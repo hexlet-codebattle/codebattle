@@ -1,0 +1,9 @@
+language: elixir
+
+elixir:
+  - 1.4.5
+
+script:
+  - mix ecto.gen.migration start
+  - mix test
+
