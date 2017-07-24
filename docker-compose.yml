@@ -1,0 +1,27 @@
+version: '3.3'
+services:
+  web:
+    build: Dockerfile
+    # env_file: .env
+    command: mix phoenix.server
+    environment:
+      - MIX_ENV=dev
+      - PORT=4000
+      - POSTGRES_USER=codebattle
+      - POSTGRES_PASSWORD=codebattle
+    ports:
+      - "4000:4000"
+    volumes:
+      - .:/app
+    depends_on:
+      - postgres
+  postgres:
+    environment:
+      - POSTGRES_USER=codebattle
+      - POSTGRES_PASSWORD=codebattle
+    image: postgres:latest
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+volumes:
+  postgres-data:
+    driver: local
