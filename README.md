@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/hexlet-codebattle/codebattle.svg?branch=master)](https://travis-ci.org/hexlet-codebattle/codebattle)
+
 # codebattle
 
-[![Build Status](https://travis-ci.org/Matt182/codebattle.svg?branch=master)](https://travis-ci.org/Matt182/codebattle)
