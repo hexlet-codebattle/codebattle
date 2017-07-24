@@ -7,10 +7,20 @@ defmodule Codebattle.Router do
     plug :fetch_flash
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug Codebattle.Plugs.Authorization
   end
 
   pipeline :api do
     plug :accepts, ["json"]
+  end
+
+  scope "/auth", Codebattle do
+    pipe_through :browser
+
+    get "/logout", AuthController, :logout
+
+    get "/:provider", AuthController, :request
+    get "/:provider/callback", AuthController, :callback
   end
 
   scope "/", Codebattle do

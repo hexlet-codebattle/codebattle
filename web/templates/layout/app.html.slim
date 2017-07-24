@@ -12,8 +12,12 @@ html lang="en"
     .container role="main"
       .header
         ul.nav.nav-pills.pull-right
-          li
-            a href="http://www.phoenixframework.org/docs"  Get Started
+          = if @conn.assigns[:is_authenticated?] do
+            li
+              a href="#{auth_path(@conn, :logout)}" Выход
+          - else
+            li
+              a href="#{auth_path(@conn, :request, :github)}" Вход через Github
         span.logo
         p.alert.alert-info role="alert" = get_flash(@conn, :info)
         p.alert.alert-danger role="alert" = get_flash(@conn, :error)
