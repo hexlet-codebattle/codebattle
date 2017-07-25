@@ -39,5 +39,5 @@ config :codebattle, Codebattle.Repo,
   username: "postgres",
   password: "postgres",
   database: "codebattle_dev",
-  hostname: "localhost",
+  hostname: "db",
   pool_size: 10
