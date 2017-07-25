@@ -1,0 +1,40 @@
+---
+- hosts: all
+
+  tasks:
+
+    - apt:
+        name: "{{ item }}"
+        update_cache: yes
+      with_items:
+        - python-pip
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - software-properties-common
+
+    - apt:
+        name: "{{ item }}"
+        state: absent
+      with_items:
+        - docker
+        - docker-engine
+        - docker.io
+
+    - apt_key:
+        url: "https://download.docker.com/linux/ubuntu/gpg"
+
+    - apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable
+
+    - apt:
+        name: docker-ce
+        update_cache: yes
+
+    - pip:
+        name: docker-compose
+
+    - user:
+        name: "{{ lookup('env', 'USER')  }}"
+        groups: docker
+        append: yes
