@@ -21,7 +21,7 @@
 # # CMD ["mix", "phoenix.server"]
 
 
-FROM elixir:latest
+FROM elixir:1.4
 
 # Install hex
 RUN mix local.hex --force
