@@ -2,3 +2,8 @@
 
 # codebattle
 
+## Docker
+
+    cd codebattle
+    cp distr.env .env && echo USERID=$UID >> .env
+    docker-compose up
