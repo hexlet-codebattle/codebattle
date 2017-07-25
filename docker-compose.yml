@@ -1,0 +1,22 @@
+version: '3.3'
+services:
+  web:
+    #image: elixir:1.4
+    build: docker/web
+    user: ${USERID}
+    env_file: .env
+    command: mix phoenix.server
+    ports:
+      - "4000:4000"
+    volumes:
+      - .:/app
+    depends_on:
+      - postgres
+  postgres:
+    image: postgres:9.6
+    env_file: .env
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+volumes:
+  postgres-data:
+    driver: local
