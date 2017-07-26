@@ -1,4 +1,5 @@
 defmodule Codebattle.Mixfile do
+  @moduledoc false
   use Mix.Project
 
   def project do
@@ -41,7 +42,8 @@ defmodule Codebattle.Mixfile do
      {:phoenix_slime, "~> 0.8.0"},
      {:ueberauth, "~> 0.4"},
      {:ueberauth_github, "~> 0.4"},
-     {:faker, "~> 0.8", only: :test}]
+     {:faker, "~> 0.8", only: :test},
+     {:credo, "~> 0.8", only: [:dev, :test], runtime: false}]
   end
 
   # Aliases are shortcuts or tasks specific to the current project.
