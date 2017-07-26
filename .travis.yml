@@ -3,7 +3,17 @@ language: elixir
 elixir:
   - 1.4.5
 
+services:
+  - postgresql
+
+env:
+  - CODEBATTLE_DATABASE_USERNAME=postgres CODEBATTLE_DATABASE_PASSWORD= CODEBATTLE_DATABASE_HOSTNAME=localhost
+
+before_script:
+  - mkdir -p priv/repo/migrations
+  - MIX_ENV=test mix ecto.create
+
 script:
-  - mix ecto.gen.migration start
+  - MIX_ENV=test mix ecto.migrate
   - mix test
 
