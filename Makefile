@@ -4,3 +4,6 @@ prepare:
 
 env:
 	ansible-playbook -vv -i ansible/development ansible/development.yml --limit=local  --become
+
+lint:
+	mix credo

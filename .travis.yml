@@ -4,6 +4,6 @@ elixir:
   - 1.4.5
 
 script:
+  - mix credo
   - mix ecto.gen.migration start
   - mix test
-
