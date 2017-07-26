@@ -7,3 +7,8 @@ env:
 
 lint:
 	mix credo
+
+test:
+	mix test
+
+.PHONY: test
