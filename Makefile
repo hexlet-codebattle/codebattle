@@ -7,6 +7,9 @@ env:
 
 compose-all: compose-build compose-install compose-compile compose-create-db compose-migrate-db
 
+lint:
+	mix credo
+
 compose-build:
 	docker-compose build web
 
@@ -39,6 +42,5 @@ install:
 
 test:
 	mix test
-
 
 .PHONY: test
