@@ -1,4 +1,7 @@
 defmodule Codebattle.Plugs.Authorization do
+  @moduledoc """
+    Fetch authenticated user from session
+  """
   import Plug.Conn
   import Ecto.Query
 

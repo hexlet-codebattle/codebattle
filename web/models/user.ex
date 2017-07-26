@@ -1,4 +1,7 @@
 defmodule Codebattle.User do
+  @moduledoc """
+    Represents authenticatable user
+  """
   use Codebattle.Web, :model
 
   schema "users" do
