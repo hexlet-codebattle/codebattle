@@ -21,6 +21,9 @@ compose:
 compose-test:
 	docker-compose run web make test
 
+comose-test-aside:
+	docker-compose run test
+
 compile:
 	mix compile
 
