@@ -9,10 +9,6 @@ env:
 compose-build:
 	docker-compose build web
 
-compose-install-deps:
-	docker-compose run web mix deps.get
-	docker-compose run web npm install
-
 compose-create-db:
 	docker-compose run web mix ecto.create
 
@@ -22,6 +18,8 @@ compose-migrate-db:
 compose:
 	docker-compose up
 
+compose-test:
+	docker-compose run web make test
 
 compile:
 	mix compile
