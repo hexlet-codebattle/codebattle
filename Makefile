@@ -31,7 +31,7 @@ compile:
 	mix compile
 
 install:
-	mix deps.get	
+	mix deps.get
 
 test:
 	mix test
