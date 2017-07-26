@@ -5,10 +5,8 @@ prepare:
 env:
 	ansible-playbook -vv -i ansible/development ansible/development.yml --limit=local  --become
 
+### Install
 compose-all: compose-build compose-install compose-compile compose-create-db compose-migrate-db
-
-lint:
-	mix credo
 
 compose-build:
 	docker-compose build web
@@ -43,4 +41,8 @@ install:
 test:
 	mix test
 
+lint:
+	mix credo
+
 .PHONY: test
+
