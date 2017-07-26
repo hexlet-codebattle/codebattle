@@ -6,4 +6,4 @@ elixir:
 script:
   - mix credo
   - mix ecto.gen.migration start
-  - mix testfull
+  - mix test
