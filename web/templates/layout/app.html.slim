@@ -6,7 +6,7 @@ html lang="en"
     meta content="width=device-width, initial-scale=1" name="viewport"
     meta content="" name="description"
     meta content="" name="author"
-    title Hello Phoenix + Slim!
+    title Codebattle
     link rel="stylesheet" href=static_path(@conn,"/css/app.css")
   body
     .container role="main"
@@ -14,10 +14,10 @@ html lang="en"
         ul.nav.nav-pills.pull-right
           = if @conn.assigns[:is_authenticated?] do
             li
-              a href="#{auth_path(@conn, :logout)}" Выход
+              a href="#{auth_path(@conn, :logout)}" <%= gettext "Logout" %>
           - else
             li
-              a href="#{auth_path(@conn, :request, :github)}" Вход через Github
+              a href="#{auth_path(@conn, :request, :github)}" <%= gettext "Sign in with Github" %>
         span.logo
         p.alert.alert-info role="alert" = get_flash(@conn, :info)
         p.alert.alert-danger role="alert" = get_flash(@conn, :error)
