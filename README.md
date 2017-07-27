@@ -6,6 +6,8 @@
 
 `git clone https://github.com/hexlet-codebattle/codebattle.git`
 
+`cd codebattle`
+
 `make compose-setup`
 
 `make compose`
