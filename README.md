@@ -4,8 +4,8 @@
 
 ### Install
 
-`make prepare`
+`git clone https://github.com/hexlet-codebattle/codebattle.git`
 
-`make env`
+`make compose-setup`
 
-`make compose-all`
+`make compose`
