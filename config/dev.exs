@@ -11,7 +11,7 @@ config :codebattle, Codebattle.Endpoint,
   debug_errors: true,
   code_reloader: true,
   check_origin: false,
-  watchers: [  watchers: [npm: ["start", "--prefix=./apps/<app_name>"]]]
+  watchers: [  watchers: [npm: ["run", "watch"]]]
 
 
 # Watch static and templates for browser reloading.

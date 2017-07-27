@@ -2,7 +2,7 @@
   "repository": {},
   "license": "MIT",
   "scripts": {
-    "start": "webpack --watch-stdin --progress --color"
+    "watch": "webpack --watch-stdin --progress --color"
   },
   "dependencies": {
     "phoenix": "file:deps/phoenix",
