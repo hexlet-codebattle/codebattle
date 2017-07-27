@@ -1,0 +1,27 @@
+## `msgid`s in this file come from POT (.pot) files.
+##
+## Do not add, change, or remove `msgid`s manually here as
+## they're tied to the ones in the corresponding POT file
+## (with the same domain).
+##
+## Use `mix gettext.extract --merge` or `mix gettext.merge`
+## to merge POT files into PO files.
+msgid ""
+msgstr ""
+"Language: ru\n"
+
+#: web/templates/page/index.html.slim:1
+msgid "Welcome to %{name}!"
+msgstr "Добро пожаловать в %{name}"
+
+#: web/templates/page/index.html.slim:1
+msgid "Codebattle: game for programmers."
+msgstr "Codebattle: игра для прораммистов."
+
+#: web/templates/layout/app.html.slim:1
+msgid "Logout"
+msgstr "Выход"
+
+#: web/templates/layout/app.html.slim:1
+msgid "Sign in with Github"
+msgstr "Войти через Github"
