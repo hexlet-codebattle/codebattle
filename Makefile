@@ -3,7 +3,7 @@ prepare:
 	sudo apt install ansible
 
 development-build-local:
-	ansible-playbook -vv -i ansible/development ansible/development.yml --limit=local  --become
+	ansible-playbook -vv --ask-sudo-pass -i ansible/development ansible/development.yml --limit=local  --become
 
 ### Install
 compose-setup: compose-build compose-install compose-prepare
