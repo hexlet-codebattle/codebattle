@@ -1,7 +1,7 @@
 .jumbotron
-  h2 Welcome to Codebattle!
+  h2 <%= gettext "Welcome to %{name}!", name: "Codebattle" %>
   p.lead
-    | Codebattle: игра для программистов.
+    | <%= gettext "Codebattle: game for programmers." %>
 .row.marketing
   .col-lg-6
     h4 Resources
@@ -20,4 +20,4 @@
       li
         a href="http://webchat.freenode.net/?channels=elixir-lang"  #elixir-lang on freenode IRC
       li
-        a href="https://twitter.com/elixirphoenix"  @elixirphoenix
+        a href="https://twitter.com/elixirphoenix"  @elixirphoenix    
