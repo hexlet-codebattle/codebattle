@@ -2,11 +2,11 @@ prepare:
 	sudo apt update
 	sudo apt install ansible
 
-env:
+development-build-local:
 	ansible-playbook -vv -i ansible/development ansible/development.yml --limit=local  --become
 
 ### Install
-compose-all: compose-build compose-install compose-compile compose-create-db compose-migrate-db
+compose-setup: compose-build compose-install compose-prepare
 
 compose-build:
 	docker-compose build web
@@ -17,14 +17,17 @@ compose-install:
 compose-compile:
 	docker-compose run web mix compile
 
-compose-create-db:
+compose-prepare: compose-compile compose-db-prepare
+
+compose-db-prepare: compose-db-create compose-db-migrate
+
+compose-db-create:
 	docker-compose run web mix ecto.create
 
-compose-migrate-db:
+compose-db-migrate:
 	docker-compose run web mix ecto.migrate
 
-compose-console:
-	docker-compose run web iex -S mix
+compose-console: docker-compose run web iex -S mix
 
 compose:
 	docker-compose up
