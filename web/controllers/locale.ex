@@ -1,4 +1,7 @@
 defmodule Codebattle.Locale do
+  @moduledoc """
+    I18n configuration
+  """
   import Plug.Conn
 
   def init(opts), do: nil
