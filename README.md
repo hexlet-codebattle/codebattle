@@ -8,6 +8,8 @@
 
 `cd codebattle`
 
+`make development-build-local`
+
 `make compose-setup`
 
 `make compose`
