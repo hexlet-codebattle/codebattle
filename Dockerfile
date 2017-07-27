@@ -4,14 +4,12 @@ RUN apt-get update && apt-get upgrade -y && \
     apt-get install -y wget curl inotify-tools git build-essential zip unzip && \
     apt-get clean && rm -fr /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Install hex package manager
-RUN mix local.hex --force
+ENV PHOENIX_VERSION 1.2.4
 
-# Install rebar (Erlang build tool)
-RUN mix local.rebar --force
+RUN mix archive.install --force https://github.com/phoenixframework/archives/raw/master/phoenix_new-$PHOENIX_VERSION.ez
 
-# Install the Phoenix framework itself
-RUN mix archive.install --force https://github.com/phoenixframework/archives/raw/master/phoenix_new.ez
+RUN mix local.hex --force \
+    && mix local.rebar --force
 
 # Install Node and NPM
 RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -

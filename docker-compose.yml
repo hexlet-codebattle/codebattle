@@ -3,10 +3,8 @@ services:
   web:
     build: .
     env_file: .env
-    environment:
-      - MIX_ENV=dev
-      - PORT=4000
     command: mix phoenix.server
+    container_name: web
     volumes:
       - .:/app
     ports:
@@ -17,11 +15,12 @@ services:
     image: postgres:9.6
     volumes:
       - postgres-data:/var/lib/postgresql/data
-    env_file: .env
+    container_name: db
+    ports:
+      - "5432:5432"
     environment:
      - POSTGRES_USER=${CODEBATTLE_DATABASE_USERNAME}
      - POSTGRES_PASSWORD=${CODEBATTLE_DATABASE_PASSWORD}
-     - POSTGRES_HOST=${CODEBATTLE_DATABASE_HOSTNAME}
 
   test:
     build: .

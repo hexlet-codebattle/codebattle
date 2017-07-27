@@ -23,6 +23,9 @@ compose-create-db:
 compose-migrate-db:
 	docker-compose run web mix ecto.migrate
 
+compose-console:
+	docker-compose run web iex -S mix
+
 compose:
 	docker-compose up
 
