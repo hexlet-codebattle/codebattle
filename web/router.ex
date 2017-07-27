@@ -8,6 +8,7 @@ defmodule Codebattle.Router do
     plug :protect_from_forgery
     plug :put_secure_browser_headers
     plug Codebattle.Plugs.Authorization
+    plug Codebattle.Locale
   end
 
   pipeline :api do
