@@ -11,15 +11,15 @@ html lang="en"
   body
     .container role="main"
       .header
-        ul.nav.nav-pills.pull-right
+        ul.nav.justify-content-end
           = if @conn.assigns[:is_authenticated?] do
-            li
-              a href="#{auth_path(@conn, :logout)}" <%= gettext "Logout" %>
+            li.nav-item
+              a href="#{auth_path(@conn, :logout)}"
+                button.btn.btn-outline-success type="submit" <%= gettext "Logout" %>
           - else
-            li
-              a href="#{auth_path(@conn, :request, :github)}" <%= gettext "Sign in with Github" %>
+            li.nav-item
+              a href="#{auth_path(@conn, :request, :github)}"
+                button.btn.btn-outline-success <%= gettext "Sign in with Github" %>
         span.logo
-        p.alert.alert-info role="alert" = get_flash(@conn, :info)
-        p.alert.alert-danger role="alert" = get_flash(@conn, :error)
       = render @view_module, @view_template, assigns
     script src=static_path(@conn,"/js/app.js")
