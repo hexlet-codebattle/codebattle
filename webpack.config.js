@@ -1,8 +1,9 @@
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
+var CopyWebpackPlugin = require("copy-webpack-plugin");
 var path = require('path');
 
 module.exports = {
-  entry: './web/static/js/app.js',
+  entry: ['./web/static/css/app.css', './web/static/js/app.js'],
   output: {
     path: path.join(__dirname, 'priv', 'static', 'js'),
     filename: 'app.js',
@@ -35,10 +36,11 @@ module.exports = {
     ]
   },
   plugins: [
-    new ExtractTextPlugin('../css/app.css')
+    new ExtractTextPlugin('../css/app.css'),
+    new CopyWebpackPlugin([{ from: path.join(__dirname, 'web', 'static', 'assets') }])
   ],
   resolve: {
-    modules: [ 'node_modules', __dirname + '/web/static/js' ],
+    modules: [ 'node_modules', path.join(__dirname, 'web', 'static', 'js') ],
     extensions: ['.js', '.jsx']
   }
 };
