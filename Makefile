@@ -12,20 +12,20 @@ compose-build:
 	docker-compose build web
 
 compose-install:
-	docker-compose run web mix deps.get
+	docker-compose run --rm web mix deps.get
 
 compose-compile:
-	docker-compose run web mix compile
+	docker-compose run --rm web mix compile
 
 compose-prepare: compose-compile compose-db-prepare
 
 compose-db-prepare: compose-db-create compose-db-migrate
 
 compose-db-create:
-	docker-compose run web mix ecto.create
+	docker-compose run --rm web mix ecto.create
 
 compose-db-migrate:
-	docker-compose run web mix ecto.migrate
+	docker-compose run --rm web mix ecto.migrate
 
 compose-console: docker-compose run web iex -S mix
 
@@ -33,10 +33,10 @@ compose:
 	docker-compose up
 
 compose-test:
-	docker-compose run web make test
+	docker-compose run --rm web make test
 
 comose-test-aside:
-	docker-compose run test
+	docker-compose run --rm test
 
 compile:
 	mix compile
