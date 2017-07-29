@@ -13,3 +13,5 @@
 `make compose-setup`
 
 `make compose`
+
+open `localhost:4000` in your browser
