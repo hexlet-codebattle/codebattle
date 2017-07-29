@@ -1,4 +1,4 @@
-defmodule Codebattle.User do
+defmodule CodebattleWeb.User do
   @moduledoc """
     Represents authenticatable user
   """

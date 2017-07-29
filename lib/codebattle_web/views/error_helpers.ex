@@ -1,4 +1,4 @@
-defmodule Codebattle.ErrorHelpers do
+defmodule CodebattleWeb.ErrorHelpers do
   @moduledoc """
   Conveniences for translating and building error messages.
   """

@@ -1,4 +1,4 @@
-defmodule Codebattle.ErrorView do
+defmodule CodebattleWeb.ErrorView do
   use Codebattle.Web, :view
 
   def render("404.html", _assigns) do

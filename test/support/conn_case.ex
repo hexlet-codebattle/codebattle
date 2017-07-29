@@ -1,4 +1,4 @@
-defmodule Codebattle.ConnCase do
+defmodule CodebattleWeb.ConnCase do
   @moduledoc """
   This module defines the test case to be used by
   tests that require setting up a connection.
@@ -25,10 +25,10 @@ defmodule Codebattle.ConnCase do
       import Ecto.Changeset
       import Ecto.Query
 
-      import Codebattle.Router.Helpers
+      import CodebattleWeb.Router.Helpers
 
       # The default endpoint for testing
-      @endpoint Codebattle.Endpoint
+      @endpoint CodebattleWeb.Endpoint
     end
   end
 

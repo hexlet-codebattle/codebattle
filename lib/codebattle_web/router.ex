@@ -1,4 +1,4 @@
-defmodule Codebattle.Router do
+defmodule CodebattleWeb.Router do
   use Codebattle.Web, :router
 
   pipeline :browser do
@@ -8,14 +8,14 @@ defmodule Codebattle.Router do
     plug :protect_from_forgery
     plug :put_secure_browser_headers
     plug Codebattle.Plugs.Authorization
-    plug Codebattle.Locale
+    plug CodebattleWeb.Locale
   end
 
   pipeline :api do
     plug :accepts, ["json"]
   end
 
-  scope "/auth", Codebattle do
+  scope "/auth", CodebattleWeb do
     pipe_through :browser
 
     get "/logout", AuthController, :logout
@@ -24,7 +24,7 @@ defmodule Codebattle.Router do
     get "/:provider/callback", AuthController, :callback
   end
 
-  scope "/", Codebattle do
+  scope "/", CodebattleWeb do
     pipe_through :browser # Use the default browser stack
 
     get "/", PageController, :index

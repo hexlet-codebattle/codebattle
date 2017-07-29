@@ -1,4 +1,4 @@
-defmodule Codebattle.PageController do
+defmodule CodebattleWeb.PageController do
   use Codebattle.Web, :controller
 
   def index(conn, _params) do

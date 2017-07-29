@@ -1,3 +1,3 @@
 defmodule Codebattle.LayoutViewTest do
-  use Codebattle.ConnCase, async: true
+  use CodebattleWeb.ConnCase, async: true
 end
