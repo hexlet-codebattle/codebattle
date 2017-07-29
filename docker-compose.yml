@@ -3,7 +3,7 @@ services:
   web:
     build: .
     env_file: .env
-    command: mix phoenix.server
+    command: mix phx.server
     container_name: web
     volumes:
       - .:/app
