@@ -1,0 +1,8 @@
+h2 Listing games
+  p Всего игр:
+    = @games |> Enum.count
+
+  = for game <- @games do
+   p  = game.state
+
+  = button "Создать игру", to: game_path(@conn, :create)

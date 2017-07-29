@@ -2,6 +2,9 @@
   h2 <%= gettext "Welcome to %{name}!", name: "Codebattle" %>
   p.lead
     | <%= gettext "Codebattle: game for programmers." %>
+
+  h3 = button "Создать игру", to: game_path(@conn, :create)
+  h3 = link "Список игр", to: game_path(@conn, :index)
 .row.marketing
   .col-lg-6
     h4 Resources
@@ -20,4 +23,4 @@
       li
         a href="http://webchat.freenode.net/?channels=elixir-lang"  #elixir-lang on freenode IRC
       li
-        a href="https://twitter.com/elixirphoenix"  @elixirphoenix    
+        a href="https://twitter.com/elixirphoenix"  @elixirphoenix

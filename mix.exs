@@ -1,5 +1,4 @@
 defmodule Codebattle.Mixfile do
-  @moduledoc false
   use Mix.Project
 
   def project do
@@ -20,7 +19,7 @@ defmodule Codebattle.Mixfile do
   def application do
     [mod: {Codebattle, []},
      applications: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext,
-                    :phoenix_ecto, :postgrex, :ueberauth, :ueberauth_github]]
+                    :phoenix_ecto, :postgrex, :ueberauth, :ueberauth_github, :gproc]]
   end
 
   # Specifies which paths to compile per environment.
@@ -36,14 +35,22 @@ defmodule Codebattle.Mixfile do
      {:phoenix_ecto, "~> 3.0"},
      {:postgrex, ">= 0.0.0"},
      {:phoenix_html, "~> 2.6"},
-     {:phoenix_live_reload, "~> 1.0", only: :dev},
      {:gettext, "~> 0.11"},
      {:cowboy, "~> 1.0"},
      {:phoenix_slime, "~> 0.8.0"},
      {:ueberauth, "~> 0.4"},
      {:ueberauth_github, "~> 0.4"},
-     {:faker, "~> 0.8", only: :test},
-     {:credo, "~> 0.8", only: [:dev, :test], runtime: false}]
+     {:gproc, "~> 0.6"},
+     {:ecto_state_machine, "~> 0.3"},
+
+     #dev_and_test
+     {:credo, "~> 0.8", only: [:dev, :test], runtime: false},
+
+     #dev
+     {:phoenix_live_reload, "~> 1.0", only: :dev},
+
+     #test
+     {:faker, "~> 0.8", only: :test}]
   end
 
   # Aliases are shortcuts or tasks specific to the current project.

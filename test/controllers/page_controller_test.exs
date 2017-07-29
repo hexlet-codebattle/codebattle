@@ -1,5 +1,4 @@
 defmodule Codebattle.PageControllerTest do
-    @moduledoc false
   use CodebattleWeb.ConnCase
 
   test "GET /", %{conn: conn} do
