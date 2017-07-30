@@ -15,7 +15,7 @@ defmodule Codebattle.GithubUserTest do
   test "new user is created successfully" do
     auth_data = %Auth{
       provider: :github,
-      uid: :rand.uniform(100000),
+      uid: :rand.uniform(100_000),
       extra: %{
         raw_info: %{
           user: @valid_data,
