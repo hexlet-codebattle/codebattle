@@ -11,6 +11,9 @@ compose-setup: compose-build compose-install compose-prepare
 compose-build:
 	docker-compose build web
 
+compose-rebuild:
+	docker-compose build --no-cache web
+
 compose-install:
 	docker-compose run --rm web mix deps.get
 
@@ -27,15 +30,13 @@ compose-db-create:
 compose-db-migrate:
 	docker-compose run --rm web mix ecto.migrate
 
-compose-console: docker-compose run web iex -S mix
+compose-console:
+	docker-compose run web iex -S mix
 
 compose:
-	docker-compose up
+	docker-compose up -d web
 
 compose-test:
-	docker-compose run --rm web make test
-
-comose-test-aside:
 	docker-compose run --rm test
 
 compile:
