@@ -4,22 +4,17 @@ defmodule Game.ServerTest do
   doctest Game.Server
 
   setup do
-    # Explicitly get a connection before each test
-    # By default the test is wrapped in a transaction
     :ok = Ecto.Adapters.SQL.Sandbox.checkout(Codebattle.Repo)
-
-    # The :shared mode allows a process to share
-    # its connection with any other process automatically
-    Ecto.Adapters.SQL.Sandbox.mode(Codebattle.Repo, { :shared, self() })
+    Ecto.Adapters.SQL.Sandbox.mode(Codebattle.Repo, {:shared, self()})
   end
 
   test "user create game" do
-    {:ok, game} = Codebattle.Repo.insert(%Codebattle.Game{})
-    user = %Codebattle.User{}
+    {:ok, game} = Codebattle.Repo.insert(%CodebattleWeb.Game{})
+    user = %CodebattleWeb.User{}
 
     Game.Supervisor.start_game(game)
     Game.Server.fire_event(game.id, user, :create)
 
-    assert Codebattle.Repo.get(Codebattle.Game, game.id).state == "waiting_oponent"
+    assert Codebattle.Repo.get(CodebattleWeb.Game, game.id).state == "waiting_oponent"
   end
 end

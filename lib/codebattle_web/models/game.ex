@@ -1,4 +1,4 @@
-defmodule Codebattle.Game do
+defmodule CodebattleWeb.Game do
   use Codebattle.Web, :model
 
  use EctoStateMachine,

@@ -3,7 +3,7 @@
   p.lead
     | <%= gettext "Codebattle: game for programmers." %>
 
-  h3 = button "Создать игру", to: game_path(@conn, :create)
+  = button "Создать игру", to: game_path(@conn, :create), class: "btn btn-primary"
   h3 = link "Список игр", to: game_path(@conn, :index)
 .row.marketing
   .col-lg-6

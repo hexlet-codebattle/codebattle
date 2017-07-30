@@ -1,7 +1,7 @@
 defmodule Codebattle.GameTest do
   use Codebattle.ModelCase
 
-  alias Codebattle.Game
+  alias CodebattleWeb.Game
 
   describe "state mashine" do
     test "initial state" do

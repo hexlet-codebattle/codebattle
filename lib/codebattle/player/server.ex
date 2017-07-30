@@ -3,20 +3,20 @@ defmodule Player.Server do
   use GenServer
 
   #API
-  def start_link(id) do
-    GenServer.start_link(__MODULE__, [], name: game_name(id))
+  def start_link(id, game_id) do
+    GenServer.start_link(__MODULE__, [], name: player_name(id))
   end
 
-  def add_message(game_id, message) do
-    GenServer.cast(game_name(game_id), {:add_message, message})
+  def add_message(player_id, message) do
+    GenServer.cast(player_name(player_id), {:add_message, message})
   end
 
-  def get_messages(game_id) do
-    GenServer.call(game_name(game_id), :get_messages)
+  def get_messages(player_id) do
+    GenServer.call(player_name(player_id), :get_messages)
   end
 
-  defp game_name(game_id) do
-    {:via, :gproc, {:n, :l, {:game, game_id}}}
+  defp player_name(player_id) do
+    {:via, :gproc, {:n, :l, {:game, player_id}}}
   end
 
   # SERVER

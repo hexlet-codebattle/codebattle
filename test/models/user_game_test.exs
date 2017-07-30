@@ -1,7 +1,7 @@
 defmodule Codebattle.UserGameTest do
   use Codebattle.ModelCase
 
-  alias Codebattle.UserGame
+  alias CodebattleWeb.UserGame
 
   @valid_attrs %{game_id: 42, result: "some content", user_id: 42}
   @invalid_attrs %{}

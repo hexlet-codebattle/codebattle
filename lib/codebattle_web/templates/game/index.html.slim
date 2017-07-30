@@ -1,0 +1,15 @@
+h2 Listing games
+  p Всего игр:
+    = @games |> Enum.count
+
+  =  button "Создать игру", to: game_path(@conn, :create), class: "btn btn-primary"
+  br
+  br
+  div = link "На главную", to: page_path(@conn, :index)
+  br
+
+  = for game <- @games do
+    div  = "id: #{game.id}, state: #{game.state}"
+    br
+
+

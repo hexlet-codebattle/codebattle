@@ -24,7 +24,7 @@ defmodule Game.Server do
   end
 
   def handle_cast({:fire_event, user, event}, game) do
-    new_game = apply(Codebattle.Game, event, [game])
+    new_game = apply(CodebattleWeb.Game, event, [game])
     Codebattle.Repo.update!(new_game)
     {:noreply, new_game}
   end

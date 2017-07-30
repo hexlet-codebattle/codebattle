@@ -1,4 +1,4 @@
-defmodule Codebattle.UserGame do
+defmodule CodebattleWeb.UserGame do
   use Codebattle.Web, :model
 
   schema "user_games" do
