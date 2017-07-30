@@ -1,4 +1,4 @@
-defmodule Codebattle.AuthController do
+defmodule CodebattleWeb.AuthController do
   use Codebattle.Web, :controller
 
   alias Ueberauth.Strategy.Helpers

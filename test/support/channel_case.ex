@@ -1,4 +1,4 @@
-defmodule Codebattle.ChannelCase do
+defmodule CodebattleWeb.ChannelCase do
   @moduledoc """
   This module defines the test case to be used by
   channel tests.
@@ -27,7 +27,7 @@ defmodule Codebattle.ChannelCase do
 
 
       # The default endpoint for testing
-      @endpoint Codebattle.Endpoint
+      @endpoint CodebattleWeb.Endpoint
     end
   end
 

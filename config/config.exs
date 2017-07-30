@@ -10,10 +10,10 @@ config :codebattle,
   ecto_repos: [Codebattle.Repo]
 
 # Configures the endpoint
-config :codebattle, Codebattle.Endpoint,
+config :codebattle, CodebattleWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "zQ3/vT3oIVM94qXO7IgWeAqbLSAyGA9em6fdBw7OdbDnbeotEkWYANrjJWYNWpd/",
-  render_errors: [view: Codebattle.ErrorView, accepts: ~w(html json)],
+  render_errors: [view: CodebattleWeb.ErrorView, accepts: ~w(html json)],
   pubsub: [name: Codebattle.PubSub,
            adapter: Phoenix.PubSub.PG2]
 

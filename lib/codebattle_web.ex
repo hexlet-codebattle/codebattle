@@ -28,20 +28,21 @@ defmodule Codebattle.Web do
 
   def controller do
     quote do
-      use Phoenix.Controller
+      use Phoenix.Controller, namespace: CodebattleWeb
 
       alias Codebattle.Repo
       import Ecto
       import Ecto.Query
 
-      import Codebattle.Router.Helpers
-      import Codebattle.Gettext
+      import CodebattleWeb.Router.Helpers
+      import CodebattleWeb.Gettext
     end
   end
 
   def view do
     quote do
-      use Phoenix.View, root: "web/templates"
+      use Phoenix.View, root: "lib/codebattle_web/templates",
+                        namespace: CodebattleWeb
 
       # Import convenience functions from controllers
       import Phoenix.Controller, only: [get_csrf_token: 0, get_flash: 2, view_module: 1]
@@ -49,9 +50,9 @@ defmodule Codebattle.Web do
       # Use all HTML functionality (forms, tags, etc)
       use Phoenix.HTML
 
-      import Codebattle.Router.Helpers
-      import Codebattle.ErrorHelpers
-      import Codebattle.Gettext
+      import CodebattleWeb.Router.Helpers
+      import CodebattleWeb.ErrorHelpers
+      import CodebattleWeb.Gettext
     end
   end
 
@@ -68,7 +69,7 @@ defmodule Codebattle.Web do
       alias Codebattle.Repo
       import Ecto
       import Ecto.Query
-      import Codebattle.Gettext
+      import CodebattleWeb.Gettext
     end
   end
 

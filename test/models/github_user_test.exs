@@ -1,7 +1,7 @@
 defmodule Codebattle.GithubUserTest do
   use Codebattle.ModelCase
 
-  alias Codebattle.GithubUser
+  alias CodebattleWeb.GithubUser
   alias Ueberauth.Auth
 
   @valid_data %{

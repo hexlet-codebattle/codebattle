@@ -1,7 +1,7 @@
-defmodule Codebattle.Endpoint do
+defmodule CodebattleWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :codebattle
 
-  socket "/socket", Codebattle.UserSocket
+  socket "/socket", CodebattleWeb.UserSocket
 
   # Serve at "/" the static files from "priv/static" directory.
   #
@@ -38,5 +38,5 @@ defmodule Codebattle.Endpoint do
     key: "_codebattle_key",
     signing_salt: "7k9BuL99"
 
-  plug Codebattle.Router
+  plug CodebattleWeb.Router
 end

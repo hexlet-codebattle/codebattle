@@ -23,11 +23,11 @@ ADD ./mix.lock /app
 RUN mix deps.get
 
 # install npm deps
-ADD ./package.json /app
-ADD ./package-lock.json /app
+ADD ./assets/package.json /app/assets/
+ADD ./assets/package-lock.json /app/assets/
+WORKDIR ./assets
 RUN npm install
-
+WORKDIR /app
 RUN mix compile
 
 ADD . /app
-

@@ -8,9 +8,9 @@ styleLoaders:
   - resolve-url-loader?sourceMap
   - postcss-loader?sourceMap
   - sass-loader?sourceMap
-preBootstrapCustomizations: ./web/static/css/pre-bootstrap-customizations.scss
-bootstrapCustomizations: ./web/static/css/bootstrap-customizations.scss
-appStyles: ./web/static/css/app.scss
+preBootstrapCustomizations: ./css/pre-bootstrap-customizations.scss
+bootstrapCustomizations: ./css/bootstrap-customizations.scss
+appStyles: ./css/app.scss
 
 ### Bootstrap styles
 styles:

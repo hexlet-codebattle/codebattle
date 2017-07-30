@@ -4,11 +4,11 @@ const webpack = require('webpack');
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 
 module.exports = {
-  entry: ['bootstrap-loader', './web/static/js/app.js'],
+  entry: ['bootstrap-loader', './js/app.js'],
   output: {
-    path: path.join(__dirname, 'priv', 'static', 'js'),
+    path: path.join(__dirname, '..', 'priv', 'static', 'js'),
     filename: 'app.js',
-    publicPath: 'priv/static'
+    publicPath: path.join(__dirname, '..', 'priv', 'static')
   },
   module: {
     rules: [
@@ -42,7 +42,7 @@ module.exports = {
   },
   plugins: [
     new ExtractTextPlugin('../css/app.css'),
-    new CopyWebpackPlugin([{ from: path.join(__dirname, 'web', 'static', 'assets') }]),
+    new CopyWebpackPlugin([{ from: path.join(__dirname, 'static'), to: path.join(__dirname, '..', 'priv', 'static') }]),
     new webpack.ProvidePlugin({
       $: "jquery",
       jQuery: "jquery",
@@ -63,7 +63,7 @@ module.exports = {
     })
   ],
   resolve: {
-    modules: [ 'node_modules', path.join(__dirname, 'web', 'static', 'js') ],
+    modules: [ 'node_modules', path.join(__dirname, 'assets', 'js') ],
     extensions: ['.js', '.jsx']
   }
 };

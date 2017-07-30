@@ -1,4 +1,4 @@
-defmodule Codebattle.UserSocket do
+defmodule CodebattleWeb.UserSocket do
   use Phoenix.Socket
 
   ## Channels

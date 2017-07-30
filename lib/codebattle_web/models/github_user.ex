@@ -1,4 +1,4 @@
-defmodule Codebattle.GithubUser do
+defmodule CodebattleWeb.GithubUser do
   @moduledoc """
     Retrieve user information from github oauth request
   """
@@ -6,7 +6,7 @@ defmodule Codebattle.GithubUser do
   import Ecto.Query
 
   alias Ueberauth.Auth
-  alias Codebattle.User
+  alias CodebattleWeb.User
 
   def find_or_create(%Auth{provider: :github} = auth) do
     user_data = %{
