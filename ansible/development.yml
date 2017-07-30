@@ -22,10 +22,10 @@
         - docker.io
 
     - apt_key:
-        url: "https://download.docker.com/linux/ubuntu/gpg"
+        url: "https://download.docker.com/linux/{{ ansible_lsb.id | lower }}/gpg"
 
     - apt_repository:
-        repo: deb https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable
+        repo: deb https://download.docker.com/linux/{{ansible_lsb.id | lower }} {{ ansible_distribution_release }} stable
 
     - apt:
         name: docker-ce
