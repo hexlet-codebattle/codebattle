@@ -16,7 +16,7 @@ cd codebattle
 make development-build-local
 ```
 * Выйдите и войдите в систему
-* Установите зависимосте и запустите docker-контейнеры
+* Установите зависимости и запустите docker-контейнеры
 ```
 make compose-setup
 make compose
