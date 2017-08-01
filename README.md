@@ -5,6 +5,8 @@
 Текущая версия приложения доступна по адресу http://hexlet-codebattle.herokuapp.com.
 Следить за процессом разработки можно в [ленте новостей.](https://github.com/hexlet-codebattle/codebattle/wiki/News-Feed)
 
+Когда вы будете полностью готовы влиться в разработку, то можете выбрать любую интересную для себя задачу исходя из текущего этапа [в этом разделе](https://github.com/hexlet-codebattle/codebattle/milestones) или посмотреть все открытые актуальные задачи [на этой доске](https://github.com/hexlet-codebattle/codebattle/projects/1).
+
 ### Установка
 
 * Клонируйте репозиторий
