@@ -9,17 +9,21 @@ html lang="en"
     title Codebattle
     link rel="stylesheet" href=static_path(@conn,"/css/app.css")
   body
+    nav.navbar.navbar-light.navbar-toggleable-sm.justify-content-center
+      a.navbar-brand.d-flex.mr-auto href="#"
+        img alt=static_path(@conn,"/css/app.css") src="/images/codebattle_logo.png" height="30"
+        | Codebattle
+      ul.nav.navbar-nav.ml-auto.justify-content-end
+        = if @conn.assigns[:is_authenticated?] do
+          li.nav-item
+            p.text-center.mr-3= @conn.assigns.user.name
+          li.nav-item
+            a href="#{auth_path(@conn, :logout)}"
+              button.btn.btn-outline-success type="submit" <%= gettext "Logout" %>
+        - else
+          li.nav-item
+            a href="#{auth_path(@conn, :request, :github)}"
+              button.btn.btn-outline-success <%= gettext "Sign in with Github" %>
     .container role="main"
-      .header
-        ul.nav.justify-content-end
-          = if @conn.assigns[:is_authenticated?] do
-            li.nav-item
-              a href="#{auth_path(@conn, :logout)}"
-                button.btn.btn-outline-success type="submit" <%= gettext "Logout" %>
-          - else
-            li.nav-item
-              a href="#{auth_path(@conn, :request, :github)}"
-                button.btn.btn-outline-success <%= gettext "Sign in with Github" %>
-        span.logo
       = render @view_module, @view_template, assigns
     script src=static_path(@conn,"/js/app.js")
