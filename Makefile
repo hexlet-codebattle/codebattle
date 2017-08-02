@@ -2,6 +2,11 @@ prepare:
 	sudo apt update
 	sudo apt install ansible
 
+webpack:
+	cd assets/
+	npm install
+	cd ../
+
 development-build-local:
 	ansible-playbook -vv --ask-sudo-pass -i ansible/development ansible/development.yml --limit=local  --become
 
@@ -30,17 +35,17 @@ compose-db-create:
 compose-db-migrate:
 	docker-compose run --rm web mix ecto.migrate
 
+compose-test:
+	docker-compose run --rm test
+
 compose-console:
 	docker-compose run web iex -S mix
 
 compose-bash:
 	docker-compose run web bash
 
-compose-full-restart:
+compose-restart:
 	docker-compose restart
-
-compose-full:
-	docker-compose up -d
 
 compose-stop:
 	docker-compose stop
@@ -51,11 +56,10 @@ compose-kill:
 compose:
 	docker-compose up -d web
 
-compose-test:
-	docker-compose run --rm test
-
 compile:
 	mix compile
+
+rebuild-styles: webpack compose-restart
 
 install:
 	mix deps.get
