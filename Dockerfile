@@ -1,5 +1,8 @@
 FROM elixir:1.5
 
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install --assume-yes apt-utils
+
 RUN apt-get update && apt-get upgrade -y && \
     apt-get install -y wget curl inotify-tools git build-essential zip unzip && \
     apt-get clean && rm -fr /var/lib/apt/lists/* /tmp/* /var/tmp/*
