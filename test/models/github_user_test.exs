@@ -5,7 +5,7 @@ defmodule Codebattle.GithubUserTest do
   alias Ueberauth.Auth
 
   @valid_data %{
-    "name" => Faker.Name.name,
+    "login" => Faker.Internet.user_name,
     "emails" => [
       %{"email" => Faker.Internet.email, "primary" => true},
       %{"email" => Faker.Internet.email, "primary" => false},
@@ -26,7 +26,7 @@ defmodule Codebattle.GithubUserTest do
     # First time user is created
     {:ok, user1} = GithubUser.find_or_create(auth_data)
     assert user1.github_id == auth_data.uid
-    assert user1.name == @valid_data["name"]
+    assert user1.name == @valid_data["login"]
     assert user1.email == @valid_data["emails"] |> Enum.at(0) |> Map.get("email")
 
     # Second time user is updated
