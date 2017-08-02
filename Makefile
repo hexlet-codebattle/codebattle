@@ -33,6 +33,21 @@ compose-db-migrate:
 compose-console:
 	docker-compose run web iex -S mix
 
+compose-bash:
+	docker-compose run web bash
+
+compose-full-restart:
+	docker-compose restart
+
+compose-full:
+	docker-compose up -d
+
+compose-stop:
+	docker-compose stop
+
+compose-kill:
+	docker-compose kill
+
 compose:
 	docker-compose up -d web
 

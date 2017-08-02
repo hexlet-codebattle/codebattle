@@ -3,7 +3,7 @@ defmodule Codebattle.Mixfile do
 
   def project do
     [app: :codebattle,
-     version: "0.0.1",
+     version: "0.0.2",
      elixir: "~> 1.2",
      elixirc_paths: elixirc_paths(Mix.env),
      compilers: [:phoenix, :gettext] ++ Mix.compilers,
@@ -34,9 +34,9 @@ defmodule Codebattle.Mixfile do
      {:phoenix_pubsub, "~> 1.0"},
      {:phoenix_ecto, "~> 3.0"},
      {:postgrex, ">= 0.0.0"},
-     {:phoenix_html, "~> 2.6"},
+     {:phoenix_html, "~> 2.10"},
      {:gettext, "~> 0.11"},
-     {:cowboy, "~> 1.0"},
+     {:cowboy, "~> 1.0" },
      {:phoenix_slime, "~> 0.8.0"},
      {:ueberauth, "~> 0.4"},
      {:ueberauth_github, "~> 0.4"},
