@@ -1,4 +1,6 @@
 defmodule Game.Server do
+  @moduledoc false
+
   use GenServer
 
   #API
@@ -33,4 +35,3 @@ defmodule Game.Server do
     {:reply, game, game}
   end
 end
-

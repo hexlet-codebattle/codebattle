@@ -1,4 +1,5 @@
 defmodule CodebattleWeb.UserGame do
+  @moduledoc false
   use Codebattle.Web, :model
 
   schema "user_games" do

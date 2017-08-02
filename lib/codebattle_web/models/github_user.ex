@@ -14,7 +14,7 @@ defmodule CodebattleWeb.GithubUser do
       name: auth.extra.raw_info.user["login"],
       email: email_from_auth(auth),
     }
-    
+
     user = User
       |> Ecto.Query.where(github_id: ^user_data.github_id)
       |> Ecto.Query.first

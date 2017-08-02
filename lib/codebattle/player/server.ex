@@ -1,4 +1,5 @@
 defmodule Player.Server do
+  @moduledoc false
 
   use GenServer
 
@@ -32,4 +33,3 @@ defmodule Player.Server do
     {:reply, messages, messages}
   end
 end
-
