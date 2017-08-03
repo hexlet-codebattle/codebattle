@@ -1,9 +1,8 @@
-body,
-form,
-ul,
+body, 
+form, 
 table {
-    margin-top: 20px;
-    margin-bottom: 20px;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 
 
@@ -48,17 +47,9 @@ form.button {
 
 
 /* Customize container */
-
-@media (min-width: 768px) {
-    .container {
-        max-width: 730px;
-    }
+.container-narrow > hr {
+  margin: 30px 0;
 }
-
-.container-narrow>hr {
-    margin: 30px 0;
-}
-
 
 /* Main marketing message */
 

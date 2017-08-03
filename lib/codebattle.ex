@@ -1,4 +1,6 @@
 defmodule Codebattle do
+  @moduledoc false
+
   use Application
 
   # See http://elixir-lang.org/docs/stable/elixir/Application.html
@@ -12,7 +14,8 @@ defmodule Codebattle do
       supervisor(Codebattle.Repo, []),
       # Start the endpoint when the application starts
       supervisor(CodebattleWeb.Endpoint, []),
-      # Start your own worker by calling: Codebattle.Worker.start_link(arg1, arg2, arg3)
+      # Start your own worker by calling:
+      #   Codebattle.Worker.start_link(arg1, arg2, arg3)
       # worker(Codebattle.Worker, [arg1, arg2, arg3]),
     ]
 

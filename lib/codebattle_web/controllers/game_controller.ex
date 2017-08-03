@@ -6,7 +6,6 @@ defmodule CodebattleWeb.GameController do
     render(conn, "index.html", games: games)
   end
 
-
   def create(conn, %{}) do
     game = Codebattle.Repo.insert!(%CodebattleWeb.Game{})
     Game.Supervisor.start_game(game)

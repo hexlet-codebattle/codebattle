@@ -4,6 +4,7 @@
 /deps
 /*.ez
 *.retry
+*.log
 
 # Generated on crash by the VM
 erl_crash.dump
@@ -24,3 +25,5 @@ erl_crash.dump
 # variables.
 /config/prod.secret.exs
 tags
+.vagrant
+*.DS_Store

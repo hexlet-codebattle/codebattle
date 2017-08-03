@@ -14,7 +14,7 @@ defmodule Codebattle.Plugs.Authorization do
         conn
 
       _ ->
-        user = Codebattle.User |> Codebattle.Repo.get(user_id)
+        user = CodebattleWeb.User |> Codebattle.Repo.get(user_id)
         conn
           |> assign(:user, user)
           |> assign(:is_authenticated?, user != nil)

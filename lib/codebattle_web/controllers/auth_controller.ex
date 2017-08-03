@@ -23,7 +23,7 @@ defmodule CodebattleWeb.AuthController do
   end
 
   def callback(%{assigns: %{ueberauth_auth: auth}} = conn, _params) do
-    case Codebattle.GithubUser.find_or_create(auth) do
+    case CodebattleWeb.GithubUser.find_or_create(auth) do
       {:ok, user} ->
         conn
         |> put_flash(:info, "Successfully authenticated.")

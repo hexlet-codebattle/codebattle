@@ -1,7 +1,9 @@
 defmodule CodebattleWeb.Game do
+  @moduledoc false
+
   use Codebattle.Web, :model
 
- use EctoStateMachine,
+  use EctoStateMachine,
     states: [:initial, :waiting_oponent, :playing, :one_player_won, :finished],
     events: [
       [
