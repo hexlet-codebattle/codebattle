@@ -1,35 +1,50 @@
-body, form, table {
+body, 
+form, 
+table {
   margin-top: 20px;
   margin-bottom: 20px;
 }
 
+
 /* Phoenix flash messages */
-.alert:empty { display: none; }
+
+.alert:empty {
+    display: none;
+}
+
 
 /* Phoenix inline forms in links and buttons */
-form.link, form.button {
-  display: inline;
+
+form.link,
+form.button {
+    display: inline;
 }
+
 
 /* Custom page header */
+
 .header {
-  border-bottom: 1px solid #e5e5e5;
-}
-.logo {
-  width: 519px;
-  height: 71px;
-  display: inline-block;
-  margin-bottom: 1em;
-  background-image: url("/images/phoenix.png");
-  background-size: 519px 71px;
+    border-bottom: 1px solid #e5e5e5;
 }
 
+.logo {
+    width: 519px;
+    height: 71px;
+    display: inline-block;
+    margin-bottom: 1em;
+    background-image: url("/images/phoenix.png");
+    background-size: 519px 71px;
+}
+
+
 /* Everything but the jumbotron gets side spacing for mobile first views */
+
 .header,
 .marketing {
-  padding-right: 15px;
-  padding-left: 15px;
+    padding-right: 15px;
+    padding-left: 15px;
 }
+
 
 /* Customize container */
 .container-narrow > hr {
@@ -37,30 +52,35 @@ form.link, form.button {
 }
 
 /* Main marketing message */
+
 .jumbotron {
-  text-align: center;
-  border-bottom: 1px solid #e5e5e5;
+    text-align: center;
+    border-bottom: 1px solid #e5e5e5;
 }
+
 
 /* Supporting marketing content */
+
 .marketing {
-  margin: 35px 0;
+    margin: 35px 0;
 }
 
+
 /* Responsive: Portrait tablets and up */
+
 @media screen and (min-width: 768px) {
-  /* Remove the padding we set earlier */
-  .header,
-  .marketing {
-    padding-right: 0;
-    padding-left: 0;
-  }
-  /* Space out the masthead */
-  .header {
-    margin-bottom: 30px;
-  }
-  /* Remove the bottom border on the jumbotron for visual effect */
-  .jumbotron {
-    border-bottom: 0;
-  }
+    /* Remove the padding we set earlier */
+    .header,
+    .marketing {
+        padding-right: 0;
+        padding-left: 0;
+    }
+    /* Space out the masthead */
+    .header {
+        margin-bottom: 30px;
+    }
+    /* Remove the bottom border on the jumbotron for visual effect */
+    .jumbotron {
+        border-bottom: 0;
+    }
 }

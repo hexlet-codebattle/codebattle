@@ -53,7 +53,7 @@ defmodule Codebattle.Mixfile do
      {:phoenix_live_reload, "~> 1.0", only: :dev},
 
      #test
-     {:faker, "~> 0.8", only: :test}]
+     {:faker, "~> 0.8"}]
   end
 
   # Aliases are shortcuts or tasks specific to the current project.
