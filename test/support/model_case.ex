@@ -60,7 +60,7 @@ defmodule Codebattle.ModelCase do
   def errors_on(struct, data) do
     struct
     |> struct.__struct__.changeset(data)
-    |> Ecto.Changeset.traverse_errors(&Codebattle.ErrorHelpers.translate_error/1)
+    |> Ecto.Changeset.traverse_errors(&CodebattleWeb.ErrorHelpers.translate_error/1)
     |> Enum.flat_map(fn {key, errors} -> for msg <- errors, do: {key, msg} end)
   end
 end

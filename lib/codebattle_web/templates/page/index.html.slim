@@ -5,22 +5,16 @@
 
   = button "Создать игру", to: game_path(@conn, :create), class: "btn btn-primary"
   h3 = link "Список игр", to: game_path(@conn, :index)
-.row.marketing
-  .col-lg-6
-    h4 Resources
-    ul
-      li
-        a href="http://phoenixframework.org/docs/overview"  Guides
-      li
-        a href="http://hexdocs.pm/phoenix"  Docs
-      li
-        a href="https://github.com/phoenixframework/phoenix"  Source
-  .col-lg-6
-    h4 Help
-    ul
-      li
-        a href="http://groups.google.com/group/phoenix-talk"  Mailing list
-      li
-        a href="http://webchat.freenode.net/?channels=elixir-lang"  #elixir-lang on freenode IRC
-      li
-        a href="https://twitter.com/elixirphoenix"  @elixirphoenix
+= if @conn.assigns[:is_authenticated?] do
+  .chat.row
+    .col-md-9
+      .card.chat-room
+        .card-header
+          | Lobby chat
+        #chat-messages.card-block.card-messages
+        input#message-input.form-control type="text" placeholder="Type a message..."
+    .col-md-3
+      .card.chat-room
+        .card-header
+          | Online users
+        #online-users.card-block.card-users

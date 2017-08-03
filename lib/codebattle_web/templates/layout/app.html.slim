@@ -26,4 +26,7 @@ html lang="en"
               button.btn.btn-outline-success <%= gettext "Sign in with Github" %>
     .container role="main"
       = render @view_module, @view_template, assigns
+    = if @conn.assigns[:is_authenticated?] do
+      javascript:
+        window.userToken = "<%= assigns[:user_id] %>"
     script src=static_path(@conn,"/js/app.js")
