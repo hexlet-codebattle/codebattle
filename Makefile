@@ -36,7 +36,7 @@ compose-db-migrate:
 	docker-compose run --rm web mix ecto.migrate
 
 compose-test:
-	docker-compose run --rm test
+	docker-compose run web make test
 
 compose-console:
 	docker-compose run web iex -S mix
@@ -69,5 +69,9 @@ test:
 
 lint:
 	mix credo
+
+frontend_watch:
+	cd assets \
+	npm run watch-dev
 
 .PHONY: test
