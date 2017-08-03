@@ -11,6 +11,7 @@ services:
       - "4000:4000"
     depends_on:
       - db
+
   db:
     image: postgres:9.6
     volumes:
@@ -22,16 +23,15 @@ services:
      - POSTGRES_USER=${CODEBATTLE_DATABASE_USERNAME}
      - POSTGRES_PASSWORD=${CODEBATTLE_DATABASE_PASSWORD}
 
-  test:
-    build: .
-    command: mix test
-    env_file: .env
-    environment:
-      - MIX_ENV=test
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: make frontend_watch
     volumes:
-      - .:/app
-    depends_on:
-      - db
+      - ./services/web:/user/src/app
+
 
 volumes:
    postgres-data:

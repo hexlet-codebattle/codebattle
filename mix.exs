@@ -4,7 +4,7 @@ defmodule Codebattle.Mixfile do
   def project do
     [app: :codebattle,
      version: "0.0.2",
-     elixir: "~> 1.2",
+     elixir: "~> 1.5",
      elixirc_paths: elixirc_paths(Mix.env),
      compilers: [:phoenix, :gettext] ++ Mix.compilers,
      build_embedded: Mix.env == :prod,
@@ -50,7 +50,7 @@ defmodule Codebattle.Mixfile do
      {:phoenix_live_reload, "~> 1.0", only: :dev},
 
      #test
-     {:faker, "~> 0.8", only: :test}]
+     {:faker, "~> 0.8"}]
   end
 
   # Aliases are shortcuts or tasks specific to the current project.

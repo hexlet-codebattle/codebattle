@@ -7,10 +7,6 @@ RUN apt-get update && apt-get upgrade -y && \
     apt-get install -y wget curl inotify-tools git build-essential zip unzip && \
     apt-get clean && rm -fr /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-ENV PHOENIX_VERSION 1.3.0
-
-RUN mix archive.install --force https://github.com/phoenixframework/archives/raw/master/phx_new-$PHOENIX_VERSION.ez
-
 RUN mix local.hex --force \
     && mix local.rebar --force
 
@@ -28,9 +24,9 @@ RUN mix deps.get
 # install npm deps
 ADD ./assets/package.json /app/assets/
 ADD ./assets/package-lock.json /app/assets/
-WORKDIR ./assets
-RUN npm install
-WORKDIR /app
-RUN mix compile
+RUN cd ./assets \
+    npm install \
+    cd ../
 
-ADD . /app
+
+RUN mix compile
