@@ -36,7 +36,7 @@ compose-db-migrate:
 	docker-compose run --rm web mix ecto.migrate
 
 compose-test:
-	docker-compose run web make test
+	docker-compose run --rm -e "MIX_ENV=test" web make test
 
 compose-console:
 	docker-compose run web iex -S mix

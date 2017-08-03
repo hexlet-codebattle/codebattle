@@ -1,5 +1,5 @@
-body, 
-form, 
+body,
+form,
 table {
   margin-top: 20px;
   margin-bottom: 20px;
@@ -83,4 +83,22 @@ form.button {
     .jumbotron {
         border-bottom: 0;
     }
+}
+
+/* Chat styles */
+.chat {
+  margin-top: 0em;
+}
+
+.chat-room {
+  margin-top: 1em;
+}
+
+.card-messages, .card-users {
+  height: 400px;
+}
+
+#chat-messages {
+  min-height: 400px;
+  overflow-y: scroll;
 }
