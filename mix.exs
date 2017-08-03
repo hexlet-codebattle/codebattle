@@ -1,10 +1,13 @@
 defmodule Codebattle.Mixfile do
+  @moduledoc """
+  """
+
   use Mix.Project
 
   def project do
     [app: :codebattle,
      version: "0.0.2",
-     elixir: "~> 1.2",
+     elixir: "~> 1.5",
      elixirc_paths: elixirc_paths(Mix.env),
      compilers: [:phoenix, :gettext] ++ Mix.compilers,
      build_embedded: Mix.env == :prod,
@@ -36,7 +39,7 @@ defmodule Codebattle.Mixfile do
      {:postgrex, ">= 0.0.0"},
      {:phoenix_html, "~> 2.10"},
      {:gettext, "~> 0.11"},
-     {:cowboy, "~> 1.0" },
+     {:cowboy, "~> 1.0"},
      {:phoenix_slime, "~> 0.8.0"},
      {:ueberauth, "~> 0.4"},
      {:ueberauth_github, "~> 0.4"},
