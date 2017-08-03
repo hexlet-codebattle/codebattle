@@ -6,7 +6,7 @@ defmodule CodebattleWeb.UserSocket do
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket,
-    timeout: 45_00
+    timeout: :infinity
   # transport :longpoll, Phoenix.Transports.LongPoll
 
   # Socket params are passed from the client and can

@@ -15,16 +15,27 @@ let chatMessages = document.getElementById("chat-messages")
 let presences = {}
 let onlineUsers = document.getElementById("online-users")
 
-let listUsers = (user) => {
+const listUsers = (user) => {
   return {
     user: user
   }
 }
 
-let renderUsers = (presences) => {
+const renderUsers = (presences) => {
   onlineUsers.innerHTML = Presence.list(presences, listUsers)
   .map(presence => `
     <li>${presence.user}</li>`).join("")
+}
+
+const get_data_from_diff = (diff, key) => {
+  const messageType = key == 'join' ? 'joined' : 'leaved';
+  let message = document.createElement("div");
+  message.className = key;
+  message.innerHTML = Object.keys(diff[`${key}s`]).reduce((acc, name) => {
+    return `${acc}\n<i>${name} ${messageType} the channel</i><br>`;
+  }, '');
+
+  return message;
 }
 
 message.focus();
@@ -48,6 +59,11 @@ channel.on('presence_state', state => {
 });
 
 channel.on('presence_diff', diff => {
+  const leaves = get_data_from_diff(diff, 'leave');
+  const joins = get_data_from_diff(diff, 'join');
+  chatMessages.appendChild(leaves);
+  chatMessages.appendChild(joins);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
   presences = Presence.syncDiff(presences, diff)
   renderUsers(presences)
 });
