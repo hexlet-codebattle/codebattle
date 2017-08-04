@@ -3,7 +3,6 @@ _build
 cover
 deps
 doc
-test
-tmp
+*deployment.retry
 erl_crash.dump
 *.ez
