@@ -37,6 +37,9 @@ git add . && git commit -m "%useful_commit_message%"
 
 git push --set-upstream origin %your_branch_name%
 ```
+Демонстрация [на видео](https://asciinema.org/a/0oyNHtP5VxxBUWBnncPG3knQv).
+
+
 6. Создайте pull request
 
 ### Создание pull request
@@ -46,7 +49,11 @@ git push --set-upstream origin %your_branch_name%
 * Скорее всего гитхаб сам предложит вам создать PR, тем не менее, стоит заглянуть [сюда](https://help.github.com/articles/creating-a-pull-request)
 * Не забываем в комментарии к PR [ссылаться на issue](https://help.github.com/articles/closing-issues-using-keywords)
 
+
+
 После завершения работы над задачей не забудьте [синхронизировать ваш fork с основным репозиторием.](https://help.github.com/articles/syncing-a-fork/)
+Демонстрация [на видео](https://asciinema.org/a/kbpBMdJBRLDrI1wzhBsbb1yGX).
+
 
 [Подробные инструкции по работе с PR](https://help.github.com/categories/collaborating-with-issues-and-pull-requests)
 
