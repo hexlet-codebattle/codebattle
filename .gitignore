@@ -5,6 +5,9 @@
 /*.ez
 *.retry
 *.log
+*tmp/
+*.elixir_ls/
+*deployment.retry
 
 # Generated on crash by the VM
 erl_crash.dump

@@ -70,6 +70,11 @@ test:
 lint:
 	mix credo
 
+clean:
+	rm -r _build
+	rm -r deps
+	rm -r .elixir_ls
+
 frontend_watch:
 	cd assets \
 	npm run watch-dev
