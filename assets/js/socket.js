@@ -25,11 +25,12 @@ const renderUsers = (presences) => {
     <li>${presence.user}</li>`).join('');
 };
 
+
 const getDataFromDiff = (diff, key) => {
-  const messageType = key === 'join' ? 'joined' : 'leaved';
+  const messageType = key === 'join' ? 'joined' : 'left';
   const message = document.createElement('div');
   message.className = key;
-  message.innerHTML = Object.keys(diff[`${key}s`]).reduce((acc, name) => `${acc}\n<i>${name} ${messageType} the channel</i><br>`, '');
+  message.innerHTML = Object.keys(diff[`${key}s`]).reduce((acc, name) => `${acc}\n<i>${name} ${messageType} channel</i><br>`, '');
 
   return message;
 };
