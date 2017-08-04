@@ -26,4 +26,11 @@ make compose
 ```
 * Откройте http://localhost:4000 в браузере
 
-Если у вас возникли проблемы с установкой или после неё(например, не работают стили), воспользуйтесь [подробной инструкцией по установке](https://github.com/hexlet-codebattle/codebattle/wiki/%D0%A3%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BA%D0%B0-%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82%D0%B0).
+* Для запуска тестов введите
+```
+make compose-test
+```
+
+Если у вас возникли проблемы с установкой или после неё, воспользуйтесь [подробной инструкцией по установке и тестированию](https://github.com/hexlet-codebattle/codebattle/wiki/%D0%A3%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BA%D0%B0-%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82%D0%B0).
+
+Также вы можете увидеть процесс полной [установки](https://asciinema.org/a/AjgY5m7jM6DQi693c91P44Jhn) и [тестирования](https://asciinema.org/a/dkkAuaBB1ezwCmlSLUKC8Sdq0) на видео.
