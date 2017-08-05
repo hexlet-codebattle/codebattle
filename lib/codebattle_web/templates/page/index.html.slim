@@ -3,18 +3,18 @@
   p.lead
     | <%= gettext "Codebattle: game for programmers." %>
 
-  = button "Создать игру", to: game_path(@conn, :create), class: "btn btn-primary"
-  h3 = link "Список игр", to: game_path(@conn, :index)
 = if @conn.assigns[:is_authenticated?] do
-  .chat.row
-    .col-md-9
-      .card.chat-room
-        .card-header
-          | Lobby chat
-        #chat-messages.card-block.card-messages
-        input#message-input.form-control type="text" placeholder="Type a message..."
-    .col-md-3
-      .card.chat-room
-        .card-header
-          | Online users
-        #online-users.card-block.card-users
+    = button "Создать игру", to: game_path(@conn, :create), class: "btn btn-primary"
+    h3 = link "Список игр", to: game_path(@conn, :index)
+    .chat.row
+      .col-md-9
+        .card.chat-room
+          .card-header
+            | Lobby chat
+          #chat-messages.card-block.card-messages
+          input#message-input.form-control type="text" placeholder="Type a message..."
+      .col-md-3
+        .card.chat-room
+          .card-header
+            | Online users
+          #online-users.card-block.card-users
