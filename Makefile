@@ -3,9 +3,10 @@ prepare:
 	sudo apt install ansible
 
 webpack:
-	cd assets/
-	npm install
-	cd ../
+	cd assets/ && npm install && cd ../
+
+add-keys:
+	sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys `sudo apt-get update 2>&1 | grep -o '[0-9A-Z]\{16\}' | xargs`
 
 development-build-local:
 	ansible-playbook -vv --ask-sudo-pass -i ansible/development ansible/development.yml --limit=local  --become
@@ -71,9 +72,9 @@ lint:
 	mix credo
 
 clean:
-	rm -r _build
-	rm -r deps
-	rm -r .elixir_ls
+	rm -r _build && \
+	rm -r deps && \
+	rm -r .elixir_ls 
 
 frontend_watch:
 	cd assets \
