@@ -16,7 +16,7 @@ html lang="en"
       ul.nav.navbar-nav.ml-auto.justify-content-end
         = if @conn.assigns[:is_authenticated?] do
           li.nav-item
-            p.text-center.mr-3= @conn.assigns.user.name
+            p.text-center.mr-3.mt-2= @conn.assigns.user.name
           li.nav-item
             a href="#{auth_path(@conn, :logout)}"
               button.btn.btn-outline-success type="submit" <%= gettext "Logout" %>

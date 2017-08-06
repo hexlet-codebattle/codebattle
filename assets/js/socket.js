@@ -20,9 +20,12 @@ const listUsers = user => ({
 });
 
 const renderUsers = (presences) => {
-    onlineUsers.innerHTML = Presence.list(presences, listUsers)
-        .map(presence => `
-    <li>${presence.user}</li>`).join('');
+    if (Object.keys(presences).length > 0) {
+        onlineUsers.innerHTML = Presence.list(presences, listUsers)
+            .map(presence => `
+    <li>${presence.user}</li>`)
+            .join("");
+    }
 };
 
 
@@ -56,13 +59,15 @@ channel.on('presence_state', (state) => {
 });
 
 channel.on('presence_diff', (diff) => {
-    const leaves = getDataFromDiff(diff, 'leave');
-    const joins = getDataFromDiff(diff, 'join');
-    chatMessages.appendChild(leaves);
-    chatMessages.appendChild(joins);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-    presences = Presence.syncDiff(presences, diff);
-    renderUsers(presences);
+    if (Object.keys(diff).length > 0) {
+        const leaves = getDataFromDiff(diff, "leave");
+        const joins = getDataFromDiff(diff, "join");
+        chatMessages.appendChild(leaves);
+        chatMessages.appendChild(joins);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        presences = Presence.syncDiff(presences, diff);
+        renderUsers(presences);
+    }
 });
 
 channel.join()
