@@ -1,21 +1,22 @@
-.jumbotron
-  h2 <%= gettext "Welcome to %{name}!", name: "Codebattle" %>
+.jumbotron.mt-5.text-center
+  h2.dispay-2 <%= gettext "Welcome to %{name}!", name: "Codebattle" %>
   p.lead
     | <%= gettext "Codebattle: game for programmers." %>
   = if @conn.assigns[:is_authenticated?] do
     = button "Создать игру", to: game_path(@conn, :create), class: "btn btn-primary"
-    h3 = link "Список игр", to: game_path(@conn, :index)
+    h3.mt-2 = link "Список игр", to: game_path(@conn, :index)
 
 = if @conn.assigns[:is_authenticated?] do
-  .chat.row
+  .row.mt-0.chat
     .col-md-9
-      .card.chat-room
+      .card.mt-4.h-100
         .card-header
           | Lobby chat
-        #chat-messages.card-block.card-messages
+        #chat-messages.card-block.pre-scrollable
         input#message-input.form-control type="text" placeholder="Type a message..."
     .col-md-3
-      .card.chat-room
+      .card.mt-4.h-100
         .card-header
           | Online users
-        #online-users.card-block.card-users
+        #online-users.card-block.pre-scrollable
+
