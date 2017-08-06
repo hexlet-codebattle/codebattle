@@ -1,4 +1,4 @@
-.jumbotron.mt-5.text-center
+.jumbotron.mt-5.text-center.mb-0
   h2.dispay-2 <%= gettext "Welcome to %{name}!", name: "Codebattle" %>
   p.lead
     | <%= gettext "Codebattle: game for programmers." %>
@@ -7,7 +7,7 @@
     h3.mt-2 = link "Список игр", to: game_path(@conn, :index)
 
 = if @conn.assigns[:is_authenticated?] do
-  .row.mt-0.chat
+  .row.mt-0.chat.mb-5
     .col-md-9
       .card.mt-4.h-100
         .card-header
