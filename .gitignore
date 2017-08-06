@@ -30,3 +30,4 @@ erl_crash.dump
 tags
 .vagrant
 *.DS_Store
+.env
