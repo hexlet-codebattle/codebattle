@@ -12,7 +12,7 @@ development-build-local:
 	ansible-playbook -vv --ask-sudo-pass -i ansible/development ansible/development.yml --limit=local  --become
 
 ### Install
-compose-setup: compose-build compose-install compose-prepare
+compose-setup: create-env compose-build compose-install compose-prepare
 
 compose-build:
 	docker-compose build web
@@ -21,23 +21,23 @@ compose-rebuild:
 	docker-compose build --no-cache web
 
 compose-install:
-	docker-compose run --rm web mix deps.get
+	docker-compose run web mix deps.get
 
 compose-compile:
-	docker-compose run --rm web mix compile
+	docker-compose run web mix compile
 
 compose-prepare: compose-compile compose-db-prepare
 
 compose-db-prepare: compose-db-create compose-db-migrate
 
 compose-db-create:
-	docker-compose run --rm web mix ecto.create
+	docker-compose run web mix ecto.create
 
 compose-db-migrate:
-	docker-compose run --rm web mix ecto.migrate
+	docker-compose run web mix ecto.migrate
 
 compose-test:
-	docker-compose run --rm -e "MIX_ENV=test" web make test
+	docker-compose run -e "MIX_ENV=test" web make test
 
 compose-console:
 	docker-compose run web iex -S mix
@@ -62,6 +62,9 @@ compile:
 
 rebuild-styles: webpack compose-restart
 
+create-env:
+	cp .env.example .env
+
 install:
 	mix deps.get
 
@@ -74,10 +77,10 @@ lint:
 clean:
 	rm -r _build && \
 	rm -r deps && \
-	rm -r .elixir_ls 
+	rm -r .elixir_ls
 
 frontend_watch:
-	cd assets \
+	cd assets && \
 	npm run watch-dev
 
 .PHONY: test

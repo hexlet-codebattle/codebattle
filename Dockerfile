@@ -24,8 +24,8 @@ RUN mix deps.get
 # install npm deps
 ADD ./assets/package.json /app/assets/
 ADD ./assets/package-lock.json /app/assets/
-RUN cd ./assets \
-    npm install \
+RUN cd ./assets && \
+    npm install && \
     cd ../
 
 
