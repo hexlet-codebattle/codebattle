@@ -1,14 +1,15 @@
 defmodule CodebattleWeb.GameController do
   use Codebattle.Web, :controller
 
+  alias Codebattle.Play
+
   def index(conn, _params) do
-    games = Codebattle.Repo.all(CodebattleWeb.Game)
+    games = Play.list_games
     render(conn, "index.html", games: games)
   end
 
   def create(conn, %{}) do
-    game = Codebattle.Repo.insert!(%CodebattleWeb.Game{})
-    Game.Supervisor.start_game(game)
+    Play.create_game(%{state: "initial"})
     conn
     |> put_flash(:info, "Игра создана")
     |> redirect(to: game_path(conn, :index))

@@ -24,6 +24,6 @@ defmodule Codebattle do
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Codebattle.Supervisor]
     Supervisor.start_link(children, opts)
-    Game.Supervisor.start_link
+    Play.Supervisor.start_link
   end
 end
