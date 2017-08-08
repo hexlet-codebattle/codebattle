@@ -1,8 +1,9 @@
 defmodule Codebattle.Game do
+  @moduledoc false
+
   use Ecto.Schema
   import Ecto.Changeset
   alias Codebattle.Game
-
 
   schema "games" do
     field :state, :string

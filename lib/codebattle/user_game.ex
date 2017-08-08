@@ -1,8 +1,9 @@
 defmodule Codebattle.UserGame do
+  @moduledoc false
+
   use Ecto.Schema
   import Ecto.Changeset
   alias Codebattle.UserGame
-
 
   schema "user_games" do
     field :user_id, :integer

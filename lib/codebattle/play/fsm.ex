@@ -1,4 +1,6 @@
 defmodule Play.Fsm do
+  @moduledoc false
+
   use Fsm, initial_state: :initial, initial_data: %{}
 
   defstate initial do
