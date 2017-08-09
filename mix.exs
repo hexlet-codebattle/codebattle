@@ -44,7 +44,7 @@ defmodule Codebattle.Mixfile do
      {:ueberauth, "~> 0.4"},
      {:ueberauth_github, "~> 0.4"},
      {:gproc, "~> 0.6"},
-     {:ecto_state_machine, "~> 0.3"},
+     {:fsm, "~> 0.3"},
 
      #dev_and_test
      {:credo, "~> 0.8", only: [:dev, :test], runtime: false},
