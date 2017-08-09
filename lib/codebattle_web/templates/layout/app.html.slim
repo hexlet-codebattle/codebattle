@@ -9,6 +9,10 @@ html lang="en"
     title Codebattle
     link rel="stylesheet" href=static_path(@conn,"/css/app.css")
   body.mt-1
+    - info = get_flash(@conn, :info)
+    = if info do
+      div class="alert alert-info" role="alert"
+        = info
     nav.navbar.navbar-light.navbar-toggleable-sm.justify-content-center
       a.navbar-brand.d-flex.mr-auto href="#"
         img alt=static_path(@conn,"/css/app.css") src="/images/codebattle_logo.png" height="30"

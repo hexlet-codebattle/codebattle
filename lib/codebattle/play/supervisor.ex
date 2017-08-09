@@ -7,8 +7,8 @@ defmodule Play.Supervisor do
     Supervisor.start_link(__MODULE__, [], name: __MODULE__)
   end
 
-  def start_game(game_id) do
-    Supervisor.start_child(__MODULE__, [game_id])
+  def start_game(game_id, state) do
+    Supervisor.start_child(__MODULE__, [game_id, state])
   end
 
   def init(_) do

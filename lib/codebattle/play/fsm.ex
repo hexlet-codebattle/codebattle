@@ -4,13 +4,13 @@ defmodule Play.Fsm do
   use Fsm, initial_state: :initial, initial_data: %{}
 
   defstate initial do
-    defevent start do
-      next_state(:waiting_opponent)
+    defevent create(params) do
+      next_state(:waiting_opponent, params)
     end
   end
 
   defstate waiting_opponent do
-    defevent start do
+    defevent start(params) do
       next_state(:playing)
     end
   end

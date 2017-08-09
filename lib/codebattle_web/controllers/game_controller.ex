@@ -9,7 +9,7 @@ defmodule CodebattleWeb.GameController do
   end
 
   def create(conn, %{}) do
-    Play.create_game(%{state: "initial"})
+    Play.create_game(conn.assigns.user)
     conn
     |> put_flash(:info, "Игра создана")
     |> redirect(to: game_path(conn, :index))

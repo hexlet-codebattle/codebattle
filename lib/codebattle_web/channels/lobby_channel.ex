@@ -2,7 +2,7 @@ defmodule CodebattleWeb.LobbyChannel do
   @moduledoc false
   use Codebattle.Web, :channel
   alias Codebattle.Repo
-  alias CodebattleWeb.User
+  alias Codebattle.User
   alias CodebattleWeb.Presence
 
   def join("lobby", _payload, socket) do

@@ -1,8 +1,10 @@
-defmodule CodebattleWeb.User do
+defmodule Codebattle.User do
   @moduledoc """
     Represents authenticatable user
   """
-  use Codebattle.Web, :model
+  use Ecto.Schema
+  import Ecto.Changeset
+  alias Codebattle.User
 
   schema "users" do
     field :name, :string
@@ -10,6 +12,9 @@ defmodule CodebattleWeb.User do
     field :github_id, :integer
 
     timestamps()
+
+    has_many :user_games, Codebattle.UserGame
+    has_many :games, through: [:user_games, :game]
   end
 
   @doc """
