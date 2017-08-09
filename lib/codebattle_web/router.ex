@@ -40,8 +40,7 @@ defmodule CodebattleWeb.Router do
   defp put_user_token(conn, _) do
     case conn.assigns[:is_authenticated?] do
       true ->
-        current_user = conn.assigns.user.id
-        user_id_token = Phoenix.Token.sign(conn, "user_id", current_user)
+        user_id_token = Phoenix.Token.sign(conn, "user_id", conn.assigns.user.id)
 
         conn
         |> assign(:user_id, user_id_token)

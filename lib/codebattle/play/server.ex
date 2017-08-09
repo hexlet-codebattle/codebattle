@@ -4,19 +4,19 @@ defmodule Play.Server do
   use GenServer
 
   #API
-  def start_link(game_id) do
-    GenServer.start_link(__MODULE__, Play.Fsm.new, name: game_pid(game_id))
+  def start_link(game_id, state) do
+    GenServer.start_link(__MODULE__, state, name: game_key(game_id))
   end
 
   def transition(game_id, event, params) do
-    GenServer.cast(game_pid(game_id), {:transition, event, params})
+    GenServer.cast(game_key(game_id), {:transition, event, params})
   end
 
   def game(game_id) do
-    GenServer.call(game_pid(game_id), :game)
+    GenServer.call(game_key(game_id), :game)
   end
 
-  def game_pid(game_id) do
+  def game_key(game_id) do
     {:via, :gproc, {:n, :l, {:game, game_id}}}
   end
 

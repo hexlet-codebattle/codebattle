@@ -6,8 +6,9 @@ defmodule Codebattle.UserGame do
   alias Codebattle.UserGame
 
   schema "user_games" do
-    field :user_id, :integer
-    field :game_id, :integer
+    belongs_to :user, Codebattle.User
+    belongs_to :game, Codebattle.Game
+
     field :result,  :string
 
     timestamps()
@@ -16,7 +17,7 @@ defmodule Codebattle.UserGame do
   @doc false
   def changeset(%UserGame{} = user_game, attrs) do
     user_game
-    |> cast(attrs, [:name, :email])
-    |> validate_required([:name, :email])
+    |> cast(attrs, [:user_id, :game_id, :result])
+    |> validate_required([:user_id, :game_id])
   end
 end

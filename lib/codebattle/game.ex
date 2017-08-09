@@ -9,6 +9,9 @@ defmodule Codebattle.Game do
     field :state, :string
 
     timestamps()
+
+    has_many :user_games, Codebattle.UserGame
+    has_many :users, through: [:user_games, :user]
   end
 
   @doc false

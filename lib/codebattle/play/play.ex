@@ -7,19 +7,22 @@ defmodule Codebattle.Play do
 
   alias Codebattle.Repo
   alias Codebattle.Game
+  alias Codebattle.UserGame
 
   def list_games do
-    Repo.all(Game)
+    Repo.all from p in Game,
+            preload: [:users]
   end
 
   def get_game!(id), do: Repo.get!(Game, id)
 
-  def create_game(attrs \\ %{}) do
-    game = %Game{}
-    |> Game.changeset(attrs)
-    |> Repo.insert!()
+  def create_game(user) do
+    game = Repo.insert!(%Game{state: "waiting_opponent"})
+    Repo.insert!(%UserGame{game_id: game.id, user_id: user.id})
 
-    Play.Supervisor.start_game(game.id)
+    state = Play.Fsm.new |> Play.Fsm.create(game: game, first_player: user)
+
+    Play.Supervisor.start_game(game.id, state)
   end
 
   def update_game(%Game{} = game, attrs) do

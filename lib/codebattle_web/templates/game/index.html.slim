@@ -9,7 +9,8 @@ h2 Listing games
   br
 
   = for game <- @games do
-    div  = "id: #{game.id}, state: #{game.state}"
+    - users = game.users |> Enum.map(fn(user) -> user.name end) |> Enum.join(", ")
+    div  = "id: #{game.id}, state: #{game.state}, players: #{users}."
     br
 
 
