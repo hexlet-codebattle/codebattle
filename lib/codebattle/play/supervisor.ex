@@ -17,4 +17,18 @@ defmodule Play.Supervisor do
     ]
     supervise(children, strategy: :simple_one_for_one)
   end
+
+  def current_games do
+    __MODULE__
+    |> Supervisor.which_children
+    |> Enum.map(&game_id/1)
+    |> Enum.map(fn(id) -> Codebattle.Repo.get(Codebattle.Game, id) |> Codebattle.Repo.preload([:users]) end)
+  end
+
+  defp game_id({_id, pid, _type, _modules}) do
+    pid
+    |> GenServer.call(:state)
+    |> Map.get(:data)
+    |> Map.get(:id)
+  end
 end

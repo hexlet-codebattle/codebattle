@@ -20,9 +20,10 @@ defmodule Codebattle.Play do
     game = Repo.insert!(%Game{state: "waiting_opponent"})
     Repo.insert!(%UserGame{game_id: game.id, user_id: user.id})
 
-    state = Play.Fsm.new |> Play.Fsm.create(game: game, first_player: user)
+    state = Play.Fsm.new |> Play.Fsm.create(%{id: game.id})
 
     Play.Supervisor.start_game(game.id, state)
+    game.id
   end
 
   def update_game(%Game{} = game, attrs) do
