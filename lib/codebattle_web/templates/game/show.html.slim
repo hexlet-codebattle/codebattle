@@ -1,0 +1,6 @@
+h1= "Game: #{@game.id}"
+h2= "State: #{@game.state}"
+p Users:
+ul
+  = for user <- @game.users do
+    li= user.name 

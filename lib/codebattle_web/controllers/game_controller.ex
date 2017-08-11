@@ -1,17 +1,24 @@
 defmodule CodebattleWeb.GameController do
   use Codebattle.Web, :controller
 
-  alias Codebattle.Play
+  alias Codebattle.Game
 
   def index(conn, _params) do
-    games = Play.list_games
+    games = Play.Supervisor.current_games
     render(conn, "index.html", games: games)
   end
 
   def create(conn, %{}) do
-    Play.create_game(conn.assigns.user)
+    game_id = Codebattle.Play.create_game(conn.assigns.user)
     conn
     |> put_flash(:info, "Игра создана")
-    |> redirect(to: game_path(conn, :index))
+    |> redirect(to: game_path(conn, :show, game_id))
+  end
+
+  def show(conn, %{"id" => id}) do
+    game =  Codebattle.Play.get_game!(id) |> Codebattle.Repo.preload([:users])
+    {id, _} = Integer.parse(id)
+    Play.Server.join(id, conn.assigns.user)
+    render conn, "show.html", game: game
   end
 end
