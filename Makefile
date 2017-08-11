@@ -39,6 +39,9 @@ compose-db-migrate:
 compose-test:
 	docker-compose run -e "MIX_ENV=test" web make test
 
+compose-lint:
+	docker-compose run web mix credo
+
 compose-console:
 	docker-compose run web iex -S mix
 
