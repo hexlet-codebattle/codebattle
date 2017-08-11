@@ -23,6 +23,7 @@ defmodule Play.Supervisor do
     |> Supervisor.which_children
     |> Enum.map(&game_id/1)
     |> Enum.map(fn(id) -> Codebattle.Repo.get(Codebattle.Game, id) |> Codebattle.Repo.preload([:users]) end)
+    |> Enum.filter(fn(game) -> !is_nil(game) end)
   end
 
   defp game_id({_id, pid, _type, _modules}) do

@@ -6,7 +6,7 @@ defmodule CodebattleWeb.GameControllerTest do
 
   test "GET /games", %{conn: conn} do
     conn = get conn, "/games"
-    assert html_response(conn, 200) =~ "Создать игру"
+    assert html_response(conn, 200) =~ "Create game"
   end
 
   test "POST /games create Game in db", %{conn: conn} do
