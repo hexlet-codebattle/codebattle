@@ -2,15 +2,19 @@ h2 Listing games
   p Всего игр:
     = @games |> Enum.count
 
-  =  button "Создать игру", to: game_path(@conn, :create), class: "btn btn-primary"
+  =  button to: game_path(@conn, :create), class: "btn btn-primary" do
+    | <%= gettext "Create game" %>
+  end
   br
   br
-  div = link "На главную", to: page_path(@conn, :index)
+  div 
+    = link to: page_path(@conn, :index) do
+      | <%= gettext "Main page" %>
+    end
   br
 
   = for game <- @games do
     - users = game.users |> Enum.map(fn(user) -> user.name end) |> Enum.join(", ")
-    div  = "id: #{game.id}, state: #{game.state}, players: #{users}."
+    div= "id: #{game.id}, state: #{game.state}, players: #{users}."
+      = link "Join", to: game_path(@conn, :show, game.id)
     br
-
-
