@@ -4,3 +4,7 @@ p Users:
 ul
   = for user <- @game.users do
     li= user.name 
+
+= link to: game_path(@conn, :index) do
+  | <%= gettext "Back to list" %>
+end
