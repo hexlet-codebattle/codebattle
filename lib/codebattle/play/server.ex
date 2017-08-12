@@ -60,6 +60,8 @@ defmodule Play.Server do
         game |> Play.Fsm.add_first_player(%{first_player: player})
       %{second_player: nil} = data ->
         game |> Play.Fsm.add_second_player(%{second_player: player})
+      true ->
+        game
     end
   end
 end

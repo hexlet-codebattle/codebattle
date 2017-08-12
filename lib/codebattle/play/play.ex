@@ -14,7 +14,12 @@ defmodule Codebattle.Play do
             preload: [:users]
   end
 
-  def get_game!(id), do: Repo.get!(Game, id)
+  def get_game!(id) do
+    Game
+    |> where([game], game.id == ^id)
+    |> preload([game], [:users])
+    |> Repo.one
+  end
 
   def create_game(user) do
     game = Repo.insert!(%Game{state: "waiting_opponent"})
