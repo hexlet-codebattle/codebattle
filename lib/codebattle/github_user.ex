@@ -39,5 +39,4 @@ defmodule Codebattle.GithubUser do
       |> Enum.find(fn item -> item["primary"] end)
       |> Map.get("email")
   end
-
 end

@@ -5,13 +5,8 @@ defmodule CodebattleWeb.GameControllerTest do
   alias Codebattle.User
 
   test "GET /games", %{conn: conn} do
-    games = [Game.changeset(%Game{}, %{state: "initial"}),
-             Game.changeset(%Game{}, %{state: "waiting_opponent"})]
-
-    Enum.each(games, &Repo.insert!(&1))
-
     conn = get conn, "/games"
-    assert html_response(conn, 200) =~ "Всего игр:2"
+    assert html_response(conn, 200) =~ "Create game"
   end
 
   test "POST /games create Game in db", %{conn: conn} do
@@ -36,4 +31,3 @@ defmodule CodebattleWeb.GameControllerTest do
     assert Enum.count(:gproc.lookup_pids({:n, :l, {:game, game.id }})) == 1
   end
 end
-

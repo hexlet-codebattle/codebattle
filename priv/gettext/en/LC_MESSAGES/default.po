@@ -10,18 +10,39 @@ msgid ""
 msgstr ""
 "Language: en\n"
 
-#: web/templates/page/index.html.slim:1
+#: lib/codebattle_web/templates/page/index.html.slim:1
 msgid "Welcome to %{name}!"
 msgstr ""
 
-#: web/templates/page/index.html.slim:1
+#: lib/codebattle_web/templates/page/index.html.slim:1
 msgid "Codebattle: game for programmers."
 msgstr ""
 
-#: web/templates/layout/app.html.slim:1
+#: lib/codebattle_web/templates/layout/app.html.slim:1
 msgid "Logout"
 msgstr ""
 
-#: web/templates/layout/app.html.slim:1
+#: lib/codebattle_web/templates/layout/app.html.slim:1
 msgid "Sign in with Github"
+msgstr ""
+
+#: lib/codebattle_web/templates/game/index.html.slim:1
+#: lib/codebattle_web/templates/page/index.html.slim:1
+msgid "Create game"
+msgstr ""
+
+#: lib/codebattle_web/templates/page/index.html.slim:1
+msgid "Game list"
+msgstr ""
+
+#: lib/codebattle_web/templates/page/index.html.slim:1
+msgid "Lobby chat"
+msgstr ""
+
+#: lib/codebattle_web/templates/game/index.html.slim:1
+msgid "Main page"
+msgstr ""
+
+#: lib/codebattle_web/templates/page/index.html.slim:1
+msgid "Online users"
 msgstr ""

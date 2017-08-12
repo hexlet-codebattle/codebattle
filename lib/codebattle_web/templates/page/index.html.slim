@@ -3,20 +3,24 @@
   p.lead
     | <%= gettext "Codebattle: game for programmers." %>
   = if @conn.assigns[:is_authenticated?] do
-    = button "Создать игру", to: game_path(@conn, :create), class: "btn btn-primary"
-    h3.mt-2 = link "Список игр", to: game_path(@conn, :index)
+    = button to: game_path(@conn, :create), class: "btn btn-primary" do
+      | <%= gettext "Create game" %>
+    end
+    h3.mt-2 
+      = link to: game_path(@conn, :index) do
+        | <%= gettext "Game list" %>
+      end
 
 = if @conn.assigns[:is_authenticated?] do
   .row.mt-0.chat.mb-5
     .col-md-9
       .card.mt-4.h-100
         .card-header
-          | Lobby chat
+          | <%= gettext "Lobby chat" %>
         #chat-messages.card-block.pre-scrollable
         input#message-input.form-control type="text" placeholder="Type a message..."
     .col-md-3
       .card.mt-4.h-100
         .card-header
-          | Online users
+          | <%= gettext "Online users" %>
         #online-users.card-block.pre-scrollable
-
