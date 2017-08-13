@@ -1,9 +1,9 @@
-h1= "Game: #{@game.id}"
+h1= "Game: #{@game.data.id}"
 h2= "State: #{@game.state}"
 p Users:
 ul
-  = for user <- @game.users do
-    li= user.name 
+  li= @game.data.first_player.name
+  li= @game.data.second_player.name
 
 = link to: game_path(@conn, :index) do
   | <%= gettext "Back to list" %>

@@ -21,15 +21,11 @@ defmodule Play.Supervisor do
   def current_games do
     __MODULE__
     |> Supervisor.which_children
-    |> Enum.map(&game_id/1)
-    |> Enum.map(fn(id) -> Codebattle.Play.get_game!(id) end)
-    |> Enum.filter(fn(game) -> !is_nil(game) end)
+    |> Enum.map(&game_state/1)
   end
 
-  defp game_id({_id, pid, _type, _modules}) do
+  defp game_state({_id, pid, _type, _modules}) do
     pid
     |> GenServer.call(:state)
-    |> Map.get(:data)
-    |> Map.get(:id)
   end
 end
