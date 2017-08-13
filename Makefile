@@ -3,7 +3,9 @@ prepare:
 	sudo apt install ansible
 
 webpack:
-	cd assets/ && npm install && cd ../
+	cd assets/
+	yarn install
+	cd ../
 
 add-keys:
 	sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys `sudo apt-get update 2>&1 | grep -o '[0-9A-Z]\{16\}' | xargs`
@@ -20,8 +22,13 @@ compose-build:
 compose-rebuild:
 	docker-compose build --no-cache web
 
-compose-install:
+compose-install: compose-install-mix compose-install-yarn
+
+compose-install-mix:
 	docker-compose run web mix deps.get
+
+compose-install-yarn:
+	docker-compose run --workdir="/app/assets/" web yarn
 
 compose-compile:
 	docker-compose run web mix compile
@@ -57,6 +64,9 @@ compose-stop:
 compose-kill:
 	docker-compose kill
 
+compose-logs:
+	docker-compose logs -f --tail=100
+
 compose:
 	docker-compose up -d web
 
@@ -66,7 +76,7 @@ compile:
 rebuild-styles: webpack compose-restart
 
 create-env:
-	cp .env.example .env
+	cp -n .env.example .env || :
 
 install:
 	mix deps.get
