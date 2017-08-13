@@ -55,10 +55,10 @@ defmodule Play.Server do
 
   defp add_player(game, player) do
     data = game |> Play.Fsm.data
-    cond do
-      %{first_player: nil} = data ->
+    case data do
+      %{first_player: nil} ->
         game |> Play.Fsm.add_first_player(%{first_player: player})
-      %{second_player: nil} = data ->
+      %{second_player: nil} ->
         game |> Play.Fsm.add_second_player(%{second_player: player})
       true ->
         game
