@@ -11,8 +11,8 @@ config :codebattle, CodebattleWeb.Endpoint,
   debug_errors: true,
   code_reloader: true,
   check_origin: false,
-  watchers: [node: ["node_modules/webpack/bin/webpack.js", "--watch-stdin", "--progress", "--color",
-                    cd: Path.expand("../assets", __DIR__)]]
+  cache_static_lookup: false,
+	watchers: [{Path.expand("assets/webpack.devserver.js"), []}]
 
 
 # Watch static and templates for browser reloading.
