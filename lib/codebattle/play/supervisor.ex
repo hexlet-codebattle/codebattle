@@ -22,6 +22,7 @@ defmodule Play.Supervisor do
     __MODULE__
     |> Supervisor.which_children
     |> Enum.map(&game_state/1)
+    |> Enum.reject(fn x -> x end)
   end
 
   defp game_state({_id, pid, _type, _modules}) do
