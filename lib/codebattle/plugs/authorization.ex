@@ -4,7 +4,6 @@ defmodule Codebattle.Plugs.Authorization do
   """
   import Plug.Conn
   import Phoenix.Controller
-  import Ecto.Query
   alias CodebattleWeb.Router.Helpers
 
   def init(default), do: default
@@ -23,14 +22,13 @@ defmodule Codebattle.Plugs.Authorization do
   end
 
   def authenticate_user(conn, _opts) do
-    case conn.assigns do
-      %{} ->
-        conn
-        |> put_flash(:danger, "You must be logged in to acces that page")
-        |> redirect(to: Helpers.page_path(conn, :index))
-        |> halt()
-      _ ->
-        conn
+    if Map.has_key?(conn.assigns, :user) do
+      conn
+    else
+      conn
+      |> put_flash(:danger, "You must be logged in to acces that page")
+      |> redirect(to: Helpers.page_path(conn, :index))
+      |> halt()
     end
   end
 end

@@ -31,7 +31,7 @@ defmodule CodebattleWeb.AuthController do
         |> redirect(to: "/")
       {:error, reason} ->
         conn
-        |> put_flash(:error, reason)
+        |> put_flash(:danger, reason)
         |> redirect(to: "/")
     end
   end
