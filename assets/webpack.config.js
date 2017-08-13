@@ -54,7 +54,7 @@ module.exports = {
     }],
   },
   plugins: [
-    new ExtractTextPlugin('css/app.css'),
+    new ExtractTextPlugin('../css/app.css'),
     new CopyWebpackPlugin([{ from: path.join(__dirname, 'static'), to: path.join(__dirname, '..', 'priv', 'static') }]),
     new webpack.ProvidePlugin({
       $: 'jquery',
