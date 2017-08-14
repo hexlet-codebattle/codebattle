@@ -14,11 +14,9 @@ h2 Listing games
   br
 
   = for game <- @games do
-    - data = game.data
-    - first_player = data.first_player.name
-    - second_player = data.second_player.name
-    div= "id: #{data.id}, state: #{game.state}, players: #{first_player}, #{second_player}."
-      = link to: game_path(@conn, :show, data.id) do
+    - users = get_users(game) |> Enum.map(fn(x) -> x.name end) |> Enum.join(", ")
+    div= "id: #{game.data.id}, state: #{game.state}, players: #{users}."
+      = link to: game_path(@conn, :show, game.data.id) do
         | <%= gettext "Join" %>
       end
     br
