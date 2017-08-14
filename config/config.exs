@@ -30,7 +30,12 @@ config :phoenix_slime, :use_slim_extension, true
 
 config :ueberauth, Ueberauth,
   providers: [
-    github: { Ueberauth.Strategy.Github, [] }
+    github: { 
+      Ueberauth.Strategy.Github,
+      [
+        default_scope: "user:email"
+      ]
+     }
   ]
 
 config :ueberauth, Ueberauth.Strategy.Github.OAuth,
