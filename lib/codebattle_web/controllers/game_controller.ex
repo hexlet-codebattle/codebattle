@@ -18,8 +18,8 @@ defmodule CodebattleWeb.GameController do
   end
 
   def show(conn, %{"id" => id}) do
-    game =  Codebattle.Play.get_game!(id)
     {id, _} = Integer.parse(id)
+    game =  Play.Server.state(id)
     Play.Server.join(id, conn.assigns.user)
     render conn, "show.html", game: game
   end
