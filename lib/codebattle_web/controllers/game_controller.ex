@@ -1,6 +1,8 @@
 defmodule CodebattleWeb.GameController do
   use Codebattle.Web, :controller
 
+  plug :authenticate_user when action in [:index, :show]
+
   alias Codebattle.Game
 
   def index(conn, _params) do

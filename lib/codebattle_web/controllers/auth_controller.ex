@@ -18,7 +18,7 @@ defmodule CodebattleWeb.AuthController do
 
   def callback(%{assigns: %{ueberauth_failure: _fails}} = conn, _params) do
     conn
-    |> put_flash(:error, "Failed to authenticate.")
+    |> put_flash(:danger, "Failed to authenticate.")
     |> redirect(to: "/")
   end
 
@@ -31,7 +31,7 @@ defmodule CodebattleWeb.AuthController do
         |> redirect(to: "/")
       {:error, reason} ->
         conn
-        |> put_flash(:error, reason)
+        |> put_flash(:danger, reason)
         |> redirect(to: "/")
     end
   end

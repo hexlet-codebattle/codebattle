@@ -33,7 +33,7 @@ defmodule Codebattle.Web do
       alias Codebattle.Repo
       import Ecto
       import Ecto.Query
-
+      import Codebattle.Plugs.Authorization, only: [authenticate_user: 2]
       import CodebattleWeb.Router.Helpers
       import CodebattleWeb.Gettext
     end
@@ -46,7 +46,7 @@ defmodule Codebattle.Web do
 
       # Import convenience functions from controllers
       import Phoenix.Controller, only:
-        [get_csrf_token: 0, get_flash: 2, view_module: 1]
+        [get_csrf_token: 0, get_flash: 1, view_module: 1]
 
       # Use all HTML functionality (forms, tags, etc)
       use Phoenix.HTML
