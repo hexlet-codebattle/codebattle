@@ -12,7 +12,12 @@ config :codebattle, CodebattleWeb.Endpoint,
   code_reloader: true,
   check_origin: false,
   cache_static_lookup: false,
-	watchers: [{Path.expand("assets/webpack.devserver.js"), []}]
+	watchers: [
+    node: [
+      Path.expand("assets/webpack.devserver.js"),
+      cd: Path.expand("../assets", __DIR__)
+    ]
+  ]
 
 
 # Watch static and templates for browser reloading.
