@@ -88,9 +88,10 @@ lint:
 	mix credo
 
 clean:
-	rm -r _build && \
-	rm -r deps && \
-	rm -r .elixir_ls
+	rm -rf _build && \
+	rm -rf deps && \
+	rm -rf .elixir_ls \
+	rm -rf assets/node_modules
 
 frontend_watch:
 	cd assets && \

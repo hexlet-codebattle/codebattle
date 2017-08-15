@@ -18,17 +18,17 @@ module.exports = {
         loader: 'babel-loader',
         options: {
           cacheDirectory: true,
-          // presets: [
-          //   'flow',
-          //   ['env', {
-          //     modules: false,
-          //     targets: {
-          //       browsers: '> 0%',
-          //       uglify: true,
-          //     },
-          //     useBuiltIns: true,
-          //   }],
-          // ],
+          presets: [
+            'flow',
+            ['env', {
+              modules: false,
+              targets: {
+                browsers: '> 0%',
+                uglify: true,
+              },
+              useBuiltIns: true,
+            }],
+          ],
         },
       },
     },
