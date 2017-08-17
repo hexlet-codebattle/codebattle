@@ -1,5 +1,5 @@
-h2 Listing games
-  p Всего игр:
+h2 <%= gettext "Listing games" %>
+  p <%= gettext "Total: " %>
     = @games |> Enum.count
 
   =  button to: game_path(@conn, :create), class: "btn btn-primary" do
@@ -7,7 +7,7 @@ h2 Listing games
   end
   br
   br
-  div 
+  div
     = link to: page_path(@conn, :index) do
       | <%= gettext "Main page" %>
     end
@@ -15,8 +15,9 @@ h2 Listing games
 
   = for game <- @games do
     - users = get_users(game) |> Enum.map(fn(x) -> x.name end) |> Enum.join(", ")
-    div= "id: #{game.data.id}, state: #{game.state}, players: #{users}."
-      = link to: game_path(@conn, :show, game.data.id) do
-        | <%= gettext "Join" %>
-      end
-    br
+    div
+    | <%= gettext "id: %{id}, state: %{state}, players: %{players}  ", id: game.data.id, state: game.state, players: users %>
+    = link to: game_path(@conn, :show, game.data.id) do
+      | <%= gettext "Join" %>
+    end
+  br
