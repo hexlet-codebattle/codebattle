@@ -30,10 +30,10 @@ const renderUsers = (presences) => {
 
 
 const getDataFromDiff = (diff, key) => {
-    const messageType = key === 'join' ? 'joined' : 'left';
+    const messageType = key === "join" ? '<%= gettext "joined" %>' : '<%= gettext "left" %>';
     const message = document.createElement('div');
     message.className = key === 'join' ? 'text-success' : 'text-danger';
-    message.innerHTML = Object.keys(diff[`${key}s`]).reduce((acc, name) => `${acc}\n<i>${name} ${messageType} channel</i><br>`, '');
+    message.innerHTML = Object.keys(diff[`${key}s`]).reduce((acc, name) => `${acc}\n<i>${name} ${messageType} <%= gettext "channel" %></i><br>`, "");
 
     return message;
 };
@@ -71,7 +71,7 @@ channel.on('presence_diff', (diff) => {
 });
 
 channel.join()
-    .receive('ok', (resp) => { console.log('Joined successfully', resp); })
-    .receive('error', (resp) => { console.log('Unable to join', resp); });
+    .receive('ok', (resp) => { console.log('<%= gettext "Joined successfully" %>', resp); })
+    .receive('error', (resp) => { console.log('<%= gettext "Unable to join" %>', resp); });
 
 export default socket;

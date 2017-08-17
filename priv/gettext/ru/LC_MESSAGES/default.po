@@ -10,39 +10,83 @@ msgid ""
 msgstr ""
 "Language: ru\n"
 
-#: lib/codebattle_web/templates/page/index.html.slim:1
+#: lib/codebattle_web/templates/page/index.html.slim:2
 msgid "Welcome to %{name}!"
 msgstr "Добро пожаловать в %{name}"
 
-#: lib/codebattle_web/templates/page/index.html.slim:1
-msgid "Codebattle: game for programmers."
-msgstr "Codebattle: игра для прораммистов."
+#: lib/codebattle_web/templates/page/index.html.slim:4
+msgid "%{name}: game for programmers."
+msgstr "%{name}: игра для прораммистов."
 
-#: lib/codebattle_web/templates/layout/app.html.slim:1
-msgid "Logout"
-msgstr "Выход"
-
-#: lib/codebattle_web/templates/layout/app.html.slim:1
-msgid "Sign in with Github"
-msgstr "Войти через Github"
-
-#: lib/codebattle_web/templates/game/index.html.slim:1
-#: lib/codebattle_web/templates/page/index.html.slim:1
+#: lib/codebattle_web/templates/page/index.html.slim:7
+#: lib/codebattle_web/templates/game/index.html.slim:6
 msgid "Create game"
 msgstr "Создать игру"
 
-#: lib/codebattle_web/templates/page/index.html.slim:1
+#: lib/codebattle_web/templates/page/index.html.slim:11
 msgid "Game list"
 msgstr "Список игр"
 
-#: lib/codebattle_web/templates/page/index.html.slim:1
+#: lib/codebattle_web/templates/page/index.html.slim:19
 msgid "Lobby chat"
 msgstr "Общий чат"
 
+#: lib/codebattle_web/templates/page/index.html.slim:25
+msgid "Online users"
+msgstr "Пользователи в сети"
+
+#: lib/codebattle_web/templates/layout/app.html.slim:26
+msgid "Logout"
+msgstr "Выход"
+
+#: lib/codebattle_web/templates/layout/app.html.slim:30
+msgid "Sign in with %{name}"
+msgstr "Войти через %{name}"
+
 #: lib/codebattle_web/templates/game/index.html.slim:1
+msgid "Listing games"
+msgstr "Список игр"
+
+#: lib/codebattle_web/templates/game/index.html.slim:2
+msgid "Total: "
+msgstr "Общее количество: "
+
+#: lib/codebattle_web/templates/game/index.html.slim:12
 msgid "Main page"
 msgstr "Главная страница"
 
-#: lib/codebattle_web/templates/page/index.html.slim:1
-msgid "Online users"
-msgstr "Пользователи онлайн"
+#: lib/codebattle_web/templates/game/index.html.slim:19
+msgid "id: %{id}, state: %{state}, players: %{players}  "
+msgstr "id: %{id}, состояние: %{state}, игроки: %{players}  "
+
+#: lib/codebattle_web/templates/game/index.html.slim:21
+msgid "Join"
+msgstr "Подключиться"
+
+#: lib/codebattle_web/templates/game/show.html.slim:2
+msgid "Game: %{id}"
+msgstr "Игра: %{id}"
+
+#: lib/codebattle_web/templates/game/show.html.slim:4
+msgid "State: %{state}"
+msgstr "Состояние: %{state}"
+
+#: assets/js/socket.js:33
+msgid "подключился"
+msgstr "вошёл в"
+
+#: assets/js/socket.js:33
+msgid "left"
+msgstr "покинул"
+
+#: assets/js/socket.js:36
+msgid "channel"
+msgstr "канал"
+
+#: assets/js/socket.js:74
+msgid "Joined successfully"
+msgstr "Успешное подключение"
+
+#: assets/js/socket.js:75
+msgid "Unable to join"
+msgstr "Невозможно подключиться"

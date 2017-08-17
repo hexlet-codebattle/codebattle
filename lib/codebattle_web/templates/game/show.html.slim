@@ -1,6 +1,9 @@
-h1= "Game: #{@game.data.id}"
-h2= "State: #{@game.state}"
-p Users:
+h1
+ | <%= gettext "Game: %{id}", id: @game.data.id %>
+h2
+ | <%= gettext "State: %{state}", state: @game.state %>
+p
+ | <%= gettext "Players" %>
 ul
   - users = get_users(@game)
   = for user <- users do

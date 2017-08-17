@@ -22,7 +22,7 @@
         "babel-preset-flow": "^6.23.0",
         "babel-preset-react": "^6.24.1",
         "babel-preset-stage-0": "^6.24.1",
-        "bootstrap": "^4.0.0-alpha.6",
+        "bootstrap": "^v4.0.0-beta",
         "bootstrap-loader": "^2.1.0",
         "copy-webpack-plugin": "^4.0.1",
         "css-loader": "^0.28.4",

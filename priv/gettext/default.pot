@@ -10,39 +10,83 @@
 msgid ""
 msgstr ""
 
-#: lib/codebattle_web/templates/page/index.html.slim:1
+#: lib/codebattle_web/templates/page/index.html.slim:2
 msgid "Welcome to %{name}!"
 msgstr ""
 
-#: lib/codebattle_web/templates/page/index.html.slim:1
-msgid "Codebattle: game for programmers."
+#: lib/codebattle_web/templates/page/index.html.slim:4
+msgid "%{name}: game for programmers."
 msgstr ""
 
-#: lib/codebattle_web/templates/layout/app.html.slim:1
-msgid "Logout"
-msgstr ""
-
-#: lib/codebattle_web/templates/layout/app.html.slim:1
-msgid "Sign in with Github"
-msgstr ""
-
-#: lib/codebattle_web/templates/game/index.html.slim:1
-#: lib/codebattle_web/templates/page/index.html.slim:1
+#: lib/codebattle_web/templates/page/index.html.slim:7
+#: lib/codebattle_web/templates/game/index.html.slim:6
 msgid "Create game"
 msgstr ""
 
-#: lib/codebattle_web/templates/page/index.html.slim:1
+#: lib/codebattle_web/templates/page/index.html.slim:11
 msgid "Game list"
 msgstr ""
 
-#: lib/codebattle_web/templates/page/index.html.slim:1
+#: lib/codebattle_web/templates/page/index.html.slim:19
 msgid "Lobby chat"
 msgstr ""
 
+#: lib/codebattle_web/templates/page/index.html.slim:25
+msgid "Online users"
+msgstr ""
+
+#: lib/codebattle_web/templates/layout/app.html.slim:26
+msgid "Logout"
+msgstr ""
+
+#: lib/codebattle_web/templates/layout/app.html.slim:30
+msgid "Sign in with %{name}"
+msgstr ""
+
 #: lib/codebattle_web/templates/game/index.html.slim:1
+msgid "Listing games"
+msgstr ""
+
+#: lib/codebattle_web/templates/game/index.html.slim:2
+msgid "Total: "
+msgstr ""
+
+#: lib/codebattle_web/templates/game/index.html.slim:12
 msgid "Main page"
 msgstr ""
 
-#: lib/codebattle_web/templates/page/index.html.slim:1
-msgid "Online users"
+#: lib/codebattle_web/templates/game/index.html.slim:19
+msgid "id: %{id}, state: %{state}, players: %{players}  "
+msgstr ""
+
+#: lib/codebattle_web/templates/game/index.html.slim:21
+msgid "Join"
+msgstr ""
+
+#: lib/codebattle_web/templates/game/show.html.slim:2
+msgid "Game: %{id}"
+msgstr ""
+
+#: lib/codebattle_web/templates/game/show.html.slim:4
+msgid "State: %{state}"
+msgstr ""
+
+#: assets/js/socket.js:33
+msgid "joined"
+msgstr ""
+
+#: assets/js/socket.js:33
+msgid "left"
+msgstr ""
+
+#: assets/js/socket.js:36
+msgid "channel"
+msgstr ""
+
+#: assets/js/socket.js:74
+msgid "Joined successfully"
+msgstr ""
+
+#: assets/js/socket.js:75
+msgid "Unable to join"
 msgstr ""
