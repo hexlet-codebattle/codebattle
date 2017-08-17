@@ -92,6 +92,7 @@ clean:
 	rm -rf deps
 	rm -rf .elixir_ls
 	rm -rf assets/node_modules
+	rm -rf priv/static/*
 
 frontend_watch:
 	cd assets && \
