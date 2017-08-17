@@ -19,7 +19,7 @@ styles:
   mixins: true
 
   # Reset and dependencies
-  normalize: true
+  normalize: false
   print: true
 
   # Core CSS
@@ -48,7 +48,7 @@ styles:
   progress: true
   media: true
   list-group: true
-  responsive-embed: true
+  responsive-embed: false
   close: true
   badge: true
 
