@@ -17,7 +17,7 @@ html lang="en"
       a.navbar-brand.d-flex.mr-auto href="#"
         img alt=static_path(@conn,"/css/app.css") src="/images/codebattle_logo.png" height="30"
         | Codebattle
-      ul.nav.navbar-nav.ml-auto.justify-content-end
+      ul.nav.navbar-nav.ml-auto.justify-content-end.flex-row
         = if @conn.assigns[:is_authenticated?] do
           li.nav-item
             p.text-center.mr-3.mt-2= @conn.assigns.user.name
