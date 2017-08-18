@@ -46,6 +46,9 @@ compose-db-migrate:
 compose-test:
 	docker-compose run -e "MIX_ENV=test" web make test
 
+compose-test-coverage-html:
+	docker-compose run -e "MIX_ENV=test" web make test-coverage-html
+
 compose-lint:
 	docker-compose run web mix credo
 
@@ -84,6 +87,9 @@ install:
 test:
 	mix test
 
+test-coverage-html:
+	mix coveralls.html
+
 lint:
 	mix credo
 
@@ -92,6 +98,7 @@ clean:
 	rm -rf deps
 	rm -rf .elixir_ls
 	rm -rf assets/node_modules
+	rm -rf cover
 
 frontend_watch:
 	cd assets && \

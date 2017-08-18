@@ -32,3 +32,6 @@ tags
 .vagrant
 *.DS_Store
 .env
+
+# Generated reports
+cover
