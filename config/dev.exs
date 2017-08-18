@@ -13,10 +13,7 @@ config :codebattle, CodebattleWeb.Endpoint,
   check_origin: false,
   cache_static_lookup: false,
 	watchers: [
-    node: [
-      Path.expand("assets/webpack.devserver.js"),
-      cd: Path.expand("../assets", __DIR__)
-    ]
+    yarn: ["watch", cd: Path.expand("../assets", __DIR__)],
   ]
 
 

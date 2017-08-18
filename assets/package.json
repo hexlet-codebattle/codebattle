@@ -2,13 +2,14 @@
     "repository": {},
     "license": "MIT",
     "scripts": {
-        "watch": "webpack --watch-stdin --progress --color",
-        "watch-dev": "webpack-dev-server --color",
-        "deploy": "webpack -p"
+        "watch": "node_modules/.bin/webpack --watch-stdin --progress --color",
+        "deploy": "node_modules/.bin/webpack -p"
     },
     "dependencies": {
         "phoenix": "file:../deps/phoenix",
         "phoenix_html": "file:../deps/phoenix_html",
+        "popper.js": "^1.12.2",
+        "precss": "^2.0.0",
         "react": "^15.6.1",
         "react-dom": "^15.6.1"
     },
