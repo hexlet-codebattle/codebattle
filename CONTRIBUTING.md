@@ -54,6 +54,12 @@ git push --set-upstream origin %your_branch_name%
 После завершения работы над задачей не забудьте [синхронизировать ваш fork с основным репозиторием.](https://help.github.com/articles/syncing-a-fork/)
 Демонстрация [на видео](https://asciinema.org/a/kbpBMdJBRLDrI1wzhBsbb1yGX).
 
+Если локально ваша ветка называется `master` (по умолчанию это так), то вы можете ввести команду
+которая повторит ровно всё то, что вы могли увидеть по 2 ссылкам выше:
+```
+make get-last-changes
+```
+
 
 [Подробные инструкции по работе с PR](https://help.github.com/categories/collaborating-with-issues-and-pull-requests)
 

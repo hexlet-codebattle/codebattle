@@ -105,4 +105,9 @@ frontend_watch:
 	cd assets && \
 	npm run watch-dev
 
+get-last-changes:
+	 git fetch upstream
+	 git checkout master
+	 git merge upstream/master
+
 .PHONY: test
