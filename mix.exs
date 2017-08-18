@@ -13,6 +13,13 @@ defmodule Codebattle.Mixfile do
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      aliases: aliases(),
+     test_coverage: [tool: ExCoveralls],
+     preferred_cli_env: [
+       "coveralls": :test,
+       "coveralls.detail": :test,
+       "coveralls.post": :test,
+       "coveralls.html": :test
+     ],
      deps: deps()]
   end
 
@@ -53,6 +60,7 @@ defmodule Codebattle.Mixfile do
      {:phoenix_live_reload, "~> 1.0", only: :dev},
 
      #test
+     {:excoveralls, "~> 0.7", only: :test},
      {:faker, "~> 0.8"}]
   end
 
