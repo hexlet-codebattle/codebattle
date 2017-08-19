@@ -13,3 +13,20 @@ ul
 = link to: game_path(@conn, :index) do
   | <%= gettext "Back to list" %>
 end
+
+= if @conn.assigns[:is_authenticated?] do
+  .row.mt-0.chat.mb-5
+    .col-md-9
+      .card.mt-4.h-100
+        .card-header
+          | <%= gettext "Lobby chat" %>
+        #chat-messages.card-body.pre-scrollable
+        input#message-input.form-control type="text" placeholder="Type a message..."
+    .col-md-3
+      .card.mt-4.h-100
+        .card-header
+          | <%= gettext "Online users" %>
+        #online-users.card-body.pre-scrollable
+
+javascript:
+  window.channel_id = "<%= @game.data.id %>"
