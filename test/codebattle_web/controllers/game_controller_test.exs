@@ -34,4 +34,8 @@ defmodule CodebattleWeb.GameControllerTest do
     game = Repo.one(query)
     assert Enum.count(:gproc.lookup_pids({:n, :l, {:game, game.id }})) == 1
   end
+
+  test "POST /games show", %{conn: conn} do
+    # TODO POST /games show
+  end
 end
