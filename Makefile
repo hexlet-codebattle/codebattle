@@ -17,10 +17,10 @@ development-build-local:
 compose-setup: create-env compose-build compose-install compose-prepare
 
 compose-build:
-	docker-compose build web
+	docker-compose build
 
 compose-rebuild:
-	docker-compose build --no-cache web
+	docker-compose build --force-rm --pull --no-cache
 
 compose-install: compose-install-mix compose-install-yarn
 

@@ -1,37 +1,29 @@
 FROM elixir:1.5
 
-ARG DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && apt-get install --assume-yes apt-utils
+RUN set -ex \
 
-RUN apt-get update && apt-get upgrade -y && \
-    apt-get install -y wget curl inotify-tools git build-essential zip unzip && \
-    apt-get clean && rm -fr /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    buildDeps=" \
+        apt-utils \
+    " && \
+    apt-get -qq update && \
+    apt-get -qq install --assume-yes $buildDeps --no-install-recommends && \
 
-RUN mix local.hex --force \
-    && mix local.rebar --force
+    # NodeJS
+    curl --silent --location https://deb.nodesource.com/setup_8.x | bash - && \
+    apt-get -qq update && apt-get -qq --assume-yes install nodejs && \
 
-# Install Node
-RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
-RUN apt-get install -y -q nodejs
-
-# Install Yarn
-RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
+    # Yarn
+    curl --silent --show-error https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
     echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
-    apt-get update && apt-get install -y yarn
+    apt-get -qq update && apt-get -qq --assume-yes install yarn && \
+
+    # Clean
+    apt-get -qq purge --assume-yes --auto-remove -o APT::AutoRemove::RecommendsImportant=false $buildDeps && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
+
+    # Elixir
+    mix local.hex --force && \
+    mix local.rebar --force
 
 WORKDIR /app
-
-# install mix deps
-ADD ./mix.exs /app
-ADD ./mix.lock /app
-RUN mix deps.get
-
-# install node packages
-ADD ./assets/package.json /app/assets/
-ADD ./assets/package-lock.json /app/assets/
-RUN cd ./assets && \
-    yarn && \
-    cd ../
-
-
-RUN mix compile
