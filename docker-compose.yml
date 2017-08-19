@@ -24,7 +24,7 @@ services:
 
 
   frontend:
-    build:
+    build: .
     image: hexlet-codebattle/runtime
     command: make frontend_watch
     volumes:
