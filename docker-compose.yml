@@ -2,9 +2,9 @@ version: '3.3'
 services:
   web:
     build: .
+    image: hexlet-codebattle/runtime
     env_file: .env
     command: mix phx.server
-    container_name: web
     volumes:
       - .:/app
     ports:
@@ -16,7 +16,6 @@ services:
     image: postgres:9.6
     volumes:
       - postgres-data:/var/lib/postgresql/data
-    container_name: db
     ports:
       - "5432:5432"
     environment:
@@ -26,12 +25,10 @@ services:
 
   frontend:
     build:
-      context: .
-      dockerfile: Dockerfile
+    image: hexlet-codebattle/runtime
     command: make frontend_watch
     volumes:
       - ./services/web:/user/src/app
-
 
 volumes:
    postgres-data:
