@@ -4,7 +4,6 @@ defmodule Codebattle.User do
   """
   use Ecto.Schema
   import Ecto.Changeset
-  alias Codebattle.User
 
   schema "users" do
     field :name, :string

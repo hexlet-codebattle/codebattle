@@ -1,13 +1,17 @@
-defmodule CodebattleWeb.LobbyChannel do
+defmodule CodebattleWeb.GameChannel do
   @moduledoc false
   use Codebattle.Web, :channel
   alias Codebattle.Repo
   alias Codebattle.User
   alias CodebattleWeb.Presence
 
-  def join("lobby", _payload, socket) do
+  def join("game:" <> _channel_id, _payload, socket) do
     send(self(), :after_join)
     {:ok, socket}
+  end
+
+  def handle_in("ping", payload, socket) do
+    {:reply, {:ok, payload}, socket}
   end
 
   def handle_in("message:new", payload, socket) do

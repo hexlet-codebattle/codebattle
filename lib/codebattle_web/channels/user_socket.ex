@@ -2,7 +2,7 @@ defmodule CodebattleWeb.UserSocket do
   use Phoenix.Socket
 
   ## Channels
-  channel "lobby", CodebattleWeb.LobbyChannel
+  channel "game:*", CodebattleWeb.GameChannel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket,
