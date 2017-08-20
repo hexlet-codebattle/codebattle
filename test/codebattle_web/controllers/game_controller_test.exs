@@ -97,7 +97,7 @@ defmodule CodebattleWeb.GameControllerTest do
     second = Repo.get(User, second.id)
 
     assert game.state == "game_over"
-    assert first.raiting == 101
-    assert second.raiting == 99
+    assert first.raiting == 1201
+    assert second.raiting == 1199
   end
 end
