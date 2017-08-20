@@ -9,6 +9,7 @@ defmodule Codebattle.User do
     field :name, :string
     field :email, :string
     field :github_id, :integer
+    field :raiting, :integer
 
     timestamps()
 
@@ -21,7 +22,7 @@ defmodule Codebattle.User do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:name, :email, :github_id])
+    |> cast(params, [:name, :email, :github_id, :raiting])
     |> validate_required([:name, :email, :github_id])
   end
 end
