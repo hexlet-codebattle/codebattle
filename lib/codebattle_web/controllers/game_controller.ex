@@ -3,7 +3,7 @@ defmodule CodebattleWeb.GameController do
 
   alias Codebattle.Play
 
-  plug :authenticate_user when action in [:index, :show]
+  plug :authenticate_user when action in [:index, :show, :create, :join, :check]
 
   def index(conn, _params) do
     render(conn, "index.html", game_fsms: Play.list_fsms)
