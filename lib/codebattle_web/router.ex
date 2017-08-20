@@ -31,11 +31,6 @@ defmodule CodebattleWeb.Router do
     get "/", PageController, :index
 
     resources "/games", GameController
-
-    scope "/games" do
-      post "/:id/join", GameController, :join
-      post "/:id/check", GameController, :check
-    end
   end
 
   # Other scopes may use custom stacks.

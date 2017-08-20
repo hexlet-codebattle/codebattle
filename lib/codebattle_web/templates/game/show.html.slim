@@ -1,38 +1,32 @@
-h1 = gettext "Game: %{id}", id: @fsm.data.game_id
-h2 = gettext "State: %{state}", state: @fsm.state
-= if @fsm.state == :player_won do
-  h3 = gettext "The winner is: %{name}", name: user_name(@fsm.data.winner)
-p = gettext "Players"
+h1
+ | <%= gettext "Game: %{id}", id: @game.data.id %>
+h2
+ | <%= gettext "State: %{state}", state: @game.state %>
+p
+ | <%= gettext "Players" %>
 ul
-  - users = get_users(@fsm)
+  - users = get_users(@game)
   = for user <- users do
-    li = user_name(user)
-
-= if Enum.count(users) == 2 do
-  = button gettext("Check result"), to: game_path(@conn, :check, @fsm.data.game_id), class: "btn btn-success"
-- else
-  = gettext("Waiting opponent")
-
-br
-br
+    li= user.name
+  end
 
 = link to: game_path(@conn, :index) do
-  = gettext "Back to list"
+  | <%= gettext "Back to list" %>
+end
 
 = if @conn.assigns[:is_authenticated?] do
   .row.mt-0.chat.mb-5
     .col-md-9
       .card.mt-4.h-100
         .card-header
-          = gettext "Game chat"
+          | <%= gettext "Lobby chat" %>
         #chat-messages.card-body.pre-scrollable
         input#message-input.form-control type="text" placeholder="Type a message..."
     .col-md-3
       .card.mt-4.h-100
         .card-header
-          = gettext "Online users"
+          | <%= gettext "Online users" %>
         #online-users.card-body.pre-scrollable
 
 javascript:
-  window.channel_id = "<%= @fsm.data.game_id %>"
-
+  window.channel_id = "<%= @game.data.id %>"

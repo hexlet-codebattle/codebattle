@@ -16,5 +16,4 @@ config :codebattle, Codebattle.Repo,
   password: System.get_env("CODEBATTLE_DATABASE_PASSWORD"),
   database: "codebattle_test",
   hostname: System.get_env("CODEBATTLE_DATABASE_HOSTNAME"),
-  pool: Ecto.Adapters.SQL.Sandbox,
-  ownership_timeout: 999_999
+  pool: Ecto.Adapters.SQL.Sandbox
