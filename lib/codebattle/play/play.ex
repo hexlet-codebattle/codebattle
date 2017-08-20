@@ -7,7 +7,6 @@ defmodule Codebattle.Play do
 
   alias Codebattle.Repo
   alias Codebattle.Game
-  alias Codebattle.User
   alias Codebattle.UserGame
 
   def list_games do
@@ -15,61 +14,26 @@ defmodule Codebattle.Play do
             preload: [:users]
   end
 
-  def list_fsms do
-    Play.Supervisor.current_games
-  end
-
-  def get_game(id) do
-    Repo.get(Game, id)
-  end
-
-  def get_fsm(id) do
-    id = String.to_integer(id)
-    Play.Server.fsm(id)
+  def get_game!(id) do
+    Game
+    |> where([game], game.id == ^id)
+    |> preload([game], [:users])
+    |> Repo.one
   end
 
   def create_game(user) do
     game = Repo.insert!(%Game{state: "waiting_opponent"})
+    Repo.insert!(%UserGame{game_id: game.id, user_id: user.id})
 
-    fsm = Play.Fsm.new |> Play.Fsm.create(%{game_id: game.id, user: user})
+    state = Play.Fsm.new |> Play.Fsm.create(%{id: game.id})
 
-    Play.Supervisor.start_game(game.id, fsm)
+    Play.Supervisor.start_game(game.id, state)
     game.id
   end
 
-  def join_game(id, user) do
-    id = String.to_integer(id)
-    Play.Server.call_transition(id, :join, %{user: user})
-  end
-
-  def check_game(id, user) do
-    id = String.to_integer(id)
-    case check_asserts() do
-      {:ok, true} ->
-        {:ok, fsm} = Play.Server.call_transition(id, :complete, %{user: user})
-        if fsm.state == :game_over do
-          terminate_game(fsm)
-        end
-        {:ok, fsm}
-    end
-  end
-
-  defp check_asserts do
-    # Сюда впилим проверку clojure
-    {:ok, true}
-  end
-
-  defp terminate_game(fsm) do
-    game = get_game(fsm.data.game_id)
-    game_struct = Game.changeset(game, %{state: to_string(fsm.state)})
-    Repo.update! game_struct
-    Repo.insert!(%UserGame{game_id: game.id, user_id: fsm.data.winner.id, result: "win"})
-    Repo.insert!(%UserGame{game_id: game.id, user_id: fsm.data.loser.id, result: "lose"})
-
-    winner = User.changeset(fsm.data.winner, %{raiting: (fsm.data.winner.raiting + 1)})
-    loser = User.changeset(fsm.data.loser, %{raiting: (fsm.data.loser.raiting - 1)})
-    Repo.update! winner
-    Repo.update! loser
-    Play.Supervisor.stop_game(game.id)
+  def update_game(%Game{} = game, attrs) do
+    game
+    |> Game.changeset(attrs)
+    |> Repo.update()
   end
 end

@@ -3,49 +3,41 @@ defmodule Play.Fsm do
 
   use Fsm, initial_state: :initial,
     initial_data: %{
-      game_id: nil,
+      id: nil,
       first_player: nil,
-      second_player: nil,
-      game_over: false,
-      winner: nil,
-      loser: nil
+      second_player: nil
     }
 
   defstate initial do
     defevent create(params), data: data do
-      next_state(:waiting_opponent, %{data | game_id: params.game_id, first_player: params.user})
+      %{id: id} = params
+      next_state(:new_game, %{data | id: id})
+    end
+  end
+
+  defstate new_game do
+    defevent add_first_player(params), data: data do
+      %{first_player: first_player} = params
+      next_state(:waiting_opponent, %{data | first_player: first_player})
     end
   end
 
   defstate waiting_opponent do
-    defevent join(params), data: data do
-      next_state(:playing, %{data | second_player: params.user})
+    defevent add_second_player(params), data: data do
+      %{second_player: second_player} = params
+      next_state(:playing, %{data | second_player: second_player})
     end
   end
 
   defstate playing do
-    defevent complete(params), data: data do
-      next_state(:player_won, %{data | winner: params.user})
-    end
-
-    defevent join(_) do
-      respond({:error, "Game is already playing"})
+    defevent won do
+      next_state(:player_won)
     end
   end
 
   defstate player_won do
-    defevent complete(params), data: data do
-      next_state(:game_over, %{data | loser: params.user, game_over: true})
-    end
-
-    defevent join(_) do
-      respond({:error, "Game is already playing"})
-    end
-  end
-
-  defstate game_over do
-    defevent _ do
-      respond({:error, "Game is over"})
+    defevent player_won do
+      next_state(:over)
     end
   end
 end
