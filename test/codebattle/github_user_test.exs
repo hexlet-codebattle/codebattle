@@ -2,7 +2,8 @@ defmodule Codebattle.GithubUserTest do
   use Codebattle.ModelCase
 
   alias Codebattle.GithubUser
-  alias Ueberauth.Auth
+
+  import CodebattleWeb.Factory
 
   @valid_data %{
     "login" => Faker.Internet.user_name,
@@ -13,15 +14,7 @@ defmodule Codebattle.GithubUserTest do
   }
 
   test "new user is created successfully" do
-    auth_data = %Auth{
-      provider: :github,
-      uid: :rand.uniform(100_000),
-      extra: %{
-        raw_info: %{
-          user: @valid_data,
-        },
-      },
-    }
+    auth_data = build(:auth, extra: %{ raw_info: %{ user: @valid_data } })
 
     # First time user is created
     {:ok, user1} = GithubUser.find_or_create(auth_data)

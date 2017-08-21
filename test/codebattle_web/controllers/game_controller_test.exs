@@ -4,9 +4,10 @@ defmodule CodebattleWeb.GameControllerTest do
   alias Codebattle.Game
   alias Codebattle.User
 
+  import CodebattleWeb.Factory
+
   test "GET /games", %{conn: conn} do
-    user = User.changeset(%User{}, %{name: "test_name", email: "test@test.test", github_id: 1})
-    user = Repo.insert!(user)
+    user = insert(:user)
     conn = assign(conn, :user, user)
 
     conn = get conn, "/games"
@@ -14,8 +15,7 @@ defmodule CodebattleWeb.GameControllerTest do
   end
 
   test "POST /games create Game in db", %{conn: conn} do
-    user = User.changeset(%User{}, %{name: "test_name", email: "test@test.test", github_id: 1})
-    user = Repo.insert!(user)
+    user = insert(:user, github_id: 1)
     conn = assign(conn, :user, user)
 
     post conn, "/games"
@@ -24,8 +24,7 @@ defmodule CodebattleWeb.GameControllerTest do
   end
 
   test "POST /games create Game server", %{conn: conn} do
-    user = User.changeset(%User{}, %{name: "first", email: "test@test.test", github_id: 1})
-    user = Repo.insert!(user)
+    user = insert(:user, name: "first")
     conn = assign(conn, :user, user)
 
     post conn, "/games"
@@ -41,11 +40,8 @@ defmodule CodebattleWeb.GameControllerTest do
   end
 
   test "POST /games/:id/join  Join to game", %{conn: conn} do
-    first = User.changeset(%User{}, %{name: "first", email: "first@test.test", github_id: 1})
-    first = Repo.insert!(first)
-
-    second = User.changeset(%User{}, %{name: "second", email: "second@test.test", github_id: 2})
-    second = Repo.insert!(second)
+    first = insert(:user, name: "first")
+    second = insert(:user, name: "second")
 
     conn = assign(conn, :user, first)
     post conn, "/games"
@@ -63,12 +59,10 @@ defmodule CodebattleWeb.GameControllerTest do
   end
 
   test "POST /games/:id/check Check game", %{conn: conn} do
-    first = User.changeset(%User{}, %{name: "first", email: "first@test.test", github_id: 1})
-    first = Repo.insert!(first)
+    first = insert(:user, name: "first")
     first = Repo.get(User, first.id)
 
-    second = User.changeset(%User{}, %{name: "second", email: "second@test.test", github_id: 2})
-    second = Repo.insert!(second)
+    second = insert(:user, name: "second")
     second = Repo.get(User, second.id)
 
     conn = assign(conn, :user, first)
