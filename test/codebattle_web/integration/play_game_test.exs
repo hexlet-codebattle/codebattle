@@ -22,7 +22,6 @@ defmodule Codebattle.PlayGameTest do
     game_id = ~r/\d+/ |> Regex.run(game_location) |> List.first |> String.to_integer
     fsm = Play.Server.fsm(game_id)
 
-    assert get_flash(conn, :info) == "Game has been created"
     assert fsm.state == :waiting_opponent
     assert fsm.data.first_player.name == "first"
     assert fsm.data.second_player == nil
@@ -31,10 +30,9 @@ defmodule Codebattle.PlayGameTest do
     assert fsm.data.game_over == false
 
     # Second player join game
-    conn = post(user2_conn, game_location <> "/join")
+    post(user2_conn, game_location <> "/join")
     fsm = Play.Server.fsm(game_id)
 
-    assert get_flash(conn, :info) == "Joined to game"
     assert fsm.state == :playing
     assert fsm.data.first_player.name == "first"
     assert fsm.data.second_player.name == "second"
@@ -43,10 +41,9 @@ defmodule Codebattle.PlayGameTest do
     assert fsm.data.game_over == false
 
     # First player won
-    conn = post(user1_conn, game_location <> "/check")
+    post(user1_conn, game_location <> "/check")
     fsm = Play.Server.fsm(game_id)
 
-    assert get_flash(conn, :info) == "Yay, you won the game!"
     assert fsm.state == :player_won
     assert fsm.data.first_player.name == "first"
     assert fsm.data.second_player.name == "second"
@@ -55,13 +52,12 @@ defmodule Codebattle.PlayGameTest do
     assert fsm.data.game_over == false
 
     # Second player complete game
-    conn = post(user2_conn, game_location <> "/check")
+    post(user2_conn, game_location <> "/check")
 
     game = Repo.get Game, game_id
     user1 = Repo.get(User, user1.id)
     user2 = Repo.get(User, user2.id)
 
-    assert get_flash(conn, :info) == "You lose the game"
     assert game.state == "game_over"
     assert user1.raiting == 11
     assert user2.raiting == 9
