@@ -3,8 +3,6 @@ defmodule CodebattleWeb.GameChannelTest do
 
   alias CodebattleWeb.GameChannel
 
-  import CodebattleWeb.Factory
-
   setup do
     user = insert(:user)
     channel_id = "lobby"

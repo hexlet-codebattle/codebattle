@@ -1,0 +1,14 @@
+h2 = gettext "Users raiting"
+p = gettext "Total: "
+  = Enum.count(@users)
+
+= link to: game_path(@conn, :index) do
+  = gettext "Game list"
+br
+br
+
+= for {user, index} <- Enum.with_index(@users) do
+  div
+    = gettext "%{index}) name: %{name}, raiting: %{raiting}", index: index + 1, name: user.name, raiting: user.raiting
+    br
+    br

@@ -2,6 +2,11 @@ h2 = gettext "Listing games"
 p = gettext "Total: "
   = Enum.count(@game_fsms)
 
+= link to: user_path(@conn, :index) do
+  = gettext "Users raiting"
+br
+br
+
 = button to: game_path(@conn, :create), class: "btn btn-primary" do
   = gettext "Create game"
 div
@@ -9,13 +14,12 @@ div
   = for fsm <- @game_fsms do
     - users = get_users(fsm) |> Enum.map(fn(user) -> user_name(user) end) |> Enum.join(", ")
     div
-    = gettext "id: %{id}, state: %{state}, players: %{players}  ", id: fsm.data.game_id, state: fsm.state, players: users
-    = if fsm.state == :waiting_opponent do
-      = button gettext("Join"), to: game_path(@conn, :join, fsm.data.game_id), class: "btn btn-success"
-    '
-    = button gettext("Show"), to: game_path(@conn, :show, fsm.data.game_id), method: :get, class: "btn btn-info"
-    br
-    br
-  = link to: page_path(@conn, :index) do
-    = gettext "Main page"
-  br
+      = gettext "id: %{id}, state: %{state}, players: %{players}  ", id: fsm.data.game_id, state: fsm.state, players: users
+      = if fsm.state == :waiting_opponent do
+        = button gettext("Join"), to: game_path(@conn, :join, fsm.data.game_id), class: "btn btn-success"
+      '
+      = button gettext("Show"), to: game_path(@conn, :show, fsm.data.game_id), method: :get, class: "btn btn-info"
+      br
+      br
+= link to: page_path(@conn, :index) do
+  = gettext "Main page"
