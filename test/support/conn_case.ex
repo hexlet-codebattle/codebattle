@@ -19,13 +19,9 @@ defmodule CodebattleWeb.ConnCase do
     quote do
       # Import conveniences for testing with connections
       use Phoenix.ConnTest
-
-      alias Codebattle.Repo
-      import Ecto
-      import Ecto.Changeset
-      import Ecto.Query
-
       import CodebattleWeb.Router.Helpers
+      import CodebattleWeb.Factory
+      alias Codebattle.{Repo, User, Game, UserGame}
 
       # The default endpoint for testing
       @endpoint CodebattleWeb.Endpoint

@@ -1,4 +1,4 @@
-ExUnit.start
+ExUnit.start(timeout: 99_999_999)
 
 Faker.start
 

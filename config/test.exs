@@ -6,6 +6,9 @@ config :codebattle, CodebattleWeb.Endpoint,
   http: [port: 4001],
   server: false
 
+config :phoenix_integration,
+  endpoint: Codebattle.Endpoint
+
 # Print only warnings and errors during test
 config :logger, level: :warn
 
@@ -17,4 +20,4 @@ config :codebattle, Codebattle.Repo,
   database: "codebattle_test",
   hostname: System.get_env("CODEBATTLE_DATABASE_HOSTNAME"),
   pool: Ecto.Adapters.SQL.Sandbox,
-  ownership_timeout: 999_999
+  ownership_timeout: 99_999_999

@@ -61,8 +61,8 @@ defmodule Codebattle.Play do
 
   defp terminate_game(fsm) do
     game = get_game(fsm.data.game_id)
-    game_struct = Game.changeset(game, %{state: to_string(fsm.state)})
-    Repo.update! game_struct
+    new_game = Game.changeset(game, %{state: to_string(fsm.state)})
+    Repo.update! new_game
     Repo.insert!(%UserGame{game_id: game.id, user_id: fsm.data.winner.id, result: "win"})
     Repo.insert!(%UserGame{game_id: game.id, user_id: fsm.data.loser.id, result: "lose"})
 
