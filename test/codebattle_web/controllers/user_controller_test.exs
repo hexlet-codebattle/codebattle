@@ -8,8 +8,8 @@ defmodule CodebattleWeb.UserControllerTest do
     user2 = User.changeset(%User{}, %{name: "test2", email: "test2@test.test", github_id: 2, raiting: 11})
     user3 = User.changeset(%User{}, %{name: "test3", email: "test3@test.test", github_id: 3, raiting: 12})
     user1 = Repo.insert!(user1)
-    user2 = Repo.insert!(user2)
-    user3 = Repo.insert!(user3)
+    Repo.insert!(user2)
+    Repo.insert!(user3)
     conn = assign(conn, :user, user1)
 
     conn = get conn, "/users"
