@@ -7,8 +7,8 @@ defmodule Play.Supervisor do
     Supervisor.start_link(__MODULE__, [], name: __MODULE__)
   end
 
-  def start_game(game_id, state) do
-    Supervisor.start_child(__MODULE__, [game_id, state])
+  def start_game(game_id, fsm) do
+    Supervisor.start_child(__MODULE__, [game_id, fsm])
   end
 
   def init(_) do
@@ -25,8 +25,13 @@ defmodule Play.Supervisor do
     |> Enum.filter(fn x -> x end)
   end
 
+  def stop_game(game_id) do
+    pid = :gproc.where({:n, :l, {:game, game_id}})
+    Supervisor.terminate_child(__MODULE__, pid)
+  end
+
   defp game_state({_id, pid, _type, _modules}) do
     pid
-    |> GenServer.call(:state)
+    |> GenServer.call(:fsm)
   end
 end

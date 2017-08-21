@@ -3,22 +3,23 @@ defmodule Play.Server do
 
   use GenServer
   require Logger
-  alias Codebattle.UserGame
-  alias Codebattle.Repo
 
-  #API
-  def start_link(game_id, state) do
-    GenServer.start_link(__MODULE__, state, name: game_key(game_id))
+  # API
+
+  def start_link(game_id, fsm) do
+    GenServer.start_link(__MODULE__, fsm, name: game_key(game_id))
   end
 
-  def join(game_id, user), do: GenServer.call(game_key(game_id), {:join, user})
-
-  def transition(game_id, event, params) do
+  def cast_transition(game_id, event, params) do
     GenServer.cast(game_key(game_id), {:transition, event, params})
   end
 
-  def state(game_id) do
-    GenServer.call(game_key(game_id), :state)
+  def call_transition(game_id, event, params) do
+    GenServer.call(game_key(game_id), {:transition, event, params})
+  end
+
+  def fsm(game_id) do
+    GenServer.call(game_key(game_id), :fsm)
   end
 
   def game_key(game_id) do
@@ -26,42 +27,26 @@ defmodule Play.Server do
   end
 
   # SERVER
-  def init(state) do
-    {:ok, state}
+
+  def init(fsm) do
+    {:ok, fsm}
   end
 
-  def handle_cast({:transition, event, params}, state) do
-    new_state = Play.Fsm.transition(state, event, params)
-    {:noreply, new_state}
+  def handle_cast({:transition, event, params}, fsm) do
+    new_fsm = Play.Fsm.transition(fsm, event, [params])
+    {:noreply, new_fsm}
   end
 
-  def handle_call(:state, _from, state) do
-    {:reply, state, state}
+  def handle_call(:fsm, _from, fsm) do
+    {:reply, fsm, fsm}
   end
 
-  def handle_call({:join, player}, _from, game) do
-    data = game.data
-    cond do
-      data.first_player != nil and data.second_player != nil ->
-        {:reply, {:error, "No more players allowed"}, game}
-      Enum.member?([data.first_player, data.second_player], player) ->
-        {:reply, {:ok, self()}, game}
-      true ->
-        new_state = add_player(game, player)
-        Repo.insert!(%UserGame{game_id: data.id, user_id: player.id})
-        {:reply, {:ok, self()}, new_state}
-    end
-  end
-
-  defp add_player(game, player) do
-    data = game |> Play.Fsm.data
-    case data do
-      %{first_player: nil} ->
-        game |> Play.Fsm.add_first_player(%{first_player: player})
-      %{second_player: nil} ->
-        game |> Play.Fsm.add_second_player(%{second_player: player})
-      true ->
-        game
+  def handle_call({:transition, event, params}, _from, fsm) do
+    case Play.Fsm.transition(fsm, event, [params]) do
+      {{:error, reason}, _} ->
+        {:reply, {:error, reason}, fsm}
+      new_fsm ->
+        {:reply, {:ok, new_fsm}, new_fsm}
     end
   end
 end
