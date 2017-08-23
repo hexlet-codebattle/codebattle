@@ -29,6 +29,17 @@ defmodule Codebattle.PlayGameTest do
     assert fsm.data.loser == nil
     assert fsm.data.game_over == false
 
+    # First player cannot join to game as second player
+    post(user1_conn, game_location <> "/join")
+    fsm = Play.Server.fsm(game_id)
+
+    assert fsm.state == :waiting_opponent
+    assert fsm.data.first_player.name == "first"
+    assert fsm.data.second_player == nil
+    assert fsm.data.winner == nil
+    assert fsm.data.loser == nil
+    assert fsm.data.game_over == false
+
     # Second player join game
     post(user2_conn, game_location <> "/join")
     fsm = Play.Server.fsm(game_id)
