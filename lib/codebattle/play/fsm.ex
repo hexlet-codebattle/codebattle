@@ -31,11 +31,10 @@ defmodule Play.Fsm do
 
   defstate playing do
     defevent complete(params), data: data do
-      cond do
-        is_player?(data, params.user) ->
-          next_state(:player_won, %{data | winner: params.user})
-        true ->
-          next_state(:playing, data)
+      if is_player?(data, params.user) do
+        next_state(:player_won, %{data | winner: params.user})
+      else
+        next_state(:playing, data)
       end
     end
 
@@ -46,11 +45,10 @@ defmodule Play.Fsm do
 
   defstate player_won do
     defevent complete(params), data: data do
-      cond do
-        is_player?(data, params.user) ->
-          next_state(:game_over, %{data | loser: params.user, game_over: true})
-        true ->
-          next_state(:playing, data)
+      if is_player?(data, params.user) do
+        next_state(:game_over, %{data | loser: params.user, game_over: true})
+      else
+        next_state(:playing, data)
       end
     end
 
