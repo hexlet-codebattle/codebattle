@@ -1,10 +1,10 @@
 version: '3.3'
 services:
-  web:
+  runtime:
     build: .
     image: hexlet-codebattle/runtime
     env_file: .env
-    command: mix phx.server
+    command: make start
     volumes:
       - .:/app
     ports:
@@ -21,7 +21,6 @@ services:
     environment:
      - POSTGRES_USER=${CODEBATTLE_DATABASE_USERNAME}
      - POSTGRES_PASSWORD=${CODEBATTLE_DATABASE_PASSWORD}
-
 
   frontend:
     build: .
