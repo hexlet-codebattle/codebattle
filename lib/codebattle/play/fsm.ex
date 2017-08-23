@@ -46,10 +46,9 @@ defmodule Play.Fsm do
 
   defstate player_won do
     defevent complete(params), data: data do
-      user = params.user
       cond do
-        is_player?(data, user) ->
-          next_state(:game_over, %{data | loser: user, game_over: true})
+        is_player?(data, params.user) ->
+          next_state(:game_over, %{data | loser: params.user, game_over: true})
         true ->
           next_state(:playing, data)
       end
