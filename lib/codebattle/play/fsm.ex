@@ -31,7 +31,12 @@ defmodule Play.Fsm do
 
   defstate playing do
     defevent complete(params), data: data do
-      next_state(:player_won, %{data | winner: params.user})
+      cond do
+        Enum.member?([data.first_player, data.second_player], params.user) ->
+          next_state(:player_won, %{data | winner: params.user})
+        true ->
+          next_state(:playing, data)
+      end
     end
 
     defevent join(_) do
