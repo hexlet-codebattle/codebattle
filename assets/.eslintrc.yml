@@ -1,6 +1,8 @@
 ---
 
 plugins:
+  - react
+  - jsx-a11y
   - flowtype
 
 env:
@@ -10,7 +12,7 @@ env:
 parser: babel-eslint
 
 extends:
-  - 'airbnb-base'
+  - 'airbnb'
   - 'plugin:flowtype/recommended'
 
 rules:

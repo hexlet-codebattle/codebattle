@@ -20,6 +20,9 @@ br
 = link to: game_path(@conn, :index) do
   = gettext "Back to list"
 
+.row
+  #game-widget-root
+
 = if @conn.assigns[:is_authenticated?] do
   .row.mt-0.chat.mb-5
     .col-md-9
