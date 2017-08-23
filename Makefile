@@ -2,11 +2,6 @@ prepare:
 	sudo apt update
 	sudo apt install ansible
 
-webpack:
-	cd assets/
-	yarn install
-	cd ../
-
 add-keys:
 	sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys `sudo apt-get update 2>&1 | grep -o '[0-9A-Z]\{16\}' | xargs`
 
@@ -75,8 +70,6 @@ compose:
 
 compile:
 	mix compile
-
-rebuild-styles: webpack compose-restart
 
 create-env:
 	cp -n .env.example .env || :
