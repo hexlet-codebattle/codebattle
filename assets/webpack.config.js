@@ -6,7 +6,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const env = process.env.MIX_ENV || 'dev';
 const prod = env === 'prod';
-const publicPath = 'http://localhost:4002';
+// const publicPath = 'http://localhost:4002';
 
 const DEV_ENTRIES = [
   // 'react-hot-loader/patch',
@@ -61,20 +61,20 @@ module.exports = {
       exclude: /node_modules/,
       use: {
         loader: 'babel-loader',
-        options: {
-          cacheDirectory: true,
-          presets: [
-            'flow',
-            ['env', {
-              modules: false,
-              targets: {
-                browsers: '> 0%',
-                uglify: true,
-              },
-              useBuiltIns: true,
-            }],
-          ],
-        },
+        // options: {
+        //   cacheDirectory: true,
+        //   presets: [
+        //     'flow',
+        //     ['env', {
+        //       modules: false,
+        //       targets: {
+        //         browsers: '> 0%',
+        //         uglify: true,
+        //       },
+        //       useBuiltIns: true,
+        //     }],
+        //   ],
+        // },
       },
     },
     {
@@ -99,6 +99,10 @@ module.exports = {
     }],
   },
   plugins,
+  watchOptions: {
+    aggregateTimeout: 300,
+    poll: 1000,
+  },
   // devServer: {
   //   hot: true,
   //   overlay: true,
