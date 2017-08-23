@@ -3,14 +3,16 @@ defmodule Codebattle.PlayGameTest do
 
   setup do
     user1 = insert(:user, %{name: "first", email: "test1@test.test", github_id: 1, raiting: 10})
-    user2 = insert(:user, %{name: "second", email: "test1@test.test", github_id: 1, raiting: 10})
+    user2 = insert(:user, %{name: "second", email: "test2@test.test", github_id: 2, raiting: 10})
+    user3 = insert(:user, %{name: "other", email: "test3@test.test", github_id: 3, raiting: 10})
     user1_conn = assign(build_conn(), :user, user1)
     user2_conn = assign(build_conn(), :user, user2)
+    user3_conn = assign(build_conn(), :user, user3)
 
-    {:ok, %{user1_conn: user1_conn, user2_conn: user2_conn, user1: user1, user2: user2}}
+    {:ok, %{user1_conn: user1_conn, user2_conn: user2_conn, user3_conn: user3_conn, user1: user1, user2: user2, user3: user3}}
   end
 
-  test "Two users play game", %{user1_conn: user1_conn, user2_conn: user2_conn, user1: user1, user2: user2} do
+  test "Two users play game", %{user1_conn: user1_conn, user2_conn: user2_conn, user3_conn: user3_conn, user1: user1, user2: user2, user3: user3} do
 
     # Create game
     conn = post(user1_conn, game_path(user1_conn, :create))
@@ -29,8 +31,41 @@ defmodule Codebattle.PlayGameTest do
     assert fsm.data.loser == nil
     assert fsm.data.game_over == false
 
+    # First player cannot join to game as second player
+    post(user1_conn, game_location <> "/join")
+    fsm = Play.Server.fsm(game_id)
+
+    assert fsm.state == :waiting_opponent
+    assert fsm.data.first_player.name == "first"
+    assert fsm.data.second_player == nil
+    assert fsm.data.winner == nil
+    assert fsm.data.loser == nil
+    assert fsm.data.game_over == false
+
     # Second player join game
     post(user2_conn, game_location <> "/join")
+    fsm = Play.Server.fsm(game_id)
+
+    assert fsm.state == :playing
+    assert fsm.data.first_player.name == "first"
+    assert fsm.data.second_player.name == "second"
+    assert fsm.data.winner == nil
+    assert fsm.data.loser == nil
+    assert fsm.data.game_over == false
+
+    # Other player cannot join game
+    post(user3_conn, game_location <> "/join")
+    fsm = Play.Server.fsm(game_id)
+
+    assert fsm.state == :playing
+    assert fsm.data.first_player.name == "first"
+    assert fsm.data.second_player.name == "second"
+    assert fsm.data.winner == nil
+    assert fsm.data.loser == nil
+    assert fsm.data.game_over == false
+
+    # Other player cannot win game
+    post(user3_conn, game_location <> "/check")
     fsm = Play.Server.fsm(game_id)
 
     assert fsm.state == :playing

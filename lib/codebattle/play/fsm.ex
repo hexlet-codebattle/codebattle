@@ -19,13 +19,23 @@ defmodule Play.Fsm do
 
   defstate waiting_opponent do
     defevent join(params), data: data do
-      next_state(:playing, %{data | second_player: params.user})
+      player = params[:user]
+      case data do
+        %{first_player: ^player} ->
+          next_state(:waiting_opponent, data)
+        _ ->
+          next_state(:playing, %{data | second_player: player})
+      end
     end
   end
 
   defstate playing do
     defevent complete(params), data: data do
-      next_state(:player_won, %{data | winner: params.user})
+      if is_player?(data, params.user) do
+        next_state(:player_won, %{data | winner: params.user})
+      else
+        next_state(:playing, data)
+      end
     end
 
     defevent join(_) do
@@ -35,7 +45,11 @@ defmodule Play.Fsm do
 
   defstate player_won do
     defevent complete(params), data: data do
-      next_state(:game_over, %{data | loser: params.user, game_over: true})
+      if is_player?(data, params.user) do
+        next_state(:game_over, %{data | loser: params.user, game_over: true})
+      else
+        next_state(:playing, data)
+      end
     end
 
     defevent join(_) do
@@ -47,5 +61,9 @@ defmodule Play.Fsm do
     defevent _ do
       respond({:error, "Game is over"})
     end
+  end
+
+  defp is_player?(data, player) do
+    Enum.member?([data.first_player, data.second_player], player)
   end
 end
