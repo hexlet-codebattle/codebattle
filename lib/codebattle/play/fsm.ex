@@ -19,7 +19,13 @@ defmodule Play.Fsm do
 
   defstate waiting_opponent do
     defevent join(params), data: data do
-      next_state(:playing, %{data | second_player: params.user})
+      player = params[:user]
+      case data do
+        %{first_player: ^player} ->
+          next_state(:waiting_opponent, data)
+        _ ->
+          next_state(:playing, %{data | second_player: player})
+      end
     end
   end
 
