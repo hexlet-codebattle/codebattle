@@ -9,7 +9,8 @@ ul
     li = user_name(user)
 
 = if Enum.count(users) == 2 do
-  = button gettext("Check result"), to: game_path(@conn, :check, @fsm.data.game_id), class: "btn btn-success"
+  = if Enum.member?(users, @conn.assigns.user) do
+    = button gettext("Check result"), to: game_path(@conn, :check, @fsm.data.game_id), class: "btn btn-success"
 - else
   = gettext("Waiting opponent")
 
@@ -35,4 +36,3 @@ br
 
 javascript:
   window.channel_id = "<%= @fsm.data.game_id %>"
-
