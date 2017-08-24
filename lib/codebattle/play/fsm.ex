@@ -49,7 +49,7 @@ defmodule Play.Fsm do
       if can_complete?(data, params.user) do
         next_state(:game_over, %{data | loser: params.user, game_over: true})
       else
-        respond({:error, "You are not player of this game"})
+        respond({:error, "You cannot check result after win"})
       end
     end
 

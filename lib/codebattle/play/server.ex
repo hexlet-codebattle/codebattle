@@ -42,7 +42,7 @@ defmodule Play.Server do
   def handle_call({:transition, event, params}, _from, fsm) do
     case Play.Fsm.transition(fsm, event, [params]) do
       {{:error, reason}, _} ->
-        {:reply, {:error, reason}, fsm}
+        {:reply, {{:error, reason}, fsm}, fsm}
       new_fsm ->
         {:reply, {:ok, new_fsm}, new_fsm}
     end

@@ -46,15 +46,11 @@ defmodule Codebattle.Play do
     id = String.to_integer(id)
     case check_asserts() do
       {:ok, true} ->
-        case Play.Server.call_transition(id, :complete, %{user: user}) do
-          {:ok, fsm} ->
-            if fsm.state == :game_over do
-              terminate_game(fsm)
-            end
-            {:ok, fsm}
-          {:error, reason} ->
-            {:error, reason}
+        {_response, fsm} = Play.Server.call_transition(id, :complete, %{user: user})
+        if fsm.state == :game_over do
+          terminate_game(fsm)
         end
+        {:ok, fsm}
     end
   end
 
