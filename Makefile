@@ -2,9 +2,10 @@ prepare:
 	sudo apt update
 	sudo apt install ansible
 
-webpack:
-	cd assets/
-	yarn install
+rebuild-styles:
+	cd assets/ && \
+	yarn install && \
+	yarn deploy && \
 	cd ../
 
 add-keys:
@@ -29,6 +30,7 @@ compose-install-mix:
 
 compose-install-yarn:
 	docker-compose run --workdir="/app/assets/" web yarn
+	docker-compose run --workdir="/app/assets/" web yarn deploy
 
 compose-compile:
 	docker-compose run web mix compile
@@ -75,8 +77,6 @@ compose:
 
 compile:
 	mix compile
-
-rebuild-styles: webpack compose-restart
 
 create-env:
 	cp -n .env.example .env || :
