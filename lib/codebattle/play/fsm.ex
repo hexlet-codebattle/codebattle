@@ -46,7 +46,7 @@ defmodule Play.Fsm do
 
   defstate player_won do
     defevent complete(params), data: data do
-      if is_player?(data, params.user) do
+      if can_complete?(data, params.user) do
         next_state(:game_over, %{data | loser: params.user, game_over: true})
       else
         respond({:error, "You are not player of this game"})
@@ -66,5 +66,13 @@ defmodule Play.Fsm do
 
   defp is_player?(data, player) do
     Enum.member?([data.first_player, data.second_player], player)
+  end
+
+  defp can_complete?(data, player) do
+    if is_player?(data, player) do
+      !Enum.member?([data.winner, data.loser], player)
+    else
+      false
+    end
   end
 end
