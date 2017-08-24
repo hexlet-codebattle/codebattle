@@ -6,12 +6,18 @@
         "deploy": "node_modules/.bin/webpack -p"
     },
     "dependencies": {
+        "brace": "^0.10.0",
         "phoenix": "file:../deps/phoenix",
         "phoenix_html": "file:../deps/phoenix_html",
         "popper.js": "^1.12.2",
         "precss": "^2.0.0",
         "react": "^15.6.1",
-        "react-dom": "^15.6.1"
+        "react-ace": "^5.1.2",
+        "react-dom": "^15.6.1",
+        "react-redux": "^5.0.6",
+        "redux": "^3.7.2",
+        "reduxsauce": "^0.6.0",
+        "seamless-immutable": "^7.1.2"
     },
     "devDependencies": {
         "autoprefixer": "^7.1.2",

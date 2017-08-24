@@ -1,12 +1,11 @@
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const path = require('path');
-const webpack = require('webpack');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const path = require("path");
+const webpack = require("webpack");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 
-
-const env = process.env.MIX_ENV || 'dev';
-const prod = env === 'prod';
-const publicPath = 'http://localhost:4002';
+const env = process.env.MIX_ENV || "dev";
+const prod = env === "prod";
+// const publicPath = 'http://localhost:4002';
 
 const DEV_ENTRIES = [
     // 'react-hot-loader/patch',
@@ -14,40 +13,40 @@ const DEV_ENTRIES = [
     // 'webpack/hot/only-dev-server',
 ];
 
-const APP_ENTRIES = [
-    'bootstrap-loader',
-    './js/app.js',
-];
+const APP_ENTRIES = ["bootstrap-loader", "./js/app.js"];
 
 const plugins = [
-    new ExtractTextPlugin('../css/app.css'),
-    new CopyWebpackPlugin([{ from: path.join(__dirname, 'static'), to: path.resolve(__dirname, '..', 'priv', 'static') }]),
+    new ExtractTextPlugin("../css/app.css"),
+    new CopyWebpackPlugin([{
+        from: path.join(__dirname, "static"),
+        to: path.resolve(__dirname, "..", "priv", "static")
+    }]),
     new webpack.ProvidePlugin({
-        $: 'jquery',
-        jQuery: 'jquery',
-        'window.jQuery': 'jquery',
-        Tether: 'tether',
-        'window.Tether': 'tether',
-        Popper: ['popper.js', 'default'],
-        Alert: 'exports-loader?Alert!bootstrap/js/dist/alert',
-        Button: 'exports-loader?Button!bootstrap/js/dist/button',
-        Carousel: 'exports-loader?Carousel!bootstrap/js/dist/carousel',
-        Collapse: 'exports-loader?Collapse!bootstrap/js/dist/collapse',
-        Dropdown: 'exports-loader?Dropdown!bootstrap/js/dist/dropdown',
-        Modal: 'exports-loader?Modal!bootstrap/js/dist/modal',
-        Popover: 'exports-loader?Popover!bootstrap/js/dist/popover',
-        Scrollspy: 'exports-loader?Scrollspy!bootstrap/js/dist/scrollspy',
-        Tab: 'exports-loader?Tab!bootstrap/js/dist/tab',
-        Tooltip: 'exports-loader?Tooltip!bootstrap/js/dist/tooltip',
-        Util: 'exports-loader?Util!bootstrap/js/dist/util',
-    }),
+        $: "jquery",
+        jQuery: "jquery",
+        "window.jQuery": "jquery",
+        Tether: "tether",
+        "window.Tether": "tether",
+        Popper: ["popper.js", "default"],
+        Alert: "exports-loader?Alert!bootstrap/js/dist/alert",
+        Button: "exports-loader?Button!bootstrap/js/dist/button",
+        Carousel: "exports-loader?Carousel!bootstrap/js/dist/carousel",
+        Collapse: "exports-loader?Collapse!bootstrap/js/dist/collapse",
+        Dropdown: "exports-loader?Dropdown!bootstrap/js/dist/dropdown",
+        Modal: "exports-loader?Modal!bootstrap/js/dist/modal",
+        Popover: "exports-loader?Popover!bootstrap/js/dist/popover",
+        Scrollspy: "exports-loader?Scrollspy!bootstrap/js/dist/scrollspy",
+        Tab: "exports-loader?Tab!bootstrap/js/dist/tab",
+        Tooltip: "exports-loader?Tooltip!bootstrap/js/dist/tooltip",
+        Util: "exports-loader?Util!bootstrap/js/dist/util"
+    })
 ];
 
 // if (!prod) { plugins.push(new webpack.HotModuleReplacementPlugin()); }
 
 module.exports = {
     entry: {
-        app: prod ? APP_ENTRIES : DEV_ENTRIES.concat(APP_ENTRIES),
+        app: prod ? APP_ENTRIES : DEV_ENTRIES.concat(APP_ENTRIES)
     },
     devtool: prod ? false : "cheap-module-eval-source-map",
     output: {
@@ -64,20 +63,18 @@ module.exports = {
                     options: {
                         cacheDirectory: true,
                         presets: [
-                            "flow",
-                            "stage-0",
-                            "react", [
-                                ("env": {
-                                    modules: false,
-                                    targets: {
-                                        browsers: "> 0%",
-                                        uglify: true
-                                    },
-                                    useBuiltIns: true
-                                })
-                            ]
+                            'flow',
+                            'stage-0',
+                            'react', ['env', {
+                                modules: false,
+                                targets: {
+                                    browsers: '> 0%',
+                                    uglify: true,
+                                },
+                                useBuiltIns: true,
+                            }],
                         ],
-                    }
+                    },
                 }
             },
             {
@@ -103,6 +100,10 @@ module.exports = {
         ]
     },
     plugins,
+    watchOptions: {
+        aggregateTimeout: 300,
+        poll: 1000
+    },
     // devServer: {
     //   hot: true,
     //   overlay: true,

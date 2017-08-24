@@ -24,6 +24,7 @@ compose-install-mix:
 
 compose-install-yarn:
 	docker-compose run --workdir="/app/assets/" web yarn
+	docker-compose run --workdir="/app/assets/" web yarn deploy
 
 compose-compile:
 	docker-compose run web mix compile
