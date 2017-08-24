@@ -1,8 +1,8 @@
 defmodule CodebattleWeb.ErrorView do
   use Codebattle.Web, :view
 
-  def render("404.html", _assigns) do
-    "Page not found"
+  def render("404.html", assigns) do
+    render("404_page.html", Map.merge(assigns, %{msg: (assigns[:msg] || "Page not found")}))
   end
 
   def render("500.html", _assigns) do

@@ -2,10 +2,8 @@ defmodule Play.Server do
   @moduledoc false
 
   use GenServer
-  require Logger
 
   # API
-
   def start_link(game_id, fsm) do
     GenServer.start_link(__MODULE__, fsm, name: game_key(game_id))
   end

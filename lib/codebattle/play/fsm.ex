@@ -1,6 +1,8 @@
 defmodule Play.Fsm do
   @moduledoc false
 
+  @states [:initial, :waiting_opponent, :playing, :player_won, :game_over]
+
   use Fsm, initial_state: :initial,
     initial_data: %{
       game_id: nil,
