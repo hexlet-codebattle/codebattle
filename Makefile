@@ -2,6 +2,12 @@ prepare:
 	sudo apt update
 	sudo apt install ansible
 
+rebuild-styles:
+	cd assets/ && \
+	yarn install && \
+	yarn deploy && \
+	cd ../
+
 add-keys:
 	sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys `sudo apt-get update 2>&1 | grep -o '[0-9A-Z]\{16\}' | xargs`
 
