@@ -5,7 +5,7 @@ import Editor from './Editor';
 class GameWidget extends Component {
   render() {
     return (
-      <div className="row">
+      <div className="row mt-3 mx-auto">
         <div className="col-md-6">
           <Editor />
         </div>

@@ -63,18 +63,23 @@ module.exports = {
                     options: {
                         cacheDirectory: true,
                         presets: [
-                            'flow',
-                            'stage-0',
-                            'react', ['env', {
-                                modules: false,
-                                targets: {
-                                    browsers: '> 0%',
-                                    uglify: true,
-                                },
-                                useBuiltIns: true,
-                            }],
+                            "flow",
+                            "es2015",
+                            "stage-0",
+                            "react", [
+                                "env",
+                                {
+                                    modules: false,
+                                    targets: {
+                                        browsers: "> 0%",
+                                        uglify: true
+                                    },
+                                    useBuiltIns: true
+                                }
+                            ]
                         ],
-                    },
+                        plugins: ["transform-class-properties"],
+                    }
                 }
             },
             {
