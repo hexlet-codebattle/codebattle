@@ -5,8 +5,13 @@ defmodule Codebattle.ErrorViewTest do
   import Phoenix.View
 
   test "renders 404.html" do
-    assert render_to_string(CodebattleWeb.ErrorView, "404.html", []) ==
+    assert render_to_string(CodebattleWeb.ErrorView, "404.html", []) =~
            "Page not found"
+  end
+
+  test "renders 404.html with msg" do
+    assert render_to_string(CodebattleWeb.ErrorView, "404.html", [msg: "404 test"]) =~
+           "test"
   end
 
   test "render 500.html" do

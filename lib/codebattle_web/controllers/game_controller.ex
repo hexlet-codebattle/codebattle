@@ -5,6 +5,17 @@ defmodule CodebattleWeb.GameController do
 
   plug :authenticate_user when action in [:index, :show, :create, :join, :check]
 
+  def call(conn, opts) do
+    try do
+      super(conn, opts)
+    catch
+      :exit, _ ->
+        conn
+        |> put_status(:not_found)
+        |> render(CodebattleWeb.ErrorView, "404.html", %{msg: "Game not found"})
+    end
+  end
+
   def index(conn, _params) do
     render(conn, "index.html", game_fsms: Play.list_fsms)
   end
@@ -17,7 +28,8 @@ defmodule CodebattleWeb.GameController do
   end
 
   def show(conn, %{"id" => id}) do
-    render conn, "show.html", fsm: Play.get_fsm(id)
+    fsm = Play.get_fsm(id)
+    render conn, "show.html", fsm: fsm
   end
 
   def join(conn, %{"id" => id}) do
