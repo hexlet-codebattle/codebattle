@@ -41,19 +41,25 @@ defmodule CodebattleWeb.GameController do
       {:error, reason} ->
         conn
         |> put_flash(:danger, reason)
-        |> redirect(to: game_path(conn, :index))
+        |> redirect(to: game_path(conn, :show, id))
     end
   end
 
   def check(conn, %{"id" => id}) do
-    {:ok, fsm} = Codebattle.Play.check_game(id, conn.assigns.user)
-    flash =
-      case fsm.state do
-        :player_won -> "Yay, you won the game!"
-        _ -> "You lose the game"
+    case Codebattle.Play.check_game(id, conn.assigns.user) do
+      {:ok, fsm} ->
+        flash =
+          case fsm.state do
+            :player_won -> "Yay, you won the game!"
+            _ -> "You lose the game"
+          end
+        conn
+        |> put_flash(:info, flash)
+        |> redirect(to: game_path(conn, :index))
+      {:error, reason} ->
+        conn
+        |> put_flash(:error, reason)
+        |> redirect(to: game_path(conn, :show, id))
       end
-    conn
-    |> put_flash(:info, flash)
-    |> redirect(to: game_path(conn, :index))
   end
 end

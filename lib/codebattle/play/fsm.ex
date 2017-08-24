@@ -22,11 +22,10 @@ defmodule Play.Fsm do
   defstate waiting_opponent do
     defevent join(params), data: data do
       player = params[:user]
-      case data do
-        %{first_player: ^player} ->
-          next_state(:waiting_opponent, data)
-        _ ->
-          next_state(:playing, %{data | second_player: player})
+      if data.first_player.id == player.id do
+        respond({:error, "You are already in game"})
+      else
+        next_state(:playing, %{data | second_player: player})
       end
     end
   end
@@ -36,7 +35,7 @@ defmodule Play.Fsm do
       if is_player?(data, params.user) do
         next_state(:player_won, %{data | winner: params.user})
       else
-        next_state(:playing, data)
+        respond({:error, "You are not player of this game"})
       end
     end
 
@@ -50,7 +49,7 @@ defmodule Play.Fsm do
       if is_player?(data, params.user) do
         next_state(:game_over, %{data | loser: params.user, game_over: true})
       else
-        next_state(:playing, data)
+        respond({:error, "You are not player of this game"})
       end
     end
 
