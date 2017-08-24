@@ -64,6 +64,17 @@ defmodule Codebattle.PlayGameTest do
     assert fsm.data.loser == nil
     assert fsm.data.game_over == false
 
+    # Winner cannot check results again
+    post(user1_conn, game_location <> "/check")
+    fsm = Play.Server.fsm(game_id)
+
+    assert fsm.state == :player_won
+    assert fsm.data.first_player.name == "first"
+    assert fsm.data.second_player.name == "second"
+    assert fsm.data.winner.name == "first"
+    assert fsm.data.loser == nil
+    assert fsm.data.game_over == false
+
     # Second player complete game
     post(user2_conn, game_location <> "/check")
 
