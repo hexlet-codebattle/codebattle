@@ -9,7 +9,7 @@ ul
     li = user_name(user)
 
 = if Enum.count(users) == 2 do
-  = if Enum.member?(users, @conn.assigns.user) do
+  = if can_check?(@fsm, @conn.assigns.user) do
     = button gettext("Check result"), to: game_path(@conn, :check, @fsm.data.game_id), class: "btn btn-success"
 - else
   = gettext("Waiting opponent")

@@ -22,11 +22,10 @@ defmodule Play.Fsm do
   defstate waiting_opponent do
     defevent join(params), data: data do
       player = params[:user]
-      case data do
-        %{first_player: ^player} ->
-          next_state(:waiting_opponent, data)
-        _ ->
-          next_state(:playing, %{data | second_player: player})
+      if data.first_player.id == player.id do
+        respond({:error, "You are already in game"})
+      else
+        next_state(:playing, %{data | second_player: player})
       end
     end
   end
@@ -36,7 +35,7 @@ defmodule Play.Fsm do
       if is_player?(data, params.user) do
         next_state(:player_won, %{data | winner: params.user})
       else
-        next_state(:playing, data)
+        respond({:error, "You are not player of this game"})
       end
     end
 
@@ -47,10 +46,10 @@ defmodule Play.Fsm do
 
   defstate player_won do
     defevent complete(params), data: data do
-      if is_player?(data, params.user) do
+      if can_complete?(data, params.user) do
         next_state(:game_over, %{data | loser: params.user, game_over: true})
       else
-        next_state(:playing, data)
+        respond({:error, "You cannot check result after win"})
       end
     end
 
@@ -67,5 +66,13 @@ defmodule Play.Fsm do
 
   defp is_player?(data, player) do
     Enum.member?([data.first_player, data.second_player], player)
+  end
+
+  defp can_complete?(data, player) do
+    if is_player?(data, player) do
+      !Enum.member?([data.winner, data.loser], player)
+    else
+      false
+    end
   end
 end

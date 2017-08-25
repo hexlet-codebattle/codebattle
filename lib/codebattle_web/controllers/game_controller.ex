@@ -38,10 +38,10 @@ defmodule CodebattleWeb.GameController do
         conn
         |> put_flash(:info, "Joined to game")
         |> redirect(to: game_path(conn, :show, id))
-      {:error, reason} ->
+      {{:error, reason}, _} ->
         conn
         |> put_flash(:danger, reason)
-        |> redirect(to: game_path(conn, :index))
+        |> redirect(to: game_path(conn, :show, id))
     end
   end
 
