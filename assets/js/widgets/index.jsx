@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from 'react-dom';
-import GameWidget from './containers/GameWidget';
+import App from './App';
 
-export default (domElement) => { render(<GameWidget />, domElement); };
+export default (domElement) => { render(<App />, domElement); };
 
