@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import AceEditor from 'react-ace';
 
 import 'brace';
@@ -7,17 +8,29 @@ import 'brace/theme/solarized_dark';
 
 
 class Editor extends Component {
-  onChange = (...newValue) => {
-    console.log('change 1', newValue);
+  static propTypes = {
+    value: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    editable: PropTypes.bool,
+    onChange: PropTypes.func,
+  }
+
+  static defaultProps = {
+    editable: false,
+    onChange: null,
   }
 
   render() {
+    const { value, name, editable, onChange } = this.props;
+
     return (
       <AceEditor
         mode="javascript"
         theme="solarized_dark"
-        onChange={this.onChange}
-        name="UNIQUE_ID_OF_DIV"
+        onChange={onChange}
+        name={name}
+        value={value}
+        readOnly={!editable}
         editorProps={{ $blockScrolling: true }}
       />
     );
