@@ -35,4 +35,8 @@ defmodule Codebattleweb.GameControllerTest do
     conn = post conn, "/games/#{game.id}/check"
     assert conn.status == 404
   end
+
+  test "POST /games show", %{conn: conn} do
+    # TODO POST /games show
+  end
 end
