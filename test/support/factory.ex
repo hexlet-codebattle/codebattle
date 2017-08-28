@@ -22,7 +22,7 @@ defmodule CodebattleWeb.Factory do
       uid: :rand.uniform(100_000),
       extra: %{
         raw_info: %{
-          user: %{},
+          user: :user,
         },
       },
     }
