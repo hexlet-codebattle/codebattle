@@ -22,7 +22,6 @@ defmodule Codebattleweb.GameControllerTest do
 
   test "POST /games/:id/join", %{conn: conn} do
     user = insert(:user)
-    user_conn = assign(conn, :user, user)
     game_id = Play.create_game(user)
 
     user2 = insert(:user)
@@ -38,7 +37,6 @@ defmodule Codebattleweb.GameControllerTest do
 
   test "POST /games/:id/check", %{conn: conn} do
     user = insert(:user)
-    user_conn = assign(conn, :user, user)
     game_id = Play.create_game(user)
 
 
