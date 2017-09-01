@@ -65,12 +65,12 @@ defmodule Play.Fsm do
   end
 
   defp is_player?(data, player) do
-    Enum.member?([data.first_player, data.second_player], player)
+    Enum.member?([data.first_player.id, data.second_player.id], player.id)
   end
 
   defp can_complete?(data, player) do
     if is_player?(data, player) do
-      !Enum.member?([data.winner, data.loser], player)
+      !(data.winner.id == player.id)
     else
       false
     end
