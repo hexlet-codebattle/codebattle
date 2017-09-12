@@ -28,7 +28,7 @@ defmodule Codebattle.Mixfile do
   # Type `mix help compile.app` for more information.
   def application do
     [mod: {Codebattle, []},
-     applications: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext,
+     applications: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext, :phoenix_gon,
                     :phoenix_ecto, :postgrex, :ueberauth, :ueberauth_github, :gproc, :ex_machina]]
   end
 
@@ -52,6 +52,8 @@ defmodule Codebattle.Mixfile do
      {:ueberauth_github, "~> 0.4"},
      {:gproc, "~> 0.6"},
      {:fsm, "~> 0.3"},
+     {:poison, "~> 3.1.0", override: true},
+     {:phoenix_gon, "~> 0.2.0"},
 
      #dev_and_test
      {:credo, "~> 0.8", only: [:dev, :test], runtime: false},

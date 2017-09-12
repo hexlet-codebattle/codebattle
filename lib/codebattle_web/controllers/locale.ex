@@ -3,13 +3,15 @@ defmodule CodebattleWeb.Locale do
     I18n configuration
   """
   import Plug.Conn
+  import PhoenixGon.Controller
 
   def init(opts), do: nil
 
   def call(conn, _opts) do
     case conn.params["locale"] || get_session(conn, :locale) do
-      nil     -> conn
+      nil     -> conn = put_gon(conn, locale: :en)
       locale  ->
+        conn = put_gon(conn, locale: locale)
         Gettext.put_locale(CodebattleWeb.Gettext, locale)
         conn |> put_session(:locale, locale)
     end

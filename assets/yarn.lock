@@ -1224,6 +1224,10 @@ bluebird@^2.10.2:
   version "2.11.0"
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-2.11.0.tgz#534b9033c022c9579c56ba3b3e5a5caafbb650e1"
 
+bluebird@^3.4.1:
+  version "3.5.0"
+  resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.5.0.tgz#791420d7f551eea2897453a8a77653f96606d67c"
+
 bn.js@^4.0.0, bn.js@^4.1.0, bn.js@^4.1.1, bn.js@^4.4.0:
   version "4.11.8"
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-4.11.8.tgz#2cde09eb5ee341f484746bb0309b3253b1b1442f"
@@ -1668,7 +1672,7 @@ combined-stream@^1.0.5, combined-stream@~1.0.5:
   dependencies:
     delayed-stream "~1.0.0"
 
-commander@^2.11.0:
+commander@^2.11.0, commander@^2.9.0:
   version "2.11.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.11.0.tgz#157152fd1e7a6c8d98a5b715cf376df928004563"
 
@@ -2327,7 +2331,7 @@ encodeurl@~1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/encodeurl/-/encodeurl-1.0.1.tgz#79e3d58655346909fe6f0f45a5de68103b294d20"
 
-encoding@^0.1.11:
+encoding@^0.1.11, encoding@^0.1.12:
   version "0.1.12"
   resolved "https://registry.yarnpkg.com/encoding/-/encoding-0.1.12.tgz#538b66f3ee62cd1ab51ec323829d1f9480c74beb"
   dependencies:
@@ -3083,6 +3087,10 @@ fs.realpath@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/fs.realpath/-/fs.realpath-1.0.0.tgz#1504ad2523158caa40db4a2787cb01411994ea4f"
 
+fs@0.0.1-security:
+  version "0.0.1-security"
+  resolved "https://registry.yarnpkg.com/fs/-/fs-0.0.1-security.tgz#8a7bd37186b6dddf3813f23858b57ecaaf5e41d4"
+
 fsevents@^1.0.0:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/fsevents/-/fsevents-1.1.2.tgz#3282b713fb3ad80ede0e9fcf4611b5aa6fc033f4"
@@ -3166,6 +3174,13 @@ getpass@^0.1.1:
   resolved "https://registry.yarnpkg.com/getpass/-/getpass-0.1.7.tgz#5eff8e3e684d569ae4cb2b1282604e8ba62149fa"
   dependencies:
     assert-plus "^1.0.0"
+
+gettext-parser@^1.1.2, gettext-parser@^1.2.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/gettext-parser/-/gettext-parser-1.3.0.tgz#61465851c266f8521ba69e61ef505aa54f635d0a"
+  dependencies:
+    encoding "^0.1.12"
+    safe-buffer "^5.1.1"
 
 gifsicle@^3.0.0:
   version "3.0.4"
@@ -3585,6 +3600,29 @@ https-proxy-agent@^1.0.0:
     agent-base "2"
     debug "2"
     extend "3"
+
+i18next-conv@^3.0.1:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/i18next-conv/-/i18next-conv-3.0.3.tgz#c8e660692dc7dd682f59d90ee9ccdc57ad66796e"
+  dependencies:
+    bluebird "^3.4.1"
+    chalk "^1.1.3"
+    commander "^2.9.0"
+    gettext-parser "^1.2.0"
+    mkdirp "^0.5.1"
+    node-gettext "^1.1.0"
+    object-assign "^4.1.0"
+    pkginfo "^0.4.0"
+
+i18next-po-loader@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/i18next-po-loader/-/i18next-po-loader-1.0.0.tgz#900a9504cff00a59fb60892dc51f79dca9842d9e"
+  dependencies:
+    i18next-conv "^3.0.1"
+
+i18next@^9.0.0:
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/i18next/-/i18next-9.0.0.tgz#a89ab0481b5b6b3964f55b12f03de9063d8f4500"
 
 iconv-lite@0.4.13:
   version "0.4.13"
@@ -5058,6 +5096,12 @@ node-forge@0.6.33:
   version "0.6.33"
   resolved "https://registry.yarnpkg.com/node-forge/-/node-forge-0.6.33.tgz#463811879f573d45155ad6a9f43dc296e8e85ebc"
 
+node-gettext@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/node-gettext/-/node-gettext-1.1.0.tgz#e96cd97b289287137381d64b6d33ca4e191f29fa"
+  dependencies:
+    gettext-parser "^1.1.2"
+
 node-gyp@^3.3.1:
   version "3.6.2"
   resolved "https://registry.yarnpkg.com/node-gyp/-/node-gyp-3.6.2.tgz#9bfbe54562286284838e750eac05295853fa1c60"
@@ -5536,7 +5580,7 @@ performance-now@^0.2.0:
   version "1.3.0"
 
 "phoenix_html@file:../deps/phoenix_html":
-  version "2.10.2"
+  version "2.10.4"
 
 pify@^2.0.0, pify@^2.3.0:
   version "2.3.0"
@@ -5567,6 +5611,10 @@ pkg-dir@^2.0.0:
   resolved "https://registry.yarnpkg.com/pkg-dir/-/pkg-dir-2.0.0.tgz#f6d5d1109e19d63edf428e0bd57e12777615334b"
   dependencies:
     find-up "^2.1.0"
+
+pkginfo@^0.4.0:
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/pkginfo/-/pkginfo-0.4.1.tgz#b5418ef0439de5425fc4995042dced14fb2a84ff"
 
 pluralize@^4.0.0:
   version "4.0.0"
@@ -6582,7 +6630,7 @@ rx@^4.1.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/rx/-/rx-4.1.0.tgz#a5f13ff79ef3b740fe30aa803fb09f98805d4782"
 
-safe-buffer@5.1.1, safe-buffer@^5.0.1, safe-buffer@^5.1.0, safe-buffer@~5.1.0, safe-buffer@~5.1.1:
+safe-buffer@5.1.1, safe-buffer@^5.0.1, safe-buffer@^5.1.0, safe-buffer@^5.1.1, safe-buffer@~5.1.0, safe-buffer@~5.1.1:
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/safe-buffer/-/safe-buffer-5.1.1.tgz#893312af69b2123def71f57889001671eeb2c853"
 

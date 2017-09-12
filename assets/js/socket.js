@@ -4,6 +4,21 @@
 // To use Phoenix channels, the first step is to import Socket
 // and connect at the socket path in "lib/my_app/endpoint.ex":
 import { Socket, Presence } from 'phoenix';
+import i18next from 'i18next';
+
+i18next.init({
+  nsSeparator: false,
+  keySeparator: false,
+  lng: window.Gon.assets().locale,
+  resources: {
+    en: {
+      translation: require('../../priv/gettext/en/LC_MESSAGES/default.po')
+    },
+    ru: {
+      translation: require('../../priv/gettext/ru/LC_MESSAGES/default.po')
+    }
+  }
+});
 
 const socket = new Socket('/socket', { params: { token: window.userToken } });
 
@@ -31,10 +46,10 @@ const renderUsers = (presences) => {
 
 
 const getDataFromDiff = (diff, key) => {
-    const messageType = key === 'join' ? 'joined' : 'left';
+    const messageType = key === 'join' ? i18next.t('joined to') : i18next.t('left');
     const message = document.createElement('div');
     message.className = key === 'join' ? 'text-success' : 'text-danger';
-    message.innerHTML = Object.keys(diff[`${key}s`]).reduce((acc, name) => `${acc}\n<i>${name} ${messageType} channel</i><br>`, "");
+    message.innerHTML = Object.keys(diff[`${key}s`]).reduce((acc, name) => `${acc}\n<i>${name} ${messageType} ${i18next.t('channel')}</i><br>`, "");
 
     return message;
 };
