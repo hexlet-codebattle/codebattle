@@ -4,7 +4,7 @@
 // To use Phoenix channels, the first step is to import Socket
 // and connect at the socket path in "lib/my_app/endpoint.ex":
 import { Socket, Presence } from 'phoenix';
-import i18next from './i18n';
+import i18n from './i18n';
 
 const socket = new Socket('/socket', { params: { token: window.userToken } });
 
@@ -32,10 +32,12 @@ const renderUsers = (presences) => {
 
 
 const getDataFromDiff = (diff, key) => {
-    const messageType = key === 'join' ? i18next.t('joined to') : i18next.t('left');
+    const messageType = key === 'join' ? i18n.t('joined to') : i18n.t('left');
     const message = document.createElement('div');
     message.className = key === 'join' ? 'text-success' : 'text-danger';
-    message.innerHTML = Object.keys(diff[`${key}s`]).reduce((acc, name) => `${acc}\n<i>${name} ${messageType} ${i18next.t('channel')}</i><br>`, "");
+message.innerHTML = Object
+  .keys(diff[`${key}s`])
+  .reduce((acc, name) => `${acc}\n<i>${name} ${messageType} ${i18n.t('channel')}</i><br>`, "");
 
     return message;
 };
