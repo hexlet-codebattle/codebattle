@@ -18,7 +18,7 @@ br
 br
 
 = link to: game_path(@conn, :index) do
-  = gettext "Back to list"
+  = gettext "Back to game list"
 
 .row
   #game-widget-root
@@ -30,7 +30,7 @@ br
         .card-header
           = gettext "Game chat"
         #chat-messages.card-body.pre-scrollable
-        input#message-input.form-control type="text" placeholder="Type a message..."
+        input#message-input.form-control type="text" placeholder=type_message
     .col-md-3
       .card.mt-4.h-100
         .card-header

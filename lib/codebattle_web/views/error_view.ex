@@ -1,12 +1,13 @@
 defmodule CodebattleWeb.ErrorView do
   use Codebattle.Web, :view
+  import CodebattleWeb.Gettext
 
   def render("404.html", assigns) do
-    render("404_page.html", Map.merge(assigns, %{msg: (assigns[:msg] || "Page not found")}))
+    render("404_page.html", Map.merge(assigns, %{msg: (assigns[:msg] || gettext "Page not found")}))
   end
 
   def render("500.html", _assigns) do
-    "Internal server error"
+    gettext "Internal server error"
   end
 
   # In case no render clause matches or no

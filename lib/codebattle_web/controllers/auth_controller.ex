@@ -1,5 +1,6 @@
 defmodule CodebattleWeb.AuthController do
   use Codebattle.Web, :controller
+  import CodebattleWeb.Gettext
 
   alias Ueberauth.Strategy.Helpers
 
@@ -11,14 +12,14 @@ defmodule CodebattleWeb.AuthController do
 
   def logout(conn, _params) do
     conn
-    |> put_flash(:info, "You have been logged out!")
+    |> put_flash(:info, gettext "You have been logged out!")
     |> configure_session(drop: true)
     |> redirect(to: "/")
   end
 
   def callback(%{assigns: %{ueberauth_failure: _fails}} = conn, _params) do
     conn
-    |> put_flash(:danger, "Failed to authenticate.")
+    |> put_flash(:danger, gettext "Failed to authenticate.")
     |> redirect(to: "/")
   end
 
@@ -26,7 +27,7 @@ defmodule CodebattleWeb.AuthController do
     case Codebattle.GithubUser.find_or_create(auth) do
       {:ok, user} ->
         conn
-        |> put_flash(:info, "Successfully authenticated.")
+        |> put_flash(:info, gettext "Successfully authenticated.")
         |> put_session(:current_user, user.id)
         |> redirect(to: "/")
       {:error, reason} ->

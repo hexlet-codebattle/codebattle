@@ -91,3 +91,24 @@ msgstr ""
 
 msgid "must be equal to %{number}"
 msgstr ""
+
+#: lib/codebattle/play/fsm.ex:27
+msgid "You are already in game"
+msgstr ""
+
+#: lib/codebattle/play/fsm.ex:39
+msgid "You are not player of this game"
+msgstr ""
+
+#: lib/codebattle/play/fsm.ex:44
+#: lib/codebattle/play/fsm.ex:58
+msgid "Game is already playing"
+msgstr ""
+
+#: lib/codebattle/play/fsm.ex:53
+msgid "You cannot check result after win"
+msgstr ""
+
+#: lib/codebattle/play/fsm.ex:64
+msgid "Game is over"
+msgstr ""

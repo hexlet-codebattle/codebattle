@@ -1,4 +1,4 @@
-h2 = gettext "Users raiting"
+h2 = gettext "Users rating"
 p = gettext "Total: "
   = Enum.count(@users)
 
@@ -9,6 +9,6 @@ br
 
 = for {user, index} <- Enum.with_index(@users) do
   div
-    = gettext "%{index}) name: %{name}, raiting: %{raiting}", index: index + 1, name: user.name, raiting: user.raiting
+    = gettext "%{index}) name: %{name}, rating: %{rating}", index: index + 1, name: user.name, rating: user.raiting
     br
     br

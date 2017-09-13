@@ -4,6 +4,7 @@ defmodule Codebattle.Plugs.Authorization do
   """
   import Plug.Conn
   import Phoenix.Controller
+  import CodebattleWeb.Gettext
   alias CodebattleWeb.Router.Helpers
 
   def init(default), do: default
@@ -26,7 +27,7 @@ defmodule Codebattle.Plugs.Authorization do
       conn
     else
       conn
-      |> put_flash(:danger, "You must be logged in to acces that page")
+      |> put_flash(:danger, gettext "You must be logged in to access that page")
       |> redirect(to: Helpers.page_path(conn, :index))
       |> halt()
     end

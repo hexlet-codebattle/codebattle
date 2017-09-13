@@ -14,22 +14,26 @@ msgstr ""
 msgid "Welcome to %{name}!"
 msgstr "Добро пожаловать в %{name}"
 
-#: lib/codebattle_web/templates/page/index.html.slim:4
+#: lib/codebattle_web/templates/page/index.html.slim:3
 msgid "%{name}: game for programmers."
 msgstr "%{name}: игра для прораммистов."
 
-#: lib/codebattle_web/templates/page/index.html.slim:7
-#: lib/codebattle_web/templates/game/index.html.slim:6
+#: lib/codebattle_web/templates/page/index.html.slim:6
+#: lib/codebattle_web/templates/game/index.html.slim:11
 msgid "Create game"
 msgstr "Создать игру"
 
-#: lib/codebattle_web/templates/page/index.html.slim:11
+#: lib/codebattle_web/templates/page/index.html.slim:9
 msgid "Game list"
 msgstr "Список игр"
 
-#: lib/codebattle_web/templates/page/index.html.slim:19
+#: lib/codebattle_web/templates/page/index.html.slim:16
 msgid "Lobby chat"
 msgstr "Общий чат"
+
+#: lib/codebattle_web/templates/page/index.html.slim:18
+msgid "Type a message..."
+msgstr "Начните писать..."
 
 #: lib/codebattle_web/templates/page/index.html.slim:25
 msgid "Online users"
@@ -51,29 +55,114 @@ msgstr "Список игр"
 msgid "Total: "
 msgstr "Общее количество: "
 
-#: lib/codebattle_web/templates/game/index.html.slim:12
-msgid "Main page"
-msgstr "Главная страница"
 
-#: lib/codebattle_web/templates/game/index.html.slim:19
+#: lib/codebattle_web/templates/game/index.html.slim:2
+msgid "Users rating: "
+msgstr ""
+
+#: lib/codebattle_web/templates/game/index.html.slim:17
 msgid "id: %{id}, state: %{state}, players: %{players}  "
 msgstr "id: %{id}, состояние: %{state}, игроки: %{players}  "
 
-#: lib/codebattle_web/templates/game/index.html.slim:21
+#: lib/codebattle_web/templates/game/index.html.slim:19
 msgid "Join"
 msgstr "Подключиться"
 
-#: lib/codebattle_web/templates/game/show.html.slim:2
+#: lib/codebattle_web/templates/game/index.html.slim:21
+msgid "Show"
+msgstr "Наблюдать"
+
+#: lib/codebattle_web/templates/game/index.html.slim:25
+msgid "Main page"
+msgstr "Главная страница"
+
+#: lib/codebattle_web/templates/game/show.html.slim:1
 msgid "Game: %{id}"
 msgstr "Игра: %{id}"
 
-#: lib/codebattle_web/templates/game/show.html.slim:4
+#: lib/codebattle_web/templates/game/show.html.slim:2
 msgid "State: %{state}"
 msgstr "Состояние: %{state}"
 
+#: lib/codebattle_web/templates/game/show.html.slim:4
+msgid "The winner is: %{name}"
+msgstr "Победитель: %{name}"
+
+#: lib/codebattle_web/templates/game/show.html.slim:5
+msgid "Players"
+msgstr "Игроки"
+
+#: lib/codebattle_web/templates/game/show.html.slim:13
+msgid "Check result"
+msgstr "Проверить результат"
+
+#: lib/codebattle_web/templates/game/show.html.slim:15
+msgid "Waiting opponent"
+msgstr "Ожидание соперника"
+
+#: lib/codebattle_web/templates/game/show.html.slim:21
+msgid "Back to game list"
+msgstr "Вернуться к списку игр"
+
+#: lib/codebattle_web/templates/game/show.html.slim:31
+msgid "Game chat"
+msgstr "Игровой чат"
+
+#: lib/codebattle_web/templates/user/index.html.slim:1
+msgid "Users rating"
+msgstr "Рейтинг пользователей"
+
+#: lib/codebattle_web/templates/user/index.html.slim:12
+msgid "%{index}) name: %{name}, rating: %{rating}"
+msgstr "%{index}) имя: %{name}, рейтинг: %{rating}"
+
+#: lib/codebattle_web/controllers/auth_controller.ex:15
+msgid "You have been logged out!"
+msgstr "Вы успешно вышли из системы!"
+
+#: lib/codebattle_web/controllers/auth_controller.ex:22
+msgid "Failed to authenticate."
+msgstr "Ошибка аунтификации."
+
+#: lib/codebattle_web/controllers/auth_controller.ex:30
+msgid "Successfully authenticated."
+msgstr "Упешная аунтификация."
+
+#: lib/codebattle_web/controllers/game_controller.ex:16
+msgid "Game not found"
+msgstr "Игра не найдена"
+
+#: lib/codebattle_web/controllers/game_controller.ex:27
+msgid "Game has been created"
+msgstr "Игра успешно создана"
+
+#: lib/codebattle_web/controllers/game_controller.ex:40
+msgid "Joined to game"
+msgstr "Вы подключились к игре"
+
+#: lib/codebattle_web/controllers/game_controller.ex:53
+msgid "Yay, you won the game!"
+msgstr "Ура, вы победили в игре!"
+
+#: lib/codebattle_web/controllers/game_controller.ex:54
+msgid "You lose the game"
+msgstr "Вы проиграли игру."
+
+#: lib/codebattle_web/views/error_view.ex:6
+msgid "Page not found"
+msgstr "Страница не найдена"
+
+#: lib/codebattle_web/views/error_view.ex:10
+msgid "Internal server error"
+msgstr "Внутренняя ошибка сервера"
+
+#: lib/codebattle/plugs/authorization.ex:30
+msgid "You must be logged in to access that page"
+msgstr "Для просмотра этой страницы Вы должны войти"
+
 #: assets/js/socket.js:49
 msgid "joined to"
-msgstr "подключился к"
+msgstr "вошёл в"
 
 #: assets/js/socket.js:49
 msgid "left"
