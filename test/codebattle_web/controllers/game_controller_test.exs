@@ -17,7 +17,7 @@ defmodule Codebattleweb.GameControllerTest do
     conn = assign(conn, :user, user)
 
     conn = get conn, "/users"
-    assert html_response(conn, 200) =~ "Users raiting"
+    assert html_response(conn, 200) =~ "Users rating"
   end
 
   test "GET /games/:id return 404 when game over", %{conn: conn} do
