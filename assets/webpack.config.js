@@ -58,7 +58,12 @@ module.exports = {
     publicPath: path.resolve(__dirname, '..', 'priv', 'static'),
   },
   module: {
-    rules: [{
+    rules: [
+    {
+      test: /\.po$/,
+      loaders: ['i18next-po-loader']
+    },
+    {
       test: /\.jsx?$/,
       exclude: /node_modules/,
       use: {

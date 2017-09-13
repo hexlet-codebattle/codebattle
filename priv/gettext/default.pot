@@ -71,22 +71,14 @@ msgstr ""
 msgid "State: %{state}"
 msgstr ""
 
-#: assets/js/socket.js:33
-msgid "joined"
+#: assets/js/socket.js:49
+msgid "joined to"
 msgstr ""
 
-#: assets/js/socket.js:33
+#: assets/js/socket.js:49
 msgid "left"
 msgstr ""
 
-#: assets/js/socket.js:36
+#: assets/js/socket.js:52
 msgid "channel"
-msgstr ""
-
-#: assets/js/socket.js:74
-msgid "Joined successfully"
-msgstr ""
-
-#: assets/js/socket.js:75
-msgid "Unable to join"
 msgstr ""

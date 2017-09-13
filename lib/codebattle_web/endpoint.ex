@@ -38,5 +38,6 @@ defmodule CodebattleWeb.Endpoint do
     key: "_codebattle_key",
     signing_salt: "7k9BuL99"
 
+  plug PhoenixGon.Pipeline
   plug CodebattleWeb.Router
 end

@@ -71,22 +71,14 @@ msgstr "Игра: %{id}"
 msgid "State: %{state}"
 msgstr "Состояние: %{state}"
 
-#: assets/js/socket.js:33
-msgid "подключился"
-msgstr "вошёл в"
+#: assets/js/socket.js:49
+msgid "joined to"
+msgstr "подключился к"
 
-#: assets/js/socket.js:33
+#: assets/js/socket.js:49
 msgid "left"
 msgstr "покинул"
 
-#: assets/js/socket.js:36
+#: assets/js/socket.js:52
 msgid "channel"
 msgstr "канал"
-
-#: assets/js/socket.js:74
-msgid "Joined successfully"
-msgstr "Успешное подключение"
-
-#: assets/js/socket.js:75
-msgid "Unable to join"
-msgstr "Невозможно подключиться"

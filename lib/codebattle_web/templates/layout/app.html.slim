@@ -33,4 +33,5 @@ html lang="en"
     = if @conn.assigns[:is_authenticated?] do
       javascript:
         window.userToken = "<%= assigns[:user_id] %>"
+      <%= render_gon_script(@conn) %>
     script src=static_path(@conn,"/js/app.js")
