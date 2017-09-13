@@ -1,5 +1,6 @@
 defmodule Play.Fsm do
   @moduledoc false
+  import CodebattleWeb.Gettext
 
   @states [:initial, :waiting_opponent, :playing, :player_won, :game_over]
 
@@ -23,7 +24,7 @@ defmodule Play.Fsm do
     defevent join(params), data: data do
       player = params[:user]
       if data.first_player.id == player.id do
-        respond({:error, "You are already in game"})
+        respond({:error, dgettext("errors", "You are already in game")})
       else
         next_state(:playing, %{data | second_player: player})
       end
@@ -35,12 +36,12 @@ defmodule Play.Fsm do
       if is_player?(data, params.user) do
         next_state(:player_won, %{data | winner: params.user})
       else
-        respond({:error, "You are not player of this game"})
+        respond({:error, dgettext("errors", "You are not player of this game")})
       end
     end
 
     defevent join(_) do
-      respond({:error, "Game is already playing"})
+      respond({:error, dgettext("errors", "Game is already playing")})
     end
   end
 
@@ -49,18 +50,18 @@ defmodule Play.Fsm do
       if can_complete?(data, params.user) do
         next_state(:game_over, %{data | loser: params.user, game_over: true})
       else
-        respond({:error, "You cannot check result after win"})
+        respond({:error, dgettext("errors", "You cannot check result after win")})
       end
     end
 
     defevent join(_) do
-      respond({:error, "Game is already playing"})
+      respond({:error, dgettext("errors", "Game is already playing")})
     end
   end
 
   defstate game_over do
     defevent _ do
-      respond({:error, "Game is over"})
+      respond({:error, dgettext("errors", "Game is over")})
     end
   end
 

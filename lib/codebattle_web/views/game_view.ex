@@ -19,4 +19,8 @@ defmodule CodebattleWeb.GameView do
   def user_name(user) do
     "#{user.name}(#{user.raiting})"
   end
+
+  def type_message do
+    gettext "Type a message..."
+  end
 end

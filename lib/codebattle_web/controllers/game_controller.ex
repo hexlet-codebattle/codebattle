@@ -1,5 +1,6 @@
 defmodule CodebattleWeb.GameController do
   use Codebattle.Web, :controller
+  import CodebattleWeb.Gettext
 
   alias Codebattle.Play
 
@@ -12,7 +13,7 @@ defmodule CodebattleWeb.GameController do
       :exit, _ ->
         conn
         |> put_status(:not_found)
-        |> render(CodebattleWeb.ErrorView, "404.html", %{msg: "Game not found"})
+        |> render(CodebattleWeb.ErrorView, "404.html", %{msg: gettext "Game not found"})
     end
   end
 
@@ -23,7 +24,7 @@ defmodule CodebattleWeb.GameController do
   def create(conn, _params) do
     id = Play.create_game(conn.assigns.user)
     conn
-    |> put_flash(:info, "Game has been created")
+    |> put_flash(:info, gettext "Game has been created")
     |> redirect(to: game_path(conn, :show, id))
   end
 
@@ -36,7 +37,7 @@ defmodule CodebattleWeb.GameController do
     case Play.join_game(id, conn.assigns.user) do
       {:ok, _} ->
         conn
-        |> put_flash(:info, "Joined to game")
+        |> put_flash(:info, gettext "Joined to game")
         |> redirect(to: game_path(conn, :show, id))
       {{:error, reason}, _} ->
         conn
@@ -49,8 +50,8 @@ defmodule CodebattleWeb.GameController do
     {:ok, fsm} = Codebattle.Play.check_game(id, conn.assigns.user)
     flash =
       case fsm.state do
-        :player_won -> "Yay, you won the game!"
-        _ -> "You lose the game"
+        :player_won -> gettext "Yay, you won the game!"
+        _ -> gettext "You lose the game"
       end
     conn
     |> put_flash(:info, flash)

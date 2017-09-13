@@ -1,6 +1,6 @@
 defmodule Play.Server do
   @moduledoc false
-
+  import CodebattleWeb.Gettext
   use GenServer
 
   # API
