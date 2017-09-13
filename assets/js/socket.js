@@ -4,21 +4,7 @@
 // To use Phoenix channels, the first step is to import Socket
 // and connect at the socket path in "lib/my_app/endpoint.ex":
 import { Socket, Presence } from 'phoenix';
-import i18next from 'i18next';
-
-i18next.init({
-  nsSeparator: false,
-  keySeparator: false,
-  lng: window.Gon.assets().locale,
-  resources: {
-    en: {
-      translation: require('../../priv/gettext/en/LC_MESSAGES/default.po')
-    },
-    ru: {
-      translation: require('../../priv/gettext/ru/LC_MESSAGES/default.po')
-    }
-  }
-});
+import i18next from './i18n';
 
 const socket = new Socket('/socket', { params: { token: window.userToken } });
 
