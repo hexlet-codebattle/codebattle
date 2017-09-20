@@ -1,5 +1,4 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { Component } from 'react'; import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -14,6 +13,8 @@ import {
 import { EditorActions } from '../redux/Actions';
 import userTypes from '../config/userTypes';
 import Editor from './Editor';
+import { sendEditorData } from '../middlewares/Editor';
+
 
 class GameWidget extends Component {
   static propTypes = {
@@ -27,16 +28,16 @@ class GameWidget extends Component {
     secondEditor: PropTypes.shape({
       value: PropTypes.string,
     }).isRequired,
-    editorActions: PropTypes.shape({}).isRequired,
+    sendEditorData: PropTypes.func.isRequired,
   }
 
   getLeftEditorParams() {
-    const { currentUser, firstEditor, secondEditor, editorActions } = this.props;
+    const { currentUser, firstEditor, secondEditor, sendEditorData } = this.props;
     const isPlayer = currentUser.id !== userTypes.spectator;
     const editable = isPlayer;
     const editorState = currentUser.type === userTypes.secondPlayer ? secondEditor : firstEditor;
     const onChange = isPlayer ?
-      (value) => { editorActions.sendPlayerCode(currentUser.id, value); } :
+      (value) => { sendEditorData(currentUser.id, value); } :
       _.noop;
 
     return {
@@ -83,7 +84,8 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  editorActions: bindActionCreators(EditorActions, dispatch),
+  // editorActions: bindActionCreators(EditorActions, dispatch),
+  sendEditorData: (...args) => { dispatch(sendEditorData(...args)) },
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(GameWidget);

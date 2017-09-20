@@ -1,6 +1,7 @@
 defmodule CodebattleWeb.GameController do
   use Codebattle.Web, :controller
   import CodebattleWeb.Gettext
+  import PhoenixGon.Controller
 
   alias Codebattle.Play
 
@@ -30,6 +31,7 @@ defmodule CodebattleWeb.GameController do
 
   def show(conn, %{"id" => id}) do
     fsm = Play.get_fsm(id)
+    conn = put_gon(conn, game_id: id)
     render conn, "show.html", fsm: fsm
   end
 

@@ -8,8 +8,7 @@ defmodule CodebattleWeb.Router do
     plug :protect_from_forgery
     plug :put_secure_browser_headers
     plug Codebattle.Plugs.Authorization
-    plug CodebattleWeb.Locale
-    plug :put_user_token
+    plug Codebattle.Plugs.Locale
   end
 
   pipeline :api do
@@ -43,14 +42,4 @@ defmodule CodebattleWeb.Router do
   # scope "/api", Codebattle do
   #   pipe_through :api
   # end
-  defp put_user_token(conn, _) do
-    case conn.assigns[:is_authenticated?] do
-      true ->
-        user_id_token = Phoenix.Token.sign(conn, "user_id", conn.assigns.user.id)
-        conn
-        |> assign(:user_id, user_id_token)
-      _ ->
-        conn
-      end
-  end
 end

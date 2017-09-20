@@ -1,7 +1,7 @@
 defmodule CodebattleWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :codebattle
 
-  socket "/socket", CodebattleWeb.UserSocket
+  socket "/ws", CodebattleWeb.UserSocket
 
   # Serve at "/" the static files from "priv/static" directory.
   #

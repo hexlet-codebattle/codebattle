@@ -24,8 +24,9 @@ export const INITIAL_STATE = Immutable({
 //   return state
 // }
 
+
 /* ------------- Hookup Reducers To Types ------------- */
-export const reducer = createReducer(INITIAL_STATE, { });
+export const reducer = createReducer(INITIAL_STATE, {});
 
 /* ------------- Selectors ------------- */
 
