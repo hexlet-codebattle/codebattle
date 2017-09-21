@@ -37,7 +37,7 @@ class GameWidget extends Component {
     const editable = isPlayer;
     const editorState = currentUser.type === userTypes.secondPlayer ? secondEditor : firstEditor;
     const onChange = isPlayer ?
-      (value) => { sendEditorData(currentUser.id, value); } :
+      (value) => { sendEditorData(value); } :
       _.noop;
 
     return {

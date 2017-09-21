@@ -1,7 +1,8 @@
-defmodule Play.Server do
+defmodule Codebattle.GameProcess.Server do
   @moduledoc false
-  import CodebattleWeb.Gettext
   use GenServer
+
+  alias Codebattle.GameProcess.Fsm
 
   # API
   def start_link(game_id, fsm) do
@@ -31,7 +32,7 @@ defmodule Play.Server do
   end
 
   def handle_cast({:transition, event, params}, fsm) do
-    new_fsm = Play.Fsm.transition(fsm, event, [params])
+    new_fsm = Fsm.transition(fsm, event, [params])
     {:noreply, new_fsm}
   end
 
@@ -40,7 +41,7 @@ defmodule Play.Server do
   end
 
   def handle_call({:transition, event, params}, _from, fsm) do
-    case Play.Fsm.transition(fsm, event, [params]) do
+    case Fsm.transition(fsm, event, [params]) do
       {{:error, reason}, _} ->
         {:reply, {{:error, reason}, fsm}, fsm}
       new_fsm ->

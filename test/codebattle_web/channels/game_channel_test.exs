@@ -22,10 +22,4 @@ defmodule CodebattleWeb.GameChannelTest do
     broadcast_from! socket, "broadcast", %{"some" => "data"}
     assert_push "broadcast", %{"some" => "data"}
   end
-
-  test "message:new broadcasts to game:*", %{socket: socket} do
-    push socket, "message:new", %{"user" => "Test User", "message" => "Test message"}
-    expected = %{"user" => "Test User", "message" => "Test message"}
-    assert_broadcast "message:new", expected
-  end
 end

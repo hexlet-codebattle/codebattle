@@ -1,4 +1,4 @@
-defmodule Play.Supervisor do
+defmodule Codebattle.GameProcess.Supervisor do
   @moduledoc false
 
   use Supervisor
@@ -13,7 +13,7 @@ defmodule Play.Supervisor do
 
   def init(_) do
     children = [
-      worker(Play.Server, [])
+      worker(Codebattle.GameProcess.Server, [])
     ]
     supervise(children, strategy: :simple_one_for_one)
   end

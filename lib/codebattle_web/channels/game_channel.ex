@@ -1,11 +1,13 @@
 defmodule CodebattleWeb.GameChannel do
   @moduledoc false
   use Codebattle.Web, :channel
-  alias Codebattle.Repo
-  alias Codebattle.User
+
+  require Logger
+
+  alias Codebattle.GameProcess.{Play, Fsm}
   alias CodebattleWeb.Presence
 
-  def join("game:" <> _channel_id, _payload, socket) do
+  def join("game:" <> game_id, _payload, socket) do
     send(self(), :after_join)
     {:ok, socket}
   end
@@ -14,15 +16,21 @@ defmodule CodebattleWeb.GameChannel do
     {:reply, {:ok, payload}, socket}
   end
 
-  def handle_in("message:new", payload, socket) do
-    user = Repo.get(User, socket.assigns.user_id)
-    broadcast! socket, "message:new", %{user: user.name,
-                                        message: payload["message"]}
-    {:noreply, socket}
+  def handle_in("editor:data", payload, socket) do
+    data = Map.get(payload, "data")
+    "game:" <> game_id = socket.topic
+    case Play.update_data(game_id, socket.assigns.user_id, data) do
+      {:ok, fsm} ->
+        broadcast! socket, "response:updated", %{challenge: challenge}
+        {:noreply, socket}
+      {:error, changeset} ->
+        {:reply, {:error, %{error: "Error updating challenge"}}, socket}
+      {:error, error} ->
+    end
   end
 
   def handle_info(:after_join, socket) do
-    user = Repo.get(User, socket.assigns.user_id)
+    user = %{name: "test"}
     {:ok, _} = Presence.track(socket, user.name, %{
       online_at: inspect(System.system_time(:seconds))
       })

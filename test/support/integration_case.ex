@@ -6,6 +6,7 @@ defmodule Codebattle.IntegrationCase do
   using do
     quote do
       use CodebattleWeb.ConnCase
+      use Phoenix.ChannelTest
       use PhoenixIntegration
 
       import Ecto

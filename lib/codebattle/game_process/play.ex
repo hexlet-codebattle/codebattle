@@ -1,22 +1,20 @@
-defmodule Codebattle.Play do
+defmodule Codebattle.GameProcess.Play do
   @moduledoc """
-  The Play context.
+  The GameProcess context.
   """
 
   import Ecto.Query, warn: false
 
-  alias Codebattle.Repo
-  alias Codebattle.Game
-  alias Codebattle.User
-  alias Codebattle.UserGame
+  alias Codebattle.{Repo, Game, User, UserGame}
+  alias Codebattle.GameProcess.{Server, Supervisor, Fsm}
 
   def list_games do
     Repo.all from p in Game,
-            preload: [:users]
+      preload: [:users]
   end
 
   def list_fsms do
-    Play.Supervisor.current_games
+    Supervisor.current_games
   end
 
   def get_game(id) do
@@ -25,28 +23,33 @@ defmodule Codebattle.Play do
 
   def get_fsm(id) do
     id = String.to_integer(id)
-    Play.Server.fsm(id)
+    Server.fsm(id)
   end
 
   def create_game(user) do
     game = Repo.insert!(%Game{state: "waiting_opponent"})
 
-    fsm = Play.Fsm.new |> Play.Fsm.create(%{game_id: game.id, user: user})
+    fsm = Fsm.new |> Fsm.create(%{game_id: game.id, user: user})
 
-    Play.Supervisor.start_game(game.id, fsm)
+    Supervisor.start_game(game.id, fsm)
     game.id
   end
 
   def join_game(id, user) do
     id = String.to_integer(id)
-    Play.Server.call_transition(id, :join, %{user: user})
+    Server.call_transition(id, :join, %{user: user})
+  end
+
+  def update_data(id, user_id, data) do
+    id = String.to_integer(id)
+    Server.call_transition(id, :update_editor_data, %{user_id: user_id, data: data})
   end
 
   def check_game(id, user) do
     id = String.to_integer(id)
     case check_asserts() do
       {:ok, true} ->
-        {_response, fsm} = Play.Server.call_transition(id, :complete, %{user: user})
+        {_response, fsm} = Server.call_transition(id, :complete, %{user: user})
         if fsm.state == :game_over do
           terminate_game(fsm)
         end
@@ -70,6 +73,6 @@ defmodule Codebattle.Play do
     loser = User.changeset(fsm.data.loser, %{raiting: (fsm.data.loser.raiting - 1)})
     Repo.update! winner
     Repo.update! loser
-    Play.Supervisor.stop_game(game.id)
+    Supervisor.stop_game(game.id)
   end
 end

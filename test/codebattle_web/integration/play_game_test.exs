@@ -1,5 +1,8 @@
 defmodule Codebattle.PlayGameTest do
-  use Codebattle.IntegrationCase, async: true
+  use Codebattle.IntegrationCase
+
+  alias Codebattle.GameProcess.Server
+  alias CodebattleWeb.GameChannel
 
   setup do
     user1 = insert(:user, %{name: "first", email: "test1@test.test", github_id: 1, raiting: 10})
@@ -22,7 +25,7 @@ defmodule Codebattle.PlayGameTest do
                     |> elem(1)
 
     game_id = ~r/\d+/ |> Regex.run(game_location) |> List.first |> String.to_integer
-    fsm = Play.Server.fsm(game_id)
+    fsm = Server.fsm(game_id)
 
     assert fsm.state == :waiting_opponent
     assert fsm.data.first_player.name == "first"
@@ -33,7 +36,7 @@ defmodule Codebattle.PlayGameTest do
 
     # First player cannot join to game as second player
     post(user1_conn, game_location <> "/join")
-    fsm = Play.Server.fsm(game_id)
+    fsm = Server.fsm(game_id)
 
     assert fsm.state == :waiting_opponent
     assert fsm.data.first_player.name == "first"
@@ -44,7 +47,7 @@ defmodule Codebattle.PlayGameTest do
 
     # Second player join game
     post(user2_conn, game_location <> "/join")
-    fsm = Play.Server.fsm(game_id)
+    fsm = Server.fsm(game_id)
 
     assert fsm.state == :playing
     assert fsm.data.first_player.name == "first"
@@ -55,7 +58,7 @@ defmodule Codebattle.PlayGameTest do
 
     # First player won
     post(user1_conn, game_location <> "/check")
-    fsm = Play.Server.fsm(game_id)
+    fsm = Server.fsm(game_id)
 
     assert fsm.state == :player_won
     assert fsm.data.first_player.name == "first"
@@ -66,7 +69,7 @@ defmodule Codebattle.PlayGameTest do
 
     # Winner cannot check results again
     post(user1_conn, game_location <> "/check")
-    fsm = Play.Server.fsm(game_id)
+    fsm = Server.fsm(game_id)
 
     assert fsm.state == :player_won
     assert fsm.data.first_player.name == "first"
@@ -98,7 +101,7 @@ defmodule Codebattle.PlayGameTest do
 
     # Other player cannot join game
     post(user3_conn, game_location <> "/join")
-    fsm = Play.Server.fsm(game_id)
+    fsm = Server.fsm(game_id)
 
     assert fsm.state == :playing
     assert fsm.data.first_player.name == "first"
@@ -109,11 +112,59 @@ defmodule Codebattle.PlayGameTest do
 
     # Other player cannot win game
     post(user3_conn, game_location <> "/check")
-    fsm = Play.Server.fsm(game_id)
+    fsm = Server.fsm(game_id)
 
     assert fsm.state == :playing
     assert fsm.data.first_player.name == "first"
     assert fsm.data.second_player.name == "second"
+    assert fsm.data.winner == nil
+    assert fsm.data.loser == nil
+    assert fsm.data.game_over == false
+  end
+
+  test "user update editor data", %{user1: user1, user2: user2, user1_conn: user1_conn, user2_conn: user2_conn} do
+    conn = post(user1_conn, game_path(user1_conn, :create))
+    game_location = conn.resp_headers
+                    |> Enum.find(&match?({"location", _}, &1))
+                    |> elem(1)
+    game_id = ~r/\d+/ |> Regex.run(game_location) |> List.first |> String.to_integer
+
+    post(user2_conn, game_location <> "/join")
+
+    fsm = Server.fsm(game_id)
+
+    assert fsm.state == :playing
+    assert fsm.data.first_player.name == "first"
+    assert fsm.data.second_player.name == "second"
+    assert fsm.data.winner == nil
+    assert fsm.data.loser == nil
+    assert fsm.data.game_over == false
+
+    # User update editor data
+
+    {:ok, _, socket1} =
+      "user_id1"
+      |> socket(%{user_id: user1.id})
+      |> subscribe_and_join(GameChannel, "game:" <> Integer.to_string(game_id))
+
+    {:ok, _, socket2} =
+      "user_id2"
+      |> socket(%{user_id: user2.id})
+      |> subscribe_and_join(GameChannel, "game:" <> Integer.to_string(game_id))
+
+    ref1 = push socket1, "editor:data", %{"data" => "test1"}
+    ref2 = push socket2, "editor:data", %{"data" => "test2"}
+
+    assert_reply ref1, :ok
+    assert_reply ref2, :ok
+
+    fsm = Server.fsm(game_id)
+
+    assert fsm.state == :playing
+    assert fsm.data.first_player.name == "first"
+    assert fsm.data.second_player.name == "second"
+    assert fsm.data.first_player_editor_data == "test1"
+    assert fsm.data.second_player_editor_data == "test2"
     assert fsm.data.winner == nil
     assert fsm.data.loser == nil
     assert fsm.data.game_over == false
