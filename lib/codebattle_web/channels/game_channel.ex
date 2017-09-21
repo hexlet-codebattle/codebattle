@@ -19,21 +19,21 @@ defmodule CodebattleWeb.GameChannel do
   def handle_in("editor:data", payload, socket) do
     data = Map.get(payload, "data")
     "game:" <> game_id = socket.topic
-    case Play.update_data(game_id, socket.assigns.user_id, data) do
-      {:ok, fsm} ->
-        broadcast! socket, "response:updated", %{challenge: challenge}
-        {:noreply, socket}
-      {:error, changeset} ->
-        {:reply, {:error, %{error: "Error updating challenge"}}, socket}
-      {:error, error} ->
-    end
+    Play.update_data(game_id, socket.assigns.user_id, data)
+    {:reply, {:ok, payload}, socket}
+    #     broadcast! socket, "response:updated", %{challenge: challenge}
+    #     {:noreply, socket}
+    #   {:error, changeset} ->
+    #     {:reply, {:error, %{error: "Error updating challenge"}}, socket}
+    #   {:error, error} ->
+    # end
   end
 
   def handle_info(:after_join, socket) do
     user = %{name: "test"}
     {:ok, _} = Presence.track(socket, user.name, %{
       online_at: inspect(System.system_time(:seconds))
-      })
+    })
     push socket, "presence_state", Presence.list(socket)
     {:noreply, socket}
   end
