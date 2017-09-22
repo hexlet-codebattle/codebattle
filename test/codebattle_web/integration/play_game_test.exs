@@ -152,11 +152,13 @@ defmodule Codebattle.PlayGameTest do
       |> socket(%{user_id: user2.id})
       |> subscribe_and_join(GameChannel, "game:" <> Integer.to_string(game_id))
 
-    ref1 = push socket1, "editor:data", %{"data" => "test1"}
-    ref2 = push socket2, "editor:data", %{"data" => "test2"}
+    push socket1, "editor:data", %{"data" => "test1"}
+    push socket2, "editor:data", %{"data" => "test2"}
 
-    assert_reply ref1, :ok
-    assert_reply ref2, :ok
+    user1_id = user1.id
+    user2_id = user2.id
+    assert_broadcast "editor:update", %{user_id: user1_id, data: "test1"}
+    assert_broadcast "editor:update", %{user_id: user2_id, data: "test2"}
 
     fsm = Server.fsm(game_id)
 
@@ -168,5 +170,6 @@ defmodule Codebattle.PlayGameTest do
     assert fsm.data.winner == nil
     assert fsm.data.loser == nil
     assert fsm.data.game_over == false
+
   end
 end

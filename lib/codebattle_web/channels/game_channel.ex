@@ -20,13 +20,8 @@ defmodule CodebattleWeb.GameChannel do
     data = Map.get(payload, "data")
     "game:" <> game_id = socket.topic
     Play.update_data(game_id, socket.assigns.user_id, data)
-    {:reply, {:ok, payload}, socket}
-    #     broadcast! socket, "response:updated", %{challenge: challenge}
-    #     {:noreply, socket}
-    #   {:error, changeset} ->
-    #     {:reply, {:error, %{error: "Error updating challenge"}}, socket}
-    #   {:error, error} ->
-    # end
+    broadcast! socket, "editor:update", %{user_id: socket.assigns.user_id, data: data}
+    {:noreply, socket}
   end
 
   def handle_info(:after_join, socket) do
