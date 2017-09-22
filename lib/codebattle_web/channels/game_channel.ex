@@ -9,7 +9,7 @@ defmodule CodebattleWeb.GameChannel do
 
   def join("game:" <> game_id, _payload, socket) do
     send(self(), :after_join)
-    {:ok, socket}
+    {:ok, Play.players_info(game_id), socket}
   end
 
   def handle_in("ping", payload, socket) do
@@ -20,7 +20,7 @@ defmodule CodebattleWeb.GameChannel do
     data = Map.get(payload, "data")
     "game:" <> game_id = socket.topic
     Play.update_data(game_id, socket.assigns.user_id, data)
-    broadcast! socket, "editor:update", %{user_id: socket.assigns.user_id, data: data}
+    broadcast_from! socket, "editor:update", %{user_id: socket.assigns.user_id, editor_text: data}
     {:noreply, socket}
   end
 

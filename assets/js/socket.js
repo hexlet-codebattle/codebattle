@@ -1,5 +1,5 @@
 import { Socket } from 'phoenix';
-import getVar from '../lib/phxVariables';
+import getVar from './lib/phxVariables';
 
 const socket = new Socket('/ws', {
   params: { token: getVar('user_token') },

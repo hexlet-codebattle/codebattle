@@ -5,10 +5,10 @@ defmodule CodebattleWeb.GameChannelTest do
 
   setup do
     user = insert(:user)
-    channel_id = "lobby"
+    game_id = "1"
     {:ok, _, socket} =
       socket("user_id", %{user_id: user.id})
-      |> subscribe_and_join(GameChannel, "game:" <> channel_id)
+      |> subscribe_and_join(GameChannel, "game:" <> game_id)
 
     {:ok, socket: socket}
   end
@@ -16,10 +16,5 @@ defmodule CodebattleWeb.GameChannelTest do
   test "ping replies with status ok", %{socket: socket} do
     ref = push socket, "ping", %{"hello" => "there"}
     assert_reply ref, :ok, %{"hello" => "there"}
-  end
-
-  test "broadcasts are pushed to the client", %{socket: socket} do
-    broadcast_from! socket, "broadcast", %{"some" => "data"}
-    assert_push "broadcast", %{"some" => "data"}
   end
 end

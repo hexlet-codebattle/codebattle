@@ -32,6 +32,10 @@ defmodule Codebattle.GameProcess.Fsm do
         next_state(:playing, %{data | second_player: player})
       end
     end
+
+    defevent update_editor_data(params), data: data do
+      next_state(:waiting_opponent)
+    end
   end
 
   defstate playing do

@@ -13,8 +13,7 @@ import {
 import { EditorActions } from '../redux/Actions';
 import userTypes from '../config/userTypes';
 import Editor from './Editor';
-import { sendEditorData } from '../middlewares/Editor';
-
+import { sendEditorData, editorReady } from '../middlewares/Game';
 
 class GameWidget extends Component {
   static propTypes = {
@@ -24,11 +23,21 @@ class GameWidget extends Component {
     }).isRequired,
     firstEditor: PropTypes.shape({
       value: PropTypes.string,
-    }).isRequired,
+    }),
     secondEditor: PropTypes.shape({
       value: PropTypes.string,
-    }).isRequired,
+    }),
     sendEditorData: PropTypes.func.isRequired,
+    editorReady: PropTypes.func.isRequired,
+  }
+
+  static defaultProps = {
+    firstEditor: {},
+    secondEditor: {},
+  }
+
+  componentDidMount() {
+    this.props.editorReady();
   }
 
   getLeftEditorParams() {
@@ -39,6 +48,13 @@ class GameWidget extends Component {
     const onChange = isPlayer ?
       (value) => { sendEditorData(value); } :
       _.noop;
+
+    // if (_.isEmpty(editorState)) {
+    //   return {
+    //     // editable: false,
+    //     name: 'left-editor',
+    //   };
+    // }
 
     return {
       onChange,
@@ -51,6 +67,13 @@ class GameWidget extends Component {
   getRightEditorParams() {
     const { currentUser, firstEditor, secondEditor } = this.props;
     const editorState = currentUser.type === userTypes.secondPlayer ? firstEditor : secondEditor;
+
+    // if (_.isEmpty(editorState)) {
+    //   return {
+    //     // editable: false,
+    //     name: 'right-editor',
+    //   };
+    // }
 
     return {
       onChange: _.noop,
@@ -70,7 +93,7 @@ class GameWidget extends Component {
           <Editor {...this.getRightEditorParams()} />
         </div>
       </div>
-    );
+      );
   }
 }
 
@@ -86,7 +109,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = dispatch => ({
   // editorActions: bindActionCreators(EditorActions, dispatch),
   sendEditorData: (...args) => { dispatch(sendEditorData(...args)) },
+    editorReady: () => { dispatch(editorReady()) },
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(GameWidget);
+  export default connect(mapStateToProps, mapDispatchToProps)(GameWidget);
 

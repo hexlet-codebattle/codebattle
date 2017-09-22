@@ -40,6 +40,14 @@ defmodule Codebattle.GameProcess.Play do
     Server.call_transition(id, :join, %{user: user})
   end
 
+  def players_info(game_id) do
+    fsm = get_fsm(game_id)
+    %{
+      first_player_id: fsm.data.first_player.id,
+      second_player_id: fsm.data.second_player.id
+    }
+  end
+
   def update_data(id, user_id, data) do
     id = String.to_integer(id)
     Server.call_transition(id, :update_editor_data, %{user_id: user_id, data: data})
