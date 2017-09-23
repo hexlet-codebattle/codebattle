@@ -22,7 +22,7 @@ defmodule Codebattle.GameProcess.Server do
   end
 
   def game_key(game_id) do
-    {:via, :gproc, {:n, :l, {:game, game_id}}}
+    {:via, :gproc, {:n, :l, {:game, to_charlist(game_id)}}}
   end
 
   # SERVER
