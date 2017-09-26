@@ -32,7 +32,7 @@ defmodule CodebattleWeb.GameController do
   def show(conn, %{"id" => id}) do
     fsm = Play.get_fsm(id)
     conn = put_gon(conn, game_id: id)
-    render conn, "show.html", fsm: fsm
+    render conn, "show.html", fsm: fsm, id: id
   end
 
   def join(conn, %{"id" => id}) do

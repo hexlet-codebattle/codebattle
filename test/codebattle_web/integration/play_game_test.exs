@@ -2,7 +2,6 @@ defmodule Codebattle.PlayGameTest do
   use Codebattle.IntegrationCase
 
   alias Codebattle.GameProcess.Server
-  alias CodebattleWeb.GameChannel
 
   setup do
     user1 = insert(:user, %{name: "first", email: "test1@test.test", github_id: 1, raiting: 10})
@@ -120,79 +119,5 @@ defmodule Codebattle.PlayGameTest do
     assert fsm.data.winner == nil
     assert fsm.data.loser == nil
     assert fsm.data.game_over == false
-  end
-
-  test "user update editor data", %{user1: user1, user2: user2, user1_conn: user1_conn, user2_conn: user2_conn} do
-    conn = post(user1_conn, game_path(user1_conn, :create))
-    game_location = conn.resp_headers
-                    |> Enum.find(&match?({"location", _}, &1))
-                    |> elem(1)
-    game_id = ~r/\d+/ |> Regex.run(game_location) |> List.first |> String.to_integer
-
-    post(user2_conn, game_location <> "/join")
-
-    fsm = Server.fsm(game_id)
-
-    assert fsm.state == :playing
-    assert fsm.data.first_player.name == "first"
-    assert fsm.data.second_player.name == "second"
-    assert fsm.data.winner == nil
-    assert fsm.data.loser == nil
-    assert fsm.data.game_over == false
-
-    # User update editor data
-
-    {:ok, _, socket1} =
-      "user_id1"
-      |> socket(%{user_id: user1.id})
-      |> subscribe_and_join(GameChannel, "game:" <> Integer.to_string(game_id))
-
-    {:ok, _, socket2} =
-      "user_id2"
-      |> socket(%{user_id: user2.id})
-      |> subscribe_and_join(GameChannel, "game:" <> Integer.to_string(game_id))
-
-    push socket1, "editor:data", %{"data" => "test1"}
-    push socket2, "editor:data", %{"data" => "test2"}
-
-    # user1_id = user1.id
-    # user2_id = user2.id
-    # TODO: add broadcast testing
-    # assert_broadcast_from "editor:update", %{user_id: user1_id, data: "test1"}
-    # assert_broadcast_from "editor:update", %{user_id: user2_id, data: "test2"}
-
-    # fsm = Server.fsm(game_id)
-
-    # assert fsm.state == :playing
-    # assert fsm.data.first_player.name == "first"
-    # assert fsm.data.second_player.name == "second"
-    # assert fsm.data.first_player_editor_data == "test1"
-    # assert fsm.data.second_player_editor_data == "test2"
-    # assert fsm.data.winner == nil
-    # assert fsm.data.loser == nil
-    # assert fsm.data.game_over == false
-  end
-
-  test "set initial data on join game channel", %{user1: user1, user2: user2, user1_conn: user1_conn, user2_conn: user2_conn} do
-    conn = post(user1_conn, game_path(user1_conn, :create))
-    game_location = conn.resp_headers
-                    |> Enum.find(&match?({"location", _}, &1))
-                    |> elem(1)
-    game_id = ~r/\d+/ |> Regex.run(game_location) |> List.first |> String.to_integer
-
-    post(user2_conn, game_location <> "/join")
-
-
-    {:ok, _, socket1} =
-      "user_id1"
-      |> socket(%{user_id: user1.id})
-      |> subscribe_and_join(GameChannel, "game:" <> Integer.to_string(game_id))
-
-    {:ok, players_info, socket2} =
-      "user_id2"
-      |> socket(%{user_id: user2.id})
-      |> subscribe_and_join(GameChannel, "game:" <> Integer.to_string(game_id))
-
-    assert players_info == %{first_player_id: user1.id, second_player_id: user2.id}
   end
 end

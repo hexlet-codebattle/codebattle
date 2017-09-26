@@ -12,6 +12,7 @@ defmodule Codebattle.IntegrationCase do
       import Ecto
       import Ecto.Query
       import CodebattleWeb.Router.Helpers
+      import Helpers.GameProcess
       import Codebattle.IntegrationCase
 
       alias Codebattle.{Repo, User, Game, UserGame}

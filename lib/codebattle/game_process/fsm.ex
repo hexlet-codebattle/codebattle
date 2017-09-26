@@ -3,23 +3,32 @@ defmodule Codebattle.GameProcess.Fsm do
   import CodebattleWeb.Gettext
 
   # fsm -> data: %{}, state :initial
-  @states [:initial, :waiting_opponent, :playing, :player_won, :game_over]
+  # @states [:initial, :waiting_opponent, :playing, :player_won, :game_over]
 
   use Fsm, initial_state: :initial,
     initial_data: %{
-      game_id: nil,
       first_player: nil, # User
       second_player: nil, # User
-      game_over: false,
+      game_over: false, # Boolean
       first_player_editor_data: "", # String
       second_player_editor_data: "", # String
       winner: nil, # User
       loser: nil # User
     }
 
+  # For tests
+  def set_data(state, data) do
+     setup(new(), state, data)
+  end
+
   defstate initial do
     defevent create(params), data: data do
-      next_state(:waiting_opponent, %{data | game_id: params.game_id, first_player: params.user})
+      next_state(:waiting_opponent, %{data | first_player: params.user})
+    end
+
+    # For test
+    defevent setup(state, new_data), data: data do
+      next_state(state, Map.merge(data, new_data))
     end
   end
 
@@ -33,8 +42,13 @@ defmodule Codebattle.GameProcess.Fsm do
       end
     end
 
-    defevent update_editor_data(params), data: data do
+    defevent update_editor_data(_params) do
       next_state(:waiting_opponent)
+    end
+
+    # For test
+    defevent setup(state, new_data), data: data do
+      next_state(state, Map.merge(data, new_data))
     end
   end
 

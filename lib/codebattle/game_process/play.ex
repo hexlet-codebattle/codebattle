@@ -28,7 +28,7 @@ defmodule Codebattle.GameProcess.Play do
   def create_game(user) do
     game = Repo.insert!(%Game{state: "waiting_opponent"})
 
-    fsm = Fsm.new |> Fsm.create(%{game_id: game.id, user: user})
+    fsm = Fsm.new |> Fsm.create(%{user: user})
 
     Supervisor.start_game(game.id, fsm)
     game.id
@@ -38,11 +38,14 @@ defmodule Codebattle.GameProcess.Play do
     Server.call_transition(id, :join, %{user: user})
   end
 
-  def players_info(game_id) do
+  def game_info(game_id) do
     fsm = get_fsm(game_id)
     %{
-      first_player_id: fsm.data.first_player.id,
-      second_player_id: fsm.data.second_player.id
+      state: fsm.state,
+      first_player_id: fsm.data.first_player && fsm.data.first_player.id,
+      second_player_id: fsm.data.second_player && fsm.data.second_player.id,
+      first_player_editor_data: fsm.data.first_player_editor_data,
+      second_player_editor_data: fsm.data.second_player_editor_data,
     }
   end
 
@@ -55,7 +58,7 @@ defmodule Codebattle.GameProcess.Play do
       {:ok, true} ->
         {_response, fsm} = Server.call_transition(id, :complete, %{user: user})
         if fsm.state == :game_over do
-          terminate_game(fsm)
+          terminate_game(id, fsm)
         end
         {:ok, fsm}
     end
@@ -66,8 +69,8 @@ defmodule Codebattle.GameProcess.Play do
     {:ok, true}
   end
 
-  defp terminate_game(fsm) do
-    game = get_game(fsm.data.game_id)
+  defp terminate_game(id, fsm) do
+    game = get_game(id)
     new_game = Game.changeset(game, %{state: to_string(fsm.state)})
     Repo.update! new_game
     Repo.insert!(%UserGame{game_id: game.id, user_id: fsm.data.winner.id, result: "win"})
@@ -77,6 +80,6 @@ defmodule Codebattle.GameProcess.Play do
     loser = User.changeset(fsm.data.loser, %{raiting: (fsm.data.loser.raiting - 1)})
     Repo.update! winner
     Repo.update! loser
-    Supervisor.stop_game(game.id)
+    Supervisor.stop_game(id)
   end
 end

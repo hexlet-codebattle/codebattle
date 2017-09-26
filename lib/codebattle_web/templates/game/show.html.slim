@@ -1,4 +1,4 @@
-h1 = gettext "Game: %{id}", id: @fsm.data.game_id
+h1 = gettext "Game: %{id}", id: @id
 h2 = gettext "State: %{state}", state: @fsm.state
 = if @fsm.state == :player_won do
   h3 = gettext "The winner is: %{name}", name: user_name(@fsm.data.winner)
@@ -10,7 +10,7 @@ ul
 
 = if Enum.count(users) == 2 do
   = if can_check?(@fsm, @conn.assigns.user) do
-    = button gettext("Check result"), to: game_path(@conn, :check, @fsm.data.game_id), class: "btn btn-success"
+    = button gettext("Check result"), to: game_path(@conn, :check, @id), class: "btn btn-success"
 - else
   = gettext("Waiting opponent")
 

@@ -7,13 +7,13 @@ defmodule CodebattleWeb.Factory do
   def user_factory do
     %User{
       name: sequence(:username, &"User #{&1}"),
-      email: "test@test.io",
+      email:  sequence(:username, &"test#{&1}@test.io"),
       github_id: :rand.uniform(9_999_999)
     }
   end
 
   def game_factory do
-    %Game{state: "initial"}
+    %Game{state: "waiting_opponent"}
   end
 
   def auth_factory do
