@@ -1,6 +1,5 @@
 import React, { Component } from 'react'; import PropTypes from 'prop-types';
 import _ from 'lodash';
-import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import {
   firstEditorSelector,
@@ -10,10 +9,15 @@ import {
   usersSelector,
   currentUserSelector,
 } from '../redux/UserRedux';
-import { EditorActions } from '../redux/Actions';
+import { gameStatusSelector } from '../redux/GameRedux';
 import userTypes from '../config/userTypes';
 import Editor from './Editor';
 import { sendEditorData, editorReady } from '../middlewares/Game';
+
+const setGameStatusTitle = (title) => {
+  const element = document.getElementById('game-status');
+  if (element) { element.innerHTML = `State: ${title}`; }
+};
 
 class GameWidget extends Component {
   static propTypes = {
@@ -27,7 +31,7 @@ class GameWidget extends Component {
     secondEditor: PropTypes.shape({
       value: PropTypes.string,
     }),
-    sendEditorData: PropTypes.func.isRequired,
+    sendData: PropTypes.func.isRequired,
     editorReady: PropTypes.func.isRequired,
   }
 
@@ -40,13 +44,19 @@ class GameWidget extends Component {
     this.props.editorReady();
   }
 
+  componentWillReceiveProps(newProps, oldProps) {
+    if (newProps.gameStatus !== oldProps.gameStatus) {
+      setGameStatusTitle(newProps.gameStatus);
+    }
+  }
+
   getLeftEditorParams() {
-    const { currentUser, firstEditor, secondEditor, sendEditorData } = this.props;
+    const { currentUser, firstEditor, secondEditor, sendData } = this.props;
     const isPlayer = currentUser.id !== userTypes.spectator;
     const editable = isPlayer;
     const editorState = currentUser.type === userTypes.secondPlayer ? secondEditor : firstEditor;
     const onChange = isPlayer ?
-      (value) => { sendEditorData(value); } :
+      (value) => { sendData(value); } :
       _.noop;
 
     // if (_.isEmpty(editorState)) {
@@ -93,24 +103,23 @@ class GameWidget extends Component {
           <Editor {...this.getRightEditorParams()} />
         </div>
       </div>
-      );
+    );
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-    users: usersSelector(state),
-    currentUser: currentUserSelector(state),
-    firstEditor: firstEditorSelector(state),
-    secondEditor: secondEditorSelector(state),
-  };
-};
+const mapStateToProps = state => ({
+  users: usersSelector(state),
+  currentUser: currentUserSelector(state),
+  firstEditor: firstEditorSelector(state),
+  secondEditor: secondEditorSelector(state),
+  gameStatus: gameStatusSelector(state),
+});
 
 const mapDispatchToProps = dispatch => ({
   // editorActions: bindActionCreators(EditorActions, dispatch),
-  sendEditorData: (...args) => { dispatch(sendEditorData(...args)) },
-    editorReady: () => { dispatch(editorReady()) },
+  sendData: (...args) => { dispatch(sendEditorData(...args)); },
+  editorReady: () => { dispatch(editorReady()); },
 });
 
-  export default connect(mapStateToProps, mapDispatchToProps)(GameWidget);
+export default connect(mapStateToProps, mapDispatchToProps)(GameWidget);
 

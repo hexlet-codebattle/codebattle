@@ -3,10 +3,11 @@ defmodule Codebattle.GameProcess.Fsm do
   import CodebattleWeb.Gettext
 
   # fsm -> data: %{}, state :initial
-  # @states [:initial, :waiting_opponent, :playing, :player_won, :game_over]
+  @states [:initial, :waiting_opponent, :playing, :player_won, :game_over]
 
   use Fsm, initial_state: :initial,
     initial_data: %{
+      game_id: nil, # Integer
       first_player: nil, # User
       second_player: nil, # User
       game_over: false, # Boolean
@@ -23,7 +24,7 @@ defmodule Codebattle.GameProcess.Fsm do
 
   defstate initial do
     defevent create(params), data: data do
-      next_state(:waiting_opponent, %{data | first_player: params.user})
+      next_state(:waiting_opponent, %{data | game_id: params.game_id, first_player: params.user})
     end
 
     # For test

@@ -41,11 +41,13 @@ export const reducer = createReducer(INITIAL_STATE, {
 
 export const usersSelector = state => state.users.users;
 export const currentUserIdSelector = state => state.users.currentUserId;
-export const currentUserSelector = state =>
-  _.pick(
+export const currentUserSelector = (state) => {
+  const user = _.pick(
     usersSelector(state),
     [currentUserIdSelector(state)],
   );
+  return _.values(user)[0];
+};
 
 export const firstUserSelector = (state) => {
   const user = _.pickBy(usersSelector(state), { type: userTypes.firstPlayer });

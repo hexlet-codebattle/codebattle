@@ -2,6 +2,8 @@ defmodule Codebattle.GameProcess.Server do
   @moduledoc false
   use GenServer
 
+  require Logger
+
   alias Codebattle.GameProcess.Fsm
 
   # API
@@ -21,7 +23,7 @@ defmodule Codebattle.GameProcess.Server do
     GenServer.call(game_key(game_id), :fsm)
   end
 
-  def game_key(game_id) do
+  defp game_key(game_id) do
     {:via, :gproc, {:n, :l, {:game, to_charlist(game_id)}}}
   end
 
@@ -32,6 +34,7 @@ defmodule Codebattle.GameProcess.Server do
   end
 
   def handle_cast({:transition, event, params}, fsm) do
+    Logger.info "#{__MODULE__} CAST transition STATE: #{fsm.state}, GAME_ID: #{fsm.data.game_id}, EVENT: #{inspect(event)}, PARAMS: #{inspect(params)}"
     new_fsm = Fsm.transition(fsm, event, [params])
     {:noreply, new_fsm}
   end
@@ -41,6 +44,7 @@ defmodule Codebattle.GameProcess.Server do
   end
 
   def handle_call({:transition, event, params}, _from, fsm) do
+    Logger.info "#{__MODULE__} CALL transition STATE: #{fsm.state}, GAME_ID: #{fsm.data.game_id} EVENT: #{inspect(event)}, PARAMS: #{inspect(params)}"
     case Fsm.transition(fsm, event, [params]) do
       {{:error, reason}, _} ->
         {:reply, {{:error, reason}, fsm}, fsm}

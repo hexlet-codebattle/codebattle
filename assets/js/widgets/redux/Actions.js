@@ -10,3 +10,7 @@ export const { Types: UserTypes, Creators: UserActions } = createActions({
   setCurrentUser: ['currentUserId'],
   updateUsers: ['users'],
 });
+
+export const { Types: GameTypes, Creators: GameActions } = createActions({
+  updateStatus: ['gameStatus'],
+});

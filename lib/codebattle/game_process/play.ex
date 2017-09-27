@@ -28,7 +28,7 @@ defmodule Codebattle.GameProcess.Play do
   def create_game(user) do
     game = Repo.insert!(%Game{state: "waiting_opponent"})
 
-    fsm = Fsm.new |> Fsm.create(%{user: user})
+    fsm = Fsm.new |> Fsm.create(%{user: user, game_id: game.id})
 
     Supervisor.start_game(game.id, fsm)
     game.id
@@ -41,7 +41,7 @@ defmodule Codebattle.GameProcess.Play do
   def game_info(game_id) do
     fsm = get_fsm(game_id)
     %{
-      state: fsm.state,
+      status: fsm.state, # :playing
       first_player_id: fsm.data.first_player && fsm.data.first_player.id,
       second_player_id: fsm.data.second_player && fsm.data.second_player.id,
       first_player_editor_data: fsm.data.first_player_editor_data,
