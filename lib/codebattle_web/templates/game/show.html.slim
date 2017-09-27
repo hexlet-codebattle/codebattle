@@ -1,5 +1,5 @@
 h1 = gettext "Game: %{id}", id: @fsm.data.game_id
-h2 = gettext "State: %{state}", state: @fsm.state
+h2#game-status = gettext "State: %{state}", state: @fsm.state
 = if @fsm.state == :player_won do
   h3 = gettext "The winner is: %{name}", name: user_name(@fsm.data.winner)
 p = gettext "Players"
@@ -36,6 +36,3 @@ br
         .card-header
           = gettext "Online users"
         #online-users.card-body.pre-scrollable
-
-javascript:
-  window.channel_id = "<%= @fsm.data.game_id %>"

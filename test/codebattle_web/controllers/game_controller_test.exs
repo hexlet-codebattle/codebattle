@@ -1,9 +1,6 @@
 defmodule Codebattleweb.GameControllerTest do
   use CodebattleWeb.ConnCase, async: true
 
-  import CodebattleWeb.GameController
-  alias Codebattle.Play
-
   test "GET /games", %{conn: conn} do
     user = insert(:user)
     conn = assign(conn, :user, user)

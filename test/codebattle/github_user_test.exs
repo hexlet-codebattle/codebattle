@@ -1,5 +1,5 @@
 defmodule Codebattle.GithubUserTest do
-  use Codebattle.ModelCase
+  use CodebattleWeb.ConnCase
 
   alias Codebattle.GithubUser
 
@@ -14,7 +14,7 @@ defmodule Codebattle.GithubUserTest do
   }
 
   test "new user is created successfully" do
-    auth_data = build(:auth, extra: %{ raw_info: %{ user: @valid_data } })
+    auth_data = build(:auth, extra: %{raw_info: %{user: @valid_data}})
 
     # First time user is created
     {:ok, user1} = GithubUser.find_or_create(auth_data)

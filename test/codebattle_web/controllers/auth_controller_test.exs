@@ -1,6 +1,5 @@
 defmodule CodebattleWeb.AuthControllerTest do
   use CodebattleWeb.ConnCase, async: true
-  alias CodebattleWeb.AuthController
 
   @valid_data %{
     "login" => Faker.Internet.user_name,

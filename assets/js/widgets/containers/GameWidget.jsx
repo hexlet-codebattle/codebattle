@@ -1,7 +1,5 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React, { Component } from 'react'; import PropTypes from 'prop-types';
 import _ from 'lodash';
-import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import {
   firstEditorSelector,
@@ -11,9 +9,15 @@ import {
   usersSelector,
   currentUserSelector,
 } from '../redux/UserRedux';
-import { EditorActions } from '../redux/Actions';
+import { gameStatusSelector } from '../redux/GameRedux';
 import userTypes from '../config/userTypes';
 import Editor from './Editor';
+import { sendEditorData, editorReady } from '../middlewares/Game';
+
+const setGameStatusTitle = (title) => {
+  const element = document.getElementById('game-status');
+  if (element) { element.innerHTML = `State: ${title}`; }
+};
 
 class GameWidget extends Component {
   static propTypes = {
@@ -23,21 +27,44 @@ class GameWidget extends Component {
     }).isRequired,
     firstEditor: PropTypes.shape({
       value: PropTypes.string,
-    }).isRequired,
+    }),
     secondEditor: PropTypes.shape({
       value: PropTypes.string,
-    }).isRequired,
-    editorActions: PropTypes.shape({}).isRequired,
+    }),
+    sendData: PropTypes.func.isRequired,
+    editorReady: PropTypes.func.isRequired,
+  }
+
+  static defaultProps = {
+    firstEditor: {},
+    secondEditor: {},
+  }
+
+  componentDidMount() {
+    this.props.editorReady();
+  }
+
+  componentWillReceiveProps(newProps, oldProps) {
+    if (newProps.gameStatus !== oldProps.gameStatus) {
+      setGameStatusTitle(newProps.gameStatus);
+    }
   }
 
   getLeftEditorParams() {
-    const { currentUser, firstEditor, secondEditor, editorActions } = this.props;
+    const { currentUser, firstEditor, secondEditor, sendData } = this.props;
     const isPlayer = currentUser.id !== userTypes.spectator;
     const editable = isPlayer;
     const editorState = currentUser.type === userTypes.secondPlayer ? secondEditor : firstEditor;
     const onChange = isPlayer ?
-      (value) => { editorActions.sendPlayerCode(currentUser.id, value); } :
+      (value) => { sendData(value); } :
       _.noop;
+
+    // if (_.isEmpty(editorState)) {
+    //   return {
+    //     // editable: false,
+    //     name: 'left-editor',
+    //   };
+    // }
 
     return {
       onChange,
@@ -50,6 +77,13 @@ class GameWidget extends Component {
   getRightEditorParams() {
     const { currentUser, firstEditor, secondEditor } = this.props;
     const editorState = currentUser.type === userTypes.secondPlayer ? firstEditor : secondEditor;
+
+    // if (_.isEmpty(editorState)) {
+    //   return {
+    //     // editable: false,
+    //     name: 'right-editor',
+    //   };
+    // }
 
     return {
       onChange: _.noop,
@@ -73,17 +107,18 @@ class GameWidget extends Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-    users: usersSelector(state),
-    currentUser: currentUserSelector(state),
-    firstEditor: firstEditorSelector(state),
-    secondEditor: secondEditorSelector(state),
-  };
-};
+const mapStateToProps = state => ({
+  users: usersSelector(state),
+  currentUser: currentUserSelector(state),
+  firstEditor: firstEditorSelector(state),
+  secondEditor: secondEditorSelector(state),
+  gameStatus: gameStatusSelector(state),
+});
 
 const mapDispatchToProps = dispatch => ({
-  editorActions: bindActionCreators(EditorActions, dispatch),
+  // editorActions: bindActionCreators(EditorActions, dispatch),
+  sendData: (...args) => { dispatch(sendEditorData(...args)); },
+  editorReady: () => { dispatch(editorReady()); },
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(GameWidget);

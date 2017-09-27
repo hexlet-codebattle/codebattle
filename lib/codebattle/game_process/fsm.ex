@@ -1,22 +1,35 @@
-defmodule Play.Fsm do
+defmodule Codebattle.GameProcess.Fsm do
   @moduledoc false
   import CodebattleWeb.Gettext
 
+  # fsm -> data: %{}, state :initial
   @states [:initial, :waiting_opponent, :playing, :player_won, :game_over]
 
   use Fsm, initial_state: :initial,
     initial_data: %{
-      game_id: nil,
-      first_player: nil,
-      second_player: nil,
-      game_over: false,
-      winner: nil,
-      loser: nil
+      game_id: nil, # Integer
+      first_player: nil, # User
+      second_player: nil, # User
+      game_over: false, # Boolean
+      first_player_editor_data: "", # String
+      second_player_editor_data: "", # String
+      winner: nil, # User
+      loser: nil # User
     }
+
+  # For tests
+  def set_data(state, data) do
+     setup(new(), state, data)
+  end
 
   defstate initial do
     defevent create(params), data: data do
       next_state(:waiting_opponent, %{data | game_id: params.game_id, first_player: params.user})
+    end
+
+    # For test
+    defevent setup(state, new_data), data: data do
+      next_state(state, Map.merge(data, new_data))
     end
   end
 
@@ -29,9 +42,26 @@ defmodule Play.Fsm do
         next_state(:playing, %{data | second_player: player})
       end
     end
+
+    defevent update_editor_data(_params) do
+      next_state(:waiting_opponent)
+    end
+
+    # For test
+    defevent setup(state, new_data), data: data do
+      next_state(state, Map.merge(data, new_data))
+    end
   end
 
   defstate playing do
+    defevent update_editor_data(params), data: data do
+      case user_role(params.user_id, data) do
+        :first_player -> next_state(:playing, %{data | first_player_editor_data: params.data})
+        :second_player -> next_state(:playing, %{data | second_player_editor_data: params.data})
+        _ -> next_state(:playing)
+      end
+    end
+
     defevent complete(params), data: data do
       if is_player?(data, params.user) do
         next_state(:player_won, %{data | winner: params.user})
@@ -46,6 +76,14 @@ defmodule Play.Fsm do
   end
 
   defstate player_won do
+    defevent update_editor_data(params), data: data do
+      case user_role(params.user_id, data) do
+        :first_player -> next_state(:playing, %{data | first_player_editor_data: params.data})
+        :second_player -> next_state(:playing, %{data | second_player_editor_data: params.data})
+        _ -> next_state(:playing, data)
+      end
+    end
+
     defevent complete(params), data: data do
       if can_complete?(data, params.user) do
         next_state(:game_over, %{data | loser: params.user, game_over: true})
@@ -74,6 +112,14 @@ defmodule Play.Fsm do
       !(data.winner.id == player.id)
     else
       false
+    end
+  end
+
+  defp user_role(user_id, data) do
+    cond do
+      data.first_player.id == user_id -> :first_player
+      data.second_player.id == user_id -> :second_player
+      true -> :spectator
     end
   end
 end

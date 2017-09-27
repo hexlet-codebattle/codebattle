@@ -1,11 +1,11 @@
-defmodule CodebattleWeb.Locale do
+defmodule Codebattle.Plugs.Locale do
   @moduledoc """
     I18n configuration
   """
   import Plug.Conn
   import PhoenixGon.Controller
 
-  def init(opts), do: nil
+  def init(_opts), do: nil
 
   def call(conn, _opts) do
     case conn.params["locale"] || get_session(conn, :locale) do

@@ -20,10 +20,10 @@ defmodule CodebattleWeb.UserSocket do
   #
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
-  def connect(%{"token" => user_id_token}, socket) do
+  def connect(%{"token" => user_token}, socket) do
     case Phoenix.Token.verify(socket,
-                              "user_id",
-                              user_id_token,
+                              "user_token",
+                              user_token,
                               max_age: 1_000_000) do
       {:ok, user_id} ->
         {:ok, assign(socket, :user_id, user_id)}

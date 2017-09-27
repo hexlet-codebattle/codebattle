@@ -20,6 +20,7 @@ defmodule CodebattleWeb.ChannelCase do
       # Import conveniences for testing with channels
       use Phoenix.ChannelTest
       import CodebattleWeb.Factory
+      import Helpers.GameProcess
 
       # The default endpoint for testing
       @endpoint CodebattleWeb.Endpoint

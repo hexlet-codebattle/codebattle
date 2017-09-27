@@ -1,8 +1,9 @@
 defmodule CodebattleWeb.GameController do
   use Codebattle.Web, :controller
   import CodebattleWeb.Gettext
+  import PhoenixGon.Controller
 
-  alias Codebattle.Play
+  alias Codebattle.GameProcess.Play
 
   plug :authenticate_user when action in [:index, :show, :create, :join, :check]
 
@@ -30,6 +31,7 @@ defmodule CodebattleWeb.GameController do
 
   def show(conn, %{"id" => id}) do
     fsm = Play.get_fsm(id)
+    conn = put_gon(conn, game_id: id)
     render conn, "show.html", fsm: fsm
   end
 
@@ -47,7 +49,7 @@ defmodule CodebattleWeb.GameController do
   end
 
   def check(conn, %{"id" => id}) do
-    {:ok, fsm} = Codebattle.Play.check_game(id, conn.assigns.user)
+    {:ok, fsm} = Play.check_game(id, conn.assigns.user)
     flash =
       case fsm.state do
         :player_won -> gettext "Yay, you won the game!"

@@ -1,5 +1,7 @@
 defmodule Codebattle.PlayGameTest do
-  use Codebattle.IntegrationCase, async: true
+  use Codebattle.IntegrationCase
+
+  alias Codebattle.GameProcess.Server
 
   setup do
     user1 = insert(:user, %{name: "first", email: "test1@test.test", github_id: 1, raiting: 10})
@@ -22,7 +24,7 @@ defmodule Codebattle.PlayGameTest do
                     |> elem(1)
 
     game_id = ~r/\d+/ |> Regex.run(game_location) |> List.first |> String.to_integer
-    fsm = Play.Server.fsm(game_id)
+    fsm = Server.fsm(game_id)
 
     assert fsm.state == :waiting_opponent
     assert fsm.data.first_player.name == "first"
@@ -33,7 +35,7 @@ defmodule Codebattle.PlayGameTest do
 
     # First player cannot join to game as second player
     post(user1_conn, game_location <> "/join")
-    fsm = Play.Server.fsm(game_id)
+    fsm = Server.fsm(game_id)
 
     assert fsm.state == :waiting_opponent
     assert fsm.data.first_player.name == "first"
@@ -44,7 +46,7 @@ defmodule Codebattle.PlayGameTest do
 
     # Second player join game
     post(user2_conn, game_location <> "/join")
-    fsm = Play.Server.fsm(game_id)
+    fsm = Server.fsm(game_id)
 
     assert fsm.state == :playing
     assert fsm.data.first_player.name == "first"
@@ -55,7 +57,7 @@ defmodule Codebattle.PlayGameTest do
 
     # First player won
     post(user1_conn, game_location <> "/check")
-    fsm = Play.Server.fsm(game_id)
+    fsm = Server.fsm(game_id)
 
     assert fsm.state == :player_won
     assert fsm.data.first_player.name == "first"
@@ -66,7 +68,7 @@ defmodule Codebattle.PlayGameTest do
 
     # Winner cannot check results again
     post(user1_conn, game_location <> "/check")
-    fsm = Play.Server.fsm(game_id)
+    fsm = Server.fsm(game_id)
 
     assert fsm.state == :player_won
     assert fsm.data.first_player.name == "first"
@@ -98,7 +100,7 @@ defmodule Codebattle.PlayGameTest do
 
     # Other player cannot join game
     post(user3_conn, game_location <> "/join")
-    fsm = Play.Server.fsm(game_id)
+    fsm = Server.fsm(game_id)
 
     assert fsm.state == :playing
     assert fsm.data.first_player.name == "first"
@@ -109,7 +111,7 @@ defmodule Codebattle.PlayGameTest do
 
     # Other player cannot win game
     post(user3_conn, game_location <> "/check")
-    fsm = Play.Server.fsm(game_id)
+    fsm = Server.fsm(game_id)
 
     assert fsm.state == :playing
     assert fsm.data.first_player.name == "first"

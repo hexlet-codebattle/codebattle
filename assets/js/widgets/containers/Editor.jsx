@@ -6,16 +6,16 @@ import 'brace';
 import 'brace/mode/javascript';
 import 'brace/theme/solarized_dark';
 
-
 class Editor extends Component {
   static propTypes = {
-    value: PropTypes.string.isRequired,
+    value: PropTypes.string,
     name: PropTypes.string.isRequired,
     editable: PropTypes.bool,
     onChange: PropTypes.func,
   }
 
   static defaultProps = {
+    value: '',
     editable: false,
     onChange: null,
   }
