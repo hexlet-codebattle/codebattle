@@ -5,7 +5,7 @@ defmodule CodebattleWeb.GameChannel do
   require Logger
 
   alias Codebattle.GameProcess.Play
-  alias CodebattleWeb.Presence
+  # alias CodebattleWeb.Presence
 
   def join("game:" <> game_id, _payload, socket) do
     send(self(), :after_join)
@@ -25,10 +25,10 @@ defmodule CodebattleWeb.GameChannel do
   end
 
   def handle_in("editor:data", payload, socket) do
-    data = Map.get(payload, "data")
+    editor_text = Map.get(payload, "editor_text")
     game_id = get_game_id(socket)
-    Play.update_data(game_id, socket.assigns.user_id, data)
-    broadcast_from! socket, "editor:update", %{user_id: socket.assigns.user_id, editor_text: data}
+    Play.update_editor_text(game_id, socket.assigns.user_id, editor_text)
+    broadcast_from! socket, "editor:update", %{user_id: socket.assigns.user_id, editor_text: editor_text}
     {:noreply, socket}
   end
 

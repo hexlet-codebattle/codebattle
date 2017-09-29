@@ -45,8 +45,8 @@ defmodule Codebattle.GameProcess.Play do
       winner: fsm.data.winner && fsm.data.winner.name,
       first_player: player_info(fsm.data.first_player),
       second_player: player_info(fsm.data.second_player),
-      first_player_editor_data: fsm.data.first_player_editor_data,
-      second_player_editor_data: fsm.data.second_player_editor_data,
+      first_player_editor_text: fsm.data.first_player_editor_text,
+      second_player_editor_text: fsm.data.second_player_editor_text,
     }
   end
 
@@ -66,8 +66,8 @@ defmodule Codebattle.GameProcess.Play do
     end
   end
 
-  def update_data(id, user_id, data) do
-    Server.call_transition(id, :update_editor_data, %{user_id: user_id, data: data})
+  def update_editor_text(id, user_id, editor_text) do
+    Server.call_transition(id, :update_editor_text, %{user_id: user_id, editor_text: editor_text})
   end
 
   def check_game(id, user) do

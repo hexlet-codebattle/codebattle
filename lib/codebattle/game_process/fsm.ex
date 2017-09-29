@@ -11,8 +11,8 @@ defmodule Codebattle.GameProcess.Fsm do
       first_player: nil, # User
       second_player: nil, # User
       game_over: false, # Boolean
-      first_player_editor_data: "", # String
-      second_player_editor_data: "", # String
+      first_player_editor_text: "", # String
+      second_player_editor_text: "", # String
       winner: nil, # User
       loser: nil # User
     }
@@ -43,7 +43,7 @@ defmodule Codebattle.GameProcess.Fsm do
       end
     end
 
-    defevent update_editor_data(_params) do
+    defevent update_editor_text(_params) do
       next_state(:waiting_opponent)
     end
 
@@ -54,10 +54,10 @@ defmodule Codebattle.GameProcess.Fsm do
   end
 
   defstate playing do
-    defevent update_editor_data(params), data: data do
+    defevent update_editor_text(params), data: data do
       case user_role(params.user_id, data) do
-        :first_player -> next_state(:playing, %{data | first_player_editor_data: params.data})
-        :second_player -> next_state(:playing, %{data | second_player_editor_data: params.data})
+        :first_player -> next_state(:playing, %{data | first_player_editor_text: params.editor_text})
+        :second_player -> next_state(:playing, %{data | second_player_editor_text: params.editor_text})
         _ -> next_state(:playing)
       end
     end
@@ -76,10 +76,10 @@ defmodule Codebattle.GameProcess.Fsm do
   end
 
   defstate player_won do
-    defevent update_editor_data(params), data: data do
+    defevent update_editor_text(params), data: data do
       case user_role(params.user_id, data) do
-        :first_player -> next_state(:playing, %{data | first_player_editor_data: params.data})
-        :second_player -> next_state(:playing, %{data | second_player_editor_data: params.data})
+        :first_player -> next_state(:playing, %{data | first_player_editor_text: params.editor_text})
+        :second_player -> next_state(:playing, %{data | second_player_editor_text: params.editor_text})
         _ -> next_state(:playing, data)
       end
     end

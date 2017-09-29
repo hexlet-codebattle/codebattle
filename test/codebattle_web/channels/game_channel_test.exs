@@ -38,8 +38,8 @@ defmodule CodebattleWeb.GameChannelTest do
         name: nil,
         raiting: nil,
       },
-      first_player_editor_data: "",
-      second_player_editor_data: "",
+      first_player_editor_text: "",
+      second_player_editor_text: "",
     }
   end
 
@@ -78,8 +78,8 @@ defmodule CodebattleWeb.GameChannelTest do
     {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
     :lib.flush_receive()
 
-    push socket1, "editor:data", %{data: editor_text1}
-    push socket2, "editor:data", %{data: editor_text2}
+    push socket1, "editor:data", %{editor_text: editor_text1}
+    push socket2, "editor:data", %{editor_text: editor_text2}
 
     payload1 = %{user_id: user1.id, editor_text: editor_text1}
     payload2 = %{user_id: user2.id, editor_text: editor_text2}

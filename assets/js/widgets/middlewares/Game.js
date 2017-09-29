@@ -50,7 +50,7 @@ export const sendEditorData = editorText => (dispatch, getState) => {
   const userId = currentUserIdSelector(state);
   dispatch(EditorActions.updateEditorData(userId, editorText));
 
-  channel.push('editor:data', { data: editorText });
+  channel.push('editor:data', { editor_text: editorText });
 };
 
 export const editorReady = () => (dispatch) => {
