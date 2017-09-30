@@ -1,39 +1,47 @@
+# Codebattle
+
 [![Build Status](https://travis-ci.org/hexlet-codebattle/codebattle.svg?branch=master)](https://travis-ci.org/hexlet-codebattle/codebattle)
 
-# Codebattle
 Кодбатл это игра с открытым исходным кодом, которая разрабатывается сообществом хекслета. Подробнее о проекте читайте в [вики репозитория](https://github.com/hexlet-codebattle/codebattle/wiki). Мы будем очень рады если решите [принять участие в разработке проекта.](https://github.com/hexlet-codebattle/codebattle/blob/master/CONTRIBUTING.md)
-Текущая версия приложения доступна по адресу http://hexlet-codebattle.herokuapp.com.
+Текущая версия приложения доступна по адресу <http://hexlet-codebattle.herokuapp.com>.
 Следить за процессом разработки можно в [ленте новостей.](https://github.com/hexlet-codebattle/codebattle/wiki/News-Feed)
 
 Когда вы будете полностью готовы влиться в разработку, то можете выбрать любую интересную для себя задачу исходя из текущего этапа [в этом разделе](https://github.com/hexlet-codebattle/codebattle/milestones) или посмотреть все открытые актуальные задачи [на этой доске](https://github.com/hexlet-codebattle/codebattle/projects/1).
 
-### Установка
+## Установка
 
 * Клонируйте репозиторий
-```
+
+```bash
 git clone https://github.com/hexlet-codebattle/codebattle.git
 ```
+
 * Настройте окружение (для Linux)
-```
+
+```bash
 cd codebattle
 make development-build-local
 ```
+
 * Выйдите и войдите в систему
 * Установите зависимости и запустите docker-контейнеры
-```
+
+```bash
 make compose-setup
 make compose
 ```
-* Вставьте свои переменные окружения в файле `.env`, [подробнее - пункт 6](https://github.com/hexlet-codebattle/codebattle/wiki/Установка-и-тестирование-проекта)
-* Откройте http://localhost:4000 в браузере
 
+* Вставьте свои переменные окружения в файле `.env`, [подробнее - пункт 6](https://github.com/hexlet-codebattle/codebattle/wiki/Установка-и-тестирование-проекта)
+* Откройте <http://localhost:4000> в браузере
 * Для запуска тестов введите
-```
+
+```bash
 make compose-test
 ```
 
 * Для создания отчета о покрытии тестами введите
-```
+
+```bash
 make compose-test-coverage-html
 ```
 
