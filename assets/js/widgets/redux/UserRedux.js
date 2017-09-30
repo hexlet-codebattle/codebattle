@@ -8,10 +8,7 @@ import { UserTypes as Types } from './Actions';
 
 export const INITIAL_STATE = Immutable({
   currentUserId: null,
-  users: {
-    1: { id: 1, type: userTypes.firstPlayer },
-    2: { id: 2, type: userTypes.secondPlayer },
-  },
+  users: {},
 });
 
 /* ------------- Reducers ------------- */
@@ -24,10 +21,12 @@ export const setCurrentUser = (state, { currentUserId }) => {
 }
 
 export const updateUsers = (state, { users: usersList }) => {
-  const users = _.reduce(usersList, user => ({ [user.id]: user }), {})
+  const users = _.reduce(usersList, (acc, user) =>
+    ({ ...acc, [user.id]: user }), {});
   if (!_.isEmpty(users)) {
-    return state.updateIn(['users'], Immutable.merge, users);
+    return state.merge({ users });
   }
+
   return state;
 }
 
@@ -46,16 +45,28 @@ export const currentUserSelector = (state) => {
     usersSelector(state),
     [currentUserIdSelector(state)],
   );
-  return _.values(user)[0];
+  if (!_.isEmpty(user)) {
+    return _.values(user)[0];
+  }
+
+  return {};
 };
 
 export const firstUserSelector = (state) => {
   const user = _.pickBy(usersSelector(state), { type: userTypes.firstPlayer });
-  return _.values(user)[0];
+  if (!_.isEmpty(user)) {
+    return _.values(user)[0];
+  }
+
+  return {};
 };
 
 export const secondUserSelector = (state) => {
   const user = _.pickBy(usersSelector(state), { type: userTypes.secondPlayer });
-  return _.values(user)[0];
+  if (!_.isEmpty(user)) {
+    return _.values(user)[0];
+  }
+
+  return {};
 };
 
