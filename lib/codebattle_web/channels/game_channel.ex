@@ -16,7 +16,7 @@ defmodule CodebattleWeb.GameChannel do
   def handle_info(:after_join, socket) do
     game_id = get_game_id(socket)
     game_info = Play.game_info(game_id)
-    broadcast_from! socket, "user:joined", Map.take(game_info, [:status, :first_player_id, :second_player_id])
+    broadcast_from! socket, "user:joined", Map.take(game_info, [:status, :winner, :first_player, :second_player])
     {:noreply, socket}
   end
 

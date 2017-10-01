@@ -5,19 +5,11 @@ import {
   firstEditorSelector,
   secondEditorSelector,
 } from '../redux/EditorRedux';
-import {
-  usersSelector,
-  currentUserSelector,
-} from '../redux/UserRedux';
-import { gameStatusSelector } from '../redux/GameRedux';
+import { currentUserSelector } from '../redux/UserRedux';
 import userTypes from '../config/userTypes';
 import Editor from './Editor';
+import GameStatusTab from './GameStatusTab';
 import { sendEditorData, editorReady } from '../middlewares/Game';
-
-const setGameStatusTitle = (title) => {
-  const element = document.getElementById('game-status');
-  if (element) { element.innerHTML = `State: ${title}`; }
-};
 
 class GameWidget extends Component {
   static propTypes = {
@@ -42,12 +34,6 @@ class GameWidget extends Component {
 
   componentDidMount() {
     this.props.editorReady();
-  }
-
-  componentWillReceiveProps(newProps, oldProps) {
-    if (newProps.gameStatus !== oldProps.gameStatus) {
-      setGameStatusTitle(newProps.gameStatus);
-    }
   }
 
   getLeftEditorParams() {
@@ -95,12 +81,19 @@ class GameWidget extends Component {
 
   render() {
     return (
-      <div className="row mt-3 mx-auto">
-        <div className="col-md-6">
-          <Editor {...this.getLeftEditorParams()} />
+      <div>
+        <div className="row mt-3 mx-auto">
+          <div className="col-md-6">
+            <GameStatusTab />
+          </div>
         </div>
-        <div className="col-md-6">
-          <Editor {...this.getRightEditorParams()} />
+        <div className="row mt-3 mx-auto">
+          <div className="col-md-6">
+            <Editor {...this.getLeftEditorParams()} />
+          </div>
+          <div className="col-md-6">
+            <Editor {...this.getRightEditorParams()} />
+          </div>
         </div>
       </div>
     );
@@ -108,11 +101,9 @@ class GameWidget extends Component {
 }
 
 const mapStateToProps = state => ({
-  users: usersSelector(state),
   currentUser: currentUserSelector(state),
   firstEditor: firstEditorSelector(state),
   secondEditor: secondEditorSelector(state),
-  gameStatus: gameStatusSelector(state),
 });
 
 const mapDispatchToProps = dispatch => ({

@@ -42,11 +42,28 @@ defmodule Codebattle.GameProcess.Play do
     fsm = get_fsm(game_id)
     %{
       status: fsm.state, # :playing
-      first_player_id: fsm.data.first_player && fsm.data.first_player.id,
-      second_player_id: fsm.data.second_player && fsm.data.second_player.id,
+      winner: fsm.data.winner && fsm.data.winner.name,
+      first_player: player_info(fsm.data.first_player),
+      second_player: player_info(fsm.data.second_player),
       first_player_editor_data: fsm.data.first_player_editor_data,
       second_player_editor_data: fsm.data.second_player_editor_data,
     }
+  end
+
+  def player_info(player) do
+    if player do
+      %{
+        id: player.id,
+        name: player.name,
+        raiting: player.raiting,
+      }
+    else
+      %{
+        id: nil,
+        name: nil,
+        raiting: nil,
+      }
+    end
   end
 
   def update_data(id, user_id, data) do

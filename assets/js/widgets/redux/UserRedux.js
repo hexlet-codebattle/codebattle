@@ -18,7 +18,7 @@ export const setCurrentUser = (state, { currentUserId }) => {
     return state.merge({ currentUserId });
   }
   return state;
-}
+};
 
 export const updateUsers = (state, { users: usersList }) => {
   const users = _.reduce(usersList, (acc, user) =>
@@ -28,7 +28,7 @@ export const updateUsers = (state, { users: usersList }) => {
   }
 
   return state;
-}
+};
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const reducer = createReducer(INITIAL_STATE, {
