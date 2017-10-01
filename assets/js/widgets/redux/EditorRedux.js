@@ -37,4 +37,3 @@ export const secondEditorSelector = (state) => {
   const editor = _.pickBy(editorsSelector(state), { userId: secondUserSelector(state).id });
   return _.values(editor)[0];
 };
-

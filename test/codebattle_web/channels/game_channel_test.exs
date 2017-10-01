@@ -27,8 +27,17 @@ defmodule CodebattleWeb.GameChannelTest do
 
     assert response == %{
       status: :waiting_opponent,
-      first_player_id: user1.id,
-      second_player_id: nil,
+      winner: nil,
+      first_player: %{
+        id: user1.id,
+        name: user1.name,
+        raiting: user1.raiting,
+      },
+      second_player: %{
+        id: nil,
+        name: nil,
+        raiting: nil,
+      },
       first_player_editor_data: "",
       second_player_editor_data: "",
     }
@@ -42,7 +51,12 @@ defmodule CodebattleWeb.GameChannelTest do
     game_topic = "game:" <> to_string(game.id)
     {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
 
-    payload = %{first_player_id: user1.id, second_player_id: user2.id, status: :playing}
+    payload = %{
+      first_player: %{id: user1.id, name: user1.name, raiting: user1.raiting},
+      second_player: %{id: user2.id, name: user2.name, raiting: user2.raiting},
+      status: :playing,
+      winner: nil,
+    }
 
     assert_receive %Phoenix.Socket.Broadcast{
       topic: ^game_topic,

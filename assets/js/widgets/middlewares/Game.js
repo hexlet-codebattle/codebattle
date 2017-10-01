@@ -12,28 +12,33 @@ const initGameChannel = (dispatch) => {
   const onJoinSuccess = (response) => {
     const {
       status,
-      first_player_id,
-      second_player_id,
+      winner,
+      first_player,
+      second_player,
       first_player_editor_data,
       second_player_editor_data,
     } = response;
 
     dispatch(UserActions.updateUsers([{
-      id: first_player_id,
+      id: first_player.id,
+      name: first_player.name,
+      raiting: first_player.raiting,
       type: userTypes.firstPlayer,
     }, {
-      id: second_player_id,
+      id: second_player.id,
+      name: second_player.name,
+      raiting: second_player.raiting,
       type: userTypes.secondPlayer,
     }]));
 
-    dispatch(GameActions.updateStatus(status));
+    dispatch(GameActions.updateStatus({ status, winner }));
 
-    dispatch(EditorActions.updateEditorData(first_player_id, first_player_editor_data));
-    dispatch(EditorActions.updateEditorData(second_player_id, second_player_editor_data));
+    dispatch(EditorActions.updateEditorData(first_player.id, first_player_editor_data));
+    dispatch(EditorActions.updateEditorData(second_player.id, second_player_editor_data));
   };
 
   channel.join().receive('ignore', () => console.log('Game channel: auth error'))
-                .receive('error', () => { console.log('Game channel: unable to join'); })
+                .receive('error', () => console.log('Game channel: unable to join'))
                 .receive('ok', onJoinSuccess);
 
   channel.onError(ev => console.log('Game channel: something went wrong', ev));
@@ -54,14 +59,18 @@ export const editorReady = () => (dispatch) => {
     dispatch(EditorActions.updateEditorData(userId, editorText));
   });
 
-  channel.on('user:joined', ({ status, first_player_id, second_player_id }) => {
-    dispatch(GameActions.updateStatus(status));
+  channel.on('user:joined', ({ status, winner, first_player, second_player }) => {
+    dispatch(GameActions.updateStatus({ status, winner }));
 
     dispatch(UserActions.updateUsers([{
-      id: first_player_id,
+      id: first_player.id,
+      name: first_player.name,
+      raiting: first_player.raiting,
       type: userTypes.firstPlayer,
     }, {
-      id: second_player_id,
+      id: second_player.id,
+      name: second_player.name,
+      raiting: second_player.raiting,
       type: userTypes.secondPlayer,
     }]));
   });
