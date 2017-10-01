@@ -56,7 +56,8 @@ config :logger,
 
 # We configure the Rollbax.Logger backend.
 config :logger, Rollbax.Logger,
-  level: :error
+  level: :warn,
+  metadata: [:file, :line, :function]
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
