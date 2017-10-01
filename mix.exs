@@ -29,7 +29,7 @@ defmodule Codebattle.Mixfile do
   def application do
     [mod: {Codebattle, []},
      applications: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext, :phoenix_gon,
-                    :phoenix_ecto, :postgrex, :ueberauth, :ueberauth_github, :gproc, :ex_machina]]
+                    :phoenix_ecto, :postgrex, :ueberauth, :ueberauth_github, :gproc, :ex_machina, :rollbax]]
   end
 
   # Specifies which paths to compile per environment.
@@ -66,7 +66,8 @@ defmodule Codebattle.Mixfile do
      {:phoenix_integration, "~> 0.3", only: :test},
      {:excoveralls, "~> 0.7", only: :test},
      {:faker, "~> 0.8"},
-     {:ex_machina, "~> 2.0"}]
+     {:ex_machina, "~> 2.0"},
+     {:rollbax, "~> 0.6"}]
   end
 
   # Aliases are shortcuts or tasks specific to the current project.

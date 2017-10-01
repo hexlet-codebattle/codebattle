@@ -46,6 +46,18 @@ config :codebattle, CodebattleWeb.Gettext,
   priv: "priv/gettext",
   default_locale: "en"
 
+config :rollbax,
+  access_token: "ff7fc39424864aa7a02f6aa07701a014",
+  environment: "production"
+
+# We register Rollbax.Logger as a Logger backend.
+config :logger,
+  backends: [Rollbax.Logger]
+
+# We configure the Rollbax.Logger backend.
+config :logger, Rollbax.Logger,
+  level: :error
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env}.exs"
