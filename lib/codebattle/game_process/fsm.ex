@@ -11,8 +11,10 @@ defmodule Codebattle.GameProcess.Fsm do
       first_player: nil, # User
       second_player: nil, # User
       game_over: false, # Boolean
-      first_player_editor_text: "", # String
-      second_player_editor_text: "", # String
+      first_player_editor_text: " ", # Space for diff
+      second_player_editor_text: " ", # Space for diff
+      first_player_diff: [],
+      second_player_diff: [],
       winner: nil, # User
       loser: nil # User
     }
@@ -56,14 +58,26 @@ defmodule Codebattle.GameProcess.Fsm do
   defstate playing do
     defevent update_editor_text(params), data: data do
       case user_role(params.user_id, data) do
-        :first_player -> next_state(:playing, %{data | first_player_editor_text: params.editor_text})
-        :second_player -> next_state(:playing, %{data | second_player_editor_text: params.editor_text})
+        :first_player ->
+          # TODO : fix emplty string diff
+          diff = Diff.diff(data.first_player_editor_text, params.editor_text)
+          new_diff = data.first_player_diff ++ diff
+          next_state(:playing, %{data | first_player_editor_text: params.editor_text, first_player_diff: new_diff})
+
+        :second_player ->
+          diff = Diff.diff(data.second_player_editor_text, params.editor_text)
+          new_diff = data.second_player_diff ++ diff
+          next_state(:playing, %{data | second_player_editor_text: params.editor_text, second_player_diff: new_diff})
+
         _ -> next_state(:playing)
       end
     end
 
     defevent complete(params), data: data do
       if is_player?(data, params.user) do
+        # TODO: move to separate process
+        Codebattle.Repo.insert!(%Codebattle.Bot.Playbook{data: %{}} )
+
         next_state(:player_won, %{data | winner: params.user})
       else
         respond({:error, dgettext("errors", "You are not player of this game")})

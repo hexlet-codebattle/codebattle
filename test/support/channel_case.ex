@@ -21,6 +21,7 @@ defmodule CodebattleWeb.ChannelCase do
       use Phoenix.ChannelTest
       import CodebattleWeb.Factory
       import Helpers.GameProcess
+      alias Codebattle.{Repo, User, Game, UserGame}
 
       # The default endpoint for testing
       @endpoint CodebattleWeb.Endpoint

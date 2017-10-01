@@ -38,8 +38,8 @@ defmodule CodebattleWeb.GameChannelTest do
         name: nil,
         raiting: nil,
       },
-      first_player_editor_text: "",
-      second_player_editor_text: "",
+      first_player_editor_text: " ",
+      second_player_editor_text: " ",
     }
   end
 

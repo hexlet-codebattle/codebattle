@@ -29,7 +29,7 @@ defmodule Codebattle.Mixfile do
   def application do
     [mod: {Codebattle, []},
      applications: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext, :phoenix_gon,
-                    :phoenix_ecto, :postgrex, :ueberauth, :ueberauth_github, :gproc, :ex_machina, :rollbax]]
+                    :phoenix_ecto, :postgrex, :ueberauth, :ueberauth_github, :gproc, :ex_machina]]
   end
 
   # Specifies which paths to compile per environment.

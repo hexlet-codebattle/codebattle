@@ -18,6 +18,8 @@ defmodule Codebattle do
       #   Codebattle.Worker.start_link(arg1, arg2, arg3)
       # worker(Codebattle.Worker, [arg1, arg2, arg3]),
       supervisor(CodebattleWeb.Presence, []),
+
+      # worker(Codebattle.Bot.UserActions, [])
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
