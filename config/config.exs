@@ -52,7 +52,7 @@ config :rollbax,
 
 # We register Rollbax.Logger as a Logger backend.
 config :logger,
-  backends: [Rollbax.Logger]
+  backends: [Rollbax.Logger, :console]
 
 # We configure the Rollbax.Logger backend.
 config :logger, Rollbax.Logger,
