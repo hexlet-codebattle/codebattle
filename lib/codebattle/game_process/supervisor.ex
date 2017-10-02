@@ -26,7 +26,7 @@ defmodule Codebattle.GameProcess.Supervisor do
   end
 
   def stop_game(game_id) do
-    pid = :gproc.where({:n, :l, {:game, game_id}})
+    pid = :gproc.where({:n, :l, {:game, to_charlist(game_id)}})
     Supervisor.terminate_child(__MODULE__, pid)
   end
 
