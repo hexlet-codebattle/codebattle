@@ -5,7 +5,8 @@
 # Inside the script, you can read and write to any of your
 # repositories directly:
 #
-#     Codebattle.Repo.insert!(%Codebattle.SomeModel{})
+# Test task
+    Codebattle.Repo.insert!(%Codebattle.Task{description: "test_task"})
 #
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.

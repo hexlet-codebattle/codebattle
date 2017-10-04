@@ -1,6 +1,7 @@
 defmodule Codebattle.GameProcess.Fsm do
   @moduledoc false
   import CodebattleWeb.Gettext
+  alias Codebattle.Bot.PlaybookStoreTask
 
   # fsm -> data: %{}, state :initial
   @states [:initial, :waiting_opponent, :playing, :player_won, :game_over]
@@ -8,20 +9,23 @@ defmodule Codebattle.GameProcess.Fsm do
   use Fsm, initial_state: :initial,
     initial_data: %{
       game_id: nil, # Integer
+      task_id: nil, # Integer
       first_player: nil, # User
       second_player: nil, # User
       game_over: false, # Boolean
       first_player_editor_text: " ", # Space for diff
       second_player_editor_text: " ", # Space for diff
-      first_player_diff: [],
-      second_player_diff: [],
+      first_player_time:  NaiveDateTime.utc_now, # Time
+      second_player_time: NaiveDateTime.utc_now, # Time
+      first_player_diff: [], # array of Diffs
+      second_player_diff: [], # array of Diffs
       winner: nil, # User
       loser: nil # User
     }
 
-  # For tests
+    # For tests
   def set_data(state, data) do
-     setup(new(), state, data)
+    setup(new(), state, data)
   end
 
   defstate initial do
@@ -59,28 +63,51 @@ defmodule Codebattle.GameProcess.Fsm do
     defevent update_editor_text(params), data: data do
       case user_role(params.user_id, data) do
         :first_player ->
-          # TODO : fix emplty string diff
-          diff = Diff.diff(data.first_player_editor_text, params.editor_text)
+          # TODO : fix empty string diff
+          time = NaiveDateTime.utc_now
+          IO.inspect time
+          diff = [%{
+            diff: inspect(Diff.diff(data.first_player_editor_text, params.editor_text)),
+            time: NaiveDateTime.diff(time, data.first_player_time, :millisecond)
+          }]
+
           new_diff = data.first_player_diff ++ diff
-          next_state(:playing, %{data | first_player_editor_text: params.editor_text, first_player_diff: new_diff})
+          next_state(:playing, %{data |
+            first_player_editor_text: params.editor_text,
+            first_player_diff: new_diff,
+            first_player_time: time
+          })
 
         :second_player ->
-          diff = Diff.diff(data.second_player_editor_text, params.editor_text)
+          time = NaiveDateTime.utc_now
+          diff = [%{
+            diff: inspect(Diff.diff(data.second_player_editor_text, params.editor_text)),
+            time: NaiveDateTime.diff(time, data.second_player_time, :millisecond)
+          }]
+
           new_diff = data.second_player_diff ++ diff
-          next_state(:playing, %{data | second_player_editor_text: params.editor_text, second_player_diff: new_diff})
+          next_state(:playing, %{data |
+            second_player_editor_text: params.editor_text,
+            second_player_diff: new_diff,
+            second_player_time: time
+          })
 
         _ -> next_state(:playing)
       end
     end
 
     defevent complete(params), data: data do
-      if is_player?(data, params.user) do
-        # TODO: move to separate process
-        Codebattle.Repo.insert!(%Codebattle.Bot.Playbook{data: %{}} )
+      case  user_role(params.user.id, data) do
+        :first_player ->
+          store_playbook(data.first_player_diff, params.user.id, data.game_id)
+          next_state(:player_won, %{data | winner: params.user})
 
-        next_state(:player_won, %{data | winner: params.user})
-      else
-        respond({:error, dgettext("errors", "You are not player of this game")})
+        :second_player ->
+          store_playbook(data.second_player_diff, params.user.id, data.game_id)
+          next_state(:player_won, %{data | winner: params.user})
+
+        _ ->
+          respond({:error, dgettext("errors", "You are not player of this game")})
       end
     end
 
@@ -135,5 +162,13 @@ defmodule Codebattle.GameProcess.Fsm do
       data.second_player.id == user_id -> :second_player
       true -> :spectator
     end
+  end
+
+  defp store_playbook(diff, user_id, game_id) do
+    task_params = %Codebattle.Bot.Playbook{data: %{playbook: diff},
+      user_id: user_id,
+      game_id: game_id}
+    {:ok, pid} = Task.Supervisor.start_link(restart: :transient, max_restarts: 5)
+    Task.Supervisor.start_child(pid, PlaybookStoreTask, :run, [task_params])
   end
 end

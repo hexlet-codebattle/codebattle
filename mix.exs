@@ -55,6 +55,7 @@ defmodule Codebattle.Mixfile do
      {:poison, "~> 3.1.0", override: true},
      {:phoenix_gon, "~> 0.2.0"},
      {:diff, "~> 1.0.0"},
+     {:rollbax, "~> 0.6"},
 
      #dev_and_test
      {:credo, "~> 0.8", only: [:dev, :test], runtime: false},
@@ -63,11 +64,12 @@ defmodule Codebattle.Mixfile do
      {:phoenix_live_reload, "~> 1.0", only: :dev},
 
      #test
+     {:ex_stub, "~> 0.1.0", only: :test},
      {:phoenix_integration, "~> 0.3", only: :test},
      {:excoveralls, "~> 0.7", only: :test},
-     {:faker, "~> 0.8"},
+     {:faker, "~> 0.8", only: :test},
      {:ex_machina, "~> 2.0"},
-     {:rollbax, "~> 0.6"}]
+     ]
   end
 
   # Aliases are shortcuts or tasks specific to the current project.
