@@ -59,57 +59,57 @@ module.exports = {
   },
   module: {
     rules: [
-    {
-      test: /\.po$/,
-      loaders: ['i18next-po-loader']
-    },
-    {
-      test: /\.jsx?$/,
-      exclude: /node_modules/,
-      use: {
-        loader: 'babel-loader',
-        options: {
-          cacheDirectory: true,
-          presets: [
-            'flow',
-            'es2015',
-            'stage-0',
-            'react', [
-              'env',
-              {
-                modules: false,
-                targets: {
-                  browsers: '> 0%',
-                  uglify: true,
+      {
+        test: /\.po$/,
+        loaders: ['i18next-po-loader'],
+      },
+      {
+        test: /\.jsx?$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            cacheDirectory: true,
+            presets: [
+              'flow',
+              'es2015',
+              'stage-0',
+              'react', [
+                'env',
+                {
+                  modules: false,
+                  targets: {
+                    browsers: '> 0%',
+                    uglify: true,
+                  },
+                  useBuiltIns: true,
                 },
-                useBuiltIns: true,
-              },
+              ],
             ],
-          ],
-          plugins: ['transform-class-properties'],
+            plugins: ['transform-class-properties'],
+          },
         },
       },
-    },
-    {
-      test: /\.css$/,
-      use: ExtractTextPlugin.extract({
-        fallback: 'style-loader',
-        use: 'css-loader',
-      }),
-    },
-    {
-      test: /\.(jpe?g|png|gif|svg|woff2?)$/,
-      use: [{
-        loader: 'url-loader',
-        options: { limit: 40000 },
+      {
+        test: /\.css$/,
+        use: ExtractTextPlugin.extract({
+          fallback: 'style-loader',
+          use: 'css-loader',
+        }),
       },
-      'image-webpack-loader',
-      ],
-    },
-    {
-      test: /bootstrap[/\\]dist[/\\]js[/\\]umd[/\\]/,
-      use: 'imports-loader?jQuery=jquery',
-    },
+      {
+        test: /\.(jpe?g|png|gif|svg|woff2?)$/,
+        use: [{
+          loader: 'url-loader',
+          options: { limit: 40000 },
+        },
+        'image-webpack-loader',
+        ],
+      },
+      {
+        test: /bootstrap[/\\]dist[/\\]js[/\\]umd[/\\]/,
+        use: 'imports-loader?jQuery=jquery',
+      },
     ],
   },
   plugins,

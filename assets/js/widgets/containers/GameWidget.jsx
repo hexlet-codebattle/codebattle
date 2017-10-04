@@ -46,13 +46,6 @@ class GameWidget extends Component {
       (value) => { sendData(value); } :
       _.noop;
 
-    // if (_.isEmpty(editorState)) {
-    //   return {
-    //     // editable: false,
-    //     name: 'left-editor',
-    //   };
-    // }
-
     return {
       onChange,
       editable,
@@ -64,13 +57,6 @@ class GameWidget extends Component {
   getRightEditorParams() {
     const { currentUser, firstEditor, secondEditor } = this.props;
     const editorState = currentUser.type === userTypes.secondPlayer ? firstEditor : secondEditor;
-
-    // if (_.isEmpty(editorState)) {
-    //   return {
-    //     // editable: false,
-    //     name: 'right-editor',
-    //   };
-    // }
 
     return {
       onChange: _.noop,
