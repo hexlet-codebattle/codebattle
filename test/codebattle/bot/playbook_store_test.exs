@@ -1,7 +1,7 @@
 defmodule Codebattle.PlaybookStoreTest do
   use Codebattle.IntegrationCase
 
-  use ExStub
+  import Mock
 
   alias CodebattleWeb.GameChannel
   alias Codebattle.Bot.Playbook
@@ -21,17 +21,14 @@ defmodule Codebattle.PlaybookStoreTest do
 
     Helpers.TimeStorage.start_link
 
-
-      defstub NaiveDateTime, for: NaiveDateTime do
-        def utc_now, do: Helpers.TimeStorage.next()
-      end
-
-    require IEx; IEx.pry
       #setup
       state = :playing
       data = %{first_player: user1, second_player: user2}
       game = setup_game(state, data)
-
+    with_mocks([{NaiveDateTime, [], [
+      diff: fn(a, b, c) -> 100 end,
+      utc_now: fn ->  Helpers.TimeStorage.next() end,
+    ]} ]) do
       game_topic = "game:" <> to_string(game.id)
       editor_text1 = "t"
       editor_text2 = "te"
@@ -47,15 +44,16 @@ defmodule Codebattle.PlaybookStoreTest do
       push socket1, "check_result", %{editor_text: editor_text3}
 
       playbook = [
-        %{"time" => 101, "diff" => inspect([%Diff.Modified{element: ["t"], index: 0, length: 1, old_element: [" "]}])},
-        %{"time" => 201, "diff" => inspect([%Diff.Insert{element: ["e"], index: 1, length: 1}])},
-        %{"time" => 301, "diff" => inspect([%Diff.Insert{element: ["s"], index: 2, length: 1}])},
-        %{"time" => 401, "diff" => inspect([])},
+        %{"time" => 100, "diff" => inspect([%Diff.Modified{element: ["t"], index: 0, length: 1, old_element: [" "]}])},
+        %{"time" => 100, "diff" => inspect([%Diff.Insert{element: ["e"], index: 1, length: 1}])},
+        %{"time" => 100, "diff" => inspect([%Diff.Insert{element: ["s"], index: 2, length: 1}])},
+        %{"time" => 100, "diff" => inspect([])},
       ]
 
       # sleep, because GameProcess need time to write Playbook with Ecto.connection
       :timer.sleep(50)
       assert playbook == Repo.get_by(Playbook, user_id: user1.id).data["playbook"]
+    end
   end
 
   # test "stores second player playbook if he is winner", %{user1: user1, user2: user2, socket1: socket1, socket2: socket2} do

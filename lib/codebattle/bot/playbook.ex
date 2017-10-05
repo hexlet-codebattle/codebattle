@@ -16,7 +16,7 @@ defmodule Codebattle.Bot.Playbook do
   @doc false
   def changeset(%Playbook{} = playbook, attrs) do
     playbook
-    |> cast(attrs, [:data, :user_id, :game_id])
+    |> cast(attrs, [:data, :user_id, :game_id, :inserted_at])
     |> validate_required([:data, :user_id, :game_id])
   end
 end

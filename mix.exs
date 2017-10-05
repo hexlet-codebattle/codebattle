@@ -64,7 +64,7 @@ defmodule Codebattle.Mixfile do
      {:phoenix_live_reload, "~> 1.0", only: :dev},
 
      #test
-     {:ex_stub, "~> 0.1.0", only: :test},
+     {:mock, "~> 0.2.0", only: :test},
      {:phoenix_integration, "~> 0.3", only: :test},
      {:excoveralls, "~> 0.7", only: :test},
      {:faker, "~> 0.8", only: :test},
