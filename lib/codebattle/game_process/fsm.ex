@@ -66,8 +66,6 @@ defmodule Codebattle.GameProcess.Fsm do
         :first_player ->
           # TODO : fix empty string diff
           time = NaiveDateTime.utc_now
-          IO.inspect data.first_player_time
-          IO.inspect time
           diff = [%{
             diff: inspect(Diff.diff(data.first_player_editor_text, params.editor_text)),
             time: NaiveDateTime.diff(time, data.first_player_time, :millisecond)

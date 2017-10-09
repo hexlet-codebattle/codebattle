@@ -1,4 +1,6 @@
 defmodule Codebattle.Task do
+  @moduledoc false
+
   use Ecto.Schema
   import Ecto.Changeset
   alias Codebattle.Task

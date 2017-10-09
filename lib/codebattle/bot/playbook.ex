@@ -1,4 +1,6 @@
 defmodule Codebattle.Bot.Playbook do
+  @moduledoc false
+
   use Ecto.Schema
   import Ecto.Changeset
   alias Codebattle.Bot.Playbook
