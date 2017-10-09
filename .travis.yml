@@ -3,8 +3,8 @@ language: elixir
 elixir:
   - 1.5.0
 
-services:
-  - postgresql
+addons:
+  postgresql: "9.6"
 
 env:
   - CODEBATTLE_DATABASE_USERNAME=postgres CODEBATTLE_DATABASE_PASSWORD= CODEBATTLE_DATABASE_HOSTNAME=localhost
