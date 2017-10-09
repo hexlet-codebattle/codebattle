@@ -28,13 +28,13 @@ defmodule Codebattle.GameProcess.Play do
   def create_game(user) do
     game = Repo.insert!(%Game{state: "waiting_opponent"})
 
-    # TODO: implement task choice in Web interface
+    # TOD: implement task choice in Web interface
 
     fsm = Fsm.new |> Fsm.create(%{user: user, game_id: game.id, task_id: 1})
 
     Supervisor.start_game(game.id, fsm)
 
-    # TODO: Run bot if second plyaer not connected after 5 seconds
+    # TOD: Run bot if second plyaer not connected after 5 seconds
     # params = %{game_id: game.id, task_id: 1}
 
     # {:ok, pid} = Task.Supervisor.start_link(restart: :transient, max_restarts: 5)
