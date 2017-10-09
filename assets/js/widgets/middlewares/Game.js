@@ -75,6 +75,11 @@ export const editorReady = () => (dispatch) => {
       type: userTypes.secondPlayer,
     }]));
   });
+
+  channel.on('user:won', ({ winner, status, msg }) => {
+    dispatch(GameActions.updateStatus({ status, winner }));
+    alert(msg);
+  });
 };
 
 export const checkGameResult = () => (dispatch, getState) => {
@@ -82,5 +87,9 @@ export const checkGameResult = () => (dispatch, getState) => {
   const currentUserId = currentUserIdSelector(state);
   const currentUserEditor = editorsSelector(state)[currentUserId];
 
-  channel.push('check_result', { editor_text: currentUserEditor.value });
+  channel.push('check_result', { editor_text: currentUserEditor.value })
+    .receive('ok', ({ status, winner, msg }) => {
+      dispatch(GameActions.updateStatus({ status, winner }));
+      alert(msg);
+    });
 };

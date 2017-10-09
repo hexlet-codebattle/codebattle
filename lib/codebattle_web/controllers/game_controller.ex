@@ -47,16 +47,4 @@ defmodule CodebattleWeb.GameController do
         |> redirect(to: game_path(conn, :show, id))
     end
   end
-
-  def check(conn, %{"id" => id}) do
-    {:ok, fsm} = Play.check_game(id, conn.assigns.user)
-    flash =
-      case fsm.state do
-        :player_won -> gettext "Yay, you won the game!"
-        _ -> gettext "You lose the game"
-      end
-    conn
-    |> put_flash(:info, flash)
-    |> redirect(to: game_path(conn, :index))
-  end
 end

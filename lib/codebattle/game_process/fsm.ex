@@ -1,6 +1,7 @@
 defmodule Codebattle.GameProcess.Fsm do
   @moduledoc false
   import CodebattleWeb.Gettext
+  alias Codebattle.User
   alias Codebattle.Bot.PlaybookStoreTask
 
   # fsm -> data: %{}, state :initial
@@ -10,8 +11,8 @@ defmodule Codebattle.GameProcess.Fsm do
     initial_data: %{
       game_id: nil, # Integer
       task_id: nil, # Integer
-      first_player: nil, # User
-      second_player: nil, # User
+      first_player: %User{}, # User
+      second_player: %User{}, # User
       game_over: false, # Boolean
       first_player_editor_text: " ", # Space for diff
       second_player_editor_text: " ", # Space for diff
@@ -19,8 +20,8 @@ defmodule Codebattle.GameProcess.Fsm do
       second_player_time: NaiveDateTime.utc_now(), # Time
       first_player_diff: [], # array of Diffs
       second_player_diff: [], # array of Diffs
-      winner: nil, # User
-      loser: nil # User
+      winner: %User{}, # User
+      loser: %User{} # User
     }
 
     # For tests
@@ -120,9 +121,9 @@ defmodule Codebattle.GameProcess.Fsm do
   defstate player_won do
     defevent update_editor_text(params), data: data do
       case user_role(params.user_id, data) do
-        :first_player -> next_state(:playing, %{data | first_player_editor_text: params.editor_text})
-        :second_player -> next_state(:playing, %{data | second_player_editor_text: params.editor_text})
-        _ -> next_state(:playing, data)
+        :first_player -> next_state(:player_won, %{data | first_player_editor_text: params.editor_text})
+        :second_player -> next_state(:player_won, %{data | second_player_editor_text: params.editor_text})
+        _ -> next_state(:player_won, data)
       end
     end
 

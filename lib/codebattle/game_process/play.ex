@@ -34,11 +34,11 @@ defmodule Codebattle.GameProcess.Play do
 
     Supervisor.start_game(game.id, fsm)
 
-    # Run bot if second plyaer not connected after 5 seconds
-    params = %{game_id: game.id, task_id: 1}
+    # TODO: Run bot if second plyaer not connected after 5 seconds
+    # params = %{game_id: game.id, task_id: 1}
 
-    {:ok, pid} = Task.Supervisor.start_link(restart: :transient, max_restarts: 5)
-    Task.Supervisor.start_child(pid, Codebattel.Bot.PlaybookPlayerTask, :run, [params])
+    # {:ok, pid} = Task.Supervisor.start_link(restart: :transient, max_restarts: 5)
+    # Task.Supervisor.start_child(pid, Codebattel.Bot.PlaybookPlayerTask, :run, [params])
 
     game.id
   end
@@ -51,28 +51,12 @@ defmodule Codebattle.GameProcess.Play do
     fsm = get_fsm(game_id)
     %{
       status: fsm.state, # :playing
-      winner: fsm.data.winner && fsm.data.winner.name,
-      first_player: player_info(fsm.data.first_player),
-      second_player: player_info(fsm.data.second_player),
+      winner: fsm.data.winner,
+      first_player: fsm.data.first_player,
+      second_player: fsm.data.second_player,
       first_player_editor_text: fsm.data.first_player_editor_text,
       second_player_editor_text: fsm.data.second_player_editor_text,
     }
-  end
-
-  def player_info(player) do
-    if player do
-      %{
-        id: player.id,
-        name: player.name,
-        raiting: player.raiting,
-      }
-    else
-      %{
-        id: nil,
-        name: nil,
-        raiting: nil,
-      }
-    end
   end
 
   def update_editor_text(id, user_id, editor_text) do

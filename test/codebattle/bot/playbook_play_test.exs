@@ -28,28 +28,8 @@ defmodule Codebattle.PlaybookPlayTest do
     {:ok, %{user1: user1, user2: user2, socket1: socket1, conn1: conn1, task: task}}
   end
 
-  test "plays with user if nobody join game", %{user1: user1, user2: user2, socket1: socket1, conn1: conn1} do
-
-    #setup
-    state = :initial
-    data = %{task_id: 1}
-    game = setup_game(state, data)
-    game_topic = "game:" <> to_string(game.id)
-
-    conn = post(conn1, game_path(conn1, :create))
-
-    {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
-
-    playbook = [
-      %{"time" => 101, "diff" => inspect([%Diff.Modified{element: ["t"], index: 0, length: 1, old_element: [" "]}])},
-      %{"time" => 201, "diff" => inspect([%Diff.Insert{element: ["e"], index: 1, length: 1}])},
-      %{"time" => 301, "diff" => inspect([%Diff.Insert{element: ["s"], index: 2, length: 1}])},
-      %{"time" => 401, "diff" => inspect([])},
-    ]
-
-    # sleep, because GameProcess need time to write Playbook with Ecto.connection
-    :timer.sleep(50)
-    assert playbook == Repo.get_by(Playbook, user_id: user1.id).data["playbook"]
+  @tag :pending
+  test "plays with bot if nobody join game", %{user1: user1, user2: user2, socket1: socket1, conn1: conn1} do
   end
 end
 
