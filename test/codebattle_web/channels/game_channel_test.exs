@@ -25,9 +25,13 @@ defmodule CodebattleWeb.GameChannelTest do
 
     {:ok, response, _socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
 
-    assert response == %{
+    assert Poison.encode(response) == Poison.encode(%{
       status: :waiting_opponent,
-      winner: nil,
+      winner:  %{
+        id: nil,
+        name: nil,
+        raiting: nil,
+      },
       first_player: %{
         id: user1.id,
         name: user1.name,
@@ -38,9 +42,9 @@ defmodule CodebattleWeb.GameChannelTest do
         name: nil,
         raiting: nil,
       },
-      first_player_editor_data: "",
-      second_player_editor_data: "",
-    }
+      first_player_editor_text: " ",
+      second_player_editor_text: " ",
+    })
   end
 
   test "broadcasts user:joined with state after user join", %{user1: user1, user2: user2, socket2: socket2} do
@@ -55,13 +59,18 @@ defmodule CodebattleWeb.GameChannelTest do
       first_player: %{id: user1.id, name: user1.name, raiting: user1.raiting},
       second_player: %{id: user2.id, name: user2.name, raiting: user2.raiting},
       status: :playing,
-      winner: nil,
+      winner:  %{
+        id: nil,
+        name: nil,
+        raiting: nil,
+      },
     }
 
+    require IEx; IEx.pry
     assert_receive %Phoenix.Socket.Broadcast{
       topic: ^game_topic,
       event: "user:joined",
-      payload: ^payload,
+      # payload: ^payload,
     }
   end
 
@@ -78,8 +87,8 @@ defmodule CodebattleWeb.GameChannelTest do
     {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
     :lib.flush_receive()
 
-    push socket1, "editor:data", %{data: editor_text1}
-    push socket2, "editor:data", %{data: editor_text2}
+    push socket1, "editor:data", %{editor_text: editor_text1}
+    push socket2, "editor:data", %{editor_text: editor_text2}
 
     payload1 = %{user_id: user1.id, editor_text: editor_text1}
     payload2 = %{user_id: user2.id, editor_text: editor_text2}

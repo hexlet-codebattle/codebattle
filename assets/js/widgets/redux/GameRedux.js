@@ -10,7 +10,7 @@ import i18next from '../../i18n';
 export const INITIAL_STATE = Immutable({
   gameStatus: {
     status: GameStatuses.initial,
-    winner: '',
+    winner: {},
   },
 });
 
@@ -37,9 +37,11 @@ export const gameStatusTitleSelector = (state) => {
       return i18next
         .t('State: {{state}}', { state: i18next.t('Playing') });
     case GameStatuses.playerWon:
+      return i18next
+        .t('The winner is: {{name}}', { name: gameStatus.winner.name });
     case GameStatuses.gameOver:
       return i18next
-        .t('The winner is: {{name}}', { name: gameStatus.winner });
+        .t('Game over. The winner is: {{name}}', { name: gameStatus.winner.name });
     default:
       return '';
   }

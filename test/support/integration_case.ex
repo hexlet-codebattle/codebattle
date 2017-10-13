@@ -5,15 +5,15 @@ defmodule Codebattle.IntegrationCase do
 
   using do
     quote do
-      use CodebattleWeb.ConnCase
       use Phoenix.ChannelTest
+      use CodebattleWeb.ConnCase
       use PhoenixIntegration
 
       import Ecto
       import Ecto.Query
       import CodebattleWeb.Router.Helpers
       import Helpers.GameProcess
-      import Codebattle.IntegrationCase
+      import Helpers.TimeStorage
 
       alias Codebattle.{Repo, User, Game, UserGame}
     end

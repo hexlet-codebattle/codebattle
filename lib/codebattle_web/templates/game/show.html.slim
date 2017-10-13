@@ -1,13 +1,6 @@
 h1 = gettext "Game: %{id}", id: @fsm.data.game_id
 - users = get_users(@fsm)
 
-= if Enum.count(users) == 2 do
-  = if can_check?(@fsm, @conn.assigns.user) do
-    = button gettext("Check result"), to: game_path(@conn, :check, @fsm.data.game_id), class: "btn btn-success"
-
-br
-br
-
 = link to: game_path(@conn, :index) do
   = gettext "Back to game list"
 

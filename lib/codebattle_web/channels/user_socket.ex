@@ -26,6 +26,8 @@ defmodule CodebattleWeb.UserSocket do
                               user_token,
                               max_age: 1_000_000) do
       {:ok, user_id} ->
+        user = Codebattle.User |> Codebattle.Repo.get!(user_id)
+        socket = assign(socket, :current_user, user)
         {:ok, assign(socket, :user_id, user_id)}
       {:error, _reason} ->
         :error

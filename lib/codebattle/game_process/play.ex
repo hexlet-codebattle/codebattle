@@ -28,9 +28,18 @@ defmodule Codebattle.GameProcess.Play do
   def create_game(user) do
     game = Repo.insert!(%Game{state: "waiting_opponent"})
 
-    fsm = Fsm.new |> Fsm.create(%{user: user, game_id: game.id})
+    # TOD: implement task choice in Web interface
+
+    fsm = Fsm.new |> Fsm.create(%{user: user, game_id: game.id, task_id: 1})
 
     Supervisor.start_game(game.id, fsm)
+
+    # TOD: Run bot if second plyaer not connected after 5 seconds
+    # params = %{game_id: game.id, task_id: 1}
+
+    # {:ok, pid} = Task.Supervisor.start_link(restart: :transient, max_restarts: 5)
+    # Task.Supervisor.start_child(pid, Codebattel.Bot.PlaybookPlayerTask, :run, [params])
+
     game.id
   end
 
@@ -42,32 +51,16 @@ defmodule Codebattle.GameProcess.Play do
     fsm = get_fsm(game_id)
     %{
       status: fsm.state, # :playing
-      winner: fsm.data.winner && fsm.data.winner.name,
-      first_player: player_info(fsm.data.first_player),
-      second_player: player_info(fsm.data.second_player),
-      first_player_editor_data: fsm.data.first_player_editor_data,
-      second_player_editor_data: fsm.data.second_player_editor_data,
+      winner: fsm.data.winner,
+      first_player: fsm.data.first_player,
+      second_player: fsm.data.second_player,
+      first_player_editor_text: fsm.data.first_player_editor_text,
+      second_player_editor_text: fsm.data.second_player_editor_text,
     }
   end
 
-  def player_info(player) do
-    if player do
-      %{
-        id: player.id,
-        name: player.name,
-        raiting: player.raiting,
-      }
-    else
-      %{
-        id: nil,
-        name: nil,
-        raiting: nil,
-      }
-    end
-  end
-
-  def update_data(id, user_id, data) do
-    Server.call_transition(id, :update_editor_data, %{user_id: user_id, data: data})
+  def update_editor_text(id, user_id, editor_text) do
+    Server.call_transition(id, :update_editor_text, %{user_id: user_id, editor_text: editor_text})
   end
 
   def check_game(id, user) do

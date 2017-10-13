@@ -19,5 +19,5 @@ export default () => {
   )(createStore);
 
   return createStoreWithMiddleware(rootReducer);
-}
+};
 
