@@ -16,8 +16,8 @@ defmodule Codebattle.GameProcess.Fsm do
       game_over: false, # Boolean
       first_player_editor_text: " ", # Space for diff
       second_player_editor_text: " ", # Space for diff
-      first_player_time:  NaiveDateTime.utc_now(), # Time
-      second_player_time: NaiveDateTime.utc_now(), # Time
+      first_player_time:  nil, # NaiveDateTime.utc_now()
+      second_player_time: nil, # NaiveDateTime.utc_now()
       first_player_diff: [], # array of Diffs
       second_player_diff: [], # array of Diffs
       winner: %User{}, # User
@@ -65,31 +65,33 @@ defmodule Codebattle.GameProcess.Fsm do
       case user_role(params.user_id, data) do
         :first_player ->
           # TOD : fix empty string diff
-          time = NaiveDateTime.utc_now
+          time = data.first_player_time || NaiveDateTime.utc_now
+          new_time = NaiveDateTime.utc_now
           diff = [%{
             diff: inspect(Diff.diff(data.first_player_editor_text, params.editor_text)),
-            time: NaiveDateTime.diff(time, data.first_player_time, :millisecond)
+            time: NaiveDateTime.diff(new_time, time, :millisecond)
           }]
 
           new_diff = data.first_player_diff ++ diff
           next_state(:playing, %{data |
             first_player_editor_text: params.editor_text,
             first_player_diff: new_diff,
-            first_player_time: time
+            first_player_time: new_time
           })
 
         :second_player ->
-          time = NaiveDateTime.utc_now
+          time = data.second_player_time || NaiveDateTime.utc_now
+          new_time = NaiveDateTime.utc_now
           diff = [%{
             diff: inspect(Diff.diff(data.second_player_editor_text, params.editor_text)),
-            time: NaiveDateTime.diff(time, data.second_player_time, :millisecond)
+            time: NaiveDateTime.diff(new_time, time, :millisecond)
           }]
 
           new_diff = data.second_player_diff ++ diff
           next_state(:playing, %{data |
             second_player_editor_text: params.editor_text,
             second_player_diff: new_diff,
-            second_player_time: time
+            second_player_time: new_time
           })
 
         _ -> next_state(:playing)
@@ -165,10 +167,10 @@ defmodule Codebattle.GameProcess.Fsm do
   end
 
   defp store_playbook(diff, user_id, game_id) do
-    task_params = %Codebattle.Bot.Playbook{data: %{playbook: diff},
-      user_id: user_id,
-      game_id: game_id}
-    {:ok, pid} = Task.Supervisor.start_link(restart: :transient, max_restarts: 5)
-    Task.Supervisor.start_child(pid, PlaybookStoreTask, :run, [task_params])
+    task_params = %{diff: diff,
+                    task_id: 1,
+                    user_id: user_id,
+                    game_id: game_id}
+    Task.start(PlaybookStoreTask, :run, [task_params])
   end
 end

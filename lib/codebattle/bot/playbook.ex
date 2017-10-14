@@ -18,7 +18,20 @@ defmodule Codebattle.Bot.Playbook do
   @doc false
   def changeset(%Playbook{} = playbook, attrs) do
     playbook
-    |> cast(attrs, [:data, :user_id, :game_id, :inserted_at])
+    |> cast(attrs, [:data, :user_id, :game_id])
     |> validate_required([:data, :user_id, :game_id])
+  end
+
+  def random(task_id) do
+    try do
+      {:ok, query} = Ecto.Adapters.SQL.query(
+        Codebattle.Repo,
+        "SELECT * from bot_playbooks WHERE task_id = $1 ORDER BY RANDOM() LIMIT 1",
+        [task_id])
+        %Postgrex.Result{rows: [[id | [diff| _tail]]]} = query
+        {id, diff}
+    rescue
+      _e in MatchError -> nil
+    end
   end
 end
