@@ -8,12 +8,14 @@ defmodule Codebattle.Bot.PlaybookStoreTask do
   end
 
   def run(params) do
-    %Codebattle.Bot.Playbook{
-      data: %{playbook: params.diff},
-      task_id: params.task_id,
-      user_id: params.user_id,
-      game_id: params.game_id,
-    }
-    |> Codebattle.Repo.insert()
+    if params.user_id != 0 do
+      %Codebattle.Bot.Playbook{
+        data: %{playbook: params.diff},
+        task_id: params.task_id,
+        user_id: params.user_id,
+        game_id: params.game_id,
+      }
+      |> Codebattle.Repo.insert()
+    end
   end
 end
