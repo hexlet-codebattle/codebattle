@@ -21,3 +21,6 @@ config :codebattle, Codebattle.Repo,
   hostname: System.get_env("CODEBATTLE_DATABASE_HOSTNAME"),
   pool: Ecto.Adapters.SQL.Sandbox,
   ownership_timeout: 99_999_999
+
+config :codebattle, Codebattle.Bot,
+  timeout: 70

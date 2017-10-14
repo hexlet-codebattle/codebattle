@@ -43,3 +43,6 @@ config :codebattle, Codebattle.Repo,
   database: "codebattle_dev",
   hostname: System.get_env("CODEBATTLE_DATABASE_HOSTNAME"),
   pool_size: 10
+
+config :codebattle, Codebattle.Bot,
+  timeout: 3000

@@ -1,4 +1,4 @@
-defmodule Codebattle.PlaybookStoreTest do
+defmodule Codebattle.Bot.PlaybookStoreTest do
   use Codebattle.IntegrationCase
 
   import Mock

@@ -66,7 +66,6 @@ defmodule CodebattleWeb.GameChannelTest do
       },
     }
 
-    require IEx; IEx.pry
     assert_receive %Phoenix.Socket.Broadcast{
       topic: ^game_topic,
       event: "user:joined",

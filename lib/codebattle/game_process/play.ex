@@ -35,10 +35,12 @@ defmodule Codebattle.GameProcess.Play do
     Supervisor.start_game(game.id, fsm)
 
     # TOD: Run bot if second plyaer not connected after 5 seconds
-    # params = %{game_id: game.id, task_id: 1}
+    params = %{game_id: game.id, task_id: 1}
 
     # {:ok, pid} = Task.Supervisor.start_link(restart: :transient, max_restarts: 5)
-    # Task.Supervisor.start_child(pid, Codebattel.Bot.PlaybookPlayerTask, :run, [params])
+    # Task.Supervisor.start_child(pid, Codebattle.Bot.PlaybookPlayerTask, :run, [params])
+    Task.start(Codebattle.Bot.PlaybookPlayerTask, :run, [params])
+    # Codebattle.Bot.PlaybookPlayerTask.run params
 
     game.id
   end
@@ -86,10 +88,16 @@ defmodule Codebattle.GameProcess.Play do
     Repo.insert!(%UserGame{game_id: game.id, user_id: fsm.data.winner.id, result: "win"})
     Repo.insert!(%UserGame{game_id: game.id, user_id: fsm.data.loser.id, result: "lose"})
 
-    winner = User.changeset(fsm.data.winner, %{raiting: (fsm.data.winner.raiting + 1)})
-    loser = User.changeset(fsm.data.loser, %{raiting: (fsm.data.loser.raiting - 1)})
-    Repo.update! winner
-    Repo.update! loser
+    if fsm.data.winner.id != 0 do
+      winner = User.changeset(fsm.data.winner, %{raiting: (fsm.data.winner.raiting + 1)})
+      Repo.update! winner
+    end
+
+    if fsm.data.loser.id != 0 do
+      loser = User.changeset(fsm.data.loser, %{raiting: (fsm.data.loser.raiting - 1)})
+      Repo.update! loser
+    end
+
     Supervisor.stop_game(id)
   end
 end
