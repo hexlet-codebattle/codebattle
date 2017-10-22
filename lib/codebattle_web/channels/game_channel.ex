@@ -38,12 +38,13 @@ defmodule CodebattleWeb.GameChannel do
     Play.update_editor_text(game_id, socket.assigns.user_id, editor_text)
     {:ok, fsm} = Play.check_game(game_id, socket.assigns.current_user)
       winner = fsm.data.winner
-      case fsm.state do
+      msg = case fsm.state do
         :player_won ->
-          msg = winner.name <> " " <> gettext("won the game!")
-          broadcast_from! socket, "user:won", %{winner: winner, status: "player_won", msg: msg}
+            message = winner.name <> " " <> gettext("won the game!")
+            broadcast_from! socket, "user:won", %{winner: winner, status: "player_won", msg: message}
+            message
         _ ->
-          msg = gettext "You lose the game"
+            gettext "You lose the game"
       end
     {:reply, {:ok, %{status: fsm.state, msg: msg, winner: winner}}, socket}
   end
