@@ -29,7 +29,7 @@ defmodule Codebattle.Mixfile do
   def application do
     [mod: {Codebattle, []},
      applications: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext, :phoenix_gon,
-                    :phoenix_ecto, :postgrex, :ueberauth, :ueberauth_github, :gproc, :ex_machina]]
+                    :phoenix_ecto, :postgrex, :yaml_elixir, :ueberauth, :ueberauth_github, :gproc, :ex_machina]]
   end
 
   # Specifies which paths to compile per environment.
@@ -56,6 +56,7 @@ defmodule Codebattle.Mixfile do
      {:phoenix_gon, "~> 0.2.0"},
      {:diff, "~> 1.0.0"},
      {:rollbax, "~> 0.6"},
+     {:yaml_elixir, "~> 1.1"},
 
      #dev_and_test
      {:credo, "~> 0.8", only: [:dev, :test], runtime: false},

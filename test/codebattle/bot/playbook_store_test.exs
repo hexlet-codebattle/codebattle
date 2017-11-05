@@ -22,7 +22,7 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
   test "stores first player playbook if he is winner", %{user1: user1, user2: user2, socket1: socket1, socket2: socket2} do
     with_mocks([{NaiveDateTime, [], [
       diff: fn(a, b, c) -> 100 end,
-      utc_now: fn ->  Helpers.TimeStorage.next() end,
+      utc_now: fn -> Helpers.TimeStorage.next() end,
     ]}]) do
 
     #setup
