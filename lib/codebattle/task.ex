@@ -3,8 +3,6 @@ defmodule Codebattle.Task do
 
   use Ecto.Schema
   import Ecto.Changeset
-  alias Codebattle.Task
-
 
   schema "tasks" do
     field :description, :string
@@ -15,10 +13,9 @@ defmodule Codebattle.Task do
     timestamps()
   end
 
-  @doc false
-  def changeset(%Task{} = task, attrs) do
-    task
-    |> cast(attrs, [:description, :name, :level, :asserts])
+  def changeset(struct, params \\ %{}) do
+    struct
+    |> cast(params, [:description, :name, :level, :asserts])
     |> validate_required([:description, :name, :level, :asserts])
     |> unique_constraint(:name)
   end

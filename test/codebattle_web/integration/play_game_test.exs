@@ -5,6 +5,7 @@ defmodule Codebattle.PlayGameTest do
   alias CodebattleWeb.GameChannel
 
   setup do
+    task = insert(:task)
     user1 = insert(:user, %{name: "first", email: "test1@test.test", github_id: 1, raiting: 10})
     user2 = insert(:user, %{name: "second", email: "test2@test.test", github_id: 2, raiting: 10})
     user3 = insert(:user, %{name: "other", email: "test3@test.test", github_id: 3, raiting: 10})

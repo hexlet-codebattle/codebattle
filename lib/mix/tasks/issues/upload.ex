@@ -21,9 +21,9 @@ defmodule Mix.Tasks.Issues.Upload do
       |> File.ls!
       |> Enum.map(fn(file_name) ->
           file_name
-          |> String.split(file_name, ".")
+          |> String.split(".")
           |> List.first
-        end)
+         end)
       |> MapSet.new
       |> Enum.filter fn(x) -> String.length(x) > 0 end
 

@@ -6,8 +6,13 @@ defmodule Tasks.Issues.UploadTest do
   setup do
     path = File.cwd! |> Path.join("test/support/fixtures/issues")
     issue_names =
-      File.ls!(path)
-      |> Enum.map(fn(file_name) -> String.split(file_name, ".") |> List.first end)
+      path
+      |> File.ls!
+      |> Enum.map(fn(file_name) ->
+          file_name
+          |> String.split(".")
+          |> List.first
+        end)
       |> MapSet.new
 
     {:ok, %{path: path, issue_names: issue_names}}
@@ -16,7 +21,9 @@ defmodule Tasks.Issues.UploadTest do
   test "uploads fixtures to database", %{path: path, issue_names: issue_names} do
     Mix.Tasks.Issues.Upload.run([path])
 
-    task_names = Repo.all(Task)
+    task_names =
+      Task
+      |> Repo.all
       |> Enum.map(fn(task) -> task.name end)
       |> MapSet.new
 
@@ -27,7 +34,9 @@ defmodule Tasks.Issues.UploadTest do
     Mix.Tasks.Issues.Upload.run([path])
     Mix.Tasks.Issues.Upload.run([path])
 
-    task_names = Repo.all(Task)
+    task_names =
+      Task
+      |> Repo.all
       |> Enum.map(fn(task) -> task.name end)
       |> MapSet.new
 

@@ -30,12 +30,14 @@ defmodule Codebattle.GameProcess.Play do
 
     # TOD: implement task choice in Web interface
 
-    fsm = Fsm.new |> Fsm.create(%{user: user, game_id: game.id, task_id: 1})
+    task = get_random_task()
+
+    fsm = Fsm.new |> Fsm.create(%{user: user, game_id: game.id, task: task})
 
     Supervisor.start_game(game.id, fsm)
 
     # TOD: Run bot if second plyaer not connected after 5 seconds
-    params = %{game_id: game.id, task_id: 1}
+    params = %{game_id: game.id, task_id: task.id}
 
     # {:ok, pid} = Task.Supervisor.start_link(restart: :transient, max_restarts: 5)
     # Task.Supervisor.start_child(pid, Codebattle.Bot.PlaybookPlayerTask, :run, [params])
@@ -99,5 +101,10 @@ defmodule Codebattle.GameProcess.Play do
     end
 
     Supervisor.stop_game(id)
+  end
+
+  defp get_random_task do
+    query = from t in Codebattle.Task, order_by: fragment("RANDOM()"), limit: 1
+    query |> Repo.all |> Enum.at 0
   end
 end
