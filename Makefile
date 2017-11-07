@@ -100,6 +100,7 @@ clean:
 	rm -rf assets/node_modules
 	rm -rf priv/static/*
 	rm -rf cover
+	rm -rf tmp/battle_asserts
 
 frontend_watch:
 	cd assets && \
@@ -109,5 +110,10 @@ get-last-changes:
 	 git fetch upstream
 	 git checkout master
 	 git merge upstream/master
+
+upload_asserts:
+	 mix issues.fetch
+	 mix issues.generate
+	 mix issues.upload
 
 .PHONY: test

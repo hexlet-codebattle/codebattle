@@ -53,4 +53,6 @@
   "tzdata": {:hex, :tzdata, "0.5.12", "1c17b68692c6ba5b6ab15db3d64cc8baa0f182043d5ae9d4b6d35d70af76f67b", [], [{:hackney, "~> 1.0", [hex: :hackney, repo: "hexpm", optional: false]}], "hexpm"},
   "ueberauth": {:hex, :ueberauth, "0.4.0", "bc72d5e5a7bdcbfcf28a756e34630816edabc926303bdce7e171f7ac7ffa4f91", [:mix], [{:plug, "~> 1.2", [hex: :plug, repo: "hexpm", optional: false]}], "hexpm"},
   "ueberauth_github": {:hex, :ueberauth_github, "0.5.0", "5478188ddfd294f3a5c981d830eab54865fe465851e87270a998db31ade26c52", [:mix], [{:oauth2, "~> 0.9", [hex: :oauth2, repo: "hexpm", optional: false]}, {:ueberauth, "~> 0.4", [hex: :ueberauth, repo: "hexpm", optional: false]}], "hexpm"},
-  "unicode_util_compat": {:hex, :unicode_util_compat, "0.3.1", "a1f612a7b512638634a603c8f401892afbf99b8ce93a45041f8aaca99cadb85e", [:rebar3], [], "hexpm"}}
+  "unicode_util_compat": {:hex, :unicode_util_compat, "0.3.1", "a1f612a7b512638634a603c8f401892afbf99b8ce93a45041f8aaca99cadb85e", [:rebar3], [], "hexpm"},
+  "yamerl": {:hex, :yamerl, "0.5.0", "6ec55a5d830f6f0d65a4030f5c5db24b0e72b813dfbde32fea44b4951ed9417c", [], [], "hexpm"},
+  "yaml_elixir": {:hex, :yaml_elixir, "1.3.1", "b84b6333343b0cba176c43c463e622f838825e7476e35334f719b83df4535bff", [], [{:yamerl, "~> 0.5", [hex: :yamerl, repo: "hexpm", optional: false]}], "hexpm"}}

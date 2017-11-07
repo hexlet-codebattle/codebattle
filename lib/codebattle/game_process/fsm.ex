@@ -10,7 +10,7 @@ defmodule Codebattle.GameProcess.Fsm do
   use Fsm, initial_state: :initial,
     initial_data: %{
       game_id: nil, # Integer
-      task_id: nil, # Integer
+      task: %Codebattle.Task{}, # Task
       first_player: %User{}, # User
       second_player: %User{}, # User
       game_over: false, # Boolean
@@ -31,7 +31,7 @@ defmodule Codebattle.GameProcess.Fsm do
 
   defstate initial do
     defevent create(params), data: data do
-      next_state(:waiting_opponent, %{data | game_id: params.game_id, first_player: params.user})
+      next_state(:waiting_opponent, %{data | game_id: params.game_id, first_player: params.user, task: params.task})
     end
 
     # For test
@@ -101,11 +101,11 @@ defmodule Codebattle.GameProcess.Fsm do
     defevent complete(params), data: data do
       case  user_role(params.user.id, data) do
         :first_player ->
-          store_playbook(data.first_player_diff, params.user.id, data.game_id)
+          store_playbook(data.first_player_diff, data.task.id, params.user.id, data.game_id)
           next_state(:player_won, %{data | winner: params.user})
 
         :second_player ->
-          store_playbook(data.second_player_diff, params.user.id, data.game_id)
+          store_playbook(data.second_player_diff, data.task.id, params.user.id, data.game_id)
           next_state(:player_won, %{data | winner: params.user})
 
         _ ->
@@ -166,9 +166,9 @@ defmodule Codebattle.GameProcess.Fsm do
     end
   end
 
-  defp store_playbook(diff, user_id, game_id) do
+  defp store_playbook(diff, task_id, user_id, game_id) do
     task_params = %{diff: diff,
-                    task_id: 1,
+                    task_id: task_id,
                     user_id: user_id,
                     game_id: game_id}
     Task.start(PlaybookStoreTask, :run, [task_params])

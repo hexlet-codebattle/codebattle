@@ -6,17 +6,17 @@
 # repositories directly:
 
 # create task for testing, delete after creating admin tools for crud on tasks
-Codebattle.Repo.get_by(Codebattle.Task, id: 1) ||
-    Codebattle.Repo.insert!(%Codebattle.Task{id: 1, description: "test_task"})
+# Codebattle.Repo.get_by(Codebattle.Task, id: 1) ||
+#     Codebattle.Repo.insert!(%Codebattle.Task{id: 1, description: "test_task"})
 
 #create a bot
-Codebattle.Repo.get_by(Codebattle.User, id: 0) ||
-  Codebattle.Repo.insert!(%Codebattle.User{
-    id: 0,
-    name: "bot",
-    email: "bot@bot.bot",
-    github_id: 0
-  })
+# Codebattle.Repo.get_by(Codebattle.User, id: 0) ||
+#   Codebattle.Repo.insert!(%Codebattle.User{
+#     id: 0,
+#     name: "bot",
+#     email: "bot@bot.bot",
+#     github_id: 0
+#   })
 #
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
