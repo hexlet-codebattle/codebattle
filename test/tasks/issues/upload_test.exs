@@ -30,7 +30,7 @@ defmodule Tasks.Issues.UploadTest do
     assert MapSet.equal?(task_names, issue_names)
   end
 
-  test "is indempotent", %{path: path, issue_names: issue_names} do
+  test "is idempotent", %{path: path, issue_names: issue_names} do
     Mix.Tasks.Issues.Upload.run([path])
     Mix.Tasks.Issues.Upload.run([path])
 
