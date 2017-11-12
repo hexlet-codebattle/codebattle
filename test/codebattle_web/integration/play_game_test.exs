@@ -75,7 +75,7 @@ defmodule Codebattle.PlayGameTest do
     editor_text3 = "Hello world3!"
 
     push socket1, "check_result", %{editor_text: editor_text1}
-    :timer.sleep(50)
+    :timer.sleep(100)
     fsm = Server.fsm(game_id)
 
     assert fsm.state == :player_won
@@ -89,7 +89,7 @@ defmodule Codebattle.PlayGameTest do
 
     # Winner cannot check results again
     push socket1, "check_result", %{editor_text: editor_text2}
-    :timer.sleep(50)
+    :timer.sleep(100)
     fsm = Server.fsm(game_id)
 
     assert fsm.state == :player_won
@@ -103,7 +103,7 @@ defmodule Codebattle.PlayGameTest do
 
     # Second player complete game
     push socket2, "check_result", %{editor_text: editor_text3}
-    :timer.sleep(50)
+    :timer.sleep(100)
 
     game = Repo.get Game, game_id
     user1 = Repo.get(User, user1.id)
