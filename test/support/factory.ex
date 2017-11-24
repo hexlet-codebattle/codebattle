@@ -19,7 +19,10 @@ defmodule CodebattleWeb.Factory do
   end
 
   def task_factory do
-    %Task{name: "task_name", description: "test_task", level: "hard", asserts: "{}\n{}"}
+    %Task{name: "test_task",
+      description: "test sum",
+      level: "hard",
+      asserts: "{\"arguments\":[1,1],\"expected\":2}"}
   end
 
   def bot_playbook_factory do

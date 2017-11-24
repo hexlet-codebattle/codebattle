@@ -1,6 +1,6 @@
 ExUnit.start(timeout: 99_999_999)
 
-ExUnit.configure(exclude: [pending: true], trace: true)
+ExUnit.configure(timeout: :infinity, exclude: [pending: true], trace: false)
 
 Faker.start
 

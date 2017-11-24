@@ -7,6 +7,7 @@ defmodule Codebattle.GameProcess.Play do
 
   alias Codebattle.{Repo, Game, User, UserGame}
   alias Codebattle.GameProcess.{Server, Supervisor, Fsm}
+  alias Codebattle.CodeCheck.Checker
 
   def list_games do
     Repo.all from p in Game,
@@ -51,8 +52,8 @@ defmodule Codebattle.GameProcess.Play do
     Server.call_transition(id, :join, %{user: user})
   end
 
-  def game_info(game_id) do
-    fsm = get_fsm(game_id)
+  def game_info(id) do
+    fsm = get_fsm(id)
     %{
       status: fsm.state, # :playing
       winner: fsm.data.winner,
@@ -67,20 +68,22 @@ defmodule Codebattle.GameProcess.Play do
     Server.call_transition(id, :update_editor_text, %{user_id: user_id, editor_text: editor_text})
   end
 
-  def check_game(id, user) do
-    case check_asserts() do
+  def check_game(id, user, editor_text) do
+    fsm = get_fsm(id)
+    case check_code(fsm.data.task, editor_text) do
       {:ok, true} ->
         {_response, fsm} = Server.call_transition(id, :complete, %{user: user})
         if fsm.state == :game_over do
           terminate_game(id, fsm)
         end
         {:ok, fsm}
+      {:error, reason} ->
+        {:error, reason}
     end
   end
 
-  defp check_asserts do
-    # Сюда впилим проверку clojure
-    {:ok, true}
+  defp check_code(task, editor_text) do
+    Checker.check(task, editor_text)
   end
 
   defp terminate_game(id, fsm) do

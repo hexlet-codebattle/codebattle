@@ -1,6 +1,8 @@
 defmodule Codebattle.PlayGameTest do
   use Codebattle.IntegrationCase
 
+  import Mock
+
   alias Codebattle.GameProcess.Server
   alias CodebattleWeb.GameChannel
 
@@ -23,95 +25,97 @@ defmodule Codebattle.PlayGameTest do
 
   test "Two users play game", %{conn1: conn1, conn2: conn2, socket1: socket1,
                                 socket2: socket2, user1: user1, user2: user2} do
+    with_mocks([ {Codebattle.CodeCheck.Checker, [], [ check: fn(a,b) -> {:ok, true} end ]} ]) do
 
-    # Create game
-    conn = post(conn1, game_path(conn1, :create))
+      # Create game
+      conn = post(conn1, game_path(conn1, :create))
 
-    game_location = conn.resp_headers
-                    |> Enum.find(&match?({"location", _}, &1))
-                    |> elem(1)
+      game_location = conn.resp_headers
+                      |> Enum.find(&match?({"location", _}, &1))
+                      |> elem(1)
 
-    game_id = ~r/\d+/ |> Regex.run(game_location) |> List.first |> String.to_integer
-    game_topic = "game:" <> to_string(game_id)
-    {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
+      game_id = ~r/\d+/ |> Regex.run(game_location) |> List.first |> String.to_integer
+      game_topic = "game:" <> to_string(game_id)
+      {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
 
-    fsm = Server.fsm(game_id)
+      fsm = Server.fsm(game_id)
 
-    assert fsm.state == :waiting_opponent
-    assert fsm.data.first_player.name == "first"
-    assert fsm.data.second_player == %User{}
-    assert fsm.data.winner == %User{}
-    assert fsm.data.loser == %User{}
-    assert fsm.data.game_over == false
+      assert fsm.state == :waiting_opponent
+      assert fsm.data.first_player.name == "first"
+      assert fsm.data.second_player == %User{}
+      assert fsm.data.winner == %User{}
+      assert fsm.data.loser == %User{}
+      assert fsm.data.game_over == false
 
-    # First player cannot join to game as second player
-    post(conn1, game_location <> "/join")
-    fsm = Server.fsm(game_id)
+      # First player cannot join to game as second player
+      post(conn1, game_location <> "/join")
+      fsm = Server.fsm(game_id)
 
-    assert fsm.state == :waiting_opponent
-    assert fsm.data.first_player.name == "first"
-    assert fsm.data.second_player == %User{}
-    assert fsm.data.winner == %User{}
-    assert fsm.data.loser == %User{}
-    assert fsm.data.game_over == false
+      assert fsm.state == :waiting_opponent
+      assert fsm.data.first_player.name == "first"
+      assert fsm.data.second_player == %User{}
+      assert fsm.data.winner == %User{}
+      assert fsm.data.loser == %User{}
+      assert fsm.data.game_over == false
 
-    # Second player join game
-    post(conn2, game_location <> "/join")
-    {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
-    fsm = Server.fsm(game_id)
+      # Second player join game
+      post(conn2, game_location <> "/join")
+      {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
+      fsm = Server.fsm(game_id)
 
-    assert fsm.state == :playing
-    assert fsm.data.first_player.name == "first"
-    assert fsm.data.second_player.name == "second"
-    assert fsm.data.winner == %User{}
-    assert fsm.data.loser == %User{}
-    assert fsm.data.game_over == false
-    assert fsm.data.first_player_editor_text == " "
-    assert fsm.data.second_player_editor_text == " "
+      assert fsm.state == :playing
+      assert fsm.data.first_player.name == "first"
+      assert fsm.data.second_player.name == "second"
+      assert fsm.data.winner == %User{}
+      assert fsm.data.loser == %User{}
+      assert fsm.data.game_over == false
+      assert fsm.data.first_player_editor_text == " "
+      assert fsm.data.second_player_editor_text == " "
 
-    # First player won
-    editor_text1 = "Hello world1!"
-    editor_text2 = "Hello world2!"
-    editor_text3 = "Hello world3!"
+      # First player won
+      editor_text1 = "Hello world1!"
+      editor_text2 = "Hello world2!"
+      editor_text3 = "Hello world3!"
 
-    push socket1, "check_result", %{editor_text: editor_text1}
-    :timer.sleep(100)
-    fsm = Server.fsm(game_id)
+      push socket1, "check_result", %{editor_text: editor_text1}
+      :timer.sleep(100)
+      fsm = Server.fsm(game_id)
 
-    assert fsm.state == :player_won
-    assert fsm.data.first_player.name == "first"
-    assert fsm.data.second_player.name == "second"
-    assert fsm.data.winner.name == "first"
-    assert fsm.data.loser == %User{}
-    assert fsm.data.game_over == false
-    assert fsm.data.first_player_editor_text == "Hello world1!"
-    assert fsm.data.second_player_editor_text == " "
+      assert fsm.state == :player_won
+      assert fsm.data.first_player.name == "first"
+      assert fsm.data.second_player.name == "second"
+      assert fsm.data.winner.name == "first"
+      assert fsm.data.loser == %User{}
+      assert fsm.data.game_over == false
+      assert fsm.data.first_player_editor_text == "Hello world1!"
+      assert fsm.data.second_player_editor_text == " "
 
-    # Winner cannot check results again
-    push socket1, "check_result", %{editor_text: editor_text2}
-    :timer.sleep(100)
-    fsm = Server.fsm(game_id)
+      # Winner cannot check results again
+      push socket1, "check_result", %{editor_text: editor_text2}
+      :timer.sleep(100)
+      fsm = Server.fsm(game_id)
 
-    assert fsm.state == :player_won
-    assert fsm.data.first_player.name == "first"
-    assert fsm.data.second_player.name == "second"
-    assert fsm.data.winner.name == "first"
-    assert fsm.data.loser == %User{}
-    assert fsm.data.game_over == false
-    assert fsm.data.first_player_editor_text == "Hello world2!"
-    assert fsm.data.second_player_editor_text == " "
+      assert fsm.state == :player_won
+      assert fsm.data.first_player.name == "first"
+      assert fsm.data.second_player.name == "second"
+      assert fsm.data.winner.name == "first"
+      assert fsm.data.loser == %User{}
+      assert fsm.data.game_over == false
+      assert fsm.data.first_player_editor_text == "Hello world2!"
+      assert fsm.data.second_player_editor_text == " "
 
-    # Second player complete game
-    push socket2, "check_result", %{editor_text: editor_text3}
-    :timer.sleep(100)
+      # Second player complete game
+      push socket2, "check_result", %{editor_text: editor_text3}
+      :timer.sleep(100)
 
-    game = Repo.get Game, game_id
-    user1 = Repo.get(User, user1.id)
-    user2 = Repo.get(User, user2.id)
+      game = Repo.get Game, game_id
+      user1 = Repo.get(User, user1.id)
+      user2 = Repo.get(User, user2.id)
 
-    assert game.state == "game_over"
-    assert user1.raiting == 11
-    assert user2.raiting == 9
+      assert game.state == "game_over"
+      assert user1.raiting == 11
+      assert user2.raiting == 9
+    end
   end
 
   test "other players cannot change game state", %{conn1: conn1, conn2: conn2, conn3: conn3, socket3: socket3} do
