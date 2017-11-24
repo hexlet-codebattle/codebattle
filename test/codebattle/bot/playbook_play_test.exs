@@ -123,27 +123,29 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
   end
 
   test "gracefully terminates process after over the game", %{user1: user1, socket1: socket1, conn1: conn1} do
-    # Create game
-    conn = post(conn1, game_path(conn1, :create))
-    game_location = conn.resp_headers
-                    |> Enum.find(&match?({"location", _}, &1))
-                    |> elem(1)
+    with_mocks([ {Codebattle.CodeCheck.Checker, [], [ check: fn(a,b) -> {:ok, true} end ]} ]) do
+      # Create game
+      conn = post(conn1, game_path(conn1, :create))
+      game_location = conn.resp_headers
+                      |> Enum.find(&match?({"location", _}, &1))
+                      |> elem(1)
 
-    game_id = ~r/\d+/ |> Regex.run(game_location) |> List.first |> String.to_integer
-    game_topic = "game:" <> to_string(game_id)
-    {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
-    push socket1, "editor:data", %{editor_text: "asdkfljlksajfd"}
+      game_id = ~r/\d+/ |> Regex.run(game_location) |> List.first |> String.to_integer
+      game_topic = "game:" <> to_string(game_id)
+      {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
+      push socket1, "editor:data", %{editor_text: "asdkfljlksajfd"}
 
-    # bot join game
-    :timer.sleep(@timeout + 50)
+      # bot join game
+      :timer.sleep(@timeout + 50)
 
-    # bot win game
-    :timer.sleep(50 * 5)
+      # bot win game
+      :timer.sleep(50 * 5)
 
 
-    # user1 check_result
-    push socket1, "check_result", %{editor_text: "asdkfljlksajfd"}
+      # user1 check_result
+      push socket1, "check_result", %{editor_text: "asdkfljlksajfd"}
 
-    :timer.sleep(50)
+      :timer.sleep(50)
+    end
   end
 end
