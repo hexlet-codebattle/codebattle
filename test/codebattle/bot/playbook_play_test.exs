@@ -99,25 +99,27 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
   end
 
   test "wins the game if first player do nothing", %{user1: user1, socket1: socket1, conn1: conn1} do
+    with_mocks([ {Codebattle.CodeCheck.Checker, [], [ check: fn(a,b) -> {:ok, true} end ]} ]) do
     # Create game
-    conn = post(conn1, game_path(conn1, :create))
-    game_location = conn.resp_headers
-                    |> Enum.find(&match?({"location", _}, &1))
-                    |> elem(1)
+      conn = post(conn1, game_path(conn1, :create))
+      game_location = conn.resp_headers
+                      |> Enum.find(&match?({"location", _}, &1))
+                      |> elem(1)
 
-    game_id = ~r/\d+/ |> Regex.run(game_location) |> List.first |> String.to_integer
-    game_topic = "game:" <> to_string(game_id)
-    {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
-    push socket1, "editor:data", %{editor_text: "asdkfljlksajfd"}
+      game_id = ~r/\d+/ |> Regex.run(game_location) |> List.first |> String.to_integer
+      game_topic = "game:" <> to_string(game_id)
+      {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
+      push socket1, "editor:data", %{editor_text: "asdkfljlksajfd"}
 
-    #bot join game
-    :timer.sleep(@timeout + 50)
+      #bot join game
+      :timer.sleep(@timeout + 50)
 
-    :timer.sleep(50 * 5)
-    fsm = Server.fsm(game_id)
+      :timer.sleep(50 * 5)
+      fsm = Server.fsm(game_id)
 
-    assert fsm.state == :player_won
-    assert fsm.data.winner.name == "superPlayer"
+      assert fsm.state == :player_won
+      assert fsm.data.winner.name == "superPlayer"
+    end
   end
 
   test "gracefully terminates process after over the game", %{user1: user1, socket1: socket1, conn1: conn1} do

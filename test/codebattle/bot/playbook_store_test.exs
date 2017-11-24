@@ -20,10 +20,15 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
   end
 
   test "stores first player playbook if he is winner", %{user1: user1, user2: user2, socket1: socket1, socket2: socket2} do
-    with_mocks([{NaiveDateTime, [], [
-      diff: fn(a, b, c) -> 100 end,
-      utc_now: fn -> Helpers.TimeStorage.next() end,
-    ]}]) do
+    with_mocks([
+      {NaiveDateTime, [], [
+        diff: fn(a, b, c) -> 100 end,
+        utc_now: fn ->  Helpers.TimeStorage.next() end,
+      ]},
+      {Codebattle.CodeCheck.Checker, [], [
+        check: fn(a,b) -> {:ok, true} end
+      ]}
+    ]) do
 
     #setup
     state = :playing
@@ -57,10 +62,15 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
   end
 
   test "stores second player playbook if he is winner", %{user1: user1, user2: user2, socket1: socket1, socket2: socket2} do
-    with_mocks([{NaiveDateTime, [], [
-      diff: fn(a, b, c) -> 100 end,
-      utc_now: fn ->  Helpers.TimeStorage.next() end,
-    ]}]) do
+    with_mocks([
+      {NaiveDateTime, [], [
+        diff: fn(a, b, c) -> 100 end,
+        utc_now: fn ->  Helpers.TimeStorage.next() end,
+      ]},
+      {Codebattle.CodeCheck.Checker, [], [
+        check: fn(a,b) -> {:ok, true} end
+      ]}
+    ]) do
 
       #setup
       state = :playing

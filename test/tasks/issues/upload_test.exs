@@ -3,8 +3,10 @@ defmodule Tasks.Issues.UploadTest do
 
   alias Codebattle.{Repo, Task}
 
+  @root_dir File.cwd!
+
   setup do
-    path = File.cwd! |> Path.join("test/support/fixtures/issues")
+    path = Path.join(@root_dir, "test/support/fixtures/issues")
     issue_names =
       path
       |> File.ls!

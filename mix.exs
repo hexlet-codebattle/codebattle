@@ -28,8 +28,10 @@ defmodule Codebattle.Mixfile do
   # Type `mix help compile.app` for more information.
   def application do
     [mod: {Codebattle, []},
-     applications: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext, :phoenix_gon,
-                    :phoenix_ecto, :postgrex, :yaml_elixir, :ueberauth, :ueberauth_github, :gproc, :ex_machina]]
+     applications: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy,
+                    :logger, :gettext, :phoenix_gon, :phoenix_ecto,
+                    :postgrex, :yaml_elixir, :ueberauth, :ueberauth_github,
+                    :gproc, :ex_machina]]
   end
 
   # Specifies which paths to compile per environment.
@@ -57,6 +59,7 @@ defmodule Codebattle.Mixfile do
      {:diff, "~> 1.0.0"},
      {:rollbax, "~> 0.6"},
      {:yaml_elixir, "~> 1.1"},
+     {:temp, "~> 0.4"},
 
      #dev_and_test
      {:credo, "~> 0.8", only: [:dev, :test], runtime: false},
