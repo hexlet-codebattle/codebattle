@@ -6,6 +6,7 @@ defmodule CodebattleWeb.GameChannelTest do
   setup do
     user1 = insert(:user)
     user2 = insert(:user)
+    task = insert(:task)
 
     user_token1 = Phoenix.Token.sign(socket(), "user_token", user1.id)
     {:ok, socket1} = connect(CodebattleWeb.UserSocket, %{"token" => user_token1})
@@ -13,13 +14,13 @@ defmodule CodebattleWeb.GameChannelTest do
     user_token2 = Phoenix.Token.sign(socket(), "user_token", user2.id)
     {:ok, socket2} = connect(CodebattleWeb.UserSocket, %{"token" => user_token2})
 
-    {:ok, %{user1: user1, user2: user2, socket1: socket1, socket2: socket2}}
+    {:ok, %{user1: user1, user2: user2, socket1: socket1, socket2: socket2, task: task}}
   end
 
-  test "sends game info when user join", %{user1: user1, socket1: socket1} do
+  test "sends game info when user join", %{user1: user1, socket1: socket1, task: task} do
     #setup
     state = :waiting_opponent
-    data = %{first_player: user1}
+    data = %{first_player: user1, task: task}
     game = setup_game(state, data)
     game_topic = "game:" <> to_string(game.id)
 
@@ -44,6 +45,12 @@ defmodule CodebattleWeb.GameChannelTest do
       },
       first_player_editor_text: " ",
       second_player_editor_text: " ",
+      task: %{
+        id: task.id,
+        level: task.level,
+        name: task.name,
+        description: task.description,
+      },
     })
   end
 
