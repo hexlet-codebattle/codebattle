@@ -70,7 +70,7 @@ class GameWidget extends Component {
     return (
       <div>
         <div className="row mt-3 mx-auto">
-          <div className="col-md-6">
+          <div className="col-md-12">
             <GameStatusTab />
           </div>
         </div>
