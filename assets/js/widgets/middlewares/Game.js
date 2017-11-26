@@ -18,6 +18,7 @@ const initGameChannel = (dispatch) => {
       second_player,
       first_player_editor_data,
       second_player_editor_data,
+      task,
     } = response;
 
     dispatch(UserActions.updateUsers([{
@@ -34,7 +35,8 @@ const initGameChannel = (dispatch) => {
 
     dispatch(GameActions.updateStatus({ status, winner }));
 
-    dispatch(EditorActions.updateEditorData(first_player.id, first_player_editor_data));
+    dispatch(GameActions.setTask(task));
+    dispatch(EditorActions.updateEditorData(second_player.id, first_player_editor_data));
     dispatch(EditorActions.updateEditorData(second_player.id, second_player_editor_data));
   };
 

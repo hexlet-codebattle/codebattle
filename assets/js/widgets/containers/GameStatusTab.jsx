@@ -1,13 +1,15 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import i18n from '../../i18n';
 import _ from 'lodash';
+import ReactMarkdown from 'react-markdown';
+import i18n from '../../i18n';
 import { usersSelector, currentUserIdSelector } from '../redux/UserRedux';
 import GameStatuses from '../config/gameStatuses';
 import {
   gameStatusSelector,
   gameStatusTitleSelector,
+  gameTaskSelector,
 } from '../redux/GameRedux';
 import { checkGameResult } from '../middlewares/Game';
 import userTypes from '../config/userTypes';
@@ -30,7 +32,7 @@ class GameStatusTab extends Component {
   }
 
   render() {
-    const { users, status, title, checkResult, currentUserId } = this.props;
+    const { users, status, title, checkResult, currentUserId, task } = this.props;
     const createUserBadge = user =>
       user.id && <li key={user.id}>{`${user.name}(${user.raiting})`}</li>;
     const badges = _.values(users)
@@ -43,15 +45,29 @@ class GameStatusTab extends Component {
 
     return (
       <div className="card mt-4 h-100 border-0">
-        {!canCheckResult ? null :
+        {!canCheckResult ? null : (
           <button
             className="btn btn-success"
             onClick={checkResult}
           >
             {i18n.t('Check result')}
           </button>
-        }
+        )}
         <h2>{title}</h2>
+        {_.isEmpty(task) ? null : (
+          <div className="card">
+            <div className="card-body">
+              <h4 className="card-title">{task.name}</h4>
+              <h6 className="card-subtitle text-muted">
+                {`${i18n.t('Level')}: ${task.level}`}
+              </h6>
+              <ReactMarkdown
+                className="card-text"
+                source={task.description}
+              />
+            </div>
+          </div>
+        )}
         <p>Players</p>
         <ul>{badges}</ul>
         {status}
@@ -65,10 +81,11 @@ const mapStateToProps = state => ({
   currentUserId: currentUserIdSelector(state),
   status: gameStatusSelector(state).status,
   title: gameStatusTitleSelector(state),
+  task: gameTaskSelector(state),
 });
 
 const mapDispatchToProps = dispatch => ({
-  checkResult: () => dispatch(checkGameResult())
+  checkResult: () => dispatch(checkGameResult()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(GameStatusTab);

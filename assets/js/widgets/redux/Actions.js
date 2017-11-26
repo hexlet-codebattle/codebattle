@@ -13,4 +13,5 @@ export const { Types: UserTypes, Creators: UserActions } = createActions({
 
 export const { Types: GameTypes, Creators: GameActions } = createActions({
   updateStatus: ['gameStatus'],
+  setTask: ['task'],
 });

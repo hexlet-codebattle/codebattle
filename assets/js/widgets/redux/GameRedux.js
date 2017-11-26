@@ -3,7 +3,7 @@ import Immutable from 'seamless-immutable';
 import { createReducer } from 'reduxsauce';
 import { GameTypes as Types } from './Actions';
 import GameStatuses from '../config/gameStatuses';
-import i18next from '../../i18n';
+import i18n from '../../i18n';
 
 /* ------------- Initial State ------------- */
 
@@ -12,15 +12,23 @@ export const INITIAL_STATE = Immutable({
     status: GameStatuses.initial,
     winner: {},
   },
+  task: {
+    id: null,
+    name: null,
+    description: null,
+    level: null,
+  },
 });
 
 /* ------------- Reducers ------------- */
 
 const updateStatus = (state, { gameStatus }) => state.merge({ gameStatus });
+const setTask = (state, { task }) => state.merge({ task });
 
 /* ------------- Hookup Reducers To Types ------------- */
 export const reducer = createReducer(INITIAL_STATE, {
   [Types.UPDATE_STATUS]: updateStatus,
+  [Types.SET_TASK]: setTask,
 });
 
 /* ------------- Selectors ------------- */
@@ -31,18 +39,21 @@ export const gameStatusTitleSelector = (state) => {
   const gameStatus = gameStatusSelector(state);
   switch (gameStatus.status) {
     case GameStatuses.waitingOpponent:
-      return i18next
-        .t('State: {{state}}', { state: i18next.t('Waiting opponent') });
+      return i18n
+        .t('State: {{state}}', { state: i18n.t('Waiting opponent') });
     case GameStatuses.playing:
-      return i18next
-        .t('State: {{state}}', { state: i18next.t('Playing') });
+      return i18n
+        .t('State: {{state}}', { state: i18n.t('Playing') });
     case GameStatuses.playerWon:
-      return i18next
+      return i18n
         .t('The winner is: {{name}}', { name: gameStatus.winner.name });
     case GameStatuses.gameOver:
-      return i18next
+      return i18n
         .t('Game over. The winner is: {{name}}', { name: gameStatus.winner.name });
     default:
       return '';
   }
 };
+
+// FIXME: rename first-level "gameStatus" to "game"
+export const gameTaskSelector = state => state.gameStatus.task;
