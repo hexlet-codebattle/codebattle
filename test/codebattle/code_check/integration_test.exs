@@ -52,7 +52,7 @@ defmodule Codebattle.CodeCheck.IntegrationTest do
     push socket1, "editor:data", %{editor_text: "test"}
     push socket1, "check_result", %{
       editor_text:
-      "exports.func = function solution(a,b) { return a + b; }"
+      "export default (a,b) => { return a + b; }"
     }
 
     :timer.sleep 2_000
