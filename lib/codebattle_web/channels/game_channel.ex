@@ -10,6 +10,7 @@ defmodule CodebattleWeb.GameChannel do
   def join("game:" <> game_id, _payload, socket) do
     send(self(), :after_join)
     game_info = Play.game_info(game_id)
+
     {:ok, game_info, socket}
   end
 

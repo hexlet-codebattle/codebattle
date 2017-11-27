@@ -28,29 +28,12 @@ defmodule CodebattleWeb.GameChannelTest do
 
     assert Poison.encode(response) == Poison.encode(%{
       status: :waiting_opponent,
-      winner:  %{
-        id: nil,
-        name: nil,
-        raiting: nil,
-      },
-      first_player: %{
-        id: user1.id,
-        name: user1.name,
-        raiting: user1.raiting,
-      },
-      second_player: %{
-        id: nil,
-        name: nil,
-        raiting: nil,
-      },
+      winner: %Codebattle.User{},
+      first_player: user1,
+      second_player: %Codebattle.User{},
       first_player_editor_text: " ",
       second_player_editor_text: " ",
-      task: %{
-        id: task.id,
-        level: task.level,
-        name: task.name,
-        description: task.description,
-      },
+      task: task,
     })
   end
 
@@ -62,22 +45,18 @@ defmodule CodebattleWeb.GameChannelTest do
     game_topic = "game:" <> to_string(game.id)
     {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
 
-    payload = %{
-      first_player: %{id: user1.id, name: user1.name, raiting: user1.raiting},
-      second_player: %{id: user2.id, name: user2.name, raiting: user2.raiting},
-      status: :playing,
-      winner:  %{
-        id: nil,
-        name: nil,
-        raiting: nil,
-      },
-    }
 
     assert_receive %Phoenix.Socket.Broadcast{
       topic: ^game_topic,
       event: "user:joined",
-      # payload: ^payload,
+      payload: response,
     }
+    assert Poison.encode(response) == Poison.encode(%{
+      first_player: user1,
+      second_player: user2,
+      status: :playing,
+      winner: %Codebattle.User{}
+    })
   end
 
   test "broadcasts editor:update, after editor:data", %{user1: user1, user2: user2, socket1: socket1, socket2: socket2} do
