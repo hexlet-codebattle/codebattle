@@ -116,8 +116,13 @@ upload_asserts:
 	 mix issues.generate
 	 mix issues.upload
 
-release:
+release-build:
 	env MIX_ENV=prod mix edeliver build release
-	mix edeliver deploy release to production --version="$VER"
 
+release-deploy:
+	mix edeliver deploy release to production --version=$(VER)
+
+release:
+	make release-build
+	make release-deploy
 .PHONY: test
