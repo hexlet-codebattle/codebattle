@@ -22,11 +22,11 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
   test "stores first player playbook if he is winner", %{user1: user1, user2: user2, socket1: socket1, socket2: socket2} do
     with_mocks([
       {NaiveDateTime, [], [
-        diff: fn(a, b, c) -> 100 end,
+        diff: fn(_a, _b, _c) -> 100 end,
         utc_now: fn ->  Helpers.TimeStorage.next() end,
       ]},
       {Codebattle.CodeCheck.Checker, [], [
-        check: fn(a,b) -> {:ok, true} end
+        check: fn(_a, _b) -> {:ok, true} end
       ]}
     ]) do
 
@@ -40,7 +40,7 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
       editor_text3 = "tes"
 
       {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
-      {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
+      {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
       :lib.flush_receive()
 
       push socket1, "editor:data", %{editor_text: editor_text1}
@@ -64,11 +64,11 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
   test "stores second player playbook if he is winner", %{user1: user1, user2: user2, socket1: socket1, socket2: socket2} do
     with_mocks([
       {NaiveDateTime, [], [
-        diff: fn(a, b, c) -> 100 end,
+        diff: fn(_a, _b, _c) -> 100 end,
         utc_now: fn ->  Helpers.TimeStorage.next() end,
       ]},
       {Codebattle.CodeCheck.Checker, [], [
-        check: fn(a,b) -> {:ok, true} end
+        check: fn(_a, _b) -> {:ok, true} end
       ]}
     ]) do
 
@@ -81,7 +81,7 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
       editor_text2 = "te"
       editor_text3 = "tes"
 
-      {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
+      {:ok, _response, _socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
       {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
       :lib.flush_receive()
 
@@ -106,7 +106,7 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
   @tag :pending
   test "stores null", %{user1: user1, user2: user2, socket1: socket1, socket2: socket2} do
     with_mocks([{NaiveDateTime, [], [
-      diff: fn(a, b, c) -> 100 end,
+      diff: fn(_a, _b, _c) -> 100 end,
       utc_now: fn ->  Helpers.TimeStorage.next() end,
     ]}]) do
 
@@ -116,7 +116,7 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
       game = setup_game(state, data)
       game_topic = "game:" <> to_string(game.id)
 
-      {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
+      {:ok, _response, _socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
       {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
       :lib.flush_receive()
 

@@ -33,6 +33,7 @@ tags
 .vagrant
 *.DS_Store
 .env
+.deliver/config
 
 # Generated reports
 cover

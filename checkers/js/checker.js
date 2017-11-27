@@ -1,3 +1,5 @@
+import solution  from "./solution";
+
 const readline = require("readline");
 const chai = require("chai");
 
@@ -17,15 +19,15 @@ rl.on("line", function(line) {
 })
 
 rl.on("close", function() {
-  const solution = require("./solution").default;
 
   checks.forEach(function(check) {
     if (check["check"]) {
       process.stdout.write(check["check"]);
     } else {
-      result = solution.apply(null, check.arguments);
+      var result = solution.apply(null, check.arguments);
       const msg = check.arguments.map(function(arg) { return JSON.stringify(arg) }).join(", ");
       assert.deepEqual(result, check.expected, "Arguments was: (" + msg + ")");
     }
   });
 });
+

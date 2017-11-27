@@ -6,7 +6,7 @@ defmodule Codebattle.Mixfile do
 
   def project do
     [app: :codebattle,
-     version: "0.0.2",
+     version: "0.0.5",
      elixir: "~> 1.5",
      elixirc_paths: elixirc_paths(Mix.env),
      compilers: [:phoenix, :gettext] ++ Mix.compilers,
@@ -31,7 +31,10 @@ defmodule Codebattle.Mixfile do
      applications: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy,
                     :logger, :gettext, :phoenix_gon, :phoenix_ecto,
                     :postgrex, :yaml_elixir, :ueberauth, :ueberauth_github,
-                    :gproc, :ex_machina]]
+                    :gproc, :ex_machina, :edeliver,
+
+                    # For distillery
+                    :fsm, :diff, :temp]]
   end
 
   # Specifies which paths to compile per environment.
@@ -57,9 +60,10 @@ defmodule Codebattle.Mixfile do
      {:poison, "~> 3.1.0", override: true},
      {:phoenix_gon, "~> 0.2.0"},
      {:diff, "~> 1.0.0"},
-     {:rollbax, "~> 0.6"},
      {:yaml_elixir, "~> 1.1"},
      {:temp, "~> 0.4"},
+     {:edeliver, "~> 1.4.4"},
+     {:distillery, ">= 0.8.0", warn_missing: false},
 
      #dev_and_test
      {:credo, "~> 0.8", only: [:dev, :test], runtime: false},

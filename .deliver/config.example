@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+APP="codebattle" # <--- THIS MUST MATCH THE NAME OF THE RELEASE IN rel/config.exs
+                 #      AND THE NAME OF THE APP IN config/mix.exs!!!!!!!!!!
+
+# Configuration of where the releases would be built.
+BUILD_HOST="codebattle.hexlet.io" # change to your server's IP address
+BUILD_USER="YOUR_USER"
+BUILD_AT="/home/YOUR_USER/codebattle/codebattle_builds"
+BUILD_ASSETS_AT="$BUILD_AT/assets"
+
+# The location where built releases are going to be stored.
+RELEASE_STORE=YOUR_USER@codebattle.hexlet.io:/home/YOUR_USER/codebattle/releases/
+
+# Host and use of where the app would run.
+PRODUCTION_HOSTS="codebattle.hexlet.io" # same host in our case.
+PRODUCTION_USER="YOUR_USER"
+
+DELIVER_TO="/home/YOUR_USER/codebattle"
+
+pre_erlang_get_and_update_deps() {
+ # copy it on the build host to the build directory when building
+ local _secret_config_file_on_build_host="/home/YOUR_USER/codebattle/prod.secret.exs"
+
+ status "Linking '$_secret_config_file_on_build_host' to build config dir"
+ __sync_remote "
+   ln -sfn '$_secret_config_file_on_build_host' '$BUILD_AT/config/prod.secret.exs'
+ "
+}
+
+pre_erlang_clean_compile() {
+ status "Installing nodejs dependencies"
+ __sync_remote "
+   [ -f ~/.profile ] && source ~/.profile
+   set -e
+   cd '$BUILD_ASSETS_AT'
+
+   APP='$APP' MIX_ENV='$TARGET_MIX_ENV' yarn install
+ "
+
+ status "Building brunch assets"
+ __sync_remote "
+   [ -f ~/.profile ] && source ~/.profile
+   set -e
+   cd '$BUILD_AT'
+   mkdir -p priv/static
+
+   cd '$BUILD_ASSETS_AT'
+   APP='$APP' MIX_ENV='$TARGET_MIX_ENV' yarn deploy
+ "
+
+ status "Compiling code"
+ __sync_remote "
+   [ -f ~/.profile ] && source ~/.profile
+   set -e #
+   cd '$BUILD_AT'
+
+   APP='$APP' MIX_ENV='$TARGET_MIX_ENV' $MIX_CMD do deps.get, compile
+ "
+
+ status "Running phoenix.digest"
+ __sync_remote "
+   [ -f ~/.profile ] && source ~/.profile
+   set -e #
+   cd '$BUILD_AT'
+
+   APP='$APP' MIX_ENV='$TARGET_MIX_ENV' $MIX_CMD phoenix.digest $SILENCE
+ "
+}

@@ -12,7 +12,7 @@ config :codebattle, CodebattleWeb.Endpoint,
   code_reloader: true,
   check_origin: false,
   cache_static_lookup: false,
-	watchers: [
+  watchers: [
     yarn: ["watch", cd: Path.expand("../assets", __DIR__)],
   ]
 

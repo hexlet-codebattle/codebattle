@@ -67,14 +67,15 @@ defmodule Codebattle.GameProcess.Fsm do
           # TOD : fix empty string diff
           time = data.first_player_time || NaiveDateTime.utc_now
           new_time = NaiveDateTime.utc_now
+          editor_text = if params.editor_text == "", do: " ", else: params.editor_text
           diff = [%{
-            diff: inspect(Diff.diff(data.first_player_editor_text, params.editor_text)),
+            diff: inspect(Diff.diff(data.first_player_editor_text, editor_text)),
             time: NaiveDateTime.diff(new_time, time, :millisecond)
           }]
 
           new_diff = data.first_player_diff ++ diff
           next_state(:playing, %{data |
-            first_player_editor_text: params.editor_text,
+            first_player_editor_text: editor_text,
             first_player_diff: new_diff,
             first_player_time: new_time
           })
@@ -82,14 +83,15 @@ defmodule Codebattle.GameProcess.Fsm do
         :second_player ->
           time = data.second_player_time || NaiveDateTime.utc_now
           new_time = NaiveDateTime.utc_now
+          editor_text = if params.editor_text == "", do: " ", else: params.editor_text
           diff = [%{
-            diff: inspect(Diff.diff(data.second_player_editor_text, params.editor_text)),
+            diff: inspect(Diff.diff(data.second_player_editor_text, editor_text)),
             time: NaiveDateTime.diff(new_time, time, :millisecond)
           }]
 
           new_diff = data.second_player_diff ++ diff
           next_state(:playing, %{data |
-            second_player_editor_text: params.editor_text,
+            second_player_editor_text: editor_text,
             second_player_diff: new_diff,
             second_player_time: new_time
           })

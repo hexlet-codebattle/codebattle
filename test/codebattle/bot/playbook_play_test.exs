@@ -4,8 +4,6 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
   import Mock
 
   alias CodebattleWeb.GameChannel
-  alias Codebattle.Bot.Playbook
-  alias Codebattle.Repo
   alias Codebattle.GameProcess.Server
 
   @timeout Application.get_env(:codebattle, Codebattle.Bot)[:timeout]
@@ -31,7 +29,7 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
     {:ok, %{user1: user1, socket1: socket1, conn1: conn1, task: task, playbook: playbook, bot: bot}}
   end
 
-  test "waits timeout before joins game", %{user1: user1, socket1: socket1, conn1: conn1} do
+  test "waits timeout before joins game", %{socket1: socket1, conn1: conn1} do
     # Create game
     conn = post(conn1, game_path(conn1, :create))
     game_location = conn.resp_headers
@@ -40,7 +38,7 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
 
     game_id = ~r/\d+/ |> Regex.run(game_location) |> List.first |> String.to_integer
     game_topic = "game:" <> to_string(game_id)
-    {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
+    {:ok, _response, _socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
 
     :timer.sleep(@timeout - 10)
     fsm = Server.fsm(game_id)
@@ -48,7 +46,7 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
     assert fsm.state == :waiting_opponent
   end
 
-  test "joins game after timeout", %{user1: user1, socket1: socket1, conn1: conn1} do
+  test "joins game after timeout", %{socket1: socket1, conn1: conn1} do
     # Create game
     conn = post(conn1, game_path(conn1, :create))
     game_location = conn.resp_headers
@@ -57,7 +55,7 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
 
     game_id = ~r/\d+/ |> Regex.run(game_location) |> List.first |> String.to_integer
     game_topic = "game:" <> to_string(game_id)
-    {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
+    {:ok, _response, _socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
 
     :timer.sleep(@timeout + 50)
     fsm = Server.fsm(game_id)
@@ -65,7 +63,7 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
     assert fsm.state == :playing
   end
 
-  test "pushes editors text to game with timeouts", %{user1: user1, socket1: socket1, conn1: conn1} do
+  test "pushes editors text to game with timeouts", %{socket1: socket1, conn1: conn1} do
     # Create game
     conn = post(conn1, game_path(conn1, :create))
     game_location = conn.resp_headers
@@ -98,8 +96,8 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
     assert fsm.data.second_player_editor_text == "tes"
   end
 
-  test "wins the game if first player do nothing", %{user1: user1, socket1: socket1, conn1: conn1} do
-    with_mocks([ {Codebattle.CodeCheck.Checker, [], [ check: fn(a,b) -> {:ok, true} end ]} ]) do
+  test "wins the game if first player do nothing", %{socket1: socket1, conn1: conn1} do
+    with_mocks([{Codebattle.CodeCheck.Checker, [], [check: fn(_a, _b) -> {:ok, true} end]}]) do
     # Create game
       conn = post(conn1, game_path(conn1, :create))
       game_location = conn.resp_headers
@@ -122,8 +120,8 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
     end
   end
 
-  test "gracefully terminates process after over the game", %{user1: user1, socket1: socket1, conn1: conn1} do
-    with_mocks([ {Codebattle.CodeCheck.Checker, [], [ check: fn(a,b) -> {:ok, true} end ]} ]) do
+  test "gracefully terminates process after over the game", %{socket1: socket1, conn1: conn1} do
+    with_mocks([{Codebattle.CodeCheck.Checker, [], [check: fn(_a, _b) -> {:ok, true} end]}]) do
       # Create game
       conn = post(conn1, game_path(conn1, :create))
       game_location = conn.resp_headers

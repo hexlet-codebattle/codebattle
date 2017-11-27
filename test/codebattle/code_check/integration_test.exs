@@ -2,7 +2,6 @@ defmodule Codebattle.CodeCheck.IntegrationTest do
   use Codebattle.IntegrationCase
 
   alias CodebattleWeb.GameChannel
-  alias Codebattle.Repo
   alias Codebattle.GameProcess.Server
 
   setup do
@@ -26,7 +25,7 @@ defmodule Codebattle.CodeCheck.IntegrationTest do
     game_topic = "game:" <> to_string(game.id)
 
     {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
-    {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
+    {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
     :lib.flush_receive()
 
     push socket1, "editor:data", %{editor_text: "dsf"}
@@ -47,13 +46,13 @@ defmodule Codebattle.CodeCheck.IntegrationTest do
     game_topic = "game:" <> to_string(game.id)
 
     {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
-    {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
+    {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
     :lib.flush_receive()
 
     push socket1, "editor:data", %{editor_text: "test"}
-    ref = push socket1, "check_result", %{
+    push socket1, "check_result", %{
       editor_text:
-      "exports.func = function solution(a,b) { return a + b; }"
+      "export default (a,b) => { return a + b; }"
     }
 
     :timer.sleep 2_000
