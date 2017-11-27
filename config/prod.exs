@@ -13,6 +13,8 @@ use Mix.Config
 # which you typically run after static files are built.
 
 config :codebattle, CodebattleWeb.Endpoint,
+  http: [port: 4000],
+  url: [scheme: "http", host: "codebattle.hexlet.io", port: 80],
   cache_static_manifest: "priv/static/cache_manifest.json",
   server: true,
   root: ".",

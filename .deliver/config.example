@@ -5,8 +5,8 @@ APP="codebattle" # <--- THIS MUST MATCH THE NAME OF THE RELEASE IN rel/config.ex
 # Configuration of where the releases would be built.
 BUILD_HOST="codebattle.hexlet.io" # change to your server's IP address
 BUILD_USER="YOUR_USER"
-BUILD_AT="/home/app/mysite.com/codebattle_builds"
-BUILD_ASSETS_AT='$BUILD_AT/assets'
+BUILD_AT="/home/YOUR_USER/codebattle/codebattle_builds"
+BUILD_ASSETS_AT="$BUILD_AT/assets"
 
 # The location where built releases are going to be stored.
 RELEASE_STORE=YOUR_USER@codebattle.hexlet.io:/home/YOUR_USER/codebattle/releases/
