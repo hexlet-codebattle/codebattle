@@ -1,11 +1,14 @@
-h1 = gettext "Game: %{id}", id: @fsm.data.game_id
-- users = get_users(@fsm)
+.row.justify-content-between
+  .col
+    h1 = gettext "Game: %{id}", id: @fsm.data.game_id
+    - users = get_users(@fsm)
 
-= link to: game_path(@conn, :index) do
-  = gettext "Back to game list"
+  .col.text-right
+    = link to: game_path(@conn, :index) do
+      = gettext "Back to game list"
 
 .row
-  #game-widget-root
+  .container-fluid#game-widget-root
 
 = if @conn.assigns[:is_authenticated?] do
   .row.mt-0.chat.mb-5
