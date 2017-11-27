@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import Immutable from 'seamless-immutable';
 import { createReducer } from 'reduxsauce';
 import { GameTypes as Types } from './Actions';
@@ -12,12 +11,7 @@ export const INITIAL_STATE = Immutable({
     status: GameStatuses.initial,
     winner: {},
   },
-  task: {
-    id: null,
-    name: null,
-    description: null,
-    level: null,
-  },
+  task: null,
 });
 
 /* ------------- Reducers ------------- */

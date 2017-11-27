@@ -21,7 +21,12 @@ class Editor extends Component {
   }
 
   render() {
-    const { value, name, editable, onChange } = this.props;
+    const {
+      value,
+      name,
+      editable,
+      onChange,
+    } = this.props;
 
     return (
       <AceEditor
@@ -32,6 +37,8 @@ class Editor extends Component {
         value={value}
         readOnly={!editable}
         editorProps={{ $blockScrolling: true }}
+        width="auto"
+        fontSize={16}
       />
     );
   }
