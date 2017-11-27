@@ -31,7 +31,10 @@ defmodule Codebattle.Mixfile do
      applications: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy,
                     :logger, :gettext, :phoenix_gon, :phoenix_ecto,
                     :postgrex, :yaml_elixir, :ueberauth, :ueberauth_github,
-                    :gproc, :ex_machina, :edeliver, :fsm]]
+                    :gproc, :ex_machina, :edeliver,
+
+                    # For distillery
+                    :fsm, :diff, :temp]]
   end
 
   # Specifies which paths to compile per environment.
