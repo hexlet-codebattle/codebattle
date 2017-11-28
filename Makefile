@@ -125,4 +125,8 @@ release-deploy:
 release:
 	make release-build
 	make release-deploy
+
+release-upgrade:
+	MIX_ENV=prod mix edeliver upgrade production
+
 .PHONY: test
