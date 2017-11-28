@@ -48,10 +48,10 @@ defmodule CodebattleWeb.GameChannel do
         _ ->
             gettext "You lose the game"
       end
-      {:reply, {:ok, %{status: fsm.state, msg: msg, winner: winner}}, socket}
+      {:reply, {:ok, %{solution_status: true, status: fsm.state, msg: msg, winner: winner}}, socket}
 
-    {:error, reason} ->
-      {:reply, {:ok, %{error: true, reason: reason}}, socket}
+    {:error, _} ->
+      {:reply, {:ok, %{solution_status: false}}, socket}
     end
   end
 
