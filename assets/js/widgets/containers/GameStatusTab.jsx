@@ -32,30 +32,33 @@ class GameStatusTab extends Component {
   }
 
   render() {
-    const { users, status, title, checkResult, currentUserId, task } = this.props;
-    const createUserBadge = user =>
-      user.id && <li key={user.id}>{`${user.name}(${user.raiting})`}</li>;
-    const badges = _.values(users)
-      .map(createUserBadge);
+    const {
+      users,
+      gameStatus,
+      title,
+      checkResult,
+      currentUserId,
+      task
+    } = this.props;
     const userType = _.get(users[currentUserId], 'type', null);
     const allowedGameStatuses = [GameStatuses.playing, GameStatuses.playerWon];
-    const canCheckResult = _.includes(allowedGameStatuses, status) &&
+    const canCheckResult = _.includes(allowedGameStatuses, gameStatus.status) &&
       userType &&
       (userType !== userTypes.spectator);
 
     return (
       <div className="card mt-4 h-100 border-0">
-        {!canCheckResult ? null : (
-          <button
-            className="btn btn-success"
-            onClick={checkResult}
-          >
-            {i18n.t('Check result')}
-          </button>
-        )}
         <h2>{title}</h2>
+        <p>Players</p>
+        {_.isEmpty(users) ? null : (
+          <ul>
+            {_.map(_.values(users), user => (
+              <li key={user.id}>{`${user.name}(${user.raiting})`}</li>
+            ))}
+          </ul>
+        )}
         {_.isEmpty(task) ? null : (
-          <div className="card">
+          <div className="card mb-3">
             <div className="card-body">
               <h4 className="card-title">{task.name}</h4>
               <h6 className="card-subtitle text-muted">
@@ -68,9 +71,41 @@ class GameStatusTab extends Component {
             </div>
           </div>
         )}
-        <p>Players</p>
-        <ul>{badges}</ul>
-        {status}
+        <div className="row">
+          <div className="col">
+            {!canCheckResult ? null : (
+              <div>
+                <button
+                  className="btn btn-success"
+                  onClick={checkResult}
+                  disabled={gameStatus.checking}
+                >
+                  {gameStatus.checking ? i18n.t('Checking...') : i18n.t('Check result')}
+                </button>
+              </div>
+            )}
+          </div>
+          <div className="col text-right">
+            <h3>
+              <span className="p-3 badge badge-danger">
+                {gameStatus.status}
+              </span>
+            </h3>
+          </div>
+        </div>
+        <div className="row">
+          {gameStatus.solutionStatus === false ? (
+            <div className="alert alert-danger alert-dismissible fade show">
+              {i18n.t('Checking failed')}
+            </div>
+          ) : null}
+          {gameStatus.solutionStatus === true ? (
+            <div className="alert alert-success alert-dismissible fade show">
+              <span aria-hidden="true">{'&times;'}</span>
+              {i18n.t('All test are passed!!11')}
+            </div>
+          ) : null}
+        </div>
       </div>
     );
   }
@@ -79,7 +114,7 @@ class GameStatusTab extends Component {
 const mapStateToProps = state => ({
   users: usersSelector(state),
   currentUserId: currentUserIdSelector(state),
-  status: gameStatusSelector(state).status,
+  gameStatus: gameStatusSelector(state),
   title: gameStatusTitleSelector(state),
   task: gameTaskSelector(state),
 });

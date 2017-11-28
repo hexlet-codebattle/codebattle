@@ -89,9 +89,11 @@ export const checkGameResult = () => (dispatch, getState) => {
   const currentUserId = currentUserIdSelector(state);
   const currentUserEditor = editorsSelector(state)[currentUserId];
 
+  dispatch(GameActions.updateStatus({ checking: true }));
+
   channel.push('check_result', { editor_text: currentUserEditor.value })
-    .receive('ok', ({ status, winner, msg }) => {
-      dispatch(GameActions.updateStatus({ status, winner }));
-      alert(msg);
+    .receive('ok', ({ status, winner, solution_status: solutionStatus }) => {
+      const newGameStatus = solutionStatus ? { status, winner } : {};
+      dispatch(GameActions.updateStatus({ ...newGameStatus, solutionStatus, checking: false }));
     });
 };

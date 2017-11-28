@@ -10,13 +10,18 @@ export const INITIAL_STATE = Immutable({
   gameStatus: {
     status: GameStatuses.initial,
     winner: {},
+    checking: false,
+    solutionStatus: null,
   },
   task: null,
 });
 
 /* ------------- Reducers ------------- */
 
-const updateStatus = (state, { gameStatus }) => state.merge({ gameStatus });
+// FIXME: validate recieved status
+const updateStatus = (state, { gameStatus }) =>
+  state.merge({ gameStatus }, { deep: true });
+
 const setTask = (state, { task }) => state.merge({ task });
 
 /* ------------- Hookup Reducers To Types ------------- */
