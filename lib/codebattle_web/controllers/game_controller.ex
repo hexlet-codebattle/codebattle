@@ -18,14 +18,9 @@ defmodule CodebattleWeb.GameController do
     end
   end
 
-  def index(conn, _params) do
-    render(conn, "index.html", game_fsms: Play.list_fsms)
-  end
-
   def create(conn, _params) do
-    id = Play.create_game(conn.assigns.user)
+    id = Play.create_game(conn.assigns.user, conn.params["level"])
     conn
-    |> put_flash(:info, gettext "Game has been created")
     |> redirect(to: game_path(conn, :show, id))
   end
 

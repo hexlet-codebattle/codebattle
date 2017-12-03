@@ -3,7 +3,12 @@ defmodule Codebattle.Game do
 
   use Ecto.Schema
   import Ecto.Changeset
+
   alias Codebattle.Game
+
+  def level_difficulties do
+    %{"elementary" => 0, "easy" => 1, "medium"=> 2, "hard" => 3}
+  end
 
   schema "games" do
     field :state, :string
