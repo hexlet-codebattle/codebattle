@@ -97,7 +97,7 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
   end
 
   test "wins the game if first player do nothing", %{socket1: socket1, conn1: conn1} do
-    with_mocks([{Codebattle.CodeCheck.Checker, [], [check: fn(_a, _b) -> {:ok, true} end]}]) do
+    with_mocks([{Codebattle.CodeCheck.Checker, [], [check: fn(_a, _b, _c) -> {:ok, true} end]}]) do
     # Create game
       conn = post(conn1, game_path(conn1, :create))
       game_location = conn.resp_headers
@@ -121,7 +121,7 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
   end
 
   test "gracefully terminates process after over the game", %{socket1: socket1, conn1: conn1} do
-    with_mocks([{Codebattle.CodeCheck.Checker, [], [check: fn(_a, _b) -> {:ok, true} end]}]) do
+    with_mocks([{Codebattle.CodeCheck.Checker, [], [check: fn(_a, _b, _c) -> {:ok, true} end]}]) do
       # Create game
       conn = post(conn1, game_path(conn1, :create))
       game_location = conn.resp_headers

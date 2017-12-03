@@ -2,7 +2,7 @@ h2 = gettext "Users rating"
 p = gettext "Total: "
   = Enum.count(@users)
 
-= link to: game_path(@conn, :index) do
+= link to: page_path(@conn, :index) do
   = gettext "Game list"
 br
 br
