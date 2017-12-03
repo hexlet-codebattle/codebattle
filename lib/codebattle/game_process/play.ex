@@ -26,12 +26,10 @@ defmodule Codebattle.GameProcess.Play do
     Server.fsm(id)
   end
 
-  def create_game(user) do
+  def create_game(user, level) do
     game = Repo.insert!(%Game{state: "waiting_opponent"})
 
-    # TOD: implement task choice in Web interface
-
-    task = get_random_task()
+    task = get_random_task(level)
 
     fsm = Fsm.new |> Fsm.create(%{user: user, game_id: game.id, task: task})
 
@@ -107,8 +105,14 @@ defmodule Codebattle.GameProcess.Play do
     Supervisor.stop_game(id)
   end
 
-  defp get_random_task do
-    query = from t in Codebattle.Task, order_by: fragment("RANDOM()"), limit: 1
+  defp get_random_task(level) do
+    new_level = if Enum.member?(Game.level_difficulties |> Map.keys, level) do
+                  level
+                else
+                  "easy"
+                end
+
+    query = from t in Codebattle.Task, order_by: fragment("RANDOM()"), limit: 1, where: ^[level: new_level]
     query |> Repo.all |> Enum.at 0
   end
 end

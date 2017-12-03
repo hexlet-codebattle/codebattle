@@ -31,7 +31,7 @@ defmodule CodebattleWeb.Router do
 
     resources "/users", UserController, only: [:index]
 
-    resources "/games", GameController, only: [:index, :create, :show]
+    resources "/games", GameController, only: [:create, :show]
     scope "/games" do
       post "/:id/join", GameController, :join
       post "/:id/check", GameController, :check

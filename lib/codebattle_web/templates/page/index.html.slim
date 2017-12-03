@@ -1,25 +1,3 @@
 .jumbotron.mt-5.text-center.mb-0
   h2.dispay-2 = gettext "Welcome to %{name}!", name: "Codebattle"
   p.lead = gettext "%{name}: game for programmers.", name: "Codebattle"
-  = if @conn.assigns[:is_authenticated?] do
-    = button to: game_path(@conn, :create), class: "btn btn-primary" do
-      = gettext "Create game"
-    h3.mt-2
-      = link to: game_path(@conn, :index) do
-        = gettext "Game list"
-
-= if @conn.assigns[:is_authenticated?] do
-  .row.mt-0.chat.mb-5
-    .col-md-9
-      .card.mt-4.h-100
-        .card-header
-          = gettext "Lobby chat"
-        #chat-messages.card-body.pre-scrollable
-        input#message-input.form-control type="text" placeholder=type_message
-    .col-md-3
-      .card.mt-4.h-100
-        .card-header
-          = gettext "Online users"
-        #online-users.card-body.pre-scrollable
-javascript:
-  window.channel_id = "lobby"
