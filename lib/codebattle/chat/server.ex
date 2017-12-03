@@ -5,12 +5,20 @@ defmodule Codebattle.Chat.Server do
         GenServer.start_link(__MODULE__, [], name: chat_key(id))
     end
 
+    def join_chat(id, user) do
+        GenServer.call(chat_key(id), {:join, user})
+    end
+
     def get_users(id) do
         GenServer.call(chat_key(id), :get_users)
     end
 
-    def join_chat(id, user) do
-        GenServer.call(chat_key(id), {:join, user})
+    def add_msg(id, user, msg) do
+        GenServer.cast(chat_key(id), {:add_msg, user, msg})
+    end
+
+    def get_msgs(id) do
+        GenServer.call(chat_key(id), :get_msgs)
     end
 
     defp chat_key(id) do
@@ -30,5 +38,16 @@ defmodule Codebattle.Chat.Server do
     def handle_call(:get_users, _from, state) do
         %{users: users} = state
         {:reply, users, state}
+    end
+
+    def handle_call(:get_msgs, _from, state) do
+        %{msgs: msgs} = state
+        {:reply, msgs, state}
+    end
+
+    def handle_cast({:add_msg, user, msg}, state) do
+        %{msgs: msgs} = state
+        new_msgs = [{user, msg} | msgs]
+        {:noreply, %{state | msgs: new_msgs}}
     end
 end
