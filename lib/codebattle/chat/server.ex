@@ -21,8 +21,10 @@ defmodule Codebattle.Chat.Server do
         {:ok, %{users: [], msgs: []}}
     end
 
-    def handle_call({:join, _user}, _from, state) do
-        {:reply, state, state}
+    def handle_call({:join, user}, _from, state) do
+        %{users: users} = state
+        new_users = [user | users]
+        {:reply, :ok, %{state | users: new_users}}
     end
 
     def handle_call(:get_users, _from, state) do
