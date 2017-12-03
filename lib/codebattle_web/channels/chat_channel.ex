@@ -1,0 +1,29 @@
+defmodule CodebattleWeb.ChatChannel do
+    @moduledoc false
+    use Codebattle.Web, :channel
+  
+    require Logger
+  
+    alias Codebattle.Chat.Server
+  
+    def join("chat:" <> chat_id, _payload, socket) do
+        send(self(), :after_join)
+        Server.join_chat(chat_id, socket.assigns.user_id)
+        msgs = Server.get_msgs(chat_id)
+
+        {:ok, msgs, socket}
+    end
+  
+    def handle_info(:after_join, socket) do
+        chat_id = get_chat_id(socket)
+        users = Server.get_users(chat_id)
+        broadcast_from! socket, "user:joined", users
+        {:noreply, socket}
+    end
+  
+    defp get_chat_id(socket) do
+        "chat:" <> chat_id = socket.topic
+        chat_id
+    end
+  end
+  
