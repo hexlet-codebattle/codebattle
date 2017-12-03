@@ -26,7 +26,7 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
         utc_now: fn ->  Helpers.TimeStorage.next() end,
       ]},
       {Codebattle.CodeCheck.Checker, [], [
-        check: fn(_a, _b) -> {:ok, true} end
+        check: fn(_a, _b, _c) -> {:ok, true} end
       ]}
     ]) do
 
@@ -68,7 +68,7 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
         utc_now: fn ->  Helpers.TimeStorage.next() end,
       ]},
       {Codebattle.CodeCheck.Checker, [], [
-        check: fn(_a, _b) -> {:ok, true} end
+        check: fn(_a, _b, _c) -> {:ok, true} end
       ]}
     ]) do
 

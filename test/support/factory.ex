@@ -21,7 +21,7 @@ defmodule CodebattleWeb.Factory do
   def task_factory do
     %Task{name: "test_task",
       description: "test sum",
-      level: "hard",
+      level: "easy",
       asserts: "{\"arguments\":[1,1],\"expected\":2}"}
   end
 

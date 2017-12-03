@@ -67,9 +67,9 @@ defmodule Codebattle.GameProcess.Play do
     Server.call_transition(id, :update_editor_text, %{user_id: user_id, editor_text: editor_text})
   end
 
-  def check_game(id, user, editor_text) do
+  def check_game(id, user, editor_text, language) do
     fsm = get_fsm(id)
-    case check_code(fsm.data.task, editor_text) do
+    case check_code(fsm.data.task, editor_text, language) do
       {:ok, true} ->
         {_response, fsm} = Server.call_transition(id, :complete, %{user: user})
         if fsm.state == :game_over do
@@ -81,8 +81,8 @@ defmodule Codebattle.GameProcess.Play do
     end
   end
 
-  defp check_code(task, editor_text) do
-    Checker.check(task, editor_text)
+  defp check_code(task, editor_text, language) do
+    Checker.check(task, editor_text, language)
   end
 
   defp terminate_game(id, fsm) do

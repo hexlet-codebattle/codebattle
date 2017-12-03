@@ -25,7 +25,7 @@ defmodule Codebattle.PlayGameTest do
 
   test "Two users play game", %{conn1: conn1, conn2: conn2, socket1: socket1,
                                 socket2: socket2, user1: user1, user2: user2} do
-    with_mocks([{Codebattle.CodeCheck.Checker, [], [check: fn(_a, _b) -> {:ok, true} end]}]) do
+    with_mocks([{Codebattle.CodeCheck.Checker, [], [check: fn(_a, _b, _c) -> {:ok, true} end]}]) do
 
       # Create game
       conn = post(conn1, game_path(conn1, :create))
