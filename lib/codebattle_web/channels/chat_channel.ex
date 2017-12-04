@@ -17,7 +17,7 @@ defmodule CodebattleWeb.ChatChannel do
     def handle_info(:after_join, socket) do
         chat_id = get_chat_id(socket)
         users = Server.get_users(chat_id)
-        broadcast_from! socket, "user:joined", users
+        broadcast_from! socket, "user:joined", %{users: users}
         {:noreply, socket}
     end
   
