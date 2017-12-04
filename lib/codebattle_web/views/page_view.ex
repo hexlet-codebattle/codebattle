@@ -3,7 +3,7 @@ defmodule CodebattleWeb.PageView do
 
   def get_users(fsm) do
     [fsm.data[:first_player], fsm.data[:second_player]]
-    |> Enum.filter(fn x -> x end)
+    |> Enum.filter(fn x -> x.id end)
   end
 
   def can_check?(fsm, user) do
@@ -16,7 +16,11 @@ defmodule CodebattleWeb.PageView do
     end
   end
 
-  def user_name(user) do
-    "#{user.name}(#{user.raiting})"
+  # FIX: typo in "raiting"
+  def user_name(%Codebattle.User{:name => name, :raiting => rating}) do
+    case {name, rating} do
+      {nil, nil} -> ""
+      _ -> "#{name}(#{rating})"
+    end
   end
 end

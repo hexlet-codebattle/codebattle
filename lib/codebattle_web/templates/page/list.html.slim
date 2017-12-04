@@ -1,32 +1,40 @@
-h2 = gettext "Games"
+h2 = gettext "Create new game with difficult:"
+
+.row
+  .col-md-3
+    = link to: game_path(@conn, :create, level: :elementary), class: "btn btn-primary btn-block", role: "button" do
+      = gettext "Elementary"
+  .col-md-3
+    = link to: game_path(@conn, :create, level: :easy), class: "btn btn-success btn-block", role: "button" do
+      = gettext "Easy"
+  .col-md-3
+    = link to: game_path(@conn, :create, level: :medium), class: "btn btn-warning btn-block", role: "button" do
+      = gettext "Medium"
+  .col-md-3
+    = link to: game_path(@conn, :create, level: :hard), class: "btn btn-danger btn-block", role: "button" do
+      = gettext "Hard"
+
+h2.mt-3 = gettext "Game list"
+
 p = gettext "Total: "
   = Enum.count(@game_fsms)
 
-= link to: user_path(@conn, :index) do
-  = gettext "Users rating"
-br
-br
-
-= button to: game_path(@conn, :create, level: :elementary), class: "mr-3 btn btn-default" do
-  = gettext "Create elementary game"
-= button to: game_path(@conn, :create, level: :easy), class: "mr-3 btn btn-success" do
-  = gettext "Create easy game"
-= button to: game_path(@conn, :create, level: :medium), class: "mr-3 btn btn-warning" do
-  = gettext "Create medium game"
-= button to: game_path(@conn, :create, level: :hard), class: "mr-3 btn btn-danger" do
-  = gettext "Create hard game"
-.mt-3
-
-  = for fsm <- @game_fsms do
-    - users = get_users(fsm) |> Enum.map(fn(user) -> user_name(user) end) |> Enum.join(", ")
-    div
-      = gettext "Level: %{level}, id: %{id}, state: %{state}, players: %{players}  ",
-        id: fsm.data.game_id, state: fsm.state, players: users, level: fsm.data.task.level
-      = if fsm.state == :waiting_opponent do
-        = button gettext("Join"), to: game_path(@conn, :join, fsm.data.game_id), class: "btn btn-success ml-2"
-      '
-      = button gettext("Show"), to: game_path(@conn, :show, fsm.data.game_id), method: :get, class: "btn btn-info"
-      br
-      br
-= link to: page_path(@conn, :index) do
-  = gettext "Main page"
+table.table.table-hover.table-sm
+  thead
+    tr
+      th scope="col" = gettext "Id"
+      th scope="col" = gettext "Level"
+      th scope="col" = gettext "Players"
+      th scope="col" = gettext "Actions"
+  tbody
+    = for fsm <- @game_fsms do
+      - users = get_users(fsm) |> Enum.map(fn(user) -> user_name(user) end) |> Enum.join(", ")
+      - row_class = if fsm.state == :waiting_opponent do "table-success" else "" end
+      tr class="#{row_class}"
+        th scope="row" = fsm.data.game_id
+        td = Gettext.gettext(CodebattleWeb.Gettext, fsm.data.task.level)
+        td = users
+        td
+          = link gettext("Show"), to: game_path(@conn, :show, fsm.data.game_id), method: :get, class: "btn btn-info btn-sm"
+          = if fsm.state == :waiting_opponent do
+            = link gettext("Join"), to: game_path(@conn, :join, fsm.data.game_id), class: "btn btn-success ml-2 btn-sm"
