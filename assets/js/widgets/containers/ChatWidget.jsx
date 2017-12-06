@@ -1,12 +1,17 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { fetchState } from '../middlewares/Chat';
+import { fetchState, addMessage } from '../middlewares/Chat';
+import { currentUserSelector } from '../redux/UserRedux';
 
 class ChatWidget extends React.Component {
   static propTypes = {
-    users: PropTypes.array,
-    messages: PropTypes.array,
+    currentUser: PropTypes.shape({
+      id: PropTypes.number,
+      name: PropTypes.string,
+    }).isRequired,
+    users: PropTypes.array.isRequired,
+    messages: PropTypes.array.isRequired,
     dispatch: PropTypes.func.isRequired,
   };
 
@@ -14,6 +19,16 @@ class ChatWidget extends React.Component {
     const { dispatch } = this.props;
 
     dispatch(fetchState());
+  }
+
+  handleKeyPress = (event) => {
+    const message = event.target.value;
+    const { name } = this.props.currentUser;
+    const { dispatch } = this.props;
+
+    if(event.key == 'Enter'){
+      dispatch(addMessage(name, message));
+    }
   }
 
   render() {
@@ -26,8 +41,9 @@ class ChatWidget extends React.Component {
         </ul>
         <h2>Messages</h2>
         <ul>
-          {this.props.messages.map(user => <li>{user}</li>)}
+          {this.props.messages.map(({ user, msg }) => <li>{msg}</li>)}
         </ul>
+        <input type="text" id="one" onKeyPress={this.handleKeyPress}/>
       </div>
     );
   }
@@ -38,6 +54,7 @@ const mapStateToProps = (state) => {
   return {
     users,
     messages,
+    currentUser: currentUserSelector(state),
   };
 };
 

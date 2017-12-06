@@ -28,6 +28,14 @@ defmodule CodebattleWeb.ChatChannel do
         {:noreply, socket}
     end
 
+    def handle_in("new:message", payload, socket) do
+        %{"text" => message} = payload
+        chat_id = get_chat_id(socket)
+        Server.add_msg(chat_id, socket.assigns.user_id, message)
+        broadcast_from! socket, "new:message", %{message: message}
+        {:reply, :ok, socket}
+    end
+
     defp get_chat_id(socket) do
         "chat:" <> chat_id = socket.topic
         chat_id
