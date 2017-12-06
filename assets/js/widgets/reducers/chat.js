@@ -16,6 +16,12 @@ const chat = handleActions({
   [actions.userLeftChat](state, { payload: { users } }) {
     return { ...state, users };
   },
+  [actions.newMessageChat](state, { payload: { message } }) {
+    const { messages } = state;
+    const newMessages = [...messages, message];
+
+    return { ...state, messages: newMessages }
+  }
 }, initState);
 
 export default chat;
