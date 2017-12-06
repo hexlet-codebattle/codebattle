@@ -1,34 +1,45 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { currentUserSelector } from '../redux/UserRedux';
-import { chatReady } from '../middlewares/Chat';
+import PropTypes from 'prop-types';
+import { fetchState } from '../middlewares/Chat';
 
 class ChatWidget extends React.Component {
   static propTypes = {
-    currentUser: PropTypes.shape({
-      id: PropTypes.number,
-      type: PropTypes.string,
-    }).isRequired,
-    chatReady: PropTypes.func.isRequired,
-  }
+    users: PropTypes.array,
+    messages: PropTypes.array,
+    dispatch: PropTypes.func.isRequired,
+  };
 
   componentDidMount() {
-    console.log(this.props.currentUser);
-    this.props.chatReady();
+    const { dispatch } = this.props;
+
+    dispatch(fetchState());
   }
 
   render() {
-    return <h1>Chat Widget</h1>;
+    return (
+      <div>
+        <h1>Chat Widget</h1>
+        <h2>Users</h2>
+        <ul>
+          {this.props.users.map(user => <li key={user}>{user}</li>)}
+        </ul>
+        <h2>Messages</h2>
+        <ul>
+          {this.props.messages.map(user => <li>{user}</li>)}
+        </ul>
+      </div>
+    );
   }
 }
 
-const mapStateToProps = state => ({
-  currentUser: currentUserSelector(state),
-});
+const mapStateToProps = (state) => {
+  const { users, messages } = state.chat;
+  return {
+    users,
+    messages,
+  };
+};
 
-const mapDispatchToProps = dispatch => ({
-  chatReady: () => { dispatch(chatReady()); },
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(ChatWidget);
+export default connect(mapStateToProps, null)(ChatWidget);
+// export default ChatWidget;

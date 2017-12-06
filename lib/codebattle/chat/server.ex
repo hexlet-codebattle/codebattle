@@ -31,7 +31,10 @@ defmodule Codebattle.Chat.Server do
 
     def handle_call({:join, user}, _from, state) do
         %{users: users} = state
-        new_users = [user | users]
+        new_users = case Enum.member?(users, user) do
+            false -> [user | users]
+            _ -> users
+        end
         {:reply, :ok, %{state | users: new_users}}
     end
 

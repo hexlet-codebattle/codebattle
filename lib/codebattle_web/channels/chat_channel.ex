@@ -10,8 +10,9 @@ defmodule CodebattleWeb.ChatChannel do
         send(self(), :after_join)
         Server.join_chat(chat_id, socket.assigns.user_id)
         msgs = Server.get_msgs(chat_id)
+        users = Server.get_users(chat_id)
 
-        {:ok, msgs, socket}
+        {:ok, %{users: users, msgs: msgs}, socket}
     end
   
     def handle_info(:after_join, socket) do
