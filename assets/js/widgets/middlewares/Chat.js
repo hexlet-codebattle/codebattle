@@ -1,6 +1,6 @@
 import socket from '../../socket';
 import getVar from '../../lib/phxVariables';
-import { userJoinedChat, fetchChatData } from '../actions'
+import { userJoinedChat, userLeftChat, fetchChatData } from '../actions'
 
 const chatId = getVar('game_id');
 const channelName = `chat:${chatId}`;
@@ -13,6 +13,7 @@ export const fetchState = () => (dispatch) => {
     .receive('ok', ({ users, msgs }) => dispatch(fetchChatData({ users, messages: msgs })));
 
   channel.on('user:joined', ({ users }) => dispatch(userJoinedChat({ users })));
+  channel.on('user:left', ({ users }) => dispatch(userLeftChat({ users })));
 };
 
 export const lala = 1;

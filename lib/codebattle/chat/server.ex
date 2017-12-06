@@ -9,6 +9,10 @@ defmodule Codebattle.Chat.Server do
         GenServer.call(chat_key(id), {:join, user})
     end
 
+    def leave_chat(id, user) do
+        GenServer.call(chat_key(id), {:leave, user})
+    end
+
     def get_users(id) do
         GenServer.call(chat_key(id), :get_users)
     end
@@ -35,7 +39,13 @@ defmodule Codebattle.Chat.Server do
             false -> [user | users]
             _ -> users
         end
-        {:reply, :ok, %{state | users: new_users}}
+        {:reply, {:ok, new_users}, %{state | users: new_users}}
+    end
+
+    def handle_call({:leave, user}, _from, state) do
+        %{users: users} = state
+        new_users = Enum.filter(users, fn(u) -> u != user end)
+        {:reply, {:ok, new_users}, %{state | users: new_users}}
     end
 
     def handle_call(:get_users, _from, state) do

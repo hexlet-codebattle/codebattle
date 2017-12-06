@@ -13,6 +13,9 @@ const chat = handleActions({
   [actions.userJoinedChat](state, { payload: { users } }) {
     return { ...state, users };
   },
+  [actions.userLeftChat](state, { payload: { users } }) {
+    return { ...state, users };
+  },
 }, initState);
 
 export default chat;
