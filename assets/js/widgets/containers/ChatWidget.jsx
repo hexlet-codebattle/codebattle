@@ -24,10 +24,9 @@ class ChatWidget extends React.Component {
   handleKeyPress = (event) => {
     const message = event.target.value;
     const { name } = this.props.currentUser;
-    const { dispatch } = this.props;
 
-    if(event.key == 'Enter'){
-      dispatch(addMessage(name, message));
+    if (event.key === 'Enter') {
+      addMessage(name, message);
     }
   }
 
@@ -37,13 +36,13 @@ class ChatWidget extends React.Component {
         <h1>Chat Widget</h1>
         <h2>Users</h2>
         <ul>
-          {this.props.users.map(user => <li key={user}>{user}</li>)}
+          {this.props.users.map(user => <li key={user.id}>{user.name}</li>)}
         </ul>
         <h2>Messages</h2>
         <ul>
-          {this.props.messages.map(({ user, msg }) => <li>{msg}</li>)}
+          {this.props.messages.map(({ user, message }) => <li><b>{user}:</b> {message}</li>)}
         </ul>
-        <input type="text" id="one" onKeyPress={this.handleKeyPress}/>
+        <input type="text" id="one" onKeyPress={this.handleKeyPress} />
       </div>
     );
   }
