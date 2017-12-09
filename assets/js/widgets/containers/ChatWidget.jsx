@@ -15,34 +15,56 @@ class ChatWidget extends React.Component {
     dispatch: PropTypes.func.isRequired,
   };
 
+  state = { message: '' };
+
   componentDidMount() {
     const { dispatch } = this.props;
 
     dispatch(fetchState());
   }
 
+  handleChange = (event) => {
+    this.setState({ message: event.target.value });
+  }
+
   handleKeyPress = (event) => {
-    const message = event.target.value;
+    const { message } = this.state;
     const { name } = this.props.currentUser;
 
     if (event.key === 'Enter') {
       addMessage(name, message);
+      this.setState({ message: '' });
     }
   }
 
   render() {
     return (
-      <div>
-        <h1>Chat Widget</h1>
-        <h2>Users</h2>
-        <ul>
-          {this.props.users.map(user => <li key={user.id}>{user.name}</li>)}
-        </ul>
-        <h2>Messages</h2>
-        <ul>
-          {this.props.messages.map(({ user, message }) => <li><b>{user}:</b> {message}</li>)}
-        </ul>
-        <input type="text" id="one" onKeyPress={this.handleKeyPress} />
+      <div className="row mt-3">
+        <div className="col-md-9">
+          <div className="card h-100">
+            <div className="card-header">Game chat</div>
+            <div className="card-body">
+              {this.props.messages.map(({ user, message }) => <p className="mb-1"><b>{user}:</b> {message}</p>)}
+              <input
+                className="form-control"
+                type="text"
+                value={this.state.message}
+                onChange={this.handleChange}
+                onKeyPress={this.handleKeyPress}
+              />
+            </div>
+          </div>
+        </div>
+        <div className="col-md-3">
+          <div className="card h-100">
+            <div className="card-header">Online users</div>
+            <div className="card-body pre-scrollable">
+              <ul>
+                {this.props.users.map(user => <li key={user.id}>{user.name}</li>)}
+              </ul>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
