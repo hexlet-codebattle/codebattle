@@ -30,7 +30,7 @@ defmodule Codebattle.Chat.Server do
     end
 
     def init(_) do
-        {:ok, %{users: [], msgs: []}}
+        {:ok, %{users: [], messages: []}}
     end
 
     def handle_call({:join, user}, _from, state) do
@@ -54,13 +54,13 @@ defmodule Codebattle.Chat.Server do
     end
 
     def handle_call(:get_msgs, _from, state) do
-        %{msgs: msgs} = state
-        {:reply, Enum.reverse(msgs), state}
+        %{messages: messages} = state
+        {:reply, Enum.reverse(messages), state}
     end
 
     def handle_cast({:add_msg, user, msg}, state) do
-        %{msgs: msgs} = state
-        new_msgs = [%{user: user, msg: msg} | msgs]
-        {:noreply, %{state | msgs: new_msgs}}
+        %{messages: messages} = state
+        new_msgs = [%{user: user, message: msg} | messages]
+        {:noreply, %{state | messages: new_msgs}}
     end
 end

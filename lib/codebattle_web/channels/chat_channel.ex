@@ -8,10 +8,10 @@ defmodule CodebattleWeb.ChatChannel do
   
     def join("chat:" <> chat_id, _payload, socket) do
         send(self(), :after_join)
-        {:ok, users} = Server.join_chat(chat_id, socket.assigns.user_id)
+        {:ok, users} = Server.join_chat(chat_id, socket.assigns.current_user)
         msgs = Server.get_msgs(chat_id)
 
-        {:ok, %{users: users, msgs: msgs}, socket}
+        {:ok, %{users: users, messages: msgs}, socket}
     end
 
     def handle_info(:after_join, socket) do
@@ -29,9 +29,9 @@ defmodule CodebattleWeb.ChatChannel do
     end
 
     def handle_in("new:message", payload, socket) do
-        %{"text" => message} = payload
+        %{"message" => message} = payload
         chat_id = get_chat_id(socket)
-        Server.add_msg(chat_id, socket.assigns.user_id, message)
+        Server.add_msg(chat_id, socket.assigns.current_user.name, message)
         broadcast_from! socket, "new:message", %{message: message}
         {:reply, :ok, socket}
     end
