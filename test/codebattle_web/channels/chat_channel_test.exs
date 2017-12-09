@@ -63,7 +63,7 @@ defmodule CodebattleWeb.ChatChannelTest do
             payload: response
         }
 
-        assert Poison.encode(response) == Poison.encode(%{message: message})
+        assert Poison.encode(response) == Poison.encode(%{user: user1.name, message: message})
         
         {:ok, %{users: users, messages: messages}, _socket2} = subscribe_and_join(socket2, ChatChannel, chat_topic)
 
