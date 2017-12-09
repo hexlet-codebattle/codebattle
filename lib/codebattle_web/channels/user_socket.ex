@@ -3,6 +3,7 @@ defmodule CodebattleWeb.UserSocket do
 
   ## Channels
   channel "game:*", CodebattleWeb.GameChannel
+  channel "chat:*", CodebattleWeb.ChatChannel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket,

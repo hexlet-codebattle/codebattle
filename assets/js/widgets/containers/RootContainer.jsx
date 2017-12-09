@@ -1,10 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import GameWidget from './GameWidget';
+import ChatWidget from './ChatWidget';
 
 const RootContainer = (props) => {
   props.startup();
-  return (<GameWidget />);
+  return (
+    <div>
+      <GameWidget />
+      <ChatWidget />
+    </div>
+  );
 };
 
 RootContainer.propTypes = {

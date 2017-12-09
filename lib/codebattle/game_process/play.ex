@@ -34,6 +34,7 @@ defmodule Codebattle.GameProcess.Play do
     fsm = Fsm.new |> Fsm.create(%{user: user, game_id: game.id, task: task})
 
     Supervisor.start_game(game.id, fsm)
+    Codebattle.Chat.Supervisor.start_chat(game.id)
 
     # TOD: Run bot if second plyaer not connected after 5 seconds
     params = %{game_id: game.id, task_id: task.id}

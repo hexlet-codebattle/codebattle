@@ -25,5 +25,6 @@ defmodule Codebattle do
     opts = [strategy: :one_for_one, name: Codebattle.Supervisor]
     Supervisor.start_link(children, opts)
     Codebattle.GameProcess.Supervisor.start_link
+    Codebattle.Chat.Supervisor.start_link
   end
 end
