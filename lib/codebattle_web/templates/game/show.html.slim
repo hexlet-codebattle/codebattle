@@ -1,7 +1,6 @@
 .row.justify-content-between
   .col
     h1 = gettext "Game: %{id}", id: @fsm.data.game_id
-    - users = get_users(@fsm)
 
   .col.text-right
     = link to: page_path(@conn, :index) do
