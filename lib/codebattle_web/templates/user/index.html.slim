@@ -7,8 +7,15 @@ p = gettext "Total: "
 br
 br
 
-= for {user, index} <- Enum.with_index(@users) do
-  div
-    = gettext "%{index}) name: %{name}, rating: %{rating}", index: index + 1, name: user.name, rating: user.raiting
-    br
-    br
+table.table.table-hover 
+    thead.thead-dark
+        tr
+            th Rank
+            th Username
+            th Rating
+    tbody
+        = for {user, index} <- Enum.with_index(@users) do
+            tr
+                td #{index + 1}
+                td #{user.name}
+                td #{user.raiting}
