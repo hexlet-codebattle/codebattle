@@ -23,7 +23,7 @@ defmodule CodebattleWeb.ChatChannel do
     
     def terminate(_reason, socket) do
         chat_id = get_chat_id(socket)
-        {:ok, users} = Server.leave_chat(chat_id, socket.assigns.user_id)
+        {:ok, users} = Server.leave_chat(chat_id, socket.assigns.current_user)
         broadcast_from! socket, "user:left", %{users: users}
         {:noreply, socket}
     end
