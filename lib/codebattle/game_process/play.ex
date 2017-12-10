@@ -114,6 +114,6 @@ defmodule Codebattle.GameProcess.Play do
                 end
 
     query = from t in Codebattle.Task, order_by: fragment("RANDOM()"), limit: 1, where: ^[level: new_level]
-    query |> Repo.all |> Enum.at 0
+    query |> Repo.all |> Enum.at(0)
   end
 end

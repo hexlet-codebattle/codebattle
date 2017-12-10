@@ -21,7 +21,7 @@ defmodule Codebattle.Bot.SocketDriver do
         event: event,
         topic: topic,
         payload: payload,
-        ref: make_ref
+        ref: make_ref()
       }
     )
   end

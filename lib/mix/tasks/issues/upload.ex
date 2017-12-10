@@ -25,7 +25,7 @@ defmodule Mix.Tasks.Issues.Upload do
           |> List.first
          end)
       |> MapSet.new
-      |> Enum.filter fn(x) -> String.length(x) > 0 end
+      |> Enum.filter(fn(x) -> String.length(x) > 0 end)
 
     Enum.each issue_names, fn(issue_name) ->
       asserts = File.read!(Path.join(path, "#{issue_name}.jsons"))
