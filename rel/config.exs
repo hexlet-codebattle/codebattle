@@ -2,11 +2,11 @@
 # They can then be used by adding `plugin MyPlugin` to
 # either an environment, or release definition, where
 # `MyPlugin` is the name of the plugin module.
-#
+
 ["rel", "plugins", "*.exs"]
-|> Path.join()
-|> Path.wildcard()
-|> Enum.map(&Code.eval_file(&1))
+  |> Path.join()
+  |> Path.wildcard()
+  |> Enum.map(&Code.eval_file/1)
 
 use Mix.Releases.Config,
     # This sets the default release built by `mix release`
@@ -23,10 +23,22 @@ use Mix.Releases.Config,
 # when building in that environment, this combination of release
 # and environment configuration is called a profile
 
+environment :dev do
+  # If you are running Phoenix, you should make sure that
+  # server: true is set and the code reloader is disabled,
+  # even in dev mode.
+  # It is recommended that you build with MIX_ENV=prod and pass
+  # the --env flag to Distillery explicitly if you want to use
+  # dev mode.
+  set dev_mode: true
+  set include_erts: false
+  set cookie: :"yhT7X/Equf$QeP%Y.MUQfe>A}6Ba<_tx:Mg2Y$Ec;p0RHv0hsoQF*Ob:_)x[X$Nu"
+end
+
 environment :prod do
   set include_erts: true
   set include_src: false
-  set cookie: :"t9oI~Rzxyi4,:,PZ4tk(Su2hK3d=]wd/=(wm=S^%3_2j<,ketjR!FR^;~XQ)O!I?"
+  set cookie: :"kt1Y[<C]gL=rp>(b{c,.5HFW2KN~u90G~E<$B?9L^Uu8b~W7rm^%jxA9~^mK3ha%"
 end
 
 # You may define one or more releases in this file.

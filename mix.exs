@@ -6,7 +6,7 @@ defmodule Codebattle.Mixfile do
 
   def project do
     [app: :codebattle,
-     version: "0.0.10",
+     version: "0.0.11",
      elixir: "~> 1.5",
      elixirc_paths: elixirc_paths(Mix.env),
      compilers: [:phoenix, :gettext] ++ Mix.compilers,
@@ -63,7 +63,8 @@ defmodule Codebattle.Mixfile do
      {:yaml_elixir, "~> 1.1"},
      {:temp, "~> 0.4"},
      {:edeliver, "~> 1.4.4"},
-     {:distillery, ">= 0.8.0", warn_missing: false},
+     {:distillery, "~> 1.4"},
+
 
      #dev_and_test
      {:credo, "~> 0.8", only: [:dev, :test], runtime: false},
