@@ -2,7 +2,7 @@ h2 = gettext "Create new game with difficult:"
 
 .row
   .col-md-3
-    = button to: game_path(@conn, :create, level: :elementary), class: "btn btn-primary btn-block", role: "button" do
+    = button to: game_path(@conn, :create, level: :elementary), class: "btn btn-info btn-block", role: "button" do
       = gettext "Elementary"
   .col-md-3
     = button to: game_path(@conn, :create, level: :easy), class: "btn btn-success btn-block", role: "button" do
