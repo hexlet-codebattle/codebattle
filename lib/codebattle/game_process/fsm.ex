@@ -16,6 +16,8 @@ defmodule Codebattle.GameProcess.Fsm do
       game_over: false, # Boolean
       first_player_editor_text: " ", # Space for diff
       second_player_editor_text: " ", # Space for diff
+      first_player_editor_lang: "js",
+      second_player_editor_lang: "js",
       first_player_time:  nil, # NaiveDateTime.utc_now()
       second_player_time: nil, # NaiveDateTime.utc_now()
       first_player_diff: [], # array of Diffs
@@ -61,6 +63,20 @@ defmodule Codebattle.GameProcess.Fsm do
   end
 
   defstate playing do
+    defevent update_editor_lang(params), data: data do
+      case user_role(params.user_id, data) do
+        :first_player ->
+          next_state(:playing, %{data |
+            first_player_editor_lang: params.lang,
+          })
+        :second_player ->
+          next_state(:playing, %{data |
+            second_player_editor_lang: params.lang,
+          })
+        _ -> next_state(:playing)
+      end
+    end
+
     defevent update_editor_text(params), data: data do
       case user_role(params.user_id, data) do
         :first_player ->

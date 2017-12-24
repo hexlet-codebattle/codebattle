@@ -60,14 +60,18 @@ defmodule Codebattle.GameProcess.Play do
       second_player: fsm.data.second_player,
       first_player_editor_text: fsm.data.first_player_editor_text,
       second_player_editor_text: fsm.data.second_player_editor_text,
-      first_player_editor_lang: "js",
-      second_player_editor_lang: "js",
+      first_player_editor_lang: fsm.data.first_player_editor_lang,
+      second_player_editor_lang: fsm.data.second_player_editor_lang,
       task: fsm.data.task,
     }
   end
 
   def update_editor_text(id, user_id, editor_text) do
     Server.call_transition(id, :update_editor_text, %{user_id: user_id, editor_text: editor_text})
+  end
+
+  def update_editor_lang(id, user_id, lang) do
+    Server.call_transition(id, :update_editor_lang, %{user_id: user_id, lang: lang})
   end
 
   def check_game(id, user, editor_text, language) do

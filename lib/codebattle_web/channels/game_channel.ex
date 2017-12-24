@@ -25,19 +25,27 @@ defmodule CodebattleWeb.GameChannel do
     {:reply, {:ok, payload}, socket}
   end
 
-  def handle_in("editor:data", payload, socket) do
+  def handle_in("editor:text", payload, socket) do
     editor_text = Map.get(payload, "editor_text")
     game_id = get_game_id(socket)
     Play.update_editor_text(game_id, socket.assigns.user_id, editor_text)
-    broadcast_from! socket, "editor:update", %{user_id: socket.assigns.user_id, editor_text: editor_text}
+    broadcast_from! socket, "editor:text", %{user_id: socket.assigns.user_id, editor_text: editor_text}
+    {:noreply, socket}
+  end
+
+  def handle_in("editor:lang", payload, socket) do
+    %{"lang" => lang} = payload
+    game_id = get_game_id(socket)
+    Play.update_editor_lang(game_id, socket.assigns.user_id, lang)
+    broadcast_from! socket, "editor:lang", %{user_id: socket.assigns.user_id, lang: lang}
     {:noreply, socket}
   end
 
   def handle_in("check_result", payload, socket) do
-    editor_text = Map.get(payload, "editor_text")
+    %{"editor_text" => editor_text, "lang" => lang} = payload
     game_id = get_game_id(socket)
     Play.update_editor_text(game_id, socket.assigns.user_id, editor_text)
-    case Play.check_game(game_id, socket.assigns.current_user, editor_text, "js") do
+    case Play.check_game(game_id, socket.assigns.current_user, editor_text, lang) do
     {:ok, fsm} ->
       winner = fsm.data.winner
       msg = case fsm.state do

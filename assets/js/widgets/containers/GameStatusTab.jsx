@@ -13,7 +13,7 @@ import {
 } from '../redux/GameRedux';
 import { currentLangSelector } from '../redux/EditorRedux';
 import { EditorActions } from '../redux/Actions';
-import { checkGameResult } from '../middlewares/Game';
+import { checkGameResult, sendEditorLang } from '../middlewares/Game';
 import userTypes from '../config/userTypes';
 import languages from '../config/languages';
 
@@ -71,7 +71,7 @@ class GameStatusTab extends Component {
                 disabled={current}
                 className={className}
                 key={lang}
-                onClick={() => this.props.setLang(currentUserId, lang)}
+                onClick={() => this.props.setLang(lang)}
               >
                 {languages[lang]}
               </button>
@@ -145,10 +145,9 @@ const mapStateToProps = (state) => {
   };
 };
 
-const mapDispatchToProps = (dispatch) => ({
+const mapDispatchToProps = dispatch => ({
   checkResult: () => dispatch(checkGameResult()),
-  setLang: (currentUserId, langKey) =>
-    dispatch(EditorActions.updateEditorLang(currentUserId, langKey)),
+  setLang: langKey => dispatch(sendEditorLang(langKey)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(GameStatusTab);
