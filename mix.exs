@@ -34,7 +34,7 @@ defmodule Codebattle.Mixfile do
                     :gproc, :ex_machina, :edeliver,
 
                     # For distillery
-                    :fsm, :diff, :temp]]
+                    :fsm, :diff, :temp, :logger_file_backend]]
   end
 
   # Specifies which paths to compile per environment.
