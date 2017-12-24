@@ -16,8 +16,10 @@ const initGameChannel = (dispatch) => {
       winner,
       first_player,
       second_player,
-      first_player_editor_data,
-      second_player_editor_data,
+      first_player_editor_text,
+      second_player_editor_text,
+      first_player_editor_lang,
+      second_player_editor_lang,
       task,
     } = response;
 
@@ -36,8 +38,16 @@ const initGameChannel = (dispatch) => {
     dispatch(GameActions.updateStatus({ status, winner }));
 
     dispatch(GameActions.setTask(task));
-    dispatch(EditorActions.updateEditorData(second_player.id, first_player_editor_data));
-    dispatch(EditorActions.updateEditorData(second_player.id, second_player_editor_data));
+    dispatch(EditorActions.updateEditorData(
+      first_player.id,
+      first_player_editor_text,
+      first_player_editor_lang,
+    ));
+    dispatch(EditorActions.updateEditorData(
+      second_player.id,
+      second_player_editor_text,
+      second_player_editor_lang,
+    ));
   };
 
   channel.join().receive('ignore', () => console.log('Game channel: auth error'))
@@ -48,18 +58,31 @@ const initGameChannel = (dispatch) => {
   channel.onClose(ev => console.log('Game channel: closed', ev));
 };
 
+// FIXME: rename sendEditorData to sendEditorText
 export const sendEditorData = editorText => (dispatch, getState) => {
   const state = getState();
   const userId = currentUserIdSelector(state);
-  dispatch(EditorActions.updateEditorData(userId, editorText));
+  dispatch(EditorActions.updateEditorText(userId, editorText));
 
-  channel.push('editor:data', { editor_text: editorText });
+  channel.push('editor:text', { editor_text: editorText });
+};
+
+export const sendEditorLang = lang => (dispatch, getState) => {
+  const state = getState();
+  const userId = currentUserIdSelector(state);
+  dispatch(EditorActions.updateEditorLang(userId, lang));
+
+  channel.push('editor:lang', { lang });
 };
 
 export const editorReady = () => (dispatch) => {
   initGameChannel(dispatch);
-  channel.on('editor:update', ({ user_id: userId, editor_text: editorText }) => {
-    dispatch(EditorActions.updateEditorData(userId, editorText));
+  channel.on('editor:text', ({ user_id: userId, editor_text: editorText }) => {
+    dispatch(EditorActions.updateEditorText(userId, editorText));
+  });
+
+  channel.on('editor:lang', ({ user_id: userId, lang }) => {
+    dispatch(EditorActions.updateEditorLang(userId, lang));
   });
 
   channel.on('user:joined', ({ status, winner, first_player, second_player }) => {
@@ -89,9 +112,16 @@ export const checkGameResult = () => (dispatch, getState) => {
   const currentUserId = currentUserIdSelector(state);
   const currentUserEditor = editorsSelector(state)[currentUserId];
 
-  dispatch(GameActions.updateStatus({ checking: true }));
+  // FIXME: create actions for this state transitions
+  // FIXME: create statuses for solutionStatus
+  dispatch(GameActions.updateStatus({ checking: true, solutionStatus: null }));
 
-  channel.push('check_result', { editor_text: currentUserEditor.value })
+  const payload = {
+    editor_text: currentUserEditor.value,
+    lang: currentUserEditor.currentLang,
+  };
+
+  channel.push('check_result', payload)
     .receive('ok', ({ status, winner, solution_status: solutionStatus }) => {
       const newGameStatus = solutionStatus ? { status, winner } : {};
       dispatch(GameActions.updateStatus({ ...newGameStatus, solutionStatus, checking: false }));

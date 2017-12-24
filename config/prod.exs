@@ -15,17 +15,28 @@ use Mix.Config
 config :codebattle, CodebattleWeb.Endpoint,
   http: [port: 4000],
   url: [scheme: "http", host: "codebattle.hexlet.io", port: 80],
-  cache_static_manifest: "priv/static/cache_manifest.json",
+  cache_static_manifest: "priv/static/manifest.json",
   server: true,
   root: ".",
   version: Mix.Project.config[:version]
+
+config :phoenix, :serve_endpoints, true
 
 config :codebattle, Codebattle.Repo,
   adapter: Ecto.Adapters.Postgres,
   database: "codebattle",
   pool_size: 15
 
-config :logger, level: :info
+config :logger,
+  backends: [{LoggerFileBackend, :info},
+             {LoggerFileBackend, :error}]
+config :logger, :error,
+  path: "/var/log/codebattle/error.log",
+  level: :error
+
+config :logger, :info,
+  path: "/var/log/codebattle/info.log",
+  level: :info
 
 config :codebattle, Codebattle.Bot,
   timeout: 7000

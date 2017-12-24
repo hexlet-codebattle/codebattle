@@ -6,13 +6,12 @@ defmodule Codebattle.CodeCheck.Checker do
   require Logger
 
   def check(task, editor_text, language) do
-    dir_path = prepare_tmp_dir!(task, editor_text, language)
+    {dir_path, check_code} = prepare_tmp_dir!(task, editor_text, language)
 
-    check = System.cmd("make", ["run"], cd: dir_path, stderr_to_stdout: true)
-    {output, status} = check
-
-    result = case status do
-      0 ->
+    {global_output, status} = System.cmd("make", ["run"], cd: dir_path, stderr_to_stdout: true)
+    [_h1 | [_h2 | output]] = String.split(global_output, "\n")
+    result = case  {output, status} do
+     {[^check_code], 0} ->
         {:ok, true}
       _ ->
         {:error, output}
@@ -23,16 +22,16 @@ defmodule Codebattle.CodeCheck.Checker do
   end
 
   defp prepare_tmp_dir!(task, editor_text, language) do
-    # TOD need implement language selector for dockers
-
     dir_path = Temp.mkdir!(prefix: "battle")
 
     File.cp_r!(Path.join(@root_dir, "checkers/#{language}/"), dir_path)
-    File.write! Path.join(dir_path, "data.jsons"), task.asserts
+
+    check_code = :rand.normal |> to_string
+
+    asserts = task.asserts <> "\n{\"check\":\"#{check_code}\"}"
+    File.write! Path.join(dir_path, "data.jsons"), asserts
 
     File.write! Path.join(dir_path, "solution.#{@lang_extentions[language]}"), editor_text
-
-    dir_path
+    {dir_path, check_code}
   end
 end
-

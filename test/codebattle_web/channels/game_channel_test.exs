@@ -33,6 +33,8 @@ defmodule CodebattleWeb.GameChannelTest do
       second_player: %Codebattle.User{},
       first_player_editor_text: " ",
       second_player_editor_text: " ",
+      first_player_editor_lang: "js",
+      second_player_editor_lang: "js",
       task: task,
     })
   end
@@ -59,7 +61,7 @@ defmodule CodebattleWeb.GameChannelTest do
     })
   end
 
-  test "broadcasts editor:update, after editor:data", %{user1: user1, user2: user2, socket1: socket1, socket2: socket2} do
+  test "broadcasts editor:text, after editor:text", %{user1: user1, user2: user2, socket1: socket1, socket2: socket2} do
     #setup
     state = :playing
     data = %{first_player: user1, second_player: user2}
@@ -72,21 +74,53 @@ defmodule CodebattleWeb.GameChannelTest do
     {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
     :lib.flush_receive()
 
-    push socket1, "editor:data", %{editor_text: editor_text1}
-    push socket2, "editor:data", %{editor_text: editor_text2}
+    push socket1, "editor:text", %{editor_text: editor_text1}
+    push socket2, "editor:text", %{editor_text: editor_text2}
 
     payload1 = %{user_id: user1.id, editor_text: editor_text1}
     payload2 = %{user_id: user2.id, editor_text: editor_text2}
 
     assert_receive %Phoenix.Socket.Broadcast{
       topic: ^game_topic,
-      event: "editor:update",
+      event: "editor:text",
       payload: ^payload1,
     }
 
     assert_receive %Phoenix.Socket.Broadcast{
       topic: ^game_topic,
-      event: "editor:update",
+      event: "editor:text",
+      payload: ^payload2,
+    }
+  end
+
+  test "broadcasts editor:lang, after editor:lang", %{user1: user1, user2: user2, socket1: socket1, socket2: socket2} do
+    #setup
+    state = :playing
+    data = %{first_player: user1, second_player: user2}
+    game = setup_game(state, data)
+    game_topic = "game:" <> to_string(game.id)
+    editor_lang1 = "js"
+    editor_lang2 = "ruby"
+
+    {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
+    {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
+    :lib.flush_receive()
+
+    push socket1, "editor:lang", %{lang: editor_lang1}
+    push socket2, "editor:lang", %{lang: editor_lang2}
+
+    payload1 = %{user_id: user1.id, lang: editor_lang1}
+    payload2 = %{user_id: user2.id, lang: editor_lang2}
+
+    assert_receive %Phoenix.Socket.Broadcast{
+      topic: ^game_topic,
+      event: "editor:lang",
+      payload: ^payload1,
+    }
+
+    assert_receive %Phoenix.Socket.Broadcast{
+      topic: ^game_topic,
+      event: "editor:lang",
       payload: ^payload2,
     }
   end

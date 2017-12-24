@@ -77,7 +77,7 @@ defmodule Codebattle.PlayGameTest do
       editor_text2 = "Hello world2!"
       editor_text3 = "Hello world3!"
 
-      push socket1, "check_result", %{editor_text: editor_text1}
+      push socket1, "check_result", %{editor_text: editor_text1, lang: :js}
       :timer.sleep(100)
       fsm = Server.fsm(game_id)
 
@@ -91,7 +91,7 @@ defmodule Codebattle.PlayGameTest do
       assert fsm.data.second_player_editor_text == " "
 
       # Winner cannot check results again
-      push socket1, "check_result", %{editor_text: editor_text2}
+      push socket1, "check_result", %{editor_text: editor_text2, lang: :js}
       :timer.sleep(100)
       fsm = Server.fsm(game_id)
 
@@ -105,7 +105,7 @@ defmodule Codebattle.PlayGameTest do
       assert fsm.data.second_player_editor_text == " "
 
       # Second player complete game
-      push socket2, "check_result", %{editor_text: editor_text3}
+      push socket2, "check_result", %{editor_text: editor_text3, lang: :js}
       :timer.sleep(100)
 
       game = Repo.get Game, game_id
@@ -141,7 +141,7 @@ defmodule Codebattle.PlayGameTest do
 
     # Other player cannot win game
     {:ok, _response, socket3} = subscribe_and_join(socket3, GameChannel, game_topic)
-    push socket3, "check_result", %{editor_text: "Hello world!"}
+    push socket3, "check_result", %{editor_text: "Hello world!", lang: :js}
     fsm = Server.fsm(game_id)
 
     assert fsm.state == :playing

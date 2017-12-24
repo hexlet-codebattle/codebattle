@@ -37,11 +37,11 @@ defmodule Codebattle.Bot.PlaybookPlayerTask do
         first_diff = diff_map |> Map.get("diff") |> Code.eval_string |> elem(0)
         new_editor_text = Diff.patch(editor_text, first_diff, &Enum.join/1)
         diff_map |> Map.get("time") |> :timer.sleep
-        SocketDriver.push(socket_pid, game_topic, "editor:data", %{"editor_text" => new_editor_text})
+        SocketDriver.push(socket_pid, game_topic, "editor:text", %{"editor_text" => new_editor_text})
         new_editor_text
       end
 
-        SocketDriver.push(socket_pid, game_topic, "check_result", %{"editor_text" => editor_text})
+        SocketDriver.push(socket_pid, game_topic, "check_result", %{"editor_text" => editor_text, "lang" => :js})
     end
   end
 end

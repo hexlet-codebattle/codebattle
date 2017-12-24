@@ -10,7 +10,7 @@ defmodule Codebattle.Bot.Playbook do
     field :user_id, :integer
     field :game_id, :integer
     field :task_id, :integer
-    field :language_id, :integer
+    field :lang, :string
 
     timestamps()
   end
@@ -18,8 +18,8 @@ defmodule Codebattle.Bot.Playbook do
   @doc false
   def changeset(%Playbook{} = playbook, attrs) do
     playbook
-    |> cast(attrs, [:data, :user_id, :game_id, :task_id])
-    |> validate_required([:data, :user_id, :game_id, :task_id])
+    |> cast(attrs, [:data, :user_id, :game_id, :task_id, :lang])
+    |> validate_required([:data, :user_id, :game_id, :task_id, :lang])
   end
 
   def random(task_id) do

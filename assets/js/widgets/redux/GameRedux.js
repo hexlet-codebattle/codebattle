@@ -14,6 +14,7 @@ export const INITIAL_STATE = Immutable({
     solutionStatus: null,
   },
   task: null,
+  langs: null,
 });
 
 /* ------------- Reducers ------------- */
@@ -24,10 +25,13 @@ const updateStatus = (state, { gameStatus }) =>
 
 const setTask = (state, { task }) => state.merge({ task });
 
+const setLangs = (state, { langs }) => state.merge({ langs });
+
 /* ------------- Hookup Reducers To Types ------------- */
 export const reducer = createReducer(INITIAL_STATE, {
   [Types.UPDATE_STATUS]: updateStatus,
   [Types.SET_TASK]: setTask,
+  [Types.SET_LANGS]: setLangs,
 });
 
 /* ------------- Selectors ------------- */
@@ -56,3 +60,5 @@ export const gameStatusTitleSelector = (state) => {
 
 // FIXME: rename first-level "gameStatus" to "game"
 export const gameTaskSelector = state => state.gameStatus.task;
+
+export const gameLangsSelector = state => state.langs;

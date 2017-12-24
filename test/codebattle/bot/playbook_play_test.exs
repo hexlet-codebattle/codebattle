@@ -73,7 +73,7 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
     game_id = ~r/\d+/ |> Regex.run(game_location) |> List.first |> String.to_integer
     game_topic = "game:" <> to_string(game_id)
     {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
-    push socket1, "editor:data", %{editor_text: "asdkfljlksajfd"}
+    push socket1, "editor:text", %{editor_text: "asdkfljlksajfd"}
 
     #bot join game
     :timer.sleep(@timeout + 50)
@@ -107,7 +107,7 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
       game_id = ~r/\d+/ |> Regex.run(game_location) |> List.first |> String.to_integer
       game_topic = "game:" <> to_string(game_id)
       {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
-      push socket1, "editor:data", %{editor_text: "asdkfljlksajfd"}
+      push socket1, "editor:text", %{editor_text: "asdkfljlksajfd"}
 
       #bot join game
       :timer.sleep(@timeout + 50)
@@ -131,7 +131,7 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
       game_id = ~r/\d+/ |> Regex.run(game_location) |> List.first |> String.to_integer
       game_topic = "game:" <> to_string(game_id)
       {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
-      push socket1, "editor:data", %{editor_text: "asdkfljlksajfd"}
+      push socket1, "editor:text", %{editor_text: "asdkfljlksajfd"}
 
       # bot join game
       :timer.sleep(@timeout + 50)
@@ -141,7 +141,7 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
 
 
       # user1 check_result
-      push socket1, "check_result", %{editor_text: "asdkfljlksajfd"}
+      push socket1, "check_result", %{editor_text: "asdkfljlksajfd", lang: :js}
 
       :timer.sleep(50)
     end

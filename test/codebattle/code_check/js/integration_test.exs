@@ -28,8 +28,8 @@ defmodule Codebattle.CodeCheck.JS.IntegrationTest do
     {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
     :lib.flush_receive()
 
-    push socket1, "editor:data", %{editor_text: "dsf"}
-    push socket1, "check_result", %{editor_text: "sdf"}
+    push socket1, "editor:text", %{editor_text: "dsf"}
+    push socket1, "check_result", %{editor_text: "sdf", lang: "js"}
     :timer.sleep(2_000)
 
     fsm = Server.fsm(game.id)
@@ -49,18 +49,38 @@ defmodule Codebattle.CodeCheck.JS.IntegrationTest do
     {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
     :lib.flush_receive()
 
-    push socket1, "editor:data", %{editor_text: "test"}
+    push socket1, "editor:text", %{editor_text: "test"}
     push socket1, "check_result", %{
-      editor_text:
-      "export default (a,b) => { return a + b; }"
+      editor_text: "export default (a,b) => { return a + b; }",
+      lang: "js"
     }
 
-    :timer.sleep 2_000
+    :timer.sleep 3_000
 
     fsm = Server.fsm(game.id)
 
     assert fsm.state == :player_won
   end
+
+  @tag :skip
+  test "process exit do not working", %{user1: user1, user2: user2, task: task, socket1: socket1, socket2: socket2} do
+    #setup
+    state = :playing
+    data = %{first_player: user1, second_player: user2, task: task}
+    game = setup_game(state, data)
+    game_topic = "game:" <> to_string(game.id)
+
+    {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
+    {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
+    :lib.flush_receive()
+
+    push socket1, "editor:text", %{editor_text: "test"}
+    push socket1, "check_result", %{editor_text: "process.exit()", lang: "js"}
+
+    :timer.sleep 2_000
+
+    fsm = Server.fsm(game.id)
+
+    assert fsm.state == :playing
+  end
 end
-
-

@@ -16,6 +16,8 @@ defmodule Codebattle.GameProcess.Fsm do
       game_over: false, # Boolean
       first_player_editor_text: " ", # Space for diff
       second_player_editor_text: " ", # Space for diff
+      first_player_editor_lang: "js",
+      second_player_editor_lang: "js",
       first_player_time:  nil, # NaiveDateTime.utc_now()
       second_player_time: nil, # NaiveDateTime.utc_now()
       first_player_diff: [], # array of Diffs
@@ -54,6 +56,10 @@ defmodule Codebattle.GameProcess.Fsm do
       next_state(:waiting_opponent)
     end
 
+    defevent update_editor_lang(_params) do
+      next_state(:waiting_opponent)
+    end
+
     # For test
     defevent setup(state, new_data), data: data do
       next_state(state, Map.merge(data, new_data))
@@ -61,6 +67,20 @@ defmodule Codebattle.GameProcess.Fsm do
   end
 
   defstate playing do
+    defevent update_editor_lang(params), data: data do
+      case user_role(params.user_id, data) do
+        :first_player ->
+          next_state(:playing, %{data |
+            first_player_editor_lang: params.lang,
+          })
+        :second_player ->
+          next_state(:playing, %{data |
+            second_player_editor_lang: params.lang,
+          })
+        _ -> next_state(:playing)
+      end
+    end
+
     defevent update_editor_text(params), data: data do
       case user_role(params.user_id, data) do
         :first_player ->
@@ -103,11 +123,19 @@ defmodule Codebattle.GameProcess.Fsm do
     defevent complete(params), data: data do
       case  user_role(params.user.id, data) do
         :first_player ->
-          store_playbook(data.first_player_diff, data.task.id, params.user.id, data.game_id)
+          store_playbook(%{diff: data.first_player_diff,
+                           lang: data.first_player_editor_lang,
+                           task_id: data.task.id,
+                           user_id: params.user.id,
+                           game_id: data.game_id})
           next_state(:player_won, %{data | winner: params.user})
 
         :second_player ->
-          store_playbook(data.second_player_diff, data.task.id, params.user.id, data.game_id)
+          store_playbook(%{diff: data.second_player_diff,
+                           lang: data.second_player_editor_lang,
+                           task_id: data.task.id,
+                           user_id: params.user.id,
+                           game_id: data.game_id})
           next_state(:player_won, %{data | winner: params.user})
 
         _ ->
@@ -168,11 +196,7 @@ defmodule Codebattle.GameProcess.Fsm do
     end
   end
 
-  defp store_playbook(diff, task_id, user_id, game_id) do
-    task_params = %{diff: diff,
-                    task_id: task_id,
-                    user_id: user_id,
-                    game_id: game_id}
-    Task.start(PlaybookStoreTask, :run, [task_params])
+  defp store_playbook(params) do
+    Task.start(PlaybookStoreTask, :run, [params])
   end
 end
