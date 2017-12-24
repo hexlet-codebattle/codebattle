@@ -27,7 +27,16 @@ config :codebattle, Codebattle.Repo,
   database: "codebattle",
   pool_size: 15
 
-config :logger, level: :info
+config :logger,
+  backends: [{LoggerFileBackend, :error_log}]
+
+config :logger, :error,
+  path: "/var/log/codebattle/error.log",
+  level: :error
+
+config :logger, :info,
+  path: "/var/log/codebattle/info.log",
+  level: :info
 
 config :codebattle, Codebattle.Bot,
   timeout: 7000

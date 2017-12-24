@@ -64,6 +64,7 @@ defmodule Codebattle.Mixfile do
      {:temp, "~> 0.4"},
      {:edeliver, "~> 1.4.4"},
      {:distillery, "~> 1.4"},
+     {:logger_file_backend, "~> 0.0.10"},
 
 
      #dev_and_test
