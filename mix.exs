@@ -63,7 +63,7 @@ defmodule Codebattle.Mixfile do
      {:yaml_elixir, "~> 1.1"},
      {:temp, "~> 0.4"},
      {:edeliver, "~> 1.4.4"},
-     {:distillery, "~> 1.4"},
+     {:distillery, "~> 1.5", runtime: false},
      {:logger_file_backend, "~> 0.0.10"},
 
 
