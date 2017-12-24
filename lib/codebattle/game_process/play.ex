@@ -60,6 +60,8 @@ defmodule Codebattle.GameProcess.Play do
       second_player: fsm.data.second_player,
       first_player_editor_text: fsm.data.first_player_editor_text,
       second_player_editor_text: fsm.data.second_player_editor_text,
+      first_player_editor_lang: "js",
+      second_player_editor_lang: "js",
       task: fsm.data.task,
     }
   end

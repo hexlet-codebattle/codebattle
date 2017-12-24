@@ -16,8 +16,10 @@ const initGameChannel = (dispatch) => {
       winner,
       first_player,
       second_player,
-      first_player_editor_data,
-      second_player_editor_data,
+      first_player_editor_text,
+      second_player_editor_text,
+      first_player_editor_lang,
+      second_player_editor_lang,
       task,
     } = response;
 
@@ -36,8 +38,16 @@ const initGameChannel = (dispatch) => {
     dispatch(GameActions.updateStatus({ status, winner }));
 
     dispatch(GameActions.setTask(task));
-    dispatch(EditorActions.updateEditorData(second_player.id, first_player_editor_data));
-    dispatch(EditorActions.updateEditorData(second_player.id, second_player_editor_data));
+    dispatch(EditorActions.updateEditorData(
+      first_player.id,
+      first_player_editor_text,
+      first_player_editor_lang,
+    ));
+    dispatch(EditorActions.updateEditorData(
+      second_player.id,
+      second_player_editor_text,
+      second_player_editor_lang,
+    ));
   };
 
   channel.join().receive('ignore', () => console.log('Game channel: auth error'))
@@ -51,13 +61,14 @@ const initGameChannel = (dispatch) => {
 export const sendEditorData = editorText => (dispatch, getState) => {
   const state = getState();
   const userId = currentUserIdSelector(state);
-  dispatch(EditorActions.updateEditorData(userId, editorText));
+  dispatch(EditorActions.updateEditorText(userId, editorText));
 
   channel.push('editor:data', { editor_text: editorText });
 };
 
 export const editorReady = () => (dispatch) => {
   initGameChannel(dispatch);
+  // FIXME send lang and putp it to store
   channel.on('editor:update', ({ user_id: userId, editor_text: editorText }) => {
     dispatch(EditorActions.updateEditorData(userId, editorText));
   });
@@ -89,7 +100,9 @@ export const checkGameResult = () => (dispatch, getState) => {
   const currentUserId = currentUserIdSelector(state);
   const currentUserEditor = editorsSelector(state)[currentUserId];
 
-  dispatch(GameActions.updateStatus({ checking: true }));
+  // FIXME: create actions for this state transitions
+  // FIXME: create statuses for solutionStatus
+  dispatch(GameActions.updateStatus({ checking: true, solutionStatus: null }));
 
   channel.push('check_result', { editor_text: currentUserEditor.value })
     .receive('ok', ({ status, winner, solution_status: solutionStatus }) => {
