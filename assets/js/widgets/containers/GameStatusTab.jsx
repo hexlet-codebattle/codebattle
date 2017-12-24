@@ -11,8 +11,11 @@ import {
   gameStatusTitleSelector,
   gameTaskSelector,
 } from '../redux/GameRedux';
-import { checkGameResult } from '../middlewares/Game';
+import { currentLangSelector } from '../redux/EditorRedux';
+import { EditorActions } from '../redux/Actions';
+import { checkGameResult, sendEditorLang } from '../middlewares/Game';
 import userTypes from '../config/userTypes';
+import languages from '../config/languages';
 
 class GameStatusTab extends Component {
   static propTypes = {
@@ -38,7 +41,8 @@ class GameStatusTab extends Component {
       title,
       checkResult,
       currentUserId,
-      task
+      currentLang,
+      task,
     } = this.props;
     const userType = _.get(users[currentUserId], 'type', null);
     const allowedGameStatuses = [GameStatuses.playing, GameStatuses.playerWon];
@@ -57,6 +61,24 @@ class GameStatusTab extends Component {
             ))}
           </ul>
         )}
+
+        <div className="row pb-1 pl-3">
+          {_.map(_.keys(languages), (lang) => {
+            const current = lang === currentLang;
+            const className = `btn mr-3 ${current ? 'btn-secondary' : 'btn-info'}`;
+            return (
+              <button
+                disabled={current}
+                className={className}
+                key={lang}
+                onClick={() => this.props.setLang(lang)}
+              >
+                {languages[lang]}
+              </button>
+            );
+          })}
+        </div>
+
         {_.isEmpty(task) ? null : (
           <div className="card mb-3">
             <div className="card-body">
@@ -111,16 +133,21 @@ class GameStatusTab extends Component {
   }
 }
 
-const mapStateToProps = state => ({
-  users: usersSelector(state),
-  currentUserId: currentUserIdSelector(state),
-  gameStatus: gameStatusSelector(state),
-  title: gameStatusTitleSelector(state),
-  task: gameTaskSelector(state),
-});
+const mapStateToProps = (state) => {
+  const currentUserId = currentUserIdSelector(state);
+  return {
+    users: usersSelector(state),
+    currentUserId,
+    currentLang: currentLangSelector(currentUserId, state),
+    gameStatus: gameStatusSelector(state),
+    title: gameStatusTitleSelector(state),
+    task: gameTaskSelector(state),
+  };
+};
 
 const mapDispatchToProps = dispatch => ({
   checkResult: () => dispatch(checkGameResult()),
+  setLang: langKey => dispatch(sendEditorLang(langKey)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(GameStatusTab);

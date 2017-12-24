@@ -49,6 +49,7 @@ class GameWidget extends Component {
     return {
       onChange,
       editable,
+      lang: editorState.currentLang,
       value: editorState.value,
       name: 'left-editor',
     };
@@ -61,6 +62,7 @@ class GameWidget extends Component {
     return {
       onChange: _.noop,
       editable: false,
+      lang: editorState.currentLang,
       value: editorState.value,
       name: 'right-editor',
     };
