@@ -22,8 +22,6 @@ defmodule Codebattle.CodeCheck.Checker do
   end
 
   defp prepare_tmp_dir!(task, editor_text, language) do
-    # TOD need implement language selector for dockers
-
     dir_path = Temp.mkdir!(prefix: "battle")
 
     File.cp_r!(Path.join(@root_dir, "checkers/#{language}/"), dir_path)

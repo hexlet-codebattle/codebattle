@@ -28,8 +28,8 @@ defmodule Codebattle.CodeCheck.JS.IntegrationTest do
     {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
     :lib.flush_receive()
 
-    push socket1, "editor:data", %{editor_text: "dsf"}
-    push socket1, "check_result", %{editor_text: "sdf"}
+    push socket1, "editor:text", %{editor_text: "dsf"}
+    push socket1, "check_result", %{editor_text: "sdf", lang: "js"}
     :timer.sleep(2_000)
 
     fsm = Server.fsm(game.id)
@@ -49,10 +49,10 @@ defmodule Codebattle.CodeCheck.JS.IntegrationTest do
     {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
     :lib.flush_receive()
 
-    push socket1, "editor:data", %{editor_text: "test"}
+    push socket1, "editor:text", %{editor_text: "test"}
     push socket1, "check_result", %{
-      editor_text:
-      "export default (a,b) => { return a + b; }"
+      editor_text: "export default (a,b) => { return a + b; }",
+      lang: "js"
     }
 
     :timer.sleep 3_000
@@ -74,8 +74,8 @@ defmodule Codebattle.CodeCheck.JS.IntegrationTest do
     {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
     :lib.flush_receive()
 
-    push socket1, "editor:data", %{editor_text: "test"}
-    push socket1, "check_result", %{editor_text: "process.exit()"}
+    push socket1, "editor:text", %{editor_text: "test"}
+    push socket1, "check_result", %{editor_text: "process.exit()", lang: "js"}
 
     :timer.sleep 2_000
 

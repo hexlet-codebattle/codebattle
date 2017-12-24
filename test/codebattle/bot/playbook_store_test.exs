@@ -43,10 +43,10 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
       {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
       :lib.flush_receive()
 
-      push socket1, "editor:data", %{editor_text: editor_text1}
-      push socket1, "editor:data", %{editor_text: editor_text2}
-      push socket1, "editor:data", %{editor_text: editor_text3}
-      push socket1, "check_result", %{editor_text: editor_text3}
+      push socket1, "editor:text", %{editor_text: editor_text1}
+      push socket1, "editor:text", %{editor_text: editor_text2}
+      push socket1, "editor:text", %{editor_text: editor_text3}
+      push socket1, "check_result", %{editor_text: editor_text3, lang: :js}
 
       playbook = [
         %{"time" => 100, "diff" => inspect([%Diff.Modified{element: ["t"], index: 0, length: 1, old_element: [" "]}])},
@@ -85,10 +85,10 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
       {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
       :lib.flush_receive()
 
-      push socket2, "editor:data", %{editor_text: editor_text1}
-      push socket2, "editor:data", %{editor_text: editor_text2}
-      push socket2, "editor:data", %{editor_text: editor_text3}
-      push socket2, "check_result", %{editor_text: editor_text3}
+      push socket2, "editor:text", %{editor_text: editor_text1}
+      push socket2, "editor:text", %{editor_text: editor_text2}
+      push socket2, "editor:text", %{editor_text: editor_text3}
+      push socket2, "check_result", %{editor_text: editor_text3, lang: :js}
 
       playbook = [
         %{"time" => 100, "diff" => inspect([%Diff.Modified{element: ["t"], index: 0, length: 1, old_element: [" "]}])},
@@ -120,7 +120,7 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
       {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
       :lib.flush_receive()
 
-      push socket2, "check_result", %{editor_text: ''}
+      push socket2, "check_result", %{editor_text: '', lang: :js}
 
       playbook = [
         %{"time" => 100, "diff" => inspect([%Diff.Modified{element: ["t"], index: 0, length: 1, old_element: [" "]}])},

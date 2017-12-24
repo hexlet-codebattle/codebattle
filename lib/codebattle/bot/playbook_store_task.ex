@@ -14,6 +14,7 @@ defmodule Codebattle.Bot.PlaybookStoreTask do
         task_id: params.task_id,
         user_id: params.user_id,
         game_id: params.game_id,
+        lang: params.lang,
       }
       |> Codebattle.Repo.insert()
     end
