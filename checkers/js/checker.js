@@ -30,4 +30,3 @@ rl.on("close", function() {
     }
   });
 });
-
