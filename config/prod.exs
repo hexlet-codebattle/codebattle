@@ -28,8 +28,8 @@ config :codebattle, Codebattle.Repo,
   pool_size: 15
 
 config :logger,
-  backends: [{LoggerFileBackend, :error_log}]
-
+  backends: [{LoggerFileBackend, :info},
+             {LoggerFileBackend, :error}]
 config :logger, :error,
   path: "/var/log/codebattle/error.log",
   level: :error
