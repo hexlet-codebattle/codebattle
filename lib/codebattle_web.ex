@@ -45,8 +45,7 @@ defmodule Codebattle.Web do
                         namespace: CodebattleWeb
 
       # Import convenience functions from controllers
-      import Phoenix.Controller, only:
-        [get_csrf_token: 0, get_flash: 1, view_module: 1]
+      import Phoenix.Controller, only: [get_flash: 1, view_module: 1]
 
       # Use all HTML functionality (forms, tags, etc)
       use Phoenix.HTML
@@ -60,16 +59,17 @@ defmodule Codebattle.Web do
   def router do
     quote do
       use Phoenix.Router
+      import Plug.Conn
+      import Phoenix.Controller
     end
   end
 
   def channel do
     quote do
       use Phoenix.Channel
-
-      alias Codebattle.Repo
-      import Ecto
-      import Ecto.Query
+      # alias Codebattle.Repo
+      # import Ecto
+      # import Ecto.Query
       import CodebattleWeb.Gettext
     end
   end

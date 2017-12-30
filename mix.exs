@@ -27,8 +27,8 @@ defmodule Codebattle.Mixfile do
   #
   # Type `mix help compile.app` for more information.
   def application do
-    [mod: {Codebattle, []},
-     applications: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy,
+    [mod: {Codebattle.Application, []},
+     extra_applications: [:runtime_tools, :phoenix, :phoenix_pubsub, :phoenix_html, :cowboy,
                     :logger, :gettext, :phoenix_gon, :phoenix_ecto,
                     :postgrex, :yaml_elixir, :ueberauth, :ueberauth_github,
                     :gproc, :ex_machina, :edeliver,
