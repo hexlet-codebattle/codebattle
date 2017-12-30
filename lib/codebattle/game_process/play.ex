@@ -36,7 +36,7 @@ defmodule Codebattle.GameProcess.Play do
     Supervisor.start_game(game.id, fsm)
     Codebattle.Chat.Supervisor.start_chat(game.id)
 
-    # TOD: Run bot if second plyaer not connected after 5 seconds
+    # TODO: Run bot if second plyaer not connected after 5 seconds
     params = %{game_id: game.id, task_id: task.id}
 
     # {:ok, pid} = Task.Supervisor.start_link(restart: :transient, max_restarts: 5)
