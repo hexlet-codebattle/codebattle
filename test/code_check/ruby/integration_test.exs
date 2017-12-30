@@ -1,5 +1,5 @@
 defmodule Codebattle.CodeCheck.Ruby.IntegrationTest do
-  use Codebattle.IntegrationCase
+  use Codebattle.IntegrationCase, async: true
 
   alias CodebattleWeb.GameChannel
   alias Codebattle.GameProcess.Server
@@ -16,7 +16,6 @@ defmodule Codebattle.CodeCheck.Ruby.IntegrationTest do
     {:ok, %{user1: user1, user2: user2, task: task, socket1: socket1, socket2: socket2}}
   end
 
-  @tag :skip
   test "bad code, game playing", %{user1: user1, user2: user2, task: task, socket1: socket1, socket2: socket2} do
     #setup
     state = :playing
@@ -37,7 +36,6 @@ defmodule Codebattle.CodeCheck.Ruby.IntegrationTest do
     assert fsm.state == :playing
   end
 
-  @tag :skip
   test "good code, player won", %{user1: user1, user2: user2, task: task, socket1: socket1, socket2: socket2} do
     #setup
     state = :playing

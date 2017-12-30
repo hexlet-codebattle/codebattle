@@ -1,9 +1,9 @@
 defmodule CodebattleWeb.ChatChannelTest do
-    use CodebattleWeb.ChannelCase
-  
+    use CodebattleWeb.ChannelCase, async: true
+
     alias CodebattleWeb.ChatChannel
     alias Codebattle.Chat.Server
-  
+
     setup do
         user1 = insert(:user)
         user2 = insert(:user)
@@ -16,7 +16,7 @@ defmodule CodebattleWeb.ChatChannelTest do
 
         {:ok, %{user1: user1, user2: user2, socket1: socket1, socket2: socket2}}
     end
-  
+
     test "sends chat info when user join", %{user1: user1, socket1: socket1} do
         chat_id = :rand.uniform(1000)
         Server.start_link(chat_id)
@@ -29,7 +29,7 @@ defmodule CodebattleWeb.ChatChannelTest do
             messages: []
         })
     end
-  
+
     test "broadcasts user:joined with state after user join", %{user2: user2, socket2: socket2} do
         chat_id = :rand.uniform(1000)
         Server.start_link(chat_id)
@@ -46,7 +46,7 @@ defmodule CodebattleWeb.ChatChannelTest do
             users: [user2]
         })
     end
-  
+
     test "messaging process", %{user1: user1, socket1: socket1, socket2: socket2} do
         chat_id = :rand.uniform(1000)
         Server.start_link(chat_id)
@@ -64,7 +64,7 @@ defmodule CodebattleWeb.ChatChannelTest do
         }
 
         assert Poison.encode(response) == Poison.encode(%{user: user1.name, message: message})
-        
+
         {:ok, %{users: users, messages: messages}, _socket2} = subscribe_and_join(socket2, ChatChannel, chat_topic)
 
 
@@ -92,10 +92,10 @@ defmodule CodebattleWeb.ChatChannelTest do
             event: "user:left",
             payload: response
         }
-        
+
         %{users: users} = response
-        
+
         assert length(users) == 1
     end
   end
-  
+

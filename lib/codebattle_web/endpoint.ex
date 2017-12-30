@@ -40,4 +40,8 @@ defmodule CodebattleWeb.Endpoint do
 
   plug PhoenixGon.Pipeline
   plug CodebattleWeb.Router
+
+  def init(_key, config) do
+    {:ok, config}
+  end
 end

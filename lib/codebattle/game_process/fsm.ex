@@ -84,7 +84,7 @@ defmodule Codebattle.GameProcess.Fsm do
     defevent update_editor_text(params), data: data do
       case user_role(params.user_id, data) do
         :first_player ->
-          # TOD : fix empty string diff
+          # TODO: fix empty string diff
           time = data.first_player_time || NaiveDateTime.utc_now
           new_time = NaiveDateTime.utc_now
           editor_text = if params.editor_text == "", do: " ", else: params.editor_text

@@ -16,4 +16,4 @@ before_script:
 script:
   - mix credo
   - MIX_ENV=test mix ecto.migrate
-  - mix test
+  - mix test test/codebattle*

@@ -1,5 +1,5 @@
 defmodule CodebattleWeb.LocaleTest do
-  use CodebattleWeb.ConnCase
+  use CodebattleWeb.ConnCase, async: true
 
   test "get en locale as default", %{conn: conn} do
     conn = get conn, page_path(conn, :index)

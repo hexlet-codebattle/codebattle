@@ -52,7 +52,7 @@ class GameStatusTab extends Component {
 
     return (
       <div className="card mt-4 h-100 border-0">
-        <h2>{title}</h2>
+        <h3>{title}</h3>
         <p>Players</p>
         {_.isEmpty(users) ? null : (
           <ul>
