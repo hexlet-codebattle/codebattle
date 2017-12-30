@@ -1,5 +1,5 @@
 defmodule CodebattleWeb.GameChannelTest do
-  use CodebattleWeb.ChannelCase
+  use CodebattleWeb.ChannelCase, async: true
 
   alias CodebattleWeb.GameChannel
 

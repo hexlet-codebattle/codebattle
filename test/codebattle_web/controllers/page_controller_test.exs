@@ -1,5 +1,5 @@
 defmodule Codebattle.PageControllerTest do
-  use CodebattleWeb.ConnCase
+  use CodebattleWeb.ConnCase, async: true
 
   test "GET /", %{conn: conn} do
     conn = get conn, "/"

@@ -1,5 +1,5 @@
 defmodule Codebattle.GithubUserTest do
-  use CodebattleWeb.ConnCase
+  use CodebattleWeb.ConnCase, async: true
 
   alias Codebattle.GithubUser
 

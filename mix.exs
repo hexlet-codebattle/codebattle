@@ -31,7 +31,7 @@ defmodule Codebattle.Mixfile do
      extra_applications: [:runtime_tools, :phoenix, :phoenix_pubsub, :phoenix_html, :cowboy,
                     :logger, :gettext, :phoenix_gon, :phoenix_ecto,
                     :postgrex, :yaml_elixir, :ueberauth, :ueberauth_github,
-                    :gproc, :ex_machina, :edeliver,
+                    :gproc, :edeliver,
 
                     # For distillery
                     :fsm, :diff, :temp, :logger_file_backend]]
@@ -78,7 +78,7 @@ defmodule Codebattle.Mixfile do
      {:phoenix_integration, "~> 0.3", only: :test},
      {:excoveralls, "~> 0.7", only: :test},
      {:faker, "~> 0.8", only: :test},
-     {:ex_machina, "~> 2.0"},
+     {:ex_machina, "~> 2.0", only: :test},
      ]
   end
 
