@@ -29,8 +29,7 @@ defmodule Codebattle.CodeCheck.Checker do
 
     check_code = :rand.normal |> to_string
 
-    asserts = task.asserts <> "
-{\"check\":\"#{check_code}\"}"
+    asserts = task.asserts <> "{\"check\":\"#{check_code}\"}"
     File.write! Path.join(dir_path, "data.jsons"), asserts
 
     File.write! Path.join(dir_path, "solution.#{@lang_extentions[language]}"), editor_text

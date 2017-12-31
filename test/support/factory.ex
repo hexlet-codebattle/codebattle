@@ -24,7 +24,8 @@ defmodule CodebattleWeb.Factory do
       level: "easy",
       asserts: "{\"arguments\":[1,1],\"expected\":2}
       {\"arguments\":[2,2],\"expected\":4}
-      {\"arguments\":[1,3],\"expected\":4}"}
+      {\"arguments\":[1,3],\"expected\":4}
+      "}
   end
 
   def bot_playbook_factory do
