@@ -16,11 +16,11 @@ defmodule Codebattle.GameProcess.Server do
   end
 
   def call_transition(game_id, event, params) do
-    GenServer.call(game_key(game_id), {:transition, event, params})
+    GenServer.call(game_key(game_id), {:transition, event, params}, 20_000)
   end
 
   def fsm(game_id) do
-    GenServer.call(game_key(game_id), :fsm)
+    GenServer.call(game_key(game_id), :fsm, 20_000)
   end
 
   defp game_key(game_id) do
