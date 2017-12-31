@@ -122,8 +122,9 @@ export const checkGameResult = () => (dispatch, getState) => {
   };
 
   channel.push('check_result', payload)
-    .receive('ok', ({ status, winner, solution_status: solutionStatus }) => {
+    .receive('ok', ({ status, winner, solution_status: solutionStatus, output }) => {
       const newGameStatus = solutionStatus ? { status, winner } : {};
+      !solutionStatus ? alert(output) : null
       dispatch(GameActions.updateStatus({ ...newGameStatus, solutionStatus, checking: false }));
     });
 };

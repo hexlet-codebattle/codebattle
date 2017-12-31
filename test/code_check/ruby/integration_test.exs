@@ -1,5 +1,5 @@
 defmodule Codebattle.CodeCheck.Ruby.IntegrationTest do
-  use Codebattle.IntegrationCase, async: true
+  use Codebattle.IntegrationCase
 
   alias CodebattleWeb.GameChannel
   alias Codebattle.GameProcess.Server

@@ -22,7 +22,10 @@ defmodule CodebattleWeb.Factory do
     %Task{name: "test_task",
       description: "test sum",
       level: "easy",
-      asserts: "{\"arguments\":[1,1],\"expected\":2}"}
+      asserts: "{\"arguments\":[1,1],\"expected\":2}
+      {\"arguments\":[2,2],\"expected\":4}
+      {\"arguments\":[1,3],\"expected\":4}
+      "}
   end
 
   def bot_playbook_factory do

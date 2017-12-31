@@ -58,8 +58,8 @@ defmodule CodebattleWeb.GameChannel do
       end
       {:reply, {:ok, %{solution_status: true, status: fsm.state, msg: msg, winner: winner}}, socket}
 
-    {:error, _} ->
-      {:reply, {:ok, %{solution_status: false}}, socket}
+    {:error, output} ->
+      {:reply, {:ok, %{solution_status: false, output: output}}, socket}
     end
   end
 
