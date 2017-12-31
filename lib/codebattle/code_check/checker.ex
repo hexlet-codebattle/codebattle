@@ -9,7 +9,7 @@ defmodule Codebattle.CodeCheck.Checker do
     {dir_path, check_code} = prepare_tmp_dir!(task, editor_text, language)
 
     {global_output, status} = System.cmd("make", ["run"], cd: dir_path, stderr_to_stdout: true)
-    Logger.info "Docker stdout lang: #{language}, output:#{global_output}"
+    Logger.info "Docker stdout for task_id: #{task.id}, lang: #{language}, output:#{global_output}"
     [_h1 | [_h2 | output]] = String.split(global_output, "\n")
     result = case  {output, status} do
      {[^check_code], 0} ->
@@ -29,7 +29,8 @@ defmodule Codebattle.CodeCheck.Checker do
 
     check_code = :rand.normal |> to_string
 
-    asserts = task.asserts <> "\n{\"check\":\"#{check_code}\"}"
+    asserts = task.asserts <> "
+{\"check\":\"#{check_code}\"}"
     File.write! Path.join(dir_path, "data.jsons"), asserts
 
     File.write! Path.join(dir_path, "solution.#{@lang_extentions[language]}"), editor_text
