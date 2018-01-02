@@ -3,14 +3,14 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { connect } from 'react-redux';
 import {
-  firstEditorSelector,
-  secondEditorSelector,
+  rightEditorSelector,
+  leftEditorSelector,
 } from '../redux/EditorRedux';
 import { currentUserSelector } from '../redux/UserRedux';
 import userTypes from '../config/userTypes';
 import Editor from './Editor';
 import GameStatusTab from './GameStatusTab';
-import { sendEditorData, editorReady } from '../middlewares/Game';
+import { sendEditorData } from '../middlewares/Game';
 
 class GameWidget extends Component {
   static propTypes = {
@@ -18,30 +18,27 @@ class GameWidget extends Component {
       id: PropTypes.number,
       type: PropTypes.string,
     }).isRequired,
-    firstEditor: PropTypes.shape({
+    leftEditor: PropTypes.shape({
       value: PropTypes.string,
     }),
-    secondEditor: PropTypes.shape({
+    rightEditor: PropTypes.shape({
       value: PropTypes.string,
     }),
     sendData: PropTypes.func.isRequired,
-    editorReady: PropTypes.func.isRequired,
   }
 
   static defaultProps = {
-    firstEditor: {},
-    secondEditor: {},
-  }
-
-  componentDidMount() {
-    this.props.editorReady();
+    leftEditor: {},
+    rightEditor: {},
   }
 
   getLeftEditorParams() {
-    const { currentUser, firstEditor, secondEditor, sendData } = this.props;
+    const {
+      currentUser, leftEditor, sendData,
+    } = this.props;
     const isPlayer = currentUser.id !== userTypes.spectator;
     const editable = isPlayer;
-    const editorState = currentUser.type === userTypes.secondPlayer ? secondEditor : firstEditor;
+    const editorState = leftEditor;
     const onChange = isPlayer ?
       (value) => { sendData(value); } :
       _.noop;
@@ -56,8 +53,8 @@ class GameWidget extends Component {
   }
 
   getRightEditorParams() {
-    const { currentUser, firstEditor, secondEditor } = this.props;
-    const editorState = currentUser.type === userTypes.secondPlayer ? firstEditor : secondEditor;
+    const { rightEditor } = this.props;
+    const editorState = rightEditor;
 
     return {
       onChange: _.noop,
@@ -71,12 +68,12 @@ class GameWidget extends Component {
   render() {
     return (
       <div>
-        <div className="row mt-3 mx-auto">
+        <div className="row mx-auto">
           <div className="col-md-12">
             <GameStatusTab />
           </div>
         </div>
-        <div className="row mt-3 mx-auto">
+        <div className="row mx-auto">
           <div className="col-md-6">
             <Editor {...this.getLeftEditorParams()} />
           </div>
@@ -91,14 +88,13 @@ class GameWidget extends Component {
 
 const mapStateToProps = state => ({
   currentUser: currentUserSelector(state),
-  firstEditor: firstEditorSelector(state),
-  secondEditor: secondEditorSelector(state),
+  leftEditor: leftEditorSelector(state),
+  rightEditor: rightEditorSelector(state),
 });
 
 const mapDispatchToProps = dispatch => ({
   // editorActions: bindActionCreators(EditorActions, dispatch),
   sendData: (...args) => { dispatch(sendEditorData(...args)); },
-  editorReady: () => { dispatch(editorReady()); },
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(GameWidget);

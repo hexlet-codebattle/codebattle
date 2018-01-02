@@ -11,10 +11,10 @@ import {
   gameStatusTitleSelector,
   gameTaskSelector,
 } from '../redux/GameRedux';
-import { currentLangSelector } from '../redux/EditorRedux';
-import { EditorActions } from '../redux/Actions';
+import { langSelector, rightEditorSelector } from '../redux/EditorRedux';
 import { checkGameResult, sendEditorLang } from '../middlewares/Game';
 import userTypes from '../config/userTypes';
+import LangSelector from '../components/langSelector';
 import languages from '../config/languages';
 
 class GameStatusTab extends Component {
@@ -41,7 +41,8 @@ class GameStatusTab extends Component {
       title,
       checkResult,
       currentUserId,
-      currentLang,
+      leftEditorLang,
+      rightEditorLang,
       task,
     } = this.props;
     const userType = _.get(users[currentUserId], 'type', null);
@@ -51,34 +52,7 @@ class GameStatusTab extends Component {
       (userType !== userTypes.spectator);
 
     return (
-      <div className="card mt-4 h-100 border-0">
-        <h3>{title}</h3>
-        <p>Players</p>
-        {_.isEmpty(users) ? null : (
-          <ul>
-            {_.map(_.values(users), user => (
-              <li key={user.id}>{`${user.name}(${user.raiting})`}</li>
-            ))}
-          </ul>
-        )}
-
-        <div className="row pb-1 pl-3">
-          {_.map(_.keys(languages), (lang) => {
-            const current = lang === currentLang;
-            const className = `btn mr-3 ${current ? 'btn-secondary' : 'btn-info'}`;
-            return (
-              <button
-                disabled={current}
-                className={className}
-                key={lang}
-                onClick={() => this.props.setLang(lang)}
-              >
-                {languages[lang]}
-              </button>
-            );
-          })}
-        </div>
-
+      <div className="card h-100 border-0">
         {_.isEmpty(task) ? null : (
           <div className="card mb-3">
             <div className="card-body">
@@ -95,24 +69,34 @@ class GameStatusTab extends Component {
         )}
         <div className="row">
           <div className="col">
-            {!canCheckResult ? null : (
-              <div>
+            <div className="btn-toolbar" role="toolbar">
+              <LangSelector currentLangKey={leftEditorLang} onChange={this.props.setLang} />
+              {!canCheckResult ? null : (
                 <button
-                  className="btn btn-success"
+                  className="btn btn-success ml-1"
                   onClick={checkResult}
                   disabled={gameStatus.checking}
                 >
                   {gameStatus.checking ? i18n.t('Checking...') : i18n.t('Check result')}
                 </button>
-              </div>
             )}
+            </div>
           </div>
-          <div className="col text-right">
+          <div className="col text-center">
             <h3>
-              <span className="p-3 badge badge-danger">
+              <span className="p-2 badge badge-danger">
                 {gameStatus.status}
               </span>
             </h3>
+          </div>
+          <div className="col text-right" >
+            <button
+              className="btn btn-info"
+              type="button"
+              disabled
+            >
+              {languages[rightEditorLang]}
+            </button>
           </div>
         </div>
         <div className="row">
@@ -135,10 +119,13 @@ class GameStatusTab extends Component {
 
 const mapStateToProps = (state) => {
   const currentUserId = currentUserIdSelector(state);
+  const secondUserId = rightEditorSelector(state).userId;
+
   return {
     users: usersSelector(state),
     currentUserId,
-    currentLang: currentLangSelector(currentUserId, state),
+    leftEditorLang: langSelector(currentUserId, state),
+    rightEditorLang: langSelector(secondUserId, state),
     gameStatus: gameStatusSelector(state),
     title: gameStatusTitleSelector(state),
     task: gameTaskSelector(state),

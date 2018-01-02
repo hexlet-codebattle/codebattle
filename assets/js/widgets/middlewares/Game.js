@@ -4,6 +4,7 @@ import { EditorActions, UserActions, GameActions } from '../redux/Actions';
 import { currentUserIdSelector } from '../redux/UserRedux';
 import { editorsSelector } from '../redux/EditorRedux';
 import userTypes from '../config/userTypes';
+import * as Actions from '../actions';
 
 const gameId = getVar('game_id');
 const channelName = `game:${gameId}`;
@@ -48,6 +49,8 @@ const initGameChannel = (dispatch) => {
       second_player_editor_text,
       second_player_editor_lang,
     ));
+
+    dispatch(Actions.finishStoreInit());
   };
 
   channel.join().receive('ignore', () => console.log('Game channel: auth error'))
@@ -85,7 +88,9 @@ export const editorReady = () => (dispatch) => {
     dispatch(EditorActions.updateEditorLang(userId, lang));
   });
 
-  channel.on('user:joined', ({ status, winner, first_player, second_player }) => {
+  channel.on('user:joined', ({
+    status, winner, first_player, second_player,
+  }) => {
     dispatch(GameActions.updateStatus({ status, winner }));
 
     dispatch(UserActions.updateUsers([{
@@ -122,9 +127,11 @@ export const checkGameResult = () => (dispatch, getState) => {
   };
 
   channel.push('check_result', payload)
-    .receive('ok', ({ status, winner, solution_status: solutionStatus, output }) => {
+    .receive('ok', ({
+      status, winner, solution_status: solutionStatus, output,
+    }) => {
       const newGameStatus = solutionStatus ? { status, winner } : {};
-      !solutionStatus ? alert(output) : null
+      !solutionStatus ? alert(output) : null;
       dispatch(GameActions.updateStatus({ ...newGameStatus, solutionStatus, checking: false }));
     });
 };

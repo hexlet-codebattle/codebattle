@@ -1,8 +1,9 @@
 import _ from 'lodash';
 import Immutable from 'seamless-immutable';
 import { createReducer } from 'reduxsauce';
-import { firstUserSelector, secondUserSelector } from './UserRedux';
+import { firstUserSelector, secondUserSelector, currentUserSelector } from './UserRedux';
 import { EditorTypes as Types } from './Actions';
+import userTypes from '../config/userTypes';
 
 /* ------------- Initial State ------------- */
 
@@ -55,5 +56,21 @@ export const secondEditorSelector = (state) => {
   return _.values(editor)[0];
 };
 
-export const currentLangSelector = (userId, state) =>
+export const leftEditorSelector = (state) => {
+  const currentUser = currentUserSelector(state);
+  const editorSelector = (currentUser.type !== userTypes.secondPlayer) ?
+    firstEditorSelector :
+    secondEditorSelector;
+  return editorSelector(state);
+};
+
+export const rightEditorSelector = (state) => {
+  const currentUser = currentUserSelector(state);
+  const editorSelector = (currentUser.type === userTypes.secondPlayer) ?
+    firstEditorSelector :
+    secondEditorSelector;
+  return editorSelector(state);
+};
+
+export const langSelector = (userId, state) =>
   _.get(state, ['editors', 'editors', userId, 'currentLang']);
