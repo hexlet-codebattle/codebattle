@@ -44,6 +44,7 @@ class Editor extends Component {
         editorProps={{ $blockScrolling: true }}
         width="auto"
         fontSize={16}
+        showPrintMargin={false}
       />
     );
   }
