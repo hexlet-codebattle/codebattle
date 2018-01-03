@@ -24,32 +24,40 @@ const initGameChannel = (dispatch) => {
       task,
     } = response;
 
-    dispatch(UserActions.updateUsers([{
+    const users = [{
       id: first_player.id,
       name: first_player.name,
       raiting: first_player.raiting,
       type: userTypes.firstPlayer,
-    }, {
-      id: second_player.id,
-      name: second_player.name,
-      raiting: second_player.raiting,
-      type: userTypes.secondPlayer,
-    }]));
+    }];
 
-    dispatch(GameActions.updateStatus({ status, winner }));
+    if (second_player.id) {
+      users.push({
+        id: second_player.id,
+        name: second_player.name,
+        raiting: second_player.raiting,
+        type: userTypes.secondPlayer,
+      });
+    }
 
-    dispatch(GameActions.setTask(task));
+    dispatch(UserActions.updateUsers(users));
+
     dispatch(EditorActions.updateEditorData(
       first_player.id,
       first_player_editor_text,
       first_player_editor_lang,
     ));
-    dispatch(EditorActions.updateEditorData(
-      second_player.id,
-      second_player_editor_text,
-      second_player_editor_lang,
-    ));
 
+    if (second_player.id) {
+      dispatch(EditorActions.updateEditorData(
+        second_player.id,
+        second_player_editor_text,
+        second_player_editor_lang,
+      ));
+    }
+
+    dispatch(GameActions.setTask(task));
+    dispatch(GameActions.updateStatus({ status, winner }));
     dispatch(Actions.finishStoreInit());
   };
 
@@ -89,7 +97,14 @@ export const editorReady = () => (dispatch) => {
   });
 
   channel.on('user:joined', ({
-    status, winner, first_player, second_player,
+    status,
+    winner,
+    first_player,
+    second_player,
+    first_player_editor_text,
+    first_player_editor_lang,
+    second_player_editor_text,
+    second_player_editor_lang,
   }) => {
     dispatch(GameActions.updateStatus({ status, winner }));
 
@@ -104,6 +119,20 @@ export const editorReady = () => (dispatch) => {
       raiting: second_player.raiting,
       type: userTypes.secondPlayer,
     }]));
+
+    dispatch(EditorActions.updateEditorData(
+      first_player.id,
+      first_player_editor_text,
+      first_player_editor_lang,
+    ));
+
+    if (second_player.id) {
+      dispatch(EditorActions.updateEditorData(
+        second_player.id,
+        second_player_editor_text,
+        second_player_editor_lang,
+      ));
+    }
   });
 
   channel.on('user:won', ({ winner, status, msg }) => {

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import _ from 'lodash';
 import AceEditor from 'react-ace';
 import 'brace';
 import 'brace/mode/javascript';
@@ -13,7 +14,7 @@ class Editor extends Component {
     value: PropTypes.string,
     name: PropTypes.string.isRequired,
     editable: PropTypes.bool,
-    lang: PropTypes.string.isRequired,
+    lang: PropTypes.string,
     onChange: PropTypes.func,
   }
 
@@ -21,6 +22,7 @@ class Editor extends Component {
     value: '',
     editable: false,
     onChange: null,
+    lang: _.values(languages)[0],
   }
 
   render() {

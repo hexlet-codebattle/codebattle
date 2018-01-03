@@ -148,8 +148,8 @@ class GameStatusTab extends Component {
 
 const mapStateToProps = (state) => {
   const currentUser = currentUserSelector(state);
-  const leftUserId = leftEditorSelector(state).userId;
-  const rightUserId = rightEditorSelector(state).userId;
+  const leftUserId = _.get(leftEditorSelector(state), ['userId'], null);
+  const rightUserId = _.get(rightEditorSelector(state), ['userId'], null);
 
   return {
     users: usersSelector(state),
