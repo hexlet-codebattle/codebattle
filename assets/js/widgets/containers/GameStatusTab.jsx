@@ -4,14 +4,18 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 import ReactMarkdown from 'react-markdown';
 import i18n from '../../i18n';
-import { usersSelector, currentUserIdSelector } from '../redux/UserRedux';
+import { usersSelector, currentUserSelector } from '../redux/UserRedux';
 import GameStatuses from '../config/gameStatuses';
 import {
   gameStatusSelector,
   gameStatusTitleSelector,
   gameTaskSelector,
 } from '../redux/GameRedux';
-import { langSelector, rightEditorSelector } from '../redux/EditorRedux';
+import {
+  langSelector,
+  leftEditorSelector,
+  rightEditorSelector,
+} from '../redux/EditorRedux';
 import { checkGameResult, sendEditorLang } from '../middlewares/Game';
 import userTypes from '../config/userTypes';
 import LangSelector from '../components/langSelector';
@@ -36,20 +40,21 @@ class GameStatusTab extends Component {
 
   render() {
     const {
-      users,
       gameStatus,
-      title,
       checkResult,
-      currentUserId,
+      currentUser,
       leftEditorLang,
       rightEditorLang,
       task,
+      leftUserId,
+      rightUserId,
+      users,
     } = this.props;
-    const userType = _.get(users[currentUserId], 'type', null);
+    const userType = currentUser.type;
+    const isSpectator = userType === userTypes.spectator;
     const allowedGameStatuses = [GameStatuses.playing, GameStatuses.playerWon];
     const canCheckResult = _.includes(allowedGameStatuses, gameStatus.status) &&
-      userType &&
-      (userType !== userTypes.spectator);
+      userType && !isSpectator;
 
     return (
       <div className="card h-100 border-0">
@@ -67,10 +72,20 @@ class GameStatusTab extends Component {
             </div>
           </div>
         )}
-        <div className="row">
+        <div className="row my-1">
           <div className="col">
             <div className="btn-toolbar" role="toolbar">
-              <LangSelector currentLangKey={leftEditorLang} onChange={this.props.setLang} />
+              {isSpectator ? (
+                <button
+                  className="btn btn-info"
+                  type="button"
+                  disabled
+                >
+                  {languages[leftEditorLang]}
+                </button>
+              ) : (
+                <LangSelector currentLangKey={leftEditorLang} onChange={this.props.setLang} />
+              )}
               {!canCheckResult ? null : (
                 <button
                   className="btn btn-success ml-1"
@@ -79,15 +94,27 @@ class GameStatusTab extends Component {
                 >
                   {gameStatus.checking ? i18n.t('Checking...') : i18n.t('Check result')}
                 </button>
-            )}
+              )}
             </div>
           </div>
-          <div className="col text-center">
-            <h3>
-              <span className="p-2 badge badge-danger">
-                {gameStatus.status}
-              </span>
-            </h3>
+          <div className="col">
+            <div className="row text-center">
+              <div className="col">
+                <span>
+                  {_.get(users, [leftUserId, 'name'], '')}
+                </span>
+              </div>
+              <div className="col">
+                <span className="p-2 badge badge-danger">
+                  {gameStatus.status}
+                </span>
+              </div>
+              <div className="col">
+                <span>
+                  {_.get(users, [rightUserId, 'name'], '')}
+                </span>
+              </div>
+            </div>
           </div>
           <div className="col text-right" >
             <button
@@ -107,7 +134,7 @@ class GameStatusTab extends Component {
           ) : null}
           {gameStatus.solutionStatus === true ? (
             <div className="alert alert-success alert-dismissible fade show">
-              <span aria-hidden="true">{'&times;'}</span>
+              <span aria-hidden="true" dangerouslySetInnerHTML={'&times;'} />
               {i18n.t('All test are passed!!11')}
             </div>
           ) : null}
@@ -118,14 +145,17 @@ class GameStatusTab extends Component {
 }
 
 const mapStateToProps = (state) => {
-  const currentUserId = currentUserIdSelector(state);
-  const secondUserId = rightEditorSelector(state).userId;
+  const currentUser = currentUserSelector(state);
+  const leftUserId = leftEditorSelector(state).userId;
+  const rightUserId = rightEditorSelector(state).userId;
 
   return {
     users: usersSelector(state),
-    currentUserId,
-    leftEditorLang: langSelector(currentUserId, state),
-    rightEditorLang: langSelector(secondUserId, state),
+    leftUserId,
+    rightUserId,
+    currentUser,
+    leftEditorLang: langSelector(leftUserId, state),
+    rightEditorLang: langSelector(rightUserId, state),
     gameStatus: gameStatusSelector(state),
     title: gameStatusTitleSelector(state),
     task: gameTaskSelector(state),
