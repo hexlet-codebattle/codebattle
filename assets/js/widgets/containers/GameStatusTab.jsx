@@ -1,8 +1,7 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import ReactMarkdown from 'react-markdown';
 import i18n from '../../i18n';
 import { usersSelector, currentUserSelector } from '../redux/UserRedux';
 import GameStatuses from '../config/gameStatuses';
@@ -20,6 +19,18 @@ import { checkGameResult, sendEditorLang } from '../middlewares/Game';
 import userTypes from '../config/userTypes';
 import LangSelector from '../components/LangSelector';
 import languages from '../config/languages';
+
+const renderNameplate = (user) => {
+  const userName = _.get(user, ['name'], '');
+  const rating = _.get(user, ['raiting'], '');
+  const ratingStr = _.isFinite(rating) ? ` (${rating})` : '';
+  return (
+    <Fragment>
+      <div> {userName} </div>
+      <div> {ratingStr} </div>
+    </Fragment>
+  );
+};
 
 class GameStatusTab extends Component {
   static propTypes = {
@@ -58,20 +69,6 @@ class GameStatusTab extends Component {
 
     return (
       <div className="card h-100 border-0">
-        {_.isEmpty(task) ? null : (
-          <div className="card mb-3">
-            <div className="card-body">
-              <h4 className="card-title">{task.name}</h4>
-              <h6 className="card-subtitle text-muted">
-                {`${i18n.t('Level')}: ${task.level}`}
-              </h6>
-              <ReactMarkdown
-                className="card-text"
-                source={task.description}
-              />
-            </div>
-          </div>
-        )}
         <div className="row my-1">
           <div className="col">
             <div className="btn-toolbar" role="toolbar">
@@ -100,9 +97,7 @@ class GameStatusTab extends Component {
           <div className="col">
             <div className="row text-center">
               <div className="col">
-                <span>
-                  {_.get(users, [leftUserId, 'name'], '')}
-                </span>
+                {renderNameplate(users[leftUserId])}
               </div>
               <div className="col">
                 <span className="p-2 badge badge-danger">
@@ -110,9 +105,7 @@ class GameStatusTab extends Component {
                 </span>
               </div>
               <div className="col">
-                <span>
-                  {_.get(users, [rightUserId, 'name'], '')}
-                </span>
+                {renderNameplate(users[rightUserId])}
               </div>
             </div>
           </div>
