@@ -4,6 +4,7 @@ import { EditorActions, UserActions, GameActions } from '../redux/Actions';
 import { currentUserIdSelector } from '../redux/UserRedux';
 import { editorsSelector } from '../redux/EditorRedux';
 import userTypes from '../config/userTypes';
+import * as Actions from '../actions';
 
 const gameId = getVar('game_id');
 const channelName = `game:${gameId}`;
@@ -23,31 +24,41 @@ const initGameChannel = (dispatch) => {
       task,
     } = response;
 
-    dispatch(UserActions.updateUsers([{
+    const users = [{
       id: first_player.id,
       name: first_player.name,
       raiting: first_player.raiting,
       type: userTypes.firstPlayer,
-    }, {
-      id: second_player.id,
-      name: second_player.name,
-      raiting: second_player.raiting,
-      type: userTypes.secondPlayer,
-    }]));
+    }];
 
-    dispatch(GameActions.updateStatus({ status, winner }));
+    if (second_player.id) {
+      users.push({
+        id: second_player.id,
+        name: second_player.name,
+        raiting: second_player.raiting,
+        type: userTypes.secondPlayer,
+      });
+    }
 
-    dispatch(GameActions.setTask(task));
+    dispatch(UserActions.updateUsers(users));
+
     dispatch(EditorActions.updateEditorData(
       first_player.id,
       first_player_editor_text,
       first_player_editor_lang,
     ));
-    dispatch(EditorActions.updateEditorData(
-      second_player.id,
-      second_player_editor_text,
-      second_player_editor_lang,
-    ));
+
+    if (second_player.id) {
+      dispatch(EditorActions.updateEditorData(
+        second_player.id,
+        second_player_editor_text,
+        second_player_editor_lang,
+      ));
+    }
+
+    dispatch(GameActions.setTask(task));
+    dispatch(GameActions.updateStatus({ status, winner }));
+    dispatch(Actions.finishStoreInit());
   };
 
   channel.join().receive('ignore', () => console.log('Game channel: auth error'))
@@ -85,7 +96,16 @@ export const editorReady = () => (dispatch) => {
     dispatch(EditorActions.updateEditorLang(userId, lang));
   });
 
-  channel.on('user:joined', ({ status, winner, first_player, second_player }) => {
+  channel.on('user:joined', ({
+    status,
+    winner,
+    first_player,
+    second_player,
+    first_player_editor_text,
+    first_player_editor_lang,
+    second_player_editor_text,
+    second_player_editor_lang,
+  }) => {
     dispatch(GameActions.updateStatus({ status, winner }));
 
     dispatch(UserActions.updateUsers([{
@@ -99,6 +119,20 @@ export const editorReady = () => (dispatch) => {
       raiting: second_player.raiting,
       type: userTypes.secondPlayer,
     }]));
+
+    dispatch(EditorActions.updateEditorData(
+      first_player.id,
+      first_player_editor_text,
+      first_player_editor_lang,
+    ));
+
+    if (second_player.id) {
+      dispatch(EditorActions.updateEditorData(
+        second_player.id,
+        second_player_editor_text,
+        second_player_editor_lang,
+      ));
+    }
   });
 
   channel.on('user:won', ({ winner, status, msg }) => {
@@ -122,9 +156,11 @@ export const checkGameResult = () => (dispatch, getState) => {
   };
 
   channel.push('check_result', payload)
-    .receive('ok', ({ status, winner, solution_status: solutionStatus, output }) => {
+    .receive('ok', ({
+      status, winner, solution_status: solutionStatus, output,
+    }) => {
       const newGameStatus = solutionStatus ? { status, winner } : {};
-      !solutionStatus ? alert(output) : null
+      !solutionStatus ? alert(output) : null;
       dispatch(GameActions.updateStatus({ ...newGameStatus, solutionStatus, checking: false }));
     });
 };

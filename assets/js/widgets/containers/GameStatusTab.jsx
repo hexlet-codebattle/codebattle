@@ -4,17 +4,21 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 import ReactMarkdown from 'react-markdown';
 import i18n from '../../i18n';
-import { usersSelector, currentUserIdSelector } from '../redux/UserRedux';
+import { usersSelector, currentUserSelector } from '../redux/UserRedux';
 import GameStatuses from '../config/gameStatuses';
 import {
   gameStatusSelector,
   gameStatusTitleSelector,
   gameTaskSelector,
 } from '../redux/GameRedux';
-import { currentLangSelector } from '../redux/EditorRedux';
-import { EditorActions } from '../redux/Actions';
+import {
+  langSelector,
+  leftEditorSelector,
+  rightEditorSelector,
+} from '../redux/EditorRedux';
 import { checkGameResult, sendEditorLang } from '../middlewares/Game';
 import userTypes from '../config/userTypes';
+import LangSelector from '../components/langSelector';
 import languages from '../config/languages';
 
 class GameStatusTab extends Component {
@@ -36,49 +40,24 @@ class GameStatusTab extends Component {
 
   render() {
     const {
-      users,
       gameStatus,
-      title,
       checkResult,
-      currentUserId,
-      currentLang,
+      currentUser,
+      leftEditorLang,
+      rightEditorLang,
       task,
+      leftUserId,
+      rightUserId,
+      users,
     } = this.props;
-    const userType = _.get(users[currentUserId], 'type', null);
+    const userType = currentUser.type;
+    const isSpectator = userType === userTypes.spectator;
     const allowedGameStatuses = [GameStatuses.playing, GameStatuses.playerWon];
     const canCheckResult = _.includes(allowedGameStatuses, gameStatus.status) &&
-      userType &&
-      (userType !== userTypes.spectator);
+      userType && !isSpectator;
 
     return (
-      <div className="card mt-4 h-100 border-0">
-        <h3>{title}</h3>
-        <p>Players</p>
-        {_.isEmpty(users) ? null : (
-          <ul>
-            {_.map(_.values(users), user => (
-              <li key={user.id}>{`${user.name}(${user.raiting})`}</li>
-            ))}
-          </ul>
-        )}
-
-        <div className="row pb-1 pl-3">
-          {_.map(_.keys(languages), (lang) => {
-            const current = lang === currentLang;
-            const className = `btn mr-3 ${current ? 'btn-secondary' : 'btn-info'}`;
-            return (
-              <button
-                disabled={current}
-                className={className}
-                key={lang}
-                onClick={() => this.props.setLang(lang)}
-              >
-                {languages[lang]}
-              </button>
-            );
-          })}
-        </div>
-
+      <div className="card h-100 border-0">
         {_.isEmpty(task) ? null : (
           <div className="card mb-3">
             <div className="card-body">
@@ -93,26 +72,60 @@ class GameStatusTab extends Component {
             </div>
           </div>
         )}
-        <div className="row">
+        <div className="row my-1">
           <div className="col">
-            {!canCheckResult ? null : (
-              <div>
+            <div className="btn-toolbar" role="toolbar">
+              {isSpectator ? (
                 <button
-                  className="btn btn-success"
+                  className="btn btn-info"
+                  type="button"
+                  disabled
+                >
+                  {languages[leftEditorLang]}
+                </button>
+              ) : (
+                <LangSelector currentLangKey={leftEditorLang} onChange={this.props.setLang} />
+              )}
+              {!canCheckResult ? null : (
+                <button
+                  className="btn btn-success ml-1"
                   onClick={checkResult}
                   disabled={gameStatus.checking}
                 >
                   {gameStatus.checking ? i18n.t('Checking...') : i18n.t('Check result')}
                 </button>
+              )}
+            </div>
+          </div>
+          <div className="col">
+            <div className="row text-center">
+              <div className="col">
+                <span>
+                  {_.get(users, [leftUserId, 'name'], '')}
+                </span>
               </div>
-            )}
+              <div className="col">
+                <span className="p-2 badge badge-danger">
+                  {gameStatus.status}
+                </span>
+              </div>
+              <div className="col">
+                <span>
+                  {_.get(users, [rightUserId, 'name'], '')}
+                </span>
+              </div>
+            </div>
           </div>
           <div className="col text-right">
-            <h3>
-              <span className="p-3 badge badge-danger">
-                {gameStatus.status}
-              </span>
-            </h3>
+            {!rightUserId ? null : (
+              <button
+                className="btn btn-info"
+                type="button"
+                disabled
+              >
+                {languages[rightEditorLang]}
+              </button>
+            )}
           </div>
         </div>
         <div className="row">
@@ -123,7 +136,7 @@ class GameStatusTab extends Component {
           ) : null}
           {gameStatus.solutionStatus === true ? (
             <div className="alert alert-success alert-dismissible fade show">
-              <span aria-hidden="true">{'&times;'}</span>
+              <span aria-hidden="true" dangerouslySetInnerHTML={'&times;'} />
               {i18n.t('All test are passed!!11')}
             </div>
           ) : null}
@@ -134,11 +147,17 @@ class GameStatusTab extends Component {
 }
 
 const mapStateToProps = (state) => {
-  const currentUserId = currentUserIdSelector(state);
+  const currentUser = currentUserSelector(state);
+  const leftUserId = _.get(leftEditorSelector(state), ['userId'], null);
+  const rightUserId = _.get(rightEditorSelector(state), ['userId'], null);
+
   return {
     users: usersSelector(state),
-    currentUserId,
-    currentLang: currentLangSelector(currentUserId, state),
+    leftUserId,
+    rightUserId,
+    currentUser,
+    leftEditorLang: langSelector(leftUserId, state),
+    rightEditorLang: langSelector(rightUserId, state),
     gameStatus: gameStatusSelector(state),
     title: gameStatusTitleSelector(state),
     task: gameTaskSelector(state),

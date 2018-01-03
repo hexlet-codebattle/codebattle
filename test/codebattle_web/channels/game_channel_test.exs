@@ -57,6 +57,10 @@ defmodule CodebattleWeb.GameChannelTest do
       first_player: user1,
       second_player: user2,
       status: :playing,
+      first_player_editor_text: " ",
+      second_player_editor_text: " ",
+      first_player_editor_lang: "js",
+      second_player_editor_lang: "js",
       winner: %Codebattle.User{}
     })
   end
