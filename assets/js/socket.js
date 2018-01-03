@@ -1,8 +1,8 @@
 import { Socket } from 'phoenix';
-import getVar from './lib/phxVariables';
+import Gon from 'Gon';
 
 const socket = new Socket('/ws', {
-  params: { token: getVar('user_token') },
+  params: { token: Gon.getAsset('user_token') },
   logger: (kind, msg, data) => { console.log(`${kind}: ${msg}`, data); },
 });
 

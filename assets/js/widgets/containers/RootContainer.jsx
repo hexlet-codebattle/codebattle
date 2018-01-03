@@ -3,13 +3,13 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import GameWidget from './GameWidget';
 import ChatWidget from './ChatWidget';
-import getVar from '../../lib/phxVariables';
+import Gon from 'Gon';
 import { UserActions } from '../redux/Actions';
 import * as GameActions from '../middlewares/Game';
 
 class RootContainer extends React.Component {
   componentDidMount() {
-    const userId = getVar('user_id');
+    const userId = Gon.getAsset('user_id');
     const { setCurrentUser, editorReady } = this.props;
 
     setCurrentUser(userId);

@@ -1,10 +1,10 @@
 import i18next from 'i18next';
-import getVar from '../lib/phxVariables';
+import Gon from 'Gon';
 
 i18next.init({
   nsSeparator: false,
   keySeparator: false,
-  lng: getVar('locale'),
+  lng: Gon.getAsset('locale'),
   resources: {
     en: {
       translation: require('../../../priv/gettext/en/LC_MESSAGES/default.po'),

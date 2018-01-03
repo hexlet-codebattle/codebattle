@@ -1,8 +1,8 @@
 import socket from '../../socket';
-import getVar from '../../lib/phxVariables';
+import Gon from 'Gon';
 import { userJoinedChat, userLeftChat, fetchChatData, newMessageChat } from '../actions';
 
-const chatId = getVar('game_id');
+const chatId = Gon.getAsset('game_id');
 const channelName = `chat:${chatId}`;
 const channel = socket.channel(channelName);
 

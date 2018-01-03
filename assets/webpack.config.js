@@ -45,8 +45,6 @@ const plugins = [
   }),
 ];
 
-// if (!prod) { plugins.push(new webpack.HotModuleReplacementPlugin()); }
-
 module.exports = {
   entry: {
     app: prod ? APP_ENTRIES : DEV_ENTRIES.concat(APP_ENTRIES),
@@ -56,6 +54,9 @@ module.exports = {
     path: path.resolve(__dirname, '..', 'priv', 'static', 'js'),
     filename: 'app.js',
     publicPath: path.resolve(__dirname, '..', 'priv', 'static'),
+  },
+  externals: {
+    Gon: 'Gon',
   },
   module: {
     rules: [
@@ -115,22 +116,8 @@ module.exports = {
   plugins,
   watchOptions: {
     aggregateTimeout: 300,
-    poll: 1500,
+    poll: 1000,
   },
-  // devServer: {
-  //   hot: true,
-  //   overlay: true,
-  //   contentBase: path.resolve(__dirname, '..', 'priv', 'static'),
-  //   port: 4002,
-  //   disableHostCheck: true,
-
-  //   historyApiFallback: true,
-  //   headers: {
-  //     'Access-Control-Allow-Origin': '*',
-  //     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
-  //     'Access-Control-Allow-Headers': 'X-Requested-With, content-type, Authorization',
-  //   },
-  // },
   resolve: {
     modules: ['node_modules', path.join(__dirname, 'assets', 'js')],
     extensions: ['.js', '.jsx'],
