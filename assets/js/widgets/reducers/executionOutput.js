@@ -5,6 +5,6 @@ const initialState = '';
 
 export default handleActions({
   [actions.updateExecutionOutput](state, { payload: { output } }) {
-    return output;
+    return output || state;
   },
 }, initialState);

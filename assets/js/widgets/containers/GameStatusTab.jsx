@@ -128,9 +128,13 @@ class GameStatusTab extends Component {
             </div>
           ) : null}
           {gameStatus.solutionStatus === true ? (
-            <div className="alert alert-success alert-dismissible fade show">
-              <span aria-hidden="true" dangerouslySetInnerHTML={'&times;'} />
-              {i18n.t('All test are passed!!11')}
+            <div className="col">
+              <div className="alert alert-success alert-dismissible fade show" role="alert">
+                {i18n.t('All test are passed!!11')}
+                <button type="button" className="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true" dangerouslySetInnerHTML={{ __html: '&times;' }} />
+                </button>
+              </div>
             </div>
           ) : null}
         </div>
