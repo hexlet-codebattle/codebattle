@@ -160,7 +160,8 @@ export const checkGameResult = () => (dispatch, getState) => {
       status, winner, solution_status: solutionStatus, output,
     }) => {
       const newGameStatus = solutionStatus ? { status, winner } : {};
-      !solutionStatus ? alert(output) : null;
+      // !solutionStatus ? alert(output) : null;
+      dispatch(Actions.updateExecutionOutput({ output }));
       dispatch(GameActions.updateStatus({ ...newGameStatus, solutionStatus, checking: false }));
     });
 };

@@ -6,3 +6,5 @@ export const userLeftChat = createAction('CHAT_USER_LEFT');
 export const newMessageChat = createAction('CHAT_NEW_MESSAGE');
 
 export const finishStoreInit = createAction('FINISH_STORE_INIT');
+
+export const updateExecutionOutput = createAction('UPDATE_EXECUTION_OUTPUT');

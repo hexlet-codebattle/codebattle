@@ -39,7 +39,7 @@ class ChatWidget extends React.Component {
 
   render() {
     return (
-      <div className="row mt-3">
+      <div className="row">
         <div className="col-md-9">
           <div className="card h-100">
             <div className="card-header">Game chat</div>

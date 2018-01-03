@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import GameWidget from './GameWidget';
-import ChatWidget from './ChatWidget';
+import InfoWidget from './InfoWidget';
 import Gon from 'Gon';
 import { UserActions } from '../redux/Actions';
 import * as GameActions from '../middlewares/Game';
@@ -20,7 +20,7 @@ class RootContainer extends React.Component {
     return !this.props.storeLoaded ? null : (
       <Fragment>
         <GameWidget />
-        <ChatWidget />
+        <InfoWidget />
       </Fragment>
     );
   }

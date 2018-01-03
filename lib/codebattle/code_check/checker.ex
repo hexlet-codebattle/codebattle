@@ -10,7 +10,7 @@ defmodule Codebattle.CodeCheck.Checker do
 
     {global_output, status} = System.cmd("make", ["run"], cd: dir_path, stderr_to_stdout: true)
     Logger.info "Docker stdout for task_id: #{task.id}, lang: #{language}, output:#{global_output}"
-    [_h1 | [_h2 | output]] = String.split(global_output, "\n")
+    output = global_output |> String.split("\n") |> tl |> tl |> Enum.join("\n")
     result = case  {output, status} do
      {[^check_code], 0} ->
         {:ok, true}
