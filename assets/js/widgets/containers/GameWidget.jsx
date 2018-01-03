@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { connect } from 'react-redux';
@@ -67,7 +67,7 @@ class GameWidget extends Component {
 
   render() {
     return (
-      <div>
+      <Fragment>
         <div className="row mx-auto">
           <div className="col-md-12">
             <GameStatusTab />
@@ -81,7 +81,7 @@ class GameWidget extends Component {
             <Editor {...this.getRightEditorParams()} />
           </div>
         </div>
-      </div>
+      </Fragment>
     );
   }
 }
