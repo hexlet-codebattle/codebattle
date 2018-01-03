@@ -1,12 +1,12 @@
 import socket from '../../socket';
-import getVar from '../../lib/phxVariables';
+import Gon from 'Gon';
 import { EditorActions, UserActions, GameActions } from '../redux/Actions';
 import { currentUserIdSelector } from '../redux/UserRedux';
 import { editorsSelector } from '../redux/EditorRedux';
 import userTypes from '../config/userTypes';
 import * as Actions from '../actions';
 
-const gameId = getVar('game_id');
+const gameId = Gon.getAsset('game_id');
 const channelName = `game:${gameId}`;
 const channel = socket.channel(channelName);
 

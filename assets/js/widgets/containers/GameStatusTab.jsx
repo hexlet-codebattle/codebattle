@@ -18,7 +18,7 @@ import {
 } from '../redux/EditorRedux';
 import { checkGameResult, sendEditorLang } from '../middlewares/Game';
 import userTypes from '../config/userTypes';
-import LangSelector from '../components/langSelector';
+import LangSelector from '../components/LangSelector';
 import languages from '../config/languages';
 
 class GameStatusTab extends Component {
