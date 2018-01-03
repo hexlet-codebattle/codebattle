@@ -4,6 +4,7 @@ defmodule Codebattle.PlayGameTest do
   import Mock
 
   alias Codebattle.GameProcess.Server
+  alias Codebattle.GameProcess.FsmHelpers
   alias CodebattleWeb.GameChannel
 
   setup do
@@ -41,10 +42,8 @@ defmodule Codebattle.PlayGameTest do
       fsm = Server.fsm(game_id)
 
       assert fsm.state == :waiting_opponent
-      assert fsm.data.first_player.name == "first"
-      assert fsm.data.second_player == %User{}
-      assert fsm.data.winner == %User{}
-      assert fsm.data.loser == %User{}
+      assert FsmHelpers.get_first_player(fsm).user.name == "first"
+      assert FsmHelpers.get_second_player(fsm).user == %User{}
       assert fsm.data.game_over == false
 
       # First player cannot join to game as second player
@@ -52,10 +51,8 @@ defmodule Codebattle.PlayGameTest do
       fsm = Server.fsm(game_id)
 
       assert fsm.state == :waiting_opponent
-      assert fsm.data.first_player.name == "first"
-      assert fsm.data.second_player == %User{}
-      assert fsm.data.winner == %User{}
-      assert fsm.data.loser == %User{}
+      assert FsmHelpers.get_first_player(fsm).user.name == "first"
+      assert FsmHelpers.get_second_player(fsm).user == %User{}
       assert fsm.data.game_over == false
 
       # Second player join game
@@ -64,13 +61,11 @@ defmodule Codebattle.PlayGameTest do
       fsm = Server.fsm(game_id)
 
       assert fsm.state == :playing
-      assert fsm.data.first_player.name == "first"
-      assert fsm.data.second_player.name == "second"
-      assert fsm.data.winner == %User{}
-      assert fsm.data.loser == %User{}
+      assert FsmHelpers.get_first_player(fsm).user.name == "first"
+      assert FsmHelpers.get_second_player(fsm).user.name == "second"
       assert fsm.data.game_over == false
-      assert fsm.data.first_player_editor_text == " "
-      assert fsm.data.second_player_editor_text == " "
+      assert FsmHelpers.get_first_player(fsm).editor_text == ""
+      assert FsmHelpers.get_second_player(fsm).editor_text == ""
 
       # First player won
       editor_text1 = "Hello world1!"
@@ -82,13 +77,12 @@ defmodule Codebattle.PlayGameTest do
       fsm = Server.fsm(game_id)
 
       assert fsm.state == :player_won
-      assert fsm.data.first_player.name == "first"
-      assert fsm.data.second_player.name == "second"
-      assert fsm.data.winner.name == "first"
-      assert fsm.data.loser == %User{}
+      assert FsmHelpers.get_first_player(fsm).user.name == "first"
+      assert FsmHelpers.get_second_player(fsm).user.name == "second"
+      assert FsmHelpers.get_winner(fsm).name == "first"
       assert fsm.data.game_over == false
-      assert fsm.data.first_player_editor_text == "Hello world1!"
-      assert fsm.data.second_player_editor_text == " "
+      assert FsmHelpers.get_first_player(fsm).editor_text == "Hello world1!"
+      assert FsmHelpers.get_second_player(fsm).editor_text == ""
 
       # Winner cannot check results again
       push socket1, "check_result", %{editor_text: editor_text2, lang: :js}
@@ -96,13 +90,12 @@ defmodule Codebattle.PlayGameTest do
       fsm = Server.fsm(game_id)
 
       assert fsm.state == :player_won
-      assert fsm.data.first_player.name == "first"
-      assert fsm.data.second_player.name == "second"
-      assert fsm.data.winner.name == "first"
-      assert fsm.data.loser == %User{}
+      assert FsmHelpers.get_first_player(fsm).user.name == "first"
+      assert FsmHelpers.get_second_player(fsm).user.name == "second"
+      assert FsmHelpers.get_winner(fsm).name == "first"
       assert fsm.data.game_over == false
-      assert fsm.data.first_player_editor_text == "Hello world2!"
-      assert fsm.data.second_player_editor_text == " "
+      assert FsmHelpers.get_first_player(fsm).editor_text == "Hello world2!"
+      assert FsmHelpers.get_second_player(fsm).editor_text == ""
 
       # Second player complete game
       push socket2, "check_result", %{editor_text: editor_text3, lang: :js}
@@ -113,8 +106,8 @@ defmodule Codebattle.PlayGameTest do
       user2 = Repo.get(User, user2.id)
 
       assert game.state == "game_over"
-      assert user1.raiting == 11
-      assert user2.raiting == 9
+      assert user1.raiting == 20
+      assert user2.raiting == 15
     end
   end
 
@@ -133,10 +126,8 @@ defmodule Codebattle.PlayGameTest do
     fsm = Server.fsm(game_id)
 
     assert fsm.state == :playing
-    assert fsm.data.first_player.name == "first"
-    assert fsm.data.second_player.name == "second"
-    assert fsm.data.winner == %User{}
-    assert fsm.data.loser == %User{}
+    assert FsmHelpers.get_first_player(fsm).user.name == "first"
+    assert FsmHelpers.get_second_player(fsm).user.name == "second"
     assert fsm.data.game_over == false
 
     # Other player cannot win game
@@ -145,10 +136,8 @@ defmodule Codebattle.PlayGameTest do
     fsm = Server.fsm(game_id)
 
     assert fsm.state == :playing
-    assert fsm.data.first_player.name == "first"
-    assert fsm.data.second_player.name == "second"
-    assert fsm.data.winner == %User{}
-    assert fsm.data.loser == %User{}
+    assert FsmHelpers.get_first_player(fsm).user.name == "first"
+    assert FsmHelpers.get_second_player(fsm).user.name == "second"
     assert fsm.data.game_over == false
   end
 end

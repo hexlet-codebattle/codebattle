@@ -6,8 +6,9 @@ defmodule Codebattle.GameProcess.Play do
   import Ecto.Query, warn: false
 
   alias Codebattle.{Repo, Game, User, UserGame}
-  alias Codebattle.GameProcess.{Server, Supervisor, Fsm}
+  alias Codebattle.GameProcess.{Server, Supervisor, Fsm, Player, FsmHelpers}
   alias Codebattle.CodeCheck.Checker
+  alias Codebattle.Bot.RecorderServer
 
   def list_games do
     Repo.all from p in Game,
@@ -34,82 +35,110 @@ defmodule Codebattle.GameProcess.Play do
     fsm = Fsm.new |> Fsm.create(%{user: user, game_id: game.id, task: task})
 
     Supervisor.start_game(game.id, fsm)
+    RecorderServer.start(game.id, task.id, user.id)
     Codebattle.Chat.Supervisor.start_chat(game.id)
-
-    # TODO: Run bot if second plyaer not connected after 5 seconds
     params = %{game_id: game.id, task_id: task.id}
-
-    # {:ok, pid} = Task.Supervisor.start_link(restart: :transient, max_restarts: 5)
-    # Task.Supervisor.start_child(pid, Codebattle.Bot.PlaybookPlayerTask, :run, [params])
     Task.start(Codebattle.Bot.PlaybookPlayerTask, :run, [params])
-    # Codebattle.Bot.PlaybookPlayerTask.run params
-
     game.id
   end
 
   def join_game(id, user) do
+    fsm = get_fsm(id)
+    RecorderServer.start(id, fsm.data.task.id, user.id)
     Server.call_transition(id, :join, %{user: user})
   end
 
   def game_info(id) do
+    #TODO: change first and second atoms to user ids, or list
     fsm = get_fsm(id)
     %{
       status: fsm.state, # :playing
-      winner: fsm.data.winner,
-      first_player: fsm.data.first_player,
-      second_player: fsm.data.second_player,
-      first_player_editor_text: fsm.data.first_player_editor_text,
-      second_player_editor_text: fsm.data.second_player_editor_text,
-      first_player_editor_lang: fsm.data.first_player_editor_lang,
-      second_player_editor_lang: fsm.data.second_player_editor_lang,
+      winner: FsmHelpers.get_winner(fsm),
+      first_player: fsm |> FsmHelpers.get_first_player |> Map.get(:user),
+      second_player: fsm |> FsmHelpers.get_second_player |> Map.get(:user, %User{}),
+      first_player_editor_text: fsm |> FsmHelpers.get_first_player |> Map.get(:editor_text),
+      second_player_editor_text: fsm |> FsmHelpers.get_second_player |> Map.get(:editor_text),
+      first_player_editor_lang: fsm |> FsmHelpers.get_first_player |> Map.get(:editor_lang),
+      second_player_editor_lang: fsm |> FsmHelpers.get_second_player |> Map.get(:editor_lang),
       task: fsm.data.task,
     }
   end
 
   def update_editor_text(id, user_id, editor_text) do
-    Server.call_transition(id, :update_editor_text, %{user_id: user_id, editor_text: editor_text})
+    RecorderServer.update_text(id, user_id, editor_text)
+    Server.call_transition(id, :update_editor_params, %{id: user_id, editor_text: editor_text})
   end
 
-  def update_editor_lang(id, user_id, lang) do
-    Server.call_transition(id, :update_editor_lang, %{user_id: user_id, lang: lang})
+  def update_editor_lang(id, user_id, editor_lang) do
+    RecorderServer.update_lang(id, user_id, editor_lang)
+    Server.call_transition(id, :update_editor_params, %{id: user_id, editor_lang: editor_lang})
   end
 
-  def check_game(id, user, editor_text, language) do
+  def check_game(id, user, editor_text, editor_lang) do
     fsm = get_fsm(id)
-    case check_code(fsm.data.task, editor_text, language) do
-      {:ok, true} ->
-        {_response, fsm} = Server.call_transition(id, :complete, %{user: user})
-        if fsm.state == :game_over do
-          terminate_game(id, fsm)
-        end
+    RecorderServer.update_text(id, user.id, editor_text)
+    RecorderServer.update_lang(id, user.id, editor_lang)
+    check = check_code(fsm.data.task, editor_text, editor_lang)
+    case {fsm.state, check}  do
+      {:playing, {:ok, true}} ->
+        {_response, fsm} = Server.call_transition(id, :complete, %{id: user.id})
+        handle_won_game(id, user, fsm)
         {:ok, fsm}
-      {:error, reason} ->
-        {:error, reason}
+      {:playing, {:error, output}} ->
+        {:error, output}
+      {:player_won, {:error, output}} ->
+        {:error, output}
+      {:player_won, {:ok, true}} ->
+        case FsmHelpers.is_winner?(fsm.data, user.id) do
+          true ->
+            {:ok, fsm}
+          _ ->
+            {_response, fsm} = Server.call_transition(id, :complete, %{id: user.id})
+            handle_game_over(id, user, fsm)
+            {:ok, fsm}
+        end
     end
   end
 
-  defp check_code(task, editor_text, language) do
-    Checker.check(task, editor_text, language)
+  defp check_code(task, editor_text, editor_lang) do
+    Checker.check(task, editor_text, editor_lang)
   end
 
-  defp terminate_game(id, fsm) do
-    game = get_game(id)
-    new_game = Game.changeset(game, %{state: to_string(fsm.state)})
-    Repo.update! new_game
-    Repo.insert!(%UserGame{game_id: game.id, user_id: fsm.data.winner.id, result: "win"})
-    Repo.insert!(%UserGame{game_id: game.id, user_id: fsm.data.loser.id, result: "lose"})
+  defp handle_won_game(id, user, fsm) do
+    RecorderServer.store(id, user.id)
+    # TODO: make async
+    game_id = id |> Integer.parse |> elem(0)
+    loser = FsmHelpers.get_opponent(fsm, user.id)
 
-    if fsm.data.winner.id != 0 do
-      winner = User.changeset(fsm.data.winner, %{raiting: (fsm.data.winner.raiting + 1)})
-      Repo.update! winner
-    end
+    game_id
+      |> get_game
+      |> Game.changeset(%{state: to_string(fsm.state)})
+      |> Repo.update!
+    Repo.insert!(%UserGame{game_id: game_id, user_id: user.id, result: "win"})
+    Repo.insert!(%UserGame{game_id: game_id, user_id: loser.id, result: "lose"})
 
-    if fsm.data.loser.id != 0 do
-      loser = User.changeset(fsm.data.loser, %{raiting: (fsm.data.loser.raiting - 1)})
-      Repo.update! loser
-    end
+    # TODO: update users rating by Elo
+      if user.id != 0 do
+        user
+          |> User.changeset(%{raiting: (user.raiting + 10)})
+          |> Repo.update!
+      end
 
-    Supervisor.stop_game(id)
+      if loser.id != 0 do
+        loser
+          |> User.changeset(%{raiting: (loser.raiting - 10)})
+          |> Repo.update!
+      end
+  end
+
+  defp handle_game_over(id, loser, fsm) do
+    id
+      |> get_game
+      |> Game.changeset(%{state: to_string(fsm.state)})
+      |> Repo.update!
+    loser
+      |> User.changeset(%{raiting: (loser.raiting + 5)})
+      |> Repo.update!
   end
 
   defp get_random_task(level) do

@@ -3,6 +3,8 @@ defmodule Codebattle.GameProcess.Supervisor do
 
   use Supervisor
 
+  alias Codebattle.GameProcess.Server
+
   def start_link do
     Supervisor.start_link(__MODULE__, [], name: __MODULE__)
   end
@@ -26,7 +28,7 @@ defmodule Codebattle.GameProcess.Supervisor do
   end
 
   def stop_game(game_id) do
-    pid = :gproc.where({:n, :l, {:game, to_charlist(game_id)}})
+    pid = Server.game_pid(game_id)
     Supervisor.terminate_child(__MODULE__, pid)
   end
 

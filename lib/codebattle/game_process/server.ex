@@ -1,5 +1,6 @@
 defmodule Codebattle.GameProcess.Server do
-  @moduledoc false
+  @moduledoc "Gen server for main game state"
+
   use GenServer
 
   require Logger
@@ -8,28 +9,28 @@ defmodule Codebattle.GameProcess.Server do
 
   # API
   def start_link(game_id, fsm) do
-    GenServer.start_link(__MODULE__, fsm, name: game_key(game_id))
+    GenServer.start_link(__MODULE__, fsm, name: server_name(game_id))
   end
 
   def cast_transition(game_id, event, params) do
-    GenServer.cast(game_key(game_id), {:transition, event, params})
+    GenServer.cast(server_name(game_id), {:transition, event, params})
   end
 
   def call_transition(game_id, event, params) do
-    GenServer.call(game_key(game_id), {:transition, event, params}, 20_000)
+    GenServer.call(server_name(game_id), {:transition, event, params}, 20_000)
   end
 
   def fsm(game_id) do
-    GenServer.call(game_key(game_id), :fsm, 20_000)
+    GenServer.call(server_name(game_id), :fsm, 20_000)
   end
 
-  defp game_key(game_id) do
-    {:via, :gproc, {:n, :l, {:game, to_charlist(game_id)}}}
+  def game_pid(game_id) do
+    :gproc.where(server_name(game_id))
   end
 
   # SERVER
-
   def init(fsm) do
+    Logger.info "Start game server for game_id: #{fsm.data.game_id}"
     {:ok, fsm}
   end
 
@@ -51,5 +52,14 @@ defmodule Codebattle.GameProcess.Server do
       new_fsm ->
         {:reply, {:ok, new_fsm}, new_fsm}
     end
+  end
+
+  # HELPERS
+  defp server_name(game_id) do
+    {:via, :gproc, game_key(game_id)}
+  end
+
+  defp game_key(game_id) do
+    {:n, :l, {:game, to_charlist(game_id)}}
   end
 end

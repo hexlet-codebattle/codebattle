@@ -4,8 +4,7 @@ defmodule CodebattleWeb.GameChannel do
 
   require Logger
 
-  alias Codebattle.GameProcess.Play
-  # alias CodebattleWeb.Presence
+  alias Codebattle.GameProcess.{Play, Fsm, FsmHelpers}
 
   def join("game:" <> game_id, _payload, socket) do
     send(self(), :after_join)
@@ -36,45 +35,64 @@ defmodule CodebattleWeb.GameChannel do
   end
 
   def handle_in("editor:text", payload, socket) do
-    editor_text = Map.get(payload, "editor_text")
     game_id = get_game_id(socket)
-    Play.update_editor_text(game_id, socket.assigns.user_id, editor_text)
-    broadcast_from! socket, "editor:text", %{user_id: socket.assigns.user_id, editor_text: editor_text}
-    {:noreply, socket}
+    if user_authorized_in_game?(game_id, socket.assigns.user_id) do
+      %{"editor_text" => editor_text} = payload
+      game_id = get_game_id(socket)
+      Play.update_editor_text(game_id, socket.assigns.user_id, editor_text)
+      broadcast_from! socket, "editor:text", %{user_id: socket.assigns.user_id, editor_text: editor_text}
+      {:noreply, socket}
+    else
+      {:reply, {:error, %{reason: "not_authorized"}}, socket}
+    end
   end
 
   def handle_in("editor:lang", payload, socket) do
-    %{"lang" => lang} = payload
     game_id = get_game_id(socket)
-    Play.update_editor_lang(game_id, socket.assigns.user_id, lang)
-    broadcast_from! socket, "editor:lang", %{user_id: socket.assigns.user_id, lang: lang}
-    {:noreply, socket}
+    if user_authorized_in_game?(game_id, socket.assigns.user_id) do
+      %{"lang" => lang} = payload
+      Play.update_editor_lang(game_id, socket.assigns.user_id, lang)
+      broadcast_from! socket, "editor:lang", %{user_id: socket.assigns.user_id, lang: lang}
+      {:noreply, socket}
+    else
+      {:reply, {:error, %{reason: "not_authorized"}}, socket}
+    end
   end
 
   def handle_in("check_result", payload, socket) do
-    %{"editor_text" => editor_text, "lang" => lang} = payload
     game_id = get_game_id(socket)
-    Play.update_editor_text(game_id, socket.assigns.user_id, editor_text)
-    case Play.check_game(game_id, socket.assigns.current_user, editor_text, lang) do
-    {:ok, fsm} ->
-      winner = fsm.data.winner
-      msg = case fsm.state do
-        :player_won ->
-            message = winner.name <> " " <> gettext("won the game!")
-            broadcast_from! socket, "user:won", %{winner: winner, status: "player_won", msg: message}
-            message
-        _ ->
-            gettext "You lose the game"
-      end
-      {:reply, {:ok, %{solution_status: true, status: fsm.state, msg: msg, winner: winner}}, socket}
+    if user_authorized_in_game?(game_id, socket.assigns.user_id) do
+      %{"editor_text" => editor_text, "lang" => lang} = payload
+      Play.update_editor_text(game_id, socket.assigns.user_id, editor_text)
+      Play.update_editor_lang(game_id, socket.assigns.user_id, lang)
+      case Play.check_game(game_id, socket.assigns.current_user, editor_text, lang) do
+      {:ok, fsm} ->
+        winner = socket.assigns.current_user
+        msg = case fsm.state do
+          :player_won ->
+              message = winner.name <> " " <> gettext("won the game!")
+              broadcast_from! socket, "user:won", %{winner: winner, status: "player_won", msg: message}
+              message
+          _ ->
+              gettext "You lose the game"
+        end
+        {:reply, {:ok, %{solution_status: true, status: fsm.state, msg: msg, winner: winner}}, socket}
 
-    {:error, output} ->
-      {:reply, {:ok, %{solution_status: false, output: output}}, socket}
+      {:error, output} ->
+        {:reply, {:ok, %{solution_status: false, output: output}}, socket}
+      end
+    else
+        {:reply, {:error, %{reason: "not_authorized"}}, socket}
     end
   end
 
   defp get_game_id(socket) do
     "game:" <> game_id = socket.topic
     game_id
+  end
+
+  defp user_authorized_in_game?(game_id, user_id) do
+    fsm = Play.get_fsm(game_id)
+    FsmHelpers.is_player?(fsm.data, user_id)
   end
 end

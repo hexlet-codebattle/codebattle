@@ -14,4 +14,8 @@ defmodule Helpers.GameProcess do
     Supervisor.start_game(game.id, fsm)
     game
   end
+
+  def start_game_recorder(game_id, task_id, user_id) do
+    Codebattle.Bot.RecorderServer.start(game_id, task_id, user_id)
+  end
 end

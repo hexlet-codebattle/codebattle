@@ -2,6 +2,7 @@ defmodule CodebattleWeb.GameChannelTest do
   use CodebattleWeb.ChannelCase, async: true
 
   alias CodebattleWeb.GameChannel
+  alias Codebattle.GameProcess.Player
 
   setup do
     user1 = insert(:user)
@@ -20,7 +21,7 @@ defmodule CodebattleWeb.GameChannelTest do
   test "sends game info when user join", %{user1: user1, socket1: socket1, task: task} do
     #setup
     state = :waiting_opponent
-    data = %{first_player: user1, task: task}
+    data = %{players: [%Player{id: user1.id, user: user1}, %Player{}], task: task}
     game = setup_game(state, data)
     game_topic = "game:" <> to_string(game.id)
 
@@ -31,8 +32,8 @@ defmodule CodebattleWeb.GameChannelTest do
       winner: %Codebattle.User{},
       first_player: user1,
       second_player: %Codebattle.User{},
-      first_player_editor_text: " ",
-      second_player_editor_text: " ",
+      first_player_editor_text: "",
+      second_player_editor_text: "",
       first_player_editor_lang: "js",
       second_player_editor_lang: "js",
       task: task,
@@ -42,7 +43,7 @@ defmodule CodebattleWeb.GameChannelTest do
   test "broadcasts user:joined with state after user join", %{user1: user1, user2: user2, socket2: socket2} do
     #setup
     state = :playing
-    data = %{first_player: user1, second_player: user2}
+    data = %{players: [%Player{id: user1.id, user: user1}, %Player{id: user2.id, user: user2}]}
     game = setup_game(state, data)
     game_topic = "game:" <> to_string(game.id)
     {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
@@ -57,8 +58,8 @@ defmodule CodebattleWeb.GameChannelTest do
       first_player: user1,
       second_player: user2,
       status: :playing,
-      first_player_editor_text: " ",
-      second_player_editor_text: " ",
+      first_player_editor_text: "",
+      second_player_editor_text: "",
       first_player_editor_lang: "js",
       second_player_editor_lang: "js",
       winner: %Codebattle.User{}
@@ -68,7 +69,7 @@ defmodule CodebattleWeb.GameChannelTest do
   test "broadcasts editor:text, after editor:text", %{user1: user1, user2: user2, socket1: socket1, socket2: socket2} do
     #setup
     state = :playing
-    data = %{first_player: user1, second_player: user2}
+    data = %{players: [%Player{id: user1.id, user: user1}, %Player{id: user2.id, user: user2}]}
     game = setup_game(state, data)
     game_topic = "game:" <> to_string(game.id)
     editor_text1 = "test1"
@@ -100,7 +101,7 @@ defmodule CodebattleWeb.GameChannelTest do
   test "broadcasts editor:lang, after editor:lang", %{user1: user1, user2: user2, socket1: socket1, socket2: socket2} do
     #setup
     state = :playing
-    data = %{first_player: user1, second_player: user2}
+    data = %{players: [%Player{id: user1.id, user: user1}, %Player{id: user2.id, user: user2}]}
     game = setup_game(state, data)
     game_topic = "game:" <> to_string(game.id)
     editor_lang1 = "js"
