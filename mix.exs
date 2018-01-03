@@ -34,7 +34,7 @@ defmodule Codebattle.Mixfile do
                     :gproc, :edeliver,
 
                     # For distillery
-                    :fsm, :diff, :temp, :logger_file_backend]]
+                    :fsm, :text_delta, :temp, :logger_file_backend]]
   end
 
   # Specifies which paths to compile per environment.
@@ -59,13 +59,13 @@ defmodule Codebattle.Mixfile do
      {:fsm, "~> 0.3"},
      {:poison, "~> 3.1.0", override: true},
      {:phoenix_gon, "~> 0.2.0"},
-     {:diff, "~> 1.0.0"},
+     {:text_delta, "~> 1.3.0"},
      {:yaml_elixir, "~> 1.1"},
      {:temp, "~> 0.4"},
      {:edeliver, "~> 1.4.4"},
      {:distillery, "~> 1.5", runtime: false},
      {:logger_file_backend, "~> 0.0.10"},
-
+     {:atomic_map, "~> 0.8"},
 
      #dev_and_test
      {:credo, "~> 0.8", only: [:dev, :test], runtime: false},

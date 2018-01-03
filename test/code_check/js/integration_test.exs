@@ -2,7 +2,7 @@ defmodule Codebattle.CodeCheck.JS.IntegrationTest do
   use Codebattle.IntegrationCase
 
   alias CodebattleWeb.GameChannel
-  alias Codebattle.GameProcess.Server
+  alias Codebattle.GameProcess.{Server, Player}
 
   setup do
     user1 = insert(:user)
@@ -19,7 +19,7 @@ defmodule Codebattle.CodeCheck.JS.IntegrationTest do
   test "bad code, game playing", %{user1: user1, user2: user2, task: task, socket1: socket1, socket2: socket2} do
     #setup
     state = :playing
-    data = %{first_player: user1, second_player: user2, task: task}
+    data = %{players: [%Player{id: user1.id, user: user1}, %Player{id: user2.id, user: user2}], task: task}
     game = setup_game(state, data)
     game_topic = "game:" <> to_string(game.id)
 
@@ -39,7 +39,7 @@ defmodule Codebattle.CodeCheck.JS.IntegrationTest do
   test "good code, player won", %{user1: user1, user2: user2, task: task, socket1: socket1, socket2: socket2} do
     #setup
     state = :playing
-    data = %{first_player: user1, second_player: user2, task: task}
+    data = %{players: [%Player{id: user1.id, user: user1}, %Player{id: user2.id, user: user2}], task: task}
     game = setup_game(state, data)
     game_topic = "game:" <> to_string(game.id)
 
@@ -63,7 +63,7 @@ defmodule Codebattle.CodeCheck.JS.IntegrationTest do
   test "process exit do not working", %{user1: user1, user2: user2, task: task, socket1: socket1, socket2: socket2} do
     #setup
     state = :playing
-    data = %{first_player: user1, second_player: user2, task: task}
+    data = %{players: [%Player{id: user1.id, user: user1}, %Player{id: user2.id, user: user2}], task: task}
     game = setup_game(state, data)
     game_topic = "game:" <> to_string(game.id)
 

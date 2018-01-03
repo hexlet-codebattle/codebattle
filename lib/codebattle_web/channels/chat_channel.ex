@@ -1,11 +1,11 @@
 defmodule CodebattleWeb.ChatChannel do
     @moduledoc false
     use Codebattle.Web, :channel
-  
+
     require Logger
-  
+
     alias Codebattle.Chat.Server
-  
+
     def join("chat:" <> chat_id, _payload, socket) do
         send(self(), :after_join)
         {:ok, users} = Server.join_chat(chat_id, socket.assigns.current_user)
@@ -20,7 +20,7 @@ defmodule CodebattleWeb.ChatChannel do
         broadcast_from! socket, "user:joined", %{users: users}
         {:noreply, socket}
     end
-    
+
     def terminate(_reason, socket) do
         chat_id = get_chat_id(socket)
         {:ok, users} = Server.leave_chat(chat_id, socket.assigns.current_user)
@@ -43,4 +43,4 @@ defmodule CodebattleWeb.ChatChannel do
         chat_id
     end
   end
-  
+
