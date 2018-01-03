@@ -68,7 +68,7 @@
         "style-loader": "^0.18.2",
         "tether": "^1.4.0",
         "url-loader": "^0.5.9",
-        "webpack": "^3.5.4",
-        "webpack-dev-server": "^2.6.1"
+        "webpack": "^3.10.0",
+        "webpack-dev-server": "^2.9.7"
     }
 }
