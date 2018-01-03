@@ -73,4 +73,4 @@ export const rightEditorSelector = (state) => {
 };
 
 export const langSelector = (userId, state) =>
-  _.get(state, ['editors', 'editors', userId, 'currentLang']);
+  _.get(state, ['editors', 'editors', userId, 'currentLang'], null);

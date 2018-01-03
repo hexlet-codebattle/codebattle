@@ -116,14 +116,16 @@ class GameStatusTab extends Component {
               </div>
             </div>
           </div>
-          <div className="col text-right" >
-            <button
-              className="btn btn-info"
-              type="button"
-              disabled
-            >
-              {languages[rightEditorLang]}
-            </button>
+          <div className="col text-right">
+            {!rightUserId ? null : (
+              <button
+                className="btn btn-info"
+                type="button"
+                disabled
+              >
+                {languages[rightEditorLang]}
+              </button>
+            )}
           </div>
         </div>
         <div className="row">
