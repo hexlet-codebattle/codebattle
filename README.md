@@ -8,20 +8,38 @@
 
 Когда вы будете полностью готовы влиться в разработку, то можете выбрать любую интересную для себя задачу исходя из текущего этапа [в этом разделе](https://github.com/hexlet-codebattle/codebattle/milestones) или посмотреть все открытые актуальные задачи [на этой доске](https://github.com/hexlet-codebattle/codebattle/projects/1).
 
-## Установка
+### Requirements
 
-* Клонируйте репозиторий
+* Mac / Linux
+* Docker
+* Docker Compose
+* Ansible (installed using pip3)
+
+### Install
+
+* Clone repo
 
 ```bash
 git clone https://github.com/hexlet-codebattle/codebattle.git
 ```
 
-* Настройте окружение (для Linux)
+* Setup env (for Ubuntu)
 
 ```bash
 cd codebattle
 make development-build-local
 ```
+
+* Setup env (for other os)
+  need_implementation
+
+### Load content
+
+```sh
+$ make upload_asserts
+```
+
+### Run
 
 * Выйдите и войдите в систему
 * Установите зависимости и запустите docker-контейнеры
