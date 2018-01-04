@@ -1,7 +1,7 @@
 run:
-	docker run --read-only  -v `pwd`:/usr/src/app codebattle/ruby make test
+	docker run --read-only --rm -v `pwd`:/usr/src/app codebattle/ruby timeout -t 3 make test
 
 test:
-	cat data.jsons | sudo -E -u nobody ruby checker.rb
+	cat data.jsons | ruby checker.rb
 
 .PHONY: test
