@@ -27,9 +27,11 @@ defmodule Codebattle.CodeCheck.Ruby.IntegrationTest do
     {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
     :lib.flush_receive()
 
-    push socket1, "editor:text", %{editor_text: "dsf"}
-    push socket1, "check_result", %{editor_text: "sdf", lang: "ruby"}
-    :timer.sleep(2_000)
+    ref = push socket1, "check_result", %{editor_text: "sdf", lang: "ruby"}
+    :timer.sleep 1_000
+
+    assert_reply ref, :ok, %{output: output}
+    assert ~r/undefined local variable or method `sdf/ |> Regex.scan(output) |> Enum.empty? == false
 
     fsm = Server.fsm(game.id)
 
@@ -52,11 +54,9 @@ defmodule Codebattle.CodeCheck.Ruby.IntegrationTest do
       editor_text: "def solution(x,y); x + y; end",
       lang: "ruby"
     }
-
-    :timer.sleep 2_000
+    :timer.sleep 1_000
 
     fsm = Server.fsm(game.id)
-
     assert fsm.state == :player_won
   end
 end
