@@ -29,6 +29,9 @@ compose-db-prepare:
 	docker-compose run app mix ecto.migrate
 	docker-compose run app mix run priv/repo/seeds.exs
 
+compose-upload-langs:
+	docker-compose run app make upload_langs
+
 compose-test-coverage-html:
 	docker-compose run -e "MIX_ENV=test" app make test-coverage-html
 

@@ -9,6 +9,7 @@ defmodule Codebattle.CodeCheck.JS.IntegrationTest do
     user2 = insert(:user)
 
     task = insert(:task)
+    lang = setup_lang(:js)
 
     socket1 = socket("user_id", %{user_id: user1.id, current_user: user1})
     socket2 = socket("user_id", %{user_id: user2.id, current_user: user2})
@@ -54,7 +55,7 @@ defmodule Codebattle.CodeCheck.JS.IntegrationTest do
       lang: "js"
     }
 
-    :timer.sleep 1_500
+    :timer.sleep 2_000
 
     fsm = Server.fsm(game.id)
 

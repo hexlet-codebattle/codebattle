@@ -1,5 +1,10 @@
 use Mix.Config
 
+config :codebattle,
+  # docker run --read-only --rm -v `pwd`:/usr/src/app codebattle/ruby:2.5.0 timeout -t 3 make test
+  #
+  docker_command_template: "docker run --read-only --rm -v `pwd`:/usr/src/app ~s timeout -t 3 cat data.jsons | ~s "
+
 # For development, we disable any cache and enable
 # debugging and code reloading.
 #

@@ -9,6 +9,7 @@ defmodule Codebattle.CodeCheck.Ruby.IntegrationTest do
     user2 = insert(:user)
 
     task = insert(:task)
+    lang = setup_lang(:ruby)
 
     socket1 = socket("user_id", %{user_id: user1.id, current_user: user1})
     socket2 = socket("user_id", %{user_id: user2.id, current_user: user2})
@@ -28,7 +29,7 @@ defmodule Codebattle.CodeCheck.Ruby.IntegrationTest do
     :lib.flush_receive()
 
     ref = push socket1, "check_result", %{editor_text: "sdf", lang: "ruby"}
-    :timer.sleep 1_000
+    :timer.sleep 1_500
 
     assert_reply ref, :ok, %{output: output}
     assert ~r/undefined local variable or method `sdf/ |> Regex.scan(output) |> Enum.empty? == false
@@ -54,7 +55,7 @@ defmodule Codebattle.CodeCheck.Ruby.IntegrationTest do
       editor_text: "def solution(x,y); x + y; end",
       lang: "ruby"
     }
-    :timer.sleep 1_000
+    :timer.sleep 1_500
 
     fsm = Server.fsm(game.id)
     assert fsm.state == :player_won
