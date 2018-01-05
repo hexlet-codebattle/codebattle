@@ -15,10 +15,10 @@ config :logger, level: :warn
 # Configure your database
 config :codebattle, Codebattle.Repo,
   adapter: Ecto.Adapters.Postgres,
-  username: "postgres",
-  password: "",
+  username: System.get_env("CODEBATTLE_DATABASE_USERNAME"),
+  password: System.get_env("CODEBATTLE_DATABASE_PASSWORD"),
   database: "codebattle_test",
-  hostname: "db",
+  hostname: System.get_env("CODEBATTLE_DATABASE_HOSTNAME"),
   pool: Ecto.Adapters.SQL.Sandbox,
   ownership_timeout: 99_999_999
 
