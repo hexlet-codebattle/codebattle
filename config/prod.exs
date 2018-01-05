@@ -41,6 +41,10 @@ config :logger, :info,
 config :codebattle, Codebattle.Bot,
   timeout: 7000
 
+# Finally import the config/prod.secret.exs
+# which should be versioned separately.
+import_config "prod.secret.exs"
+
 # ## SSL Support
 #
 # To get SSL working, you will need to add the `https` key
@@ -77,7 +81,3 @@ config :codebattle, Codebattle.Bot,
 #
 #     config :codebattle, Codebattle.Endpoint, server: true
 #
-
-# Finally import the config/prod.secret.exs
-# which should be versioned separately.
-import_config "prod.secret.exs"
