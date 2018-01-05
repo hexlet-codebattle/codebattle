@@ -1,9 +1,5 @@
 use Mix.Config
 
-config :codebattle,
-  # docker run --read-only --rm -v `pwd`:/usr/src/app codebattle/ruby:2.5.0 timeout -t 3 make test
-  docker_command_template: "docker run --read-only --rm -v `pwd`:/usr/src/app ~s timeout -t 3 cat data.jsons | ~s "
-
 # For production, we configure the host to read the PORT
 # from the system environment. Therefore, you will need
 # to set PORT=80 before running your server.

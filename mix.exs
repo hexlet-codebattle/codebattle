@@ -33,8 +33,8 @@ defmodule Codebattle.Mixfile do
                     :postgrex, :yaml_elixir, :ueberauth, :ueberauth_github,
                     :gproc, :edeliver,
 
-                    # For distillery
-                    :fsm, :text_delta, :temp, :logger_file_backend]]
+                     # For distillery
+                     :atomic_map, :fsm, :text_delta, :temp, :logger_file_backend]]
   end
 
   # Specifies which paths to compile per environment.

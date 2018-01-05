@@ -53,4 +53,7 @@ upload_langs:
 release:
 	MIX_ENV=prod mix edeliver upgrade production --verbose --env=prod
 
+migrate-prod:
+	MIX_ENV=prod mix edeliver migrate production
+
 .PHONY: test
