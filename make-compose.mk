@@ -48,4 +48,6 @@ compose-logs:
 	docker-compose logs -f --tail=100
 
 compose-upload-asserts:
-	 docker-compose run app mix issues.fetch && mix issues.generate && mix issues.upload
+	 docker-compose run app mix issues.fetch
+	 docker-compose run app mix issues.generate
+	 docker-compose run app mix issues.upload
