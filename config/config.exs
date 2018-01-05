@@ -30,12 +30,7 @@ config :phoenix_slime, :use_slim_extension, true
 
 config :ueberauth, Ueberauth,
   providers: [
-    github: {
-      Ueberauth.Strategy.Github,
-      [
-        default_scope: "user:email"
-      ]
-     }
+    github: {Ueberauth.Strategy.Github, [default_scope: "user:email"]}
   ]
 
 config :ueberauth, Ueberauth.Strategy.Github.OAuth,
@@ -46,9 +41,9 @@ config :codebattle, CodebattleWeb.Gettext,
   priv: "priv/gettext",
   default_locale: "en"
 
+config :codebattle, Mix.Tasks.Issues,
+  issues_dir: File.cwd! |> Path.join("tmp/battle_asserts")
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env}.exs"
-
-config :codebattle, Mix.Tasks.Issues,
-  issues_dir: File.cwd! |> Path.join("tmp/battle_asserts")

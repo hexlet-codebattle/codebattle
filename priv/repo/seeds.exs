@@ -1,3 +1,4 @@
+alias Codebattle.Repo
 # Script for populating the database. You can run it as:
 #
 #     mix run priv/repo/seeds.exs
@@ -18,5 +19,23 @@
 #     github_id: 0
 #   })
 #
-# We recommend using the bang functions (`insert!`, `update!`
-# and so on) as they will fail if something goes wrong.
+#
+
+levels = ["elementary", "easy", "medium", "hard"]
+for level <- levels do
+  task_name = "test_task_#{level}"
+  task_data = %{
+    name: task_name,
+    description: "test sum: for ruby `def solution(a,b); a+b;end;`",
+    asserts: "{\"arguments\":[1,1],\"expected\":2}
+    {\"arguments\":[2,2],\"expected\":4}
+    "}
+  task = case Repo.get_by(Codebattle.Task, level: level, name: task_name) do
+    nil  -> %Codebattle.Task{}
+    task -> task
+  end
+  task
+  |> Codebattle.Task.changeset(Map.merge(task_data, %{level: level}))
+  |> Repo.insert_or_update!
+  IO.puts "Upsert #{task_name}"
+end
