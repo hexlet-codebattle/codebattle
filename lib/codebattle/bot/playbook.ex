@@ -10,6 +10,7 @@ defmodule Codebattle.Bot.Playbook do
     field :user_id, :integer
     field :game_id, :integer
     field :task_id, :integer
+    # TODO: add to lang_id instead slug
     field :lang, :string
 
     timestamps()

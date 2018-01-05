@@ -1,41 +1,49 @@
 defmodule Codebattle.CodeCheck.Checker do
+  alias Codebattle.{Repo, Language}
+
   @moduledoc false
   @root_dir File.cwd!
-  @lang_extentions  %{"js" => "js", "ruby" => "rb"}
 
   require Logger
 
-  def check(task, editor_text, language) do
-    case System.get_env("CODEBATTLE_CHECK_TRUE") do
-      "true" -> {:ok, true}
-      _ ->
-        {dir_path, check_code} = prepare_tmp_dir!(task, editor_text, language)
-        {global_output, status} = System.cmd("make", ["run"], cd: dir_path, stderr_to_stdout: true)
-        Logger.info "Docker stdout for task_id: #{task.id}, lang: #{language}, output:#{global_output}"
-        output = global_output |> String.split("\n") |> tl |> tl |> Enum.join("\n")
+  def check(task, editor_text, lang_slug) do
+    case Repo.get_by(Language, %{slug: lang_slug}) do
+      nil -> {:error, "Lang #{lang_slug} is undefined"}
+      lang ->
+        # TODO: add hash to data.jsons or forbid read data.jsons
+        docker_command_template = Application.fetch_env!(:codebattle, :docker_command_template)
+        {dir_path, check_code} = prepare_tmp_dir!(task, editor_text, lang)
+        volume = "-v #{dir_path}:/usr/src/app"
+        command = docker_command_template
+                  |> :io_lib.format([volume, lang.docker_image])
+                  |> to_string
+        Logger.debug command
+        [cmd | cmd_opts] = command |> String.split
+        {global_output, status} = System.cmd(cmd, cmd_opts, stderr_to_stdout: true)
+        Logger.debug "Docker stdout for task_id: #{task.id}, lang: #{lang.slug}, output:#{global_output}"
+        output = global_output |> String.split("\n") |> tl |> Enum.join("\n")
         result = case  {output, status} do
           {^check_code, 0} ->
             {:ok, true}
           _ ->
             {:error, output}
         end
-
-      Task.start(File, :rm_rf, [dir_path])
-      result
+        Task.start(File, :rm_rf, [dir_path])
+        result
     end
   end
 
-  defp prepare_tmp_dir!(task, editor_text, language) do
-    dir_path = Temp.mkdir!(prefix: "battle")
+  defp prepare_tmp_dir!(task, editor_text, lang) do
+    dir_path = Temp.mkdir!(prefix: "codebattle-check")
 
-    File.cp_r!(Path.join(@root_dir, "checkers/#{language}/"), dir_path)
+    File.cp_r!(Path.join(@root_dir, "checkers/#{lang.slug}/"), dir_path)
 
     check_code = :rand.normal |> to_string
 
     asserts = task.asserts <> "{\"check\":\"#{check_code}\"}"
     File.write! Path.join(dir_path, "data.jsons"), asserts
 
-    File.write! Path.join(dir_path, "solution.#{@lang_extentions[language]}"), editor_text
+    File.write! Path.join(dir_path, "solution.#{lang.extension}"), editor_text
     {dir_path, check_code}
   end
 end

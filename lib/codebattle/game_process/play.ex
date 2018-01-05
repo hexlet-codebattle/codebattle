@@ -100,8 +100,8 @@ defmodule Codebattle.GameProcess.Play do
     end
   end
 
-  defp check_code(task, editor_text, editor_lang) do
-    Checker.check(task, editor_text, editor_lang)
+  defp check_code(task, editor_text, lang_slug) do
+    Checker.check(task, editor_text, lang_slug)
   end
 
   defp handle_won_game(id, user, fsm) do

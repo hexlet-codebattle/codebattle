@@ -47,6 +47,9 @@ upload_asserts:
 	 mix issues.generate
 	 mix issues.upload
 
+upload_langs:
+	 mix upload_langs
+
 release:
 	MIX_ENV=prod mix edeliver upgrade production --verbose --env=prod
 

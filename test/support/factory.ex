@@ -1,7 +1,7 @@
 defmodule CodebattleWeb.Factory do
   use ExMachina.Ecto, repo: Codebattle.Repo
 
-  alias Codebattle.{User, Game, Task}
+  alias Codebattle.{User, Game, Task, Language}
   alias Codebattle.Bot.Playbook
   alias Ueberauth.Auth
 
@@ -16,6 +16,10 @@ defmodule CodebattleWeb.Factory do
 
   def game_factory do
     %Game{state: "waiting_opponent"}
+  end
+
+  def language_factory do
+    %Language{name: "js", slug: "js"}
   end
 
   def task_factory do
