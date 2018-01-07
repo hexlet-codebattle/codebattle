@@ -37,6 +37,7 @@ defmodule Codebattle.GameProcess.Play do
     Supervisor.start_game(game.id, fsm)
     RecorderServer.start(game.id, task.id, user.id)
     Codebattle.Chat.Supervisor.start_chat(game.id)
+    CodebattleWeb.Endpoint.broadcast("lobby", "new:game", %{game: fsm})
     params = %{game_id: game.id, task_id: task.id}
     Task.start(Codebattle.Bot.PlaybookPlayerTask, :run, [params])
     game.id

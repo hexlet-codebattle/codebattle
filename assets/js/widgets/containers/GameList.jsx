@@ -19,6 +19,7 @@ class GameList extends React.Component {
     return (
       <div>
         <h1>Game List</h1>
+        <p>Total: {games.length}</p>
         <table className="table table-hover table-sm">
           <thead>
             <tr>
@@ -37,7 +38,7 @@ class GameList extends React.Component {
                   <td>{this.renderPlayers(game)}</td>
                   <td>
                     <button
-                      className="btn btn-info btn-sm mr-3"
+                      className="btn btn-info btn-sm mr-2"
                       data-method="get"
                       data-to={`/games/${game.data.game_id}`}
                     >

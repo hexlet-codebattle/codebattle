@@ -8,8 +8,6 @@ defmodule CodebattleWeb.PageController do
     case conn.assigns[:is_authenticated?] do
       true ->
         game_fsms = Play.list_fsms |> Enum.sort_by(fn (fsm) -> Game.level_difficulties[fsm.data.task.level] end)
-        IO.inspect conn
-        IO.inspect Plug.CSRFProtection.get_csrf_token()
         render(conn, "list.html", game_fsms: game_fsms)
       _ ->
         render conn, "index.html"
