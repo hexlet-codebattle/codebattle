@@ -11,6 +11,14 @@ const gameList = handleActions({
     const { games } = state;
     return { games: [...games, game] };
   },
+  [actions.updateGameLobby](state, { payload: { game } }) {
+    const gameId = game.data.game_id;
+
+    const { games } = state;
+    const filtered = games.filter(g => g.data.game_id !== gameId);
+
+    return { games: [...filtered, game] };
+  },
 }, initState);
 
 export default gameList;

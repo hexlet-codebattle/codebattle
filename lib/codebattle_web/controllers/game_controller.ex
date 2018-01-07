@@ -33,6 +33,8 @@ defmodule CodebattleWeb.GameController do
   def join(conn, %{"id" => id}) do
     case Play.join_game(id, conn.assigns.user) do
       {:ok, _} ->
+        game = Play.get_fsm(id)
+        CodebattleWeb.Endpoint.broadcast("lobby", "update:game", %{game: game})
         conn
         |> put_flash(:info, gettext "Joined to game")
         |> redirect(to: game_path(conn, :show, id))

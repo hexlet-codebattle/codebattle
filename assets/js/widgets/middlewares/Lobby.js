@@ -1,5 +1,5 @@
 import socket from '../../socket';
-import { fetchGameList, newGameLobby } from '../actions';
+import { fetchGameList, newGameLobby, updateGameLobby } from '../actions';
 
 const channelName = 'lobby';
 const channel = socket.channel(channelName);
@@ -11,4 +11,5 @@ export const fetchState = () => (dispatch) => {
     .receive('ok', ({ games }) => dispatch(fetchGameList({ games })));
 
   channel.on('new:game', ({ game }) => dispatch(newGameLobby({ game })));
+  channel.on('update:game', ({ game }) => dispatch(updateGameLobby({ game })));
 };
