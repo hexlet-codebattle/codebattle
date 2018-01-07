@@ -7,14 +7,13 @@ rebuild-styles:
 	yarn deploy && \
 	cd ../
 
-development-build-local:
-	ansible-playbook -vv --ask-sudo-pass -i ansible/development ansible/development.yml --limit=local  --become
+ansible-development-setup:
+	mkdir -p tmp
+	touch tmp/ansible-vault-password
+	ansible-playbook ansible/development.yml -i ansible/development -vv -K
 
 compile:
 	mix compile
-
-create-env:
-	cp -n .env.example .env || :
 
 install:
 	mix deps.get

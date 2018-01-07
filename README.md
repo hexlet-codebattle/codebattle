@@ -23,16 +23,12 @@
 git clone https://github.com/hexlet-codebattle/codebattle.git
 ```
 
-* Setup env (for Ubuntu)
+* Setup env
 
 ```bash
 cd codebattle
-make development-build-local
+make ansible-development-setup
 ```
-
-* Setup env (for other os)
-  need_implementation
-
 ### Load content
 
 ```sh
