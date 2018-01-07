@@ -78,6 +78,10 @@ export const sendEditorData = editorText => (dispatch, getState) => {
   channel.push('editor:text', { editor_text: editorText });
 };
 
+export const sendGiveUp = () => {
+  channel.push('give_up');
+};
+
 export const sendEditorLang = lang => (dispatch, getState) => {
   const state = getState();
   const userId = currentUserIdSelector(state);
