@@ -37,15 +37,21 @@ class InfoWidget extends Component {
   render() {
     return (
       <div className="container-fluid">
-        <div className="row mt-3">
-          {_.map(Tabs, (value, key) => (
-            <button
-              key={key}
-              onPress={() => this.setState({ currentTab: value })}
-            >
-              {value}
-            </button>
-          ))}
+        <div className="row mt-2 mb-1">
+          <div className="col">
+            <div className="btn-group" role="group">
+              {_.map(Tabs, (value, key) => (
+                <button
+                  className="btn btn-secondary"
+                  type="button"
+                  key={key}
+                  onClick={() => this.setState({ currentTab: value })}
+                >
+                  {value}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
         <div className="row ">
           <div className="col">
