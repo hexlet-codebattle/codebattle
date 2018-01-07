@@ -44,7 +44,6 @@ defmodule Codebattle.PlayGameTest do
       assert fsm.state == :waiting_opponent
       assert FsmHelpers.get_first_player(fsm).user.name == "first"
       assert FsmHelpers.get_second_player(fsm).user == %User{}
-      assert fsm.data.game_over == false
 
       # First player cannot join to game as second player
       post(conn1, game_location <> "/join")
@@ -53,7 +52,6 @@ defmodule Codebattle.PlayGameTest do
       assert fsm.state == :waiting_opponent
       assert FsmHelpers.get_first_player(fsm).user.name == "first"
       assert FsmHelpers.get_second_player(fsm).user == %User{}
-      assert fsm.data.game_over == false
 
       # Second player join game
       post(conn2, game_location <> "/join")
@@ -63,7 +61,6 @@ defmodule Codebattle.PlayGameTest do
       assert fsm.state == :playing
       assert FsmHelpers.get_first_player(fsm).user.name == "first"
       assert FsmHelpers.get_second_player(fsm).user.name == "second"
-      assert fsm.data.game_over == false
       assert FsmHelpers.get_first_player(fsm).editor_text == ""
       assert FsmHelpers.get_second_player(fsm).editor_text == ""
 
@@ -80,7 +77,6 @@ defmodule Codebattle.PlayGameTest do
       assert FsmHelpers.get_first_player(fsm).user.name == "first"
       assert FsmHelpers.get_second_player(fsm).user.name == "second"
       assert FsmHelpers.get_winner(fsm).name == "first"
-      assert fsm.data.game_over == false
       assert FsmHelpers.get_first_player(fsm).editor_text == "Hello world1!"
       assert FsmHelpers.get_second_player(fsm).editor_text == ""
 
@@ -93,7 +89,6 @@ defmodule Codebattle.PlayGameTest do
       assert FsmHelpers.get_first_player(fsm).user.name == "first"
       assert FsmHelpers.get_second_player(fsm).user.name == "second"
       assert FsmHelpers.get_winner(fsm).name == "first"
-      assert fsm.data.game_over == false
       assert FsmHelpers.get_first_player(fsm).editor_text == "Hello world2!"
       assert FsmHelpers.get_second_player(fsm).editor_text == ""
 
@@ -107,7 +102,7 @@ defmodule Codebattle.PlayGameTest do
 
       assert game.state == "game_over"
       assert user1.raiting == 20
-      assert user2.raiting == 15
+      assert user2.raiting == 0
     end
   end
 
@@ -128,7 +123,6 @@ defmodule Codebattle.PlayGameTest do
     assert fsm.state == :playing
     assert FsmHelpers.get_first_player(fsm).user.name == "first"
     assert FsmHelpers.get_second_player(fsm).user.name == "second"
-    assert fsm.data.game_over == false
 
     # Other player cannot win game
     {:ok, _response, socket3} = subscribe_and_join(socket3, GameChannel, game_topic)
@@ -138,6 +132,5 @@ defmodule Codebattle.PlayGameTest do
     assert fsm.state == :playing
     assert FsmHelpers.get_first_player(fsm).user.name == "first"
     assert FsmHelpers.get_second_player(fsm).user.name == "second"
-    assert fsm.data.game_over == false
   end
 end

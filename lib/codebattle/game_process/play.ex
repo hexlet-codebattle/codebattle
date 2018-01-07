@@ -44,6 +44,7 @@ defmodule Codebattle.GameProcess.Play do
 
   def join_game(id, user) do
     fsm = get_fsm(id)
+    #TODO: link with game server instance
     RecorderServer.start(id, fsm.data.task.id, user.id)
     Server.call_transition(id, :join, %{user: user})
   end
@@ -74,6 +75,13 @@ defmodule Codebattle.GameProcess.Play do
     Server.call_transition(id, :update_editor_params, %{id: user_id, editor_lang: editor_lang})
   end
 
+  def give_up(id, user) do
+    # TODO: terminate Bot.RecordServer for this
+    # RecorderServer.update_lang(id, user_id, editor_lang)
+    {_response, fsm} = Server.call_transition(id, :give_up, %{id: user.id})
+    handle_gave_up(id, user, fsm)
+  end
+
   def check_game(id, user, editor_text, editor_lang) do
     fsm = get_fsm(id)
     RecorderServer.update_text(id, user.id, editor_text)
@@ -89,7 +97,7 @@ defmodule Codebattle.GameProcess.Play do
       {:player_won, {:error, output}} ->
         {:error, output}
       {:player_won, {:ok, true}} ->
-        case FsmHelpers.is_winner?(fsm.data, user.id) do
+        case FsmHelpers.winner?(fsm.data, user.id) do
           true ->
             {:ok, fsm}
           _ ->
@@ -108,14 +116,14 @@ defmodule Codebattle.GameProcess.Play do
     RecorderServer.store(id, user.id)
     # TODO: make async
     game_id = id |> Integer.parse |> elem(0)
-    loser = FsmHelpers.get_opponent(fsm, user.id)
+    loser = FsmHelpers.get_opponent(fsm.data, user.id)
 
     game_id
       |> get_game
       |> Game.changeset(%{state: to_string(fsm.state)})
       |> Repo.update!
-    Repo.insert!(%UserGame{game_id: game_id, user_id: user.id, result: "win"})
-    Repo.insert!(%UserGame{game_id: game_id, user_id: loser.id, result: "lose"})
+    Repo.insert!(%UserGame{game_id: game_id, user_id: user.id, result: "won"})
+    Repo.insert!(%UserGame{game_id: game_id, user_id: loser.id, result: "lost"})
 
     # TODO: update users rating by Elo
       if user.id != 0 do
@@ -131,14 +139,38 @@ defmodule Codebattle.GameProcess.Play do
       end
   end
 
+  defp handle_gave_up(id, user, fsm) do
+    game_id = id |> Integer.parse |> elem(0)
+    winner = FsmHelpers.get_opponent(fsm.data, user.id)
+
+    game_id
+      |> get_game
+      |> Game.changeset(%{state: to_string(fsm.state)})
+      |> Repo.update!
+    Repo.insert!(%UserGame{game_id: game_id, user_id: user.id, result: "gave_up"})
+    Repo.insert!(%UserGame{game_id: game_id, user_id: winner.id, result: "won"})
+
+      if user.id != 0 do
+        user
+          |> User.changeset(%{raiting: (user.raiting + 10)})
+          |> Repo.update!
+      end
+
+      if winner.id != 0 do
+        winner
+          |> User.changeset(%{raiting: (winner.raiting - 10)})
+          |> Repo.update!
+      end
+  end
+
   defp handle_game_over(id, loser, fsm) do
     id
       |> get_game
       |> Game.changeset(%{state: to_string(fsm.state)})
       |> Repo.update!
-    loser
-      |> User.changeset(%{raiting: (loser.raiting + 5)})
-      |> Repo.update!
+    # loser
+    #   |> User.changeset(%{raiting: (loser.raiting + 5)})
+    #   |> Repo.update!
   end
 
   defp get_random_task(level) do
