@@ -6,7 +6,7 @@ defmodule CodebattleWeb.GameController do
   alias Codebattle.GameProcess.Play
   alias Codebattle.{Repo, Language}
 
-  plug :authenticate_user when action in [:index, :show, :create, :join, :check]
+  plug :authenticate_user when action in [:show, :create, :join, :check]
 
   def call(conn, opts) do
     try do
