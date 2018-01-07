@@ -4,6 +4,7 @@ defmodule CodebattleWeb.GameController do
   import PhoenixGon.Controller
 
   alias Codebattle.GameProcess.Play
+  alias Codebattle.{Repo, Language}
 
   plug :authenticate_user when action in [:index, :show, :create, :join, :check]
 
@@ -26,7 +27,8 @@ defmodule CodebattleWeb.GameController do
 
   def show(conn, %{"id" => id}) do
     fsm = Play.get_fsm(id)
-    conn = put_gon(conn, game_id: id)
+    langs = Repo.all(Language)
+    conn = put_gon(conn, game_id: id, langs: langs)
     render conn, "show.html", %{fsm: fsm, layout_template: "full_width.html"}
   end
 

@@ -5,6 +5,8 @@ defmodule Codebattle.Language do
   import Ecto.Changeset
   alias Codebattle.Language
 
+  @derive {Poison.Encoder, only: [:name, :slug, :version]}
+
   schema "languages" do
     field :name, :string
     field :slug, :string # Uniq lang name
