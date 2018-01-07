@@ -14,31 +14,6 @@ h2 = gettext "Create new game with difficult:"
     = button to: game_path(@conn, :create, level: :hard), class: "btn btn-danger btn-block", role: "button" do
       = gettext "Hard"
 
-h2.mt-3 = gettext "Game list"
-
-p = gettext "Total: "
-  = Enum.count(@game_fsms)
-
-table.table.table-hover.table-sm
-  thead
-    tr
-      th scope="col" = gettext "Id"
-      th scope="col" = gettext "Level"
-      th scope="col" = gettext "Players"
-      th scope="col" = gettext "Actions"
-  tbody
-    = for fsm <- @game_fsms do
-      - users = get_users(fsm) |> Enum.map(fn(user) -> user_name(user) end) |> Enum.join(", ")
-      - row_class = if fsm.state == :waiting_opponent do "table-success" else "" end
-      tr class="#{row_class}"
-        th scope="row" = fsm.data.game_id
-        td = Gettext.gettext(CodebattleWeb.Gettext, fsm.data.task.level)
-        td = users
-        td
-          = button gettext("Show"), to: game_path(@conn, :show, fsm.data.game_id), method: :get, class: "btn btn-info btn-sm"
-          = if fsm.state == :waiting_opponent do
-            = button gettext("Join"), to: game_path(@conn, :join, fsm.data.game_id), class: "btn btn-success ml-2 btn-sm"
-
 #game-list
 
 javascript:
