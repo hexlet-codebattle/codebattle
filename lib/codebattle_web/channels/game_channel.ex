@@ -59,6 +59,18 @@ defmodule CodebattleWeb.GameChannel do
     end
   end
 
+  def handle_in("give_up", payload, socket) do
+    game_id = get_game_id(socket)
+    if user_authorized_in_game?(game_id, socket.assigns.user_id) do
+      Play.give_up(game_id, socket.assigns.current_user)
+      broadcast_from! socket, "give_up", %{user_id: socket.assigns.user_id}
+      {:noreply, socket}
+    else
+      {:reply, {:error, %{reason: "not_authorized"}}, socket}
+    end
+  end
+
+
   def handle_in("check_result", payload, socket) do
     game_id = get_game_id(socket)
     if user_authorized_in_game?(game_id, socket.assigns.user_id) do
