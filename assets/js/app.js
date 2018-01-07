@@ -18,11 +18,16 @@ import 'phoenix_html';
 // Local files can be imported directly using relative
 // paths "./socket" or full ones "web/static/js/socket".
 
-// import './gameChat';
-import connectGameWidget from './widgets';
+import { renderGameWidget, renderLobby} from './widgets';
 
-const widgetRoot = document.getElementById('game-widget-root');
 
-if (widgetRoot) {
-  connectGameWidget(widgetRoot);
+const gameWidgetRoot = document.getElementById('game-widget-root');
+const gameListRoot = document.getElementById('game-list');
+
+if (gameWidgetRoot) {
+  renderGameWidget(gameWidgetRoot);
+}
+
+if (gameListRoot) {
+  renderLobby(gameListRoot);
 }

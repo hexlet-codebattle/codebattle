@@ -38,3 +38,8 @@ table.table.table-hover.table-sm
           = button gettext("Show"), to: game_path(@conn, :show, fsm.data.game_id), method: :get, class: "btn btn-info btn-sm"
           = if fsm.state == :waiting_opponent do
             = button gettext("Join"), to: game_path(@conn, :join, fsm.data.game_id), class: "btn btn-success ml-2 btn-sm"
+
+#game-list
+
+javascript:
+    window.csrf_token = "<%= csrf_token() %>"
