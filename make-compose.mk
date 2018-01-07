@@ -13,14 +13,11 @@ compose-kill:
 compose-bash:
 	docker-compose run app bash
 
-compose-install: compose-install-mix compose-install-yarn
-
-compose-install-mix:
+compose-install:
 	docker-compose run app mix deps.get
 
 compose-install-yarn:
 	docker-compose run --workdir="/app/assets/" app yarn
-	docker-compose run --workdir="/app/assets/" app yarn deploy
 
 compose-setup: compose-build compose-install compose-db-prepare
 
