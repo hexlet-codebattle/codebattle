@@ -1,0 +1,8 @@
+# -*- mode: yaml; vault: true; -*-
+
+codebattle_vault_github_client_id: "bc353b139a43edee4914"
+codebattle_vault_github_secret: "143cb224daf3819239c22e927907ab5bbf822015"
+codebattle_vault_db_hostname: "db"
+codebattle_vault_db_username: "postgres"
+codebattle_vault_db_password: ""
+codebattle_vault_secret_key_base: "as df;lkajsdf ;alkjsdf ;alksdjf ;alksdjf ;alskdjf ;alskdjf a;lsdjkf ;alsdkjfa ;lskdjf a;lskdj f;alksdjf ;alksjdfal;sdjfqwerty"

@@ -7,15 +7,13 @@ defmodule Codebattle.GameProcess.Fsm do
   alias Codebattle.GameProcess.Player
 
   # fsm -> data: %{}, state :initial
-  @states [:initial, :waiting_opponent, :playing, :player_won, :game_over]
+  # @states [:initial, :waiting_opponent, :playing, :player_won, :game_over]
 
   use Fsm, initial_state: :initial,
     initial_data: %{
       game_id: nil, # Integer
       task: %Codebattle.Task{}, # Task
-      game_over: false, # Boolean
       players: [] # List with two players %Player{}
-      # :id, user: %User{}, editor_text: " ", editor_lang: :js, winner: false
     }
 
     # For tests
@@ -38,7 +36,7 @@ defmodule Codebattle.GameProcess.Fsm do
   defstate waiting_opponent do
     defevent join(params), data: data do
       if is_player?(data, params.user.id) do
-        respond({:error, dgettext("errors", "You are already in game")})
+        respond({:error, dgettext("errors", "You are already in a game")})
       else
         player = %Player{id: params.user.id, user: params.user}
         players = data.players ++ [player]
@@ -63,8 +61,15 @@ defmodule Codebattle.GameProcess.Fsm do
     end
 
     defevent complete(params), data: data do
-      players = update_player_params(data.players, %{winner: true, id: params.id})
+      players = update_player_params(data.players, %{game_result: :won, id: params.id})
       next_state(:player_won, %{data | players: players})
+    end
+
+    defevent give_up(params), data: data do
+      opponent = get_opponent(data, params.id)
+      players = update_player_params(data.players, %{game_result: :gave_up, id: params.id})
+      players = update_player_params(players, %{game_result: :won, id: opponent.id})
+      next_state(:game_over, %{data | players: players})
     end
 
     defevent join(_) do
@@ -84,8 +89,13 @@ defmodule Codebattle.GameProcess.Fsm do
     end
 
     defevent complete(params), data: data do
-      players = update_player_params(data.players, %{winner: false, id: params.id})
-      next_state(:game_over, %{data | players: players, game_over: true})
+      players = update_player_params(data.players, %{game_result: :lost, id: params.id})
+      next_state(:game_over, %{data | players: players})
+    end
+
+    defevent give_up(params), data: data do
+      players = update_player_params(data.players, %{game_result: :gave_up, id: params.id})
+      next_state(:game_over, %{data | players: players})
     end
 
     defevent join(_) do

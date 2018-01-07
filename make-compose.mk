@@ -13,21 +13,20 @@ compose-kill:
 compose-bash:
 	docker-compose run app bash
 
-compose-install: compose-install-mix compose-install-yarn
-
-compose-install-mix:
+compose-install:
 	docker-compose run app mix deps.get
 
 compose-install-yarn:
 	docker-compose run --workdir="/app/assets/" app yarn
-	docker-compose run --workdir="/app/assets/" app yarn deploy
 
-compose-setup: create-env compose-build compose-install compose-db-prepare
+compose-setup: compose-build compose-install compose-db-prepare
 
 compose-db-prepare:
 	docker-compose run app mix ecto.create
 	docker-compose run app mix ecto.migrate
 	docker-compose run app mix run priv/repo/seeds.exs
+	docker-compose run app make upload_langs
+	docker-compose run app mix pull_dockers
 
 compose-upload-langs:
 	docker-compose run app make upload_langs

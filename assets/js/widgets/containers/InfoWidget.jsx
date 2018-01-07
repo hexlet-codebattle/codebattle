@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import _ from 'lodash';
 import ChatWidget from './ChatWidget';
 import Task from '../components/Task';
 import ExecutionOutput from '../components/ExecutionOutput';
@@ -7,11 +8,13 @@ import {
   gameTaskSelector,
 } from '../redux/GameRedux';
 
+const Tabs = { task: 'TASK', output: 'OUTPUT' };
+
 class InfoWidget extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentTab: 'task',
+      currentTab: Tabs.task,
     }
   }
 
@@ -22,11 +25,11 @@ class InfoWidget extends Component {
   }
 
   renderTab() {
-    const { task, output } = this.props;
+    const { taskText, outputText } = this.props;
 
     switch (this.state.currentTab) {
-      case 'task': return <Task task={task} />;
-      case 'output': return <ExecutionOutput output={output} />;
+      case Tabs.task: return <Task task={taskText} />;
+      case Tabs.output: return <ExecutionOutput output={outputText} />;
       default: return null;
     }
   }
@@ -34,7 +37,23 @@ class InfoWidget extends Component {
   render() {
     return (
       <div className="container-fluid">
-        <div className="row mt-3">
+        <div className="row mt-2 mb-1">
+          <div className="col">
+            <div className="btn-group" role="group">
+              {_.map(Tabs, (value, key) => (
+                <button
+                  className="btn btn-secondary"
+                  type="button"
+                  key={key}
+                  onClick={() => this.setState({ currentTab: value })}
+                >
+                  {value}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="row ">
           <div className="col">
             {this.renderTab()}
           </div>
@@ -48,8 +67,8 @@ class InfoWidget extends Component {
 }
 
 const mapStateToProps = state => ({
-  task: gameTaskSelector(state),
-  output: state.executionOutput,
+  taskText: gameTaskSelector(state),
+  outputText: state.executionOutput,
 });
 
 export default connect(mapStateToProps)(InfoWidget);

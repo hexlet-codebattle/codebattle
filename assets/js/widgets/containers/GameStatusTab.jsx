@@ -15,7 +15,7 @@ import {
   leftEditorSelector,
   rightEditorSelector,
 } from '../redux/EditorRedux';
-import { checkGameResult, sendEditorLang } from '../middlewares/Game';
+import { checkGameResult, sendEditorLang, sendGiveUp } from '../middlewares/Game';
 import userTypes from '../config/userTypes';
 import LangSelector from '../components/LangSelector';
 import languages from '../config/languages';
@@ -64,6 +64,7 @@ class GameStatusTab extends Component {
     const userType = currentUser.type;
     const isSpectator = userType === userTypes.spectator;
     const allowedGameStatuses = [GameStatuses.playing, GameStatuses.playerWon];
+    const canGiveUp = gameStatus.status === GameStatuses.playing && !isSpectator;
     const canCheckResult = _.includes(allowedGameStatuses, gameStatus.status) &&
       userType && !isSpectator;
 
@@ -90,6 +91,14 @@ class GameStatusTab extends Component {
                   disabled={gameStatus.checking}
                 >
                   {gameStatus.checking ? i18n.t('Checking...') : i18n.t('Check result')}
+                </button>
+              )}
+              {!canGiveUp ? null : (
+                <button
+                  className="btn btn-secondary ml-3"
+                  onClick={sendGiveUp}
+                >
+                  {i18n.t('Give up')}
                 </button>
               )}
             </div>
