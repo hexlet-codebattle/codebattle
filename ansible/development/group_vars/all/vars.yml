@@ -1,0 +1,4 @@
+codebattle_mix_env: dev
+codebattle_run_user: "{{ ansible_ssh_user }}"
+codebattle_run_user_home: "{{ lookup('env','HOME') }}"
+codebattle_env_file: "{{ lookup('env','PWD') }}/.env"

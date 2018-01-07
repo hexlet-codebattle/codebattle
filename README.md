@@ -6,8 +6,6 @@
 Текущая версия приложения доступна по адресу [codebattle.hexlet.io](http://codebattle.hexlet.io).
 Следить за процессом разработки можно в [ленте новостей.](https://github.com/hexlet-codebattle/codebattle/wiki/News-Feed)
 
-Когда вы будете полностью готовы влиться в разработку, то можете выбрать любую интересную для себя задачу исходя из текущего этапа [в этом разделе](https://github.com/hexlet-codebattle/codebattle/milestones) или посмотреть все открытые актуальные задачи [на этой доске](https://github.com/hexlet-codebattle/codebattle/projects/1).
-
 ### Requirements
 
 * Mac / Linux
@@ -20,49 +18,29 @@
 * Clone repo
 
 ```bash
-git clone https://github.com/hexlet-codebattle/codebattle.git
+$ git clone https://github.com/hexlet-codebattle/codebattle.git
 ```
 
-* Setup env (for Ubuntu)
+[Inatall ansible](http://docs.ansible.com/ansible/latest/intro_installation.html)
 
 ```bash
-cd codebattle
-make development-build-local
-```
-
-* Setup env (for other os)
-  need_implementation
-
-### Load content
-
-```sh
-$ make upload_asserts
+$ cd codebattle
+$ make ansible-development-setup
+$ make compose-setup
 ```
 
 ### Run
 
-* Выйдите и войдите в систему
-* Установите зависимости и запустите docker-контейнеры
-
 ```bash
-make compose-setup
-make compose
+$ make compose
 ```
 
-* Вставьте свои переменные окружения в файле `.env`, [подробнее - пункт 6](https://github.com/hexlet-codebattle/codebattle/wiki/Установка-и-тестирование-проекта)
-* Откройте <http://localhost:4000> в браузере
-* Для запуска тестов введите
+* Open <http://localhost:4000>
 
+### Test
 ```bash
-make compose-test
+$ make compose-test
 ```
 
-* Для создания отчета о покрытии тестами введите
-
-```bash
-make compose-test-coverage-html
-```
-
-Если у вас возникли проблемы с установкой или после неё, воспользуйтесь [подробной инструкцией по установке и тестированию](https://github.com/hexlet-codebattle/codebattle/wiki/%D0%A3%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BA%D0%B0-%D0%B8-%D1%82%D0%B5%D1%81%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82%D0%B0).
-
-Также вы можете увидеть процесс полной [установки](https://asciinema.org/a/n7LkXM2zSfGWSGsQcw2gLLLgh) и [тестирования](https://asciinema.org/a/DmZNw6NvZdLxLDXsnx67nEmbT) на видео.
+### Support
+* <https://hexlet-ru.slack.com> channel: codebattle

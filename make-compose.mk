@@ -22,12 +22,13 @@ compose-install-yarn:
 	docker-compose run --workdir="/app/assets/" app yarn
 	docker-compose run --workdir="/app/assets/" app yarn deploy
 
-compose-setup: create-env compose-build compose-install compose-db-prepare
+compose-setup: compose-build compose-install compose-db-prepare
 
 compose-db-prepare:
 	docker-compose run app mix ecto.create
 	docker-compose run app mix ecto.migrate
 	docker-compose run app mix run priv/repo/seeds.exs
+	docker-compose run app make upload_langs
 
 compose-upload-langs:
 	docker-compose run app make upload_langs

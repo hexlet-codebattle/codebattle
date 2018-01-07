@@ -1,45 +1,21 @@
 ---
 - hosts: all
-
+  gather_facts: no
   tasks:
-
-    - apt:
+    - pip:
         name: "{{ item }}"
-        update_cache: yes
-      with_items:
-        - python-pip
-        - apt-transport-https
-        - ca-certificates
-        - curl
-        - software-properties-common
-
-    - apt:
-        name: "{{ item }}"
-        state: absent
       with_items:
         - docker
-        - docker-engine
-        - docker.io
+        - docker-py
 
-    - apt_key:
-        url: "https://download.docker.com/linux/{{ ansible_lsb.id | lower }}/gpg"
+    - template:
+        src: environment.j2
+        dest: '../.env'
+      tags: env
 
-    - apt_repository:
-        repo: deb https://download.docker.com/linux/{{ansible_lsb.id | lower }} {{ ansible_distribution_release }} stable
-
-    - apt:
-        name: docker-ce
-        update_cache: yes
-
-    - pip:
-        name: docker-compose
-
-    - user:
-        name: "{{ lookup('env', 'USER')  }}"
-        groups: docker
-        append: yes
-
-
-
-
+    - lineinfile:
+        path: /etc/hosts
+        regexp: 'codebattle'
+        line: '127.0.0.1 codebattle.test # codebattle'
+      become: yes
 
