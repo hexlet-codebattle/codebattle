@@ -1,6 +1,7 @@
 import React from 'react';
 import { render } from 'react-dom';
-import App from './App';
+import { Game, Lobby } from './App';
 
-export default (domElement) => { render(<App />, domElement); };
+export const renderGameWidget = domElement => render(<Game />, domElement);
+export const renderLobby = domElement => render(<Lobby />, domElement);
 

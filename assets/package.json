@@ -17,6 +17,7 @@
         "prop-types": "^15.5.10",
         "react": "^16.1.1",
         "react-ace": "^5.1.2",
+        "react-cookie": "^2.1.2",
         "react-dom": "^16.1.1",
         "react-markdown": "^3.0.2",
         "react-redux": "^5.0.6",
