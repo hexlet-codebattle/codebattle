@@ -5,8 +5,8 @@
     :version: 2.5.0
     :extension: rb
     :docker_image: "codebattle/ruby:2.5.0"
-  - :name: js-es6
+  - :name: es6
     :slug: js
-    :version: node6-es6
+    :version: env-es6
     :extension: js
-    :docker_image: "codebattle/js:node6.es6"
+    :docker_image: "codebattle/js:env.es6"

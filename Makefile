@@ -4,7 +4,7 @@ include make-ansible.mk
 rebuild-styles:
 	cd assets/ && \
 	yarn install && \
-	yarn deploy && \
+	yarn build-dev && \
 	cd ../
 
 compile:
