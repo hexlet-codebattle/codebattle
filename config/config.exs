@@ -6,8 +6,7 @@
 use Mix.Config
 
 config :codebattle,
-  # docker run --read-only --rm -v `pwd`:/usr/src/app codebattle/ruby:2.5.0 timeout -t 3 make test
-  docker_command_template: "docker run --read-only --rm ~s ~s timeout -t 3 make test"
+  docker_command_template: "docker run --read-only --rm ~s ~s timeout -s 9 -t 3 make test"
 
 # General application configuration
 config :codebattle,
