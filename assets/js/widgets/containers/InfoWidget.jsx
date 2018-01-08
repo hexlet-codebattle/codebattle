@@ -37,25 +37,32 @@ class InfoWidget extends Component {
   render() {
     return (
       <div className="container-fluid">
-        <div className="row mt-2 mb-1">
-          <div className="col">
-            <div className="btn-group" role="group">
-              {_.map(Tabs, (value, key) => (
-                <button
-                  className="btn btn-secondary"
-                  type="button"
-                  key={key}
-                  onClick={() => this.setState({ currentTab: value })}
-                >
-                  {value}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
         <div className="row ">
           <div className="col">
-            {this.renderTab()}
+            <div className="card mb-3">
+              <div className="card-header">
+                <ul className="nav nav-tabs card-header-tabs">
+                  {_.map(Tabs, (value, key) => {
+                    const active = this.state.currentTab === value ? 'active' : '';
+                    return (
+                      <li className="nav-item" key={key}>
+                        <a
+                          href="#"
+                          role="button"
+                          className={`nav-link disabled ${active}`}
+                          onClick={() => this.setState({ currentTab: value })}
+                        >
+                          {value}
+                        </a>
+                      </li>
+                    )
+                  })}
+                </ul>
+              </div>
+              <div className="card-body">
+                {this.renderTab()}
+              </div>
+            </div>
           </div>
           <div className="col">
             <ChatWidget />

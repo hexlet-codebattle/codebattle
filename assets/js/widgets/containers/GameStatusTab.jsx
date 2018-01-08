@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
@@ -25,10 +25,7 @@ const renderNameplate = (user) => {
   const rating = _.get(user, ['raiting'], '');
   const ratingStr = _.isFinite(rating) ? ` (${rating})` : '';
   return (
-    <Fragment>
-      <div> {userName} </div>
-      <div> {ratingStr} </div>
-    </Fragment>
+    <p> {`${userName}${ratingStr}`} </p>
   );
 };
 

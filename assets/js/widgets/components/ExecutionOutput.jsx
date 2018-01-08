@@ -2,13 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const ExecutionOutput = ({ output }) => (
-  <div className="card">
-    <div className="card-body">
-      <code>
-        {output}
-      </code>
-    </div>
-  </div>
+    <code>
+      {output}
+    </code>
 );
 
 ExecutionOutput.propTypes = {
