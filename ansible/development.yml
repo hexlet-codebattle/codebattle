@@ -6,7 +6,7 @@
         name: "{{ item }}"
       with_items:
         - docker
-        - docker-py
+        - docker-compose
 
     - template:
         src: environment.j2
