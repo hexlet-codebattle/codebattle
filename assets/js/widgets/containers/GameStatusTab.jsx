@@ -22,7 +22,7 @@ import languages from '../config/languages';
 
 const renderNameplate = (user) => {
   const userName = _.get(user, ['name'], '');
-  const rating = _.get(user, ['raiting'], '');
+  const rating = _.get(user, ['rating'], '');
   const ratingStr = _.isFinite(rating) ? ` (${rating})` : '';
   return (
     <p> {`${userName}${ratingStr}`} </p>
@@ -34,7 +34,7 @@ class GameStatusTab extends Component {
     users: PropTypes.shape({
       id: PropTypes.number,
       name: PropTypes.string,
-      raiting: PropTypes.number,
+      rating: PropTypes.number,
     }),
     status: PropTypes.string,
     title: PropTypes.string,

@@ -27,7 +27,7 @@ const initGameChannel = (dispatch) => {
     const users = [{
       id: first_player.id,
       name: first_player.name,
-      raiting: first_player.raiting,
+      rating: first_player.rating,
       type: userTypes.firstPlayer,
     }];
 
@@ -35,7 +35,7 @@ const initGameChannel = (dispatch) => {
       users.push({
         id: second_player.id,
         name: second_player.name,
-        raiting: second_player.raiting,
+        rating: second_player.rating,
         type: userTypes.secondPlayer,
       });
     }
@@ -115,12 +115,12 @@ export const editorReady = () => (dispatch) => {
     dispatch(UserActions.updateUsers([{
       id: first_player.id,
       name: first_player.name,
-      raiting: first_player.raiting,
+      rating: first_player.rating,
       type: userTypes.firstPlayer,
     }, {
       id: second_player.id,
       name: second_player.name,
-      raiting: second_player.raiting,
+      rating: second_player.rating,
       type: userTypes.secondPlayer,
     }]));
 

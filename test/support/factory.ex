@@ -9,7 +9,7 @@ defmodule CodebattleWeb.Factory do
     %User{
       name: sequence(:username, &"User #{&1}"),
       email:  sequence(:username, &"test#{&1}@test.io"),
-      raiting:  123,
+      rating:  123,
       github_id: :rand.uniform(9_999_999)
     }
   end
