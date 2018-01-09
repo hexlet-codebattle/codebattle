@@ -1,4 +1,4 @@
-require './solution'
+require './check/solution'
 require 'json'
 require 'test/unit'
 extend Test::Unit::Assertions

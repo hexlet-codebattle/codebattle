@@ -129,13 +129,13 @@ defmodule Codebattle.GameProcess.Play do
     # TODO: update users rating by Elo
       if user.id != 0 do
         user
-          |> User.changeset(%{raiting: (user.raiting + 10)})
+          |> User.changeset(%{rating: (user.rating + 10)})
           |> Repo.update!
       end
 
       if loser.id != 0 do
         loser
-          |> User.changeset(%{raiting: (loser.raiting - 10)})
+          |> User.changeset(%{rating: (loser.rating - 10)})
           |> Repo.update!
       end
   end
@@ -153,13 +153,13 @@ defmodule Codebattle.GameProcess.Play do
 
       if user.id != 0 do
         user
-          |> User.changeset(%{raiting: (user.raiting + 10)})
+          |> User.changeset(%{rating: (user.rating + 10)})
           |> Repo.update!
       end
 
       if winner.id != 0 do
         winner
-          |> User.changeset(%{raiting: (winner.raiting - 10)})
+          |> User.changeset(%{rating: (winner.rating - 10)})
           |> Repo.update!
       end
   end
@@ -170,7 +170,7 @@ defmodule Codebattle.GameProcess.Play do
       |> Game.changeset(%{state: to_string(fsm.state)})
       |> Repo.update!
     # loser
-    #   |> User.changeset(%{raiting: (loser.raiting + 5)})
+    #   |> User.changeset(%{rating: (loser.rating + 5)})
     #   |> Repo.update!
   end
 

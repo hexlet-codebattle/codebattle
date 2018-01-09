@@ -5,8 +5,8 @@ defmodule CodebattleWeb.GameChannelTest do
   alias Codebattle.GameProcess.{Player, Server, FsmHelpers}
 
   setup do
-    user1 = insert(:user, raiting: 10)
-    user2 = insert(:user, raiting: 10)
+    user1 = insert(:user, rating: 10)
+    user2 = insert(:user, rating: 10)
     task = insert(:task)
 
     user_token1 = Phoenix.Token.sign(socket(), "user_token", user1.id)
@@ -163,8 +163,8 @@ defmodule CodebattleWeb.GameChannelTest do
     user2 = Repo.get(User, user2.id)
 
     assert game.state == "game_over"
-    assert user1.raiting == 20
-    assert user2.raiting == 0
+    assert user1.rating == 20
+    assert user2.rating == 0
   end
 end
 

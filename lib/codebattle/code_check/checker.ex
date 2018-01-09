@@ -1,10 +1,8 @@
 defmodule Codebattle.CodeCheck.Checker do
-  alias Codebattle.{Repo, Language}
-
   @moduledoc false
-  @root_dir File.cwd!
 
   require Logger
+  alias Codebattle.{Repo, Language}
 
   def check(task, editor_text, lang_slug) do
     case Repo.get_by(Language, %{slug: lang_slug}) do
@@ -13,7 +11,7 @@ defmodule Codebattle.CodeCheck.Checker do
         # TODO: add hash to data.jsons or forbid read data.jsons
         docker_command_template = Application.fetch_env!(:codebattle, :docker_command_template)
         {dir_path, check_code} = prepare_tmp_dir!(task, editor_text, lang)
-        volume = "-v #{dir_path}:/usr/src/app"
+        volume = "-v #{dir_path}:/usr/src/app/check"
         command = docker_command_template
                   |> :io_lib.format([volume, lang.docker_image])
                   |> to_string
@@ -21,12 +19,13 @@ defmodule Codebattle.CodeCheck.Checker do
         [cmd | cmd_opts] = command |> String.split
         {global_output, status} = System.cmd(cmd, cmd_opts, stderr_to_stdout: true)
         Logger.debug "Docker stdout for task_id: #{task.id}, lang: #{lang.slug}, output:#{global_output}"
-        output = global_output |> String.split("\n") |> tl |> Enum.join("\n")
-        result = case  {output, status} do
+        clean_output = global_output |> String.split("\n") |> tl
+        output_code = clean_output |> hd
+        result = case  {output_code, status} do
           {^check_code, 0} ->
             {:ok, true}
           _ ->
-            {:error, output}
+            {:error, Enum.join(clean_output, "\n")}
         end
         Task.start(File, :rm_rf, [dir_path])
         result
@@ -35,8 +34,6 @@ defmodule Codebattle.CodeCheck.Checker do
 
   defp prepare_tmp_dir!(task, editor_text, lang) do
     dir_path = Temp.mkdir!(prefix: "codebattle-check")
-
-    File.cp_r!(Path.join(@root_dir, "checkers/#{lang.slug}/"), dir_path)
 
     check_code = :rand.normal |> to_string
 
