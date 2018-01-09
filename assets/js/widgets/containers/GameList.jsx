@@ -14,6 +14,17 @@ class GameList extends React.Component {
     return <span>{players.map(player => player.user.name).join(', ')}</span>;
   }
 
+  renderGameLevelBadge = (level) => {
+    const levels = {
+      elementary: 'info',
+      easy: 'success',
+      medium: 'warning',
+      hard: 'danger',
+    };
+
+    return <h5><span className={`badge badge-${levels[level]}`}>{level}</span></h5>;
+  }
+
   render() {
     const { games } = this.props;
     return (
@@ -32,9 +43,12 @@ class GameList extends React.Component {
           <tbody>
             {
               games.map(game => (
-                <tr key={game.data.game_id}>
+                <tr
+                  key={game.data.game_id}
+                  className={`table-${game.state === 'waiting_opponent' ? 'success' : 'default'}`}
+                >
                   <td>{game.data.game_id}</td>
-                  <td>{game.data.task.level}</td>
+                  <td>{this.renderGameLevelBadge(game.data.task.level)}</td>
                   <td>{this.renderPlayers(game)}</td>
                   <td>
                     <button
