@@ -5,7 +5,7 @@ compose-build:
 	docker-compose build
 
 compose-test:
-	docker-compose run app mix test
+	docker-compose run app mix test test/codebattle*
 
 compose-kill:
 	docker-compose kill

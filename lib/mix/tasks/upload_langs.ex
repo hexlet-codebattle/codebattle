@@ -18,12 +18,7 @@ defmodule Mix.Tasks.UploadLangs do
         entity -> entity
       end
       language
-      |> Language.changeset(%{
-        name: lang_data.name,
-        version: lang_data.version,
-        extension: lang_data.extension,
-        docker_image: lang_data.docker_image,
-      })
+      |> Language.changeset(lang_data)
       |> Repo.insert_or_update!
       IO.puts "Upsert lang_data for: #{lang_data.slug}"
     end

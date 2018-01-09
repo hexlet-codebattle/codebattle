@@ -10,3 +10,6 @@ ENV NODE_PATH /usr/local/lib/node_modules/
 ENV BABEL_DISABLE_CACHE 1
 
 WORKDIR /usr/src/app
+
+ADD checker.js .
+ADD Makefile .

@@ -38,8 +38,28 @@ $ make compose
 * Open <http://localhost:4000>
 
 ### Test
+
 ```bash
 $ make compose-test
+```
+
+### Usefull
+
+```bash
+$ mix upload_lang
+
+$ mix dockers.push #all
+$ mix dockers.push elixir
+
+$ mix dockers.build #all
+$ mix dockers.build elixir
+
+$ mix dockers.pull #all
+$ mix dockers.pull elixir
+
+$ mix test test/code_check/
+
+#If you use docker in dev env, run commands in make compose-bash
 ```
 
 ### Support
