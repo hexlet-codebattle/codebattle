@@ -23,17 +23,23 @@ class ChatWidget extends React.Component {
     dispatch(fetchState());
   }
 
-  handleChange = (event) => {
-    this.setState({ message: event.target.value });
+  handleChange = (e) => {
+    this.setState({ message: e.target.value });
   }
 
-  handleKeyPress = (event) => {
+  sendMessage = () => {
     const { message } = this.state;
     const { name } = this.props.currentUser;
 
-    if (event.key === 'Enter') {
+    if (message) {
       addMessage(name, message);
       this.setState({ message: '' });
+    }
+  }
+
+  handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      this.sendMessage();
     }
   }
 
@@ -43,16 +49,27 @@ class ChatWidget extends React.Component {
         <div className="col-9 p-1 border">
           <p className="m-1"><b>Chat</b></p>
           <div className="chat-box p-2">
-            {this.props.messages.map(({ user, message }) => <p className="mb-1"><b>{user}:</b> {message}</p>)}
+            {this.props.messages.map(({ user, message }, i) => <p key={i} className="mb-1"><b>{user}:</b> {message}</p>)}
           </div>
-          <input
-            className="form-control mt-2"
-            type="text"
-            placeholder="Type message here..."
-            value={this.state.message}
-            onChange={this.handleChange}
-            onKeyPress={this.handleKeyPress}
-          />
+          <div className="input-group input-group-sm mt-3">
+            <input
+              className="form-control"
+              type="text"
+              placeholder="Type message here..."
+              value={this.state.message}
+              onChange={this.handleChange}
+              onKeyPress={this.handleKeyPress}
+            />
+            <div className="input-group-btn">
+              <button
+                className="btn btn-outline-success"
+                type="button"
+                onClick={this.sendMessage}
+              >
+                Button
+              </button>
+            </div>
+          </div>
         </div>
         <div className="col-3 p-1 border">
           <p className="m-1"><b>Online users</b></p>
