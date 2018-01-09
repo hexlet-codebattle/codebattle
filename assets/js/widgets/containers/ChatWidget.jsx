@@ -23,46 +23,58 @@ class ChatWidget extends React.Component {
     dispatch(fetchState());
   }
 
-  handleChange = (event) => {
-    this.setState({ message: event.target.value });
+  handleChange = (e) => {
+    this.setState({ message: e.target.value });
   }
 
-  handleKeyPress = (event) => {
+  sendMessage = () => {
     const { message } = this.state;
     const { name } = this.props.currentUser;
 
-    if (event.key === 'Enter') {
+    if (message) {
       addMessage(name, message);
       this.setState({ message: '' });
     }
   }
 
+  handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      this.sendMessage();
+    }
+  }
+
   render() {
     return (
-      <div className="row">
-        <div className="col-md-9">
-          <div className="card h-100">
-            <div className="card-header">Game chat</div>
-            <div className="card-body">
-              {this.props.messages.map(({ user, message }) => <p className="mb-1"><b>{user}:</b> {message}</p>)}
-              <input
-                className="form-control"
-                type="text"
-                value={this.state.message}
-                onChange={this.handleChange}
-                onKeyPress={this.handleKeyPress}
-              />
+      <div className="row p-3">
+        <div className="col-9 p-1 border">
+          <p className="m-1"><b>Chat</b></p>
+          <div className="chat-box p-2">
+            {this.props.messages.map(({ user, message }, i) => <p key={i} className="mb-1"><b>{user}:</b> {message}</p>)}
+          </div>
+          <div className="input-group input-group-sm mt-3">
+            <input
+              className="form-control"
+              type="text"
+              placeholder="Type message here..."
+              value={this.state.message}
+              onChange={this.handleChange}
+              onKeyPress={this.handleKeyPress}
+            />
+            <div className="input-group-btn">
+              <button
+                className="btn btn-outline-success"
+                type="button"
+                onClick={this.sendMessage}
+              >
+                Button
+              </button>
             </div>
           </div>
         </div>
-        <div className="col-md-3">
-          <div className="card h-100">
-            <div className="card-header">Online users</div>
-            <div className="card-body pre-scrollable">
-              <ul>
-                {this.props.users.map(user => <li key={user.id}>{user.name}</li>)}
-              </ul>
-            </div>
+        <div className="col-3 p-1 border">
+          <p className="m-1"><b>Online users</b></p>
+          <div className="online-users">
+            {this.props.users.map(user => <p className="m-1" key={user.id}>{user.name}</p>)}
           </div>
         </div>
       </div>
@@ -80,4 +92,3 @@ const mapStateToProps = (state) => {
 };
 
 export default connect(mapStateToProps, null)(ChatWidget);
-// export default ChatWidget;

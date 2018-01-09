@@ -55,7 +55,7 @@ defmodule Codebattle.Chat.Server do
 
     def handle_call(:get_msgs, _from, state) do
         %{messages: messages} = state
-        {:reply, Enum.reverse(messages), state}
+        {:reply, messages, state}
     end
 
     def handle_cast({:add_msg, user, msg}, state) do
