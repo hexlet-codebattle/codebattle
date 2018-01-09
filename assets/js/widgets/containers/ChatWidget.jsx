@@ -66,7 +66,7 @@ class ChatWidget extends React.Component {
                 type="button"
                 onClick={this.sendMessage}
               >
-                Button
+                Send
               </button>
             </div>
           </div>
