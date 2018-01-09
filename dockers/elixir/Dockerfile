@@ -16,6 +16,4 @@ RUN mix deps.compile
 
 ADD checker.exs .
 ADD Makefile .
-ADD spec_helper.exs spec/
-
 
