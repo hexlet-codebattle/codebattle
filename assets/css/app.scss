@@ -1,3 +1,9 @@
-.chat {
-    height: 590px;
+.chat-box {
+    height: 200px;
+    overflow-y: scroll;
+}
+
+.online-users {
+    height: 250px;
+    overflow-y: scroll;
 }

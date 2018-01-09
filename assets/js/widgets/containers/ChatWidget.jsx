@@ -39,30 +39,25 @@ class ChatWidget extends React.Component {
 
   render() {
     return (
-      <div className="row">
-        <div className="col-md-9">
-          <div className="card h-100">
-            <div className="card-header">Game chat</div>
-            <div className="card-body">
-              {this.props.messages.map(({ user, message }) => <p className="mb-1"><b>{user}:</b> {message}</p>)}
-              <input
-                className="form-control"
-                type="text"
-                value={this.state.message}
-                onChange={this.handleChange}
-                onKeyPress={this.handleKeyPress}
-              />
-            </div>
+      <div className="row p-3">
+        <div className="col-9 p-1 border">
+          <p className="m-1"><b>Chat</b></p>
+          <div className="chat-box p-2">
+            {this.props.messages.map(({ user, message }) => <p className="mb-1"><b>{user}:</b> {message}</p>)}
           </div>
+          <input
+            className="form-control mt-2"
+            type="text"
+            placeholder="Type message here..."
+            value={this.state.message}
+            onChange={this.handleChange}
+            onKeyPress={this.handleKeyPress}
+          />
         </div>
-        <div className="col-md-3">
-          <div className="card h-100">
-            <div className="card-header">Online users</div>
-            <div className="card-body pre-scrollable">
-              <ul>
-                {this.props.users.map(user => <li key={user.id}>{user.name}</li>)}
-              </ul>
-            </div>
+        <div className="col-3 p-1 border">
+          <p className="m-1"><b>Online users</b></p>
+          <div className="online-users">
+            {this.props.users.map(user => <p className="m-1" key={user.id}>{user.name}</p>)}
           </div>
         </div>
       </div>
@@ -80,4 +75,3 @@ const mapStateToProps = (state) => {
 };
 
 export default connect(mapStateToProps, null)(ChatWidget);
-// export default ChatWidget;
