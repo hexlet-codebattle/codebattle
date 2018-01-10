@@ -38,8 +38,13 @@ defmodule Codebattle.Plugs.Authorization do
         assign(conn, :is_authenticated?, false)
       _ ->
         user_token = Phoenix.Token.sign(conn, "user_token", user_id)
-        conn = put_gon(conn, user_token: user_token, user_id: user_id)
-        assign(conn, :is_authenticated?, true)
+        current_user =
+          user
+          |> Map.take([:name, :rating])
+          |> Map.put(:id, user_id)
+        conn
+        |> put_gon(user_token: user_token, current_user: current_user)
+        |> assign(:is_authenticated?, true)
     end
   end
 end

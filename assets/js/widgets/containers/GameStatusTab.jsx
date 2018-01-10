@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import i18n from '../../i18n';
-import { usersSelector, currentUserSelector } from '../redux/UserRedux';
+import { usersSelector, currentUserSelector } from '../selectors/user';
 import GameStatuses from '../config/gameStatuses';
 import {
   gameStatusSelector,

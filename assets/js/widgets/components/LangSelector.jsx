@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 import languages from '../config/languages';
 
-const langSelector = ({ currentLangKey, onChange }) => {
+const LangSelector = ({ currentLangKey, onChange }) => {
   const options = _.filter(_.keys(languages), key => key !== currentLangKey);
   return (
     <div className="dropdown">
@@ -35,9 +35,9 @@ const langSelector = ({ currentLangKey, onChange }) => {
   );
 };
 
-langSelector.propTypes = {
+LangSelector.propTypes = {
   currentLangKey: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
 };
 
-export default langSelector;
+export default LangSelector;

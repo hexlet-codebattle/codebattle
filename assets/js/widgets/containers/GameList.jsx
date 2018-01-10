@@ -82,9 +82,8 @@ class GameList extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-  const { games } = state.gameList;
-  console.log(games);
-  return { games };
+  // TODO: Add selector
+  return { games: state.gameList };
 };
 
 export default connect(mapStateToProps, null)(GameList);
