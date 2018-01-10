@@ -26,7 +26,7 @@ compose-db-prepare:
 	docker-compose run app mix ecto.migrate
 	docker-compose run app mix run priv/repo/seeds.exs
 	docker-compose run app make upload_langs
-	docker-compose run app mix pull_dockers
+	docker-compose run app mix dockers.pull
 
 compose-upload-langs:
 	docker-compose run app make upload_langs
