@@ -6,7 +6,7 @@ defmodule Codebattle.GameProcess.Play do
   import Ecto.Query, warn: false
 
   alias Codebattle.{Repo, Game, User, UserGame}
-  alias Codebattle.GameProcess.{Server, Supervisor, Fsm, Player, FsmHelpers}
+  alias Codebattle.GameProcess.{Server, Supervisor, Fsm, Player, FsmHelpers, Elo}
   alias Codebattle.CodeCheck.Checker
   alias Codebattle.Bot.RecorderServer
 
@@ -129,13 +129,13 @@ defmodule Codebattle.GameProcess.Play do
     # TODO: update users rating by Elo
       if user.id != 0 do
         user
-          |> User.changeset(%{rating: (user.rating + 10)})
+          |> User.changeset(%{ rating: Elo.calc_elo(user.rating, loser.rating).winner })
           |> Repo.update!
       end
 
       if loser.id != 0 do
         loser
-          |> User.changeset(%{rating: (loser.rating - 10)})
+          |> User.changeset(%{ rating: Elo.calc_elo(user.rating, loser.rating).loser })
           |> Repo.update!
       end
   end
@@ -153,13 +153,13 @@ defmodule Codebattle.GameProcess.Play do
 
       if user.id != 0 do
         user
-          |> User.changeset(%{rating: (user.rating + 10)})
+          |> User.changeset(%{ rating: Elo.calc_elo(winner.rating, user.rating).loser })
           |> Repo.update!
       end
 
       if winner.id != 0 do
         winner
-          |> User.changeset(%{rating: (winner.rating - 10)})
+          |> User.changeset(%{ rating: Elo.calc_elo(winner.rating, user.rating).winner })
           |> Repo.update!
       end
   end
