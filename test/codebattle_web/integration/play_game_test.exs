@@ -101,8 +101,8 @@ defmodule Codebattle.PlayGameTest do
       user2 = Repo.get(User, user2.id)
 
       assert game.state == "game_over"
-      assert user1.rating == 1016
-      assert user2.rating == 984
+      assert user1.rating == 1012
+      assert user2.rating == 988
     end
   end
 
