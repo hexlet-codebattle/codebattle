@@ -19,13 +19,15 @@ defmodule Codebattle.CodeCheck.Checker do
         [cmd | cmd_opts] = command |> String.split
         {global_output, status} = System.cmd(cmd, cmd_opts, stderr_to_stdout: true)
         Logger.debug "Docker stdout for task_id: #{task.id}, lang: #{lang.slug}, output:#{global_output}"
-        clean_output = global_output |> String.split("\n") |> tl
-        output_code = clean_output |> hd
-        result = case  {output_code, status} do
-          {^check_code, 0} ->
-            {:ok, true}
-          _ ->
-            {:error, Enum.join(clean_output, "\n")}
+        clean_output = global_output |> String.split("\n") |> tl |> Enum.join("\n")
+        result = case status do
+          0 ->
+            output_code = Regex.named_captures(~r/__code(?<code>.+)__/, clean_output)["code"]
+            case  output_code do
+              ^check_code -> {:ok, true}
+              _ -> {:error, clean_output}
+            end
+          _ -> {:error, clean_output}
         end
         Task.start(File, :rm_rf, [dir_path])
         result
@@ -37,7 +39,7 @@ defmodule Codebattle.CodeCheck.Checker do
 
     check_code = :rand.normal |> to_string
 
-    asserts = task.asserts <> "{\"check\":\"#{check_code}\"}"
+    asserts = task.asserts <> "{\"check\":\"__code#{check_code}__\"}"
     File.write! Path.join(dir_path, "data.jsons"), asserts
 
     File.write! Path.join(dir_path, "solution.#{lang.extension}"), editor_text
