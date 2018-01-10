@@ -43,7 +43,7 @@ $ make compose
 $ make compose-test
 ```
 
-### Usefull
+### Useful
 
 ```bash
 $ mix upload_lang
