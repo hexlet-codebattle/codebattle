@@ -9,9 +9,9 @@ defmodule Codebattle.PlayGameTest do
 
   setup do
     insert(:task)
-    user1 = insert(:user, %{name: "first", email: "test1@test.test", github_id: 1, rating: 10})
-    user2 = insert(:user, %{name: "second", email: "test2@test.test", github_id: 2, rating: 10})
-    user3 = insert(:user, %{name: "other", email: "test3@test.test", github_id: 3, rating: 10})
+    user1 = insert(:user, %{name: "first", email: "test1@test.test", github_id: 1, rating: 1000})
+    user2 = insert(:user, %{name: "second", email: "test2@test.test", github_id: 2, rating: 1000})
+    user3 = insert(:user, %{name: "other", email: "test3@test.test", github_id: 3, rating: 1000})
     conn1 = assign(build_conn(), :user, user1)
     conn2 = assign(build_conn(), :user, user2)
     conn3 = assign(build_conn(), :user, user3)
@@ -101,8 +101,8 @@ defmodule Codebattle.PlayGameTest do
       user2 = Repo.get(User, user2.id)
 
       assert game.state == "game_over"
-      assert user1.rating == 20
-      assert user2.rating == 0
+      assert user1.rating == 1016
+      assert user2.rating == 984
     end
   end
 
