@@ -5,8 +5,8 @@ defmodule CodebattleWeb.GameChannelTest do
   alias Codebattle.GameProcess.{Player, Server, FsmHelpers}
 
   setup do
-    user1 = insert(:user, rating: 10)
-    user2 = insert(:user, rating: 10)
+    user1 = insert(:user, rating: 1000)
+    user2 = insert(:user, rating: 1000)
     task = insert(:task)
 
     user_token1 = Phoenix.Token.sign(socket(), "user_token", user1.id)
@@ -133,7 +133,7 @@ defmodule CodebattleWeb.GameChannelTest do
   test "on give up opponents win when state playing", %{user1: user1, user2: user2, socket1: socket1, socket2: socket2} do
     #setup
     state = :playing
-    data = %{players: [%Player{id: user1.id, user: user1}, %Player{id: user2.id, user: user2}]}
+    data = %{task: build(:task), players: [%Player{id: user1.id, user: user1}, %Player{id: user2.id, user: user2}]}
     game = setup_game(state, data)
     game_topic = "game:" <> to_string(game.id)
 
@@ -154,8 +154,8 @@ defmodule CodebattleWeb.GameChannelTest do
     fsm = Server.fsm(game.id)
 
     assert fsm.state == :game_over
-    assert FsmHelpers.winner?(fsm.data, user2.id) == true
     assert FsmHelpers.gave_up?(fsm.data, user1.id) == true
+    assert FsmHelpers.winner?(fsm.data, user2.id) == true
     :timer.sleep(100)
 
     game = Repo.get Game, game.id
@@ -163,8 +163,8 @@ defmodule CodebattleWeb.GameChannelTest do
     user2 = Repo.get(User, user2.id)
 
     assert game.state == "game_over"
-    assert user1.rating == 20
-    assert user2.rating == 0
+    assert user1.rating == 988
+    assert user2.rating == 1012
   end
 end
 

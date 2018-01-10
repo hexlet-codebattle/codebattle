@@ -70,7 +70,6 @@ defmodule CodebattleWeb.GameChannel do
     end
   end
 
-
   def handle_in("check_result", payload, socket) do
     game_id = get_game_id(socket)
     if user_authorized_in_game?(game_id, socket.assigns.user_id) do

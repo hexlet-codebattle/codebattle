@@ -6,7 +6,7 @@ defmodule Codebattle.GameProcess.Play do
   import Ecto.Query, warn: false
 
   alias Codebattle.{Repo, Game, User, UserGame}
-  alias Codebattle.GameProcess.{Server, Supervisor, Fsm, Player, FsmHelpers}
+  alias Codebattle.GameProcess.{Server, Supervisor, Fsm, Player, FsmHelpers, Elo}
   alias Codebattle.CodeCheck.Checker
   alias Codebattle.Bot.RecorderServer
 
@@ -118,6 +118,9 @@ defmodule Codebattle.GameProcess.Play do
     # TODO: make async
     game_id = id |> Integer.parse |> elem(0)
     loser = FsmHelpers.get_opponent(fsm.data, user.id)
+    difficulty = fsm.data.task.level
+
+    {winner_rating, loser_rating} = Elo.calc_elo(user.rating, loser.rating, difficulty)
 
     game_id
       |> get_game
@@ -129,13 +132,13 @@ defmodule Codebattle.GameProcess.Play do
     # TODO: update users rating by Elo
       if user.id != 0 do
         user
-          |> User.changeset(%{rating: (user.rating + 10)})
+          |> User.changeset(%{rating: winner_rating})
           |> Repo.update!
       end
 
       if loser.id != 0 do
         loser
-          |> User.changeset(%{rating: (loser.rating - 10)})
+          |> User.changeset(%{rating: loser_rating})
           |> Repo.update!
       end
   end
@@ -143,6 +146,9 @@ defmodule Codebattle.GameProcess.Play do
   defp handle_gave_up(id, user, fsm) do
     game_id = id |> Integer.parse |> elem(0)
     winner = FsmHelpers.get_opponent(fsm.data, user.id)
+    difficulty = fsm.data.task.level
+
+    {winner_rating, loser_rating} = Elo.calc_elo(winner.rating, user.rating, difficulty)
 
     game_id
       |> get_game
@@ -153,13 +159,13 @@ defmodule Codebattle.GameProcess.Play do
 
       if user.id != 0 do
         user
-          |> User.changeset(%{rating: (user.rating + 10)})
+          |> User.changeset(%{rating: loser_rating})
           |> Repo.update!
       end
 
       if winner.id != 0 do
         winner
-          |> User.changeset(%{rating: (winner.rating - 10)})
+          |> User.changeset(%{rating: winner_rating})
           |> Repo.update!
       end
   end
