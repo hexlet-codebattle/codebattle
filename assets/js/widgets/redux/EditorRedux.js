@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import Immutable from 'seamless-immutable';
 import { createReducer } from 'reduxsauce';
-import { firstUserSelector, secondUserSelector, currentUserSelector } from './UserRedux';
+import { firstUserSelector, secondUserSelector, currentUserSelector } from '../selectors/user';
 import { EditorTypes as Types } from './Actions';
 import userTypes from '../config/userTypes';
 

@@ -1,10 +1,10 @@
 import socket from '../../socket';
 import Gon from 'Gon';
-import { EditorActions, UserActions, GameActions } from '../redux/Actions';
-import { currentUserIdSelector } from '../redux/UserRedux';
+import { EditorActions, GameActions } from '../redux/Actions';
+import { currentUserIdSelector } from '../selectors/user';
 import { editorsSelector } from '../redux/EditorRedux';
 import userTypes from '../config/userTypes';
-import * as Actions from '../actions';
+import * as actions from '../actions';
 
 const gameId = Gon.getAsset('game_id');
 const channelName = `game:${gameId}`;
@@ -40,7 +40,7 @@ const initGameChannel = (dispatch) => {
       });
     }
 
-    dispatch(UserActions.updateUsers(users));
+    dispatch(actions.updateUsers(users));
 
     dispatch(EditorActions.updateEditorData(
       first_player.id,
@@ -58,7 +58,7 @@ const initGameChannel = (dispatch) => {
 
     dispatch(GameActions.setTask(task));
     dispatch(GameActions.updateStatus({ status, winner }));
-    dispatch(Actions.finishStoreInit());
+    dispatch(actions.finishStoreInit());
   };
 
   channel.join().receive('ignore', () => console.log('Game channel: auth error'))
@@ -112,7 +112,7 @@ export const editorReady = () => (dispatch) => {
   }) => {
     dispatch(GameActions.updateStatus({ status, winner }));
 
-    dispatch(UserActions.updateUsers([{
+    dispatch(actions.updateUsers([{
       id: first_player.id,
       name: first_player.name,
       rating: first_player.rating,
@@ -165,7 +165,7 @@ export const checkGameResult = () => (dispatch, getState) => {
     }) => {
       const newGameStatus = solutionStatus ? { status, winner } : {};
       // !solutionStatus ? alert(output) : null;
-      dispatch(Actions.updateExecutionOutput({ output }));
+      dispatch(actions.updateExecutionOutput({ output }));
       dispatch(GameActions.updateStatus({ ...newGameStatus, solutionStatus, checking: false }));
     });
 };

@@ -4,15 +4,16 @@ import { connect } from 'react-redux';
 import GameWidget from './GameWidget';
 import InfoWidget from './InfoWidget';
 import Gon from 'Gon';
-import { UserActions } from '../redux/Actions';
+import userTypes from '../config/userTypes';
+import * as actions from '../actions';
 import * as GameActions from '../middlewares/Game';
 
 class RootContainer extends React.Component {
   componentDidMount() {
-    const userId = Gon.getAsset('user_id');
+    const user = Gon.getAsset('current_user');
     const { setCurrentUser, editorReady } = this.props;
 
-    setCurrentUser(userId);
+    setCurrentUser({ ...user, type: userTypes.spectator });
     editorReady();
   }
 
@@ -38,7 +39,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   setCurrentUser: (...args) => {
-    dispatch(UserActions.setCurrentUser(...args));
+    dispatch(actions.setCurrentUser(...args));
   },
   editorReady: () => {
     dispatch(GameActions.editorReady());

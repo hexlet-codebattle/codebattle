@@ -6,7 +6,7 @@ import {
   rightEditorSelector,
   leftEditorSelector,
 } from '../redux/EditorRedux';
-import { currentUserSelector } from '../redux/UserRedux';
+import { currentUserSelector } from '../selectors/user';
 import userTypes from '../config/userTypes';
 import Editor from './Editor';
 import GameStatusTab from './GameStatusTab';
@@ -36,7 +36,9 @@ class GameWidget extends Component {
     const {
       currentUser, leftEditor, sendData,
     } = this.props;
-    const isPlayer = currentUser.id !== userTypes.spectator;
+    // FIXME: currentUser shouldn't return {} for spectator
+    const isPlayer = currentUser.type !== userTypes.spectator;
+    console.log(isPlayer, currentUser, currentUser.type , userTypes.spectator)
     const editable = isPlayer;
     const editorState = leftEditor;
     const onChange = isPlayer ?
@@ -59,6 +61,7 @@ class GameWidget extends Component {
     return {
       onChange: _.noop,
       editable: false,
+      allowCopy: false,
       lang: editorState.currentLang,
       value: editorState.value,
       name: 'right-editor',
