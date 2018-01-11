@@ -38,7 +38,6 @@ class GameWidget extends Component {
     } = this.props;
     // FIXME: currentUser shouldn't return {} for spectator
     const isPlayer = currentUser.type !== userTypes.spectator;
-    console.log(isPlayer, currentUser, currentUser.type , userTypes.spectator)
     const editable = isPlayer;
     const editorState = leftEditor;
     const onChange = isPlayer ?
@@ -48,7 +47,7 @@ class GameWidget extends Component {
     return {
       onChange,
       editable,
-      lang: editorState.currentLang,
+      syntax: _.get(editorState, ['currentLang', 'name'], 'javascript'),
       value: editorState.value,
       name: 'left-editor',
     };
@@ -62,7 +61,7 @@ class GameWidget extends Component {
       onChange: _.noop,
       editable: false,
       allowCopy: false,
-      lang: editorState.currentLang,
+      syntax: _.get(editorState, ['currentLang', 'name'], 'javascript'),
       value: editorState.value,
       name: 'right-editor',
     };

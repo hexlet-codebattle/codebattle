@@ -1,11 +1,13 @@
-import socket from '../../socket';
+import _ from 'lodash';
 import Gon from 'Gon';
+import socket from '../../socket';
 import { EditorActions, GameActions } from '../redux/Actions';
 import { currentUserIdSelector } from '../selectors/user';
 import { editorsSelector } from '../redux/EditorRedux';
 import userTypes from '../config/userTypes';
 import * as actions from '../actions';
 
+const languages = Gon.getAsset('langs');
 const gameId = Gon.getAsset('game_id');
 const channelName = `game:${gameId}`;
 const channel = socket.channel(channelName);
@@ -23,6 +25,9 @@ const initGameChannel = (dispatch) => {
       second_player_editor_lang,
       task,
     } = response;
+
+    const firstEditorLang = _.find(languages, { slug: first_player_editor_lang });
+    const secondEditorLang = _.find(languages, { slug: second_player_editor_lang });
 
     const users = [{
       id: first_player.id,
@@ -45,14 +50,14 @@ const initGameChannel = (dispatch) => {
     dispatch(EditorActions.updateEditorData(
       first_player.id,
       first_player_editor_text,
-      first_player_editor_lang,
+      firstEditorLang,
     ));
 
     if (second_player.id) {
       dispatch(EditorActions.updateEditorData(
         second_player.id,
         second_player_editor_text,
-        second_player_editor_lang,
+        secondEditorLang,
       ));
     }
 
@@ -82,12 +87,14 @@ export const sendGiveUp = () => {
   channel.push('give_up');
 };
 
-export const sendEditorLang = lang => (dispatch, getState) => {
+export const sendEditorLang = langSlug => (dispatch, getState) => {
   const state = getState();
   const userId = currentUserIdSelector(state);
-  dispatch(EditorActions.updateEditorLang(userId, lang));
+  const editorLang = _.find(languages, { slug: langSlug });
 
-  channel.push('editor:lang', { lang });
+  dispatch(EditorActions.updateEditorLang(userId, editorLang));
+
+  channel.push('editor:lang', { lang: langSlug });
 };
 
 export const editorReady = () => (dispatch) => {
@@ -96,8 +103,9 @@ export const editorReady = () => (dispatch) => {
     dispatch(EditorActions.updateEditorText(userId, editorText));
   });
 
-  channel.on('editor:lang', ({ user_id: userId, lang }) => {
-    dispatch(EditorActions.updateEditorLang(userId, lang));
+  channel.on('editor:lang', ({ user_id: userId, lang: langSlug }) => {
+    const editorLang = _.find(languages, { slug: langSlug });
+    dispatch(EditorActions.updateEditorLang(userId, editorLang));
   });
 
   channel.on('user:joined', ({
@@ -110,6 +118,11 @@ export const editorReady = () => (dispatch) => {
     second_player_editor_text,
     second_player_editor_lang,
   }) => {
+
+    //TODO: Add strong refactoring
+    const firstEditorLang = _.find(languages, { slug: first_player_editor_lang });
+    const secondEditorLang = _.find(languages, { slug: second_player_editor_lang });
+
     dispatch(GameActions.updateStatus({ status, winner }));
 
     dispatch(actions.updateUsers([{
@@ -127,14 +140,14 @@ export const editorReady = () => (dispatch) => {
     dispatch(EditorActions.updateEditorData(
       first_player.id,
       first_player_editor_text,
-      first_player_editor_lang,
+      firstEditorLang,
     ));
 
     if (second_player.id) {
       dispatch(EditorActions.updateEditorData(
         second_player.id,
         second_player_editor_text,
-        second_player_editor_lang,
+        secondEditorLang,
       ));
     }
   });
@@ -156,7 +169,7 @@ export const checkGameResult = () => (dispatch, getState) => {
 
   const payload = {
     editor_text: currentUserEditor.value,
-    lang: currentUserEditor.currentLang,
+    lang: currentUserEditor.currentLang.slug,
   };
 
   channel.push('check_result', payload)

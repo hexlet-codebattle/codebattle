@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import Gon from 'Gon';
 import AceEditor from 'react-ace';
 import 'brace';
 import 'brace/mode/javascript';
 import 'brace/mode/ruby';
 import 'brace/mode/elixir';
 import 'brace/theme/solarized_dark';
-import languages from '../config/languages';
+// import languages from '../config/languages';
+const languages = Gon.getAsset('langs');
 
 const selectionBlockStyle = {
   position: 'absolute',
@@ -21,7 +23,7 @@ class Editor extends Component {
     value: PropTypes.string,
     name: PropTypes.string.isRequired,
     editable: PropTypes.bool,
-    lang: PropTypes.string.isRequired,
+    syntax: PropTypes.string,
     onChange: PropTypes.func,
     allowCopy: PropTypes.bool,
   }
@@ -30,7 +32,7 @@ class Editor extends Component {
     value: '',
     editable: false,
     onChange: null,
-    lang: _.values(languages)[0],
+    syntax: 'javascript',
     allowCopy: true,
   }
 
@@ -39,11 +41,10 @@ class Editor extends Component {
       value,
       name,
       editable,
-      lang,
+      syntax,
       onChange,
       allowCopy,
     } = this.props;
-    const syntax = languages[lang];
 
     return (
       <div style={{ position: 'relative' }}>

@@ -76,10 +76,10 @@ class GameStatusTab extends Component {
                   type="button"
                   disabled
                 >
-                  {languages[leftEditorLang]}
+                  {leftEditorLang.name}
                 </button>
               ) : (
-                <LangSelector currentLangKey={leftEditorLang} onChange={this.props.setLang} />
+                <LangSelector currentLangSlug={leftEditorLang.slug} onChange={this.props.setLang} />
               )}
               {!canCheckResult ? null : (
                 <button
@@ -169,7 +169,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = dispatch => ({
   checkResult: () => dispatch(checkGameResult()),
-  setLang: langKey => dispatch(sendEditorLang(langKey)),
+  setLang: langSlug => dispatch(sendEditorLang(langSlug)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(GameStatusTab);
