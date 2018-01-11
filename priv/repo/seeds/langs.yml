@@ -18,3 +18,9 @@
     :extension: exs
     :docker_image: "codebattle/elixir:1.5.3"
     :solution_template: "defmodule Solution\n  def solution() do\n  \n  end\nend"
+  - :name: python
+    :slug: python
+    :version: 3.6.0
+    :extension: py
+    :docker_image: "codebattle/python:3.6.4"
+    :solution_template: "def solution():"
