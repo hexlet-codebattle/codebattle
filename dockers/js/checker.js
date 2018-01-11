@@ -1,4 +1,4 @@
-import solution from "./check/solution";
+const solution = require("./check/solution");
 
 const readline = require("readline");
 const chai = require("chai");
