@@ -1,10 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import languages from '../config/languages';
+import Gon from 'Gon';
 
-const LangSelector = ({ currentLangKey, onChange }) => {
-  const options = _.filter(_.keys(languages), key => key !== currentLangKey);
+const languages = Gon.getAsset('langs');
+
+const LangSelector = ({ currentLangSlug, onChange }) => {
+
+const [[currentLang, ...other], otherLangs] = _.partition(languages, lang => lang.slug === currentLangSlug);
   return (
     <div className="dropdown">
       <button
@@ -15,19 +18,19 @@ const LangSelector = ({ currentLangKey, onChange }) => {
         aria-haspopup="true"
         aria-expanded="false"
       >
-        {languages[currentLangKey]}
+        {currentLang.name}
       </button>
       <div className="dropdown-menu" aria-labelledby="dropdownLangButton">
-        {_.map(options, langKey => (
+        {_.map(otherLangs, ({ slug, name }) => (
           <button
             className="dropdown-item"
             href="#"
-            key={langKey}
+            key={slug}
             onClick={() => {
-              onChange(langKey);
+              onChange(slug);
             }}
           >
-            {languages[langKey]}
+            {name}
           </button>
         ))}
       </div>
@@ -36,7 +39,7 @@ const LangSelector = ({ currentLangKey, onChange }) => {
 };
 
 LangSelector.propTypes = {
-  currentLangKey: PropTypes.string.isRequired,
+  currentLangSlug: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
 };
 

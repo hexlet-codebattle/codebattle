@@ -6,7 +6,7 @@
     :extension: rb
     :docker_image: "codebattle/ruby:2.5.0"
     :solution_template: "def solution()\n\nend"
-  - :name: js
+  - :name: javascript
     :slug: js
     :version: 9.3.0
     :extension: js
