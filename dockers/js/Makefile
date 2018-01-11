@@ -1,4 +1,4 @@
 test:
-	cat check/data.jsons | babel-node checker.js --presets env
+	cat check/data.jsons | node checker.js
 
 .PHONY: test

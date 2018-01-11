@@ -6,12 +6,12 @@
     :extension: rb
     :docker_image: "codebattle/ruby:2.5.0"
     :solution_template: "def solution()\n\nend"
-  - :name: es6
+  - :name: js
     :slug: js
-    :version: env-es6
+    :version: 9.3.0
     :extension: js
-    :docker_image: "codebattle/js:env.es6"
-    :solution_template: "export default solution() => {\n\n}"
+    :docker_image: "codebattle/js:9.3.0"
+    :solution_template: "module.exports = () => {\n\n};"
   - :name: elixir
     :slug: elixir
     :version: 1.5.3
