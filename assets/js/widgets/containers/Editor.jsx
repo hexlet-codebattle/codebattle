@@ -6,6 +6,7 @@ import 'brace';
 import 'brace/mode/javascript';
 import 'brace/mode/ruby';
 import 'brace/mode/elixir';
+import 'brace/mode/python';
 import 'brace/theme/solarized_dark';
 // import languages from '../config/languages';
 const languages = Gon.getAsset('langs');
