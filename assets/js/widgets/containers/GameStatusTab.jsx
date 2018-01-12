@@ -77,6 +77,9 @@ class GameStatusTab extends Component {
     const canGiveUp = gameStatus.status === GameStatuses.playing && !isSpectator;
     const canCheckResult = _.includes(allowedGameStatuses, gameStatus.status) &&
       userType && !isSpectator;
+    const toastOptions = {
+      hideProgressBar: true,
+    };
 
     return (
       <div className="card h-100 border-0">
@@ -140,7 +143,7 @@ class GameStatusTab extends Component {
             )}
           </div>
         </div>
-        <ToastContainer hideProgressBar={true} />
+        <ToastContainer {...toastOptions} />
       </div>
     );
   }
