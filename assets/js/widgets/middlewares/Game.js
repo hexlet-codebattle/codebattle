@@ -154,7 +154,6 @@ export const editorReady = () => (dispatch) => {
 
   channel.on('user:won', ({ winner, status, msg }) => {
     dispatch(GameActions.updateStatus({ status, winner }));
-    alert(msg);
   });
 };
 
