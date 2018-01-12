@@ -79,6 +79,7 @@ class GameStatusTab extends Component {
       userType && !isSpectator;
     const toastOptions = {
       hideProgressBar: true,
+      position: toast.POSITION.TOP_CENTER,
     };
 
     return (
