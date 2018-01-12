@@ -65,7 +65,7 @@ defmodule Codebattle.GameProcess.FsmHelpers do
       |> Kernel.!
   end
 
-  def is_player?(data, user_id) do
+  def player?(data, user_id) do
     data.players |> Enum.find_value(fn(player) -> player.id == user_id end)
                  |> Kernel.!
                  |> Kernel.!

@@ -20,9 +20,15 @@ defmodule CodebattleWeb.GameController do
   end
 
   def create(conn, _params) do
-    id = Play.create_game(conn.assigns.user, conn.params["level"])
-    conn
-    |> redirect(to: game_path(conn, :show, id))
+    case Play.create_game(conn.assigns.user, conn.params["level"]) do
+      {:ok, id} ->
+        conn
+        |> redirect(to: game_path(conn, :show, id))
+      {:error, _reason} ->
+        conn
+        |> put_flash(:danger, gettext "You are in a different game")
+        |> redirect(to: page_path(conn, :index))
+    end
   end
 
   def show(conn, %{"id" => id}) do
@@ -40,9 +46,9 @@ defmodule CodebattleWeb.GameController do
         conn
         |> put_flash(:info, gettext "Joined to game")
         |> redirect(to: game_path(conn, :show, id))
-      {{:error, reason}, _} ->
+      :error ->
         conn
-        |> put_flash(:danger, reason)
+        |> put_flash(:danger, gettext "You are in a different game")
         |> redirect(to: game_path(conn, :show, id))
     end
   end

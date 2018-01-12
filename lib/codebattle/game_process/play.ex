@@ -6,7 +6,7 @@ defmodule Codebattle.GameProcess.Play do
   import Ecto.Query, warn: false
 
   alias Codebattle.{Repo, Game, User, UserGame}
-  alias Codebattle.GameProcess.{Server, Supervisor, Fsm, Player, FsmHelpers, Elo}
+  alias Codebattle.GameProcess.{Server, GlobalSupervisor, Fsm, Player, FsmHelpers, Elo, GameList}
   alias Codebattle.CodeCheck.Checker
   alias Codebattle.Bot.RecorderServer
 
@@ -16,7 +16,7 @@ defmodule Codebattle.GameProcess.Play do
   end
 
   def list_fsms do
-    Supervisor.current_games
+    GlobalSupervisor.current_games
   end
 
   def get_game(id) do
@@ -34,20 +34,27 @@ defmodule Codebattle.GameProcess.Play do
 
     fsm = Fsm.new |> Fsm.create(%{user: user, game_id: game.id, task: task})
 
-    Supervisor.start_game(game.id, fsm)
-    RecorderServer.start(game.id, task.id, user.id)
-    Codebattle.Chat.Supervisor.start_chat(game.id)
-    CodebattleWeb.Endpoint.broadcast("lobby", "new:game", %{game: fsm})
-    params = %{game_id: game.id, task_id: task.id}
-    Task.start(Codebattle.Bot.PlaybookPlayerTask, :run, [params])
-    game.id
+    case GameList.create_game(user, fsm) do
+      :ok ->
+        GlobalSupervisor.start_game(game.id, fsm)
+        CodebattleWeb.Endpoint.broadcast("lobby", "new:game", %{game: fsm})
+        params = %{game_id: game.id, task_id: task.id}
+        Task.start(Codebattle.Bot.PlaybookPlayerTask, :run, [params])
+        {:ok, game.id}
+      _ -> {:error, "You are already in a game"}
+    end
   end
 
   def join_game(id, user) do
-    fsm = get_fsm(id)
-    #TODO: link with game server instance
-    RecorderServer.start(id, fsm.data.task.id, user.id)
-    Server.call_transition(id, :join, %{user: user})
+    if GameList.playing?(user.id) do
+      :error
+    else
+      case Server.call_transition(id, :join, %{user: user}) do
+        {:ok, fsm} ->
+          GameList.join_user(user, fsm)
+        {:error, _reason} -> :error
+      end
+    end
   end
 
   def game_info(id) do

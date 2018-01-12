@@ -8,7 +8,7 @@ defmodule CodebattleWeb.PageView do
   end
 
   def can_check?(fsm, user) do
-    FsmHelpers.is_player?(fsm.data, user.id)
+    FsmHelpers.player?(fsm.data, user.id)
   end
 
   def csrf_token() do

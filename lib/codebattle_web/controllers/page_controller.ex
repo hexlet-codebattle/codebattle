@@ -7,8 +7,7 @@ defmodule CodebattleWeb.PageController do
   def index(conn, _params) do
     case conn.assigns[:is_authenticated?] do
       true ->
-        game_fsms = Play.list_fsms |> Enum.sort_by(fn (fsm) -> Game.level_difficulties[fsm.data.task.level] end)
-        render(conn, "list.html", game_fsms: game_fsms)
+        render(conn, "list.html")
       _ ->
         render conn, "index.html"
     end

@@ -35,13 +35,9 @@ defmodule Codebattle.GameProcess.Fsm do
 
   defstate waiting_opponent do
     defevent join(params), data: data do
-      if is_player?(data, params.user.id) do
-        respond({:error, dgettext("errors", "You are already in a game")})
-      else
         player = %Player{id: params.user.id, user: params.user}
         players = data.players ++ [player]
         next_state(:playing, %{data | players: players})
-      end
     end
 
     defevent update_editor_params(_params) do
