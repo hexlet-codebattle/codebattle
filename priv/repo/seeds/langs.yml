@@ -8,7 +8,7 @@
     :solution_template: "def solution()\n\nend"
   - :name: javascript
     :slug: js
-    :version: 9.3.0
+    :version: "node 9.3.0"
     :extension: js
     :docker_image: "codebattle/js:9.3.0"
     :solution_template: "module.exports = () => {\n\n};"
@@ -20,7 +20,7 @@
     :solution_template: "defmodule Solution\n  def solution() do\n  \n  end\nend"
   - :name: python
     :slug: python
-    :version: 3.6.0
+    :version: 3.6.4
     :extension: py
     :docker_image: "codebattle/python:3.6.4"
     :solution_template: "def solution():"

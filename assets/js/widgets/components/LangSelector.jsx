@@ -18,10 +18,10 @@ const [[currentLang, ...other], otherLangs] = _.partition(languages, lang => lan
         aria-haspopup="true"
         aria-expanded="false"
       >
-        {currentLang.name}
+        {`${currentLang.name} (${currentLang.version})`}
       </button>
       <div className="dropdown-menu" aria-labelledby="dropdownLangButton">
-        {_.map(otherLangs, ({ slug, name }) => (
+        {_.map(otherLangs, ({ slug, name, version }) => (
           <button
             className="dropdown-item"
             href="#"
@@ -30,7 +30,7 @@ const [[currentLang, ...other], otherLangs] = _.partition(languages, lang => lan
               onChange(slug);
             }}
           >
-            {name}
+            {`${name} (${version})`}
           </button>
         ))}
       </div>
