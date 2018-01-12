@@ -93,7 +93,7 @@ class GameStatusTab extends Component {
                   type="button"
                   disabled
                 >
-                  {leftEditorLang.name}
+                  {`${leftEditorLang.name} (${leftEditorLang.version})`}
                 </button>
               ) : (
                 <LangSelector currentLangSlug={leftEditorLang.slug} onChange={this.props.setLang} />
