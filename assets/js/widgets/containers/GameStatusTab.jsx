@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
+import { ToastContainer, toast } from 'react-toastify';
 import i18n from '../../i18n';
 import { usersSelector, currentUserSelector } from '../selectors/user';
 import GameStatuses from '../config/gameStatuses';
@@ -44,6 +45,18 @@ class GameStatusTab extends Component {
     status: GameStatuses.initial,
     title: '',
     users: {},
+  }
+
+  componentDidUpdate() {
+    const { solutionStatus } = this.props.gameStatus;
+
+    const statuses = {
+      true: () => toast.success('Yay! All tests passed!'),
+      false: () => toast.error('Oh no, some test has failed!'),
+      null: () => null,
+    };
+
+    statuses[solutionStatus]();
   }
 
   render() {
@@ -127,23 +140,7 @@ class GameStatusTab extends Component {
             )}
           </div>
         </div>
-        <div className="row">
-          {gameStatus.solutionStatus === false ? (
-            <div className="alert alert-danger alert-dismissible fade show">
-              {i18n.t('Checking failed')}
-            </div>
-          ) : null}
-          {gameStatus.solutionStatus === true ? (
-            <div className="col">
-              <div className="alert alert-success alert-dismissible fade show" role="alert">
-                {i18n.t('All test are passed!!11')}
-                <button type="button" className="close" data-dismiss="alert" aria-label="Close">
-                  <span aria-hidden="true" dangerouslySetInnerHTML={{ __html: '&times;' }} />
-                </button>
-              </div>
-            </div>
-          ) : null}
-        </div>
+        <ToastContainer hideProgressBar={true} />
       </div>
     );
   }
