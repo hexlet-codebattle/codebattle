@@ -1,12 +1,16 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import copy from 'copy-to-clipboard';
+import i18n from 'i18next';
 import GameWidget from './GameWidget';
 import InfoWidget from './InfoWidget';
 import Gon from 'Gon';
 import userTypes from '../config/userTypes';
 import * as actions from '../actions';
 import * as GameActions from '../middlewares/Game';
+import GameStatusCodes from '../config/gameStatusCodes';
+import { gameStatusSelector } from '../redux/GameRedux';
 
 class RootContainer extends React.Component {
   componentDidMount() {
@@ -18,12 +22,49 @@ class RootContainer extends React.Component {
   }
 
   render() {
-    return !this.props.storeLoaded ? null : (
-      <Fragment>
-        <GameWidget />
-        <InfoWidget />
-      </Fragment>
-    );
+    switch (true) {
+      case !this.props.storeLoaded:
+        // TODO: add loader
+        return null;
+      case (this.props.gameStatusCode  === GameStatusCodes.waitingOpponent):
+        const gameUrl = window.location.href;
+        return (
+          <div className="jumbotron jumbotron-fluid">
+            <div className="container">
+              <h1 className="display-4">{i18n.t('Waiting opponent')}</h1>
+              <p className="lead">{i18n.t('We seek for opponent for you. You can invite to start playing')}</p>
+              <div className="row">
+                <div className="input-group mb-3">
+                  <input
+                    type="text"
+                    className="form-control"
+                    aria-label="Recipient's username"
+                    aria-describedby="basic-addon2"
+                    value={gameUrl}
+                    readOnly
+                  />
+                  <div className="input-group-append">
+                    <button
+                      className="btn btn-outline-primary"
+                      type="button"
+                      onClick={() => copy(gameUrl)}
+                    >
+                      {i18n.t('Copy')}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      default:
+        return (
+          <Fragment>
+            <GameWidget />
+            <InfoWidget />
+          </Fragment>
+        );
+    }
   }
 }
 
@@ -35,6 +76,7 @@ RootContainer.propTypes = {
 
 const mapStateToProps = state => ({
   storeLoaded: state.storeLoaded,
+  gameStatusCode: gameStatusSelector(state).status,
 });
 
 const mapDispatchToProps = dispatch => ({

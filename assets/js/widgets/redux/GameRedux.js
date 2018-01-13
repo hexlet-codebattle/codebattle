@@ -1,14 +1,14 @@
 import Immutable from 'seamless-immutable';
 import { createReducer } from 'reduxsauce';
 import { GameTypes as Types } from './Actions';
-import GameStatuses from '../config/gameStatuses';
+import GameStatusCodes from '../config/gameStatusCodes';
 import i18n from '../../i18n';
 
 /* ------------- Initial State ------------- */
 
 export const INITIAL_STATE = Immutable({
   gameStatus: {
-    status: GameStatuses.initial,
+    status: GameStatusCodes.initial,
     winner: {},
     checking: false,
     solutionStatus: null,
@@ -41,16 +41,16 @@ export const gameStatusSelector = state => state.gameStatus.gameStatus;
 export const gameStatusTitleSelector = (state) => {
   const gameStatus = gameStatusSelector(state);
   switch (gameStatus.status) {
-    case GameStatuses.waitingOpponent:
+    case GameStatusCodes.waitingOpponent:
       return i18n
         .t('State: {{state}}', { state: i18n.t('Waiting opponent') });
-    case GameStatuses.playing:
+    case GameStatusCodes.playing:
       return i18n
         .t('State: {{state}}', { state: i18n.t('Playing') });
-    case GameStatuses.playerWon:
+    case GameStatusCodes.playerWon:
       return i18n
         .t('The winner is: {{name}}', { name: gameStatus.winner.name });
-    case GameStatuses.gameOver:
+    case GameStatusCodes.gameOver:
       return i18n
         .t('Game over. The winner is: {{name}}', { name: gameStatus.winner.name });
     default:
