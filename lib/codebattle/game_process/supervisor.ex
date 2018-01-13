@@ -5,35 +5,31 @@ defmodule Codebattle.GameProcess.Supervisor do
 
   alias Codebattle.GameProcess.Server
 
-  def start_link do
-    Supervisor.start_link(__MODULE__, [], name: __MODULE__)
+  def start_link(game_id, fsm) do
+    Supervisor.start_link(__MODULE__, [game_id, fsm], name: game_name(game_id))
   end
 
-  def start_game(game_id, fsm) do
-    Supervisor.start_child(__MODULE__, [game_id, fsm])
-  end
-
-  def init(_) do
+  def init([game_id, fsm]) do
     children = [
-      worker(Codebattle.GameProcess.Server, [])
+      worker(Codebattle.Chat.Server, [game_id]),
+      worker(Codebattle.GameProcess.Server, [game_id, fsm]),
+      #TODO: enable record server
+      # worker(RecorderServer, [game.id, user.id])
     ]
-    supervise(children, strategy: :simple_one_for_one)
-  end
-
-  def current_games do
-    __MODULE__
-    |> Supervisor.which_children
-    |> Enum.map(&game_state/1)
-    |> Enum.filter(fn x -> x end)
-  end
-
-  def stop_game(game_id) do
-    pid = Server.game_pid(game_id)
-    Supervisor.terminate_child(__MODULE__, pid)
+    supervise(children, strategy: :one_for_one)
   end
 
   defp game_state({_id, pid, _type, _modules}) do
     pid
     |> GenServer.call(:fsm)
+  end
+
+  # HELPERS
+  defp game_name(game_id) do
+    {:via, :gproc, game_key(game_id)}
+  end
+
+  defp game_key(game_id) do
+    {:n, :l, {:game_supervisor, to_charlist(game_id)}}
   end
 end

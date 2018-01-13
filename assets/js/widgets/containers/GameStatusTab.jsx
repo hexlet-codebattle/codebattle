@@ -5,7 +5,7 @@ import _ from 'lodash';
 import { ToastContainer, toast } from 'react-toastify';
 import i18n from '../../i18n';
 import { usersSelector, currentUserSelector } from '../selectors/user';
-import GameStatuses from '../config/gameStatuses';
+import GameStatusCodes from '../config/gameStatusCodes';
 import {
   gameStatusSelector,
   gameStatusTitleSelector,
@@ -42,7 +42,7 @@ class GameStatusTab extends Component {
   }
 
   static defaultProps = {
-    status: GameStatuses.initial,
+    status: GameStatusCodes.initial,
     title: '',
     users: {},
   }
@@ -78,9 +78,9 @@ class GameStatusTab extends Component {
     } = this.props;
     const userType = currentUser.type;
     const isSpectator = userType === userTypes.spectator;
-    const allowedGameStatuses = [GameStatuses.playing, GameStatuses.playerWon];
-    const canGiveUp = gameStatus.status === GameStatuses.playing && !isSpectator;
-    const canCheckResult = _.includes(allowedGameStatuses, gameStatus.status) &&
+    const allowedGameStatusCodes = [GameStatusCodes.playing, GameStatusCodes.playerWon];
+    const canGiveUp = gameStatus.status === GameStatusCodes.playing && !isSpectator;
+    const canCheckResult = _.includes(allowedGameStatusCodes, gameStatus.status) &&
       userType && !isSpectator;
     const toastOptions = {
       hideProgressBar: true,

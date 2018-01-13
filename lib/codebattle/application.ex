@@ -15,9 +15,7 @@ defmodule Codebattle.Application do
       supervisor(CodebattleWeb.Endpoint, []),
       # Start your own worker by calling: Codebattle.Worker.start_link(arg1, arg2, arg3)
       # worker(Codebattle.Worker, [arg1, arg2, arg3]),
-      supervisor(CodebattleWeb.Presence, []),
-      supervisor(Codebattle.GameProcess.Supervisor, []),
-      supervisor(Codebattle.Chat.Supervisor, []),
+      supervisor(Codebattle.GameProcess.GlobalSupervisor, []),
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

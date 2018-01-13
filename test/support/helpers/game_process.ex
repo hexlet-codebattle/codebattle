@@ -5,13 +5,14 @@ defmodule Helpers.GameProcess do
 
   import CodebattleWeb.Factory
 
-  alias Codebattle.GameProcess.{Supervisor, Fsm}
+  alias Codebattle.GameProcess.{GlobalSupervisor, Fsm, FsmHelpers, ActiveGames}
 
   def setup_game(state, data) do
     game = insert(:game)
     data = Map.put(data, :game_id, game.id)
     fsm = Fsm.set_data(state, data)
-    Supervisor.start_game(game.id, fsm)
+    ActiveGames.setup_game(fsm)
+    GlobalSupervisor.start_game(game.id, fsm)
     game
   end
 
@@ -25,5 +26,4 @@ defmodule Helpers.GameProcess do
     lang = langs |> Enum.find(fn(lang) -> lang.slug == to_string(slug) end)
     insert(:language, lang)
   end
-
 end

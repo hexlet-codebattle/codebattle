@@ -1,0 +1,10 @@
+.row
+  .container-fluid
+    .jumbotron
+      h1.display-4 = gettext "Join game"
+      p.lead = "Player #{user_name(get_first_player(assigns[:fsm]).user)} expects for an opponent"
+      hr.my-4/
+      p You can join to this game
+      p.lead
+        button.btn.btn-primary.btn-lg data-method="post" data-csrf="#{csrf_token}" data-to="#{game_path(@conn, :join, get_game_id(assigns[:fsm]))}" Join
+

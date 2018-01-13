@@ -6,17 +6,12 @@ defmodule Codebattle.GameProcess.Play do
   import Ecto.Query, warn: false
 
   alias Codebattle.{Repo, Game, User, UserGame}
-  alias Codebattle.GameProcess.{Server, Supervisor, Fsm, Player, FsmHelpers, Elo}
+  alias Codebattle.GameProcess.{Server, GlobalSupervisor, Fsm, Player, FsmHelpers, Elo, ActiveGames}
   alias Codebattle.CodeCheck.Checker
   alias Codebattle.Bot.RecorderServer
 
   def list_games do
-    Repo.all from p in Game,
-      preload: [:users]
-  end
-
-  def list_fsms do
-    Supervisor.current_games
+    ActiveGames.list_games
   end
 
   def get_game(id) do
@@ -28,26 +23,35 @@ defmodule Codebattle.GameProcess.Play do
   end
 
   def create_game(user, level) do
-    game = Repo.insert!(%Game{state: "waiting_opponent"})
+    case ActiveGames.playing?(user.id) do
+      false ->
+        game = Repo.insert!(%Game{state: "waiting_opponent", users: [user]})
+        task = get_random_task(level)
+        fsm = Fsm.new |> Fsm.create(%{user: user, game_id: game.id, task: task})
 
-    task = get_random_task(level)
+        ActiveGames.create_game(user, fsm)
+        GlobalSupervisor.start_game(game.id, fsm)
+        CodebattleWeb.Endpoint.broadcast("lobby", "new:game", %{game: fsm})
 
-    fsm = Fsm.new |> Fsm.create(%{user: user, game_id: game.id, task: task})
+        params = %{game_id: game.id, task_id: task.id}
+        Task.start(Codebattle.Bot.PlaybookPlayerTask, :run, [params])
 
-    Supervisor.start_game(game.id, fsm)
-    RecorderServer.start(game.id, task.id, user.id)
-    Codebattle.Chat.Supervisor.start_chat(game.id)
-    CodebattleWeb.Endpoint.broadcast("lobby", "new:game", %{game: fsm})
-    params = %{game_id: game.id, task_id: task.id}
-    Task.start(Codebattle.Bot.PlaybookPlayerTask, :run, [params])
-    game.id
+        {:ok, game.id}
+      _ -> {:error, "You are already in a game"}
+    end
   end
 
   def join_game(id, user) do
-    fsm = get_fsm(id)
-    #TODO: link with game server instance
-    RecorderServer.start(id, fsm.data.task.id, user.id)
-    Server.call_transition(id, :join, %{user: user})
+    if ActiveGames.playing?(user.id) do
+      :error
+    else
+      case Server.call_transition(id, :join, %{user: user}) do
+        {:ok, fsm} ->
+          ActiveGames.add_participant(user, fsm)
+          {:ok, fsm}
+        {{:error, _reason}, fsm} -> :error
+      end
+    end
   end
 
   def game_info(id) do
@@ -129,18 +133,17 @@ defmodule Codebattle.GameProcess.Play do
     Repo.insert!(%UserGame{game_id: game_id, user_id: user.id, result: "won"})
     Repo.insert!(%UserGame{game_id: game_id, user_id: loser.id, result: "lost"})
 
-    # TODO: update users rating by Elo
-      if user.id != 0 do
-        user
-          |> User.changeset(%{rating: winner_rating})
-          |> Repo.update!
-      end
+    if user.id != 0 do
+      user
+        |> User.changeset(%{rating: winner_rating})
+        |> Repo.update!
+    end
 
-      if loser.id != 0 do
-        loser
-          |> User.changeset(%{rating: loser_rating})
-          |> Repo.update!
-      end
+    if loser.id != 0 do
+      loser
+        |> User.changeset(%{rating: loser_rating})
+        |> Repo.update!
+    end
   end
 
   defp handle_gave_up(id, user, fsm) do
