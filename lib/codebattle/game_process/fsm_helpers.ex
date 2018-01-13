@@ -37,6 +37,10 @@ defmodule Codebattle.GameProcess.FsmHelpers do
     player.user || %User{}
   end
 
+  def get_game_id(fsm) do
+    fsm.data.game_id
+  end
+
   #TODO: implement is_true function instead Kernel.! * 2
   def winner?(data, user_id) do
     data.players

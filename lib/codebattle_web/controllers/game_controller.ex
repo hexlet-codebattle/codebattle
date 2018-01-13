@@ -3,7 +3,7 @@ defmodule CodebattleWeb.GameController do
   import CodebattleWeb.Gettext
   import PhoenixGon.Controller
 
-  alias Codebattle.GameProcess.Play
+  alias Codebattle.GameProcess.{Play, ActiveGames}
   alias Codebattle.{Repo, Language}
 
   plug :authenticate_user when action in [:show, :create, :join, :check]
@@ -35,14 +35,22 @@ defmodule CodebattleWeb.GameController do
     fsm = Play.get_fsm(id)
     langs = Repo.all(Language)
     conn = put_gon(conn, game_id: id, langs: langs)
-    render conn, "show.html", %{fsm: fsm, layout_template: "full_width.html"}
+    is_participant = ActiveGames.participant?(id, conn.assigns.user.id)
+
+    case {fsm.state, is_participant} do
+      {:waiting_opponent, false} ->
+        render conn, "join.html", %{fsm: fsm}
+      {:game_over, false} ->
+        render conn, "game_over.html", %{fsm: fsm}
+      _ ->
+        render conn, "show.html", %{fsm: fsm, layout_template: "full_width.html"}
+    end
   end
 
   def join(conn, %{"id" => id}) do
     case Play.join_game(id, conn.assigns.user) do
-      {:ok, _} ->
-        game = Play.get_fsm(id)
-        CodebattleWeb.Endpoint.broadcast("lobby", "update:game", %{game: game})
+      {:ok, fsm} ->
+        CodebattleWeb.Endpoint.broadcast("lobby", "update:game", %{game: fsm})
         conn
         |> put_flash(:info, gettext "Joined to game")
         |> redirect(to: game_path(conn, :show, id))

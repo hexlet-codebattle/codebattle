@@ -3,7 +3,7 @@ defmodule Codebattle.GameProcess.GlobalSupervisor do
 
   use Supervisor
 
-  alias Codebattle.GameProcess.{Server, GameList}
+  alias Codebattle.GameProcess.{Server, ActiveGames}
 
   def start_link do
     Supervisor.start_link(__MODULE__, [], name: __MODULE__)
@@ -17,7 +17,7 @@ defmodule Codebattle.GameProcess.GlobalSupervisor do
     children = [
       supervisor(Codebattle.GameProcess.Supervisor, []),
     ]
-    GameList.new
+    ActiveGames.new
     supervise(children, strategy: :simple_one_for_one)
   end
 

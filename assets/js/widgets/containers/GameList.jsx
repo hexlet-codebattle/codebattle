@@ -9,9 +9,8 @@ class GameList extends React.Component {
     dispatch(fetchState());
   }
 
-  renderPlayers = (game) => {
-    const { players } = game.data;
-    return <span>{players.map(player => player.user.name).join(', ')}</span>;
+  renderPlayers = (users) => {
+    return <span>{users.map(({ name, rating }) => `${name}(${rating})`).join(', ')}</span>;
   }
 
   renderGameLevelBadge = (level) => {
@@ -27,6 +26,7 @@ class GameList extends React.Component {
 
   render() {
     const { games } = this.props;
+    const gameUrl = game => `/games/${game.game_id}`;
     return (
       <div>
         <h1>Game List</h1>
@@ -37,6 +37,7 @@ class GameList extends React.Component {
               <th>Id</th>
               <th>Level</th>
               <th>Players</th>
+              <th>State</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -44,39 +45,44 @@ class GameList extends React.Component {
             {
               games.map(game => (
                 <tr
-                  key={game.data.game_id}
-                  className={`table-${game.state === 'waiting_opponent' ? 'success' : 'default'}`}
+                  key={game.game_id}
+                  className={`table-${game.game_info.state === 'waiting_opponent' ? 'success' : 'default'}`}
                 >
-                  <td>{game.data.game_id}</td>
-                  <td>{this.renderGameLevelBadge(game.data.task.level)}</td>
-                  <td>{this.renderPlayers(game)}</td>
+                  <td>{game.game_id}</td>
+                  <td>{this.renderGameLevelBadge(game.game_info.level)}</td>
+
+                  <td>{this.renderPlayers(game.users)}</td>
+                  <td>{game.game_info.state}</td>
                   <td>
-                    <button
-                      className="btn btn-info btn-sm mr-2"
-                      data-method="get"
-                      data-to={`/games/${game.data.game_id}`}
-                    >
-                      Show
-                    </button>
+                    {game.game_info.state === 'waiting_opponent' ? null : (
+                      <button
+                        className="btn btn-info btn-sm mr-2"
+                        data-method="get"
+                        data-to={gameUrl(game)}
+                      >
+                        Show
+                      </button>
+                    )}
                     {
-                      game.state === 'waiting_opponent' ?
+                      // TODO: @lazycoder please fixme to game codes
+                      game.game_info.state === 'waiting_opponent' ?
                         <button
                           className="btn btn-success btn-sm"
                           data-method="post"
                           data-csrf={window.csrf_token}
-                          data-to={`/games/${game.data.game_id}/join`}
-                        >
-                          Join
-                        </button> :
-                        null
+                          data-to={`${gameUrl(game)}/join`}
+                          >
+                            Join
+                          </button> :
+                            null
                     }
-                  </td>
-                </tr>
+                    </td>
+                  </tr>
               ))
             }
-          </tbody>
-        </table>
-      </div>
+            </tbody>
+          </table>
+        </div>
     );
   }
 }

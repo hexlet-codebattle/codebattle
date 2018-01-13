@@ -1,6 +1,6 @@
-defmodule Codebattle.GameProcess.GameList do
+defmodule Codebattle.GameProcess.ActiveGames do
   @moduledoc """
-    GameList for game list
+    ActiveGames for game list
   """
   alias Codebattle.GameProcess.FsmHelpers
 
@@ -8,8 +8,12 @@ defmodule Codebattle.GameProcess.GameList do
     :ets.new(:game_list, [:ordered_set, :public, :named_table])
   end
 
+  def list_games do
+    :ets.match_object(:game_list, :"_")
+  end
+
   def create_game(user, fsm) do
-    # {1, %{user_id => {}, user_id => {}, game: game}}
+    # {game_id, %{user_id => {}, user_id => {}}, game_params}
     game_id = fsm.data.game_id
     users = %{user.id => user}
     game_params = %{
@@ -22,7 +26,7 @@ defmodule Codebattle.GameProcess.GameList do
 
   def create_game(user, fsm) do
     # {1, %{user_id => {}, user_id => {}}, %{level: "easy", state: :playing}}
-    case playing?(user) do
+    case playing?(user.id) do
       true -> :error
       false ->
         game_id = fsm.data.game_id
@@ -36,21 +40,28 @@ defmodule Codebattle.GameProcess.GameList do
     end
   end
 
-  def join_game(user, fsm) do
+  def add_participant(user, fsm) do
     game_id = fsm.data.game_id
-    users = FsmHelpers.get_users(fsm)
+    users = fsm
+            |> FsmHelpers.get_users
             |> Enum.map(fn(user) -> %{user.id => user} end)
     game_params = %{
       level: fsm.data.task.level,
       state: fsm.state
     }
 
+    #TODO: maybe update instead of insert
+
     :ets.insert(:game_list, {game_key(game_id), users, game_params})
     :ok
   end
 
   def playing?(user_id) do
-    :game_list |> :ets.match_object({:"$1", %{user_id => %{}}, :"_"}) |> List.empty? |> Kernel.!
+    :game_list |> :ets.match_object({:"_", %{user_id => %{}}, :"_"}) |> Enum.empty? |> Kernel.!
+  end
+
+  def participant?(game_id, user_id) do
+    :game_list |> :ets.match_object({game_key(game_id), %{user_id => %{}}, :"_"}) |> Enum.empty? |> Kernel.!
   end
 
   defp game_key(game_id) when is_integer(game_id) do
