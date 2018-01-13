@@ -22,6 +22,7 @@
         "react-dom": "^16.1.1",
         "react-markdown": "^3.0.2",
         "react-redux": "^5.0.6",
+        "react-toastify": "^3.2.2",
         "redux": "^3.7.2",
         "redux-actions": "^2.2.1",
         "redux-thunk": "^2.2.0",
