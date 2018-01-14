@@ -5,19 +5,21 @@ defmodule Codebattle.CodeCheck.Ruby.IntegrationTest do
   alias Codebattle.GameProcess.{Server, Player}
 
   setup do
+    timeout = Application.fetch_env!(:codebattle, :code_check_timeout)
+
     user1 = insert(:user)
     user2 = insert(:user)
 
     task = insert(:task)
-    lang = setup_lang(:ruby)
+    setup_lang(:ruby)
 
     socket1 = socket("user_id", %{user_id: user1.id, current_user: user1})
     socket2 = socket("user_id", %{user_id: user2.id, current_user: user2})
 
-    {:ok, %{user1: user1, user2: user2, task: task, socket1: socket1, socket2: socket2}}
+    {:ok, %{user1: user1, user2: user2, task: task, socket1: socket1, socket2: socket2, timeout: timeout}}
   end
 
-  test "bad code, game playing", %{user1: user1, user2: user2, task: task, socket1: socket1, socket2: socket2} do
+  test "bad code, game playing", %{user1: user1, user2: user2, task: task, socket1: socket1, socket2: socket2, timeout: timeout} do
     #setup
     state = :playing
     data = %{players: [%Player{id: user1.id, user: user1}, %Player{id: user2.id, user: user2}], task: task}
@@ -29,7 +31,7 @@ defmodule Codebattle.CodeCheck.Ruby.IntegrationTest do
     :lib.flush_receive()
 
     ref = push socket1, "check_result", %{editor_text: "sdf", lang: "ruby"}
-    :timer.sleep 1_500
+    :timer.sleep timeout
 
     assert_reply ref, :ok, %{output: output}
     assert ~r/undefined local variable or method `sdf/ |> Regex.scan(output) |> Enum.empty? == false
@@ -39,7 +41,7 @@ defmodule Codebattle.CodeCheck.Ruby.IntegrationTest do
     assert fsm.state == :playing
   end
 
-  test "good code, player won", %{user1: user1, user2: user2, task: task, socket1: socket1, socket2: socket2} do
+  test "good code, player won", %{user1: user1, user2: user2, task: task, socket1: socket1, socket2: socket2, timeout: timeout} do
     #setup
     state = :playing
     data = %{players: [%Player{id: user1.id, user: user1}, %Player{id: user2.id, user: user2}], task: task}
@@ -55,7 +57,7 @@ defmodule Codebattle.CodeCheck.Ruby.IntegrationTest do
       editor_text: "def solution(x,y); x + y; end",
       lang: "ruby"
     }
-    :timer.sleep 1_500
+    :timer.sleep timeout
 
     fsm = Server.fsm(game.id)
     assert fsm.state == :player_won
