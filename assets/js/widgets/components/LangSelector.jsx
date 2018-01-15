@@ -4,10 +4,24 @@ import _ from 'lodash';
 import Gon from 'Gon';
 
 const languages = Gon.getAsset('langs');
+const getLangTitle = lang => `${lang.name} (${lang.version})`;
 
-const LangSelector = ({ currentLangSlug, onChange }) => {
+const LangSelector = ({ currentLangSlug, onChange, disabled }) => {
+  const [[currentLang, ...other], otherLangs] =
+    _.partition(languages, lang => lang.slug === currentLangSlug);
 
-const [[currentLang, ...other], otherLangs] = _.partition(languages, lang => lang.slug === currentLangSlug);
+  if (disabled) {
+    return (
+      <button
+        className="btn btn-info"
+        type="button"
+        disabled
+      >
+        {getLangTitle(currentLang)}
+      </button>
+    );
+  }
+
   return (
     <div className="dropdown">
       <button
@@ -18,7 +32,7 @@ const [[currentLang, ...other], otherLangs] = _.partition(languages, lang => lan
         aria-haspopup="true"
         aria-expanded="false"
       >
-        {`${currentLang.name} (${currentLang.version})`}
+        {getLangTitle(currentLang)}
       </button>
       <div className="dropdown-menu" aria-labelledby="dropdownLangButton">
         {_.map(otherLangs, ({ slug, name, version }) => (
@@ -41,6 +55,7 @@ const [[currentLang, ...other], otherLangs] = _.partition(languages, lang => lan
 LangSelector.propTypes = {
   currentLangSlug: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
+  disabled: PropTypes.bool.isRequired,
 };
 
 export default LangSelector;

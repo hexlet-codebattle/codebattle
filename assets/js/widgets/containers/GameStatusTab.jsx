@@ -19,7 +19,6 @@ import {
 import { checkGameResult, sendEditorLang, sendGiveUp } from '../middlewares/Game';
 import userTypes from '../config/userTypes';
 import LangSelector from '../components/LangSelector';
-import languages from '../config/languages';
 
 const renderNameplate = (user) => {
   const userName = _.get(user, ['name'], '');
@@ -92,17 +91,11 @@ class GameStatusTab extends Component {
         <div className="row my-1">
           <div className="col">
             <div className="btn-toolbar" role="toolbar">
-              {isSpectator ? (
-                <button
-                  className="btn btn-info"
-                  type="button"
-                  disabled
-                >
-                  {`${leftEditorLang.name} (${leftEditorLang.version})`}
-                </button>
-              ) : (
-                <LangSelector currentLangSlug={leftEditorLang.slug} onChange={this.props.setLang} />
-              )}
+              <LangSelector
+                currentLangSlug={leftEditorLang.slug}
+                onChange={this.props.setLang}
+                disabled={isSpectator}
+              />
               {!canCheckResult ? null : (
                 <button
                   className="btn btn-success ml-1"
@@ -138,15 +131,11 @@ class GameStatusTab extends Component {
             </div>
           </div>
           <div className="col text-right">
-            {!rightUserId ? null : (
-              <button
-                className="btn btn-info"
-                type="button"
-                disabled
-              >
-                {languages[rightEditorLang]}
-              </button>
-            )}
+            <LangSelector
+              currentLangSlug={rightEditorLang.slug}
+              onChange={_.noop}
+              disabled
+            />
           </div>
         </div>
         <ToastContainer {...toastOptions} />
@@ -160,6 +149,7 @@ const mapStateToProps = (state) => {
   const leftUserId = _.get(leftEditorSelector(state), ['userId'], null);
   const rightUserId = _.get(rightEditorSelector(state), ['userId'], null);
 
+console.log("%%$", langSelector(rightUserId, state))
   return {
     users: usersSelector(state),
     leftUserId,
