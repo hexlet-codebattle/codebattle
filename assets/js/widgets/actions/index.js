@@ -1,4 +1,4 @@
-import { createActions, createAction } from 'redux-actions';
+import { createAction } from 'redux-actions';
 
 export const fetchChatData = createAction('FETCH_CHAT_DATA');
 export const userJoinedChat = createAction('CHAT_USER_JOINED');
@@ -13,7 +13,10 @@ export const finishStoreInit = createAction('FINISH_STORE_INIT');
 
 export const updateExecutionOutput = createAction('UPDATE_EXECUTION_OUTPUT');
 
-export const { setCurrentUser, updateUsers } = createActions({
-  SET_CURRENT_USER: user => ({ user }),
-  UPDATE_USERS: users => ({ users }),
-});
+export const setCurrentUser = createAction('SET_CURRENT_USER');
+export const updateUsers = createAction('UPDATE_USERS');
+
+export const sendPlayerCode = createAction('SEND_PLAYER_CODE');
+export const updateEditorData = createAction('UPDATE_EDITOR_DATA');
+export const updateEditorText = createAction('UPDATE_EDITOR_TEXT');
+export const updateEditorLang = createAction('UPDATE_EDITOR_LANG');

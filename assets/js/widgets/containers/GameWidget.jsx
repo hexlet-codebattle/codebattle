@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import {
   rightEditorSelector,
   leftEditorSelector,
-} from '../redux/EditorRedux';
+} from '../selectors/editor';
 import { currentUserSelector } from '../selectors/user';
 import userTypes from '../config/userTypes';
 import Editor from './Editor';
@@ -19,10 +19,10 @@ class GameWidget extends Component {
       type: PropTypes.string,
     }).isRequired,
     leftEditor: PropTypes.shape({
-      value: PropTypes.string,
+      text: PropTypes.string,
     }),
     rightEditor: PropTypes.shape({
-      value: PropTypes.string,
+      text: PropTypes.string,
     }),
     sendData: PropTypes.func.isRequired,
   }
@@ -48,7 +48,7 @@ class GameWidget extends Component {
       onChange,
       editable,
       syntax: _.get(editorState, ['currentLang', 'name'], 'javascript'),
-      value: editorState.value,
+      value: editorState.text,
       name: 'left-editor',
     };
   }
@@ -62,7 +62,7 @@ class GameWidget extends Component {
       editable: false,
       allowCopy: false,
       syntax: _.get(editorState, ['currentLang', 'name'], 'javascript'),
-      value: editorState.value,
+      value: editorState.text,
       name: 'right-editor',
     };
   }
@@ -95,7 +95,6 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  // editorActions: bindActionCreators(EditorActions, dispatch),
   sendData: (...args) => { dispatch(sendEditorData(...args)); },
 });
 

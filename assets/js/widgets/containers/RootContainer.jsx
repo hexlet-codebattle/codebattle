@@ -17,7 +17,8 @@ class RootContainer extends React.Component {
     const user = Gon.getAsset('current_user');
     const { setCurrentUser, editorReady } = this.props;
 
-    setCurrentUser({ ...user, type: userTypes.spectator });
+    // FIXME: maybe take from gon?
+    setCurrentUser({ user: { ...user, type: userTypes.spectator } });
     editorReady();
   }
 

@@ -15,7 +15,7 @@ import {
   langSelector,
   leftEditorSelector,
   rightEditorSelector,
-} from '../redux/EditorRedux';
+} from '../selectors/editor';
 import { checkGameResult, sendEditorLang, sendGiveUp } from '../middlewares/Game';
 import userTypes from '../config/userTypes';
 import LangSelector from '../components/LangSelector';
@@ -149,7 +149,6 @@ const mapStateToProps = (state) => {
   const leftUserId = _.get(leftEditorSelector(state), ['userId'], null);
   const rightUserId = _.get(rightEditorSelector(state), ['userId'], null);
 
-console.log("%%$", langSelector(rightUserId, state))
   return {
     users: usersSelector(state),
     leftUserId,
