@@ -1,5 +1,5 @@
 defmodule CodebattleWeb.PageController do
-  use Codebattle.Web, :controller
+  use CodebattleWeb, :controller
 
   alias Codebattle.GameProcess.Play
   alias Codebattle.Game

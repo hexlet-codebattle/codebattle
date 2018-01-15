@@ -1,5 +1,5 @@
 defmodule CodebattleWeb.AuthController do
-  use Codebattle.Web, :controller
+  use CodebattleWeb, :controller
   import CodebattleWeb.Gettext
 
   alias Ueberauth.Strategy.Helpers

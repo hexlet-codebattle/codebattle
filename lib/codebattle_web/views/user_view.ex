@@ -1,3 +1,3 @@
 defmodule CodebattleWeb.UserView do
-  use Codebattle.Web, :view
+  use CodebattleWeb, :view
 end

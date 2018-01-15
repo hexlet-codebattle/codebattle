@@ -1,5 +1,5 @@
 defmodule CodebattleWeb.Router do
-  use Codebattle.Web, :router
+  use CodebattleWeb, :router
 
   pipeline :browser do
     plug :accepts, ["html"]

@@ -1,5 +1,5 @@
 defmodule CodebattleWeb.GameController do
-  use Codebattle.Web, :controller
+  use CodebattleWeb, :controller
   import CodebattleWeb.Gettext
   import PhoenixGon.Controller
 

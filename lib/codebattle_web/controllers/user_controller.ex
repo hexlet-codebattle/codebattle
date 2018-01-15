@@ -1,5 +1,5 @@
 defmodule CodebattleWeb.UserController do
-  use Codebattle.Web, :controller
+  use CodebattleWeb, :controller
 
   alias Codebattle.Repo
   alias Codebattle.User

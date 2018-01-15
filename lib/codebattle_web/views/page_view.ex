@@ -1,5 +1,5 @@
 defmodule CodebattleWeb.PageView do
-  use Codebattle.Web, :view
+  use CodebattleWeb, :view
 
   alias Codebattle.GameProcess.FsmHelpers
 

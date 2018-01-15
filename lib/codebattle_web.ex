@@ -1,12 +1,12 @@
-defmodule Codebattle.Web do
+defmodule CodebattleWeb do
   @moduledoc """
   A module that keeps using definitions for controllers,
   views and so on.
 
   This can be used in your application as:
 
-      use Codebattle.Web, :controller
-      use Codebattle.Web, :view
+      use CodebattleWeb, :controller
+      use CodebattleWeb, :view
 
   The definitions below will be executed for every view,
   controller, etc, so keep them short and clean, focused

@@ -1,6 +1,6 @@
 defmodule CodebattleWeb.ChatChannel do
     @moduledoc false
-    use Codebattle.Web, :channel
+    use CodebattleWeb, :channel
 
     require Logger
 

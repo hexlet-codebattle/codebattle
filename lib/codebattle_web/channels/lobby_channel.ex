@@ -1,6 +1,6 @@
 defmodule CodebattleWeb.LobbyChannel do
     @moduledoc false
-    use Codebattle.Web, :channel
+    use CodebattleWeb, :channel
 
     alias Codebattle.GameProcess.Play
     alias Codebattle.Game

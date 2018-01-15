@@ -1,5 +1,5 @@
 defmodule CodebattleWeb.ErrorView do
-  use Codebattle.Web, :view
+  use CodebattleWeb, :view
   import CodebattleWeb.Gettext
 
   def render("404.html", assigns) do
