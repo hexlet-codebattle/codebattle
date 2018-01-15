@@ -36,12 +36,12 @@ get-last-changes:
 	 git checkout master
 	 git merge upstream/master
 
-upload_asserts:
+upload-asserts:
 	 mix issues.fetch
 	 mix issues.generate
 	 mix issues.upload
 
-upload_langs:
+upload-langs:
 	 mix upload_langs
 
 release:

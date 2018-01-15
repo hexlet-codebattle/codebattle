@@ -55,7 +55,7 @@ class InfoWidget extends Component {
                           {value}
                         </a>
                       </li>
-                    )
+                    );
                   })}
                 </ul>
               </div>
