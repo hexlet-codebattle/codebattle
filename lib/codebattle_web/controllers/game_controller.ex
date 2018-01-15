@@ -1,12 +1,12 @@
 defmodule CodebattleWeb.GameController do
-  use Codebattle.Web, :controller
+  use CodebattleWeb, :controller
   import CodebattleWeb.Gettext
   import PhoenixGon.Controller
 
   alias Codebattle.GameProcess.{Play, ActiveGames}
   alias Codebattle.{Repo, Language}
 
-  plug :authenticate_user when action in [:show, :create, :join, :check]
+  plug CodebattleWeb.Plugs.RequireAuth when action in [:create, :join]
 
   def call(conn, opts) do
     try do
@@ -20,7 +20,7 @@ defmodule CodebattleWeb.GameController do
   end
 
   def create(conn, _params) do
-    case Play.create_game(conn.assigns.user, conn.params["level"]) do
+    case Play.create_game(conn.assigns.current_user, conn.params["level"]) do
       {:ok, id} ->
         conn
         |> redirect(to: game_path(conn, :show, id))
@@ -35,7 +35,7 @@ defmodule CodebattleWeb.GameController do
     fsm = Play.get_fsm(id)
     langs = Repo.all(Language)
     conn = put_gon(conn, game_id: id, langs: langs)
-    is_participant = ActiveGames.participant?(id, conn.assigns.user.id)
+    is_participant = ActiveGames.participant?(id, conn.assigns.current_user.id)
 
     case {fsm.state, is_participant} do
       {:waiting_opponent, false} ->
@@ -48,7 +48,7 @@ defmodule CodebattleWeb.GameController do
   end
 
   def join(conn, %{"id" => id}) do
-    case Play.join_game(id, conn.assigns.user) do
+    case Play.join_game(id, conn.assigns.current_user) do
       {:ok, fsm} ->
         CodebattleWeb.Endpoint.broadcast("lobby", "update:game", %{game: fsm})
         conn

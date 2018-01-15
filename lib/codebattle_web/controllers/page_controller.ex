@@ -1,15 +1,16 @@
 defmodule CodebattleWeb.PageController do
-  use Codebattle.Web, :controller
+  use CodebattleWeb, :controller
 
   alias Codebattle.GameProcess.Play
   alias Codebattle.Game
 
   def index(conn, _params) do
-    case conn.assigns[:is_authenticated?] do
+   current_user = conn.assigns.current_user
+    case current_user.guest do
       true ->
-        render(conn, "list.html")
-      _ ->
         render conn, "index.html"
+      false ->
+        render conn, "list.html"
     end
   end
 end

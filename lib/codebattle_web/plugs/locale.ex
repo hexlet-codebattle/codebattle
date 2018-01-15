@@ -1,4 +1,4 @@
-defmodule Codebattle.Plugs.Locale do
+defmodule CodebattleWeb.Plugs.Locale do
   @moduledoc """
     I18n configuration
   """

@@ -7,14 +7,15 @@ defmodule Codebattle.PlayGameTest do
   alias Codebattle.GameProcess.FsmHelpers
   alias CodebattleWeb.GameChannel
 
-  setup do
+  setup %{conn: conn} do
     insert(:task)
     user1 = insert(:user, %{name: "first", email: "test1@test.test", github_id: 1, rating: 1000})
     user2 = insert(:user, %{name: "second", email: "test2@test.test", github_id: 2, rating: 1000})
     user3 = insert(:user, %{name: "other", email: "test3@test.test", github_id: 3, rating: 1000})
-    conn1 = assign(build_conn(), :user, user1)
-    conn2 = assign(build_conn(), :user, user2)
-    conn3 = assign(build_conn(), :user, user3)
+
+    conn1 = put_session(conn, :user_id, user1.id)
+    conn2 = put_session(conn, :user_id, user2.id)
+    conn3 = put_session(conn, :user_id, user3.id)
 
     socket1 = socket("user_id", %{user_id: user1.id, current_user: user1})
     socket2 = socket("user_id", %{user_id: user2.id, current_user: user2})

@@ -1,5 +1,5 @@
 defmodule CodebattleWeb.GameView do
-  use Codebattle.Web, :view
+  use CodebattleWeb, :view
   import Codebattle.GameProcess.FsmHelpers
 
   def user_name(%Codebattle.User{name: name, rating: rating}) do

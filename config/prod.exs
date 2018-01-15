@@ -39,7 +39,7 @@ config :logger, :info,
   level: :info
 
 config :codebattle, Codebattle.Bot,
-  timeout: 7000
+  timeout: 60_000
 
 # Finally import the config/prod.secret.exs
 # which should be versioned separately.

@@ -1,5 +1,5 @@
 defmodule CodebattleWeb.LayoutView do
-  use Codebattle.Web, :view
+  use CodebattleWeb, :view
   import PhoenixGon.View
   import CodebattleWeb.Router.Helpers
 end

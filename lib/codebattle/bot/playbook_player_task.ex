@@ -35,32 +35,32 @@ defmodule Codebattle.Bot.PlaybookPlayerTask do
   end
 
   defp start_bot_cycle(diffs, game_topic, socket_pid) do
-    # Diff is one the maps
-    #
-    # 1 Main map with action to update text
-    # %{"time" => 10, "delta" => []}
-    #
-    # 2 Map with action to update lang
-    # %{"time" => 10, "lang" => "elixir"}
+      # Diff is one the maps
+      #
+      # 1 Main map with action to update text
+      # %{"time" => 10, "delta" => []}
+      #
+      # 2 Map with action to update lang
+      # %{"time" => 10, "lang" => "elixir"}
 
-    init_document = TextDelta.new() |> TextDelta.insert("")
-    init_lang = :js
+      init_document = TextDelta.new() |> TextDelta.insert("")
+      init_lang = :js
 
-    {editor_text, lang} = Enum.reduce diffs, {init_document, init_lang}, fn(diff_map, {document, lang}) ->
-      diff_map |> Map.get("time") |> :timer.sleep
-      #TODO: maybe optimize serialization/deserialization process
-      delta = diff_map |> Map.get("delta", nil)
-      if delta do
-        text_delta = delta |> AtomicMap.convert(safe: true) |> TextDelta.new
-        new_document = TextDelta.apply!(document, text_delta)
-        SocketDriver.push(socket_pid, game_topic, "editor:text", %{"editor_text" => new_document.ops |> hd |> Map.get(:insert)})
-        {new_document, lang}
-      else
-        lang = diff_map |> Map.get("lang")
-        SocketDriver.push(socket_pid, game_topic, "editor:lang", %{"lang" => lang})
-        {document, lang}
+      {editor_text, lang} = Enum.reduce diffs, {init_document, init_lang}, fn(diff_map, {document, lang}) ->
+        diff_map |> Map.get("time") |> :timer.sleep
+        #TODO: maybe optimize serialization/deserialization process
+        delta = diff_map |> Map.get("delta", nil)
+        if delta do
+          text_delta = delta |> AtomicMap.convert(safe: true) |> TextDelta.new
+          new_document = TextDelta.apply!(document, text_delta)
+          SocketDriver.push(socket_pid, game_topic, "editor:text", %{"editor_text" => new_document.ops |> hd |> Map.get(:insert)})
+          {new_document, lang}
+        else
+          lang = diff_map |> Map.get("lang")
+          SocketDriver.push(socket_pid, game_topic, "editor:lang", %{"lang" => lang})
+          {document, lang}
+        end
       end
-    end
-    SocketDriver.push(socket_pid, game_topic, "check_result", %{"editor_text" => editor_text.ops |> hd |> Map.get(:insert), "lang" => lang})
+        SocketDriver.push(socket_pid, game_topic, "check_result", %{"editor_text" => editor_text.ops |> hd |> Map.get(:insert), "lang" => lang})
   end
 end

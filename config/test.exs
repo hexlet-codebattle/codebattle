@@ -24,3 +24,6 @@ config :codebattle, Codebattle.Repo,
 
 config :codebattle, Codebattle.Bot,
   timeout: 70
+
+config :codebattle,
+  code_check_timeout: 1_700

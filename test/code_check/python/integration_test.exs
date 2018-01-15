@@ -5,19 +5,21 @@ defmodule Codebattle.CodeCheck.Phython.IntegrationTest do
   alias Codebattle.GameProcess.{Server, Player}
 
   setup do
+    timeout = Application.fetch_env!(:codebattle, :code_check_timeout)
+
     user1 = insert(:user)
     user2 = insert(:user)
 
     task = insert(:task)
-    lang = setup_lang(:python)
+    setup_lang(:python)
 
     socket1 = socket("user_id", %{user_id: user1.id, current_user: user1})
     socket2 = socket("user_id", %{user_id: user2.id, current_user: user2})
 
-    {:ok, %{user1: user1, user2: user2, task: task, socket1: socket1, socket2: socket2}}
+    {:ok, %{user1: user1, user2: user2, task: task, socket1: socket1, socket2: socket2, timeout: timeout}}
   end
 
-  test "bad code, game playing", %{user1: user1, user2: user2, task: task, socket1: socket1, socket2: socket2} do
+  test "bad code, game playing", %{user1: user1, user2: user2, task: task, socket1: socket1, socket2: socket2, timeout: timeout} do
     #setup
     state = :playing
     data = %{players: [%Player{id: user1.id, user: user1}, %Player{id: user2.id, user: user2}], task: task}
@@ -29,10 +31,9 @@ defmodule Codebattle.CodeCheck.Phython.IntegrationTest do
     :lib.flush_receive()
 
     ref = push socket1, "check_result", %{editor_text: "sdf", lang: "python"}
-    :timer.sleep 2_000
+    :timer.sleep timeout
 
     assert_reply ref, :ok, %{output: output}
-    IO.inspect output
     assert ~r/name 'sdf' is not defined/ |> Regex.scan(output) |> Enum.empty? == false
 
     fsm = Server.fsm(game.id)
@@ -40,7 +41,7 @@ defmodule Codebattle.CodeCheck.Phython.IntegrationTest do
     assert fsm.state == :playing
   end
 
-  test "good code, player won", %{user1: user1, user2: user2, task: task, socket1: socket1, socket2: socket2} do
+  test "good code, player won", %{user1: user1, user2: user2, task: task, socket1: socket1, socket2: socket2, timeout: timeout} do
     #setup
     state = :playing
     data = %{players: [%Player{id: user1.id, user: user1}, %Player{id: user2.id, user: user2}], task: task}
@@ -56,7 +57,7 @@ defmodule Codebattle.CodeCheck.Phython.IntegrationTest do
       editor_text: "def solution(x, y): return x + y",
       lang: "python"
     }
-    :timer.sleep 2_000
+    :timer.sleep timeout
 
     fsm = Server.fsm(game.id)
     assert fsm.state == :player_won

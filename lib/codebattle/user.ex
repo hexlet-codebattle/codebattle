@@ -5,18 +5,20 @@ defmodule Codebattle.User do
   use Ecto.Schema
   import Ecto.Changeset
 
-  @derive {Poison.Encoder, only: [:id, :name, :rating]}
+  @derive {Poison.Encoder, only: [:id, :name, :rating, :guest]}
 
   schema "users" do
     field :name, :string
     field :email, :string
     field :github_id, :integer
     field :rating, :integer
-
-    timestamps()
+    field :guest, :boolean, virtual: true, default: false
+    field :bot, :boolean, virtual: true, default: false
 
     has_many :user_games, Codebattle.UserGame
     has_many :games, through: [:user_games, :game]
+
+    timestamps()
   end
 
   @doc """

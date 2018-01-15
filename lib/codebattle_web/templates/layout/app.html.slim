@@ -14,14 +14,13 @@ html lang="en"
         img alt=static_path(@conn,"/css/app.css") src="/images/codebattle_logo.png" height="30"
         | Codebattle
       ul.nav.navbar-nav.ml-auto.justify-content-end.flex-row
-        = if @conn.assigns[:is_authenticated?] do
+        = unless @current_user.guest do
           li.nav-item.pr-5
             = link to: user_path(@conn, :index), class: "nav-link" do
               = gettext "User rating"
-          li.navbar-text.pr-2 = @conn.assigns.user.name
+          li.navbar-text.pr-2 = @current_user.name
           li.nav-item
-            a href="#{auth_path(@conn, :logout)}"
-              button.btn.btn-outline-success type="submit" = gettext "Logout"
+            = link gettext("Sign Out"), to: session_path(@conn, :delete), method: "delete", class: "nav-link"
         - else
           li.nav-item
             a href="#{auth_path(@conn, :request, :github)}"
