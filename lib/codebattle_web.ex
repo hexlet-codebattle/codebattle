@@ -33,7 +33,6 @@ defmodule CodebattleWeb do
       alias Codebattle.Repo
       import Ecto
       import Ecto.Query
-      import Codebattle.Plugs.Authorization, only: [authenticate_user: 2]
       import CodebattleWeb.Router.Helpers
       import CodebattleWeb.Gettext
     end

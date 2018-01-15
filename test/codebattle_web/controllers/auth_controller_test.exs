@@ -23,15 +23,4 @@ defmodule CodebattleWeb.AuthControllerTest do
     assert conn.state == :sent
     assert redirected_to(conn) == "/"
   end
-
-  test "GET /auth/logout", %{conn: conn} do
-    user = insert(:user)
-    conn = assign(conn, :user, user)
-
-    conn = get conn, "/auth/logout"
-
-    assert conn.state == :sent
-    assert redirected_to(conn) == "/"
-  end
-
 end

@@ -4,11 +4,12 @@ defmodule CodebattleWeb.Router do
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
+    plug CodebattleWeb.Plugs.AssignCurrentUser
     plug :fetch_flash
     plug :protect_from_forgery
     plug :put_secure_browser_headers
-    plug Codebattle.Plugs.Authorization
-    plug Codebattle.Plugs.Locale
+    plug CodebattleWeb.Plugs.AssignGon
+    plug CodebattleWeb.Plugs.Locale
   end
 
   pipeline :api do
@@ -17,9 +18,6 @@ defmodule CodebattleWeb.Router do
 
   scope "/auth", CodebattleWeb do
     pipe_through :browser
-
-    get "/logout", AuthController, :logout
-
     get "/:provider", AuthController, :request
     get "/:provider/callback", AuthController, :callback
   end
@@ -27,10 +25,9 @@ defmodule CodebattleWeb.Router do
   scope "/", CodebattleWeb do
     pipe_through :browser # Use the default browser stack
 
+    resources "/session", SessionController, singleton: true, only: [:delete]
     get "/", PageController, :index
-
     resources "/users", UserController, only: [:index]
-
     resources "/games", GameController, only: [:create, :show]
     scope "/games" do
       post "/:id/join", GameController, :join

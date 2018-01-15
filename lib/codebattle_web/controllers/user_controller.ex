@@ -4,7 +4,7 @@ defmodule CodebattleWeb.UserController do
   alias Codebattle.Repo
   alias Codebattle.User
 
-  plug :authenticate_user when action in [:index]
+  plug CodebattleWeb.Plugs.RequireAuth when action in [:index]
 
   def index(conn, _params) do
     query = Ecto.Query.from users in User, order_by: [desc: users.rating]

@@ -6,6 +6,6 @@ defmodule Codebattle.Bot.Builder do
   alias Codebattle.User
 
   def build do
-    %User{id: 0, name: "superPlayer", rating: 1137}
+    %User{id: 0, name: "superPlayer", bot: true, rating: 1137}
   end
 end
