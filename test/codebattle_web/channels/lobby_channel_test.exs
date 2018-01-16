@@ -16,8 +16,7 @@ defmodule CodebattleWeb.LobbyChannelTest do
     test "sends game info when user join", %{user1: user1, socket1: socket1, task: task} do
         state = :waiting_opponent
         data = %{players: [%{id: user1.id, user: user1}], task: task}
-        game = setup_game(state, data)
-        game_topic = "game:" <> to_string(game.id)
+        setup_game(state, data)
 
         {:ok, %{games: games}, _socket1} = subscribe_and_join(socket1, LobbyChannel, "lobby")
 

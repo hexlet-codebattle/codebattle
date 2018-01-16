@@ -26,4 +26,14 @@ defmodule Helpers.GameProcess do
     lang = langs |> Enum.find(fn(lang) -> lang.slug == to_string(slug) end)
     insert(:language, lang)
   end
+
+  def game_id_from_conn(conn) do
+    location = conn.resp_headers
+               |> Enum.find(&match?({"location", _}, &1))
+               |> elem(1)
+    ~r/\d+/
+      |> Regex.run(location)
+      |> List.first
+      |> String.to_integer
+  end
 end

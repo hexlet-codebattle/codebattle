@@ -21,7 +21,7 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
       %{"lang" => :ruby, "time" => 100}
     ]}
 
-    playbook = insert(:bot_playbook, %{data: playbook_data, task_id: task.id})
+    insert(:bot_playbook, %{data: playbook_data, task_id: task.id})
 
 
     socket = socket("user_id", %{user_id: user.id, current_user: user})

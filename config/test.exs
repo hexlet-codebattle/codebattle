@@ -7,7 +7,7 @@ config :codebattle, CodebattleWeb.Endpoint,
   server: false
 
 config :phoenix_integration,
-  endpoint: Codebattle.Endpoint
+  endpoint: CodebattleWeb.Endpoint
 
 # Print only warnings and errors during test
 config :logger, level: :warn
