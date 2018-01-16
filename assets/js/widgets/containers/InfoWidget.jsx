@@ -4,9 +4,7 @@ import _ from 'lodash';
 import ChatWidget from './ChatWidget';
 import Task from '../components/Task';
 import ExecutionOutput from '../components/ExecutionOutput';
-import {
-  gameTaskSelector,
-} from '../redux/GameRedux';
+import { gameTaskSelector } from '../selectors';
 
 const Tabs = { task: 'TASK', output: 'OUTPUT' };
 

@@ -18,5 +18,6 @@ export const updateUsers = createAction('UPDATE_USERS');
 
 export const sendPlayerCode = createAction('SEND_PLAYER_CODE');
 export const updateEditorData = createAction('UPDATE_EDITOR_DATA');
-export const updateEditorText = createAction('UPDATE_EDITOR_TEXT');
-export const updateEditorLang = createAction('UPDATE_EDITOR_LANG');
+
+export const updateGameStatus = createAction('UPDATE_GAME_STATUS');
+export const setGameTask = createAction('SET_GAME_TASK');

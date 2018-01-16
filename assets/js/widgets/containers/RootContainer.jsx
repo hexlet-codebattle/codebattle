@@ -10,7 +10,7 @@ import userTypes from '../config/userTypes';
 import * as actions from '../actions';
 import * as GameActions from '../middlewares/Game';
 import GameStatusCodes from '../config/gameStatusCodes';
-import { gameStatusSelector } from '../redux/GameRedux';
+import { gameStatusSelector } from '../selectors';
 
 class RootContainer extends React.Component {
   componentDidMount() {

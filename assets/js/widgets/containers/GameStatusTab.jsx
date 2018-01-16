@@ -4,18 +4,17 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { ToastContainer, toast } from 'react-toastify';
 import i18n from '../../i18n';
-import { usersSelector, currentUserSelector } from '../selectors/user';
 import GameStatusCodes from '../config/gameStatusCodes';
 import {
   gameStatusSelector,
   gameStatusTitleSelector,
   gameTaskSelector,
-} from '../redux/GameRedux';
-import {
   langSelector,
   leftEditorSelector,
   rightEditorSelector,
-} from '../selectors/editor';
+  usersSelector,
+  currentUserSelector,
+} from '../selectors';
 import { checkGameResult, sendEditorLang, sendGiveUp } from '../middlewares/Game';
 import userTypes from '../config/userTypes';
 import LangSelector from '../components/LangSelector';

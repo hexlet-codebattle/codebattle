@@ -1,10 +1,8 @@
 import _ from 'lodash';
 import Gon from 'Gon';
 import socket from '../../socket';
-import { currentUserIdSelector } from '../selectors/user';
-import { editorsSelector } from '../selectors/editor';
+import { editorsSelector, currentUserIdSelector } from '../selectors';
 import userTypes from '../config/userTypes';
-import { GameActions } from '../redux/Actions';
 import * as actions from '../actions';
 
 const languages = Gon.getAsset('langs');
@@ -61,8 +59,8 @@ const initGameChannel = (dispatch) => {
       }));
     }
 
-    dispatch(GameActions.setTask(task));
-    dispatch(GameActions.updateStatus({ status, winner }));
+    dispatch(actions.setGameTask({ task }));
+    dispatch(actions.updateGameStatus({ status, winner }));
     dispatch(actions.finishStoreInit());
   };
 
@@ -122,7 +120,6 @@ export const editorReady = () => (dispatch) => {
     const firstEditorLang = _.find(languages, { slug: first_player_editor_lang });
     const secondEditorLang = _.find(languages, { slug: second_player_editor_lang });
 
-    dispatch(GameActions.updateStatus({ status, winner }));
 
     dispatch(actions.updateUsers([{
       id: first_player.id,
@@ -149,10 +146,12 @@ export const editorReady = () => (dispatch) => {
         currentLang: secondEditorLang,
       }));
     }
+
+    dispatch(actions.updateGameStatus({ status, winner }));
   });
 
   channel.on('user:won', ({ winner, status, msg }) => {
-    dispatch(GameActions.updateStatus({ status, winner }));
+    dispatch(actions.updateGameStatus({ status, winner }));
   });
 };
 
@@ -163,7 +162,7 @@ export const checkGameResult = () => (dispatch, getState) => {
 
   // FIXME: create actions for this state transitions
   // FIXME: create statuses for solutionStatus
-  dispatch(GameActions.updateStatus({ checking: true, solutionStatus: null }));
+  dispatch(actions.updateGameStatus({ checking: true, solutionStatus: null }));
 
   const payload = {
     editor_text: currentUserEditor.text,
@@ -177,6 +176,6 @@ export const checkGameResult = () => (dispatch, getState) => {
       const newGameStatus = solutionStatus ? { status, winner } : {};
       // !solutionStatus ? alert(output) : null;
       dispatch(actions.updateExecutionOutput({ output }));
-      dispatch(GameActions.updateStatus({ ...newGameStatus, solutionStatus, checking: false }));
+      dispatch(actions.updateGameStatus({ ...newGameStatus, solutionStatus, checking: false }));
     });
 };

@@ -5,8 +5,8 @@ import { connect } from 'react-redux';
 import {
   rightEditorSelector,
   leftEditorSelector,
-} from '../selectors/editor';
-import { currentUserSelector } from '../selectors/user';
+  currentUserSelector,
+} from '../selectors';
 import userTypes from '../config/userTypes';
 import Editor from './Editor';
 import GameStatusTab from './GameStatusTab';
