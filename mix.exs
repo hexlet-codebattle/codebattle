@@ -75,7 +75,7 @@ defmodule Codebattle.Mixfile do
 
      #test
      {:mock, "~> 0.2.0", only: :test},
-     {:phoenix_integration, "~> 0.3", only: :test},
+     {:phoenix_integration, "~> 0.5", only: :test},
      {:excoveralls, "~> 0.7", only: :test},
      {:faker, "~> 0.8", only: :test},
      {:ex_machina, "~> 2.0", only: :test},

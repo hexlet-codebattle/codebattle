@@ -30,13 +30,11 @@ defmodule Codebattle.PlayGameTest do
     with_mocks([{Codebattle.CodeCheck.Checker, [], [check: fn(_a, _b, _c) -> {:ok, true} end]}]) do
 
       # Create game
-      conn = post(conn1, game_path(conn1, :create))
+      conn = conn1
+            |> get(user_path(conn1, :index))
+            |> post(game_path(conn1, :create))
+      game_id = game_id_from_conn(conn)
 
-      game_location = conn.resp_headers
-                      |> Enum.find(&match?({"location", _}, &1))
-                      |> elem(1)
-
-      game_id = ~r/\d+/ |> Regex.run(game_location) |> List.first |> String.to_integer
       game_topic = "game:" <> to_string(game_id)
       {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
 
@@ -47,7 +45,7 @@ defmodule Codebattle.PlayGameTest do
       assert FsmHelpers.get_second_player(fsm).user == %User{}
 
       # First player cannot join to game as second player
-      post(conn1, game_location <> "/join")
+      post(conn1, game_path(conn1, :join, game_id))
       fsm = Server.fsm(game_id)
 
       assert fsm.state == :waiting_opponent
@@ -55,7 +53,7 @@ defmodule Codebattle.PlayGameTest do
       assert FsmHelpers.get_second_player(fsm).user == %User{}
 
       # Second player join game
-      post(conn2, game_location <> "/join")
+      post(conn2, game_path(conn2, :join, game_id))
       {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
       fsm = Server.fsm(game_id)
 
@@ -108,17 +106,18 @@ defmodule Codebattle.PlayGameTest do
   end
 
   test "other players cannot change game state", %{conn1: conn1, conn2: conn2, conn3: conn3, socket3: socket3} do
-    conn = post(conn1, game_path(conn1, :create))
-    game_location = conn.resp_headers
-                    |> Enum.find(&match?({"location", _}, &1))
-                    |> elem(1)
-    game_id = ~r/\d+/ |> Regex.run(game_location) |> List.first |> String.to_integer
+    # Create game
+    conn = conn1
+           |> get(user_path(conn1, :index))
+           |> post(game_path(conn1, :create))
+    game_id = game_id_from_conn(conn)
+
     game_topic = "game:" <> to_string(game_id)
 
-    post(conn2, game_location <> "/join")
+    post(conn2, game_path(conn1, :join, game_id))
 
     # Other player cannot join game
-    post(conn3, game_location <> "/join")
+    post(conn3, game_path(conn1, :join, game_id))
     fsm = Server.fsm(game_id)
 
     assert fsm.state == :playing

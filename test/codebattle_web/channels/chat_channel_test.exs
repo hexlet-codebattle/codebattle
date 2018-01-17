@@ -72,7 +72,7 @@ defmodule CodebattleWeb.ChatChannelTest do
         assert [%{user: user1.name, message: message}] == messages
     end
 
-    test "removes user from list on leaving channel", %{user1: user1, socket1: socket1, socket2: socket2} do
+    test "removes user from list on leaving channel", %{socket1: socket1, socket2: socket2} do
         chat_id = :rand.uniform(1000)
         Server.start_link(chat_id)
         chat_topic = "chat:" <> to_string(chat_id)
