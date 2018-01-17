@@ -9,7 +9,11 @@ defmodule Codebattle.GameProcess.ActiveGames do
   alias Codebattle.GameProcess.FsmHelpers
 
   def new do
-    :ets.new(@table_name, [:ordered_set, :public, :named_table])
+    try do
+      :ets.new(@table_name, [:ordered_set, :public, :named_table])
+    rescue
+      e in ArgumentError -> e
+    end
   end
 
   def list_games do
