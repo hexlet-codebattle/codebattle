@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { fetchState, addMessage } from '../middlewares/Chat';
-import { currentUserSelector } from '../selectors/user';
+import { currentUserSelector } from '../selectors';
 
 class ChatWidget extends React.Component {
   static propTypes = {
