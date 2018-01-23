@@ -80,9 +80,9 @@ defmodule CodebattleWeb.GameChannel do
       {:ok, fsm} ->
         winner = socket.assigns.current_user
         msg = case fsm.state do
-          :player_won ->
+          :game_over ->
               message = winner.name <> " " <> gettext("won the game!")
-              broadcast_from! socket, "user:won", %{winner: winner, status: "player_won", msg: message}
+              broadcast_from! socket, "user:won", %{winner: winner, status: "game_over", msg: message}
               message
           _ ->
               gettext "You lose the game"

@@ -4,8 +4,6 @@ defmodule Codebattle.PlayGameTest do
   import Mock
 
   alias Codebattle.GameProcess.Server
-  alias Codebattle.GameProcess.FsmHelpers
-  alias CodebattleWeb.GameChannel
 
   setup %{conn: conn} do
     insert(:task)
@@ -31,7 +29,7 @@ defmodule Codebattle.PlayGameTest do
 
       # Create game
       conn = conn1
-            |> get(user_path(conn1, :index))
+            |> get(page_path(conn1, :index))
             |> post(game_path(conn1, :create))
       game_id = game_id_from_conn(conn)
 
@@ -72,7 +70,7 @@ defmodule Codebattle.PlayGameTest do
       :timer.sleep(100)
       fsm = Server.fsm(game_id)
 
-      assert fsm.state == :player_won
+      assert fsm.state == :game_over
       assert FsmHelpers.get_first_player(fsm).user.name == "first"
       assert FsmHelpers.get_second_player(fsm).user.name == "second"
       assert FsmHelpers.get_winner(fsm).name == "first"
@@ -84,7 +82,7 @@ defmodule Codebattle.PlayGameTest do
       :timer.sleep(100)
       fsm = Server.fsm(game_id)
 
-      assert fsm.state == :player_won
+      assert fsm.state == :game_over
       assert FsmHelpers.get_first_player(fsm).user.name == "first"
       assert FsmHelpers.get_second_player(fsm).user.name == "second"
       assert FsmHelpers.get_winner(fsm).name == "first"
@@ -107,17 +105,17 @@ defmodule Codebattle.PlayGameTest do
 
   test "other players cannot change game state", %{conn1: conn1, conn2: conn2, conn3: conn3, socket3: socket3} do
     # Create game
-    conn = conn1
-           |> get(user_path(conn1, :index))
+    conn1 = conn1
+           |> get(page_path(conn1, :index))
            |> post(game_path(conn1, :create))
-    game_id = game_id_from_conn(conn)
+    game_id = game_id_from_conn(conn1)
 
     game_topic = "game:" <> to_string(game_id)
 
-    post(conn2, game_path(conn1, :join, game_id))
+    post(conn2, game_path(conn2, :join, game_id))
 
     # Other player cannot join game
-    post(conn3, game_path(conn1, :join, game_id))
+    post(conn3, game_path(conn3, :join, game_id))
     fsm = Server.fsm(game_id)
 
     assert fsm.state == :playing

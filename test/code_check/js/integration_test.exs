@@ -61,7 +61,7 @@ defmodule Codebattle.CodeCheck.JS.IntegrationTest do
 
     fsm = Server.fsm(game.id)
 
-    assert fsm.state == :player_won
+    assert fsm.state == :game_over
   end
 
   test "process exit do not working", %{user1: user1, user2: user2, task: task, socket1: socket1, socket2: socket2, timeout: timeout} do

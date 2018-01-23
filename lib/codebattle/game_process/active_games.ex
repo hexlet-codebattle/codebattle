@@ -9,22 +9,19 @@ defmodule Codebattle.GameProcess.ActiveGames do
   alias Codebattle.GameProcess.FsmHelpers
 
   def new do
-    :ets.new(@table_name, [:ordered_set, :public, :named_table])
+    try do
+      :ets.new(@table_name, [:ordered_set, :public, :named_table])
+    rescue
+      e in ArgumentError -> e
+    end
   end
 
   def list_games do
     :ets.match_object(@table_name, :"_")
   end
 
-  def create_game(user, fsm) do
-    game_id = fsm.data.game_id
-    users = %{user.id => user}
-    game_params = %{
-      level: fsm.data.task.level,
-      state: fsm.state
-    }
-
-    :ets.insert(@table_name, {game_key(game_id), users, game_params})
+  def terminate_game(game_id) do
+    :ets.delete(@table_name, game_key(game_id))
   end
 
   def create_game(user, fsm) do
@@ -52,9 +49,7 @@ defmodule Codebattle.GameProcess.ActiveGames do
       state: fsm.state
     }
 
-    #TODO: maybe update instead of insert
-
-    :ets.insert(@table_name, {game_key(game_id), users, game_params})
+    :ets.update_element(@table_name, game_key(game_id), [{2, users}, {3, game_params}])
     :ok
   end
 

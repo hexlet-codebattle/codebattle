@@ -37,9 +37,11 @@ defmodule CodebattleWeb.ConnCase do
 
   setup tags do
     :ok = Ecto.Adapters.SQL.Sandbox.checkout(Codebattle.Repo)
+
     unless tags[:async] do
       Ecto.Adapters.SQL.Sandbox.mode(Codebattle.Repo, {:shared, self()})
     end
+
     conn = Phoenix.ConnTest.build_conn()
            |> Plug.Session.call(@session)
            |> Plug.Conn.fetch_session()

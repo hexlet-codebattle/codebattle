@@ -60,6 +60,6 @@ defmodule Codebattle.CodeCheck.Ruby.IntegrationTest do
     :timer.sleep timeout
 
     fsm = Server.fsm(game.id)
-    assert fsm.state == :player_won
+    assert fsm.state == :game_over
   end
 end

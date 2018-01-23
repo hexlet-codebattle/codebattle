@@ -78,7 +78,7 @@ export const gameStatusTitleSelector = (state) => {
     case GameStatusCodes.playing:
       return i18n
         .t('State: {{state}}', { state: i18n.t('Playing') });
-    case GameStatusCodes.playerWon:
+    case GameStatusCodes.gameOver:
       return i18n
         .t('The winner is: {{name}}', { name: gameStatus.winner.name });
     case GameStatusCodes.gameOver:
