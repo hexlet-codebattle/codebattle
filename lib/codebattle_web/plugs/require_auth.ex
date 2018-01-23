@@ -9,12 +9,11 @@ defmodule CodebattleWeb.Plugs.RequireAuth do
   def call(conn, _) do
     if conn.assigns.current_user.guest do
       conn
-      |> put_flash(:error, gettext "You must be logged in to access that page")
+      |> put_flash(:error, gettext("You must be logged in to access that page"))
       |> redirect(to: RouteHelpers.page_path(conn, :index))
       |> halt
     else
       conn
     end
   end
-
 end

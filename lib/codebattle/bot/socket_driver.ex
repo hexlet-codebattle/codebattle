@@ -12,18 +12,15 @@ defmodule Codebattle.Bot.SocketDriver do
     GenServer.start_link(__MODULE__, {endpoint, socket_handler, opts}, gen_server_opts)
   end
 
-  def join(driver, topic, payload \\ %{}),
-    do: push(driver, topic, "phx_join", payload)
+  def join(driver, topic, payload \\ %{}), do: push(driver, topic, "phx_join", payload)
 
   def push(driver, topic, event, payload) do
-    push(driver,
-      %Phoenix.Socket.Message{
-        event: event,
-        topic: topic,
-        payload: payload,
-        ref: make_ref()
-      }
-    )
+    push(driver, %Phoenix.Socket.Message{
+      event: event,
+      topic: topic,
+      payload: payload,
+      ref: make_ref()
+    })
   end
 
   defp push(driver, message) do
@@ -31,39 +28,40 @@ defmodule Codebattle.Bot.SocketDriver do
     message.ref
   end
 
-
   def init({endpoint, socket_handler, driver_opts}) do
     Process.flag(:trap_exit, true)
 
     # Using connect to create the socket
-    {:ok, socket} = Phoenix.Socket.Transport.connect(
-      endpoint,
-      socket_handler,
-      :socket_driver,
-      __MODULE__,
-      NoopSerializer,
-      %{"vsn" => driver_opts[:vsn] || "1.0.0",
-        "token" => bot_token()}
-    )
+    {:ok, socket} =
+      Phoenix.Socket.Transport.connect(
+        endpoint,
+        socket_handler,
+        :socket_driver,
+        __MODULE__,
+        NoopSerializer,
+        %{"vsn" => driver_opts[:vsn] || "1.0.0", "token" => bot_token()}
+      )
 
     # A socket driver needs to manage some state
-    {:ok, %{
-      socket: socket,                       # the socket struct
-      channels: Map.new,               # topic -> channel pid
-      channels_inverse: Map.new,       # channel pid -> topic
-      receiver: driver_opts[:receiver]}
-    }
+    {:ok,
+     %{
+       # the socket struct
+       socket: socket,
+       # topic -> channel pid
+       channels: Map.new(),
+       # channel pid -> topic
+       channels_inverse: Map.new(),
+       receiver: driver_opts[:receiver]
+     }}
   end
 
   def handle_cast({:push, message}, state) do
     {:noreply,
-      message
-      |> NoopSerializer.decode!([])
-      |> Phoenix.Socket.Transport.dispatch(state.channels, state.socket)
-      |> handle_socket_response(state)
-    }
+     message
+     |> NoopSerializer.decode!([])
+     |> Phoenix.Socket.Transport.dispatch(state.channels, state.socket)
+     |> handle_socket_response(state)}
   end
-
 
   # received through PubSub when a broadcast message is fastlaned
   # The message format is governed by the serializer, in this case
@@ -78,28 +76,31 @@ defmodule Codebattle.Bot.SocketDriver do
   # channel process has terminated -> remove it from internal Maps
   def handle_info({:EXIT, pid, reason}, state) do
     case Map.get(state.channels_inverse, pid) do
-      :error -> {:noreply, state}
+      :error ->
+        {:noreply, state}
+
       {:ok, topic} ->
         {:noreply,
-          state
-          |> delete_channel_process(topic, pid)
-          |> encode_and_send_out(Phoenix.Socket.Transport.on_exit_message(topic, reason))
-        }
+         state
+         |> delete_channel_process(topic, pid)
+         |> encode_and_send_out(Phoenix.Socket.Transport.on_exit_message(topic, reason))}
     end
   end
 
   def handle_info(_message, state), do: {:noreply, state}
 
-
   # Handling results of Phoenix.Socket.Transport.dispatch
   defp handle_socket_response(:noreply, state), do: state
+
   defp handle_socket_response({:reply, reply_message}, state),
     do: encode_and_send_out(state, reply_message)
+
   defp handle_socket_response({:joined, pid, reply_message}, state) do
     state
     |> store_channel_process(reply_message.topic, pid)
     |> encode_and_send_out(reply_message)
   end
+
   defp handle_socket_response({:error, _reason, reply_message}, state),
     do: encode_and_send_out(state, reply_message)
 
@@ -116,6 +117,7 @@ defmodule Codebattle.Bot.SocketDriver do
   end
 
   defp encode_and_send_out(state, message), do: send_out(state, NoopSerializer.encode!(message))
+
   defp send_out(state, encoded_message) do
     if state.receiver, do: send(state.receiver, {:message, encoded_message})
     state

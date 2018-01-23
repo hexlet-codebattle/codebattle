@@ -16,11 +16,11 @@ defmodule CodebattleWeb.ConnCase do
   use ExUnit.CaseTemplate
 
   @session Plug.Session.init(
-    store: :cookie,
-    key: "_app",
-    encryption_salt: "yadayada",
-    signing_salt: "yadayada"
-  )
+             store: :cookie,
+             key: "_app",
+             encryption_salt: "yadayada",
+             signing_salt: "yadayada"
+           )
 
   using do
     quote do
@@ -42,9 +42,11 @@ defmodule CodebattleWeb.ConnCase do
       Ecto.Adapters.SQL.Sandbox.mode(Codebattle.Repo, {:shared, self()})
     end
 
-    conn = Phoenix.ConnTest.build_conn()
-           |> Plug.Session.call(@session)
-           |> Plug.Conn.fetch_session()
+    conn =
+      Phoenix.ConnTest.build_conn()
+      |> Plug.Session.call(@session)
+      |> Plug.Conn.fetch_session()
+
     {:ok, conn: conn}
   end
 end

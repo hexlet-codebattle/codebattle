@@ -13,9 +13,8 @@ config :codebattle, CodebattleWeb.Endpoint,
   check_origin: false,
   cache_static_lookup: false,
   watchers: [
-    yarn: ["watch", cd: Path.expand("../assets", __DIR__)],
+    yarn: ["watch", cd: Path.expand("../assets", __DIR__)]
   ]
-
 
 # Watch static and templates for browser reloading.
 config :codebattle, CodebattleWeb.Endpoint,
@@ -44,5 +43,4 @@ config :codebattle, Codebattle.Repo,
   hostname: System.get_env("CODEBATTLE_DATABASE_HOSTNAME"),
   pool_size: 15
 
-config :codebattle, Codebattle.Bot,
-  timeout: 3_000
+config :codebattle, Codebattle.Bot, timeout: 3_000

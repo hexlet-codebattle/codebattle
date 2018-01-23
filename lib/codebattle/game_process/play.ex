@@ -6,12 +6,22 @@ defmodule Codebattle.GameProcess.Play do
   import Ecto.Query, warn: false
 
   alias Codebattle.{Repo, Game, User, UserGame}
-  alias Codebattle.GameProcess.{Server, GlobalSupervisor, Fsm, Player, FsmHelpers, Elo, ActiveGames}
+
+  alias Codebattle.GameProcess.{
+    Server,
+    GlobalSupervisor,
+    Fsm,
+    Player,
+    FsmHelpers,
+    Elo,
+    ActiveGames
+  }
+
   alias Codebattle.CodeCheck.Checker
   alias Codebattle.Bot.RecorderServer
 
   def list_games do
-    ActiveGames.list_games
+    ActiveGames.list_games()
   end
 
   def get_game(id) do
@@ -27,7 +37,7 @@ defmodule Codebattle.GameProcess.Play do
       false ->
         game = Repo.insert!(%Game{state: "waiting_opponent", users: [user]})
         task = get_random_task(level)
-        fsm = Fsm.new |> Fsm.create(%{user: user, game_id: game.id, task: task})
+        fsm = Fsm.new() |> Fsm.create(%{user: user, game_id: game.id, task: task})
 
         ActiveGames.create_game(user, fsm)
         GlobalSupervisor.start_game(game.id, fsm)
@@ -37,7 +47,9 @@ defmodule Codebattle.GameProcess.Play do
         Task.start(Codebattle.Bot.PlaybookPlayerTask, :run, [params])
 
         {:ok, game.id}
-      _ -> {:error, "You are already in a game"}
+
+      _ ->
+        {:error, "You are already in a game"}
     end
   end
 
@@ -49,24 +61,28 @@ defmodule Codebattle.GameProcess.Play do
         {:ok, fsm} ->
           ActiveGames.add_participant(user, fsm)
           {:ok, fsm}
-        {{:error, _reason}, fsm} -> :error
+
+        {{:error, _reason}, fsm} ->
+          :error
       end
     end
   end
 
   def game_info(id) do
-    #TODO: change first and second atoms to user ids, or list
+    # TODO: change first and second atoms to user ids, or list
     fsm = get_fsm(id)
+
     %{
-      status: fsm.state, # :playing
+      # :playing
+      status: fsm.state,
       winner: FsmHelpers.get_winner(fsm),
-      first_player: fsm |> FsmHelpers.get_first_player |> Map.get(:user),
-      second_player: fsm |> FsmHelpers.get_second_player |> Map.get(:user, %User{}),
-      first_player_editor_text: fsm |> FsmHelpers.get_first_player |> Map.get(:editor_text),
-      second_player_editor_text: fsm |> FsmHelpers.get_second_player |> Map.get(:editor_text),
-      first_player_editor_lang: fsm |> FsmHelpers.get_first_player |> Map.get(:editor_lang),
-      second_player_editor_lang: fsm |> FsmHelpers.get_second_player |> Map.get(:editor_lang),
-      task: fsm.data.task,
+      first_player: fsm |> FsmHelpers.get_first_player() |> Map.get(:user),
+      second_player: fsm |> FsmHelpers.get_second_player() |> Map.get(:user, %User{}),
+      first_player_editor_text: fsm |> FsmHelpers.get_first_player() |> Map.get(:editor_text),
+      second_player_editor_text: fsm |> FsmHelpers.get_second_player() |> Map.get(:editor_text),
+      first_player_editor_lang: fsm |> FsmHelpers.get_first_player() |> Map.get(:editor_lang),
+      second_player_editor_lang: fsm |> FsmHelpers.get_second_player() |> Map.get(:editor_lang),
+      task: fsm.data.task
     }
   end
 
@@ -98,10 +114,13 @@ defmodule Codebattle.GameProcess.Play do
         {_response, fsm} = Server.call_transition(id, :complete, %{id: user.id})
         handle_won_game(id, user, fsm)
         {:ok, fsm}
+
       {:playing, {:error, output}} ->
         {:error, output}
+
       {:game_over, {:error, output}} ->
         {:error, output}
+
       {:game_over, {:ok, true}} ->
         {:ok, fsm}
     end
@@ -115,7 +134,7 @@ defmodule Codebattle.GameProcess.Play do
     RecorderServer.store(id, user.id)
     # TODO: make async
     # TODO: optimize code with handle_gave_up
-    game_id = id |> Integer.parse |> elem(0)
+    game_id = id |> Integer.parse() |> elem(0)
     loser = FsmHelpers.get_opponent(fsm.data, user.id)
     difficulty = fsm.data.task.level
 
@@ -124,26 +143,28 @@ defmodule Codebattle.GameProcess.Play do
     game_id
     |> get_game
     |> Game.changeset(%{state: to_string(fsm.state)})
-    |> Repo.update!
+    |> Repo.update!()
+
     Repo.insert!(%UserGame{game_id: game_id, user_id: user.id, result: "won"})
     Repo.insert!(%UserGame{game_id: game_id, user_id: loser.id, result: "lost"})
 
     if user.id != 0 do
       user
       |> User.changeset(%{rating: winner_rating})
-      |> Repo.update!
+      |> Repo.update!()
     end
 
     if loser.id != 0 do
       loser
       |> User.changeset(%{rating: loser_rating})
-      |> Repo.update!
+      |> Repo.update!()
     end
+
     ActiveGames.terminate_game(game_id)
   end
 
   defp handle_gave_up(id, user, fsm) do
-    game_id = id |> Integer.parse |> elem(0)
+    game_id = id |> Integer.parse() |> elem(0)
     winner = FsmHelpers.get_opponent(fsm.data, user.id)
     difficulty = fsm.data.task.level
 
@@ -152,7 +173,7 @@ defmodule Codebattle.GameProcess.Play do
     game_id
     |> get_game
     |> Game.changeset(%{state: to_string(fsm.state)})
-    |> Repo.update!
+    |> Repo.update!()
 
     Repo.insert!(%UserGame{game_id: game_id, user_id: user.id, result: "gave_up"})
     Repo.insert!(%UserGame{game_id: game_id, user_id: winner.id, result: "won"})
@@ -160,25 +181,34 @@ defmodule Codebattle.GameProcess.Play do
     if user.id != 0 do
       user
       |> User.changeset(%{rating: loser_rating})
-      |> Repo.update!
+      |> Repo.update!()
     end
 
     if winner.id != 0 do
       winner
       |> User.changeset(%{rating: winner_rating})
-      |> Repo.update!
+      |> Repo.update!()
     end
+
     ActiveGames.terminate_game(game_id)
   end
 
   defp get_random_task(level) do
-    new_level = if Enum.member?(Game.level_difficulties |> Map.keys, level) do
-      level
-    else
-      "easy"
-    end
+    new_level =
+      if Enum.member?(Game.level_difficulties() |> Map.keys(), level) do
+        level
+      else
+        "easy"
+      end
 
-    query = from t in Codebattle.Task, order_by: fragment("RANDOM()"), limit: 1, where: ^[level: new_level]
-    query |> Repo.all |> Enum.at(0)
+    query =
+      from(
+        t in Codebattle.Task,
+        order_by: fragment("RANDOM()"),
+        limit: 1,
+        where: ^[level: new_level]
+      )
+
+    query |> Repo.all() |> Enum.at(0)
   end
 end

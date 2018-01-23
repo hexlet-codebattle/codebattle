@@ -3,19 +3,20 @@ defmodule Tasks.Issues.UploadTest do
 
   alias Codebattle.{Repo, Task}
 
-  @root_dir File.cwd!
+  @root_dir File.cwd!()
 
   setup do
     path = Path.join(@root_dir, "test/support/fixtures/issues")
+
     issue_names =
       path
-      |> File.ls!
-      |> Enum.map(fn(file_name) ->
-          file_name
-          |> String.split(".")
-          |> List.first
-        end)
-      |> MapSet.new
+      |> File.ls!()
+      |> Enum.map(fn file_name ->
+        file_name
+        |> String.split(".")
+        |> List.first()
+      end)
+      |> MapSet.new()
 
     {:ok, %{path: path, issue_names: issue_names}}
   end
@@ -25,9 +26,9 @@ defmodule Tasks.Issues.UploadTest do
 
     task_names =
       Task
-      |> Repo.all
-      |> Enum.map(fn(task) -> task.name end)
-      |> MapSet.new
+      |> Repo.all()
+      |> Enum.map(fn task -> task.name end)
+      |> MapSet.new()
 
     assert MapSet.equal?(task_names, issue_names)
   end
@@ -38,9 +39,9 @@ defmodule Tasks.Issues.UploadTest do
 
     task_names =
       Task
-      |> Repo.all
-      |> Enum.map(fn(task) -> task.name end)
-      |> MapSet.new
+      |> Repo.all()
+      |> Enum.map(fn task -> task.name end)
+      |> MapSet.new()
 
     assert MapSet.equal?(task_names, issue_names)
   end

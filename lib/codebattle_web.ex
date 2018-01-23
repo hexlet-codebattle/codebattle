@@ -40,8 +40,9 @@ defmodule CodebattleWeb do
 
   def view do
     quote do
-      use Phoenix.View, root: "lib/codebattle_web/templates",
-                        namespace: CodebattleWeb
+      use Phoenix.View,
+        root: "lib/codebattle_web/templates",
+        namespace: CodebattleWeb
 
       # Import convenience functions from controllers
       import Phoenix.Controller, only: [get_flash: 1, view_module: 1]

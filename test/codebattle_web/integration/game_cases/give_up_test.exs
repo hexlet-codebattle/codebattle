@@ -15,14 +15,25 @@ defmodule Codebattle.GameCases.GiveUpTest do
 
     socket1 = socket("user_id", %{user_id: user1.id, current_user: user1})
     socket2 = socket("user_id", %{user_id: user2.id, current_user: user2})
-    {:ok, %{conn1: conn1, conn2: conn2, socket1: socket1, socket2: socket2, user1: user1, user2: user2}}
+
+    {:ok,
+     %{conn1: conn1, conn2: conn2, socket1: socket1, socket2: socket2, user1: user1, user2: user2}}
   end
 
-  test "first user gave up", %{conn1: conn1, conn2: conn2, socket1: socket1, socket2: socket2, user1: user1, user2: user2} do
+  test "first user gave up", %{
+    conn1: conn1,
+    conn2: conn2,
+    socket1: socket1,
+    socket2: socket2,
+    user1: user1,
+    user2: user2
+  } do
     # Create game
-    conn = conn1
-           |> get(user_path(conn1, :index))
-           |> post(game_path(conn1, :create))
+    conn =
+      conn1
+      |> get(user_path(conn1, :index))
+      |> post(game_path(conn1, :create))
+
     game_id = game_id_from_conn(conn)
 
     game_topic = "game:" <> to_string(game_id)
@@ -33,7 +44,7 @@ defmodule Codebattle.GameCases.GiveUpTest do
     {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
 
     # First player give_up
-    push socket1, "give_up", %{}
+    push(socket1, "give_up", %{})
     :timer.sleep(70)
     fsm = Server.fsm(game_id)
 
@@ -42,12 +53,21 @@ defmodule Codebattle.GameCases.GiveUpTest do
     assert FsmHelpers.winner?(fsm.data, user2.id) == true
   end
 
-  test "first user won, second gave up", %{conn1: conn1, conn2: conn2, socket1: socket1, socket2: socket2, user1: user1, user2: user2} do
+  test "first user won, second gave up", %{
+    conn1: conn1,
+    conn2: conn2,
+    socket1: socket1,
+    socket2: socket2,
+    user1: user1,
+    user2: user2
+  } do
     # Create game
-    with_mocks([{Codebattle.CodeCheck.Checker, [], [check: fn(_a, _b, _c) -> {:ok, true} end]}]) do
-      conn = conn1
-             |> get(user_path(conn1, :index))
-             |> post(game_path(conn1, :create))
+    with_mocks [{Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> {:ok, true} end]}] do
+      conn =
+        conn1
+        |> get(user_path(conn1, :index))
+        |> post(game_path(conn1, :create))
+
       game_id = game_id_from_conn(conn)
 
       game_topic = "game:" <> to_string(game_id)
@@ -58,8 +78,8 @@ defmodule Codebattle.GameCases.GiveUpTest do
       {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
 
       # First player give_up
-      push socket1, "check_result", %{editor_text: "won", lang: :js}
-      push socket1, "give_up", %{}
+      push(socket1, "check_result", %{editor_text: "won", lang: :js})
+      push(socket1, "give_up", %{})
       :timer.sleep(70)
       fsm = Server.fsm(game_id)
 
@@ -70,9 +90,10 @@ defmodule Codebattle.GameCases.GiveUpTest do
   end
 
   test "After give_up user can create games", %{conn1: conn1, conn2: conn2, socket1: socket1} do
-    conn = conn1
-            |> get(page_path(conn1, :index))
-            |> click_button("Easy")
+    conn =
+      conn1
+      |> get(page_path(conn1, :index))
+      |> click_button("Easy")
 
     game_id = game_id_from_conn(conn)
 
@@ -83,7 +104,7 @@ defmodule Codebattle.GameCases.GiveUpTest do
     |> get(game_path(conn2, :show, game_id))
     |> follow_button("Join")
 
-    push socket1, "give_up", %{}
+    push(socket1, "give_up", %{})
 
     :timer.sleep(100)
 
@@ -91,9 +112,10 @@ defmodule Codebattle.GameCases.GiveUpTest do
 
     assert fsm.state == :game_over
 
-    conn = conn1
-            |> get(page_path(conn1, :index))
-            |> click_button("Easy")
+    conn =
+      conn1
+      |> get(page_path(conn1, :index))
+      |> click_button("Easy")
 
     game_id = game_id_from_conn(conn)
 

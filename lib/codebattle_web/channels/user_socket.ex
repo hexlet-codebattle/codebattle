@@ -2,13 +2,12 @@ defmodule CodebattleWeb.UserSocket do
   use Phoenix.Socket
 
   ## Channels
-  channel "lobby", CodebattleWeb.LobbyChannel
-  channel "game:*", CodebattleWeb.GameChannel
-  channel "chat:*", CodebattleWeb.ChatChannel
+  channel("lobby", CodebattleWeb.LobbyChannel)
+  channel("game:*", CodebattleWeb.GameChannel)
+  channel("chat:*", CodebattleWeb.ChatChannel)
 
   ## Transports
-  transport :websocket, Phoenix.Transports.WebSocket,
-    timeout: :infinity
+  transport(:websocket, Phoenix.Transports.WebSocket, timeout: :infinity)
   # transport :longpoll, Phoenix.Transports.LongPoll
 
   # Socket params are passed from the client and can
@@ -23,17 +22,16 @@ defmodule CodebattleWeb.UserSocket do
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
   def connect(%{"token" => user_token}, socket) do
-    case Phoenix.Token.verify(socket,
-                              "user_token",
-                              user_token,
-                              max_age: 1_000_000) do
+    case Phoenix.Token.verify(socket, "user_token", user_token, max_age: 1_000_000) do
       {:ok, 0} ->
-        socket = assign(socket, :current_user, Codebattle.Bot.Builder.build)
+        socket = assign(socket, :current_user, Codebattle.Bot.Builder.build())
         {:ok, assign(socket, :user_id, 0)}
+
       {:ok, user_id} ->
         user = Codebattle.User |> Codebattle.Repo.get!(user_id)
         socket = assign(socket, :current_user, user)
         {:ok, assign(socket, :user_id, user_id)}
+
       {:error, _reason} ->
         :error
     end

@@ -6,10 +6,10 @@ defmodule Codebattle.UserGame do
   alias Codebattle.UserGame
 
   schema "user_games" do
-    belongs_to :user, Codebattle.User
-    belongs_to :game, Codebattle.Game
+    belongs_to(:user, Codebattle.User)
+    belongs_to(:game, Codebattle.Game)
 
-    field :result,  :string
+    field(:result, :string)
 
     timestamps()
   end

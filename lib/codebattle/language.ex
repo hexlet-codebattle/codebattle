@@ -8,12 +8,13 @@ defmodule Codebattle.Language do
   @derive {Poison.Encoder, only: [:name, :slug, :version, :solution_template]}
 
   schema "languages" do
-    field :name, :string
-    field :slug, :string # Uniq lang name
-    field :version, :string
-    field :extension, :string
-    field :docker_image, :string
-    field :solution_template, :string
+    field(:name, :string)
+    # Uniq lang name
+    field(:slug, :string)
+    field(:version, :string)
+    field(:extension, :string)
+    field(:docker_image, :string)
+    field(:solution_template, :string)
 
     timestamps()
   end

@@ -12,31 +12,34 @@ defmodule Codebattle.GithubUser do
     user_data = %{
       github_id: auth.uid,
       name: auth.extra.raw_info.user["login"],
-      email: email_from_auth(auth),
+      email: email_from_auth(auth)
     }
 
-    user = User
+    user =
+      User
       |> Ecto.Query.where(github_id: ^user_data.github_id)
-      |> Ecto.Query.first
-      |> Codebattle.Repo.one
+      |> Ecto.Query.first()
+      |> Codebattle.Repo.one()
 
-    user = case user do
-      nil ->
-        changeset = User.changeset(%User{}, user_data)
-        {:ok, user} = Codebattle.Repo.insert(changeset)
-        user
+    user =
+      case user do
+        nil ->
+          changeset = User.changeset(%User{}, user_data)
+          {:ok, user} = Codebattle.Repo.insert(changeset)
+          user
 
-      _ ->
-        changeset = User.changeset(user, user_data)
-        {:ok, user} = Codebattle.Repo.update(changeset)
-        user
-    end
+        _ ->
+          changeset = User.changeset(user, user_data)
+          {:ok, user} = Codebattle.Repo.update(changeset)
+          user
+      end
+
     {:ok, user}
   end
 
   defp email_from_auth(auth) do
     auth.extra.raw_info.user["emails"]
-      |> Enum.find(fn item -> item["primary"] end)
-      |> Map.get("email")
+    |> Enum.find(fn item -> item["primary"] end)
+    |> Map.get("email")
   end
 end

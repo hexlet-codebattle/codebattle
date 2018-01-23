@@ -12,10 +12,11 @@ defmodule Codebattle.GameProcess.Supervisor do
   def init([game_id, fsm]) do
     children = [
       worker(Codebattle.Chat.Server, [game_id]),
-      worker(Codebattle.GameProcess.Server, [game_id, fsm]),
-      #TODO: enable record server
+      worker(Codebattle.GameProcess.Server, [game_id, fsm])
+      # TODO: enable record server
       # worker(RecorderServer, [game.id, user.id])
     ]
+
     supervise(children, strategy: :one_for_one)
   end
 

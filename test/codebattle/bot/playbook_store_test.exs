@@ -13,7 +13,7 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
     user2 = insert(:user)
     task = build(:task, id: 1)
 
-    Helpers.TimeStorage.start_link
+    Helpers.TimeStorage.start_link()
 
     socket1 = socket("user_id", %{user_id: user1.id, current_user: user1})
     socket2 = socket("user_id", %{user_id: user2.id, current_user: user2})
@@ -21,21 +21,33 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
     {:ok, %{user1: user1, user2: user2, task: task, socket1: socket1, socket2: socket2}}
   end
 
-  test "stores player playbook if he is winner", %{user1: user1, user2: user2, task: task, socket1: socket1, socket2: socket2} do
-    with_mocks([
-      {NaiveDateTime, [], [
-        diff: fn(_a, _b, _c) -> 100 end,
-        utc_now: fn ->  Helpers.TimeStorage.next() end,
-      ]},
-      {Codebattle.CodeCheck.Checker, [], [
-        check: fn(_a, _b, _c) -> {:ok, true} end
-      ]}
-    ]) do
+  test "stores player playbook if he is winner", %{
+    user1: user1,
+    user2: user2,
+    task: task,
+    socket1: socket1,
+    socket2: socket2
+  } do
+    with_mocks [
+      {NaiveDateTime, [],
+       [
+         diff: fn _a, _b, _c -> 100 end,
+         utc_now: fn -> Helpers.TimeStorage.next() end
+       ]},
+      {Codebattle.CodeCheck.Checker, [],
+       [
+         check: fn _a, _b, _c -> {:ok, true} end
+       ]}
+    ] do
+      # setup
+      state = :playing
 
-    #setup
-    state = :playing
-    data = %{players: [%Player{id: user1.id, user: user1}, %Player{id: user2.id, user: user2}], task: task}
-    game = setup_game(state, data)
+      data = %{
+        players: [%Player{id: user1.id, user: user1}, %Player{id: user2.id, user: user2}],
+        task: task
+      }
+
+      game = setup_game(state, data)
       start_game_recorder(game.id, task.id, user1.id)
       game_topic = "game:" <> to_string(game.id)
       editor_text1 = "t"
@@ -46,10 +58,10 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
       {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
       :lib.flush_receive()
 
-      push socket1, "editor:text", %{editor_text: editor_text1}
-      push socket1, "editor:text", %{editor_text: editor_text2}
-      push socket1, "editor:text", %{editor_text: editor_text3}
-      push socket1, "check_result", %{editor_text: editor_text3, lang: :js}
+      push(socket1, "editor:text", %{editor_text: editor_text1})
+      push(socket1, "editor:text", %{editor_text: editor_text2})
+      push(socket1, "editor:text", %{editor_text: editor_text3})
+      push(socket1, "check_result", %{editor_text: editor_text3, lang: :js})
 
       playbook = [
         %{"delta" => [%{"insert" => "t"}], "time" => 100},
@@ -58,7 +70,7 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
         %{"delta" => [], "time" => 100},
         %{"lang" => "js", "time" => 100},
         %{"delta" => [], "time" => 100},
-        %{"lang" => "js", "time" => 100},
+        %{"lang" => "js", "time" => 100}
       ]
 
       # sleep, because GameProcess need time to write Playbook with Ecto.connection
@@ -67,4 +79,3 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
     end
   end
 end
-

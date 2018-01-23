@@ -9,10 +9,15 @@ defmodule Mix.Tasks.Issues.Fetch do
   def run(_) do
     case File.exists?(@issues_dir) do
       true ->
-        File.cd! @issues_dir
+        File.cd!(@issues_dir)
         System.cmd("git", ["pull"])
+
       false ->
-        System.cmd("git", ["clone",  "https://github.com/hexlet-codebattle/battle_asserts.git", @issues_dir])
+        System.cmd("git", [
+          "clone",
+          "https://github.com/hexlet-codebattle/battle_asserts.git",
+          @issues_dir
+        ])
     end
   end
 end

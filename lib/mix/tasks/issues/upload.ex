@@ -18,32 +18,34 @@ defmodule Mix.Tasks.Issues.Upload do
 
     issue_names =
       path
-      |> File.ls!
-      |> Enum.map(fn(file_name) ->
-          file_name
-          |> String.split(".")
-          |> List.first
-         end)
-      |> MapSet.new
-      |> Enum.filter(fn(x) -> String.length(x) > 0 end)
+      |> File.ls!()
+      |> Enum.map(fn file_name ->
+        file_name
+        |> String.split(".")
+        |> List.first()
+      end)
+      |> MapSet.new()
+      |> Enum.filter(fn x -> String.length(x) > 0 end)
 
-    Enum.each issue_names, fn(issue_name) ->
+    Enum.each(issue_names, fn issue_name ->
       asserts = File.read!(Path.join(path, "#{issue_name}.jsons"))
       issue_info = YamlElixir.read_from_file(Path.join(path, "#{issue_name}.yml"))
 
-      changeset = Task.changeset(%Task{}, %{
-        name: issue_name,
-        description: Map.get(issue_info, "description"),
-        level: Map.get(issue_info, "level"),
-        asserts: asserts,
-      })
+      changeset =
+        Task.changeset(%Task{}, %{
+          name: issue_name,
+          description: Map.get(issue_info, "description"),
+          level: Map.get(issue_info, "level"),
+          asserts: asserts
+        })
 
       case Repo.insert(changeset) do
         {:ok, _} ->
-          IO.puts "."
+          IO.puts(".")
+
         _ ->
           true
       end
-    end
+    end)
   end
 end

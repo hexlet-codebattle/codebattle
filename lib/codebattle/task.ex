@@ -7,10 +7,10 @@ defmodule Codebattle.Task do
   @derive {Poison.Encoder, only: [:id, :name, :level, :description]}
 
   schema "tasks" do
-    field :description, :string
-    field :name, :string
-    field :level, :string
-    field :asserts, :string
+    field(:description, :string)
+    field(:name, :string)
+    field(:level, :string)
+    field(:asserts, :string)
 
     timestamps()
   end
