@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { ToastContainer, toast } from 'react-toastify';
+import Hotkeys from 'react-hot-keys';
 import i18n from '../../i18n';
 import GameStatusCodes from '../config/gameStatusCodes';
 import {
@@ -86,59 +87,61 @@ class GameStatusTab extends Component {
     };
 
     return (
-      <div className="card h-100 border-0">
-        <div className="row my-1">
-          <div className="col">
-            <div className="btn-toolbar" role="toolbar">
+      <Hotkeys keyName="ctrl+Enter" onKeyUp={checkResult}>
+        <div className="card h-100 border-0">
+          <div className="row my-1">
+            <div className="col">
+              <div className="btn-toolbar" role="toolbar">
+                <LangSelector
+                  currentLangSlug={leftEditorLang.slug}
+                  onChange={this.props.setLang}
+                  disabled={isSpectator}
+                />
+                {!canCheckResult ? null : (
+                  <button
+                    className="btn btn-success ml-1"
+                    onClick={checkResult}
+                    disabled={gameStatus.checking}
+                  >
+                    {gameStatus.checking ? i18n.t('Checking...') : i18n.t('Check result')}
+                  </button>
+                )}
+                {!canGiveUp ? null : (
+                  <button
+                    className="btn btn-secondary ml-3"
+                    onClick={sendGiveUp}
+                  >
+                    {i18n.t('Give up')}
+                  </button>
+                )}
+              </div>
+            </div>
+            <div className="col">
+              <div className="row text-center">
+                <div className="col">
+                  {renderNameplate(users[leftUserId])}
+                </div>
+                <div className="col">
+                  <span className="p-2 badge badge-danger">
+                    {gameStatus.status}
+                  </span>
+                </div>
+                <div className="col">
+                  {renderNameplate(users[rightUserId])}
+                </div>
+              </div>
+            </div>
+            <div className="col text-right">
               <LangSelector
-                currentLangSlug={leftEditorLang.slug}
-                onChange={this.props.setLang}
-                disabled={isSpectator}
+                currentLangSlug={rightEditorLang.slug}
+                onChange={_.noop}
+                disabled
               />
-              {!canCheckResult ? null : (
-                <button
-                  className="btn btn-success ml-1"
-                  onClick={checkResult}
-                  disabled={gameStatus.checking}
-                >
-                  {gameStatus.checking ? i18n.t('Checking...') : i18n.t('Check result')}
-                </button>
-              )}
-              {!canGiveUp ? null : (
-                <button
-                  className="btn btn-secondary ml-3"
-                  onClick={sendGiveUp}
-                >
-                  {i18n.t('Give up')}
-                </button>
-              )}
             </div>
           </div>
-          <div className="col">
-            <div className="row text-center">
-              <div className="col">
-                {renderNameplate(users[leftUserId])}
-              </div>
-              <div className="col">
-                <span className="p-2 badge badge-danger">
-                  {gameStatus.status}
-                </span>
-              </div>
-              <div className="col">
-                {renderNameplate(users[rightUserId])}
-              </div>
-            </div>
-          </div>
-          <div className="col text-right">
-            <LangSelector
-              currentLangSlug={rightEditorLang.slug}
-              onChange={_.noop}
-              disabled
-            />
-          </div>
+          <ToastContainer {...toastOptions} />
         </div>
-        <ToastContainer {...toastOptions} />
-      </div>
+      </Hotkeys>
     );
   }
 }

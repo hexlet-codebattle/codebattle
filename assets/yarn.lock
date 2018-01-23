@@ -3737,6 +3737,10 @@ hosted-git-info@^2.1.4:
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/hosted-git-info/-/hosted-git-info-2.5.0.tgz#6d60e34b3abbc8313062c3b798ef8d901a07af3c"
 
+hotkeys-js@^2.0.8:
+  version "2.0.8"
+  resolved "https://registry.yarnpkg.com/hotkeys-js/-/hotkeys-js-2.0.8.tgz#3b94aaeba7835eee389f339fa184c7168c8fa0c0"
+
 hpack.js@^2.1.6:
   version "2.1.6"
   resolved "https://registry.yarnpkg.com/hpack.js/-/hpack.js-2.1.6.tgz#87774c0949e513f42e84575b3c45681fade2a0b2"
@@ -6565,6 +6569,12 @@ react-dom@^16.1.1:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
     prop-types "^15.6.0"
+
+react-hot-keys@^1.0.9:
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/react-hot-keys/-/react-hot-keys-1.0.9.tgz#855b7df34bbfd770dc61e3dd7c773d350ddf2083"
+  dependencies:
+    hotkeys-js "^2.0.8"
 
 react-markdown@^3.0.2:
   version "3.1.0"
