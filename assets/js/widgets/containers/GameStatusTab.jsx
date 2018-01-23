@@ -45,8 +45,9 @@ class GameStatusTab extends Component {
     users: {},
   }
 
-  componentDidUpdate() {
-    const { solutionStatus, winner } = this.props.gameStatus;
+  componentDidUpdate(prevProps, prevState) {
+    const prevStatus = prevProps.gameStatus.status;
+    const { solutionStatus, winner, status } = this.props.gameStatus;
     const { currentUser } = this.props;
     const statuses = {
       true: () => toast.success('Yay! All tests passed!'),
@@ -55,7 +56,7 @@ class GameStatusTab extends Component {
     };
 
     statuses[solutionStatus]();
-    if (winner.id) {
+    if (winner.id && prevStatus !== status) {
       winner.id === currentUser.id ?
         toast.success('Congratulations! You have won the game!') :
         toast.error('Oh snap! Your opponent has won the game :(');

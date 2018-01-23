@@ -27,7 +27,7 @@ class RootContainer extends React.Component {
       case !this.props.storeLoaded:
         // TODO: add loader
         return null;
-      case (this.props.gameStatusCode  === GameStatusCodes.waitingOpponent):
+      case (this.props.gameStatusCode === GameStatusCodes.waitingOpponent):
         const gameUrl = window.location.href;
         return (
           <div className="jumbotron jumbotron-fluid">
