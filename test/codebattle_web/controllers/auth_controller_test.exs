@@ -7,7 +7,7 @@ defmodule CodebattleWeb.AuthControllerTest do
     }
 
   test "GET /auth/:provider and ueberauth auth", %{conn: conn} do
-    auth = build(:auth, extra: %{ raw_info: %{ user: @valid_data } })
+    auth = build(:auth, extra: %{raw_info: %{user: @valid_data}})
     successful_conn = Map.put(conn, :assigns, %{ueberauth_auth: auth})
 
     conn = get successful_conn, "/auth/github"

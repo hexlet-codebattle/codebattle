@@ -10,7 +10,6 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
 
 
   test "Bot playing with user", %{conn: conn} do
-
     user = insert(:user)
     task = insert(:task)
 
@@ -54,7 +53,7 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
       :timer.sleep(300)
       fsm = Server.fsm(game_id)
 
-      assert fsm.state == :player_won
+      assert fsm.state == :game_over
       assert FsmHelpers.get_winner(fsm).name == "superPlayer"
     end
   end

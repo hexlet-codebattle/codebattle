@@ -76,7 +76,7 @@ class GameStatusTab extends Component {
     } = this.props;
     const userType = currentUser.type;
     const isSpectator = userType === userTypes.spectator;
-    const allowedGameStatusCodes = [GameStatusCodes.playing, GameStatusCodes.playerWon];
+    const allowedGameStatusCodes = [GameStatusCodes.playing, GameStatusCodes.gameOver];
     const canGiveUp = gameStatus.status === GameStatusCodes.playing && !isSpectator;
     const canCheckResult = _.includes(allowedGameStatusCodes, gameStatus.status) &&
       userType && !isSpectator;

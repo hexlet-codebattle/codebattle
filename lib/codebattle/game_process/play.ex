@@ -92,24 +92,18 @@ defmodule Codebattle.GameProcess.Play do
     RecorderServer.update_text(id, user.id, editor_text)
     RecorderServer.update_lang(id, user.id, editor_lang)
     check = check_code(fsm.data.task, editor_text, editor_lang)
-    case {fsm.state, check}  do
+    # TODO: be race condition tolerance
+    case {fsm.state, check} do
       {:playing, {:ok, true}} ->
         {_response, fsm} = Server.call_transition(id, :complete, %{id: user.id})
         handle_won_game(id, user, fsm)
         {:ok, fsm}
       {:playing, {:error, output}} ->
         {:error, output}
-      {:player_won, {:error, output}} ->
+      {:game_over, {:error, output}} ->
         {:error, output}
-      {:player_won, {:ok, true}} ->
-        case FsmHelpers.winner?(fsm.data, user.id) do
-          true ->
-            {:ok, fsm}
-          _ ->
-            {_response, fsm} = Server.call_transition(id, :complete, %{id: user.id})
-            handle_game_over(id, user, fsm)
-            {:ok, fsm}
-        end
+      {:game_over, {:ok, true}} ->
+        {:ok, fsm}
     end
   end
 
@@ -120,6 +114,7 @@ defmodule Codebattle.GameProcess.Play do
   defp handle_won_game(id, user, fsm) do
     RecorderServer.store(id, user.id)
     # TODO: make async
+    # TODO: optimize code with handle_gave_up
     game_id = id |> Integer.parse |> elem(0)
     loser = FsmHelpers.get_opponent(fsm.data, user.id)
     difficulty = fsm.data.task.level
@@ -127,23 +122,24 @@ defmodule Codebattle.GameProcess.Play do
     {winner_rating, loser_rating} = Elo.calc_elo(user.rating, loser.rating, difficulty)
 
     game_id
-      |> get_game
-      |> Game.changeset(%{state: to_string(fsm.state)})
-      |> Repo.update!
+    |> get_game
+    |> Game.changeset(%{state: to_string(fsm.state)})
+    |> Repo.update!
     Repo.insert!(%UserGame{game_id: game_id, user_id: user.id, result: "won"})
     Repo.insert!(%UserGame{game_id: game_id, user_id: loser.id, result: "lost"})
 
     if user.id != 0 do
       user
-        |> User.changeset(%{rating: winner_rating})
-        |> Repo.update!
+      |> User.changeset(%{rating: winner_rating})
+      |> Repo.update!
     end
 
     if loser.id != 0 do
       loser
-        |> User.changeset(%{rating: loser_rating})
-        |> Repo.update!
+      |> User.changeset(%{rating: loser_rating})
+      |> Repo.update!
     end
+    ActiveGames.terminate_game(game_id)
   end
 
   defp handle_gave_up(id, user, fsm) do
@@ -154,41 +150,33 @@ defmodule Codebattle.GameProcess.Play do
     {winner_rating, loser_rating} = Elo.calc_elo(winner.rating, user.rating, difficulty)
 
     game_id
-      |> get_game
-      |> Game.changeset(%{state: to_string(fsm.state)})
-      |> Repo.update!
+    |> get_game
+    |> Game.changeset(%{state: to_string(fsm.state)})
+    |> Repo.update!
+
     Repo.insert!(%UserGame{game_id: game_id, user_id: user.id, result: "gave_up"})
     Repo.insert!(%UserGame{game_id: game_id, user_id: winner.id, result: "won"})
 
-      if user.id != 0 do
-        user
-          |> User.changeset(%{rating: loser_rating})
-          |> Repo.update!
-      end
-
-      if winner.id != 0 do
-        winner
-          |> User.changeset(%{rating: winner_rating})
-          |> Repo.update!
-      end
-  end
-
-  defp handle_game_over(id, loser, fsm) do
-    id
-      |> get_game
-      |> Game.changeset(%{state: to_string(fsm.state)})
+    if user.id != 0 do
+      user
+      |> User.changeset(%{rating: loser_rating})
       |> Repo.update!
-    # loser
-    #   |> User.changeset(%{rating: (loser.rating + 5)})
-    #   |> Repo.update!
+    end
+
+    if winner.id != 0 do
+      winner
+      |> User.changeset(%{rating: winner_rating})
+      |> Repo.update!
+    end
+    ActiveGames.terminate_game(game_id)
   end
 
   defp get_random_task(level) do
     new_level = if Enum.member?(Game.level_difficulties |> Map.keys, level) do
-                  level
-                else
-                  "easy"
-                end
+      level
+    else
+      "easy"
+    end
 
     query = from t in Codebattle.Task, order_by: fragment("RANDOM()"), limit: 1, where: ^[level: new_level]
     query |> Repo.all |> Enum.at(0)

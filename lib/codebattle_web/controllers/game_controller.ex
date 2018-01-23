@@ -57,7 +57,7 @@ defmodule CodebattleWeb.GameController do
       :error ->
         conn
         |> put_flash(:danger, gettext "You are in a different game")
-        |> redirect(to: game_path(conn, :show, id))
+        |> redirect(to: page_path(conn, :index))
     end
   end
 end
