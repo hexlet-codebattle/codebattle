@@ -17,7 +17,7 @@ defmodule Codebattle.GameProcess.ActiveGames do
   end
 
   def list_games do
-    :ets.match_object(@table_name, :"_")
+    :ets.match_object(@table_name, :_)
   end
 
   def terminate_game(game_id) do
@@ -26,14 +26,18 @@ defmodule Codebattle.GameProcess.ActiveGames do
 
   def create_game(user, fsm) do
     case playing?(user.id) do
-      true -> :error
+      true ->
+        :error
+
       false ->
         game_id = fsm.data.game_id
         users = %{user.id => user}
+
         game_params = %{
           level: fsm.data.task.level,
           state: fsm.state
         }
+
         :ets.insert(@table_name, {game_key(game_id), users, game_params})
         :ok
     end
@@ -41,9 +45,12 @@ defmodule Codebattle.GameProcess.ActiveGames do
 
   def add_participant(user, fsm) do
     game_id = fsm.data.game_id
-    users = fsm
-            |> FsmHelpers.get_users
-            |> Enum.reduce(%{}, fn(user, acc) -> Map.put(acc, user.id, user) end)
+
+    users =
+      fsm
+      |> FsmHelpers.get_users()
+      |> Enum.reduce(%{}, fn user, acc -> Map.put(acc, user.id, user) end)
+
     game_params = %{
       level: fsm.data.task.level,
       state: fsm.state
@@ -54,18 +61,22 @@ defmodule Codebattle.GameProcess.ActiveGames do
   end
 
   def playing?(user_id) do
-    @table_name |> :ets.match_object({:"_", %{user_id => %{}}, :"_"}) |> Enum.empty? |> Kernel.!
+    @table_name |> :ets.match_object({:_, %{user_id => %{}}, :_}) |> Enum.empty?() |> Kernel.!()
   end
 
   def participant?(game_id, user_id) do
-    @table_name |> :ets.match_object({game_key(game_id), %{user_id => %{}}, :"_"}) |> Enum.empty? |> Kernel.!
+    @table_name |> :ets.match_object({game_key(game_id), %{user_id => %{}}, :_}) |> Enum.empty?()
+    |> Kernel.!()
   end
 
   def setup_game(fsm) do
     game_id = fsm.data.game_id
-    users = fsm
-            |> FsmHelpers.get_users
-            |> Enum.reduce(%{}, fn(user, acc) -> Map.put(acc, user.id, user) end)
+
+    users =
+      fsm
+      |> FsmHelpers.get_users()
+      |> Enum.reduce(%{}, fn user, acc -> Map.put(acc, user.id, user) end)
+
     game_params = %{
       level: fsm.data.task.level,
       state: fsm.state
@@ -79,7 +90,7 @@ defmodule Codebattle.GameProcess.ActiveGames do
   end
 
   defp game_key(game_id) when is_binary(game_id) do
-    game_id |> Integer.parse |> elem(0)
+    game_id |> Integer.parse() |> elem(0)
   end
 
   defp game_key(game_id) when is_list(game_id) do

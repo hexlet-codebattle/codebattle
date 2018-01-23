@@ -6,7 +6,7 @@ defmodule CodebattleWeb.GameController do
   alias Codebattle.GameProcess.{Play, ActiveGames}
   alias Codebattle.{Repo, Language}
 
-  plug CodebattleWeb.Plugs.RequireAuth when action in [:create, :join]
+  plug(CodebattleWeb.Plugs.RequireAuth when action in [:create, :join])
 
   def call(conn, opts) do
     try do
@@ -15,7 +15,7 @@ defmodule CodebattleWeb.GameController do
       :exit, _ ->
         conn
         |> put_status(:not_found)
-        |> render(CodebattleWeb.ErrorView, "404.html", %{msg: gettext "Game not found"})
+        |> render(CodebattleWeb.ErrorView, "404.html", %{msg: gettext("Game not found")})
     end
   end
 
@@ -24,9 +24,10 @@ defmodule CodebattleWeb.GameController do
       {:ok, id} ->
         conn
         |> redirect(to: game_path(conn, :show, id))
+
       {:error, _reason} ->
         conn
-        |> put_flash(:danger, gettext "You are in a different game")
+        |> put_flash(:danger, gettext("You are in a different game"))
         |> redirect(to: page_path(conn, :index))
     end
   end
@@ -39,11 +40,13 @@ defmodule CodebattleWeb.GameController do
 
     case {fsm.state, is_participant} do
       {:waiting_opponent, false} ->
-        render conn, "join.html", %{fsm: fsm}
+        render(conn, "join.html", %{fsm: fsm})
+
       {:game_over, false} ->
-        render conn, "game_over.html", %{fsm: fsm}
+        render(conn, "game_over.html", %{fsm: fsm})
+
       _ ->
-        render conn, "show.html", %{fsm: fsm, layout_template: "full_width.html"}
+        render(conn, "show.html", %{fsm: fsm, layout_template: "full_width.html"})
     end
   end
 
@@ -51,12 +54,14 @@ defmodule CodebattleWeb.GameController do
     case Play.join_game(id, conn.assigns.current_user) do
       {:ok, fsm} ->
         CodebattleWeb.Endpoint.broadcast("lobby", "update:game", %{game: fsm})
+
         conn
-        |> put_flash(:info, gettext "Joined to game")
+        |> put_flash(:info, gettext("Joined to game"))
         |> redirect(to: game_path(conn, :show, id))
+
       :error ->
         conn
-        |> put_flash(:danger, gettext "You are in a different game")
+        |> put_flash(:danger, gettext("You are in a different game"))
         |> redirect(to: page_path(conn, :index))
     end
   end

@@ -8,15 +8,15 @@ defmodule Codebattle.User do
   @derive {Poison.Encoder, only: [:id, :name, :rating, :guest]}
 
   schema "users" do
-    field :name, :string
-    field :email, :string
-    field :github_id, :integer
-    field :rating, :integer
-    field :guest, :boolean, virtual: true, default: false
-    field :bot, :boolean, virtual: true, default: false
+    field(:name, :string)
+    field(:email, :string)
+    field(:github_id, :integer)
+    field(:rating, :integer)
+    field(:guest, :boolean, virtual: true, default: false)
+    field(:bot, :boolean, virtual: true, default: false)
 
-    has_many :user_games, Codebattle.UserGame
-    has_many :games, through: [:user_games, :game]
+    has_many(:user_games, Codebattle.UserGame)
+    has_many(:games, through: [:user_games, :game])
 
     timestamps()
   end

@@ -6,12 +6,12 @@ defmodule Codebattle.Bot.Playbook do
   alias Codebattle.Bot.Playbook
 
   schema "bot_playbooks" do
-    field :data, :map
-    field :user_id, :integer
-    field :game_id, :integer
-    field :task_id, :integer
+    field(:data, :map)
+    field(:user_id, :integer)
+    field(:game_id, :integer)
+    field(:task_id, :integer)
     # TODO: add to lang_id instead slug
-    field :lang, :string
+    field(:lang, :string)
 
     timestamps()
   end
@@ -25,12 +25,15 @@ defmodule Codebattle.Bot.Playbook do
 
   def random(task_id) do
     try do
-      {:ok, query} = Ecto.Adapters.SQL.query(
-        Codebattle.Repo,
-        "SELECT * from bot_playbooks WHERE task_id = $1 ORDER BY RANDOM() LIMIT 1",
-        [task_id])
-        %Postgrex.Result{rows: [[id | [diff| _tail]]]} = query
-        {id, diff}
+      {:ok, query} =
+        Ecto.Adapters.SQL.query(
+          Codebattle.Repo,
+          "SELECT * from bot_playbooks WHERE task_id = $1 ORDER BY RANDOM() LIMIT 1",
+          [task_id]
+        )
+
+      %Postgrex.Result{rows: [[id | [diff | _tail]]]} = query
+      {id, diff}
     rescue
       _e in MatchError -> nil
     end

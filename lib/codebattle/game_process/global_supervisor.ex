@@ -15,15 +15,16 @@ defmodule Codebattle.GameProcess.GlobalSupervisor do
 
   def init(_) do
     children = [
-      supervisor(Codebattle.GameProcess.Supervisor, []),
+      supervisor(Codebattle.GameProcess.Supervisor, [])
     ]
-    ActiveGames.new
+
+    ActiveGames.new()
     supervise(children, strategy: :simple_one_for_one)
   end
 
   def current_games do
     __MODULE__
-    |> Supervisor.which_children
+    |> Supervisor.which_children()
     |> Enum.map(&game_state/1)
     |> Enum.filter(fn x -> x end)
   end

@@ -18,19 +18,36 @@ defmodule Codebattle.PlayGameTest do
     socket1 = socket("user_id", %{user_id: user1.id, current_user: user1})
     socket2 = socket("user_id", %{user_id: user2.id, current_user: user2})
     socket3 = socket("user_id", %{user_id: user3.id, current_user: user3})
-    {:ok, %{conn1: conn1, conn2: conn2, conn3: conn3,
-            socket1: socket1, socket2: socket2, socket3: socket3,
-            user1: user1, user2: user2, user3: user3}}
+
+    {:ok,
+     %{
+       conn1: conn1,
+       conn2: conn2,
+       conn3: conn3,
+       socket1: socket1,
+       socket2: socket2,
+       socket3: socket3,
+       user1: user1,
+       user2: user2,
+       user3: user3
+     }}
   end
 
-  test "Two users play game", %{conn1: conn1, conn2: conn2, socket1: socket1,
-                                socket2: socket2, user1: user1, user2: user2} do
-    with_mocks([{Codebattle.CodeCheck.Checker, [], [check: fn(_a, _b, _c) -> {:ok, true} end]}]) do
-
+  test "Two users play game", %{
+    conn1: conn1,
+    conn2: conn2,
+    socket1: socket1,
+    socket2: socket2,
+    user1: user1,
+    user2: user2
+  } do
+    with_mocks [{Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> {:ok, true} end]}] do
       # Create game
-      conn = conn1
-            |> get(page_path(conn1, :index))
-            |> post(game_path(conn1, :create))
+      conn =
+        conn1
+        |> get(page_path(conn1, :index))
+        |> post(game_path(conn1, :create))
+
       game_id = game_id_from_conn(conn)
 
       game_topic = "game:" <> to_string(game_id)
@@ -66,7 +83,7 @@ defmodule Codebattle.PlayGameTest do
       editor_text2 = "Hello world2!"
       editor_text3 = "Hello world3!"
 
-      push socket1, "check_result", %{editor_text: editor_text1, lang: :js}
+      push(socket1, "check_result", %{editor_text: editor_text1, lang: :js})
       :timer.sleep(100)
       fsm = Server.fsm(game_id)
 
@@ -78,7 +95,7 @@ defmodule Codebattle.PlayGameTest do
       assert FsmHelpers.get_second_player(fsm).editor_text == ""
 
       # Winner cannot check results again
-      push socket1, "check_result", %{editor_text: editor_text2, lang: :js}
+      push(socket1, "check_result", %{editor_text: editor_text2, lang: :js})
       :timer.sleep(100)
       fsm = Server.fsm(game_id)
 
@@ -90,10 +107,10 @@ defmodule Codebattle.PlayGameTest do
       assert FsmHelpers.get_second_player(fsm).editor_text == ""
 
       # Second player complete game
-      push socket2, "check_result", %{editor_text: editor_text3, lang: :js}
+      push(socket2, "check_result", %{editor_text: editor_text3, lang: :js})
       :timer.sleep(100)
 
-      game = Repo.get Game, game_id
+      game = Repo.get(Game, game_id)
       user1 = Repo.get(User, user1.id)
       user2 = Repo.get(User, user2.id)
 
@@ -103,11 +120,18 @@ defmodule Codebattle.PlayGameTest do
     end
   end
 
-  test "other players cannot change game state", %{conn1: conn1, conn2: conn2, conn3: conn3, socket3: socket3} do
+  test "other players cannot change game state", %{
+    conn1: conn1,
+    conn2: conn2,
+    conn3: conn3,
+    socket3: socket3
+  } do
     # Create game
-    conn1 = conn1
-           |> get(page_path(conn1, :index))
-           |> post(game_path(conn1, :create))
+    conn1 =
+      conn1
+      |> get(page_path(conn1, :index))
+      |> post(game_path(conn1, :create))
+
     game_id = game_id_from_conn(conn1)
 
     game_topic = "game:" <> to_string(game_id)
@@ -124,7 +148,7 @@ defmodule Codebattle.PlayGameTest do
 
     # Other player cannot win game
     {:ok, _response, socket3} = subscribe_and_join(socket3, GameChannel, game_topic)
-    push socket3, "check_result", %{editor_text: "Hello world!", lang: :js}
+    push(socket3, "check_result", %{editor_text: "Hello world!", lang: :js})
     fsm = Server.fsm(game_id)
 
     assert fsm.state == :playing

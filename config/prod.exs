@@ -18,7 +18,7 @@ config :codebattle, CodebattleWeb.Endpoint,
   cache_static_manifest: "priv/static/cache_manifest.json",
   server: true,
   root: ".",
-  version: Mix.Project.config[:version]
+  version: Mix.Project.config()[:version]
 
 config :phoenix, :serve_endpoints, true
 
@@ -27,9 +27,8 @@ config :codebattle, Codebattle.Repo,
   database: "codebattle",
   pool_size: 15
 
-config :logger,
-  backends: [{LoggerFileBackend, :info},
-             {LoggerFileBackend, :error}]
+config :logger, backends: [{LoggerFileBackend, :info}, {LoggerFileBackend, :error}]
+
 config :logger, :error,
   path: "/var/log/codebattle/error.log",
   level: :error
@@ -38,8 +37,7 @@ config :logger, :info,
   path: "/var/log/codebattle/info.log",
   level: :info
 
-config :codebattle, Codebattle.Bot,
-  timeout: 60_000
+config :codebattle, Codebattle.Bot, timeout: 60_000
 
 # Finally import the config/prod.secret.exs
 # which should be versioned separately.

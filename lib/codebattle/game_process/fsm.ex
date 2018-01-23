@@ -13,14 +13,18 @@ defmodule Codebattle.GameProcess.Fsm do
   alias Codebattle.User
   alias Codebattle.GameProcess.Player
 
-  use Fsm, initial_state: :initial,
+  use Fsm,
+    initial_state: :initial,
     initial_data: %{
-      game_id: nil, # Integer
-      task: %Codebattle.Task{}, # Task
-      players: [] # List with two players %Player{}
+      # Integer
+      game_id: nil,
+      # Task
+      task: %Codebattle.Task{},
+      # List with two players %Player{}
+      players: []
     }
 
-    # For tests
+  # For tests
   def set_data(state, data) do
     setup(new(), state, data)
   end
@@ -28,7 +32,13 @@ defmodule Codebattle.GameProcess.Fsm do
   defstate initial do
     defevent create(params), data: data do
       player = %Player{id: params.user.id, user: params.user}
-      next_state(:waiting_opponent, %{data | game_id: params.game_id, players: [player], task: params.task})
+
+      next_state(:waiting_opponent, %{
+        data
+        | game_id: params.game_id,
+          players: [player],
+          task: params.task
+      })
     end
 
     # For test
@@ -84,7 +94,6 @@ defmodule Codebattle.GameProcess.Fsm do
     end
   end
 
-
   defstate game_over do
     defevent update_editor_params(params), data: data do
       players = update_player_params(data.players, params)
@@ -97,7 +106,7 @@ defmodule Codebattle.GameProcess.Fsm do
   end
 
   defp update_player_params(players, params) do
-    Enum.map(players, fn(player) ->
+    Enum.map(players, fn player ->
       case player.id == params.id do
         true -> Map.merge(player, params)
         _ -> player

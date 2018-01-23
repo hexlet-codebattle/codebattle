@@ -41,73 +41,78 @@ defmodule Codebattle.Bot.RecorderServer do
 
   # SERVER
   def init([game_id, task_id, user_id]) do
-    Logger.info "Start bot recorder server for
+    Logger.info("Start bot recorder server for
       task_id: #{task_id},
       game_id: #{game_id},
-      user_id: #{user_id}"
-    {:ok, %{
-      game_id: game_id,
-      task_id: task_id,
-      user_id: user_id,
-      delta: TextDelta.new([]),
-      lang: :js,
-      time: nil,
-      diff: [] #Array of diffs to db playbook
-    }
-    }
+      user_id: #{user_id}")
+
+    {:ok,
+     %{
+       game_id: game_id,
+       task_id: task_id,
+       user_id: user_id,
+       delta: TextDelta.new([]),
+       lang: :js,
+       time: nil,
+       # Array of diffs to db playbook
+       diff: []
+     }}
   end
 
   def handle_cast({:update_text, text}, state) do
-    Logger.debug "#{__MODULE__} CAST update_text TEXT: #{inspect(text)}, STATE: #{inspect(state)}"
-    time = state.time || NaiveDateTime.utc_now
-    new_time = NaiveDateTime.utc_now
-    new_delta = TextDelta.new |> TextDelta.insert(text)
+    Logger.debug(
+      "#{__MODULE__} CAST update_text TEXT: #{inspect(text)}, STATE: #{inspect(state)}"
+    )
+
+    time = state.time || NaiveDateTime.utc_now()
+    new_time = NaiveDateTime.utc_now()
+    new_delta = TextDelta.new() |> TextDelta.insert(text)
+
     diff = %{
       delta: TextDelta.diff!(state.delta, new_delta).ops,
       time: NaiveDateTime.diff(new_time, time, :millisecond)
     }
 
-    new_state =  %{state |
-      delta: new_delta,
-      diff: [diff | state.diff],
-      time: new_time
-    }
+    new_state = %{state | delta: new_delta, diff: [diff | state.diff], time: new_time}
 
     {:noreply, new_state}
   end
 
   def handle_cast({:update_lang, lang}, state) do
-    Logger.debug "#{__MODULE__} CAST update_lang LANG: #{inspect(lang)}, STATE: #{inspect(state)}"
-    time = state.time || NaiveDateTime.utc_now
-    new_time = NaiveDateTime.utc_now
+    Logger.debug(
+      "#{__MODULE__} CAST update_lang LANG: #{inspect(lang)}, STATE: #{inspect(state)}"
+    )
+
+    time = state.time || NaiveDateTime.utc_now()
+    new_time = NaiveDateTime.utc_now()
+
     diff = %{
       lang: lang,
       time: NaiveDateTime.diff(new_time, time, :millisecond)
     }
 
-    new_state =  %{state |
-      lang: lang,
-      diff: [diff | state.diff],
-      time: new_time
-    }
+    new_state = %{state | lang: lang, diff: [diff | state.diff], time: new_time}
 
     {:noreply, new_state}
   end
 
   def handle_cast({:store}, state) do
-    Logger.info "Store bot_playbook for
+    Logger.info("Store bot_playbook for
       task_id: #{state.task_id},
       game_id: #{state.game_id},
-      user_id: #{state.user_id}"
+      user_id: #{state.user_id}")
+
     if state.user_id != 0 do
       %Playbook{
-        data: %{playbook: state.diff |> Enum.reverse},
+        data: %{playbook: state.diff |> Enum.reverse()},
         lang: to_string(state.lang),
         task_id: state.task_id,
         user_id: state.user_id,
-        game_id: state.game_id |> to_string |> Integer.parse |> elem(0)}
-        |> Repo.insert
+        game_id: state.game_id |> to_string |> Integer.parse() |> elem(0)
+      }
+      |> Repo.insert()
     end
+
     {:stop, :normal, state}
   end
 
@@ -121,4 +126,3 @@ defmodule Codebattle.Bot.RecorderServer do
     {:n, :l, {:bot_recorder, key}}
   end
 end
-

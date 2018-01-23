@@ -8,8 +8,8 @@ defmodule CodebattleWeb.Factory do
   def user_factory do
     %User{
       name: sequence(:username, &"User #{&1}"),
-      email:  sequence(:username, &"test#{&1}@test.io"),
-      rating:  123,
+      email: sequence(:username, &"test#{&1}@test.io"),
+      rating: 123,
       github_id: :rand.uniform(9_999_999)
     }
   end
@@ -23,13 +23,15 @@ defmodule CodebattleWeb.Factory do
   end
 
   def task_factory do
-    %Task{name: "test_task",
+    %Task{
+      name: "test_task",
       description: "test sum",
       level: "easy",
       asserts: "{\"arguments\":[1,1],\"expected\":2}
       {\"arguments\":[2,2],\"expected\":4}
       {\"arguments\":[1,3],\"expected\":4}
-      "}
+      "
+    }
   end
 
   def bot_playbook_factory do
@@ -42,9 +44,9 @@ defmodule CodebattleWeb.Factory do
       uid: :rand.uniform(100_000),
       extra: %{
         raw_info: %{
-          user: :user,
-        },
-      },
+          user: :user
+        }
+      }
     }
   end
 end

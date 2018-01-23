@@ -7,7 +7,7 @@ defmodule Mix.Tasks.Issues.Generate do
   @issues_dir Application.get_env(:codebattle, Mix.Tasks.Issues)[:issues_dir]
 
   def run(_) do
-    File.cd! @issues_dir
+    File.cd!(@issues_dir)
     System.cmd("make", ["generate-from-docker"])
   end
 end

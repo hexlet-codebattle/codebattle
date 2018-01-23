@@ -4,7 +4,7 @@ defmodule CodebattleWeb.AuthController do
 
   alias Ueberauth.Strategy.Helpers
 
-  plug Ueberauth
+  plug(Ueberauth)
 
   def request(conn, _params) do
     render(conn, "request.html", callback_url: Helpers.callback_url(conn))
@@ -12,7 +12,7 @@ defmodule CodebattleWeb.AuthController do
 
   def callback(%{assigns: %{ueberauth_failure: _fails}} = conn, _params) do
     conn
-    |> put_flash(:danger, gettext "Failed to authenticate.")
+    |> put_flash(:danger, gettext("Failed to authenticate."))
     |> redirect(to: "/")
   end
 
@@ -20,9 +20,10 @@ defmodule CodebattleWeb.AuthController do
     case Codebattle.GithubUser.find_or_create(auth) do
       {:ok, user} ->
         conn
-        |> put_flash(:info, gettext "Successfully authenticated.")
+        |> put_flash(:info, gettext("Successfully authenticated."))
         |> put_session(:user_id, user.id)
         |> redirect(to: "/")
+
       {:error, reason} ->
         conn
         |> put_flash(:danger, reason)

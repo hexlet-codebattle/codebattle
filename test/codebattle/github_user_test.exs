@@ -6,11 +6,11 @@ defmodule Codebattle.GithubUserTest do
   import CodebattleWeb.Factory
 
   @valid_data %{
-    "login" => Faker.Internet.user_name,
+    "login" => Faker.Internet.user_name(),
     "emails" => [
-      %{"email" => Faker.Internet.email, "primary" => true},
-      %{"email" => Faker.Internet.email, "primary" => false},
-    ],
+      %{"email" => Faker.Internet.email(), "primary" => true},
+      %{"email" => Faker.Internet.email(), "primary" => false}
+    ]
   }
 
   test "new user is created successfully" do

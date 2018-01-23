@@ -4,11 +4,11 @@ defmodule Codebattle.IntegrationCase do
   use ExUnit.CaseTemplate
 
   @session Plug.Session.init(
-    store: :cookie,
-    key: "_app",
-    encryption_salt: "yadayada",
-    signing_salt: "yadayada"
-  )
+             store: :cookie,
+             key: "_app",
+             encryption_salt: "yadayada",
+             signing_salt: "yadayada"
+           )
 
   using do
     quote do
@@ -32,15 +32,14 @@ defmodule Codebattle.IntegrationCase do
   end
 
   # setup tags do
-    # :ok = Ecto.Adapters.SQL.Sandbox.checkout(Codebattle.Repo)
-    # unless tags[:async] do
-    #   Ecto.Adapters.SQL.Sandbox.mode(Codebattle.Repo, {:shared, self()})
-    # end
+  # :ok = Ecto.Adapters.SQL.Sandbox.checkout(Codebattle.Repo)
+  # unless tags[:async] do
+  #   Ecto.Adapters.SQL.Sandbox.mode(Codebattle.Repo, {:shared, self()})
+  # end
 
-#     conn = Phoenix.ConnTest.build_conn()
-#            |> Plug.Session.call(@session)
-#            |> Plug.Conn.fetch_session()
-#     {:ok, conn: conn}
-#   end
+  #     conn = Phoenix.ConnTest.build_conn()
+  #            |> Plug.Session.call(@session)
+  #            |> Plug.Conn.fetch_session()
+  #     {:ok, conn: conn}
+  #   end
 end
-

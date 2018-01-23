@@ -7,16 +7,16 @@ defmodule Codebattle.Game do
   alias Codebattle.Game
 
   def level_difficulties do
-    %{"elementary" => 0, "easy" => 1, "medium"=> 2, "hard" => 3}
+    %{"elementary" => 0, "easy" => 1, "medium" => 2, "hard" => 3}
   end
 
   schema "games" do
-    field :state, :string
+    field(:state, :string)
 
     timestamps()
 
-    has_many :user_games, Codebattle.UserGame
-    has_many :users, through: [:user_games, :user]
+    has_many(:user_games, Codebattle.UserGame)
+    has_many(:users, through: [:user_games, :user])
   end
 
   @doc false
