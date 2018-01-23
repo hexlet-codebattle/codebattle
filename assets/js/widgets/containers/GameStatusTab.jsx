@@ -56,10 +56,12 @@ class GameStatusTab extends Component {
     };
 
     statuses[solutionStatus]();
-    if (winner.id && prevStatus !== status) {
-      winner.id === currentUser.id ?
-        toast.success('Congratulations! You have won the game!') :
+    if (status === 'game_over' && prevStatus !== status) {
+      if (winner.id === currentUser.id) {
+        toast.success('Congratulations! You have won the game!');
+      } else {
         toast.error('Oh snap! Your opponent has won the game :(');
+      }
     }
   }
 
