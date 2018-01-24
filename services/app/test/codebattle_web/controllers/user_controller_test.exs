@@ -19,4 +19,14 @@ defmodule CodebattleWeb.UserControllerTest do
 
     assert redirected_to(conn, 302) =~ "/"
   end
+
+  test "show user profile", %{conn: conn} do
+    user = insert(:user)
+
+    conn =
+      conn
+      |> get(user_path(conn, :show, user.id))
+
+    assert conn.status == 200
+  end
 end
