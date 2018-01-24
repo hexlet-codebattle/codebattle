@@ -22,7 +22,7 @@ const plugins = [
     to: path.resolve(__dirname, '..', 'priv', 'static'),
   }]),
   new webpack.EnvironmentPlugin({
-    NODE_ENV: 'development',
+    NODE_ENV: prod ? 'production' : 'development',
   }),
   new webpack.ProvidePlugin({
     $: 'jquery',

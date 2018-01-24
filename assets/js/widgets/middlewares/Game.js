@@ -116,22 +116,24 @@ export const editorReady = () => (dispatch) => {
     second_player_editor_text,
     second_player_editor_lang,
   }) => {
-    //TODO: Add strong refactoring
+    // TODO: Add strong refactoring
     const firstEditorLang = _.find(languages, { slug: first_player_editor_lang });
     const secondEditorLang = _.find(languages, { slug: second_player_editor_lang });
 
 
-    dispatch(actions.updateUsers([{
-      id: first_player.id,
-      name: first_player.name,
-      rating: first_player.rating,
-      type: userTypes.firstPlayer,
-    }, {
-      id: second_player.id,
-      name: second_player.name,
-      rating: second_player.rating,
-      type: userTypes.secondPlayer,
-    }]));
+    dispatch(actions.updateUsers({
+      users: [{
+        id: first_player.id,
+        name: first_player.name,
+        rating: first_player.rating,
+        type: userTypes.firstPlayer,
+      }, {
+        id: second_player.id,
+        name: second_player.name,
+        rating: second_player.rating,
+        type: userTypes.secondPlayer,
+      }],
+    }));
 
     dispatch(actions.updateEditorData({
       userId: first_player.id,
