@@ -11,4 +11,9 @@ defmodule CodebattleWeb.UserController do
     users = Repo.all(query)
     render(conn, "index.html", users: users)
   end
+
+  def show(conn, %{"id" => user_id}) do
+    user = Repo.get!(User, user_id)
+    render(conn, "show.html", user: user)
+  end
 end
