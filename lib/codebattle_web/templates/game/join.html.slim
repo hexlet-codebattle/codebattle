@@ -6,5 +6,5 @@
       hr.my-4/
       p You can join to this game
       p.lead
-        button.btn.btn-primary.btn-lg data-method="post" data-csrf="#{csrf_token}" data-to="#{game_path(@conn, :join, get_game_id(assigns[:fsm]))}" Join
+        button.btn.btn-primary.btn-lg data-method="post" data-csrf="#{csrf_token()}" data-to="#{game_path(@conn, :join, get_game_id(assigns[:fsm]))}" Join
 
