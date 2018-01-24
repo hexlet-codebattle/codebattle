@@ -18,7 +18,9 @@ html lang="en"
           li.nav-item.pr-5
             = link to: user_path(@conn, :index), class: "nav-link" do
               = gettext "User rating"
-          li.navbar-text.pr-2 = @current_user.name
+          li.nav-item.pr-5
+            = link to: user_path(@conn, :show, @current_user.id), class: "nav-link" do
+              = @current_user.name
           li.nav-item
             = link gettext("Sign Out"), to: session_path(@conn, :delete), method: "delete", class: "nav-link"
         - else
