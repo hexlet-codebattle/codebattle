@@ -21,7 +21,7 @@ compose-install-yarn:
 
 compose-install: compose-install-mix compose-install-yarn
 
-compose-setup: compose-build compose-install compose-db-prepare
+compose-setup: clean compose-build compose-install compose-db-prepare
 
 compose-db-prepare:
 	docker-compose run app mix ecto.create
@@ -53,7 +53,7 @@ compose-logs:
 
 compose-upload-asserts:
 	 docker-compose run app mix issues.fetch
-	 docker-compose run app mix issues.generate
+	 cd tmp/battle_asserts/ && make generate-from-docker
 	 docker-compose run app mix issues.upload
 
 compose-build-dockers:
