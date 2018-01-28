@@ -4,7 +4,7 @@ services:
   app:
     build:
       context: services/app
-      dockerfile: Dockerfile.development
+      dockerfile: Dockerfile.dev
     env_file: .env
     command: mix phx.server
     ports:
