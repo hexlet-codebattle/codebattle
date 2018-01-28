@@ -21,6 +21,7 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
     {:ok, %{user1: user1, user2: user2, task: task, socket1: socket1, socket2: socket2}}
   end
 
+  @tag :pending
   test "stores player playbook if he is winner", %{
     user1: user1,
     user2: user2,
