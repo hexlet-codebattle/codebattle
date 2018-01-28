@@ -13,7 +13,7 @@ use Mix.Config
 # which you typically run after static files are built.
 
 config :codebattle, CodebattleWeb.Endpoint,
-  http: [port: 4000],
+  http: [port:  System.get_env("CODEBATTLE_PORT")],
   url: [scheme: "http", host: "codebattle.hexlet.io", port: 80],
   cache_static_manifest: "priv/static/cache_manifest.json",
   server: true,
@@ -25,6 +25,14 @@ config :phoenix, :serve_endpoints, true
 config :codebattle, Codebattle.Repo,
   adapter: Ecto.Adapters.Postgres,
   database: "codebattle",
+  pool_size: 15
+
+config :codebattle, Codebattle.Repo,
+  adapter: Ecto.Adapters.Postgres,
+  username: System.get_env("CODEBATTLE_DB_USERNAME"),
+  password: System.get_env("CODEBATTLE_DB_PASSWORD"),
+  database: System.get_env("CODEBATTLE_DB_NAME"),
+  hostname: System.get_env("CODEBATTLE_DB_HOSTNAME"),
   pool_size: 15
 
 config :logger, backends: [{LoggerFileBackend, :info}, {LoggerFileBackend, :error}]
@@ -41,7 +49,7 @@ config :codebattle, Codebattle.Bot, timeout: 60_000
 
 # Finally import the config/prod.secret.exs
 # which should be versioned separately.
-import_config "prod.secret.exs"
+# import_config "prod.secret.exs"
 
 # ## SSL Support
 #

@@ -7,15 +7,9 @@
       with_items:
         - docker
         - docker-compose
+      become: true
 
     - template:
         src: environment.j2
         dest: '../.env'
       tags: env
-
-    - lineinfile:
-        path: /etc/hosts
-        regexp: 'codebattle'
-        line: '127.0.0.1 codebattle.test # codebattle'
-      become: yes
-

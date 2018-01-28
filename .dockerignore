@@ -1,8 +1,0 @@
-.git
-_build
-cover
-deps
-doc
-*deployment.retry
-erl_crash.dump
-*.ez

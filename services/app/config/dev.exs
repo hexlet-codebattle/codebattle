@@ -7,7 +7,7 @@ use Mix.Config
 # watchers to your application. For example, we use it
 # with brunch.io to recompile .js and .css sources.
 config :codebattle, CodebattleWeb.Endpoint,
-  http: [port: 4000],
+  http: [port: System.get_env("CODEBATTLE_PORT")],
   debug_errors: true,
   code_reloader: true,
   check_origin: false,
@@ -37,10 +37,10 @@ config :phoenix, :stacktrace_depth, 20
 # Configure your database
 config :codebattle, Codebattle.Repo,
   adapter: Ecto.Adapters.Postgres,
-  username: System.get_env("CODEBATTLE_DATABASE_USERNAME"),
-  password: System.get_env("CODEBATTLE_DATABASE_PASSWORD"),
-  database: "codebattle_dev",
-  hostname: System.get_env("CODEBATTLE_DATABASE_HOSTNAME"),
-  pool_size: 15
+  username: System.get_env("CODEBATTLE_DB_USERNAME"),
+  password: System.get_env("CODEBATTLE_DB_PASSWORD"),
+  hostname: System.get_env("CODEBATTLE_DB_HOSTNAME"),
+  database: System.get_env("CODEBATTLE_DB_NAME"),
+  pool_size: 5
 
 config :codebattle, Codebattle.Bot, timeout: 3_000
