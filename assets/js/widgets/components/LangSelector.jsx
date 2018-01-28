@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import Gon from 'Gon';
+import Gon from 'gon';
 
 const languages = Gon.getAsset('langs');
 const getLangTitle = lang => `${lang.name} (${lang.version})`;

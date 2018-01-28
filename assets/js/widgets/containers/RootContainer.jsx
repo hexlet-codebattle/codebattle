@@ -1,16 +1,16 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import copy from 'copy-to-clipboard';
 import i18n from 'i18next';
 import GameWidget from './GameWidget';
 import InfoWidget from './InfoWidget';
-import Gon from 'Gon';
+import Gon from 'gon';
 import userTypes from '../config/userTypes';
 import * as actions from '../actions';
 import * as GameActions from '../middlewares/Game';
 import GameStatusCodes from '../config/gameStatusCodes';
 import { gameStatusSelector } from '../selectors';
+import WaitingOpponentInfo from '../components/WaitingOpponentInfo';
 
 class RootContainer extends React.Component {
   componentDidMount() {
@@ -29,35 +29,7 @@ class RootContainer extends React.Component {
         return null;
       case (this.props.gameStatusCode === GameStatusCodes.waitingOpponent):
         const gameUrl = window.location.href;
-        return (
-          <div className="jumbotron jumbotron-fluid">
-            <div className="container">
-              <h1 className="display-4">{i18n.t('Waiting opponent')}</h1>
-              <p className="lead">{i18n.t('We seek for opponent for you. You can invite to start playing')}</p>
-              <div className="row">
-                <div className="input-group mb-3">
-                  <input
-                    type="text"
-                    className="form-control"
-                    aria-label="Recipient's username"
-                    aria-describedby="basic-addon2"
-                    value={gameUrl}
-                    readOnly
-                  />
-                  <div className="input-group-append">
-                    <button
-                      className="btn btn-outline-primary"
-                      type="button"
-                      onClick={() => copy(gameUrl)}
-                    >
-                      {i18n.t('Copy')}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
+        return <WaitingOpponentInfo gameUrl={gameUrl} />;
       default:
         return (
           <Fragment>

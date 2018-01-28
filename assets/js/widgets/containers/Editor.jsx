@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Gon from 'Gon';
+import Gon from 'gon';
 import AceEditor from 'react-ace';
 import 'brace';
 import 'brace/mode/javascript';
