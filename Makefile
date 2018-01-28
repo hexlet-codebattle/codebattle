@@ -1,12 +1,6 @@
 include make-compose.mk
 include make-ansible.mk
 
-rebuild-styles:
-	cd assets/ && \
-	yarn install && \
-	yarn build-dev && \
-	cd ../
-
 compile:
 	mix compile
 
@@ -23,18 +17,12 @@ lint:
 	mix credo
 
 clean:
-	rm -rf _build
-	rm -rf deps
-	rm -rf .elixir_ls
-	rm -rf assets/node_modules
-	rm -rf priv/static/*
-	rm -rf cover
+	rm -rf services/app/_build
+	rm -rf services/app/deps
+	rm -rf services/app/.elixir_ls
+	rm -rf services/app/assets/node_modules
+	rm -rf services/app/priv/static/*
 	rm -rf tmp/battle_asserts
-
-get-last-changes:
-	 git fetch upstream
-	 git checkout master
-	 git merge upstream/master
 
 upload-asserts:
 	 mix issues.fetch
