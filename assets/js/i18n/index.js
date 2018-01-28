@@ -1,5 +1,5 @@
 import i18next from 'i18next';
-import Gon from 'Gon';
+import Gon from 'gon';
 
 i18next.init({
   nsSeparator: false,

@@ -56,7 +56,7 @@ module.exports = {
     publicPath: path.resolve(__dirname, '..', 'priv', 'static'),
   },
   externals: {
-    Gon: 'Gon',
+    Gon: 'gon',
   },
   module: {
     rules: [

@@ -1,5 +1,5 @@
 import socket from '../../socket';
-import Gon from 'Gon';
+import Gon from 'gon';
 import { userJoinedChat, userLeftChat, fetchChatData, newMessageChat } from '../actions';
 
 const chatId = Gon.getAsset('game_id');
