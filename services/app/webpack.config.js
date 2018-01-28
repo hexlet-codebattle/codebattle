@@ -13,10 +13,10 @@ const DEV_ENTRIES = [
   // 'webpack/hot/only-dev-server',
 ];
 
-const APP_ENTRIES = ['./assets/js/app.js'];
+const APP_ENTRIES = ['./assets/js/app.js', './assets/css/app.scss'];
 
 const plugins = [
-  new ExtractTextPlugin('../assets/css/app.css'),
+  new ExtractTextPlugin('css/app.css'),
   new CopyWebpackPlugin([
     { from: 'assets/static' },
   ]),
@@ -38,9 +38,8 @@ module.exports = {
   },
   devtool: prod ? false : 'cheap-module-eval-source-map',
   output: {
-    path: path.resolve(__dirname, '..', 'priv', 'static', 'js'),
+    path: `${__dirname}/priv/static`,
     filename: 'app.js',
-    publicPath: path.resolve(__dirname, '..', 'priv', 'static'),
   },
   externals: {
     gon: 'Gon',
@@ -79,20 +78,15 @@ module.exports = {
         },
       },
       {
-        test: /\.css$/,
+        test: /\.scss$/,
         use: ExtractTextPlugin.extract({
           fallback: 'style-loader',
-          use: 'css-loader',
+          use: ['css-loader', 'postcss-loader', 'sass-loader'],
         }),
       },
       {
-        test: /\.(jpe?g|png|gif|svg|woff2?)$/,
-        use: [{
-          loader: 'url-loader',
-          options: { limit: 40000 },
-        },
-        'image-webpack-loader',
-        ],
+        test: /\.(eot|svg|ttf|woff|woff2)$/,
+        use: 'url-loader',
       },
     ],
   },
