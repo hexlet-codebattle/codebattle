@@ -24,18 +24,4 @@ clean:
 	rm -rf node_modules
 	rm -rf tmp/battle_asserts
 
-upload-asserts:
-	 mix issues.fetch
-	 mix issues.generate
-	 mix issues.upload
-
-upload-langs:
-	 mix upload_langs
-
-release:
-	MIX_ENV=prod mix edeliver upgrade production --verbose --env=prod
-
-migrate-prod:
-	MIX_ENV=prod mix edeliver migrate production
-
 .PHONY: test
