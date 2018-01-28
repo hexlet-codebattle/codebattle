@@ -1,3 +1,6 @@
+USER = "$(shell id -u):$(shell id -g)"
+ASSERTS_PATH = "tmp/battle_asserts"
+
 compose:
 	docker-compose up
 
@@ -5,13 +8,13 @@ compose-build:
 	docker-compose build
 
 compose-test:
-	docker-compose run app mix test test/codebattle*
+	docker-compose run app mix test
 
 compose-kill:
 	docker-compose kill
 
 compose-bash:
-	docker-compose run app bash
+	docker-compose run --user=$(USER) app bash
 
 compose-install-mix:
 	docker-compose run app mix deps.get
@@ -52,9 +55,10 @@ compose-logs:
 	docker-compose logs -f --tail=100
 
 compose-upload-asserts:
-	 docker-compose run app mix issues.fetch
-	 cd tmp/battle_asserts/ && make generate-from-docker
-	 docker-compose run app mix issues.upload
+	rm -rf $(ASSERTS_PATH)
+	git clone "https://github.com/hexlet-codebattle/battle_asserts.git" $(ASSERTS_PATH)
+	cd $(ASSERTS_PATH) && make generate-from-docker
+	docker-compose run --rm -v $(CURDIR)/tmp:/app/tmp app mix issues.upload $(ASSERTS_PATH)/issues
 
 compose-build-dockers:
 	docker-compose run app mix dockers.build ${lang}
