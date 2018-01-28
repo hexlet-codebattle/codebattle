@@ -1,0 +1,3 @@
+ansible_python_interpreter: "/usr/bin/env python3"
+workshop_app_image_name: "codebattle/app"
+workshop_nginx_image_name: "codebattle/nginx"

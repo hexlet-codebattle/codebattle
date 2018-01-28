@@ -24,4 +24,21 @@ defmodule Codebattleweb.GameControllerTest do
 
     assert conn.status == 404
   end
+
+  test "show game_over html", %{conn: conn} do
+    user1 = build(:user)
+    user2 = build(:user)
+    state = :game_over
+    data = %{
+      players: [%Player{id: user1.id, user: user1, game_result: :won}, %Player{id: user2.id, user: user2, game_result: :lost}],
+    }
+    game = setup_game(state, data)
+
+    conn =
+      conn
+      |> put_session(:user_id, user1.id)
+      |> get(game_path(conn, :show, game.id))
+
+    assert conn.status == 200
+  end
 end

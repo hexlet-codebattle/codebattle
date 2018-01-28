@@ -1,18 +1,19 @@
 version: '3.3'
+
 services:
   app:
-    build: .
+    build:
+      context: services/app
+      dockerfile: Dockerfile.development
     env_file: .env
     command: mix phx.server
-    volumes:
-      - .:/app
     ports:
-      - "4000:4000"
+      - "${CODEBATTLE_PORT}:${CODEBATTLE_PORT}"
     volumes:
-      - ".:/app:cached"
+      - "./services/app:/app:cached"
       - "~/.bash_history:/root/.bash_history:cached"
       - ".bashrc:/root/.bashrc:cached"
-      - '/var/run/docker.sock:/var/run/docker.sock'
+      - '/var/run/docker.sock:/var/run/docker.sock:cached'
       - "/var/tmp:/var/tmp:cached"
       - "/tmp:/tmp:cached"
     depends_on:
@@ -20,3 +21,5 @@ services:
 
   db:
     image: postgres
+    environment:
+      POSTGRES_USER: ${CODEBATTLE_DB_USERNAME}

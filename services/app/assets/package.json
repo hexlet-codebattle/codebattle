@@ -4,7 +4,7 @@
     "scripts": {
         "watch": "node_modules/.bin/webpack --watch-stdin --progress --color",
         "build-dev": "node_modules/.bin/webpack",
-        "deploy": "node_modules/.bin/webpack -p"
+        "build-prod": "node_modules/.bin/webpack -p"
     },
     "dependencies": {
         "bootstrap": "^4.0.0",

@@ -28,7 +28,9 @@ defmodule CodebattleWeb.ConnCase do
       use Phoenix.ConnTest
       import CodebattleWeb.Router.Helpers
       import CodebattleWeb.Factory
+      import Helpers.GameProcess
       alias Codebattle.{Repo, User, Game, UserGame}
+      alias Codebattle.GameProcess.{Player}
 
       # The default endpoint for testing
       @endpoint CodebattleWeb.Endpoint

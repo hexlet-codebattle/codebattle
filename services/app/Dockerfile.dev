@@ -1,0 +1,30 @@
+FROM elixir
+
+# Install hex (Elixir package manager)
+RUN mix local.hex --force
+
+# RUN mix archive.install --force https://github.com/phoenixframework/archives/raw/master/phoenix_new.ez
+
+# Install rebar (Erlang build tool)
+RUN mix local.rebar --force
+
+RUN apt-get update && apt-get install -y inotify-tools
+RUN apt-get install -y vim
+
+RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
+RUN apt-get update && apt-get install -y nodejs
+
+RUN curl -s --show-error https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+RUN apt-get update && apt-get install -y  yarn
+
+ENV DOCKER_CHANNEL edge
+ENV DOCKER_VERSION 17.11.0-ce
+RUN curl -fsSL "https://download.docker.com/linux/static/${DOCKER_CHANNEL}/x86_64/docker-${DOCKER_VERSION}.tgz" \
+  | tar -xzC /usr/local/bin --strip=1 docker/docker
+
+RUN  apt-get -qq purge --assume-yes --auto-remove -o APT::AutoRemove::RecommendsImportant=false $buildDeps
+RUN  apt-get clean
+RUN  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+WORKDIR /app
