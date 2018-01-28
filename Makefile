@@ -20,8 +20,8 @@ clean:
 	rm -rf services/app/_build
 	rm -rf services/app/deps
 	rm -rf services/app/.elixir_ls
-	rm -rf services/app/assets/node_modules
 	rm -rf services/app/priv/static/*
+	rm -rf node_modules
 	rm -rf tmp/battle_asserts
 
 upload-asserts:

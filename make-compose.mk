@@ -20,7 +20,7 @@ compose-install-mix:
 	docker-compose run app mix deps.get
 
 compose-install-yarn:
-	docker-compose run --workdir="/app/assets/" app yarn
+	docker-compose run app yarn
 
 compose-install: compose-install-mix compose-install-yarn
 

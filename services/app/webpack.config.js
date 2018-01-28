@@ -13,14 +13,13 @@ const DEV_ENTRIES = [
   // 'webpack/hot/only-dev-server',
 ];
 
-const APP_ENTRIES = ['./js/app.js'];
+const APP_ENTRIES = ['./assets/js/app.js'];
 
 const plugins = [
-  new ExtractTextPlugin('../css/app.css'),
-  new CopyWebpackPlugin([{
-    from: path.join(__dirname, 'static'),
-    to: path.resolve(__dirname, '..', 'priv', 'static'),
-  }]),
+  new ExtractTextPlugin('../assets/css/app.css'),
+  new CopyWebpackPlugin([
+    { from: 'assets/static' },
+  ]),
   new webpack.EnvironmentPlugin({
     NODE_ENV: prod ? 'production' : 'development',
   }),
