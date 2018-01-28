@@ -5,7 +5,7 @@ import copy from 'copy-to-clipboard';
 import i18n from 'i18next';
 import GameWidget from './GameWidget';
 import InfoWidget from './InfoWidget';
-import Gon from 'Gon';
+import Gon from 'gon';
 import userTypes from '../config/userTypes';
 import * as actions from '../actions';
 import * as GameActions from '../middlewares/Game';

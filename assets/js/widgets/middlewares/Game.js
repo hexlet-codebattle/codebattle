@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import Gon from 'Gon';
+import Gon from 'gon';
 import socket from '../../socket';
 import { editorsSelector, currentUserIdSelector } from '../selectors';
 import userTypes from '../config/userTypes';
