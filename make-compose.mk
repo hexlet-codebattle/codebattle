@@ -7,8 +7,11 @@ compose:
 compose-build:
 	docker-compose build
 
-compose-test:
+compose-test-all:
 	docker-compose run app mix test
+
+compose-test:
+	docker-compose run app mix test test/codebattle test/codebattle_web
 
 compose-kill:
 	docker-compose kill
@@ -35,9 +38,6 @@ compose-db-prepare:
 
 compose-upload-langs:
 	docker-compose run app mix upload_langs
-
-compose-test-coverage-html:
-	docker-compose run -e "MIX_ENV=test" app make test-coverage-html
 
 compose-credo:
 	docker-compose run app mix credo

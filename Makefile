@@ -1,21 +1,6 @@
 include make-compose.mk
 include make-ansible.mk
 
-compile:
-	mix compile
-
-install:
-	mix deps.get
-
-test:
-	mix test
-
-test-coverage-html:
-	mix coveralls.html
-
-lint:
-	mix credo
-
 clean:
 	rm -rf services/app/_build
 	rm -rf services/app/deps
