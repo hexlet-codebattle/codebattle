@@ -29,11 +29,12 @@ compose-install: compose-install-mix compose-install-yarn
 
 compose-setup: clean compose-build compose-install compose-db-prepare
 
-compose-db-prepare:
+compose-db-init:
 	docker-compose run app mix ecto.create
 	docker-compose run app mix ecto.migrate
 	docker-compose run app mix run priv/repo/seeds.exs
-	make compose-upload-asserts
+
+compose-db-prepare: compose-db-init compose-upload-asserts compose-upload-asserts
 	docker-compose run app mix dockers.pull
 
 compose-upload-langs:
