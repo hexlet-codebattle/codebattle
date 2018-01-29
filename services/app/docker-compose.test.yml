@@ -5,11 +5,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.prod
-    command: mix test
+    command: >
+      bash -c "mix credo && mix test"
     environment:
-      - DB_HOSTNAME=db
-      - DB_USERNAME=postgres
-      - DB_NAME=codebattle_test
+      - CODEBATTLE_DB_NAME=codebattle_test
+      - CODEBATTLE_DB_HOSTNAME=db
+      - CODEBATTLE_DB_USERNAME=postgres
+      - CODEBATTLE_DB_PASSWORD=
+      - MIX_ENV=test
     depends_on:
       - db
   db:
