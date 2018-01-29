@@ -1,0 +1,19 @@
+version: "3"
+
+services:
+  sut:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    command: >
+      bash -c "mix credo && mix test"
+    environment:
+      - CODEBATTLE_DB_NAME=codebattle_test
+      - CODEBATTLE_DB_HOSTNAME=db
+      - CODEBATTLE_DB_USERNAME=postgres
+      - CODEBATTLE_DB_PASSWORD=
+      - MIX_ENV=test
+    depends_on:
+      - db
+  db:
+    image: postgres

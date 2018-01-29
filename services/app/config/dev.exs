@@ -13,7 +13,7 @@ config :codebattle, CodebattleWeb.Endpoint,
   check_origin: false,
   cache_static_lookup: false,
   watchers: [
-    yarn: ["watch", cd: Path.expand("../assets", __DIR__)]
+    yarn: ["watch", cd: Path.expand("..", __DIR__)]
   ]
 
 # Watch static and templates for browser reloading.

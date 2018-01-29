@@ -1,5 +1,7 @@
 FROM elixir
 
+WORKDIR /app
+
 # Install hex (Elixir package manager)
 RUN mix local.hex --force
 
@@ -23,27 +25,27 @@ ENV DOCKER_VERSION 17.11.0-ce
 RUN curl -fsSL "https://download.docker.com/linux/static/${DOCKER_CHANNEL}/x86_64/docker-${DOCKER_VERSION}.tgz" \
   | tar -xzC /usr/local/bin --strip=1 docker/docker
 
-RUN apt-get -qq purge --assume-yes --auto-remove -o APT::AutoRemove::RecommendsImportant=false $buildDeps
-RUN apt-get clean
-RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+# RUN apt-get -qq purge --assume-yes --auto-remove -o APT::AutoRemove::RecommendsImportant=false $buildDeps
+# RUN apt-get clean
+# RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Copy all dependencies files
 COPY mix.* ./
 
 # Install all production dependencies
-RUN MIX_ENV=prod mix deps.get
+RUN mix deps.get
 
-COPY assets/package.json ./assets
-COPY assets/yarn.lock ./assets
+COPY package.json ./
+COPY yarn.lock ./
 
-RUN cd assets/ && yarn install && cd ../
+RUN yarn install
 
 # Compile all dependencies
 RUN MIX_ENV=prod mix deps.compile
 
 COPY . .
 
-RUN NODE_ENV=production cd assets/ && yarn build-prod && cd ../
+RUN NODE_ENV=production yarn build-prod
 RUN MIX_ENV=prod mix compile
 RUN MIX_ENV=prod mix phx.digest
 

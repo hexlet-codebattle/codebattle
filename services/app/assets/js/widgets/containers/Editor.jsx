@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import Gon from 'gon';
 import AceEditor from 'react-ace';
@@ -8,8 +8,6 @@ import 'brace/mode/ruby';
 import 'brace/mode/elixir';
 import 'brace/mode/python';
 import 'brace/theme/solarized_dark';
-// import languages from '../config/languages';
-const languages = Gon.getAsset('langs');
 
 const selectionBlockStyle = {
   position: 'absolute',
@@ -19,7 +17,7 @@ const selectionBlockStyle = {
   bottom: 0,
 };
 
-class Editor extends Component {
+class Editor extends PureComponent {
   static propTypes = {
     value: PropTypes.string,
     name: PropTypes.string.isRequired,
@@ -62,7 +60,7 @@ class Editor extends Component {
           fontSize={16}
           showPrintMargin={false}
         />
-        { // TODO: write component that wraps editor and prevents onCopy event
+        {
         allowCopy ? null : (
           <div style={selectionBlockStyle} />
         )}
