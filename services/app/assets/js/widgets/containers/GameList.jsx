@@ -9,9 +9,7 @@ class GameList extends React.Component {
     dispatch(fetchState());
   }
 
-  renderPlayers = (users) => {
-    return <span>{users.map(({ name, rating }) => `${name}(${rating})`).join(', ')}</span>;
-  }
+  renderPlayers = users => <span>{users.map(({ name, rating }) => `${name}(${rating})`).join(', ')}</span>
 
   renderGameLevelBadge = (level) => {
     const levels = {
@@ -71,25 +69,23 @@ class GameList extends React.Component {
                           data-method="post"
                           data-csrf={window.csrf_token}
                           data-to={`${gameUrl(game)}/join`}
-                          >
-                            Join
-                          </button> :
+                        >
+                          Join
+                        </button> :
                             null
                     }
-                    </td>
-                  </tr>
+                  </td>
+                </tr>
               ))
             }
-            </tbody>
-          </table>
-        </div>
+          </tbody>
+        </table>
+      </div>
     );
   }
 }
 
-const mapStateToProps = (state) => {
-  // TODO: Add selector
-  return { games: state.gameList.games };
-};
+// TODO: Add selector
+const mapStateToProps = state => ({ games: state.gameList.games });
 
 export default connect(mapStateToProps, null)(GameList);

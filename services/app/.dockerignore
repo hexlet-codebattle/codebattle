@@ -1,5 +1,6 @@
 _build
 deps
-assets/node_modules
+node_modules
 test
 priv/static
+tmp

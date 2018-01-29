@@ -13,14 +13,13 @@ const DEV_ENTRIES = [
   // 'webpack/hot/only-dev-server',
 ];
 
-const APP_ENTRIES = ['./js/app.js'];
+const APP_ENTRIES = ['./assets/js/app.js', './assets/css/app.scss'];
 
 const plugins = [
-  new ExtractTextPlugin('../css/app.css'),
-  new CopyWebpackPlugin([{
-    from: path.join(__dirname, 'static'),
-    to: path.resolve(__dirname, '..', 'priv', 'static'),
-  }]),
+  new ExtractTextPlugin('css/app.css'),
+  new CopyWebpackPlugin([
+    { from: 'assets/static' },
+  ]),
   new webpack.EnvironmentPlugin({
     NODE_ENV: prod ? 'production' : 'development',
   }),
@@ -39,9 +38,8 @@ module.exports = {
   },
   devtool: prod ? false : 'cheap-module-eval-source-map',
   output: {
-    path: path.resolve(__dirname, '..', 'priv', 'static', 'js'),
+    path: `${__dirname}/priv/static`,
     filename: 'app.js',
-    publicPath: path.resolve(__dirname, '..', 'priv', 'static'),
   },
   externals: {
     gon: 'Gon',
@@ -59,41 +57,20 @@ module.exports = {
           loader: 'babel-loader',
           options: {
             cacheDirectory: true,
-            presets: [
-              'flow',
-              'es2015',
-              'stage-0',
-              'react', [
-                'env',
-                {
-                  modules: false,
-                  targets: {
-                    browsers: '> 0%',
-                    uglify: true,
-                  },
-                  useBuiltIns: true,
-                },
-              ],
-            ],
-            plugins: ['transform-class-properties'],
+            presets: [ 'env', 'flow', 'stage-0' ],
           },
         },
       },
       {
-        test: /\.css$/,
+        test: /\.scss$/,
         use: ExtractTextPlugin.extract({
           fallback: 'style-loader',
-          use: 'css-loader',
+          use: ['css-loader', 'postcss-loader', 'sass-loader'],
         }),
       },
       {
-        test: /\.(jpe?g|png|gif|svg|woff2?)$/,
-        use: [{
-          loader: 'url-loader',
-          options: { limit: 40000 },
-        },
-        'image-webpack-loader',
-        ],
+        test: /\.(eot|svg|ttf|woff|woff2)$/,
+        use: 'url-loader',
       },
     ],
   },
