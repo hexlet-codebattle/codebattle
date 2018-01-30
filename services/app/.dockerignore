@@ -1,6 +1,5 @@
 _build
 deps
 node_modules
-test
 priv/static
 tmp
