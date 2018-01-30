@@ -1,0 +1,20 @@
+env:
+  - DOCKER_COMPOSE_VERSION=1.18.0
+
+before_install:
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
+
+jobs:
+  include:
+    - stage: lint and test
+      script: docker-compose -f services/app/docker-compose.test.yml run sut
+    - stage: build docker image with tag
+      on:
+        tags: true
+      script:
+        - docker login -u="$DOCKER_USER" -p="$DOCKER_PASS"
+        - docker build -t codebattle/app --file services/app/Dockerfile.prod services/app/
+        - docker push codebattle/app:"$TRAVICE_TAG"
