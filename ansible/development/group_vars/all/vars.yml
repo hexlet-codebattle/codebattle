@@ -2,3 +2,4 @@ codebattle_port: 4000
 codebattle_run_user: "{{ ansible_ssh_user }}"
 codebattle_run_user_home: "{{ lookup('env','HOME') }}"
 codebattle_env_file: "{{ lookup('env','PWD') }}/.env"
+codebattle_docker_test_timeout: 7_000

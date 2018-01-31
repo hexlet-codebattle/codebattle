@@ -23,4 +23,4 @@ config :codebattle, Codebattle.Repo,
 
 config :codebattle, Codebattle.Bot, timeout: 70
 
-config :codebattle, code_check_timeout: 8_000
+config :codebattle, code_check_timeout: (Integer.parse(System.get_env("CODEBATTLE_DOCKER_TEST_TIMEOUT")) |> elem(0)) || 5_000
