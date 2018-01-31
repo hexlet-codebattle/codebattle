@@ -38,7 +38,7 @@ module.exports = {
   },
   devtool: prod ? false : 'cheap-module-eval-source-map',
   output: {
-    path: `${__dirname}/priv/static/js`,
+    path: `${__dirname}/priv/static`,
     filename: 'app.js',
   },
   externals: {
