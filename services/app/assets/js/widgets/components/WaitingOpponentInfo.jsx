@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import i18n from 'i18next';
 import copy from 'copy-to-clipboard';
 
+const onFocus = e => e.target.select();
+
 const WaitingOpponentInfo = ({ gameUrl }) => (
   <div className="jumbotron jumbotron-fluid">
     <div className="container">
@@ -17,6 +19,7 @@ const WaitingOpponentInfo = ({ gameUrl }) => (
             aria-describedby="basic-addon2"
             value={gameUrl}
             readOnly
+            onFocus={onFocus}
           />
           <div className="input-group-append">
             <button

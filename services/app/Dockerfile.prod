@@ -25,10 +25,6 @@ ENV DOCKER_VERSION 17.11.0-ce
 RUN curl -fsSL "https://download.docker.com/linux/static/${DOCKER_CHANNEL}/x86_64/docker-${DOCKER_VERSION}.tgz" \
   | tar -xzC /usr/local/bin --strip=1 docker/docker
 
-# RUN apt-get -qq purge --assume-yes --auto-remove -o APT::AutoRemove::RecommendsImportant=false $buildDeps
-# RUN apt-get clean
-# RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
 # Copy all dependencies files
 COPY mix.* ./
 

@@ -38,7 +38,7 @@ module.exports = {
   },
   devtool: prod ? false : 'cheap-module-eval-source-map',
   output: {
-    path: `${__dirname}/priv/static`,
+    path: `${__dirname}/priv/static/js`,
     filename: 'app.js',
   },
   externals: {
@@ -57,7 +57,7 @@ module.exports = {
           loader: 'babel-loader',
           options: {
             cacheDirectory: true,
-            presets: [ 'env', 'flow', 'stage-0' ],
+            presets: ['env', 'flow', 'stage-0'],
           },
         },
       },
