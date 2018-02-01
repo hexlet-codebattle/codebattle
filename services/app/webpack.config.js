@@ -35,7 +35,6 @@ const plugins = [
 module.exports = {
   entry: {
     app: prod ? APP_ENTRIES : DEV_ENTRIES.concat(APP_ENTRIES),
-    vendor: 'font-awesome/scss/font-awesome.scss',
   },
   devtool: prod ? false : 'cheap-module-eval-source-map',
   output: {
@@ -70,23 +69,8 @@ module.exports = {
         }),
       },
       {
-        test: /.(png|jpg|jpeg|gif|woff|woff2)$/,
-        loader: 'url-loader?limit=10000',
-      },
-      {
-        test: /\.woff2?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-        use: 'url-loader?limit=10000',
-      },
-      {
-        test: /\.(ttf|eot|svg)(\?[\s\S]+)?$/,
-        use: 'file-loader',
-      },
-      {
-        test: /font-awesome\.config\.js/,
-        use: [
-          { loader: 'style-loader' },
-          { loader: 'font-awesome-loader' },
-        ],
+        test: /\.(eot|svg|ttf|woff|woff2)$/,
+        use: 'url-loader',
       },
     ],
   },

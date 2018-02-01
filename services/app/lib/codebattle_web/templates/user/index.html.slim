@@ -18,7 +18,9 @@ table.table.table-hover
     = for {user, index} <- Enum.with_index(@users) do
       tr
         td #{index + 1}
-        td #{user.name}
+        td
+          a[href="/users/#{user.id}"]
+            =user.name
         td #{user.rating}
         td
           a.text-muted[href="https://github.com/#{user.name}"]
