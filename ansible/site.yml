@@ -1,0 +1,43 @@
+- hosts: all
+
+  pre_tasks:
+    - apt:
+        update_cache: true
+        name: "{{ item }}"
+      with_items:
+        - python3-pip
+      become: true
+
+    - block:
+      - name: generate locale
+        become: true
+        locale_gen:
+          name: en_US.UTF-8
+        tags: [locale]
+
+      - name: set locale
+        become: true
+        shell: update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 LANGUAGE=en_US.UTF-8
+        tags: [locale]
+
+      - meta: reset_connection
+    - pip:
+        name: docker
+      become: true
+
+  roles:
+    - {role: geerlingguy.docker, become: true}
+
+  post_tasks:
+
+    - user:
+        name: "{{ codebattle_run_user }}"
+        groups: docker
+        append: true
+      become: true
+
+    - meta: reset_connection
+
+    - docker_network:
+        name: "{{ codebattle_docker_network }}"
+      tags: docker_network

@@ -1,5 +1,6 @@
 include make-compose.mk
 include make-ansible.mk
+include make-production.mk
 
 clean:
 	rm -rf services/app/_build

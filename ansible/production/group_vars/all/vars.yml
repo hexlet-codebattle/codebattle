@@ -3,3 +3,4 @@ codebattle_run_user: deploy
 codebattle_run_user_home: /home/deploy
 codebattle_env_file: "{{ codebattle_run_user_home }}/.env"
 codebattle_docker_network: codebattle
+codebattle_docker_test_timeout: 7_000
