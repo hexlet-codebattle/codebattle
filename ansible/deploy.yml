@@ -1,0 +1,95 @@
+---
+- hosts: all
+  gather_facts: no
+  vars_prompt:
+    - name: "codebattle_image_tag"
+      prompt: "Codebattle image tag"
+      private: no
+
+  tasks:
+    - set_fact: codebattle_image_tag={{ codebattle_image_tag }}
+      tags: always
+
+- hosts: webservers
+  gather_facts: no
+  # become: yes
+  # become_user: "{{ codebattle_run_user }}"
+
+  tasks:
+    - name: download image for nginx
+      docker_image:
+        name: "{{ codebattle_nginx_image_name }}"
+        force: yes
+
+    - docker_container:
+        recreate: yes
+        name: codebattle-nginx
+        # detach: no
+        image: "{{ codebattle_nginx_image_name }}"
+        state: started
+        restart_policy: always
+        log_driver: syslog
+        network_mode: host
+        ports:
+          - "80:80"
+      tags: [nginx]
+
+    - template:
+        src: environment.j2
+        dest: "{{ codebattle_env_file }}"
+      tags: env
+
+    - name: download image
+      docker_image:
+        name: "{{ codebattle_app_image_name }}:{{ codebattle_image_tag }}"
+        force: yes
+
+    - name: run migrations
+      docker_container:
+        recreate: yes
+        # detach: no
+        name: codebattle-migrations
+        command: "mix ecto.migrate || echo 'test'"
+        image: "{{ codebattle_app_image_name }}:{{ codebattle_image_tag }}"
+        network_mode: host
+        state: started
+        env_file: "{{ codebattle_env_file }}"
+        env:
+          MIX_ENV: prod
+        volumes:
+          - "/tmp:/tmp"
+          - "/var/tmp:/var/tmp"
+          - "/var/log/codebattle/:/var/log/codebattle/"
+      run_once: yes
+      tags: [webserver]
+
+    - name: start application
+      docker_container:
+        recreate: yes
+        name: codebattle-web
+        image: "{{ codebattle_app_image_name }}:{{ codebattle_image_tag }}"
+        state: started
+        log_driver: syslog
+        network_mode: host
+        restart_policy: always
+        env_file: "{{ codebattle_env_file }}"
+        env:
+          MIX_ENV: prod
+          NODE_ENV: production
+        ports:
+          - "4000:{{ codebattle_port }}"
+        volumes:
+          - "/var/run/docker.sock:/var/run/docker.sock"
+          - "/var/log/codebattle/:/var/log/codebattle/"
+          - "/tmp:/tmp"
+          - "/opt:/opt"
+          - "/var/tmp:/var/tmp"
+      tags: [webserver]
+
+    # - lineinfile:
+    #     regexp: "CODEBATTLE_VERSION"
+    #     line: "CODEBATTLE_VERSION={{ codebattle_image_tag }}"
+    #     dest: /etc/environment
+    #     backup: yes
+    #     state: present
+    #   become: yes
