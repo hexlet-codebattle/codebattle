@@ -8,3 +8,7 @@ production-env-update:
 
 production-deploy:
 	ansible-playbook ansible/deploy.yml -i ansible/production -u $U --ask-vault-pass
+
+production-build-and-push:
+	docker build -t codebattle/app --file services/app/Dockerfile.prod services/app/
+	docker push codebattle/app
