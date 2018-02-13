@@ -5,19 +5,19 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.prod
-    command: >
-      bash -c "mix credo && mix test"
+    command: bash -c "mix credo && mix test"
     environment:
       - CODEBATTLE_DB_NAME=codebattle_test
       - CODEBATTLE_DB_HOSTNAME=db
       - CODEBATTLE_DB_USERNAME=postgres
       - CODEBATTLE_DB_PASSWORD=
       - MIX_ENV=test
+      - CODEBATTLE_DOCKER_TEST_TIMEOUT=7000
     volumes:
-      - '/var/run/docker.sock:/var/run/docker.sock:cached'
+      - "/var/run/docker.sock:/var/run/docker.sock:cached"
       - "/var/tmp:/var/tmp:cached"
       - "/tmp:/tmp:cached"
     depends_on:
       - db
   db:
-    image: postgres
+    image: postgres:9.6
