@@ -1,4 +1,3 @@
-USER = "$(shell id -u):$(shell id -g)"
 ASSERTS_PATH = "tmp/battle_asserts"
 
 compose:
@@ -17,7 +16,7 @@ compose-kill:
 	docker-compose kill
 
 compose-bash:
-	docker-compose run --user=$(USER) app bash
+	docker-compose run app bash
 
 compose-install-mix:
 	docker-compose run app mix deps.get
