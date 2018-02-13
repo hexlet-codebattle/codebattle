@@ -39,7 +39,7 @@ module.exports = {
   devtool: prod ? false : 'cheap-module-eval-source-map',
   output: {
     path: `${__dirname}/priv/static`,
-    filename: 'app.js',
+    filename: 'js/app.js',
   },
   externals: {
     gon: 'Gon',
