@@ -24,3 +24,9 @@
     :extension: py
     :docker_image: "codebattle/python:3.6.4"
     :solution_template: "def solution():"
+  - :name: php
+    :slug: php
+    :version: 7.2
+    :extension: php
+    :docker_image: "codebattle/php:7.2"
+    :solution_template: "<?php function solution(){\n\n}"
