@@ -1,4 +1,4 @@
-defmodule Codebattle.CodeCheck.Elixir.IntegrationTest do
+defmodule Codebattle.CodeCheck.Php.IntegrationTest do
   use Codebattle.IntegrationCase
 
   alias CodebattleWeb.GameChannel
@@ -11,7 +11,7 @@ defmodule Codebattle.CodeCheck.Elixir.IntegrationTest do
     user2 = insert(:user)
 
     task = insert(:task)
-    setup_lang(:elixir)
+    setup_lang(:php)
 
     socket1 = socket("user_id", %{user_id: user1.id, current_user: user1})
     socket2 = socket("user_id", %{user_id: user2.id, current_user: user2})
@@ -50,11 +50,11 @@ defmodule Codebattle.CodeCheck.Elixir.IntegrationTest do
     {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
     :lib.flush_receive()
 
-    ref = push(socket1, "check_result", %{editor_text: "sdf", lang: "elixir"})
+    ref = push(socket1, "check_result", %{editor_text: "sdf", lang: "php"})
     :timer.sleep(timeout)
 
     assert_reply(ref, :ok, %{output: output})
-    assert ~r/undefined function sdf/ |> Regex.scan(output) |> Enum.empty?() == false
+    assert ~r/Call to undefined function solution()/ |> Regex.scan(output) |> Enum.empty?() == false
 
     fsm = Server.fsm(game.id)
 
@@ -87,7 +87,7 @@ defmodule Codebattle.CodeCheck.Elixir.IntegrationTest do
     push(socket1, "editor:text", %{editor_text: "test"})
 
     push(socket1, "check_result", %{
-      editor_text: "<?php function solution($x, $y){ return $x + $y; }",
+      editor_text: "function solution($x, $y){ return $x + $y; }",
       lang: "php"
     })
 
