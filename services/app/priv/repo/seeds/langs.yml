@@ -26,7 +26,7 @@
     :solution_template: "def solution():"
   - :name: php
     :slug: php
-    :version: 7.2
+    :version: 7.2.0
     :extension: php
-    :docker_image: "codebattle/php:7.2"
+    :docker_image: "php:7.2-alpine"
     :solution_template: "<?php function solution(){\n\n}"
