@@ -10,7 +10,7 @@ import {
 import userTypes from '../config/userTypes';
 import Editor from './Editor';
 import GameStatusTab from './GameStatusTab';
-import { sendEditorData } from '../middlewares/Game';
+import { sendEditorText } from '../middlewares/Game';
 
 class GameWidget extends Component {
   static propTypes = {
@@ -95,7 +95,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  sendData: (...args) => { dispatch(sendEditorData(...args)); },
+  sendData: (...args) => { dispatch(sendEditorText(...args)); },
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(GameWidget);

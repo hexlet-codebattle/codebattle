@@ -72,8 +72,7 @@ const initGameChannel = (dispatch) => {
   channel.onClose(ev => console.log('Game channel: closed', ev));
 };
 
-// FIXME: rename sendEditorData to sendEditorText
-export const sendEditorData = text => (dispatch, getState) => {
+export const sendEditorText = text => (dispatch, getState) => {
   const state = getState();
   const userId = currentUserIdSelector(state);
   dispatch(actions.updateEditorData({ userId, text }));
