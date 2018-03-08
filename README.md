@@ -46,15 +46,15 @@ $ make compose-test
 ### Useful
 
 ```bash
-$ mix upload_lang
+$ mix upload_langs
 
-$ mix dockers.push #all
+$ mix dockers.push # all
 $ mix dockers.push elixir
 
-$ mix dockers.build #all
+$ mix dockers.build # all
 $ mix dockers.build elixir
 
-$ mix dockers.pull #all
+$ mix dockers.pull # all
 $ mix dockers.pull elixir
 
 $ mix test test/code_check/

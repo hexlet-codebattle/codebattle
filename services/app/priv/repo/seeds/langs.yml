@@ -28,5 +28,5 @@
     :slug: php
     :version: 7.2.0
     :extension: php
-    :docker_image: "php:7.2-alpine"
+    :docker_image: "codebattle/php:7.2.0"
     :solution_template: "<?php function solution(){\n\n}"
