@@ -14,9 +14,9 @@
     :solution_template: "module.exports = () => {\n\n};"
   - :name: elixir
     :slug: elixir
-    :version: 1.5.3
+    :version: 1.6.2
     :extension: exs
-    :docker_image: "codebattle/elixir:1.5.3"
+    :docker_image: "codebattle/elixir:1.6.2"
     :solution_template: "defmodule Solution\n  def solution() do\n  \n  end\nend"
   - :name: python
     :slug: python
