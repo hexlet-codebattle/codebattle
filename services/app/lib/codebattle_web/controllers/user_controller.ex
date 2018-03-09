@@ -3,8 +3,7 @@ defmodule CodebattleWeb.UserController do
 
   use CodebattleWeb, :controller
 
-  alias Codebattle.GameProcess.ActiveGames
-  alias Codebattle.{Repo, User, Game, UserGame}
+  alias Codebattle.{Repo, User, UserGame}
   alias Ecto.Query
 
   plug(CodebattleWeb.Plugs.RequireAuth when action in @all)

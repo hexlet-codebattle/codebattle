@@ -3,8 +3,6 @@ defmodule Codebattle.GameProcess.Supervisor do
 
   use Supervisor
 
-  alias Codebattle.GameProcess.Server
-
   def start_link(game_id, fsm) do
     Supervisor.start_link(__MODULE__, [game_id, fsm], name: game_name(game_id))
   end
@@ -18,11 +16,6 @@ defmodule Codebattle.GameProcess.Supervisor do
     ]
 
     supervise(children, strategy: :one_for_one)
-  end
-
-  defp game_state({_id, pid, _type, _modules}) do
-    pid
-    |> GenServer.call(:fsm)
   end
 
   # HELPERS

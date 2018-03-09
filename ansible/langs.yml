@@ -1,0 +1,39 @@
+---
+- hosts: all
+
+  tasks:
+    - name: upload_langs
+      docker_container:
+        recreate: yes
+        # detach: no
+        name: codebattle-upload-langs
+        command: "mix upload_langs"
+        network_mode: host
+        image: "{{ codebattle_app_image_name }}:{{ ansible_env.CODEBATTLE_IMAGE_TAG }}"
+        state: started
+        env_file: "{{ codebattle_env_file }}"
+        env:
+          MIX_ENV: prod
+          CODEBATTLE_PORT: 10000
+        volumes:
+          - "/tmp:/tmp"
+          - "/var/tmp:/var/tmp"
+      run_once: yes
+
+    - name: pull dockers for tasks
+      docker_container:
+        recreate: yes
+        # detach: no
+        name: codebattle-upload-langs
+        command: "mix dockers.pull --no-start"
+        network_mode: host
+        image: "{{ codebattle_app_image_name }}:{{ ansible_env.CODEBATTLE_IMAGE_TAG }}"
+        state: started
+        env_file: "{{ codebattle_env_file }}"
+        env:
+          CODEBATTLE_PORT: 10000
+        volumes:
+          - "/tmp:/tmp"
+          - "/var/tmp:/var/tmp"
+      run_once: yes
+

@@ -2,7 +2,6 @@ defmodule CodebattleWeb.Plugs.AssignGon do
   @moduledoc false
 
   import PhoenixGon.Controller
-  import Plug.Conn
   require Logger
 
   @spec init(Keyword.t()) :: Keyword.t()
