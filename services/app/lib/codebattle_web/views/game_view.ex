@@ -9,6 +9,12 @@ defmodule CodebattleWeb.GameView do
     end
   end
 
+  def game_result(%Codebattle.Game{users: users, user_games: user_games}) do
+    users
+    |> Enum.map(fn u -> "#{user_name(u)} #{Enum.find(user_games, fn(ug) -> ug.user_id == u.id end).result}" end)
+    |> Enum.join(", ")
+  end
+
   def csrf_token do
     Plug.CSRFProtection.get_csrf_token()
   end

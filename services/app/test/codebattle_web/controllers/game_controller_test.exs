@@ -1,7 +1,18 @@
 defmodule Codebattleweb.GameControllerTest do
   use CodebattleWeb.ConnCase, async: true
 
-  test "show return 404 when game over", %{conn: conn} do
+  test "return 404 when game over does not exists", %{conn: conn} do
+    user = insert(:user)
+
+    conn =
+      conn
+      |> put_session(:user_id, user.id)
+      |> get(game_path(conn, :show, 1231223))
+
+    assert conn.status == 404
+  end
+
+  test "return 200 when game is not active", %{conn: conn} do
     user = insert(:user)
     game = insert(:game, state: "game_over")
 
@@ -10,19 +21,7 @@ defmodule Codebattleweb.GameControllerTest do
       |> put_session(:user_id, user.id)
       |> get(game_path(conn, :show, game.id))
 
-    assert conn.status == 404
-  end
-
-  test "join return 404 when game over", %{conn: conn} do
-    user = insert(:user)
-    game = insert(:game, state: "game_over")
-
-    conn =
-      conn
-      |> put_session(:user_id, user.id)
-      |> post(game_path(conn, :join, game.id))
-
-    assert conn.status == 404
+    assert conn.status == 200
   end
 
   test "show game_over html", %{conn: conn} do
