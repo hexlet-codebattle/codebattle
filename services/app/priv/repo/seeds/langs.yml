@@ -29,4 +29,4 @@
     :version: 7.2.0
     :extension: php
     :docker_image: "codebattle/php:7.2.0"
-    :solution_template: "<?php function solution(){\n\n}"
+    :solution_template: "function solution(){\n\n}"
