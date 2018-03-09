@@ -22,7 +22,6 @@ defmodule CodebattleWeb.Plugs.AssignCurrentUser do
             |> assign(:current_user, %User{guest: true})
 
           user ->
-            user
             conn |> assign(:current_user, user)
         end
     end

@@ -1,8 +1,8 @@
 defmodule CodebattleWeb.PageController do
   use CodebattleWeb, :controller
 
-  alias Codebattle.GameProcess.Play
-  alias Codebattle.Game
+  alias Codebattle.{Repo, Game}
+  alias Ecto.Query
 
   def index(conn, _params) do
     current_user = conn.assigns.current_user
@@ -12,7 +12,9 @@ defmodule CodebattleWeb.PageController do
         render(conn, "index.html")
 
       false ->
-        render(conn, "list.html")
+        query = Query.from games in Game, order_by: [desc: games.inserted_at], where: [state: "game_over"], limit: 10, preload: :users
+        games = Repo.all(query)
+        render(conn, "list.html", games: games)
     end
   end
 end

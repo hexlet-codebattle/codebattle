@@ -16,5 +16,25 @@ h2 = gettext "Create new game with difficult:"
 
 #game-list
 
+h3 = gettext "Recent games"
+
+table.table.table-hover
+  thead.thead-dark
+    tr
+      th Date
+      th State
+      th Players
+      th Result
+  tbody
+    = for game <- @games do
+      tr
+        td
+          = game.updated_at
+        td
+          = game.state
+        td
+          = game.users |> Enum.map(fn x -> user_name(x) end) |> Enum.join(", ")
+        td
+          = link "show", to: game_path(@conn, :show, game.id), class: "nav-link"
 javascript:
     window.csrf_token = "<%= csrf_token() %>"

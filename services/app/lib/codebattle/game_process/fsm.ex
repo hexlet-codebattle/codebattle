@@ -10,7 +10,6 @@ defmodule Codebattle.GameProcess.Fsm do
   import CodebattleWeb.Gettext
   import Codebattle.GameProcess.FsmHelpers
 
-  alias Codebattle.User
   alias Codebattle.GameProcess.Player
 
   use Fsm,
