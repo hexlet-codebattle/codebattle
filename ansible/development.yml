@@ -2,13 +2,6 @@
 - hosts: all
   gather_facts: no
   tasks:
-    - pip:
-        name: "{{ item }}"
-      with_items:
-        - docker
-        - docker-compose
-      become: true
-
     - template:
         src: environment.j2
         dest: '../.env'

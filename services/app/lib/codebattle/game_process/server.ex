@@ -25,7 +25,7 @@ defmodule Codebattle.GameProcess.Server do
   end
 
   def game_pid(game_id) do
-    :gproc.where(server_name(game_id))
+    :gproc.where(game_key(game_id))
   end
 
   # SERVER

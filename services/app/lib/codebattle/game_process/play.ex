@@ -25,7 +25,7 @@ defmodule Codebattle.GameProcess.Play do
   end
 
   def get_game(id) do
-    Repo.get(Game, id)
+    from(g in Game, preload: [:users, :user_games]) |> Repo.get(id)
   end
 
   def get_fsm(id) do

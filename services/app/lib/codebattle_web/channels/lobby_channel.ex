@@ -3,7 +3,6 @@ defmodule CodebattleWeb.LobbyChannel do
   use CodebattleWeb, :channel
 
   alias Codebattle.GameProcess.Play
-  alias Codebattle.Game
 
   require Logger
 
