@@ -68,6 +68,7 @@ class GameWidget extends Component {
   }
 
   render() {
+    const { leftEditor } = this.props;
     return (
       <Fragment>
         <div className="row mx-auto">
@@ -81,6 +82,11 @@ class GameWidget extends Component {
           </div>
           <div className="col-md-6">
             <Editor {...this.getRightEditorParams()} />
+          </div>
+        </div>
+        <div className="row mx-auto">
+          <div className="col-md-6">
+            <p> Template: {_.get(leftEditor, ['currentLang', 'solution_template'])}</p>
           </div>
         </div>
       </Fragment>

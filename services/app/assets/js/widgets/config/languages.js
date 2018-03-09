@@ -3,4 +3,5 @@ export default {
   ruby: 'ruby',
   elixir: 'elixir',
   php: 'php',
+  python: 'python',
 };
