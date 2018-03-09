@@ -49,7 +49,7 @@
         recreate: yes
         # detach: no
         name: codebattle-migrations
-        command: "mix ecto.migrate || echo 'test'"
+        command: "mix ecto.migrate"
         image: "{{ codebattle_app_image_name }}:{{ codebattle_image_tag }}"
         network_mode: host
         state: started
@@ -59,7 +59,6 @@
         volumes:
           - "/tmp:/tmp"
           - "/var/tmp:/var/tmp"
-          - "/var/log/codebattle/:/var/log/codebattle/"
       run_once: yes
       tags: [webserver]
 
@@ -86,10 +85,10 @@
           - "/var/tmp:/var/tmp"
       tags: [webserver]
 
-    # - lineinfile:
-    #     regexp: "CODEBATTLE_VERSION"
-    #     line: "CODEBATTLE_VERSION={{ codebattle_image_tag }}"
-    #     dest: /etc/environment
-    #     backup: yes
-    #     state: present
-    #   become: yes
+    - lineinfile:
+        regexp: "CODEBATTLE_IMAGE_TAG"
+        line: "CODEBATTLE_IMAGE_TAG={{ codebattle_image_tag }}"
+        dest: /etc/environment
+        backup: yes
+        state: present
+      become: yes
