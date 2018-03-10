@@ -4,7 +4,7 @@ services:
   sut:
     build:
       context: .
-      dockerfile: Dockerfile.test
+      dockerfile: Dockerfile.prod
     command: bash -c "mix credo && mix test"
     environment:
       - CODEBATTLE_DB_NAME=codebattle_test
