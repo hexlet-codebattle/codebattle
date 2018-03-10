@@ -1,4 +1,4 @@
-FROM elixir
+FROM elixir:1.6
 
 # Install hex (Elixir package manager)
 RUN mix local.hex --force
