@@ -8,7 +8,9 @@ while ($line = fgets($stdin)) {
         if(isset($json->{'check'})) {
                 print $json->{'check'};
         } else {
-                assert(solution(...$json->{'arguments'}) == $json->{'expected'});
+		if (solution(...$json->{'arguments'}) != $json->{'expected'}){
+			exit("Wrong result");
+		}
         }
 }
 
