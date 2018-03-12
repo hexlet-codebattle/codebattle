@@ -21,7 +21,7 @@ RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources
 RUN apt-get update && apt-get install -y  yarn
 
 ENV DOCKER_CHANNEL edge
-ENV DOCKER_VERSION 17.11.0-ce
+ENV DOCKER_VERSION 17.12.1-ce
 RUN curl -fsSL "https://download.docker.com/linux/static/${DOCKER_CHANNEL}/x86_64/docker-${DOCKER_VERSION}.tgz" \
   | tar -xzC /usr/local/bin --strip=1 docker/docker
 
