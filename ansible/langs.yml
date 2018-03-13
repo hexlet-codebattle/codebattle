@@ -31,6 +31,7 @@
         state: started
         env_file: "{{ codebattle_env_file }}"
         env:
+          MIX_ENV: prod
           CODEBATTLE_PORT: 10000
         volumes:
           - "/tmp:/tmp"
