@@ -73,7 +73,14 @@ defmodule CodebattleWeb.GameChannel do
 
     if user_authorized_in_game?(game_id, socket.assigns.user_id) do
       Play.give_up(game_id, socket.assigns.current_user)
-      broadcast_from!(socket, "give_up", %{user_id: socket.assigns.user_id})
+      fsm = Play.get_fsm(game_id)
+      winner = FsmHelpers.get_winner(fsm)
+      message = socket.assigns.current_user.name <> " " <> gettext("gave up!")
+      broadcast!(socket, "give_up", %{
+        winner: winner,
+        status: "game_over",
+        msg: message
+      })
       {:noreply, socket}
     else
       {:reply, {:error, %{reason: "not_authorized"}}, socket}

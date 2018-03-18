@@ -154,6 +154,10 @@ export const editorReady = () => (dispatch) => {
   channel.on('user:won', ({ winner, status, msg }) => {
     dispatch(actions.updateGameStatus({ status, winner }));
   });
+
+  channel.on('give_up', ({ winner, status, msg }) => {
+    dispatch(actions.updateGameStatus({ status, winner }));
+  });
 };
 
 export const checkGameResult = () => (dispatch, getState) => {
