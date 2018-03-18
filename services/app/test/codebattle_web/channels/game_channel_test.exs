@@ -169,7 +169,14 @@ defmodule CodebattleWeb.GameChannelTest do
 
     push(socket1, "give_up")
 
-    payload = %{user_id: user1.id}
+    winner = user2
+    message = "#{user1.name} gave up!"
+
+    payload = %{
+      winner: winner,
+      status: "game_over",
+      msg: message
+    }
 
     assert_receive %Phoenix.Socket.Broadcast{
       topic: ^game_topic,
