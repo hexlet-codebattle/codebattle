@@ -2,9 +2,10 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const path = require('path');
 const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
-const env = process.env.MIX_ENV || 'dev';
-const prod = env === 'prod';
+const env = process.env.NODE_ENV || 'dev';
+const isProd = env === 'production';
 // const publicPath = 'http://localhost:4002';
 
 const DEV_ENTRIES = [
@@ -15,13 +16,13 @@ const DEV_ENTRIES = [
 
 const APP_ENTRIES = ['./assets/js/app.js', './assets/css/app.scss'];
 
-const plugins = [
+const commonPlugins = [
   new ExtractTextPlugin('css/app.css'),
   new CopyWebpackPlugin([
     { from: 'assets/static' },
   ]),
   new webpack.EnvironmentPlugin({
-    NODE_ENV: prod ? 'production' : 'development',
+    NODE_ENV: isProd ? 'production' : 'development',
   }),
   new webpack.ProvidePlugin({
     $: 'jquery',
@@ -32,11 +33,17 @@ const plugins = [
   }),
 ];
 
+const devPlugins = commonPlugins;
+const productionPlugins = [
+  ...commonPlugins,
+  new UglifyJsPlugin(),
+];
+
 module.exports = {
   entry: {
-    app: prod ? APP_ENTRIES : DEV_ENTRIES.concat(APP_ENTRIES),
+    app: isProd ? APP_ENTRIES : DEV_ENTRIES.concat(APP_ENTRIES),
   },
-  devtool: prod ? false : 'cheap-module-eval-source-map',
+  devtool: isProd ? false : 'cheap-module-eval-source-map',
   output: {
     path: `${__dirname}/priv/static`,
     filename: 'js/app.js',
@@ -74,7 +81,7 @@ module.exports = {
       },
     ],
   },
-  plugins,
+  plugins: isProd ? productionPlugins : devPlugins,
   watchOptions: {
     aggregateTimeout: 300,
     poll: 1000,
