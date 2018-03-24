@@ -54,7 +54,8 @@ defmodule Codebattle.CodeCheck.Phython.IntegrationTest do
     :timer.sleep(timeout)
 
     assert_reply(ref, :ok, %{output: output})
-    assert ~r/name 'sdf' is not defined/ |> Regex.scan(output) |> Enum.empty?() == false
+    expected_result = %{"status" => "error", "result" => "unexpected"}
+    assert expected_result == Poison.decode!(output)
 
     fsm = Server.fsm(game.id)
 

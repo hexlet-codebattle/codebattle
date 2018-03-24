@@ -28,7 +28,7 @@ defmodule Codebattle.CodeCheck.Checker do
           "Docker stdout for task_id: #{task.id}, lang: #{lang.slug}, output:#{global_output}"
         )
 
-        clean_output = global_output |> String.split("\n") |> tl |> Enum.join("\n")
+        clean_output = global_output |> String.split("\n") |> hd
 
         result =
           case status do

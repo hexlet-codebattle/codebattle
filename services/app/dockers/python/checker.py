@@ -1,11 +1,28 @@
 import sys
 import json
-from check.solution import solution
 
 checks = [json.loads(l) for l in sys.stdin.read().split("\n")]
 
-for c in checks:
-    if 'check' in c.keys():
-        print(c['check'])
-    else:
-        assert solution(*c['arguments']) == c['expected']
+try:
+    from check.solution import solution
+    for element in checks:
+        if 'check' in element.keys():
+            print(json.dumps({
+                'status': 'ok',
+                'result': element['check'],
+            }))
+        else:
+            assert solution(*element['arguments']) == element['expected'], element['arguments']
+
+except AssertionError as exc:
+    print(json.dumps({
+        'status': 'failure',
+        'result': exc.args[0],
+    }))
+    exit(1)
+except Exception as exc:
+    print(json.dumps({
+        'status': 'error',
+        'result': 'unexpected',
+    }))
+    exit(1)
