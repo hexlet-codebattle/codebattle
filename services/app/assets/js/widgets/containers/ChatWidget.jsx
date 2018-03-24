@@ -45,10 +45,10 @@ class ChatWidget extends React.Component {
 
   render() {
     return (
-      <div className="row p-3">
-        <div className="col-9 p-1 border">
+      <div className="row ">
+        <div className="col-10 border p-1">
           <p className="m-1"><b>Chat</b></p>
-          <div className="chat-box p-2">
+          <div className="chat-box ">
             {this.props.messages.map(({ user, message }, i) => <p key={i} className="mb-1"><b>{user}:</b> {message}</p>)}
           </div>
           <div className="input-group input-group-sm mt-3">
@@ -71,7 +71,7 @@ class ChatWidget extends React.Component {
             </div>
           </div>
         </div>
-        <div className="col-3 p-1 border">
+        <div className="col-2 p-1 border">
           <p className="m-1"><b>Online users</b></p>
           <div className="online-users">
             {this.props.users.map(user => <p className="m-1" key={user.id}>{user.name}</p>)}

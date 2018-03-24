@@ -33,8 +33,8 @@ class RootContainer extends React.Component {
       default:
         return (
           <Fragment>
-            <GameWidget />
             <InfoWidget />
+            <GameWidget />
           </Fragment>
         );
     }

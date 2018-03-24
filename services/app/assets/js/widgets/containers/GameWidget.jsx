@@ -11,8 +11,18 @@ import userTypes from '../config/userTypes';
 import Editor from './Editor';
 import GameStatusTab from './GameStatusTab';
 import { sendEditorText } from '../middlewares/Game';
+import ExecutionOutput from '../components/ExecutionOutput';
+
+const Tabs = { editor: 'EDITOR', output: 'OUTPUT' };
 
 class GameWidget extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      currentTab: Tabs.editor,
+    }
+  }
+
   static propTypes = {
     currentUser: PropTypes.shape({
       id: PropTypes.number,
@@ -30,6 +40,7 @@ class GameWidget extends Component {
   static defaultProps = {
     leftEditor: {},
     rightEditor: {},
+    currentTab: Tabs.editor,
   }
 
   getLeftEditorParams() {
@@ -67,6 +78,16 @@ class GameWidget extends Component {
     };
   }
 
+  renderTab() {
+    const { editorText, outputText } = this.props;
+
+    switch (this.state.currentTab) {
+      case Tabs.editor: return <Editor {...this.getLeftEditorParams()} />
+      case Tabs.output: return <ExecutionOutput output={outputText} />;
+      default: return null;
+    }
+  }
+
   render() {
     const { leftEditor } = this.props;
     return (
@@ -77,8 +98,31 @@ class GameWidget extends Component {
           </div>
         </div>
         <div className="row mx-auto">
-          <div className="col-md-6">
-            <Editor {...this.getLeftEditorParams()} />
+          <div className="col-6">
+            <div className="card mb-3">
+              <div className="card-body">
+                {this.renderTab()}
+              </div>
+                <div className="card-footer text-muted">
+                <ul className="nav nav-tabs card-header-tabs">
+                  {_.map(Tabs, (value, key) => {
+                    const active = this.state.currentTab === value ? 'active' : '';
+                    return (
+                      <li className="nav-item" key={key}>
+                        <a
+                          href="#"
+                          role="button"
+                          className={`nav-link disabled ${active}`}
+                          onClick={() => this.setState({ currentTab: value })}
+                        >
+                          {value}
+                        </a>
+                      </li>
+                    );
+                  })}
+                </ul>
+                </div>
+            </div>
           </div>
           <div className="col-md-6">
             <Editor {...this.getRightEditorParams()} />
@@ -98,6 +142,7 @@ const mapStateToProps = state => ({
   currentUser: currentUserSelector(state),
   leftEditor: leftEditorSelector(state),
   rightEditor: rightEditorSelector(state),
+  outputText: state.executionOutput,
 });
 
 const mapDispatchToProps = dispatch => ({
