@@ -6,9 +6,9 @@
     "last 2 versions"
   ],
   "scripts": {
-    "watch": "node_modules/.bin/webpack --watch-stdin --progress --color",
-    "build-dev": "node_modules/.bin/webpack",
-    "build-prod": "NODE_ENV=production node_modules/.bin/webpack -p"
+    "watch": "node_modules/.bin/webpack --watch-stdin --progress --color --mode development",
+    "build-dev": "node_modules/.bin/webpack  --mode development",
+    "build-prod": "NODE_ENV=production node_modules/.bin/webpack -p  --mode production"
   },
   "dependencies": {
     "bootstrap": "^4.0.0",
