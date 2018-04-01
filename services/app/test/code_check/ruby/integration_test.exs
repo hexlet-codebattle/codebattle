@@ -55,8 +55,9 @@ defmodule Codebattle.CodeCheck.Ruby.IntegrationTest do
 
     assert_reply(ref, :ok, %{output: output})
 
-    assert ~r/undefined local variable or method `sdf/ |> Regex.scan(output) |> Enum.empty?() ==
-             false
+    expected_result = %{"status" => "error", "result" => "undefined local variable or method `sdf' for main:Object"}
+
+    assert expected_result == Poison.decode!(output)
 
     fsm = Server.fsm(game.id)
 

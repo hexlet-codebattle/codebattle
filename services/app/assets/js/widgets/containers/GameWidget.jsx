@@ -97,20 +97,15 @@ class GameWidget extends Component {
             <GameStatusTab />
           </div>
         </div>
-        <div className="row mx-auto">
-          <div className="col-6">
-            <div className="card mb-3">
-              <div className="card-body">
+        <div className="row my-2">
+          <div className="col-6" style={{ height: '500px' }}>
                 {this.renderTab()}
-              </div>
-                <div className="card-footer text-muted">
-                <ul className="nav nav-tabs card-header-tabs">
+                <ul className="nav nav-tabs">
                   {_.map(Tabs, (value, key) => {
                     const active = this.state.currentTab === value ? 'active' : '';
                     return (
                       <li className="nav-item" key={key}>
                         <a
-                          href="#"
                           role="button"
                           className={`nav-link disabled ${active}`}
                           onClick={() => this.setState({ currentTab: value })}
@@ -121,16 +116,14 @@ class GameWidget extends Component {
                     );
                   })}
                 </ul>
-                </div>
+                <div className="row mx-auto">
+                  <div className="col-md-6">
+                    <p> Template: {_.get(leftEditor, ['currentLang', 'solution_template'])}</p>
+                  </div>
             </div>
           </div>
-          <div className="col-md-6">
+          <div className="col-6">
             <Editor {...this.getRightEditorParams()} />
-          </div>
-        </div>
-        <div className="row mx-auto">
-          <div className="col-md-6">
-            <p> Template: {_.get(leftEditor, ['currentLang', 'solution_template'])}</p>
           </div>
         </div>
       </Fragment>
