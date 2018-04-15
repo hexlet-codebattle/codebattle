@@ -2,7 +2,9 @@ defmodule Codebattle.CodeCheck.Checker do
   @moduledoc false
 
   require Logger
+
   alias Codebattle.{Repo, Language}
+  # alias Codebattle.CodeCheck.OutputFilter
 
   def check(task, editor_text, lang_slug) do
     case Repo.get_by(Language, %{slug: lang_slug}) do
@@ -28,7 +30,13 @@ defmodule Codebattle.CodeCheck.Checker do
           "Docker stdout for task_id: #{task.id}, lang: #{lang.slug}, output:#{global_output}"
         )
 
-        clean_output = global_output |> String.split("\n") |> hd
+        # for json returned langs need fix after all langs support json
+        clean_output =
+          if Enum.member?(["ruby", "python", "elixir"], lang.slug) do
+            ~r/{\"status\":.+}/ |> Regex.run(global_output) |> List.first()
+          else
+            global_output |> String.split("\n") |> hd
+          end
 
         result =
           case status do

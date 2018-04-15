@@ -29,9 +29,11 @@ defmodule CodebattleWeb.GameController do
             conn
             |> put_status(:not_found)
             |> render(CodebattleWeb.ErrorView, "404.html", %{msg: gettext("Game not found")})
+
           game ->
             render(conn, "game_result.html", %{game: game})
         end
+
       _pid ->
         fsm = Play.get_fsm(id)
         langs = Repo.all(Language)

@@ -7,7 +7,7 @@ defmodule Codebattleweb.GameControllerTest do
     conn =
       conn
       |> put_session(:user_id, user.id)
-      |> get(game_path(conn, :show, 1231223))
+      |> get(game_path(conn, :show, 1_231_223))
 
     assert conn.status == 404
   end
