@@ -10,11 +10,11 @@
 msgid ""
 msgstr ""
 
-#: lib/codebattle_web/templates/page/index.html.slim:2
+#: lib/codebattle_web/templates/page/index.html.slim:1
 msgid "Welcome to %{name}!"
 msgstr ""
 
-#: lib/codebattle_web/templates/page/index.html.slim:3
+#: lib/codebattle_web/templates/page/index.html.slim:1
 msgid "%{name}: game for programmers."
 msgstr ""
 
@@ -23,7 +23,7 @@ msgstr ""
 msgid "Create game"
 msgstr ""
 
-#: lib/codebattle_web/templates/page/index.html.slim:9
+#: lib/codebattle_web/templates/user/index.html.slim:1
 msgid "Game list"
 msgstr ""
 
@@ -43,7 +43,7 @@ msgstr ""
 msgid "Logout"
 msgstr ""
 
-#: lib/codebattle_web/templates/layout/app.html.slim:30
+#: lib/codebattle_web/templates/layout/app.html.slim:1
 msgid "Sign in with %{name}"
 msgstr ""
 
@@ -51,7 +51,7 @@ msgstr ""
 msgid "Listing games"
 msgstr ""
 
-#: lib/codebattle_web/templates/game/index.html.slim:2
+#: lib/codebattle_web/templates/user/index.html.slim:1
 msgid "Total: "
 msgstr ""
 
@@ -115,11 +115,11 @@ msgstr ""
 msgid "%{index}) name: %{name}, rating: %{rating}"
 msgstr ""
 
-#: lib/codebattle_web/controllers/auth_controller.ex:15
+#: lib/codebattle_web/controllers/session_controller.ex:6
 msgid "You have been logged out!"
 msgstr ""
 
-#: lib/codebattle_web/controllers/auth_controller.ex:22
+#: lib/codebattle_web/controllers/auth_controller.ex:15
 msgid "Failed to authenticate."
 msgstr ""
 
@@ -127,7 +127,7 @@ msgstr ""
 msgid "Successfully authenticated"
 msgstr ""
 
-#: lib/codebattle_web/controllers/game_controller.ex:16
+#: lib/codebattle_web/controllers/game_controller.ex:31
 msgid "Game not found"
 msgstr ""
 
@@ -143,19 +143,19 @@ msgstr ""
 msgid "Yay, you won the game!"
 msgstr ""
 
-#: lib/codebattle_web/controllers/game_controller.ex:54
+#: lib/codebattle_web/channels/game_channel.ex:116
 msgid "You lose the game"
 msgstr ""
 
-#: lib/codebattle_web/views/error_view.ex:6
+#: lib/codebattle_web/views/error_view.ex:8
 msgid "Page not found"
 msgstr ""
 
-#: lib/codebattle_web/views/error_view.ex:10
+#: lib/codebattle_web/views/error_view.ex:13
 msgid "Internal server error"
 msgstr ""
 
-#: lib/codebattle/plugs/authorization.ex:30
+#: lib/codebattle_web/plugs/require_auth.ex:12
 msgid "You must be logged in to access that page"
 msgstr ""
 
@@ -169,4 +169,85 @@ msgstr ""
 
 #: assets/js/socket.js:52
 msgid "channel"
+msgstr ""
+
+#, elixir-format
+#: lib/codebattle_web/templates/page/list.html.slim:1
+msgid "Create new game with difficult:"
+msgstr ""
+
+#, elixir-format
+#: lib/codebattle_web/templates/page/list.html.slim:1
+msgid "Easy"
+msgstr ""
+
+#, elixir-format
+#: lib/codebattle_web/templates/page/list.html.slim:1
+msgid "Elementary"
+msgstr ""
+
+#, elixir-format
+#: lib/codebattle_web/templates/game/game_over.html.slim:1
+msgid "Game over"
+msgstr ""
+
+#, elixir-format
+#: lib/codebattle_web/templates/game/game_result.html.slim:1
+msgid "Game status"
+msgstr ""
+
+#, elixir-format
+#: lib/codebattle_web/templates/page/list.html.slim:1
+msgid "Hard"
+msgstr ""
+
+#, elixir-format
+#: lib/codebattle_web/templates/game/join.html.slim:1
+msgid "Join game"
+msgstr ""
+
+#, elixir-format
+#: lib/codebattle_web/controllers/game_controller.ex:60
+msgid "Joined the game"
+msgstr ""
+
+#, elixir-format
+#: lib/codebattle_web/templates/page/list.html.slim:1
+msgid "Medium"
+msgstr ""
+
+#, elixir-format
+#: lib/codebattle_web/templates/page/list.html.slim:1
+msgid "Recent games"
+msgstr ""
+
+#, elixir-format
+#: lib/codebattle_web/templates/layout/app.html.slim:1
+msgid "Sign Out"
+msgstr ""
+
+#, elixir-format
+#: lib/codebattle_web/controllers/auth_controller.ex:23
+msgid "Successfully authenticated."
+msgstr ""
+
+#, elixir-format
+#: lib/codebattle_web/templates/layout/app.html.slim:1
+msgid "User rating"
+msgstr ""
+
+#, elixir-format
+#: lib/codebattle_web/controllers/game_controller.ex:19
+#: lib/codebattle_web/controllers/game_controller.ex:65
+msgid "You are in a different game"
+msgstr ""
+
+#, elixir-format
+#: lib/codebattle_web/channels/game_channel.ex:78
+msgid "gave up!"
+msgstr ""
+
+#, elixir-format
+#: lib/codebattle_web/channels/game_channel.ex:105
+msgid "won the game!"
 msgstr ""
