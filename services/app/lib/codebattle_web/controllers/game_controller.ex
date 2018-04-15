@@ -57,7 +57,7 @@ defmodule CodebattleWeb.GameController do
         CodebattleWeb.Endpoint.broadcast("lobby", "update:game", %{game: fsm})
 
         conn
-        |> put_flash(:info, gettext("Joined to game"))
+        |> put_flash(:info, gettext("Joined the game"))
         |> redirect(to: game_path(conn, :show, id))
 
       :error ->

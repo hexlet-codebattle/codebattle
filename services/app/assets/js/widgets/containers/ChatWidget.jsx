@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { fetchState, addMessage } from '../middlewares/Chat';
@@ -15,16 +16,25 @@ class ChatWidget extends React.Component {
     dispatch: PropTypes.func.isRequired,
   };
 
-  state = { message: '' };
+  state = { message: '' }
 
   componentDidMount() {
     const { dispatch } = this.props;
 
     dispatch(fetchState());
+    _.defer(this.scrollBottom);
   }
+
+  messagesEnd = null
 
   handleChange = (e) => {
     this.setState({ message: e.target.value });
+  }
+
+  scrollBottom = () => {
+    if (this.messagesEnd) {
+      (this.messagesEnd).scrollIntoView({ behavior: 'smooth' });
+    }
   }
 
   sendMessage = () => {
@@ -35,6 +45,7 @@ class ChatWidget extends React.Component {
       addMessage(name, message);
       this.setState({ message: '' });
     }
+    this.scrollBottom();
   }
 
   handleKeyPress = (e) => {
@@ -45,36 +56,70 @@ class ChatWidget extends React.Component {
 
   render() {
     return (
-      <div className="row ">
-        <div className="col-10 border p-1">
-          <p className="m-1"><b>Chat</b></p>
-          <div className="chat-box ">
-            {this.props.messages.map(({ user, message }, i) => <p key={i} className="mb-1"><b>{user}:</b> {message}</p>)}
+      <div
+        className="card-group"
+        style={{
+          height: '100%',
+          position: 'absolute',
+          top: 0,
+          bottom: 0,
+          right: '15px',
+          left: '15px',
+        }}
+      >
+        <div className="card col-8 p-0">
+          <div className="card-header font-weight-bold">Chat</div>
+          <div className="card-body" style={{ overflow: 'scroll' }}>
+            {this.props.messages.map(({ user, message }, i) => {
+              const key = `${user}${i}`;
+              return (
+                <p key={key} className="mb-1 ">
+                  <span className="font-weight-bold">{`${user}: `}</span>
+                  {message}
+                </p>
+              );
+            })}
+            <div ref={(el) => { this.messagesEnd = el; }} />
           </div>
-          <div className="input-group input-group-sm mt-3">
-            <input
-              className="form-control"
-              type="text"
-              placeholder="Type message here..."
-              value={this.state.message}
-              onChange={this.handleChange}
-              onKeyPress={this.handleKeyPress}
-            />
-            <div className="input-group-btn">
-              <button
-                className="btn btn-outline-success"
-                type="button"
-                onClick={this.sendMessage}
-              >
-                Send
-              </button>
+          <div className="card-footer">
+            <div className="input-group input-group-sm">
+              <input
+                className="form-control"
+                type="text"
+                placeholder="Type message here..."
+                value={this.state.message}
+                onChange={this.handleChange}
+                onKeyPress={this.handleKeyPress}
+              />
+              <div className="input-group-append">
+                <button
+                  className="btn btn-outline-success"
+                  type="button"
+                  onClick={this.sendMessage}
+                >
+                  Send
+                </button>
+              </div>
             </div>
           </div>
         </div>
-        <div className="col-2 p-1 border">
-          <p className="m-1"><b>Online users</b></p>
-          <div className="online-users">
-            {this.props.users.map(user => <p className="m-1" key={user.id}>{user.name}</p>)}
+        <div className="card col-4 p-0">
+          <span
+            className="card-header font-weight-bold text-truncate"
+            title="Online users"
+          >
+            Online users
+          </span>
+          <div className="card-body">
+            {this.props.users.map(user => (
+              <p
+                className="m-1 text-truncate"
+                key={user.id}
+                title={user.name}
+              >
+                {user.name}
+              </p>
+            ))}
           </div>
         </div>
       </div>
