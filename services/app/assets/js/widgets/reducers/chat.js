@@ -18,7 +18,7 @@ const chat = handleActions({
   },
   [actions.newMessageChat](state, { payload: { user, message } }) {
     const { messages } = state;
-    const newMessages = [{ user, message }, ...messages];
+    const newMessages = [...messages, { user, message }];
 
     return { ...state, messages: newMessages };
   },
