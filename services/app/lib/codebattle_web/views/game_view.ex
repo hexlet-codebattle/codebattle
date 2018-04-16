@@ -11,7 +11,9 @@ defmodule CodebattleWeb.GameView do
 
   def game_result(%Codebattle.Game{users: users, user_games: user_games}) do
     users
-    |> Enum.map(fn u -> "#{user_name(u)} #{Enum.find(user_games, fn(ug) -> ug.user_id == u.id end).result}" end)
+    |> Enum.map(fn u ->
+      "#{user_name(u)} #{Enum.find(user_games, fn ug -> ug.user_id == u.id end).result}"
+    end)
     |> Enum.join(", ")
   end
 

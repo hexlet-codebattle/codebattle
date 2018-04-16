@@ -21,20 +21,10 @@
       run_once: yes
 
     - name: pull dockers for tasks
-      docker_container:
-        recreate: yes
-        # detach: no
-        name: codebattle-upload-langs
-        command: "mix dockers.pull --no-start"
-        network_mode: host
-        image: "{{ codebattle_app_image_name }}:{{ ansible_env.CODEBATTLE_IMAGE_TAG }}"
-        state: started
-        env_file: "{{ codebattle_env_file }}"
-        env:
-          MIX_ENV: prod
-          CODEBATTLE_PORT: 10000
-        volumes:
-          - "/tmp:/tmp"
-          - "/var/tmp:/var/tmp"
-      run_once: yes
-
+      shell: "docker pull {{ item }}"
+      with_items:
+        - "codebattle/ruby:2.5.0"
+        - "codebattle/js:9.3.0"
+        - "codebattle/elixir:1.6.2"
+        - "codebattle/python:3.6.4"
+        - "codebattle/php:7.2.0"

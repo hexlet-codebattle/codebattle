@@ -76,11 +76,13 @@ defmodule CodebattleWeb.GameChannel do
       fsm = Play.get_fsm(game_id)
       winner = FsmHelpers.get_winner(fsm)
       message = socket.assigns.current_user.name <> " " <> gettext("gave up!")
+
       broadcast!(socket, "give_up", %{
         winner: winner,
         status: "game_over",
         msg: message
       })
+
       {:noreply, socket}
     else
       {:reply, {:error, %{reason: "not_authorized"}}, socket}

@@ -65,7 +65,9 @@ defmodule Codebattle.GameProcess.ActiveGames do
   end
 
   def participant?(game_id, user_id) do
-    @table_name |> :ets.match_object({game_key(game_id), %{user_id => %{}}, :_}) |> Enum.empty?()
+    @table_name
+    |> :ets.match_object({game_key(game_id), %{user_id => %{}}, :_})
+    |> Enum.empty?()
     |> Kernel.!()
   end
 

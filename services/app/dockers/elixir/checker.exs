@@ -1,37 +1,52 @@
-Code.require_file "check/solution.exs"
+try do
+  Code.eval_file("check/solution.exs")
 
-ExUnit.start
-# ExUnit.configure(capture_log: true)
+  ExUnit.start()
+  # ExUnit.configure(capture_log: true)
 
-defmodule TheTest do
-  use ExUnit.Case
+  defmodule TheTest do
+    use ExUnit.Case
 
-  def input_loop(stream) do
-    case IO.read(stream, :line) do
-      :eof -> :ok
+    def input_loop(stream) do
+      case IO.read(stream, :line) do
+        :eof ->
+          :ok
 
-      {:error, reason} -> IO.puts "Error: #{reason}"
+        {:error, reason} ->
+          IO.puts("Error: #{reason}")
 
-      data ->
-        data = Poison.decode!(data)
-        case Map.get(data, "check") do
-          nil ->
-            %{"arguments" => args, "expected" => expected} = data
-            result = apply(Solution, :solution, args)
-            # IO.inspect result
-            assert expected == result
-            input_loop(stream)
-          check_code ->
-            IO.puts check_code
-            input_loop(stream)
-        end
+        data ->
+          data = Poison.decode!(data)
+
+          case Map.get(data, "check") do
+            nil ->
+              %{"arguments" => args, "expected" => expected} = data
+              result = apply(Solution, :solution, args)
+
+              try do
+                assert expected == result
+                input_loop(stream)
+              rescue
+                e in ExUnit.AssertionError ->
+                  IO.puts(Poison.encode!(%{status: :failure, result: args}))
+                  exit(:failure)
+                  input_loop(stream)
+              end
+
+            check_code ->
+              IO.puts(Poison.encode!(%{status: :ok, result: check_code}))
+              input_loop(stream)
+          end
+      end
+    end
+
+    test "solution" do
+      input_loop(:stdio)
     end
   end
 
-
-  test "solution" do
-    input_loop(:stdio)
-  end
+  exit(:normal)
+rescue
+  e in CompileError ->
+    IO.puts(Poison.encode!(%{status: :error, result: e.description}))
 end
-
-exit :normal
