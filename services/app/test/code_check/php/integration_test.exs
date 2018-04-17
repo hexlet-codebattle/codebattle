@@ -27,7 +27,7 @@ defmodule Codebattle.CodeCheck.Php.IntegrationTest do
      }}
   end
 
-  test "bad code, game playing (function)", %{
+  test "error code, game playing", %{
     user1: user1,
     user2: user2,
     task: task,
@@ -54,14 +54,20 @@ defmodule Codebattle.CodeCheck.Php.IntegrationTest do
     :timer.sleep(timeout)
 
     assert_reply(ref, :ok, %{output: output})
-    # assert ~r/Call to undefined function sdf()/ |> Regex.scan(output) |> Enum.empty?() == false
+
+    expected_result = %{
+      "status" => "error",
+      "result" => "PHP error"
+    }
+
+    assert expected_result == Poison.decode!(output)
 
     fsm = Server.fsm(game.id)
 
     assert fsm.state == :playing
   end
 
-  test "bad code, game playing (empty function)", %{
+  test "failure code, game playing", %{
     user1: user1,
     user2: user2,
     task: task,
@@ -84,48 +90,17 @@ defmodule Codebattle.CodeCheck.Php.IntegrationTest do
     {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
     :lib.flush_receive()
 
-    ref = push(socket1, "check_result", %{editor_text: "function solution($f) {}", lang: "php"})
+    ref = push(socket1, "check_result", %{editor_text: "function solution($a, $b) { return $a; }", lang: "php"})
     :timer.sleep(timeout)
 
     assert_reply(ref, :ok, %{output: output})
-    assert ~r/Wrong result/ |> Regex.scan(output) |> Enum.empty?() == false
 
-    fsm = Server.fsm(game.id)
-
-    assert fsm.state == :playing
-  end
-
-  test "bad code, game playing (constant)", %{
-    user1: user1,
-    user2: user2,
-    task: task,
-    socket1: socket1,
-    socket2: socket2,
-    timeout: timeout
-  } do
-    # setup
-    state = :playing
-
-    data = %{
-      players: [%Player{id: user1.id, user: user1}, %Player{id: user2.id, user: user2}],
-      task: task
+    expected_result = %{
+      "status" => "failure",
+      "result" => "[1,1]"
     }
 
-    game = setup_game(state, data)
-    game_topic = "game:" <> to_string(game.id)
-
-    {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
-    {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
-    :lib.flush_receive()
-
-    ref = push(socket1, "check_result", %{editor_text: "sdf", lang: "php"})
-    :timer.sleep(timeout)
-
-    assert_reply(ref, :ok, %{output: output})
-
-    # assert ~r/Use of undefined constant sdf - assumed 'sdf' /
-    #        |> Regex.scan(output)
-    #        |> Enum.empty?() == false
+    assert expected_result == Poison.decode!(output)
 
     fsm = Server.fsm(game.id)
 
