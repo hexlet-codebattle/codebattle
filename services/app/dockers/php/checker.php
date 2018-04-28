@@ -1,109 +1,52 @@
 <?php
 
-// echo 'Checkings is running\n';
+register_shutdown_function(function() {
+  $stdout = STDERR;
+  $last_error = error_get_last();
+  $errors = array(E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR);
 
-set_error_handler(function($severity, $message, $file, $line) {
-  throw new Exception('PHP error', 0, $file, $line);
+  if (in_array($last_error['type'], $errors)) {
+    if (isset($last_error['message'])) {
+      list($message) = explode(PHP_EOL, $last_error['message']);
+    } else {
+      $message = $last_error['message'];
+    }
+
+    fwrite($stdout, json_encode(array(
+      'status' => 'error',
+      'result' => $message
+    )));
+    exit(1);
+  }
 });
 
-// echo 'Checkings after error_handler\n';
+include 'check/solution.php';
 
-$stdout = STDOUT;
-$checks = array();
+assert_options(ASSERT_ACTIVE, 1);
+assert_options(ASSERT_WARNING, 0);
+assert_options(ASSERT_QUIET_EVAL, 1);
+
+$stdout = STDERR;
 
 while ($line = fgets(STDIN)) {
-  echo "Line is $line";
-  array_push($checks, $line);
-}
+  $json = json_decode($line);
 
-// echo 'Checkings after store checks\n';
+  if (isset($json->check)) {
+    fwrite($stdout, json_encode(array(
+      'status' => 'ok',
+      'result' => $json->check
+    )));
+  } else {
+    $result = solution(...$json->arguments);
 
-try {
-  include 'check/solution.php';
-
-  foreach ($checks as $element) {
-    if (isset($element->{'check'})) {
+    if (assert($result !== $json->expected)) {
       fwrite($stdout, json_encode(array(
-        'status' => 'ok',
-        'result' => $element->{'check'}
+        'status' => 'failure',
+        'result' => $json->arguments
       )));
-    } else {
-      $result = solution(...$json->{'arguments'});
-
-      if ($result != $element->{'expected'}) {
-        fwrite($stdout, json_encode(array(
-          'status' => 'failure',
-          'result' => $json->{'arguments'}
-        )));
-      }
+      exit(1);
     }
   }
-
-  // while ($line = fgets(STDIN)) {
-  //   $json = yield json_decode($line);
-  //
-  //   echo $json;
-  //
-  //   // if (isset($json->{'check'})) {
-  //   //   echo json_encode(array(
-  //   //     'status' => 'ok',
-  //   //     'result' => $json->{'check'}
-  //   //   ));
-  //   // } else {
-  //   //   echo json_encode(array(
-  //   //     'status' => 'ok'
-  //   //   ));
-  //   //
-  //   //   if (solution(...$json->{'arguments'}) != $json->{'expected'}) {
-  //   //     echo json_encode(array(
-  //   //       'status' => 'failure',
-  //   //       'result' => $json->{'arguments'}
-  //   //     ));
-  //   //   }
-  //   // }
-  // }
-} catch (Exception $e) {
-  fwrite($stdout, json_encode(array(
-    'status' => 'error',
-    'result' => $e->getMessage()
-  )));
-  exit(1);
 }
-
-
-// try {
-//   include 'check/solution.php';
-//
-//   while ($line = fgets(STDIN)) {
-//     $json = json_decode($line);
-//
-//     if (isset($json->{'check'})) {
-//       echo json_encode(array(
-//         'status' => 'ok',
-//         'result' => $json->{'check'}
-//       ));
-//     } else {
-//       echo json_encode(array(
-//         'status' => 'ok'
-//       ));
-//
-//       if (solution(...$json->{'arguments'}) != $json->{'expected'}) {
-//         echo json_encode(array(
-//           'status' => 'failure',
-//           'result' => $json->{'arguments'}
-//         ));
-//       }
-//     }
-//   }
-// } catch (Exception $e) {
-//   echo 'Exception found';
-//
-//   echo json_encode(array(
-//     'status' => 'error',
-//     'result' => $e->getMessage()
-//   ));
-// }
-
-echo 'Checkings stop\n';
 
 ?>
