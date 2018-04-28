@@ -29,7 +29,15 @@ rl.on("close", function() {
       } else {
         const result = solution.apply(null, check.arguments);
 
-        assert.equal(result, check.expected, JSON.stringify(check.arguments));
+        try {
+          assert.deepEqual(result, check.expected);
+        } catch (e) {
+          process.stdout.write(JSON.stringify({
+            status: "failure",
+            result: check.arguments
+          }));
+          process.exit(1);
+        }
       }
     });
   } catch (e) {
@@ -37,5 +45,6 @@ rl.on("close", function() {
       status: "error",
       result: e.message
     }));
+    process.exit(1);
   }
 });

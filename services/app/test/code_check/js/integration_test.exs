@@ -93,7 +93,7 @@ defmodule Codebattle.CodeCheck.JS.IntegrationTest do
 
     assert_reply(ref, :ok, %{output: output})
 
-    expected_result = %{"status" => "error", "result" => "[1,1]: expected 0 to equal 2"}
+    expected_result = %{"status" => "failure", "result" => [1, 1]}
     assert expected_result == Poison.decode!(output)
 
     fsm = Server.fsm(game.id)
