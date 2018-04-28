@@ -50,14 +50,14 @@ defmodule Codebattle.CodeCheck.Php.IntegrationTest do
     {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
     :lib.flush_receive()
 
-    ref = push(socket1, "check_result", %{editor_text: "sdf()", lang: "php"})
+    ref = push(socket1, "check_result", %{editor_text: "sdf();", lang: "php"})
     :timer.sleep(timeout)
 
     assert_reply(ref, :ok, %{output: output})
 
     expected_result = %{
       "status" => "error",
-      "result" => "PHP error"
+      "result" => "Uncaught Error: Call to undefined function sdf() in /usr/src/app/check/solution.php:2"
     }
 
     assert expected_result == Poison.decode!(output)
@@ -90,15 +90,12 @@ defmodule Codebattle.CodeCheck.Php.IntegrationTest do
     {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
     :lib.flush_receive()
 
-    ref = push(socket1, "check_result", %{editor_text: "function solution($a, $b) { return $a; }", lang: "php"})
+    ref = push(socket1, "check_result", %{editor_text: "function solution($a, $b) { return $a; }\n", lang: "php"})
     :timer.sleep(timeout)
 
     assert_reply(ref, :ok, %{output: output})
 
-    expected_result = %{
-      "status" => "failure",
-      "result" => "[1,1]"
-    }
+    expected_result = %{"status" => "failure", "result" => [1, 1]}
 
     assert expected_result == Poison.decode!(output)
 
@@ -133,7 +130,7 @@ defmodule Codebattle.CodeCheck.Php.IntegrationTest do
     push(socket1, "editor:text", %{editor_text: "test"})
 
     push(socket1, "check_result", %{
-      editor_text: "function solution($x, $y){ return $x + $y; }",
+      editor_text: "function solution($x, $y){ return $x + $y; }\n",
       lang: "php"
     })
 

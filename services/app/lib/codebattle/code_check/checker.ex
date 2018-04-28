@@ -31,12 +31,7 @@ defmodule Codebattle.CodeCheck.Checker do
         )
 
         # for json returned langs need fix after all langs support json
-        clean_output =
-          if Enum.member?(["ruby", "python", "elixir"], lang.slug) do
-            ~r/{\"status\":.+}/ |> Regex.run(global_output) |> List.first()
-          else
-            global_output |> String.split("\n") |> hd
-          end
+        clean_output = ~r/{\"status\":.+}/ |> Regex.run(global_output) |> List.first()
 
         result =
           case status do
