@@ -106,7 +106,12 @@ class GameStatusTab extends Component {
                     onClick={checkResult}
                     disabled={gameStatus.checking}
                   >
-                    {gameStatus.checking ? i18n.t('Checking...') : i18n.t('Check result')}
+                    {gameStatus.checking ? (
+                      <span className="mx-1 fa fa-cog fa-spin" />
+                      ) : (
+                        <span className="mx-1 fa fa-play-circle" />
+                      )}
+                    {i18n.t('Check')}
                   </button>
                 )}
                 {!canGiveUp ? null : (

@@ -4,8 +4,20 @@ import _ from 'lodash';
 import Gon from 'gon';
 
 const languages = Gon.getAsset('langs');
-const getLangTitle = lang => `${lang.name} (${lang.version})`;
+const getLangTitle = (lang) => {
+  const icons = {
+    js: 'icon-nodejs',
+    php: 'icon-php-alt',
+    ruby: 'icon-ruby',
+    elixir: 'icon-elixir',
+    python: 'icon-python',
+  };
 
+  return (<span className={icons[lang.slug]}>
+    {lang.name} {lang.version}
+          </span>
+  );
+};
 const LangSelector = ({ currentLangSlug, onChange, disabled }) => {
   const [[currentLang, ...other], otherLangs] =
     _.partition(languages, lang => lang.slug === currentLangSlug);
@@ -44,7 +56,7 @@ const LangSelector = ({ currentLangSlug, onChange, disabled }) => {
               onChange(slug);
             }}
           >
-            {`${name} (${version})`}
+            {getLangTitle({ slug, name, version })}
           </button>
         ))}
       </div>
