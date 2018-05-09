@@ -67,7 +67,7 @@ class ChatWidget extends React.Component {
             style = {{
               display: 'inline-block',
               width: '100%',
-              height: '250px',
+              height: '100%',
               overflow: 'auto',
               border: '1px solid #eee',
             }}
