@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { fetchState, addMessage } from '../middlewares/Chat';
 import { currentUserSelector } from '../selectors';
+import Messages from './Messages.jsx';
 
 class ChatWidget extends React.Component {
   static propTypes = {
@@ -22,19 +23,12 @@ class ChatWidget extends React.Component {
     const { dispatch } = this.props;
 
     dispatch(fetchState());
-    _.defer(this.scrollBottom);
   }
 
   messagesEnd = null
 
   handleChange = (e) => {
     this.setState({ message: e.target.value });
-  }
-
-  scrollBottom = () => {
-    if (this.messagesEnd) {
-      (this.messagesEnd).scrollIntoView({ behavior: 'smooth' });
-    }
   }
 
   sendMessage = () => {
@@ -45,7 +39,6 @@ class ChatWidget extends React.Component {
       addMessage(name, message);
       this.setState({ message: '' });
     }
-    this.scrollBottom();
   }
 
   handleKeyPress = (e) => {
@@ -65,23 +58,21 @@ class ChatWidget extends React.Component {
           bottom: 0,
           right: '15px',
           left: '15px',
+
         }}
       >
         <div className="card col-8 p-0">
-          <div className="card-header font-weight-bold">Chat</div>
-          <div className="card-body" style={{ overflow: 'scroll' }}>
-            {this.props.messages.map(({ user, message }, i) => {
-              const key = `${user}${i}`;
-              return (
-                <p key={key} className="mb-1 ">
-                  <span className="font-weight-bold">{`${user}: `}</span>
-                  {message}
-                </p>
-              );
-            })}
-            <div ref={(el) => { this.messagesEnd = el; }} />
-          </div>
-          <div className="card-footer">
+          <div className="mx-1 mt-1 font-weight-bold">Chat</div>
+          <Messages
+            style = {{
+              display: 'inline-block',
+              width: '100%',
+              height: '250px',
+              overflow: 'auto',
+              border: '1px solid #eee',
+            }}
+            messages= {this.props.messages} />
+          <div className="card-text">
             <div className="input-group input-group-sm">
               <input
                 className="form-control"
@@ -105,7 +96,7 @@ class ChatWidget extends React.Component {
         </div>
         <div className="card col-4 p-0">
           <span
-            className="card-header font-weight-bold text-truncate"
+            className="mx-1 mt-1 font-weight-bold"
             title="Online users"
           >
             Online users
