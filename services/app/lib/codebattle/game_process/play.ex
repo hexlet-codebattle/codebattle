@@ -69,6 +69,19 @@ defmodule Codebattle.GameProcess.Play do
     end
   end
 
+  def cancel_game(id, user) do
+    if ActiveGames.participant?(id, user.id) do
+      ActiveGames.terminate_game(id)
+        id
+        |> get_game
+        |> Game.changeset(%{state: "canceled"})
+        |> Repo.update!()
+      :ok
+    else
+      :error
+    end
+  end
+
   def game_info(id) do
     # TODO: change first and second atoms to user ids, or list
     fsm = get_fsm(id)
