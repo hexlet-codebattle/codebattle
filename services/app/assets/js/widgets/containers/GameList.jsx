@@ -30,7 +30,6 @@ class GameList extends React.Component {
   renderGameActionButton = (game) => {
     const gameUrl = game => `/games/${game.game_id}`;
     const user = Gon.getAsset('current_user');
-    console.log(this.isPlayer(user, game));
 
     switch (game.game_info.state) {
       case GameStatusCodes.waitingOpponent:
@@ -100,8 +99,8 @@ class GameList extends React.Component {
               games.map(game => (
                 <tr
                   key={game.game_id}
-                  className={`table-${game.game_info.state === GameStatusCodes.waitingOpponent ? 'success' : 'default'}`}
                 >
+
                   <td>{game.game_id}</td>
                   <td>{this.renderGameLevelBadge(game.game_info.level)}</td>
 

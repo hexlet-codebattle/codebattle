@@ -74,6 +74,7 @@ defmodule CodebattleWeb.GameController do
     case Play.cancel_game(id, conn.assigns.current_user) do
       :ok ->
         redirect(conn, to: page_path(conn, :index))
+        CodebattleWeb.Endpoint.broadcast("lobby", "cancel:game", %{game_id: id})
 
       :error ->
         conn
