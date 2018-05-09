@@ -20,12 +20,13 @@ import { checkGameResult, sendEditorLang, sendGiveUp } from '../middlewares/Game
 import userTypes from '../config/userTypes';
 import LangSelector from '../components/LangSelector';
 
-const renderNameplate = (user) => {
+const renderNameplate = (user, onlineUsers) => {
   const userName = _.get(user, ['name'], '');
   const rating = _.get(user, ['rating'], '');
   const ratingStr = _.isFinite(rating) ? ` (${rating})` : '';
+  const color = _.find(onlineUsers, { id: user.id }) ? 'green' : '#ccc';
   return (
-    <p> {`${userName}${ratingStr}`} </p>
+    <div><span className="mx-1 fa fa-plug" style={{ color }} />  {`${userName}${ratingStr}`} </div>
   );
 };
 
@@ -44,6 +45,7 @@ class GameStatusTab extends Component {
     status: GameStatusCodes.initial,
     title: '',
     users: {},
+    onlineUsers: [],
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -77,6 +79,7 @@ class GameStatusTab extends Component {
       leftUserId,
       rightUserId,
       users,
+      onlineUsers,
     } = this.props;
     const userType = currentUser.type;
     const isSpectator = userType === userTypes.spectator;
@@ -106,7 +109,12 @@ class GameStatusTab extends Component {
                     onClick={checkResult}
                     disabled={gameStatus.checking}
                   >
-                    {gameStatus.checking ? i18n.t('Checking...') : i18n.t('Check result')}
+                    {gameStatus.checking ? (
+                      <span className="mx-1 fa fa-cog fa-spin" />
+                      ) : (
+                        <span className="mx-1 fa fa-play-circle" />
+                      )}
+                    {i18n.t('Check')}
                   </button>
                 )}
                 {!canGiveUp ? null : (
@@ -122,7 +130,7 @@ class GameStatusTab extends Component {
             <div className="col">
               <div className="row text-center">
                 <div className="col">
-                  {renderNameplate(users[leftUserId])}
+                  {renderNameplate(users[leftUserId], onlineUsers)}
                 </div>
                 <div className="col">
                   <span className="p-2 badge badge-danger">
@@ -130,7 +138,7 @@ class GameStatusTab extends Component {
                   </span>
                 </div>
                 <div className="col">
-                  {renderNameplate(users[rightUserId])}
+                  {renderNameplate(users[rightUserId], onlineUsers)}
                 </div>
               </div>
             </div>
@@ -153,12 +161,14 @@ const mapStateToProps = (state) => {
   const currentUser = currentUserSelector(state);
   const leftUserId = _.get(leftEditorSelector(state), ['userId'], null);
   const rightUserId = _.get(rightEditorSelector(state), ['userId'], null);
+  const { users: onlineUsers } = state.chat;
 
   return {
     users: usersSelector(state),
     leftUserId,
     rightUserId,
     currentUser,
+    onlineUsers,
     leftEditorLang: langSelector(leftUserId, state),
     rightEditorLang: langSelector(rightUserId, state),
     gameStatus: gameStatusSelector(state),

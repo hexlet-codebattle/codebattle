@@ -45,4 +45,26 @@ defmodule Codebattleweb.GameControllerTest do
 
     assert conn.status == 200
   end
+
+  test "cancel game", %{conn: conn} do
+    user1 = build(:user)
+    user2 = build(:user)
+    state = :game_over
+
+    data = %{
+      players: [
+        %Player{id: user1.id, user: user1, game_result: :won},
+        %Player{id: user2.id, user: user2, game_result: :lost}
+      ]
+    }
+
+    game = setup_game(state, data)
+
+    conn =
+      conn
+      |> put_session(:user_id, user1.id)
+      |> delete(game_path(conn, :delete, game.id))
+
+    assert conn.status == 302
+  end
 end

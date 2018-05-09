@@ -16,10 +16,10 @@ class InfoWidget extends Component {
     const { taskText } = this.props;
     return (
       <div className="row mb-2">
-        <div className="col-8">
+        <div className="col-7">
           <Task task={taskText} />
         </div>
-        <div className="col-4">
+        <div className="col-5">
           <ChatWidget />
         </div>
       </div>

@@ -6,8 +6,8 @@ const middlewares = [
 ];
 
 if (process.env.NODE_ENV !== 'production') {
-  const logger = require('redux-logger').default;
-  middlewares.push(logger);
+  // const logger = require('redux-logger').default;
+  // middlewares.push(logger);
 }
 
 export default function configureStore(reducer, initialState) {

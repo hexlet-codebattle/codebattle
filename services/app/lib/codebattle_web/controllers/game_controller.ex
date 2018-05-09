@@ -59,7 +59,7 @@ defmodule CodebattleWeb.GameController do
         CodebattleWeb.Endpoint.broadcast("lobby", "update:game", %{game: fsm})
 
         conn
-        |> put_flash(:info, gettext("Joined the game"))
+        # |> put_flash(:info, gettext("Joined the game"))
         |> redirect(to: game_path(conn, :show, id))
 
       :error ->
@@ -68,4 +68,19 @@ defmodule CodebattleWeb.GameController do
         |> redirect(to: page_path(conn, :index))
     end
   end
+
+
+  def delete(conn, %{"id" => id}) do
+    case Play.cancel_game(id, conn.assigns.current_user) do
+      :ok ->
+        redirect(conn, to: page_path(conn, :index))
+        CodebattleWeb.Endpoint.broadcast("lobby", "cancel:game", %{game_id: id})
+
+      :error ->
+        conn
+        |> put_flash(:danger, gettext("You are in a different game"))
+        |> redirect(to: page_path(conn, :index))
+    end
+  end
+
 end

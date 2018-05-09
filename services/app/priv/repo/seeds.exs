@@ -39,3 +39,6 @@ for level <- levels do
   |> Repo.insert_or_update!
   IO.puts "Upsert #{task_name}"
 end
+
+{output, _status} = System.cmd("mix", ["upload_langs"], stderr_to_stdout: true)
+IO.puts output
