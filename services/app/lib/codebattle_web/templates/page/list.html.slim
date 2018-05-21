@@ -16,22 +16,22 @@ h2 = gettext "Create new game with difficult:"
 
 #game-list
 
-h3 = gettext "Recent games"
+h3.text-center = gettext "Recent games"
 
-table.table.table-hover
+table.table.table-hover.text-center
   thead.thead-dark
     tr
       th Date
-      th State
+      th Winner
       th Players
       th Result
   tbody
     = for game <- @games do
       tr
         td
-          = game.updated_at
+          = "#{game.updated_at.day}-#{game.updated_at.month}-#{game.updated_at.year}  #{game.updated_at.hour}:#{game.updated_at.minute}"
         td
-          = game.state
+          = game.user_games |> Enum.filter(fn user -> user.result == "won" end) |> List.first |> Map.get(:user) |> user_name()
         td
           = game.users |> Enum.map(fn x -> user_name(x) end) |> Enum.join(", ")
         td
