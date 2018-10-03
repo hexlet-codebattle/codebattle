@@ -64,14 +64,15 @@ class ChatWidget extends React.Component {
         <div className="card col-8 p-0">
           <div className="mx-1 mt-1 font-weight-bold">Chat</div>
           <Messages
-            style = {{
+            style={{
               display: 'inline-block',
               width: '100%',
-              height: '250px',
+              height: '150px',
               overflow: 'auto',
               border: '1px solid #eee',
             }}
-            messages= {this.props.messages} />
+            messages={this.props.messages}
+          />
           <div className="card-text">
             <div className="input-group input-group-sm">
               <input
