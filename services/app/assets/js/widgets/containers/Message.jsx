@@ -2,14 +2,14 @@ import React, { Component } from 'react';
 import { scrolled } from 'react-stay-scrolled';
 
 class Message extends Component {
-  componentDidMount() {
-    const { stayScrolled } = this.props;
-    stayScrolled();
-  }
-
   static defaultProps = {
     message: '',
     user: '',
+  }
+
+  componentDidMount() {
+    const { stayScrolled } = this.props;
+    stayScrolled();
   }
 
   render() {

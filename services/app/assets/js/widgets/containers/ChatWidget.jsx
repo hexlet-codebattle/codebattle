@@ -58,7 +58,6 @@ class ChatWidget extends React.Component {
           bottom: 0,
           right: '15px',
           left: '15px',
-
         }}
       >
         <div className="card col-8 p-0">
@@ -66,9 +65,10 @@ class ChatWidget extends React.Component {
           <Messages
             style={{
               display: 'inline-block',
+              flexGrow: '1',
               width: '100%',
               height: '150px',
-              overflow: 'auto',
+              overflowY: 'scroll',
               border: '1px solid #eee',
             }}
             messages={this.props.messages}
