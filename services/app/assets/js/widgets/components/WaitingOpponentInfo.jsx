@@ -8,8 +8,8 @@ const onFocus = e => e.target.select();
 const WaitingOpponentInfo = ({ gameUrl }) => (
   <div className="jumbotron jumbotron-fluid">
     <div className="container">
-      <h1 className="display-4">{i18n.t('Waiting opponent')}</h1>
-      <p className="lead">{i18n.t('We seek for opponent for you. You can invite to start playing')}</p>
+      <h1 className="display-4">{i18n.t('Waiting for an opponent')}</h1>
+      <p className="lead">{i18n.t('Please wait for someone to join or send an invite using the link below')}</p>
       <div className="row">
         <div className="input-group mb-3">
           <input

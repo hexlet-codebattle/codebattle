@@ -24,7 +24,7 @@ msgid "Create game"
 msgstr ""
 
 #: lib/codebattle_web/templates/user/index.html.slim:1
-msgid "Game list"
+msgid "List of games"
 msgstr ""
 
 #: lib/codebattle_web/templates/page/index.html.slim:16
@@ -96,11 +96,11 @@ msgid "Check result"
 msgstr ""
 
 #: lib/codebattle_web/templates/game/show.html.slim:15
-msgid "Waiting opponent"
+msgid "Waiting for an opponent"
 msgstr ""
 
 #: lib/codebattle_web/templates/game/show.html.slim:21
-msgid "Back to game list"
+msgid "Back to the list of games"
 msgstr ""
 
 #: lib/codebattle_web/templates/game/show.html.slim:31
@@ -136,7 +136,7 @@ msgid "Game has been created"
 msgstr ""
 
 #: lib/codebattle_web/controllers/game_controller.ex:40
-msgid "Joined to game"
+msgid "Joined the game"
 msgstr ""
 
 #: lib/codebattle_web/controllers/game_controller.ex:53
@@ -144,7 +144,7 @@ msgid "Yay, you won the game!"
 msgstr ""
 
 #: lib/codebattle_web/channels/game_channel.ex:116
-msgid "You lose the game"
+msgid "You lost the game"
 msgstr ""
 
 #: lib/codebattle_web/views/error_view.ex:8
@@ -173,7 +173,7 @@ msgstr ""
 
 #, elixir-format
 #: lib/codebattle_web/templates/page/list.html.slim:1
-msgid "Create new game with difficult:"
+msgid "Select a difficulty to start a new game"
 msgstr ""
 
 #, elixir-format
@@ -203,7 +203,7 @@ msgstr ""
 
 #, elixir-format
 #: lib/codebattle_web/templates/game/join.html.slim:1
-msgid "Join game"
+msgid "Join the game"
 msgstr ""
 
 #, elixir-format

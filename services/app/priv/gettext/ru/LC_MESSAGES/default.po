@@ -24,7 +24,7 @@ msgid "Create game"
 msgstr "Создать игру"
 
 #: lib/codebattle_web/templates/page/index.html.slim:9
-msgid "Game list"
+msgid "List of games"
 msgstr "Список игр"
 
 #: lib/codebattle_web/templates/page/index.html.slim:16
@@ -97,11 +97,11 @@ msgid "Check result"
 msgstr "Проверить результат"
 
 #: lib/codebattle_web/templates/game/show.html.slim:15
-msgid "Waiting opponent"
+msgid "Waiting for an opponent"
 msgstr "Ожидание соперника"
 
 #: lib/codebattle_web/templates/game/show.html.slim:21
-msgid "Back to game list"
+msgid "Back to the list of games"
 msgstr "Вернуться к списку игр"
 
 #: lib/codebattle_web/templates/game/show.html.slim:31
@@ -137,7 +137,7 @@ msgid "Game has been created"
 msgstr "Игра успешно создана"
 
 #: lib/codebattle_web/controllers/game_controller.ex:40
-msgid "Joined to game"
+msgid "Joined the game"
 msgstr "Вы подключились к игре"
 
 #: lib/codebattle_web/controllers/game_controller.ex:53
@@ -145,7 +145,7 @@ msgid "Yay, you won the game!"
 msgstr "Ура, вы победили в игре!"
 
 #: lib/codebattle_web/controllers/game_controller.ex:54
-msgid "You lose the game"
+msgid "You lost the game"
 msgstr "Вы проиграли игру."
 
 #: lib/codebattle_web/views/error_view.ex:6
