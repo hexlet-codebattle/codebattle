@@ -82,7 +82,7 @@ class GameList extends React.Component {
     const gameUrl = game => `/games/${game.game_id}`;
     return (
       <div>
-        <h1>Game List</h1>
+        <h1>List of games</h1>
         <p>Total: {games.length}</p>
         <table className="table table-hover table-sm">
           <thead>
