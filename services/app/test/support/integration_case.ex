@@ -15,6 +15,7 @@ defmodule Codebattle.IntegrationCase do
       use Phoenix.ChannelTest
       import CodebattleWeb.Router.Helpers
       import CodebattleWeb.Factory
+      use Phoenix.ConnTest
       use CodebattleWeb.ConnCase
       use PhoenixIntegration
 

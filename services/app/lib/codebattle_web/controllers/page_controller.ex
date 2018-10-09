@@ -15,7 +15,7 @@ defmodule CodebattleWeb.PageController do
         query =
           Query.from(
             games in Game,
-            order_by: [desc: games.inserted_at],
+            order_by: [desc: games.updated_at],
             where: [state: "game_over"],
             limit: 20,
             preload: :users

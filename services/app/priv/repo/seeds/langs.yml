@@ -2,27 +2,27 @@
 :langs:
   - :name: ruby
     :slug: ruby
-    :version: 2.5.0
+    :version: 2.5.1
     :extension: rb
-    :docker_image: "codebattle/ruby:2.5.0"
+    :docker_image: "codebattle/ruby:2.5.1"
     :solution_template: "def solution()\n\nend"
   - :name: javascript
     :slug: js
-    :version: "node 9.3.0"
+    :version: "node 10.11.0"
     :extension: js
-    :docker_image: "codebattle/js:9.3.0"
+    :docker_image: "codebattle/js:10.11.0"
     :solution_template: "module.exports = () => {\n\n};"
   - :name: elixir
     :slug: elixir
-    :version: 1.6.2
+    :version: 1.7.3
     :extension: exs
-    :docker_image: "codebattle/elixir:1.6.2"
+    :docker_image: "codebattle/elixir:1.7.3"
     :solution_template: "defmodule Solution\n  def solution() do\n  \n  end\nend"
   - :name: python
     :slug: python
-    :version: 3.6.4
+    :version: 3.7.0
     :extension: py
-    :docker_image: "codebattle/python:3.6.4"
+    :docker_image: "codebattle/python:3.7.0"
     :solution_template: "def solution():"
   - :name: php
     :slug: php

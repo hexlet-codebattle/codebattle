@@ -48,10 +48,10 @@ defmodule Codebattle.CodeCheck.Ruby.IntegrationTest do
 
     {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
     {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
-    :lib.flush_receive()
+    Mix.Shell.Process.flush()
 
     ref =
-      push(socket1, "check_result", %{lang: "ruby", editor_text: "def solution(x,y); x - y; end"})
+      Phoenix.ChannelTest.push(socket1, "check_result", %{lang: "ruby", editor_text: "def solution(x,y); x - y; end"})
 
     :timer.sleep(timeout)
 
@@ -87,9 +87,9 @@ defmodule Codebattle.CodeCheck.Ruby.IntegrationTest do
 
     {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
     {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
-    :lib.flush_receive()
+    Mix.Shell.Process.flush()
 
-    ref = push(socket1, "check_result", %{editor_text: "sdf", lang: "ruby"})
+    ref = Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: "sdf", lang: "ruby"})
     :timer.sleep(timeout)
 
     assert_reply(ref, :ok, %{output: output})
@@ -127,11 +127,11 @@ defmodule Codebattle.CodeCheck.Ruby.IntegrationTest do
 
     {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
     {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
-    :lib.flush_receive()
+    Mix.Shell.Process.flush()
 
-    push(socket1, "editor:text", %{editor_text: "test"})
+    Phoenix.ChannelTest.push(socket1, "editor:text", %{editor_text: "test"})
 
-    push(socket1, "check_result", %{
+    Phoenix.ChannelTest.push(socket1, "check_result", %{
       editor_text: "def solution(x,y); x + y; end",
       lang: "ruby"
     })
