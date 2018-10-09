@@ -23,8 +23,8 @@
     - name: pull dockers for tasks
       shell: "docker pull {{ item }}"
       with_items:
-        - "codebattle/ruby:2.5.0"
-        - "codebattle/js:9.3.0"
-        - "codebattle/elixir:1.6.2"
-        - "codebattle/python:3.6.4"
+        - "codebattle/ruby:2.5.1"
+        - "codebattle/js:10.11.0"
+        - "codebattle/elixir:1.7.3"
+        - "codebattle/python:3.7.0"
         - "codebattle/php:7.2.0"
