@@ -40,7 +40,7 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
       game_id = ~r/\d+/ |> Regex.run(game_location) |> List.first() |> String.to_integer()
       game_topic = "game:" <> to_string(game_id)
       {:ok, _response, socket} = subscribe_and_join(socket, GameChannel, game_topic)
-      push(socket, "editor:text", %{editor_text: "asdkfljlksajfd"})
+      Phoenix.ChannelTest.push(socket, "editor:text", %{editor_text: "asdkfljlksajfd"})
 
       :timer.sleep(@timeout - 10)
       fsm = Server.fsm(game_id)

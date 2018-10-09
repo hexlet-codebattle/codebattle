@@ -9,7 +9,7 @@ defmodule Mix.Tasks.Dockers.Pull do
     {:ok, _started} = Application.ensure_all_started(:codebattle)
 
     spec_filepath = Path.join(root(), "priv/repo/seeds/langs.yml")
-    %{langs: langs} = YamlElixir.read_from_file(spec_filepath, atoms: true)
+    %{langs: langs} = YamlElixir.read_from_file!(spec_filepath, atoms: true)
     lang = Enum.find(langs, fn lang -> lang.slug == slug end)
     pull([lang])
   end
@@ -18,7 +18,7 @@ defmodule Mix.Tasks.Dockers.Pull do
     {:ok, _started} = Application.ensure_all_started(:codebattle)
 
     spec_filepath = Path.join(root(), "priv/repo/seeds/langs.yml")
-    %{langs: langs} = YamlElixir.read_from_file(spec_filepath, atoms: true)
+    %{langs: langs} = YamlElixir.read_from_file!(spec_filepath, atoms: true)
     pull(langs)
   end
 

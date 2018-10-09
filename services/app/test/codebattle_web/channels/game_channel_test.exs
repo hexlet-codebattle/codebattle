@@ -88,7 +88,7 @@ defmodule CodebattleWeb.GameChannelTest do
 
     {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
     {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
-    :lib.flush_receive()
+    Mix.Shell.Process.flush()
 
     push(socket1, "editor:text", %{editor_text: editor_text1})
     push(socket2, "editor:text", %{editor_text: editor_text2})
@@ -125,7 +125,7 @@ defmodule CodebattleWeb.GameChannelTest do
 
     {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
     {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
-    :lib.flush_receive()
+    Mix.Shell.Process.flush()
 
     push(socket1, "editor:lang", %{lang: editor_lang1})
     push(socket2, "editor:lang", %{lang: editor_lang2})
@@ -165,7 +165,7 @@ defmodule CodebattleWeb.GameChannelTest do
 
     {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
     {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
-    :lib.flush_receive()
+    Mix.Shell.Process.flush()
 
     push(socket1, "give_up")
 
