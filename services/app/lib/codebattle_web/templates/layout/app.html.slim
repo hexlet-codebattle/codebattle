@@ -17,7 +17,7 @@ html lang="en"
         = unless @current_user.guest do
           li.nav-item.pr-5
             = link to: user_path(@conn, :index), class: "nav-link" do
-              = gettext "User rating"
+              = gettext "Users rating"
           li.nav-item.pr-5
             = link to: user_path(@conn, :show, @current_user.id), class: "nav-link" do
               = @current_user.name

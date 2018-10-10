@@ -5,7 +5,7 @@ defmodule Codebattle.User do
   use Ecto.Schema
   import Ecto.Changeset
 
-  @derive {Poison.Encoder, only: [:id, :name, :rating, :guest]}
+  @derive {Poison.Encoder, only: [:id, :name, :rating, :guest, :github_id]}
 
   schema "users" do
     field(:name, :string)
