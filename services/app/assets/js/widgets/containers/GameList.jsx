@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
+import moment from 'moment';
 import { connect } from 'react-redux';
 // import PropTypes from 'prop-types';
 import { fetchState } from '../middlewares/Lobby';
@@ -24,7 +25,7 @@ class GameList extends React.Component {
       style={{ display: 'inline-block' }}
     >
       <img
-        className="attachment rounded-circle mr-2"
+        className="attachment rounded mr-2"
         alt={name}
         src={`https://avatars0.githubusercontent.com/u/${github_id}`}
         style={{ width: '25px' }}
@@ -106,7 +107,7 @@ class GameList extends React.Component {
         <table className="table table-hover table-sm text-center">
           <thead>
             <tr>
-              <th>Id</th>
+              <th>Date</th>
               <th>Level</th>
               <th>Players</th>
               <th>State</th>
@@ -120,7 +121,7 @@ class GameList extends React.Component {
                   key={game.game_id}
                 >
 
-                  <td className="align-middle">{game.game_id}</td>
+                  <td className="align-middle">{moment.utc(game.game_info.inserted_at).local().format('YYYY-MM-DD HH:mm')}</td>
                   <td className="align-middle">{this.renderGameLevelBadge(game.game_info.level)}</td>
 
                   <td className="align-middle">{this.renderPlayers(game.users)}</td>

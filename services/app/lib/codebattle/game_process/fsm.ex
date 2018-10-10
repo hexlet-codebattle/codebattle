@@ -18,6 +18,8 @@ defmodule Codebattle.GameProcess.Fsm do
     initial_data: %{
       # Integer
       game_id: nil,
+      # NaiveDateTime
+      inserted_at: NaiveDateTime.utc_now,
       # Task
       task: %Codebattle.Task{},
       # List with two players %Player{}
@@ -37,7 +39,8 @@ defmodule Codebattle.GameProcess.Fsm do
         data
         | game_id: params.game_id,
           players: [player],
-          task: params.task
+          task: params.task,
+          inserted_at: params.inserted_at
       })
     end
 

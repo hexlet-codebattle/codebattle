@@ -3,21 +3,21 @@ p = gettext "Total: "
   = Enum.count(@users)
 
 table.table.table-hover
-  thead.text-center
+  thead
     tr
       th rank
       th user_name
       th rating
       th games_played
       th github_profile
-  tbody.text-center
+  tbody
     = for {user, index} <- Enum.with_index(@users) do
       tr
         td.align-middle
           = index + 1
-        td.align-middle
+        td.align-middle.text-left
           = link to: user_path(@conn, :show, user.id), class: "nav-link" do
-            img.attachment.rounded-circle.mr-3[alt="#{user.name}" src="https://avatars0.githubusercontent.com/u/#{user.github_id}" style="width:50px"]
+            img.attachment.rounded.mr-3[alt="#{user.name}" src="https://avatars0.githubusercontent.com/u/#{user.github_id}" style="width:50px"]
             = user.name
         td.align-middle
           = user.rating

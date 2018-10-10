@@ -35,7 +35,8 @@ defmodule Codebattle.GameProcess.ActiveGames do
 
         game_params = %{
           level: fsm.data.task.level,
-          state: fsm.state
+          state: fsm.state,
+          inserted_at: fsm.data.inserted_at
         }
 
         :ets.insert(@table_name, {game_key(game_id), users, game_params})

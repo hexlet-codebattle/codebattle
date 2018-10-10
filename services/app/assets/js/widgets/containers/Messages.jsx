@@ -7,7 +7,6 @@ const initialState = {
 };
 
 export default class Messages extends Component {
-
   constructor(props) {
     super(props);
   }
@@ -20,8 +19,8 @@ export default class Messages extends Component {
     const { messages } = this.props;
 
     return (
-    <StayScrolled {...this.props}>
-      {
+      <StayScrolled {...this.props}>
+        {
         messages.map(({ user, message }, i) => <Message user={user} message={message} key={i} />)
       }
       </StayScrolled>
