@@ -233,7 +233,7 @@ msgstr ""
 
 #, elixir-format
 #: lib/codebattle_web/templates/layout/app.html.slim:1
-msgid "User rating"
+msgid "Users rating"
 msgstr ""
 
 #, elixir-format

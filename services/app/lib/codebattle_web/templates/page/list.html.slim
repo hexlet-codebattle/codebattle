@@ -1,40 +1,45 @@
-h2 = gettext "Select a difficulty to start a new game"
-
 .row
-  .col-md-3
-    = button to: game_path(@conn, :create, level: :elementary), class: "btn btn-info btn-block", role: "button" do
-      = gettext "Elementary"
-  .col-md-3
-    = button to: game_path(@conn, :create, level: :easy), class: "btn btn-success btn-block", role: "button" do
-      = gettext "Easy"
-  .col-md-3
-    = button to: game_path(@conn, :create, level: :medium), class: "btn btn-warning btn-block", role: "button" do
-      = gettext "Medium"
-  .col-md-3
-    = button to: game_path(@conn, :create, level: :hard), class: "btn btn-danger btn-block", role: "button" do
-      = gettext "Hard"
+  .col-md-4.px-5
+    h3.text-center.my-4 = gettext "Select a difficulty to start a new game"
 
-#game-list
+    .row.mb-2.justify-content-center
+      .list-group.text-center style="width:70%;"
+        = button to: game_path(@conn, :create, level: :elementary), class: "list-group-item list-group-item-action btn btn-outline-success", role: "button" do
+          = gettext "Elementary"
+        = button to: game_path(@conn, :create, level: :easy), class: "list-group-item list-group-item-action btn btn-outline-secondary", role: "button" do
+          = gettext "Easy"
+        = button to: game_path(@conn, :create, level: :medium), class: "list-group-item list-group-item-action btn btn-outline-warning", role: "button" do
+          = gettext "Medium"
+        = button to: game_path(@conn, :create, level: :hard), class: "list-group-item list-group-item-action btn btn-outline-danger", role: "button" do
+          = gettext "Hard"
 
-h3.text-center = gettext "Recent games"
+  .col-md-8.px-5
+    div style="overflow-y:auto;height:45vh;"
+      #game-list
 
-table.table.table-hover.text-center
-  thead.thead-dark
-    tr
-      th Date
-      th Winner
-      th Players
-      th Result
-  tbody
-    = for game <- @games do
-      tr
-        td
-          = "#{game.updated_at.day}-#{game.updated_at.month}-#{game.updated_at.year}  #{game.updated_at.hour}:#{game.updated_at.minute}"
-        td
-          = game.user_games |> Enum.filter(fn user -> user.result == "won" end) |> List.first |> Map.get(:user) |> user_name()
-        td
-          = game.users |> Enum.map(fn x -> user_name(x) end) |> Enum.join(", ")
-        td
-          = link "show", to: game_path(@conn, :show, game.id), class: "nav-link"
-javascript:
-    window.csrf_token = "<%= csrf_token() %>"
+    div style="overflow-y:auto;height:45vh;"
+      h2.text-center.my-4 = gettext "Recent games"
+
+      table.table.table-hover.text-center
+        thead
+          tr
+            th Date
+            th Winner
+            th Players
+            th Result
+        tbody
+          = for game <- @games do
+            tr
+              td.align-middle
+                = "#{game.updated_at.day}-#{game.updated_at.month}-#{game.updated_at.year}  #{game.updated_at.hour}:#{game.updated_at.minute}"
+              td.align-middle
+                - user = game.user_games |> Enum.filter(fn user -> user.result == "won" end) |> List.first |> Map.get(:user)
+                = link to: user_path(@conn, :show, user.id), class: "nav-link" do
+                  img.attachment.rounded-circle.mr-3[alt="#{user.name}" src="https://avatars0.githubusercontent.com/u/#{user.github_id}" style="width:30px"]
+                  = user_name(user)
+              td.align-middle
+                = game.users |> Enum.map(fn x -> user_name(x) end) |> Enum.join(", ")
+              td.align-middle
+                = link "Show", to: game_path(@conn, :show, game.id), class: "btn btn-info btn-sm mr-2"
+    javascript:
+        window.csrf_token = "<%= csrf_token() %>"
