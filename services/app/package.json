@@ -21,6 +21,7 @@
     "i18next": "^10.3.0",
     "jquery": "^3.3.1",
     "lodash": "^4.17.4",
+    "moment": "^2.22.2",
     "phoenix": "file:deps/phoenix",
     "phoenix_html": "file:deps/phoenix_html",
     "popper.js": "^1.12.2",

@@ -1,5 +1,5 @@
 .row
-  .col-md-4.px-5
+  .col-md-4.px-4
     h3.text-center.my-4 = gettext "Select a difficulty to start a new game"
 
     .row.mb-2.justify-content-center
@@ -13,32 +13,35 @@
         = button to: game_path(@conn, :create, level: :hard), class: "list-group-item list-group-item-action btn btn-outline-danger", role: "button" do
           = gettext "Hard"
 
-  .col-md-8.px-5
+  .col-md-8.px-4
     div style="overflow-y:auto;height:45vh;"
       #game-list
 
     div style="overflow-y:auto;height:45vh;"
       h2.text-center.my-4 = gettext "Recent games"
 
-      table.table.table-hover.text-center
+      table.table.table-hover
         thead
           tr
             th Date
             th Winner
-            th Players
+            th Loser
             th Result
         tbody
           = for game <- @games do
+            - winner = game.user_games |> Enum.filter(fn user -> user.result == "won" end) |> List.first |> Map.get(:user)
+            - loser = game.user_games |> Enum.filter(fn user -> user.result != "won" end) |> List.first |> Map.get(:user)
             tr
               td.align-middle
-                = "#{game.updated_at.day}-#{game.updated_at.month}-#{game.updated_at.year}  #{game.updated_at.hour}:#{game.updated_at.minute}"
+                = "#{game.updated_at.year}-#{game.updated_at.month}-#{game.updated_at.day}  #{game.updated_at.hour}:#{game.updated_at.minute}"
               td.align-middle
-                - user = game.user_games |> Enum.filter(fn user -> user.result == "won" end) |> List.first |> Map.get(:user)
-                = link to: user_path(@conn, :show, user.id), class: "nav-link" do
-                  img.attachment.rounded-circle.mr-3[alt="#{user.name}" src="https://avatars0.githubusercontent.com/u/#{user.github_id}" style="width:30px"]
-                  = user_name(user)
+                = link to: user_path(@conn, :show, winner.id), class: "nav-link" do
+                  img.attachment.rounded.mr-3[alt="#{winner.name}" src="https://avatars0.githubusercontent.com/u/#{winner.github_id}" style="width:30px"]
+                  = user_name(winner)
               td.align-middle
-                = game.users |> Enum.map(fn x -> user_name(x) end) |> Enum.join(", ")
+                = link to: user_path(@conn, :show, loser.id), class: "nav-link" do
+                  img.attachment.rounded.mr-3[alt="#{loser.name}" src="https://avatars0.githubusercontent.com/u/#{loser.github_id}" style="width:30px"]
+                  = user_name(loser)
               td.align-middle
                 = link "Show", to: game_path(@conn, :show, game.id), class: "btn btn-info btn-sm mr-2"
     javascript:
