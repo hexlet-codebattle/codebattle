@@ -58,7 +58,7 @@ class Editor extends PureComponent {
           wrapLines
           editorProps={{ $blockScrolling: true }}
           width="auto"
-          height="500px"
+          height="450px"
           fontSize={16}
           showPrintMargin={false}
         />

@@ -13,9 +13,10 @@ const getLangTitle = (lang) => {
     python: 'icon-python',
   };
 
-  return (<span className={icons[lang.slug]}>
-    {lang.name} {lang.version}
-          </span>
+  return (
+    <span className={icons[lang.slug]}>
+      {lang.name} {lang.version}
+    </span>
   );
 };
 const LangSelector = ({ currentLangSlug, onChange, disabled }) => {
