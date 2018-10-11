@@ -38,7 +38,7 @@ defmodule Codebattle.GameProcess.Play do
       false ->
         game = Repo.insert!(%Game{state: "waiting_opponent", users: [user]})
         task = get_random_task(level)
-        fsm = Fsm.new() |> Fsm.create(%{user: user, game_id: game.id, task: task})
+        fsm = Fsm.new() |> Fsm.create(%{user: user, game_id: game.id, task: task, inserted_at: game.inserted_at})
 
         ActiveGames.create_game(user, fsm)
         GlobalSupervisor.start_game(game.id, fsm)

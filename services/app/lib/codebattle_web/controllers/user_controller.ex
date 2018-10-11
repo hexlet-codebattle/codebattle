@@ -4,12 +4,12 @@ defmodule CodebattleWeb.UserController do
   use CodebattleWeb, :controller
 
   alias Codebattle.{Repo, User, UserGame}
-  alias Ecto.Query
+  import Ecto.Query
 
   plug(CodebattleWeb.Plugs.RequireAuth when action in @all)
 
   def index(conn, _params) do
-    query = Query.from(users in User, order_by: [desc: users.rating])
+    query = from(users in User, order_by: [desc: users.rating], preload: [:user_games])
     users = Repo.all(query)
     render(conn, "index.html", users: users)
   end

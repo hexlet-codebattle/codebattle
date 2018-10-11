@@ -1,5 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
+import moment from 'moment';
 import { connect } from 'react-redux';
 // import PropTypes from 'prop-types';
 import { fetchState } from '../middlewares/Lobby';
@@ -12,7 +13,26 @@ class GameList extends React.Component {
     dispatch(fetchState());
   }
 
-  renderPlayers = users => <span>{users.map(({ name, rating }) => `${name}(${rating})`).join(', ')}</span>
+
+  renderPlayers = users => (<div>{users.map(({
+ id, name, rating, github_id,
+}) =>
+
+    (<a
+      className="nav-link"
+      href={`/users/${id}`}
+      key={github_id}
+      style={{ display: 'inline-block' }}
+    >
+      <img
+        className="attachment rounded mr-2"
+        alt={name}
+        src={`https://avatars0.githubusercontent.com/u/${github_id}`}
+        style={{ width: '25px' }}
+      />
+      {`${name}(${rating})`}
+    </a>))}
+                            </div>)
 
   renderGameLevelBadge = (level) => {
     const levels = {
@@ -81,13 +101,13 @@ class GameList extends React.Component {
     const { games } = this.props;
     const gameUrl = game => `/games/${game.game_id}`;
     return (
-      <div>
-        <h1>Game List</h1>
+      <div className="my-5">
+        <h2 className="text-center">List of games</h2>
         <p>Total: {games.length}</p>
-        <table className="table table-hover table-sm">
+        <table className="table table-hover table-sm text-center">
           <thead>
             <tr>
-              <th>Id</th>
+              <th>Date</th>
               <th>Level</th>
               <th>Players</th>
               <th>State</th>
@@ -101,13 +121,13 @@ class GameList extends React.Component {
                   key={game.game_id}
                 >
 
-                  <td>{game.game_id}</td>
-                  <td>{this.renderGameLevelBadge(game.game_info.level)}</td>
+                  <td className="align-middle">{moment.utc(game.game_info.inserted_at).local().format('YYYY-MM-DD HH:mm')}</td>
+                  <td className="align-middle">{this.renderGameLevelBadge(game.game_info.level)}</td>
 
-                  <td>{this.renderPlayers(game.users)}</td>
-                  <td>{game.game_info.state}</td>
+                  <td className="align-middle">{this.renderPlayers(game.users)}</td>
+                  <td className="align-middle">{game.game_info.state}</td>
 
-                  <td>{this.renderGameActionButton(game)}</td>
+                  <td className="align-middle">{this.renderGameActionButton(game)}</td>
                 </tr>
               ))
             }

@@ -16,6 +16,7 @@ const gameList = handleActions({
       game_info: {
         state: game.state,
         level: game.data.task.level,
+        inserted_at: game.data.inserted_at,
       },
       game_id: game.data.game_id,
     };
@@ -24,7 +25,7 @@ const gameList = handleActions({
   [actions.cancelGameLobby](state, { payload: { game_id } }) {
     const { games } = state;
 
-    const new_games = _.filter(games, (game) => game.game_id != parseInt(game_id));
+    const new_games = _.filter(games, game => game.game_id != parseInt(game_id));
 
     return { games: new_games };
   },

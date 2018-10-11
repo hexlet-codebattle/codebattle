@@ -57,12 +57,12 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
 
       {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
       {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
-      :lib.flush_receive()
+      Mix.Shell.Process.flush()
 
-      push(socket1, "editor:text", %{editor_text: editor_text1})
-      push(socket1, "editor:text", %{editor_text: editor_text2})
-      push(socket1, "editor:text", %{editor_text: editor_text3})
-      push(socket1, "check_result", %{editor_text: editor_text3, lang: :js})
+      Phoenix.ChannelTest.push(socket1, "editor:text", %{editor_text: editor_text1})
+      Phoenix.ChannelTest.push(socket1, "editor:text", %{editor_text: editor_text2})
+      Phoenix.ChannelTest.push(socket1, "editor:text", %{editor_text: editor_text3})
+      Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text3, lang: :js})
 
       playbook = [
         %{"delta" => [%{"insert" => "t"}], "time" => 100},

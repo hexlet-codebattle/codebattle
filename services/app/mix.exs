@@ -8,10 +8,9 @@ defmodule Codebattle.Mixfile do
     [
       app: :codebattle,
       version: "0.0.12",
-      elixir: "~> 1.5",
+      elixir: "~> 1.7",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
-      build_embedded: Mix.env() == :prod,
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       test_coverage: [tool: ExCoveralls],
@@ -46,14 +45,6 @@ defmodule Codebattle.Mixfile do
         :ueberauth,
         :ueberauth_github,
         :gproc,
-        :edeliver,
-
-        # For distillery
-        :atomic_map,
-        :fsm,
-        :text_delta,
-        :temp,
-        :logger_file_backend
       ]
     ]
   end
@@ -84,10 +75,9 @@ defmodule Codebattle.Mixfile do
       {:text_delta, "~> 1.3.0"},
       {:yaml_elixir, "~> 1.1"},
       {:temp, "~> 0.4"},
-      {:edeliver, "~> 1.4.4"},
-      {:distillery, "~> 1.5", runtime: false},
       {:logger_file_backend, "~> 0.0.10"},
       {:atomic_map, "~> 0.8"},
+      {:envy, "~> 1.1.1"},
 
       # dev_and_test
       {:credo, "~> 0.8", only: [:dev, :test], runtime: false},
@@ -96,7 +86,7 @@ defmodule Codebattle.Mixfile do
       {:phoenix_live_reload, "~> 1.0", only: :dev},
 
       # test
-      {:mock, "~> 0.2.0", only: :test},
+      {:mock, "~> 0.3.0", only: :test},
       {:phoenix_integration, "~> 0.5", only: :test},
       {:excoveralls, "~> 0.7", only: :test},
       {:faker, "~> 0.8", only: :test},

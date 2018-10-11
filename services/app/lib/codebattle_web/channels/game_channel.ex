@@ -115,7 +115,7 @@ defmodule CodebattleWeb.GameChannel do
                 message
 
               _ ->
-                gettext("You lose the game")
+                gettext("You lost the game")
             end
 
           {:reply, {:ok, %{solution_status: true, status: fsm.state, msg: msg, winner: winner}},

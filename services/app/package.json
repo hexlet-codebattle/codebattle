@@ -21,6 +21,7 @@
     "i18next": "^10.3.0",
     "jquery": "^3.3.1",
     "lodash": "^4.17.4",
+    "moment": "^2.22.2",
     "phoenix": "file:deps/phoenix",
     "phoenix_html": "file:deps/phoenix_html",
     "popper.js": "^1.12.2",
@@ -79,8 +80,8 @@
     "style-loader": "^0.20.3",
     "uglifyjs-webpack-plugin": "^1.2.4",
     "url-loader": "^1.0.1",
-    "webpack": "^4.1.1",
-    "webpack-cli": "^2.0.12",
+    "webpack": "^4.20.2",
+    "webpack-cli": "^3.1.1",
     "webpack-dev-server": "^3.1.1"
   }
 }

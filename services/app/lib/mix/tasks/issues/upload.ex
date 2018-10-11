@@ -29,7 +29,7 @@ defmodule Mix.Tasks.Issues.Upload do
 
     Enum.each(issue_names, fn issue_name ->
       asserts = File.read!(Path.join(path, "#{issue_name}.jsons"))
-      issue_info = YamlElixir.read_from_file(Path.join(path, "#{issue_name}.yml"))
+      issue_info = YamlElixir.read_from_file!(Path.join(path, "#{issue_name}.yml"))
 
       changeset =
         Task.changeset(%Task{}, %{

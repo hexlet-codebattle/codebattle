@@ -74,7 +74,7 @@ export const gameStatusTitleSelector = (state) => {
   switch (gameStatus.status) {
     case GameStatusCodes.waitingOpponent:
       return i18n
-        .t('State: {{state}}', { state: i18n.t('Waiting opponent') });
+        .t('State: {{state}}', { state: i18n.t('Waiting for an opponent') });
     case GameStatusCodes.playing:
       return i18n
         .t('State: {{state}}', { state: i18n.t('Playing') });

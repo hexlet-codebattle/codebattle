@@ -48,10 +48,10 @@ defmodule Codebattle.CodeCheck.Elixir.IntegrationTest do
 
     {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
     {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
-    :lib.flush_receive()
+    Mix.Shell.Process.flush()
 
     ref =
-      push(socket1, "check_result", %{
+      Phoenix.ChannelTest.push(socket1, "check_result", %{
         editor_text: "defmodule Solution do\n def solution(x,y) do; x - y; end end",
         lang: "elixir"
       })
@@ -89,9 +89,9 @@ defmodule Codebattle.CodeCheck.Elixir.IntegrationTest do
 
     {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
     {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
-    :lib.flush_receive()
+    Mix.Shell.Process.flush()
 
-    ref = push(socket1, "check_result", %{editor_text: "sdf", lang: "elixir"})
+    ref = Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: "sdf", lang: "elixir"})
     :timer.sleep(timeout)
 
     assert_reply(ref, :ok, %{output: output})
@@ -126,11 +126,11 @@ defmodule Codebattle.CodeCheck.Elixir.IntegrationTest do
 
     {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
     {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
-    :lib.flush_receive()
+    Mix.Shell.Process.flush()
 
-    push(socket1, "editor:text", %{editor_text: "test"})
+    Phoenix.ChannelTest.push(socket1, "editor:text", %{editor_text: "test"})
 
-    push(socket1, "check_result", %{
+    Phoenix.ChannelTest.push(socket1, "check_result", %{
       editor_text: "defmodule Solution do; def solution(x,y) do; x + y; end end",
       lang: "elixir"
     })

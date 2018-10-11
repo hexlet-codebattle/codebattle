@@ -12,7 +12,7 @@ defmodule Mix.Tasks.UploadLangs do
     {:ok, _started} = Application.ensure_all_started(:codebattle)
 
     spec_filepath = Path.join(File.cwd!(), "priv/repo/seeds/langs.yml")
-    %{langs: langs} = YamlElixir.read_from_file(spec_filepath, atoms: true)
+    %{langs: langs} = YamlElixir.read_from_file!(spec_filepath, atoms: true)
 
     for lang_data <- langs do
       language =
