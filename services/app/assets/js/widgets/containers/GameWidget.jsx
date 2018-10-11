@@ -116,7 +116,7 @@ class GameWidget extends Component {
               })}
             </ul>
             {this.renderTab()}
-            <div className="row mx-auto" style={{ display: 'none' }}>
+            <div className="row mx-auto">
               <div className="col-md-6">
                 <p> Template: {_.get(leftEditor, ['currentLang', 'solution_template'])}</p>
               </div>
