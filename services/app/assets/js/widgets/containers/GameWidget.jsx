@@ -13,7 +13,7 @@ import GameStatusTab from './GameStatusTab';
 import { sendEditorText } from '../middlewares/Game';
 import ExecutionOutput from '../components/ExecutionOutput';
 
-const Tabs = { editor: 'EDITOR', output: 'OUTPUT' };
+const Tabs = { editor: 'EDITOR', output: 'OUTPUT', template: 'TEMPLATE' };
 
 class GameWidget extends Component {
   static defaultProps = {
@@ -79,11 +79,16 @@ class GameWidget extends Component {
   }
 
   renderTab() {
-    const { outputText } = this.props;
-
+    const { outputText, leftEditor } = this.props;
     switch (this.state.currentTab) {
       case Tabs.editor: return <Editor {...this.getLeftEditorParams()} />;
       case Tabs.output: return <ExecutionOutput output={outputText} />;
+      case Tabs.template: return (
+        <div className="row mx-auto">
+          <div className="col-md-6">
+            {_.get(leftEditor, ['currentLang', 'solution_template']).split('\n').map((i, key) => <div key={key}>{i}</div>)}
+          </div>
+        </div>);
       default: return null;
     }
   }
@@ -98,7 +103,7 @@ class GameWidget extends Component {
           </div>
         </div>
         <div className="row my-2 d-flex">
-          <div className="col-6" style={{ height: '500px' }}>
+          <div className="col-6" style={{ height: '500px', cursor: 'pointer' }}>
             <ul className="nav nav-tabs">
               {_.map(Tabs, (value, key) => {
                 const active = this.state.currentTab === value ? 'active' : '';
@@ -116,11 +121,6 @@ class GameWidget extends Component {
               })}
             </ul>
             {this.renderTab()}
-            <div className="row mx-auto">
-              <div className="col-md-6">
-                <p> Template: {_.get(leftEditor, ['currentLang', 'solution_template'])}</p>
-              </div>
-            </div>
           </div>
           <div className="col-6" style={{ marginTop: '42px' }}>
             <Editor {...this.getRightEditorParams()} />
