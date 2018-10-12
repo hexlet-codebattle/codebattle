@@ -15,11 +15,11 @@ class InfoWidget extends Component {
   render() {
     const { taskText } = this.props;
     return (
-      <div className="row mb-2">
-        <div className="col-7">
+      <div className="row mb-2" style={{ height: '35%' }}>
+        <div className="col-6">
           <Task task={taskText} />
         </div>
-        <div className="col-5">
+        <div className="col-6">
           <ChatWidget />
         </div>
       </div>

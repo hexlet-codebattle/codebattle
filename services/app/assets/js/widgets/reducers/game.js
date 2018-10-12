@@ -18,7 +18,7 @@ export default handleActions({
       ...state,
       gameStatus: {
         ...state.gameStatus,
-        ...payload
+        ...payload,
       },
     };
   },

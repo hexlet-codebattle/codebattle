@@ -16,11 +16,10 @@ import ExecutionOutput from '../components/ExecutionOutput';
 const Tabs = { editor: 'EDITOR', output: 'OUTPUT' };
 
 class GameWidget extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      currentTab: Tabs.editor,
-    }
+  static defaultProps = {
+    leftEditor: {},
+    rightEditor: {},
+    currentTab: Tabs.editor,
   }
 
   static propTypes = {
@@ -37,10 +36,11 @@ class GameWidget extends Component {
     sendData: PropTypes.func.isRequired,
   }
 
-  static defaultProps = {
-    leftEditor: {},
-    rightEditor: {},
-    currentTab: Tabs.editor,
+  constructor(props) {
+    super(props);
+    this.state = {
+      currentTab: Tabs.editor,
+    };
   }
 
   getLeftEditorParams() {
@@ -79,10 +79,10 @@ class GameWidget extends Component {
   }
 
   renderTab() {
-    const { editorText, outputText } = this.props;
+    const { outputText } = this.props;
 
     switch (this.state.currentTab) {
-      case Tabs.editor: return <Editor {...this.getLeftEditorParams()} />
+      case Tabs.editor: return <Editor {...this.getLeftEditorParams()} />;
       case Tabs.output: return <ExecutionOutput output={outputText} />;
       default: return null;
     }
@@ -97,32 +97,32 @@ class GameWidget extends Component {
             <GameStatusTab />
           </div>
         </div>
-        <div className="row my-2">
+        <div className="row my-2 d-flex">
           <div className="col-6" style={{ height: '500px' }}>
-                {this.renderTab()}
-                <ul className="nav nav-tabs">
-                  {_.map(Tabs, (value, key) => {
-                    const active = this.state.currentTab === value ? 'active' : '';
-                    return (
-                      <li className="nav-item" key={key}>
-                        <a
-                          role="button"
-                          className={`nav-link disabled ${active}`}
-                          onClick={() => this.setState({ currentTab: value })}
-                        >
-                          {value}
-                        </a>
-                      </li>
-                    );
-                  })}
-                </ul>
-                <div className="row mx-auto">
-                  <div className="col-md-6">
-                    <p> Template: {_.get(leftEditor, ['currentLang', 'solution_template'])}</p>
-                  </div>
+            <ul className="nav nav-tabs">
+              {_.map(Tabs, (value, key) => {
+                const active = this.state.currentTab === value ? 'active' : '';
+                return (
+                  <li className="nav-item" key={key}>
+                    <a
+                      role="button"
+                      className={`nav-link disabled ${active}`}
+                      onClick={() => this.setState({ currentTab: value })}
+                    >
+                      {value}
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+            {this.renderTab()}
+            <div className="row mx-auto">
+              <div className="col-md-6">
+                <p> Template: {_.get(leftEditor, ['currentLang', 'solution_template'])}</p>
+              </div>
             </div>
           </div>
-          <div className="col-6">
+          <div className="col-6" style={{ marginTop: '42px' }}>
             <Editor {...this.getRightEditorParams()} />
           </div>
         </div>
