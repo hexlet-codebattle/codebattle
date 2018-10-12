@@ -56,15 +56,15 @@ class GameList extends React.Component {
         switch (this.isPlayer(user, game)) {
           case true:
             return (
-              <div>
+              <div className="btn-group">
                 <button
-                  className="btn btn-info btn-sm mr-2"
+                  className="btn btn-info btn-sm"
                   data-method="get"
                   data-to={gameUrl(game)}
                 > Show
                 </button>
                 <button
-                  className="btn btn-danger btn-sm mr-2"
+                  className="btn btn-danger btn-sm"
                   data-method="delete"
                   data-csrf={window.csrf_token}
                   data-to={gameUrl(game)}
@@ -101,10 +101,8 @@ class GameList extends React.Component {
     const { games } = this.props;
     const gameUrl = game => `/games/${game.game_id}`;
     return (
-      <div className="my-5">
-        <h2 className="text-center">List of games</h2>
-        <p>Total: {games.length}</p>
-        <table className="table table-hover table-sm text-center">
+      <div>
+        <table className="table table-hover table-sm">
           <thead>
             <tr>
               <th>Date</th>
@@ -116,16 +114,16 @@ class GameList extends React.Component {
           </thead>
           <tbody>
             {
-              games.map(game => (
+              games.concat(games).concat(games).concat(games).map(game => (
                 <tr
                   key={game.game_id}
                 >
 
-                  <td className="align-middle">{moment.utc(game.game_info.inserted_at).local().format('YYYY-MM-DD HH:mm')}</td>
-                  <td className="align-middle">{this.renderGameLevelBadge(game.game_info.level)}</td>
+                  <td className="align-middle" style={{whiteSpace: "nowrap"}}>{moment.utc(game.game_info.inserted_at).local().format('YYYY-MM-DD HH:mm')}</td>
+                  <td className="align-middle" style={{whiteSpace:"nowrap"}}>{this.renderGameLevelBadge(game.game_info.level)}</td>
 
-                  <td className="align-middle">{this.renderPlayers(game.users)}</td>
-                  <td className="align-middle">{game.game_info.state}</td>
+                  <td className="align-middle" style={{whiteSpace:"nowrap"}}>{this.renderPlayers(game.users)}</td>
+                  <td className="align-middle" style={{whiteSpace:"nowrap"}}>{game.game_info.state}</td>
 
                   <td className="align-middle">{this.renderGameActionButton(game)}</td>
                 </tr>

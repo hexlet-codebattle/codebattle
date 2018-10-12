@@ -19,7 +19,7 @@ defmodule Codebattle.GameProcess.Fsm do
       # Integer
       game_id: nil,
       # NaiveDateTime
-      inserted_at: NaiveDateTime.utc_now,
+      inserted_at: nil,
       # Task
       task: %Codebattle.Task{},
       # List with two players %Player{}

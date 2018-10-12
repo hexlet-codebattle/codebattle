@@ -6,9 +6,9 @@
     :extension: rb
     :docker_image: "codebattle/ruby:2.5.1"
     :solution_template: "def solution()\n\nend"
-  - :name: javascript
+  - :name: nodejs
     :slug: js
-    :version: "node 10.11.0"
+    :version: "10.11.0"
     :extension: js
     :docker_image: "codebattle/js:10.11.0"
     :solution_template: "module.exports = () => {\n\n};"

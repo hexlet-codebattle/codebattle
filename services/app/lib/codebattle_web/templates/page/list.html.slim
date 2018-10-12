@@ -1,6 +1,6 @@
 .row
   .col-md-4.px-4
-    h3.text-center.my-4 = gettext "Select a difficulty to start a new game"
+    h3.text-center.my-3 = gettext "Select a difficulty to start a new game"
 
     .row.mb-2.justify-content-center
       .list-group.text-center style="width:70%;"
@@ -13,14 +13,14 @@
         = button to: game_path(@conn, :create, level: :hard), class: "list-group-item list-group-item-action btn btn-outline-danger", role: "button" do
           = gettext "Hard"
 
-  .col-md-8.px-4
-    div style="overflow-y:auto;height:45vh;"
+  .col-md-8.pr-4
+    h3.text-center.mt-3.mb-2 List of games
+    div style="overflow-y:auto;height:35vh;"
       #game-list
 
-    div style="overflow-y:auto;height:45vh;"
-      h2.text-center.my-4 = gettext "Recent games"
-
-      table.table.table-hover
+    h3.text-center.mt-4.mb-2 = gettext "Recent games"
+    div style="overflow-y:auto;height:35vh;"
+      table.table.table-hover.table-sm
         thead
           tr
             th Date
@@ -32,13 +32,13 @@
             - winner = game.user_games |> Enum.filter(fn user -> user.result == "won" end) |> List.first |> Map.get(:user)
             - loser = game.user_games |> Enum.filter(fn user -> user.result != "won" end) |> List.first |> Map.get(:user)
             tr
-              td.align-middle
+              td.align-middle style="white-space:nowrap;"
                 = "#{game.updated_at.year}-#{game.updated_at.month}-#{game.updated_at.day}  #{game.updated_at.hour}:#{game.updated_at.minute}"
-              td.align-middle
+              td.align-middle style="white-space:nowrap;"
                 = link to: user_path(@conn, :show, winner.id), class: "nav-link" do
                   img.attachment.rounded.mr-3[alt="#{winner.name}" src="https://avatars0.githubusercontent.com/u/#{winner.github_id}" style="width:30px"]
                   = user_name(winner)
-              td.align-middle
+              td.align-middle style="white-space:nowrap;"
                 = link to: user_path(@conn, :show, loser.id), class: "nav-link" do
                   img.attachment.rounded.mr-3[alt="#{loser.name}" src="https://avatars0.githubusercontent.com/u/#{loser.github_id}" style="width:30px"]
                   = user_name(loser)
