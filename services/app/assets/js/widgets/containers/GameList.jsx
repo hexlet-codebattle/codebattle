@@ -114,7 +114,7 @@ class GameList extends React.Component {
           </thead>
           <tbody>
             {
-              games.concat(games).concat(games).concat(games).map(game => (
+              games.map(game => (
                 <tr
                   key={game.game_id}
                 >
