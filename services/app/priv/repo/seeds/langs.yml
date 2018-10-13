@@ -30,3 +30,9 @@
     :extension: php
     :docker_image: "codebattle/php:7.2.0"
     :solution_template: "function solution(){\n\n}"
+  - :name: clojure
+    :slug: clojure
+    :version: 1.8.0
+    :extension: clj
+    :docker_image: "codebattle/clojure:1.8.0"
+    :solution_template: "(defn solution [])"
