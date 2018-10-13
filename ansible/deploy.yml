@@ -16,30 +16,30 @@
   # become_user: "{{ codebattle_run_user }}"
 
   tasks:
-    - name: download image for nginx
-      docker_image:
-        name: "{{ codebattle_nginx_image_name }}"
-        force: yes
+    # - name: download image for nginx
+    #   docker_image:
+    #     name: "{{ codebattle_nginx_image_name }}"
+    #     force: yes
 
-    - docker_container:
-        recreate: yes
-        name: codebattle-nginx
-        # detach: no
-        image: "{{ codebattle_nginx_image_name }}"
-        state: started
-        restart_policy: always
-        log_driver: syslog
-        network_mode: host
-        ports:
-          - "80:80"
-      tags: [nginx]
+    # - docker_container:
+    #     recreate: yes
+    #     name: codebattle-nginx
+    #     # detach: no
+    #     image: "{{ codebattle_nginx_image_name }}"
+    #     state: started
+    #     restart_policy: always
+    #     log_driver: syslog
+    #     network_mode: host
+    #     ports:
+    #       - "80:80"
+    #   tags: [nginx]
 
     - template:
         src: environment.j2
         dest: "{{ codebattle_env_file }}"
       tags: env
 
-    - name: download image
+    - name: download app image
       docker_image:
         name: "{{ codebattle_app_image_name }}:{{ codebattle_image_tag }}"
         force: yes
