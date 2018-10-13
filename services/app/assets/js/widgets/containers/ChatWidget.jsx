@@ -62,7 +62,7 @@ class ChatWidget extends React.Component {
         }}
       >
         <div className="card col-8 p-0">
-          <div className="mx-1 mt-1 font-weight-bold">Chat</div>
+          <div className="ml-2 my-1 font-weight-bold">Chat</div>
           <Messages
             style={{
               display: 'inline-block',
@@ -98,7 +98,7 @@ class ChatWidget extends React.Component {
         </div>
         <div className="card col-4 p-0">
           <span
-            className="mx-1 mt-1 font-weight-bold"
+            className="ml-2 my-1 font-weight-bold"
             title="Online users"
           >
             Online users

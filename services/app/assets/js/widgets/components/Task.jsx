@@ -4,16 +4,29 @@ import _ from 'lodash';
 import ReactMarkdown from 'react-markdown';
 import i18n from '../../i18n';
 
+const renderGameLevelBadge = (level) => {
+  const levels = {
+    elementary: 'info',
+    easy: 'success',
+    medium: 'warning',
+    hard: 'danger',
+  };
+
+  return <h4 className="m-0 p-0"><span className={`badge badge-${levels[level]}`}>{level}</span></h4>;
+};
+
 const Task = ({ task }) =>
   (_.isEmpty(task) ? null : (
     <div className="card">
-      <div className="card-header font-weight-bold">
-        {`Task: ${task.name}`}
+      <div className="d-flex align-items-center py-0 my-0 justify-content-between card-header font-weight-bold">
+        <div className="p-1" >
+          {`Task: ${task.name}`}
+        </div>
+        <div className="p-1">
+          {renderGameLevelBadge(task.level)}
+        </div>
       </div>
-      <div className="card-body">
-        <h6 className="card-subtitle text-muted">
-          {`${i18n.t('Level')}: ${task.level}`}
-        </h6>
+      <div className="card-body py-1 mb-0">
         <ReactMarkdown
           className="card-text"
           source={task.description}

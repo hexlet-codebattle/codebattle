@@ -18,14 +18,14 @@ class Timer extends Component {
   render() {
     const { time } = this.props;
     return (
-      <div className="card my-2">
-        <div className="card-header font-weight-bold">
-          {` Starts at: ${moment.utc(time).local().format('YYYY-MM-DD HH:mm:ss')}`}
-        </div>
-        <div className="card-body">
-          <h6 className="card-subtitle text-muted">
+      <div className="card mt-2">
+        <div className="d-flex py-0 justify-content-between card-header font-weight-bold" >
+          <div className="p-1" >
+            {` Starts at: ${moment.utc(time).local().format('YYYY-MM-DD HH:mm:ss')}`}
+          </div>
+          <div className="p-1" >
             {` Duration: ${moment.utc(moment().diff(moment.utc(time))).format('HH:mm:ss.SS')}`}
-          </h6>
+          </div>
         </div>
       </div>
     );
