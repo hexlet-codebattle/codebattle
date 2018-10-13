@@ -74,21 +74,20 @@ export const gameStatusTitleSelector = (state) => {
   switch (gameStatus.status) {
     case GameStatusCodes.waitingOpponent:
       return i18n
-        .t('State: {{state}}', { state: i18n.t('Waiting for an opponent') });
+        .t('{{state}}', { state: i18n.t('Waiting for an opponent') });
     case GameStatusCodes.playing:
       return i18n
-        .t('State: {{state}}', { state: i18n.t('Playing') });
+        .t('{{state}}', { state: i18n.t('Playing') });
     case GameStatusCodes.gameOver:
       return i18n
         .t('The winner is: {{name}}', { name: gameStatus.winner.name });
-    case GameStatusCodes.gameOver:
-      return i18n
-        .t('Game over. The winner is: {{name}}', { name: gameStatus.winner.name });
     default:
       return '';
   }
 };
 
 export const gameTaskSelector = state => state.game.task;
+
+export const gameStartsAtSelector = state => state.game.gameStatus.startsAt;
 
 export const gameLangsSelector = state => state.game.langs;

@@ -9,11 +9,21 @@ html lang="en"
     title Codebattle
     link rel="stylesheet" href=static_path(@conn,"/css/app.css")
   body
-    nav.navbar.navbar-light.bg-light.navbar-toggleable-sm.justify-content-center.mb-3
-      a.navbar-brand.d-flex.mr-auto href="/"
-        img alt=static_path(@conn,"/css/app.css") src="/images/codebattle_logo.png" height="30"
-        | Codebattle
-      ul.nav.navbar-nav.ml-auto.justify-content-end.flex-row
+    nav.navbar.navbar-light.bg-light.navbar-toggleable-sm.justify-content-center
+      ul.nav.navbar-nav.mr-auto.justify-content-end.flex-row
+        a.navbar-brand.text-muted href="/"
+          span.h3
+            img alt=static_path(@conn,"/css/app.css") src="/images/codebattle_logo.png" height="30"
+          |&nbsp;Codebattle
+        a.navbar-brand.text-muted[href="https://github.com/hexlet-codebattle/codebattle" target="_blank"]
+          span.h3
+            span.fa.fa-github
+          |&nbsp;SourceCode
+        a.navbar-brand.text-muted[href="https://hexlet.io" target="_blank"]
+          span.h3
+            span.fa.fa-university.ml-2
+          | &nbsp;Hexlet
+      ul.nav.navbar-nav.ml-auto.justify-content-end.flex-row.font-weight-bold
         = unless @current_user.guest do
           li.nav-item.pr-5
             = link to: user_path(@conn, :index), class: "nav-link" do

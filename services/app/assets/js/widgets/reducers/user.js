@@ -25,7 +25,7 @@ const reducer = handleActions({
   },
 
   [actions.updateUsers](state, { payload }) {
-    const { users: usersList } = payload;
+   const { users: usersList } = payload;
     const users = _.reduce(usersList, (acc, user) => ({ ...acc, [user.id]: user }), {});
     if (!_.isEmpty(users)) {
       return { ...state, users: { ...state.users, ...users } };

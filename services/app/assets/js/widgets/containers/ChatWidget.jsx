@@ -4,7 +4,8 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { fetchState, addMessage } from '../middlewares/Chat';
 import { currentUserSelector } from '../selectors';
-import Messages from './Messages.jsx';
+import Messages from '../components/Messages.jsx';
+import UserName from '../components/UserName';
 
 class ChatWidget extends React.Component {
   static propTypes = {
@@ -102,16 +103,18 @@ class ChatWidget extends React.Component {
           >
             Online users
           </span>
-          <div className="card-body">
-            {this.props.users.map(user => (
-              <p
-                className="m-1 text-truncate"
-                key={user.id}
-                title={user.name}
-              >
-                {user.name}
-              </p>
-            ))}
+          <div
+            className="card-body"
+            style={{
+              display: 'inline-block',
+              flexGrow: '1',
+              width: '100%',
+              height: '130px',
+              overflowY: 'scroll',
+              border: '1px solid #eee',
+            }}
+          >
+            {this.props.users.map(user => (<div key={user.id} className="my-2"> <UserName user={user} /> </div>))}
           </div>
         </div>
       </div>

@@ -1,3 +1,5 @@
 .jumbotron.mt-5.text-center.mb-0
   h2.dispay-2 = gettext "Welcome to %{name}!", name: "Codebattle"
   p.lead = gettext "%{name}: game for programmers.", name: "Codebattle"
+  a href="#{auth_path(@conn, :request, :github)}"
+    button.btn.btn-outline-success = gettext "Sign in with %{name}", name: "Github"

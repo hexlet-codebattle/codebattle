@@ -37,6 +37,7 @@ defmodule CodebattleWeb.GameChannelTest do
                second_player_editor_text: "",
                first_player_editor_lang: "js",
                second_player_editor_lang: "js",
+               starts_at: nil,
                task: task
              })
   end

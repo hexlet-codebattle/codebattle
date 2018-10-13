@@ -44,8 +44,8 @@ defmodule CodebattleWeb.GameController do
           {:waiting_opponent, false} ->
             render(conn, "join.html", %{fsm: fsm})
 
-          {:game_over, false} ->
-            render(conn, "game_over.html", %{fsm: fsm})
+          # {:game_over, false} ->
+            # render(conn, "game_over.html", %{fsm: fsm})
 
           _ ->
             render(conn, "show.html", %{fsm: fsm, layout_template: "full_width.html"})

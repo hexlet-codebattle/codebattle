@@ -19,14 +19,18 @@ import {
 import { checkGameResult, sendEditorLang, sendGiveUp } from '../middlewares/Game';
 import userTypes from '../config/userTypes';
 import LangSelector from '../components/LangSelector';
+import UserName from '../components/UserName';
 
 const renderNameplate = (user, onlineUsers) => {
-  const userName = _.get(user, ['name'], '');
-  const rating = _.get(user, ['rating'], '');
-  const ratingStr = _.isFinite(rating) ? ` (${rating})` : '';
   const color = _.find(onlineUsers, { id: user.id }) ? 'green' : '#ccc';
   return (
-    <div><span className="mx-1 fa fa-plug" style={{ color }} />  {`${userName}${ratingStr}`} </div>
+    <div>
+      <UserName user={user} />
+      <span
+        className="d-inline ml-3 fa fa-plug"
+        style={{ color }}
+      />
+    </div>
   );
 };
 
@@ -78,6 +82,7 @@ class GameStatusTab extends Component {
       task,
       leftUserId,
       rightUserId,
+      title,
       users,
       onlineUsers,
     } = this.props;
@@ -127,14 +132,14 @@ class GameStatusTab extends Component {
                 )}
               </div>
             </div>
-            <div className="col">
+            <div className="col-md-5">
               <div className="row text-center">
                 <div className="col">
                   {renderNameplate(users[leftUserId], onlineUsers)}
                 </div>
                 <div className="col">
                   <span className="p-2 badge badge-danger">
-                    {gameStatus.status}
+                    {title}
                   </span>
                 </div>
                 <div className="col">

@@ -15,6 +15,7 @@ const initGameChannel = (dispatch) => {
     const {
       status,
       winner,
+      starts_at,
       first_player,
       second_player,
       first_player_editor_text,
@@ -31,6 +32,7 @@ const initGameChannel = (dispatch) => {
       id: first_player.id,
       name: first_player.name,
       rating: first_player.rating,
+      github_id: first_player.github_id,
       type: userTypes.firstPlayer,
     }];
 
@@ -39,6 +41,7 @@ const initGameChannel = (dispatch) => {
         id: second_player.id,
         name: second_player.name,
         rating: second_player.rating,
+        github_id: second_player.github_id,
         type: userTypes.secondPlayer,
       });
     }
@@ -60,7 +63,7 @@ const initGameChannel = (dispatch) => {
     }
 
     dispatch(actions.setGameTask({ task }));
-    dispatch(actions.updateGameStatus({ status, winner }));
+    dispatch(actions.updateGameStatus({ status, winner, startsAt: starts_at }));
     dispatch(actions.finishStoreInit());
   };
 
@@ -125,11 +128,13 @@ export const editorReady = () => (dispatch) => {
         id: first_player.id,
         name: first_player.name,
         rating: first_player.rating,
+        github_id: first_player.github_id,
         type: userTypes.firstPlayer,
       }, {
         id: second_player.id,
         name: second_player.name,
         rating: second_player.rating,
+        github_id: second_player.github_id,
         type: userTypes.secondPlayer,
       }],
     }));
@@ -148,7 +153,7 @@ export const editorReady = () => (dispatch) => {
       }));
     }
 
-    dispatch(actions.updateGameStatus({ status, winner }));
+    dispatch(actions.updateGameStatus({ status, winner}));
   });
 
   channel.on('user:won', ({ winner, status, msg }) => {

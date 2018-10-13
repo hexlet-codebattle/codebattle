@@ -89,6 +89,7 @@ defmodule Codebattle.GameProcess.Play do
     %{
       # :playing
       status: fsm.state,
+      starts_at: fsm.data.inserted_at,
       winner: FsmHelpers.get_winner(fsm),
       first_player: fsm |> FsmHelpers.get_first_player() |> Map.get(:user),
       second_player: fsm |> FsmHelpers.get_second_player() |> Map.get(:user, %User{}),
