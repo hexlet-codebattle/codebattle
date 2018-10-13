@@ -23,6 +23,10 @@ html lang="en"
           span.h3
             span.fa.fa-university.ml-2
           | &nbsp;Hexlet
+        a.navbar-brand.text-muted[href="http://slack-ru.hexlet.io/" target="_blank"]
+          span.h3
+            span.fa.fa-slack.ml-2
+          | &nbsp;Support: Slack#codebattle
       ul.nav.navbar-nav.ml-auto.justify-content-end.flex-row.font-weight-bold
         = unless @current_user.guest do
           li.nav-item.pr-5
