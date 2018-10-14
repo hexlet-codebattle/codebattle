@@ -3,6 +3,10 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 import Gon from 'gon';
 
+String.prototype.capitalize = function () {
+  return this.charAt(0).toUpperCase() + this.slice(1);
+};
+
 const languages = Gon.getAsset('langs');
 const getLangTitle = (lang) => {
   const icons = {
@@ -11,11 +15,12 @@ const getLangTitle = (lang) => {
     ruby: 'icon-ruby',
     elixir: 'icon-elixir',
     python: 'icon-python',
+    clojure: 'icon-clojure',
   };
 
   return (
     <span className={icons[lang.slug]}>
-      {lang.name} {lang.version}
+      {`    ${lang.name.capitalize()} ${lang.version}`}
     </span>
   );
 };
