@@ -4,4 +4,5 @@ export default {
   elixir: 'elixir',
   php: 'php',
   python: 'python',
+  clojure: 'clojure',
 };

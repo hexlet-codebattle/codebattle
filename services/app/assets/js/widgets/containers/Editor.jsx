@@ -7,8 +7,12 @@ import 'brace/mode/javascript';
 import 'brace/mode/ruby';
 import 'brace/mode/elixir';
 import 'brace/mode/php';
+import 'brace/mode/clojure';
 import 'brace/mode/python';
 import 'brace/theme/solarized_dark';
+import 'brace/ext/language_tools';
+import 'brace/keybinding/emacs';
+import 'brace/keybinding/vim';
 
 const selectionBlockStyle = {
   position: 'absolute',
@@ -26,6 +30,7 @@ class Editor extends PureComponent {
     syntax: PropTypes.string,
     onChange: PropTypes.func,
     allowCopy: PropTypes.bool,
+    keyboardHandler: PropTypes.string,
   }
 
   static defaultProps = {
@@ -34,6 +39,7 @@ class Editor extends PureComponent {
     onChange: null,
     syntax: 'javascript',
     allowCopy: true,
+    keyboardHandler: '',
   }
 
   render() {
@@ -44,6 +50,7 @@ class Editor extends PureComponent {
       syntax,
       onChange,
       allowCopy,
+      keyboardHandler,
     } = this.props;
 
     return (
@@ -61,6 +68,8 @@ class Editor extends PureComponent {
           height="450px"
           fontSize={16}
           showPrintMargin={false}
+          keyboardHandler={keyboardHandler}
+          setOptions={{ tabSize: 2 }}
         />
         {
         allowCopy ? null : (
