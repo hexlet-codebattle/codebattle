@@ -80,13 +80,14 @@ export const gameStatusTitleSelector = (state) => {
         .t('{{state}}', { state: i18n.t('Playing') });
     case GameStatusCodes.gameOver:
       return i18n
-        .t('The winner is: {{name}}', { name: gameStatus.winner.name });
+        .t('{{name}} won', { name: gameStatus.winner.name });
     default:
       return '';
   }
 };
 
 export const gameTaskSelector = state => state.game.task;
+export const gameStatusNameSelector = state => state.game.gameStatus.status;
 
 export const gameStartsAtSelector = state => state.game.gameStatus.startsAt;
 
