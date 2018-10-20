@@ -14,3 +14,19 @@ $fa-font-path: "~font-awesome/fonts";
 //     height: 150px;
 //     overflow-y: scroll;
 // }
+
+.embed-container {
+  position: relative;
+  padding-bottom: 56.25%;
+  overflow: hidden;
+}
+
+.embed-container iframe,
+.embed-container object,
+.embed-container embed {
+  position: absolute;
+  top: 0;
+  left: 2%;
+  width: 96%;
+  height: 100%;
+}
