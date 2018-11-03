@@ -1,7 +1,7 @@
 FROM alpine:latest
 
 RUN apk update \
- && apk add cabal ghc gmp-dev make
+ && apk add cabal ghc gmp-dev make wget
 
 WORKDIR /usr/src/app
 
@@ -10,3 +10,4 @@ ADD checker.hs .
 ADD Types.hs .
 ADD Makefile .
 
+RUN cabal new-update
