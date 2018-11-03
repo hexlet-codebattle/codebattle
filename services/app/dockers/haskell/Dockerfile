@@ -1,7 +1,7 @@
 FROM alpine:latest
 
 RUN apk update \
- && apk add cabal ghc gmp-dev
+ && apk add cabal ghc gmp-dev make
 
 WORKDIR /usr/src/app
 
