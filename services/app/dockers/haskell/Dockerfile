@@ -11,3 +11,4 @@ ADD Types.hs .
 ADD Makefile .
 
 RUN cabal new-update
+RUN cabal new-install --only-dependencies
