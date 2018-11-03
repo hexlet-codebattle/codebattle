@@ -6,6 +6,7 @@ module Types where
 
 import Data.Aeson
 import Data.Foldable
+import Debug.Trace
 
 data Request = Task 
   { taskArguments :: [Value]
@@ -36,7 +37,7 @@ foldCaseRess = foldCaseRess' Dummy
 instance ToJSON CaseRes where
     toJSON (Ok n) = object ["status" .= ("ok" :: String), "result" .= n]
     toJSON (Failure vs) = object ["status" .= ("failure" :: String), "result" .= vs]
-    toJSON (Err s) = object ["status" .= ("error" :: String), "result" .= ("unexpected" :: String)]
+    toJSON (Err s) = object ["status" .= ("error" :: String), "result" .= (s :: String)]
     toJSON Dummy = error "Should not be possible!"
 
 class Foo a where
@@ -50,5 +51,5 @@ fromResult (Success x) = x
 fromResult (Error s) = error s
 
 instance {-# OVERLAPPING #-} (FromJSON a, Foo b) => Foo (a -> b) where
-  run (s:ss) f = toJSON $ run ss (f (fromResult $ fromJSON s))
+  run a@(s:ss) f = trace (show a) (toJSON $ run ss (f (fromResult $ fromJSON s)))
   run _ _ = error "!!"
