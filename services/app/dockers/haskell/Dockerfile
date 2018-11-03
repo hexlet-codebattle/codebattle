@@ -6,11 +6,10 @@ RUN apk update \
 WORKDIR /usr/src/app
 
 ADD HOwl.cabal .
+ADD checker.hs .
+ADD Types.hs .
 ADD Solution.hs .
+ADD Makefile .
 
 RUN cabal new-update
 RUN cabal new-build
-
-ADD checker.hs .
-ADD Types.hs .
-ADD Makefile .

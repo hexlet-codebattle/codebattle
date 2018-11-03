@@ -11,7 +11,7 @@ main :: IO ()
 main = do
     s <- getContents
     let ress = map unmagic $ lines s
-    (print . A.encode $ foldCaseRess ress) `catch` \e -> print (e :: ErrorCall)
+    (BS.putStrLn . A.encode $ foldCaseRess ress) `catch` \e -> print (e :: ErrorCall)
 
 unmagic :: String -> CaseRes
 unmagic s =  
