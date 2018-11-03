@@ -57,10 +57,17 @@ defmodule Codebattle.CodeCheck.Checker do
 
     check_code = :rand.normal() |> to_string
 
+    file_name = case lang.slug do
+       "haskell" ->
+      "Solution.#{lang.extension}"
+      _ ->
+      "solution.#{lang.extension}"
+    end
+
     asserts = task.asserts <> "{\"check\":\"__code#{check_code}__\"}"
     File.write!(Path.join(dir_path, "data.jsons"), asserts)
 
-    File.write!(Path.join(dir_path, "solution.#{lang.extension}"), editor_text)
+    File.write!(Path.join(dir_path, file_name), editor_text)
     {dir_path, check_code}
   end
 end
