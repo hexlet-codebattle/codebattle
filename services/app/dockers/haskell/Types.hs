@@ -7,11 +7,12 @@ module Types where
 import Data.Aeson
 import Data.Foldable
 import Debug.Trace
+import qualified Data.Text as T
 
 data Request = Task 
   { taskArguments :: [Value]
   , taskExpected :: Value
-  } | Check { taskCheck :: Int }
+  } | Check { taskCheck :: T.Text }
   deriving (Show, Eq)
 
 instance FromJSON Request where
@@ -23,7 +24,7 @@ instance ToJSON Request where
     toJSON (Check n) = object ["check" .= n] 
     toJSON (Task a e) = object ["arguments" .= a, "expected" .= e]
 
-data CaseRes = Ok Int | Failure [Value] | Err String | Dummy deriving (Show)
+data CaseRes = Ok T.Text | Failure [Value] | Err String | Dummy deriving (Show)
 
 foldCaseRess :: [CaseRes] -> CaseRes
 foldCaseRess = foldCaseRess' Dummy 
@@ -35,7 +36,7 @@ foldCaseRess = foldCaseRess' Dummy
      foldCaseRess' y [x@(Ok _)] = x
 
 instance ToJSON CaseRes where
-    toJSON (Ok n) = object ["status" .= ("ok" :: String), "result" .= n]
+    toJSON (Ok s) = object ["status" .= ("ok" :: String), "result" .= s]
     toJSON (Failure vs) = object ["status" .= ("failure" :: String), "result" .= vs]
     toJSON (Err s) = object ["status" .= ("error" :: String), "result" .= (s :: String)]
     toJSON Dummy = error "Should not be possible!"
@@ -51,5 +52,5 @@ fromResult (Success x) = x
 fromResult (Error s) = error s
 
 instance {-# OVERLAPPING #-} (FromJSON a, Foo b) => Foo (a -> b) where
-  run a@(s:ss) f = trace (show a) (toJSON $ run ss (f (fromResult $ fromJSON s)))
+  run a@(s:ss) f = toJSON $ run ss (f (fromResult $ fromJSON s))
   run _ _ = error "!!"

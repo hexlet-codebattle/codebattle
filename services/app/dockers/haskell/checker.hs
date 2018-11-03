@@ -10,9 +10,7 @@ import Check.Solution
 main :: IO ()
 main = do
     s <- getContents
-    print s
     let ress = map unmagic $ lines s
-    print ress
     (BS.putStrLn . A.encode $ foldCaseRess ress) `catch` \e -> print (e :: ErrorCall)
 
 unmagic :: String -> CaseRes
