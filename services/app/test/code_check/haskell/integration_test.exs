@@ -52,7 +52,7 @@ defmodule Codebattle.CodeCheck.Haskell.IntegrationTest do
 
     ref =
       Phoenix.ChannelTest.push(socket1, "check_result", %{
-        editor_text: "module Solution where\n\nsolution :: Int -> Int -> Int\nsolution x y = x - y",
+        editor_text: "module Check.Solution where\n\nsolution :: Int -> Int -> Int\nsolution x y = x - y",
         lang: "haskell"
       })
 
@@ -128,7 +128,7 @@ defmodule Codebattle.CodeCheck.Haskell.IntegrationTest do
     Phoenix.ChannelTest.push(socket1, "editor:text", %{editor_text: "test"})
 
     Phoenix.ChannelTest.push(socket1, "check_result", %{
-      editor_text: "module Solution where\n\nsolution :: Int -> Int -> Int\nsolution x y = x + y",
+      editor_text: "module Check.Solution where\n\nsolution :: Int -> Int -> Int\nsolution x y = x + y",
       lang: "haskell"
     })
 

@@ -9,7 +9,7 @@ import Data.Foldable
 
 data Request = Task 
   { taskArguments :: [Value]
-  , taskExpected :: [Value]
+  , taskExpected :: Value
   } | Check { taskCheck :: Int }
   deriving (Show, Eq)
 
