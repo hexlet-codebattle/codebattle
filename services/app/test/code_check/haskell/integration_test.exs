@@ -59,7 +59,7 @@ defmodule Codebattle.CodeCheck.Haskell.IntegrationTest do
     :timer.sleep(timeout)
 
     assert_reply(ref, :ok, %{output: output})
-    expected_result = %{"status" => "error", "result" => "unexpected"}
+    expected_result = %{"status" => "failure", "result" => [1, 1]}
     assert expected_result == Poison.decode!(output)
 
     fsm = Server.fsm(game.id)
