@@ -15,7 +15,13 @@ defmodule Codebattle.CodeCheck.Checker do
         # TODO: add hash to data.jsons or forbid read data.jsons
         docker_command_template = Application.fetch_env!(:codebattle, :docker_command_template)
         {dir_path, check_code} = prepare_tmp_dir!(task, editor_text, lang)
-        volume = "-v #{dir_path}:/usr/src/app/check"
+
+    volume = case lang.slug do
+       "haskell" ->
+          "-v #{dir_path}:/usr/src/app/Check"
+      _ ->
+          "-v #{dir_path}:/usr/src/app/check"
+    end
 
         command =
           docker_command_template
@@ -26,7 +32,7 @@ defmodule Codebattle.CodeCheck.Checker do
         [cmd | cmd_opts] = command |> String.split()
         {global_output, status} = System.cmd(cmd, cmd_opts, stderr_to_stdout: true)
 
-        Logger.debug(
+        Logger.error(
           "Docker stdout for task_id: #{task.id}, lang: #{lang.slug}, output:#{global_output}"
         )
 
@@ -57,10 +63,17 @@ defmodule Codebattle.CodeCheck.Checker do
 
     check_code = :rand.normal() |> to_string
 
+    file_name = case lang.slug do
+       "haskell" ->
+      "Solution.#{lang.extension}"
+      _ ->
+      "solution.#{lang.extension}"
+    end
+
     asserts = task.asserts <> "{\"check\":\"__code#{check_code}__\"}"
     File.write!(Path.join(dir_path, "data.jsons"), asserts)
 
-    File.write!(Path.join(dir_path, "solution.#{lang.extension}"), editor_text)
+    File.write!(Path.join(dir_path, file_name), editor_text)
     {dir_path, check_code}
   end
 end
