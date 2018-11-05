@@ -18,14 +18,19 @@ import 'phoenix_html';
 // Local files can be imported directly using relative
 // paths "./socket" or full ones "web/static/js/socket".
 
-import { renderGameWidget, renderLobby } from './widgets';
+import { renderGameWidget, renderLobby, renderHeatmapWidget } from './widgets';
 
 
 const gameWidgetRoot = document.getElementById('game-widget-root');
+const heatmapRoot = document.getElementById('heatmap-root');
 const gameListRoot = document.getElementById('game-list');
 
 if (gameWidgetRoot) {
   renderGameWidget(gameWidgetRoot);
+}
+
+if (heatmapRoot) {
+  renderHeatmapWidget(heatmapRoot);
 }
 
 if (gameListRoot) {
