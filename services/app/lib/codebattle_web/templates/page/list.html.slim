@@ -33,7 +33,7 @@
             - loser = game.user_games |> Enum.filter(fn user -> user.result != "won" end) |> List.first |> Map.get(:user)
             tr
               td.align-middle style="white-space:nowrap;"
-                = "#{game.updated_at.year}-#{game.updated_at.month}-#{game.updated_at.day}  #{game.updated_at.hour}:#{game.updated_at.minute}"
+                = "#{game.updated_at.year}-#{game.updated_at.month}-#{game.updated_at.day}  #{game.updated_at.hour}:#{String.pad_leading(game.updated_at.minute, 2, "0")}"
               td.align-middle style="white-space:nowrap;"
                 = link to: user_path(@conn, :show, winner.id), class: "nav-link" do
                   img.attachment.rounded.mr-3[alt="#{winner.name}" src="https://avatars0.githubusercontent.com/u/#{winner.github_id}" style="width:30px"]
