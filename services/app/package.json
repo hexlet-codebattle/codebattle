@@ -28,11 +28,11 @@
     "precss": "^3.1.0",
     "prop-types": "^15.5.10",
     "react": "^16.6.0",
-    "react-ace": "^5.9.0",
+    "react-ace": "^6.2.0",
     "react-cookie": "^2.1.2",
     "react-dom": "^16.6.0",
     "react-hot-keys": "^1.0.9",
-    "react-markdown": "^3.1.4",
+    "react-markdown": "^4.0.3",
     "react-redux": "^5.1.0",
     "react-stay-scrolled": "^2.1.1",
     "react-toastify": "^3.3.1",
@@ -82,7 +82,7 @@
     "style-loader": "^0.23.1",
     "uglifyjs-webpack-plugin": "^2.0.1",
     "url-loader": "^1.1.2",
-    "webpack": "^4.25.0",
+    "webpack": "^4.25.1",
     "webpack-cli": "^3.1.1",
     "webpack-dev-server": "^3.1.10"
   }
