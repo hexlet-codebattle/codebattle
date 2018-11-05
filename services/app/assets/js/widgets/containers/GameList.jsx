@@ -14,25 +14,28 @@ class GameList extends React.Component {
   }
 
 
-  renderPlayers = users => (<div>{users.map(({
- id, name, rating, github_id,
-}) =>
-
-    (<a
-      className="nav-link"
-      href={`/users/${id}`}
-      key={github_id}
-      style={{ display: 'inline-block' }}
-    >
-      <img
-        className="attachment rounded mr-2"
-        alt={name}
-        src={`https://avatars0.githubusercontent.com/u/${github_id}`}
-        style={{ width: '25px' }}
-      />
-      {`${name}(${rating})`}
-    </a>))}
-                            </div>)
+  renderPlayers = users => (
+    <div>
+      {users.map(({
+        id, name, rating, github_id,
+      }) => (
+        <a
+          className="nav-link"
+          href={`/users/${id}`}
+          key={github_id}
+          style={{ display: 'inline-block' }}
+        >
+          <img
+            className="attachment rounded mr-2"
+            alt={name}
+            src={`https://avatars0.githubusercontent.com/u/${github_id}`}
+            style={{ width: '25px' }}
+          />
+          {`${name}(${rating})`}
+        </a>
+      ))}
+    </div>
+  )
 
   renderGameLevelBadge = (level) => {
     const levels = {
@@ -115,17 +118,39 @@ class GameList extends React.Component {
           <tbody>
             {
               games.map(game => (
-                <tr
-                  key={game.game_id}
-                >
+                <tr key={game.game_id}>
 
-                  <td className="align-middle" style={{whiteSpace: "nowrap"}}>{moment.utc(game.game_info.inserted_at).local().format('YYYY-MM-DD HH:mm')}</td>
-                  <td className="align-middle" style={{whiteSpace:"nowrap"}}>{this.renderGameLevelBadge(game.game_info.level)}</td>
+                  <td
+                    className="align-middle"
+                    style={{ whiteSpace: 'nowrap' }}
+                  >
+                    {moment.utc(game.game_info.inserted_at).local().format('YYYY-MM-DD HH:mm')}
+                  </td>
+                  <td
+                    className="align-middle"
+                    style={{ whiteSpace: 'nowrap' }}
+                  >
+                    {this.renderGameLevelBadge(game.game_info.level)}
+                  </td>
 
-                  <td className="align-middle" style={{whiteSpace:"nowrap"}}>{this.renderPlayers(game.users)}</td>
-                  <td className="align-middle" style={{whiteSpace:"nowrap"}}>{game.game_info.state}</td>
+                  <td
+                    className="align-middle"
+                    style={{ whiteSpace: 'nowrap' }}
+                  >
+                    {this.renderPlayers(game.users)}
+                  </td>
+                  <td
+                    className="align-middle"
+                    style={{ whiteSpace: 'nowrap' }}
+                  >
+                    {game.game_info.state}
+                  </td>
 
-                  <td className="align-middle">{this.renderGameActionButton(game)}</td>
+                  <td
+                    className="align-middle"
+                  >
+                    {this.renderGameActionButton(game)}
+                  </td>
                 </tr>
               ))
             }
