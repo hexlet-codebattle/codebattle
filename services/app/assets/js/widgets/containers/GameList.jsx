@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 // import PropTypes from 'prop-types';
 import { fetchState } from '../middlewares/Lobby';
 import GameStatusCodes from '../config/gameStatusCodes';
+import Loading from '../components/Loading.jsx';
 import Gon from 'gon';
 
 class GameList extends React.Component {
@@ -100,6 +101,9 @@ class GameList extends React.Component {
   render() {
     const { games } = this.props;
     const gameUrl = game => `/games/${game.game_id}`;
+    if (!games) {
+      return (<Loading />);
+    }
     return (
       <div>
         <table className="table table-hover table-sm">
@@ -119,11 +123,11 @@ class GameList extends React.Component {
                   key={game.game_id}
                 >
 
-                  <td className="align-middle" style={{whiteSpace: "nowrap"}}>{moment.utc(game.game_info.inserted_at).local().format('YYYY-MM-DD HH:mm')}</td>
-                  <td className="align-middle" style={{whiteSpace:"nowrap"}}>{this.renderGameLevelBadge(game.game_info.level)}</td>
+                  <td className="align-middle" style={{ whiteSpace: 'nowrap' }}>{moment.utc(game.game_info.inserted_at).local().format('YYYY-MM-DD HH:mm')}</td>
+                  <td className="align-middle" style={{ whiteSpace: 'nowrap' }}>{this.renderGameLevelBadge(game.game_info.level)}</td>
 
-                  <td className="align-middle" style={{whiteSpace:"nowrap"}}>{this.renderPlayers(game.users)}</td>
-                  <td className="align-middle" style={{whiteSpace:"nowrap"}}>{game.game_info.state}</td>
+                  <td className="align-middle" style={{ whiteSpace: 'nowrap' }}>{this.renderPlayers(game.users)}</td>
+                  <td className="align-middle" style={{ whiteSpace: 'nowrap' }}>{game.game_info.state}</td>
 
                   <td className="align-middle">{this.renderGameActionButton(game)}</td>
                 </tr>

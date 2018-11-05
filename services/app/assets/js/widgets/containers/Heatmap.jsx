@@ -1,38 +1,59 @@
 import React from 'react';
 import CalendarHeatmap from 'react-calendar-heatmap';
+import Loading from '../components/Loading.jsx';
+import axios from 'axios';
 
 class Heatmap extends React.Component {
-  colorScale(count) {
-    switch (count) {
-      case (count > 2):
-        return '123';
+  constructor(props) {
+    super(props);
+    this.state = {
+      activities: null,
+    };
+  }
 
-      default:
-        return '12sdf3';
+  colorScale(count) {
+    if (count >= 5) {
+      return 'color-huge';
+    } else if (count >= 3) {
+      return 'color-large';
+    } else if (count >= 1) {
+      return 'color-small';
     }
+    return 'color-empty';
+  }
+
+  componentDidMount() {
+    axios.get('/api/v1/activity')
+      .then((response) => { console.log(response.data); this.setState(response.data); });
   }
 
   render() {
+    const { activities } = this.state;
+    if (!activities) {
+      return (<Loading />);
+    }
     return (
-      <div className="card">
-
-        <div className="d-flex py-0 justify-content-between card-header font-weight-bold" >
+      <div className="card shadow rounded">
+        <div className="d-flex my-0 py-1 justify-content-center card-header font-weight-bold" >
               Activity
         </div>
-        <div className="card-body" >
+        <div className="card-body py-0 my-0" >
           <CalendarHeatmap
-            viewBox="0 0 582 90"
-            values={[
-    { date: '2018-01-01', count: 3 },
-    { date: '2018-01-22', count: 1 },
-    { date: '2018-01-30', count: 3 },
-  ]}
+            viewBox="0 0 0 0"
+            showWeekdayLabels
+            values={activities}
             classForValue={(value) => {
-    if (!value) {
-      return 'color-empty';
-    }
-    return colorScale(value.count);
-  }}
+              if (!value) {
+                return 'color-empty';
+              }
+              return this.colorScale(value.count);
+                      }}
+            titleForValue={(value) => {
+              if (!value) {
+                return 'No games';
+              }
+                return `${value.count} games on ${value.date}`;
+              }}
           />
         </div>
       </div>
