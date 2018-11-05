@@ -30,3 +30,38 @@ $fa-font-path: "~font-awesome/fonts";
   width: 96%;
   height: 100%;
 }
+
+
+.react-calendar-heatmap {
+  .color-huge {
+      fill: #1e6823;
+  }
+  .color-huge:hover {
+    fill: #0e5813;
+  }
+  .color-large {
+      fill: #44a340;
+  }
+  .color-large:hover {
+      fill: #349330;
+  }
+  .color-small {
+      fill: #d6e685;
+  }
+  .color-small:hover {
+      fill: #c6d675;
+  }
+  .color-empty {
+      fill: #eee;
+  }
+  .color-empty:hover {
+    fill: #ccc;
+  }
+}
+.react-calendar-heatmap rect:hover {
+    stroke: #555;
+    stroke-width: 1px;
+}
+.react-calendar-heatmap {
+    font-size: 8px;
+}

@@ -3,9 +3,11 @@ import _ from 'lodash';
 import moment from 'moment';
 import { connect } from 'react-redux';
 // import PropTypes from 'prop-types';
+import Gon from 'gon';
 import { fetchState } from '../middlewares/Lobby';
 import GameStatusCodes from '../config/gameStatusCodes';
-import Gon from 'gon';
+import Loading from '../components/Loading';
+
 
 class GameList extends React.Component {
   componentDidMount() {
@@ -17,18 +19,18 @@ class GameList extends React.Component {
   renderPlayers = users => (
     <div>
       {users.map(({
-        id, name, rating, github_id,
+        id, name, rating, github_id: githubId,
       }) => (
         <a
           className="nav-link"
           href={`/users/${id}`}
-          key={github_id}
+          key={githubId}
           style={{ display: 'inline-block' }}
         >
           <img
             className="attachment rounded mr-2"
             alt={name}
-            src={`https://avatars0.githubusercontent.com/u/${github_id}`}
+            src={`https://avatars0.githubusercontent.com/u/${githubId}`}
             style={{ width: '25px' }}
           />
           {`${name}(${rating})`}
@@ -51,11 +53,12 @@ class GameList extends React.Component {
   isPlayer = (user, game) => !_.isEmpty(_.find(game.users, { id: user.id }))
 
   renderGameActionButton = (game) => {
-    const gameUrl = game => `/games/${game.game_id}`;
+    const gameUrl = ({ game_id: gameId }) => `/games/${gameId}`;
     const user = Gon.getAsset('current_user');
 
     switch (game.game_info.state) {
       case GameStatusCodes.waitingOpponent:
+        // FIXME: nested case tooo hard
         switch (this.isPlayer(user, game)) {
           case true:
             return (
@@ -64,14 +67,16 @@ class GameList extends React.Component {
                   className="btn btn-info btn-sm"
                   data-method="get"
                   data-to={gameUrl(game)}
-                > Show
+                >
+                  Show
                 </button>
                 <button
                   className="btn btn-danger btn-sm"
                   data-method="delete"
                   data-csrf={window.csrf_token}
                   data-to={gameUrl(game)}
-                > Cancel
+                >
+                  Cancel
                 </button>
               </div>
             );
@@ -83,7 +88,8 @@ class GameList extends React.Component {
                 data-method="post"
                 data-csrf={window.csrf_token}
                 data-to={`${gameUrl(game)}/join`}
-              > Join
+              >
+                Join
               </button>
             );
         }
@@ -93,16 +99,22 @@ class GameList extends React.Component {
             className="btn btn-info btn-sm mr-2"
             data-method="get"
             data-to={gameUrl(game)}
-          > Show
+          >
+            Show
           </button>
         );
       default:
         return '';
     }
   }
+
   render() {
     const { games } = this.props;
-    const gameUrl = game => `/games/${game.game_id}`;
+
+    if (!games) {
+      return (<Loading />);
+    }
+
     return (
       <div>
         <table className="table table-hover table-sm">
