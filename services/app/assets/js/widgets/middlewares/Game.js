@@ -153,7 +153,7 @@ export const editorReady = () => (dispatch) => {
       }));
     }
 
-    dispatch(actions.updateGameStatus({ status, winner}));
+    dispatch(actions.updateGameStatus({ status, winner }));
   });
 
   channel.on('user:won', ({ winner, status, msg }) => {

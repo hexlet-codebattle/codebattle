@@ -1,6 +1,5 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import Gon from 'gon';
 import AceEditor from 'react-ace';
 import 'brace';
 import 'brace/mode/javascript';
@@ -54,10 +53,13 @@ class Editor extends PureComponent {
       keyboardHandler,
     } = this.props;
 
+    // FIXME: rename language name
+    const mappedSyntax = syntax === 'js' ? 'javascript' : syntax;
+
     return (
       <div style={{ position: 'relative' }}>
         <AceEditor
-          mode={syntax}
+          mode={mappedSyntax}
           theme="solarized_dark"
           onChange={onChange}
           name={name}
