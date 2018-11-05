@@ -11,11 +11,12 @@ const languages = Gon.getAsset('langs');
 const getLangTitle = (lang) => {
   const icons = {
     js: 'icon-nodejs',
-    php: 'icon-php-alt',
     ruby: 'icon-ruby',
     elixir: 'icon-elixir',
-    python: 'icon-python',
+    haskell: 'icon-haskell',
     clojure: 'icon-clojure',
+    python: 'icon-python',
+    php: 'icon-php-alt',
   };
 
   return (
