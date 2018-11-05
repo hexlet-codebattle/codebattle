@@ -2,7 +2,7 @@ import { handleActions } from 'redux-actions';
 import _ from 'lodash';
 import * as actions from '../actions';
 
-const initState = { games: [] };
+const initState = { games: null };
 
 const gameList = handleActions({
   [actions.fetchGameList](state, { payload: { games } }) {

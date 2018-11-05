@@ -14,12 +14,24 @@ defmodule CodebattleWeb.Router do
 
   pipeline :api do
     plug(:accepts, ["json"])
+    plug(:fetch_session)
+    plug(CodebattleWeb.Plugs.AssignCurrentUser)
+    plug(:protect_from_forgery)
+    plug(:put_secure_browser_headers)
   end
 
   scope "/auth", CodebattleWeb do
     pipe_through(:browser)
     get("/:provider", AuthController, :request)
     get("/:provider/callback", AuthController, :callback)
+  end
+
+  scope "/api", CodebattleWeb.Api, as: :api do
+    pipe_through(:api)
+
+    scope "/v1", V1, as: :v1 do
+      get("/activity", ActivityController, :show)
+    end
   end
 
   scope "/", CodebattleWeb do
