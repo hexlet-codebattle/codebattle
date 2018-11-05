@@ -5,4 +5,3 @@ import { Game, Lobby } from './App';
 
 export const renderGameWidget = domElement => render(<Game />, domElement);
 export const renderLobby = domElement => render(<Lobby />, domElement);
-
