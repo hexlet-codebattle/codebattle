@@ -41,4 +41,4 @@
     :version: 8.4.3
     :extension: hs
     :docker_image: "codebattle/haskell:8.4.3"
-    :solution_template: "module Solution where\n\nsolution ="
+    :solution_template: "module Check.Solution where\n\nsolution ="

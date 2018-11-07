@@ -94,7 +94,7 @@ defmodule Codebattle.CodeCheck.Haskell.IntegrationTest do
     :timer.sleep(timeout)
 
     assert_reply(ref, :ok, %{output: output})
-    expected_result = %{"status" => "error", "result" => "unexpected"}
+    expected_result = %{"status" => "error", "result" => "Check/Solution.hs:1:1: error:    File name does not match module name:    Saw: Main    Expected: Check.Solution  |1 | sdf  | ^"}
     assert expected_result == Poison.decode!(output)
 
     fsm = Server.fsm(game.id)
