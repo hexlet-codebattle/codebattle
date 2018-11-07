@@ -2,7 +2,7 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const path = require('path');
 const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+// const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 const env = process.env.NODE_ENV || 'dev';
 const isProd = env === 'production';
@@ -36,7 +36,7 @@ const commonPlugins = [
 const devPlugins = commonPlugins;
 const productionPlugins = [
   ...commonPlugins,
-  new UglifyJsPlugin(),
+  // new UglifyJsPlugin(),
 ];
 
 module.exports = {
@@ -62,10 +62,6 @@ module.exports = {
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
-          options: {
-            cacheDirectory: true,
-            presets: ['env', 'flow', 'stage-0'],
-          },
         },
       },
       {
