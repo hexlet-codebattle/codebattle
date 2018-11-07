@@ -7,6 +7,7 @@ WORKDIR /usr/src/app
 
 ADD HOwl.cabal .
 ADD checker.hs .
+ADD magic.hs .
 ADD Types.hs .
 ADD Solution.hs Check/Solution.hs
 ADD Makefile .
