@@ -30,7 +30,7 @@ defmodule CodebattleWeb.Router do
     pipe_through(:api)
 
     scope "/v1", V1, as: :v1 do
-      get("/activity", ActivityController, :show)
+      get("/:user_id/activity", ActivityController, :show)
     end
   end
 

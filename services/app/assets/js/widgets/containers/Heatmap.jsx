@@ -23,7 +23,8 @@ class Heatmap extends React.Component {
   }
 
   componentDidMount() {
-    axios.get('/api/v1/activity')
+    const user_id = window.location.pathname.split('/').pop();
+    axios.get(`/api/v1/${user_id}/activity`)
       .then((response) => { console.log(response.data); this.setState(response.data); });
   }
 
@@ -39,7 +40,6 @@ class Heatmap extends React.Component {
         </div>
         <div className="card-body py-0 my-0" >
           <CalendarHeatmap
-            viewBox="0 0 0 0"
             showWeekdayLabels
             values={activities}
             classForValue={(value) => {

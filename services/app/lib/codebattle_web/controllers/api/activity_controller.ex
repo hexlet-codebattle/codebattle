@@ -13,10 +13,9 @@ defmodule CodebattleWeb.Api.V1.ActivityController do
   end
   plug(CodebattleWeb.Plugs.RequireAuth when action in @all)
 
-  def show(conn, _params) do
-    current_user = conn.assigns.current_user
+  def show(conn, %{"user_id" => user_id}) do
     query = from ug in UserGame,
-              where: ug.user_id == ^current_user.id,
+              where: ug.user_id == ^user_id,
               group_by: to_char(ug.inserted_at, "YYYY-mm-dd"),
               select: %{date: to_char(ug.inserted_at, "YYYY-mm-dd"), count: count(ug.id)}
 
