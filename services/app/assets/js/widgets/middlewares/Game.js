@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import Gon from 'gon';
 import socket from '../../socket';
-import { editorsSelector, currentUserIdSelector } from '../selectors';
+import { editorDataSelector, currentUserIdSelector } from '../selectors';
 import userTypes from '../config/userTypes';
 import * as actions from '../actions';
 
@@ -51,14 +51,14 @@ const initGameChannel = (dispatch) => {
     dispatch(actions.updateEditorData({
       userId: first_player.id,
       text: first_player_editor_text,
-      currentLang: firstEditorLang,
+      lang: firstEditorLang,
     }));
 
     if (second_player.id) {
       dispatch(actions.updateEditorData({
         userId: second_player.id,
         text: second_player_editor_text,
-        currentLang: secondEditorLang,
+        lang: secondEditorLang,
       }));
     }
 
@@ -100,12 +100,12 @@ export const sendEditorLang = langSlug => (dispatch, getState) => {
 export const editorReady = () => (dispatch) => {
   initGameChannel(dispatch);
   channel.on('editor:text', ({ user_id: userId, editor_text: text }) => {
-    dispatch(actions.updateEditorData({ userId, text }));
+    dispatch(actions.updateEditorText({ userId, text }));
   });
 
   channel.on('editor:lang', ({ user_id: userId, lang: langSlug }) => {
     const currentLang = _.find(languages, { slug: langSlug });
-    dispatch(actions.updateEditorData({ userId, currentLang }));
+    dispatch(actions.updateEditorLang({ userId, currentLang }));
   });
 
   channel.on('user:joined', ({
@@ -142,14 +142,14 @@ export const editorReady = () => (dispatch) => {
     dispatch(actions.updateEditorData({
       userId: first_player.id,
       text: first_player_editor_text,
-      currentLang: firstEditorLang,
+      lang: firstEditorLang,
     }));
 
     if (second_player.id) {
       dispatch(actions.updateEditorData({
         userId: second_player.id,
         text: second_player_editor_text,
-        currentLang: secondEditorLang,
+        lang: secondEditorLang,
       }));
     }
 
@@ -168,7 +168,7 @@ export const editorReady = () => (dispatch) => {
 export const checkGameResult = () => (dispatch, getState) => {
   const state = getState();
   const currentUserId = currentUserIdSelector(state);
-  const currentUserEditor = editorsSelector(state)[currentUserId];
+  const currentUserEditor = editorDataSelector(currentUserId)(state);
 
   // FIXME: create actions for this state transitions
   // FIXME: create statuses for solutionStatus

@@ -2,6 +2,7 @@ import _ from 'lodash';
 import userTypes from '../config/userTypes';
 import GameStatusCodes from '../config/gameStatusCodes';
 import i18n from '../../i18n';
+import { makeEditorTextKey } from '../reducers';
 
 export const usersSelector = state => state.user.users;
 export const currentUserIdSelector = state => state.user.currentUserId;
@@ -29,6 +30,7 @@ export const firstUserSelector = (state) => {
 
 export const secondUserSelector = (state) => {
   const user = _.pickBy(usersSelector(state), { type: userTypes.secondPlayer });
+  // FIXME: remove this
   if (!_.isEmpty(user)) {
     return _.values(user)[0];
   }
@@ -36,36 +38,46 @@ export const secondUserSelector = (state) => {
   return {};
 };
 
-export const editorsSelector = state => state.editors;
+const editorsMetaSelector = state => state.editors.meta;
+const editorsTextSelector = state => state.editors.text;
+
+export const editorDataSelector = userId => (state) => {
+  const meta = editorsMetaSelector(state)[userId];
+  const editorText = editorsTextSelector(state);
+  const text = editorText[makeEditorTextKey(userId, meta.currentLang)];
+  return {
+    ...meta,
+    text,
+  };
+};
 
 export const firstEditorSelector = (state) => {
   const userId = firstUserSelector(state).id;
-  return editorsSelector(state)[userId];
+  return editorDataSelector(userId)(state);
 };
 
 export const secondEditorSelector = (state) => {
   const userId = secondUserSelector(state).id;
-  return editorsSelector(state)[userId];
+  return editorDataSelector(userId)(state);
 };
 
 export const leftEditorSelector = (state) => {
   const currentUser = currentUserSelector(state);
-  const editorSelector = (currentUser.type !== userTypes.secondPlayer) ?
-    firstEditorSelector :
-    secondEditorSelector;
+  const editorSelector = (currentUser.type !== userTypes.secondPlayer)
+    ? firstEditorSelector
+    : secondEditorSelector;
   return editorSelector(state);
 };
 
 export const rightEditorSelector = (state) => {
   const currentUser = currentUserSelector(state);
-  const editorSelector = (currentUser.type === userTypes.secondPlayer) ?
-    firstEditorSelector :
-    secondEditorSelector;
+  const editorSelector = (currentUser.type === userTypes.secondPlayer)
+    ? firstEditorSelector
+    : secondEditorSelector;
   return editorSelector(state);
 };
 
-export const langSelector = (userId, state) =>
-  _.get(editorsSelector(state), [userId, 'currentLang'], null);
+export const userLangSelector = (userId, state) => _.get(editorDataSelector(userId)(state), 'currentLang', null);
 
 export const gameStatusSelector = state => state.game.gameStatus;
 

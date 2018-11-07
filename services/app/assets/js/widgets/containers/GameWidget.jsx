@@ -51,9 +51,9 @@ class GameWidget extends Component {
     const isPlayer = currentUser.type !== userTypes.spectator;
     const editable = isPlayer;
     const editorState = leftEditor;
-    const onChange = isPlayer ?
-      (value) => { sendData(value); } :
-      _.noop;
+    const onChange = isPlayer
+      ? (value) => { sendData(value); }
+      : _.noop;
 
     return {
       onChange,

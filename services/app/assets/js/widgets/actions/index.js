@@ -18,7 +18,13 @@ export const setCurrentUser = createAction('SET_CURRENT_USER');
 export const updateUsers = createAction('UPDATE_USERS');
 
 export const sendPlayerCode = createAction('SEND_PLAYER_CODE');
-export const updateEditorData = createAction('UPDATE_EDITOR_DATA');
+export const updateEditorLang = createAction('UPDATE_EDITOR_LANG');
+export const updateEditorText = createAction('UPDATE_EDITOR_TEXT');
 
 export const updateGameStatus = createAction('UPDATE_GAME_STATUS');
 export const setGameTask = createAction('SET_GAME_TASK');
+
+export const updateEditorData = ({ userId, lang, text }) => (dispatch) => {
+  dispatch(updateEditorLang, { userId, currentLang: lang });
+  dispatch(updateEditorText, { userId, lang, text });
+};
