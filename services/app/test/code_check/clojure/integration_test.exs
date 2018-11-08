@@ -91,7 +91,9 @@ defmodule Codebattle.CodeCheck.Clojure.IntegrationTest do
     {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
     Mix.Shell.Process.flush()
 
-    ref = Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: "sdf", lang: "clojure"})
+    ref =
+      Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: "sdf", lang: "clojure"})
+
     :timer.sleep(timeout)
 
     assert_reply(ref, :ok, %{output: output})

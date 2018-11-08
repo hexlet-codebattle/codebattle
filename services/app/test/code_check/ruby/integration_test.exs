@@ -51,7 +51,10 @@ defmodule Codebattle.CodeCheck.Ruby.IntegrationTest do
     Mix.Shell.Process.flush()
 
     ref =
-      Phoenix.ChannelTest.push(socket1, "check_result", %{lang: "ruby", editor_text: "def solution(x,y); x - y; end"})
+      Phoenix.ChannelTest.push(socket1, "check_result", %{
+        lang: "ruby",
+        editor_text: "def solution(x,y); x - y; end"
+      })
 
     :timer.sleep(timeout)
 

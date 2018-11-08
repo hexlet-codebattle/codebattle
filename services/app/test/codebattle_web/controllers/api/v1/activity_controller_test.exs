@@ -12,11 +12,10 @@ defmodule CodebattleWeb.Api.V1.ActivityControllerTest do
       |> get(api_v1_activity_path(conn, :show, user.id))
 
     assert json_response(conn, 200) == %{
-              "activities" => [
-                %{"count" => 2, "date" => "2000-01-01"},
-                %{"count" => 3, "date" => "2000-01-02"}
-              ]
-            }
+             "activities" => [
+               %{"count" => 2, "date" => "2000-01-01"},
+               %{"count" => 3, "date" => "2000-01-02"}
+             ]
+           }
   end
-
 end

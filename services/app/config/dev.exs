@@ -12,7 +12,7 @@ config :codebattle, CodebattleWeb.Endpoint,
   code_reloader: true,
   check_origin: false,
   cache_static_lookup: false,
-  watchers: [ yarn: ["watch", cd: Path.expand("..", __DIR__)] ]
+  watchers: [yarn: ["watch", cd: Path.expand("..", __DIR__)]]
 
 # Watch static and templates for browser reloading.
 config :codebattle, CodebattleWeb.Endpoint,

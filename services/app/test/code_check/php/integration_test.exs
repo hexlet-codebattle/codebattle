@@ -57,7 +57,8 @@ defmodule Codebattle.CodeCheck.Php.IntegrationTest do
 
     expected_result = %{
       "status" => "error",
-      "result" => "Uncaught Error: Call to undefined function sdf() in /usr/src/app/check/solution.php:2"
+      "result" =>
+        "Uncaught Error: Call to undefined function sdf() in /usr/src/app/check/solution.php:2"
     }
 
     assert expected_result == Poison.decode!(output)
@@ -90,7 +91,12 @@ defmodule Codebattle.CodeCheck.Php.IntegrationTest do
     {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
     Mix.Shell.Process.flush()
 
-    ref = Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: "function solution($a, $b) { return $a; }\n", lang: "php"})
+    ref =
+      Phoenix.ChannelTest.push(socket1, "check_result", %{
+        editor_text: "function solution($a, $b) { return $a; }\n",
+        lang: "php"
+      })
+
     :timer.sleep(timeout)
 
     assert_reply(ref, :ok, %{output: output})

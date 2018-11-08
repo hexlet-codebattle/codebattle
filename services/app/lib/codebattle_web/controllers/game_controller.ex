@@ -45,7 +45,7 @@ defmodule CodebattleWeb.GameController do
             render(conn, "join.html", %{fsm: fsm})
 
           # {:game_over, false} ->
-            # render(conn, "game_over.html", %{fsm: fsm})
+          # render(conn, "game_over.html", %{fsm: fsm})
 
           _ ->
             render(conn, "show.html", %{fsm: fsm, layout_template: "full_width.html"})
@@ -69,7 +69,6 @@ defmodule CodebattleWeb.GameController do
     end
   end
 
-
   def delete(conn, %{"id" => id}) do
     case Play.cancel_game(id, conn.assigns.current_user) do
       :ok ->
@@ -82,5 +81,4 @@ defmodule CodebattleWeb.GameController do
         |> redirect(to: page_path(conn, :index))
     end
   end
-
 end

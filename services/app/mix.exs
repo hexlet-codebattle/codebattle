@@ -44,7 +44,7 @@ defmodule Codebattle.Mixfile do
         :yaml_elixir,
         :ueberauth,
         :ueberauth_github,
-        :gproc,
+        :gproc
       ]
     ]
   end

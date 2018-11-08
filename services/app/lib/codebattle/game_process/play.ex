@@ -38,7 +38,10 @@ defmodule Codebattle.GameProcess.Play do
       false ->
         game = Repo.insert!(%Game{state: "waiting_opponent", users: [user]})
         task = get_random_task(level)
-        fsm = Fsm.new() |> Fsm.create(%{user: user, game_id: game.id, task: task, inserted_at: game.inserted_at})
+
+        fsm =
+          Fsm.new()
+          |> Fsm.create(%{user: user, game_id: game.id, task: task, inserted_at: game.inserted_at})
 
         ActiveGames.create_game(user, fsm)
         GlobalSupervisor.start_game(game.id, fsm)
@@ -72,10 +75,12 @@ defmodule Codebattle.GameProcess.Play do
   def cancel_game(id, user) do
     if ActiveGames.participant?(id, user.id) do
       ActiveGames.terminate_game(id)
-        id
-        |> get_game
-        |> Game.changeset(%{state: "canceled"})
-        |> Repo.update!()
+
+      id
+      |> get_game
+      |> Game.changeset(%{state: "canceled"})
+      |> Repo.update!()
+
       :ok
     else
       :error
