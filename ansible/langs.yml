@@ -30,3 +30,4 @@
         - "codebattle/php:7.2.0"
         - "codebattle/haskell:8.4.3"
         - "codebattle/clojure:1.8.0"
+        - "codebattle/perl:5.26.2"
