@@ -42,7 +42,7 @@ const editorsMetaSelector = state => state.editors.meta;
 const editorsTextSelector = state => state.editors.text;
 
 export const editorDataSelector = userId => (state) => {
-  const meta = editorsMetaSelector(state)[userId];
+  const meta = editorsMetaSelector(state)[userId] || {currentLang: 'js'};
   const editorText = editorsTextSelector(state);
   const text = editorText[makeEditorTextKey(userId, meta.currentLang)];
   return {
