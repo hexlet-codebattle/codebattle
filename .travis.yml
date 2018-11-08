@@ -1,18 +1,25 @@
 env:
-  - DOCKER_COMPOSE_VERSION=1.21.0
+  - DOCKER_COMPOSE_VERSION=1.23.1
 
 before_install:
   - sudo rm /usr/local/bin/docker-compose
   - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
+  - docker pull codebattle/codebattle/js:10.11.0
+  - docker pull codebattle/codebattle/ruby:2.5.1
+  - docker pull codebattle/codebattle/elixir:1.7.3
+  - docker pull codebattle/codebattle/python:3.7.0
+  - docker pull codebattle/codebattle/php:7.2.0
+  - docker pull codebattle/codebattle/clojure:1.8.0
+  - docker pull codebattle/codebattle/haskell:8.4.3
 
 jobs:
   include:
     - stage: lint and test
       script: docker-compose -f services/app/docker-compose.test.yml run sut
     - stage: build docker image with tag
-      if: branch = master AND tag =~ ^v
+      if: branch = master
       script:
         - docker login -u="$DOCKER_USER" -p="$DOCKER_PASS"
         - docker build -t codebattle/app --file services/app/Dockerfile.prod services/app/
