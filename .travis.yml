@@ -6,13 +6,13 @@ before_install:
   - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
-  - docker pull codebattle/codebattle/js:10.11.0
-  - docker pull codebattle/codebattle/ruby:2.5.1
-  - docker pull codebattle/codebattle/elixir:1.7.3
-  - docker pull codebattle/codebattle/python:3.7.0
-  - docker pull codebattle/codebattle/php:7.2.0
-  - docker pull codebattle/codebattle/clojure:1.8.0
-  - docker pull codebattle/codebattle/haskell:8.4.3
+  - docker pull codebattle/js:10.11.0
+  - docker pull codebattle/ruby:2.5.1
+  - docker pull codebattle/elixir:1.7.3
+  - docker pull codebattle/python:3.7.0
+  - docker pull codebattle/php:7.2.0
+  - docker pull codebattle/clojure:1.8.0
+  - docker pull codebattle/haskell:8.4.3
 
 jobs:
   include:
