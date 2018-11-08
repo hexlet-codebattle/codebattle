@@ -94,7 +94,7 @@ defmodule Codebattle.CodeCheck.Perl.IntegrationTest do
     :timer.sleep(timeout)
 
     assert_reply(ref, :ok, %{output: output})
-    expected_result = %{"status" => "error", "result" => "Undefined subroutine &main::solution called at checker.pl line 18, <> line 1."}
+    expected_result = %{"status" => "error", "result" => "Undefined subroutine &main::solution called at checker.pl line 21, <> line 1."}
     assert expected_result == Poison.decode!(output)
 
     fsm = Server.fsm(game.id)
