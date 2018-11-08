@@ -42,3 +42,9 @@
     :extension: hs
     :docker_image: "codebattle/haskell:8.4.3"
     :solution_template: "module Check.Solution where\n\nsolution ="
+  - :name: perl
+    :slug: perl
+    :version: 5.26.2
+    :extension: pl
+    :docker_image: "codebattle/perl:5.26.2"
+    :solution_template: "sub solution {} 1;"
