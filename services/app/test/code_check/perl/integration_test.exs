@@ -1,4 +1,4 @@
-defmodule Codebattle.CodeCheck.Phython.IntegrationTest do
+defmodule Codebattle.CodeCheck.Perl.IntegrationTest do
   use Codebattle.IntegrationCase
 
   alias CodebattleWeb.GameChannel
@@ -94,7 +94,7 @@ defmodule Codebattle.CodeCheck.Phython.IntegrationTest do
     :timer.sleep(timeout)
 
     assert_reply(ref, :ok, %{output: output})
-    expected_result = %{"status" => "error", "result" => "unexpected"}
+    expected_result = %{"status" => "error", "result" => "Undefined subroutine &main::solution called at checker.pl line 18, <> line 1."}
     assert expected_result == Poison.decode!(output)
 
     fsm = Server.fsm(game.id)
