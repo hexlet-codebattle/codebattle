@@ -100,7 +100,7 @@ export const sendEditorLang = langSlug => (dispatch, getState) => {
 export const editorReady = () => (dispatch) => {
   initGameChannel(dispatch);
   channel.on('editor:text', ({ user_id: userId, editor_text: text }) => {
-    dispatch(actions.updateEditorText({ userId, text }));
+    dispatch(actions.updateEditorText({ userId, lang: 'js',  text }));
   });
 
   channel.on('editor:lang', ({ user_id: userId, lang: langSlug }) => {

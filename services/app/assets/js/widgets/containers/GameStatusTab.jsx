@@ -21,7 +21,7 @@ import userTypes from '../config/userTypes';
 import LangSelector from '../components/LangSelector';
 import UserName from '../components/UserName';
 
-const renderNameplate = (user, onlineUsers) => {
+const renderNameplate = (user = {}, onlineUsers) => {
   const color = _.find(onlineUsers, { id: user.id }) ? 'green' : '#ccc';
   return (
     <div>

@@ -8,7 +8,7 @@ String.prototype.capitalize = function () {
 };
 
 const languages = Gon.getAsset('langs');
-const getLangTitle = (lang) => {
+const getLangTitle = (lang = {name: 'js', slug: 'js'}) => {
   const icons = {
     js: 'icon-nodejs',
     ruby: 'icon-ruby',
