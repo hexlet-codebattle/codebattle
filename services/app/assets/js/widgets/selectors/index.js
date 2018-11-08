@@ -50,22 +50,21 @@ export const secondEditorSelector = (state) => {
 
 export const leftEditorSelector = (state) => {
   const currentUser = currentUserSelector(state);
-  const editorSelector = (currentUser.type !== userTypes.secondPlayer) ?
-    firstEditorSelector :
-    secondEditorSelector;
+  const editorSelector = (currentUser.type !== userTypes.secondPlayer)
+    ? firstEditorSelector
+    : secondEditorSelector;
   return editorSelector(state);
 };
 
 export const rightEditorSelector = (state) => {
   const currentUser = currentUserSelector(state);
-  const editorSelector = (currentUser.type === userTypes.secondPlayer) ?
-    firstEditorSelector :
-    secondEditorSelector;
+  const editorSelector = (currentUser.type === userTypes.secondPlayer)
+    ? firstEditorSelector
+    : secondEditorSelector;
   return editorSelector(state);
 };
 
-export const langSelector = (userId, state) =>
-  _.get(editorsSelector(state), [userId, 'currentLang'], null);
+export const langSelector = (userId, state) => _.get(editorsSelector(state), [userId, 'currentLang'], null);
 
 export const gameStatusSelector = state => state.game.gameStatus;
 

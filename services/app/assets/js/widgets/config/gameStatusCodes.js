@@ -4,4 +4,3 @@ export default {
   playing: 'playing',
   gameOver: 'game_over',
 };
-

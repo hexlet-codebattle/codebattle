@@ -1,11 +1,11 @@
 import { combineReducers } from 'redux';
-import chat from '../reducers/chat';
-import gameList from '../reducers/gameList';
-import storeLoaded from '../reducers/store';
-import user from '../reducers/user';
-import executionOutput from '../reducers/executionOutput';
-import editors from '../reducers/editor';
-import game from '../reducers/game';
+import chat from './chat';
+import gameList from './gameList';
+import storeLoaded from './store';
+import user from './user';
+import executionOutput from './executionOutput';
+import editors from './editor';
+import game from './game';
 
 export default combineReducers({
   game,
@@ -16,4 +16,3 @@ export default combineReducers({
   storeLoaded,
   executionOutput,
 });
-

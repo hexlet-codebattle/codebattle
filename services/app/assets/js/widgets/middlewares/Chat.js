@@ -1,6 +1,8 @@
-import socket from '../../socket';
 import Gon from 'gon';
-import { userJoinedChat, userLeftChat, fetchChatData, newMessageChat } from '../actions';
+import socket from '../../socket';
+import {
+  userJoinedChat, userLeftChat, fetchChatData, newMessageChat,
+} from '../actions';
 
 const chatId = Gon.getAsset('game_id');
 const channelName = `chat:${chatId}`;
