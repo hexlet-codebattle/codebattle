@@ -16,27 +16,28 @@ const initialState = {
 
 export const makeEditorTextKey = (userId, lang) => `${userId}:${lang}`;
 
-const meta = handleActions({
+const reducer = handleActions({
   [actions.updateEditorLang](state, { userId, currentLang }) {
+    console.log(state)
     return {
       ...state,
+      meta: '123',
       [userId]: {
         currentLang,
       },
     };
   },
-}, initialState.meta);
 
-const text = handleActions({
   [actions.updateEditorText](state, { userId, lang, text: editorText }) {
     return {
       ...state,
       [makeEditorTextKey(userId, lang)]: editorText,
     };
   },
-}, initialState.text);
+}, initialState);
 
-export default combineReducers({
-  meta,
-  text,
-});
+// export default combineReducers({
+//   meta,
+//   text,
+// });
+export default reducer;

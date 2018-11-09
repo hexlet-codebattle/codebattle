@@ -87,20 +87,20 @@ export const sendGiveUp = () => {
   channel.push('give_up');
 };
 
-export const sendEditorLang = langSlug => (dispatch, getState) => {
+export const sendEditorLang = currentLang => (dispatch, getState) => {
   const state = getState();
   const userId = currentUserIdSelector(state);
-  const currentLang = _.find(languages, { slug: langSlug });
+  // const currentLang = _.find(languages, { slug: langSlug });
 
-  dispatch(actions.updateEditorData({ userId, currentLang }));
+  dispatch(actions.updateEditorLang({ userId, currentLang }));
 
-  channel.push('editor:lang', { lang: langSlug });
+  channel.push('editor:lang', { lang: currentLang });
 };
 
 export const editorReady = () => (dispatch) => {
   initGameChannel(dispatch);
   channel.on('editor:text', ({ user_id: userId, editor_text: text }) => {
-    dispatch(actions.updateEditorText({ userId, lang: 'js',  text }));
+    dispatch(actions.updateEditorText({ userId, lang: 'js', text }));
   });
 
   channel.on('editor:lang', ({ user_id: userId, lang: langSlug }) => {

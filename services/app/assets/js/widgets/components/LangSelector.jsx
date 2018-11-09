@@ -8,7 +8,7 @@ String.prototype.capitalize = function () {
 };
 
 const languages = Gon.getAsset('langs');
-const getLangTitle = (lang = {name: 'js', slug: 'js'}) => {
+const getLangTitle = (lang) => {
   const icons = {
     js: 'icon-nodejs',
     ruby: 'icon-ruby',
@@ -28,6 +28,7 @@ const getLangTitle = (lang = {name: 'js', slug: 'js'}) => {
 const LangSelector = ({ currentLangSlug, onChange, disabled }) => {
   const [[currentLang, ...other], otherLangs] =
     _.partition(languages, lang => lang.slug === currentLangSlug);
+
 
   if (disabled) {
     return (

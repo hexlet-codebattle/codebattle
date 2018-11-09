@@ -104,7 +104,7 @@ class GameStatusTab extends Component {
             <div className="col">
               <div className="btn-toolbar" role="toolbar">
                 <LangSelector
-                  currentLangSlug={leftEditorLang.slug}
+                  currentLangSlug={leftEditorLang}
                   onChange={this.props.setLang}
                   disabled={isSpectator}
                 />
@@ -149,7 +149,7 @@ class GameStatusTab extends Component {
             </div>
             <div className="col text-right">
               <LangSelector
-                currentLangSlug={rightEditorLang.slug}
+                currentLangSlug={rightEditorLang}
                 onChange={_.noop}
                 disabled
               />
