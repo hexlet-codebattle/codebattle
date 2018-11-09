@@ -41,7 +41,7 @@
     :version: 8.4.3
     :extension: hs
     :docker_image: "codebattle/haskell:8.4.3"
-    :solution_template: "module Check.Solution where\n\nsolution ="
+    :solution_template: "module Check.Solution where\n\nsolution ::\nsolution =\n\n{- Included packages:\naeson\nbytestring\ncase-insensitive\ncontainers\ndeepseq\nfgl\ninteger-logarithms\nmegaparsec\nmtl\nparser-combinators\npretty\nrandom\nregex-base\nregex-compat\nregex-posix\nscientific\nsplit\ntemplate-haskell\ntext\ntime\ntransformers\nunordered-containers\nvector\nvector-algorithms -}"
   - :name: perl
     :slug: perl
     :version: 5.26.2
