@@ -71,6 +71,22 @@ executable Checker
                        , unordered-containers
                        , vector
                        , scientific
+                       , split
+                       , case-insensitive
+                       , deepseq
+                       , fgl
+                       , integer-logarithms
+                       , megaparsec
+                       , mtl
+                       , parser-combinators
+                       , pretty
+                       , random
+                       , regex-base
+                       , regex-compat
+                       , regex-posix
+                       , time
+                       , transformers
+                       , vector-algorithms
 
   -- Directories containing source files.
   -- hs-source-dirs:
