@@ -4,15 +4,16 @@ import gameList from './gameList';
 import storeLoaded from './store';
 import user from './user';
 import executionOutput from './executionOutput';
-import editors from './editor';
+import editor from './editor';
 import game from './game';
 
 export default combineReducers({
   game,
-  editors,
+  editor,
   user,
   chat,
   gameList,
   storeLoaded,
   executionOutput,
 });
+export { makeEditorTextKey } from './editor';

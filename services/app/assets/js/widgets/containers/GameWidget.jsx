@@ -13,7 +13,7 @@ import GameStatusTab from './GameStatusTab';
 import { sendEditorText } from '../middlewares/Game';
 import ExecutionOutput from '../components/ExecutionOutput';
 
-const Tabs = { editor: 'EDITOR', output: 'OUTPUT', template: 'TEMPLATE' };
+const Tabs = { editor: 'EDITOR', output: 'OUTPUT' };
 
 class GameWidget extends Component {
   static defaultProps = {
@@ -33,7 +33,7 @@ class GameWidget extends Component {
     rightEditor: PropTypes.shape({
       text: PropTypes.string,
     }),
-    sendData: PropTypes.func.isRequired,
+    updateEditorValue: PropTypes.func.isRequired,
   }
 
   constructor(props) {
@@ -43,17 +43,17 @@ class GameWidget extends Component {
     };
   }
 
-  getLeftEditorParams() {
+  getLeftEditorParams = () => {
     const {
-      currentUser, leftEditor, sendData,
+      currentUser, leftEditor, updateEditorValue,
     } = this.props;
     // FIXME: currentUser shouldn't return {} for spectator
     const isPlayer = currentUser.type !== userTypes.spectator;
     const editable = isPlayer;
     const editorState = leftEditor;
-    const onChange = isPlayer ?
-      (value) => { sendData(value); } :
-      _.noop;
+    const onChange = isPlayer
+      ? (value) => { updateEditorValue(value); }
+      : _.noop;
 
     return {
       onChange,
@@ -64,7 +64,7 @@ class GameWidget extends Component {
     };
   }
 
-  getRightEditorParams() {
+  getRightEditorParams = () => {
     const { rightEditor } = this.props;
     const editorState = rightEditor;
 
@@ -79,22 +79,20 @@ class GameWidget extends Component {
   }
 
   renderTab() {
-    const { outputText, leftEditor } = this.props;
+    const { outputText } = this.props;
     switch (this.state.currentTab) {
       case Tabs.editor: return <Editor {...this.getLeftEditorParams()} />;
       case Tabs.output: return <ExecutionOutput output={outputText} />;
-      case Tabs.template: return (
-        <div className="row mx-auto">
-          <div className="col-md-6">
-            {_.get(leftEditor, ['currentLang', 'solution_template']).split('\n').map((i, key) => <div key={key}>{i}</div>)}
-          </div>
-        </div>);
       default: return null;
     }
   }
 
   render() {
-    const { leftEditor } = this.props;
+    const { leftEditor, rightEditor } = this.props;
+    if (leftEditor === null || rightEditor === null) {
+      // FIXME: render loader
+      return null;
+    }
     return (
       <Fragment>
         <div className="row mx-auto">
@@ -138,8 +136,8 @@ const mapStateToProps = state => ({
   outputText: state.executionOutput,
 });
 
-const mapDispatchToProps = dispatch => ({
-  sendData: (...args) => { dispatch(sendEditorText(...args)); },
-});
+const mapDispatchToProps = {
+  updateEditorValue: sendEditorText,
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(GameWidget);

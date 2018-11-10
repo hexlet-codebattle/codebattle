@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import ChatWidget from './ChatWidget';
 import Task from '../components/Task';
 import Timer from '../components/Timer';
-import { gameTaskSelector, gameStatusNameSelector, gameStartsAtSelector } from '../selectors';
+import * as selectors from '../selectors';
 import GameStatusCodes from '../config/gameStatusCodes';
 
 class InfoWidget extends Component {
@@ -16,6 +16,7 @@ class InfoWidget extends Component {
     gameStatusName: PropTypes.string.isRequired,
     startsAt: PropTypes.string.isRequired,
   }
+
   render() {
     const { taskText, gameStatusName, startsAt } = this.props;
     return (
@@ -23,18 +24,18 @@ class InfoWidget extends Component {
         <div className="col-6">
           <Task task={taskText} />
           <div className="card mt-2">
-            <div className="d-flex py-0 justify-content-between card-header font-weight-bold" >
-              <div className="p-1" >
+            <div className="d-flex py-0 justify-content-between card-header font-weight-bold">
+              <div className="p-1">
                 {` Starts at: ${moment.utc(startsAt).local().format('YYYY-MM-DD HH:mm:ss')}`}
               </div>
-              <div className="p-1" >
+              <div className="p-1">
                 { gameStatusName !== GameStatusCodes.gameOver ? (
                   <Timer time={startsAt} />
-                  ) : (
-                    <div>
-                      <p>{gameStatusName}</p>
-                    </div>
-                  )}
+                ) : (
+                  <div>
+                    <p>{gameStatusName}</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -48,9 +49,9 @@ class InfoWidget extends Component {
 }
 
 const mapStateToProps = state => ({
-  taskText: gameTaskSelector(state),
-  gameStatusName: gameStatusNameSelector(state),
-  startsAt: gameStartsAtSelector(state),
+  taskText: selectors.gameTaskSelector(state),
+  gameStatusName: selectors.gameStatusNameSelector(state),
+  startsAt: selectors.gameStartsAtSelector(state),
   // outputText: state.executionOutput,
 });
 
