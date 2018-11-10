@@ -10,4 +10,3 @@ const storeLoaded = handleActions({
 }, initialState);
 
 export default storeLoaded;
-

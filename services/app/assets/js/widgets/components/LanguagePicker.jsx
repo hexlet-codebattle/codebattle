@@ -13,6 +13,7 @@ const getLangTitle = (lang) => {
     clojure: 'icon-clojure',
     python: 'icon-python',
     php: 'icon-php-alt',
+    perl: 'icon-perl',
   };
 
   return (

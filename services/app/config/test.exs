@@ -23,9 +23,10 @@ config :codebattle, Codebattle.Repo,
 
 config :codebattle, Codebattle.Bot, timeout: 70
 
-timeout =  case System.get_env("CODEBATTLE_DOCKER_TEST_TIMEOUT") do
-  nil -> 5000
-  x -> Integer.parse(x) |> elem(0)
-end
+timeout =
+  case System.get_env("CODEBATTLE_DOCKER_TEST_TIMEOUT") do
+    nil -> 5000
+    x -> Integer.parse(x) |> elem(0)
+  end
 
 config :codebattle, code_check_timeout: timeout

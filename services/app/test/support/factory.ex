@@ -21,8 +21,8 @@ defmodule CodebattleWeb.Factory do
   def user_game_factory do
     %UserGame{
       result: "game_over",
-      user: build(:user),
- }
+      user: build(:user)
+    }
   end
 
   def language_factory do

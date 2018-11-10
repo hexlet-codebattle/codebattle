@@ -85,10 +85,12 @@ defmodule Codebattle.CodeCheck.JS.IntegrationTest do
     {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
     Mix.Shell.Process.flush()
 
-    ref = Phoenix.ChannelTest.push(socket1, "check_result", %{
-      editor_text: "const solution = (a, b) => { return a - b; }; module.exports = solution;\n",
-      lang: "js"
-    })
+    ref =
+      Phoenix.ChannelTest.push(socket1, "check_result", %{
+        editor_text: "const solution = (a, b) => { return a - b; }; module.exports = solution;\n",
+        lang: "js"
+      })
+
     :timer.sleep(timeout)
 
     assert_reply(ref, :ok, %{output: output})

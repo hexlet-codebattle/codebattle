@@ -1,5 +1,7 @@
 import socket from '../../socket';
-import { cancelGameLobby, fetchGameList, newGameLobby, updateGameLobby } from '../actions';
+import {
+  cancelGameLobby, fetchGameList, newGameLobby, updateGameLobby,
+} from '../actions';
 
 const channelName = 'lobby';
 const channel = socket.channel(channelName);

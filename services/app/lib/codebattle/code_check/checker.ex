@@ -16,12 +16,14 @@ defmodule Codebattle.CodeCheck.Checker do
         docker_command_template = Application.fetch_env!(:codebattle, :docker_command_template)
         {dir_path, check_code} = prepare_tmp_dir!(task, editor_text, lang)
 
-    volume = case lang.slug do
-       "haskell" ->
-          "-v #{dir_path}:/usr/src/app/Check"
-      _ ->
-          "-v #{dir_path}:/usr/src/app/check"
-    end
+        volume =
+          case lang.slug do
+            "haskell" ->
+              "-v #{dir_path}:/usr/src/app/Check"
+
+            _ ->
+              "-v #{dir_path}:/usr/src/app/check"
+          end
 
         command =
           docker_command_template
@@ -32,25 +34,19 @@ defmodule Codebattle.CodeCheck.Checker do
         [cmd | cmd_opts] = command |> String.split()
         {global_output, status} = System.cmd(cmd, cmd_opts, stderr_to_stdout: true)
 
-        Logger.error(
+        Logger.debug(
           "Docker stdout for task_id: #{task.id}, lang: #{lang.slug}, output:#{global_output}"
         )
 
         # for json returned langs need fix after all langs support json
         clean_output = ~r/{\"status\":.+}/ |> Regex.run(global_output) |> List.first()
 
+        output_code = Regex.named_captures(~r/__code(?<code>.+)__/, clean_output)["code"]
+
         result =
-          case status do
-            0 ->
-              output_code = Regex.named_captures(~r/__code(?<code>.+)__/, clean_output)["code"]
-
-              case output_code do
-                ^check_code -> {:ok, true}
-                _ -> {:error, clean_output}
-              end
-
-            _ ->
-              {:error, clean_output}
+          case output_code do
+            ^check_code -> {:ok, true}
+            _ -> {:error, clean_output}
           end
 
         Task.start(File, :rm_rf, [dir_path])
@@ -63,12 +59,14 @@ defmodule Codebattle.CodeCheck.Checker do
 
     check_code = :rand.normal() |> to_string
 
-    file_name = case lang.slug do
-       "haskell" ->
-      "Solution.#{lang.extension}"
-      _ ->
-      "solution.#{lang.extension}"
-    end
+    file_name =
+      case lang.slug do
+        "haskell" ->
+          "Solution.#{lang.extension}"
+
+        _ ->
+          "solution.#{lang.extension}"
+      end
 
     asserts = task.asserts <> "{\"check\":\"__code#{check_code}__\"}"
     File.write!(Path.join(dir_path, "data.jsons"), asserts)

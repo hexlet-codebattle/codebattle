@@ -45,8 +45,14 @@ extra-source-files:  CHANGELOG.md
 -- Constraint on the version of Cabal needed to build this package.
 cabal-version:       >=1.10
 
+executable Magic
+  main-is:             magic.hs
+  build-depends:       base >= 4.11 && < 4.12
+                       , typed-process
+                       , bytestring
+  default-language:    Haskell2010
 
-executable HOwl
+executable Checker
   -- .hs or .lhs file containing the Main module.
   main-is:             checker.hs
 
@@ -62,6 +68,25 @@ executable HOwl
                        , aeson
                        , bytestring
                        , text
+                       , unordered-containers
+                       , vector
+                       , scientific
+                       , split
+                       , case-insensitive
+                       , deepseq
+                       , fgl
+                       , integer-logarithms
+                       , megaparsec
+                       , mtl
+                       , parser-combinators
+                       , pretty
+                       , random
+                       , regex-base
+                       , regex-compat
+                       , regex-posix
+                       , time
+                       , transformers
+                       , vector-algorithms
 
   -- Directories containing source files.
   -- hs-source-dirs:

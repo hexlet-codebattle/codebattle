@@ -5,10 +5,11 @@ defmodule Codebattle.Application do
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
   def start(_type, _args) do
-   unless Mix.env == :prod do
+    unless Mix.env() == :prod do
       Envy.load(["../../.env"])
-      Envy.reload_config
+      Envy.reload_config()
     end
+
     import Supervisor.Spec
 
     # Define workers and child supervisors to be supervised

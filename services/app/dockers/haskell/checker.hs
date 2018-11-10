@@ -6,12 +6,14 @@ import Data.Maybe
 import Control.Exception
 import Types
 import Check.Solution
+import System.Exit
 
 main :: IO ()
 main = do
     s <- getContents
     let ress = map unmagic $ lines s
     (BS.putStrLn . A.encode $ foldCaseRess ress) `catch` \e -> print (e :: ErrorCall)
+    exitWith (ExitFailure 1)
 
 unmagic :: String -> CaseRes
 unmagic s =  

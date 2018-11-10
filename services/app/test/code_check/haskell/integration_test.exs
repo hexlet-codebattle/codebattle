@@ -52,7 +52,8 @@ defmodule Codebattle.CodeCheck.Haskell.IntegrationTest do
 
     ref =
       Phoenix.ChannelTest.push(socket1, "check_result", %{
-        editor_text: "module Check.Solution where\n\nsolution :: Int -> Int -> Int\nsolution x y = x - y",
+        editor_text:
+          "module Check.Solution where\n\nsolution :: Int -> Int -> Int\nsolution x y = x - y",
         lang: "haskell"
       })
 
@@ -90,11 +91,19 @@ defmodule Codebattle.CodeCheck.Haskell.IntegrationTest do
     {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
     Mix.Shell.Process.flush()
 
-    ref = Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: "sdf", lang: "haskell"})
+    ref =
+      Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: "sdf", lang: "haskell"})
+
     :timer.sleep(timeout)
 
     assert_reply(ref, :ok, %{output: output})
-    expected_result = %{"status" => "error", "result" => "unexpected"}
+
+    expected_result = %{
+      "status" => "error",
+      "result" =>
+        "Check/Solution.hs:1:1: error:    File name does not match module name:    Saw: Main    Expected: Check.Solution  |1 | sdf  | ^"
+    }
+
     assert expected_result == Poison.decode!(output)
 
     fsm = Server.fsm(game.id)
@@ -128,7 +137,8 @@ defmodule Codebattle.CodeCheck.Haskell.IntegrationTest do
     Phoenix.ChannelTest.push(socket1, "editor:text", %{editor_text: "test"})
 
     Phoenix.ChannelTest.push(socket1, "check_result", %{
-      editor_text: "module Check.Solution where\n\nsolution :: Int -> Int -> Int\nsolution x y = x + y",
+      editor_text:
+        "module Check.Solution where\n\nsolution :: Int -> Int -> Int\nsolution x y = x + y",
       lang: "haskell"
     })
 

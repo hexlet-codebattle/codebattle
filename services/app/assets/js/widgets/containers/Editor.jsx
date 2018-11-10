@@ -8,6 +8,7 @@ import 'brace/mode/elixir';
 import 'brace/mode/php';
 import 'brace/mode/haskell';
 import 'brace/mode/clojure';
+import 'brace/mode/perl';
 import 'brace/mode/python';
 import 'brace/theme/solarized_dark';
 import 'brace/ext/language_tools';
