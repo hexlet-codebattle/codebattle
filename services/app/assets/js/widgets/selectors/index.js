@@ -47,7 +47,7 @@ export const editorDataSelector = userId => (state) => {
   if (!meta) {
     return null;
   }
-  const text = editorTexts[makeEditorTextKey(userId, meta.currentLang)];
+  const text = editorTexts[makeEditorTextKey(userId, meta.currentLangSlug)];
   return {
     ...meta,
     text,
@@ -86,7 +86,7 @@ export const currentPlayerTextByLangSelector = lang => (state) => {
   return editorTexts[makeEditorTextKey(userId, lang)];
 };
 
-export const userLangSelector = userId => state => _.get(editorDataSelector(userId)(state), 'currentLang', null);
+export const userLangSelector = userId => state => _.get(editorDataSelector(userId)(state), 'currentLangSlug', null);
 
 export const gameStatusSelector = state => state.game.gameStatus;
 

@@ -78,50 +78,51 @@ const initGameChannel = (dispatch) => {
 export const sendEditorText = (text, langSlug = null) => (dispatch, getState) => {
   const state = getState();
   const userId = selectors.currentUserIdSelector(state);
-  const currentLang = langSlug || selectors.userLangSelector(userId)(state);
-  dispatch(actions.updateEditorText({ userId, text, langSlug: currentLang }));
+  const currentLangSlug = langSlug || selectors.userLangSelector(userId)(state);
+  dispatch(actions.updateEditorText({ userId, text, langSlug: currentLangSlug }));
 
-  channel.push('editor:text', { editor_text: text });
+  channel.push('editor:data', { editor_text: text, lang: currentLangSlug });
 
-  if (langSlug !== null) {
-    channel.push('editor:lang', { lang: currentLang });
-  }
+  // if (langSlug !== null) {
+  //   channel.push('editor:lang', { lang: currentLangSlug });
+  // }
 };
 
 export const sendGiveUp = () => {
   channel.push('give_up');
 };
 
-export const sendEditorLang = currentLang => (dispatch, getState) => {
+export const sendEditorLang = currentLangSlug => (dispatch, getState) => {
   const state = getState();
   const userId = selectors.currentUserIdSelector(state);
 
-  dispatch(actions.updateEditorLang({ userId, currentLang }));
+  dispatch(actions.updateEditorLang({ userId, currentLangSlug }));
 
-  channel.push('editor:lang', { lang: currentLang });
+  // channel.push('editor:lang', { lang: currentLangSlug });
 };
 
 export const changeCurrentLangAndSetTemplate = langSlug => (dispatch, getState) => {
   const state = getState();
   const currentText = selectors.currentPlayerTextByLangSelector(langSlug)(state);
   const { solution_template: template } = _.find(languages, { slug: langSlug });
-  if (_.isUndefined(currentText)) {
-    dispatch(sendEditorText(template, langSlug));
-  } else {
-    dispatch(sendEditorLang(langSlug));
-  }
+  // if (_.isUndefined(currentText)) {
+  //   dispatch(sendEditorText(template, langSlug));
+  // } else {
+  //   dispatch(sendEditorLang(langSlug));
+  // }
+  const textToSet = currentText || template;
+  dispatch(sendEditorText(textToSet, langSlug));
 };
 
 export const editorReady = () => (dispatch) => {
   initGameChannel(dispatch);
-  channel.on('editor:text', ({ user_id: userId, editor_text: text }) => {
-    dispatch(actions.updateEditorText({ userId, langSlug: 'js', text }));
+  channel.on('editor:data', ({ user_id: userId, lang_slug: langSlug, editor_text: text }) => {
+    dispatch(actions.updateEditorText({ userId, langSlug, text }));
   });
 
-  channel.on('editor:lang', ({ user_id: userId, lang: langSlug }) => {
-    const currentLang = _.find(languages, { slug: langSlug });
-    dispatch(actions.updateEditorLang({ userId, currentLang }));
-  });
+  // channel.on('editor:lang', ({ user_id: userId, lang: currentLangSlug }) => {
+  //   dispatch(actions.updateEditorLang({ userId, currentLangSlug}));
+  // });
 
   channel.on('user:joined', ({
     status,
@@ -190,7 +191,7 @@ export const checkGameResult = () => (dispatch, getState) => {
 
   const payload = {
     editor_text: currentUserEditor.text,
-    lang: currentUserEditor.currentLang.slug,
+    lang: currentUserEditor.currentLangSlug,
   };
 
   channel.push('check_result', payload)

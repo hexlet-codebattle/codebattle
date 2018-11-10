@@ -11,6 +11,7 @@ defmodule Codebattle.GameProcess.Fsm do
   import Codebattle.GameProcess.FsmHelpers
 
   alias Codebattle.User
+  alias Codebattle.Languages
   alias Codebattle.GameProcess.Player
 
   use Fsm,
@@ -25,6 +26,7 @@ defmodule Codebattle.GameProcess.Fsm do
       # List with two players %Player{}
       players: []
     }
+  # Player [:id, user: %User{}, editor_text: "", editor_lang: :js, game_result: :undefined]
 
   # For tests
   def set_data(state, data) do
@@ -33,7 +35,15 @@ defmodule Codebattle.GameProcess.Fsm do
 
   defstate initial do
     defevent create(params), data: data do
-      player = %Player{id: params.user.id, user: params.user}
+      editor_lang = String.to_existing_atom(params.user.lang || "js")
+      editor_text = Languages.meta |> Map.get(editor_lang) |> Map.get(:solution_template)
+
+      player = %Player{
+        id: params.user.id,
+        user: params.user,
+        editor_lang: editor_lang,
+        editor_text: editor_text
+      }
 
       next_state(:waiting_opponent, %{
         data

@@ -36,16 +36,22 @@ defmodule CodebattleWeb.GameChannel do
     {:reply, {:ok, payload}, socket}
   end
 
-  def handle_in("editor:text", payload, socket) do
+  def handle_in("editor:data", payload, socket) do
+    user_id = socket.assigns.user_id
     game_id = get_game_id(socket)
+    fsm = Play.get_fsm(game_id)
+    lang_slug = FsmHelpers.get_user_lang(fsm, user_id)
 
-    if user_authorized_in_game?(game_id, socket.assigns.user_id) do
-      %{"editor_text" => editor_text} = payload
+    if user_authorized_in_game?(game_id, user_id) do
+      %{"editor_text" => editor_text, "lang" => lang} = payload
       game_id = get_game_id(socket)
-      Play.update_editor_text(game_id, socket.assigns.user_id, editor_text)
+      # TODO: refactorme to update_editor_data in Play module
+      Play.update_editor_text(game_id, user_id, editor_text)
+      Play.update_editor_lang(game_id, user_id, lang)
 
-      broadcast_from!(socket, "editor:text", %{
-        user_id: socket.assigns.user_id,
+      broadcast_from!(socket, "editor:data", %{
+        user_id: user_id,
+        lang_slug: lang_slug,
         editor_text: editor_text
       })
 
@@ -57,11 +63,12 @@ defmodule CodebattleWeb.GameChannel do
 
   def handle_in("editor:lang", payload, socket) do
     game_id = get_game_id(socket)
+    user_id = socket.assigns.user_id
 
-    if user_authorized_in_game?(game_id, socket.assigns.user_id) do
+    if user_authorized_in_game?(game_id, user_id) do
       %{"lang" => lang} = payload
-      Play.update_editor_lang(game_id, socket.assigns.user_id, lang)
-      broadcast_from!(socket, "editor:lang", %{user_id: socket.assigns.user_id, lang: lang})
+      Play.update_editor_lang(game_id, user_id, lang)
+      broadcast_from!(socket, "editor:lang", %{user_id: user_id, lang: lang})
       {:noreply, socket}
     else
       {:reply, {:error, %{reason: "not_authorized"}}, socket}
@@ -91,11 +98,12 @@ defmodule CodebattleWeb.GameChannel do
 
   def handle_in("check_result", payload, socket) do
     game_id = get_game_id(socket)
+    user_id = socket.assigns.user_id
 
     if user_authorized_in_game?(game_id, socket.assigns.user_id) do
       %{"editor_text" => editor_text, "lang" => lang} = payload
-      Play.update_editor_text(game_id, socket.assigns.user_id, editor_text)
-      Play.update_editor_lang(game_id, socket.assigns.user_id, lang)
+      Play.update_editor_text(game_id, user_id, editor_text)
+      Play.update_editor_lang(game_id, user_id, lang)
 
       case Play.check_game(game_id, socket.assigns.current_user, editor_text, lang) do
         {:ok, fsm} ->

@@ -12,8 +12,10 @@ import Editor from './Editor';
 import GameStatusTab from './GameStatusTab';
 import { sendEditorText } from '../middlewares/Game';
 import ExecutionOutput from '../components/ExecutionOutput';
+import Gon from 'gon';
 
 const Tabs = { editor: 'EDITOR', output: 'OUTPUT' };
+const languages = Gon.getAsset('langs');
 
 class GameWidget extends Component {
   static defaultProps = {
@@ -55,10 +57,11 @@ class GameWidget extends Component {
       ? (value) => { updateEditorValue(value); }
       : _.noop;
 
+    // const syntax = _.find(languages, { slug: editorState. });
     return {
       onChange,
       editable,
-      syntax: _.get(editorState, ['currentLang', 'name'], 'javascript'),
+      syntax: _.get(editorState, ['currentLangSlug', 'name'], 'javascript'),
       value: editorState.text,
       name: 'left-editor',
     };
@@ -72,7 +75,7 @@ class GameWidget extends Component {
       onChange: _.noop,
       editable: false,
       allowCopy: false,
-      syntax: _.get(editorState, ['currentLang', 'name'], 'javascript'),
+      syntax: _.get(editorState, ['currentLangSlug', 'name'], 'javascript'),
       value: editorState.text,
       name: 'right-editor',
     };
