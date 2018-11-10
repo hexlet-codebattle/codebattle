@@ -38,13 +38,16 @@ export const secondUserSelector = (state) => {
   return {};
 };
 
-const editorsMetaSelector = state => state.editors.meta;
-const editorsTextSelector = state => state.editors.text;
+const editorsMetaSelector = state => state.editor.meta;
+const editorTextsSelector = state => state.editor.text;
 
 export const editorDataSelector = userId => (state) => {
-  const meta = editorsMetaSelector(state)[userId] || {currentLang: 'js'};
-  const editorText = editorsTextSelector(state);
-  const text = editorText[makeEditorTextKey(userId, meta.currentLang)];
+  const meta = editorsMetaSelector(state)[userId];
+  const editorTexts = editorTextsSelector(state);
+  if (!meta) {
+    return null;
+  }
+  const text = editorTexts[makeEditorTextKey(userId, meta.currentLang)];
   return {
     ...meta,
     text,
@@ -77,7 +80,13 @@ export const rightEditorSelector = (state) => {
   return editorSelector(state);
 };
 
-export const userLangSelector = (userId, state) => _.get(editorDataSelector(userId)(state), 'currentLang', null);
+export const currentPlayerTextByLangSelector = lang => (state) => {
+  const { id: userId } = currentUserSelector(state);
+  const editorTexts = editorTextsSelector(state);
+  return editorTexts[makeEditorTextKey(userId, lang)];
+};
+
+export const userLangSelector = userId => state => _.get(editorDataSelector(userId)(state), 'currentLang', null);
 
 export const gameStatusSelector = state => state.game.gameStatus;
 

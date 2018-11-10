@@ -16,9 +16,9 @@ import {
   usersSelector,
   currentUserSelector,
 } from '../selectors';
-import { checkGameResult, sendEditorLang, sendGiveUp } from '../middlewares/Game';
+import { checkGameResult, changeCurrentLangAndSetTemplate, sendGiveUp } from '../middlewares/Game';
 import userTypes from '../config/userTypes';
-import LangSelector from '../components/LangSelector';
+import LanguagePicker from '../components/LanguagePicker';
 import UserName from '../components/UserName';
 
 const renderNameplate = (user = {}, onlineUsers) => {
@@ -52,9 +52,9 @@ class GameStatusTab extends Component {
     onlineUsers: [],
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps) {
     const prevStatus = prevProps.gameStatus.status;
-    const { solutionStatus, winner, status } = this.props.gameStatus;
+    const { gameStatus: { solutionStatus, winner, status } } = this.props;
     const { currentUser } = this.props;
     const statuses = {
       true: () => toast.success('Yay! All tests passed!'),
@@ -77,25 +77,29 @@ class GameStatusTab extends Component {
       gameStatus,
       checkResult,
       currentUser,
-      leftEditorLang,
-      rightEditorLang,
-      task,
+      leftEditorLangSlug,
+      rightEditorLangSlug,
       leftUserId,
       rightUserId,
       title,
       users,
       onlineUsers,
+      setLang,
     } = this.props;
     const userType = currentUser.type;
     const isSpectator = userType === userTypes.spectator;
     const allowedGameStatusCodes = [GameStatusCodes.playing, GameStatusCodes.gameOver];
     const canGiveUp = gameStatus.status === GameStatusCodes.playing && !isSpectator;
-    const canCheckResult = _.includes(allowedGameStatusCodes, gameStatus.status) &&
-      userType && !isSpectator;
+    const canCheckResult = _.includes(allowedGameStatusCodes, gameStatus.status)
+      && userType && !isSpectator;
     const toastOptions = {
       hideProgressBar: true,
       position: toast.POSITION.TOP_CENTER,
     };
+
+    if (leftEditorLangSlug === null || rightEditorLangSlug === null) {
+      return null;
+    }
 
     return (
       <Hotkeys keyName="ctrl+Enter" onKeyUp={checkResult}>
@@ -103,9 +107,9 @@ class GameStatusTab extends Component {
           <div className="row my-1">
             <div className="col">
               <div className="btn-toolbar" role="toolbar">
-                <LangSelector
-                  currentLangSlug={leftEditorLang}
-                  onChange={this.props.setLang}
+                <LanguagePicker
+                  currentLangSlug={leftEditorLangSlug}
+                  onChange={setLang}
                   disabled={isSpectator}
                 />
                 {!canCheckResult ? null : (
@@ -116,9 +120,9 @@ class GameStatusTab extends Component {
                   >
                     {gameStatus.checking ? (
                       <span className="mx-1 fa fa-cog fa-spin" />
-                      ) : (
-                        <span className="mx-1 fa fa-play-circle" />
-                      )}
+                    ) : (
+                      <span className="mx-1 fa fa-play-circle" />
+                    )}
                     {i18n.t('Check')}
                   </button>
                 )}
@@ -148,8 +152,8 @@ class GameStatusTab extends Component {
               </div>
             </div>
             <div className="col text-right">
-              <LangSelector
-                currentLangSlug={rightEditorLang}
+              <LanguagePicker
+                currentLangSlug={rightEditorLangSlug}
                 onChange={_.noop}
                 disabled
               />
@@ -174,17 +178,18 @@ const mapStateToProps = (state) => {
     rightUserId,
     currentUser,
     onlineUsers,
-    leftEditorLang: userLangSelector(leftUserId, state),
-    rightEditorLang: userLangSelector(rightUserId, state),
+    leftEditorLangSlug: userLangSelector(leftUserId)(state),
+    rightEditorLangSlug: userLangSelector(rightUserId)(state),
     gameStatus: gameStatusSelector(state),
     title: gameStatusTitleSelector(state),
     task: gameTaskSelector(state),
+
   };
 };
 
-const mapDispatchToProps = dispatch => ({
-  checkResult: () => dispatch(checkGameResult()),
-  setLang: langSlug => dispatch(sendEditorLang(langSlug)),
-});
+const mapDispatchToProps = {
+  checkResult: checkGameResult,
+  setLang: changeCurrentLangAndSetTemplate,
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(GameStatusTab);

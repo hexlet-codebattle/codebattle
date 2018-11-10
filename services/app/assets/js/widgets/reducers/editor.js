@@ -9,6 +9,7 @@ import * as actions from '../actions';
 // text: {
 //   [2:haskell] : 'text'
 // },
+
 const initialState = {
   meta: {},
   text: {},
@@ -16,28 +17,38 @@ const initialState = {
 
 export const makeEditorTextKey = (userId, lang) => `${userId}:${lang}`;
 
-const reducer = handleActions({
-  [actions.updateEditorLang](state, { userId, currentLang }) {
-    console.log(state)
+const meta = handleActions({
+  [actions.updateEditorLang](state, { payload: { userId, currentLang } }) {
     return {
       ...state,
-      meta: '123',
       [userId]: {
+        userId,
         currentLang,
       },
     };
   },
-
-  [actions.updateEditorText](state, { userId, lang, text: editorText }) {
+  [actions.updateEditorText](state, { payload: { userId, langSlug } }) {
     return {
       ...state,
-      [makeEditorTextKey(userId, lang)]: editorText,
+      [userId]: {
+        userId,
+        currentLang: langSlug,
+      },
     };
   },
-}, initialState);
+}, initialState.meta);
 
-// export default combineReducers({
-//   meta,
-//   text,
-// });
-export default reducer;
+const text = handleActions({
+  [actions.updateEditorText](state, { payload: { userId, langSlug, text: editorText } }) {
+    console.log({ userId, langSlug, text: editorText });
+    return {
+      ...state,
+      [makeEditorTextKey(userId, langSlug)]: editorText,
+    };
+  },
+}, initialState.text);
+
+export default combineReducers({
+  meta,
+  text,
+});

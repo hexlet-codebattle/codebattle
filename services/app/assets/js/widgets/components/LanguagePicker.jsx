@@ -3,10 +3,6 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 import Gon from 'gon';
 
-String.prototype.capitalize = function () {
-  return this.charAt(0).toUpperCase() + this.slice(1);
-};
-
 const languages = Gon.getAsset('langs');
 const getLangTitle = (lang) => {
   const icons = {
@@ -21,14 +17,16 @@ const getLangTitle = (lang) => {
 
   return (
     <span className={icons[lang.slug]}>
-      {`    ${lang.name.capitalize()} ${lang.version}`}
+      {`\u00a0${_.capitalize(lang.name)} ${lang.version}`}
     </span>
   );
 };
-const LangSelector = ({ currentLangSlug, onChange, disabled }) => {
-  const [[currentLang, ...other], otherLangs] =
-    _.partition(languages, lang => lang.slug === currentLangSlug);
 
+const LanguagePicker = ({ currentLangSlug, onChange, disabled }) => {
+  const [[currentLang], otherLangs] = _.partition(
+    languages,
+    lang => lang.slug === currentLangSlug,
+  );
 
   if (disabled) {
     return (
@@ -72,10 +70,10 @@ const LangSelector = ({ currentLangSlug, onChange, disabled }) => {
   );
 };
 
-LangSelector.propTypes = {
+LanguagePicker.propTypes = {
   currentLangSlug: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
   disabled: PropTypes.bool.isRequired,
 };
 
-export default LangSelector;
+export default LanguagePicker;

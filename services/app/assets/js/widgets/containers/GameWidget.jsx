@@ -33,7 +33,7 @@ class GameWidget extends Component {
     rightEditor: PropTypes.shape({
       text: PropTypes.string,
     }),
-    sendData: PropTypes.func.isRequired,
+    updateEditorValue: PropTypes.func.isRequired,
   }
 
   constructor(props) {
@@ -43,16 +43,16 @@ class GameWidget extends Component {
     };
   }
 
-  getLeftEditorParams() {
+  getLeftEditorParams = () => {
     const {
-      currentUser, leftEditor, sendData,
+      currentUser, leftEditor, updateEditorValue,
     } = this.props;
     // FIXME: currentUser shouldn't return {} for spectator
     const isPlayer = currentUser.type !== userTypes.spectator;
     const editable = isPlayer;
     const editorState = leftEditor;
     const onChange = isPlayer
-      ? (value) => { sendData(value); }
+      ? (value) => { updateEditorValue(value); }
       : _.noop;
 
     return {
@@ -64,7 +64,7 @@ class GameWidget extends Component {
     };
   }
 
-  getRightEditorParams() {
+  getRightEditorParams = () => {
     const { rightEditor } = this.props;
     const editorState = rightEditor;
 
@@ -94,7 +94,11 @@ class GameWidget extends Component {
   }
 
   render() {
-    const { leftEditor } = this.props;
+    const { leftEditor, rightEditor } = this.props;
+    if (leftEditor === null || rightEditor === null) {
+      // FIXME: render loader
+      return null;
+    }
     return (
       <Fragment>
         <div className="row mx-auto">
@@ -138,8 +142,8 @@ const mapStateToProps = state => ({
   outputText: state.executionOutput,
 });
 
-const mapDispatchToProps = dispatch => ({
-  sendData: (...args) => { dispatch(sendEditorText(...args)); },
-});
+const mapDispatchToProps = {
+  updateEditorValue: sendEditorText,
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(GameWidget);

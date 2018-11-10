@@ -23,8 +23,3 @@ export const updateEditorText = createAction('UPDATE_EDITOR_TEXT');
 
 export const updateGameStatus = createAction('UPDATE_GAME_STATUS');
 export const setGameTask = createAction('SET_GAME_TASK');
-
-export const updateEditorData = ({ userId, lang, text }) => (dispatch) => {
-  dispatch(updateEditorLang, { userId, currentLang: lang });
-  dispatch(updateEditorText, { userId, lang, text });
-};

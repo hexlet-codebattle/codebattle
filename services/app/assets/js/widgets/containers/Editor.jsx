@@ -53,7 +53,7 @@ class Editor extends PureComponent {
       keyboardHandler,
     } = this.props;
 
-    // FIXME: rename language name
+    // FIXME: move here and apply mapping object
     const mappedSyntax = syntax === 'js' ? 'javascript' : syntax;
 
     return (
