@@ -13,7 +13,7 @@ import GameStatusTab from './GameStatusTab';
 import { sendEditorText } from '../middlewares/Game';
 import ExecutionOutput from '../components/ExecutionOutput';
 
-const Tabs = { editor: 'EDITOR', output: 'OUTPUT', template: 'TEMPLATE' };
+const Tabs = { editor: 'EDITOR', output: 'OUTPUT' };
 
 class GameWidget extends Component {
   static defaultProps = {
@@ -79,16 +79,10 @@ class GameWidget extends Component {
   }
 
   renderTab() {
-    const { outputText, leftEditor } = this.props;
+    const { outputText } = this.props;
     switch (this.state.currentTab) {
       case Tabs.editor: return <Editor {...this.getLeftEditorParams()} />;
       case Tabs.output: return <ExecutionOutput output={outputText} />;
-      case Tabs.template: return (
-        <div className="row mx-auto">
-          <div className="col-md-6">
-            {_.get(leftEditor, ['currentLang', 'solution_template']).split('\n').map((i, key) => <div key={key}>{i}</div>)}
-          </div>
-        </div>);
       default: return null;
     }
   }
