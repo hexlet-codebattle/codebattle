@@ -6,16 +6,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import Hotkeys from 'react-hot-keys';
 import i18n from '../../i18n';
 import GameStatusCodes from '../config/gameStatusCodes';
-import {
-  gameStatusSelector,
-  gameStatusTitleSelector,
-  gameTaskSelector,
-  userLangSelector,
-  leftEditorSelector,
-  rightEditorSelector,
-  usersSelector,
-  currentUserSelector,
-} from '../selectors';
+import * as selectors from '../selectors';
 import { checkGameResult, changeCurrentLangAndSetTemplate, sendGiveUp } from '../middlewares/Game';
 import userTypes from '../config/userTypes';
 import LanguagePicker from '../components/LanguagePicker';
@@ -167,22 +158,22 @@ class GameStatusTab extends Component {
 }
 
 const mapStateToProps = (state) => {
-  const currentUser = currentUserSelector(state);
-  const leftUserId = _.get(leftEditorSelector(state), ['userId'], null);
-  const rightUserId = _.get(rightEditorSelector(state), ['userId'], null);
+  const currentUser = selectors.currentUserSelector(state);
+  const leftUserId = _.get(selectors.leftEditorSelector(state), ['userId'], null);
+  const rightUserId = _.get(selectors.rightEditorSelector(state), ['userId'], null);
   const { users: onlineUsers } = state.chat;
 
   return {
-    users: usersSelector(state),
+    users: selectors.usersSelector(state),
     leftUserId,
     rightUserId,
     currentUser,
     onlineUsers,
-    leftEditorLangSlug: userLangSelector(leftUserId)(state),
-    rightEditorLangSlug: userLangSelector(rightUserId)(state),
-    gameStatus: gameStatusSelector(state),
-    title: gameStatusTitleSelector(state),
-    task: gameTaskSelector(state),
+    leftEditorLangSlug: selectors.userLangSelector(leftUserId)(state),
+    rightEditorLangSlug: selectors.userLangSelector(rightUserId)(state),
+    gameStatus: selectors.gameStatusSelector(state),
+    title: selectors.gameStatusTitleSelector(state),
+    task: selectors.gameTaskSelector(state),
 
   };
 };
