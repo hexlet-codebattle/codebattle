@@ -4,7 +4,7 @@ defmodule CodebattleWeb.GameController do
   import PhoenixGon.Controller
 
   alias Codebattle.GameProcess.{Play, ActiveGames, Server}
-  alias Codebattle.{Repo, Language}
+  alias Codebattle.{Languages}
 
   plug(CodebattleWeb.Plugs.RequireAuth when action in [:create, :join])
 
@@ -36,7 +36,7 @@ defmodule CodebattleWeb.GameController do
 
       _pid ->
         fsm = Play.get_fsm(id)
-        langs = Repo.all(Language)
+        langs = Languages.meta() |> Map.values()
         conn = put_gon(conn, game_id: id, langs: langs)
         is_participant = ActiveGames.participant?(id, conn.assigns.current_user.id)
 

@@ -3,11 +3,13 @@ defmodule Codebattle.CodeCheck.Checker do
 
   require Logger
 
-  alias Codebattle.{Repo, Language}
+  alias Codebattle.Languages
   # alias Codebattle.CodeCheck.OutputFilter
 
   def check(task, editor_text, lang_slug) do
-    case Repo.get_by(Language, %{slug: lang_slug}) do
+    slug_atom = String.to_existing_atom(lang_slug)
+
+    case Languages.meta() |> Map.get(slug_atom) do
       nil ->
         {:error, "Lang #{lang_slug} is undefined"}
 

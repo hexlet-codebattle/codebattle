@@ -134,7 +134,7 @@ defmodule Codebattle.CodeCheck.Php.IntegrationTest do
 
     Mix.Shell.Process.flush()
 
-    Phoenix.ChannelTest.push(socket1, "editor:text", %{editor_text: "test"})
+    Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: "test"})
 
     Phoenix.ChannelTest.push(socket1, "check_result", %{
       editor_text: "function solution($x, $y){ return $x + $y; }\n",

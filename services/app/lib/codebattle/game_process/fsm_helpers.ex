@@ -13,10 +13,6 @@ defmodule Codebattle.GameProcess.FsmHelpers do
     (player && player.user) || %User{}
   end
 
-  def get_user_lang(fsm, id) do
-    get_player(fsm, id).editor_lang
-  end
-
   def get_player(fsm, id) do
     player =
       fsm.data.players

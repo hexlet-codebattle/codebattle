@@ -113,9 +113,14 @@ defmodule Codebattle.GameProcess.Play do
 
   # FIXME: add lang validation
   def update_editor_lang(id, user_id, editor_lang) do
-    Repo.get(User, user_id)
-    |> Ecto.Changeset.change(%{lang: editor_lang})
-    |> Repo.update!
+    case Repo.get(User, user_id) do
+      user ->
+        user |> Ecto.Changeset.change(%{lang: editor_lang}) |> Repo.update!()
+
+      nil ->
+        nil
+    end
+
     RecorderServer.update_lang(id, user_id, editor_lang)
     Server.call_transition(id, :update_editor_params, %{id: user_id, editor_lang: editor_lang})
   end

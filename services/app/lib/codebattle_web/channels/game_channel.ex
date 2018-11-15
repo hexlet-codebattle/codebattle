@@ -40,18 +40,23 @@ defmodule CodebattleWeb.GameChannel do
     user_id = socket.assigns.user_id
     game_id = get_game_id(socket)
     fsm = Play.get_fsm(game_id)
-    lang_slug = FsmHelpers.get_user_lang(fsm, user_id)
 
     if user_authorized_in_game?(game_id, user_id) do
-      %{"editor_text" => editor_text, "lang" => lang} = payload
       game_id = get_game_id(socket)
+
       # TODO: refactorme to update_editor_data in Play module
+      %{editor_text: prev_editor_text, editor_lang: prev_editor_lang} =
+        FsmHelpers.get_player(fsm, user_id)
+
+      editor_text = Map.get(payload, "editor_text", prev_editor_text)
+      editor_lang = Map.get(payload, "lang", prev_editor_lang |> Atom.to_string())
+
       Play.update_editor_text(game_id, user_id, editor_text)
-      Play.update_editor_lang(game_id, user_id, lang)
+      Play.update_editor_lang(game_id, user_id, editor_lang)
 
       broadcast_from!(socket, "editor:data", %{
         user_id: user_id,
-        lang_slug: lang_slug,
+        lang_slug: editor_lang,
         editor_text: editor_text
       })
 
@@ -61,19 +66,19 @@ defmodule CodebattleWeb.GameChannel do
     end
   end
 
-  def handle_in("editor:lang", payload, socket) do
-    game_id = get_game_id(socket)
-    user_id = socket.assigns.user_id
+  # def handle_in("editor:lang", payload, socket) do
+  #   game_id = get_game_id(socket)
+  #   user_id = socket.assigns.user_id
 
-    if user_authorized_in_game?(game_id, user_id) do
-      %{"lang" => lang} = payload
-      Play.update_editor_lang(game_id, user_id, lang)
-      broadcast_from!(socket, "editor:lang", %{user_id: user_id, lang: lang})
-      {:noreply, socket}
-    else
-      {:reply, {:error, %{reason: "not_authorized"}}, socket}
-    end
-  end
+  #   if user_authorized_in_game?(game_id, user_id) do
+  #     %{"lang" => lang} = payload
+  #     Play.update_editor_lang(game_id, user_id, lang)
+  #     broadcast_from!(socket, "editor:lang", %{user_id: user_id, lang: lang})
+  #     {:noreply, socket}
+  #   else
+  #     {:reply, {:error, %{reason: "not_authorized"}}, socket}
+  #   end
+  # end
 
   def handle_in("give_up", payload, socket) do
     game_id = get_game_id(socket)
