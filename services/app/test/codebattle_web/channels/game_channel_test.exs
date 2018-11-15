@@ -3,6 +3,7 @@ defmodule CodebattleWeb.GameChannelTest do
 
   alias CodebattleWeb.GameChannel
   alias Codebattle.GameProcess.{Player, Server, FsmHelpers}
+  alias Codebattle.Languages
 
   setup do
     user1 = insert(:user, rating: 1000)
@@ -33,8 +34,8 @@ defmodule CodebattleWeb.GameChannelTest do
                winner: %Codebattle.User{},
                first_player: user1,
                second_player: %Codebattle.User{},
-               first_player_editor_text: "",
-               second_player_editor_text: "",
+               first_player_editor_text: Languages.meta()[:js].solution_template,
+               second_player_editor_text: Languages.meta()[:js].solution_template,
                first_player_editor_lang: "js",
                second_player_editor_lang: "js",
                starts_at: nil,
@@ -65,15 +66,15 @@ defmodule CodebattleWeb.GameChannelTest do
                first_player: user1,
                second_player: user2,
                status: :playing,
-               first_player_editor_text: "",
-               second_player_editor_text: "",
+               first_player_editor_text: Languages.meta()[:js].solution_template,
+               second_player_editor_text: Languages.meta()[:js].solution_template,
                first_player_editor_lang: "js",
                second_player_editor_lang: "js",
                winner: %Codebattle.User{}
              })
   end
 
-  test "broadcasts editor:text, after editor:text", %{
+  test "broadcasts editor:data, after editor:data", %{
     user1: user1,
     user2: user2,
     socket1: socket1,
@@ -91,26 +92,26 @@ defmodule CodebattleWeb.GameChannelTest do
     {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
     Mix.Shell.Process.flush()
 
-    push(socket1, "editor:text", %{editor_text: editor_text1})
-    push(socket2, "editor:text", %{editor_text: editor_text2})
+    push(socket1, "editor:data", %{editor_text: editor_text1})
+    push(socket2, "editor:data", %{editor_text: editor_text2})
 
     payload1 = %{user_id: user1.id, editor_text: editor_text1}
     payload2 = %{user_id: user2.id, editor_text: editor_text2}
 
     assert_receive %Phoenix.Socket.Broadcast{
       topic: ^game_topic,
-      event: "editor:text",
+      event: "editor:data",
       payload: ^payload1
     }
 
     assert_receive %Phoenix.Socket.Broadcast{
       topic: ^game_topic,
-      event: "editor:text",
+      event: "editor:data",
       payload: ^payload2
     }
   end
 
-  test "broadcasts editor:lang, after editor:lang", %{
+  test "chahge lang after change lang", %{
     user1: user1,
     user2: user2,
     socket1: socket1,
@@ -128,21 +129,30 @@ defmodule CodebattleWeb.GameChannelTest do
     {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
     Mix.Shell.Process.flush()
 
-    push(socket1, "editor:lang", %{lang: editor_lang1})
-    push(socket2, "editor:lang", %{lang: editor_lang2})
+    push(socket1, "editor:data", %{lang: editor_lang1, editor_text: 'text1'})
+    push(socket2, "editor:data", %{lang: editor_lang2, editor_text: 'text2'})
 
-    payload1 = %{user_id: user1.id, lang: editor_lang1}
-    payload2 = %{user_id: user2.id, lang: editor_lang2}
+    payload1 = %{
+      user_id: user1.id,
+      lang_slug: editor_lang1,
+      editor_text: 'text1'
+    }
+
+    payload2 = %{
+      user_id: user2.id,
+      lang_slug: editor_lang2,
+      editor_text: 'text2'
+    }
 
     assert_receive %Phoenix.Socket.Broadcast{
       topic: ^game_topic,
-      event: "editor:lang",
+      event: "editor:data",
       payload: ^payload1
     }
 
     assert_receive %Phoenix.Socket.Broadcast{
       topic: ^game_topic,
-      event: "editor:lang",
+      event: "editor:data",
       payload: ^payload2
     }
   end

@@ -57,14 +57,14 @@ defmodule Codebattle.Bot.PlaybookPlayerTask do
           text_delta = delta |> AtomicMap.convert(safe: true) |> TextDelta.new()
           new_document = TextDelta.apply!(document, text_delta)
 
-          SocketDriver.push(socket_pid, game_topic, "editor:text", %{
+          SocketDriver.push(socket_pid, game_topic, "editor:data", %{
             "editor_text" => new_document.ops |> hd |> Map.get(:insert)
           })
 
           {new_document, lang}
         else
           lang = diff_map |> Map.get("lang")
-          SocketDriver.push(socket_pid, game_topic, "editor:lang", %{"lang" => lang})
+          SocketDriver.push(socket_pid, game_topic, "editor:data", %{"lang" => lang})
           {document, lang}
         end
       end)

@@ -59,9 +59,9 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
       {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
       Mix.Shell.Process.flush()
 
-      Phoenix.ChannelTest.push(socket1, "editor:text", %{editor_text: editor_text1})
-      Phoenix.ChannelTest.push(socket1, "editor:text", %{editor_text: editor_text2})
-      Phoenix.ChannelTest.push(socket1, "editor:text", %{editor_text: editor_text3})
+      Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text1})
+      Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text2})
+      Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text3})
       Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text3, lang: :js})
 
       playbook = [
