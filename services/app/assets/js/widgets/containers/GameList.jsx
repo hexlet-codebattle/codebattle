@@ -10,17 +10,18 @@ import Loading from '../components/Loading';
 
 
 class GameList extends React.Component {
-  componentDidMount() {
-    const { dispatch } = this.props;
-    dispatch(fetchState());
-  }
-
   levelToClass = {
     elementary: 'info',
     easy: 'success',
     medium: 'warning',
     hard: 'danger',
   };
+
+  componentDidMount() {
+    const { dispatch } = this.props;
+    dispatch(fetchState());
+  }
+
 
   renderPlayers = users => (
     <div>
@@ -54,60 +55,58 @@ class GameList extends React.Component {
 
   isPlayer = (user, game) => !_.isEmpty(_.find(game.users, { id: user.id }))
 
+  renderShowGameButton = gameUrl => (
+    <button
+      type="button"
+      className="btn btn-info btn-sm"
+      data-method="get"
+      data-to={gameUrl}
+    >
+      Show
+    </button>
+  )
+
   renderGameActionButton = (game) => {
-    const gameUrl = ({ game_id: gameId }) => `/games/${gameId}`;
+    const gameUrl = `/games/${game.game_id}`;
     const user = Gon.getAsset('current_user');
+    const gameState = game.game_info.state;
 
-    switch (game.game_info.state) {
-      case GameStatusCodes.waitingOpponent:
-        // FIXME: nested case tooo hard
-        switch (this.isPlayer(user, game)) {
-          case true:
-            return (
-              <div className="btn-group">
-                <button
-                  className="btn btn-info btn-sm"
-                  data-method="get"
-                  data-to={gameUrl(game)}
-                >
-                  Show
-                </button>
-                <button
-                  className="btn btn-danger btn-sm"
-                  data-method="delete"
-                  data-csrf={window.csrf_token}
-                  data-to={gameUrl(game)}
-                >
-                  Cancel
-                </button>
-              </div>
-            );
-
-          case false:
-            return (
-              <button
-                className="btn btn-primary btn-sm"
-                data-method="post"
-                data-csrf={window.csrf_token}
-                data-to={`${gameUrl(game)}/join`}
-              >
-                Join
-              </button>
-            );
-        }
-      case GameStatusCodes.playing:
-        return (
-          <button
-            className="btn btn-info btn-sm mr-2"
-            data-method="get"
-            data-to={gameUrl(game)}
-          >
-            Show
-          </button>
-        );
-      default:
-        return '';
+    if (gameState === GameStatusCodes.playing) {
+      return this.renderShowGameButton(gameUrl);
     }
+
+    if (gameState === GameStatusCodes.waitingOpponent) {
+      if (this.isPlayer(user, game)) {
+        return (
+          <div className="btn-group">
+            {this.renderShowGameButton(gameUrl)}
+            <button
+              type="button"
+              className="btn btn-danger btn-sm"
+              data-method="delete"
+              data-csrf={window.csrf_token}
+              data-to={gameUrl}
+            >
+              Cancel
+            </button>
+          </div>
+        );
+      }
+
+      return (
+        <button
+          type="button"
+          className="btn btn-primary btn-sm"
+          data-method="post"
+          data-csrf={window.csrf_token}
+          data-to={`${gameUrl(game)}/join`}
+        >
+          Join
+        </button>
+      );
+    }
+
+    return null;
   }
 
   renderStartNewGameButton = level => (
