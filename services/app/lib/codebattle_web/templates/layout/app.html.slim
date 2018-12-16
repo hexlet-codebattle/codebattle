@@ -47,12 +47,14 @@ html lang="en"
             li.nav-item
               a href="#{auth_path(@conn, :request, :github)}"
                 button.btn.btn-outline-success = gettext "Sign in with %{name}", name: "Github"
-    = for {type, message} <- get_flash(@conn) do
-      div class="alert alert-#{type} alert-dismissible fade show" role="alert"
-        = message
-        button type="button" class="close" data-dismiss="alert" aria-label="Close"
-          span aria-hidden="true" &times;
 
-    = render @view_module, @view_template, Map.put(assigns, :layout, {CodebattleWeb.LayoutView, assigns[:layout_template] || "standart.html"})
-    = render_gon_script(@conn)
-    script src=static_path(@conn,"/js/app.js")
+    .container-fluid.p-0
+      = for {type, message} <- get_flash(@conn) do
+        div class="alert alert-#{type} alert-dismissible fade show" role="alert"
+          = message
+          button type="button" class="close" data-dismiss="alert" aria-label="Close"
+            span aria-hidden="true" &times;
+
+      = render @view_module, @view_template, Map.put(assigns, :layout, {CodebattleWeb.LayoutView, assigns[:layout_template] || "standart.html"})
+      = render_gon_script(@conn)
+      script src=static_path(@conn,"/js/app.js")

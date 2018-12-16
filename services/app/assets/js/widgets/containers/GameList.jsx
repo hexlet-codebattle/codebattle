@@ -15,6 +15,12 @@ class GameList extends React.Component {
     dispatch(fetchState());
   }
 
+  levelToClass = {
+    elementary: 'info',
+    easy: 'success',
+    medium: 'warning',
+    hard: 'danger',
+  };
 
   renderPlayers = users => (
     <div>
@@ -39,16 +45,12 @@ class GameList extends React.Component {
     </div>
   )
 
-  renderGameLevelBadge = (level) => {
-    const levels = {
-      elementary: 'info',
-      easy: 'success',
-      medium: 'warning',
-      hard: 'danger',
-    };
-
-    return <h5><span className={`badge badge-${levels[level]}`}>{level}</span></h5>;
-  }
+  renderGameLevelBadge = level => (
+    <div>
+      <span className={`badge badge-pill badge-${this.levelToClass[level]} mr-1`}>&nbsp;</span>
+      {level}
+    </div>
+  )
 
   isPlayer = (user, game) => !_.isEmpty(_.find(game.users, { id: user.id }))
 
@@ -84,7 +86,7 @@ class GameList extends React.Component {
           case false:
             return (
               <button
-                className="btn btn-success btn-sm"
+                className="btn btn-primary btn-sm"
                 data-method="post"
                 data-csrf={window.csrf_token}
                 data-to={`${gameUrl(game)}/join`}
@@ -107,6 +109,19 @@ class GameList extends React.Component {
         return '';
     }
   }
+
+  renderStartNewGameButton = level => (
+    <button
+      className="dropdown-item"
+      type="button"
+      data-method="post"
+      data-csrf={window.csrf_token}
+      data-to={`games?level=${level}`}
+    >
+      <span className={`badge badge-pill badge-${this.levelToClass[level]} mr-1`}>&nbsp;</span>
+      {level}
+    </button>
+  )
 
   render() {
     const { games } = this.props;
@@ -168,6 +183,19 @@ class GameList extends React.Component {
             }
           </tbody>
         </table>
+        <div className="btn-group" role="group">
+          <button id="btnGroupStartNewGame" type="button" className="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Start a new game
+          </button>
+          <div className="dropdown-menu" aria-labelledby="btnGroupStartNewGame">
+            <div className="dropdown-header">Select a difficulty</div>
+            <div className="dropdown-divider" />
+            {this.renderStartNewGameButton('elementary')}
+            {this.renderStartNewGameButton('easy')}
+            {this.renderStartNewGameButton('medium')}
+            {this.renderStartNewGameButton('hard')}
+          </div>
+        </div>
       </div>
     );
   }
