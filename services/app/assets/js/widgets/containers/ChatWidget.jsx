@@ -66,28 +66,30 @@ class ChatWidget extends React.Component {
                 display: 'inline-block',
                 flexGrow: '1',
                 width: '100%',
-                height: '160px',
+                height: '130px',
                 overflowY: 'scroll',
               }}
             />
           </div>
-          <div className="input-group input-group-sm">
-            <input
-              className="form-control"
-              type="text"
-              placeholder="Type message here..."
-              value={message}
-              onChange={this.handleChange}
-              onKeyPress={this.handleKeyPress}
-            />
-            <div className="input-group-append">
-              <button
-                className="btn btn-outline-success"
-                type="button"
-                onClick={this.sendMessage}
-              >
-                Send
-              </button>
+          <div className="card-footer">
+            <div className="input-group input-group-sm">
+              <input
+                className="form-control"
+                type="text"
+                placeholder="Type message here..."
+                value={message}
+                onChange={this.handleChange}
+                onKeyPress={this.handleKeyPress}
+              />
+              <div className="input-group-append">
+                <button
+                  className="btn btn-light border"
+                  type="button"
+                  onClick={this.sendMessage}
+                >
+                  Send
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -99,7 +101,7 @@ class ChatWidget extends React.Component {
               display: 'inline-block',
               flexGrow: '1',
               width: '100%',
-              height: '160px',
+              height: '130px',
               overflowY: 'scroll',
             }}
           >
