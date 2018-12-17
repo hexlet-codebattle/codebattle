@@ -99,7 +99,7 @@ class GameList extends React.Component {
           className="btn btn-primary btn-sm"
           data-method="post"
           data-csrf={window.csrf_token}
-          data-to={`${gameUrl(game)}/join`}
+          data-to={`${gameUrl}/join`}
         >
           Join
         </button>
