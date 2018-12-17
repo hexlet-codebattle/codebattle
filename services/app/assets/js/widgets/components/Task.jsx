@@ -2,7 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import ReactMarkdown from 'react-markdown';
-import i18n from '../../i18n';
+// import i18n from '../../i18n';
+import Timer from './Timer';
+import GameStatusCodes from '../config/gameStatusCodes';
 
 const renderGameLevelBadge = (level) => {
   const levels = {
@@ -12,28 +14,46 @@ const renderGameLevelBadge = (level) => {
     hard: 'danger',
   };
 
-  return <h4 className="m-0 p-0"><span className={`badge badge-${levels[level]}`}>{level}</span></h4>;
+  return (
+    <small>
+      <span className={`badge badge-pill badge-${levels[level]} mr-1`}>&nbsp;</span>
+      {level}
+    </small>
+  );
 };
 
-const Task = ({ task }) =>
-  (_.isEmpty(task) ? null : (
+const renderTimer = (time, gameStatusName) => {
+  if (gameStatusName !== GameStatusCodes.gameOver) {
+    return <Timer time={time} />;
+  }
+
+  return <div><p>{gameStatusName}</p></div>;
+};
+
+const Task = ({ task, time, gameStatusName }) => {
+  if (_.isEmpty(task)) {
+    return null;
+  }
+
+  return (
     <div className="card">
-      <div className="d-flex align-items-center py-0 my-0 justify-content-between card-header font-weight-bold">
-        <div className="p-1" >
-          {`Task: ${task.name}`}
-        </div>
-        <div className="p-1">
-          {renderGameLevelBadge(task.level)}
-        </div>
-      </div>
-      <div className="card-body py-1 mb-0">
+      <div className="card-header">Task</div>
+      <div className="card-body">
+        <h5 className="card-title mb-4">
+          {task.name}
+          <small className="ml-2">{renderGameLevelBadge(task.level)}</small>
+        </h5>
         <ReactMarkdown
           className="card-text"
           source={task.description}
         />
       </div>
+      <div className="card-footer text-muted">
+        {renderTimer(time, gameStatusName)}
+      </div>
     </div>
-  ));
+  );
+};
 
 Task.propTypes = {
   task: PropTypes.shape({
