@@ -59,19 +59,19 @@ class ChatWidget extends React.Component {
       >
         <div className="card col-12 col-md-8 p-0">
           <div className="card-header">Chat</div>
-          <div className="card-body">
+          <div className="card-body p-0">
             <Messages
               messages={messages}
               style={{
                 display: 'inline-block',
                 flexGrow: '1',
                 width: '100%',
-                height: '130px',
+                maxHeight: '180px',
                 overflowY: 'scroll',
               }}
             />
           </div>
-          <div className="card-footer">
+          <div className="card-footer p-0">
             <div className="input-group input-group-sm">
               <input
                 className="form-control"
@@ -101,7 +101,7 @@ class ChatWidget extends React.Component {
               display: 'inline-block',
               flexGrow: '1',
               width: '100%',
-              height: '130px',
+              maxHeight: '160px',
               overflowY: 'scroll',
             }}
           >
