@@ -4,6 +4,7 @@ import _ from 'lodash';
 import Gon from 'gon';
 
 const languages = Gon.getAsset('langs');
+
 const getLangTitle = (lang) => {
   const icons = {
     js: 'icon-nodejs',
@@ -32,7 +33,7 @@ const LanguagePicker = ({ currentLangSlug, onChange, disabled }) => {
   if (disabled) {
     return (
       <button
-        className="btn btn-info"
+        className="btn btn-outline-secondary"
         type="button"
         disabled
       >
@@ -44,7 +45,7 @@ const LanguagePicker = ({ currentLangSlug, onChange, disabled }) => {
   return (
     <div className="dropdown">
       <button
-        className="btn btn-info dropdown-toggle"
+        className="btn btn-outline-secondary dropdown-toggle"
         type="button"
         id="dropdownLangButton"
         data-toggle="dropdown"
@@ -56,12 +57,11 @@ const LanguagePicker = ({ currentLangSlug, onChange, disabled }) => {
       <div className="dropdown-menu" aria-labelledby="dropdownLangButton">
         {_.map(otherLangs, ({ slug, name, version }) => (
           <button
+            type="button"
             className="dropdown-item"
             href="#"
             key={slug}
-            onClick={() => {
-              onChange(slug);
-            }}
+            onClick={() => { onChange(slug); }}
           >
             {getLangTitle({ slug, name, version })}
           </button>
