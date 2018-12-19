@@ -48,18 +48,25 @@ class ExecutionOutput extends PureComponent {
     const outputObj = this.parseOutput(output);
 
     return (
-      <div style={{ height: '500px' }}>
-        <h3>
-          Check status {this.renderStatusBadge(outputObj.status)}
-        </h3>
-        <code>
-          {this.renderTestResults(outputObj)}
-        </code>
+      <div className="card bg-light my-2" style={{ height: '200px' }}>
+        <div className="card-body">
+          <div className="d-flex justify-content-between">
+            <h6 className="card-title">Output</h6>
+            <div className="card-subtitle mb-2 text-muted">
+              Check status:
+              {' '}
+              {this.renderStatusBadge(outputObj.status)}
+            </div>
+          </div>
+          <p className="card-text">
+            <code>
+              {this.renderTestResults(outputObj)}
+            </code>
+          </p>
+        </div>
       </div>
     );
   }
 }
 
-
 export default ExecutionOutput;
-

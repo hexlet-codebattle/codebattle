@@ -1,10 +1,10 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import i18n from 'i18next';
+// import i18n from 'i18next';
+import Gon from 'gon';
 import GameWidget from './GameWidget';
 import InfoWidget from './InfoWidget';
-import Gon from 'gon';
 import userTypes from '../config/userTypes';
 import * as actions from '../actions';
 import * as GameActions from '../middlewares/Game';
@@ -23,21 +23,24 @@ class RootContainer extends React.Component {
   }
 
   render() {
-    switch (true) {
-      case !this.props.storeLoaded:
-        // TODO: add loader
-        return null;
-      case (this.props.gameStatusCode === GameStatusCodes.waitingOpponent):
-        const gameUrl = window.location.href;
-        return <WaitingOpponentInfo gameUrl={gameUrl} />;
-      default:
-        return (
-          <Fragment>
-            <InfoWidget />
-            <GameWidget />
-          </Fragment>
-        );
+    const { storeLoaded, gameStatusCode } = this.props;
+
+    if (!storeLoaded) {
+      // TODO: add loader
+      return null;
     }
+
+    if (gameStatusCode === GameStatusCodes.waitingOpponent) {
+      const gameUrl = window.location.href;
+      return <WaitingOpponentInfo gameUrl={gameUrl} />;
+    }
+
+    return (
+      <Fragment>
+        <InfoWidget />
+        <GameWidget />
+      </Fragment>
+    );
   }
 }
 
