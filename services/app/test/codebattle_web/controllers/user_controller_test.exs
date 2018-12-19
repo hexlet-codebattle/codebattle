@@ -40,4 +40,11 @@ defmodule CodebattleWeb.UserControllerTest do
 
     assert redirected_to(conn, 302) == "/"
   end
+
+  test "edit user", %{conn: conn} do
+    user = insert(:user)
+
+    conn = get(conn, user_path(conn, :edit, user))
+    assert html_response(conn, 200) =~ user.name
+  end
 end
