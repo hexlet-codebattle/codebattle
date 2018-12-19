@@ -120,9 +120,9 @@ export const editorReady = () => (dispatch) => {
     dispatch(actions.updateEditorText({ userId, langSlug, text }));
   });
 
-  // channel.on('editor:lang', ({ user_id: userId, lang: currentLangSlug }) => {
-  //   dispatch(actions.updateEditorLang({ userId, currentLangSlug}));
-  // });
+  channel.on('output:data', ({ user_id: userId, result, output }) => {
+    dispatch(actions.updateOuput({ userId, result, output }));
+  });
 
   channel.on('user:joined', ({
     status,
