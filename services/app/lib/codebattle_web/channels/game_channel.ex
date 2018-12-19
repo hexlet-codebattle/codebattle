@@ -111,31 +111,50 @@ defmodule CodebattleWeb.GameChannel do
       Play.update_editor_lang(game_id, user_id, lang)
 
       case Play.check_game(game_id, socket.assigns.current_user, editor_text, lang) do
-        {:ok, fsm} ->
+        {:ok, fsm, result, output} ->
           winner = socket.assigns.current_user
+          message = winner.name <> " " <> gettext("won the game!")
 
-          msg =
-            case fsm.state do
-              :game_over ->
-                message = winner.name <> " " <> gettext("won the game!")
+          broadcast_from!(socket, "user:won", %{
+            winner: winner,
+            status: "game_over",
+            msg: message
+          })
 
-                broadcast_from!(socket, "user:won", %{
-                  winner: winner,
-                  status: "game_over",
-                  msg: message
-                })
+          broadcast_from!(socket, "output:data", %{
+            user_id: user_id,
+            result: result,
+            output: output
+          })
 
-                message
+          {:reply,
+           {:ok,
+            %{
+              solution_status: true,
+              status: fsm.state,
+              msg: message,
+              winner: winner,
+              result: result,
+              output: output
+            }}, socket}
 
-              _ ->
-                gettext("You lost the game")
-            end
+        {:error, result, output} ->
+          broadcast_from!(socket, "output:data", %{
+            user_id: user_id,
+            result: result,
+            output: output
+          })
 
-          {:reply, {:ok, %{solution_status: true, status: fsm.state, msg: msg, winner: winner}},
-           socket}
+          {:reply, {:ok, %{solution_status: false, result: result, output: output}}, socket}
 
-        {:error, output} ->
-          {:reply, {:ok, %{solution_status: false, output: output}}, socket}
+        {:ok, result, output} ->
+          broadcast_from!(socket, "output:data", %{
+            user_id: user_id,
+            result: result,
+            output: output
+          })
+
+          {:reply, {:ok, %{solution_status: true, result: result, output: output}}, socket}
       end
     else
       {:reply, {:error, %{reason: "not_authorized"}}, socket}

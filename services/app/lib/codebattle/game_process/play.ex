@@ -139,19 +139,24 @@ defmodule Codebattle.GameProcess.Play do
     check = check_code(fsm.data.task, editor_text, editor_lang)
     # TODO: be race condition tolerance
     case {fsm.state, check} do
-      {:playing, {:ok, true}} ->
+
+      {:playing, {:ok, result, output}} ->
+        Server.call_transition(id, :update_editor_params, %{id: user.id, result: result, output: output})
         {_response, fsm} = Server.call_transition(id, :complete, %{id: user.id})
         handle_won_game(id, user, fsm)
-        {:ok, fsm}
+        {:ok, fsm, result, output}
 
-      {:playing, {:error, output}} ->
-        {:error, output}
+      {:playing, {:error, result,  output}} ->
+        Server.call_transition(id, :update_editor_params, %{id: user.id, result: result, output: output})
+        {:error, result, output}
 
-      {:game_over, {:error, output}} ->
-        {:error, output}
+      {:game_over, {:error, result, output}} ->
+        Server.call_transition(id, :update_editor_params, %{id: user.id, result: result, output: output})
+        {:error, result, output}
 
-      {:game_over, {:ok, true}} ->
-        {:ok, fsm}
+      {:game_over, {:ok, result, output}} ->
+        Server.call_transition(id, :update_editor_params, %{id: user.id, result: result, output: output})
+        {:ok, result, output}
     end
   end
 

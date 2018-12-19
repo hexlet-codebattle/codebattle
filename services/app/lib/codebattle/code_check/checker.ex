@@ -34,21 +34,21 @@ defmodule Codebattle.CodeCheck.Checker do
 
         Logger.debug(command)
         [cmd | cmd_opts] = command |> String.split()
-        {global_output, status} = System.cmd(cmd, cmd_opts, stderr_to_stdout: true)
+        {container_output, status} = System.cmd(cmd, cmd_opts, stderr_to_stdout: true)
 
         Logger.debug(
-          "Docker stdout for task_id: #{task.id}, lang: #{lang.slug}, output:#{global_output}"
+          "Docker stdout for task_id: #{task.id}, lang: #{lang.slug}, output:#{container_output}"
         )
 
         # for json returned langs need fix after all langs support json
-        clean_output = ~r/{\"status\":.+}/ |> Regex.run(global_output) |> List.first()
+        json_result = ~r/{\"status\":.+}/ |> Regex.run(container_output) |> List.first()
 
-        output_code = Regex.named_captures(~r/__code(?<code>.+)__/, clean_output)["code"]
+        output_code = Regex.named_captures(~r/__code(?<code>.+)__/, json_result)["code"]
 
         result =
           case output_code do
-            ^check_code -> {:ok, true}
-            _ -> {:error, clean_output}
+            ^check_code -> {:ok, json_result, container_output}
+            _ -> {:error, json_result, container_output}
           end
 
         Task.start(File, :rm_rf, [dir_path])
