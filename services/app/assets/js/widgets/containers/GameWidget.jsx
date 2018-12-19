@@ -2,6 +2,7 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { connect } from 'react-redux';
+import Gon from 'gon';
 import {
   rightEditorSelector,
   leftEditorSelector,
@@ -9,19 +10,18 @@ import {
 } from '../selectors';
 import userTypes from '../config/userTypes';
 import Editor from './Editor';
-import GameStatusTab from './GameStatusTab';
+import LeftEditorToolbar from './LeftEditorToolbar';
+import RightEditorToolbar from './RightEditorToolbar';
+import GameActionButtons from '../components/GameActionButtons';
 import { sendEditorText } from '../middlewares/Game';
 import ExecutionOutput from '../components/ExecutionOutput';
-import Gon from 'gon';
 
-const Tabs = { editor: 'EDITOR', output: 'OUTPUT' };
-const languages = Gon.getAsset('langs');
+// const languages = Gon.getAsset('langs');
 
 class GameWidget extends Component {
   static defaultProps = {
     leftEditor: {},
     rightEditor: {},
-    currentTab: Tabs.editor,
   }
 
   static propTypes = {
@@ -36,13 +36,6 @@ class GameWidget extends Component {
       text: PropTypes.string,
     }),
     updateEditorValue: PropTypes.func.isRequired,
-  }
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      currentTab: Tabs.editor,
-    };
   }
 
   getLeftEditorParams = () => {
@@ -81,49 +74,23 @@ class GameWidget extends Component {
     };
   }
 
-  renderTab() {
-    const { outputText } = this.props;
-    switch (this.state.currentTab) {
-      case Tabs.editor: return <Editor {...this.getLeftEditorParams()} />;
-      case Tabs.output: return <ExecutionOutput output={outputText} />;
-      default: return null;
-    }
-  }
-
   render() {
-    const { leftEditor, rightEditor } = this.props;
+    const { leftEditor, rightEditor, outputText } = this.props;
     if (leftEditor === null || rightEditor === null) {
       // FIXME: render loader
       return null;
     }
     return (
       <Fragment>
-        <div className="row mx-auto">
-          <div className="col-md-12">
-            <GameStatusTab />
+        <div className="row my-2">
+          <div className="col-12 col-md-6" style={{ cursor: 'pointer' }}>
+            <LeftEditorToolbar />
+            <Editor {...this.getLeftEditorParams()} />
+            <GameActionButtons output={outputText} />
+            <ExecutionOutput output={outputText} />
           </div>
-        </div>
-        <div className="row my-2 d-flex">
-          <div className="col-6" style={{ height: '500px', cursor: 'pointer' }}>
-            <ul className="nav nav-tabs">
-              {_.map(Tabs, (value, key) => {
-                const active = this.state.currentTab === value ? 'active' : '';
-                return (
-                  <li className="nav-item" key={key}>
-                    <a
-                      role="button"
-                      className={`nav-link disabled ${active}`}
-                      onClick={() => this.setState({ currentTab: value })}
-                    >
-                      {value}
-                    </a>
-                  </li>
-                );
-              })}
-            </ul>
-            {this.renderTab()}
-          </div>
-          <div className="col-6" style={{ marginTop: '42px' }}>
+          <div className="col-12 col-md-6">
+            <RightEditorToolbar />
             <Editor {...this.getRightEditorParams()} />
           </div>
         </div>

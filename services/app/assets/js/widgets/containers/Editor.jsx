@@ -58,7 +58,7 @@ class Editor extends PureComponent {
     const mappedSyntax = syntax === 'js' ? 'javascript' : syntax;
 
     return (
-      <div style={{ position: 'relative' }}>
+      <div className="my-2" style={{ position: 'relative' }}>
         <AceEditor
           mode={mappedSyntax}
           theme="solarized_dark"
@@ -69,7 +69,7 @@ class Editor extends PureComponent {
           wrapLines
           editorProps={{ $blockScrolling: true }}
           width="auto"
-          height="450px"
+          height="300px"
           fontSize={16}
           showPrintMargin={false}
           keyboardHandler={keyboardHandler}

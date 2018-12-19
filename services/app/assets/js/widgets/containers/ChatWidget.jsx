@@ -1,10 +1,10 @@
 import React from 'react';
-import _ from 'lodash';
+// import _ from 'lodash';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { fetchState, addMessage } from '../middlewares/Chat';
 import { currentUserSelector } from '../selectors';
-import Messages from '../components/Messages.jsx';
+import Messages from '../components/Messages';
 import UserName from '../components/UserName';
 
 class ChatWidget extends React.Component {
@@ -20,13 +20,13 @@ class ChatWidget extends React.Component {
 
   state = { message: '' }
 
+  messagesEnd = null
+
   componentDidMount() {
     const { dispatch } = this.props;
 
     dispatch(fetchState());
   }
-
-  messagesEnd = null
 
   handleChange = (e) => {
     this.setState({ message: e.target.value });
@@ -34,7 +34,7 @@ class ChatWidget extends React.Component {
 
   sendMessage = () => {
     const { message } = this.state;
-    const { name } = this.props.currentUser;
+    const { currentUser: { name } } = this.props;
 
     if (message) {
       addMessage(name, message);
@@ -49,44 +49,43 @@ class ChatWidget extends React.Component {
   }
 
   render() {
+    const { message } = this.state;
+    const { messages, users } = this.props;
+
     return (
       <div
         className="card-group"
-        style={{
-          height: '100%',
-          position: 'absolute',
-          top: 0,
-          bottom: 0,
-          right: '15px',
-          left: '15px',
-        }}
+        style={{ height: '100%' }}
       >
         <div className="card col-8 p-0">
-          <div className="ml-2 my-1 font-weight-bold">Chat</div>
-          <Messages
-            style={{
-              display: 'inline-block',
-              flexGrow: '1',
-              width: '100%',
-              height: '130px',
-              overflowY: 'scroll',
-              border: '1px solid #eee',
-            }}
-            messages={this.props.messages}
-          />
-          <div className="card-text">
+          <div className="card-body pb-0">
+            <h6 className="card-title">Chat</h6>
+            <p className="card-text">
+              <Messages
+                messages={messages}
+                style={{
+                  display: 'inline-block',
+                  flexGrow: '1',
+                  width: '100%',
+                  maxHeight: '130px',
+                  overflowY: 'scroll',
+                }}
+              />
+            </p>
+          </div>
+          <div className="card-footer p-0">
             <div className="input-group input-group-sm">
               <input
                 className="form-control"
                 type="text"
                 placeholder="Type message here..."
-                value={this.state.message}
+                value={message}
                 onChange={this.handleChange}
                 onKeyPress={this.handleKeyPress}
               />
               <div className="input-group-append">
                 <button
-                  className="btn btn-outline-success"
+                  className="btn btn-light border"
                   type="button"
                   onClick={this.sendMessage}
                 >
@@ -97,24 +96,25 @@ class ChatWidget extends React.Component {
           </div>
         </div>
         <div className="card col-4 p-0">
-          <span
-            className="ml-2 my-1 font-weight-bold"
-            title="Online users"
-          >
-            Online users
-          </span>
-          <div
-            className="card-body"
-            style={{
-              display: 'inline-block',
-              flexGrow: '1',
-              width: '100%',
-              height: '130px',
-              overflowY: 'scroll',
-              border: '1px solid #eee',
-            }}
-          >
-            {this.props.users.map(user => (<div key={user.id} className="my-2"> <UserName user={user} /> </div>))}
+          <div className="card-body pb-0">
+            <h6 className="card-title">Online users</h6>
+            <p
+              style={{
+                display: 'inline-block',
+                flexGrow: '1',
+                width: '100%',
+                maxHeight: '150px',
+                overflowY: 'scroll',
+              }}
+            >
+              {users.map(user => (
+                <div key={user.id} className="my-2">
+                  {' '}
+                  <UserName user={user} />
+                  {' '}
+                </div>
+              ))}
+            </p>
           </div>
         </div>
       </div>

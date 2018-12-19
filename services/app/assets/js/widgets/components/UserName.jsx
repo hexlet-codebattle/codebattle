@@ -17,7 +17,7 @@ const UserName = ({ user }) => {
           className="attachment rounded mr-2"
           alt={user.name}
           src={`https://avatars0.githubusercontent.com/u/${user.github_id}`}
-          style={{ width: '40px' }}
+          style={{ width: '38px' }}
         />
         {user.name + ratingStr}
       </a>
