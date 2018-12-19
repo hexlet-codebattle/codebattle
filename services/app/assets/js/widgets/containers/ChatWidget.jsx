@@ -57,19 +57,21 @@ class ChatWidget extends React.Component {
         className="card-group"
         style={{ height: '100%' }}
       >
-        <div className="card col-12 col-md-8 p-0">
-          <div className="card-header">Chat</div>
-          <div className="card-body p-0">
-            <Messages
-              messages={messages}
-              style={{
-                display: 'inline-block',
-                flexGrow: '1',
-                width: '100%',
-                maxHeight: '180px',
-                overflowY: 'scroll',
-              }}
-            />
+        <div className="card col-8 p-0">
+          <div className="card-body pb-0">
+            <h6 className="card-title">Chat</h6>
+            <p className="card-text">
+              <Messages
+                messages={messages}
+                style={{
+                  display: 'inline-block',
+                  flexGrow: '1',
+                  width: '100%',
+                  maxHeight: '130px',
+                  overflowY: 'scroll',
+                }}
+              />
+            </p>
           </div>
           <div className="card-footer p-0">
             <div className="input-group input-group-sm">
@@ -93,25 +95,26 @@ class ChatWidget extends React.Component {
             </div>
           </div>
         </div>
-        <div className="card col-12 col-md-4 p-0">
-          <div className="card-header">Online users</div>
-          <div
-            className="card-body"
-            style={{
-              display: 'inline-block',
-              flexGrow: '1',
-              width: '100%',
-              maxHeight: '160px',
-              overflowY: 'scroll',
-            }}
-          >
-            {users.map(user => (
-              <div key={user.id} className="my-2">
-                {' '}
-                <UserName user={user} />
-                {' '}
-              </div>
-            ))}
+        <div className="card col-4 p-0">
+          <div className="card-body pb-0">
+            <h6 className="card-title">Online users</h6>
+            <p
+              style={{
+                display: 'inline-block',
+                flexGrow: '1',
+                width: '100%',
+                maxHeight: '150px',
+                overflowY: 'scroll',
+              }}
+            >
+              {users.map(user => (
+                <div key={user.id} className="my-2">
+                  {' '}
+                  <UserName user={user} />
+                  {' '}
+                </div>
+              ))}
+            </p>
           </div>
         </div>
       </div>

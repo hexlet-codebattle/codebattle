@@ -17,7 +17,7 @@ class Message extends Component {
 
     return (
       <div>
-        <span className="ml-2 font-weight-bold">{`${user}: `}</span>
+        <span className="font-weight-bold">{`${user}: `}</span>
         {message}
       </div>
     );
