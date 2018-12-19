@@ -49,7 +49,7 @@ defmodule CodebattleWeb.GameChannel do
         FsmHelpers.get_player(fsm, user_id)
 
       editor_text = Map.get(payload, "editor_text", prev_editor_text)
-      editor_lang = Map.get(payload, "lang", prev_editor_lang |> Atom.to_string())
+      editor_lang = Map.get(payload, "lang", prev_editor_lang)
 
       Play.update_editor_text(game_id, user_id, editor_text)
       Play.update_editor_lang(game_id, user_id, editor_lang)
