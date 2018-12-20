@@ -1,5 +1,5 @@
 h2.text-center = "#{@user.name}: edit"
-= form_for @changeset, user_path(@conn, :update, @user),  fn f ->
+= form_for @changeset, user_setting_path(@conn, :update),  fn f ->
   div.form-group.row.justify-content-center
     = label f, :name, class: "col-form-label"
     div.col-2

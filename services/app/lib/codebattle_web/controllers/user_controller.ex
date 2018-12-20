@@ -21,14 +21,14 @@ defmodule CodebattleWeb.UserController do
     render(conn, "show.html", user: user, games: games)
   end
 
-  def edit(conn, %{"id" => user_id}) do
+  def edit(conn, _params) do
     current_user = conn.assigns.current_user
 
     changeset = User.changeset(current_user)
     render(conn, "edit.html", user: current_user, changeset: changeset)
   end
 
-  def update(conn, %{"id" => user_id, "user" => user_params}) do
+  def update(conn, %{"user" => user_params}) do
     current_user = conn.assigns.current_user
 
     current_user
@@ -38,7 +38,7 @@ defmodule CodebattleWeb.UserController do
       {:ok, user} ->
         conn
         |> put_flash(:info, "User was successfully updated.")
-        |> redirect(to: user_path(conn, :show, user))
+        |> redirect(to: user_setting_path(conn, :edit))
 
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", user: current_user, changeset: changeset)
