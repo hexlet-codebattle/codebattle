@@ -40,7 +40,8 @@ defmodule CodebattleWeb.Router do
 
     resources("/session", SessionController, singleton: true, only: [:delete])
     get("/", PageController, :index)
-    resources("/users", UserController, only: [:index, :show, :edit, :update])
+    resources("/users", UserController, only: [:index, :show])
+    resources("/users/me", UserController, only: [:edit, :update])
     resources("/games", GameController, only: [:create, :show, :delete])
 
     scope "/games" do

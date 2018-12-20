@@ -22,24 +22,26 @@ defmodule CodebattleWeb.UserController do
   end
 
   def edit(conn, %{"id" => user_id}) do
-    user = Repo.get!(User, user_id)
-    changeset = User.changeset(user)
-    render(conn, "edit.html", user: user, changeset: changeset)
+    current_user = conn.assigns.current_user
+
+    changeset = User.changeset(current_user)
+    render(conn, "edit.html", user: current_user, changeset: changeset)
   end
 
   def update(conn, %{"id" => user_id, "user" => user_params}) do
-    user = Repo.get!(User, user_id)
+    current_user = conn.assigns.current_user
 
-    user
-    |> User.changeset(user_params)
+    current_user
+    |> User.settings_changeset(user_params)
     |> Codebattle.Repo.update()
     |> case do
       {:ok, user} ->
         conn
-        |> put_flash(:info, "User updated successfully.")
+        |> put_flash(:info, "User was successfully updated.")
         |> redirect(to: user_path(conn, :show, user))
+
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, "edit.html", user: user, changeset: changeset)
+        render(conn, "edit.html", user: current_user, changeset: changeset)
     end
   end
 end

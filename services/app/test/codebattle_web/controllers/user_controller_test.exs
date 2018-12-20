@@ -63,4 +63,29 @@ defmodule CodebattleWeb.UserControllerTest do
     assert conn.status == 302
     assert Repo.get(User, user.id).name == "new_name"
   end
+
+  @tag :skip
+  # TODO: fix test
+  test "update user with same name", %{conn: conn} do
+    user = insert(:user)
+    user2 = insert(:user)
+
+    conn =
+      conn
+      |> put_session(:user_id, user.id)
+      |> put(user_path(conn, :update, user.id), user: %{name: "new_name"})
+
+    assert conn.status == 302
+    assert Repo.get(User, user.id).name == "new_name"
+
+    conn2 = Phoenix.ConnTest.build_conn()
+
+    conn2 =
+      conn2
+      |> put_session(:user_id, user2.id)
+      |> put(user_path(conn2, :update, user2.id), user: %{name: "new_name"})
+
+    assert conn.status == 422
+    assert Repo.get(User, user.id).name != "new_name"
+  end
 end

@@ -34,9 +34,14 @@ defmodule Codebattle.User do
     struct
     |> cast(params, [:name, :github_name, :email, :github_id, :rating, :lang, :editor_mode, :editor_theme])
     |> validate_required([:name, :email, :github_id])
-    |> unique_constraint(:name)
   end
 
+  def settings_changeset(model, params \\ %{}) do
+    model
+    |> cast(params, ~w(name), [])
+    |> unique_constraint(:name)
+    |> validate_length(:name, min: 3, max: 16)
+  end
   # TODO add lang validation
   # def lang_changeset(struct, params \\ %{}) do
   #   struct
