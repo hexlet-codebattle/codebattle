@@ -95,8 +95,8 @@ defmodule CodebattleWeb.GameChannelTest do
     push(socket1, "editor:data", %{editor_text: editor_text1, lang: "js"})
     push(socket2, "editor:data", %{editor_text: editor_text2, lang: "js"})
 
-    payload1 = %{user_id: user1.id, editor_text: editor_text1, lang_slug: "js" }
-    payload2 = %{user_id: user2.id, editor_text: editor_text2, lang_slug: "js" }
+    payload1 = %{user_id: user1.id, editor_text: editor_text1, lang_slug: "js"}
+    payload2 = %{user_id: user2.id, editor_text: editor_text2, lang_slug: "js"}
 
     assert_receive %Phoenix.Socket.Broadcast{
       topic: ^game_topic,

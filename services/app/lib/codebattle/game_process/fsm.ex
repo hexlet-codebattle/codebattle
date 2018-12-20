@@ -26,6 +26,7 @@ defmodule Codebattle.GameProcess.Fsm do
       # List with two players %Player{}
       players: []
     }
+
   # Player [:id, user: %User{}, editor_text: "", editor_lang: "js", game_result: :undefined]
 
   # For tests
@@ -35,8 +36,8 @@ defmodule Codebattle.GameProcess.Fsm do
 
   defstate initial do
     defevent create(params), data: data do
-      editor_lang = (params.user.lang || "js")
-      editor_text = Languages.meta |> Map.get(editor_lang) |> Map.get(:solution_template)
+      editor_lang = params.user.lang || "js"
+      editor_text = Languages.meta() |> Map.get(editor_lang) |> Map.get(:solution_template)
 
       player = %Player{
         id: params.user.id,
