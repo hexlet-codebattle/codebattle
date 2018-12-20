@@ -1,1 +1,10 @@
-h2 = "#{@user.name}: edit"
+h2.text-center = "#{@user.name}: edit"
+= form_for @changeset, user_path(@conn, :update, @user),  fn f ->
+  div.form-group.row.justify-content-center
+    = label f, :name, class: "col-form-label"
+    div.col-2
+      = text_input f, :name, class: "form-control"
+    = error_tag f, :name
+
+  div.form-group.text-center
+    = submit "Save", class: "btn btn-primary"

@@ -11,6 +11,7 @@ defmodule Codebattle.User do
 
   schema "users" do
     field(:name, :string)
+    field(:github_name, :string)
     field(:email, :string)
     field(:github_id, :integer)
     field(:rating, :integer)
@@ -31,8 +32,9 @@ defmodule Codebattle.User do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:name, :email, :github_id, :rating, :lang, :editor_mode, :editor_theme])
+    |> cast(params, [:name, :github_name, :email, :github_id, :rating, :lang, :editor_mode, :editor_theme])
     |> validate_required([:name, :email, :github_id])
+    |> unique_constraint(:name)
   end
 
   # TODO add lang validation

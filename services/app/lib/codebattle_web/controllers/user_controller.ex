@@ -1,5 +1,5 @@
 defmodule CodebattleWeb.UserController do
-  @all [:index, :show]
+  @all [:index, :show, :edit, :update]
 
   use CodebattleWeb, :controller
 
@@ -19,5 +19,27 @@ defmodule CodebattleWeb.UserController do
 
     user = Repo.get!(User, user_id)
     render(conn, "show.html", user: user, games: games)
+  end
+
+  def edit(conn, %{"id" => user_id}) do
+    user = Repo.get!(User, user_id)
+    changeset = User.changeset(user)
+    render(conn, "edit.html", user: user, changeset: changeset)
+  end
+
+  def update(conn, %{"id" => user_id, "user" => user_params}) do
+    user = Repo.get!(User, user_id)
+
+    user
+    |> User.changeset(user_params)
+    |> Codebattle.Repo.update()
+    |> case do
+      {:ok, user} ->
+        conn
+        |> put_flash(:info, "User updated successfully.")
+        |> redirect(to: user_path(conn, :show, user))
+      {:error, %Ecto.Changeset{} = changeset} ->
+        render(conn, "edit.html", user: user, changeset: changeset)
+    end
   end
 end

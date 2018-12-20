@@ -5,7 +5,7 @@
         img.attachment.user.avatar.img-fluid.shadow.rounded[alt="#{@user.name}" src="https://avatars0.githubusercontent.com/u/#{@user.github_id}"]
     h1.mt-1.mb-0
       = @user.name
-      a.text-muted[href="https://github.com/#{@user.name}"]
+      a.text-muted[href="https://github.com/#{@user.github_name}"]
         span.h3
           span.fa.fa-github.mt-5.pl-3
       h2.mt-1.mb-0

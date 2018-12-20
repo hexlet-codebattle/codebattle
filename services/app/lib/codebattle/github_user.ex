@@ -9,9 +9,11 @@ defmodule Codebattle.GithubUser do
   alias Codebattle.User
 
   def find_or_create(%Auth{provider: :github} = auth) do
+    github_name = auth.extra.raw_info.user["login"]
     user_data = %{
       github_id: auth.uid,
-      name: auth.extra.raw_info.user["login"],
+      name: github_name,
+      github_name: github_name,
       email: email_from_auth(auth)
     }
 

@@ -40,4 +40,27 @@ defmodule CodebattleWeb.UserControllerTest do
 
     assert redirected_to(conn, 302) == "/"
   end
+
+  test "edit user", %{conn: conn} do
+    user = insert(:user)
+
+    conn =
+      conn
+      |> put_session(:user_id, user.id)
+      |> get(user_path(conn, :edit, user.id))
+
+    assert conn.status == 200
+  end
+
+  test "update user", %{conn: conn} do
+    user = insert(:user)
+
+    conn =
+      conn
+      |> put_session(:user_id, user.id)
+      |> put(user_path(conn, :update, user.id), user: %{name: "new_name"})
+
+    assert conn.status == 302
+    assert Repo.get(User, user.id).name == "new_name"
+  end
 end
