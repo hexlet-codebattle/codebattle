@@ -34,8 +34,8 @@ defmodule CodebattleWeb.GameChannelTest do
                winner: %Codebattle.User{},
                first_player: user1,
                second_player: %Codebattle.User{},
-               first_player_editor_text: Languages.meta()[:js].solution_template,
-               second_player_editor_text: Languages.meta()[:js].solution_template,
+               first_player_editor_text: Languages.meta()["js"].solution_template,
+               second_player_editor_text: Languages.meta()["js"].solution_template,
                first_player_editor_lang: "js",
                second_player_editor_lang: "js",
                starts_at: nil,
@@ -66,8 +66,8 @@ defmodule CodebattleWeb.GameChannelTest do
                first_player: user1,
                second_player: user2,
                status: :playing,
-               first_player_editor_text: Languages.meta()[:js].solution_template,
-               second_player_editor_text: Languages.meta()[:js].solution_template,
+               first_player_editor_text: Languages.meta()["js"].solution_template,
+               second_player_editor_text: Languages.meta()["js"].solution_template,
                first_player_editor_lang: "js",
                second_player_editor_lang: "js",
                winner: %Codebattle.User{}
@@ -92,11 +92,11 @@ defmodule CodebattleWeb.GameChannelTest do
     {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
     Mix.Shell.Process.flush()
 
-    push(socket1, "editor:data", %{editor_text: editor_text1})
-    push(socket2, "editor:data", %{editor_text: editor_text2})
+    push(socket1, "editor:data", %{editor_text: editor_text1, lang: "js"})
+    push(socket2, "editor:data", %{editor_text: editor_text2, lang: "js"})
 
-    payload1 = %{user_id: user1.id, editor_text: editor_text1}
-    payload2 = %{user_id: user2.id, editor_text: editor_text2}
+    payload1 = %{user_id: user1.id, editor_text: editor_text1, lang_slug: "js" }
+    payload2 = %{user_id: user2.id, editor_text: editor_text2, lang_slug: "js" }
 
     assert_receive %Phoenix.Socket.Broadcast{
       topic: ^game_topic,

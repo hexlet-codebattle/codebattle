@@ -3,7 +3,7 @@ defmodule Codebattle.Languages do
 
   def meta do
   %{
-    ruby: %{
+    "ruby" => %{
       name: "ruby",
       slug: "ruby",
       version: "2.5.1",
@@ -11,7 +11,7 @@ defmodule Codebattle.Languages do
       docker_image: "codebattle/ruby:2.5.1",
       solution_template: "def solution()\n\nend"
     },
-    js: %{
+    "js" => %{
       name: "Node.js",
       slug: "js",
       version: "10.11.0",
@@ -19,7 +19,7 @@ defmodule Codebattle.Languages do
       docker_image: "codebattle/js:10.11.0",
       solution_template: "module.exports = () => {\n\n};"
     },
-    elixir: %{
+    "elixir" => %{
       name: "elixir",
       slug: "elixir",
       version: "1.7.3",
@@ -27,7 +27,7 @@ defmodule Codebattle.Languages do
       docker_image: "codebattle/elixir:1.7.3",
       solution_template: "defmodule Solution\n  def solution() do\n  \n  end\nend"
     },
-    python: %{
+    "python" => %{
       name: "python",
       slug: "python",
       version: "3.7.0",
@@ -35,7 +35,7 @@ defmodule Codebattle.Languages do
       docker_image: "codebattle/python:3.7.0",
       solution_template: "def solution():"
     },
-    php: %{
+    "php" => %{
       name: "php",
       slug: "php",
       version: "7.2.0",
@@ -43,7 +43,7 @@ defmodule Codebattle.Languages do
       docker_image: "codebattle/php:7.2.0",
       solution_template: "function solution(){\n\n}"
     },
-    clojure: %{
+    "clojure" => %{
       name: "clojure",
       slug: "clojure",
       version: "1.8.0",
@@ -51,7 +51,7 @@ defmodule Codebattle.Languages do
       docker_image: "codebattle/clojure:1.8.0",
       solution_template: "(defn solution [])"
     },
-    haskell: %{
+    "haskell" => %{
       name: "haskell",
       slug: "haskell",
       version: "8.4.3",
@@ -60,7 +60,7 @@ defmodule Codebattle.Languages do
       solution_template:
         "module Check.Solution where\n\nsolution ::\nsolution =\n\n{- Included packages:\naeson\nbytestring\ncase-insensitive\ncontainers\ndeepseq\nfgl\ninteger-logarithms\nmegaparsec\nmtl\nparser-combinators\npretty\nrandom\nregex-base\nregex-compat\nregex-posix\nscientific\nsplit\ntemplate-haskell\ntext\ntime\ntransformers\nunordered-containers\nvector\nvector-algorithms -}"
     },
-    perl: %{
+    "perl" => %{
       name: "perl",
       slug: "perl",
       version: "5.26.2",

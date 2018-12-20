@@ -7,9 +7,7 @@ defmodule Codebattle.CodeCheck.Checker do
   # alias Codebattle.CodeCheck.OutputFilter
 
   def check(task, editor_text, lang_slug) do
-    slug_atom = String.to_existing_atom(lang_slug)
-
-    case Languages.meta() |> Map.get(slug_atom) do
+    case Languages.meta() |> Map.get(lang_slug) do
       nil ->
         {:error, "Lang #{lang_slug} is undefined"}
 

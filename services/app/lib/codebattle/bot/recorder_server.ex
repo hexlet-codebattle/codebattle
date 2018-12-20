@@ -52,7 +52,7 @@ defmodule Codebattle.Bot.RecorderServer do
        task_id: task_id,
        user_id: user_id,
        delta: TextDelta.new([]),
-       lang: :js,
+       lang: "js",
        time: nil,
        # Array of diffs to db playbook
        diff: []

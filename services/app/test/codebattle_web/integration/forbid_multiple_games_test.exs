@@ -13,12 +13,12 @@ defmodule Codebattle.ForbidMultipleGamesTest do
 
     conn
     |> get(page_path(conn, :index))
-    |> click_button("Easy")
+    |> post(game_path(conn, :create))
 
     conn =
       conn
       |> get(page_path(conn, :index))
-      |> click_button("Easy")
+      |> post(game_path(conn, :create))
 
     assert conn.status == 302
 

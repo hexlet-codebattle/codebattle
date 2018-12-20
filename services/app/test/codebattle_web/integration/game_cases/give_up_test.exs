@@ -78,7 +78,7 @@ defmodule Codebattle.GameCases.GiveUpTest do
       {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
 
       # First player give_up
-      Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: "won", lang: :js})
+      Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: "won", lang: "js"})
       Phoenix.ChannelTest.push(socket1, "give_up", %{})
       :timer.sleep(70)
       fsm = Server.fsm(game_id)
@@ -93,7 +93,7 @@ defmodule Codebattle.GameCases.GiveUpTest do
     conn =
       conn1
       |> get(page_path(conn1, :index))
-      |> click_button("Easy")
+      |> post(game_path(conn, :create))
 
     game_id = game_id_from_conn(conn)
 
@@ -115,7 +115,7 @@ defmodule Codebattle.GameCases.GiveUpTest do
     conn =
       conn1
       |> get(page_path(conn1, :index))
-      |> click_button("Easy")
+      |> post(game_path(conn, :create))
 
     game_id = game_id_from_conn(conn)
 
