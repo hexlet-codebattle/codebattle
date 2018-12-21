@@ -54,7 +54,7 @@ class GameWidget extends Component {
     return {
       onChange,
       editable,
-      syntax: _.get(editorState, ['currentLangSlug', 'name'], 'javascript'),
+      syntax: editorState.currentLangSlug || 'javascript',
       value: editorState.text,
       name: 'left-editor',
     };
@@ -68,7 +68,7 @@ class GameWidget extends Component {
       onChange: _.noop,
       editable: false,
       allowCopy: false,
-      syntax: _.get(editorState, ['currentLangSlug', 'name'], 'javascript'),
+      syntax: editorState.currentLangSlug || 'javascript',
       value: editorState.text,
       name: 'right-editor',
     };
