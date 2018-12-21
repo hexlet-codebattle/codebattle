@@ -1,6 +1,9 @@
 env:
   - DOCKER_COMPOSE_VERSION=1.23.1
 
+services:
+  - docker
+
 before_install:
   - sudo rm /usr/local/bin/docker-compose
   - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
@@ -23,6 +26,6 @@ jobs:
     - stage: build and push docker image
       if: branch = master
       script:
-        - docker login -u="$DOCKER_USER" -p="$DOCKER_PASS"
+        - echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
         - docker build -t codebattle/app --file services/app/Dockerfile.prod services/app/
         - docker push codebattle/app:latest
