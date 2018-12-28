@@ -16,7 +16,7 @@ msgstr "Добро пожаловать в %{name}"
 
 #: lib/codebattle_web/templates/page/index.html.slim:3
 msgid "%{name}: game for programmers."
-msgstr "%{name}: игра для прораммистов."
+msgstr "%{name}: игра для программистов."
 
 #: lib/codebattle_web/templates/page/index.html.slim:6
 #: lib/codebattle_web/templates/game/index.html.slim:11
@@ -58,7 +58,7 @@ msgstr "Общее количество: "
 
 #: lib/codebattle_web/templates/game/index.html.slim:2
 msgid "Users rating: "
-msgstr ""
+msgstr "Рейтинг пользователей: "
 
 #: lib/codebattle_web/templates/game/index.html.slim:17
 msgid "id: %{id}, state: %{state}, players: %{players}  "
@@ -122,11 +122,11 @@ msgstr "Вы успешно вышли из системы!"
 
 #: lib/codebattle_web/controllers/auth_controller.ex:22
 msgid "Failed to authenticate."
-msgstr "Ошибка аунтификации."
+msgstr "Ошибка аутентификации."
 
 #: lib/codebattle_web/controllers/auth_controller.ex:30
 msgid "Successfully authenticated."
-msgstr "Упешная аунтификация."
+msgstr "Успешная аутентификация."
 
 #: lib/codebattle_web/controllers/game_controller.ex:16
 msgid "Game not found"
@@ -158,7 +158,7 @@ msgstr "Внутренняя ошибка сервера"
 
 #: lib/codebattle/plugs/authorization.ex:30
 msgid "You must be logged in to access that page"
-msgstr "Для просмотра этой страницы Вы должны войти"
+msgstr "Для просмотра этой страницы вам нужно войти"
 
 #: assets/js/socket.js:49
 msgid "joined to"
