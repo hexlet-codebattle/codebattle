@@ -11,76 +11,76 @@ msgstr ""
 "Language: ru\n"
 
 msgid "can't be blank"
-msgstr ""
+msgstr "не может быть пустым"
 
 msgid "has already been taken"
-msgstr ""
+msgstr "уже занято"
 
 msgid "is invalid"
-msgstr ""
+msgstr "является недействительным"
 
 msgid "has invalid format"
-msgstr ""
+msgstr "имеет неверный формат"
 
 msgid "has an invalid entry"
-msgstr ""
+msgstr "имеет недопустимую запись"
 
 msgid "is reserved"
-msgstr ""
+msgstr "зарезервировано"
 
 msgid "does not match confirmation"
-msgstr ""
+msgstr "не соответствует подтверждению"
 
 msgid "is still associated to this entry"
-msgstr ""
+msgstr "по-прежнему связано с этой записью"
 
 msgid "are still associated to this entry"
-msgstr ""
+msgstr "по-прежнему связаны с этой записью"
 
 msgid "should be %{count} character(s)"
 msgid_plural "should be %{count} character(s)"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "должен иметь %{count} символ(ов)"
+msgstr[1] "должен иметь %{count} символ(ов)"
 
 msgid "should have %{count} item(s)"
 msgid_plural "should have %{count} item(s)"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "должен иметь %{count} элемент(ов)"
+msgstr[1] "должен иметь %{count} элемент(ов)"
 
 msgid "should be at least %{count} character(s)"
 msgid_plural "should be at least %{count} character(s)"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "должен быть не менее %{count} символ(ов)"
+msgstr[1] "должен быть не менее %{count} символ(ов)"
 
 msgid "should have at least %{count} item(s)"
 msgid_plural "should have at least %{count} item(s)"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "должен иметь не менее %{count} элемент(ов)"
+msgstr[1] "должен иметь не менее %{count} элемент(ов)"
 
 msgid "should be at most %{count} character(s)"
 msgid_plural "should be at most %{count} character(s)"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "должен быть не более %{count} символ(ов)"
+msgstr[1] "должен быть не более %{count} символ(ов)"
 
 msgid "should have at most %{count} item(s)"
 msgid_plural "should have at most %{count} item(s)"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "должен быть не более %{count} элемент(ов)"
+msgstr[1] "должен быть не более %{count} элемент(ов)"
 
 msgid "must be less than %{number}"
-msgstr ""
+msgstr "должен быть меньше %{number}"
 
 msgid "must be greater than %{number}"
-msgstr ""
+msgstr "должен быть больше %{number}"
 
 msgid "must be less than or equal to %{number}"
-msgstr ""
+msgstr "должен быть меньше или равен %{number}"
 
 msgid "must be greater than or equal to %{number}"
-msgstr ""
+msgstr "должен быть больше или равен %{number}"
 
 msgid "must be equal to %{number}"
-msgstr ""
+msgstr "должен быть равен %{number}"
 
 #: lib/codebattle/play/fsm.ex:27
 msgid "You are already in game"
