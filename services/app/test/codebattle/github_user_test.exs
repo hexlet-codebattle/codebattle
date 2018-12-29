@@ -23,7 +23,11 @@ defmodule Codebattle.GithubUserTest do
     assert user1.email == @valid_data["emails"] |> Enum.at(0) |> Map.get("email")
 
     # Second time user is updated
+    user1
+      |> User.settings_changeset(%{name: "new_name"})
+      |> Repo.update()
     {:ok, user2} = GithubUser.find_or_create(auth_data)
     assert user1.id == user2.id
+    assert user2.name == "new_name"
   end
 end
