@@ -35,8 +35,8 @@ defmodule Codebattle.GithubUserTest do
     user = insert(:user)
     auth_data = build(:auth, extra: %{raw_info: %{user: %{@valid_data | "login" => user.name}}})
 
-    {:ok, user1} = GithubUser.find_or_create(auth_data)
-    assert user1.github_id == auth_data.uid
-    assert user1.email == @valid_data["emails"] |> Enum.at(0) |> Map.get("email")
+    {:ok, user} = GithubUser.find_or_create(auth_data)
+    assert user.github_id == auth_data.uid
+    assert user.email == @valid_data["emails"] |> Enum.at(0) |> Map.get("email")
   end
 end
