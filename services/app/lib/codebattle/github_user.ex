@@ -16,20 +16,9 @@ defmodule Codebattle.GithubUser do
       |> Repo.one()
 
     github_name = auth.extra.raw_info.user["login"]
-    name = case user do
-      nil ->
-        case Repo.get_by(User, name: github_name) do
-          %User{} ->
-            "#{github_name}1"
-          _ ->
-            github_name
-        end
-      _ ->
-        user.name
-    end
     user_data = %{
       github_id: auth.uid,
-      name: name,
+      name: name(user, github_name),
       github_name: github_name,
       email: email_from_auth(auth)
     }
@@ -48,6 +37,30 @@ defmodule Codebattle.GithubUser do
       end
 
     {:ok, user}
+  end
+
+  defp name(user, github_name) do
+    case user do
+      nil ->
+        case Repo.get_by(User, name: github_name) do
+          %User{} ->
+            generate_name(github_name)
+          _ ->
+            github_name
+        end
+      _ ->
+        user.name
+    end
+  end
+
+  defp generate_name(name) do
+    new_name = "#{name}_#{:crypto.strong_rand_bytes(2) |> Base.encode16}"
+    case Repo.get_by(User, name: new_name) do
+      %User{} ->
+        generate_name(name)
+      _ ->
+        new_name
+    end
   end
 
   defp email_from_auth(auth) do
