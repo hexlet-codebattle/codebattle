@@ -75,15 +75,15 @@ defmodule Codebattle.PlayGameTest do
       assert fsm.state == :playing
       assert FsmHelpers.get_first_player(fsm).user.name == "first"
       assert FsmHelpers.get_second_player(fsm).user.name == "second"
-      assert FsmHelpers.get_first_player(fsm).editor_text == ""
-      assert FsmHelpers.get_second_player(fsm).editor_text == ""
+      assert FsmHelpers.get_first_player(fsm).editor_text == "module.exports = () => {\n\n};"
+      assert FsmHelpers.get_second_player(fsm).editor_text == "module.exports = () => {\n\n};"
 
       # First player won
       editor_text1 = "Hello world1!"
       editor_text2 = "Hello world2!"
       editor_text3 = "Hello world3!"
 
-      Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text1, lang: :js})
+      Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text1, lang: "js"})
       :timer.sleep(100)
       fsm = Server.fsm(game_id)
 
@@ -92,10 +92,10 @@ defmodule Codebattle.PlayGameTest do
       assert FsmHelpers.get_second_player(fsm).user.name == "second"
       assert FsmHelpers.get_winner(fsm).name == "first"
       assert FsmHelpers.get_first_player(fsm).editor_text == "Hello world1!"
-      assert FsmHelpers.get_second_player(fsm).editor_text == ""
+      assert FsmHelpers.get_second_player(fsm).editor_text == "module.exports = () => {\n\n};"
 
       # Winner cannot check results again
-      Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text2, lang: :js})
+      Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text2, lang: "js"})
       :timer.sleep(100)
       fsm = Server.fsm(game_id)
 
@@ -104,10 +104,10 @@ defmodule Codebattle.PlayGameTest do
       assert FsmHelpers.get_second_player(fsm).user.name == "second"
       assert FsmHelpers.get_winner(fsm).name == "first"
       assert FsmHelpers.get_first_player(fsm).editor_text == "Hello world2!"
-      assert FsmHelpers.get_second_player(fsm).editor_text == ""
+      assert FsmHelpers.get_second_player(fsm).editor_text == "module.exports = () => {\n\n};"
 
       # Second player complete game
-      Phoenix.ChannelTest.push(socket2, "check_result", %{editor_text: editor_text3, lang: :js})
+      Phoenix.ChannelTest.push(socket2, "check_result", %{editor_text: editor_text3, lang: "js"})
       :timer.sleep(100)
 
       game = Repo.get(Game, game_id)
@@ -148,7 +148,7 @@ defmodule Codebattle.PlayGameTest do
 
     # Other player cannot win game
     {:ok, _response, socket3} = subscribe_and_join(socket3, GameChannel, game_topic)
-    Phoenix.ChannelTest.push(socket3, "check_result", %{editor_text: "Hello world!", lang: :js})
+    Phoenix.ChannelTest.push(socket3, "check_result", %{editor_text: "Hello world!", lang: "js"})
     fsm = Server.fsm(game_id)
 
     assert fsm.state == :playing

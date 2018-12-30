@@ -62,7 +62,7 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
       Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text1})
       Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text2})
       Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text3})
-      Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text3, lang: :js})
+      Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text3, lang: "js"})
 
       playbook = [
         %{"delta" => [%{"insert" => "t"}], "time" => 100},

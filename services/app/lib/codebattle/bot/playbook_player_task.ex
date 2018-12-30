@@ -45,7 +45,7 @@ defmodule Codebattle.Bot.PlaybookPlayerTask do
     # %{"time" => 10, "lang" => "elixir"}
 
     init_document = TextDelta.new() |> TextDelta.insert("")
-    init_lang = :js
+    init_lang = "js"
 
     {editor_text, lang} =
       Enum.reduce(diffs, {init_document, init_lang}, fn diff_map, {document, lang} ->

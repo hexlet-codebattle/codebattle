@@ -25,9 +25,9 @@ class ExecutionOutput extends PureComponent {
         return (`You have some syntax errors: ${outputObj.result}`);
       case 'failure':
         if (Array.isArray(outputObj.result)) {
-          return (`Test falls with arguments (${outputObj.result.join(', ')})`);
+          return (`Test falls with arguments (${outputObj.result.map(JSON.stringify).join(', ')})`);
         }
-        return (`Test falls with arguments (${outputObj.result})`);
+        return (`Test falls with arguments (${JSON.stringify(outputObj.result)})`);
       case 'success':
         return ('Yay! All tests are passed!!111');
       default:

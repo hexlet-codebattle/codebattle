@@ -8,6 +8,7 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
 
   @timeout Application.get_env(:codebattle, Codebattle.Bot)[:timeout]
 
+  @tag :skip
   test "Bot playing with user", %{conn: conn} do
     user = insert(:user)
     task = insert(:task)
@@ -17,7 +18,7 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
         %{"delta" => [%{"insert" => "t"}], "time" => 20},
         %{"delta" => [%{"retain" => 1}, %{"insert" => "e"}], "time" => 20},
         %{"delta" => [%{"retain" => 2}, %{"insert" => "s"}], "time" => 20},
-        %{"lang" => :ruby, "time" => 100}
+        %{"lang" => "ruby", "time" => 100}
       ]
     }
 
@@ -47,7 +48,7 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
       assert fsm.state == :waiting_opponent
 
       # bot join game
-      :timer.sleep(400)
+      :timer.sleep(300)
       fsm = Server.fsm(game_id)
       assert FsmHelpers.get_second_player(fsm).editor_text == "tes"
 

@@ -41,6 +41,7 @@ html lang="en"
                 = @current_user.name
               .dropdown-menu.dropdown-menu-right
                 = link gettext("My Profile"), to: user_path(@conn, :show, @current_user.id), class: "dropdown-item"
+                = link gettext("Settings"), to: user_setting_path(@conn, :edit), class: "dropdown-item"
                 .dropdown-divider
                 = link gettext("Sign Out"), to: session_path(@conn, :delete), method: "delete", class: "dropdown-item"
           - else

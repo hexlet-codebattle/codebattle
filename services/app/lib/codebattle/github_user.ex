@@ -6,35 +6,61 @@ defmodule Codebattle.GithubUser do
   import Ecto.Query
 
   alias Ueberauth.Auth
-  alias Codebattle.User
+  alias Codebattle.{Repo, User}
 
   def find_or_create(%Auth{provider: :github} = auth) do
-    user_data = %{
-      github_id: auth.uid,
-      name: auth.extra.raw_info.user["login"],
-      email: email_from_auth(auth)
-    }
-
     user =
       User
-      |> Ecto.Query.where(github_id: ^user_data.github_id)
+      |> Ecto.Query.where(github_id: ^auth.uid)
       |> Ecto.Query.first()
-      |> Codebattle.Repo.one()
+      |> Repo.one()
+
+    github_name = auth.extra.raw_info.user["login"]
+    user_data = %{
+      github_id: auth.uid,
+      name: name(user, github_name),
+      github_name: github_name,
+      email: email_from_auth(auth)
+    }
 
     user =
       case user do
         nil ->
           changeset = User.changeset(%User{}, user_data)
-          {:ok, user} = Codebattle.Repo.insert(changeset)
+          {:ok, user} = Repo.insert(changeset)
           user
 
         _ ->
           changeset = User.changeset(user, user_data)
-          {:ok, user} = Codebattle.Repo.update(changeset)
+          {:ok, user} = Repo.update(changeset)
           user
       end
 
     {:ok, user}
+  end
+
+  defp name(user, github_name) do
+    case user do
+      nil ->
+        case Repo.get_by(User, name: github_name) do
+          %User{} ->
+            generate_name(github_name)
+          _ ->
+            github_name
+        end
+      _ ->
+        user.name
+    end
+  end
+
+  defp generate_name(name) do
+    new_name = "#{name}_#{:crypto.strong_rand_bytes(2) |> Base.encode16}"
+    case Repo.get_by(User, name: new_name) do
+      %User{} ->
+        generate_name(name)
+      _ ->
+        new_name
+    end
   end
 
   defp email_from_auth(auth) do
