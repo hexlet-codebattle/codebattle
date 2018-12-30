@@ -132,6 +132,7 @@ defmodule CodebattleWeb.GameChannel do
             %{
               solution_status: true,
               status: fsm.state,
+              user_id: user_id,
               msg: message,
               winner: winner,
               result: result,
@@ -145,7 +146,9 @@ defmodule CodebattleWeb.GameChannel do
             output: output
           })
 
-          {:reply, {:ok, %{solution_status: false, result: result, output: output}}, socket}
+          {:reply,
+           {:ok, %{solution_status: false, result: result, output: output, user_id: user_id}},
+           socket}
 
         {:ok, result, output} ->
           broadcast_from!(socket, "output:data", %{
@@ -154,7 +157,9 @@ defmodule CodebattleWeb.GameChannel do
             output: output
           })
 
-          {:reply, {:ok, %{solution_status: true, result: result, output: output}}, socket}
+          {:reply,
+           {:ok, %{solution_status: true, result: result, output: output, user_id: user_id}},
+           socket}
       end
     else
       {:reply, {:error, %{reason: "not_authorized"}}, socket}

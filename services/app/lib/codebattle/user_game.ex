@@ -10,6 +10,7 @@ defmodule Codebattle.UserGame do
     belongs_to(:game, Codebattle.Game)
 
     field(:result, :string)
+    field(:creator, :boolean)
 
     timestamps()
   end

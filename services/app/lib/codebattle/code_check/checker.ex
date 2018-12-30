@@ -43,8 +43,7 @@ defmodule Codebattle.CodeCheck.Checker do
 
         output_code = Regex.named_captures(~r/__code(?<code>.+)__/, json_result)["code"]
 
-        result =
-          case output_code do
+        result = case output_code do
             ^check_code -> {:ok, json_result, container_output}
             _ -> {:error, json_result, container_output}
           end

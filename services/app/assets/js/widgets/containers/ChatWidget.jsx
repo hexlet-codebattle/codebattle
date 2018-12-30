@@ -59,7 +59,7 @@ class ChatWidget extends React.Component {
       >
         <div className="card col-8 p-0">
           <div className="card-body pb-0">
-            <p className="card-text">
+            <div className="card-text">
               <Messages
                 messages={messages}
                 style={{
@@ -70,7 +70,7 @@ class ChatWidget extends React.Component {
                   overflowY: 'scroll',
                 }}
               />
-            </p>
+            </div>
           </div>
           <div className="card-footer p-0">
             <div className="input-group input-group-sm">
@@ -96,8 +96,8 @@ class ChatWidget extends React.Component {
         </div>
         <div className="card col-4 p-0">
           <div className="card-body pb-0">
-            <h6 className="card-title">Online users: {users.length}</h6>
-            <p
+            <h6 className="card-title">{`Online users: ${users.length}`}</h6>
+            <div
               style={{
                 display: 'inline-block',
                 flexGrow: '1',
@@ -108,12 +108,10 @@ class ChatWidget extends React.Component {
             >
               {users.map(user => (
                 <div key={user.id} className="my-2">
-                  {' '}
                   <UserName user={user} />
-                  {' '}
                 </div>
               ))}
-            </p>
+            </div>
           </div>
         </div>
       </div>

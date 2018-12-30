@@ -10,7 +10,7 @@ export const fetchState = () => (dispatch) => {
   channel.join()
     .receive('ignore', () => console.log('Lobby channel: auth error'))
     .receive('error', () => console.log('Lobby channel: unable to join'))
-    .receive('ok', ({ games }) => dispatch(fetchGameList({ games })));
+    .receive('ok', ({ active_games, completed_games }) => dispatch(fetchGameList({ active_games, completed_games })));
 
   channel.on('new:game', ({ game }) => dispatch(newGameLobby({ game })));
   channel.on('update:game', ({ game }) => dispatch(updateGameLobby({ game })));

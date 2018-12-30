@@ -20,6 +20,7 @@ defmodule Codebattle.User do
     field(:editor_theme, :string)
     field(:guest, :boolean, virtual: true, default: false)
     field(:bot, :boolean, virtual: true, default: false)
+    field(:creator, :boolean, virtual: true, default: false)
 
     has_many(:user_games, Codebattle.UserGame)
     has_many(:games, through: [:user_games, :game])

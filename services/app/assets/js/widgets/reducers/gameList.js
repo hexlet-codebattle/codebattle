@@ -2,14 +2,14 @@ import { handleActions } from 'redux-actions';
 import _ from 'lodash';
 import * as actions from '../actions';
 
-const initState = { games: null };
+const initState = { active_games: null, completed_games: null };
 
 const gameList = handleActions({
-  [actions.fetchGameList](state, { payload: { games } }) {
-    return { ...state, games };
+  [actions.fetchGameList](state, { payload: { active_games, completed_games } }) {
+    return { ...state, active_games: active_games, completed_games: completed_games };
   },
   [actions.newGameLobby](state, { payload: { game } }) {
-    const { games } = state;
+    const { active_games } = state;
 
     const new_game = {
       users: game.data.players.map(player => player.user),
@@ -20,22 +20,22 @@ const gameList = handleActions({
       },
       game_id: game.data.game_id,
     };
-    return { games: [...games, new_game] };
+    return { active_games: [...active_games, new_game] };
   },
   [actions.cancelGameLobby](state, { payload: { game_id } }) {
-    const { games } = state;
+    const { active_games } = state;
 
-    const new_games = _.filter(games, game => game.game_id != parseInt(game_id));
+    const new_games = _.filter(active_games, game => game.game_id != parseInt(game_id));
 
-    return { games: new_games };
+    return { active_games: new_games };
   },
   [actions.updateGameLobby](state, { payload: { game } }) {
     const gameId = game.data.game_id;
 
-    const { games } = state;
-    const filtered = games.filter(g => g.data.game_id !== gameId);
+    const { active_games } = state;
+    const filtered = active_games.filter(g => g.data.game_id !== gameId);
 
-    return { games: [...filtered, game] };
+    return { active_games: [...filtered, game] };
   },
 }, initState);
 

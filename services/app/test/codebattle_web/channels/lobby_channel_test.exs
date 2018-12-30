@@ -1,25 +1,32 @@
 defmodule CodebattleWeb.LobbyChannelTest do
-  use CodebattleWeb.ChannelCase, async: true
+  use CodebattleWeb.ChannelCase
 
   alias CodebattleWeb.LobbyChannel
 
   setup do
-    user1 = insert(:user)
-    task = build(:task)
+    task = insert(:task)
+    # game = insert(:game, task_id: task.id, task_level: task.level, state: "game_over")
+    winner = insert(:user)
+    # loser = insert(:user)
+    # winner_user_game = insert(:user_game, user: winner, creator: false, game: game)
+    # loser_user_game = insert(:user_game, user: loser, creator: true, game: game)
 
-    user_token1 = Phoenix.Token.sign(socket(), "user_token", user1.id)
+    user_token1 = Phoenix.Token.sign(socket(), "user_token", winner.id)
     {:ok, socket1} = connect(CodebattleWeb.UserSocket, %{"token" => user_token1})
 
-    {:ok, %{user1: user1, socket1: socket1, task: task}}
+    {:ok, %{winner: winner, socket1: socket1, task: task}}
   end
 
-  test "sends game info when user join", %{user1: user1, socket1: socket1, task: task} do
+  test "sends game info when user join", %{winner: winner, socket1: socket1, task: task} do
     state = :waiting_opponent
-    data = %{players: [%{id: user1.id, user: user1}], task: task}
+    data = %{players: [%{id: winner.id, user: winner}], task: task}
     setup_game(state, data)
 
-    {:ok, %{games: games}, _socket1} = subscribe_and_join(socket1, LobbyChannel, "lobby")
+    {:ok, %{active_games: active_games, completed_games: completed_games}, _socket1} =
+      subscribe_and_join(socket1, LobbyChannel, "lobby")
 
-    assert length(games) == 1
+    # TODO: fix test active games
+    assert length(active_games) > 1
+    assert completed_games == []
   end
 end

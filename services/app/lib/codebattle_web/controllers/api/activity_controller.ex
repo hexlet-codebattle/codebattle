@@ -22,7 +22,7 @@ defmodule CodebattleWeb.Api.V1.ActivityController do
         select: %{date: to_char(ug.inserted_at, "YYYY-mm-dd"), count: count(ug.id)}
       )
 
-    user_games = Repo.all(query)
-    json(conn, %{activities: user_games})
+    activities = Repo.all(query)
+    json(conn, %{activities: activities})
   end
 end
