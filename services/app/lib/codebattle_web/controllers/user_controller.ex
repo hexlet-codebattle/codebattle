@@ -33,9 +33,9 @@ defmodule CodebattleWeb.UserController do
 
     current_user
     |> User.settings_changeset(user_params)
-    |> Codebattle.Repo.update()
+    |> Repo.update()
     |> case do
-      {:ok, user} ->
+      {:ok, _} ->
         conn
         |> put_flash(:info, "User was successfully updated.")
         |> redirect(to: user_setting_path(conn, :edit))
