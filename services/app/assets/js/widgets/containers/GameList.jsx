@@ -7,6 +7,7 @@ import Gon from 'gon';
 import { fetchState } from '../middlewares/Lobby';
 import GameStatusCodes from '../config/gameStatusCodes';
 import Loading from '../components/Loading';
+import GamesHeatmap from '../components/GamesHeatmap';
 
 
 class GameList extends React.Component {
@@ -123,14 +124,17 @@ class GameList extends React.Component {
   )
 
   render() {
-    const { games } = this.props;
+    const { active_games, completed_games } = this.props;
 
-    if (!games) {
+    if (!active_games) {
       return (<Loading />);
     }
 
     return (
       <div>
+        <h3 className="text-center mt-3 mb-4">
+          Active games
+        </h3>
         <table className="table table-hover table-sm">
           <thead>
             <tr>
@@ -143,7 +147,7 @@ class GameList extends React.Component {
           </thead>
           <tbody>
             {
-              games.map(game => (
+              active_games.map(game => (
                 <tr key={game.game_id}>
 
                   <td
@@ -182,6 +186,7 @@ class GameList extends React.Component {
             }
           </tbody>
         </table>
+
         <div className="btn-group" role="group">
           <button id="btnGroupStartNewGame" type="button" className="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Start a new game
@@ -195,6 +200,65 @@ class GameList extends React.Component {
             {this.renderStartNewGameButton('hard')}
           </div>
         </div>
+        <div className="row px-4 mt-5 justify-content-center">
+          <div className="col-6">
+            <GamesHeatmap />
+          </div>
+        </div>
+        <h3 className="text-center mt-3 mb-4">
+          Completed games
+        </h3>
+        <table className="table table-hover table-sm">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Level</th>
+              <th>Players</th>
+              <th>Duration</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              completed_games.map(game => (
+                <tr key={game.game_id}>
+
+                  <td
+                    className="align-middle"
+                    style={{ whiteSpace: 'nowrap' }}
+                  >
+                    {moment.utc(game.updated_at).local().format('YYYY-MM-DD HH:mm')}
+                  </td>
+                  <td
+                    className="align-middle"
+                    style={{ whiteSpace: 'nowrap' }}
+                  >
+                    {this.renderGameLevelBadge(game.task_level)}
+                  </td>
+
+                  <td
+                    className="align-middle"
+                    style={{ whiteSpace: 'nowrap' }}
+                  >
+                    {this.renderPlayers(game.players)}
+                  </td>
+                  <td
+                    className="align-middle"
+                    style={{ whiteSpace: 'nowrap' }}
+                  >
+                    {game.duration}
+                  </td>
+
+                  <td
+                    className="align-middle"
+                  >
+                    {this.renderShowGameButton(`/games/${game.id}`)}
+                  </td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
       </div>
     );
   }
@@ -202,7 +266,8 @@ class GameList extends React.Component {
 
 // TODO: Add selector
 const mapStateToProps = state => ({
-  games: state.gameList.games,
+  active_games: state.gameList.active_games,
+  completed_games: state.gameList.completed_games,
 });
 
 export default connect(mapStateToProps, null)(GameList);

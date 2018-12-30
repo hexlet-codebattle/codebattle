@@ -15,13 +15,13 @@ defmodule CodebattleWeb.Factory do
   end
 
   def game_factory do
-    %Game{state: "waiting_opponent"}
+    %Game{state: "waiting_opponent", task_id: build(:task).id}
   end
 
   def user_game_factory do
     %UserGame{
       result: "game_over",
-      user: build(:user)
+      user: build(:user),
     }
   end
 

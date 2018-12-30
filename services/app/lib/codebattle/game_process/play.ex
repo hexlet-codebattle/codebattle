@@ -24,6 +24,49 @@ defmodule Codebattle.GameProcess.Play do
     ActiveGames.list_games()
   end
 
+  def completed_games do
+    query =
+      from(
+        games in Game,
+        order_by: [desc: games.updated_at],
+        where: [state: "game_over"],
+        limit: 30,
+        preload: [:users, :user_games]
+      )
+
+    games = Repo.all(query)
+
+    Enum.map(games, fn game ->
+      winner_user_game =
+        game.user_games
+        |> Enum.filter(fn user_game -> user_game.result == "won" end)
+        |> List.first()
+
+      winner = Map.get(winner_user_game, :user) |> Map.merge(%{creator: winner_user_game.creator})
+
+      loser_user_game =
+        game.user_games
+        |> Enum.filter(fn user_game -> user_game.result != "won" end)
+        |> List.first()
+
+      loser = Map.get(loser_user_game, :user) |> Map.merge(%{creator: loser_user_game.creator})
+
+      %{updated_at: updated_at} = game
+
+      players =
+        [winner, loser]
+        |> Enum.sort(&(&1.creator > &2.creator))
+
+      %{
+        id: game.id,
+        players: players,
+        updated_at: updated_at,
+        duration: game.duration_in_seconds || 1000,
+        task_level: game.task_level || "hard"
+      }
+    end)
+  end
+
   def get_game(id) do
     query = from(g in Game, preload: [:users, :user_games])
     Repo.get(query, id)
@@ -36,8 +79,15 @@ defmodule Codebattle.GameProcess.Play do
   def create_game(user, level) do
     case ActiveGames.playing?(user.id) do
       false ->
-        game = Repo.insert!(%Game{state: "waiting_opponent", users: [user]})
         task = get_random_task(level)
+
+        game =
+          Repo.insert!(%Game{
+            state: "waiting_opponent",
+            users: [user],
+            task_level: task.level,
+            task: task
+          })
 
         fsm =
           Fsm.new()
@@ -139,19 +189,43 @@ defmodule Codebattle.GameProcess.Play do
     check = check_code(fsm.data.task, editor_text, editor_lang)
     # TODO: be race condition tolerance
     case {fsm.state, check} do
-      {:playing, {:ok, true}} ->
+      {:playing, {:ok, result, output}} ->
+        Server.call_transition(id, :update_editor_params, %{
+          id: user.id,
+          result: result,
+          output: output
+        })
+
         {_response, fsm} = Server.call_transition(id, :complete, %{id: user.id})
         handle_won_game(id, user, fsm)
-        {:ok, fsm}
+        {:ok, fsm, result, output}
 
-      {:playing, {:error, output}} ->
-        {:error, output}
+      {:playing, {:error, result, output}} ->
+        Server.call_transition(id, :update_editor_params, %{
+          id: user.id,
+          result: result,
+          output: output
+        })
 
-      {:game_over, {:error, output}} ->
-        {:error, output}
+        {:error, result, output}
 
-      {:game_over, {:ok, true}} ->
-        {:ok, fsm}
+      {:game_over, {:error, result, output}} ->
+        Server.call_transition(id, :update_editor_params, %{
+          id: user.id,
+          result: result,
+          output: output
+        })
+
+        {:error, result, output}
+
+      {:game_over, {:ok, result, output}} ->
+        Server.call_transition(id, :update_editor_params, %{
+          id: user.id,
+          result: result,
+          output: output
+        })
+
+        {:ok, result, output}
     end
   end
 
