@@ -53,10 +53,10 @@ defmodule Codebattle.CodeCheck.JS.IntegrationTest do
     ref = Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: "sdf\n", lang: "js"})
     :timer.sleep(timeout)
 
-    assert_reply(ref, :ok, %{output: output})
+    assert_reply(ref, :ok, %{output: output, result: result})
 
     expected_result = %{"status" => "error", "result" => "sdf is not defined"}
-    assert expected_result == Poison.decode!(output)
+    assert expected_result == Poison.decode!(result)
 
     fsm = Server.fsm(game.id)
     assert fsm.state == :playing
@@ -93,10 +93,10 @@ defmodule Codebattle.CodeCheck.JS.IntegrationTest do
 
     :timer.sleep(timeout)
 
-    assert_reply(ref, :ok, %{output: output})
+    assert_reply(ref, :ok, %{output: output, result: result})
 
     expected_result = %{"status" => "failure", "result" => [1, 1]}
-    assert expected_result == Poison.decode!(output)
+    assert expected_result == Poison.decode!(result)
 
     fsm = Server.fsm(game.id)
     assert fsm.state == :playing

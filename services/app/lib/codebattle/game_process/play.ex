@@ -238,6 +238,7 @@ defmodule Codebattle.GameProcess.Play do
     # TODO: make async
     # TODO: optimize code with handle_gave_up
     game_id = id |> Integer.parse() |> elem(0)
+    winner = FsmHelpers.get_player(fsm, user.id)
     loser = FsmHelpers.get_opponent(fsm.data, user.id)
     difficulty = fsm.data.task.level
 
@@ -248,8 +249,9 @@ defmodule Codebattle.GameProcess.Play do
     |> Game.changeset(%{state: to_string(fsm.state)})
     |> Repo.update!()
 
-    Repo.insert!(%UserGame{game_id: game_id, user_id: user.id, result: "won"})
-    Repo.insert!(%UserGame{game_id: game_id, user_id: loser.id, result: "lost"})
+    # TODO: fix creator please!!!!!
+    Repo.insert!(%UserGame{game_id: game_id, user_id: user.id, result: "won", creator: winner.creator})
+    Repo.insert!(%UserGame{game_id: game_id, user_id: loser.id, result: "lost", creator: loser.creator})
 
     if user.id != 0 do
       user

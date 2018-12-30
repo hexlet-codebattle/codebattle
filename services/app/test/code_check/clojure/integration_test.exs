@@ -58,10 +58,10 @@ defmodule Codebattle.CodeCheck.Clojure.IntegrationTest do
 
     :timer.sleep(timeout)
 
-    assert_reply(ref, :ok, %{output: output})
+    assert_reply(ref, :ok, %{output: output, result: result})
 
     expected_result = %{"status" => "failure", "result" => [1, 1]}
-    assert expected_result == Poison.decode!(output)
+    assert expected_result == Poison.decode!(result)
 
     fsm = Server.fsm(game.id)
 
@@ -96,10 +96,10 @@ defmodule Codebattle.CodeCheck.Clojure.IntegrationTest do
 
     :timer.sleep(timeout)
 
-    assert_reply(ref, :ok, %{output: output})
+    assert_reply(ref, :ok, %{output: output, result: result})
 
-    assert Poison.decode!(output)["status"] == "error"
-    assert Poison.decode!(output)["result"] =~ "Unable to resolve symbol: sdf"
+    assert Poison.decode!(result)["status"] == "error"
+    assert Poison.decode!(result)["result"] =~ "Unable to resolve symbol: sdf"
 
     fsm = Server.fsm(game.id)
 

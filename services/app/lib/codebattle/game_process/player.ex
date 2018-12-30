@@ -10,6 +10,7 @@ defmodule Codebattle.GameProcess.Player do
     editor_lang: "js",
     game_result: :undefined,
     output: "",
-    result: "{}"
+    result: "{}",
+    creator: false
   ]
 end
