@@ -14,7 +14,7 @@ defmodule CodebattleWeb.Api.V1.ActivityControllerTest do
     assert json_response(conn, 200) == %{
              "activities" => [
                %{"count" => 3, "date" => "2000-01-02"},
-               %{"count" => 2, "date" => "2000-01-01"},
+               %{"count" => 2, "date" => "2000-01-01"}
              ]
            }
   end
