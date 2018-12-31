@@ -29,7 +29,7 @@ try do
               rescue
                 e in ExUnit.AssertionError ->
                   IO.puts(Poison.encode!(%{status: :failure, result: args}))
-                  exit(:failure)
+                  exit(:normal)
                   input_loop(stream)
               end
 

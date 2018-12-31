@@ -2,16 +2,16 @@ import { handleActions } from 'redux-actions';
 import _ from 'lodash';
 import * as actions from '../actions';
 
-const initState = { active_games: null, completed_games: null };
+const initState = { activeGames: null, completedGames: null };
 
 const gameList = handleActions({
-  [actions.fetchGameList](state, { payload: { active_games, completed_games } }) {
-    return { ...state, active_games: active_games, completed_games: completed_games };
+  [actions.fetchGameList](state, { payload: { active_games: activeGames, completed_games: completedGames } }) {
+    return { ...state, activeGames, completedGames };
   },
   [actions.newGameLobby](state, { payload: { game } }) {
-    const { active_games } = state;
+    const { activeGames } = state;
 
-    const new_game = {
+    const newGame = {
       users: game.data.players.map(player => player.user),
       game_info: {
         state: game.state,
@@ -20,22 +20,31 @@ const gameList = handleActions({
       },
       game_id: game.data.game_id,
     };
-    return { active_games: [...active_games, new_game] };
+    return { ...state, activeGames: [...activeGames, newGame] };
   },
-  [actions.cancelGameLobby](state, { payload: { game_id } }) {
-    const { active_games } = state;
+  [actions.cancelGameLobby](state, { payload: { game_id: gameId } }) {
+    const { activeGames } = state;
 
-    const new_games = _.filter(active_games, game => game.game_id != parseInt(game_id));
+    const newGames = _.filter(activeGames, game => game.game_id !== parseInt(gameId));
 
-    return { active_games: new_games };
+    return { ...state, activeGames: newGames };
   },
   [actions.updateGameLobby](state, { payload: { game } }) {
     const gameId = game.data.game_id;
 
-    const { active_games } = state;
-    const filtered = active_games.filter(g => g.data.game_id !== gameId);
+    const { activeGames } = state;
+    const filtered = activeGames.filter(g => g.game_id !== parseInt(gameId));
 
-    return { active_games: [...filtered, game] };
+    const newGame = {
+      users: game.data.players.map(player => player.user),
+      game_info: {
+        state: game.state,
+        level: game.data.task.level,
+        inserted_at: game.data.inserted_at,
+      },
+      game_id: game.data.game_id,
+    };
+    return { ...state, activeGames: [...filtered, newGame] };
   },
 }, initState);
 

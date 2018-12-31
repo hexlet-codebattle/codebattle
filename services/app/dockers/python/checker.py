@@ -19,10 +19,10 @@ except AssertionError as exc:
         'status': 'failure',
         'result': exc.args[0],
     }))
-    exit(1)
+    exit(0)
 except Exception as exc:
     print(json.dumps({
         'status': 'error',
         'result': 'unexpected',
     }))
-    exit(1)
+    exit(0)

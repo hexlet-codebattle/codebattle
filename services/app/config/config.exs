@@ -6,7 +6,7 @@
 use Mix.Config
 
 config :codebattle,
-  docker_command_template: "docker run --rm ~s ~s timeout -s 9 -t 5 make --silent test"
+  docker_command_template: "docker run --rm ~s ~s timeout -s 9 -t 10 make --silent test"
 
 # General application configuration
 config :codebattle, ecto_repos: [Codebattle.Repo]
