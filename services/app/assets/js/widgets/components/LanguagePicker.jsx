@@ -33,7 +33,7 @@ const LanguagePicker = ({ currentLangSlug, onChange, disabled }) => {
   if (disabled) {
     return (
       <button
-        className="btn btn-outline-secondary"
+        className="btn btn-outline-secondary btn-sm"
         type="button"
         disabled
       >
@@ -45,7 +45,7 @@ const LanguagePicker = ({ currentLangSlug, onChange, disabled }) => {
   return (
     <div className="dropdown">
       <button
-        className="btn btn-outline-secondary dropdown-toggle"
+        className="btn btn-outline-secondary btn-sm dropdown-toggle"
         type="button"
         id="dropdownLangButton"
         data-toggle="dropdown"
