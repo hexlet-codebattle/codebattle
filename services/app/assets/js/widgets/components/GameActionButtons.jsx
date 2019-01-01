@@ -22,14 +22,14 @@ class GameActionButtons extends Component {
     return (
       <button
         type="button"
-        className="btn btn-success btn-sm ml-1"
+        className="btn btn-success btn-sm"
         onClick={checkResult}
         disabled={gameStatus.checking}
       >
         {gameStatus.checking ? (
-          <span className="mx-1 fa fa-cog fa-spin" />
+          <span className="fa fa-cog fa-spin mr-1" />
         ) : (
-          <span className="mx-1 fa fa-play-circle" />
+          <span className="fa fa-play-circle mr-1" />
         )}
         {i18n.t('Check')}
         <small> (ctrl+enter)</small>
@@ -48,7 +48,7 @@ class GameActionButtons extends Component {
         className="btn btn-outline-danger btn-sm"
         onClick={sendGiveUp}
       >
-        <span className="mx-1 fa fa-times-circle" />
+        <span className="fa fa-times-circle mr-1" />
         {i18n.t('Give up')}
       </button>
     );

@@ -6,10 +6,13 @@ import { ToastContainer, toast } from 'react-toastify';
 // import i18n from '../../i18n';
 import GameStatusCodes from '../config/gameStatusCodes';
 import * as selectors from '../selectors';
-import { checkGameResult, changeCurrentLangAndSetTemplate } from '../middlewares/Game';
+import {
+  checkGameResult, changeCurrentLangAndSetTemplate, compressEditorHeight, expandEditorHeight,
+} from '../middlewares/Game';
 import userTypes from '../config/userTypes';
 import LanguagePicker from '../components/LanguagePicker';
 import UserName from '../components/UserName';
+import WinnerTrophy from '../components/WinnerTrophy';
 
 const renderNameplate = (user = {}, onlineUsers) => {
   const color = _.find(onlineUsers, { id: user.id }) ? 'green' : '#ccc';
@@ -24,13 +27,24 @@ const renderNameplate = (user = {}, onlineUsers) => {
   );
 };
 
-const renderWinnerTrophy = ({ solutionStatus, winner, status }, leftUserId) => {
-  if (status === GameStatusCodes.gameOver && winner.id === leftUserId) {
-    return <i className="fa fa-trophy fa-2x text-warning" aria-hidden="true" />;
-  }
-
-  return null;
-};
+const renderEditorHeightButtons = (compressEditor, expandEditor, userId) => (
+  <div className="btn-group btn-group-sm ml-2" role="group" aria-label="Editor height">
+    <button
+      type="button"
+      className="btn btn-outline-secondary"
+      onClick={() => compressEditor(userId)}
+    >
+      <i className="fa fa-compress" aria-hidden="true" />
+    </button>
+    <button
+      type="button"
+      className="btn btn-outline-secondary"
+      onClick={() => expandEditor(userId)}
+    >
+      <i className="fa fa-expand" aria-hidden="true" />
+    </button>
+  </div>
+);
 
 class LeftEditorToolbar extends Component {
   static propTypes = {
@@ -79,6 +93,8 @@ class LeftEditorToolbar extends Component {
       onlineUsers,
       setLang,
       gameStatus,
+      compressEditor,
+      expandEditor,
     } = this.props;
     const userType = currentUser.type;
     const isSpectator = userType === userTypes.spectator;
@@ -94,12 +110,15 @@ class LeftEditorToolbar extends Component {
     return (
       <Fragment>
         <div className="btn-toolbar justify-content-between" role="toolbar">
-          <LanguagePicker
-            currentLangSlug={leftEditorLangSlug}
-            onChange={setLang}
-            disabled={isSpectator}
-          />
-          {renderWinnerTrophy(gameStatus, leftUserId)}
+          <div className="btn-group" role="group" aria-label="Editor settings">
+            <LanguagePicker
+              currentLangSlug={leftEditorLangSlug}
+              onChange={setLang}
+              disabled={isSpectator}
+            />
+            {renderEditorHeightButtons(compressEditor, expandEditor, leftUserId)}
+          </div>
+          {WinnerTrophy(gameStatus, leftUserId)}
           {renderNameplate(users[leftUserId], onlineUsers)}
         </div>
         <ToastContainer {...toastOptions} />
@@ -132,6 +151,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = {
   checkResult: checkGameResult,
   setLang: changeCurrentLangAndSetTemplate,
+  compressEditor: compressEditorHeight,
+  expandEditor: expandEditorHeight,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(LeftEditorToolbar);
