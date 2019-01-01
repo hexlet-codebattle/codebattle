@@ -90,7 +90,6 @@ defmodule Codebattle.GameProcess.Play do
             task: task
           })
 
-        Notifier.call(:game_created, %{task: task, game: game})
 
         fsm =
           Fsm.new()
@@ -104,7 +103,7 @@ defmodule Codebattle.GameProcess.Play do
         Task.start(Codebattle.Bot.PlaybookPlayerTask, :run, [params])
 
         # TODO add Task.async
-        Notifier.call(:game_created, %{task: task, game: game})
+        Notifier.call(:game_created, %{task: task, game: game, user: user})
 
         {:ok, game.id}
 

@@ -15,7 +15,7 @@ defmodule Codebattle.GameProcess.Notifier do
     |> put_heading("New game")
     |> put_message(:en, "Yo, new game with level: #{params.task.level} was created")
     |> put_message(:ru, "Yo, кто-то создал новую игру с уровнем сложности: #{params.task.level}. Покажи класс!")
-    |> put_segment("Active Users")
+    |> put_filter(%{key: "userId", value: params.user.public_id, relation: "!=", field: "tag"})
     |> notify
   end
 
