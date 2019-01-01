@@ -18,11 +18,17 @@ const initialState = {
 
 export const makeEditorTextKey = (userId, lang) => `${userId}:${lang}`;
 
+const getCurrentEditorHeight = (state, userId) => {
+  const { [userId]: { editorHeight } } = state;
+  return editorHeight || defaultEditorHeight;
+};
+
 const meta = handleActions({
   [actions.updateEditorLang](state, { payload: { userId, currentLangSlug } }) {
     return {
       ...state,
       [userId]: {
+        ...state[userId],
         userId,
         currentLangSlug,
       },
@@ -32,14 +38,14 @@ const meta = handleActions({
     return {
       ...state,
       [userId]: {
+        ...state[userId],
         userId,
         currentLangSlug: langSlug,
       },
     };
   },
   [actions.compressEditorHeight](state, { payload: { userId } }) {
-    const { [userId]: { editorHeight } } = state;
-    const currentHeight = editorHeight || defaultEditorHeight;
+    const currentHeight = getCurrentEditorHeight(state, userId);
     const newEditorHeight = currentHeight > 100 ? currentHeight - 100 : currentHeight;
     return {
       ...state,
@@ -50,8 +56,7 @@ const meta = handleActions({
     };
   },
   [actions.expandEditorHeight](state, { payload: { userId } }) {
-    const { [userId]: { editorHeight } } = state;
-    const currentHeight = editorHeight || defaultEditorHeight;
+    const currentHeight = getCurrentEditorHeight(state, userId);
     return {
       ...state,
       [userId]: {
