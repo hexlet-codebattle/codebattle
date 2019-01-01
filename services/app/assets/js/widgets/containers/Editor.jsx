@@ -52,6 +52,7 @@ class Editor extends PureComponent {
       onChange,
       allowCopy,
       keyboardHandler,
+      editorHeight,
     } = this.props;
 
     // FIXME: move here and apply mapping object
@@ -69,7 +70,7 @@ class Editor extends PureComponent {
           wrapLines
           editorProps={{ $blockScrolling: true }}
           width="auto"
-          height="300px"
+          height={editorHeight}
           fontSize={16}
           showPrintMargin={false}
           keyboardHandler={keyboardHandler}

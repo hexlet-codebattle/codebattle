@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
 import { handleActions } from 'redux-actions';
 import * as actions from '../actions';
+import { defaultEditorHeight } from '../config/editorSettings';
 
 // example
 // meta: {
@@ -33,6 +34,29 @@ const meta = handleActions({
       [userId]: {
         userId,
         currentLangSlug: langSlug,
+      },
+    };
+  },
+  [actions.compressEditorHeight](state, { payload: { userId } }) {
+    const { [userId]: { editorHeight } } = state;
+    const currentHeight = editorHeight || defaultEditorHeight;
+    const newEditorHeight = currentHeight > 100 ? currentHeight - 100 : currentHeight;
+    return {
+      ...state,
+      [userId]: {
+        ...state[userId],
+        editorHeight: newEditorHeight,
+      },
+    };
+  },
+  [actions.expandEditorHeight](state, { payload: { userId } }) {
+    const { [userId]: { editorHeight } } = state;
+    const currentHeight = editorHeight || defaultEditorHeight;
+    return {
+      ...state,
+      [userId]: {
+        ...state[userId],
+        editorHeight: currentHeight + 100,
       },
     };
   },

@@ -6,6 +6,7 @@ import Gon from 'gon';
 import {
   rightEditorSelector,
   leftEditorSelector,
+  editorHeightSelector,
   currentUserSelector,
 } from '../selectors';
 import userTypes from '../config/userTypes';
@@ -40,7 +41,7 @@ class GameWidget extends Component {
 
   getLeftEditorParams = () => {
     const {
-      currentUser, leftEditor, updateEditorValue,
+      currentUser, leftEditor, updateEditorValue, leftEditorHeight,
     } = this.props;
     // FIXME: currentUser shouldn't return {} for spectator
     const isPlayer = currentUser.type !== userTypes.spectator;
@@ -57,11 +58,12 @@ class GameWidget extends Component {
       syntax: editorState.currentLangSlug || 'javascript',
       value: editorState.text,
       name: 'left-editor',
+      editorHeight: `${leftEditorHeight}px`,
     };
   }
 
   getRightEditorParams = () => {
-    const { rightEditor } = this.props;
+    const { rightEditor, rightEditorHeight } = this.props;
     const editorState = rightEditor;
 
     return {
@@ -71,6 +73,7 @@ class GameWidget extends Component {
       syntax: editorState.currentLangSlug || 'javascript',
       value: editorState.text,
       name: 'right-editor',
+      editorHeight: `${rightEditorHeight}px`,
     };
   }
 
@@ -99,12 +102,21 @@ class GameWidget extends Component {
   }
 }
 
-const mapStateToProps = state => ({
-  currentUser: currentUserSelector(state),
-  leftEditor: leftEditorSelector(state),
-  rightEditor: rightEditorSelector(state),
-  outputText: state.executionOutput,
-});
+const mapStateToProps = (state) => {
+  const leftEditor = leftEditorSelector(state);
+  const rightEditor = rightEditorSelector(state);
+  const leftUserId = _.get(leftEditor, ['userId'], null);
+  const rightUserId = _.get(rightEditor, ['userId'], null);
+
+  return {
+    currentUser: currentUserSelector(state),
+    leftEditor,
+    rightEditor,
+    leftEditorHeight: editorHeightSelector(leftUserId)(state),
+    rightEditorHeight: editorHeightSelector(rightUserId)(state),
+    outputText: state.executionOutput,
+  };
+};
 
 const mapDispatchToProps = {
   updateEditorValue: sendEditorText,
