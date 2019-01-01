@@ -116,3 +116,31 @@ export const gameStartsAtSelector = state => state.game.gameStatus.startsAt;
 export const gameLangsSelector = state => state.game.langs;
 
 export const editorHeightSelector = userId => state => _.get(editorDataSelector(userId)(state), 'editorHeight', defaultEditorHeight);
+
+export const executionOutputSelector = userId => state => state.executionOutput[userId];
+
+export const firstExecutionOutputSelector = (state) => {
+  const userId = firstUserSelector(state).id;
+  return executionOutputSelector(userId)(state);
+};
+
+export const secondExecutionOutputSelector = (state) => {
+  const userId = secondUserSelector(state).id;
+  return executionOutputSelector(userId)(state);
+};
+
+export const leftExecutionOutputSelector = (state) => {
+  const currentUser = currentUserSelector(state);
+  const selector = (currentUser.type !== userTypes.secondPlayer)
+    ? firstExecutionOutputSelector
+    : secondExecutionOutputSelector;
+  return selector(state);
+};
+
+export const rightExecutionOutputSelector = (state) => {
+  const currentUser = currentUserSelector(state);
+  const selector = (currentUser.type === userTypes.secondPlayer)
+    ? firstExecutionOutputSelector
+    : secondExecutionOutputSelector;
+  return selector(state);
+};

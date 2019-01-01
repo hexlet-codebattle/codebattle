@@ -8,6 +8,8 @@ import {
   leftEditorSelector,
   editorHeightSelector,
   currentUserSelector,
+  leftExecutionOutputSelector,
+  rightExecutionOutputSelector,
 } from '../selectors';
 import userTypes from '../config/userTypes';
 import Editor from './Editor';
@@ -78,7 +80,9 @@ class GameWidget extends Component {
   }
 
   render() {
-    const { leftEditor, rightEditor, outputText } = this.props;
+    const {
+      leftEditor, rightEditor, leftOutput, rightOutput,
+    } = this.props;
     if (leftEditor === null || rightEditor === null) {
       // FIXME: render loader
       return null;
@@ -89,12 +93,15 @@ class GameWidget extends Component {
           <div className="col-12 col-md-6" style={{ cursor: 'pointer' }}>
             <LeftEditorToolbar />
             <Editor {...this.getLeftEditorParams()} />
-            <GameActionButtons output={outputText} />
-            <ExecutionOutput output={outputText} />
+            <GameActionButtons />
+            <ExecutionOutput output={leftOutput} />
           </div>
           <div className="col-12 col-md-6">
             <RightEditorToolbar />
             <Editor {...this.getRightEditorParams()} />
+            {/* TODO: Andrey please fix it */}
+            <div className="btn-toolbar justify-content-between pb-3 pt-4" role="toolbar" />
+            <ExecutionOutput output={rightOutput} />
           </div>
         </div>
       </Fragment>
@@ -114,7 +121,8 @@ const mapStateToProps = (state) => {
     rightEditor,
     leftEditorHeight: editorHeightSelector(leftUserId)(state),
     rightEditorHeight: editorHeightSelector(rightUserId)(state),
-    outputText: state.executionOutput,
+    leftOutput: leftExecutionOutputSelector(state),
+    rightOutput: rightExecutionOutputSelector(state),
   };
 };
 

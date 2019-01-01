@@ -38,22 +38,23 @@ const Task = ({ task, time, gameStatusName }) => {
   return (
     <div className="card">
       <div className="card-body">
-        <h6 className="card-title">
-          Task:
-          <span className="card-subtitle mb-2 text-muted">
-            {' '}
-            {task.name}
-          </span>
-          <small className="ml-2">{renderGameLevelBadge(task.level)}</small>
-        </h6>
-        <p className="card-text">
+          <div className="d-flex justify-content-between">
+            <h6 className="card-title">
+              {'Task: '}
+              <span className="card-subtitle mb-2 text-muted">
+                {task.name}
+              </span>
+              <small className="ml-2">{renderGameLevelBadge(task.level)}</small>
+            </h6>
+            <div className="card-text">
+              <span className="text-muted">
+                {renderTimer(time, gameStatusName)}
+              </span>
+            </div>
+          </div>
+        <div className="card-text">
           <ReactMarkdown source={task.description} />
-        </p>
-        <p className="card-text">
-          <span className="text-muted">
-            {renderTimer(time, gameStatusName)}
-          </span>
-        </p>
+        </div>
       </div>
     </div>
   );

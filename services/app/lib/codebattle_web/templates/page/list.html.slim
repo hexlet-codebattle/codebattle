@@ -1,34 +1,5 @@
 .row.justify-content-center
   .col-12.col-lg-8.col-md-10.mt-4
-    h3.text-center.mt-3.mb-4= gettext "Active games"
     #game-list
-
-    h3.text-center.mt-5.mb-4= gettext "Completed games"
-    table.table.table-hover.table-sm
-      thead
-        tr
-          th Date
-          th Winner
-          th Loser
-          th Result
-      tbody
-        = for game <- @games do
-          - winner = game.user_games |> Enum.filter(fn user -> user.result == "won" end) |> List.first |> Map.get(:user)
-          - loser = game.user_games |> Enum.filter(fn user -> user.result != "won" end) |> List.first |> Map.get(:user)
-          tr
-            td.align-middle style="white-space:nowrap;"
-              - %{ updated_at: updated_at } = game
-              - formatted_minute = updated_at.minute |> Integer.to_string |> String.pad_leading(2, "0")
-              = "#{updated_at.year}-#{updated_at.month}-#{updated_at.day}  #{updated_at.hour}:#{formatted_minute}"
-            td.align-middle style="white-space:nowrap;"
-              = link to: user_path(@conn, :show, winner.id), class: "nav-link" do
-                img.attachment.rounded.mr-3[alt="#{winner.name}" src="https://avatars0.githubusercontent.com/u/#{winner.github_id}" style="width:30px"]
-                = user_name(winner)
-            td.align-middle style="white-space:nowrap;"
-              = link to: user_path(@conn, :show, loser.id), class: "nav-link" do
-                img.attachment.rounded.mr-3[alt="#{loser.name}" src="https://avatars0.githubusercontent.com/u/#{loser.github_id}" style="width:30px"]
-                = user_name(loser)
-            td.align-middle
-              = link "Show", to: game_path(@conn, :show, game.id), class: "btn btn-info btn-sm mr-2"
   javascript:
       window.csrf_token = "<%= csrf_token() %>"

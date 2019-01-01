@@ -10,11 +10,16 @@ defmodule Codebattle.Game do
     %{"elementary" => 0, "easy" => 1, "medium" => 2, "hard" => 3}
   end
 
+  @derive {Poison.Encoder, only: [:id, :users, :state]}
+
   schema "games" do
     field(:state, :string)
+    field(:task_level, :string)
+    field(:duration_in_seconds, :integer)
 
     timestamps()
 
+    belongs_to(:task, Codebattle.Task)
     has_many(:user_games, Codebattle.UserGame)
     has_many(:users, through: [:user_games, :user])
   end
@@ -22,7 +27,7 @@ defmodule Codebattle.Game do
   @doc false
   def changeset(%Game{} = game, attrs) do
     game
-    |> cast(attrs, [:state])
+    |> cast(attrs, [:state, :task_id, :task_level, :duration_in_seconds])
     |> validate_required([:state])
   end
 end

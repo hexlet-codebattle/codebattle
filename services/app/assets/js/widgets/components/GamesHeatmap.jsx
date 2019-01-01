@@ -1,9 +1,9 @@
 import React from 'react';
 import CalendarHeatmap from 'react-calendar-heatmap';
 import axios from 'axios';
-import Loading from '../components/Loading.jsx';
+import Loading from './Loading.jsx';
 
-class Heatmap extends React.Component {
+class GamesHeatmap extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -23,8 +23,7 @@ class Heatmap extends React.Component {
   }
 
   componentDidMount() {
-    const user_id = window.location.pathname.split('/').pop();
-    axios.get(`/api/v1/${user_id}/activity`)
+    axios.get(`/api/v1/game_activity`)
       .then((response) => { console.log(response.data); this.setState(response.data); });
   }
 
@@ -60,4 +59,4 @@ class Heatmap extends React.Component {
     );
   }
 }
-export default Heatmap;
+export default GamesHeatmap;

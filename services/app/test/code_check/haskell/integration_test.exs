@@ -59,9 +59,9 @@ defmodule Codebattle.CodeCheck.Haskell.IntegrationTest do
 
     :timer.sleep(timeout)
 
-    assert_reply(ref, :ok, %{output: output})
+    assert_reply(ref, :ok, %{output: output, result: result})
     expected_result = %{"status" => "failure", "result" => [1, 1]}
-    assert expected_result == Poison.decode!(output)
+    assert expected_result == Poison.decode!(result)
 
     fsm = Server.fsm(game.id)
 
@@ -96,7 +96,7 @@ defmodule Codebattle.CodeCheck.Haskell.IntegrationTest do
 
     :timer.sleep(timeout)
 
-    assert_reply(ref, :ok, %{output: output})
+    assert_reply(ref, :ok, %{output: output, result: result})
 
     expected_result = %{
       "status" => "error",
@@ -104,7 +104,7 @@ defmodule Codebattle.CodeCheck.Haskell.IntegrationTest do
         "Check/Solution.hs:1:1: error:    File name does not match module name:    Saw: Main    Expected: Check.Solution  |1 | sdf  | ^"
     }
 
-    assert expected_result == Poison.decode!(output)
+    assert expected_result == Poison.decode!(result)
 
     fsm = Server.fsm(game.id)
 

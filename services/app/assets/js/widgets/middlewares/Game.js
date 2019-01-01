@@ -120,9 +120,9 @@ export const editorReady = () => (dispatch) => {
     dispatch(actions.updateEditorText({ userId, langSlug, text }));
   });
 
-  // channel.on('editor:lang', ({ user_id: userId, lang: currentLangSlug }) => {
-  //   dispatch(actions.updateEditorLang({ userId, currentLangSlug}));
-  // });
+  channel.on('output:data', ({ user_id: userId, result, output }) => {
+    dispatch(actions.updateExecutionOutput({ userId, result, output }));
+  });
 
   channel.on('user:joined', ({
     status,
@@ -196,11 +196,11 @@ export const checkGameResult = () => (dispatch, getState) => {
 
   channel.push('check_result', payload)
     .receive('ok', ({
-      status, winner, solution_status: solutionStatus, output,
+      status, winner, solution_status: solutionStatus, output, result, user_id: userId,
     }) => {
       const newGameStatus = solutionStatus ? { status, winner } : {};
       // !solutionStatus ? alert(output) : null;
-      dispatch(actions.updateExecutionOutput({ output }));
+      dispatch(actions.updateExecutionOutput({ output, result, userId }));
       dispatch(actions.updateGameStatus({ ...newGameStatus, solutionStatus, checking: false }));
     });
 };

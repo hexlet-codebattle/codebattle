@@ -41,7 +41,7 @@ defmodule Codebattle.PlayGameTest do
     user1: user1,
     user2: user2
   } do
-    with_mocks [{Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> {:ok, true} end]}] do
+    with_mocks [{Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> {:ok, "asdf", "asdf"} end]}] do
       # Create game
       conn =
         conn1

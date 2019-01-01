@@ -43,7 +43,8 @@ defmodule Codebattle.GameProcess.Fsm do
         id: params.user.id,
         user: params.user,
         editor_lang: editor_lang,
-        editor_text: editor_text
+        editor_text: editor_text,
+        creator: true
       }
 
       next_state(:waiting_opponent, %{

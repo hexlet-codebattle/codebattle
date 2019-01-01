@@ -62,7 +62,7 @@ defmodule Codebattle.GameCases.GiveUpTest do
     user2: user2
   } do
     # Create game
-    with_mocks [{Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> {:ok, true} end]}] do
+    with_mocks [{Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> {:ok, "asdf", "output"} end]}] do
       conn =
         conn1
         |> get(user_path(conn1, :index))

@@ -37,7 +37,7 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
        ]},
       {Codebattle.CodeCheck.Checker, [],
        [
-         check: fn _a, _b, _c -> {:ok, true} end
+         check: fn _a, _b, _c -> {:ok, "adsf", "asdf"} end
        ]}
     ] do
       # setup

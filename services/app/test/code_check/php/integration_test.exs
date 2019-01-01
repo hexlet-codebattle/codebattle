@@ -53,7 +53,7 @@ defmodule Codebattle.CodeCheck.Php.IntegrationTest do
     ref = Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: "sdf();", lang: "php"})
     :timer.sleep(timeout)
 
-    assert_reply(ref, :ok, %{output: output})
+    assert_reply(ref, :ok, %{output: output, result: result})
 
     expected_result = %{
       "status" => "error",
@@ -61,7 +61,7 @@ defmodule Codebattle.CodeCheck.Php.IntegrationTest do
         "Uncaught Error: Call to undefined function sdf() in /usr/src/app/check/solution.php:2"
     }
 
-    assert expected_result == Poison.decode!(output)
+    assert expected_result == Poison.decode!(result)
 
     fsm = Server.fsm(game.id)
 
@@ -99,11 +99,11 @@ defmodule Codebattle.CodeCheck.Php.IntegrationTest do
 
     :timer.sleep(timeout)
 
-    assert_reply(ref, :ok, %{output: output})
+    assert_reply(ref, :ok, %{output: output, result: result})
 
     expected_result = %{"status" => "failure", "result" => [1, 1]}
 
-    assert expected_result == Poison.decode!(output)
+    assert expected_result == Poison.decode!(result)
 
     fsm = Server.fsm(game.id)
 

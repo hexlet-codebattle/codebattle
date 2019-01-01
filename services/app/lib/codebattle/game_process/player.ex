@@ -8,6 +8,9 @@ defmodule Codebattle.GameProcess.Player do
     user: %User{},
     editor_text: "module.exports = () => {\n\n};",
     editor_lang: "js",
-    game_result: :undefined
+    game_result: :undefined,
+    output: "",
+    result: "{}",
+    creator: false
   ]
 end

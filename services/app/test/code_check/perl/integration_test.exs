@@ -58,9 +58,9 @@ defmodule Codebattle.CodeCheck.Perl.IntegrationTest do
 
     :timer.sleep(timeout)
 
-    assert_reply(ref, :ok, %{output: output})
+    assert_reply(ref, :ok, %{output: output, result: result})
     expected_result = %{"status" => "failure", "result" => [1, 1]}
-    assert expected_result == Poison.decode!(output)
+    assert expected_result == Poison.decode!(result)
 
     fsm = Server.fsm(game.id)
 
@@ -93,14 +93,14 @@ defmodule Codebattle.CodeCheck.Perl.IntegrationTest do
     ref = Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: "sdf", lang: "perl"})
     :timer.sleep(timeout)
 
-    assert_reply(ref, :ok, %{output: output})
+    assert_reply(ref, :ok, %{output: output, result: result})
 
     expected_result = %{
       "status" => "error",
       "result" => "Undefined subroutine &main::solution called at checker.pl line 21, <> line 1."
     }
 
-    assert expected_result == Poison.decode!(output)
+    assert expected_result == Poison.decode!(result)
 
     fsm = Server.fsm(game.id)
 
