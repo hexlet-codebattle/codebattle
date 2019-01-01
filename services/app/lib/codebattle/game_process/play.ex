@@ -14,7 +14,8 @@ defmodule Codebattle.GameProcess.Play do
     Player,
     FsmHelpers,
     Elo,
-    ActiveGames
+    ActiveGames,
+    Notifier
   }
 
   alias Codebattle.CodeCheck.Checker
@@ -89,6 +90,8 @@ defmodule Codebattle.GameProcess.Play do
             task: task
           })
 
+        Notifier.call(:game_created, %{task: task, game: game})
+
         fsm =
           Fsm.new()
           |> Fsm.create(%{user: user, game_id: game.id, task: task, inserted_at: game.inserted_at})
@@ -99,6 +102,9 @@ defmodule Codebattle.GameProcess.Play do
 
         params = %{game_id: game.id, task_id: task.id}
         Task.start(Codebattle.Bot.PlaybookPlayerTask, :run, [params])
+
+        # TODO add Task.async
+        Notifier.call(:game_created, %{task: task, game: game})
 
         {:ok, game.id}
 
@@ -114,6 +120,13 @@ defmodule Codebattle.GameProcess.Play do
       case Server.call_transition(id, :join, %{user: user}) do
         {:ok, fsm} ->
           ActiveGames.add_participant(user, fsm)
+
+          Notifier.call(:game_opponent_join, %{
+            creator: FsmHelpers.get_opponent(fsm.data, user.id),
+            user: user,
+            game_id: id
+          })
+
           {:ok, fsm}
 
         {{:error, _reason}, fsm} ->
@@ -250,8 +263,19 @@ defmodule Codebattle.GameProcess.Play do
     |> Repo.update!()
 
     # TODO: fix creator please!!!!!
-    Repo.insert!(%UserGame{game_id: game_id, user_id: user.id, result: "won", creator: winner.creator})
-    Repo.insert!(%UserGame{game_id: game_id, user_id: loser.id, result: "lost", creator: loser.creator})
+    Repo.insert!(%UserGame{
+      game_id: game_id,
+      user_id: user.id,
+      result: "won",
+      creator: winner.creator
+    })
+
+    Repo.insert!(%UserGame{
+      game_id: game_id,
+      user_id: loser.id,
+      result: "lost",
+      creator: loser.creator
+    })
 
     if user.id != 0 do
       user

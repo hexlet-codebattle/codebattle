@@ -42,3 +42,4 @@ config :codebattle, Codebattle.Repo,
   pool_size: 5
 
 config :codebattle, Codebattle.Bot, timeout: 3_000
+
