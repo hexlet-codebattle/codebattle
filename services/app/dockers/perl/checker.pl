@@ -1,11 +1,11 @@
 use strict;
 use warnings;
-use JSON::MaybeXS qw(encode_json decode_json); 
+use JSON::MaybeXS qw(encode_json decode_json);
 use Data::Compare;
 require "./check/solution.pl";
 
-$SIG{__DIE__} = sub {print "{\"status\":\"error\", \"result\":\"" . substr(shift, 0, -1) . "\"}\n"; exit 1;};
-$SIG{__WARN__} = sub {print "{\"status\":\"error\", \"result\":\"" . substr(shift, 0, -1) . "\"}\n"; exit 1;};
+$SIG{__DIE__} = sub {print "{\"status\":\"error\", \"result\":\"" . substr(shift, 0, -1) . "\"}\n"; exit 0;};
+$SIG{__WARN__} = sub {print "{\"status\":\"error\", \"result\":\"" . substr(shift, 0, -1) . "\"}\n"; exit 0;};
 
 while(<>){
     my $JSON=$_;

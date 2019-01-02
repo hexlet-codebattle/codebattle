@@ -13,7 +13,7 @@ defmodule Codebattle.Mixfile do
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      test_coverage: [tool: ExCoveralls],
+      # test_coverage: [tool: ExCoveralls],
       preferred_cli_env: [
         coveralls: :test,
         "coveralls.detail": :test,
@@ -44,7 +44,8 @@ defmodule Codebattle.Mixfile do
         :yaml_elixir,
         :ueberauth,
         :ueberauth_github,
-        :gproc
+        :gproc,
+        :one_signal,
       ]
     ]
   end
@@ -79,6 +80,7 @@ defmodule Codebattle.Mixfile do
       {:logger_file_backend, "~> 0.0.10"},
       {:atomic_map, "~> 0.8"},
       {:envy, "~> 1.1.1"},
+      {:one_signal,  git: "https://github.com/vtm9/one_signal.git"},
 
       # dev_and_test
       {:credo, "~> 0.8", only: [:dev, :test], runtime: false},
@@ -91,7 +93,7 @@ defmodule Codebattle.Mixfile do
       {:phoenix_integration, "~> 0.5", only: :test},
       {:excoveralls, "~> 0.7", only: :test},
       {:faker, "~> 0.8", only: :test},
-      {:ex_machina, "~> 2.0", only: :test}
+      {:ex_machina, "~> 2.0", only: :test},
     ]
   end
 

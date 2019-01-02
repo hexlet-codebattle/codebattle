@@ -28,14 +28,14 @@ begin
           status: :failure,
           result: element['arguments']
         )
-        exit!
+        exit(0)
       end
     end
   end
-rescue Exception  => e
+rescue Exception => e
   puts(JSON.dump(
-          status: :error,
-          result: e.message
-  ))
-  exit!
+         status: :error,
+         result: e.message
+       ))
+  exit(0)
 end

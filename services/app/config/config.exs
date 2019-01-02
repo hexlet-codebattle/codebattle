@@ -6,7 +6,7 @@
 use Mix.Config
 
 config :codebattle,
-  docker_command_template: "docker run --rm ~s ~s timeout -s 9 -t 5 make --silent test"
+  docker_command_template: "docker run --rm ~s ~s timeout -s 9 -t 10 make --silent test"
 
 # General application configuration
 config :codebattle, ecto_repos: [Codebattle.Repo]
@@ -42,6 +42,9 @@ config :codebattle, CodebattleWeb.Gettext,
   priv: "priv/gettext",
   default_locale: "en"
 
+  config :one_signal, OneSignal,
+    app_id:  System.get_env("ONESIGNAL_APP_ID"),
+    api_key:  System.get_env("ONESIGNAL_API_KEY")
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"

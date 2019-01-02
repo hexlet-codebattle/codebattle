@@ -13,13 +13,13 @@ main = do
     s <- getContents
     let ress = map unmagic $ lines s
     (BS.putStrLn . A.encode $ foldCaseRess ress) `catch` \e -> print (e :: ErrorCall)
-    exitWith (ExitFailure 1)
+    exitWith (ExitFailure 0)
 
 unmagic :: String -> CaseRes
-unmagic s =  
+unmagic s =
     case A.decode $ BS.pack s of
         Nothing -> Err "Bad parse!"
-        (Just tcase) -> case tcase of 
+        (Just tcase) -> case tcase of
             Task a e -> if e == run a solution
                     then Dummy
                     else Failure a

@@ -16,7 +16,7 @@ register_shutdown_function(function() {
       'status' => 'error',
       'result' => $message
     )));
-    exit(1);
+    exit(0);
   }
 });
 
@@ -44,7 +44,7 @@ while ($line = fgets(STDIN)) {
         'status' => 'failure',
         'result' => $json->arguments
       )));
-      exit(1);
+      exit(0);
     }
   }
 }

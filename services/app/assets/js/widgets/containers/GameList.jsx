@@ -129,9 +129,9 @@ class GameList extends React.Component {
   )
 
   render() {
-    const { active_games, completed_games } = this.props;
+    const { activeGames, completedGames } = this.props;
 
-    if (!active_games) {
+    if (!activeGames) {
       return (<Loading />);
     }
 
@@ -152,7 +152,7 @@ class GameList extends React.Component {
           </thead>
           <tbody>
             {
-              active_games.map(game => (
+              activeGames.map(game => (
                 <tr key={game.game_id}>
                   <td
                     className="align-middle"
@@ -220,7 +220,8 @@ class GameList extends React.Component {
           </thead>
           <tbody>
             {
-              completed_games.map(game => (
+
+              completedGames.map(game => (
                 <tr key={game.id}>
                   <td
                     className="align-middle"
@@ -261,8 +262,8 @@ class GameList extends React.Component {
 
 // TODO: Add selector
 const mapStateToProps = state => ({
-  active_games: state.gameList.active_games,
-  completed_games: state.gameList.completed_games,
+  activeGames: state.gameList.activeGames,
+  completedGames: state.gameList.completedGames,
 });
 
 export default connect(mapStateToProps, null)(GameList);

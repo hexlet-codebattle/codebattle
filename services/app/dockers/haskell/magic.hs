@@ -13,4 +13,4 @@ main = do
         ExitSuccess -> return ()
         (ExitFailure _)-> do
             putStrLn $ "{\"status\": \"error\", \"result\":\"" ++ BSL.unpack (BSL.filter (\c -> ord c < 128 && c /= '\n') dateErr) ++ "\"}"
-            exitWith (ExitFailure 1)
+            exitWith (ExitFailure 0)

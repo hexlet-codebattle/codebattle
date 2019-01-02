@@ -36,7 +36,7 @@ rl.on("close", function() {
             status: "failure",
             result: check.arguments
           }));
-          process.exit(1);
+          process.exit(0);
         }
       }
     });
@@ -45,6 +45,6 @@ rl.on("close", function() {
       status: "error",
       result: e.message
     }));
-    process.exit(1);
+    process.exit(0);
   }
 });

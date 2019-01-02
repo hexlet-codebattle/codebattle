@@ -18,6 +18,7 @@ defmodule Codebattle.User do
     field(:lang, :string)
     field(:editor_mode, :string)
     field(:editor_theme, :string)
+    field(:public_id, :binary_id)
     field(:guest, :boolean, virtual: true, default: false)
     field(:bot, :boolean, virtual: true, default: false)
     field(:creator, :boolean, virtual: true, default: false)

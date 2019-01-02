@@ -28,7 +28,7 @@ class ExecutionOutput extends PureComponent {
           return (`Test falls with arguments (${resultObj.result.map(JSON.stringify).join(', ')})`);
         }
         return (`Test falls with arguments (${JSON.stringify(resultObj.result)})`);
-      case 'success':
+      case 'ok':
         return ('Yay! All tests are passed!!111');
       default:
         return 'Oops';
