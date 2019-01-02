@@ -14,7 +14,7 @@ class GameActionButtons extends Component {
     status: GameStatusCodes.initial,
   }
 
-  renderCheckResultButton = (canCheckResult, checkResult, gameStatus) => {
+  renderCheckResultButton = (canCheckResult, checkResult, gameStatus, disabled) => {
     if (!canCheckResult) {
       return null;
     }
@@ -22,9 +22,9 @@ class GameActionButtons extends Component {
     return (
       <button
         type="button"
-        className="btn btn-success btn-sm"
+        className="btn btn-success btn-sm ml-auto"
         onClick={checkResult}
-        disabled={gameStatus.checking}
+        disabled={disabled || gameStatus.checking}
       >
         {gameStatus.checking ? (
           <span className="fa fa-cog fa-spin mr-1" />
@@ -37,7 +37,7 @@ class GameActionButtons extends Component {
     );
   }
 
-  renderGiveUpButton = (canGiveUp) => {
+  renderGiveUpButton = (canGiveUp, disabled) => {
     if (!canGiveUp) {
       return null;
     }
@@ -47,6 +47,7 @@ class GameActionButtons extends Component {
         type="button"
         className="btn btn-outline-danger btn-sm"
         onClick={sendGiveUp}
+        disabled={disabled}
       >
         <span className="fa fa-times-circle mr-1" />
         {i18n.t('Give up')}
@@ -57,6 +58,7 @@ class GameActionButtons extends Component {
 
   render() {
     const {
+      disabled,
       gameStatus,
       checkResult,
       currentUser,
@@ -64,15 +66,15 @@ class GameActionButtons extends Component {
     const userType = currentUser.type;
     const isSpectator = userType === userTypes.spectator;
     const allowedGameStatusCodes = [GameStatusCodes.playing, GameStatusCodes.gameOver];
-    const canGiveUp = gameStatus.status === GameStatusCodes.playing && !isSpectator;
-    const canCheckResult = _.includes(allowedGameStatusCodes, gameStatus.status)
-      && userType && !isSpectator;
+    const canGiveUp = gameStatus.status === GameStatusCodes.playing;
+    const canCheckResult = _.includes(allowedGameStatusCodes, gameStatus.status);
+    const realDisabled = isSpectator || disabled;
 
     return (
       <Hotkeys keyName="ctrl+Enter" onKeyUp={checkResult}>
-        <div className="btn-toolbar justify-content-between pb-2" role="toolbar">
-          {this.renderGiveUpButton(canGiveUp)}
-          {this.renderCheckResultButton(canCheckResult, checkResult, gameStatus)}
+        <div className="btn-toolbar pb-2" role="toolbar">
+          {this.renderGiveUpButton(canGiveUp, realDisabled)}
+          {this.renderCheckResultButton(canCheckResult, checkResult, gameStatus, realDisabled)}
         </div>
       </Hotkeys>
     );

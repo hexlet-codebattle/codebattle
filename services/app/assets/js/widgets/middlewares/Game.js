@@ -15,55 +15,51 @@ const initGameChannel = (dispatch) => {
     const {
       status,
       winner,
-      starts_at,
-      first_player,
-      second_player,
-      first_player_editor_text,
-      second_player_editor_text,
-      first_player_editor_lang,
-      second_player_editor_lang,
+      starts_at: startsAt,
+      players: [user1, user2],
       task,
     } = response;
 
-    // const firstEditorLang = _.find(languages, { slug: first_player_editor_lang });
-    // const secondEditorLang = _.find(languages, { slug: second_player_editor_lang });
+    // const firstEditorLang = _.find(languages, { slug: user1.editor_lang });
+    const users = [{ ...user1, type: userTypes.firstPlayer }];
 
-    const users = [{
-      id: first_player.id,
-      name: first_player.name,
-      rating: first_player.rating,
-      github_id: first_player.github_id,
-      type: userTypes.firstPlayer,
-    }];
-
-    if (second_player.id) {
-      users.push({
-        id: second_player.id,
-        name: second_player.name,
-        rating: second_player.rating,
-        github_id: second_player.github_id,
-        type: userTypes.secondPlayer,
-      });
+    if (user2) {
+      // const secondEditorLang = _.find(languages, { slug: user2.editor_lang });
+      users.push({ ...user2, type: userTypes.secondPlayer });
     }
 
     dispatch(actions.updateUsers({ users }));
 
     dispatch(actions.updateEditorText({
-      userId: first_player.id,
-      text: first_player_editor_text,
-      langSlug: first_player_editor_lang,
+      userId: user1.id,
+      text: user1.editor_text,
+      langSlug: user1.editor_lang,
     }));
 
-    if (second_player.id) {
+    dispatch(actions.updateExecutionOutput({
+      userId: user1.id,
+      result: user1.result,
+      output: user1.output,
+    }));
+
+    if (user2) {
       dispatch(actions.updateEditorText({
-        userId: second_player.id,
-        text: second_player_editor_text,
-        langSlug: second_player_editor_lang,
+        userId: user2.id,
+        text: user2.editor_text,
+        langSlug: user2.editor_lang,
+      }));
+
+      dispatch(actions.updateExecutionOutput({
+        userId: user2.id,
+        result: user2.result,
+        output: user2.output,
       }));
     }
 
-    dispatch(actions.setGameTask({ task }));
-    dispatch(actions.updateGameStatus({ status, winner, startsAt: starts_at }));
+    if (task) {
+      dispatch(actions.setGameTask({ task }));
+    }
+    dispatch(actions.updateGameStatus({ status, winner, startsAt }));
     dispatch(actions.finishStoreInit());
   };
 
@@ -127,48 +123,34 @@ export const editorReady = () => (dispatch) => {
   channel.on('user:joined', ({
     status,
     winner,
-    first_player,
-    second_player,
-    first_player_editor_text,
-    first_player_editor_lang,
-    second_player_editor_text,
-    second_player_editor_lang,
+    starts_at: startsAt,
+    players: [user1, user2],
+    task,
   }) => {
-    // TODO: Add strong refactoring
-    // const firstEditorLang = _.find(languages, { slug: first_player_editor_lang });
-    // const secondEditorLang = _.find(languages, { slug: second_player_editor_lang });
+    const users = [
+      { ...user1, type: userTypes.firstPlayer },
+      { ...user2, type: userTypes.secondPlayer },
+    ];
 
-    dispatch(actions.updateUsers({
-      users: [{
-        id: first_player.id,
-        name: first_player.name,
-        rating: first_player.rating,
-        github_id: first_player.github_id,
-        type: userTypes.firstPlayer,
-      }, {
-        id: second_player.id,
-        name: second_player.name,
-        rating: second_player.rating,
-        github_id: second_player.github_id,
-        type: userTypes.secondPlayer,
-      }],
-    }));
+    dispatch(actions.updateUsers({ users }));
+    dispatch(actions.setGameTask({ task }));
 
     dispatch(actions.updateEditorText({
-      userId: first_player.id,
-      text: first_player_editor_text,
-      langSlug: first_player_editor_lang,
+      userId: user1.id,
+      text: user1.editor_text,
+      langSlug: user1.editor_lang,
     }));
 
-    if (second_player.id) {
+
+    if (user2) {
       dispatch(actions.updateEditorText({
-        userId: second_player.id,
-        text: second_player_editor_text,
-        langSlug: second_player_editor_lang,
+        userId: user2.id,
+        text: user2.editor_text,
+        langSlug: user2.editor_lang,
       }));
     }
 
-    dispatch(actions.updateGameStatus({ status, winner }));
+    dispatch(actions.updateGameStatus({ status, winner, startsAt }));
   });
 
   channel.on('user:won', ({ winner, status, msg }) => {

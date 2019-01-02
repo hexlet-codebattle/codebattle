@@ -33,13 +33,7 @@ defmodule Codebattle.GameProcess.ActiveGames do
         game_id = fsm.data.game_id
         users = %{user.id => user}
 
-        game_params = %{
-          level: fsm.data.task.level,
-          state: fsm.state,
-          inserted_at: fsm.data.inserted_at
-        }
-
-        :ets.insert(@table_name, {game_key(game_id), users, game_params})
+        :ets.insert(@table_name, {game_key(game_id), users, game_params(fsm)})
         :ok
     end
   end
@@ -52,12 +46,7 @@ defmodule Codebattle.GameProcess.ActiveGames do
       |> FsmHelpers.get_users()
       |> Enum.reduce(%{}, fn user, acc -> Map.put(acc, user.id, user) end)
 
-    game_params = %{
-      level: fsm.data.task.level,
-      state: fsm.state
-    }
-
-    :ets.update_element(@table_name, game_key(game_id), [{2, users}, {3, game_params}])
+    :ets.update_element(@table_name, game_key(game_id), [{2, users}, {3, game_params(fsm)}])
     :ok
   end
 
@@ -80,13 +69,13 @@ defmodule Codebattle.GameProcess.ActiveGames do
       |> FsmHelpers.get_users()
       |> Enum.reduce(%{}, fn user, acc -> Map.put(acc, user.id, user) end)
 
-    game_params = %{
-      level: fsm.data.task.level,
-      state: fsm.state,
-      inserted_at: fsm.data.inserted_at
-    }
+    # game_params = %{
+    #   level: fsm.data.task_level,
+    #   state: fsm.state,
+    #   starts_at: fsm.data.starts_at
+    # }
 
-    :ets.insert(@table_name, {game_key(game_id), users, game_params})
+    :ets.insert(@table_name, {game_key(game_id), users, game_params(fsm)})
   end
 
   defp game_key(game_id) when is_integer(game_id) do
@@ -99,5 +88,13 @@ defmodule Codebattle.GameProcess.ActiveGames do
 
   defp game_key(game_id) when is_list(game_id) do
     game_id |> to_string |> game_key
+  end
+
+  defp game_params(fsm) do
+    %{
+      state: fsm.state,
+      level: fsm.data.level,
+      starts_at: fsm.data.starts_at
+    }
   end
 end

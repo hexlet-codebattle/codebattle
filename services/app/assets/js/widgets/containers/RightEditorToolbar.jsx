@@ -77,7 +77,7 @@ class RightEditorToolbar extends Component {
 
     return (
       <div className="btn-toolbar justify-content-between" role="toolbar">
-        {renderNameplate(users[rightUserId], onlineUsers)}
+        {renderNameplate(users[rightUserId].user, onlineUsers)}
         {WinnerTrophy(gameStatus, rightUserId)}
         <div className="btn-group" role="group" aria-label="Editor settings">
           {renderEditorHeightButtons(compressEditor, expandEditor, rightUserId)}

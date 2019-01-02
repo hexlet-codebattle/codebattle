@@ -1,6 +1,7 @@
 defmodule CodebattleWeb.UserSocket do
   use Phoenix.Socket
 
+  require Logger
   ## Channels
   channel("lobby", CodebattleWeb.LobbyChannel)
   channel("game:*", CodebattleWeb.GameChannel)
@@ -27,13 +28,19 @@ defmodule CodebattleWeb.UserSocket do
         socket = assign(socket, :current_user, Codebattle.Bot.Builder.build())
         {:ok, assign(socket, :user_id, 0)}
 
+      {:ok, "anonymus"} ->
+        socket = assign(socket, :current_user, %Codebattle.User{guest: true, id: "anonymus", name: "Anonymus"})
+        {:ok, assign(socket, :user_id, "anonymus")}
+
       {:ok, user_id} ->
         user = Codebattle.User |> Codebattle.Repo.get!(user_id)
         socket = assign(socket, :current_user, user)
         {:ok, assign(socket, :user_id, user_id)}
 
       {:error, _reason} ->
-        :error
+        Logger.error(_reason)
+        socket = assign(socket, :current_user, "guest")
+        {:ok, assign(socket, :user_id, "guest")}
     end
   end
 

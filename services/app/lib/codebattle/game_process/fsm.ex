@@ -20,14 +20,14 @@ defmodule Codebattle.GameProcess.Fsm do
       # Integer
       game_id: nil,
       # NaiveDateTime
-      inserted_at: nil,
+      starts_at: nil,
       # Task
       task: %Codebattle.Task{},
+      # level, appears before task created
+      level: "",
       # List with two players %Player{}
       players: []
     }
-
-  # Player [:id, user: %User{}, editor_text: "", editor_lang: "js", game_result: :undefined]
 
   # For tests
   def set_data(state, data) do
@@ -51,8 +51,7 @@ defmodule Codebattle.GameProcess.Fsm do
         data
         | game_id: params.game_id,
           players: [player],
-          task: params.task,
-          inserted_at: params.inserted_at
+          level: params.level
       })
     end
 
@@ -66,7 +65,7 @@ defmodule Codebattle.GameProcess.Fsm do
     defevent join(params), data: data do
       player = %Player{id: params.user.id, user: params.user}
       players = data.players ++ [player]
-      next_state(:playing, %{data | players: players})
+      next_state(:playing, %{data | players: players, starts_at: params.starts_at, task: params.task})
     end
 
     defevent update_editor_params(_params) do

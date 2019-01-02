@@ -13,7 +13,9 @@ defmodule CodebattleWeb.Plugs.AssignGon do
 
     case current_user.guest do
       true ->
+        user_token = Phoenix.Token.sign(conn, "user_token", "anonymus")
         conn
+        |> put_gon(user_token: user_token, current_user: %Codebattle.User{guest: true, id: "anonymus"})
 
       _ ->
         user_token = Phoenix.Token.sign(conn, "user_token", current_user.id)

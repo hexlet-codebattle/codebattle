@@ -8,6 +8,7 @@ import { fetchState } from '../middlewares/Lobby';
 import GameStatusCodes from '../config/gameStatusCodes';
 import Loading from '../components/Loading';
 import GamesHeatmap from '../components/GamesHeatmap';
+import UserName from '../components/UserName';
 
 class GameList extends React.Component {
   levelToClass = {
@@ -23,34 +24,35 @@ class GameList extends React.Component {
   }
 
 
-  renderPlayers = users => (
-    <Fragment>
-      {users.map(({
-        id, name, rating, github_id: githubId,
-      }) => (
+  renderPlayers = (users) => {
+    if (users.length === 1) {
+      return (
         <td
-          key={id}
+          className="align-middle"
+          style={{ whiteSpace: 'nowrap' }}
+          colSpan={2}
+        >
+          <UserName user={users[0]} />
+        </td>
+      );
+    }
+    return (
+      <Fragment>
+        <td
           className="align-middle"
           style={{ whiteSpace: 'nowrap' }}
         >
-          <a
-            className="nav-link"
-            href={`/users/${id}`}
-            key={githubId}
-            style={{ display: 'inline-block' }}
-          >
-            <img
-              className="attachment rounded mr-2"
-              alt={name}
-              src={`https://avatars0.githubusercontent.com/u/${githubId}`}
-              style={{ width: '25px' }}
-            />
-            {`${name}(${rating})`}
-          </a>
+          <UserName user={users[0]} />
         </td>
-      ))}
-    </Fragment>
-  )
+        <td
+          className="align-middle"
+          style={{ whiteSpace: 'nowrap' }}
+        >
+          <UserName user={users[1]} />
+        </td>
+      </Fragment>
+    );
+  }
 
   renderGameLevelBadge = level => (
     <div>
@@ -233,7 +235,7 @@ class GameList extends React.Component {
                     className="align-middle"
                     style={{ whiteSpace: 'nowrap' }}
                   >
-                    {this.renderGameLevelBadge(game.task_level)}
+                    {this.renderGameLevelBadge(game.level)}
                   </td>
 
                   {this.renderPlayers(game.players)}

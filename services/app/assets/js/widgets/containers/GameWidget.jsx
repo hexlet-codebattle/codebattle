@@ -93,14 +93,15 @@ class GameWidget extends Component {
           <div className="col-12 col-md-6" style={{ cursor: 'pointer' }}>
             <LeftEditorToolbar />
             <Editor {...this.getLeftEditorParams()} />
-            <GameActionButtons />
+            {/* TODO: move state to parent component */}
+            <GameActionButtons disabled={false}/>
             <ExecutionOutput output={leftOutput} />
           </div>
           <div className="col-12 col-md-6">
             <RightEditorToolbar />
             <Editor {...this.getRightEditorParams()} />
-            {/* TODO: Andrey please fix it */}
-            <div className="btn-toolbar justify-content-between pb-3 pt-4" role="toolbar" />
+            {/* TODO: move state to parent component */}
+            <GameActionButtons disabled={true}/>
             <ExecutionOutput output={rightOutput} />
           </div>
         </div>

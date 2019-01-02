@@ -119,7 +119,7 @@ class LeftEditorToolbar extends Component {
             {renderEditorHeightButtons(compressEditor, expandEditor, leftUserId)}
           </div>
           {WinnerTrophy(gameStatus, leftUserId)}
-          {renderNameplate(users[leftUserId], onlineUsers)}
+          {renderNameplate(users[leftUserId].user, onlineUsers)}
         </div>
         <ToastContainer {...toastOptions} />
       </Fragment>

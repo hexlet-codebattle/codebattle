@@ -17,16 +17,7 @@ defmodule CodebattleWeb.GameChannel do
     game_id = get_game_id(socket)
     game_info = Play.game_info(game_id)
 
-    fields = [
-      :status,
-      :winner,
-      :first_player,
-      :second_player,
-      :first_player_editor_text,
-      :second_player_editor_text,
-      :first_player_editor_lang,
-      :second_player_editor_lang
-    ]
+    fields = [ :status, :winner, :players, :task, :starts_at, :level]
 
     broadcast_from!(socket, "user:joined", Map.take(game_info, fields))
     {:noreply, socket}

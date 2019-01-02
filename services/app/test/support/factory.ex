@@ -15,7 +15,7 @@ defmodule CodebattleWeb.Factory do
   end
 
   def game_factory do
-    %Game{state: "waiting_opponent", task_id: build(:task).id}
+    %Game{state: "waiting_opponent", task: build(:task)}
   end
 
   def user_game_factory do

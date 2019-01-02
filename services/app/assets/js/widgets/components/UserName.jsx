@@ -10,18 +10,21 @@ const UserName = ({ user }) => {
       style={{ whiteSpace: 'nowrap' }}
       className="d-inline align-middle"
     >
-      <a
-        href={`/users/${user.id}`}
-        key={user.github_id}
-      >
-        <img
-          className="attachment rounded border mr-1"
-          alt={user.name}
-          src={`https://avatars0.githubusercontent.com/u/${user.github_id}`}
-          style={{ width: '25px' }}
-        />
-        {user.name + ratingStr}
-      </a>
+      { user.id === 'anonymus' ? ('Anonymus') : (
+        <a
+          href={`/users/${user.id}`}
+          key={user.github_id}
+        >
+          <img
+            className="attachment rounded border mr-1"
+            alt={user.name}
+            src={`https://avatars0.githubusercontent.com/u/${user.github_id}`}
+            style={{ width: '25px' }}
+          />
+          {user.name + ratingStr}
+        </a>
+
+        ) }
     </div>
   );
 };

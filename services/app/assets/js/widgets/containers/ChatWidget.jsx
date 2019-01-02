@@ -58,14 +58,14 @@ class ChatWidget extends React.Component {
       <div className="d-flex">
         <div className="card col-8 p-0">
           <div
-            className="card-body pb-0"
-            style={{
-              height: '180px',
-              overflowY: 'auto',
-            }}
+            className="card-body p-0"
           >
             <div className="card-text">
-              <Messages messages={messages} />
+              <Messages
+                messages={messages}
+                className="overflow-auto px-3 py-2"
+                style={{ height: '180px' }}
+              />
             </div>
           </div>
           <div className="card-footer p-0">
@@ -90,11 +90,8 @@ class ChatWidget extends React.Component {
           <div className="card-body p-0">
             <h6 className="card-title pl-3 pr-3 pt-3">{`Online users: ${users.length}`}</h6>
             <div
-              className="pl-3 pr-3"
-              style={{
-                height: '165px',
-                overflowY: 'auto',
-              }}
+              className="pl-3 pr-3 overflow-auto"
+              style={{ height: '165px' }}
             >
               {users.map(user => (
                 <div key={user.id} className="my-2">

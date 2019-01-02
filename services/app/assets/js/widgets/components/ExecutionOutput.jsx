@@ -19,7 +19,7 @@ class ExecutionOutput extends PureComponent {
 
   renderTestResults = (resultObj) => {
     switch (resultObj.status) {
-      case 'nothing':
+      case '':
         return 'Run your code!';
       case 'error':
         return `You have some syntax errors: ${resultObj.result}`;
@@ -48,7 +48,13 @@ class ExecutionOutput extends PureComponent {
     const resultObj = this.parseOutput(result);
 
     return (
-      <div className="card bg-light my-2" style={{ height: '200px', overflow: 'auto' }}>
+      <div
+        className="card bg-light my-2 overflow-auto"
+        style={{
+          minHeight: '200px',
+          maxHeight: '500px',
+        }}
+      >
         <div className="card-body">
           <div className="d-flex justify-content-between">
             <h6 className="card-title">Output</h6>
