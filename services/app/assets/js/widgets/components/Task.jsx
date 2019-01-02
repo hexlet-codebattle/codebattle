@@ -27,7 +27,11 @@ const renderTimer = (time, gameStatusName) => {
     return <Timer time={time} />;
   }
 
-  return <div><p>{gameStatusName}</p></div>;
+  return (
+    <div>
+      <p>{gameStatusName}</p>
+    </div>
+  );
 };
 
 const Task = ({ task, time, gameStatusName }) => {
@@ -36,22 +40,18 @@ const Task = ({ task, time, gameStatusName }) => {
   }
 
   return (
-    <div className="card">
+    <div className="card h-100">
       <div className="card-body">
-          <div className="d-flex justify-content-between">
-            <h6 className="card-title">
-              {'Task: '}
-              <span className="card-subtitle mb-2 text-muted">
-                {task.name}
-              </span>
-              <small className="ml-2">{renderGameLevelBadge(task.level)}</small>
-            </h6>
-            <div className="card-text">
-              <span className="text-muted">
-                {renderTimer(time, gameStatusName)}
-              </span>
-            </div>
+        <div className="d-flex justify-content-between">
+          <h6 className="card-title">
+            {'Task: '}
+            <span className="card-subtitle mb-2 text-muted">{task.name}</span>
+            <small className="ml-2">{renderGameLevelBadge(task.level)}</small>
+          </h6>
+          <div className="card-text">
+            <span className="text-muted">{renderTimer(time, gameStatusName)}</span>
           </div>
+        </div>
         <div className="card-text">
           <ReactMarkdown source={task.description} />
         </div>

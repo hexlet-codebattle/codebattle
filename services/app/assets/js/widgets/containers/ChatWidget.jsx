@@ -18,9 +18,9 @@ class ChatWidget extends React.Component {
     dispatch: PropTypes.func.isRequired,
   };
 
-  state = { message: '' }
+  state = { message: '' };
 
-  messagesEnd = null
+  messagesEnd = null;
 
   componentDidMount() {
     const { dispatch } = this.props;
@@ -30,46 +30,42 @@ class ChatWidget extends React.Component {
 
   handleChange = (e) => {
     this.setState({ message: e.target.value });
-  }
+  };
 
   sendMessage = () => {
     const { message } = this.state;
-    const { currentUser: { name } } = this.props;
+    const {
+      currentUser: { name },
+    } = this.props;
 
     if (message) {
       addMessage(name, message);
       this.setState({ message: '' });
     }
-  }
+  };
 
   handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       this.sendMessage();
     }
-  }
+  };
 
   render() {
     const { message } = this.state;
     const { messages, users } = this.props;
 
     return (
-      <div
-        className="card-group"
-        style={{ height: '100%' }}
-      >
+      <div className="d-flex">
         <div className="card col-8 p-0">
-          <div className="card-body pb-0">
+          <div
+            className="card-body pb-0"
+            style={{
+              height: '180px',
+              overflowY: 'auto',
+            }}
+          >
             <div className="card-text">
-              <Messages
-                messages={messages}
-                style={{
-                  display: 'inline-block',
-                  flexGrow: '1',
-                  width: '100%',
-                  maxHeight: '130px',
-                  overflowY: 'scroll',
-                }}
-              />
+              <Messages messages={messages} />
             </div>
           </div>
           <div className="card-footer p-0">
@@ -83,11 +79,7 @@ class ChatWidget extends React.Component {
                 onKeyPress={this.handleKeyPress}
               />
               <div className="input-group-append">
-                <button
-                  className="btn btn-light border"
-                  type="button"
-                  onClick={this.sendMessage}
-                >
+                <button className="btn btn-light border" type="button" onClick={this.sendMessage}>
                   Send
                 </button>
               </div>
@@ -95,15 +87,13 @@ class ChatWidget extends React.Component {
           </div>
         </div>
         <div className="card col-4 p-0">
-          <div className="card-body pb-0">
-            <h6 className="card-title">{`Online users: ${users.length}`}</h6>
+          <div className="card-body p-0">
+            <h6 className="card-title pl-3 pr-3 pt-3">{`Online users: ${users.length}`}</h6>
             <div
+              className="pl-3 pr-3"
               style={{
-                display: 'inline-block',
-                flexGrow: '1',
-                width: '100%',
-                maxHeight: '150px',
-                overflowY: 'scroll',
+                height: '165px',
+                overflowY: 'auto',
               }}
             >
               {users.map(user => (
@@ -128,4 +118,7 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps, null)(ChatWidget);
+export default connect(
+  mapStateToProps,
+  null,
+)(ChatWidget);
