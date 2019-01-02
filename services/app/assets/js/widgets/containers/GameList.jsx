@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
 import { connect } from 'react-redux';
@@ -8,7 +8,6 @@ import { fetchState } from '../middlewares/Lobby';
 import GameStatusCodes from '../config/gameStatusCodes';
 import Loading from '../components/Loading';
 import GamesHeatmap from '../components/GamesHeatmap';
-
 
 class GameList extends React.Component {
   levelToClass = {
@@ -25,26 +24,32 @@ class GameList extends React.Component {
 
 
   renderPlayers = users => (
-    <div>
+    <Fragment>
       {users.map(({
         id, name, rating, github_id: githubId,
       }) => (
-        <a
-          className="nav-link"
-          href={`/users/${id}`}
-          key={githubId}
-          style={{ display: 'inline-block' }}
+        <td
+          key={id}
+          className="align-middle"
+          style={{ whiteSpace: 'nowrap' }}
         >
-          <img
-            className="attachment rounded mr-2"
-            alt={name}
-            src={`https://avatars0.githubusercontent.com/u/${githubId}`}
-            style={{ width: '25px' }}
-          />
-          {`${name}(${rating})`}
-        </a>
+          <a
+            className="nav-link"
+            href={`/users/${id}`}
+            key={githubId}
+            style={{ display: 'inline-block' }}
+          >
+            <img
+              className="attachment rounded mr-2"
+              alt={name}
+              src={`https://avatars0.githubusercontent.com/u/${githubId}`}
+              style={{ width: '25px' }}
+            />
+            {`${name}(${rating})`}
+          </a>
+        </td>
       ))}
-    </div>
+    </Fragment>
   )
 
   renderGameLevelBadge = level => (
@@ -140,7 +145,7 @@ class GameList extends React.Component {
             <tr>
               <th>Date</th>
               <th>Level</th>
-              <th>Players</th>
+              <th colSpan="2">Players</th>
               <th>State</th>
               <th>Actions</th>
             </tr>
@@ -149,7 +154,6 @@ class GameList extends React.Component {
             {
               activeGames.map(game => (
                 <tr key={game.game_id}>
-
                   <td
                     className="align-middle"
                     style={{ whiteSpace: 'nowrap' }}
@@ -163,12 +167,8 @@ class GameList extends React.Component {
                     {this.renderGameLevelBadge(game.game_info.level)}
                   </td>
 
-                  <td
-                    className="align-middle"
-                    style={{ whiteSpace: 'nowrap' }}
-                  >
-                    {this.renderPlayers(game.users)}
-                  </td>
+                  {this.renderPlayers(game.users)}
+
                   <td
                     className="align-middle"
                     style={{ whiteSpace: 'nowrap' }}
@@ -213,16 +213,16 @@ class GameList extends React.Component {
             <tr>
               <th>Date</th>
               <th>Level</th>
-              <th>Players</th>
+              <th colSpan="2">Players</th>
               <th>Duration</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {
+
               completedGames.map(game => (
                 <tr key={game.id}>
-
                   <td
                     className="align-middle"
                     style={{ whiteSpace: 'nowrap' }}
@@ -236,12 +236,8 @@ class GameList extends React.Component {
                     {this.renderGameLevelBadge(game.task_level)}
                   </td>
 
-                  <td
-                    className="align-middle"
-                    style={{ whiteSpace: 'nowrap' }}
-                  >
-                    {this.renderPlayers(game.players)}
-                  </td>
+                  {this.renderPlayers(game.players)}
+
                   <td
                     className="align-middle"
                     style={{ whiteSpace: 'nowrap' }}
