@@ -333,6 +333,7 @@ defmodule Codebattle.GameProcess.Play do
         "easy"
       end
 
+    # TODO: add new random strategy!!!!
     query =
       from(
         t in Codebattle.Task,
