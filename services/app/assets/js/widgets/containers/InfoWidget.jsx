@@ -12,17 +12,17 @@ class InfoWidget extends Component {
     }).isRequired,
     gameStatusName: PropTypes.string.isRequired,
     startsAt: PropTypes.string.isRequired,
-  }
+  };
 
   render() {
     const { taskText, gameStatusName, startsAt } = this.props;
 
     return (
       <div className="row my-4">
-        <div className="col-12 col-lg-6">
+        <div className="col-12 col-lg-6 my-2">
           <Task task={taskText} time={startsAt} gameStatusName={gameStatusName} />
         </div>
-        <div className="col-12 col-lg-6">
+        <div className="col-12 col-lg-6 my-2">
           <ChatWidget />
         </div>
       </div>

@@ -15,25 +15,25 @@ class ExecutionOutput extends PureComponent {
     };
 
     return <span className={`badge badge-${stautsColors[status]}`}>{status}</span>;
-  }
+  };
 
   renderTestResults = (resultObj) => {
     switch (resultObj.status) {
       case 'nothing':
-        return ('Run your code!');
+        return 'Run your code!';
       case 'error':
-        return (`You have some syntax errors: ${resultObj.result}`);
+        return `You have some syntax errors: ${resultObj.result}`;
       case 'failure':
         if (Array.isArray(resultObj.result)) {
-          return (`Test falls with arguments (${resultObj.result.map(JSON.stringify).join(', ')})`);
+          return `Test falls with arguments (${resultObj.result.map(JSON.stringify).join(', ')})`;
         }
-        return (`Test falls with arguments (${JSON.stringify(resultObj.result)})`);
+        return `Test falls with arguments (${JSON.stringify(resultObj.result)})`;
       case 'ok':
-        return ('Yay! All tests are passed!!111');
+        return 'Yay! All tests are passed!!111';
       default:
         return 'Oops';
     }
-  }
+  };
 
   parseOutput = (result) => {
     try {
@@ -41,14 +41,14 @@ class ExecutionOutput extends PureComponent {
     } catch (e) {
       return { result: 'something went wrong!', status: 'error' };
     }
-  }
+  };
 
   render() {
     const { output: { output, result } = {} } = this.props;
     const resultObj = this.parseOutput(result);
 
     return (
-      <div className="card bg-light my-2" style={{ height: '200px' }}>
+      <div className="card bg-light my-2" style={{ height: '200px', overflow: 'auto' }}>
         <div className="card-body">
           <div className="d-flex justify-content-between">
             <h6 className="card-title">Output</h6>
@@ -59,13 +59,9 @@ class ExecutionOutput extends PureComponent {
             </div>
           </div>
           <p className="card-text">
-            <code>
-              {this.renderTestResults(resultObj)}
-            </code>
+            <code>{this.renderTestResults(resultObj)}</code>
           </p>
-          <pre className="card-text">
-            {output}
-          </pre>
+          <pre className="card-text">{output}</pre>
         </div>
       </div>
     );
