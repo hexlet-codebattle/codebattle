@@ -20,7 +20,7 @@ const renderNameplate = (user = {}, onlineUsers) => {
     <div>
       <UserName user={user} />
       <span
-        className="d-inline ml-3 fa fa-plug"
+        className="fa fa-plug align-middle ml-2"
         style={{ color }}
       />
     </div>
