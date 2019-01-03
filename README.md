@@ -11,7 +11,6 @@
 * Mac / Linux
 * Docker
 * Docker Compose
-* Ansible (installed using pip3)
 
 ### Install
 

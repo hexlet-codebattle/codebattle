@@ -1,4 +1,3 @@
-U := ubuntu
 
 ansible-deps-install:
 	ansible-galaxy install -r requirements.yml
@@ -6,10 +5,10 @@ ansible-deps-install:
 ansible-development-setup:
 	mkdir -p tmp
 	echo 'asdf' > tmp/ansible-vault-password
-	ansible-playbook ansible/development.yml -i ansible/development -vv
+	docker run  -v $(CURDIR):/app -w /app williamyeh/ansible:ubuntu18.04 ansible-playbook ansible/development.yml -i ansible/development -vv
 
 ansible-development-update-env:
-	ansible-playbook ansible/development.yml -i ansible/development -vv --tag env
+	docker run  -v $(CURDIR):/app -w /app williamyeh/ansible:ubuntu18.04 ansible-playbook ansible/development.yml -i ansible/development -vv --tag env
 
 ansible-vaults-encrypt:
 	ansible-vault encrypt ansible/production/group_vars/all/vault.yml

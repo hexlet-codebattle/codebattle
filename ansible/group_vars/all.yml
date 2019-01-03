@@ -1,3 +1,2 @@
-ansible_python_interpreter: "/usr/bin/env python3"
 codebattle_app_image_name: "codebattle/app"
 codebattle_nginx_image_name: "codebattle/nginx"
