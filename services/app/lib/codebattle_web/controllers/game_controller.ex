@@ -56,7 +56,7 @@ defmodule CodebattleWeb.GameController do
   def join(conn, %{"id" => id}) do
     case Play.join_game(id, conn.assigns.current_user) do
       {:ok, fsm} ->
-        CodebattleWeb.Endpoint.broadcast("lobby", "update:game", %{game: fsm})
+        Task.async(fn -> CodebattleWeb.Endpoint.broadcast("lobby", "update:game", %{game: fsm}) end)
 
         conn
         # |> put_flash(:info, gettext("Joined the game"))

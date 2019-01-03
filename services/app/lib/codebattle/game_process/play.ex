@@ -43,14 +43,18 @@ defmodule Codebattle.GameProcess.Play do
         |> Enum.filter(fn user_game -> user_game.result == "won" end)
         |> List.first()
 
-      winner = Map.get(winner_user_game, :user) |> Map.merge(%{creator: winner_user_game.creator})
+      winner =
+        Map.get(winner_user_game, :user)
+        |> Map.merge(%{creator: winner_user_game.creator, game_result: winner_user_game.result})
 
       loser_user_game =
         game.user_games
         |> Enum.filter(fn user_game -> user_game.result != "won" end)
         |> List.first()
 
-      loser = Map.get(loser_user_game, :user) |> Map.merge(%{creator: loser_user_game.creator})
+      loser =
+        Map.get(loser_user_game, :user)
+        |> Map.merge(%{creator: loser_user_game.creator, game_result: loser_user_game.result})
 
       %{updated_at: updated_at} = game
 
@@ -80,7 +84,6 @@ defmodule Codebattle.GameProcess.Play do
   def create_game(user, level) do
     case ActiveGames.playing?(user.id) do
       false ->
-
         game =
           Repo.insert!(%Game{
             state: "waiting_opponent",
@@ -93,7 +96,7 @@ defmodule Codebattle.GameProcess.Play do
           |> Fsm.create(%{
             user: user,
             game_id: game.id,
-            level: level,
+            level: level
           })
 
         ActiveGames.create_game(user, fsm)
@@ -118,14 +121,18 @@ defmodule Codebattle.GameProcess.Play do
     else
       game = get_game(id)
 
+      # TODO: improve task query here
       task = get_random_task(game.task_level)
 
       game
       |> Game.changeset(%{state: "playing", task_id: task.id})
       |> Repo.update!()
 
-      case Server.call_transition(id, :join, %{user: user, starts_at: NaiveDateTime.utc_now(), task: task}) do
-
+      case Server.call_transition(id, :join, %{
+             user: user,
+             starts_at: NaiveDateTime.utc_now(),
+             task: task
+           }) do
         {:ok, fsm} ->
           ActiveGames.add_participant(user, fsm)
 
@@ -249,16 +256,15 @@ defmodule Codebattle.GameProcess.Play do
     Checker.check(task, editor_text, lang_slug)
   end
 
-  defp handle_won_game(id, user, fsm) do
-    RecorderServer.store(id, user.id)
+  defp handle_won_game(id, winner, fsm) do
+    RecorderServer.store(id, winner.id)
     # TODO: make async
     # TODO: optimize code with handle_gave_up
     game_id = id |> Integer.parse() |> elem(0)
-    winner = FsmHelpers.get_player(fsm, user.id)
-    loser = FsmHelpers.get_opponent(fsm.data, user.id)
+    loser = FsmHelpers.get_opponent(fsm.data, winner.id)
     difficulty = fsm.data.level
 
-    {winner_rating, loser_rating} = Elo.calc_elo(user.rating, loser.rating, difficulty)
+    {winner_rating, loser_rating} = Elo.calc_elo(winner.rating, loser.rating, difficulty)
 
     game_id
     |> get_game
@@ -268,7 +274,7 @@ defmodule Codebattle.GameProcess.Play do
     # TODO: fix creator please!!!!!
     Repo.insert!(%UserGame{
       game_id: game_id,
-      user_id: user.id,
+      user_id: winner.id,
       result: "won",
       creator: winner.creator
     })
@@ -280,8 +286,8 @@ defmodule Codebattle.GameProcess.Play do
       creator: loser.creator
     })
 
-    if user.id != 0 do
-      user
+    if winner.id != 0 do
+      winner
       |> User.changeset(%{rating: winner_rating})
       |> Repo.update!()
     end
@@ -295,23 +301,23 @@ defmodule Codebattle.GameProcess.Play do
     ActiveGames.terminate_game(game_id)
   end
 
-  defp handle_gave_up(id, user, fsm) do
+  defp handle_gave_up(id, loser, fsm) do
     game_id = id |> Integer.parse() |> elem(0)
-    winner = FsmHelpers.get_opponent(fsm.data, user.id)
+    winner = FsmHelpers.get_opponent(fsm.data, loser.id)
     difficulty = fsm.data.level
 
-    {winner_rating, loser_rating} = Elo.calc_elo(winner.rating, user.rating, difficulty)
+    {winner_rating, loser_rating} = Elo.calc_elo(winner.rating, loser.rating, difficulty)
 
     game_id
     |> get_game
     |> Game.changeset(%{state: to_string(fsm.state)})
     |> Repo.update!()
 
-    Repo.insert!(%UserGame{game_id: game_id, user_id: user.id, result: "gave_up"})
-    Repo.insert!(%UserGame{game_id: game_id, user_id: winner.id, result: "won"})
+    Repo.insert!(%UserGame{game_id: game_id, user_id: loser.id, result: "gave_up", creator: loser.creator})
+    Repo.insert!(%UserGame{game_id: game_id, user_id: winner.id, result: "won", creator: winner.creator})
 
-    if user.id != 0 do
-      user
+    if loser.id != 0 do
+      loser
       |> User.changeset(%{rating: loser_rating})
       |> Repo.update!()
     end

@@ -7,7 +7,18 @@ defmodule Codebattle.User do
   import Ecto.Query
 
   @derive {Poison.Encoder,
-           only: [:id, :name, :rating, :guest, :github_id, :lang, :editor_mode, :editor_theme]}
+           only: [
+             :id,
+             :name,
+             :rating,
+             :guest,
+             :github_id,
+             :lang,
+             :editor_mode,
+             :editor_theme,
+             :creator,
+             :game_result
+           ]}
 
   schema "users" do
     field(:name, :string)
@@ -22,6 +33,7 @@ defmodule Codebattle.User do
     field(:guest, :boolean, virtual: true, default: false)
     field(:bot, :boolean, virtual: true, default: false)
     field(:creator, :boolean, virtual: true, default: false)
+    field(:game_result, :string, virtual: true)
 
     has_many(:user_games, Codebattle.UserGame)
     has_many(:games, through: [:user_games, :game])
@@ -34,7 +46,16 @@ defmodule Codebattle.User do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:name, :github_name, :email, :github_id, :rating, :lang, :editor_mode, :editor_theme])
+    |> cast(params, [
+      :name,
+      :github_name,
+      :email,
+      :github_id,
+      :rating,
+      :lang,
+      :editor_mode,
+      :editor_theme
+    ])
     |> validate_required([:name, :email, :github_id])
   end
 
@@ -44,6 +65,7 @@ defmodule Codebattle.User do
     |> unique_constraint(:name)
     |> validate_length(:name, min: 3, max: 16)
   end
+
   # TODO add lang validation
   # def lang_changeset(struct, params \\ %{}) do
   #   struct
