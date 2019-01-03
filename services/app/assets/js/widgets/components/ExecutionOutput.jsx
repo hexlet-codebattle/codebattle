@@ -48,13 +48,7 @@ class ExecutionOutput extends PureComponent {
     const resultObj = this.parseOutput(result);
 
     return (
-      <div
-        className="card bg-light my-2 overflow-auto"
-        style={{
-          minHeight: '200px',
-          maxHeight: '500px',
-        }}
-      >
+      <div className="card bg-light my-2">
         <div className="card-body">
           <div className="d-flex justify-content-between">
             <h6 className="card-title">Output</h6>
@@ -64,10 +58,10 @@ class ExecutionOutput extends PureComponent {
               {this.renderStatusBadge(resultObj.status)}
             </div>
           </div>
-          <p className="card-text">
+          <p className="card-text mb-0">
             <code>{this.renderTestResults(resultObj)}</code>
           </p>
-          <pre className="card-text">{output}</pre>
+          <pre className="card-text d-none d-md-block mt-3">{output}</pre>
         </div>
       </div>
     );
