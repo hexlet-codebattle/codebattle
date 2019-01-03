@@ -58,10 +58,10 @@ class ExecutionOutput extends PureComponent {
               {this.renderStatusBadge(resultObj.status)}
             </div>
           </div>
-          <p className="card-text">
+          <p className="card-text mb-0">
             <code>{this.renderTestResults(resultObj)}</code>
           </p>
-          <pre className="card-text d-none d-md-block">{output}</pre>
+          <pre className="card-text d-none d-md-block mt-3">{output}</pre>
         </div>
       </div>
     );
