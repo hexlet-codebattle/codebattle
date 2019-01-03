@@ -23,56 +23,40 @@ class GameList extends React.Component {
     dispatch(fetchState());
   }
 
-
   renderPlayers = (users) => {
     if (users.length === 1) {
       return (
-        <td
-          className="align-middle"
-          style={{ whiteSpace: 'nowrap' }}
-          colSpan={2}
-        >
+        <td className="align-middle" style={{ whiteSpace: 'nowrap' }} colSpan={2}>
           <UserName user={users[0]} />
         </td>
       );
     }
     return (
       <Fragment>
-        <td
-          className="align-middle"
-          style={{ whiteSpace: 'nowrap' }}
-        >
+        <td className="align-middle" style={{ whiteSpace: 'nowrap' }}>
           <UserName user={users[0]} />
         </td>
-        <td
-          className="align-middle"
-          style={{ whiteSpace: 'nowrap' }}
-        >
+        <td className="align-middle" style={{ whiteSpace: 'nowrap' }}>
           <UserName user={users[1]} />
         </td>
       </Fragment>
     );
-  }
+  };
 
   renderGameLevelBadge = level => (
     <div>
       <span className={`badge badge-pill badge-${this.levelToClass[level]} mr-1`}>&nbsp;</span>
       {level}
     </div>
-  )
+  );
 
-  isPlayer = (user, game) => !_.isEmpty(_.find(game.users, { id: user.id }))
+  isPlayer = (user, game) => !_.isEmpty(_.find(game.users, { id: user.id }));
 
   renderShowGameButton = gameUrl => (
-    <button
-      type="button"
-      className="btn btn-info btn-sm"
-      data-method="get"
-      data-to={gameUrl}
-    >
+    <button type="button" className="btn btn-info btn-sm" data-method="get" data-to={gameUrl}>
       Show
     </button>
-  )
+  );
 
   renderGameActionButton = (game) => {
     const gameUrl = `/games/${game.game_id}`;
@@ -115,7 +99,7 @@ class GameList extends React.Component {
     }
 
     return null;
-  }
+  };
 
   renderStartNewGameButton = level => (
     <button
@@ -128,69 +112,64 @@ class GameList extends React.Component {
       <span className={`badge badge-pill badge-${this.levelToClass[level]} mr-1`}>&nbsp;</span>
       {level}
     </button>
-  )
+  );
 
   render() {
     const { activeGames, completedGames } = this.props;
 
     if (!activeGames) {
-      return (<Loading />);
+      return <Loading />;
     }
 
     return (
       <div>
-        <h3 className="text-center mt-3 mb-4">
-          Active games
-        </h3>
-        <table className="table table-hover table-sm">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Level</th>
-              <th colSpan="2">Players</th>
-              <th>State</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {
-              activeGames.map(game => (
+        <h3 className="text-center mt-3 mb-4">Active games</h3>
+        <div className="table-responsive">
+          <table className="table table-hover table-sm">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Level</th>
+                <th colSpan="2">Players</th>
+                <th>State</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {activeGames.map(game => (
                 <tr key={game.game_id}>
-                  <td
-                    className="align-middle"
-                    style={{ whiteSpace: 'nowrap' }}
-                  >
-                    {moment.utc(game.game_info.inserted_at).local().format('YYYY-MM-DD HH:mm')}
+                  <td className="align-middle" style={{ whiteSpace: 'nowrap' }}>
+                    {moment
+                      .utc(game.game_info.inserted_at)
+                      .local()
+                      .format('YYYY-MM-DD HH:mm')}
                   </td>
-                  <td
-                    className="align-middle"
-                    style={{ whiteSpace: 'nowrap' }}
-                  >
+                  <td className="align-middle" style={{ whiteSpace: 'nowrap' }}>
                     {this.renderGameLevelBadge(game.game_info.level)}
                   </td>
 
                   {this.renderPlayers(game.users)}
 
-                  <td
-                    className="align-middle"
-                    style={{ whiteSpace: 'nowrap' }}
-                  >
+                  <td className="align-middle" style={{ whiteSpace: 'nowrap' }}>
                     {game.game_info.state}
                   </td>
 
-                  <td
-                    className="align-middle"
-                  >
-                    {this.renderGameActionButton(game)}
-                  </td>
+                  <td className="align-middle">{this.renderGameActionButton(game)}</td>
                 </tr>
-              ))
-            }
-          </tbody>
-        </table>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
         <div className="btn-group" role="group">
-          <button id="btnGroupStartNewGame" type="button" className="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <button
+            id="btnGroupStartNewGame"
+            type="button"
+            className="btn btn-success dropdown-toggle"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
             Start a new game
           </button>
           <div className="dropdown-menu" aria-labelledby="btnGroupStartNewGame">
@@ -203,60 +182,47 @@ class GameList extends React.Component {
           </div>
         </div>
         <div className="row px-4 mt-5 justify-content-center">
-          <div className="col-6">
+          <div className="col-12 col-sm-8 col-md-6">
             <GamesHeatmap />
           </div>
         </div>
-        <h3 className="text-center mt-3 mb-4">
-          Completed games
-        </h3>
-        <table className="table table-hover table-sm">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Level</th>
-              <th colSpan="2">Players</th>
-              <th>Duration</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {
-
-              completedGames.map(game => (
+        <h3 className="text-center mt-3 mb-4">Completed games</h3>
+        <div className="table-responsive">
+          <table className="table table-hover table-sm">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Level</th>
+                <th colSpan="2">Players</th>
+                <th>Duration</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {completedGames.map(game => (
                 <tr key={game.id}>
-                  <td
-                    className="align-middle"
-                    style={{ whiteSpace: 'nowrap' }}
-                  >
-                    {moment.utc(game.updated_at).local().format('YYYY-MM-DD HH:mm')}
+                  <td className="align-middle" style={{ whiteSpace: 'nowrap' }}>
+                    {moment
+                      .utc(game.updated_at)
+                      .local()
+                      .format('YYYY-MM-DD HH:mm')}
                   </td>
-                  <td
-                    className="align-middle"
-                    style={{ whiteSpace: 'nowrap' }}
-                  >
+                  <td className="align-middle" style={{ whiteSpace: 'nowrap' }}>
                     {this.renderGameLevelBadge(game.level)}
                   </td>
 
                   {this.renderPlayers(game.players)}
 
-                  <td
-                    className="align-middle"
-                    style={{ whiteSpace: 'nowrap' }}
-                  >
+                  <td className="align-middle" style={{ whiteSpace: 'nowrap' }}>
                     {game.duration}
                   </td>
 
-                  <td
-                    className="align-middle"
-                  >
-                    {this.renderShowGameButton(`/games/${game.id}`)}
-                  </td>
+                  <td className="align-middle">{this.renderShowGameButton(`/games/${game.id}`)}</td>
                 </tr>
-              ))
-            }
-          </tbody>
-        </table>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     );
   }
@@ -268,4 +234,7 @@ const mapStateToProps = state => ({
   completedGames: state.gameList.completedGames,
 });
 
-export default connect(mapStateToProps, null)(GameList);
+export default connect(
+  mapStateToProps,
+  null,
+)(GameList);
