@@ -25,8 +25,8 @@ defmodule Codebattle.GameProcess.Notifier do
   def game_opponent_join(params) do
     OneSignal.new()
     |> put_heading("Game started")
-    |> put_message(:en, "Yo, #{params.creator.name} started playing your game")
-    |> put_message(:ru, "Yo, #{params.creator.name} начал играть в твою игру")
+    |> put_message(:en, "Yo, #{params.user.name} started playing your game")
+    |> put_message(:ru, "Yo, #{params.user.name} начал играть в твою игру")
     |> put_filter(%{key: "userId", value: params.creator.public_id, relation: "=", field: "tag"})
     |> notify
   end
