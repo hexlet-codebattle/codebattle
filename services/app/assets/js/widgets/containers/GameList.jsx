@@ -82,7 +82,7 @@ class GameList extends React.Component {
 
   renderGameActionButton = (game) => {
     const gameUrl = `/games/${game.game_id}`;
-    const user = Gon.getAsset('current_user');
+    const currentUser = Gon.getAsset('current_user');
     const gameState = game.game_info.state;
 
     if (gameState === GameStatusCodes.playing) {
@@ -90,7 +90,7 @@ class GameList extends React.Component {
     }
 
     if (gameState === GameStatusCodes.waitingOpponent) {
-      if (this.isPlayer(user, game)) {
+      if (this.isPlayer(currentUser, game)) {
         return (
           <div className="btn-group">
             {this.renderShowGameButton(gameUrl)}
@@ -106,7 +106,9 @@ class GameList extends React.Component {
           </div>
         );
       }
-
+      if (currentUser.id === 'anonymous') {
+        return null;
+      }
       return (
         <button
           type="button"
@@ -135,6 +137,35 @@ class GameList extends React.Component {
       {level}
     </button>
   );
+
+  renderStartNewGameSelector = () => {
+    const currentUser = Gon.getAsset('current_user');
+    if (currentUser.id === 'anonymous') {
+      return null;
+    }
+    return (
+      <div className="btn-group" role="group">
+        <button
+          id="btnGroupStartNewGame"
+          type="button"
+          className="btn btn-success dropdown-toggle"
+          data-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false"
+        >
+            Start a new game
+        </button>
+        <div className="dropdown-menu" aria-labelledby="btnGroupStartNewGame">
+          <div className="dropdown-header">Select a difficulty</div>
+          <div className="dropdown-divider" />
+          {this.renderStartNewGameButton('elementary')}
+          {this.renderStartNewGameButton('easy')}
+          {this.renderStartNewGameButton('medium')}
+          {this.renderStartNewGameButton('hard')}
+        </div>
+      </div>
+    );
+  }
 
   render() {
     const { activeGames, completedGames } = this.props;
@@ -182,27 +213,7 @@ class GameList extends React.Component {
             </tbody>
           </table>
         </div>
-
-        <div className="btn-group" role="group">
-          <button
-            id="btnGroupStartNewGame"
-            type="button"
-            className="btn btn-success dropdown-toggle"
-            data-toggle="dropdown"
-            aria-haspopup="true"
-            aria-expanded="false"
-          >
-            Start a new game
-          </button>
-          <div className="dropdown-menu" aria-labelledby="btnGroupStartNewGame">
-            <div className="dropdown-header">Select a difficulty</div>
-            <div className="dropdown-divider" />
-            {this.renderStartNewGameButton('elementary')}
-            {this.renderStartNewGameButton('easy')}
-            {this.renderStartNewGameButton('medium')}
-            {this.renderStartNewGameButton('hard')}
-          </div>
-        </div>
+        {this.renderStartNewGameSelector()}
         <div className="row px-4 mt-5 justify-content-center">
           <div className="col-12 col-sm-8 col-md-6">
             <GamesHeatmap />

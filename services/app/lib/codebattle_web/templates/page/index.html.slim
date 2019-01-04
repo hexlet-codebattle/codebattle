@@ -1,7 +1,14 @@
-h1.text-center = gettext "Welcome to %{name}!", name: "Codebattle"
-p.text-center.lead = gettext "%{name}: game for programmers.", name: "Codebattle"
-.text-center
-  a href="#{auth_path(@conn, :request, :github)}"
-    button.btn.btn-outline-success.btn-lg = "Start play"
-.embed-container
-  iframe src="https://player.vimeo.com/video/296164641?background=1&autoplay=1&loop=1&speed=2x" frameborder="0" allow="autoplay" webkitallowfullscreen mozallowfullscreen allowfullscreen
+= if @current_user.guest do
+  h1.text-center = gettext "Welcome to %{name}!", name: "Codebattle"
+  p.text-center.lead = gettext "%{name}: game for programmers.", name: "Codebattle"
+  .text-center
+    a href="#{auth_path(@conn, :request, :github)}"
+      button.btn.btn-outline-success.btn-lg = "Start play"
+    {/* .embed-container */}
+    {/*   iframe src="https://player.vimeo.com/video/296164641?background=1&autoplay=1&loop=1&speed=2x" frameborder="0" allow="autoplay" webkitallowfullscreen mozallowfullscreen allowfullscreen */}
+
+.row.justify-content-center
+  .col-12.col-lg-10.col-xl-8.mt-4
+    #game-list
+  javascript:
+      window.csrf_token = "<%= csrf_token() %>"

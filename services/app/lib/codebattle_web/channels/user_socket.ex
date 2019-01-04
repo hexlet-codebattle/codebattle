@@ -28,9 +28,9 @@ defmodule CodebattleWeb.UserSocket do
         socket = assign(socket, :current_user, Codebattle.Bot.Builder.build())
         {:ok, assign(socket, :user_id, 0)}
 
-      {:ok, "anonymus"} ->
-        socket = assign(socket, :current_user, %Codebattle.User{guest: true, id: "anonymus", name: "Anonymus"})
-        {:ok, assign(socket, :user_id, "anonymus")}
+      {:ok, "anonymous"} ->
+        socket = assign(socket, :current_user, %Codebattle.User{guest: true, id: "anonymous", name: "Anonymous"})
+        {:ok, assign(socket, :user_id, "anonymous")}
 
       {:ok, user_id} ->
         user = Codebattle.User |> Codebattle.Repo.get!(user_id)

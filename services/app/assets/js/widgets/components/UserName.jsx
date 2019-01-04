@@ -8,7 +8,7 @@ const UserName = ({
     id, github_id, name, rating, lang,
   },
 }) => {
-  const anonymusUser = (
+  const anonymousUser = (
     <span className="text-secondary">
       <span className="border rounded align-middle text-center p-1 mr-1">
         <i className="fa fa-lg fa-user-secret" aria-hidden="true" />
@@ -41,7 +41,7 @@ const UserName = ({
       style={{ whiteSpace: 'nowrap' }}
       className="d-inline align-middle"
     >
-      {id === 'anonymus' ? anonymusUser : githubUser}
+      {id === 'anonymous' ? anonymousUser : githubUser}
     </div>
   );
 };
