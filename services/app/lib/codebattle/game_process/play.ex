@@ -1,4 +1,6 @@
 defmodule Codebattle.GameProcess.Play do
+  require Logger
+
   @moduledoc """
   The GameProcess context.
   """
@@ -121,8 +123,8 @@ defmodule Codebattle.GameProcess.Play do
     else
       game = get_game(id)
 
-      # TODO: improve task query here
-      task = get_random_task(game.task_level)
+      user2 = get_fsm(id) |> FsmHelpers.get_users() |> List.first
+      task = get_random_task(game.task_level, [user.id, user2.id])
 
       game
       |> Game.changeset(%{state: "playing", task_id: task.id})
@@ -342,23 +344,26 @@ defmodule Codebattle.GameProcess.Play do
     ActiveGames.terminate_game(game_id)
   end
 
-  defp get_random_task(level) do
-    new_level =
-      if Enum.member?(Game.level_difficulties() |> Map.keys(), level) do
-        level
-      else
-        "easy"
-      end
+  defp get_random_task(level, user_ids) do
+    qry = """
+   WITH game_tasks AS ( SELECT count(games.id) as count, games.task_id FROM games
+    INNER JOIN "user_games" ON "user_games"."game_id" = "games"."id"
+    WHERE "games"."task_level" = $1 AND "user_games"."user_id" IN ($2, $3)
+    GROUP BY "games"."task_id")
 
-    # TODO: add new random strategy!!!!
-    query =
-      from(
-        t in Codebattle.Task,
-        order_by: fragment("RANDOM()"),
-        limit: 1,
-        where: ^[level: new_level]
-      )
+    SELECT "tasks".*, "game_tasks".* FROM tasks
+    LEFT JOIN game_tasks ON "tasks"."id" = "game_tasks"."task_id"
+    ORDER BY "game_tasks"."count" NULLS FIRST
+    LIMIT 1
+    """
+    res = Ecto.Adapters.SQL.query!(Repo, qry, [level, Enum.at(user_ids,0), Enum.at(user_ids,1) ]) # a
 
-    query |> Repo.all() |> Enum.at(0)
+    cols = Enum.map res.columns, &(String.to_atom(&1)) # b
+
+    tasks = Enum.map res.rows, fn(row) ->
+      struct(Codebattle.Task, Enum.zip(cols, row)) # c
+    end
+
+    List.first(tasks)
   end
 end

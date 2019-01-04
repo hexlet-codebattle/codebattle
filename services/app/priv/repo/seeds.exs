@@ -10,7 +10,7 @@ alias Codebattle.Repo
 # Codebattle.Repo.get_by(Codebattle.Task, id: 1) ||
 #     Codebattle.Repo.insert!(%Codebattle.Task{id: 1, description: "test_task"})
 
-#create a bot
+# create a bot
 # Codebattle.Repo.get_by(Codebattle.User, id: 0) ||
 #   Codebattle.Repo.insert!(%Codebattle.User{
 #     id: 0,
@@ -22,23 +22,33 @@ alias Codebattle.Repo
 #
 
 levels = ["elementary", "easy", "medium", "hard"]
-for level <- levels do
-  task_name = "test_task_#{level}"
-  task_data = %{
-    name: task_name,
-    description: "test sum: for ruby `def solution(a,b); a+b;end;`",
-    asserts: "{\"arguments\":[1,1],\"expected\":2}
+
+1..3
+|> Enum.each(fn x ->
+  for level <- levels do
+    task_name = "task_#{level}_#{:crypto.strong_rand_bytes(10) |> Base.encode32()}"
+
+    task_data = %{
+      name: task_name,
+      description: "test sum: for ruby `def solution(a,b); a+b;end;`",
+      asserts: "{\"arguments\":[1,1],\"expected\":2}
     {\"arguments\":[2,2],\"expected\":4}
-    "}
-  task = case Repo.get_by(Codebattle.Task, level: level, name: task_name) do
-    nil  -> %Codebattle.Task{}
-    task -> task
+    "
+    }
+
+    task =
+      case Repo.get_by(Codebattle.Task, level: level, name: task_name) do
+        nil -> %Codebattle.Task{}
+        task -> task
+      end
+
+    task
+    |> Codebattle.Task.changeset(Map.merge(task_data, %{level: level}))
+    |> Repo.insert_or_update!()
+
+    IO.puts("Upsert #{task_name}")
   end
-  task
-  |> Codebattle.Task.changeset(Map.merge(task_data, %{level: level}))
-  |> Repo.insert_or_update!
-  IO.puts "Upsert #{task_name}"
-end
+end)
 
 {output, _status} = System.cmd("mix", ["upload_langs"], stderr_to_stdout: true)
-IO.puts output
+IO.puts(output)
