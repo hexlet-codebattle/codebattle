@@ -1,31 +1,28 @@
 import React from 'react';
 import CalendarHeatmap from 'react-calendar-heatmap';
 import axios from 'axios';
-import Loading from '../components/Loading.jsx';
+import Loading from '../components/Loading';
+
+const getColorScale = (count) => {
+  if (count >= 5) {
+    return 'color-huge';
+  } if (count >= 3) {
+    return 'color-large';
+  } if (count >= 1) {
+    return 'color-small';
+  }
+  return 'color-empty';
+};
 
 class Heatmap extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      activities: null,
-    };
-  }
-
-  colorScale(count) {
-    if (count >= 5) {
-      return 'color-huge';
-    } if (count >= 3) {
-      return 'color-large';
-    } if (count >= 1) {
-      return 'color-small';
-    }
-    return 'color-empty';
+  state = {
+    activities: null,
   }
 
   componentDidMount() {
-    const user_id = window.location.pathname.split('/').pop();
-    axios.get(`/api/v1/${user_id}/activity`)
-      .then((response) => { console.log(response.data); this.setState(response.data); });
+    const userId = window.location.pathname.split('/').pop();
+    axios.get(`/api/v1/${userId}/activity`)
+      .then((response) => { this.setState(response.data); });
   }
 
   render() {
@@ -46,7 +43,7 @@ class Heatmap extends React.Component {
               if (!value) {
                 return 'color-empty';
               }
-              return this.colorScale(value.count);
+              return getColorScale(value.count);
             }}
             titleForValue={(value) => {
               if (!value) {

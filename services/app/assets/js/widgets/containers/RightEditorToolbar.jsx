@@ -12,7 +12,23 @@ import LanguagePicker from '../components/LanguagePicker';
 import UserName from '../components/UserName';
 import WinnerTrophy from '../components/WinnerTrophy';
 
-const renderNameplate = (user = {}, onlineUsers) => {
+class RightEditorToolbar extends Component {
+  static propTypes = {
+    users: PropTypes.shape({
+      id: PropTypes.number,
+      name: PropTypes.string,
+      rating: PropTypes.number,
+    }),
+  }
+
+  static defaultProps = {
+    status: GameStatusCodes.initial,
+    title: '',
+    users: {},
+    onlineUsers: [],
+  }
+
+renderNameplate = (user = {}, onlineUsers) => {
   const color = _.find(onlineUsers, { id: user.id }) ? 'green' : '#ccc';
   return (
     <div>
@@ -25,7 +41,7 @@ const renderNameplate = (user = {}, onlineUsers) => {
   );
 };
 
-const renderEditorHeightButtons = (compressEditor, expandEditor, userId) => (
+renderEditorHeightButtons = (compressEditor, expandEditor, userId) => (
   <div className="btn-group btn-group-sm mr-2" role="group" aria-label="Editor height">
     <button
       type="button"
@@ -44,52 +60,40 @@ const renderEditorHeightButtons = (compressEditor, expandEditor, userId) => (
   </div>
 );
 
-class RightEditorToolbar extends Component {
-  static propTypes = {
-    users: PropTypes.shape({
-      id: PropTypes.number,
-      name: PropTypes.string,
-      rating: PropTypes.number,
-    }),
+render() {
+  const {
+    rightEditorLangSlug,
+    rightUserId,
+    users,
+    onlineUsers,
+    gameStatus,
+    compressEditor,
+    expandEditor,
+  } = this.props;
+
+  if (rightEditorLangSlug === null) {
+    return null;
   }
 
-  static defaultProps = {
-    status: GameStatusCodes.initial,
-    title: '',
-    users: {},
-    onlineUsers: [],
-  }
-
-  render() {
-    const {
-      rightEditorLangSlug,
-      rightUserId,
-      users,
-      onlineUsers,
-      gameStatus,
-      compressEditor,
-      expandEditor,
-    } = this.props;
-
-    if (rightEditorLangSlug === null) {
-      return null;
-    }
-
-    return (
-      <div className="btn-toolbar justify-content-between" role="toolbar">
-        {renderNameplate(users[rightUserId].user, onlineUsers)}
-        {WinnerTrophy(gameStatus, rightUserId)}
-        <div className="btn-group" role="group" aria-label="Editor settings">
-          {renderEditorHeightButtons(compressEditor, expandEditor, rightUserId)}
-          <LanguagePicker
-            currentLangSlug={rightEditorLangSlug}
-            onChange={_.noop}
-            disabled
-          />
-        </div>
+  return (
+    <div className="btn-toolbar justify-content-between" role="toolbar">
+      {this.renderNameplate(users[rightUserId].user, onlineUsers)}
+      <WinnerTrophy
+        gameStatus={_.get(gameStatus, 'status')}
+        winnerId={_.get(gameStatus, ['winner', 'id'])}
+        userId={rightUserId}
+      />
+      <div className="btn-group" role="group" aria-label="Editor settings">
+        {this.renderEditorHeightButtons(compressEditor, expandEditor, rightUserId)}
+        <LanguagePicker
+          currentLangSlug={rightEditorLangSlug}
+          onChange={_.noop}
+          disabled
+        />
       </div>
-    );
-  }
+    </div>
+  );
+}
 }
 
 const mapStateToProps = (state) => {
