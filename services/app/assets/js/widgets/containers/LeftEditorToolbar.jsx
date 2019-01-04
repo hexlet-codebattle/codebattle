@@ -144,7 +144,6 @@ const mapStateToProps = (state) => {
     gameStatus: selectors.gameStatusSelector(state),
     title: selectors.gameStatusTitleSelector(state),
     task: selectors.gameTaskSelector(state),
-
   };
 };
 

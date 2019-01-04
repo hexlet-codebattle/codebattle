@@ -1,30 +1,47 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
+import LanguageIcon from './LanguageIcon';
 
-const UserName = ({ user }) => {
-  const ratingStr = _.isFinite(user.rating) ? ` (${user.rating})` : '';
+const UserName = ({
+  user: {
+    id, github_id, name, rating, lang,
+  },
+}) => {
+  const anonymusUser = (
+    <span className="text-secondary">
+      <span className="border rounded align-middle text-center p-1 mr-1">
+        <i className="fa fa-lg fa-user-secret" aria-hidden="true" />
+      </span>
+      {name}
+    </span>
+  );
+
+  const githubUser = (
+    <a
+      href={`/users/${id}`}
+      key={github_id}
+    >
+      <img
+        className="attachment rounded border mr-1"
+        alt={name}
+        src={`https://avatars0.githubusercontent.com/u/${github_id}`}
+        style={{ width: '25px' }}
+      />
+      <span className="mr-1">{name}</span>
+      <LanguageIcon lang={lang} />
+      <small>
+        {_.isFinite(rating) && rating}
+      </small>
+    </a>
+  );
 
   return (
     <div
       style={{ whiteSpace: 'nowrap' }}
       className="d-inline align-middle"
     >
-      { user.id === 'anonymus' ? ('Anonymus') : (
-        <a
-          href={`/users/${user.id}`}
-          key={user.github_id}
-        >
-          <img
-            className="attachment rounded border mr-1"
-            alt={user.name}
-            src={`https://avatars0.githubusercontent.com/u/${user.github_id}`}
-            style={{ width: '25px' }}
-          />
-          {user.name + ratingStr}
-        </a>
-
-        ) }
+      {id === 'anonymus' ? anonymusUser : githubUser}
     </div>
   );
 };

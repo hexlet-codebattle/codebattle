@@ -1,28 +1,18 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import Gon from 'gon';
+import LanguageIcon from './LanguageIcon';
 
 const languages = Gon.getAsset('langs');
 
-const getLangTitle = (lang) => {
-  const icons = {
-    js: 'icon-nodejs',
-    ruby: 'icon-ruby',
-    elixir: 'icon-elixir',
-    haskell: 'icon-haskell',
-    clojure: 'icon-clojure',
-    python: 'icon-python',
-    php: 'icon-php-alt',
-    perl: 'icon-perl',
-  };
-
-  return (
-    <span className={icons[lang.slug]}>
-      {`\u00a0${_.capitalize(lang.name)} ${lang.version}`}
-    </span>
-  );
-};
+const getLangTitle = ({ slug, name, version }) => (
+  <Fragment>
+    <LanguageIcon lang={slug} />
+    <span className="mx-1">{_.capitalize(name)}</span>
+    <small>{version}</small>
+  </Fragment>
+);
 
 const LanguagePicker = ({ currentLangSlug, onChange, disabled }) => {
   const [[currentLang], otherLangs] = _.partition(
