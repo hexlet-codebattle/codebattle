@@ -123,7 +123,7 @@ defmodule Codebattle.GameProcess.Play do
     else
       game = get_game(id)
 
-      user2 = get_fsm(id) |> FsmHelpers.get_users() |> List.first
+      user2 = get_fsm(id) |> FsmHelpers.get_users() |> List.first()
       task = get_random_task(game.task_level, [user.id, user2.id])
 
       game
@@ -346,7 +346,7 @@ defmodule Codebattle.GameProcess.Play do
 
   defp get_random_task(level, user_ids) do
     qry = """
-   WITH game_tasks AS ( SELECT count(games.id) as count, games.task_id FROM games
+    WITH game_tasks AS (SELECT count(games.id) as count, games.task_id FROM games
     INNER JOIN "user_games" ON "user_games"."game_id" = "games"."id"
     WHERE "games"."task_level" = $1 AND "user_games"."user_id" IN ($2, $3)
     GROUP BY "games"."task_id")
@@ -356,13 +356,15 @@ defmodule Codebattle.GameProcess.Play do
     ORDER BY "game_tasks"."count" NULLS FIRST
     LIMIT 1
     """
-    res = Ecto.Adapters.SQL.query!(Repo, qry, [level, Enum.at(user_ids,0), Enum.at(user_ids,1) ]) # a
 
-    cols = Enum.map res.columns, &(String.to_atom(&1)) # b
+    res = Ecto.Adapters.SQL.query!(Repo, qry, [level, Enum.at(user_ids, 0), Enum.at(user_ids, 1)])
 
-    tasks = Enum.map res.rows, fn(row) ->
-      struct(Codebattle.Task, Enum.zip(cols, row)) # c
-    end
+    cols = Enum.map(res.columns, &String.to_atom(&1))
+
+    tasks =
+      Enum.map(res.rows, fn row ->
+        struct(Codebattle.Task, Enum.zip(cols, row))
+      end)
 
     List.first(tasks)
   end

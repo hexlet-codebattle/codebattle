@@ -11,6 +11,7 @@ defmodule Codebattle.PlayGameTest do
 |> Enum.each(fn x ->
     insert(:task,level: "easy", name: Base.encode32(:crypto.strong_rand_bytes(10)))
 end)
+    insert(:task,level: "medium", name: Base.encode32(:crypto.strong_rand_bytes(10)))
 
     user1 = insert(:user, %{name: "first", email: "test1@test.test", github_id: 1, rating: 1000})
     user2 = insert(:user, %{name: "second", email: "test2@test.test", github_id: 2, rating: 1000})
