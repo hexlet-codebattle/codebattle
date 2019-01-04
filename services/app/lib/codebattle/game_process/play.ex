@@ -313,8 +313,19 @@ defmodule Codebattle.GameProcess.Play do
     |> Game.changeset(%{state: to_string(fsm.state)})
     |> Repo.update!()
 
-    Repo.insert!(%UserGame{game_id: game_id, user_id: loser.id, result: "gave_up", creator: loser.creator})
-    Repo.insert!(%UserGame{game_id: game_id, user_id: winner.id, result: "won", creator: winner.creator})
+    Repo.insert!(%UserGame{
+      game_id: game_id,
+      user_id: loser.id,
+      result: "gave_up",
+      creator: loser.creator
+    })
+
+    Repo.insert!(%UserGame{
+      game_id: game_id,
+      user_id: winner.id,
+      result: "won",
+      creator: winner.creator
+    })
 
     if loser.id != 0 do
       loser
