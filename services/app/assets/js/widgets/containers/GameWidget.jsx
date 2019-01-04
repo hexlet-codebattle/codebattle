@@ -18,6 +18,7 @@ import RightEditorToolbar from './RightEditorToolbar';
 import GameActionButtons from '../components/GameActionButtons';
 import { sendEditorText } from '../middlewares/Game';
 import ExecutionOutput from '../components/ExecutionOutput';
+import NotificationsHandler from './NotificationsHandler';
 
 // const languages = Gon.getAsset('langs');
 
@@ -105,6 +106,7 @@ class GameWidget extends Component {
             <ExecutionOutput output={rightOutput} />
           </div>
         </div>
+        <NotificationsHandler />
       </Fragment>
     );
   }

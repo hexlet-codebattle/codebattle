@@ -181,11 +181,14 @@ export const checkGameResult = () => (dispatch, getState) => {
       status, winner, solution_status: solutionStatus, output, result, user_id: userId,
     }) => {
       const newGameStatus = solutionStatus ? { status, winner } : {};
-      // !solutionStatus ? alert(output) : null;
       dispatch(actions.updateExecutionOutput({ output, result, userId }));
       dispatch(actions.updateGameStatus({ ...newGameStatus, solutionStatus, checking: false }));
     });
 };
 
-export const compressEditorHeight = userId => dispatch => dispatch(actions.compressEditorHeight({ userId }));
-export const expandEditorHeight = userId => dispatch => dispatch(actions.expandEditorHeight({ userId }));
+export const compressEditorHeight = (
+  userId => dispatch => dispatch(actions.compressEditorHeight({ userId }))
+);
+export const expandEditorHeight = (
+  userId => dispatch => dispatch(actions.expandEditorHeight({ userId }))
+);

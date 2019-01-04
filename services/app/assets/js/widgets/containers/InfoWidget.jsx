@@ -12,7 +12,7 @@ class InfoWidget extends Component {
     }).isRequired,
     gameStatusName: PropTypes.string.isRequired,
     startsAt: PropTypes.string.isRequired,
-  };
+  }
 
   render() {
     const { taskText, gameStatusName, startsAt } = this.props;
