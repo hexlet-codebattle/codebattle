@@ -38,3 +38,4 @@ tags
 # Generated reports
 cover
 .deliver/releases/
+.idea/
