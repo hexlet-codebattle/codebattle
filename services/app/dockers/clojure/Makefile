@@ -1,4 +1,4 @@
 test:
-	cat check/data.jsons | inlein checker.clj
+	cat check/data.jsons | clj -m checker
 
 .PHONY: test

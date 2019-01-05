@@ -11,7 +11,6 @@ defmodule Codebattle.CodeCheck.Php.IntegrationTest do
     user2 = insert(:user)
 
     task = insert(:task)
-    setup_lang(:php)
 
     socket1 = socket("user_id", %{user_id: user1.id, current_user: user1})
     socket2 = socket("user_id", %{user_id: user2.id, current_user: user2})
@@ -58,7 +57,7 @@ defmodule Codebattle.CodeCheck.Php.IntegrationTest do
     expected_result = %{
       "status" => "error",
       "result" =>
-        "Uncaught Error: Call to undefined function sdf() in /usr/src/app/check/solution.php:2"
+        "Uncaught Error: Call to undefined function solution() in /usr/src/app/checker.php:40"
     }
 
     assert expected_result == Poison.decode!(result)
@@ -93,7 +92,7 @@ defmodule Codebattle.CodeCheck.Php.IntegrationTest do
 
     ref =
       Phoenix.ChannelTest.push(socket1, "check_result", %{
-        editor_text: "function solution($a, $b) { return $a; }\n",
+        editor_text: "<?php\nfunction solution($a, $b) { return $a; }\n",
         lang: "php"
       })
 
@@ -137,7 +136,7 @@ defmodule Codebattle.CodeCheck.Php.IntegrationTest do
     Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: "test"})
 
     Phoenix.ChannelTest.push(socket1, "check_result", %{
-      editor_text: "function solution($x, $y){ return $x + $y; }\n",
+      editor_text: "<?php\nfunction solution($x, $y){ return $x + $y; }\n",
       lang: "php"
     })
 

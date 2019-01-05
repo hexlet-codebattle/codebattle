@@ -1,6 +1,6 @@
-FROM node:10.11.0-alpine
+FROM node:11.6.0
 
-RUN apk add --update make
+RUN apt-get update && apt-get install -y build-essential --no-install-recommends && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN npm i -g chai
 

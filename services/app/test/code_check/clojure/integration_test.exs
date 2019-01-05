@@ -11,7 +11,6 @@ defmodule Codebattle.CodeCheck.Clojure.IntegrationTest do
     user2 = insert(:user)
 
     task = insert(:task)
-    setup_lang(:clojure)
 
     socket1 = socket("user_id", %{user_id: user1.id, current_user: user1})
     socket2 = socket("user_id", %{user_id: user2.id, current_user: user2})
@@ -99,7 +98,7 @@ defmodule Codebattle.CodeCheck.Clojure.IntegrationTest do
     assert_reply(ref, :ok, %{output: output, result: result})
 
     assert Poison.decode!(result)["status"] == "error"
-    assert Poison.decode!(result)["result"] =~ "Unable to resolve symbol: sdf"
+    assert Poison.decode!(result)["result"] =~ "Syntax error compiling at"
 
     fsm = Server.fsm(game.id)
 

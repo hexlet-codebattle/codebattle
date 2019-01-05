@@ -8,22 +8,20 @@ defmodule Mix.Tasks.Dockers.Build do
   def run([slug]) do
     {:ok, _started} = Application.ensure_all_started(:codebattle)
 
-    spec_filepath = Path.join(root(), "priv/repo/seeds/langs.yml")
-    %{langs: langs} = YamlElixir.read_from_file!(spec_filepath, atoms: true)
-    lang = Enum.find(langs, fn lang -> lang.slug == slug end)
+    langs = Codebattle.Languages.meta
+    lang = Enum.find(langs, fn {lang, _map} -> lang == slug end) |> elem(1)
     build([lang])
   end
 
   def run(_) do
     {:ok, _started} = Application.ensure_all_started(:codebattle)
 
-    spec_filepath = Path.join(root(), "priv/repo/seeds/langs.yml")
-    %{langs: langs} = YamlElixir.read_from_file!(spec_filepath, atoms: true)
+    langs = Codebattle.Languages.meta
     build(langs)
   end
 
   defp build(langs) do
-    for lang <- langs do
+    for {_slug, lang} <- langs do
       command =
         "docker build -t #{lang.docker_image} --file #{root()}/dockers/#{lang.slug}/Dockerfile #{
           root()

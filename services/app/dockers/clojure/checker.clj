@@ -1,9 +1,7 @@
-#!/usr/bin/env inlein
-
-'{:dependencies [[org.clojure/clojure "1.8.0"] [org.clojure/data.json "0.2.6"]] :jvm-opts ["-Xmx1g" "-server"]}
-
-(require '[clojure.test :refer :all])
-(require '[clojure.data.json :as json])
+(ns checker
+  (:require
+    [clojure.test :refer :all]
+    [clojure.data.json :as json]))
 
 (try
   (load-file "check/solution.clj")
@@ -29,5 +27,5 @@
               (println (json/write-str {:status "failure" :result (:arguments x)}))
               (System/exit 0)
               ))))))
-
-(generate-tests prepared-data solution)
+(defn -main []
+  (generate-tests prepared-data solution))

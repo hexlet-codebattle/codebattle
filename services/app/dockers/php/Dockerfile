@@ -1,7 +1,6 @@
-FROM php:7.2-alpine
+FROM php:7.3
 
-RUN apk add --update make
-RUN apk add --update sed
+RUN apt-get update && apt-get install -y build-essential --no-install-recommends && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /usr/src/app
 

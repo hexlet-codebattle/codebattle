@@ -15,7 +15,7 @@ defmodule CodebattleWeb.Factory do
   end
 
   def game_factory do
-    %Game{state: "waiting_opponent", task: build(:task)}
+    %Game{state: "waiting_opponent", task: insert(:task)}
   end
 
   def user_game_factory do
@@ -31,7 +31,7 @@ defmodule CodebattleWeb.Factory do
 
   def task_factory do
     %Task{
-      name: "test_task",
+      name:   Base.encode16(:crypto.strong_rand_bytes(2)),
       description: "test sum",
       level: "easy",
       asserts: "{\"arguments\":[1,1],\"expected\":2}

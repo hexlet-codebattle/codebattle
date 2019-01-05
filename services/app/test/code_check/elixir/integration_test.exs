@@ -11,7 +11,6 @@ defmodule Codebattle.CodeCheck.Elixir.IntegrationTest do
     user2 = insert(:user)
 
     task = insert(:task)
-    setup_lang(:elixir)
 
     socket1 = socket("user_id", %{user_id: user1.id, current_user: user1})
     socket2 = socket("user_id", %{user_id: user2.id, current_user: user2})

@@ -13,17 +13,16 @@ defmodule Codebattle.CodeCheck.Checker do
 
       lang ->
         # TODO: add hash to data.jsons or forbid read data.jsons
-        docker_command_template = Application.fetch_env!(:codebattle, :docker_command_template)
-        {dir_path, check_code} = prepare_tmp_dir!(task, editor_text, lang)
-
-        volume =
-          case lang.slug do
-            "haskell" ->
-              "-v #{dir_path}:/usr/src/app/Check"
-
-            _ ->
-              "-v #{dir_path}:/usr/src/app/check"
+        docker_command_template =
+          case lang.base_image do
+            :ubuntu ->
+              Application.fetch_env!(:codebattle, :ubuntu_docker_command_template)
+            :alpine ->
+              Application.fetch_env!(:codebattle, :alpine_docker_command_template)
           end
+
+        {dir_path, check_code} = prepare_tmp_dir!(task, editor_text, lang)
+        volume = "-v #{dir_path}:/usr/src/app/#{lang.check_dir}"
 
         command =
           docker_command_template
@@ -32,7 +31,9 @@ defmodule Codebattle.CodeCheck.Checker do
 
         Logger.debug(command)
         [cmd | cmd_opts] = command |> String.split()
+        t = :os.system_time(:millisecond)
         {container_output, status} = System.cmd(cmd, cmd_opts, stderr_to_stdout: true)
+        Logger.error("Execution time: #{:os.system_time(:millisecond) - t}, lang: #{lang.slug}")
 
         Logger.debug(
           "Docker stdout for task_id: #{task.id}, lang: #{lang.slug}, output:#{container_output}"

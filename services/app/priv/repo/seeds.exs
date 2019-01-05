@@ -49,6 +49,3 @@ levels = ["elementary", "easy", "medium", "hard"]
     IO.puts("Upsert #{task_name}")
   end
 end)
-
-{output, _status} = System.cmd("mix", ["upload_langs"], stderr_to_stdout: true)
-IO.puts(output)
