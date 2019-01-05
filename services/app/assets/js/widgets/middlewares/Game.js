@@ -149,7 +149,7 @@ export const editorReady = () => (dispatch) => {
         langSlug: user2.editor_lang,
       }));
     }
-    
+
     dispatch(actions.updateGameStatus({ status, winner, startsAt }));
   });
 
