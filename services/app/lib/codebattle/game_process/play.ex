@@ -359,7 +359,7 @@ defmodule Codebattle.GameProcess.Play do
     LEFT JOIN game_tasks ON "tasks"."id" = "game_tasks"."task_id"
     WHERE "tasks"."level" = $1
     ORDER BY "game_tasks"."count" NULLS FIRST
-    LIMIT 1
+    LIMIT 7
     """
     # TODO: get list and then get random in elixir
 
@@ -373,6 +373,10 @@ defmodule Codebattle.GameProcess.Play do
         struct(Codebattle.Task, Enum.zip(cols, row))
       end)
 
-    List.first(tasks)
+
+    min_task = List.first(tasks)
+
+    filtered_task  = Enum.filter(tasks, fn x -> Map.get(x, :count) ==  min_task.count end)
+    Enum.random(filtered_task)
   end
 end

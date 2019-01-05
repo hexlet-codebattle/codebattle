@@ -11,6 +11,8 @@ defmodule Codebattle.Task do
     field(:name, :string)
     field(:level, :string)
     field(:asserts, :string)
+    field(:count, :integer, virtual: true)
+    field(:task_id, :integer, virtual: true)
 
     timestamps()
   end
