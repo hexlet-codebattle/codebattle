@@ -68,7 +68,7 @@ defmodule Codebattle.GameProcess.Play do
         id: game.id,
         players: players,
         updated_at: updated_at,
-        duration: game.duration_in_seconds || 1000,
+        duration: game.duration_in_seconds,
         level: game.task_level
       }
     end)
@@ -268,9 +268,11 @@ defmodule Codebattle.GameProcess.Play do
 
     {winner_rating, loser_rating} = Elo.calc_elo(winner.rating, loser.rating, difficulty)
 
+    duration = NaiveDateTime.diff(NaiveDateTime.utc_now(), fsm.data.starts_at)
+
     game_id
     |> get_game
-    |> Game.changeset(%{state: to_string(fsm.state)})
+    |> Game.changeset(%{state: to_string(fsm.state), duration_in_seconds: duration})
     |> Repo.update!()
 
     # TODO: fix creator please!!!!!
@@ -310,9 +312,11 @@ defmodule Codebattle.GameProcess.Play do
 
     {winner_rating, loser_rating} = Elo.calc_elo(winner.rating, loser.rating, difficulty)
 
+    duration = NaiveDateTime.diff(NaiveDateTime.utc_now(), fsm.data.starts_at)
+
     game_id
     |> get_game
-    |> Game.changeset(%{state: to_string(fsm.state)})
+    |> Game.changeset(%{state: to_string(fsm.state), duration_in_seconds: duration})
     |> Repo.update!()
 
     Repo.insert!(%UserGame{

@@ -251,7 +251,7 @@ class GameList extends React.Component {
                   {this.renderPlayers(game.players)}
 
                   <td className="align-middle" style={{ whiteSpace: 'nowrap' }}>
-                    {game.duration}
+                    {moment.duration(game.duration, 'seconds').humanize()}
                   </td>
 
                   <td className="align-middle">{this.renderShowGameButton(`/games/${game.id}`)}</td>
