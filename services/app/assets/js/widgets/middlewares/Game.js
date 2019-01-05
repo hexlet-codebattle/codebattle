@@ -113,6 +113,7 @@ export const changeCurrentLangAndSetTemplate = langSlug => (dispatch, getState) 
 export const editorReady = () => (dispatch) => {
   initGameChannel(dispatch);
   channel.on('editor:data', ({ user_id: userId, lang_slug: langSlug, editor_text: text }) => {
+    console.log(langSlug);
     dispatch(actions.updateEditorText({ userId, langSlug, text }));
   });
 
@@ -134,7 +135,6 @@ export const editorReady = () => (dispatch) => {
 
     dispatch(actions.updateUsers({ users }));
     dispatch(actions.setGameTask({ task }));
-
     dispatch(actions.updateEditorText({
       userId: user1.id,
       text: user1.editor_text,
@@ -149,7 +149,6 @@ export const editorReady = () => (dispatch) => {
         langSlug: user2.editor_lang,
       }));
     }
-
     dispatch(actions.updateGameStatus({ status, winner, startsAt }));
   });
 
