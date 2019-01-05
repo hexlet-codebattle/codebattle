@@ -26,7 +26,7 @@ class GameList extends React.Component {
   renderResultIcon = (resultUser1, resultUser2) => {
     if (resultUser1 === 'gave_up') {
       return (
-        <span className="align-middle mr-2">
+        <span className="align-middle mr-2" data-toggle="tooltip" data-placement="left" title="Player gave up">
           <i className="fa fa-flag-o" aria-hidden="true" />
         </span>
       );
@@ -34,7 +34,7 @@ class GameList extends React.Component {
 
     if (resultUser1 === 'won' && resultUser2 !== 'gave_up') {
       return (
-        <span className="align-middle mr-2">
+        <span className="align-middle mr-2" data-toggle="tooltip" data-placement="left" title="Player won">
           <i className="fa fa-trophy text-warning" aria-hidden="true" />
         </span>
       );
