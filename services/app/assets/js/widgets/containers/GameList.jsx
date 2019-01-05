@@ -23,8 +23,8 @@ class GameList extends React.Component {
     dispatch(fetchState());
   }
 
-  renderResultIcon = (result) => {
-    if (result === 'gave_up') {
+  renderResultIcon = (resultUser1, resultUser2) => {
+    if (resultUser1 === 'gave_up') {
       return (
         <span className="align-middle mr-2">
           <i className="fa fa-flag-o" aria-hidden="true" />
@@ -32,7 +32,7 @@ class GameList extends React.Component {
       );
     }
 
-    if (result === 'won') {
+    if (resultUser1 === 'won' && resultUser2 !== 'gave_up') {
       return (
         <span className="align-middle mr-2">
           <i className="fa fa-trophy text-warning" aria-hidden="true" />
@@ -58,11 +58,11 @@ class GameList extends React.Component {
     return (
       <Fragment>
         <td className="align-middle" style={{ whiteSpace: 'nowrap' }}>
-          {this.renderResultIcon(users[0].game_result)}
+          {this.renderResultIcon(users[0].game_result, users[1].game_result)}
           <UserName user={users[0]} />
         </td>
         <td className="align-middle" style={{ whiteSpace: 'nowrap' }}>
-          {this.renderResultIcon(users[1].game_result)}
+          {this.renderResultIcon(users[1].game_result, users[0].game_result)}
           <UserName user={users[1]} />
         </td>
       </Fragment>
