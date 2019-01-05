@@ -10,7 +10,8 @@ defmodule Helpers.GameProcess do
   def setup_game(state, data) do
     game = insert(:game)
     data = Map.put(data, :game_id, game.id)
-    data = Map.put(data, :level, "elementary")
+    data = Map.put(data, :level, game.task.level)
+    data = Map.put(data, :task, game.task)
     fsm = Fsm.set_data(state, data)
     ActiveGames.setup_game(fsm)
     GlobalSupervisor.start_game(game.id, fsm)

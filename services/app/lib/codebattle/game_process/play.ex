@@ -359,6 +359,7 @@ defmodule Codebattle.GameProcess.Play do
     LEFT JOIN game_tasks ON "tasks"."id" = "game_tasks"."task_id"
     WHERE "tasks"."level" = $1
     ORDER BY "game_tasks"."count" NULLS FIRST
+    LIMIT 1
     """
     # TODO: get list and then get random in elixir
 

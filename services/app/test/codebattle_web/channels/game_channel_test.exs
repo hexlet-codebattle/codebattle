@@ -8,7 +8,7 @@ defmodule CodebattleWeb.GameChannelTest do
   setup do
     user1 = insert(:user, rating: 1000)
     user2 = insert(:user, rating: 1000)
-    task = insert(:task)
+    game = insert(:game)
 
     user_token1 = Phoenix.Token.sign(socket(), "user_token", user1.id)
     {:ok, socket1} = connect(CodebattleWeb.UserSocket, %{"token" => user_token1})
@@ -16,30 +16,69 @@ defmodule CodebattleWeb.GameChannelTest do
     user_token2 = Phoenix.Token.sign(socket(), "user_token", user2.id)
     {:ok, socket2} = connect(CodebattleWeb.UserSocket, %{"token" => user_token2})
 
-    {:ok, %{user1: user1, user2: user2, socket1: socket1, socket2: socket2, task: task}}
+    {:ok, %{user1: user1, user2: user2, socket1: socket1, socket2: socket2, game: game}}
   end
 
-  test "sends game info when user join", %{user1: user1, socket1: socket1, task: task} do
+  test "sends game info when user join", %{user1: user1, socket1: socket1, game: game} do
     # setup
     state = :waiting_opponent
-    data = %{players: [%Player{id: user1.id, user: user1}, %Player{}], task: task}
+    data = %{players: [%Player{id: user1.id, user: user1}, %Player{}], task: game.task}
     game = setup_game(state, data)
     game_topic = "game:" <> to_string(game.id)
 
     {:ok, response, _socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
 
-    assert Poison.encode(response) ==
-             Poison.encode(%{
-               status: :waiting_opponent,
-               winner: %Codebattle.User{},
-               first_player: user1,
-               second_player: %Codebattle.User{},
-               first_player_editor_text: Languages.meta()["js"].solution_template,
-               second_player_editor_text: Languages.meta()["js"].solution_template,
-               first_player_editor_lang: "js",
-               second_player_editor_lang: "js",
-               starts_at: nil,
-               task: task
+    assert Poison.encode!(response) ==
+             Poison.encode!(%{
+               "level" => game.task.level,
+               "players" => [
+                 %{
+                   "creator" => false,
+                   "editor_lang" => "js",
+                   "editor_text" => "module.exports = () => {\n\n};",
+                   "game_result" => "undefined",
+                   "id" => user1.id,
+                   "output" => "",
+                   "result" => "{}",
+                   "user" => user1,
+                 },
+                 %{
+                   "creator" => false,
+                   "editor_lang" => "js",
+                   "editor_text" => "module.exports = () => {\n\n};",
+                   "game_result" => "undefined",
+                   "id" => nil,
+                   "output" => "",
+                   "result" => "{}",
+                   "user" => %{
+                     "creator" => false,
+                     "editor_mode" => nil,
+                     "editor_theme" => nil,
+                     "game_result" => nil,
+                     "github_id" => nil,
+                     "guest" => false,
+                     "id" => nil,
+                     "lang" => nil,
+                     "name" => nil,
+                     "rating" => nil
+                   }
+                 }
+               ],
+               "starts_at" => nil,
+               "status" => "waiting_opponent",
+               "task" => game.task,
+               "winner" => %{
+                 "creator" => false,
+                 "editor_mode" => nil,
+                 "editor_theme" => nil,
+                 "game_result" => nil,
+                 "github_id" => nil,
+                 "guest" => false,
+                 "id" => nil,
+                 "lang" => nil,
+                 "name" => nil,
+                 "rating" => nil
+               }
              })
   end
 
@@ -61,16 +100,46 @@ defmodule CodebattleWeb.GameChannelTest do
       payload: response
     }
 
-    assert Poison.encode(response) ==
-             Poison.encode(%{
-               first_player: user1,
-               second_player: user2,
-               status: :playing,
-               first_player_editor_text: Languages.meta()["js"].solution_template,
-               second_player_editor_text: Languages.meta()["js"].solution_template,
-               first_player_editor_lang: "js",
-               second_player_editor_lang: "js",
-               winner: %Codebattle.User{}
+    assert Poison.encode!(response) ==
+             Poison.encode!(%{
+               "level" => game.task.level,
+               "players" => [
+                 %{
+                   "creator" => false,
+                   "editor_lang" => "js",
+                   "editor_text" => "module.exports = () => {\n\n};",
+                   "game_result" => "undefined",
+                   "id" => user1.id,
+                   "output" => "",
+                   "result" => "{}",
+                   "user" => user1
+                 },
+                 %{
+                   "creator" => false,
+                   "editor_lang" => "js",
+                   "editor_text" => "module.exports = () => {\n\n};",
+                   "game_result" => "undefined",
+                   "id" => user2.id,
+                   "output" => "",
+                   "result" => "{}",
+                   "user" => user2
+                 }
+               ],
+               "starts_at" => nil,
+               "status" => "playing",
+               "task" => game.task,
+               "winner" => %{
+                 "creator" => false,
+                 "editor_mode" => nil,
+                 "editor_theme" => nil,
+                 "game_result" => nil,
+                 "github_id" => nil,
+                 "guest" => false,
+                 "id" => nil,
+                 "lang" => nil,
+                 "name" => nil,
+                 "rating" => nil
+               }
              })
   end
 
@@ -161,13 +230,14 @@ defmodule CodebattleWeb.GameChannelTest do
     user1: user1,
     user2: user2,
     socket1: socket1,
-    socket2: socket2
+    socket2: socket2,
+    game: game
   } do
     # setup
     state = :playing
 
     data = %{
-      task: build(:task),
+      task: game.task,
       players: [%Player{id: user1.id, user: user1}, %Player{id: user2.id, user: user2}]
     }
 

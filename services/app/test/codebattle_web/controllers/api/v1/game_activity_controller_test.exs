@@ -9,11 +9,13 @@ defmodule CodebattleWeb.Api.V1.GameActivityControllerTest do
       conn
       |> get(api_v1_game_activity_path(conn, :show))
 
-    assert json_response(conn, 200) == %{
-             "activities" => [
-               %{"count" => 3, "date" => "2000-01-02"},
-               %{"count" => 2, "date" => "2000-01-01"}
-             ]
-           }
+    asserted_data = [
+      %{"count" => 3, "date" => "2000-01-02"},
+      %{"count" => 2, "date" => "2000-01-01"}
+    ]
+
+    assert json_response(conn, 200)
+           |> Map.get("activities")
+           |> Enum.sort(&(Map.get(&1, "count") >= Map.get(&2, "count"))) == asserted_data
   end
 end

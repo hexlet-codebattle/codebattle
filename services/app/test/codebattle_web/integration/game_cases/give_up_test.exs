@@ -6,7 +6,7 @@ defmodule Codebattle.GameCases.GiveUpTest do
   alias Codebattle.GameProcess.Server
 
   setup %{conn: conn} do
-    insert(:task)
+    insert(:task, level: "elementary")
     user1 = insert(:user)
     user2 = insert(:user)
 
@@ -32,7 +32,7 @@ defmodule Codebattle.GameCases.GiveUpTest do
     conn =
       conn1
       |> get(user_path(conn1, :index))
-      |> post(game_path(conn1, :create))
+      |> post(game_path(conn1, :create, level: "elementary"))
 
     game_id = game_id_from_conn(conn)
 
@@ -66,7 +66,7 @@ defmodule Codebattle.GameCases.GiveUpTest do
       conn =
         conn1
         |> get(user_path(conn1, :index))
-        |> post(game_path(conn1, :create))
+        |> post(game_path(conn1, :create, level: "elementary"))
 
       game_id = game_id_from_conn(conn)
 
@@ -93,7 +93,7 @@ defmodule Codebattle.GameCases.GiveUpTest do
     conn =
       conn1
       |> get(page_path(conn1, :index))
-      |> post(game_path(conn, :create))
+      |> post(game_path(conn, :create, level: "elementary"))
 
     game_id = game_id_from_conn(conn)
 
@@ -115,7 +115,7 @@ defmodule Codebattle.GameCases.GiveUpTest do
     conn =
       conn1
       |> get(page_path(conn1, :index))
-      |> post(game_path(conn, :create))
+      |> post(game_path(conn, :create, level: "elementary"))
 
     game_id = game_id_from_conn(conn)
 
