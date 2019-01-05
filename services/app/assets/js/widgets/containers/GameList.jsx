@@ -40,7 +40,11 @@ class GameList extends React.Component {
       );
     }
 
-    return null;
+    return (
+      <span className="align-middle mr-1">
+        <i className="fa fa-fw" aria-hidden="true" />
+      </span>
+    );
   };
 
   renderPlayers = (users) => {
