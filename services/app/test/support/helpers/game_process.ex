@@ -12,6 +12,7 @@ defmodule Helpers.GameProcess do
     data = Map.put(data, :game_id, game.id)
     data = Map.put(data, :level, game.task.level)
     data = Map.put(data, :task, game.task)
+    data = Map.put(data, :starts_at, TimeHelper.utc_now())
     fsm = Fsm.set_data(state, data)
     ActiveGames.setup_game(fsm)
     GlobalSupervisor.start_game(game.id, fsm)

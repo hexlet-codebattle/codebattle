@@ -132,7 +132,7 @@ defmodule Codebattle.GameProcess.Play do
 
       case Server.call_transition(id, :join, %{
              user: user,
-             starts_at: NaiveDateTime.utc_now(),
+             starts_at: TimeHelper.utc_now(),
              task: task
            }) do
         {:ok, fsm} ->
@@ -268,7 +268,7 @@ defmodule Codebattle.GameProcess.Play do
 
     {winner_rating, loser_rating} = Elo.calc_elo(winner.rating, loser.rating, difficulty)
 
-    duration = NaiveDateTime.diff(NaiveDateTime.utc_now(), fsm.data.starts_at)
+    duration = NaiveDateTime.diff(TimeHelper.utc_now(), FsmHelpers.get_starts_at(fsm))
 
     game_id
     |> get_game
@@ -312,7 +312,7 @@ defmodule Codebattle.GameProcess.Play do
 
     {winner_rating, loser_rating} = Elo.calc_elo(winner.rating, loser.rating, difficulty)
 
-    duration = NaiveDateTime.diff(NaiveDateTime.utc_now(), fsm.data.starts_at)
+    duration = NaiveDateTime.diff(TimeHelper.utc_now(), FsmHelpers.get_starts_at(fsm))
 
     game_id
     |> get_game

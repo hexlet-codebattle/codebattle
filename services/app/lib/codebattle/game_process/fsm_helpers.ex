@@ -47,6 +47,10 @@ defmodule Codebattle.GameProcess.FsmHelpers do
     fsm.data.game_id
   end
 
+  def get_starts_at(fsm) do
+    fsm.data.starts_at
+  end
+
   # TODO: implement is_true function instead Kernel.! * 2
   def winner?(data, user_id) do
     data.players
