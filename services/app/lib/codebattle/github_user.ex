@@ -9,11 +9,7 @@ defmodule Codebattle.GithubUser do
   alias Codebattle.{Repo, User}
 
   def find_or_create(%Auth{provider: :github} = auth) do
-    user =
-      User
-      |> Ecto.Query.where(github_id: ^auth.uid)
-      |> Ecto.Query.first()
-      |> Repo.one()
+    user = User |> Repo.get_by(github_id: auth.uid)
 
     github_name = auth.extra.raw_info.user["login"]
     user_data = %{

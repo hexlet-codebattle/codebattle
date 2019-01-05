@@ -15,7 +15,7 @@ defmodule CodebattleWeb.UserControllerTest do
   test "index", %{conn: conn} do
     conn =
       conn
-      |> get(user_path(conn, :index))
+      |> get(user_path(conn, :index, q: %{sort: %{"desc" => "rating"}}))
 
     assert redirected_to(conn, 302) == "/"
   end

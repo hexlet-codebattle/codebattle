@@ -59,7 +59,7 @@ defmodule Codebattle.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.3.0"},
+      {:phoenix, "~> 1.3"},
       {:phoenix_pubsub, "~> 1.0"},
       {:phoenix_ecto, "~> 3.0"},
       {:postgrex, ">= 0.0.0"},
@@ -81,6 +81,7 @@ defmodule Codebattle.Mixfile do
       {:atomic_map, "~> 0.8"},
       {:envy, "~> 1.1.1"},
       {:one_signal,  git: "https://github.com/vtm9/one_signal.git"},
+      {:paginator, "~> 0.6"},
 
       # dev_and_test
       {:credo, "~> 0.8", only: [:dev, :test], runtime: false},

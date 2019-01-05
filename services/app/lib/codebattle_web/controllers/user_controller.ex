@@ -8,10 +8,18 @@ defmodule CodebattleWeb.UserController do
 
   plug(CodebattleWeb.Plugs.RequireAuth when action in @all)
 
-  def index(conn, _params) do
-    query = from(users in User, order_by: [desc: users.rating], preload: [:user_games])
+  def index(conn, params) do
+    # TODO: add paginator
+    q = Map.get(params, "q", %{"sort" => %{"asc" => "rating"}})
+    sort_query = Map.get(q, "sort")
+    order = Enum.map(sort_query, fn({key, value}) -> {String.to_atom(key), String.to_atom(value)} end)
+    query = from(users in User, order_by: ^order, preload: [:user_games])
     users = Repo.all(query)
-    render(conn, "index.html", users: users)
+    direction = case Map.keys(sort_query) |> List.first do
+      "asc" -> "desc"
+      "desc" -> "asc"
+    end
+    render(conn, "index.html", users: users, direction: direction)
   end
 
   def show(conn, %{"id" => user_id}) do
