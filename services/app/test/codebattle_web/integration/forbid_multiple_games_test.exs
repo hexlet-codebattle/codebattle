@@ -2,7 +2,6 @@ defmodule Codebattle.ForbidMultipleGamesTest do
   use Codebattle.IntegrationCase
 
   test "User cannot create second game", %{conn: conn} do
-    # Create game
     insert(:task)
     user = insert(:user)
 
