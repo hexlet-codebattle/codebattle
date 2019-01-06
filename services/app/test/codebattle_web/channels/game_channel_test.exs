@@ -40,7 +40,7 @@ defmodule CodebattleWeb.GameChannelTest do
                    "id" => user1.id,
                    "output" => "",
                    "result" => "{}",
-                   "user" => user1,
+                   "user" => user1
                  },
                  %{
                    "creator" => false,

@@ -26,7 +26,9 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
 
     socket = socket("user_id", %{user_id: user.id, current_user: user})
 
-    with_mocks [{Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> {:ok, "asdf", "asdf"} end]}] do
+    with_mocks [
+      {Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> {:ok, "asdf", "asdf"} end]}
+    ] do
       # Create game
       conn =
         conn

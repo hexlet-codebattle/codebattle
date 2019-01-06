@@ -17,6 +17,7 @@ defmodule Codebattle.CodeCheck.Checker do
           case lang.base_image do
             :ubuntu ->
               Application.fetch_env!(:codebattle, :ubuntu_docker_command_template)
+
             :alpine ->
               Application.fetch_env!(:codebattle, :alpine_docker_command_template)
           end
@@ -42,8 +43,14 @@ defmodule Codebattle.CodeCheck.Checker do
         # for json returned langs need fix after all langs support json
         json_result =
           case Regex.run(~r/{\"status\":.+}/, container_output) do
-            nil -> Poison.encode!(%{status: "error", result: "Something went wrong! Please, write to dev team in our Slack"})
-            arr -> List.first(arr)
+            nil ->
+              Poison.encode!(%{
+                status: "error",
+                result: "Something went wrong! Please, write to dev team in our Slack"
+              })
+
+            arr ->
+              List.first(arr)
           end
 
         output_code = Regex.named_captures(~r/__code(?<code>.+)__/, json_result)["code"]

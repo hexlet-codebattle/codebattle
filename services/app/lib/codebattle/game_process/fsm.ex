@@ -65,9 +65,22 @@ defmodule Codebattle.GameProcess.Fsm do
     defevent join(params), data: data do
       editor_lang = params.user.lang || "js"
       editor_text = Languages.meta() |> Map.get(editor_lang) |> Map.get(:solution_template)
-      player = %Player{id: params.user.id, user: params.user, editor_lang: editor_lang, editor_text: editor_text}
+
+      player = %Player{
+        id: params.user.id,
+        user: params.user,
+        editor_lang: editor_lang,
+        editor_text: editor_text
+      }
+
       players = data.players ++ [player]
-      next_state(:playing, %{data | players: players, starts_at: params.starts_at, task: params.task})
+
+      next_state(:playing, %{
+        data
+        | players: players,
+          starts_at: params.starts_at,
+          task: params.task
+      })
     end
 
     defevent update_editor_params(_params) do

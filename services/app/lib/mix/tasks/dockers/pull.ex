@@ -8,7 +8,7 @@ defmodule Mix.Tasks.Dockers.Pull do
   def run([slug]) do
     {:ok, _started} = Application.ensure_all_started(:codebattle)
 
-    langs = Codebattle.Languages.meta
+    langs = Codebattle.Languages.meta()
     lang = Enum.find(langs, fn {lang, _map} -> lang == slug end) |> elem(1)
     pull([lang])
   end
@@ -16,7 +16,7 @@ defmodule Mix.Tasks.Dockers.Pull do
   def run(_) do
     {:ok, _started} = Application.ensure_all_started(:codebattle)
 
-    langs = Codebattle.Languages.meta
+    langs = Codebattle.Languages.meta()
     pull(langs)
   end
 

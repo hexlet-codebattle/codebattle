@@ -6,7 +6,6 @@ defmodule Codebattle.Game do
 
   alias Codebattle.Game
 
-
   def level_difficulties do
     %{"elementary" => 0, "easy" => 1, "medium" => 2, "hard" => 3}
   end
@@ -30,6 +29,7 @@ defmodule Codebattle.Game do
     game
     |> cast(attrs, [:state, :task_id, :task_level, :duration_in_seconds])
     |> validate_required([:state])
+
     # |> cast_assoc(:task, required: false)
   end
 end

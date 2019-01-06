@@ -12,6 +12,7 @@ defmodule Codebattle.GithubUser do
     user = User |> Repo.get_by(github_id: auth.uid)
 
     github_name = auth.extra.raw_info.user["login"]
+
     user_data = %{
       github_id: auth.uid,
       name: name(user, github_name),
@@ -41,19 +42,23 @@ defmodule Codebattle.GithubUser do
         case Repo.get_by(User, name: github_name) do
           %User{} ->
             generate_name(github_name)
+
           _ ->
             github_name
         end
+
       _ ->
         user.name
     end
   end
 
   defp generate_name(name) do
-    new_name = "#{name}_#{:crypto.strong_rand_bytes(2) |> Base.encode16}"
+    new_name = "#{name}_#{:crypto.strong_rand_bytes(2) |> Base.encode16()}"
+
     case Repo.get_by(User, name: new_name) do
       %User{} ->
         generate_name(name)
+
       _ ->
         new_name
     end

@@ -361,8 +361,8 @@ defmodule Codebattle.GameProcess.Play do
     ORDER BY "game_tasks"."count" NULLS FIRST
     LIMIT 7
     """
-    # TODO: get list and then get random in elixir
 
+    # TODO: get list and then get random in elixir
 
     res = Ecto.Adapters.SQL.query!(Repo, qry, [level, Enum.at(user_ids, 0), Enum.at(user_ids, 1)])
 
@@ -373,10 +373,9 @@ defmodule Codebattle.GameProcess.Play do
         struct(Codebattle.Task, Enum.zip(cols, row))
       end)
 
-
     min_task = List.first(tasks)
 
-    filtered_task  = Enum.filter(tasks, fn x -> Map.get(x, :count) ==  min_task.count end)
+    filtered_task = Enum.filter(tasks, fn x -> Map.get(x, :count) == min_task.count end)
     Enum.random(filtered_task)
   end
 end

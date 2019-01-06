@@ -69,7 +69,6 @@ defmodule Codebattle.GameProcess.ActiveGames do
       |> FsmHelpers.get_users()
       |> Enum.reduce(%{}, fn user, acc -> Map.put(acc, user.id, user) end)
 
-
     :ets.insert(@table_name, {game_key(game_id), users, game_params(fsm)})
   end
 

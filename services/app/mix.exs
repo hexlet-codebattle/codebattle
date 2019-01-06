@@ -45,7 +45,7 @@ defmodule Codebattle.Mixfile do
         :ueberauth,
         :ueberauth_github,
         :gproc,
-        :one_signal,
+        :one_signal
       ]
     ]
   end
@@ -80,7 +80,7 @@ defmodule Codebattle.Mixfile do
       {:logger_file_backend, "~> 0.0.10"},
       {:atomic_map, "~> 0.8"},
       {:envy, "~> 1.1.1"},
-      {:one_signal,  git: "https://github.com/vtm9/one_signal.git"},
+      {:one_signal, git: "https://github.com/vtm9/one_signal.git"},
       {:paginator, "~> 0.6"},
 
       # dev_and_test
@@ -94,7 +94,7 @@ defmodule Codebattle.Mixfile do
       {:phoenix_integration, "~> 0.5", only: :test},
       {:excoveralls, "~> 0.7", only: :test},
       {:faker, "~> 0.8", only: :test},
-      {:ex_machina, "~> 2.0", only: :test},
+      {:ex_machina, "~> 2.0", only: :test}
     ]
   end
 

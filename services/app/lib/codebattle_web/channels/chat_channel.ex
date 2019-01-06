@@ -24,6 +24,7 @@ defmodule CodebattleWeb.ChatChannel do
   def terminate(_reason, socket) do
     chat_id = get_chat_id(socket)
     {:ok, users} = Server.leave_chat(chat_id, socket.assigns.current_user)
+    require IEx; IEx.pry
     broadcast_from!(socket, "user:left", %{users: users})
     {:noreply, socket}
   end
