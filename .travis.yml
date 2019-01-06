@@ -1,5 +1,5 @@
 env:
-  - DOCKER_COMPOSE_VERSION=1.23.1
+  - DOCKER_COMPOSE_VERSION=1.23.2
 
 services:
   - docker
@@ -14,12 +14,12 @@ jobs:
   include:
     - stage: integration tests
       script:
-        - docker pull codebattle/js:10.11.0
-        - docker pull codebattle/ruby:2.5.1
+        - docker pull codebattle/js:11.6.0
+        - docker pull codebattle/ruby:2.6.0
         - docker pull codebattle/elixir:1.7.3
-        - docker pull codebattle/python:3.7.0
-        - docker pull codebattle/php:7.2.0
-        - docker pull codebattle/clojure:1.8.0
+        - docker pull codebattle/python:3.7.2
+        - docker pull codebattle/php:7.3.0
+        - docker pull codebattle/clojure:1.10.0
         - docker pull codebattle/haskell:8.4.3
         - docker pull codebattle/perl:5.26.2
         - docker-compose -f services/app/docker-compose.test.yml run sut

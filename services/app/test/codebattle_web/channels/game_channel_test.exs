@@ -67,6 +67,18 @@ defmodule CodebattleWeb.GameChannelTest do
                "starts_at" => TimeHelper.utc_now(),
                "status" => "waiting_opponent",
                "task" => game.task,
+               "winner" => %{
+                 "creator" => false,
+                 "editor_mode" => nil,
+                 "editor_theme" => nil,
+                 "game_result" => nil,
+                 "github_id" => nil,
+                 "guest" => false,
+                 "id" => nil,
+                 "lang" => nil,
+                 "name" => nil,
+                 "rating" => nil
+               }
              })
   end
 
@@ -116,6 +128,18 @@ defmodule CodebattleWeb.GameChannelTest do
                "starts_at" => TimeHelper.utc_now(),
                "status" => "playing",
                "task" => game.task,
+               "winner" => %{
+                 "creator" => false,
+                 "editor_mode" => nil,
+                 "editor_theme" => nil,
+                 "game_result" => nil,
+                 "github_id" => nil,
+                 "guest" => false,
+                 "id" => nil,
+                 "lang" => nil,
+                 "name" => nil,
+                 "rating" => nil
+               }
              })
   end
 

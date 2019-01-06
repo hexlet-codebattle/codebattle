@@ -51,7 +51,7 @@ defmodule Codebattle.Languages do
         check_dir: "check",
         extension: "php",
         docker_image: "codebattle/php:7.3.0",
-        solution_template: "<?php\nfunction solution(){\n\n}\n?>"
+        solution_template: "<?php\nfunction solution(){\n\n}"
       },
       "clojure" => %{
         name: "clojure",

@@ -1,4 +1,4 @@
-defmodule Codebattle.PlayGameTest do
+defmodule Codebattle.RandomTaskSelectorTest do
   use Codebattle.IntegrationCase
 
   alias Codebattle.GameProcess.Server
