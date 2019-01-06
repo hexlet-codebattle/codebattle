@@ -10,7 +10,7 @@ import {
 } from '../middlewares/Game';
 import LanguagePicker from '../components/LanguagePicker';
 import UserName from '../components/UserName';
-import WinnerTrophy from '../components/WinnerTrophy';
+import GameResultIcon from '../components/GameResultIcon';
 
 class RightEditorToolbar extends Component {
   static propTypes = {
@@ -64,6 +64,7 @@ render() {
   const {
     rightEditorLangSlug,
     rightUserId,
+    leftUserId,
     users,
     onlineUsers,
     gameStatus,
@@ -78,10 +79,9 @@ render() {
   return (
     <div className="btn-toolbar justify-content-between" role="toolbar">
       {this.renderNameplate(users[rightUserId].user, onlineUsers)}
-      <WinnerTrophy
-        gameStatus={_.get(gameStatus, 'status')}
-        winnerId={_.get(gameStatus, ['winner', 'id'])}
-        userId={rightUserId}
+      <GameResultIcon
+        resultUser1={_.get(users, [[rightUserId], 'game_result'])}
+        resultUser2={_.get(users, [[leftUserId], 'game_result'])}
       />
       <div className="btn-group" role="group" aria-label="Editor settings">
         {this.renderEditorHeightButtons(compressEditor, expandEditor, rightUserId)}
@@ -98,11 +98,13 @@ render() {
 
 const mapStateToProps = (state) => {
   const rightUserId = _.get(selectors.rightEditorSelector(state), ['userId'], null);
+  const leftUserId = _.get(selectors.leftEditorSelector(state), ['userId'], null);
   const { users: onlineUsers } = state.chat;
 
   return {
     users: selectors.usersSelector(state),
     rightUserId,
+    leftUserId,
     onlineUsers,
     rightEditorLangSlug: selectors.userLangSelector(rightUserId)(state),
     gameStatus: selectors.gameStatusSelector(state),

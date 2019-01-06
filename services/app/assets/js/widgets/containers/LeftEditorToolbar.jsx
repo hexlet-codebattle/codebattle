@@ -11,7 +11,7 @@ import {
 import userTypes from '../config/userTypes';
 import LanguagePicker from '../components/LanguagePicker';
 import UserName from '../components/UserName';
-import WinnerTrophy from '../components/WinnerTrophy';
+import GameResultIcon from '../components/GameResultIcon';
 
 class LeftEditorToolbar extends Component {
   static propTypes = {
@@ -69,6 +69,7 @@ class LeftEditorToolbar extends Component {
       currentUser,
       leftEditorLangSlug,
       leftUserId,
+      rightUserId,
       users,
       onlineUsers,
       setLang,
@@ -94,10 +95,9 @@ class LeftEditorToolbar extends Component {
             />
             {this.renderEditorHeightButtons(compressEditor, expandEditor, leftUserId)}
           </div>
-          <WinnerTrophy
-            gameStatus={_.get(gameStatus, 'status')}
-            winnerId={_.get(gameStatus, ['winner', 'id'])}
-            userId={leftUserId}
+          <GameResultIcon
+            resultUser1={_.get(users, [[leftUserId], 'game_result'])}
+            resultUser2={_.get(users, [[rightUserId], 'game_result'])}
           />
           {this.renderNameplate(users[leftUserId].user, onlineUsers)}
         </div>
