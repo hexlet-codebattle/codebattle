@@ -95,14 +95,14 @@ class GameWidget extends Component {
             <LeftEditorToolbar />
             <Editor {...this.getLeftEditorParams()} />
             {/* TODO: move state to parent component */}
-            <GameActionButtons disabled={false}/>
+            <GameActionButtons disabled={false} editorUser={leftEditor.userId} />
             <ExecutionOutput output={leftOutput} />
           </div>
           <div className="col-12 col-md-6">
             <RightEditorToolbar />
             <Editor {...this.getRightEditorParams()} />
             {/* TODO: move state to parent component */}
-            <GameActionButtons disabled={true}/>
+            <GameActionButtons disabled={true} editorUser={rightEditor.userId} />
             <ExecutionOutput output={rightOutput} />
           </div>
         </div>
