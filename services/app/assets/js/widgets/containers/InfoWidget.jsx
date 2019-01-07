@@ -18,7 +18,7 @@ class InfoWidget extends Component {
     const { taskText, gameStatusName, startsAt } = this.props;
 
     return (
-      <div className="row my-4">
+      <div className="row">
         <div className="col-12 col-lg-6 my-2">
           <Task task={taskText} time={startsAt} gameStatusName={gameStatusName} />
         </div>

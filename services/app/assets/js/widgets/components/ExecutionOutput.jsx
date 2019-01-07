@@ -48,7 +48,7 @@ class ExecutionOutput extends PureComponent {
     const resultObj = this.parseOutput(result);
 
     return (
-      <div className="card bg-light my-2">
+      <div className="card my-2 border-0 shadow-sm">
         <div className="card-body">
           <div className="d-flex justify-content-between">
             <h6 className="card-title">Output</h6>

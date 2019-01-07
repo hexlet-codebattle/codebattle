@@ -40,7 +40,7 @@ const Task = ({ task, time, gameStatusName }) => {
   }
 
   return (
-    <div className="card h-100">
+    <div className="card h-100 border-0 shadow-sm">
       <div className="card-body">
         <div className="d-flex justify-content-between">
           <h6 className="card-title">

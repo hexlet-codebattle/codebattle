@@ -56,7 +56,7 @@ class ChatWidget extends React.Component {
 
     return (
       <div className="d-flex">
-        <div className="card col-8 p-0">
+        <div className="card col-8 p-0 border-0 shadow-sm">
           <div
             className="card-body p-0"
           >
@@ -68,7 +68,7 @@ class ChatWidget extends React.Component {
               />
             </div>
           </div>
-          <div className="card-footer p-0">
+          <div className="card-footer p-0 border-0">
             <div className="input-group input-group-sm">
               <input
                 className="form-control"
@@ -86,9 +86,9 @@ class ChatWidget extends React.Component {
             </div>
           </div>
         </div>
-        <div className="card col-4 p-0">
+        <div className="card col-4 p-0 border-0 shadow-sm">
           <div className="card-body p-0">
-            <h6 className="card-title pl-3 pr-3 pt-3">{`Online users: ${users.length}`}</h6>
+            <p className="pl-3 pr-1 pt-2 mb-0">{`Online users: ${users.length}`}</p>
             <div
               className="pl-3 pr-3 overflow-auto"
               style={{ height: '165px' }}

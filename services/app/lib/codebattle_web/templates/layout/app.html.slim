@@ -66,7 +66,7 @@ html lang="en"
               a href="#{auth_path(@conn, :request, :github)}"
                 button.btn.btn-outline-success = gettext "Sign in with %{name}", name: "Github"
 
-    .container-fluid.p-0
+    .container-fluid.p-0.bg-light
       = for {type, message} <- get_flash(@conn) do
         div class="alert alert-#{type} alert-dismissible fade show" role="alert"
           = message
