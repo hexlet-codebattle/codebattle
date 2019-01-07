@@ -96,6 +96,10 @@ defmodule CodebattleWeb.GameChannel do
     game_id = get_game_id(socket)
     user_id = socket.assigns.user_id
 
+    broadcast_from!(socket, "user:startCheck", %{
+      user: socket.assigns.current_user,
+    })
+
     if user_authorized_in_game?(game_id, socket.assigns.user_id) do
       %{"editor_text" => editor_text, "lang" => lang} = payload
       Play.update_editor_text(game_id, user_id, editor_text)
@@ -118,6 +122,10 @@ defmodule CodebattleWeb.GameChannel do
             output: output
           })
 
+          broadcast_from!(socket, "user:finishCheck", %{
+            user: socket.assigns.current_user,
+          })
+
           {:reply,
            {:ok,
             %{
@@ -137,6 +145,10 @@ defmodule CodebattleWeb.GameChannel do
             output: output
           })
 
+          broadcast_from!(socket, "user:finishCheck", %{
+            user: socket.assigns.current_user,
+          })
+
           {:reply,
            {:ok, %{solution_status: false, result: result, output: output, user_id: user_id}},
            socket}
@@ -146,6 +158,10 @@ defmodule CodebattleWeb.GameChannel do
             user_id: user_id,
             result: result,
             output: output
+          })
+
+          broadcast_from!(socket, "user:finishCheck", %{
+            user: socket.assigns.current_user,
           })
 
           {:reply,

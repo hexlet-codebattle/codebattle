@@ -120,6 +120,14 @@ export const editorReady = () => (dispatch) => {
     dispatch(actions.updateExecutionOutput({ userId, result, output }));
   });
 
+  channel.on('user:startCheck', ({ user }) => {
+    dispatch(actions.updateCheckStatus({ [user.id]: true }));
+  });
+
+  channel.on('user:finishCheck', ({ user }) => {
+    dispatch(actions.updateCheckStatus({ [user.id]: false }));
+  });
+
   channel.on('user:joined', ({
     status,
     winner,
@@ -169,20 +177,21 @@ export const checkGameResult = () => (dispatch, getState) => {
 
   // FIXME: create actions for this state transitions
   // FIXME: create statuses for solutionStatus
-  dispatch(actions.updateGameStatus({ checking: true, solutionStatus: null }));
+  dispatch(actions.updateGameStatus({ solutionStatus: null }));
+  dispatch(actions.updateCheckStatus({ [currentUserId]: true }));
 
   const payload = {
     editor_text: currentUserEditor.text,
     lang: currentUserEditor.currentLangSlug,
   };
-
   channel.push('check_result', payload)
     .receive('ok', ({
       status, winner, solution_status: solutionStatus, output, result, user_id: userId,
     }) => {
       const newGameStatus = solutionStatus ? { status, winner } : {};
       dispatch(actions.updateExecutionOutput({ output, result, userId }));
-      dispatch(actions.updateGameStatus({ ...newGameStatus, solutionStatus, checking: false }));
+      dispatch(actions.updateGameStatus({ ...newGameStatus, solutionStatus }));
+      dispatch(actions.updateCheckStatus({ [currentUserId]: false }));
     });
 };
 
