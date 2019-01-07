@@ -55,7 +55,6 @@ class GameActionButtons extends Component {
     );
   }
 
-
   render() {
     const {
       disabled,
@@ -63,6 +62,7 @@ class GameActionButtons extends Component {
       checkResult,
       currentUser,
     } = this.props;
+
     const userType = currentUser.type;
     const isSpectator = userType === userTypes.spectator;
     const allowedGameStatusCodes = [GameStatusCodes.playing, GameStatusCodes.gameOver];

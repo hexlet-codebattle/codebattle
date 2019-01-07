@@ -1,20 +1,32 @@
 import React from 'react';
+import { Tooltip, OverlayTrigger } from 'react-bootstrap';
 
 export default ({ resultUser1, resultUser2 }) => {
-  console.log(resultUser1, resultUser2);
+  const tooltipId = `tooltip-${resultUser1}`;
+
   if (resultUser1 === 'gave_up') {
     return (
-      <div className="align-middle mr-2" data-toggle="tooltip" data-placement="left" title="Player gave up">
-        <i className="fa fa-flag-o fa-lg align-middle" aria-hidden="true" />
-      </div>
+      <OverlayTrigger
+        overlay={<Tooltip id={tooltipId}>Player gave up</Tooltip>}
+        placement="left"
+      >
+        <div className="align-middle mr-2">
+          <i className="fa fa-flag-o fa-lg align-middle" aria-hidden="true" />
+        </div>
+      </OverlayTrigger>
     );
   }
 
   if (resultUser1 === 'won' && resultUser2 !== 'gave_up') {
     return (
-      <div className="align-middle mr-2" data-toggle="tooltip" data-placement="left" title="Player won">
-        <i className="fa fa-trophy fa-lg text-warning align-middle" aria-hidden="true" />
-      </div>
+      <OverlayTrigger
+        overlay={<Tooltip id={tooltipId}>Player won</Tooltip>}
+        placement="left"
+      >
+        <div className="align-middle mr-2">
+          <i className="fa fa-trophy fa-lg text-warning align-middle" aria-hidden="true" />
+        </div>
+      </OverlayTrigger>
     );
   }
 

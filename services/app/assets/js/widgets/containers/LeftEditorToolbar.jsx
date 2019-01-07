@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
@@ -85,23 +85,21 @@ class LeftEditorToolbar extends Component {
     }
 
     return (
-      <Fragment>
-        <div className="btn-toolbar justify-content-between" role="toolbar">
-          <div className="btn-group" role="group" aria-label="Editor settings">
-            <LanguagePicker
-              currentLangSlug={leftEditorLangSlug}
-              onChange={setLang}
-              disabled={isSpectator}
-            />
-            {this.renderEditorHeightButtons(compressEditor, expandEditor, leftUserId)}
-          </div>
-          <GameResultIcon
-            resultUser1={_.get(users, [[leftUserId], 'game_result'])}
-            resultUser2={_.get(users, [[rightUserId], 'game_result'])}
+      <div className="btn-toolbar justify-content-between" role="toolbar">
+        <div className="btn-group" role="group" aria-label="Editor settings">
+          <LanguagePicker
+            currentLangSlug={leftEditorLangSlug}
+            onChange={setLang}
+            disabled={isSpectator}
           />
-          {this.renderNameplate(users[leftUserId].user, onlineUsers)}
+          {this.renderEditorHeightButtons(compressEditor, expandEditor, leftUserId)}
         </div>
-      </Fragment>
+        <GameResultIcon
+          resultUser1={_.get(users, [[leftUserId], 'game_result'])}
+          resultUser2={_.get(users, [[rightUserId], 'game_result'])}
+        />
+        {this.renderNameplate(users[leftUserId].user, onlineUsers)}
+      </div>
     );
   }
 }

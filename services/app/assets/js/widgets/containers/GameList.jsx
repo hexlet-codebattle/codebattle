@@ -4,6 +4,7 @@ import moment from 'moment';
 import { connect } from 'react-redux';
 // import PropTypes from 'prop-types';
 import Gon from 'gon';
+import { Tooltip, OverlayTrigger } from 'react-bootstrap';
 import { fetchState } from '../middlewares/Lobby';
 import GameStatusCodes from '../config/gameStatusCodes';
 import Loading from '../components/Loading';
@@ -23,20 +24,32 @@ class GameList extends React.Component {
     dispatch(fetchState());
   }
 
-  renderResultIcon = (resultUser1, resultUser2) => {
-    if (resultUser1 === 'gave_up') {
+  renderResultIcon = (gameId, player1, player2) => {
+    const tooltipId = `tooltip-${gameId}-${player1.id}`;
+
+    if (player1.game_result === 'gave_up') {
       return (
-        <span className="align-middle mr-2" data-toggle="tooltip" data-placement="left" title="Player gave up">
-          <i className="fa fa-flag-o" aria-hidden="true" />
-        </span>
+        <OverlayTrigger
+          overlay={<Tooltip id={tooltipId}>Player gave up</Tooltip>}
+          placement="left"
+        >
+          <span className="align-middle mr-2">
+            <i className="fa fa-flag-o" aria-hidden="true" />
+          </span>
+        </OverlayTrigger>
       );
     }
 
-    if (resultUser1 === 'won' && resultUser2 !== 'gave_up') {
+    if (player1.game_result === 'won' && player2.game_result !== 'gave_up') {
       return (
-        <span className="align-middle mr-2" data-toggle="tooltip" data-placement="left" title="Player won">
-          <i className="fa fa-trophy text-warning" aria-hidden="true" />
-        </span>
+        <OverlayTrigger
+          overlay={<Tooltip id={tooltipId}>Player won</Tooltip>}
+          placement="left"
+        >
+          <span className="align-middle mr-2">
+            <i className="fa fa-trophy text-warning" aria-hidden="true" />
+          </span>
+        </OverlayTrigger>
       );
     }
 
@@ -47,7 +60,7 @@ class GameList extends React.Component {
     );
   };
 
-  renderPlayers = (users) => {
+  renderPlayers = (gameId, users) => {
     if (users.length === 1) {
       return (
         <td className="align-middle" style={{ whiteSpace: 'nowrap' }} colSpan={2}>
@@ -58,11 +71,11 @@ class GameList extends React.Component {
     return (
       <Fragment>
         <td className="align-middle" style={{ whiteSpace: 'nowrap' }}>
-          {this.renderResultIcon(users[0].game_result, users[1].game_result)}
+          {this.renderResultIcon(gameId, users[0], users[1])}
           <UserName user={users[0]} />
         </td>
         <td className="align-middle" style={{ whiteSpace: 'nowrap' }}>
-          {this.renderResultIcon(users[1].game_result, users[0].game_result)}
+          {this.renderResultIcon(gameId, users[1], users[0])}
           <UserName user={users[1]} />
         </td>
       </Fragment>
@@ -205,7 +218,7 @@ class GameList extends React.Component {
                     {this.renderGameLevelBadge(game.game_info.level)}
                   </td>
 
-                  {this.renderPlayers(game.users)}
+                  {this.renderPlayers(game.id, game.users)}
 
                   <td className="align-middle" style={{ whiteSpace: 'nowrap' }}>
                     {game.game_info.state}
@@ -248,7 +261,7 @@ class GameList extends React.Component {
                     {this.renderGameLevelBadge(game.level)}
                   </td>
 
-                  {this.renderPlayers(game.players)}
+                  {this.renderPlayers(game.id, game.players)}
 
                   <td className="align-middle" style={{ whiteSpace: 'nowrap' }}>
                     {moment.duration(game.duration, 'seconds').humanize()}
