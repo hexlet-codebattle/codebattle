@@ -21,6 +21,11 @@ defmodule Codebattle.GameProcess.FsmHelpers do
     player || %Player{}
   end
 
+  def get_players(fsm) do
+    fsm.data.players
+    # |> Enum.map(fn player -> %Player{player.user} end)
+  end
+
   def get_users(fsm) do
     fsm.data.players
     |> Enum.filter(fn player -> player.id end)

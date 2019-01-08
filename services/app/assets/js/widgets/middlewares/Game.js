@@ -165,8 +165,9 @@ export const editorReady = () => (dispatch) => {
     dispatch(actions.updateGameStatus({ status, winner }));
   });
 
-  channel.on('give_up', ({ winner, status, msg }) => {
-    dispatch(actions.updateGameStatus({ status, winner }));
+  channel.on('give_up', ({ players, status, msg }) => {
+    dispatch(actions.updateGameStatus({ status }));
+    dispatch(actions.updateGamePlayers({ players }));
   });
 };
 

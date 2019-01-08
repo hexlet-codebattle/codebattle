@@ -75,13 +75,19 @@ defmodule CodebattleWeb.GameChannel do
     game_id = get_game_id(socket)
 
     if user_authorized_in_game?(game_id, socket.assigns.user_id) do
-      Play.give_up(game_id, socket.assigns.current_user)
-      fsm = Play.get_fsm(game_id)
+      fsm = Play.give_up(game_id, socket.assigns.current_user)
+      # fsm = Play.get_fsm(game_id)
       winner = FsmHelpers.get_winner(fsm)
+      loser = FsmHelpers.get_opponent(fsm.data, winner.id)
       message = socket.assigns.current_user.name <> " " <> gettext("gave up!")
+      players = FsmHelpers.get_players(fsm)
+      # IO.inspect(players)
+      # IO.inspect(fsm)
 
       broadcast!(socket, "give_up", %{
-        winner: winner,
+        # winner: winner,
+        # loser: loser,
+        players: players,
         status: "game_over",
         msg: message
       })
@@ -97,7 +103,7 @@ defmodule CodebattleWeb.GameChannel do
     user_id = socket.assigns.user_id
 
     broadcast_from!(socket, "user:startCheck", %{
-      user: socket.assigns.current_user,
+      user: socket.assigns.current_user
     })
 
     if user_authorized_in_game?(game_id, socket.assigns.user_id) do
@@ -123,7 +129,7 @@ defmodule CodebattleWeb.GameChannel do
           })
 
           broadcast_from!(socket, "user:finishCheck", %{
-            user: socket.assigns.current_user,
+            user: socket.assigns.current_user
           })
 
           {:reply,
@@ -146,7 +152,7 @@ defmodule CodebattleWeb.GameChannel do
           })
 
           broadcast_from!(socket, "user:finishCheck", %{
-            user: socket.assigns.current_user,
+            user: socket.assigns.current_user
           })
 
           {:reply,
@@ -161,7 +167,7 @@ defmodule CodebattleWeb.GameChannel do
           })
 
           broadcast_from!(socket, "user:finishCheck", %{
-            user: socket.assigns.current_user,
+            user: socket.assigns.current_user
           })
 
           {:reply,

@@ -23,6 +23,7 @@ export const updateEditorText = createAction('UPDATE_EDITOR_TEXT');
 
 export const updateGameStatus = createAction('UPDATE_GAME_STATUS');
 export const setGameTask = createAction('SET_GAME_TASK');
+export const updateGamePlayers = createAction('UPDATE_GAME_PLAYERS');
 
 export const updateCheckStatus = createAction('UPDATE_CHECK_STATUS');
 

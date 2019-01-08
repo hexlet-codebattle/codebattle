@@ -68,6 +68,7 @@ render() {
     users,
     onlineUsers,
     gameStatus,
+    players,
     compressEditor,
     expandEditor,
   } = this.props;
@@ -80,8 +81,8 @@ render() {
     <div className="btn-toolbar justify-content-between" role="toolbar">
       {this.renderNameplate(users[rightUserId].user, onlineUsers)}
       <GameResultIcon
-        resultUser1={_.get(users, [[rightUserId], 'game_result'])}
-        resultUser2={_.get(users, [[leftUserId], 'game_result'])}
+        resultUser1={_.get(players, [[rightUserId], 'game_result'])}
+        resultUser2={_.get(players, [[leftUserId], 'game_result'])}
       />
       <div className="btn-group" role="group" aria-label="Editor settings">
         {this.renderEditorHeightButtons(compressEditor, expandEditor, rightUserId)}
@@ -108,6 +109,7 @@ const mapStateToProps = (state) => {
     onlineUsers,
     rightEditorLangSlug: selectors.userLangSelector(rightUserId)(state),
     gameStatus: selectors.gameStatusSelector(state),
+    players: selectors.gamePlayersSelector(state),
   };
 };
 

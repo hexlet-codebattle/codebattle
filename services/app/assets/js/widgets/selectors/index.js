@@ -144,3 +144,5 @@ export const rightExecutionOutputSelector = (state) => {
     : secondExecutionOutputSelector;
   return selector(state);
 };
+
+export const gamePlayersSelector = state => state.game.players;

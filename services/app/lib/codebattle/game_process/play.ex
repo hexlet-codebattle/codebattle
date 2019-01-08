@@ -205,6 +205,7 @@ defmodule Codebattle.GameProcess.Play do
     # RecorderServer.update_lang(id, user_id, editor_lang)
     {_response, fsm} = Server.call_transition(id, :give_up, %{id: user.id})
     handle_gave_up(id, user, fsm)
+    fsm
   end
 
   def check_game(id, user, editor_text, editor_lang) do

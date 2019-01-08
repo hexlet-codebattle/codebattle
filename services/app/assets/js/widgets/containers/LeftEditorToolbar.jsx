@@ -74,6 +74,7 @@ class LeftEditorToolbar extends Component {
       onlineUsers,
       setLang,
       gameStatus,
+      players,
       compressEditor,
       expandEditor,
     } = this.props;
@@ -95,8 +96,8 @@ class LeftEditorToolbar extends Component {
           {this.renderEditorHeightButtons(compressEditor, expandEditor, leftUserId)}
         </div>
         <GameResultIcon
-          resultUser1={_.get(users, [[leftUserId], 'game_result'])}
-          resultUser2={_.get(users, [[rightUserId], 'game_result'])}
+          resultUser1={_.get(players, [[leftUserId], 'game_result'])}
+          resultUser2={_.get(players, [[rightUserId], 'game_result'])}
         />
         {this.renderNameplate(users[leftUserId].user, onlineUsers)}
       </div>
@@ -119,6 +120,7 @@ const mapStateToProps = (state) => {
     leftEditorLangSlug: selectors.userLangSelector(leftUserId)(state),
     rightEditorLangSlug: selectors.userLangSelector(rightUserId)(state),
     gameStatus: selectors.gameStatusSelector(state),
+    players: selectors.gamePlayersSelector(state),
     title: selectors.gameStatusTitleSelector(state),
     task: selectors.gameTaskSelector(state),
   };
