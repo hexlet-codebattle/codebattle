@@ -59,7 +59,7 @@ class Editor extends PureComponent {
     const mappedSyntax = syntax === 'js' ? 'javascript' : syntax;
 
     return (
-      <div className="my-2" style={{ position: 'relative' }}>
+      <div style={{ position: 'relative' }}>
         <AceEditor
           mode={mappedSyntax}
           theme="solarized_dark"

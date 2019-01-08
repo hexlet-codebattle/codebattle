@@ -90,7 +90,7 @@ class GameWidget extends Component {
     }
     return (
       <Fragment>
-        <div className="row my-2">
+        <div className="row mt-3">
           <div className="col-12 col-md-6" style={{ cursor: 'pointer' }}>
             <LeftEditorToolbar />
             <Editor {...this.getLeftEditorParams()} />
@@ -102,7 +102,7 @@ class GameWidget extends Component {
             <RightEditorToolbar />
             <Editor {...this.getRightEditorParams()} />
             {/* TODO: move state to parent component */}
-            <GameActionButtons disabled={true} editorUser={rightEditor.userId} />
+            <GameActionButtons disabled editorUser={rightEditor.userId} />
             <ExecutionOutput output={rightOutput} />
           </div>
         </div>

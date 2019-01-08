@@ -48,14 +48,14 @@ class LeftEditorToolbar extends Component {
     <div className="btn-group btn-group-sm ml-2" role="group" aria-label="Editor height">
       <button
         type="button"
-        className="btn btn-outline-secondary"
+        className="btn"
         onClick={() => compressEditor(userId)}
       >
         <i className="fa fa-compress" aria-hidden="true" />
       </button>
       <button
         type="button"
-        className="btn btn-outline-secondary"
+        className="btn"
         onClick={() => expandEditor(userId)}
       >
         <i className="fa fa-expand" aria-hidden="true" />

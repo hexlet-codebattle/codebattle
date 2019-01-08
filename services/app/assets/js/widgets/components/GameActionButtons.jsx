@@ -72,7 +72,7 @@ class GameActionButtons extends Component {
 
     return (
       <Hotkeys keyName="ctrl+Enter" onKeyUp={checkResult}>
-        <div className="btn-toolbar pb-2" role="toolbar">
+        <div className="btn-toolbar py-2" role="toolbar">
           {this.renderGiveUpButton(canGiveUp, realDisabled)}
           {this.renderCheckResultButton(
             canCheckResult,
