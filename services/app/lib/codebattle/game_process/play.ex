@@ -86,6 +86,8 @@ defmodule Codebattle.GameProcess.Play do
   def create_game(user, level) do
     case ActiveGames.playing?(user.id) do
       false ->
+        player = Player.from_user(user)
+
         game =
           Repo.insert!(%Game{
             state: "waiting_opponent",
@@ -96,7 +98,7 @@ defmodule Codebattle.GameProcess.Play do
         fsm =
           Fsm.new()
           |> Fsm.create(%{
-            user: user,
+            player: player,
             game_id: game.id,
             level: level
           })
@@ -106,9 +108,10 @@ defmodule Codebattle.GameProcess.Play do
 
         Task.async(fn -> CodebattleWeb.Endpoint.broadcast("lobby", "new:game", %{game: fsm}) end)
 
-        Task.async(fn ->
-          Notifier.call(:game_created, %{level: level, game: game, user: user})
-        end)
+        # TODO: сделать настройку нотификаций в списке игр
+        # Task.async(fn ->
+        # Notifier.call(:game_created, %{level: level, game: game, player: player})
+        # end)
 
         {:ok, game.id}
 
@@ -122,25 +125,25 @@ defmodule Codebattle.GameProcess.Play do
       :error
     else
       game = get_game(id)
-
-      user2 = get_fsm(id) |> FsmHelpers.get_users() |> List.first()
-      task = get_random_task(game.task_level, [user.id, user2.id])
+      first_player = get_fsm(id) |> FsmHelpers.get_first_player()
+      task = get_random_task(game.task_level, [user.id, first_player.id])
 
       game
       |> Game.changeset(%{state: "playing", task_id: task.id})
       |> Repo.update!()
 
       case Server.call_transition(id, :join, %{
-             user: user,
+             player: Player.from_user(user),
              starts_at: TimeHelper.utc_now(),
              task: task
            }) do
         {:ok, fsm} ->
-          ActiveGames.add_participant(user, fsm)
+          ActiveGames.add_participant(fsm)
 
           Notifier.call(:game_opponent_join, %{
-            creator: FsmHelpers.get_opponent(fsm.data, user.id),
-            user: user,
+            # creator: FsmHelpers.get_opponent(fsm, user.id),
+            first_player: first_player,
+            second_player: FsmHelpers.get_second_player(fsm),
             game_id: id
           })
 

@@ -36,15 +36,19 @@ defmodule Codebattle.GameProcess.Fsm do
 
   defstate initial do
     defevent create(params), data: data do
-      editor_lang = params.user.lang || "js"
+      editor_lang = params.player.user_lang || "js"
       editor_text = Languages.meta() |> Map.get(editor_lang) |> Map.get(:solution_template)
 
       player = %Player{
-        id: params.user.id,
-        user: params.user,
-        editor_lang: editor_lang,
+        id: params.player.user_id,
         editor_text: editor_text,
-        creator: true
+        editor_lang: editor_lang,
+        creator: true,
+        user_id: params.player.user_id,
+        user_github_id: params.player.user_github_id,
+        user_name: params.player.user_name,
+        user_rating: params.player.user_rating,
+        user_lang: params.player.user_lang
       }
 
       next_state(:waiting_opponent, %{
@@ -63,14 +67,19 @@ defmodule Codebattle.GameProcess.Fsm do
 
   defstate waiting_opponent do
     defevent join(params), data: data do
-      editor_lang = params.user.lang || "js"
+      editor_lang = params.player.user_lang || "js"
       editor_text = Languages.meta() |> Map.get(editor_lang) |> Map.get(:solution_template)
 
       player = %Player{
-        id: params.user.id,
-        user: params.user,
+        id: params.player.user_id,
+        editor_text: editor_text,
         editor_lang: editor_lang,
-        editor_text: editor_text
+        creator: false,
+        user_id: params.player.user_id,
+        user_github_id: params.player.user_github_id,
+        user_name: params.player.user_name,
+        user_rating: params.player.user_rating,
+        user_lang: params.player.user_lang
       }
 
       players = data.players ++ [player]

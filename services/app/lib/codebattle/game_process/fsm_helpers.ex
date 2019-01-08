@@ -23,7 +23,6 @@ defmodule Codebattle.GameProcess.FsmHelpers do
 
   def get_players(fsm) do
     fsm.data.players
-    # |> Enum.map(fn player -> %Player{player.user} end)
   end
 
   def get_users(fsm) do
@@ -33,19 +32,19 @@ defmodule Codebattle.GameProcess.FsmHelpers do
   end
 
   def get_first_player(fsm) do
-    fsm.data.players |> Enum.at(0) || %Player{}
+    get_players(fsm) |> Enum.at(0) || %Player{}
   end
 
   def get_second_player(fsm) do
-    fsm.data.players |> Enum.at(1) || %Player{}
+    get_players(fsm) |> Enum.at(1) || %Player{}
   end
 
-  def get_opponent(data, user_id) do
+  def get_opponent(fsm, user_id) do
     player =
-      data.players
+      get_players(fsm)
       |> Enum.find(fn player -> player.id != user_id end)
 
-    player.user || %User{}
+    player || %Player{}
   end
 
   def get_game_id(fsm) do
