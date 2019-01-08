@@ -18,12 +18,7 @@ import 'phoenix_html';
 // Local files can be imported directly using relative
 // paths "./socket" or full ones "web/static/js/socket".
 
-import jQuery from 'jquery';
 import { renderGameWidget, renderLobby, renderHeatmapWidget } from './widgets';
-
-jQuery(() => {
-  jQuery('[data-toggle="tooltip"]').tooltip();
-});
 
 const gameWidgetRoot = document.getElementById('game-widget-root');
 const heatmapRoot = document.getElementById('heatmap-root');

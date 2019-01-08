@@ -6,7 +6,7 @@ const initialState = {
   gameStatus: {
     status: GameStatusCodes.initial,
     winner: null,
-    checking: false,
+    checking: { 1: false, 2: false },
     solutionStatus: null,
   },
   task: null,
@@ -25,5 +25,17 @@ export default handleActions({
   [actions.setGameTask](state, { payload }) {
     const { task } = payload;
     return { ...state, task };
+  },
+  [actions.updateCheckStatus](state, { payload }) {
+    return {
+      ...state,
+      gameStatus: {
+        ...state.gameStatus,
+        checking: {
+          ...state.gameStatus.checking,
+          ...payload,
+        },
+      },
+    };
   },
 }, initialState);

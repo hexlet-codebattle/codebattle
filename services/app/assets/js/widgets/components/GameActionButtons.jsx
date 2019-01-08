@@ -14,22 +14,21 @@ class GameActionButtons extends Component {
     status: GameStatusCodes.initial,
   }
 
-  renderCheckResultButton = (canCheckResult, checkResult, gameStatus, disabled) => {
+  renderCheckResultButton = (canCheckResult, checkResult, gameStatus, disabled, editorUser) => {
     if (!canCheckResult) {
       return null;
     }
-
     return (
       <button
         type="button"
         className="btn btn-success btn-sm ml-auto"
         onClick={checkResult}
-        disabled={disabled || gameStatus.checking}
+        disabled={disabled || gameStatus.checking[editorUser]}
       >
-        {gameStatus.checking ? (
+        {gameStatus.checking[editorUser] ? (
           <span className="fa fa-cog fa-spin mr-1" />
         ) : (
-          <span className="fa fa-play-circle mr-1" />
+          <span data-test={editorUser} className="fa fa-play-circle mr-1" />
         )}
         {i18n.t('Check')}
         <small> (ctrl+enter)</small>
@@ -55,14 +54,15 @@ class GameActionButtons extends Component {
     );
   }
 
-
   render() {
     const {
       disabled,
       gameStatus,
       checkResult,
       currentUser,
+      editorUser,
     } = this.props;
+
     const userType = currentUser.type;
     const isSpectator = userType === userTypes.spectator;
     const allowedGameStatusCodes = [GameStatusCodes.playing, GameStatusCodes.gameOver];
@@ -74,7 +74,13 @@ class GameActionButtons extends Component {
       <Hotkeys keyName="ctrl+Enter" onKeyUp={checkResult}>
         <div className="btn-toolbar py-2" role="toolbar">
           {this.renderGiveUpButton(canGiveUp, realDisabled)}
-          {this.renderCheckResultButton(canCheckResult, checkResult, gameStatus, realDisabled)}
+          {this.renderCheckResultButton(
+            canCheckResult,
+            checkResult,
+            gameStatus,
+            realDisabled,
+            editorUser,
+          )}
         </div>
       </Hotkeys>
     );
