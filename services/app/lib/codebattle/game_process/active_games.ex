@@ -30,7 +30,7 @@ defmodule Codebattle.GameProcess.ActiveGames do
         :error
 
       false ->
-        game_id = fsm.data.game_id
+        game_id =  FsmHelpers.get_game_id(fsm)
         players = %{user.id => FsmHelpers.get_first_player(fsm)}
 
         :ets.insert(@table_name, {game_key(game_id), players, game_params(fsm)})
@@ -39,7 +39,7 @@ defmodule Codebattle.GameProcess.ActiveGames do
   end
 
   def add_participant(fsm) do
-    game_id = fsm.data.game_id
+    game_id =  FsmHelpers.get_game_id(fsm)
 
     players =
       fsm
@@ -62,7 +62,7 @@ defmodule Codebattle.GameProcess.ActiveGames do
   end
 
   def setup_game(fsm) do
-    game_id = fsm.data.game_id
+    game_id =  FsmHelpers.get_game_id(fsm)
 
     players =
       fsm
@@ -87,8 +87,8 @@ defmodule Codebattle.GameProcess.ActiveGames do
   defp game_params(fsm) do
     %{
       state: fsm.state,
-      level: fsm.data.level,
-      starts_at: fsm.data.starts_at
+      level:  FsmHelpers.get_level(fsm),
+      starts_at: FsmHelpers.get_starts_at(fsm)
     }
   end
 end

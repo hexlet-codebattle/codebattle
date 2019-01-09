@@ -179,6 +179,6 @@ defmodule CodebattleWeb.GameChannel do
 
   defp user_authorized_in_game?(game_id, user_id) do
     fsm = Play.get_fsm(game_id)
-    FsmHelpers.player?(fsm.data, user_id)
+    FsmHelpers.player?(fsm, user_id)
   end
 end

@@ -14,8 +14,8 @@ defmodule Codebattle.GameProcess.Notifier do
     OneSignal.new()
     |> put_heading("New game")
     |> put_message(:en, "Yo, new game with level: #{params.level}\
-      was created by user: #{params.player.user_name}")
-    |> put_message(:ru, "Yo, #{params.player.user_name} создал новую игру\
+      was created by user: #{params.player.name}")
+    |> put_message(:ru, "Yo, #{params.player.name} создал новую игру\
         с уровнем сложности: #{params.level}")
     # FIXME: что за public_id?
     |> put_filter(%{key: "userId", value: params.player.public_id, relation: "!=", field: "tag"})
@@ -26,8 +26,8 @@ defmodule Codebattle.GameProcess.Notifier do
   def game_opponent_join(params) do
     OneSignal.new()
     |> put_heading("Game started")
-    |> put_message(:en, "Yo, #{params.second_player.user_name} started playing your game")
-    |> put_message(:ru, "Yo, #{params.second_player.user_name} начал играть в твою игру")
+    |> put_message(:en, "Yo, #{params.second_player.name} started playing your game")
+    |> put_message(:ru, "Yo, #{params.second_player.name} начал играть в твою игру")
     # FIXME: что за public_id?
     |> put_filter(%{
       key: "userId",

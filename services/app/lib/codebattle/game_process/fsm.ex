@@ -36,7 +36,7 @@ defmodule Codebattle.GameProcess.Fsm do
 
   defstate initial do
     defevent create(params), data: data do
-      editor_lang = params.player.user_lang || "js"
+      editor_lang = params.player.lang || "js"
       editor_text = Languages.meta() |> Map.get(editor_lang) |> Map.get(:solution_template)
 
       player = %Player{
@@ -44,11 +44,10 @@ defmodule Codebattle.GameProcess.Fsm do
         editor_text: editor_text,
         editor_lang: editor_lang,
         creator: true,
-        user_id: params.player.user_id,
-        user_github_id: params.player.user_github_id,
-        user_name: params.player.user_name,
-        user_rating: params.player.user_rating,
-        user_lang: params.player.user_lang
+        github_id: params.player.github_id,
+        name: params.player.name,
+        rating: params.player.rating,
+        lang: params.player.lang
       }
 
       next_state(:waiting_opponent, %{
@@ -67,7 +66,7 @@ defmodule Codebattle.GameProcess.Fsm do
 
   defstate waiting_opponent do
     defevent join(params), data: data do
-      editor_lang = params.player.user_lang || "js"
+      editor_lang = params.player.lang || "js"
       editor_text = Languages.meta() |> Map.get(editor_lang) |> Map.get(:solution_template)
 
       player = %Player{
@@ -75,11 +74,10 @@ defmodule Codebattle.GameProcess.Fsm do
         editor_text: editor_text,
         editor_lang: editor_lang,
         creator: false,
-        user_id: params.player.user_id,
-        user_github_id: params.player.user_github_id,
-        user_name: params.player.user_name,
-        user_rating: params.player.user_rating,
-        user_lang: params.player.user_lang
+        github_id: params.player.github_id,
+        name: params.player.name,
+        rating: params.player.rating,
+        lang: params.player.lang
       }
 
       players = data.players ++ [player]
@@ -109,14 +107,14 @@ defmodule Codebattle.GameProcess.Fsm do
     end
 
     defevent complete(params), data: data do
-      opponent = get_opponent(data, params.id)
+      opponent = get_opponent(%{data: data}, params.id)
       players = update_player_params(data.players, %{game_result: :won, id: params.id})
       players = update_player_params(players, %{game_result: :lost, id: opponent.id})
       next_state(:game_over, %{data | players: players})
     end
 
     defevent give_up(params), data: data do
-      opponent = get_opponent(data, params.id)
+      opponent = get_opponent(%{data: data}, params.id)
       players = update_player_params(data.players, %{game_result: :gave_up, id: params.id})
       players = update_player_params(players, %{game_result: :won, id: opponent.id})
       next_state(:game_over, %{data | players: players})

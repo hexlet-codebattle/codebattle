@@ -266,7 +266,8 @@ defmodule Codebattle.GameProcess.Play do
     # TODO: make async
     # TODO: optimize code with handle_gave_up
     game_id = id |> Integer.parse() |> elem(0)
-    loser = FsmHelpers.get_opponent(fsm.data, winner.id)
+    loser_id = FsmHelpers.get_opponent(fsm, winner.id).id
+    loser =  Repo.get(User, loser_id)
     difficulty = fsm.data.level
 
     {winner_rating, loser_rating} = Elo.calc_elo(winner.rating, loser.rating, difficulty)
@@ -310,7 +311,9 @@ defmodule Codebattle.GameProcess.Play do
 
   defp handle_gave_up(id, loser, fsm) do
     game_id = id |> Integer.parse() |> elem(0)
-    winner = FsmHelpers.get_opponent(fsm.data, loser.id)
+    winner_id = FsmHelpers.get_opponent(fsm, loser.id).id
+    winner =  Repo.get(User, winner_id)
+
     difficulty = fsm.data.level
 
     {winner_rating, loser_rating} = Elo.calc_elo(winner.rating, loser.rating, difficulty)

@@ -9,10 +9,10 @@ defmodule CodebattleWeb.GameView do
     end
   end
 
-  def player_name(%Codebattle.GameProcess.Player{user_name: user_name, user_rating: user_rating}) do
-    case {user_name, user_rating} do
+  def player_name(%Codebattle.GameProcess.Player{name: name, rating: rating}) do
+    case {name, rating} do
       {nil, nil} -> ""
-      _ -> "#{user_name}(#{user_rating})"
+      _ -> "#{name}(#{rating})"
     end
   end
 

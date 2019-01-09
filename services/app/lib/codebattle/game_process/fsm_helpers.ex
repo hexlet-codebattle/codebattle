@@ -10,7 +10,7 @@ defmodule Codebattle.GameProcess.FsmHelpers do
       fsm.data.players
       |> Enum.find(fn player -> player.game_result == :won end)
 
-    (player && player.user) || %User{}
+    player || %Player{}
   end
 
   def get_player(fsm, id) do
@@ -39,10 +39,10 @@ defmodule Codebattle.GameProcess.FsmHelpers do
     get_players(fsm) |> Enum.at(1) || %Player{}
   end
 
-  def get_opponent(fsm, user_id) do
+  def get_opponent(fsm, player_id) do
     player =
       get_players(fsm)
-      |> Enum.find(fn player -> player.id != user_id end)
+      |> Enum.find(fn player -> player.id != player_id end)
 
     player || %Player{}
   end
@@ -55,37 +55,41 @@ defmodule Codebattle.GameProcess.FsmHelpers do
     fsm.data.starts_at
   end
 
+  def get_level(fsm) do
+    fsm.data.level
+  end
+
   # TODO: implement is_true function instead Kernel.! * 2
-  def winner?(data, user_id) do
-    data.players
+  def winner?(fsm, player_id) do
+    fsm.data.players
     |> Enum.find_value(fn player ->
-      player.id == user_id && player.game_result == :won
+      player.id == player_id && player.game_result == :won
     end)
     |> Kernel.!()
     |> Kernel.!()
   end
 
-  def lost?(data, user_id) do
-    data.players
+  def lost?(fsm, player_id) do
+    fsm.data.players
     |> Enum.find_value(fn player ->
-      player.id == user_id && player.game_result == :lost
+      player.id == player_id && player.game_result == :lost
     end)
     |> Kernel.!()
     |> Kernel.!()
   end
 
-  def gave_up?(data, user_id) do
-    data.players
+  def gave_up?(fsm, player_id) do
+    fsm.data.players
     |> Enum.find_value(fn player ->
-      player.id == user_id && player.game_result == :gave_up
+      player.id == player_id && player.game_result == :gave_up
     end)
     |> Kernel.!()
     |> Kernel.!()
   end
 
-  def player?(data, user_id) do
-    data.players
-    |> Enum.find_value(fn player -> player.id == user_id end)
+  def player?(fsm, player_id) do
+    fsm.data.players
+    |> Enum.find_value(fn player -> player.id == player_id end)
     |> Kernel.!()
     |> Kernel.!()
   end

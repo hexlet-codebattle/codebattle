@@ -4,6 +4,7 @@ defmodule Codebattle.PlayGameTest do
   import Mock
 
   alias Codebattle.GameProcess.Server
+  alias CodebattleWeb.UserSocket
 
   setup %{conn: conn} do
     insert(:task)
@@ -15,9 +16,9 @@ defmodule Codebattle.PlayGameTest do
     conn2 = put_session(conn, :user_id, user2.id)
     conn3 = put_session(conn, :user_id, user3.id)
 
-    socket1 = socket("user_id", %{user_id: user1.id, current_user: user1})
-    socket2 = socket("user_id", %{user_id: user2.id, current_user: user2})
-    socket3 = socket("user_id", %{user_id: user3.id, current_user: user3})
+    socket1 = socket(UserSocket, "user_id", %{user_id: user1.id, current_user: user1})
+    socket2 = socket(UserSocket, "user_id", %{user_id: user2.id, current_user: user2})
+    socket3 = socket(UserSocket, "user_id", %{user_id: user3.id, current_user: user3})
 
     {:ok,
      %{
@@ -58,16 +59,16 @@ defmodule Codebattle.PlayGameTest do
       fsm = Server.fsm(game_id)
 
       assert fsm.state == :waiting_opponent
-      assert FsmHelpers.get_first_player(fsm).user.name == "first"
-      assert FsmHelpers.get_second_player(fsm).user == %User{}
+      assert FsmHelpers.get_first_player(fsm).name == "first"
+      assert FsmHelpers.get_second_player(fsm) == %Player{}
 
       # First player cannot join to game as second player
       post(conn1, game_path(conn1, :join, game_id))
       fsm = Server.fsm(game_id)
 
       assert fsm.state == :waiting_opponent
-      assert FsmHelpers.get_first_player(fsm).user.name == "first"
-      assert FsmHelpers.get_second_player(fsm).user == %User{}
+      assert FsmHelpers.get_first_player(fsm).name == "first"
+      assert FsmHelpers.get_second_player(fsm) == %Player{}
 
       # Second player join game
       post(conn2, game_path(conn2, :join, game_id))
@@ -75,8 +76,8 @@ defmodule Codebattle.PlayGameTest do
       fsm = Server.fsm(game_id)
 
       assert fsm.state == :playing
-      assert FsmHelpers.get_first_player(fsm).user.name == "first"
-      assert FsmHelpers.get_second_player(fsm).user.name == "second"
+      assert FsmHelpers.get_first_player(fsm).name == "first"
+      assert FsmHelpers.get_second_player(fsm).name == "second"
       assert FsmHelpers.get_first_player(fsm).editor_text == "module.exports = () => {\n\n};"
       assert FsmHelpers.get_second_player(fsm).editor_text == "module.exports = () => {\n\n};"
 
@@ -90,8 +91,8 @@ defmodule Codebattle.PlayGameTest do
       fsm = Server.fsm(game_id)
 
       assert fsm.state == :game_over
-      assert FsmHelpers.get_first_player(fsm).user.name == "first"
-      assert FsmHelpers.get_second_player(fsm).user.name == "second"
+      assert FsmHelpers.get_first_player(fsm).name == "first"
+      assert FsmHelpers.get_second_player(fsm).name == "second"
       assert FsmHelpers.get_winner(fsm).name == "first"
       assert FsmHelpers.get_first_player(fsm).editor_text == "Hello world1!"
       assert FsmHelpers.get_second_player(fsm).editor_text == "module.exports = () => {\n\n};"
@@ -102,8 +103,8 @@ defmodule Codebattle.PlayGameTest do
       fsm = Server.fsm(game_id)
 
       assert fsm.state == :game_over
-      assert FsmHelpers.get_first_player(fsm).user.name == "first"
-      assert FsmHelpers.get_second_player(fsm).user.name == "second"
+      assert FsmHelpers.get_first_player(fsm).name == "first"
+      assert FsmHelpers.get_second_player(fsm).name == "second"
       assert FsmHelpers.get_winner(fsm).name == "first"
       assert FsmHelpers.get_first_player(fsm).editor_text == "Hello world2!"
       assert FsmHelpers.get_second_player(fsm).editor_text == "module.exports = () => {\n\n};"
@@ -145,8 +146,8 @@ defmodule Codebattle.PlayGameTest do
     fsm = Server.fsm(game_id)
 
     assert fsm.state == :playing
-    assert FsmHelpers.get_first_player(fsm).user.name == "first"
-    assert FsmHelpers.get_second_player(fsm).user.name == "second"
+    assert FsmHelpers.get_first_player(fsm).name == "first"
+    assert FsmHelpers.get_second_player(fsm).name == "second"
 
     # Other player cannot win game
     {:ok, _response, socket3} = subscribe_and_join(socket3, GameChannel, game_topic)
@@ -154,7 +155,7 @@ defmodule Codebattle.PlayGameTest do
     fsm = Server.fsm(game_id)
 
     assert fsm.state == :playing
-    assert FsmHelpers.get_first_player(fsm).user.name == "first"
-    assert FsmHelpers.get_second_player(fsm).user.name == "second"
+    assert FsmHelpers.get_first_player(fsm).name == "first"
+    assert FsmHelpers.get_second_player(fsm).name == "second"
   end
 end

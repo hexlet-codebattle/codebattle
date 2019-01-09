@@ -4,6 +4,7 @@ defmodule Codebattle.GameCases.GiveUpTest do
   import Mock
 
   alias Codebattle.GameProcess.Server
+  alias CodebattleWeb.UserSocket
 
   setup %{conn: conn} do
     insert(:task, level: "elementary")
@@ -13,8 +14,8 @@ defmodule Codebattle.GameCases.GiveUpTest do
     conn1 = put_session(conn, :user_id, user1.id)
     conn2 = put_session(conn, :user_id, user2.id)
 
-    socket1 = socket("user_id", %{user_id: user1.id, current_user: user1})
-    socket2 = socket("user_id", %{user_id: user2.id, current_user: user2})
+    socket1 = socket(UserSocket, "user_id", %{user_id: user1.id, current_user: user1})
+    socket2 = socket(UserSocket, "user_id", %{user_id: user2.id, current_user: user2})
 
     {:ok,
      %{conn1: conn1, conn2: conn2, socket1: socket1, socket2: socket2, user1: user1, user2: user2}}
@@ -49,8 +50,8 @@ defmodule Codebattle.GameCases.GiveUpTest do
     fsm = Server.fsm(game_id)
 
     assert fsm.state == :game_over
-    assert FsmHelpers.gave_up?(fsm.data, user1.id) == true
-    assert FsmHelpers.winner?(fsm.data, user2.id) == true
+    assert FsmHelpers.gave_up?(fsm, user1.id) == true
+    assert FsmHelpers.winner?(fsm, user2.id) == true
   end
 
   test "first user won, second gave up", %{
@@ -86,8 +87,8 @@ defmodule Codebattle.GameCases.GiveUpTest do
       fsm = Server.fsm(game_id)
 
       assert fsm.state == :game_over
-      assert FsmHelpers.winner?(fsm.data, user1.id) == true
-      assert FsmHelpers.lost?(fsm.data, user2.id) == true
+      assert FsmHelpers.winner?(fsm, user1.id) == true
+      assert FsmHelpers.lost?(fsm, user2.id) == true
     end
   end
 
@@ -95,7 +96,7 @@ defmodule Codebattle.GameCases.GiveUpTest do
     conn =
       conn1
       |> get(page_path(conn1, :index))
-      |> post(game_path(conn, :create, level: "elementary"))
+      |> post(game_path(conn1, :create, level: "elementary"))
 
     game_id = game_id_from_conn(conn)
 
