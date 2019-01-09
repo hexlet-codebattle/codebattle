@@ -33,7 +33,7 @@ defmodule Codebattle.CodeCheck.Checker do
         Logger.debug(command)
         [cmd | cmd_opts] = command |> String.split()
         t = :os.system_time(:millisecond)
-        {container_output, status} = System.cmd(cmd, cmd_opts, stderr_to_stdout: true)
+        {container_output, _status} = System.cmd(cmd, cmd_opts, stderr_to_stdout: true)
         Logger.error("Execution time: #{:os.system_time(:millisecond) - t}, lang: #{lang.slug}")
 
         Logger.debug(
