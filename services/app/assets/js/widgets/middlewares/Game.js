@@ -14,52 +14,56 @@ const initGameChannel = (dispatch) => {
   const onJoinSuccess = (response) => {
     const {
       status,
-      winner,
       starts_at: startsAt,
-      players: [user1, user2],
+      players: [firstPlayer, secondPlayer],
       task,
     } = response;
 
     // const firstEditorLang = _.find(languages, { slug: user1.editor_lang });
-    const users = [{ ...user1, type: userTypes.firstPlayer }];
+    // const users = [{ ...user1, type: userTypes.firstPlayer }];
 
-    if (user2) {
-      // const secondEditorLang = _.find(languages, { slug: user2.editor_lang });
-      users.push({ ...user2, type: userTypes.secondPlayer });
-    }
+    // if (user2) {
+    // const secondEditorLang = _.find(languages, { slug: user2.editor_lang });
+    // users.push({ ...user2, type: userTypes.secondPlayer });
+    // }
 
-    dispatch(actions.updateUsers({ users }));
+    const players = [
+      { ...firstPlayer, type: userTypes.firstPlayer },
+      { ...secondPlayer, type: userTypes.secondPlayer },
+    ];
+
+    dispatch(actions.updateGamePlayers({ players }));
 
     dispatch(actions.updateEditorText({
-      userId: user1.id,
-      text: user1.editor_text,
-      langSlug: user1.editor_lang,
+      userId: firstPlayer.id,
+      text: firstPlayer.editor_text,
+      langSlug: firstPlayer.editor_lang,
     }));
 
     dispatch(actions.updateExecutionOutput({
-      userId: user1.id,
-      result: user1.result,
-      output: user1.output,
+      userId: firstPlayer.id,
+      result: firstPlayer.result,
+      output: firstPlayer.output,
     }));
 
-    if (user2) {
+    if (secondPlayer) {
       dispatch(actions.updateEditorText({
-        userId: user2.id,
-        text: user2.editor_text,
-        langSlug: user2.editor_lang,
+        userId: secondPlayer.id,
+        text: secondPlayer.editor_text,
+        langSlug: secondPlayer.editor_lang,
       }));
 
       dispatch(actions.updateExecutionOutput({
-        userId: user2.id,
-        result: user2.result,
-        output: user2.output,
+        userId: secondPlayer.id,
+        result: secondPlayer.result,
+        output: secondPlayer.output,
       }));
     }
 
     if (task) {
       dispatch(actions.setGameTask({ task }));
     }
-    dispatch(actions.updateGameStatus({ status, winner, startsAt }));
+    dispatch(actions.updateGameStatus({ status, startsAt }));
     dispatch(actions.finishStoreInit());
   };
 
@@ -130,35 +134,45 @@ export const editorReady = () => (dispatch) => {
 
   channel.on('user:joined', ({
     status,
-    winner,
     starts_at: startsAt,
-    players: [user1, user2],
+    players: [firstPlayer, secondPlayer],
     task,
   }) => {
-    const users = [
-      { ...user1, type: userTypes.firstPlayer },
-      { ...user2, type: userTypes.secondPlayer },
+    const players = [
+      { ...firstPlayer, type: userTypes.firstPlayer },
+      { ...secondPlayer, type: userTypes.secondPlayer },
     ];
 
-    dispatch(actions.updateUsers({ users }));
+    dispatch(actions.updateGamePlayers({ players }));
     dispatch(actions.setGameTask({ task }));
 
     dispatch(actions.updateEditorText({
-      userId: user1.id,
-      text: user1.editor_text,
-      langSlug: user1.editor_lang,
+      userId: firstPlayer.id,
+      text: firstPlayer.editor_text,
+      langSlug: firstPlayer.editor_lang,
     }));
 
+    dispatch(actions.updateExecutionOutput({
+      userId: firstPlayer.id,
+      result: firstPlayer.result,
+      output: firstPlayer.output,
+    }));
 
-    if (user2) {
+    if (secondPlayer) {
       dispatch(actions.updateEditorText({
-        userId: user2.id,
-        text: user2.editor_text,
-        langSlug: user2.editor_lang,
+        userId: secondPlayer.id,
+        text: secondPlayer.editor_text,
+        langSlug: secondPlayer.editor_lang,
+      }));
+
+      dispatch(actions.updateExecutionOutput({
+        userId: secondPlayer.id,
+        result: secondPlayer.result,
+        output: secondPlayer.output,
       }));
     }
 
-    dispatch(actions.updateGameStatus({ status, winner, startsAt }));
+    dispatch(actions.updateGameStatus({ status, startsAt }));
   });
 
   channel.on('user:won', ({ winner, status, msg }) => {

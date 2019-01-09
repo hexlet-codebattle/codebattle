@@ -1,11 +1,10 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import _ from 'lodash';
 import LanguageIcon from './LanguageIcon';
 
 const UserName = ({
   user: {
-    id, github_id, name, rating, lang,
+    id, user_github_id: githubId, user_name: name, user_rating: rating, user_lang: lang,
   },
 }) => {
   const anonymousUser = (
@@ -20,12 +19,12 @@ const UserName = ({
   const githubUser = (
     <a
       href={`/users/${id}`}
-      key={github_id}
+      key={githubId}
     >
       <img
         className="attachment rounded border mr-1"
         alt={name}
-        src={`https://avatars0.githubusercontent.com/u/${github_id}`}
+        src={`https://avatars0.githubusercontent.com/u/${githubId}`}
         style={{ width: '25px' }}
       />
       <span className="mr-1">{name}</span>
@@ -44,10 +43,6 @@ const UserName = ({
       {id === 'anonymous' ? anonymousUser : githubUser}
     </div>
   );
-};
-
-UserName.propTypes = {
-  user: PropTypes.object.isRequired,
 };
 
 export default UserName;

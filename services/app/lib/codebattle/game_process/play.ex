@@ -177,10 +177,9 @@ defmodule Codebattle.GameProcess.Play do
     %{
       status: fsm.state,
       starts_at: fsm.data.starts_at,
-      players: fsm.data.players,
+      players: FsmHelpers.get_players(fsm),
       task: fsm.data.task,
-      level: fsm.data.level,
-      winner: FsmHelpers.get_winner(fsm)
+      level: fsm.data.level
     }
   end
 

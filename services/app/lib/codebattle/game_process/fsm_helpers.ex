@@ -15,7 +15,7 @@ defmodule Codebattle.GameProcess.FsmHelpers do
 
   def get_player(fsm, id) do
     player =
-      fsm.data.players
+      get_players(fsm)
       |> Enum.find(fn player -> player.id == id end)
 
     player || %Player{}

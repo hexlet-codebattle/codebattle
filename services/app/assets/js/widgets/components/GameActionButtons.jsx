@@ -7,7 +7,6 @@ import i18n from '../../i18n';
 import GameStatusCodes from '../config/gameStatusCodes';
 import * as selectors from '../selectors';
 import { checkGameResult, sendGiveUp } from '../middlewares/Game';
-import userTypes from '../config/userTypes';
 
 class GameActionButtons extends Component {
   static defaultProps = {
@@ -59,12 +58,12 @@ class GameActionButtons extends Component {
       disabled,
       gameStatus,
       checkResult,
-      currentUser,
+      players,
+      currentUserId,
       editorUser,
     } = this.props;
 
-    const userType = currentUser.type;
-    const isSpectator = userType === userTypes.spectator;
+    const isSpectator = !_.hasIn(players, currentUserId);
     const allowedGameStatusCodes = [GameStatusCodes.playing, GameStatusCodes.gameOver];
     const canGiveUp = gameStatus.status === GameStatusCodes.playing;
     const canCheckResult = _.includes(allowedGameStatusCodes, gameStatus.status);
@@ -87,15 +86,12 @@ class GameActionButtons extends Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  const currentUser = selectors.currentUserSelector(state);
-
-  return {
-    currentUser,
-    gameStatus: selectors.gameStatusSelector(state),
-    task: selectors.gameTaskSelector(state),
-  };
-};
+const mapStateToProps = state => ({
+  players: selectors.gamePlayersSelector(state),
+  currentUserId: selectors.currentUserIdSelector(state),
+  gameStatus: selectors.gameStatusSelector(state),
+  task: selectors.gameTaskSelector(state),
+});
 
 const mapDispatchToProps = {
   checkResult: checkGameResult,

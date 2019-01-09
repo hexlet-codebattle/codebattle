@@ -17,7 +17,7 @@ defmodule CodebattleWeb.GameChannel do
     game_id = get_game_id(socket)
     game_info = Play.game_info(game_id)
 
-    fields = [:status, :winner, :players, :task, :starts_at, :level]
+    fields = [:status, :players, :task, :starts_at, :level]
 
     broadcast_from!(socket, "user:joined", Map.take(game_info, fields))
     {:noreply, socket}
@@ -76,17 +76,10 @@ defmodule CodebattleWeb.GameChannel do
 
     if user_authorized_in_game?(game_id, socket.assigns.user_id) do
       fsm = Play.give_up(game_id, socket.assigns.current_user)
-      # fsm = Play.get_fsm(game_id)
-      winner = FsmHelpers.get_winner(fsm)
-      loser = FsmHelpers.get_opponent(fsm.data, winner.id)
       message = socket.assigns.current_user.name <> " " <> gettext("gave up!")
       players = FsmHelpers.get_players(fsm)
-      # IO.inspect(players)
-      # IO.inspect(fsm)
 
       broadcast!(socket, "give_up", %{
-        # winner: winner,
-        # loser: loser,
         players: players,
         status: "game_over",
         msg: message

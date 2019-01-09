@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import _ from 'lodash';
 // import i18n from '../../i18n';
 import GameStatusCodes from '../config/gameStatusCodes';
@@ -13,14 +12,6 @@ import UserName from '../components/UserName';
 import GameResultIcon from '../components/GameResultIcon';
 
 class RightEditorToolbar extends Component {
-  static propTypes = {
-    users: PropTypes.shape({
-      id: PropTypes.number,
-      name: PropTypes.string,
-      rating: PropTypes.number,
-    }),
-  }
-
   static defaultProps = {
     status: GameStatusCodes.initial,
     title: '',
@@ -28,11 +19,11 @@ class RightEditorToolbar extends Component {
     onlineUsers: [],
   }
 
-renderNameplate = (user = {}, onlineUsers) => {
-  const color = _.find(onlineUsers, { id: user.id }) ? 'green' : '#ccc';
+renderNameplate = (player = {}, onlineUsers) => {
+  const color = _.find(onlineUsers, { id: player.id }) ? 'green' : '#ccc';
   return (
     <div>
-      <UserName user={user} />
+      <UserName user={player} />
       <span
         className="fa fa-plug align-middle ml-2"
         style={{ color }}
@@ -65,9 +56,7 @@ render() {
     rightEditorLangSlug,
     rightUserId,
     leftUserId,
-    users,
     onlineUsers,
-    gameStatus,
     players,
     compressEditor,
     expandEditor,
@@ -79,7 +68,7 @@ render() {
 
   return (
     <div className="btn-toolbar justify-content-between" role="toolbar">
-      {this.renderNameplate(users[rightUserId].user, onlineUsers)}
+      {this.renderNameplate(players[rightUserId], onlineUsers)}
       <GameResultIcon
         resultUser1={_.get(players, [[rightUserId], 'game_result'])}
         resultUser2={_.get(players, [[leftUserId], 'game_result'])}
@@ -100,13 +89,11 @@ render() {
 const mapStateToProps = (state) => {
   const rightUserId = _.get(selectors.rightEditorSelector(state), ['userId'], null);
   const leftUserId = _.get(selectors.leftEditorSelector(state), ['userId'], null);
-  const { users: onlineUsers } = state.chat;
 
   return {
-    users: selectors.usersSelector(state),
     rightUserId,
     leftUserId,
-    onlineUsers,
+    onlineUsers: selectors.chatUsersSelector(state),
     rightEditorLangSlug: selectors.userLangSelector(rightUserId)(state),
     gameStatus: selectors.gameStatusSelector(state),
     players: selectors.gamePlayersSelector(state),
