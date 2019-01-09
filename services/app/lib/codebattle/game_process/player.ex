@@ -15,8 +15,8 @@ defmodule Codebattle.GameProcess.Player do
             rating: "",
             lang: ""
 
-  def from_user(user) do
-    case user.id do
+  def from_user(user, params \\ %{}) do
+    player = case user.id do
       nil ->
         %__MODULE__{}
 
@@ -29,5 +29,6 @@ defmodule Codebattle.GameProcess.Player do
           lang: user.lang
         }
     end
+    Map.merge(player, params)
   end
 end
