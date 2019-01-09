@@ -31,8 +31,8 @@ defmodule Codebattleweb.GameControllerTest do
 
     data = %{
       players: [
-        Player.from_user(user1, game_result: :won)
-        Player.from_user(user2, game_result: :lost)
+        Player.from_user(user1, %{game_result: :won}),
+        Player.from_user(user2, %{game_result: :lost})
       ]
     }
 
@@ -53,8 +53,8 @@ defmodule Codebattleweb.GameControllerTest do
 
     data = %{
       players: [
-        %Player{id: user1.id, user: user1, game_result: :won},
-        %Player{id: user2.id, user: user2, game_result: :lost}
+        Player.from_user(user1, %{game_result: :won}),
+        Player.from_user(user2, %{game_result: :lost})
       ]
     }
 

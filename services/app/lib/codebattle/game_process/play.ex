@@ -86,7 +86,7 @@ defmodule Codebattle.GameProcess.Play do
   def create_game(user, level) do
     case ActiveGames.playing?(user.id) do
       false ->
-        player = Player.from_user(user)
+        player = Player.from_user(user, %{creator: true})
 
         game =
           Repo.insert!(%Game{

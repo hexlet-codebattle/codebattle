@@ -80,7 +80,6 @@ defmodule CodebattleWeb.UserControllerTest do
 
     conn2 = Phoenix.ConnTest.build_conn()
 
-    conn2 =
       conn2
       |> put_session(:user_id, user2.id)
       |> put(user_path(conn2, :update, user2.id), user: %{name: "new_name"})

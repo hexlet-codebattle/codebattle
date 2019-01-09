@@ -32,11 +32,11 @@ defmodule Codebattle.GameProcess.FsmHelpers do
   end
 
   def get_first_player(fsm) do
-    get_players(fsm) |> Enum.at(0) || %Player{}
+    get_players(fsm) |> Enum.at(0)
   end
 
   def get_second_player(fsm) do
-    get_players(fsm) |> Enum.at(1) || %Player{}
+    get_players(fsm) |> Enum.at(1)
   end
 
   def get_opponent(fsm, player_id) do

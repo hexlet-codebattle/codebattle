@@ -60,7 +60,7 @@ defmodule Codebattle.PlayGameTest do
 
       assert fsm.state == :waiting_opponent
       assert FsmHelpers.get_first_player(fsm).name == "first"
-      assert FsmHelpers.get_second_player(fsm) == %Player{}
+      assert FsmHelpers.get_second_player(fsm) == nil
 
       # First player cannot join to game as second player
       post(conn1, game_path(conn1, :join, game_id))
@@ -68,7 +68,7 @@ defmodule Codebattle.PlayGameTest do
 
       assert fsm.state == :waiting_opponent
       assert FsmHelpers.get_first_player(fsm).name == "first"
-      assert FsmHelpers.get_second_player(fsm) == %Player{}
+      assert FsmHelpers.get_second_player(fsm) == nil
 
       # Second player join game
       post(conn2, game_path(conn2, :join, game_id))

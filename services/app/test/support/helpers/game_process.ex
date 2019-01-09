@@ -5,7 +5,7 @@ defmodule Helpers.GameProcess do
 
   import CodebattleWeb.Factory
 
-  alias Codebattle.GameProcess.{GlobalSupervisor, Fsm, FsmHelpers, ActiveGames}
+  alias Codebattle.GameProcess.{GlobalSupervisor, Fsm, ActiveGames}
 
   def setup_game(state, data) do
     game = insert(:game)
