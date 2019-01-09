@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { ToastContainer, toast } from 'react-toastify';
@@ -15,42 +16,44 @@ class NotificationsHandler extends Component {
       gameStatus: { solutionStatus, status, checking },
       isCurrentUserPlayer,
     } = this.props;
+
     if (isCurrentUserPlayer && prevProps.gameStatus.checking && !checking) {
-      this.showCheckingStatusMessage();
+      this.showCheckingStatusMessage(solutionStatus);
     }
+
     if (status === GameStatusCodes.gameOver && prevProps.gameStatus.status !== status) {
       this.showGameResultMessage();
     }
   }
 
-  showCheckingStatusMessage = () => {
-    const { gameStatus: { solutionStatus } } = this.props;
-    switch (solutionStatus) {
-      case true:
-        toast.success('Yay! All tests passed!');
-        return;
-      case false:
-        toast.error('Oh no, some test has failed!');
-      default:
-        break;
+  showCheckingStatusMessage = (solutionStatus) => {
+    if (solutionStatus) {
+      toast.success('Yay! All tests passed!');
+    } else {
+      toast.error('Oh no, some test has failed!');
     }
   }
 
   showGameResultMessage = () => {
     const {
-      gameStatus: { winner, status },
       isCurrentUserPlayer,
-      currentUser,
+      currentUserId,
+      players,
     } = this.props;
-    if (winner.id === currentUser.id) {
+
+    const winner = _.find(players, ['game_result', 'won']);
+
+    if (currentUserId === winner.id) {
       toast.success('Congratulations! You have won the game!');
       return;
     }
+
     if (isCurrentUserPlayer) {
       toast.error('Oh snap! Your opponent has won the game');
       return;
     }
-    toast.success(`${winner.name} has won the game!`);
+
+    toast.success(`${winner.user_name} has won the game!`);
   }
 
   render() {
@@ -59,13 +62,14 @@ class NotificationsHandler extends Component {
 }
 
 const mapStateToProps = (state) => {
-  const currentUser = selectors.currentUserSelector(state);
-  const leftUserId = _.get(selectors.leftEditorSelector(state), ['userId'], null);
-  const rightUserId = _.get(selectors.rightEditorSelector(state), ['userId'], null);
+  const currentUserId = selectors.currentUserIdSelector(state);
+  const players = selectors.gamePlayersSelector(state);
+  const isCurrentUserPlayer = _.hasIn(players, currentUserId);
 
   return {
-    currentUser,
-    isCurrentUserPlayer: currentUser.id === leftUserId || currentUser.id === rightUserId,
+    currentUserId,
+    players,
+    isCurrentUserPlayer,
     gameStatus: selectors.gameStatusSelector(state),
   };
 };

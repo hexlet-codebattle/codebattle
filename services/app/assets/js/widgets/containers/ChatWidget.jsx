@@ -1,30 +1,17 @@
 import React from 'react';
-// import _ from 'lodash';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import { fetchState, addMessage } from '../middlewares/Chat';
-import { currentUserSelector } from '../selectors';
+import { chatUsersSelector, chatMessagesSelector, currentChatUserSelector } from '../selectors';
 import Messages from '../components/Messages';
 import UserName from '../components/UserName';
 
 class ChatWidget extends React.Component {
-  static propTypes = {
-    currentUser: PropTypes.shape({
-      id: PropTypes.number,
-      name: PropTypes.string,
-    }).isRequired,
-    users: PropTypes.array.isRequired,
-    messages: PropTypes.array.isRequired,
-    dispatch: PropTypes.func.isRequired,
-  };
-
   state = { message: '' };
 
   messagesEnd = null;
 
   componentDidMount() {
     const { dispatch } = this.props;
-
     dispatch(fetchState());
   }
 
@@ -106,14 +93,11 @@ class ChatWidget extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  const { users, messages } = state.chat;
-  return {
-    users,
-    messages,
-    currentUser: currentUserSelector(state),
-  };
-};
+const mapStateToProps = state => ({
+  users: chatUsersSelector(state),
+  messages: chatMessagesSelector(state),
+  currentUser: currentChatUserSelector(state),
+});
 
 export default connect(
   mapStateToProps,

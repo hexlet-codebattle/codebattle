@@ -1,17 +1,16 @@
 import React, { Component, Fragment } from 'react';
-import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { connect } from 'react-redux';
-import Gon from 'gon';
+// import Gon from 'gon';
 import {
   rightEditorSelector,
   leftEditorSelector,
   editorHeightSelector,
-  currentUserSelector,
+  currentUserIdSelector,
+  gamePlayersSelector,
   leftExecutionOutputSelector,
   rightExecutionOutputSelector,
 } from '../selectors';
-import userTypes from '../config/userTypes';
 import Editor from './Editor';
 import LeftEditorToolbar from './LeftEditorToolbar';
 import RightEditorToolbar from './RightEditorToolbar';
@@ -28,26 +27,13 @@ class GameWidget extends Component {
     rightEditor: {},
   }
 
-  static propTypes = {
-    currentUser: PropTypes.shape({
-      id: PropTypes.number,
-      type: PropTypes.string,
-    }).isRequired,
-    leftEditor: PropTypes.shape({
-      text: PropTypes.string,
-    }),
-    rightEditor: PropTypes.shape({
-      text: PropTypes.string,
-    }),
-    updateEditorValue: PropTypes.func.isRequired,
-  }
-
   getLeftEditorParams = () => {
     const {
-      currentUser, leftEditor, updateEditorValue, leftEditorHeight,
+      currentUserId, players, leftEditor, updateEditorValue, leftEditorHeight,
     } = this.props;
+
     // FIXME: currentUser shouldn't return {} for spectator
-    const isPlayer = currentUser.type !== userTypes.spectator;
+    const isPlayer = _.hasIn(players, currentUserId);
     const editable = isPlayer;
     const editorState = leftEditor;
     const onChange = isPlayer
@@ -119,7 +105,8 @@ const mapStateToProps = (state) => {
   const rightUserId = _.get(rightEditor, ['userId'], null);
 
   return {
-    currentUser: currentUserSelector(state),
+    currentUserId: currentUserIdSelector(state),
+    players: gamePlayersSelector(state),
     leftEditor,
     rightEditor,
     leftEditorHeight: editorHeightSelector(leftUserId)(state),

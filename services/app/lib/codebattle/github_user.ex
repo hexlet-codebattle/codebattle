@@ -3,8 +3,6 @@ defmodule Codebattle.GithubUser do
     Retrieve user information from github oauth request
   """
 
-  import Ecto.Query
-
   alias Ueberauth.Auth
   alias Codebattle.{Repo, User}
 

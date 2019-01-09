@@ -1,14 +1,15 @@
 defmodule Codebattle.RandomTaskSelectorTest do
   use Codebattle.IntegrationCase
 
-  alias Codebattle.GameProcess.Server
-  alias Codebattle.{Repo, Task, Game}
+  alias Codebattle.{Repo, Game}
+  alias CodebattleWeb.UserSocket
+
   import Mock
   import Ecto.Query
 
   setup %{conn: conn} do
     1..5
-    |> Enum.each(fn x ->
+    |> Enum.each(fn _x ->
       insert(:task, level: "easy", name: Base.encode32(:crypto.strong_rand_bytes(10)))
     end)
 
@@ -20,8 +21,8 @@ defmodule Codebattle.RandomTaskSelectorTest do
     conn1 = put_session(conn, :user_id, user1.id)
     conn2 = put_session(conn, :user_id, user2.id)
 
-    socket1 = socket("user_id", %{user_id: user1.id, current_user: user1})
-    socket2 = socket("user_id", %{user_id: user2.id, current_user: user2})
+    socket1 = socket(UserSocket, "user_id", %{user_id: user1.id, current_user: user1})
+    socket2 = socket(UserSocket, "user_id", %{user_id: user2.id, current_user: user2})
 
     {:ok,
      %{
@@ -39,8 +40,6 @@ defmodule Codebattle.RandomTaskSelectorTest do
     conn2: conn2,
     socket1: socket1,
     socket2: socket2,
-    user1: user1,
-    user2: user2
   } do
     with_mocks [
       {Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> {:ok, "asdf", "asdf"} end]}
@@ -48,7 +47,7 @@ defmodule Codebattle.RandomTaskSelectorTest do
       # Create game
 
       1..20
-      |> Enum.each(fn x ->
+      |> Enum.each(fn _x ->
         conn =
           conn1
           |> get(page_path(conn1, :index))
@@ -59,11 +58,9 @@ defmodule Codebattle.RandomTaskSelectorTest do
         game_topic = "game:" <> to_string(game_id)
         {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
 
-        fsm = Server.fsm(game_id)
         # Second player join game
         post(conn2, game_path(conn2, :join, game_id))
-        {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
-        fsm = Server.fsm(game_id)
+        {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
 
         # First player won
 
@@ -72,7 +69,6 @@ defmodule Codebattle.RandomTaskSelectorTest do
         Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text1, lang: "js"})
 
         :timer.sleep(100)
-        fsm = Server.fsm(game_id)
       end)
 
       query = from(g in Game, select: g.task_id)

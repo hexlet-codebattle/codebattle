@@ -9,6 +9,13 @@ defmodule CodebattleWeb.GameView do
     end
   end
 
+  def player_name(%Codebattle.GameProcess.Player{name: name, rating: rating}) do
+    case {name, rating} do
+      {nil, nil} -> ""
+      _ -> "#{name}(#{rating})"
+    end
+  end
+
   def game_result(%Codebattle.Game{users: users, user_games: user_games}) do
     users
     |> Enum.map(fn u ->

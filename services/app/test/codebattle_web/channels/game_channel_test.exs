@@ -3,18 +3,18 @@ defmodule CodebattleWeb.GameChannelTest do
 
   alias CodebattleWeb.GameChannel
   alias Codebattle.GameProcess.{Player, Server, FsmHelpers}
-  alias Codebattle.Languages
+  alias CodebattleWeb.UserSocket
 
   setup do
     user1 = insert(:user, rating: 1000)
     user2 = insert(:user, rating: 1000)
     game = insert(:game)
 
-    user_token1 = Phoenix.Token.sign(socket(), "user_token", user1.id)
-    {:ok, socket1} = connect(CodebattleWeb.UserSocket, %{"token" => user_token1})
+    user_token1 = Phoenix.Token.sign(socket(UserSocket), "user_token", user1.id)
+    {:ok, socket1} = connect(UserSocket, %{"token" => user_token1})
 
-    user_token2 = Phoenix.Token.sign(socket(), "user_token", user2.id)
-    {:ok, socket2} = connect(CodebattleWeb.UserSocket, %{"token" => user_token2})
+    user_token2 = Phoenix.Token.sign(socket(UserSocket), "user_token", user2.id)
+    {:ok, socket2} = connect(UserSocket, %{"token" => user_token2})
 
     {:ok, %{user1: user1, user2: user2, socket1: socket1, socket2: socket2, game: game}}
   end
@@ -22,63 +22,23 @@ defmodule CodebattleWeb.GameChannelTest do
   test "sends game info when user join", %{user1: user1, socket1: socket1, game: game} do
     # setup
     state = :waiting_opponent
-    data = %{players: [%Player{id: user1.id, user: user1}, %Player{}], task: game.task}
+    data = %{players: [Player.from_user(user1), %Player{}], task: game.task}
     game = setup_game(state, data)
     game_topic = "game:" <> to_string(game.id)
 
     {:ok, response, _socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
 
+
     assert Poison.encode!(response) ==
              Poison.encode!(%{
                "level" => game.task.level,
                "players" => [
-                 %{
-                   "creator" => false,
-                   "editor_lang" => "js",
-                   "editor_text" => "module.exports = () => {\n\n};",
-                   "game_result" => "undefined",
-                   "id" => user1.id,
-                   "output" => "",
-                   "result" => "{}",
-                   "user" => user1
-                 },
-                 %{
-                   "creator" => false,
-                   "editor_lang" => "js",
-                   "editor_text" => "module.exports = () => {\n\n};",
-                   "game_result" => "undefined",
-                   "id" => nil,
-                   "output" => "",
-                   "result" => "{}",
-                   "user" => %{
-                     "creator" => false,
-                     "editor_mode" => nil,
-                     "editor_theme" => nil,
-                     "game_result" => nil,
-                     "github_id" => nil,
-                     "guest" => false,
-                     "id" => nil,
-                     "lang" => nil,
-                     "name" => nil,
-                     "rating" => nil
-                   }
-                 }
+                 Player.from_user(user1),
+                 Player.from_user(%User{}),
                ],
                "starts_at" => TimeHelper.utc_now(),
                "status" => "waiting_opponent",
                "task" => game.task,
-               "winner" => %{
-                 "creator" => false,
-                 "editor_mode" => nil,
-                 "editor_theme" => nil,
-                 "game_result" => nil,
-                 "github_id" => nil,
-                 "guest" => false,
-                 "id" => nil,
-                 "lang" => nil,
-                 "name" => nil,
-                 "rating" => nil
-               }
              })
   end
 
@@ -89,7 +49,7 @@ defmodule CodebattleWeb.GameChannelTest do
   } do
     # setup
     state = :playing
-    data = %{players: [%Player{id: user1.id, user: user1}, %Player{id: user2.id, user: user2}]}
+    data = %{players: [Player.from_user(user1), Player.from_user(user2)]}
     game = setup_game(state, data)
     game_topic = "game:" <> to_string(game.id)
     {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
@@ -104,42 +64,12 @@ defmodule CodebattleWeb.GameChannelTest do
              Poison.encode!(%{
                "level" => game.task.level,
                "players" => [
-                 %{
-                   "creator" => false,
-                   "editor_lang" => "js",
-                   "editor_text" => "module.exports = () => {\n\n};",
-                   "game_result" => "undefined",
-                   "id" => user1.id,
-                   "output" => "",
-                   "result" => "{}",
-                   "user" => user1
-                 },
-                 %{
-                   "creator" => false,
-                   "editor_lang" => "js",
-                   "editor_text" => "module.exports = () => {\n\n};",
-                   "game_result" => "undefined",
-                   "id" => user2.id,
-                   "output" => "",
-                   "result" => "{}",
-                   "user" => user2
-                 }
+                 Player.from_user(user1),
+                 Player.from_user(user2),
                ],
                "starts_at" => TimeHelper.utc_now(),
                "status" => "playing",
                "task" => game.task,
-               "winner" => %{
-                 "creator" => false,
-                 "editor_mode" => nil,
-                 "editor_theme" => nil,
-                 "game_result" => nil,
-                 "github_id" => nil,
-                 "guest" => false,
-                 "id" => nil,
-                 "lang" => nil,
-                 "name" => nil,
-                 "rating" => nil
-               }
              })
   end
 
@@ -151,7 +81,7 @@ defmodule CodebattleWeb.GameChannelTest do
   } do
     # setup
     state = :playing
-    data = %{players: [%Player{id: user1.id, user: user1}, %Player{id: user2.id, user: user2}]}
+    data = %{players: [Player.from_user(user1), Player.from_user(user2)]}
     game = setup_game(state, data)
     game_topic = "game:" <> to_string(game.id)
     editor_text1 = "test1"
@@ -188,7 +118,7 @@ defmodule CodebattleWeb.GameChannelTest do
   } do
     # setup
     state = :playing
-    data = %{players: [%Player{id: user1.id, user: user1}, %Player{id: user2.id, user: user2}]}
+    data = %{players: [Player.from_user(user1), Player.from_user(user2)]}
     game = setup_game(state, data)
     game_topic = "game:" <> to_string(game.id)
     editor_lang1 = "js"
@@ -238,7 +168,7 @@ defmodule CodebattleWeb.GameChannelTest do
 
     data = %{
       task: game.task,
-      players: [%Player{id: user1.id, user: user1}, %Player{id: user2.id, user: user2}]
+      players: [Player.from_user(user1), Player.from_user(user2)]
     }
 
     game = setup_game(state, data)
@@ -250,11 +180,13 @@ defmodule CodebattleWeb.GameChannelTest do
 
     push(socket1, "give_up")
 
-    winner = user2
     message = "#{user1.name} gave up!"
+    :timer.sleep(100)
+    fsm = Server.fsm(game.id)
+    players = FsmHelpers.get_players(fsm)
 
     payload = %{
-      winner: winner,
+      players: players,
       status: "game_over",
       msg: message
     }
@@ -268,8 +200,8 @@ defmodule CodebattleWeb.GameChannelTest do
     fsm = Server.fsm(game.id)
 
     assert fsm.state == :game_over
-    assert FsmHelpers.gave_up?(fsm.data, user1.id) == true
-    assert FsmHelpers.winner?(fsm.data, user2.id) == true
+    assert FsmHelpers.gave_up?(fsm, user1.id) == true
+    assert FsmHelpers.winner?(fsm, user2.id) == true
     :timer.sleep(100)
 
     game = Repo.get(Game, game.id)

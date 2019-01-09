@@ -17,7 +17,7 @@ defmodule CodebattleWeb.GameChannel do
     game_id = get_game_id(socket)
     game_info = Play.game_info(game_id)
 
-    fields = [:status, :winner, :players, :task, :starts_at, :level]
+    fields = [:status, :players, :task, :starts_at, :level]
 
     broadcast_from!(socket, "user:joined", Map.take(game_info, fields))
     {:noreply, socket}
@@ -75,13 +75,12 @@ defmodule CodebattleWeb.GameChannel do
     game_id = get_game_id(socket)
 
     if user_authorized_in_game?(game_id, socket.assigns.user_id) do
-      Play.give_up(game_id, socket.assigns.current_user)
-      fsm = Play.get_fsm(game_id)
-      winner = FsmHelpers.get_winner(fsm)
+      fsm = Play.give_up(game_id, socket.assigns.current_user)
       message = socket.assigns.current_user.name <> " " <> gettext("gave up!")
+      players = FsmHelpers.get_players(fsm)
 
       broadcast!(socket, "give_up", %{
-        winner: winner,
+        players: players,
         status: "game_over",
         msg: message
       })
@@ -97,7 +96,7 @@ defmodule CodebattleWeb.GameChannel do
     user_id = socket.assigns.user_id
 
     broadcast_from!(socket, "user:startCheck", %{
-      user: socket.assigns.current_user,
+      user: socket.assigns.current_user
     })
 
     if user_authorized_in_game?(game_id, socket.assigns.user_id) do
@@ -123,7 +122,7 @@ defmodule CodebattleWeb.GameChannel do
           })
 
           broadcast_from!(socket, "user:finishCheck", %{
-            user: socket.assigns.current_user,
+            user: socket.assigns.current_user
           })
 
           {:reply,
@@ -146,7 +145,7 @@ defmodule CodebattleWeb.GameChannel do
           })
 
           broadcast_from!(socket, "user:finishCheck", %{
-            user: socket.assigns.current_user,
+            user: socket.assigns.current_user
           })
 
           {:reply,
@@ -161,7 +160,7 @@ defmodule CodebattleWeb.GameChannel do
           })
 
           broadcast_from!(socket, "user:finishCheck", %{
-            user: socket.assigns.current_user,
+            user: socket.assigns.current_user
           })
 
           {:reply,
@@ -180,6 +179,6 @@ defmodule CodebattleWeb.GameChannel do
 
   defp user_authorized_in_game?(game_id, user_id) do
     fsm = Play.get_fsm(game_id)
-    FsmHelpers.player?(fsm.data, user_id)
+    FsmHelpers.player?(fsm, user_id)
   end
 end

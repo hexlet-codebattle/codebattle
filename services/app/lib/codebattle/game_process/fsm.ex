@@ -36,21 +36,11 @@ defmodule Codebattle.GameProcess.Fsm do
 
   defstate initial do
     defevent create(params), data: data do
-      editor_lang = params.user.lang || "js"
-      editor_text = Languages.meta() |> Map.get(editor_lang) |> Map.get(:solution_template)
-
-      player = %Player{
-        id: params.user.id,
-        user: params.user,
-        editor_lang: editor_lang,
-        editor_text: editor_text,
-        creator: true
-      }
 
       next_state(:waiting_opponent, %{
         data
         | game_id: params.game_id,
-          players: [player],
+          players: [params.player],
           level: params.level
       })
     end
@@ -63,17 +53,7 @@ defmodule Codebattle.GameProcess.Fsm do
 
   defstate waiting_opponent do
     defevent join(params), data: data do
-      editor_lang = params.user.lang || "js"
-      editor_text = Languages.meta() |> Map.get(editor_lang) |> Map.get(:solution_template)
-
-      player = %Player{
-        id: params.user.id,
-        user: params.user,
-        editor_lang: editor_lang,
-        editor_text: editor_text
-      }
-
-      players = data.players ++ [player]
+      players = data.players ++ [params.player]
 
       next_state(:playing, %{
         data
@@ -100,14 +80,14 @@ defmodule Codebattle.GameProcess.Fsm do
     end
 
     defevent complete(params), data: data do
-      opponent = get_opponent(data, params.id)
+      opponent = get_opponent(%{data: data}, params.id)
       players = update_player_params(data.players, %{game_result: :won, id: params.id})
       players = update_player_params(players, %{game_result: :lost, id: opponent.id})
       next_state(:game_over, %{data | players: players})
     end
 
     defevent give_up(params), data: data do
-      opponent = get_opponent(data, params.id)
+      opponent = get_opponent(%{data: data}, params.id)
       players = update_player_params(data.players, %{game_result: :gave_up, id: params.id})
       players = update_player_params(players, %{game_result: :won, id: opponent.id})
       next_state(:game_over, %{data | players: players})
