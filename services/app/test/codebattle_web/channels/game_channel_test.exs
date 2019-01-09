@@ -64,42 +64,12 @@ defmodule CodebattleWeb.GameChannelTest do
              Poison.encode!(%{
                "level" => game.task.level,
                "players" => [
-                 %{
-                   "creator" => false,
-                   "editor_lang" => "js",
-                   "editor_text" => "module.exports = () => {\n\n};",
-                   "game_result" => "undefined",
-                   "id" => user1.id,
-                   "output" => "",
-                   "result" => "{}",
-                   "user" => user1
-                 },
-                 %{
-                   "creator" => false,
-                   "editor_lang" => "js",
-                   "editor_text" => "module.exports = () => {\n\n};",
-                   "game_result" => "undefined",
-                   "id" => user2.id,
-                   "output" => "",
-                   "result" => "{}",
-                   "user" => user2
-                 }
+                 Player.from_user(user1),
+                 Player.from_user(user2),
                ],
                "starts_at" => TimeHelper.utc_now(),
                "status" => "playing",
                "task" => game.task,
-               "winner" => %{
-                 "creator" => false,
-                 "editor_mode" => nil,
-                 "editor_theme" => nil,
-                 "game_result" => nil,
-                 "github_id" => nil,
-                 "guest" => false,
-                 "id" => nil,
-                 "lang" => nil,
-                 "name" => nil,
-                 "rating" => nil
-               }
              })
   end
 
@@ -210,11 +180,13 @@ defmodule CodebattleWeb.GameChannelTest do
 
     push(socket1, "give_up")
 
-    winner = user2
     message = "#{user1.name} gave up!"
+    :timer.sleep(100)
+    fsm = Server.fsm(game.id)
+    players = FsmHelpers.get_players(fsm)
 
     payload = %{
-      winner: winner,
+      players: players,
       status: "game_over",
       msg: message
     }
@@ -228,8 +200,8 @@ defmodule CodebattleWeb.GameChannelTest do
     fsm = Server.fsm(game.id)
 
     assert fsm.state == :game_over
-    assert FsmHelpers.gave_up?(fsm.data, user1.id) == true
-    assert FsmHelpers.winner?(fsm.data, user2.id) == true
+    assert FsmHelpers.gave_up?(fsm, user1.id) == true
+    assert FsmHelpers.winner?(fsm, user2.id) == true
     :timer.sleep(100)
 
     game = Repo.get(Game, game.id)
