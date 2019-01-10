@@ -107,10 +107,11 @@ defmodule CodebattleWeb.GameChannel do
       case Play.check_game(game_id, socket.assigns.current_user, editor_text, lang) do
         {:ok, fsm, result, output} ->
           winner = socket.assigns.current_user
+          players = FsmHelpers.get_players(fsm)
           message = winner.name <> " " <> gettext("won the game!")
 
           broadcast_from!(socket, "user:won", %{
-            winner: winner,
+            players: players,
             status: "game_over",
             msg: message
           })
@@ -132,7 +133,7 @@ defmodule CodebattleWeb.GameChannel do
               status: fsm.state,
               user_id: user_id,
               msg: message,
-              winner: winner,
+              players: players,
               result: result,
               output: output
             }}, socket}

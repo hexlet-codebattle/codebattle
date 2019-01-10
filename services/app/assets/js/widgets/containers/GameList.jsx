@@ -260,7 +260,6 @@ class GameList extends React.Component {
                   <td className="align-middle" style={{ whiteSpace: 'nowrap' }}>
                     {this.renderGameLevelBadge(game.level)}
                   </td>
-
                   {this.renderPlayers(game.id, game.players)}
 
                   <td className="align-middle" style={{ whiteSpace: 'nowrap' }}>

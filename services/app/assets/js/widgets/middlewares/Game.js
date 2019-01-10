@@ -27,10 +27,11 @@ const initGameChannel = (dispatch) => {
     // users.push({ ...user2, type: userTypes.secondPlayer });
     // }
 
-    const players = [
-      { ...firstPlayer, type: userTypes.firstPlayer },
-      { ...secondPlayer, type: userTypes.secondPlayer },
-    ];
+    const players = [{ ...firstPlayer, type: userTypes.firstPlayer }];
+
+    if (secondPlayer) {
+      players.push({ ...secondPlayer, type: userTypes.secondPlayer });
+    }
 
     dispatch(actions.updateGamePlayers({ players }));
 
@@ -175,13 +176,14 @@ export const editorReady = () => (dispatch) => {
     dispatch(actions.updateGameStatus({ status, startsAt }));
   });
 
-  channel.on('user:won', ({ winner, status, msg }) => {
-    dispatch(actions.updateGameStatus({ status, winner }));
+  channel.on('user:won', ({ players, status, msg }) => {
+    dispatch(actions.updateGamePlayers({ players }));
+    dispatch(actions.updateGameStatus({ status, msg }));
   });
 
   channel.on('give_up', ({ players, status, msg }) => {
-    dispatch(actions.updateGameStatus({ status }));
     dispatch(actions.updateGamePlayers({ players }));
+    dispatch(actions.updateGameStatus({ status, msg }));
   });
 };
 
@@ -201,9 +203,10 @@ export const checkGameResult = () => (dispatch, getState) => {
   };
   channel.push('check_result', payload)
     .receive('ok', ({
-      status, winner, solution_status: solutionStatus, output, result, user_id: userId,
+      status, players, solution_status: solutionStatus, output, result, user_id: userId,
     }) => {
-      const newGameStatus = solutionStatus ? { status, winner } : {};
+      const newGameStatus = solutionStatus ? { status } : {};
+      dispatch(actions.updateGamePlayers({ players }));
       dispatch(actions.updateExecutionOutput({ output, result, userId }));
       dispatch(actions.updateGameStatus({ ...newGameStatus, solutionStatus }));
       dispatch(actions.updateCheckStatus({ [currentUserId]: false }));

@@ -105,7 +105,7 @@ export const gameStatusTitleSelector = (state) => {
         .t('{{state}}', { state: i18n.t('Playing') });
     case GameStatusCodes.gameOver:
       return i18n
-        .t('{{name}} won', { name: gameStatus.winner.name });
+        .t('{{state}}', { state: gameStatus.msg });
     default:
       return '';
   }
@@ -156,6 +156,6 @@ export const chatMessagesSelector = state => state.chat.messages;
 
 export const currentChatUserSelector = (state) => {
   const currentUserId = currentUserIdSelector(state);
-  const currentUser = _.find(chatUsersSelector(state), currentUserId);
+  const currentUser = _.find(chatUsersSelector(state), { id: currentUserId });
   return currentUser;
 };

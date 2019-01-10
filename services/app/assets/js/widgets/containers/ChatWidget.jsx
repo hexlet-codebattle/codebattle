@@ -40,7 +40,6 @@ class ChatWidget extends React.Component {
   render() {
     const { message } = this.state;
     const { messages, users } = this.props;
-
     return (
       <div className="d-flex">
         <div className="card col-8 p-0 border-0 shadow-sm">

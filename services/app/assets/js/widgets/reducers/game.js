@@ -30,8 +30,8 @@ export default handleActions({
     return {
       ...state,
       players: {
-        ...state.players,
-        ...players,
+        1: { ...state.players[1], ...players[1] },
+        2: { ...state.players[2], ...players[2] },
       },
     };
   },
