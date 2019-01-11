@@ -149,7 +149,7 @@ defmodule Codebattle.GameProcess.Play do
 
           {:ok, fsm}
 
-        {{:error, _reason}, fsm} ->
+        {{:error, _reason}, _} ->
           :error
       end
     end

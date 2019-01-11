@@ -4,7 +4,7 @@ defmodule CodebattleWeb.GameChannel do
 
   require Logger
 
-  alias Codebattle.GameProcess.{Play, Fsm, FsmHelpers}
+  alias Codebattle.GameProcess.{Play, FsmHelpers}
 
   def join("game:" <> game_id, _payload, socket) do
     send(self(), :after_join)
@@ -71,7 +71,7 @@ defmodule CodebattleWeb.GameChannel do
   #   end
   # end
 
-  def handle_in("give_up", payload, socket) do
+  def handle_in("give_up", _, socket) do
     game_id = get_game_id(socket)
 
     if user_authorized_in_game?(game_id, socket.assigns.user_id) do

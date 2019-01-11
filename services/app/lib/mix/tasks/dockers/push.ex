@@ -30,8 +30,4 @@ defmodule Mix.Tasks.Dockers.Push do
       IO.puts("End pushing image for #{lang.slug}: #{output}")
     end
   end
-
-  defp root() do
-    File.cwd!()
-  end
 end
