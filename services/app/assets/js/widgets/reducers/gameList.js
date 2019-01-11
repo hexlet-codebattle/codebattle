@@ -10,12 +10,11 @@ const gameList = handleActions({
   },
   [actions.newGameLobby](state, { payload: { game } }) {
     const { activeGames } = state;
-
     const newGame = {
-      users: game.data.players.map(player => player.user),
+      users: game.data.players,
       game_info: {
         state: game.state,
-        level: game.data.task_level,
+        level: game.data.level,
         starts_at: game.data.starts_at,
       },
       game_id: game.data.game_id,

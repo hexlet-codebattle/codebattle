@@ -2,6 +2,7 @@ defmodule CodebattleWeb.LobbyChannelTest do
   use CodebattleWeb.ChannelCase
 
   alias CodebattleWeb.LobbyChannel
+  alias CodebattleWeb.UserSocket
 
   setup do
     task = insert(:task)
@@ -11,8 +12,8 @@ defmodule CodebattleWeb.LobbyChannelTest do
     # winner_user_game = insert(:user_game, user: winner, creator: false, game: game)
     # loser_user_game = insert(:user_game, user: loser, creator: true, game: game)
 
-    user_token1 = Phoenix.Token.sign(socket(), "user_token", winner.id)
-    {:ok, socket1} = connect(CodebattleWeb.UserSocket, %{"token" => user_token1})
+    user_token1 = Phoenix.Token.sign(socket(UserSocket), "user_token", winner.id)
+    {:ok, socket1} = connect(UserSocket, %{"token" => user_token1})
 
     {:ok, %{winner: winner, socket1: socket1, task: task}}
   end

@@ -2,7 +2,7 @@
   .container-fluid
     .jumbotron
       h1.display-4 = gettext "Join the game"
-      p.lead = "Player #{user_name(get_first_player(assigns[:fsm]).user)} is waiting for an opponent"
+      p.lead = "Player #{player_name(get_first_player(assigns[:fsm]))} is waiting for an opponent"
       hr.my-4/
       p You can join this game
       p.lead

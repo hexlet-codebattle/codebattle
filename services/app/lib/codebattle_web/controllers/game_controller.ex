@@ -28,7 +28,8 @@ defmodule CodebattleWeb.GameController do
           nil ->
             conn
             |> put_status(:not_found)
-            |> render(CodebattleWeb.ErrorView, "404.html", %{msg: gettext("Game not found")})
+            |> put_view(CodebattleWeb.ErrorView)
+            |> render("404.html", %{msg: gettext("Game not found")})
 
           game ->
             render(conn, "game_result.html", %{game: game})

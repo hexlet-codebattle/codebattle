@@ -4,7 +4,6 @@ defmodule Codebattle.User do
   """
   use Ecto.Schema
   import Ecto.Changeset
-  import Ecto.Query
 
   @derive {Poison.Encoder,
            only: [
@@ -61,7 +60,7 @@ defmodule Codebattle.User do
 
   def settings_changeset(model, params \\ %{}) do
     model
-    |> cast(params, ~w(name), [])
+    |> cast(params, [:name], [])
     |> unique_constraint(:name)
     |> validate_length(:name, min: 3, max: 16)
   end

@@ -7,17 +7,13 @@ import i18n from '../../i18n';
 import GameStatusCodes from '../config/gameStatusCodes';
 import * as selectors from '../selectors';
 import { checkGameResult, sendGiveUp } from '../middlewares/Game';
-import userTypes from '../config/userTypes';
 
 class GameActionButtons extends Component {
   static defaultProps = {
     status: GameStatusCodes.initial,
   }
 
-  renderCheckResultButton = (canCheckResult, checkResult, gameStatus, disabled, editorUser) => {
-    if (!canCheckResult) {
-      return null;
-    }
+  renderCheckResultButton = (checkResult, gameStatus, disabled, editorUser) => {
     return (
       <button
         type="button"
@@ -36,38 +32,30 @@ class GameActionButtons extends Component {
     );
   }
 
-  renderGiveUpButton = (canGiveUp, disabled) => {
-    if (!canGiveUp) {
-      return null;
-    }
-
-    return (
-      <button
-        type="button"
-        className="btn btn-outline-danger btn-sm"
-        onClick={sendGiveUp}
-        disabled={disabled}
-      >
-        <span className="fa fa-times-circle mr-1" />
-        {i18n.t('Give up')}
-      </button>
-    );
-  }
+  renderGiveUpButton = (canGiveUp, disabled) => (
+    <button
+      type="button"
+      className="btn btn-outline-danger btn-sm"
+      onClick={sendGiveUp}
+      disabled={!canGiveUp ? true : disabled}
+    >
+      <span className="fa fa-times-circle mr-1" />
+      {i18n.t('Give up')}
+    </button>
+  )
 
   render() {
     const {
       disabled,
       gameStatus,
       checkResult,
-      currentUser,
+      players,
+      currentUserId,
       editorUser,
     } = this.props;
 
-    const userType = currentUser.type;
-    const isSpectator = userType === userTypes.spectator;
-    const allowedGameStatusCodes = [GameStatusCodes.playing, GameStatusCodes.gameOver];
+    const isSpectator = !_.hasIn(players, currentUserId);
     const canGiveUp = gameStatus.status === GameStatusCodes.playing;
-    const canCheckResult = _.includes(allowedGameStatusCodes, gameStatus.status);
     const realDisabled = isSpectator || disabled;
 
     return (
@@ -75,7 +63,6 @@ class GameActionButtons extends Component {
         <div className="btn-toolbar py-2" role="toolbar">
           {this.renderGiveUpButton(canGiveUp, realDisabled)}
           {this.renderCheckResultButton(
-            canCheckResult,
             checkResult,
             gameStatus,
             realDisabled,
@@ -87,15 +74,12 @@ class GameActionButtons extends Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  const currentUser = selectors.currentUserSelector(state);
-
-  return {
-    currentUser,
-    gameStatus: selectors.gameStatusSelector(state),
-    task: selectors.gameTaskSelector(state),
-  };
-};
+const mapStateToProps = state => ({
+  players: selectors.gamePlayersSelector(state),
+  currentUserId: selectors.currentUserIdSelector(state),
+  gameStatus: selectors.gameStatusSelector(state),
+  task: selectors.gameTaskSelector(state),
+});
 
 const mapDispatchToProps = {
   checkResult: checkGameResult,

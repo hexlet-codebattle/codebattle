@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
 import _ from 'lodash';
 // import i18n from '../../i18n';
 import GameStatusCodes from '../config/gameStatusCodes';
@@ -8,34 +7,22 @@ import * as selectors from '../selectors';
 import {
   checkGameResult, changeCurrentLangAndSetTemplate, compressEditorHeight, expandEditorHeight,
 } from '../middlewares/Game';
-import userTypes from '../config/userTypes';
 import LanguagePicker from '../components/LanguagePicker';
 import UserName from '../components/UserName';
 import GameResultIcon from '../components/GameResultIcon';
 
 class LeftEditorToolbar extends Component {
-  static propTypes = {
-    users: PropTypes.shape({
-      id: PropTypes.number,
-      name: PropTypes.string,
-      rating: PropTypes.number,
-    }),
-    status: PropTypes.string,
-    title: PropTypes.string,
-  }
-
   static defaultProps = {
     status: GameStatusCodes.initial,
     title: '',
-    users: {},
     onlineUsers: [],
   }
 
-  renderNameplate = (user = {}, onlineUsers) => {
-    const color = _.find(onlineUsers, { id: user.id }) ? 'green' : '#ccc';
+  renderNameplate = (player = {}, onlineUsers) => {
+    const color = _.find(onlineUsers, { id: player.id }) ? 'green' : '#ccc';
     return (
       <div>
-        <UserName user={user} />
+        <UserName user={player} />
         <span
           className="fa fa-plug align-middle ml-2"
           style={{ color }}
@@ -66,19 +53,18 @@ class LeftEditorToolbar extends Component {
 
   render() {
     const {
-      currentUser,
+      currentUserId,
       leftEditorLangSlug,
       leftUserId,
       rightUserId,
-      users,
       onlineUsers,
       setLang,
-      gameStatus,
+      players,
       compressEditor,
       expandEditor,
     } = this.props;
-    const userType = currentUser.type;
-    const isSpectator = userType === userTypes.spectator;
+
+    const isSpectator = !_.hasIn(players, currentUserId);
 
     if (leftEditorLangSlug === null) {
       return null;
@@ -95,30 +81,28 @@ class LeftEditorToolbar extends Component {
           {this.renderEditorHeightButtons(compressEditor, expandEditor, leftUserId)}
         </div>
         <GameResultIcon
-          resultUser1={_.get(users, [[leftUserId], 'game_result'])}
-          resultUser2={_.get(users, [[rightUserId], 'game_result'])}
+          resultUser1={_.get(players, [[leftUserId], 'game_result'])}
+          resultUser2={_.get(players, [[rightUserId], 'game_result'])}
         />
-        {this.renderNameplate(users[leftUserId].user, onlineUsers)}
+        {this.renderNameplate(players[leftUserId], onlineUsers)}
       </div>
     );
   }
 }
 
 const mapStateToProps = (state) => {
-  const currentUser = selectors.currentUserSelector(state);
   const leftUserId = _.get(selectors.leftEditorSelector(state), ['userId'], null);
   const rightUserId = _.get(selectors.rightEditorSelector(state), ['userId'], null);
-  const { users: onlineUsers } = state.chat;
 
   return {
-    users: selectors.usersSelector(state),
     leftUserId,
     rightUserId,
-    currentUser,
-    onlineUsers,
+    currentUserId: selectors.currentUserIdSelector(state),
+    onlineUsers: selectors.chatUsersSelector(state),
     leftEditorLangSlug: selectors.userLangSelector(leftUserId)(state),
     rightEditorLangSlug: selectors.userLangSelector(rightUserId)(state),
     gameStatus: selectors.gameStatusSelector(state),
+    players: selectors.gamePlayersSelector(state),
     title: selectors.gameStatusTitleSelector(state),
     task: selectors.gameTaskSelector(state),
   };

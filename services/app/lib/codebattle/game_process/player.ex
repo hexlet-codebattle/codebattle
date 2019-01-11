@@ -1,16 +1,40 @@
 defmodule Codebattle.GameProcess.Player do
   @moduledoc "Struct for player"
   alias Codebattle.User
+  alias Codebattle.Languages
   # @game_result [:undefined, :gave_up, :won, :lost]
 
-  defstruct [
-    :id,
-    user: %User{},
-    editor_text: "module.exports = () => {\n\n};",
-    editor_lang: "js",
-    game_result: :undefined,
-    output: "",
-    result: "{}",
-    creator: false
-  ]
+  defstruct id: "",
+            editor_text: "module.exports = () => {\n\n};",
+            editor_lang: "",
+            game_result: :undefined,
+            output: "",
+            result: "{}",
+            creator: false,
+            github_id: "",
+            name: "",
+            rating: ""
+
+  def from_user(user, params \\ %{}) do
+    player =
+      case user.id do
+        nil ->
+          %__MODULE__{}
+
+        id ->
+          editor_lang = user.lang || "js"
+          editor_text = Languages.get_solution(editor_lang)
+
+          %__MODULE__{
+            id: user.id,
+            github_id: user.github_id,
+            name: user.name,
+            rating: user.rating,
+            editor_lang: editor_lang,
+            editor_text: editor_text
+          }
+      end
+
+    Map.merge(player, params)
+  end
 end

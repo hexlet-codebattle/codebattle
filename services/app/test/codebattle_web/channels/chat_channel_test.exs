@@ -3,16 +3,17 @@ defmodule CodebattleWeb.ChatChannelTest do
 
   alias CodebattleWeb.ChatChannel
   alias Codebattle.Chat.Server
+  alias CodebattleWeb.UserSocket
 
   setup do
     user1 = insert(:user)
     user2 = insert(:user)
 
-    user_token1 = Phoenix.Token.sign(socket(), "user_token", user1.id)
-    {:ok, socket1} = connect(CodebattleWeb.UserSocket, %{"token" => user_token1})
+    user_token1 = Phoenix.Token.sign(socket(UserSocket), "user_token", user1.id)
+    {:ok, socket1} = connect(UserSocket, %{"token" => user_token1})
 
-    user_token2 = Phoenix.Token.sign(socket(), "user_token", user2.id)
-    {:ok, socket2} = connect(CodebattleWeb.UserSocket, %{"token" => user_token2})
+    user_token2 = Phoenix.Token.sign(socket(UserSocket), "user_token", user2.id)
+    {:ok, socket2} = connect(UserSocket, %{"token" => user_token2})
 
     {:ok, %{user1: user1, user2: user2, socket1: socket1, socket2: socket2}}
   end

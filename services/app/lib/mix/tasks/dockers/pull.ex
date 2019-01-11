@@ -31,7 +31,7 @@ defmodule Mix.Tasks.Dockers.Pull do
     end
   end
 
-  defp root do
-    File.cwd!()
-  end
+  # defp root do
+  #   File.cwd!()
+  # end
 end

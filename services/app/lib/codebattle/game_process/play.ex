@@ -86,6 +86,8 @@ defmodule Codebattle.GameProcess.Play do
   def create_game(user, level) do
     case ActiveGames.playing?(user.id) do
       false ->
+        player = Player.from_user(user, %{creator: true})
+
         game =
           Repo.insert!(%Game{
             state: "waiting_opponent",
@@ -96,7 +98,7 @@ defmodule Codebattle.GameProcess.Play do
         fsm =
           Fsm.new()
           |> Fsm.create(%{
-            user: user,
+            player: player,
             game_id: game.id,
             level: level
           })
@@ -106,9 +108,10 @@ defmodule Codebattle.GameProcess.Play do
 
         Task.async(fn -> CodebattleWeb.Endpoint.broadcast("lobby", "new:game", %{game: fsm}) end)
 
-        Task.async(fn ->
-          Notifier.call(:game_created, %{level: level, game: game, user: user})
-        end)
+        # TODO: сделать настройку нотификаций в списке игр
+        # Task.async(fn ->
+        # Notifier.call(:game_created, %{level: level, game: game, player: player})
+        # end)
 
         {:ok, game.id}
 
@@ -122,25 +125,25 @@ defmodule Codebattle.GameProcess.Play do
       :error
     else
       game = get_game(id)
-
-      user2 = get_fsm(id) |> FsmHelpers.get_users() |> List.first()
-      task = get_random_task(game.task_level, [user.id, user2.id])
+      first_player = get_fsm(id) |> FsmHelpers.get_first_player()
+      task = get_random_task(game.task_level, [user.id, first_player.id])
 
       game
       |> Game.changeset(%{state: "playing", task_id: task.id})
       |> Repo.update!()
 
       case Server.call_transition(id, :join, %{
-             user: user,
+             player: Player.from_user(user),
              starts_at: TimeHelper.utc_now(),
              task: task
            }) do
         {:ok, fsm} ->
-          ActiveGames.add_participant(user, fsm)
+          ActiveGames.add_participant(fsm)
 
           Notifier.call(:game_opponent_join, %{
-            creator: FsmHelpers.get_opponent(fsm.data, user.id),
-            user: user,
+            # creator: FsmHelpers.get_opponent(fsm, user.id),
+            first_player: first_player,
+            second_player: FsmHelpers.get_second_player(fsm),
             game_id: id
           })
 
@@ -174,10 +177,9 @@ defmodule Codebattle.GameProcess.Play do
     %{
       status: fsm.state,
       starts_at: fsm.data.starts_at,
-      players: fsm.data.players,
+      players: FsmHelpers.get_players(fsm),
       task: fsm.data.task,
-      level: fsm.data.level,
-      winner: FsmHelpers.get_winner(fsm)
+      level: fsm.data.level
     }
   end
 
@@ -205,6 +207,7 @@ defmodule Codebattle.GameProcess.Play do
     # RecorderServer.update_lang(id, user_id, editor_lang)
     {_response, fsm} = Server.call_transition(id, :give_up, %{id: user.id})
     handle_gave_up(id, user, fsm)
+    fsm
   end
 
   def check_game(id, user, editor_text, editor_lang) do
@@ -263,7 +266,8 @@ defmodule Codebattle.GameProcess.Play do
     # TODO: make async
     # TODO: optimize code with handle_gave_up
     game_id = id |> Integer.parse() |> elem(0)
-    loser = FsmHelpers.get_opponent(fsm.data, winner.id)
+    loser_id = FsmHelpers.get_opponent(fsm, winner.id).id
+    loser =  Repo.get(User, loser_id)
     difficulty = fsm.data.level
 
     {winner_rating, loser_rating} = Elo.calc_elo(winner.rating, loser.rating, difficulty)
@@ -307,7 +311,9 @@ defmodule Codebattle.GameProcess.Play do
 
   defp handle_gave_up(id, loser, fsm) do
     game_id = id |> Integer.parse() |> elem(0)
-    winner = FsmHelpers.get_opponent(fsm.data, loser.id)
+    winner_id = FsmHelpers.get_opponent(fsm, loser.id).id
+    winner =  Repo.get(User, winner_id)
+
     difficulty = fsm.data.level
 
     {winner_rating, loser_rating} = Elo.calc_elo(winner.rating, loser.rating, difficulty)

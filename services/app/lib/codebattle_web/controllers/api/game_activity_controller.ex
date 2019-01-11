@@ -1,6 +1,4 @@
 defmodule CodebattleWeb.Api.V1.GameActivityController do
-  @all [:index, :show]
-
   use CodebattleWeb, :controller
 
   alias Codebattle.{Repo, Game}

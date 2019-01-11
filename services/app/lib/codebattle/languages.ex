@@ -1,6 +1,10 @@
 defmodule Codebattle.Languages do
   @moduledoc false
 
+  def get_solution(lang) do
+    meta() |> Map.get(lang) |> Map.get(:solution_template)
+  end
+
   def meta do
     %{
       "ruby" => %{
