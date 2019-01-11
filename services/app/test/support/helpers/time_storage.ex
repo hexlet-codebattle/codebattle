@@ -38,7 +38,7 @@ defmodule Helpers.TimeStorage do
       end)
 
     Agent.update(__MODULE__, fn state ->
-      {j, list} = state
+      {_, list} = state
       {i + 1, list}
     end)
 
