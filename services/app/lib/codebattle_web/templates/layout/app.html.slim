@@ -7,7 +7,7 @@ html lang="en"
     meta content="" name="description"
     meta content="" name="author"
     title Codebattle
-    link rel="stylesheet" href=static_path(@conn,"/css/app.css")
+    link rel="stylesheet" href=static_path(@conn,"/assets/app.css")
     = unless @current_user.guest do
       - app_id = "#{Application.get_env(:one_signal, OneSignal)[:app_id]}"
       script async="" src="https://cdn.onesignal.com/sdks/OneSignalSDK.js"
@@ -28,7 +28,7 @@ html lang="en"
   body
     nav.navbar.navbar-expand-lg.navbar-light.bg-light
       a.navbar-brand.mr-4[href="/" aria-hidden="true"]
-        img alt=static_path(@conn,"/css/app.css") src="/images/codebattle_logo.png" height="30"
+        img alt=static_path(@conn,"/assets/app.css") src="/assets/images/codebattle_logo.png" height="30"
         |&nbsp;Codebattle
       button.navbar-toggler[aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation" data-target="#navbarResponsive" data-toggle="collapse" type="button"]
         span.navbar-toggler-icon
@@ -75,4 +75,4 @@ html lang="en"
 
       = render @view_module, @view_template, Map.put(assigns, :layout, {CodebattleWeb.LayoutView, assigns[:layout_template] || "standart.html"})
       = render_gon_script(@conn)
-      script src=static_path(@conn,"/js/app.js")
+      script src=static_path(@conn,"/assets/app.js")
