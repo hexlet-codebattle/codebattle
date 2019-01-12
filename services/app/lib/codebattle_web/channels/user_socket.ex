@@ -44,7 +44,6 @@ defmodule CodebattleWeb.UserSocket do
         {:ok, assign(socket, :user_id, user_id)}
 
       {:error, _reason} ->
-        Logger.error(_reason)
         socket = assign(socket, :current_user, "guest")
         {:ok, assign(socket, :user_id, "guest")}
     end

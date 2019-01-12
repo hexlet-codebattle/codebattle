@@ -1,7 +1,6 @@
 defmodule Codebattle.GameProcess.FsmHelpers do
   @moduledoc false
 
-  alias Codebattle.User
   alias Codebattle.GameProcess.Player
 
   # HELPERS

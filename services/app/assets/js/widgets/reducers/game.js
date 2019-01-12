@@ -24,15 +24,16 @@ export default handleActions({
     };
   },
 
-  [actions.updateGamePlayers](state, { payload }) {
-    const { players: playersList } = payload;
-    const players = _.reduce(playersList, (acc, player) => ({ ...acc, [player.id]: player }), {});
+  [actions.updateGamePlayers](state, { payload: { players: playersList } }) {
+    const { players } = state;
+    const newPlayersState = playersList.reduce((acc, player) => ({
+      ...acc,
+      [player.id]: { ...acc[player.id], ...player },
+    }), players);
+
     return {
       ...state,
-      players: {
-        1: { ...state.players[1], ...players[1] },
-        2: { ...state.players[2], ...players[2] },
-      },
+      players: newPlayersState,
     };
   },
 

@@ -1,6 +1,5 @@
 defmodule Codebattle.GameProcess.Player do
   @moduledoc "Struct for player"
-  alias Codebattle.User
   alias Codebattle.Languages
   # @game_result [:undefined, :gave_up, :won, :lost]
 
@@ -21,7 +20,7 @@ defmodule Codebattle.GameProcess.Player do
         nil ->
           %__MODULE__{}
 
-        id ->
+        _ ->
           editor_lang = user.lang || "js"
           editor_text = Languages.get_solution(editor_lang)
 

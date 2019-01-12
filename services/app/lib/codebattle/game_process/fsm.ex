@@ -10,10 +10,6 @@ defmodule Codebattle.GameProcess.Fsm do
   import CodebattleWeb.Gettext
   import Codebattle.GameProcess.FsmHelpers
 
-  alias Codebattle.User
-  alias Codebattle.Languages
-  alias Codebattle.GameProcess.Player
-
   use Fsm,
     initial_state: :initial,
     initial_data: %{

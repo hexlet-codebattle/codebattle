@@ -38,7 +38,7 @@ defmodule Codebattle.CodeCheck.Clojure.IntegrationTest do
     state = :playing
 
     data = %{
-      players: [%Player{id: user1.id, user: user1}, %Player{id: user2.id, user: user2}],
+      players: [%Player{id: user1.id}, %Player{id: user2.id}],
       task: task
     }
 
@@ -79,7 +79,7 @@ defmodule Codebattle.CodeCheck.Clojure.IntegrationTest do
     state = :playing
 
     data = %{
-      players: [%Player{id: user1.id, user: user1}, %Player{id: user2.id, user: user2}],
+      players: [%Player{id: user1.id}, %Player{id: user2.id}],
       task: task
     }
 
@@ -117,7 +117,7 @@ defmodule Codebattle.CodeCheck.Clojure.IntegrationTest do
     state = :playing
 
     data = %{
-      players: [%Player{id: user1.id, user: user1}, %Player{id: user2.id, user: user2}],
+      players: [%Player{id: user1.id}, %Player{id: user2.id}],
       task: task
     }
 
