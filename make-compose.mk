@@ -6,6 +6,9 @@ compose:
 compose-build:
 	docker-compose build
 
+compose-down:
+	docker-compose down -v || true
+
 compose-test-all:
 	docker-compose run app mix test
 
@@ -26,7 +29,7 @@ compose-install-yarn:
 
 compose-install: compose-install-mix compose-install-yarn
 
-compose-setup: clean compose-build compose-install compose-db-prepare
+compose-setup: compose-down compose-build compose-install compose-db-prepare
 
 compose-db-init:
 	docker-compose run app mix ecto.create
