@@ -36,14 +36,14 @@ renderEditorHeightButtons = (compressEditor, expandEditor, userId) => (
   <div className="btn-group btn-group-sm mr-2" role="group" aria-label="Editor height">
     <button
       type="button"
-      className="btn"
+      className="btn btn-link"
       onClick={() => compressEditor(userId)}
     >
       <i className="fa fa-compress" aria-hidden="true" />
     </button>
     <button
       type="button"
-      className="btn"
+      className="btn btn-link"
       onClick={() => expandEditor(userId)}
     >
       <i className="fa fa-expand" aria-hidden="true" />
