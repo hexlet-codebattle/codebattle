@@ -1,10 +1,11 @@
 defmodule Codebattle.PageControllerTest do
   use CodebattleWeb.ConnCase, async: true
 
-  test "index", %{conn: conn} do
-    conn = get(conn, "/")
-    assert html_response(conn, 200) =~ "Welcome to Codebattle!"
-  end
+  #TODO Add lending
+  # test "index", %{conn: conn} do
+  #   conn = get(conn, "/")
+  #   assert html_response(conn, 200) =~ "Welcome to Codebattle!"
+  # end
 
   test "index for signed_user", %{conn: conn} do
     user = insert(:user)
