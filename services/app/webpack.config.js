@@ -33,7 +33,9 @@ const commonPlugins = [
     Popper: ['popper.js', 'default'],
   }),
   new MonacoWebpackPlugin(),
-  new MiniCssExtractPlugin(),
+  new MiniCssExtractPlugin({
+    filename: 'app.css',
+  }),
 ];
 
 const devPlugins = commonPlugins;
@@ -48,9 +50,9 @@ module.exports = {
   },
   devtool: isProd ? false : 'cheap-module-eval-source-map',
   output: {
-    path: `${__dirname}/priv/static/js`,
+    path: `${__dirname}/priv/static/assets`,
     filename: 'app.js',
-    publicPath: '/js/',
+    publicPath: '/assets/',
   },
   externals: {
     gon: 'Gon',
@@ -83,7 +85,7 @@ module.exports = {
       {
         test: /\.(sa|sc|c)ss$/,
         use: [
-          isProd ? MiniCssExtractPlugin.loader : 'style-loader',
+          MiniCssExtractPlugin.loader,
           'css-loader',
           'postcss-loader',
           'sass-loader',
