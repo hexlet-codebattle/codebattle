@@ -1,8 +1,10 @@
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const path = require('path');
 const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 // const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+
 
 const env = process.env.NODE_ENV || 'dev';
 const isProd = env === 'production';
@@ -17,7 +19,6 @@ const DEV_ENTRIES = [
 const APP_ENTRIES = ['./assets/js/app.js', './assets/css/app.scss'];
 
 const commonPlugins = [
-  new ExtractTextPlugin('css/app.css'),
   new CopyWebpackPlugin([
     { from: 'assets/static' },
   ]),
@@ -31,6 +32,8 @@ const commonPlugins = [
     Tether: 'tether',
     Popper: ['popper.js', 'default'],
   }),
+  new MonacoWebpackPlugin(),
+  new MiniCssExtractPlugin(),
 ];
 
 const devPlugins = commonPlugins;
@@ -45,8 +48,9 @@ module.exports = {
   },
   devtool: isProd ? false : 'cheap-module-eval-source-map',
   output: {
-    path: `${__dirname}/priv/static`,
-    filename: 'js/app.js',
+    path: `${__dirname}/priv/static/js`,
+    filename: 'app.js',
+    publicPath: '/js/',
   },
   externals: {
     gon: 'Gon',
@@ -60,16 +64,30 @@ module.exports = {
       {
         test: /\.jsx?$/,
         exclude: /node_modules/,
-        use: {
+        use:
+        {
           loader: 'babel-loader',
+          options: {
+            cacheDirectory: true,
+            presets: [
+              '@babel/env',
+              '@babel/react',
+            ],
+            plugins: [
+              '@babel/plugin-syntax-dynamic-import',
+              ['@babel/plugin-proposal-class-properties', { loose: false }],
+            ],
+          },
         },
       },
       {
-        test: /\.scss$/,
-        use: ExtractTextPlugin.extract({
-          fallback: 'style-loader',
-          use: ['css-loader', 'postcss-loader', 'sass-loader'],
-        }),
+        test: /\.(sa|sc|c)ss$/,
+        use: [
+          isProd ? MiniCssExtractPlugin.loader : 'style-loader',
+          'css-loader',
+          'postcss-loader',
+          'sass-loader',
+        ],
       },
       {
         test: /\.(eot|svg|ttf|woff|woff2)$/,
