@@ -7,8 +7,8 @@
   ],
   "scripts": {
     "watch": "webpack --watch-stdin --progress --color --mode development",
-    "build-dev": "node_modules/.bin/webpack  --mode development",
-    "build-prod": "NODE_ENV=production node_modules/.bin/webpack -p  --mode production"
+    "build-dev": "webpack --mode development",
+    "build-prod": "NODE_ENV=production webpack -p --mode production"
   },
   "dependencies": {
     "@babel/polyfill": "^7.2.5",
