@@ -53,28 +53,24 @@ class GameList extends React.Component {
       );
     }
 
-    return (
-      <span className="align-middle mr-1">
-        <i className="fa fa-fw" aria-hidden="true" />
-      </span>
-    );
+    return null;
   };
 
   renderPlayers = (gameId, users) => {
     if (users.length === 1) {
       return (
-        <td className="align-middle" style={{ whiteSpace: 'nowrap' }} colSpan={2}>
+        <td className="p-3 align-middle" style={{ whiteSpace: 'nowrap' }} colSpan={2}>
           <UserName user={users[0]} />
         </td>
       );
     }
     return (
       <Fragment>
-        <td className="align-middle" style={{ whiteSpace: 'nowrap' }}>
+        <td className="p-3 align-middle" style={{ whiteSpace: 'nowrap' }}>
           {this.renderResultIcon(gameId, users[0], users[1])}
           <UserName user={users[0]} />
         </td>
-        <td className="align-middle" style={{ whiteSpace: 'nowrap' }}>
+        <td className="p-3 align-middle" style={{ whiteSpace: 'nowrap' }}>
           {this.renderResultIcon(gameId, users[1], users[0])}
           <UserName user={users[1]} />
         </td>
@@ -184,6 +180,60 @@ class GameList extends React.Component {
     );
   }
 
+  renderActiveGames = () => {
+    const { activeGames } = this.props;
+    if (_.isEmpty(activeGames)) {
+      return (
+        <div className="text-center">
+          <p className="p-2">Not have active games now</p>
+          {this.renderStartNewGameSelector()}
+        </div>
+      );
+    }
+
+    return (
+      <div>
+        {this.renderStartNewGameSelector()}
+        <div className="table-responsive mt-2">
+          <table className="table">
+            <thead className="text-left">
+              <tr>
+                <th className="p-3 border-0">Date</th>
+                <th className="p-3 border-0">Level</th>
+                <th className="p-3 border-0" colSpan="2">Players</th>
+                <th className="p-3 border-0">State</th>
+                <th className="p-3 border-0">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {activeGames.map(game => (
+                <tr key={game.game_id}>
+                  <td className="p-3 align-middle" style={{ whiteSpace: 'nowrap' }}>
+                    {moment
+                      .utc(game.game_info.inserted_at)
+                      .local()
+                      .format('YYYY-MM-DD HH:mm')}
+                  </td>
+                  <td className="p-3 align-middle" style={{ whiteSpace: 'nowrap' }}>
+                    {this.renderGameLevelBadge(game.game_info.level)}
+                  </td>
+
+                  {this.renderPlayers(game.id, game.users)}
+
+                  <td className="p-3 align-middle" style={{ whiteSpace: 'nowrap' }}>
+                    {game.game_info.state}
+                  </td>
+
+                  <td className="p-3 align-middle">{this.renderGameActionButton(game)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  }
+
   render() {
     const { activeGames, completedGames } = this.props;
 
@@ -194,79 +244,43 @@ class GameList extends React.Component {
     return (
       <div>
         <h3 className="text-center mt-3 mb-4">Active games</h3>
-        <div className="table-responsive">
-          <table className="table table-hover table-sm">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Level</th>
-                <th colSpan="2">Players</th>
-                <th>State</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {activeGames.map(game => (
-                <tr key={game.game_id}>
-                  <td className="align-middle" style={{ whiteSpace: 'nowrap' }}>
-                    {moment
-                      .utc(game.game_info.inserted_at)
-                      .local()
-                      .format('YYYY-MM-DD HH:mm')}
-                  </td>
-                  <td className="align-middle" style={{ whiteSpace: 'nowrap' }}>
-                    {this.renderGameLevelBadge(game.game_info.level)}
-                  </td>
-
-                  {this.renderPlayers(game.id, game.users)}
-
-                  <td className="align-middle" style={{ whiteSpace: 'nowrap' }}>
-                    {game.game_info.state}
-                  </td>
-
-                  <td className="align-middle">{this.renderGameActionButton(game)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        {this.renderStartNewGameSelector()}
+        {this.renderActiveGames()}
         <div className="row px-4 mt-5 justify-content-center">
           <div className="col-12 col-sm-8 col-md-6">
             <GamesHeatmap />
           </div>
         </div>
-        <h3 className="text-center mt-3 mb-4">Completed games</h3>
+        <h3 className="text-center mt-5 mb-4">Completed games</h3>
         <div className="table-responsive">
-          <table className="table table-hover table-sm">
+          <table className="table table-sm">
             <thead>
               <tr>
-                <th>Date</th>
-                <th>Level</th>
-                <th colSpan="2">Players</th>
-                <th>Duration</th>
-                <th>Actions</th>
+                <th className="p-3 border-0">Date</th>
+                <th className="p-3 border-0">Level</th>
+                <th className="p-3 border-0" colSpan="2">Players</th>
+                <th className="p-3 border-0">Duration</th>
+                <th className="p-3 border-0">Actions</th>
               </tr>
             </thead>
             <tbody>
               {completedGames.map(game => (
                 <tr key={game.id}>
-                  <td className="align-middle" style={{ whiteSpace: 'nowrap' }}>
+                  <td className="p-3 align-middle" style={{ whiteSpace: 'nowrap' }}>
                     {moment
                       .utc(game.updated_at)
                       .local()
                       .format('YYYY-MM-DD HH:mm')}
                   </td>
-                  <td className="align-middle" style={{ whiteSpace: 'nowrap' }}>
+                  <td className="p-3 align-middle" style={{ whiteSpace: 'nowrap' }}>
                     {this.renderGameLevelBadge(game.level)}
                   </td>
                   {this.renderPlayers(game.id, game.players)}
 
-                  <td className="align-middle" style={{ whiteSpace: 'nowrap' }}>
+                  <td className="p-3 align-middle" style={{ whiteSpace: 'nowrap' }}>
                     {moment.duration(game.duration, 'seconds').humanize()}
                   </td>
 
-                  <td className="align-middle">{this.renderShowGameButton(`/games/${game.id}`)}</td>
+                  <td className="p-3 align-middle">{this.renderShowGameButton(`/games/${game.id}`)}</td>
                 </tr>
               ))}
             </tbody>

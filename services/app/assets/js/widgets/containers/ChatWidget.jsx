@@ -41,21 +41,15 @@ class ChatWidget extends React.Component {
     const { message } = this.state;
     const { messages, users } = this.props;
     return (
-      <div className="d-flex">
-        <div className="card col-8 p-0 border-0 shadow-sm">
-          <div
-            className="card-body p-0"
-          >
-            <div className="card-text">
-              <Messages
-                messages={messages}
-                className="overflow-auto px-3 py-2"
-                style={{ height: '180px' }}
-              />
-            </div>
-          </div>
-          <div className="card-footer p-0 border-0">
-            <div className="input-group input-group-sm">
+      <div className="d-flex shadow-sm">
+        <div className="col-8 p-0 bg-white rounded-left">
+          <Messages
+            messages={messages}
+            className="overflow-auto px-3 py-3"
+            style={{ height: '180px' }}
+          />
+          <div className="">
+            <div className="px-3 py-2 input-group input-group-sm">
               <input
                 className="form-control"
                 type="text"
@@ -72,18 +66,20 @@ class ChatWidget extends React.Component {
             </div>
           </div>
         </div>
-        <div className="card col-4 p-0 border-0 shadow-sm">
-          <div className="card-body p-0">
-            <p className="pl-3 pr-1 pt-2 mb-0">{`Online users: ${users.length}`}</p>
-            <div
-              className="pl-3 pr-3 overflow-auto"
-              style={{ height: '165px' }}
-            >
-              {users.map(user => (
-                <div key={user.id} className="my-2">
-                  <UserName user={user} />
-                </div>
-              ))}
+        <div className="col-4 p-0 border-left bg-white rounded-right">
+          <div className="d-flex flex-direction-column flex-wrap justify-content-between">
+            <div className="px-3 py-3">
+              <p className="mb-0">{`Online users: ${users.length}`}</p>
+              <div
+                className="overflow-auto"
+                style={{ height: '100px' }}
+              >
+                {users.map(user => (
+                  <div key={user.id} className="my-2">
+                    <UserName user={user} />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>

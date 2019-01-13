@@ -1,10 +1,11 @@
-h2.text-center = "#{@user.name}: edit"
-= form_for @changeset, user_setting_path(@conn, :update),  fn f ->
-  div.form-group.row.justify-content-center
-    = label f, :name, class: "col-form-label"
-    div.col-2
-      = text_input f, :name, class: "form-control"
-    = error_tag f, :name
-
-  div.form-group.text-center
-    = submit "Save", class: "btn btn-primary"
+.container.bg-white.shadow-sm.py-4
+  .text-center
+    h2.font-weight-normal= "Settings"
+  = form_for @changeset, user_setting_path(@conn, :update),  fn f ->
+    div.col-4
+      .form-group
+        = label f, :name
+        div
+          = text_input f, :name, class: "form-control"
+      = error_tag f, :name
+      = submit "Save", class: "btn btn-primary"
