@@ -62,6 +62,9 @@ class Editor extends PureComponent {
     }
     // this.editor.getModel().updateOptions({ tabSize: this.tabSize });
 
+    // eslint-disable-next-line no-bitwise
+    this.editor.addCommand(this.monaco.KeyMod.CtrlCmd | this.monaco.KeyCode.Enter, () => null);
+
     window.addEventListener('resize', this.handleResize);
   }
 
@@ -80,6 +83,7 @@ class Editor extends PureComponent {
     const mappedSyntax = syntax === 'js' ? 'javascript' : syntax;
     const options = {
       lineNumbersMinChars: 2,
+      readOnly: !editable,
       fontSize: 16,
       scrollBeyondLastLine: false,
       selectOnLineNumbers: true,
