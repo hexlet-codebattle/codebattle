@@ -133,6 +133,20 @@ export const editorReady = () => (dispatch) => {
     dispatch(actions.updateCheckStatus({ [user.id]: false }));
   });
 
+  channel.on('user:check_result', ({
+    status, players, solution_status: solutionStatus, output, result, user_id: userId,
+  }) => {
+    // const currentUserId = selectors.currentUserIdSelector(state);
+
+    const newGameStatus = solutionStatus ? { status } : {};
+    if (players) {
+      dispatch(actions.updateGamePlayers({ players }));
+    }
+    dispatch(actions.updateExecutionOutput({ output, result, userId }));
+    dispatch(actions.updateGameStatus({ ...newGameStatus, solutionStatus }));
+    dispatch(actions.updateCheckStatus({ [userId]: false }));
+  });
+
   channel.on('user:joined', ({
     status,
     starts_at: startsAt,
@@ -201,16 +215,7 @@ export const checkGameResult = () => (dispatch, getState) => {
     editor_text: currentUserEditor.text,
     lang: currentUserEditor.currentLangSlug,
   };
-  channel.push('check_result', payload)
-    .receive('ok', ({
-      status, players, solution_status: solutionStatus, output, result, user_id: userId,
-    }) => {
-      const newGameStatus = solutionStatus ? { status } : {};
-      dispatch(actions.updateGamePlayers({ players }));
-      dispatch(actions.updateExecutionOutput({ output, result, userId }));
-      dispatch(actions.updateGameStatus({ ...newGameStatus, solutionStatus }));
-      dispatch(actions.updateCheckStatus({ [currentUserId]: false }));
-    });
+  channel.push('check_result', payload);
 };
 
 export const compressEditorHeight = (

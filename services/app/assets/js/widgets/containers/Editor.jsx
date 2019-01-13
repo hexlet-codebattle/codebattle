@@ -1,19 +1,8 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import AceEditor from 'react-ace';
-import 'brace';
-import 'brace/mode/javascript';
-import 'brace/mode/ruby';
-import 'brace/mode/elixir';
-import 'brace/mode/php';
-import 'brace/mode/haskell';
-import 'brace/mode/clojure';
-import 'brace/mode/perl';
-import 'brace/mode/python';
-import 'brace/theme/solarized_dark';
-import 'brace/ext/language_tools';
-import 'brace/keybinding/emacs';
-import 'brace/keybinding/vim';
+import MonacoEditor from 'react-monaco-editor';
+import { registerRulesForLanguage } from 'monaco-ace-tokenizer';
+
 
 const selectionBlockStyle = {
   position: 'absolute',
@@ -31,7 +20,6 @@ class Editor extends PureComponent {
     syntax: PropTypes.string,
     onChange: PropTypes.func,
     allowCopy: PropTypes.bool,
-    keyboardHandler: PropTypes.string,
   }
 
   static defaultProps = {
@@ -40,7 +28,44 @@ class Editor extends PureComponent {
     onChange: null,
     syntax: 'javascript',
     allowCopy: true,
-    keyboardHandler: '',
+  }
+
+  componentDidUpdate = async () => {
+    const { editable, syntax } = this.props;
+    if (this.editor && editable) {
+      this.editor.focus();
+    }
+    const notIncludedSyntaxHightlight = new Set(['haskell', 'elixir']);
+    if (notIncludedSyntaxHightlight.has(syntax)) {
+      const { default: HighlightRules } = await import(`monaco-ace-tokenizer/lib/ace/definitions/${syntax}`);
+      this.monaco.languages.register({
+        id: syntax,
+      });
+      registerRulesForLanguage(syntax, new HighlightRules());
+    }
+  }
+
+
+  handleResize = () => this.editor.layout();
+
+  handleChange = (content) => {
+    const { onCodeChange } = this.props;
+    onCodeChange({ content });
+  }
+
+  editorDidMount = (editor, monaco) => {
+    this.editor = editor;
+    this.monaco = monaco;
+    const { editable } = this.props;
+    if (editable) {
+      this.editor.focus();
+    }
+    // this.editor.getModel().updateOptions({ tabSize: this.tabSize });
+
+    // eslint-disable-next-line no-bitwise
+    this.editor.addCommand(this.monaco.KeyMod.CtrlCmd | this.monaco.KeyCode.Enter, () => null);
+
+    window.addEventListener('resize', this.handleResize);
   }
 
   render() {
@@ -51,35 +76,39 @@ class Editor extends PureComponent {
       syntax,
       onChange,
       allowCopy,
-      keyboardHandler,
       editorHeight,
     } = this.props;
 
     // FIXME: move here and apply mapping object
     const mappedSyntax = syntax === 'js' ? 'javascript' : syntax;
-
+    const options = {
+      lineNumbersMinChars: 2,
+      readOnly: !editable,
+      fontSize: 16,
+      scrollBeyondLastLine: false,
+      selectOnLineNumbers: true,
+      // automaticLayout: true,
+      minimap: {
+        enabled: false,
+      },
+    };
     return (
       <div style={{ position: 'relative' }}>
-        <AceEditor
-          mode={mappedSyntax}
-          theme="solarized_dark"
-          onChange={onChange}
-          name={name}
-          value={value}
-          readOnly={!editable}
-          wrapLines
-          editorProps={{ $blockScrolling: true }}
+        <MonacoEditor
+          theme="vs-dark"
+          options={options}
           width="auto"
           height={editorHeight}
-          fontSize={16}
-          showPrintMargin={false}
-          keyboardHandler={keyboardHandler}
-          setOptions={{ tabSize: 2 }}
+          language={mappedSyntax}
+          editorDidMount={this.editorDidMount}
+          name={name}
+          value={value}
+          onChange={onChange}
         />
         {
-        allowCopy ? null : (
-          <div style={selectionBlockStyle} />
-        )}
+          allowCopy ? null : (
+            <div style={selectionBlockStyle} />
+          )}
       </div>
     );
   }

@@ -35,14 +35,14 @@ class LeftEditorToolbar extends Component {
     <div className="btn-group btn-group-sm ml-2" role="group" aria-label="Editor height">
       <button
         type="button"
-        className="btn"
+        className="btn btn-link"
         onClick={() => compressEditor(userId)}
       >
         <i className="fa fa-compress" aria-hidden="true" />
       </button>
       <button
         type="button"
-        className="btn"
+        className="btn btn-link"
         onClick={() => expandEditor(userId)}
       >
         <i className="fa fa-expand" aria-hidden="true" />
@@ -72,7 +72,7 @@ class LeftEditorToolbar extends Component {
 
     return (
       <div className="btn-toolbar justify-content-between" role="toolbar">
-        <div className="btn-group" role="group" aria-label="Editor settings">
+        <div className="btn-group " role="group" aria-label="Editor settings">
           <LanguagePicker
             currentLangSlug={leftEditorLangSlug}
             onChange={setLang}
