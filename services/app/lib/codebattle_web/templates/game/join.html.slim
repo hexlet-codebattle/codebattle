@@ -1,10 +1,4 @@
-.row
-  .container-fluid
-    .jumbotron
-      h1.display-4 = gettext "Join the game"
-      p.lead = "Player #{player_name(get_first_player(assigns[:fsm]))} is waiting for an opponent"
-      hr.my-4/
-      p You can join this game
-      p.lead
-        button.btn.btn-primary.btn-lg data-method="post" data-csrf="#{csrf_token()}" data-to="#{game_path(@conn, :join, get_game_id(assigns[:fsm]))}" Join
-
+.jumbotron.container.text-center.bg-white.shadow-sm
+  h2.h2.font-weight-normal.mb-4  = gettext "Join the game"
+  p.lead.text-muted.mb-4 = "Player #{player_name(get_first_player(assigns[:fsm]))} is waiting for an opponent"
+  button.btn.btn-outline-secondary.btn-md.px-5 data-method="post" data-csrf="#{csrf_token()}" data-to="#{game_path(@conn, :join, get_game_id(assigns[:fsm]))}" Join

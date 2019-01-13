@@ -71,7 +71,7 @@ class LeftEditorToolbar extends Component {
     }
 
     return (
-      <div className="btn-toolbar justify-content-between" role="toolbar">
+      <div className="py-2 px-3 btn-toolbar justify-content-between" role="toolbar">
         <div className="btn-group " role="group" aria-label="Editor settings">
           <LanguagePicker
             currentLangSlug={leftEditorLangSlug}
@@ -81,6 +81,7 @@ class LeftEditorToolbar extends Component {
           {this.renderEditorHeightButtons(compressEditor, expandEditor, leftUserId)}
         </div>
         <GameResultIcon
+          className="ml-auto mr-2"
           resultUser1={_.get(players, [[leftUserId], 'game_result'])}
           resultUser2={_.get(players, [[rightUserId], 'game_result'])}
         />

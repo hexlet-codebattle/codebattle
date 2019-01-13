@@ -2,10 +2,6 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 
 class ExecutionOutput extends PureComponent {
-  static propTypes = {
-    output: PropTypes.string.isRequired,
-  };
-
   renderStatusBadge = (status) => {
     const stautsColors = {
       error: 'danger',
@@ -48,21 +44,19 @@ class ExecutionOutput extends PureComponent {
     const resultObj = this.parseOutput(result);
 
     return (
-      <div className="card my-2 border-0 shadow-sm">
-        <div className="card-body">
-          <div className="d-flex justify-content-between">
-            <h6 className="card-title">Output</h6>
-            <div className="card-subtitle mb-2 text-muted">
-              Check status:
-              {' '}
-              {this.renderStatusBadge(resultObj.status)}
-            </div>
+      <div className="card-body border-top">
+        <div className="d-flex justify-content-between">
+          <h6 className="card-title">Output</h6>
+          <div className="card-subtitle mb-2 text-muted">
+            Check status:
+            {' '}
+            {this.renderStatusBadge(resultObj.status)}
           </div>
-          <p className="card-text mb-0">
-            <code>{this.renderTestResults(resultObj)}</code>
-          </p>
-          <pre className="card-text d-none d-md-block mt-3">{output}</pre>
         </div>
+        <p className="card-text mb-0">
+          <code>{this.renderTestResults(resultObj)}</code>
+        </p>
+        <pre className="card-text d-none d-md-block mt-3">{output}</pre>
       </div>
     );
   }

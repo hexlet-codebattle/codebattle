@@ -4,7 +4,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 // const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 const env = process.env.NODE_ENV || 'dev';
 const isProd = env === 'production';
@@ -105,5 +105,8 @@ module.exports = {
   resolve: {
     modules: ['node_modules', path.join(__dirname, 'assets', 'js')],
     extensions: ['.js', '.jsx'],
+  },
+  optimization: {
+    minimizer: [new UglifyJsPlugin()],
   },
 };

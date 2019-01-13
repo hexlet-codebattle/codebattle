@@ -67,13 +67,14 @@ render() {
   }
 
   return (
-    <div className="btn-toolbar justify-content-between" role="toolbar">
-      {this.renderNameplate(players[rightUserId], onlineUsers)}
+    <div className="py-2 px-3 btn-toolbar justify-content-between" role="toolbar">
       <GameResultIcon
+        className="mr-2"
         resultUser1={_.get(players, [[rightUserId], 'game_result'])}
         resultUser2={_.get(players, [[leftUserId], 'game_result'])}
       />
-      <div className="btn-group" role="group" aria-label="Editor settings">
+      {this.renderNameplate(players[rightUserId], onlineUsers)}
+      <div className="ml-auto btn-group" role="group" aria-label="Editor settings">
         {this.renderEditorHeightButtons(compressEditor, expandEditor, rightUserId)}
         <LanguagePicker
           currentLangSlug={rightEditorLangSlug}

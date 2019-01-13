@@ -15,7 +15,7 @@ const renderGameLevelBadge = (level) => {
   };
 
   return (
-    <small>
+    <small className="ml-2">
       <span className={`badge badge-pill badge-${levels[level]} mr-1`}>&nbsp;</span>
       {level}
     </small>
@@ -27,11 +27,7 @@ const renderTimer = (time, gameStatusName) => {
     return <Timer time={time} />;
   }
 
-  return (
-    <div>
-      <p>{gameStatusName}</p>
-    </div>
-  );
+  return gameStatusName;
 };
 
 const Task = ({ task, time, gameStatusName }) => {
@@ -41,18 +37,18 @@ const Task = ({ task, time, gameStatusName }) => {
 
   return (
     <div className="card h-100 border-0 shadow-sm">
-      <div className="card-body">
+      <div className="px-3 py-3">
         <div className="d-flex justify-content-between">
-          <h6 className="card-title">
+          <h6 className="card-text">
             {'Task: '}
             <span className="card-subtitle mb-2 text-muted">{task.name}</span>
-            <small className="ml-2">{renderGameLevelBadge(task.level)}</small>
+            {renderGameLevelBadge(task.level)}
           </h6>
           <div className="card-text">
             <span className="text-muted">{renderTimer(time, gameStatusName)}</span>
           </div>
         </div>
-        <div className="card-text">
+        <div className="card-text mb-0">
           <ReactMarkdown source={task.description} />
         </div>
       </div>
