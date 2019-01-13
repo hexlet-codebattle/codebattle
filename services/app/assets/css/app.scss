@@ -9,10 +9,6 @@ $fa-font-path: "~font-awesome/fonts";
 @import "~font-awesome/scss/font-awesome";
 @import "~font-mfizz/dist/font-mfizz.css";
 
-body {
-  min-height: 100vh;
-}
-
 a {
   transition: color ease-in 0.1s;
 }
