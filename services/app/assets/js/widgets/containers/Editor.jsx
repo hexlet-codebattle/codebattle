@@ -104,7 +104,6 @@ class Editor extends PureComponent {
           name={name}
           value={value}
           onChange={onChange}
-          readOnly={!editable}
         />
         {
           allowCopy ? null : (
