@@ -4,6 +4,8 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+// const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+
 
 const env = process.env.NODE_ENV || 'dev';
 const isProd = env === 'production';
@@ -23,9 +25,14 @@ const commonPlugins = [
   new MiniCssExtractPlugin({
     filename: 'app.css',
   }),
+  new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /(en|ru)$/),
 ];
 
-const devPlugins = commonPlugins;
+const devPlugins = [
+  ...commonPlugins,
+  // new BundleAnalyzerPlugin(),
+];
+
 const productionPlugins = [
   ...commonPlugins,
   new OptimizeCssAssetsPlugin({

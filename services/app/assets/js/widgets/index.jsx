@@ -1,6 +1,6 @@
+import '@babel/polyfill';
 import React from 'react';
 import { render } from 'react-dom';
-import './vendors';
 import { Game, Lobby } from './App';
 import Heatmap from './containers/Heatmap';
 
