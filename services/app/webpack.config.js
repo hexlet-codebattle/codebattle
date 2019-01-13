@@ -1,10 +1,8 @@
 const path = require('path');
 const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-// const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 const env = process.env.NODE_ENV || 'dev';
 const isProd = env === 'production';
@@ -22,15 +20,12 @@ const commonPlugins = [
   new CopyWebpackPlugin([
     { from: 'assets/static' },
   ]),
-  new webpack.EnvironmentPlugin({
-    NODE_ENV: isProd ? 'production' : 'development',
-  }),
   new webpack.ProvidePlugin({
     $: 'jquery',
     jQuery: 'jquery',
     'window.jQuery': 'jquery',
-    Tether: 'tether',
-    Popper: ['popper.js', 'default'],
+    // Tether: 'tether',
+    // Popper: ['popper.js', 'default'],
   }),
   new MonacoWebpackPlugin(),
   new MiniCssExtractPlugin({
@@ -105,8 +100,5 @@ module.exports = {
   resolve: {
     modules: ['node_modules', path.join(__dirname, 'assets', 'js')],
     extensions: ['.js', '.jsx'],
-  },
-  optimization: {
-    minimizer: [new UglifyJsPlugin()],
   },
 };
