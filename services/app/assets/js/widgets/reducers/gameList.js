@@ -35,7 +35,7 @@ const gameList = handleActions({
     const filtered = activeGames.filter(g => g.game_id !== parseInt(gameId));
 
     const newGame = {
-      users: game.data.players.map(player => player.user),
+      users: game.data.players,
       game_info: {
         state: game.state,
         level: game.data.task_level,
