@@ -6,8 +6,8 @@ import GameStatusCodes from '../config/gameStatusCodes';
 const initialState = {
   gameStatus: {
     status: GameStatusCodes.initial,
+    checking: { 1: false, 2: false },
     solutionStatus: null,
-    checking: {},
   },
   task: null,
   players: {},
