@@ -5,11 +5,6 @@ const middlewares = [
   thunk,
 ];
 
-if (process.env.NODE_ENV !== 'production') {
-  // const logger = require('redux-logger').default;
-  // middlewares.push(logger);
-}
-
 export default function configureStore(reducer, initialState) {
   /* eslint-disable no-underscore-dangle */
   const store = createStore(reducer, initialState, compose(
