@@ -1,18 +1,22 @@
 FROM elixir:1.7
 
 # Install hex (Elixir package manager)
-RUN mix local.hex --force
+# Install rebar (Erlang build tool)
+RUN mix local.hex --force \
+ && mix local.rebar --force
 
 # RUN mix archive.install --force https://github.com/phoenixframework/archives/raw/master/phoenix_new.ez
 
-# Install rebar (Erlang build tool)
 RUN mix local.rebar --force
 
-RUN apt-get update && apt-get install -y inotify-tools
-RUN apt-get install -y vim
+RUN apt-get update \
+ && apt-get install -y inotify-tools \
+ && apt-get install -y vim
 
-RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
-RUN apt-get update && apt-get install -y nodejs
+RUN curl -sL https://deb.nodesource.com/setup_11.x | bash - \
+ && apt-get update \
+ && apt-get install -y nodejs \
+ && npm install --global yarn@1.13.0
 
 RUN curl -s --show-error https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list

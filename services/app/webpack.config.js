@@ -3,18 +3,11 @@ const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
 const env = process.env.NODE_ENV || 'dev';
 const isProd = env === 'production';
 // const publicPath = 'http://localhost:4002';
-
-const DEV_ENTRIES = [
-  // 'react-hot-loader/patch',
-  // 'webpack-dev-server/client?' + publicPath,
-  // 'webpack/hot/only-dev-server',
-];
-
-const APP_ENTRIES = ['./assets/js/app.js', './assets/css/app.scss'];
 
 const commonPlugins = [
   new CopyWebpackPlugin([
@@ -24,8 +17,7 @@ const commonPlugins = [
     $: 'jquery',
     jQuery: 'jquery',
     'window.jQuery': 'jquery',
-    // Tether: 'tether',
-    // Popper: ['popper.js', 'default'],
+    Popper: ['popper.js', 'default'],
   }),
   new MonacoWebpackPlugin(),
   new MiniCssExtractPlugin({
@@ -36,14 +28,20 @@ const commonPlugins = [
 const devPlugins = commonPlugins;
 const productionPlugins = [
   ...commonPlugins,
-  // new UglifyJsPlugin(),
+  new OptimizeCssAssetsPlugin({
+    assetNameRegExp: /\.css$/g,
+    cssProcessorPluginOptions: {
+      preset: ['default', { discardComments: { removeAll: true } }],
+    },
+    canPrint: true,
+  }),
 ];
 
 module.exports = {
   entry: {
-    app: isProd ? APP_ENTRIES : DEV_ENTRIES.concat(APP_ENTRIES),
+    app: ['./assets/js/app.js', './assets/css/app.scss'],
   },
-  devtool: isProd ? false : 'cheap-module-eval-source-map',
+  devtool: isProd ? false : 'eval-source-map',
   output: {
     path: `${__dirname}/priv/static/assets`,
     filename: 'app.js',
@@ -80,9 +78,8 @@ module.exports = {
       {
         test: /\.(sa|sc|c)ss$/,
         use: [
-          MiniCssExtractPlugin.loader,
+          { loader: isProd ? MiniCssExtractPlugin.loader : 'style-loader' },
           'css-loader',
-          'postcss-loader',
           'sass-loader',
         ],
       },
