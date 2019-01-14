@@ -29,8 +29,7 @@ COPY mix.* ./
 # Install all production dependencies
 RUN mix deps.get
 
-COPY package.json ./ \
-  && yarn.lock ./
+COPY ["package.json", "yarn.lock", "./"]
 
 RUN yarn install
 
