@@ -19,7 +19,7 @@ class GameActionButtons extends Component {
       className="btn btn-success btn-sm ml-auto"
       onClick={checkResult}
       disabled={gameStatus.checking[editorUser] || disabled}
-    >
+
       {gameStatus.checking[editorUser] ? (
         <span className="fa fa-cog fa-spin mr-1" />
       ) : (
@@ -58,7 +58,7 @@ class GameActionButtons extends Component {
 
     return (
       <Hotkeys keyName="ctrl+Enter" onKeyUp={checkResult}>
-        <div className="btn-toolbar py-2" role="toolbar">
+        <div className="btn-toolbar py-3 px-3" role="toolbar">
           {this.renderGiveUpButton(canGiveUp, realDisabled)}
           {this.renderCheckResultButton(
             checkResult,

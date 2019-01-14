@@ -25,54 +25,55 @@ html lang="en"
           });
         });
 
-  body
-    nav.navbar.navbar-expand-lg.navbar-light.bg-light
-      a.navbar-brand.mr-4[href="/" aria-hidden="true"]
-        img alt=static_path(@conn,"/assets/app.css") src="/assets/images/codebattle_logo.png" height="30"
-        |&nbsp;Codebattle
-      button.navbar-toggler[aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation" data-target="#navbarResponsive" data-toggle="collapse" type="button"]
-        span.navbar-toggler-icon
-      #navbarResponsive.collapse.navbar-collapse
-        ul.navbar-nav.mr-auto
-          li.nav-item
-            a.nav-link[href="https://github.com/hexlet-codebattle/codebattle" target="_blank"]
-              span.fa.fa-github.mr-1
-              = gettext "SourceCode"
-          li.nav-item
-            a.nav-link[href="https://hexlet.io" target="_blank"]
-              span.fa.fa-university.mr-1
-              = gettext "Hexlet"
-          li.nav-item
-            a.nav-link[href="http://slack-ru.hexlet.io/" target="_blank"]
-              span.fa.fa-slack.mr-1
-              = gettext "Slack#codebattle"
-        ul.navbar-nav.ml-auto
-          = unless @current_user.guest do
-            li.nav-item
-              = link to: user_path(@conn, :index), class: "nav-link" do
-                span.fa.fa-bar-chart.mr-1
-                = gettext "Users rating"
-            li.nav-item.dropdown
-              a.nav-link.dropdown-toggle.noborder[href='#' aria-expanded="false", aria-haspopup="true" data-toggle="dropdown"]
-                img.attachment.rounded.border.mr-1[alt="#{@current_user.name}" src="https://avatars0.githubusercontent.com/u/#{@current_user.github_id}" style="width:25px"]
-                = @current_user.name
-              .dropdown-menu.dropdown-menu-right
-                = link gettext("My Profile"), to: user_path(@conn, :show, @current_user.id), class: "dropdown-item"
-                = link gettext("Settings"), to: user_setting_path(@conn, :edit), class: "dropdown-item"
-                .dropdown-divider
-                = link gettext("Sign Out"), to: session_path(@conn, :delete), method: "delete", class: "dropdown-item"
-          - else
-            li.nav-item
-              a href="#{auth_path(@conn, :request, :github)}"
-                button.btn.btn-outline-success = gettext "Sign in with %{name}", name: "Github"
-
-    .container-fluid.p-0.bg-light
+  body.position-relative
+    .bg-white
+      .container
+        nav.navbar.navbar-expand-lg.navbar-light.row
+          a.navbar-brand.mr-4[href="/" aria-hidden="true"]
+            img alt=static_path(@conn,"/assets/app.css") src="/assets/images/codebattle_logo.png" height="30"
+            |&nbsp;Codebattle
+          button.navbar-toggler[aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation" data-target="#navbarResponsive" data-toggle="collapse" type="button"]
+            span.navbar-toggler-icon
+          #navbarResponsive.collapse.navbar-collapse
+            ul.navbar-nav.mr-auto
+              li.nav-item.p-2
+                a.nav-link[href="https://github.com/hexlet-codebattle/codebattle" target="_blank"]
+                  span.fa.fa-github.mr-2
+                  = gettext "SourceCode"
+              li.nav-item.p-2
+                a.nav-link[href="https://hexlet.io" target="_blank"]
+                  span.fa.fa-university.mr-2
+                  = gettext "Hexlet"
+              li.nav-item.p-2
+                a.nav-link[href="http://slack-ru.hexlet.io/" target="_blank"]
+                  span.fa.fa-slack.mr-2
+                  = gettext "Slack#codebattle"
+            ul.navbar-nav.ml-auto
+              = unless @current_user.guest do
+                li.nav-item.p-2
+                  = link to: user_path(@conn, :index), class: "nav-link" do
+                    span.fa.fa-bar-chart.mr-1
+                    = gettext "Users rating"
+                li.nav-item.p-2.dropdown
+                  a.nav-link.dropdown-toggle.noborder[href='#' aria-expanded="false", aria-haspopup="true" data-toggle="dropdown"]
+                    img.attachment.rounded.border.mr-1[alt="#{@current_user.name}" src="https://avatars0.githubusercontent.com/u/#{@current_user.github_id}" style="width:25px"]
+                    = @current_user.name
+                  .dropdown-menu.dropdown-menu-right
+                    = link gettext("My Profile"), to: user_path(@conn, :show, @current_user.id), class: "dropdown-item"
+                    = link gettext("Settings"), to: user_setting_path(@conn, :edit), class: "dropdown-item"
+                    .dropdown-divider
+                    = link gettext("Sign Out"), to: session_path(@conn, :delete), method: "delete", class: "dropdown-item"
+              - else
+                li.nav-item
+                  a href="#{auth_path(@conn, :request, :github)}"
+                    button.btn.btn-outline-success = gettext "Sign in with %{name}", name: "Github"
+    div
       = for {type, message} <- get_flash(@conn) do
-        div class="alert alert-#{type} alert-dismissible fade show" role="alert"
+        div class="m-0 rounded-0 alert alert-#{type} alert-dismissible fade show" role="alert"
           = message
           button type="button" class="close" data-dismiss="alert" aria-label="Close"
             span aria-hidden="true" &times;
-
+    .content.pt-4
       = render @view_module, @view_template, Map.put(assigns, :layout, {CodebattleWeb.LayoutView, assigns[:layout_template] || "standart.html"})
       = render_gon_script(@conn)
-      script src=static_path(@conn,"/assets/app.js")
+    script src=static_path(@conn,"/assets/app.js")

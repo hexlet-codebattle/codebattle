@@ -32,7 +32,7 @@ class Timer extends Component {
 
   render() {
     const { duration } = this.state;
-    return <small className="text-monospace">{duration}</small>;
+    return <span className="text-monospace">{duration}</span>;
   }
 }
 

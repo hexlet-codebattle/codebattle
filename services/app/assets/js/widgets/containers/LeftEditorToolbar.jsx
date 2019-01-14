@@ -35,14 +35,14 @@ class LeftEditorToolbar extends Component {
     <div className="btn-group btn-group-sm ml-2" role="group" aria-label="Editor height">
       <button
         type="button"
-        className="btn btn-link"
+        className="btn btn-sm border rounded"
         onClick={() => compressEditor(userId)}
       >
         <i className="fa fa-compress" aria-hidden="true" />
       </button>
       <button
         type="button"
-        className="btn btn-link"
+        className="btn btn-sm border rounded ml-2"
         onClick={() => expandEditor(userId)}
       >
         <i className="fa fa-expand" aria-hidden="true" />
@@ -71,7 +71,7 @@ class LeftEditorToolbar extends Component {
     }
 
     return (
-      <div className="btn-toolbar justify-content-between" role="toolbar">
+      <div className="py-2 px-3 btn-toolbar justify-content-between" role="toolbar">
         <div className="btn-group " role="group" aria-label="Editor settings">
           <LanguagePicker
             currentLangSlug={leftEditorLangSlug}
@@ -81,6 +81,7 @@ class LeftEditorToolbar extends Component {
           {this.renderEditorHeightButtons(compressEditor, expandEditor, leftUserId)}
         </div>
         <GameResultIcon
+          className="ml-auto mr-2"
           resultUser1={_.get(players, [[leftUserId], 'game_result'])}
           resultUser2={_.get(players, [[rightUserId], 'game_result'])}
         />

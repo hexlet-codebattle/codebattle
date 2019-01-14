@@ -1,19 +1,17 @@
-$link-color:                 #6c757d;
-$link-hover-color:           #000;
+$link-color:  #1f3754;
+$link-hover-color: #5673ce;
+$link-hover-decoration: none;
+$body-bg: #e9edf3;
+@import "fonts";
+$font-family-sans-serif: "Roboto", sans-serif;
 @import "~bootstrap/scss/bootstrap";
 $fa-font-path: "~font-awesome/fonts";
 @import "~font-awesome/scss/font-awesome";
 @import "~font-mfizz/dist/font-mfizz.css";
 
-// .chat-box {
-//     height: 100px;
-//     overflow-y: scroll;
-// }
-
-// .online-users {
-//     height: 150px;
-//     overflow-y: scroll;
-// }
+a {
+  transition: color ease-in 0.1s;
+}
 
 .embed-container {
   position: relative;

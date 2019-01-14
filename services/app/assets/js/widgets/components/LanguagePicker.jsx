@@ -35,7 +35,7 @@ const LanguagePicker = ({ currentLangSlug, onChange, disabled }) => {
   return (
     <div className="dropdown">
       <button
-        className="btn btn-sm btn-link dropdown-toggle text-decoration-none"
+        className="btn btn-sm border dropdown-toggle text-decoration-none"
         type="button"
         id="dropdownLangButton"
         data-toggle="dropdown"
@@ -48,8 +48,7 @@ const LanguagePicker = ({ currentLangSlug, onChange, disabled }) => {
         {_.map(otherLangs, ({ slug, name, version }) => (
           <button
             type="button"
-            className="dropdown-item"
-            href="#"
+            className="dropdown-item btn rounded-0"
             key={slug}
             onClick={() => { onChange(slug); }}
           >
