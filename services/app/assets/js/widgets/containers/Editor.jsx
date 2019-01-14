@@ -31,10 +31,8 @@ class Editor extends PureComponent {
   }
 
   componentDidUpdate = async () => {
-    const { editable, syntax } = this.props;
-    if (this.editor && editable) {
-      this.editor.focus();
-    }
+    const { syntax } = this.props;
+
     const notIncludedSyntaxHightlight = new Set(['haskell', 'elixir']);
     if (notIncludedSyntaxHightlight.has(syntax)) {
       const { default: HighlightRules } = await import(`monaco-ace-tokenizer/lib/ace/definitions/${syntax}`);
@@ -84,6 +82,7 @@ class Editor extends PureComponent {
     const options = {
       lineNumbersMinChars: 2,
       readOnly: !editable,
+      contextmenu: editable,
       fontSize: 16,
       scrollBeyondLastLine: false,
       selectOnLineNumbers: true,
