@@ -4,10 +4,11 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+
 
 const env = process.env.NODE_ENV || 'dev';
 const isProd = env === 'production';
-// const publicPath = 'http://localhost:4002';
 
 const commonPlugins = [
   new CopyWebpackPlugin([
@@ -19,13 +20,22 @@ const commonPlugins = [
     'window.jQuery': 'jquery',
     Popper: ['popper.js', 'default'],
   }),
-  new MonacoWebpackPlugin(),
+  new MonacoWebpackPlugin({
+    languages: ['ruby', 'javascript', 'perl', 'python', 'clojure', 'php'],
+  }),
   new MiniCssExtractPlugin({
     filename: 'app.css',
   }),
+  new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /(en|ru)$/),
 ];
 
-const devPlugins = commonPlugins;
+const devPlugins = [
+  ...commonPlugins,
+  new BundleAnalyzerPlugin({
+    analyzerMode: 'disabled',
+  }),
+];
+
 const productionPlugins = [
   ...commonPlugins,
   new OptimizeCssAssetsPlugin({
