@@ -58,9 +58,15 @@ class Editor extends PureComponent {
     if (editable) {
       this.editor.focus();
     } else {
-      // disale copy for spectator
+      // disable copying for spectator
       // eslint-disable-next-line no-bitwise
-      this.editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_C, () => {});
+      this.editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_C, () => null);
+      this.editor.onDidChangeCursorSelection(
+        () => {
+          const { column, lineNumber } = this.editor.getPosition();
+          this.editor.setPosition({ lineNumber, column });
+        },
+      );
     }
     // this.editor.getModel().updateOptions({ tabSize: this.tabSize });
 
