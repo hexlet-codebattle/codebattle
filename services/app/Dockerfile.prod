@@ -14,8 +14,8 @@ RUN apt-get update \
  && apt-get install -y vim
 
 RUN curl -sL https://deb.nodesource.com/setup_11.x | bash - \
- && apt-get update
- && apt-get install -y nodejs
+ && apt-get update \
+ && apt-get install -y nodejs \
  && npm install --global yarn@1.13.0
 
 ENV DOCKER_CHANNEL edge
@@ -29,7 +29,7 @@ COPY mix.* ./
 # Install all production dependencies
 RUN mix deps.get
 
-COPY package.json ./
+COPY package.json ./ \
   && yarn.lock ./
 
 RUN yarn install
