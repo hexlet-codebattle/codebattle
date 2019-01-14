@@ -12,8 +12,8 @@ export const fetchState = () => (dispatch) => {
     .receive('error', () => console.log('Lobby channel: unable to join'))
     .receive('ok', ({ active_games: activeGames, completed_games: completedGames }) => dispatch(fetchGameList({ activeGames, completedGames })));
 
-  channel.on('new:game', ({ game }) => dispatch(newGameLobby({ game })));
-  channel.on('update:game', ({ game }) => dispatch(updateGameLobby({ game })));
-  channel.on('cancel:game', ({ game_id: gameId }) => dispatch(cancelGameLobby({ gameId })));
-  channel.on('gave_over:game', ({ active_games: activeGames, completed_games: completedGames }) => dispatch(fetchGameList({ activeGames, completedGames })));
+  channel.on('game:new', ({ game }) => dispatch(newGameLobby({ game })));
+  channel.on('game:update', ({ game }) => dispatch(updateGameLobby({ game })));
+  channel.on('game:cancel', ({ game_id: gameId }) => dispatch(cancelGameLobby({ gameId })));
+  channel.on('game:game_over', ({ active_games: activeGames, completed_games: completedGames }) => dispatch(fetchGameList({ activeGames, completedGames })));
 };

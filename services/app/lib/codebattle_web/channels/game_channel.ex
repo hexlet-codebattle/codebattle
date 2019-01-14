@@ -85,7 +85,7 @@ defmodule CodebattleWeb.GameChannel do
         end)
       completed_games = Play.completed_games()
       CodebattleWeb.Endpoint.broadcast_from!(self(), "lobby",
-        "gave_over:game", %{active_games: active_games, completed_games: completed_games})
+        "game:game_over", %{active_games: active_games, completed_games: completed_games})
 
       broadcast!(socket, "give_up", %{
         players: players,
@@ -135,7 +135,7 @@ defmodule CodebattleWeb.GameChannel do
           })
 
           CodebattleWeb.Endpoint.broadcast_from!(self(), "lobby",
-            "gave_over:game", %{active_games: active_games, completed_games: completed_games})
+            "game:game_over", %{active_games: active_games, completed_games: completed_games})
 
           broadcast_from!(socket, "user:finishCheck", %{
             user: socket.assigns.current_user
