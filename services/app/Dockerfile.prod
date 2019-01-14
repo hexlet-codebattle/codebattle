@@ -30,7 +30,7 @@ COPY mix.* ./
 RUN mix deps.get
 
 COPY package.json ./
-COPY yarn.lock ./
+  && yarn.lock ./
 
 RUN yarn install
 
@@ -39,7 +39,7 @@ RUN MIX_ENV=prod mix deps.compile
 
 COPY . .
 
-RUN NODE_ENV=production yarn build-prod
+RUN yarn build-prod
 RUN MIX_ENV=prod mix compile
 RUN MIX_ENV=prod mix phx.digest
 
