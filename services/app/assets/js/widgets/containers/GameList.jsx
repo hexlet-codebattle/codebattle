@@ -206,27 +206,30 @@ class GameList extends React.Component {
               </tr>
             </thead>
             <tbody>
-              {activeGames.map(game => (
-                <tr key={game.game_id}>
-                  <td className="p-3 align-middle" style={{ whiteSpace: 'nowrap' }}>
-                    {moment
-                      .utc(game.game_info.inserted_at)
-                      .local()
-                      .format('YYYY-MM-DD HH:mm')}
-                  </td>
-                  <td className="p-3 align-middle" style={{ whiteSpace: 'nowrap' }}>
-                    {this.renderGameLevelBadge(game.game_info.level)}
-                  </td>
+              {activeGames.map((game) => {
+                console.log(game);
+                return (
+                  <tr key={game.game_id}>
+                    <td className="p-3 align-middle" style={{ whiteSpace: 'nowrap' }}>
+                      {moment
+                        .utc(game.game_info.inserted_at)
+                        .local()
+                        .format('YYYY-MM-DD HH:mm')}
+                    </td>
+                    <td className="p-3 align-middle" style={{ whiteSpace: 'nowrap' }}>
+                      {this.renderGameLevelBadge(game.game_info.level)}
+                    </td>
 
-                  {this.renderPlayers(game.id, game.users)}
+                    {this.renderPlayers(game.id, game.users)}
 
-                  <td className="p-3 align-middle" style={{ whiteSpace: 'nowrap' }}>
-                    {game.game_info.state}
-                  </td>
+                    <td className="p-3 align-middle" style={{ whiteSpace: 'nowrap' }}>
+                      {game.game_info.state}
+                    </td>
 
-                  <td className="p-3 align-middle">{this.renderGameActionButton(game)}</td>
-                </tr>
-              ))}
+                    <td className="p-3 align-middle">{this.renderGameActionButton(game)}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

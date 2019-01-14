@@ -19,13 +19,16 @@ class GameActionButtons extends Component {
       className="btn btn-success btn-sm ml-auto"
       onClick={checkResult}
       disabled={gameStatus.checking[editorUser] || disabled}
-
+    >
       {gameStatus.checking[editorUser] ? (
         <span className="fa fa-cog fa-spin mr-1" />
       ) : (
         <span data-test={editorUser} className="fa fa-play-circle mr-1" />
       )}
       {i18n.t('Check')}
+      {
+        // FIXME: set cmd for mac os
+      }
       <small> (ctrl+enter)</small>
     </button>
   )

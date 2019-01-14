@@ -24,26 +24,26 @@ const gameList = handleActions({
   [actions.cancelGameLobby](state, { payload: { gameId } }) {
     const { activeGames } = state;
 
-    const newGames = _.filter(activeGames, game => game.game_id !== parseInt(gameId));
+    const newGames = _.filter(activeGames, game => game.game_id !== gameId);
 
     return { ...state, activeGames: newGames };
   },
-  [actions.updateGameLobby](state, { payload: { game } }) {
+  [actions.updateGameLobby](state, { payload: { game, gameInfo } }) {
+    // FIXME: use shape from nackend
     const gameId = game.data.game_id;
 
     const { activeGames } = state;
-    const filtered = activeGames.filter(g => g.game_id !== parseInt(gameId));
+    const restGames = activeGames.filter(g => g.game_id !== gameId);
 
     const newGame = {
       users: game.data.players,
       game_info: {
-        state: game.state,
-        level: game.data.task_level,
-        inserted_at: game.data.inserted_at,
+        ...gameInfo,
+        state: gameInfo.status,
       },
-      game_id: game.data.game_id,
+      game_id: gameId,
     };
-    return { ...state, activeGames: [...filtered, newGame] };
+    return { ...state, activeGames: [...restGames, newGame] };
   },
 }, initState);
 
