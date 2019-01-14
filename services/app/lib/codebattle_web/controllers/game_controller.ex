@@ -58,7 +58,7 @@ defmodule CodebattleWeb.GameController do
     case Play.join_game(id, conn.assigns.current_user) do
       {:ok, fsm} ->
         Task.async(fn ->
-          CodebattleWeb.Endpoint.broadcast("lobby", "update:game", %{game: fsm})
+          CodebattleWeb.Endpoint.broadcast("lobby", "game:update", %{game: fsm})
         end)
 
         conn
@@ -76,7 +76,7 @@ defmodule CodebattleWeb.GameController do
     case Play.cancel_game(id, conn.assigns.current_user) do
       :ok ->
         redirect(conn, to: page_path(conn, :index))
-        CodebattleWeb.Endpoint.broadcast("lobby", "cancel:game", %{game_id: id})
+        CodebattleWeb.Endpoint.broadcast("lobby", "game:cancel", %{game_id: id})
 
       :error ->
         conn

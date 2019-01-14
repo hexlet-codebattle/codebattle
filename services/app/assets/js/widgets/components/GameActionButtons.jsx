@@ -18,8 +18,8 @@ class GameActionButtons extends Component {
       type="button"
       className="btn btn-success btn-sm ml-auto"
       onClick={checkResult}
-      disabled={disabled || gameStatus.checking[editorUser]}
-    >
+      disabled={gameStatus.checking[editorUser] || disabled}
+
       {gameStatus.checking[editorUser] ? (
         <span className="fa fa-cog fa-spin mr-1" />
       ) : (
