@@ -68,11 +68,11 @@ class ChatWidget extends React.Component {
         </div>
         <div className="col-4 p-0 border-left bg-white rounded-right">
           <div className="d-flex flex-direction-column flex-wrap justify-content-between">
-            <div className="px-3 py-3">
+            <div className="px-3 py-3 w-100">
               <p className="mb-0">{`Online users: ${users.length}`}</p>
               <div
                 className="overflow-auto"
-                style={{ height: '100px' }}
+                style={{ height: '180px' }}
               >
                 {users.map(user => (
                   <div key={user.id} className="my-2">
