@@ -2,6 +2,7 @@
 _build
 deps
 db
+.idea
 *.ez
 *.retry
 *.log
