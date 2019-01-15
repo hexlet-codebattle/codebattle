@@ -90,7 +90,7 @@ class Editor extends PureComponent {
     // FIXME: move here and apply mapping object
     const mappedSyntax = syntax === 'js' ? 'javascript' : syntax;
     const options = {
-      lineNumbersMinChars: 2,
+      lineNumbersMinChars: 3,
       readOnly: !editable,
       contextmenu: editable,
       fontSize: 16,
