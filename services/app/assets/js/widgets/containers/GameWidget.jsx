@@ -58,7 +58,6 @@ class GameWidget extends Component {
     return {
       onChange: _.noop,
       editable: false,
-      allowCopy: false,
       syntax: editorState.currentLangSlug || 'javascript',
       value: editorState.text,
       name: 'right-editor',

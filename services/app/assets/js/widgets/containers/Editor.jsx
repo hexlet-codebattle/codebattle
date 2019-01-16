@@ -19,7 +19,6 @@ class Editor extends PureComponent {
     editable: PropTypes.bool,
     syntax: PropTypes.string,
     onChange: PropTypes.func,
-    allowCopy: PropTypes.bool,
   }
 
   static defaultProps = {
@@ -27,7 +26,6 @@ class Editor extends PureComponent {
     editable: false,
     onChange: null,
     syntax: 'javascript',
-    allowCopy: true,
   }
 
   componentDidUpdate = async () => {
@@ -83,7 +81,6 @@ class Editor extends PureComponent {
       editable,
       syntax,
       onChange,
-      allowCopy,
       editorHeight,
     } = this.props;
 
@@ -114,10 +111,6 @@ class Editor extends PureComponent {
           value={value}
           onChange={onChange}
         />
-        {
-          allowCopy ? null : (
-            <div style={selectionBlockStyle} />
-          )}
       </div>
     );
   }
