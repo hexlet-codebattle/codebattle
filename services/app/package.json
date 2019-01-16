@@ -16,6 +16,7 @@
     "axios": "^0.18.0",
     "bootstrap": "^4.2.0",
     "copy-to-clipboard": "^3.0.8",
+    "emoji-mart": "^2.9.2",
     "font-awesome": "^4.7.0",
     "font-mfizz": "^2.4.1",
     "i18next": "^10.3.0",
