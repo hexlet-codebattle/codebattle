@@ -185,7 +185,7 @@ class GameList extends React.Component {
     if (_.isEmpty(activeGames)) {
       return (
         <div className="text-center">
-          <p className="p-2">Not have active games now</p>
+          <p className="p-2">There are no active games right now</p>
           {this.renderStartNewGameSelector()}
         </div>
       );
