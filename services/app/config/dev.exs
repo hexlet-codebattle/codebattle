@@ -1,13 +1,19 @@
 use Mix.Config
 
+root_dir = File.cwd!()
 # For development, we disable any cache and enable
 # debugging and code reloading.
 #
 # The watchers configuration can be used to run external
 # watchers to your application. For example, we use it
 # with brunch.io to recompile .js and .css sources.
+
 config :codebattle, CodebattleWeb.Endpoint,
-  http: [port: System.get_env("CODEBATTLE_PORT")],
+  https: [
+    port: System.get_env("CODEBATTLE_PORT") ||  4000,
+    keyfile: Path.join(root_dir, "dev.key"),
+    certfile: Path.join(root_dir, "dev.crt"),
+  ],
   debug_errors: true,
   code_reloader: true,
   check_origin: false,
