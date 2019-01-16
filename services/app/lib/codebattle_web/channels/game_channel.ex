@@ -103,7 +103,7 @@ defmodule CodebattleWeb.GameChannel do
     game_id = get_game_id(socket)
     user_id = socket.assigns.user_id
 
-    broadcast_from!(socket, "user:startCheck", %{
+    broadcast_from!(socket, "user:start_check", %{
       user: socket.assigns.current_user
     })
 
@@ -137,7 +137,7 @@ defmodule CodebattleWeb.GameChannel do
           CodebattleWeb.Endpoint.broadcast_from!(self(), "lobby",
             "game:game_over", %{active_games: active_games, completed_games: completed_games})
 
-          broadcast_from!(socket, "user:finishCheck", %{
+          broadcast_from!(socket, "user:finish_check", %{
             user: socket.assigns.current_user
           })
 
@@ -163,7 +163,7 @@ defmodule CodebattleWeb.GameChannel do
             user_id: user_id
           })
 
-          broadcast_from!(socket, "user:finishCheck", %{
+          broadcast_from!(socket, "user:finish_check", %{
             user: socket.assigns.current_user
           })
 
@@ -184,7 +184,7 @@ defmodule CodebattleWeb.GameChannel do
             user_id: user_id
           })
 
-          broadcast_from!(socket, "user:finishCheck", %{
+          broadcast_from!(socket, "user:finish_check", %{
             user: socket.assigns.current_user
           })
 

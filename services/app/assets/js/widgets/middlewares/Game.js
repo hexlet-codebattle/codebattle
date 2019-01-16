@@ -125,11 +125,11 @@ export const editorReady = () => (dispatch) => {
     dispatch(actions.updateExecutionOutput({ userId, result, output }));
   });
 
-  channel.on('user:startCheck', ({ user }) => {
+  channel.on('user:start_check', ({ user }) => {
     dispatch(actions.updateCheckStatus({ [user.id]: true }));
   });
 
-  channel.on('user:finishCheck', ({ user }) => {
+  channel.on('user:finish_check', ({ user }) => {
     dispatch(actions.updateCheckStatus({ [user.id]: false }));
   });
 
