@@ -38,3 +38,13 @@ tags
 # Generated reports
 cover
 .deliver/releases/
+.tern-port
+*.backup
+.terraform
+secrets.auto.tfvars
+.cache-loader
+*.tfstate
+*.secret.yml
+.elixir_ls
+google.key.json
+
