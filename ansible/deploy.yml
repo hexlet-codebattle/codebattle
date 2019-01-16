@@ -85,10 +85,10 @@
           - "/var/tmp:/var/tmp"
       tags: [webserver]
 
-    - lineinfile:
-        regexp: "CODEBATTLE_IMAGE_TAG"
-        line: "CODEBATTLE_IMAGE_TAG={{ codebattle_image_tag }}"
-        dest: /etc/environment
-        backup: yes
-        state: present
-      become: yes
+    # - lineinfile:
+    #     regexp: "CODEBATTLE_IMAGE_TAG"
+    #     line: "CODEBATTLE_IMAGE_TAG={{ codebattle_image_tag }}"
+    #     dest: /etc/environment
+    #     backup: yes
+    #     state: present
+    #   become: yes
