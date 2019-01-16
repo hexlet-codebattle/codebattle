@@ -38,7 +38,7 @@ const Task = ({ task, time, gameStatusName }) => {
   return (
     <div className="card h-100 border-0 shadow-sm">
       <div className="px-3 py-3">
-        <div className="d-flex justify-content-between">
+        <div className="d-flex flex-column flex-sm-row justify-content-between">
           <h6 className="card-text">
             {'Task: '}
             <span className="card-subtitle mb-2 text-muted">{task.name}</span>
