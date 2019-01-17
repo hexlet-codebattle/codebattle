@@ -21,7 +21,7 @@ const commonPlugins = [
     Popper: ['popper.js', 'default'],
   }),
   new MonacoWebpackPlugin({
-    languages: ['ruby', 'javascript', 'perl', 'python', 'clojure', 'php'],
+    languages: ['ruby', 'javascript', 'typescript', 'perl', 'python', 'clojure', 'php'],
   }),
   new MiniCssExtractPlugin({
     filename: 'app.css',
@@ -52,6 +52,10 @@ module.exports = {
     app: ['./assets/js/app.js', './assets/css/app.scss'],
   },
   devtool: isProd ? false : 'eval-source-map',
+  devServer: {
+    publicPath: '/assets',
+  },
+
   output: {
     path: `${__dirname}/priv/static/assets`,
     filename: 'app.js',
