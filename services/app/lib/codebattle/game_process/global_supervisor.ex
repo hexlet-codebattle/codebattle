@@ -1,6 +1,8 @@
 defmodule Codebattle.GameProcess.GlobalSupervisor do
   @moduledoc false
 
+  require Logger
+
   use Supervisor
 
   alias Codebattle.GameProcess.{Server, ActiveGames}
@@ -22,20 +24,13 @@ defmodule Codebattle.GameProcess.GlobalSupervisor do
     supervise(children, strategy: :simple_one_for_one)
   end
 
-  def current_games do
-    __MODULE__
-    |> Supervisor.which_children()
-    |> Enum.map(&game_state/1)
-    |> Enum.filter(fn x -> x end)
-  end
+  def terminate_game(game_id) do
+    pid = Codebattle.GameProcess.Supervisor.get_pid(game_id)
 
-  def stop_game(game_id) do
-    pid = Server.game_pid(game_id)
-    Supervisor.terminate_child(__MODULE__, pid)
-  end
-
-  defp game_state({_id, pid, _type, _modules}) do
-    pid
-    |> GenServer.call(:fsm)
+    try do
+      Supervisor.terminate_child(__MODULE__, pid)
+    rescue
+      _ -> Logger.error("game not found")
+    end
   end
 end

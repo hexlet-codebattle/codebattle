@@ -104,7 +104,7 @@ defmodule Codebattle.GameProcess.Play do
           })
 
         ActiveGames.create_game(user, fsm)
-        GlobalSupervisor.start_game(game.id, fsm)
+        {:ok, _} = GlobalSupervisor.start_game(game.id, fsm)
 
         Task.async(fn -> CodebattleWeb.Endpoint.broadcast("lobby", "game:new", %{game: fsm}) end)
 
@@ -158,6 +158,7 @@ defmodule Codebattle.GameProcess.Play do
   def cancel_game(id, user) do
     if ActiveGames.participant?(id, user.id) do
       ActiveGames.terminate_game(id)
+      GlobalSupervisor.terminate_game(id)
 
       id
       |> get_game
@@ -267,7 +268,7 @@ defmodule Codebattle.GameProcess.Play do
     # TODO: optimize code with handle_gave_up
     game_id = id |> Integer.parse() |> elem(0)
     loser_id = FsmHelpers.get_opponent(fsm, winner.id).id
-    loser =  Repo.get(User, loser_id)
+    loser = Repo.get(User, loser_id)
     difficulty = fsm.data.level
 
     {winner_rating, loser_rating} = Elo.calc_elo(winner.rating, loser.rating, difficulty)
@@ -312,7 +313,7 @@ defmodule Codebattle.GameProcess.Play do
   defp handle_gave_up(id, loser, fsm) do
     game_id = id |> Integer.parse() |> elem(0)
     winner_id = FsmHelpers.get_opponent(fsm, loser.id).id
-    winner =  Repo.get(User, winner_id)
+    winner = Repo.get(User, winner_id)
 
     difficulty = fsm.data.level
 
