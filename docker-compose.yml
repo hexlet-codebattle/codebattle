@@ -22,6 +22,11 @@ services:
       - db
 
   db:
-    image: postgres:9.6
+    image: postgres:10
     environment:
       POSTGRES_USER: ${CODEBATTLE_DB_USERNAME}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+volumes:
+  pg_data:
