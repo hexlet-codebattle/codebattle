@@ -1,14 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import 'emoji-mart/css/emoji-mart.css';
-import { Picker } from 'emoji-mart';
 import { fetchState, addMessage } from '../middlewares/Chat';
 import { chatUsersSelector, chatMessagesSelector, currentChatUserSelector } from '../selectors';
 import Messages from '../components/Messages';
 import UserName from '../components/UserName';
+import Emoji from '../components/Emoji';
 
 class ChatWidget extends React.Component {
-  state = { message: '', showEmoji: false };
+  state = { message: '' };
 
   messagesEnd = null;
 
@@ -23,40 +22,19 @@ class ChatWidget extends React.Component {
     this.setState({ message: e.target.value });
   };
 
-  addEmoji = (emoji) => {
-    this.setState(prevState => ({ message: `${prevState.message}${emoji.native}` }), () => {
-      this.closeEmoji();
-      this.inputRef.current.focus();
+  addEmoji = (emoji, closeEmoji) => {
+    const { message } = this.state;
+    const input = this.inputRef.current;
+    const cursorPosition = input.selectionStart;
+    const start = message.substring(0, input.selectionStart);
+    const end = message.substring(input.selectionEnd);
+    const text = `${start}${emoji.native}${end}`;
+
+    this.setState({ message: text }, () => {
+      closeEmoji();
+      input.selectionEnd = cursorPosition + emoji.native.length;
+      input.focus();
     });
-  }
-
-  toggleEmoji = () => {
-    const { showEmoji } = this.state;
-    if (showEmoji) {
-      this.closeEmoji();
-    } else {
-      this.openEmoji();
-    }
-  }
-
-  openEmoji = () => {
-    this.setState({
-      showEmoji: true,
-    }, () => document.addEventListener('click', this.closeEmojiOutsideClick, false));
-  }
-
-  closeEmoji = () => {
-    this.setState({
-      showEmoji: false,
-    }, () => document.removeEventListener('click', this.closeEmojiOutsideClick, false));
-  }
-
-  closeEmojiOutsideClick = (e) => {
-    const { target } = e;
-    const isPickerEmoji = target.closest('.emoji-mart');
-    if (!isPickerEmoji) {
-      this.closeEmoji();
-    }
   }
 
   sendMessage = () => {
@@ -78,7 +56,7 @@ class ChatWidget extends React.Component {
   };
 
   render() {
-    const { message, showEmoji } = this.state;
+    const { message } = this.state;
     const { messages, users } = this.props;
     return (
       <div className="d-flex shadow-sm">
@@ -99,35 +77,7 @@ class ChatWidget extends React.Component {
                 onKeyPress={this.handleKeyPress}
                 ref={this.inputRef}
               />
-              <div
-                role="button"
-                tabIndex="-1"
-                onClick={this.toggleEmoji}
-                onKeyPress={this.toggleEmoji}
-                className="d-none d-sm-block"
-                style={{
-                  position: 'absolute',
-                  right: '65px',
-                  zIndex: 10,
-                  height: '31px',
-                }}
-              >
-                <span role="img" aria-label="Emoji" style={{ position: 'relative', top: '5px' }}>😀</span>
-              </div>
-              {showEmoji && (
-                <Picker
-                  title="Pick your emoji…"
-                  emoji="point_up"
-                  onSelect={this.addEmoji}
-                  style={{
-                    position: 'absolute',
-                    bottom: '50px',
-                    right: '16px',
-                    maxHeight: '200px',
-                    overflow: 'hidden',
-                  }}
-                />
-              )}
+              <Emoji addEmoji={this.addEmoji} />
               <div className="input-group-append">
                 <button className="btn btn-light border" type="button" onClick={this.sendMessage}>
                   Send
