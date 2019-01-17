@@ -2,7 +2,7 @@
   .text-center
     h2.font-weight-normal= gettext "Users rating"
     p = gettext "Total: "
-      = Enum.count(@users)
+      = @total
 
     table.table
       thead.text-left
@@ -33,3 +33,5 @@
                   i.fa.fa-github
             td.p-3.align-middle
               = user.inserted_at
+
+    p = pagination_links @page, previous: Phoenix.HTML.raw("&leftarrow;"), next: Phoenix.HTML.raw("&rightarrow;"), view_style: :bootstrap_v4
