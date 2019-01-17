@@ -1,10 +1,12 @@
 defmodule Codebattle.GameProcess.Supervisor do
   @moduledoc false
 
+  require Logger
+
   use Supervisor
 
   def start_link(game_id, fsm) do
-    Supervisor.start_link(__MODULE__, [game_id, fsm], name: game_name(game_id))
+    Supervisor.start_link(__MODULE__, [game_id, fsm], name: supervisor_name(game_id))
   end
 
   def init([game_id, fsm]) do
@@ -17,12 +19,17 @@ defmodule Codebattle.GameProcess.Supervisor do
     supervise(children, strategy: :one_for_one)
   end
 
-  # HELPERS
-  defp game_name(game_id) do
-    {:via, :gproc, game_key(game_id)}
+
+  def get_pid(game_id) do
+    :gproc.where(supervisor_key(game_id))
   end
 
-  defp game_key(game_id) do
+  # HELPERS
+  defp supervisor_name(game_id) do
+    {:via, :gproc, supervisor_key(game_id)}
+  end
+
+  defp supervisor_key(game_id) do
     {:n, :l, {:game_supervisor, to_charlist(game_id)}}
   end
 end
