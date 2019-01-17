@@ -78,8 +78,8 @@ defmodule CodebattleWeb.GameController do
   def delete(conn, %{"id" => id}) do
     case Play.cancel_game(id, conn.assigns.current_user) do
       :ok ->
-        redirect(conn, to: page_path(conn, :index))
         CodebattleWeb.Endpoint.broadcast("lobby", "game:cancel", %{game_id: id})
+        redirect(conn, to: page_path(conn, :index))
 
       :error ->
         conn

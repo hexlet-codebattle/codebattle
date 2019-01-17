@@ -104,7 +104,7 @@ defmodule Codebattle.GameProcess.Play do
           })
 
         ActiveGames.create_game(user, fsm)
-        GlobalSupervisor.start_game(game.id, fsm)
+        {:ok, _} = GlobalSupervisor.start_game(game.id, fsm)
 
         Task.async(fn -> CodebattleWeb.Endpoint.broadcast("lobby", "game:new", %{game: fsm}) end)
 
@@ -158,6 +158,7 @@ defmodule Codebattle.GameProcess.Play do
   def cancel_game(id, user) do
     if ActiveGames.participant?(id, user.id) do
       ActiveGames.terminate_game(id)
+      GlobalSupervisor.terminate_game(id)
 
       id
       |> get_game

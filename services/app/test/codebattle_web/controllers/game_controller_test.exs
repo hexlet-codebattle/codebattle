@@ -1,6 +1,9 @@
 defmodule Codebattleweb.GameControllerTest do
   use CodebattleWeb.ConnCase, async: true
 
+  import Ecto.Query, warn: false
+  alias Codebattle.{Repo, Game}
+  alias Codebattle.GameProcess.{ActiveGames, Server}
   test "return 404 when game over does not exists", %{conn: conn} do
     user = insert(:user)
 
@@ -47,18 +50,17 @@ defmodule Codebattleweb.GameControllerTest do
   end
 
   test "cancel game", %{conn: conn} do
-    user1 = build(:user)
-    user2 = build(:user)
-    state = :game_over
+    user1 = insert(:user)
+    state = :waiting_opponent
 
     data = %{
       players: [
-        Player.from_user(user1, %{game_result: :won}),
-        Player.from_user(user2, %{game_result: :lost})
+        Player.from_user(user1, %{game_result: :undefined}),
       ]
     }
 
     game = setup_game(state, data)
+    assert ActiveGames.game_exists?(game.id) == true
 
     conn =
       conn
@@ -66,5 +68,11 @@ defmodule Codebattleweb.GameControllerTest do
       |> delete(game_path(conn, :delete, game.id))
 
     assert conn.status == 302
+
+    game = from(g in Game) |> Repo.get(game.id)
+
+    assert game.state == "canceled"
+    assert ActiveGames.game_exists?(game.id) == false
+    assert Server.game_pid(game.id) == :undefined
   end
 end
