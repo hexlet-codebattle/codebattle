@@ -4,40 +4,23 @@ import { fetchState, addMessage } from '../middlewares/Chat';
 import { chatUsersSelector, chatMessagesSelector, currentChatUserSelector } from '../selectors';
 import Messages from '../components/Messages';
 import UserName from '../components/UserName';
-import Emoji from '../components/Emoji';
+import InputWithEmoji from '../components/InputWithEmoji';
 
 class ChatWidget extends React.Component {
   state = { message: '' };
 
   messagesEnd = null;
 
-  inputRef = React.createRef();
-
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch(fetchState());
   }
 
-  handleChange = (e) => {
-    this.setState({ message: e.target.value });
+  handleChange = (message) => {
+    this.setState({ message });
   };
 
-  addEmoji = (emoji, closeEmoji) => {
-    const { message } = this.state;
-    const input = this.inputRef.current;
-    const cursorPosition = input.selectionStart;
-    const start = message.substring(0, input.selectionStart);
-    const end = message.substring(input.selectionEnd);
-    const text = `${start}${emoji.native}${end}`;
-
-    this.setState({ message: text }, () => {
-      closeEmoji();
-      input.selectionEnd = cursorPosition + emoji.native.length;
-      input.focus();
-    });
-  }
-
-  sendMessage = () => {
+  handleSubmit = () => {
     const { message } = this.state;
     const {
       currentUser: { name },
@@ -46,12 +29,6 @@ class ChatWidget extends React.Component {
     if (message) {
       addMessage(name, message);
       this.setState({ message: '' });
-    }
-  };
-
-  handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      this.sendMessage();
     }
   };
 
@@ -68,18 +45,13 @@ class ChatWidget extends React.Component {
           />
           <div className="">
             <div className="px-3 my-2 input-group input-group-sm">
-              <input
-                className="form-control"
-                type="text"
-                placeholder="Type message here..."
+              <InputWithEmoji
                 value={message}
-                onChange={this.handleChange}
-                onKeyPress={this.handleKeyPress}
-                ref={this.inputRef}
+                handleChange={this.handleChange}
+                handleSubmit={this.handleSubmit}
               />
-              <Emoji addEmoji={this.addEmoji} />
               <div className="input-group-append">
-                <button className="btn btn-light border" type="button" onClick={this.sendMessage}>
+                <button className="btn btn-light border" type="button" onClick={this.handleSubmit}>
                   Send
                 </button>
               </div>
