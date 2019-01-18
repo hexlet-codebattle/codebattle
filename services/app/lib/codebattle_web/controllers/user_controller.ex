@@ -16,7 +16,6 @@ defmodule CodebattleWeb.UserController do
       Enum.map(sort_query, fn {key, value} -> {String.to_atom(key), String.to_atom(value)} end)
 
     query = from(users in User, order_by: ^order, preload: [:user_games])
-    total_number_of_users = Enum.count(Repo.all(query))
     page = 
       query
       |> Repo.paginate(params)
@@ -27,7 +26,7 @@ defmodule CodebattleWeb.UserController do
         "desc" -> "asc"
       end
 
-    render(conn, "index.html", users: page.entries, page: page, direction: direction, total: total_number_of_users)
+    render(conn, "index.html", users: page.entries, page: page, direction: direction)
   end
 
   def show(conn, %{"id" => user_id}) do
