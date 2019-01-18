@@ -39,7 +39,7 @@ html lang="en"
 
   body.position-relative
     .bg-white
-      .container
+      .container-fluid
         nav.navbar.navbar-expand-lg.navbar-light.row
           a.navbar-brand.mr-4[href="/" aria-hidden="true"]
             img alt="Codebattle logo" src="/assets/images/codebattle_logo.png" height="30"
@@ -48,25 +48,25 @@ html lang="en"
             span.navbar-toggler-icon
           #navbarResponsive.collapse.navbar-collapse
             ul.navbar-nav.mr-auto
-              li.nav-item.p-2
+              li.nav-item
                 a.nav-link[href="https://github.com/hexlet-codebattle/codebattle" target="_blank"]
                   span.fa.fa-github.mr-2
                   = gettext "SourceCode"
-              li.nav-item.p-2
+              li.nav-item
                 a.nav-link[href="https://hexlet.io" target="_blank"]
                   span.fa.fa-university.mr-2
                   = gettext "Hexlet"
-              li.nav-item.p-2
+              li.nav-item
                 a.nav-link[href="http://slack-ru.hexlet.io/" target="_blank"]
                   span.fa.fa-slack.mr-2
                   = gettext "Slack#codebattle"
             ul.navbar-nav.ml-auto
               = unless @current_user.guest do
-                li.nav-item.p-2
+                li.nav-item
                   = link to: user_path(@conn, :index), class: "nav-link" do
                     span.fa.fa-bar-chart.mr-1
                     = gettext "Users rating"
-                li.nav-item.p-2.dropdown
+                li.nav-item.dropdown
                   a.nav-link.dropdown-toggle.noborder[href='#' aria-expanded="false", aria-haspopup="true" data-toggle="dropdown"]
                     img.attachment.rounded.border.mr-1[alt="#{@current_user.name}" src="https://avatars0.githubusercontent.com/u/#{@current_user.github_id}" style="width:25px"]
                     = @current_user.name
