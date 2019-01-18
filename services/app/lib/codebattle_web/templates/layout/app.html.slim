@@ -40,7 +40,7 @@ html lang="en"
   body.position-relative
     .bg-white
       .container-fluid
-        nav.navbar.navbar-expand-lg.navbar-light.row
+        nav.navbar.navbar-expand-lg.navbar-light.row.mb-1
           a.navbar-brand.mr-4[href="/" aria-hidden="true"]
             img alt="Codebattle logo" src="/assets/images/codebattle_logo.png" height="30"
             |&nbsp;Codebattle
@@ -85,7 +85,7 @@ html lang="en"
           = message
           button type="button" class="close" data-dismiss="alert" aria-label="Close"
             span aria-hidden="true" &times;
-    .content.pt-4
+    .content
       = render @view_module, @view_template, Map.put(assigns, :layout, {CodebattleWeb.LayoutView, assigns[:layout_template] || "standart.html"})
       = render_gon_script(@conn)
     script src=static_path(@conn,"/assets/app.js")
