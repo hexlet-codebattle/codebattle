@@ -75,8 +75,8 @@ class GameWidget extends Component {
     }
     return (
       <Fragment>
-        <div className="row mt-3">
-          <div className="col-12 col-md-6">
+        <div className="row no-gutters">
+          <div className="col-12 col-md-6 p-1">
             <div className="card">
               <LeftEditorToolbar />
               <Editor {...this.getLeftEditorParams()} />
@@ -85,7 +85,7 @@ class GameWidget extends Component {
               <ExecutionOutput output={leftOutput} />
             </div>
           </div>
-          <div className="col-12 col-md-6">
+          <div className="col-12 col-md-6 p-1">
             <div className="card">
               <RightEditorToolbar />
               <Editor {...this.getRightEditorParams()} />

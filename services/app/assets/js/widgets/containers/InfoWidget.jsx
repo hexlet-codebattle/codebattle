@@ -18,11 +18,11 @@ class InfoWidget extends Component {
     const { taskText, gameStatusName, startsAt } = this.props;
 
     return (
-      <div className="row">
-        <div className="col-12 col-lg-6 my-2">
+      <div className="row no-gutters">
+        <div className="col-12 col-lg-6 p-1">
           <Task task={taskText} time={startsAt} gameStatusName={gameStatusName} />
         </div>
-        <div className="col-12 col-lg-6 my-2">
+        <div className="col-12 col-lg-6 p-1">
           <ChatWidget />
         </div>
       </div>
