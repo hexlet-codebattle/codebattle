@@ -18,11 +18,10 @@
         = for {user, index} <- Enum.with_index(@users) do
           tr
             td.p-3.align-middle
-              = if @page.page_number == 1 do
-                = index + 1
-              end
               = if @page.page_number > 1 do
                 = index + 1 + (@page.page_number - 1) * 10
+                = else 
+                = index + 1
               end
             td.text-left.p-3.align-middle
               = link to: user_path(@conn, :show, user.id) do
