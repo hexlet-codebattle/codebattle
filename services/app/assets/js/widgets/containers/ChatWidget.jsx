@@ -4,11 +4,14 @@ import { fetchState, addMessage } from '../middlewares/Chat';
 import { chatUsersSelector, chatMessagesSelector, currentChatUserSelector } from '../selectors';
 import Messages from '../components/Messages';
 import UserName from '../components/UserName';
+import Emoji from '../components/Emoji';
 
 class ChatWidget extends React.Component {
   state = { message: '' };
 
   messagesEnd = null;
+
+  inputRef = React.createRef();
 
   componentDidMount() {
     const { dispatch } = this.props;
@@ -18,6 +21,21 @@ class ChatWidget extends React.Component {
   handleChange = (e) => {
     this.setState({ message: e.target.value });
   };
+
+  addEmoji = (emoji, closeEmoji) => {
+    const { message } = this.state;
+    const input = this.inputRef.current;
+    const cursorPosition = input.selectionStart;
+    const start = message.substring(0, input.selectionStart);
+    const end = message.substring(input.selectionEnd);
+    const text = `${start}${emoji.native}${end}`;
+
+    this.setState({ message: text }, () => {
+      closeEmoji();
+      input.selectionEnd = cursorPosition + emoji.native.length;
+      input.focus();
+    });
+  }
 
   sendMessage = () => {
     const { message } = this.state;
@@ -42,14 +60,14 @@ class ChatWidget extends React.Component {
     const { messages, users } = this.props;
     return (
       <div className="d-flex shadow-sm">
-        <div className="col-8 p-0 bg-white rounded-left">
+        <div className="col-12 col-sm-8 p-0 bg-white rounded-left">
           <Messages
             messages={messages}
             className="overflow-auto px-3 py-3"
             style={{ height: '180px' }}
           />
           <div className="">
-            <div className="px-3 py-2 input-group input-group-sm">
+            <div className="px-3 my-2 input-group input-group-sm">
               <input
                 className="form-control"
                 type="text"
@@ -57,7 +75,9 @@ class ChatWidget extends React.Component {
                 value={message}
                 onChange={this.handleChange}
                 onKeyPress={this.handleKeyPress}
+                ref={this.inputRef}
               />
+              <Emoji addEmoji={this.addEmoji} />
               <div className="input-group-append">
                 <button className="btn btn-light border" type="button" onClick={this.sendMessage}>
                   Send
@@ -66,7 +86,7 @@ class ChatWidget extends React.Component {
             </div>
           </div>
         </div>
-        <div className="col-4 p-0 border-left bg-white rounded-right">
+        <div className="col-4 d-none d-sm-block p-0 border-left bg-white rounded-right">
           <div className="d-flex flex-direction-column flex-wrap justify-content-between">
             <div className="px-3 py-3 w-100">
               <p className="mb-0">{`Online users: ${users.length}`}</p>

@@ -3323,6 +3323,11 @@ elliptic@^6.0.0:
     minimalistic-assert "^1.0.0"
     minimalistic-crypto-utils "^1.0.0"
 
+emoji-mart@^2.9.2:
+  version "2.9.2"
+  resolved "https://registry.yarnpkg.com/emoji-mart/-/emoji-mart-2.9.2.tgz#03d1a3011e9d5fa7cd184fe308b7b803e6901ae2"
+  integrity sha512-5S743OpjFb9nBbbx5F4APWgcp2IOjdT7gLLzu2OBh0k44C3ZoCm+wuIN1llOtj5eosUa3lYqrZWtU/ZiaCULrg==
+
 emoji-regex@^6.5.1:
   version "6.5.1"
   resolved "https://registry.yarnpkg.com/emoji-regex/-/emoji-regex-6.5.1.tgz#9baea929b155565c11ea41c6626eaa65cef992c2"
