@@ -19,7 +19,7 @@
           tr
             td.p-3.align-middle
               = if @page.page_number > 1 do
-                = index + 1 + (@page.page_number - 1) * 10
+                = index + 1 + (@page.page_number - 1) * @page.page_size
                 = else 
                 = index + 1
               end
