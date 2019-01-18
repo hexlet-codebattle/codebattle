@@ -64,7 +64,7 @@ class GameActionButtons extends Component {
   renderModal = () => {
     const { modalShowing } = this.state;
     return (
-      <Modal show={modalShowinggit} onHide={this.modalHide}>
+      <Modal show={modalShowing} onHide={this.modalHide}>
         <Modal.Body className="text-center">
             Are you sure you want to give up?
         </Modal.Body>
