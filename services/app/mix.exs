@@ -45,7 +45,9 @@ defmodule Codebattle.Mixfile do
         :ueberauth,
         :ueberauth_github,
         :gproc,
-        :one_signal
+        :one_signal,
+        :scrivener_ecto,
+        :scrivener_html
       ]
     ]
   end
@@ -82,6 +84,8 @@ defmodule Codebattle.Mixfile do
       {:envy, "~> 1.1.1"},
       {:one_signal, git: "https://github.com/vtm9/one_signal.git"},
       {:paginator, "~> 0.6"},
+      {:scrivener_ecto, "~> 2.0"},
+      {:scrivener_html, git: "https://github.com/hlongvu/scrivener_html.git"},
 
       # dev_and_test
       {:credo, "~> 0.8", only: [:dev, :test], runtime: false},

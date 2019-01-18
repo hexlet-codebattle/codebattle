@@ -9,7 +9,6 @@ defmodule CodebattleWeb.UserController do
   plug(CodebattleWeb.Plugs.RequireAuth when action in @all)
 
   def index(conn, params) do
-    # TODO: add paginator
     q = Map.get(params, "q", %{"sort" => %{"desc" => "rating"}})
     sort_query = Map.get(q, "sort")
 
@@ -17,7 +16,9 @@ defmodule CodebattleWeb.UserController do
       Enum.map(sort_query, fn {key, value} -> {String.to_atom(key), String.to_atom(value)} end)
 
     query = from(users in User, order_by: ^order, preload: [:user_games])
-    users = Repo.all(query)
+    page = 
+      query
+      |> Repo.paginate(params)
 
     direction =
       case Map.keys(sort_query) |> List.first() do
@@ -25,7 +26,7 @@ defmodule CodebattleWeb.UserController do
         "desc" -> "asc"
       end
 
-    render(conn, "index.html", users: users, direction: direction)
+    render(conn, "index.html", users: page.entries, page: page, direction: direction)
   end
 
   def show(conn, %{"id" => user_id}) do
