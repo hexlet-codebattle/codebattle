@@ -1,4 +1,6 @@
 defmodule Codebattle.GameProcess.Notifier do
+  require Logger
+
   import OneSignal.Param
 
   def call(type, params \\ %{}) do
@@ -6,6 +8,8 @@ defmodule Codebattle.GameProcess.Notifier do
     if Mix.env() != :test do
       apply(__MODULE__, type, [params])
     end
+
+    Logger.info("Send OneSignal #{type} with #{inspect(params)}")
   end
 
   # private
@@ -17,7 +21,6 @@ defmodule Codebattle.GameProcess.Notifier do
       was created by user: #{params.player.name}")
     |> put_message(:ru, "Yo, #{params.player.name} создал новую игру\
         с уровнем сложности: #{params.level}")
-    # FIXME: что за public_id?
     |> put_filter(%{key: "userId", value: params.player.public_id, relation: "!=", field: "tag"})
     |> notify
   end
@@ -28,10 +31,9 @@ defmodule Codebattle.GameProcess.Notifier do
     |> put_heading("Game started")
     |> put_message(:en, "Yo, #{params.second_player.name} started playing your game")
     |> put_message(:ru, "Yo, #{params.second_player.name} начал играть в твою игру")
-    # FIXME: что за public_id?
     |> put_filter(%{
       key: "userId",
-      value: params.first_player.id,
+      value: params.first_player.public_id,
       relation: "=",
       field: "tag"
     })

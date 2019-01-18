@@ -106,12 +106,14 @@ defmodule Codebattle.GameProcess.Play do
         ActiveGames.create_game(user, fsm)
         {:ok, _} = GlobalSupervisor.start_game(game.id, fsm)
 
-        Task.async(fn -> CodebattleWeb.Endpoint.broadcast("lobby", "game:new", %{game: fsm}) end)
+        Task.async(fn ->
+          CodebattleWeb.Endpoint.broadcast("lobby", "game:new", %{game: fsm})
+        end)
 
         # TODO: сделать настройку нотификаций в списке игр
-        # Task.async(fn ->
-        # Notifier.call(:game_created, %{level: level, game: game, player: player})
-        # end)
+        Task.async(fn ->
+          Notifier.call(:game_created, %{level: level, game: game, player: player})
+        end)
 
         {:ok, game.id}
 

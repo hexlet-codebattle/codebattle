@@ -11,6 +11,7 @@ defmodule Codebattle.GameProcess.Player do
             result: "{}",
             creator: false,
             github_id: "",
+            public_id: "",
             name: "",
             rating: ""
 
@@ -26,6 +27,7 @@ defmodule Codebattle.GameProcess.Player do
 
           %__MODULE__{
             id: user.id,
+            public_id: user.public_id,
             github_id: user.github_id,
             name: user.name,
             rating: user.rating,
