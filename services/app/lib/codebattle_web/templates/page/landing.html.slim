@@ -1,1 +1,26 @@
-h1 Landing
+section.jumbotron
+  .d-flex.flex-column.align-items-center.flex-sm-row
+    .d-flex.flex-column.w-100.text-center.mb-5.mb-sm-0
+      h1.jumbotron-heading Achieve mastery through challenge
+      p.lead.text-muted Improve your skills by training with others on real code challenges
+      a href="#{auth_path(@conn, :request, :github)}"
+        button.btn.btn-success.btn-lg = "Start play"
+    .d-flex.flex-wrap.w-100.justify-content-center.align-content-center.m-auto
+      a href="#{auth_path(@conn, :request, :github)}"
+        button.btn.btn-success.m-2 = "Clojure"
+      a href="#{auth_path(@conn, :request, :github)}"
+        button.btn.btn-success.m-2 = "Elixir"
+      a href="#{auth_path(@conn, :request, :github)}"
+        button.btn.btn-success.m-2 = "Haskell"
+      a href="#{auth_path(@conn, :request, :github)}"
+        button.btn.btn-success.m-2 = "Perl"
+      a href="#{auth_path(@conn, :request, :github)}"
+        button.btn.btn-success.m-2 = "PHP"
+      a href="#{auth_path(@conn, :request, :github)}"
+        button.btn.btn-success.m-2 = "Python"
+      a href="#{auth_path(@conn, :request, :github)}"
+        button.btn.btn-success.m-2 = "Ruby"
+
+.embed-container.w-100.m-auto
+  iframe src="https://player.vimeo.com/video/296164641?background=1&autoplay=1&loop=1&speed=2x" frameborder="0" allow="autoplay" webkitallowfullscreen mozallowfullscreen allowfullscreen
+
