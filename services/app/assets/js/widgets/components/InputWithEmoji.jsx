@@ -1,5 +1,4 @@
 import React, { PureComponent } from 'react';
-import { scrolled } from 'react-stay-scrolled';
 import Emoji from './Emoji';
 
 class InputWithEmoji extends PureComponent {
@@ -26,8 +25,12 @@ class InputWithEmoji extends PureComponent {
     input.focus();
   }
 
+  onChange = (e) => {
+    this.props.handleChange(e.target.value);
+  }
+
   render() {
-    const { value, handleChange } = this.props;
+    const { value } = this.props;
     return (
       <>
         <input
@@ -35,7 +38,7 @@ class InputWithEmoji extends PureComponent {
           type="text"
           placeholder="Type message here..."
           value={value}
-          onChange={handleChange}
+          onChange={this.onChange}
           onKeyPress={this.handleKeyPress}
           ref={this.inputRef}
         />
