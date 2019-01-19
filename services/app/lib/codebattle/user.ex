@@ -34,10 +34,6 @@ defmodule Codebattle.User do
     field(:creator, :boolean, virtual: true, default: false)
     field(:game_result, :string, virtual: true)
 
-    field(:wins, :integer, virtual: true, default: 0)
-    field(:loses, :integer, virtual: true, default: 0)
-    field(:leaves, :integer, virtual: true, default: 0)
-
     has_many(:user_games, Codebattle.UserGame)
     has_many(:games, through: [:user_games, :game])
 
