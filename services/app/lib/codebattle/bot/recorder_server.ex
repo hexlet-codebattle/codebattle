@@ -1,14 +1,22 @@
 defmodule Codebattle.Bot.RecorderServer do
-  @moduledoc "Gen server for calculating bot diffs and store it to database after player won the game"
+  @moduledoc "Gen server for calculating bot diffs and store it to database after user_id won the game"
+
+  require Logger
 
   use GenServer
-  require Logger
+
   alias Codebattle.Repo
   alias Codebattle.Bot.Playbook
 
+  import Codebattle.GameProcess.FsmHelpers
+
   # API
-  def start(game_id, task_id, user_id) do
-    GenServer.start(__MODULE__, [game_id, task_id, user_id], name: server_name(game_id, user_id))
+  def start_link({game_id, user_id, fsm}) do
+    GenServer.start_link(
+      __MODULE__,
+      {game_id, user_id, fsm},
+      name: server_name(game_id, user_id)
+    )
   end
 
   def update_text(game_id, user_id, text) do
@@ -40,16 +48,16 @@ defmodule Codebattle.Bot.RecorderServer do
   end
 
   # SERVER
-  def init([game_id, task_id, user_id]) do
+  def init({game_id, user_id, fsm}) do
     Logger.info("Start bot recorder server for
-      task_id: #{task_id},
       game_id: #{game_id},
-      user_id: #{user_id}")
+      user_id: #{user_id},
+      fsm: #{inspect(fsm)}")
 
     {:ok,
      %{
        game_id: game_id,
-       task_id: task_id,
+       task_id: get_task(fsm).id,
        user_id: user_id,
        delta: TextDelta.new([]),
        lang: "js",
@@ -61,7 +69,7 @@ defmodule Codebattle.Bot.RecorderServer do
 
   def handle_cast({:update_text, text}, state) do
     Logger.debug(
-      "#{__MODULE__} CAST update_text TEXT: #{inspect(text)}, STATE: #{inspect(state)}"
+      "#{__MODULE__} CAST update_text to BOT TEXT: #{inspect(text)}, STATE: #{inspect(state)}"
     )
 
     time = state.time || NaiveDateTime.utc_now()
@@ -80,7 +88,7 @@ defmodule Codebattle.Bot.RecorderServer do
 
   def handle_cast({:update_lang, lang}, state) do
     Logger.debug(
-      "#{__MODULE__} CAST update_lang LANG: #{inspect(lang)}, STATE: #{inspect(state)}"
+      "#{__MODULE__} CAST update_lang to BOT LANG: #{inspect(lang)}, STATE: #{inspect(state)}"
     )
 
     time = state.time || NaiveDateTime.utc_now()
@@ -117,12 +125,11 @@ defmodule Codebattle.Bot.RecorderServer do
   end
 
   # HELPERS
-  defp server_name(game_id, user_id) do
+  def server_name(game_id, user_id) do
     {:via, :gproc, recorder_key(game_id, user_id)}
   end
 
-  defp recorder_key(game_id, user_id) do
-    key = [game_id, user_id] |> Enum.map(&to_charlist/1)
-    {:n, :l, {:bot_recorder, key}}
+  def recorder_key(game_id, user_id) do
+    {:n, :l, {:bot_recorder, "#{game_id}_#{user_id}"}}
   end
 end

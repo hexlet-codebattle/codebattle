@@ -36,14 +36,15 @@ defmodule CodebattleWeb.GameChannel do
       game_id = get_game_id(socket)
 
       # TODO: refactorme to update_editor_data in Play module
+      fsm = Play.get_fsm(game_id)
+
       %{editor_text: prev_editor_text, editor_lang: prev_editor_lang} =
         FsmHelpers.get_player(fsm, user_id)
 
       editor_text = Map.get(payload, "editor_text", prev_editor_text)
       editor_lang = Map.get(payload, "lang", prev_editor_lang)
 
-      Play.update_editor_text(game_id, user_id, editor_text)
-      Play.update_editor_lang(game_id, user_id, editor_lang)
+      Play.update_editor_data(game_id, user_id, editor_text, editor_lang)
 
       broadcast_from!(socket, "editor:data", %{
         user_id: user_id,
@@ -109,9 +110,6 @@ defmodule CodebattleWeb.GameChannel do
 
     if user_authorized_in_game?(game_id, socket.assigns.user_id) do
       %{"editor_text" => editor_text, "lang" => lang} = payload
-      Play.update_editor_text(game_id, user_id, editor_text)
-      Play.update_editor_lang(game_id, user_id, lang)
-
       case Play.check_game(game_id, socket.assigns.current_user, editor_text, lang) do
         {:ok, fsm, result, output} ->
           winner = socket.assigns.current_user

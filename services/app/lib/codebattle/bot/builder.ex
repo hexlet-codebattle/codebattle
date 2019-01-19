@@ -5,7 +5,8 @@ defmodule Codebattle.Bot.Builder do
 
   alias Codebattle.User
 
-  def build do
-    %User{id: 0, name: "superPlayer", bot: true, rating: 1137}
+  def build(params \\ %{}) do
+    bot = %User{id: (:rand.uniform(61000000) + 1000000), name: "superPlayer", bot: true, rating: 1137}
+    Map.merge(bot, params)
   end
 end

@@ -19,10 +19,6 @@ defmodule Helpers.GameProcess do
     game
   end
 
-  def start_game_recorder(game_id, task_id, user_id) do
-    Codebattle.Bot.RecorderServer.start(game_id, task_id, user_id)
-  end
-
   def game_id_from_conn(conn) do
     location =
       conn.resp_headers
