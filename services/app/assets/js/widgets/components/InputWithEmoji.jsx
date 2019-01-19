@@ -10,6 +10,11 @@ class InputWithEmoji extends PureComponent {
     }
   };
 
+  getEmoji = (emoji) => {
+    const codes = emoji.unified.split('-').map(c => `0x${c}`);
+    return String.fromCodePoint(...codes);
+  }
+
   addEmoji = (emoji, closeEmoji) => {
     const { value, handleChange } = this.props;
     const input = this.inputRef.current;
@@ -18,6 +23,8 @@ class InputWithEmoji extends PureComponent {
     const end = value.substring(input.selectionEnd);
     // TODO: fix native emojies and add custom :troll_fase
     const updatedValue = `${start}${emoji.native}${end}`;
+    const emojiPic = this.getEmoji(emoji);
+    const updatedValue = `${start}${emojiPic}${end}`;
 
     handleChange(updatedValue);
     closeEmoji();
