@@ -10,13 +10,19 @@ class InputWithEmoji extends PureComponent {
     }
   };
 
+  getEmoji = (emoji) => {
+    const codes = emoji.unified.split('-').map(c => `0x${c}`);
+    return String.fromCodePoint(...codes);
+  }
+
   addEmoji = (emoji, closeEmoji) => {
     const { value, handleChange } = this.props;
     const input = this.inputRef.current;
     const cursorPosition = input.selectionStart;
     const start = value.substring(0, input.selectionStart);
     const end = value.substring(input.selectionEnd);
-    const updatedValue = `${start}${emoji.native}${end}`;
+    const emojiPic = this.getEmoji(emoji);
+    const updatedValue = `${start}${emojiPic}${end}`;
 
     handleChange(updatedValue);
     closeEmoji();
