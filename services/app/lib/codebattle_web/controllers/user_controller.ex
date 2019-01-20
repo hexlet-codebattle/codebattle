@@ -3,7 +3,7 @@ defmodule CodebattleWeb.UserController do
 
   use CodebattleWeb, :controller
 
-  alias Codebattle.{Repo, User, UserGame}
+  alias Codebattle.{Repo, User, UserGame, User.Stats}
   import Ecto.Query
 
   plug(CodebattleWeb.Plugs.RequireAuth when action in @all)
@@ -31,9 +31,10 @@ defmodule CodebattleWeb.UserController do
 
   def show(conn, %{"id" => user_id}) do
     games = Repo.all(from(games in UserGame, where: games.user_id == ^user_id))
-
+    stats = User.Stats.for_user(user_id)
     user = Repo.get!(User, user_id)
-    render(conn, "show.html", user: user, games: games)
+
+    render(conn, "show.html", user: user, games: games, stats: stats)
   end
 
   def edit(conn, _params) do
