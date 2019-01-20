@@ -1,4 +1,3 @@
-import { combineReducers } from 'redux';
 import chat from './chat';
 import gameList from './gameList';
 import storeLoaded from './store';
@@ -7,7 +6,7 @@ import executionOutput from './executionOutput';
 import editor from './editor';
 import game from './game';
 
-export default combineReducers({
+export default {
   game,
   editor,
   user,
@@ -15,5 +14,5 @@ export default combineReducers({
   gameList,
   storeLoaded,
   executionOutput,
-});
+};
 export { makeEditorTextKey } from './editor';
