@@ -33,6 +33,7 @@
     "react": "^16.6.0",
     "react-bootstrap": "^1.0.0-beta.3",
     "react-calendar-heatmap": "^1.7.0",
+    "react-contenteditable": "^3.2.5",
     "react-dom": "^16.6.0",
     "react-hot-keys": "^1.0.9",
     "react-loading": "^2.0.3",
