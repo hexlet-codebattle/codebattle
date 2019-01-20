@@ -131,7 +131,7 @@ class Editor extends PureComponent {
           value={value}
           onChange={onChange}
         />
-        <div ref={this.statusBarRef} className="bg-dark text-white" />
+        <div ref={this.statusBarRef} className="bg-dark text-white px-1" />
       </>
     );
   }
