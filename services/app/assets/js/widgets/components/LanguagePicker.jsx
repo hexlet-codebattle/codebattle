@@ -35,7 +35,7 @@ const LanguagePicker = ({ currentLangSlug, onChange, disabled }) => {
   return (
     <div className="dropdown">
       <button
-        className="btn btn-sm border dropdown-toggle text-decoration-none"
+        className="btn btn-sm border btn-light dropdown-toggle"
         type="button"
         id="dropdownLangButton"
         data-toggle="dropdown"
