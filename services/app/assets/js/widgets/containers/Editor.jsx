@@ -29,10 +29,15 @@ class Editor extends PureComponent {
   }
 
   componentDidMount() {
+    const { isVimMode } = this.props;
     const convertRemToPixels = rem => rem * parseFloat(getComputedStyle(document.documentElement)
       .fontSize);
     // statusBarHeight = lineHeight = current fontSize * 1.5
     this.statusBarHeight = convertRemToPixels(1) * 1.5;
+
+    if (isVimMode) {
+      this.vimMode = initVimMode(this.editor, this.statusBarRef.current);
+    }
   }
 
   componentDidUpdate = async (prevProps) => {
@@ -111,9 +116,10 @@ class Editor extends PureComponent {
         enabled: false,
       },
     };
-    const editorHeightWithVimMode = isVimMode ? editorHeight.replace(/[a-z]/g, '') - this.statusBarHeight : editorHeight;
+    const editorHeightWithVimMode = isVimMode
+      ? parseFloat(editorHeight) - this.statusBarHeight : editorHeight;
     return (
-      <div>
+      <>
         <MonacoEditor
           theme="vs-dark"
           options={options}
@@ -125,8 +131,8 @@ class Editor extends PureComponent {
           value={value}
           onChange={onChange}
         />
-        <div ref={this.statusBarRef} className="bg-secondary text-white" />
-      </div>
+        <div ref={this.statusBarRef} className="bg-dark text-white" />
+      </>
     );
   }
 }
