@@ -54,6 +54,14 @@ defmodule Codebattle.GameProcess.FsmHelpers do
     fsm.data.starts_at
   end
 
+  def get_task(fsm) do
+    fsm.data.task
+  end
+
+  def private?(fsm) do
+    fsm.data.is_private
+  end
+
   def get_level(fsm) do
     fsm.data.level
   end

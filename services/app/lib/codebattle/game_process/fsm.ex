@@ -22,7 +22,9 @@ defmodule Codebattle.GameProcess.Fsm do
       # level, appears before task created
       level: "",
       # List with two players %Player{}
-      players: []
+      players: [],
+      # private play with friend
+      is_private: false
     }
 
   # For tests
@@ -37,7 +39,8 @@ defmodule Codebattle.GameProcess.Fsm do
         data
         | game_id: params.game_id,
           players: [params.player],
-          level: params.level
+          level: params.level,
+          is_private: params.is_private
       })
     end
 
