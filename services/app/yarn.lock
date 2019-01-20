@@ -742,7 +742,7 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.12.18.tgz#1d3ca764718915584fcd9f6344621b7672665c67"
   integrity sha512-fh+pAqt4xRzPfqA6eh3Z2y6fyZavRIumvjhaCL753+TVkGKGhpPeyrJG2JftD0T9q4GF00KjefsQ+PQNDdWQaQ==
 
-"@types/prop-types@*":
+"@types/prop-types@*", "@types/prop-types@^15.5.6":
   version "15.5.8"
   resolved "https://registry.yarnpkg.com/@types/prop-types/-/prop-types-15.5.8.tgz#8ae4e0ea205fe95c3901a5a1df7f66495e3a56ce"
   integrity sha512-3AQoUxQcQtLHsK25wtTWIoIpgYjH3vSDroZOUr7PpCHw/jLY1RB9z9E8dBT/OSmwStVgkRNvdh+ZHNiomRieaw==
@@ -8528,6 +8528,14 @@ react-calendar-heatmap@^1.7.0:
   dependencies:
     memoize-one "^4.0.2"
     prop-types "^15.6.2"
+
+react-contenteditable@^3.2.5:
+  version "3.2.5"
+  resolved "https://registry.yarnpkg.com/react-contenteditable/-/react-contenteditable-3.2.5.tgz#abdeae18a0677ae758a84c686bc3227b92b708e9"
+  integrity sha512-WsPoW+qwpls/0sf0txSPmKY6rIKG6SLEOIolQVUDYWhaIPeExikfy/KN+cAP/44FO6udNdtbXq5Me6Tlns4a+w==
+  dependencies:
+    "@types/prop-types" "^15.5.6"
+    fast-deep-equal "^2.0.1"
 
 react-context-toolbox@^1.2.3:
   version "1.2.3"

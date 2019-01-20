@@ -1,6 +1,7 @@
 import React from 'react';
 import 'emoji-mart/css/emoji-mart.css';
 import { Picker } from 'emoji-mart';
+import customEmoji from '../lib/customEmoji';
 
 const styles = {
   pickerEmoji: {
@@ -35,6 +36,7 @@ class Emoji extends React.Component {
   }
 
   openEmoji = () => {
+    this.props.setSelAndRange();
     this.setState({
       showEmoji: true,
     }, () => document.addEventListener('click', this.closeEmojiOutsideClick, false));
@@ -75,6 +77,7 @@ class Emoji extends React.Component {
             emoji="point_up"
             onSelect={this.onSelect}
             style={styles.pickerEmoji}
+            custom={customEmoji}
           />
         )}
       </React.Fragment>
