@@ -159,3 +159,5 @@ export const currentChatUserSelector = (state) => {
   const currentUser = _.find(chatUsersSelector(state), { id: currentUserId });
   return currentUser;
 };
+
+export const editorVimModeSelector = userId => state => _.get(editorDataSelector(userId)(state), 'isVimMode', false);

@@ -2,10 +2,15 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import _ from 'lodash';
 // import i18n from '../../i18n';
+import cn from 'classnames';
 import GameStatusCodes from '../config/gameStatusCodes';
 import * as selectors from '../selectors';
 import {
-  checkGameResult, changeCurrentLangAndSetTemplate, compressEditorHeight, expandEditorHeight,
+  checkGameResult,
+  changeCurrentLangAndSetTemplate,
+  compressEditorHeight,
+  expandEditorHeight,
+  toggleVimMode,
 } from '../middlewares/Game';
 import LanguagePicker from '../components/LanguagePicker';
 import UserName from '../components/UserName';
@@ -35,14 +40,14 @@ class LeftEditorToolbar extends Component {
     <div className="btn-group btn-group-sm ml-2" role="group" aria-label="Editor height">
       <button
         type="button"
-        className="btn btn-sm border rounded"
+        className="btn btn-sm btn-light border rounded"
         onClick={() => compressEditor(userId)}
       >
         <i className="fa fa-compress" aria-hidden="true" />
       </button>
       <button
         type="button"
-        className="btn btn-sm border rounded ml-2"
+        className="btn btn-sm btn-light border rounded ml-2"
         onClick={() => expandEditor(userId)}
       >
         <i className="fa fa-expand" aria-hidden="true" />
@@ -50,6 +55,29 @@ class LeftEditorToolbar extends Component {
     </div>
   );
 
+  renderVimModeBtn = (userId) => {
+    const { toggleVim, leftEditorIsVimMode } = this.props;
+
+    const classNames = cn({
+      btn: true,
+      'btn-sm': true,
+      border: true,
+      rounded: true,
+      'ml-2': true,
+      'btn-light': !leftEditorIsVimMode,
+      'btn-secondary': leftEditorIsVimMode,
+    });
+
+    return (
+      <button
+        type="button"
+        className={classNames}
+        onClick={() => toggleVim(userId)}
+      >
+        Vim
+      </button>
+    );
+  }
 
   render() {
     const {
@@ -78,6 +106,7 @@ class LeftEditorToolbar extends Component {
             onChange={setLang}
             disabled={isSpectator}
           />
+          {!isSpectator && this.renderVimModeBtn(leftUserId)}
           {this.renderEditorHeightButtons(compressEditor, expandEditor, leftUserId)}
         </div>
         <GameResultIcon
@@ -106,6 +135,7 @@ const mapStateToProps = (state) => {
     players: selectors.gamePlayersSelector(state),
     title: selectors.gameStatusTitleSelector(state),
     task: selectors.gameTaskSelector(state),
+    leftEditorIsVimMode: selectors.editorVimModeSelector(leftUserId)(state),
   };
 };
 
@@ -114,6 +144,7 @@ const mapDispatchToProps = {
   setLang: changeCurrentLangAndSetTemplate,
   compressEditor: compressEditorHeight,
   expandEditor: expandEditorHeight,
+  toggleVim: toggleVimMode,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(LeftEditorToolbar);

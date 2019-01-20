@@ -65,6 +65,15 @@ const meta = handleActions({
       },
     };
   },
+  [actions.toggleVimMode](state, { payload: { userId } }) {
+    return {
+      ...state,
+      [userId]: {
+        ...state[userId],
+        isVimMode: !state[userId].isVimMode,
+      },
+    };
+  },
 }, initialState.meta);
 
 const text = handleActions({

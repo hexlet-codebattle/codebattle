@@ -10,6 +10,7 @@ import {
   gamePlayersSelector,
   leftExecutionOutputSelector,
   rightExecutionOutputSelector,
+  editorVimModeSelector,
 } from '../selectors';
 import Editor from './Editor';
 import LeftEditorToolbar from './LeftEditorToolbar';
@@ -29,7 +30,7 @@ class GameWidget extends Component {
 
   getLeftEditorParams = () => {
     const {
-      currentUserId, players, leftEditor, updateEditorValue, leftEditorHeight,
+      currentUserId, players, leftEditor, updateEditorValue, leftEditorHeight, isVimMode,
     } = this.props;
 
     // FIXME: currentUser shouldn't return {} for spectator
@@ -48,6 +49,7 @@ class GameWidget extends Component {
       value: editorState.text,
       name: 'left-editor',
       editorHeight: `${leftEditorHeight}px`,
+      isVimMode,
     };
   }
 
@@ -116,6 +118,7 @@ const mapStateToProps = (state) => {
     rightEditorHeight: editorHeightSelector(rightUserId)(state),
     leftOutput: leftExecutionOutputSelector(state),
     rightOutput: rightExecutionOutputSelector(state),
+    isVimMode: editorVimModeSelector(leftUserId)(state),
   };
 };
 
