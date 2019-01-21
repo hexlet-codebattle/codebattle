@@ -36,7 +36,7 @@ class Emoji extends React.Component {
   }
 
   openEmoji = () => {
-    this.props.setSelAndRange();
+    this.props.setSelectionAndRange();
     this.setState({
       showEmoji: true,
     }, () => document.addEventListener('click', this.closeEmojiOutsideClick, false));

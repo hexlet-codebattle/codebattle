@@ -3,14 +3,14 @@ import ContentEditable from 'react-contenteditable';
 import Emoji from './Emoji';
 
 class InputWithEmoji extends PureComponent {
-  state = { sel: null, range: null };
+  state = { selection: null, range: null };
 
   inputRef = React.createRef();
 
-  setSelAndRange = () => {
-    const sel = window.getSelection();
-    const range = sel.getRangeAt(0);
-    this.setState({ sel, range });
+  setSelectionAndRange = () => {
+    const selection = window.getSelection();
+    const range = selection.getRangeAt(0);
+    this.setState({ selection, range });
   }
 
   handleKeyPress = (e) => {
@@ -22,7 +22,7 @@ class InputWithEmoji extends PureComponent {
   };
 
   insertEmoji = (emoji) => {
-    const { sel, range } = this.state;
+    const { selection, range } = this.state;
     range.deleteContents();
     let textNode;
     if (emoji.type === 'image') {
@@ -35,8 +35,8 @@ class InputWithEmoji extends PureComponent {
     }
     range.insertNode(textNode);
     range.setStartAfter(textNode);
-    sel.removeAllRanges();
-    sel.addRange(range);
+    selection.removeAllRanges();
+    selection.addRange(range);
   }
 
   getEmoji = (emoji) => {
@@ -81,7 +81,7 @@ class InputWithEmoji extends PureComponent {
         />
         <Emoji
           addEmoji={this.addEmoji}
-          setSelAndRange={this.setSelAndRange}
+          setSelectionAndRange={this.setSelectionAndRange}
           fallback={(emoji, props) => (emoji ? `:${emoji.short_names[0]}:` : props.emoji)}
         />
       </>
