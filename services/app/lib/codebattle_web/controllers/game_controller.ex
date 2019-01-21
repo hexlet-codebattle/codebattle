@@ -57,6 +57,7 @@ defmodule CodebattleWeb.GameController do
   def join(conn, %{"id" => id}) do
     try do
       case Play.join_game(id, conn.assigns.current_user) do
+        # TODO: move to Play.ex; @mimikria, we miss you))))
         {:ok, fsm} ->
           Task.async(fn ->
             CodebattleWeb.Endpoint.broadcast("lobby", "game:update", %{
