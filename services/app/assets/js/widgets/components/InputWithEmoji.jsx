@@ -1,54 +1,87 @@
 import React, { PureComponent } from 'react';
+import ContentEditable from 'react-contenteditable';
 import Emoji from './Emoji';
 
 class InputWithEmoji extends PureComponent {
+  state = { selection: null, range: null };
+
   inputRef = React.createRef();
+
+  setSelectionAndRange = () => {
+    const selection = window.getSelection();
+    const range = selection.getRangeAt(0);
+    this.setState({ selection, range });
+  }
 
   handleKeyPress = (e) => {
     if (e.key === 'Enter') {
-      this.props.handleSubmit();
+      const { handleSubmit } = this.props;
+      e.preventDefault();
+      handleSubmit();
     }
   };
 
+  insertEmoji = (emoji) => {
+    const { selection, range } = this.state;
+    range.deleteContents();
+    let textNode;
+    if (emoji.type === 'image') {
+      textNode = document.createElement('img');
+      textNode.setAttribute('src', emoji.imageUrl);
+      textNode.style.cssText = 'max-width: 19px; max-height: 19px';
+    }
+    if (emoji.type === 'text') {
+      textNode = document.createTextNode(emoji.emojiPic);
+    }
+    range.insertNode(textNode);
+    range.setStartAfter(textNode);
+    selection.removeAllRanges();
+    selection.addRange(range);
+  }
+
   getEmoji = (emoji) => {
+    if (emoji.custom) {
+      return {
+        ...emoji,
+        type: 'image',
+      };
+    }
     const codes = emoji.unified.split('-').map(c => `0x${c}`);
-    return String.fromCodePoint(...codes);
+    const emojiPic = String.fromCodePoint(...codes);
+    return {
+      type: 'text',
+      emojiPic,
+    };
   }
 
   addEmoji = (emoji, closeEmoji) => {
-    const { value, handleChange } = this.props;
-    const input = this.inputRef.current;
-    const cursorPosition = input.selectionStart;
-    const start = value.substring(0, input.selectionStart);
-    const end = value.substring(input.selectionEnd);
+    const { handleChange } = this.props;
     const emojiPic = this.getEmoji(emoji);
-    const updatedValue = `${start}${emojiPic}${end}`;
-
+    this.insertEmoji(emojiPic);
+    const updatedValue = this.inputRef.current.innerHTML;
     handleChange(updatedValue);
     closeEmoji();
-    input.selectionEnd = cursorPosition + emoji.native.length;
-    input.focus();
   }
 
   onChange = (e) => {
-    this.props.handleChange(e.target.value);
+    const { handleChange } = this.props;
+    handleChange(e.target.value);
   }
 
   render() {
     const { value } = this.props;
     return (
       <>
-        <input
+        <ContentEditable
           className="form-control"
-          type="text"
-          placeholder="Type message here..."
-          value={value}
+          html={value}
           onChange={this.onChange}
+          innerRef={this.inputRef}
           onKeyPress={this.handleKeyPress}
-          ref={this.inputRef}
         />
         <Emoji
           addEmoji={this.addEmoji}
+          setSelectionAndRange={this.setSelectionAndRange}
           fallback={(emoji, props) => (emoji ? `:${emoji.short_names[0]}:` : props.emoji)}
         />
       </>
