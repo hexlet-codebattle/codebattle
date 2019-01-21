@@ -3,7 +3,7 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
 
   import Mock
 
-  alias CodebattleWeb.GameChannel
+  alias CodebattleWeb.{GameChannel, UserSocket}
   alias Codebattle.GameProcess.{Server, FsmHelpers}
 
   @timeout Application.get_env(:codebattle, Codebattle.Bot)[:timeout]
@@ -24,7 +24,7 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
 
     insert(:bot_playbook, %{data: playbook_data, task_id: task.id})
 
-    socket = socket("user_id", %{user_id: user.id, current_user: user})
+    socket = socket(UserSocket, "user_id", %{user_id: user.id, current_user: user})
 
     with_mocks [
       {Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> {:ok, "asdf", "asdf"} end]}

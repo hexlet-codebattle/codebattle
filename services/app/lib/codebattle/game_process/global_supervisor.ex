@@ -5,7 +5,7 @@ defmodule Codebattle.GameProcess.GlobalSupervisor do
 
   use Supervisor
 
-  alias Codebattle.GameProcess.{Server, ActiveGames}
+  alias Codebattle.GameProcess.ActiveGames
 
   def start_link do
     Supervisor.start_link(__MODULE__, [], name: __MODULE__)
