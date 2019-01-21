@@ -7,20 +7,19 @@
     table.table
       thead.text-left
         tr
-          th.p-3.border-0 = link "rank", to: user_path(@conn, :index, q: %{sort: %{@direction => "id"}})
-          th.p-3.border-0 = link "user_name", to: user_path(@conn, :index, q: %{sort: %{@direction => "name"}})
-          th.p-3.border-0 = link "rating", to: user_path(@conn, :index, q: %{sort: %{@direction => "rating"}})
-          th.p-3.border-0 games_played
+          th.p-3.border-0 = link "Rank", to: user_path(@conn, :index, q: %{sort: %{@direction => "id"}})
+          th.p-3.border-0 = link "User", to: user_path(@conn, :index, q: %{sort: %{@direction => "name"}})
+          th.p-3.border-0 = link "Rating", to: user_path(@conn, :index, q: %{sort: %{@direction => "rating"}})
+          th.p-3.border-0 Games played
           / TODO: fix layout
-          th.p-3.border-0 github_profile
-          th.p-3.border-0 = link "created_at", to: user_path(@conn, :index, q: %{sort: %{@direction => "inserted_at"}})
+          th.p-3.border-0 Github
       tbody.text-left
         = for {user, index} <- Enum.with_index(@users) do
           tr
             td.p-3.align-middle
-              = if @page.page_number > 1 do
+              - if @page.page_number > 1 do
                 = index + 1 + (@page.page_number - 1) * @page.page_size
-                = else 
+              - else
                 = index + 1
               end
             td.text-left.p-3.align-middle
@@ -35,7 +34,5 @@
               a.text-muted[href="https://github.com/#{user.name}"]
                 span.h3
                   i.fa.fa-github
-            td.p-3.align-middle
-              = user.inserted_at
 
     p = pagination_links @page, previous: Phoenix.HTML.raw("&leftarrow;"), next: Phoenix.HTML.raw("&rightarrow;"), view_style: :bootstrap_v4
