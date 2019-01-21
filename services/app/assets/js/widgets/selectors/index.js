@@ -128,8 +128,8 @@ export const chatMessagesSelector = state => state.chat.messages;
 
 export const currentChatUserSelector = (state) => {
   const currentUserId = currentUserIdSelector(state);
-  const currentUser = _.find(chatUsersSelector(state), { id: currentUserId });
-  return currentUser;
+
+  return _.find(chatUsersSelector(state), {id: currentUserId});
 };
 
 export const editorsModeSelector = state => state.editorUI.mode;
@@ -147,3 +147,5 @@ export const activeGamesSelector = (state) => {
 };
 
 export const completedGamesSelector = state => state.gameList.completedGames || [];
+
+export const getUsersStats = state => state.user.usersStats;

@@ -1,14 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { fetchState, addMessage } from '../middlewares/Chat';
-import { chatUsersSelector, chatMessagesSelector, currentChatUserSelector } from '../selectors';
+import * as selectors from '../selectors';
 import Messages from '../components/Messages';
-import UserName from '../components/UserName';
+import UserInfo from './UserInfo';
+import InputWithEmoji from '../components/InputWithEmoji';
 
 class ChatWidget extends React.Component {
   state = { message: '' };
-
-  messagesEnd = null;
 
   componentDidMount() {
     const { dispatch } = this.props;
@@ -67,7 +66,7 @@ class ChatWidget extends React.Component {
               >
                 {users.map(user => (
                   <div key={user.id} className="my-2">
-                    <UserName user={user} />
+                    <UserInfo user={user} />
                   </div>
                 ))}
               </div>
@@ -80,9 +79,9 @@ class ChatWidget extends React.Component {
 }
 
 const mapStateToProps = state => ({
-  users: chatUsersSelector(state),
-  messages: chatMessagesSelector(state),
-  currentUser: currentChatUserSelector(state),
+  users: selectors.chatUsersSelector(state),
+  messages: selectors.chatMessagesSelector(state),
+  currentUser: selectors.currentChatUserSelector(state),
 });
 
 export default connect(
