@@ -3,7 +3,7 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
 
   import Mock
 
-  alias CodebattleWeb.GameChannel
+  alias CodebattleWeb.{GameChannel, UserSocket}
   alias Codebattle.Bot.Playbook
   alias Codebattle.Repo
   alias Codebattle.GameProcess.Player
@@ -15,8 +15,8 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
 
     Helpers.TimeStorage.start_link()
 
-    socket1 = socket("user_id", %{user_id: user1.id, current_user: user1})
-    socket2 = socket("user_id", %{user_id: user2.id, current_user: user2})
+    socket1 = socket(UserSocket, "user_id", %{user_id: user1.id, current_user: user1})
+    socket2 = socket(UserSocket, "user_id", %{user_id: user2.id, current_user: user2})
 
     {:ok, %{user1: user1, user2: user2, task: task, socket1: socket1, socket2: socket2}}
   end
