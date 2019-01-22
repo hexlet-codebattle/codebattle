@@ -59,7 +59,7 @@ defmodule Codebattle.Bot.SocketDriver do
     {:noreply,
      message
      |> NoopSerializer.decode!([])
-     |> Phoenix.Socket.Transport.do_dispatch(state.channels, state.socket)
+     |> Phoenix.Socket.Transport.dispatch(state.channels, state.socket)
      |> handle_socket_response(state)}
   end
 
@@ -67,6 +67,8 @@ defmodule Codebattle.Bot.SocketDriver do
   # The message format is governed by the serializer, in this case
   # Phoenix.ChannelTest.NoopSerializer
   def handle_info(%Phoenix.Socket.Message{} = encoded_message, state) do
+    # on join another user start bot playbook
+    # start_bot_cycle(diffs, game_topic, socket_pid)
     IO.inspect(111_111_111_111_111_111_111_111_111_111_111)
     IO.inspect(state)
     IO.inspect(encoded_message)
