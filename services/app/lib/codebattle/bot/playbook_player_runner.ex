@@ -10,7 +10,8 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
 
   @timeout Application.get_env(:codebattle, Codebattle.Bot)[:timeout]
 
-  def call("#{__MODULE__} RUN TASK with PARAMS: #{inspect(params)}, SLEEP for #{@timeout} ")
+  def call(params) do
+    Logger.info("#{__MODULE__} RUN TASK with PARAMS: #{inspect(params)}, SLEEP for #{@timeout} ")
 
     :timer.sleep(@timeout)
     playbook = Playbook.random(params.task_id)
@@ -20,10 +21,7 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
       Logger.info("#{__MODULE__} BOT START with playbook_id = #{id}")
 
       {:ok, socket_pid} =
-        SocketDriver.start_link(
-          CodebattleWeb.Endpoint,
-          CodebattleWeb.UserSocket
-        )
+        SocketDriver.start_link(CodebattleWeb.Endpoint, CodebattleWeb.UserSocket)
 
       bot = Builder.build()
       Play.join_game(params.game_id, bot)

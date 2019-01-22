@@ -11,14 +11,11 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
 
   test "Bot playing with user", %{conn: conn} do
     task = insert(:task)
-    user1 = insert(:user, %{name: "first", email: "test1@test.test", github_id: 1, rating: 1000})
-    user2 = insert(:user, %{name: "second", email: "test2@test.test", github_id: 2, rating: 1000})
+    user = insert(:user, %{name: "first", email: "test1@test.test", github_id: 1, rating: 1000})
+    bot = Codebattle.Bot.Builder.build()
 
-    conn1 = put_session(conn, :user_id, user1.id)
-    conn2 = put_session(conn, :user_id, user2.id)
+    conn = put_session(conn, :user_id, user.id)
 
-    socket1 = socket(UserSocket, "user_id", %{user_id: user1.id, current_user: user1})
-    socket2 = socket(UserSocket, "user_id", %{user_id: user2.id, current_user: user2})
     playbook_data = %{
       playbook: [
         %{"delta" => [%{"insert" => "t"}], "time" => 20},
@@ -28,38 +25,32 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
       ]
     }
 
-    insert(:bot_playbook, %{data: playbook_data, task_id: task.id})
+    insert(:bot_playbook, %{data: playbook_data, task: task, lang: "ruby"})
 
     socket = socket(UserSocket, "user_id", %{user_id: user.id, current_user: user})
 
     with_mocks [
       {Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> {:ok, "asdf", "asdf"} end]}
     ] do
+
       # Create game
-      conn =
-        conn1
-        |> get(page_path(conn1, :index))
-        |> post(game_path(conn1, :create, level: "easy"))
+      {:ok, game_id} = Codebattle.Bot.GameCreator.call()
 
-      game_id = game_id_from_conn(conn)
+      game_topic = "game:#{game_id}"
 
-      game_topic = "game:" <> to_string(game_id)
+      # User join to the game
+      post(conn, game_path(conn, :join, game_id))
 
-      # Second player join game
-      post(conn2, game_path(conn2, :join, game_id))
-
-      {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
-      {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
-      Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: "asdkfljlksajfd"})
+      {:ok, _response, socket} = subscribe_and_join(socket, GameChannel, game_topic)
+      Phoenix.ChannelTest.push(socket, "editor:data", %{editor_text: "asdkfljlksajfd"})
 
       :timer.sleep(@timeout - 10)
       fsm = Server.fsm(game_id)
-      assert fsm.state == :waiting_opponent
+      assert fsm.state == :playing
 
-      # bot join game
-      :timer.sleep(300)
+      :timer.sleep(100)
       fsm = Server.fsm(game_id)
-      assert FsmHelpers.get_second_player(fsm).editor_text == "tes"
+      assert FsmHelpers.get_second_player(fsm).editor_text == "asdkfljlksajfd"
 
       # bot win the game
       :timer.sleep(300)

@@ -38,7 +38,7 @@ defmodule Codebattle.Bot.SocketDriver do
         socket_handler,
         :socket_driver,
         __MODULE__,
-        NoopSerializer,
+        [{NoopSerializer, "~> 1.0.0"}],
         %{"vsn" => driver_opts[:vsn] || "1.0.0", "token" => bot_token()}
       )
 
@@ -66,8 +66,12 @@ defmodule Codebattle.Bot.SocketDriver do
   # received through PubSub when a broadcast message is fastlaned
   # The message format is governed by the serializer, in this case
   # Phoenix.ChannelTest.NoopSerializer
-  def handle_info(%Phoenix.Socket.Message{} = encoded_message, state),
-    do: {:noreply, send_out(state, encoded_message)}
+  def handle_info(%Phoenix.Socket.Message{} = encoded_message, state) do
+    IO.inspect(111_111_111_111_111_111_111_111_111_111_111)
+    IO.inspect(state)
+    IO.inspect(encoded_message)
+    {:noreply, send_out(state, encoded_message)}
+  end
 
   # received from the channel process if the callback function replies
   def handle_info(%Phoenix.Socket.Reply{} = message, state),
