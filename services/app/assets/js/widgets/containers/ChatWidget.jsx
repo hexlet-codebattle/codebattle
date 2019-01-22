@@ -50,11 +50,6 @@ class ChatWidget extends React.Component {
                 handleChange={this.handleChange}
                 handleSubmit={this.handleSubmit}
               />
-              <div className="input-group-append">
-                <button className="btn btn-light border" type="button" onClick={this.handleSubmit}>
-                  Send
-                </button>
-              </div>
             </div>
           </div>
         </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import 'emoji-mart/css/emoji-mart.css';
-import { Picker } from 'emoji-mart';
+import { Picker, Emoji } from 'emoji-mart';
 import customEmoji from '../lib/customEmoji';
 import Modal from './Modal';
 
@@ -11,8 +11,6 @@ const styles = {
   },
   emoji: {
     position: 'relative',
-    left: '3px',
-    top: '1px',
   },
 };
 
@@ -37,6 +35,7 @@ class EmojiPicker extends React.Component {
   }
 
   onSelect = (emoji) => {
+    console.log(emoji);
     const { addEmoji } = this.props;
     addEmoji(emoji, this.closeEmoji);
   }
@@ -75,17 +74,21 @@ class EmojiPicker extends React.Component {
     } = this.state;
     return (
       <>
-        <div className="input-group-append d-none d-sm-block">
-          <div
-            role="button"
-            tabIndex="-1"
-            className="btn btn-link border"
-            onClick={this.toggleVisibility}
-            onKeyPress={this.toggleVisibility}
-            ref={this.buttonRef}
-          >
-            <span role="img" aria-label="Emoji" style={styles.emoji}>😀</span>
-          </div>
+        <div
+          className="input-group-append d-none d-sm-block"
+          role="button"
+          tabIndex="-1"
+          onClick={this.toggleVisibility}
+          onKeyPress={this.toggleVisibility}
+          ref={this.buttonRef}
+        >
+          <span className="input-group-text">
+            <Emoji
+              emoji="grinning"
+              set="apple"
+              size={16}
+            />
+          </span>
         </div>
         {isOpen && (
           <Modal>
