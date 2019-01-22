@@ -1,4 +1,4 @@
-defmodule Codebattle.Bot.PlaybookPlayerTask do
+defmodule Codebattle.Bot.PlaybookPlayerRunner do
   @moduledoc """
   Process for playing playbooks of tasks
   """
@@ -10,8 +10,7 @@ defmodule Codebattle.Bot.PlaybookPlayerTask do
 
   @timeout Application.get_env(:codebattle, Codebattle.Bot)[:timeout]
 
-  def run(params) do
-    Logger.info("#{__MODULE__} RUN TASK with PARAMS: #{inspect(params)}, SLEEP for #{@timeout} ")
+  def call("#{__MODULE__} RUN TASK with PARAMS: #{inspect(params)}, SLEEP for #{@timeout} ")
 
     :timer.sleep(@timeout)
     playbook = Playbook.random(params.task_id)
