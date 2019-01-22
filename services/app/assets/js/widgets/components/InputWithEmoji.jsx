@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import ContentEditable from 'react-contenteditable';
-import Emoji from './Emoji';
+import EmojiPicker from './EmojiPicker';
 
 class InputWithEmoji extends PureComponent {
   state = { selection: null, range: null };
@@ -69,17 +69,19 @@ class InputWithEmoji extends PureComponent {
   }
 
   render() {
-    const { value } = this.props;
+    const { value = '' } = this.props;
     return (
       <>
         <ContentEditable
           className="form-control"
+          type="text"
+          placeholder="Type message here..."
           html={value}
           onChange={this.onChange}
-          innerRef={this.inputRef}
           onKeyPress={this.handleKeyPress}
+          ref={this.inputRef}
         />
-        <Emoji
+        <EmojiPicker
           addEmoji={this.addEmoji}
           setSelectionAndRange={this.setSelectionAndRange}
           fallback={(emoji, props) => (emoji ? `:${emoji.short_names[0]}:` : props.emoji)}

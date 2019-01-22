@@ -2,14 +2,12 @@ import React from 'react';
 import 'emoji-mart/css/emoji-mart.css';
 import { Picker } from 'emoji-mart';
 import customEmoji from '../lib/customEmoji';
+import Modal from './Modal';
 
 const styles = {
   pickerEmoji: {
     position: 'absolute',
-    bottom: '30px',
-    right: '16px',
-    maxHeight: '200px',
-    overflow: 'hidden',
+    zIndex: 1000,
   },
   emoji: {
     position: 'relative',
@@ -18,12 +16,20 @@ const styles = {
   },
 };
 
-class Emoji extends React.Component {
-  state = { showEmoji: false };
+class EmojiPicker extends React.Component {
+  state = {
+    isOpen: false,
+    positionX: 0,
+    positionY: 0,
+    width: 0,
+    height: 0,
+  };
 
-  toggleEmoji = () => {
-    const { showEmoji } = this.state;
-    if (showEmoji) {
+  buttonRef = React.createRef();
+
+  toggleVisibility = () => {
+    const { isOpen } = this.state;
+    if (isOpen) {
       this.closeEmoji();
     } else {
       this.openEmoji();
@@ -36,15 +42,22 @@ class Emoji extends React.Component {
   }
 
   openEmoji = () => {
+    const {
+      x, y, width, height,
+    } = this.buttonRef.current.getBoundingClientRect();
     this.props.setSelectionAndRange();
     this.setState({
-      showEmoji: true,
+      isOpen: true,
+      positionX: x,
+      positionY: y,
+      width,
+      height,
     }, () => document.addEventListener('click', this.closeEmojiOutsideClick, false));
   }
 
   closeEmoji = () => {
     this.setState({
-      showEmoji: false,
+      isOpen: false,
     }, () => document.removeEventListener('click', this.closeEmojiOutsideClick, false));
   }
 
@@ -57,32 +70,43 @@ class Emoji extends React.Component {
   }
 
   render() {
-    const { showEmoji } = this.state;
+    const {
+      isOpen, positionX, positionY, width, height,
+    } = this.state;
     return (
-      <React.Fragment>
+      <>
         <div className="input-group-append d-none d-sm-block">
           <div
             role="button"
             tabIndex="-1"
             className="btn btn-link border"
-            onClick={this.toggleEmoji}
-            onKeyPress={this.toggleEmoji}
+            onClick={this.toggleVisibility}
+            onKeyPress={this.toggleVisibility}
+            ref={this.buttonRef}
           >
             <span role="img" aria-label="Emoji" style={styles.emoji}>😀</span>
           </div>
         </div>
-        {showEmoji && (
-          <Picker
-            title="Pick your emoji…"
-            emoji="point_up"
-            onSelect={this.onSelect}
-            style={styles.pickerEmoji}
-            custom={customEmoji}
-          />
+        {isOpen && (
+          <Modal>
+            <Picker
+              title="Pick your emoji..."
+              emoji="point_up"
+              onSelect={this.onSelect}
+              custom={customEmoji}
+              showPreview={false}
+              emojiTooltip
+              style={{
+                ...styles.pickerEmoji,
+                top: positionY + height,
+                left: Math.max(positionX - 338 + width, 0),
+              }}
+            />
+          </Modal>
         )}
-      </React.Fragment>
+      </>
     );
   }
 }
 
-export default Emoji;
+export default EmojiPicker;
