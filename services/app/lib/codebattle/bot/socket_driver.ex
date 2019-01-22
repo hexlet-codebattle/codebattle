@@ -33,13 +33,13 @@ defmodule Codebattle.Bot.SocketDriver do
 
     # Using connect to create the socket
     {:ok, socket} =
-      Phoenix.Socket.Transport.connect(
-        endpoint,
-        socket_handler,
-        :socket_driver,
-        __MODULE__,
-        [{NoopSerializer, "~> 1.0.0"}],
-        %{"vsn" => driver_opts[:vsn] || "1.0.0", "token" => bot_token()}
+      socket_handler.connect(
+        %{
+        endpoint: endpoint,
+        transport: __MODULE__,
+        options: [serializer: [{NoopSerializer, "~> 1.0.0"}]],
+        params: %{"vsn" => "1.0.0", "token" => bot_token()},
+        connect_info: [:peer_data, :x_headers, :uri]}
       )
 
     # A socket driver needs to manage some state
@@ -59,7 +59,7 @@ defmodule Codebattle.Bot.SocketDriver do
     {:noreply,
      message
      |> NoopSerializer.decode!([])
-     |> Phoenix.Socket.Transport.dispatch(state.channels, state.socket)
+     |> Phoenix.Socket.Transport.do_dispatch(state.channels, state.socket)
      |> handle_socket_response(state)}
   end
 

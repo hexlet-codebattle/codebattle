@@ -35,6 +35,7 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
 
       # Create game
       {:ok, game_id} = Codebattle.Bot.GameCreator.call()
+      :timer.sleep(12222)
 
       game_topic = "game:#{game_id}"
 
