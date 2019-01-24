@@ -83,7 +83,7 @@ defmodule Codebattle.GameProcess.Play do
     Server.fsm(id)
   end
 
-  def create_game(user, level) do
+  def create_game(user, level, type \\ "public") do
     case ActiveGames.playing?(user.id) do
       false ->
         player = Player.from_user(user, %{creator: true})
@@ -92,7 +92,8 @@ defmodule Codebattle.GameProcess.Play do
           Repo.insert!(%Game{
             state: "waiting_opponent",
             users: [user],
-            task_level: level
+            task_level: level,
+            type: type
           })
 
         fsm =
@@ -100,7 +101,8 @@ defmodule Codebattle.GameProcess.Play do
           |> Fsm.create(%{
             player: player,
             game_id: game.id,
-            level: level
+            level: level,
+            type: type
           })
 
         ActiveGames.create_game(user, fsm)
@@ -111,9 +113,14 @@ defmodule Codebattle.GameProcess.Play do
         end)
 
         # TODO: сделать настройку нотификаций в списке игр
-        Task.async(fn ->
-          Notifier.call(:game_created, %{level: level, game: game, player: player})
-        end)
+        # FIXME: please refactor this, don't broadcast notificate if the game is a private
+        case type do
+          "public" ->
+            Task.async(fn ->
+              Notifier.call(:game_created, %{level: level, game: game, player: player})
+            end)
+          _ ->
+        end
 
         {:ok, game.id}
 
@@ -179,10 +186,11 @@ defmodule Codebattle.GameProcess.Play do
 
     %{
       status: fsm.state,
-      starts_at: fsm.data.starts_at,
+      starts_at: FsmHelpers.get_starts_at(fsm),
       players: FsmHelpers.get_players(fsm),
-      task: fsm.data.task,
-      level: fsm.data.level
+      task: FsmHelpers.get_task(fsm),
+      level: FsmHelpers.get_level(fsm),
+      type: FsmHelpers.get_type(fsm)
     }
   end
 
@@ -363,7 +371,6 @@ defmodule Codebattle.GameProcess.Play do
     INNER JOIN "user_games" ON "user_games"."game_id" = "games"."id"
     WHERE "games"."task_level" = $1 AND "user_games"."user_id" IN ($2, $3)
     GROUP BY "games"."task_id")
-
     SELECT "tasks".*, "game_tasks".* FROM tasks
     LEFT JOIN game_tasks ON "tasks"."id" = "game_tasks"."task_id"
     WHERE "tasks"."level" = $1
