@@ -75,20 +75,20 @@ class EmojiPicker extends React.Component {
     return (
       <>
         <div
-          className="input-group-append d-none d-sm-block"
+          className="input-group-append"
           role="button"
           tabIndex="-1"
           onClick={this.toggleVisibility}
           onKeyPress={this.toggleVisibility}
           ref={this.buttonRef}
         >
-          <span className="input-group-text">
+          <button className="btn btn-outline-secondary" type="button">
             <Emoji
               emoji="grinning"
               set="apple"
-              size={16}
+              size={18}
             />
-          </span>
+          </button>
         </div>
         {isOpen && (
           <Modal>

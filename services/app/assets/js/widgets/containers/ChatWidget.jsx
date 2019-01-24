@@ -44,12 +44,17 @@ class ChatWidget extends React.Component {
             style={{ height: '180px' }}
           />
           <div className="">
-            <div className="px-3 my-2 input-group input-group-sm">
+            <div className="px-3 my-2 input-group">
               <InputWithEmoji
                 value={message}
                 handleChange={this.handleChange}
                 handleSubmit={this.handleSubmit}
               />
+              <div className="input-group-append ">
+                <button className="btn btn-outline-secondary" type="button" onClick={this.handleSubmit}>
+                  Send
+                </button>
+              </div>
             </div>
           </div>
         </div>
