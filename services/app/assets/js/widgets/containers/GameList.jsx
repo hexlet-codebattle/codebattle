@@ -2,11 +2,13 @@ import React, { Fragment } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
 import { connect } from 'react-redux';
-// import PropTypes from 'prop-types';
 import Gon from 'gon';
+import qs from 'qs';
 import { Tooltip, OverlayTrigger } from 'react-bootstrap';
-import { fetchState } from '../middlewares/Lobby';
+import * as lobbyMiddlewares from '../middlewares/Lobby';
 import GameStatusCodes from '../config/gameStatusCodes';
+import * as actions from '../actions';
+import { activeGamesSelector, completedGamesSelector } from '../selectors';
 import Loading from '../components/Loading';
 import GamesHeatmap from '../components/GamesHeatmap';
 import UserName from '../components/UserName';
@@ -20,8 +22,9 @@ class GameList extends React.Component {
   };
 
   componentDidMount() {
-    const { dispatch } = this.props;
-    dispatch(fetchState());
+    const { setCurrentUser, fetchState, currentUser } = this.props;
+    setCurrentUser({ user: { ...currentUser } });
+    fetchState();
   }
 
   renderResultIcon = (gameId, player1, player2) => {
@@ -53,24 +56,28 @@ class GameList extends React.Component {
       );
     }
 
-    return null;
+    return (
+      <span className="align-middle mr-1">
+        <i className="fa fa-fw" aria-hidden="true" />
+      </span>
+    );
   };
 
   renderPlayers = (gameId, users) => {
     if (users.length === 1) {
       return (
-        <td className="p-3 align-middle" style={{ whiteSpace: 'nowrap' }} colSpan={2}>
+        <td className="p-3 align-middle text-nowrap" colSpan={2}>
           <UserName user={users[0]} />
         </td>
       );
     }
     return (
       <Fragment>
-        <td className="p-3 align-middle" style={{ whiteSpace: 'nowrap' }}>
+        <td className="p-3 align-middle text-nowrap">
           {this.renderResultIcon(gameId, users[0], users[1])}
           <UserName user={users[0]} />
         </td>
-        <td className="p-3 align-middle" style={{ whiteSpace: 'nowrap' }}>
+        <td className="p-3 align-middle text-nowrap">
           {this.renderResultIcon(gameId, users[1], users[0])}
           <UserName user={users[1]} />
         </td>
@@ -122,6 +129,7 @@ class GameList extends React.Component {
       if (currentUser.id === 'anonymous') {
         return null;
       }
+
       return (
         <button
           type="button"
@@ -138,101 +146,136 @@ class GameList extends React.Component {
     return null;
   };
 
-  renderStartNewGameButton = level => (
-    <button
-      className="dropdown-item"
-      type="button"
-      data-method="post"
-      data-csrf={window.csrf_token}
-      data-to={`games?level=${level}`}
-    >
-      <span className={`badge badge-pill badge-${this.levelToClass[level]} mr-1`}>&nbsp;</span>
-      {level}
-    </button>
+  renderStartNewGameButton = (gameLevel, gameType) => {
+    const queryParamsString = qs.stringify({ level: gameLevel, type: gameType });
+    const gameUrl = `/games?${queryParamsString}`;
+
+    return (
+      <button
+        className="dropdown-item"
+        type="button"
+        data-method="post"
+        data-csrf={window.csrf_token}
+        data-to={gameUrl}
+      >
+        <span className={`badge badge-pill badge-${this.levelToClass[gameLevel]} mr-1`}>&nbsp;</span>
+        {gameLevel}
+      </button>
+    );
+  };
+
+  renderStartNewGameDropdownMenu = gameType => (
+    <Fragment>
+      <div className="dropdown-header">Select a difficulty</div>
+      <div className="dropdown-divider" />
+      {this.renderStartNewGameButton('elementary', gameType)}
+      {this.renderStartNewGameButton('easy', gameType)}
+      {this.renderStartNewGameButton('medium', gameType)}
+      {this.renderStartNewGameButton('hard', gameType)}
+    </Fragment>
+  )
+
+  renderStartNewGameSelector = () => (
+    <div className="dropdown">
+      <button
+        id="btnGroupStartNewGame"
+        type="button"
+        className="btn btn-success dropdown-toggle"
+        data-toggle="dropdown"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
+        <i className="fa fa-random mr-2" />
+          Play with any player
+      </button>
+      <div className="dropdown-menu" aria-labelledby="btnGroupStartNewGame">
+        {this.renderStartNewGameDropdownMenu('withRandomPlayer')}
+      </div>
+    </div>
   );
 
-  renderStartNewGameSelector = () => {
-    const currentUser = Gon.getAsset('current_user');
-    if (currentUser.id === 'anonymous') {
-      return null;
-    }
-    return (
-      <div className="btn-group" role="group">
-        <button
-          id="btnGroupStartNewGame"
-          type="button"
-          className="btn btn-success dropdown-toggle"
-          data-toggle="dropdown"
-          aria-haspopup="true"
-          aria-expanded="false"
-        >
-            Start a new game
-        </button>
-        <div className="dropdown-menu" aria-labelledby="btnGroupStartNewGame">
-          <div className="dropdown-header">Select a difficulty</div>
-          <div className="dropdown-divider" />
-          {this.renderStartNewGameButton('elementary')}
-          {this.renderStartNewGameButton('easy')}
-          {this.renderStartNewGameButton('medium')}
-          {this.renderStartNewGameButton('hard')}
-        </div>
+  renderPlayWithFriendSelector = () => (
+    <div className="dropdown">
+      <button
+        id="btnGroupPlayWithFriend"
+        type="button"
+        className="btn btn-sm btn-outline-success dropdown-toggle"
+        data-toggle="dropdown"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
+        <i className="fa fa-male mr-2" />
+          Play with a friend
+      </button>
+      <div className="dropdown-menu" aria-labelledby="btnGroupPlayWithFriend">
+        {this.renderStartNewGameDropdownMenu('withFriend')}
       </div>
-    );
-  }
+    </div>
+  )
 
-  renderActiveGames = () => {
-    const { activeGames } = this.props;
+  // TODO: add this render under "Play with a friend" when the server part is ready
+  renderPlayWithBotSelector = () => (
+    <div className="dropdown">
+      <button
+        id="btnGroupPlayWithBot"
+        type="button"
+        className="btn btn-sm btn-outline-success dropdown-toggle"
+        data-toggle="dropdown"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
+        <i className="fa fa-android mr-2" />
+          Play with the bot
+      </button>
+      <div className="dropdown-menu" aria-labelledby="btnGroupPlayWithBot">
+        {this.renderStartNewGameDropdownMenu('withBot')}
+      </div>
+    </div>
+  )
+
+  renderActiveGames = (activeGames) => {
     if (_.isEmpty(activeGames)) {
       return (
-        <div className="text-center">
-          <p className="p-2">There are no active games right now</p>
-          {this.renderStartNewGameSelector()}
-        </div>
+        <p className="text-center">There are no active games right now.</p>
       );
     }
 
     return (
-      <div>
-        {this.renderStartNewGameSelector()}
-        <div className="table-responsive mt-2">
-          <table className="table">
-            <thead className="text-left">
-              <tr>
-                <th className="p-3 border-0">Date</th>
-                <th className="p-3 border-0">Level</th>
-                <th className="p-3 border-0" colSpan="2">Players</th>
-                <th className="p-3 border-0">State</th>
-                <th className="p-3 border-0">Actions</th>
+      <div className="table-responsive mt-2">
+        <table className="table">
+          <thead className="text-left">
+            <tr>
+              <th className="p-3 border-0">Date</th>
+              <th className="p-3 border-0">Level</th>
+              <th className="p-3 border-0" colSpan="2">Players</th>
+              <th className="p-3 border-0">State</th>
+              <th className="p-3 border-0">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {activeGames.map(game => (
+              <tr key={game.game_id}>
+                <td className="p-3 align-middle text-nowrap">
+                  {moment
+                    .utc(game.game_info.inserted_at)
+                    .local()
+                    .format('YYYY-MM-DD HH:mm')}
+                </td>
+                <td className="p-3 align-middle text-nowrap">
+                  {this.renderGameLevelBadge(game.game_info.level)}
+                </td>
+
+                {this.renderPlayers(game.id, game.users)}
+
+                <td className="p-3 align-middle text-nowrap">
+                  {game.game_info.state}
+                </td>
+
+                <td className="p-3 align-middle">{this.renderGameActionButton(game)}</td>
               </tr>
-            </thead>
-            <tbody>
-              {activeGames.map((game) => {
-                console.log(game);
-                return (
-                  <tr key={game.game_id}>
-                    <td className="p-3 align-middle" style={{ whiteSpace: 'nowrap' }}>
-                      {moment
-                        .utc(game.game_info.inserted_at)
-                        .local()
-                        .format('YYYY-MM-DD HH:mm')}
-                    </td>
-                    <td className="p-3 align-middle" style={{ whiteSpace: 'nowrap' }}>
-                      {this.renderGameLevelBadge(game.game_info.level)}
-                    </td>
-
-                    {this.renderPlayers(game.id, game.users)}
-
-                    <td className="p-3 align-middle" style={{ whiteSpace: 'nowrap' }}>
-                      {game.game_info.state}
-                    </td>
-
-                    <td className="p-3 align-middle">{this.renderGameActionButton(game)}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
       </div>
     );
   }
@@ -246,8 +289,14 @@ class GameList extends React.Component {
 
     return (
       <div>
-        <h3 className="text-center mt-3 mb-4">Active games</h3>
-        {this.renderActiveGames()}
+        <h3 className="text-center mt-3 mb-4">New game</h3>
+        <div className="text-center">
+          <div>{this.renderStartNewGameSelector()}</div>
+          <div>or</div>
+          <div>{this.renderPlayWithFriendSelector()}</div>
+        </div>
+        <h3 className="text-center mt-5 mb-4">Active games</h3>
+        {this.renderActiveGames(activeGames)}
         <div className="row px-4 mt-5 justify-content-center">
           <div className="col-12 col-sm-8 col-md-6">
             <GamesHeatmap />
@@ -268,18 +317,18 @@ class GameList extends React.Component {
             <tbody>
               {completedGames.map(game => (
                 <tr key={game.id}>
-                  <td className="p-3 align-middle" style={{ whiteSpace: 'nowrap' }}>
+                  <td className="p-3 align-middle text-nowrap">
                     {moment
                       .utc(game.updated_at)
                       .local()
                       .format('YYYY-MM-DD HH:mm')}
                   </td>
-                  <td className="p-3 align-middle" style={{ whiteSpace: 'nowrap' }}>
+                  <td className="p-3 align-middle text-nowrap">
                     {this.renderGameLevelBadge(game.level)}
                   </td>
                   {this.renderPlayers(game.id, game.players)}
 
-                  <td className="p-3 align-middle" style={{ whiteSpace: 'nowrap' }}>
+                  <td className="p-3 align-middle text-nowrap">
                     {moment.duration(game.duration, 'seconds').humanize()}
                   </td>
 
@@ -294,13 +343,18 @@ class GameList extends React.Component {
   }
 }
 
-// TODO: Add selector
 const mapStateToProps = state => ({
-  activeGames: state.gameList.activeGames,
-  completedGames: state.gameList.completedGames,
+  activeGames: activeGamesSelector(state),
+  completedGames: completedGamesSelector(state),
+  currentUser: Gon.getAsset('current_user'), // FIXME: don't use gon in components, Luke
 });
+
+const mapDispatchToProps = {
+  setCurrentUser: actions.setCurrentUser,
+  fetchState: lobbyMiddlewares.fetchState,
+};
 
 export default connect(
   mapStateToProps,
-  null,
+  mapDispatchToProps,
 )(GameList);

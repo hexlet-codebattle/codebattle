@@ -1,7 +1,6 @@
 defmodule Codebattle.GameProcess.Fsm do
   @moduledoc """
   Finit state machine for game process.
-
   fsm -> data: %{}, state :initial
   states -> [:initial, :waiting_opponent, :playing, :game_over]
   Player.game_result -> [:undefined, :gave_up, :won, :lost]
@@ -22,7 +21,9 @@ defmodule Codebattle.GameProcess.Fsm do
       # level, appears before task created
       level: "",
       # List with two players %Player{}
-      players: []
+      players: [],
+      # public or private game with friend
+      type: "public"
     }
 
   # For tests
@@ -37,7 +38,8 @@ defmodule Codebattle.GameProcess.Fsm do
         data
         | game_id: params.game_id,
           players: [params.player],
-          level: params.level
+          level: params.level,
+          type: params.type
       })
     end
 

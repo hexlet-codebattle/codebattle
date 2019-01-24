@@ -4,7 +4,7 @@ defmodule Codebattle.GameProcess.ActiveGames do
   """
 
   @table_name :active_games
-  # {game_id, %{player_id => Player, player_id => Player}, %{level: "easy", state: :playing}}
+  # {game_id, %{player_id => Player, player_id => Player}, %{level: "easy", state: :playing, type: "private"}}
 
   alias Codebattle.GameProcess.FsmHelpers
 
@@ -91,7 +91,8 @@ defmodule Codebattle.GameProcess.ActiveGames do
     %{
       state: fsm.state,
       level:  FsmHelpers.get_level(fsm),
-      starts_at: FsmHelpers.get_starts_at(fsm)
+      starts_at: FsmHelpers.get_starts_at(fsm),
+      type: FsmHelpers.get_type(fsm)
     }
   end
 end
