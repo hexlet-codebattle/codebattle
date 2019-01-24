@@ -134,8 +134,8 @@ export const currentChatUserSelector = (state) => {
 
 export const activeGamesSelector = (state) => {
   const currentUserId = currentUserIdSelector(state);
-  const filterPrivateGamesFunc = ({ users, game_info: { state: gameStatus, is_private: isPrivate } }) => {
-    if (gameStatus !== 'waiting_opponent' || !isPrivate) {
+  const filterPrivateGamesFunc = ({ users, game_info: { state: gameStatus, type: gameType } }) => {
+    if (gameStatus !== 'waiting_opponent' || gameType !== 'private') {
       return true;
     }
     return _.some(users, { id: currentUserId });

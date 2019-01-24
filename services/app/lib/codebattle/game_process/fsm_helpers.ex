@@ -58,8 +58,8 @@ defmodule Codebattle.GameProcess.FsmHelpers do
     fsm.data.task
   end
 
-  def private?(fsm) do
-    fsm.data.is_private
+  def get_type(fsm) do
+    fsm.data.type
   end
 
   def get_level(fsm) do

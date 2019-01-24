@@ -83,7 +83,7 @@ defmodule Codebattle.GameProcess.Play do
     Server.fsm(id)
   end
 
-  def create_game(user, level, is_private \\ false) do
+  def create_game(user, level, type \\ "public") do
     case ActiveGames.playing?(user.id) do
       false ->
         player = Player.from_user(user, %{creator: true})
@@ -93,7 +93,7 @@ defmodule Codebattle.GameProcess.Play do
             state: "waiting_opponent",
             users: [user],
             task_level: level,
-            is_private: is_private
+            type: type
           })
 
         fsm =
@@ -102,7 +102,7 @@ defmodule Codebattle.GameProcess.Play do
             player: player,
             game_id: game.id,
             level: level,
-            is_private: is_private
+            type: type
           })
 
         ActiveGames.create_game(user, fsm)
@@ -114,8 +114,8 @@ defmodule Codebattle.GameProcess.Play do
 
         # TODO: сделать настройку нотификаций в списке игр
         # FIXME: please refactor this, don't broadcast notificate if the game is a private
-        case is_private do
-          false ->
+        case type do
+          "public" ->
             Task.async(fn ->
               Notifier.call(:game_created, %{level: level, game: game, player: player})
             end)
@@ -190,7 +190,7 @@ defmodule Codebattle.GameProcess.Play do
       players: FsmHelpers.get_players(fsm),
       task: FsmHelpers.get_task(fsm),
       level: FsmHelpers.get_level(fsm),
-      is_private: FsmHelpers.private?(fsm)
+      type: FsmHelpers.get_type(fsm)
     }
   end
 

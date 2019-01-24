@@ -9,12 +9,12 @@ defmodule CodebattleWeb.GameController do
   plug(CodebattleWeb.Plugs.RequireAuth when action in [:create, :join])
 
   def create(conn, _params) do
-    is_private = case conn.params["type"] do
-     "withFriend" -> true
-     _ -> false
+    type = case conn.params["type"] do
+     "withFriend" -> "private"
+     _ -> "public"
     end
 
-    case Play.create_game(conn.assigns.current_user, conn.params["level"], is_private) do
+    case Play.create_game(conn.assigns.current_user, conn.params["level"], type) do
       {:ok, id} ->
         conn
         |> redirect(to: game_path(conn, :show, id))

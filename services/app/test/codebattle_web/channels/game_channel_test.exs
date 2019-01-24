@@ -39,7 +39,7 @@ defmodule CodebattleWeb.GameChannelTest do
                "starts_at" => TimeHelper.utc_now(),
                "status" => "waiting_opponent",
                "task" => game.task,
-               "is_private" => false
+               "type" => "public"
              })
   end
 

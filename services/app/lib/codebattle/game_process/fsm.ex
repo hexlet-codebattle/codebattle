@@ -23,8 +23,8 @@ defmodule Codebattle.GameProcess.Fsm do
       level: "",
       # List with two players %Player{}
       players: [],
-      # private play with friend
-      is_private: false
+      # public or private game with friend
+      type: "public"
     }
 
   # For tests
@@ -40,7 +40,7 @@ defmodule Codebattle.GameProcess.Fsm do
         | game_id: params.game_id,
           players: [params.player],
           level: params.level,
-          is_private: params.is_private
+          type: params.type
       })
     end
 

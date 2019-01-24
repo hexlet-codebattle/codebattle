@@ -3,12 +3,12 @@ import _ from 'lodash';
 import moment from 'moment';
 import { connect } from 'react-redux';
 import Gon from 'gon';
+import qs from 'qs';
 import { Tooltip, OverlayTrigger } from 'react-bootstrap';
 import * as lobbyMiddlewares from '../middlewares/Lobby';
 import GameStatusCodes from '../config/gameStatusCodes';
-import userTypes from '../config/userTypes';
-import { activeGamesSelector, completedGamesSelector } from '../selectors';
 import * as actions from '../actions';
+import { activeGamesSelector, completedGamesSelector } from '../selectors';
 import Loading from '../components/Loading';
 import GamesHeatmap from '../components/GamesHeatmap';
 import UserName from '../components/UserName';
@@ -25,8 +25,9 @@ class GameList extends React.Component {
     const { setCurrentUser, fetchState } = this.props;
     const user = Gon.getAsset('current_user');
 
-    // FIXME: maybe take from gon?
-    setCurrentUser({ user: { ...user, type: userTypes.spectator } });
+    // FIXME: probably it is necessary to refactor
+    // NOTE: here the current user is installed in the state to show the private game in the list of active games, if it was created by the current user
+    setCurrentUser({ user: { ...user } });
     fetchState();
   }
 
@@ -59,24 +60,28 @@ class GameList extends React.Component {
       );
     }
 
-    return null;
+    return (
+      <span className="align-middle mr-1">
+        <i className="fa fa-fw" aria-hidden="true" />
+      </span>
+    );
   };
 
   renderPlayers = (gameId, users) => {
     if (users.length === 1) {
       return (
-        <td className="p-3 align-middle" style={{ whiteSpace: 'nowrap' }} colSpan={2}>
+        <td className="p-3 align-middle text-nowrap" colSpan={2}>
           <UserName user={users[0]} />
         </td>
       );
     }
     return (
       <Fragment>
-        <td className="p-3 align-middle" style={{ whiteSpace: 'nowrap' }}>
+        <td className="p-3 align-middle text-nowrap">
           {this.renderResultIcon(gameId, users[0], users[1])}
           <UserName user={users[0]} />
         </td>
-        <td className="p-3 align-middle" style={{ whiteSpace: 'nowrap' }}>
+        <td className="p-3 align-middle text-nowrap">
           {this.renderResultIcon(gameId, users[1], users[0])}
           <UserName user={users[1]} />
         </td>
@@ -128,6 +133,7 @@ class GameList extends React.Component {
       if (currentUser.id === 'anonymous') {
         return null;
       }
+
       return (
         <button
           type="button"
@@ -144,18 +150,23 @@ class GameList extends React.Component {
     return null;
   };
 
-  renderStartNewGameButton = (gameLevel, gameType) => (
-    <button
-      className="dropdown-item"
-      type="button"
-      data-method="post"
-      data-csrf={window.csrf_token}
-      data-to={`games?level=${gameLevel}&type=${gameType}`}
-    >
-      <span className={`badge badge-pill badge-${this.levelToClass[gameLevel]} mr-1`}>&nbsp;</span>
-      {gameLevel}
-    </button>
-  );
+  renderStartNewGameButton = (gameLevel, gameType) => {
+    const queryParamsString = qs.stringify({ level: gameLevel, type: gameType });
+    const gameUrl = `/games?${queryParamsString}`;
+
+    return (
+      <button
+        className="dropdown-item"
+        type="button"
+        data-method="post"
+        data-csrf={window.csrf_token}
+        data-to={gameUrl}
+      >
+        <span className={`badge badge-pill badge-${this.levelToClass[gameLevel]} mr-1`}>&nbsp;</span>
+        {gameLevel}
+      </button>
+    );
+  };
 
   renderStartNewGameDropdownMenu = gameType => (
     <Fragment>
@@ -248,19 +259,19 @@ class GameList extends React.Component {
           <tbody>
             {activeGames.map(game => (
               <tr key={game.game_id}>
-                <td className="p-3 align-middle" style={{ whiteSpace: 'nowrap' }}>
+                <td className="p-3 align-middle text-nowrap">
                   {moment
                     .utc(game.game_info.inserted_at)
                     .local()
                     .format('YYYY-MM-DD HH:mm')}
                 </td>
-                <td className="p-3 align-middle" style={{ whiteSpace: 'nowrap' }}>
+                <td className="p-3 align-middle text-nowrap">
                   {this.renderGameLevelBadge(game.game_info.level)}
                 </td>
 
                 {this.renderPlayers(game.id, game.users)}
 
-                <td className="p-3 align-middle" style={{ whiteSpace: 'nowrap' }}>
+                <td className="p-3 align-middle text-nowrap">
                   {game.game_info.state}
                 </td>
 
@@ -310,18 +321,18 @@ class GameList extends React.Component {
             <tbody>
               {completedGames.map(game => (
                 <tr key={game.id}>
-                  <td className="p-3 align-middle" style={{ whiteSpace: 'nowrap' }}>
+                  <td className="p-3 align-middle text-nowrap">
                     {moment
                       .utc(game.updated_at)
                       .local()
                       .format('YYYY-MM-DD HH:mm')}
                   </td>
-                  <td className="p-3 align-middle" style={{ whiteSpace: 'nowrap' }}>
+                  <td className="p-3 align-middle text-nowrap">
                     {this.renderGameLevelBadge(game.level)}
                   </td>
                   {this.renderPlayers(game.id, game.players)}
 
-                  <td className="p-3 align-middle" style={{ whiteSpace: 'nowrap' }}>
+                  <td className="p-3 align-middle text-nowrap">
                     {moment.duration(game.duration, 'seconds').humanize()}
                   </td>
 
@@ -341,14 +352,10 @@ const mapStateToProps = state => ({
   completedGames: completedGamesSelector(state),
 });
 
-const mapDispatchToProps = dispatch => ({
-  setCurrentUser: (...args) => {
-    dispatch(actions.setCurrentUser(...args));
-  },
-  fetchState: () => {
-    dispatch(lobbyMiddlewares.fetchState());
-  },
-});
+const mapDispatchToProps = {
+  setCurrentUser: actions.setCurrentUser,
+  fetchState: lobbyMiddlewares.fetchState,
+};
 
 export default connect(
   mapStateToProps,
