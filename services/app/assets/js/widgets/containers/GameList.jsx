@@ -213,7 +213,7 @@ class GameList extends React.Component {
     </div>
   )
 
-  // TODO: add this render under "Play with a friend" when the server part is ready
+  // TODO: add this render under "Play with the bot" when the server part is ready
   renderPlayWithBotSelector = () => (
     <div className="dropdown">
       <button
