@@ -22,12 +22,8 @@ class GameList extends React.Component {
   };
 
   componentDidMount() {
-    const { setCurrentUser, fetchState } = this.props;
-    const user = Gon.getAsset('current_user');
-
-    // FIXME: probably it is necessary to refactor
-    // NOTE: here the current user is installed in the state to show the private game in the list of active games, if it was created by the current user
-    setCurrentUser({ user: { ...user } });
+    const { setCurrentUser, fetchState, currentUser } = this.props;
+    setCurrentUser({ user: { ...currentUser } });
     fetchState();
   }
 
@@ -350,6 +346,7 @@ class GameList extends React.Component {
 const mapStateToProps = state => ({
   activeGames: activeGamesSelector(state),
   completedGames: completedGamesSelector(state),
+  currentUser: Gon.getAsset('current_user'), // FIXME: don't use gon in components, Luke
 });
 
 const mapDispatchToProps = {
