@@ -16,6 +16,7 @@ const gameList = handleActions({
         state: game.state,
         level: game.data.level,
         starts_at: game.data.starts_at,
+        type: game.data.type,
       },
       game_id: game.data.game_id,
     };
