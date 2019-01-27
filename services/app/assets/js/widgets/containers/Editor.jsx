@@ -26,14 +26,14 @@ class Editor extends PureComponent {
   constructor(props) {
     super(props);
     this.statusBarRef = React.createRef();
-  }
-
-  componentDidMount() {
-    const { mode } = this.props;
     const convertRemToPixels = rem => rem * parseFloat(getComputedStyle(document.documentElement)
       .fontSize);
     // statusBarHeight = lineHeight = current fontSize * 1.5
     this.statusBarHeight = convertRemToPixels(1) * 1.5;
+  }
+
+  componentDidMount() {
+    const { mode } = this.props;
     this.modes = {
       default: () => null,
       vim: () => initVimMode(this.editor, this.statusBarRef.current),
