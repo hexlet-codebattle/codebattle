@@ -30,5 +30,4 @@ export const updateCheckStatus = createAction('UPDATE_CHECK_STATUS');
 export const compressEditorHeight = createAction('COMPRESS_EDITOR_HEIGHT');
 export const expandEditorHeight = createAction('EXPAND_EDITOR_HEIGHT');
 
-export const toggleVimMode = createAction('MODE_VIM_TOGGLE');
-export const toggleDefaultMode = createAction('MODE_DEFAULT_TOGGLE');
+export const setEditorsMode = createAction('EDITORS_MODE_SET');

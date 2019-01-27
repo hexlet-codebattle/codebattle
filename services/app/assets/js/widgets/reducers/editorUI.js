@@ -7,16 +7,10 @@ const initialState = {
 };
 
 const editorUI = handleActions({
-  [actions.toggleVimMode](state) {
+  [actions.setEditorsMode](state, { payload: mode }) {
     return {
       ...state,
-      mode: 'vim',
-    };
-  },
-  [actions.toggleDefaultMode](state) {
-    return {
-      ...state,
-      mode: 'default',
+      mode,
     };
   },
 }, initialState);

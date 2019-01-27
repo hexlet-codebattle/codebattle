@@ -1,10 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 import { connect } from 'react-redux';
-import {
-  toggleDefaultMode,
-  toggleVimMode,
-} from '../actions';
+import { setEditorsMode } from '../actions';
 import { editorsModeSelector } from '../selectors';
 
 
@@ -12,18 +9,9 @@ const getModeTitle = typeMode => (<span className="mx-1">{`${_.capitalize(typeMo
 
 const EditorsModeToggle = (props) => {
   const {
-    toggleDefault, toggleVim, currentMode,
+    setMode, currentMode,
   } = props;
-  const modes = [
-    {
-      type: 'default',
-      action: toggleDefault,
-    },
-    {
-      type: 'vim',
-      action: toggleVim,
-    },
-  ];
+  const modes = ['default', 'vim'];
 
   return (
     <div className="dropdown ml-2">
@@ -38,14 +26,14 @@ const EditorsModeToggle = (props) => {
         {getModeTitle(currentMode)}
       </button>
       <div className="dropdown-menu" aria-labelledby="dropdownLangButton">
-        {modes.map(({ type, action }) => (
+        {modes.map(mode => (
           <button
             type="button"
             className="dropdown-item btn rounded-0"
-            key={type}
-            onClick={() => action()}
+            key={mode}
+            onClick={() => setMode(mode)}
           >
-            {getModeTitle(type)}
+            {getModeTitle(mode)}
           </button>
         ))}
       </div>
@@ -58,8 +46,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-  toggleVim: toggleVimMode,
-  toggleDefault: toggleDefaultMode,
+  setMode: setEditorsMode,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(EditorsModeToggle);
