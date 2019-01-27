@@ -32,18 +32,17 @@ class Editor extends PureComponent {
     this.statusBarHeight = convertRemToPixels(1) * 1.5;
   }
 
-  componentDidMount() {
-    const { mode } = this.props;
+  componentDidMount = async () => {
+    const { mode, syntax } = this.props;
     this.modes = {
       default: () => null,
       vim: () => initVimMode(this.editor, this.statusBarRef.current),
     };
-
+    await this.updateHightLightForNotIncludeSyntax(syntax);
     this.currentMode = this.modes[mode]();
   }
 
-  componentDidUpdate = async (prevProps) => {
-    const { syntax, mode } = this.props;
+  updateHightLightForNotIncludeSyntax = async (syntax) => {
     const notIncludedSyntaxHightlight = new Set(['haskell', 'elixir']);
     if (notIncludedSyntaxHightlight.has(syntax)) {
       const { default: HighlightRules } = await import(`monaco-ace-tokenizer/lib/ace/definitions/${syntax}`);
@@ -52,6 +51,11 @@ class Editor extends PureComponent {
       });
       registerRulesForLanguage(syntax, new HighlightRules());
     }
+  }
+
+  componentDidUpdate = async (prevProps) => {
+    const { syntax, mode } = this.props;
+    await this.updateHightLightForNotIncludeSyntax(syntax);
     if (mode !== prevProps.mode) {
       if (this.currentMode) {
         this.currentMode.dispose();
