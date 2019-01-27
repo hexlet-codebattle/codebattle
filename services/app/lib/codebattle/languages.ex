@@ -35,7 +35,7 @@ defmodule Codebattle.Languages do
         check_dir: "check",
         extension: "exs",
         docker_image: "codebattle/elixir:1.7.3",
-        solution_template: "defmodule Solution\n do def solution() do\n  \n  end\nend"
+        solution_template: "defmodule Solution do\n  def solution() do\n    \n  end\nend"
       },
       "python" => %{
         name: "python",

@@ -5,38 +5,10 @@ import i18n from '../../i18n';
 import { makeEditorTextKey } from '../reducers';
 import { defaultEditorHeight } from '../config/editorSettings';
 
-// export const usersSelector = state => state.user.users;
 export const currentUserIdSelector = state => state.user.currentUserId;
 
 export const gamePlayersSelector = state => state.game.players;
 
-// export const currentUserSelector = (state) => {
-//   const user = _.pick(
-//     usersSelector(state),
-//     [currentUserIdSelector(state)],
-//   );
-//   if (!_.isEmpty(user)) {
-//     return _.values(user)[0];
-//   }
-//   return null;
-// };
-
-// export const firstUserSelector = (state) => {
-//   const user = _.pickBy(usersSelector(state), { type: userTypes.firstPlayer });
-//   if (!_.isEmpty(user)) {
-//     return _.values(user)[0];
-//   }
-//   return {};
-// };
-
-// export const secondUserSelector = (state) => {
-//   const user = _.pickBy(usersSelector(state), { type: userTypes.secondPlayer });
-//   // FIXME: remove this
-//   if (!_.isEmpty(user)) {
-//     return _.values(user)[0];
-//   }
-//   return {};
-// };
 export const firstPlayerSelector = state => _.find(gamePlayersSelector(state), { type: userTypes.firstPlayer });
 export const secondPlayerSelector = state => _.find(gamePlayersSelector(state), { type: userTypes.secondPlayer });
 
@@ -161,3 +133,17 @@ export const currentChatUserSelector = (state) => {
 };
 
 export const editorsModeSelector = state => state.editorUI.mode;
+export const activeGamesSelector = (state) => {
+  const currentUserId = currentUserIdSelector(state);
+  const filterPrivateGamesFunc = ({ users, game_info: { state: gameStatus, type: gameType } }) => {
+    if (gameStatus !== 'waiting_opponent' || gameType !== 'private') {
+      return true;
+    }
+    return _.some(users, { id: currentUserId });
+  };
+  const activeGames = _.filter(state.gameList.activeGames, filterPrivateGamesFunc);
+
+  return activeGames || [];
+};
+
+export const completedGamesSelector = state => state.gameList.completedGames || [];
