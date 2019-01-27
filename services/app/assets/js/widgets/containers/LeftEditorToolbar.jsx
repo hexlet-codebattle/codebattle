@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import _ from 'lodash';
 // import i18n from '../../i18n';
-import cn from 'classnames';
 import GameStatusCodes from '../config/gameStatusCodes';
 import * as selectors from '../selectors';
 import {
@@ -10,11 +9,11 @@ import {
   changeCurrentLangAndSetTemplate,
   compressEditorHeight,
   expandEditorHeight,
-  toggleVimMode,
 } from '../middlewares/Game';
 import LanguagePicker from '../components/LanguagePicker';
 import UserName from '../components/UserName';
 import GameResultIcon from '../components/GameResultIcon';
+import EditorsModeToggle from '../components/EditorsModeToggle';
 
 class LeftEditorToolbar extends Component {
   static defaultProps = {
@@ -55,29 +54,6 @@ class LeftEditorToolbar extends Component {
     </div>
   );
 
-  renderVimModeBtn = (userId) => {
-    const { toggleVim, leftEditorIsVimMode } = this.props;
-
-    const classNames = cn({
-      btn: true,
-      'btn-sm': true,
-      border: true,
-      rounded: true,
-      'ml-2': true,
-      'btn-light': !leftEditorIsVimMode,
-      'btn-secondary': leftEditorIsVimMode,
-    });
-
-    return (
-      <button
-        type="button"
-        className={classNames}
-        onClick={() => toggleVim(userId)}
-      >
-        Vim
-      </button>
-    );
-  }
 
   render() {
     const {
@@ -106,7 +82,7 @@ class LeftEditorToolbar extends Component {
             onChange={setLang}
             disabled={isSpectator}
           />
-          {!isSpectator && this.renderVimModeBtn(leftUserId)}
+          {!isSpectator && <EditorsModeToggle />}
           {this.renderEditorHeightButtons(compressEditor, expandEditor, leftUserId)}
         </div>
         <GameResultIcon
@@ -135,7 +111,6 @@ const mapStateToProps = (state) => {
     players: selectors.gamePlayersSelector(state),
     title: selectors.gameStatusTitleSelector(state),
     task: selectors.gameTaskSelector(state),
-    leftEditorIsVimMode: selectors.editorVimModeSelector(leftUserId)(state),
   };
 };
 
@@ -144,7 +119,6 @@ const mapDispatchToProps = {
   setLang: changeCurrentLangAndSetTemplate,
   compressEditor: compressEditorHeight,
   expandEditor: expandEditorHeight,
-  toggleVim: toggleVimMode,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(LeftEditorToolbar);

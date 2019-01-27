@@ -9,15 +9,15 @@ import createStore from './lib/configureStore';
 import reducers from './reducers';
 import GameList from './containers/GameList';
 
-const { editor: editorReducer, ...otherReducers } = reducers;
+const { editorUI: editorUIReducer, ...otherReducers } = reducers;
 
-const editorPersistConfig = {
-  key: 'editor',
+const editorUIPersistConfig = {
+  key: 'editorUI',
   storage,
 };
 
 const rootReducer = combineReducers({
-  editor: persistReducer(editorPersistConfig, editorReducer),
+  editorUI: persistReducer(editorUIPersistConfig, editorUIReducer),
   ...otherReducers,
 });
 

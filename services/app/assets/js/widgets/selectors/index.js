@@ -160,4 +160,4 @@ export const currentChatUserSelector = (state) => {
   return currentUser;
 };
 
-export const editorVimModeSelector = userId => state => _.get(editorDataSelector(userId)(state), 'isVimMode', false);
+export const editorsModeSelector = state => state.editorUI.mode;

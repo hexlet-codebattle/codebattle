@@ -224,7 +224,3 @@ export const compressEditorHeight = (
 export const expandEditorHeight = (
   userId => dispatch => dispatch(actions.expandEditorHeight({ userId }))
 );
-
-export const toggleVimMode = (
-  userId => dispatch => dispatch(actions.toggleVimMode({ userId }))
-);

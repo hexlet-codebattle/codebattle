@@ -12,7 +12,7 @@ class Editor extends PureComponent {
     editable: PropTypes.bool,
     syntax: PropTypes.string,
     onChange: PropTypes.func,
-    isVimMode: PropTypes.bool,
+    mode: PropTypes.string,
   }
 
   static defaultProps = {
@@ -20,7 +20,7 @@ class Editor extends PureComponent {
     editable: false,
     onChange: null,
     syntax: 'javascript',
-    isVimMode: false,
+    mode: 'default',
   }
 
   constructor(props) {
@@ -29,19 +29,21 @@ class Editor extends PureComponent {
   }
 
   componentDidMount() {
-    const { isVimMode } = this.props;
+    const { mode } = this.props;
     const convertRemToPixels = rem => rem * parseFloat(getComputedStyle(document.documentElement)
       .fontSize);
     // statusBarHeight = lineHeight = current fontSize * 1.5
     this.statusBarHeight = convertRemToPixels(1) * 1.5;
+    this.modes = {
+      default: () => null,
+      vim: () => initVimMode(this.editor, this.statusBarRef.current),
+    };
 
-    if (isVimMode) {
-      this.vimMode = initVimMode(this.editor, this.statusBarRef.current);
-    }
+    this.currentMode = this.modes[mode]();
   }
 
   componentDidUpdate = async (prevProps) => {
-    const { syntax, isVimMode } = this.props;
+    const { syntax, mode } = this.props;
     const notIncludedSyntaxHightlight = new Set(['haskell', 'elixir']);
     if (notIncludedSyntaxHightlight.has(syntax)) {
       const { default: HighlightRules } = await import(`monaco-ace-tokenizer/lib/ace/definitions/${syntax}`);
@@ -50,11 +52,12 @@ class Editor extends PureComponent {
       });
       registerRulesForLanguage(syntax, new HighlightRules());
     }
-    if (isVimMode && !prevProps.isVimMode) {
-      this.vimMode = initVimMode(this.editor, this.statusBarRef.current);
-    } else if (!isVimMode && prevProps.isVimMode) {
-      this.vimMode.dispose();
+    if (mode !== prevProps.mode) {
+      if (this.currentMode) {
+        this.currentMode.dispose();
+      }
       this.statusBarRef.current.innerHTML = '';
+      this.currentMode = this.modes[mode]();
     }
   }
 
@@ -99,9 +102,8 @@ class Editor extends PureComponent {
       syntax,
       onChange,
       editorHeight,
-      isVimMode,
+      mode,
     } = this.props;
-
     // FIXME: move here and apply mapping object
     const mappedSyntax = syntax === 'js' ? 'javascript' : syntax;
     const options = {
@@ -116,15 +118,14 @@ class Editor extends PureComponent {
         enabled: false,
       },
     };
-    const editorHeightWithVimMode = isVimMode
-      ? parseFloat(editorHeight) - this.statusBarHeight : editorHeight;
+    const editorHeightWithStatusBar = mode === 'vim' ? editorHeight - this.statusBarHeight : editorHeight;
     return (
       <>
         <MonacoEditor
           theme="vs-dark"
           options={options}
           width="auto"
-          height={editorHeightWithVimMode}
+          height={editorHeightWithStatusBar}
           language={mappedSyntax}
           editorDidMount={this.editorDidMount}
           name={name}
