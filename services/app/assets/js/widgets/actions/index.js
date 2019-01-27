@@ -29,3 +29,5 @@ export const updateCheckStatus = createAction('UPDATE_CHECK_STATUS');
 
 export const compressEditorHeight = createAction('COMPRESS_EDITOR_HEIGHT');
 export const expandEditorHeight = createAction('EXPAND_EDITOR_HEIGHT');
+
+export const setEditorsMode = createAction('EDITORS_MODE_SET');

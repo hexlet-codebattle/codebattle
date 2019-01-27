@@ -132,6 +132,7 @@ export const currentChatUserSelector = (state) => {
   return currentUser;
 };
 
+export const editorsModeSelector = state => state.editorUI.mode;
 export const activeGamesSelector = (state) => {
   const currentUserId = currentUserIdSelector(state);
   const filterPrivateGamesFunc = ({ users, game_info: { state: gameStatus, type: gameType } }) => {

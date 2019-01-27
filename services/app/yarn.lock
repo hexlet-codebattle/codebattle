@@ -6932,6 +6932,11 @@ monaco-editor@^0.15.1:
   resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.15.6.tgz#d63b3b06f86f803464f003b252627c3eb4a09483"
   integrity sha512-JoU9V9k6KqT9R9Tiw1RTU8ohZ+Xnf9DMg6Ktqqw5hILumwmq7xqa/KLXw513uTUsWbhtnHoSJYYR++u3pkyxJg==
 
+monaco-vim@^0.0.10:
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/monaco-vim/-/monaco-vim-0.0.10.tgz#ed4ddc0b1f977a3a7b83d72a572a6710352f4e3e"
+  integrity sha512-J9hKFxgvO04SAIbti1V5Xr6/YPJhBLSG5GDtqAqQlOINjY8p/7I7w5QxaKsiuZ850eMoS9SY9KapuI4zR275TA==
+
 move-concurrently@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/move-concurrently/-/move-concurrently-1.0.1.tgz#be2c005fda32e0b29af1f05d7c4b33214c701f92"
@@ -8789,6 +8794,11 @@ redux-actions@^2.6.4:
     loose-envify "^1.4.0"
     reduce-reducers "^0.4.3"
     to-camel-case "^1.0.0"
+
+redux-persist@^5.10.0:
+  version "5.10.0"
+  resolved "https://registry.yarnpkg.com/redux-persist/-/redux-persist-5.10.0.tgz#5d8d802c5571e55924efc1c3a9b23575283be62b"
+  integrity sha512-sSJAzNq7zka3qVHKce1hbvqf0Vf5DuTVm7dr4GtsqQVOexnrvbV47RWFiPxQ8fscnyiuWyD2O92DOxPl0tGCRg==
 
 redux-thunk@^2.2.0:
   version "2.3.0"

@@ -5,11 +5,15 @@ import _ from 'lodash';
 import GameStatusCodes from '../config/gameStatusCodes';
 import * as selectors from '../selectors';
 import {
-  checkGameResult, changeCurrentLangAndSetTemplate, compressEditorHeight, expandEditorHeight,
+  checkGameResult,
+  changeCurrentLangAndSetTemplate,
+  compressEditorHeight,
+  expandEditorHeight,
 } from '../middlewares/Game';
 import LanguagePicker from '../components/LanguagePicker';
 import UserName from '../components/UserName';
 import GameResultIcon from '../components/GameResultIcon';
+import EditorsModeToggle from '../components/EditorsModeToggle';
 
 class LeftEditorToolbar extends Component {
   static defaultProps = {
@@ -35,14 +39,14 @@ class LeftEditorToolbar extends Component {
     <div className="btn-group btn-group-sm ml-2" role="group" aria-label="Editor height">
       <button
         type="button"
-        className="btn btn-sm border rounded"
+        className="btn btn-sm btn-light border rounded"
         onClick={() => compressEditor(userId)}
       >
         <i className="fa fa-compress" aria-hidden="true" />
       </button>
       <button
         type="button"
-        className="btn btn-sm border rounded ml-2"
+        className="btn btn-sm btn-light border rounded ml-2"
         onClick={() => expandEditor(userId)}
       >
         <i className="fa fa-expand" aria-hidden="true" />
@@ -78,6 +82,7 @@ class LeftEditorToolbar extends Component {
             onChange={setLang}
             disabled={isSpectator}
           />
+          {!isSpectator && <EditorsModeToggle />}
           {this.renderEditorHeightButtons(compressEditor, expandEditor, leftUserId)}
         </div>
         <GameResultIcon
