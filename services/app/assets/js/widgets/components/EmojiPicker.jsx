@@ -82,11 +82,11 @@ class EmojiPicker extends React.Component {
           onKeyPress={this.toggleVisibility}
           ref={this.buttonRef}
         >
-          <button className="btn btn-outline-secondary" type="button">
+          <button className="btn btn-outline-secondary d-flex align-items-center" type="button">
             <Emoji
               emoji="grinning"
               set="apple"
-              size={18}
+              size={15}
             />
           </button>
         </div>
