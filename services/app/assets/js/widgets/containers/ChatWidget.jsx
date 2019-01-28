@@ -43,18 +43,16 @@ class ChatWidget extends React.Component {
             className="overflow-auto px-3 py-3"
             style={{ height: '180px' }}
           />
-          <div className="">
-            <div className="px-3 my-2 input-group input-group-sm">
-              <InputWithEmoji
-                value={message}
-                handleChange={this.handleChange}
-                handleSubmit={this.handleSubmit}
-              />
-              <div className="input-group-append">
-                <button className="btn btn-light border" type="button" onClick={this.handleSubmit}>
-                  Send
-                </button>
-              </div>
+          <div className="px-3 my-2 input-group input-group-sm">
+            <InputWithEmoji
+              value={message}
+              handleChange={this.handleChange}
+              handleSubmit={this.handleSubmit}
+            />
+            <div className="input-group-append">
+              <button className="btn btn-outline-secondary" type="button" onClick={this.handleSubmit}>
+                Send
+              </button>
             </div>
           </div>
         </div>
