@@ -1,7 +1,15 @@
 $link-color:  #1f3754;
 $link-hover-color: #5673ce;
 $link-hover-decoration: none;
-$body-bg: #e9edf3;
+$body-bg: #fafafa;
+
+$gray-600:    #477591 !default;
+$green:   #64b079 !default;
+
+$secondary:          $gray-600 !default;
+$success:       $green !default;
+
+$box-shadow-sm: 0 2px 4px (0,0,0,0.18);
 @import "fonts";
 $font-family-sans-serif: "Roboto", sans-serif;
 @import "~bootstrap/scss/bootstrap";
