@@ -23,6 +23,8 @@ class Editor extends PureComponent {
     mode: 'default',
   }
 
+  notIncludedSyntaxHightlight = new Set(['haskell', 'elixir'])
+
   constructor(props) {
     super(props);
     this.statusBarRef = React.createRef();
@@ -31,6 +33,7 @@ class Editor extends PureComponent {
     // statusBarHeight = lineHeight = current fontSize * 1.5
     this.statusBarHeight = convertRemToPixels(1) * 1.5;
   }
+
 
   componentDidMount = async () => {
     const { mode, syntax } = this.props;
@@ -43,9 +46,9 @@ class Editor extends PureComponent {
   }
 
   updateHightLightForNotIncludeSyntax = async (syntax) => {
-    const notIncludedSyntaxHightlight = new Set(['haskell', 'elixir']);
-    if (notIncludedSyntaxHightlight.has(syntax)) {
+    if (this.notIncludedSyntaxHightlight.has(syntax)) {
       const { default: HighlightRules } = await import(`monaco-ace-tokenizer/lib/ace/definitions/${syntax}`);
+      this.notIncludedSyntaxHightlight.delete(syntax);
       this.monaco.languages.register({
         id: syntax,
       });

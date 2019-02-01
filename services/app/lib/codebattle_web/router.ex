@@ -32,6 +32,7 @@ defmodule CodebattleWeb.Router do
     scope "/v1", V1, as: :v1 do
       get("/:user_id/activity", ActivityController, :show)
       get("/game_activity", GameActivityController, :show)
+      get("/user/:id/stats", UserController, :stats)
     end
   end
 
