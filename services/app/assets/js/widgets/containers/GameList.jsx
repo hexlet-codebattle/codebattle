@@ -56,17 +56,20 @@ class GameList extends React.Component {
       );
     }
 
-    return (
-      <span className="align-middle mr-1">
-        <i className="fa fa-fw" aria-hidden="true" />
-      </span>
-    );
+    return this.renderEmptyResultIcon();
   };
+
+  renderEmptyResultIcon = () => (
+    <span className="align-middle mr-1">
+      <i className="fa fa-fw" aria-hidden="true" />
+    </span>
+  );
 
   renderPlayers = (gameId, users) => {
     if (users.length === 1) {
       return (
         <td className="p-3 align-middle text-nowrap" colSpan={2}>
+          {this.renderEmptyResultIcon()}
           <UserName user={users[0]} />
         </td>
       );
