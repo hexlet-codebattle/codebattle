@@ -11,7 +11,7 @@ import * as actions from '../actions';
 import { activeGamesSelector, completedGamesSelector } from '../selectors';
 import Loading from '../components/Loading';
 import GamesHeatmap from '../components/GamesHeatmap';
-import UserName from '../components/UserName';
+import UserInfo from './UserInfo';
 
 class GameList extends React.Component {
   levelToClass = {
@@ -70,7 +70,7 @@ class GameList extends React.Component {
       return (
         <td className="p-3 align-middle text-nowrap" colSpan={2}>
           {this.renderEmptyResultIcon()}
-          <UserName user={users[0]} />
+          <UserInfo user={users[0]} />
         </td>
       );
     }
@@ -78,11 +78,11 @@ class GameList extends React.Component {
       <Fragment>
         <td className="p-3 align-middle text-nowrap">
           {this.renderResultIcon(gameId, users[0], users[1])}
-          <UserName user={users[0]} />
+          <UserInfo user={users[0]} />
         </td>
         <td className="p-3 align-middle text-nowrap">
           {this.renderResultIcon(gameId, users[1], users[0])}
-          <UserName user={users[1]} />
+          <UserInfo user={users[1]} />
         </td>
       </Fragment>
     );
@@ -214,7 +214,7 @@ class GameList extends React.Component {
         {this.renderStartNewGameDropdownMenu('withFriend')}
       </div>
     </div>
-  )
+  );
 
   // TODO: add this render under "Play with the bot" when the server part is ready
   renderPlayWithBotSelector = () => (
@@ -234,7 +234,7 @@ class GameList extends React.Component {
         {this.renderStartNewGameDropdownMenu('withBot')}
       </div>
     </div>
-  )
+  );
 
   renderActiveGames = (activeGames) => {
     if (_.isEmpty(activeGames)) {
@@ -281,11 +281,10 @@ class GameList extends React.Component {
         </table>
       </div>
     );
-  }
+  };
 
   render() {
     const { activeGames, completedGames } = this.props;
-
     if (!activeGames) {
       return <Loading />;
     }
@@ -333,7 +332,6 @@ class GameList extends React.Component {
                     <td className="p-3 align-middle text-nowrap">
                       {moment.duration(game.duration, 'seconds').humanize()}
                     </td>
-
                     <td className="p-3 align-middle">{this.renderShowGameButton(`/games/${game.id}`)}</td>
                   </tr>
                 ))}

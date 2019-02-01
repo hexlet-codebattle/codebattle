@@ -16,6 +16,7 @@ export const updateExecutionOutput = createAction('UPDATE_EXECUTION_OUTPUT');
 
 export const setCurrentUser = createAction('SET_CURRENT_USER');
 export const updateUsers = createAction('UPDATE_USERS');
+export const updateUsersStats = createAction('UPDATE_USERS_STATS');
 
 export const sendPlayerCode = createAction('SEND_PLAYER_CODE');
 export const updateEditorLang = createAction('UPDATE_EDITOR_LANG');
