@@ -4,7 +4,7 @@ import LanguageIcon from './LanguageIcon';
 
 const UserName = ({
   user: {
-    id, github_id: githubId, name, rating, lang,
+    id, github_id: githubId, name, rating, lang, rating_diff: ratingDiff,
   },
 }) => {
   const anonymousUser = (
@@ -32,6 +32,7 @@ const UserName = ({
       <small>
         {_.isFinite(rating) && rating}
       </small>
+      {ratingDiff ? <small className={ratingDiff < 0 ? 'text-danger' : 'text-success'}>{ratingDiff}</small> : ''}
     </a>
   );
 

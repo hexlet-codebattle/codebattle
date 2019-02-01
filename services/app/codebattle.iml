@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="ELIXIR_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/lib" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/test" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/assets/node_modules/phoenix" />
+      <excludeFolder url="file://$MODULE_DIR$/assets/node_modules/phoenix_html" />
+      <excludeFolder url="file://$MODULE_DIR$/cover" />
+      <excludeFolder url="file://$MODULE_DIR$/deps" />
+      <excludeFolder url="file://$MODULE_DIR$/doc" />
+      <excludeFolder url="file://$MODULE_DIR$/logs" />
+    </content>
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="phoenix" level="project" />
+    <orderEntry type="library" name="phoenix_pubsub" level="project" />
+    <orderEntry type="library" name="phoenix_ecto" level="project" />
+    <orderEntry type="library" name="postgrex" level="project" />
+    <orderEntry type="library" name="phoenix_html" level="project" />
+    <orderEntry type="library" name="gettext" level="project" />
+    <orderEntry type="library" name="cowboy" level="project" />
+    <orderEntry type="library" name="plug_cowboy" level="project" />
+    <orderEntry type="library" name="phoenix_slime" level="project" />
+    <orderEntry type="library" name="ueberauth" level="project" />
+    <orderEntry type="library" name="ueberauth_github" level="project" />
+    <orderEntry type="library" name="gproc" level="project" />
+    <orderEntry type="library" name="fsm" level="project" />
+    <orderEntry type="library" name="poison" level="project" />
+    <orderEntry type="library" name="phoenix_gon" level="project" />
+    <orderEntry type="library" name="text_delta" level="project" />
+    <orderEntry type="library" name="yaml_elixir" level="project" />
+    <orderEntry type="library" name="temp" level="project" />
+    <orderEntry type="library" name="logger_file_backend" level="project" />
+    <orderEntry type="library" name="atomic_map" level="project" />
+    <orderEntry type="library" name="envy" level="project" />
+    <orderEntry type="library" name="one_signal" level="project" />
+    <orderEntry type="library" name="paginator" level="project" />
+    <orderEntry type="library" name="scrivener_ecto" level="project" />
+    <orderEntry type="library" name="scrivener_html" level="project" />
+    <orderEntry type="library" name="credo" level="project" />
+    <orderEntry type="library" name="phoenix_live_reload" level="project" />
+    <orderEntry type="library" name="mock" level="project" />
+    <orderEntry type="library" name="phoenix_integration" level="project" />
+    <orderEntry type="library" name="excoveralls" level="project" />
+    <orderEntry type="library" name="faker" level="project" />
+    <orderEntry type="library" name="ex_machina" level="project" />
+  </component>
+</module>
