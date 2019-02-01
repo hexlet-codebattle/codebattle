@@ -186,7 +186,7 @@ class GameList extends React.Component {
         aria-expanded="false"
       >
         <i className="fa fa-random mr-2" />
-        Play with any player
+        Create game
       </button>
       <div className="dropdown-menu" aria-labelledby="btnGroupStartNewGame">
         {this.renderStartNewGameDropdownMenu('withRandomPlayer')}

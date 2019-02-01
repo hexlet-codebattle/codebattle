@@ -9,7 +9,7 @@ const WaitingOpponentInfo = ({ gameUrl }) => (
   <div className="jumbotron container text-center bg-white shadow-sm">
     <div className="col-xl-8 col-lg-10 col-12 m-auto">
       <h2 className="h2 font-weight-normal">{i18n.t('Waiting for an opponent')}</h2>
-      <p className="lead text-muted">{i18n.t('Please wait for someone to join or send an invite using the link below')}</p>
+      <p className="lead mb-4">{i18n.t('Please wait for someone to join or send an invite using the link below')}</p>
       <div>
         <div className="input-group mb-3">
           <input

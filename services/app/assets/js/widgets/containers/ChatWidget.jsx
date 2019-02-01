@@ -5,7 +5,6 @@ import { chatUsersSelector, chatMessagesSelector, currentChatUserSelector } from
 import Messages from '../components/Messages';
 import UserName from '../components/UserName';
 
-const messageStyles = { wordBreak: 'break-all', height: '164px' };
 class ChatWidget extends React.Component {
   state = { message: '' };
 
@@ -42,7 +41,7 @@ class ChatWidget extends React.Component {
           <Messages
             messages={messages}
             className="overflow-auto px-3 mt-3 pb-0"
-            style={messageStyles}
+            style={{ wordBreak: 'break-all', height: '164px' }}
           />
           <form className="px-3 my-2 input-group input-group-sm" onSubmit={this.handleSubmit}>
             <input
@@ -53,7 +52,7 @@ class ChatWidget extends React.Component {
             />
             <div className="input-group-append">
               <button className="btn btn-outline-secondary" type="button" onClick={this.handleSubmit}>
-              Send
+                Send
               </button>
             </div>
           </form>
