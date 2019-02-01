@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import { fetchState, addMessage } from '../middlewares/Chat';
 import * as selectors from '../selectors';
 import Messages from '../components/Messages';
-import UserInfo from './UserInfo';
 import InputWithEmoji from '../components/InputWithEmoji';
+import UserName from '../components/UserName';
 
 class ChatWidget extends React.Component {
   state = { message: '' };
@@ -66,7 +66,7 @@ class ChatWidget extends React.Component {
               >
                 {users.map(user => (
                   <div key={user.id} className="my-2">
-                    <UserInfo user={user} />
+                    <UserName user={user} />
                   </div>
                 ))}
               </div>
