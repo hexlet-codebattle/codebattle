@@ -179,7 +179,7 @@ class GameList extends React.Component {
   )
 
   renderStartNewGameSelector = () => (
-    <div className="dropdown">
+    <div className="dropdown mr-sm-3 mr-0 mb-sm-0 mb-3">
       <button
         id="btnGroupStartNewGame"
         type="button"
@@ -189,7 +189,7 @@ class GameList extends React.Component {
         aria-expanded="false"
       >
         <i className="fa fa-random mr-2" />
-          Play with any player
+        Create a game
       </button>
       <div className="dropdown-menu" aria-labelledby="btnGroupStartNewGame">
         {this.renderStartNewGameDropdownMenu('withRandomPlayer')}
@@ -202,13 +202,13 @@ class GameList extends React.Component {
       <button
         id="btnGroupPlayWithFriend"
         type="button"
-        className="btn btn-sm btn-outline-success dropdown-toggle"
+        className="btn btn-outline-success dropdown-toggle"
         data-toggle="dropdown"
         aria-haspopup="true"
         aria-expanded="false"
       >
         <i className="fa fa-male mr-2" />
-          Play with a friend
+        Play with a friend
       </button>
       <div className="dropdown-menu" aria-labelledby="btnGroupPlayWithFriend">
         {this.renderStartNewGameDropdownMenu('withFriend')}
@@ -291,57 +291,57 @@ class GameList extends React.Component {
     }
 
     return (
-      <div>
-        <h3 className="text-center mt-3 mb-4">New game</h3>
-        <div className="text-center">
-          <div>{this.renderStartNewGameSelector()}</div>
-          <div>or</div>
-          <div>{this.renderPlayWithFriendSelector()}</div>
-        </div>
-        <h3 className="text-center mt-5 mb-4">Active games</h3>
-        {this.renderActiveGames(activeGames)}
-        <div className="row px-4 mt-5 justify-content-center">
-          <div className="col-12 col-sm-8 col-md-6">
-            <GamesHeatmap />
+      <>
+        <div className="container bg-white shadow-sm py-4 mb-3">
+          <h3 className="text-center mb-4">New game</h3>
+          <div className="d-flex flex-sm-row flex-column align-items-center justify-content-center flex-wrap">
+            {this.renderStartNewGameSelector()}
+            {this.renderPlayWithFriendSelector()}
           </div>
         </div>
-        <h3 className="text-center mt-5 mb-4">Completed games</h3>
-        <div className="table-responsive">
-          <table className="table table-sm">
-            <thead>
-              <tr>
-                <th className="p-3 border-0">Date</th>
-                <th className="p-3 border-0">Level</th>
-                <th className="p-3 border-0" colSpan="2">Players</th>
-                <th className="p-3 border-0">Duration</th>
-                <th className="p-3 border-0">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {completedGames.map(game => (
-                <tr key={game.id}>
-                  <td className="p-3 align-middle text-nowrap">
-                    {moment
-                      .utc(game.updated_at)
-                      .local()
-                      .format('YYYY-MM-DD HH:mm')}
-                  </td>
-                  <td className="p-3 align-middle text-nowrap">
-                    {this.renderGameLevelBadge(game.level)}
-                  </td>
-                  {this.renderPlayers(game.id, game.players)}
-
-                  <td className="p-3 align-middle text-nowrap">
-                    {moment.duration(game.duration, 'seconds').humanize()}
-                  </td>
-
-                  <td className="p-3 align-middle">{this.renderShowGameButton(`/games/${game.id}`)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="container bg-white shadow-sm py-4 mb-3">
+          <h3 className="text-center mb-4">Active games</h3>
+          {this.renderActiveGames(activeGames)}
         </div>
-      </div>
+        <div className="container bg-white shadow-sm py-4">
+          <h3 className="text-center mb-4">Completed games</h3>
+          <div className="table-responsive">
+            <table className="table table-sm">
+              <thead>
+                <tr>
+                  <th className="p-3 border-0">Date</th>
+                  <th className="p-3 border-0">Level</th>
+                  <th className="p-3 border-0" colSpan="2">Players</th>
+                  <th className="p-3 border-0">Duration</th>
+                  <th className="p-3 border-0">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {completedGames.map(game => (
+                  <tr key={game.id}>
+                    <td className="p-3 align-middle text-nowrap">
+                      {moment
+                        .utc(game.updated_at)
+                        .local()
+                        .format('YYYY-MM-DD HH:mm')}
+                    </td>
+                    <td className="p-3 align-middle text-nowrap">
+                      {this.renderGameLevelBadge(game.level)}
+                    </td>
+                    {this.renderPlayers(game.id, game.players)}
+
+                    <td className="p-3 align-middle text-nowrap">
+                      {moment.duration(game.duration, 'seconds').humanize()}
+                    </td>
+
+                    <td className="p-3 align-middle">{this.renderShowGameButton(`/games/${game.id}`)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </>
     );
   }
 }

@@ -4,7 +4,6 @@ import { fetchState, addMessage } from '../middlewares/Chat';
 import { chatUsersSelector, chatMessagesSelector, currentChatUserSelector } from '../selectors';
 import Messages from '../components/Messages';
 import UserName from '../components/UserName';
-import InputWithEmoji from '../components/InputWithEmoji';
 
 class ChatWidget extends React.Component {
   state = { message: '' };
@@ -16,11 +15,12 @@ class ChatWidget extends React.Component {
     dispatch(fetchState());
   }
 
-  handleChange = (message) => {
-    this.setState({ message });
+  handleChange = (e) => {
+    this.setState({ message: e.target.value });
   };
 
-  handleSubmit = () => {
+  handleSubmit = (e) => {
+    e.preventDefault();
     const { message } = this.state;
     const {
       currentUser: { name },
@@ -40,29 +40,30 @@ class ChatWidget extends React.Component {
         <div className="col-12 col-sm-8 p-0 bg-white rounded-left">
           <Messages
             messages={messages}
-            className="overflow-auto px-3 py-3"
-            style={{ height: '180px' }}
+            className="overflow-auto px-3 mt-3 pb-0"
+            style={{ wordBreak: 'break-all', height: '164px' }}
           />
-          <div className="px-3 my-2 input-group input-group-sm">
-            <InputWithEmoji
+          <form className="px-3 my-2 input-group input-group-sm" onSubmit={this.handleSubmit}>
+            <input
+              className="form-control border-secondary"
+              placeholder="Type message here..."
               value={message}
-              handleChange={this.handleChange}
-              handleSubmit={this.handleSubmit}
+              onChange={this.handleChange}
             />
             <div className="input-group-append">
               <button className="btn btn-outline-secondary" type="button" onClick={this.handleSubmit}>
                 Send
               </button>
             </div>
-          </div>
+          </form>
         </div>
         <div className="col-4 d-none d-sm-block p-0 border-left bg-white rounded-right">
           <div className="d-flex flex-direction-column flex-wrap justify-content-between">
-            <div className="px-3 py-3 w-100">
-              <p className="mb-0">{`Online users: ${users.length}`}</p>
+            <div className="px-3 pt-3 pb-2 w-100">
+              <p className="mb-1">{`Online users: ${users.length}`}</p>
               <div
                 className="overflow-auto"
-                style={{ height: '180px' }}
+                style={{ height: '175px' }}
               >
                 {users.map(user => (
                   <div key={user.id} className="my-2">

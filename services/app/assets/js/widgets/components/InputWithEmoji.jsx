@@ -1,9 +1,9 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import ContentEditable from 'react-contenteditable';
 import EmojiPicker from './EmojiPicker';
 
 class InputWithEmoji extends PureComponent {
-  state = { selection: null, range: null };
+  state = { selection: null, range: null, inputVal: '' };
 
   inputRef = React.createRef();
 
@@ -69,14 +69,14 @@ class InputWithEmoji extends PureComponent {
   }
 
   render() {
-    const { value = '' } = this.props;
+    const { inputVal } = this.state;
     return (
-      <>
-        <ContentEditable
+      <Fragment>
+        <input
           className="form-control"
           type="text"
           placeholder="Type message here..."
-          html={value}
+          value={inputVal}
           onChange={this.onChange}
           onKeyPress={this.handleKeyPress}
           ref={this.inputRef}
@@ -86,7 +86,7 @@ class InputWithEmoji extends PureComponent {
           setSelectionAndRange={this.setSelectionAndRange}
           fallback={(emoji, props) => (emoji ? `:${emoji.short_names[0]}:` : props.emoji)}
         />
-      </>
+      </Fragment>
     );
   }
 }
