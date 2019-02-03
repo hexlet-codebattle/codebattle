@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import _ from 'lodash';
+import cn from 'classnames';
 import GameStatusCodes from '../config/gameStatusCodes';
 import * as selectors from '../selectors';
 import {
@@ -12,7 +13,7 @@ import {
 import LanguagePicker from '../components/LanguagePicker';
 import UserInfo from './UserInfo';
 import GameResultIcon from '../components/GameResultIcon';
-import EditorsModeToggle from '../components/EditorsModeToggle';
+import { setEditorsMode } from '../actions';
 
 class LeftEditorToolbar extends Component {
   static defaultProps = {
@@ -53,6 +54,31 @@ class LeftEditorToolbar extends Component {
     </div>
   );
 
+  renderVimModeBtn = () => {
+    const { setMode, leftEditorsMode } = this.props;
+    const isVimMode = leftEditorsMode === 'vim';
+    const nextMode = isVimMode ? 'default' : 'vim';
+    const classNames = cn({
+      btn: true,
+      'btn-sm': true,
+      border: true,
+      rounded: true,
+      'ml-2': true,
+      'btn-light': !isVimMode,
+      'btn-secondary': isVimMode,
+    });
+
+    return (
+      <button
+        type="button"
+        className={classNames}
+        onClick={() => setMode(nextMode)}
+      >
+        Vim
+      </button>
+    );
+  }
+
 
   render() {
     const {
@@ -81,7 +107,7 @@ class LeftEditorToolbar extends Component {
             onChange={setLang}
             disabled={isSpectator}
           />
-          {!isSpectator && <EditorsModeToggle />}
+          {!isSpectator && this.renderVimModeBtn()}
           {this.renderEditorHeightButtons(compressEditor, expandEditor, leftUserId)}
         </div>
         <GameResultIcon
@@ -110,6 +136,7 @@ const mapStateToProps = (state) => {
     players: selectors.gamePlayersSelector(state),
     title: selectors.gameStatusTitleSelector(state),
     task: selectors.gameTaskSelector(state),
+    leftEditorsMode: selectors.editorsModeSelector(leftUserId)(state),
   };
 };
 
@@ -118,6 +145,7 @@ const mapDispatchToProps = {
   setLang: changeCurrentLangAndSetTemplate,
   compressEditor: compressEditorHeight,
   expandEditor: expandEditorHeight,
+  setMode: setEditorsMode,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(LeftEditorToolbar);
