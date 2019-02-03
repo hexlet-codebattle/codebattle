@@ -9,8 +9,11 @@ export const currentUserIdSelector = state => state.user.currentUserId;
 
 export const gamePlayersSelector = state => state.game.players;
 
-export const firstPlayerSelector = state => _.find(gamePlayersSelector(state), { type: userTypes.firstPlayer });
-export const secondPlayerSelector = state => _.find(gamePlayersSelector(state), { type: userTypes.secondPlayer });
+export const firstPlayerSelector = state => _
+  .find(gamePlayersSelector(state), { type: userTypes.firstPlayer });
+
+export const secondPlayerSelector = state => _
+  .find(gamePlayersSelector(state), { type: userTypes.secondPlayer });
 
 const editorsMetaSelector = state => state.editor.meta;
 const editorTextsSelector = state => state.editor.text;
@@ -129,10 +132,12 @@ export const chatMessagesSelector = state => state.chat.messages;
 export const currentChatUserSelector = (state) => {
   const currentUserId = currentUserIdSelector(state);
 
-  return _.find(chatUsersSelector(state), {id: currentUserId});
+  return _.find(chatUsersSelector(state), { id: currentUserId });
 };
 
-export const editorsModeSelector = state => state.editorUI.mode;
+export const editorsModeSelector = currentUserId => state => (_
+  .hasIn(gamePlayersSelector(state), currentUserId) ? state.editorUI.mode : 'default');
+
 export const activeGamesSelector = (state) => {
   const currentUserId = currentUserIdSelector(state);
   const filterPrivateGamesFunc = ({ users, game_info: { state: gameStatus, type: gameType } }) => {
