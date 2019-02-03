@@ -1,7 +1,6 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-// import i18n from 'i18next';
 import Gon from 'gon';
 import GameWidget from './GameWidget';
 import InfoWidget from './InfoWidget';

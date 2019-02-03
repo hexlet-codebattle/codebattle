@@ -1,49 +1,39 @@
-section.jumbotron
+section.jumbotron.bg-transparent.mb-0
   .container
     .row
-      .col-12.col-sm-6.col-xl-7.text-center.mb-5.mb-sm-0
-        h1.jumbotron-heading Achieve mastery through challenge
-          p.lead.text-muted Improve your skills by training with others on real code challenges
-          a href="#{auth_path(@conn, :request, :github)}"
-            button.btn.btn-success.btn-lg = "Start playing"
-      .col-12.col-sm-6.col-xl-5.d-flex.align-content-center
+      .col-12.text-center.mb-4
+        h1.jumbotron-heading.mb-3 Achieve mastery through challenge
+        p.lead.mb-3 Improve your skills by training with others on real code challenges
+        a.btn.btn-success.btn-lg href="#{auth_path(@conn, :request, :github)}" = "Start playing"
+      .col-12.d-flex.align-content-center
         .d-flex.flex-wrap.w-100.justify-content-center.align-content-center
-          a href="#{auth_path(@conn, :request, :github)}"
-            button.btn.btn-sm.btn-outline-success.m-2
-              i.icon-clojure.pr-1
-              = "Clojure"
-          a href="#{auth_path(@conn, :request, :github)}"
-            button.btn.btn-sm.btn-outline-success.m-2
-              i.icon-elixir.pr-1
-              = "Elixir"
-          a href="#{auth_path(@conn, :request, :github)}"
-            button.btn.btn-sm.btn-outline-success.m-2
-              i.icon-haskell.pr-1
-              = "Haskell"
-          a href="#{auth_path(@conn, :request, :github)}"
-            button.btn.btn-sm.btn-outline-success.m-2
-              i.icon-javascript-alt.pr-1
-              = "JavaScript"
-          a href="#{auth_path(@conn, :request, :github)}"
-            button.btn.btn-sm.btn-outline-success.m-2
-              i.icon-perl.pr-1
-              = "Perl"
-          a href="#{auth_path(@conn, :request, :github)}"
-            button.btn.btn-sm.btn-outline-success.m-2
-              i.icon-php.pr-1
-              = "PHP"
-          a href="#{auth_path(@conn, :request, :github)}"
-            button.btn.btn-sm.btn-outline-success.m-2
-              i.icon-python.pr-1
-              = "Python"
-          a href="#{auth_path(@conn, :request, :github)}"
-            button.btn.btn-sm.btn-outline-success.m-2
-              i.icon-ruby.pr-1
-              = "Ruby"
+          a.m-2.btn.btn-sm.btn-outline-secondary href="#{auth_path(@conn, :request, :github)}"
+            i.icon-clojure.pr-1
+            = "Clojure"
+          a.btn.btn-sm.btn-outline-secondary.m-2 href="#{auth_path(@conn, :request, :github)}"
+            i.icon-elixir.pr-1
+            = "Elixir"
+          a.btn.btn-sm.btn-outline-secondary.m-2 href="#{auth_path(@conn, :request, :github)}"
+            i.icon-haskell.pr-1
+            = "Haskell"
+          a.btn.btn-sm.btn-outline-secondary.m-2 href="#{auth_path(@conn, :request, :github)}"
+            i.icon-javascript-alt.pr-1
+            = "JavaScript"
+          a.btn.btn-sm.btn-outline-secondary.m-2 href="#{auth_path(@conn, :request, :github)}"
+            i.icon-perl.pr-1
+            = "Perl"
+          a.btn.btn-sm.btn-outline-secondary.m-2 href="#{auth_path(@conn, :request, :github)}"
+            i.icon-php.pr-1
+            = "PHP"
+          a.btn.btn-sm.btn-outline-secondary.m-2 href="#{auth_path(@conn, :request, :github)}"
+            i.icon-python.pr-1
+            = "Python"
+          a.btn.btn-sm.btn-outline-secondary.m-2 href="#{auth_path(@conn, :request, :github)}"
+            i.icon-ruby.pr-1
+            = "Ruby"
 
 .container
   .row.justify-content-center
     .col-12
       .embed-container
-        iframe src="https://player.vimeo.com/video/296164641?background=1&autoplay=1&loop=1&speed=2x" frameborder="0" allow="autoplay" webkitallowfullscreen mozallowfullscreen allowfullscreen
-
+        iframe src="https://player.vimeo.com/video/296164641?background=1&autoplay=1&loop=1&speed=2x" frameborder="0" webkitallowfullscreen="true" mozallowfullscreen="true" allowfullscreen="true"

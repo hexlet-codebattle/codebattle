@@ -1,6 +1,4 @@
-.row
-  .container-fluid
-    .jumbotron
-      h1.display-4 = gettext "Game over"
-      p.lead = "The winner is #{user_name(get_winner(assigns[:fsm]))}"
-
+.container-fluid
+  .container.bg-white.shadow-sm.py-4.mb-3
+    h3.text-center.mb-4 = gettext "Game over"
+    p.lead = "The winner is #{user_name(get_winner(assigns[:fsm]))}"

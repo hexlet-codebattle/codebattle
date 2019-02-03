@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import _ from 'lodash';
-// import i18n from '../../i18n';
 import GameStatusCodes from '../config/gameStatusCodes';
 import * as selectors from '../selectors';
 import {
@@ -11,7 +10,7 @@ import {
   expandEditorHeight,
 } from '../middlewares/Game';
 import LanguagePicker from '../components/LanguagePicker';
-import UserName from '../components/UserName';
+import UserInfo from './UserInfo';
 import GameResultIcon from '../components/GameResultIcon';
 import EditorsModeToggle from '../components/EditorsModeToggle';
 
@@ -20,13 +19,13 @@ class LeftEditorToolbar extends Component {
     status: GameStatusCodes.initial,
     title: '',
     onlineUsers: [],
-  }
+  };
 
   renderNameplate = (player = {}, onlineUsers) => {
     const color = _.find(onlineUsers, { id: player.id }) ? 'green' : '#ccc';
     return (
       <div>
-        <UserName user={player} />
+        <UserInfo user={player} />
         <span
           className="fa fa-plug align-middle ml-2"
           style={{ color }}
