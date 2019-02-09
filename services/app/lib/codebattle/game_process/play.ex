@@ -354,6 +354,7 @@ defmodule Codebattle.GameProcess.Play do
 
     {winner_rating, loser_rating} = Elo.calc_elo(winner.rating, loser.rating, difficulty)
 
+
     duration = NaiveDateTime.diff(TimeHelper.utc_now(), FsmHelpers.get_starts_at(fsm))
 
     game_id
@@ -376,9 +377,32 @@ defmodule Codebattle.GameProcess.Play do
       creator: loser.creator
     })
 
+    new_achivements = recalculate_achivments(winner)
+
+
+    :bot, :games_count, :core_team
+
+    {[], user}
+    def verb_game_10({new_achivements, user})
+    if :games_count in user.achevements return {new_achivements, user}
+
+    else
+      if Query.call(user.id) == true
+        return {new_achivements ++ :games_10, user}
+      else
+        return {new_achivements, user}
+      end
+    end
+
+    |>:games_count
+
+
+
+    recalculate_achivments(loser)
+
     if winner.id != 0 do
       winner
-      |> User.changeset(%{rating: winner_rating})
+      |> User.changeset(%{rating: winner_rating, achivements: new_achivements})
       |> Repo.update!()
     end
 

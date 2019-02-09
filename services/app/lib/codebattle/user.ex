@@ -33,6 +33,7 @@ defmodule Codebattle.User do
     field(:bot, :boolean, virtual: true, default: false)
     field(:creator, :boolean, virtual: true, default: false)
     field(:game_result, :string, virtual: true)
+    field(:achivments, :array)
 
     has_many(:user_games, Codebattle.UserGame)
     has_many(:games, through: [:user_games, :game])
