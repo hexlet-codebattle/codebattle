@@ -4,29 +4,51 @@ defmodule Codebattle.User.Achievements do
 """
   alias Codebattle.{Repo, UserGame}
   alias Codebattle.User.Stats
-  alias Codebattle.GameProcess.FsmHelpers
 
   import Ecto.Query, warn: false
 
-  def recalculate_achievements(fsm, id) do
-    player = FsmHelpers.get_player(fsm, id)
-    {player.achievements, id}
-    |>played_ten_games
+  def recalculate_achievements(user) do
+    {user.achievements, user}
+    |>count_played_games
     |>elem(0)
   end
 
-  def played_ten_games({achievements, id}) do
+  def count_played_games({achievements, user}) do
     query = from ug in UserGame,
                  select: ug.result,
-                 where: ug.user_id == ^id
+                 where: ug.user_id == ^user.id
     data = Repo.all(query)
-    user_games = Enum.into(data, [])
+    user_games = Enum.count(Enum.into(data, []))
     cond do
-      Enum.member?(achievements, "played_ten_games") ->
-        {achievements, id}
-      Enum.count(user_games) >= 10 ->
-        {achievements ++ ["played_ten_games"], id}
-      true -> {achievements, id}
+      user_games >= 10 && user_games < 50 ->
+        if Enum.member?(achievements, "played_ten_games") do
+          {achievements, user}
+        else
+          {achievements ++ ["played_ten_games"], user}
+        end
+      user_games >= 50 && user_games < 100 ->
+         if Enum.member?(achievements, "played_fifty_games") do
+           {achievements, user}
+         else
+           {achievements ++ ["played_fifty_games"], user}
+         end
+      user_games >= 100 ->
+        if Enum.member?(achievements, "played_hundred_games") do
+          {achievements, user}
+        else
+          {achievements ++ ["played_hundred_games"], user}
+        end
     end
+  end
+
+  def check_bot({achievements, user}) do
+    cond do
+      Enum.member?(achievements, "bot") ->
+        {achievements, user}
+      user.bot == true ->
+        {{achievements ++ ["bot"], user}}
+      true -> {achievements, user}
+    end
+
   end
 end

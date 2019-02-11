@@ -10,7 +10,7 @@ const UserInfo = ({ dispatch, user, usersStats }) => {
   const userStats = usersStats[user.id];
   const statsPopover = (
     <Popover title="Stats">
-      <UserStats stats={userStats} />
+      <UserStats data={userStats} />
     </Popover>
   );
 

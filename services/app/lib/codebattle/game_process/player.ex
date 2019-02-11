@@ -14,7 +14,7 @@ defmodule Codebattle.GameProcess.Player do
             public_id: "",
             name: "",
             rating: "",
-            achievements: "[]"
+            achievements: []
 
   def from_user(user, params \\ %{}) do
     player =
@@ -25,7 +25,6 @@ defmodule Codebattle.GameProcess.Player do
         _ ->
           editor_lang = user.lang || "js"
           editor_text = Languages.get_solution(editor_lang)
-          achievements = user.achievements || []
 
           %__MODULE__{
             id: user.id,
@@ -35,7 +34,7 @@ defmodule Codebattle.GameProcess.Player do
             rating: user.rating,
             editor_lang: editor_lang,
             editor_text: editor_text,
-            achievements: achievements
+            achievements: user.achievements
           }
       end
 

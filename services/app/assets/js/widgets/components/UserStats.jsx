@@ -1,18 +1,37 @@
 import React from 'react';
 import Loading from './Loading';
 
-const UserStats = ({ stats }) => {
-  if (stats) {
+const UserStats = ({ data }) => {
+  console.log('render');
+  if (data) {
+    const { stats, achievements } = data;
     return (
       <div>
-        Won:
-        <b className="text-success">{stats.won}</b>
-        <br />
-        Lost:
-        <b className="text-danger">{stats.lost}</b>
-        <br />
-        Gave up:
-        <b className="text-warning">{stats.gave_up}</b>
+        <ul className="list-inline">
+          <li className="list-inline-item">
+            Won:
+            {' '}
+            <b className="text-success">{stats.won}</b>
+          </li>
+          <li className="list-inline-item">
+            Lost:
+            {' '}
+            <b className="text-danger">{stats.lost}</b>
+          </li>
+          <li className="list-inline-item">
+            Gave up:
+            {' '}
+            <b className="text-warning">{stats.gave_up}</b>
+          </li>
+        </ul>
+          Achievements:
+        <ul className="list-inline">
+          {achievements.map(el => (
+            <li key={el} className="list-inline-item">
+              <img src={`/assets/images/achievements/${el}.png`} alt={el} height="50" width="50" />
+            </li>
+          ))}
+        </ul>
       </div>
     );
   }

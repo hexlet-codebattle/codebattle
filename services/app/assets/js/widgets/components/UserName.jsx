@@ -16,6 +16,12 @@ const UserName = ({
     </span>
   );
 
+  const displayDiff = (num) => {
+    if (num < 0) {
+      return <small className="text-danger">{` ${num}`}</small>;
+    }
+    return <small className="text-success">{` +${num}`}</small>;
+  };
   const githubUser = (
     <a
       href={`/users/${id}`}
@@ -32,7 +38,7 @@ const UserName = ({
       <small>
         {_.isFinite(rating) && rating}
       </small>
-      {ratingDiff ? <small className={ratingDiff < 0 ? 'text-danger' : 'text-success'}>{ratingDiff}</small> : ''}
+      {ratingDiff ? displayDiff(ratingDiff) : ''}
     </a>
   );
 

@@ -324,14 +324,14 @@ defmodule Codebattle.GameProcess.Play do
     })
 
     if winner.id != 0 do
-      winner_achievements = Achievements.recalculate_achievements(fsm, winner.id)
+      winner_achievements = Achievements.recalculate_achievements(winner)
       winner
       |> User.changeset(%{rating: winner_rating, achievements: winner_achievements})
       |> Repo.update!()
     end
 
     if loser.id != 0 do
-      loser_achievements = Achievements.recalculate_achievements(fsm, loser.id)
+      loser_achievements = Achievements.recalculate_achievements(loser)
       loser
       |> User.changeset(%{rating: loser_rating, achievements: loser_achievements})
       |> Repo.update!()
@@ -379,14 +379,14 @@ defmodule Codebattle.GameProcess.Play do
     })
 
     if loser.id != 0 do
-      loser_achievements = Achievements.recalculate_achievements(fsm, loser.id)
+      loser_achievements = Achievements.recalculate_achievements(loser)
       loser
       |> User.changeset(%{rating: loser_rating, achievements: loser_achievements})
       |> Repo.update!()
     end
 
     if winner.id != 0 do
-      winner_achievements = Achievements.recalculate_achievements(fsm, winner.id)
+      winner_achievements = Achievements.recalculate_achievements(winner)
       winner
       |> User.changeset(%{rating: winner_rating, achievements: winner_achievements})
       |> Repo.update!()

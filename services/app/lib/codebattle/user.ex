@@ -17,7 +17,8 @@ defmodule Codebattle.User do
              :editor_theme,
              :creator,
              :game_result,
-             :rating_diff
+             :rating_diff,
+             :achievements
            ]}
 
   schema "users" do
