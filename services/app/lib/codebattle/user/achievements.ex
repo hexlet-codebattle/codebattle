@@ -9,8 +9,8 @@ defmodule Codebattle.User.Achievements do
 
   def recalculate_achievements(user) do
     {user.achievements, user}
-    |>count_played_games
-    |>elem(0)
+      |> count_played_games
+      |> elem(0)
 
   end
 
