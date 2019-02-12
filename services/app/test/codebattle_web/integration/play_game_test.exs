@@ -89,7 +89,6 @@ defmodule Codebattle.PlayGameTest do
       Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text1, lang: "js"})
       :timer.sleep(100)
       fsm = Server.fsm(game_id)
-      IO.inspect(fsm)
       assert fsm.state == :game_over
       assert FsmHelpers.get_first_player(fsm).name == "first"
       assert FsmHelpers.get_second_player(fsm).name == "second"

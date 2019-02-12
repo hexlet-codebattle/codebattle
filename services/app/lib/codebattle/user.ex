@@ -17,8 +17,8 @@ defmodule Codebattle.User do
              :editor_theme,
              :creator,
              :game_result,
-             :rating_diff,
-             :achievements
+             :achievements,
+             :rating_diff
            ]}
 
   schema "users" do
@@ -36,7 +36,7 @@ defmodule Codebattle.User do
     field(:creator, :boolean, virtual: true, default: false)
     field(:game_result, :string, virtual: true)
     field(:achievements, {:array, :string}, default: [])
-    field(:rating_diff, :integer)
+    field(:rating_diff, :integer, virtual: true)
 
     has_many(:user_games, Codebattle.UserGame)
     has_many(:games, through: [:user_games, :game])
