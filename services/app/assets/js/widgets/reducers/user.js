@@ -36,7 +36,6 @@ const reducer = handleActions({
 
   [actions.updateUsersStats](state, { payload }) {
     const { userId, stats, achievements } = payload;
-    console.log(payload);
     return {
       ...state,
       usersStats: {

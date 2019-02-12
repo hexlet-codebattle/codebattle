@@ -23,5 +23,3 @@ export const fetchState = () => (dispatch) => {
     ({ active_games: activeGames, completed_games: completedGames }) => dispatch(fetchGameList({ activeGames, completedGames })),
   );
 };
-
-

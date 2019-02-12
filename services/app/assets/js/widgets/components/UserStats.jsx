@@ -2,25 +2,21 @@ import React from 'react';
 import Loading from './Loading';
 
 const UserStats = ({ data }) => {
-  console.log('render');
   if (data) {
     const { stats, achievements } = data;
     return (
       <div>
         <ul className="list-inline">
           <li className="list-inline-item">
-            Won:
-            {' '}
+            Won:&nbsp;
             <b className="text-success">{stats.won}</b>
           </li>
           <li className="list-inline-item">
-            Lost:
-            {' '}
+            Lost:&nbsp;
             <b className="text-danger">{stats.lost}</b>
           </li>
           <li className="list-inline-item">
-            Gave up:
-            {' '}
+            Gave up:&nbsp;
             <b className="text-warning">{stats.gave_up}</b>
           </li>
         </ul>
