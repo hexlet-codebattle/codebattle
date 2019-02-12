@@ -4,6 +4,7 @@ defmodule CodebattleWeb.LobbyChannelTest do
   alias CodebattleWeb.LobbyChannel
   alias CodebattleWeb.UserSocket
 
+
   setup do
     task = insert(:task)
     # game = insert(:game, task_id: task.id, task_level: task.level, state: "game_over")

@@ -8,6 +8,7 @@ defmodule Codebattle.GameProcess.Play do
   import Ecto.Query, warn: false
 
   alias Codebattle.{Repo, Game, User, UserGame}
+  alias Codebattle.User.Achievements
 
   alias Codebattle.GameProcess.{
     Server,
@@ -47,7 +48,12 @@ defmodule Codebattle.GameProcess.Play do
 
       winner =
         Map.get(winner_user_game, :user)
-        |> Map.merge(%{creator: winner_user_game.creator, game_result: winner_user_game.result})
+        |> Map.merge(%{
+          creator: winner_user_game.creator,
+          game_result: winner_user_game.result,
+          lang: winner_user_game.lang,
+          rating: winner_user_game.rating,
+          rating_diff: winner_user_game.rating_diff})
 
       loser_user_game =
         game.user_games
@@ -56,7 +62,12 @@ defmodule Codebattle.GameProcess.Play do
 
       loser =
         Map.get(loser_user_game, :user)
-        |> Map.merge(%{creator: loser_user_game.creator, game_result: loser_user_game.result})
+        |> Map.merge(%{
+          creator: loser_user_game.creator,
+          game_result: loser_user_game.result,
+          lang: loser_user_game.lang,
+          rating: loser_user_game.rating,
+          rating_diff: loser_user_game.rating_diff})
 
       %{updated_at: updated_at} = game
 
@@ -234,7 +245,6 @@ defmodule Codebattle.GameProcess.Play do
           result: result,
           output: output
         })
-
         {_response, fsm} = Server.call_transition(id, :complete, %{id: user.id})
         handle_won_game(id, user, fsm)
         {:ok, fsm, result, output}
@@ -282,6 +292,8 @@ defmodule Codebattle.GameProcess.Play do
     difficulty = fsm.data.level
 
     {winner_rating, loser_rating} = Elo.calc_elo(winner.rating, loser.rating, difficulty)
+    winner_rating_diff = winner_rating - winner.rating
+    loser_rating_diff = loser_rating - loser.rating
 
     duration = NaiveDateTime.diff(TimeHelper.utc_now(), FsmHelpers.get_starts_at(fsm))
 
@@ -295,25 +307,33 @@ defmodule Codebattle.GameProcess.Play do
       game_id: game_id,
       user_id: winner.id,
       result: "won",
-      creator: winner.creator
+      creator: winner.creator,
+      rating: winner_rating,
+      rating_diff: winner_rating_diff,
+      lang: winner.lang
     })
 
     Repo.insert!(%UserGame{
       game_id: game_id,
       user_id: loser.id,
       result: "lost",
-      creator: loser.creator
+      creator: loser.creator,
+      rating: loser_rating,
+      rating_diff: loser_rating_diff,
+      lang: loser.lang
     })
 
     if winner.id != 0 do
+      winner_achievements = Achievements.recalculate_achievements(winner)
       winner
-      |> User.changeset(%{rating: winner_rating})
+      |> User.changeset(%{rating: winner_rating, achievements: winner_achievements})
       |> Repo.update!()
     end
 
     if loser.id != 0 do
+      loser_achievements = Achievements.recalculate_achievements(loser)
       loser
-      |> User.changeset(%{rating: loser_rating})
+      |> User.changeset(%{rating: loser_rating, achievements: loser_achievements})
       |> Repo.update!()
     end
 
@@ -328,6 +348,8 @@ defmodule Codebattle.GameProcess.Play do
     difficulty = fsm.data.level
 
     {winner_rating, loser_rating} = Elo.calc_elo(winner.rating, loser.rating, difficulty)
+    winner_rating_diff = winner_rating - winner.rating;
+    loser_rating_diff = loser_rating - loser.rating;
 
     duration = NaiveDateTime.diff(TimeHelper.utc_now(), FsmHelpers.get_starts_at(fsm))
 
@@ -340,25 +362,33 @@ defmodule Codebattle.GameProcess.Play do
       game_id: game_id,
       user_id: loser.id,
       result: "gave_up",
-      creator: loser.creator
+      creator: loser.creator,
+      rating: loser_rating,
+      rating_diff: loser_rating_diff,
+      lang: loser.lang
     })
 
     Repo.insert!(%UserGame{
       game_id: game_id,
       user_id: winner.id,
       result: "won",
-      creator: winner.creator
+      creator: winner.creator,
+      rating: winner_rating,
+      rating_diff: winner_rating_diff,
+      lang: winner.lang
     })
 
     if loser.id != 0 do
+      loser_achievements = Achievements.recalculate_achievements(loser)
       loser
-      |> User.changeset(%{rating: loser_rating})
+      |> User.changeset(%{rating: loser_rating, achievements: loser_achievements})
       |> Repo.update!()
     end
 
     if winner.id != 0 do
+      winner_achievements = Achievements.recalculate_achievements(winner)
       winner
-      |> User.changeset(%{rating: winner_rating})
+      |> User.changeset(%{rating: winner_rating, achievements: winner_achievements})
       |> Repo.update!()
     end
 

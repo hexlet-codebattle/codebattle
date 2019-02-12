@@ -4,6 +4,7 @@
       .row
         .col-10.col-sm-4.col-md-2.m-auto
           img.attachment.user.avatar.img-fluid.rounded[alt="#{@user.name}" src="https://avatars0.githubusercontent.com/u/#{@user.github_id}"]
+
       h1.mt-1.mb-0
         = @user.name
         a.text-muted[href="https://github.com/#{@user.github_name}"]
@@ -11,7 +12,6 @@
             span.fa.fa-github.mt-5.pl-3
         h2.mt-1.mb-0
           = "Lang: #{@user.lang}"
-
   .row.px-4.mt-5.justify-content-center
     .col-6
       #heatmap-root
@@ -31,3 +31,12 @@
         = length(@games)
       p.lead
         | games played
+  .row
+    .col-12.text-center.mt-4
+      h2.mt-1.mb-0
+        | Achievements:
+      ul.list-inline
+        = for achievement <- @user.achievements do
+          li.list-inline-item
+            img.img-fluid.rounded[alt="#{achievement}" title="#{achievement}" src="/assets/images/achievements/#{achievement}.png" width="200" height="200"]
+  

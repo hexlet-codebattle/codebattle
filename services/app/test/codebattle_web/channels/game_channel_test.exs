@@ -208,7 +208,6 @@ defmodule CodebattleWeb.GameChannelTest do
     game = Repo.get(Game, game.id)
     user1 = Repo.get(User, user1.id)
     user2 = Repo.get(User, user2.id)
-
     assert game.state == "game_over"
     assert user1.rating == 988
     assert user2.rating == 1012
