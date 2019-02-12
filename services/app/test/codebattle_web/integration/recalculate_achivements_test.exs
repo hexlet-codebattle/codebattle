@@ -6,13 +6,12 @@ defmodule RecalculateAchivementsTest do
 
   alias Codebattle.GameProcess.Server
   alias CodebattleWeb.UserSocket
-  alias Codebattle.User.Achievements
   alias Codebattle.User
 
   setup %{conn: conn} do
     insert(:task)
-    user1 = insert(:user, %{name: "first", email: "test1@test.test", github_id: 1, rating: 1000, achievements: []})
-    user2 = insert(:user, %{name: "second", email: "test2@test.test", github_id: 2, rating: 1000, achievements: []})
+    user1 = insert(:user, %{name: "first", email: "test1@test.test", github_id: 1, rating: 1000})
+    user2 = insert(:user, %{name: "second", email: "test2@test.test", github_id: 2, rating: 1000})
 
     conn1 = put_session(conn, :user_id, user1.id)
     conn2 = put_session(conn, :user_id, user2.id)
@@ -34,9 +33,7 @@ defmodule RecalculateAchivementsTest do
       {Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> {:ok, "asdf", "asdf"} end]}
     ]
     do
-      #refactor
-    user1_games_struct = insert_list(9, :user_game, %{user: user1})
-    #Repo.insert_all(UserGame, user1_games)
+    insert_list(9, :user_game, %{user: user1})
     # Create game
     conn =
       conn1
