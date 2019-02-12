@@ -33,7 +33,6 @@ defmodule Codebattle.GameProcess.Fsm do
 
   defstate initial do
     defevent create(params), data: data do
-
       next_state(:waiting_opponent, %{
         data
         | game_id: params.game_id,

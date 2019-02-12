@@ -53,7 +53,8 @@ defmodule Codebattle.GameProcess.Play do
           game_result: winner_user_game.result,
           lang: winner_user_game.lang,
           rating: winner_user_game.rating,
-          rating_diff: winner_user_game.rating_diff})
+          rating_diff: winner_user_game.rating_diff
+        })
 
       loser_user_game =
         game.user_games
@@ -67,7 +68,8 @@ defmodule Codebattle.GameProcess.Play do
           game_result: loser_user_game.result,
           lang: loser_user_game.lang,
           rating: loser_user_game.rating,
-          rating_diff: loser_user_game.rating_diff})
+          rating_diff: loser_user_game.rating_diff
+        })
 
       %{updated_at: updated_at} = game
 
@@ -130,7 +132,9 @@ defmodule Codebattle.GameProcess.Play do
             Task.async(fn ->
               Notifier.call(:game_created, %{level: level, game: game, player: player})
             end)
+
           _ ->
+            nil
         end
 
         {:ok, game.id}
@@ -245,6 +249,7 @@ defmodule Codebattle.GameProcess.Play do
           result: result,
           output: output
         })
+
         {_response, fsm} = Server.call_transition(id, :complete, %{id: user.id})
         handle_won_game(id, user, fsm)
         {:ok, fsm, result, output}
@@ -325,6 +330,7 @@ defmodule Codebattle.GameProcess.Play do
 
     if winner.id != 0 do
       winner_achievements = Achievements.recalculate_achievements(winner)
+
       winner
       |> User.changeset(%{rating: winner_rating, achievements: winner_achievements})
       |> Repo.update!()
@@ -332,6 +338,7 @@ defmodule Codebattle.GameProcess.Play do
 
     if loser.id != 0 do
       loser_achievements = Achievements.recalculate_achievements(loser)
+
       loser
       |> User.changeset(%{rating: loser_rating, achievements: loser_achievements})
       |> Repo.update!()
@@ -348,8 +355,8 @@ defmodule Codebattle.GameProcess.Play do
     difficulty = fsm.data.level
 
     {winner_rating, loser_rating} = Elo.calc_elo(winner.rating, loser.rating, difficulty)
-    winner_rating_diff = winner_rating - winner.rating;
-    loser_rating_diff = loser_rating - loser.rating;
+    winner_rating_diff = winner_rating - winner.rating
+    loser_rating_diff = loser_rating - loser.rating
 
     duration = NaiveDateTime.diff(TimeHelper.utc_now(), FsmHelpers.get_starts_at(fsm))
 
@@ -380,6 +387,7 @@ defmodule Codebattle.GameProcess.Play do
 
     if loser.id != 0 do
       loser_achievements = Achievements.recalculate_achievements(loser)
+
       loser
       |> User.changeset(%{rating: loser_rating, achievements: loser_achievements})
       |> Repo.update!()
@@ -387,6 +395,7 @@ defmodule Codebattle.GameProcess.Play do
 
     if winner.id != 0 do
       winner_achievements = Achievements.recalculate_achievements(winner)
+
       winner
       |> User.changeset(%{rating: winner_rating, achievements: winner_achievements})
       |> Repo.update!()

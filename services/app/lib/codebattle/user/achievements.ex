@@ -1,7 +1,7 @@
 defmodule Codebattle.User.Achievements do
   @moduledoc """
-  Count user achievements
-"""
+    Count user achievements
+  """
   alias Codebattle.{Repo, UserGame}
   alias Codebattle.User.Stats
 
@@ -9,17 +9,20 @@ defmodule Codebattle.User.Achievements do
 
   def recalculate_achievements(user) do
     {user.achievements, user}
-    |>count_played_games
-    |>elem(0)
-
+    |> count_played_games
+    |> elem(0)
   end
 
   def count_played_games({achievements, user}) do
-    query = from ug in UserGame,
-                 select: ug.result,
-                 where: ug.user_id == ^user.id
+    query =
+      from(ug in UserGame,
+        select: ug.result,
+        where: ug.user_id == ^user.id
+      )
+
     data = Repo.all(query)
     user_games = Enum.count(Enum.into(data, []))
+
     cond do
       user_games >= 10 && user_games < 50 ->
         if Enum.member?(achievements, "played_ten_games") do
@@ -27,12 +30,14 @@ defmodule Codebattle.User.Achievements do
         else
           {achievements ++ ["played_ten_games"], user}
         end
+
       user_games >= 50 && user_games < 100 ->
-         if Enum.member?(achievements, "played_fifty_games") do
-           {achievements, user}
-         else
-           {achievements ++ ["played_fifty_games"], user}
-         end
+        if Enum.member?(achievements, "played_fifty_games") do
+          {achievements, user}
+        else
+          {achievements ++ ["played_fifty_games"], user}
+        end
+
       user_games >= 100 ->
         if Enum.member?(achievements, "played_hundred_games") do
           {achievements, user}
@@ -46,10 +51,12 @@ defmodule Codebattle.User.Achievements do
     cond do
       Enum.member?(achievements, "bot") ->
         {achievements, user}
+
       user.bot == true ->
         {{achievements ++ ["bot"], user}}
-      true -> {achievements, user}
-    end
 
+      true ->
+        {achievements, user}
+    end
   end
 end
