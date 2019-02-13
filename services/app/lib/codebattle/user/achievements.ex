@@ -11,7 +11,6 @@ defmodule Codebattle.User.Achievements do
     {user.achievements, user}
       |> count_played_games
       |> elem(0)
-
   end
 
   def count_played_games({achievements, user}) do
