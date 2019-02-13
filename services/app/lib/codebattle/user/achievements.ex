@@ -44,6 +44,9 @@ defmodule Codebattle.User.Achievements do
         else
           {achievements ++ ["played_hundred_games"], user}
         end
+
+      true ->
+        {achievements, user}
     end
   end
 
