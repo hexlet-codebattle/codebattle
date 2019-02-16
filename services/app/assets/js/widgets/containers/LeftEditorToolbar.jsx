@@ -14,6 +14,7 @@ import LanguagePicker from '../components/LanguagePicker';
 import UserInfo from './UserInfo';
 import GameResultIcon from '../components/GameResultIcon';
 import { setEditorsMode } from '../actions';
+import EditorModes from '../config/editorModes';
 
 class LeftEditorToolbar extends Component {
   static defaultProps = {
@@ -56,14 +57,9 @@ class LeftEditorToolbar extends Component {
 
   renderVimModeBtn = () => {
     const { setMode, leftEditorsMode } = this.props;
-    const isVimMode = leftEditorsMode === 'vim';
-    const nextMode = isVimMode ? 'default' : 'vim';
-    const classNames = cn({
-      btn: true,
-      'btn-sm': true,
-      border: true,
-      rounded: true,
-      'ml-2': true,
+    const isVimMode = leftEditorsMode === EditorModes.vim;
+    const nextMode = isVimMode ? EditorModes.default : EditorModes.vim;
+    const classNames = cn('btn btn-sm border rounded ml-2', {
       'btn-light': !isVimMode,
       'btn-secondary': isVimMode,
     });

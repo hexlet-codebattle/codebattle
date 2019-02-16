@@ -1,9 +1,10 @@
 import { handleActions } from 'redux-actions';
 import * as actions from '../actions';
+import EditorModes from '../config/editorModes';
 
 
 const initialState = {
-  mode: 'default',
+  mode: EditorModes.default,
 };
 
 const editorUI = handleActions({

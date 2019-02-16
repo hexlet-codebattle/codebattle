@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import userTypes from '../config/userTypes';
 import GameStatusCodes from '../config/gameStatusCodes';
+import EditorModes from '../config/editorModes';
 import i18n from '../../i18n';
 import { makeEditorTextKey } from '../reducers';
 import { defaultEditorHeight } from '../config/editorSettings';
@@ -135,13 +136,17 @@ export const currentChatUserSelector = (state) => {
   return _.find(chatUsersSelector(state), { id: currentUserId });
 };
 
-export const editorsModeSelector = currentUserId => state => (_
-  .hasIn(gamePlayersSelector(state), currentUserId) ? state.editorUI.mode : 'default');
+export const editorsModeSelector = currentUserId => (state) => {
+  if (_.hasIn(gamePlayersSelector(state), currentUserId)) {
+    return state.editorUI.mode;
+  }
+  return EditorModes.default;
+};
 
 export const activeGamesSelector = (state) => {
   const currentUserId = currentUserIdSelector(state);
   const filterPrivateGamesFunc = ({ users, game_info: { state: gameStatus, type: gameType } }) => {
-    if (gameStatus !== 'waiting_opponent' || gameType !== 'private') {
+    if (gameStatus !== GameStatusCodes.waitingOpponent || gameType !== 'private') {
       return true;
     }
     return _.some(users, { id: currentUserId });
