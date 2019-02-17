@@ -1,3 +1,4 @@
+/* eslint-disable no-bitwise */
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import MonacoEditor from 'react-monaco-editor';
@@ -12,7 +13,7 @@ class Editor extends PureComponent {
     editable: PropTypes.bool,
     syntax: PropTypes.string,
     onChange: PropTypes.func,
-    mode: PropTypes.string,
+    mode: PropTypes.string.isRequired,
   }
 
   static defaultProps = {
@@ -20,7 +21,6 @@ class Editor extends PureComponent {
     editable: false,
     onChange: null,
     syntax: 'javascript',
-    mode: 'default',
   }
 
   notIncludedSyntaxHightlight = new Set(['haskell', 'elixir'])
@@ -71,10 +71,6 @@ class Editor extends PureComponent {
 
   handleResize = () => this.editor.layout();
 
-  handleChange = (content) => {
-    const { onCodeChange } = this.props;
-    onCodeChange({ content });
-  }
 
   editorDidMount = (editor, monaco) => {
     this.editor = editor;
@@ -84,7 +80,6 @@ class Editor extends PureComponent {
       this.editor.focus();
     } else {
       // disable copying for spectator
-      // eslint-disable-next-line no-bitwise
       this.editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_C, () => null);
       this.editor.onDidChangeCursorSelection(
         () => {
@@ -95,7 +90,6 @@ class Editor extends PureComponent {
     }
     // this.editor.getModel().updateOptions({ tabSize: this.tabSize });
 
-    // eslint-disable-next-line no-bitwise
     this.editor.addCommand(this.monaco.KeyMod.CtrlCmd | this.monaco.KeyCode.Enter, () => null);
 
     window.addEventListener('resize', this.handleResize);
