@@ -1,44 +1,20 @@
 import _ from 'lodash';
 import userTypes from '../config/userTypes';
 import GameStatusCodes from '../config/gameStatusCodes';
+import EditorModes from '../config/editorModes';
 import i18n from '../../i18n';
 import { makeEditorTextKey } from '../reducers';
 import { defaultEditorHeight } from '../config/editorSettings';
 
-// export const usersSelector = state => state.user.users;
 export const currentUserIdSelector = state => state.user.currentUserId;
 
 export const gamePlayersSelector = state => state.game.players;
 
-// export const currentUserSelector = (state) => {
-//   const user = _.pick(
-//     usersSelector(state),
-//     [currentUserIdSelector(state)],
-//   );
-//   if (!_.isEmpty(user)) {
-//     return _.values(user)[0];
-//   }
-//   return null;
-// };
+export const firstPlayerSelector = state => _
+  .find(gamePlayersSelector(state), { type: userTypes.firstPlayer });
 
-// export const firstUserSelector = (state) => {
-//   const user = _.pickBy(usersSelector(state), { type: userTypes.firstPlayer });
-//   if (!_.isEmpty(user)) {
-//     return _.values(user)[0];
-//   }
-//   return {};
-// };
-
-// export const secondUserSelector = (state) => {
-//   const user = _.pickBy(usersSelector(state), { type: userTypes.secondPlayer });
-//   // FIXME: remove this
-//   if (!_.isEmpty(user)) {
-//     return _.values(user)[0];
-//   }
-//   return {};
-// };
-export const firstPlayerSelector = state => _.find(gamePlayersSelector(state), { type: userTypes.firstPlayer });
-export const secondPlayerSelector = state => _.find(gamePlayersSelector(state), { type: userTypes.secondPlayer });
+export const secondPlayerSelector = state => _
+  .find(gamePlayersSelector(state), { type: userTypes.secondPlayer });
 
 const editorsMetaSelector = state => state.editor.meta;
 const editorTextsSelector = state => state.editor.text;
@@ -156,6 +132,30 @@ export const chatMessagesSelector = state => state.chat.messages;
 
 export const currentChatUserSelector = (state) => {
   const currentUserId = currentUserIdSelector(state);
-  const currentUser = _.find(chatUsersSelector(state), { id: currentUserId });
-  return currentUser;
+
+  return _.find(chatUsersSelector(state), { id: currentUserId });
 };
+
+export const editorsModeSelector = currentUserId => (state) => {
+  if (_.hasIn(gamePlayersSelector(state), currentUserId)) {
+    return state.editorUI.mode;
+  }
+  return EditorModes.default;
+};
+
+export const activeGamesSelector = (state) => {
+  const currentUserId = currentUserIdSelector(state);
+  const filterPrivateGamesFunc = ({ users, game_info: { state: gameStatus, type: gameType } }) => {
+    if (gameStatus !== GameStatusCodes.waitingOpponent || gameType !== 'private') {
+      return true;
+    }
+    return _.some(users, { id: currentUserId });
+  };
+  const activeGames = _.filter(state.gameList.activeGames, filterPrivateGamesFunc);
+
+  return activeGames || [];
+};
+
+export const completedGamesSelector = state => state.gameList.completedGames || [];
+
+export const getUsersStats = state => state.user.usersStats;

@@ -5,6 +5,7 @@ import * as actions from '../actions';
 export const initState = {
   currentUserId: null,
   users: {},
+  usersStats: {},
 };
 
 const reducer = handleActions({
@@ -31,6 +32,17 @@ const reducer = handleActions({
       return { ...state, users: { ...state.users, ...users } };
     }
     return state;
+  },
+
+  [actions.updateUsersStats](state, { payload }) {
+    const { userId, stats, achievements } = payload;
+    return {
+      ...state,
+      usersStats: {
+        ...state.usersStats,
+        [userId]: { stats, achievements },
+      },
+    };
   },
 }, initState);
 

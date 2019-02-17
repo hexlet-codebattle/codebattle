@@ -3,11 +3,11 @@
   p.text-center.lead = gettext "%{name}: game for programmers.", name: "Codebattle"
   .text-center
     a href="#{auth_path(@conn, :request, :github)}"
-      button.btn.btn-outline-success.btn-lg = "Start play"
+      button.btn.btn-outline-success.btn-lg = "Start playing"
     {/* .embed-container */}
     {/*   iframe src="https://player.vimeo.com/video/296164641?background=1&autoplay=1&loop=1&speed=2x" frameborder="0" allow="autoplay" webkitallowfullscreen mozallowfullscreen allowfullscreen */}
 
-.container.bg-white.shadow-sm.py-4
+.container-fluid
   #game-list
   javascript:
       window.csrf_token = "<%= csrf_token() %>"

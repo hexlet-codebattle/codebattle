@@ -13,7 +13,7 @@ main = do
     s <- getContents
     let ress = map unmagic $ lines s
     (BS.putStrLn . A.encode $ foldCaseRess ress) `catch` \e -> print (e :: ErrorCall)
-    exitWith (ExitFailure 0)
+    exitWith ExitSuccess
 
 unmagic :: String -> CaseRes
 unmagic s =

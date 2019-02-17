@@ -14,7 +14,8 @@ defmodule Codebattle.GameProcess.Player do
             github_id: "",
             public_id: "",
             name: "",
-            rating: ""
+            rating: "",
+            achievements: []
 
   def from_user(user, params \\ %{}) do
     player =
@@ -34,7 +35,8 @@ defmodule Codebattle.GameProcess.Player do
             name: user.name,
             rating: user.rating,
             editor_lang: editor_lang,
-            editor_text: editor_text
+            editor_text: editor_text,
+            achievements: user.achievements
           }
       end
 

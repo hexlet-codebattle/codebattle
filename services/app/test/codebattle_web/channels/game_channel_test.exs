@@ -28,17 +28,17 @@ defmodule CodebattleWeb.GameChannelTest do
 
     {:ok, response, _socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
 
-
     assert Poison.encode!(response) ==
              Poison.encode!(%{
                "level" => game.task.level,
                "players" => [
                  Player.from_user(user1),
-                 Player.from_user(%User{}),
+                 Player.from_user(%User{})
                ],
                "starts_at" => TimeHelper.utc_now(),
                "status" => "waiting_opponent",
                "task" => game.task,
+               "type" => "public"
              })
   end
 
@@ -65,11 +65,11 @@ defmodule CodebattleWeb.GameChannelTest do
                "level" => game.task.level,
                "players" => [
                  Player.from_user(user1),
-                 Player.from_user(user2),
+                 Player.from_user(user2)
                ],
                "starts_at" => TimeHelper.utc_now(),
                "status" => "playing",
-               "task" => game.task,
+               "task" => game.task
              })
   end
 
@@ -207,7 +207,6 @@ defmodule CodebattleWeb.GameChannelTest do
     game = Repo.get(Game, game.id)
     user1 = Repo.get(User, user1.id)
     user2 = Repo.get(User, user2.id)
-
     assert game.state == "game_over"
     assert user1.rating == 988
     assert user2.rating == 1012

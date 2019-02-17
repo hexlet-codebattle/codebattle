@@ -4,7 +4,7 @@ defmodule Codebattle.GameProcess.ActiveGames do
   """
 
   @table_name :active_games
-  # {game_id, %{player_id => Player, player_id => Player}, %{level: "easy", state: :playing}}
+  # {game_id, %{player_id => Player, player_id => Player}, %{level: "easy", state: :playing, type: "private"}}
 
   alias Codebattle.GameProcess.FsmHelpers
 
@@ -21,7 +21,7 @@ defmodule Codebattle.GameProcess.ActiveGames do
   end
 
   def game_exists?(game_id) do
-    :ets.match_object(@table_name, {game_key(game_id), :_, :_}) |> Enum.empty?() |> Kernel.!
+    :ets.match_object(@table_name, {game_key(game_id), :_, :_}) |> Enum.empty?() |> Kernel.!()
   end
 
   def terminate_game(game_id) do
@@ -34,7 +34,7 @@ defmodule Codebattle.GameProcess.ActiveGames do
         :error
 
       false ->
-        game_id =  FsmHelpers.get_game_id(fsm)
+        game_id = FsmHelpers.get_game_id(fsm)
         players = %{user.id => FsmHelpers.get_first_player(fsm)}
 
         :ets.insert(@table_name, {game_key(game_id), players, game_params(fsm)})
@@ -43,10 +43,11 @@ defmodule Codebattle.GameProcess.ActiveGames do
   end
 
   def add_participant(fsm) do
-    game_id =  FsmHelpers.get_game_id(fsm)
+    game_id = FsmHelpers.get_game_id(fsm)
 
     players =
-      fsm |> FsmHelpers.get_players()
+      fsm
+      |> FsmHelpers.get_players()
       |> Enum.reduce(%{}, fn player, acc -> Map.put(acc, player.id, player) end)
 
     :ets.update_element(@table_name, game_key(game_id), [{2, players}, {3, game_params(fsm)}])
@@ -65,7 +66,7 @@ defmodule Codebattle.GameProcess.ActiveGames do
   end
 
   def setup_game(fsm) do
-    game_id =  FsmHelpers.get_game_id(fsm)
+    game_id = FsmHelpers.get_game_id(fsm)
 
     players =
       fsm
@@ -90,8 +91,9 @@ defmodule Codebattle.GameProcess.ActiveGames do
   defp game_params(fsm) do
     %{
       state: fsm.state,
-      level:  FsmHelpers.get_level(fsm),
-      starts_at: FsmHelpers.get_starts_at(fsm)
+      level: FsmHelpers.get_level(fsm),
+      starts_at: FsmHelpers.get_starts_at(fsm),
+      type: FsmHelpers.get_type(fsm)
     }
   end
 end

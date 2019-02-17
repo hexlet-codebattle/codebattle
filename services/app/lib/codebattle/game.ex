@@ -16,6 +16,7 @@ defmodule Codebattle.Game do
     field(:state, :string)
     field(:level, :string)
     field(:duration_in_seconds, :integer)
+    field(:type, :string)
 
     timestamps()
 
@@ -27,7 +28,7 @@ defmodule Codebattle.Game do
   @doc false
   def changeset(%Game{} = game, attrs) do
     game
-    |> cast(attrs, [:state, :task_id, :level, :duration_in_seconds])
+    |> cast(attrs, [:state, :task_id, :level, :duration_in_seconds, :type])
     |> validate_required([:state])
 
     # |> cast_assoc(:task, required: false)

@@ -16,7 +16,9 @@ defmodule Codebattle.User do
              :editor_mode,
              :editor_theme,
              :creator,
-             :game_result
+             :game_result,
+             :achievements,
+             :rating_diff
            ]}
 
   schema "users" do
@@ -31,9 +33,10 @@ defmodule Codebattle.User do
     field(:public_id, :binary_id)
     field(:guest, :boolean, virtual: true, default: false)
     field(:bot, :boolean, virtual: true, default: false)
+    field(:achievements, {:array, :string}, default: [], null: false)
+    field(:rating_diff, :integer, virtual: true)
     field(:creator, :boolean, virtual: true, default: false)
     field(:game_result, :string, virtual: true)
-    field(:achivments, :array)
 
     has_many(:user_games, Codebattle.UserGame)
     has_many(:games, through: [:user_games, :game])
@@ -54,7 +57,8 @@ defmodule Codebattle.User do
       :rating,
       :lang,
       :editor_mode,
-      :editor_theme
+      :editor_theme,
+      :achievements
     ])
     |> validate_required([:name, :email, :github_id])
   end

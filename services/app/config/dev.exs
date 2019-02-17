@@ -10,9 +10,9 @@ root_dir = File.cwd!()
 
 config :codebattle, CodebattleWeb.Endpoint,
   https: [
-    port: System.get_env("CODEBATTLE_PORT") ||  4000,
+    port: System.get_env("CODEBATTLE_PORT") || 4000,
     keyfile: Path.join(root_dir, "dev.key"),
-    certfile: Path.join(root_dir, "dev.crt"),
+    certfile: Path.join(root_dir, "dev.crt")
   ],
   debug_errors: true,
   code_reloader: true,

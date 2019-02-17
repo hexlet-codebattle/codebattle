@@ -8,6 +8,7 @@ defmodule Codebattle.GameProcess.Play do
   import Ecto.Query, warn: false
 
   alias Codebattle.{Repo, Game, User, UserGame}
+  alias Codebattle.User.Achievements
 
   alias Codebattle.GameProcess.{
     Server,
@@ -47,7 +48,13 @@ defmodule Codebattle.GameProcess.Play do
 
       winner =
         Map.get(winner_user_game, :user)
-        |> Map.merge(%{creator: winner_user_game.creator, game_result: winner_user_game.result})
+        |> Map.merge(%{
+          creator: winner_user_game.creator,
+          game_result: winner_user_game.result,
+          lang: winner_user_game.lang,
+          rating: winner_user_game.rating,
+          rating_diff: winner_user_game.rating_diff
+        })
 
       loser_user_game =
         game.user_games
@@ -56,7 +63,13 @@ defmodule Codebattle.GameProcess.Play do
 
       loser =
         Map.get(loser_user_game, :user)
-        |> Map.merge(%{creator: loser_user_game.creator, game_result: loser_user_game.result})
+        |> Map.merge(%{
+          creator: loser_user_game.creator,
+          game_result: loser_user_game.result,
+          lang: loser_user_game.lang,
+          rating: loser_user_game.rating,
+          rating_diff: loser_user_game.rating_diff
+        })
 
       %{updated_at: updated_at} = game
 
@@ -83,7 +96,7 @@ defmodule Codebattle.GameProcess.Play do
     Server.fsm(id)
   end
 
-  def create_game(user, level) do
+  def create_game(user, level, type \\ "public") do
     case ActiveGames.playing?(user.id) do
       false ->
         player = Player.from_user(user, %{creator: true})
@@ -92,7 +105,8 @@ defmodule Codebattle.GameProcess.Play do
           Repo.insert!(%Game{
             state: "waiting_opponent",
             users: [user],
-            level: level
+            level: level,
+            type: type
           })
 
         fsm =
@@ -100,7 +114,8 @@ defmodule Codebattle.GameProcess.Play do
           |> Fsm.create(%{
             player: player,
             game_id: game.id,
-            level: level
+            level: level,
+            type: type
           })
 
         ActiveGames.create_game(user, fsm)
@@ -111,9 +126,16 @@ defmodule Codebattle.GameProcess.Play do
         end)
 
         # TODO: сделать настройку нотификаций в списке игр
-        Task.async(fn ->
-          Notifier.call(:game_created, %{level: level, game: game, player: player})
-        end)
+        # FIXME: please refactor this, don't broadcast notificate if the game is a private
+        case type do
+          "public" ->
+            Task.async(fn ->
+              Notifier.call(:game_created, %{level: level, game: game, player: player})
+            end)
+
+          _ ->
+            nil
+        end
 
         {:ok, game.id}
 
@@ -180,23 +202,7 @@ defmodule Codebattle.GameProcess.Play do
       else
         task = get_random_task(game.level, [user.id, first_player.id])
 
-        game
-        |> Game.changeset(%{state: "playing", task_id: task.id})
-        |> Repo.update!()
 
-        {:ok, _} =
-          Codebattle.Bot.Supervisor.start_bot_server(
-            id,
-            FsmHelpers.get_first_player(fsm).id,
-            fsm
-          )
-
-        Notifier.call(:game_opponent_join, %{
-          # creator: FsmHelpers.get_opponent(fsm, user.id),
-          first_player: first_player,
-          second_player: FsmHelpers.get_second_player(fsm),
-          game_id: id
-        })
 
         player = Player.from_user(user)
 
@@ -208,12 +214,29 @@ defmodule Codebattle.GameProcess.Play do
           {:ok, fsm} ->
             ActiveGames.add_participant(fsm)
 
+            game
+            |> Game.changeset(%{state: "playing", task_id: task.id})
+            |> Repo.update!()
+
+            {:ok, _} =
+              Codebattle.Bot.Supervisor.start_bot_server(
+                id,
+                first_player.id,
+                fsm
+              )
+
             {:ok, _} =
               Codebattle.Bot.Supervisor.start_bot_server(
                 id,
                 FsmHelpers.get_second_player(fsm).id,
                 fsm
               )
+              Notifier.call(:game_opponent_join, %{
+                # creator: FsmHelpers.get_opponent(fsm, user.id),
+                first_player: first_player,
+                second_player: FsmHelpers.get_second_player(fsm),
+                game_id: id
+              })
 
             {:ok, fsm}
 
@@ -246,10 +269,11 @@ defmodule Codebattle.GameProcess.Play do
 
     %{
       status: fsm.state,
-      starts_at: fsm.data.starts_at,
+      starts_at: FsmHelpers.get_starts_at(fsm),
       players: FsmHelpers.get_players(fsm),
-      task: fsm.data.task,
-      level: fsm.data.level
+      task: FsmHelpers.get_task(fsm),
+      level: FsmHelpers.get_level(fsm),
+      type: FsmHelpers.get_type(fsm)
     }
   end
 
@@ -353,6 +377,8 @@ defmodule Codebattle.GameProcess.Play do
     difficulty = fsm.data.level
 
     {winner_rating, loser_rating} = Elo.calc_elo(winner.rating, loser.rating, difficulty)
+    winner_rating_diff = winner_rating - winner.rating
+    loser_rating_diff = loser_rating - loser.rating
 
 
     duration = NaiveDateTime.diff(TimeHelper.utc_now(), FsmHelpers.get_starts_at(fsm))
@@ -367,48 +393,35 @@ defmodule Codebattle.GameProcess.Play do
       game_id: game_id,
       user_id: winner.id,
       result: "won",
-      creator: winner.creator
+      creator: winner.creator,
+      rating: winner_rating,
+      rating_diff: winner_rating_diff,
+      lang: winner.lang
     })
 
     Repo.insert!(%UserGame{
       game_id: game_id,
       user_id: loser.id,
       result: "lost",
-      creator: loser.creator
+      creator: loser.creator,
+      rating: loser_rating,
+      rating_diff: loser_rating_diff,
+      lang: loser.lang
     })
 
-    new_achivements = recalculate_achivments(winner)
+    if !winner.bot do
+      winner_achievements = Achievements.recalculate_achievements(winner)
 
-
-    :bot, :games_count, :core_team
-
-    {[], user}
-    def verb_game_10({new_achivements, user})
-    if :games_count in user.achevements return {new_achivements, user}
-
-    else
-      if Query.call(user.id) == true
-        return {new_achivements ++ :games_10, user}
-      else
-        return {new_achivements, user}
-      end
-    end
-
-    |>:games_count
-
-
-
-    recalculate_achivments(loser)
-
-    if winner.id != 0 do
       winner
-      |> User.changeset(%{rating: winner_rating, achivements: new_achivements})
+      |> User.changeset(%{rating: winner_rating, achievements: winner_achievements})
       |> Repo.update!()
     end
 
-    if loser.id != 0 do
+    if !loser.bot do
+      loser_achievements = Achievements.recalculate_achievements(loser)
+
       loser
-      |> User.changeset(%{rating: loser_rating})
+      |> User.changeset(%{rating: loser_rating, achievements: loser_achievements})
       |> Repo.update!()
     end
 
@@ -423,6 +436,8 @@ defmodule Codebattle.GameProcess.Play do
     difficulty = fsm.data.level
 
     {winner_rating, loser_rating} = Elo.calc_elo(winner.rating, loser.rating, difficulty)
+    winner_rating_diff = winner_rating - winner.rating
+    loser_rating_diff = loser_rating - loser.rating
 
     duration = NaiveDateTime.diff(TimeHelper.utc_now(), FsmHelpers.get_starts_at(fsm))
 
@@ -435,25 +450,35 @@ defmodule Codebattle.GameProcess.Play do
       game_id: game_id,
       user_id: loser.id,
       result: "gave_up",
-      creator: loser.creator
+      creator: loser.creator,
+      rating: loser_rating,
+      rating_diff: loser_rating_diff,
+      lang: loser.lang
     })
 
     Repo.insert!(%UserGame{
       game_id: game_id,
       user_id: winner.id,
       result: "won",
-      creator: winner.creator
+      creator: winner.creator,
+      rating: winner_rating,
+      rating_diff: winner_rating_diff,
+      lang: winner.lang
     })
 
     if loser.id != 0 do
+      loser_achievements = Achievements.recalculate_achievements(loser)
+
       loser
-      |> User.changeset(%{rating: loser_rating})
+      |> User.changeset(%{rating: loser_rating, achievements: loser_achievements})
       |> Repo.update!()
     end
 
     if winner.id != 0 do
+      winner_achievements = Achievements.recalculate_achievements(winner)
+
       winner
-      |> User.changeset(%{rating: winner_rating})
+      |> User.changeset(%{rating: winner_rating, achievements: winner_achievements})
       |> Repo.update!()
     end
 
@@ -466,7 +491,6 @@ defmodule Codebattle.GameProcess.Play do
     INNER JOIN "user_games" ON "user_games"."game_id" = "games"."id"
     WHERE "games"."level" = $1 AND "user_games"."user_id" IN ($2, $3)
     GROUP BY "games"."task_id")
-
     SELECT "tasks".*, "game_tasks".* FROM tasks
     LEFT JOIN game_tasks ON "tasks"."id" = "game_tasks"."task_id"
     WHERE "tasks"."level" = $1

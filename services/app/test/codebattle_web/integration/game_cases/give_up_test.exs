@@ -3,7 +3,7 @@ defmodule Codebattle.GameCases.GiveUpTest do
 
   import Mock
 
-  alias Codebattle.GameProcess.Server
+  alias Codebattle.GameProcess.{ActiveGames, Server}
   alias CodebattleWeb.UserSocket
 
   setup %{conn: conn} do
@@ -52,6 +52,7 @@ defmodule Codebattle.GameCases.GiveUpTest do
     assert fsm.state == :game_over
     assert FsmHelpers.gave_up?(fsm, user1.id) == true
     assert FsmHelpers.winner?(fsm, user2.id) == true
+    assert ActiveGames.game_exists?(game_id) == false
   end
 
   test "first user won, second gave up", %{

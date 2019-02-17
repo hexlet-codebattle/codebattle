@@ -17,6 +17,6 @@ defmodule Codebattle.Bot.Supervisor do
 
   def start_bot_server(game_id, user_id, fsm) do
     spec = {RecorderServer, {game_id, user_id, fsm} }
-    DynamicSupervisor.start_child(String.to_atom("bot_server_#{game_id}"), spec)
+    DynamicSupervisor.start_child(String.to_atom("bot_server_#{game_id}_#{user_id}"), spec)
   end
 end

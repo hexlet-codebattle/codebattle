@@ -12,9 +12,11 @@ defmodule CodebattleWeb.UserController do
     q = Map.get(params, "q", %{"sort" => %{"desc" => "rating"}})
     sort_query = Map.get(q, "sort")
 
-    order = Enum.map(sort_query, fn {key, value} -> {String.to_atom(key), String.to_atom(value)} end)
+    order =
+      Enum.map(sort_query, fn {key, value} -> {String.to_atom(key), String.to_atom(value)} end)
 
     query = from(users in User, order_by: ^order, preload: [:user_games])
+
     page =
       query
       |> Repo.paginate(params)
