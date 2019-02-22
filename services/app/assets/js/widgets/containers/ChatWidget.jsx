@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { fetchState, addMessage } from '../middlewares/Chat';
 import * as selectors from '../selectors';
 import Messages from '../components/Messages';
-import InputWithEmoji from '../components/InputWithEmoji';
 import UserName from '../components/UserName';
 
 class ChatWidget extends React.Component {
@@ -32,7 +31,7 @@ class ChatWidget extends React.Component {
   };
 
   render() {
-    const { message } = this.state;
+    const { message: typedMessage } = this.state;
     const { messages, users } = this.props;
     return (
       <div className="d-flex shadow-sm">
@@ -46,7 +45,7 @@ class ChatWidget extends React.Component {
             <input
               className="form-control border-secondary"
               placeholder="Type message here..."
-              value={message}
+              value={typedMessage}
               onChange={this.handleChange}
             />
             <div className="input-group-append">
