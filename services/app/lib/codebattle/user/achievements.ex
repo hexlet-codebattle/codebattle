@@ -56,7 +56,7 @@ defmodule Codebattle.User.Achievements do
         {achievements, user}
 
       user.bot == true ->
-        {{achievements ++ ["bot"], user}}
+        {achievements ++ ["bot"], user}
 
       true ->
         {achievements, user}
