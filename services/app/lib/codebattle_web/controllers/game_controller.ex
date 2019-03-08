@@ -2,6 +2,7 @@ defmodule CodebattleWeb.GameController do
   use CodebattleWeb, :controller
   import CodebattleWeb.Gettext
   import PhoenixGon.Controller
+  require Logger
 
   alias Codebattle.GameProcess.{Play, ActiveGames, Server}
   alias Codebattle.{Languages}
@@ -82,7 +83,8 @@ defmodule CodebattleWeb.GameController do
           |> redirect(to: page_path(conn, :index))
       end
     catch
-      :exit, _ ->
+      :exit, reason ->
+        Logger.error(inspect(reason))
         conn
         |> put_flash(:danger, gettext("Sorry, the game doesn't exist"))
         |> redirect(to: page_path(conn, :index))

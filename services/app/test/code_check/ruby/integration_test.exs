@@ -62,7 +62,7 @@ defmodule Codebattle.CodeCheck.Ruby.IntegrationTest do
 
     expected_result = %{"status" => "failure", "result" => [1, 1]}
 
-    assert expected_result == Poison.decode!(result)
+    assert expected_result == Jason.decode!(result)
 
     fsm = Server.fsm(game.id)
 
@@ -104,7 +104,7 @@ defmodule Codebattle.CodeCheck.Ruby.IntegrationTest do
       "result" => "undefined local variable or method `sdf' for main:Object"
     }
 
-    assert expected_result == Poison.decode!(result)
+    assert expected_result == Jason.decode!(result)
 
     fsm = Server.fsm(game.id)
 

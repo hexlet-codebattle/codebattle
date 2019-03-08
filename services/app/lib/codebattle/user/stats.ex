@@ -8,18 +8,24 @@ defmodule Codebattle.User.Stats do
   import Ecto.Query, warn: false
 
   def for_user(id) do
-    query =
-      from(ug in UserGame,
-        select: {
-          ug.result,
-          count(ug.id)
-        },
-        where: ug.user_id == ^id,
-        group_by: ug.result
-      )
+    case id do
+      "bot" ->
+        %{"won" => 30, "lost" => 0, "gave_up" => 0}
 
-    stats = Repo.all(query)
+      user_id ->
+        query =
+          from(ug in UserGame,
+            select: {
+              ug.result,
+              count(ug.id)
+            },
+            where: ug.user_id == ^id,
+            group_by: ug.result
+          )
 
-    Map.merge(%{"won" => 0, "lost" => 0, "gave_up" => 0}, Enum.into(stats, %{}))
+        stats = Repo.all(query)
+
+        Map.merge(%{"won" => 0, "lost" => 0, "gave_up" => 0}, Enum.into(stats, %{}))
+    end
   end
 end

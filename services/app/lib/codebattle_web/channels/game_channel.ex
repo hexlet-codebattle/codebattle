@@ -38,13 +38,14 @@ defmodule CodebattleWeb.GameChannel do
       # TODO: refactorme to update_editor_data in Play module
       fsm = Play.get_fsm(game_id)
 
-      %{editor_text: prev_editor_text, editor_lang: prev_editor_lang} =
-        FsmHelpers.get_player(fsm, user_id)
+      %{editor_text: prev_editor_text, editor_lang: prev_editor_lang} = FsmHelpers.get_player(fsm, user_id)
 
       editor_text = Map.get(payload, "editor_text", prev_editor_text)
       editor_lang = Map.get(payload, "lang", prev_editor_lang)
 
-      Play.update_editor_data(game_id, user_id, editor_text, editor_lang)
+      if socket.assigns.current_user.bot == false do
+        Play.update_editor_data(game_id, user_id, editor_text, editor_lang)
+      end
 
       broadcast_from!(socket, "editor:data", %{
         user_id: user_id,

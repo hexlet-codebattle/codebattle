@@ -44,7 +44,7 @@ defmodule Codebattle.CodeCheck.Checker do
         json_result =
           case Regex.run(~r/{\"status\":.+}/, container_output) do
             nil ->
-              Poison.encode!(%{
+              Jason.encode!(%{
                 status: "error",
                 result: "Something went wrong! Please, write to dev team in our Slack"
               })

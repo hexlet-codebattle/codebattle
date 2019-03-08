@@ -40,6 +40,7 @@ defmodule Codebattle.Bot.RecorderServer do
       GenServer.cast(server_name(game_id, user_id), {:store})
     rescue
       e in FunctionClauseError -> e
+        Logger.error(inspect(e))
     end
   end
 
@@ -110,7 +111,7 @@ defmodule Codebattle.Bot.RecorderServer do
       game_id: #{state.game_id},
       user_id: #{state.user_id}")
 
-    if state.user_id != 0 do
+    if state.user_id != "bot" do
       %Playbook{
         data: %{playbook: state.diff |> Enum.reverse()},
         lang: to_string(state.lang),

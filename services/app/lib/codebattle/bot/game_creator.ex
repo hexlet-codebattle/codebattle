@@ -1,7 +1,7 @@
 defmodule Codebattle.Bot.GameCreator do
   alias Codebattle.GameProcess.Play
   alias Codebattle.Repo
-  alias Codebattle.Bot.{Playbook, SocketDriver}
+  alias Codebattle.Bot.Playbook
 
   import Ecto.Query, warn: false
 
@@ -11,24 +11,25 @@ defmodule Codebattle.Bot.GameCreator do
       query =
         from(
           playbook in Playbook,
-          where: [lang: "ruby"],
-          preload: [:task]
+          preload: [:task],
+          order_by: fragment("RANDOM()"),
+          limit: 1
         )
 
       playbook = Repo.one(query)
 
-      bot = Codebattle.Bot.Builder.build(%{lang: "ruby"})
+      if playbook do
+        bot = Codebattle.Bot.Builder.build(%{lang: "ruby"})
 
-      {:ok, socket_pid} =
-        SocketDriver.start_link(CodebattleWeb.Endpoint, CodebattleWeb.UserSocket)
+        {:ok, game_id} = Play.create_bot_game(bot, playbook.task)
+        {:ok, game_id, playbook.task.id}
+      else
 
-      {:ok, game_id} = Play.create_bot_game(bot, playbook.task)
+        {:error, :no_playbooks}
+      end
+    else
 
-      #TODO: add socket with bot to game process
-      game_topic = "game:#{game_id}"
-      SocketDriver.join(socket_pid, game_topic)
-
-      {:ok, game_id}
+      {:error, :game_limit}
     end
   end
 end

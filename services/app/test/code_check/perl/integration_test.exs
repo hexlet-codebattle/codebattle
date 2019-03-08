@@ -62,7 +62,7 @@ defmodule Codebattle.CodeCheck.Perl.IntegrationTest do
     }
 
     expected_result = %{"status" => "failure", "result" => [1, 1]}
-    assert expected_result == Poison.decode!(result)
+    assert expected_result == Jason.decode!(result)
 
     fsm = Server.fsm(game.id)
 
@@ -104,7 +104,7 @@ defmodule Codebattle.CodeCheck.Perl.IntegrationTest do
       "result" => "Undefined subroutine &main::solution called at checker.pl line 21, <> line 1."
     }
 
-    assert expected_result == Poison.decode!(result)
+    assert expected_result == Jason.decode!(result)
 
     fsm = Server.fsm(game.id)
 

@@ -62,7 +62,7 @@ defmodule Codebattle.CodeCheck.Clojure.IntegrationTest do
     }
 
     expected_result = %{"status" => "failure", "result" => [1, 1]}
-    assert expected_result == Poison.decode!(result)
+    assert expected_result == Jason.decode!(result)
 
     fsm = Server.fsm(game.id)
 
@@ -100,8 +100,8 @@ defmodule Codebattle.CodeCheck.Clojure.IntegrationTest do
       payload: %{result: result, output: output}
     }
 
-    assert Poison.decode!(result)["status"] == "error"
-    assert Poison.decode!(result)["result"] =~ "Syntax error compiling at"
+    assert Jason.decode!(result)["status"] == "error"
+    assert Jason.decode!(result)["result"] =~ "Syntax error compiling at"
 
     fsm = Server.fsm(game.id)
 

@@ -16,7 +16,7 @@ try do
           IO.puts("Error: #{reason}")
 
         data ->
-          data = Poison.decode!(data)
+          data = Jason.decode!(data)
 
           case Map.get(data, "check") do
             nil ->
@@ -28,13 +28,13 @@ try do
                 input_loop(stream)
               rescue
                 e in ExUnit.AssertionError ->
-                  IO.puts(Poison.encode!(%{status: :failure, result: args}))
+                  IO.puts(Jason.encode!(%{status: :failure, result: args}))
                   exit(:normal)
                   input_loop(stream)
               end
 
             check_code ->
-              IO.puts(Poison.encode!(%{status: :ok, result: check_code}))
+              IO.puts(Jason.encode!(%{status: :ok, result: check_code}))
               input_loop(stream)
           end
       end
@@ -48,5 +48,5 @@ try do
   exit(:normal)
 rescue
   e in CompileError ->
-    IO.puts(Poison.encode!(%{status: :error, result: e.description}))
+    IO.puts(Jason.encode!(%{status: :error, result: e.description}))
 end

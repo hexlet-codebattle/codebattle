@@ -63,7 +63,7 @@ defmodule Codebattle.CodeCheck.Php.IntegrationTest do
         "Uncaught Error: Call to undefined function solution() in /usr/src/app/checker.php:40"
     }
 
-    assert expected_result == Poison.decode!(result)
+    assert expected_result == Jason.decode!(result)
 
     fsm = Server.fsm(game.id)
 
@@ -106,7 +106,7 @@ defmodule Codebattle.CodeCheck.Php.IntegrationTest do
 
     expected_result = %{"status" => "failure", "result" => [1, 1]}
 
-    assert expected_result == Poison.decode!(result)
+    assert expected_result == Jason.decode!(result)
 
     fsm = Server.fsm(game.id)
 
