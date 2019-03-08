@@ -36,22 +36,22 @@ defmodule Codebattle.Bot.PlaybookAsyncRunner do
   def handle_cast({:run, params}, state) do
     port = CodebattleWeb.Endpoint.struct_url().port
 
-    schema =
+    {schema, new_port} =
       case port do
         # dev
         4000 ->
-          "wss"
+          {"wss", port}
 
         # test
         4001 ->
-          "ws"
+          {"ws", port}
 
         # prod
         _ ->
-          "ws"
+          {"ws", 8080}
       end
 
-    socket_opts = [url: "#{schema}://localhost:#{port}/ws/websocket?vsn=2.0.0&token=#{bot_token}"]
+    socket_opts = [url: "#{schema}://localhost:#{new_port}/ws/websocket?vsn=2.0.0&token=#{bot_token}"]
     {:ok, socket} = PhoenixClient.Socket.start_link(socket_opts)
 
     game_topic = "game:#{params.game_id}"
