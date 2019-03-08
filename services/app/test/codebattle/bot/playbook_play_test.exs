@@ -57,7 +57,6 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
       :timer.sleep(800)
       # bot win the game
       fsm = Server.fsm(game_id)
-      IO.inspect(fsm)
 
       assert fsm.state == :game_over
       assert FsmHelpers.get_first_player(fsm).editor_text == "tes"
