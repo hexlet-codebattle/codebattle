@@ -18,7 +18,7 @@ class Message extends Component {
     return (
       <div>
         <span className="font-weight-bold">{`${user}: `}</span>
-        <span dangerouslySetInnerHTML={{ __html: message }} />
+        <span>{message}</span>
       </div>
     );
   }
