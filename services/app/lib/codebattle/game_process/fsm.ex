@@ -18,12 +18,16 @@ defmodule Codebattle.GameProcess.Fsm do
       starts_at: nil,
       # Task
       task: %Codebattle.Task{},
-      # level, appears before task created
+      # String, level, appears before task created
       level: "",
-      # List with two players %Player{}
+      # List, with two players %Player{}
       players: [],
-      # public or private game with friend
-      type: "public"
+      # String, public or private game with friend
+      type: "public",
+      # Boolean, game played with bot
+      bots: false,
+      # TODO: remove it please))))
+      player: nil
     }
 
   # For tests
@@ -33,12 +37,10 @@ defmodule Codebattle.GameProcess.Fsm do
 
   defstate initial do
     defevent create(params), data: data do
+
+      new_data = Map.merge(data, params)
       next_state(:waiting_opponent, %{
-        data
-        | game_id: params.game_id,
-          players: [params.player],
-          level: params.level,
-          type: params.type
+        new_data | players: [params.player],
       })
     end
 
@@ -52,11 +54,9 @@ defmodule Codebattle.GameProcess.Fsm do
     defevent join(params), data: data do
       players = data.players ++ [params.player]
 
+      new_data = Map.merge(data, params)
       next_state(:playing, %{
-        data
-        | players: players,
-          starts_at: params.starts_at,
-          task: params.task
+        new_data | players: players, starts_at: params.starts_at
       })
     end
 

@@ -63,7 +63,7 @@ defmodule Codebattle.Mixfile do
     [
       {:phoenix, "~> 1.3"},
       {:phoenix_pubsub, "~> 1.0"},
-      {:phoenix_ecto, "~> 3.0"},
+      {:phoenix_ecto, "~> 4.0"},
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 2.10"},
       {:gettext, "~> 0.11"},
@@ -77,7 +77,7 @@ defmodule Codebattle.Mixfile do
       {:poison, "~> 3.1.0", override: true},
       {:phoenix_gon, "~> 0.2.0"},
       {:text_delta, "~> 1.3.0"},
-      {:yaml_elixir, "~> 1.1"},
+      {:yaml_elixir, "~> 2.1"},
       {:temp, "~> 0.4"},
       {:logger_file_backend, "~> 0.0.10"},
       {:atomic_map, "~> 0.8"},
@@ -86,6 +86,11 @@ defmodule Codebattle.Mixfile do
       {:paginator, "~> 0.6"},
       {:scrivener_ecto, "~> 2.0"},
       {:scrivener_html, git: "https://github.com/hlongvu/scrivener_html.git"},
+      {:phoenix_client, git: "https://github.com/vtm9/phoenix_client.git"},
+      {:websocket_client, "~> 1.3"},
+      {:jason, "~> 1.1"},
+      {:websockex, "~> 0.4.0"},
+       {:socket, "~> 0.3"},
 
       # dev_and_test
       {:credo, "~> 0.8", only: [:dev, :test], runtime: false},

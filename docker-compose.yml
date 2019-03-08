@@ -23,6 +23,7 @@ services:
 
   db:
     image: postgres:10
+      - 5432:${CODEBATTLE_DB_PORT}"
     environment:
       POSTGRES_USER: ${CODEBATTLE_DB_USERNAME}
     volumes:

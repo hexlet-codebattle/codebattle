@@ -260,7 +260,7 @@ class GameList extends React.Component {
               <tr key={game.game_id}>
                 <td className="p-3 align-middle text-nowrap">
                   {moment
-                    .utc(game.game_info.inserted_at)
+                    .utc(game.game_info.starts_at)
                     .local()
                     .format('YYYY-MM-DD HH:mm')}
                 </td>

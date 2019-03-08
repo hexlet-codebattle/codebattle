@@ -5,13 +5,16 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
 
   alias CodebattleWeb.{GameChannel, UserSocket}
   alias Codebattle.GameProcess.{Server, FsmHelpers}
+  alias CodebattleWeb.UserSocket
+  alias Codebattle.Bot.PlaybookPlayerRunner
 
   @timeout Application.get_env(:codebattle, Codebattle.Bot)[:timeout]
 
-  @tag :skip
   test "Bot playing with user", %{conn: conn} do
-    user = insert(:user)
     task = insert(:task)
+    user = insert(:user, %{name: "first", email: "test1@test.test", github_id: 1, rating: 1000})
+
+    conn = put_session(conn, :user_id, user.id)
 
     playbook_data = %{
       playbook: [
@@ -22,7 +25,7 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
       ]
     }
 
-    insert(:bot_playbook, %{data: playbook_data, task_id: task.id})
+    insert(:bot_playbook, %{data: playbook_data, task: task, lang: "ruby"})
 
     socket = socket(UserSocket, "user_id", %{user_id: user.id, current_user: user})
 
@@ -30,36 +33,35 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
       {Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> {:ok, "asdf", "asdf"} end]}
     ] do
       # Create game
-      conn =
-        conn
-        |> put_session(:user_id, user.id)
-        |> post(game_path(conn, :create))
+      {:ok, game_id, task_id} = Codebattle.Bot.GameCreator.call()
 
-      game_location =
-        conn.resp_headers
-        |> Enum.find(&match?({"location", _}, &1))
-        |> elem(1)
+      game_topic = "game:#{game_id}"
 
-      game_id = ~r/\d+/ |> Regex.run(game_location) |> List.first() |> String.to_integer()
-      game_topic = "game:" <> to_string(game_id)
+      # User join to the game
+      post(conn, game_path(conn, :join, game_id))
+
       {:ok, _response, socket} = subscribe_and_join(socket, GameChannel, game_topic)
-      Phoenix.ChannelTest.push(socket, "editor:data", %{editor_text: "asdkfljlksajfd"})
 
-      :timer.sleep(@timeout - 10)
-      fsm = Server.fsm(game_id)
-      assert fsm.state == :waiting_opponent
-
-      # bot join game
+      # Run bot
       :timer.sleep(300)
-      fsm = Server.fsm(game_id)
-      assert FsmHelpers.get_second_player(fsm).editor_text == "tes"
+      {:ok, pid} = Codebattle.Bot.PlaybookAsyncRunner.start(%{game_id: game_id})
 
+      Codebattle.Bot.PlaybookAsyncRunner.call(%{
+        game_id: game_id,
+        task_id: task_id
+      })
+
+      fsm = Server.fsm(game_id)
+      assert fsm.state == :playing
+
+      :timer.sleep(800)
       # bot win the game
-      :timer.sleep(300)
       fsm = Server.fsm(game_id)
+      IO.inspect(fsm)
 
       assert fsm.state == :game_over
-      assert FsmHelpers.get_winner(fsm).name == "superPlayer"
+      assert FsmHelpers.get_first_player(fsm).editor_text == "tes"
+      assert FsmHelpers.get_winner(fsm).name == "bot"
     end
   end
 end

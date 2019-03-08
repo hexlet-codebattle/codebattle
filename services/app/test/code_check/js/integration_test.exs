@@ -58,7 +58,7 @@ defmodule Codebattle.CodeCheck.JS.IntegrationTest do
     }
 
     expected_result = %{"status" => "error", "result" => "sdf is not defined"}
-    assert expected_result == Poison.decode!(result)
+    assert expected_result == Jason.decode!(result)
 
     fsm = Server.fsm(game.id)
     assert fsm.state == :playing
@@ -99,7 +99,7 @@ defmodule Codebattle.CodeCheck.JS.IntegrationTest do
     }
 
     expected_result = %{"status" => "failure", "result" => [1, 1]}
-    assert expected_result == Poison.decode!(result)
+    assert expected_result == Jason.decode!(result)
 
     fsm = Server.fsm(game.id)
     assert fsm.state == :playing

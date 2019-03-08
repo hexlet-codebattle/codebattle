@@ -29,7 +29,7 @@ defmodule Codebattle.GameProcess.ActiveGames do
   end
 
   def create_game(user, fsm) do
-    case playing?(user.id) do
+    case playing?(user.id) && !user.bot do
       true ->
         :error
 

@@ -6,7 +6,16 @@ defmodule CodebattleWeb.Api.V1.UserController do
 
   def stats(conn, %{"id" => id}) do
     stats = Stats.for_user(id)
-    user = Repo.get(User, id)
-    json(conn, %{achievements: user.achievements, stats: stats, user_id: id})
+
+    achievements =
+      case id do
+        "bot" ->
+          [:bot]
+
+        user_id ->
+          Repo.get(User, id).achievements
+      end
+
+    json(conn, %{achievements: achievements, stats: stats, user_id: id})
   end
 end

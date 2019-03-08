@@ -6,7 +6,7 @@ defmodule CodebattleWeb.LobbyChannelTest do
 
   setup do
     task = insert(:task)
-    # game = insert(:game, task_id: task.id, task_level: task.level, state: "game_over")
+    # game = insert(:game, task_id: task.id, level: task.level, state: "game_over")
     winner = insert(:user)
     # loser = insert(:user)
     # winner_user_game = insert(:user_game, user: winner, creator: false, game: game)

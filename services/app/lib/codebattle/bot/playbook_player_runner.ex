@@ -1,4 +1,4 @@
-defmodule Codebattle.Bot.PlaybookPlayerTask do
+defmodule Codebattle.Bot.PlaybookPlayerRunner do
   @moduledoc """
   Process for playing playbooks of tasks
   """
@@ -10,32 +10,22 @@ defmodule Codebattle.Bot.PlaybookPlayerTask do
 
   @timeout Application.get_env(:codebattle, Codebattle.Bot)[:timeout]
 
-  def run(params) do
+  def call(params) do
     Logger.info("#{__MODULE__} RUN TASK with PARAMS: #{inspect(params)}, SLEEP for #{@timeout} ")
 
-    :timer.sleep(@timeout)
     playbook = Playbook.random(params.task_id)
 
     if playbook do
       {id, diff} = playbook
       Logger.info("#{__MODULE__} BOT START with playbook_id = #{id}")
 
-      {:ok, socket_pid} =
-        SocketDriver.start_link(
-          CodebattleWeb.Endpoint,
-          CodebattleWeb.UserSocket
-        )
-
-      bot = Builder.build()
-      Play.join_game(params.game_id, bot)
-      game_topic = "game:" <> to_string(params.game_id)
-      SocketDriver.join(socket_pid, game_topic)
       diffs = Map.get(diff, "playbook")
-      start_bot_cycle(diffs, game_topic, socket_pid)
+      game_topic = "game:#{params.game_id}"
+      start_bot_cycle(diffs, game_topic, params.channel)
     end
   end
 
-  defp start_bot_cycle(diffs, game_topic, socket_pid) do
+  defp start_bot_cycle(diffs, game_topic, channel_pid) do
     # Diff is one the maps
     #
     # 1 Main map with action to update text
@@ -46,6 +36,7 @@ defmodule Codebattle.Bot.PlaybookPlayerTask do
 
     init_document = TextDelta.new() |> TextDelta.insert("")
     init_lang = "js"
+    Logger.debug("Bot player initial sleep #{@timeout}")
 
     {editor_text, lang} =
       Enum.reduce(diffs, {init_document, init_lang}, fn diff_map, {document, lang} ->
@@ -57,21 +48,25 @@ defmodule Codebattle.Bot.PlaybookPlayerTask do
           text_delta = delta |> AtomicMap.convert(safe: true) |> TextDelta.new()
           new_document = TextDelta.apply!(document, text_delta)
 
-          SocketDriver.push(socket_pid, game_topic, "editor:data", %{
-            "editor_text" => new_document.ops |> hd |> Map.get(:insert)
-          })
+            PhoenixClient.Channel.push_async(channel_pid, "editor:data", %{
+              "lang" => lang,
+              "editor_text" => new_document.ops |> hd |> Map.get(:insert)
+            })
 
           {new_document, lang}
         else
           lang = diff_map |> Map.get("lang")
-          SocketDriver.push(socket_pid, game_topic, "editor:data", %{"lang" => lang})
+            PhoenixClient.Channel.push_async(channel_pid, "editor:data", %{
+              "lang" => lang,
+              "editor_text" => document.ops |> hd |> Map.get(:insert)
+            })
           {document, lang}
         end
       end)
 
-    SocketDriver.push(socket_pid, game_topic, "check_result", %{
-      "editor_text" => editor_text.ops |> hd |> Map.get(:insert),
-      "lang" => lang
-    })
+            PhoenixClient.Channel.push_async(channel_pid, "check_result", %{
+              "lang" => lang,
+              "editor_text" => editor_text.ops |> hd |> Map.get(:insert)
+            })
   end
 end

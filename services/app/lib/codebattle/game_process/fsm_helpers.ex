@@ -24,6 +24,10 @@ defmodule Codebattle.GameProcess.FsmHelpers do
     fsm.data.players
   end
 
+  def get_task(fsm) do
+    fsm.data.task
+  end
+
   def get_users(fsm) do
     fsm.data.players
     |> Enum.filter(fn player -> player.id end)
@@ -99,5 +103,9 @@ defmodule Codebattle.GameProcess.FsmHelpers do
     |> Enum.find_value(fn player -> player.id == player_id end)
     |> Kernel.!()
     |> Kernel.!()
+  end
+
+  def bot_game?(fsm) do
+    fsm.data.bots
   end
 end
