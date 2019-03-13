@@ -1,4 +1,4 @@
-FROM elixir:1.7
+FROM elixir:1.8
 
 # Install hex (Elixir package manager)
 # Install rebar (Erlang build tool)
@@ -19,7 +19,7 @@ RUN curl -sL https://deb.nodesource.com/setup_11.x | bash - \
  && npm install --global yarn@1.13.0
 
 ENV DOCKER_CHANNEL edge
-ENV DOCKER_VERSION 17.11.0-ce
+ENV DOCKER_VERSION 18.09.3
 RUN curl -fsSL "https://download.docker.com/linux/static/${DOCKER_CHANNEL}/x86_64/docker-${DOCKER_VERSION}.tgz" \
   | tar -xzC /usr/local/bin --strip=1 docker/docker
 
