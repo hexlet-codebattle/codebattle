@@ -419,6 +419,7 @@ defmodule Codebattle.GameProcess.Play do
     |> Repo.update!()
 
     # TODO: fix creator please!!!!!
+
     if !winner.bot do
       Repo.insert!(%UserGame{
         game_id: game_id,
