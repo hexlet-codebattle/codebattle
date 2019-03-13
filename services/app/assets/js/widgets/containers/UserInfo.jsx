@@ -9,7 +9,7 @@ import { loadUserStats } from '../middlewares/Users';
 const UserInfo = ({ dispatch, user, usersStats }) => {
   const userStats = usersStats[user.id];
   const statsPopover = (
-    <Popover title="Stats">
+    <Popover title={user.name}>
       <UserStats data={userStats} />
     </Popover>
   );

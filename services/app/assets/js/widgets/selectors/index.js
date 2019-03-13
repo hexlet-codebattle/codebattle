@@ -143,6 +143,8 @@ export const editorsModeSelector = currentUserId => (state) => {
   return EditorModes.default;
 };
 
+
+export const gameListLoadedSelector = state => state.gameList.loaded;
 export const activeGamesSelector = (state) => {
   const currentUserId = currentUserIdSelector(state);
   const filterPrivateGamesFunc = ({ users, game_info: { state: gameStatus, type: gameType } }) => {

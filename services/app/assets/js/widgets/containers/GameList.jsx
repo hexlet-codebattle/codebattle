@@ -8,7 +8,7 @@ import { Tooltip, OverlayTrigger } from 'react-bootstrap';
 import * as lobbyMiddlewares from '../middlewares/Lobby';
 import GameStatusCodes from '../config/gameStatusCodes';
 import * as actions from '../actions';
-import { activeGamesSelector, completedGamesSelector } from '../selectors';
+import { activeGamesSelector, completedGamesSelector, gameListLoadedSelector } from '../selectors';
 import Loading from '../components/Loading';
 import GamesHeatmap from '../components/GamesHeatmap';
 import UserInfo from './UserInfo';
@@ -76,11 +76,11 @@ class GameList extends React.Component {
     }
     return (
       <Fragment>
-        <td className="p-3 align-middle text-nowrap">
+        <td className="p-3 align-middle text-nowrap x-username-td text-truncate">
           {this.renderResultIcon(gameId, users[0], users[1])}
           <UserInfo user={users[0]} />
         </td>
-        <td className="p-3 align-middle text-nowrap">
+        <td className="p-3 align-middle text-nowrap x-username-td text-truncate">
           {this.renderResultIcon(gameId, users[1], users[0])}
           <UserInfo user={users[1]} />
         </td>
@@ -283,12 +283,54 @@ class GameList extends React.Component {
     );
   };
 
-  render() {
-    const { activeGames, completedGames } = this.props;
-    if (!activeGames) {
-      return <Loading />;
-    }
+  renderGameContainers = (activeGames, completedGames) => (
+    <>
+      <div className="container bg-white shadow-sm py-4 mb-3">
+        <h3 className="text-center mb-4">Active games</h3>
+        {this.renderActiveGames(activeGames)}
+      </div>
+      <div className="container bg-white shadow-sm py-4">
+        <h3 className="text-center mb-4">Completed games</h3>
+        <div className="table-responsive">
+          <table className="table table-sm">
+            <thead>
+              <tr>
+                <th className="p-3 border-0">Date</th>
+                <th className="p-3 border-0">Level</th>
+                <th className="p-3 border-0" colSpan="2">Players</th>
+                <th className="p-3 border-0">Duration</th>
+                <th className="p-3 border-0">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {completedGames.map(game => (
+                <tr key={game.id}>
+                  <td className="p-3 align-middle text-nowrap">
+                    {moment
+                        .utc(game.updated_at)
+                        .local()
+                        .format('YYYY-MM-DD HH:mm')}
+                  </td>
+                  <td className="p-3 align-middle text-nowrap">
+                    {this.renderGameLevelBadge(game.level)}
+                  </td>
+                  {this.renderPlayers(game.id, game.players)}
 
+                  <td className="p-3 align-middle text-nowrap">
+                    {moment.duration(game.duration, 'seconds').humanize()}
+                  </td>
+                  <td className="p-3 align-middle">{this.renderShowGameButton(`/games/${game.id}`)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </>
+  )
+
+  render() {
+    const { activeGames, completedGames, loaded } = this.props;
     return (
       <>
         <div className="container bg-white shadow-sm py-4 mb-3">
@@ -298,47 +340,12 @@ class GameList extends React.Component {
             {this.renderPlayWithFriendSelector()}
           </div>
         </div>
-        <div className="container bg-white shadow-sm py-4 mb-3">
-          <h3 className="text-center mb-4">Active games</h3>
-          {this.renderActiveGames(activeGames)}
-        </div>
-        <div className="container bg-white shadow-sm py-4">
-          <h3 className="text-center mb-4">Completed games</h3>
-          <div className="table-responsive">
-            <table className="table table-sm">
-              <thead>
-                <tr>
-                  <th className="p-3 border-0">Date</th>
-                  <th className="p-3 border-0">Level</th>
-                  <th className="p-3 border-0" colSpan="2">Players</th>
-                  <th className="p-3 border-0">Duration</th>
-                  <th className="p-3 border-0">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {completedGames.map(game => (
-                  <tr key={game.id}>
-                    <td className="p-3 align-middle text-nowrap">
-                      {moment
-                        .utc(game.updated_at)
-                        .local()
-                        .format('YYYY-MM-DD HH:mm')}
-                    </td>
-                    <td className="p-3 align-middle text-nowrap">
-                      {this.renderGameLevelBadge(game.level)}
-                    </td>
-                    {this.renderPlayers(game.id, game.players)}
 
-                    <td className="p-3 align-middle text-nowrap">
-                      {moment.duration(game.duration, 'seconds').humanize()}
-                    </td>
-                    <td className="p-3 align-middle">{this.renderShowGameButton(`/games/${game.id}`)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        {!loaded ? (
+          <Loading />
+        )
+          : this.renderGameContainers(activeGames, completedGames)
+        }
       </>
     );
   }
@@ -346,6 +353,7 @@ class GameList extends React.Component {
 
 const mapStateToProps = state => ({
   activeGames: activeGamesSelector(state),
+  loaded: gameListLoadedSelector(state),
   completedGames: completedGamesSelector(state),
   currentUser: Gon.getAsset('current_user'), // FIXME: don't use gon in components, Luke
 });

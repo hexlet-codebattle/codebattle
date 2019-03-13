@@ -7,7 +7,6 @@ defmodule CodebattleWeb.LobbyChannel do
   require Logger
 
   def join("lobby", _payload, socket) do
-
     active_games =
       Play.list_games()
       |> Enum.map(fn {game_id, users, game_info} ->
