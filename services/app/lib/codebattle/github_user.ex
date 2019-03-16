@@ -34,6 +34,21 @@ defmodule Codebattle.GithubUser do
     {:ok, user}
   end
 
+  def find_or_create(%{provider: :dev_local} = auth) do
+
+    user_data = %{
+      github_id: "35539033",
+      name: auth.name,
+      github_name: auth.name,
+      email: auth.email
+    }
+
+    changeset = User.changeset(%User{}, user_data)
+    {:ok, user} = Repo.insert(changeset)
+
+    {:ok, user}
+  end
+
   defp name(user, github_name) do
     case user do
       nil ->
