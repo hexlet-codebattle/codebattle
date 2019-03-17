@@ -14,7 +14,7 @@
   "dependencies": {
     "@babel/polyfill": "^7.2.5",
     "axios": "^0.18.0",
-    "bootstrap": "^4.2.0",
+    "bootstrap": "^4.3.0",
     "classnames": "^2.2.6",
     "copy-to-clipboard": "^3.0.8",
     "emoji-mart": "^2.9.2",

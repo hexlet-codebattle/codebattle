@@ -4,10 +4,18 @@ import { connect } from 'react-redux';
 import { ToastContainer, toast } from 'react-toastify';
 import * as selectors from '../selectors';
 import GameStatusCodes from '../config/gameStatusCodes';
+import Toast from '../components/Toast';
+import { Alert } from 'react-bootstrap';
+import ActionAfterGame from '../components/Toast/ActionAfterGame';
+import CloseButton from '../components/Toast/CloseButton';
 
 const toastOptions = {
   hideProgressBar: true,
   position: toast.POSITION.TOP_CENTER,
+  autoClose: 3000,
+  closeOnClick: false,
+  toastClassName: 'toast-container',
+  closeButton: <CloseButton />
 };
 
 class NotificationsHandler extends Component {
@@ -28,10 +36,27 @@ class NotificationsHandler extends Component {
 
   showCheckingStatusMessage = (solutionStatus) => {
     if (solutionStatus) {
-      toast.success('Yay! All tests passed!');
+      toast(
+        <Toast header='Success'>
+          <Alert variant='success'>Yay! All tests passed!</Alert>
+        </Toast>
+      )
     } else {
-      toast.error('Oh no, some test has failed!');
+      toast(
+        <Toast header='Success'>
+          <Alert variant='error'>Oh no, some test has failed!</Alert>
+        </Toast>
+      )
     }
+  }
+
+  showActionsAfterGame = () => {
+    toast(
+      <Toast header='Next Action'>
+        <ActionAfterGame />
+      </Toast>,
+      { autoClose: false }
+    )
   }
 
   showGameResultMessage = () => {
@@ -44,12 +69,22 @@ class NotificationsHandler extends Component {
     const winner = _.find(players, ['game_result', 'won']);
 
     if (currentUserId === winner.id) {
-      toast.success('Congratulations! You have won the game!');
+      toast(
+        <Toast header='Success'>
+          <Alert variant='success'>Congratulations! You have won the game!</Alert>
+        </Toast>
+      );
+      this.showActionsAfterGame();
       return;
     }
 
     if (isCurrentUserPlayer) {
-      toast.error('Oh snap! Your opponent has won the game');
+      toast(
+        <Toast header='Success'>
+          <Alert variant='danger'>Oh snap! Your opponent has won the game</Alert>
+        </Toast>
+      );
+      this.showActionsAfterGame();
       return;
     }
 
