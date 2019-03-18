@@ -1,15 +1,18 @@
 import React from 'react';
+import qs from 'qs';
+import { connect } from 'react-redux';
+import { gameTaskSelector } from '../../selectors';
 
-export default class ActionAfterGame extends React.Component {
+class ActionAfterGame extends React.Component {
   handleRematch = () => {
     console.log('============REMATCH=============');
   }
 
-  handleNewGame = () => {
-    console.log('============NEW GAME=============');
-  }
-
   render () {
+    const { gameTask: { level } } = this.props;
+    const queryParamsString = qs.stringify({ level, type: 'withRandomPlayer' });
+    const gameUrl = `/games?${queryParamsString}`;
+
     return(
       <React.Fragment>
         <button
@@ -22,7 +25,9 @@ export default class ActionAfterGame extends React.Component {
         <button
           type="button"
           className="btn btn-secondary btn-block"
-          onClick={this.handleNewGame}
+          data-method="post"
+          data-csrf={window.csrf_token}
+          data-to={gameUrl}
         >
           New Game
         </button>
@@ -30,3 +35,9 @@ export default class ActionAfterGame extends React.Component {
     );
   }
 }
+
+const mapStateToProps = state => ({
+  gameTask: gameTaskSelector(state),
+});
+
+export default connect(mapStateToProps)(ActionAfterGame);
