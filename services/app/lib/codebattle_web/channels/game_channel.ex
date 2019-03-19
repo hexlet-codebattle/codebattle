@@ -78,14 +78,19 @@ defmodule CodebattleWeb.GameChannel do
       fsm = Play.give_up(game_id, socket.assigns.current_user)
       message = socket.assigns.current_user.name <> " " <> gettext("gave up!")
       players = FsmHelpers.get_players(fsm)
+
       active_games =
         Play.list_games()
         |> Enum.map(fn {game_id, users, game_info} ->
           %{game_id: game_id, users: Map.values(users), game_info: game_info}
         end)
+
       completed_games = Play.completed_games()
-      CodebattleWeb.Endpoint.broadcast_from!(self(), "lobby",
-        "game:game_over", %{active_games: active_games, completed_games: completed_games})
+
+      CodebattleWeb.Endpoint.broadcast_from!(self(), "lobby", "game:game_over", %{
+        active_games: active_games,
+        completed_games: completed_games
+      })
 
       broadcast!(socket, "give_up", %{
         players: players,
@@ -117,11 +122,13 @@ defmodule CodebattleWeb.GameChannel do
           winner = socket.assigns.current_user
           players = FsmHelpers.get_players(fsm)
           message = winner.name <> " " <> gettext("won the game!")
+
           active_games =
             Play.list_games()
             |> Enum.map(fn {game_id, users, game_info} ->
               %{game_id: game_id, users: Map.values(users), game_info: game_info}
             end)
+
           completed_games = Play.completed_games()
 
           push(socket, "user:check_result", %{
@@ -134,8 +141,10 @@ defmodule CodebattleWeb.GameChannel do
             players: players
           })
 
-          CodebattleWeb.Endpoint.broadcast_from!(self(), "lobby",
-            "game:game_over", %{active_games: active_games, completed_games: completed_games})
+          CodebattleWeb.Endpoint.broadcast_from!(self(), "lobby", "game:game_over", %{
+            active_games: active_games,
+            completed_games: completed_games
+          })
 
           broadcast_from!(socket, "user:finish_check", %{
             user: socket.assigns.current_user

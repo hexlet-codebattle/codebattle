@@ -30,7 +30,7 @@ class GameWidget extends Component {
 
   getLeftEditorParams = () => {
     const {
-      currentUserId, players, leftEditor, updateEditorValue, leftEditorHeight, currentEditorsMode,
+      currentUserId, players, leftEditor, updateEditorValue, leftEditorHeight, leftEditorsMode,
     } = this.props;
 
     // FIXME: currentUser shouldn't return {} for spectator
@@ -49,7 +49,7 @@ class GameWidget extends Component {
       value: editorState.text,
       name: 'left-editor',
       editorHeight: leftEditorHeight,
-      mode: currentEditorsMode,
+      mode: leftEditorsMode,
     };
   }
 
@@ -60,6 +60,7 @@ class GameWidget extends Component {
     return {
       onChange: _.noop,
       editable: false,
+      mode: 'default',
       syntax: editorState.currentLangSlug || 'javascript',
       value: editorState.text,
       name: 'right-editor',
@@ -118,7 +119,7 @@ const mapStateToProps = (state) => {
     rightEditorHeight: editorHeightSelector(rightUserId)(state),
     leftOutput: leftExecutionOutputSelector(state),
     rightOutput: rightExecutionOutputSelector(state),
-    currentEditorsMode: editorsModeSelector(state),
+    leftEditorsMode: editorsModeSelector(leftUserId)(state),
   };
 };
 

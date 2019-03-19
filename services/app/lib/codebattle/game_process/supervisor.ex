@@ -19,7 +19,6 @@ defmodule Codebattle.GameProcess.Supervisor do
     supervise(children, strategy: :one_for_one)
   end
 
-
   def get_pid(game_id) do
     :gproc.where(supervisor_key(game_id))
   end

@@ -4,6 +4,7 @@ defmodule Codebattleweb.GameControllerTest do
   import Ecto.Query, warn: false
   alias Codebattle.{Repo, Game}
   alias Codebattle.GameProcess.{ActiveGames, Server}
+
   test "return 404 when game over does not exists", %{conn: conn} do
     user = insert(:user)
 
@@ -55,7 +56,7 @@ defmodule Codebattleweb.GameControllerTest do
 
     data = %{
       players: [
-        Player.from_user(user1, %{game_result: :undefined}),
+        Player.from_user(user1, %{game_result: :undefined})
       ]
     }
 

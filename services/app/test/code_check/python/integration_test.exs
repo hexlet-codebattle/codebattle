@@ -60,6 +60,7 @@ defmodule Codebattle.CodeCheck.Phython.IntegrationTest do
     assert_receive %Phoenix.Socket.Broadcast{
       payload: %{result: result, output: output}
     }
+
     expected_result = %{"status" => "failure", "result" => [1, 1]}
     assert expected_result == Poison.decode!(result)
 
@@ -97,6 +98,7 @@ defmodule Codebattle.CodeCheck.Phython.IntegrationTest do
     assert_receive %Phoenix.Socket.Broadcast{
       payload: %{result: result, output: output}
     }
+
     expected_result = %{"status" => "error", "result" => "unexpected"}
     assert expected_result == Poison.decode!(result)
 

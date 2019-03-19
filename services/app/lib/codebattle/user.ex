@@ -35,7 +35,7 @@ defmodule Codebattle.User do
     field(:bot, :boolean, virtual: true, default: false)
     field(:creator, :boolean, virtual: true, default: false)
     field(:game_result, :string, virtual: true)
-    field(:achievements, {:array, :string}, default: [])
+    field(:achievements, {:array, :string}, default: [], null: false)
     field(:rating_diff, :integer, virtual: true)
 
     has_many(:user_games, Codebattle.UserGame)

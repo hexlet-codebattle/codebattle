@@ -1,7 +1,7 @@
 defmodule Codebattle.PageControllerTest do
   use CodebattleWeb.ConnCase, async: true
 
-  #TODO Add lending
+  # TODO Add lending
   # test "index", %{conn: conn} do
   #   conn = get(conn, "/")
   #   assert html_response(conn, 200) =~ "Welcome to Codebattle!"
