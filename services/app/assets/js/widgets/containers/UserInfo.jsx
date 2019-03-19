@@ -14,7 +14,7 @@ const UserInfo = ({ dispatch, user, usersStats }) => {
     </Popover>
   );
 
-  const onEnter = () => (userStats ? null : loadUserStats(dispatch)(user));
+  const onEnter = () => !userStats && dispatch(loadUserStats)(user);
 
   return (
     <OverlayTrigger
