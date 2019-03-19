@@ -1,4 +1,4 @@
-defmodule Codebattle.Repo.Migrations.AddPublicUserIdUuid do
+defmodule Codebattle.Repo.Migrations.AddUuid do
   use Ecto.Migration
 
   def change do

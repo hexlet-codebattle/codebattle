@@ -22,6 +22,7 @@ defmodule CodebattleWeb.Router do
 
   scope "/auth", CodebattleWeb do
     pipe_through(:browser)
+    post("/dev_login", DevLoginController, :create)
     get("/:provider", AuthController, :request)
     get("/:provider/callback", AuthController, :callback)
   end

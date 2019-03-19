@@ -115,10 +115,15 @@ defmodule Codebattle.PlayGameTest do
       game = Repo.get(Game, game_id)
       user1 = Repo.get(User, user1.id)
       user2 = Repo.get(User, user2.id)
+      user_game1 = Repo.get_by(UserGame, user_id: user1.id)
+      user_game2 = Repo.get_by(UserGame, user_id: user2.id)
 
       assert game.state == "game_over"
       assert user1.rating == 1012
       assert user2.rating == 988
+
+      assert user_game1.creator == true
+      assert user_game2.creator == false
     end
   end
 

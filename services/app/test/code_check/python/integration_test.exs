@@ -62,7 +62,7 @@ defmodule Codebattle.CodeCheck.Phython.IntegrationTest do
     }
 
     expected_result = %{"status" => "failure", "result" => [1, 1]}
-    assert expected_result == Poison.decode!(result)
+    assert expected_result == Jason.decode!(result)
 
     fsm = Server.fsm(game.id)
 
@@ -100,7 +100,7 @@ defmodule Codebattle.CodeCheck.Phython.IntegrationTest do
     }
 
     expected_result = %{"status" => "error", "result" => "unexpected"}
-    assert expected_result == Poison.decode!(result)
+    assert expected_result == Jason.decode!(result)
 
     fsm = Server.fsm(game.id)
 

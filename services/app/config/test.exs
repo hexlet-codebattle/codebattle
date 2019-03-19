@@ -4,7 +4,7 @@ use Mix.Config
 # you can enable the server option below.
 config :codebattle, CodebattleWeb.Endpoint,
   http: [port: 4001],
-  server: false
+  server: true
 
 config :phoenix_integration, endpoint: CodebattleWeb.Endpoint
 

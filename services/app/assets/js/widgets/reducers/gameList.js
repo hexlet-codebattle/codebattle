@@ -2,11 +2,11 @@ import { handleActions } from 'redux-actions';
 import _ from 'lodash';
 import * as actions from '../actions';
 
-const initState = { activeGames: null, completedGames: null };
+const initialState = { activeGames: null, completedGames: null, loaded: false };
 
 const gameList = handleActions({
   [actions.fetchGameList](state, { payload: { activeGames, completedGames } }) {
-    return { ...state, activeGames, completedGames };
+    return { ...state, activeGames, completedGames, loaded: true };
   },
   [actions.newGameLobby](state, { payload: { game } }) {
     const { activeGames } = state;
@@ -46,6 +46,6 @@ const gameList = handleActions({
     };
     return { ...state, activeGames: [...restGames, newGame] };
   },
-}, initState);
+}, initialState);
 
 export default gameList;

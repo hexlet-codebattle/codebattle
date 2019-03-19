@@ -22,7 +22,6 @@ defmodule Codebattle.IntegrationCase do
       # import Ecto
       # import Ecto.Query
       import Helpers.GameProcess
-      import Helpers.TimeStorage
 
       alias Codebattle.{Repo, User, Game, UserGame}
       alias Codebattle.GameProcess.{FsmHelpers}
