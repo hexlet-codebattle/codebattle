@@ -1,6 +1,7 @@
 import { connect } from 'react-redux';
 import React from 'react';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
+import cn from 'classnames';
 import UserName from '../components/UserName';
 import UserStats from '../components/UserStats';
 import { getUsersStats } from '../selectors';
@@ -8,9 +9,9 @@ import { loadUserStats } from '../middlewares/Users';
 
 const UserInfo = ({ dispatch, user, usersStats }) => {
   const userStats = usersStats[user.id];
-  const statsPopover = (
-    <Popover title={user.name}>
-      <UserStats data={userStats} />
+  const statsPopover = ({ show, ...rest }) => (
+    <Popover className={cn({ 'd-none': !userStats })} title={user.name} {...rest}>
+      {userStats && <UserStats data={userStats} /> }
     </Popover>
   );
 
