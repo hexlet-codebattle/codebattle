@@ -106,8 +106,7 @@ defmodule CodebattleWeb.GameChannel do
     end
   end
 
-  def handle_in("remath", _, socket) do
-  IO.inspect("===============================")
+  def handle_in("rematch", _, socket) do
     game_id = get_game_id(socket)
 
     broadcast!(socket, "rematch", %{})
