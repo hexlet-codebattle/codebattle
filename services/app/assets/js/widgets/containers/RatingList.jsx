@@ -45,11 +45,8 @@ class UsersRating extends React.Component {
 
   renderPagItems = (current, total) => {
     const pages = [];
-    let n = 1;
+    let n = current > 6 ? current - 5 : 1;
     const fin = current + 5 < total ? current + 5 : total;
-    if (current > 6) {
-      n = current - 5;
-    }
     for (n; n <= fin; n++) {
       pages.push(
         <Pagination.Item key={n} active={n === current} onClick={this.clickHandler(n)}>
@@ -69,10 +66,10 @@ class UsersRating extends React.Component {
       <Pagination>
         <Pagination.Prev onClick={this.clickHandler(current - 1 > 0 ? current - 1 : 1)} />
         {current > 6 ? <Pagination.Item onClick={this.clickHandler(1)}>{1}</Pagination.Item> : ''}
-        {current > 6 ? <Pagination.Ellipsis /> : ''}
+        {current > 7 ? <Pagination.Ellipsis /> : ''}
         {this.renderPagItems(current, total)}
         {total - current > 6 ? <Pagination.Ellipsis /> : ''}
-        {total - current > 6 ? <Pagination.Item onClick={this.clickHandler(total)}>{total}</Pagination.Item> : ''}
+        {total - current > 5 ? <Pagination.Item onClick={this.clickHandler(total)}>{total}</Pagination.Item> : ''}
         <Pagination.Next onClick={this.clickHandler(current + 1 < total ? current + 1 : total)} />
       </Pagination>
     );

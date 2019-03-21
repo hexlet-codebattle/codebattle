@@ -33,8 +33,6 @@ defmodule Codebattle.User do
     field(:public_id, :binary_id)
     field(:guest, :boolean, virtual: true, default: false)
     field(:bot, :boolean, virtual: true, default: false)
-    field(:achievements, {:array, :string}, default: [], null: false)
-    field(:rating_diff, :integer, virtual: true)
     field(:creator, :boolean, virtual: true, default: false)
     field(:game_result, :string, virtual: true)
     field(:achievements, {:array, :string}, default: [], null: false)
