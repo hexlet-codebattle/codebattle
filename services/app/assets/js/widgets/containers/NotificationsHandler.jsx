@@ -43,7 +43,7 @@ class NotificationsHandler extends Component {
       )
     } else {
       toast(
-        <Toast header='Success'>
+        <Toast header='Failed'>
           <Alert variant='error'>Oh no, some test has failed!</Alert>
         </Toast>
       )
@@ -80,7 +80,7 @@ class NotificationsHandler extends Component {
 
     if (isCurrentUserPlayer) {
       toast(
-        <Toast header='Success'>
+        <Toast header='Failed'>
           <Alert variant='danger'>Oh snap! Your opponent has won the game</Alert>
         </Toast>
       );
