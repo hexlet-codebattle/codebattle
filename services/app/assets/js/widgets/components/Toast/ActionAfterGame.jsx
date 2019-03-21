@@ -2,10 +2,11 @@ import React from 'react';
 import qs from 'qs';
 import { connect } from 'react-redux';
 import { gameTaskSelector } from '../../selectors';
+import { sendRematch } from '../../middlewares/Game';
 
 class ActionAfterGame extends React.Component {
   handleRematch = () => {
-    console.log('============REMATCH=============');
+    sendRematch();
   }
 
   render () {

@@ -74,6 +74,7 @@ const initGameChannel = (dispatch) => {
 
   channel.onError(ev => console.log('Game channel: something went wrong', ev));
   channel.onClose(ev => console.log('Game channel: closed', ev));
+  channel.on('rematch', () => console.log('++++++++++++++REMATCH++++++++++'));
 };
 
 export const sendEditorText = (text, langSlug = null) => (dispatch, getState) => {
@@ -91,6 +92,10 @@ export const sendEditorText = (text, langSlug = null) => (dispatch, getState) =>
 
 export const sendGiveUp = () => {
   channel.push('give_up');
+};
+
+export const sendRematch = () => {
+  channel.push('rematch');
 };
 
 export const sendEditorLang = currentLangSlug => (dispatch, getState) => {
