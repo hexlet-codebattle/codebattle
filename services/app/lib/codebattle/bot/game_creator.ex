@@ -7,7 +7,7 @@ defmodule Codebattle.Bot.GameCreator do
 
   def call() do
     # TODO: think about more smart solution
-    if Play.list_games() |> Enum.count() < 3 do
+    if Play.list_games() |> Enum.count() < 5 do
       query =
         from(
           playbook in Playbook,

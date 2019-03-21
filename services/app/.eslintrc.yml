@@ -3,7 +3,6 @@
 plugins:
   - react
   - jsx-a11y
-  - flowtype
 
 env:
   node: true
@@ -13,7 +12,6 @@ parser: babel-eslint
 
 extends:
   - 'airbnb'
-  - 'plugin:flowtype/recommended'
 
 rules:
   no-console: 0

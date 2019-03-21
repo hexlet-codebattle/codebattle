@@ -1,9 +1,11 @@
 import React from 'react';
+import _ from 'lodash';
 import Loading from './Loading';
 
 const UserStats = ({ data }) => {
   if (data) {
     const { stats, achievements } = data;
+    const achivementsTitle = _.isEmpty(achievements) ? 'No achievements' : 'Achievements:';
     return (
       <div>
         <ul className="list-inline">
@@ -20,14 +22,16 @@ const UserStats = ({ data }) => {
             <b className="text-warning">{stats.gave_up}</b>
           </li>
         </ul>
-          Achievements:
-        <ul className="list-inline">
-          {achievements.map(el => (
-            <li key={el} className="list-inline-item">
-              <img src={`/assets/images/achievements/${el}.png`} alt={el} height="50" width="50" />
-            </li>
-          ))}
-        </ul>
+        {achivementsTitle}
+        {!_.isEmpty(achievements) && (
+          <ul className="list-inline">
+            {achievements.map(el => (
+              <li key={el} className="list-inline-item">
+                <img src={`/assets/images/achievements/${el}.png`} alt={el} height="50" width="50" />
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     );
   }
