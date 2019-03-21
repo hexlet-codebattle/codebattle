@@ -109,7 +109,9 @@ defmodule CodebattleWeb.GameChannel do
   def handle_in("rematch", _, socket) do
     game_id = get_game_id(socket)
 
-    broadcast!(socket, "rematch", %{})
+    broadcast!(socket, "rematch", %{
+      status: "want_rematch"
+    })
   end
 
   def handle_in("check_result", payload, socket) do

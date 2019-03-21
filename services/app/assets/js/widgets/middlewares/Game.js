@@ -204,7 +204,9 @@ export const editorReady = () => (dispatch) => {
     dispatch(actions.updateGameStatus({ status, msg }));
   });
 
-  channel.on('rematch', () => console.log('Game channel: rematch'));
+  channel.on('rematch', ({ status }) => {
+    dispatch(actions.updateGameStatus({ rematch_status: status }));
+  });
 };
 
 export const checkGameResult = () => (dispatch, getState) => {
