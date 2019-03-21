@@ -1,5 +1,6 @@
 /* eslint-disable no-bitwise */
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
+import _ from 'lodash';
 import PropTypes from 'prop-types';
 import MonacoEditor from 'react-monaco-editor';
 import { registerRulesForLanguage } from 'monaco-ace-tokenizer';
@@ -32,10 +33,21 @@ class Editor extends PureComponent {
       .fontSize);
     // statusBarHeight = lineHeight = current fontSize * 1.5
     this.statusBarHeight = convertRemToPixels(1) * 1.5;
+    this.options = {
+      lineNumbersMinChars: 3,
+      fontSize: 16,
+      scrollBeyondLastLine: false,
+      selectOnLineNumbers: true,
+      minimap: {
+        enabled: false,
+      },
+      readOnly: !props.editable,
+      contextmenu: props.editable,
+    };
   }
 
 
-  componentDidMount = async () => {
+  async componentDidMount() {
     const { mode, syntax } = this.props;
     this.modes = {
       default: () => null,
@@ -43,6 +55,31 @@ class Editor extends PureComponent {
     };
     await this.updateHightLightForNotIncludeSyntax(syntax);
     this.currentMode = this.modes[mode]();
+  }
+
+  async componentDidUpdate(prevProps) {
+    const { syntax, mode, editable } = this.props;
+    if (mode !== prevProps.mode) {
+      if (this.currentMode) {
+        this.currentMode.dispose();
+      }
+      this.statusBarRef.current.innerHTML = '';
+      this.currentMode = this.modes[mode]();
+    }
+    if (prevProps.editable !== editable) {
+      this.options = {
+        ...this.props,
+        readOnly: !editable,
+        contextMenu: editable,
+      };
+    }
+    if (prevProps.syntax !== syntax) {
+      await this.updateHightLightForNotIncludeSyntax(syntax);
+    }
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.handleResize);
   }
 
   updateHightLightForNotIncludeSyntax = async (syntax) => {
@@ -56,21 +93,7 @@ class Editor extends PureComponent {
     }
   }
 
-  componentDidUpdate = async (prevProps) => {
-    const { syntax, mode } = this.props;
-    await this.updateHightLightForNotIncludeSyntax(syntax);
-    if (mode !== prevProps.mode) {
-      if (this.currentMode) {
-        this.currentMode.dispose();
-      }
-      this.statusBarRef.current.innerHTML = '';
-      this.currentMode = this.modes[mode]();
-    }
-  }
-
-
   handleResize = () => this.editor.layout();
-
 
   editorDidMount = (editor, monaco) => {
     this.editor = editor;
@@ -81,12 +104,10 @@ class Editor extends PureComponent {
     } else {
       // disable copying for spectator
       this.editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_C, () => null);
-      this.editor.onDidChangeCursorSelection(
-        () => {
-          const { column, lineNumber } = this.editor.getPosition();
-          this.editor.setPosition({ lineNumber, column });
-        },
-      );
+      this.editor.onDidChangeCursorSelection(() => {
+        const { column, lineNumber } = this.editor.getPosition();
+        this.editor.setPosition({ lineNumber, column });
+      });
     }
     // this.editor.getModel().updateOptions({ tabSize: this.tabSize });
 
@@ -99,7 +120,6 @@ class Editor extends PureComponent {
     const {
       value,
       name,
-      editable,
       syntax,
       onChange,
       editorHeight,
@@ -107,24 +127,12 @@ class Editor extends PureComponent {
     } = this.props;
     // FIXME: move here and apply mapping object
     const mappedSyntax = syntax === 'js' ? 'javascript' : syntax;
-    const options = {
-      lineNumbersMinChars: 3,
-      readOnly: !editable,
-      contextmenu: editable,
-      fontSize: 16,
-      scrollBeyondLastLine: false,
-      selectOnLineNumbers: true,
-      // automaticLayout: true,
-      minimap: {
-        enabled: false,
-      },
-    };
     const editorHeightWithStatusBar = mode === 'vim' ? editorHeight - this.statusBarHeight : editorHeight;
     return (
-      <>
+      <Fragment>
         <MonacoEditor
           theme="vs-dark"
-          options={options}
+          options={this.options}
           width="auto"
           height={editorHeightWithStatusBar}
           language={mappedSyntax}
@@ -134,7 +142,7 @@ class Editor extends PureComponent {
           onChange={onChange}
         />
         <div ref={this.statusBarRef} className="bg-dark text-white px-1" />
-      </>
+      </Fragment>
     );
   }
 }

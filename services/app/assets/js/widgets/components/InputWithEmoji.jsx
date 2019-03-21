@@ -1,5 +1,4 @@
 import React, { PureComponent, Fragment } from 'react';
-import ContentEditable from 'react-contenteditable';
 import EmojiPicker from './EmojiPicker';
 
 class InputWithEmoji extends PureComponent {
