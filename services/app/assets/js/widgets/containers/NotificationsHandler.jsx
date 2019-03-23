@@ -31,6 +31,7 @@ class NotificationsHandler extends Component {
 
     if (status === GameStatusCodes.gameOver && prevProps.gameStatus.status !== status) {
       this.showGameResultMessage();
+      this.showActionsAfterGame();
     }
   }
 
@@ -51,6 +52,12 @@ class NotificationsHandler extends Component {
   }
 
   showActionsAfterGame = () => {
+    const { isCurrentUserPlayer } = this.props;
+
+    if (!isCurrentUserPlayer) {
+      return;
+    }
+
     toast(
       <Toast header='Next Action'>
         <ActionAfterGame />
@@ -74,7 +81,6 @@ class NotificationsHandler extends Component {
           <Alert variant='success'>Congratulations! You have won the game!</Alert>
         </Toast>
       );
-      this.showActionsAfterGame();
       return;
     }
 
@@ -84,11 +90,14 @@ class NotificationsHandler extends Component {
           <Alert variant='danger'>Oh snap! Your opponent has won the game</Alert>
         </Toast>
       );
-      this.showActionsAfterGame();
       return;
     }
 
-    toast.success(`${winner.user_name} has won the game!`);
+    toast(
+      <Toast header='Success'>
+        <Alert variant='success'>`${winner.user_name} has won the game!`</Alert>
+      </Toast>
+    );
   }
 
   render() {

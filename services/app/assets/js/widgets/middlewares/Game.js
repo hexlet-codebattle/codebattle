@@ -93,8 +93,16 @@ export const sendGiveUp = () => {
   channel.push('give_up');
 };
 
-export const sendRematch = () => {
-  channel.push('rematch');
+export const sendOfferToRematch = () => {
+  channel.push('rematch:send_offer');
+};
+
+export const sendRejectToRematch = () => {
+  channel.push('rematch:reject_offer');
+};
+
+export const sendAcceptToRematch = () => {
+  channel.push('rematch:accept_offer');
 };
 
 export const sendEditorLang = currentLangSlug => (dispatch, getState) => {
@@ -204,8 +212,8 @@ export const editorReady = () => (dispatch) => {
     dispatch(actions.updateGameStatus({ status, msg }));
   });
 
-  channel.on('rematch', ({ status }) => {
-    dispatch(actions.updateGameStatus({ rematch_status: status }));
+  channel.on('rematch:update_status', (payload) => {
+    dispatch(actions.updateRematchStatus(payload));
   });
 };
 

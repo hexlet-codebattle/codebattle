@@ -1,28 +1,17 @@
 import React from 'react';
+import _ from 'lodash';
 import qs from 'qs';
 import { connect } from 'react-redux';
-import { gameTaskSelector } from '../../selectors';
-import { sendRematch } from '../../middlewares/Game';
+import * as selectors from '../../selectors';
+import { sendOfferToRematch, sendRejectToRematch, sendAcceptToRematch } from '../../middlewares/Game';
 
 class ActionAfterGame extends React.Component {
-  handleRematch = () => {
-    sendRematch();
-  }
-
-  render () {
+  renderButtonNewGame = () => {
     const { gameTask: { level } } = this.props;
     const queryParamsString = qs.stringify({ level, type: 'withRandomPlayer' });
     const gameUrl = `/games?${queryParamsString}`;
 
-    return(
-      <React.Fragment>
-        <button
-          type="button"
-          className="btn btn-secondary btn-block"
-          onClick={this.handleRematch}
-        >
-          Rematch
-        </button>
+    return (
         <button
           type="button"
           className="btn btn-secondary btn-block"
@@ -32,13 +21,95 @@ class ActionAfterGame extends React.Component {
         >
           New Game
         </button>
+    );
+  };
+
+  renderButtonRematch = () => {
+    const { gameStatus: { rematchStatus }, currentUserId, isCurrentUserPlayer } = this.props; 
+    const isCurrentUserSendOfferToRematch = rematchStatus[currentUserId] === 'sended_offer';
+    const isCurrentUserFetchOfferToRematch = rematchStatus[currentUserId] === 'recieved_offer';
+    const isRejectOfferToRematch = rematchStatus[currentUserId] === 'rejected_offer';
+
+    if (isRejectOfferToRematch) {
+      return (
+        <button
+          type="button"
+          className="btn btn-danger btn-block"
+          disabled={true}
+        >
+          Rejected Offer
+        </button>
+      );
+    }
+
+    if (isCurrentUserSendOfferToRematch) {
+      return (
+        <button
+          type="button"
+          className="btn btn-secondary btn-block"
+          disabled={true}
+        >
+          Wait Rematch...
+        </button>
+      );
+    }
+
+    if (isCurrentUserFetchOfferToRematch) {
+      return (
+        <div className="input-group mt-2">
+          <input type="text" className="form-control" placeholder="Accept Rematch?" disabled="" />
+          <div className="input-group-append">
+            <button
+              className="btn btn-outline-secondary"
+              type="button"
+              onClick={sendAcceptToRematch}
+            >
+              Yes
+            </button>
+            <button
+              className="btn btn-outline-secondary"
+              type="button"
+              onClick={sendRejectToRematch}
+            >
+              No
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <button
+        type="button"
+        className="btn btn-secondary btn-block"
+        onClick={sendOfferToRematch}
+      >
+        Rematch
+      </button>
+    );
+  }
+
+  render () {
+    return(
+      <React.Fragment>
+        {this.renderButtonNewGame()}
+        {this.renderButtonRematch()}
       </React.Fragment>
     );
   }
 }
 
-const mapStateToProps = state => ({
-  gameTask: gameTaskSelector(state),
-});
+const mapStateToProps = (state) => {
+  const currentUserId = selectors.currentUserIdSelector(state);
+  const players = selectors.gamePlayersSelector(state);
+  const isCurrentUserPlayer = _.hasIn(players, currentUserId);
+
+  return {
+    gameTask: selectors.gameTaskSelector(state),
+    gameStatus: selectors.gameStatusSelector(state),
+    isCurrentUserPlayer,
+    currentUserId,
+  }
+};
 
 export default connect(mapStateToProps)(ActionAfterGame);

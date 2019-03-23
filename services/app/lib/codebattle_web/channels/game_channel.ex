@@ -106,12 +106,35 @@ defmodule CodebattleWeb.GameChannel do
     end
   end
 
-  def handle_in("rematch", _, socket) do
+  def handle_in("rematch:send_offer", _, socket) do
     game_id = get_game_id(socket)
+    fsm = Play.give_up(game_id, socket.assigns.current_user)
+    currentUserId = socket.assigns.user_id
+    opponentsRematchState =
+      FsmHelpers.get_players(fsm)
+      |>Enum.filter(fn e -> e.id !== currentUserId end)
+      |>Enum.map(fn e -> %{e.id => "recieved_offer"} end)
+      |>Enum.reduce(%{}, fn e, acc -> Map.merge(acc, e) end)
 
-    broadcast!(socket, "rematch", %{
-      status: "want_rematch"
-    })
+    currentUserRematchState = %{currentUserId => "sended_offer"}
+    rematchState = Map.merge(currentUserRematchState, opponentsRematchState)
+    broadcast!(socket, "rematch:update_status", rematchState)
+    
+    {:noreply, socket}
+  end
+
+  def handle_in("rematch:reject_offer", _, socket) do
+    game_id = get_game_id(socket)
+    fsm = Play.give_up(game_id, socket.assigns.current_user)
+    currentUserId = socket.assigns.user_id
+    rematchState =
+      FsmHelpers.get_players(fsm)
+      |>Enum.map(fn e -> %{e.id => "rejected_offer"} end)
+      |>Enum.reduce(%{}, fn e, acc -> Map.merge(acc, e) end)
+
+    broadcast!(socket, "rematch:update_status", rematchState)
+    
+    {:noreply, socket}
   end
 
   def handle_in("check_result", payload, socket) do
