@@ -4,6 +4,7 @@ import qs from 'qs';
 import { connect } from 'react-redux';
 import * as selectors from '../../selectors';
 import { sendOfferToRematch, sendRejectToRematch, sendAcceptToRematch } from '../../middlewares/Game';
+import axios from 'axios';
 
 class ActionAfterGame extends React.Component {
   renderButtonNewGame = () => {
@@ -12,17 +13,27 @@ class ActionAfterGame extends React.Component {
     const gameUrl = `/games?${queryParamsString}`;
 
     return (
-        <button
-          type="button"
-          className="btn btn-secondary btn-block"
-          data-method="post"
-          data-csrf={window.csrf_token}
-          data-to={gameUrl}
-        >
-          New Game
-        </button>
+      <button
+        type="button"
+        className="btn btn-secondary btn-block"
+        data-method="post"
+        data-csrf={window.csrf_token}
+        data-to={gameUrl}
+      >
+        New Game
+      </button>
     );
   };
+
+  handleAcceptRematch = () => {
+    const { gameTask: { level } } = this.props;
+    const queryParamsString = qs.stringify({ level });
+    const gameUrl = `/api/v1/games?${queryParamsString}`;
+    const csrf = window.csrf_token;
+
+    axios.post(gameUrl, {}, { headers: { 'X-CSRF-Token': csrf } })
+      .then((res) => sendAcceptToRematch(res.data.game_id));
+  }
 
   renderButtonRematch = () => {
     const { gameStatus: { rematchStatus }, currentUserId, isCurrentUserPlayer } = this.props; 
@@ -62,7 +73,7 @@ class ActionAfterGame extends React.Component {
             <button
               className="btn btn-outline-secondary"
               type="button"
-              onClick={sendAcceptToRematch}
+              onClick={this.handleAcceptRematch}
             >
               Yes
             </button>
