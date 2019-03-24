@@ -11,8 +11,6 @@ defmodule CodebattleWeb.Api.V1.GameController do
 
   def create(conn, _params) do
     type = "private"
-    IO.puts "+++++++++++++++++++++++++++++++++++++++++++++++++"
-    IO.inspect conn
 
     case Play.create_game(conn.assigns.current_user, conn.params["level"], type) do
       {:ok, id} ->

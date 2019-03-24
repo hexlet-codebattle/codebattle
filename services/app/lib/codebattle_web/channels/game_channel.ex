@@ -108,39 +108,56 @@ defmodule CodebattleWeb.GameChannel do
 
   def handle_in("rematch:send_offer", _, socket) do
     game_id = get_game_id(socket)
-    fsm = Play.give_up(game_id, socket.assigns.current_user)
-    currentUserId = socket.assigns.user_id
-    opponentsRematchState =
-      FsmHelpers.get_players(fsm)
-      |>Enum.filter(fn e -> e.id !== currentUserId end)
-      |>Enum.map(fn e -> %{e.id => "recieved_offer"} end)
-      |>Enum.reduce(%{}, fn e, acc -> Map.merge(acc, e) end)
 
-    currentUserRematchState = %{currentUserId => "sended_offer"}
-    rematchState = Map.merge(currentUserRematchState, opponentsRematchState)
-    broadcast!(socket, "rematch:update_status", rematchState)
+    if user_authorized_in_game?(game_id, socket.assigns.user_id) do
+      fsm = Play.give_up(game_id, socket.assigns.current_user)
+      currentUserId = socket.assigns.user_id
+
+      opponentsRematchState =
+        FsmHelpers.get_players(fsm)
+        |>Enum.filter(fn e -> e.id !== currentUserId end)
+        |>Enum.map(fn e -> %{e.id => "recieved_offer"} end)
+        |>Enum.reduce(%{}, fn e, acc -> Map.merge(acc, e) end)
+
+      currentUserRematchState = %{currentUserId => "sended_offer"}
+      rematchState = Map.merge(currentUserRematchState, opponentsRematchState)
+      broadcast!(socket, "rematch:update_status", rematchState)
+
+      {:noreply, socket}
+    else
+      {:reply, {:error, %{reason: "not_authorized"}}, socket}
+    end
     
-    {:noreply, socket}
   end
 
   def handle_in("rematch:reject_offer", _, socket) do
     game_id = get_game_id(socket)
-    fsm = Play.give_up(game_id, socket.assigns.current_user)
-    rematchState =
-      FsmHelpers.get_players(fsm)
-      |>Enum.map(fn e -> %{e.id => "rejected_offer"} end)
-      |>Enum.reduce(%{}, fn e, acc -> Map.merge(acc, e) end)
 
-    broadcast!(socket, "rematch:update_status", rematchState)
-    
-    {:noreply, socket}
+    if user_authorized_in_game?(game_id, socket.assigns.user_id) do
+      fsm = Play.give_up(game_id, socket.assigns.current_user)
+      rematchState =
+        FsmHelpers.get_players(fsm)
+        |>Enum.map(fn e -> %{e.id => "rejected_offer"} end)
+        |>Enum.reduce(%{}, fn e, acc -> Map.merge(acc, e) end)
+
+      broadcast!(socket, "rematch:update_status", rematchState)
+      
+      {:noreply, socket}
+    else
+      {:reply, {:error, %{reason: "not_authorized"}}, socket}
+    end
   end
 
   def handle_in("rematch:accept_offer", payload, socket) do
-    %{"game_id" => new_game_id} = payload
-    broadcast!(socket, "rematch:redirect_to_new_game", %{game_id: new_game_id})
-    
-    {:noreply, socket}
+    game_id = get_game_id(socket)
+
+    if user_authorized_in_game?(game_id, socket.assigns.user_id) do
+      broadcast!(socket, "rematch:redirect_to_new_game", %{game_id: payload["game_id"]})
+      
+      {:noreply, socket}
+    else
+      {:reply, {:error, %{reason: "not_authorized"}}, socket}
+    end
   end
 
   def handle_in("check_result", payload, socket) do
