@@ -33,4 +33,5 @@ export const compressEditorHeight = createAction('COMPRESS_EDITOR_HEIGHT');
 export const expandEditorHeight = createAction('EXPAND_EDITOR_HEIGHT');
 
 export const setEditorsMode = createAction('EDITORS_MODE_SET');
+export const updateGameUI = createAction('UPDATE_GAME_UI');
 export const redirectToNewGame = game_id => window.location.href = `/games/${game_id}`;

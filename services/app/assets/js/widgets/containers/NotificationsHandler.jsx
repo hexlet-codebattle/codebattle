@@ -8,6 +8,7 @@ import GameStatusCodes from '../config/gameStatusCodes';
 import Toast from '../components/Toast';
 import ActionsAfterGame from '../components/Toast/ActionsAfterGame';
 import CloseButton from '../components/Toast/CloseButton';
+import { updateGameUI } from '../actions';
 
 const toastOptions = {
   hideProgressBar: true,
@@ -21,7 +22,7 @@ const toastOptions = {
 class NotificationsHandler extends Component {
   componentDidUpdate(prevProps) {
     const {
-      gameStatus: { solutionStatus, status, checking },
+      gameStatus: { solutionStatus, status, checking, rematchStatus },
       isCurrentUserPlayer,
     } = this.props;
 
@@ -31,6 +32,10 @@ class NotificationsHandler extends Component {
 
     if (status === GameStatusCodes.gameOver && prevProps.gameStatus.status !== status) {
       this.showGameResultMessage();
+      this.showActionsAfterGame();
+    }
+
+    if(_.isEqual(rematchStatus, prevProps.gameStatus.rematchStatus) === false) {
       this.showActionsAfterGame();
     }
   }
@@ -52,9 +57,13 @@ class NotificationsHandler extends Component {
   }
 
   showActionsAfterGame = () => {
-    const { isCurrentUserPlayer } = this.props;
+    const { isCurrentUserPlayer, updateGameUI, isShowActionsAfterGame } = this.props;
 
     if (!isCurrentUserPlayer) {
+      return;
+    }
+
+    if (isShowActionsAfterGame) {
       return;
     }
 
@@ -62,7 +71,11 @@ class NotificationsHandler extends Component {
       <Toast header="Next Action">
         <ActionsAfterGame />
       </Toast>,
-      { autoClose: false },
+      {
+        autoClose: false,
+        onClose: () => updateGameUI({ showToastActionsAfterGame: false }),
+        onOpen: () => updateGameUI({ showToastActionsAfterGame: true }),
+      },
     );
   }
 
@@ -111,13 +124,19 @@ const mapStateToProps = (state) => {
   const currentUserId = selectors.currentUserIdSelector(state);
   const players = selectors.gamePlayersSelector(state);
   const isCurrentUserPlayer = _.hasIn(players, currentUserId);
+  const isShowActionsAfterGame = state.gameUI.showToastActionsAfterGame;
 
   return {
     currentUserId,
     players,
     isCurrentUserPlayer,
+    isShowActionsAfterGame,
     gameStatus: selectors.gameStatusSelector(state),
   };
 };
 
-export default connect(mapStateToProps)(NotificationsHandler);
+const mapDispatchToProps = {
+  updateGameUI
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(NotificationsHandler);
