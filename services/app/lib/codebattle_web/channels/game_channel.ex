@@ -113,14 +113,14 @@ defmodule CodebattleWeb.GameChannel do
       fsm = Play.give_up(game_id, socket.assigns.current_user)
       currentUserId = socket.assigns.user_id
 
-      opponentsRematchState =
+      rematchState =
         FsmHelpers.get_players(fsm)
         |>Enum.filter(fn e -> e.id !== currentUserId end)
         |>Enum.map(fn e -> %{e.id => "recieved_offer"} end)
         |>Enum.reduce(%{}, fn e, acc -> Map.merge(acc, e) end)
+        |>Map.merge(%{currentUserId => "sended_offer"})
+        |>Map.merge(%{state: "in_approval"})
 
-      currentUserRematchState = %{currentUserId => "sended_offer"}
-      rematchState = Map.merge(currentUserRematchState, opponentsRematchState)
       broadcast!(socket, "rematch:update_status", rematchState)
 
       {:noreply, socket}
@@ -139,6 +139,7 @@ defmodule CodebattleWeb.GameChannel do
         FsmHelpers.get_players(fsm)
         |>Enum.map(fn e -> %{e.id => "rejected_offer"} end)
         |>Enum.reduce(%{}, fn e, acc -> Map.merge(acc, e) end)
+        |>Map.merge(%{state: "rejected"})
 
       broadcast!(socket, "rematch:update_status", rematchState)
       
@@ -153,6 +154,22 @@ defmodule CodebattleWeb.GameChannel do
 
     if user_authorized_in_game?(game_id, socket.assigns.user_id) do
       broadcast!(socket, "rematch:redirect_to_new_game", %{game_id: payload["game_id"]})
+      
+      {:noreply, socket}
+    else
+      {:reply, {:error, %{reason: "not_authorized"}}, socket}
+    end
+  end
+
+  def handle_in("rematch:send_reset", payload, socket) do
+    game_id = get_game_id(socket)
+
+    if user_authorized_in_game?(game_id, socket.assigns.user_id) do
+      if (payload.rematch_state === "rejected") do
+        broadcast!(socket, "rematch:update_status", %{state: "rejected"})
+      else
+        broadcast!(socket, "rematch:update_status", %{state: "init"})
+      end
       
       {:noreply, socket}
     else

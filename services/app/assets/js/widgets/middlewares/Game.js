@@ -93,6 +93,10 @@ export const sendGiveUp = () => {
   channel.push('give_up');
 };
 
+export const sendResetRematch = (rematchState) => {
+  channel.push('rematch:send_reset', { rematch_state: rematchState });
+};
+
 export const sendOfferToRematch = () => {
   channel.push('rematch:send_offer');
 };

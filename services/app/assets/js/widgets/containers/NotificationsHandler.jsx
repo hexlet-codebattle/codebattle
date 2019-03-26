@@ -9,6 +9,7 @@ import Toast from '../components/Toast';
 import ActionsAfterGame from '../components/Toast/ActionsAfterGame';
 import CloseButton from '../components/Toast/CloseButton';
 import { updateGameUI } from '../actions';
+import { sendResetRematch } from '../middlewares/Game';
 
 const toastOptions = {
   hideProgressBar: true,
@@ -26,6 +27,9 @@ class NotificationsHandler extends Component {
       isCurrentUserPlayer,
     } = this.props;
 
+    const currentRematchState = rematchStatus.state;
+    const isChangeRematchState = prevProps.gameStatus.rematchStatus.state !== currentRematchState;
+
     if (isCurrentUserPlayer && prevProps.gameStatus.checking && !checking) {
       this.showCheckingStatusMessage(solutionStatus);
     }
@@ -35,7 +39,7 @@ class NotificationsHandler extends Component {
       this.showActionsAfterGame();
     }
 
-    if(_.isEqual(rematchStatus, prevProps.gameStatus.rematchStatus) === false) {
+    if(isChangeRematchState && currentRematchState !== 'init') {
       this.showActionsAfterGame();
     }
   }
@@ -57,7 +61,12 @@ class NotificationsHandler extends Component {
   }
 
   showActionsAfterGame = () => {
-    const { isCurrentUserPlayer, updateGameUI, isShowActionsAfterGame } = this.props;
+    const {
+      isCurrentUserPlayer,
+      updateGameUI,
+      isShowActionsAfterGame,
+      gameStatus: { rematchStatus },
+    } = this.props;
 
     if (!isCurrentUserPlayer) {
       return;
@@ -73,7 +82,10 @@ class NotificationsHandler extends Component {
       </Toast>,
       {
         autoClose: false,
-        onClose: () => updateGameUI({ showToastActionsAfterGame: false }),
+        onClose: () => {
+          updateGameUI({ showToastActionsAfterGame: false });
+          sendResetRematch(rematchStatus.state);
+        },
         onOpen: () => updateGameUI({ showToastActionsAfterGame: true }),
       },
     );
