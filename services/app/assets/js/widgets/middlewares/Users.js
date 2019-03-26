@@ -11,8 +11,8 @@ export const loadUserStats = dispatch => async (user) => {
 
 export const getUsersRatingPage = page => (dispatch) => {
   axios.get(`/api/v1/users/${page}`)
-    .then((response) => {
-      dispatch(updateUsersRatingPage(response.data));
+    .then(({ data }) => {
+      dispatch(updateUsersRatingPage(data));
     });
 };
 

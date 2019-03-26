@@ -7876,7 +7876,7 @@ performance-now@^2.1.0:
   integrity sha1-Ywn04OX6kT7BxpMHrjZLSzd8nns=
 
 "phoenix@file:deps/phoenix":
-  version "1.4.1"
+  version "1.4.2"
 
 "phoenix_html@file:deps/phoenix_html":
   version "2.13.1"
@@ -8700,6 +8700,11 @@ react-overlays@^1.0.0:
     react-popper "^1.3.2"
     uncontrollable "^6.0.0"
     warning "^4.0.2"
+
+react-pagination-library@^0.1.14:
+  version "0.1.14"
+  resolved "https://registry.yarnpkg.com/react-pagination-library/-/react-pagination-library-0.1.14.tgz#e66d0be6fbab898a2b204d2e05fc81ba8d4d9d51"
+  integrity sha512-1IQt5ia45FIJMXaaOldtS7r2tSPMtvgJASLA5mS63iDkweTLQ24tDzXoOcEKhSi7y4+JcjhyB2UiKhmdsRNpOQ==
 
 react-popper@^1.3.2:
   version "1.3.2"

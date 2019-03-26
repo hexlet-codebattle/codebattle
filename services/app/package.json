@@ -41,6 +41,7 @@
     "react-loading": "^2.0.3",
     "react-markdown": "^4.0.6",
     "react-monaco-editor": "^0.25.1",
+    "react-pagination-library": "^0.1.14",
     "react-redux": "^6.0.1",
     "react-stay-scrolled": "^2.1.1",
     "react-toastify": "^3.3.1",

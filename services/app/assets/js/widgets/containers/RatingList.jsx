@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import _ from 'lodash';
-import { Pagination } from 'react-bootstrap';
+import Pagination from 'react-pagination-library';
 import UserInfo from './UserInfo';
 import { getUsersList } from '../selectors';
 import * as UsersMiddlewares from '../middlewares/Users';
@@ -38,40 +38,19 @@ class UsersRating extends React.Component {
     );
   }
 
-  clickHandler = num => () => {
-    const { getRatingPage } = this.props;
-    getRatingPage(num);
-  }
-
-  renderPagItems = (current, total) => {
-    const pages = [];
-    let n = current > 6 ? current - 5 : 1;
-    const fin = current + 5 < total ? current + 5 : total;
-    for (n; n <= fin; n++) {
-      pages.push(
-        <Pagination.Item key={n} active={n === current} onClick={this.clickHandler(n)}>
-          {n}
-        </Pagination.Item>,
-      );
-    }
-    return pages;
-  }
-
   renderPaginationUi = () => {
     const {
+      getRatingPage,
       usersRatingPage:
       { pageInfo: { page_number: current, total_pages: total } },
     } = this.props;
     return (
-      <Pagination>
-        <Pagination.Prev onClick={this.clickHandler(current - 1 > 0 ? current - 1 : 1)} />
-        {current > 6 ? <Pagination.Item onClick={this.clickHandler(1)}>{1}</Pagination.Item> : ''}
-        {current > 7 ? <Pagination.Ellipsis /> : ''}
-        {this.renderPagItems(current, total)}
-        {total - current > 6 ? <Pagination.Ellipsis /> : ''}
-        {total - current > 5 ? <Pagination.Item onClick={this.clickHandler(total)}>{total}</Pagination.Item> : ''}
-        <Pagination.Next onClick={this.clickHandler(current + 1 < total ? current + 1 : total)} />
-      </Pagination>
+      <Pagination
+        currentPage={current}
+        totalPages={total}
+        changeCurrentPage={getRatingPage}
+        theme="bottom-border"
+      />
     );
   }
 
