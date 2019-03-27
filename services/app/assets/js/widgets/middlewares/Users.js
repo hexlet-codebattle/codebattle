@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { updateUsersStats } from '../actions';
+import { updateUsersRatingPage, updateUsersStats } from '../actions';
 
 export const loadUserStats = dispatch => async (user) => {
   try {
@@ -7,6 +7,13 @@ export const loadUserStats = dispatch => async (user) => {
     const { stats, user_id: userId, achievements } = response.data;
     dispatch(updateUsersStats({ stats, userId, achievements }));
   } catch (e) {}
+};
+
+export const getUsersRatingPage = page => (dispatch) => {
+  axios.get(`/api/v1/users/${page}`)
+    .then(({ data }) => {
+      dispatch(updateUsersRatingPage(data));
+    });
 };
 
 export default loadUserStats;

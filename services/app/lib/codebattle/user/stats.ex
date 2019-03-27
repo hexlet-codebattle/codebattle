@@ -3,7 +3,7 @@ defmodule Codebattle.User.Stats do
     Find user game statistic
   """
 
-  alias Codebattle.{Repo, UserGame}
+  alias Codebattle.{Repo, UserGame, User}
 
   import Ecto.Query, warn: false
 
@@ -27,5 +27,19 @@ defmodule Codebattle.User.Stats do
 
         Map.merge(%{"won" => 0, "lost" => 0, "gave_up" => 0}, Enum.into(stats, %{}))
     end
+  end
+
+  def get_users_rating(params) do
+    query =
+      from(users in User,
+        order_by: {:desc, :rating},
+        preload: [:user_games]
+      )
+
+    page =
+      query
+      |> Repo.paginate(params)
+
+    %{users: page.entries, page: page}
   end
 end

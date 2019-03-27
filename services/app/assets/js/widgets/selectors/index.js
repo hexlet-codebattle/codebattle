@@ -161,3 +161,5 @@ export const activeGamesSelector = (state) => {
 export const completedGamesSelector = state => state.gameList.completedGames || [];
 
 export const getUsersStats = state => state.user.usersStats;
+
+export const getUsersList = state => state.user.usersRatingPage;
