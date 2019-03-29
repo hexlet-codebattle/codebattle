@@ -17,7 +17,7 @@ defmodule Codebattle.Bot.CreatorServer do
 
   def handle_info(:create_bot_if_need, state) do
     case Codebattle.Bot.GameCreator.call() do
-      {:ok, game_id, _task_id} ->
+      {:ok, game_id} ->
 
         Process.send_after(self(), :create_bot_if_need, 3_000)
         {:ok, pid}=PlaybookAsyncRunner.start(%{game_id: game_id})

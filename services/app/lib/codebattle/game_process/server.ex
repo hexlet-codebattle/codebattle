@@ -58,7 +58,7 @@ defmodule Codebattle.GameProcess.Server do
 
     case Fsm.transition(fsm, event, [params]) do
       {{:error, reason}, _} ->
-        {:reply, {{:error, reason}, fsm}, fsm}
+        {:reply, {:error, reason, fsm}, fsm}
 
       new_fsm ->
         {:reply, {:ok, new_fsm}, new_fsm}

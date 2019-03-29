@@ -28,15 +28,14 @@ defmodule Codebattle.GameProcess.ActiveGames do
     :ets.delete(@table_name, game_key(game_id))
   end
 
-  def create_game(user, fsm) do
-    case playing?(user.id) && !user.bot do
+  def create_game(player, fsm) do
+    case playing?(player.id) && player.bot do
       true ->
         :error
 
       false ->
         game_id = FsmHelpers.get_game_id(fsm)
-        players = %{user.id => FsmHelpers.get_first_player(fsm)}
-
+        players = %{player.id => FsmHelpers.get_first_player(fsm)}
         :ets.insert(@table_name, {game_key(game_id), players, game_params(fsm)})
         :ok
     end

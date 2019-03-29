@@ -8,27 +8,26 @@ defmodule Codebattle.Bot.GameCreator do
   def call() do
     # TODO: think about more smart solution
     if Play.list_games() |> Enum.count() < 5 do
-      query =
-        from(
-          playbook in Playbook,
-          preload: [:task],
-          order_by: fragment("RANDOM()"),
-          limit: 1
-        )
+      level = ["elementary", "easy", "medium", "hard"] |> Enum.random()
+      bot = Codebattle.Bot.Builder.build(%{"level" => level, "type" => "public"})
 
-      playbook = Repo.one(query)
+      {:ok, game_id} = Play.create_game(bot, %{"level" => level, "type" => "public"})
+      {:ok, game_id}
+      # query =
+      #   from(
+      #     playbook in Playbook,
+      #     preload: [:task],
+      #     order_by: fragment("RANDOM()"),
+      #     limit: 1
+      #   )
 
-      if playbook do
-        bot = Codebattle.Bot.Builder.build(%{lang: "ruby"})
+      # playbook = Repo.one(query)
 
-        {:ok, game_id} = Play.create_bot_game(bot, playbook.task)
-        {:ok, game_id, playbook.task.id}
-      else
-
-        {:error, :no_playbooks}
-      end
+      # if playbook do
+      # else
+      #   {:error, :no_playbooks}
+      # end
     else
-
       {:error, :game_limit}
     end
   end

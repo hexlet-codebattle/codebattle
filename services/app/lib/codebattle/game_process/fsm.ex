@@ -16,6 +16,8 @@ defmodule Codebattle.GameProcess.Fsm do
       game_id: nil,
       # NaiveDateTime
       starts_at: nil,
+      # NaiveDateTime
+      joins_at: nil,
       # Task
       task: %Codebattle.Task{},
       # String, level, appears before task created

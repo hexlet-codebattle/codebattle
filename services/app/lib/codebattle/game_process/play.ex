@@ -109,182 +109,53 @@ defmodule Codebattle.GameProcess.Play do
     Server.fsm(id)
   end
 
-  def create_game(user, level, type \\ "public") do
-    case ActiveGames.playing?(user.id) do
+  def create_game(user, game_params) do
+    player = Player.from_user(user, %{creator: true})
+    engine = get_engine(fsm)
+
+    case ActiveGames.playing?(player.id) do
       false ->
-        player = Player.from_user(user, %{creator: true})
-
-        game =
-          Repo.insert!(%Game{
-            state: "waiting_opponent",
-            users: [user],
-            level: level,
-            type: type
-          })
-
-        fsm =
-          Fsm.new()
-          |> Fsm.create(%{
-            player: player,
-            game_id: game.id,
-            level: level,
-            type: type,
-            starts_at: TimeHelper.utc_now()
-          })
-
-        ActiveGames.create_game(user, fsm)
-        {:ok, _} = GlobalSupervisor.start_game(game.id, fsm)
-
-        Task.async(fn ->
-          CodebattleWeb.Endpoint.broadcast("lobby", "game:new", %{game: fsm})
-        end)
-
-        # TODO: сделать настройку нотификаций в списке игр
-        # FIXME: please refactor this, don't broadcast notificate if the game is a private
-        case type do
-          "public" ->
-            Task.async(fn ->
-              Notifier.call(:game_created, %{level: level, game: game, player: player})
-            end)
-
-          _ ->
-            nil
-        end
-
-        {:ok, game.id}
+        engine.create_game(player, game_params)
 
       _ ->
         {:error, "You are already in a game"}
     end
   end
 
-  def create_bot_game(bot, task) do
-    player = Player.from_user(bot, %{creator: true})
-
-    game =
-      Repo.insert!(%Game{state: "waiting_opponent", users: [bot], level: task.level, task: task})
-
-    fsm =
-      Fsm.new()
-      |> Fsm.create(%{
-        player: player,
-        game_id: game.id,
-        level: task.level,
-        task: task,
-        bots: true,
-        starts_at: TimeHelper.utc_now()
-      })
-
-    ActiveGames.create_game(bot, fsm)
-    {:ok, _} = GlobalSupervisor.start_game(game.id, fsm)
-
-    Task.async(fn ->
-      CodebattleWeb.Endpoint.broadcast("lobby", "game:new", %{game: fsm})
-    end)
-
-    {:ok, game.id}
-  end
-
   # TODO: refactor to join_to_bot_game and join_game
   def join_game(id, user) do
-    if ActiveGames.playing?(user.id) do
-      :error
-    else
-      game = get_game(id)
-      fsm = get_fsm(id)
-      first_player = FsmHelpers.get_first_player(fsm)
+    case ActiveGames.playing?(user.id) do
+      false ->
+        {:ok, fsm} = engine.join_game(id, user)
 
-      if FsmHelpers.bot_game?(fsm) == true do
-        game
-        |> Game.changeset(%{state: "playing"})
-        |> Repo.update!()
+        Task.async(fn ->
+          CodebattleWeb.Endpoint.broadcast("lobby", "game:update", %{
+            game: fsm,
+            game_info: Play.game_info(id)
+          })
+        end)
 
-        player = Player.from_user(user)
+        {:ok, fsm}
 
-        case Server.call_transition(id, :join, %{
-               player: player,
-               starts_at: TimeHelper.utc_now()
-             }) do
-          {:ok, fsm} ->
-            ActiveGames.add_participant(fsm)
-
-            {:ok, _} =
-              Codebattle.Bot.Supervisor.start_bot_server(
-                id,
-                FsmHelpers.get_second_player(fsm),
-                fsm
-              )
-
-            Codebattle.Bot.PlaybookAsyncRunner.call(%{
-              game_id: id,
-              task_id: FsmHelpers.get_task(fsm).id
-            })
-
-            {:ok, fsm}
-
-          {{:error, _reason}, _} ->
-            :error
-        end
-      else
-        task = get_random_task(game.level, [user.id, first_player.id])
-
-        player = Player.from_user(user)
-
-        case Server.call_transition(id, :join, %{
-               player: player,
-               starts_at: TimeHelper.utc_now(),
-               task: task
-             }) do
-          {:ok, fsm} ->
-            ActiveGames.add_participant(fsm)
-
-            game
-            |> Game.changeset(%{state: "playing", task_id: task.id})
-            |> Repo.update!()
-
-            {:ok, _} =
-              Codebattle.Bot.Supervisor.start_bot_server(
-                id,
-                first_player,
-                fsm
-              )
-
-            {:ok, _} =
-              Codebattle.Bot.Supervisor.start_bot_server(
-                id,
-                FsmHelpers.get_second_player(fsm),
-                fsm
-              )
-
-            Notifier.call(:game_opponent_join, %{
-              # creator: FsmHelpers.get_opponent(fsm, user.id),
-              first_player: first_player,
-              second_player: FsmHelpers.get_second_player(fsm),
-              game_id: id
-            })
-
-            {:ok, fsm}
-
-          {{:error, _reason}, _} ->
-            :error
-        end
-      end
+      _ ->
+        {:error, "You are already in a game"}
     end
   end
 
   def cancel_game(id, user) do
-    if ActiveGames.participant?(id, user.id) do
+    case ActiveGames.participant?(id, user.id) do
       ActiveGames.terminate_game(id)
       GlobalSupervisor.terminate_game(id)
+      CodebattleWeb.Endpoint.broadcast("lobby", "game:cancel", %{game_id: id})
 
       id
       |> get_game
       |> Game.changeset(%{state: "canceled"})
       |> Repo.update!()
 
-      :ok
+      {:ok}
     else
-      :error
+      {:error, _reason}
     end
   end
 
@@ -312,7 +183,7 @@ defmodule Codebattle.GameProcess.Play do
     RecorderServer.update_text(id, player_id, editor_text)
     Server.call_transition(id, :update_editor_params, %{id: player_id, editor_text: editor_text})
 
-    # land
+    # lang
     case editor_lang do
       ^prev_editor_lang ->
         :ok
@@ -336,10 +207,8 @@ defmodule Codebattle.GameProcess.Play do
   end
 
   def give_up(id, user) do
-    # TODO: terminate Bot.RecordServer for this
-    # RecorderServer.update_lang(id, user_id, editor_lang)
     {_response, fsm} = Server.call_transition(id, :give_up, %{id: user.id})
-    handle_gave_up(id, user, fsm)
+    engine.gave_up(id, user, fsm)
     fsm
   end
 
@@ -399,11 +268,12 @@ defmodule Codebattle.GameProcess.Play do
     game_id = id |> Integer.parse() |> elem(0)
     loser_id = FsmHelpers.get_opponent(fsm, winner.id).id
 
-   loser =  try do
-      Repo.get(User, loser_id)
-    rescue
-      _ -> Codebattle.Bot.Builder.build()
-    end
+    loser =
+      try do
+        Repo.get(User, loser_id)
+      rescue
+        _ -> Codebattle.Bot.Builder.build()
+      end
 
     difficulty = fsm.data.level
 
@@ -464,17 +334,17 @@ defmodule Codebattle.GameProcess.Play do
   end
 
   defp handle_gave_up(id, loser, fsm) do
-    game_id = id |> Integer.parse() |> elem(0)
+    loser_player = Player.from_user(fsm, loser.id).id
     winner_id = FsmHelpers.get_opponent(fsm, loser.id).id
 
-    winner =
-      case FsmHelpers.bot_game?(fsm) do
-        true ->
-          FsmHelpers.get_first_player(fsm)
+    # winner =
+    #   case FsmHelpers.bot_game?(fsm) do
+    #     true ->
+    #       FsmHelpers.get_first_player(fsm)
 
-        false ->
-          Repo.get(User, winner_id)
-      end
+    #     false ->
+    #       Repo.get(User, winner_id)
+    #   end
 
     difficulty = fsm.data.level
 
@@ -542,7 +412,7 @@ defmodule Codebattle.GameProcess.Play do
     LEFT JOIN game_tasks ON "tasks"."id" = "game_tasks"."task_id"
     WHERE "tasks"."level" = $1
     ORDER BY "game_tasks"."count" NULLS FIRST
-    LIMIT 7
+    LIMIT 30
     """
 
     # TODO: get list and then get random in elixir

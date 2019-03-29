@@ -19,8 +19,8 @@ defmodule Codebattle.Bot.Playbook do
   @doc false
   def changeset(%Playbook{} = playbook, attrs) do
     playbook
-    |> cast(attrs, [:data, :user_id, :game_id, :task_id, :lang])
-    |> validate_required([:data, :user_id, :game_id, :task_id, :lang])
+    |> cast(attrs, [:data, :user_id, :game_id, :task_id, :lang, :level])
+    |> validate_required([:data, :user_id, :game_id, :task_id, :lang, :level])
   end
 
   def random(task_id) do
