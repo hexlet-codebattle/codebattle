@@ -6,10 +6,10 @@ defmodule Codebattle.CodeCheck.Checker do
   alias Codebattle.Languages
   # alias Codebattle.CodeCheck.OutputFilter
 
-  def check(task, editor_text, lang_slug) do
-    case Languages.meta() |> Map.get(lang_slug) do
+  def check(task, editor_text, editor_lang) do
+    case Languages.meta() |> Map.get(editor_lang) do
       nil ->
-        {:error, "Lang #{lang_slug} is undefined"}
+        {:error, "Lang #{editor_lang} is undefined"}
 
       lang ->
         # TODO: add hash to data.jsons or forbid read data.jsons

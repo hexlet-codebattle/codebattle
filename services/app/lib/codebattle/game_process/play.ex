@@ -109,53 +109,61 @@ defmodule Codebattle.GameProcess.Play do
     Server.fsm(id)
   end
 
-  def create_game(user, game_params) do
+  def create_game(user, game_params, engine_type \\ :standard) do
     player = Player.from_user(user, %{creator: true})
-    engine = get_engine(fsm)
+    engine = get_engine(engine_type)
 
-    case ActiveGames.playing?(player.id) do
-      false ->
+    case player_can_create_game?(player) do
+      :ok ->
         engine.create_game(player, game_params)
 
-      _ ->
-        {:error, "You are already in a game"}
+      {:error, reason} ->
+        {:error, reason}
     end
   end
 
   # TODO: refactor to join_to_bot_game and join_game
   def join_game(id, user) do
-    case ActiveGames.playing?(user.id) do
-      false ->
-        {:ok, fsm} = engine.join_game(id, user)
+    player = Player.from_user(user)
+    engine = get_engine(fsm)
+
+    case player_can_join_game?(player) do
+      :ok ->
+        {:ok, fsm} = engine.join_game(id, player)
 
         Task.async(fn ->
           CodebattleWeb.Endpoint.broadcast("lobby", "game:update", %{
             game: fsm,
-            game_info: Play.game_info(id)
+            game_info: game_info(id)
           })
         end)
 
         {:ok, fsm}
 
-      _ ->
-        {:error, "You are already in a game"}
+      {:error, reason} ->
+        {:error, reason}
     end
   end
 
   def cancel_game(id, user) do
-    case ActiveGames.participant?(id, user.id) do
-      ActiveGames.terminate_game(id)
-      GlobalSupervisor.terminate_game(id)
-      CodebattleWeb.Endpoint.broadcast("lobby", "game:cancel", %{game_id: id})
+    player = Player.from_user(user)
+    engine = get_engine(fsm)
 
-      id
-      |> get_game
-      |> Game.changeset(%{state: "canceled"})
-      |> Repo.update!()
+    case player_can_cancel_game?(player, fsm) do
+      :ok ->
+        ActiveGames.terminate_game(id)
+        GlobalSupervisor.terminate_game(id)
+        CodebattleWeb.Endpoint.broadcast("lobby", "game:cancel", %{game_id: id})
 
-      {:ok}
-    else
-      {:error, _reason}
+        id
+        |> get_game
+        |> Game.changeset(%{state: "canceled"})
+        |> Repo.update!()
+
+        :ok
+
+      {:error, _reason} ->
+        {:error, _reason}
     end
   end
 
@@ -173,94 +181,78 @@ defmodule Codebattle.GameProcess.Play do
     }
   end
 
-  def update_editor_data(id, player_id, editor_text, editor_lang) do
-    fsm = get_fsm(id)
+  def update_editor_data(id, user, editor_text, editor_lang) do
+    player = FsmHelpers.get_player(fsm, user.id)
 
-    %{editor_text: prev_editor_text, editor_lang: prev_editor_lang} =
-      FsmHelpers.get_player(fsm, player_id)
+    %{editor_text: prev_text, editor_lang: prev_lang} = player
+
+    is_text_changed = editor_text == prev_text
+    is_lang_changed = editor_lang == prev_lang
 
     # text
-    RecorderServer.update_text(id, player_id, editor_text)
-    Server.call_transition(id, :update_editor_params, %{id: player_id, editor_text: editor_text})
-
-    # lang
-    case editor_lang do
-      ^prev_editor_lang ->
-        :ok
-
-      _ ->
-        case Repo.get(User, player_id) do
-          user ->
-            user |> Ecto.Changeset.change(%{lang: editor_lang}) |> Repo.update!()
-
-          nil ->
-            nil
-        end
-
-        RecorderServer.update_lang(id, player_id, editor_lang)
+    case is_text_changed do
+      true ->
+        RecorderServer.update_text(id, player.id, editor_text)
 
         Server.call_transition(id, :update_editor_params, %{
-          id: player_id,
+          id: player.id,
+          editor_text: editor_text
+        })
+
+      _ ->
+        nil
+    end
+
+    # lang
+    case is_lang_changed do
+      true ->
+        RecorderServer.update_lang(id, player.id, editor_lang)
+
+        Server.call_transition(id, :update_editor_params, %{
+          id: player.id,
           editor_lang: editor_lang
         })
+
+        update_user(user, %{lang: editor_lang})
+
+      _ ->
+        nil
     end
   end
 
   def give_up(id, user) do
-    {_response, fsm} = Server.call_transition(id, :give_up, %{id: user.id})
-    engine.gave_up(id, user, fsm)
+    fsm = get_fsm(id)
+    player = FsmHelpers.get_player(fsm, user.id)
+    engine = get_engine(fsm)
+    {_response, fsm} = Server.call_transition(id, :give_up, %{id: player.id})
+    engine.gave_up(id, player, fsm)
     fsm
   end
 
   def check_game(id, user, editor_text, editor_lang) do
     fsm = get_fsm(id)
-    update_editor_data(id, user.id, editor_text, editor_lang)
-    RecorderServer.update_lang(id, user.id, editor_lang)
-    check = check_code(fsm.data.task, editor_text, editor_lang)
-    # TODO: be race condition tolerance
+    player = Player.from_user(user)
+    engine = get_engine(fsm)
+
+    update_editor_data(id, player, editor_text, editor_lang)
+    check = check_code(FsmHelpers.get_task(fsm), editor_text, editor_lang)
+
     case {fsm.state, check} do
       {:playing, {:ok, result, output}} ->
-        Server.call_transition(id, :update_editor_params, %{
-          id: user.id,
-          result: result,
-          output: output
-        })
-
-        {_response, fsm} = Server.call_transition(id, :complete, %{id: user.id})
-        handle_won_game(id, user, fsm)
+        {_response, fsm} = Server.call_transition(id, :complete, %{id: player.id})
+        engine.handle_won_game(id, player, fsm)
         {:ok, fsm, result, output}
 
-      {:playing, {:error, result, output}} ->
-        Server.call_transition(id, :update_editor_params, %{
-          id: user.id,
-          result: result,
-          output: output
-        })
-
-        {:error, result, output}
-
-      {:game_over, {:error, result, output}} ->
-        Server.call_transition(id, :update_editor_params, %{
-          id: user.id,
-          result: result,
-          output: output
-        })
-
+      {_, {:error, result, output}} ->
         {:error, result, output}
 
       {:game_over, {:ok, result, output}} ->
-        Server.call_transition(id, :update_editor_params, %{
-          id: user.id,
-          result: result,
-          output: output
-        })
-
         {:ok, result, output}
     end
   end
 
-  defp check_code(task, editor_text, lang_slug) do
-    Checker.check(task, editor_text, lang_slug)
+  defp check_code(task, editor_text, editor_lang) do
+    Checker.check(task, editor_text, editor_lang)
   end
 
   defp handle_won_game(id, winner, fsm) do
@@ -430,5 +422,35 @@ defmodule Codebattle.GameProcess.Play do
 
     filtered_task = Enum.filter(tasks, fn x -> Map.get(x, :count) == min_task.count end)
     Enum.random(filtered_task)
+  end
+
+  def player_can_create_game?(player) do
+    case ActiveGames.playing?(player.id) do
+      false ->
+        :ok
+
+      _ ->
+        {:error, "You are already in a game"}
+    end
+  end
+
+  def player_can_join_game?(player) do
+    case ActiveGames.playing?(user.id) do
+      false ->
+        :ok
+
+      _ ->
+        {:error, "You are already in a game"}
+    end
+  end
+
+  def player_can_cancel_game?(id, player) do
+    case ActiveGames.participant?(id, player.id) do
+      :ok ->
+        :ok
+
+      {:error, _reason} ->
+        {:error, _reason}
+    end
   end
 end

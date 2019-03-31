@@ -28,11 +28,11 @@ defmodule Codebattle.GameProcess.FsmHelpers do
     fsm.data.task
   end
 
-  def get_users(fsm) do
-    fsm.data.players
-    |> Enum.filter(fn player -> player.id end)
-    |> Enum.map(fn player -> player.user end)
-  end
+  # def get_users(fsm) do
+  #   fsm.data.players
+  #   |> Enum.filter(fn player -> player.id end)
+  #   |> Enum.map(fn player -> player.user end)
+  # end
 
   def get_first_player(fsm) do
     get_players(fsm) |> Enum.at(0)

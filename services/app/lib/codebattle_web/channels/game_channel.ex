@@ -28,50 +28,30 @@ defmodule CodebattleWeb.GameChannel do
   end
 
   def handle_in("editor:data", payload, socket) do
-    user_id = socket.assigns.user_id
     game_id = get_game_id(socket)
-    fsm = Play.get_fsm(game_id)
+    user = socket.assigns.current_user
 
-    if user_authorized_in_game?(game_id, user_id) do
-      game_id = get_game_id(socket)
+    %{"lang" => lang, "editor_text" => editor_text} = payload
 
-      # TODO: refactorme to update_editor_data in Play module
-      fsm = Play.get_fsm(game_id)
+    case Play.update_editor_data(game_id, user, editor_text, lang) do
+      :ok ->
+        broadcast_from!(socket, "editor:data", %{
+          user_id: user.id,
+          lang_slug: lang,
+          editor_text: editor_text
+        })
 
-      %{editor_text: prev_editor_text, editor_lang: prev_editor_lang} = FsmHelpers.get_player(fsm, user_id)
-
-      editor_text = Map.get(payload, "editor_text", prev_editor_text)
-      editor_lang = Map.get(payload, "lang", prev_editor_lang)
-
-      if socket.assigns.current_user.bot == false do
-        Play.update_editor_data(game_id, user_id, editor_text, editor_lang)
-      end
-
-      broadcast_from!(socket, "editor:data", %{
-        user_id: user_id,
-        lang_slug: editor_lang,
-        editor_text: editor_text
-      })
-
-      {:noreply, socket}
-    else
-      {:reply, {:error, %{reason: "not_authorized"}}, socket}
+      {:error, reason} ->
+        {:reply, {:error, %{reason: reason}}, socket}
     end
+
+    # if user_authorized_in_game?(game_id, user_id) do
+    #   fsm = Play.get_fsm(game_id)
+    #   {:noreply, socket}
+    # else
+    #   {:reply, {:error, %{reason: "not_authorized"}}, socket}
+    # end
   end
-
-  # def handle_in("editor:lang", payload, socket) do
-  #   game_id = get_game_id(socket)
-  #   user_id = socket.assigns.user_id
-
-  #   if user_authorized_in_game?(game_id, user_id) do
-  #     %{"lang" => lang} = payload
-  #     Play.update_editor_lang(game_id, user_id, lang)
-  #     broadcast_from!(socket, "editor:lang", %{user_id: user_id, lang: lang})
-  #     {:noreply, socket}
-  #   else
-  #     {:reply, {:error, %{reason: "not_authorized"}}, socket}
-  #   end
-  # end
 
   def handle_in("give_up", _, socket) do
     game_id = get_game_id(socket)
@@ -116,6 +96,7 @@ defmodule CodebattleWeb.GameChannel do
 
     if user_authorized_in_game?(game_id, socket.assigns.user_id) do
       %{"editor_text" => editor_text, "lang" => lang} = payload
+
       case Play.check_game(game_id, socket.assigns.current_user, editor_text, lang) do
         {:ok, fsm, result, output} ->
           winner = socket.assigns.current_user
