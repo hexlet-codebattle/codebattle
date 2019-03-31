@@ -50,8 +50,8 @@ defmodule Codebattle.GameProcess.Fsm do
 
       new_data = Map.merge(data, params)
       next_state(:playing, %{
-        new_data | players: players, level: level,
-        type: type
+        new_data | players: params.players, level: params.level,
+        type: params.type, task: params.task, starts_at: params.starts_at
       })
     end
 

@@ -154,8 +154,9 @@ defmodule CodebattleWeb.GameChannel do
     game_id = get_game_id(socket)
 
     case Play.create_rematch_game(game_id) do
-      {:ok, id} ->
-        broadcast!(socket, "rematch:redirect_to_new_game", %{game_id: payload["game_id"]})
+      {:ok, game_id} ->
+        broadcast!(socket, "rematch:redirect_to_new_game", %{game_id: game_id})
+        {:noreply, socket}
         _ ->
       {:reply, {:error, %{reason: "sww"}}, socket}
     end

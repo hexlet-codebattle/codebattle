@@ -14,6 +14,7 @@ defmodule Codebattle.GameProcess.Play do
     Server,
     GlobalSupervisor,
     Fsm,
+    Play,
     Player,
     FsmHelpers,
     Elo,
@@ -186,36 +187,37 @@ defmodule Codebattle.GameProcess.Play do
   end
 
   def create_rematch_game(game_id) do
-    ActiveGames.terminate_game(id)
-    fsm = FsmHelpers.get_fsm(game_id)
+    ActiveGames.terminate_game(game_id)
+    fsm = Play.get_fsm(game_id)
     level = FsmHelpers.get_level(fsm)
     type = FsmHelpers.get_type(fsm)
+    players = FsmHelpers.get_players(fsm)
+    task = get_random_task(level, players)
 
-    game = Repo.insert!(%Game{state: "waiting_opponent", users: players], level: level, task: task})
-    task = get_random_task(level, [user.id, first_player.id])
+    game =
+      Repo.insert!(%Game{state: "waiting_opponent", users: players, level: level, task: task})
 
-    ActiveGames.create_game(user, fsm)
+
+    # TODO
+    ActiveGames.create_game(players[0], fsm)
     {:ok, _} = GlobalSupervisor.start_game(game.id, fsm)
 
-        fsm =
-          Fsm.new()
-          |> Fsm.create_rematch(%{
-            players: players,
-            level: level,
-            type: type,
-            starts_at: TimeHelper.utc_now()
-          })
+    fsm =
+      Fsm.new()
+      |> Fsm.create_rematch(%{
+        players: players,
+        game_id: game.id,
+        level: level,
+        type: type,
+        task: task,
+        starts_at: TimeHelper.utc_now()
+      })
 
-        Task.async(fn ->
-          CodebattleWeb.Endpoint.broadcast("lobby", "game:new", %{game: fsm})
-        end)
+    Task.async(fn ->
+      CodebattleWeb.Endpoint.broadcast("lobby", "game:new", %{game: fsm})
+    end)
 
-
-        {:ok, game.id}
-
-      _ ->
-        {:error, "You are already in a game"}
-    end
+    {:ok, game.id}
   end
 
   # TODO: refactor to join_to_bot_game and join_game
@@ -259,7 +261,7 @@ defmodule Codebattle.GameProcess.Play do
             :error
         end
       else
-        task = get_random_task(game.level, [user.id, first_player.id])
+        task = get_random_task(game.level, [user, first_player])
 
         player = Player.from_user(user)
 
@@ -566,7 +568,7 @@ defmodule Codebattle.GameProcess.Play do
     ActiveGames.terminate_game(game_id)
   end
 
-  defp get_random_task(level, user_ids) do
+  defp get_random_task(level, players) do
     qry = """
     WITH game_tasks AS (SELECT count(games.id) as count, games.task_id FROM games
     INNER JOIN "user_games" ON "user_games"."game_id" = "games"."id"
@@ -581,7 +583,12 @@ defmodule Codebattle.GameProcess.Play do
 
     # TODO: get list and then get random in elixir
 
-    res = Ecto.Adapters.SQL.query!(Repo, qry, [level, Enum.at(user_ids, 0), Enum.at(user_ids, 1)])
+    res =
+      Ecto.Adapters.SQL.query!(Repo, qry, [
+        level,
+        Enum.at(players, 0).id,
+        Enum.at(players, 1).id
+      ])
 
     cols = Enum.map(res.columns, &String.to_atom(&1))
 
