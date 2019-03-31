@@ -15,8 +15,8 @@ defmodule Codebattle.Bot.CreatorServer do
     {:ok, %{}}
   end
 
+  case Codebattle.Bot.GameCreator.call() do
   def handle_info(:create_bot_if_need, state) do
-    case Codebattle.Bot.GameCreator.call() do
       {:ok, game_id, _task_id} ->
 
         Process.send_after(self(), :create_bot_if_need, 3_000)

@@ -185,6 +185,39 @@ defmodule Codebattle.GameProcess.Play do
     {:ok, game.id}
   end
 
+  def create_rematch_game(game_id) do
+    ActiveGames.terminate_game(id)
+    fsm = FsmHelpers.get_fsm(game_id)
+    level = FsmHelpers.get_level(fsm)
+    type = FsmHelpers.get_type(fsm)
+
+    game = Repo.insert!(%Game{state: "waiting_opponent", users: players], level: level, task: task})
+    task = get_random_task(level, [user.id, first_player.id])
+
+    ActiveGames.create_game(user, fsm)
+    {:ok, _} = GlobalSupervisor.start_game(game.id, fsm)
+
+        fsm =
+          Fsm.new()
+          |> Fsm.create_rematch(%{
+            players: players,
+            level: level,
+            type: type,
+            starts_at: TimeHelper.utc_now()
+          })
+
+        Task.async(fn ->
+          CodebattleWeb.Endpoint.broadcast("lobby", "game:new", %{game: fsm})
+        end)
+
+
+        {:ok, game.id}
+
+      _ ->
+        {:error, "You are already in a game"}
+    end
+  end
+
   # TODO: refactor to join_to_bot_game and join_game
   def join_game(id, user) do
     if ActiveGames.playing?(user.id) do
@@ -399,11 +432,12 @@ defmodule Codebattle.GameProcess.Play do
     game_id = id |> Integer.parse() |> elem(0)
     loser_id = FsmHelpers.get_opponent(fsm, winner.id).id
 
-   loser =  try do
-      Repo.get(User, loser_id)
-    rescue
-      _ -> Codebattle.Bot.Builder.build()
-    end
+    loser =
+      try do
+        Repo.get(User, loser_id)
+      rescue
+        _ -> Codebattle.Bot.Builder.build()
+      end
 
     difficulty = fsm.data.level
 

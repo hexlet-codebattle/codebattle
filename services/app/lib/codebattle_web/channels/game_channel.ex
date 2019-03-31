@@ -38,7 +38,8 @@ defmodule CodebattleWeb.GameChannel do
       # TODO: refactorme to update_editor_data in Play module
       fsm = Play.get_fsm(game_id)
 
-      %{editor_text: prev_editor_text, editor_lang: prev_editor_lang} = FsmHelpers.get_player(fsm, user_id)
+      %{editor_text: prev_editor_text, editor_lang: prev_editor_lang} =
+        FsmHelpers.get_player(fsm, user_id)
 
       editor_text = Map.get(payload, "editor_text", prev_editor_text)
       editor_lang = Map.get(payload, "lang", prev_editor_lang)
@@ -110,16 +111,16 @@ defmodule CodebattleWeb.GameChannel do
     game_id = get_game_id(socket)
 
     if user_authorized_in_game?(game_id, socket.assigns.user_id) do
-      fsm = Play.give_up(game_id, socket.assigns.current_user)
+      fsm = Play.get_fsm(game_id)
       currentUserId = socket.assigns.user_id
 
       rematchState =
         FsmHelpers.get_players(fsm)
-        |>Enum.filter(fn e -> e.id !== currentUserId end)
-        |>Enum.map(fn e -> %{e.id => "recieved_offer"} end)
-        |>Enum.reduce(%{}, fn e, acc -> Map.merge(acc, e) end)
-        |>Map.merge(%{currentUserId => "sended_offer"})
-        |>Map.merge(%{state: "in_approval"})
+        |> Enum.filter(fn e -> e.id !== currentUserId end)
+        |> Enum.map(fn e -> %{e.id => "recieved_offer"} end)
+        |> Enum.reduce(%{}, fn e, acc -> Map.merge(acc, e) end)
+        |> Map.merge(%{currentUserId => "sended_offer"})
+        |> Map.merge(%{state: "in_approval"})
 
       broadcast!(socket, "rematch:update_status", rematchState)
 
@@ -127,7 +128,6 @@ defmodule CodebattleWeb.GameChannel do
     else
       {:reply, {:error, %{reason: "not_authorized"}}, socket}
     end
-    
   end
 
   def handle_in("rematch:reject_offer", _, socket) do
@@ -135,14 +135,15 @@ defmodule CodebattleWeb.GameChannel do
 
     if user_authorized_in_game?(game_id, socket.assigns.user_id) do
       fsm = Play.give_up(game_id, socket.assigns.current_user)
+
       rematchState =
         FsmHelpers.get_players(fsm)
-        |>Enum.map(fn e -> %{e.id => "rejected_offer"} end)
-        |>Enum.reduce(%{}, fn e, acc -> Map.merge(acc, e) end)
-        |>Map.merge(%{state: "rejected"})
+        |> Enum.map(fn e -> %{e.id => "rejected_offer"} end)
+        |> Enum.reduce(%{}, fn e, acc -> Map.merge(acc, e) end)
+        |> Map.merge(%{state: "rejected"})
 
       broadcast!(socket, "rematch:update_status", rematchState)
-      
+
       {:noreply, socket}
     else
       {:reply, {:error, %{reason: "not_authorized"}}, socket}
@@ -152,12 +153,11 @@ defmodule CodebattleWeb.GameChannel do
   def handle_in("rematch:accept_offer", payload, socket) do
     game_id = get_game_id(socket)
 
-    if user_authorized_in_game?(game_id, socket.assigns.user_id) do
-      broadcast!(socket, "rematch:redirect_to_new_game", %{game_id: payload["game_id"]})
-      
-      {:noreply, socket}
-    else
-      {:reply, {:error, %{reason: "not_authorized"}}, socket}
+    case Play.create_rematch_game(game_id) do
+      {:ok, id} ->
+        broadcast!(socket, "rematch:redirect_to_new_game", %{game_id: payload["game_id"]})
+        _ ->
+      {:reply, {:error, %{reason: "sww"}}, socket}
     end
   end
 
@@ -165,12 +165,12 @@ defmodule CodebattleWeb.GameChannel do
     game_id = get_game_id(socket)
 
     if user_authorized_in_game?(game_id, socket.assigns.user_id) do
-      if (payload.rematch_state === "rejected") do
+      if payload.rematch_state === "rejected" do
         broadcast!(socket, "rematch:update_status", %{state: "rejected"})
       else
         broadcast!(socket, "rematch:update_status", %{state: "init"})
       end
-      
+
       {:noreply, socket}
     else
       {:reply, {:error, %{reason: "not_authorized"}}, socket}
@@ -187,6 +187,7 @@ defmodule CodebattleWeb.GameChannel do
 
     if user_authorized_in_game?(game_id, socket.assigns.user_id) do
       %{"editor_text" => editor_text, "lang" => lang} = payload
+
       case Play.check_game(game_id, socket.assigns.current_user, editor_text, lang) do
         {:ok, fsm, result, output} ->
           winner = socket.assigns.current_user

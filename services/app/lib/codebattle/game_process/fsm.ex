@@ -26,6 +26,8 @@ defmodule Codebattle.GameProcess.Fsm do
       type: "public",
       # Boolean, game played with bot
       bots: false,
+      # :Atom,
+      rematch_state: nil,
       # TODO: remove it please))))
       player: nil
     }
@@ -41,6 +43,15 @@ defmodule Codebattle.GameProcess.Fsm do
       new_data = Map.merge(data, params)
       next_state(:waiting_opponent, %{
         new_data | players: [params.player],
+      })
+    end
+
+    defevent create_rematch(params), data: data do
+
+      new_data = Map.merge(data, params)
+      next_state(:playing, %{
+        new_data | players: players, level: level,
+        type: type
       })
     end
 
