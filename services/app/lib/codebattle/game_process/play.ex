@@ -195,7 +195,7 @@ defmodule Codebattle.GameProcess.Play do
     task = get_random_task(level, players)
 
     game =
-      Repo.insert!(%Game{state: "waiting_opponent", users: players, level: level, task: task})
+      Repo.insert!(%Game{state: "playing", users: players, level: level, task: task})
 
 
     # TODO
@@ -210,7 +210,7 @@ defmodule Codebattle.GameProcess.Play do
         level: level,
         type: type,
         task: task,
-        starts_at: TimeHelper.utc_now()
+        # starts_at: TimeHelper.utc_now()
       })
 
     Task.async(fn ->
