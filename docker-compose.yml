@@ -12,12 +12,12 @@ services:
     ports:
       - "${CODEBATTLE_PORT}:${CODEBATTLE_PORT}"
     volumes:
-      - "./services/app:/app:cached"
-      - "~/.bash_history:/root/.bash_history:cached"
-      - ".bashrc:/root/.bashrc:cached"
+      - "./services/app:/app:delegated"
+      - "~/.bash_history:/root/.bash_history:delegated"
+      - ".bashrc:/root/.bashrc:delegated"
       - '/var/run/docker.sock:/var/run/docker.sock:cached'
-      - "/var/tmp:/var/tmp:cached"
-      - "/tmp:/tmp:cached"
+      - "/var/tmp:/var/tmp:delegated"
+      - "/tmp:/tmp:delegated"
     depends_on:
       - db
 
