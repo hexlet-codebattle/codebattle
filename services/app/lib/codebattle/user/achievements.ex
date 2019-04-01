@@ -10,6 +10,7 @@ defmodule Codebattle.User.Achievements do
   def recalculate_achievements(user) do
     {user.achievements, user}
     |> count_played_games
+    |> count_wins
     |> elem(0)
   end
 
@@ -61,5 +62,27 @@ defmodule Codebattle.User.Achievements do
       true ->
         {achievements, user}
     end
+  end
+
+  def count_wins({achievements, user}) do
+    query =
+      from(ug in UserGame,
+        select: {
+          ug.lang,
+          count(ug.id)
+        },
+        where: ug.user_id == ^user.id and ug.result == "won" and not is_nil(ug.lang),
+        group_by: ug.lang
+      )
+
+    languages = Repo.all(query) |> Enum.into(%{}) |> Map.keys()
+    cond do
+      Enum.count(languages) >= 3 ->
+        {achievements ++ ["win_games_with_?#{Enum.join(languages, "_")}"], user}
+      true ->
+        {achievements, user}
+    end
+
+
   end
 end

@@ -51,14 +51,17 @@ defmodule RecalculateAchivementsTest do
     with_mocks [
       {Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> {:ok, "asdf", "asdf"} end]}
     ] do
-      # refactor
-      user1_games_struct = insert_list(9, :user_game, %{user: user1})
-      # Repo.insert_all(UserGame, user1_games)
+
+      ["js", "php", "ruby"]
+      |> Enum.each(fn x ->
+        insert_list(3, :user_game, %{user: user1, lang: x, result: "won"})
+      end)
+
       # Create game
       conn =
         conn1
         |> get(page_path(conn1, :index))
-        |> post(game_path(conn1, :create, level: "easy"))
+        |> post(game_path(conn1, :create, level: "easy", lang: "js"))
 
       game_id = game_id_from_conn(conn)
 
@@ -68,14 +71,13 @@ defmodule RecalculateAchivementsTest do
       # Second player join game
       post(conn2, game_path(conn2, :join, game_id))
       {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
-
       # First player won
       editor_text1 = "Hello world1!"
       Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text1, lang: "js"})
       :timer.sleep(100)
       fsm = Server.fsm(game_id)
       user = Repo.get(User, user1.id)
-      assert user.achievements == ["played_ten_games"]
+      assert user.achievements == ["played_ten_games", "win_games_with_?js_php_ruby"]
     end
   end
 end
