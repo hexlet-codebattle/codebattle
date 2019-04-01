@@ -173,7 +173,7 @@ msgstr ""
 msgid "Game status"
 msgstr ""
 
-#, elixir-format, fuzzy
+#, elixir-format
 #: lib/codebattle_web/templates/game/join.html.slim:1
 msgid "Join the game"
 msgstr ""
@@ -183,7 +183,7 @@ msgstr ""
 msgid "Sign Out"
 msgstr ""
 
-#, elixir-format, fuzzy
+#, elixir-format
 #: lib/codebattle_web/controllers/auth_controller.ex:23
 #: lib/codebattle_web/controllers/dev_login_controller.ex:15
 msgid "Successfully authenticated."
@@ -239,4 +239,20 @@ msgstr ""
 #, elixir-format
 #: lib/codebattle_web/templates/layout/app.html.slim:13
 msgid "SourceCode"
+msgstr ""
+
+# JSX
+msgid "Run your code!"
+msgstr ""
+
+msgid "You have some syntax errors: %{errors}"
+msgstr ""
+
+msgid "Test failed with arguments (%{arguments})"
+msgstr ""
+
+msgid "Yay! All tests passed!!111"
+msgstr ""
+
+msgid "Oops"
 msgstr ""
