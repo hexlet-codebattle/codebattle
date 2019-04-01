@@ -43,7 +43,7 @@ msgstr ""
 msgid "Logout"
 msgstr ""
 
-#: lib/codebattle_web/templates/layout/app.html.slim:1
+#: lib/codebattle_web/templates/layout/app.html.slim:13
 msgid "Sign in with %{name}"
 msgstr ""
 
@@ -107,10 +107,6 @@ msgstr ""
 msgid "Game chat"
 msgstr ""
 
-#: lib/codebattle_web/templates/user/index.html.slim:1
-msgid "Users rating"
-msgstr ""
-
 #: lib/codebattle_web/templates/user/index.html.slim:12
 msgid "%{index}) name: %{name}, rating: %{rating}"
 msgstr ""
@@ -127,16 +123,12 @@ msgstr ""
 msgid "Successfully authenticated"
 msgstr ""
 
-#: lib/codebattle_web/controllers/game_controller.ex:31
+#: lib/codebattle_web/controllers/game_controller.ex:39
 msgid "Game not found"
 msgstr ""
 
 #: lib/codebattle_web/controllers/game_controller.ex:27
 msgid "Game has been created"
-msgstr ""
-
-#: lib/codebattle_web/controllers/game_controller.ex:40
-msgid "Joined the game"
 msgstr ""
 
 #: lib/codebattle_web/controllers/game_controller.ex:53
@@ -172,21 +164,6 @@ msgid "channel"
 msgstr ""
 
 #, elixir-format
-#: lib/codebattle_web/templates/page/list.html.slim:1
-msgid "Select a difficulty to start a new game"
-msgstr ""
-
-#, elixir-format
-#: lib/codebattle_web/templates/page/list.html.slim:1
-msgid "Easy"
-msgstr ""
-
-#, elixir-format
-#: lib/codebattle_web/templates/page/list.html.slim:1
-msgid "Elementary"
-msgstr ""
-
-#, elixir-format
 #: lib/codebattle_web/templates/game/game_over.html.slim:1
 msgid "Game over"
 msgstr ""
@@ -197,57 +174,69 @@ msgid "Game status"
 msgstr ""
 
 #, elixir-format
-#: lib/codebattle_web/templates/page/list.html.slim:1
-msgid "Hard"
-msgstr ""
-
-#, elixir-format
 #: lib/codebattle_web/templates/game/join.html.slim:1
 msgid "Join the game"
 msgstr ""
 
 #, elixir-format
-#: lib/codebattle_web/controllers/game_controller.ex:60
-msgid "Joined the game"
-msgstr ""
-
-#, elixir-format
-#: lib/codebattle_web/templates/page/list.html.slim:1
-msgid "Medium"
-msgstr ""
-
-#, elixir-format
-#: lib/codebattle_web/templates/page/list.html.slim:1
-msgid "Recent games"
-msgstr ""
-
-#, elixir-format
-#: lib/codebattle_web/templates/layout/app.html.slim:1
+#: lib/codebattle_web/templates/layout/app.html.slim:13
 msgid "Sign Out"
 msgstr ""
 
 #, elixir-format
 #: lib/codebattle_web/controllers/auth_controller.ex:23
+#: lib/codebattle_web/controllers/dev_login_controller.ex:15
 msgid "Successfully authenticated."
 msgstr ""
 
 #, elixir-format
-#: lib/codebattle_web/templates/layout/app.html.slim:1
+#: lib/codebattle_web/templates/layout/app.html.slim:13
 msgid "Users rating"
 msgstr ""
 
 #, elixir-format
-#: lib/codebattle_web/controllers/game_controller.ex:19
-#: lib/codebattle_web/controllers/game_controller.ex:65
+#: lib/codebattle_web/controllers/game_controller.ex:26
+#: lib/codebattle_web/controllers/game_controller.ex:82
+#: lib/codebattle_web/controllers/game_controller.ex:102
 msgid "You are in a different game"
 msgstr ""
 
 #, elixir-format
-#: lib/codebattle_web/channels/game_channel.ex:78
+#: lib/codebattle_web/channels/game_channel.ex:81
 msgid "gave up!"
 msgstr ""
 
 #, elixir-format
-#: lib/codebattle_web/channels/game_channel.ex:105
+#: lib/codebattle_web/channels/game_channel.ex:123
 msgid "won the game!"
+msgstr ""
+
+#, elixir-format
+#: lib/codebattle_web/templates/layout/app.html.slim:13
+msgid "Hexlet"
+msgstr ""
+
+#, elixir-format
+#: lib/codebattle_web/templates/layout/app.html.slim:13
+msgid "My Profile"
+msgstr ""
+
+#, elixir-format
+#: lib/codebattle_web/templates/layout/app.html.slim:13
+msgid "Settings"
+msgstr ""
+
+#, elixir-format
+#: lib/codebattle_web/templates/layout/app.html.slim:13
+msgid "Slack#codebattle"
+msgstr ""
+
+#, elixir-format
+#: lib/codebattle_web/controllers/game_controller.ex:89
+msgid "Sorry, the game doesn't exist"
+msgstr ""
+
+#, elixir-format
+#: lib/codebattle_web/templates/layout/app.html.slim:13
+msgid "SourceCode"
 msgstr ""

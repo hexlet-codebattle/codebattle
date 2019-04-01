@@ -10,11 +10,11 @@ msgid ""
 msgstr ""
 "Language: ru\n"
 
-#: lib/codebattle_web/templates/page/index.html.slim:2
+#: lib/codebattle_web/templates/page/index.html.slim:1
 msgid "Welcome to %{name}!"
 msgstr "Добро пожаловать в %{name}"
 
-#: lib/codebattle_web/templates/page/index.html.slim:3
+#: lib/codebattle_web/templates/page/index.html.slim:1
 msgid "%{name}: game for programmers."
 msgstr "%{name}: игра для программистов."
 
@@ -23,7 +23,7 @@ msgstr "%{name}: игра для программистов."
 msgid "Create game"
 msgstr "Создать игру"
 
-#: lib/codebattle_web/templates/page/index.html.slim:9
+#: lib/codebattle_web/templates/user/index.html.slim:1
 msgid "List of games"
 msgstr "Список игр"
 
@@ -43,7 +43,7 @@ msgstr "Пользователи в сети"
 msgid "Logout"
 msgstr "Выход"
 
-#: lib/codebattle_web/templates/layout/app.html.slim:30
+#: lib/codebattle_web/templates/layout/app.html.slim:13
 msgid "Sign in with %{name}"
 msgstr "Войти через %{name}"
 
@@ -51,10 +51,9 @@ msgstr "Войти через %{name}"
 msgid "Listing games"
 msgstr "Список игр"
 
-#: lib/codebattle_web/templates/game/index.html.slim:2
+#: lib/codebattle_web/templates/user/index.html.slim:1
 msgid "Total: "
 msgstr "Общее количество: "
-
 
 #: lib/codebattle_web/templates/game/index.html.slim:2
 msgid "Users rating: "
@@ -108,27 +107,24 @@ msgstr "Вернуться к списку игр"
 msgid "Game chat"
 msgstr "Игровой чат"
 
-#: lib/codebattle_web/templates/user/index.html.slim:1
-msgid "Users rating"
-msgstr "Рейтинг пользователей"
-
 #: lib/codebattle_web/templates/user/index.html.slim:12
 msgid "%{index}) name: %{name}, rating: %{rating}"
 msgstr "%{index}) имя: %{name}, рейтинг: %{rating}"
 
-#: lib/codebattle_web/controllers/auth_controller.ex:15
+#: lib/codebattle_web/controllers/session_controller.ex:6
 msgid "You have been logged out!"
 msgstr "Вы успешно вышли из системы!"
 
-#: lib/codebattle_web/controllers/auth_controller.ex:22
+#: lib/codebattle_web/controllers/auth_controller.ex:15
 msgid "Failed to authenticate."
 msgstr "Ошибка аутентификации."
 
+#, fuzzy
 #: lib/codebattle_web/controllers/auth_controller.ex:30
-msgid "Successfully authenticated."
+msgid "Successfully authenticated"
 msgstr "Успешная аутентификация."
 
-#: lib/codebattle_web/controllers/game_controller.ex:16
+#: lib/codebattle_web/controllers/game_controller.ex:39
 msgid "Game not found"
 msgstr "Игра не найдена"
 
@@ -136,27 +132,23 @@ msgstr "Игра не найдена"
 msgid "Game has been created"
 msgstr "Игра успешно создана"
 
-#: lib/codebattle_web/controllers/game_controller.ex:40
-msgid "Joined the game"
-msgstr "Вы подключились к игре"
-
 #: lib/codebattle_web/controllers/game_controller.ex:53
 msgid "Yay, you won the game!"
 msgstr "Ура, вы победили в игре!"
 
-#: lib/codebattle_web/controllers/game_controller.ex:54
+#: lib/codebattle_web/channels/game_channel.ex:116
 msgid "You lost the game"
 msgstr "Вы проиграли игру."
 
-#: lib/codebattle_web/views/error_view.ex:6
+#: lib/codebattle_web/views/error_view.ex:8
 msgid "Page not found"
 msgstr "Страница не найдена"
 
-#: lib/codebattle_web/views/error_view.ex:10
+#: lib/codebattle_web/views/error_view.ex:13
 msgid "Internal server error"
 msgstr "Внутренняя ошибка сервера"
 
-#: lib/codebattle/plugs/authorization.ex:30
+#: lib/codebattle_web/plugs/require_auth.ex:12
 msgid "You must be logged in to access that page"
 msgstr "Для просмотра этой страницы вам нужно войти"
 
@@ -171,3 +163,81 @@ msgstr "покинул"
 #: assets/js/socket.js:52
 msgid "channel"
 msgstr "канал"
+
+#, elixir-format
+#: lib/codebattle_web/templates/game/game_over.html.slim:1
+msgid "Game over"
+msgstr ""
+
+#, elixir-format
+#: lib/codebattle_web/templates/game/game_result.html.slim:1
+msgid "Game status"
+msgstr ""
+
+#, elixir-format, fuzzy
+#: lib/codebattle_web/templates/game/join.html.slim:1
+msgid "Join the game"
+msgstr "Вы подключились к игре"
+
+#, elixir-format
+#: lib/codebattle_web/templates/layout/app.html.slim:13
+msgid "Sign Out"
+msgstr ""
+
+#, elixir-format
+#: lib/codebattle_web/controllers/auth_controller.ex:23
+#: lib/codebattle_web/controllers/dev_login_controller.ex:15
+msgid "Successfully authenticated."
+msgstr "Успешная аутентификация."
+
+#, elixir-format
+#: lib/codebattle_web/templates/layout/app.html.slim:13
+msgid "Users rating"
+msgstr "Рейтинг пользователей"
+
+#, elixir-format
+#: lib/codebattle_web/controllers/game_controller.ex:26
+#: lib/codebattle_web/controllers/game_controller.ex:82
+#: lib/codebattle_web/controllers/game_controller.ex:102
+msgid "You are in a different game"
+msgstr ""
+
+#, elixir-format
+#: lib/codebattle_web/channels/game_channel.ex:81
+msgid "gave up!"
+msgstr ""
+
+#, elixir-format
+#: lib/codebattle_web/channels/game_channel.ex:123
+msgid "won the game!"
+msgstr ""
+
+#, elixir-format
+#: lib/codebattle_web/templates/layout/app.html.slim:13
+msgid "Hexlet"
+msgstr ""
+
+#, elixir-format
+#: lib/codebattle_web/templates/layout/app.html.slim:13
+msgid "My Profile"
+msgstr ""
+
+#, elixir-format
+#: lib/codebattle_web/templates/layout/app.html.slim:13
+msgid "Settings"
+msgstr ""
+
+#, elixir-format
+#: lib/codebattle_web/templates/layout/app.html.slim:13
+msgid "Slack#codebattle"
+msgstr ""
+
+#, elixir-format
+#: lib/codebattle_web/controllers/game_controller.ex:89
+msgid "Sorry, the game doesn't exist"
+msgstr ""
+
+#, elixir-format
+#: lib/codebattle_web/templates/layout/app.html.slim:13
+msgid "SourceCode"
+msgstr ""
