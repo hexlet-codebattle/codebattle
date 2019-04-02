@@ -1,6 +1,25 @@
-defmodule Standard do
+defmodule Codebattle.GameProcess.Engine.Standard do
+  import Codebattle.GameProcess.Engine.Base
+
+  alias Codebattle.GameProcess.{
+    Play,
+    Server,
+    GlobalSupervisor,
+    Fsm,
+    Player,
+    FsmHelpers,
+    Elo,
+    ActiveGames,
+    Notifier
+  }
+
+  alias Codebattle.{Repo, User, Game, UserGame}
+  alias Codebattle.Bot.RecorderServer
+  alias Codebattle.User.Achievements
+
   def create_game(player, %{"level" => level, "type" => type}) do
-    game = Repo.insert!(%Game{
+    game =
+      Repo.insert!(%Game{
         state: "waiting_opponent",
         level: level,
         type: type
@@ -16,7 +35,7 @@ defmodule Standard do
         starts_at: TimeHelper.utc_now()
       })
 
-    ActiveGames.create_game(player, fsm)
+    ActiveGames.create_game(game.id, fsm)
     {:ok, _} = GlobalSupervisor.start_game(game.id, fsm)
 
     Task.async(fn ->
@@ -36,15 +55,14 @@ defmodule Standard do
     {:ok, game.id}
   end
 
-  def join_game(game_id, user) do
-    game = get_game(game_id)
-    fsm = get_fsm(game_id)
+  def join_game(game_id, second_player) do
+    game = Play.get_game(game_id)
+    fsm = Play.get_fsm(game_id)
     first_player = FsmHelpers.get_first_player(fsm)
-    second_player = Player.from_user(user)
 
     task = get_random_task(game.level, [first_player.id, second_player.id])
 
-    case Server.call_transition(id, :join, %{
+    case Server.call_transition(game_id, :join, %{
            player: second_player,
            joins_at: TimeHelper.utc_now(),
            task: task
@@ -57,35 +75,57 @@ defmodule Standard do
         |> Game.changeset(%{state: "playing", task_id: task.id})
         |> Repo.update!()
 
-        {:ok, _} = Codebattle.Bot.Supervisor.start_bot_record_server(id, first_player, fsm)
-        {:ok, _} = Codebattle.Bot.Supervisor.start_bot_record_server(id, second_player, fsm)
+        {:ok, _} = Codebattle.Bot.Supervisor.start_bot_record_server(game_id, first_player, fsm)
+        {:ok, _} = Codebattle.Bot.Supervisor.start_bot_record_server(game_id, second_player, fsm)
 
         Notifier.call(:game_opponent_join, %{
           first_player: first_player,
           second_player: second_player,
-          game_id: id
+          game_id: game_id
         })
 
         {:ok, fsm}
 
-      {:error, _reason} ->
-        {:error, _reason}
+      {:error, reason, _fsm} ->
+        {:error, reason}
     end
   end
 
-  def give_up(game_id, loser, fsm) do
-    winner = FsmHelpers.get_opponent(fsm, loser.id)
-    winner_user = Repo.get(User, winner.id)
+  def update_text(game_id, player, editor_text) do
+    RecorderServer.update_text(game_id, player.id, editor_text)
 
-    difficulty = fsm.data.level
-    {winner_rating, loser_rating} = Elo.calc_elo(winner.rating, loser.rating, difficulty)
-    winner_rating_diff = winner_rating - winner.rating
-    loser_rating_diff = loser_rating - loser.rating
-
-    duration = NaiveDateTime.diff(TimeHelper.utc_now(), FsmHelpers.get_starts_at(fsm))
+    Server.call_transition(game_id, :update_editor_params, %{
+      id: player.id,
+      editor_text: editor_text
+    })
   end
 
-  def handle_won_game(game_id, player, fsm)
+  def update_lang(game_id, player, editor_lang) do
+    RecorderServer.update_lang(game_id, player.id, editor_lang)
+
+    Server.call_transition(game_id, :update_editor_params, %{
+      id: player.id,
+      editor_lang: editor_lang
+    })
+
+    update_user!(player, %{lang: editor_lang})
+  end
+
+  def handle_won_game(game_id, winner, fsm) do
+    loser = FsmHelpers.get_opponent(fsm, winner.id)
+
+    store_game_resuls_async!(fsm, {winner, "won"}, {loser, "lost"})
+    :ok = RecorderServer.store(game_id, winner.id)
+  end
+
+  def handle_give_up(game_id, loser, fsm) do
+    winner = FsmHelpers.get_opponent(fsm, loser.id)
+    level = FsmHelpers.get_level(fsm)
+
+    store_game_resuls_async!(fsm, {winner, "won"}, {loser, "gave_up"})
+    ActiveGames.update_state(game_id, fsm)
+    ActiveGames.list_games() |> IO.inspect()
+  end
 
   defp get_random_task(level, user_ids) do
     qry = """
@@ -116,4 +156,21 @@ defmodule Standard do
     filtered_task = Enum.filter(tasks, fn x -> Map.get(x, :count) == min_task.count end)
     Enum.random(filtered_task)
   end
+
+  # defp update_game!(game_id, params) do
+  #   game_id
+  #   |> Play.get_game()
+  #   |> Game.changeset(params)
+  #   |> Repo.update!()
+  # end
+
+  # defp update_user!(user_id, params) do
+  #   Repo.get!(User, user_id)
+  #   |> User.changeset(params)
+  #   |> Repo.update!()
+  # end
+
+  # defp create_user_game!(params) do
+  #   Repo.insert!(UserGame.changeset(%UserGame{}, params))
+  # end
 end

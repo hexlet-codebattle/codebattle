@@ -11,7 +11,7 @@ defmodule Codebattle.Bot.CreatorServer do
   end
 
   def init(state) do
-    Process.send_after(self(), :create_bot_if_need, 1_000)
+    Process.send_after(self(), :create_bot_if_need, 1_00000)
     {:ok, %{}}
   end
 

@@ -11,7 +11,7 @@ defmodule Codebattle.Bot.GameCreator do
       level = ["elementary", "easy", "medium", "hard"] |> Enum.random()
       bot = Codebattle.Bot.Builder.build(%{"level" => level, "type" => "public"})
 
-      {:ok, game_id} = Play.create_game(bot, %{"level" => level, "type" => "public"})
+      {:ok, game_id} = Play.create_bot_game(bot, %{"level" => level, "type" => "public"})
       {:ok, game_id}
       # query =
       #   from(

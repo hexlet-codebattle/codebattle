@@ -16,7 +16,8 @@ defmodule CodebattleWeb.GameController do
         _ -> "public"
       end
 
-    game_params = Map.take(conn.params, ["level", "type"])
+    game_params = Map.merge(%{"type" => "standard"},  Map.take(conn.params, ["level", "type"]))
+
     case Play.create_game(conn.assigns.current_user, game_params) do
       {:ok, id} ->
         conn
@@ -74,21 +75,21 @@ defmodule CodebattleWeb.GameController do
 
         {:error, reason} ->
           conn
-          |> put_flash(:danger, gettext(reason))
+          |> put_flash(:danger, reason)
           |> redirect(to: page_path(conn, :index))
       end
     catch
       :exit, reason ->
         Logger.error(inspect(reason))
         conn
-        |> put_flash(:danger, gettext("Sorry, the game doesn't exist"))
+        |> put_flash(:danger, "Sorry, the game doesn't exist")
         |> redirect(to: page_path(conn, :index))
     end
   end
 
   def delete(conn, %{"id" => id}) do
     case Play.cancel_game(id, conn.assigns.current_user) do
-      {:ok} ->
+      :ok ->
         redirect(conn, to: page_path(conn, :index))
 
       {:error, _reason} ->

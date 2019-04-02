@@ -3,6 +3,8 @@ defmodule Codebattle.GameProcess.Player do
   alias Codebattle.Languages
   # @game_result [:undefined, :gave_up, :won, :lost]
 
+  alias Codebattle.User
+
   defstruct id: "",
             editor_text: "module.exports = () => {\n\n};",
             editor_lang: "",
@@ -10,14 +12,14 @@ defmodule Codebattle.GameProcess.Player do
             output: "",
             result: "{}",
             creator: false,
-            bot: false,
+            is_bot: false,
             github_id: "",
             public_id: "",
             name: "",
             rating: "",
             achievements: []
 
-  def from_user(user, params \\ %{}) do
+  def build(%User{} = user, params \\ %{}) do
     player =
       case user.id do
         nil ->
@@ -30,7 +32,7 @@ defmodule Codebattle.GameProcess.Player do
           %__MODULE__{
             id: user.id,
             public_id: user.public_id,
-            bot: user.bot,
+            is_bot: user.is_bot,
             github_id: user.github_id,
             name: user.name,
             rating: user.rating,

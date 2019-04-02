@@ -32,7 +32,7 @@ defmodule Codebattle.User do
     field(:editor_theme, :string)
     field(:public_id, :binary_id)
     field(:guest, :boolean, virtual: true, default: false)
-    field(:bot, :boolean, virtual: true, default: false)
+    field(:is_bot, :boolean, default: false)
     field(:creator, :boolean, virtual: true, default: false)
     field(:game_result, :string, virtual: true)
     field(:achievements, {:array, :string}, default: [], null: false)

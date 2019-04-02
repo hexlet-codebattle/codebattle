@@ -28,8 +28,6 @@ defmodule Codebattle.GameProcess.Fsm do
       type: "public",
       # Boolean, game played with bot
       bots: false,
-      # TODO: remove it please))))
-      player: nil
     }
 
   # For tests
@@ -58,7 +56,7 @@ defmodule Codebattle.GameProcess.Fsm do
 
       new_data = Map.merge(data, params)
       next_state(:playing, %{
-        new_data | players: players, starts_at: params.starts_at
+        new_data | players: players, joins_at: params.joins_at
       })
     end
 

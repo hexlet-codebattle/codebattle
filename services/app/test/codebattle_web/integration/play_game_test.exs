@@ -123,7 +123,9 @@ defmodule Codebattle.PlayGameTest do
       assert user2.rating == 988
 
       assert user_game1.creator == true
+      assert user_game1.result == "won"
       assert user_game2.creator == false
+      assert user_game2.result == "lost"
     end
   end
 

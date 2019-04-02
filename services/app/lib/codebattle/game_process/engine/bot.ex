@@ -1,9 +1,13 @@
-defmodule Bot do
-  def create_game(user, %{"level" => level, "type" => type}) do
-    bot_player = Player.from_user(bot, %{creator: true})
+defmodule Codebattle.GameProcess.Engine.Bot do
+  alias Codebattle.GameProcess.{FsmHelpers, Play}
+  alias Codebattle.{Repo, User, Game, UserGame}
 
-    game =
-      Repo.insert!(%Game{state: "waiting_opponent",  level: level, type: type})
+  import Ecto.Query, warn: false
+
+  def create_game(bot, %{"level" => level, "type" => type}) do
+    bot_player = Player.build(bot, %{creator: true})
+
+    game = Repo.insert!(%Game{state: "waiting_opponent", level: level, type: type})
 
     fsm =
       Fsm.new()
@@ -26,10 +30,10 @@ defmodule Bot do
   end
 
   def join_game(game_id, user) do
-    game = get_game(game_id)
-    fsm = get_fsm(game_id)
+    game = Play.get_game(game_id)
+    fsm = Play.get_fsm(game_id)
     first_player = FsmHelpers.get_first_player(fsm)
-    second_player = Player.from_user(user)
+    second_player = Player.build(user)
     level = FsmHelpers.get_level(fsm)
 
     case get_playbook(level) do

@@ -3,11 +3,17 @@ defmodule Codebattle.Bot.Builder do
     generate bots for different environments
   """
 
-  # alias Codebattle.User
   alias Codebattle.GameProcess.Player
 
   def build(params \\ %{}) do
-    bot = %Player{id: "bot", name: "bot", bot: true, rating: 1137, github_id: "35539033"}
+    bot = %Player{
+      id: "bot",
+      name: "bot",
+      is_bot: true,
+      rating: 1137,
+      github_id: "35539033"
+    }
+
     Map.merge(bot, params)
   end
 end
