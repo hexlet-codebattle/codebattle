@@ -50,6 +50,9 @@ config :one_signal, OneSignal,
 config :scrivener_html,
   routes_helper: CodebattleWeb.Router.Helpers
 
+config :codebattle, Codebattle.Bot.PlaybookPlayerRunner, timeout: 7_000
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"
+

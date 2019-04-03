@@ -38,9 +38,10 @@ defmodule Codebattle.GameProcess.Fsm do
   defstate initial do
     defevent create(params), data: data do
 
-      new_data = Map.merge(data, params)
+      {player, new_params} = Map.pop(params, :player)
+      new_data = Map.merge(data, new_params)
       next_state(:waiting_opponent, %{
-        new_data | players: [params.player],
+        new_data | players: [player],
       })
     end
 
@@ -56,7 +57,7 @@ defmodule Codebattle.GameProcess.Fsm do
 
       new_data = Map.merge(data, params)
       next_state(:playing, %{
-        new_data | players: players, joins_at: params.joins_at
+        new_data | players: players, task: params.task, joins_at: params.joins_at
       })
     end
 

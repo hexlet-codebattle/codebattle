@@ -6,6 +6,7 @@ defmodule Codebattle.GameProcess.Play do
   """
 
   import Ecto.Query, warn: false
+  import Codebattle.GameProcess.Auth
 
   alias Codebattle.{Repo, Game, User, UserGame}
 
@@ -26,7 +27,7 @@ defmodule Codebattle.GameProcess.Play do
   alias Codebattle.Bot.PlaybookPlayerRunner
 
   # get data interface
-  def list_games do
+  def active_games do
     ActiveGames.list_games()
   end
 
@@ -49,7 +50,7 @@ defmodule Codebattle.GameProcess.Play do
         games in Game,
         order_by: [desc: games.updated_at],
         where: [state: "game_over"],
-        limit: 30,
+        limit: 5,
         preload: [:users, :user_games]
       )
 
@@ -65,64 +66,6 @@ defmodule Codebattle.GameProcess.Play do
     Server.fsm(id)
   end
 
-  # Enum.map(games, fn game ->
-  #   winner_user_game =
-  #     game.user_games
-  #     |> Enum.filter(fn user_game -> user_game.result == "won" end)
-  #     |> List.first()
-
-  #   winner =
-  #     case winner_user_game do
-  #       nil ->
-  #         Codebattle.Bot.Builder.build(%{game_result: :won})
-
-  #       winner_user_game ->
-  #         Map.get(winner_user_game, :user)
-  #         |> Map.merge(%{
-  #           creator: winner_user_game.creator,
-  #           game_result: winner_user_game.result,
-  #           lang: winner_user_game.lang,
-  #           rating: winner_user_game.rating,
-  #           rating_diff: winner_user_game.rating_diff
-  #         })
-  #     end
-
-  #   loser_user_game =
-  #     game.user_games
-  #     |> Enum.filter(fn user_game -> user_game.result != "won" end)
-  #     |> List.first()
-
-  #   loser =
-  #     case loser_user_game do
-  #       nil ->
-  #         Codebattle.Bot.Builder.build()
-
-  #       loser_user_game ->
-  #         Map.get(loser_user_game, :user)
-  #         |> Map.merge(%{
-  #           creator: loser_user_game.creator,
-  #           game_result: loser_user_game.result,
-  #           lang: loser_user_game.lang,
-  #           rating: loser_user_game.rating,
-  #           rating_diff: loser_user_game.rating_diff
-  #         })
-  #     end
-
-  #   %{updated_at: updated_at} = game
-
-  #   players =
-  #     [winner, loser]
-  #     |> Enum.sort(&(&1.creator > &2.creator))
-
-  #   %{
-  #     id: game.id,
-  #     players: players,
-  #     updated_at: updated_at,
-  #     duration: game.duration_in_seconds,
-  #     level: game.level
-  #   }
-  # end)
-  # end
 
   # main api interface
   def create_game(user, game_params) do
@@ -131,8 +74,14 @@ defmodule Codebattle.GameProcess.Play do
 
     case player_can_create_game?(player) do
       :ok ->
-        engine.create_game(player, game_params)
+        {:ok, fsm} = engine.create_game(player, game_params)
 
+
+        Task.async(fn ->
+          CodebattleWeb.Endpoint.broadcast!("lobby", "game:new", %{game: FsmHelpers.lobby_format(fsm)})
+        end)
+
+      {:ok, FsmHelpers.get_game_id(fsm)}
       {:error, reason} ->
         {:error, reason}
     end
@@ -143,7 +92,8 @@ defmodule Codebattle.GameProcess.Play do
 
     case player_can_create_game?(bot) do
       :ok ->
-        engine.create_game(bot, game_params)
+      {:ok, fsm} =  engine.create_game(bot, game_params)
+      {:ok, FsmHelpers.get_game_id(fsm)}
 
       {:error, reason} ->
         {:error, reason}
@@ -160,9 +110,8 @@ defmodule Codebattle.GameProcess.Play do
         case engine.join_game(id, player) do
           {:ok, fsm} ->
             Task.async(fn ->
-              CodebattleWeb.Endpoint.broadcast("lobby", "game:update", %{
-                game: fsm,
-                game_info: game_info(id)
+              CodebattleWeb.Endpoint.broadcast!("lobby", "game:update", %{
+                game: FsmHelpers.lobby_format(fsm),
               })
             end)
 
@@ -207,6 +156,7 @@ defmodule Codebattle.GameProcess.Play do
     case player_can_update_editor_data?(id, player) do
       :ok ->
         update_editor(id, engine, player, editor_text, editor_lang)
+        :ok
 
       {:error, reason} ->
         {:error, reason}
@@ -256,68 +206,6 @@ defmodule Codebattle.GameProcess.Play do
 
       {:error, reason} ->
         {:error, reason}
-    end
-  end
-
-  # stuff
-
-  defp player_can_create_game?(player) do
-    case ActiveGames.playing?(player.id) do
-      false ->
-        :ok
-
-      _ ->
-        {:error, "You are already in a game"}
-    end
-  end
-
-  defp player_can_join_game?(player) do
-    case ActiveGames.playing?(player.id) do
-      false ->
-        :ok
-
-      _ ->
-        {:error, "You are already in a game"}
-    end
-  end
-
-  defp player_can_cancel_game?(id, player) do
-    case ActiveGames.participant?(id, player.id, :waiting_opponent) do
-      true ->
-        :ok
-
-      _ ->
-        {:error, "Not authorized"}
-    end
-  end
-
-  defp player_can_give_up?(id, player) do
-    case ActiveGames.participant?(id, player.id,  :playing) do
-      true ->
-        :ok
-
-      _ ->
-        {:error, "Not authorized"}
-    end
-  end
-
-  defp player_can_check_game?(id, player) do
-    case ActiveGames.participant?(id, player.id) do
-      true ->
-        :ok
-
-      _ ->
-        {:error, "Not authorized"}
-    end
-  end
-
-  defp player_can_update_editor_data?(id, player) do
-    case ActiveGames.participant?(id, player.id) do
-      true ->
-        :ok
-
-      _ ->
-        {:error, "Not authorized"}
     end
   end
 

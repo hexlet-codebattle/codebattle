@@ -21,7 +21,8 @@ config :codebattle, Codebattle.Repo,
   pool: Ecto.Adapters.SQL.Sandbox,
   ownership_timeout: 99_999_999
 
-config :codebattle, Codebattle.Bot, timeout: 30
+config :codebattle, Codebattle.Bot, timeout: 60_000
+config :codebattle, Codebattle.Bot.PlaybookPlayerRunner, timeout: 10
 
 timeout =
   case System.get_env("CODEBATTLE_DOCKER_TEST_TIMEOUT") do

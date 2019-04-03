@@ -47,4 +47,4 @@ config :codebattle, Codebattle.Repo,
   database: System.get_env("CODEBATTLE_DB_NAME") || "codebattle_dev",
   pool_size: 5
 
-config :codebattle, Codebattle.Bot, timeout: 3_000
+config :codebattle, Codebattle.Bot, timeout: 2_000

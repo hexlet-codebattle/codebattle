@@ -88,6 +88,7 @@ defmodule CodebattleWeb.GameController do
   end
 
   def delete(conn, %{"id" => id}) do
+    id = String.to_integer(id)
     case Play.cancel_game(id, conn.assigns.current_user) do
       :ok ->
         redirect(conn, to: page_path(conn, :index))

@@ -31,7 +31,8 @@ defmodule CodebattleWeb.GameChannel do
     game_id = get_game_id(socket)
     user = socket.assigns.current_user
 
-    %{"lang" => lang, "editor_text" => editor_text} = payload
+    editor_text = Map.get(payload, "editor_text", nil)
+    lang = Map.get(payload, "lang", nil)
 
     case Play.update_editor_data(game_id, user, editor_text, lang) do
       :ok ->
@@ -40,6 +41,7 @@ defmodule CodebattleWeb.GameChannel do
           lang_slug: lang,
           editor_text: editor_text
         })
+        {:noreply, socket}
 
       {:error, reason} ->
         {:reply, {:error, %{reason: reason}}, socket}
@@ -56,7 +58,7 @@ defmodule CodebattleWeb.GameChannel do
 
         # TODO: send olny one game, and add it to game for completed games, and remove from active
         active_games =
-          Play.list_games()
+          Play.active_games()
           |> Enum.map(fn {game_id, users, game_info} ->
             %{game_id: game_id, users: Map.values(users), game_info: game_info}
           end)
@@ -88,7 +90,8 @@ defmodule CodebattleWeb.GameChannel do
     broadcast_from!(socket, "user:start_check", %{
       user: socket.assigns.current_user
     })
-    %{"editor_text" => editor_text, "lang" => lang} = payload
+    editor_text = Map.get(payload, "editor_text", nil)
+    lang = Map.get(payload, "lang", "js")
 
       case Play.check_game(game_id, user, editor_text, lang) do
         {:ok, fsm, result, output} ->
@@ -97,7 +100,7 @@ defmodule CodebattleWeb.GameChannel do
           message = winner.name <> " " <> gettext("won the game!")
 
           active_games =
-            Play.list_games()
+            Play.active_games()
             |> Enum.map(fn {game_id, users, game_info} ->
               %{game_id: game_id, users: Map.values(users), game_info: game_info}
             end)

@@ -45,7 +45,7 @@ config :logger, :info,
   path: "/var/log/codebattle/info.log",
   level: :info
 
-config :codebattle, Codebattle.Bot, timeout: 60_000
+config :codebattle, Codebattle.Bot, timeout: 1000
 
 # Finally import the config/prod.secret.exs
 # which should be versioned separately.

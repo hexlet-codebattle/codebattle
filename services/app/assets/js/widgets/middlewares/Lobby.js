@@ -16,7 +16,7 @@ export const fetchState = () => (dispatch) => {
     );
 
   channel.on('game:new', ({ game }) => dispatch(newGameLobby({ game })));
-  channel.on('game:update', ({ game, game_info: gameInfo }) => dispatch(updateGameLobby({ game, gameInfo })));
+  channel.on('game:update', ({ game}) => dispatch(updateGameLobby({ game})));
   channel.on('game:cancel', ({ game_id: gameId }) => dispatch(cancelGameLobby({ gameId })));
   channel.on(
     'game:game_over',

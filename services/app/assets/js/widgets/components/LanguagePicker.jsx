@@ -5,6 +5,7 @@ import Gon from 'gon';
 import LanguageIcon from './LanguageIcon';
 
 const languages = Gon.getAsset('langs');
+console.log(languages)
 
 const getLangTitle = ({ slug, name, version }) => (
   <Fragment>

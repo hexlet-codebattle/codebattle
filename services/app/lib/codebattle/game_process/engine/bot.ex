@@ -1,6 +1,21 @@
 defmodule Codebattle.GameProcess.Engine.Bot do
-  alias Codebattle.GameProcess.{FsmHelpers, Play}
+  import Codebattle.GameProcess.Engine.Base
+
+  alias Codebattle.GameProcess.{
+    Play,
+    Server,
+    GlobalSupervisor,
+    Fsm,
+    Player,
+    FsmHelpers,
+    Elo,
+    ActiveGames,
+    Notifier
+  }
+
   alias Codebattle.{Repo, User, Game, UserGame}
+  alias Codebattle.Bot.{RecorderServer, Playbook}
+  alias Codebattle.User.Achievements
 
   import Ecto.Query, warn: false
 
@@ -16,42 +31,35 @@ defmodule Codebattle.GameProcess.Engine.Bot do
         level: level,
         game_id: game.id,
         bots: true,
+        type: type,
         starts_at: TimeHelper.utc_now()
       })
 
-    ActiveGames.create_game(bot, fsm)
+    ActiveGames.create_game(game.id, fsm)
     {:ok, _} = GlobalSupervisor.start_game(game.id, fsm)
 
-    Task.async(fn ->
-      CodebattleWeb.Endpoint.broadcast("lobby", "game:new", %{game: fsm})
-    end)
-
-    {:ok, game.id}
+    {:ok, fsm}
   end
 
-  def join_game(game_id, user) do
+  def join_game(game_id, second_player) do
     game = Play.get_game(game_id)
     fsm = Play.get_fsm(game_id)
     first_player = FsmHelpers.get_first_player(fsm)
-    second_player = Player.build(user)
     level = FsmHelpers.get_level(fsm)
 
     case get_playbook(level) do
       {:ok, playbook} ->
-        # todo update second players in game
-        game
-        |> Game.changeset(%{state: "playing", task: playbook.task})
-        |> Repo.update!()
+        update_game!(game_id, %{state: "playing", task_id: playbook.task.id})
 
         case Server.call_transition(game_id, :join, %{
                player: second_player,
-               starts_at: TimeHelper.utc_now()
+               task: playbook.task,
+               joins_at: TimeHelper.utc_now()
              }) do
           {:ok, fsm} ->
             ActiveGames.add_participant(fsm)
 
-            {:ok, _} =
-              Codebattle.Bot.Supervisor.start_bot_record_server(game_id, second_player, fsm)
+            {:ok, _} = Codebattle.Bot.Supervisor.start_record_server(game_id, second_player, fsm)
 
             Codebattle.Bot.PlaybookAsyncRunner.call(%{
               game_id: game_id,
@@ -69,6 +77,32 @@ defmodule Codebattle.GameProcess.Engine.Bot do
     end
   end
 
+  def update_text(game_id, player, editor_text) do
+    update_fsm_text(game_id, player, editor_text)
+  end
+
+  def update_lang(game_id, player, editor_lang) do
+    update_fsm_lang(game_id, player, editor_lang)
+  end
+
+  def handle_won_game(game_id, winner, fsm) do
+    loser = FsmHelpers.get_opponent(fsm, winner.id)
+
+    store_game_result_async!(fsm, {winner, "won"}, {loser, "lost"})
+
+    unless winner.is_bot do
+    :ok = RecorderServer.store(game_id, winner.id)
+    end
+    ActiveGames.terminate_game(game_id)
+  end
+
+  def handle_give_up(game_id, loser, fsm) do
+    winner = FsmHelpers.get_opponent(fsm, loser.id)
+
+    store_game_result_async!(fsm, {winner, "won"}, {loser, "gave_up"})
+    ActiveGames.terminate_game(game_id)
+  end
+
   def get_playbook(level) do
     query =
       from(
@@ -76,6 +110,7 @@ defmodule Codebattle.GameProcess.Engine.Bot do
         join: task in "tasks",
         on: task.id == playbook.task_id,
         order_by: fragment("RANDOM()"),
+        preload: [:task],
         where: task.level == ^level,
         limit: 1
       )

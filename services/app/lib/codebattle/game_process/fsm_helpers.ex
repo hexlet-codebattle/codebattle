@@ -108,4 +108,17 @@ defmodule Codebattle.GameProcess.FsmHelpers do
   def bot_game?(fsm) do
     fsm.data.bots
   end
+
+  def lobby_format(fsm) do
+    %{
+      game_info: %{
+        state: fsm.state,
+        level: fsm.data.level,
+        starts_at: fsm.data.starts_at,
+        type: fsm.data.type
+      },
+      users: fsm.data.players,
+      game_id: fsm.data.game_id
+    }
+  end
 end

@@ -8,11 +8,12 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
   alias Codebattle.Bot.{Builder, Playbook, SocketDriver}
   alias Codebattle.GameProcess.Play
 
-  @timeout Application.get_env(:codebattle, Codebattle.Bot)[:timeout]
+  @timeout Application.get_env(:codebattle, Codebattle.Bot.PlaybookPlayerRunner)[:timeout]
 
   def call(params) do
     Logger.info("#{__MODULE__} RUN TASK with PARAMS: #{inspect(params)}, SLEEP for #{@timeout} ")
 
+    :timer.sleep(@timeout)
     playbook = Playbook.random(params.task_id)
 
     if playbook do

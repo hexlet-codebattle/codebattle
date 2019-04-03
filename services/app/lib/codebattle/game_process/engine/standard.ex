@@ -1,4 +1,5 @@
 defmodule Codebattle.GameProcess.Engine.Standard do
+
   import Codebattle.GameProcess.Engine.Base
 
   alias Codebattle.GameProcess.{
@@ -38,10 +39,6 @@ defmodule Codebattle.GameProcess.Engine.Standard do
     ActiveGames.create_game(game.id, fsm)
     {:ok, _} = GlobalSupervisor.start_game(game.id, fsm)
 
-    Task.async(fn ->
-      CodebattleWeb.Endpoint.broadcast("lobby", "game:new", %{game: fsm})
-    end)
-
     case type do
       "public" ->
         Task.async(fn ->
@@ -52,15 +49,15 @@ defmodule Codebattle.GameProcess.Engine.Standard do
         nil
     end
 
-    {:ok, game.id}
+    {:ok, fsm}
   end
 
   def join_game(game_id, second_player) do
-    game = Play.get_game(game_id)
     fsm = Play.get_fsm(game_id)
+    level = FsmHelpers.get_level(fsm)
     first_player = FsmHelpers.get_first_player(fsm)
 
-    task = get_random_task(game.level, [first_player.id, second_player.id])
+    task = get_random_task(level, [first_player.id, second_player.id])
 
     case Server.call_transition(game_id, :join, %{
            player: second_player,
@@ -70,13 +67,10 @@ defmodule Codebattle.GameProcess.Engine.Standard do
       {:ok, fsm} ->
         ActiveGames.add_participant(fsm)
 
-        # todo update second players in game
-        game
-        |> Game.changeset(%{state: "playing", task_id: task.id})
-        |> Repo.update!()
+        update_game!(game_id, %{state: "playing", task_id: task.id})
 
-        {:ok, _} = Codebattle.Bot.Supervisor.start_bot_record_server(game_id, first_player, fsm)
-        {:ok, _} = Codebattle.Bot.Supervisor.start_bot_record_server(game_id, second_player, fsm)
+        {:ok, _} = Codebattle.Bot.Supervisor.start_record_server(game_id, first_player, fsm)
+        {:ok, _} = Codebattle.Bot.Supervisor.start_record_server(game_id, second_player, fsm)
 
         Notifier.call(:game_opponent_join, %{
           first_player: first_player,
@@ -92,39 +86,26 @@ defmodule Codebattle.GameProcess.Engine.Standard do
   end
 
   def update_text(game_id, player, editor_text) do
-    RecorderServer.update_text(game_id, player.id, editor_text)
-
-    Server.call_transition(game_id, :update_editor_params, %{
-      id: player.id,
-      editor_text: editor_text
-    })
+    update_fsm_text(game_id, player, editor_text)
   end
 
   def update_lang(game_id, player, editor_lang) do
-    RecorderServer.update_lang(game_id, player.id, editor_lang)
-
-    Server.call_transition(game_id, :update_editor_params, %{
-      id: player.id,
-      editor_lang: editor_lang
-    })
-
-    update_user!(player, %{lang: editor_lang})
+    update_fsm_lang(game_id, player, editor_lang)
   end
 
   def handle_won_game(game_id, winner, fsm) do
     loser = FsmHelpers.get_opponent(fsm, winner.id)
 
-    store_game_resuls_async!(fsm, {winner, "won"}, {loser, "lost"})
+    store_game_result_async!(fsm, {winner, "won"}, {loser, "lost"})
     :ok = RecorderServer.store(game_id, winner.id)
+    ActiveGames.terminate_game(game_id)
   end
 
   def handle_give_up(game_id, loser, fsm) do
     winner = FsmHelpers.get_opponent(fsm, loser.id)
-    level = FsmHelpers.get_level(fsm)
 
-    store_game_resuls_async!(fsm, {winner, "won"}, {loser, "gave_up"})
-    ActiveGames.update_state(game_id, fsm)
-    ActiveGames.list_games() |> IO.inspect()
+    store_game_result_async!(fsm, {winner, "won"}, {loser, "gave_up"})
+    ActiveGames.terminate_game(game_id)
   end
 
   defp get_random_task(level, user_ids) do

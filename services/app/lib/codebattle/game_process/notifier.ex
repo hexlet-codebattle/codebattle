@@ -27,6 +27,7 @@ defmodule Codebattle.GameProcess.Notifier do
 
   # TODO: дать ссылку на конкретную игру
   def game_opponent_join(params) do
+    Logger.debug("Send one signal notificatoin with params: #{inspect(params)}")
     OneSignal.new()
     |> put_heading("Game started")
     |> put_message(:en, "Yo, #{params.second_player.name} started playing your game")

@@ -111,7 +111,6 @@ defmodule Codebattle.Bot.RecorderServer do
       game_id: #{state.game_id},
       user_id: #{state.user_id}")
 
-    if state.user_id != "bot" do
       %Playbook{
         data: %{playbook: state.diff |> Enum.reverse()},
         lang: to_string(state.lang),
@@ -120,7 +119,6 @@ defmodule Codebattle.Bot.RecorderServer do
         game_id: state.game_id |> to_string |> Integer.parse() |> elem(0)
       }
       |> Repo.insert()
-    end
 
     {:stop, :normal, state}
   end
