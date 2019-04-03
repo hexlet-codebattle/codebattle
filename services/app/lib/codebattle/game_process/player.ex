@@ -38,8 +38,8 @@ defmodule Codebattle.GameProcess.Player do
             github_id: "",
             public_id: "",
             name: "",
-            rating: nil,
-            rating_diff: nil,
+            rating: 0,
+            rating_diff: 0,
             achievements: []
 
   def build(%UserGame{} = user_game) do
