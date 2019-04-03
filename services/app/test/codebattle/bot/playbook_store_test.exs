@@ -48,7 +48,6 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
          check: fn _a, _b, _c -> {:ok, "adsf", "asdf"} end
        ]}
     ] do
-
       # Create game
       conn =
         conn1
@@ -75,7 +74,12 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
       :timer.sleep(40)
       Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text2})
       :timer.sleep(40)
-      Phoenix.ChannelTest.push(socket1, "editor:data", %{"editor_text" => editor_text2, "lang" => "elixir"})
+
+      Phoenix.ChannelTest.push(socket1, "editor:data", %{
+        "editor_text" => editor_text2,
+        "lang" => "elixir"
+      })
+
       :timer.sleep(40)
       Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text3})
       :timer.sleep(40)
@@ -83,16 +87,15 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
       :timer.sleep(40)
       Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text4, lang: "js"})
 
-#       playbook = [
-#         %{"delta" => [%{"insert" => "t"}], "time" => 100},
-#         %{"delta" => [%{"retain" => 1}, %{"insert" => "e"}], "time" => 100},
-#         %{"delta" => [%{"retain" => 2}, %{"insert" => "s"}], "time" => 100},
-#         %{"delta" => [], "time" => 100},
-#         %{"lang" => "js", "time" => 100},
-#         %{"delta" => [], "time" => 100},
-#         %{"lang" => "js", "time" => 100}
-#       ]
-
+      #       playbook = [
+      #         %{"delta" => [%{"insert" => "t"}], "time" => 100},
+      #         %{"delta" => [%{"retain" => 1}, %{"insert" => "e"}], "time" => 100},
+      #         %{"delta" => [%{"retain" => 2}, %{"insert" => "s"}], "time" => 100},
+      #         %{"delta" => [], "time" => 100},
+      #         %{"lang" => "js", "time" => 100},
+      #         %{"delta" => [], "time" => 100},
+      #         %{"lang" => "js", "time" => 100}
+      #       ]
 
       # sleep, because GameProcess need time to write Playbook with Ecto.connection
       :timer.sleep(400)

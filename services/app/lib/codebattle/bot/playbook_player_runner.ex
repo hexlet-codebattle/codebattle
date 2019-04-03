@@ -49,25 +49,27 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
           text_delta = delta |> AtomicMap.convert(safe: true) |> TextDelta.new()
           new_document = TextDelta.apply!(document, text_delta)
 
-            PhoenixClient.Channel.push_async(channel_pid, "editor:data", %{
-              "lang" => lang,
-              "editor_text" => new_document.ops |> hd |> Map.get(:insert)
-            })
+          PhoenixClient.Channel.push_async(channel_pid, "editor:data", %{
+            "lang" => lang,
+            "editor_text" => new_document.ops |> hd |> Map.get(:insert)
+          })
 
           {new_document, lang}
         else
           lang = diff_map |> Map.get("lang")
-            PhoenixClient.Channel.push_async(channel_pid, "editor:data", %{
-              "lang" => lang,
-              "editor_text" => document.ops |> hd |> Map.get(:insert)
-            })
+
+          PhoenixClient.Channel.push_async(channel_pid, "editor:data", %{
+            "lang" => lang,
+            "editor_text" => document.ops |> hd |> Map.get(:insert)
+          })
+
           {document, lang}
         end
       end)
 
-            PhoenixClient.Channel.push_async(channel_pid, "check_result", %{
-              "lang" => lang,
-              "editor_text" => editor_text.ops |> hd |> Map.get(:insert)
-            })
+    PhoenixClient.Channel.push_async(channel_pid, "check_result", %{
+      "lang" => lang,
+      "editor_text" => editor_text.ops |> hd |> Map.get(:insert)
+    })
   end
 end

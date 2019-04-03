@@ -32,7 +32,7 @@ defmodule Codebattle.GameProcess.Auth do
   end
 
   def player_can_give_up?(id, player) do
-    case ActiveGames.participant?(id, player.id,  :playing) do
+    case ActiveGames.participant?(id, player.id, :playing) do
       true ->
         :ok
 

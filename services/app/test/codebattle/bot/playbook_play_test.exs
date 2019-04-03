@@ -39,7 +39,6 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
       {:ok, pid} = Codebattle.Bot.PlaybookAsyncRunner.start(%{game_id: game_id, bot: bot})
       :timer.sleep(600)
 
-
       # User join to the game
       post(conn, game_path(conn, :join, game_id))
 

@@ -66,7 +66,6 @@ defmodule Codebattle.GameProcess.Play do
     Server.fsm(id)
   end
 
-
   # main api interface
   def create_game(user, game_params) do
     player = Player.build(user, %{creator: true})
@@ -76,12 +75,14 @@ defmodule Codebattle.GameProcess.Play do
       :ok ->
         {:ok, fsm} = engine.create_game(player, game_params)
 
-
         Task.async(fn ->
-          CodebattleWeb.Endpoint.broadcast!("lobby", "game:new", %{game: FsmHelpers.lobby_format(fsm)})
+          CodebattleWeb.Endpoint.broadcast!("lobby", "game:new", %{
+            game: FsmHelpers.lobby_format(fsm)
+          })
         end)
 
-      {:ok, FsmHelpers.get_game_id(fsm)}
+        {:ok, FsmHelpers.get_game_id(fsm)}
+
       {:error, reason} ->
         {:error, reason}
     end
@@ -92,8 +93,8 @@ defmodule Codebattle.GameProcess.Play do
 
     case player_can_create_game?(bot) do
       :ok ->
-      {:ok, fsm} =  engine.create_game(bot, game_params)
-      {:ok, FsmHelpers.get_game_id(fsm)}
+        {:ok, fsm} = engine.create_game(bot, game_params)
+        {:ok, FsmHelpers.get_game_id(fsm)}
 
       {:error, reason} ->
         {:error, reason}
@@ -111,7 +112,7 @@ defmodule Codebattle.GameProcess.Play do
           {:ok, fsm} ->
             Task.async(fn ->
               CodebattleWeb.Endpoint.broadcast!("lobby", "game:update", %{
-                game: FsmHelpers.lobby_format(fsm),
+                game: FsmHelpers.lobby_format(fsm)
               })
             end)
 

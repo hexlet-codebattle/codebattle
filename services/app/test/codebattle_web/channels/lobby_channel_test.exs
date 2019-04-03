@@ -11,7 +11,9 @@ defmodule CodebattleWeb.LobbyChannelTest do
     winner = insert(:user)
     loser = insert(:user)
     winner_user_game = insert(:user_game, user: winner, creator: false, game: game, result: "won")
-    loser_user_game = insert(:user_game, user: loser, creator: true, game: game, result: "gave_up")
+
+    loser_user_game =
+      insert(:user_game, user: loser, creator: true, game: game, result: "gave_up")
 
     user_token1 = Phoenix.Token.sign(socket(UserSocket), "user_token", winner.id)
     {:ok, socket1} = connect(UserSocket, %{"token" => user_token1})
@@ -21,10 +23,12 @@ defmodule CodebattleWeb.LobbyChannelTest do
 
   test "sends game info when user join", %{winner: winner, socket1: socket1, task: task} do
     state = :waiting_opponent
+
     data = %{
       players: [%Player{id: winner.id}],
       task: task
     }
+
     setup_game(state, data)
 
     {:ok, %{active_games: active_games, completed_games: completed_games}, _socket1} =

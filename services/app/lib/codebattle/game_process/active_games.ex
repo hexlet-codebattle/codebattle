@@ -33,7 +33,10 @@ defmodule Codebattle.GameProcess.ActiveGames do
   end
 
   def update_state(game_id, fsm) do
-    :ets.update_element(@table_name, game_key(game_id), [ {2, build_players(fsm)}, {3, build_game_params(fsm)} ])
+    :ets.update_element(@table_name, game_key(game_id), [
+      {2, build_players(fsm)},
+      {3, build_game_params(fsm)}
+    ])
 
     :ok
   end
@@ -41,7 +44,10 @@ defmodule Codebattle.GameProcess.ActiveGames do
   def add_participant(fsm) do
     game_id = FsmHelpers.get_game_id(fsm)
 
-    :ets.update_element(@table_name, game_key(game_id), [ {2, build_players(fsm)}, {3, build_game_params(fsm)} ])
+    :ets.update_element(@table_name, game_key(game_id), [
+      {2, build_players(fsm)},
+      {3, build_game_params(fsm)}
+    ])
 
     :ok
   end
@@ -50,7 +56,7 @@ defmodule Codebattle.GameProcess.ActiveGames do
     @table_name |> :ets.match_object({:_, %{player_id => %{}}, :_}) |> Enum.empty?() |> Kernel.!()
   end
 
-  def participant?(game_id, player_id, state \\ :"_") do
+  def participant?(game_id, player_id, state \\ :_) do
     @table_name
     |> :ets.match_object({game_key(game_id), %{player_id => %{}}, %{state: state}})
     |> Enum.empty?()

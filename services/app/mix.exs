@@ -90,7 +90,7 @@ defmodule Codebattle.Mixfile do
       {:websocket_client, "~> 1.3"},
       {:jason, "~> 1.1"},
       {:websockex, "~> 0.4.0"},
-       {:socket, "~> 0.3"},
+      {:socket, "~> 0.3"},
 
       # dev_and_test
       {:credo, "~> 0.8", only: [:dev, :test], runtime: false},

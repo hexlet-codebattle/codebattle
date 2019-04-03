@@ -1,5 +1,4 @@
 defmodule Codebattle.GameProcess.Engine.Standard do
-
   import Codebattle.GameProcess.Engine.Base
 
   alias Codebattle.GameProcess.{

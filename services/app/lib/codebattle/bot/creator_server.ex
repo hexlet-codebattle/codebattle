@@ -8,13 +8,11 @@ defmodule Codebattle.Bot.CreatorServer do
 
   @timeout Application.get_env(:codebattle, Codebattle.Bot)[:timeout]
 
-
   def start_link() do
     GenServer.start_link(__MODULE__, %{}, name: __MODULE__)
   end
 
   def init(state) do
-
     Process.send_after(self(), :create_bot_if_need, @timeout)
     {:ok, %{}}
   end
@@ -22,12 +20,11 @@ defmodule Codebattle.Bot.CreatorServer do
   def handle_info(:create_bot_if_need, state) do
     case Codebattle.Bot.GameCreator.call() do
       {:ok, game_id, bot} ->
-
         Process.send_after(self(), :create_bot_if_need, 3_000)
-        {:ok, pid}=PlaybookAsyncRunner.start(%{game_id: game_id, bot: bot})
-
+        {:ok, pid} = PlaybookAsyncRunner.start(%{game_id: game_id, bot: bot})
 
         {:noreply, %{}}
+
       {:error, reason} ->
         Logger.debug("Can't create bot game, reason: #{reason}")
         Process.send_after(self(), :create_bot_if_need, 5_000)

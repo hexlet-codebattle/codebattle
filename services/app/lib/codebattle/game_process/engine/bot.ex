@@ -91,8 +91,9 @@ defmodule Codebattle.GameProcess.Engine.Bot do
     store_game_result_async!(fsm, {winner, "won"}, {loser, "lost"})
 
     unless winner.is_bot do
-    :ok = RecorderServer.store(game_id, winner.id)
+      :ok = RecorderServer.store(game_id, winner.id)
     end
+
     ActiveGames.terminate_game(game_id)
   end
 

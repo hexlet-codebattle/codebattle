@@ -16,7 +16,7 @@ defmodule Codebattle.User do
              :lang,
              :editor_mode,
              :editor_theme,
-             :achievements,
+             :achievements
            ]}
 
   schema "users" do
