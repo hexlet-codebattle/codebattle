@@ -21,13 +21,7 @@ class RematchButton extends React.Component {
   }
 
   handleAcceptRematch = () => {
-    const { gameTask: { level } } = this.props;
-    const queryParamsString = qs.stringify({ level });
-    const gameUrl = `/api/v1/games?${queryParamsString}`;
-    const csrf = window.csrf_token;
-
-    axios.post(gameUrl, {}, { headers: { 'X-CSRF-Token': csrf } })
-      .then(({ data }) => sendAcceptToRematch(data.game_id));
+    sendAcceptToRematch();
   }
 
   renderBtnAfterReject = () => (

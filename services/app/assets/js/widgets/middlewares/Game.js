@@ -105,8 +105,8 @@ export const sendRejectToRematch = () => {
   channel.push('rematch:reject_offer');
 };
 
-export const sendAcceptToRematch = (game_id) => {
-  channel.push('rematch:accept_offer', { game_id });
+export const sendAcceptToRematch = () => {
+  channel.push('rematch:accept_offer');
 };
 
 export const sendEditorLang = currentLangSlug => (dispatch, getState) => {
