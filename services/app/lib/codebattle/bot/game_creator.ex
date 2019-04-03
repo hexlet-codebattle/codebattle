@@ -5,10 +5,8 @@ defmodule Codebattle.Bot.GameCreator do
 
   import Ecto.Query, warn: false
 
-  def call() do
-    # TODO: think about more smart solution
+  def call(level) do
     if Play.active_games() |> Enum.count() < 5 do
-      level = ["elementary", "easy", "medium", "hard"] |> Enum.random()
       bot = Codebattle.Bot.Builder.build()
 
       case Play.create_bot_game(bot, %{"level" => level, "type" => "public"}) do

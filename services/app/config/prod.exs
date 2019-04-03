@@ -28,7 +28,6 @@ config :codebattle, Codebattle.Repo,
   pool_size: 15
 
 config :codebattle, Codebattle.Repo,
-  adapter: Ecto.Adapters.Postgres,
   username: System.get_env("CODEBATTLE_DB_USERNAME"),
   password: System.get_env("CODEBATTLE_DB_PASSWORD"),
   database: System.get_env("CODEBATTLE_DB_NAME"),

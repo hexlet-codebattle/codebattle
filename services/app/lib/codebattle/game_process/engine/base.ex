@@ -1,10 +1,4 @@
 defmodule Codebattle.GameProcess.Engine.Base do
-  defmacro __using__(_opts) do
-    quote do
-      import Codebattle.GameProcess.Engine.Base
-    end
-  end
-
   alias Codebattle.GameProcess.{
     Play,
     Server,

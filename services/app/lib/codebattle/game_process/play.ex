@@ -193,6 +193,8 @@ defmodule Codebattle.GameProcess.Play do
         check_result = Checker.check(FsmHelpers.get_task(fsm), editor_text, editor_lang)
 
         case {fsm.state, check_result} do
+          {:waiting_opponent, {:ok, result, output}} ->
+            {:error, result, output}
           {:playing, {:ok, result, output}} ->
             {_response, fsm} = Server.call_transition(id, :complete, %{id: player.id})
             engine.handle_won_game(id, player, fsm)

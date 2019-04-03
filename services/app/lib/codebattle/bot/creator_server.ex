@@ -18,7 +18,9 @@ defmodule Codebattle.Bot.CreatorServer do
   end
 
   def handle_info(:create_bot_if_need, state) do
-    case Codebattle.Bot.GameCreator.call() do
+    level = ["elementary", "easy", "medium", "hard"] |> Enum.random()
+
+    case Codebattle.Bot.GameCreator.call(level) do
       {:ok, game_id, bot} ->
         Process.send_after(self(), :create_bot_if_need, 3_000)
         {:ok, pid} = PlaybookAsyncRunner.start(%{game_id: game_id, bot: bot})
