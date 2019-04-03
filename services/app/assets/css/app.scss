@@ -76,3 +76,9 @@ a {
     max-width: 350px;
     overflow: hidden;
 }
+
+.toast-container {
+  box-shadow: none;
+  background: rgba(0, 0, 0, 0);
+  padding: 0;
+}

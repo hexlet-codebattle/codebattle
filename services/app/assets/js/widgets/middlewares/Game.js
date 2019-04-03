@@ -93,6 +93,22 @@ export const sendGiveUp = () => {
   channel.push('give_up');
 };
 
+export const sendResetRematch = (rematchState) => {
+  channel.push('rematch:send_reset', { rematch_state: rematchState });
+};
+
+export const sendOfferToRematch = () => {
+  channel.push('rematch:send_offer');
+};
+
+export const sendRejectToRematch = () => {
+  channel.push('rematch:reject_offer');
+};
+
+export const sendAcceptToRematch = (game_id) => {
+  channel.push('rematch:accept_offer', { game_id });
+};
+
 export const sendEditorLang = currentLangSlug => (dispatch, getState) => {
   const state = getState();
   const userId = selectors.currentUserIdSelector(state);
@@ -198,6 +214,14 @@ export const editorReady = () => (dispatch) => {
   channel.on('give_up', ({ players, status, msg }) => {
     dispatch(actions.updateGamePlayers({ players }));
     dispatch(actions.updateGameStatus({ status, msg }));
+  });
+
+  channel.on('rematch:update_status', (payload) => {
+    dispatch(actions.updateRematchStatus(payload));
+  });
+
+  channel.on('rematch:redirect_to_new_game', ({ game_id }) => {
+    actions.redirectToNewGame(game_id);
   });
 };
 

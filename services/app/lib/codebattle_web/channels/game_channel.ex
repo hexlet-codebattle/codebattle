@@ -84,6 +84,66 @@ defmodule CodebattleWeb.GameChannel do
     end
   end
 
+  def handle_in("rematch:send_offer", _, socket) do
+    game_id = get_game_id(socket)
+
+    fsm = Play.get_fsm(game_id)
+    currentUserId = socket.assigns.user_id
+
+    rematchState =
+      FsmHelpers.get_players(fsm)
+      |> Enum.filter(fn e -> e.id !== currentUserId end)
+      |> Enum.map(fn e -> %{e.id => "recieved_offer"} end)
+      |> Enum.reduce(%{}, fn e, acc -> Map.merge(acc, e) end)
+      |> Map.merge(%{currentUserId => "sended_offer"})
+      |> Map.merge(%{state: "in_approval"})
+
+    broadcast!(socket, "rematch:update_status", rematchState)
+
+    {:noreply, socket}
+  end
+
+  def handle_in("rematch:reject_offer", _, socket) do
+    game_id = get_game_id(socket)
+
+    fsm = Play.give_up(game_id, socket.assigns.current_user)
+
+    rematchState =
+      FsmHelpers.get_players(fsm)
+      |> Enum.map(fn e -> %{e.id => "rejected_offer"} end)
+      |> Enum.reduce(%{}, fn e, acc -> Map.merge(acc, e) end)
+      |> Map.merge(%{state: "rejected"})
+
+    broadcast!(socket, "rematch:update_status", rematchState)
+
+    {:noreply, socket}
+  end
+
+  def handle_in("rematch:accept_offer", payload, socket) do
+    game_id = get_game_id(socket)
+
+    case Play.create_rematch_game(game_id) do
+      {:ok, game_id} ->
+        broadcast!(socket, "rematch:redirect_to_new_game", %{game_id: game_id})
+        {:noreply, socket}
+
+      _ ->
+        {:reply, {:error, %{reason: "sww"}}, socket}
+    end
+  end
+
+  def handle_in("rematch:send_reset", payload, socket) do
+    game_id = get_game_id(socket)
+
+    if payload.rematch_state === "rejected" do
+      broadcast!(socket, "rematch:update_status", %{state: "rejected"})
+    else
+      broadcast!(socket, "rematch:update_status", %{state: "init"})
+    end
+
+    {:noreply, socket}
+  end
+
   def handle_in("check_result", payload, socket) do
     game_id = get_game_id(socket)
     user = socket.assigns.current_user

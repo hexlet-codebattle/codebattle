@@ -15,6 +15,7 @@ defmodule Codebattle.GameProcess.Play do
     GlobalSupervisor,
     Engine,
     Fsm,
+    Play,
     Player,
     FsmHelpers,
     Elo,
@@ -99,6 +100,27 @@ defmodule Codebattle.GameProcess.Play do
       {:error, reason} ->
         {:error, reason}
     end
+  end
+
+  def create_rematch_game(game_id) do
+    ActiveGames.terminate_game(game_id)
+
+    fsm = Play.get_fsm(game_id)
+    first_player = FsmHelpers.get_first_player(fsm)
+    second_player = FsmHelpers.get_second_player(fsm)
+    level = FsmHelpers.get_level(fsm)
+    type = FsmHelpers.get_type(fsm)
+
+    engine = get_engine(fsm)
+    {:ok, new_fsm} = engine.create_game(first_player, %{"level" => level, "type" => type})
+    new_game_id = FsmHelpers.get_game_id(new_fsm)
+    {:ok, new_fsm} = engine.join_game(new_game_id, second_player)
+
+    Task.async(fn ->
+      CodebattleWeb.Endpoint.broadcast("lobby", "game:new", %{game: FsmHelpers.lobby_format(new_fsm)})
+    end)
+
+    {:ok, new_game_id}
   end
 
   def join_game(id, user) do
@@ -195,6 +217,7 @@ defmodule Codebattle.GameProcess.Play do
         case {fsm.state, check_result} do
           {:waiting_opponent, {:ok, result, output}} ->
             {:error, result, output}
+
           {:playing, {:ok, result, output}} ->
             {_response, fsm} = Server.call_transition(id, :complete, %{id: player.id})
             engine.handle_won_game(id, player, fsm)

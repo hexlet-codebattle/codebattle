@@ -27,7 +27,9 @@ defmodule Codebattle.GameProcess.Fsm do
       # String, public or private game with friend
       type: "public",
       # Boolean, game played with bot
-      bots: false
+      bots: false,
+      # :Atom,
+      rematch_state: nil,
     }
 
   # For tests
@@ -43,6 +45,15 @@ defmodule Codebattle.GameProcess.Fsm do
       next_state(:waiting_opponent, %{
         new_data
         | players: [player]
+      })
+    end
+
+    defevent create_rematch(params), data: data do
+
+      new_data = Map.merge(data, params)
+      next_state(:playing, %{
+        new_data | players: params.players, level: params.level,
+        type: params.type, task: params.task
       })
     end
 
