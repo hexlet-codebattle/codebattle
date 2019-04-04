@@ -10,15 +10,13 @@ defmodule Codebattle.User do
              :id,
              :name,
              :rating,
+             :is_bot,
              :guest,
              :github_id,
              :lang,
              :editor_mode,
              :editor_theme,
-             :creator,
-             :game_result,
-             :achievements,
-             :rating_diff
+             :achievements
            ]}
 
   schema "users" do
@@ -31,12 +29,9 @@ defmodule Codebattle.User do
     field(:editor_mode, :string)
     field(:editor_theme, :string)
     field(:public_id, :binary_id)
+    field(:is_bot, :boolean, default: false)
     field(:guest, :boolean, virtual: true, default: false)
-    field(:bot, :boolean, virtual: true, default: false)
     field(:achievements, {:array, :string}, default: [], null: false)
-    field(:rating_diff, :integer, virtual: true)
-    field(:creator, :boolean, virtual: true, default: false)
-    field(:game_result, :string, virtual: true)
 
     has_many(:user_games, Codebattle.UserGame)
     has_many(:games, through: [:user_games, :game])
@@ -69,23 +64,4 @@ defmodule Codebattle.User do
     |> unique_constraint(:name)
     |> validate_length(:name, min: 3, max: 16)
   end
-
-  # TODO add lang validation
-  # def lang_changeset(struct, params \\ %{}) do
-  #   struct
-  #   |> cast(params, [:lang, :editor_mode, :editor_theme])
-  #   |> validate_required([:lang])
-  #   |> validate_lang([:lang])
-  # end
-
-  # def validate_lang(changeset, field, options \\ []) do
-  #   langs = Codebattle.Languages.meta |> Map.keys
-
-  #   validate_change(changeset, :lang, fn _params, lang ->
-  #     case String.to_existing_atom(lang) in langs do
-  #       true -> []
-  #       false -> [{field, options[:message] || "Unexpected URL"}]
-  #     end
-  #   end)
-  # end
 end

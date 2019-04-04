@@ -20,11 +20,14 @@ import 'bootstrap';
 // Local files can be imported directly using relative
 // paths "./socket" or full ones "web/static/js/socket".
 
-import { renderGameWidget, renderLobby, renderHeatmapWidget } from './widgets';
+import {
+  renderGameWidget, renderLobby, renderHeatmapWidget, renderUsersRating,
+} from './widgets';
 
 const gameWidgetRoot = document.getElementById('game-widget-root');
 const heatmapRoot = document.getElementById('heatmap-root');
 const gameListRoot = document.getElementById('game-list');
+const ratingList = document.getElementById('rating-list');
 
 if (gameWidgetRoot) {
   renderGameWidget(gameWidgetRoot);
@@ -36,4 +39,8 @@ if (heatmapRoot) {
 
 if (gameListRoot) {
   renderLobby(gameListRoot);
+}
+
+if (ratingList) {
+  renderUsersRating(ratingList);
 }

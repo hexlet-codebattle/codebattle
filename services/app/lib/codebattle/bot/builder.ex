@@ -2,12 +2,22 @@ defmodule Codebattle.Bot.Builder do
   @moduledoc """
     generate bots for different environments
   """
+  import Ecto.Query
 
-  # alias Codebattle.User
-  alias Codebattle.GameProcess.Player
+  alias Codebattle.User
+  alias Codebattle.Repo
 
   def build(params \\ %{}) do
-    bot = %Player{id: "bot", name: "bot", bot: true, rating: 1137, github_id: "35539033"}
+    query =
+      from(
+        user in User,
+        where: user.is_bot == true,
+        order_by: fragment("RANDOM()"),
+        limit: 1
+      )
+
+    bot = Repo.one(query)
+
     Map.merge(bot, params)
   end
 end

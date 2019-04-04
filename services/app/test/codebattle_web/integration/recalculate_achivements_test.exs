@@ -51,9 +51,7 @@ defmodule RecalculateAchivementsTest do
     with_mocks [
       {Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> {:ok, "asdf", "asdf"} end]}
     ] do
-      # refactor
-      user1_games_struct = insert_list(9, :user_game, %{user: user1})
-      # Repo.insert_all(UserGame, user1_games)
+      insert_list(10, :user_game, %{user: user1})
       # Create game
       conn =
         conn1
@@ -74,6 +72,7 @@ defmodule RecalculateAchivementsTest do
       Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text1, lang: "js"})
       :timer.sleep(100)
       fsm = Server.fsm(game_id)
+
       user = Repo.get(User, user1.id)
       assert user.achievements == ["played_ten_games"]
     end

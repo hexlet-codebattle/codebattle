@@ -81,6 +81,7 @@ class GameWidget extends Component {
         <div className="row no-gutters">
           <div className="col-12 col-md-6 p-1">
             <div className="card">
+              {console.log(this.props)}
               <LeftEditorToolbar />
               <Editor {...this.getLeftEditorParams()} />
               {/* TODO: move state to parent component */}

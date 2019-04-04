@@ -17,12 +17,14 @@ export const updateExecutionOutput = createAction('UPDATE_EXECUTION_OUTPUT');
 export const setCurrentUser = createAction('SET_CURRENT_USER');
 export const updateUsers = createAction('UPDATE_USERS');
 export const updateUsersStats = createAction('UPDATE_USERS_STATS');
+export const updateUsersRatingPage = createAction('UPDATE_USERS_RATING_PAGE');
 
 export const sendPlayerCode = createAction('SEND_PLAYER_CODE');
 export const updateEditorLang = createAction('UPDATE_EDITOR_LANG');
 export const updateEditorText = createAction('UPDATE_EDITOR_TEXT');
 
 export const updateGameStatus = createAction('UPDATE_GAME_STATUS');
+export const updateRematchStatus = createAction('UPDATE_REMATCH_STATUS');
 export const setGameTask = createAction('SET_GAME_TASK');
 export const updateGamePlayers = createAction('UPDATE_GAME_PLAYERS');
 
@@ -32,3 +34,5 @@ export const compressEditorHeight = createAction('COMPRESS_EDITOR_HEIGHT');
 export const expandEditorHeight = createAction('EXPAND_EDITOR_HEIGHT');
 
 export const setEditorsMode = createAction('EDITORS_MODE_SET');
+export const updateGameUI = createAction('UPDATE_GAME_UI');
+export const redirectToNewGame = game_id => window.location.href = `/games/${game_id}`;

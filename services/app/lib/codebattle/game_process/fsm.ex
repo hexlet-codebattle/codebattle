@@ -16,6 +16,8 @@ defmodule Codebattle.GameProcess.Fsm do
       game_id: nil,
       # NaiveDateTime
       starts_at: nil,
+      # NaiveDateTime
+      joins_at: nil,
       # Task
       task: %Codebattle.Task{},
       # String, level, appears before task created
@@ -26,8 +28,8 @@ defmodule Codebattle.GameProcess.Fsm do
       type: "public",
       # Boolean, game played with bot
       bots: false,
-      # TODO: remove it please))))
-      player: nil
+      # :Atom,
+      rematch_state: nil,
     }
 
   # For tests
@@ -37,10 +39,21 @@ defmodule Codebattle.GameProcess.Fsm do
 
   defstate initial do
     defevent create(params), data: data do
+      {player, new_params} = Map.pop(params, :player)
+      new_data = Map.merge(data, new_params)
+
+      next_state(:waiting_opponent, %{
+        new_data
+        | players: [player]
+      })
+    end
+
+    defevent create_rematch(params), data: data do
 
       new_data = Map.merge(data, params)
-      next_state(:waiting_opponent, %{
-        new_data | players: [params.player],
+      next_state(:playing, %{
+        new_data | players: params.players, level: params.level,
+        type: params.type, task: params.task
       })
     end
 
@@ -55,8 +68,12 @@ defmodule Codebattle.GameProcess.Fsm do
       players = data.players ++ [params.player]
 
       new_data = Map.merge(data, params)
+
       next_state(:playing, %{
-        new_data | players: players, starts_at: params.starts_at
+        new_data
+        | players: players,
+          task: params.task,
+          joins_at: params.joins_at
       })
     end
 

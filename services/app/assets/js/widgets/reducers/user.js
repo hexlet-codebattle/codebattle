@@ -44,6 +44,17 @@ const reducer = handleActions({
       },
     };
   },
+  [actions.updateUsersRatingPage](state, { payload }) {
+    const { users, page_info: pageInfo } = payload;
+    return {
+      ...state,
+      usersRatingPage: {
+        users,
+        pageInfo,
+      },
+    };
+  },
 }, initState);
+
 
 export default reducer;

@@ -5,30 +5,18 @@ defmodule Codebattle.Bot.GameCreator do
 
   import Ecto.Query, warn: false
 
-  def call() do
-    # TODO: think about more smart solution
-    if Play.list_games() |> Enum.count() < 3 do
-      query =
-        from(
-          playbook in Playbook,
-          preload: [:task],
-          order_by: fragment("RANDOM()"),
-          limit: 1
-        )
+  def call(level) do
+    if Play.active_games() |> Enum.count() < 5 do
+      bot = Codebattle.Bot.Builder.build()
 
-      playbook = Repo.one(query)
+      case Play.create_bot_game(bot, %{"level" => level, "type" => "public"}) do
+        {:ok, game_id} ->
+          {:ok, game_id, bot}
 
-      if playbook do
-        bot = Codebattle.Bot.Builder.build(%{lang: "ruby"})
-
-        {:ok, game_id} = Play.create_bot_game(bot, playbook.task)
-        {:ok, game_id, playbook.task.id}
-      else
-
-        {:error, :no_playbooks}
+        {:error, reason} ->
+          {:error, reason}
       end
     else
-
       {:error, :game_limit}
     end
   end

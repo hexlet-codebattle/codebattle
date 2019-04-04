@@ -11,6 +11,7 @@ tmp
 *deployment.retry
 *~
 *.swp
+*.swo
 
 
 # Generated on crash by the VM
@@ -49,4 +50,4 @@ secrets.auto.tfvars
 *.secret.yml
 .elixir_ls
 google.key.json
-
+.iml

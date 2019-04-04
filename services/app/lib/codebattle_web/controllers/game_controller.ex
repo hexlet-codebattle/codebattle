@@ -16,7 +16,9 @@ defmodule CodebattleWeb.GameController do
         _ -> "public"
       end
 
-    case Play.create_game(conn.assigns.current_user, conn.params["level"], type) do
+    game_params = Map.merge(%{"type" => "standard"}, Map.take(conn.params, ["level", "type"]))
+
+    case Play.create_game(conn.assigns.current_user, game_params) do
       {:ok, id} ->
         conn
         |> redirect(to: game_path(conn, :show, id))
@@ -66,40 +68,35 @@ defmodule CodebattleWeb.GameController do
       case Play.join_game(id, conn.assigns.current_user) do
         # TODO: move to Play.ex; @mimikria, we miss you))))
         {:ok, fsm} ->
-          Task.async(fn ->
-            CodebattleWeb.Endpoint.broadcast("lobby", "game:update", %{
-              game: fsm,
-              game_info: Play.game_info(id)
-            })
-          end)
-
           conn
           # |> put_flash(:info, gettext("Joined the game"))
           |> redirect(to: game_path(conn, :show, id))
 
-        :error ->
+        {:error, reason} ->
           conn
-          |> put_flash(:danger, gettext("You are in a different game"))
+          |> put_flash(:danger, reason)
           |> redirect(to: page_path(conn, :index))
       end
     catch
       :exit, reason ->
         Logger.error(inspect(reason))
+
         conn
-        |> put_flash(:danger, gettext("Sorry, the game doesn't exist"))
+        |> put_flash(:danger, "Sorry, the game doesn't exist")
         |> redirect(to: page_path(conn, :index))
     end
   end
 
   def delete(conn, %{"id" => id}) do
+    id = String.to_integer(id)
+
     case Play.cancel_game(id, conn.assigns.current_user) do
       :ok ->
-        CodebattleWeb.Endpoint.broadcast("lobby", "game:cancel", %{game_id: id})
         redirect(conn, to: page_path(conn, :index))
 
-      :error ->
+      {:error, _reason} ->
         conn
-        |> put_flash(:danger, gettext("You are in a different game"))
+        |> put_flash(:danger, _reason)
         |> redirect(to: page_path(conn, :index))
     end
   end

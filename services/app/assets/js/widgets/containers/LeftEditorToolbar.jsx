@@ -90,6 +90,8 @@ class LeftEditorToolbar extends Component {
     } = this.props;
 
     const isSpectator = !_.hasIn(players, currentUserId);
+    console.log(111111111111111111111)
+    console.log(leftEditorLangSlug)
 
     if (leftEditorLangSlug === null) {
       return null;

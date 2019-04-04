@@ -28,7 +28,7 @@ levels = ["elementary", "easy", "medium", "hard"]
   for level <- levels do
     task_name = "task_#{level}_#{:crypto.strong_rand_bytes(10) |> Base.encode32()}"
 
-    task_data = %{
+    task_data = %Codebattle.Task{
       name: task_name,
       description: "test sum: for ruby `def solution(a,b); a+b;end;`",
       asserts: "{\"arguments\":[1,1],\"expected\":2}
@@ -36,15 +36,25 @@ levels = ["elementary", "easy", "medium", "hard"]
     "
     }
 
-    task =
-      case Repo.get_by(Codebattle.Task, level: level, name: task_name) do
-        nil -> %Codebattle.Task{}
-        task -> task
-      end
+    task = Codebattle.Task.changeset(Map.merge(task_data, %{level: level})) |> Repo.insert!()
 
-    task
-    |> Codebattle.Task.changeset(Map.merge(task_data, %{level: level}))
-    |> Repo.insert_or_update!()
+    playbook_data = %{
+      playbook: [
+        %{"time" => 0, "delta" => [%{"insert" => "def solution()\n\nend"}]},
+        %{"lang" => "ruby", "time" => 24},
+        %{"time" => 2058, "delta" => [%{"retain" => 13}, %{"insert" => "a"}]},
+        %{"time" => 145, "delta" => [%{"retain" => 14}, %{"insert" => ","}]},
+        %{"time" => 725, "delta" => [%{"retain" => 15}, %{"insert" => "b"}]},
+        %{"time" => 620, "delta" => [%{"retain" => 19}, %{"insert" => "\n"}]},
+        %{"time" => 593, "delta" => [%{"retain" => 18}, %{"insert" => "a"}]},
+        %{"time" => 329, "delta" => [%{"retain" => 19}, %{"insert" => " "}]},
+        %{"time" => 500, "delta" => [%{"retain" => 20}, %{"insert" => "+"}]},
+        %{"time" => 251, "delta" => [%{"retain" => 21}, %{"insert" => " "}]},
+        %{"time" => 183, "delta" => [%{"retain" => 22}, %{"insert" => "b"}]}
+      ]
+    }
+
+    Repo.insert!(%Codebattle.Bot.Playbook{data: playbook_data, task: task, lang: "ruby"})
 
     IO.puts("Upsert #{task_name}")
   end

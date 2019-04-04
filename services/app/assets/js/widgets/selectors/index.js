@@ -75,13 +75,13 @@ export const gameStatusTitleSelector = (state) => {
   switch (gameStatus.status) {
     case GameStatusCodes.waitingOpponent:
       return i18n
-        .t('{{state}}', { state: i18n.t('Waiting for an opponent') });
+        .t('%{state}', { state: i18n.t('Waiting for an opponent') });
     case GameStatusCodes.playing:
       return i18n
-        .t('{{state}}', { state: i18n.t('Playing') });
+        .t('%{state}', { state: i18n.t('Playing') });
     case GameStatusCodes.gameOver:
       return i18n
-        .t('{{state}}', { state: gameStatus.msg });
+        .t('%{state}', { state: gameStatus.msg });
     default:
       return '';
   }
@@ -161,3 +161,5 @@ export const activeGamesSelector = (state) => {
 export const completedGamesSelector = state => state.gameList.completedGames || [];
 
 export const getUsersStats = state => state.user.usersStats;
+
+export const getUsersList = state => state.user.usersRatingPage;

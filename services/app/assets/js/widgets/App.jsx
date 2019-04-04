@@ -8,6 +8,7 @@ import RootContainer from './containers/RootContainer';
 import createStore from './lib/configureStore';
 import reducers from './reducers';
 import GameList from './containers/GameList';
+import RatingList from './containers/RatingList';
 
 const { editorUI: editorUIReducer, ...otherReducers } = reducers;
 
@@ -39,6 +40,14 @@ export const Lobby = () => (
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
       <GameList />
+    </PersistGate>
+  </Provider>
+);
+
+export const UsersRating = () => (
+  <Provider store={store}>
+    <PersistGate loading={null} persistor={persistor}>
+      <RatingList />
     </PersistGate>
   </Provider>
 );

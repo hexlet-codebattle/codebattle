@@ -16,6 +16,7 @@ $font-family-sans-serif: "Roboto", sans-serif;
 $fa-font-path: "~font-awesome/fonts";
 @import "~font-awesome/scss/font-awesome";
 @import "~font-mfizz/dist/font-mfizz.css";
+@import "~react-pagination-library/build/css/index.css";
 
 a {
   transition: color ease-in 0.1s;
@@ -72,6 +73,12 @@ a {
     font-size: 8px;
 }
 .x-username-td {
-    max-width: 220px;
+    max-width: 350px;
     overflow: hidden;
+}
+
+.toast-container {
+  box-shadow: none;
+  background: rgba(0, 0, 0, 0);
+  padding: 0;
 }

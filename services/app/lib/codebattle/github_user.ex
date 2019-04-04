@@ -35,7 +35,6 @@ defmodule Codebattle.GithubUser do
   end
 
   def find_or_create(%{provider: :dev_local} = auth) do
-
     user_data = %{
       github_id: "35539033",
       name: auth.name,

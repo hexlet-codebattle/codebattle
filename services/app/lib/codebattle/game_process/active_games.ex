@@ -4,7 +4,7 @@ defmodule Codebattle.GameProcess.ActiveGames do
   """
 
   @table_name :active_games
-  # {game_id, %{player_id => Player, player_id => Player}, %{level: "easy", state: :playing, type: "private"}}
+  # {game_id, active, %{player_id => Player, player_id => Player}, %{level: "easy", state: :playing, starts_at: Time, type: "private"}}
 
   alias Codebattle.GameProcess.FsmHelpers
 
@@ -16,9 +16,7 @@ defmodule Codebattle.GameProcess.ActiveGames do
     end
   end
 
-  def list_games do
-    :ets.match_object(@table_name, :_)
-  end
+  def list_games, do: :ets.match_object(@table_name, :_)
 
   def game_exists?(game_id) do
     :ets.match_object(@table_name, {game_key(game_id), :_, :_}) |> Enum.empty?() |> Kernel.!()
@@ -28,29 +26,29 @@ defmodule Codebattle.GameProcess.ActiveGames do
     :ets.delete(@table_name, game_key(game_id))
   end
 
-  def create_game(user, fsm) do
-    case playing?(user.id) && !user.bot do
-      true ->
-        :error
+  def create_game(game_id, fsm) do
+    :ets.insert(@table_name, {game_key(game_id), build_players(fsm), build_game_params(fsm)})
 
-      false ->
-        game_id = FsmHelpers.get_game_id(fsm)
-        players = %{user.id => FsmHelpers.get_first_player(fsm)}
+    :ok
+  end
 
-        :ets.insert(@table_name, {game_key(game_id), players, game_params(fsm)})
-        :ok
-    end
+  def update_state(game_id, fsm) do
+    :ets.update_element(@table_name, game_key(game_id), [
+      {2, build_players(fsm)},
+      {3, build_game_params(fsm)}
+    ])
+
+    :ok
   end
 
   def add_participant(fsm) do
     game_id = FsmHelpers.get_game_id(fsm)
 
-    players =
-      fsm
-      |> FsmHelpers.get_players()
-      |> Enum.reduce(%{}, fn player, acc -> Map.put(acc, player.id, player) end)
+    :ets.update_element(@table_name, game_key(game_id), [
+      {2, build_players(fsm)},
+      {3, build_game_params(fsm)}
+    ])
 
-    :ets.update_element(@table_name, game_key(game_id), [{2, players}, {3, game_params(fsm)}])
     :ok
   end
 
@@ -58,9 +56,9 @@ defmodule Codebattle.GameProcess.ActiveGames do
     @table_name |> :ets.match_object({:_, %{player_id => %{}}, :_}) |> Enum.empty?() |> Kernel.!()
   end
 
-  def participant?(game_id, player_id) do
+  def participant?(game_id, player_id, state \\ :_) do
     @table_name
-    |> :ets.match_object({game_key(game_id), %{player_id => %{}}, :_})
+    |> :ets.match_object({game_key(game_id), %{player_id => %{}}, %{state: state}})
     |> Enum.empty?()
     |> Kernel.!()
   end
@@ -68,12 +66,7 @@ defmodule Codebattle.GameProcess.ActiveGames do
   def setup_game(fsm) do
     game_id = FsmHelpers.get_game_id(fsm)
 
-    players =
-      fsm
-      |> FsmHelpers.get_players()
-      |> Enum.reduce(%{}, fn player, acc -> Map.put(acc, player.id, player) end)
-
-    :ets.insert(@table_name, {game_key(game_id), players, game_params(fsm)})
+    :ets.insert(@table_name, {game_key(game_id), build_players(fsm), build_game_params(fsm)})
   end
 
   defp game_key(game_id) when is_integer(game_id) do
@@ -88,12 +81,18 @@ defmodule Codebattle.GameProcess.ActiveGames do
     game_id |> to_string |> game_key
   end
 
-  defp game_params(fsm) do
+  defp build_game_params(fsm) do
     %{
       state: fsm.state,
       level: FsmHelpers.get_level(fsm),
       starts_at: FsmHelpers.get_starts_at(fsm),
       type: FsmHelpers.get_type(fsm)
     }
+  end
+
+  defp build_players(fsm) do
+    fsm
+    |> FsmHelpers.get_players()
+    |> Enum.reduce(%{}, fn player, acc -> Map.put(acc, player.id, player) end)
   end
 end
