@@ -3,12 +3,15 @@ import i18n from 'i18next';
 import copy from 'copy-to-clipboard';
 
 class WaitingOpponentInfo extends React.PureComponent {
-  constructor(props) {
-    super(props);
-    this.state = { copied: false };
-  }
+  state = { copied: false };
 
   onFocus = e => e.target.select();
+
+  onClick = () => {
+    const { gameUrl } = this.props;
+    copy(gameUrl);
+    this.setState({ copied: true });
+  }
 
   render() {
     const { gameUrl } = this.props;
@@ -34,10 +37,7 @@ class WaitingOpponentInfo extends React.PureComponent {
                 <button
                   className="btn btn-outline-secondary btn-block"
                   type="button"
-                  onClick={() => {
-                    copy(gameUrl);
-                    this.setState({ copied: true });
-                  }}
+                  onClick={this.onClick}
                 >
                   {i18n.t(textButtonCopy)}
                 </button>
