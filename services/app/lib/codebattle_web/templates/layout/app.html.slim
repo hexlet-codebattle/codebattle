@@ -21,7 +21,8 @@ html lang="en"
     link href="https://cdnjs.cloudflare.com/ajax/libs/font-mfizz/2.4.1/font-mfizz.min.css"
 
     title Codebattle
-    link rel="stylesheet" href=static_path(@conn,"/assets/app.css")
+    - if Mix.env() != :dev do
+      link rel="stylesheet" href=static_path(@conn,"/assets/app.css")
     = unless @current_user.guest do
       - app_id = "#{Application.get_env(:one_signal, OneSignal)[:app_id]}"
       script async="" src="https://cdn.onesignal.com/sdks/OneSignalSDK.js"

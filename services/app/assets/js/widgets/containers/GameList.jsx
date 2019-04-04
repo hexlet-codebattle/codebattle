@@ -117,6 +117,9 @@ class GameList extends React.Component {
         return (
           <div className="btn-group">
             {this.renderShowGameButton(gameUrl)}
+            {
+              // TODO_NOW: pretty add channel.push(cancel_game)
+            }
             <button
               type="button"
               className="btn btn-danger btn-sm"

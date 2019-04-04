@@ -44,4 +44,18 @@ defmodule CodebattleWeb.LobbyChannel do
 
     {:ok, %{active_games: active_games, completed_games: completed_games}, socket}
   end
+
+  # TODO_NOW: check this
+  def handle_in("game:cancel", payload, socket) do
+    game_id = Map.get(payload, "gameId")
+
+    case Play.cancel_game(game_id, socket.assigns.current_user) do
+      :ok ->
+        broadcast!(socket, "game:cancel", game_id)
+        {:noreply, socket}
+
+      {:error, reason} ->
+        {:error, %{reason: reason}, socket}
+    end
+  end
 end
