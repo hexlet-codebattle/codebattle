@@ -4,7 +4,7 @@ defmodule CodebattleWeb.GameChannel do
 
   require Logger
 
-  alias Codebattle.GameProcess.{Play, FsmHelpers}
+  alias Codebattle.GameProcess.{Play, FsmHelpers, ActiveGames}
 
   def join("game:" <> game_id, _payload, socket) do
     send(self(), :after_join)
@@ -90,6 +90,18 @@ defmodule CodebattleWeb.GameChannel do
     fsm = Play.get_fsm(game_id)
     currentUserId = socket.assigns.user_id
 
+    if FsmHelpers.bot_game?(fsm) do
+      case Play.create_rematch_game_with_bot(game_id) do
+        {:ok, game_id} ->
+          broadcast!(socket, "rematch:redirect_to_new_game", %{game_id: game_id})
+          {:noreply, socket}
+        {:error, reason} ->
+          {:reply, {:error, %{reason: reason}}, socket}
+        _ ->
+          {:reply, {:error, %{reason: "sww"}}, socket}
+      end
+    end
+
     rematchState =
       FsmHelpers.get_players(fsm)
       |> Enum.filter(fn e -> e.id !== currentUserId end)
@@ -97,6 +109,7 @@ defmodule CodebattleWeb.GameChannel do
       |> Enum.reduce(%{}, fn e, acc -> Map.merge(acc, e) end)
       |> Map.merge(%{currentUserId => "sended_offer"})
       |> Map.merge(%{state: "in_approval"})
+    # %{player.id_sender => "sended_offer", player.id_opponent => "recieved_offer"}
 
     broadcast!(socket, "rematch:update_status", rematchState)
 

@@ -17,6 +17,8 @@ defmodule Codebattle.Bot.Builder do
       )
 
     bot = Repo.one(query)
+    IO.puts "BOT AFTER QUERY +++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+    IO.inspect bot
 
     Map.merge(bot, params)
   end
