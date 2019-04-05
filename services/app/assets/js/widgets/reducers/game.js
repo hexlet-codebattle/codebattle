@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { handleActions } from 'redux-actions';
 import * as actions from '../actions';
 import GameStatusCodes from '../config/gameStatusCodes';

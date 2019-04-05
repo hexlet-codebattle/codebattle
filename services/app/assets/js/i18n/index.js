@@ -1,3 +1,4 @@
+/* eslint-disable global-require */
 import i18next from 'i18next';
 import Gon from 'gon';
 
@@ -7,7 +8,7 @@ i18next.init({
   lng: Gon.getAsset('locale'),
   interpolation: {
     prefix: '%{',
-    suffix: '}'
+    suffix: '}',
   },
   resources: {
     en: {
