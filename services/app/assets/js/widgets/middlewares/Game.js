@@ -220,8 +220,8 @@ export const editorReady = () => (dispatch) => {
     dispatch(actions.updateRematchStatus(payload));
   });
 
-  channel.on('rematch:redirect_to_new_game', ({ game_id }) => {
-    actions.redirectToNewGame(game_id);
+  channel.on('rematch:redirect_to_new_game', ({ game_id: newGameId }) => {
+    actions.redirectToNewGame(newGameId);
   });
 };
 

@@ -9,7 +9,8 @@
     "watch": "webpack --watch-stdin --color --mode development",
     "profile": "webpack --profile --json > stats.json",
     "build-dev": "webpack --mode development",
-    "build-prod": "NODE_ENV=production webpack -p --mode production"
+    "build-prod": "NODE_ENV=production webpack -p --mode production",
+    "eslint": "eslint"
   },
   "dependencies": {
     "@babel/polyfill": "^7.4.0",
