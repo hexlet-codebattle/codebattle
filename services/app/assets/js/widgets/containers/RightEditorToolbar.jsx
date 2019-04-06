@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import _ from 'lodash';
+import cn from 'classnames';
 import GameStatusCodes from '../config/gameStatusCodes';
 import * as selectors from '../selectors';
 import {
@@ -19,36 +20,41 @@ class RightEditorToolbar extends Component {
   };
 
   renderNameplate = (player = {}, onlineUsers) => {
-    const color = _.find(onlineUsers, { id: player.id }) ? 'green' : '#ccc';
+    const isOnline = _.find(onlineUsers, { id: player.id });
+    const classNames = cn('fa fa-plug align-middle ml-2 text-success',
+      {
+        'text-success': isOnline,
+        'text-secondary': !isOnline,
+      });
+
     return (
       <div>
         <UserInfo user={player} />
         <span
-          className="fa fa-plug align-middle ml-2"
-          style={{ color }}
+          className={classNames}
         />
       </div>
     );
   };
 
-renderEditorHeightButtons = (compressEditor, expandEditor, userId) => (
-  <div className="btn-group btn-group-sm mr-2" role="group" aria-label="Editor height">
-    <button
-      type="button"
-      className="btn btn-sm btn-light border rounded"
-      onClick={() => compressEditor(userId)}
-    >
-      <i className="fa fa-compress" aria-hidden="true" />
-    </button>
-    <button
-      type="button"
-      className="btn btn-sm btn-light border rounded ml-2"
-      onClick={() => expandEditor(userId)}
-    >
-      <i className="fa fa-expand" aria-hidden="true" />
-    </button>
-  </div>
-);
+  renderEditorHeightButtons = (compressEditor, expandEditor, userId) => (
+    <div className="btn-group btn-group-sm mr-2" role="group" aria-label="Editor height">
+      <button
+        type="button"
+        className="btn btn-sm btn-light border rounded"
+        onClick={() => compressEditor(userId)}
+      >
+        <i className="fa fa-compress" aria-hidden="true" />
+      </button>
+      <button
+        type="button"
+        className="btn btn-sm btn-light border rounded ml-2"
+        onClick={() => expandEditor(userId)}
+      >
+        <i className="fa fa-expand" aria-hidden="true" />
+      </button>
+    </div>
+  );
 
   render() {
     const {

@@ -24,13 +24,18 @@ class LeftEditorToolbar extends Component {
   };
 
   renderNameplate = (player = {}, onlineUsers) => {
-    const color = _.find(onlineUsers, { id: player.id }) ? 'green' : '#ccc';
+    const isOnline = _.find(onlineUsers, { id: player.id });
+    const classNames = cn('fa fa-plug align-middle ml-2 text-success',
+      {
+        'text-success': isOnline,
+        'text-secondary': !isOnline,
+      });
+
     return (
       <div>
         <UserInfo user={player} />
         <span
-          className="fa fa-plug align-middle ml-2"
-          style={{ color }}
+          className={classNames}
         />
       </div>
     );
@@ -90,8 +95,6 @@ class LeftEditorToolbar extends Component {
     } = this.props;
 
     const isSpectator = !_.hasIn(players, currentUserId);
-    console.log(111111111111111111111)
-    console.log(leftEditorLangSlug)
 
     if (leftEditorLangSlug === null) {
       return null;
