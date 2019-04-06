@@ -31,12 +31,18 @@ class NotificationsHandler extends Component {
 
     const currentRematchState = rematchStatus.state;
     const isChangeRematchState = prevProps.gameStatus.rematchStatus.state !== currentRematchState;
+    const statusChanged = prevProps.gameStatus.status !== status;
 
     if (isCurrentUserPlayer && prevProps.gameStatus.checking && !checking) {
       this.showCheckingStatusMessage(solutionStatus);
     }
 
-    if (status === GameStatusCodes.gameOver && prevProps.gameStatus.status !== status) {
+    if (status === GameStatusCodes.gameOver && statusChanged) {
+      this.showGameResultMessage();
+      this.showActionsAfterGame();
+    }
+
+    if (status === GameStatusCodes.timeout && statusChanged) {
       this.showGameResultMessage();
       this.showActionsAfterGame();
     }
@@ -93,40 +99,41 @@ class NotificationsHandler extends Component {
     );
   }
 
+  showFailureMessage = msg => toast(
+    <Toast header="Failed">
+      <Alert variant="danger">{msg}</Alert>
+    </Toast>,
+  )
+
+  showSuccessMessage = msg => toast(
+    <Toast header="Success">
+      <Alert variant="success">{msg}</Alert>
+    </Toast>,
+  )
+
   showGameResultMessage = () => {
     const {
       isCurrentUserPlayer,
       currentUserId,
       players,
+      gameStatus,
     } = this.props;
+
+    if (gameStatus.status === GameStatusCodes.timeout) {
+      return this.showFailureMessage(gameStatus.msg);
+    }
 
     const winner = _.find(players, ['game_result', 'won']);
 
     if (currentUserId === winner.id) {
-      toast(
-        <Toast header="Success">
-          <Alert variant="success">Congratulations! You have won the game!</Alert>
-        </Toast>,
-      );
-      return;
+      return this.showSuccessMessage('Congratulations! You have won the game!');
     }
 
     if (isCurrentUserPlayer) {
-      toast(
-        <Toast header="Failed">
-          <Alert variant="danger">Oh snap! Your opponent has won the game</Alert>
-        </Toast>,
-      );
-      return;
+      return this.showFailureMessage('Oh snap! Your opponent has won the game');
     }
 
-    toast(
-      <Toast header="Success">
-        <Alert variant="success">
-          {`${winner.name} has won the game!`}
-        </Alert>
-      </Toast>,
-    );
+    return this.showSuccessMessage(`${winner.name} has won the game!`);
   }
 
   render() {

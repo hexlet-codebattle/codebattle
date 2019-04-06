@@ -226,6 +226,10 @@ export const editorReady = () => (dispatch) => {
   channel.on('rematch:redirect_to_new_game', ({ game_id: newGameId }) => {
     actions.redirectToNewGame(newGameId);
   });
+
+  channel.on('game:timeout', ({ status, msg }) => {
+    dispatch(actions.updateGameStatus({ status, msg }));
+  });
 };
 
 export const checkGameResult = () => (dispatch, getState) => {

@@ -4,3 +4,6 @@ db-recreate:
 
 lint-js:
 	npx eslint --ext .js --ext .jsx assets/js/
+
+lint-js-fix:
+	npx eslint --fix --ext .js --ext .jsx assets/js/

@@ -8,7 +8,7 @@ defmodule CodebattleWeb.Notifications do
   def game_timeout(game_id) do
     Task.async(fn ->
       CodebattleWeb.Endpoint.broadcast!(
-        Utils.game_channel_name(game_id), "game:timeout", %{})
+        Utils.game_channel_name(game_id), "game:timeout", %{ status: "timeout", msg: "Oh no, your time is out! ;(" })
     end)
   end
 end
