@@ -1,34 +1,24 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import React from 'react';
 import { connect } from 'react-redux';
 import ChatWidget from './ChatWidget';
 import Task from '../components/Task';
 import * as selectors from '../selectors';
 
-class InfoWidget extends Component {
-  static propTypes = {
-    taskText: PropTypes.shape({
-      name: PropTypes.string.isRequired,
-    }).isRequired,
-    gameStatusName: PropTypes.string.isRequired,
-    startsAt: PropTypes.string.isRequired,
-  }
+const InfoWidget = (props) => {
+  const { taskText, gameStatusName, startsAt } = props;
 
-  render() {
-    const { taskText, gameStatusName, startsAt } = this.props;
-
-    return (
-      <div className="row no-gutters">
-        <div className="col-12 col-lg-6 p-1">
-          <Task task={taskText} time={startsAt} gameStatusName={gameStatusName} />
-        </div>
-        <div className="col-12 col-lg-6 p-1">
-          <ChatWidget />
-        </div>
+  return (
+    <div className="row no-gutters">
+      <div className="col-12 col-lg-6 p-1">
+        <Task task={taskText} time={startsAt} gameStatusName={gameStatusName} />
       </div>
-    );
-  }
-}
+      <div className="col-12 col-lg-6 p-1">
+        <ChatWidget />
+      </div>
+    </div>
+  );
+};
+
 
 const mapStateToProps = state => ({
   taskText: selectors.gameTaskSelector(state),

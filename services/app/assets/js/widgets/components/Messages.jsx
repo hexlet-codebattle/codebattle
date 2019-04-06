@@ -1,19 +1,14 @@
-import React, { Component } from 'react';
+import React from 'react';
 import StayScrolled from 'react-stay-scrolled';
-import Message from './Message.jsx';
+import Message from './Message';
 
-export default class Messages extends Component {
-  static defaultProps = {
-    messages: [],
-  }
+export default (props) => {
+  const { messages = [] } = props;
 
-  render() {
-    const { messages } = this.props;
-
-    return (
-      <StayScrolled {...this.props}>
-        {messages.map(({ user, message }, i) => <Message user={user} message={message} key={i} />)}
-      </StayScrolled>
-    );
-  }
-}
+  return (
+    <StayScrolled {...props}>
+      {/* eslint-disable-next-line react/no-array-index-key */}
+      {messages.map(({ user, message }, i) => <Message user={user} message={message} key={i} />)}
+    </StayScrolled>
+  );
+};
