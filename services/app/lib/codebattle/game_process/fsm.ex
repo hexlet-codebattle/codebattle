@@ -30,6 +30,9 @@ defmodule Codebattle.GameProcess.Fsm do
       bots: false,
       # :Atom,
       rematch_state: nil,
+
+      # timeouts
+      timeout_seconds: 15
     }
 
   # For tests
@@ -107,6 +110,14 @@ defmodule Codebattle.GameProcess.Fsm do
       next_state(:game_over, %{data | players: players})
     end
 
+    defevent timeout(_params), data: data do
+      players = Enum.map(data.players, fn player ->
+        update_player_params(data.players, %{game_result: :timeout, id: player.id})
+      end)
+
+      next_state(:timeout, %{data | players: players})
+    end
+
     defevent join(_) do
       respond({:error, dgettext("errors", "Game is already playing")})
     end
@@ -125,6 +136,12 @@ defmodule Codebattle.GameProcess.Fsm do
 
     defevent _ do
       next_state(:game_over)
+    end
+  end
+
+  defstate timeout do
+    defevent _ do
+      next_state(:timeout)
     end
   end
 

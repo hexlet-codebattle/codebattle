@@ -139,6 +139,12 @@ defmodule Codebattle.GameProcess.Play do
               })
             end)
 
+
+            Codebattle.GameProcess.TimeoutServer.restart(
+              id,
+              fsm.data.timeout_seconds
+            )
+
             {:ok, fsm}
 
           {:error, reason} ->
@@ -147,6 +153,26 @@ defmodule Codebattle.GameProcess.Play do
 
       {:error, reason} ->
         {:error, reason}
+    end
+  end
+
+  def timeout_game(id) do
+    if ActiveGames.game_exists?(id) do
+      Logger.info("Timeout triggered for game_id: #{id}")
+      Server.call_transition(id, :timeout, %{})
+      ActiveGames.terminate_game(id)
+      CodebattleWeb.Notifications.game_timeout(id)
+
+      id
+      |> get_game
+      |> Game.changeset(%{state: "timeout"})
+      |> Repo.update!()
+
+      GlobalSupervisor.terminate_game(id) # FIXME: looks like it silently fails there
+
+      :ok
+    else
+      :error
     end
   end
 
