@@ -75,7 +75,7 @@ class Editor extends PureComponent {
     if (prevProps.syntax !== syntax) {
       await this.updateHightLightForNotIncludeSyntax(syntax);
     }
-    // Фикс мерцания в редакторе
+    // fix flickering in editor
     const model = this.editor.getModel();
     model.forceTokenization(model.getLineCount());
   }
