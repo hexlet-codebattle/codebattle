@@ -15,9 +15,11 @@ const initGameChannel = (dispatch) => {
     const {
       status,
       starts_at: startsAt,
+      joins_at: joinsAt,
       players: [firstPlayer, secondPlayer],
       task,
     } = response;
+
 
     // const firstEditorLang = _.find(languages, { slug: user1.editor_lang });
     // const users = [{ ...user1, type: userTypes.firstPlayer }];
@@ -64,7 +66,7 @@ const initGameChannel = (dispatch) => {
     if (task) {
       dispatch(actions.setGameTask({ task }));
     }
-    dispatch(actions.updateGameStatus({ status, startsAt }));
+    dispatch(actions.updateGameStatus({ status, startsAt, joinsAt }));
     dispatch(actions.finishStoreInit());
   };
 
@@ -166,6 +168,7 @@ export const editorReady = () => (dispatch) => {
   channel.on('user:joined', ({
     status,
     starts_at: startsAt,
+    joins_at: joinsAt,
     players: [firstPlayer, secondPlayer],
     task,
   }) => {
@@ -203,7 +206,7 @@ export const editorReady = () => (dispatch) => {
       }));
     }
 
-    dispatch(actions.updateGameStatus({ status, startsAt }));
+    dispatch(actions.updateGameStatus({ status, startsAt, joinsAt }));
   });
 
   channel.on('user:won', ({ players, status, msg }) => {
