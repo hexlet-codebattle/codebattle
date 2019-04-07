@@ -8,7 +8,8 @@ const initialState = {
     status: GameStatusCodes.initial,
     checking: {},
     solutionStatus: null,
-    rematchStatus: { state: 'init' },
+    rematchState: 'none',
+    rematchInitiatorId: null,
   },
   task: null,
   players: {},
@@ -21,16 +22,6 @@ export default handleActions({
       gameStatus: {
         ...state.gameStatus,
         ...payload,
-      },
-    };
-  },
-  // FIX: I quess this action must be delete and use above action
-  [actions.updateRematchStatus](state, { payload }) {
-    return {
-      ...state,
-      gameStatus: {
-        ...state.gameStatus,
-        rematchStatus: { ...payload },
       },
     };
   },

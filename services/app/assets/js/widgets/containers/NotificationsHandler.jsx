@@ -23,12 +23,11 @@ const toastOptions = {
 class NotificationsHandler extends Component {
   componentDidUpdate(prevProps) {
     const {
-      gameStatus: { solutionStatus, status, checking, rematchStatus },
+      gameStatus: { solutionStatus, status, checking, rematchState },
       isCurrentUserPlayer,
     } = this.props;
 
-    const currentRematchState = rematchStatus.state;
-    const isChangeRematchState = prevProps.gameStatus.rematchStatus.state !== currentRematchState;
+    const isChangeRematchState = prevProps.gameStatus.rematchState !== rematchState;
 
     if (isCurrentUserPlayer && prevProps.gameStatus.checking && !checking) {
       this.showCheckingStatusMessage(solutionStatus);
@@ -39,9 +38,10 @@ class NotificationsHandler extends Component {
       this.showActionsAfterGame();
     }
 
-    if(isChangeRematchState && currentRematchState !== 'init') {
+    if(isChangeRematchState && rematchState !== 'none') {
       this.showActionsAfterGame();
     }
+
   }
 
   showCheckingStatusMessage = (solutionStatus) => {
@@ -65,7 +65,7 @@ class NotificationsHandler extends Component {
       isCurrentUserPlayer,
       updateGameUI,
       isShowActionsAfterGame,
-      gameStatus: { rematchStatus },
+      gameStatus: { rematchState },
     } = this.props;
 
     if (!isCurrentUserPlayer) {
@@ -84,7 +84,7 @@ class NotificationsHandler extends Component {
         autoClose: false,
         onClose: () => {
           updateGameUI({ showToastActionsAfterGame: false });
-          sendResetRematch(rematchStatus.state);
+          sendResetRematch();
         },
         onOpen: () => updateGameUI({ showToastActionsAfterGame: true }),
       },

@@ -103,27 +103,41 @@ defmodule Codebattle.GameProcess.Play do
   end
 
   def create_rematch_game_with_bot(game_id) do
-    ActiveGames.terminate_game(game_id)
-
     fsm = Play.get_fsm(game_id)
+    engine = get_engine(fsm)
     real_player = FsmHelpers.get_second_player(fsm)
     level = FsmHelpers.get_level(fsm)
     type = FsmHelpers.get_type(fsm)
     game_params = %{"level" => level, "type" => type}
-    bot = Codebattle.Bot.Builder.build(%{id: -1000})
-    engine = get_engine(fsm)
 
-    case create_bot_game(bot, game_params) do
-      {:ok, new_game_id} ->
-        {:ok, new_fsm} = engine.join_game(new_game_id, real_player)
-        Task.async(fn ->
-          CodebattleWeb.Endpoint.broadcast("lobby", "game:new", %{game: FsmHelpers.lobby_format(new_fsm)})
-        end)
-        {:ok, new_game_id}
+    bot = Codebattle.Bot.Builder.build_free_bot()
 
-      {:error, reason} ->
-        {:error, reason}
+    if bot === nil do
+      {:no_free_bot}
+    else
+      case create_bot_game(bot, game_params) do
+        {:ok, new_game_id} ->
+          {:ok, new_fsm} = engine.join_game(new_game_id, real_player)
+          Task.async(fn ->
+            CodebattleWeb.Endpoint.broadcast("lobby", "game:new", %{game: FsmHelpers.lobby_format(new_fsm)})
+          end)
+          {:ok, new_game_id}
+
+        {:error, reason} ->
+          {:error, reason}
+      end
     end
+  end
+
+  def rematch_reject(game_id) do
+    fsm = get_fsm(game_id)
+    {_response, new_fsm} = Server.call_transition(game_id, :rematch_reject, %{})
+    {:ok, new_fsm}
+  end
+
+  def rematch_send_offer(game_id, user_id) do
+    {_response, new_fsm} = Server.call_transition(game_id, :rematch_send_offer, %{player_id: user_id})
+    {:ok, new_fsm}
   end
 
   def create_rematch_game(game_id) do

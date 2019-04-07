@@ -93,8 +93,8 @@ export const sendGiveUp = () => {
   channel.push('give_up');
 };
 
-export const sendResetRematch = (rematchState) => {
-  channel.push('rematch:send_reset', { rematch_state: rematchState });
+export const sendResetRematch = () => {
+  channel.push('rematch:send_reset');
 };
 
 export const sendOfferToRematch = () => {
@@ -217,7 +217,7 @@ export const editorReady = () => (dispatch) => {
   });
 
   channel.on('rematch:update_status', (payload) => {
-    dispatch(actions.updateRematchStatus(payload));
+    dispatch(actions.updateGameStatus(payload));
   });
 
   channel.on('rematch:redirect_to_new_game', ({ game_id }) => {
