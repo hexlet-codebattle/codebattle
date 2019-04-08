@@ -88,9 +88,6 @@ export const gameStatusTitleSelector = (state) => {
 };
 
 export const gameTaskSelector = state => state.game.task;
-export const gameStatusNameSelector = state => state.game.gameStatus.status;
-
-export const gameStartsAtSelector = state => state.game.gameStatus.startsAt;
 
 export const gameLangsSelector = state => state.game.langs;
 
