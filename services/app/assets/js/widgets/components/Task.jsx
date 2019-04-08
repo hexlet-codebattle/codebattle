@@ -23,7 +23,7 @@ const renderGameLevelBadge = (level) => {
 };
 
 const renderTimer = (time, gameStatusName) => {
-  if (gameStatusName !== GameStatusCodes.gameOver) {
+  if (gameStatusName !== GameStatusCodes.gameOver && gameStatusName !== GameStatusCodes.timeout) {
     return <Timer time={time} />;
   }
 
