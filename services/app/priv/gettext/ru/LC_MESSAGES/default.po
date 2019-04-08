@@ -123,7 +123,7 @@ msgstr "Ошибка аутентификации."
 msgid "Successfully authenticated"
 msgstr "Успешная аутентификация."
 
-#: lib/codebattle_web/controllers/game_controller.ex:39
+#: lib/codebattle_web/controllers/game_controller.ex:41
 msgid "Game not found"
 msgstr "Игра не найдена"
 
@@ -195,19 +195,17 @@ msgid "Users rating"
 msgstr "Рейтинг пользователей"
 
 #, elixir-format
-#: lib/codebattle_web/controllers/game_controller.ex:26
-#: lib/codebattle_web/controllers/game_controller.ex:82
-#: lib/codebattle_web/controllers/game_controller.ex:102
+#: lib/codebattle_web/controllers/game_controller.ex:28
 msgid "You are in a different game"
 msgstr ""
 
 #, elixir-format
-#: lib/codebattle_web/channels/game_channel.ex:81
+#: lib/codebattle_web/channels/game_channel.ex:57
 msgid "gave up!"
 msgstr ""
 
 #, elixir-format
-#: lib/codebattle_web/channels/game_channel.ex:123
+#: lib/codebattle_web/channels/game_channel.ex:162
 msgid "won the game!"
 msgstr ""
 
@@ -232,11 +230,6 @@ msgid "Slack#codebattle"
 msgstr ""
 
 #, elixir-format
-#: lib/codebattle_web/controllers/game_controller.ex:89
-msgid "Sorry, the game doesn't exist"
-msgstr ""
-
-#, elixir-format
 #: lib/codebattle_web/templates/layout/app.html.slim:13
 msgid "SourceCode"
 msgstr ""
@@ -248,7 +241,6 @@ msgstr ""
 msgid "You have some syntax errors: %{errors}"
 msgstr ""
 
-#, fuzzy
 msgid "Test failed with arguments (%{arguments})"
 msgstr ""
 
@@ -256,4 +248,9 @@ msgid "Yay! All tests passed!!111"
 msgstr ""
 
 msgid "Oops"
+msgstr ""
+
+#, elixir-format
+#: lib/codebattle_web/support/notifications.ex:13
+msgid "Oh no, the time is out! Both players lost ;("
 msgstr ""
