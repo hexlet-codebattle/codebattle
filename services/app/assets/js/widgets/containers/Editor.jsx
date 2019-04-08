@@ -1,6 +1,5 @@
 /* eslint-disable no-bitwise */
 import React, { PureComponent, Fragment } from 'react';
-import _ from 'lodash';
 import PropTypes from 'prop-types';
 import MonacoEditor from 'react-monaco-editor';
 import { registerRulesForLanguage } from 'monaco-ace-tokenizer';
@@ -76,6 +75,9 @@ class Editor extends PureComponent {
     if (prevProps.syntax !== syntax) {
       await this.updateHightLightForNotIncludeSyntax(syntax);
     }
+    // fix flickering in editor
+    const model = this.editor.getModel();
+    model.forceTokenization(model.getLineCount());
   }
 
   componentWillUnmount() {

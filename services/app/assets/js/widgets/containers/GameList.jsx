@@ -5,12 +5,11 @@ import { connect } from 'react-redux';
 import Gon from 'gon';
 import qs from 'qs';
 import { Tooltip, OverlayTrigger } from 'react-bootstrap';
-import * as lobbyMiddlewares from '../middlewares/Lobby';
+import fetchStateMiddleware from '../middlewares/Lobby';
 import GameStatusCodes from '../config/gameStatusCodes';
 import * as actions from '../actions';
 import { activeGamesSelector, completedGamesSelector, gameListLoadedSelector } from '../selectors';
 import Loading from '../components/Loading';
-import GamesHeatmap from '../components/GamesHeatmap';
 import UserInfo from './UserInfo';
 
 class GameList extends React.Component {
@@ -228,7 +227,7 @@ class GameList extends React.Component {
         aria-expanded="false"
       >
         <i className="fa fa-android mr-2" />
-          Play with the bot
+        Play with the bot
       </button>
       <div className="dropdown-menu" aria-labelledby="btnGroupPlayWithBot">
         {this.renderStartNewGameDropdownMenu('withBot')}
@@ -307,9 +306,9 @@ class GameList extends React.Component {
                 <tr key={game.id}>
                   <td className="p-3 align-middle text-nowrap">
                     {moment
-                        .utc(game.updated_at)
-                        .local()
-                        .format('YYYY-MM-DD HH:mm')}
+                      .utc(game.updated_at)
+                      .local()
+                      .format('YYYY-MM-DD HH:mm')}
                   </td>
                   <td className="p-3 align-middle text-nowrap">
                     {this.renderGameLevelBadge(game.level)}
@@ -360,7 +359,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = {
   setCurrentUser: actions.setCurrentUser,
-  fetchState: lobbyMiddlewares.fetchState,
+  fetchState: fetchStateMiddleware,
 };
 
 export default connect(

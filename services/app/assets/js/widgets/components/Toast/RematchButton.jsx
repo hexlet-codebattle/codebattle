@@ -1,6 +1,4 @@
 import React from 'react';
-import qs from 'qs';
-import axios from 'axios';
 import { connect } from 'react-redux';
 import * as selectors from '../../selectors';
 import {

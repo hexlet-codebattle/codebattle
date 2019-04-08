@@ -8,7 +8,7 @@ import GameStatusCodes from '../config/gameStatusCodes';
 import Toast from '../components/Toast';
 import ActionsAfterGame from '../components/Toast/ActionsAfterGame';
 import CloseButton from '../components/Toast/CloseButton';
-import { updateGameUI } from '../actions';
+import { updateGameUI as updateGameUIAction } from '../actions';
 import { sendResetRematch } from '../middlewares/Game';
 
 const toastOptions = {
@@ -37,7 +37,9 @@ class NotificationsHandler extends Component {
 
   componentDidUpdate(prevProps) {
     const {
-      gameStatus: { solutionStatus, status, checking, rematchState },
+      gameStatus: {
+        solutionStatus, status, checking, rematchState,
+      },
       isCurrentUserPlayer,
     } = this.props;
 
@@ -52,7 +54,7 @@ class NotificationsHandler extends Component {
       this.showActionsAfterGame();
     }
 
-    if(isChangeRematchState && rematchState !== 'none') {
+    if (isChangeRematchState && rematchState !== 'none') {
       this.showActionsAfterGame();
     }
 
@@ -135,7 +137,7 @@ class NotificationsHandler extends Component {
     toast(
       <Toast header="Success">
         <Alert variant="success">
-          `${winner.user_name} has won the game!`
+          {`${winner.user_name} has won the game!`}
         </Alert>
       </Toast>,
     );
@@ -162,7 +164,7 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
-  updateGameUI
+  updateGameUI: updateGameUIAction,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(NotificationsHandler);

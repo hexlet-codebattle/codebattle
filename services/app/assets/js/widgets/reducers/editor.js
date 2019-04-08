@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux';
 import { handleActions } from 'redux-actions';
 import * as actions from '../actions';
-import { defaultEditorHeight } from '../config/editorSettings';
+import defaultEditorHeight from '../config/editorSettings';
 
 // example
 // meta: {

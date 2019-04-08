@@ -35,7 +35,6 @@ class EmojiPicker extends React.Component {
   }
 
   onSelect = (emoji) => {
-    console.log(emoji);
     const { addEmoji } = this.props;
     addEmoji(emoji, this.closeEmoji);
   }
@@ -44,7 +43,8 @@ class EmojiPicker extends React.Component {
     const {
       x, y, width, height,
     } = this.buttonRef.current.getBoundingClientRect();
-    this.props.setSelectionAndRange();
+    const { setSelectionAndRange } = this.props;
+    setSelectionAndRange();
     this.setState({
       isOpen: true,
       positionX: x,
