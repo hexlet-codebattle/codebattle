@@ -21,6 +21,20 @@ const toastOptions = {
 };
 
 class NotificationsHandler extends Component {
+  componentDidMount() {
+    const { gameStatus: { status } } = this.props;
+
+    switch (status) {
+      case GameStatusCodes.gameOver:
+      case GameStatusCodes.rematchInApproval:
+      case GameStatusCodes.rematchRejected:
+        this.showActionsAfterGame();
+        break;
+      default:
+        return;
+    }
+  }
+
   componentDidUpdate(prevProps) {
     const {
       gameStatus: { solutionStatus, status, checking, rematchState },

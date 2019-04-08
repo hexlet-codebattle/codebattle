@@ -249,9 +249,7 @@ defmodule CodebattleWeb.GameChannel do
   end
 
   defp rematch_reject(game_id, socket) do
-    IO.puts "===================== MUST START REJECT ============================="
     {:ok, new_fsm} = Play.rematch_reject(game_id)
-    IO.inspect new_fsm
     broadcast!(socket, "rematch:update_status", %{rematchState: new_fsm.data.rematch_state})
     {:noreply, socket}
   end

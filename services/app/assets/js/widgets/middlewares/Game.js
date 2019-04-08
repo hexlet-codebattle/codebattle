@@ -17,6 +17,8 @@ const initGameChannel = (dispatch) => {
       starts_at: startsAt,
       players: [firstPlayer, secondPlayer],
       task,
+      rematch_state: rematchState,
+      rematch_initiator_id: rematchInitiatorId,
     } = response;
 
     // const firstEditorLang = _.find(languages, { slug: user1.editor_lang });
@@ -64,7 +66,13 @@ const initGameChannel = (dispatch) => {
     if (task) {
       dispatch(actions.setGameTask({ task }));
     }
-    dispatch(actions.updateGameStatus({ status, startsAt }));
+    dispatch(actions.updateGameStatus({
+      status,
+      startsAt,
+      rematchState,
+      rematchInitiatorId,
+    }));
+
     dispatch(actions.finishStoreInit());
   };
 

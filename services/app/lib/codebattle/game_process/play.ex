@@ -41,7 +41,9 @@ defmodule Codebattle.GameProcess.Play do
       players: FsmHelpers.get_players(fsm),
       task: FsmHelpers.get_task(fsm),
       level: FsmHelpers.get_level(fsm),
-      type: FsmHelpers.get_type(fsm)
+      type: FsmHelpers.get_type(fsm),
+      rematch_state: FsmHelpers.get_rematch_state(fsm),
+      rematch_initiator_id: FsmHelpers.get_rematch_initiator_id(fsm)
     }
   end
 

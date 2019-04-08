@@ -8,8 +8,6 @@ const initialState = {
     status: GameStatusCodes.initial,
     checking: {},
     solutionStatus: null,
-    rematchState: 'none',
-    rematchInitiatorId: null,
   },
   task: null,
   players: {},

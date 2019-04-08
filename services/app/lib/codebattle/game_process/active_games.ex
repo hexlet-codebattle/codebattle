@@ -59,9 +59,6 @@ defmodule Codebattle.GameProcess.ActiveGames do
   end
 
   def playing?(player_id) do
-    IO.puts "ID IN PLAYING? 000000000000000000000000000000000000000000000000000000000"
-    IO.inspect player_id
-    IO.inspect @table_name |> :ets.match_object({:_, %{player_id => %{}}, :_}) |> Enum.empty?() |> Kernel.!()
     @table_name |> :ets.match_object({:_, %{player_id => %{}}, :_}) |> Enum.empty?() |> Kernel.!()
   end
 

@@ -9,8 +9,6 @@ defmodule Codebattle.Bot.GameCreator do
     if Play.active_games() |> Enum.count() < 5 do
       bot = Codebattle.Bot.Builder.build()
 
-      IO.puts "AUTO CREATE BOT ------------------------------------------------------------------------"
-      IO.inspect bot
       case Play.create_bot_game(bot, %{"level" => level, "type" => "public"}) do
         {:ok, game_id} ->
           {:ok, game_id, bot}
