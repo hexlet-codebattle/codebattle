@@ -62,6 +62,10 @@ defmodule Codebattle.GameProcess.FsmHelpers do
     fsm.data.joins_at
   end
 
+  def get_timeout_seconds(fsm) do
+    fsm.data.timeout_seconds
+  end
+
   def get_task(fsm) do
     fsm.data.task
   end

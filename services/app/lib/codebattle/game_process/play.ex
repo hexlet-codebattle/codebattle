@@ -42,7 +42,8 @@ defmodule Codebattle.GameProcess.Play do
       task: FsmHelpers.get_task(fsm),
       level: FsmHelpers.get_level(fsm),
       type: FsmHelpers.get_type(fsm),
-      joins_at: FsmHelpers.get_joins_at(fsm)
+      joins_at: FsmHelpers.get_joins_at(fsm),
+      timeout_seconds: FsmHelpers.get_timeout_seconds(fsm)
     }
   end
 

@@ -6,6 +6,16 @@ defmodule CodebattleWeb.GameChannel do
 
   alias Codebattle.GameProcess.{Play, FsmHelpers}
 
+  @after_join_game_attrs [
+    :status,
+    :players,
+    :task,
+    :starts_at,
+    :joins_at,
+    :timeout_seconds,
+    :level
+  ]
+
   def join("game:" <> game_id, _payload, socket) do
     send(self(), :after_join)
     game_info = Play.game_info(game_id)
@@ -17,9 +27,7 @@ defmodule CodebattleWeb.GameChannel do
     game_id = get_game_id(socket)
     game_info = Play.game_info(game_id)
 
-    fields = [:status, :players, :task, :starts_at, :joins_at, :level]
-
-    broadcast_from!(socket, "user:joined", Map.take(game_info, fields))
+    broadcast_from!(socket, "user:joined", Map.take(game_info, @after_join_game_attrs))
     {:noreply, socket}
   end
 
