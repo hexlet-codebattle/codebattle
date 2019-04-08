@@ -24,14 +24,10 @@ class NotificationsHandler extends Component {
   componentDidMount() {
     const { gameStatus: { status } } = this.props;
 
-    switch (status) {
-      case GameStatusCodes.gameOver:
-      case GameStatusCodes.rematchInApproval:
-      case GameStatusCodes.rematchRejected:
-        this.showActionsAfterGame();
-        break;
-      default:
-        return;
+    if (status === GameStatusCodes.gameOver
+      || status === GameStatusCodes.rematchInApproval
+      || status === GameStatusCodes.rematchRejected) {
+      this.showActionsAfterGame();
     }
   }
 
@@ -57,7 +53,6 @@ class NotificationsHandler extends Component {
     if (isChangeRematchState && rematchState !== 'none') {
       this.showActionsAfterGame();
     }
-
   }
 
   showCheckingStatusMessage = (solutionStatus) => {
@@ -81,7 +76,6 @@ class NotificationsHandler extends Component {
       isCurrentUserPlayer,
       updateGameUI,
       isShowActionsAfterGame,
-      gameStatus: { rematchState },
     } = this.props;
 
     if (!isCurrentUserPlayer) {

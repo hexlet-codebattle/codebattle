@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import * as selectors from '../../selectors';
+import i18n from '../../../i18n';
 import {
   sendOfferToRematch,
   sendRejectToRematch,
@@ -29,7 +30,7 @@ class RematchButton extends React.Component {
       className="btn btn-danger btn-block"
       disabled
     >
-      Rejected Offer
+      {i18n.t('Rejected Offer')}
     </button>
   );
 
@@ -39,7 +40,7 @@ class RematchButton extends React.Component {
       className="btn btn-secondary btn-block"
       disabled
     >
-      Wait Answer...
+      {i18n.t('Wait Answer...')}
     </button>
   );
 
@@ -52,14 +53,14 @@ class RematchButton extends React.Component {
           type="button"
           onClick={this.handleAcceptRematch}
         >
-          Yes
+          {i18n.t('Yes')}
         </button>
         <button
           className="btn btn-outline-secondary"
           type="button"
           onClick={sendRejectToRematch}
         >
-          No
+          {i18n.t('No')}
         </button>
       </div>
     </div>
@@ -71,7 +72,7 @@ class RematchButton extends React.Component {
       className="btn btn-secondary btn-block"
       onClick={sendOfferToRematch}
     >
-      Rematch
+    {i18n.t('Rematch')}
     </button>
   );
 
@@ -79,14 +80,14 @@ class RematchButton extends React.Component {
     if (rematchInitiatorId === null) {
       return null;
     }
-    return rematchInitiatorId == currentUserId ? 'initiator' : 'acceptor';
+    return rematchInitiatorId === currentUserId ? 'initiator' : 'acceptor';
   }
 
   render() {
     const { gameStatus: { rematchState, rematchInitiatorId }, currentUserId } = this.props;
     const playerStatus = this.getPlayerStatus(rematchInitiatorId, currentUserId);
     const fnRenderBtn = this.mapRematchStateToButtons[`${rematchState}_${playerStatus}`]
-      || this.mapRematchStateToButtons['none'];
+      || this.mapRematchStateToButtons.none;
     return this[fnRenderBtn]();
   }
 }
