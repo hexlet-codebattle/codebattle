@@ -9,7 +9,7 @@ import Toast from '../components/Toast';
 import ActionsAfterGame from '../components/Toast/ActionsAfterGame';
 import CloseButton from '../components/Toast/CloseButton';
 import { updateGameUI as updateGameUIAction } from '../actions';
-import { sendResetRematch } from '../middlewares/Game';
+import { sendRejectToRematch } from '../middlewares/Game';
 
 const toastOptions = {
   hideProgressBar: true,
@@ -94,7 +94,7 @@ class NotificationsHandler extends Component {
         autoClose: false,
         onClose: () => {
           updateGameUI({ showToastActionsAfterGame: false });
-          sendResetRematch();
+          sendRejectToRematch();
         },
         onOpen: () => updateGameUI({ showToastActionsAfterGame: true }),
       },

@@ -130,16 +130,6 @@ defmodule CodebattleWeb.GameChannel do
     end
   end
 
-  def handle_in("rematch:send_reset", _, socket) do
-    game_id = get_game_id(socket)
-
-    {_response, new_fsm} = Server.call_transition(game_id, :rematch_reset, %{})
-    rematch_data = %{rematchState: new_fsm.data.rematch_state, rematchInitiatorId: new_fsm.data.rematch_initiator_id}
-    broadcast!(socket, "rematch:update_status", rematch_data)
-
-    {:noreply, socket}
-  end
-
   def handle_in("check_result", payload, socket) do
     game_id = get_game_id(socket)
     user = socket.assigns.current_user

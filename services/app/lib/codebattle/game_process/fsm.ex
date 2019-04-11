@@ -130,11 +130,6 @@ defmodule Codebattle.GameProcess.Fsm do
     defevent rematch_reject(_params), data: data do
       next_state(:rematch_rejected, %{data | rematch_state: :rejected})
     end
-
-    defevent rematch_reset(_params), data: data do
-      new_data = %{rematch_state: :none, rematch_initiator_id: nil}
-      next_state(:game_over, Map.merge(data, new_data))
-    end
   end
 
   defstate rematch_rejected do
