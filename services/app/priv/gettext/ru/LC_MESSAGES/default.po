@@ -254,3 +254,24 @@ msgstr ""
 #: lib/codebattle_web/support/notifications.ex:13
 msgid "Oh no, the time is out! Both players lost ;("
 msgstr ""
+
+msgid "Timeout - no timeout"
+msgstr ""
+
+msgid "Timeout 60 seconds"
+msgstr ""
+
+msgid "Timeout 120 seconds"
+msgstr ""
+
+msgid "Timeout 300 seconds"
+msgstr ""
+
+msgid "Timeout 600 seconds"
+msgstr ""
+
+msgid "Timeout 1200 seconds"
+msgstr ""
+
+msgid "Timeout 3600 seconds"
+msgstr ""

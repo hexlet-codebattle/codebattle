@@ -32,7 +32,7 @@ defmodule Codebattle.GameProcess.Fsm do
       rematch_state: nil,
 
       # timeouts
-      timeout_seconds: 150
+      timeout_seconds: 0
     }
 
   # For tests

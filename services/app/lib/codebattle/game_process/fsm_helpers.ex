@@ -123,7 +123,8 @@ defmodule Codebattle.GameProcess.FsmHelpers do
         state: fsm.state,
         level: fsm.data.level,
         starts_at: fsm.data.starts_at,
-        type: fsm.data.type
+        type: fsm.data.type,
+        timeout_seconds: fsm.data.timeout_seconds
       },
       users: fsm.data.players,
       game_id: fsm.data.game_id

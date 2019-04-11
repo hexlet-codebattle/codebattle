@@ -86,7 +86,8 @@ defmodule Codebattle.GameProcess.ActiveGames do
       state: fsm.state,
       level: FsmHelpers.get_level(fsm),
       starts_at: FsmHelpers.get_starts_at(fsm),
-      type: FsmHelpers.get_type(fsm)
+      type: FsmHelpers.get_type(fsm),
+      timeout_seconds: FsmHelpers.get_timeout_seconds(fsm)
     }
   end
 

@@ -141,10 +141,12 @@ defmodule Codebattle.GameProcess.Play do
             end)
 
 
-            Codebattle.GameProcess.TimeoutServer.restart(
-              id,
-              fsm.data.timeout_seconds
-            )
+            if fsm.data.timeout_seconds > 0 do
+              Codebattle.GameProcess.TimeoutServer.restart(
+                id,
+                fsm.data.timeout_seconds
+              )
+            end
 
             {:ok, fsm}
 
