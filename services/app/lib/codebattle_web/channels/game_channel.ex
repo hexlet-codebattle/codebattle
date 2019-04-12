@@ -117,7 +117,7 @@ defmodule CodebattleWeb.GameChannel do
     rematch_reject(game_id, socket)
   end
 
-  def handle_in("rematch:accept_offer", payload, socket) do
+  def handle_in("rematch:accept_offer", _, socket) do
     game_id = get_game_id(socket)
 
     case Play.create_rematch_game(game_id) do
