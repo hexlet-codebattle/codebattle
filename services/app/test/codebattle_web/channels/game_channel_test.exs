@@ -60,6 +60,46 @@ defmodule CodebattleWeb.GameChannelTest do
     assert fsm.state == :rematch_in_approval
   end
 
+  test "rematch:reject_offer", %{
+    user1: user1,
+    user2: user2,
+    socket1: socket1,
+    socket2: socket2,
+    game: game
+  } do
+    # setup
+    state = :rematch_in_approval
+
+    data = %{
+      task: game.task,
+      players: [Player.build(user1), Player.build(user2)]
+    }
+
+    game = setup_game(state, data)
+    game_topic = "game:" <> to_string(game.id)
+
+    {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
+    {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
+    Mix.Shell.Process.flush()
+
+    push(socket1, "rematch:reject_offer")
+
+    :timer.sleep(100)
+
+    payload = %{
+      rematchState: :rejected
+    }
+
+    assert_receive %Phoenix.Socket.Broadcast{
+      topic: ^game_topic,
+      event: "rematch:update_status",
+      payload: ^payload
+    }
+    fsm = Server.fsm(game.id)
+
+    assert fsm.state == :rematch_rejected
+  end
+
   test "sends game info when user join", %{user1: user1, socket1: socket1, game: game} do
     # setup
     state = :waiting_opponent
