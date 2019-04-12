@@ -72,7 +72,7 @@ class RematchButton extends React.Component {
       className="btn btn-secondary btn-block"
       onClick={sendOfferToRematch}
     >
-    {i18n.t('Rematch')}
+      {i18n.t('Rematch')}
     </button>
   );
 

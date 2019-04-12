@@ -19,6 +19,47 @@ defmodule CodebattleWeb.GameChannelTest do
     {:ok, %{user1: user1, user2: user2, socket1: socket1, socket2: socket2, game: game}}
   end
 
+  test "rematch:send_offer with real player", %{
+    user1: user1,
+    user2: user2,
+    socket1: socket1,
+    socket2: socket2,
+    game: game
+  } do
+    # setup
+    state = :game_over
+
+    data = %{
+      task: game.task,
+      players: [Player.build(user1), Player.build(user2)]
+    }
+
+    game = setup_game(state, data)
+    game_topic = "game:" <> to_string(game.id)
+
+    {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
+    {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
+    Mix.Shell.Process.flush()
+
+    push(socket1, "rematch:send_offer")
+
+    :timer.sleep(100)
+
+    payload = %{
+      rematchState: :in_approval,
+      rematchInitiatorId: socket1.assigns.user_id,
+    }
+
+    assert_receive %Phoenix.Socket.Broadcast{
+      topic: ^game_topic,
+      event: "rematch:update_status",
+      payload: ^payload
+    }
+    fsm = Server.fsm(game.id)
+
+    assert fsm.state == :rematch_in_approval
+  end
+
   test "sends game info when user join", %{user1: user1, socket1: socket1, game: game} do
     # setup
     state = :waiting_opponent
@@ -38,7 +79,9 @@ defmodule CodebattleWeb.GameChannelTest do
                "starts_at" => TimeHelper.utc_now(),
                "status" => "waiting_opponent",
                "task" => game.task,
-               "type" => "public"
+               "type" => "public",
+							 "rematch_state" => "none",
+							 "rematch_initiator_id" => nil
              })
   end
 
