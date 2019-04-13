@@ -13,6 +13,7 @@ defmodule CodebattleWeb.GameController do
     type =
       case conn.params["type"] do
         "withFriend" -> "private"
+        "private" -> "private"
         _ -> "public"
       end
 
@@ -20,8 +21,6 @@ defmodule CodebattleWeb.GameController do
       |> Map.take(["level", "type", "timeoutSeconds"])
       |> Map.merge(%{"type" => type})
       |> Map.merge(%{"timeoutSeconds" => timeout_seconds(conn.params)})
-
-    IO.inspect game_params
 
     # game_params = Map.merge(%{"type" => "standard"}, Map.take(conn.params, ["level", "type", "timeoutSeconds"]))
 
@@ -120,7 +119,7 @@ defmodule CodebattleWeb.GameController do
 
   @timeout_seconds_default 0
 
-  defp timeout_seconds(%{ "timeoutSeconds" => timeout_seconds}) do
+  defp timeout_seconds(%{"timeoutSeconds" => timeout_seconds}) do
     timeout_seconds_int = cond do
       timeout_seconds == "" ->
         0
@@ -135,5 +134,9 @@ defmodule CodebattleWeb.GameController do
     else
       @timeout_seconds_default
     end
+  end
+
+  defp timeout_seconds(_) do
+    @timeout_seconds_default
   end
 end

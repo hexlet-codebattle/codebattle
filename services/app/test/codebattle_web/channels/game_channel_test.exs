@@ -38,7 +38,9 @@ defmodule CodebattleWeb.GameChannelTest do
                "starts_at" => TimeHelper.utc_now(),
                "status" => "waiting_opponent",
                "task" => game.task,
-               "type" => "public"
+               "type" => "public",
+               "joins_at" => nil,
+               "timeout_seconds" => 0
              })
   end
 
@@ -69,7 +71,9 @@ defmodule CodebattleWeb.GameChannelTest do
                ],
                "starts_at" => TimeHelper.utc_now(),
                "status" => "playing",
-               "task" => game.task
+               "task" => game.task,
+               "joins_at" => nil,
+               "timeout_seconds" => 0
              })
   end
 
