@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import moment from 'moment';
 import PropTypes from 'prop-types';
-import Timer from './Timer';
 
 // Countdown
 class CountdownTimer extends Component {

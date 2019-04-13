@@ -24,11 +24,9 @@ const renderGameLevelBadge = (level) => {
 };
 
 const renderTimeoutText = (timeoutSeconds) => {
-  if (!timeoutSeconds) { return false }
-  return 'Timeout in: '
-
-
-}
+  if (!timeoutSeconds) { return false; }
+  return 'Timeout in: ';
+};
 const renderTimer = (time, timeoutSeconds, gameStatusName) => {
   if (gameStatusName === GameStatusCodes.gameOver || gameStatusName === GameStatusCodes.timeout) {
     return gameStatusName;
@@ -41,7 +39,9 @@ const renderTimer = (time, timeoutSeconds, gameStatusName) => {
   return <Timer time={time} />;
 };
 
-const Task = ({ task, time, gameStatusName, timeoutSeconds }) => {
+const Task = ({
+  task, time, gameStatusName, timeoutSeconds,
+}) => {
   if (_.isEmpty(task)) {
     return null;
   }

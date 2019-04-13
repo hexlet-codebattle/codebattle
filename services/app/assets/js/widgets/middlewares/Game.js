@@ -67,7 +67,9 @@ const initGameChannel = (dispatch) => {
     if (task) {
       dispatch(actions.setGameTask({ task }));
     }
-    dispatch(actions.updateGameStatus({ status, startsAt, joinsAt, timeoutSeconds }));
+    dispatch(actions.updateGameStatus({
+      status, startsAt, joinsAt, timeoutSeconds,
+    }));
     dispatch(actions.finishStoreInit());
   };
 
@@ -208,7 +210,9 @@ export const editorReady = () => (dispatch) => {
       }));
     }
 
-    dispatch(actions.updateGameStatus({ status, startsAt, joinsAt, timeoutSeconds }));
+    dispatch(actions.updateGameStatus({
+      status, startsAt, joinsAt, timeoutSeconds,
+    }));
   });
 
   channel.on('user:won', ({ players, status, msg }) => {

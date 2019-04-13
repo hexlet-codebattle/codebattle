@@ -165,6 +165,7 @@ defmodule Codebattle.GameProcess.Play do
       Server.call_transition(id, :timeout, %{})
       ActiveGames.terminate_game(id)
       CodebattleWeb.Notifications.game_timeout(id)
+      CodebattleWeb.Notifications.lobby_game_cancel(id)
 
       id
       |> get_game
@@ -187,7 +188,7 @@ defmodule Codebattle.GameProcess.Play do
       :ok ->
         ActiveGames.terminate_game(id)
         GlobalSupervisor.terminate_game(id)
-        CodebattleWeb.Endpoint.broadcast("lobby", "game:cancel", %{game_id: id})
+        CodebattleWeb.Notifications.lobby_game_cancel(id)
 
         id
         |> get_game
