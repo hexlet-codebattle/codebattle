@@ -26,3 +26,8 @@ export const fetchState = () => (dispatch) => {
     ({ active_games: activeGames, completed_games: completedGames }) => dispatch(fetchGameList({ activeGames, completedGames })),
   );
 };
+
+export const cancelGame = gameId => () => {
+  channel.push('game:cancel', { gameId })
+    .receive('error', error => console.error(error));
+};

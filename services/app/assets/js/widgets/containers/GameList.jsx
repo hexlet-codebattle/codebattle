@@ -123,9 +123,7 @@ class GameList extends React.Component {
             <button
               type="button"
               className="btn btn-danger btn-sm"
-              data-method="delete"
-              data-csrf={window.csrf_token}
-              data-to={gameUrl}
+              onClick={lobbyMiddlewares.cancelGame(game.game_id)}
             >
               Cancel
             </button>
@@ -310,9 +308,9 @@ class GameList extends React.Component {
                 <tr key={game.id}>
                   <td className="p-3 align-middle text-nowrap">
                     {moment
-                        .utc(game.updated_at)
-                        .local()
-                        .format('YYYY-MM-DD HH:mm')}
+                      .utc(game.updated_at)
+                      .local()
+                      .format('YYYY-MM-DD HH:mm')}
                   </td>
                   <td className="p-3 align-middle text-nowrap">
                     {this.renderGameLevelBadge(game.level)}
@@ -364,6 +362,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
   setCurrentUser: actions.setCurrentUser,
   fetchState: lobbyMiddlewares.fetchState,
+  cancelGame: lobbyMiddlewares.cancelGame,
 };
 
 export default connect(
