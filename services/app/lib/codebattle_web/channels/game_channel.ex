@@ -95,6 +95,17 @@ defmodule CodebattleWeb.GameChannel do
     fsm = Play.get_fsm(game_id)
     currentUserId = socket.assigns.user_id
 
+		if fsm.state == :in_approval do
+			case Play.create_rematch_game(game_id) do
+				{:ok, game_id} ->
+					broadcast!(socket, "rematch:redirect_to_new_game", %{game_id: game_id})
+					{:noreply, socket}
+
+				_ ->
+					{:reply, {:error, %{reason: "sww"}}, socket}
+			end
+		end
+
     {:ok, rematch_data} = Play.rematch_send_offer(game_id, currentUserId)
     broadcast!(socket, "rematch:update_status", rematch_data)
 
@@ -111,9 +122,8 @@ defmodule CodebattleWeb.GameChannel do
         _ ->
           {:reply, {:error, %{reason: "sww"}}, socket}
       end
-    else
-      {:noreply, socket}
     end
+		{:noreply, socket}
   end
 
   def handle_in("rematch:reject_offer", _, socket) do
