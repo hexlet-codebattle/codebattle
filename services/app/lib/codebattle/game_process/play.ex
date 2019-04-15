@@ -123,6 +123,7 @@ defmodule Codebattle.GameProcess.Play do
           Task.async(fn ->
             CodebattleWeb.Endpoint.broadcast("lobby", "game:new", %{game: FsmHelpers.lobby_format(new_fsm)})
           end)
+
           {:ok, new_game_id}
 
         {:error, reason} ->
@@ -139,7 +140,8 @@ defmodule Codebattle.GameProcess.Play do
 
   def rematch_send_offer(game_id, user_id) do
     {_response, new_fsm} = Server.call_transition(game_id, :rematch_send_offer, %{player_id: user_id})
-    {:ok, new_fsm}
+    rematch_data = %{rematchState: new_fsm.data.rematch_state, rematchInitiatorId: new_fsm.data.rematch_initiator_id}
+    {:ok, rematch_data}
   end
 
   def create_rematch_game(game_id) do

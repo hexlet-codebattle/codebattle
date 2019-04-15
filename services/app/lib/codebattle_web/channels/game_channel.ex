@@ -23,6 +23,11 @@ defmodule CodebattleWeb.GameChannel do
     {:noreply, socket}
   end
 
+	# This handle for test rematch:accept_offer
+	def handle_info(msg, socket) do
+		{:noreply, socket}
+	end
+
   def handle_in("ping", payload, socket) do
     {:reply, {:ok, payload}, socket}
   end
@@ -90,8 +95,7 @@ defmodule CodebattleWeb.GameChannel do
     fsm = Play.get_fsm(game_id)
     currentUserId = socket.assigns.user_id
 
-    {:ok, new_fsm} = Play.rematch_send_offer(game_id, currentUserId)
-    rematch_data = %{rematchState: new_fsm.data.rematch_state, rematchInitiatorId: new_fsm.data.rematch_initiator_id}
+    {:ok, rematch_data} = Play.rematch_send_offer(game_id, currentUserId)
     broadcast!(socket, "rematch:update_status", rematch_data)
 
 
