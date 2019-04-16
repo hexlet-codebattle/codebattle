@@ -142,6 +142,47 @@ defmodule CodebattleWeb.GameChannelTest do
 
   end
 
+  test "rematch when players make rematch at same time", %{
+    user1: user1,
+    user2: user2,
+    socket1: socket1,
+    socket2: socket2,
+    game: game
+  } do
+    # setup
+    state = :game_over
+
+    data = %{
+      task: game.task,
+      players: [Player.build(user1), Player.build(user2)]
+    }
+
+    game = setup_game(state, data)
+    game_topic = "game:" <> to_string(game.id)
+
+    {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
+    {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
+    Mix.Shell.Process.flush()
+
+    push(socket1, "rematch:send_offer")
+    :timer.sleep(100)
+    push(socket2, "rematch:send_offer")
+
+    :timer.sleep(100)
+
+    payload = %{
+      game_id: game.id + 1
+    }
+    assert_receive %Phoenix.Socket.Broadcast{
+      topic: ^game_topic,
+      event: "rematch:redirect_to_new_game",
+      payload: ^payload
+    }
+    fsm = Server.fsm(game.id + 1)
+
+    assert fsm.state == :playing
+  end
+
   test "sends game info when user join", %{user1: user1, socket1: socket1, game: game} do
     # setup
     state = :waiting_opponent

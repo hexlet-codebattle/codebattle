@@ -95,40 +95,37 @@ defmodule CodebattleWeb.GameChannel do
     fsm = Play.get_fsm(game_id)
     currentUserId = socket.assigns.user_id
 
-		if fsm.state == :in_approval do
-			case Play.create_rematch_game(game_id) do
-				{:ok, game_id} ->
-					broadcast!(socket, "rematch:redirect_to_new_game", %{game_id: game_id})
-					{:noreply, socket}
+    case fsm.state do
+      :rematch_in_approval -> handle_in("rematch:accept_offer", nil, socket)
 
-				_ ->
-					{:reply, {:error, %{reason: "sww"}}, socket}
-			end
-		end
+      :game_over ->
+        case Play.rematch_send_offer(game_id, currentUserId) do
+          {:rematch_offer, rematch_data} ->
+            broadcast!(socket, "rematch:update_status", rematch_data)
+            {:noreply, socket}
 
-    {:ok, rematch_data} = Play.rematch_send_offer(game_id, currentUserId)
-    broadcast!(socket, "rematch:update_status", rematch_data)
+          {:new_game, new_game_id} ->
+            broadcast!(socket, "rematch:redirect_to_new_game", %{game_id: new_game_id})
+            {:noreply, socket}
 
+          {:no_free_bot} ->
+            handle_in("rematch:reject_offer", nil, socket)
 
-    if FsmHelpers.bot_game?(fsm) do
-      case Play.create_rematch_game_with_bot(game_id) do
-        {:ok, game_id} ->
-          broadcast!(socket, "rematch:redirect_to_new_game", %{game_id: game_id})
-          {:noreply, socket}
-        {:no_free_bot} ->
-          rematch_reject(game_id, socket)
-        {:error, reason} ->
-          {:reply, {:error, %{reason: reason}}, socket}
-        _ ->
-          {:reply, {:error, %{reason: "sww"}}, socket}
-      end
+          {:error, reason} ->
+            {:reply, {:error, %{reason: reason}}, socket}
+          _ ->
+            {:reply, {:error, %{reason: "sww"}}, socket}
+        end
+
+      _ -> {:noreply, socket}
     end
-		{:noreply, socket}
   end
 
   def handle_in("rematch:reject_offer", _, socket) do
     game_id = get_game_id(socket)
-    rematch_reject(game_id, socket)
+    {:ok, new_fsm} = Play.rematch_reject(game_id)
+    broadcast!(socket, "rematch:update_status", %{rematchState: new_fsm.data.rematch_state})
+    {:noreply, socket}
   end
 
   def handle_in("rematch:accept_offer", _, socket) do
