@@ -58,6 +58,10 @@ defmodule Codebattle.GameProcess.FsmHelpers do
     fsm.data.starts_at
   end
 
+  def get_joins_at(fsm) do
+    fsm.data.joins_at
+  end
+
   def get_task(fsm) do
     fsm.data.task
   end

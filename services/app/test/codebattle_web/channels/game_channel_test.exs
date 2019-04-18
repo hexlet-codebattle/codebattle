@@ -204,7 +204,8 @@ defmodule CodebattleWeb.GameChannelTest do
                "task" => game.task,
                "type" => "public",
 							 "rematch_state" => "none",
-							 "rematch_initiator_id" => nil
+							 "rematch_initiator_id" => nil,
+               "joins_at" => nil
              })
   end
 
@@ -235,7 +236,8 @@ defmodule CodebattleWeb.GameChannelTest do
                ],
                "starts_at" => TimeHelper.utc_now(),
                "status" => "playing",
-               "task" => game.task
+               "task" => game.task,
+               "joins_at" => nil
              })
   end
 

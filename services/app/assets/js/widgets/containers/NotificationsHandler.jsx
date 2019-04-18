@@ -131,7 +131,7 @@ class NotificationsHandler extends Component {
     toast(
       <Toast header="Success">
         <Alert variant="success">
-          {`${winner.user_name} has won the game!`}
+          {`${winner.name} has won the game!`}
         </Alert>
       </Toast>,
     );

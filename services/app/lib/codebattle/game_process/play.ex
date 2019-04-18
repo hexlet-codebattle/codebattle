@@ -43,7 +43,8 @@ defmodule Codebattle.GameProcess.Play do
       level: FsmHelpers.get_level(fsm),
       type: FsmHelpers.get_type(fsm),
       rematch_state: FsmHelpers.get_rematch_state(fsm),
-      rematch_initiator_id: FsmHelpers.get_rematch_initiator_id(fsm)
+      rematch_initiator_id: FsmHelpers.get_rematch_initiator_id(fsm),
+      joins_at: FsmHelpers.get_joins_at(fsm)
     }
   end
 
