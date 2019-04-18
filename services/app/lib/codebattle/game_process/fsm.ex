@@ -31,7 +31,7 @@ defmodule Codebattle.GameProcess.Fsm do
       # :Atom, (:in_approval, :rejected)
       rematch_state: :none,
       # Integer, player_id who sended offer to rematch
-      rematch_initiator_id: nil,
+      rematch_initiator_id: nil
     }
 
   # For tests

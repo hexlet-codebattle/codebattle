@@ -22,8 +22,9 @@ defmodule Codebattle.Bot.Builder do
   end
 
   def build_free_bot do
-    playing_bots_id = ActiveGames.get_playing_bots
-      |>Enum.map(fn bot -> bot.id end)
+    playing_bots_id =
+      ActiveGames.get_playing_bots()
+      |> Enum.map(fn bot -> bot.id end)
 
     query =
       from(

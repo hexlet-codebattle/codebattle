@@ -121,8 +121,11 @@ defmodule Codebattle.GameProcess.Play do
       case create_bot_game(bot, game_params) do
         {:ok, new_game_id} ->
           {:ok, new_fsm} = engine.join_game(new_game_id, real_player)
+
           Task.async(fn ->
-            CodebattleWeb.Endpoint.broadcast("lobby", "game:new", %{game: FsmHelpers.lobby_format(new_fsm)})
+            CodebattleWeb.Endpoint.broadcast("lobby", "game:new", %{
+              game: FsmHelpers.lobby_format(new_fsm)
+            })
           end)
 
           {:new_game, new_game_id}
@@ -139,8 +142,14 @@ defmodule Codebattle.GameProcess.Play do
     if FsmHelpers.bot_game?(fsm) do
       create_rematch_game_with_bot(game_id)
     else
-      {_response, new_fsm} = Server.call_transition(game_id, :rematch_send_offer, %{player_id: user_id})
-      rematch_data = %{rematchState: new_fsm.data.rematch_state, rematchInitiatorId: new_fsm.data.rematch_initiator_id}
+      {_response, new_fsm} =
+        Server.call_transition(game_id, :rematch_send_offer, %{player_id: user_id})
+
+      rematch_data = %{
+        rematchState: new_fsm.data.rematch_state,
+        rematchInitiatorId: new_fsm.data.rematch_initiator_id
+      }
+
       {:rematch_offer, rematch_data}
     end
   end
@@ -160,7 +169,9 @@ defmodule Codebattle.GameProcess.Play do
     {:ok, new_fsm} = engine.join_game(new_game_id, second_player)
 
     Task.async(fn ->
-      CodebattleWeb.Endpoint.broadcast("lobby", "game:new", %{game: FsmHelpers.lobby_format(new_fsm)})
+      CodebattleWeb.Endpoint.broadcast("lobby", "game:new", %{
+        game: FsmHelpers.lobby_format(new_fsm)
+      })
     end)
 
     {:ok, new_game_id}

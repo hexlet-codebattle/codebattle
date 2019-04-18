@@ -20,8 +20,8 @@ defmodule Codebattle.GameProcess.ActiveGames do
 
   def get_playing_bots do
     list_games()
-    |>Enum.map(fn {_, item, _} -> item |> Map.values() |> hd end)
-    |>Enum.filter(fn player -> player.is_bot == true end)
+    |> Enum.map(fn {_, item, _} -> item |> Map.values() |> hd end)
+    |> Enum.filter(fn player -> player.is_bot == true end)
   end
 
   def game_exists?(game_id) do

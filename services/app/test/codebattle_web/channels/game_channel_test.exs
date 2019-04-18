@@ -47,7 +47,7 @@ defmodule CodebattleWeb.GameChannelTest do
 
     payload = %{
       rematchState: :in_approval,
-      rematchInitiatorId: socket1.assigns.user_id,
+      rematchInitiatorId: socket1.assigns.user_id
     }
 
     assert_receive %Phoenix.Socket.Broadcast{
@@ -55,6 +55,7 @@ defmodule CodebattleWeb.GameChannelTest do
       event: "rematch:update_status",
       payload: ^payload
     }
+
     fsm = Server.fsm(game.id)
 
     assert fsm.state == :rematch_in_approval
@@ -95,6 +96,7 @@ defmodule CodebattleWeb.GameChannelTest do
       event: "rematch:update_status",
       payload: ^payload
     }
+
     fsm = Server.fsm(game.id)
 
     assert fsm.state == :rematch_rejected
@@ -130,6 +132,7 @@ defmodule CodebattleWeb.GameChannelTest do
     payload = %{
       game_id: game.id + 1
     }
+
     assert_receive %Phoenix.Socket.Broadcast{
       topic: ^game_topic,
       event: "rematch:redirect_to_new_game",
@@ -139,7 +142,6 @@ defmodule CodebattleWeb.GameChannelTest do
     fsm = Server.fsm(game.id + 1)
 
     assert fsm.state == :playing
-
   end
 
   test "rematch when players make rematch at same time", %{
@@ -173,11 +175,13 @@ defmodule CodebattleWeb.GameChannelTest do
     payload = %{
       game_id: game.id + 1
     }
+
     assert_receive %Phoenix.Socket.Broadcast{
       topic: ^game_topic,
       event: "rematch:redirect_to_new_game",
       payload: ^payload
     }
+
     fsm = Server.fsm(game.id + 1)
 
     assert fsm.state == :playing
@@ -203,8 +207,8 @@ defmodule CodebattleWeb.GameChannelTest do
                "status" => "waiting_opponent",
                "task" => game.task,
                "type" => "public",
-							 "rematch_state" => "none",
-							 "rematch_initiator_id" => nil,
+               "rematch_state" => "none",
+               "rematch_initiator_id" => nil,
                "joins_at" => nil
              })
   end

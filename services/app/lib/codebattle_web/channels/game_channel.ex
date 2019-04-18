@@ -23,10 +23,10 @@ defmodule CodebattleWeb.GameChannel do
     {:noreply, socket}
   end
 
-	# This handle for test rematch:accept_offer
-	def handle_info(msg, socket) do
-		{:noreply, socket}
-	end
+  # This handle for test rematch:accept_offer
+  def handle_info(msg, socket) do
+    {:noreply, socket}
+  end
 
   def handle_in("ping", payload, socket) do
     {:reply, {:ok, payload}, socket}
@@ -96,7 +96,8 @@ defmodule CodebattleWeb.GameChannel do
     currentUserId = socket.assigns.user_id
 
     case fsm.state do
-      :rematch_in_approval -> handle_in("rematch:accept_offer", nil, socket)
+      :rematch_in_approval ->
+        handle_in("rematch:accept_offer", nil, socket)
 
       :game_over ->
         case Play.rematch_send_offer(game_id, currentUserId) do
@@ -113,11 +114,13 @@ defmodule CodebattleWeb.GameChannel do
 
           {:error, reason} ->
             {:reply, {:error, %{reason: reason}}, socket}
+
           _ ->
             {:reply, {:error, %{reason: "sww"}}, socket}
         end
 
-      _ -> {:noreply, socket}
+      _ ->
+        {:noreply, socket}
     end
   end
 

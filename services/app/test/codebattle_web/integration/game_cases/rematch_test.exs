@@ -65,9 +65,10 @@ defmodule Codebattle.GameCases.RematchTest do
 
   test "first user gave up and send rematch offer to the bot", %{
     conn1: conn1,
-    socket1: socket1,
+    socket1: socket1
   } do
     task = insert(:task, level: "elementary")
+
     playbook_data = %{
       playbook: [
         %{"delta" => [%{"insert" => "t"}], "time" => 20},
@@ -146,5 +147,4 @@ defmodule Codebattle.GameCases.RematchTest do
     assert FsmHelpers.get_first_player(fsm).id == user1.id
     assert FsmHelpers.get_second_player(fsm).id == user2.id
   end
-
 end
