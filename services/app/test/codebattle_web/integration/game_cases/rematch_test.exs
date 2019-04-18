@@ -1,9 +1,7 @@
 defmodule Codebattle.GameCases.RematchTest do
   use Codebattle.IntegrationCase
 
-  import Mock
-
-  alias Codebattle.GameProcess.{ActiveGames, Server}
+  alias Codebattle.GameProcess.Server
   alias CodebattleWeb.UserSocket
 
   setup %{conn: conn} do
@@ -68,7 +66,6 @@ defmodule Codebattle.GameCases.RematchTest do
   test "first user gave up and send rematch offer to the bot", %{
     conn1: conn1,
     socket1: socket1,
-    user1: user1,
   } do
     task = insert(:task, level: "elementary")
     playbook_data = %{
@@ -82,11 +79,11 @@ defmodule Codebattle.GameCases.RematchTest do
 
     # Create game
     level = "elementary"
-    {:ok, game_id, bot} = Codebattle.Bot.GameCreator.call(level)
+    {:ok, game_id, _bot} = Codebattle.Bot.GameCreator.call(level)
     game_topic = "game:" <> to_string(game_id)
 
     # User join to the game
-     post(conn1, game_path(conn1, :join, game_id))
+    post(conn1, game_path(conn1, :join, game_id))
 
     fsm = Server.fsm(game_id)
     assert fsm.state == :playing
