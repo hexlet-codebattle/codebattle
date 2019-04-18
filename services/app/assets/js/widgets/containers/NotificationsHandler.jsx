@@ -50,7 +50,7 @@ class NotificationsHandler extends Component {
       this.showActionsAfterGame();
     }
 
-    if (isChangeRematchState && rematchState !== 'none') {
+    if (isChangeRematchState && rematchState !== 'none' && rematchState !== 'rejected') {
       this.showActionsAfterGame();
     }
   }
