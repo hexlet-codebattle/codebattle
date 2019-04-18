@@ -54,7 +54,7 @@ defmodule Codebattle.GameProcess.Play do
         games in Game,
         order_by: [desc: games.updated_at],
         where: [state: "game_over"],
-        limit: 5,
+        limit: 25,
         preload: [:users, :user_games]
       )
 
