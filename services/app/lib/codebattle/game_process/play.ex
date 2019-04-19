@@ -108,7 +108,7 @@ defmodule Codebattle.GameProcess.Play do
   def create_rematch_game_with_bot(game_id) do
     fsm = Play.get_fsm(game_id)
     engine = get_engine(fsm)
-    real_player = FsmHelpers.get_second_player(fsm)
+    real_player = FsmHelpers.get_second_player(fsm) |> Player.reset_editor_text()
     level = FsmHelpers.get_level(fsm)
     type = FsmHelpers.get_type(fsm)
     game_params = %{"level" => level, "type" => type}
@@ -158,8 +158,8 @@ defmodule Codebattle.GameProcess.Play do
     ActiveGames.terminate_game(game_id)
 
     fsm = Play.get_fsm(game_id)
-    first_player = FsmHelpers.get_first_player(fsm)
-    second_player = FsmHelpers.get_second_player(fsm)
+    first_player = FsmHelpers.get_first_player(fsm) |> Player.reset_editor_text()
+    second_player = FsmHelpers.get_second_player(fsm) |> Player.reset_editor_text()
     level = FsmHelpers.get_level(fsm)
     type = FsmHelpers.get_type(fsm)
 

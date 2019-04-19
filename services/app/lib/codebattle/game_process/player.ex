@@ -89,4 +89,10 @@ defmodule Codebattle.GameProcess.Player do
 
     Map.merge(player, params)
   end
+
+  def reset_editor_text(%__MODULE__{} = player) do
+    editor_lang = player.editor_lang || "js"
+    editor_text = Languages.get_solution(editor_lang)
+    Map.merge(player, %{editor_text: editor_text})
+  end
 end
