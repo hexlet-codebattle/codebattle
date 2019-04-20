@@ -18,11 +18,9 @@ defmodule CodebattleWeb.GameController do
       end
 
     game_params = conn.params
-      |> Map.take(["level", "type", "timeoutSeconds"])
+      |> Map.take(["level", "type"])
       |> Map.merge(%{"type" => type})
-      |> Map.merge(%{"timeoutSeconds" => timeout_seconds(conn.params)})
-
-    # game_params = Map.merge(%{"type" => "standard"}, Map.take(conn.params, ["level", "type", "timeoutSeconds"]))
+      |> Map.merge(%{"timeout_seconds" => timeout_seconds(conn.params)})
 
     case Play.create_game(conn.assigns.current_user, game_params) do
       {:ok, id} ->
@@ -119,7 +117,7 @@ defmodule CodebattleWeb.GameController do
 
   @timeout_seconds_default 0
 
-  defp timeout_seconds(%{"timeoutSeconds" => timeout_seconds}) do
+  defp timeout_seconds(%{"timeout_seconds" => timeout_seconds}) do
     timeout_seconds_int = cond do
       timeout_seconds == "" ->
         0

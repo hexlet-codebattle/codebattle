@@ -112,7 +112,8 @@ defmodule Codebattle.GameProcess.Play do
     real_player = FsmHelpers.get_second_player(fsm)
     level = FsmHelpers.get_level(fsm)
     type = FsmHelpers.get_type(fsm)
-    game_params = %{"level" => level, "type" => type}
+    timeout_seconds = FsmHelpers.get_timeout_seconds(fsm)
+    game_params = %{"level" => level, "type" => type, "timeout_seconds" => timeout_seconds}
 
     bot = Codebattle.Bot.Builder.build_free_bot()
 
@@ -163,9 +164,11 @@ defmodule Codebattle.GameProcess.Play do
     second_player = FsmHelpers.get_second_player(fsm)
     level = FsmHelpers.get_level(fsm)
     type = FsmHelpers.get_type(fsm)
+    timeout_seconds = FsmHelpers.get_timeout_seconds(fsm)
+    game_params = %{"level" => level, "type" => type, "timeout_seconds" => timeout_seconds}
 
     engine = get_engine(fsm)
-    {:ok, new_fsm} = engine.create_game(first_player, %{"level" => level, "type" => type})
+    {:ok, new_fsm} = engine.create_game(first_player, game_params)
     new_game_id = FsmHelpers.get_game_id(new_fsm)
     {:ok, new_fsm} = engine.join_game(new_game_id, second_player)
 

@@ -17,7 +17,7 @@ defmodule Codebattle.GameProcess.Engine.Standard do
   alias Codebattle.Bot.RecorderServer
   alias Codebattle.User.Achievements
 
-  def create_game(player, %{"level" => level, "type" => type, "timeoutSeconds" => timeout_seconds}) do
+  def create_game(player, %{"level" => level, "type" => type, "timeout_seconds" => timeout_seconds}) do
     game =
       Repo.insert!(%Game{
         state: "waiting_opponent",

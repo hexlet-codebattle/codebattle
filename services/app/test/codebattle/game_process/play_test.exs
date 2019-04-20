@@ -11,7 +11,7 @@ defmodule Codebattle.GameProcess.PlayTest do
 
     {:ok, game_id} = Play.create_game(
       user1,
-      %{"type" => "public", "level" => "medium", "timeoutSeconds" => 60}
+      %{"type" => "public", "level" => "medium", "timeout_seconds" => 60}
     )
 
     %{ user1: user1, user2: user2, game_id: game_id }
