@@ -234,8 +234,6 @@ defmodule Codebattle.GameProcess.Play do
       |> Game.changeset(%{state: "timeout"})
       |> Repo.update!()
 
-      GlobalSupervisor.terminate_game(id) # FIXME: looks like it silently fails there
-
       :ok
     else
       :error

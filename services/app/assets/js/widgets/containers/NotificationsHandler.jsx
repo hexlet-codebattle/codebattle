@@ -40,6 +40,7 @@ class NotificationsHandler extends Component {
     } = this.props;
 
     const isChangeRematchState = prevProps.gameStatus.rematchState !== rematchState;
+    const statusChanged = prevProps.gameStatus.status !== status;
 
     if (isCurrentUserPlayer && prevProps.gameStatus.checking && !checking) {
       this.showCheckingStatusMessage(solutionStatus);

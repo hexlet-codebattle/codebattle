@@ -35,6 +35,15 @@ defmodule Codebattle.GameProcess.TimeoutServer do
     {:noreply, game_id}
   end
 
+  # FIXME: used in tests?
+  def handle_info({_, :ok}, state) do
+    {:noreply, state}
+  end
+
+  def handle_info({:DOWN, ref, :process, _, _}, state) do
+    {:noreply, state}
+  end
+
   # HELPERS
 
   defp server_name(game_id) do

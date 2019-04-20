@@ -74,7 +74,7 @@ const initGameChannel = (dispatch) => {
       status,
       startsAt,
       joinsAt,
-      timeoutSeconds
+      timeoutSeconds,
       rematchState,
       rematchInitiatorId,
     }));
