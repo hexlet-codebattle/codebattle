@@ -5,8 +5,10 @@ defmodule Codebattle.Bot.GameCreator do
 
   import Ecto.Query, warn: false
 
+  @game_limit 5
+
   def call(level) do
-    if Play.active_games() |> Enum.count() < 5 do
+    if Play.active_games() |> Enum.count() < @game_limit do
       bot = Codebattle.Bot.Builder.build()
 
       case Play.create_bot_game(bot, %{"level" => level, "type" => "public"}) do
