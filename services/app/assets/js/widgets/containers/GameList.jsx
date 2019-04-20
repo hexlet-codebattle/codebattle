@@ -168,7 +168,12 @@ class GameList extends React.Component {
   };
 
   renderStartNewGameButton = (gameLevel, gameType, timeoutSeconds) => {
-    const queryParamsString = qs.stringify({ level: gameLevel, type: gameType, timeout_seconds: timeoutSeconds });
+    const queryParamsString = qs.stringify({
+      level: gameLevel,
+      type: gameType,
+      timeout_seconds: timeoutSeconds,
+    });
+
     const gameUrl = `/games?${queryParamsString}`;
 
     return (
