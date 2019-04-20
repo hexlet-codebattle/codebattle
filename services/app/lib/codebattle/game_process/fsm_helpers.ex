@@ -78,6 +78,14 @@ defmodule Codebattle.GameProcess.FsmHelpers do
     fsm.data.level
   end
 
+  def get_rematch_state(fsm) do
+    fsm.data.rematch_state
+  end
+
+  def get_rematch_initiator_id(fsm) do
+    fsm.data.rematch_initiator_id
+  end
+
   # TODO: implement is_true function instead Kernel.! * 2
   def winner?(fsm, player_id) do
     fsm.data.players

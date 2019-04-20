@@ -28,11 +28,12 @@ defmodule Codebattle.GameProcess.Fsm do
       type: "public",
       # Boolean, game played with bot
       bots: false,
-      # :Atom,
-      rematch_state: nil,
-
       # timeouts
-      timeout_seconds: 0
+      timeout_seconds: 0,
+      # :Atom, (:in_approval, :rejected)
+      rematch_state: :none,
+      # Integer, player_id who sended offer to rematch
+      rematch_initiator_id: nil
     }
 
   # For tests
@@ -48,15 +49,6 @@ defmodule Codebattle.GameProcess.Fsm do
       next_state(:waiting_opponent, %{
         new_data
         | players: [player]
-      })
-    end
-
-    defevent create_rematch(params), data: data do
-
-      new_data = Map.merge(data, params)
-      next_state(:playing, %{
-        new_data | players: params.players, level: params.level,
-        type: params.type, task: params.task
       })
     end
 
@@ -134,14 +126,36 @@ defmodule Codebattle.GameProcess.Fsm do
       next_state(:game_over, %{data | players: players})
     end
 
+    defevent rematch_send_offer(params), data: data do
+      new_data = %{rematch_state: :in_approval, rematch_initiator_id: params.player_id}
+      next_state(:rematch_in_approval, Map.merge(data, new_data))
+    end
+
     defevent _ do
       next_state(:game_over)
     end
   end
 
   defstate timeout do
+    defevent rematch_send_offer(params), data: data do
+      new_data = %{rematch_state: :in_approval, rematch_initiator_id: params.player_id}
+      next_state(:rematch_in_approval, Map.merge(data, new_data))
+    end
+
     defevent _ do
       next_state(:timeout)
+    end
+  end
+
+  defstate rematch_in_approval do
+    defevent rematch_reject(_params), data: data do
+      next_state(:rematch_rejected, %{data | rematch_state: :rejected})
+    end
+  end
+
+  defstate rematch_rejected do
+    defevent _ do
+      next_state(:rematch_rejected)
     end
   end
 

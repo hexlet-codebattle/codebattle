@@ -19,6 +19,8 @@ const initGameChannel = (dispatch) => {
       timeout_seconds: timeoutSeconds,
       players: [firstPlayer, secondPlayer],
       task,
+      rematch_state: rematchState,
+      rematch_initiator_id: rematchInitiatorId,
     } = response;
 
 
@@ -67,9 +69,16 @@ const initGameChannel = (dispatch) => {
     if (task) {
       dispatch(actions.setGameTask({ task }));
     }
+
     dispatch(actions.updateGameStatus({
-      status, startsAt, joinsAt, timeoutSeconds,
+      status,
+      startsAt,
+      joinsAt,
+      timeoutSeconds
+      rematchState,
+      rematchInitiatorId,
     }));
+
     dispatch(actions.finishStoreInit());
   };
 
@@ -96,10 +105,6 @@ export const sendEditorText = (text, langSlug = null) => (dispatch, getState) =>
 
 export const sendGiveUp = () => {
   channel.push('give_up');
-};
-
-export const sendResetRematch = (rematchState) => {
-  channel.push('rematch:send_reset', { rematch_state: rematchState });
 };
 
 export const sendOfferToRematch = () => {
@@ -226,7 +231,7 @@ export const editorReady = () => (dispatch) => {
   });
 
   channel.on('rematch:update_status', (payload) => {
-    dispatch(actions.updateRematchStatus(payload));
+    dispatch(actions.updateGameStatus(payload));
   });
 
   channel.on('rematch:redirect_to_new_game', ({ game_id: newGameId }) => {
