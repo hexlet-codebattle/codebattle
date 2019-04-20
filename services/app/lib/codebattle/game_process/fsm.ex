@@ -103,9 +103,8 @@ defmodule Codebattle.GameProcess.Fsm do
     end
 
     defevent timeout(_params), data: data do
-      players = Enum.map(data.players, fn player ->
-        update_player_params(data.players, %{game_result: :timeout, id: player.id})
-      end)
+     players = update_player_params(data.players, %{game_result: :timeout, id: get_first_player(%{data: data}).id})
+     players = update_player_params(players, %{game_result: :timeout, id: get_second_player(%{data: data}).id})
 
       next_state(:timeout, %{data | players: players})
     end

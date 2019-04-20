@@ -1,8 +1,6 @@
 defmodule Codebattle.GameCases.TimeoutTest do
   use Codebattle.IntegrationCase
 
-  import Mock
-
   alias Codebattle.GameProcess.{ActiveGames, Server, TimeoutServer}
   alias CodebattleWeb.UserSocket
 
@@ -42,15 +40,30 @@ defmodule Codebattle.GameCases.TimeoutTest do
 
     # Second player join game
     post(conn2, game_path(conn2, :join, game_id))
-    {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
+    {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
+    :timer.sleep(70)
 
     TimeoutServer.restart(game_id, 1)
     :timer.sleep(1500)
 
     fsm = Server.fsm(game_id)
-
     assert fsm.state == :timeout
     assert ActiveGames.game_exists?(game_id) == false
+
+    # rematch
+
+    Phoenix.ChannelTest.push(socket1, "rematch:send_offer", %{})
+    :timer.sleep(70)
+
+    fsm = Server.fsm(game_id)
+    assert fsm.state == :rematch_in_approval
+
+    Phoenix.ChannelTest.push(socket2, "rematch:accept_offer", %{})
+    :timer.sleep(70)
+
+    fsm = Server.fsm(game_id + 1)
+    assert fsm.state == :playing
+    assert fsm.data.timeout_seconds == 60
   end
 
   test "After timeout user can create games", %{conn1: conn1, conn2: conn2, socket1: socket1} do

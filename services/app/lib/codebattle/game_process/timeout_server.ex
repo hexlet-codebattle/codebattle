@@ -35,7 +35,7 @@ defmodule Codebattle.GameProcess.TimeoutServer do
     {:noreply, game_id}
   end
 
-  # FIXME: used in tests?
+  # FIXME: without these prints error in tests
   def handle_info({_, :ok}, state) do
     {:noreply, state}
   end

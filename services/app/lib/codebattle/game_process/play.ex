@@ -124,6 +124,8 @@ defmodule Codebattle.GameProcess.Play do
         {:ok, new_game_id} ->
           {:ok, new_fsm} = engine.join_game(new_game_id, real_player)
 
+          start_timeout_timer(new_game_id, new_fsm)
+
           Task.async(fn ->
             CodebattleWeb.Endpoint.broadcast("lobby", "game:new", %{
               game: FsmHelpers.lobby_format(new_fsm)
@@ -172,6 +174,8 @@ defmodule Codebattle.GameProcess.Play do
     new_game_id = FsmHelpers.get_game_id(new_fsm)
     {:ok, new_fsm} = engine.join_game(new_game_id, second_player)
 
+    start_timeout_timer(new_game_id, new_fsm)
+
     Task.async(fn ->
       CodebattleWeb.Endpoint.broadcast("lobby", "game:new", %{
         game: FsmHelpers.lobby_format(new_fsm)
@@ -202,13 +206,7 @@ defmodule Codebattle.GameProcess.Play do
               })
             end)
 
-
-            if fsm.data.timeout_seconds > 0 do
-              Codebattle.GameProcess.TimeoutServer.restart(
-                id,
-                fsm.data.timeout_seconds
-              )
-            end
+            start_timeout_timer(id, fsm)
 
             {:ok, fsm}
 
@@ -351,6 +349,15 @@ defmodule Codebattle.GameProcess.Play do
 
     if is_lang_changed do
       engine.update_lang(id, player, editor_lang)
+    end
+  end
+
+  defp start_timeout_timer(id, fsm) do
+    if fsm.data.timeout_seconds > 0 do
+      Codebattle.GameProcess.TimeoutServer.restart(
+        id,
+        fsm.data.timeout_seconds
+      )
     end
   end
 end

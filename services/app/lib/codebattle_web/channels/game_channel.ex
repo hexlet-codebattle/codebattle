@@ -108,25 +108,10 @@ defmodule CodebattleWeb.GameChannel do
         handle_in("rematch:accept_offer", nil, socket)
 
       :game_over ->
-        case Play.rematch_send_offer(game_id, currentUserId) do
-          {:rematch_offer, rematch_data} ->
-            broadcast!(socket, "rematch:update_status", rematch_data)
-            {:noreply, socket}
+        process_rematch_offer(game_id, currentUserId, socket)
 
-          {:new_game, new_game_id} ->
-            broadcast!(socket, "rematch:redirect_to_new_game", %{game_id: new_game_id})
-            {:noreply, socket}
-
-          {:no_free_bot} ->
-            handle_in("rematch:reject_offer", nil, socket)
-
-          {:error, reason} ->
-            {:reply, {:error, %{reason: reason}}, socket}
-
-          _ ->
-            {:reply, {:error, %{reason: "sww"}}, socket}
-        end
-
+      :timeout ->
+        process_rematch_offer(game_id, currentUserId, socket)
       _ ->
         {:noreply, socket}
     end
@@ -252,6 +237,27 @@ defmodule CodebattleWeb.GameChannel do
 
       {:error, reason} ->
         {:reply, {:error, %{reason: reason}}, socket}
+    end
+  end
+
+  defp process_rematch_offer(game_id, currentUserId, socket) do
+    case Play.rematch_send_offer(game_id, currentUserId) do
+      {:rematch_offer, rematch_data} ->
+        broadcast!(socket, "rematch:update_status", rematch_data)
+        {:noreply, socket}
+
+      {:new_game, new_game_id} ->
+        broadcast!(socket, "rematch:redirect_to_new_game", %{game_id: new_game_id})
+        {:noreply, socket}
+
+      {:no_free_bot} ->
+        handle_in("rematch:reject_offer", nil, socket)
+
+      {:error, reason} ->
+        {:reply, {:error, %{reason: reason}}, socket}
+
+      _ ->
+        {:reply, {:error, %{reason: "sww"}}, socket}
     end
   end
 
