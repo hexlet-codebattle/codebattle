@@ -37,3 +37,5 @@ export const updateGameUI = createAction('UPDATE_GAME_UI');
 export const redirectToNewGame = (gameId) => {
   window.location.href = `/games/${gameId}`;
 };
+
+export const selectNewGameTimeout = createAction('SELECT_NEW_GAME_TIMEOUT');

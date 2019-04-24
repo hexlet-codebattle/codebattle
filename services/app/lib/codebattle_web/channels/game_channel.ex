@@ -6,6 +6,16 @@ defmodule CodebattleWeb.GameChannel do
 
   alias Codebattle.GameProcess.{Play, FsmHelpers, ActiveGames, Server}
 
+  @after_join_game_attrs [
+    :status,
+    :players,
+    :task,
+    :starts_at,
+    :joins_at,
+    :timeout_seconds,
+    :level
+  ]
+
   def join("game:" <> game_id, _payload, socket) do
     send(self(), :after_join)
     game_info = Play.game_info(game_id)
@@ -17,9 +27,7 @@ defmodule CodebattleWeb.GameChannel do
     game_id = get_game_id(socket)
     game_info = Play.game_info(game_id)
 
-    fields = [:status, :players, :task, :starts_at, :joins_at, :level]
-
-    broadcast_from!(socket, "user:joined", Map.take(game_info, fields))
+    broadcast_from!(socket, "user:joined", Map.take(game_info, @after_join_game_attrs))
     {:noreply, socket}
   end
 
@@ -100,25 +108,10 @@ defmodule CodebattleWeb.GameChannel do
         handle_in("rematch:accept_offer", nil, socket)
 
       :game_over ->
-        case Play.rematch_send_offer(game_id, currentUserId) do
-          {:rematch_offer, rematch_data} ->
-            broadcast!(socket, "rematch:update_status", rematch_data)
-            {:noreply, socket}
+        process_rematch_offer(game_id, currentUserId, socket)
 
-          {:new_game, new_game_id} ->
-            broadcast!(socket, "rematch:redirect_to_new_game", %{game_id: new_game_id})
-            {:noreply, socket}
-
-          {:no_free_bot} ->
-            handle_in("rematch:reject_offer", nil, socket)
-
-          {:error, reason} ->
-            {:reply, {:error, %{reason: reason}}, socket}
-
-          _ ->
-            {:reply, {:error, %{reason: "sww"}}, socket}
-        end
-
+      :timeout ->
+        process_rematch_offer(game_id, currentUserId, socket)
       _ ->
         {:noreply, socket}
     end
@@ -244,6 +237,27 @@ defmodule CodebattleWeb.GameChannel do
 
       {:error, reason} ->
         {:reply, {:error, %{reason: reason}}, socket}
+    end
+  end
+
+  defp process_rematch_offer(game_id, currentUserId, socket) do
+    case Play.rematch_send_offer(game_id, currentUserId) do
+      {:rematch_offer, rematch_data} ->
+        broadcast!(socket, "rematch:update_status", rematch_data)
+        {:noreply, socket}
+
+      {:new_game, new_game_id} ->
+        broadcast!(socket, "rematch:redirect_to_new_game", %{game_id: new_game_id})
+        {:noreply, socket}
+
+      {:no_free_bot} ->
+        handle_in("rematch:reject_offer", nil, socket)
+
+      {:error, reason} ->
+        {:reply, {:error, %{reason: reason}}, socket}
+
+      _ ->
+        {:reply, {:error, %{reason: "sww"}}, socket}
     end
   end
 

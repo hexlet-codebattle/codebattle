@@ -97,7 +97,7 @@ msgstr ""
 msgid "You are not player of this game"
 msgstr ""
 
-#: lib/codebattle/game_process/fsm.ex:94
+#: lib/codebattle/game_process/fsm.ex:122
 msgid "Game is already playing"
 msgstr ""
 

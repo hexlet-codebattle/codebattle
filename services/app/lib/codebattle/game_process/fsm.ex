@@ -28,6 +28,8 @@ defmodule Codebattle.GameProcess.Fsm do
       type: "public",
       # Boolean, game played with bot
       bots: false,
+      # timeouts
+      timeout_seconds: 0,
       # :Atom, (:in_approval, :rejected)
       rematch_state: :none,
       # Integer, player_id who sended offer to rematch
@@ -100,6 +102,13 @@ defmodule Codebattle.GameProcess.Fsm do
       next_state(:game_over, %{data | players: players})
     end
 
+    defevent timeout(_params), data: data do
+     players = update_player_params(data.players, %{game_result: :timeout, id: get_first_player(%{data: data}).id})
+     players = update_player_params(players, %{game_result: :timeout, id: get_second_player(%{data: data}).id})
+
+      next_state(:timeout, %{data | players: players})
+    end
+
     defevent join(_) do
       respond({:error, dgettext("errors", "Game is already playing")})
     end
@@ -123,6 +132,17 @@ defmodule Codebattle.GameProcess.Fsm do
 
     defevent _ do
       next_state(:game_over)
+    end
+  end
+
+  defstate timeout do
+    defevent rematch_send_offer(params), data: data do
+      new_data = %{rematch_state: :in_approval, rematch_initiator_id: params.player_id}
+      next_state(:rematch_in_approval, Map.merge(data, new_data))
+    end
+
+    defevent _ do
+      next_state(:timeout)
     end
   end
 

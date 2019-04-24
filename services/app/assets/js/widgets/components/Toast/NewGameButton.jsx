@@ -4,8 +4,8 @@ import { connect } from 'react-redux';
 import * as selectors from '../../selectors';
 
 const NewGameButton = (props) => {
-  const { gameTask: { level } } = props;
-  const queryParamsString = qs.stringify({ level, type: 'withRandomPlayer' });
+  const { gameTask: { level }, timeoutSeconds } = props;
+  const queryParamsString = qs.stringify({ level, type: 'withRandomPlayer', timeout_seconds: timeoutSeconds });
   const gameUrl = `/games?${queryParamsString}`;
 
   return (
@@ -22,6 +22,7 @@ const NewGameButton = (props) => {
 };
 
 const mapStateToProps = state => ({
+  timeoutSeconds: selectors.gameStatusSelector(state).timeoutSeconds,
   gameTask: selectors.gameTaskSelector(state),
 });
 

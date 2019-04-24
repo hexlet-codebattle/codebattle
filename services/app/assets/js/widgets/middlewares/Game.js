@@ -16,6 +16,7 @@ const initGameChannel = (dispatch) => {
       status,
       starts_at: startsAt,
       joins_at: joinsAt,
+      timeout_seconds: timeoutSeconds,
       players: [firstPlayer, secondPlayer],
       task,
       rematch_state: rematchState,
@@ -73,6 +74,7 @@ const initGameChannel = (dispatch) => {
       status,
       startsAt,
       joinsAt,
+      timeoutSeconds,
       rematchState,
       rematchInitiatorId,
     }));
@@ -175,6 +177,7 @@ export const editorReady = () => (dispatch) => {
     status,
     starts_at: startsAt,
     joins_at: joinsAt,
+    timeout_seconds: timeoutSeconds,
     players: [firstPlayer, secondPlayer],
     task,
   }) => {
@@ -212,7 +215,9 @@ export const editorReady = () => (dispatch) => {
       }));
     }
 
-    dispatch(actions.updateGameStatus({ status, startsAt, joinsAt }));
+    dispatch(actions.updateGameStatus({
+      status, startsAt, joinsAt, timeoutSeconds,
+    }));
   });
 
   channel.on('user:won', ({ players, status, msg }) => {
@@ -231,6 +236,10 @@ export const editorReady = () => (dispatch) => {
 
   channel.on('rematch:redirect_to_new_game', ({ game_id: newGameId }) => {
     actions.redirectToNewGame(newGameId);
+  });
+
+  channel.on('game:timeout', ({ status, msg }) => {
+    dispatch(actions.updateGameStatus({ status, msg }));
   });
 };
 
