@@ -37,12 +37,11 @@ class RematchButton extends React.Component {
   );
 
   renderBtnAfterSendOffer = () => {
-    const text = this.opponentInGame() ? 'Wait Answer...' : 'Opponent Left Game';
-    const classNames = cn({
-      btn: true,
-      'btn-secondary': this.opponentInGame(),
-      'btn-warning': !this.opponentInGame(),
-      'btn-block': true,
+    const isOpponentInGame = this.isOpponentInGame();
+    const text = isOpponentInGame ? 'Wait For An Answer...' : 'Opponent Left The Game';
+    const classNames = cn('btn btn-block', {
+      'btn-secondary': isOpponentInGame,
+      'btn-warning': !isOpponentInGame,
     });
     return (
       <button
@@ -87,10 +86,10 @@ class RematchButton extends React.Component {
     </button>
   );
 
-  opponentInGame = () => {
+  isOpponentInGame = () => {
     const { opponentPlayer, chatUsers } = this.props;
-    const findedUser = _.find(chatUsers, user => (opponentPlayer.id === user.id));
-    return typeof findedUser !== 'undefined';
+    const findedUser = _.find(chatUsers, { id: opponentPlayer.id });
+    return !_.isUndefined(findedUser);
   }
 
   getPlayerStatus = (rematchInitiatorId, currentUserId) => {
