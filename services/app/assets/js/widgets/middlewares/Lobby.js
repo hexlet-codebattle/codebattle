@@ -6,7 +6,7 @@ import {
 const channelName = 'lobby';
 const channel = socket.channel(channelName);
 
-const fetchState = () => (dispatch) => {
+export const fetchState = () => (dispatch) => {
   channel.join()
     .receive('ignore', () => console.log('Lobby channel: auth error'))
     .receive('error', () => console.log('Lobby channel: unable to join'))
@@ -30,4 +30,7 @@ const fetchState = () => (dispatch) => {
   );
 };
 
-export default fetchState;
+export const cancelGame = gameId => () => {
+  channel.push('game:cancel', { gameId })
+    .receive('error', error => console.error(error));
+};

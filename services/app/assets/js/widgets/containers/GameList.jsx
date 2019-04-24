@@ -7,7 +7,7 @@ import qs from 'qs';
 import { Tooltip, OverlayTrigger } from 'react-bootstrap';
 import i18n from '../../i18n';
 
-import fetchStateMiddleware from '../middlewares/Lobby';
+import * as lobbyMiddlewares from '../middlewares/Lobby';
 import GameStatusCodes from '../config/gameStatusCodes';
 import * as actions from '../actions';
 import {
@@ -135,12 +135,13 @@ class GameList extends React.Component {
         return (
           <div className="btn-group">
             {this.renderShowGameButton(gameUrl)}
+            {
+              // TODO_NOW: pretty add channel.push(cancel_game)
+            }
             <button
               type="button"
               className="btn btn-danger btn-sm"
-              data-method="delete"
-              data-csrf={window.csrf_token}
-              data-to={gameUrl}
+              onClick={lobbyMiddlewares.cancelGame(game.game_id)}
             >
               Cancel
             </button>
@@ -437,8 +438,9 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = {
   setCurrentUser: actions.setCurrentUser,
+  fetchState: lobbyMiddlewares.fetchState,
+  cancelGame: lobbyMiddlewares.cancelGame,
   selectNewGameTimeout: actions.selectNewGameTimeout,
-  fetchState: fetchStateMiddleware,
 };
 
 export default connect(
