@@ -13,10 +13,14 @@ defmodule CodebattleWeb.GameController do
     type =
       case conn.params["type"] do
         "withFriend" -> "private"
+        "private" -> "private"
         _ -> "public"
       end
 
-    game_params = Map.merge(%{"type" => "standard"}, Map.take(conn.params, ["level", "type"]))
+    game_params = conn.params
+      |> Map.take(["level", "type"])
+      |> Map.merge(%{"type" => type})
+      |> Map.merge(%{"timeout_seconds" => timeout_seconds(conn.params)})
 
     case Play.create_game(conn.assigns.current_user, game_params) do
       {:ok, id} ->
@@ -99,5 +103,38 @@ defmodule CodebattleWeb.GameController do
         |> put_flash(:danger, _reason)
         |> redirect(to: page_path(conn, :index))
     end
+  end
+
+  @timeout_seconds_whitelist [
+    0,
+    60,
+    120,
+    300,
+    600,
+    1200,
+    3600
+  ]
+
+  @timeout_seconds_default 0
+
+  defp timeout_seconds(%{"timeout_seconds" => timeout_seconds}) do
+    timeout_seconds_int = cond do
+      timeout_seconds == "" ->
+        0
+      timeout_seconds == nil ->
+        0
+      true ->
+        String.to_integer(timeout_seconds)
+    end
+
+    if Enum.member?(@timeout_seconds_whitelist, timeout_seconds_int) do
+      timeout_seconds_int
+    else
+      @timeout_seconds_default
+    end
+  end
+
+  defp timeout_seconds(_) do
+    @timeout_seconds_default
   end
 end

@@ -37,6 +37,16 @@ $ make compose
 $ make compose-test
 ```
 
+### Lint
+
+```bash
+$ make compose-bash
+$ make lint-js
+
+# To autofix warnings run:
+$ make lint-js-fix 
+```
+
 ### Useful
 
 ```bash

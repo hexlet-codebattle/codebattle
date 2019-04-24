@@ -76,4 +76,80 @@ defmodule Codebattleweb.GameControllerTest do
     assert ActiveGames.game_exists?(game.id) == false
     assert Server.game_pid(game.id) == :undefined
   end
+
+  test "create game", %{conn: conn} do
+    user = insert(:user)
+
+    conn = create_game(
+      conn,
+      user,
+      %{"type" => "public", "level" => "elementary"}
+    )
+
+    assert conn.status == 302
+    assert %{id: created_game_id} = redirected_params(conn)
+
+    id = String.to_integer(created_game_id)
+
+    {_, users, game_info} = active_game(id)
+
+    assert users[user.id] != nil
+    assert game_info[:timeout_seconds] == 0
+    assert game_info[:type] == "public"
+    assert game_info[:level] == "elementary"
+  end
+
+  test "create private game with timeout", %{conn: conn} do
+    user = insert(:user)
+
+    conn = create_game(
+      conn,
+      user,
+      %{"type" => "withFriend", "level" => "medium", "timeout_seconds" => "60"}
+    )
+
+    assert conn.status == 302
+    assert %{id: created_game_id} = redirected_params(conn)
+    id = String.to_integer(created_game_id)
+
+    {_, users, game_info} = active_game(id)
+
+    assert users[user.id] != nil
+    assert game_info[:timeout_seconds] == 60
+    assert game_info[:type] == "private"
+    assert game_info[:level] == "medium"
+  end
+
+  test "create game and normalizes incorrect timeout and type values", %{conn: conn} do
+    user = insert(:user)
+
+    conn = create_game(
+      conn,
+      user,
+      %{"type" => "wrongType", "level" => "medium", "timeout_seconds" => "8"}
+    )
+
+    assert conn.status == 302
+    assert %{id: created_game_id} = redirected_params(conn)
+
+    id = String.to_integer(created_game_id)
+
+    {_, users, game_info} = active_game(id)
+
+    assert users[user.id] != nil
+    assert game_info[:timeout_seconds] == 0
+    assert game_info[:type] == "public"
+    assert game_info[:level] == "medium"
+  end
+
+  defp create_game(conn, user, params) do
+      conn
+      |> put_session(:user_id, user.id)
+      |> post(game_path(conn, :create, params))
+  end
+
+  defp active_game(id) do
+    ActiveGames.list_games
+      |> Enum.find( fn {game_id, _, _} -> game_id == id end)
+  end
 end

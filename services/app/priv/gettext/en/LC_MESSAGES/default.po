@@ -123,7 +123,7 @@ msgstr ""
 msgid "Successfully authenticated"
 msgstr ""
 
-#: lib/codebattle_web/controllers/game_controller.ex:39
+#: lib/codebattle_web/controllers/game_controller.ex:41
 msgid "Game not found"
 msgstr ""
 
@@ -195,19 +195,17 @@ msgid "Users rating"
 msgstr ""
 
 #, elixir-format
-#: lib/codebattle_web/controllers/game_controller.ex:26
-#: lib/codebattle_web/controllers/game_controller.ex:82
-#: lib/codebattle_web/controllers/game_controller.ex:102
+#: lib/codebattle_web/controllers/game_controller.ex:28
 msgid "You are in a different game"
 msgstr ""
 
 #, elixir-format
-#: lib/codebattle_web/channels/game_channel.ex:81
+#: lib/codebattle_web/channels/game_channel.ex:57
 msgid "gave up!"
 msgstr ""
 
 #, elixir-format
-#: lib/codebattle_web/channels/game_channel.ex:123
+#: lib/codebattle_web/channels/game_channel.ex:162
 msgid "won the game!"
 msgstr ""
 
@@ -232,11 +230,6 @@ msgid "Slack#codebattle"
 msgstr ""
 
 #, elixir-format
-#: lib/codebattle_web/controllers/game_controller.ex:89
-msgid "Sorry, the game doesn't exist"
-msgstr ""
-
-#, elixir-format
 #: lib/codebattle_web/templates/layout/app.html.slim:13
 msgid "SourceCode"
 msgstr ""
@@ -256,3 +249,29 @@ msgstr ""
 
 msgid "Oops"
 msgstr ""
+
+#, elixir-format
+#: lib/codebattle_web/support/notifications.ex:13
+msgid "Oh no, the time is out! Both players lost ;("
+msgstr ""
+
+msgid "Timeout - no timeout"
+msgstr "No timeout"
+
+msgid "Timeout 60 seconds"
+msgstr "1 minute"
+
+msgid "Timeout 120 seconds"
+msgstr "2 minutes"
+
+msgid "Timeout 300 seconds"
+msgstr "5 minutes"
+
+msgid "Timeout 600 seconds"
+msgstr "10 minutes"
+
+msgid "Timeout 1200 seconds"
+msgstr "20 minutes"
+
+msgid "Timeout 3600 seconds"
+msgstr "1 hour"

@@ -8,8 +8,8 @@ import GameStatusCodes from '../config/gameStatusCodes';
 import Toast from '../components/Toast';
 import ActionsAfterGame from '../components/Toast/ActionsAfterGame';
 import CloseButton from '../components/Toast/CloseButton';
-import { updateGameUI } from '../actions';
-import { sendResetRematch } from '../middlewares/Game';
+import { updateGameUI as updateGameUIAction } from '../actions';
+import { sendRejectToRematch } from '../middlewares/Game';
 
 const toastOptions = {
   hideProgressBar: true,
@@ -21,25 +21,42 @@ const toastOptions = {
 };
 
 class NotificationsHandler extends Component {
+  componentDidMount() {
+    const { gameStatus: { status } } = this.props;
+
+    if (status === GameStatusCodes.gameOver
+      || status === GameStatusCodes.rematchInApproval
+      || status === GameStatusCodes.rematchRejected) {
+      this.showActionsAfterGame();
+    }
+  }
+
   componentDidUpdate(prevProps) {
     const {
-      gameStatus: { solutionStatus, status, checking, rematchStatus },
+      gameStatus: {
+        solutionStatus, status, checking, rematchState,
+      },
       isCurrentUserPlayer,
     } = this.props;
 
-    const currentRematchState = rematchStatus.state;
-    const isChangeRematchState = prevProps.gameStatus.rematchStatus.state !== currentRematchState;
+    const isChangeRematchState = prevProps.gameStatus.rematchState !== rematchState;
+    const statusChanged = prevProps.gameStatus.status !== status;
 
     if (isCurrentUserPlayer && prevProps.gameStatus.checking && !checking) {
       this.showCheckingStatusMessage(solutionStatus);
     }
 
-    if (status === GameStatusCodes.gameOver && prevProps.gameStatus.status !== status) {
+    if (status === GameStatusCodes.gameOver && statusChanged) {
       this.showGameResultMessage();
       this.showActionsAfterGame();
     }
 
-    if(isChangeRematchState && currentRematchState !== 'init') {
+    if (status === GameStatusCodes.timeout && statusChanged) {
+      this.showGameResultMessage();
+      this.showActionsAfterGame();
+    }
+
+    if (isChangeRematchState && rematchState !== 'none' && rematchState !== 'rejected') {
       this.showActionsAfterGame();
     }
   }
@@ -65,7 +82,6 @@ class NotificationsHandler extends Component {
       isCurrentUserPlayer,
       updateGameUI,
       isShowActionsAfterGame,
-      gameStatus: { rematchStatus },
     } = this.props;
 
     if (!isCurrentUserPlayer) {
@@ -84,47 +100,48 @@ class NotificationsHandler extends Component {
         autoClose: false,
         onClose: () => {
           updateGameUI({ showToastActionsAfterGame: false });
-          sendResetRematch(rematchStatus.state);
+          sendRejectToRematch();
         },
         onOpen: () => updateGameUI({ showToastActionsAfterGame: true }),
       },
     );
   }
 
+  showFailureMessage = msg => toast(
+    <Toast header="Failed">
+      <Alert variant="danger">{msg}</Alert>
+    </Toast>,
+  )
+
+  showSuccessMessage = msg => toast(
+    <Toast header="Success">
+      <Alert variant="success">{msg}</Alert>
+    </Toast>,
+  )
+
   showGameResultMessage = () => {
     const {
       isCurrentUserPlayer,
       currentUserId,
       players,
+      gameStatus,
     } = this.props;
+
+    if (gameStatus.status === GameStatusCodes.timeout) {
+      return this.showFailureMessage(gameStatus.msg);
+    }
 
     const winner = _.find(players, ['game_result', 'won']);
 
     if (currentUserId === winner.id) {
-      toast(
-        <Toast header="Success">
-          <Alert variant="success">Congratulations! You have won the game!</Alert>
-        </Toast>,
-      );
-      return;
+      return this.showSuccessMessage('Congratulations! You have won the game!');
     }
 
     if (isCurrentUserPlayer) {
-      toast(
-        <Toast header="Failed">
-          <Alert variant="danger">Oh snap! Your opponent has won the game</Alert>
-        </Toast>,
-      );
-      return;
+      return this.showFailureMessage('Oh snap! Your opponent has won the game');
     }
 
-    toast(
-      <Toast header="Success">
-        <Alert variant="success">
-          `${winner.user_name} has won the game!`
-        </Alert>
-      </Toast>,
-    );
+    return this.showSuccessMessage(`${winner.name} has won the game!`);
   }
 
   render() {
@@ -148,7 +165,7 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
-  updateGameUI
+  updateGameUI: updateGameUIAction,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(NotificationsHandler);

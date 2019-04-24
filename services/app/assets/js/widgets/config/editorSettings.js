@@ -1,1 +1,3 @@
-export const defaultEditorHeight = 300;
+const defaultEditorHeight = 300;
+
+export default defaultEditorHeight;

@@ -24,7 +24,6 @@ export const updateEditorLang = createAction('UPDATE_EDITOR_LANG');
 export const updateEditorText = createAction('UPDATE_EDITOR_TEXT');
 
 export const updateGameStatus = createAction('UPDATE_GAME_STATUS');
-export const updateRematchStatus = createAction('UPDATE_REMATCH_STATUS');
 export const setGameTask = createAction('SET_GAME_TASK');
 export const updateGamePlayers = createAction('UPDATE_GAME_PLAYERS');
 
@@ -35,4 +34,8 @@ export const expandEditorHeight = createAction('EXPAND_EDITOR_HEIGHT');
 
 export const setEditorsMode = createAction('EDITORS_MODE_SET');
 export const updateGameUI = createAction('UPDATE_GAME_UI');
-export const redirectToNewGame = game_id => window.location.href = `/games/${game_id}`;
+export const redirectToNewGame = (gameId) => {
+  window.location.href = `/games/${gameId}`;
+};
+
+export const selectNewGameTimeout = createAction('SELECT_NEW_GAME_TIMEOUT');

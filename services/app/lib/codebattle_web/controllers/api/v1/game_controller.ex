@@ -21,7 +21,5 @@ defmodule CodebattleWeb.Api.V1.GameController do
         conn
         |> json(%{error: "You are in a different game"})
     end
-
   end
-
 end

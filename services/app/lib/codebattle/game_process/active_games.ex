@@ -4,7 +4,7 @@ defmodule Codebattle.GameProcess.ActiveGames do
   """
 
   @table_name :active_games
-  # {game_id, active, %{player_id => Player, player_id => Player}, %{level: "easy", state: :playing, starts_at: Time, type: "private"}}
+  # {game_id, active, %{player_id => Player, player_id => Player}, %{level: "easy", state: :playing, timeout_seconds: 0, starts_at: Time, type: "private"}}
 
   alias Codebattle.GameProcess.FsmHelpers
 
@@ -17,6 +17,12 @@ defmodule Codebattle.GameProcess.ActiveGames do
   end
 
   def list_games, do: :ets.match_object(@table_name, :_)
+
+  def get_playing_bots do
+    list_games()
+    |> Enum.map(fn {_, item, _} -> item |> Map.values() |> hd end)
+    |> Enum.filter(fn player -> player.is_bot == true end)
+  end
 
   def game_exists?(game_id) do
     :ets.match_object(@table_name, {game_key(game_id), :_, :_}) |> Enum.empty?() |> Kernel.!()
@@ -86,7 +92,8 @@ defmodule Codebattle.GameProcess.ActiveGames do
       state: fsm.state,
       level: FsmHelpers.get_level(fsm),
       starts_at: FsmHelpers.get_starts_at(fsm),
-      type: FsmHelpers.get_type(fsm)
+      type: FsmHelpers.get_type(fsm),
+      timeout_seconds: FsmHelpers.get_timeout_seconds(fsm)
     }
   end
 
