@@ -89,4 +89,13 @@ defmodule Codebattle.GameProcess.Player do
 
     Map.merge(player, params)
   end
+
+  def rebuild(%__MODULE__{} = player) do
+    user = Codebattle.Repo.get!(User, player.id)
+    editor_lang = player.editor_lang
+    editor_text = Languages.get_solution(editor_lang)
+    params = %{editor_lang: editor_lang, editor_text: editor_text}
+
+    build(user, params)
+  end
 end

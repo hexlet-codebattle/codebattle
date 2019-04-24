@@ -42,25 +42,50 @@ defmodule Codebattle.GameCases.RematchTest do
     post(conn2, game_path(conn2, :join, game_id))
     {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
 
+    editor_text_init = "module.exports = () => {\n\n};"
+
+    fsm = Server.fsm(game_id)
+    assert fsm.state == :playing
+    assert FsmHelpers.get_first_player(fsm).editor_text == editor_text_init
+    assert FsmHelpers.get_second_player(fsm).editor_text == editor_text_init
+
+    editor_text1 = "Hello world1!"
+    editor_text2 = "Hello world2!"
+
+    # Both players enter some text in text editor
+    Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text1, lang: "js"})
+    Phoenix.ChannelTest.push(socket2, "editor:data", %{editor_text: editor_text2, lang: "js"})
+    :timer.sleep(70)
+    fsm = Server.fsm(game_id)
+
+    assert FsmHelpers.get_first_player(fsm).editor_text == editor_text1
+    assert FsmHelpers.get_second_player(fsm).editor_text == editor_text2
+
     # First player give_up
     Phoenix.ChannelTest.push(socket1, "give_up", %{})
     :timer.sleep(70)
     fsm = Server.fsm(game_id)
     assert fsm.state == :game_over
 
+    # First player send rematch offer
     Phoenix.ChannelTest.push(socket1, "rematch:send_offer", %{})
     :timer.sleep(70)
     fsm = Server.fsm(game_id)
     assert fsm.state == :rematch_in_approval
 
+    # Second player accept rematch offer
     Phoenix.ChannelTest.push(socket2, "rematch:accept_offer", %{})
     :timer.sleep(70)
-
     fsm = Server.fsm(game_id + 1)
+
     assert fsm.state == :playing
     assert FsmHelpers.get_level(fsm) == "elementary"
     assert FsmHelpers.get_first_player(fsm).id == user1.id
     assert FsmHelpers.get_second_player(fsm).id == user2.id
+
+    # Text editor go to init state, after start new game after rematch
+    assert FsmHelpers.get_first_player(fsm).editor_text == editor_text_init
+    assert FsmHelpers.get_second_player(fsm).editor_text == editor_text_init
   end
 
   test "first user gave up and send rematch offer to the bot", %{
@@ -75,6 +100,9 @@ defmodule Codebattle.GameCases.RematchTest do
         %{"lang" => "ruby", "time" => 100}
       ]
     }
+
+    editor_text_init = "module.exports = () => {\n\n};"
+    editor_text_edited = "Hello world1!"
 
     insert(:bot_playbook, %{data: playbook_data, task: task, lang: "ruby"})
 
@@ -92,6 +120,17 @@ defmodule Codebattle.GameCases.RematchTest do
     {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
     :timer.sleep(70)
 
+    fsm = Server.fsm(game_id)
+    assert fsm.state == :playing
+    assert FsmHelpers.get_second_player(fsm).editor_text == editor_text_init
+
+
+    # Real player (second player) enter some text in text editor
+    Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text_edited, lang: "js"})
+    :timer.sleep(70)
+    fsm = Server.fsm(game_id)
+    assert FsmHelpers.get_second_player(fsm).editor_text == editor_text_edited
+
     # User give_up
     Phoenix.ChannelTest.push(socket1, "give_up", %{})
     :timer.sleep(70)
@@ -102,6 +141,9 @@ defmodule Codebattle.GameCases.RematchTest do
     :timer.sleep(70)
     fsm = Server.fsm(game_id + 1)
     assert fsm.state == :playing
+
+    # Text editor go to init state, after start new game after rematch
+    assert FsmHelpers.get_second_player(fsm).editor_text == editor_text_init
   end
 
   test "first user gave up and both users send rematch offer at same time", %{
