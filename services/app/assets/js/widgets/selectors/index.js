@@ -16,6 +16,11 @@ export const firstPlayerSelector = state => _
 export const secondPlayerSelector = state => _
   .find(gamePlayersSelector(state), { type: userTypes.secondPlayer });
 
+export const opponentPlayerSelector = (state) => {
+  const currentUserId = currentUserIdSelector(state);
+  return _.find(gamePlayersSelector(state), ({ id }) => (id !== currentUserId));
+};
+
 const editorsMetaSelector = state => state.editor.meta;
 const editorTextsSelector = state => state.editor.text;
 
