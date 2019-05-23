@@ -28,11 +28,11 @@ defmodule Codebattle.GameProcess.FsmHelpers do
     fsm.data.task
   end
 
-  def get_users(fsm) do
-    fsm.data.players
-    |> Enum.filter(fn player -> player.id end)
-    |> Enum.map(fn player -> player.user end)
-  end
+  # def get_users(fsm) do
+  #   fsm.data.players
+  #   |> Enum.filter(fn player -> player.id end)
+  #   |> Enum.map(fn player -> player.user end)
+  # end
 
   def get_first_player(fsm) do
     get_players(fsm) |> Enum.at(0)
@@ -58,6 +58,14 @@ defmodule Codebattle.GameProcess.FsmHelpers do
     fsm.data.starts_at
   end
 
+  def get_joins_at(fsm) do
+    fsm.data.joins_at
+  end
+
+  def get_timeout_seconds(fsm) do
+    fsm.data.timeout_seconds
+  end
+
   def get_task(fsm) do
     fsm.data.task
   end
@@ -68,6 +76,14 @@ defmodule Codebattle.GameProcess.FsmHelpers do
 
   def get_level(fsm) do
     fsm.data.level
+  end
+
+  def get_rematch_state(fsm) do
+    fsm.data.rematch_state
+  end
+
+  def get_rematch_initiator_id(fsm) do
+    fsm.data.rematch_initiator_id
   end
 
   # TODO: implement is_true function instead Kernel.! * 2
@@ -107,5 +123,19 @@ defmodule Codebattle.GameProcess.FsmHelpers do
 
   def bot_game?(fsm) do
     fsm.data.bots
+  end
+
+  def lobby_format(fsm) do
+    %{
+      game_info: %{
+        state: fsm.state,
+        level: fsm.data.level,
+        starts_at: fsm.data.starts_at,
+        type: fsm.data.type,
+        timeout_seconds: fsm.data.timeout_seconds
+      },
+      users: fsm.data.players,
+      game_id: fsm.data.game_id
+    }
   end
 end

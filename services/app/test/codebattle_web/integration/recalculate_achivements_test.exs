@@ -51,12 +51,7 @@ defmodule RecalculateAchivementsTest do
     with_mocks [
       {Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> {:ok, "asdf", "asdf"} end]}
     ] do
-
-      ["js", "php", "ruby"]
-      |> Enum.each(fn x ->
-        insert_list(3, :user_game, %{user: user1, lang: x, result: "won"})
-      end)
-
+      insert_list(10, :user_game, %{user: user1})
       # Create game
       conn =
         conn1
@@ -76,6 +71,7 @@ defmodule RecalculateAchivementsTest do
       Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text1, lang: "js"})
       :timer.sleep(100)
       fsm = Server.fsm(game_id)
+
       user = Repo.get(User, user1.id)
       assert user.achievements == ["played_ten_games", "win_games_with?js_php_ruby"]
     end

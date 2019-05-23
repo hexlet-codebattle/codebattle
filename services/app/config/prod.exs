@@ -28,7 +28,6 @@ config :codebattle, Codebattle.Repo,
   pool_size: 15
 
 config :codebattle, Codebattle.Repo,
-  adapter: Ecto.Adapters.Postgres,
   username: System.get_env("CODEBATTLE_DB_USERNAME"),
   password: System.get_env("CODEBATTLE_DB_PASSWORD"),
   database: System.get_env("CODEBATTLE_DB_NAME"),
@@ -45,7 +44,7 @@ config :logger, :info,
   path: "/var/log/codebattle/info.log",
   level: :info
 
-config :codebattle, Codebattle.Bot, timeout: 60_000
+config :codebattle, Codebattle.Bot, timeout: 1000
 
 # Finally import the config/prod.secret.exs
 # which should be versioned separately.

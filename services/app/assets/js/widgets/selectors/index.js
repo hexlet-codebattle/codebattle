@@ -4,7 +4,7 @@ import GameStatusCodes from '../config/gameStatusCodes';
 import EditorModes from '../config/editorModes';
 import i18n from '../../i18n';
 import { makeEditorTextKey } from '../reducers';
-import { defaultEditorHeight } from '../config/editorSettings';
+import defaultEditorHeight from '../config/editorSettings';
 
 export const currentUserIdSelector = state => state.user.currentUserId;
 
@@ -15,6 +15,11 @@ export const firstPlayerSelector = state => _
 
 export const secondPlayerSelector = state => _
   .find(gamePlayersSelector(state), { type: userTypes.secondPlayer });
+
+export const opponentPlayerSelector = (state) => {
+  const currentUserId = currentUserIdSelector(state);
+  return _.find(gamePlayersSelector(state), ({ id }) => (id !== currentUserId));
+};
 
 const editorsMetaSelector = state => state.editor.meta;
 const editorTextsSelector = state => state.editor.text;
@@ -75,22 +80,19 @@ export const gameStatusTitleSelector = (state) => {
   switch (gameStatus.status) {
     case GameStatusCodes.waitingOpponent:
       return i18n
-        .t('{{state}}', { state: i18n.t('Waiting for an opponent') });
+        .t('%{state}', { state: i18n.t('Waiting for an opponent') });
     case GameStatusCodes.playing:
       return i18n
-        .t('{{state}}', { state: i18n.t('Playing') });
+        .t('%{state}', { state: i18n.t('Playing') });
     case GameStatusCodes.gameOver:
       return i18n
-        .t('{{state}}', { state: gameStatus.msg });
+        .t('%{state}', { state: gameStatus.msg });
     default:
       return '';
   }
 };
 
 export const gameTaskSelector = state => state.game.task;
-export const gameStatusNameSelector = state => state.game.gameStatus.status;
-
-export const gameStartsAtSelector = state => state.game.gameStatus.startsAt;
 
 export const gameLangsSelector = state => state.game.langs;
 
@@ -145,6 +147,7 @@ export const editorsModeSelector = currentUserId => (state) => {
 
 
 export const gameListLoadedSelector = state => state.gameList.loaded;
+export const gameListNewGameSelector = state => state.gameList.newGame;
 export const activeGamesSelector = (state) => {
   const currentUserId = currentUserIdSelector(state);
   const filterPrivateGamesFunc = ({ users, game_info: { state: gameStatus, type: gameType } }) => {

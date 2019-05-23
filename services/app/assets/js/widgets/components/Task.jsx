@@ -4,6 +4,7 @@ import _ from 'lodash';
 import ReactMarkdown from 'react-markdown';
 // import i18n from '../../i18n';
 import Timer from './Timer';
+import CountdownTimer from './CountdownTimer';
 import GameStatusCodes from '../config/gameStatusCodes';
 
 const renderGameLevelBadge = (level) => {
@@ -22,15 +23,25 @@ const renderGameLevelBadge = (level) => {
   );
 };
 
-const renderTimer = (time, gameStatusName) => {
-  if (gameStatusName !== GameStatusCodes.gameOver) {
-    return <Timer time={time} />;
+const renderTimeoutText = (timeoutSeconds) => {
+  if (!timeoutSeconds) { return false; }
+  return 'Timeout in: ';
+};
+const renderTimer = (time, timeoutSeconds, gameStatusName) => {
+  if (gameStatusName === GameStatusCodes.gameOver || gameStatusName === GameStatusCodes.timeout) {
+    return gameStatusName;
   }
 
-  return gameStatusName;
+  if (timeoutSeconds) {
+    return <CountdownTimer time={time} timeoutSeconds={timeoutSeconds} />;
+  }
+
+  return <Timer time={time} />;
 };
 
-const Task = ({ task, time, gameStatusName }) => {
+const Task = ({
+  task, time, gameStatusName, timeoutSeconds,
+}) => {
   if (_.isEmpty(task)) {
     return null;
   }
@@ -45,7 +56,10 @@ const Task = ({ task, time, gameStatusName }) => {
             {renderGameLevelBadge(task.level)}
           </h6>
           <div className="card-text">
-            <span className="text-muted">{renderTimer(time, gameStatusName)}</span>
+            <span className="text-muted">
+              {renderTimeoutText(timeoutSeconds)}
+              {renderTimer(time, timeoutSeconds, gameStatusName)}
+            </span>
           </div>
         </div>
         <div className="card-text mb-0">

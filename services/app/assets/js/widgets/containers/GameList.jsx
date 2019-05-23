@@ -5,13 +5,26 @@ import { connect } from 'react-redux';
 import Gon from 'gon';
 import qs from 'qs';
 import { Tooltip, OverlayTrigger } from 'react-bootstrap';
+import i18n from '../../i18n';
+
 import * as lobbyMiddlewares from '../middlewares/Lobby';
 import GameStatusCodes from '../config/gameStatusCodes';
 import * as actions from '../actions';
-import { activeGamesSelector, completedGamesSelector, gameListLoadedSelector } from '../selectors';
+import {
+  activeGamesSelector, completedGamesSelector, gameListLoadedSelector, gameListNewGameSelector,
+} from '../selectors';
 import Loading from '../components/Loading';
-import GamesHeatmap from '../components/GamesHeatmap';
 import UserInfo from './UserInfo';
+
+const timeoutOptions = {
+  0: i18n.t('Timeout - no timeout'),
+  60: i18n.t('Timeout 60 seconds'),
+  120: i18n.t('Timeout 120 seconds'),
+  300: i18n.t('Timeout 300 seconds'),
+  600: i18n.t('Timeout 600 seconds'),
+  1200: i18n.t('Timeout 1200 seconds'),
+  3600: i18n.t('Timeout 3600 seconds'),
+};
 
 class GameList extends React.Component {
   levelToClass = {
@@ -25,6 +38,11 @@ class GameList extends React.Component {
     const { setCurrentUser, fetchState, currentUser } = this.props;
     setCurrentUser({ user: { ...currentUser } });
     fetchState();
+  }
+
+  updateTimeoutSeconds = (timeoutSeconds) => {
+    const { selectNewGameTimeout } = this.props;
+    selectNewGameTimeout({ timeoutSeconds });
   }
 
   renderResultIcon = (gameId, player1, player2) => {
@@ -117,12 +135,13 @@ class GameList extends React.Component {
         return (
           <div className="btn-group">
             {this.renderShowGameButton(gameUrl)}
+            {
+              // TODO_NOW: pretty add channel.push(cancel_game)
+            }
             <button
               type="button"
               className="btn btn-danger btn-sm"
-              data-method="delete"
-              data-csrf={window.csrf_token}
-              data-to={gameUrl}
+              onClick={lobbyMiddlewares.cancelGame(game.game_id)}
             >
               Cancel
             </button>
@@ -149,8 +168,13 @@ class GameList extends React.Component {
     return null;
   };
 
-  renderStartNewGameButton = (gameLevel, gameType) => {
-    const queryParamsString = qs.stringify({ level: gameLevel, type: gameType });
+  renderStartNewGameButton = (gameLevel, gameType, timeoutSeconds) => {
+    const queryParamsString = qs.stringify({
+      level: gameLevel,
+      type: gameType,
+      timeout_seconds: timeoutSeconds,
+    });
+
     const gameUrl = `/games?${queryParamsString}`;
 
     return (
@@ -167,18 +191,18 @@ class GameList extends React.Component {
     );
   };
 
-  renderStartNewGameDropdownMenu = gameType => (
+  renderStartNewGameDropdownMenu = (gameType, timeoutSeconds) => (
     <Fragment>
       <div className="dropdown-header">Select a difficulty</div>
       <div className="dropdown-divider" />
-      {this.renderStartNewGameButton('elementary', gameType)}
-      {this.renderStartNewGameButton('easy', gameType)}
-      {this.renderStartNewGameButton('medium', gameType)}
-      {this.renderStartNewGameButton('hard', gameType)}
+      {this.renderStartNewGameButton('elementary', gameType, timeoutSeconds)}
+      {this.renderStartNewGameButton('easy', gameType, timeoutSeconds)}
+      {this.renderStartNewGameButton('medium', gameType, timeoutSeconds)}
+      {this.renderStartNewGameButton('hard', gameType, timeoutSeconds)}
     </Fragment>
   )
 
-  renderStartNewGameSelector = () => (
+  renderStartNewGameSelector = timeoutSeconds => (
     <div className="dropdown mr-sm-3 mr-0 mb-sm-0 mb-3">
       <button
         id="btnGroupStartNewGame"
@@ -192,12 +216,12 @@ class GameList extends React.Component {
         Create a game
       </button>
       <div className="dropdown-menu" aria-labelledby="btnGroupStartNewGame">
-        {this.renderStartNewGameDropdownMenu('withRandomPlayer')}
+        {this.renderStartNewGameDropdownMenu('withRandomPlayer', timeoutSeconds)}
       </div>
     </div>
   );
 
-  renderPlayWithFriendSelector = () => (
+  renderPlayWithFriendSelector = timeoutSeconds => (
     <div className="dropdown">
       <button
         id="btnGroupPlayWithFriend"
@@ -211,10 +235,52 @@ class GameList extends React.Component {
         Play with a friend
       </button>
       <div className="dropdown-menu" aria-labelledby="btnGroupPlayWithFriend">
-        {this.renderStartNewGameDropdownMenu('withFriend')}
+        {this.renderStartNewGameDropdownMenu('withFriend', timeoutSeconds)}
       </div>
     </div>
   );
+
+  renderTimeoutSelector = timeoutSeconds => (
+    <div className="dropdown mr-sm-3 mr-0 mb-sm-0 mb-3">
+      <button
+        id="btnGroupTimeoutSelector"
+        type="button"
+        className="btn btn-outline-info dropdown-toggle"
+        data-toggle="dropdown"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
+        <i className="fa fa-clock-o mr-2" />
+        {timeoutOptions[timeoutSeconds]}
+      </button>
+      <div className="dropdown-menu" aria-labelledby="btnGroupStartNewGame">
+        {this.renderTimeoutSelectorDropdownMenu('withRandomPlayer', timeoutSeconds)}
+      </div>
+    </div>
+  );
+
+  renderTimeoutSelectorDropdownMenu = () => {
+    const options = _.map(timeoutOptions, (text, timeoutSeconds) => (
+      <button
+        className="dropdown-item"
+        type="button"
+        key={text}
+        onClick={() => this.updateTimeoutSeconds(timeoutSeconds)}
+      >
+        {text}
+      </button>
+    ));
+    // const options = []
+    //
+
+    return (
+      <Fragment>
+        <div className="dropdown-header">Select time limit</div>
+        <div className="dropdown-divider" />
+        {options}
+      </Fragment>
+    );
+  };
 
   // TODO: add this render under "Play with the bot" when the server part is ready
   renderPlayWithBotSelector = () => (
@@ -228,7 +294,7 @@ class GameList extends React.Component {
         aria-expanded="false"
       >
         <i className="fa fa-android mr-2" />
-          Play with the bot
+        Play with the bot
       </button>
       <div className="dropdown-menu" aria-labelledby="btnGroupPlayWithBot">
         {this.renderStartNewGameDropdownMenu('withBot')}
@@ -252,6 +318,7 @@ class GameList extends React.Component {
               <th className="p-3 border-0">Level</th>
               <th className="p-3 border-0" colSpan="2">Players</th>
               <th className="p-3 border-0">State</th>
+              <th className="p-3 border-0">Time limit</th>
               <th className="p-3 border-0">Actions</th>
             </tr>
           </thead>
@@ -272,6 +339,11 @@ class GameList extends React.Component {
 
                 <td className="p-3 align-middle text-nowrap">
                   {game.game_info.state}
+                </td>
+
+
+                <td className="p-3 align-middle text-nowrap">
+                  {timeoutOptions[game.game_info.timeout_seconds]}
                 </td>
 
                 <td className="p-3 align-middle">{this.renderGameActionButton(game)}</td>
@@ -307,9 +379,9 @@ class GameList extends React.Component {
                 <tr key={game.id}>
                   <td className="p-3 align-middle text-nowrap">
                     {moment
-                        .utc(game.updated_at)
-                        .local()
-                        .format('YYYY-MM-DD HH:mm')}
+                      .utc(game.updated_at)
+                      .local()
+                      .format('YYYY-MM-DD HH:mm')}
                   </td>
                   <td className="p-3 align-middle text-nowrap">
                     {this.renderGameLevelBadge(game.level)}
@@ -330,14 +402,19 @@ class GameList extends React.Component {
   )
 
   render() {
-    const { activeGames, completedGames, loaded } = this.props;
+    const {
+      activeGames, completedGames, loaded, newGame,
+    } = this.props;
+    const timeoutSeconds = newGame.timeoutSeconds || 0;
+
     return (
       <>
         <div className="container bg-white shadow-sm py-4 mb-3">
           <h3 className="text-center mb-4">New game</h3>
           <div className="d-flex flex-sm-row flex-column align-items-center justify-content-center flex-wrap">
-            {this.renderStartNewGameSelector()}
-            {this.renderPlayWithFriendSelector()}
+            {this.renderTimeoutSelector(timeoutSeconds)}
+            {this.renderStartNewGameSelector(timeoutSeconds)}
+            {this.renderPlayWithFriendSelector(timeoutSeconds)}
           </div>
         </div>
 
@@ -354,6 +431,7 @@ class GameList extends React.Component {
 const mapStateToProps = state => ({
   activeGames: activeGamesSelector(state),
   loaded: gameListLoadedSelector(state),
+  newGame: gameListNewGameSelector(state),
   completedGames: completedGamesSelector(state),
   currentUser: Gon.getAsset('current_user'), // FIXME: don't use gon in components, Luke
 });
@@ -361,6 +439,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
   setCurrentUser: actions.setCurrentUser,
   fetchState: lobbyMiddlewares.fetchState,
+  cancelGame: lobbyMiddlewares.cancelGame,
+  selectNewGameTimeout: actions.selectNewGameTimeout,
 };
 
 export default connect(

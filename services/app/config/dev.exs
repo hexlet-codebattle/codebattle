@@ -40,11 +40,10 @@ config :phoenix, :stacktrace_depth, 20
 
 # Configure your database
 config :codebattle, Codebattle.Repo,
-  adapter: Ecto.Adapters.Postgres,
   username: System.get_env("CODEBATTLE_DB_USERNAME") || "postgres",
   password: System.get_env("CODEBATTLE_DB_PASSWORD") || "postgres",
   hostname: System.get_env("CODEBATTLE_DB_HOSTNAME") || "localhost",
   database: System.get_env("CODEBATTLE_DB_NAME") || "codebattle_dev",
   pool_size: 5
 
-config :codebattle, Codebattle.Bot, timeout: 3_000
+config :codebattle, Codebattle.Bot, timeout: 2_000

@@ -5,6 +5,5 @@ defmodule Codebattle.Repo.Migrations.AddNewAchievements do
     alter table(:users) do
       add(:achievements, {:array, :string}, null: false, default: [])
     end
-
   end
 end

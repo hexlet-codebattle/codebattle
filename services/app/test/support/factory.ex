@@ -20,7 +20,7 @@ defmodule CodebattleWeb.Factory do
 
   def user_game_factory do
     %UserGame{
-      result: "game_over",
+      result: "won",
       user: build(:user)
     }
   end

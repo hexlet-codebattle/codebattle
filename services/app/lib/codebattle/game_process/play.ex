@@ -6,14 +6,16 @@ defmodule Codebattle.GameProcess.Play do
   """
 
   import Ecto.Query, warn: false
+  import Codebattle.GameProcess.Auth
 
   alias Codebattle.{Repo, Game, User, UserGame}
-  alias Codebattle.User.Achievements
 
   alias Codebattle.GameProcess.{
     Server,
     GlobalSupervisor,
+    Engine,
     Fsm,
+    Play,
     Player,
     FsmHelpers,
     Elo,
@@ -25,8 +27,26 @@ defmodule Codebattle.GameProcess.Play do
   alias Codebattle.Bot.RecorderServer
   alias Codebattle.Bot.PlaybookPlayerRunner
 
-  def list_games do
+  # get data interface
+  def active_games do
     ActiveGames.list_games()
+  end
+
+  def game_info(id) do
+    fsm = get_fsm(id)
+
+    %{
+      status: fsm.state,
+      starts_at: FsmHelpers.get_starts_at(fsm),
+      players: FsmHelpers.get_players(fsm),
+      task: FsmHelpers.get_task(fsm),
+      level: FsmHelpers.get_level(fsm),
+      type: FsmHelpers.get_type(fsm),
+      timeout_seconds: FsmHelpers.get_timeout_seconds(fsm),
+      rematch_state: FsmHelpers.get_rematch_state(fsm),
+      rematch_initiator_id: FsmHelpers.get_rematch_initiator_id(fsm),
+      joins_at: FsmHelpers.get_joins_at(fsm)
+    }
   end
 
   def completed_games do
@@ -35,69 +55,11 @@ defmodule Codebattle.GameProcess.Play do
         games in Game,
         order_by: [desc: games.updated_at],
         where: [state: "game_over"],
-        limit: 30,
+        limit: 25,
         preload: [:users, :user_games]
       )
 
     games = Repo.all(query)
-
-    Enum.map(games, fn game ->
-      winner_user_game =
-        game.user_games
-        |> Enum.filter(fn user_game -> user_game.result == "won" end)
-        |> List.first()
-
-      winner =
-        case winner_user_game do
-          nil ->
-            Codebattle.Bot.Builder.build(%{game_result: :won})
-
-          winner_user_game ->
-            Map.get(winner_user_game, :user)
-            |> Map.merge(%{
-              creator: winner_user_game.creator,
-              game_result: winner_user_game.result,
-              lang: winner_user_game.lang,
-              rating: winner_user_game.rating,
-              rating_diff: winner_user_game.rating_diff
-            })
-        end
-
-      loser_user_game =
-        game.user_games
-        |> Enum.filter(fn user_game -> user_game.result != "won" end)
-        |> List.first()
-
-      loser =
-        case loser_user_game do
-          nil ->
-            Codebattle.Bot.Builder.build()
-
-          loser_user_game ->
-            Map.get(loser_user_game, :user)
-            |> Map.merge(%{
-              creator: loser_user_game.creator,
-              game_result: loser_user_game.result,
-              lang: loser_user_game.lang,
-              rating: loser_user_game.rating,
-              rating_diff: loser_user_game.rating_diff
-            })
-        end
-
-      %{updated_at: updated_at} = game
-
-      players =
-        [winner, loser]
-        |> Enum.sort(&(&1.creator > &2.creator))
-
-      %{
-        id: game.id,
-        players: players,
-        updated_at: updated_at,
-        duration: game.duration_in_seconds,
-        level: game.level
-      }
-    end)
   end
 
   def get_game(id) do
@@ -109,177 +71,165 @@ defmodule Codebattle.GameProcess.Play do
     Server.fsm(id)
   end
 
-  def create_game(user, level, type \\ "public") do
-    case ActiveGames.playing?(user.id) do
-      false ->
-        player = Player.from_user(user, %{creator: true})
+  # main api interface
+  def create_game(user, game_params) do
+    player = Player.build(user, %{creator: true})
+    engine = get_engine(:standard)
 
-        game =
-          Repo.insert!(%Game{
-            state: "waiting_opponent",
-            users: [user],
-            level: level,
-            type: type
-          })
-
-        fsm =
-          Fsm.new()
-          |> Fsm.create(%{
-            player: player,
-            game_id: game.id,
-            level: level,
-            type: type,
-            starts_at: TimeHelper.utc_now()
-          })
-
-        ActiveGames.create_game(user, fsm)
-        {:ok, _} = GlobalSupervisor.start_game(game.id, fsm)
+    case player_can_create_game?(player) do
+      :ok ->
+        {:ok, fsm} = engine.create_game(player, game_params)
 
         Task.async(fn ->
-          CodebattleWeb.Endpoint.broadcast("lobby", "game:new", %{game: fsm})
+          CodebattleWeb.Endpoint.broadcast!("lobby", "game:new", %{
+            game: FsmHelpers.lobby_format(fsm)
+          })
         end)
 
-        # TODO: сделать настройку нотификаций в списке игр
-        # FIXME: please refactor this, don't broadcast notificate if the game is a private
-        case type do
-          "public" ->
-            Task.async(fn ->
-              Notifier.call(:game_created, %{level: level, game: game, player: player})
-            end)
+        {:ok, FsmHelpers.get_game_id(fsm)}
 
-          _ ->
-            nil
-        end
-
-        {:ok, game.id}
-
-      _ ->
-        {:error, "You are already in a game"}
+      {:error, reason} ->
+        {:error, reason}
     end
   end
 
-  def create_bot_game(bot, task) do
-    player = Player.from_user(bot, %{creator: true})
+  def create_bot_game(bot, game_params) do
+    engine = get_engine(:bot)
 
-    game =
-      Repo.insert!(%Game{state: "waiting_opponent", users: [bot], level: task.level, task: task})
+    case player_can_create_game?(bot) do
+      :ok ->
+        {:ok, fsm} = engine.create_game(bot, game_params)
+        {:ok, FsmHelpers.get_game_id(fsm)}
 
-    fsm =
-      Fsm.new()
-      |> Fsm.create(%{
-        player: player,
-        game_id: game.id,
-        level: task.level,
-        task: task,
-        bots: true,
-        starts_at: TimeHelper.utc_now()
-      })
-
-    ActiveGames.create_game(bot, fsm)
-    {:ok, _} = GlobalSupervisor.start_game(game.id, fsm)
-
-    Task.async(fn ->
-      CodebattleWeb.Endpoint.broadcast("lobby", "game:new", %{game: fsm})
-    end)
-
-    {:ok, game.id}
+      {:error, reason} ->
+        {:error, reason}
+    end
   end
 
-  # TODO: refactor to join_to_bot_game and join_game
-  def join_game(id, user) do
-    if ActiveGames.playing?(user.id) do
-      :error
+  def create_rematch_game_with_bot(game_id) do
+    fsm = Play.get_fsm(game_id)
+    engine = get_engine(fsm)
+    real_player = FsmHelpers.get_second_player(fsm) |> Player.rebuild()
+    level = FsmHelpers.get_level(fsm)
+    type = FsmHelpers.get_type(fsm)
+    timeout_seconds = FsmHelpers.get_timeout_seconds(fsm)
+    game_params = %{"level" => level, "type" => type, "timeout_seconds" => timeout_seconds}
+
+    bot = Codebattle.Bot.Builder.build_free_bot()
+
+    if bot === nil do
+      {:no_free_bot}
     else
-      game = get_game(id)
-      fsm = get_fsm(id)
-      first_player = FsmHelpers.get_first_player(fsm)
+      case create_bot_game(bot, game_params) do
+        {:ok, new_game_id} ->
+          {:ok, new_fsm} = engine.join_game(new_game_id, real_player)
 
-      if FsmHelpers.bot_game?(fsm) == true do
-        game
-        |> Game.changeset(%{state: "playing"})
-        |> Repo.update!()
+          start_timeout_timer(new_game_id, new_fsm)
 
-        player = Player.from_user(user)
-
-        case Server.call_transition(id, :join, %{
-               player: player,
-               starts_at: TimeHelper.utc_now()
-             }) do
-          {:ok, fsm} ->
-            ActiveGames.add_participant(fsm)
-
-            {:ok, _} =
-              Codebattle.Bot.Supervisor.start_bot_server(
-                id,
-                FsmHelpers.get_second_player(fsm),
-                fsm
-              )
-
-            Codebattle.Bot.PlaybookAsyncRunner.call(%{
-              game_id: id,
-              task_id: FsmHelpers.get_task(fsm).id
+          Task.async(fn ->
+            CodebattleWeb.Endpoint.broadcast("lobby", "game:new", %{
+              game: FsmHelpers.lobby_format(new_fsm)
             })
+          end)
 
-            {:ok, fsm}
+          {:new_game, new_game_id}
 
-          {{:error, _reason}, _} ->
-            :error
-        end
-      else
-        task = get_random_task(game.level, [user.id, first_player.id])
-
-        player = Player.from_user(user)
-
-        case Server.call_transition(id, :join, %{
-               player: player,
-               starts_at: TimeHelper.utc_now(),
-               task: task
-             }) do
-          {:ok, fsm} ->
-            ActiveGames.add_participant(fsm)
-
-            game
-            |> Game.changeset(%{state: "playing", task_id: task.id})
-            |> Repo.update!()
-
-            {:ok, _} =
-              Codebattle.Bot.Supervisor.start_bot_server(
-                id,
-                first_player,
-                fsm
-              )
-
-            {:ok, _} =
-              Codebattle.Bot.Supervisor.start_bot_server(
-                id,
-                FsmHelpers.get_second_player(fsm),
-                fsm
-              )
-
-            Notifier.call(:game_opponent_join, %{
-              # creator: FsmHelpers.get_opponent(fsm, user.id),
-              first_player: first_player,
-              second_player: FsmHelpers.get_second_player(fsm),
-              game_id: id
-            })
-
-            {:ok, fsm}
-
-          {{:error, _reason}, _} ->
-            :error
-        end
+        {:error, reason} ->
+          {:error, reason}
       end
     end
   end
 
-  def cancel_game(id, user) do
-    if ActiveGames.participant?(id, user.id) do
+  def rematch_send_offer(game_id, user_id) do
+    fsm = get_fsm(game_id)
+
+    if FsmHelpers.bot_game?(fsm) do
+      create_rematch_game_with_bot(game_id)
+    else
+      {_response, new_fsm} =
+        Server.call_transition(game_id, :rematch_send_offer, %{player_id: user_id})
+
+      rematch_data = %{
+        rematchState: new_fsm.data.rematch_state,
+        rematchInitiatorId: new_fsm.data.rematch_initiator_id
+      }
+
+      {:rematch_offer, rematch_data}
+    end
+  end
+
+  def create_rematch_game(game_id) do
+    ActiveGames.terminate_game(game_id)
+
+    fsm = Play.get_fsm(game_id)
+    first_player = FsmHelpers.get_first_player(fsm) |> Player.rebuild()
+    second_player = FsmHelpers.get_second_player(fsm) |> Player.rebuild()
+    level = FsmHelpers.get_level(fsm)
+    type = FsmHelpers.get_type(fsm)
+    timeout_seconds = FsmHelpers.get_timeout_seconds(fsm)
+    game_params = %{"level" => level, "type" => type, "timeout_seconds" => timeout_seconds}
+
+    engine = get_engine(fsm)
+    {:ok, new_fsm} = engine.create_game(first_player, game_params)
+    new_game_id = FsmHelpers.get_game_id(new_fsm)
+    {:ok, new_fsm} = engine.join_game(new_game_id, second_player)
+
+    start_timeout_timer(new_game_id, new_fsm)
+
+    Task.async(fn ->
+      CodebattleWeb.Endpoint.broadcast("lobby", "game:new", %{
+        game: FsmHelpers.lobby_format(new_fsm)
+      })
+    end)
+
+    {:ok, new_game_id}
+  end
+
+  def rematch_reject(game_id) do
+    fsm = get_fsm(game_id)
+    {_response, new_fsm} = Server.call_transition(game_id, :rematch_reject, %{})
+    {:ok, new_fsm}
+  end
+
+  def join_game(id, user) do
+    fsm = get_fsm(id)
+    player = Player.build(user)
+    engine = get_engine(fsm)
+
+    case player_can_join_game?(player) do
+      :ok ->
+        case engine.join_game(id, player) do
+          {:ok, fsm} ->
+            Task.async(fn ->
+              CodebattleWeb.Endpoint.broadcast!("lobby", "game:update", %{
+                game: FsmHelpers.lobby_format(fsm)
+              })
+            end)
+
+            start_timeout_timer(id, fsm)
+
+            {:ok, fsm}
+
+          {:error, reason} ->
+            {:error, reason}
+        end
+
+      {:error, reason} ->
+        {:error, reason}
+    end
+  end
+
+  def timeout_game(id) do
+    if ActiveGames.game_exists?(id) do
+      Logger.info("Timeout triggered for game_id: #{id}")
+      Server.call_transition(id, :timeout, %{})
       ActiveGames.terminate_game(id)
-      GlobalSupervisor.terminate_game(id)
+      CodebattleWeb.Notifications.game_timeout(id)
+      CodebattleWeb.Notifications.lobby_game_cancel(id)
 
       id
       |> get_game
-      |> Game.changeset(%{state: "canceled"})
+      |> Game.changeset(%{state: "timeout"})
       |> Repo.update!()
 
       :ok
@@ -288,277 +238,126 @@ defmodule Codebattle.GameProcess.Play do
     end
   end
 
-  def game_info(id) do
-    # TODO: change first and second atoms to user ids, or list
+  def cancel_game(id, user) do
     fsm = get_fsm(id)
+    player = FsmHelpers.get_player(fsm, user.id)
 
-    %{
-      status: fsm.state,
-      starts_at: FsmHelpers.get_starts_at(fsm),
-      players: FsmHelpers.get_players(fsm),
-      task: FsmHelpers.get_task(fsm),
-      level: FsmHelpers.get_level(fsm),
-      type: FsmHelpers.get_type(fsm)
-    }
-  end
+    case player_can_cancel_game?(id, player) do
+      :ok ->
+        ActiveGames.terminate_game(id)
+        GlobalSupervisor.terminate_game(id)
+        CodebattleWeb.Notifications.lobby_game_cancel(id)
 
-  def update_editor_data(id, player_id, editor_text, editor_lang) do
-    fsm = get_fsm(id)
+        id
+        |> get_game
+        |> Game.changeset(%{state: "canceled"})
+        |> Repo.update!()
 
-    %{editor_text: prev_editor_text, editor_lang: prev_editor_lang} =
-      FsmHelpers.get_player(fsm, player_id)
-
-    # text
-    RecorderServer.update_text(id, player_id, editor_text)
-    Server.call_transition(id, :update_editor_params, %{id: player_id, editor_text: editor_text})
-
-    # land
-    case editor_lang do
-      ^prev_editor_lang ->
         :ok
 
-      _ ->
-        case Repo.get(User, player_id) do
-          user ->
-            user |> Ecto.Changeset.change(%{lang: editor_lang}) |> Repo.update!()
+      {:error, _reason} ->
+        {:error, _reason}
+    end
+  end
 
-          nil ->
-            nil
-        end
+  def update_editor_data(id, user, editor_text, editor_lang) do
+    fsm = get_fsm(id)
+    player = FsmHelpers.get_player(fsm, user.id)
+    engine = get_engine(fsm)
 
-        RecorderServer.update_lang(id, player_id, editor_lang)
+    case player_can_update_editor_data?(id, player) do
+      :ok ->
+        update_editor(id, engine, player, editor_text, editor_lang)
+        :ok
 
-        Server.call_transition(id, :update_editor_params, %{
-          id: player_id,
-          editor_lang: editor_lang
-        })
+      {:error, reason} ->
+        {:error, reason}
     end
   end
 
   def give_up(id, user) do
-    # TODO: terminate Bot.RecordServer for this
-    # RecorderServer.update_lang(id, user_id, editor_lang)
-    {_response, fsm} = Server.call_transition(id, :give_up, %{id: user.id})
-    handle_gave_up(id, user, fsm)
-    fsm
+    fsm = get_fsm(id)
+    player = FsmHelpers.get_player(fsm, user.id)
+
+    case player_can_give_up?(id, player) do
+      :ok ->
+        engine = get_engine(fsm)
+        {_response, fsm} = Server.call_transition(id, :give_up, %{id: player.id})
+        engine.handle_give_up(id, player, fsm)
+        {:ok, fsm}
+
+      {:error, reason} ->
+        {:error, reason}
+    end
   end
 
   def check_game(id, user, editor_text, editor_lang) do
     fsm = get_fsm(id)
-    update_editor_data(id, user.id, editor_text, editor_lang)
-    RecorderServer.update_lang(id, user.id, editor_lang)
-    check = check_code(fsm.data.task, editor_text, editor_lang)
-    # TODO: be race condition tolerance
-    case {fsm.state, check} do
-      {:playing, {:ok, result, output}} ->
-        Server.call_transition(id, :update_editor_params, %{
-          id: user.id,
-          result: result,
-          output: output
-        })
+    player = FsmHelpers.get_player(fsm, user.id)
 
-        {_response, fsm} = Server.call_transition(id, :complete, %{id: user.id})
-        handle_won_game(id, user, fsm)
-        {:ok, fsm, result, output}
+    case player_can_check_game?(id, player) do
+      :ok ->
+        engine = get_engine(fsm)
 
-      {:playing, {:error, result, output}} ->
-        Server.call_transition(id, :update_editor_params, %{
-          id: user.id,
-          result: result,
-          output: output
-        })
+        update_editor(id, engine, player, editor_text, editor_lang)
 
-        {:error, result, output}
+        check_result = Checker.check(FsmHelpers.get_task(fsm), editor_text, editor_lang)
 
-      {:game_over, {:error, result, output}} ->
-        Server.call_transition(id, :update_editor_params, %{
-          id: user.id,
-          result: result,
-          output: output
-        })
+        case {fsm.state, check_result} do
+          {:waiting_opponent, {:ok, result, output}} ->
+            {:error, result, output}
 
-        {:error, result, output}
+          {:playing, {:ok, result, output}} ->
+            {_response, fsm} = Server.call_transition(id, :complete, %{id: player.id})
+            engine.handle_won_game(id, player, fsm)
+            {:ok, fsm, result, output}
 
-      {:game_over, {:ok, result, output}} ->
-        Server.call_transition(id, :update_editor_params, %{
-          id: user.id,
-          result: result,
-          output: output
-        })
+          {:game_over, {:ok, result, output}} ->
+            {:ok, result, output}
 
-        {:ok, result, output}
+          {_, {:error, result, output}} ->
+            {:error, result, output}
+        end
+
+      {:error, reason} ->
+        {:error, reason}
     end
   end
 
-  defp check_code(task, editor_text, lang_slug) do
-    Checker.check(task, editor_text, lang_slug)
+  defp get_engine(:standard), do: Engine.Standard
+  defp get_engine(:bot), do: Engine.Bot
+
+  defp get_engine(fsm) do
+    case FsmHelpers.bot_game?(fsm) do
+      true ->
+        Engine.Bot
+
+      _ ->
+        Engine.Standard
+    end
   end
 
-  defp handle_won_game(id, winner, fsm) do
-    :ok = RecorderServer.store(id, winner.id)
-    game_id = id |> Integer.parse() |> elem(0)
-    loser_id = FsmHelpers.get_opponent(fsm, winner.id).id
+  defp update_editor(id, engine, player, editor_text, editor_lang) do
+    %{editor_text: prev_text, editor_lang: prev_lang} = player
 
-   loser =  try do
-      Repo.get(User, loser_id)
-    rescue
-      _ -> Codebattle.Bot.Builder.build()
+    is_text_changed = editor_text != prev_text
+    is_lang_changed = editor_lang != prev_lang
+
+    if is_text_changed do
+      engine.update_text(id, player, editor_text)
     end
 
-    difficulty = fsm.data.level
-
-    {winner_rating, loser_rating} = Elo.calc_elo(winner.rating, loser.rating, difficulty)
-    winner_rating_diff = winner_rating - winner.rating
-    loser_rating_diff = loser_rating - loser.rating
-
-    duration = NaiveDateTime.diff(TimeHelper.utc_now(), FsmHelpers.get_starts_at(fsm))
-
-    game_id
-    |> get_game
-    |> Game.changeset(%{state: to_string(fsm.state), duration_in_seconds: duration})
-    |> Repo.update!()
-
-    # TODO: fix creator please!!!!!
-
-    if !winner.bot do
-      Repo.insert!(%UserGame{
-        game_id: game_id,
-        user_id: winner.id,
-        result: "won",
-        creator: winner.creator,
-        rating: winner_rating,
-        rating_diff: winner_rating_diff,
-        lang: Map.get(winner, :lang, nil)
-      })
+    if is_lang_changed do
+      engine.update_lang(id, player, editor_lang)
     end
-
-    if !loser.bot do
-      Repo.insert!(%UserGame{
-        game_id: game_id,
-        user_id: loser.id,
-        result: "lost",
-        creator: loser.creator,
-        rating: loser_rating,
-        rating_diff: loser_rating_diff,
-        lang: Map.get(loser, :lang, nil)
-      })
-    end
-
-    if !winner.bot do
-      winner_achievements = Achievements.recalculate_achievements(winner)
-
-      winner
-      |> User.changeset(%{rating: winner_rating, achievements: winner_achievements})
-      |> Repo.update!()
-    end
-
-    if !loser.bot do
-      loser_achievements = Achievements.recalculate_achievements(loser)
-
-      loser
-      |> User.changeset(%{rating: loser_rating, achievements: loser_achievements})
-      |> Repo.update!()
-    end
-
-    ActiveGames.terminate_game(game_id)
   end
 
-  defp handle_gave_up(id, loser, fsm) do
-    game_id = id |> Integer.parse() |> elem(0)
-    winner_id = FsmHelpers.get_opponent(fsm, loser.id).id
-
-    winner =
-      case FsmHelpers.bot_game?(fsm) do
-        true ->
-          FsmHelpers.get_first_player(fsm)
-
-        false ->
-          Repo.get(User, winner_id)
-      end
-
-    difficulty = fsm.data.level
-
-    {winner_rating, loser_rating} = Elo.calc_elo(winner.rating, loser.rating, difficulty)
-    winner_rating_diff = winner_rating - winner.rating
-    loser_rating_diff = loser_rating - loser.rating
-
-    duration = NaiveDateTime.diff(TimeHelper.utc_now(), FsmHelpers.get_starts_at(fsm))
-
-    game_id
-    |> get_game
-    |> Game.changeset(%{state: to_string(fsm.state), duration_in_seconds: duration})
-    |> Repo.update!()
-
-    if !loser.bot do
-      Repo.insert!(%UserGame{
-        game_id: game_id,
-        user_id: loser.id,
-        result: "gave_up",
-        creator: loser.creator,
-        rating: loser_rating,
-        rating_diff: loser_rating_diff,
-        lang: Map.get(loser, :lang, nil)
-      })
+  defp start_timeout_timer(id, fsm) do
+    if fsm.data.timeout_seconds > 0 do
+      Codebattle.GameProcess.TimeoutServer.restart(
+        id,
+        fsm.data.timeout_seconds
+      )
     end
-
-    if !winner.bot do
-      Repo.insert!(%UserGame{
-        game_id: game_id,
-        user_id: winner.id,
-        result: "won",
-        creator: winner.creator,
-        rating: winner_rating,
-        rating_diff: winner_rating_diff,
-        lang: Map.get(winner, :lang, nil)
-      })
-    end
-
-    if loser.bot == false do
-      loser_achievements = Achievements.recalculate_achievements(loser)
-
-      loser
-      |> User.changeset(%{rating: loser_rating, achievements: loser_achievements})
-      |> Repo.update!()
-    end
-
-    if winner.bot == false do
-      winner_achievements = Achievements.recalculate_achievements(winner)
-
-      winner
-      |> User.changeset(%{rating: winner_rating, achievements: winner_achievements})
-      |> Repo.update!()
-    end
-
-    ActiveGames.terminate_game(game_id)
-  end
-
-  defp get_random_task(level, user_ids) do
-    qry = """
-    WITH game_tasks AS (SELECT count(games.id) as count, games.task_id FROM games
-    INNER JOIN "user_games" ON "user_games"."game_id" = "games"."id"
-    WHERE "games"."level" = $1 AND "user_games"."user_id" IN ($2, $3)
-    GROUP BY "games"."task_id")
-    SELECT "tasks".*, "game_tasks".* FROM tasks
-    LEFT JOIN game_tasks ON "tasks"."id" = "game_tasks"."task_id"
-    WHERE "tasks"."level" = $1
-    ORDER BY "game_tasks"."count" NULLS FIRST
-    LIMIT 7
-    """
-
-    # TODO: get list and then get random in elixir
-
-    res = Ecto.Adapters.SQL.query!(Repo, qry, [level, Enum.at(user_ids, 0), Enum.at(user_ids, 1)])
-
-    cols = Enum.map(res.columns, &String.to_atom(&1))
-
-    tasks =
-      Enum.map(res.rows, fn row ->
-        struct(Codebattle.Task, Enum.zip(cols, row))
-      end)
-
-    min_task = List.first(tasks)
-
-    filtered_task = Enum.filter(tasks, fn x -> Map.get(x, :count) == min_task.count end)
-    Enum.random(filtered_task)
   end
 end

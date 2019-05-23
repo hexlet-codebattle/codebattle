@@ -4,7 +4,7 @@ defmodule CodebattleWeb.PageView do
   alias Codebattle.GameProcess.FsmHelpers
 
   def get_users(fsm) do
-    FsmHelpers.get_users(fsm)
+    FsmHelpers.get_players(fsm)
   end
 
   def can_check?(fsm, user) do

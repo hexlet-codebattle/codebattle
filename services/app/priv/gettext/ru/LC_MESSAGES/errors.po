@@ -90,8 +90,7 @@ msgstr "Вы уже подключены к игре"
 msgid "You are not player of this game"
 msgstr "Вы не являетесь участником этой игры"
 
-#: lib/codebattle/play/fsm.ex:44
-#: lib/codebattle/play/fsm.ex:58
+#: lib/codebattle/game_process/fsm.ex:122
 msgid "Game is already playing"
 msgstr "Игра уже началась"
 

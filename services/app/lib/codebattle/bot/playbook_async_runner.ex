@@ -6,15 +6,13 @@ defmodule Codebattle.Bot.PlaybookAsyncRunner do
 
   require Logger
 
-  alias Codebattle.Bot.{Builder, Playbook}
+  alias Codebattle.Bot.Playbook
   alias Codebattle.GameProcess.Play
 
-  @timeout Application.get_env(:codebattle, Codebattle.Bot)[:timeout]
-
   # API
-  def start(%{game_id: game_id}) do
+  def start(%{game_id: game_id, bot: bot}) do
     try do
-      GenServer.start(__MODULE__, %{game_id: game_id}, name: server_name(game_id))
+      GenServer.start(__MODULE__, %{game_id: game_id, bot: bot}, name: server_name(game_id))
     rescue
       e in FunctionClauseError ->
         e
@@ -36,6 +34,7 @@ defmodule Codebattle.Bot.PlaybookAsyncRunner do
   def handle_cast({:run, params}, state) do
     port = CodebattleWeb.Endpoint.struct_url().port
 
+    # TODO: FIXME move to config
     {schema, new_port} =
       case port do
         # dev
@@ -51,19 +50,34 @@ defmodule Codebattle.Bot.PlaybookAsyncRunner do
           {"ws", 8080}
       end
 
-    socket_opts = [url: "#{schema}://localhost:#{new_port}/ws/websocket?vsn=2.0.0&token=#{bot_token}"]
+    socket_opts = [
+      url:
+        "#{schema}://localhost:#{new_port}/ws/websocket?vsn=2.0.0&token=#{bot_token(state.bot.id)}"
+    ]
+
     {:ok, socket} = PhoenixClient.Socket.start_link(socket_opts)
 
     game_topic = "game:#{params.game_id}"
-    :timer.sleep(400)
-    {:ok, _response, channel} = PhoenixClient.Channel.join(socket, game_topic)
-    new_params = Map.merge(params, %{channel: channel})
-    Codebattle.Bot.PlaybookPlayerRunner.call(new_params)
+    :timer.sleep(600)
+
+    case PhoenixClient.Channel.join(socket, game_topic) do
+      {:ok, _response, channel} ->
+        new_params = Map.merge(params, %{channel: channel})
+        Codebattle.Bot.PlaybookPlayerRunner.call(new_params)
+
+      {:error, reason} ->
+        {:error, reason}
+    end
 
     {:noreply, state}
   end
 
   # HELPERS
+
+  def handle_info(message, state) do
+    Logger.info(inspect(message))
+    {:noreply, state}
+  end
 
   defp server_name(game_id) do
     {:via, :gproc, game_key(game_id)}
@@ -73,7 +87,7 @@ defmodule Codebattle.Bot.PlaybookAsyncRunner do
     {:n, :l, {:bot_player, "#{game_id}"}}
   end
 
-  defp bot_token do
-    Phoenix.Token.sign(%Phoenix.Socket{endpoint: CodebattleWeb.Endpoint}, "user_token", "bot")
+  defp bot_token(bot_id) do
+    Phoenix.Token.sign(%Phoenix.Socket{endpoint: CodebattleWeb.Endpoint}, "user_token", bot_id)
   end
 end

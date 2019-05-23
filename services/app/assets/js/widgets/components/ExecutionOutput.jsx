@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
+import i18n from '../../i18n';
 
 class ExecutionOutput extends PureComponent {
   renderStatusBadge = (status) => {
@@ -16,18 +16,18 @@ class ExecutionOutput extends PureComponent {
   renderTestResults = (resultObj) => {
     switch (resultObj.status) {
       case '':
-        return 'Run your code!';
+        return i18n.t('Run your code!');
       case 'error':
-        return `You have some syntax errors: ${resultObj.result}`;
+        return i18n.t('You have some syntax errors: %{errors}', { errors: resultObj.result, interpolation: { escapeValue: false } });
       case 'failure':
         if (Array.isArray(resultObj.result)) {
-          return `Test falls with arguments (${resultObj.result.map(JSON.stringify).join(', ')})`;
+          return i18n.t('Test failed with arguments (%{arguments})', { arguments: resultObj.result.map(JSON.stringify).join(', '), interpolation: { escapeValue: false } });
         }
-        return `Test falls with arguments (${JSON.stringify(resultObj.result)})`;
+        return i18n.t('Test failed with arguments (%{arguments})', { arguments: JSON.stringify(resultObj.result), interpolation: { escapeValue: false } });
       case 'ok':
-        return 'Yay! All tests are passed!!111';
+        return i18n.t('Yay! All tests passed!!111');
       default:
-        return 'Oops';
+        return i18n.t('Oops');
     }
   };
 

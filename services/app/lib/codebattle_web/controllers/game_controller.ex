@@ -13,10 +13,16 @@ defmodule CodebattleWeb.GameController do
     type =
       case conn.params["type"] do
         "withFriend" -> "private"
+        "private" -> "private"
         _ -> "public"
       end
 
-    case Play.create_game(conn.assigns.current_user, conn.params["level"], type) do
+    game_params = conn.params
+      |> Map.take(["level", "type"])
+      |> Map.merge(%{"type" => type})
+      |> Map.merge(%{"timeout_seconds" => timeout_seconds(conn.params)})
+
+    case Play.create_game(conn.assigns.current_user, game_params) do
       {:ok, id} ->
         conn
         |> redirect(to: game_path(conn, :show, id))
@@ -66,41 +72,69 @@ defmodule CodebattleWeb.GameController do
       case Play.join_game(id, conn.assigns.current_user) do
         # TODO: move to Play.ex; @mimikria, we miss you))))
         {:ok, fsm} ->
-          Task.async(fn ->
-            CodebattleWeb.Endpoint.broadcast("lobby", "game:update", %{
-              game: fsm,
-              game_info: Play.game_info(id)
-            })
-          end)
-
           conn
           # |> put_flash(:info, gettext("Joined the game"))
           |> redirect(to: game_path(conn, :show, id))
 
-        :error ->
+        {:error, reason} ->
           conn
-          |> put_flash(:danger, gettext("You are in a different game"))
+          |> put_flash(:danger, reason)
           |> redirect(to: page_path(conn, :index))
       end
     catch
       :exit, reason ->
         Logger.error(inspect(reason))
+
         conn
-        |> put_flash(:danger, gettext("Sorry, the game doesn't exist"))
+        |> put_flash(:danger, "Sorry, the game doesn't exist")
         |> redirect(to: page_path(conn, :index))
     end
   end
 
   def delete(conn, %{"id" => id}) do
+    id = String.to_integer(id)
+
     case Play.cancel_game(id, conn.assigns.current_user) do
       :ok ->
-        CodebattleWeb.Endpoint.broadcast("lobby", "game:cancel", %{game_id: id})
         redirect(conn, to: page_path(conn, :index))
 
-      :error ->
+      {:error, _reason} ->
         conn
-        |> put_flash(:danger, gettext("You are in a different game"))
+        |> put_flash(:danger, _reason)
         |> redirect(to: page_path(conn, :index))
     end
+  end
+
+  @timeout_seconds_whitelist [
+    0,
+    60,
+    120,
+    300,
+    600,
+    1200,
+    3600
+  ]
+
+  @timeout_seconds_default 0
+
+  defp timeout_seconds(%{"timeout_seconds" => timeout_seconds}) do
+    timeout_seconds_int = cond do
+      timeout_seconds == "" ->
+        0
+      timeout_seconds == nil ->
+        0
+      true ->
+        String.to_integer(timeout_seconds)
+    end
+
+    if Enum.member?(@timeout_seconds_whitelist, timeout_seconds_int) do
+      timeout_seconds_int
+    else
+      @timeout_seconds_default
+    end
+  end
+
+  defp timeout_seconds(_) do
+    @timeout_seconds_default
   end
 end

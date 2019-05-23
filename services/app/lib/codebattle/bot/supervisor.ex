@@ -15,8 +15,8 @@ defmodule Codebattle.Bot.Supervisor do
     DynamicSupervisor.init(strategy: :one_for_one)
   end
 
-  def start_bot_server(game_id, user, fsm) do
-    spec = {RecorderServer, {game_id, user.id, fsm} }
+  def start_record_server(game_id, user, fsm) do
+    spec = {RecorderServer, {game_id, user.id, fsm}}
     DynamicSupervisor.start_child(String.to_atom("bot_server_#{game_id}"), spec)
     # DynamicSupervisor.start_child(String.to_atom("bot_server_#{game_id}_#{user.id}"), spec)
   end

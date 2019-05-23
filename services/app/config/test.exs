@@ -13,7 +13,6 @@ config :logger, level: :error
 
 # Configure your database
 config :codebattle, Codebattle.Repo,
-  adapter: Ecto.Adapters.Postgres,
   username: System.get_env("CODEBATTLE_DB_USERNAME") || "postgres",
   password: System.get_env("CODEBATTLE_DB_PASSWORD") || "postgres",
   database: "codebattle_test",
@@ -21,7 +20,8 @@ config :codebattle, Codebattle.Repo,
   pool: Ecto.Adapters.SQL.Sandbox,
   ownership_timeout: 99_999_999
 
-config :codebattle, Codebattle.Bot, timeout: 30
+config :codebattle, Codebattle.Bot, timeout: 60_000
+config :codebattle, Codebattle.Bot.PlaybookPlayerRunner, timeout: 300
 
 timeout =
   case System.get_env("CODEBATTLE_DOCKER_TEST_TIMEOUT") do
