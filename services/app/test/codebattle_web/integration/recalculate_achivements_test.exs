@@ -77,7 +77,7 @@ defmodule RecalculateAchivementsTest do
       :timer.sleep(100)
       fsm = Server.fsm(game_id)
       user = Repo.get(User, user1.id)
-      assert user.achievements == ["played_ten_games", "win_games_with_?js_php_ruby"]
+      assert user.achievements == ["played_ten_games", "win_games_with?js_php_ruby"]
     end
   end
 end

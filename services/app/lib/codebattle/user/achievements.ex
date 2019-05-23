@@ -78,7 +78,7 @@ defmodule Codebattle.User.Achievements do
     languages = Repo.all(query) |> Enum.into(%{}) |> Map.keys()
     cond do
       Enum.count(languages) >= 3 ->
-        {achievements ++ ["win_games_with_?#{Enum.join(languages, "_")}"], user}
+        {achievements ++ ["win_games_with?#{Enum.join(languages, "_")}"], user}
       true ->
         {achievements, user}
     end

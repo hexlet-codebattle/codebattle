@@ -1,6 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 import Loading from './Loading';
+import UserAchievements from './UserAchievements';
 
 const UserStats = ({ data }) => {
   if (data) {
@@ -23,6 +24,7 @@ const UserStats = ({ data }) => {
           </li>
         </ul>
         {achivementsTitle}
+        {UserAchievements(achievements)}
       </div>
     );
   }
