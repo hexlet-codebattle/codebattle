@@ -1,6 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 import Loading from './Loading';
+import UserAchievements from './UserAchievements';
 
 const UserStats = ({ data }) => {
   if (data) {
@@ -23,15 +24,7 @@ const UserStats = ({ data }) => {
           </li>
         </ul>
         {achivementsTitle}
-        {!_.isEmpty(achievements) && (
-          <ul className="list-inline">
-            {achievements.map(el => (
-              <li key={el} className="list-inline-item">
-                <img src={`/assets/images/achievements/${el}.png`} alt={el} height="50" width="50" />
-              </li>
-            ))}
-          </ul>
-        )}
+        {UserAchievements(achievements)}
       </div>
     );
   }

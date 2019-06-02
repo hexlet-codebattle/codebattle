@@ -56,7 +56,7 @@ defmodule RecalculateAchivementsTest do
       conn =
         conn1
         |> get(page_path(conn1, :index))
-        |> post(game_path(conn1, :create, level: "easy"))
+        |> post(game_path(conn1, :create, level: "easy", lang: "js"))
 
       game_id = game_id_from_conn(conn)
 
@@ -66,7 +66,6 @@ defmodule RecalculateAchivementsTest do
       # Second player join game
       post(conn2, game_path(conn2, :join, game_id))
       {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
-
       # First player won
       editor_text1 = "Hello world1!"
       Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text1, lang: "js"})
@@ -74,7 +73,49 @@ defmodule RecalculateAchivementsTest do
       fsm = Server.fsm(game_id)
 
       user = Repo.get(User, user1.id)
-      assert user.achievements == ["played_ten_games"]
+      assert user.achievements == ["played_ten_games", "win_games_with?js_php_ruby"]
+    end
+  end
+
+  test "calculate polyglot achievement", %{
+    conn1: conn1,
+    conn2: conn2,
+    socket1: socket1,
+    socket2: socket2,
+    user1: user1,
+    user2: user2
+  } do
+    with_mocks [
+      {Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> {:ok, "asdf", "asdf"} end]}
+    ] do
+
+      ["js", "php", "ruby"]
+      |> Enum.each(fn x ->
+        insert_list(3, :user_game, %{user: user1, lang: x, result: "won"})
+      end)
+
+      # Create game
+      conn =
+        conn1
+        |> get(page_path(conn1, :index))
+        |> post(game_path(conn1, :create, level: "easy", lang: "js"))
+
+      game_id = game_id_from_conn(conn)
+
+      game_topic = "game:" <> to_string(game_id)
+      {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
+
+      # Second player join game
+      post(conn2, game_path(conn2, :join, game_id))
+      {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
+      # First player won
+      editor_text1 = "Hello world1!"
+      Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text1, lang: "js"})
+      :timer.sleep(100)
+      fsm = Server.fsm(game_id)
+
+      user = Repo.get(User, user1.id)
+      assert user.achievements == ["played_ten_games", "win_games_with?js_php_ruby"]
     end
   end
 end

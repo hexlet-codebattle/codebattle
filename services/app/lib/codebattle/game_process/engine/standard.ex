@@ -103,7 +103,6 @@ defmodule Codebattle.GameProcess.Engine.Standard do
 
   def handle_give_up(game_id, loser, fsm) do
     winner = FsmHelpers.get_opponent(fsm, loser.id)
-
     store_game_result_async!(fsm, {winner, "won"}, {loser, "gave_up"})
     ActiveGames.terminate_game(game_id)
   end
