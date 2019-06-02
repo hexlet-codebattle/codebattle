@@ -18,7 +18,12 @@
   .row.px-4.mt-5.justify-content-center
     .col-12.col-md-4.col-lg-2.text-center
       .h1
-        = @user.rating
+        = @rank
+      p.lead
+        | rank
+    .col-12.col-md-4.col-lg-2.text-center
+      .h1
+        = "#{@user.rating}"
       p.lead
         | elo rating
     .col-12.col-md-5.col-lg-3.text-center
@@ -36,7 +41,7 @@
       h2.mt-1.mb-0
         | Achievements:
       div.d-flex.justify-content-center.profile
-        = Enum.map @user.achievements, fn achievement -> 
+        = Enum.map @user.achievements, fn achievement ->
           - condition = String.contains?(achievement, "win_games_with")
           = if condition do
             div.polyglot[title="#{achievement}"]
@@ -46,5 +51,3 @@
                   img.[alt="#{lang}" title="#{lang}" src="/assets/images/achievements/#{lang}.png" width="38" height="38"]
           - else
             img.mr-1[alt="#{achievement}" title="#{achievement}" src="/assets/images/achievements/#{achievement}.png" width="200" height="200"]
-            
-  
