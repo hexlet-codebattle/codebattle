@@ -35,8 +35,16 @@
     .col-12.text-center.mt-4
       h2.mt-1.mb-0
         | Achievements:
-      ul.list-inline
-        = for achievement <- @user.achievements do
-          li.list-inline-item
-            img.img-fluid.rounded[alt="#{achievement}" title="#{achievement}" src="/assets/images/achievements/#{achievement}.png" width="200" height="200"]
+      div.d-flex.justify-content-center.profile
+        = Enum.map @user.achievements, fn achievement -> 
+          - condition = String.contains?(achievement, "win_games_with")
+          = if condition do
+            div.polyglot[title="#{achievement}"]
+              div.d-flex.h-75.flex-wrap.align-items-center.justify-content-around
+                - langs = String.split(achievement, "?") |> Enum.at(1) |> String.split("_")
+                = Enum.map langs, fn lang ->
+                  img.[alt="#{lang}" title="#{lang}" src="/assets/images/achievements/#{lang}.png" width="38" height="38"]
+          - else
+            img.mr-1[alt="#{achievement}" title="#{achievement}" src="/assets/images/achievements/#{achievement}.png" width="200" height="200"]
+            
   
