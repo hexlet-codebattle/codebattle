@@ -35,7 +35,10 @@ defmodule Codebattle.User.Stats do
 
     sorted_ids = Repo.all(query)
 
-    Enum.find_index(sorted_ids, fn id -> id == String.to_integer(user_id) end) + 1
+    case Enum.find_index(sorted_ids, fn id -> id == String.to_integer(user_id) end) do
+      nil -> -1
+      id -> id + 1
+    end
   end
 
   def get_users_rating(params) do
