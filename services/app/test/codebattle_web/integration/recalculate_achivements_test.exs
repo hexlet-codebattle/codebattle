@@ -4,9 +4,7 @@ defmodule RecalculateAchivementsTest do
   import Mock
   import CodebattleWeb.Factory
 
-  alias Codebattle.GameProcess.Server
   alias CodebattleWeb.UserSocket
-  alias Codebattle.User.Achievements
   alias Codebattle.User
 
   setup %{conn: conn} do
@@ -46,12 +44,12 @@ defmodule RecalculateAchivementsTest do
     socket1: socket1,
     socket2: socket2,
     user1: user1,
-    user2: user2
+    user2: _user2
   } do
     with_mocks [
       {Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> {:ok, "asdf", "asdf"} end]}
     ] do
-      insert_list(10, :user_game, %{user: user1})
+      insert_list(49, :user_game, %{user: user1})
       # Create game
       conn =
         conn1
@@ -70,10 +68,9 @@ defmodule RecalculateAchivementsTest do
       editor_text1 = "Hello world1!"
       Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text1, lang: "js"})
       :timer.sleep(100)
-      fsm = Server.fsm(game_id)
 
       user = Repo.get(User, user1.id)
-      assert user.achievements == ["played_ten_games", "win_games_with?js_php_ruby"]
+      assert user.achievements == ["played_fifty_games"]
     end
   end
 
@@ -83,7 +80,7 @@ defmodule RecalculateAchivementsTest do
     socket1: socket1,
     socket2: socket2,
     user1: user1,
-    user2: user2
+    user2: _user2
   } do
     with_mocks [
       {Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> {:ok, "asdf", "asdf"} end]}
@@ -112,7 +109,6 @@ defmodule RecalculateAchivementsTest do
       editor_text1 = "Hello world1!"
       Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text1, lang: "js"})
       :timer.sleep(100)
-      fsm = Server.fsm(game_id)
 
       user = Repo.get(User, user1.id)
       assert user.achievements == ["played_ten_games", "win_games_with?js_php_ruby"]
