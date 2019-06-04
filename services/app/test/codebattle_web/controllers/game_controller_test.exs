@@ -150,6 +150,6 @@ defmodule Codebattleweb.GameControllerTest do
 
   defp active_game(id) do
     ActiveGames.list_games
-      |> Enum.find( fn {game_id, _, _} -> game_id == id end)
+      |> Enum.find(fn {game_id, _, _} -> game_id == id end)
   end
 end

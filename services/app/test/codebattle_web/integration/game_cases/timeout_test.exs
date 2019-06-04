@@ -24,8 +24,8 @@ defmodule Codebattle.GameCases.TimeoutTest do
     conn2: conn2,
     socket1: socket1,
     socket2: socket2,
-    user1: user1,
-    user2: user2
+    user1: _user1,
+    user2: _user2
   } do
     # Create game
     conn =
