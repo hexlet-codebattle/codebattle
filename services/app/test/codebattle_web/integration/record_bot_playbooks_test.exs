@@ -34,8 +34,8 @@ defmodule Codebattle.RecordBotPlaybooksTest do
     conn2: conn2,
     socket1: socket1,
     socket2: socket2,
-    user1: user1,
-    user2: user2
+    user1: _user1,
+    user2: _user2
   } do
     with_mocks [
       {Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> {:ok, "asdf", "asdf"} end]}
@@ -59,7 +59,7 @@ defmodule Codebattle.RecordBotPlaybooksTest do
 
       # Second player join game
       post(conn2, game_path(conn2, :join, game_id))
-      {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
+      {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
       fsm = Server.fsm(game_id)
 
       assert fsm.state == :playing
@@ -70,8 +70,7 @@ defmodule Codebattle.RecordBotPlaybooksTest do
 
       # First player won
       editor_text1 = "Hello world1!"
-      editor_text2 = "Hello world2!"
-      editor_text3 = "Hello world3!"
+      # editor_text2 = "Hello world2!"
 
       Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text1, lang: "js"})
       :timer.sleep(100)

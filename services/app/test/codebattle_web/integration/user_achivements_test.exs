@@ -1,4 +1,4 @@
-defmodule Codebattle.RandomTaskSelectorTest do
+defmodule Codebattle.UserAchivementsTest do
   use Codebattle.IntegrationCase
 
   alias Codebattle.{Repo, Game}

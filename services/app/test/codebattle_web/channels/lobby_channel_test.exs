@@ -10,9 +10,9 @@ defmodule CodebattleWeb.LobbyChannelTest do
     game = insert(:game, task: task, level: task.level, state: "game_over")
     winner = insert(:user)
     loser = insert(:user)
-    winner_user_game = insert(:user_game, user: winner, creator: false, game: game, result: "won")
+    _winner_user_game = insert(:user_game, user: winner, creator: false, game: game, result: "won")
 
-    loser_user_game =
+    _loser_user_game =
       insert(:user_game, user: loser, creator: true, game: game, result: "gave_up")
 
     user_token1 = Phoenix.Token.sign(socket(UserSocket), "user_token", winner.id)

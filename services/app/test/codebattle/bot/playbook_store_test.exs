@@ -6,14 +6,13 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
   alias CodebattleWeb.{GameChannel, UserSocket}
   alias Codebattle.Bot.Playbook
   alias Codebattle.Repo
-  alias Codebattle.GameProcess.Player
   alias CodebattleWeb.UserSocket
 
   setup %{conn: conn} do
     task = insert(:task)
     user1 = insert(:user, %{name: "first", email: "test1@test.test", github_id: 1, rating: 1000})
     user2 = insert(:user, %{name: "second", email: "test2@test.test", github_id: 2, rating: 1000})
-    user3 = insert(:user, %{name: "other", email: "test3@test.test", github_id: 3, rating: 1000})
+    # user3 = insert(:user, %{name: "other", email: "test3@test.test", github_id: 3, rating: 1000})
 
     conn1 = put_session(conn, :user_id, user1.id)
     conn2 = put_session(conn, :user_id, user2.id)
@@ -37,8 +36,8 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
     conn1: conn1,
     conn2: conn2,
     user1: user1,
-    user2: user2,
-    task: task,
+    user2: _user2,
+    task: _task,
     socket1: socket1,
     socket2: socket2
   } do
