@@ -48,7 +48,7 @@ const Task = ({
 
   return (
     <div className="card h-100 border-0 shadow-sm">
-      <div className="px-3 py-3">
+      <div className="px-3 py-3 h-100">
         <div className="d-flex flex-column flex-sm-row justify-content-between">
           <h6 className="card-text">
             {'Task: '}
@@ -62,7 +62,7 @@ const Task = ({
             </span>
           </div>
         </div>
-        <div className="card-text mb-0">
+        <div className="card-text mb-0  h-100  overflow-auto">
           <ReactMarkdown source={task.description} />
         </div>
       </div>

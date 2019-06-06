@@ -1,15 +1,9 @@
 import React, { Component } from 'react';
-import { scrolled } from 'react-stay-scrolled';
 
 class Message extends Component {
   static defaultProps = {
     message: '',
     user: '',
-  }
-
-  componentDidMount() {
-    const { stayScrolled } = this.props;
-    stayScrolled();
   }
 
   render() {
@@ -24,4 +18,4 @@ class Message extends Component {
   }
 }
 
-export default scrolled(Message);
+export default (Message);

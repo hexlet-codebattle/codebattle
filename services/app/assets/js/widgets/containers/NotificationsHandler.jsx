@@ -10,6 +10,7 @@ import ActionsAfterGame from '../components/Toast/ActionsAfterGame';
 import CloseButton from '../components/Toast/CloseButton';
 import { updateGameUI as updateGameUIAction } from '../actions';
 import { sendRejectToRematch } from '../middlewares/Game';
+import 'react-toastify/dist/ReactToastify.css';
 
 const toastOptions = {
   hideProgressBar: true,

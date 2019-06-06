@@ -34,14 +34,12 @@ class ChatWidget extends React.Component {
     const { message: typedMessage } = this.state;
     const { messages, users } = this.props;
     return (
-      <div className="d-flex shadow-sm">
-        <div className="col-12 col-sm-8 p-0 bg-white rounded-left">
+      <div className="d-flex shadow-sm h-100">
+        <div className="col-12 col-sm-8 p-0 bg-white rounded-left h-100 position-relative">
           <Messages
             messages={messages}
-            className="overflow-auto px-3 mt-3 pb-0"
-            style={{ wordBreak: 'break-all', height: '164px' }}
           />
-          <form className="px-3 my-2 input-group input-group-sm" onSubmit={this.handleSubmit}>
+          <form className="p-2 input-group input-group-sm position-absolute" style={{ bottom: 0 }} onSubmit={this.handleSubmit}>
             <input
               className="form-control border-secondary"
               placeholder="Type message here..."
