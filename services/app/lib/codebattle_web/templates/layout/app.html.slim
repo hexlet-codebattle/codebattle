@@ -17,12 +17,9 @@ html lang="en"
     meta content="#b91d47" name="msapplication-TileColor"
     meta content="/assets/images/favicons/browserconfig.xml" name="msapplication-config"
     meta content="#ffffff" name="theme-color"
-
-    link href="https://cdnjs.cloudflare.com/ajax/libs/font-mfizz/2.4.1/font-mfizz.min.css"
+    link rel="stylesheet" href=static_path(@conn,"/assets/style.css")
 
     title Codebattle
-    - if Mix.env() != :dev do
-      link rel="stylesheet" href=static_path(@conn,"/assets/app.css")
     = unless @current_user.guest do
       - app_id = "#{Application.get_env(:one_signal, OneSignal)[:app_id]}"
       script async="" src="https://cdn.onesignal.com/sdks/OneSignalSDK.js"

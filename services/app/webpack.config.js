@@ -7,7 +7,7 @@ const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
 
-const env = process.env.NODE_ENV || 'dev';
+const env = process.env.NODE_ENV || 'development';
 const isProd = env === 'production';
 
 const commonPlugins = [
@@ -24,7 +24,7 @@ const commonPlugins = [
     languages: ['ruby', 'javascript', 'typescript', 'perl', 'python', 'clojure', 'php'],
   }),
   new MiniCssExtractPlugin({
-    filename: 'app.css',
+    filename: 'style.css',
   }),
   new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /(en|ru)$/),
 ];
@@ -49,7 +49,7 @@ const productionPlugins = [
 
 module.exports = {
   entry: {
-    app: ['./assets/js/app.js', './assets/css/app.scss'],
+    app: ['./assets/js/app.js', './assets/css/style.scss'],
   },
   devtool: isProd ? false : 'eval-source-map',
   devServer: {
@@ -77,7 +77,7 @@ module.exports = {
         {
           loader: 'babel-loader',
           options: {
-            cacheDirectory: true,
+            // cacheDirectory: true,
             presets: [
               '@babel/env',
               '@babel/react',
@@ -92,9 +92,14 @@ module.exports = {
       {
         test: /\.(sa|sc|c)ss$/,
         use: [
-          { loader: isProd ? MiniCssExtractPlugin.loader : 'style-loader' },
-          'css-loader',
-          'sass-loader',
+          {
+            loader: MiniCssExtractPlugin.loader,
+            options: {
+              hmr: process.env.NODE_ENV === 'development',
+            },
+          },
+          { loader: 'css-loader' },
+          { loader: 'sass-loader' },
         ],
       },
       {
