@@ -13,7 +13,7 @@ class UsersRating extends React.Component {
     getRatingPage(1);
   }
 
-  rengerUser = (user, index) => {
+  renderUser = (user, index) => {
     const { usersRatingPage: { pageInfo } } = this.props;
     return (
       <tr key={user.id}>
@@ -77,7 +77,7 @@ class UsersRating extends React.Component {
             </tr>
           </thead>
           <tbody className="text-left">
-            {usersRatingPage.users.map(this.rengerUser)}
+            {usersRatingPage.users.map(this.renderUser)}
           </tbody>
         </table>
         {this.renderPaginationUi()}
