@@ -104,17 +104,17 @@ defmodule CodebattleWeb.GameChannel do
     game_id = get_game_id(socket)
 
     fsm = Play.get_fsm(game_id)
-    currentUserId = socket.assigns.user_id
+    current_user_id = socket.assigns.user_id
 
     case fsm.state do
       :rematch_in_approval ->
         handle_in("rematch:accept_offer", nil, socket)
 
       :game_over ->
-        process_rematch_offer(game_id, currentUserId, socket)
+        process_rematch_offer(game_id, current_user_id, socket)
 
       :timeout ->
-        process_rematch_offer(game_id, currentUserId, socket)
+        process_rematch_offer(game_id, current_user_id, socket)
       _ ->
         {:noreply, socket}
     end
