@@ -134,7 +134,7 @@ defmodule Codebattle.GameProcess.FsmHelpers do
         type: fsm.data.type,
         timeout_seconds: fsm.data.timeout_seconds
       },
-      users: fsm.data.players,
+      players: fsm.data.players,
       game_id: fsm.data.game_id
     }
   end

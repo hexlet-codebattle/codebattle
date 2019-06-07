@@ -74,10 +74,13 @@ defmodule CodebattleWeb.GameChannel do
         active_games =
           Play.active_games()
           |> Enum.map(fn {game_id, users, game_info} ->
-            %{game_id: game_id, users: Map.values(users), game_info: game_info}
+            %{game_id: game_id, players: Map.values(users), game_info: game_info}
           end)
 
-        completed_games = Play.completed_games()
+        completed_games =
+          Enum.map(Play.completed_games(), fn game ->
+            Play.get_completed_game_info(game)
+          end)
 
         CodebattleWeb.Endpoint.broadcast_from!(self(), "lobby", "game:game_over", %{
           active_games: active_games,
@@ -157,10 +160,13 @@ defmodule CodebattleWeb.GameChannel do
         active_games =
           Play.active_games()
           |> Enum.map(fn {game_id, users, game_info} ->
-            %{game_id: game_id, users: Map.values(users), game_info: game_info}
+            %{game_id: game_id, players: Map.values(users), game_info: game_info}
           end)
 
-        completed_games = Play.completed_games()
+        completed_games =
+          Enum.map(Play.completed_games(), fn game ->
+            Play.get_completed_game_info(game)
+          end)
 
         push(socket, "user:check_result", %{
           solution_status: true,

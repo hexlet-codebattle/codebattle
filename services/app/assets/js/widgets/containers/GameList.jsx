@@ -83,24 +83,24 @@ class GameList extends React.Component {
     </span>
   );
 
-  renderPlayers = (gameId, users) => {
-    if (users.length === 1) {
+  renderPlayers = (gameId, players) => {
+    if (players.length === 1) {
       return (
         <td className="p-3 align-middle text-nowrap" colSpan={2}>
           {this.renderEmptyResultIcon()}
-          <UserInfo user={users[0]} />
+          <UserInfo user={players[0]} />
         </td>
       );
     }
     return (
       <Fragment>
         <td className="p-3 align-middle text-nowrap x-username-td text-truncate">
-          {this.renderResultIcon(gameId, users[0], users[1])}
-          <UserInfo user={users[0]} />
+          {this.renderResultIcon(gameId, players[0], players[1])}
+          <UserInfo user={players[0]} />
         </td>
         <td className="p-3 align-middle text-nowrap x-username-td text-truncate">
-          {this.renderResultIcon(gameId, users[1], users[0])}
-          <UserInfo user={users[1]} />
+          {this.renderResultIcon(gameId, players[1], players[0])}
+          <UserInfo user={players[1]} />
         </td>
       </Fragment>
     );
@@ -113,7 +113,7 @@ class GameList extends React.Component {
     </div>
   );
 
-  isPlayer = (user, game) => !_.isEmpty(_.find(game.users, { id: user.id }));
+  isPlayer = (user, game) => !_.isEmpty(_.find(game.players, { id: user.id }));
 
   renderShowGameButton = gameUrl => (
     <button type="button" className="btn btn-info btn-sm" data-method="get" data-to={gameUrl}>
@@ -335,7 +335,7 @@ class GameList extends React.Component {
                   {this.renderGameLevelBadge(game.game_info.level)}
                 </td>
 
-                {this.renderPlayers(game.id, game.users)}
+                {this.renderPlayers(game.id, game.players)}
 
                 <td className="p-3 align-middle text-nowrap">
                   {game.game_info.state}
