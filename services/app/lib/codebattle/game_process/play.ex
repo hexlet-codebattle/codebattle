@@ -32,6 +32,10 @@ defmodule Codebattle.GameProcess.Play do
     ActiveGames.list_games()
   end
 
+  def active_games(params) do
+    ActiveGames.list_games(params)
+  end
+
   def game_info(id) do
     fsm = get_fsm(id)
 

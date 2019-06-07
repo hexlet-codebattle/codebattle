@@ -18,6 +18,10 @@ defmodule Codebattle.GameProcess.ActiveGames do
 
   def list_games, do: :ets.match_object(@table_name, :_)
 
+  def list_games(params) do
+    @table_name |> :ets.match_object({:_, :_, params})
+  end
+
   def get_playing_bots do
     list_games()
     |> Enum.map(fn {_, item, _} -> item |> Map.values() |> hd end)
@@ -90,6 +94,7 @@ defmodule Codebattle.GameProcess.ActiveGames do
   defp build_game_params(fsm) do
     %{
       state: fsm.state,
+      is_bot: FsmHelpers.bot_game?(fsm),
       level: FsmHelpers.get_level(fsm),
       starts_at: FsmHelpers.get_starts_at(fsm),
       type: FsmHelpers.get_type(fsm),
