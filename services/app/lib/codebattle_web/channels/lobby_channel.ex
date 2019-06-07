@@ -15,9 +15,7 @@ defmodule CodebattleWeb.LobbyChannel do
       end)
 
     completed_games =
-      Enum.map(Play.completed_games(), fn game ->
-        Play.get_completed_game_info(game)
-      end)
+      Enum.map(Play.completed_games(), &Play.get_completed_game_info/1)
 
     {:ok, %{active_games: active_games, completed_games: completed_games}, socket}
   end
