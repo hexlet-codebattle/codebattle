@@ -1,4 +1,4 @@
-version: '3.3'
+version: "3.3"
 
 services:
   app:
@@ -15,7 +15,7 @@ services:
       - "./services/app:/app:delegated"
       - "~/.bash_history:/root/.bash_history:delegated"
       - ".bashrc:/root/.bashrc:delegated"
-      - '/var/run/docker.sock:/var/run/docker.sock:cached'
+      - "/var/run/docker.sock:/var/run/docker.sock:cached"
       - "/var/tmp:/var/tmp:delegated"
       - "/tmp:/tmp:delegated"
     depends_on:
