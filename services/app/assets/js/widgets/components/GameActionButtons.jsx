@@ -44,9 +44,6 @@ class GameActionButtons extends Component {
       }
 
       {` ${i18n.t('Check')}`}
-      {
-        // FIXME: set cmd for mac os
-      }
       <small> (ctrl+enter)</small>
     </button>
   )
@@ -93,7 +90,7 @@ class GameActionButtons extends Component {
     const realDisabled = isSpectator || disabled;
 
     return (
-          <div className="btn-toolbar py-3 px-3" role="toolbar">
+      <div className="btn-toolbar py-3 px-3" role="toolbar">
             {this.renderGiveUpButton(canGiveUp, realDisabled)}
             {this.renderCheckResultButton(
               checkResult,
