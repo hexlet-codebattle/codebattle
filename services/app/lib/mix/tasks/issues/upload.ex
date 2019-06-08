@@ -3,7 +3,7 @@ defmodule Mix.Tasks.Issues.Upload do
 
   use Mix.Task
 
-  require Logger
+  # require Logger
 
   alias Codebattle.{Repo, Task}
 
@@ -34,27 +34,13 @@ defmodule Mix.Tasks.Issues.Upload do
       issue_info = YamlElixir.read_from_file!(Path.join(path, "#{issue_name}.yml"))
       signature = Map.get(issue_info, "signature")
 
-      input =
-        case Map.get(signature, "input") do
-          nil -> "nil"
-
-          input_args -> Enum.map_join(input_args, "/", &parse_arg/1)
-        end
-
-      output =
-        case Map.get(signature, "output") do
-          nil -> "nil"
-
-          output_arg -> parse_arg(output_arg)
-        end
-
       changeset =
         Task.changeset(%Task{}, %{
           name: issue_name,
           description: Map.get(issue_info, "description"),
           level: Map.get(issue_info, "level"),
-          input: input,
-          output: output,
+          input_signature: Map.get(signature, "input"),
+          output_signature: Map.get(signature, "output"),
           asserts: asserts
         })
 
@@ -67,14 +53,4 @@ defmodule Mix.Tasks.Issues.Upload do
       end
     end)
   end
-
-  defp parse_arg(%{"argument-name" => name, "type" => type}) do
-    "#{name}:#{parse_type(type)}"
-  end
-  defp parse_arg(%{"type" => type}), do: "nil:#{parse_type(type)}"
-
-  defp parse_type(%{"name" => name, "nested" => %{"type": nested_type}}) do
-    "#{name}[#{parse_type(nested_type)}]"
-  end
-  defp parse_type(%{"name" => name}), do: name
 end

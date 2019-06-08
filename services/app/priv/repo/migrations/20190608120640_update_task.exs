@@ -3,8 +3,8 @@ defmodule Codebattle.Repo.Migrations.UpdateTask do
 
   def change do
     alter table(:tasks) do
-      add(:input, :string)
-      add(:output, :string)
+      add(:input_signature, :jsonb, default: "[]")
+      add(:output_signature, :jsonb, default: "{}")
     end
   end
 end

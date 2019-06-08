@@ -18,10 +18,19 @@ defmodule Tasks.Issues.UploadTest do
       end)
       |> MapSet.new()
 
-    {:ok, %{path: path, issue_names: issue_names}}
+    signatures =
+      issue_names
+      |> Enum.map(fn issue_name ->
+        YamlElixir.read_from_file!(Path.join(path, "#{issue_name}.yml"))
+        |> Map.get("signature")
+      end)
+      |> MapSet.new()
+
+
+   {:ok, %{path: path, issue_names: issue_names, signatures: signatures}}
   end
 
-  test "uploads fixtures to database", %{path: path, issue_names: issue_names} do
+  test "uploads fixtures to database", %{path: path, issue_names: issue_names, signatures: _signatures} do
     Mix.Tasks.Issues.Upload.run([path])
 
     task_names =
@@ -33,7 +42,7 @@ defmodule Tasks.Issues.UploadTest do
     assert MapSet.equal?(task_names, issue_names)
   end
 
-  test "is idempotent", %{path: path, issue_names: issue_names} do
+  test "is idempotent", %{path: path, issue_names: issue_names, signatures: _signatures} do
     Mix.Tasks.Issues.Upload.run([path])
     Mix.Tasks.Issues.Upload.run([path])
 
@@ -46,15 +55,17 @@ defmodule Tasks.Issues.UploadTest do
     assert MapSet.equal?(task_names, issue_names)
   end
 
-  test "is correct input and output", %{path: path, issue_names: _issue_names} do
+  test "is correct signature", %{path: path, issue_names: _issue_names, signatures: signatures} do
     Mix.Tasks.Issues.Upload.run([path])
 
-    [{task_input, task_output}] =
+    task_signatures =
       Task
       |> Repo.all()
-      |> Enum.map(fn task -> {task.input, task.output} end)
+      |> Enum.map(fn task ->
+        %{"input" => task.input_signature, "output" => task.output_signature}
+      end)
+      |> MapSet.new()
 
-    assert task_input == "num:integer"
-    assert task_output == "nil:integer"
+    assert MapSet.equal?(task_signatures, signatures)
   end
 end
