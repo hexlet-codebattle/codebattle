@@ -3,6 +3,8 @@ defmodule Mix.Tasks.Issues.Upload do
 
   use Mix.Task
 
+  require Logger
+
   alias Codebattle.{Repo, Task}
 
   @shortdoc "Upload tasks from /asserts to database"
@@ -31,11 +33,23 @@ defmodule Mix.Tasks.Issues.Upload do
       asserts = File.read!(Path.join(path, "#{issue_name}.jsons"))
       issue_info = YamlElixir.read_from_file!(Path.join(path, "#{issue_name}.yml"))
 
+      input =
+        Map.get(issue_info, "signature")
+        |> Map.get("input")
+        |> Enum.map_join("/", &parse_arg/1)
+
+      output =
+        Map.get(issue_info, "signature")
+        |> Map.get("output")
+        |> parse_arg()
+
       changeset =
         Task.changeset(%Task{}, %{
           name: issue_name,
           description: Map.get(issue_info, "description"),
           level: Map.get(issue_info, "level"),
+          input: input,
+          output: output,
           asserts: asserts
         })
 
@@ -47,5 +61,15 @@ defmodule Mix.Tasks.Issues.Upload do
           true
       end
     end)
+  end
+
+  defp parse_arg(%{"type" => type}), do: "nil:#{parse_type(type)}"
+  defp parse_arg(%{"argument-name" => name, "type" => type}) do
+    "#{name}:#{parse_type(type)}"
+  end
+
+  defp parse_type(%{"name" => name}), do: name
+  defp parse_type(%{"name" => name, "nested" => nested}) do
+    "#{name}[#{parse_type(nested)}]"
   end
 end
