@@ -66,6 +66,33 @@ defmodule Codebattle.GameProcess.Play do
     games = Repo.all(query)
   end
 
+  def get_completed_game_info(game) do
+    winner_user_game =
+      game.user_games
+      |> Enum.filter(fn user_game -> user_game.result == "won" end)
+      |> List.first()
+
+    loser_user_game =
+      game.user_games
+      |> Enum.filter(fn user_game -> user_game.result != "won" end)
+      |> List.first()
+
+    winner = Player.build(winner_user_game)
+    loser = Player.build(loser_user_game)
+
+    players =
+      [winner, loser]
+      |> Enum.sort(&(&1.creator > &2.creator))
+
+    %{
+      id: game.id,
+      players: players,
+      updated_at: game.updated_at,
+      duration: game.duration_in_seconds,
+      level: game.level
+    }
+  end
+
   def get_game(id) do
     query = from(g in Game, preload: [:users, :user_games])
     Repo.get(query, id)

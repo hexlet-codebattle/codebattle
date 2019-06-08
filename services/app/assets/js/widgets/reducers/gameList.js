@@ -30,7 +30,7 @@ const gameList = handleActions({
     const restGames = activeGames.filter(g => g.game_id !== gameId);
 
     const newGame = {
-      users: game.users,
+      players: game.players,
       game_info: game.game_info,
       game_id: gameId,
     };
