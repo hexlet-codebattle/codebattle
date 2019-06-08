@@ -32,16 +32,21 @@ defmodule Mix.Tasks.Issues.Upload do
     Enum.each(issue_names, fn issue_name ->
       asserts = File.read!(Path.join(path, "#{issue_name}.jsons"))
       issue_info = YamlElixir.read_from_file!(Path.join(path, "#{issue_name}.yml"))
+      signature = Map.get(issue_info, "signature")
 
       input =
-        Map.get(issue_info, "signature")
-        |> Map.get("input")
-        |> Enum.map_join("/", &parse_arg/1)
+        case Map.get(signature, "input") do
+          nil -> "nil"
+
+          input_args -> Enum.map_join(input_args, "/", &parse_arg/1)
+        end
 
       output =
-        Map.get(issue_info, "signature")
-        |> Map.get("output")
-        |> parse_arg()
+        case Map.get(signature, "output") do
+          nil -> "nil"
+
+          output_arg -> parse_arg(output_arg)
+        end
 
       changeset =
         Task.changeset(%Task{}, %{
@@ -63,13 +68,13 @@ defmodule Mix.Tasks.Issues.Upload do
     end)
   end
 
-  defp parse_arg(%{"type" => type}), do: "nil:#{parse_type(type)}"
   defp parse_arg(%{"argument-name" => name, "type" => type}) do
     "#{name}:#{parse_type(type)}"
   end
+  defp parse_arg(%{"type" => type}), do: "nil:#{parse_type(type)}"
 
-  defp parse_type(%{"name" => name}), do: name
-  defp parse_type(%{"name" => name, "nested" => nested}) do
-    "#{name}[#{parse_type(nested)}]"
+  defp parse_type(%{"name" => name, "nested" => %{"type": nested_type}}) do
+    "#{name}[#{parse_type(nested_type)}]"
   end
+  defp parse_type(%{"name" => name}), do: name
 end

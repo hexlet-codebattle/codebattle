@@ -46,10 +46,10 @@ defmodule Tasks.Issues.UploadTest do
     assert MapSet.equal?(task_names, issue_names)
   end
 
-  test "is correct input and output", %{path: path, issue_name: issue_names} do
-    Mix.Tasks.Issue.Upload.run([path])
+  test "is correct input and output", %{path: path, issue_names: _issue_names} do
+    Mix.Tasks.Issues.Upload.run([path])
 
-    {task_input, task_output} =
+    [{task_input, task_output}] =
       Task
       |> Repo.all()
       |> Enum.map(fn task -> {task.input, task.output} end)
