@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { HotKeys } from 'react-hotkeys';
 import Gon from 'gon';
 import GameWidget from './GameWidget';
 import InfoWidget from './InfoWidget';
@@ -22,7 +23,14 @@ class RootContainer extends React.Component {
   }
 
   render() {
-    const { storeLoaded, gameStatusCode } = this.props;
+    const { storeLoaded, gameStatusCode, checkResult } = this.props;
+    const keyMap = {
+      CHECK_GAME: ['command+enter', 'ctrl+enter'],
+    };
+
+    const handlers = {
+      CHECK_GAME: (event) => { checkResult(); },
+    };
 
     if (!storeLoaded) {
       // TODO: add loader
@@ -35,10 +43,10 @@ class RootContainer extends React.Component {
     }
 
     return (
-      <Fragment>
+      <HotKeys keyMap={keyMap} handlers={handlers}>
         <InfoWidget />
         <GameWidget />
-      </Fragment>
+      </HotKeys>
     );
   }
 }
@@ -61,6 +69,7 @@ const mapDispatchToProps = dispatch => ({
   editorReady: () => {
     dispatch(GameActions.editorReady());
   },
+  checkResult: () => { dispatch(GameActions.checkGameResult()); },
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(RootContainer);

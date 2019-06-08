@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 // import PropTypes from 'prop-types';
 import _ from 'lodash';
-import Hotkeys from 'react-hot-keys';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button, Modal } from 'react-bootstrap';
 import i18n from '../../i18n';
 import GameStatusCodes from '../config/gameStatusCodes';
@@ -36,12 +36,14 @@ class GameActionButtons extends Component {
       onClick={checkResult}
       disabled={gameStatus.checking[editorUser] || disabled}
     >
-      {gameStatus.checking[editorUser] ? (
-        <span className="fa fa-cog fa-spin mr-1" />
-      ) : (
-        <span data-test={editorUser} className="fa fa-play-circle mr-1" />
-      )}
-      {i18n.t('Check')}
+
+      {
+        (gameStatus.checking[editorUser])
+          ? <FontAwesomeIcon icon="spinner" pulse />
+          : <FontAwesomeIcon icon="play-circle" />
+      }
+
+      {` ${i18n.t('Check')}`}
       {
         // FIXME: set cmd for mac os
       }
@@ -91,18 +93,16 @@ class GameActionButtons extends Component {
     const realDisabled = isSpectator || disabled;
 
     return (
-      <Hotkeys keyName="ctrl+Enter" onKeyUp={checkResult}>
-        <div className="btn-toolbar py-3 px-3" role="toolbar">
-          {this.renderGiveUpButton(canGiveUp, realDisabled)}
-          {this.renderCheckResultButton(
-            checkResult,
-            gameStatus,
-            realDisabled,
-            editorUser,
-          )}
-          {this.renderModal()}
-        </div>
-      </Hotkeys>
+          <div className="btn-toolbar py-3 px-3" role="toolbar">
+            {this.renderGiveUpButton(canGiveUp, realDisabled)}
+            {this.renderCheckResultButton(
+              checkResult,
+              gameStatus,
+              realDisabled,
+              editorUser,
+            )}
+            {this.renderModal()}
+          </div>
     );
   }
 }

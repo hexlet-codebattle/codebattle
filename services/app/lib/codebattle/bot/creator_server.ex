@@ -23,11 +23,11 @@ defmodule Codebattle.Bot.CreatorServer do
     for level <- levels do
       case Codebattle.Bot.GameCreator.call(level) do
         {:ok, game_id, bot} ->
-          Logger.debug("create_game with id: #{game_id}")
+          # Logger.debug("create_game with id: #{game_id}")
           {:ok, pid} = PlaybookAsyncRunner.start(%{game_id: game_id, bot: bot})
 
         {:error, reason} ->
-          Logger.debug("Can't create bot game, reason: #{reason}")
+          # Logger.debug("Can't create bot game, reason: #{reason}")
       end
     end
 

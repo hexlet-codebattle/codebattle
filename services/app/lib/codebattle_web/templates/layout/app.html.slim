@@ -42,7 +42,7 @@ html lang="en"
       .container-fluid
         nav.navbar.navbar-expand-lg.navbar-light.row.border-bottom
           a.navbar-brand.mr-4[href="/" aria-hidden="true"]
-            img alt="Codebattle logo" src="/assets/images/codebattle_logo.png" height="30"
+            img alt="Logo" src="/assets/images/codebattle_logo.png" height="30"
             |&nbsp;Codebattle
           button.navbar-toggler[aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation" data-target="#navbarResponsive" data-toggle="collapse" type="button"]
             span.navbar-toggler-icon
@@ -50,7 +50,7 @@ html lang="en"
             ul.navbar-nav.mr-auto
               li.nav-item
                 a.nav-link[href="https://github.com/hexlet-codebattle/codebattle" target="_blank"]
-                  span.fa.fa-github.mr-2
+                  span.fab.fa-github.mr-2
                   = gettext "SourceCode"
               li.nav-item
                 a.nav-link[href="https://hexlet.io" target="_blank"]
@@ -58,13 +58,13 @@ html lang="en"
                   = gettext "Hexlet"
               li.nav-item
                 a.nav-link[href="http://slack-ru.hexlet.io/" target="_blank"]
-                  span.fa.fa-slack.mr-2
+                  span.fab.fa-slack.mr-2
                   = gettext "Slack#codebattle"
             ul.navbar-nav.ml-auto
               = unless @current_user.guest do
                 li.nav-item
                   = link to: user_path(@conn, :index), class: "nav-link" do
-                    span.fa.fa-bar-chart.mr-1
+                    span.fa.fa-chart-bar.mr-1
                     = gettext "Users rating"
                 li.nav-item.dropdown
                   a.nav-link.dropdown-toggle.noborder[href='#' aria-expanded="false", aria-haspopup="true" data-toggle="dropdown"]

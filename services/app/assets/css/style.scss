@@ -13,8 +13,7 @@ $box-shadow-sm: 0 2px 4px rgba(0,0,0,0.18);
 @import "fonts";
 $font-family-sans-serif: "Roboto", sans-serif;
 @import "~bootstrap/scss/bootstrap";
-$fa-font-path: "~font-awesome/fonts";
-@import "~font-awesome/scss/font-awesome";
+$fa-font-path: "/fonts";
 @import "~font-mfizz/dist/font-mfizz.css";
 @import "~react-pagination-library/build/css/index.css";
 
@@ -93,4 +92,8 @@ a {
   width: 200px;
   height: 200px;
   padding: 12px;
+}
+
+.fa-hidden {
+  color: transparent;
 }

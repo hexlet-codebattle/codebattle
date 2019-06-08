@@ -55,7 +55,7 @@ class GameList extends React.Component {
           placement="left"
         >
           <span className="align-middle mr-2">
-            <i className="fa fa-flag-o" aria-hidden="true" />
+            <i className="far fa-flag" aria-hidden="true" />
           </span>
         </OverlayTrigger>
       );
@@ -79,7 +79,7 @@ class GameList extends React.Component {
 
   renderEmptyResultIcon = () => (
     <span className="align-middle mr-1">
-      <i className="fa fa-fw" aria-hidden="true" />
+      <i className="fa  fa-hidden">&nbsp;</i>
     </span>
   );
 
@@ -250,7 +250,7 @@ class GameList extends React.Component {
         aria-haspopup="true"
         aria-expanded="false"
       >
-        <i className="fa fa-clock-o mr-2" />
+        <i className="fas fa-stopwatch mr-2" />
         {timeoutOptions[timeoutSeconds]}
       </button>
       <div className="dropdown-menu" aria-labelledby="btnGroupStartNewGame">

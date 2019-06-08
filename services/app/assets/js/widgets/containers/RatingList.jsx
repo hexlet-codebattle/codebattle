@@ -30,7 +30,7 @@ class UsersRating extends React.Component {
         <td className="p-3 align-middle">
           <a className="text-muted" href={`https://github.com/${user.name}`}>
             <span className="h3">
-              <i className="fa fa-github" />
+              <i className="fab fa-github" />
             </span>
           </a>
         </td>

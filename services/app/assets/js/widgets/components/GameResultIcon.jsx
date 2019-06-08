@@ -11,7 +11,7 @@ export default ({ resultUser1, resultUser2, className }) => {
         placement="left"
       >
         <div className={className}>
-          <i className="fa fa-flag-o fa-lg align-middle" aria-hidden="true" />
+          <i className="far fa-flag fa-lg align-middle" aria-hidden="true" />
         </div>
       </OverlayTrigger>
     );

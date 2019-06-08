@@ -79,26 +79,26 @@ class GameWidget extends Component {
     }
     return (
       <Fragment>
-        <div className="row no-gutters">
-          <div className="col-12 col-md-6 p-1">
-            <div className="card">
-              <LeftEditorToolbar />
-              <Editor {...this.getLeftEditorParams()} />
-              {/* TODO: move state to parent component */}
-              <GameActionButtons disabled={false} editorUser={leftEditor.userId} />
-              <ExecutionOutput output={leftOutput} />
+          <div className="row no-gutters">
+            <div className="col-12 col-md-6 p-1">
+              <div className="card">
+                <LeftEditorToolbar />
+                <Editor {...this.getLeftEditorParams()} />
+                {/* TODO: move state to parent component */}
+                <GameActionButtons disabled={false} editorUser={leftEditor.userId} />
+                <ExecutionOutput output={leftOutput} />
+              </div>
+            </div>
+            <div className="col-12 col-md-6 p-1">
+              <div className="card">
+                <RightEditorToolbar />
+                <Editor {...this.getRightEditorParams()} />
+                {/* TODO: move state to parent component */}
+                <GameActionButtons disabled editorUser={rightEditor.userId} />
+                <ExecutionOutput output={rightOutput} />
+              </div>
             </div>
           </div>
-          <div className="col-12 col-md-6 p-1">
-            <div className="card">
-              <RightEditorToolbar />
-              <Editor {...this.getRightEditorParams()} />
-              {/* TODO: move state to parent component */}
-              <GameActionButtons disabled editorUser={rightEditor.userId} />
-              <ExecutionOutput output={rightOutput} />
-            </div>
-          </div>
-        </div>
         <NotificationsHandler />
       </Fragment>
     );

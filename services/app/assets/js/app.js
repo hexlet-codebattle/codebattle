@@ -13,6 +13,7 @@
 // to also remove its path from "config.paths.watched".
 import 'phoenix_html';
 import '@babel/polyfill';
+import '@fortawesome/fontawesome-free/js/all';
 import 'bootstrap';
 
 // Import local files
