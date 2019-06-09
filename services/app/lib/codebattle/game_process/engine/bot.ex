@@ -65,7 +65,7 @@ defmodule Codebattle.GameProcess.Engine.Bot do
             update_game!(game_id, %{state: "playing", task_id: task.id})
             start_record_fsm(game_id, FsmHelpers.get_players(fsm), fsm)
 
-            Codebattle.Bot.PlaybookAsyncRunner.call(%{
+            Codebattle.Bot.PlaybookAsyncRunner.run!(%{
               game_id: game_id,
               task_id: task.id
             })

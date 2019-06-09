@@ -76,8 +76,12 @@ defmodule Codebattle.User.Achievements do
       )
 
     languages = Repo.all(query) |> Enum.into(%{}) |> Map.keys()
-    exist_achievement = Enum.filter(achievements, fn x -> String.contains?(x, "win_games_with") end) |> Enum.at(0)
+
+    exist_achievement =
+      Enum.filter(achievements, fn x -> String.contains?(x, "win_games_with") end) |> Enum.at(0)
+
     new_achievement = "win_games_with?#{Enum.join(languages, "_")}"
+
     cond do
       Enum.count(languages) >= 3 ->
         if new_achievement !== exist_achievement do
@@ -86,10 +90,9 @@ defmodule Codebattle.User.Achievements do
         else
           {achievements, user}
         end
+
       true ->
         {achievements, user}
     end
-
-
   end
 end

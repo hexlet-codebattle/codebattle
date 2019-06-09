@@ -17,7 +17,8 @@ defmodule CodebattleWeb.GameController do
         _ -> "public"
       end
 
-    game_params = conn.params
+    game_params =
+      conn.params
       |> Map.take(["level", "type"])
       |> Map.merge(%{"type" => type})
       |> Map.merge(%{"timeout_seconds" => timeout_seconds(conn.params)})
@@ -119,14 +120,17 @@ defmodule CodebattleWeb.GameController do
   @timeout_seconds_default 0
 
   defp timeout_seconds(%{"timeout_seconds" => timeout_seconds}) do
-    timeout_seconds_int = cond do
-      timeout_seconds == "" ->
-        0
-      timeout_seconds == nil ->
-        0
-      true ->
-        String.to_integer(timeout_seconds)
-    end
+    timeout_seconds_int =
+      cond do
+        timeout_seconds == "" ->
+          0
+
+        timeout_seconds == nil ->
+          0
+
+        true ->
+          String.to_integer(timeout_seconds)
+      end
 
     if Enum.member?(@timeout_seconds_whitelist, timeout_seconds_int) do
       timeout_seconds_int

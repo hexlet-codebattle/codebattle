@@ -12,6 +12,7 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
     task = insert(:task)
     user1 = insert(:user, %{name: "first", email: "test1@test.test", github_id: 1, rating: 1000})
     user2 = insert(:user, %{name: "second", email: "test2@test.test", github_id: 2, rating: 1000})
+
     # user3 = insert(:user, %{name: "other", email: "test3@test.test", github_id: 3, rating: 1000})
 
     conn1 = put_session(conn, :user_id, user1.id)

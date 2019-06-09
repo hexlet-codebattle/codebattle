@@ -35,7 +35,9 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
       game_topic = "game:#{game_id}"
 
       # Run bot
-      {:ok, _pid} = Codebattle.Bot.PlaybookAsyncRunner.start(%{game_id: game_id, bot: bot})
+      {:ok, _pid} =
+        Codebattle.Bot.PlaybookAsyncRunner.create_server(%{game_id: game_id, bot: bot})
+
       :timer.sleep(100)
 
       # User join to the game
@@ -44,7 +46,7 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
       {:ok, _response, _socket} = subscribe_and_join(socket, GameChannel, game_topic)
       :timer.sleep(100)
 
-      Codebattle.Bot.PlaybookAsyncRunner.call(%{
+      Codebattle.Bot.PlaybookAsyncRunner.run!(%{
         game_id: game_id,
         task_id: task.id
       })
@@ -52,7 +54,8 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
       fsm = Server.fsm(game_id)
       assert fsm.state == :playing
 
-      :timer.sleep(2000)
+      # FIXME atfter correct bot api
+      :timer.sleep(7000)
       # bot won the game
       fsm = Server.fsm(game_id)
 
