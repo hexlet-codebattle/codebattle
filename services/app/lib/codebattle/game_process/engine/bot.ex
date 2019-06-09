@@ -61,7 +61,7 @@ defmodule Codebattle.GameProcess.Engine.Bot do
 
             {:ok, _} = Codebattle.Bot.Supervisor.start_record_server(game_id, second_player, fsm)
 
-            Codebattle.Bot.PlaybookAsyncRunner.call(%{
+            Codebattle.Bot.PlaybookAsyncRunner.run!(%{
               game_id: game_id,
               task_id: playbook.task.id
             })

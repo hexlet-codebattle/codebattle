@@ -103,8 +103,17 @@ defmodule Codebattle.GameProcess.Fsm do
     end
 
     defevent timeout(_params), data: data do
-     players = update_player_params(data.players, %{game_result: :timeout, id: get_first_player(%{data: data}).id})
-     players = update_player_params(players, %{game_result: :timeout, id: get_second_player(%{data: data}).id})
+      players =
+        update_player_params(data.players, %{
+          game_result: :timeout,
+          id: get_first_player(%{data: data}).id
+        })
+
+      players =
+        update_player_params(players, %{
+          game_result: :timeout,
+          id: get_second_player(%{data: data}).id
+        })
 
       next_state(:timeout, %{data | players: players})
     end

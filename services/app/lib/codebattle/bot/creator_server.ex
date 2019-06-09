@@ -21,13 +21,14 @@ defmodule Codebattle.Bot.CreatorServer do
     levels = ["elementary", "easy", "medium", "hard"]
 
     for level <- levels do
+      # create fsm for every level, if no waiting opponent games
       case Codebattle.Bot.GameCreator.call(level) do
         {:ok, game_id, bot} ->
-          # Logger.debug("create_game with id: #{game_id}")
-          {:ok, pid} = PlaybookAsyncRunner.start(%{game_id: game_id, bot: bot})
+          # create bots gen_server for every game
+          {:ok, pid} = PlaybookAsyncRunner.create_server(%{game_id: game_id, bot: bot})
 
         {:error, reason} ->
-          # Logger.debug("Can't create bot game, reason: #{reason}")
+          nil
       end
     end
 

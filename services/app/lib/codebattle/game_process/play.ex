@@ -25,7 +25,7 @@ defmodule Codebattle.GameProcess.Play do
 
   alias Codebattle.CodeCheck.Checker
   alias Codebattle.Bot.RecorderServer
-  alias Codebattle.Bot.PlaybookPlayerRunner
+  alias Codebattle.Bot.PlaybookAsyncRunner
 
   # get data interface
   def active_games do
@@ -153,6 +153,7 @@ defmodule Codebattle.GameProcess.Play do
     else
       case create_bot_game(bot, game_params) do
         {:ok, new_game_id} ->
+          {:ok, _bot_pid} = PlaybookAsyncRunner.create_server(%{game_id: new_game_id, bot: bot})
           {:ok, new_fsm} = engine.join_game(new_game_id, real_player)
 
           start_timeout_timer(new_game_id, new_fsm)

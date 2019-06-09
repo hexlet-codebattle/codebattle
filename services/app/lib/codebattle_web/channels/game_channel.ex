@@ -77,8 +77,7 @@ defmodule CodebattleWeb.GameChannel do
             %{game_id: game_id, players: Map.values(users), game_info: game_info}
           end)
 
-        completed_games =
-          Enum.map(Play.completed_games(), &Play.get_completed_game_info/1)
+        completed_games = Enum.map(Play.completed_games(), &Play.get_completed_game_info/1)
 
         CodebattleWeb.Endpoint.broadcast_from!(self(), "lobby", "game:game_over", %{
           active_games: active_games,
@@ -113,6 +112,7 @@ defmodule CodebattleWeb.GameChannel do
 
       :timeout ->
         process_rematch_offer(game_id, current_user_id, socket)
+
       _ ->
         {:noreply, socket}
     end
@@ -161,8 +161,7 @@ defmodule CodebattleWeb.GameChannel do
             %{game_id: game_id, players: Map.values(users), game_info: game_info}
           end)
 
-        completed_games =
-          Enum.map(Play.completed_games(), &Play.get_completed_game_info/1)
+        completed_games = Enum.map(Play.completed_games(), &Play.get_completed_game_info/1)
 
         push(socket, "user:check_result", %{
           solution_status: true,

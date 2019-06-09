@@ -80,11 +80,12 @@ defmodule Codebattleweb.GameControllerTest do
   test "create game", %{conn: conn} do
     user = insert(:user)
 
-    conn = create_game(
-      conn,
-      user,
-      %{"type" => "public", "level" => "elementary"}
-    )
+    conn =
+      create_game(
+        conn,
+        user,
+        %{"type" => "public", "level" => "elementary"}
+      )
 
     assert conn.status == 302
     assert %{id: created_game_id} = redirected_params(conn)
@@ -102,11 +103,12 @@ defmodule Codebattleweb.GameControllerTest do
   test "create private game with timeout", %{conn: conn} do
     user = insert(:user)
 
-    conn = create_game(
-      conn,
-      user,
-      %{"type" => "withFriend", "level" => "medium", "timeout_seconds" => "60"}
-    )
+    conn =
+      create_game(
+        conn,
+        user,
+        %{"type" => "withFriend", "level" => "medium", "timeout_seconds" => "60"}
+      )
 
     assert conn.status == 302
     assert %{id: created_game_id} = redirected_params(conn)
@@ -123,11 +125,12 @@ defmodule Codebattleweb.GameControllerTest do
   test "create game and normalizes incorrect timeout and type values", %{conn: conn} do
     user = insert(:user)
 
-    conn = create_game(
-      conn,
-      user,
-      %{"type" => "wrongType", "level" => "medium", "timeout_seconds" => "8"}
-    )
+    conn =
+      create_game(
+        conn,
+        user,
+        %{"type" => "wrongType", "level" => "medium", "timeout_seconds" => "8"}
+      )
 
     assert conn.status == 302
     assert %{id: created_game_id} = redirected_params(conn)
@@ -143,13 +146,13 @@ defmodule Codebattleweb.GameControllerTest do
   end
 
   defp create_game(conn, user, params) do
-      conn
-      |> put_session(:user_id, user.id)
-      |> post(game_path(conn, :create, params))
+    conn
+    |> put_session(:user_id, user.id)
+    |> post(game_path(conn, :create, params))
   end
 
   defp active_game(id) do
-    ActiveGames.list_games
-      |> Enum.find(fn {game_id, _, _} -> game_id == id end)
+    ActiveGames.list_games()
+    |> Enum.find(fn {game_id, _, _} -> game_id == id end)
   end
 end

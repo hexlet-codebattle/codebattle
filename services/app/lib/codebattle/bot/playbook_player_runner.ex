@@ -22,7 +22,7 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
 
       diffs = Map.get(diff, "playbook")
       game_topic = "game:#{params.game_id}"
-      start_bot_cycle(diffs, game_topic, params.channel)
+      start_bot_cycle(diffs, game_topic, params.game_channel)
     end
   end
 
