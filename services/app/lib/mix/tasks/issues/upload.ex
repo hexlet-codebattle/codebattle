@@ -3,6 +3,8 @@ defmodule Mix.Tasks.Issues.Upload do
 
   use Mix.Task
 
+  # require Logger
+
   alias Codebattle.{Repo, Task}
 
   @shortdoc "Upload tasks from /asserts to database"
@@ -30,12 +32,15 @@ defmodule Mix.Tasks.Issues.Upload do
     Enum.each(issue_names, fn issue_name ->
       asserts = File.read!(Path.join(path, "#{issue_name}.jsons"))
       issue_info = YamlElixir.read_from_file!(Path.join(path, "#{issue_name}.yml"))
+      signature = Map.get(issue_info, "signature")
 
       changeset =
         Task.changeset(%Task{}, %{
           name: issue_name,
           description: Map.get(issue_info, "description"),
           level: Map.get(issue_info, "level"),
+          input_signature: Map.get(signature, "input"),
+          output_signature: Map.get(signature, "output"),
           asserts: asserts
         })
 
