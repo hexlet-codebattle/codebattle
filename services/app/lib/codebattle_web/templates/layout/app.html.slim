@@ -63,6 +63,10 @@ html lang="en"
             ul.navbar-nav.ml-auto
               = unless @current_user.guest do
                 li.nav-item
+                  = link to: tournament_path(@conn, :index), class: "nav-link" do
+                    span.fa.fa-trophy.mr-1
+                    = gettext "Tournaments"
+                li.nav-item
                   = link to: user_path(@conn, :index), class: "nav-link" do
                     span.fa.fa-chart-bar.mr-1
                     = gettext "Users rating"

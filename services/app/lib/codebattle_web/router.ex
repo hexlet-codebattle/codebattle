@@ -45,6 +45,7 @@ defmodule CodebattleWeb.Router do
     resources("/session", SessionController, singleton: true, only: [:delete])
     get("/", PageController, :index)
     resources("/users", UserController, only: [:index, :show])
+    resources("/tournaments", TournamentController, only: [:index])
     get("/settings", UserController, :edit, as: :user_setting)
     put("/settings", UserController, :update, as: :user_setting)
     resources("/games", GameController, only: [:create, :show, :delete])
