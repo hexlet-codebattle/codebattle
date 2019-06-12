@@ -11,7 +11,7 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
   @timeout Application.get_env(:codebattle, Codebattle.Bot.PlaybookPlayerRunner)[:timeout]
 
   def call(params) do
-    Logger.info("#{__MODULE__} RUN TASK with PARAMS: #{inspect(params)}, SLEEP for #{@timeout} ")
+    # maybe add speed_k
 
     :timer.sleep(@timeout)
     playbook = Playbook.random(params.task_id)
@@ -37,7 +37,6 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
 
     init_document = TextDelta.new() |> TextDelta.insert("")
     init_lang = "js"
-    Logger.debug("Bot player initial sleep #{@timeout}")
 
     {editor_text, lang} =
       Enum.reduce(diffs, {init_document, init_lang}, fn diff_map, {document, lang} ->

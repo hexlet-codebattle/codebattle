@@ -64,6 +64,7 @@ defmodule Codebattle.GameProcess.Engine.Bot do
             Codebattle.Bot.PlaybookAsyncRunner.run!(%{
               game_id: game_id,
               task_id: playbook.task.id
+              # speed_k: calc_k
             })
 
             {:ok, fsm}
