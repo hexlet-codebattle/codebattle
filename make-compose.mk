@@ -36,7 +36,7 @@ compose-db-init:
 	docker-compose run app mix ecto.migrate
 	docker-compose run app mix run priv/repo/seeds.exs
 
-compose-db-prepare: compose-db-init compose-upload-asserts
+compose-db-prepare: compose-db-init
 	docker-compose run app mix dockers.pull
 
 compose-credo:
