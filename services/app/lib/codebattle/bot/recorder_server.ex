@@ -67,7 +67,6 @@ defmodule Codebattle.Bot.RecorderServer do
   end
 
   def handle_cast({:update_text, text}, state) do
-    # TODO: BOTS add maximum time limit
 
     time = state.time || NaiveDateTime.utc_now()
     new_time = NaiveDateTime.utc_now()
@@ -75,8 +74,7 @@ defmodule Codebattle.Bot.RecorderServer do
 
     diff = %{
       delta: TextDelta.diff!(state.delta, new_delta).ops,
-      time: NaiveDateTime.diff(new_time, time, :millisecond)
-      # time: time_diff(new_time, time) implement time < maximum or maximum in milliseconds
+      time: time_diff(new_time, time)
     }
 
     new_state = %{state | delta: new_delta, diff: [diff | state.diff], time: new_time}
@@ -85,14 +83,12 @@ defmodule Codebattle.Bot.RecorderServer do
   end
 
   def handle_cast({:update_lang, lang}, state) do
-    # TODO: BOTS add maximum time limit
     time = state.time || NaiveDateTime.utc_now()
     new_time = NaiveDateTime.utc_now()
 
     diff = %{
       lang: lang,
-      time: NaiveDateTime.diff(new_time, time, :millisecond)
-      # time: time_diff(new_time, time) implement time < maximum or maximum in milliseconds
+      time: time_diff(new_time, time)
     }
 
     new_state = %{state | lang: lang, diff: [diff | state.diff], time: new_time}
@@ -106,7 +102,8 @@ defmodule Codebattle.Bot.RecorderServer do
       data: %{
         playbook: Enum.reverse(state.diff),
         meta: %{
-          total_time: calc_total_time(state.diff)
+          total_time: calc_total_time(state.diff),
+          total_steps: Enum.count(state.diff)
         }
       },
       lang: to_string(state.lang),
@@ -128,8 +125,15 @@ defmodule Codebattle.Bot.RecorderServer do
     {:n, :l, {:bot_recorder, "#{game_id}_#{user_id}"}}
   end
 
-  # TODO: implement
-  # defp time_diff do
-  # use @time_limit
-  # defp calc_total_time
+  defp calc_total_time(state) do
+    Enum.reduce(state, 0, fn x, acc -> x.time + acc end)
+  end
+  
+  defp time_diff(new_time, time) do
+    step_time = NaiveDateTime.diff(new_time, time, :millisecond)
+    cond do
+      step_time > @time_limit -> 3000
+      true -> step_time
+    end
+  end
 end

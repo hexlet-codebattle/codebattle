@@ -8,14 +8,12 @@ defmodule Codebattle.GameProcess.Engine.Bot do
     Fsm,
     Player,
     FsmHelpers,
-    Elo,
     ActiveGames,
     Notifier
   }
 
   alias Codebattle.{Repo, User, Game, UserGame}
   alias Codebattle.Bot.{RecorderServer, Playbook}
-  alias Codebattle.User.Achievements
 
   import Ecto.Query, warn: false
 
@@ -42,9 +40,7 @@ defmodule Codebattle.GameProcess.Engine.Bot do
   end
 
   def join_game(game_id, second_player) do
-    game = Play.get_game(game_id)
     fsm = Play.get_fsm(game_id)
-    first_player = FsmHelpers.get_first_player(fsm)
     level = FsmHelpers.get_level(fsm)
 
     case get_playbook(level) do
@@ -67,7 +63,8 @@ defmodule Codebattle.GameProcess.Engine.Bot do
 
             Codebattle.Bot.PlaybookAsyncRunner.run!(%{
               game_id: game_id,
-              task_id: task.id
+              task_id: task.id,
+              apponent_data: get_apponent_data(second_player)
             })
 
             {:ok, fsm}
@@ -126,6 +123,14 @@ defmodule Codebattle.GameProcess.Engine.Bot do
       {:ok, playbook}
     else
       {:error, :playbook_not_found}
+    end
+  end
+
+  defp get_apponent_data(player) do
+    cond do
+      player.rating <= 1200 -> %{"elementary" => 300_000, "easy" => 500_000, "middle" => 800_000, "hard" => 1_500_000, "player_level" => :low}
+      player.rating > 1200 -> %{"elementary" => 200_000, "easy" => 400_000, "middle" => 600_000, "hard" => 1_300_000, "player_level" => :middle}
+      player.rating > 1400 -> %{"elementary" => 100_000, "easy" => 300_000, "middle" => 500_000, "hard" => 1_100_000, "player_level" => :high}
     end
   end
 end
