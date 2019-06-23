@@ -46,9 +46,7 @@ defmodule CodebattleWeb.Api.V1.UserController do
           )
       end
 
-    page =
-      query
-      |> Repo.paginate(%{page: page_number, page_size: 2})
+    page = Repo.paginate(query, %{page: page_number, page_size: 2})
 
     users =
       Enum.map(
