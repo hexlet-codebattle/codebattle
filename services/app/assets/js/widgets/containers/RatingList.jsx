@@ -1,11 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import _ from 'lodash';
+import _ from 'lodash'
 import Pagination from 'react-pagination-library';
 import UserInfo from './UserInfo';
 import { getUsersList } from '../selectors';
 import * as UsersMiddlewares from '../middlewares/Users';
 import Loading from '../components/Loading';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class UsersRating extends React.Component {
   componentDidMount() {
@@ -44,6 +45,7 @@ class UsersRating extends React.Component {
       usersRatingPage:
       { pageInfo: { page_number: current, total_pages: total } },
     } = this.props;
+
     return (
       <Pagination
         currentPage={current}
@@ -54,8 +56,17 @@ class UsersRating extends React.Component {
     );
   }
 
+  onFilterChange = event => {
+    event.persist();
+
+    const { getRatingPage } = this.props;
+
+    getRatingPage(1, event.target.value);
+  }
+
   render() {
     const { usersRatingPage } = this.props;
+
     if (!usersRatingPage) {
       return <Loading />;
     }
@@ -66,6 +77,23 @@ class UsersRating extends React.Component {
         <p>
           {`Total: ${usersRatingPage.pageInfo.total_entries}`}
         </p>
+        <div className="form-inline">
+          <div className="input-group">
+            <div className="input-group-prepend">
+              <span className="input-group-text" id="basic-addon1">
+                <FontAwesomeIcon icon="search" />
+              </span>
+            </div>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Username"
+              aria-label="Username"
+              aria-describedby="basic-addon1"
+              onChange={this.onFilterChange}
+            />
+          </div>
+        </div>
         <table className="table">
           <thead className="text-left">
             <tr>

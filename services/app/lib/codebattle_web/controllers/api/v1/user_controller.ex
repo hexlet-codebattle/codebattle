@@ -19,7 +19,10 @@ defmodule CodebattleWeb.Api.V1.UserController do
     json(conn, %{achievements: achievements, stats: stats, user_id: id})
   end
 
-  def index(conn, %{"page" => page_number}) do
+  def index(conn, params) do
+    page_number = Map.get(params, "page", "1")
+    filter = Map.get(params, "filter")
+
     query =
       from(u in User,
         order_by: {:desc, :rating},
@@ -29,9 +32,17 @@ defmodule CodebattleWeb.Api.V1.UserController do
         select: [u.name, u.id, u.rating, u.github_id, u.lang, count(ug.user_id)]
       )
 
+      IO.inspect(filter)
+      IO.inspect('test 11!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1')
+
+      if filter do
+        query = from q in query, where: ilike(q.name , ^"%#{filter}%")
+      end
+
+#      todo page_size remove !!!
     page =
       query
-      |> Repo.paginate(%{page: page_number})
+      |> Repo.paginate(%{page: page_number, page_size: 5})
 
     users =
       Enum.map(
