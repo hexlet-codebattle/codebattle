@@ -42,6 +42,9 @@ compose-db-prepare: compose-db-init compose-upload-asserts
 compose-credo:
 	docker-compose run app mix credo
 
+compose-credo-full:
+	docker-compose run app mix credo -a
+
 compose-console:
 	docker-compose run app iex -S mix
 
