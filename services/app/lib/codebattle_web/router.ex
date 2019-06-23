@@ -34,7 +34,7 @@ defmodule CodebattleWeb.Router do
       get("/:user_id/activity", ActivityController, :show)
       get("/game_activity", GameActivityController, :show)
       get("/user/:id/stats", UserController, :stats)
-      resources("/users/:page", UserController, only: [:index])
+      resources("/users", UserController, only: [:index])
     end
   end
 
