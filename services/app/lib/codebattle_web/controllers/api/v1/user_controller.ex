@@ -23,26 +23,32 @@ defmodule CodebattleWeb.Api.V1.UserController do
     page_number = Map.get(params, "page", "1")
     filter = Map.get(params, "filter")
 
+    # TODO: FIXME
     query =
-      from(u in User,
-        order_by: {:desc, :rating},
-        join: ug in UserGame,
-        on: u.id == ug.user_id,
-        group_by: u.id,
-        select: [u.name, u.id, u.rating, u.github_id, u.lang, count(ug.user_id)]
-      )
+      case filter do
+        nil ->
+          from(u in User,
+            order_by: {:desc, :rating},
+            join: ug in UserGame,
+            on: u.id == ug.user_id,
+            group_by: u.id,
+            select: [u.name, u.id, u.rating, u.github_id, u.lang, count(ug.user_id)]
+          )
 
-      IO.inspect(filter)
-      IO.inspect('test 11!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1')
-
-      if filter do
-        query = from q in query, where: ilike(q.name , ^"%#{filter}%")
+        _ ->
+          from(u in User,
+            order_by: {:desc, :rating},
+            join: ug in UserGame,
+            on: u.id == ug.user_id,
+            group_by: u.id,
+            where: ilike(u.name, ^"%#{filter}%"),
+            select: [u.name, u.id, u.rating, u.github_id, u.lang, count(ug.user_id)]
+          )
       end
 
-#      todo page_size remove !!!
     page =
       query
-      |> Repo.paginate(%{page: page_number, page_size: 5})
+      |> Repo.paginate(%{page: page_number, page_size: 2})
 
     users =
       Enum.map(
