@@ -48,25 +48,16 @@ defmodule Codebattle.GameProcess.Engine.Bot do
     level = FsmHelpers.get_level(fsm)
 
     case get_playbook(level) do
-      {:ok, playbook} ->
-        update_game!(game_id, %{state: "playing", task_id: playbook.task.id})
+      {:ok, %{task: task} = _playbook} ->
+        update_game!(game_id, %{state: "playing", task_id: task.id})
 
         case Server.call_transition(game_id, :join, %{
-               player: second_player,
-               task: playbook.task,
+               player: Player.rebuild(second_player, task),
+               task: task,
                joins_at: TimeHelper.utc_now()
              }) do
           {:ok, fsm} ->
-            ActiveGames.add_participant(fsm)
-
-            {:ok, _} = Codebattle.Bot.Supervisor.start_record_server(game_id, second_player, fsm)
-
-            Codebattle.Bot.PlaybookAsyncRunner.call(%{
-              game_id: game_id,
-              task_id: playbook.task.id
-            })
-
-            {:ok, fsm}
+            start_game(game_id, FsmHelpers.get_players(fsm), task)
 
           {:error, _reason} ->
             {:error, _reason}
@@ -74,6 +65,24 @@ defmodule Codebattle.GameProcess.Engine.Bot do
 
       {:error, _reason} ->
         {:error, _reason}
+    end
+  end
+
+  def start_game(game_id, [first_player, _], task) do
+    case update_fsm_player(game_id, first_player, task) do
+      {:ok, fsm} ->
+        update_game!(game_id, %{state: "playing", task_id: task.id})
+        start_record_fsm(game_id, FsmHelpers.get_players(fsm), fsm)
+
+        Codebattle.Bot.PlaybookAsyncRunner.call(%{
+          game_id: game_id,
+          task_id: task.id
+        })
+
+        {:ok, fsm}
+
+      {:error, reason} ->
+        {:error, reason}
     end
   end
 

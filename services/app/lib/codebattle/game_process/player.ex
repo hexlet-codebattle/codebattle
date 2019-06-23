@@ -3,6 +3,8 @@ defmodule Codebattle.GameProcess.Player do
   alias Codebattle.Languages
   # @game_result [:undefined, :gave_up, :won, :lost]
 
+  # require Logger
+
   alias Codebattle.User
   alias Codebattle.UserGame
 
@@ -71,9 +73,6 @@ defmodule Codebattle.GameProcess.Player do
           %__MODULE__{}
 
         _ ->
-          editor_lang = user.lang || "js"
-          editor_text = Languages.get_solution(editor_lang)
-
           %__MODULE__{
             id: user.id,
             public_id: user.public_id,
@@ -81,8 +80,7 @@ defmodule Codebattle.GameProcess.Player do
             github_id: user.github_id,
             name: user.name,
             rating: user.rating,
-            editor_lang: editor_lang,
-            editor_text: editor_text,
+            editor_lang: user.lang || "js",
             achievements: user.achievements
           }
       end
@@ -90,12 +88,12 @@ defmodule Codebattle.GameProcess.Player do
     Map.merge(player, params)
   end
 
-  def rebuild(%__MODULE__{} = player) do
+  def rebuild(%__MODULE__{} = player, task) do
     user = Codebattle.Repo.get!(User, player.id)
     editor_lang = player.editor_lang
-    editor_text = Languages.get_solution(editor_lang)
+    editor_text = Languages.get_solution(editor_lang, task)
     params = %{editor_lang: editor_lang, editor_text: editor_text}
 
-    build(user, params)
+    Map.merge(player, params)
   end
 end
