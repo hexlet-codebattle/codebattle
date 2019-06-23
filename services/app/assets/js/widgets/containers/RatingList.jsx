@@ -1,12 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import _ from 'lodash'
+import _ from 'lodash';
 import Pagination from 'react-pagination-library';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import UserInfo from './UserInfo';
 import { getUsersList } from '../selectors';
 import * as UsersMiddlewares from '../middlewares/Users';
 import Loading from '../components/Loading';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 class UsersRating extends React.Component {
   componentDidMount() {
@@ -15,7 +15,9 @@ class UsersRating extends React.Component {
   }
 
   renderUser = (user, index) => {
-    const { usersRatingPage: { pageInfo } } = this.props;
+    const {
+      usersRatingPage: { pageInfo },
+    } = this.props;
     return (
       <tr key={user.id}>
         <td className="p-3 align-middle">
@@ -37,13 +39,14 @@ class UsersRating extends React.Component {
         </td>
       </tr>
     );
-  }
+  };
 
   renderPaginationUi = () => {
     const {
       getRatingPage,
-      usersRatingPage:
-      { pageInfo: { page_number: current, total_pages: total } },
+      usersRatingPage: {
+        pageInfo: { page_number: current, total_pages: total },
+      },
     } = this.props;
 
     return (
@@ -54,15 +57,15 @@ class UsersRating extends React.Component {
         theme="bottom-border"
       />
     );
-  }
+  };
 
-  onFilterChange = event => {
+  onFilterChange = (event) => {
     event.persist();
 
     const { getRatingPage } = this.props;
 
     getRatingPage(1, event.target.value);
-  }
+  };
 
   render() {
     const { usersRatingPage } = this.props;
@@ -74,9 +77,7 @@ class UsersRating extends React.Component {
     return (
       <div className="text-center">
         <h2 className="font-weight-normal">Users rating</h2>
-        <p>
-          {`Total: ${usersRatingPage.pageInfo.total_entries}`}
-        </p>
+        <p>{`Total: ${usersRatingPage.pageInfo.total_entries}`}</p>
         <div className="form-inline">
           <div className="input-group">
             <div className="input-group-prepend">
