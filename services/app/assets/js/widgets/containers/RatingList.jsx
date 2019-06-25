@@ -1,16 +1,26 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import _ from 'lodash';
-import Pagination from 'react-pagination-library';
+import Pagination from '../components/Pagination';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import UserInfo from './UserInfo';
 import { getUsersList } from '../selectors';
 import * as UsersMiddlewares from '../middlewares/Users';
 import Loading from '../components/Loading';
 
+const mapStateToProps = state => ({
+  usersRatingPage: getUsersList(state),
+});
+
+const mapDispatchToProps = {
+  getRatingPage: UsersMiddlewares.getUsersRatingPage,
+};
+
 class UsersRating extends React.Component {
   componentDidMount() {
     const { getRatingPage } = this.props;
+
     getRatingPage(1);
   }
 
@@ -18,6 +28,7 @@ class UsersRating extends React.Component {
     const {
       usersRatingPage: { pageInfo },
     } = this.props;
+
     return (
       <tr key={user.id}>
         <td className="p-3 align-middle">
@@ -45,30 +56,25 @@ class UsersRating extends React.Component {
     const {
       getRatingPage,
       usersRatingPage: {
-        pageInfo: { page_number: current, total_pages: total },
+        pageInfo: { page_number: currentPage, total_pages: total },
       },
     } = this.props;
 
+    const filter = !!this._filter ? this._filter.value : '';
+    const pages = _.range(1, total + 1);
+
     return (
       <Pagination
-        currentPage={current}
-        totalPages={total}
-        changeCurrentPage={getRatingPage}
-        theme="bottom-border"
+        filter={filter}
+        pages={pages}
+        currentPage={currentPage}
+        onChangePage={getRatingPage}
       />
-    );
-  };
-
-  onFilterChange = (event) => {
-    event.persist();
-
-    const { getRatingPage } = this.props;
-
-    getRatingPage(1, event.target.value);
+    )
   };
 
   render() {
-    const { usersRatingPage } = this.props;
+    const { usersRatingPage, getRatingPage } = this.props;
 
     if (!usersRatingPage) {
       return <Loading />;
@@ -91,7 +97,8 @@ class UsersRating extends React.Component {
               placeholder="Username"
               aria-label="Username"
               aria-describedby="basic-addon1"
-              onChange={this.onFilterChange}
+              onChange={_.debounce(() => getRatingPage(1, this._filter.value), 500)}
+              ref={c => this._filter = ReactDOM.findDOMNode(c)}
             />
           </div>
         </div>
@@ -114,14 +121,6 @@ class UsersRating extends React.Component {
     );
   }
 }
-
-const mapStateToProps = state => ({
-  usersRatingPage: getUsersList(state),
-});
-
-const mapDispatchToProps = {
-  getRatingPage: UsersMiddlewares.getUsersRatingPage,
-};
 
 export default connect(
   mapStateToProps,
