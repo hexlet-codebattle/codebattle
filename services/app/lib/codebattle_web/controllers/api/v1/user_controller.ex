@@ -23,7 +23,6 @@ defmodule CodebattleWeb.Api.V1.UserController do
     page_number = Map.get(params, "page", "1")
     filter = Map.get(params, "filter")
 
-    # TODO: FIXME
     query =
       case filter do
         nil ->
@@ -46,7 +45,7 @@ defmodule CodebattleWeb.Api.V1.UserController do
           )
       end
 
-    page = Repo.paginate(query, %{page: page_number, page_size: 2})
+    page = Repo.paginate(query, %{page: page_number})
 
     users =
       Enum.map(

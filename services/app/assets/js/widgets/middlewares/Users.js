@@ -12,7 +12,7 @@ export const loadUserStats = dispatch => async (user) => {
   }
 };
 
-export const getUsersRatingPage = (page, filter) => (dispatch) => {
+export const getUsersRatingPage = (page = 1, filter = '') => (dispatch) => {
   const queryParamsString = qs.stringify({
     page,
     filter,
