@@ -64,7 +64,7 @@ defmodule Codebattle.GameProcess.Engine.Bot do
             Codebattle.Bot.PlaybookAsyncRunner.run!(%{
               game_id: game_id,
               task_id: task.id,
-              apponent_data: get_apponent_data(second_player)
+              apponent_data: get_apponent_task_data(second_player, level)
             })
 
             {:ok, fsm}
@@ -126,11 +126,28 @@ defmodule Codebattle.GameProcess.Engine.Bot do
     end
   end
 
-  defp get_apponent_data(player) do
+  defp get_apponent_task_data(player, game_level) do
+    start_sequence_position = %{
+      "elementary" => 300_000,
+      "easy" => 500_000,
+      "middle" => 800_000,
+      "hard" => 1_500_000}
+
+    end_sequence_position = %{
+      "elementary" => 100_000,
+      "easy" => 300_000,
+      "middle" => 500_000,
+      "hard" => 1_100_000}
+
+    lower_level = 1000
+    highest_level = 1500
+
+    sequence_step = div(start_sequence_position[game_level] - end_sequence_position[game_level], highest_level - lower_level)  #400
+    n = player.rating - lower_level
     cond do
-      player.rating <= 1200 -> %{"elementary" => 300_000, "easy" => 500_000, "middle" => 800_000, "hard" => 1_500_000, "player_level" => :low}
-      player.rating > 1200 -> %{"elementary" => 200_000, "easy" => 400_000, "middle" => 600_000, "hard" => 1_300_000, "player_level" => :middle}
-      player.rating > 1400 -> %{"elementary" => 100_000, "easy" => 300_000, "middle" => 500_000, "hard" => 1_100_000, "player_level" => :high}
+      player.rating <= lower_level -> start_sequence_position.get(game_level)
+      player.rating > highest_level -> end_sequence_position[game_level]
+      true -> start_sequence_position[game_level] - n * sequence_step
     end
   end
 end

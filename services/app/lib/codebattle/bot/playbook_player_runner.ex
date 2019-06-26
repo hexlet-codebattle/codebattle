@@ -19,17 +19,16 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
       diffs = Map.get(diff, "playbook")
       meta = Map.get(diff, "meta")
       game_topic = "game:#{params.game_id}"
-      game_level = params.game_state["level"]
       if meta do
-        step_timeout = calc_step_timeout(params.apponent_data, meta["total_time"], meta["total_steps"], game_level)
-        start_bot_cycle(diffs, game_topic, params.game_channel, step_timeout)
+        step_coefficient = params.apponent_data /  Map.get(meta, "total_time")
+        start_bot_cycle(diffs, game_topic, params.game_channel, step_coefficient)
       else
         start_bot_cycle(diffs, game_topic, params.game_channel, 0)
       end
     end
   end
 
-  defp start_bot_cycle(diffs, game_topic, channel_pid, step_timeout) do
+  defp start_bot_cycle(diffs, game_topic, channel_pid, step_coefficient) do
     # Diff is one the maps
     #
     # 1 Main map with action to update text
@@ -42,7 +41,7 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
     init_lang = "js"
     {editor_text, lang} =
       Enum.reduce(diffs, {init_document, init_lang}, fn diff_map, {document, lang} ->
-        timer_value = Map.get(diff_map, "time") + step_timeout
+        timer_value = Map.get(diff_map, "time") * step_coefficient
         :timer.sleep(timer_value)
         # TODO: maybe optimize serialization/deserialization process
         delta = diff_map |> Map.get("delta", nil)
@@ -74,15 +73,5 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
       "editor_text" => editor_text.ops |> hd |> Map.get(:insert)
     })
   end
-  
-  defp calc_step_timeout(player_data, total_time, steps, game_level) do
-    time_diff = player_data[game_level] - total_time
-    case player_data["player_level"] do
-        :low when time_diff > 0 -> time_diff / steps
-        :middle when time_diff < 0 -> time_diff / steps
-        :high when time_diff < 0  -> time_diff / steps
-        _ -> 0
-    end
-    
-  end
+
 end
