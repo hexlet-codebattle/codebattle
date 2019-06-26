@@ -51,13 +51,13 @@ defmodule Codebattle.GameProcess.Engine.Bot do
       {:ok, %{task: task} = _playbook} ->
 
         case Server.call_transition(game_id, :join, %{
-          players: [
-            Player.rebuild(first_player, task),
-            Player.rebuild(second_player, task)
-          ],
-          task: task,
-          joins_at: TimeHelper.utc_now()
-        }) do
+              players: [
+                Player.rebuild(first_player, task),
+                Player.rebuild(second_player, task)
+              ],
+              task: task,
+              joins_at: TimeHelper.utc_now()
+            }) do
 
           {:ok, fsm} ->
             ActiveGames.add_participant(fsm)

@@ -60,13 +60,13 @@ defmodule Codebattle.GameProcess.Engine.Standard do
     task = get_random_task(level, [first_player.id, second_player.id])
 
     case Server.call_transition(game_id, :join, %{
-      players: [
-        Player.rebuild(first_player, task),
-        Player.rebuild(second_player, task)
-      ],
-      joins_at: TimeHelper.utc_now(),
-      task: task
-    }) do
+          players: [
+            Player.rebuild(first_player, task),
+            Player.rebuild(second_player, task)
+          ],
+          joins_at: TimeHelper.utc_now(),
+          task: task
+        }) do
 
       {:ok, fsm} ->
         ActiveGames.add_participant(fsm)
