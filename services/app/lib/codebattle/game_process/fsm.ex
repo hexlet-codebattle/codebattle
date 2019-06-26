@@ -60,16 +60,7 @@ defmodule Codebattle.GameProcess.Fsm do
 
   defstate waiting_opponent do
     defevent join(params), data: data do
-      players = data.players ++ [params.player]
-
-      new_data = Map.merge(data, params)
-
-      next_state(:playing, %{
-        new_data
-        | players: players,
-          task: params.task,
-          joins_at: params.joins_at
-      })
+      next_state(:playing, Map.merge(data, params))
     end
 
     defevent update_editor_params(_params) do

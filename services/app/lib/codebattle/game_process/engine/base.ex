@@ -16,8 +16,6 @@ defmodule Codebattle.GameProcess.Engine.Base do
   alias Codebattle.User.Achievements
 
   def start_record_fsm(game_id, [first_player, second_player], fsm) do
-    ActiveGames.add_participant(fsm)
-
     unless first_player.is_bot do
       {:ok, _} = Codebattle.Bot.Supervisor.start_record_server(game_id, first_player, fsm)
     end
@@ -26,17 +24,6 @@ defmodule Codebattle.GameProcess.Engine.Base do
     end
 
     {:ok, fsm}
-  end
-
-  def update_fsm_player(game_id, player, params) do
-    # update happens before we start recording
-    %{editor_lang: editor_lang, editor_text: editor_text} = Player.rebuild(player, params)
-
-    Server.call_transition(game_id, :update_editor_params, %{
-      id: player.id,
-      editor_lang: editor_lang,
-      editor_text: editor_text
-    })
   end
 
   def update_fsm_text(game_id, player, editor_text) do

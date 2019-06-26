@@ -60,21 +60,17 @@ defmodule Codebattle.GameProcess.Engine.Standard do
     task = get_random_task(level, [first_player.id, second_player.id])
 
     case Server.call_transition(game_id, :join, %{
-           player: Player.rebuild(second_player, task),
-           joins_at: TimeHelper.utc_now(),
-           task: task
-         }) do
-      {:ok, fsm} ->
-        start_game(game_id, FsmHelpers.get_players(fsm), task)
+      players: [
+        Player.rebuild(first_player, task),
+        Player.rebuild(second_player, task)
+      ],
+      joins_at: TimeHelper.utc_now(),
+      task: task
+    }) do
 
-      {:error, reason, _fsm} ->
-        {:error, reason}
-    end
-  end
-
-  def start_game(game_id, [first_player, _] = players, task) do
-    case update_fsm_player(game_id, first_player, task) do
       {:ok, fsm} ->
+        ActiveGames.add_participant(fsm)
+
         update_game!(game_id, %{state: "playing", task_id: task.id})
         start_record_fsm(game_id, FsmHelpers.get_players(fsm), fsm)
 
@@ -86,7 +82,7 @@ defmodule Codebattle.GameProcess.Engine.Standard do
 
         {:ok, fsm}
 
-      {:error, reason} ->
+      {:error, reason, _fsm} ->
         {:error, reason}
     end
   end
