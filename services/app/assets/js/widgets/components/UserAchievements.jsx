@@ -20,7 +20,7 @@ const UserAchievements = (achievements) => {
           if (name === 'win_games_with') {
             return renderPolyglotAchievement(languages.split('_'));
           }
-          return <img src={`/assets/images/achievements/${el}.png`} className="mr-1" alt={el} height="50" width="50" />})
+          return <img key={Math.random()} src={`/assets/images/achievements/${el}.png`} className="mr-1" alt={el} height="50" width="50" />})
         }
       </div>
     );
