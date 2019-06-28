@@ -9,7 +9,7 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
 
   test "Bot playing with user", %{conn: conn} do
     task = insert(:task, level: "elementary")
-    user = insert(:user, %{name: "first", email: "test1@test.test", github_id: 1, rating: 1000})
+    user = insert(:user, %{name: "first", email: "test1@test.test", github_id: 1, rating: 1400})
 
     conn = put_session(conn, :user_id, user.id)
 

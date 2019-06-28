@@ -1,6 +1,8 @@
 defmodule Codebattle.Bot.RecorderServer do
   @moduledoc "Gen server for calculating bot diffs and store it to database after user_id won the game"
 
+  @time_limit Application.get_env(:codebattle, Codebattle.Bot.RecorderServer)[:limit]
+
   require Logger
 
   use GenServer
@@ -51,11 +53,6 @@ defmodule Codebattle.Bot.RecorderServer do
 
   # SERVER
   def init({game_id, user_id, fsm}) do
-    Logger.info("Start bot recorder server for
-      game_id: #{game_id},
-      user_id: #{user_id},
-      fsm: #{inspect(fsm)}")
-
     {:ok,
      %{
        game_id: game_id,
@@ -70,9 +67,6 @@ defmodule Codebattle.Bot.RecorderServer do
   end
 
   def handle_cast({:update_text, text}, state) do
-    Logger.debug(
-      "#{__MODULE__} CAST update_text to BOT TEXT: #{inspect(text)}, STATE: #{inspect(state)}"
-    )
 
     time = state.time || NaiveDateTime.utc_now()
     new_time = NaiveDateTime.utc_now()
@@ -80,7 +74,7 @@ defmodule Codebattle.Bot.RecorderServer do
 
     diff = %{
       delta: TextDelta.diff!(state.delta, new_delta).ops,
-      time: NaiveDateTime.diff(new_time, time, :millisecond)
+      time: time_diff(new_time, time)
     }
 
     new_state = %{state | delta: new_delta, diff: [diff | state.diff], time: new_time}
@@ -89,16 +83,12 @@ defmodule Codebattle.Bot.RecorderServer do
   end
 
   def handle_cast({:update_lang, lang}, state) do
-    Logger.debug(
-      "#{__MODULE__} CAST update_lang to BOT LANG: #{inspect(lang)}, STATE: #{inspect(state)}"
-    )
-
     time = state.time || NaiveDateTime.utc_now()
     new_time = NaiveDateTime.utc_now()
 
     diff = %{
       lang: lang,
-      time: NaiveDateTime.diff(new_time, time, :millisecond)
+      time: time_diff(new_time, time)
     }
 
     new_state = %{state | lang: lang, diff: [diff | state.diff], time: new_time}
@@ -107,13 +97,15 @@ defmodule Codebattle.Bot.RecorderServer do
   end
 
   def handle_cast({:store}, state) do
-    Logger.info("Store bot_playbook for
-      task_id: #{state.task_id},
-      game_id: #{state.game_id},
-      user_id: #{state.user_id}")
 
     %Playbook{
-      data: %{playbook: state.diff |> Enum.reverse()},
+      data: %{
+        playbook: Enum.reverse(state.diff),
+        meta: %{
+          total_time: calc_total_time(state.diff),
+          total_steps: Enum.count(state.diff)
+        }
+      },
       lang: to_string(state.lang),
       task_id: state.task_id,
       user_id: state.user_id,
@@ -131,5 +123,17 @@ defmodule Codebattle.Bot.RecorderServer do
 
   def recorder_key(game_id, user_id) do
     {:n, :l, {:bot_recorder, "#{game_id}_#{user_id}"}}
+  end
+
+  defp calc_total_time(state) do
+    Enum.reduce(state, 0, fn x, acc -> x.time + acc end)
+  end
+  
+  defp time_diff(new_time, time) do
+    step_time = NaiveDateTime.diff(new_time, time, :millisecond)
+    cond do
+      step_time > @time_limit -> 3000
+      true -> step_time
+    end
   end
 end
