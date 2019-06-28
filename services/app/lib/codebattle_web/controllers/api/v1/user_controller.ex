@@ -63,7 +63,11 @@ defmodule CodebattleWeb.Api.V1.UserController do
       Enum.map(
         page.entries,
         fn user ->
-          Map.put(user, :performance, user.rating / user.games_played)
+          Map.put(
+            user,
+            :performance,
+            Kernel.round((user.rating - 1200) / (user.games_played + 1))
+          )
         end
       )
 
