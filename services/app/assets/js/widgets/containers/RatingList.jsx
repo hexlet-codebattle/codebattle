@@ -2,8 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import _ from 'lodash';
-import Pagination from '../components/Pagination';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Pagination from '../components/Pagination';
 import UserInfo from './UserInfo';
 import { getUsersList } from '../selectors';
 import * as UsersMiddlewares from '../middlewares/Users';
@@ -31,16 +31,13 @@ class UsersRating extends React.Component {
 
     return (
       <tr key={user.id}>
-        <td className="p-3 align-middle">
-          {pageInfo.page_number > 1
-            ? index + 1 + (pageInfo.page_number - 1) * pageInfo.page_size
-            : index + 1}
-        </td>
+        <td className="p-3 align-middle">{user.rank}</td>
         <td className="tex-left p-3 align-middle">
           <UserInfo user={_.omit(user, 'rating')} />
         </td>
         <td className="p-3 align-middle">{user.rating}</td>
-        <td className="p-3 align-middle">{user.game_count}</td>
+        <td className="p-3 align-middle">{user.games_played}</td>
+        <td className="p-3 align-middle">{user.performance}</td>
         <td className="p-3 align-middle">
           <a className="text-muted" href={`https://github.com/${user.name}`}>
             <span className="h3">
@@ -60,7 +57,7 @@ class UsersRating extends React.Component {
       },
     } = this.props;
 
-    const filter = !!this._filter ? this._filter.value : '';
+    const filter = this._filter ? this._filter.value : '';
     const pages = _.range(1, total + 1);
 
     return (
@@ -70,7 +67,7 @@ class UsersRating extends React.Component {
         currentPage={currentPage}
         onChangePage={getRatingPage}
       />
-    )
+    );
   };
 
   render() {
@@ -109,6 +106,7 @@ class UsersRating extends React.Component {
               <th className="p-3 border-0">User</th>
               <th className="p-3 border-0">Rating</th>
               <th className="p-3 border-0">Games played</th>
+              <th className="p-3 border-0">Performance</th>
               <th className="p-3 border-0">Github</th>
             </tr>
           </thead>
