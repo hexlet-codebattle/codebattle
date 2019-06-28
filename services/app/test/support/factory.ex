@@ -33,7 +33,12 @@ defmodule CodebattleWeb.Factory do
       asserts: "{\"arguments\":[1,1],\"expected\":2}
       {\"arguments\":[2,2],\"expected\":4}
       {\"arguments\":[1,3],\"expected\":4}
-      "
+      ",
+      input_signature: [
+        %{"argument-name" => "a", "type" => %{"name" => "integer"}},
+        %{"argument-name" => "b", "type" => %{"name" => "integer"}}
+      ],
+      output_signature: %{"type" => %{"name" => "integer"}}
     }
   end
 

@@ -78,8 +78,8 @@ defmodule Codebattle.PlayGameTest do
       assert fsm.state == :playing
       assert FsmHelpers.get_first_player(fsm).name == "first"
       assert FsmHelpers.get_second_player(fsm).name == "second"
-      assert FsmHelpers.get_first_player(fsm).editor_text == "module.exports = () => {\n\n};"
-      assert FsmHelpers.get_second_player(fsm).editor_text == "module.exports = () => {\n\n};"
+      assert FsmHelpers.get_first_player(fsm).editor_text == "module.exports = (a, b) => {\n\treturn 0;\n};"
+      assert FsmHelpers.get_second_player(fsm).editor_text == "module.exports = (a, b) => {\n\treturn 0;\n};"
 
       # First player won
       editor_text1 = "Hello world1!"
@@ -94,7 +94,7 @@ defmodule Codebattle.PlayGameTest do
       assert FsmHelpers.get_second_player(fsm).name == "second"
       assert FsmHelpers.get_winner(fsm).name == "first"
       assert FsmHelpers.get_first_player(fsm).editor_text == "Hello world1!"
-      assert FsmHelpers.get_second_player(fsm).editor_text == "module.exports = () => {\n\n};"
+      assert FsmHelpers.get_second_player(fsm).editor_text == "module.exports = (a, b) => {\n\treturn 0;\n};"
 
       # Winner cannot check results again
       Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text2, lang: "js"})
@@ -106,7 +106,7 @@ defmodule Codebattle.PlayGameTest do
       assert FsmHelpers.get_second_player(fsm).name == "second"
       assert FsmHelpers.get_winner(fsm).name == "first"
       assert FsmHelpers.get_first_player(fsm).editor_text == "Hello world2!"
-      assert FsmHelpers.get_second_player(fsm).editor_text == "module.exports = () => {\n\n};"
+      assert FsmHelpers.get_second_player(fsm).editor_text == "module.exports = (a, b) => {\n\treturn 0;\n};"
 
       # Second player complete game
       Phoenix.ChannelTest.push(socket2, "check_result", %{editor_text: editor_text3, lang: "js"})

@@ -33,7 +33,12 @@ levels = ["elementary", "easy", "medium", "hard"]
       description: "test sum: for ruby `def solution(a,b); a+b;end;`",
       asserts: "{\"arguments\":[1,1],\"expected\":2}
     {\"arguments\":[2,2],\"expected\":4}
-    "
+      ",
+      input_signature: [
+        %{"argument-name" => "a", "type" => %{"name" => "integer"}},
+        %{"argument-name" => "b", "type" => %{"name" => "integer"}}
+      ],
+      output_signature: %{"type" => %{"name" => "integer"}}
     }
 
     task = Codebattle.Task.changeset(Map.merge(task_data, %{level: level})) |> Repo.insert!()

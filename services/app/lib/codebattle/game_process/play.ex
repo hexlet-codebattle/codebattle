@@ -140,7 +140,8 @@ defmodule Codebattle.GameProcess.Play do
   def create_rematch_game_with_bot(game_id) do
     fsm = Play.get_fsm(game_id)
     engine = get_engine(fsm)
-    real_player = FsmHelpers.get_second_player(fsm) |> Player.rebuild()
+    task = FsmHelpers.get_task(fsm)
+    real_player = FsmHelpers.get_second_player(fsm) |> Player.rebuild(task)
     level = FsmHelpers.get_level(fsm)
     type = FsmHelpers.get_type(fsm)
     timeout_seconds = FsmHelpers.get_timeout_seconds(fsm)
@@ -193,8 +194,9 @@ defmodule Codebattle.GameProcess.Play do
     ActiveGames.terminate_game(game_id)
 
     fsm = Play.get_fsm(game_id)
-    first_player = FsmHelpers.get_first_player(fsm) |> Player.rebuild()
-    second_player = FsmHelpers.get_second_player(fsm) |> Player.rebuild()
+    task = FsmHelpers.get_task(fsm)
+    first_player = FsmHelpers.get_first_player(fsm) |> Player.rebuild(task)
+    second_player = FsmHelpers.get_second_player(fsm) |> Player.rebuild(task)
     level = FsmHelpers.get_level(fsm)
     type = FsmHelpers.get_type(fsm)
     timeout_seconds = FsmHelpers.get_timeout_seconds(fsm)

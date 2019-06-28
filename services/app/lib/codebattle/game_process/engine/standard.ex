@@ -60,21 +60,23 @@ defmodule Codebattle.GameProcess.Engine.Standard do
     task = get_random_task(level, [first_player.id, second_player.id])
 
     case Server.call_transition(game_id, :join, %{
-           player: second_player,
-           joins_at: TimeHelper.utc_now(),
-           task: task
-         }) do
+          players: [
+            Player.rebuild(first_player, task),
+            Player.rebuild(second_player, task)
+          ],
+          joins_at: TimeHelper.utc_now(),
+          task: task
+        }) do
+
       {:ok, fsm} ->
         ActiveGames.add_participant(fsm)
 
         update_game!(game_id, %{state: "playing", task_id: task.id})
-
-        {:ok, _} = Codebattle.Bot.Supervisor.start_record_server(game_id, first_player, fsm)
-        {:ok, _} = Codebattle.Bot.Supervisor.start_record_server(game_id, second_player, fsm)
+        start_record_fsm(game_id, FsmHelpers.get_players(fsm), fsm)
 
         Notifier.call(:game_opponent_join, %{
-          first_player: first_player,
-          second_player: second_player,
+          first_player: FsmHelpers.get_first_player(fsm),
+          second_player: FsmHelpers.get_second_player(fsm),
           game_id: game_id
         })
 

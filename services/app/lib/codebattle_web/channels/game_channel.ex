@@ -2,7 +2,7 @@ defmodule CodebattleWeb.GameChannel do
   @moduledoc false
   use CodebattleWeb, :channel
 
-  require Logger
+  # require Logger
 
   alias Codebattle.GameProcess.{Play, FsmHelpers, ActiveGames, Server}
 
