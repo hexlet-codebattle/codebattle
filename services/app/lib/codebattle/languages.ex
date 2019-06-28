@@ -89,7 +89,7 @@ defmodule Codebattle.Languages do
           "float" => "float",
           "string" => "str",
           "array" => "List[\0]",
-          "boolean" => "False",
+          "boolean" => "bool",
           "hash" => "Dict[str, \0]"
         }
       },
