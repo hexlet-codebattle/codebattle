@@ -1,5 +1,45 @@
 defmodule Codebattle.SolutionTemplateGenerator do
-  @moduledoc false
+  @moduledoc ~S"""
+  Parses the given params into a solution template for game
+
+  ## Examples
+
+      iex> Codebattle.SolutionTemplateGenerator.get_solution(
+      ...>    Codebattle.Languages.meta() |> Map.get("ruby"),
+      ...>    %{
+      ...>      input_signature: [
+      ...>        %{"argument-name" => "a", "type" => %{"name" => "integer"}},
+      ...>        %{"argument-name" => "b", "type" => %{"name" => "integer"}}
+      ...>      ],
+      ...>      output_signature: %{"type" => %{"name" => "integer"}}
+      ...>    }
+      ...> )
+      "def solution(a, b)\n\t0\nend"
+
+      iex> Codebattle.SolutionTemplateGenerator.get_solution(
+      ...>    Codebattle.Languages.meta() |> Map.get("python"),
+      ...>    %{
+      ...>      input_signature: [
+      ...>        %{"argument-name" => "str1", "type" => %{"name" => "string"}},
+      ...>        %{"argument-name" => "str2", "type" => %{"name" => "string"}}
+      ...>      ],
+      ...>      output_signature: %{"type" => %{"name" => "string"}}
+      ...>    }
+      ...> )
+      "def solution(str1: str, str2: str) -> str:"
+
+      iex> Codebattle.SolutionTemplateGenerator.get_solution(
+      ...>    Codebattle.Languages.meta() |> Map.get("clojure"),
+      ...>    %{
+      ...>      input_signature: [
+      ...>        %{"argument-name" => "a", "type" => %{"name" => "float"}},
+      ...>        %{"argument-name" => "b", "type" => %{"name" => "float"}}
+      ...>      ],
+      ...>      output_signature: %{"type" => %{"name" => "hash", "nested" => %{"name" => "float"}}}
+      ...>    }
+      ...> )
+      "(defn solution [a, b] {\"key\": 0.1})"
+  """
 
   @type_langs ["haskell", "python"]
 
