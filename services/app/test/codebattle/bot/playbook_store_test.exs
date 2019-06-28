@@ -103,7 +103,6 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
       playbook = Repo.get_by(Playbook, user_id: user1.id)
       assert Enum.count(playbook.data["playbook"]) == 8
       
-      assert playbook.data["meta"]["total_time"] > 3000 == true
       assert Enum.all?(playbook.data["playbook"], fn x -> x["time"] <= 3000 end) == true
      
     end

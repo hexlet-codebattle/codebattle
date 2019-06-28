@@ -145,7 +145,7 @@ defmodule Codebattle.GameProcess.Engine.Bot do
     sequence_step = div(start_sequence_position[game_level] - end_sequence_position[game_level], highest_level - lower_level)  #400
     n = player.rating - lower_level
     cond do
-      player.rating <= lower_level -> start_sequence_position.get(game_level)
+      player.rating <= lower_level -> start_sequence_position[game_level]
       player.rating > highest_level -> end_sequence_position[game_level]
       true -> start_sequence_position[game_level] - n * sequence_step
     end
