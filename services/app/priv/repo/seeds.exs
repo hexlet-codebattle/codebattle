@@ -31,9 +31,7 @@ levels = ["elementary", "easy", "medium", "hard"]
     task_data = %Codebattle.Task{
       name: task_name,
       description: "test sum: for ruby `def solution(a,b); a+b;end;`",
-      asserts: "{\"arguments\":[1,1],\"expected\":2}
-    {\"arguments\":[2,2],\"expected\":4}
-      ",
+      asserts: "{\"arguments\":[1,1],\"expected\":2}\n{\"arguments\":[2,2],\"expected\":4}",
       input_signature: [
         %{"argument-name" => "a", "type" => %{"name" => "integer"}},
         %{"argument-name" => "b", "type" => %{"name" => "integer"}}
