@@ -27,7 +27,7 @@ defmodule Codebattle.CodeCheck.TestGenerator do
         ...>    },
         ...>    %{slug: "js"}
         ...> )
-        [checks: [{"1, 2", "[2, 1]", "result1"}, {"3, 5", "[5, 3]", "result2"}]]
+        [checks: [%{arguments: "1, 2", expected: "[2, 1]"}, %{arguments: "3, 5", expected: "[5, 3]"}]]
 
         iex> Codebattle.CodeCheck.TestGenerator.inflect(
         ...>    %{
@@ -40,7 +40,7 @@ defmodule Codebattle.CodeCheck.TestGenerator do
         ...>    },
         ...>    %{slug: "js"}
         ...> )
-        [checks: [{"\"str1\", \"str2\"", "{\"str1\": 3, \"str2\": 3}", "result1"}]]
+        [checks: [%{arguments: "\"str1\", \"str2\"", expected: "{\"str1\": 3, \"str2\": 3}"}]]
   """
 
   def inflect(task, %{slug: slug}) do
