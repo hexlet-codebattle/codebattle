@@ -7,29 +7,20 @@ try {
   const solution = require('./solution_example');
   // const solution = require('./solution');
 
-  const result1 = solution.apply(null, [1, 2]); // arguments1
+  const assertSolution = (result, expected, errorMessage) => {
+    try {
+      assert.deepEqual(result, expected);
+    } catch (e) {
+      process.stdout.write(JSON.stringify({
+        status: 'failure',
+        result: errorMessage,
+      }));
+      process.exit(0);
+    }
+  };
 
-  try {
-    assert.deepEqual(result1, 3); // expected1
-  } catch (e) {
-    process.stdout.write(JSON.stringify({
-      status: 'failure',
-      result: [1, 2], // arguments1
-    }));
-    process.exit(0);
-  }
-
-  const result2 = solution.apply(null, [5, 6]); // arguments2
-
-  try {
-    assert.deepEqual(result2, 11); // expected2
-  } catch (e) {
-    process.stdout.write(JSON.stringify({
-      status: 'failure',
-      result: [5, 6], // arguments2
-    }));
-    process.exit(0);
-  }
+  assertSolution(solution(1, 2), 3, '[1, 2]'); // arguments1, expected1
+  assertSolution(solution(5, 6), 11, '[5, 6]'); // arguments2, expected2
 
   process.stdout.write(JSON.stringify({
     status: 'ok',

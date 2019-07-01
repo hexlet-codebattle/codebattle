@@ -49,10 +49,9 @@ defmodule Codebattle.CodeCheck.TestGenerator do
       checks: asserts
                 |> Enum.map(&Jason.decode!/1)
                 |> Enum.with_index(1)
-                |> Enum.map(fn item -> {
-                  get_arguments(item, task, slug),
-                  get_expected(item, task, slug),
-                  get_var_name(item, slug)
+                |> Enum.map(fn item -> %{
+                  arguments: get_arguments(item, task, slug),
+                  expected: get_expected(item, task, slug)
                 } end)
     ]
   end
@@ -68,10 +67,6 @@ defmodule Codebattle.CodeCheck.TestGenerator do
 
   defp get_expected({assert, _index}, %{output_signature: output_signature}, slug) do
     get_value({get_type(output_signature), assert["expected"]}, slug)
-  end
-
-  defp get_var_name({_, index}, "js") do
-    "result#{index}"
   end
 
   defp get_value({%{"name" => "string"}, value}, "js"), do: "\"#{value}\""

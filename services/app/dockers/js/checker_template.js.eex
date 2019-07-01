@@ -5,18 +5,20 @@ const { assert } = chai;
 try {
   const solution = require('./solution');
 
-  <%= for {arguments, expected, result_var_name} <- checks do %>
-    const <%= result_var_name %> = solution.apply(null, [<%= arguments %>]);
-
+  const assertSolution = (result, expected, errorMessage) => {
     try {
-      assert.deepEqual(<%= result_var_name %>, <%= expected %>);
+      assert.deepEqual(result, expected);
     } catch (e) {
       process.stdout.write(JSON.stringify({
-        status: "failure",
-        result: [<%= arguments %>],
+        status: 'failure',
+        result: errorMessage
       }));
       process.exit(0);
     }
+  };
+
+  <%= for %{arguments: arguments, expected: expected} <- checks do %>
+    assertSolution(solution(<%= arguments %>), <%= expected %>, "[<%= arguments %>]");
   <% end %>
 
   process.stdout.write(JSON.stringify({
