@@ -19,6 +19,13 @@ defmodule Codebattle.Bot.ChatClientRunner do
       "user" => "test_bot"
     })
 
+    unless :rand.uniform(16) > 8 do
+      PhoenixClient.Channel.push_async(params.chat_channel, "new:message", %{
+        "message" => say_announcement(params.chat_state),
+        "user" => "test_bot"
+      })
+    end
+
     :timer.sleep(10 * 60 * 1000)
 
     PhoenixClient.Channel.push_async(params.chat_channel, "new:message", %{
@@ -35,6 +42,10 @@ defmodule Codebattle.Bot.ChatClientRunner do
   defp say_about_language(chat_state) do
     opponent = get_opponent(chat_state)
     "#{String.capitalize(opponent["lang"] || "javascript")} is not good lang!"
+  end
+
+  defp say_announcement(_chat_state) do
+    "But don't be upset, sooner or later we provide Golang"
   end
 
   defp say_about_code(_chat_state) do
