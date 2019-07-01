@@ -45,30 +45,52 @@ defmodule Codebattle.SolutionTemplateGenerator do
 
   # require Logger
 
-  def get_solution(%{slug: lang} = meta, task) do
-    meta
-    |> add_input_to_template(lang, Map.get(task, :input_signature, []))
-    |> add_output_to_template(lang, Map.get(task, :output_signature, %{}))
-    |> Map.get(:solution_template)
-    |> clean()
-  end
-  def get_solution(%{solution_template: template}, _task), do: clean(template)
+  def get_solution(%{slug: lang, solution_template: template} = meta, task) do
+    bindings = []
+              |> add_input_spec(meta, Map.get(task, :input_signature, []))
+              |> add_output_spec(meta, Map.get(task, :output_signature, %{}))
 
-  defp add_input_to_template(meta, _lang, nil), do: meta
-  defp add_input_to_template(meta, _lang, input) when input == [], do: meta
-  defp add_input_to_template(%{types: lang_types} = meta, lang, input) when lang in @type_langs do
+    EEx.eval_string(template, bindings)
+  end
+
+  defp add_input_spec(bindings, meta, nil), do: add_empty_input(bindings, meta)
+  defp add_input_spec(bindings, meta, input) when input == [], do: add_empty_input(bindings, meta)
+  defp add_input_spec(bindings, %{slug: lang, types: lang_types} = meta, input) when lang in @type_langs do
     specs = Enum.map_join(input, ", ", fn %{"argument-name" => name, "type" => type} ->
       arg_type = get_type(type, lang_types)
       get_input_spec(name, lang, arg_type)
     end)
 
-    update_template(meta, specs)
+    Keyword.put(bindings, :arguments, specs)
   end
-  defp add_input_to_template(meta, lang, input) when lang not in ["perl"] do
+  defp add_input_spec(bindings, %{slug: lang} = meta, input) when lang not in ["perl"] do
     input_args_str = get_args_str(meta, lang, input)
-    update_template(meta, input_args_str)
+    Keyword.put(bindings, :arguments, input_args_str)
   end
-  defp add_input_to_template(meta, _lang, _input), do: meta
+  defp add_input_spec(bindings, meta, _input), do: add_empty_input(bindings, meta)
+
+  defp add_output_spec(bindings, meta, nil), do: add_empty_output(bindings, meta)
+  defp add_output_spec(bindings, meta, output) when map_size(output) == 0, do: add_empty_output(bindings, meta)
+  defp add_output_spec(
+    bindings,
+    %{slug: lang, types: lang_types},
+    %{"type" => type}
+  ) when lang in @type_langs do
+
+    expected = " -> #{get_type(type, lang_types)}"
+    Keyword.put(bindings, :expected, expected)
+  end
+  defp add_output_spec(
+    bindings,
+    %{slug: lang, return_template: return_template, default_values: default_values},
+    %{"type" => type}
+  ) when lang not in ["perl"] do
+
+    value = get_default_value(default_values, type)
+    return_statement = EEx.eval_string(return_template, [default_value: value])
+    Keyword.put(bindings, :return_statement, return_statement)
+  end
+  defp add_output_spec(binding, meta, _output), do: add_empty_output(binding, meta)
 
   defp get_input_spec(name, "python", arg_type), do: "#{name}: #{arg_type}"
   defp get_input_spec(_name, "haskell", arg_type), do: arg_type
@@ -80,42 +102,20 @@ defmodule Codebattle.SolutionTemplateGenerator do
     Enum.map_join(input, ", ", &(&1["argument-name"]))
   end
 
-  defp add_output_to_template(meta, _lang, nil), do: meta
-  defp add_output_to_template(meta, _lang, output) when map_size(output) == 0, do: meta
-  defp add_output_to_template(%{
-    types: lang_types
-  } = meta, lang, %{"type" => type}) when lang in @type_langs do
-    output_type = " -> #{get_type(type, lang_types)}"
-    update_template(meta, output_type)
-  end
-  defp add_output_to_template(%{
-    return_template: return_template,
-    default_values: default_values
-  } = meta, lang, %{"type" => type}) when lang not in ["perl"] do
-
-    value = get_default_value(default_values, type)
-    return_statement = String.replace(return_template, "\0", value)
-    update_template(meta, return_statement)
-  end
-  defp add_output_to_template(meta, _default_values, _output), do: meta
-
   defp get_type(%{"name" => name, "nested" => nested}, lang_types) do
     type = Map.get(lang_types, name)
-    String.replace(type, "\0", get_type(nested, lang_types))
+    EEx.eval_string(type, [inner_type: get_type(nested, lang_types)])
   end
   defp get_type(%{"name" => name}, lang_types), do: Map.get(lang_types, name)
 
   defp get_default_value(default_values, %{"name" => name, "nested" => nested}) do
     default = Map.get(default_values, name)
-    String.replace(default, "\0", get_default_value(default_values, nested))
+    EEx.eval_string(default, [value: get_default_value(default_values, nested)])
   end
   defp get_default_value(default_values, %{"name" => name}), do: Map.get(default_values, name)
 
-  defp update_template(meta, str) do
-    Map.update!(meta, :solution_template, fn t ->
-      String.replace(t, "\0", str, global: false)
-    end)
-  end
+  defp add_empty_input(bindings, _meta), do: Keyword.put(bindings, :arguments, "")
 
-  defp clean(template), do: String.replace(template, "\0", "")
+  defp add_empty_output(bindings, %{slug: lang}) when lang in @type_langs, do: Keyword.put(bindings, :expected, "")
+  defp add_empty_output(bindings, _meta), do: Keyword.put(bindings, :return_statement, "")
 end
