@@ -1,0 +1,34 @@
+const chai = require('chai');
+
+const { assert } = chai;
+
+try {
+  const solution = require('./solution');
+
+  const assertSolution = (result, expected, errorMessage) => {
+    try {
+      assert.deepEqual(result, expected);
+    } catch (e) {
+      process.stdout.write(JSON.stringify({
+        status: 'failure',
+        result: errorMessage
+      }));
+      process.exit(0);
+    }
+  };
+
+  <%= for %{arguments: arguments, expected: expected} <- checks do %>
+    assertSolution(solution(<%= arguments %>), <%= expected %>, "[<%= arguments %>]");
+  <% end %>
+
+  process.stdout.write(JSON.stringify({
+    status: "ok",
+    result: <%= hash_sum %>,
+  }));
+} catch (e) {
+  process.stdout.write(JSON.stringify({
+    status: "error",
+    result: e.message
+  }));
+  process.exit(0);
+}
