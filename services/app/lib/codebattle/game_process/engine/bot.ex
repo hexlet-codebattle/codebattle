@@ -42,6 +42,7 @@ defmodule Codebattle.GameProcess.Engine.Bot do
   def join_game(game_id, second_player) do
     fsm = Play.get_fsm(game_id)
     level = FsmHelpers.get_level(fsm)
+    first_player = FsmHelpers.get_first_player(fsm)
 
     case get_playbook(level) do
       {:ok, %{task: task} = _playbook} ->
