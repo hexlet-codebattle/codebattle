@@ -59,11 +59,11 @@ defmodule Codebattle.Languages do
       "ts" => %{
         name: "typescript",
         slug: "ts",
-        version: "3.2.0",
+        version: "3.5.2",
         base_image: :ubuntu,
         check_dir: "check",
         extension: "ts",
-        docker_image: "codebattle/ts:3.2.0"
+        docker_image: "codebattle/ts:3.5.2"
       },
       "elixir" => %{
         name: "elixir",
