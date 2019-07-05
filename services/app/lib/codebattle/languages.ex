@@ -56,6 +56,15 @@ defmodule Codebattle.Languages do
           "hash" => "{\"key\": <%= value %>}"
         }
       },
+      "ts" => %{
+        name: "typescript",
+        slug: "ts",
+        version: "3.2.0",
+        base_image: :ubuntu,
+        check_dir: "check",
+        extension: "ts",
+        docker_image: "codebattle/ts:3.2.0"
+      },
       "elixir" => %{
         name: "elixir",
         slug: "elixir",
