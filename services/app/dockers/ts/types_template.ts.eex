@@ -1,4 +1,4 @@
-<%= %{name: name, value_type: value_type} <- types %>
+<%= for %{name: name, value_type: value_type} <- types do %>
 export interface <%= name %> {
   [key: string]: <%= value_type %>;
 }
