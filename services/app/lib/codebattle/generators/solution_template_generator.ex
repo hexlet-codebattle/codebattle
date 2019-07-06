@@ -50,7 +50,7 @@ defmodule Codebattle.Generators.SolutionTemplateGenerator do
       ...>      output_signature: %{"type" => %{"name" => "hash", "nested" => %{"name" => "float"}}}
       ...>    }
       ...> )
-      "import {IHash} from \"./types\";\n\nexport default function solution(a: number, b: number): IHash {\n\n};"
+      "import {IHash} from \"./types\";\n\nfunction solution(a: number, b: number): IHash {\n\n};\n\nexport default solution;"
   """
 
   @type_langs ["haskell", "python", "ts"]

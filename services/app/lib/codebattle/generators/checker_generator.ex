@@ -33,8 +33,8 @@ defmodule Codebattle.Generators.CheckerGenerator do
         ...> )
         [checks:
           [
-            %{arguments: "1, 2", expected: "[2, 1]", index: 1, error_message: "error"},
-            %{arguments: "3, 5", expected: "[5, 3]", index: 2, error_message: "error"}
+            %{arguments: "1, 2", expected: "[2, 1]", index: 1, error_message: "\"error\""},
+            %{arguments: "3, 5", expected: "[5, 3]", index: 2, error_message: "\"error\""}
           ]
         ]
 
@@ -51,7 +51,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
         ...> )
         [checks:
           [
-            %{arguments: "\"str1\", \"str2\"", expected: "{\"str1\": 3, \"str2\": 3}", index: 1, error_message: "error"}
+            %{arguments: "\"str1\", \"str2\"", expected: "{\"str1\": 3, \"str2\": 3}", index: 1, error_message: "\"error\""}
           ]
         ]
 

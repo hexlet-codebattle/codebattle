@@ -21,7 +21,7 @@ defmodule Codebattle.LanguagesTest do
     empty_signature = %{input_signature: [], output_signature: %{}}
     empty_solutions = MapSet.new([
       "module.exports = () => {\n\n};",
-      "export default function solution(){\n\n};",
+      "function solution(){\n\n};\n\nexport default solution;",
       "def solution()\n\nend",
       "defmodule Solution do\n\tdef solution() do\n\n\tend\nend",
       "def solution():",
@@ -43,7 +43,7 @@ defmodule Codebattle.LanguagesTest do
   } do
 
     js_expected = "module.exports = (a, b, text, arr, condition, hashtable) => {\n\treturn [\"value\"];\n};"
-    ts_expected = "import {Hashtable} from \"./types\";\n\nexport default function solution(a: number, b: number, text: string, arr: Array<Array<number>>, condition: boolean, hashtable: Hashtable): Array<string> {\n\n};"
+    ts_expected = "import {Hashtable} from \"./types\";\n\nfunction solution(a: number, b: number, text: string, arr: Array<Array<number>>, condition: boolean, hashtable: Hashtable): Array<string> {\n\n};\n\nexport default solution;"
     ruby_expected = "def solution(a, b, text, arr, condition, hashtable)\n\t[\"value\"]\nend"
     elixir_expected = "defmodule Solution do\n\tdef solution(a, b, text, arr, condition, hashtable) do\n\t\t[\"value\"]\n\tend\nend"
     python_expected = "def solution(a: int, b: float, text: str, arr: List[List[int]], condition: bool, hashtable: Dict[str, int]) -> List[str]:"
