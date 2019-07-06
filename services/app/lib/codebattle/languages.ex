@@ -64,7 +64,7 @@ defmodule Codebattle.Languages do
         check_dir: "check",
         extension: "ts",
         docker_image: "codebattle/ts:3.5.2",
-        solution_template: "<%= interfaces %>export default function solution(<%= arguments %>)<%= expected %>{\n\n};",
+        solution_template: "<%= import %>export default function solution(<%= arguments %>)<%= expected %>{\n\n};",
         types: %{
           "integer" => "number",
           "float" => "number",

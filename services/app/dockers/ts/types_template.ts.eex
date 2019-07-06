@@ -1,0 +1,6 @@
+<%= %{name: name, value_type: value_type} <- types %>
+export interface <%= name %> {
+  [key: string]: <%= value_type %>;
+}
+
+<% end %>

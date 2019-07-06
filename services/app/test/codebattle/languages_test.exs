@@ -43,7 +43,7 @@ defmodule Codebattle.LanguagesTest do
   } do
 
     js_expected = "module.exports = (a, b, text, arr, condition, hashtable) => {\n\treturn [\"value\"];\n};"
-    ts_expected = "export interface Hashtable {\n\t[key: string]: number;\n}\n\nexport default function solution(a: number, b: number, text: string, arr: Array<Array<number>>, condition: boolean, hashtable: Hashtable): Array<string> {\n\n};"
+    ts_expected = "import {Hashtable} from \"./types\";\n\nexport default function solution(a: number, b: number, text: string, arr: Array<Array<number>>, condition: boolean, hashtable: Hashtable): Array<string> {\n\n};"
     ruby_expected = "def solution(a, b, text, arr, condition, hashtable)\n\t[\"value\"]\nend"
     elixir_expected = "defmodule Solution do\n\tdef solution(a, b, text, arr, condition, hashtable) do\n\t\t[\"value\"]\n\tend\nend"
     python_expected = "def solution(a: int, b: float, text: str, arr: List[List[int]], condition: bool, hashtable: Dict[str, int]) -> List[str]:"
