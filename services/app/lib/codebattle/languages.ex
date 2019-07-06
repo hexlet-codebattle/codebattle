@@ -63,7 +63,16 @@ defmodule Codebattle.Languages do
         base_image: :ubuntu,
         check_dir: "check",
         extension: "ts",
-        docker_image: "codebattle/ts:3.5.2"
+        docker_image: "codebattle/ts:3.5.2",
+        solution_template: "<%= interfaces %>export default function solution(<%= arguments %>)<%= expected %>{\n\n};",
+        types: %{
+          "integer" => "number",
+          "float" => "number",
+          "string" => "string",
+          "array" => "Array<<%= inner_type %>>",
+          "boolean" => "boolean",
+          "hash" => "any"
+        }
       },
       "elixir" => %{
         name: "elixir",

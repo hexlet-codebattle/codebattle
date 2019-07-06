@@ -39,9 +39,22 @@ defmodule Codebattle.SolutionTemplateGenerator do
       ...>    }
       ...> )
       "(defn solution [a, b] {\"key\": 0.1})"
+
+      iex> Codebattle.SolutionTemplateGenerator.get_solution(
+      ...>    Codebattle.Languages.meta() |> Map.get("ts"),
+      ...>    %{
+      ...>      input_signature: [
+      ...>        %{"argument-name" => "a", "type" => %{"name" => "float"}},
+      ...>        %{"argument-name" => "b", "type" => %{"name" => "float"}}
+      ...>      ],
+      ...>      output_signature: %{"type" => %{"name" => "hash", "nested" => %{"name" => "float"}}}
+      ...>    }
+      ...> )
+      "export interface IHash {\n\t[key: string]: number;\n}\n\nexport default function solution(a: number, b: number): IHash {\n\n};"
   """
 
-  @type_langs ["haskell", "python"]
+  @type_langs ["haskell", "python", "ts"]
+  @static_langs ["ts"]
 
   # require Logger
 
@@ -49,17 +62,15 @@ defmodule Codebattle.SolutionTemplateGenerator do
     bindings = []
               |> add_input_spec(meta, Map.get(task, :input_signature, []))
               |> add_output_spec(meta, Map.get(task, :output_signature, %{}))
+              |> add_interfaces_spec(meta, task)
 
     EEx.eval_string(template, bindings)
   end
 
   defp add_input_spec(bindings, meta, nil), do: add_empty_input(bindings, meta)
   defp add_input_spec(bindings, meta, input) when input == [], do: add_empty_input(bindings, meta)
-  defp add_input_spec(bindings, %{slug: lang, types: lang_types} = meta, input) when lang in @type_langs do
-    specs = Enum.map_join(input, ", ", fn %{"argument-name" => name, "type" => type} ->
-      arg_type = get_type(type, lang_types)
-      get_input_spec(name, lang, arg_type)
-    end)
+  defp add_input_spec(bindings, %{slug: lang} = meta, input) when lang in @type_langs do
+    specs = Enum.map_join(input, ", ", &get_input_spec(&1, meta))
 
     Keyword.put(bindings, :arguments, specs)
   end
@@ -74,10 +85,10 @@ defmodule Codebattle.SolutionTemplateGenerator do
   defp add_output_spec(
     bindings,
     %{slug: lang, types: lang_types},
-    %{"type" => type}
+    output_signature
   ) when lang in @type_langs do
 
-    expected = " -> #{get_type(type, lang_types)}"
+    expected = get_expected_type(output_signature, lang, lang_types)
     Keyword.put(bindings, :expected, expected)
   end
   defp add_output_spec(
@@ -90,10 +101,32 @@ defmodule Codebattle.SolutionTemplateGenerator do
     return_statement = EEx.eval_string(return_template, [default_value: value])
     Keyword.put(bindings, :return_statement, return_statement)
   end
-  defp add_output_spec(binding, meta, _output), do: add_empty_output(binding, meta)
+  defp add_output_spec(bindings, meta, _output), do: add_empty_output(bindings, meta)
 
-  defp get_input_spec(name, "python", arg_type), do: "#{name}: #{arg_type}"
-  defp get_input_spec(_name, "haskell", arg_type), do: arg_type
+  defp add_interfaces_spec(bindings, %{slug: lang}, _task) when lang not in @static_langs, do: bindings
+  defp add_interfaces_spec(
+    bindings,
+    %{slug: "ts"} = meta,
+    %{input_signature: input_signature, output_signature: output_signature}
+  ) do
+
+    hashs = get_hashs(input_signature, output_signature)
+    interfaces = get_interfaces_formatted(hashs, meta, "")
+
+    Keyword.put(bindings, :interfaces, interfaces)
+  end
+
+  defp get_input_spec(%{"type" => type}, %{slug: "haskell", types: lang_types}) , do: get_type(type, lang_types)
+  defp get_input_spec(%{"argument-name" => name, "type" => type}, %{slug: "python", types: lang_types}) do
+    "#{name}: #{get_type(type, lang_types)}"
+  end
+  defp get_input_spec(%{"argument-name" => name, "type" => type} = input, %{slug: "ts", types: lang_types}) do
+    if is_hash(input) do
+      "#{name}: #{get_interface_name(input, "ts")}"
+    else
+      "#{name}: #{get_type(type, lang_types)}"
+    end
+  end
 
   defp get_args_str(_meta, "php", input) do
     Enum.map_join(input, ", ", &("$#{&1["argument-name"]}"))
@@ -108,11 +141,54 @@ defmodule Codebattle.SolutionTemplateGenerator do
   end
   defp get_type(%{"name" => name}, lang_types), do: Map.get(lang_types, name)
 
+  defp get_expected_type(%{"type" => %{"name" => "hash"}} = output, "ts", _lang_types) do
+    ": #{get_interface_name(output, "ts")} "
+  end
+  defp get_expected_type(%{"type" => type}, "ts", lang_types), do: ": #{get_type(type, lang_types)} "
+  defp get_expected_type(%{"type" => type}, _lang, lang_types), do: " -> #{get_type(type, lang_types)}"
+
   defp get_default_value(default_values, %{"name" => name, "nested" => nested}) do
     default = Map.get(default_values, name)
     EEx.eval_string(default, [value: get_default_value(default_values, nested)])
   end
   defp get_default_value(default_values, %{"name" => name}), do: Map.get(default_values, name)
+
+  defp get_hashs(nil, nil), do: []
+  defp get_hashs(nil, %{"type" => %{"name" => "hash"}} = output_signature), do: output_signature
+  defp get_hashs(input_signature, nil), do: Enum.filter(input_signature, &is_hash/1)
+  defp get_hashs(input_signature, output_signature), do: Enum.filter(input_signature ++ [output_signature], &is_hash/1)
+
+  defp is_hash(%{"type" => %{"name" => "hash"}}), do: true
+  defp is_hash(_), do: false
+
+  defp get_interfaces_formatted(hashs, _meta, acc) when hashs == [], do: acc
+  defp get_interfaces_formatted(
+    [%{"type" => %{"nested" => nested}} = interface | rest],
+    %{slug: lang, types: lang_types} = meta,
+    acc
+  ) do
+
+    formatted_name = get_interface_name(interface, lang)
+    value_type = get_type(nested, lang_types)
+    new_acc = add_interface(acc, lang, %{name: formatted_name, value_type: value_type})
+
+    get_interfaces_formatted(rest, meta, new_acc)
+  end
+
+  defp get_interface_name(%{"argument-name" => name}, "ts") do
+    name
+    |> case_words()
+    |> Enum.map_join(&(String.capitalize(&1)))
+  end
+  defp get_interface_name(_, "ts"), do: "IHash"
+
+  defp case_words(str) do
+    String.split(str, ~r{_})
+  end
+
+  defp add_interface(acc, "ts", %{name: name, value_type: value}) do
+    "#{acc}export interface #{name} {\n\t[key: string]: #{value};\n}\n\n"
+  end
 
   defp add_empty_input(bindings, _meta), do: Keyword.put(bindings, :arguments, "")
 
