@@ -2,7 +2,7 @@ defmodule Codebattle.Languages do
   @moduledoc false
 
   # require Logger
-  alias Codebattle.SolutionTemplateGenerator
+  alias Codebattle.Generators.SolutionTemplateGenerator
 
   def get_solution(lang, task) do
     meta()
