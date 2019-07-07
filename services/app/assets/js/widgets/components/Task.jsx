@@ -7,6 +7,16 @@ import Timer from './Timer';
 import CountdownTimer from './CountdownTimer';
 import GameStatusCodes from '../config/gameStatusCodes';
 
+const renderTaskLink = (name) => {
+  const link = `https://github.com/hexlet-codebattle/battle_asserts/tree/master/src/battle_asserts/issues/${name}`;
+
+  return (
+    <a href={link} className="ml-2">
+      <span className="fab fa-github" />
+    </a>
+  );
+};
+
 const renderGameLevelBadge = (level) => {
   const levels = {
     elementary: 'info',
@@ -53,6 +63,7 @@ const Task = ({
           <h6 className="card-text">
             {'Task: '}
             <span className="card-subtitle mb-2 text-muted">{task.name}</span>
+            {renderTaskLink(task.name)}
             {renderGameLevelBadge(task.level)}
           </h6>
           <div className="card-text">
