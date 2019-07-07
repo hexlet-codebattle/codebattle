@@ -2,7 +2,7 @@ defmodule Codebattle.Languages do
   @moduledoc false
 
   # require Logger
-  alias Codebattle.SolutionTemplateGenerator
+  alias Codebattle.Generators.SolutionTemplateGenerator
 
   def get_solution(lang, task) do
     meta()
@@ -54,6 +54,24 @@ defmodule Codebattle.Languages do
           "array" => "[<%= value %>]",
           "boolean" => "true",
           "hash" => "{\"key\": <%= value %>}"
+        }
+      },
+      "ts" => %{
+        name: "typescript",
+        slug: "ts",
+        version: "3.5.2",
+        base_image: :ubuntu,
+        check_dir: "check",
+        extension: "ts",
+        docker_image: "codebattle/ts:3.5.2",
+        solution_template: "<%= import %>function solution(<%= arguments %>)<%= expected %>{\n\n};\n\nexport default solution;",
+        types: %{
+          "integer" => "number",
+          "float" => "number",
+          "string" => "string",
+          "array" => "Array<<%= inner_type %>>",
+          "boolean" => "boolean",
+          "hash" => "any"
         }
       },
       "elixir" => %{

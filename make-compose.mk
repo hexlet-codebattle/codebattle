@@ -13,7 +13,7 @@ compose-test-all:
 	docker-compose run app mix test
 
 compose-test:
-	docker-compose run app mix test test/codebattle test/codebattle_web
+	docker-compose run app mix test test/codebattle test/codebattle_web test/generators
 
 compose-kill:
 	docker-compose kill

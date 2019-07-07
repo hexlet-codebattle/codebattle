@@ -1,10 +1,10 @@
-defmodule Codebattle.SolutionTemplateGenerator do
+defmodule Codebattle.Generators.SolutionTemplateGenerator do
   @moduledoc ~S"""
   Parses the given params into a solution template for game
 
   ## Examples
 
-      iex> Codebattle.SolutionTemplateGenerator.get_solution(
+      iex> Codebattle.Generators.SolutionTemplateGenerator.get_solution(
       ...>    Codebattle.Languages.meta() |> Map.get("ruby"),
       ...>    %{
       ...>      input_signature: [
@@ -16,7 +16,7 @@ defmodule Codebattle.SolutionTemplateGenerator do
       ...> )
       "def solution(a, b)\n\t0\nend"
 
-      iex> Codebattle.SolutionTemplateGenerator.get_solution(
+      iex> Codebattle.Generators.SolutionTemplateGenerator.get_solution(
       ...>    Codebattle.Languages.meta() |> Map.get("python"),
       ...>    %{
       ...>      input_signature: [
@@ -28,7 +28,7 @@ defmodule Codebattle.SolutionTemplateGenerator do
       ...> )
       "def solution(str1: str, str2: str) -> str:"
 
-      iex> Codebattle.SolutionTemplateGenerator.get_solution(
+      iex> Codebattle.Generators.SolutionTemplateGenerator.get_solution(
       ...>    Codebattle.Languages.meta() |> Map.get("clojure"),
       ...>    %{
       ...>      input_signature: [
@@ -39,27 +39,40 @@ defmodule Codebattle.SolutionTemplateGenerator do
       ...>    }
       ...> )
       "(defn solution [a, b] {\"key\": 0.1})"
+
+      iex> Codebattle.Generators.SolutionTemplateGenerator.get_solution(
+      ...>    Codebattle.Languages.meta() |> Map.get("ts"),
+      ...>    %{
+      ...>      input_signature: [
+      ...>        %{"argument-name" => "a", "type" => %{"name" => "float"}},
+      ...>        %{"argument-name" => "b", "type" => %{"name" => "float"}}
+      ...>      ],
+      ...>      output_signature: %{"type" => %{"name" => "hash", "nested" => %{"name" => "float"}}}
+      ...>    }
+      ...> )
+      "import {IHash} from \"./types\";\n\nfunction solution(a: number, b: number): IHash {\n\n};\n\nexport default solution;"
   """
 
-  @type_langs ["haskell", "python"]
+  @type_langs ["haskell", "python", "ts"]
+  @static_langs ["ts"]
 
   # require Logger
+
+  alias Codebattle.Generators.TypesGenerator
 
   def get_solution(%{slug: lang, solution_template: template} = meta, task) do
     bindings = []
               |> add_input_spec(meta, Map.get(task, :input_signature, []))
               |> add_output_spec(meta, Map.get(task, :output_signature, %{}))
+              |> add_types(meta, task)
 
     EEx.eval_string(template, bindings)
   end
 
   defp add_input_spec(bindings, meta, nil), do: add_empty_input(bindings, meta)
   defp add_input_spec(bindings, meta, input) when input == [], do: add_empty_input(bindings, meta)
-  defp add_input_spec(bindings, %{slug: lang, types: lang_types} = meta, input) when lang in @type_langs do
-    specs = Enum.map_join(input, ", ", fn %{"argument-name" => name, "type" => type} ->
-      arg_type = get_type(type, lang_types)
-      get_input_spec(name, lang, arg_type)
-    end)
+  defp add_input_spec(bindings, %{slug: lang} = meta, input) when lang in @type_langs do
+    specs = Enum.map_join(input, ", ", &get_input_spec(&1, meta))
 
     Keyword.put(bindings, :arguments, specs)
   end
@@ -73,11 +86,11 @@ defmodule Codebattle.SolutionTemplateGenerator do
   defp add_output_spec(bindings, meta, output) when map_size(output) == 0, do: add_empty_output(bindings, meta)
   defp add_output_spec(
     bindings,
-    %{slug: lang, types: lang_types},
-    %{"type" => type}
+    %{slug: lang} = meta,
+    output_signature
   ) when lang in @type_langs do
 
-    expected = " -> #{get_type(type, lang_types)}"
+    expected = get_expected_type(output_signature, meta)
     Keyword.put(bindings, :expected, expected)
   end
   defp add_output_spec(
@@ -90,10 +103,20 @@ defmodule Codebattle.SolutionTemplateGenerator do
     return_statement = EEx.eval_string(return_template, [default_value: value])
     Keyword.put(bindings, :return_statement, return_statement)
   end
-  defp add_output_spec(binding, meta, _output), do: add_empty_output(binding, meta)
+  defp add_output_spec(bindings, meta, _output), do: add_empty_output(bindings, meta)
 
-  defp get_input_spec(name, "python", arg_type), do: "#{name}: #{arg_type}"
-  defp get_input_spec(_name, "haskell", arg_type), do: arg_type
+  defp add_types(bindings, %{slug: lang}, _task) when lang not in @static_langs, do: bindings
+  defp add_types(bindings, meta, task) do
+    types_import = TypesGenerator.get_import(task, meta)
+    Keyword.put(bindings, :import, types_import)
+  end
+
+  defp get_input_spec(input, %{slug: "haskell"} = meta) do
+    TypesGenerator.get_type(input, meta)
+  end
+  defp get_input_spec(%{"argument-name" => name} = input, meta) do
+    "#{name}: #{TypesGenerator.get_type(input, meta)}"
+  end
 
   defp get_args_str(_meta, "php", input) do
     Enum.map_join(input, ", ", &("$#{&1["argument-name"]}"))
@@ -102,11 +125,11 @@ defmodule Codebattle.SolutionTemplateGenerator do
     Enum.map_join(input, ", ", &(&1["argument-name"]))
   end
 
-  defp get_type(%{"name" => name, "nested" => nested}, lang_types) do
-    type = Map.get(lang_types, name)
-    EEx.eval_string(type, [inner_type: get_type(nested, lang_types)])
+  defp get_expected_type(%{"type" => %{"name" => "hash"}} = output, "ts" = lang, _lang_types) do
+    ": #{TypesGenerator.get_interface_name(output, lang)} "
   end
-  defp get_type(%{"name" => name}, lang_types), do: Map.get(lang_types, name)
+  defp get_expected_type(signature, %{slug: "ts"} = meta), do: ": #{TypesGenerator.get_type(signature, meta)} "
+  defp get_expected_type(signature, meta), do: " -> #{TypesGenerator.get_type(signature, meta)}"
 
   defp get_default_value(default_values, %{"name" => name, "nested" => nested}) do
     default = Map.get(default_values, name)

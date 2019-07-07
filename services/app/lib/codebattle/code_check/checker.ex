@@ -4,10 +4,10 @@ defmodule Codebattle.CodeCheck.Checker do
   require Logger
 
   alias Codebattle.Languages
-  alias Codebattle.CodeCheck.TestGenerator
+  alias Codebattle.Generators.CheckerGenerator
   # alias Codebattle.CodeCheck.OutputFilter
 
-  @advanced_checker_lang_list ["js"]
+  @advanced_checker_lang_list ["ts"]
 
   def check(task, editor_text, editor_lang) do
     case Languages.meta() |> Map.get(editor_lang) do
@@ -85,7 +85,7 @@ defmodule Codebattle.CodeCheck.Checker do
       end
 
     if lang.slug in @advanced_checker_lang_list do
-      TestGenerator.create(lang, task, dir_path, hash_sum)
+      CheckerGenerator.create(lang, task, dir_path, hash_sum)
     else
       asserts = task.asserts <> "\n{\"check\": #{hash_sum}}"
       File.write!(Path.join(dir_path, "data.jsons"), asserts)
