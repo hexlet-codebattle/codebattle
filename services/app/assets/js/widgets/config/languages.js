@@ -1,5 +1,6 @@
 export default {
   js: 'javascript',
+  ts: 'typescript',
   haskell: 'haskell',
   ruby: 'ruby',
   elixir: 'elixir',
