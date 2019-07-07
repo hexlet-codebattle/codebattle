@@ -57,7 +57,7 @@ defmodule Codebattle.CodeCheck.TS.IntegrationTest do
       payload: %{result: result, output: output}
     }
 
-    expected_result = %{"status" => "error", "result" => "sdf is not defined"}
+    expected_result = %{"status" => "error", "result" => "Something went wrong! Please, write to dev team in our Slack"}
     assert expected_result == Jason.decode!(result)
 
     fsm = Server.fsm(game.id)

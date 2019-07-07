@@ -33,8 +33,8 @@ defmodule Codebattle.Generators.CheckerGenerator do
         ...> )
         [checks:
           [
-            %{arguments: "1, 2", expected: "[2, 1]", index: 1, error_message: "\"error\""},
-            %{arguments: "3, 5", expected: "[5, 3]", index: 2, error_message: "\"error\""}
+            %{arguments: "1, 2", expected: "[2, 1]", index: 1, error_message: "[1, 2]"},
+            %{arguments: "3, 5", expected: "[5, 3]", index: 2, error_message: "[3, 5]"}
           ]
         ]
 
@@ -51,7 +51,12 @@ defmodule Codebattle.Generators.CheckerGenerator do
         ...> )
         [checks:
           [
-            %{arguments: "\"str1\", \"str2\"", expected: "{\"str1\": 3, \"str2\": 3}", index: 1, error_message: "\"error\""}
+            %{
+              arguments: "\"str1\", \"str2\"",
+              expected: "{\"str1\": 3, \"str2\": 3}",
+              index: 1,
+              error_message: "[\"str1\", \"str2\"]"
+            }
           ]
         ]
 
@@ -74,7 +79,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
               },
               expected: %{defining: "expected1: IHash", value: "{\"str1\": 1, \"str2\": 1}"},
               index: 1,
-              error_message: "\"error\""
+              error_message: "[[\"str1\", \"str2\"]]"
             }
           ]
         ]
@@ -90,7 +95,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
                   arguments: get_arguments(item, task, meta),
                   expected: get_expected(item, task, meta),
                   index: index,
-                  error_message: "\"error\""
+                  error_message: get_error_message(item, task, meta)
                 } end)
     ]
   end
@@ -130,6 +135,16 @@ defmodule Codebattle.Generators.CheckerGenerator do
       defining: "expected#{index}: #{type_name}",
       value: get_value({type, assert["expected"]}, "ts")
     }
+  end
+
+  defp get_error_message({assert, _}, %{input_signature: input_signature}, _meta) do
+    types = Enum.map(input_signature, &extract_type/1)
+    result = types
+             |> Enum.zip(assert["arguments"])
+             |> Enum.map(&get_value(&1, "js"))
+             |> Enum.join(", ")
+
+    "[#{result}]"
   end
 
   defp get_name(%{"argument-name" => name}, index, _meta), do: "#{name}#{index}"
