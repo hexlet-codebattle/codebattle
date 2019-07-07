@@ -124,9 +124,12 @@ defmodule Codebattle.GameCases.RematchTest do
     assert fsm.state == :playing
     assert FsmHelpers.get_second_player(fsm).editor_text == editor_text_init
 
-
     # Real player (second player) enter some text in text editor
-    Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text_edited, lang: "js"})
+    Phoenix.ChannelTest.push(socket1, "editor:data", %{
+      editor_text: editor_text_edited,
+      lang: "js"
+    })
+
     :timer.sleep(70)
     fsm = Server.fsm(game_id)
     assert FsmHelpers.get_second_player(fsm).editor_text == editor_text_edited

@@ -12,6 +12,7 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
     task = insert(:task)
     user1 = insert(:user, %{name: "first", email: "test1@test.test", github_id: 1, rating: 1000})
     user2 = insert(:user, %{name: "second", email: "test2@test.test", github_id: 2, rating: 1000})
+
     # user3 = insert(:user, %{name: "other", email: "test3@test.test", github_id: 3, rating: 1000})
 
     conn1 = put_session(conn, :user_id, user1.id)
@@ -81,10 +82,11 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
 
       :timer.sleep(40)
       Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text3})
-      :timer.sleep(40)
+      :timer.sleep(500)
       Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text4})
       :timer.sleep(40)
       Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text4, lang: "js"})
+
 
       #       playbook = [
       #         %{"delta" => [%{"insert" => "t"}], "time" => 100},
@@ -100,6 +102,9 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
       :timer.sleep(400)
       playbook = Repo.get_by(Playbook, user_id: user1.id)
       assert Enum.count(playbook.data["playbook"]) == 8
+      
+      assert Enum.all?(playbook.data["playbook"], fn x -> x["time"] <= 3000 end) == true
+     
     end
   end
 end

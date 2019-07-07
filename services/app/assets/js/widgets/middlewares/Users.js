@@ -1,4 +1,5 @@
 import axios from 'axios';
+import qs from 'qs';
 import { updateUsersRatingPage, updateUsersStats } from '../actions';
 
 export const loadUserStats = dispatch => async (user) => {
@@ -11,8 +12,13 @@ export const loadUserStats = dispatch => async (user) => {
   }
 };
 
-export const getUsersRatingPage = page => (dispatch) => {
-  axios.get(`/api/v1/users/${page}`)
+export const getUsersRatingPage = (page = 1, filter = '') => (dispatch) => {
+  const queryParamsString = qs.stringify({
+    page,
+    filter,
+  });
+
+  axios.get(`/api/v1/users?${queryParamsString}`)
     .then(({ data }) => {
       dispatch(updateUsersRatingPage(data));
     });

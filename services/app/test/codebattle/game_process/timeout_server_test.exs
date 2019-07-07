@@ -14,14 +14,15 @@ defmodule Codebattle.GameProcess.TimeoutServerTest do
   test "calls Play.timeout when it's time" do
     TimeoutServer.start_link(@game_id)
     TimeoutServer.start_link(@game2_id)
-    with_mock(Play, [
-      timeout_game: fn(game_id) -> game_id end
-    ]) do
+
+    with_mock(Play,
+      timeout_game: fn game_id -> game_id end
+    ) do
       TimeoutServer.restart(@game_id, 0)
       TimeoutServer.restart(@game2_id, 100)
 
-      assert called Play.timeout_game(@game_id)
-      assert !(called Play.timeout_game(@game2_id))
+      assert called(Play.timeout_game(@game_id))
+      assert !called(Play.timeout_game(@game2_id))
     end
   end
 end

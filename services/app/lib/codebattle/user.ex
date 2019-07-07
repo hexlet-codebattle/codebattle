@@ -16,7 +16,10 @@ defmodule Codebattle.User do
              :lang,
              :editor_mode,
              :editor_theme,
-             :achievements
+             :achievements,
+             :rank,
+             :games_played,
+             :performance
            ]}
 
   schema "users" do
@@ -31,6 +34,9 @@ defmodule Codebattle.User do
     field(:public_id, :binary_id)
     field(:is_bot, :boolean, default: false)
     field(:guest, :boolean, virtual: true, default: false)
+    field(:rank, :integer, virtual: true)
+    field(:games_played, :integer, virtual: true)
+    field(:performance, :integer, virtual: true)
     field(:achievements, {:array, :string}, default: [], null: false)
 
     has_many(:user_games, Codebattle.UserGame)
