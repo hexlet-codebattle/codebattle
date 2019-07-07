@@ -1,0 +1,11 @@
+level: easy
+disabled: false
+signature:
+  input:
+    - argument-name: str
+      type:
+        name: string
+  output:
+    type:
+      name: string
+description: 'new_description'
