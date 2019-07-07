@@ -87,7 +87,7 @@ defmodule Codebattle.CodeCheck.Checker do
     if lang.slug in @advanced_checker_lang_list do
       CheckerGenerator.create(lang, task, dir_path, hash_sum)
     else
-      asserts = task.asserts <> "\n{\"check\": #{hash_sum}}"
+      asserts = task.asserts <> "{\"check\": #{hash_sum}}"
       File.write!(Path.join(dir_path, "data.jsons"), asserts)
     end
 
