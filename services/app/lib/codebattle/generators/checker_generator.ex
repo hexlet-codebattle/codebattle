@@ -87,8 +87,10 @@ defmodule Codebattle.Generators.CheckerGenerator do
 
   def inflect(task, meta) do
     asserts = String.split(task.asserts, "\n")
+    Logger.debug(inspect(asserts))
     [
       checks: asserts
+                |> Enum.filter(fn item -> item !== "" end)
                 |> Enum.map(&Jason.decode!/1)
                 |> Enum.with_index(1)
                 |> Enum.map(fn {_assert, index} = item -> %{
