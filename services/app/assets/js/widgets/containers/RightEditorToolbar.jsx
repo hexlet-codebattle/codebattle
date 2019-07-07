@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import _ from 'lodash';
-import cn from 'classnames';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import GameStatusCodes from '../config/gameStatusCodes';
 import * as selectors from '../selectors';
 import {
@@ -21,18 +21,17 @@ class RightEditorToolbar extends Component {
 
   renderNameplate = (player = {}, onlineUsers) => {
     const isOnline = _.find(onlineUsers, { id: player.id });
-    const classNames = cn('fa fa-plug align-middle ml-2 text-success',
-      {
-        'text-success': isOnline,
-        'text-secondary': !isOnline,
-      });
 
     return (
-      <div>
+      <div className="d-flex align-items-center">
         <UserInfo user={player} />
-        <span
-          className={classNames}
-        />
+        <div>
+          {
+              isOnline
+                ? <FontAwesomeIcon icon="snowman" className="text-success ml-2" />
+                : <FontAwesomeIcon icon="skull-crossbones" className="text-secondary ml-2" />
+            }
+        </div>
       </div>
     );
   };

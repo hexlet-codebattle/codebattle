@@ -27,7 +27,7 @@ try do
                 assert expected == result
                 input_loop(stream)
               rescue
-                e in ExUnit.AssertionError ->
+                _e in ExUnit.AssertionError ->
                   IO.puts(Jason.encode!(%{status: :failure, result: args}))
                   exit(:normal)
                   input_loop(stream)

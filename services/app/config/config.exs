@@ -52,6 +52,14 @@ config :scrivener_html,
 
 config :codebattle, Codebattle.Bot.PlaybookPlayerRunner, timeout: 7_000
 
+bot_limit =
+  case System.get_env("CODEBATTLE_BOT_TIME_SLEEP_LIMIT") do
+    nil -> 30_000
+    x -> Integer.parse(x) |> elem(0)
+  end
+
+config :codebattle, Codebattle.Bot.RecorderServer, limit: bot_limit
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"

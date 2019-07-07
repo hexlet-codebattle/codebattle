@@ -10,7 +10,8 @@ defmodule Codebattle.Bot.PlaybookAsyncRunner do
   alias Codebattle.GameProcess.Play
 
   # API
-  def start(%{game_id: game_id, bot: bot}) do
+  # Starts GenServer for bot for every game. When GenServer receives :run, bot starts play
+  def create_server(%{game_id: game_id, bot: bot}) do
     try do
       GenServer.start(__MODULE__, %{game_id: game_id, bot: bot}, name: server_name(game_id))
     rescue
@@ -20,7 +21,8 @@ defmodule Codebattle.Bot.PlaybookAsyncRunner do
     end
   end
 
-  def call(params) do
+  # Bot strats play and chat
+  def run!(params) do
     GenServer.cast(server_name(params.game_id), {:run, params})
   end
 
@@ -58,14 +60,28 @@ defmodule Codebattle.Bot.PlaybookAsyncRunner do
     {:ok, socket} = PhoenixClient.Socket.start_link(socket_opts)
 
     game_topic = "game:#{params.game_id}"
-    :timer.sleep(600)
+    chat_topic = "chat:#{params.game_id}"
+    :timer.sleep(5_000)
+    game_channel_data = PhoenixClient.Channel.join(socket, game_topic)
+    chat_channel_data = PhoenixClient.Channel.join(socket, chat_topic)
 
-    case PhoenixClient.Channel.join(socket, game_topic) do
-      {:ok, _response, channel} ->
-        new_params = Map.merge(params, %{channel: channel})
-        Codebattle.Bot.PlaybookPlayerRunner.call(new_params)
+    case {game_channel_data, chat_channel_data} do
+      {{:ok, game_state, game_channel}, {:ok, chat_state, chat_channel}} ->
+        new_params =
+          Map.merge(params, %{
+            game_channel: game_channel,
+            chat_channel: chat_channel,
+            game_state: game_state,
+            chat_state: chat_state
+          })
 
-      {:error, reason} ->
+        Task.async(fn -> Codebattle.Bot.PlaybookPlayerRunner.call(new_params) end)
+        Task.async(fn -> Codebattle.Bot.ChatClientRunner.call(new_params) end)
+
+      {{:error, reason}, _} ->
+        {:error, reason}
+
+      {_, {:error, reason}} ->
         {:error, reason}
     end
 
@@ -75,7 +91,6 @@ defmodule Codebattle.Bot.PlaybookAsyncRunner do
   # HELPERS
 
   def handle_info(message, state) do
-    Logger.info(inspect(message))
     {:noreply, state}
   end
 

@@ -30,7 +30,8 @@ defmodule CodebattleWeb.ChannelCase do
 
   setup tags do
     :ok = Ecto.Adapters.SQL.Sandbox.checkout(Codebattle.Repo)
-    :ets.delete_all_objects(:active_games) # Clean ETS storage between tests
+    # Clean ETS storage between tests
+    :ets.delete_all_objects(:active_games)
 
     unless tags[:async] do
       Ecto.Adapters.SQL.Sandbox.mode(Codebattle.Repo, {:shared, self()})

@@ -34,7 +34,7 @@ defmodule CodebattleWeb.Router do
       get("/:user_id/activity", ActivityController, :show)
       get("/game_activity", GameActivityController, :show)
       get("/user/:id/stats", UserController, :stats)
-      resources("/users/:page", UserController, only: [:index])
+      resources("/users", UserController, only: [:index])
     end
   end
 
@@ -45,6 +45,7 @@ defmodule CodebattleWeb.Router do
     resources("/session", SessionController, singleton: true, only: [:delete])
     get("/", PageController, :index)
     resources("/users", UserController, only: [:index, :show])
+    resources("/tournaments", TournamentController, only: [:index])
     get("/settings", UserController, :edit, as: :user_setting)
     put("/settings", UserController, :update, as: :user_setting)
     resources("/games", GameController, only: [:create, :show, :delete])

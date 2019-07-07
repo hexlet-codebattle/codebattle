@@ -85,7 +85,6 @@ defmodule RecalculateAchivementsTest do
     with_mocks [
       {Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> {:ok, "asdf", "asdf"} end]}
     ] do
-
       ["js", "php", "ruby"]
       |> Enum.each(fn x ->
         insert_list(3, :user_game, %{user: user1, lang: x, result: "won"})
