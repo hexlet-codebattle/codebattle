@@ -2,6 +2,7 @@ import React from 'react';
 
 const iconsToClass = {
   js: 'icon-nodejs align-middle',
+  ts: 'icon-nodejs align-middle',
   ruby: 'icon-ruby align-middle',
   elixir: 'icon-elixir align-middle',
   haskell: 'icon-haskell align-middle',

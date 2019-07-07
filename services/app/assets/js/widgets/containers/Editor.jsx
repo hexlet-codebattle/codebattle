@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import MonacoEditor from 'react-monaco-editor';
 import { registerRulesForLanguage } from 'monaco-ace-tokenizer';
 import { initVimMode } from 'monaco-vim';
-
+import languages from '../config/languages';
 
 class Editor extends PureComponent {
   static propTypes = {
@@ -128,7 +128,7 @@ class Editor extends PureComponent {
       mode,
     } = this.props;
     // FIXME: move here and apply mapping object
-    const mappedSyntax = syntax === 'js' ? 'javascript' : syntax;
+    const mappedSyntax = languages[syntax];
     const editorHeightWithStatusBar = mode === 'vim' ? editorHeight - this.statusBarHeight : editorHeight;
     return (
       <Fragment>

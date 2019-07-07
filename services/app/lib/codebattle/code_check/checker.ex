@@ -4,7 +4,10 @@ defmodule Codebattle.CodeCheck.Checker do
   require Logger
 
   alias Codebattle.Languages
+  alias Codebattle.Generators.CheckerGenerator
   # alias Codebattle.CodeCheck.OutputFilter
+
+  @advanced_checker_lang_list ["ts"]
 
   def check(task, editor_text, editor_lang) do
     case Languages.meta() |> Map.get(editor_lang) do
@@ -70,6 +73,7 @@ defmodule Codebattle.CodeCheck.Checker do
     dir_path = Temp.mkdir!(prefix: "codebattle-check")
 
     check_code = :rand.normal() |> to_string
+    hash_sum = "\"__code#{check_code}__\""
 
     file_name =
       case lang.slug do
@@ -80,8 +84,12 @@ defmodule Codebattle.CodeCheck.Checker do
           "solution.#{lang.extension}"
       end
 
-    asserts = task.asserts <> "{\"check\":\"__code#{check_code}__\"}"
-    File.write!(Path.join(dir_path, "data.jsons"), asserts)
+    if lang.slug in @advanced_checker_lang_list do
+      CheckerGenerator.create(lang, task, dir_path, hash_sum)
+    else
+      asserts = task.asserts <> "\n{\"check\": #{hash_sum}}"
+      File.write!(Path.join(dir_path, "data.jsons"), asserts)
+    end
 
     File.write!(Path.join(dir_path, file_name), editor_text)
     {dir_path, check_code}

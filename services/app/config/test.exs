@@ -25,7 +25,7 @@ config :codebattle, Codebattle.Bot.PlaybookPlayerRunner, timeout: 300
 
 timeout =
   case System.get_env("CODEBATTLE_DOCKER_TEST_TIMEOUT") do
-    nil -> 4000
+    nil -> 8000
     x -> Integer.parse(x) |> elem(0)
   end
 

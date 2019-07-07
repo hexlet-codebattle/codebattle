@@ -1,0 +1,42 @@
+import solution from './solution';
+import { assert } from 'chai';
+<%= imports %>
+try {
+  const assertEqual = function (result, expected, errorMessage) {
+    try {
+      assert.deepEqual(result, expected);
+    } catch (err) {
+      process.stdout.write(JSON.stringify({
+        status: 'failure',
+        result: errorMessage,
+      }));
+      process.exit(0);
+    }
+  };
+
+  <%= for %{arguments: arguments, expected: expected, index: i, error_message: message} <- checks do %>
+    <%= for  %{defining: defining, value: value} <- arguments.info do %>
+      const <%= defining %> = <%= value %>;
+    <% end %>
+    const <%= expected.defining %> = <%= expected.value %>;
+
+    assertEqual(
+      solution(<%= arguments.expretion %>),
+      expected<%= i %>,
+      <%= message %>
+    );
+  <% end %>
+
+  process.stdout.write(JSON.stringify({
+    status: 'ok',
+    result: <%= hash_sum %>,
+  }));
+  process.exit(0);
+
+} catch (err) {
+  process.stdout.write(JSON.stringify({
+    status: 'failure',
+    result: err.message,
+  }));
+  process.exit(0);
+}
