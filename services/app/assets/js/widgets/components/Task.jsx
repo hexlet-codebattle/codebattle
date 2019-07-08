@@ -8,11 +8,12 @@ import CountdownTimer from './CountdownTimer';
 import GameStatusCodes from '../config/gameStatusCodes';
 
 const renderTaskLink = (name) => {
-  const link = `https://github.com/hexlet-codebattle/battle_asserts/tree/master/src/battle_asserts/issues/${name}`;
+  const link = `https://github.com/hexlet-codebattle/battle_asserts/tree/master/src/battle_asserts/issues/${name}.clj`;
 
   return (
     <a href={link} className="ml-2">
-      <span className="fab fa-github" />
+      <span className="fab fa-github mr-1" />
+      link
     </a>
   );
 };
