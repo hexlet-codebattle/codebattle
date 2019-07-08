@@ -90,7 +90,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
     Logger.debug(inspect(asserts))
     [
       checks: asserts
-                |> Enum.filter(fn item -> item !== "" end)
+                |> Enum.filter(&(&1 !== ""))
                 |> Enum.map(&Jason.decode!/1)
                 |> Enum.with_index(1)
                 |> Enum.map(fn {_assert, index} = item -> %{
