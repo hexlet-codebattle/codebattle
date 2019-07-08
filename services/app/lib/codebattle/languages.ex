@@ -74,6 +74,24 @@ defmodule Codebattle.Languages do
           "hash" => "any"
         }
       },
+      "golang" => %{
+        name: "golang",
+        slug: "golang",
+        version: "1.12.6",
+        base_image: :ubuntu,
+        check_dir: "check",
+        extension: "go",
+        docker_image: "codebattle/golang:1.12.6",
+        solution_template: "package main;\n\nfunc solution(<%= arguments %>)<%= expected %> {\n\n}",
+        types: %{
+          "integer" => "int64",
+          "float" => "float64",
+          "string" => "string",
+          "array" => "[]<%= inner_type %>",
+          "boolean" => "bool",
+          "hash" => "map[string]<%= inner_type %>"
+        }
+      },
       "elixir" => %{
         name: "elixir",
         slug: "elixir",
