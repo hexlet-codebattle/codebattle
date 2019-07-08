@@ -7,7 +7,7 @@ defmodule Codebattle.CodeCheck.Checker do
   alias Codebattle.Generators.CheckerGenerator
   # alias Codebattle.CodeCheck.OutputFilter
 
-  @advanced_checker_lang_list ["ts"]
+  @advanced_checker_lang_list ["ts", "golang"]
 
   def check(task, editor_text, editor_lang) do
     case Languages.meta() |> Map.get(editor_lang) do
