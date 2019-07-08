@@ -22,6 +22,7 @@ defmodule Codebattle.LanguagesTest do
     empty_solutions = MapSet.new([
       "module.exports = () => {\n\n};",
       "function solution(){\n\n};\n\nexport default solution;",
+      "package main;\n\nfunc solution() {\n\n}",
       "def solution()\n\nend",
       "defmodule Solution do\n\tdef solution() do\n\n\tend\nend",
       "def solution():",
@@ -44,6 +45,7 @@ defmodule Codebattle.LanguagesTest do
 
     js_expected = "module.exports = (a, b, text, arr, condition, hashtable) => {\n\treturn [\"value\"];\n};"
     ts_expected = "import {Hashtable} from \"./types\";\n\nfunction solution(a: number, b: number, text: string, arr: Array<Array<number>>, condition: boolean, hashtable: Hashtable): Array<string> {\n\n};\n\nexport default solution;"
+    golang_expected = "package main;\n\nfunc solution(a int64, b float64, text string, arr [][]int64, condition bool, hashtable map[string]int64) []string {\n\n}"
     ruby_expected = "def solution(a, b, text, arr, condition, hashtable)\n\t[\"value\"]\nend"
     elixir_expected = "defmodule Solution do\n\tdef solution(a, b, text, arr, condition, hashtable) do\n\t\t[\"value\"]\n\tend\nend"
     python_expected = "def solution(a: int, b: float, text: str, arr: List[List[int]], condition: bool, hashtable: Dict[str, int]) -> List[str]:"
@@ -54,6 +56,7 @@ defmodule Codebattle.LanguagesTest do
 
     assert Languages.get_solution("js", signature) == js_expected
     assert Languages.get_solution("ts", signature) == ts_expected
+    assert Languages.get_solution("golang", signature) == golang_expected
     assert Languages.get_solution("ruby", signature) == ruby_expected
     assert Languages.get_solution("elixir", signature) == elixir_expected
     assert Languages.get_solution("python", signature) == python_expected
