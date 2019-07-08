@@ -1,7 +1,7 @@
 export default {
   js: 'javascript',
   ts: 'typescript',
-  golang: 'golang',
+  golang: 'go',
   haskell: 'haskell',
   ruby: 'ruby',
   elixir: 'elixir',
