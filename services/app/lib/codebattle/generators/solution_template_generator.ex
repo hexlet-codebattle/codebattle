@@ -51,9 +51,21 @@ defmodule Codebattle.Generators.SolutionTemplateGenerator do
       ...>    }
       ...> )
       "import {IHash} from \"./types\";\n\nfunction solution(a: number, b: number): IHash {\n\n};\n\nexport default solution;"
+
+      iex> Codebattle.Generators.SolutionTemplateGenerator.get_solution(
+      ...>    Codebattle.Languages.meta() |> Map.get("golang"),
+      ...>    %{
+      ...>      input_signature: [
+      ...>        %{"argument-name" => "a", "type" => %{"name" => "float"}},
+      ...>        %{"argument-name" => "b", "type" => %{"name" => "float"}}
+      ...>      ],
+      ...>      output_signature: %{"type" => %{"name" => "hash", "nested" => %{"name" => "float"}}}
+      ...>    }
+      ...> )
+      "package main;\n\nfunc solution(a float64, b float64) map[string]float64 {\n\n}"
   """
 
-  @type_langs ["haskell", "python", "ts"]
+  @type_langs ["haskell", "python", "ts", "golang"]
   @static_langs ["ts"]
 
   # require Logger
@@ -114,6 +126,9 @@ defmodule Codebattle.Generators.SolutionTemplateGenerator do
   defp get_input_spec(input, %{slug: "haskell"} = meta) do
     TypesGenerator.get_type(input, meta)
   end
+  defp get_input_spec(%{"argument-name" => name} = input, %{slug: "golang"} = meta) do
+    "#{name} #{TypesGenerator.get_type(input, meta)}"
+  end
   defp get_input_spec(%{"argument-name" => name} = input, meta) do
     "#{name}: #{TypesGenerator.get_type(input, meta)}"
   end
@@ -125,10 +140,8 @@ defmodule Codebattle.Generators.SolutionTemplateGenerator do
     Enum.map_join(input, ", ", &(&1["argument-name"]))
   end
 
-  defp get_expected_type(%{"type" => %{"name" => "hash"}} = output, "ts" = lang, _lang_types) do
-    ": #{TypesGenerator.get_interface_name(output, lang)} "
-  end
   defp get_expected_type(signature, %{slug: "ts"} = meta), do: ": #{TypesGenerator.get_type(signature, meta)} "
+  defp get_expected_type(signature, %{slug: "golang"} = meta), do: " #{TypesGenerator.get_type(signature, meta)}"
   defp get_expected_type(signature, meta), do: " -> #{TypesGenerator.get_type(signature, meta)}"
 
   defp get_default_value(default_values, %{"name" => name, "nested" => nested}) do

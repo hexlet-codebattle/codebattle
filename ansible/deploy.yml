@@ -81,6 +81,7 @@
           - "/var/run/docker.sock:/var/run/docker.sock"
           - "/var/log/codebattle/:/var/log/codebattle/"
           - "/tmp:/tmp"
+          - "/home/deploy/battle_asserts/issues:/tmp/issues"
           - "/opt:/opt"
           - "/var/tmp:/var/tmp"
       tags: [webserver]

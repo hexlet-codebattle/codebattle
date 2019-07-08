@@ -30,7 +30,7 @@ defmodule CodebattleWeb.Factory do
       name: Base.encode16(:crypto.strong_rand_bytes(2)),
       description: "test sum",
       level: "easy",
-      asserts: "{\"arguments\":[1,1],\"expected\":2}\n{\"arguments\":[2,2],\"expected\":4}\n{\"arguments\":[1,3],\"expected\":4}",
+      asserts: "{\"arguments\":[1,1],\"expected\":2}\n{\"arguments\":[2,2],\"expected\":4}\n{\"arguments\":[1,3],\"expected\":4}\n",
       input_signature: [
         %{"argument-name" => "a", "type" => %{"name" => "integer"}},
         %{"argument-name" => "b", "type" => %{"name" => "integer"}}

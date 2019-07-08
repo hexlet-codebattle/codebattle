@@ -63,6 +63,8 @@ $ mix dockers.pull elixir
 
 $ mix test test/code_check/
 
+$ mix issues.upload # Upsert issues by name in db
+
 #If you use docker in dev env, run commands in make compose-bash
 ```
 
