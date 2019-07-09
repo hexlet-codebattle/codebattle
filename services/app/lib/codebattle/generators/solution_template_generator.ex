@@ -38,7 +38,7 @@ defmodule Codebattle.Generators.SolutionTemplateGenerator do
       ...>      output_signature: %{"type" => %{"name" => "hash", "nested" => %{"name" => "float"}}}
       ...>    }
       ...> )
-      "(defn solution [a, b] {\"key\": 0.1})"
+      "(defn solution [a b] {:key 0.1})"
 
       iex> Codebattle.Generators.SolutionTemplateGenerator.get_solution(
       ...>    Codebattle.Languages.meta() |> Map.get("ts"),
@@ -135,6 +135,9 @@ defmodule Codebattle.Generators.SolutionTemplateGenerator do
 
   defp get_args_str(_meta, "php", input) do
     Enum.map_join(input, ", ", &("$#{&1["argument-name"]}"))
+  end
+  defp get_args_str(_meta, "clojure", input) do
+    Enum.map_join(input, " ", &(&1["argument-name"]))
   end
   defp get_args_str(_meta, _lang, input) do
     Enum.map_join(input, ", ", &(&1["argument-name"]))

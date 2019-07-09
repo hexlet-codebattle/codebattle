@@ -164,7 +164,7 @@ defmodule Codebattle.Languages do
           "string" => "\"value\"",
           "array" => "[<%= value %>]",
           "boolean" => "false",
-          "hash" => "{\"key\": <%= value %>}"
+          "hash" => "{:key <%= value %>}"
         }
       },
       "haskell" => %{

@@ -147,7 +147,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
       expretion: Enum.map_join(info, ", ", fn %{name: name} -> name end)
     }
   end
-  defp get_arguments({assert, _index}, %{input_signature: input_signature}, %{slug: "js"} = meta) do
+  defp get_arguments({assert, _index}, %{input_signature: input_signature}, meta) do
     types = Enum.map(input_signature, &extract_type/1)
 
     types
@@ -156,14 +156,18 @@ defmodule Codebattle.Generators.CheckerGenerator do
     |> Enum.join(", ")
   end
 
-  defp get_expected({assert, _index}, %{output_signature: signature}, %{slug: "js"} = meta) do
-    get_value({extract_type(signature), assert["expected"]}, meta)
-  end
-  defp get_expected({assert, index}, %{output_signature: signature}, meta) do
+  defp get_expected(
+    {assert, index},
+    %{output_signature: signature},
+    %{slug: slug} = meta
+  ) when slug in @static_langs do
     %{
       defining: get_defining(signature, index, meta),
       value: get_value_expretion(signature, assert["expected"], meta)
     }
+  end
+  defp get_expected({assert, _index}, %{output_signature: signature}, meta) do
+    get_value({extract_type(signature), assert["expected"]}, meta)
   end
 
   defp get_error_message({assert, _}, %{input_signature: input_signature}, meta) do
@@ -201,10 +205,10 @@ defmodule Codebattle.Generators.CheckerGenerator do
     array_values = Enum.map_join(value, ", ", &get_value({nested, &1}, meta))
     "[#{array_values}]"
   end
-  defp get_value({%{"name" => "hash", "nested" => nested}, value}, meta) do
+  defp get_value({%{"name" => "hash"} = signature, value}, meta) do
     list = Map.to_list(value)
-    hash_entries = Enum.map_join(list, ", ", fn {k, v} -> "\"#{k}\": #{get_value({nested, v}, meta)}" end)
-    "{#{hash_entries}}"
+    hash_entries = Enum.map_join(list, ", ", fn item -> get_hash_inners(item, signature, meta) end)
+    get_hash_value(hash_entries, meta)
   end
   defp get_value({_, value}, _meta), do: value
 
@@ -218,6 +222,25 @@ defmodule Codebattle.Generators.CheckerGenerator do
     type = extract_type(signature)
     get_value({type, value}, meta)
   end
+
+  defp get_hash_inners(
+    {k, v},
+    %{"nested" => nested},
+    %{slug: slug} = meta
+  ) when slug in ["ruby", "php"] do
+
+    "\"#{k}\" => #{get_value({nested, v}, meta)}"
+  end
+  defp get_hash_inners({k, v}, %{"nested" => nested}, %{slug: "clojure"} = meta) do
+    ":#{k} #{get_value({nested, v}, meta)}"
+  end
+  defp get_hash_inners({k, v}, %{"nested" => nested}, meta) do
+    "\"#{k}\": #{get_value({nested, v}, meta)}"
+  end
+
+  defp get_hash_value(entries, %{slug: "php"}), do: "array(#{entries})"
+  defp get_hash_value(entries, %{slug: "elixir"}), do: "%{#{entries}}"
+  defp get_hash_value(entries, _meta), do: "{#{entries}}"
 
   defp extract_type(%{"type" => type}), do: type
 
