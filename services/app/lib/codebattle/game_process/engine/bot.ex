@@ -59,6 +59,8 @@ defmodule Codebattle.GameProcess.Engine.Bot do
           {:ok, fsm} ->
             ActiveGames.add_participant(fsm)
 
+            level = FsmHelpers.get_level(fsm)
+
             update_game!(game_id, %{state: "playing", task_id: task.id})
             start_record_fsm(game_id, FsmHelpers.get_players(fsm), fsm)
 
