@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash';
 import { connect } from 'react-redux';
 import { fetchState, addMessage } from '../middlewares/Chat';
 import * as selectors from '../selectors';
@@ -33,6 +34,8 @@ class ChatWidget extends React.Component {
   render() {
     const { message: typedMessage } = this.state;
     const { messages, users } = this.props;
+    const listOfUsers = _.uniqBy(users, 'github_id');
+
     return (
       <div className="d-flex shadow-sm h-100">
         <div className="col-12 col-sm-8 p-0 bg-white rounded-left h-100 position-relative">
@@ -61,7 +64,7 @@ class ChatWidget extends React.Component {
                 className="overflow-auto"
                 style={{ height: '175px' }}
               >
-                {users.map(user => (
+                {listOfUsers.map(user => (
                   <div key={user.id} className="my-2">
                     <UserName user={user} />
                   </div>
