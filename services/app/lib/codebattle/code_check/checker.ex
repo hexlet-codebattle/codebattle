@@ -7,7 +7,7 @@ defmodule Codebattle.CodeCheck.Checker do
   alias Codebattle.Generators.CheckerGenerator
   # alias Codebattle.CodeCheck.OutputFilter
 
-  @advanced_checker_lang_list ["ts", "golang", "elixir", "ruby", "php", "clojure", "python"]
+  @advanced_checker_stop_list ["js", "perl", "haskell"]
 
   def check(task, editor_text, editor_lang) do
     case Languages.meta() |> Map.get(editor_lang) do
@@ -84,7 +84,7 @@ defmodule Codebattle.CodeCheck.Checker do
           "solution.#{lang.extension}"
       end
 
-    if lang.slug in @advanced_checker_lang_list do
+    if lang.slug not in @advanced_checker_stop_list do
       CheckerGenerator.create(lang, task, dir_path, hash_sum)
     else
       asserts = task.asserts <> "{\"check\": #{hash_sum}}"
