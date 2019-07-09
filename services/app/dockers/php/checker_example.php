@@ -20,7 +20,20 @@ register_shutdown_function(function() {
   }
 });
 
-include 'check/solution.php';
+function assert_result($result, $expected, $error_message)
+{
+    $stdout = STDERR;
+
+    if (assert($result !== $expected)) {
+        fwrite($stdout, json_encode(array(
+            'status' => 'failure',
+            'result' => $error_message
+        )));
+        exit(0);
+    }
+}
+
+include 'solution_example.php';
 
 assert_options(ASSERT_ACTIVE, 1);
 assert_options(ASSERT_WARNING, 0);
@@ -28,25 +41,11 @@ assert_options(ASSERT_QUIET_EVAL, 1);
 
 $stdout = STDERR;
 
-while ($line = fgets(STDIN)) {
-  $json = json_decode($line);
+assert_result(solution(1, 2), 3, '[1, 2]');
+assert_result(solution(5, 3), 8, '[5, 3]');
 
-  if (isset($json->check)) {
-    fwrite($stdout, json_encode(array(
-      'status' => 'ok',
-      'result' => $json->check
-    )));
-  } else {
-    $result = solution(...$json->arguments);
-
-    if (assert($result !== $json->expected)) {
-      fwrite($stdout, json_encode(array(
-        'status' => 'failure',
-        'result' => $json->arguments
-      )));
-      exit(0);
-    }
-  }
-}
-
+fwrite($stdout, json_encode(array(
+    'status' => 'ok',
+    'result' => '__code-0__'
+)));
 ?>

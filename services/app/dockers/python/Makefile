@@ -1,4 +1,7 @@
 test:
-	cat check/data.jsons | python checker.py
+	python ./check/checker.py
+
+test-example:
+	python checker_example.py
 
 .PHONY: test

@@ -14,6 +14,6 @@ ADD mix.exs .
 RUN mix deps.get
 RUN mix deps.compile
 
-ADD checker.exs .
+ADD checker_example.exs .
+ADD solution_example.exs .
 ADD Makefile .
-
