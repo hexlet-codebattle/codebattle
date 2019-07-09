@@ -1,6 +1,6 @@
-FROM golang:1.12.6
+FROM golang:1.12.6-alpine
 
-RUN apt-get update && apt-get install -y build-essential --no-install-recommends && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apk add --update make
 
 WORKDIR /usr/src/app
 
