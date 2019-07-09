@@ -13,11 +13,11 @@ defmodule Codebattle.Bot.ChatClientRunner do
     })
 
     :timer.sleep(2 * 60 * 1000)
-
-    PhoenixClient.Channel.push_async(params.chat_channel, "new:message", %{
-      "message" => say_about_language(params.chat_state),
-      "user" => "test_bot"
-    })
+    #
+    #PhoenixClient.Channel.push_async(params.chat_channel, "new:message", %{
+    #  "message" => say_about_language(params.chat_state),
+    #  "user" => "test_bot"
+    #})
 
     unless :rand.uniform(16) > 8 do
       PhoenixClient.Channel.push_async(params.chat_channel, "new:message", %{
@@ -28,10 +28,12 @@ defmodule Codebattle.Bot.ChatClientRunner do
 
     :timer.sleep(10 * 60 * 1000)
 
+    unless :rand.uniform(20) > 5 do
     PhoenixClient.Channel.push_async(params.chat_channel, "new:message", %{
       "message" => say_about_code(params.chat_state),
       "user" => "test_bot"
     })
+    end
   end
 
   defp greet_opponent(chat_state) do
@@ -44,8 +46,9 @@ defmodule Codebattle.Bot.ChatClientRunner do
     "#{String.capitalize(opponent["lang"] || "javascript")} is not good lang!"
   end
 
-  defp say_announcement(_chat_state) do
-    "But don't be upset, sooner or later we provide Golang"
+  defp say_announcement(chat_state) do
+    opponent = get_opponent(chat_state)
+    "I have some great news))) You may choose #{pick_language(opponent["lang"])} for this task"
   end
 
   defp say_about_code(_chat_state) do
@@ -61,6 +64,9 @@ defmodule Codebattle.Bot.ChatClientRunner do
         user
     end
   end
+
+  defp pick_language("golang"), do: "TypeScript"
+  defp pick_language(_), do: "Golang"
 
   defp default_user do
     %{"name" => "dude", "lang" => "php"}
