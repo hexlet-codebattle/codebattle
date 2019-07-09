@@ -1,0 +1,43 @@
+try do
+  Code.eval_file("./check/solution.exs")
+
+  ExUnit.start()
+  # ExUnit.configure(capture_log: true)
+
+  defmodule TheTest do
+    use ExUnit.Case
+    alias Jason.Helpers
+    import Helpers
+
+    defp assert_result(result, expected, errorMessage) do
+      try do
+        assert result == expected
+      rescue
+        _e in ExUnit.AssertionError ->
+          message = json_map(status: :failure, result: errorMessage)
+          IO.puts(Jason.encode!(message))
+          exit(:normal)
+      end
+    end
+
+    defp test_solution() do
+      <%= for %{arguments: arguments, expected: expected} <- checks do %>
+        assert_result(apply(Solution, :solution, [<%= arguments %>]), <%= expected %>, "[<%= arguments %>]")
+      <% end %>
+      message = json_map(status: :ok, result: <%= hash_sum %>)
+      IO.puts(Jason.encode!(message))
+      :ok
+    end
+
+    test "solution" do
+      test_solution()
+    end
+  end
+
+  exit(:normal)
+rescue
+  e in CompileError ->
+    require Jason.Helpers
+    message = Jason.Helpers.json_map(status: :error, result: e.description)
+    IO.puts(Jason.encode!(message))
+end

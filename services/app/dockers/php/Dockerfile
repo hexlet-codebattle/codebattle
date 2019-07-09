@@ -4,5 +4,6 @@ RUN apt-get update && apt-get install -y build-essential --no-install-recommends
 
 WORKDIR /usr/src/app
 
-ADD checker.php .
+ADD checker_example.php .
+ADD solution_example.php .
 ADD Makefile .
