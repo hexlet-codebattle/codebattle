@@ -60,7 +60,7 @@ defmodule Codebattle.CodeCheck.Php.IntegrationTest do
     expected_result = %{
       "status" => "error",
       "result" =>
-        "Uncaught Error: Call to undefined function solution() in /usr/src/app/checker.php:40"
+        "Uncaught Error: Call to undefined function solution() in /usr/src/app/check/checker.php:45"
     }
 
     assert expected_result == Jason.decode!(result)
@@ -104,7 +104,7 @@ defmodule Codebattle.CodeCheck.Php.IntegrationTest do
       payload: %{result: result, output: output}
     }
 
-    expected_result = %{"status" => "failure", "result" => [1, 1]}
+    expected_result = %{"status" => "failure", "result" => "[1, 1]"}
 
     assert expected_result == Jason.decode!(result)
 
