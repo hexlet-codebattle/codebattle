@@ -1,7 +1,7 @@
 test:
-	node ./check/checker.js
+	babel --out-dir dist ./check/ && node ./dist/checker.js
 
 test_example:
-	node ./checker_example.js
+	babel --out-dir dist ./ && node ./dist/checker_example.js
 
 .PHONY: test
