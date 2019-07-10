@@ -2,7 +2,6 @@ import sys
 import json
 
 def assert_result(result, expected, errorMessage):
-    print(json.dumps({'result': result, 'expected': expected}))
     assert result == expected, errorMessage
 
 try:
