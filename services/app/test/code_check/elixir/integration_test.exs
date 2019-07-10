@@ -61,7 +61,7 @@ defmodule Codebattle.CodeCheck.Elixir.IntegrationTest do
       payload: %{result: result, output: output}
     }
 
-    expected_result = %{"status" => "failure", "result" => "[1, 1]"}
+    expected_result = %{"status" => "failure", "result" => "error1"}
     assert expected_result == Jason.decode!(result)
 
     fsm = Server.fsm(game.id)
