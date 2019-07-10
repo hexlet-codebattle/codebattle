@@ -7,26 +7,26 @@ import (
 )
 
 func main() {
-  <%= for %{arguments: arguments, expected: expected, index: i, error_message: message} <- checks do %>
+  <%= for %{arguments: arguments, expected: expected, index: i} <- checks do %>
     <%= for %{defining: defining, value: value} <- arguments.info do %>
-      var <%= defining %> = <%= value %>
+      var <%= defining %> = <%= value %>;
     <% end %>
-    var <%= expected.defining %> = <%= expected.value %>
+    var <%= expected.defining %> = <%= expected.value %>;
 
-    AssertSolution(solution(<%= arguments.expretion %>), expected<%= i %>, "<%= message %>")
+    AssertSolution(solution(<%= arguments.expretion %>), expected<%= i %>, "error<%= i %>");
   <% end %>
 
-  SendMessageAndExit("ok", <%= hash_sum %>)
+  SendMessageAndExit("ok", <%= hash_sum %>);
 }
 
 func AssertSolution(result interface{}, expected interface{}, message string) {
-  var status bool = reflect.DeepEqual(result, expected)
+  var status bool = reflect.DeepEqual(result, expected);
   if status == false {
-    SendMessageAndExit("failure", message)
+    SendMessageAndExit("failure", message);
   }
 }
 
 func SendMessageAndExit(status string, result string) {
-  fmt.Printf("{\"status\": \"%s\", \"result\": \"%s\"}", status, result)
-  os.Exit(0)
+  fmt.Printf("{\"status\": \"%s\", \"result\": \"%s\"}", status, result);
+  os.Exit(0);
 }

@@ -7,8 +7,8 @@ def assert_result(result, expected, errorMessage):
 try:
     from solution_example import solution
 
-    assert_result(solution(1, 2), 3, "[1, 2]")
-    assert_result(solution(5, 3), 8, "[5, 3]")
+    assert_result(solution(1, 2), 3, [1, 2])
+    assert_result(solution(5, 3), 8, [5, 3])
 
     print(json.dumps({
         'status': 'ok',

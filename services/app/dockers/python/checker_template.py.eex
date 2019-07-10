@@ -2,13 +2,14 @@ import sys
 import json
 
 def assert_result(result, expected, errorMessage):
+    print(json.dumps({'result': result, 'expected': expected}))
     assert result == expected, errorMessage
 
 try:
     from solution import solution
 
     <%= for %{arguments: arguments, expected: expected} <- checks do %>
-    assert_result(solution(<%= arguments %>), <%= expected %>, "[<%= arguments %>]")
+    assert_result(solution(<%= arguments %>), <%= expected %>, [<%= arguments %>])
     <% end %>
 
     print(json.dumps({

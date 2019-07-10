@@ -42,7 +42,7 @@ assert_options(ASSERT_QUIET_EVAL, 1);
 $stdout = STDERR;
 
 <%= for %{arguments: arguments, expected: expected} <- checks do %>
-    assert_result(solution(<%= arguments %>), <%= expected %>, '[<%= arguments %>]');
+    assert_result(solution(<%= arguments %>), <%= expected %>, array(<%= arguments %>));
 <% end %>
 
 fwrite($stdout, json_encode(array(

@@ -64,7 +64,7 @@ defmodule Codebattle.CodeCheck.Checker do
             _ -> {:error, json_result, container_output}
           end
 
-        Task.start(File, :rm_rf, [dir_path])
+        #Task.start(File, :rm_rf, [dir_path])
         result
     end
   end

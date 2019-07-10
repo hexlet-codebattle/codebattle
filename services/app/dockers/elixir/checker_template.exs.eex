@@ -21,8 +21,8 @@ try do
     end
 
     defp test_solution() do
-      <%= for %{arguments: arguments, expected: expected} <- checks do %>
-        assert_result(apply(Solution, :solution, [<%= arguments %>]), <%= expected %>, "[<%= arguments %>]")
+      <%= for %{arguments: arguments, expected: expected, index: i} <- checks do %>
+        assert_result(apply(Solution, :solution, [<%= arguments %>]), <%= expected %>, "error<%= i %>")
       <% end %>
       message = json_map(status: :ok, result: <%= hash_sum %>)
       IO.puts(Jason.encode!(message))
