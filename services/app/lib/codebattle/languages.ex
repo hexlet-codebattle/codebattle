@@ -45,7 +45,7 @@ defmodule Codebattle.Languages do
         check_dir: "check",
         extension: "js",
         docker_image: "codebattle/js:11.6.0",
-        solution_template: "module.exports = (<%= arguments %>) => {\n<%= return_statement %>\n};",
+        solution_template: "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nmodule.exports = (<%= arguments %>) => {\n<%= return_statement %>\n};",
         return_template: "\treturn <%= default_value %>;",
         default_values: %{
           "integer" => "0",

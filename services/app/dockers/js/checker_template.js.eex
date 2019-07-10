@@ -18,13 +18,14 @@ try {
   };
 
   <%= for %{arguments: arguments, expected: expected} <- checks do %>
-    assertSolution(solution(<%= arguments %>), <%= expected %>, "[<%= arguments %>]");
+    assertSolution(solution(<%= arguments %>), <%= expected %>, [<%= arguments %>]);
   <% end %>
 
   process.stdout.write(JSON.stringify({
     status: "ok",
     result: <%= hash_sum %>,
   }));
+  process.exit(0);
 } catch (e) {
   process.stdout.write(JSON.stringify({
     status: "error",

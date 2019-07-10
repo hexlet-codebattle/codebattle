@@ -7,7 +7,7 @@ defmodule Codebattle.CodeCheck.Checker do
   alias Codebattle.Generators.CheckerGenerator
   # alias Codebattle.CodeCheck.OutputFilter
 
-  @advanced_checker_stop_list ["js", "perl", "haskell"]
+  @advanced_checker_stop_list ["perl", "haskell"]
 
   def check(task, editor_text, editor_lang) do
     case Languages.meta() |> Map.get(editor_lang) do
@@ -64,7 +64,7 @@ defmodule Codebattle.CodeCheck.Checker do
             _ -> {:error, json_result, container_output}
           end
 
-        #Task.start(File, :rm_rf, [dir_path])
+        Task.start(File, :rm_rf, [dir_path])
         result
     end
   end
