@@ -20,7 +20,7 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
       meta = Map.get(diff, "meta")
       game_topic = "game:#{params.game_id}"
       if meta do
-        step_coefficient = params.apponent_data /  Map.get(meta, "total_time")
+        step_coefficient = params.opponent_data /  Map.get(meta, "total_time")
         start_bot_cycle(diffs, game_topic, params.game_channel, step_coefficient)
       else
         start_bot_cycle(diffs, game_topic, params.game_channel, 0)
