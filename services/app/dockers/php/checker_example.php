@@ -41,8 +41,8 @@ assert_options(ASSERT_QUIET_EVAL, 1);
 
 $stdout = STDERR;
 
-assert_result(solution(1, 2), 3, '[1, 2]');
-assert_result(solution(5, 3), 8, '[5, 3]');
+assert_result(solution(1, 2), 3, array(1, 2));
+assert_result(solution(5, 3), 8, array(5, 3));
 
 fwrite($stdout, json_encode(array(
     'status' => 'ok',

@@ -1,9 +1,5 @@
 defmodule Codebattle.Generators.TypesGenerator do
   @moduledoc ~S"""
-  Parses the given params into a solution template for game
-
-  ## Examples
-
       iex> Codebattle.Generators.TypesGenerator.get_import(
       ...>    %{
       ...>      input_signature: [

@@ -22,8 +22,8 @@
 
 (defn generate-tests
   [solution]
-  (assert_result 3 (apply solution [1, 2]) "[1, 2]")
-  (assert_result 8 (apply solution [5, 3]) "[5, 3]")
+  (assert_result 3 (apply solution [1, 2]) [1, 2])
+  (assert_result 8 (apply solution [5, 3]) [5, 3])
   (println (json/write-str {:status "ok" :result "__code-0__"})))
 
 (defn -main []

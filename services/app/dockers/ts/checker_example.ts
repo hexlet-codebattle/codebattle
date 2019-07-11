@@ -18,13 +18,13 @@ try {
   const b1: number = 2;
   const expected1: number = 3;
 
-  assertEqual(solution(a1, b1), expected1, '[1, 2]');
+  assertEqual(solution(a1, b1), expected1, [1, 2]);
 
   const a2 = 5;
   const b2 = 3;
   const expected2: number = 8;
 
-  assertEqual(solution(a2, b2), expected2, '[5, 3]');
+  assertEqual(solution(a2, b2), expected2, [5, 3]);
 
   process.stdout.write(JSON.stringify({
     status: 'ok',

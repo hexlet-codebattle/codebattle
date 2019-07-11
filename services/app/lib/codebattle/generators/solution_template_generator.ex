@@ -72,7 +72,7 @@ defmodule Codebattle.Generators.SolutionTemplateGenerator do
 
   alias Codebattle.Generators.TypesGenerator
 
-  def get_solution(%{slug: lang, solution_template: template} = meta, task) do
+  def get_solution(%{solution_template: template} = meta, task) do
     bindings = []
               |> add_input_spec(meta, Map.get(task, :input_signature, []))
               |> add_output_spec(meta, Map.get(task, :output_signature, %{}))

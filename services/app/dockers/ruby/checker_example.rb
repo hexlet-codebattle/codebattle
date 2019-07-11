@@ -19,8 +19,8 @@ begin
     end
   end
 
-  assert_result(method(:solution).call(1, 2), 3, '[1, 2]')
-  assert_result(method(:solution).call(5, 3), 8, '[5, 3]')
+  assert_result(method(:solution).call(1, 2), 3, [1, 2])
+  assert_result(method(:solution).call(5, 3), 8, [5, 3])
   puts JSON.dump(
     status: :ok,
     result: '__code-0__'
