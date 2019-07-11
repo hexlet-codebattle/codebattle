@@ -9,20 +9,20 @@ try do
     alias Jason.Helpers
     import Helpers
 
-    defp assert_result(result, expected, errorMessage) do
+    defp assert_result(result, expected, error_message) do
       try do
         assert result == expected
       rescue
         _e in ExUnit.AssertionError ->
-          message = json_map(status: :failure, result: errorMessage)
+          message = json_map(status: :failure, result: error_message)
           IO.puts(Jason.encode!(message))
           exit(:normal)
       end
     end
 
     defp test_solution() do
-      <%= for %{arguments: arguments, expected: expected, index: i} <- checks do %>
-        assert_result(apply(Solution, :solution, [<%= arguments %>]), <%= expected %>, "error<%= i %>")
+      <%= for %{arguments: arguments, expected: expected} <- checks do %>
+          assert_result(apply(Solution, :solution, [<%= arguments %>]), <%= expected %>, [<%= arguments %>])
       <% end %>
       message = json_map(status: :ok, result: <%= hash_sum %>)
       IO.puts(Jason.encode!(message))

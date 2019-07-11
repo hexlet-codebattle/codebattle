@@ -21,8 +21,8 @@ try do
     end
 
     defp test_solution do
-      assert_result(apply(Solution, :solution, [1, 2]), 3, "[1, 2]")
-      assert_result(apply(Solution, :solution, [3, 5]), 8, "[3, 5]")
+      assert_result(apply(Solution, :solution, [1, 2]), 3, [1, 2])
+      assert_result(apply(Solution, :solution, [3, 5]), 8, [3, 5])
       message = json_map(status: :ok, result: "__code-0__")
       IO.puts(Jason.encode!(message))
     end

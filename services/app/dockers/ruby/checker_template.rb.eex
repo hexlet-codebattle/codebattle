@@ -20,7 +20,7 @@ begin
   end
 
   <%= for %{arguments: arguments, expected: expected} <- checks do %>
-    assert_result(method(:solution).call(<%= arguments %>), <%= expected %>, '[<%= arguments %>]')
+    assert_result(method(:solution).call(<%= arguments %>), <%= expected %>, [<%= arguments %>])
   <% end %>
   puts JSON.dump(
     status: :ok,

@@ -4,6 +4,7 @@ import (
   "fmt";
   "os";
   "reflect";
+  "encoding/json"
 )
 
 func main() {
@@ -13,20 +14,31 @@ func main() {
     <% end %>
     var <%= expected.defining %> = <%= expected.value %>;
 
-    AssertSolution(solution(<%= arguments.expretion %>), expected<%= i %>, "error<%= i %>");
+    AssertSolution(solution(<%= arguments.expretion %>), expected<%= i %>, []interface{}{<%= arguments.expretion %>});
   <% end %>
 
   SendMessageAndExit("ok", <%= hash_sum %>);
 }
 
-func AssertSolution(result interface{}, expected interface{}, message string) {
+func AssertSolution(result interface{}, expected interface{}, message []interface{}) {
   var status bool = reflect.DeepEqual(result, expected);
   if status == false {
-    SendMessageAndExit("failure", message);
+    SendFailureMessageAndExit("failure", message);
   }
 }
 
 func SendMessageAndExit(status string, result string) {
   fmt.Printf("{\"status\": \"%s\", \"result\": \"%s\"}", status, result);
   os.Exit(0);
+}
+
+func SendFailureMessageAndExit(status string, result []interface{}) {
+  message, err := json.Marshal(result)
+  if err != nil {
+    fmt.Println("Marshaler error")
+    os.Exit(0)
+  }
+
+  fmt.Printf("{\"status\": \"%s\", \"result\": \"%s\"}", status, message);
+  os.Exit(0)
 }
