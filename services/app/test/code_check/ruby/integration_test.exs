@@ -60,7 +60,7 @@ defmodule Codebattle.CodeCheck.Ruby.IntegrationTest do
       payload: %{result: result, output: output}
     }
 
-    expected_result = %{"status" => "failure", "result" => [1, 1]}
+    expected_result = %{"status" => "failure", "result" => 0, "arguments" => [1, 1]}
 
     assert expected_result == Jason.decode!(result)
 

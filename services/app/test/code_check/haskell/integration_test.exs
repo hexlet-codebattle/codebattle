@@ -62,7 +62,7 @@ defmodule Codebattle.CodeCheck.Haskell.IntegrationTest do
       payload: %{result: result, output: output}
     }
 
-    expected_result = %{"status" => "failure", "result" => [1, 1]}
+    expected_result = %{"status" => "failure", "arguments" => [1, 1]}
     assert expected_result == Jason.decode!(result)
 
     fsm = Server.fsm(game.id)
