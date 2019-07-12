@@ -349,6 +349,9 @@ defmodule Codebattle.GameProcess.Play do
           {:game_over, {:ok, result, output}} ->
             {:ok, result, output}
 
+          {_, {:failure, result, percent, assert_results, output}} ->
+            {:failure, result, percent, assert_results, output}
+
           {_, {:error, result, output}} ->
             {:error, result, output}
         end
