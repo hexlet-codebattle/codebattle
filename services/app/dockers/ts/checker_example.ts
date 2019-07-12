@@ -1,16 +1,24 @@
 import solution from './solution_example';
 import { assert } from 'chai';
 
+let success: boolean = true;
+
 try {
   const assertEqual = function (result, expected, errorMessage) {
     try {
       assert.deepEqual(result, expected);
+
+      process.stdout.write(`${JSON.stringify({
+        status: 'success',
+        result,
+      })}\n`);
     } catch (err) {
-      process.stdout.write(JSON.stringify({
+      process.stdout.write(`${JSON.stringify({
         status: 'failure',
-        result: errorMessage,
-      }));
-      process.exit(0);
+        result,
+        arguments: errorMessage,
+      })}\n`);
+      success = false;
     }
   };
 
@@ -26,16 +34,18 @@ try {
 
   assertEqual(solution(a2, b2), expected2, [5, 3]);
 
-  process.stdout.write(JSON.stringify({
-    status: 'ok',
-    result: '__code0.0__',
-  }));
+  if (success) {
+    process.stdout.write(`${JSON.stringify({
+      status: 'ok',
+      result: '__code-0__',
+    })}\n`);
+  }
   process.exit(0);
 
 } catch (err) {
-  process.stdout.write(JSON.stringify({
+  process.stdout.write(`${JSON.stringify({
     status: 'failure',
     result: err.message,
-  }));
+  })}\n`);
   process.exit(0);
 }

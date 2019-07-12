@@ -14,17 +14,31 @@
 (defn assert_result
   [expected result errorMessage]
   (try (assert (= expected result))
+       true
        (catch java.lang.AssertionError e
          (do
-           (println (json/write-str {:status "failure" :result errorMessage}))
-           (System/exit 0)
+           (println (json/write-str {:status "failure" :result result :arguments errorMessage}))
+           false
            ))))
+
+(defn get_test_status [status_test status_assert]
+  (if status_test
+    (if status_assert
+      status_test
+      status_assert
+      )
+    status_test))
 
 (defn generate-tests
   [solution]
-  (assert_result 3 (apply solution [1, 2]) [1, 2])
-  (assert_result 8 (apply solution [5, 3]) [5, 3])
-  (println (json/write-str {:status "ok" :result "__code-0__"})))
+  (let [success
+        (reduce get_test_status
+          [
+            (assert_result 3 (apply solution [1, 2]) [1, 2])
+            (assert_result 8 (apply solution [5, 3]) [5, 3])
+          ])]
+    (if success
+        (println (json/write-str {:status "ok" :result "__code-0__"})))))
 
 (defn -main []
   (generate-tests solution))

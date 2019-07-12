@@ -1,25 +1,34 @@
 import sys
 import json
 
-def assert_result(result, expected, errorMessage):
-    assert result == expected, errorMessage
+def assert_result(result, expected, errorMessage, success):
+    try:
+        assert result == expected, errorMessage
+        print(json.dumps({
+            'status': 'success',
+            'result': result,
+        }))
+        return success
+    except AssertionError as exc:
+        print(json.dumps({
+            'status': 'failure',
+            'result': result,
+            'arguments': errorMessage,
+        }))
+        return False
 
 try:
     from solution import solution
-
+    success = True
     <%= for %{arguments: arguments, expected: expected} <- checks do %>
-    assert_result(solution(<%= arguments %>), <%= expected %>, [<%= arguments %>])
+    success = assert_result(solution(<%= arguments %>), <%= expected %>, [<%= arguments %>], success)
     <% end %>
 
-    print(json.dumps({
-        'status': 'ok',
-        'result': <%= hash_sum %>,
-    }))
-except AssertionError as exc:
-    print(json.dumps({
-        'status': 'failure',
-        'result': exc.args[0],
-    }))
+    if success:
+        print(json.dumps({
+            'status': 'ok',
+            'result': <%= hash_sum %>,
+        }))
     exit(0)
 except Exception as exc:
     print(json.dumps({

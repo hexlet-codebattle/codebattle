@@ -19,17 +19,17 @@ while(<>){
     if (not ref($exp)){
         if(!($exp & ~$exp)){
             if (solution(@$args) != $exp)  {
-                print "{\"status\":\"failure\", \"result\":" . encode_json($PERL->{arguments}) . "}\n";
+                print "{\"status\":\"failure\", \"arguments\":" . encode_json($PERL->{arguments}) . "}\n";
                 last;
             }
         }elsif($exp & ~$exp){
             if (!(solution(@$args) eq $exp))  {
-                print "{\"status\":\"failure\", \"result\":" . encode_json($PERL->{arguments}) . "}\n";
+                print "{\"status\":\"failure\", \"arguments\":" . encode_json($PERL->{arguments}) . "}\n";
                 last;
             }
         }
     }elsif (Compare(solution(@$args), $exp) != 1)  {
-        print "{\"status\":\"failure\", \"result\":" . encode_json($PERL->{arguments}) . "}\n";
+        print "{\"status\":\"failure\", \"arguments\":" . encode_json($PERL->{arguments}) . "}\n";
         last;
     }
 }

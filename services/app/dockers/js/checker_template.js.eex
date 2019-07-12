@@ -2,18 +2,28 @@ const chai = require('chai');
 
 const { assert } = chai;
 
+let success = true;
+
 try {
+  // We can change solution to check different behaviors
   const solution = require('./solution');
+  // const solution = require('./solution');
 
   const assertSolution = (result, expected, errorMessage) => {
     try {
       assert.deepEqual(result, expected);
+
+      process.stdout.write(`${JSON.stringify({
+        status: 'success',
+        result,
+      })}\n`);
     } catch (e) {
-      process.stdout.write(JSON.stringify({
+      process.stdout.write(`${JSON.stringify({
         status: 'failure',
-        result: errorMessage
-      }));
-      process.exit(0);
+        result,
+        arguments: errorMessage,
+      })}\n`);
+      success = false;
     }
   };
 
@@ -21,15 +31,17 @@ try {
     assertSolution(solution(<%= arguments %>), <%= expected %>, [<%= arguments %>]);
   <% end %>
 
-  process.stdout.write(JSON.stringify({
-    status: "ok",
-    result: <%= hash_sum %>,
-  }));
+  if (success) {
+    process.stdout.write(`${JSON.stringify({
+      status: 'ok',
+      result: <%= hash_sum %>,
+    })}\n`);
+  }
   process.exit(0);
 } catch (e) {
-  process.stdout.write(JSON.stringify({
-    status: "error",
-    result: e.message
-  }));
+  process.stdout.write(`${JSON.stringify({
+    status: 'error',
+    result: e.message,
+  })}\n`);
   process.exit(0);
 }

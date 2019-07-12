@@ -15,22 +15,30 @@ register_shutdown_function(function() {
     fwrite($stdout, json_encode(array(
       'status' => 'error',
       'result' => $message
-    )));
+    )) . "\n");
     exit(0);
   }
 });
 
-function assert_result($result, $expected, $error_message)
+$success = true;
+
+function assert_result($result, $expected, $error_message, $success)
 {
     $stdout = STDERR;
 
     if (assert($result !== $expected)) {
         fwrite($stdout, json_encode(array(
             'status' => 'failure',
-            'result' => $error_message
-        )));
-        exit(0);
+            'result' => $result,
+            'arguments' => $error_message
+        )) . "\n");
+        return false;
     }
+    fwrite($stdout, json_encode(array(
+        'status' => 'success',
+        'result' => $result
+    )) . "\n");
+    return $success;
 }
 
 include 'solution_example.php';
@@ -41,11 +49,13 @@ assert_options(ASSERT_QUIET_EVAL, 1);
 
 $stdout = STDERR;
 
-assert_result(solution(1, 2), 3, array(1, 2));
-assert_result(solution(5, 3), 8, array(5, 3));
+$success = assert_result(solution(1, 2), 3, array(1, 2), $success);
+$success = assert_result(solution(5, 3), 8, array(5, 3), $success);
 
-fwrite($stdout, json_encode(array(
-    'status' => 'ok',
-    'result' => '__code-0__'
-)));
+if (success) {
+    fwrite($stdout, json_encode(array(
+        'status' => 'ok',
+        'result' => '__code-0__'
+    )) . "\n");
+}
 ?>

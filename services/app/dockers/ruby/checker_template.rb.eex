@@ -7,25 +7,37 @@ extend Test::Unit::Assertions
 begin
   require './check/solution'
 
-  def assert_result(result, expected, error_message)
+  success = true
+
+  def assert_result(result, expected, error_message, success)
     begin
       assert_equal(expected, result)
+
+      puts JSON.dump(
+        status: :success,
+        result: result
+      )
+      success
     rescue Test::Unit::AssertionFailedError
       puts JSON.dump(
         status: :failure,
-        result: error_message
+        result: result,
+        arguments: error_message
       )
-      exit(0)
+      false
     end
   end
 
   <%= for %{arguments: arguments, expected: expected} <- checks do %>
-    assert_result(method(:solution).call(<%= arguments %>), <%= expected %>, [<%= arguments %>])
+    success = assert_result(method(:solution).call(<%= arguments %>), <%= expected %>, [<%= arguments %>], success)
   <% end %>
-  puts JSON.dump(
-    status: :ok,
-    result: <%= hash_sum %>
-  )
+
+  if success
+    puts JSON.dump(
+      status: :ok,
+      result: <%= hash_sum %>
+    )
+  end
 rescue Exception => e
   puts(JSON.dump(
          status: :error,
