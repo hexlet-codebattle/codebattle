@@ -36,7 +36,7 @@ class ExecutionOutput extends PureComponent {
       case -1:
         return '';
       default:
-        return `, and you passed ${percent}% of asserts`;
+        return i18n.t(', and you passed %{percent}% of asserts', { percent });
     }
   }
 

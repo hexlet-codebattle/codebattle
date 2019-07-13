@@ -244,7 +244,19 @@ msgstr ""
 msgid "Test failed with arguments (%{arguments})"
 msgstr ""
 
+msgid ", and you passed %{percent}% of asserts"
+msgstr ""
+
 msgid "Yay! All tests passed!!111"
+msgstr ""
+
+msgid "Give up"
+msgstr ""
+
+msgid "Сheck"
+msgstr ""
+
+msgid "Сheck status:"
 msgstr ""
 
 msgid "Oops"
