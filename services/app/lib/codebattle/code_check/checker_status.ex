@@ -35,7 +35,7 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
           :failure,
           ~s({"status": "failure", "result": "0", "arguments": [0]}),
           50,
-          [[~s({"status": "failure", "result": "0", "arguments": [0]})], [~s({"status": "success", "result": "1"})]],
+          [~s({"status": "failure", "result": "0", "arguments": [0]}), ~s({"status": "success", "result": "1"})],
           ""
         }
 
@@ -111,6 +111,6 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
   end
 
   defp reset_statuses(list, container_output) do
-    Enum.reduce(list, container_output, fn [str], output -> String.replace(output, "#{str}\n", "", global: false) end)
+    Enum.reduce(list, container_output, fn str, output -> String.replace(output, "#{str}\n", "", global: false) end)
   end
 end
