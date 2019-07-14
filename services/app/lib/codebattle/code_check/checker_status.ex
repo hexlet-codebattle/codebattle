@@ -4,7 +4,7 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
   require Logger
 
   @doc """
-        iex> Codebattle.CodeCheck.CheckerStatus.get_result(
+        iex> Codebattle.CodeCheck.CheckerStatus.get_check_result(
         ...>    ~s({"status": "error", "result": "sdf"}),
         ...>    "-1",
         ...>    %{slug: "js"}
@@ -15,7 +15,7 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
           ~s({"status": "error", "result": "sdf"})
         }
 
-        iex> Codebattle.CodeCheck.CheckerStatus.get_result(
+        iex> Codebattle.CodeCheck.CheckerStatus.get_check_result(
         ...>      ~s({"status": "ok", "result": "__code-1__"}),
         ...>      "-1",
         ...>      %{slug: "js"}
@@ -24,7 +24,7 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
           :ok, ~s({"status": "ok", "result": "__code-1__"}), ~s({"status": "ok", "result": "__code-1__"})
         }
 
-        iex> Codebattle.CodeCheck.CheckerStatus.get_result(
+        iex> Codebattle.CodeCheck.CheckerStatus.get_check_result(
         ...>      ~s({"status": "failure", "result": "0", "arguments": [0]}
         ...>{"status": "success", "result": "1"}
         ...>),
@@ -41,10 +41,9 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
 
   """
 
-  def get_result(container_output, check_code, meta) do
+  def get_check_result(container_output, check_code, meta) do
       case Regex.scan(~r/{\"status\":.+}/, container_output) do
         [] ->
-          IO.puts(container_output)
           result = Jason.encode!(%{
             status: "error",
             result: "Something went wrong! Please, write to dev team in our Slack"
@@ -59,6 +58,20 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
             ^check_code -> {:ok, last_message, reset_statuses(json_result, container_output)}
             _           -> get_error_status(last_message, container_output, meta)
           end
+      end
+  end
+
+  def get_compile_check_result(container_output, %{slug: "golang"}) do
+    case Regex.run(~r/\.\/check\/solution\.go:.+/, container_output) do
+        nil ->
+          :ok
+        result ->
+          json_result = Jason.encode!(%{
+            status: "error",
+            result: List.first(result)
+          })
+
+          {:error, json_result, container_output}
       end
   end
 

@@ -9,6 +9,7 @@ defmodule Codebattle.CodeCheck.Checker do
   # alias Codebattle.CodeCheck.OutputFilter
 
   @advanced_checker_stop_list ["perl", "haskell"]
+  @langs_needs_compiling ["golang"]
 
   def check(task, editor_text, editor_lang) do
     case Languages.meta() |> Map.get(editor_lang) do
@@ -17,35 +18,38 @@ defmodule Codebattle.CodeCheck.Checker do
 
       lang ->
         # TODO: add hash to data.jsons or forbid read data.jsons
-        docker_command_template =
+        {docker_command_template, docker_command_compile_template} =
           case lang.base_image do
             :ubuntu ->
-              Application.fetch_env!(:codebattle, :ubuntu_docker_command_template)
+              {
+                Application.fetch_env!(:codebattle, :ubuntu_docker_command_template),
+                Application.fetch_env!(:codebattle, :ubuntu_docker_command_compile_template)
+              }
 
             :alpine ->
-              Application.fetch_env!(:codebattle, :alpine_docker_command_template)
+              {
+                Application.fetch_env!(:codebattle, :alpine_docker_command_template),
+                Application.fetch_env!(:codebattle, :alpine_docker_command_compile_template)
+              }
           end
 
         {dir_path, check_code} = prepare_tmp_dir!(task, editor_text, lang)
         volume = "-v #{dir_path}:/usr/src/app/#{lang.check_dir}"
 
-        command =
+        check_command =
           docker_command_template
           |> :io_lib.format([volume, lang.docker_image])
           |> to_string
 
-        Logger.debug(command)
-        [cmd | cmd_opts] = command |> String.split()
-        t = :os.system_time(:millisecond)
-        {container_output, _status} = System.cmd(cmd, cmd_opts, stderr_to_stdout: true)
-        Logger.error("Execution time: #{:os.system_time(:millisecond) - t}, lang: #{lang.slug}")
+        compile_command =
+          docker_command_compile_template
+          |> :io_lib.format([volume, lang.docker_image])
+          |> to_string
 
-        Logger.debug(
-          "Docker stdout for task_id: #{task.id}, lang: #{lang.slug}, output:#{container_output}"
+        result = start_check_solution(
+          {check_command, compile_command},
+          %{task: task, lang: lang, check_code: check_code}
         )
-
-        # for json returned langs need fix after all langs support json
-        result = CheckerStatus.get_result(container_output, check_code, lang)
 
         Task.start(File, :rm_rf, [dir_path])
         result
@@ -77,4 +81,42 @@ defmodule Codebattle.CodeCheck.Checker do
     File.write!(Path.join(dir_path, file_name), editor_text)
     {dir_path, check_code}
   end
+
+  defp start_check_solution(
+    {check_command, compile_command},
+    %{lang: lang, task: task, check_code: check_code}
+  ) do
+    case compile_check_solution(compile_command, task, lang) do
+      :ok ->
+        Logger.debug(check_command)
+        [cmd | cmd_opts] = check_command |> String.split()
+        t = :os.system_time(:millisecond)
+        {container_output, _status} = System.cmd(cmd, cmd_opts, stderr_to_stdout: true)
+        Logger.error("Execution time: #{:os.system_time(:millisecond) - t}, lang: #{lang.slug}")
+
+        Logger.debug(
+          "Docker stdout for task_id: #{task.id}, lang: #{lang.slug}, output:#{container_output}"
+        )
+
+        # for json returned langs need fix after all langs support json
+        CheckerStatus.get_check_result(container_output, check_code, lang)
+      {:error, result, output} ->
+        {:error, result, output}
+    end
+  end
+
+  defp compile_check_solution(command, task, %{slug: slug} = lang) when slug in @langs_needs_compiling do
+    Logger.debug(command)
+    [cmd | cmd_opts] = command |> String.split()
+    t = :os.system_time(:millisecond)
+    {container_output, _status} = System.cmd(cmd, cmd_opts, stderr_to_stdout: true)
+    Logger.error("Compiling time: #{:os.system_time(:millisecond) - t}, lang: #{slug}")
+
+    Logger.debug(
+      "Docker stdout for task_id: #{task.id}, lang: #{slug}, output:#{container_output}"
+    )
+
+    CheckerStatus.get_compile_check_result(container_output, lang)
+  end
+  defp compile_check_solution(_, _, _), do: :ok
 end
