@@ -79,7 +79,7 @@ class ExecutionOutput extends PureComponent {
             </li>
             <li>
               <a
-                className={`btn btn-sm rounded border btn-light ${this.isError(resultObj) ? 'active': ''}`}
+                className={`btn btn-sm rounded border btn-light ${this.isError(resultObj) ? 'active' : ''}`}
                 data-toggle="tab"
                 href="#output"
               >
@@ -96,14 +96,16 @@ class ExecutionOutput extends PureComponent {
         <p className="card-text mb-0">
           <code>{this.renderTestResults({ ...resultObj, percent })}</code>
         </p>
-          <div className="tab-content">
-            <div id="asserts" className={`tab-pane ${this.isError(resultObj) ? '' : 'active'}`}>
-              <pre className="card-text d-none d-md-block mt-3">{asserts.join('\n')}</pre>
-            </div>
-            <div id="output" className={`tab-pane ${this.isError(resultObj) ? 'active' : ''}`}>
-              <pre className="card-text d-none d-md-block mt-3">{output}</pre>
-            </div>
+        <div className="tab-content">
+          <div id="asserts" className={`tab-pane ${this.isError(resultObj) ? '' : 'active'}`}>
+            <pre className="card-text d-none d-md-block mt-3">
+              {asserts.filter(([assert]) => !assert.match(/{"status":.*"success"/g)).join('\n')}
+            </pre>
           </div>
+          <div id="output" className={`tab-pane ${this.isError(resultObj) ? 'active' : ''}`}>
+            <pre className="card-text d-none d-md-block mt-3">{output}</pre>
+          </div>
+        </div>
       </div>
     );
   }
