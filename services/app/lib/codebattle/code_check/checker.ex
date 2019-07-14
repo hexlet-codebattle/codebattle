@@ -6,7 +6,6 @@ defmodule Codebattle.CodeCheck.Checker do
   alias Codebattle.Languages
   alias Codebattle.Generators.CheckerGenerator
   alias Codebattle.CodeCheck.CheckerStatus
-  # alias Codebattle.CodeCheck.OutputFilter
 
   @advanced_checker_stop_list ["perl", "haskell"]
   @langs_needs_compiling ["golang"]
@@ -110,11 +109,7 @@ defmodule Codebattle.CodeCheck.Checker do
     [cmd | cmd_opts] = command |> String.split()
     t = :os.system_time(:millisecond)
     {container_output, _status} = System.cmd(cmd, cmd_opts, stderr_to_stdout: true)
-    Logger.error("Compiling time: #{:os.system_time(:millisecond) - t}, lang: #{slug}")
-
-    Logger.debug(
-      "Docker stdout for task_id: #{task.id}, lang: #{slug}, output:#{container_output}"
-    )
+    Logger.error("Syntax Check time: #{:os.system_time(:millisecond) - t}, lang: #{slug}")
 
     CheckerStatus.get_compile_check_result(container_output, lang)
   end

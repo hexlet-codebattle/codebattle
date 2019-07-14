@@ -1,5 +1,5 @@
 defmodule Codebattle.CodeCheck.CheckerStatus do
-  @moduledoc false
+  @moduledoc "Parse container output for representing check status of solution"
 
   require Logger
 
