@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import ReactMarkdown from 'react-markdown';
-// import i18n from '../../i18n';
+import i18n from '../../i18n';
 import Timer from './Timer';
 import CountdownTimer from './CountdownTimer';
 import GameStatusCodes from '../config/gameStatusCodes';
@@ -60,11 +60,10 @@ const Task = ({
   return (
     <div className="card h-100 border-0 shadow-sm">
       <div className="px-3 py-3 h-100">
-        <div className="d-flex flex-column flex-sm-row justify-content-between">
+        <div className="d-flex align-items-begin flex-column flex-sm-row justify-content-between">
           <h6 className="card-text">
-            {'Task: '}
+            {i18n.t('Task: ')}
             <span className="card-subtitle mb-2 text-muted">{task.name}</span>
-            {renderTaskLink(task.name)}
             {renderGameLevelBadge(task.level)}
           </h6>
           <div className="card-text">
@@ -74,8 +73,16 @@ const Task = ({
             </span>
           </div>
         </div>
-        <div className="card-text mb-0  h-100  overflow-auto">
-          <ReactMarkdown source={task.description} />
+        <div className="d-flex align-items-stretch flex-column">
+          <div className="card-text mb-0  h-100  overflow-auto">
+            <ReactMarkdown source={task.description} />
+          </div>
+        </div>
+        <div className="d-flex align-items-end flex-column flex-sm-row justify-content-between">
+          <h6 className="card-text">
+            {i18n.t('Found a mistake? Have something to add? Pull Requests are welcome: ')}
+            {renderTaskLink(task.name)}
+          </h6>
         </div>
       </div>
     </div>
