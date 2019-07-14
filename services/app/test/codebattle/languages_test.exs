@@ -25,7 +25,7 @@ defmodule Codebattle.LanguagesTest do
       "package main;\n\nfunc solution() {\n\n}",
       "def solution()\n\nend",
       "defmodule Solution do\n\tdef solution() do\n\n\tend\nend",
-      "from typing import List, Dict\n\ndef solution():",
+      "def solution():",
       "<?php\nfunction solution(){\n\n}",
       "(defn solution [] )",
       "module Check.Solution where\n\nsolution :: ()\nsolution =\n\n{- Included packages:\naeson\nbytestring\ncase-insensitive\ncontainers\ndeepseq\nfgl\ninteger-logarithms\nmegaparsec\nmtl\nparser-combinators\npretty\nrandom\nregex-base\nregex-compat\nregex-posix\nscientific\nsplit\ntemplate-haskell\ntext\ntime\ntransformers\nunordered-containers\nvector\nvector-algorithms -}",
@@ -46,9 +46,9 @@ defmodule Codebattle.LanguagesTest do
     js_expected = "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nmodule.exports = (a, b, text, arr, condition, hashtable) => {\n\treturn [\"value\"];\n};"
     ts_expected = "import {Hashtable} from \"./types\";\n\nfunction solution(a: number, b: number, text: string, arr: Array<Array<number>>, condition: boolean, hashtable: Hashtable): Array<string> {\n\n};\n\nexport default solution;"
     golang_expected = "package main;\n\nfunc solution(a int64, b float64, text string, arr [][]int64, condition bool, hashtable map[string]int64) []string {\n\n}"
-    ruby_expected = "def solution(a, b, text, arr, condition, hashtable)\n\t[\"value\"]\nend"
+    ruby_expected = "def solution(a, b, text, arr, condition, hashtable)\n\treturn [\"value\"]\nend"
     elixir_expected = "defmodule Solution do\n\tdef solution(a, b, text, arr, condition, hashtable) do\n\t\t[\"value\"]\n\tend\nend"
-    python_expected = "from typing import List, Dict\n\ndef solution(a: int, b: float, text: str, arr: List[List[int]], condition: bool, hashtable: Dict[str, int]) -> List[str]:"
+    python_expected = "def solution(a: int, b: float, text: str, arr: list[list[int]], condition: bool, hashtable: dict[str, int]) -> list[str]:"
     php_expected = "<?php\nfunction solution($a, $b, $text, $arr, $condition, $hashtable){\n\treturn [\"value\"];\n}"
     clojure_expected = "(defn solution [a b text arr condition hashtable] [\"value\"])"
     haskell_expected = "module Check.Solution where\n\nsolution :: (Integer, Float, String, Array (Array (Integer)), Bool, Map) -> Array (String)\nsolution =\n\n{- Included packages:\naeson\nbytestring\ncase-insensitive\ncontainers\ndeepseq\nfgl\ninteger-logarithms\nmegaparsec\nmtl\nparser-combinators\npretty\nrandom\nregex-base\nregex-compat\nregex-posix\nscientific\nsplit\ntemplate-haskell\ntext\ntime\ntransformers\nunordered-containers\nvector\nvector-algorithms -}"

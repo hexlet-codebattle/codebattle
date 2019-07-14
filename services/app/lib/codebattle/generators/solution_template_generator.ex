@@ -14,7 +14,7 @@ defmodule Codebattle.Generators.SolutionTemplateGenerator do
       ...>      output_signature: %{"type" => %{"name" => "integer"}}
       ...>    }
       ...> )
-      "def solution(a, b)\n\t0\nend"
+      "def solution(a, b)\n\treturn 0\nend"
 
       iex> Codebattle.Generators.SolutionTemplateGenerator.get_solution(
       ...>    Codebattle.Languages.meta() |> Map.get("python"),
@@ -26,7 +26,7 @@ defmodule Codebattle.Generators.SolutionTemplateGenerator do
       ...>      output_signature: %{"type" => %{"name" => "string"}}
       ...>    }
       ...> )
-      "from typing import List, Dict\n\ndef solution(str1: str, str2: str) -> str:"
+      "def solution(str1: str, str2: str) -> str:"
 
       iex> Codebattle.Generators.SolutionTemplateGenerator.get_solution(
       ...>    Codebattle.Languages.meta() |> Map.get("clojure"),
