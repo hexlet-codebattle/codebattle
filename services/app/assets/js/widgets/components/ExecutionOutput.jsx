@@ -99,7 +99,7 @@ class ExecutionOutput extends PureComponent {
         <div className="tab-content">
           <div id="asserts" className={`tab-pane ${this.isError(resultObj) ? '' : 'active'}`}>
             <pre className="card-text d-none d-md-block mt-3">
-              {asserts.filter(([assert]) => !assert.match(/{"status":.*"success"/g)).join('\n')}
+              {asserts.filter(assert => !assert.match(/{"status":.*"success"/g)).join('\n')}
             </pre>
           </div>
           <div id="output" className={`tab-pane ${this.isError(resultObj) ? 'active' : ''}`}>

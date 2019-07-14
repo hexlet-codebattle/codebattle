@@ -55,7 +55,7 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
           [last_message] = List.last(json_result)
           output_code = Regex.named_captures(~r/__code(?<code>.+)__/, last_message)["code"]
           case output_code do
-            ^check_code -> {:ok, last_message, reset_statuses(json_result, container_output)}
+            ^check_code -> {:ok, last_message, reset_statuses(List.flatten(json_result), container_output)}
             _           -> get_error_status(last_message, container_output, meta)
           end
       end
@@ -94,7 +94,7 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
         percent_of_success_tests = div(100 * success_count, (failure_count + success_count))
 
         [first_failure_json] = List.first(failure_list)
-        asserts_list = failure_list ++ success_list
+        asserts_list = List.flatten(failure_list ++ success_list)
         new_container_output = reset_statuses(asserts_list, container_output)
 
         {
