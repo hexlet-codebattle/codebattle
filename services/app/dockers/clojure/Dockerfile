@@ -7,7 +7,7 @@ WORKDIR /usr/src/app
 ADD deps.edn .
 RUN clojure -e "(prn :install)"
 
-#ADD checker_example.clj .
-#ADD solution_example.clj .
+ADD checker_example.clj .
+ADD solution_example.clj .
 ADD test_clojure.clj .
 ADD Makefile .

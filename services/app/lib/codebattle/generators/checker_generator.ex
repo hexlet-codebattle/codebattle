@@ -152,8 +152,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
 
     types
     |> Enum.zip(assert["arguments"])
-    |> Enum.map(&get_value(&1, meta))
-    |> Enum.join(", ")
+    |> Enum.map_join(", ", &get_value(&1, meta))
   end
 
   defp get_expected(
@@ -174,8 +173,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
     types = Enum.map(input_signature, &extract_type/1)
     result = types
              |> Enum.zip(assert["arguments"])
-             |> Enum.map(&get_value(&1, meta))
-             |> Enum.join(", ")
+             |> Enum.map_join(", ", &get_value(&1, meta))
 
     ~s([#{result}])
   end
@@ -189,33 +187,8 @@ defmodule Codebattle.Generators.CheckerGenerator do
     get_defining_expretion(name, type_name, meta)
   end
 
-  defp get_defining_expretion(name, type_name, %{slug: "ts"}) do
-    ~s(#{name}: #{type_name})
-  end
-  defp get_defining_expretion(name, type_name, %{slug: "golang"}) do
-    ~s(#{name} #{type_name})
-  end
-
-  defp get_value({%{"name" => "string"}, value}, _meta), do: ~s("#{value}")
-  defp get_value({%{"name" => "boolean"}, value}, meta), do: get_boolean_value(value, meta)
-  defp get_value({%{"name" => "array", "nested" => nested} = signature, value}, %{slug: "golang"} = meta) do
-    array_values = Enum.map_join(value, ", ", &get_value({nested, &1}, meta))
-    ~s({#{array_values}})
-  end
-  defp get_value({%{"name" => "array", "nested" => nested} = signature, value}, %{slug: "php"} = meta) do
-    array_values = Enum.map_join(value, ", ", &get_value({nested, &1}, meta))
-    "array(#{array_values}\)"
-  end
-  defp get_value({%{"name" => "array", "nested" => nested} = signature, value}, meta) do
-    array_values = Enum.map_join(value, ", ", &get_value({nested, &1}, meta))
-    ~s([#{array_values}])
-  end
-  defp get_value({%{"name" => "hash"} = signature, value}, meta) do
-    list = Map.to_list(value)
-    hash_entries = Enum.map_join(list, ", ", fn item -> get_hash_inners(item, signature, meta) end)
-    get_hash_value(hash_entries, meta)
-  end
-  defp get_value({_, value}, _meta), do: value
+  defp get_defining_expretion(name, type_name, %{slug: "ts"}), do: ~s(#{name}: #{type_name})
+  defp get_defining_expretion(name, type_name, %{slug: "golang"}), do: ~s(#{name} #{type_name})
 
   defp get_value_expretion(%{"type" => %{"nested" => _nested}} = signature, value, %{slug: "golang"} = meta) do
     type_name = TypesGenerator.get_type(signature, meta)
@@ -228,6 +201,19 @@ defmodule Codebattle.Generators.CheckerGenerator do
     get_value({type, value}, meta)
   end
 
+  defp get_value({%{"name" => "string"}, value}, _meta), do: ~s("#{value}")
+  defp get_value({%{"name" => "boolean"}, value}, meta), do: get_boolean_value(value, meta)
+  defp get_value({%{"name" => "array", "nested" => nested} = signature, value}, meta) do
+    array_values = Enum.map_join(value, ", ", &get_value({nested, &1}, meta))
+    get_array_value(array_values, meta)
+  end
+  defp get_value({%{"name" => "hash"} = signature, value}, meta) do
+    list = Map.to_list(value)
+    hash_entries = Enum.map_join(list, ", ", fn item -> get_hash_inners(item, signature, meta) end)
+    get_hash_value(hash_entries, meta)
+  end
+  defp get_value({_, value}, _meta), do: value
+
   defp get_boolean_value(false, %{slug: slug}) when slug in ["python"], do: ~s(False)
   defp get_boolean_value(true, %{slug: slug}) when slug in ["python"], do: ~s(True)
   defp get_boolean_value(value, _), do: value
@@ -238,18 +224,22 @@ defmodule Codebattle.Generators.CheckerGenerator do
     %{slug: slug} = meta
   ) when slug in ["ruby", "php"] do
 
-    ~s(\"#{k}\" => #{get_value({nested, v}, meta)})
+    ~s("#{k}" => #{get_value({nested, v}, meta)})
   end
   defp get_hash_inners({k, v}, %{"nested" => nested}, %{slug: "clojure"} = meta) do
     ~s(:#{k} #{get_value({nested, v}, meta)})
   end
   defp get_hash_inners({k, v}, %{"nested" => nested}, meta) do
-    ~s(\"#{k}\": #{get_value({nested, v}, meta)})
+    ~s("#{k}": #{get_value({nested, v}, meta)})
   end
 
   defp get_hash_value(entries, %{slug: "php"}), do: "array(#{entries})"
   defp get_hash_value(entries, %{slug: "elixir"}), do: ~s(%{#{entries}})
   defp get_hash_value(entries, _meta), do: ~s({#{entries}})
+
+  defp get_array_value(entries, %{slug: "golang"}), do: ~s({#{entries}})
+  defp get_array_value(entries, %{slug: "php"}), do: "array(#{entries}\)"
+  defp get_array_value(entries, _meta), do: ~s([#{entries}])
 
   defp extract_type(%{"type" => type}), do: type
 

@@ -27,7 +27,7 @@ defmodule Codebattle.Languages do
         extension: :rb,
         docker_image: "codebattle/ruby:2.6.0",
         solution_template: "def solution(<%= arguments %>)\n<%= return_statement %>\nend",
-        return_template: "\t<%= default_value %>",
+        return_template: "\treturn <%= default_value %>",
         default_values: %{
           "integer" => "0",
           "float" => "0.1",
@@ -119,14 +119,14 @@ defmodule Codebattle.Languages do
         check_dir: "check",
         extension: "py",
         docker_image: "codebattle/python:3.7.2",
-        solution_template: "from typing import List, Dict\n\ndef solution(<%= arguments %>)<%= expected %>:",
+        solution_template: "def solution(<%= arguments %>)<%= expected %>:",
         types: %{
           "integer" => "int",
           "float" => "float",
           "string" => "str",
-          "array" => "List[<%= inner_type %>]",
+          "array" => "list[<%= inner_type %>]",
           "boolean" => "bool",
-          "hash" => "Dict[str, <%= inner_type %>]"
+          "hash" => "dict[str, <%= inner_type %>]"
         }
       },
       "php" => %{
@@ -171,7 +171,7 @@ defmodule Codebattle.Languages do
         name: "haskell",
         slug: "haskell",
         version: "8.4.3",
-        base_image: :alpine,
+        base_image: :ubuntu,
         extension: "hs",
         check_dir: "Check",
         docker_image: "codebattle/haskell:8.4.3",
@@ -190,7 +190,7 @@ defmodule Codebattle.Languages do
         name: "perl",
         slug: "perl",
         version: "5.26.2",
-        base_image: :alpine,
+        base_image: :ubuntu,
         check_dir: "check",
         extension: "pl",
         docker_image: "codebattle/perl:5.26.2",

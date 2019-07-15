@@ -166,12 +166,12 @@ msgstr "канал"
 #, elixir-format
 #: lib/codebattle_web/templates/game/game_over.html.slim:1
 msgid "Game over"
-msgstr ""
+msgstr "Игра окончена"
 
 #, elixir-format
 #: lib/codebattle_web/templates/game/game_result.html.slim:1
 msgid "Game status"
-msgstr ""
+msgstr "Статус игры"
 
 #, elixir-format
 #: lib/codebattle_web/templates/game/join.html.slim:1
@@ -197,7 +197,7 @@ msgstr "Рейтинг пользователей"
 #, elixir-format
 #: lib/codebattle_web/controllers/game_controller.ex:28
 msgid "You are in a different game"
-msgstr ""
+msgstr "Вы уже учавствуете в другой игре"
 
 #, elixir-format
 #: lib/codebattle_web/channels/game_channel.ex:57
@@ -207,7 +207,7 @@ msgstr ""
 #, elixir-format
 #: lib/codebattle_web/channels/game_channel.ex:162
 msgid "won the game!"
-msgstr ""
+msgstr "Вы победили в игре!"
 
 #, elixir-format
 #: lib/codebattle_web/templates/layout/app.html.slim:13
@@ -217,12 +217,12 @@ msgstr ""
 #, elixir-format
 #: lib/codebattle_web/templates/layout/app.html.slim:13
 msgid "My Profile"
-msgstr ""
+msgstr "Мой Профиль"
 
 #, elixir-format
 #: lib/codebattle_web/templates/layout/app.html.slim:13
 msgid "Settings"
-msgstr ""
+msgstr "Настройки"
 
 #, elixir-format
 #: lib/codebattle_web/templates/layout/app.html.slim:13
@@ -232,23 +232,35 @@ msgstr ""
 #, elixir-format
 #: lib/codebattle_web/templates/layout/app.html.slim:13
 msgid "SourceCode"
-msgstr ""
+msgstr "Исходный Код"
 
 # JSX
 msgid "Run your code!"
-msgstr ""
+msgstr "Запустите ваш код!"
 
 msgid "You have some syntax errors: %{errors}"
-msgstr ""
+msgstr "У вас есть синтаксические ошибки: %{errors}"
 
 msgid "Test failed with arguments (%{arguments})"
-msgstr ""
+msgstr "Тест провалился с аргументами (%{arguments})"
+
+msgid ", and you passed %{percent}% of asserts"
+msgstr ", и вы прошли %{percent}% тестов"
 
 msgid "Yay! All tests passed!!111"
-msgstr ""
+msgstr "Поздравляю! Вы прошли все тесты!!111"
+
+msgid "Give up"
+msgstr "Cдаться"
+
+msgid "Сheck"
+msgstr "Отправить решение"
+
+msgid "Сheck status:"
+msgstr "Статус проверки:"
 
 msgid "Oops"
-msgstr ""
+msgstr "Упс"
 
 #, elixir-format
 #: lib/codebattle_web/support/notifications.ex:13
