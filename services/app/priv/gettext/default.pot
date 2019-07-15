@@ -235,6 +235,12 @@ msgid "SourceCode"
 msgstr ""
 
 # JSX
+msgid "Task: "
+msgstr "Задача: "
+
+msgid "Found a mistake? Have something to add? Pull Requests are welcome: "
+msgstr "Нашли ошибку? Вы хотите что-нибудь добавить? Пулл Реквесты приветствуются: "
+
 msgid "Run your code!"
 msgstr ""
 

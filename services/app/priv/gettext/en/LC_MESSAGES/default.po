@@ -235,6 +235,12 @@ msgid "SourceCode"
 msgstr ""
 
 # JSX
+msgid "Task: "
+msgstr ""
+
+msgid "Found a mistake? Have something to add? Pull Requests are welcome: "
+msgstr ""
+
 msgid "Run your code!"
 msgstr ""
 
