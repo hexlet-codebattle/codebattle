@@ -14,6 +14,7 @@
 (defn assert_result
   [expected result errorMessage]
   (try (assert (= expected result))
+       (println (json/write-str {:status "success" :result result}))
        true
        (catch java.lang.AssertionError e
          (do

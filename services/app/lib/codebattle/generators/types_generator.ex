@@ -22,7 +22,7 @@ defmodule Codebattle.Generators.TypesGenerator do
 
     hashs = get_hashs(input_signature, output_signature)
     interfaces = get_interfaces_info(hashs, meta, [])
-    get_import_expretion(interfaces, meta)
+    get_import_expression(interfaces, meta)
   end
 
   def get_interfaces(
@@ -82,8 +82,8 @@ defmodule Codebattle.Generators.TypesGenerator do
     "export interface #{name} {\n\t[key: string]: #{value};\n}\n\n"
   end
 
-  defp get_import_expretion(types, _meta) when types == [], do: ""
-  defp get_import_expretion(types, %{slug: "ts"}) do
+  defp get_import_expression(types, _meta) when types == [], do: ""
+  defp get_import_expression(types, %{slug: "ts"}) do
     names = Enum.map(types, fn %{name: name} -> name end)
     "import {#{Enum.join(names, ", ")}} from \"./types\";\n\n"
   end

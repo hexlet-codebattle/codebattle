@@ -22,16 +22,16 @@ try {
     }
   };
 
-  <%= for %{arguments: arguments, expected: expected, index: i, error_message: message} <- checks do %>
+  <%= for %{arguments: arguments, expected: expected, index: i} <- checks do %>
     <%= for  %{defining: defining, value: value} <- arguments.info do %>
       const <%= defining %> = <%= value %>;
     <% end %>
     const <%= expected.defining %> = <%= expected.value %>;
 
     assertEqual(
-      solution(<%= arguments.expretion %>),
+      solution(<%= arguments.expression %>),
       expected<%= i %>,
-      <%= message %>
+      [<%= arguments.expression %>]
     );
   <% end %>
 

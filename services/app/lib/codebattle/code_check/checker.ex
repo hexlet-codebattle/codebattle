@@ -40,13 +40,13 @@ defmodule Codebattle.CodeCheck.Checker do
           |> :io_lib.format([volume, lang.docker_image])
           |> to_string
 
-        compile_command =
+        compile_check_command =
           docker_command_compile_template
           |> :io_lib.format([volume, lang.docker_image])
           |> to_string
 
         result = start_check_solution(
-          {check_command, compile_command},
+          {check_command, compile_check_command},
           %{task: task, lang: lang, check_code: check_code}
         )
 
@@ -81,37 +81,39 @@ defmodule Codebattle.CodeCheck.Checker do
     {dir_path, check_code}
   end
 
-  defp start_check_solution(
-    {check_command, compile_command},
-    %{lang: lang, task: task, check_code: check_code}
-  ) do
-    case compile_check_solution(compile_command, task, lang) do
+  defp start_check_solution({check_command, compile_check_command}, meta) do
+    case compile_check_solution(compile_check_command, meta) do
       :ok ->
-        Logger.debug(check_command)
-        [cmd | cmd_opts] = check_command |> String.split()
-        t = :os.system_time(:millisecond)
-        {container_output, _status} = System.cmd(cmd, cmd_opts, stderr_to_stdout: true)
-        Logger.error("Execution time: #{:os.system_time(:millisecond) - t}, lang: #{lang.slug}")
-
-        Logger.debug(
-          "Docker stdout for task_id: #{task.id}, lang: #{lang.slug}, output:#{container_output}"
-        )
+        container_output = run_checker(check_command, meta, "Execution")
 
         # for json returned langs need fix after all langs support json
-        CheckerStatus.get_check_result(container_output, check_code, lang)
-      {:error, result, output} ->
-        {:error, result, output}
+        CheckerStatus.get_check_result(container_output, meta)
+
+      error_result ->
+        error_result
     end
   end
 
-  defp compile_check_solution(command, task, %{slug: slug} = lang) when slug in @langs_needs_compiling do
+  defp compile_check_solution(
+    command,
+    %{lang: %{slug: slug} = lang} = meta
+  ) when slug in @langs_needs_compiling do
+    container_output = run_checker(command, meta, "Compile check")
+    CheckerStatus.get_compile_check_result(container_output, lang)
+  end
+  defp compile_check_solution(_, _), do: :ok
+
+  defp run_checker(command, %{task: task, lang: lang}, description) do
     Logger.debug(command)
     [cmd | cmd_opts] = command |> String.split()
     t = :os.system_time(:millisecond)
     {container_output, _status} = System.cmd(cmd, cmd_opts, stderr_to_stdout: true)
-    Logger.error("Syntax Check time: #{:os.system_time(:millisecond) - t}, lang: #{slug}")
+    Logger.error("#{description} time: #{:os.system_time(:millisecond) - t}, lang: #{lang.slug}")
 
-    CheckerStatus.get_compile_check_result(container_output, lang)
+    Logger.debug(
+      "Docker stdout for task_id: #{task.id}, lang: #{lang.slug}, output:#{container_output}"
+    )
+
+    container_output
   end
-  defp compile_check_solution(_, _, _), do: :ok
 end

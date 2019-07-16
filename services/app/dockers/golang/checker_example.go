@@ -9,6 +9,13 @@ import (
 func main() {
   var success bool = true;
 
+  defer func() {
+    if err := recover(); err != nil {
+      SendMessage("error", err);
+    }
+    os.Exit(0);
+  }();
+
   var a1 int64 = 1;
   var b1 int64 = 2;
   var expected1 int64 = 3;
@@ -22,7 +29,7 @@ func main() {
   success = AssertSolution(solution(a2, b2), expected2, [3, 2], success);
 
   if success {
-    SendMessageAndExit("ok", "__code-0__");
+    SendMessage("ok", "__code-0__");
   }
 }
 
@@ -35,9 +42,8 @@ func AssertSolution(result interface{}, expected interface{}, message []interfac
   return success;
 }
 
-func SendMessageAndExit(status string, result string) {
+func SendMessage(status string, result interface{}) {
   fmt.Printf("{\"status\": \"%s\", \"result\": \"%s\"}", status, result);
-  os.Exit(0)
 }
 
 func SendFailureMessage(status string, result interface{}, message []interface{}) {

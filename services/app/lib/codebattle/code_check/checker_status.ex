@@ -6,8 +6,7 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
   @doc """
         iex> Codebattle.CodeCheck.CheckerStatus.get_check_result(
         ...>    ~s({"status": "error", "result": "sdf"}),
-        ...>    "-1",
-        ...>    %{slug: "js"}
+        ...>    %{check_code: "-1", lang: %{slug: "js"}}
         ...> )
         {
           :error,
@@ -17,8 +16,7 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
 
         iex> Codebattle.CodeCheck.CheckerStatus.get_check_result(
         ...>      ~s({"status": "ok", "result": "__code-1__"}),
-        ...>      "-1",
-        ...>      %{slug: "js"}
+        ...>      %{check_code: "-1", lang: %{slug: "js"}}
         ...> )
         {
           :ok, ~s({"status": "ok", "result": "__code-1__"}), ~s({"status": "ok", "result": "__code-1__"})
@@ -27,9 +25,7 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
         iex> Codebattle.CodeCheck.CheckerStatus.get_check_result(
         ...>      ~s({"status": "failure", "result": "0", "arguments": [0]}
         ...>{"status": "success", "result": "1"}
-        ...>),
-        ...>      "-1",
-        ...>      %{slug: "js"}
+        ...>), %{check_code: "-1", lang: %{slug: "js"}}
         ...> )
         {
           :failure,
@@ -41,7 +37,7 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
 
   """
 
-  def get_check_result(container_output, check_code, meta) do
+  def get_check_result(container_output, %{check_code: check_code, lang: lang}) do
       case Regex.scan(~r/{\"status\":.+}/, container_output) do
         [] ->
           result = Jason.encode!(%{
@@ -56,7 +52,7 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
           output_code = Regex.named_captures(~r/__code(?<code>.+)__/, last_message)["code"]
           case output_code do
             ^check_code -> {:ok, last_message, reset_statuses(List.flatten(json_result), container_output)}
-            _           -> get_error_status(last_message, container_output, meta)
+            _           -> get_error_status(last_message, container_output, lang)
           end
       end
   end

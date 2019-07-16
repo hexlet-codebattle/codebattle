@@ -76,7 +76,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
             %{
               arguments: %{
                 info: [%{name: "arr1", defining: "arr1: Array<string>", value: "[\"str1\", \"str2\"]"}],
-                expretion: "arr1"
+                expression: "arr1"
               },
               expected: %{defining: "expected1: IHash", value: "{\"str1\": 1, \"str2\": 1}"},
               index: 1,
@@ -100,7 +100,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
             %{
               arguments: %{
                 info: [%{name: "arr1", defining: "arr1 []string", value: "[]string{\"str1\", \"str2\"}"}],
-                expretion: "arr1"
+                expression: "arr1"
               },
               expected: %{defining: "expected1 map[string]int64", value: "map[string]int64{\"str1\": 1, \"str2\": 1}"},
               index: 1,
@@ -138,13 +138,13 @@ defmodule Codebattle.Generators.CheckerGenerator do
              %{
                name: get_name(input, index, meta),
                defining: get_defining(input, index, meta),
-               value: get_value_expretion(input, value, meta),
+               value: get_value_expression(input, value, meta),
              }
            end)
 
     %{
       info: info,
-      expretion: Enum.map_join(info, ", ", fn %{name: name} -> name end)
+      expression: Enum.map_join(info, ", ", fn %{name: name} -> name end)
     }
   end
   defp get_arguments({assert, _index}, %{input_signature: input_signature}, meta) do
@@ -162,7 +162,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
   ) when slug in @static_langs do
     %{
       defining: get_defining(signature, index, meta),
-      value: get_value_expretion(signature, assert["expected"], meta)
+      value: get_value_expression(signature, assert["expected"], meta)
     }
   end
   defp get_expected({assert, _index}, %{output_signature: signature}, meta) do
@@ -184,19 +184,19 @@ defmodule Codebattle.Generators.CheckerGenerator do
   defp get_defining(signature, index, meta) do
     name = get_name(signature, index, meta)
     type_name = TypesGenerator.get_type(signature, meta)
-    get_defining_expretion(name, type_name, meta)
+    get_defining_expression(name, type_name, meta)
   end
 
-  defp get_defining_expretion(name, type_name, %{slug: "ts"}), do: ~s(#{name}: #{type_name})
-  defp get_defining_expretion(name, type_name, %{slug: "golang"}), do: ~s(#{name} #{type_name})
+  defp get_defining_expression(name, type_name, %{slug: "ts"}), do: ~s(#{name}: #{type_name})
+  defp get_defining_expression(name, type_name, %{slug: "golang"}), do: ~s(#{name} #{type_name})
 
-  defp get_value_expretion(%{"type" => %{"nested" => _nested}} = signature, value, %{slug: "golang"} = meta) do
+  defp get_value_expression(%{"type" => %{"nested" => _nested}} = signature, value, %{slug: "golang"} = meta) do
     type_name = TypesGenerator.get_type(signature, meta)
     type = extract_type(signature)
     value = get_value({type, value}, meta)
     ~s(#{type_name}#{value})
   end
-  defp get_value_expretion(signature, value, meta) do
+  defp get_value_expression(signature, value, meta) do
     type = extract_type(signature)
     get_value({type, value}, meta)
   end

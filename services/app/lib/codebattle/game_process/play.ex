@@ -346,14 +346,8 @@ defmodule Codebattle.GameProcess.Play do
             engine.handle_won_game(id, player, fsm)
             {:ok, fsm, result, output}
 
-          {:game_over, {:ok, result, output}} ->
-            {:ok, result, output}
-
-          {_, {:failure, result, percent, assert_results, output}} ->
-            {:failure, result, percent, assert_results, output}
-
-          {_, {:error, result, output}} ->
-            {:error, result, output}
+          {_, result} ->
+            result
         end
 
       {:error, reason} ->

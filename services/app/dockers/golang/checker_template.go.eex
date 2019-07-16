@@ -9,13 +9,21 @@ import (
 
 func main() {
   var success bool = true;
+
+  defer func() {
+    if err := recover(); err != nil {
+      SendMessage("error", err);
+      os.Exit(0);
+    }
+  }();
+
   <%= for %{arguments: arguments, expected: expected, index: i} <- checks do %>
     <%= for %{defining: defining, value: value} <- arguments.info do %>
       var <%= defining %> = <%= value %>;
     <% end %>
     var <%= expected.defining %> = <%= expected.value %>;
 
-    success = AssertSolution(solution(<%= arguments.expretion %>), expected<%= i %>, []interface{}{<%= arguments.expretion %>}, success);
+    success = AssertSolution(solution(<%= arguments.expression %>), expected<%= i %>, []interface{}{<%= arguments.expression %>}, success);
   <% end %>
 
   if success {
@@ -34,7 +42,7 @@ func AssertSolution(result interface{}, expected interface{}, message []interfac
   return success;
 }
 
-func SendMessage(status string, result string) {
+func SendMessage(status string, result interface{}) {
   fmt.Printf("{\"status\": \"%s\", \"result\": \"%s\"}\n", status, result);
 }
 
