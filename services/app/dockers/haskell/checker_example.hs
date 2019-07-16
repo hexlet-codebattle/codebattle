@@ -7,7 +7,10 @@ import Control.Exception
 import Check.Solution
 import System.Exit
 
-handleRuntimeError e = BS.putStrLn . A.encode $ A.object ["status" A..= ("error" :: String), "result" A..= show e]
+output = BS.putStrLn . A.encode . A.object
+handleSuccess res = output ["status" A..= ("ok" :: String), "result" A..= res]
+handleFailure res args = output ["status" A..= ("failure" :: String), "result" A..= res, "arguments" A..= args]
+handleRuntimeError e = output ["status" A..= ("error" :: String), "result" A..= show e]
 
 main :: IO ()
 main = do
@@ -15,14 +18,14 @@ main = do
     let res1 = solution 1 1
     
     (if res1 == expected1 
-        then BS.putStrLn . A.encode $ A.object ["status" A..= ("ok" :: String), "result" A..= res1]
-        else BS.putStrLn . A.encode $ A.object ["status" A..= ("failure" :: String), "result" A..= res1, "arguments" A..= ("[1, 1]" :: String)])
+        then handleSuccess res1
+        else handleFailure res1 ("[1, 1]" :: String))
         `catch` \(e ::ErrorCall) -> handleRuntimeError e
 
     let expected2 = 8
     let res2 = solution 5 3
 
     (if res2 == expected2 
-        then BS.putStrLn . A.encode $ A.object ["status" A..= ("ok" :: String), "result" A..= res2]
-        else BS.putStrLn . A.encode $ A.object ["status" A..= ("failure" :: String), "result" A..= res2, "arguments" A..= ("[5, 3]" :: String)])
+        then handleSuccess res2
+        else handleFailure res2 ("[5, 3]" :: String))
         `catch` \(e ::ErrorCall) -> handleRuntimeError e
