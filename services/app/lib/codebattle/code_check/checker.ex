@@ -7,7 +7,7 @@ defmodule Codebattle.CodeCheck.Checker do
   alias Codebattle.Generators.CheckerGenerator
   alias Codebattle.CodeCheck.CheckerStatus
 
-  @advanced_checker_stop_list ["perl", "haskell"]
+  @advanced_checker_stop_list ["perl"]
   @langs_needs_compiling ["golang"]
 
   def check(task, editor_text, editor_lang) do
@@ -61,14 +61,12 @@ defmodule Codebattle.CodeCheck.Checker do
     check_code = :rand.normal() |> to_string
     hash_sum = "\"__code#{check_code}__\""
 
-    file_name =
-      case lang.slug do
-        "haskell" ->
-          "Solution.#{lang.extension}"
-
-        _ ->
-          "solution.#{lang.extension}"
-      end
+    file_name = case lang.slug do
+      "haskell" ->
+        "Solution.#{lang.extension}"
+      _ ->
+        "solution.#{lang.extension}"
+    end
 
     if lang.slug not in @advanced_checker_stop_list do
       CheckerGenerator.create(lang, task, dir_path, hash_sum)

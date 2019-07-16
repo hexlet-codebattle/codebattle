@@ -79,7 +79,7 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
     json_result,
     container_output,
     %{slug: slug}
-  ) when slug in ["haskell", "perl"] do
+  ) when slug in ["perl"] do
 
     {:error, json_result, container_output}
   end
