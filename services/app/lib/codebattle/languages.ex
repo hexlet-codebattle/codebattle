@@ -176,14 +176,14 @@ defmodule Codebattle.Languages do
         check_dir: "Check",
         docker_image: "codebattle/haskell:8.4.3",
         solution_template:
-        "module Check.Solution where\n\nsolution :: (<%= arguments %>)<%= expected %>\nsolution =\n\n{- Included packages:\naeson\nbytestring\ncase-insensitive\ncontainers\ndeepseq\nfgl\ninteger-logarithms\nmegaparsec\nmtl\nparser-combinators\npretty\nrandom\nregex-base\nregex-compat\nregex-posix\nscientific\nsplit\ntemplate-haskell\ntext\ntime\ntransformers\nunordered-containers\nvector\nvector-algorithms -}",
+        "module Check.Solution where\n\nimport Data.HashMap.Lazy\n\nsolution :: <%= arguments %><%= expected %>\nsolution =\n\n{- Included packages:\naeson\nbytestring\ncase-insensitive\ncontainers\ndeepseq\nfgl\ninteger-logarithms\nmegaparsec\nmtl\nparser-combinators\npretty\nrandom\nregex-base\nregex-compat\nregex-posix\nscientific\nsplit\ntemplate-haskell\ntext\ntime\ntransformers\nunordered-containers\nvector\nvector-algorithms -}",
         types: %{
-          "integer" => "Integer",
-          "float" => "Float",
+          "integer" => "Int",
+          "float" => "Double",
           "string" => "String",
-          "array" => "Array (<%= inner_type %>)",
+          "array" => "[<%= inner_type %>]",
           "boolean" => "Bool",
-          "hash" => "Map"
+          "hash" => "HashMap String <%= inner_type %>"
         }
       },
       "perl" => %{
