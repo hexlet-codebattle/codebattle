@@ -54,10 +54,12 @@ executable Magic
 
 executable Checker
   -- .hs or .lhs file containing the Main module.
-  main-is:             checker_example.hs
+  -- main-is:             checker_example.hs
+  main-is:             test_haskell.hs
 
   -- Modules included in this executable, other than Main.
   other-modules:       Check.Solution
+  other-modules:       Check.Checker
 
   -- LANGUAGE extensions used by modules in this package.
   other-extensions:    TemplateHaskell

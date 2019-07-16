@@ -6,11 +6,11 @@ RUN apk update \
 WORKDIR /usr/src/app
 
 ADD HOwl.cabal .
-ADD checker.hs .
 ADD magic.hs .
-ADD Types.hs .
-ADD Solution.hs Check/Solution.hs
 ADD Makefile .
+ADD test_haskell.hs .
+ADD Check/Checker.hs ./Check/Checker.hs
+ADD Check/Solution.hs ./Check/Solution.hs
 
 RUN ln -s check Check
 RUN cabal new-update

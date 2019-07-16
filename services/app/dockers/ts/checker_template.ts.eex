@@ -31,7 +31,7 @@ try {
     assertEqual(
       solution(<%= arguments.expretion %>),
       expected<%= i %>,
-      <%= message %>
+      [<%= arguments.expretion %>]
     );
   <% end %>
 

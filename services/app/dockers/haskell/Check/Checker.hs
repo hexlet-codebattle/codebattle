@@ -1,4 +1,3 @@
-#!/usr/local/bin/runghc
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE OverloadedStrings #-}
 module Check.Checker where
@@ -10,25 +9,24 @@ import Check.Solution
 import System.Exit
 
 output = BS.putStrLn . A.encode . A.object
-handleOk = output ["status" A..= ("ok" :: String), "result" A..= (<%= hash_sum %> :: String)]
 handleSuccess res = output ["status" A..= ("success" :: String), "result" A..= res]
 handleFailure res args = output ["status" A..= ("failure" :: String), "result" A..= res, "arguments" A..= args]
 handleRuntimeError e = output ["status" A..= ("error" :: String), "result" A..= show e]
 
 test :: IO ()
 test = do
+    let expected1 = 2
+    let res1 = solution 1 1
 
-    <%= for %{arguments: arguments, expected: expected, index: i, error_message: message} <- checks do %>
-    let expected<%= i %> = <%= expected %>
-    let res<%= i %> = solution <%= arguments %>
-
-    (if res<%= i %> == expected<%= i %>
-        then handleSuccess res<%= i %>
-        else handleFailure res<%= i %> ("[<%= message %>]" :: String))
+    (if res1 == expected1
+        then handleSuccess res1
+        else handleFailure res1 ("[1, 1]" :: String))
         `catch` \(e ::ErrorCall) -> handleRuntimeError e
-    <% end %>
 
+    let expected2 = 8
+    let res2 = solution 5 3
 
-    (if False
-      then handleOk
-      else output [])
+    (if res2 == expected2
+        then handleSuccess res2
+        else handleFailure res2 ("[5, 3]" :: String))
+        `catch` \(e ::ErrorCall) -> handleRuntimeError e
