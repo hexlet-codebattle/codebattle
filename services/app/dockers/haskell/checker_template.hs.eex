@@ -21,14 +21,16 @@ test = do
     <%= for %{arguments: arguments, expected: expected, index: i, error_message: message} <- checks do %>
     let expected<%= i %> = <%= expected %>
     let res<%= i %> = solution <%= arguments %>
+    let resAssert<%= i %> = res<%= i %> == expected<%= i %>
 
-    (if res<%= i %> == expected<%= i %>
+    (if resAssert<%= i %>
         then handleSuccess res<%= i %>
         else handleFailure res<%= i %> ("[<%= message %>]" :: String))
         `catch` \(e ::ErrorCall) -> handleRuntimeError e
     <% end %>
 
+    let final_res = [True <%= for %{index: i} <- checks do %>, resAssert<%= i %><% end %>]
 
-    (if False
+    (if final_res
       then handleOk
       else output [])
