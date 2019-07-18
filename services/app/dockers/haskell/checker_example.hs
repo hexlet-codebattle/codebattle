@@ -33,7 +33,7 @@ main = do
         else handleFailure res2 ("[5, 3]" :: String))
         `catch` \(e ::ErrorCall) -> handleRuntimeError e
 
-    let final_res = [resAssert1, resAssert2]
+    let final_res = [True, resAssert1, resAssert2]
 
     (if final_res
         then handleOk

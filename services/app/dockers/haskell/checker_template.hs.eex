@@ -29,7 +29,7 @@ test = do
         `catch` \(e ::ErrorCall) -> handleRuntimeError e
     <% end %>
 
-    let final_res = [True <%= for %{index: i} <- checks do %>, resAssert<%= i %><% end %>]
+    let final_res = [True<%= for %{index: i} <- checks do %>, resAssert<%= i %><% end %>]
 
     (if final_res
       then handleOk
