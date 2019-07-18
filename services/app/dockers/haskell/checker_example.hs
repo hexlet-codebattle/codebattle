@@ -35,8 +35,8 @@ main = do
 
     let final_res = [True, resAssert1, resAssert2]
 
-    (if final_res
+    if and final_res
         then handleOk
-        else output [])
-        `catch` \(e ::ErrorCall) -> handleRuntimeError e
+        else output []
+        
 

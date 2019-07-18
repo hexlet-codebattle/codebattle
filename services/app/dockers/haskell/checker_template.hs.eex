@@ -31,6 +31,6 @@ test = do
 
     let final_res = [True<%= for %{index: i} <- checks do %>, resAssert<%= i %><% end %>]
 
-    (if final_res
+    if and final_res
       then handleOk
-      else output [])
+      else output []
