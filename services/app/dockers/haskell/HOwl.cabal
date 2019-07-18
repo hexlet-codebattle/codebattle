@@ -47,24 +47,25 @@ cabal-version:       >=1.10
 
 executable Magic
   main-is:             magic.hs
-  build-depends:       base >= 4.11 && < 4.12
+  build-depends:       base >= 4.11
                        , typed-process
                        , bytestring
   default-language:    Haskell2010
 
 executable Checker
   -- .hs or .lhs file containing the Main module.
-  main-is:             checker.hs
+  -- main-is:             checker_example.hs
+  main-is:             test_haskell.hs
 
   -- Modules included in this executable, other than Main.
   other-modules:       Check.Solution
-                       , Types
+  other-modules:       Check.Checker
 
   -- LANGUAGE extensions used by modules in this package.
   other-extensions:    TemplateHaskell
 
   -- Other library packages from which modules are imported.
-  build-depends:       base >=4.11 && <4.12, containers >=0.5 && <0.6, template-haskell >=2.13 && <2.14
+  build-depends:       base >=4.11, containers >=0.5 && <0.6, template-haskell >=2.13
                        , aeson
                        , bytestring
                        , text

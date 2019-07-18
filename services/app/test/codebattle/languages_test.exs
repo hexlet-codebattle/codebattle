@@ -28,7 +28,7 @@ defmodule Codebattle.LanguagesTest do
       "def solution():",
       "<?php\nfunction solution(){\n\n}",
       "(defn solution [] )",
-      "module Check.Solution where\n\nsolution :: ()\nsolution =\n\n{- Included packages:\naeson\nbytestring\ncase-insensitive\ncontainers\ndeepseq\nfgl\ninteger-logarithms\nmegaparsec\nmtl\nparser-combinators\npretty\nrandom\nregex-base\nregex-compat\nregex-posix\nscientific\nsplit\ntemplate-haskell\ntext\ntime\ntransformers\nunordered-containers\nvector\nvector-algorithms -}",
+      "module Check.Solution where\n\nimport Data.HashMap.Lazy\n\nsolution :: \nsolution =\n\n{- Included packages:\naeson\nbytestring\ncase-insensitive\ncontainers\ndeepseq\nfgl\ninteger-logarithms\nmegaparsec\nmtl\nparser-combinators\npretty\nrandom\nregex-base\nregex-compat\nregex-posix\nscientific\nsplit\ntemplate-haskell\ntext\ntime\ntransformers\nunordered-containers\nvector\nvector-algorithms -}",
       "sub solution {\n\n}\n1;"])
     %{
       valid_signature: valid_signature,
@@ -51,7 +51,7 @@ defmodule Codebattle.LanguagesTest do
     python_expected = "def solution(a: int, b: float, text: str, arr: list[list[int]], condition: bool, hashtable: dict[str, int]) -> list[str]:"
     php_expected = "<?php\nfunction solution($a, $b, $text, $arr, $condition, $hashtable){\n\treturn [\"value\"];\n}"
     clojure_expected = "(defn solution [a b text arr condition hashtable] [\"value\"])"
-    haskell_expected = "module Check.Solution where\n\nsolution :: (Integer, Float, String, Array (Array (Integer)), Bool, Map) -> Array (String)\nsolution =\n\n{- Included packages:\naeson\nbytestring\ncase-insensitive\ncontainers\ndeepseq\nfgl\ninteger-logarithms\nmegaparsec\nmtl\nparser-combinators\npretty\nrandom\nregex-base\nregex-compat\nregex-posix\nscientific\nsplit\ntemplate-haskell\ntext\ntime\ntransformers\nunordered-containers\nvector\nvector-algorithms -}"
+    haskell_expected = "module Check.Solution where\n\nimport Data.HashMap.Lazy\n\nsolution :: Int -> Double -> String -> [[Int]] -> Bool -> HashMap String Int -> [String]\nsolution =\n\n{- Included packages:\naeson\nbytestring\ncase-insensitive\ncontainers\ndeepseq\nfgl\ninteger-logarithms\nmegaparsec\nmtl\nparser-combinators\npretty\nrandom\nregex-base\nregex-compat\nregex-posix\nscientific\nsplit\ntemplate-haskell\ntext\ntime\ntransformers\nunordered-containers\nvector\nvector-algorithms -}"
     perl_expected = "sub solution {\n\n}\n1;"
 
     assert Languages.get_solution("js", signature) == js_expected

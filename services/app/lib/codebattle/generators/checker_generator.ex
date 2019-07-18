@@ -34,8 +34,8 @@ defmodule Codebattle.Generators.CheckerGenerator do
         ...> )
         [checks:
           [
-            %{arguments: "1, 2", expected: "[2, 1]", index: 1, error_message: "[1, 2]"},
-            %{arguments: "3, 5", expected: "[5, 3]", index: 2, error_message: "[3, 5]"}
+            %{arguments: "1, 2", expected: "[2, 1]", index: 1, error_message: "1, 2"},
+            %{arguments: "3, 5", expected: "[5, 3]", index: 2, error_message: "3, 5"}
           ]
         ]
 
@@ -56,7 +56,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
               arguments: "\"str1\", \"str2\"",
               expected: "{\"str1\": 3, \"str2\": 3}",
               index: 1,
-              error_message: "[\"str1\", \"str2\"]"
+              error_message: "\\\"str1\\\", \\\"str2\\\""
             }
           ]
         ]
@@ -80,7 +80,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
               },
               expected: %{defining: "expected1: IHash", value: "{\"str1\": 1, \"str2\": 1}"},
               index: 1,
-              error_message: "[[\"str1\", \"str2\"]]"
+              error_message: "[\\\"str1\\\", \\\"str2\\\"]"
             }
           ]
         ]
@@ -104,7 +104,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
               },
               expected: %{defining: "expected1 map[string]int64", value: "map[string]int64{\"str1\": 1, \"str2\": 1}"},
               index: 1,
-              error_message: "[{\"str1\", \"str2\"}]"
+              error_message: "{\\\"str1\\\", \\\"str2\\\"}"
             }
           ]
         ]
@@ -152,7 +152,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
 
     types
     |> Enum.zip(assert["arguments"])
-    |> Enum.map_join(", ", &get_value(&1, meta))
+    |> get_arguments_expression(meta)
   end
 
   defp get_expected(
@@ -175,7 +175,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
              |> Enum.zip(assert["arguments"])
              |> Enum.map_join(", ", &get_value(&1, meta))
 
-    ~s([#{result}])
+    "#{String.replace(result, "\"", "\\\"")}"
   end
 
   defp get_name(%{"argument-name" => name}, index, _meta), do: "#{name}#{index}"
@@ -185,6 +185,13 @@ defmodule Codebattle.Generators.CheckerGenerator do
     name = get_name(signature, index, meta)
     type_name = TypesGenerator.get_type(signature, meta)
     get_defining_expression(name, type_name, meta)
+  end
+
+  defp get_arguments_expression(items, %{slug: "haskell"} = meta) do
+    Enum.map_join(items, " ", &get_value(&1, meta))
+  end
+  defp get_arguments_expression(items, meta) do
+    Enum.map_join(items, ", ", &get_value(&1, meta))
   end
 
   defp get_defining_expression(name, type_name, %{slug: "ts"}), do: ~s(#{name}: #{type_name})
@@ -238,7 +245,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
   defp get_hash_value(entries, _meta), do: ~s({#{entries}})
 
   defp get_array_value(entries, %{slug: "golang"}), do: ~s({#{entries}})
-  defp get_array_value(entries, %{slug: "php"}), do: "array(#{entries}\)"
+  defp get_array_value(entries, %{slug: "php"}), do: "array(#{entries})"
   defp get_array_value(entries, _meta), do: ~s([#{entries}])
 
   defp extract_type(%{"type" => type}), do: type
@@ -259,7 +266,12 @@ defmodule Codebattle.Generators.CheckerGenerator do
       {:new_eex, "types_template.#{extension}.eex", Path.join(target_dir, "types.#{extension}")}
     ]
   end
-  defp get_template_specs(target_dir, %{slug: slug, extension: extension}) do
+  defp get_template_specs(target_dir, %{slug: "haskell", extension: extension}) do
+    [
+      {:new_eex, "checker_template.#{extension}.eex", Path.join(target_dir, "Checker.#{extension}")}
+    ]
+  end
+  defp get_template_specs(target_dir, %{extension: extension}) do
     [
       {:new_eex, "checker_template.#{extension}.eex", Path.join(target_dir, "checker.#{extension}")}
     ]

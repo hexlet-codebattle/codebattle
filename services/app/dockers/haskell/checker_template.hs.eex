@@ -1,0 +1,36 @@
+#!/usr/local/bin/runghc
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE OverloadedStrings #-}
+module Check.Checker where
+
+import qualified Data.Aeson as A
+import qualified Data.ByteString.Lazy.Char8 as BS
+import Control.Exception
+import Check.Solution
+import System.Exit
+
+output = BS.putStrLn . A.encode . A.object
+handleOk = output ["status" A..= ("ok" :: String), "result" A..= (<%= hash_sum %> :: String)]
+handleSuccess res = output ["status" A..= ("success" :: String), "result" A..= res]
+handleFailure res args = output ["status" A..= ("failure" :: String), "result" A..= res, "arguments" A..= args]
+handleRuntimeError e = output ["status" A..= ("error" :: String), "result" A..= show e]
+
+test :: IO ()
+test = do
+
+    <%= for %{arguments: arguments, expected: expected, index: i, error_message: message} <- checks do %>
+    let expected<%= i %> = <%= expected %>
+    let res<%= i %> = solution <%= arguments %>
+    let resAssert<%= i %> = res<%= i %> == expected<%= i %>
+
+    (if resAssert<%= i %>
+        then handleSuccess res<%= i %>
+        else handleFailure res<%= i %> ("[<%= message %>]" :: String))
+        `catch` \(e ::ErrorCall) -> handleRuntimeError e
+    <% end %>
+
+    let final_res = [True<%= for %{index: i} <- checks do %>, resAssert<%= i %><% end %>]
+
+    if and final_res
+      then handleOk
+      else output []

@@ -84,7 +84,7 @@ defmodule Codebattle.Generators.SolutionTemplateGenerator do
   defp add_input_spec(bindings, meta, nil), do: add_empty_input(bindings, meta)
   defp add_input_spec(bindings, meta, input) when input == [], do: add_empty_input(bindings, meta)
   defp add_input_spec(bindings, %{slug: lang} = meta, input) when lang in @type_langs do
-    specs = Enum.map_join(input, ", ", &get_input_spec(&1, meta))
+    specs = get_args_spec(meta, lang, input)
 
     Keyword.put(bindings, :arguments, specs)
   end
@@ -131,6 +131,13 @@ defmodule Codebattle.Generators.SolutionTemplateGenerator do
   end
   defp get_input_spec(%{"argument-name" => name} = input, meta) do
     "#{name}: #{TypesGenerator.get_type(input, meta)}"
+  end
+
+  defp get_args_spec(meta, "haskell", input) do
+    Enum.map_join(input, " -> ", &get_input_spec(&1, meta))
+  end
+  defp get_args_spec(meta, _lang, input) do
+    Enum.map_join(input, ", ", &get_input_spec(&1, meta))
   end
 
   defp get_args_str(_meta, "php", input) do
