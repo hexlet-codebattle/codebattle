@@ -92,7 +92,7 @@ defmodule Codebattle.GameProcess.Player do
     user = Codebattle.Repo.get!(User, player.id)
     editor_lang = player.editor_lang
     editor_text = Languages.get_solution(editor_lang, task)
-    params = %{editor_lang: editor_lang, editor_text: editor_text}
+    params = %{editor_lang: editor_lang, editor_text: editor_text, game_result: :undefined}
 
     Map.merge(player, params)
   end

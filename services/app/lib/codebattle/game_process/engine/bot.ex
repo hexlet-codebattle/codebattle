@@ -67,7 +67,7 @@ defmodule Codebattle.GameProcess.Engine.Bot do
             Codebattle.Bot.PlaybookAsyncRunner.run!(%{
               game_id: game_id,
               task_id: task.id,
-              opponent_data: get_opponent_task_data(second_player, level)
+              opponent_data: get_opponent_task_data(FsmHelpers.get_second_player(fsm), level)
             })
 
             {:ok, fsm}

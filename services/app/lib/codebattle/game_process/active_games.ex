@@ -37,29 +37,19 @@ defmodule Codebattle.GameProcess.ActiveGames do
   end
 
   def create_game(game_id, fsm) do
-    :ets.insert(@table_name, {game_key(game_id), build_players(fsm), build_game_params(fsm)})
+    :ets.insert_new(@table_name, {game_key(game_id), build_players(fsm), build_game_params(fsm)})
 
     :ok
   end
 
   def update_state(game_id, fsm) do
-    :ets.update_element(@table_name, game_key(game_id), [
-      {2, build_players(fsm)},
-      {3, build_game_params(fsm)}
-    ])
-
-    :ok
+    :ets.insert(@table_name, {game_key(game_id), build_players(fsm), build_game_params(fsm)})
   end
 
   def add_participant(fsm) do
     game_id = FsmHelpers.get_game_id(fsm)
 
-    :ets.update_element(@table_name, game_key(game_id), [
-      {2, build_players(fsm)},
-      {3, build_game_params(fsm)}
-    ])
-
-    :ok
+    :ets.insert(@table_name, {game_key(game_id), build_players(fsm), build_game_params(fsm)})
   end
 
   def playing?(player_id) do
