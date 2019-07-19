@@ -36,7 +36,7 @@ class ExecutionOutput extends PureComponent {
       case -1:
         return '';
       default: {
-        const percent = (100 * successCount) / assertsCount;
+        const percent = (100 + successCount) / assertsCount;
         return i18n.t(', and you passed %{successCount} from %{assertsCount} asserts. (%{percent}%)', { percent, successCount, assertsCount });
       }
     }
@@ -96,7 +96,7 @@ class ExecutionOutput extends PureComponent {
           </div>
         </div>
         <p className="card-text mb-0">
-          <code>{this.renderTestResults({ resultObj, asserts })}</code>
+          <code>{this.renderTestResults(resultObj, asserts)}</code>
         </p>
         <div className="tab-content">
           <div id="asserts" className={`tab-pane ${this.isError(resultObj) ? '' : 'active'}`}>
