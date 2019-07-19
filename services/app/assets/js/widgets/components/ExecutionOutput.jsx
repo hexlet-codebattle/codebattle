@@ -13,7 +13,7 @@ class ExecutionOutput extends PureComponent {
     return <span className={`badge badge-${stautsColors[status]}`}>{status}</span>;
   };
 
-  renderTestResults = (resultObj) => {
+  renderTestResults = (resultObj, asserts) => {
     switch (resultObj.status) {
       case '':
         return i18n.t('Run your code!');
@@ -21,9 +21,9 @@ class ExecutionOutput extends PureComponent {
         return i18n.t('You have some syntax errors: %{errors}', { errors: resultObj.result, interpolation: { escapeValue: false } });
       case 'failure':
         if (Array.isArray(resultObj.result)) {
-          return i18n.t('Test failed with arguments (%{arguments})%{percentMessage}', { arguments: resultObj.arguments.map(JSON.stringify).join(', '), percentMessage: this.getPercentOfSuccessTestsMesssage(resultObj.percent), interpolation: { escapeValue: false } });
+          return i18n.t('Test failed with arguments (%{arguments})%{assertsInfo}', { arguments: resultObj.arguments.map(JSON.stringify).join(', '), assertsInfo: this.getInfoAboutFailuresAsserts(asserts), interpolation: { escapeValue: false } });
         }
-        return i18n.t('Test failed with arguments (%{arguments})%{percentMessage}', { arguments: JSON.stringify(resultObj.arguments), percentMessage: this.getPercentOfSuccessTestsMesssage(resultObj.percent), interpolation: { escapeValue: false } });
+        return i18n.t('Test failed with arguments (%{arguments})%{assertsInfo}', { arguments: JSON.stringify(resultObj.arguments), assertsInfo: this.getInfoAboutFailuresAsserts(asserts), interpolation: { escapeValue: false } });
       case 'ok':
         return i18n.t('Yay! All tests passed!!111');
       default:
@@ -31,12 +31,14 @@ class ExecutionOutput extends PureComponent {
     }
   };
 
-  getPercentOfSuccessTestsMesssage = (percent) => {
-    switch (percent) {
+  getInfoAboutFailuresAsserts = ({ assertsCount, successCount }) => {
+    switch (assertsCount) {
       case -1:
         return '';
-      default:
-        return i18n.t(', and you passed %{percent}% of asserts', { percent });
+      default: {
+        const percent = (100 * successCount) / assertsCount;
+        return i18n.t(', and you passed %{successCount} from %{assertsCount} asserts. (%{percent}%)', { percent, successCount, assertsCount });
+      }
     }
   }
 
@@ -59,7 +61,7 @@ class ExecutionOutput extends PureComponent {
   render() {
     const {
       output: {
-        output, result, percent, asserts = [],
+        output, result, asserts = { assertsCount: -1, successCount: -1 },
       } = {},
     } = this.props;
     const resultObj = this.parseOutput(result);
@@ -94,12 +96,12 @@ class ExecutionOutput extends PureComponent {
           </div>
         </div>
         <p className="card-text mb-0">
-          <code>{this.renderTestResults({ ...resultObj, percent })}</code>
+          <code>{this.renderTestResults({ resultObj, asserts })}</code>
         </p>
         <div className="tab-content">
           <div id="asserts" className={`tab-pane ${this.isError(resultObj) ? '' : 'active'}`}>
             <pre className="card-text d-none d-md-block mt-3">
-              {asserts.filter(assert => !assert.match(/{"status":.*"success"/g)).join('\n')}
+              {result}
             </pre>
           </div>
           <div id="output" className={`tab-pane ${this.isError(resultObj) ? 'active' : ''}`}>

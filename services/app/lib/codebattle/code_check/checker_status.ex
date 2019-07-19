@@ -30,9 +30,9 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
         {
           :failure,
           ~s({"status": "failure", "result": "0", "arguments": [0]}),
-          50,
-          [~s({"status": "failure", "result": "0", "arguments": [0]}), ~s({"status": "success", "result": "1"})],
-          ""
+          1,
+          1,
+          ~s({"status": "failure", "result": "0", "arguments": [0]})
         }
 
   """
@@ -51,7 +51,7 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
           [last_message] = List.last(json_result)
           output_code = Regex.named_captures(~r/__code(?<code>.+)__/, last_message)["code"]
           case output_code do
-            ^check_code -> {:ok, last_message, reset_statuses(List.flatten(json_result), container_output)}
+            ^check_code -> {:ok, last_message, reset_statuses(container_output, List.flatten(json_result))}
             _           -> get_error_status(last_message, container_output, lang)
           end
       end
@@ -80,24 +80,28 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
     {:error, json_result, container_output}
   end
   defp get_error_status(json_result, container_output, _meta) do
-    error_list = Regex.scan(~r/{"status":.*"error".+}/, container_output)
-    case error_list do
+    case Regex.scan(~r/{"status":.*"error".+}/, container_output) do
       [] ->
+
         failure_list = Regex.scan(~r/{"status":.*"failure".+}/, container_output)
         success_list = Regex.scan(~r/{"status":.*"success".+}/, container_output)
         failure_count = length(failure_list)
         success_count = length(success_list)
-        percent_of_success_tests = div(100 * success_count, (failure_count + success_count))
+        #percent_of_success_tests = div(100 * success_count, (failure_count + success_count))
 
         [first_failure_json] = List.first(failure_list)
-        asserts_list = List.flatten(failure_list ++ success_list)
-        new_container_output = reset_statuses(asserts_list, container_output)
+        #asserts_list = List.flatten(json_result)
+
+        new_container_output =
+          container_output
+          |> cut_output_by_delimiter(first_failure_json)
+          |> reset_statuses(success_list)
 
         {
           :failure,
           first_failure_json,
-          percent_of_success_tests,
-          asserts_list,
+          failure_count,
+          success_count,
           new_container_output
         }
       [_] ->
@@ -106,7 +110,15 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
     end
   end
 
-  defp reset_statuses(list, container_output) do
+  defp cut_output_by_delimiter(container_output, delimiter) do
+    result = container_output
+              |> String.split(delimiter)
+              |> List.first
+
+    result <> delimiter
+  end
+
+  defp reset_statuses(container_output, list) do
     Enum.reduce(list, container_output, fn str, output -> String.replace(output, "#{str}\n", "", global: false) end)
   end
 end
