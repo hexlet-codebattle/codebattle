@@ -52,6 +52,7 @@ defmodule Codebattle.CodeCheck.TS.IntegrationTest do
 
     Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: "sdf\n", lang: "ts"})
     :timer.sleep(timeout)
+    :timer.sleep(timeout)
 
     assert_receive %Phoenix.Socket.Broadcast{
       payload: %{result: result, output: output}
@@ -92,6 +93,7 @@ defmodule Codebattle.CodeCheck.TS.IntegrationTest do
       lang: "ts"
     })
 
+    :timer.sleep(timeout)
     :timer.sleep(timeout)
 
     assert_receive %Phoenix.Socket.Broadcast{
@@ -135,6 +137,7 @@ defmodule Codebattle.CodeCheck.TS.IntegrationTest do
       lang: "ts"
     })
 
+    :timer.sleep(timeout)
     :timer.sleep(timeout)
 
     fsm = Server.fsm(game.id)

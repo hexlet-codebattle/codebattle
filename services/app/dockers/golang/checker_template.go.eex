@@ -13,8 +13,8 @@ func main() {
   defer func() {
     if err := recover(); err != nil {
       SendMessage("error", err);
-      os.Exit(0);
     }
+    os.Exit(0);
   }();
 
   <%= for %{arguments: arguments, expected: expected, index: i} <- checks do %>
@@ -53,7 +53,7 @@ func SendSuccessMessage(status string, result interface{}) {
     os.Exit(0)
   }
 
-  fmt.Printf("{\"status\": \"%s\", \"result\": \"%s\"}\n", status, resultMessage);
+  fmt.Printf("{\"status\": \"%s\", \"result\": %s}\n", status, resultMessage);
 }
 
 func SendFailureMessage(status string, result interface{}, message []interface{}) {
@@ -64,5 +64,5 @@ func SendFailureMessage(status string, result interface{}, message []interface{}
     os.Exit(0)
   }
 
-  fmt.Printf("{\"status\": \"%s\", \"result\": \"%s\", \"arguments\": \"%s\"}\n", status, resultMessage, errorMessage);
+  fmt.Printf("{\"status\": \"%s\", \"result\": %s, \"arguments\": %s}\n", status, resultMessage, errorMessage);
 }
