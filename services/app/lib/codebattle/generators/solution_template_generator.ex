@@ -50,7 +50,7 @@ defmodule Codebattle.Generators.SolutionTemplateGenerator do
       ...>      output_signature: %{"type" => %{"name" => "hash", "nested" => %{"name" => "float"}}}
       ...>    }
       ...> )
-      "import {IHash} from \"./types\";\n\nfunction solution(a: number, b: number): IHash {\n\n};\n\nexport default solution;"
+      "import * as _ from \"lodash\";\nimport {IHash} from \"./types\";\n\nfunction solution(a: number, b: number): IHash {\n\n};\n\nexport default solution;"
 
       iex> Codebattle.Generators.SolutionTemplateGenerator.get_solution(
       ...>    Codebattle.Languages.meta() |> Map.get("golang"),

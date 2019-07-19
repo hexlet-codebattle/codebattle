@@ -12,7 +12,7 @@ defmodule Codebattle.Generators.TypesGenerator do
       ...>    },
       ...>    Codebattle.Languages.meta() |> Map.get("ts")
       ...> )
-      "import {Obj1, Obj2, IHash} from \"./types\";\n\n"
+      "import * as _ from \"lodash\";\nimport {Obj1, Obj2, IHash} from \"./types\";\n\n"
   """
 
   def get_import(
@@ -82,10 +82,12 @@ defmodule Codebattle.Generators.TypesGenerator do
     "export interface #{name} {\n\t[key: string]: #{value};\n}\n\n"
   end
 
-  defp get_import_expression(types, _meta) when types == [], do: ""
+  defp get_import_expression(types, %{slug: "ts"}) when types == [] do
+    "import * as _ from \"lodash\";\n"
+  end
   defp get_import_expression(types, %{slug: "ts"}) do
     names = Enum.map(types, fn %{name: name} -> name end)
-    "import {#{Enum.join(names, ", ")}} from \"./types\";\n\n"
+    "import * as _ from \"lodash\";\nimport {#{Enum.join(names, ", ")}} from \"./types\";\n\n"
   end
 
   defp is_hash(%{"type" => %{"name" => "hash"}}), do: true

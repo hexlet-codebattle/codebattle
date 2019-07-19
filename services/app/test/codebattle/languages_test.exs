@@ -21,7 +21,7 @@ defmodule Codebattle.LanguagesTest do
     empty_signature = %{input_signature: [], output_signature: %{}}
     empty_solutions = MapSet.new([
       "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nmodule.exports = () => {\n\n};",
-      "function solution(){\n\n};\n\nexport default solution;",
+      "import * as _ from \"lodash\";\nfunction solution(){\n\n};\n\nexport default solution;",
       "package main;\n\nfunc solution() {\n\n}",
       "def solution()\n\nend",
       "defmodule Solution do\n\tdef solution() do\n\n\tend\nend",
@@ -44,7 +44,7 @@ defmodule Codebattle.LanguagesTest do
   } do
 
     js_expected = "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nmodule.exports = (a, b, text, arr, condition, hashtable) => {\n\treturn [\"value\"];\n};"
-    ts_expected = "import {Hashtable} from \"./types\";\n\nfunction solution(a: number, b: number, text: string, arr: Array<Array<number>>, condition: boolean, hashtable: Hashtable): Array<string> {\n\n};\n\nexport default solution;"
+    ts_expected = "import * as _ from \"lodash\";\nimport {Hashtable} from \"./types\";\n\nfunction solution(a: number, b: number, text: string, arr: Array<Array<number>>, condition: boolean, hashtable: Hashtable): Array<string> {\n\n};\n\nexport default solution;"
     golang_expected = "package main;\n\nfunc solution(a int64, b float64, text string, arr [][]int64, condition bool, hashtable map[string]int64) []string {\n\n}"
     ruby_expected = "def solution(a, b, text, arr, condition, hashtable)\n\treturn [\"value\"]\nend"
     elixir_expected = "defmodule Solution do\n\tdef solution(a, b, text, arr, condition, hashtable) do\n\t\t[\"value\"]\n\tend\nend"
