@@ -244,8 +244,8 @@ msgstr "У вас есть синтаксические ошибки: %{errors}"
 msgid "Test failed with arguments (%{arguments})"
 msgstr "Тест провалился с аргументами (%{arguments})"
 
-msgid ", and you passed %{percent}% of asserts"
-msgstr ", и вы прошли %{percent}% тестов"
+msgid ", and you passed %{successCount} from %{assertsCount} asserts. (%{percent}%)"
+msgstr ", и вы прошли %{successCount} из %{assertsCount} тестов. (%{percent}%)"
 
 msgid "Yay! All tests passed!!111"
 msgstr "Поздравляю! Вы прошли все тесты!!111"
@@ -268,22 +268,22 @@ msgid "Oh no, the time is out! Both players lost ;("
 msgstr ""
 
 msgid "Timeout - no timeout"
-msgstr ""
+msgstr "Таймер - нет таймера"
 
 msgid "Timeout 60 seconds"
-msgstr ""
+msgstr "Таймер на 60 секунд"
 
 msgid "Timeout 120 seconds"
-msgstr ""
+msgstr "Таймер на 120 секунд"
 
 msgid "Timeout 300 seconds"
-msgstr ""
+msgstr "Таймер на 300 секунд"
 
 msgid "Timeout 600 seconds"
-msgstr ""
+msgstr "Таймер на 600 секунд"
 
 msgid "Timeout 1200 seconds"
-msgstr ""
+msgstr "Таймер на 1200 секунд"
 
 msgid "Timeout 3600 seconds"
-msgstr ""
+msgstr "Таймер на 3600 секунд"

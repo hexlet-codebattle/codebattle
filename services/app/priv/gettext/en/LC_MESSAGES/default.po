@@ -250,7 +250,7 @@ msgstr ""
 msgid "Test failed with arguments (%{arguments})"
 msgstr ""
 
-msgid ", and you passed %{percent}% of asserts"
+msgid ", and you passed %{successCount} from %{assertsCount} asserts. (%{percent}%)"
 msgstr ""
 
 msgid "Yay! All tests passed!!111"
