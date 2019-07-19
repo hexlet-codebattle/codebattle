@@ -15,6 +15,7 @@ defmodule Codebattle.GameProcess.Engine.Bot do
   alias Codebattle.Bot.{RecorderServer, Playbook}
 
   import Ecto.Query, warn: false
+  #require Logger
 
   def create_game(bot, %{"level" => level, "type" => type}) do
     bot_player = Player.build(bot, %{creator: true})
@@ -62,7 +63,6 @@ defmodule Codebattle.GameProcess.Engine.Bot do
 
             update_game!(game_id, %{state: "playing", task_id: task.id})
             start_record_fsm(game_id, FsmHelpers.get_players(fsm), fsm)
-
             Codebattle.Bot.PlaybookAsyncRunner.run!(%{
               game_id: game_id,
               task_id: task.id,
@@ -132,13 +132,13 @@ defmodule Codebattle.GameProcess.Engine.Bot do
     start_sequence_position = %{
       "elementary" => 300_000,
       "easy" => 500_000,
-      "middle" => 800_000,
+      "medium" => 800_000,
       "hard" => 1_500_000}
 
     end_sequence_position = %{
       "elementary" => 100_000,
       "easy" => 300_000,
-      "middle" => 500_000,
+      "medium" => 500_000,
       "hard" => 1_100_000}
 
     lower_level = 1000
