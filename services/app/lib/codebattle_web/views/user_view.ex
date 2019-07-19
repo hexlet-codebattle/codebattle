@@ -1,4 +1,4 @@
 defmodule CodebattleWeb.UserView do
   use CodebattleWeb, :view
-  import Scrivener.HTML
+  #import Scrivener.HTML
 end

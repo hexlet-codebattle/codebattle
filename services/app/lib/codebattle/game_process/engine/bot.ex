@@ -8,11 +8,10 @@ defmodule Codebattle.GameProcess.Engine.Bot do
     Fsm,
     Player,
     FsmHelpers,
-    ActiveGames,
-    Notifier
+    ActiveGames
   }
 
-  alias Codebattle.{Repo, User, Game, UserGame}
+  alias Codebattle.{Repo, Game}
   alias Codebattle.Bot.{RecorderServer, Playbook}
 
   import Ecto.Query, warn: false
@@ -72,12 +71,12 @@ defmodule Codebattle.GameProcess.Engine.Bot do
 
             {:ok, fsm}
 
-          {:error, _reason} ->
-            {:error, _reason}
+          {:error, reason} ->
+            {:error, reason}
         end
 
-      {:error, _reason} ->
-        {:error, _reason}
+      {:error, reason} ->
+        {:error, reason}
     end
   end
 

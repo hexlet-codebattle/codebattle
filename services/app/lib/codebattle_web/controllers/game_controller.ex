@@ -73,7 +73,7 @@ defmodule CodebattleWeb.GameController do
     try do
       case Play.join_game(id, conn.assigns.current_user) do
         # TODO: move to Play.ex; @mimikria, we miss you))))
-        {:ok, fsm} ->
+        {:ok, _fsm} ->
           conn
           # |> put_flash(:info, gettext("Joined the game"))
           |> redirect(to: game_path(conn, :show, id))
@@ -100,9 +100,9 @@ defmodule CodebattleWeb.GameController do
       :ok ->
         redirect(conn, to: page_path(conn, :index))
 
-      {:error, _reason} ->
+      {:error, reason} ->
         conn
-        |> put_flash(:danger, _reason)
+        |> put_flash(:danger, reason)
         |> redirect(to: page_path(conn, :index))
     end
   end

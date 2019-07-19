@@ -63,7 +63,7 @@ defmodule RecalculateAchivementsTest do
 
       # Second player join game
       post(conn2, game_path(conn2, :join, game_id))
-      {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
+      subscribe_and_join(socket2, GameChannel, game_topic)
       # First player won
       editor_text1 = "Hello world1!"
       Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text1, lang: "js"})
@@ -103,7 +103,7 @@ defmodule RecalculateAchivementsTest do
 
       # Second player join game
       post(conn2, game_path(conn2, :join, game_id))
-      {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
+      subscribe_and_join(socket2, GameChannel, game_topic)
       # First player won
       editor_text1 = "Hello world1!"
       Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text1, lang: "js"})

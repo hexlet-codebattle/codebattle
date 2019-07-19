@@ -42,7 +42,6 @@ defmodule Codebattle.Bot.RecorderServer do
       GenServer.cast(server_name(game_id, user_id), {:store})
     rescue
       e in FunctionClauseError ->
-        e
         Logger.error(inspect(e))
     end
   end
@@ -128,7 +127,7 @@ defmodule Codebattle.Bot.RecorderServer do
   defp calc_total_time(state) do
     Enum.reduce(state, 0, fn x, acc -> x.time + acc end)
   end
-  
+
   defp time_diff(new_time, time) do
     step_time = NaiveDateTime.diff(new_time, time, :millisecond)
     cond do

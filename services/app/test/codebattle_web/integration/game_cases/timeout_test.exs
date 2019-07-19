@@ -75,7 +75,7 @@ defmodule Codebattle.GameCases.TimeoutTest do
     game_id = game_id_from_conn(conn)
 
     game_topic = "game:" <> to_string(game_id)
-    {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
+    subscribe_and_join(socket1, GameChannel, game_topic)
 
     conn2
     |> get(game_path(conn2, :show, game_id))

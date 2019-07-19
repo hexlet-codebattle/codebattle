@@ -12,7 +12,7 @@ defmodule CodebattleWeb.Api.V1.UserController do
         "bot" ->
           [:bot]
 
-        user_id ->
+        _user_id ->
           Repo.get(User, id).achievements
       end
 
@@ -49,10 +49,9 @@ defmodule CodebattleWeb.Api.V1.UserController do
           subquery
 
         _ ->
-          a =
-            from(t in subquery(subquery),
-              where: ilike(t.name, ^"%#{filter}%")
-            )
+          from(t in subquery(subquery),
+            where: ilike(t.name, ^"%#{filter}%")
+          )
       end
 
     page = Repo.paginate(query, %{page: page_number})
@@ -74,7 +73,7 @@ defmodule CodebattleWeb.Api.V1.UserController do
     json(conn, %{users: users, page_info: page_info})
   end
 
-  def index(conn, _params) do
-    index(conn, %{"page" => 1})
-  end
+  #def index(conn, _params) do
+  #  index(conn, %{"page" => 1})
+  #end
 end

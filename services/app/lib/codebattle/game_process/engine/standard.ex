@@ -8,14 +8,12 @@ defmodule Codebattle.GameProcess.Engine.Standard do
     Fsm,
     Player,
     FsmHelpers,
-    Elo,
     ActiveGames,
     Notifier
   }
 
-  alias Codebattle.{Repo, User, Game, UserGame}
+  alias Codebattle.{Repo, Game}
   alias Codebattle.Bot.RecorderServer
-  alias Codebattle.User.Achievements
 
   def create_game(player, %{
         "level" => level,

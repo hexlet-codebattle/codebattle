@@ -8,23 +8,19 @@ defmodule Codebattle.GameProcess.Play do
   import Ecto.Query, warn: false
   import Codebattle.GameProcess.Auth
 
-  alias Codebattle.{Repo, Game, User, UserGame}
+  alias Codebattle.{Repo, Game}
 
   alias Codebattle.GameProcess.{
     Server,
     GlobalSupervisor,
     Engine,
-    Fsm,
     Play,
     Player,
     FsmHelpers,
-    Elo,
-    ActiveGames,
-    Notifier
+    ActiveGames
   }
 
   alias Codebattle.CodeCheck.Checker
-  alias Codebattle.Bot.RecorderServer
   alias Codebattle.Bot.PlaybookAsyncRunner
 
   # get data interface
@@ -63,7 +59,7 @@ defmodule Codebattle.GameProcess.Play do
         preload: [:users, :user_games]
       )
 
-    games = Repo.all(query)
+    Repo.all(query)
   end
 
   def get_completed_game_info(game) do
@@ -220,7 +216,6 @@ defmodule Codebattle.GameProcess.Play do
   end
 
   def rematch_reject(game_id) do
-    fsm = get_fsm(game_id)
     {_response, new_fsm} = Server.call_transition(game_id, :rematch_reject, %{})
     {:ok, new_fsm}
   end
@@ -289,8 +284,8 @@ defmodule Codebattle.GameProcess.Play do
 
         :ok
 
-      {:error, _reason} ->
-        {:error, _reason}
+      {:error, reason} ->
+        {:error, reason}
     end
   end
 
