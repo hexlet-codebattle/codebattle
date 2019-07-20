@@ -196,7 +196,7 @@ defmodule CodebattleWeb.GameChannel do
 
         {:noreply, socket}
 
-      {:failure, result, success_tests_count, failure_tests_count, output} ->
+      {:failure, result, failure_tests_count, success_tests_count, output} ->
         push(socket, "user:check_result", %{
           solution_status: false,
           result: result,

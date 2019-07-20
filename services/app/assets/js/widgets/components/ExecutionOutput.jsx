@@ -36,7 +36,7 @@ class ExecutionOutput extends PureComponent {
       case -1:
         return '';
       default: {
-        const percent = (100 + successCount) / assertsCount;
+        const percent = (100 * successCount) / assertsCount;
         return i18n.t(', and you passed %{successCount} from %{assertsCount} asserts. (%{percent}%)', { percent, successCount, assertsCount });
       }
     }
@@ -63,6 +63,7 @@ class ExecutionOutput extends PureComponent {
       output: {
         output, result, asserts = { assertsCount: -1, successCount: -1 },
       } = {},
+      id,
     } = this.props;
     const resultObj = this.parseOutput(result);
 
@@ -74,7 +75,7 @@ class ExecutionOutput extends PureComponent {
               <a
                 className={`btn btn-sm rounded border btn-light ${this.isError(resultObj) ? '' : 'active'}`}
                 data-toggle="tab"
-                href="#asserts"
+                href={`#asserts_${id}`}
               >
                 Asserts
               </a>
@@ -83,7 +84,7 @@ class ExecutionOutput extends PureComponent {
               <a
                 className={`btn btn-sm rounded border btn-light ${this.isError(resultObj) ? 'active' : ''}`}
                 data-toggle="tab"
-                href="#output"
+                href={`#output_${id}`}
               >
                 Output
               </a>
@@ -99,12 +100,12 @@ class ExecutionOutput extends PureComponent {
           <code>{this.renderTestResults(resultObj, asserts)}</code>
         </p>
         <div className="tab-content">
-          <div id="asserts" className={`tab-pane ${this.isError(resultObj) ? '' : 'active'}`}>
+          <div id={`asserts_${id}`} className={`tab-pane ${this.isError(resultObj) ? '' : 'active'}`}>
             <pre className="card-text d-none d-md-block mt-3">
               {result}
             </pre>
           </div>
-          <div id="output" className={`tab-pane ${this.isError(resultObj) ? 'active' : ''}`}>
+          <div id={`output_${id}`} className={`tab-pane ${this.isError(resultObj) ? 'active' : ''}`}>
             <pre className="card-text d-none d-md-block mt-3">{output}</pre>
           </div>
         </div>
