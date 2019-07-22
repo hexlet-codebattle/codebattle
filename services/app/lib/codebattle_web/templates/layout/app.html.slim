@@ -22,7 +22,7 @@ html lang="en"
     title Codebattle
     = unless @current_user.guest do
       - app_id = "#{Application.get_env(:one_signal, OneSignal)[:app_id]}"
-      script async="" src="https://cdn.onesignal.com/sdks/OneSignalSDK.js"
+      script async="async" src="https://cdn.onesignal.com/sdks/OneSignalSDK.js"
       javascript:
         var OneSignal = window.OneSignal || [];
         OneSignal.push(function() {
