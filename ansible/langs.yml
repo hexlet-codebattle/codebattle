@@ -2,24 +2,6 @@
 - hosts: all
 
   tasks:
-    # - name: upload_langs
-    #   docker_container:
-    #     recreate: yes
-    #     # detach: no
-    #     name: codebattle-upload-langs
-    #     command: "mix upload_langs"
-    #     network_mode: host
-    #     image: "{{ codebattle_app_image_name }}:{{ ansible_env.CODEBATTLE_IMAGE_TAG }}"
-    #     state: started
-    #     env_file: "{{ codebattle_env_file }}"
-    #     env:
-    #       MIX_ENV: prod
-    #       CODEBATTLE_PORT: 10000
-    #     volumes:
-    #       - "/tmp:/tmp"
-    #       - "/var/tmp:/var/tmp"
-    #   run_once: yes
-
     - name: pull dockers for tasks
       shell: "docker pull {{ item }}"
       with_items:
@@ -33,3 +15,6 @@
         - "codebattle/haskell:8.4.3"
         - "codebattle/clojure:1.10.0"
         - "codebattle/perl:5.26.2"
+
+    - name: prune docker images
+      shell: docker rmi $(docker images | grep "<none>" | awk '{print $3}')
