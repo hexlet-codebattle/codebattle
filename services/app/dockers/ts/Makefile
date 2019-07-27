@@ -1,7 +1,7 @@
 test:
-	tsc ./check/checker.ts && node ./check/checker.js
+	tsc --project tsconfig.json && node ./check/checker.js
 
 test_example:
-	tsc ./checker_example.ts && node ./checker_example.js
+	tsc --project tsconfig_example.json && node ./checker_example.js
 
 .PHONY: test

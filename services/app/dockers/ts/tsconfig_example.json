@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "types": ["node", "chai", "lodash"],
+    "sourceMap": true,
+    "typeRoots": [
+      "node_modules/@types"
+    ]
+  },
+  "include": [
+    "./checker_example.ts",
+    "./solution_example.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
