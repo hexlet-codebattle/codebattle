@@ -42,7 +42,7 @@
     "react-dom": "^16.8.4",
     "react-hotkeys": "^1.1.4",
     "react-loading": "^2.0.3",
-    "react-markdown": "^4.0.6",
+    "react-markdown": "^4.1.0",
     "react-monaco-editor": "^0.26.2",
     "react-redux": "^7.0.3",
     "react-stay-scrolled": "^7.0.0",

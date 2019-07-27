@@ -12,28 +12,8 @@
 
 - hosts: webservers
   gather_facts: no
-  # become: yes
-  # become_user: "{{ codebattle_run_user }}"
 
   tasks:
-    # - name: download image for nginx
-    #   docker_image:
-    #     name: "{{ codebattle_nginx_image_name }}"
-    #     force: yes
-
-    # - docker_container:
-    #     recreate: yes
-    #     name: codebattle-nginx
-    #     # detach: no
-    #     image: "{{ codebattle_nginx_image_name }}"
-    #     state: started
-    #     restart_policy: always
-    #     log_driver: syslog
-    #     network_mode: host
-    #     ports:
-    #       - "80:80"
-    #   tags: [nginx]
-
     - template:
         src: environment.j2
         dest: "{{ codebattle_env_file }}"
@@ -68,7 +48,6 @@
         name: codebattle-web
         image: "{{ codebattle_app_image_name }}:{{ codebattle_image_tag }}"
         state: started
-        # log_driver: syslog
         network_mode: host
         restart_policy: always
         env_file: "{{ codebattle_env_file }}"
@@ -86,10 +65,5 @@
           - "/var/tmp:/var/tmp"
       tags: [webserver]
 
-    # - lineinfile:
-    #     regexp: "CODEBATTLE_IMAGE_TAG"
-    #     line: "CODEBATTLE_IMAGE_TAG={{ codebattle_image_tag }}"
-    #     dest: /etc/environment
-    #     backup: yes
-    #     state: present
-    #   become: yes
+    - name: prune docker images
+      shell: docker rmi $(docker images | grep "<none>" | awk '{print $3}')

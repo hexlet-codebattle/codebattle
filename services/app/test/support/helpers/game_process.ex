@@ -8,10 +8,13 @@ defmodule Helpers.GameProcess do
   alias Codebattle.GameProcess.{GlobalSupervisor, Fsm, ActiveGames}
 
   def setup_game(state, data) do
+    # TODO: FIXME
     game = insert(:game)
+    task = Map.get(data, :task, game.task)
+
     data = Map.put(data, :game_id, game.id)
-    data = Map.put(data, :level, game.task.level)
-    data = Map.put(data, :task, game.task)
+    data = Map.put(data, :task, task)
+    data = Map.put(data, :level, task.level)
     data = Map.put(data, :starts_at, TimeHelper.utc_now())
     fsm = Fsm.set_data(state, data)
     ActiveGames.setup_game(fsm)
