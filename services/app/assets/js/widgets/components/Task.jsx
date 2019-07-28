@@ -59,7 +59,7 @@ const Task = ({
 
   return (
     <div className="card h-100 border-0 shadow-sm">
-      <div className="px-3 py-3 h-100">
+      <div className="px-3 py-3 h-100 overflow-auto">
         <div className="d-flex align-items-begin flex-column flex-sm-row justify-content-between">
           <h6 className="card-text">
             {i18n.t('Task: ')}
