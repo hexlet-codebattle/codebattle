@@ -17,4 +17,4 @@
         - "codebattle/perl:5.26.2"
 
     - name: prune docker images
-      shell: docker rmi $(docker images | grep "<none>" | awk '{print $3}')
+      shell: docker rmi -f $(docker images | grep "<none>" | awk '{print $3}')
