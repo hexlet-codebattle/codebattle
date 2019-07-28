@@ -37,6 +37,16 @@ defmodule Codebattle.Bot.RecorderServer do
     end
   end
 
+  def check_and_store_result(game_id, user_id, editor_text) do
+    try do
+      GenServer.cast(server_name(game_id, user_id), {:check_and_store, editor_text})
+    rescue
+      e in FunctionClauseError ->
+        e
+        Logger.error(inspect(e))
+    end
+  end
+
   def store(game_id, user_id) do
     try do
       GenServer.cast(server_name(game_id, user_id), {:store})
@@ -95,12 +105,15 @@ defmodule Codebattle.Bot.RecorderServer do
   end
 
   def handle_cast({:store}, state) do
+<<<<<<< HEAD
+=======
+  
+>>>>>>> initial code of copypast detected
     %Playbook{
       data: %{
         playbook: Enum.reverse(state.diff),
         meta: %{
           total_time: calc_total_time(state.diff),
-          total_steps: Enum.count(state.diff)
         }
       },
       lang: to_string(state.lang),
@@ -111,6 +124,31 @@ defmodule Codebattle.Bot.RecorderServer do
     |> Repo.insert()
 
     {:stop, :normal, state}
+  end
+
+  def handle_cast({:check_and_store, editor_text}, state) do
+     IO.inspect(editor_text)
+     IO.inspect(is_copypast?(editor_text, state))
+    if is_copypast?(editor_text, state) do
+      {:error, :copypast, state}
+    else
+      %Playbook{
+        data: %{
+          playbook: Enum.reverse(state.diff),
+          meta: %{
+            total_time: calc_total_time(state.diff),
+          }
+        },
+        lang: to_string(state.lang),
+        task_id: state.task_id,
+        user_id: state.user_id,
+        game_id: state.game_id |> to_string |> Integer.parse() |> elem(0)
+      }
+      |> Repo.insert()
+
+      {:stop, :normal, state}
+    end
+
   end
 
   # HELPERS
@@ -134,5 +172,14 @@ defmodule Codebattle.Bot.RecorderServer do
     else
       step_time
     end
+  end
+
+  def is_copypast?(editor_text, state) do # TODO: reduce editor_text and take only text nodes 
+     task_length = String.length(editor_text)
+     IO.inspect(editor_text);
+     filtered_state = Enum.filter(state.diff, fn x -> Map.has_key?(x, :delta) and Enum.length(x.delta) > 0 end)
+     |> Enum.map(fn x -> Enum.reduce(x.insert, "", fn acc, x -> Map.has(x, :insert) end) end)
+    IO.inspect(filtered_state);
+     Enum.any?(filtered_state, fn x -> div(task_length, x.delta) >= 2 end)
   end
 end

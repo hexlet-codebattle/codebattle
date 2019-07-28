@@ -90,19 +90,20 @@ defmodule Codebattle.GameProcess.Engine.Bot do
   def handle_won_game(game_id, winner, fsm) do
     loser = FsmHelpers.get_opponent(fsm, winner.id)
 
-    store_game_result_async!(fsm, {winner, "won"}, {loser, "lost"})
+    store_game_result!(fsm, {winner, "won"}, {loser, "lost"})
 
     unless winner.is_bot do
-      :ok = RecorderServer.store(game_id, winner.id)
+      RecorderServer.store(game_id, winner.id)
     end
 
     ActiveGames.terminate_game(game_id)
+    :ok
   end
 
   def handle_give_up(game_id, loser, fsm) do
     winner = FsmHelpers.get_opponent(fsm, loser.id)
 
-    store_game_result_async!(fsm, {winner, "won"}, {loser, "gave_up"})
+    store_game_result!(fsm, {winner, "won"}, {loser, "gave_up"})
     ActiveGames.terminate_game(game_id)
   end
 
