@@ -42,7 +42,8 @@ defmodule Codebattle.GameCases.RematchTest do
     post(conn2, game_path(conn2, :join, game_id))
     {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
 
-    editor_text_init = "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nmodule.exports = (a, b) => {\n\treturn 0;\n};"
+    editor_text_init =
+      "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nmodule.exports = (a, b) => {\n\treturn 0;\n};"
 
     fsm = Server.fsm(game_id)
     assert fsm.state == :playing
@@ -101,7 +102,9 @@ defmodule Codebattle.GameCases.RematchTest do
       ]
     }
 
-    editor_text_init = "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nmodule.exports = (a, b) => {\n\treturn 0;\n};"
+    editor_text_init =
+      "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nmodule.exports = (a, b) => {\n\treturn 0;\n};"
+
     editor_text_edited = "Hello world1!"
 
     insert(:bot_playbook, %{data: playbook_data, task: task, lang: "ruby"})

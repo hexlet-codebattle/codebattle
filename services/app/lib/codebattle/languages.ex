@@ -45,7 +45,8 @@ defmodule Codebattle.Languages do
         check_dir: "check",
         extension: "js",
         docker_image: "codebattle/js:11.6.0",
-        solution_template: "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nmodule.exports = (<%= arguments %>) => {\n<%= return_statement %>\n};",
+        solution_template:
+          "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nmodule.exports = (<%= arguments %>) => {\n<%= return_statement %>\n};",
         return_template: "\treturn <%= default_value %>;",
         default_values: %{
           "integer" => "0",
@@ -64,7 +65,8 @@ defmodule Codebattle.Languages do
         check_dir: "check",
         extension: "ts",
         docker_image: "codebattle/ts:3.5.2",
-        solution_template: "<%= import %>function solution(<%= arguments %>)<%= expected %>{\n\n};\n\nexport default solution;",
+        solution_template:
+          "<%= import %>function solution(<%= arguments %>)<%= expected %>{\n\n};\n\nexport default solution;",
         types: %{
           "integer" => "number",
           "float" => "number",
@@ -82,7 +84,8 @@ defmodule Codebattle.Languages do
         check_dir: "check",
         extension: "go",
         docker_image: "codebattle/golang:1.12.6",
-        solution_template: "package main;\n\nfunc solution(<%= arguments %>)<%= expected %> {\n\n}",
+        solution_template:
+          "package main;\n\nfunc solution(<%= arguments %>)<%= expected %> {\n\n}",
         types: %{
           "integer" => "int64",
           "float" => "float64",
@@ -100,7 +103,8 @@ defmodule Codebattle.Languages do
         check_dir: "check",
         extension: "exs",
         docker_image: "codebattle/elixir:1.7.3",
-        solution_template: "defmodule Solution do\n\tdef solution(<%= arguments %>) do\n<%= return_statement %>\n\tend\nend",
+        solution_template:
+          "defmodule Solution do\n\tdef solution(<%= arguments %>) do\n<%= return_statement %>\n\tend\nend",
         return_template: "\t\t<%= default_value %>",
         default_values: %{
           "integer" => "0",
@@ -137,7 +141,8 @@ defmodule Codebattle.Languages do
         check_dir: "check",
         extension: "php",
         docker_image: "codebattle/php:7.3.0",
-        solution_template: "<?php\nfunction solution(<%= arguments %>){\n<%= return_statement %>\n}",
+        solution_template:
+          "<?php\nfunction solution(<%= arguments %>){\n<%= return_statement %>\n}",
         return_template: "\treturn <%= default_value %>;",
         default_values: %{
           "integer" => "0",
@@ -176,7 +181,7 @@ defmodule Codebattle.Languages do
         check_dir: "Check",
         docker_image: "codebattle/haskell:8.4.3",
         solution_template:
-        "module Check.Solution where\n\nimport Data.HashMap.Lazy\n\nsolution :: <%= arguments %><%= expected %>\nsolution =\n\n{- Included packages:\naeson\nbytestring\ncase-insensitive\ncontainers\ndeepseq\nfgl\ninteger-logarithms\nmegaparsec\nmtl\nparser-combinators\npretty\nrandom\nregex-base\nregex-compat\nregex-posix\nscientific\nsplit\ntemplate-haskell\ntext\ntime\ntransformers\nunordered-containers\nvector\nvector-algorithms -}",
+          "module Check.Solution where\n\nimport Data.HashMap.Lazy\n\nsolution :: <%= arguments %><%= expected %>\nsolution =\n\n{- Included packages:\naeson\nbytestring\ncase-insensitive\ncontainers\ndeepseq\nfgl\ninteger-logarithms\nmegaparsec\nmtl\nparser-combinators\npretty\nrandom\nregex-base\nregex-compat\nregex-posix\nscientific\nsplit\ntemplate-haskell\ntext\ntime\ntransformers\nunordered-containers\nvector\nvector-algorithms -}",
         types: %{
           "integer" => "Int",
           "float" => "Double",

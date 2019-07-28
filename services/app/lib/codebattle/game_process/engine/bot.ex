@@ -15,7 +15,7 @@ defmodule Codebattle.GameProcess.Engine.Bot do
   alias Codebattle.Bot.{RecorderServer, Playbook}
 
   import Ecto.Query, warn: false
-  #require Logger
+  # require Logger
 
   def create_game(bot, %{"level" => level, "type" => type}) do
     bot_player = Player.build(bot, %{creator: true})
@@ -46,16 +46,14 @@ defmodule Codebattle.GameProcess.Engine.Bot do
 
     case get_playbook(level) do
       {:ok, %{task: task} = _playbook} ->
-
         case Server.call_transition(game_id, :join, %{
-              players: [
-                Player.rebuild(first_player, task),
-                Player.rebuild(second_player, task)
-              ],
-              task: task,
-              joins_at: TimeHelper.utc_now()
-            }) do
-
+               players: [
+                 Player.rebuild(first_player, task),
+                 Player.rebuild(second_player, task)
+               ],
+               task: task,
+               joins_at: TimeHelper.utc_now()
+             }) do
           {:ok, fsm} ->
             ActiveGames.add_participant(fsm)
 
@@ -63,6 +61,7 @@ defmodule Codebattle.GameProcess.Engine.Bot do
 
             update_game!(game_id, %{state: "playing", task_id: task.id})
             start_record_fsm(game_id, FsmHelpers.get_players(fsm), fsm)
+
             Codebattle.Bot.PlaybookAsyncRunner.run!(%{
               game_id: game_id,
               task_id: task.id,
@@ -133,19 +132,28 @@ defmodule Codebattle.GameProcess.Engine.Bot do
       "elementary" => 300_000,
       "easy" => 500_000,
       "medium" => 800_000,
-      "hard" => 1_500_000}
+      "hard" => 1_500_000
+    }
 
     end_sequence_position = %{
       "elementary" => 100_000,
       "easy" => 300_000,
       "medium" => 500_000,
-      "hard" => 1_100_000}
+      "hard" => 1_100_000
+    }
 
     lower_level = 1000
     highest_level = 1500
 
-    sequence_step = div(start_sequence_position[game_level] - end_sequence_position[game_level], highest_level - lower_level)  #400
+    # 400
+    sequence_step =
+      div(
+        start_sequence_position[game_level] - end_sequence_position[game_level],
+        highest_level - lower_level
+      )
+
     n = player.rating || 1000 - lower_level
+
     cond do
       player.rating <= lower_level -> start_sequence_position[game_level]
       player.rating > highest_level -> end_sequence_position[game_level]

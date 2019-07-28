@@ -45,10 +45,11 @@ defmodule Codebattle.CodeCheck.Checker do
           |> :io_lib.format([volume, lang.docker_image])
           |> to_string
 
-        result = start_check_solution(
-          {check_command, compile_check_command},
-          %{task: task, lang: lang, check_code: check_code}
-        )
+        result =
+          start_check_solution(
+            {check_command, compile_check_command},
+            %{task: task, lang: lang, check_code: check_code}
+          )
 
         Task.start(File, :rm_rf, [dir_path])
         result
@@ -61,12 +62,14 @@ defmodule Codebattle.CodeCheck.Checker do
     check_code = :rand.normal() |> to_string
     hash_sum = "\"__code#{check_code}__\""
 
-    file_name = case lang.slug do
-      "haskell" ->
-        "Solution.#{lang.extension}"
-      _ ->
-        "solution.#{lang.extension}"
-    end
+    file_name =
+      case lang.slug do
+        "haskell" ->
+          "Solution.#{lang.extension}"
+
+        _ ->
+          "solution.#{lang.extension}"
+      end
 
     if lang.slug not in @advanced_checker_stop_list do
       CheckerGenerator.create(lang, task, dir_path, hash_sum)
@@ -93,12 +96,14 @@ defmodule Codebattle.CodeCheck.Checker do
   end
 
   defp compile_check_solution(
-    command,
-    %{lang: %{slug: slug} = lang} = meta
-  ) when slug in @langs_needs_compiling do
+         command,
+         %{lang: %{slug: slug} = lang} = meta
+       )
+       when slug in @langs_needs_compiling do
     container_output = run_checker(command, meta, "Compile check")
     CheckerStatus.get_compile_check_result(container_output, lang)
   end
+
   defp compile_check_solution(_, _), do: :ok
 
   defp run_checker(command, %{task: task, lang: lang}, description) do

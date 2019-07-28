@@ -73,7 +73,7 @@ defmodule CodebattleWeb.Api.V1.UserController do
     json(conn, %{users: users, page_info: page_info})
   end
 
-  #def index(conn, _params) do
+  # def index(conn, _params) do
   #  index(conn, %{"page" => 1})
-  #end
+  # end
 end

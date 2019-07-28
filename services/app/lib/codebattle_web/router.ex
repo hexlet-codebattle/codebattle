@@ -6,7 +6,7 @@ defmodule CodebattleWeb.Router do
     plug(:fetch_session)
     plug(CodebattleWeb.Plugs.AssignCurrentUser)
     plug(:fetch_flash)
-    plug Phoenix.LiveView.Flash
+    plug(Phoenix.LiveView.Flash)
     plug(:protect_from_forgery)
     plug(:put_secure_browser_headers)
     plug(CodebattleWeb.Plugs.AssignGon)

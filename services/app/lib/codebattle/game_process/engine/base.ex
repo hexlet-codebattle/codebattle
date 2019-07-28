@@ -19,6 +19,7 @@ defmodule Codebattle.GameProcess.Engine.Base do
     unless first_player.is_bot do
       {:ok, _} = Codebattle.Bot.Supervisor.start_record_server(game_id, first_player, fsm)
     end
+
     unless second_player.is_bot do
       {:ok, _} = Codebattle.Bot.Supervisor.start_record_server(game_id, second_player, fsm)
     end

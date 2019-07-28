@@ -3,7 +3,7 @@ defmodule CodebattleWeb.Live.TournamentView do
   use Timex
 
   @update_frequency 100
-  @starts_at Timex.parse! "2019-08-22 15:00:00Z", "{ISO:Extended}"
+  @starts_at "2019-08-22 15:00:00Z"
 
   def render(assigns) do
     CodebattleWeb.TournamentView.render("index.html", assigns)
@@ -136,16 +136,23 @@ defmodule CodebattleWeb.Live.TournamentView do
   end
 
   defp updated_time do
-    diff = Time.diff(@starts_at, Timex.now, :second)
-    days = round(Timex.diff(@starts_at, Timex.now, :days))
-    hours = round(Timex.diff(@starts_at, Timex.now, :hours) - (days * 24))
-    minutes = round(Timex.diff(@starts_at, Timex.now, :minutes) - (days * 24 * 60) - (hours * 60))
-    seconds = round(Timex.diff(@starts_at, Timex.now, :seconds) - (days * 24 * 60 * 60) - (hours * 60 * 60) - ( minutes * 60))
+    starts_at = Timex.parse!(@starts_at, "{ISO:Extended}")
+    diff = Time.diff(starts_at, Timex.now(), :second)
+    days = round(Timex.diff(starts_at, Timex.now(), :days))
+    hours = round(Timex.diff(starts_at, Timex.now(), :hours) - days * 24)
+    minutes = round(Timex.diff(starts_at, Timex.now(), :minutes) - days * 24 * 60 - hours * 60)
+
+    seconds =
+      round(
+        Timex.diff(starts_at, Timex.now(), :seconds) - days * 24 * 60 * 60 - hours * 60 * 60 -
+          minutes * 60
+      )
+
     %{
       days: days,
       hours: hours,
       minutes: minutes,
-      seconds: seconds,
+      seconds: seconds
     }
   end
 end

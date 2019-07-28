@@ -10,12 +10,20 @@ defmodule Codebattle.Generators.CheckerGenerator do
 
   def create(%{extension: extension, slug: slug} = meta, task, target_dir, hash_sum) do
     binding = inflect(task, meta)
-    binding = binding
-              |> Keyword.put(:hash_sum, hash_sum)
-              |> put_types(meta, task)
+
+    binding =
+      binding
+      |> Keyword.put(:hash_sum, hash_sum)
+      |> put_types(meta, task)
 
     source_dir = "/dockers/#{slug}"
-    Logger.info("Create checker for #{slug} language. NAME: checker.#{extension}, TASK: #{inspect(task)}, BINDING #{inspect(binding)}")
+
+    Logger.info(
+      "Create checker for #{slug} language. NAME: checker.#{extension}, TASK: #{inspect(task)}, BINDING #{
+        inspect(binding)
+      }"
+    )
+
     Mix.Phoenix.copy_from(["."], source_dir, binding, get_template_specs(target_dir, meta))
   end
 
@@ -114,39 +122,46 @@ defmodule Codebattle.Generators.CheckerGenerator do
     asserts = task.asserts |> String.split("\n") |> filter_empty_items()
 
     Logger.debug(inspect(asserts))
+
     [
-      checks: asserts
-                |> Enum.map(&Jason.decode!/1)
-                |> Enum.with_index(1)
-                |> Enum.map(fn {_assert, index} = item -> %{
-                  arguments: get_arguments(item, task, meta),
-                  expected: get_expected(item, task, meta),
-                  index: index,
-                  error_message: get_error_message(item, task, meta)
-                } end)
+      checks:
+        asserts
+        |> Enum.map(&Jason.decode!/1)
+        |> Enum.with_index(1)
+        |> Enum.map(fn {_assert, index} = item ->
+          %{
+            arguments: get_arguments(item, task, meta),
+            expected: get_expected(item, task, meta),
+            index: index,
+            error_message: get_error_message(item, task, meta)
+          }
+        end)
     ]
   end
 
   defp get_arguments(
-    {assert, index},
-    %{input_signature: input_signature},
-    %{slug: slug} = meta
-  ) when slug in @static_langs do
-    info = input_signature
-           |> Enum.zip(assert["arguments"])
-           |> Enum.map(fn {input, value} ->
-             %{
-               name: get_name(input, index, meta),
-               defining: get_defining(input, index, meta),
-               value: get_value_expression(input, value, meta),
-             }
-           end)
+         {assert, index},
+         %{input_signature: input_signature},
+         %{slug: slug} = meta
+       )
+       when slug in @static_langs do
+    info =
+      input_signature
+      |> Enum.zip(assert["arguments"])
+      |> Enum.map(fn {input, value} ->
+        %{
+          name: get_name(input, index, meta),
+          defining: get_defining(input, index, meta),
+          value: get_value_expression(input, value, meta)
+        }
+      end)
 
     %{
       info: info,
       expression: Enum.map_join(info, ", ", fn %{name: name} -> name end)
     }
   end
+
   defp get_arguments({assert, _index}, %{input_signature: input_signature}, meta) do
     types = Enum.map(input_signature, &extract_type/1)
 
@@ -156,24 +171,28 @@ defmodule Codebattle.Generators.CheckerGenerator do
   end
 
   defp get_expected(
-    {assert, index},
-    %{output_signature: signature},
-    %{slug: slug} = meta
-  ) when slug in @static_langs do
+         {assert, index},
+         %{output_signature: signature},
+         %{slug: slug} = meta
+       )
+       when slug in @static_langs do
     %{
       defining: get_defining(signature, index, meta),
       value: get_value_expression(signature, assert["expected"], meta)
     }
   end
+
   defp get_expected({assert, _index}, %{output_signature: signature}, meta) do
     get_value({extract_type(signature), assert["expected"]}, meta)
   end
 
   defp get_error_message({assert, _}, %{input_signature: input_signature}, meta) do
     types = Enum.map(input_signature, &extract_type/1)
-    result = types
-             |> Enum.zip(assert["arguments"])
-             |> Enum.map_join(", ", &get_value(&1, meta))
+
+    result =
+      types
+      |> Enum.zip(assert["arguments"])
+      |> Enum.map_join(", ", &get_value(&1, meta))
 
     "#{String.replace(result, "\"", "\\\"")}"
   end
@@ -190,6 +209,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
   defp get_arguments_expression(items, %{slug: "haskell"} = meta) do
     Enum.map_join(items, " ", &get_value(&1, meta))
   end
+
   defp get_arguments_expression(items, meta) do
     Enum.map_join(items, ", ", &get_value(&1, meta))
   end
@@ -197,12 +217,17 @@ defmodule Codebattle.Generators.CheckerGenerator do
   defp get_defining_expression(name, type_name, %{slug: "ts"}), do: ~s(#{name}: #{type_name})
   defp get_defining_expression(name, type_name, %{slug: "golang"}), do: ~s(#{name} #{type_name})
 
-  defp get_value_expression(%{"type" => %{"nested" => _nested}} = signature, value, %{slug: "golang"} = meta) do
+  defp get_value_expression(
+         %{"type" => %{"nested" => _nested}} = signature,
+         value,
+         %{slug: "golang"} = meta
+       ) do
     type_name = TypesGenerator.get_type(signature, meta)
     type = extract_type(signature)
     value = get_value({type, value}, meta)
     ~s(#{type_name}#{value})
   end
+
   defp get_value_expression(signature, value, meta) do
     type = extract_type(signature)
     get_value({type, value}, meta)
@@ -210,15 +235,21 @@ defmodule Codebattle.Generators.CheckerGenerator do
 
   defp get_value({%{"name" => "string"}, value}, _meta), do: ~s("#{value}")
   defp get_value({%{"name" => "boolean"}, value}, meta), do: get_boolean_value(value, meta)
+
   defp get_value({%{"name" => "array", "nested" => nested} = signature, value}, meta) do
     array_values = Enum.map_join(value, ", ", &get_value({nested, &1}, meta))
     get_array_value(array_values, meta)
   end
+
   defp get_value({%{"name" => "hash"} = signature, value}, meta) do
     list = Map.to_list(value)
-    hash_entries = Enum.map_join(list, ", ", fn item -> get_hash_inners(item, signature, meta) end)
+
+    hash_entries =
+      Enum.map_join(list, ", ", fn item -> get_hash_inners(item, signature, meta) end)
+
     get_hash_value(hash_entries, meta)
   end
+
   defp get_value({_, value}, _meta), do: value
 
   defp get_boolean_value(false, %{slug: slug}) when slug in ["python"], do: ~s(False)
@@ -226,16 +257,18 @@ defmodule Codebattle.Generators.CheckerGenerator do
   defp get_boolean_value(value, _), do: value
 
   defp get_hash_inners(
-    {k, v},
-    %{"nested" => nested},
-    %{slug: slug} = meta
-  ) when slug in ["ruby", "php"] do
-
+         {k, v},
+         %{"nested" => nested},
+         %{slug: slug} = meta
+       )
+       when slug in ["ruby", "php"] do
     ~s("#{k}" => #{get_value({nested, v}, meta)})
   end
+
   defp get_hash_inners({k, v}, %{"nested" => nested}, %{slug: "clojure"} = meta) do
     ~s(:#{k} #{get_value({nested, v}, meta)})
   end
+
   defp get_hash_inners({k, v}, %{"nested" => nested}, meta) do
     ~s("#{k}": #{get_value({nested, v}, meta)})
   end
@@ -254,26 +287,34 @@ defmodule Codebattle.Generators.CheckerGenerator do
 
   defp put_types(binding, %{slug: slug} = meta, task) when slug in @langs_need_types do
     binding
-      |> Keyword.put(:imports, TypesGenerator.get_import(task, meta))
-      |> Keyword.put(:types, TypesGenerator.get_interfaces(task, meta))
+    |> Keyword.put(:imports, TypesGenerator.get_import(task, meta))
+    |> Keyword.put(:types, TypesGenerator.get_interfaces(task, meta))
   end
+
   defp put_types(binding, _, _), do: binding
 
-  defp get_template_specs(target_dir, %{slug: slug, extension: extension}) when slug in @langs_need_types do
+  defp get_template_specs(target_dir, %{slug: slug, extension: extension})
+       when slug in @langs_need_types do
     Logger.info("Create types for #{slug} language. NAME: types.#{extension}")
+
     [
-      {:new_eex, "checker_template.#{extension}.eex", Path.join(target_dir, "checker.#{extension}")},
+      {:new_eex, "checker_template.#{extension}.eex",
+       Path.join(target_dir, "checker.#{extension}")},
       {:new_eex, "types_template.#{extension}.eex", Path.join(target_dir, "types.#{extension}")}
     ]
   end
+
   defp get_template_specs(target_dir, %{slug: "haskell", extension: extension}) do
     [
-      {:new_eex, "checker_template.#{extension}.eex", Path.join(target_dir, "Checker.#{extension}")}
+      {:new_eex, "checker_template.#{extension}.eex",
+       Path.join(target_dir, "Checker.#{extension}")}
     ]
   end
+
   defp get_template_specs(target_dir, %{extension: extension}) do
     [
-      {:new_eex, "checker_template.#{extension}.eex", Path.join(target_dir, "checker.#{extension}")}
+      {:new_eex, "checker_template.#{extension}.eex",
+       Path.join(target_dir, "checker.#{extension}")}
     ]
   end
 end

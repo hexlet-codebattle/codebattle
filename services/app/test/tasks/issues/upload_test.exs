@@ -101,10 +101,13 @@ defmodule Tasks.Issues.UploadTest do
     assert new_task.name == "asserts"
     assert new_task.description == "new_description"
     assert new_task.level == "easy"
-    assert new_task.input_signature ==  [%{"argument-name" => "str", "type" => %{"name" => "string"}}]
+
+    assert new_task.input_signature == [
+             %{"argument-name" => "str", "type" => %{"name" => "string"}}
+           ]
+
     assert new_task.output_signature == %{"type" => %{"name" => "string"}}
     assert new_task.asserts |> String.split("\n") |> Enum.count() == 2
-    assert new_task.id  == task.id
-
+    assert new_task.id == task.id
   end
 end

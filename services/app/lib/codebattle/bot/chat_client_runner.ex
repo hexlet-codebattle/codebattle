@@ -14,10 +14,10 @@ defmodule Codebattle.Bot.ChatClientRunner do
 
     :timer.sleep(2 * 60 * 1000)
     #
-    #PhoenixClient.Channel.push_async(params.chat_channel, "new:message", %{
+    # PhoenixClient.Channel.push_async(params.chat_channel, "new:message", %{
     #  "message" => say_about_language(params.chat_state),
     #  "user" => "test_bot"
-    #})
+    # })
 
     unless :rand.uniform(16) > 8 do
       PhoenixClient.Channel.push_async(params.chat_channel, "new:message", %{
@@ -29,10 +29,10 @@ defmodule Codebattle.Bot.ChatClientRunner do
     :timer.sleep(10 * 60 * 1000)
 
     unless :rand.uniform(20) > 5 do
-    PhoenixClient.Channel.push_async(params.chat_channel, "new:message", %{
-      "message" => say_about_code(params.chat_state),
-      "user" => "test_bot"
-    })
+      PhoenixClient.Channel.push_async(params.chat_channel, "new:message", %{
+        "message" => say_about_code(params.chat_state),
+        "user" => "test_bot"
+      })
     end
   end
 

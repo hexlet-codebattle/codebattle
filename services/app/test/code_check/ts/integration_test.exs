@@ -58,7 +58,11 @@ defmodule Codebattle.CodeCheck.TS.IntegrationTest do
       payload: %{result: result, output: output}
     }
 
-    expected_result = %{"status" => "error", "result" => "Something went wrong! Please, write to dev team in our Slack"}
+    expected_result = %{
+      "status" => "error",
+      "result" => "Something went wrong! Please, write to dev team in our Slack"
+    }
+
     assert expected_result == Jason.decode!(result)
 
     fsm = Server.fsm(game.id)
@@ -89,7 +93,8 @@ defmodule Codebattle.CodeCheck.TS.IntegrationTest do
     Mix.Shell.Process.flush()
 
     Phoenix.ChannelTest.push(socket1, "check_result", %{
-      editor_text: "export default function solution(a: number, b: number) {\n\treturn a - b;\n};",
+      editor_text:
+        "export default function solution(a: number, b: number) {\n\treturn a - b;\n};",
       lang: "ts"
     })
 
@@ -133,7 +138,8 @@ defmodule Codebattle.CodeCheck.TS.IntegrationTest do
     Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: "test"})
 
     Phoenix.ChannelTest.push(socket1, "check_result", %{
-      editor_text: "export default function solution(a: number, b: number) {\n\treturn a + b;\n};",
+      editor_text:
+        "export default function solution(a: number, b: number) {\n\treturn a + b;\n};",
       lang: "ts"
     })
 

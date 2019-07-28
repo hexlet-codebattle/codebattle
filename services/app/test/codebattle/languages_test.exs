@@ -9,27 +9,38 @@ defmodule Codebattle.LanguagesTest do
         %{"argument-name" => "a", "type" => %{"name" => "integer"}},
         %{"argument-name" => "b", "type" => %{"name" => "float"}},
         %{"argument-name" => "text", "type" => %{"name" => "string"}},
-        %{"argument-name" => "arr",
-          "type" => %{"name" => "array",
-                      "nested" => %{"name" => "array",
-                                    "nested" => %{"name" => "integer"}}}},
+        %{
+          "argument-name" => "arr",
+          "type" => %{
+            "name" => "array",
+            "nested" => %{"name" => "array", "nested" => %{"name" => "integer"}}
+          }
+        },
         %{"argument-name" => "condition", "type" => %{"name" => "boolean"}},
-        %{"argument-name" => "hashtable", "type" => %{"name" => "hash", "nested" => %{"name" => "integer"}}}
+        %{
+          "argument-name" => "hashtable",
+          "type" => %{"name" => "hash", "nested" => %{"name" => "integer"}}
+        }
       ],
       output_signature: %{"type" => %{"name" => "array", "nested" => %{"name" => "string"}}}
     }
+
     empty_signature = %{input_signature: [], output_signature: %{}}
-    empty_solutions = MapSet.new([
-      "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nmodule.exports = () => {\n\n};",
-      "import * as _ from \"lodash\";\nfunction solution(){\n\n};\n\nexport default solution;",
-      "package main;\n\nfunc solution() {\n\n}",
-      "def solution()\n\nend",
-      "defmodule Solution do\n\tdef solution() do\n\n\tend\nend",
-      "def solution():",
-      "<?php\nfunction solution(){\n\n}",
-      "(defn solution [] )",
-      "module Check.Solution where\n\nimport Data.HashMap.Lazy\n\nsolution :: \nsolution =\n\n{- Included packages:\naeson\nbytestring\ncase-insensitive\ncontainers\ndeepseq\nfgl\ninteger-logarithms\nmegaparsec\nmtl\nparser-combinators\npretty\nrandom\nregex-base\nregex-compat\nregex-posix\nscientific\nsplit\ntemplate-haskell\ntext\ntime\ntransformers\nunordered-containers\nvector\nvector-algorithms -}",
-      "sub solution {\n\n}\n1;"])
+
+    empty_solutions =
+      MapSet.new([
+        "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nmodule.exports = () => {\n\n};",
+        "import * as _ from \"lodash\";\nfunction solution(){\n\n};\n\nexport default solution;",
+        "package main;\n\nfunc solution() {\n\n}",
+        "def solution()\n\nend",
+        "defmodule Solution do\n\tdef solution() do\n\n\tend\nend",
+        "def solution():",
+        "<?php\nfunction solution(){\n\n}",
+        "(defn solution [] )",
+        "module Check.Solution where\n\nimport Data.HashMap.Lazy\n\nsolution :: \nsolution =\n\n{- Included packages:\naeson\nbytestring\ncase-insensitive\ncontainers\ndeepseq\nfgl\ninteger-logarithms\nmegaparsec\nmtl\nparser-combinators\npretty\nrandom\nregex-base\nregex-compat\nregex-posix\nscientific\nsplit\ntemplate-haskell\ntext\ntime\ntransformers\nunordered-containers\nvector\nvector-algorithms -}",
+        "sub solution {\n\n}\n1;"
+      ])
+
     %{
       valid_signature: valid_signature,
       empty_signature: empty_signature,
@@ -42,16 +53,32 @@ defmodule Codebattle.LanguagesTest do
     empty_signature: _,
     empty_solutions: _
   } do
+    js_expected =
+      "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nmodule.exports = (a, b, text, arr, condition, hashtable) => {\n\treturn [\"value\"];\n};"
 
-    js_expected = "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nmodule.exports = (a, b, text, arr, condition, hashtable) => {\n\treturn [\"value\"];\n};"
-    ts_expected = "import * as _ from \"lodash\";\nimport {Hashtable} from \"./types\";\n\nfunction solution(a: number, b: number, text: string, arr: Array<Array<number>>, condition: boolean, hashtable: Hashtable): Array<string> {\n\n};\n\nexport default solution;"
-    golang_expected = "package main;\n\nfunc solution(a int64, b float64, text string, arr [][]int64, condition bool, hashtable map[string]int64) []string {\n\n}"
-    ruby_expected = "def solution(a, b, text, arr, condition, hashtable)\n\treturn [\"value\"]\nend"
-    elixir_expected = "defmodule Solution do\n\tdef solution(a, b, text, arr, condition, hashtable) do\n\t\t[\"value\"]\n\tend\nend"
-    python_expected = "def solution(a: int, b: float, text: str, arr: list[list[int]], condition: bool, hashtable: dict[str, int]) -> list[str]:"
-    php_expected = "<?php\nfunction solution($a, $b, $text, $arr, $condition, $hashtable){\n\treturn [\"value\"];\n}"
+    ts_expected =
+      "import * as _ from \"lodash\";\nimport {Hashtable} from \"./types\";\n\nfunction solution(a: number, b: number, text: string, arr: Array<Array<number>>, condition: boolean, hashtable: Hashtable): Array<string> {\n\n};\n\nexport default solution;"
+
+    golang_expected =
+      "package main;\n\nfunc solution(a int64, b float64, text string, arr [][]int64, condition bool, hashtable map[string]int64) []string {\n\n}"
+
+    ruby_expected =
+      "def solution(a, b, text, arr, condition, hashtable)\n\treturn [\"value\"]\nend"
+
+    elixir_expected =
+      "defmodule Solution do\n\tdef solution(a, b, text, arr, condition, hashtable) do\n\t\t[\"value\"]\n\tend\nend"
+
+    python_expected =
+      "def solution(a: int, b: float, text: str, arr: list[list[int]], condition: bool, hashtable: dict[str, int]) -> list[str]:"
+
+    php_expected =
+      "<?php\nfunction solution($a, $b, $text, $arr, $condition, $hashtable){\n\treturn [\"value\"];\n}"
+
     clojure_expected = "(defn solution [a b text arr condition hashtable] [\"value\"])"
-    haskell_expected = "module Check.Solution where\n\nimport Data.HashMap.Lazy\n\nsolution :: Int -> Double -> String -> [[Int]] -> Bool -> HashMap String Int -> [String]\nsolution =\n\n{- Included packages:\naeson\nbytestring\ncase-insensitive\ncontainers\ndeepseq\nfgl\ninteger-logarithms\nmegaparsec\nmtl\nparser-combinators\npretty\nrandom\nregex-base\nregex-compat\nregex-posix\nscientific\nsplit\ntemplate-haskell\ntext\ntime\ntransformers\nunordered-containers\nvector\nvector-algorithms -}"
+
+    haskell_expected =
+      "module Check.Solution where\n\nimport Data.HashMap.Lazy\n\nsolution :: Int -> Double -> String -> [[Int]] -> Bool -> HashMap String Int -> [String]\nsolution =\n\n{- Included packages:\naeson\nbytestring\ncase-insensitive\ncontainers\ndeepseq\nfgl\ninteger-logarithms\nmegaparsec\nmtl\nparser-combinators\npretty\nrandom\nregex-base\nregex-compat\nregex-posix\nscientific\nsplit\ntemplate-haskell\ntext\ntime\ntransformers\nunordered-containers\nvector\nvector-algorithms -}"
+
     perl_expected = "sub solution {\n\n}\n1;"
 
     assert Languages.get_solution("js", signature) == js_expected
@@ -71,8 +98,8 @@ defmodule Codebattle.LanguagesTest do
     empty_signature: signature,
     empty_solutions: expected
   } do
-
     meta = Languages.meta()
+
     solutions =
       meta
       |> Map.to_list()

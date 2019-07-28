@@ -57,7 +57,11 @@ defmodule Codebattle.CodeCheck.Golang.IntegrationTest do
       payload: %{result: result, output: output}
     }
 
-    expected_result = %{"status" => "error", "result" => "./check/solution.go:1:1: expected 'package', found sdf"}
+    expected_result = %{
+      "status" => "error",
+      "result" => "./check/solution.go:1:1: expected 'package', found sdf"
+    }
+
     assert expected_result == Jason.decode!(result)
 
     fsm = Server.fsm(game.id)

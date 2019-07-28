@@ -66,7 +66,6 @@ defmodule Codebattle.Bot.RecorderServer do
   end
 
   def handle_cast({:update_text, text}, state) do
-
     time = state.time || NaiveDateTime.utc_now()
     new_time = NaiveDateTime.utc_now()
     new_delta = TextDelta.new() |> TextDelta.insert(text)
@@ -96,7 +95,6 @@ defmodule Codebattle.Bot.RecorderServer do
   end
 
   def handle_cast({:store}, state) do
-
     %Playbook{
       data: %{
         playbook: Enum.reverse(state.diff),
@@ -130,6 +128,7 @@ defmodule Codebattle.Bot.RecorderServer do
 
   defp time_diff(new_time, time) do
     step_time = NaiveDateTime.diff(new_time, time, :millisecond)
+
     cond do
       step_time > @time_limit -> 3000
       true -> step_time

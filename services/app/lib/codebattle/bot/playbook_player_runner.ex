@@ -10,17 +10,18 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
   @timeout Application.get_env(:codebattle, Codebattle.Bot.PlaybookPlayerRunner)[:timeout]
 
   def call(params) do
-
     :timer.sleep(@timeout)
     playbook = Playbook.random(params.task_id)
+
     if playbook do
       {id, diff} = playbook
       Logger.info("#{__MODULE__} BOT START with playbook_id = #{id}")
       diffs = Map.get(diff, "playbook")
       meta = Map.get(diff, "meta")
       game_topic = "game:#{params.game_id}"
+
       if meta do
-        step_coefficient = params.opponent_data /  Map.get(meta, "total_time")
+        step_coefficient = params.opponent_data / Map.get(meta, "total_time")
         start_bot_cycle(diffs, game_topic, params.game_channel, step_coefficient)
       else
         start_bot_cycle(diffs, game_topic, params.game_channel, 0)
@@ -39,6 +40,7 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
 
     init_document = TextDelta.new() |> TextDelta.insert("")
     init_lang = "js"
+
     {editor_text, lang} =
       Enum.reduce(diffs, {init_document, init_lang}, fn diff_map, {document, lang} ->
         timer_value = Map.get(diff_map, "time") * step_coefficient
@@ -73,5 +75,4 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
       "editor_text" => editor_text.ops |> hd |> Map.get(:insert)
     })
   end
-
 end
