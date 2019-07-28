@@ -3,7 +3,7 @@ defmodule CodebattleWeb.Live.TournamentView do
   use Timex
 
   @update_frequency 100
-  @starts_at ~U[2019-08-22 15:00:00Z]
+  @starts_at Timex.parse! "2019-08-22 15:00:00Z", "{ISO:Extended}"
 
   def render(assigns) do
     CodebattleWeb.TournamentView.render("index.html", assigns)
