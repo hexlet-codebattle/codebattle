@@ -64,12 +64,14 @@ defmodule Codebattle.Mixfile do
       {:phoenix, "~> 1.3"},
       {:phoenix_pubsub, "~> 1.0"},
       {:phoenix_ecto, "~> 4.0"},
+      {:phoenix_live_view, github: "phoenixframework/phoenix_live_view"},
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 2.10"},
       {:gettext, "~> 0.11"},
       {:cowboy, "~> 1.0"},
       {:plug_cowboy, "~> 1.0"},
-      {:phoenix_slime, "~> 0.8.0"},
+      {:phoenix_slime, github: "slime-lang/phoenix_slime"},
+      {:slime, github: "slime-lang/slime", override: true},
       {:ueberauth, "~> 0.5"},
       {:ueberauth_github, "~> 0.7"},
       {:gproc, "~> 0.6"},
@@ -91,6 +93,7 @@ defmodule Codebattle.Mixfile do
       {:jason, "~> 1.1"},
       {:websockex, "~> 0.4.0"},
       {:socket, "~> 0.3"},
+      {:timex, "~> 3.5"},
 
       # dev_and_test
       {:credo, "~> 0.8", only: [:dev, :test], runtime: false},

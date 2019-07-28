@@ -9,12 +9,14 @@ $green: #64b079 !default;
 $secondary: $gray-600 !default;
 $success: $green !default;
 
+@import "../../deps/phoenix_live_view/assets/css/live_view.css";
 $box-shadow-sm: 0 2px 4px rgba(0,0,0,0.18);
 @import "fonts";
 $font-family-sans-serif: "Roboto", sans-serif;
 @import "~bootstrap/scss/bootstrap";
 $fa-font-path: "/fonts";
 @import "~font-mfizz/dist/font-mfizz.css";
+@import "tournaments.css";
 
 a {
   transition: color ease-in 0.1s;

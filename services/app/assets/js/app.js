@@ -15,6 +15,7 @@ import 'phoenix_html';
 import '@babel/polyfill';
 import '@fortawesome/fontawesome-free/js/all';
 import 'bootstrap';
+import LiveSocket from 'phoenix_live_view';
 
 // Import local files
 //
@@ -24,6 +25,9 @@ import 'bootstrap';
 import {
   renderGameWidget, renderLobby, renderHeatmapWidget, renderUsersRating,
 } from './widgets';
+
+const liveSocket = new LiveSocket('/live');
+liveSocket.connect();
 
 const gameWidgetRoot = document.getElementById('game-widget-root');
 const heatmapRoot = document.getElementById('heatmap-root');

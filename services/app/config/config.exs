@@ -8,8 +8,10 @@ use Mix.Config
 config :codebattle,
   alpine_docker_command_template: "docker run --rm ~s ~s timeout -s 9 -t 10 make --silent test",
   ubuntu_docker_command_template: "docker run --rm ~s ~s timeout -s 9 10s make --silent test",
-  alpine_docker_command_compile_template: "docker run ~s ~s timeout -s 9 -t 10 make --silent test-compile",
-  ubuntu_docker_command_compile_template: "docker run ~s ~s timeout -s 9 10s make --silent test-compile"
+  alpine_docker_command_compile_template:
+    "docker run ~s ~s timeout -s 9 -t 10 make --silent test-compile",
+  ubuntu_docker_command_compile_template:
+    "docker run ~s ~s timeout -s 9 10s make --silent test-compile"
 
 # General application configuration
 config :codebattle, ecto_repos: [Codebattle.Repo]
@@ -28,7 +30,8 @@ config :logger, :console,
 
 config :phoenix, :template_engines,
   slim: PhoenixSlime.Engine,
-  slime: PhoenixSlime.Engine
+  slime: PhoenixSlime.Engine,
+  slimleex: PhoenixSlime.LiveViewEngine
 
 config :phoenix_slime, :use_slim_extension, true
 
@@ -51,6 +54,8 @@ config :one_signal, OneSignal,
 
 config :scrivener_html,
   routes_helper: CodebattleWeb.Router.Helpers
+
+config :codebattle, CodebattleWeb.Endpoint, live_view: [signing_salt: "asdfasdf"]
 
 config :codebattle, Codebattle.Bot.PlaybookPlayerRunner, timeout: 7_000
 

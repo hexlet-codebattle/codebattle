@@ -1,12 +1,11 @@
 defmodule CodebattleWeb.TournamentController do
   use CodebattleWeb, :controller
 
-  #alias Codebattle.{Repo, User, UserGame}
-  #import Ecto.Query
+  alias Phoenix.LiveView
 
   plug(CodebattleWeb.Plugs.RequireAuth)
 
   def index(conn, _params) do
-    render(conn, "index.html")
+    LiveView.Controller.live_render(conn, CodebattleWeb.Live.TournamentView, session: %{})
   end
 end

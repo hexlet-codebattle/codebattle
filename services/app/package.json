@@ -33,6 +33,7 @@
     "monaco-vim": "^0.0.13",
     "phoenix": "file:deps/phoenix",
     "phoenix_html": "file:deps/phoenix_html",
+    "phoenix_live_view": "file:deps/phoenix_live_view",
     "popper.js": "^1.12.2",
     "prop-types": "^15.5.10",
     "qs": "^6.6.0",

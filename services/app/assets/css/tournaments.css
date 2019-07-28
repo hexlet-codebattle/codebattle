@@ -1,0 +1,320 @@
+.tournament {
+  position: relative;
+  text-align: center;
+  overflow: hidden;
+  color: #fcfcfc;
+}
+
+.tournament-header {
+  font-family: "Abel", sans-serif;
+  text-transform: uppercase;
+  color: #5cca87;
+  letter-spacing: 6px;
+  text-shadow: 0 0 12px rgba(0, 0, 0, 0.5);
+  font-size: 1.2em;
+  margin: 0 0 20px;
+}
+
+.tournament p.intro {
+  font-family: "Holtwood One SC", serif;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 3em;
+  margin-bottom: -40px;
+}
+
+.bracket {
+  overflow: hidden;
+  background-color: #e1e1e1;
+  background-color: rgba(225, 225, 225, 0.9);
+  padding-top: 20px;
+  font-size: 12px;
+  padding: 40px 0;
+}
+
+.tournament-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: block;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: row;
+  flex-direction: row;
+}
+.split {
+  display: block;
+  float: left;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  width: 42%;
+  -webkit-flex-direction: row;
+  -moz-flex-direction: row;
+  flex-direction: row;
+}
+.champion {
+  float: left;
+  display: block;
+  width: 16%;
+  -webkit-flex-direction: row;
+  flex-direction: row;
+  -webkit-align-self: center;
+  align-self: center;
+  margin-top: -15px;
+  text-align: center;
+  padding: 230px 0\9;
+}
+.champion i {
+  color: #a0a6a8;
+  font-size: 45px;
+  padding: 10px 0;
+}
+.round {
+  display: block;
+  float: left;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  width: 95%;
+  width: 30.8333%\9;
+}
+.split-two {
+}
+.split-one .round {
+  margin: 0 2.5% 0 0;
+}
+.split-two .round {
+  margin: 0 0 0 2.5%;
+}
+.matchup {
+  margin: 0;
+  width: 100%;
+  padding: 10px 0;
+  height: 60px;
+  -webkit-transition: all 0.2s;
+  transition: all 0.2s;
+}
+.score {
+  font-size: 11px;
+  text-transform: uppercase;
+  float: right;
+  color: #2c7399;
+  font-weight: bold;
+  font-family: "Roboto Condensed", sans-serif;
+  position: absolute;
+  right: 5px;
+}
+.team {
+  padding: 0 5px;
+  margin: 3px 0;
+  height: 25px;
+  line-height: 25px;
+  white-space: nowrap;
+  overflow: hidden;
+  position: relative;
+}
+.round-two .matchup {
+  margin: 0;
+  height: 60px;
+  padding: 50px 0;
+}
+.round-three .matchup {
+  margin: 0;
+  height: 60px;
+  padding: 130px 0;
+}
+.round-details {
+  font-family: "Roboto Condensed", sans-serif;
+  font-size: 13px;
+  color: #2c7399;
+  text-transform: uppercase;
+  text-align: center;
+  height: 40px;
+}
+.champion li,
+.round li {
+  background-color: #fff;
+  box-shadow: none;
+  opacity: 0.45;
+}
+.current li {
+  opacity: 1;
+}
+.current li.team {
+  background-color: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  opacity: 1;
+}
+.vote-options {
+  display: block;
+  height: 52px;
+}
+.share .container {
+  margin: 0 auto;
+  text-align: center;
+}
+.share-icon {
+  font-size: 24px;
+  color: #fff;
+  padding: 25px;
+}
+.share-wrap {
+  max-width: 1100px;
+  text-align: center;
+  margin: 60px auto;
+}
+.final {
+  margin: 4.5em 0;
+}
+
+@-webkit-keyframes pulse {
+  0% {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+  }
+
+  50% {
+    -webkit-transform: scale(1.3);
+    transform: scale(1.3);
+  }
+
+  100% {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    -webkit-transform: scale(1);
+    -ms-transform: scale(1);
+    transform: scale(1);
+  }
+
+  50% {
+    -webkit-transform: scale(1.3);
+    -ms-transform: scale(1.3);
+    transform: scale(1.3);
+  }
+
+  100% {
+    -webkit-transform: scale(1);
+    -ms-transform: scale(1);
+    transform: scale(1);
+  }
+}
+
+.share-icon {
+  color: #fff;
+  opacity: 0.35;
+}
+.share-icon:hover {
+  opacity: 1;
+  -webkit-animation: pulse 0.5s;
+  animation: pulse 0.5s;
+}
+.date {
+  font-size: 10px;
+  letter-spacing: 2px;
+  font-family: "Istok Web", sans-serif;
+  color: #3f915f;
+}
+
+@media screen and (min-width: 981px) and (max-width: 1099px) {
+  .container {
+    margin: 0 1%;
+  }
+  .champion {
+    width: 14%;
+  }
+  .split {
+    width: 43%;
+  }
+  .split-one .vote-box {
+    margin-left: 138px;
+  }
+  .tournament p.intro {
+    font-size: 28px;
+  }
+  .tournament p.year {
+    margin: 5px 0 10px;
+  }
+}
+
+@media screen and (max-width: 980px) {
+  .container {
+    -webkit-flex-direction: column;
+    -moz-flex-direction: column;
+    flex-direction: column;
+  }
+  .split,
+  .champion {
+    width: 90%;
+    margin: 35px 5%;
+  }
+  .champion {
+    -webkit-box-ordinal-group: 3;
+    -moz-box-ordinal-group: 3;
+    -ms-flex-order: 3;
+    -webkit-order: 3;
+    order: 3;
+  }
+  .split {
+    border-bottom: 1px solid #b6b6b6;
+    padding-bottom: 20px;
+  }
+  .tournament p.intro {
+    font-size: 24px;
+  }
+  .tournament h1 {
+    font-size: 3em;
+    margin: 15px 0;
+  }
+  .tournament p {
+    font-size: 1em;
+  }
+}
+
+@media screen and (max-width: 400px) {
+  .split {
+    width: 95%;
+    margin: 25px 2.5%;
+  }
+  .round {
+    width: 21%;
+  }
+  .current {
+    -webkit-flex-grow: 1;
+    -moz-flex-grow: 1;
+    flex-grow: 1;
+  }
+  .tournament h1 {
+    font-size: 2.15em;
+    letter-spacing: 0;
+    margin: 0;
+  }
+  .tournament p.intro {
+    font-size: 1.15em;
+    margin-bottom: -10px;
+  }
+  .round-details {
+    font-size: 90%;
+  }
+  .tournament-wrap {
+    padding: 2.5em;
+  }
+  .tournament p.year {
+    margin: 5px 0 10px;
+    font-size: 18px;
+  }
+}
