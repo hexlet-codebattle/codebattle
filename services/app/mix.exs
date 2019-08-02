@@ -94,6 +94,7 @@ defmodule Codebattle.Mixfile do
       {:websockex, "~> 0.4.0"},
       {:socket, "~> 0.3"},
       {:timex, "~> 3.5"},
+      {:deep_merge, "~> 1.0"},
 
       # dev_and_test
       {:credo, "~> 0.8", only: [:dev, :test], runtime: false},

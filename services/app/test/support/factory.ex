@@ -44,6 +44,10 @@ defmodule CodebattleWeb.Factory do
     %Playbook{}
   end
 
+  def tournament_factory do
+    %Codebattle.Tournament{name: "name", players_count: 16}
+  end
+
   def auth_factory do
     %Auth{
       provider: :github,

@@ -1,4 +1,4 @@
-= if @match do
+= if !is_nil(@match) do
   - [player1, player2] = @match.players
   li.team.team-top
     = player1.name
@@ -10,6 +10,4 @@
       = player2.game_result
 - else
   li.team.team-top Andrey
-    span.score waiting
   li.team.team-bottom Dima
-    span.score waiting

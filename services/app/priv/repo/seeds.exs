@@ -62,3 +62,11 @@ levels = ["elementary", "easy", "medium", "hard"]
     IO.puts("Upsert #{task_name}")
   end
 end)
+
+%Codebattle.Tournament{}
+|> Codebattle.Tournament.changeset(%{
+  name: "Codebattle Hexlet summer tournament 2019",
+  players_count: 16,
+  starts_at: ~N[2019-08-22 19:33:08.910767]
+})
+|> Codebattle.Repo.insert!()

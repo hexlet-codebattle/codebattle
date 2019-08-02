@@ -6,6 +6,8 @@ defmodule CodebattleWeb.TournamentController do
   plug(CodebattleWeb.Plugs.RequireAuth)
 
   def index(conn, _params) do
-    LiveView.Controller.live_render(conn, CodebattleWeb.Live.TournamentView, session: %{})
+    LiveView.Controller.live_render(conn, CodebattleWeb.Live.TournamentView,
+      session: %{current_user: conn.assigns[:current_user]}
+    )
   end
 end
