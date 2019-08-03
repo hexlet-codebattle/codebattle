@@ -129,9 +129,10 @@ defmodule Codebattle.Bot.RecorderServer do
   defp time_diff(new_time, time) do
     step_time = NaiveDateTime.diff(new_time, time, :millisecond)
 
-    cond do
-      step_time > @time_limit -> 3000
-      true -> step_time
+    if step_time > @time_limit do
+      3000
+    else
+      step_time
     end
   end
 end

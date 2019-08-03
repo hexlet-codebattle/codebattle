@@ -187,10 +187,10 @@ defmodule CodebattleWeb.GameChannelTest do
     assert fsm.state == :playing
   end
 
-  test "sends game info when user join", %{user1: user1, socket1: socket1, game: game} do
+  test "sends game info when user join", %{user1: user1, socket1: socket1} do
     # setup
     state = :waiting_opponent
-    data = %{players: [Player.build(user1), %Player{}], task: game.task}
+    data = %{players: [Player.build(user1), %Player{}]}
     game = setup_game(state, data)
     game_topic = "game:" <> to_string(game.id)
 

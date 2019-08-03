@@ -21,8 +21,7 @@ defmodule Codebattle.User.Achievements do
         where: ug.user_id == ^user.id
       )
 
-    data = Repo.all(query)
-    user_games = Enum.count(Enum.into(data, []))
+    user_games = Repo.aggregate(query, :count, :id)
 
     cond do
       user_games >= 10 && user_games < 50 ->
@@ -44,6 +43,13 @@ defmodule Codebattle.User.Achievements do
           {achievements, user}
         else
           {achievements ++ ["played_hundred_games"], user}
+        end
+
+      user_games >= 500 ->
+        if Enum.member?(achievements, "played_five_hundred_games") do
+          {achievements, user}
+        else
+          {achievements ++ ["played_five_hundred_games"], user}
         end
 
       true ->
@@ -82,17 +88,15 @@ defmodule Codebattle.User.Achievements do
 
     new_achievement = "win_games_with?#{Enum.join(languages, "_")}"
 
-    cond do
-      Enum.count(languages) >= 3 ->
-        if new_achievement !== exist_achievement do
-          new_list = List.delete(achievements, exist_achievement)
-          {new_list ++ [new_achievement], user}
-        else
-          {achievements, user}
-        end
-
-      true ->
+    if Enum.count(languages) >= 3 do
+      if new_achievement !== exist_achievement do
+        new_list = List.delete(achievements, exist_achievement)
+        {new_list ++ [new_achievement], user}
+      else
         {achievements, user}
+      end
+    else
+      {achievements, user}
     end
   end
 end

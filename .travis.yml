@@ -26,8 +26,8 @@ jobs:
         - docker pull codebattle/perl:5.26.2
         - docker-compose -f services/app/docker-compose.test.yml run sut
     # - stage: build and push docker image
-      # if: branch = master
-      # script:
-        # - echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-        # - docker build -t codebattle/app --file services/app/Dockerfile.prod services/app/
-        # - docker push codebattle/app:latest
+    # if: branch = master
+    # script:
+    # - echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+    # - docker build -t codebattle/app --file services/app/Dockerfile.prod services/app/
+    # - docker push codebattle/app:latest

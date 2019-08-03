@@ -97,7 +97,7 @@ defmodule Codebattle.Mixfile do
       {:deep_merge, "~> 1.0"},
 
       # dev_and_test
-      {:credo, "~> 0.8", only: [:dev, :test], runtime: false},
+      {:credo, ">= 0.0.0", only: [:dev, :test], runtime: false},
 
       # dev
       {:phoenix_live_reload, "~> 1.0", only: :dev},

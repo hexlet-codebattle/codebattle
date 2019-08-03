@@ -71,11 +71,11 @@ defmodule Codebattle.CodeCheck.Checker do
           "solution.#{lang.extension}"
       end
 
-    if lang.slug not in @advanced_checker_stop_list do
-      CheckerGenerator.create(lang, task, dir_path, hash_sum)
-    else
+    if lang.slug in @advanced_checker_stop_list do
       asserts = task.asserts <> "{\"check\": #{hash_sum}}"
       File.write!(Path.join(dir_path, "data.jsons"), asserts)
+    else
+      CheckerGenerator.create(lang, task, dir_path, hash_sum)
     end
 
     File.write!(Path.join(dir_path, file_name), editor_text)
@@ -107,15 +107,10 @@ defmodule Codebattle.CodeCheck.Checker do
   defp compile_check_solution(_, _), do: :ok
 
   defp run_checker(command, %{task: task, lang: lang}, description) do
-    Logger.debug(command)
     [cmd | cmd_opts] = command |> String.split()
     t = :os.system_time(:millisecond)
     {container_output, _status} = System.cmd(cmd, cmd_opts, stderr_to_stdout: true)
     Logger.error("#{description} time: #{:os.system_time(:millisecond) - t}, lang: #{lang.slug}")
-
-    Logger.debug(
-      "Docker stdout for task_id: #{task.id}, lang: #{lang.slug}, output:#{container_output}"
-    )
 
     container_output
   end
