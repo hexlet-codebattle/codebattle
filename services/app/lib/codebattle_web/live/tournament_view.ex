@@ -38,7 +38,6 @@ defmodule CodebattleWeb.Live.TournamentView do
   end
 
   def handle_info(%{topic: @topic, payload: payload} = params, socket) do
-    IO.inspect(params)
     {:noreply, assign(socket, tournament: payload.tournament)}
   end
 
