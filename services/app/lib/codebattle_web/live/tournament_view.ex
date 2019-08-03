@@ -2,6 +2,8 @@ defmodule CodebattleWeb.Live.TournamentView do
   use Phoenix.LiveView
   use Timex
 
+  @topic "tournaments"
+
   alias Codebattle.User
   alias Codebattle.Repo
   alias Codebattle.Tournament
@@ -20,6 +22,8 @@ defmodule CodebattleWeb.Live.TournamentView do
 
     tournament = Tournament.actual()
 
+    CodebattleWeb.Endpoint.subscribe(@topic)
+
     {:ok,
      assign(socket,
        current_user: session[:current_user],
@@ -31,6 +35,11 @@ defmodule CodebattleWeb.Live.TournamentView do
   def handle_info(:update, socket) do
     tournament = socket.assigns.tournament
     {:noreply, assign(socket, time: updated_time(tournament.starts_at))}
+  end
+
+  def handle_info(%{topic: @topic, payload: payload} = params, socket) do
+    IO.inspect(params)
+    {:noreply, assign(socket, tournament: payload.tournament)}
   end
 
   def handle_event("join", _params, socket) do
@@ -48,20 +57,30 @@ defmodule CodebattleWeb.Live.TournamentView do
       })
       |> Repo.update!()
 
+    CodebattleWeb.Endpoint.broadcast_from(self(), @topic, "update_tournament", %{
+      tournament: new_tournament
+    })
+
     {:noreply, assign(socket, tournament: new_tournament)}
   end
 
-  def handle_event("start", _params, socket) do
-    {:noreply, socket}
-  end
-
-  def handle_event("clean", _params, socket) do
+  def handle_event("leave", _params, socket) do
     tournament = socket.assigns.tournament
+
+    new_players =
+      tournament.data.players
+      |> Enum.filter(fn x -> x.id != socket.assigns.current_user.id end)
 
     new_tournament =
       tournament
-      |> Tournament.changeset(%{data: DeepMerge.deep_merge(tournament.data, %{players: []})})
+      |> Tournament.changeset(%{
+        data: DeepMerge.deep_merge(tournament.data, %{players: new_players})
+      })
       |> Repo.update!()
+
+    CodebattleWeb.Endpoint.broadcast_from(self(), @topic, "update_tournament", %{
+      tournament: new_tournament
+    })
 
     {:noreply, assign(socket, tournament: new_tournament)}
   end

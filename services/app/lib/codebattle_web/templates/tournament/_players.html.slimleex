@@ -12,5 +12,4 @@ h3 Participants
   h5 no participans yet
 
 button.btn.btn-outline-success.mt-3[phx-click="join"] Join
-button.btn.btn-outline-danger.mt-3[phx-click="start"] Start
-button.btn.btn-outline-danger.mt-3[phx-click="clean"] Clean
+button.btn.btn-outline-danger.mt-3[phx-click="leave"] Leave
