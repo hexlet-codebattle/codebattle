@@ -1,55 +1,39 @@
-- matches = @tournament.data.matches
-- players = @tournament.data.players
-- first_round_left_range = 0..3
-- first_round_right_range = 4..7
-- second_round_left_range = 8..9
-- second_round_right_range = 10..11
-- sm_left = 12
-- sm_right = 13
-- final = 14
+.container.bg-white.shadow-sm.py-4.mb-3
+  h1.text-center Tournaments
+  .table-responsive.mt-4
+    table.table.table-sm
+      thead
+        tr
+          th name
+          th state
+          th starts_at
+          th players_count
+          th creator
+          th actions
+      tbody
+        = for tournament <- @tournaments do
+          tr
+            td.align-middle.text-nowrap = tournament.name
+            td.align-middle.text-nowrap = tournament.state
+            td.align-middle.text-nowrap = tournament.starts_at
+            td.align-middle.text-nowrap = tournament.players_count
+            td.align-middle.text-nowrap
+              = render "_player.html", player: tournament.creator
+            td.align-middle.text-nowrap
+              = link "Show",
+                to: CodebattleWeb.Router.Helpers.tournament_path(@socket, :show, tournament.id),
+                class: "btn btn-success mt-2"
 
-header.tournament
-  .tournament-header
-    h1 = @tournament.name
-    p  starts after #{@time.days} days #{@time.hours} hours #{@time.minutes} minutes #{@time.seconds} seconds
-section.bracket
-  .tournament-container
-    .participants-container
-      = render "_players.html", players: players
-    .bracket-container
-      .split.split-one
-        .round.round-one.current
-          .round-details Round 1
-          = Enum.map first_round_left_range,  fn index ->
-            ul.matchup
-              = render "_match.html", match:  Enum.at(matches, index)
-        .round.round-two
-          .round-details Round 2
-          = Enum.map second_round_left_range,  fn index ->
-            ul.matchup
-              = render "_match.html", match:  Enum.at(matches, index)
-      .champion
-        .semis-l
-          .round-details first_semifinal
-          ul.matchup.championship
-            = render "_match.html", match:  Enum.at(matches, sm_left)
-        .final
-          i.fa.fa-trophy
-          .round-details championship
-          ul.matchup.championship
-            = render "_match.html", match:  Enum.at(matches, final)
-        .semis-r
-          .round-details  second_semifinal
-          ul.matchup.championship
-            = render "_match.html", match:  Enum.at(matches, sm_right)
-      .split.split-two
-        .round.round-two
-          .round-details Round 2
-          = Enum.map second_round_right_range,  fn index ->
-            ul.matchup
-              = render "_match.html", match:  Enum.at(matches, index)
-        .round.round-one.current
-          .round-details Round 1
-          = Enum.map first_round_right_range,  fn index ->
-            ul.matchup
-              = render "_match.html", match:  Enum.at(matches, index)
+.container.bg-white.shadow-sm.py-4
+  h2.text-center.mt-5 Create new tournament
+  = f = form_for @changeset, "#", phx_change: :validate, phx_submit: :create
+    .form-group
+      = label f, :name
+      = text_input f, :name, class: "form-control", placeholder: "My tournament"
+      = error_tag f, :name
+    .form-group
+      = label f, "starts_at_after"
+      = select f, :starts_at_type, Codebattle.Tournament.starts_at_types, class: "form-control"
+    = submit "Create", phx_disable_with: "Creating...", class: "btn btn-primary mb-2"
+
+

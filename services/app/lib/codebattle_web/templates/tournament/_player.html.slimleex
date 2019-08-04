@@ -1,0 +1,4 @@
+a href="/users/#{@player.id}"
+  img.ml-2.attachment.rounded.border.mr-1.x-user-avatar src="https://avatars0.githubusercontent.com/u/#{@player.github_id}"
+  span.mr-1 = @player.name
+  small = @player.rating
