@@ -44,7 +44,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
 
   def handle_event("join", _params, socket) do
     new_tournament =
-      Helpers.add_participant(
+      Helpers.join(
         socket.assigns.tournament,
         socket.assigns.current_user
       )
@@ -118,10 +118,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
       }
     )
 
-    {:stop,
-     socket
-     |> put_flash(:info, "Tournament cancel successfully.")
-     |> redirect(to: "/tournaments")}
+    {:noreply, assign(socket, tournament: new_tournament)}
   end
 
   defp updated_time(starts_at) do

@@ -10,6 +10,7 @@ defmodule Codebattle.Tournament.Types do
       field(:name, :string)
       field(:rating, :integer)
       field(:guest, :boolean)
+      field(:game_result, :string, default: "waiting")
     end
 
     def changeset(struct, params) do

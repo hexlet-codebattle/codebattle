@@ -1,4 +1,3 @@
-h3 Participants
 = if !Enum.empty?(@players) do
   .tournament-users
     = for {player, index} <- Enum.with_index(@players) do

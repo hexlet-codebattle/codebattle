@@ -15,13 +15,16 @@ header.tournament
 section.bracket
   .tournament-container
     .participants-container
+      h3 Participants
       = render "_players.html", players: players
-      = if Codebattle.Tournament.Helpers.is_participant?(@tournament, @current_user.id) do
-        button.btn.btn-outline-danger.mt-2[phx-click="leave"] Leave
-      - else
-        button.btn.btn-outline-success.mt-2[phx-click="join"] Join
+      = if Codebattle.Tournament.Helpers.is_waiting_partisipants?(@tournament) do
+        = if Codebattle.Tournament.Helpers.is_participant?(@tournament, @current_user.id) do
+          button.btn.btn-outline-danger.mt-2[phx-click="leave"] Leave
+        - else
+          button.btn.btn-outline-success.mt-2[phx-click="join"] Join
+        = if Codebattle.Tournament.Helpers.is_creator?(@tournament, @current_user.id) do
+          button.btn.btn-outline-success.mt-2[phx-click="start"] Start
       = if Codebattle.Tournament.Helpers.is_creator?(@tournament, @current_user.id) do
-        button.btn.btn-outline-success.mt-2[phx-click="start]"] Start
         button.btn.btn-outline-danger.mt-2[phx-click="cancel"] Cancel
 
       = link "Back to tournaments", to: CodebattleWeb.Router.Helpers.tournament_path(@socket, :index), class: "btn btn-success mt-2"
@@ -39,6 +42,7 @@ section.bracket
             ul.matchup
               = render "_match.html", match:  Enum.at(matches, index)
       .champion
+        h3 State: #{@tournament.state}
         .semis-l
           .round-details first_semifinal
           ul.matchup.championship

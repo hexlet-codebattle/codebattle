@@ -16,6 +16,7 @@ defmodule Codebattle.Tournament do
     field(:name, :string)
     field(:state, :string, default: "waiting_participants")
     field(:players_count, :integer, default: 16)
+    field(:step, :integer, default: 0)
     field(:starts_at, :naive_datetime)
     field(:starts_at_type, :string, virtual: true, default: "5_min")
     embeds_one(:data, Types.Data, on_replace: :delete)
@@ -27,11 +28,11 @@ defmodule Codebattle.Tournament do
 
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:name, :state, :starts_at, :players_count, :creator_id])
+    |> cast(params, [:name, :step, :state, :starts_at, :players_count, :creator_id])
     |> cast_embed(:data)
-    |> validate_required([:name, :players_count, :creator_id])
     |> validate_inclusion(:state, @states)
     |> validate_inclusion(:starts_at_type, @starts_at_types)
+    |> validate_required([:name, :players_count, :creator_id, :starts_at])
   end
 
   def get!(id) do

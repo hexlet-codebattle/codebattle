@@ -17,7 +17,7 @@ defmodule Codebattle.Bot.Builder do
         limit: 1
       )
 
-    bot = Repo.one(query)
+    bot = Repo.one!(query)
     Map.merge(bot, params)
   end
 
