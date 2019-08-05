@@ -97,15 +97,29 @@ defmodule Codebattle.Tournament.HelpersTest do
 
   test "#start!" do
     user = insert(:user)
+    insert_pair(:task, level: "elementary")
+    task = insert(:task, level: "elementary")
+    playbook_data = %{playbook: [%{"lang" => "ruby", "time" => 100}]}
+
+    insert(:bot_playbook, %{data: playbook_data, task: task, lang: "ruby"})
+
     player = struct(Codebattle.Tournament.Types.Player, Map.from_struct(user))
 
     tournament =
       insert(:tournament, creator_id: user.id, data: %{players: [player]}, players_count: 16)
 
-    new_tournament = Helpers.start!(tournament, user)
+    new_tournament =
+      Helpers.join(tournament, user)
+      |> Helpers.start!(user)
 
     assert new_tournament.state == "active"
     assert Enum.count(new_tournament.data.players) == new_tournament.players_count
     assert Enum.count(new_tournament.data.matches) == 8
+
+    assert new_tournament.data.matches
+           |> Enum.filter(fn x -> x.state == "active" end)
+           |> Enum.count() == 8
+
+    assert new_tournament.data.matches |> Enum.filter(fn x -> x.game_id end) |> Enum.count() == 8
   end
 end

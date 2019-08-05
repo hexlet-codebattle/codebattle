@@ -6,16 +6,27 @@ defmodule Codebattle.Tournament.Types do
 
     embedded_schema do
       field(:id, :integer)
+      field(:public_id, :string)
       field(:github_id, :integer)
+      field(:lang, :string)
       field(:name, :string)
       field(:rating, :integer)
       field(:guest, :boolean)
+      field(:is_bot, :boolean)
       field(:game_result, :string, default: "waiting")
     end
 
     def changeset(struct, params) do
       struct
-      |> cast(Map.from_struct(params), [:id, :name, :github_id, :rating, :guest])
+      |> cast(Map.from_struct(params), [
+        :id,
+        :name,
+        :github_id,
+        :rating,
+        :guest,
+        :is_bot,
+        :game_result
+      ])
     end
   end
 
@@ -26,12 +37,13 @@ defmodule Codebattle.Tournament.Types do
 
     embedded_schema do
       field(:state, :string)
+      field(:game_id, :integer)
       embeds_many(:players, Player, on_replace: :delete)
     end
 
     def changeset(struct, params) do
       struct
-      |> cast(params, [:state])
+      |> cast(params, [:state, :game_id])
       |> cast_embed(:players)
     end
   end

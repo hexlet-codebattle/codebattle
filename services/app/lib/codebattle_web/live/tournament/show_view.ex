@@ -7,7 +7,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
   alias Codebattle.Tournament
   alias Codebattle.Tournament.Helpers
 
-  @update_frequency 100
+  @update_frequency 1_000_000_000_000
 
   def render(assigns) do
     CodebattleWeb.TournamentView.render("show.html", assigns)

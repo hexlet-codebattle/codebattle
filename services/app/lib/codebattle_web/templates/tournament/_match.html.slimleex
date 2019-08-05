@@ -1,13 +1,12 @@
 = if !is_nil(@match) do
   - [player1, player2] = @match.players
-  li.team.team-top
-    = player1.name
-    span.score
-      = player1.game_result
-  li.team.team-bottom
-    = player2.name
-    span.score
-      = player2.game_result
+  .d-flex.align-items-center.bg-light.py-2
+    = link "Show", to: "/games/#{@match.game_id}", class: "btn btn-success mx-2"
+    .d-flex.flex-column.justify-content-around
+      .bg-light class="tournament-bg-#{@match.state}"
+        = render "_player.html", player: player1
+      .bg-light class="tournament-bg-#{@match.state}"
+        = render "_player.html", player: player2
 - else
-  li.team.team-top Andrey
-  li.team.team-bottom Dima
+  .d-flex.align-items-center.justify-content-center.bg-gray
+     p Waiting

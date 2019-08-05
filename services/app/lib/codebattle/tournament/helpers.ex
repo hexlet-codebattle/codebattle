@@ -1,6 +1,6 @@
 defmodule Codebattle.Tournament.Helpers do
-  alias Codebattle.Tournament
   alias Codebattle.Repo
+  alias Codebattle.Tournament
 
   def get_players(tournament), do: tournament.data.players
   def get_matches(tournament), do: tournament.data.matches
@@ -88,7 +88,8 @@ defmodule Codebattle.Tournament.Helpers do
     if is_creator?(tournament, user.id) do
       tournament
       |> complete_players
-      |> build_matches(tournament.step)
+      |> build_matches
+      |> start_games
       |> Tournament.changeset(%{state: "active"})
       |> Repo.update!()
     else
@@ -118,7 +119,7 @@ defmodule Codebattle.Tournament.Helpers do
     end
   end
 
-  defp build_matches(tournament, 0) do
+  defp build_matches(%Tournament{step: 0} = tournament) do
     players = tournament |> get_players |> Enum.shuffle()
 
     matches =
@@ -143,6 +144,29 @@ defmodule Codebattle.Tournament.Helpers do
     tournament
     |> Tournament.changeset(%{
       data: DeepMerge.deep_merge(Map.from_struct(tournament.data), %{matches: matches})
+    })
+    |> Repo.update!()
+  end
+
+  defp start_games(tournament) do
+    new_matches =
+      tournament
+      |> get_matches
+      |> Enum.map(fn match ->
+        case match.state do
+          "waiting" ->
+            {:ok, game_id} = Codebattle.GameProcess.Play.create_tournament_game(match.players)
+            %{match | game_id: game_id, state: "active"}
+
+          _ ->
+            match
+        end
+        |> Map.from_struct()
+      end)
+
+    tournament
+    |> Tournament.changeset(%{
+      data: DeepMerge.deep_merge(Map.from_struct(tournament.data), %{matches: new_matches})
     })
     |> Repo.update!()
   end

@@ -133,6 +133,15 @@ defmodule Codebattle.GameProcess.Play do
     end
   end
 
+  def create_tournament_game(players) do
+    engine = get_engine(:tournament)
+    {:ok, fsm} = engine.create_game(players)
+
+    game_id = FsmHelpers.get_game_id(fsm)
+
+    {:ok, game_id}
+  end
+
   def create_rematch_game_with_bot(game_id) do
     fsm = Play.get_fsm(game_id)
     engine = get_engine(fsm)
@@ -151,6 +160,7 @@ defmodule Codebattle.GameProcess.Play do
       case create_bot_game(bot, game_params) do
         {:ok, new_game_id} ->
           {:ok, _bot_pid} = PlaybookAsyncRunner.create_server(%{game_id: new_game_id, bot: bot})
+
           {:ok, new_fsm} = engine.join_game(new_game_id, real_player)
 
           start_timeout_timer(new_game_id, new_fsm)
@@ -352,6 +362,7 @@ defmodule Codebattle.GameProcess.Play do
 
   defp get_engine(:standard), do: Engine.Standard
   defp get_engine(:bot), do: Engine.Bot
+  defp get_engine(:tournament), do: Engine.Tournament
 
   defp get_engine(fsm) do
     case FsmHelpers.bot_game?(fsm) do

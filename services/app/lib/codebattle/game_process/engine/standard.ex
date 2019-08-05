@@ -30,7 +30,7 @@ defmodule Codebattle.GameProcess.Engine.Standard do
     fsm =
       Fsm.new()
       |> Fsm.create(%{
-        player: player,
+        players: [player],
         game_id: game.id,
         level: level,
         type: type,
@@ -110,36 +110,6 @@ defmodule Codebattle.GameProcess.Engine.Standard do
     winner = FsmHelpers.get_opponent(fsm, loser.id)
     store_game_result_async!(fsm, {winner, "won"}, {loser, "gave_up"})
     ActiveGames.terminate_game(game_id)
-  end
-
-  defp get_random_task(level, user_ids) do
-    qry = """
-    WITH game_tasks AS (SELECT count(games.id) as count, games.task_id FROM games
-    INNER JOIN "user_games" ON "user_games"."game_id" = "games"."id"
-    WHERE "games"."level" = $1 AND "user_games"."user_id" IN ($2, $3)
-    GROUP BY "games"."task_id")
-    SELECT "tasks".*, "game_tasks".* FROM tasks
-    LEFT JOIN game_tasks ON "tasks"."id" = "game_tasks"."task_id"
-    WHERE "tasks"."level" = $1
-    ORDER BY "game_tasks"."count" NULLS FIRST
-    LIMIT 30
-    """
-
-    # TODO: get list and then get random in elixir
-
-    res = Ecto.Adapters.SQL.query!(Repo, qry, [level, Enum.at(user_ids, 0), Enum.at(user_ids, 1)])
-
-    cols = Enum.map(res.columns, &String.to_atom(&1))
-
-    tasks =
-      Enum.map(res.rows, fn row ->
-        struct(Codebattle.Task, Enum.zip(cols, row))
-      end)
-
-    min_task = List.first(tasks)
-
-    filtered_task = Enum.filter(tasks, fn x -> Map.get(x, :count) == min_task.count end)
-    Enum.random(filtered_task)
   end
 
   # defp update_game!(game_id, params) do

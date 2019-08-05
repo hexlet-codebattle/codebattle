@@ -20,11 +20,11 @@ defmodule CodebattleWeb.Api.V1.UserControllerTest do
     assert resp_body["page_info"] == %{
              "page_number" => 1,
              "page_size" => 50,
-             "total_entries" => 18,
+             "total_entries" => 31,
              "total_pages" => 1
            }
 
-    assert Enum.count(resp_body["users"]) == 18
+    assert Enum.count(resp_body["users"]) ==  31
   end
 
   test "show rating list with filter", %{conn: conn} do
@@ -44,10 +44,10 @@ defmodule CodebattleWeb.Api.V1.UserControllerTest do
     assert resp_body["page_info"] == %{
              "page_number" => 1,
              "page_size" => 50,
-             "total_entries" => 18,
+             "total_entries" => 19,
              "total_pages" => 1
            }
 
-    assert Enum.count(resp_body["users"]) == 14
+    assert Enum.count(resp_body["users"]) == 19
   end
 end

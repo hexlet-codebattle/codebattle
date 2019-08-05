@@ -25,11 +25,12 @@ defmodule Codebattle.GameProcess.Engine.Bot do
     fsm =
       Fsm.new()
       |> Fsm.create(%{
-        player: bot_player,
+        players: [bot_player],
         level: level,
         game_id: game.id,
         bots: true,
         type: type,
+        timeout_seconds: 60 * 60,
         starts_at: TimeHelper.utc_now()
       })
 
@@ -44,8 +45,8 @@ defmodule Codebattle.GameProcess.Engine.Bot do
     level = FsmHelpers.get_level(fsm)
     first_player = FsmHelpers.get_first_player(fsm)
 
-    case get_playbook(level) do
-      {:ok, %{task: task} = _playbook} ->
+    case get_task(level) do
+      {:ok, task} ->
         case Server.call_transition(game_id, :join, %{
                players: [
                  Player.rebuild(first_player, task),
@@ -61,12 +62,7 @@ defmodule Codebattle.GameProcess.Engine.Bot do
 
             update_game!(game_id, %{state: "playing", task_id: task.id})
             start_record_fsm(game_id, FsmHelpers.get_players(fsm), fsm)
-
-            Codebattle.Bot.PlaybookAsyncRunner.run!(%{
-              game_id: game_id,
-              task_id: task.id,
-              opponent_data: get_opponent_task_data(FsmHelpers.get_second_player(fsm), level)
-            })
+            run_bot!(fsm)
 
             {:ok, fsm}
 
@@ -77,6 +73,16 @@ defmodule Codebattle.GameProcess.Engine.Bot do
       {:error, reason} ->
         {:error, reason}
     end
+  end
+
+  def run_bot!(fsm) do
+    Codebattle.Bot.PlaybookAsyncRunner.run!(%{
+      game_id: FsmHelpers.get_game_id(fsm),
+      task_id: FsmHelpers.get_task(fsm).id,
+      bot_id: FsmHelpers.get_first_player(fsm).id,
+      opponent_data:
+        get_opponent_task_data(FsmHelpers.get_second_player(fsm), FsmHelpers.get_level(fsm))
+    })
   end
 
   def update_text(game_id, player, editor_text) do
@@ -106,7 +112,7 @@ defmodule Codebattle.GameProcess.Engine.Bot do
     ActiveGames.terminate_game(game_id)
   end
 
-  def get_playbook(level) do
+  def get_task(level) do
     query =
       from(
         playbook in Playbook,
@@ -121,7 +127,8 @@ defmodule Codebattle.GameProcess.Engine.Bot do
     playbook = Repo.one(query)
 
     if playbook do
-      {:ok, playbook}
+      %{task: task} = playbook
+      {:ok, task}
     else
       {:error, :playbook_not_found}
     end
