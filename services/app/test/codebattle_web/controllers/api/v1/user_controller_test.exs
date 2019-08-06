@@ -24,7 +24,7 @@ defmodule CodebattleWeb.Api.V1.UserControllerTest do
              "total_pages" => 1
            }
 
-    assert Enum.count(resp_body["users"]) ==  31
+    assert Enum.count(resp_body["users"]) == 31
   end
 
   test "show rating list with filter", %{conn: conn} do
