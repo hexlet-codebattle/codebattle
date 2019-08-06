@@ -1,12 +1,15 @@
 = if !is_nil(@match) do
   - [player1, player2] = @match.players
-  .d-flex.align-items-center.bg-light.py-2
-    = link "Show", to: "/games/#{@match.game_id}", class: "btn btn-success mx-2"
+  .d-flex.bg-light
+    .d-flex.flex-column.justify-content-center.align-items-center
+      p = @match.state
+      = link "Show", to: "/games/#{@match.game_id}", class: "btn btn-success m-1"
     .d-flex.flex-column.justify-content-around
       .bg-light class="tournament-bg-#{@match.state}"
         = render "_player.html", player: player1
       .bg-light class="tournament-bg-#{@match.state}"
         = render "_player.html", player: player2
+
 - else
   .d-flex.align-items-center.justify-content-center.bg-gray
      p Waiting

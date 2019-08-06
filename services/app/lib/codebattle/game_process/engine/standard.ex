@@ -15,6 +15,7 @@ defmodule Codebattle.GameProcess.Engine.Standard do
 
   alias Codebattle.{Repo, Game}
   alias Codebattle.Bot.RecorderServer
+  alias CodebattleWeb.Notifications
 
   def create_game(player, params) do
     %{"level" => level, "type" => type, "timeout_seconds" => timeout_seconds} = params
@@ -123,12 +124,24 @@ defmodule Codebattle.GameProcess.Engine.Standard do
     store_game_result_async!(fsm, {winner, "won"}, {loser, "lost"})
     :ok = RecorderServer.store(game_id, winner.id)
     ActiveGames.terminate_game(game_id)
+
+    Notifications.notify_tournament("game:finished", fsm, %{
+      game_id: game_id,
+      winner: {winner.id, "won"},
+      loser: {loser.id, "lost"}
+    })
   end
 
   def handle_give_up(game_id, loser, fsm) do
     winner = FsmHelpers.get_opponent(fsm, loser.id)
     store_game_result_async!(fsm, {winner, "won"}, {loser, "gave_up"})
     ActiveGames.terminate_game(game_id)
+
+    Notifications.notify_tournament("game:finished", fsm, %{
+      game_id: game_id,
+      winner: {winner.id, "won"},
+      loser: {loser.id, "gave_up"}
+    })
   end
 
   def handle_rematch_offer_send(fsm, user_id) do

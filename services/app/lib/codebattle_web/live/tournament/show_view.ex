@@ -7,7 +7,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
   alias Codebattle.Tournament
   alias Codebattle.Tournament.Helpers
 
-  @update_frequency 1_000_000_000_000
+  @update_frequency 1000
 
   def render(assigns) do
     CodebattleWeb.TournamentView.render("show.html", assigns)
@@ -19,12 +19,15 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     end
 
     tournament = Tournament.get!(session[:id])
+    messages = Codebattle.Tournament.Server.get_messages(tournament.id)
+
     CodebattleWeb.Endpoint.subscribe(topic_name(tournament))
 
     {:ok,
      assign(socket,
        current_user: session[:current_user],
        tournament: tournament,
+       messages: messages,
        time: updated_time(tournament.starts_at)
      )}
   end
@@ -37,6 +40,14 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
   def handle_info(%{topic: topic, event: "update_tournament", payload: payload} = params, socket) do
     if is_current_topic?(topic, socket.assigns.tournament) do
       {:noreply, assign(socket, tournament: payload.tournament)}
+    else
+      {:noreply, socket}
+    end
+  end
+
+  def handle_info(%{topic: topic, event: "update_chat", payload: payload} = params, socket) do
+    if is_current_topic?(topic, socket.assigns.tournament) do
+      {:noreply, assign(socket, messages: payload.messages)}
     else
       {:noreply, socket}
     end
@@ -119,6 +130,28 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     )
 
     {:noreply, assign(socket, tournament: new_tournament)}
+  end
+
+  def handle_event("chat_message", params, socket) do
+    tournament = socket.assigns.tournament
+    current_user = socket.assigns.current_user
+
+    Codebattle.Tournament.Server.add_message(
+      tournament.id,
+      current_user,
+      params["message"]["content"]
+    )
+
+    messages = Codebattle.Tournament.Server.get_messages(tournament.id)
+
+    CodebattleWeb.Endpoint.broadcast_from(
+      self(),
+      topic_name(tournament),
+      "update_chat",
+      %{messages: messages}
+    )
+
+    {:noreply, assign(socket, messages: messages)}
   end
 
   defp updated_time(starts_at) do

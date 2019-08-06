@@ -22,6 +22,7 @@ defmodule Codebattle.GameProcess.Play do
 
   alias Codebattle.CodeCheck.Checker
   alias Codebattle.Bot.PlaybookAsyncRunner
+  alias CodebattleWeb.Notifications
 
   # get data interface
   def active_games do
@@ -110,9 +111,14 @@ defmodule Codebattle.GameProcess.Play do
     end
   end
 
-  def create_tournament_game(players) do
+  def create_tournament_game(tournament, players, timeout_seconds) do
     engine = get_engine(:tournament)
-    {:ok, fsm} = engine.create_game(players)
+
+    {:ok, fsm} =
+      engine.create_game(players, %{
+        tournament_id: tournament.id,
+        timeout_seconds: timeout_seconds
+      })
 
     {:ok, FsmHelpers.get_game_id(fsm)}
   end
@@ -150,8 +156,9 @@ defmodule Codebattle.GameProcess.Play do
       Logger.info("Timeout triggered for game_id: #{id}")
       Server.call_transition(id, :timeout, %{})
       ActiveGames.terminate_game(id)
-      CodebattleWeb.Notifications.game_timeout(id)
-      CodebattleWeb.Notifications.lobby_game_cancel(id)
+      Notifications.game_timeout(id)
+      Notifications.lobby_game_cancel(id)
+      Notifications.notify_tournament("game:cancel", get_fsm(id), %{game_id: id})
 
       id
       |> get_game
@@ -172,7 +179,7 @@ defmodule Codebattle.GameProcess.Play do
       :ok ->
         ActiveGames.terminate_game(id)
         GlobalSupervisor.terminate_game(id)
-        CodebattleWeb.Notifications.lobby_game_cancel(id)
+        Notifications.lobby_game_cancel(id)
 
         id
         |> get_game

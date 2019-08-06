@@ -4,8 +4,6 @@ defmodule Codebattle.GameProcess.Engine.Tournament do
   alias Codebattle.GameProcess.FsmHelpers
   alias Codebattle.Bot.PlaybookAsyncRunner
 
-  @game_timeout 60 * 3
-
   alias Codebattle.GameProcess.{
     Play,
     Server,
@@ -20,23 +18,27 @@ defmodule Codebattle.GameProcess.Engine.Tournament do
   alias Codebattle.{Repo, Game}
   alias Codebattle.Bot.RecorderServer
 
-  def create_game(players) do
+  def create_game(players, params) do
     level = "elementary"
     task = get_task(level, players)
+    is_bot_game = Enum.any?(players, fn x -> x.is_bot end)
 
     game =
       Repo.insert!(%Game{state: "playing", level: level, type: "tournament", task_id: task.id})
 
     fsm =
       Fsm.new()
-      |> Fsm.create_tournament_game(%{
+      |> Fsm.create_playing_game(%{
         players: Enum.map(players, fn x -> Codebattle.GameProcess.Player.build(x) end),
         game_id: game.id,
+        is_bot_game: is_bot_game,
         level: level,
         type: "tournament",
         starts_at: TimeHelper.utc_now(),
         timeout_seconds: @game_timeout,
         task: task,
+        tournament_id: params.tournament_id,
+        timeout_seconds: params.timeout_seconds,
         joins_at: TimeHelper.utc_now()
       })
 
@@ -55,6 +57,8 @@ defmodule Codebattle.GameProcess.Engine.Tournament do
         })
       end
     end)
+
+    start_timeout_timer(game.id, fsm)
 
     {:ok, fsm}
   end

@@ -14,9 +14,9 @@ defmodule Codebattle.GameProcess.Engine.Bot do
 
   alias Codebattle.{Repo, Game}
   alias Codebattle.Bot.{RecorderServer, Playbook, PlaybookAsyncRunner}
+  alias CodebattleWeb.Notifications
 
   import Ecto.Query, warn: false
-  # require Logger
 
   def create_game(bot, %{"level" => level, "type" => type}) do
     case player_can_create_game?(bot) do
@@ -31,7 +31,7 @@ defmodule Codebattle.GameProcess.Engine.Bot do
             players: [bot_player],
             level: level,
             game_id: game.id,
-            bots: true,
+            is_bot_game: true,
             type: type,
             timeout_seconds: 60 * 60,
             starts_at: TimeHelper.utc_now()
@@ -118,6 +118,12 @@ defmodule Codebattle.GameProcess.Engine.Bot do
     end
 
     ActiveGames.terminate_game(game_id)
+
+    Notifications.notify_tournament("game:finished", fsm, %{
+      game_id: game_id,
+      winner: {winner.id, "won"},
+      loser: {loser.id, "lost"}
+    })
   end
 
   def handle_give_up(game_id, loser, fsm) do
@@ -125,6 +131,12 @@ defmodule Codebattle.GameProcess.Engine.Bot do
 
     store_game_result_async!(fsm, {winner, "won"}, {loser, "gave_up"})
     ActiveGames.terminate_game(game_id)
+
+    Notifications.notify_tournament("game:finished", fsm, %{
+      game_id: game_id,
+      winner: {winner.id, "won"},
+      loser: {loser.id, "gave_up"}
+    })
   end
 
   def get_task(level) do

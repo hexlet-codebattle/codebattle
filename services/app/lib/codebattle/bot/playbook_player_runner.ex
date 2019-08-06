@@ -11,6 +11,7 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
 
   def call(params) do
     :timer.sleep(@timeout)
+    :timer.sleep(Enum.random(3..7))
     playbook = Playbook.random(params.task_id)
 
     if playbook do

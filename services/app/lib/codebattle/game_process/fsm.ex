@@ -14,6 +14,8 @@ defmodule Codebattle.GameProcess.Fsm do
     initial_data: %{
       # Integer
       game_id: nil,
+      # Integer
+      tournament_id: nil,
       # NaiveDateTime
       starts_at: nil,
       # NaiveDateTime
@@ -27,7 +29,7 @@ defmodule Codebattle.GameProcess.Fsm do
       # String, public or private game with friend
       type: "public",
       # Boolean, game played with bot
-      bots: false,
+      is_bot_game: false,
       # timeouts
       timeout_seconds: 0,
       # :Atom, (:in_approval, :rejected)
@@ -46,7 +48,7 @@ defmodule Codebattle.GameProcess.Fsm do
       next_state(:waiting_opponent, Map.merge(data, params))
     end
 
-    defevent create_tournament_game(params), data: data do
+    defevent create_playing_game(params), data: data do
       next_state(:playing, Map.merge(data, params))
     end
 

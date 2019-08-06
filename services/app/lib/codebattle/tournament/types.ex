@@ -34,6 +34,7 @@ defmodule Codebattle.Tournament.Types do
     use Ecto.Schema
     import Ecto.Changeset
     @primary_key false
+    @states ~w(waiting active canceled finished)
 
     embedded_schema do
       field(:state, :string)
@@ -44,6 +45,7 @@ defmodule Codebattle.Tournament.Types do
     def changeset(struct, params) do
       struct
       |> cast(params, [:state, :game_id])
+      |> validate_inclusion(:state, @states)
       |> cast_embed(:players)
     end
   end
@@ -63,6 +65,20 @@ defmodule Codebattle.Tournament.Types do
       |> cast(params, [])
       |> cast_embed(:matches)
       |> cast_embed(:players)
+    end
+  end
+
+  defmodule Message do
+    use Ecto.Schema
+    import Ecto.Changeset
+    @primary_key false
+
+    embedded_schema do
+      field(:content, :string)
+    end
+
+    def changeset(struct, params) do
+      struct |> cast(params, [:content])
     end
   end
 end

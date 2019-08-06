@@ -1,4 +1,14 @@
 a href="/users/#{@player.id}"
   img.ml-2.attachment.rounded.border.mr-1.x-user-avatar src="https://avatars0.githubusercontent.com/u/#{@player.github_id}"
   span.mr-1 = @player.name
-  small = @player.rating
+  small.mr-1 = @player.rating
+  elixir:
+    classes = case Map.get(@player, :game_result) do
+      "waiting" -> nil
+      "won" -> "fa fa-trophy"
+      "lost" -> "lost"
+      "gave_up" -> "far fa-flag"
+      _ -> nil
+    end
+  = if classes do
+    span class=classes
