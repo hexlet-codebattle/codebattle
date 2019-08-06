@@ -133,4 +133,13 @@ defmodule Codebattle.GameProcess.Engine.Base do
     filtered_task = Enum.filter(tasks, fn x -> Map.get(x, :count) == min_task.count end)
     Enum.random(filtered_task)
   end
+
+  def start_timeout_timer(id, fsm) do
+    if fsm.data.timeout_seconds > 0 do
+      Codebattle.GameProcess.TimeoutServer.restart(
+        id,
+        fsm.data.timeout_seconds
+      )
+    end
+  end
 end

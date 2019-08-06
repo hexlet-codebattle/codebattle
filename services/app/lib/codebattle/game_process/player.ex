@@ -34,6 +34,7 @@ defmodule Codebattle.GameProcess.Player do
   defstruct id: "",
             editor_text: "module.exports = () => {\n\n};",
             editor_lang: "js",
+            lang: "js",
             game_result: :undefined,
             output: "",
             result: "{}",
@@ -80,7 +81,7 @@ defmodule Codebattle.GameProcess.Player do
     }
   end
 
-  def build(%User{} = user, params \\ %{}) do
+  def build(user, params \\ %{}) do
     player =
       case user.id do
         nil ->

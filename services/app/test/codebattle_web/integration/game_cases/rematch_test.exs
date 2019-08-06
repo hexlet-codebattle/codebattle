@@ -1,5 +1,5 @@
 defmodule Codebattle.GameCases.RematchTest do
-  use Codebattle.IntegrationCase
+  use Codebattle.IntegrationCase, async: false
 
   alias Codebattle.GameProcess.Server
   alias CodebattleWeb.UserSocket
