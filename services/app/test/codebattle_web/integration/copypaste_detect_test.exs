@@ -25,7 +25,7 @@ defmodule Codebattle.PlayGameTest do
        socket1: socket1,
        socket2: socket2,
        user1: user1,
-       user2: user2,
+       user2: user2
      }}
   end
 
@@ -36,7 +36,7 @@ defmodule Codebattle.PlayGameTest do
     socket2: socket2,
     user1: user1,
     user2: user2
-  } do 
+  } do
     with_mocks [
       {Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> {:ok, "asdf", "asdf"} end]}
     ] do
@@ -69,8 +69,6 @@ defmodule Codebattle.PlayGameTest do
       :timer.sleep(100)
 
       assert Codebattle.Repo.aggregate(Codebattle.Bot.Playbook, :count, :id) == play_books_count
-
-      
     end
   end
 
@@ -81,7 +79,7 @@ defmodule Codebattle.PlayGameTest do
     socket2: socket2,
     user1: user1,
     user2: user2
-  } do 
+  } do
     with_mocks [
       {Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> {:ok, "asdf", "asdf"} end]}
     ] do
@@ -114,9 +112,8 @@ defmodule Codebattle.PlayGameTest do
       Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text2, lang: "js"})
       :timer.sleep(1000)
 
-      assert Codebattle.Repo.aggregate(Codebattle.Bot.Playbook, :count, :id) == play_books_count + 1
-
-      
+      assert Codebattle.Repo.aggregate(Codebattle.Bot.Playbook, :count, :id) ==
+               play_books_count + 1
     end
   end
 end

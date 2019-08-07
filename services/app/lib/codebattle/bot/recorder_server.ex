@@ -106,7 +106,7 @@ defmodule Codebattle.Bot.RecorderServer do
   end
 
   def handle_cast({:store}, state) do
-  
+
     %Playbook{
       data: %{
         playbook: Enum.reverse(state.diff),
@@ -176,7 +176,7 @@ defmodule Codebattle.Bot.RecorderServer do
     filtered_state1 = Enum.reduce(state.diff, [], fn x, acc -> if Map.has_key?(x, :delta) do acc ++ x.delta else acc end end)
     |> Enum.filter(fn x -> Map.has_key?(x, :insert) end)
 
-    Enum.any?(filtered_state1, fn x -> 
+    Enum.any?(filtered_state1, fn x ->
     div(task_length, String.length(x.insert)) < 2
      end)
   end
