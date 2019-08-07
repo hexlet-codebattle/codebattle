@@ -176,7 +176,11 @@ defmodule Codebattle.Bot.RecorderServer do
     filtered_state1 = Enum.reduce(state.diff, [], fn x, acc -> if Map.has_key?(x, :delta) do acc ++ x.delta else acc end end)
     |> Enum.filter(fn x -> Map.has_key?(x, :insert) end)
 
-    Enum.any?(filtered_state1, fn x ->
+    [_h | tail] = Enum.reverse(filtered_state1)
+
+    tail
+    |> Enum.reverse
+    |> Enum.any?(fn x ->
     div(task_length, String.length(x.insert)) < 2
      end)
   end

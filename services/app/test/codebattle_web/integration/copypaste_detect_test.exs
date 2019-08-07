@@ -99,17 +99,18 @@ defmodule Codebattle.PlayGameTest do
       {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
       fsm = Server.fsm(game_id)
 
-      editor_text = "the"
-      editor_text1 = "the whole so"
-      editor_text2 = "the whole solution"
+      template = "def solution(a, b) return"
+      editor_text1 = "def solution(a, b) the  return"
+      editor_text2 = "def solution(a, b) the whole so  return"
+      solution = "def solution(a, b) the whole solution  return"
 
       play_books_count = Codebattle.Repo.aggregate(Codebattle.Bot.Playbook, :count, :id)
 
-      Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text})
+      Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: template})
       :timer.sleep(50)
       Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text1})
       Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text2})
-      Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text2, lang: "js"})
+      Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: solution, lang: "js"})
       :timer.sleep(1000)
 
       assert Codebattle.Repo.aggregate(Codebattle.Bot.Playbook, :count, :id) ==
