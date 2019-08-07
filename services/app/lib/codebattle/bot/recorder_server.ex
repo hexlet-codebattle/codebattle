@@ -9,6 +9,7 @@ defmodule Codebattle.Bot.RecorderServer do
 
   alias Codebattle.Repo
   alias Codebattle.Bot.Playbook
+  alias Codebattle.GameProcess.Play
 
   import Codebattle.GameProcess.FsmHelpers
 
@@ -105,10 +106,7 @@ defmodule Codebattle.Bot.RecorderServer do
   end
 
   def handle_cast({:store}, state) do
-<<<<<<< HEAD
-=======
   
->>>>>>> initial code of copypast detected
     %Playbook{
       data: %{
         playbook: Enum.reverse(state.diff),
@@ -127,10 +125,8 @@ defmodule Codebattle.Bot.RecorderServer do
   end
 
   def handle_cast({:check_and_store, editor_text}, state) do
-     IO.inspect(editor_text)
-     IO.inspect(is_copypast?(editor_text, state))
     if is_copypast?(editor_text, state) do
-      {:error, :copypast, state}
+      {:stop, :normal, state}
     else
       %Playbook{
         data: %{
@@ -174,12 +170,14 @@ defmodule Codebattle.Bot.RecorderServer do
     end
   end
 
-  def is_copypast?(editor_text, state) do # TODO: reduce editor_text and take only text nodes 
-     task_length = String.length(editor_text)
-     IO.inspect(editor_text);
-     filtered_state = Enum.filter(state.diff, fn x -> Map.has_key?(x, :delta) and Enum.length(x.delta) > 0 end)
-     |> Enum.map(fn x -> Enum.reduce(x.insert, "", fn acc, x -> Map.has(x, :insert) end) end)
-    IO.inspect(filtered_state);
-     Enum.any?(filtered_state, fn x -> div(task_length, x.delta) >= 2 end)
+  def is_copypast?(editor_text, state) do
+    task_length = String.length(editor_text)
+
+    filtered_state1 = Enum.reduce(state.diff, [], fn x, acc -> if Map.has_key?(x, :delta) do acc ++ x.delta else acc end end)
+    |> Enum.filter(fn x -> Map.has_key?(x, :insert) end)
+
+    Enum.any?(filtered_state1, fn x -> 
+    div(task_length, String.length(x.insert)) < 2
+     end)
   end
 end

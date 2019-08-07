@@ -100,15 +100,11 @@ defmodule Codebattle.GameProcess.Engine.Standard do
 
   def handle_won_game(game_id, winner, fsm, editor_text) do
     loser = FsmHelpers.get_opponent(fsm, winner.id)
-    check_result = RecorderServer.check_and_store_result(game_id, winner.id, editor_text)
-    case check_result do
-      {:stop, :normal, _} ->
-        store_game_result!(fsm, {winner, "won"}, {loser, "lost"})
-        ActiveGames.terminate_game(game_id)
-        :ok
-      {:error, :copypast, _} ->
-        :copypast
-    end
+    RecorderServer.check_and_store_result(game_id, winner.id, editor_text)
+
+    store_game_result!(fsm, {winner, "won"}, {loser, "lost"})
+    ActiveGames.terminate_game(game_id)
+    :ok
   end
 
   def handle_give_up(game_id, loser, fsm) do
