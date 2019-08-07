@@ -128,7 +128,7 @@ defmodule CodebattleWeb.GameChannel do
   def handle_in("rematch:accept_offer", _, socket) do
     game_id = get_game_id(socket)
 
-    case Play.create_rematch_game(game_id) do
+    case Play.rematch_accept_offer(game_id) do
       {:ok, game_id} ->
         broadcast!(socket, "rematch:redirect_to_new_game", %{game_id: game_id})
         {:noreply, socket}

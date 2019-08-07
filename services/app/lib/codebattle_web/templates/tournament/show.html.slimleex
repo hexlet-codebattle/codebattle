@@ -1,0 +1,70 @@
+- matches = @tournament.data.matches
+- players = @tournament.data.players
+- first_round_left_range = 0..7
+- second_round_left_range = 8..11
+- sm_final_range = 12..13
+- final = 14
+
+.text-center
+  h1 = @tournament.name
+  p  starts after #{@time.days} days #{@time.hours} hours #{@time.minutes} minutes #{@time.seconds} seconds
+
+.container-fluid
+  .row.justify-content-around
+    .col-auto.d-flex.align-items-center.justify-content-around.flex-column.bg-white.shadow-sm.py-4 style="max-width: 23%"
+      .d-flex.align-items-center.flex-column
+        h3 Participants
+        .list-group-item.d-flex.align-items-center.flex-column
+          = render "_players.html", players: players
+          .d-flex.align-items-center
+            = if Codebattle.Tournament.Helpers.is_waiting_partisipants?(@tournament) do
+              = if Codebattle.Tournament.Helpers.is_participant?(@tournament, @current_user.id) do
+                button.btn.btn-outline-danger.m-2[phx-click="leave"] Leave
+              - else
+                button.btn.btn-outline-info.m-2[phx-click="join"] Join
+              = if Codebattle.Tournament.Helpers.is_creator?(@tournament, @current_user.id) do
+                button.btn.btn-outline-success.m-2[phx-click="start"] Start
+            = if Codebattle.Tournament.Helpers.is_creator?(@tournament, @current_user.id) do
+              button.btn.btn-outline-danger.m-2[phx-click="cancel"] Cancel
+          = link "Back to tournaments", to: CodebattleWeb.Router.Helpers.tournament_path(@socket, :index), class: "btn btn-success mt-2"
+      .d-flex.flex-column.my-3.align-items-center
+        h3.text-center Chat
+        div.list-group-item.p-0 style="height: 300px"
+          ul.overflow-auto.pt-0.pl-4.pr-0 style=("word-break: break-all; height: 80%; top: 5px;")
+            div
+              span.ml-1 Please, be nice in chat
+            = for message <- @messages do
+              div
+                span.font-weight-bold = "#{message.user_name}:"
+                span.ml-1 = message.message
+          = form_for :message, "#", [phx_submit: :chat_message, class: "p-2 input-group input-group-sm position-absolute"],  fn f ->
+            = text_input f, :content, placeholder: "write your message here...", class: "form-control border-secondary"
+            .input-group-append
+              = submit "Send", class: "btn btn-outline-secondary"
+
+    .col-9.bg-white.shadow-sm.py-4
+      .d-flex.justify-content-around
+        h4 1/8
+        h4 1/4
+        h4 1/2
+        h4 Final
+      .bracket
+        .round
+          = Enum.map first_round_left_range,  fn index ->
+            .match
+              .match__content.bg-light
+                = render "_match.html", match:  Enum.at(matches, index)
+        .round
+          = Enum.map second_round_left_range,  fn index ->
+            .match
+              .match__content
+                = render "_match.html", match:  Enum.at(matches, index)
+        .round
+          = Enum.map sm_final_range, fn index ->
+            .match
+              .match__content
+                = render "_match.html", match:  Enum.at(matches, index)
+        .round
+          .match
+            .match__content
+              = render "_match.html", match:  Enum.at(matches, final)

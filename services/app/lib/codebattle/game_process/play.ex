@@ -22,6 +22,7 @@ defmodule Codebattle.GameProcess.Play do
 
   alias Codebattle.CodeCheck.Checker
   alias Codebattle.Bot.PlaybookAsyncRunner
+  alias CodebattleWeb.Notifications
 
   # get data interface
   def active_games do
@@ -99,120 +100,39 @@ defmodule Codebattle.GameProcess.Play do
   end
 
   # main api interface
-  def create_game(user, game_params) do
+
+  def create_game(user, game_params, engine_type \\ :standard) do
     player = Player.build(user, %{creator: true})
-    engine = get_engine(:standard)
+    engine = get_engine(engine_type)
 
-    case player_can_create_game?(player) do
-      :ok ->
-        {:ok, fsm} = engine.create_game(player, game_params)
-
-        Task.async(fn ->
-          CodebattleWeb.Endpoint.broadcast!("lobby", "game:new", %{
-            game: FsmHelpers.lobby_format(fsm)
-          })
-        end)
-
-        {:ok, FsmHelpers.get_game_id(fsm)}
-
-      {:error, reason} ->
-        {:error, reason}
+    case engine.create_game(player, game_params) do
+      {:ok, fsm} -> {:ok, FsmHelpers.get_game_id(fsm)}
+      {:error, reason} -> {:error, reason}
     end
   end
 
-  def create_bot_game(bot, game_params) do
-    engine = get_engine(:bot)
+  def create_tournament_game(tournament, players, timeout_seconds) do
+    engine = get_engine(:tournament)
 
-    case player_can_create_game?(bot) do
-      :ok ->
-        {:ok, fsm} = engine.create_game(bot, game_params)
-        {:ok, FsmHelpers.get_game_id(fsm)}
+    {:ok, fsm} =
+      engine.create_game(players, %{
+        tournament_id: tournament.id,
+        timeout_seconds: timeout_seconds
+      })
 
-      {:error, reason} ->
-        {:error, reason}
-    end
-  end
-
-  def create_rematch_game_with_bot(game_id) do
-    fsm = Play.get_fsm(game_id)
-    engine = get_engine(fsm)
-    task = FsmHelpers.get_task(fsm)
-    real_player = FsmHelpers.get_second_player(fsm) |> Player.rebuild(task)
-    level = FsmHelpers.get_level(fsm)
-    type = FsmHelpers.get_type(fsm)
-    timeout_seconds = FsmHelpers.get_timeout_seconds(fsm)
-    game_params = %{"level" => level, "type" => type, "timeout_seconds" => timeout_seconds}
-
-    bot = Codebattle.Bot.Builder.build_free_bot()
-
-    if bot === nil do
-      {:no_free_bot}
-    else
-      case create_bot_game(bot, game_params) do
-        {:ok, new_game_id} ->
-          {:ok, _bot_pid} = PlaybookAsyncRunner.create_server(%{game_id: new_game_id, bot: bot})
-          {:ok, new_fsm} = engine.join_game(new_game_id, real_player)
-
-          start_timeout_timer(new_game_id, new_fsm)
-
-          Task.async(fn ->
-            CodebattleWeb.Endpoint.broadcast("lobby", "game:new", %{
-              game: FsmHelpers.lobby_format(new_fsm)
-            })
-          end)
-
-          {:new_game, new_game_id}
-
-        {:error, reason} ->
-          {:error, reason}
-      end
-    end
+    {:ok, FsmHelpers.get_game_id(fsm)}
   end
 
   def rematch_send_offer(game_id, user_id) do
     fsm = get_fsm(game_id)
-
-    if FsmHelpers.bot_game?(fsm) do
-      create_rematch_game_with_bot(game_id)
-    else
-      {_response, new_fsm} =
-        Server.call_transition(game_id, :rematch_send_offer, %{player_id: user_id})
-
-      rematch_data = %{
-        rematchState: new_fsm.data.rematch_state,
-        rematchInitiatorId: new_fsm.data.rematch_initiator_id
-      }
-
-      {:rematch_offer, rematch_data}
-    end
+    engine = get_engine(fsm)
+    engine.handle_rematch_offer_send(fsm, user_id)
   end
 
-  def create_rematch_game(game_id) do
-    ActiveGames.terminate_game(game_id)
-
-    fsm = Play.get_fsm(game_id)
-    task = FsmHelpers.get_task(fsm)
-    first_player = FsmHelpers.get_first_player(fsm) |> Player.rebuild(task)
-    second_player = FsmHelpers.get_second_player(fsm) |> Player.rebuild(task)
-    level = FsmHelpers.get_level(fsm)
-    type = FsmHelpers.get_type(fsm)
-    timeout_seconds = FsmHelpers.get_timeout_seconds(fsm)
-    game_params = %{"level" => level, "type" => type, "timeout_seconds" => timeout_seconds}
-
+  def rematch_accept_offer(game_id) do
+    fsm = get_fsm(game_id)
     engine = get_engine(fsm)
-    {:ok, new_fsm} = engine.create_game(first_player, game_params)
-    new_game_id = FsmHelpers.get_game_id(new_fsm)
-    {:ok, new_fsm} = engine.join_game(new_game_id, second_player)
-
-    start_timeout_timer(new_game_id, new_fsm)
-
-    Task.async(fn ->
-      CodebattleWeb.Endpoint.broadcast("lobby", "game:new", %{
-        game: FsmHelpers.lobby_format(new_fsm)
-      })
-    end)
-
-    {:ok, new_game_id}
+    engine.handle_accept_offer(fsm)
   end
 
   def rematch_reject(game_id) do
@@ -226,25 +146,8 @@ defmodule Codebattle.GameProcess.Play do
     engine = get_engine(fsm)
 
     case player_can_join_game?(player) do
-      :ok ->
-        case engine.join_game(id, player) do
-          {:ok, fsm} ->
-            Task.async(fn ->
-              CodebattleWeb.Endpoint.broadcast!("lobby", "game:update", %{
-                game: FsmHelpers.lobby_format(fsm)
-              })
-            end)
-
-            start_timeout_timer(id, fsm)
-
-            {:ok, fsm}
-
-          {:error, reason} ->
-            {:error, reason}
-        end
-
-      {:error, reason} ->
-        {:error, reason}
+      :ok -> engine.join_game(id, player)
+      {:error, reason} -> {:error, reason}
     end
   end
 
@@ -253,8 +156,9 @@ defmodule Codebattle.GameProcess.Play do
       Logger.info("Timeout triggered for game_id: #{id}")
       Server.call_transition(id, :timeout, %{})
       ActiveGames.terminate_game(id)
-      CodebattleWeb.Notifications.game_timeout(id)
-      CodebattleWeb.Notifications.lobby_game_cancel(id)
+      Notifications.game_timeout(id)
+      Notifications.lobby_game_cancel(id)
+      Notifications.notify_tournament("game:cancel", get_fsm(id), %{game_id: id})
 
       id
       |> get_game
@@ -275,7 +179,7 @@ defmodule Codebattle.GameProcess.Play do
       :ok ->
         ActiveGames.terminate_game(id)
         GlobalSupervisor.terminate_game(id)
-        CodebattleWeb.Notifications.lobby_game_cancel(id)
+        Notifications.lobby_game_cancel(id)
 
         id
         |> get_game
@@ -355,6 +259,7 @@ defmodule Codebattle.GameProcess.Play do
 
   defp get_engine(:standard), do: Engine.Standard
   defp get_engine(:bot), do: Engine.Bot
+  defp get_engine(:tournament), do: Engine.Tournament
 
   defp get_engine(fsm) do
     case FsmHelpers.bot_game?(fsm) do
@@ -378,15 +283,6 @@ defmodule Codebattle.GameProcess.Play do
 
     if is_lang_changed do
       engine.update_lang(id, player, editor_lang)
-    end
-  end
-
-  defp start_timeout_timer(id, fsm) do
-    if fsm.data.timeout_seconds > 0 do
-      Codebattle.GameProcess.TimeoutServer.restart(
-        id,
-        fsm.data.timeout_seconds
-      )
     end
   end
 end

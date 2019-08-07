@@ -105,4 +105,41 @@ defmodule Codebattle.GameProcess.Engine.Base do
   def create_user_game!(params) do
     Repo.insert!(UserGame.changeset(%UserGame{}, params))
   end
+
+  def get_random_task(level, user_ids) do
+    qry = """
+    WITH game_tasks AS (SELECT count(games.id) as count, games.task_id FROM games
+    INNER JOIN "user_games" ON "user_games"."game_id" = "games"."id"
+    WHERE "games"."level" = $1 AND "user_games"."user_id" IN ($2, $3)
+    GROUP BY "games"."task_id")
+    SELECT "tasks".*, "game_tasks".* FROM tasks
+    LEFT JOIN game_tasks ON "tasks"."id" = "game_tasks"."task_id"
+    WHERE "tasks"."level" = $1
+    ORDER BY "game_tasks"."count" NULLS FIRST
+    LIMIT 30
+    """
+
+    res = Ecto.Adapters.SQL.query!(Repo, qry, [level, Enum.at(user_ids, 0), Enum.at(user_ids, 1)])
+
+    cols = Enum.map(res.columns, &String.to_atom(&1))
+
+    tasks =
+      Enum.map(res.rows, fn row ->
+        struct(Codebattle.Task, Enum.zip(cols, row))
+      end)
+
+    min_task = List.first(tasks)
+
+    filtered_task = Enum.filter(tasks, fn x -> Map.get(x, :count) == min_task.count end)
+    Enum.random(filtered_task)
+  end
+
+  def start_timeout_timer(id, fsm) do
+    if fsm.data.timeout_seconds > 0 do
+      Codebattle.GameProcess.TimeoutServer.restart(
+        id,
+        fsm.data.timeout_seconds
+      )
+    end
+  end
 end

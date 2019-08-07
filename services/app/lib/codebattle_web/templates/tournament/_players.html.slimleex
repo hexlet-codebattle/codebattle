@@ -1,15 +1,9 @@
-h3 Participants
 = if !Enum.empty?(@players) do
   .tournament-users
     = for {player, index} <- Enum.with_index(@players) do
-      .d-inline.align-middle.mt-2
-        a href="/users/#{player.id}"
-          span = index
-          img.ml-2.attachment.rounded.border.mr-1.x-user-avatar src="https://avatars0.githubusercontent.com/u/#{player.github_id}"
-          span.mr-1 = player.name
-          small = player.rating
+      .d-flex.align-middle.my-3
+        div = index
+        = render "_player.html", player: player
 - else
   h5 no participans yet
 
-button.btn.btn-outline-success.mt-3[phx-click="join"] Join
-button.btn.btn-outline-danger.mt-3[phx-click="leave"] Leave

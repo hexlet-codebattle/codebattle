@@ -1,5 +1,5 @@
 defmodule Codebattleweb.GameControllerTest do
-  use CodebattleWeb.ConnCase, async: true
+  use CodebattleWeb.ConnCase, async: false
 
   import Ecto.Query, warn: false
   alias Codebattle.{Repo, Game}

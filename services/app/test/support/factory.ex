@@ -45,7 +45,14 @@ defmodule CodebattleWeb.Factory do
   end
 
   def tournament_factory do
-    %Codebattle.Tournament{name: "name", players_count: 16}
+    %Codebattle.Tournament{
+      name: "name",
+      step: 0,
+      players_count: 16,
+      starts_at: NaiveDateTime.utc_now(),
+      creator_id: 1,
+      data: %{players: [], matches: []}
+    }
   end
 
   def auth_factory do

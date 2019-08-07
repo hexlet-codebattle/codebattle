@@ -1,5 +1,6 @@
 defmodule Codebattle.GameProcess.Engine.Standard do
   import Codebattle.GameProcess.Engine.Base
+  import Codebattle.GameProcess.Auth
 
   alias Codebattle.GameProcess.{
     Play,
@@ -14,44 +15,55 @@ defmodule Codebattle.GameProcess.Engine.Standard do
 
   alias Codebattle.{Repo, Game}
   alias Codebattle.Bot.RecorderServer
+  alias CodebattleWeb.Notifications
 
-  def create_game(player, %{
-        "level" => level,
-        "type" => type,
-        "timeout_seconds" => timeout_seconds
-      }) do
-    game =
-      Repo.insert!(%Game{
-        state: "waiting_opponent",
-        level: level,
-        type: type
-      })
+  def create_game(player, params) do
+    %{"level" => level, "type" => type, "timeout_seconds" => timeout_seconds} = params
 
-    fsm =
-      Fsm.new()
-      |> Fsm.create(%{
-        player: player,
-        game_id: game.id,
-        level: level,
-        type: type,
-        starts_at: TimeHelper.utc_now(),
-        timeout_seconds: timeout_seconds
-      })
+    case player_can_create_game?(player) do
+      :ok ->
+        game =
+          Repo.insert!(%Game{
+            state: "waiting_opponent",
+            level: level,
+            type: type
+          })
 
-    ActiveGames.create_game(game.id, fsm)
-    {:ok, _} = GlobalSupervisor.start_game(game.id, fsm)
+        fsm =
+          Fsm.new()
+          |> Fsm.create(%{
+            players: [player],
+            game_id: game.id,
+            level: level,
+            type: type,
+            starts_at: TimeHelper.utc_now(),
+            timeout_seconds: timeout_seconds
+          })
 
-    case type do
-      "public" ->
-        Task.async(fn ->
-          Notifier.call(:game_created, %{level: level, game: game, player: player})
-        end)
+        ActiveGames.create_game(game.id, fsm)
+        {:ok, _} = GlobalSupervisor.start_game(game.id, fsm)
 
-      _ ->
-        nil
+        case type do
+          "public" ->
+            Task.async(fn ->
+              Notifier.call(:game_created, %{level: level, game: game, player: player})
+            end)
+
+            Task.async(fn ->
+              CodebattleWeb.Endpoint.broadcast!("lobby", "game:new", %{
+                game: FsmHelpers.lobby_format(fsm)
+              })
+            end)
+
+          _ ->
+            nil
+        end
+
+        {:ok, fsm}
+
+      {:error, reason} ->
+        {:error, reason}
     end
-
-    {:ok, fsm}
   end
 
   def join_game(game_id, second_player) do
@@ -83,6 +95,14 @@ defmodule Codebattle.GameProcess.Engine.Standard do
           })
         end)
 
+        Task.async(fn ->
+          CodebattleWeb.Endpoint.broadcast!("lobby", "game:update", %{
+            game: FsmHelpers.lobby_format(fsm)
+          })
+        end)
+
+        start_timeout_timer(game_id, fsm)
+
         {:ok, fsm}
 
       {:error, reason, _fsm} ->
@@ -104,6 +124,13 @@ defmodule Codebattle.GameProcess.Engine.Standard do
 
     store_game_result!(fsm, {winner, "won"}, {loser, "lost"})
     ActiveGames.terminate_game(game_id)
+
+    Notifications.notify_tournament("game:finished", fsm, %{
+      game_id: game_id,
+      winner: {winner.id, "won"},
+      loser: {loser.id, "lost"}
+    })
+
     :ok
   end
 
@@ -111,36 +138,53 @@ defmodule Codebattle.GameProcess.Engine.Standard do
     winner = FsmHelpers.get_opponent(fsm, loser.id)
     store_game_result!(fsm, {winner, "won"}, {loser, "gave_up"})
     ActiveGames.terminate_game(game_id)
+
+    Notifications.notify_tournament("game:finished", fsm, %{
+      game_id: game_id,
+      winner: {winner.id, "won"},
+      loser: {loser.id, "gave_up"}
+    })
   end
 
-  defp get_random_task(level, user_ids) do
-    qry = """
-    WITH game_tasks AS (SELECT count(games.id) as count, games.task_id FROM games
-    INNER JOIN "user_games" ON "user_games"."game_id" = "games"."id"
-    WHERE "games"."level" = $1 AND "user_games"."user_id" IN ($2, $3)
-    GROUP BY "games"."task_id")
-    SELECT "tasks".*, "game_tasks".* FROM tasks
-    LEFT JOIN game_tasks ON "tasks"."id" = "game_tasks"."task_id"
-    WHERE "tasks"."level" = $1
-    ORDER BY "game_tasks"."count" NULLS FIRST
-    LIMIT 30
-    """
+  def handle_rematch_offer_send(fsm, user_id) do
+    game_id = FsmHelpers.get_game_id(fsm)
 
-    # TODO: get list and then get random in elixir
+    {_response, new_fsm} =
+      Server.call_transition(game_id, :rematch_send_offer, %{player_id: user_id})
 
-    res = Ecto.Adapters.SQL.query!(Repo, qry, [level, Enum.at(user_ids, 0), Enum.at(user_ids, 1)])
+    rematch_data = %{
+      rematchState: new_fsm.data.rematch_state,
+      rematchInitiatorId: new_fsm.data.rematch_initiator_id
+    }
 
-    cols = Enum.map(res.columns, &String.to_atom(&1))
+    {:rematch_offer, rematch_data}
+  end
 
-    tasks =
-      Enum.map(res.rows, fn row ->
-        struct(Codebattle.Task, Enum.zip(cols, row))
-      end)
+  def handle_accept_offer(fsm) do
+    game_id = FsmHelpers.get_game_id(fsm)
+    ActiveGames.terminate_game(game_id)
 
-    min_task = List.first(tasks)
+    task = FsmHelpers.get_task(fsm)
+    first_player = FsmHelpers.get_first_player(fsm) |> Player.rebuild(task)
+    second_player = FsmHelpers.get_second_player(fsm) |> Player.rebuild(task)
+    level = FsmHelpers.get_level(fsm)
+    type = FsmHelpers.get_type(fsm)
+    timeout_seconds = FsmHelpers.get_timeout_seconds(fsm)
+    game_params = %{"level" => level, "type" => type, "timeout_seconds" => timeout_seconds}
 
-    filtered_task = Enum.filter(tasks, fn x -> Map.get(x, :count) == min_task.count end)
-    Enum.random(filtered_task)
+    {:ok, new_fsm} = create_game(first_player, game_params)
+    new_game_id = FsmHelpers.get_game_id(new_fsm)
+    {:ok, new_fsm} = join_game(new_game_id, second_player)
+
+    start_timeout_timer(new_game_id, new_fsm)
+
+    Task.async(fn ->
+      CodebattleWeb.Endpoint.broadcast("lobby", "game:new", %{
+        game: FsmHelpers.lobby_format(new_fsm)
+      })
+    end)
+
+    {:ok, new_game_id}
   end
 
   # defp update_game!(game_id, params) do

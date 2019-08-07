@@ -48,7 +48,8 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
 
       Codebattle.Bot.PlaybookAsyncRunner.run!(%{
         game_id: game_id,
-        task_id: task.id
+        task_id: task.id,
+        bot_id: bot.id
       })
 
       fsm = Server.fsm(game_id)

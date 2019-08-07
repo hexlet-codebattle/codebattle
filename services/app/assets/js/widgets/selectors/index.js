@@ -148,18 +148,7 @@ export const editorsModeSelector = currentUserId => (state) => {
 
 export const gameListLoadedSelector = state => state.gameList.loaded;
 export const gameListNewGameSelector = state => state.gameList.newGame;
-export const activeGamesSelector = (state) => {
-  const currentUserId = currentUserIdSelector(state);
-  const filterPrivateGamesFunc = ({ users, game_info: { state: gameStatus, type: gameType } }) => {
-    if (gameStatus !== GameStatusCodes.waitingOpponent || gameType !== 'private') {
-      return true;
-    }
-    return _.some(users, { id: currentUserId });
-  };
-  const activeGames = _.filter(state.gameList.activeGames, filterPrivateGamesFunc);
-
-  return activeGames || [];
-};
+export const activeGamesSelector = state => state.gameList.activeGames;
 
 export const completedGamesSelector = state => state.gameList.completedGames || [];
 

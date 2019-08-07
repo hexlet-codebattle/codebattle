@@ -54,6 +54,10 @@ defmodule Codebattle.GameProcess.FsmHelpers do
     fsm.data.game_id
   end
 
+  def get_tournament_id(fsm) do
+    fsm.data.tournament_id
+  end
+
   def get_starts_at(fsm) do
     fsm.data.starts_at
   end
@@ -122,7 +126,7 @@ defmodule Codebattle.GameProcess.FsmHelpers do
   end
 
   def bot_game?(fsm) do
-    fsm.data.bots
+    fsm.data.is_bot_game
   end
 
   def lobby_format(fsm) do

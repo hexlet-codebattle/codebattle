@@ -13,6 +13,10 @@ defmodule CodebattleWeb.LobbyChannel do
       |> Enum.map(fn {game_id, users, game_info} ->
         %{game_id: game_id, players: Map.values(users), game_info: game_info}
       end)
+      |> Enum.filter(fn game ->
+        Enum.any?(game.players, fn player -> player.id === socket.assigns.user_id end) or
+        game.game_info.type === "public"
+      end)
 
     completed_games = Enum.map(Play.completed_games(), &Play.get_completed_game_info/1)
 

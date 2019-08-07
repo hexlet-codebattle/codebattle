@@ -30,3 +30,4 @@ timeout =
   end
 
 config :codebattle, code_check_timeout: timeout
+config :codebattle, tournament_match_timeout: 1

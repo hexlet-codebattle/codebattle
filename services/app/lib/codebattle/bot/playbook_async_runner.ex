@@ -13,7 +13,9 @@ defmodule Codebattle.Bot.PlaybookAsyncRunner do
   # Starts GenServer for bot for every game. When GenServer receives :run, bot starts play
   def create_server(%{game_id: game_id, bot: bot}) do
     try do
-      GenServer.start(__MODULE__, %{game_id: game_id, bot: bot}, name: server_name(game_id))
+      GenServer.start(__MODULE__, %{game_id: game_id, bot: bot},
+        name: server_name(game_id, bot.id)
+      )
     rescue
       e in FunctionClauseError ->
         e
@@ -23,7 +25,7 @@ defmodule Codebattle.Bot.PlaybookAsyncRunner do
 
   # Bot strats play and chat
   def run!(params) do
-    GenServer.cast(server_name(params.game_id), {:run, params})
+    GenServer.cast(server_name(params.game_id, params.bot_id), {:run, params})
   end
 
   # SERVER
@@ -94,12 +96,12 @@ defmodule Codebattle.Bot.PlaybookAsyncRunner do
     {:noreply, state}
   end
 
-  defp server_name(game_id) do
-    {:via, :gproc, game_key(game_id)}
+  defp server_name(game_id, bot_id) do
+    {:via, :gproc, game_key(game_id, bot_id)}
   end
 
-  defp game_key(game_id) do
-    {:n, :l, {:bot_player, "#{game_id}"}}
+  defp game_key(game_id, bot_id) do
+    {:n, :l, {:bot_player, "#{game_id}__#{bot_id}"}}
   end
 
   defp bot_token(bot_id) do
