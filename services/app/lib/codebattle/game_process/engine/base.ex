@@ -51,7 +51,7 @@ defmodule Codebattle.GameProcess.Engine.Base do
     update_user!(player.id, %{lang: editor_lang})
   end
 
-  def store_game_result_async!(fsm, {winner, winner_status}, {loser, loser_status}) do
+  def store_game_result!(fsm, {winner, winner_status}, {loser, loser_status}) do
     level = FsmHelpers.get_level(fsm)
     game_id = FsmHelpers.get_game_id(fsm)
     {new_winner_rating, new_loser_rating} = Elo.calc_elo(winner.rating, loser.rating, level)

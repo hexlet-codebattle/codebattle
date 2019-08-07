@@ -242,8 +242,11 @@ defmodule Codebattle.GameProcess.Play do
 
           {:playing, {:ok, result, output}} ->
             {_response, fsm} = Server.call_transition(id, :complete, %{id: player.id})
-            engine.handle_won_game(id, player, fsm)
-            {:ok, fsm, result, output}
+
+            case engine.handle_won_game(id, player, fsm, editor_text) do
+              :ok -> {:ok, fsm, result, output}
+              :copypast -> {:copypast, result, output} 
+            end
 
           {_, result} ->
             result

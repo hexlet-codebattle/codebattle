@@ -9,6 +9,7 @@ defmodule Codebattle.Bot.RecorderServer do
 
   alias Codebattle.Repo
   alias Codebattle.Bot.Playbook
+  alias Codebattle.GameProcess.Play
 
   import Codebattle.GameProcess.FsmHelpers
 
@@ -34,6 +35,16 @@ defmodule Codebattle.Bot.RecorderServer do
       GenServer.cast(server_name(game_id, user_id), {:update_lang, lang})
     rescue
       e in FunctionClauseError -> e
+    end
+  end
+
+  def check_and_store_result(game_id, user_id, editor_text) do
+    try do
+      GenServer.cast(server_name(game_id, user_id), {:check_and_store, editor_text})
+    rescue
+      e in FunctionClauseError ->
+        e
+        Logger.error(inspect(e))
     end
   end
 
@@ -95,12 +106,12 @@ defmodule Codebattle.Bot.RecorderServer do
   end
 
   def handle_cast({:store}, state) do
+
     %Playbook{
       data: %{
         playbook: Enum.reverse(state.diff),
         meta: %{
           total_time: calc_total_time(state.diff),
-          total_steps: Enum.count(state.diff)
         }
       },
       lang: to_string(state.lang),
@@ -111,6 +122,29 @@ defmodule Codebattle.Bot.RecorderServer do
     |> Repo.insert()
 
     {:stop, :normal, state}
+  end
+
+  def handle_cast({:check_and_store, editor_text}, state) do
+    if is_copypast?(editor_text, state) do
+      {:stop, :normal, state}
+    else
+      %Playbook{
+        data: %{
+          playbook: Enum.reverse(state.diff),
+          meta: %{
+            total_time: calc_total_time(state.diff),
+          }
+        },
+        lang: to_string(state.lang),
+        task_id: state.task_id,
+        user_id: state.user_id,
+        game_id: state.game_id |> to_string |> Integer.parse() |> elem(0)
+      }
+      |> Repo.insert()
+
+      {:stop, :normal, state}
+    end
+
   end
 
   # HELPERS
@@ -134,5 +168,16 @@ defmodule Codebattle.Bot.RecorderServer do
     else
       step_time
     end
+  end
+
+  def is_copypast?(editor_text, state) do
+    task_length = String.length(editor_text)
+
+    filtered_state1 = Enum.reduce(state.diff, [], fn x, acc -> if Map.has_key?(x, :delta) do acc ++ x.delta else acc end end)
+    |> Enum.filter(fn x -> Map.has_key?(x, :insert) end)
+
+    Enum.any?(filtered_state1, fn x ->
+    div(task_length, String.length(x.insert)) < 2
+     end)
   end
 end

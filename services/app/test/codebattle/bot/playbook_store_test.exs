@@ -63,8 +63,8 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
 
       editor_text1 = "t"
       editor_text2 = "te"
-      editor_text3 = "tesghjkhkjh"
-      editor_text4 = "flksjdf"
+      editor_text3 = "tes"
+      editor_text4 = "testf"
 
       {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
       {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)

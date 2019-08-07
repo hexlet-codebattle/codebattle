@@ -118,11 +118,11 @@ defmodule Codebattle.GameProcess.Engine.Standard do
     update_fsm_lang(game_id, player, editor_lang)
   end
 
-  def handle_won_game(game_id, winner, fsm) do
+  def handle_won_game(game_id, winner, fsm, editor_text) do
     loser = FsmHelpers.get_opponent(fsm, winner.id)
+    RecorderServer.check_and_store_result(game_id, winner.id, editor_text)
 
-    store_game_result_async!(fsm, {winner, "won"}, {loser, "lost"})
-    :ok = RecorderServer.store(game_id, winner.id)
+    store_game_result!(fsm, {winner, "won"}, {loser, "lost"})
     ActiveGames.terminate_game(game_id)
 
     Notifications.notify_tournament("game:finished", fsm, %{
@@ -130,11 +130,13 @@ defmodule Codebattle.GameProcess.Engine.Standard do
       winner: {winner.id, "won"},
       loser: {loser.id, "lost"}
     })
+
+    :ok
   end
 
   def handle_give_up(game_id, loser, fsm) do
     winner = FsmHelpers.get_opponent(fsm, loser.id)
-    store_game_result_async!(fsm, {winner, "won"}, {loser, "gave_up"})
+    store_game_result!(fsm, {winner, "won"}, {loser, "gave_up"})
     ActiveGames.terminate_game(game_id)
 
     Notifications.notify_tournament("game:finished", fsm, %{

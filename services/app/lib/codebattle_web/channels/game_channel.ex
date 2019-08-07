@@ -237,6 +237,19 @@ defmodule CodebattleWeb.GameChannel do
         })
 
         {:noreply, socket}
+      
+      {:copypast, result, output} ->
+        push(socket, "user:copypast_detected", %{
+          user_id: user.id
+        })
+
+        broadcast_from!(socket, "output:data", %{
+          user_id: user.id,
+          result: result,
+          output: output
+        })
+
+        {:noreply, socket}
 
       {:ok, result, output} ->
         push(socket, "user:check_result", %{
@@ -260,6 +273,7 @@ defmodule CodebattleWeb.GameChannel do
 
       {:error, reason} ->
         {:reply, {:error, %{reason: reason}}, socket}
+
     end
   end
 
