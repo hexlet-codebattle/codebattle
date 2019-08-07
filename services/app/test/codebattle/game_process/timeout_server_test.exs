@@ -8,7 +8,7 @@ defmodule Codebattle.GameProcess.TimeoutServerTest do
   @game2_id 101
 
   test "starts server" do
-    assert {:ok, server_pid} = TimeoutServer.start_link(@game_id)
+    assert TimeoutServer.start_link(@game_id)
   end
 
   test "calls Play.timeout when it's time" do
