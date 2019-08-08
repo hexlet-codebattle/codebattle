@@ -4,11 +4,21 @@ defmodule Codebattle.Chat.Server do
   end
 
   def join_chat(id, user) do
-    GenServer.call(chat_key(id), {:join, user})
+    try do
+      GenServer.call(chat_key(id), {:join, user})
+    catch
+      :exit, reason ->
+        []
+    end
   end
 
   def leave_chat(id, user) do
-    GenServer.call(chat_key(id), {:leave, user})
+    try do
+      GenServer.call(chat_key(id), {:leave, user})
+    catch
+      :exit, reason ->
+        []
+    end
   end
 
   def get_users(id) do
