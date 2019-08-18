@@ -167,7 +167,6 @@ defmodule Codebattle.GameProcess.Engine.Bot do
     player = FsmHelpers.get_second_player(fsm)
     game_level = FsmHelpers.get_level(fsm)
 
-    # time in seconds for 1200 rating
     low_level_time = %{
       "elementary" => 60 * 3,
       "easy" => 60 * 5,
@@ -175,7 +174,6 @@ defmodule Codebattle.GameProcess.Engine.Bot do
       "hard" => 60 * 9
     }
 
-    # time in seconds for 1400 rating
     high_level_time = %{
       "elementary" => 60,
       "easy" => 60 * 3,
@@ -188,7 +186,7 @@ defmodule Codebattle.GameProcess.Engine.Bot do
     # f(x) = k/(x  + b)
 
     x1 = 1400
-    x2 = 1200
+    x2 = 800
     y1 = high_level_time[game_level]
     y2 = low_level_time[game_level]
     k = y1 * (x1 * y2 - x2 * y2) / (y2 - y1)
