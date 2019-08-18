@@ -61,7 +61,7 @@ config :codebattle, Codebattle.Bot.PlaybookPlayerRunner, timeout: 2_000
 
 bot_limit =
   case System.get_env("CODEBATTLE_BOT_TIME_SLEEP_LIMIT") do
-    nil -> 30_000
+    nil -> 7_000
     x -> Integer.parse(x) |> elem(0)
   end
 
