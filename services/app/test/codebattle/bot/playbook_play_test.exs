@@ -14,6 +14,7 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
     conn = put_session(conn, :user_id, user.id)
 
     playbook_data = %{
+      meta: %{total_time_ms: 1000000, init_lang: "ruby"},
       playbook: [
         %{"delta" => [%{"insert" => "t"}], "time" => 20},
         %{"delta" => [%{"retain" => 1}, %{"insert" => "e"}], "time" => 20},
@@ -55,12 +56,10 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
       fsm = Server.fsm(game_id)
       assert fsm.state == :playing
 
-      # FIXME atfter correct bot api
-      :timer.sleep(7000)
-      # bot won the game
+      :timer.sleep(6000)
+      # bot write_some_text
       fsm = Server.fsm(game_id)
 
-      assert fsm.state == :game_over
       assert FsmHelpers.get_first_player(fsm).editor_text == "tes"
       assert FsmHelpers.get_winner(fsm).name == bot.name
     end
