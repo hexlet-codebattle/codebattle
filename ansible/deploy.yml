@@ -1,15 +1,4 @@
 ---
-- hosts: all
-  gather_facts: no
-  vars_prompt:
-    - name: "codebattle_image_tag"
-      prompt: "Codebattle image tag"
-      private: no
-
-  tasks:
-    - set_fact: codebattle_image_tag={{ codebattle_image_tag }}
-      tags: always
-
 - hosts: webservers
   gather_facts: no
 
@@ -21,16 +10,16 @@
 
     - name: download app image
       docker_image:
-        name: "{{ codebattle_app_image_name }}:{{ codebattle_image_tag }}"
+        name: "{{ codebattle_app_image_name }}:latest"
         force: yes
 
     - name: run migrations
       docker_container:
         recreate: yes
-        # detach: no
+        detach: no
         name: codebattle-migrations
         command: "mix ecto.migrate"
-        image: "{{ codebattle_app_image_name }}:{{ codebattle_image_tag }}"
+        image: "{{ codebattle_app_image_name }}:latest"
         network_mode: host
         state: started
         env_file: "{{ codebattle_env_file }}"
@@ -46,7 +35,7 @@
       docker_container:
         recreate: yes
         name: codebattle-web
-        image: "{{ codebattle_app_image_name }}:{{ codebattle_image_tag }}"
+        image: "{{ codebattle_app_image_name }}:latest"
         state: started
         network_mode: host
         restart_policy: always

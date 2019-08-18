@@ -13,5 +13,8 @@ production-build-and-push:
 	docker build -t codebattle/app --file services/app/Dockerfile.prod services/app/
 	docker push codebattle/app
 
-production-upload-langs:
-	ansible-playbook ansible/langs.yml -i ansible/production -u $U -vv
+production-pull-dockers:
+	ansible-playbook ansible/pull_dockers.yml -i ansible/production -u $U -vv
+
+production-upload-asserts:
+	ansible-playbook ansible/upload_asserts.yml -i ansible/production -u $U -vv
