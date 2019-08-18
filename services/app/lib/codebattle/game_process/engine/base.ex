@@ -114,7 +114,7 @@ defmodule Codebattle.GameProcess.Engine.Base do
     GROUP BY "games"."task_id")
     SELECT "tasks".*, "game_tasks".* FROM tasks
     LEFT JOIN game_tasks ON "tasks"."id" = "game_tasks"."task_id"
-    WHERE "tasks"."level" = $1
+    WHERE "tasks"."level" = $1 AND "tasks"."disabled" = 'f'
     ORDER BY "game_tasks"."count" NULLS FIRST
     LIMIT 30
     """

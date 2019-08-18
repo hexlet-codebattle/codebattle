@@ -149,6 +149,7 @@ defmodule Codebattle.GameProcess.Engine.Bot do
         order_by: fragment("RANDOM()"),
         preload: [:task],
         where: task.level == ^level,
+        where: task.disabled == false,
         limit: 1
       )
 

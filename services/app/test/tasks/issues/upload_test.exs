@@ -75,7 +75,9 @@ defmodule Tasks.Issues.UploadTest do
     path = Path.join(@root_dir, "test/support/fixtures/issues_with_disabled")
     Mix.Tasks.Issues.Upload.run([path])
 
-    assert Repo.all(Task) |> Enum.count() == 1
+    assert Repo.all(Task) |> Enum.count() == 2
+
+    Repo.all(Task.visible(Task)) |> Enum.count() == 1
   end
 
   test "update fields", %{path: path} do

@@ -32,26 +32,25 @@ defmodule Mix.Tasks.Issues.Upload do
     Enum.each(issue_names, fn issue_name ->
       issue_info = YamlElixir.read_from_file!(Path.join(path, "#{issue_name}.yml"))
 
-      if !issue_info["disabled"] do
-        asserts = File.read!(Path.join(path, "#{issue_name}.jsons"))
-        signature = Map.get(issue_info, "signature")
+      asserts = File.read!(Path.join(path, "#{issue_name}.jsons"))
+      signature = Map.get(issue_info, "signature")
 
-        params = %{
-          name: issue_name,
-          description: Map.get(issue_info, "description"),
-          level: Map.get(issue_info, "level"),
-          input_signature: Map.get(signature, "input"),
-          output_signature: Map.get(signature, "output"),
-          asserts: asserts
-        }
+      params = %{
+        name: issue_name,
+        disabled: Map.get(issue_info, "disabled"),
+        description: Map.get(issue_info, "description"),
+        level: Map.get(issue_info, "level"),
+        input_signature: Map.get(signature, "input"),
+        output_signature: Map.get(signature, "output"),
+        asserts: asserts
+      }
 
-        case Task |> Repo.get_by(name: issue_name) do
-          nil -> %Task{}
-          task -> task
-        end
-        |> Task.changeset(params)
-        |> Repo.insert_or_update()
+      case Task |> Repo.get_by(name: issue_name) do
+        nil -> %Task{}
+        task -> task
       end
+      |> Task.changeset(params)
+      |> Repo.insert_or_update()
     end)
   end
 end

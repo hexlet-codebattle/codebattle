@@ -3,6 +3,7 @@ defmodule Codebattle.Task do
 
   use Ecto.Schema
   import Ecto.Changeset
+  import Ecto.Query
 
   @derive {Poison.Encoder, only: [:id, :name, :level, :description]}
 
@@ -13,6 +14,7 @@ defmodule Codebattle.Task do
     field(:input_signature, {:array, :map})
     field(:output_signature, :map)
     field(:asserts, :string)
+    field(:disabled, :boolean)
     field(:count, :integer, virtual: true)
     field(:task_id, :integer, virtual: true)
 
@@ -24,5 +26,9 @@ defmodule Codebattle.Task do
     |> cast(params, [:description, :name, :level, :input_signature, :output_signature, :asserts])
     |> validate_required([:description, :name, :level, :asserts])
     |> unique_constraint(:name)
+  end
+
+  def visible(query) do
+    from t in query, where: t.disabled == false
   end
 end
