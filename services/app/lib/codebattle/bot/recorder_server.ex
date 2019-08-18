@@ -48,15 +48,6 @@ defmodule Codebattle.Bot.RecorderServer do
     end
   end
 
-  def store(game_id, user_id) do
-    try do
-      GenServer.cast(server_name(game_id, user_id), {:store})
-    rescue
-      e in FunctionClauseError ->
-        Logger.error(inspect(e))
-    end
-  end
-
   def recorder_pid(game_id, user_id) do
     :gproc.where(recorder_key(game_id, user_id))
   end
@@ -69,7 +60,8 @@ defmodule Codebattle.Bot.RecorderServer do
        task_id: get_task(fsm).id,
        user_id: user_id,
        delta: TextDelta.new([]),
-       lang: "js",
+       init_lang: get_player(fsm, user_id).lang,
+       lang: get_player(fsm, user_id).lang,
        time: nil,
        # Array of diffs to db playbook
        diff: []
@@ -105,25 +97,6 @@ defmodule Codebattle.Bot.RecorderServer do
     {:noreply, new_state}
   end
 
-  def handle_cast({:store}, state) do
-
-    %Playbook{
-      data: %{
-        playbook: Enum.reverse(state.diff),
-        meta: %{
-          total_time: calc_total_time(state.diff),
-        }
-      },
-      lang: to_string(state.lang),
-      task_id: state.task_id,
-      user_id: state.user_id,
-      game_id: state.game_id |> to_string |> Integer.parse() |> elem(0)
-    }
-    |> Repo.insert()
-
-    {:stop, :normal, state}
-  end
-
   def handle_cast({:check_and_store, editor_text}, state) do
     if is_copypast?(editor_text, state) do
       {:stop, :normal, state}
@@ -132,7 +105,8 @@ defmodule Codebattle.Bot.RecorderServer do
         data: %{
           playbook: Enum.reverse(state.diff),
           meta: %{
-            total_time: calc_total_time(state.diff),
+            total_time_ms: calc_total_time(state.diff),
+            init_lang: state.init_lang
           }
         },
         lang: to_string(state.lang),
@@ -144,7 +118,6 @@ defmodule Codebattle.Bot.RecorderServer do
 
       {:stop, :normal, state}
     end
-
   end
 
   # HELPERS
@@ -164,7 +137,7 @@ defmodule Codebattle.Bot.RecorderServer do
     step_time = NaiveDateTime.diff(new_time, time, :millisecond)
 
     if step_time > @time_limit do
-      3000
+      @time_limit
     else
       step_time
     end
@@ -173,15 +146,22 @@ defmodule Codebattle.Bot.RecorderServer do
   def is_copypast?(editor_text, state) do
     task_length = String.length(editor_text)
 
-    filtered_state1 = Enum.reduce(state.diff, [], fn x, acc -> if Map.has_key?(x, :delta) do acc ++ x.delta else acc end end)
-    |> Enum.filter(fn x -> Map.has_key?(x, :insert) end)
+    filtered_state1 =
+      Enum.reduce(state.diff, [], fn x, acc ->
+        if Map.has_key?(x, :delta) do
+          acc ++ x.delta
+        else
+          acc
+        end
+      end)
+      |> Enum.filter(fn x -> Map.has_key?(x, :insert) end)
 
     [_h | tail] = Enum.reverse(filtered_state1)
 
     tail
-    |> Enum.reverse
+    |> Enum.reverse()
     |> Enum.any?(fn x ->
-    div(task_length, String.length(x.insert)) < 2
-     end)
+      div(task_length, String.length(x.insert)) < 2
+    end)
   end
 end

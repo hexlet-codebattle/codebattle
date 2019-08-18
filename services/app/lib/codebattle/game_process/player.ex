@@ -34,7 +34,7 @@ defmodule Codebattle.GameProcess.Player do
   defstruct id: "",
             editor_text: "module.exports = () => {\n\n};",
             editor_lang: "js",
-            lang: "js",
+            lang: "",
             game_result: :undefined,
             output: "",
             result: "{}",
@@ -63,6 +63,7 @@ defmodule Codebattle.GameProcess.Player do
           rating: user_game.rating,
           rating_diff: user_game.rating_diff,
           editor_lang: user_game.lang,
+          lang: user_game.lang,
           creator: user_game.creator,
           game_result: user_game.result
         }
@@ -77,7 +78,8 @@ defmodule Codebattle.GameProcess.Player do
       github_id: user.github_id,
       name: user.name,
       rating: user.rating,
-      editor_lang: user.lang || "js"
+      editor_lang: user.lang || "js",
+      lang: user.lang || "js"
     }
   end
 
@@ -96,6 +98,7 @@ defmodule Codebattle.GameProcess.Player do
             name: user.name,
             rating: user.rating,
             editor_lang: user.lang || "js",
+            lang: user.lang || "js",
             achievements: user.achievements
           }
       end
@@ -106,6 +109,7 @@ defmodule Codebattle.GameProcess.Player do
   def rebuild(%__MODULE__{} = player, task) do
     user = Codebattle.Repo.get!(User, player.id)
     editor_lang = player.editor_lang
+    lang = player.editor_lang
     editor_text = Languages.get_solution(editor_lang, task)
     params = %{editor_lang: editor_lang, editor_text: editor_text, game_result: :undefined}
 

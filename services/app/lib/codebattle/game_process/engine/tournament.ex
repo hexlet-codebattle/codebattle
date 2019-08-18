@@ -53,7 +53,7 @@ defmodule Codebattle.GameProcess.Engine.Tournament do
           game_id: game.id,
           task_id: task.id,
           bot_id: player.id,
-          opponent_data: 100_000
+          bot_time_ms: 50 * 3
         })
       end
     end)

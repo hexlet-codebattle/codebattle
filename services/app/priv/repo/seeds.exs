@@ -42,6 +42,7 @@ levels = ["elementary", "easy", "medium", "hard"]
     task = Codebattle.Task.changeset(Map.merge(task_data, %{level: level})) |> Repo.insert!()
 
     playbook_data = %{
+      meta: %{total_time_ms: 5_000, init_lang: "ruby" },
       playbook: [
         %{"time" => 0, "delta" => [%{"insert" => "def solution()\n\nend"}]},
         %{"lang" => "ruby", "time" => 24},
@@ -66,6 +67,7 @@ end)
 %Codebattle.Tournament{}
 |> Codebattle.Tournament.changeset(%{
   name: "Codebattle Hexlet summer tournament 2019",
+  creator_id: 1,
   players_count: 16,
   starts_at: ~N[2019-08-22 19:33:08.910767]
 })

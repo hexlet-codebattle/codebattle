@@ -33,7 +33,7 @@ defmodule Codebattle.GameProcess.Engine.Bot do
             game_id: game.id,
             is_bot_game: true,
             type: type,
-            timeout_seconds: 60 * 60,
+            timeout_seconds: 60 * 60 * 8,
             starts_at: TimeHelper.utc_now()
           })
 
@@ -95,8 +95,7 @@ defmodule Codebattle.GameProcess.Engine.Bot do
       game_id: FsmHelpers.get_game_id(fsm),
       task_id: FsmHelpers.get_task(fsm).id,
       bot_id: FsmHelpers.get_first_player(fsm).id,
-      opponent_data:
-        get_opponent_task_data(FsmHelpers.get_second_player(fsm), FsmHelpers.get_level(fsm))
+      bot_time_ms: get_bot_time(fsm)
     })
   end
 
@@ -108,13 +107,13 @@ defmodule Codebattle.GameProcess.Engine.Bot do
     update_fsm_lang(game_id, player, editor_lang)
   end
 
-  def handle_won_game(game_id, winner, fsm) do
+  def handle_won_game(game_id, winner, fsm, editor_text) do
     loser = FsmHelpers.get_opponent(fsm, winner.id)
 
     store_game_result!(fsm, {winner, "won"}, {loser, "lost"})
 
     unless winner.is_bot do
-      RecorderServer.store(game_id, winner.id)
+      RecorderServer.check_and_store_result(game_id, winner.id, editor_text)
     end
 
     ActiveGames.terminate_game(game_id)
@@ -163,38 +162,41 @@ defmodule Codebattle.GameProcess.Engine.Bot do
     end
   end
 
-  defp get_opponent_task_data(player, game_level) do
-    start_sequence_position = %{
-      "elementary" => 300_000,
-      "easy" => 500_000,
-      "medium" => 800_000,
-      "hard" => 1_500_000
+  defp get_bot_time(fsm) do
+    player = FsmHelpers.get_second_player(fsm)
+    game_level = FsmHelpers.get_level(fsm)
+
+    low_level_rating = 1200
+    high_level_rating = 1400
+
+    # time in seconds for 1200 rating
+    low_level_time = %{
+      "elementary" => 60 * 3,
+      "easy" => 60 * 5,
+      "medium" => 60 * 7,
+      "hard" => 60 * 9
     }
 
-    end_sequence_position = %{
-      "elementary" => 100_000,
-      "easy" => 300_000,
-      "medium" => 500_000,
-      "hard" => 1_100_000
+    # time in seconds for 1400 rating
+    high_level_time = %{
+      "elementary" => 60,
+      "easy" => 60 * 3,
+      "medium" => 60 * 5,
+      "hard" => 60 * 7
     }
 
-    lower_level = 1000
-    highest_level = 1500
+    # y = f(x);
+    # y: time, x: rating;
+    # f(x) = k/(x  + b)
 
-    # 400
-    sequence_step =
-      div(
-        start_sequence_position[game_level] - end_sequence_position[game_level],
-        highest_level - lower_level
-      )
+    x1 = 1500
+    x2 = 1000
+    y1 = high_level_time[game_level]
+    y2 = low_level_time[game_level]
+    k = y1 * (x1 * y2 - x2 * y2) / (y2 - y1)
+    b = (x1 * y1 - x2 * y2) / (y2 - y1)
 
-    n = player.rating || 1000 - lower_level
-
-    cond do
-      player.rating <= lower_level -> start_sequence_position[game_level]
-      player.rating > highest_level -> end_sequence_position[game_level]
-      true -> start_sequence_position[game_level] - n * sequence_step
-    end
+    k / (player.rating + b) * 1000
   end
 
   # TODO do create and join in one action

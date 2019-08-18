@@ -11,26 +11,27 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
 
   def call(params) do
     :timer.sleep(@timeout)
-    :timer.sleep(Enum.random(3..7))
     playbook = Playbook.random(params.task_id)
 
     if playbook do
-      {id, diff} = playbook
-      Logger.info("#{__MODULE__} BOT START with playbook_id = #{id}")
-      diffs = Map.get(diff, "playbook")
-      meta = Map.get(diff, "meta")
+      {id, playbook_data} = playbook
+      diffs = Map.get(playbook_data, "playbook")
+      meta = Map.get(playbook_data, "meta")
       game_topic = "game:#{params.game_id}"
 
-      if meta do
-        step_coefficient = params.opponent_data / Map.get(meta, "total_time")
-        start_bot_cycle(diffs, game_topic, params.game_channel, step_coefficient)
-      else
-        start_bot_cycle(diffs, game_topic, params.game_channel, 0)
-      end
+      step_coefficient = params.bot_time_ms / Map.get(meta, "total_time_ms")
+
+      Logger.info("#{__MODULE__} BOT START with playbook_id: #{id};
+        bot_time_ms: #{params.bot_time_ms},
+        k: #{step_coefficient},
+        total_time_ms: #{meta["total_time_ms"]}
+        ")
+
+      start_bot_cycle(meta, diffs, game_topic, params.game_channel, step_coefficient)
     end
   end
 
-  defp start_bot_cycle(diffs, game_topic, channel_pid, step_coefficient) do
+  defp start_bot_cycle(meta, diffs, game_topic, channel_pid, step_coefficient) do
     # Diff is one the maps
     #
     # 1 Main map with action to update text
@@ -40,12 +41,12 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
     # %{"time" => 10, "lang" => "elixir"}
 
     init_document = TextDelta.new() |> TextDelta.insert("")
-    init_lang = "js"
+    init_lang = meta["init_lang"]
 
     {editor_text, lang} =
       Enum.reduce(diffs, {init_document, init_lang}, fn diff_map, {document, lang} ->
         timer_value = Map.get(diff_map, "time") * step_coefficient
-        :timer.sleep(timer_value)
+        :timer.sleep(Kernel.trunc(timer_value))
         # TODO: maybe optimize serialization/deserialization process
         delta = diff_map |> Map.get("delta", nil)
 
