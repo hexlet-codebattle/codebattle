@@ -77,7 +77,9 @@ defmodule Tasks.Issues.UploadTest do
 
     assert Repo.all(Task) |> Enum.count() == 2
 
-    Repo.all(Task.visible(Task)) |> Enum.count() == 1
+    assert Repo.all(Task.invisible(Task)) |> Enum.count() == 1
+
+    assert Repo.all(Task.visible(Task)) |> Enum.count() == 1
   end
 
   test "update fields", %{path: path} do
