@@ -7,7 +7,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
   alias Codebattle.Tournament
   alias Codebattle.Tournament.Helpers
 
-  @update_frequency 1000
+  @update_frequency 1_000
 
   def render(assigns) do
     CodebattleWeb.TournamentView.render("show.html", assigns)
@@ -34,7 +34,12 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
 
   def handle_info(:update, socket) do
     tournament = socket.assigns.tournament
-    {:noreply, assign(socket, time: updated_time(tournament.starts_at))}
+
+    if tournament.state == "waiting_participants" do
+      {:noreply, assign(socket, time: updated_time(tournament.starts_at))}
+    else
+      {:noreply, socket}
+    end
   end
 
   def handle_info(%{topic: topic, event: "update_tournament", payload: payload} = params, socket) do
@@ -131,6 +136,9 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
 
     {:noreply, assign(socket, tournament: new_tournament)}
   end
+
+  def handle_event("chat_message", %{"message" => %{"content" => ""}}, socket),
+    do: {:noreply, socket}
 
   def handle_event("chat_message", params, socket) do
     tournament = socket.assigns.tournament

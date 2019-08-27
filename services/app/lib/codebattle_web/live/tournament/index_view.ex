@@ -9,8 +9,6 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
   alias Codebattle.Tournament
   alias Codebattle.Tournament.Helpers
 
-  @update_frequency 100
-
   def render(assigns) do
     CodebattleWeb.TournamentView.render("index.html", assigns)
   end

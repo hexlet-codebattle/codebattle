@@ -72,7 +72,7 @@ defmodule Codebattle.PlayGameTest do
     end
   end
 
-  test "Detect uer copypaste", %{
+  test "Detect user copypaste", %{
     conn1: conn1,
     conn2: conn2,
     socket1: socket1,

@@ -75,7 +75,6 @@
 }
 
 .match__content {
-  border: 2px solid green;
   min-width: 200px;
   min-height: 20px;
   position: relative;

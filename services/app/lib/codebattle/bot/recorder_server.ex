@@ -98,7 +98,7 @@ defmodule Codebattle.Bot.RecorderServer do
   end
 
   def handle_cast({:check_and_store, editor_text}, state) do
-    if is_copypast?(editor_text, state) do
+    if is_copypaste?(editor_text, state) do
       {:stop, :normal, state}
     else
       %Playbook{
@@ -143,7 +143,7 @@ defmodule Codebattle.Bot.RecorderServer do
     end
   end
 
-  def is_copypast?(editor_text, state) do
+  def is_copypaste?(editor_text, state) do
     task_length = String.length(editor_text)
 
     filtered_state1 =

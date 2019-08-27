@@ -20,6 +20,7 @@ const initGameChannel = (dispatch) => {
       players: [firstPlayer, secondPlayer],
       task,
       rematch_state: rematchState,
+      tournament_id: tournamentId,
       rematch_initiator_id: rematchInitiatorId,
     } = response;
 
@@ -77,6 +78,7 @@ const initGameChannel = (dispatch) => {
       timeoutSeconds,
       rematchState,
       rematchInitiatorId,
+      tournamentId,
     }));
 
     dispatch(actions.finishStoreInit());

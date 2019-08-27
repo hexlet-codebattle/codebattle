@@ -46,6 +46,7 @@ defmodule Codebattle.GameProcess.Play do
       timeout_seconds: FsmHelpers.get_timeout_seconds(fsm),
       rematch_state: FsmHelpers.get_rematch_state(fsm),
       rematch_initiator_id: FsmHelpers.get_rematch_initiator_id(fsm),
+      tournament_id: FsmHelpers.get_tournament_id(fsm),
       joins_at: FsmHelpers.get_joins_at(fsm)
     }
   end
@@ -245,7 +246,7 @@ defmodule Codebattle.GameProcess.Play do
 
             case engine.handle_won_game(id, player, fsm, editor_text) do
               :ok -> {:ok, fsm, result, output}
-              :copypast -> {:copypast, result, output} 
+              :copypaste -> {:copypaste, result, output}
             end
 
           {_, result} ->

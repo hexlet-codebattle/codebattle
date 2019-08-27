@@ -238,8 +238,8 @@ defmodule CodebattleWeb.GameChannel do
 
         {:noreply, socket}
       
-      {:copypast, result, output} ->
-        push(socket, "user:copypast_detected", %{
+      {:copypaste, result, output} ->
+        push(socket, "user:copypaste_detected", %{
           user_id: user.id
         })
 
