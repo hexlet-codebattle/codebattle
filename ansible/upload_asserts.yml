@@ -17,14 +17,13 @@
 
     - name: mix run upload
       docker_container:
-        detach: no
         recreate: yes
+        detach: no
         name: codebattle-asserts_uploader
         image: "{{ codebattle_app_image_name }}:latest"
         command: "mix issues.upload /issues_dir"
         state: started
         network_mode: host
-        restart_policy: always
         env_file: "{{ codebattle_env_file }}"
         env:
           CODEBATTLE_PORT: "5555"
