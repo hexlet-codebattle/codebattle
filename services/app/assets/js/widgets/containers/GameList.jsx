@@ -14,6 +14,7 @@ import {
   activeGamesSelector, completedGamesSelector, gameListLoadedSelector, gameListNewGameSelector,
 } from '../selectors';
 import Loading from '../components/Loading';
+import GamesHeatmap from '../components/GamesHeatmap';
 import UserInfo from './UserInfo';
 
 const timeoutOptions = {
@@ -360,6 +361,12 @@ class GameList extends React.Component {
       <div className="container bg-white shadow-sm py-4 mb-3">
         <h3 className="text-center mb-4">Active games</h3>
         {this.renderActiveGames(activeGames)}
+      </div>
+      <div className="container d-flex flex-column align-items-center bg-white  shadow-sm py-4 mb-3">
+        <h3 className="text-center mb-4">Activity</h3>
+        <div className="col-12  col-sm-8 col-md-6">
+          <GamesHeatmap />
+        </div>
       </div>
       <div className="container bg-white shadow-sm py-4">
         <h3 className="text-center mb-4">Completed games</h3>

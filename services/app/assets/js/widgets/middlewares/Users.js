@@ -2,7 +2,7 @@ import axios from 'axios';
 import qs from 'qs';
 import { updateUsersRatingPage, updateUsersStats } from '../actions';
 
-export const loadUserStats = dispatch => async (user) => {
+export const loadUserStats = (dispatch) => async (user) => {
   try {
     const response = await axios.get(`/api/v1/user/${user.id}/stats`);
     const { stats, user_id: userId, achievements } = response.data;

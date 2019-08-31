@@ -88,8 +88,8 @@ const initGameChannel = (dispatch) => {
     .receive('error', () => console.log('Game channel: unable to join'))
     .receive('ok', onJoinSuccess);
 
-  channel.onError(ev => console.log('Game channel: something went wrong', ev));
-  channel.onClose(ev => console.log('Game channel: closed', ev));
+  channel.onError((ev) => console.log('Game channel: something went wrong', ev));
+  channel.onClose((ev) => console.log('Game channel: closed', ev));
 };
 
 export const sendEditorText = (text, langSlug = null) => (dispatch, getState) => {
@@ -121,7 +121,7 @@ export const sendAcceptToRematch = () => {
   channel.push('rematch:accept_offer');
 };
 
-export const sendEditorLang = currentLangSlug => (dispatch, getState) => {
+export const sendEditorLang = (currentLangSlug) => (dispatch, getState) => {
   const state = getState();
   const userId = selectors.currentUserIdSelector(state);
 
@@ -130,7 +130,7 @@ export const sendEditorLang = currentLangSlug => (dispatch, getState) => {
   // channel.push('editor:lang', { lang: currentLangSlug });
 };
 
-export const changeCurrentLangAndSetTemplate = langSlug => (dispatch, getState) => {
+export const changeCurrentLangAndSetTemplate = (langSlug) => (dispatch, getState) => {
   const state = getState();
   const currentText = selectors.currentPlayerTextByLangSelector(langSlug)(state);
   const { solution_template: template } = _.find(languages, { slug: langSlug });
@@ -267,8 +267,8 @@ export const checkGameResult = () => (dispatch, getState) => {
 };
 
 export const compressEditorHeight = (
-  userId => dispatch => dispatch(actions.compressEditorHeight({ userId }))
+  (userId) => (dispatch) => dispatch(actions.compressEditorHeight({ userId }))
 );
 export const expandEditorHeight = (
-  userId => dispatch => dispatch(actions.expandEditorHeight({ userId }))
+  (userId) => (dispatch) => dispatch(actions.expandEditorHeight({ userId }))
 );

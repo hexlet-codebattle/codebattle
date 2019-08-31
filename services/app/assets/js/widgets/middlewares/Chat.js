@@ -25,5 +25,5 @@ export const addMessage = (user, message) => {
   const payload = { user, message };
 
   channel.push('new:message', payload)
-    .receive('error', error => console.error(error));
+    .receive('error', (error) => console.error(error));
 };
