@@ -252,8 +252,8 @@ defmodule Codebattle.Generators.CheckerGenerator do
 
   defp get_value({_, value}, _meta), do: value
 
-  defp get_boolean_value(false, %{slug: slug}) when slug in ["python"], do: ~s(False)
-  defp get_boolean_value(true, %{slug: slug}) when slug in ["python"], do: ~s(True)
+  defp get_boolean_value(false, %{slug: slug}) when slug in ["python", "haskell"], do: ~s(False)
+  defp get_boolean_value(true, %{slug: slug}) when slug in ["python", "haskell"], do: ~s(True)
   defp get_boolean_value(value, _), do: value
 
   defp get_hash_inners(
