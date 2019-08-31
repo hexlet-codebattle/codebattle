@@ -34,7 +34,7 @@ defmodule Codebattle.LanguagesTest do
         "package main;\n\nfunc solution() {\n\n}",
         "def solution()\n\nend",
         "defmodule Solution do\n\tdef solution() do\n\n\tend\nend",
-        "def solution():",
+        "from typing import List, Dict\n\ndef solution():",
         "<?php\nfunction solution(){\n\n}",
         "(defn solution [] )",
         "module Check.Solution where\n\nimport Data.HashMap.Lazy\n\nsolution :: \nsolution =\n\n{- Included packages:\naeson\nbytestring\ncase-insensitive\ncontainers\ndeepseq\nfgl\ninteger-logarithms\nmegaparsec\nmtl\nparser-combinators\npretty\nrandom\nregex-base\nregex-compat\nregex-posix\nscientific\nsplit\ntemplate-haskell\ntext\ntime\ntransformers\nunordered-containers\nvector\nvector-algorithms -}",
@@ -69,7 +69,7 @@ defmodule Codebattle.LanguagesTest do
       "defmodule Solution do\n\tdef solution(a, b, text, arr, condition, hashtable) do\n\t\t[\"value\"]\n\tend\nend"
 
     python_expected =
-      "def solution(a: int, b: float, text: str, arr: list[list[int]], condition: bool, hashtable: dict[str, int]) -> list[str]:"
+      "from typing import List, Dict\n\ndef solution(a: int, b: float, text: str, arr: List[List[int]], condition: bool, hashtable: Dict[str, int]) -> List[str]:"
 
     php_expected =
       "<?php\nfunction solution($a, $b, $text, $arr, $condition, $hashtable){\n\treturn [\"value\"];\n}"

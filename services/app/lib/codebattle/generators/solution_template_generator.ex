@@ -26,7 +26,7 @@ defmodule Codebattle.Generators.SolutionTemplateGenerator do
       ...>      output_signature: %{"type" => %{"name" => "string"}}
       ...>    }
       ...> )
-      "def solution(str1: str, str2: str) -> str:"
+      "from typing import List, Dict\n\ndef solution(str1: str, str2: str) -> str:"
 
       iex> Codebattle.Generators.SolutionTemplateGenerator.get_solution(
       ...>    Codebattle.Languages.meta() |> Map.get("clojure"),
