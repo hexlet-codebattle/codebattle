@@ -94,3 +94,11 @@
 .tournament-bg-active {
   background-color:  #dedede !important;
 }
+
+.tournament-plyaer-name {
+     width: 130px;
+     margin: auto;
+     white-space: nowrap;
+     overflow: hidden;
+     text-overflow: ellipsis;
+}

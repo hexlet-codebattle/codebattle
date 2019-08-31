@@ -8,7 +8,7 @@
       {_, true} ->  {"Show", "bg-light border border-warning"}
       _ ->  {"Show", "bg-light"}
     end
-  .d-flex class="#{bgClass} border border-success"
+  .d-flex.p-1 class="#{bgClass} border border-success"
     .d-flex.flex-column.justify-content-center.align-items-center
       p = @match.state
       = link link_name, to: "/games/#{@match.game_id}", class: "btn btn-success m-1"

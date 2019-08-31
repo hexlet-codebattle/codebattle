@@ -1,14 +1,15 @@
-a href="/users/#{@player.id}"
-  img.ml-2.attachment.rounded.border.mr-1.x-user-avatar src="https://avatars0.githubusercontent.com/u/#{@player.github_id}"
-  span.mr-1 = @player.name
-  small.mr-1 = @player.rating
-  elixir:
-    classes = case Map.get(@player, :game_result) do
-      "waiting" -> nil
-      "won" -> "fa fa-trophy"
-      "lost" -> "lost"
-      "gave_up" -> "far fa-flag"
-      _ -> nil
-    end
-  = if classes do
-    span class=classes
+elixir:
+  fa_class = case Map.get(@player, :game_result) do
+    "waiting" -> nil
+    "won" -> "fa fa-trophy"
+    "lost" -> "lost"
+    "gave_up" -> "far fa-flag"
+    _ -> nil
+  end
+.d-flex
+  a.d-flex.align-items-center.justify-content-start href="/users/#{@player.id}"
+    img.ml-2.attachment.rounded.border.mr-1.x-user-avatar src="https://avatars0.githubusercontent.com/u/#{@player.github_id}"
+    p.mr-1.tournament-plyaer-name = @player.name
+    small.mr-1 = @player.rating
+  = if fa_class do
+    span class=fa_class
