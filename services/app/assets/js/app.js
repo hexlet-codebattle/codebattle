@@ -26,7 +26,18 @@ import {
   renderGameWidget, renderLobby, renderHeatmapWidget, renderUsersRating,
 } from './widgets';
 
-const liveSocket = new LiveSocket('/live');
+const Hooks = {
+  NewChatMessage: {
+    mounted() {
+      this.el.scrollTop = this.el.scrollHeight;
+    },
+    updated() {
+      this.el.scrollTop = this.el.scrollHeight;
+    },
+  },
+};
+console.log(Hooks);
+const liveSocket = new LiveSocket('/live', { hooks: Hooks });
 liveSocket.connect();
 
 const gameWidgetRoot = document.getElementById('game-widget-root');

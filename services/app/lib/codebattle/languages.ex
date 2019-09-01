@@ -27,7 +27,7 @@ defmodule Codebattle.Languages do
         extension: :rb,
         docker_image: "codebattle/ruby:2.6.0",
         solution_template: "def solution(<%= arguments %>)\n<%= return_statement %>\nend",
-        return_template: "\treturn <%= default_value %>",
+        return_template: "\t<%= default_value %>",
         default_values: %{
           "integer" => "0",
           "float" => "0.1",

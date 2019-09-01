@@ -19,7 +19,7 @@ const gameList = handleActions({
   [actions.cancelGameLobby](state, { payload: { gameId } }) {
     const { activeGames } = state;
 
-    const newGames = _.filter(activeGames, game => game.game_id !== gameId);
+    const newGames = _.filter(activeGames, (game) => game.game_id !== gameId);
 
     return { ...state, activeGames: newGames };
   },
@@ -27,7 +27,7 @@ const gameList = handleActions({
     const gameId = game.game_id;
 
     const { activeGames } = state;
-    const restGames = activeGames.filter(g => g.game_id !== gameId);
+    const restGames = activeGames.filter((g) => g.game_id !== gameId);
 
     const newGame = {
       players: game.players,

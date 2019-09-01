@@ -6,14 +6,14 @@ import i18n from '../../i18n';
 import { makeEditorTextKey } from '../reducers';
 import defaultEditorHeight from '../config/editorSettings';
 
-export const currentUserIdSelector = state => state.user.currentUserId;
+export const currentUserIdSelector = (state) => state.user.currentUserId;
 
-export const gamePlayersSelector = state => state.game.players;
+export const gamePlayersSelector = (state) => state.game.players;
 
-export const firstPlayerSelector = state => _
+export const firstPlayerSelector = (state) => _
   .find(gamePlayersSelector(state), { type: userTypes.firstPlayer });
 
-export const secondPlayerSelector = state => _
+export const secondPlayerSelector = (state) => _
   .find(gamePlayersSelector(state), { type: userTypes.secondPlayer });
 
 export const opponentPlayerSelector = (state) => {
@@ -21,10 +21,10 @@ export const opponentPlayerSelector = (state) => {
   return _.find(gamePlayersSelector(state), ({ id }) => (id !== currentUserId));
 };
 
-const editorsMetaSelector = state => state.editor.meta;
-const editorTextsSelector = state => state.editor.text;
+const editorsMetaSelector = (state) => state.editor.meta;
+const editorTextsSelector = (state) => state.editor.text;
 
-export const editorDataSelector = playerId => (state) => {
+export const editorDataSelector = (playerId) => (state) => {
   const meta = editorsMetaSelector(state)[playerId];
   const editorTexts = editorTextsSelector(state);
   if (!meta) {
@@ -65,15 +65,15 @@ export const rightEditorSelector = (state) => {
   return editorSelector(state);
 };
 
-export const currentPlayerTextByLangSelector = lang => (state) => {
+export const currentPlayerTextByLangSelector = (lang) => (state) => {
   const userId = currentUserIdSelector(state);
   const editorTexts = editorTextsSelector(state);
   return editorTexts[makeEditorTextKey(userId, lang)];
 };
 
-export const userLangSelector = userId => state => _.get(editorDataSelector(userId)(state), 'currentLangSlug', null);
+export const userLangSelector = (userId) => (state) => _.get(editorDataSelector(userId)(state), 'currentLangSlug', null);
 
-export const gameStatusSelector = state => state.game.gameStatus;
+export const gameStatusSelector = (state) => state.game.gameStatus;
 
 export const gameStatusTitleSelector = (state) => {
   const gameStatus = gameStatusSelector(state);
@@ -92,13 +92,13 @@ export const gameStatusTitleSelector = (state) => {
   }
 };
 
-export const gameTaskSelector = state => state.game.task;
+export const gameTaskSelector = (state) => state.game.task;
 
-export const gameLangsSelector = state => state.game.langs;
+export const gameLangsSelector = (state) => state.game.langs;
 
-export const editorHeightSelector = userId => state => _.get(editorDataSelector(userId)(state), 'editorHeight', defaultEditorHeight);
+export const editorHeightSelector = (userId) => (state) => _.get(editorDataSelector(userId)(state), 'editorHeight', defaultEditorHeight);
 
-export const executionOutputSelector = userId => state => state.executionOutput[userId];
+export const executionOutputSelector = (userId) => (state) => state.executionOutput[userId];
 
 export const firstExecutionOutputSelector = (state) => {
   const playerId = firstPlayerSelector(state).id;
@@ -128,9 +128,9 @@ export const rightExecutionOutputSelector = (state) => {
   return outputSelector(state);
 };
 
-export const chatUsersSelector = state => state.chat.users;
+export const chatUsersSelector = (state) => state.chat.users;
 
-export const chatMessagesSelector = state => state.chat.messages;
+export const chatMessagesSelector = (state) => state.chat.messages;
 
 export const currentChatUserSelector = (state) => {
   const currentUserId = currentUserIdSelector(state);
@@ -138,7 +138,7 @@ export const currentChatUserSelector = (state) => {
   return _.find(chatUsersSelector(state), { id: currentUserId });
 };
 
-export const editorsModeSelector = currentUserId => (state) => {
+export const editorsModeSelector = (currentUserId) => (state) => {
   if (_.hasIn(gamePlayersSelector(state), currentUserId)) {
     return state.editorUI.mode;
   }
@@ -146,12 +146,12 @@ export const editorsModeSelector = currentUserId => (state) => {
 };
 
 
-export const gameListLoadedSelector = state => state.gameList.loaded;
-export const gameListNewGameSelector = state => state.gameList.newGame;
-export const activeGamesSelector = state => state.gameList.activeGames;
+export const gameListLoadedSelector = (state) => state.gameList.loaded;
+export const gameListNewGameSelector = (state) => state.gameList.newGame;
+export const activeGamesSelector = (state) => state.gameList.activeGames;
 
-export const completedGamesSelector = state => state.gameList.completedGames || [];
+export const completedGamesSelector = (state) => state.gameList.completedGames || [];
 
-export const getUsersStats = state => state.user.usersStats;
+export const getUsersStats = (state) => state.user.usersStats;
 
-export const getUsersList = state => state.user.usersRatingPage;
+export const getUsersList = (state) => state.user.usersRatingPage;

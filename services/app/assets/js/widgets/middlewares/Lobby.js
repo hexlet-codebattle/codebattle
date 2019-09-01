@@ -30,7 +30,7 @@ export const fetchState = () => (dispatch) => {
   );
 };
 
-export const cancelGame = gameId => () => {
+export const cancelGame = (gameId) => () => {
   channel.push('game:cancel', { gameId })
-    .receive('error', error => console.error(error));
+    .receive('error', (error) => console.error(error));
 };

@@ -21,7 +21,7 @@ const commonPlugins = [
     Popper: ['popper.js', 'default'],
   }),
   new MonacoWebpackPlugin({
-    languages: ['ruby', 'javascript', 'typescript', 'perl', 'python', 'clojure', 'php'],
+    languages: ['ruby', 'javascript', 'typescript', 'perl', 'python', 'clojure', 'php', 'go'],
   }),
   new MiniCssExtractPlugin({
     filename: 'style.css',

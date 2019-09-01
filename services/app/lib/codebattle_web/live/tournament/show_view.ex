@@ -7,7 +7,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
   alias Codebattle.Tournament
   alias Codebattle.Tournament.Helpers
 
-  @update_frequency 1_000
+  @update_frequency 1_00000000000
 
   def render(assigns) do
     CodebattleWeb.TournamentView.render("show.html", assigns)
@@ -137,8 +137,8 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     {:noreply, assign(socket, tournament: new_tournament)}
   end
 
-  def handle_event("chat_message", %{"message" => %{"content" => ""}}, socket),
-    do: {:noreply, socket}
+  # def handle_event("chat_message", %{"message" => %{"content" => ""}}, socket),
+  #   do: {:noreply, socket}
 
   def handle_event("chat_message", params, socket) do
     tournament = socket.assigns.tournament

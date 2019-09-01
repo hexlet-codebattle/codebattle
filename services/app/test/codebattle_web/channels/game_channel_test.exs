@@ -206,6 +206,7 @@ defmodule CodebattleWeb.GameChannelTest do
                "starts_at" => TimeHelper.utc_now(),
                "status" => "waiting_opponent",
                "task" => game.task,
+               "tournament_id" => nil,
                "type" => "public",
                "timeout_seconds" => 0,
                "rematch_state" => "none",
