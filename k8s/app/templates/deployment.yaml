@@ -13,7 +13,6 @@ spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-
       app.kubernetes.io/name: "{{ .Release.Name }}-web-pod"
       app.kubernetes.io/instance: "{{ .Release.Name }}"
   strategy:
@@ -39,7 +38,7 @@ spec:
     {{- end }}
       containers:
         - name: nginx
-          imagePullPolicy: "{{ .Values.caddy.image.imagePullPolicy }}"
+          imagePullPolicy: "{{ .Values.nginx.image.imagePullPolicy }}"
           image: "{{ .Values.nginx.image.repository }}"
           readinessProbe:
             httpGet:
