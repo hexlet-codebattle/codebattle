@@ -24,7 +24,7 @@ config :phoenix, :serve_endpoints, true
 
 config :codebattle, Codebattle.Repo,
   adapter: Ecto.Adapters.Postgres,
-  database: "codebattle",
+  database: System.get_env("CODEBATTLE_DB_NAME"),
   ssl: true,
   port: System.get_env("CODEBATTLE_DB_PORT"),
   username: System.get_env("CODEBATTLE_DB_USERNAME"),

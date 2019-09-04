@@ -1,4 +1,4 @@
-FROM elixir:1.8
+FROM elixir:1.9
 
 WORKDIR /app
 
@@ -18,28 +18,29 @@ RUN curl -sL https://deb.nodesource.com/setup_12.x | bash - \
  && apt-get install -y nodejs \
  && npm install --global yarn@1.16.0
 
+RUN npm install -g npm-check-updates env-cmd
+
 ENV DOCKER_CHANNEL edge
 ENV DOCKER_VERSION 18.09.3
 RUN curl -fsSL "https://download.docker.com/linux/static/${DOCKER_CHANNEL}/x86_64/docker-${DOCKER_VERSION}.tgz" \
   | tar -xzC /usr/local/bin --strip=1 docker/docker
 
 # Copy all dependencies files
-COPY mix.* ./
+COPY mix.exs mix.lock ./
 
 # Install all production dependencies
 RUN mix deps.get
+COPY config .
+RUN MIX_ENV=prod mix deps.compile
 
 COPY ["package.json", "yarn.lock", "./"]
 
 RUN yarn install
 
-# Compile all dependencies
-RUN MIX_ENV=prod mix deps.compile
-
 COPY . .
 
+RUN MIX_ENV=prod env-cmd -f .env.docker mix compile
 RUN yarn build-prod
-RUN MIX_ENV=prod mix compile
 RUN MIX_ENV=prod mix phx.digest
 
 CMD ["mix", "phx.server"]

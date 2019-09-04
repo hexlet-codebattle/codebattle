@@ -82,11 +82,7 @@ spec:
               name: docker-sock
           envFrom:
             - secretRef:
-                name: codebattle-environment-secrets
+                name: codebattle-secrets
           env:
             - name: CODEBATTLE_VERSION
               value: {{ .Values.version }}
-          # lifecycle:
-          #   postStart:
-          #     exec:
-          #       command: {{ .Values.slack_notification }}

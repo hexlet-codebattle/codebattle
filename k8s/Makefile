@@ -12,3 +12,5 @@ helm-init:
 helm-upgrade-app:
 	helm upgrade --kubeconfig="kubeconfig.yml" app $(CURRENT_DIR)/app-chart
 
+helm-install-ingress:
+	helm install stable/nginx-ingress --name ingress --set rbac.create=true
