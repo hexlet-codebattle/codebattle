@@ -51,3 +51,5 @@ secrets.auto.tfvars
 .elixir_ls
 google.key.json
 .iml
+
+kubeconfig.yml
