@@ -7,6 +7,7 @@ get-nodes:
 	kubectl --kubeconfig="kubeconfig.yml" get nodes
 
 helm-init:
+	 helm init --kubeconfig="kubeconfig.yml"
 	 helm install --kubeconfig="kubeconfig.yml" --name app $(CURRENT_DIR)/app-chart
 
 helm-upgrade-app:

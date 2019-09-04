@@ -15,3 +15,7 @@ ansible-vaults-encrypt:
 
 ansible-vaults-decrypt:
 	ansible-vault decrypt ansible/production/group_vars/all/vault.yml
+
+
+ansible-vault-edit-production:
+	docker run -v $(CURDIR):/app -it -w /app ansible ansible-vault --vault-password-file tmp/ansible-vault-password edit ansible/production/group_vars/all/vault.yml
