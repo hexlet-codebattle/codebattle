@@ -82,9 +82,7 @@ spec:
               name: docker-sock
           envFrom:
             - secretRef:
-                name: codebattle-secrets
-            - configMapRef:
-                name: codebattle-config-map
+                name: codebattle-environment-secrets
           env:
             - name: CODEBATTLE_VERSION
               value: {{ .Values.version }}
