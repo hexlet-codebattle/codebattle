@@ -13,6 +13,12 @@
         name: "{{ codebattle_app_image_name }}:latest"
         force: yes
 
+    - name: download image for nginx
+      docker_image:
+        name: "{{ codebattle_nginx_image_name }}"
+        force: yes
+      tags: [nginx]
+
     - name: run migrations
       docker_container:
         recreate: yes
@@ -53,6 +59,19 @@
           - "/opt:/opt"
           - "/var/tmp:/var/tmp"
       tags: [webserver]
+
+    - name: start nginx
+      docker_container:
+        recreate: yes
+        name: codebattle-nginx
+        image: "{{ codebattle_nginx_image_name }}"
+        state: started
+        restart_policy: always
+        log_driver: syslog
+        network_mode: host
+        ports:
+          - "80:80"
+      tags: [nginx]
 
     - name: prune docker images
       shell: docker rmi -f $(docker images | grep "<none>" | awk '{print $3}')

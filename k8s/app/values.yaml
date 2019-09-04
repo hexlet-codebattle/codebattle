@@ -1,0 +1,20 @@
+---
+version: latest
+
+replicaCount: 1
+
+app:
+  image:
+    repository: codebattle/app
+    tag: latest
+    imagePullPolicy: Always
+
+nginx:
+  image:
+    repository: codebattle/nginx
+    imagePullPolicy: Always
+
+resources: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}
