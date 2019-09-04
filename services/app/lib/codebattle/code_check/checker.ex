@@ -57,7 +57,8 @@ defmodule Codebattle.CodeCheck.Checker do
   end
 
   defp prepare_tmp_dir!(task, editor_text, lang) do
-    dir_path = Temp.mkdir!(prefix: "codebattle-check")
+    File.mkdir_p! "/tmp/codebattle-check"
+    dir_path = Temp.mkdir!(prefix: lang.slug, basedir: "/tmp/codebattle-check")
 
     check_code = :rand.normal() |> to_string
     hash_sum = "\"__code#{check_code}__\""

@@ -1,36 +1,17 @@
-{{- if .Values.ingress.enabled -}}
-{{- $fullName := include "app.fullname" . -}}
+---
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: {{ $fullName }}
+  name: "{{ .Release.Name }}-frontend"
   labels:
-{{ include "app.labels" . | indent 4 }}
-  {{- with .Values.ingress.annotations }}
+    app.kubernetes.io/name: "{{ .Chart.Name }}"
+    app.kubernetes.io/instance: "{{ .Release.Name }}"
+    app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
+    app.kubernetes.io/managed-by: "{{ .Release.Service }}"
+    helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
   annotations:
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
+    external-dns.alpha.kubernetes.io/hostname: "codebattle.hexlet.io."
 spec:
-{{- if .Values.ingress.tls }}
-  tls:
-  {{- range .Values.ingress.tls }}
-    - hosts:
-      {{- range .hosts }}
-        - {{ . | quote }}
-      {{- end }}
-      secretName: {{ .secretName }}
-  {{- end }}
-{{- end }}
-  rules:
-  {{- range .Values.ingress.hosts }}
-    - host: {{ .host | quote }}
-      http:
-        paths:
-        {{- range .paths }}
-          - path: {{ . }}
-            backend:
-              serviceName: {{ $fullName }}
-              servicePort: http
-        {{- end }}
-  {{- end }}
-{{- end }}
+  backend:
+    serviceName: "{{ .Release.Name }}-frontend"
+    servicePort: 8080

@@ -1,16 +1,20 @@
-apiVersion: v1
+---
 kind: Service
+apiVersion: v1
 metadata:
-  name: {{ include "app.fullname" . }}
+  name: "{{ .Release.Name }}-frontend"
   labels:
-{{ include "app.labels" . | indent 4 }}
+    app.kubernetes.io/name: "{{ .Chart.Name }}"
+    app.kubernetes.io/instance: "{{ .Release.Name }}"
+    app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
+    app.kubernetes.io/managed-by: "{{ .Release.Service }}"
+    helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
 spec:
-  type: {{ .Values.service.type }}
-  ports:
-    - port: {{ .Values.service.port }}
-      targetPort: http
-      protocol: TCP
-      name: http
   selector:
-    app.kubernetes.io/name: {{ include "app.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/name: "{{ .Release.Name }}-web-pod"
+    app.kubernetes.io/instance: "{{ .Release.Name }}"
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080

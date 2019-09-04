@@ -38,3 +38,58 @@ spec:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       containers:
+        - name: nginx
+          imagePullPolicy: "{{ .Values.caddy.image.imagePullPolicy }}"
+          image: "{{ .Values.nginx.image.repository }}"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            successThreshold: 1
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              cpu: 10m
+          env:
+            - name: NGINX_SERVER_ADDRESS
+              value: 127.0.0.1
+        - name: app
+          securityContext:
+            privileged: true
+          imagePullPolicy: "{{ .Values.app.image.imagePullPolicy }}"
+          image: "{{ .Values.app.image.repository }}:{{ .Values.version }}"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 4000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            successThreshold: 1
+          resources:
+            requests:
+              cpu: 10m
+          command:
+            - make
+            - start
+          ports:
+            - containerPort: 4000
+          volumeMounts:
+            - mountPath: /tmp/hexlet-basics
+              name: users-code-path
+            - mountPath: /var/run/docker.sock
+              name: docker-sock
+          envFrom:
+            - secretRef:
+                name: codebattle-secrets
+            - configMapRef:
+                name: codebattle-config-map
+          env:
+            - name: CODEBATTLE_VERSION
+              value: {{ .Values.version }}
+          # lifecycle:
+          #   postStart:
+          #     exec:
+          #       command: {{ .Values.slack_notification }}
