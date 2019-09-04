@@ -8,7 +8,8 @@ defmodule Codebattle.Chat.Server do
       GenServer.call(chat_key(id), {:join, user})
     catch
       :exit, reason ->
-        []
+        # TODO: add error handler
+        {:ok, []}
     end
   end
 

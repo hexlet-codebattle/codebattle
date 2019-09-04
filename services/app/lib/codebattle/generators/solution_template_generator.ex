@@ -14,7 +14,7 @@ defmodule Codebattle.Generators.SolutionTemplateGenerator do
       ...>      output_signature: %{"type" => %{"name" => "integer"}}
       ...>    }
       ...> )
-      "def solution(a, b)\n\treturn 0\nend"
+      "def solution(a, b)\n\t0\nend"
 
       iex> Codebattle.Generators.SolutionTemplateGenerator.get_solution(
       ...>    Codebattle.Languages.meta() |> Map.get("python"),

@@ -7,3 +7,15 @@ lint-js:
 
 lint-js-fix:
 	npx eslint --fix --ext .js --ext .jsx assets/js/
+
+start:
+	mix ecto.migrate
+	mix phx.server
+
+update:
+	mix deps.update --all
+	ncu -u
+	npm update
+
+console:
+	iex -S mix

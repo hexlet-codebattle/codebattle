@@ -1,0 +1,11 @@
+variable "codebattle_port" {}
+variable "codebattle_secret_key_base" {}
+variable "codebattle_db_hostname" {}
+variable "codebattle_db_username" {}
+variable "codebattle_db_password" {}
+variable "codebattle_db_name" {}
+variable "codebattle_db_port" {}
+variable "github_client_secret" {}
+variable "github_client_id" {}
+variable "onesignal_api_key" {}
+variable "onesignal_app_id" {}

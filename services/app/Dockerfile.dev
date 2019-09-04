@@ -1,4 +1,4 @@
-FROM elixir:1.8
+FROM elixir:1.9
 
 # Install hex (Elixir package manager)
 # Install rebar (Erlang build tool)
