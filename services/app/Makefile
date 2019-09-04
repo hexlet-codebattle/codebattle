@@ -9,7 +9,6 @@ lint-js-fix:
 	npx eslint --fix --ext .js --ext .jsx assets/js/
 
 start:
-	mix ecto.create
 	mix ecto.migrate
 	mix phx.server
 

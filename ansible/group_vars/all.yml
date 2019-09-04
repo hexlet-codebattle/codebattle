@@ -1,3 +1,3 @@
-codebattle_db_port: 5432
+codebattle_port: 4000
 codebattle_app_image_name: "codebattle/app"
 codebattle_nginx_image_name: "codebattle/nginx"
