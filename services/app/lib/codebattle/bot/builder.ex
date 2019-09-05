@@ -33,6 +33,6 @@ defmodule Codebattle.Bot.Builder do
         limit: 1
       )
 
-    bot = Repo.one(query)
+    Repo.one(query)
   end
 end

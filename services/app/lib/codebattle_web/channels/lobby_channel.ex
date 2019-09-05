@@ -3,7 +3,6 @@ defmodule CodebattleWeb.LobbyChannel do
   use CodebattleWeb, :channel
 
   alias Codebattle.GameProcess.Play
-  alias Codebattle.GameProcess.Player
 
   require Logger
 
@@ -15,7 +14,7 @@ defmodule CodebattleWeb.LobbyChannel do
       end)
       |> Enum.filter(fn game ->
         Enum.any?(game.players, fn player -> player.id === socket.assigns.user_id end) or
-        game.game_info.type === "public"
+          game.game_info.type === "public"
       end)
 
     completed_games = Enum.map(Play.completed_games(), &Play.get_completed_game_info/1)

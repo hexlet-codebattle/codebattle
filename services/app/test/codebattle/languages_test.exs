@@ -62,8 +62,7 @@ defmodule Codebattle.LanguagesTest do
     golang_expected =
       "package main;\n\nfunc solution(a int64, b float64, text string, arr [][]int64, condition bool, hashtable map[string]int64) []string {\n\n}"
 
-    ruby_expected =
-      "def solution(a, b, text, arr, condition, hashtable)\n\treturn [\"value\"]\nend"
+    ruby_expected = "def solution(a, b, text, arr, condition, hashtable)\n\t[\"value\"]\nend"
 
     elixir_expected =
       "defmodule Solution do\n\tdef solution(a, b, text, arr, condition, hashtable) do\n\t\t[\"value\"]\n\tend\nend"

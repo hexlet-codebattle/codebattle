@@ -3,7 +3,6 @@ defmodule Codebattle.Bot.CreatorServer do
 
   use GenServer
 
-  alias Codebattle.Repo
   alias Codebattle.Bot.PlaybookAsyncRunner
 
   @timeout Application.get_env(:codebattle, Codebattle.Bot)[:timeout]
@@ -12,12 +11,12 @@ defmodule Codebattle.Bot.CreatorServer do
     GenServer.start_link(__MODULE__, %{}, name: __MODULE__)
   end
 
-  def init(state) do
+  def init(_state) do
     Process.send_after(self(), :create_bot_if_needed, @timeout)
     {:ok, %{}}
   end
 
-  def handle_info(:create_bot_if_needed, state) do
+  def handle_info(:create_bot_if_needed, _state) do
     levels = ["elementary", "easy", "medium", "hard"]
 
     for level <- levels do
@@ -25,9 +24,9 @@ defmodule Codebattle.Bot.CreatorServer do
       case Codebattle.Bot.GameCreator.call(level) do
         {:ok, game_id, bot} ->
           # create bots gen_server for every game
-          {:ok, pid} = PlaybookAsyncRunner.create_server(%{game_id: game_id, bot: bot})
+          {:ok, _pid} = PlaybookAsyncRunner.create_server(%{game_id: game_id, bot: bot})
 
-        {:error, reason} ->
+        {:error, _reason} ->
           nil
       end
     end

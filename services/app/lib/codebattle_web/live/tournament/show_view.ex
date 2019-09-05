@@ -2,12 +2,10 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
   use Phoenix.LiveView
   use Timex
 
-  alias Codebattle.User
-  alias Codebattle.Repo
   alias Codebattle.Tournament
   alias Codebattle.Tournament.Helpers
 
-  @update_frequency 1_00000000000
+  @update_frequency 1_000
 
   def render(assigns) do
     CodebattleWeb.TournamentView.render("show.html", assigns)
@@ -42,7 +40,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     end
   end
 
-  def handle_info(%{topic: topic, event: "update_tournament", payload: payload} = params, socket) do
+  def handle_info(%{topic: topic, event: "update_tournament", payload: payload}, socket) do
     if is_current_topic?(topic, socket.assigns.tournament) do
       {:noreply, assign(socket, tournament: payload.tournament)}
     else
@@ -50,7 +48,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     end
   end
 
-  def handle_info(%{topic: topic, event: "update_chat", payload: payload} = params, socket) do
+  def handle_info(%{topic: topic, event: "update_chat", payload: payload}, socket) do
     if is_current_topic?(topic, socket.assigns.tournament) do
       {:noreply, assign(socket, messages: payload.messages)}
     else
@@ -163,7 +161,6 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
   end
 
   defp updated_time(starts_at) do
-    diff = Time.diff(starts_at, Timex.now(), :second)
     days = round(Timex.diff(starts_at, Timex.now(), :days))
     hours = round(Timex.diff(starts_at, Timex.now(), :hours) - days * 24)
     minutes = round(Timex.diff(starts_at, Timex.now(), :minutes) - days * 24 * 60 - hours * 60)

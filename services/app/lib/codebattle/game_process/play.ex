@@ -14,14 +14,12 @@ defmodule Codebattle.GameProcess.Play do
     Server,
     GlobalSupervisor,
     Engine,
-    Play,
     Player,
     FsmHelpers,
     ActiveGames
   }
 
   alias Codebattle.CodeCheck.Checker
-  alias Codebattle.Bot.PlaybookAsyncRunner
   alias CodebattleWeb.Notifications
 
   # get data interface

@@ -4,7 +4,7 @@ defmodule CodebattleWeb.GameChannel do
 
   # require Logger
 
-  alias Codebattle.GameProcess.{Play, FsmHelpers, ActiveGames, Server}
+  alias Codebattle.GameProcess.{Play, FsmHelpers}
 
   @after_join_game_attrs [
     :status,
@@ -32,7 +32,7 @@ defmodule CodebattleWeb.GameChannel do
   end
 
   # This handle for test rematch:accept_offer
-  def handle_info(msg, socket) do
+  def handle_info(_msg, socket) do
     {:noreply, socket}
   end
 
@@ -237,7 +237,7 @@ defmodule CodebattleWeb.GameChannel do
         })
 
         {:noreply, socket}
-      
+
       {:copypaste, result, output} ->
         push(socket, "user:copypaste_detected", %{
           user_id: user.id
@@ -273,7 +273,6 @@ defmodule CodebattleWeb.GameChannel do
 
       {:error, reason} ->
         {:reply, {:error, %{reason: reason}}, socket}
-
     end
   end
 
@@ -301,11 +300,5 @@ defmodule CodebattleWeb.GameChannel do
   defp get_game_id(socket) do
     "game:" <> game_id = socket.topic
     game_id
-  end
-
-  defp rematch_reject(game_id, socket) do
-    {:ok, new_fsm} = Play.rematch_reject(game_id)
-    broadcast!(socket, "rematch:update_status", %{rematchState: new_fsm.data.rematch_state})
-    {:noreply, socket}
   end
 end

@@ -8,19 +8,14 @@ defmodule Codebattle.Mixfile do
     [
       app: :codebattle,
       version: "0.0.12",
-      elixir: "~> 1.7",
+      elixir: "~> 1.9",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      # test_coverage: [tool: ExCoveralls],
-      preferred_cli_env: [
-        coveralls: :test,
-        "coveralls.detail": :test,
-        "coveralls.post": :test,
-        "coveralls.html": :test
-      ],
-      deps: deps()
+      test_coverage: [tool: ExCoveralls],
+      deps: deps(),
+      elixirc_options: [warnings_as_errors: true]
     ]
   end
 

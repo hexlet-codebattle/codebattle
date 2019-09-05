@@ -123,7 +123,8 @@ defmodule Codebattle.Languages do
         check_dir: "check",
         extension: "py",
         docker_image: "codebattle/python:3.7.2",
-        solution_template: "from typing import List, Dict\n\ndef solution(<%= arguments %>)<%= expected %>:",
+        solution_template:
+          "from typing import List, Dict\n\ndef solution(<%= arguments %>)<%= expected %>:",
         types: %{
           "integer" => "int",
           "float" => "float",

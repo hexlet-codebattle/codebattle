@@ -41,7 +41,7 @@ defmodule Codebattle.GameProcess.Auth do
     end
   end
 
-  def player_can_check_game?(id, player) do
+  def player_can_check_game?(_id, _player) do
     :ok
     # case ActiveGames.participant?(id, player.id) do
     #   true ->
@@ -52,7 +52,7 @@ defmodule Codebattle.GameProcess.Auth do
     # end
   end
 
-  def player_can_update_editor_data?(id, player) do
+  def player_can_update_editor_data?(_id, _player) do
     :ok
     # case ActiveGames.participant?(id, player.id) do
     #   true ->

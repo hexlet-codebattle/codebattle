@@ -1,22 +1,15 @@
 defmodule Codebattle.GameProcess.Engine.Tournament do
   import Codebattle.GameProcess.Engine.Base
 
-  alias Codebattle.GameProcess.FsmHelpers
   alias Codebattle.Bot.PlaybookAsyncRunner
 
   alias Codebattle.GameProcess.{
-    Play,
-    Server,
     GlobalSupervisor,
     Fsm,
-    Player,
-    FsmHelpers,
-    ActiveGames,
-    Notifier
+    ActiveGames
   }
 
   alias Codebattle.{Repo, Game}
-  alias Codebattle.Bot.RecorderServer
 
   def create_game(players, params) do
     level = "elementary"
@@ -35,7 +28,6 @@ defmodule Codebattle.GameProcess.Engine.Tournament do
         level: level,
         type: "tournament",
         starts_at: TimeHelper.utc_now(),
-        timeout_seconds: @game_timeout,
         task: task,
         tournament_id: params.tournament_id,
         timeout_seconds: params.timeout_seconds,
@@ -70,7 +62,7 @@ defmodule Codebattle.GameProcess.Engine.Tournament do
 
   # bot and user
 
-  def get_task(level, players) do
+  def get_task(level, _players) do
     {:ok, task} = Codebattle.GameProcess.Engine.Bot.get_task(level)
     task
   end

@@ -47,7 +47,6 @@ defmodule CodebattleWeb.Router do
     get("/", PageController, :index)
     resources("/users", UserController, only: [:index, :show])
     resources("/tournaments", TournamentController, only: [:index, :show])
-    live("/tournaments/:id", Live.Tournament.ShowView)
     get("/settings", UserController, :edit, as: :user_setting)
     put("/settings", UserController, :update, as: :user_setting)
     resources("/games", GameController, only: [:create, :show, :delete])

@@ -236,7 +236,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
   defp get_value({%{"name" => "string"}, value}, _meta), do: ~s("#{value}")
   defp get_value({%{"name" => "boolean"}, value}, meta), do: get_boolean_value(value, meta)
 
-  defp get_value({%{"name" => "array", "nested" => nested} = signature, value}, meta) do
+  defp get_value({%{"name" => "array", "nested" => nested}, value}, meta) do
     array_values = Enum.map_join(value, ", ", &get_value({nested, &1}, meta))
     get_array_value(array_values, meta)
   end

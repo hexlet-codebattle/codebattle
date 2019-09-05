@@ -9,7 +9,6 @@ defmodule Codebattle.Bot.RecorderServer do
 
   alias Codebattle.Repo
   alias Codebattle.Bot.Playbook
-  alias Codebattle.GameProcess.Play
 
   import Codebattle.GameProcess.FsmHelpers
 
@@ -26,7 +25,8 @@ defmodule Codebattle.Bot.RecorderServer do
     try do
       GenServer.cast(server_name(game_id, user_id), {:update_text, text})
     rescue
-      e in FunctionClauseError -> e
+      e in FunctionClauseError ->
+        Logger.error(inspect(e))
     end
   end
 
@@ -34,7 +34,8 @@ defmodule Codebattle.Bot.RecorderServer do
     try do
       GenServer.cast(server_name(game_id, user_id), {:update_lang, lang})
     rescue
-      e in FunctionClauseError -> e
+      e in FunctionClauseError ->
+        Logger.error(inspect(e))
     end
   end
 
@@ -43,7 +44,6 @@ defmodule Codebattle.Bot.RecorderServer do
       GenServer.cast(server_name(game_id, user_id), {:check_and_store, editor_text})
     rescue
       e in FunctionClauseError ->
-        e
         Logger.error(inspect(e))
     end
   end

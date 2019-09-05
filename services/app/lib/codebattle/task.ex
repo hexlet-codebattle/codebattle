@@ -23,16 +23,24 @@ defmodule Codebattle.Task do
 
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:description, :name, :level, :input_signature, :output_signature, :asserts, :disabled])
+    |> cast(params, [
+      :description,
+      :name,
+      :level,
+      :input_signature,
+      :output_signature,
+      :asserts,
+      :disabled
+    ])
     |> validate_required([:description, :name, :level, :asserts])
     |> unique_constraint(:name)
   end
 
   def visible(query) do
-    from t in query, where: t.disabled == false
+    from(t in query, where: t.disabled == false)
   end
 
   def invisible(query) do
-    from t in query, where: t.disabled == true
+    from(t in query, where: t.disabled == true)
   end
 end

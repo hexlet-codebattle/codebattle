@@ -3,7 +3,6 @@ defmodule Codebattle.User.Achievements do
     Count user achievements
   """
   alias Codebattle.{Repo, UserGame}
-  alias Codebattle.User.Stats
 
   import Ecto.Query, warn: false
 

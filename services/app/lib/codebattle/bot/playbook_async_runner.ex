@@ -6,9 +6,6 @@ defmodule Codebattle.Bot.PlaybookAsyncRunner do
 
   require Logger
 
-  alias Codebattle.Bot.Playbook
-  alias Codebattle.GameProcess.Play
-
   # API
   # Starts GenServer for bot for every game. When GenServer receives :run, bot starts play
   def create_server(%{game_id: game_id, bot: bot}) do
@@ -18,7 +15,6 @@ defmodule Codebattle.Bot.PlaybookAsyncRunner do
       )
     rescue
       e in FunctionClauseError ->
-        e
         Logger.error(inspect(e))
     end
   end
@@ -92,7 +88,7 @@ defmodule Codebattle.Bot.PlaybookAsyncRunner do
 
   # HELPERS
 
-  def handle_info(message, state) do
+  def handle_info(_message, state) do
     {:noreply, state}
   end
 

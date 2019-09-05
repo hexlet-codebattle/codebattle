@@ -14,7 +14,7 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
     conn = put_session(conn, :user_id, user.id)
 
     playbook_data = %{
-      meta: %{total_time_ms: 1000000, init_lang: "ruby"},
+      meta: %{total_time_ms: 1_000_000, init_lang: "ruby"},
       playbook: [
         %{"delta" => [%{"insert" => "t"}], "time" => 20},
         %{"delta" => [%{"retain" => 1}, %{"insert" => "e"}], "time" => 20},

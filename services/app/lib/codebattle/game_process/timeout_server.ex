@@ -43,7 +43,7 @@ defmodule Codebattle.GameProcess.TimeoutServer do
     {:noreply, state}
   end
 
-  def handle_info({:DOWN, ref, :process, _, _}, state) do
+  def handle_info({:DOWN, _ref, :process, _, _}, state) do
     {:noreply, state}
   end
 

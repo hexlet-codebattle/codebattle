@@ -77,7 +77,7 @@ defmodule Codebattle.Tournament.Helpers do
 
     case result do
       {:ok, tournament} ->
-        {:ok, pid} = Codebattle.Tournament.Server.start(tournament)
+        {:ok, _pid} = Codebattle.Tournament.Server.start(tournament)
         {:ok, tournament}
 
       {:error, changeset} ->
@@ -135,7 +135,7 @@ defmodule Codebattle.Tournament.Helpers do
           ^game_id ->
             update_match_params(match, params)
 
-          x ->
+          _ ->
             match
         end
         |> Map.from_struct()
@@ -210,10 +210,10 @@ defmodule Codebattle.Tournament.Helpers do
     |> Repo.update!()
   end
 
-  defp pick_winner(%{players: [%{game_result: "won"} = winner, _]} = match), do: winner
-  defp pick_winner(%{players: [_, %{game_result: "won"} = winner]} = match), do: winner
-  defp pick_winner(%{players: [winner, %{game_result: "gave_up"} = loser]} = match), do: winner
-  defp pick_winner(%{players: [%{game_result: "gave_up"} = loser, winner]} = match), do: winner
+  defp pick_winner(%{players: [%{game_result: "won"} = winner, _]}), do: winner
+  defp pick_winner(%{players: [_, %{game_result: "won"} = winner]}), do: winner
+  defp pick_winner(%{players: [winner, %{game_result: "gave_up"}]}), do: winner
+  defp pick_winner(%{players: [%{game_result: "gave_up"}, winner]}), do: winner
   defp pick_winner(match), do: Enum.random(match.players)
 
   defp pair_players_to_matches(players) do

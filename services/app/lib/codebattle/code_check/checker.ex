@@ -57,7 +57,7 @@ defmodule Codebattle.CodeCheck.Checker do
   end
 
   defp prepare_tmp_dir!(task, editor_text, lang) do
-    File.mkdir_p! "/tmp/codebattle-check"
+    File.mkdir_p!("/tmp/codebattle-check")
     dir_path = Temp.mkdir!(prefix: lang.slug, basedir: "/tmp/codebattle-check")
 
     check_code = :rand.normal() |> to_string
@@ -107,7 +107,7 @@ defmodule Codebattle.CodeCheck.Checker do
 
   defp compile_check_solution(_, _), do: :ok
 
-  defp run_checker(command, %{task: task, lang: lang}, description) do
+  defp run_checker(command, %{task: _task, lang: lang}, description) do
     [cmd | cmd_opts] = command |> String.split()
     t = :os.system_time(:millisecond)
     {container_output, _status} = System.cmd(cmd, cmd_opts, stderr_to_stdout: true)

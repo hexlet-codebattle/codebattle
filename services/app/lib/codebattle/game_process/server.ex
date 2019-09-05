@@ -24,7 +24,7 @@ defmodule Codebattle.GameProcess.Server do
     try do
       GenServer.call(server_name(game_id), :fsm, 20_000)
     catch
-      :exit, reason ->
+      :exit, _reason ->
         :terminated
     end
   end

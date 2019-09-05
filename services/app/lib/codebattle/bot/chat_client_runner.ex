@@ -13,11 +13,6 @@ defmodule Codebattle.Bot.ChatClientRunner do
     })
 
     :timer.sleep(2 * 60 * 1000)
-    #
-    # PhoenixClient.Channel.push_async(params.chat_channel, "new:message", %{
-    #  "message" => say_about_language(params.chat_state),
-    #  "user" => "test_bot"
-    # })
 
     unless :rand.uniform(16) > 8 do
       PhoenixClient.Channel.push_async(params.chat_channel, "new:message", %{
@@ -41,11 +36,6 @@ defmodule Codebattle.Bot.ChatClientRunner do
     "Hi, #{opponent["name"]}!"
   end
 
-  defp say_about_language(chat_state) do
-    opponent = get_opponent(chat_state)
-    "#{String.capitalize(opponent["lang"] || "javascript")} is not good lang!"
-  end
-
   defp say_announcement(chat_state) do
     opponent = get_opponent(chat_state)
     "I have some great news))) You may choose #{pick_language(opponent["lang"])} for this task"
@@ -58,7 +48,7 @@ defmodule Codebattle.Bot.ChatClientRunner do
   defp get_opponent(chat_state) do
     case Enum.at(chat_state["users"], 1) do
       nil ->
-        default_user
+        default_user()
 
       user ->
         user

@@ -2,13 +2,8 @@ defmodule Codebattle.GameProcess.Engine.Base do
   alias Codebattle.GameProcess.{
     Play,
     Server,
-    GlobalSupervisor,
-    Fsm,
-    Player,
     FsmHelpers,
-    Elo,
-    ActiveGames,
-    Notifier
+    Elo
   }
 
   alias Codebattle.{Repo, User, Game, UserGame}

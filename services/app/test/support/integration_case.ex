@@ -3,12 +3,12 @@ defmodule Codebattle.IntegrationCase do
 
   use ExUnit.CaseTemplate
 
-  @session Plug.Session.init(
-             store: :cookie,
-             key: "_app",
-             encryption_salt: "yadayada",
-             signing_salt: "yadayada"
-           )
+  # @session Plug.Session.init(
+  #            store: :cookie,
+  #            key: "_app",
+  #            encryption_salt: "yadayada",
+  #            signing_salt: "yadayada"
+  #          )
 
   using do
     quote do
@@ -19,8 +19,6 @@ defmodule Codebattle.IntegrationCase do
       use CodebattleWeb.ConnCase
       use PhoenixIntegration
 
-      # import Ecto
-      # import Ecto.Query
       import Helpers.GameProcess
 
       alias Codebattle.{Repo, User, Game, UserGame}

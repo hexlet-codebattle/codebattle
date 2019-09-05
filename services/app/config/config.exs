@@ -6,8 +6,10 @@
 use Mix.Config
 
 config :codebattle,
-  alpine_docker_command_template: "docker run --rm --net none ~s ~s timeout -s 9 -t 10 make --silent test",
-  ubuntu_docker_command_template: "docker run --rm --net none ~s ~s timeout -s 9 10s make --silent test",
+  alpine_docker_command_template:
+    "docker run --rm --net none ~s ~s timeout -s 9 -t 10 make --silent test",
+  ubuntu_docker_command_template:
+    "docker run --rm --net none ~s ~s timeout -s 9 10s make --silent test",
   alpine_docker_command_compile_template:
     "docker run --net none ~s ~s timeout -s 9 -t 10 make --silent test-compile",
   ubuntu_docker_command_compile_template:

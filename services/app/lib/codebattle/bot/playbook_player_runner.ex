@@ -17,7 +17,6 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
       {id, playbook_data} = playbook
       diffs = Map.get(playbook_data, "playbook")
       meta = Map.get(playbook_data, "meta")
-      game_topic = "game:#{params.game_id}"
 
       step_coefficient = params.bot_time_ms / Map.get(meta, "total_time_ms")
 
@@ -27,11 +26,11 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
         total_time_ms: #{meta["total_time_ms"]}
         ")
 
-      start_bot_cycle(meta, diffs, game_topic, params.game_channel, step_coefficient)
+      start_bot_cycle(meta, diffs, params.game_channel, step_coefficient)
     end
   end
 
-  defp start_bot_cycle(meta, diffs, game_topic, channel_pid, step_coefficient) do
+  defp start_bot_cycle(meta, diffs, channel_pid, step_coefficient) do
     # Diff is one the maps
     #
     # 1 Main map with action to update text

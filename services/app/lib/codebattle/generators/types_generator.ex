@@ -81,9 +81,9 @@ defmodule Codebattle.Generators.TypesGenerator do
   defp get_hashs(input_signature, output_signature),
     do: Enum.filter(input_signature ++ [output_signature], &is_hash/1)
 
-  defp get_interface_export("ts", %{name: name, value_type: value}) do
-    "export interface #{name} {\n\t[key: string]: #{value};\n}\n\n"
-  end
+  # defp get_interface_export("ts", %{name: name, value_type: value}) do
+  #   "export interface #{name} {\n\t[key: string]: #{value};\n}\n\n"
+  # end
 
   defp get_import_expression(types, %{slug: "ts"}) when types == [] do
     "import * as _ from \"lodash\";\n"

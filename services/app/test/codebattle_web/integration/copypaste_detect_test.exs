@@ -1,11 +1,9 @@
-defmodule Codebattle.PlayGameTest do
+defmodule Codebattle.CopyPasteDetectTest do
   use Codebattle.IntegrationCase
 
   import Mock
 
-  alias Codebattle.GameProcess.Server
   alias CodebattleWeb.UserSocket
-  alias Codebattle.GameProcess.FsmHelpers
 
   setup %{conn: conn} do
     insert(:task)
@@ -33,9 +31,7 @@ defmodule Codebattle.PlayGameTest do
     conn1: conn1,
     conn2: conn2,
     socket1: socket1,
-    socket2: socket2,
-    user1: user1,
-    user2: user2
+    socket2: socket2
   } do
     with_mocks [
       {Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> {:ok, "asdf", "asdf"} end]}
@@ -53,8 +49,7 @@ defmodule Codebattle.PlayGameTest do
 
       # Second player join game
       post(conn2, game_path(conn2, :join, game_id))
-      {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
-      fsm = Server.fsm(game_id)
+      {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
 
       # First player copypaste detected
       editor_text = "t"
@@ -76,9 +71,7 @@ defmodule Codebattle.PlayGameTest do
     conn1: conn1,
     conn2: conn2,
     socket1: socket1,
-    socket2: socket2,
-    user1: user1,
-    user2: user2
+    socket2: socket2
   } do
     with_mocks [
       {Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> {:ok, "asdf", "asdf"} end]}
@@ -96,9 +89,7 @@ defmodule Codebattle.PlayGameTest do
 
       # Second player join game
       post(conn2, game_path(conn2, :join, game_id))
-      {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
-      fsm = Server.fsm(game_id)
-
+      {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
       template = "def solution(a, b) return"
       editor_text1 = "def solution(a, b) the  return"
       editor_text2 = "def solution(a, b) the whole so  return"

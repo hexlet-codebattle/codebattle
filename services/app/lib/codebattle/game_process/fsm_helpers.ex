@@ -70,10 +70,6 @@ defmodule Codebattle.GameProcess.FsmHelpers do
     fsm.data.timeout_seconds
   end
 
-  def get_task(fsm) do
-    fsm.data.task
-  end
-
   def get_type(fsm) do
     fsm.data.type
   end

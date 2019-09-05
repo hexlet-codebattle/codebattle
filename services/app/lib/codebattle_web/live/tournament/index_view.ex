@@ -4,8 +4,6 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
 
   @topic "tournaments"
 
-  alias Codebattle.User
-  alias Codebattle.Repo
   alias Codebattle.Tournament
   alias Codebattle.Tournament.Helpers
 

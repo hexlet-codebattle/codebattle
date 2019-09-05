@@ -12,7 +12,7 @@ defmodule Codebattle.Tournament.Server do
     try do
       GenServer.call(taournament_key(id), :get_messages)
     catch
-      :exit, reason ->
+      :exit, _reason ->
         []
     end
   end

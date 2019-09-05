@@ -10,7 +10,7 @@ defmodule CodebattleWeb.UserSocket do
   def connect(%{"token" => user_token}, socket) do
     case Phoenix.Token.verify(socket, "user_token", user_token, max_age: 1_000_000) do
       {:ok, 0} ->
-        socket = assign(socket, :current_user, Codebattle.Bot.Builder.build())
+        _socket = assign(socket, :current_user, Codebattle.Bot.Builder.build())
 
       {:ok, "anonymous"} ->
         socket =
