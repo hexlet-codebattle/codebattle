@@ -76,7 +76,7 @@ spec:
           ports:
             - containerPort: 4000
           volumeMounts:
-            - mountPath: /tmp/hexlet-basics
+            - mountPath: /tmp/codebattle-check
               name: users-code-path
             - mountPath: /var/run/docker.sock
               name: docker-sock
