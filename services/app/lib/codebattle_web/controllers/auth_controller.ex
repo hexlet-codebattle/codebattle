@@ -2,6 +2,7 @@ defmodule CodebattleWeb.AuthController do
   use CodebattleWeb, :controller
   import CodebattleWeb.Gettext
 
+  require Logger
   alias Ueberauth.Strategy.Helpers
 
   plug(Ueberauth)
@@ -10,7 +11,9 @@ defmodule CodebattleWeb.AuthController do
     render(conn, "request.html", callback_url: Helpers.callback_url(conn))
   end
 
-  def callback(%{assigns: %{ueberauth_failure: _fails}} = conn, _params) do
+  def callback(%{assigns: %{ueberauth_failure: reason}} = conn, _params) do
+    Logger.error("Failed to authenticate on github" + inspect(reason))
+
     conn
     |> put_flash(:danger, gettext("Failed to authenticate."))
     |> redirect(to: "/")
