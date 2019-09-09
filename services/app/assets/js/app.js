@@ -36,7 +36,6 @@ const Hooks = {
     },
   },
 };
-console.log(Hooks);
 const liveSocket = new LiveSocket('/live', { hooks: Hooks });
 liveSocket.connect();
 
