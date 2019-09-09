@@ -11,8 +11,8 @@ defmodule CodebattleWeb.AuthController do
     render(conn, "request.html", callback_url: Helpers.callback_url(conn))
   end
 
-  def callback(%{assigns: %{ueberauth_failure: reason}} = conn, _params) do
-    Logger.error("Failed to authenticate on github" <> inspect(reason))
+  def callback(%{assigns: %{ueberauth_failure: reason}} = conn, params) do
+    Logger.error("Failed to authenticate on github" <> inspect(reason) <> "\nParams: " <> inspect(params) <> <> "\nConn: " <> inspect(conn))
 
     conn
     |> put_flash(:danger, gettext("Failed to authenticate."))
