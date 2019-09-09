@@ -39,7 +39,7 @@ config :phoenix_slime, :use_slim_extension, true
 
 config :ueberauth, Ueberauth,
   providers: [
-    github: {Ueberauth.Strategy.Github, [default_scope: "user:email"]}
+    github: {Ueberauth.Strategy.Github, [default_scope: "user:email", send_redirect_uri: false]}
   ]
 
 config :ueberauth, Ueberauth.Strategy.Github.OAuth,
