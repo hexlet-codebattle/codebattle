@@ -194,7 +194,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
       |> Enum.zip(assert["arguments"])
       |> Enum.map_join(", ", &get_value(&1, meta))
 
-    "#{String.replace(result, "\"", "\\\"")}"
+    ~s(#{String.replace(result, "\"", "\\\"")})
   end
 
   defp get_name(%{"argument-name" => name}, index, _meta), do: "#{name}#{index}"
@@ -233,7 +233,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
     get_value({type, value}, meta)
   end
 
-  defp get_value({%{"name" => "string"}, value}, _meta), do: ~s("#{value}")
+  defp get_value({%{"name" => "string"}, value}, _meta), do: ~s("#{double_backslashes(value)}")
   defp get_value({%{"name" => "boolean"}, value}, meta), do: get_boolean_value(value, meta)
 
   defp get_value({%{"name" => "array", "nested" => nested}, value}, meta) do
@@ -284,6 +284,9 @@ defmodule Codebattle.Generators.CheckerGenerator do
   defp extract_type(%{"type" => type}), do: type
 
   defp filter_empty_items(items), do: items |> Enum.filter(&(&1 != ""))
+
+  defp double_backslashes(string),
+    do: string |> String.replace("\\", "\\\\") |> String.replace("\n", "\\n") |> String.replace("\t", "\\t")
 
   defp put_types(binding, %{slug: slug} = meta, task) when slug in @langs_need_types do
     binding
