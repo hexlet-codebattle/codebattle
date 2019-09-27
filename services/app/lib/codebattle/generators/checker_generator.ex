@@ -244,10 +244,14 @@ defmodule Codebattle.Generators.CheckerGenerator do
   defp get_value({%{"name" => "hash"} = signature, value}, meta) do
     list = Map.to_list(value)
 
-    hash_entries =
-      Enum.map_join(list, ", ", fn item -> get_hash_inners(item, signature, meta) end)
+    if Enum.empty?(list) do
+      get_empty_hash(meta)
+    else
+      hash_entries =
+        Enum.map_join(list, ", ", fn item -> get_hash_inners(item, signature, meta) end)
 
-    get_hash_value(hash_entries, meta)
+      get_hash_value(hash_entries, meta)
+    end
   end
 
   defp get_value({_, value}, _meta), do: value
@@ -276,6 +280,11 @@ defmodule Codebattle.Generators.CheckerGenerator do
   defp get_hash_value(entries, %{slug: "php"}), do: "array(#{entries})"
   defp get_hash_value(entries, %{slug: "elixir"}), do: ~s(%{#{entries}})
   defp get_hash_value(entries, _meta), do: ~s({#{entries}})
+
+  defp get_empty_hash(%{slug: "php"}), do: "array()"
+  defp get_empty_hash(%{slug: "elixir"}), do: ~s(%{})
+  defp get_empty_hash(%{slug: "haskell"}), do: ~s(empty)
+  defp get_empty_hash(%{slug: _meta}), do: ~s({})
 
   defp get_array_value(entries, %{slug: "golang"}), do: ~s({#{entries}})
   defp get_array_value(entries, %{slug: "php"}), do: "array(#{entries})"
