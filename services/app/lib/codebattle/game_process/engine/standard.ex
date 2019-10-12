@@ -10,7 +10,8 @@ defmodule Codebattle.GameProcess.Engine.Standard do
     Player,
     FsmHelpers,
     ActiveGames,
-    Notifier
+    Notifier,
+    TasksQueuesServer
   }
 
   alias Codebattle.{Repo, Game}
@@ -71,7 +72,7 @@ defmodule Codebattle.GameProcess.Engine.Standard do
     level = FsmHelpers.get_level(fsm)
     first_player = FsmHelpers.get_first_player(fsm)
 
-    task = get_random_task(level, [first_player.id, second_player.id])
+    task = TasksQueuesServer.call_next_task(level)
 
     case Server.call_transition(game_id, :join, %{
            players: [

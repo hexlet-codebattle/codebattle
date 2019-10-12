@@ -6,7 +6,8 @@ defmodule Codebattle.GameProcess.Engine.Tournament do
   alias Codebattle.GameProcess.{
     GlobalSupervisor,
     Fsm,
-    ActiveGames
+    ActiveGames,
+    TasksQueuesServer
   }
 
   alias Codebattle.{Repo, Game}
@@ -56,12 +57,11 @@ defmodule Codebattle.GameProcess.Engine.Tournament do
   end
 
   # real users
-  def get_task(level, [%{is_bot: false}, %{is_bot: false}] = players) do
-    get_random_task(level, Enum.map(players, fn x -> x.id end))
+  def get_task(level, [%{is_bot: false}, %{is_bot: false}]) do
+    TasksQueuesServer.call_next_task(level)
   end
 
   # bot and user
-
   def get_task(level, _players) do
     {:ok, task} = Codebattle.GameProcess.Engine.Bot.get_task(level)
     task
