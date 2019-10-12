@@ -59,7 +59,7 @@ defmodule Codebattle.Mixfile do
       {:phoenix, "~> 1.3"},
       {:phoenix_pubsub, "~> 1.0"},
       {:phoenix_ecto, "~> 4.0"},
-      {:phoenix_live_view, github: "phoenixframework/phoenix_live_view"},
+      {:phoenix_live_view, "~> 0.3.0"},
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 2.10"},
       {:gettext, "~> 0.11"},
@@ -98,6 +98,7 @@ defmodule Codebattle.Mixfile do
       {:phoenix_live_reload, "~> 1.0", only: :dev},
 
       # test
+      {:floki, ">= 0.0.0", only: :test},
       {:mock, "~> 0.3.0", only: :test},
       {:phoenix_integration, "~> 0.5", only: :test},
       {:excoveralls, "~> 0.7", only: :test},
