@@ -295,7 +295,11 @@ defmodule Codebattle.Generators.CheckerGenerator do
   defp filter_empty_items(items), do: items |> Enum.filter(&(&1 != ""))
 
   defp double_backslashes(string),
-    do: string |> String.replace("\\", "\\\\") |> String.replace("\n", "\\n") |> String.replace("\t", "\\t")
+    do:
+      string
+      |> String.replace("\\", "\\\\")
+      |> String.replace("\n", "\\n")
+      |> String.replace("\t", "\\t")
 
   defp put_types(binding, %{slug: slug} = meta, task) when slug in @langs_need_types do
     binding
