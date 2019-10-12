@@ -15,6 +15,7 @@ defmodule Codebattle.GameProcess.Play do
     GlobalSupervisor,
     Engine,
     Player,
+    Fsm,
     FsmHelpers,
     ActiveGames
   }
@@ -140,13 +141,14 @@ defmodule Codebattle.GameProcess.Play do
   end
 
   def join_game(id, user) do
-    fsm = get_fsm(id)
-    player = Player.build(user)
-    engine = get_engine(fsm)
-
-    case player_can_join_game?(player) do
-      :ok -> engine.join_game(id, player)
+    with %Fsm{} = fsm <- get_fsm(id),
+         %Player{} = player <- Player.build(user),
+         :ok <- player_can_join_game?(player) do
+      engine = get_engine(fsm)
+      engine.join_game(id, player)
+    else
       {:error, reason} -> {:error, reason}
+      result -> {:error, result}
     end
   end
 
