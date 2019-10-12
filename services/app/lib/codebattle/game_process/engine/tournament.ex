@@ -38,7 +38,7 @@ defmodule Codebattle.GameProcess.Engine.Tournament do
     ActiveGames.create_game(game.id, fsm)
     {:ok, _} = GlobalSupervisor.start_game(game.id, fsm)
 
-    Enum.map(players, fn player ->
+    Enum.each(players, fn player ->
       if player.is_bot do
         PlaybookAsyncRunner.create_server(%{game_id: game.id, bot: player})
 
