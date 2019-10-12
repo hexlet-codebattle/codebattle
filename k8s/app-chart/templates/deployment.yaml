@@ -49,9 +49,6 @@ spec:
             successThreshold: 1
           ports:
             - containerPort: 8080
-          resources:
-            requests:
-              cpu: 10m
           env:
             - name: NGINX_SERVER_ADDRESS
               value: 127.0.0.1
@@ -67,9 +64,6 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 5
             successThreshold: 1
-          resources:
-            requests:
-              cpu: 10m
           command:
             - make
             - start
