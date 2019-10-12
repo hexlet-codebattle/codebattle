@@ -20,6 +20,7 @@ defmodule Codebattle.Application do
       supervisor(CodebattleWeb.Endpoint, []),
       # Start your own worker by calling: Codebattle.Worker.start_link(arg1, arg2, arg3)
       # worker(Codebattle.Worker, [arg1, arg2, arg3]),
+      worker(Codebattle.GameProcess.TasksQueuesServer, []),
       supervisor(Codebattle.GameProcess.GlobalSupervisor, []),
       worker(Codebattle.Bot.CreatorServer, [])
     ]

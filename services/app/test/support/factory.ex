@@ -36,7 +36,8 @@ defmodule CodebattleWeb.Factory do
         %{"argument-name" => "a", "type" => %{"name" => "integer"}},
         %{"argument-name" => "b", "type" => %{"name" => "integer"}}
       ],
-      output_signature: %{"type" => %{"name" => "integer"}}
+      output_signature: %{"type" => %{"name" => "integer"}},
+      disabled: false
     }
   end
 
