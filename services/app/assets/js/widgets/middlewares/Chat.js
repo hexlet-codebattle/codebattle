@@ -10,8 +10,6 @@ const channel = socket.channel(channelName);
 
 export const fetchState = () => (dispatch) => {
   channel.join()
-    .receive('ignore', () => console.log('Chat channel: auth error'))
-    .receive('error', () => console.log('Chat channel: unable to join'))
     .receive('ok', ({ users, messages }) => dispatch(fetchChatData({ users, messages })));
 
   channel.on('user:joined', ({ users }) => dispatch(userJoinedChat({ users })));

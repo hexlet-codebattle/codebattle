@@ -15,7 +15,8 @@ import 'phoenix_html';
 import '@babel/polyfill';
 import '@fortawesome/fontawesome-free/js/all';
 import 'bootstrap';
-import LiveSocket from 'phoenix_live_view';
+import { Socket } from "phoenix";
+import { LiveSocket } from "phoenix_live_view";
 
 // Import local files
 //
@@ -36,7 +37,7 @@ const Hooks = {
     },
   },
 };
-const liveSocket = new LiveSocket('/live', { hooks: Hooks });
+const liveSocket = new LiveSocket('/live', Socket, { hooks: Hooks });
 liveSocket.connect();
 
 const gameWidgetRoot = document.getElementById('game-widget-root');

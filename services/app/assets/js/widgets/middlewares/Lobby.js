@@ -8,8 +8,6 @@ const channel = socket.channel(channelName);
 
 export const fetchState = () => (dispatch) => {
   channel.join()
-    .receive('ignore', () => console.log('Lobby channel: auth error'))
-    .receive('error', () => console.log('Lobby channel: unable to join'))
     .receive(
       'ok',
       ({

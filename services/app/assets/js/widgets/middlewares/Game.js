@@ -24,7 +24,6 @@ const initGameChannel = (dispatch) => {
       rematch_initiator_id: rematchInitiatorId,
     } = response;
 
-
     // const firstEditorLang = _.find(languages, { slug: user1.editor_lang });
     // const users = [{ ...user1, type: userTypes.firstPlayer }];
 
@@ -41,55 +40,60 @@ const initGameChannel = (dispatch) => {
 
     dispatch(actions.updateGamePlayers({ players }));
 
-    dispatch(actions.updateEditorText({
-      userId: firstPlayer.id,
-      text: firstPlayer.editor_text,
-      langSlug: firstPlayer.editor_lang,
-    }));
+    dispatch(
+      actions.updateEditorText({
+        userId: firstPlayer.id,
+        text: firstPlayer.editor_text,
+        langSlug: firstPlayer.editor_lang,
+      }),
+    );
 
-    dispatch(actions.updateExecutionOutput({
-      userId: firstPlayer.id,
-      result: firstPlayer.result,
-      output: firstPlayer.output,
-    }));
+    dispatch(
+      actions.updateExecutionOutput({
+        userId: firstPlayer.id,
+        result: firstPlayer.result,
+        output: firstPlayer.output,
+      }),
+    );
 
     if (secondPlayer) {
-      dispatch(actions.updateEditorText({
-        userId: secondPlayer.id,
-        text: secondPlayer.editor_text,
-        langSlug: secondPlayer.editor_lang,
-      }));
+      dispatch(
+        actions.updateEditorText({
+          userId: secondPlayer.id,
+          text: secondPlayer.editor_text,
+          langSlug: secondPlayer.editor_lang,
+        }),
+      );
 
-      dispatch(actions.updateExecutionOutput({
-        userId: secondPlayer.id,
-        result: secondPlayer.result,
-        output: secondPlayer.output,
-      }));
+      dispatch(
+        actions.updateExecutionOutput({
+          userId: secondPlayer.id,
+          result: secondPlayer.result,
+          output: secondPlayer.output,
+        }),
+      );
     }
 
     if (task) {
       dispatch(actions.setGameTask({ task }));
     }
 
-    dispatch(actions.updateGameStatus({
-      status,
-      startsAt,
-      joinsAt,
-      timeoutSeconds,
-      rematchState,
-      rematchInitiatorId,
-      tournamentId,
-    }));
+    dispatch(
+      actions.updateGameStatus({
+        status,
+        startsAt,
+        joinsAt,
+        timeoutSeconds,
+        rematchState,
+        rematchInitiatorId,
+        tournamentId,
+      }),
+    );
 
     dispatch(actions.finishStoreInit());
   };
 
-  channel.join().receive('ignore', () => console.log('Game channel: auth error'))
-    .receive('error', () => console.log('Game channel: unable to join'))
-    .receive('ok', onJoinSuccess);
-
-  channel.onError((ev) => console.log('Game channel: something went wrong', ev));
-  channel.onClose((ev) => console.log('Game channel: closed', ev));
+  channel.join().receive('ok', onJoinSuccess);
 };
 
 export const sendEditorText = (text, langSlug = null) => (dispatch, getState) => {
@@ -161,70 +165,100 @@ export const editorReady = () => (dispatch) => {
     dispatch(actions.updateCheckStatus({ [user.id]: false }));
   });
 
-  channel.on('user:check_result', ({
-    status, players, solution_status: solutionStatus,
-    output, result, asserts_count: assertsCount, success_count: successCount, user_id: userId,
-  }) => {
-    // const currentUserId = selectors.currentUserIdSelector(state);
+  channel.on(
+    'user:check_result',
+    ({
+      status,
+      players,
+      solution_status: solutionStatus,
+      output,
+      result,
+      asserts_count: assertsCount,
+      success_count: successCount,
+      user_id: userId,
+    }) => {
+      // const currentUserId = selectors.currentUserIdSelector(state);
 
-    const newGameStatus = solutionStatus ? { status } : {};
-    const asserts = { assertsCount, successCount };
-    if (players) {
+      const newGameStatus = solutionStatus ? { status } : {};
+      const asserts = { assertsCount, successCount };
+      if (players) {
+        dispatch(actions.updateGamePlayers({ players }));
+      }
+      dispatch(
+        actions.updateExecutionOutput({
+          output,
+          result,
+          asserts,
+          userId,
+        }),
+      );
+      dispatch(actions.updateGameStatus({ ...newGameStatus, solutionStatus }));
+      dispatch(actions.updateCheckStatus({ [userId]: false }));
+    },
+  );
+
+  channel.on(
+    'user:joined',
+    ({
+      status,
+      starts_at: startsAt,
+      joins_at: joinsAt,
+      timeout_seconds: timeoutSeconds,
+      players: [firstPlayer, secondPlayer],
+      task,
+    }) => {
+      const players = [
+        { ...firstPlayer, type: userTypes.firstPlayer },
+        { ...secondPlayer, type: userTypes.secondPlayer },
+      ];
+
       dispatch(actions.updateGamePlayers({ players }));
-    }
-    dispatch(actions.updateExecutionOutput({
-      output, result, asserts, userId,
-    }));
-    dispatch(actions.updateGameStatus({ ...newGameStatus, solutionStatus }));
-    dispatch(actions.updateCheckStatus({ [userId]: false }));
-  });
+      dispatch(actions.setGameTask({ task }));
 
-  channel.on('user:joined', ({
-    status,
-    starts_at: startsAt,
-    joins_at: joinsAt,
-    timeout_seconds: timeoutSeconds,
-    players: [firstPlayer, secondPlayer],
-    task,
-  }) => {
-    const players = [
-      { ...firstPlayer, type: userTypes.firstPlayer },
-      { ...secondPlayer, type: userTypes.secondPlayer },
-    ];
+      dispatch(
+        actions.updateEditorText({
+          userId: firstPlayer.id,
+          text: firstPlayer.editor_text,
+          langSlug: firstPlayer.editor_lang,
+        }),
+      );
 
-    dispatch(actions.updateGamePlayers({ players }));
-    dispatch(actions.setGameTask({ task }));
+      dispatch(
+        actions.updateExecutionOutput({
+          userId: firstPlayer.id,
+          result: firstPlayer.result,
+          output: firstPlayer.output,
+        }),
+      );
 
-    dispatch(actions.updateEditorText({
-      userId: firstPlayer.id,
-      text: firstPlayer.editor_text,
-      langSlug: firstPlayer.editor_lang,
-    }));
+      if (secondPlayer) {
+        dispatch(
+          actions.updateEditorText({
+            userId: secondPlayer.id,
+            text: secondPlayer.editor_text,
+            langSlug: secondPlayer.editor_lang,
+          }),
+        );
 
-    dispatch(actions.updateExecutionOutput({
-      userId: firstPlayer.id,
-      result: firstPlayer.result,
-      output: firstPlayer.output,
-    }));
+        dispatch(
+          actions.updateExecutionOutput({
+            userId: secondPlayer.id,
+            result: secondPlayer.result,
+            output: secondPlayer.output,
+          }),
+        );
+      }
 
-    if (secondPlayer) {
-      dispatch(actions.updateEditorText({
-        userId: secondPlayer.id,
-        text: secondPlayer.editor_text,
-        langSlug: secondPlayer.editor_lang,
-      }));
-
-      dispatch(actions.updateExecutionOutput({
-        userId: secondPlayer.id,
-        result: secondPlayer.result,
-        output: secondPlayer.output,
-      }));
-    }
-
-    dispatch(actions.updateGameStatus({
-      status, startsAt, joinsAt, timeoutSeconds,
-    }));
-  });
+      dispatch(
+        actions.updateGameStatus({
+          status,
+          startsAt,
+          joinsAt,
+          timeoutSeconds,
+        }),
+      );
+    },
+  );
 
   channel.on('user:won', ({ players, status, msg }) => {
     dispatch(actions.updateGamePlayers({ players }));
@@ -266,9 +300,5 @@ export const checkGameResult = () => (dispatch, getState) => {
   channel.push('check_result', payload);
 };
 
-export const compressEditorHeight = (
-  (userId) => (dispatch) => dispatch(actions.compressEditorHeight({ userId }))
-);
-export const expandEditorHeight = (
-  (userId) => (dispatch) => dispatch(actions.expandEditorHeight({ userId }))
-);
+export const compressEditorHeight = (userId) => (dispatch) => dispatch(actions.compressEditorHeight({ userId }));
+export const expandEditorHeight = (userId) => (dispatch) => dispatch(actions.expandEditorHeight({ userId }));
