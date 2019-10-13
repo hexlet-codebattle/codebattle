@@ -68,43 +68,44 @@ defmodule Codebattle.GameProcess.Engine.Standard do
   end
 
   def join_game(game_id, second_player) do
-    fsm = Play.get_fsm(game_id)
-    level = FsmHelpers.get_level(fsm)
-    first_player = FsmHelpers.get_first_player(fsm)
+    with {:ok, fsm} <- Play.get_fsm(game_id),
+         level <- FsmHelpers.get_level(fsm),
+         first_player <- FsmHelpers.get_first_player(fsm),
+         task <- TasksQueuesServer.call_next_task(level),
+         {:ok, fsm} <-
+           Server.call_transition(game_id, :join, %{
+             players: [
+               Player.rebuild(first_player, task),
+               Player.rebuild(second_player, task)
+             ],
+             joins_at: TimeHelper.utc_now(),
+             task: task
+           }) do
+      ActiveGames.add_participant(fsm)
 
-    task = TasksQueuesServer.call_next_task(level)
+      update_game!(game_id, %{state: "playing", task_id: task.id})
+      start_record_fsm(game_id, FsmHelpers.get_players(fsm), fsm)
 
-    case Server.call_transition(game_id, :join, %{
-           players: [
-             Player.rebuild(first_player, task),
-             Player.rebuild(second_player, task)
-           ],
-           joins_at: TimeHelper.utc_now(),
-           task: task
-         }) do
-      {:ok, fsm} ->
-        ActiveGames.add_participant(fsm)
+      Task.async(fn ->
+        Notifier.call(:game_opponent_join, %{
+          first_player: FsmHelpers.get_first_player(fsm),
+          second_player: FsmHelpers.get_second_player(fsm),
+          game_id: game_id
+        })
+      end)
 
-        update_game!(game_id, %{state: "playing", task_id: task.id})
-        start_record_fsm(game_id, FsmHelpers.get_players(fsm), fsm)
+      Task.async(fn ->
+        CodebattleWeb.Endpoint.broadcast!("lobby", "game:update", %{
+          game: FsmHelpers.lobby_format(fsm)
+        })
+      end)
 
-        Task.async(fn ->
-          Notifier.call(:game_opponent_join, %{
-            first_player: FsmHelpers.get_first_player(fsm),
-            second_player: FsmHelpers.get_second_player(fsm),
-            game_id: game_id
-          })
-        end)
+      start_timeout_timer(game_id, fsm)
 
-        Task.async(fn ->
-          CodebattleWeb.Endpoint.broadcast!("lobby", "game:update", %{
-            game: FsmHelpers.lobby_format(fsm)
-          })
-        end)
-
-        start_timeout_timer(game_id, fsm)
-
-        {:ok, fsm}
+      {:ok, fsm}
+    else
+      {:error, reason} ->
+        {:error, reason}
 
       {:error, reason, _fsm} ->
         {:error, reason}

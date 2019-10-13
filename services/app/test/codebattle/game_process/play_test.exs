@@ -32,7 +32,7 @@ defmodule Codebattle.GameProcess.PlayTest do
   test "tries to join the missing game", %{user1: user1, user2: user2, game_id: game_id} do
     :ok = Play.cancel_game(game_id, user1)
 
-    assert {:error, :terminated} = Play.join_game(game_id, user2)
+    assert {:error, :game_terminated} = Play.join_game(game_id, user2)
   end
 
   test "timeouts the game", %{user1: _, user2: user2, game_id: game_id} do

@@ -15,7 +15,6 @@ defmodule Codebattle.GameProcess.Play do
     GlobalSupervisor,
     Engine,
     Player,
-    Fsm,
     FsmHelpers,
     ActiveGames
   }
@@ -33,21 +32,26 @@ defmodule Codebattle.GameProcess.Play do
   end
 
   def game_info(id) do
-    fsm = get_fsm(id)
+    case get_fsm(id) do
+      {:ok, fsm} ->
+        {:ok,
+         %{
+           status: fsm.state,
+           starts_at: FsmHelpers.get_starts_at(fsm),
+           players: FsmHelpers.get_players(fsm),
+           task: FsmHelpers.get_task(fsm),
+           level: FsmHelpers.get_level(fsm),
+           type: FsmHelpers.get_type(fsm),
+           timeout_seconds: FsmHelpers.get_timeout_seconds(fsm),
+           rematch_state: FsmHelpers.get_rematch_state(fsm),
+           rematch_initiator_id: FsmHelpers.get_rematch_initiator_id(fsm),
+           tournament_id: FsmHelpers.get_tournament_id(fsm),
+           joins_at: FsmHelpers.get_joins_at(fsm)
+         }}
 
-    %{
-      status: fsm.state,
-      starts_at: FsmHelpers.get_starts_at(fsm),
-      players: FsmHelpers.get_players(fsm),
-      task: FsmHelpers.get_task(fsm),
-      level: FsmHelpers.get_level(fsm),
-      type: FsmHelpers.get_type(fsm),
-      timeout_seconds: FsmHelpers.get_timeout_seconds(fsm),
-      rematch_state: FsmHelpers.get_rematch_state(fsm),
-      rematch_initiator_id: FsmHelpers.get_rematch_initiator_id(fsm),
-      tournament_id: FsmHelpers.get_tournament_id(fsm),
-      joins_at: FsmHelpers.get_joins_at(fsm)
-    }
+      {:error, reason} ->
+        {:error, reason}
+    end
   end
 
   def completed_games do
@@ -124,15 +128,25 @@ defmodule Codebattle.GameProcess.Play do
   end
 
   def rematch_send_offer(game_id, user_id) do
-    fsm = get_fsm(game_id)
-    engine = get_engine(fsm)
-    engine.handle_rematch_offer_send(fsm, user_id)
+    case get_fsm(game_id) do
+      {:ok, fsm} ->
+        engine = get_engine(fsm)
+        engine.handle_rematch_offer_send(fsm, user_id)
+
+      {:error, reason} ->
+        {:error, reason}
+    end
   end
 
   def rematch_accept_offer(game_id) do
-    fsm = get_fsm(game_id)
-    engine = get_engine(fsm)
-    engine.handle_accept_offer(fsm)
+    case get_fsm(game_id) do
+      {:ok, fsm} ->
+        engine = get_engine(fsm)
+        engine.handle_accept_offer(fsm)
+
+      {:error, reason} ->
+        {:error, reason}
+    end
   end
 
   def rematch_reject(game_id) do
@@ -141,14 +155,13 @@ defmodule Codebattle.GameProcess.Play do
   end
 
   def join_game(id, user) do
-    with %Fsm{} = fsm <- get_fsm(id),
+    with {:ok, fsm} <- get_fsm(id),
          %Player{} = player <- Player.build(user),
          :ok <- player_can_join_game?(player) do
       engine = get_engine(fsm)
       engine.join_game(id, player)
     else
       {:error, reason} -> {:error, reason}
-      result -> {:error, result}
     end
   end
 
@@ -159,7 +172,8 @@ defmodule Codebattle.GameProcess.Play do
       ActiveGames.terminate_game(id)
       Notifications.game_timeout(id)
       Notifications.lobby_game_cancel(id)
-      Notifications.notify_tournament("game:cancel", get_fsm(id), %{game_id: id})
+      {:ok, fsm} = get_fsm(id)
+      Notifications.notify_tournament("game:cancel", fsm, %{game_id: id})
 
       id
       |> get_game
@@ -173,88 +187,74 @@ defmodule Codebattle.GameProcess.Play do
   end
 
   def cancel_game(id, user) do
-    fsm = get_fsm(id)
-    player = FsmHelpers.get_player(fsm, user.id)
+    with {:ok, fsm} <- get_fsm(id),
+         %Player{} = player <- FsmHelpers.get_player(fsm, user.id),
+         :ok <- player_can_cancel_game?(id, player) do
+      ActiveGames.terminate_game(id)
+      GlobalSupervisor.terminate_game(id)
+      Notifications.lobby_game_cancel(id)
 
-    case player_can_cancel_game?(id, player) do
-      :ok ->
-        ActiveGames.terminate_game(id)
-        GlobalSupervisor.terminate_game(id)
-        Notifications.lobby_game_cancel(id)
+      id
+      |> get_game
+      |> Game.changeset(%{state: "canceled"})
+      |> Repo.update!()
 
-        id
-        |> get_game
-        |> Game.changeset(%{state: "canceled"})
-        |> Repo.update!()
-
-        :ok
-
-      {:error, reason} ->
-        {:error, reason}
+      :ok
+    else
+      {:error, reason} -> {:error, reason}
     end
   end
 
   def update_editor_data(id, user, editor_text, editor_lang) do
-    fsm = get_fsm(id)
-    player = FsmHelpers.get_player(fsm, user.id)
-    engine = get_engine(fsm)
-
-    case player_can_update_editor_data?(id, player) do
-      :ok ->
-        update_editor(id, engine, player, editor_text, editor_lang)
-        :ok
-
-      {:error, reason} ->
-        {:error, reason}
+    with {:ok, fsm} <- get_fsm(id),
+         %Player{} = player <- FsmHelpers.get_player(fsm, user.id),
+         :ok <- player_can_update_editor_data?(id, player) do
+      engine = get_engine(fsm)
+      update_editor(id, engine, player, editor_text, editor_lang)
+      :ok
+    else
+      {:error, reason} -> {:error, reason}
     end
   end
 
   def give_up(id, user) do
-    fsm = get_fsm(id)
-    player = FsmHelpers.get_player(fsm, user.id)
-
-    case player_can_give_up?(id, player) do
-      :ok ->
-        engine = get_engine(fsm)
-        {_response, fsm} = Server.call_transition(id, :give_up, %{id: player.id})
-        engine.handle_give_up(id, player, fsm)
-        {:ok, fsm}
-
-      {:error, reason} ->
-        {:error, reason}
+    with {:ok, fsm} <- get_fsm(id),
+         %Player{} = player <- FsmHelpers.get_player(fsm, user.id),
+         :ok <- player_can_give_up?(id, player),
+         {_response, fsm} <- Server.call_transition(id, :give_up, %{id: player.id}) do
+      engine = get_engine(fsm)
+      engine.handle_give_up(id, player, fsm)
+      {:ok, fsm}
+    else
+      {:error, reason} -> {:error, reason}
     end
   end
 
   def check_game(id, user, editor_text, editor_lang) do
-    fsm = get_fsm(id)
-    player = FsmHelpers.get_player(fsm, user.id)
+    with {:ok, fsm} <- get_fsm(id),
+         %Player{} = player <- FsmHelpers.get_player(fsm, user.id),
+         :ok <- player_can_check_game?(id, player) do
+      engine = get_engine(fsm)
+      update_editor(id, engine, player, editor_text, editor_lang)
+      check_result = Checker.check(FsmHelpers.get_task(fsm), editor_text, editor_lang)
 
-    case player_can_check_game?(id, player) do
-      :ok ->
-        engine = get_engine(fsm)
+      case {fsm.state, check_result} do
+        {:waiting_opponent, {:ok, result, output}} ->
+          {:error, result, output}
 
-        update_editor(id, engine, player, editor_text, editor_lang)
+        {:playing, {:ok, result, output}} ->
+          {_response, fsm} = Server.call_transition(id, :complete, %{id: player.id})
 
-        check_result = Checker.check(FsmHelpers.get_task(fsm), editor_text, editor_lang)
+          case engine.handle_won_game(id, player, fsm, editor_text) do
+            :ok -> {:ok, fsm, result, output}
+            :copypaste -> {:copypaste, result, output}
+          end
 
-        case {fsm.state, check_result} do
-          {:waiting_opponent, {:ok, result, output}} ->
-            {:error, result, output}
-
-          {:playing, {:ok, result, output}} ->
-            {_response, fsm} = Server.call_transition(id, :complete, %{id: player.id})
-
-            case engine.handle_won_game(id, player, fsm, editor_text) do
-              :ok -> {:ok, fsm, result, output}
-              :copypaste -> {:copypaste, result, output}
-            end
-
-          {_, result} ->
-            result
-        end
-
-      {:error, reason} ->
-        {:error, reason}
+        {_, result} ->
+          result
+      end
+    else
+      {:error, reason} -> {:error, reason}
     end
   end
 

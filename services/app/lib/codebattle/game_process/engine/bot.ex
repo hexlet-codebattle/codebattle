@@ -48,41 +48,35 @@ defmodule Codebattle.GameProcess.Engine.Bot do
   end
 
   def join_game(game_id, second_player) do
-    fsm = Play.get_fsm(game_id)
-    level = FsmHelpers.get_level(fsm)
-    first_player = FsmHelpers.get_first_player(fsm)
+    with {:ok, fsm} <- Play.get_fsm(game_id),
+         level <- FsmHelpers.get_level(fsm),
+         first_player <- FsmHelpers.get_first_player(fsm),
+         {:ok, task} <- get_task(level),
+         {:ok, fsm} <-
+           Server.call_transition(game_id, :join, %{
+             players: [
+               Player.rebuild(first_player, task),
+               Player.rebuild(second_player, task)
+             ],
+             task: task,
+             joins_at: TimeHelper.utc_now()
+           }) do
+      ActiveGames.add_participant(fsm)
 
-    case get_task(level) do
-      {:ok, task} ->
-        case Server.call_transition(game_id, :join, %{
-               players: [
-                 Player.rebuild(first_player, task),
-                 Player.rebuild(second_player, task)
-               ],
-               task: task,
-               joins_at: TimeHelper.utc_now()
-             }) do
-          {:ok, fsm} ->
-            ActiveGames.add_participant(fsm)
+      update_game!(game_id, %{state: "playing", task_id: task.id})
+      start_record_fsm(game_id, FsmHelpers.get_players(fsm), fsm)
+      run_bot!(fsm)
 
-            update_game!(game_id, %{state: "playing", task_id: task.id})
-            start_record_fsm(game_id, FsmHelpers.get_players(fsm), fsm)
-            run_bot!(fsm)
+      Task.async(fn ->
+        CodebattleWeb.Endpoint.broadcast!("lobby", "game:update", %{
+          game: FsmHelpers.lobby_format(fsm)
+        })
+      end)
 
-            Task.async(fn ->
-              CodebattleWeb.Endpoint.broadcast!("lobby", "game:update", %{
-                game: FsmHelpers.lobby_format(fsm)
-              })
-            end)
+      start_timeout_timer(game_id, fsm)
 
-            start_timeout_timer(game_id, fsm)
-
-            {:ok, fsm}
-
-          {:error, reason} ->
-            {:error, reason}
-        end
-
+      {:ok, fsm}
+    else
       {:error, reason} ->
         {:error, reason}
     end

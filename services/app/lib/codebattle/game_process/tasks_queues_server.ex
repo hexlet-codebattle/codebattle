@@ -48,8 +48,9 @@ defmodule Codebattle.GameProcess.TasksQueuesServer do
 
   defp get_shuffled_tasks(level) do
     from(task in Task,
-      where: task.level == ^level)
-      |> Repo.all()
-      |> Enum.shuffle
+      where: task.level == ^level
+    )
+    |> Repo.all()
+    |> Enum.shuffle()
   end
 end

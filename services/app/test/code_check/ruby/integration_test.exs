@@ -64,7 +64,7 @@ defmodule Codebattle.CodeCheck.Ruby.IntegrationTest do
 
     assert expected_result == Jason.decode!(result)
 
-    fsm = Server.fsm(game.id)
+    {:ok, fsm} = Server.fsm(game.id)
 
     assert fsm.state == :playing
   end
@@ -106,7 +106,7 @@ defmodule Codebattle.CodeCheck.Ruby.IntegrationTest do
 
     assert expected_result == Jason.decode!(result)
 
-    fsm = Server.fsm(game.id)
+    {:ok, fsm} = Server.fsm(game.id)
 
     assert fsm.state == :playing
   end
@@ -143,7 +143,7 @@ defmodule Codebattle.CodeCheck.Ruby.IntegrationTest do
 
     :timer.sleep(timeout)
 
-    fsm = Server.fsm(game.id)
+    {:ok, fsm} = Server.fsm(game.id)
     assert fsm.state == :game_over
   end
 end
