@@ -42,6 +42,7 @@
     "react-calendar-heatmap": "^1.8.1",
     "react-dom": "^16.10.2",
     "react-hotkeys": "^1.1.4",
+    "react-js-pagination": "^3.0.2",
     "react-loading": "^2.0.3",
     "react-markdown": "^4.2.2",
     "react-monaco-editor": "^0.26.2",

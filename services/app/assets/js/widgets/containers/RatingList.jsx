@@ -3,13 +3,13 @@ import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import _ from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import Pagination from '../components/Pagination';
+import Pagination from 'react-js-pagination';
 import UserInfo from './UserInfo';
 import { getUsersList } from '../selectors';
 import * as UsersMiddlewares from '../middlewares/Users';
 import Loading from '../components/Loading';
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   usersRatingPage: getUsersList(state),
 });
 
@@ -24,48 +24,46 @@ class UsersRating extends React.Component {
     getRatingPage(1);
   }
 
-  renderUser = (user, index) => {
-    const {
-      usersRatingPage: { pageInfo },
-    } = this.props;
+  renderUser = (user) => (
+    <tr key={user.id}>
+      <td className="p-3 align-middle">{user.rank}</td>
+      <td className="tex-left p-3 align-middle">
+        <UserInfo user={_.omit(user, 'rating')} />
+      </td>
+      <td className="p-3 align-middle">{user.rating}</td>
+      <td className="p-3 align-middle">{user.games_played}</td>
+      <td className="p-3 align-middle">{user.performance}</td>
+      <td className="p-3 align-middle">
+        <a className="text-muted" href={`https://github.com/${user.name}`}>
+          <span className="h3">
+            <i className="fab fa-github" />
+          </span>
+        </a>
+      </td>
+    </tr>
+  );
 
-    return (
-      <tr key={user.id}>
-        <td className="p-3 align-middle">{user.rank}</td>
-        <td className="tex-left p-3 align-middle">
-          <UserInfo user={_.omit(user, 'rating')} />
-        </td>
-        <td className="p-3 align-middle">{user.rating}</td>
-        <td className="p-3 align-middle">{user.games_played}</td>
-        <td className="p-3 align-middle">{user.performance}</td>
-        <td className="p-3 align-middle">
-          <a className="text-muted" href={`https://github.com/${user.name}`}>
-            <span className="h3">
-              <i className="fab fa-github" />
-            </span>
-          </a>
-        </td>
-      </tr>
-    );
-  };
-
-  renderPaginationUi = () => {
+  renderPagination = () => {
     const {
       getRatingPage,
       usersRatingPage: {
-        pageInfo: { page_number: currentPage, total_pages: total },
+        pageInfo: {
+          page_number: activePage,
+          page_size: itemsCountPerPage,
+          total_entries: totalItemsCount,
+        },
       },
     } = this.props;
 
-    const filter = this._filter ? this._filter.value : '';
-    const pages = _.range(1, total + 1);
-
     return (
       <Pagination
-        filter={filter}
-        pages={pages}
-        currentPage={currentPage}
-        onChangePage={getRatingPage}
+        activePage={activePage}
+        itemsCountPerPage={itemsCountPerPage}
+        totalItemsCount={totalItemsCount}
+        pageRangeDisplayed={5}
+        onChange={getRatingPage}
+        itemClass="page-item"
+        linkClass="page-link"
       />
     );
   };
@@ -114,7 +112,9 @@ class UsersRating extends React.Component {
             {usersRatingPage.users.map(this.renderUser)}
           </tbody>
         </table>
-        {this.renderPaginationUi()}
+        <div>
+          {this.renderPagination()}
+        </div>
       </div>
     );
   }
