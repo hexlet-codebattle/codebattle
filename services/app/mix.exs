@@ -81,7 +81,7 @@ defmodule Codebattle.Mixfile do
       {:envy, "~> 1.1.1"},
       {:one_signal, git: "https://github.com/vtm9/one_signal.git"},
       {:paginator, "~> 0.6"},
-      {:scrivener_ecto, "~> 2.0"},
+      {:scrivener_ecto, "~> 2.2"},
       {:scrivener_html, git: "https://github.com/hlongvu/scrivener_html.git"},
       {:phoenix_client, git: "https://github.com/vtm9/phoenix_client.git"},
       {:websocket_client, "~> 1.3"},
