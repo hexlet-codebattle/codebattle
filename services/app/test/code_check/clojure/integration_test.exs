@@ -64,7 +64,7 @@ defmodule Codebattle.CodeCheck.Clojure.IntegrationTest do
     expected_result = %{"status" => "failure", "arguments" => [1, 1], "result" => 0}
     assert expected_result == Jason.decode!(result)
 
-    fsm = Server.fsm(game.id)
+    {:ok, fsm} = Server.fsm(game.id)
 
     assert fsm.state == :playing
   end
@@ -103,7 +103,7 @@ defmodule Codebattle.CodeCheck.Clojure.IntegrationTest do
     assert Jason.decode!(result)["status"] == "error"
     assert Jason.decode!(result)["result"] =~ "Syntax error compiling at"
 
-    fsm = Server.fsm(game.id)
+    {:ok, fsm} = Server.fsm(game.id)
 
     assert fsm.state == :playing
   end
@@ -140,7 +140,7 @@ defmodule Codebattle.CodeCheck.Clojure.IntegrationTest do
 
     :timer.sleep(timeout)
 
-    fsm = Server.fsm(game.id)
+    {:ok, fsm} = Server.fsm(game.id)
     assert fsm.state == :game_over
   end
 end

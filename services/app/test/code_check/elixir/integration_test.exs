@@ -64,7 +64,7 @@ defmodule Codebattle.CodeCheck.Elixir.IntegrationTest do
     expected_result = %{"status" => "failure", "result" => 0, "arguments" => [1, 1]}
     assert expected_result == Jason.decode!(result)
 
-    fsm = Server.fsm(game.id)
+    {:ok, fsm} = Server.fsm(game.id)
 
     assert fsm.state == :playing
   end
@@ -103,7 +103,7 @@ defmodule Codebattle.CodeCheck.Elixir.IntegrationTest do
 
     assert expected_result == Jason.decode!(result)
 
-    fsm = Server.fsm(game.id)
+    {:ok, fsm} = Server.fsm(game.id)
 
     assert fsm.state == :playing
   end
@@ -140,7 +140,7 @@ defmodule Codebattle.CodeCheck.Elixir.IntegrationTest do
 
     :timer.sleep(timeout)
 
-    fsm = Server.fsm(game.id)
+    {:ok, fsm} = Server.fsm(game.id)
     assert fsm.state == :game_over
   end
 end

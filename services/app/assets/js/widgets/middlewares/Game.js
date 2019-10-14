@@ -11,6 +11,11 @@ const channelName = `game:${gameId}`;
 const channel = socket.channel(channelName);
 
 const initGameChannel = (dispatch) => {
+  const onJoinFailure = (response) => {
+    console.log(response);
+    window.location.reload();
+  };
+
   const onJoinSuccess = (response) => {
     const {
       status,
@@ -93,7 +98,10 @@ const initGameChannel = (dispatch) => {
     dispatch(actions.finishStoreInit());
   };
 
-  channel.join().receive('ok', onJoinSuccess);
+  channel
+    .join()
+    .receive('ok', onJoinSuccess)
+    .receive('error', onJoinFailure);
 };
 
 export const sendEditorText = (text, langSlug = null) => (dispatch, getState) => {

@@ -17,18 +17,27 @@ defmodule CodebattleWeb.GameChannel do
   ]
 
   def join("game:" <> game_id, _payload, socket) do
-    send(self(), :after_join)
-    game_info = Play.game_info(game_id)
+    case Play.game_info(game_id) do
+      {:ok, game_info} ->
+        send(self(), :after_join)
+        {:ok, game_info, socket}
 
-    {:ok, game_info, socket}
+      {:error, reason} ->
+        {:error, reason}
+    end
   end
 
   def handle_info(:after_join, socket) do
     game_id = get_game_id(socket)
-    game_info = Play.game_info(game_id)
 
-    broadcast_from!(socket, "user:joined", Map.take(game_info, @after_join_game_attrs))
-    {:noreply, socket}
+    case Play.game_info(game_id) do
+      {:ok, game_info} ->
+        broadcast_from!(socket, "user:joined", Map.take(game_info, @after_join_game_attrs))
+        {:noreply, socket}
+
+      {:error, _reason} ->
+        {:noreply, socket}
+    end
   end
 
   # This handle for test rematch:accept_offer
@@ -99,21 +108,24 @@ defmodule CodebattleWeb.GameChannel do
 
   def handle_in("rematch:send_offer", _, socket) do
     game_id = get_game_id(socket)
-
-    fsm = Play.get_fsm(game_id)
     current_user_id = socket.assigns.user_id
 
-    case fsm.state do
-      :rematch_in_approval ->
-        handle_in("rematch:accept_offer", nil, socket)
+    with {:ok, fsm} <- Play.get_fsm(game_id) do
+      case fsm.state do
+        :rematch_in_approval ->
+          handle_in("rematch:accept_offer", nil, socket)
 
-      :game_over ->
-        process_rematch_offer(game_id, current_user_id, socket)
+        :game_over ->
+          process_rematch_offer(game_id, current_user_id, socket)
 
-      :timeout ->
-        process_rematch_offer(game_id, current_user_id, socket)
+        :timeout ->
+          process_rematch_offer(game_id, current_user_id, socket)
 
-      _ ->
+        _ ->
+          {:noreply, socket}
+      end
+    else
+      {:error, _reason} ->
         {:noreply, socket}
     end
   end

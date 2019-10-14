@@ -53,12 +53,12 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
         bot_id: bot.id
       })
 
-      fsm = Server.fsm(game_id)
+      {:ok, fsm} = Server.fsm(game_id)
       assert fsm.state == :playing
 
       :timer.sleep(6000)
       # bot write_some_text
-      fsm = Server.fsm(game_id)
+      {:ok, fsm} = Server.fsm(game_id)
 
       assert FsmHelpers.get_first_player(fsm).editor_text == "tes"
       assert FsmHelpers.get_winner(fsm).name == bot.name

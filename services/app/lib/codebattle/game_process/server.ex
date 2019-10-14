@@ -21,11 +21,13 @@ defmodule Codebattle.GameProcess.Server do
   end
 
   def fsm(game_id) do
-    try do
-      GenServer.call(server_name(game_id), :fsm, 20_000)
-    catch
-      :exit, _reason ->
-        :terminated
+    case game_pid(game_id) do
+      :undefined ->
+        {:error, :game_terminated}
+
+      _pid ->
+        fsm = GenServer.call(server_name(game_id), :fsm, 20_000)
+        {:ok, fsm}
     end
   end
 
