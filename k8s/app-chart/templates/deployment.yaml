@@ -80,3 +80,5 @@ spec:
           env:
             - name: CODEBATTLE_VERSION
               value: {{ .Values.version }}
+            - name: DEPLOYED_AT
+              value: "{{ now }}"
