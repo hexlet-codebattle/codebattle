@@ -21,7 +21,7 @@ defmodule Codebattle.GameProcess.Server do
   end
 
   def fsm(game_id) do
-    case :gproc.where(game_key(game_id)) do
+    case game_pid(game_id) do
       :undefined ->
         {:error, :game_terminated}
 

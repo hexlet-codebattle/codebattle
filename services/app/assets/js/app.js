@@ -15,8 +15,8 @@ import 'phoenix_html';
 import '@babel/polyfill';
 import '@fortawesome/fontawesome-free/js/all';
 import 'bootstrap';
-import { Socket } from "phoenix";
-import { LiveSocket } from "phoenix_live_view";
+import { Socket } from 'phoenix';
+import { LiveSocket } from 'phoenix_live_view';
 
 // Import local files
 //
