@@ -22,3 +22,12 @@ helm-install-keel:
 	helm repo add keel https://charts.keel.sh
 	helm repo update
 	helm upgrade --install keel --namespace keel keel/keel
+
+
+kb-app-%: POD_NAME = $(shell kubectl get pod -l "app.kubernetes.io/instance=app" -o name --kubeconfig=$(KUBECONFIG))
+
+kb-app-tailf:
+	kubectl logs -f $(POD_NAME) -c app
+
+kb-app-console:
+	kubectl exec -it $(POD_NAME) -c app  -- bash
