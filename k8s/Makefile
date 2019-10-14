@@ -1,16 +1,24 @@
-CURRENT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
+PWD:=$(shell pwd)
 
-get-pods:
-	kubectl --kubeconfig="kubeconfig.yml" get pod -w -o wide
+kb-%: export KUBECONFIG=$(PWD)/kubeconfig.yml
+helm-%: export KUBECONFIG=$(PWD)/kubeconfig.yml
 
-get-nodes:
-	kubectl --kubeconfig="kubeconfig.yml" get nodes
+kb-get-pods:
+	kubectl get pod -w -o wide
+
+kb-get-nodes:
+	kubectl get nodes
 
 helm-init:
-	 helm install --kubeconfig="kubeconfig.yml" --name app $(CURRENT_DIR)/app-chart
+	helm install --name app $(PWD)/app-chart
 
 helm-upgrade-app:
-	helm upgrade --kubeconfig="kubeconfig.yml" app $(CURRENT_DIR)/app-chart
+	helm upgrade app $(PWD)/app-chart
 
 helm-install-ingress:
 	helm install stable/nginx-ingress --name ingress --set rbac.create=true
+
+helm-install-keel:
+	helm repo add keel https://charts.keel.sh
+	helm repo update
+	helm upgrade --install keel --namespace keel keel/keel
