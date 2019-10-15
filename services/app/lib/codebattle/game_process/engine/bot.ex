@@ -167,10 +167,10 @@ defmodule Codebattle.GameProcess.Engine.Bot do
     }
 
     high_level_time = %{
-      "elementary" => 60,
-      "easy" => 60 * 3,
-      "medium" => 60 * 5,
-      "hard" => 60 * 7
+      "elementary" => 30,
+      "easy" => 30 * 3,
+      "medium" => 30 * 5,
+      "hard" => 30 * 7
     }
 
     # y = f(x);
