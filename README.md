@@ -8,20 +8,20 @@
 
 ### Requirements
 
-* Mac / Linux
-* Docker
-* Docker Compose
+- Mac / Linux
+- Docker
+- Docker Compose
 
 ### Install
 
-* Clone repo
+- Clone repo
 
 ```bash
 $ git clone https://github.com/hexlet-codebattle/codebattle.git
 $ cd codebattle
 $ mkdir -p tmp
 $ echo 'asdf' > tmp/ansible-vault-password
-$ make ansible-development-setup
+$ make setup-env
 $ make compose-setup
 ```
 
@@ -31,7 +31,7 @@ $ make compose-setup
 $ make compose
 ```
 
-* Open <https://localhost:4000>
+- Open <https://localhost:4000>
 
 ### Test
 
@@ -46,7 +46,7 @@ $ make compose-bash
 $ make lint-js
 
 # To autofix warnings run:
-$ make lint-js-fix 
+$ make lint-js-fix
 ```
 
 ### Useful
@@ -71,4 +71,5 @@ $ mix issues.upload # Upsert issues by name in db
 ```
 
 ### Support
-* <https://hexlet-ru.slack.com> channel: codebattle
+
+- <https://hexlet-ru.slack.com> channel: codebattle
