@@ -19,6 +19,8 @@
 ```bash
 $ git clone https://github.com/hexlet-codebattle/codebattle.git
 $ cd codebattle
+$ mkdir -p tmp
+$ echo 'asdf' > tmp/ansible-vault-password
 $ make ansible-development-setup
 $ make compose-setup
 ```
