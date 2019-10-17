@@ -318,7 +318,7 @@ class GameList extends React.Component {
             <tr>
               <th className="p-3 border-0">Date</th>
               <th className="p-3 border-0">Level</th>
-              <th className="p-3 border-0" colSpan="2">Players</th>
+              <th className="p-3 border-0 text-center" colSpan="2">Players</th>
               <th className="p-3 border-0">State</th>
               <th className="p-3 border-0">Time limit</th>
               <th className="p-3 border-0">Actions</th>
@@ -377,7 +377,7 @@ class GameList extends React.Component {
               <tr>
                 <th className="p-3 border-0">Date</th>
                 <th className="p-3 border-0">Level</th>
-                <th className="p-3 border-0" colSpan="2">Players</th>
+                <th className="p-3 border-0 text-center" colSpan="2">Players</th>
                 <th className="p-3 border-0">Duration</th>
                 <th className="p-3 border-0">Actions</th>
               </tr>
