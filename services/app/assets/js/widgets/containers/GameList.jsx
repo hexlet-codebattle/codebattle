@@ -107,7 +107,7 @@ class GameList extends React.Component {
     );
   };
 
-  renderGameLevelBadge = level => (
+  renderGameLevelBadge = (level) => (
     <div>
       <span className={`badge badge-pill badge-${this.levelToClass[level]} mr-1`}>&nbsp;</span>
       {level}
@@ -116,13 +116,19 @@ class GameList extends React.Component {
 
   isPlayer = (user, game) => !_.isEmpty(_.find(game.players, { id: user.id }));
 
-  renderShowGameButton = gameUrl => (
-    <button type="button" className="btn btn-info btn-sm" data-method="get" data-to={gameUrl}>
+  renderShowGameButton = (gameUrl) => (
+    <button type="button" className="btn btn-info btn-sm mr-1 ml-1" data-method="get" data-to={gameUrl}>
       Show
     </button>
   );
 
-  renderGameActionButton = (game) => {
+  renderJoinGameButton = (gameUrl) => (
+    <button type="button" className="btn btn-success btn-sm mr-1 ml-1" data-method="post" data-csrf={window.csrf_token} data-to={`${gameUrl}/join`}>
+      Join
+    </button>
+  )
+
+  renderGameActionButtons = (game) => {
     const gameUrl = `/games/${game.game_id}`;
     const currentUser = Gon.getAsset('current_user');
     const gameState = game.game_info.state;
@@ -154,15 +160,10 @@ class GameList extends React.Component {
       }
 
       return (
-        <button
-          type="button"
-          className="btn btn-primary btn-sm"
-          data-method="post"
-          data-csrf={window.csrf_token}
-          data-to={`${gameUrl}/join`}
-        >
-          Join
-        </button>
+        <Fragment>
+          {this.renderJoinGameButton(gameUrl)}
+          {this.renderShowGameButton(gameUrl)}
+        </Fragment>
       );
     }
 
@@ -347,7 +348,7 @@ class GameList extends React.Component {
                   {timeoutOptions[game.game_info.timeout_seconds]}
                 </td>
 
-                <td className="p-3 align-middle">{this.renderGameActionButton(game)}</td>
+                <td className="p-3 align-middle">{this.renderGameActionButtons(game)}</td>
               </tr>
             ))}
           </tbody>
