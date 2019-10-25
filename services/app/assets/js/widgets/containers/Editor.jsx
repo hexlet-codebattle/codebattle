@@ -126,6 +126,7 @@ class Editor extends PureComponent {
       onChange,
       editorHeight,
       mode,
+      theme,
     } = this.props;
     // FIXME: move here and apply mapping object
     const mappedSyntax = languages[syntax];
@@ -133,7 +134,7 @@ class Editor extends PureComponent {
     return (
       <Fragment>
         <MonacoEditor
-          theme="vs-dark"
+          theme={theme}
           options={this.options}
           width="auto"
           height={editorHeightWithStatusBar}

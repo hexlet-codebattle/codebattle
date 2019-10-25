@@ -2,6 +2,7 @@ import _ from 'lodash';
 import userTypes from '../config/userTypes';
 import GameStatusCodes from '../config/gameStatusCodes';
 import EditorModes from '../config/editorModes';
+import EditorThemes from '../config/editorThemes';
 import i18n from '../../i18n';
 import { makeEditorTextKey } from '../reducers';
 import defaultEditorHeight from '../config/editorSettings';
@@ -145,6 +146,12 @@ export const editorsModeSelector = (currentUserId) => (state) => {
   return EditorModes.default;
 };
 
+export const editorsThemeSelector = (currentUserId) => (state) => {
+  if (_.hasIn(gamePlayersSelector(state), currentUserId)) {
+    return state.editorUI.theme;
+  }
+  return EditorThemes.dark;
+};
 
 export const gameListLoadedSelector = (state) => state.gameList.loaded;
 export const gameListNewGameSelector = (state) => state.gameList.newGame;
