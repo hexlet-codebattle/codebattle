@@ -11,6 +11,7 @@ import {
   leftExecutionOutputSelector,
   rightExecutionOutputSelector,
   editorsModeSelector,
+  editorsThemeSelector,
 } from '../selectors';
 import Editor from './Editor';
 import LeftEditorToolbar from './LeftEditorToolbar';
@@ -20,6 +21,7 @@ import { sendEditorText } from '../middlewares/Game';
 import ExecutionOutput from '../components/ExecutionOutput';
 import NotificationsHandler from './NotificationsHandler';
 import editorModes from '../config/editorModes';
+import editorThemes from '../config/editorThemes';
 
 // const languages = Gon.getAsset('langs');
 
@@ -31,7 +33,7 @@ class GameWidget extends Component {
 
   getLeftEditorParams = () => {
     const {
-      currentUserId, players, leftEditor, updateEditorValue, leftEditorHeight, leftEditorsMode,
+      currentUserId, players, leftEditor, updateEditorValue, leftEditorHeight, leftEditorsMode, theme
     } = this.props;
 
     // FIXME: currentUser shouldn't return {} for spectator
@@ -51,6 +53,7 @@ class GameWidget extends Component {
       name: 'left-editor',
       editorHeight: leftEditorHeight,
       mode: editable ? leftEditorsMode : editorModes.default,
+      theme,
     };
   }
 
@@ -121,6 +124,7 @@ const mapStateToProps = (state) => {
     leftOutput: leftExecutionOutputSelector(state),
     rightOutput: rightExecutionOutputSelector(state),
     leftEditorsMode: editorsModeSelector(leftUserId)(state),
+    theme: editorsThemeSelector(leftUserId)(state),
   };
 };
 

@@ -34,6 +34,7 @@ export const expandEditorHeight = createAction('EXPAND_EDITOR_HEIGHT');
 
 export const setEditorsMode = createAction('EDITORS_MODE_SET');
 export const updateGameUI = createAction('UPDATE_GAME_UI');
+export const switchEditorsTheme = createAction('SWITCH_EDITORS_THEME');
 export const redirectToNewGame = (gameId) => {
   window.location.href = `/games/${gameId}`;
 };

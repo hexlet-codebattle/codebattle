@@ -14,8 +14,9 @@ import {
 import LanguagePicker from '../components/LanguagePicker';
 import UserInfo from './UserInfo';
 import GameResultIcon from '../components/GameResultIcon';
-import { setEditorsMode } from '../actions';
+import { setEditorsMode, switchEditorsTheme } from '../actions';
 import EditorModes from '../config/editorModes';
+import EditorThemes from '../config/editorThemes';
 
 class LeftEditorToolbar extends Component {
   static defaultProps = {
@@ -80,6 +81,26 @@ class LeftEditorToolbar extends Component {
     );
   }
 
+  renderSwitchThemeBtn = () => {
+    const { switchTheme, theme } = this.props;
+    const isDarkTheme = theme === EditorThemes.dark;
+    const nextTheme = isDarkTheme ? EditorThemes.light : EditorThemes.dark;
+    const classNames = cn('btn btn-sm border rounded ml-2', {
+      'btn-light': !isDarkTheme,
+      'btn-secondary': isDarkTheme,
+    });
+    const text = isDarkTheme ? 'Dark' : 'Light';
+
+    return (
+      <button
+        type="button"
+        className={classNames}
+        onClick={() => switchTheme(nextTheme)}
+      >
+        {text}
+      </button>
+    );
+  }
 
   render() {
     const {
@@ -109,6 +130,7 @@ class LeftEditorToolbar extends Component {
             disabled={isSpectator}
           />
           {!isSpectator && this.renderVimModeBtn()}
+          {this.renderSwitchThemeBtn()}
           {this.renderEditorHeightButtons(compressEditor, expandEditor, leftUserId)}
         </div>
         <GameResultIcon
@@ -138,6 +160,7 @@ const mapStateToProps = (state) => {
     title: selectors.gameStatusTitleSelector(state),
     task: selectors.gameTaskSelector(state),
     leftEditorsMode: selectors.editorsModeSelector(leftUserId)(state),
+    theme: selectors.editorsThemeSelector(leftUserId)(state),
   };
 };
 
@@ -147,6 +170,7 @@ const mapDispatchToProps = {
   compressEditor: compressEditorHeight,
   expandEditor: expandEditorHeight,
   setMode: setEditorsMode,
+  switchTheme: switchEditorsTheme,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(LeftEditorToolbar);
