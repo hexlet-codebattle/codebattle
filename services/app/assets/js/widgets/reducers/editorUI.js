@@ -1,7 +1,7 @@
 import { handleActions } from 'redux-actions';
 import * as actions from '../actions';
 import EditorModes from '../config/editorModes';
-import EditorThemes from '../config/EditorThemes';
+import EditorThemes from '../config/editorThemes';
 
 const initialState = {
   mode: EditorModes.default,
