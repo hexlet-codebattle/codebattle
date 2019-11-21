@@ -103,10 +103,7 @@ defmodule Codebattle.GameProcess.Engine.Base do
 
   def start_timeout_timer(id, fsm) do
     if fsm.data.timeout_seconds > 0 do
-      Codebattle.GameProcess.TimeoutServer.restart(
-        id,
-        fsm.data.timeout_seconds
-      )
+      Codebattle.GameProcess.TimeoutServer.restart(id, fsm.data.timeout_seconds)
     end
   end
 end
