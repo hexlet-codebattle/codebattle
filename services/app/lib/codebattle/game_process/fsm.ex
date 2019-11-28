@@ -67,6 +67,10 @@ defmodule Codebattle.GameProcess.Fsm do
       next_state(:waiting_opponent)
     end
 
+    defevent timeout(_params) do
+      next_state(:timeout)
+    end
+
     # For test
     defevent setup(state, new_data), data: data do
       next_state(state, Map.merge(data, new_data))

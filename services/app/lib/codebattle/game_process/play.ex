@@ -105,12 +105,19 @@ defmodule Codebattle.GameProcess.Play do
 
   # main api interface
 
-  def create_game(user, game_params, engine_type \\ :standard) do
+  def create_game(user, game_params,
+                  engine_type \\ :standard,
+                  default_timeout \\ Application.get_env(:codebattle, :default_timeout)) do
     player = Player.build(user, %{creator: true})
     engine = get_engine(engine_type)
 
     case engine.create_game(player, game_params) do
-      {:ok, fsm} -> {:ok, FsmHelpers.get_game_id(fsm)}
+      {:ok, fsm} ->
+        game_id = FsmHelpers.get_game_id(fsm)
+        Codebattle.GameProcess.TimeoutServer.restart(game_id, default_timeout)
+
+        {:ok, game_id}
+
       {:error, reason} -> {:error, reason}
     end
   end

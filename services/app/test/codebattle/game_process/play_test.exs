@@ -12,7 +12,9 @@ defmodule Codebattle.GameProcess.PlayTest do
     {:ok, game_id} =
       Play.create_game(
         user1,
-        %{"type" => "public", "level" => "medium", "timeout_seconds" => 60}
+        %{"type" => "public", "level" => "medium", "timeout_seconds" => 60},
+        :standard,
+        1
       )
 
     %{user1: user1, user2: user2, game_id: game_id}
@@ -38,6 +40,13 @@ defmodule Codebattle.GameProcess.PlayTest do
   test "timeouts the game", %{user1: _, user2: user2, game_id: game_id} do
     assert {:ok, fsm} = Play.join_game(game_id, user2)
     assert :ok = Play.timeout_game(game_id)
+    game = Repo.get(Game, game_id)
+
+    assert game.state == "timeout"
+  end
+
+  test "timeouts the game by default", %{user1: _, user2: _, game_id: game_id} do
+    :timer.sleep(1100)
     game = Repo.get(Game, game_id)
 
     assert game.state == "timeout"

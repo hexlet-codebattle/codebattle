@@ -69,6 +69,7 @@ bot_limit =
 
 config :codebattle, Codebattle.Bot.RecorderServer, limit: bot_limit
 config :codebattle, tournament_match_timeout: 3 * 60
+config :codebattle, default_timeout: 10_800 # 3 hours in seconds
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
