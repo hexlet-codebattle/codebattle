@@ -47,6 +47,7 @@
     "react-js-pagination": "^3.0.2",
     "react-loading": "^2.0.3",
     "react-markdown": "^4.2.2",
+    "react-minimal-pie-chart": "^6.0.1",
     "react-monaco-editor": "^0.26.2",
     "react-redux": "^7.1.3",
     "react-stay-scrolled": "^7.0.0",

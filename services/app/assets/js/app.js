@@ -24,7 +24,11 @@ import { LiveSocket } from 'phoenix_live_view';
 // paths "./socket" or full ones "web/static/js/socket".
 
 import {
-  renderGameWidget, renderLobby, renderHeatmapWidget, renderUsersRating,
+  renderGameWidget,
+  renderLobby,
+  renderHeatmapWidget,
+  renderUsersRating,
+  renderPieChartWidget,
 } from './widgets';
 
 const Hooks = {
@@ -42,6 +46,7 @@ liveSocket.connect();
 
 const gameWidgetRoot = document.getElementById('game-widget-root');
 const heatmapRoot = document.getElementById('heatmap-root');
+const profilePieChart = document.getElementById('lang-pie-chart');
 const gameListRoot = document.getElementById('game-list');
 const ratingList = document.getElementById('rating-list');
 
@@ -51,6 +56,10 @@ if (gameWidgetRoot) {
 
 if (heatmapRoot) {
   renderHeatmapWidget(heatmapRoot);
+}
+
+if (profilePieChart) {
+  renderPieChartWidget(profilePieChart);
 }
 
 if (gameListRoot) {
