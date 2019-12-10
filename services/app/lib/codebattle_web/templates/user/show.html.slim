@@ -4,37 +4,31 @@
       .row
         .col-10.col-sm-4.col-md-2.m-auto
           img.attachment.user.avatar.img-fluid.rounded[alt="#{@user.name}" src="https://avatars0.githubusercontent.com/u/#{@user.github_id}"]
-
       h1.mt-1.mb-0
         = @user.name
         a.text-muted[href="https://github.com/#{@user.github_name}"]
           span.fab.fa-github.mt-5.pl-3
-        h2.mt-1.mb-0
-          = "Lang: #{@user.lang}"
+        h2.mt-1.mb-0 = "Lang: #{@user.lang}"
   .row.px-4.mt-5.justify-content-center
     .col-6
       #heatmap-root
   .row.px-4.mt-5.justify-content-center
+    .col-6
+      #lang-pie-chart
+  .row.px-4.mt-5.justify-content-center
     .col-12.col-md-4.col-lg-2.text-center
-      .h1
-        = @rank
-      p.lead
-        | rank
+      .h1 = @rank
+      p.lead rank
     .col-12.col-md-4.col-lg-2.text-center
-      .h1
-        = "#{@user.rating}"
-      p.lead
-        | elo rating
+      .h1 = @user.rating
+      p.lead elo rating
     .col-12.col-md-5.col-lg-3.text-center
-      .h1
-        = "#{@stats["won"]}/#{@stats["lost"]}/#{@stats["gave_up"]}"
-      p.lead
-        | won/lost/gave up
+      .h1 = "#{@stats["won"]}/#{@stats["lost"]}/#{@stats["gave_up"]}"
+      p.lead won/lost/gave up
     .col-12.col-md-4.col-lg-2.text-center
       .h1
         = length(@games)
-      p.lead
-        | games played
+      p.lead games played
   .row
     .col-12.text-center.mt-4
       h2.mt-1.mb-0
