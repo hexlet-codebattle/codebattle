@@ -32,27 +32,10 @@ defmodule Codebattle.Bot.PlaybookAsyncRunner do
   end
 
   def handle_cast({:run, params}, state) do
-    port = CodebattleWeb.Endpoint.struct_url().port
-
-    # TODO: FIXME move to config
-    {schema, new_port} =
-      case port do
-        # dev
-        4000 ->
-          {"wss", port}
-
-        # test
-        4001 ->
-          {"ws", port}
-
-        # prod
-        _ ->
-          {"ws", 8080}
-      end
+    port = Application.get_env(:codebattle, :ws_port, 4000)
 
     socket_opts = [
-      url:
-        "#{schema}://localhost:#{new_port}/ws/websocket?vsn=2.0.0&token=#{bot_token(state.bot.id)}"
+      url: "ws://localhost:#{port}/ws/websocket?vsn=2.0.0&token=#{bot_token(state.bot.id)}"
     ]
 
     {:ok, socket} = PhoenixClient.Socket.start_link(socket_opts)
