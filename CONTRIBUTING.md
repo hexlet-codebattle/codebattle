@@ -57,6 +57,7 @@
 После завершения работы над задачей не забудьте [синхронизировать ваш fork с основным репозиторием](https://help.github.com/articles/syncing-a-fork/).
 
 ```bash
+    git remote add upstream https://github.com/hexlet-codebattle/codebattle.git
     git fetch upstream
     git checkout master
     git merge upstream/master
