@@ -14,7 +14,7 @@ template <typename T>
 bool AssertSolution(T result, T expected, string message, bool success){
   bool status = result == expected;
   if (status == false) {
-    SendFailureMessage("failure", result, message);
+    SendFailureMessage("failure", message, message);
     return false;
   }
   return success;
