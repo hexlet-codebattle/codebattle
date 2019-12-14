@@ -1,5 +1,5 @@
 test:
-	g++ -std=c++17 -o checker ./check/checker.cpp ./check/solution.cpp -lm && ./checker
+	g++ -std=c++17 -o checker ./check/checker.cpp -lm && ./checker
 
 test-example:
 	g++ -std=c++17 -o checker checker_example.cpp -lm && ./checker

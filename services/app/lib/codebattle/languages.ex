@@ -87,7 +87,7 @@ defmodule Codebattle.Languages do
         solution_template:
           "#include <iostream>\n#include <map>\n#include <vector>\n\nusing namespace std;\n\n<%= expected %> solution(<%= arguments %>) {\n\n}",
         types: %{
-          "integer" => "long",
+          "integer" => "int",
           "float" => "double",
           "string" => "string",
           "array" => "vector<<%= inner_type %>>",
