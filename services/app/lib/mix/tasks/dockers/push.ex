@@ -21,7 +21,7 @@ defmodule Mix.Tasks.Dockers.Push do
   end
 
   defp push(langs) do
-    for {_slug, lang} <- langs do
+    for lang <- langs do
       IO.puts("Start pushing image for #{lang.slug}")
 
       {output, _status} =
