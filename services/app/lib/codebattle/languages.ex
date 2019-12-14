@@ -24,7 +24,7 @@ defmodule Codebattle.Languages do
         version: "2.6.0",
         base_image: :ubuntu,
         check_dir: "check",
-        extension: :rb,
+        extension: "rb",
         docker_image: "codebattle/ruby:2.6.0",
         solution_template: "def solution(<%= arguments %>)\n<%= return_statement %>\nend",
         return_template: "\t<%= default_value %>",
