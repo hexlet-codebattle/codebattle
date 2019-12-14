@@ -1,0 +1,42 @@
+#include <iostream>
+
+#include "solution_example.cpp"
+
+using namespace std;
+
+template <typename T>
+void SendFailureMessage(string status, T result, string message) {
+  cout << "{\"status\": \"" << status << "\", \"result\": \"" << result << "\", \"arguments\": \"" << message << "\"}";
+}
+
+template <typename T>
+bool AssertSolution(T result, T expected, string message, bool success){
+  bool status = result == expected;
+  if (status == false) {
+    SendFailureMessage("failure", result, message);
+    return false;
+  }
+  return success;
+}
+
+template <typename T>
+void SendMessage(string status, T result) {
+  cout << "{\"status\": \"" << status << "\", \"result\": \"" << result << "\"}";
+}
+
+int main() {
+  bool success = true;
+
+  <%= for %{arguments: arguments, expected: expected, index: i} <- checks do %>
+    <%= for %{defining: defining, value: value} <- arguments.info do %>
+      <%= defining %> = <%= value %>;
+    <% end %>
+    <%= expected.defining %> = <%= expected.value %>;
+
+    success = AssertSolution(solution(<%= arguments.expression %>), expected<%= i %>, "<%= arguments.expression %>", success);
+  <% end %>
+
+  if (success) {
+    SendMessage("ok", "__code-0__");
+  }
+}
