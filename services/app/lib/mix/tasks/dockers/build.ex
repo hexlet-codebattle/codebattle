@@ -21,7 +21,7 @@ defmodule Mix.Tasks.Dockers.Build do
   end
 
   defp build(langs) do
-    for {_slug, lang} <- langs do
+    for lang <- langs do
       command =
         "docker build -t #{lang.docker_image} --file #{root()}/dockers/#{lang.slug}/Dockerfile #{
           root()

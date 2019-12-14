@@ -4,6 +4,7 @@ const iconsToClass = {
   js: 'icon-nodejs align-middle',
   ts: 'icon-nodejs align-middle',
   golang: 'icon-go align-middle',
+  cpp: 'icon-cplusplus align-middle',
   ruby: 'icon-ruby align-middle',
   elixir: 'icon-elixir align-middle',
   haskell: 'icon-haskell align-middle',

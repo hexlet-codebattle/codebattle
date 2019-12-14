@@ -65,7 +65,7 @@ defmodule Codebattle.Generators.SolutionTemplateGenerator do
       "package main;\n\nfunc solution(a float64, b float64) map[string]float64 {\n\n}"
   """
 
-  @type_langs ["haskell", "python", "ts", "golang"]
+  @type_langs ["haskell", "python", "ts", "golang", "cpp"]
   @static_langs ["ts"]
 
   # require Logger
@@ -141,6 +141,10 @@ defmodule Codebattle.Generators.SolutionTemplateGenerator do
     "#{name} #{TypesGenerator.get_type(input, meta)}"
   end
 
+  defp get_input_spec(%{"argument-name" => name} = input, %{slug: "cpp"} = meta) do
+    "#{TypesGenerator.get_type(input, meta)} #{name}"
+  end
+
   defp get_input_spec(%{"argument-name" => name} = input, meta) do
     "#{name}: #{TypesGenerator.get_type(input, meta)}"
   end
@@ -169,6 +173,9 @@ defmodule Codebattle.Generators.SolutionTemplateGenerator do
     do: ": #{TypesGenerator.get_type(signature, meta)} "
 
   defp get_expected_type(signature, %{slug: "golang"} = meta),
+    do: " #{TypesGenerator.get_type(signature, meta)}"
+
+  defp get_expected_type(signature, %{slug: "cpp"} = meta),
     do: " #{TypesGenerator.get_type(signature, meta)}"
 
   defp get_expected_type(signature, meta), do: " -> #{TypesGenerator.get_type(signature, meta)}"

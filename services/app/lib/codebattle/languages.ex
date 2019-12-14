@@ -24,7 +24,7 @@ defmodule Codebattle.Languages do
         version: "2.6.0",
         base_image: :ubuntu,
         check_dir: "check",
-        extension: :rb,
+        extension: "rb",
         docker_image: "codebattle/ruby:2.6.0",
         solution_template: "def solution(<%= arguments %>)\n<%= return_statement %>\nend",
         return_template: "\t<%= default_value %>",
@@ -74,6 +74,25 @@ defmodule Codebattle.Languages do
           "array" => "Array<<%= inner_type %>>",
           "boolean" => "boolean",
           "hash" => "any"
+        }
+      },
+      "cpp" => %{
+        name: "C++",
+        slug: "cpp",
+        version: "17",
+        base_image: :alpine,
+        check_dir: "check",
+        extension: "cpp",
+        docker_image: "codebattle/cpp:17",
+        solution_template:
+          "#include <iostream>\n#include <map>\n#include <vector>\n\nusing namespace std;\n\n<%= expected %> solution(<%= arguments %>) {\n\n}",
+        types: %{
+          "integer" => "int",
+          "float" => "double",
+          "string" => "string",
+          "array" => "vector<<%= inner_type %>>",
+          "boolean" => "bool",
+          "hash" => "map<string,<%= inner_type %>>"
         }
       },
       "golang" => %{
