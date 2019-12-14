@@ -108,6 +108,7 @@ defmodule Codebattle.CodeCheck.Checker do
     [cmd | cmd_opts] = command |> String.split()
     t = :os.system_time(:millisecond)
     {container_output, _status} = System.cmd(cmd, cmd_opts, stderr_to_stdout: true)
+    IO.inspect container_output
     Logger.error("#{description} time: #{:os.system_time(:millisecond) - t}, lang: #{lang.slug}")
 
     container_output

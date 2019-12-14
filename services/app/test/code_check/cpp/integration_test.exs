@@ -145,4 +145,42 @@ defmodule Codebattle.CodeCheck.Cpp.IntegrationTest do
 
     assert fsm.state == :game_over
   end
+
+  test "good code, player won with vectors", %{
+    user1: user1,
+    user2: user2,
+    socket1: socket1,
+    socket2: socket2,
+    timeout: timeout
+  } do
+    # setup
+    state = :playing
+    task = insert(:task_vectors)
+
+    data = %{
+      players: [%Player{id: user1.id}, %Player{id: user2.id}],
+      task: task
+    }
+
+    game = setup_game(state, data)
+    game_topic = "game:" <> to_string(game.id)
+
+    {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
+    {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
+    Mix.Shell.Process.flush()
+
+    Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: "test"})
+
+    Phoenix.ChannelTest.push(socket1, "check_result", %{
+      editor_text: "#include <iostream> \n #include <vector> \n using namespace std; \n vector<string>
+      solution(vector<string> a, vector<string> b) { return vector<string> {\"abcdef\"};}",
+      lang: "cpp"
+    })
+
+    :timer.sleep(timeout)
+
+    {:ok, fsm} = Server.fsm(game.id)
+
+    assert fsm.state == :game_over
+  end
 end

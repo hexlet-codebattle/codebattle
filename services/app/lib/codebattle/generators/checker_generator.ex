@@ -229,6 +229,17 @@ defmodule Codebattle.Generators.CheckerGenerator do
     ~s(#{type_name}#{value})
   end
 
+  defp get_value_expression(
+         %{"type" => %{"nested" => _nested}} = signature,
+         value,
+         %{slug: "cpp"} = meta
+       ) do
+    type_name = TypesGenerator.get_type(signature, meta)
+    type = extract_type(signature)
+    value = get_value({type, value}, meta)
+    ~s(#{type_name}#{value})
+  end
+
   defp get_value_expression(signature, value, meta) do
     type = extract_type(signature)
     get_value({type, value}, meta)
@@ -288,6 +299,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
   defp get_empty_hash(%{slug: _meta}), do: ~s({})
 
   defp get_array_value(entries, %{slug: "golang"}), do: ~s({#{entries}})
+  defp get_array_value(entries, %{slug: "cpp"}), do: ~s({#{entries}})
   defp get_array_value(entries, %{slug: "php"}), do: "array(#{entries})"
   defp get_array_value(entries, _meta), do: ~s([#{entries}])
 
@@ -295,12 +307,12 @@ defmodule Codebattle.Generators.CheckerGenerator do
 
   defp filter_empty_items(items), do: items |> Enum.filter(&(&1 != ""))
 
-  defp double_backslashes(string),
-    do:
-      string
-      |> String.replace("\\", "\\\\")
-      |> String.replace("\n", "\\n")
-      |> String.replace("\t", "\\t")
+  defp double_backslashes(string) do
+    string
+    |> String.replace("\\", "\\\\")
+    |> String.replace("\n", "\\n")
+    |> String.replace("\t", "\\t")
+  end
 
   defp put_types(binding, %{slug: slug} = meta, task) when slug in @langs_need_types do
     binding
