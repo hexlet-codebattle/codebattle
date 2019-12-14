@@ -59,7 +59,7 @@ defmodule Codebattle.CodeCheck.Cpp.IntegrationTest do
 
     expected_result = %{
       "status" => "error",
-      "result" => "./check/solution.go:1:1: expected 'package', found sdf"
+      "result" => "./check/solution.cpp:1:1: error: 'sdf' does not name a type"
     }
 
     assert expected_result == Jason.decode!(result)
