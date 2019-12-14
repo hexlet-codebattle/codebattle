@@ -85,7 +85,7 @@ defmodule Codebattle.Languages do
         extension: "cpp",
         docker_image: "codebattle/cpp:17",
         solution_template:
-          "#include <iostream>;\n\nusing namespace std;\n\n<%= expected %> solution(<%= arguments %>) {\n\n}",
+          "#include <iostream>\n#include <map>\n#include <vector>\n\nusing namespace std;\n\n<%= expected %> solution(<%= arguments %>) {\n\n}",
         types: %{
           "integer" => "long",
           "float" => "double",
