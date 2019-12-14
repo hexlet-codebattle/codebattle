@@ -85,14 +85,14 @@ defmodule Codebattle.Languages do
         extension: "cpp",
         docker_image: "codebattle/cpp:17",
         solution_template:
-          "package main;\n\nfunc solution(<%= arguments %>)<%= expected %> {\n\n}",
+          "#include <iostream>;\n\nusing namespace std;\n\n<%= expected %> solution(<%= arguments %>) {\n\n}",
         types: %{
-          "integer" => "int64",
-          "float" => "float64",
+          "integer" => "long",
+          "float" => "double",
           "string" => "string",
-          "array" => "[]<%= inner_type %>",
+          "array" => "vector<<%= inner_type %>>",
           "boolean" => "bool",
-          "hash" => "map[string]<%= inner_type %>"
+          "hash" => "map<string,<%= inner_type %>>"
         }
       },
       "golang" => %{
