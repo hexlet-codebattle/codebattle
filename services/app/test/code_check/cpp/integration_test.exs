@@ -92,7 +92,7 @@ defmodule Codebattle.CodeCheck.Cpp.IntegrationTest do
     Mix.Shell.Process.flush()
 
     Phoenix.ChannelTest.push(socket1, "check_result", %{
-      editor_text: "package main;\n\nfunc solution(a int64, b int64) int64 {\n\treturn a - b\n}",
+      editor_text: "int solution(int a, int b) { return a - b;}",
       lang: "cpp"
     })
 
@@ -135,7 +135,7 @@ defmodule Codebattle.CodeCheck.Cpp.IntegrationTest do
     Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: "test"})
 
     Phoenix.ChannelTest.push(socket1, "check_result", %{
-      editor_text: "package main;\n\nfunc solution(a int64, b int64) int64 {\n\treturn a + b\n}",
+      editor_text: "int solution(int a, int b) { return a + b;}",
       lang: "cpp"
     })
 
