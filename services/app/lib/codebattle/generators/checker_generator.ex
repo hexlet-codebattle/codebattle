@@ -6,7 +6,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
   alias Codebattle.Generators.TypesGenerator
 
   @langs_need_types ["ts"]
-  @static_langs ["ts", "golang"]
+  @static_langs ["ts", "golang", "cpp"]
 
   def create(%{extension: extension, slug: slug} = meta, task, target_dir, hash_sum) do
     binding = inflect(task, meta)
@@ -216,6 +216,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
 
   defp get_defining_expression(name, type_name, %{slug: "ts"}), do: ~s(#{name}: #{type_name})
   defp get_defining_expression(name, type_name, %{slug: "golang"}), do: ~s(#{name} #{type_name})
+  defp get_defining_expression(name, type_name, %{slug: "cpp"}), do: ~s(#{type_name} #{name})
 
   defp get_value_expression(
          %{"type" => %{"nested" => _nested}} = signature,
