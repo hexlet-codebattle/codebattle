@@ -76,6 +76,25 @@ defmodule Codebattle.Languages do
           "hash" => "any"
         }
       },
+      "cpp" => %{
+        name: "C++",
+        slug: "cpp",
+        version: "17",
+        base_image: :alpine,
+        check_dir: "check",
+        extension: "cpp",
+        docker_image: "codebattle/cpp:17",
+        solution_template:
+          "package main;\n\nfunc solution(<%= arguments %>)<%= expected %> {\n\n}",
+        types: %{
+          "integer" => "int64",
+          "float" => "float64",
+          "string" => "string",
+          "array" => "[]<%= inner_type %>",
+          "boolean" => "bool",
+          "hash" => "map[string]<%= inner_type %>"
+        }
+      },
       "golang" => %{
         name: "golang",
         slug: "golang",

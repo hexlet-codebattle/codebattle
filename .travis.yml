@@ -17,6 +17,7 @@ jobs:
         - docker pull codebattle/js:11.6.0
         - docker pull codebattle/ts:3.5.2
         - docker pull codebattle/golang:1.12.6
+        - docker pull codebattle/cpp:17
         - docker pull codebattle/ruby:2.6.0
         - docker pull codebattle/elixir:1.7.3
         - docker pull codebattle/python:3.7.2
