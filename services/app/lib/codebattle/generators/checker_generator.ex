@@ -6,7 +6,6 @@ defmodule Codebattle.Generators.CheckerGenerator do
   alias Codebattle.Generators.TypesGenerator
 
   @langs_need_types ["ts"]
-  @static_langs ["ts", "golang"]
 
   def create(%{extension: extension, slug: slug} = meta, task, target_dir, hash_sum) do
     binding = inflect(task, meta)
@@ -38,7 +37,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
         ...>      ],
         ...>      output_signature: %{"type" => %{"name" => "array", "nested" => %{"name" => "integer"}}}
         ...>    },
-        ...>    %{slug: "js"}
+        ...>    Codebattle.Languages.meta() |> Map.get("js")
         ...> )
         [checks:
           [
@@ -56,7 +55,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
         ...>      ],
         ...>      output_signature: %{"type" => %{"name" => "hash", "nested" => %{"name" => "integer"}}}
         ...>    },
-        ...>    %{slug: "js"}
+        ...>    Codebattle.Languages.meta() |> Map.get("js")
         ...> )
         [checks:
           [
@@ -142,15 +141,14 @@ defmodule Codebattle.Generators.CheckerGenerator do
   defp get_arguments(
          {assert, index},
          %{input_signature: input_signature},
-         %{slug: slug} = meta
-       )
-       when slug in @static_langs do
+         %{checker_meta: %{version: :static}} = meta
+       ) do
     info =
       input_signature
       |> Enum.zip(assert["arguments"])
       |> Enum.map(fn {input, value} ->
         %{
-          name: get_name(input, index, meta),
+          name: get_variable_name(input, index, meta),
           defining: get_defining(input, index, meta),
           value: get_value_expression(input, value, meta)
         }
@@ -162,20 +160,23 @@ defmodule Codebattle.Generators.CheckerGenerator do
     }
   end
 
-  defp get_arguments({assert, _index}, %{input_signature: input_signature}, meta) do
+  defp get_arguments(
+          {assert, _index},
+          %{input_signature: input_signature},
+          %{checker_meta: checker_meta} = meta
+       ) do
     types = Enum.map(input_signature, &extract_type/1)
 
     types
     |> Enum.zip(assert["arguments"])
-    |> get_arguments_expression(meta)
+    |> Enum.map_join(checker_meta.arguments_delimeter, &get_value(&1, meta))
   end
 
   defp get_expected(
          {assert, index},
          %{output_signature: signature},
-         %{slug: slug} = meta
-       )
-       when slug in @static_langs do
+         %{checker_meta: %{version: :static}} = meta
+       ) do
     %{
       defining: get_defining(signature, index, meta),
       value: get_value_expression(signature, assert["expected"], meta)
@@ -197,35 +198,29 @@ defmodule Codebattle.Generators.CheckerGenerator do
     ~s(#{String.replace(result, "\"", "\\\"")})
   end
 
-  defp get_name(%{"argument-name" => name}, index, _meta), do: "#{name}#{index}"
-  defp get_name(_signature, index, _meta), do: ~s(expected#{index})
+  defp get_variable_name(%{"argument-name" => name}, index, _meta), do: "#{name}#{index}"
+  defp get_variable_name(_signature, index, _meta), do: ~s(expected#{index})
 
-  defp get_defining(signature, index, meta) do
-    name = get_name(signature, index, meta)
-    type_name = TypesGenerator.get_type(signature, meta)
-    get_defining_expression(name, type_name, meta)
+  defp get_defining(signature, index, %{checker_meta: checker_meta} = meta) do
+    name = get_variable_name(signature, index, meta)
+    type = TypesGenerator.get_type(signature, meta)
+
+    EEx.eval_string(
+      checker_meta.defining_variable_template,
+      [name: name, type: type]
+    )
   end
-
-  defp get_arguments_expression(items, %{slug: "haskell"} = meta) do
-    Enum.map_join(items, " ", &get_value(&1, meta))
-  end
-
-  defp get_arguments_expression(items, meta) do
-    Enum.map_join(items, ", ", &get_value(&1, meta))
-  end
-
-  defp get_defining_expression(name, type_name, %{slug: "ts"}), do: ~s(#{name}: #{type_name})
-  defp get_defining_expression(name, type_name, %{slug: "golang"}), do: ~s(#{name} #{type_name})
 
   defp get_value_expression(
-         %{"type" => %{"nested" => _nested}} = signature,
-         value,
-         %{slug: "golang"} = meta
+          %{"type" => %{"nested" => _nested}} = signature,
+          value,
+          %{checker_meta: checker_meta} = meta
        ) do
     type_name = TypesGenerator.get_type(signature, meta)
     type = extract_type(signature)
     value = get_value({type, value}, meta)
-    ~s(#{type_name}#{value})
+
+    EEx.eval_string(checker_meta.nested_value_expression_template, value: value, type_name: type_name)
   end
 
   defp get_value_expression(signature, value, meta) do
@@ -234,61 +229,37 @@ defmodule Codebattle.Generators.CheckerGenerator do
   end
 
   defp get_value({%{"name" => "string"}, value}, _meta), do: ~s("#{double_backslashes(value)}")
-  defp get_value({%{"name" => "boolean"}, value}, meta), do: get_boolean_value(value, meta)
+  defp get_value({%{"name" => "boolean"}, value}, %{checker_meta: checker_meta}),
+       do: checker_meta.type_templates.boolean[value]
 
-  defp get_value({%{"name" => "array", "nested" => nested}, value}, meta) do
+  defp get_value({%{"name" => "array", "nested" => nested}, value}, %{checker_meta: checker_meta} = meta) do
     array_values = Enum.map_join(value, ", ", &get_value({nested, &1}, meta))
-    get_array_value(array_values, meta)
+    EEx.eval_string(checker_meta.type_templates.array, [entries: array_values])
   end
 
-  defp get_value({%{"name" => "hash"} = signature, value}, meta) do
+  defp get_value({%{"name" => "hash"} = signature, value}, %{checker_meta: checker_meta} = meta) do
     list = Map.to_list(value)
 
     if Enum.empty?(list) do
-      get_empty_hash(meta)
+      checker_meta.type_templates.hash.empty
     else
       hash_entries =
         Enum.map_join(list, ", ", fn item -> get_hash_inners(item, signature, meta) end)
 
-      get_hash_value(hash_entries, meta)
+      EEx.eval_string(checker_meta.type_templates.hash.value, [entries: hash_entries])
     end
   end
 
   defp get_value({_, value}, _meta), do: value
 
-  defp get_boolean_value(false, %{slug: slug}) when slug in ["python", "haskell"], do: ~s(False)
-  defp get_boolean_value(true, %{slug: slug}) when slug in ["python", "haskell"], do: ~s(True)
-  defp get_boolean_value(value, _), do: value
+  defp get_hash_inners({k, v}, %{"nested" => nested}, %{checker_meta: checker_meta} = meta) do
+    binding = [
+      key: k,
+      value: get_value({nested, v}, meta)
+    ]
 
-  defp get_hash_inners(
-         {k, v},
-         %{"nested" => nested},
-         %{slug: slug} = meta
-       )
-       when slug in ["ruby", "php"] do
-    ~s("#{k}" => #{get_value({nested, v}, meta)})
+    EEx.eval_string(checker_meta.type_templates.hash.inners, binding)
   end
-
-  defp get_hash_inners({k, v}, %{"nested" => nested}, %{slug: "clojure"} = meta) do
-    ~s(:#{k} #{get_value({nested, v}, meta)})
-  end
-
-  defp get_hash_inners({k, v}, %{"nested" => nested}, meta) do
-    ~s("#{k}": #{get_value({nested, v}, meta)})
-  end
-
-  defp get_hash_value(entries, %{slug: "php"}), do: "array(#{entries})"
-  defp get_hash_value(entries, %{slug: "elixir"}), do: ~s(%{#{entries}})
-  defp get_hash_value(entries, _meta), do: ~s({#{entries}})
-
-  defp get_empty_hash(%{slug: "php"}), do: "array()"
-  defp get_empty_hash(%{slug: "elixir"}), do: ~s(%{})
-  defp get_empty_hash(%{slug: "haskell"}), do: ~s(empty)
-  defp get_empty_hash(%{slug: _meta}), do: ~s({})
-
-  defp get_array_value(entries, %{slug: "golang"}), do: ~s({#{entries}})
-  defp get_array_value(entries, %{slug: "php"}), do: "array(#{entries})"
-  defp get_array_value(entries, _meta), do: ~s([#{entries}])
 
   defp extract_type(%{"type" => type}), do: type
 
@@ -301,7 +272,8 @@ defmodule Codebattle.Generators.CheckerGenerator do
       |> String.replace("\n", "\\n")
       |> String.replace("\t", "\\t")
 
-  defp put_types(binding, %{slug: slug} = meta, task) when slug in @langs_need_types do
+  defp put_types(binding, %{slug: slug} = meta, task)
+       when slug in @langs_need_types do
     binding
     |> Keyword.put(:imports, TypesGenerator.get_import(task, meta))
     |> Keyword.put(:types, TypesGenerator.get_interfaces(task, meta))

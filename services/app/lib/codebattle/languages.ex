@@ -16,6 +16,16 @@ defmodule Codebattle.Languages do
     end)
   end
 
+  defmodule TypeTemplates do
+    defstruct boolean: %{true: "true", false: "false"},
+              array: "[<%= entries %>]",
+              hash: %{
+                empty: "{}",
+                value: "{<%= entries %>}",
+                inners: "\"<%= key %>\": <%= value %>"
+              }
+  end
+
   def meta do
     %{
       "ruby" => %{
@@ -26,7 +36,12 @@ defmodule Codebattle.Languages do
         check_dir: "check",
         extension: :rb,
         docker_image: "codebattle/ruby:2.6.0",
+        solution_version: :default,
         solution_template: "def solution(<%= arguments %>)\n<%= return_statement %>\nend",
+        arguments_template: %{
+          argument: "<%= name %>",
+          delimeter: ", "
+        },
         return_template: "\t<%= default_value %>",
         default_values: %{
           "integer" => "0",
@@ -35,6 +50,13 @@ defmodule Codebattle.Languages do
           "array" => "[<%= value %>]",
           "boolean" => "false",
           "hash" => "{\"key\" => <%= value %>}"
+        },
+        checker_meta: %{
+          version: :dynamic,
+          arguments_delimeter: ", ",
+          type_templates: %TypeTemplates{
+            hash: %{TypeTemplates.__struct__.hash | inners: "\"<%= key %>\" => <%= value %>"}
+          }
         }
       },
       "js" => %{
@@ -45,8 +67,13 @@ defmodule Codebattle.Languages do
         check_dir: "check",
         extension: "js",
         docker_image: "codebattle/js:11.6.0",
+        solution_version: :default,
         solution_template:
           "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nmodule.exports = (<%= arguments %>) => {\n<%= return_statement %>\n};",
+        arguments_template: %{
+          argument: "<%= name %>",
+          delimeter: ", "
+        },
         return_template: "\treturn <%= default_value %>;",
         default_values: %{
           "integer" => "0",
@@ -55,6 +82,11 @@ defmodule Codebattle.Languages do
           "array" => "[<%= value %>]",
           "boolean" => "true",
           "hash" => "{\"key\": <%= value %>}"
+        },
+        checker_meta: %{
+          version: :dynamic,
+          arguments_delimeter: ", ",
+          type_templates: %TypeTemplates{}
         }
       },
       "ts" => %{
@@ -65,8 +97,14 @@ defmodule Codebattle.Languages do
         check_dir: "check",
         extension: "ts",
         docker_image: "codebattle/ts:3.5.2",
+        solution_version: :typed,
         solution_template:
           "<%= import %>function solution(<%= arguments %>)<%= expected %>{\n\n};\n\nexport default solution;",
+        arguments_template: %{
+          argument: "<%= name %>: <%= type %>",
+          delimeter: ", "
+        },
+        expected_template: ": <%= type %> ",
         types: %{
           "integer" => "number",
           "float" => "number",
@@ -74,6 +112,12 @@ defmodule Codebattle.Languages do
           "array" => "Array<<%= inner_type %>>",
           "boolean" => "boolean",
           "hash" => "any"
+        },
+        checker_meta: %{
+          version: :static,
+          type_templates: %TypeTemplates{},
+          defining_variable_template: "<%= name %>: <%= type %>",
+          nested_value_expression_template: "<%= value %>"
         }
       },
       "golang" => %{
@@ -84,8 +128,14 @@ defmodule Codebattle.Languages do
         check_dir: "check",
         extension: "go",
         docker_image: "codebattle/golang:1.12.6",
+        solution_version: :typed,
         solution_template:
           "package main;\n\nfunc solution(<%= arguments %>)<%= expected %> {\n\n}",
+        arguments_template: %{
+          argument: "<%= name %> <%= type %>",
+          delimeter: ", ",
+        },
+        expected_template: " <%= type %>",
         types: %{
           "integer" => "int64",
           "float" => "float64",
@@ -93,6 +143,14 @@ defmodule Codebattle.Languages do
           "array" => "[]<%= inner_type %>",
           "boolean" => "bool",
           "hash" => "map[string]<%= inner_type %>"
+        },
+        checker_meta: %{
+          version: :static,
+          type_templates: %TypeTemplates{
+            array: "{<%= entries %>}",
+          },
+          defining_variable_template: "<%= name %> <%= type %>",
+          nested_value_expression_template: "<%= type_name %><%= value %>"
         }
       },
       "elixir" => %{
@@ -103,8 +161,13 @@ defmodule Codebattle.Languages do
         check_dir: "check",
         extension: "exs",
         docker_image: "codebattle/elixir:1.7.3",
+        solution_version: :default,
         solution_template:
           "defmodule Solution do\n\tdef solution(<%= arguments %>) do\n<%= return_statement %>\n\tend\nend",
+        arguments_template: %{
+          argument: "<%= name %>",
+          delimeter: ", "
+        },
         return_template: "\t\t<%= default_value %>",
         default_values: %{
           "integer" => "0",
@@ -113,6 +176,13 @@ defmodule Codebattle.Languages do
           "array" => "[<%= value %>]",
           "boolean" => "false",
           "hash" => "%{\"key\": <%= value %>}"
+        },
+        checker_meta: %{
+          version: :dynamic,
+          arguments_delimeter: ", ",
+          type_templates: %TypeTemplates{
+            hash: %{TypeTemplates.__struct__.hash | empty: "%{}", value: "%{<%= entries %>}"}
+          }
         }
       },
       "python" => %{
@@ -123,8 +193,14 @@ defmodule Codebattle.Languages do
         check_dir: "check",
         extension: "py",
         docker_image: "codebattle/python:3.7.2",
+        solution_version: :typed,
         solution_template:
           "from typing import List, Dict\n\ndef solution(<%= arguments %>)<%= expected %>:",
+        arguments_template: %{
+          argument: "<%= name %>: <%= type %>",
+          delimeter: ", "
+        },
+        expected_template: " -> <%= type %>",
         types: %{
           "integer" => "int",
           "float" => "float",
@@ -132,6 +208,13 @@ defmodule Codebattle.Languages do
           "array" => "List[<%= inner_type %>]",
           "boolean" => "bool",
           "hash" => "Dict[str, <%= inner_type %>]"
+        },
+        checker_meta: %{
+          version: :dynamic,
+          arguments_delimeter: ", ",
+          type_templates: %TypeTemplates{
+            boolean: %{true: "True", false: "False"},
+          }
         }
       },
       "php" => %{
@@ -142,9 +225,14 @@ defmodule Codebattle.Languages do
         check_dir: "check",
         extension: "php",
         docker_image: "codebattle/php:7.3.0",
+        solution_version: :default,
         solution_template:
           "<?php\nfunction solution(<%= arguments %>){\n<%= return_statement %>\n}",
         return_template: "\treturn <%= default_value %>;",
+        arguments_template: %{
+          argument: "$<%= name %>",
+          delimeter: ", "
+        },
         default_values: %{
           "integer" => "0",
           "float" => "0.1",
@@ -152,6 +240,14 @@ defmodule Codebattle.Languages do
           "array" => "[<%= value %>]",
           "boolean" => "False",
           "hash" => "array(\"key\" => <%= value %>)"
+        },
+        checker_meta: %{
+          version: :dynamic,
+          arguments_delimeter: ", ",
+          type_templates: %TypeTemplates{
+            array: "array(<%= entries %>)",
+            hash: %{empty: "array()", value: "array(<%= entries %>)", inners: "\"<%= key %>\" => <%= value %>"}
+          }
         }
       },
       "clojure" => %{
@@ -162,7 +258,12 @@ defmodule Codebattle.Languages do
         check_dir: "check",
         extension: "clj",
         docker_image: "codebattle/clojure:1.10.0",
+        solution_version: :default,
         solution_template: "(defn solution [<%= arguments %>] <%= return_statement %>)",
+        arguments_template: %{
+          argument: "<%= name %>",
+          delimeter: " "
+        },
         return_template: "<%= default_value %>",
         default_values: %{
           "integer" => "0",
@@ -171,6 +272,13 @@ defmodule Codebattle.Languages do
           "array" => "[<%= value %>]",
           "boolean" => "false",
           "hash" => "{:key <%= value %>}"
+        },
+        checker_meta: %{
+          version: :dynamic,
+          arguments_delimeter: ", ",
+          type_templates: %TypeTemplates{
+            hash: %{TypeTemplates.__struct__.hash | inners: ":<%= key %> <%= value %>"}
+          }
         }
       },
       "haskell" => %{
@@ -181,8 +289,14 @@ defmodule Codebattle.Languages do
         extension: "hs",
         check_dir: "Check",
         docker_image: "codebattle/haskell:8.4.3",
+        solution_version: :typed,
         solution_template:
-          "module Check.Solution where\n\nimport Data.HashMap.Lazy\n\nsolution :: <%= arguments %><%= expected %>\nsolution =\n\n{- Included packages:\naeson\nbytestring\ncase-insensitive\ncontainers\ndeepseq\nfgl\ninteger-logarithms\nmegaparsec\nmtl\nparser-combinators\npretty\nrandom\nregex-base\nregex-compat\nregex-posix\nscientific\nsplit\ntemplate-haskell\ntext\ntime\ntransformers\nunordered-containers\nvector\nvector-algorithms -}",
+        "module Check.Solution where\n\nimport Data.HashMap.Lazy\n\nsolution :: <%= arguments %><%= expected %>\nsolution =\n\n{- Included packages:\naeson\nbytestring\ncase-insensitive\ncontainers\ndeepseq\nfgl\ninteger-logarithms\nmegaparsec\nmtl\nparser-combinators\npretty\nrandom\nregex-base\nregex-compat\nregex-posix\nscientific\nsplit\ntemplate-haskell\ntext\ntime\ntransformers\nunordered-containers\nvector\nvector-algorithms -}",
+        arguments_template: %{
+          argument: "<%= type %>",
+          delimeter: " -> ",
+        },
+        expected_template: " -> <%= type %>",
         types: %{
           "integer" => "Int",
           "float" => "Double",
@@ -190,6 +304,14 @@ defmodule Codebattle.Languages do
           "array" => "[<%= inner_type %>]",
           "boolean" => "Bool",
           "hash" => "HashMap String <%= inner_type %>"
+        },
+        checker_meta: %{
+          version: :dynamic,
+          arguments_delimeter: " ",
+          type_templates: %TypeTemplates{
+            boolean: %{true: "True", false: "False"},
+            hash: %{TypeTemplates.__struct__.hash | empty: "empty"}
+          }
         }
       },
       "perl" => %{
@@ -200,6 +322,7 @@ defmodule Codebattle.Languages do
         check_dir: "check",
         extension: "pl",
         docker_image: "codebattle/perl:5.26.2",
+        solution_version: :empty,
         solution_template: "sub solution {\n\n}\n1;"
       }
     }
