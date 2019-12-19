@@ -9,11 +9,7 @@ root_dir = File.cwd!()
 # with brunch.io to recompile .js and .css sources.
 
 config :codebattle, CodebattleWeb.Endpoint,
-  https: [
-    port: System.get_env("CODEBATTLE_PORT") || 4000,
-    keyfile: Path.join(root_dir, "dev.key"),
-    certfile: Path.join(root_dir, "dev.crt")
-  ],
+  http: [port: System.get_env("CODEBATTLE_PORT") || 4000],
   debug_errors: true,
   code_reloader: true,
   check_origin: false,

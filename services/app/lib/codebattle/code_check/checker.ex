@@ -8,7 +8,7 @@ defmodule Codebattle.CodeCheck.Checker do
   alias Codebattle.CodeCheck.CheckerStatus
 
   @advanced_checker_stop_list ["perl"]
-  @langs_needs_compiling ["golang"]
+  @langs_needs_compiling ["golang", "cpp"]
 
   def check(task, editor_text, editor_lang) do
     case Languages.meta() |> Map.get(editor_lang) do
@@ -96,10 +96,7 @@ defmodule Codebattle.CodeCheck.Checker do
     end
   end
 
-  defp compile_check_solution(
-         command,
-         %{lang: %{slug: slug} = lang} = meta
-       )
+  defp compile_check_solution(command, %{lang: %{slug: slug} = lang} = meta)
        when slug in @langs_needs_compiling do
     container_output = run_checker(command, meta, "Compile check")
     CheckerStatus.get_compile_check_result(container_output, lang)
@@ -111,6 +108,7 @@ defmodule Codebattle.CodeCheck.Checker do
     [cmd | cmd_opts] = command |> String.split()
     t = :os.system_time(:millisecond)
     {container_output, _status} = System.cmd(cmd, cmd_opts, stderr_to_stdout: true)
+    IO.inspect container_output, limit: :infinity
     Logger.error("#{description} time: #{:os.system_time(:millisecond) - t}, lang: #{lang.slug}")
 
     container_output

@@ -31,7 +31,7 @@ $ make compose-setup
 $ make compose
 ```
 
-- Open <https://localhost:4000>
+- Open <http://localhost:4000>
 
 ### Test
 

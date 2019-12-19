@@ -41,6 +41,30 @@ defmodule CodebattleWeb.Factory do
     }
   end
 
+  def task_vectors_factory do
+    %Task{
+      name: Base.encode16(:crypto.strong_rand_bytes(2)),
+      description: "test sum",
+      level: "easy",
+      asserts:
+        "{\"arguments\":[[\"a\", \"b\", \"c\"], [\"d\", \"e\", \"f\"]],\"expected\":[\"abcdef\"]}\n",
+      input_signature: [
+        %{
+          "argument-name" => "a",
+          "type" => %{"name" => "array", "nested" => %{"name" => "string"}}
+        },
+        %{
+          "argument-name" => "b",
+          "type" => %{"name" => "array", "nested" => %{"name" => "string"}}
+        }
+      ],
+      output_signature: %{
+        "type" => %{"name" => "array", "nested" => %{"name" => "string"}}
+      },
+      disabled: false
+    }
+  end
+
   def bot_playbook_factory do
     %Playbook{}
   end

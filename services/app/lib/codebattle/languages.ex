@@ -33,7 +33,7 @@ defmodule Codebattle.Languages do
         version: "2.6.0",
         base_image: :ubuntu,
         check_dir: "check",
-        extension: :rb,
+        extension: "rb",
         docker_image: "codebattle/ruby:2.6.0",
         solution_version: :default,
         solution_template: "def solution(<%= arguments %>)\n<%= return_statement %>\nend",
@@ -117,6 +117,40 @@ defmodule Codebattle.Languages do
           type_templates: %TypeTemplates{},
           defining_variable_template: "<%= name %>: <%= type %>",
           nested_value_expression_template: "<%= value %>"
+        }
+      },
+      "cpp" => %{
+        name: "C++",
+        slug: "cpp",
+        version: "17",
+        base_image: :alpine,
+        check_dir: "check",
+        extension: "cpp",
+        docker_image: "codebattle/cpp:17",
+        solution_version: :typed,
+        solution_template:
+          "#include <iostream>\n#include <map>\n#include <vector>\n\nusing namespace std;\n\n<%= expected %> solution(<%= arguments %>) {\n\n}",
+        arguments_template: %{
+          argument: "<%= type %> <%= name %>",
+          delimeter: ", ",
+        },
+        expected_template: "<%= type %>",
+        types: %{
+          "integer" => "int",
+          "float" => "double",
+          "string" => "string",
+          "array" => "vector<<%= inner_type %>>",
+          "boolean" => "bool",
+          "hash" => "map<string,<%= inner_type %>>"
+        },
+        checker_meta: %{
+          version: :static,
+          type_templates: %TypeTemplates{
+            array: "{<%= entries %>}",
+            hash_inners: "{\"<%= key %>\", <%= value %>}",
+          },
+          defining_variable_template: "<%= type_name %> <%= value %>",
+          nested_value_expression_template: "<%= type_name %><%= value %>"
         }
       },
       "golang" => %{

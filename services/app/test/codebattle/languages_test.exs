@@ -29,6 +29,7 @@ defmodule Codebattle.LanguagesTest do
 
     empty_solutions =
       MapSet.new([
+        "#include <iostream>\n#include <map>\n#include <vector>\n\nusing namespace std;\n\n solution() {\n\n}",
         "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nmodule.exports = () => {\n\n};",
         "import * as _ from \"lodash\";\nfunction solution(){\n\n};\n\nexport default solution;",
         "package main;\n\nfunc solution() {\n\n}",
@@ -79,6 +80,8 @@ defmodule Codebattle.LanguagesTest do
       "module Check.Solution where\n\nimport Data.HashMap.Lazy\n\nsolution :: Int -> Double -> String -> [[Int]] -> Bool -> HashMap String Int -> [String]\nsolution =\n\n{- Included packages:\naeson\nbytestring\ncase-insensitive\ncontainers\ndeepseq\nfgl\ninteger-logarithms\nmegaparsec\nmtl\nparser-combinators\npretty\nrandom\nregex-base\nregex-compat\nregex-posix\nscientific\nsplit\ntemplate-haskell\ntext\ntime\ntransformers\nunordered-containers\nvector\nvector-algorithms -}"
 
     perl_expected = "sub solution {\n\n}\n1;"
+    cpp_expected =
+      "#include <iostream>\n#include <map>\n#include <vector>\n\nusing namespace std;\n\nvector<string> solution(int a, double b, string text, vector<vector<int>> arr, bool condition, map<string,int> hashtable) {\n\n}"
 
     assert Languages.get_solution("js", signature) == js_expected
     assert Languages.get_solution("ts", signature) == ts_expected
@@ -90,6 +93,7 @@ defmodule Codebattle.LanguagesTest do
     assert Languages.get_solution("clojure", signature) == clojure_expected
     assert Languages.get_solution("haskell", signature) == haskell_expected
     assert Languages.get_solution("perl", signature) == perl_expected
+    assert Languages.get_solution("cpp", signature) == cpp_expected
   end
 
   test "check solutions for empty signature", %{

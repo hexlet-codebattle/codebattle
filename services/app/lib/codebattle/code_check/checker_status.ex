@@ -77,6 +77,21 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
         {:error, json_result, container_output}
     end
   end
+  def get_compile_check_result(container_output, %{slug: "cpp"}) do
+    case Regex.run(~r/\.\/check\/solution\.cpp:.+/, container_output) do
+      nil ->
+        :ok
+
+      result ->
+        json_result =
+          Jason.encode!(%{
+            status: "error",
+            result: List.first(result)
+          })
+
+        {:error, json_result, container_output}
+    end
+  end
 
   defp get_error_status(
          json_result,
