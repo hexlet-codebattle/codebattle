@@ -149,7 +149,7 @@ defmodule Codebattle.Languages do
             array: "{<%= entries %>}",
             hash_inners: "{\"<%= key %>\", <%= value %>}",
           },
-          defining_variable_template: "<%= type_name %> <%= value %>",
+          defining_variable_template: "<%= type %> <%= name %>",
           nested_value_expression_template: "<%= type_name %><%= value %>"
         }
       },
