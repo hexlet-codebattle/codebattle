@@ -81,7 +81,7 @@ defmodule Codebattle.LanguagesTest do
 
     perl_expected = "sub solution {\n\n}\n1;"
     cpp_expected =
-      "#include <iostream>\n#include <map>\n#include <vector>\n\nusing namespace std;\n\n -> vector<string> solution(int a, double b, string text, vector<vector<int>> arr, bool condition, map<string,int> hashtable) {\n\n}"
+      "#include <iostream>\n#include <map>\n#include <vector>\n\nusing namespace std;\n\nvector<string> solution(int a, double b, string text, vector<vector<int>> arr, bool condition, map<string,int> hashtable) {\n\n}"
 
     assert Languages.get_solution("js", signature) == js_expected
     assert Languages.get_solution("ts", signature) == ts_expected

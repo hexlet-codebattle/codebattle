@@ -60,6 +60,8 @@ defmodule Codebattle.Generators.TypesGenerator do
   def get_type(%{"type" => %{"name" => name}}, %{types: lang_types}),
     do: Map.get(lang_types, name)
 
+  def get_type(_, _), do: ""
+
   defp get_interfaces_info(hashs, _meta, acc) when hashs == [], do: acc
 
   defp get_interfaces_info(
