@@ -230,7 +230,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
 
   defp get_value({%{"name" => "string"}, value}, _meta), do: ~s("#{double_backslashes(value)}")
   defp get_value({%{"name" => "boolean"}, value}, %{checker_meta: checker_meta}),
-       do: checker_meta.type_templates.boolean[value]
+       do: get_boolean_value(checker_meta.type_templates, value)
 
   defp get_value({%{"name" => "array", "nested" => nested}, value}, %{checker_meta: checker_meta} = meta) do
     array_values = Enum.map_join(value, ", ", &get_value({nested, &1}, meta))
@@ -241,16 +241,20 @@ defmodule Codebattle.Generators.CheckerGenerator do
     list = Map.to_list(value)
 
     if Enum.empty?(list) do
-      checker_meta.type_templates.hash.empty
+      checker_meta.type_templates.hash_empty
     else
       hash_entries =
         Enum.map_join(list, ", ", fn item -> get_hash_inners(item, signature, meta) end)
 
-      EEx.eval_string(checker_meta.type_templates.hash.value, [entries: hash_entries])
+      EEx.eval_string(checker_meta.type_templates.hash_value, [entries: hash_entries])
     end
   end
 
   defp get_value({_, value}, _meta), do: value
+
+  defp get_boolean_value(type_templates, true), do: type_templates.boolean_true
+
+  defp get_boolean_value(type_templates, false), do: type_templates.boolean_false
 
   defp get_hash_inners({k, v}, %{"nested" => nested}, %{checker_meta: checker_meta} = meta) do
     binding = [
@@ -258,7 +262,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
       value: get_value({nested, v}, meta)
     ]
 
-    EEx.eval_string(checker_meta.type_templates.hash.inners, binding)
+    EEx.eval_string(checker_meta.type_templates.hash_inners, binding)
   end
 
   defp extract_type(%{"type" => type}), do: type

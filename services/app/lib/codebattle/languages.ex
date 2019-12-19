@@ -17,13 +17,12 @@ defmodule Codebattle.Languages do
   end
 
   defmodule TypeTemplates do
-    defstruct boolean: %{true: "true", false: "false"},
+    defstruct boolean_true: "true",
+              boolean_false: "false",
               array: "[<%= entries %>]",
-              hash: %{
-                empty: "{}",
-                value: "{<%= entries %>}",
-                inners: "\"<%= key %>\": <%= value %>"
-              }
+              hash_empty: "{}",
+              hash_value: "{<%= entries %>}",
+              hash_inners: "\"<%= key %>\": <%= value %>"
   end
 
   def meta do
@@ -55,7 +54,7 @@ defmodule Codebattle.Languages do
           version: :dynamic,
           arguments_delimeter: ", ",
           type_templates: %TypeTemplates{
-            hash: %{TypeTemplates.__struct__.hash | inners: "\"<%= key %>\" => <%= value %>"}
+            hash_inners: "\"<%= key %>\" => <%= value %>"
           }
         }
       },
@@ -181,7 +180,8 @@ defmodule Codebattle.Languages do
           version: :dynamic,
           arguments_delimeter: ", ",
           type_templates: %TypeTemplates{
-            hash: %{TypeTemplates.__struct__.hash | empty: "%{}", value: "%{<%= entries %>}"}
+            hash_empty: "%{}",
+            hash_value: "%{<%= entries %>}"
           }
         }
       },
@@ -213,7 +213,8 @@ defmodule Codebattle.Languages do
           version: :dynamic,
           arguments_delimeter: ", ",
           type_templates: %TypeTemplates{
-            boolean: %{true: "True", false: "False"},
+            boolean_true: "True",
+            boolean_false: "False",
           }
         }
       },
@@ -246,7 +247,9 @@ defmodule Codebattle.Languages do
           arguments_delimeter: ", ",
           type_templates: %TypeTemplates{
             array: "array(<%= entries %>)",
-            hash: %{empty: "array()", value: "array(<%= entries %>)", inners: "\"<%= key %>\" => <%= value %>"}
+            hash_empty: "array()",
+            hash_value: "array(<%= entries %>)",
+            hash_inners: "\"<%= key %>\" => <%= value %>"
           }
         }
       },
@@ -277,7 +280,7 @@ defmodule Codebattle.Languages do
           version: :dynamic,
           arguments_delimeter: ", ",
           type_templates: %TypeTemplates{
-            hash: %{TypeTemplates.__struct__.hash | inners: ":<%= key %> <%= value %>"}
+            hash_inners: ":<%= key %> <%= value %>"
           }
         }
       },
@@ -309,8 +312,9 @@ defmodule Codebattle.Languages do
           version: :dynamic,
           arguments_delimeter: " ",
           type_templates: %TypeTemplates{
-            boolean: %{true: "True", false: "False"},
-            hash: %{TypeTemplates.__struct__.hash | empty: "empty"}
+            boolean_true: "True",
+            boolean_false: "False",
+            hash_empty: "empty"
           }
         }
       },
