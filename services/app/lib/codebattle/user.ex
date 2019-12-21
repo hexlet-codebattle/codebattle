@@ -11,6 +11,7 @@ defmodule Codebattle.User do
              :name,
              :rating,
              :is_bot,
+             :is_anonymous,
              :guest,
              :github_id,
              :lang,
@@ -33,6 +34,7 @@ defmodule Codebattle.User do
     field(:editor_theme, :string)
     field(:public_id, :binary_id)
     field(:is_bot, :boolean, default: false)
+    field(:is_anonymous, :boolean, default: false)
     field(:guest, :boolean, virtual: true, default: false)
     field(:rank, :integer, virtual: true)
     field(:games_played, :integer, virtual: true)
@@ -59,6 +61,7 @@ defmodule Codebattle.User do
       :lang,
       :editor_mode,
       :editor_theme,
+      :is_anonymous,
       :achievements
     ])
     |> validate_required([:name, :email, :github_id])

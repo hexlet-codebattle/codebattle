@@ -13,6 +13,7 @@ defmodule Codebattle.Tournament.Types do
       field(:rating, :integer)
       field(:guest, :boolean)
       field(:is_bot, :boolean)
+      field(:is_anonymous, :boolean, default: false)
       field(:game_result, :string, default: "waiting")
     end
 
@@ -25,6 +26,7 @@ defmodule Codebattle.Tournament.Types do
         :rating,
         :guest,
         :is_bot,
+        :is_anonymous,
         :game_result
       ])
     end
