@@ -10,8 +10,8 @@
 using namespace std;
 
 template<class K, class V, class dummy_compare, class A>
-using my_workaround_fifo_map = nlohmann::fifo_map<K, V, nlohmann::fifo_map_compare<K>, A>;
-using json = nlohmann::basic_json<my_workaround_fifo_map>;
+using fifo_map = nlohmann::fifo_map<K, V, nlohmann::fifo_map_compare<K>, A>;
+using json = nlohmann::basic_json<fifo_map>;
 
 template <typename T>
 void SendFailureMessage(string status, T result, string message) {
@@ -20,7 +20,7 @@ void SendFailureMessage(string status, T result, string message) {
   j["result"] = result;
   j["arguments"] = message;
 
-  cout << j;
+  cout << j << "\n";
 }
 
 template <typename T>
@@ -39,7 +39,7 @@ void SendMessage(string status, T result) {
   j["status"] = status;
   j["result"] = result;
 
-  cout << j;
+  cout << j << "\n";
 }
 
 int main() {
