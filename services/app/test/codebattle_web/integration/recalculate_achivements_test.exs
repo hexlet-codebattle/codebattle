@@ -49,8 +49,7 @@ defmodule RecalculateAchivementsTest do
     with_mocks [
       {Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> {:ok, "asdf", "asdf"} end]}
     ] do
-      insert_list(49, :user_game, %{user: user1})
-      # Create game
+      insert_list(9, :user_game, %{user: user1})
       conn =
         conn1
         |> get(page_path(conn1, :index))
@@ -69,8 +68,8 @@ defmodule RecalculateAchivementsTest do
       Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text1, lang: "js"})
       :timer.sleep(100)
 
-      user = Repo.get(User, user1.id)
-      assert user.achievements == ["played_fifty_games"]
+      user = Repo.get!(User, user1.id)
+      assert user.achievements == ["played_ten_games"]
     end
   end
 

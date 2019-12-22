@@ -30,7 +30,5 @@ defmodule Codebattle.Game do
     game
     |> cast(attrs, [:state, :task_id, :level, :duration_in_seconds, :type])
     |> validate_required([:state])
-
-    # |> cast_assoc(:task, required: false)
   end
 end
