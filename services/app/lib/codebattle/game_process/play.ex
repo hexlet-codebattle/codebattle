@@ -247,9 +247,11 @@ defmodule Codebattle.GameProcess.Play do
 
       case {fsm.state, check_result} do
         {:waiting_opponent, {:ok, result, output}} ->
+          Server.call_transition(id, :update_editor_params, %{id: player.id, result: result, output: output})
           {:error, result, output}
 
         {:playing, {:ok, result, output}} ->
+          Server.call_transition(id, :update_editor_params, %{id: player.id, result: result, output: output})
           {_response, fsm} = Server.call_transition(id, :complete, %{id: player.id})
 
           case engine.handle_won_game(id, player, fsm, editor_text) do
@@ -258,6 +260,8 @@ defmodule Codebattle.GameProcess.Play do
           end
 
         {_, result} ->
+          {_, res, _, _, out} = result
+          Server.call_transition(id, :update_editor_params, %{id: player.id, result: res, output: out})
           result
       end
     else
