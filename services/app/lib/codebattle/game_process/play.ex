@@ -260,9 +260,14 @@ defmodule Codebattle.GameProcess.Play do
           end
 
         {_, result} ->
-          {_, res, _, _, out} = result
-          Server.call_transition(id, :update_editor_params, %{id: player.id, result: res, output: out})
-          result
+          case result do
+            {:ok, res, out} ->
+              Server.call_transition(id, :update_editor_params, %{id: player.id, result: res, output: out})
+              result
+            {:failure, res, _, _, out} ->
+              Server.call_transition(id, :update_editor_params, %{id: player.id, result: res, output: out})
+              result
+          end
       end
     else
       {:error, reason} -> {:error, reason}
