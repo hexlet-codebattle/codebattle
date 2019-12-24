@@ -3,7 +3,7 @@ defmodule CodebattleWeb.Notifications do
   import Codebattle.GameProcess.FsmHelpers
 
   def game_timeout(game_id) do
-    Task.async(fn ->
+    Task.start(fn ->
       CodebattleWeb.Endpoint.broadcast!(game_channel_name(game_id), "game:timeout", %{
         status: "timeout",
         msg: gettext("Oh no, the time is out! Both players lost ;(")
@@ -12,7 +12,7 @@ defmodule CodebattleWeb.Notifications do
   end
 
   def lobby_game_cancel(game_id) do
-    Task.async(fn ->
+    Task.start(fn ->
       CodebattleWeb.Endpoint.broadcast("lobby", "game:cancel", %{game_id: game_id})
     end)
   end

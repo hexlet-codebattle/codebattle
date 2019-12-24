@@ -108,7 +108,7 @@ defmodule Codebattle.GameProcess.Player do
   def rebuild(%__MODULE__{} = player, task) do
     editor_lang = player.editor_lang
     editor_text = Languages.get_solution(editor_lang, task)
-    params = %{editor_lang: editor_lang, editor_text: editor_text, game_result: :undefined}
+    params = %{editor_lang: editor_lang, editor_text: editor_text, game_result: :undefined, result: "{}", output: ""}
 
     Map.merge(player, params)
   end

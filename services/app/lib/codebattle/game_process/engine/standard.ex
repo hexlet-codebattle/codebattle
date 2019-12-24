@@ -1,5 +1,5 @@
 defmodule Codebattle.GameProcess.Engine.Standard do
-  import Codebattle.GameProcess.Engine.Base
+  use Codebattle.GameProcess.Engine.Base
   import Codebattle.GameProcess.Auth
 
   alias Codebattle.GameProcess.{
@@ -46,11 +46,11 @@ defmodule Codebattle.GameProcess.Engine.Standard do
 
         case type do
           "public" ->
-            Task.async(fn ->
+            Task.start(fn ->
               Notifier.call(:game_created, %{level: level, game: game, player: player})
             end)
 
-            Task.async(fn ->
+            Task.start(fn ->
               CodebattleWeb.Endpoint.broadcast!("lobby", "game:new", %{
                 game: FsmHelpers.lobby_format(fsm)
               })
@@ -86,7 +86,7 @@ defmodule Codebattle.GameProcess.Engine.Standard do
       update_game!(game_id, %{state: "playing", task_id: task.id})
       start_record_fsm(game_id, FsmHelpers.get_players(fsm), fsm)
 
-      Task.async(fn ->
+      Task.start(fn ->
         Notifier.call(:game_opponent_join, %{
           first_player: FsmHelpers.get_first_player(fsm),
           second_player: FsmHelpers.get_second_player(fsm),
@@ -94,7 +94,7 @@ defmodule Codebattle.GameProcess.Engine.Standard do
         })
       end)
 
-      Task.async(fn ->
+      Task.start(fn ->
         CodebattleWeb.Endpoint.broadcast!("lobby", "game:update", %{
           game: FsmHelpers.lobby_format(fsm)
         })
@@ -110,14 +110,6 @@ defmodule Codebattle.GameProcess.Engine.Standard do
       {:error, reason, _fsm} ->
         {:error, reason}
     end
-  end
-
-  def update_text(game_id, player, editor_text) do
-    update_fsm_text(game_id, player, editor_text)
-  end
-
-  def update_lang(game_id, player, editor_lang) do
-    update_fsm_lang(game_id, player, editor_lang)
   end
 
   def handle_won_game(game_id, winner, fsm, editor_text) do
@@ -180,7 +172,7 @@ defmodule Codebattle.GameProcess.Engine.Standard do
 
     start_timeout_timer(new_game_id, new_fsm)
 
-    Task.async(fn ->
+    Task.start(fn ->
       CodebattleWeb.Endpoint.broadcast("lobby", "game:new", %{
         game: FsmHelpers.lobby_format(new_fsm)
       })
@@ -188,21 +180,4 @@ defmodule Codebattle.GameProcess.Engine.Standard do
 
     {:ok, new_game_id}
   end
-
-  # defp update_game!(game_id, params) do
-  #   game_id
-  #   |> Play.get_game()
-  #   |> Game.changeset(params)
-  #   |> Repo.update!()
-  # end
-
-  # defp update_user!(user_id, params) do
-  #   Repo.get!(User, user_id)
-  #   |> User.changeset(params)
-  #   |> Repo.update!()
-  # end
-
-  # defp create_user_game!(params) do
-  #   Repo.insert!(UserGame.changeset(%UserGame{}, params))
-  # end
 end
