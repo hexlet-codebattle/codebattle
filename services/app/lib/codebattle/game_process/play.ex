@@ -105,9 +105,12 @@ defmodule Codebattle.GameProcess.Play do
 
   # main api interface
 
-  def create_game(user, game_params,
-                  engine_type \\ :standard,
-                  default_timeout \\ Application.get_env(:codebattle, :default_timeout)) do
+  def create_game(
+        user,
+        game_params,
+        engine_type \\ :standard,
+        default_timeout \\ Application.get_env(:codebattle, :default_timeout)
+      ) do
     player = Player.build(user, %{creator: true})
     engine = get_engine(engine_type)
 
@@ -118,7 +121,8 @@ defmodule Codebattle.GameProcess.Play do
 
         {:ok, game_id}
 
-      {:error, reason} -> {:error, reason}
+      {:error, reason} ->
+        {:error, reason}
     end
   end
 
@@ -247,11 +251,21 @@ defmodule Codebattle.GameProcess.Play do
 
       case {fsm.state, check_result} do
         {:waiting_opponent, {:ok, result, output}} ->
-          Server.call_transition(id, :update_editor_params, %{id: player.id, result: result, output: output})
+          Server.call_transition(id, :update_editor_params, %{
+            id: player.id,
+            result: result,
+            output: output
+          })
+
           {:error, result, output}
 
         {:playing, {:ok, result, output}} ->
-          Server.call_transition(id, :update_editor_params, %{id: player.id, result: result, output: output})
+          Server.call_transition(id, :update_editor_params, %{
+            id: player.id,
+            result: result,
+            output: output
+          })
+
           {_response, fsm} = Server.call_transition(id, :complete, %{id: player.id})
 
           case engine.handle_won_game(id, player, fsm, editor_text) do
@@ -262,10 +276,21 @@ defmodule Codebattle.GameProcess.Play do
         {_, result} ->
           case result do
             {:ok, res, out} ->
-              Server.call_transition(id, :update_editor_params, %{id: player.id, result: res, output: out})
+              Server.call_transition(id, :update_editor_params, %{
+                id: player.id,
+                result: res,
+                output: out
+              })
+
               result
+
             {:failure, res, _, _, out} ->
-              Server.call_transition(id, :update_editor_params, %{id: player.id, result: res, output: out})
+              Server.call_transition(id, :update_editor_params, %{
+                id: player.id,
+                result: res,
+                output: out
+              })
+
               result
           end
       end

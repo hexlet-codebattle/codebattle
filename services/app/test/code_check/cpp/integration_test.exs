@@ -172,7 +172,8 @@ defmodule Codebattle.CodeCheck.Cpp.IntegrationTest do
     Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: "test"})
 
     Phoenix.ChannelTest.push(socket1, "check_result", %{
-      editor_text: "#include <iostream> \n #include <vector> \n using namespace std; \n
+      editor_text:
+        "#include <iostream> \n #include <vector> \n using namespace std; \n
       vector<string> solution(vector<string> a, vector<string> b) { return vector<string> {\"abcdef\"};}",
       lang: "cpp"
     })

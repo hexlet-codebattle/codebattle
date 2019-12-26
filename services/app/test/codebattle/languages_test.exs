@@ -80,6 +80,7 @@ defmodule Codebattle.LanguagesTest do
       "module Check.Solution where\n\nimport Data.HashMap.Lazy\n\nsolution :: Int -> Double -> String -> [[Int]] -> Bool -> HashMap String Int -> [String]\nsolution =\n\n{- Included packages:\naeson\nbytestring\ncase-insensitive\ncontainers\ndeepseq\nfgl\ninteger-logarithms\nmegaparsec\nmtl\nparser-combinators\npretty\nrandom\nregex-base\nregex-compat\nregex-posix\nscientific\nsplit\ntemplate-haskell\ntext\ntime\ntransformers\nunordered-containers\nvector\nvector-algorithms -}"
 
     perl_expected = "sub solution {\n\n}\n1;"
+
     cpp_expected =
       "#include <iostream>\n#include <map>\n#include <vector>\n\nusing namespace std;\n\nvector<string> solution(int a, double b, string text, vector<vector<int>> arr, bool condition, map<string,int> hashtable) {\n\n}"
 

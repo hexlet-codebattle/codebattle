@@ -26,6 +26,7 @@ defmodule CodebattleWeb.GameController do
     case Play.create_game(conn.assigns.current_user, game_params) do
       {:ok, id} ->
         game = Play.get_game(id)
+
         conn
         |> redirect(to: game_path(conn, :show, id, level: game.level))
 

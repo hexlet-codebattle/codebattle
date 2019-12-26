@@ -50,6 +50,7 @@ defmodule RecalculateAchivementsTest do
       {Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> {:ok, "asdf", "asdf"} end]}
     ] do
       insert_list(9, :user_game, %{user: user1})
+
       conn =
         conn1
         |> get(page_path(conn1, :index))

@@ -132,7 +132,7 @@ defmodule Codebattle.Languages do
           "#include <iostream>\n#include <map>\n#include <vector>\n\nusing namespace std;\n\n<%= expected %> solution(<%= arguments %>) {\n\n}",
         arguments_template: %{
           argument: "<%= type %> <%= name %>",
-          delimeter: ", ",
+          delimeter: ", "
         },
         expected_template: "<%= type %>",
         types: %{
@@ -147,7 +147,7 @@ defmodule Codebattle.Languages do
           version: :static,
           type_templates: %TypeTemplates{
             array: "{<%= entries %>}",
-            hash_inners: "{\"<%= key %>\", <%= value %>}",
+            hash_inners: "{\"<%= key %>\", <%= value %>}"
           },
           defining_variable_template: "<%= type %> <%= name %>",
           nested_value_expression_template: "<%= type_name %><%= value %>"
@@ -166,7 +166,7 @@ defmodule Codebattle.Languages do
           "package main;\n\nfunc solution(<%= arguments %>)<%= expected %> {\n\n}",
         arguments_template: %{
           argument: "<%= name %> <%= type %>",
-          delimeter: ", ",
+          delimeter: ", "
         },
         expected_template: " <%= type %>",
         types: %{
@@ -180,7 +180,7 @@ defmodule Codebattle.Languages do
         checker_meta: %{
           version: :static,
           type_templates: %TypeTemplates{
-            array: "{<%= entries %>}",
+            array: "{<%= entries %>}"
           },
           defining_variable_template: "<%= name %> <%= type %>",
           nested_value_expression_template: "<%= type_name %><%= value %>"
@@ -248,7 +248,7 @@ defmodule Codebattle.Languages do
           arguments_delimeter: ", ",
           type_templates: %TypeTemplates{
             boolean_true: "True",
-            boolean_false: "False",
+            boolean_false: "False"
           }
         }
       },
@@ -328,10 +328,10 @@ defmodule Codebattle.Languages do
         docker_image: "codebattle/haskell:8.4.3",
         solution_version: :typed,
         solution_template:
-        "module Check.Solution where\n\nimport Data.HashMap.Lazy\n\nsolution :: <%= arguments %><%= expected %>\nsolution =\n\n{- Included packages:\naeson\nbytestring\ncase-insensitive\ncontainers\ndeepseq\nfgl\ninteger-logarithms\nmegaparsec\nmtl\nparser-combinators\npretty\nrandom\nregex-base\nregex-compat\nregex-posix\nscientific\nsplit\ntemplate-haskell\ntext\ntime\ntransformers\nunordered-containers\nvector\nvector-algorithms -}",
+          "module Check.Solution where\n\nimport Data.HashMap.Lazy\n\nsolution :: <%= arguments %><%= expected %>\nsolution =\n\n{- Included packages:\naeson\nbytestring\ncase-insensitive\ncontainers\ndeepseq\nfgl\ninteger-logarithms\nmegaparsec\nmtl\nparser-combinators\npretty\nrandom\nregex-base\nregex-compat\nregex-posix\nscientific\nsplit\ntemplate-haskell\ntext\ntime\ntransformers\nunordered-containers\nvector\nvector-algorithms -}",
         arguments_template: %{
           argument: "<%= type %>",
-          delimeter: " -> ",
+          delimeter: " -> "
         },
         expected_template: " -> <%= type %>",
         types: %{
