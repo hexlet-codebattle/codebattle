@@ -1,0 +1,13 @@
+name: Elixir CI
+
+on:
+  push:
+    branches:
+      - add_github_actions
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Run Tests
+      run: docker-compose -f services/app/docker-compose.test.yml run sut
