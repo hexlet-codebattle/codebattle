@@ -11,4 +11,4 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: pull-request-run
-      run: docker-compose -f services/app/docker-compose.test.yml run -e PATH_TO_TESTS=test/codebattle:test/codebattle_web:test/generators sut
+      run: docker-compose -f services/app/docker-compose.test.yml run -e PATH_TO_TESTS="test/codebattle test/codebattle_web test/generators" sut
