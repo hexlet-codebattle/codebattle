@@ -11,7 +11,7 @@ const renderTaskLink = (name) => {
   const link = `https://github.com/hexlet-codebattle/battle_asserts/tree/master/src/battle_asserts/issues/${name}.clj`;
 
   return (
-    <a href={link} className="ml-2">
+    <a href={link} className="d-inline-block">
       <span className="fab fa-github mr-1" />
       link
     </a>
@@ -80,7 +80,9 @@ const Task = ({
         </div>
         <div className="d-flex align-items-end flex-column flex-sm-row justify-content-between">
           <h6 className="card-text">
-            {i18n.t('Found a mistake? Have something to add? Pull Requests are welcome: ')}
+            <span className="mr-2">
+              {i18n.t('Found a mistake? Have something to add? Pull Requests are welcome: ')}
+            </span>
             {renderTaskLink(task.name)}
           </h6>
         </div>
