@@ -6,6 +6,7 @@ defmodule RecalculateAchivementsTest do
 
   alias CodebattleWeb.UserSocket
   alias Codebattle.User
+  alias Codebattle.CodeCheck.CheckResult
 
   setup %{conn: conn} do
     insert(:task)
@@ -47,7 +48,7 @@ defmodule RecalculateAchivementsTest do
     user2: _user2
   } do
     with_mocks [
-      {Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> {:ok, "asdf", "asdf"} end]}
+      {Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> %CheckResult{status: :ok, result: "asdf", output: "asdf"} end]}
     ] do
       insert_list(9, :user_game, %{user: user1})
 
@@ -83,7 +84,7 @@ defmodule RecalculateAchivementsTest do
     user2: _user2
   } do
     with_mocks [
-      {Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> {:ok, "asdf", "asdf"} end]}
+      {Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> %CheckResult{status: :ok, result: "asdf", output: "asdf"} end]}
     ] do
       ["js", "php", "ruby"]
       |> Enum.each(fn x ->

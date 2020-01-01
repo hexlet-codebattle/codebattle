@@ -6,6 +6,7 @@ defmodule Codebattle.CodeCheck.Checker do
   alias Codebattle.Languages
   alias Codebattle.Generators.CheckerGenerator
   alias Codebattle.CodeCheck.CheckerStatus
+  alias Codebattle.CodeCheck.CheckResult
 
   @advanced_checker_stop_list ["perl"]
   @langs_needs_compiling ["golang", "cpp"]
@@ -13,7 +14,7 @@ defmodule Codebattle.CodeCheck.Checker do
   def check(task, editor_text, editor_lang) do
     case Languages.meta() |> Map.get(editor_lang) do
       nil ->
-        {:error, "Lang #{editor_lang} is undefined"}
+        %CheckResult{status: :error, result: "Lang #{editor_lang} is undefined", output: ""}
 
       lang ->
         # TODO: add hash to data.jsons or forbid read data.jsons
@@ -91,8 +92,8 @@ defmodule Codebattle.CodeCheck.Checker do
         # for json returned langs need fix after all langs support json
         CheckerStatus.get_check_result(container_output, meta)
 
-      error_result ->
-        error_result
+      {:error, result, output} ->
+        %CheckResult{status: :error, result: result, output: output}
     end
   end
 

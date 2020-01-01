@@ -7,6 +7,7 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
   alias Codebattle.Bot.Playbook
   alias Codebattle.Repo
   alias CodebattleWeb.UserSocket
+  alias Codebattle.CodeCheck.CheckResult
 
   setup %{conn: conn} do
     task = insert(:task)
@@ -45,7 +46,7 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
     with_mocks [
       {Codebattle.CodeCheck.Checker, [],
        [
-         check: fn _a, _b, _c -> {:ok, "adsf", "asdf"} end
+         check: fn _a, _b, _c -> %CheckResult{status: :ok, result: "asdf", output: "asdf"} end
        ]}
     ] do
       # Create game
