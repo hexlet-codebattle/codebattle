@@ -160,10 +160,32 @@ defmodule CodebattleWeb.GameChannel do
 
     editor_text = Map.get(payload, "editor_text", nil)
     lang = Map.get(payload, "lang", "js")
+    check_result = Play.check_game(game_id, user, editor_text, lang)
 
-    case Play.check_game(game_id, user, editor_text, lang) do
-      {:ok, fsm, result, output} ->
+    case check_result do
+      %{status: :ok} ->
+        push(socket, "user:check_result", %{
+          solution_status: true,
+          result: check_result.result,
+          output: check_result.output,
+          user_id: user.id
+        })
+
+        broadcast_from!(socket, "user:finish_check", %{
+          user: socket.assigns.current_user
+        })
+
+        broadcast_from!(socket, "output:data", %{
+          user_id: user.id,
+          result: check_result.result,
+          output: check_result.output
+        })
+
+        {:noreply, socket}
+
+      %{status: :game_won} ->
         winner = socket.assigns.current_user
+        {:ok, fsm} = Play.get_fsm(game_id)
         players = FsmHelpers.get_players(fsm)
         message = winner.name <> " " <> gettext("won the game!")
 
@@ -177,8 +199,8 @@ defmodule CodebattleWeb.GameChannel do
 
         push(socket, "user:check_result", %{
           solution_status: true,
-          result: result,
-          output: output,
+          result: check_result.result,
+          output: check_result.output,
           user_id: user.id,
           msg: message,
           status: fsm.state,
@@ -190,16 +212,6 @@ defmodule CodebattleWeb.GameChannel do
           completed_games: completed_games
         })
 
-        broadcast_from!(socket, "user:finish_check", %{
-          user: socket.assigns.current_user
-        })
-
-        broadcast_from!(socket, "output:data", %{
-          user_id: user.id,
-          result: result,
-          output: output
-        })
-
         broadcast_from!(socket, "user:won", %{
           players: players,
           status: "game_over",
@@ -208,13 +220,13 @@ defmodule CodebattleWeb.GameChannel do
 
         {:noreply, socket}
 
-      {:failure, result, failure_tests_count, success_tests_count, output} ->
+      %{status: :failure} ->
         push(socket, "user:check_result", %{
           solution_status: false,
-          result: result,
-          output: output,
-          asserts_count: success_tests_count + failure_tests_count,
-          success_count: success_tests_count,
+          result: check_result.result,
+          output: check_result.output,
+          asserts_count: check_result.success_tests_count + check_result.failure_tests_count,
+          success_count: check_result.success_tests_count,
           user_id: user.id
         })
 
@@ -224,17 +236,17 @@ defmodule CodebattleWeb.GameChannel do
 
         broadcast_from!(socket, "output:data", %{
           user_id: user.id,
-          result: result,
-          output: output
+          result: check_result.result,
+          output: check_result.output
         })
 
         {:noreply, socket}
 
-      {:error, result, output} ->
+      %{status: :error} ->
         push(socket, "user:check_result", %{
           solution_status: false,
-          result: result,
-          output: output,
+          result: check_result.result,
+          output: check_result.output,
           user_id: user.id
         })
 
@@ -244,41 +256,21 @@ defmodule CodebattleWeb.GameChannel do
 
         broadcast_from!(socket, "output:data", %{
           user_id: user.id,
-          result: result,
-          output: output
+          result: check_result.result,
+          output: check_result.output
         })
 
         {:noreply, socket}
 
-      {:copypaste, result, output} ->
+      %{status: :copypaste} ->
         push(socket, "user:copypaste_detected", %{
           user_id: user.id
         })
 
         broadcast_from!(socket, "output:data", %{
           user_id: user.id,
-          result: result,
-          output: output
-        })
-
-        {:noreply, socket}
-
-      {:ok, result, output} ->
-        push(socket, "user:check_result", %{
-          solution_status: true,
-          result: result,
-          output: output,
-          user_id: user.id
-        })
-
-        broadcast_from!(socket, "user:finish_check", %{
-          user: socket.assigns.current_user
-        })
-
-        broadcast_from!(socket, "output:data", %{
-          user_id: user.id,
-          result: result,
-          output: output
+          result: check_result.result,
+          output: check_result.output
         })
 
         {:noreply, socket}

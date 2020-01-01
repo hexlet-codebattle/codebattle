@@ -248,51 +248,24 @@ defmodule Codebattle.GameProcess.Play do
       engine = get_engine(fsm)
       update_editor(id, engine, player, editor_text, editor_lang)
       check_result = Checker.check(FsmHelpers.get_task(fsm), editor_text, editor_lang)
+      Server.call_transition(id, :update_editor_params, %{
+        id: player.id,
+        result: check_result.result,
+        output: check_result.output
+      })
 
       case {fsm.state, check_result} do
-        {:waiting_opponent, {:ok, result, output}} ->
-          Server.call_transition(id, :update_editor_params, %{
-            id: player.id,
-            result: result,
-            output: output
-          })
+        {:waiting_opponent, %{status: :ok}} ->
+          %{check_result | status: :error}
 
-          {:error, result, output}
-
-        {:playing, {:ok, result, output}} ->
-          Server.call_transition(id, :update_editor_params, %{
-            id: player.id,
-            result: result,
-            output: output
-          })
-
+        {:playing, %{status: :ok}} ->
           {_response, fsm} = Server.call_transition(id, :complete, %{id: player.id})
 
           case engine.handle_won_game(id, player, fsm, editor_text) do
-            :ok -> {:ok, fsm, result, output}
-            :copypaste -> {:copypaste, result, output}
+            :ok -> %{check_result | status: :game_won}
+            :copypaste -> %{check_result | status: :copypaste}
           end
-
-        {_, result} ->
-          case result do
-            {:ok, res, out} ->
-              Server.call_transition(id, :update_editor_params, %{
-                id: player.id,
-                result: res,
-                output: out
-              })
-
-              result
-
-            {:failure, res, _, _, out} ->
-              Server.call_transition(id, :update_editor_params, %{
-                id: player.id,
-                result: res,
-                output: out
-              })
-
-              result
-          end
+        _ -> check_result
       end
     else
       {:error, reason} -> {:error, reason}

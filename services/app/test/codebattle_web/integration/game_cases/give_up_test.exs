@@ -5,6 +5,7 @@ defmodule Codebattle.GameCases.GiveUpTest do
 
   alias Codebattle.GameProcess.{ActiveGames, Server}
   alias CodebattleWeb.UserSocket
+  alias Codebattle.CodeCheck.CheckResult
 
   setup %{conn: conn} do
     insert(:task, level: "elementary")
@@ -65,7 +66,7 @@ defmodule Codebattle.GameCases.GiveUpTest do
   } do
     # Create game
     with_mocks [
-      {Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> {:ok, "asdf", "output"} end]}
+      {Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> %CheckResult{status: :ok, result: "asdf", output: "asdf"} end]}
     ] do
       conn =
         conn1

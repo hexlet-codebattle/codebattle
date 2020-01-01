@@ -5,6 +5,7 @@ defmodule Codebattle.PlayGameTest do
 
   alias Codebattle.GameProcess.Server
   alias CodebattleWeb.UserSocket
+  alias Codebattle.CodeCheck.CheckResult
 
   setup %{conn: conn} do
     insert(:task)
@@ -43,7 +44,7 @@ defmodule Codebattle.PlayGameTest do
     user2: user2
   } do
     with_mocks [
-      {Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> {:ok, "asdf", "asdf"} end]}
+      {Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> %CheckResult{status: :ok, result: "asdf", output: "asdf"} end]}
     ] do
       # Create game
       conn =

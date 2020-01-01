@@ -1,5 +1,6 @@
 defmodule Codebattle.CopyPasteDetectTest do
   use Codebattle.IntegrationCase
+  alias Codebattle.CodeCheck.CheckResult
 
   import Mock
 
@@ -34,7 +35,7 @@ defmodule Codebattle.CopyPasteDetectTest do
     socket2: socket2
   } do
     with_mocks [
-      {Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> {:ok, "asdf", "asdf"} end]}
+      {Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> %CheckResult{status: :ok, result: "asdf", output: "asdf"} end]}
     ] do
       # Create game
       conn =
@@ -74,7 +75,7 @@ defmodule Codebattle.CopyPasteDetectTest do
     socket2: socket2
   } do
     with_mocks [
-      {Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> {:ok, "asdf", "asdf"} end]}
+      {Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> %CheckResult{status: :ok, result: "asdf", output: "asdf"} end]}
     ] do
       # Create game
       conn =
