@@ -1,14 +1,55 @@
-name: PR Job
+name: Build PR
 
 on:
   pull_request:
     branches:
       - master
-    types: [opened, edited]
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    services:
+      db:
+        image: postgres:10
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
-    - uses: actions/checkout@v1
-    - name: pull-request-run
-      run: docker-compose -f services/app/docker-compose.test.yml run -e PATH_TO_TESTS="test/codebattle test/codebattle_web test/generators" sut
+      - uses: actions/checkout@v1
+      - uses: actions/setup-elixir@v1.1.0
+        with:
+          otp-version: 22.x
+          elixir-version: 1.9.x
+      - uses: actions/cache@v1
+        with:
+          path: services/app/deps
+          key: ${{ runner.os }}-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/services/app/mix.lock')) }}
+          restore-keys: |
+            ${{ runner.os }}-deps-
+      - uses: actions/cache@v1
+        with:
+          path: services/app/_build
+          key: ${{ runner.os }}-build-${{ hashFiles(format('{0}{1}', github.workspace, '/services/app/mix.lock')) }}
+          restore-keys: |
+            ${{ runner.os }}-build-
+      - uses: actions/cache@v1
+        with:
+          path: ~/.mix
+          key: ${{ runner.os }}-mix-${{ hashFiles(format('{0}{1}', github.workspace, '/services/app/mix.lock')) }}
+          restore-keys: |
+            ${{ runner.os }}-mix-
+      - name: Get deps
+        run: cd services/app && mix deps.get
+      - name: Mix format
+        run: cd services/app && mix  format --check-formatted
+        env:
+          MIX_ENV: test
+      - name: Mix credo
+        run: cd services/app && mix credo
+        env:
+          MIX_ENV: test
+      - run: make test

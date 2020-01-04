@@ -110,21 +110,22 @@ defmodule CodebattleWeb.GameChannel do
     game_id = get_game_id(socket)
     current_user_id = socket.assigns.user_id
 
-    with {:ok, fsm} <- Play.get_fsm(game_id) do
-      case fsm.state do
-        :rematch_in_approval ->
-          handle_in("rematch:accept_offer", nil, socket)
+    case Play.get_fsm(game_id) do
+      {:ok, fsm} ->
+        case fsm.state do
+          :rematch_in_approval ->
+            handle_in("rematch:accept_offer", nil, socket)
 
-        :game_over ->
-          process_rematch_offer(game_id, current_user_id, socket)
+          :game_over ->
+            process_rematch_offer(game_id, current_user_id, socket)
 
-        :timeout ->
-          process_rematch_offer(game_id, current_user_id, socket)
+          :timeout ->
+            process_rematch_offer(game_id, current_user_id, socket)
 
-        _ ->
-          {:noreply, socket}
-      end
-    else
+          _ ->
+            {:noreply, socket}
+        end
+
       {:error, _reason} ->
         {:noreply, socket}
     end

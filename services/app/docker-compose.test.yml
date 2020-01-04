@@ -5,8 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.prod
-    command: bash -c "mix test $${PATH_TO_TESTS}"
-    # command: bash -c "mix credo && mix test"
+    command: bash -c "make test"
     environment:
       - CODEBATTLE_DB_NAME=codebattle_test
       - CODEBATTLE_DB_HOSTNAME=db
