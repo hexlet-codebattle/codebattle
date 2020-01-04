@@ -4,11 +4,31 @@ on:
   pull_request:
     branches:
       - master
-    types: [opened, edited]
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    services:
+      db:
+        image: postgres:10
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
-    - uses: actions/checkout@v1
-    - name: pull-request-run
-      run: docker-compose -f services/app/docker-compose.test.yml run sut
+      - uses: actions/checkout@v1
+      - uses: actions/setup-elixir@v1.1.0
+        with:
+          otp-version: 22.x
+          elixir-version: 1.9.x
+      - uses: actions/cache@v1
+        with:
+          path: services/app/deps
+          key: ${{ runner.os }}-mix-${{ hashFiles(format('{0}{1}', github.workspace, '/services/app/mix.lock')) }}
+          restore-keys: |
+            ${{ runner.os }}-mix-
+      - run: cd services/app && mix deps.get
+      - run: make test
