@@ -11,7 +11,7 @@ defmodule Codebattle.CodeCheck.Checker do
   @advanced_checker_stop_list ["perl"]
   @langs_needs_compiling ["golang", "cpp"]
 
-  def check(task, editor_text, editor_lang) do
+  def call(task, editor_text, editor_lang) do
     case Languages.meta() |> Map.get(editor_lang) do
       nil ->
         %CheckResult{status: :error, result: "Lang #{editor_lang} is undefined", output: ""}

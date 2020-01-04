@@ -61,7 +61,11 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
 
         case output_code do
           ^check_code ->
-             %CheckResult{status: :ok, result: last_message, output: reset_statuses(container_output, List.flatten(json_result))}
+            %CheckResult{
+              status: :ok,
+              result: last_message,
+              output: reset_statuses(container_output, List.flatten(json_result))
+            }
 
           _ ->
             get_error_status(last_message, container_output, lang)

@@ -27,6 +27,7 @@ defmodule Codebattle.CodeCheck.Php.IntegrationTest do
      }}
   end
 
+  @tag :code_check
   test "error code, game playing", %{
     user1: user1,
     user2: user2,
@@ -70,6 +71,7 @@ defmodule Codebattle.CodeCheck.Php.IntegrationTest do
     assert fsm.state == :playing
   end
 
+  @tag :code_check
   test "failure code, game playing", %{
     user1: user1,
     user2: user2,
@@ -113,6 +115,7 @@ defmodule Codebattle.CodeCheck.Php.IntegrationTest do
     assert fsm.state == :playing
   end
 
+  @tag :code_check
   test "good code, player won", %{
     user1: user1,
     user2: user2,

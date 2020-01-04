@@ -27,6 +27,7 @@ defmodule Codebattle.CodeCheck.Cpp.IntegrationTest do
      }}
   end
 
+  @tag :code_check
   test "error code, game playing", %{
     user1: user1,
     user2: user2,
@@ -68,6 +69,7 @@ defmodule Codebattle.CodeCheck.Cpp.IntegrationTest do
     assert fsm.state == :playing
   end
 
+  @tag :code_check
   test "failure code, game playing", %{
     user1: user1,
     user2: user2,
@@ -109,6 +111,7 @@ defmodule Codebattle.CodeCheck.Cpp.IntegrationTest do
     assert fsm.state == :playing
   end
 
+  @tag :code_check
   test "good code, player won", %{
     user1: user1,
     user2: user2,
@@ -146,6 +149,7 @@ defmodule Codebattle.CodeCheck.Cpp.IntegrationTest do
     assert fsm.state == :game_over
   end
 
+  @tag :code_check
   test "good code, player won with vectors", %{
     user1: user1,
     user2: user2,

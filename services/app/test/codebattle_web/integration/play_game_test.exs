@@ -1,11 +1,8 @@
 defmodule Codebattle.PlayGameTest do
   use Codebattle.IntegrationCase
 
-  import Mock
-
   alias Codebattle.GameProcess.Server
   alias CodebattleWeb.UserSocket
-  alias Codebattle.CodeCheck.CheckResult
 
   setup %{conn: conn} do
     insert(:task)
@@ -43,99 +40,94 @@ defmodule Codebattle.PlayGameTest do
     user1: user1,
     user2: user2
   } do
-    with_mocks [
-      {Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> %CheckResult{status: :ok, result: "asdf", output: "asdf"} end]}
-    ] do
-      # Create game
-      conn =
-        conn1
-        |> get(page_path(conn1, :index))
-        |> post(game_path(conn1, :create, level: "easy"))
+    # Create game
+    conn =
+      conn1
+      |> get(page_path(conn1, :index))
+      |> post(game_path(conn1, :create, level: "easy"))
 
-      game_id = game_id_from_conn(conn)
+    game_id = game_id_from_conn(conn)
 
-      game_topic = "game:" <> to_string(game_id)
-      {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
+    game_topic = "game:" <> to_string(game_id)
+    {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
 
-      {:ok, fsm} = Server.fsm(game_id)
+    {:ok, fsm} = Server.fsm(game_id)
 
-      assert fsm.state == :waiting_opponent
-      assert FsmHelpers.get_first_player(fsm).name == "first"
-      assert FsmHelpers.get_second_player(fsm) == nil
+    assert fsm.state == :waiting_opponent
+    assert FsmHelpers.get_first_player(fsm).name == "first"
+    assert FsmHelpers.get_second_player(fsm) == nil
 
-      # First player cannot join to game as second player
-      post(conn1, game_path(conn1, :join, game_id))
-      {:ok, fsm} = Server.fsm(game_id)
+    # First player cannot join to game as second player
+    post(conn1, game_path(conn1, :join, game_id))
+    {:ok, fsm} = Server.fsm(game_id)
 
-      assert fsm.state == :waiting_opponent
-      assert FsmHelpers.get_first_player(fsm).name == "first"
-      assert FsmHelpers.get_second_player(fsm) == nil
+    assert fsm.state == :waiting_opponent
+    assert FsmHelpers.get_first_player(fsm).name == "first"
+    assert FsmHelpers.get_second_player(fsm) == nil
 
-      # Second player join game
-      post(conn2, game_path(conn2, :join, game_id))
-      {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
-      {:ok, fsm} = Server.fsm(game_id)
+    # Second player join game
+    post(conn2, game_path(conn2, :join, game_id))
+    {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
+    {:ok, fsm} = Server.fsm(game_id)
 
-      assert fsm.state == :playing
-      assert FsmHelpers.get_first_player(fsm).name == "first"
-      assert FsmHelpers.get_second_player(fsm).name == "second"
+    assert fsm.state == :playing
+    assert FsmHelpers.get_first_player(fsm).name == "first"
+    assert FsmHelpers.get_second_player(fsm).name == "second"
 
-      assert FsmHelpers.get_first_player(fsm).editor_text ==
-               "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nmodule.exports = (a, b) => {\n\treturn 0;\n};"
+    assert FsmHelpers.get_first_player(fsm).editor_text ==
+             "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nmodule.exports = (a, b) => {\n\treturn 0;\n};"
 
-      assert FsmHelpers.get_second_player(fsm).editor_text ==
-               "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nmodule.exports = (a, b) => {\n\treturn 0;\n};"
+    assert FsmHelpers.get_second_player(fsm).editor_text ==
+             "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nmodule.exports = (a, b) => {\n\treturn 0;\n};"
 
-      # First player won
-      editor_text1 = "Hello world1!"
-      editor_text2 = "Hello world2!"
-      editor_text3 = "Hello world3!"
+    # First player won
+    editor_text1 = "Hello world1!"
+    editor_text2 = "Hello world2!"
+    editor_text3 = "Hello world3!"
 
-      Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text1, lang: "js"})
-      :timer.sleep(100)
-      {:ok, fsm} = Server.fsm(game_id)
-      assert fsm.state == :game_over
-      assert FsmHelpers.get_first_player(fsm).name == "first"
-      assert FsmHelpers.get_second_player(fsm).name == "second"
-      assert FsmHelpers.get_winner(fsm).name == "first"
-      assert FsmHelpers.get_first_player(fsm).editor_text == "Hello world1!"
+    Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text1, lang: "js"})
+    :timer.sleep(100)
+    {:ok, fsm} = Server.fsm(game_id)
+    assert fsm.state == :game_over
+    assert FsmHelpers.get_first_player(fsm).name == "first"
+    assert FsmHelpers.get_second_player(fsm).name == "second"
+    assert FsmHelpers.get_winner(fsm).name == "first"
+    assert FsmHelpers.get_first_player(fsm).editor_text == "Hello world1!"
 
-      assert FsmHelpers.get_second_player(fsm).editor_text ==
-               "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nmodule.exports = (a, b) => {\n\treturn 0;\n};"
+    assert FsmHelpers.get_second_player(fsm).editor_text ==
+             "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nmodule.exports = (a, b) => {\n\treturn 0;\n};"
 
-      # Winner cannot check results again
-      Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text2, lang: "js"})
-      :timer.sleep(100)
-      {:ok, fsm} = Server.fsm(game_id)
+    # Winner cannot check results again
+    Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text2, lang: "js"})
+    :timer.sleep(100)
+    {:ok, fsm} = Server.fsm(game_id)
 
-      assert fsm.state == :game_over
-      assert FsmHelpers.get_first_player(fsm).name == "first"
-      assert FsmHelpers.get_second_player(fsm).name == "second"
-      assert FsmHelpers.get_winner(fsm).name == "first"
-      assert FsmHelpers.get_first_player(fsm).editor_text == "Hello world2!"
+    assert fsm.state == :game_over
+    assert FsmHelpers.get_first_player(fsm).name == "first"
+    assert FsmHelpers.get_second_player(fsm).name == "second"
+    assert FsmHelpers.get_winner(fsm).name == "first"
+    assert FsmHelpers.get_first_player(fsm).editor_text == "Hello world2!"
 
-      assert FsmHelpers.get_second_player(fsm).editor_text ==
-               "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nmodule.exports = (a, b) => {\n\treturn 0;\n};"
+    assert FsmHelpers.get_second_player(fsm).editor_text ==
+             "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nmodule.exports = (a, b) => {\n\treturn 0;\n};"
 
-      # Second player complete game
-      Phoenix.ChannelTest.push(socket2, "check_result", %{editor_text: editor_text3, lang: "js"})
-      :timer.sleep(100)
+    # Second player complete game
+    Phoenix.ChannelTest.push(socket2, "check_result", %{editor_text: editor_text3, lang: "js"})
 
-      game = Repo.get(Game, game_id)
-      user1 = Repo.get(User, user1.id)
-      user2 = Repo.get(User, user2.id)
-      user_game1 = Repo.get_by(UserGame, user_id: user1.id)
-      user_game2 = Repo.get_by(UserGame, user_id: user2.id)
+    game = Repo.get(Game, game_id)
+    user1 = Repo.get(User, user1.id)
+    user2 = Repo.get(User, user2.id)
+    user_game1 = Repo.get_by(UserGame, user_id: user1.id)
+    user_game2 = Repo.get_by(UserGame, user_id: user2.id)
 
-      assert game.state == "game_over"
-      assert user1.rating == 1012
-      assert user2.rating == 988
+    assert game.state == "game_over"
+    assert user1.rating == 1012
+    assert user2.rating == 988
 
-      assert user_game1.creator == true
-      assert user_game1.result == "won"
-      assert user_game2.creator == false
-      assert user_game2.result == "lost"
-    end
+    assert user_game1.creator == true
+    assert user_game1.result == "won"
+    assert user_game2.creator == false
+    assert user_game2.result == "lost"
   end
 
   test "other players cannot change game state", %{

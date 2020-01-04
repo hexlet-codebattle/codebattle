@@ -9,11 +9,11 @@ compose-build:
 compose-down:
 	docker-compose down -v || true
 
-compose-test-all:
-	docker-compose run app mix test
+compose-test-code-checkers:
+	docker-compose run app mix test test/code_check
 
 compose-test:
-	docker-compose run app mix test test/codebattle test/codebattle_web test/generators
+	docker-compose run app mix test --exclude code_check
 
 compose-kill:
 	docker-compose kill

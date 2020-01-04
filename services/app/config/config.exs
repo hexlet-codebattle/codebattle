@@ -68,6 +68,7 @@ bot_limit =
   end
 
 config :codebattle, Codebattle.Bot.RecorderServer, limit: bot_limit
+config :codebattle, checker_adapter: Codebattle.CodeCheck.Checker
 config :codebattle, tournament_match_timeout: 3 * 60
 # 3 hours in seconds
 config :codebattle, default_timeout: 10_800

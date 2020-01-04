@@ -19,3 +19,12 @@ update:
 
 console:
 	iex -S mix
+
+test:
+	mix test --exclude code_check
+
+test-code-checkers: export CODEBATTLE_RUN_CODE_CHECK = true
+test-code-checkers:
+	mix test test/code_check
+
+.PHONY: test

@@ -1,8 +1,5 @@
 defmodule Codebattle.CopyPasteDetectTest do
   use Codebattle.IntegrationCase
-  alias Codebattle.CodeCheck.CheckResult
-
-  import Mock
 
   alias CodebattleWeb.UserSocket
 
@@ -34,38 +31,34 @@ defmodule Codebattle.CopyPasteDetectTest do
     socket1: socket1,
     socket2: socket2
   } do
-    with_mocks [
-      {Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> %CheckResult{status: :ok, result: "asdf", output: "asdf"} end]}
-    ] do
-      # Create game
-      conn =
-        conn1
-        |> get(page_path(conn1, :index))
-        |> post(game_path(conn1, :create, level: "easy"))
+    # Create game
+    conn =
+      conn1
+      |> get(page_path(conn1, :index))
+      |> post(game_path(conn1, :create, level: "easy"))
 
-      game_id = game_id_from_conn(conn)
+    game_id = game_id_from_conn(conn)
 
-      game_topic = "game:" <> to_string(game_id)
-      {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
+    game_topic = "game:" <> to_string(game_id)
+    {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
 
-      # Second player join game
-      post(conn2, game_path(conn2, :join, game_id))
-      {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
+    # Second player join game
+    post(conn2, game_path(conn2, :join, game_id))
+    {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
 
-      # First player copypaste detected
-      editor_text = "t"
-      editor_text1 = "the whole solution"
+    # First player copypaste detected
+    editor_text = "t"
+    editor_text1 = "the whole solution"
 
-      play_books_count = Codebattle.Repo.aggregate(Codebattle.Bot.Playbook, :count, :id)
+    play_books_count = Codebattle.Repo.aggregate(Codebattle.Bot.Playbook, :count, :id)
 
-      Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text})
-      :timer.sleep(50)
-      Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text1})
-      Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text1, lang: "js"})
-      :timer.sleep(100)
+    Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text})
+    :timer.sleep(50)
+    Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text1})
+    Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text1, lang: "js"})
+    :timer.sleep(100)
 
-      assert Codebattle.Repo.aggregate(Codebattle.Bot.Playbook, :count, :id) == play_books_count
-    end
+    assert Codebattle.Repo.aggregate(Codebattle.Bot.Playbook, :count, :id) == play_books_count
   end
 
   test "Detect user copypaste, part 2", %{
@@ -74,39 +67,35 @@ defmodule Codebattle.CopyPasteDetectTest do
     socket1: socket1,
     socket2: socket2
   } do
-    with_mocks [
-      {Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> %CheckResult{status: :ok, result: "asdf", output: "asdf"} end]}
-    ] do
-      # Create game
-      conn =
-        conn1
-        |> get(page_path(conn1, :index))
-        |> post(game_path(conn1, :create, level: "easy"))
+    # Create game
+    conn =
+      conn1
+      |> get(page_path(conn1, :index))
+      |> post(game_path(conn1, :create, level: "easy"))
 
-      game_id = game_id_from_conn(conn)
+    game_id = game_id_from_conn(conn)
 
-      game_topic = "game:" <> to_string(game_id)
-      {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
+    game_topic = "game:" <> to_string(game_id)
+    {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
 
-      # Second player join game
-      post(conn2, game_path(conn2, :join, game_id))
-      {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
-      template = "def solution(a, b) return"
-      editor_text1 = "def solution(a, b) the  return"
-      editor_text2 = "def solution(a, b) the whole so  return"
-      solution = "def solution(a, b) the whole solution  return"
+    # Second player join game
+    post(conn2, game_path(conn2, :join, game_id))
+    {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
+    template = "def solution(a, b) return"
+    editor_text1 = "def solution(a, b) the  return"
+    editor_text2 = "def solution(a, b) the whole so  return"
+    solution = "def solution(a, b) the whole solution  return"
 
-      play_books_count = Codebattle.Repo.aggregate(Codebattle.Bot.Playbook, :count, :id)
+    play_books_count = Codebattle.Repo.aggregate(Codebattle.Bot.Playbook, :count, :id)
 
-      Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: template})
-      :timer.sleep(50)
-      Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text1})
-      Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text2})
-      Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: solution, lang: "js"})
-      :timer.sleep(1000)
+    Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: template})
+    :timer.sleep(50)
+    Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text1})
+    Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text2})
+    Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: solution, lang: "js"})
+    :timer.sleep(1000)
 
-      assert Codebattle.Repo.aggregate(Codebattle.Bot.Playbook, :count, :id) ==
-               play_books_count + 1
-    end
+    assert Codebattle.Repo.aggregate(Codebattle.Bot.Playbook, :count, :id) ==
+             play_books_count + 1
   end
 end

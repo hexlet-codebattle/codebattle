@@ -19,10 +19,8 @@ defmodule Codebattle.GameProcess.Play do
     ActiveGames
   }
 
-  alias Codebattle.CodeCheck.Checker
   alias CodebattleWeb.Notifications
 
-  # get data interface
   def active_games do
     ActiveGames.list_games()
   end
@@ -247,7 +245,8 @@ defmodule Codebattle.GameProcess.Play do
          :ok <- player_can_check_game?(id, player) do
       engine = get_engine(fsm)
       update_editor(id, engine, player, editor_text, editor_lang)
-      check_result = Checker.check(FsmHelpers.get_task(fsm), editor_text, editor_lang)
+      check_result = checker_adapter().call(FsmHelpers.get_task(fsm), editor_text, editor_lang)
+
       Server.call_transition(id, :update_editor_params, %{
         id: player.id,
         result: check_result.result,
@@ -265,7 +264,9 @@ defmodule Codebattle.GameProcess.Play do
             :ok -> %{check_result | status: :game_won}
             :copypaste -> %{check_result | status: :copypaste}
           end
-        _ -> check_result
+
+        _ ->
+          check_result
       end
     else
       {:error, reason} -> {:error, reason}
@@ -299,5 +300,9 @@ defmodule Codebattle.GameProcess.Play do
     if is_lang_changed do
       engine.update_lang(id, player, editor_lang)
     end
+  end
+
+  defp checker_adapter do
+    Application.get_env(:codebattle, :checker_adapter)
   end
 end
