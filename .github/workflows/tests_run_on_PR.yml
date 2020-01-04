@@ -42,7 +42,14 @@ jobs:
           key: ${{ runner.os }}-mix-${{ hashFiles(format('{0}{1}', github.workspace, '/services/app/mix.lock')) }}
           restore-keys: |
             ${{ runner.os }}-mix-
-      - run: cd services/app && mix deps.get
-      - run: cd services/app && mix format --check-formatted
-      - run: cd services/app && mix credo
+      - name: Get deps
+        run: cd services/app && mix deps.get
+      - name: Mix format
+        run: cd services/app && mix  format --check-formatted
+        env:
+          MIX_ENV: test
+      - name: Mix credo
+        run: cd services/app && mix credo
+        env:
+          MIX_ENV: test
       - run: make test
