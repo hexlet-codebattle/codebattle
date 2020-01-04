@@ -43,4 +43,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-mix-
       - run: cd services/app && mix deps.get
+      - run: cd services/app && mix format --check-formatted
+      - run: cd services/app && mix credo
       - run: make test
