@@ -27,6 +27,18 @@ jobs:
       - uses: actions/cache@v1
         with:
           path: services/app/deps
+          key: ${{ runner.os }}-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/services/app/mix.lock')) }}
+          restore-keys: |
+            ${{ runner.os }}-deps-
+      - uses: actions/cache@v1
+        with:
+          path: services/app/_build
+          key: ${{ runner.os }}-build-${{ hashFiles(format('{0}{1}', github.workspace, '/services/app/mix.lock')) }}
+          restore-keys: |
+            ${{ runner.os }}-build-
+      - uses: actions/cache@v1
+        with:
+          path: ~/.mix
           key: ${{ runner.os }}-mix-${{ hashFiles(format('{0}{1}', github.workspace, '/services/app/mix.lock')) }}
           restore-keys: |
             ${{ runner.os }}-mix-
