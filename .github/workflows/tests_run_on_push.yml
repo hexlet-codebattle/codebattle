@@ -45,7 +45,7 @@ jobs:
       - uses: actions/cache@v1
         with:
           path: /var/lib/docker/overlay2
-          key: ${{ runner.os }}-dockers-${{ hashFiles(format('{0}{1}', github.workspace) }}
+          key: ${{ runner.os }}-dockers-${{ hashFiles(format('{0}{1}', github.workspace, '/.github/workflows/tests_run_on_push.yml')) }}
           restore-keys: |
             ${{ runner.os }}-dockers-
       - name: Get deps
