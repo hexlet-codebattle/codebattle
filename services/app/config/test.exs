@@ -23,19 +23,13 @@ config :codebattle, Codebattle.Repo,
 config :codebattle, Codebattle.Bot, timeout: 60_000
 config :codebattle, Codebattle.Bot.PlaybookPlayerRunner, timeout: 300
 
-timeout =
-  case System.get_env("CODEBATTLE_DOCKER_TEST_TIMEOUT") do
-    nil -> 2000
-    x -> String.to_integer(x)
-  end
-
 adapter =
   case System.get_env("CODEBATTLE_RUN_CODE_CHECK") do
     "true" -> Codebattle.CodeCheck.Checker
     _ -> Codebattle.CodeCheck.FakeChecker
   end
 
-config :codebattle, code_check_timeout: timeout
+config :codebattle, code_check_timeout: 15_000
 config :codebattle, checker_adapter: adapter
 config :codebattle, tournament_match_timeout: 1
 
