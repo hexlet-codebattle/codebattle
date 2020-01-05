@@ -12,7 +12,6 @@ services:
       - CODEBATTLE_DB_USERNAME=postgres
       - CODEBATTLE_DB_PASSWORD=
       - MIX_ENV=test
-      - CODEBATTLE_DOCKER_TEST_TIMEOUT=15000
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:cached"
       - "/var/tmp:/var/tmp:cached"

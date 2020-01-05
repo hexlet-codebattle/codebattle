@@ -208,15 +208,25 @@ defmodule CodebattleWeb.GameChannel do
           players: players
         })
 
-        CodebattleWeb.Endpoint.broadcast_from!(self(), "lobby", "game:game_over", %{
-          active_games: active_games,
-          completed_games: completed_games
+        broadcast_from!(socket, "user:finish_check", %{
+          user: socket.assigns.current_user
+        })
+
+        broadcast_from!(socket, "output:data", %{
+          user_id: user.id,
+          result: check_result.result,
+          output: check_result.output
         })
 
         broadcast_from!(socket, "user:won", %{
           players: players,
           status: "game_over",
           msg: message
+        })
+
+        CodebattleWeb.Endpoint.broadcast_from!(self(), "lobby", "game:game_over", %{
+          active_games: active_games,
+          completed_games: completed_games
         })
 
         {:noreply, socket}

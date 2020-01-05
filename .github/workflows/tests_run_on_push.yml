@@ -79,4 +79,3 @@ jobs:
         run: make test-code-checkers
         env:
           MIX_ENV: test
-          CODEBATTLE_DOCKER_TEST_TIMEOUT: 10000
