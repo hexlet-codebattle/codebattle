@@ -1,4 +1,4 @@
-import { handleActions } from 'redux-actions';
+import { createReducer } from '@reduxjs/toolkit';
 import * as actions from '../actions';
 
 const initState = {
@@ -6,22 +6,19 @@ const initState = {
   messages: [],
 };
 
-const chat = handleActions({
-  [actions.fetchChatData](state, { payload: { users, messages } }) {
-    return { ...state, users, messages };
+const chat = createReducer(initState, {
+  [actions.fetchChatData](state, { payload }) {
+    return payload;
   },
   [actions.userJoinedChat](state, { payload: { users } }) {
-    return { ...state, users };
+    state.users = users
   },
   [actions.userLeftChat](state, { payload: { users } }) {
-    return { ...state, users };
+    state.users = users
   },
-  [actions.newMessageChat](state, { payload: { user, message } }) {
-    const { messages } = state;
-    const newMessages = [...messages, { user, message }];
-
-    return { ...state, messages: newMessages };
+  [actions.newMessageChat](state, { payload }) {
+    state.messages.push(payload);
   },
-}, initState);
+});
 
 export default chat;

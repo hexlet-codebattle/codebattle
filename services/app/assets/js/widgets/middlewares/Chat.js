@@ -1,4 +1,5 @@
 import Gon from 'gon';
+import { camelizeKeys } from 'humps';
 import socket from '../../socket';
 import {
   userJoinedChat, userLeftChat, fetchChatData, newMessageChat,
@@ -9,14 +10,13 @@ const channelName = `chat:${chatId}`;
 const channel = socket.channel(channelName);
 
 export const fetchState = () => (dispatch) => {
+  const camelizeKeysAndDispatch = actionCreator => data => dispatch(actionCreator(camelizeKeys(data)));
   channel.join()
-    .receive('ok', ({ users, messages }) => dispatch(fetchChatData({ users, messages })));
+    .receive('ok', camelizeKeysAndDispatch(fetchChatData));
 
-  channel.on('user:joined', ({ users }) => dispatch(userJoinedChat({ users })));
-  channel.on('user:left', ({ users }) => dispatch(userLeftChat({ users })));
-  channel.on('new:message', ({ user, message }) => {
-    dispatch(newMessageChat({ user, message }));
-  });
+  channel.on('user:joined', camelizeKeysAndDispatch(userJoinedChat));
+  channel.on('user:left', camelizeKeysAndDispatch(userLeftChat));
+  channel.on('new:message', camelizeKeysAndDispatch(newMessageChat));
 };
 
 export const addMessage = (user, message) => {

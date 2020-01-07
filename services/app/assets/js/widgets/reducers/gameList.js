@@ -27,7 +27,7 @@ const gameList = createReducer(initialState, {
   [actions.updateGameLobby](state, { payload: { game } }) {
     const gameToUpdate = _.find(state.activeGames, { gameId: game.gameId });
     if (gameToUpdate) {
-      gameToUpdate = { ...gameToUpdate, game };
+      Object.assign(gameToUpdate, game);
     }
   },
   [actions.selectNewGameTimeout](state, { payload: { timeoutSeconds } }) {
