@@ -1,34 +1,21 @@
+import { camelizeKeys } from 'humps';
 import socket from '../../socket';
 import {
-  cancelGameLobby, fetchGameList, newGameLobby, updateGameLobby,
+  cancelGameLobby, initGameList, newGameLobby, updateGameLobby,
 } from '../actions';
 
 const channelName = 'lobby';
 const channel = socket.channel(channelName);
 
 export const fetchState = () => (dispatch) => {
-  channel.join()
-    .receive(
-      'ok',
-      ({
-        active_games: activeGames,
-        completed_games: completedGames,
-      }) => dispatch(fetchGameList({ activeGames, completedGames })),
-    );
+  channel.join().receive('ok', (data) => dispatch(initGameList(camelizeKeys(data))));
 
-  channel.on('game:new', ({ game }) => dispatch(newGameLobby({ game })));
-  channel.on('game:update', ({ game }) => dispatch(updateGameLobby({ game })));
+  channel.on('game:new', (data) => dispatch(newGameLobby(camelizeKeys(data))));
+  channel.on('game:update', ({ game }) => dispatch(updateGameLobby(camelizeKeys(game))));
   channel.on('game:cancel', ({ game_id: gameId }) => dispatch(cancelGameLobby({ gameId })));
-  channel.on(
-    'game:game_over',
-    ({
-      active_games: activeGames,
-      completed_games: completedGames,
-    }) => dispatch(fetchGameList({ activeGames, completedGames })),
-  );
+  channel.on('game:game_over', (data) => dispatch(camelizeKeys(data)));
 };
 
 export const cancelGame = (gameId) => () => {
-  channel.push('game:cancel', { gameId })
-    .receive('error', (error) => console.error(error));
+  channel.push('game:cancel', { gameId }).receive('error', (error) => console.error(error));
 };

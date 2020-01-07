@@ -1,45 +1,38 @@
-import { handleActions } from 'redux-actions';
+import { createReducer } from '@reduxjs/toolkit';
 import _ from 'lodash';
 import * as actions from '../actions';
 
 const initialState = {
-  activeGames: null, completedGames: null, loaded: false, newGame: { timeoutSeconds: null },
+  activeGames: null,
+  completedGames: null,
+  loaded: false,
+  newGame: { timeoutSeconds: null },
 };
 
-const gameList = handleActions({
-  [actions.fetchGameList](state, { payload: { activeGames, completedGames } }) {
+const gameList = createReducer(initialState, {
+  [actions.initGameList](state, { payload: { activeGames, completedGames } }) {
     return {
-      ...state, activeGames, completedGames, loaded: true,
+      ...state,
+      activeGames,
+      completedGames,
+      loaded: true,
     };
   },
   [actions.newGameLobby](state, { payload: { game } }) {
-    const { activeGames } = state;
-    return { ...state, activeGames: [...activeGames, game] };
+    state.activeGames.push(game);
   },
   [actions.cancelGameLobby](state, { payload: { gameId } }) {
-    const { activeGames } = state;
-
-    const newGames = _.filter(activeGames, (game) => game.game_id !== gameId);
-
-    return { ...state, activeGames: newGames };
+    state.activeGames = _.reject(state.activeGames, { gameId });
   },
   [actions.updateGameLobby](state, { payload: { game } }) {
-    const gameId = game.game_id;
-
-    const { activeGames } = state;
-    const restGames = activeGames.filter((g) => g.game_id !== gameId);
-
-    const newGame = {
-      players: game.players,
-      game_info: game.game_info,
-      game_id: gameId,
-    };
-    return { ...state, activeGames: [...restGames, newGame] };
+    const gameToUpdate = _.find(state.activeGames, { gameId: game.gameId });
+    if (gameToUpdate) {
+      gameToUpdate = { ...gameToUpdate, game };
+    }
   },
   [actions.selectNewGameTimeout](state, { payload: { timeoutSeconds } }) {
-    const { newGame } = state;
-    return { ...state, newGame: { ...newGame, timeoutSeconds } };
+    state.newGame.timeoutSeconds = timeoutSeconds;
   },
-}, initialState);
+});
 
 export default gameList;

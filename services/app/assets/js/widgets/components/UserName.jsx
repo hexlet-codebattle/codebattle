@@ -4,7 +4,7 @@ import LanguageIcon from './LanguageIcon';
 
 const UserName = ({
   user: {
-    id, github_id: githubId, name, rating, lang, rating_diff: ratingDiff,
+    id, githubId, name, rating, lang, ratingDiff,
   },
 }) => {
   const anonymousUser = (
