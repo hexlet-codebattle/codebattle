@@ -1,4 +1,4 @@
-import { handleActions } from 'redux-actions';
+import { createReducer } from '@reduxjs/toolkit';
 import * as actions from '../actions';
 import EditorModes from '../config/editorModes';
 import EditorThemes from '../config/editorThemes';
@@ -8,19 +8,13 @@ const initialState = {
   theme: EditorThemes.dark,
 };
 
-const editorUI = handleActions({
-  [actions.setEditorsMode](state, { payload: mode }) {
-    return {
-      ...state,
-      mode,
-    };
+const editorUI = createReducer(initialState, {
+  [actions.setEditorsMode](state, { payload }) {
+    state.mode = payload;
   },
-  [actions.switchEditorsTheme](state, { payload: theme }) {
-    return {
-      ...state,
-      theme,
-    };
+  [actions.switchEditorsTheme](state, { payload }) {
+    state.theme = payload;
   },
-}, initialState);
+});
 
 export default editorUI;

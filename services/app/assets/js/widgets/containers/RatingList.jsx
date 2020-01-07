@@ -31,7 +31,7 @@ class UsersRating extends React.Component {
         <UserInfo user={_.omit(user, 'rating')} />
       </td>
       <td className="p-3 align-middle">{user.rating}</td>
-      <td className="p-3 align-middle">{user.games_played}</td>
+      <td className="p-3 align-middle">{user.gamesPlayed}</td>
       <td className="p-3 align-middle">{user.performance}</td>
       <td className="p-3 align-middle">
         <a className="text-muted" href={`https://github.com/${user.name}`}>
@@ -48,9 +48,9 @@ class UsersRating extends React.Component {
       getRatingPage,
       usersRatingPage: {
         pageInfo: {
-          page_number: activePage,
-          page_size: itemsCountPerPage,
-          total_entries: totalItemsCount,
+          pageNumber: activePage,
+          pageSize: itemsCountPerPage,
+          totalEntries: totalItemsCount,
         },
       },
     } = this.props;
@@ -78,7 +78,7 @@ class UsersRating extends React.Component {
     return (
       <div className="text-center">
         <h2 className="font-weight-normal">Users rating</h2>
-        <p>{`Total: ${usersRatingPage.pageInfo.total_entries}`}</p>
+        <p>{`Total: ${usersRatingPage.pageInfo.totalEntries}`}</p>
         <div className="form-inline">
           <div className="input-group">
             <div className="input-group-prepend">

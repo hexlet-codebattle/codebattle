@@ -49,7 +49,7 @@ class GameList extends React.Component {
   renderResultIcon = (gameId, player1, player2) => {
     const tooltipId = `tooltip-${gameId}-${player1.id}`;
 
-    if (player1.game_result === 'gave_up') {
+    if (player1.gameResult === 'gave_up') {
       return (
         <OverlayTrigger
           overlay={<Tooltip id={tooltipId}>Player gave up</Tooltip>}
@@ -62,7 +62,7 @@ class GameList extends React.Component {
       );
     }
 
-    if (player1.game_result === 'won' && player2.game_result !== 'gave_up') {
+    if (player1.gameResult === 'won' && player2.gameResult !== 'gave_up') {
       return (
         <OverlayTrigger
           overlay={<Tooltip id={tooltipId}>Player won</Tooltip>}
@@ -129,9 +129,9 @@ class GameList extends React.Component {
   )
 
   renderGameActionButtons = (game) => {
-    const gameUrl = `/games/${game.game_id}`;
+    const gameUrl = `/games/${game.gameId}`;
     const currentUser = Gon.getAsset('current_user');
-    const gameState = game.game_info.state;
+    const gameState = game.gameInfo.state;
 
     if (gameState === GameStatusCodes.playing) {
       return this.renderShowGameButton(gameUrl);
@@ -148,7 +148,7 @@ class GameList extends React.Component {
             <button
               type="button"
               className="btn btn-danger btn-sm"
-              onClick={lobbyMiddlewares.cancelGame(game.game_id)}
+              onClick={lobbyMiddlewares.cancelGame(game.gameId)}
             >
               Cancel
             </button>
@@ -326,26 +326,26 @@ class GameList extends React.Component {
           </thead>
           <tbody>
             {activeGames.map(game => (
-              <tr key={game.game_id}>
+              <tr key={game.gameId}>
                 <td className="p-3 align-middle text-nowrap">
                   {moment
-                    .utc(game.game_info.starts_at)
+                    .utc(game.gameInfo.startsAt)
                     .local()
                     .format('YYYY-MM-DD HH:mm')}
                 </td>
                 <td className="p-3 align-middle text-nowrap">
-                  {this.renderGameLevelBadge(game.game_info.level)}
+                  {this.renderGameLevelBadge(game.gameInfo.level)}
                 </td>
 
                 {this.renderPlayers(game.id, game.players)}
 
                 <td className="p-3 align-middle text-nowrap">
-                  {game.game_info.state}
+                  {game.gameInfo.state}
                 </td>
 
 
                 <td className="p-3 align-middle text-nowrap">
-                  {timeoutOptions[game.game_info.timeout_seconds]}
+                  {timeoutOptions[game.gameInfo.timeoutSeconds]}
                 </td>
 
                 <td className="p-3 align-middle">{this.renderGameActionButtons(game)}</td>
@@ -387,7 +387,7 @@ class GameList extends React.Component {
                 <tr key={game.id}>
                   <td className="p-3 align-middle text-nowrap">
                     {moment
-                      .utc(game.updated_at)
+                      .utc(game.updatedAt)
                       .local()
                       .format('YYYY-MM-DD HH:mm')}
                   </td>

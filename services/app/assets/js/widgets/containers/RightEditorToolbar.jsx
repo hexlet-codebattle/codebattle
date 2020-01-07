@@ -27,10 +27,10 @@ class RightEditorToolbar extends Component {
         <UserInfo user={player} />
         <div>
           {
-              isOnline
-                ? <FontAwesomeIcon icon="snowman" className="text-success ml-2" />
-                : <FontAwesomeIcon icon="skull-crossbones" className="text-secondary ml-2" />
-            }
+            isOnline
+              ? <FontAwesomeIcon icon="snowman" className="text-success ml-2" />
+              : <FontAwesomeIcon icon="skull-crossbones" className="text-secondary ml-2" />
+          }
         </div>
       </div>
     );
@@ -74,8 +74,8 @@ class RightEditorToolbar extends Component {
       <div className="py-2 px-3 btn-toolbar justify-content-between" role="toolbar">
         <GameResultIcon
           className="mr-2"
-          resultUser1={_.get(players, [[rightUserId], 'game_result'])}
-          resultUser2={_.get(players, [[leftUserId], 'game_result'])}
+          resultUser1={_.get(players, [[rightUserId], 'gameResult'])}
+          resultUser2={_.get(players, [[leftUserId], 'gameResult'])}
         />
         {this.renderNameplate(players[rightUserId], onlineUsers)}
         <div className="ml-auto btn-group" role="group" aria-label="Editor settings">

@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { handleActions } from 'redux-actions';
+import { createReducer } from '@reduxjs/toolkit';
 import * as actions from '../actions';
 
 export const initState = {
@@ -8,53 +8,34 @@ export const initState = {
   usersStats: {},
 };
 
-const reducer = handleActions({
+const reducer = createReducer(initState, {
   [actions.setCurrentUser](state, { payload }) {
     const { user } = payload;
     const currentUserId = user.id;
     if (currentUserId) {
-      return {
-        ...state,
-        users: {
-          ...state.users,
-          [user.id]: user,
-        },
-        currentUserId,
-      };
+      state.currentUserId = currentUserId;
+      state.users[user.id] = user;
     }
-    return state;
   },
 
   [actions.updateUsers](state, { payload }) {
     const { users: usersList } = payload;
     const users = _.reduce(usersList, (acc, user) => ({ ...acc, [user.id]: user }), {});
     if (!_.isEmpty(users)) {
-      return { ...state, users: { ...state.users, ...users } };
+      Object.assign(state.users, users);
     }
-    return state;
   },
 
   [actions.updateUsersStats](state, { payload }) {
     const { userId, stats, achievements } = payload;
-    return {
-      ...state,
-      usersStats: {
-        ...state.usersStats,
-        [userId]: { stats, achievements },
-      },
-    };
+    state.usersStats[userId] = { stats, achievements };
   },
+
   [actions.updateUsersRatingPage](state, { payload }) {
-    const { users, page_info: pageInfo } = payload;
-    return {
-      ...state,
-      usersRatingPage: {
-        users,
-        pageInfo,
-      },
-    };
+    const { users, pageInfo } = payload;
+    state.usersRatingPage = { users, pageInfo };
   },
-}, initState);
+});
 
 
 export default reducer;

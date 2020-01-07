@@ -1,5 +1,4 @@
 ---
-
 plugins:
   - react
   - jsx-a11y
@@ -11,10 +10,10 @@ env:
 parser: babel-eslint
 
 extends:
-  - 'airbnb'
+  - "airbnb"
 
 rules:
   no-console: 0
   react/prop-types: 0
   import/no-unresolved: 0
-
+  no-param-reassign: 0

@@ -1,5 +1,4 @@
-import { combineReducers } from 'redux';
-import { handleActions } from 'redux-actions';
+import { createReducer, combineReducers } from '@reduxjs/toolkit';
 import * as actions from '../actions';
 import defaultEditorHeight from '../config/editorSettings';
 
@@ -23,58 +22,46 @@ const getCurrentEditorHeight = (state, userId) => {
   return editorHeight || defaultEditorHeight;
 };
 
-const meta = handleActions({
+const meta = createReducer(initialState.meta, {
   [actions.updateEditorLang](state, { payload: { userId, currentLangSlug } }) {
-    return {
-      ...state,
-      [userId]: {
-        ...state[userId],
-        userId,
-        currentLangSlug,
-      },
+    state[userId] = {
+      ...state[userId],
+      userId,
+      currentLangSlug,
     };
   },
+
   [actions.updateEditorText](state, { payload: { userId, langSlug } }) {
-    return {
-      ...state,
-      [userId]: {
-        ...state[userId],
-        userId,
-        currentLangSlug: langSlug,
-      },
+    state[userId] = {
+      ...state[userId],
+      userId,
+      currentLangSlug: langSlug,
     };
   },
+
   [actions.compressEditorHeight](state, { payload: { userId } }) {
     const currentHeight = getCurrentEditorHeight(state, userId);
     const newEditorHeight = currentHeight > 100 ? currentHeight - 100 : currentHeight;
-    return {
-      ...state,
-      [userId]: {
-        ...state[userId],
-        editorHeight: newEditorHeight,
-      },
+    state[userId] = {
+      ...state[userId],
+      editorHeight: newEditorHeight,
     };
   },
+
   [actions.expandEditorHeight](state, { payload: { userId } }) {
     const currentHeight = getCurrentEditorHeight(state, userId);
-    return {
-      ...state,
-      [userId]: {
-        ...state[userId],
-        editorHeight: currentHeight + 100,
-      },
+    state[userId] = {
+      ...state[userId],
+      editorHeight: currentHeight + 100,
     };
   },
-}, initialState.meta);
+});
 
-const text = handleActions({
-  [actions.updateEditorText](state, { payload: { userId, langSlug, text: editorText } }) {
-    return {
-      ...state,
-      [makeEditorTextKey(userId, langSlug)]: editorText,
-    };
+const text = createReducer(initialState.text, {
+  [actions.updateEditorText](state, { payload: { userId, langSlug, editorText } }) {
+    state[makeEditorTextKey(userId, langSlug)] = editorText;
   },
-}, initialState.text);
+});
 
 export default combineReducers({
   meta,

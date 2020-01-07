@@ -1,17 +1,14 @@
-import { handleActions } from 'redux-actions';
+import { createReducer } from '@reduxjs/toolkit';
 import * as actions from '../actions';
 
 const initialState = {
   showToastActionsAfterGame: false,
 };
 
-const gameUI = handleActions({
+const gameUI = createReducer(initialState, {
   [actions.updateGameUI](state, { payload }) {
-    return {
-      ...state,
-      ...payload,
-    };
+    Object.assign(state, payload);
   },
-}, initialState);
+});
 
 export default gameUI;

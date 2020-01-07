@@ -20,7 +20,7 @@ const UserStats = ({ data }) => {
           </li>
           <li className="list-inline-item">
             Gave up:&nbsp;
-            <b className="text-warning">{stats.gave_up}</b>
+            <b className="text-warning">{stats.gaveUp}</b>
           </li>
         </ul>
         {achivementsTitle}

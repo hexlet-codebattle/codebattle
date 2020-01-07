@@ -12,6 +12,11 @@ import GameStatusCodes from '../config/gameStatusCodes';
 import { gameStatusSelector } from '../selectors';
 import WaitingOpponentInfo from '../components/WaitingOpponentInfo';
 
+
+const ComponentForHandlers = ({ children }) => (
+  <div style={{ outline: 'none' }}>{children}</div>
+);
+
 class RootContainer extends React.Component {
   componentDidMount() {
     const user = Gon.getAsset('current_user');
@@ -43,7 +48,11 @@ class RootContainer extends React.Component {
     }
 
     return (
-      <HotKeys keyMap={keyMap} handlers={handlers}>
+      <HotKeys
+        keyMap={keyMap}
+        handlers={handlers}
+        component={ComponentForHandlers}
+      >
         <InfoWidget />
         <GameWidget />
       </HotKeys>
