@@ -53,3 +53,5 @@ jobs:
         env:
           MIX_ENV: test
       - run: make test
+      - name: Eslint
+        run: cd services/app && yarn lint
