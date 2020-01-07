@@ -6,7 +6,9 @@ const channelName = 'lobby';
 const channel = socket.channel(channelName);
 
 export const fetchState = () => (dispatch) => {
-  const camelizeKeysAndDispatch = actionCreator => data => dispatch(actionCreator(camelizeKeys(data)));
+  const camelizeKeysAndDispatch = (actionCreator) => (data) => (
+    dispatch(actionCreator(camelizeKeys(data)))
+  );
 
   channel.join().receive('ok', camelizeKeysAndDispatch(actions.initGameList));
 

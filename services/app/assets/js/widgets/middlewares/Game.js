@@ -306,5 +306,9 @@ export const checkGameResult = () => (dispatch, getState) => {
   channel.push('check_result', payload);
 };
 
-export const compressEditorHeight = (userId) => (dispatch) => dispatch(actions.compressEditorHeight({ userId }));
-export const expandEditorHeight = (userId) => (dispatch) => dispatch(actions.expandEditorHeight({ userId }));
+export const compressEditorHeight = (userId) => (dispatch) => (
+  dispatch(actions.compressEditorHeight({ userId }))
+);
+export const expandEditorHeight = (userId) => (dispatch) => (
+  dispatch(actions.expandEditorHeight({ userId }))
+);

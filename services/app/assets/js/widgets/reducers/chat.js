@@ -11,10 +11,10 @@ const chat = createReducer(initState, {
     return payload;
   },
   [actions.userJoinedChat](state, { payload: { users } }) {
-    state.users = users
+    state.users = users;
   },
   [actions.userLeftChat](state, { payload: { users } }) {
-    state.users = users
+    state.users = users;
   },
   [actions.newMessageChat](state, { payload }) {
     state.messages.push(payload);

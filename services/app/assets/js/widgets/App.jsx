@@ -3,8 +3,7 @@ import { Provider } from 'react-redux';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import { PersistGate } from 'redux-persist/integration/react';
-import { combineReducers } from '@reduxjs/toolkit'
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import RootContainer from './containers/RootContainer';
 import reducers from './reducers';
 import GameList from './containers/GameList';
