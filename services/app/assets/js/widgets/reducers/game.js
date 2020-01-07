@@ -1,4 +1,4 @@
-import { handleActions } from 'redux-actions';
+import { createReducer } from '@reduxjs/toolkit';
 import * as actions from '../actions';
 import GameStatusCodes from '../config/gameStatusCodes';
 
@@ -12,15 +12,9 @@ const initialState = {
   players: {},
 };
 
-export default handleActions({
+export default createReducer(initialState, {
   [actions.updateGameStatus](state, { payload }) {
-    return {
-      ...state,
-      gameStatus: {
-        ...state.gameStatus,
-        ...payload,
-      },
-    };
+    Object.assign(state.gameStatus, payload);
   },
 
   [actions.updateGamePlayers](state, { payload: { players: playersList } }) {
@@ -30,27 +24,14 @@ export default handleActions({
       [player.id]: { ...acc[player.id], ...player },
     }), players);
 
-    return {
-      ...state,
-      players: newPlayersState,
-    };
+    state.players = newPlayersState;
   },
 
-  [actions.setGameTask](state, { payload }) {
-    const { task } = payload;
-    return { ...state, task };
+  [actions.setGameTask](state, { payload: { task } }) {
+    state.task = task;
   },
 
   [actions.updateCheckStatus](state, { payload }) {
-    return {
-      ...state,
-      gameStatus: {
-        ...state.gameStatus,
-        checking: {
-          ...state.gameStatus.checking,
-          ...payload,
-        },
-      },
-    };
+    Object.assign(state.gameStatus.checking, payload);
   },
-}, initialState);
+});

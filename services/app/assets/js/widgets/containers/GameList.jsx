@@ -49,7 +49,7 @@ class GameList extends React.Component {
   renderResultIcon = (gameId, player1, player2) => {
     const tooltipId = `tooltip-${gameId}-${player1.id}`;
 
-    if (player1.game_result === 'gave_up') {
+    if (player1.gameResult === 'gave_up') {
       return (
         <OverlayTrigger
           overlay={<Tooltip id={tooltipId}>Player gave up</Tooltip>}
@@ -62,7 +62,7 @@ class GameList extends React.Component {
       );
     }
 
-    if (player1.game_result === 'won' && player2.game_result !== 'gave_up') {
+    if (player1.gameResult === 'won' && player2.gameResult !== 'gave_up') {
       return (
         <OverlayTrigger
           overlay={<Tooltip id={tooltipId}>Player won</Tooltip>}
@@ -387,7 +387,7 @@ class GameList extends React.Component {
                 <tr key={game.id}>
                   <td className="p-3 align-middle text-nowrap">
                     {moment
-                      .utc(game.updated_at)
+                      .utc(game.updatedAt)
                       .local()
                       .format('YYYY-MM-DD HH:mm')}
                   </td>
