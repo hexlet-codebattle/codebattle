@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { HotKeys } from 'react-hotkeys';
@@ -34,7 +34,7 @@ class RootContainer extends React.Component {
     };
 
     const handlers = {
-      CHECK_GAME: (event) => { checkResult(); },
+      CHECK_GAME: () => { checkResult(); },
     };
 
     if (!storeLoaded) {

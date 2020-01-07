@@ -5,8 +5,8 @@ import * as actions from '../actions';
 const channelName = 'lobby';
 const channel = socket.channel(channelName);
 
-export const fetchState = () => (dispatch) => {
-  const camelizeKeysAndDispatch = (actionCreator) => (data) => (
+export const fetchState = () => dispatch => {
+  const camelizeKeysAndDispatch = actionCreator => data => (
     dispatch(actionCreator(camelizeKeys(data)))
   );
 
@@ -18,6 +18,6 @@ export const fetchState = () => (dispatch) => {
   channel.on('game:game_over', camelizeKeysAndDispatch(actions.fetchGameList));
 };
 
-export const cancelGame = (gameId) => () => {
-  channel.push('game:cancel', { gameId }).receive('error', (error) => console.error(error));
+export const cancelGame = gameId => () => {
+  channel.push('game:cancel', { gameId }).receive('error', error => console.error(error));
 };

@@ -3,7 +3,7 @@ import CalendarHeatmap from 'react-calendar-heatmap';
 import axios from 'axios';
 import Loading from '../components/Loading';
 
-const getColorScale = (count) => {
+const getColorScale = count => {
   if (count >= 5) {
     return 'color-huge';
   } if (count >= 3) {
@@ -22,7 +22,7 @@ class Heatmap extends React.Component {
   componentDidMount() {
     const userId = window.location.pathname.split('/').pop();
     axios.get(`/api/v1/${userId}/activity`)
-      .then((response) => { this.setState(response.data); });
+      .then(response => { this.setState(response.data); });
   }
 
   render() {
@@ -39,13 +39,13 @@ class Heatmap extends React.Component {
           <CalendarHeatmap
             showWeekdayLabels
             values={activities}
-            classForValue={(value) => {
+            classForValue={value => {
               if (!value) {
                 return 'color-empty';
               }
               return getColorScale(value.count);
             }}
-            titleForValue={(value) => {
+            titleForValue={value => {
               if (!value) {
                 return 'No games';
               }

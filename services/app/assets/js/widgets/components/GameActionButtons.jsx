@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 // import PropTypes from 'prop-types';
 import _ from 'lodash';
@@ -91,15 +91,15 @@ class GameActionButtons extends Component {
 
     return (
       <div className="btn-toolbar py-3 px-3" role="toolbar">
-            {this.renderGiveUpButton(canGiveUp, realDisabled)}
-            {this.renderCheckResultButton(
-              checkResult,
-              gameStatus,
-              realDisabled,
-              editorUser,
-            )}
-            {this.renderModal()}
-          </div>
+        {this.renderGiveUpButton(canGiveUp, realDisabled)}
+        {this.renderCheckResultButton(
+          checkResult,
+          gameStatus,
+          realDisabled,
+          editorUser,
+        )}
+        {this.renderModal()}
+      </div>
     );
   }
 }

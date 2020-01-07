@@ -62,7 +62,7 @@ class NotificationsHandler extends Component {
     }
   }
 
-  showCheckingStatusMessage = (solutionStatus) => {
+  showCheckingStatusMessage = solutionStatus => {
     if (solutionStatus) {
       toast(
         <Toast header="Success">
@@ -150,7 +150,7 @@ class NotificationsHandler extends Component {
   }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   const currentUserId = selectors.currentUserIdSelector(state);
   const players = selectors.gamePlayersSelector(state);
   const isCurrentUserPlayer = _.hasIn(players, currentUserId);

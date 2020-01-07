@@ -10,7 +10,7 @@
     "profile": "webpack --profile --json > stats.json",
     "build-dev": "webpack --mode development",
     "build-prod": "NODE_ENV=production webpack -p --mode production",
-    "lint": "eslint ./assets/js --ext .js"
+    "lint": "eslint --ext js,jsx ./assets/js"
   },
   "dependencies": {
     "@babel/polyfill": "^7.7.0",

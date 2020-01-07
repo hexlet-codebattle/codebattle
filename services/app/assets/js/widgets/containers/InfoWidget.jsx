@@ -4,7 +4,7 @@ import ChatWidget from './ChatWidget';
 import Task from '../components/Task';
 import * as selectors from '../selectors';
 
-const InfoWidget = (props) => {
+const InfoWidget = props => {
   const {
     taskText, gameStatusName, timeoutSeconds, joinsAt,
   } = props;
@@ -27,7 +27,7 @@ const InfoWidget = (props) => {
 };
 
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   const gameStatus = selectors.gameStatusSelector(state);
 
   return {

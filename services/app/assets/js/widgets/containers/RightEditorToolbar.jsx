@@ -91,7 +91,7 @@ class RightEditorToolbar extends Component {
   }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   const rightUserId = _.get(selectors.rightEditorSelector(state), ['userId'], null);
   const leftUserId = _.get(selectors.leftEditorSelector(state), ['userId'], null);
 

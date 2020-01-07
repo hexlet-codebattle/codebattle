@@ -3,10 +3,10 @@ db-recreate:
 	mix run priv/repo/seeds.exs
 
 lint-js:
-	yarn lint --ext .js --ext .jsx assets/js/
+	yarn lint
 
 lint-js-fix:
-	yarn lint --fix --ext .js --ext .jsx assets/js/
+	yarn lint --fix
 
 start:
 	mix ecto.migrate

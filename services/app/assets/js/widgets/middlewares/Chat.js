@@ -9,8 +9,8 @@ const chatId = Gon.getAsset('game_id');
 const channelName = `chat:${chatId}`;
 const channel = socket.channel(channelName);
 
-export const fetchState = () => (dispatch) => {
-  const camelizeKeysAndDispatch = (actionCreator) => (data) => (
+export const fetchState = () => dispatch => {
+  const camelizeKeysAndDispatch = actionCreator => data => (
     dispatch(actionCreator(camelizeKeys(data)))
   );
 
@@ -26,5 +26,5 @@ export const addMessage = (user, message) => {
   const payload = { user, message };
 
   channel.push('new:message', payload)
-    .receive('error', (error) => console.error(error));
+    .receive('error', error => console.error(error));
 };

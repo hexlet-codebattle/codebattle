@@ -3,7 +3,7 @@ import { camelizeKeys } from 'humps';
 import qs from 'qs';
 import { updateUsersRatingPage, updateUsersStats } from '../actions';
 
-export const loadUserStats = (dispatch) => async (user) => {
+export const loadUserStats = dispatch => async user => {
   try {
     const response = await axios.get(`/api/v1/user/${user.id}/stats`);
     const data = camelizeKeys(response.data);
@@ -13,7 +13,7 @@ export const loadUserStats = (dispatch) => async (user) => {
   }
 };
 
-export const getUsersRatingPage = (page = 1, filter = '') => (dispatch) => {
+export const getUsersRatingPage = (page = 1, filter = '') => dispatch => {
   const queryParamsString = qs.stringify({
     page,
     filter,

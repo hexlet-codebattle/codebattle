@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import Gon from 'gon';
@@ -7,11 +7,11 @@ import LanguageIcon from './LanguageIcon';
 const languages = Gon.getAsset('langs');
 
 const getLangTitle = ({ slug, name, version }) => (
-  <Fragment>
+  <>
     <LanguageIcon lang={slug} />
     <span className="mx-1">{_.capitalize(name)}</span>
     <small>{version}</small>
-  </Fragment>
+  </>
 );
 
 const LanguagePicker = ({ currentLangSlug, onChange, disabled }) => {

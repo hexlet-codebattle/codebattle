@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Toast = (props) => {
+const Toast = props => {
   const { children, header } = props;
   return (
     <div className="toast show">
