@@ -48,15 +48,18 @@ jobs:
             ${{ runner.os }}-mix-
 
       - name: Get deps
-        run: cd services/app && mix deps.get
+        run: mix deps.get
+        working-directory: ./services/app
 
       - name: Mix format
-        run: cd services/app && mix format --check-formatted
+        run: mix format --check-formatted
+        working-directory: ./services/app
         env:
           MIX_ENV: test
 
       - name: Mix credo
-        run: cd services/app && mix credo
+        run: mix credo
+        working-directory: ./services/app
         env:
           MIX_ENV: test
 
@@ -75,7 +78,9 @@ jobs:
 
       - name: Install yarn dependencies
         run: yarn install --froze-lockfile
+        working-directory: ./services/app
 
       - name: Eslint
-        run: cd services/app && yarn lint
+        run: yarn lint
+        working-directory: ./services/app
 
