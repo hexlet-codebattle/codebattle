@@ -63,8 +63,6 @@ jobs:
         env:
           MIX_ENV: test
 
-      - run: make test
-
       - name: Get yarn cache
         id: yarn-cache
         run: echo "::set-output name=dir::$(yarn cache dir)"
@@ -83,4 +81,6 @@ jobs:
       - name: Eslint
         run: yarn lint
         working-directory: ./services/app
+
+      - run: make test
 
