@@ -1,9 +1,9 @@
 import _ from 'lodash';
 import React from 'react';
 import { connect } from 'react-redux';
+import cn from 'classnames';
 import * as selectors from '../../selectors';
 import i18n from '../../../i18n';
-import cn from 'classnames';
 import {
   sendOfferToRematch,
   sendRejectToRematch,
@@ -108,7 +108,7 @@ class RematchButton extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   const currentUserId = selectors.currentUserIdSelector(state);
 
   return {

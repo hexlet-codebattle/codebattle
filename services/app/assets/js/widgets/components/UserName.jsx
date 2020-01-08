@@ -16,7 +16,7 @@ const UserName = ({
     </span>
   );
 
-  const displayDiff = (num) => {
+  const displayDiff = num => {
     if (num < 0) {
       return <small className="text-danger">{` ${num}`}</small>;
     }

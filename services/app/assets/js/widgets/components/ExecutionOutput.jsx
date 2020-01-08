@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import i18n from '../../i18n';
 
 class ExecutionOutput extends PureComponent {
-  renderStatusBadge = (status) => {
+  renderStatusBadge = status => {
     const stautsColors = {
       error: 'danger',
       failure: 'warning',
@@ -42,7 +42,7 @@ class ExecutionOutput extends PureComponent {
     }
   }
 
-  parseOutput = (result) => {
+  parseOutput = result => {
     try {
       return JSON.parse(result || '{"result": "nothing", "status": "nothing"}');
     } catch (e) {
@@ -50,7 +50,7 @@ class ExecutionOutput extends PureComponent {
     }
   };
 
-  isError = (result) => {
+  isError = result => {
     if (result && result.status === 'error') {
       return true;
     }

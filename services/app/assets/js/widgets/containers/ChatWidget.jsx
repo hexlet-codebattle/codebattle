@@ -14,11 +14,11 @@ class ChatWidget extends React.Component {
     dispatch(fetchState());
   }
 
-  handleChange = (e) => {
+  handleChange = e => {
     this.setState({ message: e.target.value });
   };
 
-  handleSubmit = (e) => {
+  handleSubmit = e => {
     e.preventDefault();
     const { message } = this.state;
     const {

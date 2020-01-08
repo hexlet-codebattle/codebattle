@@ -9,7 +9,7 @@ import { getUsersList } from '../selectors';
 import * as UsersMiddlewares from '../middlewares/Users';
 import Loading from '../components/Loading';
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   usersRatingPage: getUsersList(state),
 });
 
@@ -24,7 +24,7 @@ class UsersRating extends React.Component {
     getRatingPage(1);
   }
 
-  renderUser = (user) => (
+  renderUser = user => (
     <tr key={user.id}>
       <td className="p-3 align-middle">{user.rank}</td>
       <td className="tex-left p-3 align-middle">
@@ -92,8 +92,9 @@ class UsersRating extends React.Component {
               placeholder="Username"
               aria-label="Username"
               aria-describedby="basic-addon1"
-              onChange={_.debounce(() => getRatingPage(1, this._filter.value), 500)}
-              ref={c => this._filter = ReactDOM.findDOMNode(c)}
+              onChange={_.debounce(() => getRatingPage(1, this.filterNode.value), 500)}
+              // eslint-disable-next-line react/no-find-dom-node
+              ref={c => { this.filterNode = ReactDOM.findDOMNode(c); }}
             />
           </div>
         </div>

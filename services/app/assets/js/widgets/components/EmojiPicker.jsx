@@ -34,7 +34,7 @@ class EmojiPicker extends React.Component {
     }
   }
 
-  onSelect = (emoji) => {
+  onSelect = emoji => {
     const { addEmoji } = this.props;
     addEmoji(emoji, this.closeEmoji);
   }
@@ -60,7 +60,7 @@ class EmojiPicker extends React.Component {
     }, () => document.removeEventListener('click', this.closeEmojiOutsideClick, false));
   }
 
-  closeEmojiOutsideClick = (e) => {
+  closeEmojiOutsideClick = e => {
     const { target } = e;
     const isPickerEmoji = target.closest('.emoji-mart');
     if (!isPickerEmoji) {

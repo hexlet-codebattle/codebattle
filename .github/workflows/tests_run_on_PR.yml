@@ -20,36 +20,67 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
+
       - uses: actions/setup-elixir@v1.1.0
         with:
           otp-version: 22.x
           elixir-version: 1.9.x
+
       - uses: actions/cache@v1
         with:
           path: services/app/deps
           key: ${{ runner.os }}-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/services/app/mix.lock')) }}
           restore-keys: |
             ${{ runner.os }}-deps-
+
       - uses: actions/cache@v1
         with:
           path: services/app/_build
           key: ${{ runner.os }}-build-${{ hashFiles(format('{0}{1}', github.workspace, '/services/app/mix.lock')) }}
           restore-keys: |
             ${{ runner.os }}-build-
+
       - uses: actions/cache@v1
         with:
           path: ~/.mix
           key: ${{ runner.os }}-mix-${{ hashFiles(format('{0}{1}', github.workspace, '/services/app/mix.lock')) }}
           restore-keys: |
             ${{ runner.os }}-mix-
+
       - name: Get deps
-        run: cd services/app && mix deps.get
+        run: mix deps.get
+        working-directory: ./services/app
+
       - name: Mix format
-        run: cd services/app && mix format --check-formatted
+        run: mix format --check-formatted
+        working-directory: ./services/app
         env:
           MIX_ENV: test
+
       - name: Mix credo
-        run: cd services/app && mix credo
+        run: mix credo
+        working-directory: ./services/app
         env:
           MIX_ENV: test
+
+      - name: Get yarn cache
+        id: yarn-cache
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+
+      - uses: actions/cache@v1
+        with:
+          path: ${{ steps.yarn-cache.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: Install yarn dependencies
+        run: yarn install --froze-lockfile
+        working-directory: ./services/app
+
+      - name: Eslint
+        run: yarn lint
+        working-directory: ./services/app
+
       - run: make test
+

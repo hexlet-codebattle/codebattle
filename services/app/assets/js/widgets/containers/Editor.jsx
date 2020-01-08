@@ -1,5 +1,5 @@
 /* eslint-disable no-bitwise */
-import React, { PureComponent, Fragment } from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import MonacoEditor from 'react-monaco-editor';
 import { registerRulesForLanguage } from 'monaco-ace-tokenizer';
@@ -23,6 +23,7 @@ class Editor extends PureComponent {
     syntax: 'javascript',
   }
 
+  // eslint-disable-next-line react/sort-comp
   notIncludedSyntaxHightlight = new Set(['haskell', 'elixir'])
 
   constructor(props) {
@@ -84,7 +85,7 @@ class Editor extends PureComponent {
     window.removeEventListener('resize', this.handleResize);
   }
 
-  updateHightLightForNotIncludeSyntax = async (syntax) => {
+  updateHightLightForNotIncludeSyntax = async syntax => {
     if (this.notIncludedSyntaxHightlight.has(syntax)) {
       const { default: HighlightRules } = await import(`monaco-ace-tokenizer/lib/ace/definitions/${syntax}`);
       this.notIncludedSyntaxHightlight.delete(syntax);
@@ -132,7 +133,7 @@ class Editor extends PureComponent {
     const mappedSyntax = languages[syntax];
     const editorHeightWithStatusBar = mode === 'vim' ? editorHeight - this.statusBarHeight : editorHeight;
     return (
-      <Fragment>
+      <>
         <MonacoEditor
           theme={theme}
           options={this.options}
@@ -145,7 +146,7 @@ class Editor extends PureComponent {
           onChange={onChange}
         />
         <div ref={this.statusBarRef} className="bg-dark text-white px-1" />
-      </Fragment>
+      </>
     );
   }
 }

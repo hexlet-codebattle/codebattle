@@ -26,7 +26,7 @@ class GamesHeatmap extends React.Component {
 
   componentDidMount() {
     axios.get('/api/v1/game_activity')
-      .then((response) => { this.setState(response.data); });
+      .then(response => { this.setState(response.data); });
   }
 
 
@@ -41,13 +41,13 @@ class GamesHeatmap extends React.Component {
           <CalendarHeatmap
             showWeekdayLabels
             values={activities}
-            classForValue={(value) => {
+            classForValue={value => {
               if (!value) {
                 return 'color-empty';
               }
               return GamesHeatmap.colorScale(value.count);
             }}
-            titleForValue={(value) => {
+            titleForValue={value => {
               if (!value) {
                 return 'No games';
               }

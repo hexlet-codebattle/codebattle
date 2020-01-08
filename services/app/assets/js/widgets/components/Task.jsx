@@ -7,7 +7,7 @@ import Timer from './Timer';
 import CountdownTimer from './CountdownTimer';
 import GameStatusCodes from '../config/gameStatusCodes';
 
-const renderTaskLink = (name) => {
+const renderTaskLink = name => {
   const link = `https://github.com/hexlet-codebattle/battle_asserts/tree/master/src/battle_asserts/issues/${name}.clj`;
 
   return (
@@ -18,7 +18,7 @@ const renderTaskLink = (name) => {
   );
 };
 
-const renderGameLevelBadge = (level) => {
+const renderGameLevelBadge = level => {
   const levels = {
     elementary: 'info',
     easy: 'success',
@@ -34,7 +34,7 @@ const renderGameLevelBadge = (level) => {
   );
 };
 
-const renderTimeoutText = (timeoutSeconds) => {
+const renderTimeoutText = timeoutSeconds => {
   if (!timeoutSeconds) { return false; }
   return 'Timeout in: ';
 };

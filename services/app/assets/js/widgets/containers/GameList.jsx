@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import _ from 'lodash';
 import moment from 'moment';
 import { connect } from 'react-redux';
@@ -41,7 +41,7 @@ class GameList extends React.Component {
     fetchState();
   }
 
-  updateTimeoutSeconds = (timeoutSeconds) => {
+  updateTimeoutSeconds = timeoutSeconds => {
     const { selectNewGameTimeout } = this.props;
     selectNewGameTimeout({ timeoutSeconds });
   }
@@ -94,7 +94,7 @@ class GameList extends React.Component {
       );
     }
     return (
-      <Fragment>
+      <>
         <td className="p-3 align-middle text-nowrap x-username-td text-truncate">
           {this.renderResultIcon(gameId, players[0], players[1])}
           <UserInfo user={players[0]} />
@@ -103,11 +103,11 @@ class GameList extends React.Component {
           {this.renderResultIcon(gameId, players[1], players[0])}
           <UserInfo user={players[1]} />
         </td>
-      </Fragment>
+      </>
     );
   };
 
-  renderGameLevelBadge = (level) => (
+  renderGameLevelBadge = level => (
     <div>
       <span className={`badge badge-pill badge-${this.levelToClass[level]} mr-1`}>&nbsp;</span>
       {level}
@@ -116,19 +116,19 @@ class GameList extends React.Component {
 
   isPlayer = (user, game) => !_.isEmpty(_.find(game.players, { id: user.id }));
 
-  renderShowGameButton = (gameUrl) => (
+  renderShowGameButton = gameUrl => (
     <button type="button" className="btn btn-info btn-sm mr-1 ml-1" data-method="get" data-to={gameUrl}>
       Show
     </button>
   );
 
-  renderJoinGameButton = (gameUrl) => (
+  renderJoinGameButton = gameUrl => (
     <button type="button" className="btn btn-success btn-sm mr-1 ml-1" data-method="post" data-csrf={window.csrf_token} data-to={`${gameUrl}/join`}>
       Join
     </button>
   )
 
-  renderGameActionButtons = (game) => {
+  renderGameActionButtons = game => {
     const gameUrl = `/games/${game.gameId}`;
     const currentUser = Gon.getAsset('current_user');
     const gameState = game.gameInfo.state;
@@ -160,10 +160,10 @@ class GameList extends React.Component {
       }
 
       return (
-        <Fragment>
+        <>
           {this.renderJoinGameButton(gameUrl)}
           {this.renderShowGameButton(gameUrl)}
-        </Fragment>
+        </>
       );
     }
 
@@ -194,14 +194,14 @@ class GameList extends React.Component {
   };
 
   renderStartNewGameDropdownMenu = (gameType, timeoutSeconds) => (
-    <Fragment>
+    <>
       <div className="dropdown-header">Select a difficulty</div>
       <div className="dropdown-divider" />
       {this.renderStartNewGameButton('elementary', gameType, timeoutSeconds)}
       {this.renderStartNewGameButton('easy', gameType, timeoutSeconds)}
       {this.renderStartNewGameButton('medium', gameType, timeoutSeconds)}
       {this.renderStartNewGameButton('hard', gameType, timeoutSeconds)}
-    </Fragment>
+    </>
   )
 
   renderStartNewGameSelector = timeoutSeconds => (
@@ -276,11 +276,11 @@ class GameList extends React.Component {
     //
 
     return (
-      <Fragment>
+      <>
         <div className="dropdown-header">Select time limit</div>
         <div className="dropdown-divider" />
         {options}
-      </Fragment>
+      </>
     );
   };
 
@@ -304,7 +304,7 @@ class GameList extends React.Component {
     </div>
   );
 
-  renderActiveGames = (activeGames) => {
+  renderActiveGames = activeGames => {
     if (_.isEmpty(activeGames)) {
       return (
         <p className="text-center">There are no active games right now.</p>
@@ -429,8 +429,7 @@ class GameList extends React.Component {
         {!loaded ? (
           <Loading />
         )
-          : this.renderGameContainers(activeGames, completedGames)
-        }
+          : this.renderGameContainers(activeGames, completedGames)}
       </>
     );
   }
