@@ -4,7 +4,7 @@ import LanguageIcon from './LanguageIcon';
 
 const UserName = ({
   user: {
-    id, github_id: githubId, name, rating, lang, rating_diff: ratingDiff,
+    id, github_id: githubId, name, rating, is_anonymous: isAnonymous, lang, rating_diff: ratingDiff,
   },
 }) => {
   const anonymousUser = (
@@ -12,7 +12,7 @@ const UserName = ({
       <span className="border rounded align-middle text-center p-1 mr-1">
         <i className="fa fa-lg fa-user-secret" aria-hidden="true" />
       </span>
-      {name}
+      Anonymous
     </span>
   );
 
@@ -38,7 +38,7 @@ const UserName = ({
       <small>
         {_.isFinite(rating) && rating}
       </small>
-      {ratingDiff ? displayDiff(ratingDiff) : ''}
+      {ratingDiff && !isAnonymous ? displayDiff(ratingDiff) : ''}
     </a>
   );
 
@@ -47,7 +47,7 @@ const UserName = ({
       style={{ whiteSpace: 'nowrap' }}
       className="d-inline align-middle"
     >
-      {id === 'anonymous' ? anonymousUser : githubUser}
+      {id === 'anonymous' || isAnonymous ? anonymousUser : githubUser}
     </div>
   );
 };

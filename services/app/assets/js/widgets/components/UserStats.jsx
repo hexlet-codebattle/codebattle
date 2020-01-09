@@ -3,28 +3,30 @@ import _ from 'lodash';
 import Loading from './Loading';
 import UserAchievements from './UserAchievements';
 
-const UserStats = ({ data }) => {
+const UserStats = ({ data, isAnonymous }) => {
   if (data) {
     const { stats, achievements } = data;
-    const achivementsTitle = _.isEmpty(achievements) ? 'No achievements' : 'Achievements:';
+    const achivementsTitle = _.isEmpty(achievements) || isAnonymous ? 'No achievements' : 'Achievements:';
+    const userAchivements = isAnonymous ? '' : UserAchievements(achievements);
+
     return (
       <div>
         <ul className="list-inline">
           <li className="list-inline-item">
             Won:&nbsp;
-            <b className="text-success">{stats.won}</b>
+            <b className="text-success">{isAnonymous ? '%$#@' : stats.won}</b>
           </li>
           <li className="list-inline-item">
             Lost:&nbsp;
-            <b className="text-danger">{stats.lost}</b>
+            <b className="text-danger">{isAnonymous ? '%$#@' : stats.lost}</b>
           </li>
           <li className="list-inline-item">
             Gave up:&nbsp;
-            <b className="text-warning">{stats.gave_up}</b>
+            <b className="text-warning">{isAnonymous ? '%$#@' : stats.gave_up}</b>
           </li>
         </ul>
         {achivementsTitle}
-        {UserAchievements(achievements)}
+        {userAchivements}
       </div>
     );
   }
