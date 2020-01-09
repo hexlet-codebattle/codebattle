@@ -1,8 +1,6 @@
 defmodule CodebattleWeb.PageView do
   use CodebattleWeb, :view
 
-  alias Codebattle.GameProcess.FsmHelpers
-
   def csrf_token() do
     Plug.CSRFProtection.get_csrf_token()
   end
