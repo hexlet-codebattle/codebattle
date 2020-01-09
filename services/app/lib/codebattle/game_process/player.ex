@@ -58,7 +58,7 @@ defmodule Codebattle.GameProcess.Player do
           id: user.id,
           public_id: user.public_id,
           is_bot: user.is_bot,
-          is_anonymous: user.is_anonymous,
+          is_anonymous: user_game.is_anonymous,
           github_id: user.github_id,
           name: user.name,
           achievements: user_game.user.achievements,

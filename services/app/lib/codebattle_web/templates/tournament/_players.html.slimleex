@@ -3,7 +3,7 @@
     = for {player, index} <- Enum.with_index(@players) do
       .d-flex.align-middle.my-3
         div = index
-        = render "_player.html", player: player
+        = render "_player.html", player: player, current_user: @current_user
 - else
   h5 no participans yet
 

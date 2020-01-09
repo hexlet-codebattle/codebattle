@@ -56,10 +56,13 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     end
   end
 
-  def handle_event("join", _params, socket) do
+  def handle_event("join", params, socket) do
+    user_params = parse_join_params(params)
+
     new_tournament =
       Helpers.join(
         socket.assigns.tournament,
+        user_params,
         socket.assigns.current_user
       )
 
@@ -186,4 +189,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
   defp is_current_topic?(topic, tournament) do
     topic == topic_name(tournament)
   end
+
+  defp parse_join_params(%{"is_anonymous" => "true", "name" => name}), do: %{is_anonymous: true, name: name}
+  defp parse_join_params(%{"is_anonymous" => "false"}), do: %{is_anonymous: false}
 end

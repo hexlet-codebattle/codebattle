@@ -14,9 +14,9 @@
       = link link_name, to: "/games/#{@match.game_id}", class: "btn btn-success m-1"
     .d-flex.flex-column.justify-content-around
       .bg-light class="tournament-bg-#{@match.state}"
-        = render "_player.html", player: player1
+        = render "_player.html", player: player1, current_user: @current_user
       .bg-light class="tournament-bg-#{@match.state}"
-        = render "_player.html", player: player2
+        = render "_player.html", player: player2, current_user: @current_user
 
 - else
   .d-flex.align-items-center.justify-content-center.bg-gray

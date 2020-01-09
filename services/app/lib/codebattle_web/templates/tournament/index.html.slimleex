@@ -18,7 +18,7 @@
             td.align-middle.text-nowrap = tournament.starts_at
             td.align-middle.text-nowrap = tournament.players_count
             td.align-middle.text-nowrap
-              = render "_player.html", player: tournament.creator
+              = render "_player.html", player: tournament.creator, current_user: @current_user
             td.align-middle.text-nowrap
               = link "Show",
                 to: CodebattleWeb.Router.Helpers.tournament_path(@socket, :show, tournament.id),

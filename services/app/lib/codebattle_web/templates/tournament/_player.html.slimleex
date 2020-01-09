@@ -1,3 +1,5 @@
+- player_flag = if @player.id == @current_user.id, do: " (you)"
+
 elixir:
   fa_class = case Map.get(@player, :game_result) do
     "waiting" -> nil
@@ -7,9 +9,17 @@ elixir:
     _ -> nil
   end
 .d-flex
-  a.d-flex.align-items-center.justify-content-start href="/users/#{@player.id}"
-    img.ml-2.attachment.rounded.border.mr-1.x-user-avatar src="https://avatars0.githubusercontent.com/u/#{@player.github_id}"
-    p.mr-1.tournament-plyaer-name = @player.name
-    small.mr-1 = @player.rating
+  = if @player.is_anonymous do
+    span.text-secondary.d-flex.align-items-center.justify-content-start
+      span.attachment.border.rounded.align-middle.text-center.mr-2.ml-2
+        i.fa.fa-lg.fa-user-secret aria-hidden="true"
+      p.mr-1.tournament-plyaer-name = "#{@player.name}#{player_flag}"
+      small.mr-1 = "%$#@"
+  - else
+    a.d-flex.align-items-center.justify-content-start href="/users/#{@player.id}"
+      img.ml-2.attachment.rounded.border.mr-1.x-user-avatar src="https://avatars0.githubusercontent.com/u/#{@player.github_id}"
+      p.mr-1.tournament-plyaer-name = @player.name
+      small.mr-1 = @player.rating
+  end
   = if fa_class do
     span class=fa_class

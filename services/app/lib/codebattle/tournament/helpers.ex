@@ -25,15 +25,24 @@ defmodule Codebattle.Tournament.Helpers do
     |> Kernel.!()
   end
 
+  def is_anonymous_player?(tournament, player_id) do
+    tournament.data.players
+    |> Enum.find_value(fn player -> player.id == player_id and player.is_anonymous end)
+    |> Kernel.!()
+    |> Kernel.!()
+  end
+
   def is_creator?(tournament, player_id) do
     tournament.creator_id == player_id
   end
 
-  def join(tournament, user) do
+  def join(tournament, params, user) do
     if is_waiting_partisipants?(tournament) do
+      player = get_player_info(user, params)
+
       new_players =
         tournament.data.players
-        |> Enum.concat([user])
+        |> Enum.concat([player])
         |> Enum.uniq_by(fn x -> x.id end)
 
       tournament
@@ -147,6 +156,8 @@ defmodule Codebattle.Tournament.Helpers do
     })
     |> Repo.update!()
   end
+
+  defp get_player_info(user, params), do: Map.merge(user, params)
 
   defp start_step!(tournament) do
     tournament

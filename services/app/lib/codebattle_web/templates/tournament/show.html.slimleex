@@ -23,20 +23,22 @@
                 div
                   span.font-weight-bold = "#{message.user_name}:"
                   span.ml-1 = message.message
-          = form_for :message, "#", [phx_submit: :chat_message, class: "p-2 input-group input-group-sm position-absolute"],  fn f ->
-            = text_input f, :content, placeholder: "write your message here...", class: "form-control border-secondary"
-            .input-group-append
-              = submit "Send", class: "btn btn-outline-secondary"
+          = unless Codebattle.Tournament.Helpers.is_anonymous_player?(@tournament, @current_user.id) do
+            = form_for :message, "#", [phx_submit: :chat_message, class: "p-2 input-group input-group-sm position-absolute"],  fn f ->
+              = text_input f, :content, placeholder: "write your message here...", class: "form-control border-secondary"
+              .input-group-append
+                = submit "Send", class: "btn btn-outline-secondary"
       .d-flex.align-items-center.flex-column
         h6 Participants
         .list-group-item.d-flex.align-items-center.flex-column
-          = render "_players.html", players: players
+          = render "_players.html", players: players, current_user: @current_user
           .d-flex.align-items-center
             = if Codebattle.Tournament.Helpers.is_waiting_partisipants?(@tournament) do
               = if Codebattle.Tournament.Helpers.is_participant?(@tournament, @current_user.id) do
                 button.btn.btn-outline-danger.m-2[phx-click="leave"] Leave
               - else
-                button.btn.btn-outline-info.m-2[phx-click="join"] Join
+                button.btn.btn-outline-info.m-2[phx-click="join" phx-value-is_anonymous="false"] Join
+                button.btn.btn-outline-info.m-2[phx-click="join" phx-value-is_anonymous="true" phx-value-name="Anonymous"] Join Anonymous
               = if Codebattle.Tournament.Helpers.is_creator?(@tournament, @current_user.id) do
                 button.btn.btn-outline-success.m-2[phx-click="start"] Start
             = if Codebattle.Tournament.Helpers.is_creator?(@tournament, @current_user.id) do
