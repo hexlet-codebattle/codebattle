@@ -3,6 +3,7 @@
 [![Actions Status](https://github.com/hexlet-codebattle/codebattle/workflows/Build%20master/badge.svg)](https://github.com/hexlet-codebattle/codebattle/actions)
 [![codecov](https://codecov.io/gh/hexlet-codebattle/codebattle/branch/master/graph/badge.svg)](https://codecov.io/gh/hexlet-codebattle/codebattle)
 [![Maintainability](https://api.codeclimate.com/v1/badges/a99a88d28ad37a79dbf6/maintainability)](https://codeclimate.com/github/hexlet-codebattle/codebattle/maintainability)
+[![codebeat badge](https://codebeat.co/badges/7557979e-74a7-45a6-b9ab-dcd44bab7e5b)](https://codebeat.co/projects/github-com-hexlet-codebattle-codebattle-master)
 
 Кодбатл - это игра с открытым исходным кодом, которая разрабатывается сообществом Хекслета. Подробнее о проекте читайте в [вики репозитория](https://github.com/hexlet-codebattle/codebattle/wiki). Мы будем очень рады, если вы решите [принять участие в разработке проекта](https://github.com/hexlet-codebattle/codebattle/blob/master/CONTRIBUTING.md).
 Текущая версия приложения доступна по адресу [codebattle.hexlet.io](https://codebattle.hexlet.io).
