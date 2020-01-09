@@ -91,8 +91,10 @@ jobs:
       - run: make test
 
       - name: Codecov
-        run: .codecov.bash
+        run: ./.codecov.bash
         working-directory: ./services/app
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Pull dockers
         run: |
