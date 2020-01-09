@@ -17,7 +17,7 @@ const UserInfo = ({ dispatch, user, usersStats }) => {
       { userStats
         && (
         <Popover.Content>
-          <UserStats data={userStats} isAnonymous={user.isAnonymous}/>
+          <UserStats data={userStats} isAnonymous={user.isAnonymous} />
         </Popover.Content>
         )}
     </Popover>
