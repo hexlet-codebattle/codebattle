@@ -9,7 +9,7 @@ import { loadUserStats } from '../middlewares/Users';
 
 const UserInfo = ({ dispatch, user, usersStats }) => {
   const userStats = usersStats[user.id];
-  const userName = user.is_anonymous ? 'Anonymous' : user.name;
+  const userName = user.isAnonymous ? 'Anonymous' : user.name;
 
   const statsPopover = ({ show, ...rest }) => (
     <Popover className={cn({ 'd-none': !userStats })} {...rest}>
@@ -17,7 +17,7 @@ const UserInfo = ({ dispatch, user, usersStats }) => {
       { userStats
         && (
         <Popover.Content>
-          <UserStats data={userStats} isAnonymous={user.is_anonymous}/>
+          <UserStats data={userStats} isAnonymous={user.isAnonymous}/>
         </Popover.Content>
         )}
     </Popover>
