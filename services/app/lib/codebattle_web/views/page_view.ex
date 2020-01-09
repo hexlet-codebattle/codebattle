@@ -1,16 +1,6 @@
 defmodule CodebattleWeb.PageView do
   use CodebattleWeb, :view
 
-  alias Codebattle.GameProcess.FsmHelpers
-
-  def get_users(fsm) do
-    FsmHelpers.get_players(fsm)
-  end
-
-  def can_check?(fsm, user) do
-    FsmHelpers.player?(fsm.data, user.id)
-  end
-
   def csrf_token() do
     Plug.CSRFProtection.get_csrf_token()
   end
