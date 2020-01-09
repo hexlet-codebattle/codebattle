@@ -36,13 +36,14 @@ defmodule Codebattle.Tournament.Helpers do
     tournament.creator_id == player_id
   end
 
-  def join(tournament, params, user) do
-    if is_waiting_partisipants?(tournament) do
-      player = get_player_info(user, params)
+  def join(tournament, params, user),
+    do: join(tournament, get_player_info(user, params))
 
+  def join(tournament, user) do
+    if is_waiting_partisipants?(tournament) do
       new_players =
         tournament.data.players
-        |> Enum.concat([player])
+        |> Enum.concat([user])
         |> Enum.uniq_by(fn x -> x.id end)
 
       tournament

@@ -4,6 +4,7 @@ defmodule CodebattleWeb.ChatChannelTest do
   alias CodebattleWeb.ChatChannel
   alias Codebattle.Chat.Server
   alias CodebattleWeb.UserSocket
+  alias Codebattle.GameProcess.Player
 
   setup do
     user1 = insert(:user)
@@ -15,13 +16,18 @@ defmodule CodebattleWeb.ChatChannelTest do
     user_token2 = Phoenix.Token.sign(socket(UserSocket), "user_token", user2.id)
     {:ok, socket2} = connect(UserSocket, %{"token" => user_token2})
 
-    {:ok, %{user1: user1, user2: user2, socket1: socket1, socket2: socket2}}
+    state = :playing
+
+    data = %{players: [Player.build(user1), Player.build(user2)]}
+
+    game = setup_game(state, data)
+
+    {:ok, %{user1: user1, user2: user2, socket1: socket1, socket2: socket2, id: game.id}}
   end
 
-  test "sends chat info when user join", %{user1: user1, socket1: socket1} do
-    chat_id = :rand.uniform(1000)
-    Server.start_link(chat_id)
-    chat_topic = "chat:" <> to_string(chat_id)
+  test "sends chat info when user join", %{user1: user1, socket1: socket1, id: id} do
+    Server.start_link(id)
+    chat_topic = "chat:" <> to_string(id)
 
     {:ok, response, _socket1} = subscribe_and_join(socket1, ChatChannel, chat_topic)
 
@@ -32,10 +38,9 @@ defmodule CodebattleWeb.ChatChannelTest do
              })
   end
 
-  test "broadcasts user:joined with state after user join", %{user2: user2, socket2: socket2} do
-    chat_id = :rand.uniform(1000)
-    Server.start_link(chat_id)
-    chat_topic = "chat:" <> to_string(chat_id)
+  test "broadcasts user:joined with state after user join", %{user2: user2, socket2: socket2, id: id} do
+    Server.start_link(id)
+    chat_topic = "chat:" <> to_string(id)
     {:ok, _response, _socket2} = subscribe_and_join(socket2, ChatChannel, chat_topic)
 
     assert_receive %Phoenix.Socket.Broadcast{
@@ -50,10 +55,9 @@ defmodule CodebattleWeb.ChatChannelTest do
              })
   end
 
-  test "messaging process", %{user1: user1, socket1: socket1, socket2: socket2} do
-    chat_id = :rand.uniform(1000)
-    Server.start_link(chat_id)
-    chat_topic = "chat:" <> to_string(chat_id)
+  test "messaging process", %{user1: user1, socket1: socket1, socket2: socket2, id: id} do
+    Server.start_link(id)
+    chat_topic = "chat:" <> to_string(id)
     {:ok, _response, socket1} = subscribe_and_join(socket1, ChatChannel, chat_topic)
 
     message = "test message"
@@ -77,10 +81,9 @@ defmodule CodebattleWeb.ChatChannelTest do
 
   @tag :skip
   # TODO: fix test
-  test "removes user from list on leaving channel", %{socket1: socket1, socket2: socket2} do
-    chat_id = :rand.uniform(1000)
-    Server.start_link(chat_id)
-    chat_topic = "chat:" <> to_string(chat_id)
+  test "removes user from list on leaving channel", %{socket1: socket1, socket2: socket2, id: id} do
+    Server.start_link(id)
+    chat_topic = "chat:" <> to_string(id)
 
     {:ok, _response, _socket1} = subscribe_and_join(socket1, ChatChannel, chat_topic)
     {:ok, response, socket2} = subscribe_and_join(socket2, ChatChannel, chat_topic)
