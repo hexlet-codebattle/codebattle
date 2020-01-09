@@ -38,7 +38,11 @@ defmodule CodebattleWeb.ChatChannelTest do
              })
   end
 
-  test "broadcasts user:joined with state after user join", %{user2: user2, socket2: socket2, id: id} do
+  test "broadcasts user:joined with state after user join", %{
+    user2: user2,
+    socket2: socket2,
+    id: id
+  } do
     Server.start_link(id)
     chat_topic = "chat:" <> to_string(id)
     {:ok, _response, _socket2} = subscribe_and_join(socket2, ChatChannel, chat_topic)
