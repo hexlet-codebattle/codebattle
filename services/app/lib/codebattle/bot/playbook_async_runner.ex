@@ -52,6 +52,7 @@ defmodule Codebattle.Bot.PlaybookAsyncRunner do
           Map.merge(params, %{
             game_channel: game_channel,
             chat_channel: chat_channel,
+            bot_id: state.bot.id,
             game_state: game_state,
             chat_state: chat_state
           })

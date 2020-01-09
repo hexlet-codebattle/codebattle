@@ -6,9 +6,10 @@ defmodule Codebattle.Bot.ChatClientRunner do
 
   def call(params) do
     :timer.sleep(500)
+    opponent = get_opponent(params.game_state, params.bot_id)
 
     PhoenixClient.Channel.push_async(params.chat_channel, "new:message", %{
-      "message" => greet_opponent(params.chat_state),
+      "message" => greet_opponent(opponent),
       "user" => "test_bot"
     })
 
@@ -16,7 +17,7 @@ defmodule Codebattle.Bot.ChatClientRunner do
 
     unless :rand.uniform(16) > 8 do
       PhoenixClient.Channel.push_async(params.chat_channel, "new:message", %{
-        "message" => say_announcement(params.chat_state),
+        "message" => say_announcement(opponent),
         "user" => "test_bot"
       })
     end
@@ -25,42 +26,34 @@ defmodule Codebattle.Bot.ChatClientRunner do
 
     unless :rand.uniform(20) > 5 do
       PhoenixClient.Channel.push_async(params.chat_channel, "new:message", %{
-        "message" => say_about_code(params.chat_state),
+        "message" => say_about_code(opponent),
         "user" => "test_bot"
       })
     end
   end
 
-  defp greet_opponent(chat_state) do
-    opponent = get_opponent(chat_state)
+  defp greet_opponent(opponent) do
     "Hi, #{opponent["name"]}!"
   end
 
-  defp say_announcement(chat_state) do
-    opponent = get_opponent(chat_state)
+  defp say_announcement(opponent) do
     "I have some great news))) You may choose #{pick_language(opponent["lang"])} for this task"
   end
 
-  defp say_about_code(_chat_state) do
+  defp say_about_code(_opponent) do
     "Your code looks very strange..."
   end
 
-  defp get_opponent(chat_state) do
-    case Enum.at(chat_state["users"], 1) do
-      nil ->
-        default_user()
-
-      user ->
-        user
-    end
+  defp get_opponent(game_state, bot_id) do
+    Enum.find(game_state["players"], &(&1["id"] !== bot_id))
   end
 
   defp pick_language("golang"), do: "TypeScript"
   defp pick_language(_), do: "Golang"
 
-  defp default_user do
-    %{"name" => "dude", "lang" => "php"}
-  end
+  #defp default_user do
+  #  %{"name" => "dude", "lang" => "php"}
+  #end
 
   # Chat state
   #   %{
