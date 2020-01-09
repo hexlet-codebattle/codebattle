@@ -47,13 +47,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-mix-
 
-      - uses: actions/cache@v1
-        with:
-          path: /var/lib/docker/overlay2
-          key: ${{ runner.os }}-dockers-${{ hashFiles(format('{0}{1}', github.workspace, '/.github/workflows/tests_run_on_push.yml')) }}
-          restore-keys: |
-            ${{ runner.os }}-dockers-
-
       - name: Get deps
         run: mix deps.get
         working-directory: ./services/app
@@ -89,10 +82,17 @@ jobs:
         run: yarn lint
         working-directory: ./services/app
 
-      - name: Run app tests
-        run: make test
+      - name: Setup db
+        run: mix ecto.create && mix ecto.migrate
+        working-directory: ./services/app
         env:
           MIX_ENV: test
+
+      - run: make test
+
+      - name: Codecov
+        run: .codecov.bash
+        working-directory: ./services/app
 
       - name: Pull dockers
         run: |

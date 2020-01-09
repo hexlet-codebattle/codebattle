@@ -82,5 +82,15 @@ jobs:
         run: yarn lint
         working-directory: ./services/app
 
+      - name: Setup db
+        run: mix ecto.create && mix ecto.migrate
+        working-directory: ./services/app
+        env:
+          MIX_ENV: test
+
       - run: make test
+
+      - name: Codecov
+        run: .codecov.bash
+        working-directory: ./services/app
 
