@@ -190,6 +190,8 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     topic == topic_name(tournament)
   end
 
-  defp parse_join_params(%{"is_anonymous" => "true", "name" => name}), do: %{is_anonymous: true, name: name}
+  defp parse_join_params(%{"is_anonymous" => "true", "name" => name}),
+    do: %{is_anonymous: true, name: name}
+
   defp parse_join_params(%{"is_anonymous" => "false"}), do: %{is_anonymous: false}
 end

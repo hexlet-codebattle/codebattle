@@ -8,8 +8,8 @@ defmodule Codebattle.Chat.Server do
   def join_chat(id, user) do
     try do
       {:ok, users} = GenServer.call(chat_key(id), {:join, user})
-      filteredUsers = Enum.filter(users, &!Play.is_anonymous_player?(&1, id))
-      {:ok, filteredUsers}
+      filtered_users = Enum.filter(users, &(!Play.is_anonymous_player?(&1, id)))
+      {:ok, filtered_users}
     catch
       :exit, _reason ->
         # TODO: add error handler
@@ -30,7 +30,7 @@ defmodule Codebattle.Chat.Server do
   def get_users(id) do
     try do
       users = GenServer.call(chat_key(id), :get_users)
-      Enum.filter(users, &!Play.is_anonymous_player?(&1, id))
+      Enum.filter(users, &(!Play.is_anonymous_player?(&1, id)))
     catch
       :exit, _reason ->
         # TODO: add error handler

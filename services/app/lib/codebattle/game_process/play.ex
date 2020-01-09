@@ -278,6 +278,7 @@ defmodule Codebattle.GameProcess.Play do
       {:ok, fsm} ->
         players = FsmHelpers.get_players(fsm)
         Enum.any?(players, &(&1.is_anonymous && &1.id == user.id))
+
       {:error, reason} ->
         {:error, reason}
     end

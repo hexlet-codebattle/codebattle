@@ -22,7 +22,16 @@ defmodule Codebattle.UserGame do
   @doc false
   def changeset(%UserGame{} = user_game, attrs) do
     user_game
-    |> cast(attrs, [:user_id, :game_id, :result, :creator, :rating, :rating_diff, :lang, :is_anonymous])
+    |> cast(attrs, [
+      :user_id,
+      :game_id,
+      :result,
+      :creator,
+      :rating,
+      :rating_diff,
+      :lang,
+      :is_anonymous
+    ])
     |> validate_required([:user_id, :game_id])
   end
 end

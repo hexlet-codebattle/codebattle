@@ -51,9 +51,9 @@ defmodule Codebattle.Bot.ChatClientRunner do
   defp pick_language("golang"), do: "TypeScript"
   defp pick_language(_), do: "Golang"
 
-  #defp default_user do
+  # defp default_user do
   #  %{"name" => "dude", "lang" => "php"}
-  #end
+  # end
 
   # Chat state
   #   %{
