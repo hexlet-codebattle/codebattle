@@ -265,6 +265,16 @@ defmodule Codebattle.GameProcess.Play do
     end
   end
 
+  def is_anonymous_player?(user, id) do
+    case get_fsm(id) do
+      {:ok, fsm} ->
+        players = FsmHelpers.get_players(fsm)
+        Enum.any?(players, &(&1.is_anonymous && &1.id == user.id))
+      {:error, reason} ->
+        {:error, reason}
+    end
+  end
+
   defp get_engine(:standard), do: Engine.Standard
   defp get_engine(:bot), do: Engine.Bot
   defp get_engine(:tournament), do: Engine.Tournament

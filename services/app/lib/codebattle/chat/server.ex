@@ -1,11 +1,15 @@
 defmodule Codebattle.Chat.Server do
+  alias Codebattle.GameProcess.Play
+
   def start_link(id) do
     GenServer.start_link(__MODULE__, [], name: chat_key(id))
   end
 
   def join_chat(id, user) do
     try do
-      GenServer.call(chat_key(id), {:join, user})
+      {:ok, users} = GenServer.call(chat_key(id), {:join, user})
+      filteredUsers = Enum.filter(users, &!Play.is_anonymous_player?(&1, id))
+      {:ok, filteredUsers}
     catch
       :exit, _reason ->
         # TODO: add error handler
@@ -24,7 +28,14 @@ defmodule Codebattle.Chat.Server do
   end
 
   def get_users(id) do
-    GenServer.call(chat_key(id), :get_users)
+    try do
+      users = GenServer.call(chat_key(id), :get_users)
+      Enum.filter(users, &!Play.is_anonymous_player?(&1, id))
+    catch
+      :exit, _reason ->
+        # TODO: add error handler
+        []
+    end
   end
 
   def add_msg(id, user, msg) do
