@@ -161,9 +161,9 @@ defmodule Codebattle.Generators.CheckerGenerator do
   end
 
   defp get_arguments(
-          {assert, _index},
-          %{input_signature: input_signature},
-          %{checker_meta: checker_meta} = meta
+         {assert, _index},
+         %{input_signature: input_signature},
+         %{checker_meta: checker_meta} = meta
        ) do
     types = Enum.map(input_signature, &extract_type/1)
 
@@ -207,20 +207,24 @@ defmodule Codebattle.Generators.CheckerGenerator do
 
     EEx.eval_string(
       checker_meta.defining_variable_template,
-      [name: name, type: type]
+      name: name,
+      type: type
     )
   end
 
   defp get_value_expression(
-          %{"type" => %{"nested" => _nested}} = signature,
-          value,
-          %{checker_meta: checker_meta} = meta
+         %{"type" => %{"nested" => _nested}} = signature,
+         value,
+         %{checker_meta: checker_meta} = meta
        ) do
     type_name = TypesGenerator.get_type(signature, meta)
     type = extract_type(signature)
     value = get_value({type, value}, meta)
 
-    EEx.eval_string(checker_meta.nested_value_expression_template, value: value, type_name: type_name)
+    EEx.eval_string(checker_meta.nested_value_expression_template,
+      value: value,
+      type_name: type_name
+    )
   end
 
   defp get_value_expression(signature, value, meta) do
@@ -229,12 +233,16 @@ defmodule Codebattle.Generators.CheckerGenerator do
   end
 
   defp get_value({%{"name" => "string"}, value}, _meta), do: ~s("#{double_backslashes(value)}")
-  defp get_value({%{"name" => "boolean"}, value}, %{checker_meta: checker_meta}),
-       do: get_boolean_value(checker_meta.type_templates, value)
 
-  defp get_value({%{"name" => "array", "nested" => nested}, value}, %{checker_meta: checker_meta} = meta) do
+  defp get_value({%{"name" => "boolean"}, value}, %{checker_meta: checker_meta}),
+    do: get_boolean_value(checker_meta.type_templates, value)
+
+  defp get_value(
+         {%{"name" => "array", "nested" => nested}, value},
+         %{checker_meta: checker_meta} = meta
+       ) do
     array_values = Enum.map_join(value, ", ", &get_value({nested, &1}, meta))
-    EEx.eval_string(checker_meta.type_templates.array, [entries: array_values])
+    EEx.eval_string(checker_meta.type_templates.array, entries: array_values)
   end
 
   defp get_value({%{"name" => "hash"} = signature, value}, %{checker_meta: checker_meta} = meta) do
@@ -246,7 +254,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
       hash_entries =
         Enum.map_join(list, ", ", fn item -> get_hash_inners(item, signature, meta) end)
 
-      EEx.eval_string(checker_meta.type_templates.hash_value, [entries: hash_entries])
+      EEx.eval_string(checker_meta.type_templates.hash_value, entries: hash_entries)
     end
   end
 

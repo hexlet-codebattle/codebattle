@@ -1,4 +1,4 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { PureComponent } from 'react';
 import EmojiPicker from './EmojiPicker';
 
 class InputWithEmoji extends PureComponent {
@@ -12,7 +12,7 @@ class InputWithEmoji extends PureComponent {
     this.setState({ selection, range });
   }
 
-  handleKeyPress = (e) => {
+  handleKeyPress = e => {
     if (e.key === 'Enter') {
       const { handleSubmit } = this.props;
       e.preventDefault();
@@ -20,7 +20,7 @@ class InputWithEmoji extends PureComponent {
     }
   };
 
-  insertEmoji = (emoji) => {
+  insertEmoji = emoji => {
     const { selection, range } = this.state;
     range.deleteContents();
     let textNode;
@@ -38,7 +38,7 @@ class InputWithEmoji extends PureComponent {
     selection.addRange(range);
   }
 
-  getEmoji = (emoji) => {
+  getEmoji = emoji => {
     if (emoji.custom) {
       return {
         ...emoji,
@@ -62,7 +62,7 @@ class InputWithEmoji extends PureComponent {
     closeEmoji();
   }
 
-  onChange = (e) => {
+  onChange = e => {
     const { handleChange } = this.props;
     handleChange(e.target.value);
   }
@@ -70,7 +70,7 @@ class InputWithEmoji extends PureComponent {
   render() {
     const { inputVal } = this.state;
     return (
-      <Fragment>
+      <>
         <input
           className="form-control"
           type="text"
@@ -85,7 +85,7 @@ class InputWithEmoji extends PureComponent {
           setSelectionAndRange={this.setSelectionAndRange}
           fallback={(emoji, props) => (emoji ? `:${emoji.short_names[0]}:` : props.emoji)}
         />
-      </Fragment>
+      </>
     );
   }
 }

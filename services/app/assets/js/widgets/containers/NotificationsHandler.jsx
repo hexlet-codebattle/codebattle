@@ -62,7 +62,7 @@ class NotificationsHandler extends Component {
     }
   }
 
-  showCheckingStatusMessage = (solutionStatus) => {
+  showCheckingStatusMessage = solutionStatus => {
     if (solutionStatus) {
       toast(
         <Toast header="Success">
@@ -132,7 +132,7 @@ class NotificationsHandler extends Component {
       return this.showFailureMessage(gameStatus.msg);
     }
 
-    const winner = _.find(players, ['game_result', 'won']);
+    const winner = _.find(players, ['gameResult', 'won']);
 
     if (currentUserId === winner.id) {
       return this.showSuccessMessage('Congratulations! You have won the game!');
@@ -150,7 +150,7 @@ class NotificationsHandler extends Component {
   }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   const currentUserId = selectors.currentUserIdSelector(state);
   const players = selectors.gamePlayersSelector(state);
   const isCurrentUserPlayer = _.hasIn(players, currentUserId);

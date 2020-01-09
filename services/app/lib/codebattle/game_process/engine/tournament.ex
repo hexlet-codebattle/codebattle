@@ -1,5 +1,5 @@
 defmodule Codebattle.GameProcess.Engine.Tournament do
-  import Codebattle.GameProcess.Engine.Base
+  use Codebattle.GameProcess.Engine.Base
 
   alias Codebattle.Bot.PlaybookAsyncRunner
 
@@ -56,12 +56,10 @@ defmodule Codebattle.GameProcess.Engine.Tournament do
     {:ok, fsm}
   end
 
-  # real users
   def get_task(level, [%{is_bot: false}, %{is_bot: false}]) do
     TasksQueuesServer.call_next_task(level)
   end
 
-  # bot and user
   def get_task(level, _players) do
     {:ok, task} = Codebattle.GameProcess.Engine.Bot.get_task(level)
     task

@@ -1,8 +1,6 @@
 defmodule Codebattle.GameCases.GiveUpTest do
   use Codebattle.IntegrationCase
 
-  import Mock
-
   alias Codebattle.GameProcess.{ActiveGames, Server}
   alias CodebattleWeb.UserSocket
 
@@ -64,33 +62,29 @@ defmodule Codebattle.GameCases.GiveUpTest do
     user2: user2
   } do
     # Create game
-    with_mocks [
-      {Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> {:ok, "asdf", "output"} end]}
-    ] do
-      conn =
-        conn1
-        |> get(user_path(conn1, :index))
-        |> post(game_path(conn1, :create, level: "elementary"))
+    conn =
+      conn1
+      |> get(user_path(conn1, :index))
+      |> post(game_path(conn1, :create, level: "elementary"))
 
-      game_id = game_id_from_conn(conn)
+    game_id = game_id_from_conn(conn)
 
-      game_topic = "game:" <> to_string(game_id)
-      {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
+    game_topic = "game:" <> to_string(game_id)
+    {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
 
-      # Second player join game
-      post(conn2, game_path(conn2, :join, game_id))
-      {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
+    # Second player join game
+    post(conn2, game_path(conn2, :join, game_id))
+    {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
 
-      # First player give_up
-      Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: "won", lang: "js"})
-      Phoenix.ChannelTest.push(socket1, "give_up", %{})
-      :timer.sleep(70)
-      {:ok, fsm} = Server.fsm(game_id)
+    # First player give_up
+    Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: "won", lang: "js"})
+    Phoenix.ChannelTest.push(socket1, "give_up", %{})
+    :timer.sleep(70)
+    {:ok, fsm} = Server.fsm(game_id)
 
-      assert fsm.state == :game_over
-      assert FsmHelpers.winner?(fsm, user1.id) == true
-      assert FsmHelpers.lost?(fsm, user2.id) == true
-    end
+    assert fsm.state == :game_over
+    assert FsmHelpers.winner?(fsm, user1.id) == true
+    assert FsmHelpers.lost?(fsm, user2.id) == true
   end
 
   test "After give_up user can create games", %{conn1: conn1, conn2: conn2, socket1: socket1} do

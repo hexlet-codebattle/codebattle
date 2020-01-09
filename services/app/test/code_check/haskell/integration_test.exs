@@ -6,8 +6,6 @@ defmodule Codebattle.CodeCheck.Haskell.IntegrationTest do
   alias CodebattleWeb.UserSocket
 
   setup do
-    timeout = Application.fetch_env!(:codebattle, :code_check_timeout)
-
     user1 = insert(:user)
     user2 = insert(:user)
 
@@ -22,18 +20,17 @@ defmodule Codebattle.CodeCheck.Haskell.IntegrationTest do
        user2: user2,
        task: task,
        socket1: socket1,
-       socket2: socket2,
-       timeout: timeout
+       socket2: socket2
      }}
   end
 
+  @tag :code_check
   test "failure code, game playing", %{
     user1: user1,
     user2: user2,
     task: task,
     socket1: socket1,
-    socket2: socket2,
-    timeout: timeout
+    socket2: socket2
   } do
     # setup
     state = :playing
@@ -56,7 +53,7 @@ defmodule Codebattle.CodeCheck.Haskell.IntegrationTest do
       lang: "haskell"
     })
 
-    :timer.sleep(timeout)
+    assert_code_check()
 
     assert_receive %Phoenix.Socket.Broadcast{
       payload: %{result: result, output: output}
@@ -70,13 +67,13 @@ defmodule Codebattle.CodeCheck.Haskell.IntegrationTest do
     assert fsm.state == :playing
   end
 
+  @tag :code_check
   test "error code, game playing", %{
     user1: user1,
     user2: user2,
     task: task,
     socket1: socket1,
-    socket2: socket2,
-    timeout: timeout
+    socket2: socket2
   } do
     # setup
     state = :playing
@@ -95,7 +92,7 @@ defmodule Codebattle.CodeCheck.Haskell.IntegrationTest do
 
     Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: "sdf", lang: "haskell"})
 
-    :timer.sleep(timeout)
+    assert_code_check()
 
     assert_receive %Phoenix.Socket.Broadcast{
       payload: %{result: result, output: output}
@@ -114,13 +111,13 @@ defmodule Codebattle.CodeCheck.Haskell.IntegrationTest do
     assert fsm.state == :playing
   end
 
+  @tag :code_check
   test "good code, player won", %{
     user1: user1,
     user2: user2,
     task: task,
     socket1: socket1,
-    socket2: socket2,
-    timeout: timeout
+    socket2: socket2
   } do
     # setup
     state = :playing
@@ -145,7 +142,7 @@ defmodule Codebattle.CodeCheck.Haskell.IntegrationTest do
       lang: "haskell"
     })
 
-    :timer.sleep(timeout)
+    assert_code_check()
 
     {:ok, fsm} = Server.fsm(game.id)
     assert fsm.state == :game_over

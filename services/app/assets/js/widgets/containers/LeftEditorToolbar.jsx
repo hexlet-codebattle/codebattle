@@ -135,8 +135,8 @@ class LeftEditorToolbar extends Component {
         </div>
         <GameResultIcon
           className="ml-auto mr-2"
-          resultUser1={_.get(players, [[leftUserId], 'game_result'])}
-          resultUser2={_.get(players, [[rightUserId], 'game_result'])}
+          resultUser1={_.get(players, [[leftUserId], 'gameResult'])}
+          resultUser2={_.get(players, [[rightUserId], 'gameResult'])}
         />
         {this.renderNameplate(players[leftUserId], onlineUsers)}
       </div>
@@ -144,7 +144,7 @@ class LeftEditorToolbar extends Component {
   }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   const leftUserId = _.get(selectors.leftEditorSelector(state), ['userId'], null);
   const rightUserId = _.get(selectors.rightEditorSelector(state), ['userId'], null);
 

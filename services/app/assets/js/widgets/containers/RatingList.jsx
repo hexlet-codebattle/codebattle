@@ -9,7 +9,7 @@ import { getUsersList } from '../selectors';
 import * as UsersMiddlewares from '../middlewares/Users';
 import Loading from '../components/Loading';
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   usersRatingPage: getUsersList(state),
 });
 
@@ -24,14 +24,14 @@ class UsersRating extends React.Component {
     getRatingPage(1);
   }
 
-  renderUser = (user) => (
+  renderUser = user => (
     <tr key={user.id}>
       <td className="p-3 align-middle">{user.rank}</td>
       <td className="tex-left p-3 align-middle">
         <UserInfo user={_.omit(user, 'rating')} />
       </td>
       <td className="p-3 align-middle">{user.rating}</td>
-      <td className="p-3 align-middle">{user.games_played}</td>
+      <td className="p-3 align-middle">{user.gamesPlayed}</td>
       <td className="p-3 align-middle">{user.performance}</td>
       <td className="p-3 align-middle">
         <a className="text-muted" href={`https://github.com/${user.name}`}>
@@ -48,9 +48,9 @@ class UsersRating extends React.Component {
       getRatingPage,
       usersRatingPage: {
         pageInfo: {
-          page_number: activePage,
-          page_size: itemsCountPerPage,
-          total_entries: totalItemsCount,
+          pageNumber: activePage,
+          pageSize: itemsCountPerPage,
+          totalEntries: totalItemsCount,
         },
       },
     } = this.props;
@@ -78,7 +78,7 @@ class UsersRating extends React.Component {
     return (
       <div className="text-center">
         <h2 className="font-weight-normal">Users rating</h2>
-        <p>{`Total: ${usersRatingPage.pageInfo.total_entries}`}</p>
+        <p>{`Total: ${usersRatingPage.pageInfo.totalEntries}`}</p>
         <div className="form-inline">
           <div className="input-group">
             <div className="input-group-prepend">
@@ -92,8 +92,9 @@ class UsersRating extends React.Component {
               placeholder="Username"
               aria-label="Username"
               aria-describedby="basic-addon1"
-              onChange={_.debounce(() => getRatingPage(1, this._filter.value), 500)}
-              ref={c => this._filter = ReactDOM.findDOMNode(c)}
+              onChange={_.debounce(() => getRatingPage(1, this.filterNode.value), 500)}
+              // eslint-disable-next-line react/no-find-dom-node
+              ref={c => { this.filterNode = ReactDOM.findDOMNode(c); }}
             />
           </div>
         </div>

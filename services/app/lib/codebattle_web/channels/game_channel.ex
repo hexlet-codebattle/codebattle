@@ -110,21 +110,22 @@ defmodule CodebattleWeb.GameChannel do
     game_id = get_game_id(socket)
     current_user_id = socket.assigns.user_id
 
-    with {:ok, fsm} <- Play.get_fsm(game_id) do
-      case fsm.state do
-        :rematch_in_approval ->
-          handle_in("rematch:accept_offer", nil, socket)
+    case Play.get_fsm(game_id) do
+      {:ok, fsm} ->
+        case fsm.state do
+          :rematch_in_approval ->
+            handle_in("rematch:accept_offer", nil, socket)
 
-        :game_over ->
-          process_rematch_offer(game_id, current_user_id, socket)
+          :game_over ->
+            process_rematch_offer(game_id, current_user_id, socket)
 
-        :timeout ->
-          process_rematch_offer(game_id, current_user_id, socket)
+          :timeout ->
+            process_rematch_offer(game_id, current_user_id, socket)
 
-        _ ->
-          {:noreply, socket}
-      end
-    else
+          _ ->
+            {:noreply, socket}
+        end
+
       {:error, _reason} ->
         {:noreply, socket}
     end
@@ -160,10 +161,32 @@ defmodule CodebattleWeb.GameChannel do
 
     editor_text = Map.get(payload, "editor_text", nil)
     lang = Map.get(payload, "lang", "js")
+    check_result = Play.check_game(game_id, user, editor_text, lang)
 
-    case Play.check_game(game_id, user, editor_text, lang) do
-      {:ok, fsm, result, output} ->
+    case check_result do
+      %{status: :ok} ->
+        push(socket, "user:check_result", %{
+          solution_status: true,
+          result: check_result.result,
+          output: check_result.output,
+          user_id: user.id
+        })
+
+        broadcast_from!(socket, "user:finish_check", %{
+          user: socket.assigns.current_user
+        })
+
+        broadcast_from!(socket, "output:data", %{
+          user_id: user.id,
+          result: check_result.result,
+          output: check_result.output
+        })
+
+        {:noreply, socket}
+
+      %{status: :game_won} ->
         winner = socket.assigns.current_user
+        {:ok, fsm} = Play.get_fsm(game_id)
         players = FsmHelpers.get_players(fsm)
         message = winner.name <> " " <> gettext("won the game!")
 
@@ -177,17 +200,12 @@ defmodule CodebattleWeb.GameChannel do
 
         push(socket, "user:check_result", %{
           solution_status: true,
-          result: result,
-          output: output,
+          result: check_result.result,
+          output: check_result.output,
           user_id: user.id,
           msg: message,
           status: fsm.state,
           players: players
-        })
-
-        CodebattleWeb.Endpoint.broadcast_from!(self(), "lobby", "game:game_over", %{
-          active_games: active_games,
-          completed_games: completed_games
         })
 
         broadcast_from!(socket, "user:finish_check", %{
@@ -196,8 +214,8 @@ defmodule CodebattleWeb.GameChannel do
 
         broadcast_from!(socket, "output:data", %{
           user_id: user.id,
-          result: result,
-          output: output
+          result: check_result.result,
+          output: check_result.output
         })
 
         broadcast_from!(socket, "user:won", %{
@@ -206,15 +224,20 @@ defmodule CodebattleWeb.GameChannel do
           msg: message
         })
 
+        CodebattleWeb.Endpoint.broadcast_from!(self(), "lobby", "game:game_over", %{
+          active_games: active_games,
+          completed_games: completed_games
+        })
+
         {:noreply, socket}
 
-      {:failure, result, failure_tests_count, success_tests_count, output} ->
+      %{status: :failure} ->
         push(socket, "user:check_result", %{
           solution_status: false,
-          result: result,
-          output: output,
-          asserts_count: success_tests_count + failure_tests_count,
-          success_count: success_tests_count,
+          result: check_result.result,
+          output: check_result.output,
+          asserts_count: check_result.success_tests_count + check_result.failure_tests_count,
+          success_count: check_result.success_tests_count,
           user_id: user.id
         })
 
@@ -224,17 +247,17 @@ defmodule CodebattleWeb.GameChannel do
 
         broadcast_from!(socket, "output:data", %{
           user_id: user.id,
-          result: result,
-          output: output
+          result: check_result.result,
+          output: check_result.output
         })
 
         {:noreply, socket}
 
-      {:error, result, output} ->
+      %{status: :error} ->
         push(socket, "user:check_result", %{
           solution_status: false,
-          result: result,
-          output: output,
+          result: check_result.result,
+          output: check_result.output,
           user_id: user.id
         })
 
@@ -244,41 +267,21 @@ defmodule CodebattleWeb.GameChannel do
 
         broadcast_from!(socket, "output:data", %{
           user_id: user.id,
-          result: result,
-          output: output
+          result: check_result.result,
+          output: check_result.output
         })
 
         {:noreply, socket}
 
-      {:copypaste, result, output} ->
+      %{status: :copypaste} ->
         push(socket, "user:copypaste_detected", %{
           user_id: user.id
         })
 
         broadcast_from!(socket, "output:data", %{
           user_id: user.id,
-          result: result,
-          output: output
-        })
-
-        {:noreply, socket}
-
-      {:ok, result, output} ->
-        push(socket, "user:check_result", %{
-          solution_status: true,
-          result: result,
-          output: output,
-          user_id: user.id
-        })
-
-        broadcast_from!(socket, "user:finish_check", %{
-          user: socket.assigns.current_user
-        })
-
-        broadcast_from!(socket, "output:data", %{
-          user_id: user.id,
-          result: result,
-          output: output
+          result: check_result.result,
+          output: check_result.output
         })
 
         {:noreply, socket}

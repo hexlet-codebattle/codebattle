@@ -1,12 +1,10 @@
-import { handleActions } from 'redux-actions';
+import { createReducer } from '@reduxjs/toolkit';
 import * as actions from '../actions';
 
-const initialState = false;
-
-const storeLoaded = handleActions({
+const storeLoaded = createReducer(false, {
   [actions.finishStoreInit]() {
     return true;
   },
-}, initialState);
+});
 
 export default storeLoaded;

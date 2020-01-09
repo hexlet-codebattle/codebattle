@@ -16,7 +16,7 @@ defmodule Mix.Tasks.Dockers.Pull do
   def run(_) do
     {:ok, _started} = Application.ensure_all_started(:codebattle)
 
-    langs = Codebattle.Languages.meta()
+    langs = Codebattle.Languages.meta() |> Map.values()
     pull(langs)
   end
 

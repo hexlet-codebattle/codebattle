@@ -22,7 +22,7 @@ const UserStats = ({ data, isAnonymous }) => {
           </li>
           <li className="list-inline-item">
             Gave up:&nbsp;
-            <b className="text-warning">{isAnonymous ? '%$#@' : stats.gave_up}</b>
+            <b className="text-warning">{isAnonymous ? '%$#@' : stats.gaveUp}</b>
           </li>
         </ul>
         {achivementsTitle}

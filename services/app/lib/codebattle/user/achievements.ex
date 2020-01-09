@@ -37,7 +37,7 @@ defmodule Codebattle.User.Achievements do
           {achievements ++ ["played_fifty_games"], user}
         end
 
-      user_games >= 100 ->
+      user_games >= 100 && user_games < 500 ->
         if Enum.member?(achievements, "played_hundred_games") do
           {achievements, user}
         else

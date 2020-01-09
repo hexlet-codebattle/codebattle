@@ -1,7 +1,6 @@
 defmodule RecalculateAchivementsTest do
   use Codebattle.IntegrationCase
 
-  import Mock
   import CodebattleWeb.Factory
 
   alias CodebattleWeb.UserSocket
@@ -46,32 +45,28 @@ defmodule RecalculateAchivementsTest do
     user1: user1,
     user2: _user2
   } do
-    with_mocks [
-      {Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> {:ok, "asdf", "asdf"} end]}
-    ] do
-      insert_list(49, :user_game, %{user: user1})
-      # Create game
-      conn =
-        conn1
-        |> get(page_path(conn1, :index))
-        |> post(game_path(conn1, :create, level: "easy", lang: "js"))
+    insert_list(9, :user_game, %{user: user1})
 
-      game_id = game_id_from_conn(conn)
+    conn =
+      conn1
+      |> get(page_path(conn1, :index))
+      |> post(game_path(conn1, :create, level: "easy", lang: "js"))
 
-      game_topic = "game:" <> to_string(game_id)
-      {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
+    game_id = game_id_from_conn(conn)
 
-      # Second player join game
-      post(conn2, game_path(conn2, :join, game_id))
-      subscribe_and_join(socket2, GameChannel, game_topic)
-      # First player won
-      editor_text1 = "Hello world1!"
-      Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text1, lang: "js"})
-      :timer.sleep(100)
+    game_topic = "game:" <> to_string(game_id)
+    {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
 
-      user = Repo.get(User, user1.id)
-      assert user.achievements == ["played_fifty_games"]
-    end
+    # Second player join game
+    post(conn2, game_path(conn2, :join, game_id))
+    subscribe_and_join(socket2, GameChannel, game_topic)
+    # First player won
+    editor_text1 = "Hello world1!"
+    Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text1, lang: "js"})
+    :timer.sleep(100)
+
+    user = Repo.get!(User, user1.id)
+    assert user.achievements == ["played_ten_games"]
   end
 
   test "calculate polyglot achievement", %{
@@ -82,35 +77,31 @@ defmodule RecalculateAchivementsTest do
     user1: user1,
     user2: _user2
   } do
-    with_mocks [
-      {Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> {:ok, "asdf", "asdf"} end]}
-    ] do
-      ["js", "php", "ruby"]
-      |> Enum.each(fn x ->
-        insert_list(3, :user_game, %{user: user1, lang: x, result: "won"})
-      end)
+    ["js", "php", "ruby"]
+    |> Enum.each(fn x ->
+      insert_list(3, :user_game, %{user: user1, lang: x, result: "won"})
+    end)
 
-      # Create game
-      conn =
-        conn1
-        |> get(page_path(conn1, :index))
-        |> post(game_path(conn1, :create, level: "easy", lang: "js"))
+    # Create game
+    conn =
+      conn1
+      |> get(page_path(conn1, :index))
+      |> post(game_path(conn1, :create, level: "easy", lang: "js"))
 
-      game_id = game_id_from_conn(conn)
+    game_id = game_id_from_conn(conn)
 
-      game_topic = "game:" <> to_string(game_id)
-      {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
+    game_topic = "game:" <> to_string(game_id)
+    {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
 
-      # Second player join game
-      post(conn2, game_path(conn2, :join, game_id))
-      subscribe_and_join(socket2, GameChannel, game_topic)
-      # First player won
-      editor_text1 = "Hello world1!"
-      Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text1, lang: "js"})
-      :timer.sleep(100)
+    # Second player join game
+    post(conn2, game_path(conn2, :join, game_id))
+    subscribe_and_join(socket2, GameChannel, game_topic)
+    # First player won
+    editor_text1 = "Hello world1!"
+    Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text1, lang: "js"})
+    :timer.sleep(100)
 
-      user = Repo.get(User, user1.id)
-      assert user.achievements == ["played_ten_games", "win_games_with?js_php_ruby"]
-    end
+    user = Repo.get(User, user1.id)
+    assert user.achievements == ["played_ten_games", "win_games_with?js_php_ruby"]
   end
 end

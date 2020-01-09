@@ -4,7 +4,7 @@ import LanguageIcon from './LanguageIcon';
 
 const UserName = ({
   user: {
-    id, github_id: githubId, name, rating, is_anonymous: isAnonymous, lang, rating_diff: ratingDiff,
+    id, githubId, name, rating, isAnonymous, lang, ratingDiff,
   },
 }) => {
   const anonymousUser = (
@@ -16,7 +16,7 @@ const UserName = ({
     </span>
   );
 
-  const displayDiff = (num) => {
+  const displayDiff = num => {
     if (num < 0) {
       return <small className="text-danger">{` ${num}`}</small>;
     }

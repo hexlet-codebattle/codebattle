@@ -1,6 +1,6 @@
 # Codebattle
 
-[![Build Status](https://travis-ci.org/hexlet-codebattle/codebattle.svg?branch=master)](https://travis-ci.org/hexlet-codebattle/codebattle)
+![](https://github.com/hexlet-codebattle/codebattle/workflows/Build%20master/badge.svg)
 
 Кодбатл - это игра с открытым исходным кодом, которая разрабатывается сообществом Хекслета. Подробнее о проекте читайте в [вики репозитория](https://github.com/hexlet-codebattle/codebattle/wiki). Мы будем очень рады, если вы решите [принять участие в разработке проекта](https://github.com/hexlet-codebattle/codebattle/blob/master/CONTRIBUTING.md).
 Текущая версия приложения доступна по адресу [codebattle.hexlet.io](https://codebattle.hexlet.io).

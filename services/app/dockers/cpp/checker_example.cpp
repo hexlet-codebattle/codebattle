@@ -1,12 +1,26 @@
 #include <iostream>
+#include <vector>
+#include <map>
+
+#include "json.hpp"
+#include "fifo_map.hpp"
 
 #include "solution_example.cpp"
 
 using namespace std;
 
+template<class K, class V, class dummy_compare, class A>
+using my_workaround_fifo_map = nlohmann::fifo_map<K, V, nlohmann::fifo_map_compare<K>, A>;
+using json = nlohmann::basic_json<my_workaround_fifo_map>;
+
 template <typename T>
 void SendFailureMessage(string status, T result, string message) {
-  cout << "{\"status\": \"" << status << "\", \"result\": \"" << result << "\", \"arguments\": \"" << message << "\"}";
+  json j;
+  j["status"] = status;
+  j["result"] = result;
+  j["arguments"] = message;
+
+  cout << j;
 }
 
 template <typename T>
@@ -21,7 +35,12 @@ bool AssertSolution(T result, T expected, string message, bool success){
 
 template <typename T>
 void SendMessage(string status, T result) {
-  cout << "{\"status\": \"" << status << "\", \"result\": \"" << result << "\"}";
+  json j;
+
+  j["status"] = status;
+  j["result"] = result;
+
+  cout << j;
 }
 
 int main() {

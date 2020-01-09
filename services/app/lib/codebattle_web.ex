@@ -73,9 +73,6 @@ defmodule CodebattleWeb do
   def channel do
     quote do
       use Phoenix.Channel
-      # alias Codebattle.Repo
-      # import Ecto
-      # import Ecto.Query
       import CodebattleWeb.Gettext
     end
   end

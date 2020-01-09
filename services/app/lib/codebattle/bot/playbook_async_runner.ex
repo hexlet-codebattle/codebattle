@@ -57,8 +57,8 @@ defmodule Codebattle.Bot.PlaybookAsyncRunner do
             chat_state: chat_state
           })
 
-        Task.async(fn -> Codebattle.Bot.PlaybookPlayerRunner.call(new_params) end)
-        Task.async(fn -> Codebattle.Bot.ChatClientRunner.call(new_params) end)
+        Task.start(fn -> Codebattle.Bot.PlaybookPlayerRunner.call(new_params) end)
+        Task.start(fn -> Codebattle.Bot.ChatClientRunner.call(new_params) end)
 
       {{:error, reason}, _} ->
         {:error, reason}

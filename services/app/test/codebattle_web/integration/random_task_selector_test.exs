@@ -4,7 +4,6 @@ defmodule Codebattle.RandomTaskSelectorTest do
   alias Codebattle.{Repo, Game}
   alias CodebattleWeb.UserSocket
 
-  import Mock
   import Ecto.Query
 
   setup %{conn: conn} do
@@ -41,46 +40,42 @@ defmodule Codebattle.RandomTaskSelectorTest do
     socket1: socket1,
     socket2: socket2
   } do
-    with_mocks [
-      {Codebattle.CodeCheck.Checker, [], [check: fn _a, _b, _c -> {:ok, "asdf", "asdf"} end]}
-    ] do
-      # Create game
+    # Create game
 
-      1..20
-      |> Enum.each(fn _x ->
-        conn =
-          conn1
-          |> get(page_path(conn1, :index))
-          |> post(game_path(conn1, :create, level: "easy"))
+    1..20
+    |> Enum.each(fn _x ->
+      conn =
+        conn1
+        |> get(page_path(conn1, :index))
+        |> post(game_path(conn1, :create, level: "easy"))
 
-        game_id = game_id_from_conn(conn)
+      game_id = game_id_from_conn(conn)
 
-        game_topic = "game:" <> to_string(game_id)
-        {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
+      game_topic = "game:" <> to_string(game_id)
+      {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
 
-        # Second player join game
-        post(conn2, game_path(conn2, :join, game_id))
-        {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
+      # Second player join game
+      post(conn2, game_path(conn2, :join, game_id))
+      {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
 
-        # First player won
+      # First player won
 
-        editor_text1 = "Hello world1!"
+      editor_text1 = "Hello world1!"
 
-        Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text1, lang: "js"})
+      Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text1, lang: "js"})
 
-        :timer.sleep(100)
-      end)
+      :timer.sleep(100)
+    end)
 
-      query = from(g in Game, select: g.task_id)
-      task_ids = Repo.all(query)
+    query = from(g in Game, select: g.task_id)
+    task_ids = Repo.all(query)
 
-      played_id_list =
-        Enum.group_by(task_ids, fn x -> x end)
-        |> Map.values()
-        |> Enum.map(&Enum.count/1)
+    played_id_list =
+      Enum.group_by(task_ids, fn x -> x end)
+      |> Map.values()
+      |> Enum.map(&Enum.count/1)
 
-      assert 1 == played_id_list |> Enum.uniq() |> Enum.count()
-      assert 4 == played_id_list |> List.first()
-    end
+    assert 1 == played_id_list |> Enum.uniq() |> Enum.count()
+    assert 4 == played_id_list |> List.first()
   end
 end

@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { HotKeys } from 'react-hotkeys';
@@ -11,6 +11,11 @@ import * as GameActions from '../middlewares/Game';
 import GameStatusCodes from '../config/gameStatusCodes';
 import { gameStatusSelector } from '../selectors';
 import WaitingOpponentInfo from '../components/WaitingOpponentInfo';
+
+
+const ComponentForHandlers = ({ children }) => (
+  <div style={{ outline: 'none' }}>{children}</div>
+);
 
 class RootContainer extends React.Component {
   componentDidMount() {
@@ -29,7 +34,7 @@ class RootContainer extends React.Component {
     };
 
     const handlers = {
-      CHECK_GAME: (event) => { checkResult(); },
+      CHECK_GAME: () => { checkResult(); },
     };
 
     if (!storeLoaded) {
@@ -43,7 +48,11 @@ class RootContainer extends React.Component {
     }
 
     return (
-      <HotKeys keyMap={keyMap} handlers={handlers}>
+      <HotKeys
+        keyMap={keyMap}
+        handlers={handlers}
+        component={ComponentForHandlers}
+      >
         <InfoWidget />
         <GameWidget />
       </HotKeys>

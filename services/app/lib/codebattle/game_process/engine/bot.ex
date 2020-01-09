@@ -1,5 +1,5 @@
 defmodule Codebattle.GameProcess.Engine.Bot do
-  import Codebattle.GameProcess.Engine.Base
+  use Codebattle.GameProcess.Engine.Base
   import Codebattle.GameProcess.Auth
 
   alias Codebattle.GameProcess.{
@@ -67,7 +67,7 @@ defmodule Codebattle.GameProcess.Engine.Bot do
       start_record_fsm(game_id, FsmHelpers.get_players(fsm), fsm)
       run_bot!(fsm)
 
-      Task.async(fn ->
+      Task.start(fn ->
         CodebattleWeb.Endpoint.broadcast!("lobby", "game:update", %{
           game: FsmHelpers.lobby_format(fsm)
         })
@@ -89,14 +89,6 @@ defmodule Codebattle.GameProcess.Engine.Bot do
       bot_id: FsmHelpers.get_first_player(fsm).id,
       bot_time_ms: get_bot_time(fsm)
     })
-  end
-
-  def update_text(game_id, player, editor_text) do
-    update_fsm_text(game_id, player, editor_text)
-  end
-
-  def update_lang(game_id, player, editor_lang) do
-    update_fsm_lang(game_id, player, editor_lang)
   end
 
   def handle_won_game(game_id, winner, fsm, editor_text) do
@@ -207,7 +199,7 @@ defmodule Codebattle.GameProcess.Engine.Bot do
 
         start_timeout_timer(new_game_id, new_fsm)
 
-        Task.async(fn ->
+        Task.start(fn ->
           CodebattleWeb.Endpoint.broadcast("lobby", "game:new", %{
             game: FsmHelpers.lobby_format(new_fsm)
           })

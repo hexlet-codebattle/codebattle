@@ -1,5 +1,4 @@
 ---
-
 plugins:
   - react
   - jsx-a11y
@@ -11,10 +10,16 @@ env:
 parser: babel-eslint
 
 extends:
-  - 'airbnb'
+  - "airbnb"
 
 rules:
   no-console: 0
   react/prop-types: 0
   import/no-unresolved: 0
-
+  no-param-reassign: 0
+  arrow-parens:
+    - 2
+    - "as-needed"
+  react/jsx-props-no-spreading: 0
+  react/static-property-placement: 0
+  react/state-in-constructor: 0

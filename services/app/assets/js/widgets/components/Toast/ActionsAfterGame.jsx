@@ -5,7 +5,7 @@ import BackToTournamentButton from './BackToTournamentButton';
 import NewGameButton from './NewGameButton';
 import RematchButton from './RematchButton';
 
-const ActionsAfterGame = (props) => {
+const ActionsAfterGame = props => {
   const {
     gameStatus: { tournamentId },
   } = props;

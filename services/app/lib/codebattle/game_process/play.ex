@@ -19,10 +19,8 @@ defmodule Codebattle.GameProcess.Play do
     ActiveGames
   }
 
-  alias Codebattle.CodeCheck.Checker
   alias CodebattleWeb.Notifications
 
-  # get data interface
   def active_games do
     ActiveGames.list_games()
   end
@@ -105,9 +103,12 @@ defmodule Codebattle.GameProcess.Play do
 
   # main api interface
 
-  def create_game(user, game_params,
-                  engine_type \\ :standard,
-                  default_timeout \\ Application.get_env(:codebattle, :default_timeout)) do
+  def create_game(
+        user,
+        game_params,
+        engine_type \\ :standard,
+        default_timeout \\ Application.get_env(:codebattle, :default_timeout)
+      ) do
     player = Player.build(user, %{creator: true})
     engine = get_engine(engine_type)
 
@@ -118,7 +119,8 @@ defmodule Codebattle.GameProcess.Play do
 
         {:ok, game_id}
 
-      {:error, reason} -> {:error, reason}
+      {:error, reason} ->
+        {:error, reason}
     end
   end
 
@@ -243,22 +245,28 @@ defmodule Codebattle.GameProcess.Play do
          :ok <- player_can_check_game?(id, player) do
       engine = get_engine(fsm)
       update_editor(id, engine, player, editor_text, editor_lang)
-      check_result = Checker.check(FsmHelpers.get_task(fsm), editor_text, editor_lang)
+      check_result = checker_adapter().call(FsmHelpers.get_task(fsm), editor_text, editor_lang)
+
+      Server.call_transition(id, :update_editor_params, %{
+        id: player.id,
+        result: check_result.result,
+        output: check_result.output
+      })
 
       case {fsm.state, check_result} do
-        {:waiting_opponent, {:ok, result, output}} ->
-          {:error, result, output}
+        {:waiting_opponent, %{status: :ok}} ->
+          %{check_result | status: :error}
 
-        {:playing, {:ok, result, output}} ->
+        {:playing, %{status: :ok}} ->
           {_response, fsm} = Server.call_transition(id, :complete, %{id: player.id})
 
           case engine.handle_won_game(id, player, fsm, editor_text) do
-            :ok -> {:ok, fsm, result, output}
-            :copypaste -> {:copypaste, result, output}
+            :ok -> %{check_result | status: :game_won}
+            :copypaste -> %{check_result | status: :copypaste}
           end
 
-        {_, result} ->
-          result
+        _ ->
+          check_result
       end
     else
       {:error, reason} -> {:error, reason}
@@ -302,5 +310,9 @@ defmodule Codebattle.GameProcess.Play do
     if is_lang_changed do
       engine.update_lang(id, player, editor_lang)
     end
+  end
+
+  defp checker_adapter do
+    Application.get_env(:codebattle, :checker_adapter)
   end
 end

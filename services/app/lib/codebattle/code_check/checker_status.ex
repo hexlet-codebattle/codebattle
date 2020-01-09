@@ -2,24 +2,31 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
   @moduledoc "Parse container output for representing check status of solution"
 
   require Logger
+  alias Codebattle.CodeCheck.CheckResult
 
   @doc """
         iex> Codebattle.CodeCheck.CheckerStatus.get_check_result(
         ...>    ~s({"status": "error", "result": "sdf"}),
         ...>    %{check_code: "-1", lang: %{slug: "js"}}
         ...> )
-        {
-          :error,
-          ~s({"status": "error", "result": "sdf"}),
-          ~s({"status": "error", "result": "sdf"})
+        %Codebattle.CodeCheck.CheckResult{
+          failure_tests_count: nil,
+          success_tests_count: nil,
+          status: :error,
+          output: ~s({"status": "error", "result": "sdf"}),
+          result: ~s({"status": "error", "result": "sdf"})
         }
 
         iex> Codebattle.CodeCheck.CheckerStatus.get_check_result(
         ...>      ~s({"status": "ok", "result": "__code-1__"}),
         ...>      %{check_code: "-1", lang: %{slug: "js"}}
         ...> )
-        {
-          :ok, ~s({"status": "ok", "result": "__code-1__"}), ~s({"status": "ok", "result": "__code-1__"})
+        %Codebattle.CodeCheck.CheckResult{
+          failure_tests_count: nil,
+          success_tests_count: nil,
+          status: :ok,
+          output: ~s({"status": "ok", "result": "__code-1__"}),
+          result: ~s({"status": "ok", "result": "__code-1__"})
         }
 
         iex> Codebattle.CodeCheck.CheckerStatus.get_check_result(
@@ -27,12 +34,12 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
         ...>{"status": "success", "result": "1"}
         ...>), %{check_code: "-1", lang: %{slug: "js"}}
         ...> )
-        {
-          :failure,
-          ~s({"status": "failure", "result": "0", "arguments": [0]}),
-          1,
-          1,
-          ~s({"status": "failure", "result": "0", "arguments": [0]})
+        %Codebattle.CodeCheck.CheckResult{
+          failure_tests_count: 1,
+          success_tests_count: 1,
+          status: :failure,
+          output: ~s({"status": "failure", "result": "0", "arguments": [0]}),
+          result: ~s({"status": "failure", "result": "0", "arguments": [0]})
         }
 
   """
@@ -46,7 +53,7 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
             result: "Something went wrong! Please, write to dev team in our Slack"
           })
 
-        {:error, result, container_output}
+        %CheckResult{status: :error, result: result, output: container_output}
 
       json_result ->
         [last_message] = List.last(json_result)
@@ -54,7 +61,11 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
 
         case output_code do
           ^check_code ->
-            {:ok, last_message, reset_statuses(container_output, List.flatten(json_result))}
+            %CheckResult{
+              status: :ok,
+              result: last_message,
+              output: reset_statuses(container_output, List.flatten(json_result))
+            }
 
           _ ->
             get_error_status(last_message, container_output, lang)
@@ -77,6 +88,7 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
         {:error, json_result, container_output}
     end
   end
+
   def get_compile_check_result(container_output, %{slug: "cpp"}) do
     case Regex.run(~r/\.\/check\/solution\.cpp:.+/, container_output) do
       nil ->
@@ -99,7 +111,7 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
          %{slug: slug}
        )
        when slug in ["perl"] do
-    {:error, json_result, container_output}
+    %CheckResult{status: :error, result: json_result, output: container_output}
   end
 
   defp get_error_status(json_result, container_output, _meta) do
@@ -119,16 +131,16 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
           |> cut_output_by_delimiter(first_failure_json)
           |> reset_statuses(success_list)
 
-        {
-          :failure,
-          first_failure_json,
-          failure_count,
-          success_count,
-          new_container_output
+        %CheckResult{
+          status: :failure,
+          result: first_failure_json,
+          failure_tests_count: failure_count,
+          success_tests_count: success_count,
+          output: new_container_output
         }
 
       [_] ->
-        {:error, json_result, container_output}
+        %CheckResult{status: :error, result: json_result, output: container_output}
     end
   end
 
