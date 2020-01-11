@@ -2,6 +2,9 @@ include make-compose.mk
 include make-ansible.mk
 include make-production.mk
 
+pg:
+	docker-compose up -d db
+
 clean:
 	rm -rf services/app/_build
 	rm -rf services/app/deps
