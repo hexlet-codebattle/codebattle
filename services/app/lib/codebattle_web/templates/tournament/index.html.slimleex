@@ -28,11 +28,15 @@
   h2.text-center.mt-5 Create new tournament
   = f = form_for @changeset, "#", phx_change: :validate, phx_submit: :create
     .form-group
+      = label f, :type
+      = select f, :type, Codebattle.Tournament.types, class: "form-control"
+      = error_tag f, :type
+    .form-group
       = label f, :name
       = text_input f, :name, class: "form-control", placeholder: "My tournament"
       = error_tag f, :name
     .form-group
-      = label f, "starts_at_after"
+      = label f, :starts_at_type
       = select f, :starts_at_type, Codebattle.Tournament.starts_at_types, class: "form-control"
     = submit "Create", phx_disable_with: "Creating...", class: "btn btn-primary mb-2"
 
