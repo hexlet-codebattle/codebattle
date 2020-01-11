@@ -79,7 +79,7 @@ const Task = ({
           </div>
         </div>
         <div className="d-flex align-items-end flex-column flex-sm-row justify-content-between">
-          <h6 className="card-text">
+          <h6 className="card-text small font-italic text-black-50">
             <span className="mr-2">
               {i18n.t('Found a mistake? Have something to add? Pull Requests are welcome: ')}
             </span>
