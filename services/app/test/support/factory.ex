@@ -71,12 +71,31 @@ defmodule CodebattleWeb.Factory do
 
   def tournament_factory do
     %Codebattle.Tournament{
+      type: "individual",
       name: "name",
       step: 0,
       players_count: 16,
       starts_at: NaiveDateTime.utc_now(),
       creator_id: 1,
       data: %{players: [], matches: []}
+    }
+  end
+
+  def team_tournament_factory do
+    %Codebattle.Tournament{
+      type: "team",
+      name: "name",
+      step: 0,
+      players_count: 16,
+      starts_at: NaiveDateTime.utc_now(),
+      creator_id: 1,
+      data: %{players: [], matches: []},
+      meta: %{
+        teams: [
+          %{id: 0, title: "frontend"},
+          %{id: 1, title: "backend"}
+        ]
+      }
     }
   end
 

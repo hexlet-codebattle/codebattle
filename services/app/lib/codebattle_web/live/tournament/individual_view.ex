@@ -1,4 +1,4 @@
-defmodule CodebattleWeb.Live.Tournament.ShowView do
+defmodule CodebattleWeb.Live.Tournament.IndividualView do
   use Phoenix.LiveView
   use Timex
 
@@ -8,7 +8,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
   @update_frequency 1_000
 
   def render(assigns) do
-    CodebattleWeb.TournamentView.render("show.html", assigns)
+    CodebattleWeb.TournamentView.render("individual.html", assigns)
   end
 
   def mount(session, socket) do
@@ -16,7 +16,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
       :timer.send_interval(@update_frequency, self(), :update)
     end
 
-    tournament = Tournament.get!(session[:id])
+    tournament = session.tournament
     messages = Codebattle.Tournament.Server.get_messages(tournament.id)
 
     CodebattleWeb.Endpoint.subscribe(topic_name(tournament))

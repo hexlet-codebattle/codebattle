@@ -6,6 +6,7 @@ defmodule Codebattle.Tournament.Types do
 
     embedded_schema do
       field(:id, :integer)
+      field(:team_id, :integer)
       field(:public_id, :string)
       field(:github_id, :integer)
       field(:lang, :string)
@@ -20,6 +21,7 @@ defmodule Codebattle.Tournament.Types do
       struct
       |> cast(Map.from_struct(params), [
         :id,
+        :team_id,
         :name,
         :github_id,
         :rating,

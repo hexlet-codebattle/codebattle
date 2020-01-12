@@ -1,4 +1,4 @@
-defmodule Codebattle.Tournament.HelpersTest do
+defmodule Codebattle.Tournament.TeamTest do
   use Codebattle.IntegrationCase, async: false
 
   import CodebattleWeb.Factory
@@ -6,129 +6,38 @@ defmodule Codebattle.Tournament.HelpersTest do
 
   test "#create success" do
     {:ok, result} =
-      Helpers.create(%{"creator_id" => 1, "name" => "name", "starts_at_type" => "5_min"})
+      Helpers.create(%{
+        "type" => "team",
+        "creator_id" => 1,
+        "name" => "name",
+        "starts_at_type" => "5_min"
+      })
 
     assert result.state == "waiting_participants"
   end
 
-  test "#create unprocessable" do
-    {:error, result} = Helpers.create(%{})
-
-    assert result.valid? == false
-  end
-
   test "#join" do
-    tournament = insert(:tournament)
+    tournament = insert(:team_tournament)
     user = insert(:user)
 
-    new_tournament = Helpers.join(tournament, user)
+    new_tournament = Helpers.join(tournament, user, 1)
 
     assert Enum.count(new_tournament.data.players) == 1
-  end
-
-  test "#join idempotent" do
-    tournament = insert(:tournament)
-    user = insert(:user)
-
-    Helpers.join(tournament, user)
-    Helpers.join(tournament, user)
-    new_tournament = Helpers.join(tournament, user)
-
-    assert Enum.count(new_tournament.data.players) == 1
-  end
-
-  test "#join only in waiting_participants" do
-    tournament = insert(:tournament, state: "active")
-    user = insert(:user)
-
-    Helpers.join(tournament, user)
-    Helpers.join(tournament, user)
-    new_tournament = Helpers.join(tournament, user)
-
-    assert Enum.empty?(new_tournament.data.players)
-  end
-
-  test "#leave" do
-    user = insert(:user)
-    player = struct(Codebattle.Tournament.Types.Player, Map.from_struct(user))
-    tournament = insert(:tournament, data: %{players: [player]})
-
-    new_tournament = Helpers.leave(tournament, user)
-
-    assert Enum.empty?(new_tournament.data.players)
-  end
-
-  test "#leave idempotent" do
-    user = insert(:user)
-    player = struct(Codebattle.Tournament.Types.Player, Map.from_struct(user))
-    tournament = insert(:tournament, data: %{players: [player]})
-
-    Helpers.leave(tournament, user)
-    new_tournament = Helpers.leave(tournament, user)
-
-    assert Enum.empty?(new_tournament.data.players)
-  end
-
-  test "#cancel!" do
-    user = insert(:user)
-    tournament = insert(:tournament, creator_id: user.id)
-
-    new_tournament = Helpers.cancel!(tournament, user)
-
-    assert new_tournament.state == "canceled"
-  end
-
-  test "#cancel! checks creator" do
-    user = insert(:user)
-    tournament = insert(:tournament)
-
-    new_tournament = Helpers.cancel!(tournament, user)
-
-    assert new_tournament.state == "waiting_participants"
-  end
-
-  test "#start! checks creator" do
-    user = insert(:user)
-    tournament = insert(:tournament)
-
-    new_tournament = Helpers.start!(tournament, user)
-    assert new_tournament.state == "waiting_participants"
   end
 
   test "#start!" do
     user = insert(:user)
-    insert_pair(:task, level: "elementary")
-    task = insert(:task, level: "elementary")
-
-    playbook_data = %{
-      playbook: [
-        %{"delta" => [%{"insert" => "t"}], "time" => 20},
-        %{"delta" => [%{"retain" => 1}, %{"insert" => "e"}], "time" => 20},
-        %{"delta" => [%{"retain" => 2}, %{"insert" => "s"}], "time" => 20},
-        %{"lang" => "ruby", "time" => 100}
-      ]
-    }
-
-    insert(:bot_playbook, %{data: playbook_data, task: task, lang: "ruby"})
 
     player = struct(Codebattle.Tournament.Types.Player, Map.from_struct(user))
 
-    tournament =
-      insert(:tournament, creator_id: user.id, data: %{players: [player]}, players_count: 16)
+    tournament = insert(:team_tournament, creator_id: user.id, data: %{players: [player]})
 
     new_tournament =
       Helpers.join(tournament, user)
       |> Helpers.start!(user)
 
     assert new_tournament.state == "active"
-    assert Enum.count(new_tournament.data.players) == new_tournament.players_count
-    assert Enum.count(new_tournament.data.matches) == 8
-
-    assert new_tournament.data.matches
-           |> Enum.filter(fn x -> x.state == "active" end)
-           |> Enum.count() == 8
-
-    assert new_tournament.data.matches |> Enum.filter(fn x -> x.game_id end) |> Enum.count() == 8
+    assert Enum.count(new_tournament.data.players) == 2
   end
 
   test "#update_match, state canceled" do

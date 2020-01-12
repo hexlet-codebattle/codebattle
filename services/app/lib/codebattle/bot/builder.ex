@@ -21,6 +21,20 @@ defmodule Codebattle.Bot.Builder do
     Map.merge(bot, params)
   end
 
+  def build_list(count, params \\ %{}) do
+    query =
+      from(
+        user in User,
+        where: user.is_bot == true,
+        order_by: fragment("RANDOM()"),
+        limit: ^count
+      )
+
+    query
+    |> Repo.all()
+    |> Enum.map(&Map.merge(&1, params))
+  end
+
   def build_free_bot do
     playing_bots_id =
       ActiveGames.get_playing_bots()
