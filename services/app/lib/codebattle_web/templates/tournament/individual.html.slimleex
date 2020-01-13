@@ -1,22 +1,18 @@
-- matches = @tournament.data.matches
-- players = @tournament.data.players
+- matches = get_matches(@tournament)
+- players = get_players(@tournament)
 - first_round_left_range = 0..7
 - second_round_left_range = 8..11
 - sm_final_range = 12..13
 - final = 14
 
-.text-center
-  h1 = @tournament.name |> String.upcase
-  h6 = @tournament.state |> String.upcase
-  = if @tournament.state == "waiting_participants" do
-    p  Will start in #{@time.minutes} minutes #{@time.seconds} seconds
+= render "_header.html", tournament: @tournament, time: @time, current_user: @current_user, socket: @socket
 
 .container-fluid
-  .row.justify-content-around
-    .col-3.d-flex.align-items-center.justify-content-around.flex-column.bg-white.shadow-sm.py-4 style="max-width: 400px"
-      .d-flex.flex-column.my-3.align-items-center style=" max-width: 400px"
+  .row
+    .col-3
+      .container.bg-white.shadow-sm.p-2
         h6.text-center Please, be nice in chat
-        div.list-group-item.p-0 style="height: 450px; min-width: 250px;"
+        div.list-group-item.p-0 style="height: 350px;"
           ul.overflow-auto.pt-2.px-2 style=("word-break: break-all; height: 80%; top: 5px;") phx-hook="NewChatMessage"
             div
               = for message <- @messages do
@@ -27,21 +23,15 @@
             = text_input f, :content, placeholder: "write your message here...", class: "form-control border-secondary"
             .input-group-append
               = submit "Send", class: "btn btn-outline-secondary"
-      .d-flex.align-items-center.flex-column
-        h6 Participants
-        .list-group-item.d-flex.align-items-center.flex-column
-          = render "_players.html", players: players
-          .d-flex.align-items-center
-            = if Codebattle.Tournament.Helpers.is_waiting_partisipants?(@tournament) do
-              = if Codebattle.Tournament.Helpers.is_participant?(@tournament, @current_user.id) do
-                button.btn.btn-outline-danger.m-2[phx-click="leave"] Leave
-              - else
-                button.btn.btn-outline-info.m-2[phx-click="join"] Join
-              = if Codebattle.Tournament.Helpers.is_creator?(@tournament, @current_user.id) do
-                button.btn.btn-outline-success.m-2[phx-click="start"] Start
-            = if Codebattle.Tournament.Helpers.is_creator?(@tournament, @current_user.id) do
-              button.btn.btn-outline-danger.m-2[phx-click="cancel"] Cancel
-          = link "Back to tournaments", to: CodebattleWeb.Router.Helpers.tournament_path(@socket, :index), class: "btn btn-success mt-2"
+      .container.mt-2.bg-white.shadow-sm.p-2
+        .d-flex.align-items-center
+          h5.mb-0.mr-5 Participants
+          = if is_waiting_partisipants?(@tournament) do
+            = if is_participant?(@tournament, @current_user.id) do
+              button.btn.btn-outline-danger[phx-click="leave"] Leave
+            - else
+              button.btn.btn-outline-info[phx-click="join"] Join
+        = render "_players.html", players: players
 
     .col-9.bg-white.shadow-sm.py-4
       .d-flex.justify-content-around

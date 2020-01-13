@@ -4,133 +4,6 @@ defmodule Codebattle.Tournament.IndividualTest do
   import CodebattleWeb.Factory
   alias Codebattle.Tournament.Helpers
 
-  test "#create success" do
-    {:ok, result} =
-      Helpers.create(%{"creator_id" => 1, "name" => "name", "starts_at_type" => "5_min"})
-
-    assert result.state == "waiting_participants"
-  end
-
-  test "#create unprocessable" do
-    {:error, result} = Helpers.create(%{})
-
-    assert result.valid? == false
-  end
-
-  test "#join" do
-    tournament = insert(:tournament)
-    user = insert(:user)
-
-    new_tournament = Helpers.join(tournament, user)
-
-    assert Enum.count(new_tournament.data.players) == 1
-  end
-
-  test "#join idempotent" do
-    tournament = insert(:tournament)
-    user = insert(:user)
-
-    Helpers.join(tournament, user)
-    Helpers.join(tournament, user)
-    new_tournament = Helpers.join(tournament, user)
-
-    assert Enum.count(new_tournament.data.players) == 1
-  end
-
-  test "#join only in waiting_participants" do
-    tournament = insert(:tournament, state: "active")
-    user = insert(:user)
-
-    Helpers.join(tournament, user)
-    Helpers.join(tournament, user)
-    new_tournament = Helpers.join(tournament, user)
-
-    assert Enum.empty?(new_tournament.data.players)
-  end
-
-  test "#leave" do
-    user = insert(:user)
-    player = struct(Codebattle.Tournament.Types.Player, Map.from_struct(user))
-    tournament = insert(:tournament, data: %{players: [player]})
-
-    new_tournament = Helpers.leave(tournament, user)
-
-    assert Enum.empty?(new_tournament.data.players)
-  end
-
-  test "#leave idempotent" do
-    user = insert(:user)
-    player = struct(Codebattle.Tournament.Types.Player, Map.from_struct(user))
-    tournament = insert(:tournament, data: %{players: [player]})
-
-    Helpers.leave(tournament, user)
-    new_tournament = Helpers.leave(tournament, user)
-
-    assert Enum.empty?(new_tournament.data.players)
-  end
-
-  test "#cancel!" do
-    user = insert(:user)
-    tournament = insert(:tournament, creator_id: user.id)
-
-    new_tournament = Helpers.cancel!(tournament, user)
-
-    assert new_tournament.state == "canceled"
-  end
-
-  test "#cancel! checks creator" do
-    user = insert(:user)
-    tournament = insert(:tournament)
-
-    new_tournament = Helpers.cancel!(tournament, user)
-
-    assert new_tournament.state == "waiting_participants"
-  end
-
-  test "#start! checks creator" do
-    user = insert(:user)
-    tournament = insert(:tournament)
-
-    new_tournament = Helpers.start!(tournament, user)
-    assert new_tournament.state == "waiting_participants"
-  end
-
-  test "#start!" do
-    user = insert(:user)
-    insert_pair(:task, level: "elementary")
-    task = insert(:task, level: "elementary")
-
-    playbook_data = %{
-      playbook: [
-        %{"delta" => [%{"insert" => "t"}], "time" => 20},
-        %{"delta" => [%{"retain" => 1}, %{"insert" => "e"}], "time" => 20},
-        %{"delta" => [%{"retain" => 2}, %{"insert" => "s"}], "time" => 20},
-        %{"lang" => "ruby", "time" => 100}
-      ]
-    }
-
-    insert(:bot_playbook, %{data: playbook_data, task: task, lang: "ruby"})
-
-    player = struct(Codebattle.Tournament.Types.Player, Map.from_struct(user))
-
-    tournament =
-      insert(:tournament, creator_id: user.id, data: %{players: [player]}, players_count: 16)
-
-    new_tournament =
-      Helpers.join(tournament, user)
-      |> Helpers.start!(user)
-
-    assert new_tournament.state == "active"
-    assert Enum.count(new_tournament.data.players) == new_tournament.players_count
-    assert Enum.count(new_tournament.data.matches) == 8
-
-    assert new_tournament.data.matches
-           |> Enum.filter(fn x -> x.state == "active" end)
-           |> Enum.count() == 8
-
-    assert new_tournament.data.matches |> Enum.filter(fn x -> x.game_id end) |> Enum.count() == 8
-  end
-
   test "#update_match, state canceled" do
     user1 = insert(:user)
     user2 = insert(:user)
@@ -159,7 +32,7 @@ defmodule Codebattle.Tournament.IndividualTest do
     assert states == ["canceled", "active"]
   end
 
-  test "#update_match, user gave_up]" do
+  test "#update_match, user gave_up" do
     user1 = insert(:user)
     user2 = insert(:user)
 

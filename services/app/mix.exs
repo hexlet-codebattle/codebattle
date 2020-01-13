@@ -32,25 +32,7 @@ defmodule Codebattle.Mixfile do
   def application do
     [
       mod: {Codebattle.Application, []},
-      extra_applications: [
-        :runtime_tools,
-        :phoenix,
-        :phoenix_pubsub,
-        :phoenix_html,
-        :cowboy,
-        :logger,
-        :gettext,
-        :phoenix_gon,
-        :phoenix_ecto,
-        :postgrex,
-        :yaml_elixir,
-        :ueberauth,
-        :ueberauth_github,
-        :gproc,
-        :one_signal,
-        :scrivener_ecto,
-        :scrivener_html
-      ]
+      extra_applications: [:runtime_tools, :logger]
     ]
   end
 
@@ -66,7 +48,7 @@ defmodule Codebattle.Mixfile do
       {:phoenix, "~> 1.3"},
       {:phoenix_pubsub, "~> 1.0"},
       {:phoenix_ecto, "~> 4.0"},
-      {:phoenix_live_view, "~> 0.3.0"},
+      {:phoenix_live_view, "~> 0.4.0"},
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 2.10"},
       {:gettext, "~> 0.11"},
@@ -105,7 +87,7 @@ defmodule Codebattle.Mixfile do
       {:phoenix_live_reload, "~> 1.0", only: :dev},
 
       # test
-      {:floki, ">= 0.0.0", only: :test},
+      {:floki, "0.23.1", only: :test},
       {:mock, "~> 0.3.0", only: :test},
       {:phoenix_integration, "~> 0.5", only: :test},
       {:excoveralls, "~> 0.10", only: :test},

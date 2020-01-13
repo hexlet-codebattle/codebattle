@@ -205,25 +205,18 @@ defmodule Codebattle.Tournament.Helpers do
   end
 
   defp complete_players(%{type: "individual"} = tournament) do
-    if tournament.players_count == players_count(tournament) do
-      tournament
-    else
-      bot = Codebattle.Bot.Builder.build()
+    bots_count = tournament.players_count - players_count(tournament)
 
-      new_players =
-        tournament
-        |> get_players
-        |> Enum.concat([bot])
-        |> Enum.uniq_by(fn x -> x.id end)
-
-      # TODO: optimize DB inserts
+    new_players =
       tournament
-      |> Tournament.changeset(%{
-        data: DeepMerge.deep_merge(tournament.data, %{players: new_players})
-      })
-      |> Repo.update!()
-      |> complete_players()
-    end
+      |> get_players
+      |> Enum.concat(Codebattle.Bot.Builder.build_list(bots_count))
+
+    tournament
+    |> Tournament.changeset(%{
+      data: DeepMerge.deep_merge(tournament.data, %{players: new_players})
+    })
+    |> Repo.update!()
   end
 
   defp complete_players(%{type: "team", meta: meta} = tournament) do

@@ -5,6 +5,7 @@
       thead
         tr
           th name
+          th type
           th state
           th starts_at
           th players_count
@@ -14,8 +15,9 @@
         = for tournament <- @tournaments do
           tr
             td.align-middle.text-nowrap = tournament.name
+            td.align-middle.text-nowrap = tournament.type
             td.align-middle.text-nowrap = tournament.state
-            td.align-middle.text-nowrap = tournament.starts_at
+            td.align-middle.text-nowrap = render_datetime(tournament.starts_at)
             td.align-middle.text-nowrap = tournament.players_count
             td.align-middle.text-nowrap
               = render "_player.html", player: tournament.creator
