@@ -3,49 +3,38 @@
 
 = render "_header.html", tournament: @tournament, time: @time, current_user: @current_user, socket: @socket
 
-.container-fluid
+.container-fluid.mt-4
   .row
     .col-3
-      h6.text-center Please, be nice in chat
-      div.list-group-item.p-0 style="height: 350px;"
-        ul.overflow-auto.pt-2.px-2 style=("word-break: break-all; height: 80%; top: 5px;") phx-hook="NewChatMessage"
-          div
-            = for message <- @messages do
-              div
-                span.font-weight-bold = "#{message.user_name}:"
-                span.ml-1 = message.message
-        = form_for :message, "#", [phx_submit: :chat_message, class: "p-2 input-group input-group-sm position-absolute"],  fn f ->
-          = text_input f, :content, placeholder: "write your message here...", class: "form-control border-secondary"
-          .input-group-append
-            = submit "Send", class: "btn btn-outline-secondary"
+      .sticky-top
+        div.list-group-item.p-0 style="height: 350px;"
+          ul.overflow-auto.pt-2.px-2 style=("word-break: break-all; height: 80%; top: 5px;") phx-hook="NewChatMessage"
+            div
+              span.text-muted Please, be nice in chat
+              = for message <- @messages do
+                div
+                  span.font-weight-bold = "#{message.user_name}:"
+                  span.ml-1 = message.message
+          = form_for :message, "#", [phx_submit: :chat_message, class: "p-2 position-absolute"],  fn f ->
+            .input-group.input-group-sm
+              = text_input f, :content, placeholder: "write your message here...", class: "form-control border-secondary"
+              .input-group-append
+                = submit "Send", class: "btn btn-outline-secondary"
+    .col-9
+      .row
+        = for %{"title" => title, "id" => team_id} <- get_teams(@tournament) do
+          .col
+            .px-3.py-2.bg-white.rounded.shadow-sm
+              .d-flex.align-items-center
+                h5.mb-0.mr-5 = title
+                = if is_waiting_partisipants?(@tournament) do
+                  = if is_participant?(@tournament, @current_user.id, team_id) do
+                    button.btn.btn-outline-danger[phx-click="leave"] Leave
+                  - else
+                    button.btn.btn-outline-info[phx-click="join" phx-value-team_id=team_id] Join
 
-    = for %{"title" => title, "id" => team_id} <- get_teams(@tournament) do
-      .col
-        .d-flex.align-items-center
-          h5.mb-0.mr-5 = title
-          = if is_waiting_partisipants?(@tournament) do
-            = if is_participant?(@tournament, @current_user.id, team_id) do
-              button.btn.btn-outline-danger[phx-click="leave"] Leave
-            - else
-              button.btn.btn-outline-info[phx-click="join" phx-value-team_id=team_id] Join
+              = render "_players.html", players: get_team_players(@tournament, team_id)
 
-        = render "_players.html", players: get_team_players(@tournament, team_id)
-
-    .col-12
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        .col-12
+          = for round <- get_rounds(@tournament) do
+            = render "_team_round.html", round: round, current_user: @current_user

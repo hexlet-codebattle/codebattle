@@ -1,0 +1,11 @@
+.col-12.mt-3.py-2.bg-white.shadow-sm.rounded
+  h3 round #{get_round_id(@round)}
+  .row
+    .col-1
+      h4 1
+    .col-2
+      p.mb-1 PITYH PYTOHOV
+      p.text-muted.mt-1 TEAM NAME
+    .col-9.text-right
+      p.mb-1 PITYH PYTOHOV
+      p.text-muted.mt-1 TEAM NAME

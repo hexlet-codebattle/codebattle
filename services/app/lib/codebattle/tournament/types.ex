@@ -41,12 +41,13 @@ defmodule Codebattle.Tournament.Types do
     embedded_schema do
       field(:state, :string)
       field(:game_id, :integer)
+      field(:round_id, :integer, default: 0)
       embeds_many(:players, Player, on_replace: :delete)
     end
 
     def changeset(struct, params) do
       struct
-      |> cast(params, [:state, :game_id])
+      |> cast(params, [:state, :game_id, :round_id])
       |> validate_inclusion(:state, @states)
       |> cast_embed(:players)
     end

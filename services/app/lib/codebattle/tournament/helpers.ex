@@ -8,6 +8,15 @@ defmodule Codebattle.Tournament.Helpers do
   def get_matches(tournament), do: tournament.data.matches
   def get_teams(%{type: "team", meta: meta}), do: meta["teams"]
 
+  def get_rounds(%{type: "team"} = tournament) do
+    tournament
+    |> get_matches()
+    |> Enum.chunk_by(& &1.round_id)
+    |> Enum.sort_by(&get_round_id/1)
+  end
+
+  def get_round_id([%{round_id: round_id} | _]), do: round_id
+
   def get_team_players(%{type: "team"} = tournament, team_id) do
     tournament |> get_players |> Enum.filter(&(&1.team_id == team_id))
   end
@@ -256,11 +265,8 @@ defmodule Codebattle.Tournament.Helpers do
       |> Enum.map(&Enum.shuffle/1)
       |> Enum.zip()
       |> Enum.map(fn {p1, p2} ->
-        %{state: "waiting", players: [p1, p2]}
+        %{state: "waiting", players: [p1, p2], round_id: 0}
       end)
-
-    # players = Enum.map(matches_range, fn index -> pick_winner(Enum.at(matches, index)) end)
-    # new_matches = matches ++ pair_players_to_matches(players)
 
     tournament
     |> Tournament.changeset(%{

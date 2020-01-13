@@ -27,24 +27,24 @@ defmodule CodebattleWeb.Live.Tournament.TeamTest do
 
     {:ok, view1, _html} = live(conn1, Routes.tournament_path(conn, :show, tournament.id))
 
-    render_click(view1, :join, %{"team_id" =>  "0"})
-    render_click(view1, :join, %{"team_id" =>  "1"})
+    render_click(view1, :join, %{"team_id" => "0"})
+    render_click(view1, :join, %{"team_id" => "1"})
 
     tournament = Codebattle.Tournament.get!(tournament.id)
     assert Helpers.players_count(tournament) == 1
 
     {:ok, view2, _html} = live(conn2, Routes.tournament_path(conn, :show, tournament.id))
 
-    render_click(view2, :leave, %{"team_id" =>  "0"})
-    render_click(view2, :leave, %{"team_id" =>  "1"})
-    render_click(view2, :join, %{"team_id" =>  "1"})
+    render_click(view2, :leave, %{"team_id" => "0"})
+    render_click(view2, :leave, %{"team_id" => "1"})
+    render_click(view2, :join, %{"team_id" => "1"})
 
     tournament = Codebattle.Tournament.get!(tournament.id)
     assert Helpers.players_count(tournament) == 2
 
     {:ok, view3, _html} = live(conn3, Routes.tournament_path(conn, :show, tournament.id))
 
-    render_click(view3, :join, %{"team_id" =>  "0"})
+    render_click(view3, :join, %{"team_id" => "0"})
 
     tournament = Codebattle.Tournament.get!(tournament.id)
     assert Helpers.players_count(tournament) == 3

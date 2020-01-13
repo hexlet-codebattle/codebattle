@@ -1,11 +1,11 @@
 .container-fluid
   .row
     .col
-      .text-center
-        h1 = @tournament.name |> String.upcase
-        h6 = @tournament.state |> String.upcase
-        = if @tournament.state == "waiting_participants" do
-          p  Will start in #{@time.minutes} minutes #{@time.seconds} seconds
+      h1
+        = @tournament.name |> String.upcase
+        span.small.text-muted.ml-3 = @tournament.state
+      = if @tournament.state == "waiting_participants" do
+        p  Will start in #{@time.minutes} minutes #{@time.seconds} seconds
 
     .col
       .text-right
