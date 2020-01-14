@@ -166,7 +166,21 @@ defmodule Codebattle.Tournament.Helpers do
     end
   end
 
-  def maybe_start_new_step(tournament) do
+  def maybe_start_new_step(%{type: "individual"} = tournament) do
+    matches = tournament |> get_matches
+
+    if Enum.any?(matches, fn match -> match.state == "active" end) do
+      tournament
+    else
+      tournament
+      |> Tournament.changeset(%{step: tournament.step + 1})
+      |> Repo.update!()
+      |> maybe_finish
+      |> start_step!
+    end
+  end
+
+  def maybe_start_new_step(%{type: "team"} = tournament) do
     matches = tournament |> get_matches
 
     if Enum.any?(matches, fn match -> match.state == "active" end) do
@@ -258,19 +272,26 @@ defmodule Codebattle.Tournament.Helpers do
   end
 
   defp build_matches(%{type: "team"} = tournament) do
-    matches =
+    matches_for_round =
       tournament
       |> get_players()
       |> Enum.chunk_by(&Map.get(&1, :team_id))
       |> Enum.map(&Enum.shuffle/1)
       |> Enum.zip()
       |> Enum.map(fn {p1, p2} ->
-        %{state: "waiting", players: [p1, p2], round_id: 0}
+        %{state: "waiting", players: [p1, p2], round_id: tournament.step}
       end)
+
+    prev_matches =
+      tournament
+      |> get_matches()
+      |> Enum.map(&Map.from_struct/1)
+
+    new_matches = prev_matches ++ matches_for_round
 
     tournament
     |> Tournament.changeset(%{
-      data: DeepMerge.deep_merge(Map.from_struct(tournament.data), %{matches: matches})
+      data: DeepMerge.deep_merge(Map.from_struct(tournament.data), %{matches: new_matches})
     })
     |> Repo.update!()
   end
