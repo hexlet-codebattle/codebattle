@@ -12,7 +12,6 @@ defmodule Codebattle.Tournament do
   @types ~w(individual team)
   @states ~w(waiting_participants canceled active finished)
   @starts_at_types ~w(1_min 5_min 10_min 30_min)
-  @team_rounds_need_to_win_num 3
 
   schema "tournaments" do
     field(:name, :string)

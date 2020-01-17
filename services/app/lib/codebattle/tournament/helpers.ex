@@ -3,6 +3,7 @@ defmodule Codebattle.Tournament.Helpers do
   alias Codebattle.Tournament
 
   @match_timeout Application.fetch_env!(:codebattle, :tournament_match_timeout)
+  @team_rounds_need_to_win_num 3
 
   def get_players(tournament), do: tournament.data.players
   def get_matches(tournament), do: tournament.data.matches
@@ -433,10 +434,22 @@ defmodule Codebattle.Tournament.Helpers do
     Map.merge(match, %{players: new_players, state: "finished"})
   end
 
-  defp maybe_finish(%Tournament{step: 4} = tournament) do
+  defp maybe_finish(%Tournament{type: "individual", step: 4} = tournament) do
     tournament
     |> Tournament.changeset(%{state: "finished"})
     |> Repo.update!()
+  end
+
+  defp maybe_finish(%Tournament{type: "team"} = tournament) do
+    {score1, score2} = calc_team_score(tournament)
+
+    if max(score1, score2) >= @team_rounds_need_to_win_num do
+      tournament
+      |> Tournament.changeset(%{state: "finished"})
+      |> Repo.update!()
+    else
+      tournament
+    end
   end
 
   defp maybe_finish(tournament), do: tournament
