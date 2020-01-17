@@ -1,16 +1,16 @@
 defmodule Codebattle.Tournament.Server do
   def start(tournament) do
-    GenServer.start(__MODULE__, [tournament], name: taournament_key(tournament.id))
+    GenServer.start(__MODULE__, [tournament], name: tournament_key(tournament.id))
   end
 
   # API
   def add_message(id, user, msg) do
-    GenServer.cast(taournament_key(id), {:add_message, user, msg})
+    GenServer.cast(tournament_key(id), {:add_message, user, msg})
   end
 
   def get_messages(id) do
     try do
-      GenServer.call(taournament_key(id), :get_messages)
+      GenServer.call(tournament_key(id), :get_messages)
     catch
       :exit, _reason ->
         []
@@ -18,7 +18,7 @@ defmodule Codebattle.Tournament.Server do
   end
 
   def update_tournament(id, event_type, params) do
-    GenServer.call(taournament_key(id), {:update_tournament, id, event_type, params})
+    GenServer.call(tournament_key(id), {:update_tournament, id, event_type, params})
   end
 
   # SERVER
@@ -61,7 +61,7 @@ defmodule Codebattle.Tournament.Server do
   end
 
   # HELPERS
-  defp taournament_key(id) do
+  defp tournament_key(id) do
     {:via, :gproc, {:n, :l, {:tournament, "#{id}"}}}
   end
 end

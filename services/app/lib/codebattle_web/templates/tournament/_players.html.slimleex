@@ -1,9 +1,8 @@
-= if !Enum.empty?(@players) do
-  .tournament-users
-    = for {player, index} <- Enum.with_index(@players) do
-      .d-flex.align-middle.my-3
-        div = index
+.my-3
+  = if !Enum.empty?(@players) do
+    = for player <- @players do
+      .my-3
         = render "_player.html", player: player
-- else
-  h5 no participans yet
+  - else
+    p NO_PARTICIPANTS_YET
 

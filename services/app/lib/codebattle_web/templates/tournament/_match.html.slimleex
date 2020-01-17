@@ -1,13 +1,7 @@
 = if !is_nil(@match) do
-  elixir:
-    [player1, player2] = @match.players
-    is_participant =  Enum.map(@match.players, & &1.id) |> Enum.any?(&(&1 == @current_user.id))
-    {link_name, bgClass} = case {@match.state, is_participant} do
-      {"waiting", true} ->  {"Wait", "bg-warning"}
-      {"active", true} ->  {"Join", "bg-warning"}
-      {_, true} ->  {"Show", "bg-light border border-warning"}
-      _ ->  {"Show", "bg-light"}
-    end
+  - [player1, player2] = @match.players
+  - {link_name, bgClass} = get_link_params(@match, @current_user)
+
   .d-flex.p-1 class="#{bgClass} border border-success"
     .d-flex.flex-column.justify-content-center.align-items-center
       p = @match.state

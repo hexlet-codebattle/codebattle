@@ -8,8 +8,8 @@ elixir:
   end
 .d-flex
   a.d-flex.align-items-center.justify-content-start href="/users/#{@player.id}"
-    img.ml-2.attachment.rounded.border.mr-1.x-user-avatar src="https://avatars0.githubusercontent.com/u/#{@player.github_id}"
-    p.mr-1.tournament-plyaer-name = @player.name
+    img.attachment.rounded.border.mr-1.x-user-avatar src="https://avatars0.githubusercontent.com/u/#{@player.github_id}"
+    p.mr-1.tournament-player-name = @player.name
     small.mr-1 = @player.rating
   = if fa_class do
     span class=fa_class

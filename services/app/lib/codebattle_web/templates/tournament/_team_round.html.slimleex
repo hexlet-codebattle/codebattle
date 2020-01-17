@@ -1,0 +1,20 @@
+- {r1, r2} = calc_round_result(@round)
+
+.col-12.mt-3.py-2.bg-white.shadow-sm.rounded
+  .row.mb-3
+    .col-5
+      h3.font-weight-light.mb-0 round #{get_round_id(@round)}
+    .col-1.text-center
+      span.h3.font-weight-light.mb-0 = r1
+    .col-1.text-center
+      span.h3.font-weight-light.mb-0 = r2
+  = for match <- @round do
+    - [p1, p2] = match.players
+    - {link_name, bgClass} = get_link_params(match, @current_user)
+    .row.align-items-center.py-2 class=bgClass
+      .col-6
+        = render "_player.html", player: p1
+      .col-4
+        = render "_player.html", player: p2
+      .col-2.text-right
+        = link link_name, to: "/games/#{match.game_id}", class: "btn btn-success"

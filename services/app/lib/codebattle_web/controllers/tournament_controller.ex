@@ -15,8 +15,13 @@ defmodule CodebattleWeb.TournamentController do
   end
 
   def show(conn, params) do
-    LiveView.Controller.live_render(conn, CodebattleWeb.Live.Tournament.ShowView,
-      session: %{current_user: conn.assigns[:current_user], id: params["id"]}
+    tournament = Codebattle.Tournament.get!(params["id"])
+    view = case tournament.type do
+      "team" -> CodebattleWeb.Live.Tournament.TeamView
+      _ -> CodebattleWeb.Live.Tournament.IndividualView
+    end
+    LiveView.Controller.live_render(conn, view,
+      session: %{current_user: conn.assigns[:current_user], tournament: tournament}
     )
   end
 end

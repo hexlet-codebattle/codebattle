@@ -9,7 +9,7 @@ defmodule CodebattleWeb.Api.V1.ActivityControllerTest do
     conn =
       conn
       |> put_session(:user_id, user.id)
-      |> get(api_v1_activity_path(conn, :show, user.id))
+      |> get(Routes.api_v1_activity_path(conn, :show, user.id))
 
     asserted_data = [
       %{"count" => 3, "date" => "2000-01-02"},

@@ -7,7 +7,7 @@ defmodule CodebattleWeb.Api.V1.GameActivityControllerTest do
 
     conn =
       conn
-      |> get(api_v1_game_activity_path(conn, :show))
+      |> get(Routes.api_v1_game_activity_path(conn, :show))
 
     asserted_data = [
       %{"count" => 3, "date" => "2000-01-02"},

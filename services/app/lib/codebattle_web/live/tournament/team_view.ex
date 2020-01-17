@@ -1,14 +1,13 @@
-defmodule CodebattleWeb.Live.Tournament.ShowView do
+defmodule CodebattleWeb.Live.Tournament.TeamView do
   use Phoenix.LiveView
   use Timex
 
-  alias Codebattle.Tournament
   alias Codebattle.Tournament.Helpers
 
   @update_frequency 1_000
 
   def render(assigns) do
-    CodebattleWeb.TournamentView.render("show.html", assigns)
+    CodebattleWeb.TournamentView.render("team.html", assigns)
   end
 
   def mount(session, socket) do
@@ -16,7 +15,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
       :timer.send_interval(@update_frequency, self(), :update)
     end
 
-    tournament = Tournament.get!(session[:id])
+    tournament = session.tournament
     messages = Codebattle.Tournament.Server.get_messages(tournament.id)
 
     CodebattleWeb.Endpoint.subscribe(topic_name(tournament))
@@ -32,9 +31,10 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
 
   def handle_info(:update, socket) do
     tournament = socket.assigns.tournament
+    time = updated_time(tournament.starts_at)
 
-    if tournament.state == "waiting_participants" do
-      {:noreply, assign(socket, time: updated_time(tournament.starts_at))}
+    if tournament.state == "waiting_participants" and time.seconds >= 0 do
+      {:noreply, assign(socket, time: time)}
     else
       {:noreply, socket}
     end
@@ -56,11 +56,12 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     end
   end
 
-  def handle_event("join", _params, socket) do
+  def handle_event("join", %{"team_id" => team_id}, socket) do
     new_tournament =
       Helpers.join(
         socket.assigns.tournament,
-        socket.assigns.current_user
+        socket.assigns.current_user,
+        String.to_integer(team_id)
       )
 
     CodebattleWeb.Endpoint.broadcast_from(

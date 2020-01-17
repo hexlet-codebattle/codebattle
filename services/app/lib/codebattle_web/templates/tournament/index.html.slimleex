@@ -5,6 +5,7 @@
       thead
         tr
           th name
+          th type
           th state
           th starts_at
           th players_count
@@ -14,8 +15,9 @@
         = for tournament <- @tournaments do
           tr
             td.align-middle.text-nowrap = tournament.name
+            td.align-middle.text-nowrap = tournament.type
             td.align-middle.text-nowrap = tournament.state
-            td.align-middle.text-nowrap = tournament.starts_at
+            td.align-middle.text-nowrap = render_datetime(tournament.starts_at)
             td.align-middle.text-nowrap = tournament.players_count
             td.align-middle.text-nowrap
               = render "_player.html", player: tournament.creator
@@ -28,11 +30,15 @@
   h2.text-center.mt-5 Create new tournament
   = f = form_for @changeset, "#", phx_change: :validate, phx_submit: :create
     .form-group
+      = label f, :type
+      = select f, :type, Codebattle.Tournament.types, class: "form-control"
+      = error_tag f, :type
+    .form-group
       = label f, :name
       = text_input f, :name, class: "form-control", placeholder: "My tournament"
       = error_tag f, :name
     .form-group
-      = label f, "starts_at_after"
+      = label f, :starts_at_type
       = select f, :starts_at_type, Codebattle.Tournament.starts_at_types, class: "form-control"
     = submit "Create", phx_disable_with: "Creating...", class: "btn btn-primary mb-2"
 
