@@ -7,7 +7,7 @@ defmodule CodebattleWeb.UserControllerTest do
     conn =
       conn
       |> put_session(:user_id, user.id)
-      |> get(user_path(conn, :index))
+      |> get(Routes.user_path(conn, :index))
 
     assert conn.status == 200
   end
@@ -15,7 +15,7 @@ defmodule CodebattleWeb.UserControllerTest do
   test "index", %{conn: conn} do
     conn =
       conn
-      |> get(user_path(conn, :index))
+      |> get(Routes.user_path(conn, :index))
 
     assert redirected_to(conn, 302) == "/"
   end
@@ -26,7 +26,7 @@ defmodule CodebattleWeb.UserControllerTest do
     conn =
       conn
       |> put_session(:user_id, user.id)
-      |> get(user_path(conn, :show, user.id))
+      |> get(Routes.user_path(conn, :show, user.id))
 
     assert conn.status == 200
   end
@@ -36,7 +36,7 @@ defmodule CodebattleWeb.UserControllerTest do
 
     conn =
       conn
-      |> get(user_path(conn, :show, user.id))
+      |> get(Routes.user_path(conn, :show, user.id))
 
     assert redirected_to(conn, 302) == "/"
   end
@@ -47,7 +47,7 @@ defmodule CodebattleWeb.UserControllerTest do
     conn =
       conn
       |> put_session(:user_id, user.id)
-      |> get(user_setting_path(conn, :edit))
+      |> get(Routes.user_setting_path(conn, :edit))
 
     assert conn.status == 200
   end
@@ -58,7 +58,7 @@ defmodule CodebattleWeb.UserControllerTest do
     conn =
       conn
       |> put_session(:user_id, user.id)
-      |> put(user_setting_path(conn, :update), user: %{name: "new_name"})
+      |> put(Routes.user_setting_path(conn, :update), user: %{name: "new_name"})
 
     assert conn.status == 302
     assert Repo.get(User, user.id).name == "new_name"
@@ -73,7 +73,7 @@ defmodule CodebattleWeb.UserControllerTest do
     conn =
       conn
       |> put_session(:user_id, user.id)
-      |> put(user_path(conn, :update, user.id), user: %{name: "new_name"})
+      |> put(Routes.user_path(conn, :update, user.id), user: %{name: "new_name"})
 
     assert conn.status == 302
     assert Repo.get(User, user.id).name == "new_name"
@@ -82,7 +82,7 @@ defmodule CodebattleWeb.UserControllerTest do
 
     conn2
     |> put_session(:user_id, user2.id)
-    |> put(user_path(conn2, :update, user2.id), user: %{name: "new_name"})
+    |> put(Routes.user_path(conn2, :update, user2.id), user: %{name: "new_name"})
 
     assert conn.status == 422
     assert Repo.get(User, user.id).name != "new_name"

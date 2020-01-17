@@ -2,7 +2,6 @@ defmodule CodebattleWeb.Live.Tournament.TeamView do
   use Phoenix.LiveView
   use Timex
 
-  alias Codebattle.Tournament
   alias Codebattle.Tournament.Helpers
 
   @update_frequency 1_000

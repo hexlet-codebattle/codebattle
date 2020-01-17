@@ -1,6 +1,5 @@
 defmodule CodebattleWeb.TournamentView do
   use CodebattleWeb, :view
-  alias HrWeb.Router.Helpers, as: Routes
 
   @default_timezone "Europe/Moscow"
 

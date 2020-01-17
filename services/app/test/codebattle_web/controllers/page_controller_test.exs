@@ -13,7 +13,7 @@ defmodule Codebattle.PageControllerTest do
     conn =
       conn
       |> put_session(:user_id, user.id)
-      |> get(user_path(conn, :index))
+      |> get(Routes.user_path(conn, :index))
 
     assert conn.status == 200
   end

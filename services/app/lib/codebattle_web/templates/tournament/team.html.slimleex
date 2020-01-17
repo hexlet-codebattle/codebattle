@@ -1,5 +1,3 @@
-- matches = get_matches(@tournament)
-- players = get_players(@tournament)
 - {r1, r2} = calc_team_score(@tournament)
 - [%{"title" => title1}, %{"title" => title2}] = get_teams(@tournament)
 

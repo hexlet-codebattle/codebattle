@@ -14,7 +14,7 @@ defmodule CodebattleWeb.Api.V1.UserControllerTest do
 
     conn =
       conn
-      |> get(api_v1_user_path(conn, :index, filter: ""))
+      |> get(Routes.api_v1_user_path(conn, :index, filter: ""))
 
     resp_body = json_response(conn, 200)
 
@@ -38,7 +38,7 @@ defmodule CodebattleWeb.Api.V1.UserControllerTest do
 
     conn =
       conn
-      |> get(api_v1_user_path(conn, :index, filter: "a"))
+      |> get(Routes.api_v1_user_path(conn, :index, filter: "a"))
 
     resp_body = json_response(conn, 200)
 

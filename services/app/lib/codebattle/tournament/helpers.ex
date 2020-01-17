@@ -364,7 +364,7 @@ defmodule Codebattle.Tournament.Helpers do
   defp calc_match_result(%{players: [_, %{game_result: "won"}]}), do: {0, 1}
   defp calc_match_result(%{players: [_, %{game_result: "gave_up"}]}), do: {1, 0}
   defp calc_match_result(%{players: [%{game_result: "gave_up"}, _]}), do: {0, 1}
-  defp calc_match_result(match), do: {0, 0}
+  defp calc_match_result(_), do: {0, 0}
 
   defp pair_players_to_matches(players) do
     Enum.reduce(players, [%{}], fn player, acc ->

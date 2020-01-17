@@ -11,7 +11,7 @@ defmodule Codebattleweb.GameControllerTest do
     conn =
       conn
       |> put_session(:user_id, user.id)
-      |> get(game_path(conn, :show, 1_231_223))
+      |> get(Routes.game_path(conn, :show, 1_231_223))
 
     assert conn.status == 404
   end
@@ -23,7 +23,7 @@ defmodule Codebattleweb.GameControllerTest do
     conn =
       conn
       |> put_session(:user_id, user.id)
-      |> get(game_path(conn, :show, game.id))
+      |> get(Routes.game_path(conn, :show, game.id))
 
     assert conn.status == 200
   end
@@ -45,7 +45,7 @@ defmodule Codebattleweb.GameControllerTest do
     conn =
       conn
       |> put_session(:user_id, user1.id)
-      |> get(game_path(conn, :show, game.id))
+      |> get(Routes.game_path(conn, :show, game.id))
 
     assert conn.status == 200
   end
@@ -66,7 +66,7 @@ defmodule Codebattleweb.GameControllerTest do
     conn =
       conn
       |> put_session(:user_id, user1.id)
-      |> delete(game_path(conn, :delete, game.id))
+      |> delete(Routes.game_path(conn, :delete, game.id))
 
     assert conn.status == 302
 
@@ -148,7 +148,7 @@ defmodule Codebattleweb.GameControllerTest do
   defp create_game(conn, user, params) do
     conn
     |> put_session(:user_id, user.id)
-    |> post(game_path(conn, :create, params))
+    |> post(Routes.game_path(conn, :create, params))
   end
 
   defp active_game(id) do
