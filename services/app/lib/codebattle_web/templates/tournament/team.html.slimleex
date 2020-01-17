@@ -8,7 +8,7 @@
     .col-3
       .sticky-top.pt-3
         .bg-white.rounded-top.shadow-sm style="height: 350px;"
-          .overflow-auto.px-3.pt-3.h-100 style=("word-break: break-all;") phx-hook="NewChatMessage"
+          .overflow-auto.px-3.pt-3.h-100.text-break phx-hook="NewChatMessage"
             div
               span.text-muted Please, be nice in chat
             = for message <- @messages do
@@ -17,7 +17,7 @@
                 span.ml-1 = message.message
         = form_for :message, "#", [phx_submit: :chat_message],  fn f ->
           .d-flex.shadow-sm.rounded-bottom
-            = text_input f, :content, placeholder: "write your message here...", class: "form-control rounded-0 border-0 border-top x-rounded-bottom-left"
+            = text_input f, :content, autocomplete: "off", placeholder: "write your message here...", class: "form-control rounded-0 border-0 border-top x-rounded-bottom-left"
             = submit "Send", class: "btn btn-outline-secondary x-rounded-bottom-right rounded-0"
     .col-9.mt-3
       .row
