@@ -1,13 +1,13 @@
 .container-fluid
   .row
-    .col
+    .col-8
       h1
-        = @tournament.name |> String.upcase
-        span.small.text-muted.ml-3 = @tournament.state
+        span.mr-3 = @tournament.name |> String.upcase
+        span.small.text-muted = @tournament.state
       = if @tournament.state == "waiting_participants" do
         p  Will start in #{@time.minutes} minutes #{@time.seconds} seconds
 
-    .col
+    .col-4
       .text-right
         = if is_creator?(@tournament, @current_user.id) do
           button.btn.btn-outline-success.mx-2[phx-click="start"] Start
