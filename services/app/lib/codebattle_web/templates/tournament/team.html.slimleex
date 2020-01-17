@@ -8,21 +8,20 @@
 .container-fluid.mt-4
   .row
     .col-3
-      .sticky-top
-        div.list-group-item.p-0 style="height: 350px;"
-          ul.overflow-auto.pt-2.px-2 style=("word-break: break-all; height: 80%; top: 5px;") phx-hook="NewChatMessage"
+      .sticky-top.pt-3
+        .bg-white.rounded-top.shadow-sm style="height: 350px;"
+          .overflow-auto.px-3.pt-3.h-100 style=("word-break: break-all;") phx-hook="NewChatMessage"
             div
               span.text-muted Please, be nice in chat
-              = for message <- @messages do
-                div
-                  span.font-weight-bold = "#{message.user_name}:"
-                  span.ml-1 = message.message
-          = form_for :message, "#", [phx_submit: :chat_message, class: "p-2 position-absolute"],  fn f ->
-            .input-group.input-group-sm
-              = text_input f, :content, placeholder: "write your message here...", class: "form-control border-secondary"
-              .input-group-append
-                = submit "Send", class: "btn btn-outline-secondary"
-    .col-9
+            = for message <- @messages do
+              div
+                span.font-weight-bold = "#{message.user_name}:"
+                span.ml-1 = message.message
+        = form_for :message, "#", [phx_submit: :chat_message],  fn f ->
+          .d-flex.shadow-sm.rounded-bottom
+            = text_input f, :content, placeholder: "write your message here...", class: "form-control rounded-0 border-0 border-top x-rounded-bottom-left"
+            = submit "Send", class: "btn btn-outline-secondary x-rounded-bottom-right rounded-0"
+    .col-9.mt-3
       .row
         .col-12
           .py-2.bg-white.shadow-sm.rounded
@@ -49,5 +48,5 @@
                   = render "_players.html", players: get_team_players(@tournament, team_id)
 
         .col-12.mt-4
-          = for round <- get_rounds(@tournament) do
+          = for round <- Enum.reverse(get_rounds(@tournament)) do
             = render "_team_round.html", round: round, current_user: @current_user

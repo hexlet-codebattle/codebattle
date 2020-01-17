@@ -3,10 +3,9 @@ $link-hover-color: #5673ce;
 $link-hover-decoration: none;
 $body-bg: #fafafa;
 
-$gray-600: #477591 !default;
 $green: #64b079 !default;
 
-$secondary: $gray-600 !default;
+$secondary: #477591 !default;
 $success: $green !default;
 
 @import "../../deps/phoenix_live_view/assets/css/live_view.css";
@@ -103,5 +102,13 @@ a {
 }
 
 .bg-gray {
-  background-color:  #dedede !important;
+  background-color: #dedede !important;
+}
+
+.x-rounded-bottom-right {
+  border-bottom-right-radius: $border-radius !important;
+}
+
+.x-rounded-bottom-left {
+  border-bottom-left-radius: $border-radius !important;
 }

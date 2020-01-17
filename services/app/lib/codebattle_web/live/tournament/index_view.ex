@@ -40,7 +40,6 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
       {:ok, tournament} ->
         {:stop,
          socket
-         |> put_flash(:info, "Tournament created successfully.")
          |> redirect(to: "/tournaments/#{tournament.id}")}
 
       {:error, %Ecto.Changeset{} = changeset} ->

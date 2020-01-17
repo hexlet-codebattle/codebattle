@@ -242,6 +242,8 @@ defmodule Codebattle.Tournament.Helpers do
     |> Repo.update!()
   end
 
+  defp start_step!(%{state: "finished"} = tournament), do: tournament
+
   defp start_step!(tournament) do
     tournament
     |> build_matches
@@ -284,6 +286,7 @@ defmodule Codebattle.Tournament.Helpers do
       tournament
       |> get_players
       |> Enum.concat(bots)
+      |> Enum.sort_by(fn p -> p.team_id end)
 
     tournament
     |> Tournament.changeset(%{

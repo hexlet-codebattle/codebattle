@@ -13,7 +13,6 @@
     - {link_name, bgClass} = get_link_params(match, @current_user)
     .row.align-items-center.py-2 class=bgClass
       .col-6
-        - IO.inspect match
         = render "_player.html", player: p1
       .col-4
         = render "_player.html", player: p2
