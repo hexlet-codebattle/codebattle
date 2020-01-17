@@ -15,6 +15,26 @@ defmodule Codebattle.Tournament.Helpers do
     |> Enum.sort_by(&get_round_id/1)
   end
 
+  def calc_round_result(round) do
+    round
+    |> Enum.map(&calc_match_result/1)
+    |> Enum.reduce(fn {x1, x2}, {a1, a2} -> {x1 + a1, x2 + a2} end)
+  end
+
+  def calc_team_score(tournament) do
+    tournament
+    |> get_rounds()
+    |> Enum.filter(fn round -> Enum.all?(round, &(&1.state in ["canceled", "finished"])) end)
+    |> Enum.map(&calc_round_result/1)
+    |> Enum.reduce({0, 0}, fn {x1, x2}, {a1, a2} ->
+      cond do
+        x1 > x2 -> {a1 + 1, a2}
+        x1 < x2 -> {a1, a2 + 1}
+        true -> {a1 + 0.5, a2 + 0.5}
+      end
+    end)
+  end
+
   def get_round_id([%{round_id: round_id} | _]), do: round_id
 
   def get_team_players(%{type: "team"} = tournament, team_id) do
@@ -320,8 +340,8 @@ defmodule Codebattle.Tournament.Helpers do
 
     matches = tournament |> get_matches |> Enum.map(&Map.from_struct/1)
 
-    players = Enum.map(matches_range, fn index -> pick_winner(Enum.at(matches, index)) end)
-    new_matches = matches ++ pair_players_to_matches(players)
+    winners = Enum.map(matches_range, fn index -> pick_winner(Enum.at(matches, index)) end)
+    new_matches = matches ++ pair_players_to_matches(winners)
 
     tournament
     |> Tournament.changeset(%{
@@ -335,6 +355,12 @@ defmodule Codebattle.Tournament.Helpers do
   defp pick_winner(%{players: [winner, %{game_result: "gave_up"}]}), do: winner
   defp pick_winner(%{players: [%{game_result: "gave_up"}, winner]}), do: winner
   defp pick_winner(match), do: Enum.random(match.players)
+
+  defp calc_match_result(%{players: [%{game_result: "won"}, _]}), do: {1, 0}
+  defp calc_match_result(%{players: [_, %{game_result: "won"}]}), do: {0, 1}
+  defp calc_match_result(%{players: [_, %{game_result: "gave_up"}]}), do: {1, 0}
+  defp calc_match_result(%{players: [%{game_result: "gave_up"}, _]}), do: {0, 1}
+  defp calc_match_result(match), do: {0, 0}
 
   defp pair_players_to_matches(players) do
     Enum.reduce(players, [%{}], fn player, acc ->

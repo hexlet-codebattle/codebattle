@@ -1,8 +1,7 @@
 .my-3
   = if !Enum.empty?(@players) do
-    = for {player, index} <- Enum.with_index(@players) do
-      .d-flex.align-middle.my-3
-        div = index
+    = for player <- @players do
+      .my-3
         = render "_player.html", player: player
   - else
     p NO_PARTICIPANTS_YET
