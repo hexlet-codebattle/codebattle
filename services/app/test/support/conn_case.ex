@@ -35,7 +35,6 @@ defmodule CodebattleWeb.ConnCase do
       alias Codebattle.{Repo, User, Game, UserGame}
       alias Codebattle.GameProcess.{Player}
 
-
       # The default endpoint for testing
       @endpoint CodebattleWeb.Endpoint
     end
