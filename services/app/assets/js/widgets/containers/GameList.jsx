@@ -444,7 +444,6 @@ class GameList extends React.Component {
     const {
       activeGames, completedGames, liveTournaments,
     } = this.props;
-    console.log({ liveTournaments })
     return (
       <>
         <Card title="Active games">
