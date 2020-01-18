@@ -1,17 +1,20 @@
 import React from 'react';
+import cn from 'classnames';
 
 const iconsToClass = {
-  js: 'icon-nodejs align-middle',
-  ts: 'icon-nodejs align-middle',
-  golang: 'icon-go align-middle',
-  cpp: 'icon-cplusplus align-middle',
-  ruby: 'icon-ruby align-middle',
-  elixir: 'icon-elixir align-middle',
-  haskell: 'icon-haskell align-middle',
-  clojure: 'icon-clojure align-middle',
-  python: 'icon-python align-middle',
-  php: 'icon-php-alt align-middle',
-  perl: 'icon-perl align-middle',
+  js: 'icon-nodejs',
+  ts: 'icon-nodejs',
+  golang: 'icon-go',
+  cpp: 'icon-cplusplus',
+  ruby: 'icon-ruby',
+  elixir: 'icon-elixir',
+  haskell: 'icon-haskell',
+  clojure: 'icon-clojure',
+  python: 'icon-python',
+  php: 'icon-php-alt',
+  perl: 'icon-perl',
 };
 
-export default ({ lang }) => <span className={iconsToClass[lang]} />;
+const LanguageIcon = ({ lang }) => <span className={cn('d-flex', iconsToClass[lang])} />;
+
+export default LanguageIcon;

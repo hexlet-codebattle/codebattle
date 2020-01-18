@@ -10,11 +10,15 @@ const initialState = {
 };
 
 const gameList = createReducer(initialState, {
-  [actions.initGameList](state, { payload: { activeGames, completedGames } }) {
+  [actions.initGameList](
+    state,
+    { payload: { activeGames, completedGames, liveTournaments } },
+  ) {
     return {
       ...state,
       activeGames,
       completedGames,
+      liveTournaments,
       loaded: true,
     };
   },

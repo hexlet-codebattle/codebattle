@@ -23,23 +23,26 @@ const UserName = ({
     return <small className="text-success">{` +${num}`}</small>;
   };
   const githubUser = (
-    <a
-      href={`/users/${id}`}
-      key={githubId}
-    >
-      <img
-        className="attachment rounded border mr-1"
-        alt={name}
-        src={`https://avatars0.githubusercontent.com/u/${githubId}`}
-        style={{ width: '25px' }}
-      />
-      <span className="mr-1">{name}</span>
+    <span className="d-flex align-items-center">
+      <a
+        href={`/users/${id}`}
+        key={githubId}
+        className="d-flex align-items-center mr-1"
+      >
+        <img
+          className="attachment rounded border mr-1"
+          alt={name}
+          src={`https://avatars0.githubusercontent.com/u/${githubId}`}
+          style={{ width: '25px' }}
+        />
+        <span>{name}</span>
+      </a>
       <LanguageIcon lang={lang} />
       <small>
         {_.isFinite(rating) && rating}
       </small>
       {ratingDiff ? displayDiff(ratingDiff) : ''}
-    </a>
+    </span>
   );
 
   return (

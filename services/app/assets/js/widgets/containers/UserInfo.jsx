@@ -12,12 +12,11 @@ const UserInfo = ({ dispatch, user, usersStats }) => {
   const statsPopover = ({ show, ...rest }) => (
     <Popover className={cn({ 'd-none': !userStats })} {...rest}>
       <Popover.Title as="h3">{user.name}</Popover.Title>
-      { userStats
-        && (
+      {userStats && (
         <Popover.Content>
           <UserStats data={userStats} />
         </Popover.Content>
-        )}
+      )}
     </Popover>
   );
 

@@ -36,7 +36,7 @@ class GamesHeatmap extends React.Component {
       return (<Loading />);
     }
     return (
-      <div className="card shadow rounded">
+      <div className="card rounded">
         <div className="card-body py-0 my-0">
           <CalendarHeatmap
             showWeekdayLabels

@@ -8,6 +8,9 @@ defmodule CodebattleWeb.LobbyChannelTest do
   setup do
     task = insert(:task)
     game = insert(:game, task: task, level: task.level, state: "game_over")
+    insert(:tournament, %{state: "waiting_participants"})
+    insert(:tournament, %{state: "active"})
+    insert(:tournament, %{state: "finished"})
     winner = insert(:user)
     loser = insert(:user)
 
@@ -33,12 +36,15 @@ defmodule CodebattleWeb.LobbyChannelTest do
 
     setup_game(state, data)
 
-    {:ok, %{active_games: active_games, completed_games: completed_games}, _socket1} =
-      subscribe_and_join(socket1, LobbyChannel, "lobby")
-
-    # TODO: fix test active games
+    {:ok,
+     %{
+       active_games: active_games,
+       live_tournaments: live_tournaments,
+       completed_games: completed_games
+     }, _socket1} = subscribe_and_join(socket1, LobbyChannel, "lobby")
 
     assert length(active_games) >= 1
+    assert length(live_tournaments) == 2
     assert length(completed_games) == 1
   end
 end
