@@ -153,11 +153,7 @@ export const editorsThemeSelector = currentUserId => state => {
   return EditorThemes.dark;
 };
 
-export const gameListLoadedSelector = state => state.gameList.loaded;
-export const gameListNewGameSelector = state => state.gameList.newGame;
-export const activeGamesSelector = state => state.gameList.activeGames;
-
-export const completedGamesSelector = state => state.gameList.completedGames || [];
+export const gameListSelector = state => state.gameList;
 
 export const getUsersStats = state => state.user.usersStats;
 

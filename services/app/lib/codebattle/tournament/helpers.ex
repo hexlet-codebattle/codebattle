@@ -320,9 +320,9 @@ defmodule Codebattle.Tournament.Helpers do
     |> Repo.update!()
   end
 
-  defp build_matches(%Tournament{step: 4} = tournament), do: tournament
+  defp build_matches(%{type: "individual", step: 4} = tournament), do: tournament
 
-  defp build_matches(%Tournament{step: 0} = tournament) do
+  defp build_matches(%{type: "individual", step: 0} = tournament) do
     players = tournament |> get_players |> Enum.shuffle()
 
     matches = pair_players_to_matches(players)

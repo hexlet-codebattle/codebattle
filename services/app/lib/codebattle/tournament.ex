@@ -7,7 +7,7 @@ defmodule Codebattle.Tournament do
 
   alias Codebattle.Tournament.Types
 
-  @derive {Poison.Encoder, only: [:id, :name, :state, :starts_at, :players_count, :data]}
+  @derive {Poison.Encoder, only: [:id, :type, :name, :state, :starts_at, :players_count, :data]}
 
   @types ~w(individual team)
   @states ~w(waiting_participants canceled active finished)
@@ -56,4 +56,17 @@ defmodule Codebattle.Tournament do
 
   def types, do: @types
   def starts_at_types, do: @starts_at_types
+
+  def get_live_tournaments do
+    query =
+      from(
+        t in Codebattle.Tournament,
+        order_by: [desc: t.id],
+        where: t.state in ["waiting_participants", "active"],
+        preload: :creator,
+        limit: 5
+      )
+
+    Codebattle.Repo.all(query)
+  end
 end

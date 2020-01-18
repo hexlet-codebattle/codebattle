@@ -3,6 +3,7 @@ defmodule CodebattleWeb.LobbyChannel do
   use CodebattleWeb, :channel
 
   alias Codebattle.GameProcess.Play
+  alias Codebattle.Tournament
 
   require Logger
 
@@ -17,9 +18,15 @@ defmodule CodebattleWeb.LobbyChannel do
           game.game_info.type === "public"
       end)
 
+    live_tournaments = Tournament.get_live_tournaments()
     completed_games = Enum.map(Play.completed_games(), &Play.get_completed_game_info/1)
 
-    {:ok, %{active_games: active_games, completed_games: completed_games}, socket}
+    {:ok,
+     %{
+       active_games: active_games,
+       live_tournaments: live_tournaments,
+       completed_games: completed_games
+     }, socket}
   end
 
   # TODO_NOW: check this
