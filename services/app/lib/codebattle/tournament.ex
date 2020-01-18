@@ -7,8 +7,7 @@ defmodule Codebattle.Tournament do
 
   alias Codebattle.Tournament.Types
 
-  @derive {Poison.Encoder,
-           only: [:id, :type, :name, :state, :starts_at, :players_count, :data]}
+  @derive {Poison.Encoder, only: [:id, :type, :name, :state, :starts_at, :players_count, :data]}
 
   @types ~w(individual team)
   @states ~w(waiting_participants canceled active finished)
