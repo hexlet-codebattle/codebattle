@@ -53,19 +53,6 @@ html lang="en"
           button.navbar-toggler[aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation" data-target="#navbarResponsive" data-toggle="collapse" type="button"]
             span.navbar-toggler-icon
           #navbarResponsive.collapse.navbar-collapse
-            ul.navbar-nav.mr-auto
-              li.nav-item
-                a.nav-link[href="https://github.com/hexlet-codebattle/codebattle" target="_blank"]
-                  span.fab.fa-github.mr-2
-                  = gettext "SourceCode"
-              li.nav-item
-                a.nav-link[href="https://hexlet.io" target="_blank"]
-                  span.fa.fa-university.mr-2
-                  = gettext "Hexlet"
-              li.nav-item
-                a.nav-link[href="http://slack-ru.hexlet.io/" target="_blank"]
-                  span.fab.fa-slack.mr-2
-                  = gettext "Slack#codebattle"
             ul.navbar-nav.ml-auto
               = unless @current_user.guest do
                 li.nav-item
@@ -83,6 +70,16 @@ html lang="en"
                   .dropdown-menu.dropdown-menu-right
                     = link gettext("My Profile"), to: user_path(@conn, :show, @current_user.id), class: "dropdown-item"
                     = link gettext("Settings"), to: user_setting_path(@conn, :edit), class: "dropdown-item"
+                    .dropdown-divider
+                    a.dropdown-item.d-flex.align-items-center.justify-content-between[href="https://github.com/hexlet-codebattle/codebattle" target="_blank"]
+                      = gettext "SourceCode"
+                      span.fab.fa-github.ml-3
+                    a.dropdown-item.d-flex.align-items-center.justify-content-between[href="https://hexlet.io" target="_blank"]
+                      = gettext "Hexlet"
+                      span.fa.fa-university.ml-3
+                    a.dropdown-item.d-flex.align-items-center.justify-content-between[href="http://slack-ru.hexlet.io/" target="_blank"]
+                      = gettext "Slack#codebattle"
+                      span.fab.fa-slack.ml-3
                     .dropdown-divider
                     = link gettext("Sign Out"), to: session_path(@conn, :delete), method: "delete", class: "dropdown-item"
               - else

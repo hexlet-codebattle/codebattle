@@ -316,7 +316,7 @@ class GameList extends React.Component {
       );
     }
     return (
-      <div className="table-responsive mt-2">
+      <div className="table-responsive">
         <table className="table">
           <thead className="text-left">
             <tr>
@@ -364,7 +364,7 @@ class GameList extends React.Component {
       );
     }
     return (
-      <div className="table-responsive mt-2">
+      <div className="table-responsive">
         <table className="table">
           <thead className="text-left">
             <tr>
@@ -372,7 +372,7 @@ class GameList extends React.Component {
               <th className="p-3 border-0">Level</th>
               <th className="p-3 border-0 text-center" colSpan="2">Players</th>
               <th className="p-3 border-0">State</th>
-              <th className="p-3 border-0">Time limit</th>
+              <th className="p-3 border-0 text-nowrap">Time limit</th>
               <th className="p-3 border-0">Actions</th>
             </tr>
           </thead>
@@ -454,7 +454,7 @@ class GameList extends React.Component {
         </Card>
         <Card title="Game activity">
           <div className="row justify-content-center">
-            <div className="col-sm-8">
+            <div className="col-md-8">
               <GamesHeatmap />
             </div>
           </div>
