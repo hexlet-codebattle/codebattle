@@ -5,7 +5,6 @@
     a href="#{auth_path(@conn, :request, :github)}"
       button.btn.btn-outline-success.btn-lg = "Start playing"
 
-.container-fluid
-  #game-list
-  javascript:
-      window.csrf_token = "<%= csrf_token() %>"
+#game-list
+javascript:
+    window.csrf_token = "<%= csrf_token() %>"
