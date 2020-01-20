@@ -1,7 +1,7 @@
 import React from 'react';
 import { Tooltip, OverlayTrigger } from 'react-bootstrap';
 
-export default ({ resultUser1, resultUser2, className }) => {
+const GameResultIcon = ({ resultUser1, resultUser2, className }) => {
   const tooltipId = `tooltip-${resultUser1}`;
 
   if (resultUser1 === 'gave_up') {
@@ -32,3 +32,5 @@ export default ({ resultUser1, resultUser2, className }) => {
 
   return null;
 };
+
+export default GameResultIcon;

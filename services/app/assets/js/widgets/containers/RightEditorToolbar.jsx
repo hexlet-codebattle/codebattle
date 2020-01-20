@@ -71,7 +71,7 @@ class RightEditorToolbar extends Component {
     }
 
     return (
-      <div className="py-2 px-3 btn-toolbar justify-content-between" role="toolbar">
+      <div className="py-2 px-3 btn-toolbar justify-content-between align-items-center" role="toolbar">
         <GameResultIcon
           className="mr-2"
           resultUser1={_.get(players, [[rightUserId], 'gameResult'])}

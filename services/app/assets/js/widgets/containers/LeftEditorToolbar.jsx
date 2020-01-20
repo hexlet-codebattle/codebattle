@@ -122,7 +122,7 @@ class LeftEditorToolbar extends Component {
     }
 
     return (
-      <div className="py-2 px-3 btn-toolbar justify-content-between" role="toolbar">
+      <div className="py-2 px-3 btn-toolbar justify-content-between align-items-center" role="toolbar">
         <div className="btn-group " role="group" aria-label="Editor settings">
           <LanguagePicker
             currentLangSlug={leftEditorLangSlug}
