@@ -6,12 +6,12 @@ import LanguageIcon from './LanguageIcon';
 
 const languages = Gon.getAsset('langs');
 
-const getLangTitle = ({ slug, name, version }) => (
-  <>
+const LangTitle = ({ slug, name, version }) => (
+  <div className="d-inline-flex align-items-center">
     <LanguageIcon lang={slug} />
     <span className="mx-1">{_.capitalize(name)}</span>
-    <small>{version}</small>
-  </>
+    <span>{version}</span>
+  </div>
 );
 
 const LanguagePicker = ({ currentLangSlug, onChange, disabled }) => {
@@ -27,7 +27,7 @@ const LanguagePicker = ({ currentLangSlug, onChange, disabled }) => {
         type="button"
         disabled
       >
-        {getLangTitle(currentLang)}
+        <LangTitle {...currentLang} />
       </button>
     );
   }
@@ -42,7 +42,7 @@ const LanguagePicker = ({ currentLangSlug, onChange, disabled }) => {
         aria-haspopup="true"
         aria-expanded="false"
       >
-        {getLangTitle(currentLang)}
+        <LangTitle {...currentLang} />
       </button>
       <div className="dropdown-menu" aria-labelledby="dropdownLangButton">
         {_.map(otherLangs, ({ slug, name, version }) => (
@@ -52,7 +52,7 @@ const LanguagePicker = ({ currentLangSlug, onChange, disabled }) => {
             key={slug}
             onClick={() => { onChange(slug); }}
           >
-            {getLangTitle({ slug, name, version })}
+            <LangTitle slug={slug} name={name} version={version} />
           </button>
         ))}
       </div>
