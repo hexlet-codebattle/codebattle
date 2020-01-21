@@ -79,7 +79,8 @@ $ mix issues.upload # Upsert issues by name in db
 
 
 ### Troubleshooting
-- Install and docker
+
+- Install and run docker
 
 Make sure you have installed `docker` and `docker-compose` for your OS.
 
