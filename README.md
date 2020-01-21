@@ -103,6 +103,8 @@ Close and open your terminal if docker daemon didn't start immediately.
 
 - Manage Docker as a non-root user
 
+https://docs.docker.com/install/linux/linux-postinstall/
+
 Create the docker group.
 
 ```
