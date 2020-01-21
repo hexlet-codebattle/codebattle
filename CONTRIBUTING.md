@@ -19,31 +19,35 @@
 
 ## Разработка
 
-1. Ознакомьтесь с [принципами разработки](https://github.com/hexlet-codebattle/codebattle/wiki/%D0%9F%D1%80%D0%B8%D0%BD%D1%86%D0%B8%D0%BF%D1%8B-%D1%80%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%BA%D0%B8) принятыми в этом проекте.
+1. Если у вас нет SSH-ключей, сгенерируйте их и подключите к гитхабу, чтобы работать с репозиторием по SSH:
 
-1. Сделайте fork проекта (кнопка fork в правом верхнем углу на странице <https://github.com/hexlet-codebattle/codebattle>) и клонируйте репозиторий:
+   https://help.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh
+
+2. Ознакомьтесь с [принципами разработки](https://github.com/hexlet-codebattle/codebattle/wiki/%D0%9F%D1%80%D0%B8%D0%BD%D1%86%D0%B8%D0%BF%D1%8B-%D1%80%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%BA%D0%B8) принятыми в этом проекте.
+
+3. Сделайте fork проекта (кнопка fork в правом верхнем углу на странице <https://github.com/hexlet-codebattle/codebattle>) и клонируйте репозиторий:
 
     ```bash
-    git clone https://github.com/%your-username%/codebattle.git
+    git clone git@github.com:%your-username%/codebattle.git
     ```
 
-1. Следуйте [инструкциям по установке](https://github.com/hexlet-codebattle/codebattle/blob/master/README.md#install).
+4. Следуйте [инструкциям по установке](https://github.com/hexlet-codebattle/codebattle/blob/master/README.md#install).
 
-1. Перед тем как начать писать код, необходимо создать ветку для разработки из ветки `master`. Важно учитывать, что в одной ветке может находиться решение только одной задачи!
+5. Перед тем как начать писать код, необходимо создать ветку для разработки из ветки `master`. Важно учитывать, что в одной ветке может находиться решение только одной задачи!
 
     ```bash
     git checkout master
     git checkout -b %your_branch_name%
     ```
 
-1. После выполнения задачи коммитите изменения (текст коммита на английском) и отправляете в удаленный репозиторий.
+6. После выполнения задачи коммитите изменения (текст коммита на английском) и отправляете в удаленный репозиторий.
 
     ```bash
     git add . && git commit -m "%useful_commit_message%"
     git push --set-upstream origin %your_branch_name%
     ```
 
-1. Создайте `pull request`.
+7. Создайте `pull request`.
 
 ## Создание pull request
 
@@ -57,7 +61,7 @@
 После завершения работы над задачей не забудьте [синхронизировать ваш fork с основным репозиторием](https://help.github.com/articles/syncing-a-fork/).
 
 ```bash
-    git remote add upstream https://github.com/hexlet-codebattle/codebattle.git
+    git remote add upstream git@github.com:hexlet-codebattle/codebattle.git
     git fetch upstream
     git checkout master
     git merge upstream/master
