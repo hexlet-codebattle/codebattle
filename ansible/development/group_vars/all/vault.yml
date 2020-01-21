@@ -5,6 +5,7 @@ vault_codebattle_github_secret: "eaac6e0cb603e652a133bde58902507a13cb0901"
 vault_codebattle_db_hostname: "db"
 vault_codebattle_db_username: "postgres"
 vault_codebattle_db_password: ""
+vault_codebattle_db_port: 5445
 vault_codebattle_db_name: "codebattle_dev"
 vault_codebattle_secret_key_base: "asdlskdjalskdjfalksdjfalksjdfalsdjfqwerty"
 vault_codebattle_onesignal_app_id: "5857921a-703b-4231-9e0a-bc3e0bb385bb"
