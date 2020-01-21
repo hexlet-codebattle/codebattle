@@ -15,48 +15,12 @@
 - Docker
 - Docker Compose
 
-### Before install
-- Install and docker
-
-Install `docker` and `docker-compose` for your OS.
-
-https://docs.docker.com/install/
-
-https://docs.docker.com/compose/install/
-
-Make sure your docker daemon is running. You can run it manually by typing:
-
-```
-sudo dockerd
-```
-
-or you can add it to startup by typing:
-
-```
-sudo systemctl enable docker
-```
-
-Close and open your terminal if docker daemon didn't start immediately.
-
-- Manage Docker as a non-root user
-
-Create the docker group.
-
-```
-sudo groupadd docker
-```
-
-Add your user to the docker group.
-
-```
-sudo usermod -aG docker $USER
-```
 ### Install
 
 - Clone repo
 
 ```bash
-$ git clone git@github.com:hexlet-codebattle/codebattle.git
+$ git clone https://github.com/hexlet-codebattle/codebattle.git
 $ cd codebattle
 $ mkdir -p tmp
 $ echo 'asdf' > tmp/ansible-vault-password
@@ -112,3 +76,41 @@ $ mix issues.upload # Upsert issues by name in db
 ### Support
 
 - <https://hexlet-ru.slack.com> channel: codebattle
+
+
+### Troubleshooting
+- Install and docker
+
+Make sure you have installed `docker` and `docker-compose` for your OS.
+
+https://docs.docker.com/install/
+
+https://docs.docker.com/compose/install/
+
+Make sure your docker daemon is running. You can run it manually by typing:
+
+```
+sudo dockerd
+```
+
+or you can add it to startup by typing:
+
+```
+sudo systemctl enable docker
+```
+
+Close and open your terminal if docker daemon didn't start immediately.
+
+- Manage Docker as a non-root user
+
+Create the docker group.
+
+```
+sudo groupadd docker
+```
+
+Add your user to the docker group.
+
+```
+sudo usermod -aG docker $USER
+```
