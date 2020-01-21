@@ -19,7 +19,7 @@
 
 ## Разработка
 
-1. Если у вас нет SSH-ключей, сгенерируйте их и подключите к гитхабу, чтобы работать с репозиторием по SSH:
+1. Если у вас нет SSH-ключей, сгенерируйте их и подключите к гитхабу, чтобы работать с репозиторием по SSH: https://help.github.com/en/github/authenticating-to-github/adding-a-new-ssh-key-to-your-github-account
 
 1. Ознакомьтесь с [принципами разработки](https://github.com/hexlet-codebattle/codebattle/wiki/%D0%9F%D1%80%D0%B8%D0%BD%D1%86%D0%B8%D0%BF%D1%8B-%D1%80%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%BA%D0%B8) принятыми в этом проекте.
 
