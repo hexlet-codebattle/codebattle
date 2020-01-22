@@ -20,7 +20,7 @@
 - Clone repo
 
 ```bash
-$ git clone https://github.com/hexlet-codebattle/codebattle.git
+$ git clone git@github.com:hexlet-codebattle/codebattle.git
 $ cd codebattle
 $ mkdir -p tmp
 $ echo 'asdf' > tmp/ansible-vault-password
