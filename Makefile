@@ -3,7 +3,7 @@ include make-ansible.mk
 include make-production.mk
 
 pg:
-	docker-compose up -d db
+	docker-compose up -d db-local
 
 clean:
 	rm -rf services/app/_build
