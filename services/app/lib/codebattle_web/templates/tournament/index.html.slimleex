@@ -1,4 +1,4 @@
-.container.bg-white.shadow-sm.py-4.mb-3
+.container-xl.bg-white.shadow-sm.rounded.py-4.mb-3
   h1.text-center Tournaments
   .table-responsive.mt-4
     table.table.table-sm
@@ -26,8 +26,8 @@
                 to: CodebattleWeb.Router.Helpers.tournament_path(@socket, :show, tournament.id),
                 class: "btn btn-success mt-2"
 
-.container.bg-white.shadow-sm.py-4
-  h2.text-center.mt-5 Create new tournament
+.container-xl.bg-white.shadow-sm.rounded.py-4
+  h2.text-center Create new tournament
   = f = form_for @changeset, "#", phx_change: :validate, phx_submit: :create
     .form-group
       = label f, :type

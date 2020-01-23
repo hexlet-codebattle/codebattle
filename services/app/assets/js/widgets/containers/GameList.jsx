@@ -474,19 +474,15 @@ class GameList extends React.Component {
 
     return (
       <>
-        <div className="container bg-white shadow-sm py-4 mb-3">
-          <h3 className="text-center mb-4">New game</h3>
+        <Card title="New game">
           <div className="d-flex flex-sm-row flex-column align-items-center justify-content-center flex-wrap">
             {this.renderTimeoutSelector(timeoutSeconds)}
             {this.renderStartNewGameSelector(timeoutSeconds)}
             {this.renderPlayWithFriendSelector(timeoutSeconds)}
           </div>
-        </div>
+        </Card>
 
-        {!loaded ? (
-          <Loading />
-        )
-          : this.renderGameContainers()}
+        {!loaded ? <Loading /> : this.renderGameContainers()}
       </>
     );
   }
