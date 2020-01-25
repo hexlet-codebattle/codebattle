@@ -69,7 +69,9 @@ defmodule Codebattle.GameProcess.Player do
     end
   end
 
-  def build(%Types.Player{} = user) do
+  def build(user, params \\ %{})
+
+  def build(%Types.Player{} = user, task) do
     %__MODULE__{
       id: user.id,
       public_id: user.public_id,
@@ -78,11 +80,12 @@ defmodule Codebattle.GameProcess.Player do
       name: user.name,
       rating: user.rating,
       editor_lang: user.lang || "js",
+      editor_text: Languages.get_solution(user.lang || "js", task),
       lang: user.lang || "js"
     }
   end
 
-  def build(user, params \\ %{}) do
+  def build(user, params) do
     player =
       case user.id do
         nil ->

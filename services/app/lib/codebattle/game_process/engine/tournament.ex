@@ -6,6 +6,7 @@ defmodule Codebattle.GameProcess.Engine.Tournament do
   alias Codebattle.GameProcess.{
     GlobalSupervisor,
     Fsm,
+    Player,
     ActiveGames,
     TasksQueuesServer
   }
@@ -23,7 +24,7 @@ defmodule Codebattle.GameProcess.Engine.Tournament do
     fsm =
       Fsm.new()
       |> Fsm.create_playing_game(%{
-        players: Enum.map(players, fn x -> Codebattle.GameProcess.Player.build(x) end),
+        players: Enum.map(players, &Player.build(&1, task)),
         game_id: game.id,
         is_bot_game: is_bot_game,
         level: level,
