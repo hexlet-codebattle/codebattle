@@ -28,8 +28,8 @@ defmodule Codebattle.Tournament.Team do
   def complete_players(%{meta: meta} = tournament) do
     team_players_count =
       meta
-      |> Map.get("teams")
-      |> Enum.map(fn t -> {t["id"], players_count(tournament, t["id"])} end)
+      |> Map.get(:teams)
+      |> Enum.map(fn t -> {t[:id], players_count(tournament, t[:id])} end)
 
     {_, max_players_count} = team_players_count |> Enum.max_by(&elem(&1, 1))
 

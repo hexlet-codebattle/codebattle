@@ -1,8 +1,8 @@
 = if !is_nil(@match) do
   - [player1, player2] = @match.players
-  - {link_name, bgClass} = get_link_params(@match, @current_user)
+  - {link_name, bg_class} = get_link_params(@match, @current_user)
 
-  .d-flex.p-1 class="#{bgClass} border border-success"
+  .d-flex.p-1.border.border-success class=bg_class
     .d-flex.flex-column.justify-content-center.align-items-center
       p = @match.state
       = link link_name, to: "/games/#{@match.game_id}", class: "btn btn-success m-1"

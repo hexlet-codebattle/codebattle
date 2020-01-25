@@ -1,15 +1,8 @@
-elixir:
-  fa_class = case Map.get(@player, :game_result) do
-    "waiting" -> nil
-    "won" -> "fa fa-trophy"
-    "lost" -> "lost"
-    "gave_up" -> "far fa-flag"
-    _ -> nil
-  end
-.d-flex
-  a.d-flex.align-items-center.justify-content-start href="/users/#{@player.id}"
+-fa_class = get_icon_class(@player)
+.d-flex.align-items-center
+  a.d-inline-flex.align-items-center href="/users/#{@player.id}"
     img.attachment.rounded.border.mr-1.x-user-avatar src="https://avatars0.githubusercontent.com/u/#{@player.github_id}"
-    p.mr-1.tournament-player-name = @player.name
-    small.mr-1 = @player.rating
+    span.mr-1.text-truncate style="max-width: 130px;" = @player.name
+  small.mr-1 = @player.rating
   = if fa_class do
     span class=fa_class

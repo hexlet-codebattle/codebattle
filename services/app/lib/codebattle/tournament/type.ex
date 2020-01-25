@@ -27,7 +27,7 @@ defmodule Codebattle.Tournament.Type do
         |> Repo.update!()
       end
 
-      def cancel!(tournament, user) do
+      def cancel(tournament, %{user: user}) do
         if is_creator?(tournament, user.id) do
           tournament
           |> Tournament.changeset(%{state: "canceled"})
@@ -37,7 +37,7 @@ defmodule Codebattle.Tournament.Type do
         end
       end
 
-      def start!(tournament, user) do
+      def start(tournament, %{user: user}) do
         if is_creator?(tournament, user.id) do
           tournament
           |> complete_players
@@ -110,7 +110,7 @@ defmodule Codebattle.Tournament.Type do
       defp pick_winner(%{players: [%{game_result: "gave_up"}, winner]}), do: winner
       defp pick_winner(match), do: Enum.random(match.players)
 
-      defp start_games(%Tournament{step: 4} = tournament), do: tournament
+      defp start_games(%Tournament{step: 4, type: "individual"} = tournament), do: tournament
 
       defp start_games(tournament) do
         new_matches =
@@ -189,10 +189,9 @@ defmodule Codebattle.Tournament.Type do
     result =
       %Tournament{}
       |> Tournament.changeset(
-        Map.merge(params, %{"starts_at" => starts_at, "step" => 0, "meta" => meta})
+        Map.merge(params, %{"starts_at" => starts_at, "step" => 0, "meta" => meta, "data" => %{}})
       )
       |> Repo.insert()
-      |> IO.inspect()
 
     case result do
       {:ok, tournament} ->

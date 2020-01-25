@@ -48,7 +48,6 @@ defmodule Codebattle.Tournament.Server do
     {:noreply, Map.merge(state, %{tournament: new_tournament})}
   end
 
-
   # HELPERS
 
   defp broadcast_tournament(tournament) do

@@ -13,6 +13,10 @@ defmodule Codebattle.Tournament.Helpers do
     tournament |> get_team_players(team_id) |> Enum.count()
   end
 
+  def can_start_tournament?(tournament) do
+    players_count(tournament) > 0 && tournament.state == "waiting_participants"
+  end
+
   def is_waiting_partisipants?(tournament) do
     tournament.state == "waiting_participants"
   end
@@ -50,7 +54,13 @@ defmodule Codebattle.Tournament.Helpers do
     |> Enum.sort_by(&get_round_id/1)
   end
 
-  def get_teams(%{meta: meta}), do: meta["teams"]
+  def get_teams(%{meta: %{teams: teams}}),
+    do: Enum.map(teams, fn x -> %{id: x.id, title: x.title} end)
+
+  def get_teams(%{meta: %{"teams" => teams}}),
+    do: Enum.map(teams, fn x -> %{id: x["id"], title: x["title"]} end)
+
+  def get_teams(_), do: []
 
   def get_team_players(%{type: "team"} = tournament, team_id) do
     tournament |> get_players |> Enum.filter(&(&1.team_id == team_id))
