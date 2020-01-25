@@ -12,7 +12,8 @@ defmodule Codebattle.Tournament.Server do
 
   def get_messages(id) do
     try do
-      GenServer.call(tournament_key(id), :get_messages)
+      GenServer.call(tournament_key(id), {:get_messages})
+
     catch
       :exit, _reason ->
         []
@@ -20,7 +21,9 @@ defmodule Codebattle.Tournament.Server do
   end
 
   def update_tournament(tournament_id, event_type, params) do
-    GenServer.cast(tournament_key(tournament_id), {event_type, params})
+    IO.inspect(event_type)
+    IO.inspect(params)
+    GenServer.call(tournament_key(tournament_id), {event_type, params})
   end
 
   # SERVER
@@ -28,24 +31,29 @@ defmodule Codebattle.Tournament.Server do
     tournament_module = Codebattle.Tournament.Helpers.get_module(tournament)
     {:ok, %{tournament: tournament, tournament_module: tournament_module, messages: []}}
   end
+  # Tournament
+
+
+  def handle_call({event_type, params}, _from,  state) do
+    IO.inspect 11111111
+
+    IO.inspect {event_type, params}
+    new_tournament = apply(state.tournament_module, event_type, [state.tournament, params]) |> IO.inspect
+    broadcast_tournament(new_tournament)
+    {:reply, new_tournament, Map.merge(state, %{tournament: new_tournament})}
+  end
 
   # Tournament chat
-  def handle_call(:get_messages, _from, state) do
+  def handle_call({:get_messages}, _from, state) do
     %{messages: messages} = state
     {:reply, Enum.reverse(messages), state}
   end
 
   def handle_cast({:add_message, user, msg}, state) do
+    IO.inspect 33333
     %{messages: messages} = state
     new_msgs = [%{user_name: user.name, message: msg} | messages]
     {:noreply, %{state | messages: new_msgs}}
-  end
-
-  # Tournament
-  def handle_cast({event_type, params}, state) do
-    new_tournament = apply(state.tournament_module, event_type, [state.tournament, params])
-    broadcast_tournament(new_tournament)
-    {:noreply, Map.merge(state, %{tournament: new_tournament})}
   end
 
   # HELPERS
