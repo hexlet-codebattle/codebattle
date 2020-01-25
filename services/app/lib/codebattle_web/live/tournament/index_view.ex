@@ -5,7 +5,6 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
   @topic "tournaments"
 
   alias Codebattle.Tournament
-  alias Codebattle.Tournament.Helpers
 
   def render(assigns) do
     CodebattleWeb.TournamentView.render("index.html", assigns)
@@ -36,7 +35,7 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
   def handle_event("create", %{"tournament" => params}, socket) do
     creator_id = socket.assigns.current_user.id
 
-    case Helpers.create(Map.merge(params, %{"creator_id" => creator_id})) do
+    case Tournament.Type.create(Map.merge(params, %{"creator_id" => creator_id})) do
       {:ok, tournament} ->
         {:stop,
          socket
