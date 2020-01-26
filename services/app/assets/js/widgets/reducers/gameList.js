@@ -3,7 +3,7 @@ import _ from 'lodash';
 import * as actions from '../actions';
 
 const initialState = {
-  activeGames: null,
+  activeGames: [],
   completedGames: null,
   loaded: false,
   newGame: { timeoutSeconds: null },

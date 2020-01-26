@@ -26,6 +26,8 @@ const timeoutOptions = {
   3600: i18n.t('Timeout 3600 seconds'),
 };
 
+const orderedLevels = ['elementary', 'easy', 'medium', 'hard'];
+
 class GameList extends React.Component {
   levelToClass = {
     elementary: 'info',
@@ -127,7 +129,7 @@ class GameList extends React.Component {
     </button>
   );
 
-  renderGameActionButtons = game => {
+  renderGameActionButton = game => {
     const gameUrl = `/games/${game.gameId}`;
     const currentUser = Gon.getAsset('current_user');
     const gameState = game.gameInfo.state;
@@ -173,14 +175,20 @@ class GameList extends React.Component {
     return null;
   };
 
-  renderStartNewGameButton = (gameLevel, gameType, timeoutSeconds) => {
+  renderStartNewGameButton = (gameLevel, gameType, timeoutSeconds, gameId) => {
     const queryParamsString = qs.stringify({
       level: gameLevel,
       type: gameType,
       timeout_seconds: timeoutSeconds,
     });
 
-    const gameUrl = `/games?${queryParamsString}`;
+    const defaultGameUrl = `/games?${queryParamsString}`;
+
+    const urlMap = {
+      withBot: `/games/${gameId}/join`,
+    };
+
+    const gameUrl = urlMap[gameType] || defaultGameUrl;
 
     return (
       <button
@@ -196,19 +204,33 @@ class GameList extends React.Component {
     );
   };
 
-  renderStartNewGameDropdownMenu = (gameType, timeoutSeconds) => (
-    <>
-      <div className="dropdown-header">Select a difficulty</div>
-      <div className="dropdown-divider" />
-      {this.renderStartNewGameButton('elementary', gameType, timeoutSeconds)}
-      {this.renderStartNewGameButton('easy', gameType, timeoutSeconds)}
-      {this.renderStartNewGameButton('medium', gameType, timeoutSeconds)}
-      {this.renderStartNewGameButton('hard', gameType, timeoutSeconds)}
-    </>
-  )
+  renderStartNewGameDropdownMenu = (gameType, timeoutSeconds = 0) => {
+    const renderButton = (level) => {
+      const rendererMap = {
+        withBot: () => {
+          const { activeGames } = this.props;
+          const gamesWithBot = activeGames.filter(game => game.gameInfo.isBot);
+          const selectGameByLevel = (type) => gamesWithBot.find(game => game.gameInfo.level === type);
+          const game = selectGameByLevel(level);
+          return this.renderStartNewGameButton(level, gameType, 0, game.gameId);
+        }
+      }
+      const render = rendererMap[gameType] && rendererMap[gameType]();
+      return render || this.renderStartNewGameButton(level, gameType, timeoutSeconds);
+    };
+    return (
+      <>
+        <div className="dropdown-header">Select a difficulty</div>
+        <div className="dropdown-divider" />
+        {orderedLevels.map(level => <div key={level}>
+          {renderButton(level, gameType, timeoutSeconds)}
+        </div>)}
+      </>
+    );
+  }
 
   renderStartNewGameSelector = timeoutSeconds => (
-    <div className="dropdown mr-sm-3 mr-0 mb-sm-0 mb-3">
+    <div className="dropdown mr-sm-3 mr-0 mb-sm-0 mx-3">
       <button
         id="btnGroupStartNewGame"
         type="button"
@@ -292,14 +314,14 @@ class GameList extends React.Component {
       <button
         id="btnGroupPlayWithBot"
         type="button"
-        className="btn btn-sm btn-outline-success dropdown-toggle"
+        className="btn btn-outline-success dropdown-toggle"
         data-toggle="dropdown"
         aria-haspopup="true"
         aria-expanded="false"
       >
-        <i className="fa fa-android mr-2" />
+        <i className="fa fa-robot mr-2" />
         Play with the bot
-      </button>
+    </button>
       <div className="dropdown-menu" aria-labelledby="btnGroupPlayWithBot">
         {this.renderStartNewGameDropdownMenu('withBot')}
       </div>
@@ -395,7 +417,7 @@ class GameList extends React.Component {
                 <td className="p-3 align-middle text-nowrap">
                   {timeoutOptions[game.gameInfo.timeoutSeconds]}
                 </td>
-                <td className="p-3 align-middle">{this.renderGameActionButtons(game)}</td>
+                <td className="p-3 align-middle">{this.renderGameActionButton(game)}</td>
               </tr>
             ))}
           </tbody>
@@ -460,9 +482,9 @@ class GameList extends React.Component {
           </div>
         </Card>
         {!_.isEmpty(completedGames) && (
-        <Card title="Completed games">
-          {this.renderCompletedGames(completedGames)}
-        </Card>
+          <Card title="Completed games">
+            {this.renderCompletedGames(completedGames)}
+          </Card>
         )}
       </>
     );
@@ -471,18 +493,19 @@ class GameList extends React.Component {
   render() {
     const { loaded, newGame } = this.props;
     const timeoutSeconds = newGame.timeoutSeconds || 0;
-
+    if (!loaded) {
+      return <Loading />
+    }
     return (
       <>
         <Card title="New game">
           <div className="d-flex flex-sm-row flex-column align-items-center justify-content-center flex-wrap">
-            {this.renderTimeoutSelector(timeoutSeconds)}
+            {this.renderPlayWithBotSelector()}
             {this.renderStartNewGameSelector(timeoutSeconds)}
             {this.renderPlayWithFriendSelector(timeoutSeconds)}
           </div>
         </Card>
-
-        {!loaded ? <Loading /> : this.renderGameContainers()}
+        {this.renderGameContainers()}
       </>
     );
   }
