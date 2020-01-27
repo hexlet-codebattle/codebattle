@@ -4,17 +4,12 @@ defmodule CodebattleWeb.Live.Tournament.TeamView do
 
   alias Codebattle.Tournament.Helpers
 
-  @update_frequency 1_000
 
   def render(assigns) do
     CodebattleWeb.TournamentView.render("team.html", assigns)
   end
 
   def mount(session, socket) do
-    if connected?(socket) do
-      :timer.send_interval(@update_frequency, self(), :update)
-    end
-
     tournament = session.tournament
     messages = Codebattle.Tournament.Server.get_messages(tournament.id)
 
@@ -25,19 +20,8 @@ defmodule CodebattleWeb.Live.Tournament.TeamView do
        current_user: session[:current_user],
        tournament: tournament,
        messages: messages,
-       time: updated_time(tournament.starts_at)
+       starts_at: NaiveDateTime.to_string(tournament.starts_at)
      )}
-  end
-
-  def handle_info(:update, socket) do
-    tournament = socket.assigns.tournament
-    time = updated_time(tournament.starts_at)
-
-    if tournament.state == "waiting_participants" and time.seconds >= 0 do
-      {:noreply, assign(socket, time: time)}
-    else
-      {:noreply, socket}
-    end
   end
 
   def handle_info(%{topic: topic, event: "update_tournament", payload: payload}, socket) do
@@ -159,25 +143,6 @@ defmodule CodebattleWeb.Live.Tournament.TeamView do
     )
 
     {:noreply, assign(socket, messages: messages)}
-  end
-
-  defp updated_time(starts_at) do
-    days = round(Timex.diff(starts_at, Timex.now(), :days))
-    hours = round(Timex.diff(starts_at, Timex.now(), :hours) - days * 24)
-    minutes = round(Timex.diff(starts_at, Timex.now(), :minutes) - days * 24 * 60 - hours * 60)
-
-    seconds =
-      round(
-        Timex.diff(starts_at, Timex.now(), :seconds) - days * 24 * 60 * 60 - hours * 60 * 60 -
-          minutes * 60
-      )
-
-    %{
-      days: days,
-      hours: hours,
-      minutes: minutes,
-      seconds: seconds
-    }
   end
 
   defp topic_name(tournament) do

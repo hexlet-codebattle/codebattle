@@ -1,7 +1,7 @@
 - {r1, r2} = calc_team_score(@tournament)
 - [%{"title" => title1}, %{"title" => title2}] = get_teams(@tournament)
 
-= render "_header.html", tournament: @tournament, time: @time, current_user: @current_user, socket: @socket
+= render "_header.html", tournament: @tournament, current_user: @current_user, socket: @socket
 
 .container-fluid.mt-4
   .row

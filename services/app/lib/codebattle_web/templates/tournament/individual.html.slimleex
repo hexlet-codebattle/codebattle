@@ -5,7 +5,7 @@
 - sm_final_range = 12..13
 - final = 14
 
-= render "_header.html", tournament: @tournament, time: @time, current_user: @current_user, socket: @socket
+= render "_header.html", tournament: @tournament, current_user: @current_user, socket: @socket
 
 .container-fluid
   .row

@@ -5,8 +5,23 @@
         span.mr-3 = @tournament.name |> String.upcase
         span.small.text-muted = @tournament.state
       = if @tournament.state == "waiting_participants" do
-        p  Will start in #{@time.minutes} minutes #{@time.seconds} seconds
+        p id="timer"
+        javascript:
+          const timeStartInMiliseconds = new Date("#{@tournament.starts_at}".replace(" ", 'T') + '.000Z').getTime();
+          const p = document.getElementById('timer');
+          const intervalId = setInterval(function () {
+            const now = new Date().getTime();
+            const diffInMiliseconds = timeStartInMiliseconds - now;
 
+            const diffMinutes = Math.floor((diffInMiliseconds/1000/60));
+            const diffSeconds = Math.floor(((diffInMiliseconds/1000/60 - diffMinutes)*60));
+
+            p.innerHTML = `Will start in ${diffMinutes} minutes ${diffSeconds} seconds`;
+            if (diffInMiliseconds <= 0) {
+              p.innerHTML = 'the tournament has begun';
+              clearInterval(intervalId);
+            };
+          }, 1000);
     .col-5
       .text-right
         = if is_creator?(@tournament, @current_user.id) do
