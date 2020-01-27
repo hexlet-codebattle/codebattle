@@ -4,7 +4,6 @@ defmodule CodebattleWeb.Live.Tournament.IndividualView do
 
   alias Codebattle.Tournament.Helpers
 
-  # @update_frequency 1_000
 
   def render(assigns) do
     CodebattleWeb.TournamentView.render("individual.html", assigns)
