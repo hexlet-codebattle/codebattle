@@ -61,6 +61,8 @@ config :codebattle, CodebattleWeb.Endpoint, live_view: [signing_salt: "asdfasdf"
 
 config :codebattle, Codebattle.Bot.PlaybookPlayerRunner, timeout: 2_000
 
+config :codebattle, Codebattle.DockerLangsPuller, timeout: 5_000 * 60
+
 bot_limit =
   case System.get_env("CODEBATTLE_BOT_TIME_SLEEP_LIMIT") do
     nil -> 7_000
