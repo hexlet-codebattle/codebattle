@@ -4,6 +4,7 @@
     "lib/codebattle_web.ex",
     "lib/codebattle_web/router.ex",
     "lib/codebattle_web/views/error_helpers.ex",
+    "lib/codebattle/docker_langs_puller.ex",
     "lib/mix/tasks/dockers/build.ex",
     "lib/mix/tasks/dockers/pull.ex",
     "lib/mix/tasks/dockers/push.ex",
