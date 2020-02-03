@@ -48,7 +48,7 @@ defmodule Codebattle.Mixfile do
       {:phoenix, "~> 1.3"},
       {:phoenix_pubsub, "~> 1.0"},
       {:phoenix_ecto, "~> 4.0"},
-      {:phoenix_live_view, "~> 0.4.0"},
+      {:phoenix_live_view, "~> 0.6"},
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 2.10"},
       {:gettext, "~> 0.11"},
@@ -87,9 +87,9 @@ defmodule Codebattle.Mixfile do
       {:phoenix_live_reload, "~> 1.0", only: :dev},
 
       # test
-      {:floki, "0.23.1", only: :test},
+      {:floki, "~> 0.24", only: :test},
       {:mock, "~> 0.3.0", only: :test},
-      {:phoenix_integration, "~> 0.5", only: :test},
+      {:phoenix_integration, "~> 0.7", only: :test},
       {:excoveralls, "~> 0.10", only: :test},
       {:faker, "~> 0.8", only: :test},
       {:ex_machina, "~> 2.0", only: :test}

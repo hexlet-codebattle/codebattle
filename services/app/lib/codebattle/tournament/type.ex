@@ -195,7 +195,7 @@ defmodule Codebattle.Tournament.Type do
 
     case result do
       {:ok, tournament} ->
-        {:ok, _pid} = Codebattle.Tournament.Server.start(tournament)
+        {:ok, _pid} = Codebattle.Tournament.Supervisor.start_tournament(tournament)
         {:ok, tournament}
 
       {:error, changeset} ->

@@ -56,7 +56,7 @@ defmodule CodebattleWeb do
       import CodebattleWeb.Router.Helpers
       import CodebattleWeb.ErrorHelpers
       import CodebattleWeb.Gettext
-      import Phoenix.LiveView, only: [live_render: 2, live_render: 3, live_link: 1, live_link: 2]
+      import Phoenix.LiveView.Helpers
       alias CodebattleWeb.Router.Helpers, as: Routes
     end
   end

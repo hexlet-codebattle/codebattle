@@ -1,8 +1,7 @@
-defmodule Codebattle.Tournament.IndividualTest do
+defmodule Codebattle.Tournament.TeamTest do
   use Codebattle.IntegrationCase, async: false
 
-  import CodebattleWeb.Factory
-  alias Codebattle.Tournament.Helpers
+  @module Codebattle.Tournament.Team
 
   def build_team_player(user, params \\ %{}) do
     struct(Codebattle.Tournament.Types.Player, Map.from_struct(user)) |> Map.merge(params)
@@ -29,7 +28,7 @@ defmodule Codebattle.Tournament.IndividualTest do
 
     new_tournament =
       tournament
-      |> Helpers.maybe_start_new_step()
+      |> @module.maybe_start_new_step()
 
     assert new_tournament.step == 0
 
@@ -61,7 +60,7 @@ defmodule Codebattle.Tournament.IndividualTest do
 
     new_tournament =
       tournament
-      |> Helpers.maybe_start_new_step()
+      |> @module.maybe_start_new_step()
 
     assert new_tournament.step == 1
 
@@ -109,7 +108,7 @@ defmodule Codebattle.Tournament.IndividualTest do
 
     new_tournament =
       tournament
-      |> Helpers.maybe_start_new_step()
+      |> @module.maybe_start_new_step()
 
     assert new_tournament.state == "finished"
   end
@@ -167,7 +166,7 @@ defmodule Codebattle.Tournament.IndividualTest do
 
     new_tournament =
       tournament
-      |> Helpers.maybe_start_new_step()
+      |> @module.maybe_start_new_step()
 
     assert new_tournament.state == "finished"
   end

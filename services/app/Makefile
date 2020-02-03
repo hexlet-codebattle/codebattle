@@ -1,3 +1,11 @@
+default: format credo test
+
+format:
+	mix format
+
+credo:
+	mix credo
+
 db-recreate:
 	mix ecto.reset
 	mix run priv/repo/seeds.exs

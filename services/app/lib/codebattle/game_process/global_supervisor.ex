@@ -3,25 +3,23 @@ defmodule Codebattle.GameProcess.GlobalSupervisor do
 
   require Logger
 
-  use Supervisor
+  use DynamicSupervisor
 
   alias Codebattle.GameProcess.ActiveGames
 
   def start_link do
-    Supervisor.start_link(__MODULE__, [], name: __MODULE__)
+    DynamicSupervisor.start_link(__MODULE__, [], name: __MODULE__)
   end
 
   def start_game(game_id, fsm) do
-    Supervisor.start_child(__MODULE__, [game_id, fsm])
+    spec = {Codebattle.GameProcess.Supervisor, [game_id, fsm]}
+    DynamicSupervisor.start_child(__MODULE__, spec)
   end
 
+  @impl true
   def init(_) do
-    children = [
-      supervisor(Codebattle.GameProcess.Supervisor, [])
-    ]
-
-    ActiveGames.new()
-    supervise(children, strategy: :simple_one_for_one)
+    ActiveGames.init()
+    DynamicSupervisor.init(strategy: :one_for_one)
   end
 
   def terminate_game(game_id) do

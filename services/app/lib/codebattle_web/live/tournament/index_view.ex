@@ -10,13 +10,13 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
     CodebattleWeb.TournamentView.render("index.html", assigns)
   end
 
-  def mount(session, socket) do
+  def mount(_params, session, socket) do
     CodebattleWeb.Endpoint.subscribe(@topic)
 
     {:ok,
      assign(socket,
-       current_user: session[:current_user],
-       tournaments: session[:tournaments],
+       current_user: session["current_user"],
+       tournaments: session["tournaments"],
        changeset: Codebattle.Tournament.changeset(%Codebattle.Tournament{})
      )}
   end
@@ -39,6 +39,7 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
       {:ok, tournament} ->
         {:stop,
          socket
+         |> put_flash(:info, "user created")
          |> redirect(to: "/tournaments/#{tournament.id}")}
 
       {:error, %Ecto.Changeset{} = changeset} ->

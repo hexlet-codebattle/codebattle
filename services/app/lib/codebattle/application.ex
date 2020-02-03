@@ -15,11 +15,11 @@ defmodule Codebattle.Application do
       supervisor(CodebattleWeb.Endpoint, []),
       worker(Codebattle.GameProcess.TasksQueuesServer, []),
       supervisor(Codebattle.GameProcess.GlobalSupervisor, []),
+      supervisor(Codebattle.Tournament.Supervisor, []),
       worker(Codebattle.Bot.CreatorServer, [])
     ]
 
-    opts = [strategy: :one_for_one, name: Codebattle.Supervisor]
-    Supervisor.start_link(children, opts)
+    Supervisor.start_link(children, strategy: :one_for_one, name: __MODULE__)
   end
 
   def config_change(changed, _new, removed) do

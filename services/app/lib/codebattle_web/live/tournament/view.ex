@@ -10,19 +10,19 @@ defmodule CodebattleWeb.Live.Tournament.View do
     CodebattleWeb.TournamentView.render("#{assigns.tournament.type}.html", assigns)
   end
 
-  def mount(session, socket) do
+  def mount(_params, session, socket) do
     if connected?(socket) do
       :timer.send_interval(@update_frequency, self(), :update)
     end
 
-    tournament = session.tournament
+    tournament = session["tournament"]
     messages = Tournament.Server.get_messages(tournament.id)
 
     CodebattleWeb.Endpoint.subscribe(topic_name(tournament))
 
     {:ok,
      assign(socket,
-       current_user: session[:current_user],
+       current_user: session["current_user"],
        tournament: tournament,
        messages: messages,
        time: updated_time(tournament.starts_at)
