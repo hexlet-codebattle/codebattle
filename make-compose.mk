@@ -29,15 +29,12 @@ compose-install-yarn:
 
 compose-install: compose-install-mix compose-install-yarn
 
-compose-setup: compose-down compose-build compose-install compose-db-prepare
+compose-setup: compose-down compose-build compose-install compose-db-init
 
 compose-db-init:
 	docker-compose run app mix ecto.create
 	docker-compose run app mix ecto.migrate
 	docker-compose run app mix run priv/repo/seeds.exs
-
-compose-db-prepare: compose-db-init
-	docker-compose run app mix dockers.pull
 
 compose-credo:
 	docker-compose run app mix credo

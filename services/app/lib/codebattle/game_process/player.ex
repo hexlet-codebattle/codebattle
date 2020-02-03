@@ -70,8 +70,10 @@ defmodule Codebattle.GameProcess.Player do
     end
   end
 
-  def build(%Types.Player{} = user) do
-    %__MODULE__{
+  def build(user, params \\ %{})
+
+  def build(%Types.Player{} = user, params) do
+    player = %__MODULE__{
       id: user.id,
       public_id: user.public_id,
       is_bot: user.is_bot,
@@ -81,9 +83,11 @@ defmodule Codebattle.GameProcess.Player do
       editor_lang: user.lang || "js",
       lang: user.lang || "js"
     }
+
+    Map.merge(player, params)
   end
 
-  def build(user, params \\ %{}) do
+  def build(user, params) do
     player =
       case user.id do
         nil ->

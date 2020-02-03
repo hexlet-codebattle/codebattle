@@ -6,11 +6,12 @@ defmodule Codebattle.GameProcess.Engine.Tournament do
   alias Codebattle.GameProcess.{
     GlobalSupervisor,
     Fsm,
+    Player,
     ActiveGames,
     TasksQueuesServer
   }
 
-  alias Codebattle.{Repo, Game}
+  alias Codebattle.{Repo, Game, User, Languages}
 
   def create_game(players, params) do
     level = "elementary"
@@ -23,7 +24,17 @@ defmodule Codebattle.GameProcess.Engine.Tournament do
     fsm =
       Fsm.new()
       |> Fsm.create_playing_game(%{
-        players: Enum.map(players, fn x -> Codebattle.GameProcess.Player.build(x) end),
+        players:
+          Enum.map(players, fn player ->
+            user = Repo.get(User, player.id)
+
+            params = %{
+              editor_lang: user.lang || "js",
+              editor_text: Languages.get_solution(user.lang || "js", task)
+            }
+
+            Player.build(player, params)
+          end),
         game_id: game.id,
         is_bot_game: is_bot_game,
         level: level,
