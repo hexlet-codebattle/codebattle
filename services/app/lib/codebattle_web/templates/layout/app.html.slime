@@ -17,6 +17,7 @@ html lang="en"
     meta content="#b91d47" name="msapplication-TileColor"
     meta content="/assets/images/favicons/browserconfig.xml" name="msapplication-config"
     meta content="#ffffff" name="theme-color"
+    = csrf_meta_tag()
     link rel="stylesheet" href=static_path(@conn,"/assets/style.css")
     title Codebattle
     = unless @current_user.guest do

@@ -1,8 +1,7 @@
 defmodule Codebattle.Tournament.IndividualTest do
   use Codebattle.IntegrationCase, async: false
 
-  import CodebattleWeb.Factory
-  alias Codebattle.Tournament.Helpers
+  @module Codebattle.Tournament.Individual
 
   test "#update_match, state canceled" do
     user1 = insert(:user)
@@ -25,7 +24,7 @@ defmodule Codebattle.Tournament.IndividualTest do
         players_count: 16
       )
 
-    new_tournament = Helpers.update_match(tournament, game_id, %{state: "canceled"})
+    new_tournament = @module.update_match(tournament, game_id, %{state: "canceled"})
 
     states = new_tournament.data.matches |> Enum.map(fn x -> x.state end)
 
@@ -54,7 +53,7 @@ defmodule Codebattle.Tournament.IndividualTest do
       )
 
     new_tournament =
-      Helpers.update_match(tournament, game_id, %{
+      @module.update_match(tournament, game_id, %{
         state: "finished",
         winner: {user1.id, "won"},
         loser: {user2.id, "gave_up"}
@@ -91,7 +90,7 @@ defmodule Codebattle.Tournament.IndividualTest do
       )
 
     new_tournament =
-      Helpers.update_match(tournament, game_id, %{
+      @module.update_match(tournament, game_id, %{
         state: "finished",
         winner: {user1.id, "lost"},
         loser: {user2.id, "won"}
@@ -128,7 +127,7 @@ defmodule Codebattle.Tournament.IndividualTest do
 
     new_tournament =
       tournament
-      |> Helpers.maybe_start_new_step()
+      |> @module.maybe_start_new_step()
 
     assert new_tournament.step == 0
 
@@ -181,7 +180,7 @@ defmodule Codebattle.Tournament.IndividualTest do
 
     new_tournament =
       tournament
-      |> Helpers.maybe_start_new_step()
+      |> @module.maybe_start_new_step()
 
     assert new_tournament.step == 1
 
@@ -225,7 +224,7 @@ defmodule Codebattle.Tournament.IndividualTest do
 
     new_tournament =
       tournament
-      |> Helpers.maybe_start_new_step()
+      |> @module.maybe_start_new_step()
 
     assert new_tournament.state == "finished"
   end

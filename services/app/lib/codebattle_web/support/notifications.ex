@@ -23,19 +23,10 @@ defmodule CodebattleWeb.Notifications do
         nil
 
       tournament_id ->
-        new_tournament =
-          Codebattle.Tournament.Server.update_tournament(tournament_id, event_type, params)
-
-        CodebattleWeb.Endpoint.broadcast!(
-          tournament_topic_name(tournament_id),
-          "update_tournament",
-          %{tournament: new_tournament}
-        )
+        Codebattle.Tournament.Server.update_tournament(tournament_id, event_type, params)
     end
   end
 
   defp game_channel_name(nil), do: :error
   defp game_channel_name(game_id), do: "game:#{game_id}"
-
-  defp tournament_topic_name(tournament_id), do: "tournament_#{tournament_id}"
 end

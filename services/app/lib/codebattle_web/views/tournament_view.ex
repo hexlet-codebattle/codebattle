@@ -23,4 +23,14 @@ defmodule CodebattleWeb.TournamentView do
       _ -> {"Show", ""}
     end
   end
+
+  def get_icon_class(player) do
+    case Map.get(player, :game_result) do
+      "waiting" -> nil
+      "won" -> "fa fa-trophy"
+      "lost" -> "lost"
+      "gave_up" -> "far fa-flag"
+      _ -> nil
+    end
+  end
 end

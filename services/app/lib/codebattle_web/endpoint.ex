@@ -1,8 +1,14 @@
 defmodule CodebattleWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :codebattle
 
+  @session_options [
+    store: :cookie,
+    key: "_codebattle_key",
+    signing_salt: "7k9BuL99"
+  ]
+
   socket("/ws", CodebattleWeb.UserSocket, websocket: [timeout: :infinity])
-  socket("/live", Phoenix.LiveView.Socket)
+  socket("/live", Phoenix.LiveView.Socket, websocket: [connect_info: [session: @session_options]])
 
   # Serve at "/" the static files from "priv/static" directory.
   #
@@ -42,9 +48,7 @@ defmodule CodebattleWeb.Endpoint do
   # Set :encryption_salt if you would also like to encrypt it.
   plug(
     Plug.Session,
-    store: :cookie,
-    key: "_codebattle_key",
-    signing_salt: "7k9BuL99"
+    @session_options
   )
 
   plug(PhoenixGon.Pipeline)

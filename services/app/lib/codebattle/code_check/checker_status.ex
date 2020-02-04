@@ -121,9 +121,11 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
         success_list = Regex.scan(~r/{"status":.*"success".+}/, container_output)
         failure_count = length(failure_list)
         success_count = length(success_list)
+
         # percent_of_success_tests = div(100 * success_count, (failure_count + success_count))
 
         [first_failure_json] = List.first(failure_list)
+
         # asserts_list = List.flatten(json_result)
 
         new_container_output =
