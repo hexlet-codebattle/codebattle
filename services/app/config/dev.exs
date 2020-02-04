@@ -1,6 +1,7 @@
 use Mix.Config
 
 root_dir = File.cwd!()
+
 # For development, we disable any cache and enable
 # debugging and code reloading.
 #

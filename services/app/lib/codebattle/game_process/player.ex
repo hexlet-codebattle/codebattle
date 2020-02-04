@@ -3,6 +3,7 @@ defmodule Codebattle.GameProcess.Player do
   alias Codebattle.Languages
 
   alias Codebattle.Tournament.Types
+
   # @game_result [:undefined, :gave_up, :won, :lost]
 
   # require Logger

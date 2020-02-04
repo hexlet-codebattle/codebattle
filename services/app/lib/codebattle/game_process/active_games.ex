@@ -4,11 +4,12 @@ defmodule Codebattle.GameProcess.ActiveGames do
   """
 
   @table_name :active_games
+
   # {game_id, active, %{player_id => Player, player_id => Player}, %{level: "easy", state: :playing, timeout_seconds: 0, starts_at: Time, type: "private"}}
 
   alias Codebattle.GameProcess.FsmHelpers
 
-  def new do
+  def init do
     try do
       :ets.new(@table_name, [:ordered_set, :public, :named_table])
     rescue

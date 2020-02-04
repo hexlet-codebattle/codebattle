@@ -5,19 +5,18 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
   @topic "tournaments"
 
   alias Codebattle.Tournament
-  alias Codebattle.Tournament.Helpers
 
   def render(assigns) do
     CodebattleWeb.TournamentView.render("index.html", assigns)
   end
 
-  def mount(session, socket) do
+  def mount(_params, session, socket) do
     CodebattleWeb.Endpoint.subscribe(@topic)
 
     {:ok,
      assign(socket,
-       current_user: session[:current_user],
-       tournaments: session[:tournaments],
+       current_user: session["current_user"],
+       tournaments: session["tournaments"],
        changeset: Codebattle.Tournament.changeset(%Codebattle.Tournament{})
      )}
   end
@@ -36,10 +35,11 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
   def handle_event("create", %{"tournament" => params}, socket) do
     creator_id = socket.assigns.current_user.id
 
-    case Helpers.create(Map.merge(params, %{"creator_id" => creator_id})) do
+    case Tournament.create(Map.merge(params, %{"creator_id" => creator_id})) do
       {:ok, tournament} ->
         {:stop,
          socket
+         |> put_flash(:info, "user created")
          |> redirect(to: "/tournaments/#{tournament.id}")}
 
       {:error, %Ecto.Changeset{} = changeset} ->

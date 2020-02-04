@@ -14,7 +14,7 @@ defmodule CodebattleWeb.AuthController do
   def callback(%{assigns: %{ueberauth_failure: reason}} = conn, params) do
     Logger.error(
       "Failed to authenticate on github" <>
-        inspect(reason) <> "\nParams: " <> inspect(params) <> "\nConn: " <> inspect(conn)
+        inspect(reason) <> "\nParams: " <> inspect(params)
     )
 
     conn

@@ -10,6 +10,6 @@
     .col-5
       .text-right
         = if is_creator?(@tournament, @current_user.id) do
-          button.btn.btn-outline-success.mx-2[phx-click="start"] Start
+          button.btn.btn-outline-success.mx-2[phx-click="start" disabled=!can_start_tournament?(@tournament)] Start
           button.btn.btn-outline-danger.mx-2[phx-click="cancel"] Cancel
         = link "Back to tournaments", to: CodebattleWeb.Router.Helpers.tournament_path(@socket, :index), class: "btn btn-success ml-2"

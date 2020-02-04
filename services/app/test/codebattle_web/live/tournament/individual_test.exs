@@ -7,7 +7,6 @@ defmodule CodebattleWeb.Live.Tournament.IndividialTest do
     user1 = insert(:user)
     user2 = insert(:user)
     user3 = insert(:user)
-    tournament = insert(:tournament, %{creator_id: user1.id})
     task = insert(:task, level: "elementary")
 
     playbook_data = %{
@@ -25,11 +24,22 @@ defmodule CodebattleWeb.Live.Tournament.IndividialTest do
     conn2 = put_session(conn, :user_id, user2.id)
     conn3 = put_session(conn, :user_id, user3.id)
 
+    {:ok, view, _html} = live(conn1, Routes.tournament_path(conn1, :index))
+
+    {:error, {:redirect, %{to: "/tournaments/" <> tournament_id}}} =
+      render_submit(view, :create, %{
+        "tournament" => %{type: "individual", starts_at_type: "1_min", name: "test"}
+      })
+
+    tournament = Codebattle.Tournament.get!(tournament_id)
+
     {:ok, view1, _html} = live(conn1, Routes.tournament_path(conn, :show, tournament.id))
 
     render_click(view1, :join)
+
     tournament = Codebattle.Tournament.get!(tournament.id)
     assert Helpers.players_count(tournament) == 1
+
     render_click(view1, :leave)
     render_click(view1, :leave)
 
@@ -51,6 +61,7 @@ defmodule CodebattleWeb.Live.Tournament.IndividialTest do
     assert tournament.state == "waiting_participants"
 
     render_click(view1, :start)
+
     tournament = Codebattle.Tournament.get!(tournament.id)
     assert tournament.state == "active"
 
@@ -62,13 +73,5 @@ defmodule CodebattleWeb.Live.Tournament.IndividialTest do
 
     tournament = Codebattle.Tournament.get!(tournament.id)
     assert Helpers.players_count(tournament) == 16
-
-    render_click(view2, :cancel)
-    tournament = Codebattle.Tournament.get!(tournament.id)
-    assert tournament.state == "active"
-
-    render_click(view1, :cancel)
-    tournament = Codebattle.Tournament.get!(tournament.id)
-    assert tournament.state == "canceled"
   end
 end
