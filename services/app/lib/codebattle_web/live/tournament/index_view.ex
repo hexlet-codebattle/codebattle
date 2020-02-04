@@ -35,7 +35,7 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
   def handle_event("create", %{"tournament" => params}, socket) do
     creator_id = socket.assigns.current_user.id
 
-    case Tournament.Type.create(Map.merge(params, %{"creator_id" => creator_id})) do
+    case Tournament.create(Map.merge(params, %{"creator_id" => creator_id})) do
       {:ok, tournament} ->
         {:stop,
          socket

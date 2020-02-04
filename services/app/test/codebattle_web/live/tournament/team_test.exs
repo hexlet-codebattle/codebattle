@@ -3,8 +3,6 @@ defmodule CodebattleWeb.Live.Tournament.TeamTest do
 
   alias Codebattle.Tournament.Helpers
 
-  @db_insert_timeout 100
-
   test "integration tournament start test", %{conn: conn} do
     user1 = insert(:user)
     user2 = insert(:user)
@@ -40,7 +38,6 @@ defmodule CodebattleWeb.Live.Tournament.TeamTest do
     render_click(view1, :join, %{"team_id" => "0"})
     render_click(view1, :join, %{"team_id" => "1"})
 
-    :timer.sleep(@db_insert_timeout)
     tournament = Codebattle.Tournament.get!(tournament.id)
     assert Helpers.players_count(tournament) == 1
 
@@ -62,9 +59,15 @@ defmodule CodebattleWeb.Live.Tournament.TeamTest do
 
     render_click(view1, :start)
 
-    :timer.sleep(@db_insert_timeout)
     tournament = Codebattle.Tournament.get!(tournament.id)
     assert tournament.state == "active"
+    assert Helpers.players_count(tournament) == 4
+    assert Enum.count(tournament.data.matches) == 2
+
+    render_click(view1, :cancel)
+
+    tournament = Codebattle.Tournament.get!(tournament.id)
+    assert tournament.state == "canceled"
     assert Helpers.players_count(tournament) == 4
     assert Enum.count(tournament.data.matches) == 2
   end

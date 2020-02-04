@@ -110,8 +110,6 @@ defmodule Codebattle.Tournament.Type do
       defp pick_winner(%{players: [%{game_result: "gave_up"}, winner]}), do: winner
       defp pick_winner(match), do: Enum.random(match.players)
 
-      defp start_games(%Tournament{step: 4, type: "individual"} = tournament), do: tournament
-
       defp start_games(tournament) do
         new_matches =
           tournament
@@ -157,49 +155,6 @@ defmodule Codebattle.Tournament.Type do
 
         Map.merge(match, %{players: new_players, state: "finished"})
       end
-    end
-  end
-
-  def create(params) do
-    now = NaiveDateTime.utc_now()
-
-    starts_at =
-      case params["starts_at_type"] do
-        "1_min" -> NaiveDateTime.add(now, 1 * 60)
-        "5_min" -> NaiveDateTime.add(now, 5 * 60)
-        "10_min" -> NaiveDateTime.add(now, 10 * 60)
-        "30_min" -> NaiveDateTime.add(now, 30 * 60)
-        _ -> NaiveDateTime.add(now, 60 * 60)
-      end
-
-    meta =
-      case params["type"] do
-        "team" ->
-          %{
-            teams: [
-              %{id: 0, title: "frontend"},
-              %{id: 1, title: "backend"}
-            ]
-          }
-
-        _ ->
-          %{}
-      end
-
-    result =
-      %Tournament{}
-      |> Tournament.changeset(
-        Map.merge(params, %{"starts_at" => starts_at, "step" => 0, "meta" => meta, "data" => %{}})
-      )
-      |> Repo.insert()
-
-    case result do
-      {:ok, tournament} ->
-        {:ok, _pid} = Codebattle.Tournament.Supervisor.start_tournament(tournament)
-        {:ok, tournament}
-
-      {:error, changeset} ->
-        {:error, changeset}
     end
   end
 end

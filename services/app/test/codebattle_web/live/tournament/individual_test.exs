@@ -3,8 +3,6 @@ defmodule CodebattleWeb.Live.Tournament.IndividialTest do
 
   alias Codebattle.Tournament.Helpers
 
-  @db_insert_timeout 100
-
   test "integration tournament start test", %{conn: conn} do
     user1 = insert(:user)
     user2 = insert(:user)
@@ -39,14 +37,12 @@ defmodule CodebattleWeb.Live.Tournament.IndividialTest do
 
     render_click(view1, :join)
 
-    :timer.sleep(@db_insert_timeout)
     tournament = Codebattle.Tournament.get!(tournament.id)
     assert Helpers.players_count(tournament) == 1
 
     render_click(view1, :leave)
     render_click(view1, :leave)
 
-    :timer.sleep(@db_insert_timeout)
     tournament = Codebattle.Tournament.get!(tournament.id)
     assert Helpers.players_count(tournament) == 0
 
@@ -66,7 +62,6 @@ defmodule CodebattleWeb.Live.Tournament.IndividialTest do
 
     render_click(view1, :start)
 
-    :timer.sleep(@db_insert_timeout)
     tournament = Codebattle.Tournament.get!(tournament.id)
     assert tournament.state == "active"
 

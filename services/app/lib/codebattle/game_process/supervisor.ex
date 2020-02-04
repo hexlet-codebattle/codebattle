@@ -30,6 +30,6 @@ defmodule Codebattle.GameProcess.Supervisor do
   end
 
   defp supervisor_key(game_id) do
-    {:n, :l, {:game_supervisor, to_charlist(game_id)}}
+    {:n, :l, {:game_supervisor, "#{game_id}"}}
   end
 end

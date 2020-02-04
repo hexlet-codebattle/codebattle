@@ -2,9 +2,6 @@ defmodule Codebattle.Tournament.Helpers do
   def get_players(tournament), do: tournament.data.players
   def get_matches(tournament), do: tournament.data.matches
 
-  def get_module(%{type: "team"}), do: Codebattle.Tournament.Team
-  def get_module(_), do: Codebattle.Tournament.Individual
-
   def players_count(tournament) do
     tournament |> get_players |> Enum.count()
   end

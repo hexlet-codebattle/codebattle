@@ -37,7 +37,11 @@ const Hooks = {
     },
   },
 };
-const liveSocket = new LiveSocket('/live', Socket, { hooks: Hooks });
+const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute('content');
+const liveSocket = new LiveSocket('/live', Socket, {
+  hooks: Hooks,
+  params: { _csrf_token: csrfToken },
+});
 liveSocket.connect();
 
 const gameWidgetRoot = document.getElementById('game-widget-root');
