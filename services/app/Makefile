@@ -1,4 +1,4 @@
-default: format credo test
+default: format lint-js-fix credo test
 
 format:
 	mix format
