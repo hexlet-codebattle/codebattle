@@ -12,10 +12,9 @@ export const fetchState = () => dispatch => {
 
   channel.join().receive('ok', camelizeKeysAndDispatch(actions.initGameList));
 
-  channel.on('game:new', camelizeKeysAndDispatch(actions.newGameLobby));
-  channel.on('game:update', camelizeKeysAndDispatch(actions.updateGameLobby));
-  channel.on('game:cancel', camelizeKeysAndDispatch(actions.cancelGameLobby));
-  channel.on('game:game_over', camelizeKeysAndDispatch(actions.fetchGameList));
+  channel.on('game:upsert', camelizeKeysAndDispatch(actions.upsertGameLobby));
+  channel.on('game:remove', camelizeKeysAndDispatch(actions.removeGameLobby));
+  channel.on('game:finish', camelizeKeysAndDispatch(actions.finishGame));
 };
 
 export const cancelGame = gameId => () => {

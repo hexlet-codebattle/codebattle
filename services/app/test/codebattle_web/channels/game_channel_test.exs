@@ -211,7 +211,7 @@ defmodule CodebattleWeb.GameChannelTest do
                "timeout_seconds" => 0,
                "rematch_state" => "none",
                "rematch_initiator_id" => nil,
-               "joins_at" => nil
+               "starts_at" => nil
              })
   end
 
@@ -244,7 +244,7 @@ defmodule CodebattleWeb.GameChannelTest do
                "status" => "playing",
                "task" => game.task,
                "timeout_seconds" => 0,
-               "joins_at" => nil
+               "starts_at" => nil
              })
   end
 

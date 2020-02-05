@@ -10,10 +10,7 @@ const initialState = {
 };
 
 const gameList = createReducer(initialState, {
-  [actions.initGameList](
-    state,
-    { payload: { activeGames, completedGames, liveTournaments } },
-  ) {
+  [actions.initGameList](state, { payload: { activeGames, completedGames, liveTournaments } }) {
     return {
       ...state,
       activeGames,
@@ -22,20 +19,23 @@ const gameList = createReducer(initialState, {
       loaded: true,
     };
   },
-  [actions.newGameLobby](state, { payload: { game } }) {
-    state.activeGames.push(game);
+  [actions.removeGameLobby](state, { payload: { id } }) {
+    state.activeGames = _.reject(state.activeGames, { id });
   },
-  [actions.cancelGameLobby](state, { payload: { gameId } }) {
-    state.activeGames = _.reject(state.activeGames, { gameId });
-  },
-  [actions.updateGameLobby](state, { payload: { game } }) {
-    const gameToUpdate = _.find(state.activeGames, { gameId: game.gameId });
+  [actions.upsertGameLobby](state, { payload: { game } }) {
+    const gameToUpdate = _.find(state.activeGames, { id: game.id });
     if (gameToUpdate) {
       Object.assign(gameToUpdate, game);
+    } else {
+      state.activeGames.push(game);
     }
   },
   [actions.selectNewGameTimeout](state, { payload: { timeoutSeconds } }) {
     state.newGame.timeoutSeconds = timeoutSeconds;
+  },
+  [actions.finishGame](state, { payload: { game } }) {
+    state.activeGames = _.reject(state.activeGames, { id: game.id });
+    state.completedGames = [game, ...state.completedGames];
   },
 });
 

@@ -21,75 +21,19 @@ defmodule Codebattle.GameProcess.Play do
 
   alias CodebattleWeb.Notifications
 
-  def active_games do
-    ActiveGames.list_games()
-  end
+  def get_active_games(params \\ %{}), do: ActiveGames.get_games(params)
 
-  def active_games(params) do
-    ActiveGames.list_games(params)
-  end
-
-  def game_info(id) do
-    case get_fsm(id) do
-      {:ok, fsm} ->
-        {:ok,
-         %{
-           status: fsm.state,
-           starts_at: FsmHelpers.get_starts_at(fsm),
-           players: FsmHelpers.get_players(fsm),
-           task: FsmHelpers.get_task(fsm),
-           level: FsmHelpers.get_level(fsm),
-           type: FsmHelpers.get_type(fsm),
-           timeout_seconds: FsmHelpers.get_timeout_seconds(fsm),
-           rematch_state: FsmHelpers.get_rematch_state(fsm),
-           rematch_initiator_id: FsmHelpers.get_rematch_initiator_id(fsm),
-           tournament_id: FsmHelpers.get_tournament_id(fsm),
-           joins_at: FsmHelpers.get_joins_at(fsm)
-         }}
-
-      {:error, reason} ->
-        {:error, reason}
-    end
-  end
-
-  def completed_games do
+  def get_completed_games do
     query =
       from(
         games in Game,
-        order_by: [desc: games.updated_at],
+        order_by: [desc: games.finishs_at],
         where: [state: "game_over"],
-        limit: 25,
+        limit: 20,
         preload: [:users, :user_games]
       )
 
     Repo.all(query)
-  end
-
-  def get_completed_game_info(game) do
-    winner_user_game =
-      game.user_games
-      |> Enum.filter(fn user_game -> user_game.result == "won" end)
-      |> List.first()
-
-    loser_user_game =
-      game.user_games
-      |> Enum.filter(fn user_game -> user_game.result != "won" end)
-      |> List.first()
-
-    winner = Player.build(winner_user_game)
-    loser = Player.build(loser_user_game)
-
-    players =
-      [winner, loser]
-      |> Enum.sort(&(&1.creator > &2.creator))
-
-    %{
-      id: game.id,
-      players: players,
-      updated_at: game.updated_at,
-      duration: game.duration_in_seconds,
-      level: game.level
-    }
   end
 
   def get_game(id) do
@@ -97,9 +41,7 @@ defmodule Codebattle.GameProcess.Play do
     Repo.get(query, id)
   end
 
-  def get_fsm(id) do
-    Server.fsm(id)
-  end
+  def get_fsm(id), do: Server.get_fsm(id)
 
   # main api interface
 
@@ -180,7 +122,7 @@ defmodule Codebattle.GameProcess.Play do
       Server.call_transition(id, :timeout, %{})
       ActiveGames.terminate_game(id)
       Notifications.game_timeout(id)
-      Notifications.lobby_game_cancel(id)
+      Notifications.remove_active_game(id)
       {:ok, fsm} = get_fsm(id)
       Notifications.notify_tournament(:game_over, fsm, %{game_id: id, state: "canceled"})
 
@@ -201,7 +143,7 @@ defmodule Codebattle.GameProcess.Play do
          :ok <- player_can_cancel_game?(id, player) do
       ActiveGames.terminate_game(id)
       GlobalSupervisor.terminate_game(id)
-      Notifications.lobby_game_cancel(id)
+      Notifications.remove_active_game(id)
 
       id
       |> get_game

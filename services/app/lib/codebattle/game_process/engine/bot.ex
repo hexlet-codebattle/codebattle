@@ -33,8 +33,8 @@ defmodule Codebattle.GameProcess.Engine.Bot do
             game_id: game.id,
             is_bot_game: true,
             type: type,
-            timeout_seconds: 60 * 60 * 8,
-            starts_at: TimeHelper.utc_now()
+            timeout_seconds: 3600,
+            inserted_at: game.inserted_at
           })
 
         ActiveGames.create_game(game.id, fsm)
@@ -59,19 +59,15 @@ defmodule Codebattle.GameProcess.Engine.Bot do
                Player.rebuild(second_player, task)
              ],
              task: task,
-             joins_at: TimeHelper.utc_now()
+             starts_at: TimeHelper.utc_now()
            }) do
-      ActiveGames.add_participant(fsm)
+      ActiveGames.update_game(fsm)
 
       update_game!(game_id, %{state: "playing", task_id: task.id})
       start_record_fsm(game_id, FsmHelpers.get_players(fsm), fsm)
       run_bot!(fsm)
 
-      Task.start(fn ->
-        CodebattleWeb.Endpoint.broadcast!("lobby", "game:update", %{
-          game: FsmHelpers.lobby_format(fsm)
-        })
-      end)
+      broadcast_active_game(fsm)
 
       start_timeout_timer(game_id, fsm)
 
@@ -201,11 +197,7 @@ defmodule Codebattle.GameProcess.Engine.Bot do
 
         start_timeout_timer(new_game_id, new_fsm)
 
-        Task.start(fn ->
-          CodebattleWeb.Endpoint.broadcast("lobby", "game:new", %{
-            game: FsmHelpers.lobby_format(new_fsm)
-          })
-        end)
+        broadcast_active_game(new_fsm)
 
         {:new_game, new_game_id}
 

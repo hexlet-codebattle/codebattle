@@ -39,11 +39,11 @@ defmodule Codebattle.GameProcess.Engine.Tournament do
         is_bot_game: is_bot_game,
         level: level,
         type: "tournament",
-        starts_at: TimeHelper.utc_now(),
+        inserted_at: game.inserted_at,
         task: task,
         tournament_id: params.tournament_id,
         timeout_seconds: params.timeout_seconds,
-        joins_at: TimeHelper.utc_now()
+        starts_at: TimeHelper.utc_now()
       })
 
     ActiveGames.create_game(game.id, fsm)

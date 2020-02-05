@@ -20,13 +20,13 @@ defmodule Codebattle.GameProcess.Server do
     GenServer.call(server_name(game_id), {:transition, event, params}, 20_000)
   end
 
-  def fsm(game_id) do
+  def get_fsm(game_id) do
     case game_pid(game_id) do
       :undefined ->
         {:error, :game_terminated}
 
       _pid ->
-        fsm = GenServer.call(server_name(game_id), :fsm, 20_000)
+        fsm = GenServer.call(server_name(game_id), :get_fsm, 20_000)
         {:ok, fsm}
     end
   end
@@ -46,7 +46,7 @@ defmodule Codebattle.GameProcess.Server do
     {:noreply, new_fsm}
   end
 
-  def handle_call(:fsm, _from, fsm) do
+  def handle_call(:get_fsm, _from, fsm) do
     {:reply, fsm, fsm}
   end
 

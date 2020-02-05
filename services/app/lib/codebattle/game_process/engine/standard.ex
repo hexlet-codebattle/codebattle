@@ -37,7 +37,7 @@ defmodule Codebattle.GameProcess.Engine.Standard do
             game_id: game.id,
             level: level,
             type: type,
-            starts_at: TimeHelper.utc_now(),
+            inserted_at: game.inserted_at,
             timeout_seconds: timeout_seconds
           })
 
@@ -50,11 +50,7 @@ defmodule Codebattle.GameProcess.Engine.Standard do
               Notifier.call(:game_created, %{level: level, game: game, player: player})
             end)
 
-            Task.start(fn ->
-              CodebattleWeb.Endpoint.broadcast!("lobby", "game:new", %{
-                game: FsmHelpers.lobby_format(fsm)
-              })
-            end)
+            broadcast_active_game(fsm)
 
           _ ->
             nil
@@ -78,10 +74,10 @@ defmodule Codebattle.GameProcess.Engine.Standard do
                Player.rebuild(first_player, task),
                Player.rebuild(second_player, task)
              ],
-             joins_at: TimeHelper.utc_now(),
+             starts_at: TimeHelper.utc_now(),
              task: task
            }) do
-      ActiveGames.add_participant(fsm)
+      ActiveGames.update_game(fsm)
 
       update_game!(game_id, %{state: "playing", task_id: task.id})
       start_record_fsm(game_id, FsmHelpers.get_players(fsm), fsm)
@@ -94,11 +90,7 @@ defmodule Codebattle.GameProcess.Engine.Standard do
         })
       end)
 
-      Task.start(fn ->
-        CodebattleWeb.Endpoint.broadcast!("lobby", "game:update", %{
-          game: FsmHelpers.lobby_format(fsm)
-        })
-      end)
+      broadcast_active_game(fsm)
 
       start_timeout_timer(game_id, fsm)
 
@@ -174,11 +166,7 @@ defmodule Codebattle.GameProcess.Engine.Standard do
 
     start_timeout_timer(new_game_id, new_fsm)
 
-    Task.start(fn ->
-      CodebattleWeb.Endpoint.broadcast("lobby", "game:new", %{
-        game: FsmHelpers.lobby_format(new_fsm)
-      })
-    end)
+    broadcast_active_game(fsm)
 
     {:ok, new_game_id}
   end

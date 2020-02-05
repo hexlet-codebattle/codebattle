@@ -6,9 +6,9 @@ export const userLeftChat = createAction('CHAT_USER_LEFT');
 export const newMessageChat = createAction('CHAT_NEW_MESSAGE');
 
 export const initGameList = createAction('INIT_GAME_LIST');
-export const newGameLobby = createAction('LOBBY_NEW_GAME');
-export const updateGameLobby = createAction('LOBBY_UPDATE_GAME');
-export const cancelGameLobby = createAction('LOBBY_CANCEL_GAME');
+export const upsertGameLobby = createAction('LOBBY_UPSERT_GAME');
+export const removeGameLobby = createAction('LOBBY_REMOVE_GAME');
+export const finishGame = createAction('LOBBY_FINISH_GAME');
 
 export const finishStoreInit = createAction('FINISH_STORE_INIT');
 

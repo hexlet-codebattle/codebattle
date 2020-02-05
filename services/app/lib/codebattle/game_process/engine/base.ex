@@ -9,6 +9,7 @@ defmodule Codebattle.GameProcess.Engine.Base do
   alias Codebattle.{Repo, User, Game, UserGame}
   alias Codebattle.Bot.RecorderServer
   alias Codebattle.User.Achievements
+  alias CodebattleWeb.Api.GameView
 
   defmacro __using__(_opts) do
     quote do
@@ -64,8 +65,6 @@ defmodule Codebattle.GameProcess.Engine.Base do
     winner_rating_diff = new_winner_rating - winner.rating
     loser_rating_diff = new_loser_rating - loser.rating
 
-    duration = NaiveDateTime.diff(TimeHelper.utc_now(), FsmHelpers.get_starts_at(fsm))
-
     Repo.transaction(fn ->
       create_user_game!(%{
         game_id: game_id,
@@ -87,7 +86,11 @@ defmodule Codebattle.GameProcess.Engine.Base do
         lang: Map.get(loser, :editor_lang)
       })
 
-      update_game!(game_id, %{state: to_string(fsm.state), duration_in_seconds: duration})
+      update_game!(game_id, %{
+        state: to_string(fsm.state),
+        starts_at: FsmHelpers.get_starts_at(fsm),
+        finishs_at: TimeHelper.utc_now()
+      })
 
       winner_achievements = Achievements.recalculate_achievements(winner)
       loser_achievements = Achievements.recalculate_achievements(loser)
@@ -116,5 +119,11 @@ defmodule Codebattle.GameProcess.Engine.Base do
     if fsm.data.timeout_seconds > 0 do
       Codebattle.GameProcess.TimeoutServer.restart(id, fsm.data.timeout_seconds)
     end
+  end
+
+  def broadcast_active_game(fsm) do
+    CodebattleWeb.Endpoint.broadcast!("lobby", "game:upsert", %{
+      game: GameView.render_active_game(fsm)
+    })
   end
 end

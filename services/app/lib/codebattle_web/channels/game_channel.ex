@@ -2,25 +2,14 @@ defmodule CodebattleWeb.GameChannel do
   @moduledoc false
   use CodebattleWeb, :channel
 
-  # require Logger
-
   alias Codebattle.GameProcess.{Play, FsmHelpers}
-
-  @after_join_game_attrs [
-    :status,
-    :players,
-    :task,
-    :starts_at,
-    :joins_at,
-    :timeout_seconds,
-    :level
-  ]
+  alias CodebattleWeb.Api.GameView
 
   def join("game:" <> game_id, _payload, socket) do
-    case Play.game_info(game_id) do
-      {:ok, game_info} ->
+    case Play.get_fsm(game_id) do
+      {:ok, fsm} ->
         send(self(), :after_join)
-        {:ok, game_info, socket}
+        {:ok, GameView.render_fsm(fsm), socket}
 
       {:error, reason} ->
         {:error, reason}
@@ -30,19 +19,14 @@ defmodule CodebattleWeb.GameChannel do
   def handle_info(:after_join, socket) do
     game_id = get_game_id(socket)
 
-    case Play.game_info(game_id) do
-      {:ok, game_info} ->
-        broadcast_from!(socket, "user:joined", Map.take(game_info, @after_join_game_attrs))
+    case Play.get_fsm(game_id) do
+      {:ok, fsm} ->
+        broadcast_from!(socket, "user:joined", GameView.render_fsm(fsm))
         {:noreply, socket}
 
       {:error, _reason} ->
         {:noreply, socket}
     end
-  end
-
-  # This handle for test rematch:accept_offer
-  def handle_info(_msg, socket) do
-    {:noreply, socket}
   end
 
   def handle_in("ping", payload, socket) do
@@ -79,19 +63,7 @@ defmodule CodebattleWeb.GameChannel do
         message = socket.assigns.current_user.name <> " " <> gettext("gave up!")
         players = FsmHelpers.get_players(fsm)
 
-        # TODO: send olny one game, and add it to game for completed games, and remove from active
-        active_games =
-          Play.active_games()
-          |> Enum.map(fn {game_id, users, game_info} ->
-            %{game_id: game_id, players: Map.values(users), game_info: game_info}
-          end)
-
-        completed_games = Enum.map(Play.completed_games(), &Play.get_completed_game_info/1)
-
-        CodebattleWeb.Endpoint.broadcast_from!(self(), "lobby", "game:game_over", %{
-          active_games: active_games,
-          completed_games: completed_games
-        })
+        CodebattleWeb.Notifications.finish_active_game(fsm)
 
         broadcast!(socket, "give_up", %{
           players: players,
@@ -190,14 +162,6 @@ defmodule CodebattleWeb.GameChannel do
         players = FsmHelpers.get_players(fsm)
         message = winner.name <> " " <> gettext("won the game!")
 
-        active_games =
-          Play.active_games()
-          |> Enum.map(fn {game_id, users, game_info} ->
-            %{game_id: game_id, players: Map.values(users), game_info: game_info}
-          end)
-
-        completed_games = Enum.map(Play.completed_games(), &Play.get_completed_game_info/1)
-
         push(socket, "user:check_result", %{
           solution_status: true,
           result: check_result.result,
@@ -224,10 +188,7 @@ defmodule CodebattleWeb.GameChannel do
           msg: message
         })
 
-        CodebattleWeb.Endpoint.broadcast_from!(self(), "lobby", "game:game_over", %{
-          active_games: active_games,
-          completed_games: completed_games
-        })
+        CodebattleWeb.Notifications.finish_active_game(fsm)
 
         {:noreply, socket}
 
