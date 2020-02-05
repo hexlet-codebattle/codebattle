@@ -258,7 +258,7 @@ defmodule Codebattle.GameProcess.Play do
         %{id: user.id, editor_text: editor_text, editor_lang: editor_lang}
       )
 
-      # update_editor(id, engine, player, editor_text, editor_lang)
+      update_editor(id, engine, player, editor_text, editor_lang)
 
       check_result = checker_adapter().call(FsmHelpers.get_task(fsm), editor_text, editor_lang)
 
