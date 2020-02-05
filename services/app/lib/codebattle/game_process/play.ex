@@ -232,6 +232,13 @@ defmodule Codebattle.GameProcess.Play do
          :ok <- player_can_give_up?(id, player),
          {_response, fsm} <- Server.call_transition(id, :give_up, %{id: player.id}) do
       engine = get_engine(fsm)
+
+      Server.update_playbook(
+        id,
+        :give_up,
+        %{id: user.id}
+      )
+
       engine.handle_give_up(id, player, fsm)
       {:ok, fsm}
     else
@@ -244,7 +251,15 @@ defmodule Codebattle.GameProcess.Play do
          %Player{} = player <- FsmHelpers.get_player(fsm, user.id),
          :ok <- player_can_check_game?(id, player) do
       engine = get_engine(fsm)
-      update_editor(id, engine, player, editor_text, editor_lang)
+
+      Server.update_playbook(
+        id,
+        :check_solution,
+        %{id: user.id, editor_text: editor_text, editor_lang: editor_lang}
+      )
+
+      # update_editor(id, engine, player, editor_text, editor_lang)
+
       check_result = checker_adapter().call(FsmHelpers.get_task(fsm), editor_text, editor_lang)
 
       Server.call_transition(id, :update_editor_params, %{
