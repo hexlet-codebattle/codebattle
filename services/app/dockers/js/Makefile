@@ -4,8 +4,11 @@ test:
 test_example:
 	babel --out-dir dist ./ && node ./dist/checker_example.js
 
+lint:
+	eslint ./check/solution.js
+
 lint_example:
-	echo "lint_example"
+	eslint ./solution_example.js
 
 docker_build_image:
 	docker build -t codebattle/js --file ./Dockerfile ./
