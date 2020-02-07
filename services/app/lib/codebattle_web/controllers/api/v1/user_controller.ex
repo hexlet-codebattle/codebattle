@@ -21,7 +21,6 @@ defmodule CodebattleWeb.Api.V1.UserController do
 
   def index(conn, params) do
     page_number = Map.get(params, "page", "1")
-    filter = Map.get(params, "filter")
 
     subquery =
       from(u in User,
@@ -41,20 +40,7 @@ defmodule CodebattleWeb.Api.V1.UserController do
         }
       )
 
-    query =
-      case filter do
-        nil ->
-          subquery
-
-        "" ->
-          subquery
-
-        _ ->
-          from(t in subquery(subquery),
-            where: ilike(t.name, ^"%#{filter}%")
-          )
-      end
-
+    query = Turbo.Ecto.turboq(subquery, params)
     page = Repo.paginate(query, %{page: page_number})
 
     page_info = Map.take(page, [:page_number, :page_size, :total_entries, :total_pages])

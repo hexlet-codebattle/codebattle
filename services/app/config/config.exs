@@ -75,6 +75,10 @@ config :codebattle, tournament_match_timeout: 3 * 60
 # 3 hours in seconds
 config :codebattle, default_timeout: 10_800
 
+config :turbo_ecto, Turbo.Ecto,
+  repo: Codebattle.Repo,
+  per_page: 50
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"
