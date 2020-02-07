@@ -4,8 +4,11 @@ test:
 test-example:
 	clj -m checker_example
 
+lint:
+	clj-kondo --lint ./check/solution.clj
+
 lint_example:
-	echo "lint_example"
+	clj-kondo --lint ./solution_example.clj
 
 docker_build_image:
 	docker build -t codebattle/clojure --file ./Dockerfile ./
