@@ -36,7 +36,8 @@ defmodule CodebattleWeb.Api.V1.UserController do
           github_id: u.github_id,
           lang: u.lang,
           games_played: count(ug.user_id),
-          rank: fragment("row_number() OVER(order by ? desc)", u.rating)
+          rank: fragment("row_number() OVER(order by ? desc)", u.rating),
+          inserted_at: u.inserted_at
         }
       )
 
