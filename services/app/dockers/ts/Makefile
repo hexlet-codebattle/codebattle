@@ -4,4 +4,13 @@ test:
 test_example:
 	tsc --project tsconfig_example.json && node ./checker_example.js
 
+lint_example:
+	echo "lint_example"
+
+docker_build_image:
+	docker build -t codebattle/ts --file ./Dockerfile ./
+
+docker_run_lint_example:
+	docker run --rm codebattle/ts make lint_example
+
 .PHONY: test

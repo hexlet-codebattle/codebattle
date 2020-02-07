@@ -10,4 +10,13 @@ test-compile:
 test-example-compile:
 	gofmt -w -e solution_example.go
 
+lint_example:
+	echo "lint_example"
+
+docker_build_image:
+	docker build -t codebattle/go --file ./Dockerfile ./
+
+docker_run_lint_example:
+	docker run --rm codebattle/go make lint_example
+
 .PHONY: test
