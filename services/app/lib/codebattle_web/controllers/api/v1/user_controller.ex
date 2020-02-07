@@ -21,6 +21,7 @@ defmodule CodebattleWeb.Api.V1.UserController do
 
   def index(conn, params) do
     page_number = Map.get(params, "page", "1")
+    query_params = Map.take(params, ~w(q s))
 
     subquery =
       from(u in User,
@@ -40,7 +41,7 @@ defmodule CodebattleWeb.Api.V1.UserController do
         }
       )
 
-    query = Turbo.Ecto.turboq(subquery, params)
+    query = Turbo.Ecto.turboq(subquery, query_params)
     page = Repo.paginate(query, %{page: page_number})
 
     page_info = Map.take(page, [:page_number, :page_size, :total_entries, :total_pages])
