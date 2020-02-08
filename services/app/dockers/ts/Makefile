@@ -1,11 +1,14 @@
 test:
-	tsc --project tsconfig.json && node ./check/checker.js
+	tsc --project tsconfig.json && node ./check/checker.ts
 
 test_example:
-	tsc --project tsconfig_example.json && node ./checker_example.js
+	tsc --project tsconfig_example.json && node ./checker_example.ts
+
+lint:
+	eslint ./check/checker.ts
 
 lint_example:
-	echo "lint_example"
+	eslint ./checker_example.ts
 
 docker_build_image:
 	docker build -t codebattle/ts --file ./Dockerfile ./
