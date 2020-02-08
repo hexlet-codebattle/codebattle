@@ -33,6 +33,7 @@ class UsersRating extends React.Component {
       <td className="p-3 align-middle">{user.rating}</td>
       <td className="p-3 align-middle">{user.gamesPlayed}</td>
       <td className="p-3 align-middle">{user.performance}</td>
+      <td className="p-3 align-middle">{user.insertedAt}</td>
       <td className="p-3 align-middle">
         <a className="text-muted" href={`https://github.com/${user.name}`}>
           <span className="h3">
@@ -106,6 +107,7 @@ class UsersRating extends React.Component {
               <th className="p-3 border-0">Rating</th>
               <th className="p-3 border-0">Games played</th>
               <th className="p-3 border-0">Performance</th>
+              <th className="p-3 border-0">Joined</th>
               <th className="p-3 border-0">Github</th>
             </tr>
           </thead>
