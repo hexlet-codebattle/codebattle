@@ -14,9 +14,11 @@ export const loadUserStats = dispatch => async user => {
 };
 
 export const getUsersRatingPage = (page = 1, filter = '') => dispatch => {
+  //TODO: add s parameter for sort, example: s=inserted_at+asc
+  // should have next format <attr>+<direction>
   const queryParamsString = qs.stringify({
     page,
-    filter,
+    q: { name_ilike: filter }
   });
 
   axios.get(`/api/v1/users?${queryParamsString}`)
