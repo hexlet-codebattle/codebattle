@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import _ from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Pagination from 'react-js-pagination';
+import moment from 'moment';
 import UserInfo from './UserInfo';
 import { getUsersList } from '../selectors';
 import * as UsersMiddlewares from '../middlewares/Users';
@@ -24,6 +25,8 @@ class UsersRating extends React.Component {
     getRatingPage(1);
   }
 
+  decorateJoinedDate = str => (moment.utc(str).format('LL'))
+
   renderUser = user => (
     <tr key={user.id}>
       <td className="p-3 align-middle">{user.rank}</td>
@@ -33,7 +36,7 @@ class UsersRating extends React.Component {
       <td className="p-3 align-middle">{user.rating}</td>
       <td className="p-3 align-middle">{user.gamesPlayed}</td>
       <td className="p-3 align-middle">{user.performance}</td>
-      <td className="p-3 align-middle">{user.insertedAt}</td>
+      <td className="p-3 align-middle">{this.decorateJoinedDate(user.insertedAt)}</td>
       <td className="p-3 align-middle">
         <a className="text-muted" href={`https://github.com/${user.name}`}>
           <span className="h3">
