@@ -4,8 +4,11 @@ test:
 test_example:
 	ruby checker_example.rb
 
+lint:
+	rubocop ./check/solution.rb
+
 lint_example:
-	echo "lint_example"
+	rubocop ./solution_example.rb
 
 docker_build_image:
 	docker build -t codebattle/ruby --file ./Dockerfile ./
