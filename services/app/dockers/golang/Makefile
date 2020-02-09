@@ -10,8 +10,11 @@ test-compile:
 test-example-compile:
 	gofmt -w -e solution_example.go
 
+lint:
+	golint ./check/checker.go
+
 lint_example:
-	echo "lint_example"
+	golint ./checker_example.go
 
 docker_build_image:
 	docker build -t codebattle/go --file ./Dockerfile ./
