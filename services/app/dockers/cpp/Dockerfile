@@ -1,7 +1,8 @@
 FROM debian:9-slim
 
 RUN apt-get update && \
-    apt-get install -y git openssh-client g++ cmake ninja-build python3 wget cppcheck clang-tidy && \
+    apt-get install -y --no-install-recommends build-essential git openssh-client \
+    g++ cmake ninja-build python3 wget cppcheck clang-tidy ca-certificates && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /usr/src/app
