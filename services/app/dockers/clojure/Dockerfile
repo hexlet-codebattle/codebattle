@@ -1,6 +1,8 @@
 FROM clojure:openjdk-13-tools-deps-1.10.1.502
 
-RUN apt-get update && apt-get install -y build-essential curl unzip
+RUN apt-get update && apt-get install -y build-essential curl unzip \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /usr/src/app
 
@@ -8,7 +10,7 @@ ADD deps.edn .
 RUN clojure -e "(prn :install)"
 
 RUN curl -O "https://raw.githubusercontent.com/borkdude/clj-kondo/master/script/install-clj-kondo" \
-        && bash install-clj-kondo
+ && bash install-clj-kondo
 
 ADD checker_example.clj .
 ADD solution_example.clj .
