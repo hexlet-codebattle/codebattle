@@ -1,7 +1,8 @@
-FROM alpine:3.4
+FROM debian:9-slim
 
-RUN apk add --update make
-RUN apk add --no-cache git openssh-client g++ cmake ninja python3 wget
+RUN apt-get update && \
+    apt-get install -y git openssh-client g++ cmake ninja-build python3 wget cppcheck clang-tidy && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /usr/src/app
 

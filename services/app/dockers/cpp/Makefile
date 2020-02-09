@@ -10,8 +10,11 @@ test-compile:
 test-example-compile:
 	g++ -std=c++17 -c solution_example.cpp
 
+lint:
+	clang-tidy ./check/solution.cpp -checks=-*,cppcoreguidelines-*,modernize-* --
+
 lint_example:
-	echo "lint_example"
+	clang-tidy ./solution_example.cpp -checks=-*,cppcoreguidelines-*,modernize-* --
 
 docker_build_image:
 	docker build -t codebattle/cpp --file ./Dockerfile ./
