@@ -107,7 +107,7 @@ defmodule Codebattle.GameCases.RematchTest do
 
     editor_text_edited = "Hello world1!"
 
-    insert(:bot_playbook, %{data: playbook_data, task: task, lang: "ruby"})
+    insert(:playbook, %{data: playbook_data, task: task, winner_lang: "ruby"})
 
     # Create game
     level = "elementary"
