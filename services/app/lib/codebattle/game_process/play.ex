@@ -273,7 +273,8 @@ defmodule Codebattle.GameProcess.Play do
           %{check_result | status: :error}
 
         {:playing, %{status: :ok}} ->
-          {_response, fsm} = Server.call_transition(id, :complete, %{id: player.id})
+          {_response, fsm} =
+            Server.call_transition(id, :complete, %{id: player.id, lang: editor_lang})
 
           case engine.handle_won_game(id, player, fsm, editor_text) do
             :ok -> %{check_result | status: :game_won}

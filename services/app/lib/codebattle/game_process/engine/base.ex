@@ -7,16 +7,11 @@ defmodule Codebattle.GameProcess.Engine.Base do
   }
 
   alias Codebattle.{Repo, User, Game, UserGame}
-  # alias Codebattle.Bot.RecorderServer
   alias Codebattle.User.Achievements
 
   defmacro __using__(_opts) do
     quote do
       def update_text(game_id, player, editor_text) do
-        # unless player.is_bot do
-        #   RecorderServer.update_text(game_id, player.id, editor_text)
-        # end
-
         Server.call_transition(game_id, :update_editor_params, %{
           id: player.id,
           editor_text: editor_text
@@ -24,10 +19,6 @@ defmodule Codebattle.GameProcess.Engine.Base do
       end
 
       def update_lang(game_id, player, editor_lang) do
-        # unless player.is_bot do
-        #   RecorderServer.update_lang(game_id, player.id, editor_lang)
-        # end
-
         Server.call_transition(game_id, :update_editor_params, %{
           id: player.id,
           editor_lang: editor_lang
@@ -43,18 +34,6 @@ defmodule Codebattle.GameProcess.Engine.Base do
       import Codebattle.GameProcess.Engine.Base
     end
   end
-
-  # def start_record_fsm(game_id, [first_player, second_player], fsm) do
-  #   unless first_player.is_bot do
-  #     {:ok, _} = Codebattle.Bot.Supervisor.start_record_server(game_id, first_player, fsm)
-  #   end
-
-  #   unless second_player.is_bot do
-  #     {:ok, _} = Codebattle.Bot.Supervisor.start_record_server(game_id, second_player, fsm)
-  #   end
-
-  #   {:ok, fsm}
-  # end
 
   def store_game_result!(fsm, {winner, winner_result}, {loser, loser_result}) do
     level = FsmHelpers.get_level(fsm)
