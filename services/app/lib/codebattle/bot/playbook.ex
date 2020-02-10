@@ -3,13 +3,15 @@ defmodule Codebattle.Bot.Playbook do
 
   use Ecto.Schema
   import Ecto.Changeset
+  import Ecto.Query
   alias Codebattle.Bot.Playbook
+  alias Codebattle.Repo
 
-  schema "bot_playbooks" do
+  schema "playbooks" do
     field(:data, :map)
-    field(:user_id, :integer)
     field(:game_id, :integer)
-    field(:lang, :string)
+    field(:winner_id, :integer)
+    field(:winner_lang, :string)
 
     belongs_to(:task, Codebattle.Task)
 
@@ -19,24 +21,19 @@ defmodule Codebattle.Bot.Playbook do
   @doc false
   def changeset(%Playbook{} = playbook, attrs) do
     playbook
-    |> cast(attrs, [:data, :user_id, :game_id, :task_id, :lang, :level])
-    |> validate_required([:data, :user_id, :game_id, :task_id, :lang, :level])
+    |> cast(attrs, [:data, :game_id, :winner_id, :winner_lang, :task_id])
+    |> validate_required([:data, :game_id, :winner_id, :winner_lang, :task_id])
   end
 
   def random(task_id) do
-    try do
-      {:ok, query} =
-        Ecto.Adapters.SQL.query(
-          Codebattle.Repo,
-          "SELECT * from bot_playbooks WHERE task_id = $1 ORDER BY RANDOM() LIMIT 1",
-          [task_id]
-        )
-
-      %Postgrex.Result{rows: [[id | [diff | _tail]]]} = query
-      {id, diff}
-    rescue
-      _e in MatchError -> nil
-    end
+    from(
+      p in Playbook,
+      where: p.winner_id > 0 and p.task_id == ^task_id,
+      order_by: fragment("RANDOM()"),
+      limit: 1
+    )
+    |> Repo.all()
+    |> Enum.at(0)
   end
 
   def init(_), do: []
@@ -45,56 +42,172 @@ defmodule Codebattle.Bot.Playbook do
     :join_chat,
     :leave_chat,
     :add_chat_message,
+    :init,
     :update_editor_params,
     :give_up,
     :check_solution,
     :complete
   ]
 
-  def add_event(
-        playbook,
-        event,
-        %{id: user_id} = params
-      )
+  def add_event(playbook, event, params)
       when event in @events do
     time = NaiveDateTime.utc_now()
 
     record =
       {event, params}
       |> create_record
-      |> Map.merge(%{"user_id" => user_id, "time" => time})
+      |> Map.merge(params)
+      |> Map.merge(%{time: time})
 
     [record | playbook]
+  end
+
+  def add_event(playbook, :join, %{players: players}) do
+    Enum.reduce(players, playbook, fn player, acc ->
+      add_event(acc, :init, %{
+        id: player.id,
+        editor_text: player.editor_text,
+        editor_lang: player.editor_lang
+      })
+    end)
   end
 
   def add_event(playbook, _event, _params) do
     playbook
   end
 
-  defp create_record({:join_chat, %{name: name}}),
-    do: %{"type" => "join_chat", "name" => name}
+  def store_playbook(playbook, game_id, task_id) do
+    data = create_final_game_playbook(playbook)
 
-  defp create_record({:leave_chat, %{name: name}}),
-    do: %{"type" => "leave_chat", "name" => name}
+    case Enum.find(playbook, &is_complete_record?/1) do
+      nil ->
+        %Playbook{
+          data: data,
+          task_id: task_id,
+          game_id: game_id |> to_string |> Integer.parse() |> elem(0),
+          winner_id: 0,
+          winner_lang: "none"
+        }
 
-  defp create_record({:add_chat_message, %{name: name, message: message}}),
-    do: %{"type" => "chat_message", "name" => name, "message" => message}
+      %{id: winner_id, lang: lang} ->
+        %Playbook{
+          data: data,
+          task_id: task_id,
+          game_id: game_id |> to_string |> Integer.parse() |> elem(0),
+          winner_id: winner_id,
+          winner_lang: lang
+        }
+    end
+    |> Repo.insert()
+  end
 
-  defp create_record({:update_editor_params, %{editor_lang: editor_lang}}),
-    do: %{"type" => "editor_lang", "editor_lang" => editor_lang}
+  def update_stored_playbook(playbook, game) do
+    params = %{
+      data: create_final_game_playbook(playbook)
+    }
 
-  defp create_record({:update_editor_params, %{editor_text: editor_text}}),
-    do: %{"type" => "editor_text", "editor_text" => editor_text}
+    Playbook
+    |> Repo.get_by!(game_id: game.id)
+    |> Playbook.changeset(params)
+  end
 
-  defp create_record({:update_editor_params, %{result: result, output: output}}),
-    do: %{"type" => "result_check", "result" => result, "output" => output}
+  defp create_record({:join_chat, _params}),
+    do: %{type: :join_chat}
+
+  defp create_record({:leave_chat, _params}),
+    do: %{type: :leave_chat}
+
+  defp create_record({:add_chat_message, _params}),
+    do: %{type: :chat_message}
+
+  defp create_record({:init, _params}),
+    do: %{type: :init}
+
+  defp create_record({:update_editor_params, %{editor_lang: _}}),
+    do: %{type: :editor_lang}
+
+  defp create_record({:update_editor_params, %{editor_text: _}}),
+    do: %{type: :editor_text}
+
+  defp create_record({:update_editor_params, %{result: _, output: _}}),
+    do: %{type: :result_check}
 
   defp create_record({:give_up, _params}),
-    do: %{"type" => "give_up"}
+    do: %{type: :give_up}
 
-  defp create_record({:check_solution, %{editor_text: editor_text, editor_lang: editor_lang}}),
-    do: %{"type" => "start_check", "editor_text" => editor_text, "editor_lang" => editor_lang}
+  defp create_record({:check_solution, _params}),
+    do: %{type: :start_check}
 
   defp create_record({:complete, _params}),
-    do: %{"type" => "game_complete"}
+    do: %{type: :game_complete}
+
+  defp create_final_game_playbook(playbook) do
+    init_data = %{playbook: [], players: %{}}
+
+    playbook
+    |> Enum.reverse()
+    |> Enum.reduce(init_data, fn
+      %{type: :init} = record, acc ->
+        player_state =
+          record
+          |> Map.put(:type, :player_state)
+          |> Map.put_new(:total_time_ms, 0)
+
+        acc
+        |> update_players_state(player_state)
+        |> Map.update!(:playbook, &[record | &1])
+
+      %{type: type, id: id, time: time} = record, acc when type in [:editor_text, :editor_lang] ->
+        player_state = acc.players |> Map.get(id)
+        diff = create_diff(type, player_state, record)
+
+        new_player_state =
+          player_state
+          |> Map.put(type, record[type])
+          |> Map.put(:time, time)
+          |> Map.update!(:total_time_ms, &(&1 + diff.time))
+
+        new_record = %{
+          type: type,
+          id: id,
+          diff: diff,
+          time: time
+        }
+
+        acc
+        |> update_players_state(new_player_state)
+        |> Map.update!(:playbook, &[new_record | &1])
+
+      record, acc ->
+        Map.update!(acc, :playbook, &[record | &1])
+    end)
+    |> Map.update!(:playbook, &Enum.reverse/1)
+  end
+
+  defp update_players_state(data, %{id: id} = player_state),
+    do: Map.update!(data, :players, &Map.put(&1, id, player_state))
+
+  defp create_diff(:editor_lang, player_state, %{time: time, editor_lang: lang}),
+    do: %{
+      prev_lang: player_state.editor_lang,
+      next_lang: lang,
+      time: time_diff(time, player_state.time)
+    }
+
+  defp create_diff(:editor_text, player_state, %{time: time, editor_text: text}) do
+    player_state_delta = create_delta(player_state.editor_text)
+    new_delta = create_delta(text)
+
+    %{
+      delta: TextDelta.diff!(player_state_delta, new_delta).ops,
+      time: time_diff(time, player_state.time)
+    }
+  end
+
+  defp create_delta(text), do: TextDelta.new() |> TextDelta.insert(text)
+
+  defp time_diff(new_time, time), do: NaiveDateTime.diff(new_time, time, :millisecond)
+
+  defp is_complete_record?(%{type: :game_complete}), do: true
+  defp is_complete_record?(_), do: false
 end
