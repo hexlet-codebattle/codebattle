@@ -14,4 +14,4 @@ ADD solution_example.ts .
 ADD Makefile .
 ADD tsconfig_example.json .
 ADD tsconfig.json .
-ADD .eslintrc.js .
+COPY .eslintrc.js .
