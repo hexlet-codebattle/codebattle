@@ -31,6 +31,24 @@ defmodule Codebattle.Bot.ChatClientRunner do
     end
   end
 
+  def say_some_excuse(chat_channel) do
+    PhoenixClient.Channel.push_async(chat_channel, "new:message", %{
+      "message" => some_excuse(),
+      "user" => "test_bot"
+    })
+  end
+
+  defp some_excuse() do
+    [
+      "You lucky. I don't have a clue, how solve it",
+      "Perhaps, you can solve this better than i can",
+      "Dame it!!!! It's hard task...",
+      "It's X0xl0ma, Argh!!! I knew she would do something",
+      "Vtm, Master, Help Me"
+    ]
+    |> Enum.random()
+  end
+
   defp greet_opponent(chat_state) do
     opponent = get_opponent(chat_state)
     "Hi, #{opponent["name"]}!"
