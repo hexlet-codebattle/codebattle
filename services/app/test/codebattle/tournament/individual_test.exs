@@ -155,14 +155,32 @@ defmodule Codebattle.Tournament.IndividualTest do
 
     playbook_data = %{
       playbook: [
-        %{"delta" => [%{"insert" => "t"}], "time" => 20},
-        %{"delta" => [%{"retain" => 1}, %{"insert" => "e"}], "time" => 20},
-        %{"delta" => [%{"retain" => 2}, %{"insert" => "s"}], "time" => 20},
-        %{"lang" => "ruby", "time" => 100}
+        %{"type" => "init", "id" => 2, "editor_text" => "", "editor_lang" => "ruby"},
+        %{
+          "diff" => %{"delta" => [%{"insert" => "t"}], "time" => 20},
+          "type" => "editor_text",
+          "id" => 2
+        },
+        %{
+          "diff" => %{"delta" => [%{"retain" => 1}, %{"insert" => "e"}], "time" => 20},
+          "type" => "editor_text",
+          "id" => 2
+        },
+        %{
+          "diff" => %{"delta" => [%{"retain" => 2}, %{"insert" => "s"}], "time" => 20},
+          "type" => "editor_text",
+          "id" => 2
+        },
+        %{
+          "diff" => %{"prev_lang" => "ruby", "next_lang" => "ruby", "time" => 100},
+          "type" => "editor_lang",
+          "id" => 2
+        },
+        %{"type" => "game_complete", "id" => 2, "lang" => "ruby"}
       ]
     }
 
-    insert(:bot_playbook, %{data: playbook_data, task: task, lang: "ruby"})
+    insert(:playbook, %{data: playbook_data, task: task, winner_lang: "ruby"})
     player1 = struct(Codebattle.Tournament.Types.Player, Map.from_struct(user1))
     player2 = struct(Codebattle.Tournament.Types.Player, Map.from_struct(user2))
 

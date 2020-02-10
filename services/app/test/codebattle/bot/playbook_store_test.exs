@@ -2,7 +2,7 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
   use Codebattle.IntegrationCase
 
   alias CodebattleWeb.{GameChannel, UserSocket}
-  # alias Codebattle.Bot.Playbook
+  alias Codebattle.Bot.Playbook
   # alias Codebattle.Repo
   alias CodebattleWeb.UserSocket
 
@@ -34,7 +34,7 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
   test "stores player playbook if he is winner", %{
     conn1: conn1,
     conn2: conn2,
-    user1: _user1,
+    user1: user1,
     user2: _user2,
     task: _task,
     socket1: socket1,
@@ -81,22 +81,30 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
     Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text4, lang: "elixir"})
 
     #       playbook = [
-    #         %{"type" => "game_complete", "user_id" => 1, "time" => ....},
-    #         %{"type" => "result_check", "user_id" => 1, "result" => ..., "output" => ..., "time" => ....},
-    #         %{"type" => "start_check", "user_id" => 1, "editor_lang" => "elixir", "editor_text" => "testf", "time" => ....}
-    #         %{"type" => "editor_text", "editor_text" => "testf","user_id" => 1, "time" => ....},
-    #         %{"type" => "editor_text", "editor_text" => "tes","user_id" => 1, "time" => ....},
-    #         %{"type" => "editor_lang", "editor_lang" => "elixir","user_id" => 1, "time" => ....},
-    #         %{"type" => "editor_text", "editor_text" => "te","user_id" => 1, "time" => ....},
-    #         %{"type" => "editor_text", "editor_text" => "t","user_id" => 1, "time" => ....},
+    #         %{type: "game_complete", id: 1, time: ....},
+    #         %{type: "result_check", id: 1, result: ..., output: ..., time: ....},
+    #         %{type: "start_check", id: 1, editor_lang: "elixir", editor_text: "testf", time: ....}
+    #         %{type: "editor_text", editor_text: "testf", id: 1, time: ....},
+    #         %{type: "editor_text", editor_text: "tes", id: 1, time: ....},
+    #         %{type: "editor_lang", editor_lang: "elixir", id: 1, time: ....},
+    #         %{type: "editor_text", editor_text: "te", id: 1, time: ....},
+    #         %{type: "editor_text", editor_text: "t", id: 1, time: ....},
+    #         %{type: "editor_text", editor_text: "t", id: 1, time: ....},
+    #         %{type: :init, editor_text: "t", editor_lang: "js", id: 1, time: ....},
+    #         %{type: :init, editor_text: ..., editor_lang: "js", id: 2, time: ....},
     #       ]
 
     # sleep, because GameProcess need time to write Playbook with Ecto.connection
     :timer.sleep(400)
-    {:ok, playbook} = Codebattle.GameProcess.Server.playbook(game_id)
-    # playbook = Repo.get_by(Playbook, user_id: user1.id)
-    assert Enum.count(playbook) == 8
 
-    # assert Enum.all?(playbook.data["playbook"], fn x -> x["time"] <= 3000 end) == true
+    playbook = Repo.get_by(Playbook, winner_id: user1.id)
+    assert Enum.count(playbook.data["playbook"]) == 10
+
+    user_playbook =
+      Enum.filter(playbook.data["playbook"], fn x ->
+        x["id"] == user1.id && x["type"] in ["editor_text", "editor_lang"]
+      end)
+
+    assert Enum.all?(user_playbook, fn x -> x["diff"]["time"] <= 3000 end) == true
   end
 end
