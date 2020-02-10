@@ -8,7 +8,9 @@ defmodule Codebattle.GameProcess.Engine.Tournament do
     Fsm,
     Player,
     ActiveGames,
-    TasksQueuesServer
+    TasksQueuesServer,
+    FsmHelpers,
+    Server
   }
 
   alias Codebattle.{Repo, Game, User, Languages}
@@ -49,6 +51,9 @@ defmodule Codebattle.GameProcess.Engine.Tournament do
     ActiveGames.create_game(game.id, fsm)
     {:ok, _} = GlobalSupervisor.start_game(game.id, fsm)
 
+    players = FsmHelpers.get_players(fsm)
+    Server.update_playbook(game.id, :join, %{players: players})
+
     Enum.each(players, fn player ->
       if player.is_bot do
         PlaybookAsyncRunner.create_server(%{game_id: game.id, bot: player})
@@ -72,7 +77,7 @@ defmodule Codebattle.GameProcess.Engine.Tournament do
   end
 
   def get_task(level, _players) do
-    {:ok, task} = Codebattle.GameProcess.Engine.Bot.get_task(level)
+    {:ok, task} = Codebattle.GameProcess.Engine.Bot.get_solved_task(level)
     task
   end
 end
