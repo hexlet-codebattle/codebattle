@@ -7,8 +7,8 @@ defmodule Codebattle.Bot.RecorderServer do
 
   use GenServer
 
-  alias Codebattle.Repo
-  alias Codebattle.Bot.Playbook
+  # alias Codebattle.Repo
+  # alias Codebattle.Bot.Playbook
 
   import Codebattle.GameProcess.FsmHelpers
 
@@ -101,20 +101,20 @@ defmodule Codebattle.Bot.RecorderServer do
     if is_copypaste?(editor_text, state) do
       {:stop, :normal, state}
     else
-      %Playbook{
-        data: %{
-          playbook: Enum.reverse(state.diff),
-          meta: %{
-            total_time_ms: calc_total_time(state.diff),
-            init_lang: state.init_lang
-          }
-        },
-        lang: to_string(state.lang),
-        task_id: state.task_id,
-        user_id: state.user_id,
-        game_id: state.game_id |> to_string |> Integer.parse() |> elem(0)
-      }
-      |> Repo.insert()
+      # %Playbook{
+      #   data: %{
+      #     playbook: Enum.reverse(state.diff),
+      #     meta: %{
+      #       total_time_ms: calc_total_time(state.diff),
+      #       init_lang: state.init_lang
+      #     }
+      #   },
+      #   lang: to_string(state.lang),
+      #   task_id: state.task_id,
+      #   user_id: state.user_id,
+      #   game_id: state.game_id |> to_string |> Integer.parse() |> elem(0)
+      # }
+      # |> Repo.insert()
 
       {:stop, :normal, state}
     end
@@ -129,9 +129,9 @@ defmodule Codebattle.Bot.RecorderServer do
     {:n, :l, {:bot_recorder, "#{game_id}_#{user_id}"}}
   end
 
-  defp calc_total_time(state) do
-    Enum.reduce(state, 0, fn x, acc -> x.time + acc end)
-  end
+  # defp calc_total_time(state) do
+  #   Enum.reduce(state, 0, fn x, acc -> x.time + acc end)
+  # end
 
   defp time_diff(new_time, time) do
     step_time = NaiveDateTime.diff(new_time, time, :millisecond)
