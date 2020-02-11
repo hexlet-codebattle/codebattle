@@ -63,13 +63,7 @@ defmodule Codebattle.Bot.Playbook do
   end
 
   def add_event(playbook, :join, %{players: players}) do
-    Enum.reduce(players, playbook, fn player, acc ->
-      add_event(acc, :init, %{
-        id: player.id,
-        editor_text: player.editor_text,
-        editor_lang: player.editor_lang
-      })
-    end)
+    Enum.reduce(players, playbook, &add_player_init_state/2)
   end
 
   def add_event(playbook, _event, _params) do
@@ -141,51 +135,45 @@ defmodule Codebattle.Bot.Playbook do
   defp create_record({:complete, _params}),
     do: %{type: :game_complete}
 
+  defp add_player_init_state(player, playbook) do
+    add_event(playbook, :init, %{
+      id: player.id,
+      editor_text: player.editor_text,
+      editor_lang: player.editor_lang
+    })
+  end
+
   defp create_final_game_playbook(playbook) do
     init_data = %{playbook: [], players: %{}}
 
     playbook
     |> Enum.reverse()
-    |> Enum.reduce(init_data, fn
-      %{type: :init} = record, acc ->
-        player_state =
-          record
-          |> Map.put(:type, :player_state)
-          |> Map.put_new(:total_time_ms, 0)
-
-        acc
-        |> update_players_state(player_state)
-        |> Map.update!(:playbook, &[record | &1])
-
-      %{type: type, id: id, time: time} = record, acc when type in [:editor_text, :editor_lang] ->
-        player_state = acc.players |> Map.get(id)
-        diff = create_diff(type, player_state, record)
-
-        new_player_state =
-          player_state
-          |> Map.put(type, record[type])
-          |> Map.put(:time, time)
-          |> Map.update!(:total_time_ms, &(&1 + diff.time))
-
-        new_record = %{
-          type: type,
-          id: id,
-          diff: diff,
-          time: time
-        }
-
-        acc
-        |> update_players_state(new_player_state)
-        |> Map.update!(:playbook, &[new_record | &1])
-
-      record, acc ->
-        Map.update!(acc, :playbook, &[record | &1])
-    end)
+    |> Enum.reduce(init_data, &add_final_record/2)
     |> Map.update!(:playbook, &Enum.reverse/1)
   end
 
-  defp update_players_state(data, %{id: id} = player_state),
-    do: Map.update!(data, :players, &Map.put(&1, id, player_state))
+  defp add_final_record(%{type: :init} = record, data) do
+    player_state = create_init_state(record)
+
+    update_data(data, player_state, record)
+  end
+
+  defp add_final_record(%{type: type, id: id, time: time} = record, data)
+       when type in [:editor_text, :editor_lang] do
+    player_state = Map.get(data.players, id)
+    diff = create_diff(type, player_state, record)
+    new_player_state = update_editor_state(player_state, record, diff.time)
+    new_record = %{type: type, id: id, diff: diff, time: time}
+
+    update_data(data, new_player_state, new_record)
+  end
+
+  defp add_final_record(record, data) do
+    Map.update!(data, :playbook, &[record | &1])
+  end
+
+  defp update_data(data, player_state, record),
+    do: data |> update_players_state(player_state) |> Map.update!(:playbook, &[record | &1])
 
   defp create_diff(:editor_lang, player_state, %{time: time, editor_lang: lang}),
     do: %{
@@ -203,6 +191,19 @@ defmodule Codebattle.Bot.Playbook do
       time: time_diff(time, player_state.time)
     }
   end
+
+  defp create_init_state(record),
+    do: record |> Map.put(:type, :player_state) |> Map.put_new(:total_time_ms, 0)
+
+  defp update_players_state(data, %{id: id} = player_state),
+    do: Map.update!(data, :players, &Map.put(&1, id, player_state))
+
+  defp update_editor_state(player_state, %{type: type, time: time} = record, diff_time),
+    do:
+      player_state
+      |> Map.put(type, record[type])
+      |> Map.put(:time, time)
+      |> Map.update!(:total_time_ms, &(&1 + diff_time))
 
   defp create_delta(text), do: TextDelta.new() |> TextDelta.insert(text)
 

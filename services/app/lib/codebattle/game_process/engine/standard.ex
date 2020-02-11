@@ -16,7 +16,6 @@ defmodule Codebattle.GameProcess.Engine.Standard do
 
   alias Codebattle.{Repo, Game}
   alias CodebattleWeb.Notifications
-  alias Codebattle.Bot.Playbook
 
   def create_game(player, params) do
     %{"level" => level, "type" => type, "timeout_seconds" => timeout_seconds} = params
@@ -116,7 +115,7 @@ defmodule Codebattle.GameProcess.Engine.Standard do
     task = FsmHelpers.get_task(fsm)
 
     {:ok, playbook} = Server.playbook(game_id)
-    Playbook.store_playbook(playbook, game_id, task.id)
+    store_playbook(playbook, game_id, task.id)
 
     store_game_result!(fsm, {winner, "won"}, {loser, "lost"})
     ActiveGames.terminate_game(game_id)
