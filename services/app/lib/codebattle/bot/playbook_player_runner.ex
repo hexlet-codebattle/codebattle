@@ -68,16 +68,11 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
          {document, editor_lang},
          channel_pid
        ) do
-    delta = diff |> Map.get("delta")
-    text_delta = delta |> AtomicMap.convert(safe: true) |> TextDelta.new()
-    new_document = TextDelta.apply!(document, text_delta)
+    next_document = create_next_document(document, diff)
+    next_editor_state = {next_document, editor_lang}
+    send_editor_state(channel_pid, next_editor_state)
 
-    PhoenixClient.Channel.push_async(channel_pid, "editor:data", %{
-      "lang" => editor_lang,
-      "editor_text" => new_document.ops |> hd |> Map.get(:insert)
-    })
-
-    {new_document, editor_lang}
+    next_editor_state
   end
 
   defp perform_action(
@@ -86,22 +81,16 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
          channel_pid
        ) do
     next_lang = diff |> Map.get("next_lang")
+    next_editor_state = {document, next_lang}
+    send_editor_state(channel_pid, next_editor_state)
 
-    PhoenixClient.Channel.push_async(channel_pid, "editor:data", %{
-      "lang" => next_lang,
-      "editor_text" => document.ops |> hd |> Map.get(:insert)
-    })
-
-    {document, next_lang}
+    next_editor_state
   end
 
-  defp perform_action(%{"type" => "game_complete"}, {document, editor_lang}, channel_pid) do
-    PhoenixClient.Channel.push_async(channel_pid, "check_result", %{
-      "lang" => editor_lang,
-      "editor_text" => document.ops |> hd |> Map.get(:insert)
-    })
+  defp perform_action(%{"type" => "game_complete"}, editor_state, channel_pid) do
+    send_check_request(channel_pid, editor_state)
 
-    {document, editor_lang}
+    editor_state
   end
 
   defp create_user_playbook(playbook, user_id) do
@@ -112,8 +101,28 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
     )
   end
 
+  defp create_next_document(document, diff) do
+    delta = diff |> Map.get("delta")
+    text_delta = delta |> AtomicMap.convert(safe: true) |> TextDelta.new()
+    TextDelta.apply!(document, text_delta)
+  end
+
   defp get_timer_value(%{"type" => "game_complete"}, _step_coefficient), do: 0
 
   defp get_timer_value(%{"diff" => diff}, step_coefficient),
     do: Map.get(diff, "time") * step_coefficient
+
+  defp send_editor_state(channel_pid, {document, lang}) do
+    PhoenixClient.Channel.push_async(channel_pid, "editor:data", %{
+      "lang" => lang,
+      "editor_text" => document.ops |> hd |> Map.get(:insert)
+    })
+  end
+
+  defp send_check_request(channel_pid, {document, lang}) do
+    PhoenixClient.Channel.push_async(channel_pid, "check_result", %{
+      "lang" => lang,
+      "editor_text" => document.ops |> hd |> Map.get(:insert)
+    })
+  end
 end

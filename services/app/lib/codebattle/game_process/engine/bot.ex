@@ -99,7 +99,7 @@ defmodule Codebattle.GameProcess.Engine.Bot do
 
     {:ok, playbook} = Server.playbook(game_id)
 
-    Playbook.store_playbook(playbook, game_id, task_id)
+    store_playbook(playbook, game_id, task_id)
 
     ActiveGames.terminate_game(game_id)
 

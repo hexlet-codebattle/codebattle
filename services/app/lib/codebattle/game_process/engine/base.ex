@@ -8,6 +8,7 @@ defmodule Codebattle.GameProcess.Engine.Base do
 
   alias Codebattle.{Repo, User, Game, UserGame}
   alias Codebattle.User.Achievements
+  alias Codebattle.Bot.Playbook
 
   defmacro __using__(_opts) do
     quote do
@@ -29,6 +30,10 @@ defmodule Codebattle.GameProcess.Engine.Base do
           |> User.changeset(%{lang: editor_lang})
           |> Repo.update!()
         end)
+      end
+
+      def store_playbook(playbook, game_id, task_id) do
+        Task.start(fn -> Playbook.store_playbook(playbook, game_id, task_id) end)
       end
 
       import Codebattle.GameProcess.Engine.Base
