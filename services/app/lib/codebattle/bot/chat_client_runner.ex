@@ -44,7 +44,7 @@ defmodule Codebattle.Bot.ChatClientRunner do
       "Perhaps, you can solve this better than i can",
       "Dame it!!!! It's hard task...",
       "It's X0xl0ma, Argh!!! I knew she would do something",
-      "Vtm, Master, Help Me"
+      "Vtm, Master, Guide Me"
     ]
     |> Enum.random()
   end

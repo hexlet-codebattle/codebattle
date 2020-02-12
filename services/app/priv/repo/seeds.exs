@@ -43,7 +43,7 @@ levels = ["elementary", "easy", "medium", "hard"]
 
     playbook_data = %{
       players: %{2 => %{total_time_ms: 5_000, editor_lang: "ruby", editor_text: ""}},
-      playbook: [
+      records: [
         %{"type" => "init", "id" => 2, "editor_text" => "", "editor_lang" => "ruby"},
         %{
           "diff" => %{"delta" => [%{"insert" => "def solution()\n\nend"}], "time" => 0},
@@ -100,7 +100,7 @@ levels = ["elementary", "easy", "medium", "hard"]
           "type" => "editor_text",
           "id" => 2
         },
-        %{"type" => "game_complete", "id" => 2, "lang" => "ruby"}
+        %{"type" => "check_complete", "id" => 2, "lang" => "ruby"}
       ]
     }
 

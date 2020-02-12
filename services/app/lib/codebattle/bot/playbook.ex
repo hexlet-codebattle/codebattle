@@ -6,9 +6,27 @@ defmodule Codebattle.Bot.Playbook do
   import Ecto.Query
   alias Codebattle.Bot.Playbook
   alias Codebattle.Repo
+  alias Codebattle.GameProcess.{Play, FsmHelpers}
+
+  defmodule Data do
+    use Ecto.Schema
+    import Ecto.Changeset
+    @primary_key false
+
+    embedded_schema do
+      field(:players, :map, default: %{})
+      field(:records, {:array, :map}, default: [])
+      field(:count, :integer)
+    end
+
+    def changeset(struct, params) do
+      struct
+      |> cast(params, [:players, :records, :count])
+    end
+  end
 
   schema "playbooks" do
-    field(:data, :map)
+    embeds_one(:data, Data)
     field(:game_id, :integer)
     field(:winner_id, :integer)
     field(:winner_lang, :string)
@@ -28,12 +46,11 @@ defmodule Codebattle.Bot.Playbook do
   def random(task_id) do
     from(
       p in Playbook,
-      where: p.winner_id > 0 and p.task_id == ^task_id,
+      where: not is_nil(p.winner_id) and p.task_id == ^task_id,
       order_by: fragment("RANDOM()"),
       limit: 1
     )
-    |> Repo.all()
-    |> Enum.at(0)
+    |> Repo.one()
   end
 
   def init(_), do: []
@@ -41,11 +58,11 @@ defmodule Codebattle.Bot.Playbook do
   @events [
     :join_chat,
     :leave_chat,
-    :add_chat_message,
+    :chat_message,
     :init,
     :update_editor_params,
     :give_up,
-    :check_solution,
+    :start_check,
     :complete
   ]
 
@@ -71,27 +88,17 @@ defmodule Codebattle.Bot.Playbook do
   end
 
   def store_playbook(playbook, game_id, task_id) do
+    {:ok, fsm} = Play.get_fsm(game_id)
     data = create_final_game_playbook(playbook)
+    winner = FsmHelpers.get_winner(fsm)
 
-    case Enum.find(playbook, &is_complete_record?/1) do
-      nil ->
-        %Playbook{
-          data: data,
-          task_id: task_id,
-          game_id: game_id |> to_string |> Integer.parse() |> elem(0),
-          winner_id: 0,
-          winner_lang: "none"
-        }
-
-      %{id: winner_id, lang: lang} ->
-        %Playbook{
-          data: data,
-          task_id: task_id,
-          game_id: game_id |> to_string |> Integer.parse() |> elem(0),
-          winner_id: winner_id,
-          winner_lang: lang
-        }
-    end
+    %Playbook{
+      data: data,
+      task_id: task_id,
+      game_id: String.to_integer(game_id),
+      winner_id: winner.id,
+      winner_lang: winner.id && winner.editor_lang
+    }
     |> Repo.insert()
   end
 
@@ -105,18 +112,6 @@ defmodule Codebattle.Bot.Playbook do
     |> Playbook.changeset(params)
   end
 
-  defp create_record({:join_chat, _params}),
-    do: %{type: :join_chat}
-
-  defp create_record({:leave_chat, _params}),
-    do: %{type: :leave_chat}
-
-  defp create_record({:add_chat_message, _params}),
-    do: %{type: :chat_message}
-
-  defp create_record({:init, _params}),
-    do: %{type: :init}
-
   defp create_record({:update_editor_params, %{editor_lang: _}}),
     do: %{type: :editor_lang}
 
@@ -126,14 +121,11 @@ defmodule Codebattle.Bot.Playbook do
   defp create_record({:update_editor_params, %{result: _, output: _}}),
     do: %{type: :result_check}
 
-  defp create_record({:give_up, _params}),
-    do: %{type: :give_up}
-
-  defp create_record({:check_solution, _params}),
-    do: %{type: :start_check}
-
   defp create_record({:complete, _params}),
-    do: %{type: :game_complete}
+    do: %{type: :check_complete}
+
+  defp create_record({type, _params}),
+    do: %{type: type}
 
   defp add_player_init_state(player, playbook) do
     add_event(playbook, :init, %{
@@ -144,12 +136,12 @@ defmodule Codebattle.Bot.Playbook do
   end
 
   defp create_final_game_playbook(playbook) do
-    init_data = %{playbook: [], players: %{}}
+    init_data = %{records: [], players: %{}, count: 0}
 
     playbook
     |> Enum.reverse()
     |> Enum.reduce(init_data, &add_final_record/2)
-    |> Map.update!(:playbook, &Enum.reverse/1)
+    |> Map.update!(:records, &Enum.reverse/1)
   end
 
   defp add_final_record(%{type: :init} = record, data) do
@@ -168,12 +160,10 @@ defmodule Codebattle.Bot.Playbook do
     update_data(data, new_player_state, new_record)
   end
 
-  defp add_final_record(record, data) do
-    Map.update!(data, :playbook, &[record | &1])
-  end
+  defp add_final_record(record, data), do: update_history(data, record)
 
   defp update_data(data, player_state, record),
-    do: data |> update_players_state(player_state) |> Map.update!(:playbook, &[record | &1])
+    do: data |> update_players_state(player_state) |> update_history(record)
 
   defp create_diff(:editor_lang, player_state, %{time: time, editor_lang: lang}),
     do: %{
@@ -205,10 +195,12 @@ defmodule Codebattle.Bot.Playbook do
       |> Map.put(:time, time)
       |> Map.update!(:total_time_ms, &(&1 + diff_time))
 
+  defp update_history(data, record),
+    do: Map.update!(data, :records, &[record | &1]) |> increase_count
+
   defp create_delta(text), do: TextDelta.new() |> TextDelta.insert(text)
 
   defp time_diff(new_time, time), do: NaiveDateTime.diff(new_time, time, :millisecond)
 
-  defp is_complete_record?(%{type: :game_complete}), do: true
-  defp is_complete_record?(_), do: false
+  defp increase_count(data), do: Map.update!(data, :count, &(&1 + 1))
 end
