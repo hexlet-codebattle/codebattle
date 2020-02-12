@@ -96,7 +96,7 @@ defmodule Codebattle.GameCases.RematchTest do
     task = insert(:task, level: "elementary")
 
     playbook_data = %{
-      playbook: [
+      records: [
         %{"delta" => [%{"insert" => "t"}], "time" => 20},
         %{"lang" => "ruby", "time" => 100}
       ]

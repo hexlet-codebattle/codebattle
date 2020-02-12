@@ -14,12 +14,10 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
     playbook = Playbook.random(params.task_id)
 
     if playbook do
-      %{id: id, winner_id: winner_id, data: playbook_data} = playbook
+      %Playbook{id: id, winner_id: winner_id, data: playbook_data} = playbook
+      [init_state | actions] = create_user_playbook(playbook_data.records, winner_id)
 
-      [init_state | actions] =
-        Map.get(playbook_data, "playbook") |> create_user_playbook(winner_id)
-
-      player_meta = Map.get(playbook_data, "players") |> Map.get(to_string(winner_id))
+      player_meta = Map.get(playbook_data.players, to_string(winner_id))
       step_coefficient = params.bot_time_ms / Map.get(player_meta, "total_time_ms")
 
       Logger.info("#{__MODULE__} BOT START with playbook_id: #{id};
@@ -49,7 +47,7 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
     # %{"type" => "editor_lang", "diff" => %{"time" => 10, "prev_lang" => "elixir", "next_lang" => "ruby"}}
     #
     # 3 Map with action to send solution
-    # %{"type" => "game_complete"}
+    # %{"type" => "check_complete"}
 
     init_document = TextDelta.new() |> TextDelta.insert(editor_text)
 
@@ -87,17 +85,17 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
     next_editor_state
   end
 
-  defp perform_action(%{"type" => "game_complete"}, editor_state, channel_pid) do
+  defp perform_action(%{"type" => "check_complete"}, editor_state, channel_pid) do
     send_check_request(channel_pid, editor_state)
 
     editor_state
   end
 
-  defp create_user_playbook(playbook, user_id) do
+  defp create_user_playbook(records, user_id) do
     Enum.filter(
-      playbook,
+      records,
       &(&1["id"] == user_id &&
-          &1["type"] in ["init", "editor_text", "editor_lang", "game_complete"])
+          &1["type"] in ["init", "editor_text", "editor_lang", "check_complete"])
     )
   end
 
@@ -107,7 +105,7 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
     TextDelta.apply!(document, text_delta)
   end
 
-  defp get_timer_value(%{"type" => "game_complete"}, _step_coefficient), do: 0
+  defp get_timer_value(%{"type" => "check_complete"}, _step_coefficient), do: 0
 
   defp get_timer_value(%{"diff" => diff}, step_coefficient),
     do: Map.get(diff, "time") * step_coefficient

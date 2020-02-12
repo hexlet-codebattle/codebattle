@@ -254,7 +254,7 @@ defmodule Codebattle.GameProcess.Play do
 
       Server.update_playbook(
         id,
-        :check_solution,
+        :start_check,
         %{id: user.id, editor_text: editor_text, editor_lang: editor_lang}
       )
 

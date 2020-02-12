@@ -58,7 +58,7 @@ defmodule CodebattleWeb.ChatChannel do
 
     GameProcess.Server.update_playbook(
       chat_id,
-      :add_chat_message,
+      :chat_message,
       %{
         id: socket.assigns.current_user.id,
         name: user,

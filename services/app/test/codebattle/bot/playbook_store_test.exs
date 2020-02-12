@@ -81,7 +81,7 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
     Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text4, lang: "elixir"})
 
     #       playbook = [
-    #         %{type: "game_complete", id: 1, time: ....},
+    #         %{type: "check_complete", id: 1, time: ....},
     #         %{type: "result_check", id: 1, result: ..., output: ..., time: ....},
     #         %{type: "start_check", id: 1, editor_lang: "elixir", editor_text: "testf", time: ....}
     #         %{type: "editor_text", editor_text: "testf", id: 1, time: ....},
@@ -98,10 +98,10 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
     :timer.sleep(400)
 
     playbook = Repo.get_by(Playbook, winner_id: user1.id)
-    assert Enum.count(playbook.data["playbook"]) == 10
+    assert Enum.count(playbook.data.records) == 10
 
     user_playbook =
-      Enum.filter(playbook.data["playbook"], fn x ->
+      Enum.filter(playbook.data.records, fn x ->
         x["id"] == user1.id && x["type"] in ["editor_text", "editor_lang"]
       end)
 

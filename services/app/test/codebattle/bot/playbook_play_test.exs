@@ -13,7 +13,7 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
 
     playbook_data = %{
       players: %{2 => %{total_time_ms: 1_000_000}},
-      playbook: [
+      records: [
         %{"type" => "init", "id" => 2, "editor_text" => "", "editor_lang" => "ruby"},
         %{
           "diff" => %{"delta" => [%{"insert" => "t"}], "time" => 20},
@@ -35,7 +35,7 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
           "type" => "editor_lang",
           "id" => 2
         },
-        %{"type" => "game_complete", "id" => 2, "lang" => "ruby"}
+        %{"type" => "check_complete", "id" => 2, "lang" => "ruby"}
       ]
     }
 

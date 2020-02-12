@@ -153,7 +153,7 @@ defmodule Codebattle.Tournament.IndividualTest do
     task = insert(:task, level: "elementary")
 
     playbook_data = %{
-      playbook: [
+      records: [
         %{"type" => "init", "id" => 2, "editor_text" => "", "editor_lang" => "ruby"},
         %{
           "diff" => %{"delta" => [%{"insert" => "t"}], "time" => 20},
@@ -175,7 +175,7 @@ defmodule Codebattle.Tournament.IndividualTest do
           "type" => "editor_lang",
           "id" => 2
         },
-        %{"type" => "game_complete", "id" => 2, "lang" => "ruby"}
+        %{"type" => "check_complete", "id" => 2, "lang" => "ruby"}
       ]
     }
 
