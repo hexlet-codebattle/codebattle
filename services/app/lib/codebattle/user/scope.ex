@@ -12,6 +12,7 @@ defmodule Codebattle.User.Scope do
   def list_users_with_raiting(params) do
     initial_with_raiting_scope
     |> search_by_name(params)
+    |> sort(params)
   end
 
   defp initial_with_raiting_scope do
