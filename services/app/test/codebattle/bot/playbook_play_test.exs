@@ -12,7 +12,7 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
     conn = put_session(conn, :user_id, user.id)
 
     playbook_data = %{
-      players: %{2 => %{total_time_ms: 1_000_000}},
+      players: [%{id: 2, total_time_ms: 1_000_000}],
       records: [
         %{"type" => "init", "id" => 2, "editor_text" => "", "editor_lang" => "ruby"},
         %{

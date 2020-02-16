@@ -42,7 +42,7 @@ levels = ["elementary", "easy", "medium", "hard"]
     task = Codebattle.Task.changeset(Map.merge(task_data, %{level: level})) |> Repo.insert!()
 
     playbook_data = %{
-      players: %{2 => %{total_time_ms: 5_000, editor_lang: "ruby", editor_text: ""}},
+      players: [%{ id: 2, total_time_ms: 5_000, editor_lang: "ruby", editor_text: ""}],
       records: [
         %{"type" => "init", "id" => 2, "editor_text" => "", "editor_lang" => "ruby"},
         %{
