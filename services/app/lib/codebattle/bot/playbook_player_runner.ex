@@ -4,7 +4,6 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
   """
 
   require Logger
-
   alias Codebattle.Bot.{Playbook, ChatClientRunner}
 
   @timeout Application.get_env(:codebattle, Codebattle.Bot.PlaybookPlayerRunner)[:timeout]
@@ -16,8 +15,7 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
     if playbook do
       %Playbook{id: id, winner_id: winner_id, data: playbook_data} = playbook
       [init_state | actions] = create_user_playbook(playbook_data.records, winner_id)
-
-      player_meta = Map.get(playbook_data.players, to_string(winner_id))
+      player_meta = Enum.find(playbook_data.players, &(&1["id"] == winner_id))
       step_coefficient = params.bot_time_ms / Map.get(player_meta, "total_time_ms")
 
       Logger.info("#{__MODULE__} BOT START with playbook_id: #{id};
