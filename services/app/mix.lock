@@ -64,7 +64,6 @@
   "temp": {:hex, :temp, "0.4.7", "2c78482cc2294020a4bc0c95950b907ff386523367d4e63308a252feffbea9f2", [:mix], [], "hexpm"},
   "text_delta": {:hex, :text_delta, "1.3.0", "bb840bf1d2daf69f18aeb0eb3d7837cd4ad58e8921ca3b47926a6fc2861300aa", [:mix], [], "hexpm"},
   "timex": {:hex, :timex, "3.6.1", "efdf56d0e67a6b956cc57774353b0329c8ab7726766a11547e529357ffdc1d56", [:mix], [{:combine, "~> 0.10", [hex: :combine, repo: "hexpm", optional: false]}, {:gettext, "~> 0.10", [hex: :gettext, repo: "hexpm", optional: false]}, {:tzdata, "~> 0.1.8 or ~> 0.5 or ~> 1.0.0", [hex: :tzdata, repo: "hexpm", optional: false]}], "hexpm"},
-  "turbo_ecto": {:hex, :turbo_ecto, "0.4.3", "e527cade94bf0a89f20881d582031677fb3649b6577e402c55094822eff5461d", [:mix], [{:ecto_sql, "~> 3.0", [hex: :ecto_sql, repo: "hexpm", optional: false]}], "hexpm"},
   "tzdata": {:hex, :tzdata, "1.0.3", "73470ad29dde46e350c60a66e6b360d3b99d2d18b74c4c349dbebbc27a09a3eb", [:mix], [{:hackney, "~> 1.0", [hex: :hackney, repo: "hexpm", optional: false]}], "hexpm"},
   "ueberauth": {:hex, :ueberauth, "0.6.2", "25a31111249d60bad8b65438b2306a4dc91f3208faa62f5a8c33e8713989b2e8", [:mix], [{:plug, "~> 1.5", [hex: :plug, repo: "hexpm", optional: false]}], "hexpm"},
   "ueberauth_github": {:hex, :ueberauth_github, "0.8.0", "2216c8cdacee0de6245b422fb397921b64a29416526985304e345dab6a799d17", [:mix], [{:oauth2, "~> 1.0 or ~> 2.0", [hex: :oauth2, repo: "hexpm", optional: false]}, {:ueberauth, "~> 0.6.0", [hex: :ueberauth, repo: "hexpm", optional: false]}], "hexpm"},
