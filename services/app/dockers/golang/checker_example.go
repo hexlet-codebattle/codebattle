@@ -10,7 +10,7 @@ import (
 func main() {
 	defer func() {
 		if err := recover(); err != nil {
-			sendMessage("error", fmt.Sprintf("%s", err), nil)
+			sendMessage("error", fmt.Sprintf("%s", err))
 		}
 		os.Exit(0)
 	}()
@@ -30,38 +30,33 @@ func main() {
 	success = assertSolution(solution(a2, b2), expected2, []interface{}{a2, b2}, success)
 
 	if success {
-		sendMessage("ok", "__code-0__", nil)
+		sendMessage("ok", "__code-0__")
 	}
-}
-
-type resultMessage struct {
-	Status    string      `json:"status"`
-	Result    interface{} `json:"result"`
-	Arguments interface{} `json:"arguments,omitempty"`
 }
 
 func assertSolution(result, expected, message interface{}, success bool) bool {
 	status := reflect.DeepEqual(result, expected)
 	if !status {
-		sendMessage("failure", result, message)
+		sendFailureMessage("failure", result, message)
 		return false
 	}
 
 	return success
 }
 
-func sendMessage(status string, result, arguments interface{}) {
-	message := resultMessage{
-		Status:    status,
-		Result:    result,
-		Arguments: arguments,
-	}
+func sendMessage(status string, result interface{}) {
+	fmt.Printf(`{"status": "%s", "result": %s}`, status, toJSON(result))
+}
 
-	jsonMessage, err := json.Marshal(message)
+func sendFailureMessage(status string, result, arguments interface{}) {
+	fmt.Printf(`{"status": "%s", "result": %s, "arguments": %s}`, status, toJSON(result), toJSON(arguments))
+}
+
+func toJSON(data interface{}) []byte {
+	result, err := json.Marshal(data)
 	if err != nil {
 		fmt.Println("Marshaler error")
 		os.Exit(0)
 	}
-
-	fmt.Print(string(jsonMessage))
+	return result
 }
