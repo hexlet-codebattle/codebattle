@@ -1,58 +1,67 @@
 package main
 
 import (
-  "fmt";
-  "os";
-  "reflect";
+	"encoding/json"
+	"fmt"
+	"os"
+	"reflect"
 )
 
 func main() {
-  var success bool = true;
+	defer func() {
+		if err := recover(); err != nil {
+			sendMessage("error", fmt.Sprintf("%s", err), nil)
+		}
+		os.Exit(0)
+	}()
 
-  defer func() {
-    if err := recover(); err != nil {
-      SendMessage("error", err);
-    }
-    os.Exit(0);
-  }();
+	success := true
 
-  var a1 int64 = 1;
-  var b1 int64 = 2;
-  var expected1 int64 = 3;
+	var a1 int64 = 1
+	var b1 int64 = 2
+	var expected1 int64 = 3
 
-  success = AssertSolution(solution(a1, b1), expected1, [1, 2], success);
+	success = assertSolution(solution(a1, b1), expected1, []interface{}{a1, b1}, success)
 
-  var a2 int64 = 3;
-  var b2 int64 = 2;
-  var expected2 int64 = 5;
+	var a2 int64 = 3
+	var b2 int64 = 2
+	var expected2 int64 = 5
 
-  success = AssertSolution(solution(a2, b2), expected2, [3, 2], success);
+	success = assertSolution(solution(a2, b2), expected2, []interface{}{a2, b2}, success)
 
-  if success {
-    SendMessage("ok", "__code-0__");
-  }
+	if success {
+		sendMessage("ok", "__code-0__", nil)
+	}
 }
 
-func AssertSolution(result interface{}, expected interface{}, message []interface{}, success bool) bool {
-  var status bool = reflect.DeepEqual(result, expected);
-  if status == false {
-    SendFailureMessage("failure", result, message);
-    return false;
-  }
-  return success;
+type resultMessage struct {
+	Status    string      `json:"status"`
+	Result    interface{} `json:"result"`
+	Arguments interface{} `json:"arguments,omitempty"`
 }
 
-func SendMessage(status string, result interface{}) {
-  fmt.Printf("{\"status\": \"%s\", \"result\": \"%s\"}", status, result);
+func assertSolution(result, expected, message interface{}, success bool) bool {
+	status := reflect.DeepEqual(result, expected)
+	if !status {
+		sendMessage("failure", result, message)
+		return false
+	}
+
+	return success
 }
 
-func SendFailureMessage(status string, result interface{}, message []interface{}) {
-  resultMessage, err1 := json.Marshal(result)
-  message, err2 := json.Marshal(result)
-  if err1 != nil || err2 != nil {
-    fmt.Println("Marshaler error")
-    os.Exit(0)
-  }
+func sendMessage(status string, result, arguments interface{}) {
+	message := resultMessage{
+		Status:    status,
+		Result:    result,
+		Arguments: arguments,
+	}
 
-  fmt.Printf("{\"status\": \"%s\", \"result\": \"%s\", \"arguments\": \"%s\"}", status, result, message);
+	jsonMessage, err := json.Marshal(message)
+	if err != nil {
+		fmt.Println("Marshaler error")
+		os.Exit(0)
+	}
+
+	fmt.Print(string(jsonMessage))
 }
