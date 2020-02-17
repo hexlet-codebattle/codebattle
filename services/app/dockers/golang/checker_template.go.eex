@@ -27,12 +27,8 @@ func main() {
   <% end %>
 
   if success {
-    sendMessage("ok", "__code-0__")
+    sendMessage("ok", <%= hash_sum %>)
   }
-}
-
-sendMessage("ok", "__code-0__")
-	}
 }
 
 func assertSolution(result, expected, message interface{}, success bool) bool {
