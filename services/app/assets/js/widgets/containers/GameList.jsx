@@ -3,7 +3,6 @@ import _ from 'lodash';
 import moment from 'moment';
 import { connect } from 'react-redux';
 import Gon from 'gon';
-import qs from 'qs';
 import { Tooltip, OverlayTrigger } from 'react-bootstrap';
 import i18n from '../../i18n';
 
@@ -15,6 +14,7 @@ import Loading from '../components/Loading';
 import GamesHeatmap from '../components/GamesHeatmap';
 import Card from '../components/Card';
 import UserInfo from './UserInfo';
+import makeCreateGameUrl from '../utils/makeCreateGameUrl';
 
 const timeoutOptions = {
   0: i18n.t('Timeout - no timeout'),
@@ -176,19 +176,7 @@ class GameList extends React.Component {
   };
 
   renderStartNewGameButton = (gameLevel, gameType, timeoutSeconds, gameId) => {
-    const queryParamsString = qs.stringify({
-      level: gameLevel,
-      type: gameType,
-      timeout_seconds: timeoutSeconds,
-    });
-
-    const defaultGameUrl = `/games?${queryParamsString}`;
-
-    const urlMap = {
-      withBot: `/games/${gameId}/join`,
-    };
-
-    const gameUrl = urlMap[gameType] || defaultGameUrl;
+    const gameUrl = makeCreateGameUrl({gameLevel, gameType, timeoutSeconds, gameId});
 
     return (
       <button
