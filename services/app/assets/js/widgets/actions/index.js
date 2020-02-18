@@ -41,4 +41,9 @@ export const redirectToNewGame = gameId => {
 
 export const selectNewGameTimeout = createAction('SELECT_NEW_GAME_TIMEOUT');
 
+export const loadStoredPlaybook = createAction('LOAD_PLAYBOOK');
+export const loadActivePlaybook = createAction('LOAD_ACTIVE_PLAYBOOK');
+export const updateRecords = createAction('UPDATE_RECORDS');
+export const setStepCoefficient = createAction('SET_STEP_COEFFICIENT');
+
 export const setUserInfo = createAction('SET_USER_INFO');
