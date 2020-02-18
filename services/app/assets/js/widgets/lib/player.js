@@ -22,45 +22,47 @@ export const getText = (text, { delta: d }) => {
   return finalDelta.ops[0].insert;
 };
 
+const collectFinalRecord = (acc, record) => {
+  const { players } = acc;
+  switch (record.type) {
+    case 'editor_text': {
+      const player = _.find(players, { id: record.userId });
+      const editorText = getText(player.editorText, record.diff);
+      const newPlayers = updatePlayers(players, {
+        id: record.userId,
+        editorText,
+        editorLang: record.editorLang,
+      });
+
+      return { ...acc, players: newPlayers };
+    }
+    case 'result_check': {
+      const newPlayers = updatePlayers(players, {
+        id: record.id,
+        result: record.result,
+        output: record.output,
+      });
+
+      return { ...acc, players: newPlayers };
+    }
+    case 'chat_message':
+    case 'join_chat':
+    case 'leave_chat': {
+      return { ...acc, chat: record.chat };
+    }
+    default: {
+      return acc;
+    }
+  }
+};
+
 export const getFinalState = ({ recordId, records, gameInitialState }) => {
   const closestFullRecordId = Math.floor(recordId / snapshotStep) * snapshotStep;
   const closestFullRecord = records[closestFullRecordId];
 
   const finalRecord = records
     .slice(closestFullRecordId + 1, recordId)
-    .reduce((acc, record) => {
-      const { players } = acc;
-      switch (record.type) {
-        case 'editor_text': {
-          const player = _.find(players, { id: record.userId });
-          const editorText = getText(player.editorText, record.diff);
-          const newPlayers = updatePlayers(players, {
-            id: record.userId,
-            editorText,
-            editorLang: record.editorLang,
-          });
-
-          return { ...acc, players: newPlayers };
-        }
-        case 'result_check': {
-          const newPlayers = updatePlayers(players, {
-            id: record.id,
-            result: record.result,
-            output: record.output,
-          });
-
-          return { ...acc, players: newPlayers };
-        }
-        case 'chat_message':
-        case 'join_chat':
-        case 'leave_chat': {
-          return { ...acc, chat: record.chat };
-        }
-        default: {
-          return acc;
-        }
-      }
-    }, closestFullRecord);
+    .reduce(collectFinalRecord, closestFullRecord);
 
   const nextRecordId = recordId !== records.length ? recordId : recordId - 1;
   return nextRecordId === 0 ? gameInitialState : { ...finalRecord, nextRecordId };
