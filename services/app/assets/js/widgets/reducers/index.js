@@ -7,9 +7,11 @@ import editor from './editor';
 import game from './game';
 import editorUI from './editorUI';
 import gameUI from './gameUI';
+import usersInfo from './usersInfo';
 
 export default {
   game,
+  usersInfo,
   editor,
   editorUI,
   gameUI,
