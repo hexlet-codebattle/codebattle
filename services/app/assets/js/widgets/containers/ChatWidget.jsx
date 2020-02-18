@@ -5,13 +5,16 @@ import { fetchState, addMessage } from '../middlewares/Chat';
 import * as selectors from '../selectors';
 import Messages from '../components/Messages';
 import UserName from '../components/UserName';
+import GameStatusCodes from '../config/gameStatusCodes';
 
 class ChatWidget extends React.Component {
   state = { message: '' };
 
   componentDidMount() {
-    const { dispatch } = this.props;
-    dispatch(fetchState());
+    const { dispatch, isStoredGame } = this.props;
+    if (!isStoredGame) {
+      dispatch(fetchState());
+    }
   }
 
   handleChange = e => {
@@ -31,9 +34,28 @@ class ChatWidget extends React.Component {
     }
   };
 
-  render() {
+  renderChatInput() {
     const { message: typedMessage } = this.state;
-    const { messages, users } = this.props;
+
+    return (
+      <form className="p-2 input-group input-group-sm position-absolute" style={{ bottom: 0 }} onSubmit={this.handleSubmit}>
+        <input
+          className="form-control border-secondary"
+          placeholder="Type message here..."
+          value={typedMessage}
+          onChange={this.handleChange}
+        />
+        <div className="input-group-append">
+          <button className="btn btn-outline-secondary" type="button" onClick={this.handleSubmit}>
+            Send
+          </button>
+        </div>
+      </form>
+    );
+  }
+
+  render() {
+    const { messages, users, isStoredGame } = this.props;
     const listOfUsers = _.uniqBy(users, 'githubId');
 
     return (
@@ -42,19 +64,7 @@ class ChatWidget extends React.Component {
           <Messages
             messages={messages}
           />
-          <form className="p-2 input-group input-group-sm position-absolute" style={{ bottom: 0 }} onSubmit={this.handleSubmit}>
-            <input
-              className="form-control border-secondary"
-              placeholder="Type message here..."
-              value={typedMessage}
-              onChange={this.handleChange}
-            />
-            <div className="input-group-append">
-              <button className="btn btn-outline-secondary" type="button" onClick={this.handleSubmit}>
-                Send
-              </button>
-            </div>
-          </form>
+          { !isStoredGame && this.renderChatInput() }
         </div>
         <div className="col-4 d-none d-sm-block p-0 border-left bg-white rounded-right">
           <div className="d-flex flex-direction-column flex-wrap justify-content-between">
@@ -82,6 +92,7 @@ const mapStateToProps = state => ({
   users: selectors.chatUsersSelector(state),
   messages: selectors.chatMessagesSelector(state),
   currentUser: selectors.currentChatUserSelector(state),
+  isStoredGame: selectors.gameStatusSelector(state).status === GameStatusCodes.stored,
 });
 
 export default connect(

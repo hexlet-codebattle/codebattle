@@ -11,7 +11,7 @@ import * as GameActions from '../middlewares/Game';
 import GameStatusCodes from '../config/gameStatusCodes';
 import { gameStatusSelector } from '../selectors';
 import WaitingOpponentInfo from '../components/WaitingOpponentInfo';
-
+import CodebattlePlayer from './CodebattlePlayer';
 
 const ComponentForHandlers = ({ children }) => (
   <div style={{ outline: 'none' }}>{children}</div>
@@ -20,15 +20,16 @@ const ComponentForHandlers = ({ children }) => (
 class RootContainer extends React.Component {
   componentDidMount() {
     const user = Gon.getAsset('current_user');
-    const { setCurrentUser, editorReady } = this.props;
-
+    const { setCurrentUser, init } = this.props;
     // FIXME: maybe take from gon?
     setCurrentUser({ user: { ...user, type: userTypes.spectator } });
-    editorReady();
+    init();
   }
 
   render() {
-    const { storeLoaded, gameStatusCode, checkResult } = this.props;
+    const {
+      storeLoaded, gameStatusCode, checkResult,
+    } = this.props;
     const keyMap = {
       CHECK_GAME: ['command+enter', 'ctrl+enter'],
     };
@@ -47,14 +48,19 @@ class RootContainer extends React.Component {
       return <WaitingOpponentInfo gameUrl={gameUrl} />;
     }
 
+    const isStoredGame = gameStatusCode === GameStatusCodes.stored;
+
     return (
       <HotKeys
         keyMap={keyMap}
         handlers={handlers}
         component={ComponentForHandlers}
       >
-        <InfoWidget />
-        <GameWidget />
+        <div className="container-fluid">
+          <InfoWidget />
+          <GameWidget />
+        </div>
+        {isStoredGame && <CodebattlePlayer />}
       </HotKeys>
     );
   }
@@ -63,7 +69,7 @@ class RootContainer extends React.Component {
 RootContainer.propTypes = {
   storeLoaded: PropTypes.bool.isRequired,
   setCurrentUser: PropTypes.func.isRequired,
-  editorReady: PropTypes.func.isRequired,
+  init: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
@@ -75,8 +81,8 @@ const mapDispatchToProps = dispatch => ({
   setCurrentUser: (...args) => {
     dispatch(actions.setCurrentUser(...args));
   },
-  editorReady: () => {
-    dispatch(GameActions.editorReady());
+  init: () => {
+    dispatch(GameActions.init());
   },
   checkResult: () => { dispatch(GameActions.checkGameResult()); },
 });
