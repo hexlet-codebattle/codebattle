@@ -69,7 +69,7 @@ const Task = ({
           <div className="card-text">
             <span className="text-muted">
               {renderTimeoutText(timeoutSeconds)}
-              {renderTimer(time, timeoutSeconds, gameStatusName)}
+              {time && renderTimer(time, timeoutSeconds, gameStatusName)}
             </span>
           </div>
         </div>

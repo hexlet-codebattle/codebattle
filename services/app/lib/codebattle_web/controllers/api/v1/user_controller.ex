@@ -4,6 +4,12 @@ defmodule CodebattleWeb.Api.V1.UserController do
   alias Codebattle.{Repo, User, User.Stats, UserGame}
   import Ecto.Query, warn: false
 
+  def info(conn, %{"id" => id}) do
+    user = Repo.get(User, id)
+
+    json(conn, %{user: user})
+  end
+
   def stats(conn, %{"id" => id}) do
     stats = Stats.for_user(id)
 

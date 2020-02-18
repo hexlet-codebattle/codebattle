@@ -31,7 +31,7 @@ defmodule Codebattle.GameProcess.Player do
              :rating_diff
            ]}
 
-  defstruct id: "",
+  defstruct id: nil,
             editor_text: "module.exports = () => {\n\n};",
             editor_lang: "js",
             lang: "",
