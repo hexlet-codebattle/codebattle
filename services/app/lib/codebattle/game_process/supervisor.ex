@@ -5,7 +5,7 @@ defmodule Codebattle.GameProcess.Supervisor do
 
   use Supervisor
 
-  def start_link(game_id, fsm) do
+  def start_link([game_id, fsm]) do
     Supervisor.start_link(__MODULE__, [game_id, fsm], name: supervisor_name(game_id))
   end
 
@@ -30,6 +30,6 @@ defmodule Codebattle.GameProcess.Supervisor do
   end
 
   defp supervisor_key(game_id) do
-    {:n, :l, {:game_supervisor, to_charlist(game_id)}}
+    {:n, :l, {:game_supervisor, "#{game_id}"}}
   end
 end

@@ -5,7 +5,8 @@ defmodule Codebattle.Tournament do
   import Ecto.Changeset
   import Ecto.Query
 
-  alias Codebattle.Tournament.Types
+  alias __MODULE__
+  alias Tournament.Types
 
   @derive {Poison.Encoder, only: [:id, :type, :name, :state, :starts_at, :players_count, :data]}
 
@@ -22,6 +23,7 @@ defmodule Codebattle.Tournament do
     field(:starts_at, :naive_datetime)
     field(:starts_at_type, :string, virtual: true, default: "5_min")
     field(:meta, :map, default: %{})
+    field(:module, :any, virtual: true, default: Tournament.Individual)
     embeds_one(:data, Types.Data, on_replace: :delete)
 
     belongs_to(:creator, Codebattle.User)
@@ -39,14 +41,26 @@ defmodule Codebattle.Tournament do
     |> validate_required([:name, :players_count, :creator_id, :starts_at])
   end
 
+  def add_module(tournament) do
+    Map.put(tournament, :module, get_module(tournament))
+  end
+
   def get!(id) do
-    Codebattle.Repo.get!(Codebattle.Tournament, id)
+    case Tournament.Server.get_tournament(id) do
+      nil -> get_from_db!(id)
+      tournament -> tournament
+    end
+  end
+
+  def get_from_db!(id) do
+    tournament = Codebattle.Repo.get!(Tournament, id)
+    add_module(tournament)
   end
 
   def all() do
     query =
       from(
-        t in Codebattle.Tournament,
+        t in Tournament,
         order_by: [desc: t.inserted_at],
         preload: :creator
       )
@@ -60,7 +74,7 @@ defmodule Codebattle.Tournament do
   def get_live_tournaments do
     query =
       from(
-        t in Codebattle.Tournament,
+        t in Tournament,
         order_by: [desc: t.id],
         where: t.state in ["waiting_participants", "active"],
         preload: :creator,
@@ -69,4 +83,55 @@ defmodule Codebattle.Tournament do
 
     Codebattle.Repo.all(query)
   end
+
+  def create(params) do
+    now = NaiveDateTime.utc_now()
+
+    starts_at =
+      case params["starts_at_type"] do
+        "1_min" -> NaiveDateTime.add(now, 1 * 60)
+        "5_min" -> NaiveDateTime.add(now, 5 * 60)
+        "10_min" -> NaiveDateTime.add(now, 10 * 60)
+        "30_min" -> NaiveDateTime.add(now, 30 * 60)
+        _ -> NaiveDateTime.add(now, 60 * 60)
+      end
+
+    meta =
+      case params["type"] do
+        "team" ->
+          %{
+            teams: [
+              %{id: 0, title: "frontend"},
+              %{id: 1, title: "backend"}
+            ]
+          }
+
+        _ ->
+          %{}
+      end
+
+    result =
+      %Tournament{}
+      |> Tournament.changeset(
+        Map.merge(params, %{"starts_at" => starts_at, "step" => 0, "meta" => meta, "data" => %{}})
+      )
+      |> Codebattle.Repo.insert()
+
+    case result do
+      {:ok, tournament} ->
+        {:ok, _pid} =
+          tournament
+          |> add_module
+          |> Tournament.Supervisor.start_tournament()
+
+        {:ok, tournament}
+
+      {:error, changeset} ->
+        {:error, changeset}
+    end
+  end
+
+  defp get_module(%{type: "team"}), do: Tournament.Team
+  defp get_module(%{"type" => "team"}), do: Tournament.Team
+  defp get_module(_), do: Tournament.Individual
 end

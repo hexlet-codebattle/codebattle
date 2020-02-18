@@ -182,7 +182,7 @@ defmodule Codebattle.GameProcess.Play do
       Notifications.game_timeout(id)
       Notifications.lobby_game_cancel(id)
       {:ok, fsm} = get_fsm(id)
-      Notifications.notify_tournament("game:cancel", fsm, %{game_id: id})
+      Notifications.notify_tournament(:game_over, fsm, %{game_id: id, state: "canceled"})
 
       id
       |> get_game

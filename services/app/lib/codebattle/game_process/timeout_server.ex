@@ -54,6 +54,6 @@ defmodule Codebattle.GameProcess.TimeoutServer do
   end
 
   defp game_key(game_id) do
-    {:n, :l, {:timeout_server, to_charlist(game_id)}}
+    {:n, :l, {:timeout_server, "#{game_id}"}}
   end
 end

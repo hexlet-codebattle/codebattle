@@ -36,7 +36,7 @@ defmodule Codebattle.Chat.Server do
   end
 
   defp chat_key(id) do
-    {:via, :gproc, {:n, :l, {:chat, to_charlist(id)}}}
+    {:via, :gproc, {:n, :l, {:chat, "#{id}"}}}
   end
 
   def init(_) do

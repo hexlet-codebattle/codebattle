@@ -7,7 +7,6 @@ defmodule CodebattleWeb.Live.Tournament.TeamTest do
     user1 = insert(:user)
     user2 = insert(:user)
     user3 = insert(:user)
-    tournament = insert(:team_tournament, %{creator_id: user1.id})
     task = insert(:task, level: "elementary")
 
     playbook_data = %{
@@ -43,6 +42,15 @@ defmodule CodebattleWeb.Live.Tournament.TeamTest do
     conn2 = put_session(conn, :user_id, user2.id)
     conn3 = put_session(conn, :user_id, user3.id)
 
+    {:ok, view, _html} = live(conn1, Routes.tournament_path(conn1, :index))
+
+    {:error, {:redirect, %{to: "/tournaments/" <> tournament_id}}} =
+      render_submit(view, :create, %{
+        "tournament" => %{type: "team", starts_at_type: "1_min", name: "test"}
+      })
+
+    tournament = Codebattle.Tournament.get!(tournament_id)
+
     {:ok, view1, _html} = live(conn1, Routes.tournament_path(conn, :show, tournament.id))
 
     render_click(view1, :join, %{"team_id" => "0"})
@@ -71,7 +79,14 @@ defmodule CodebattleWeb.Live.Tournament.TeamTest do
 
     tournament = Codebattle.Tournament.get!(tournament.id)
     assert tournament.state == "active"
-    assert Enum.count(tournament.data.players) == 4
+    assert Helpers.players_count(tournament) == 4
+    assert Enum.count(tournament.data.matches) == 2
+
+    render_click(view1, :cancel)
+
+    tournament = Codebattle.Tournament.get!(tournament.id)
+    assert tournament.state == "canceled"
+    assert Helpers.players_count(tournament) == 4
     assert Enum.count(tournament.data.matches) == 2
   end
 end

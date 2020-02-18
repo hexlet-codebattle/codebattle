@@ -65,7 +65,7 @@ class GameActionButtons extends Component {
     return (
       <Modal show={modalShowing} onHide={this.modalHide}>
         <Modal.Body className="text-center">
-            Are you sure you want to give up?
+          Are you sure you want to give up?
         </Modal.Body>
         <Modal.Footer className="mx-auto">
           <Button onClick={this.handleGiveUp} className="btn-danger">Give up</Button>

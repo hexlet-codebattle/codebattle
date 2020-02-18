@@ -110,6 +110,6 @@ defmodule Codebattle.GameProcess.Server do
   end
 
   defp game_key(game_id) do
-    {:n, :l, {:game, to_charlist(game_id)}}
+    {:n, :l, {:game, "#{game_id}"}}
   end
 end

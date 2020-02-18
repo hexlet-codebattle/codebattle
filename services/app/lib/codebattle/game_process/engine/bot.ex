@@ -103,7 +103,8 @@ defmodule Codebattle.GameProcess.Engine.Bot do
 
     ActiveGames.terminate_game(game_id)
 
-    Notifications.notify_tournament("game:finished", fsm, %{
+    Notifications.notify_tournament(:game_over, fsm, %{
+      state: "finished",
       game_id: game_id,
       winner: {winner.id, "won"},
       loser: {loser.id, "lost"}
@@ -118,7 +119,8 @@ defmodule Codebattle.GameProcess.Engine.Bot do
     store_game_result!(fsm, {winner, "won"}, {loser, "gave_up"})
     ActiveGames.terminate_game(game_id)
 
-    Notifications.notify_tournament("game:finished", fsm, %{
+    Notifications.notify_tournament(:game_over, fsm, %{
+      state: "finished",
       game_id: game_id,
       winner: {winner.id, "won"},
       loser: {loser.id, "gave_up"}
