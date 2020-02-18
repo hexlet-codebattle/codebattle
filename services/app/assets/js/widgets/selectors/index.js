@@ -129,6 +129,8 @@ export const rightExecutionOutputSelector = state => {
   return outputSelector(state);
 };
 
+export const getUsersInfo = state => state.usersInfo;
+
 export const chatUsersSelector = state => state.chat.users;
 
 export const chatMessagesSelector = state => state.chat.messages;
