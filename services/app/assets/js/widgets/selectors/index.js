@@ -23,20 +23,28 @@ export const opponentPlayerSelector = state => {
 };
 
 const editorsMetaSelector = state => state.editor.meta;
-const editorTextsSelector = state => state.editor.text;
+export const editorTextsSelector = state => state.editor.text;
+export const editorTextsPlaybookSelector = state => state.editor.textPlaybook;
 
 export const editorDataSelector = playerId => state => {
+  const isStoredGame = gameStatusSelector(state).status === GameStatusCodes.stored;
   const meta = editorsMetaSelector(state)[playerId];
   const editorTexts = editorTextsSelector(state);
+  const editorTextsPlaybook = editorTextsPlaybookSelector(state);
+
   if (!meta) {
     return null;
   }
-  const text = editorTexts[makeEditorTextKey(playerId, meta.currentLangSlug)];
+  const text = isStoredGame
+    ? editorTextsPlaybook[playerId]
+    : editorTexts[makeEditorTextKey(playerId, meta.currentLangSlug)];
   return {
     ...meta,
     text,
   };
 };
+
+export const getEditorTextPlaybook = (state, userId) => state.editor.textPlaybook[userId];
 
 export const firstEditorSelector = state => {
   const playerId = firstPlayerSelector(state).id;
