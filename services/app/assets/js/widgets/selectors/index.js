@@ -26,6 +26,8 @@ const editorsMetaSelector = state => state.editor.meta;
 export const editorTextsSelector = state => state.editor.text;
 export const editorTextsPlaybookSelector = state => state.editor.textPlaybook;
 
+export const gameStatusSelector = state => state.game.gameStatus;
+
 export const editorDataSelector = playerId => state => {
   const isStoredGame = gameStatusSelector(state).status === GameStatusCodes.stored;
   const meta = editorsMetaSelector(state)[playerId];
@@ -81,8 +83,6 @@ export const currentPlayerTextByLangSelector = lang => state => {
 };
 
 export const userLangSelector = userId => state => _.get(editorDataSelector(userId)(state), 'currentLangSlug', null);
-
-export const gameStatusSelector = state => state.game.gameStatus;
 
 export const gameStatusTitleSelector = state => {
   const gameStatus = gameStatusSelector(state);

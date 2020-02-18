@@ -10,9 +10,9 @@ const updatePlayers = (players, params) => (
 );
 
 const updatePlayersGameResult = (players, firstPlayer, secondPlayer) => (
-  players.map(player => (player.id === firstPlayer.id)
+  players.map(player => ((player.id === firstPlayer.id)
     ? { ...player, ...firstPlayer }
-    : { ...player, ...secondPlayer })
+    : { ...player, ...secondPlayer }))
 );
 
 export const getText = (text, { delta: d }) => {
@@ -63,8 +63,8 @@ export const getFinalState = ({ recordId, records, gameInitialState }) => {
     }, closestFullRecord);
 
   const nextRecordId = recordId !== records.length ? recordId : recordId - 1;
-  return nextRecordId === 0 ? gameInitialState: { ...finalRecord, nextRecordId };
-}
+  return nextRecordId === 0 ? gameInitialState : { ...finalRecord, nextRecordId };
+};
 
 export const resolveDiffs = playbook => {
   const { records: [initPlayerOne, initPlayerTwo, ...restRecords] } = playbook;
@@ -183,11 +183,11 @@ export const resolveDiffs = playbook => {
 
           return { ...acc, chat: newChatState, records: [...records, newRecord] };
         }
-        case 'give_up':
+        case 'give_up': {
           const newPlayers = updatePlayersGameResult(
             playersState,
-            { id: record.id, gameResult: "gave_up" },
-            { gameResult: "won" },
+            { id: record.id, gameResult: 'gave_up' },
+            { gameResult: 'won' },
           );
           const data = { type: record.type };
           const newRecord = createFinalRecord(index, data, {
@@ -196,11 +196,12 @@ export const resolveDiffs = playbook => {
           });
 
           return { ...acc, players: newPlayers, records: [...records, newRecord] };
+        }
         case 'check_complete': {
           const newPlayers = updatePlayersGameResult(
             playersState,
-            { id: record.id, gameResult: "won" },
-            { gameResult: "lost" },
+            { id: record.id, gameResult: 'won' },
+            { gameResult: 'lost' },
           );
           const data = { type: record.type };
           const newRecord = createFinalRecord(index, data, {
@@ -214,7 +215,7 @@ export const resolveDiffs = playbook => {
           const newRecord = createFinalRecord(index, record, {
             players: playersState,
             chat: chatState,
-          })
+          });
 
           return { ...acc, records: [...records, newRecord] };
         }
