@@ -7,6 +7,7 @@ import editor from './editor';
 import game from './game';
 import editorUI from './editorUI';
 import gameUI from './gameUI';
+import playbook from './playbook';
 import usersInfo from './usersInfo';
 
 export default {
@@ -15,6 +16,7 @@ export default {
   editor,
   editorUI,
   gameUI,
+  playbook,
   user,
   chat,
   gameList,
