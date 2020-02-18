@@ -163,6 +163,14 @@ export const editorsThemeSelector = currentUserId => state => {
   return EditorThemes.dark;
 };
 
+export const getPlaybookStatus = state => state.playbook.status;
+
+export const getPlaybookInitRecords = state => state.playbook.initRecords;
+
+export const getPlaybookRecords = state => state.playbook.records;
+
+export const getStepCoefficient = state => state.playbook.stepCoefficient;
+
 export const gameListSelector = state => state.gameList;
 
 export const getUsersStats = state => state.user.usersStats;
