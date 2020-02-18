@@ -23,20 +23,30 @@ export const opponentPlayerSelector = state => {
 };
 
 const editorsMetaSelector = state => state.editor.meta;
-const editorTextsSelector = state => state.editor.text;
+export const editorTextsSelector = state => state.editor.text;
+export const editorTextsPlaybookSelector = state => state.editor.textPlaybook;
+
+export const gameStatusSelector = state => state.game.gameStatus;
 
 export const editorDataSelector = playerId => state => {
+  const isStoredGame = gameStatusSelector(state).status === GameStatusCodes.stored;
   const meta = editorsMetaSelector(state)[playerId];
   const editorTexts = editorTextsSelector(state);
+  const editorTextsPlaybook = editorTextsPlaybookSelector(state);
+
   if (!meta) {
     return null;
   }
-  const text = editorTexts[makeEditorTextKey(playerId, meta.currentLangSlug)];
+  const text = isStoredGame
+    ? editorTextsPlaybook[playerId]
+    : editorTexts[makeEditorTextKey(playerId, meta.currentLangSlug)];
   return {
     ...meta,
     text,
   };
 };
+
+export const getEditorTextPlaybook = (state, userId) => state.editor.textPlaybook[userId];
 
 export const firstEditorSelector = state => {
   const playerId = firstPlayerSelector(state).id;
@@ -73,8 +83,6 @@ export const currentPlayerTextByLangSelector = lang => state => {
 };
 
 export const userLangSelector = userId => state => _.get(editorDataSelector(userId)(state), 'currentLangSlug', null);
-
-export const gameStatusSelector = state => state.game.gameStatus;
 
 export const gameStatusTitleSelector = state => {
   const gameStatus = gameStatusSelector(state);
@@ -129,6 +137,8 @@ export const rightExecutionOutputSelector = state => {
   return outputSelector(state);
 };
 
+export const getUsersInfo = state => state.usersInfo;
+
 export const chatUsersSelector = state => state.chat.users;
 
 export const chatMessagesSelector = state => state.chat.messages;
@@ -152,6 +162,14 @@ export const editorsThemeSelector = currentUserId => state => {
   }
   return EditorThemes.dark;
 };
+
+export const getPlaybookStatus = state => state.playbook.status;
+
+export const getPlaybookInitRecords = state => state.playbook.initRecords;
+
+export const getPlaybookRecords = state => state.playbook.records;
+
+export const getStepCoefficient = state => state.playbook.stepCoefficient;
 
 export const gameListSelector = state => state.gameList;
 

@@ -39,6 +39,7 @@
     "popper.js": "^1.16.0",
     "prop-types": "^15.5.10",
     "qs": "^6.9.1",
+    "quill-delta": "^4.2.1",
     "react": "^16.12.0",
     "react-bootstrap": "^1.0.0-beta.16",
     "react-calendar-heatmap": "^1.8.1",
@@ -52,6 +53,7 @@
     "react-stay-scrolled": "^7.0.0",
     "react-toastify": "^5.4.1",
     "redux-persist": "^6.0.0",
+    "react-player-controls": "^1.1.0",
     "set-value": "^2.0.1"
   },
   "devDependencies": {

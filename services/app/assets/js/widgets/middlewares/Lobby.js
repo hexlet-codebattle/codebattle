@@ -1,9 +1,11 @@
 import { camelizeKeys } from 'humps';
+import Gon from 'gon';
 import socket from '../../socket';
 import * as actions from '../actions';
 
 const channelName = 'lobby';
-const channel = socket.channel(channelName);
+const isRecord = Gon.getAsset('is_record');
+const channel = !isRecord ? socket.channel(channelName) : null;
 
 export const fetchState = () => dispatch => {
   const camelizeKeysAndDispatch = actionCreator => data => (
