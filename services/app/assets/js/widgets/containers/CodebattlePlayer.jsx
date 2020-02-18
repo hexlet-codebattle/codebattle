@@ -6,6 +6,7 @@ import { Direction } from 'react-player-controls/dist/constants';
 import * as selectors from '../selectors';
 import * as actions from '../actions';
 import { getText, getFinalState } from '../lib/player';
+import CodebattleSliderBar from '../components/CodebattleSliderBar';
 
 const isEqual = (float1, float2) => {
   const compareEpsilon = Number.EPSILON;
@@ -70,14 +71,17 @@ class CodebattlePlayer extends Component {
     this.setState({ value });
 
     const { isHold } = this.state;
+
+    const run = () => {
+      const { value: currentValue } = this.state;
+      const isSync = isEqual(currentValue, value);
+      if (isSync) {
+        this.setGameState();
+      }
+    };
+
     if (isHold) {
-      setTimeout(() => {
-        const { value: currentValue } = this.state;
-        const isSync = isEqual(currentValue, value);
-        if (isSync) {
-          this.setGameState();
-        }
-      }, 10);
+      setTimeout(run, 10);
     }
   }
 
@@ -202,20 +206,22 @@ class CodebattlePlayer extends Component {
 
   async play() {
     const { value, speed } = this.state;
-    const { stepCoefficient } = this.props;
+
+    const run = () => {
+      const { isStop, value: currentValue } = this.state;
+      const { stepCoefficient } = this.props;
+      const isSync = isEqual(currentValue, value);
+
+      if (!isStop && isSync) {
+        const newValue = value + stepCoefficient;
+        this.setState({ value: newValue > 1 ? 1 : newValue });
+        this.changeGameState();
+        this.play();
+      }
+    };
 
     if (value < 1) {
-      setTimeout(() => {
-        const { isStop, value: currentValue } = this.state;
-        const isSync = isEqual(currentValue, value);
-
-        if (!isStop && isSync) {
-          const newValue = value + stepCoefficient;
-          this.setState({ value: newValue > 1 ? 1 : newValue });
-          this.changeGameState();
-          this.play();
-        }
-      }, speed);
+      setTimeout(run, speed);
     } else {
       this.resetValue();
       this.resetNextRecordId();
@@ -251,35 +257,6 @@ class CodebattlePlayer extends Component {
       this.onControlButtonClick();
     }
   }
-
-  renderSliderBar = ({ value, className }) => (
-    <div
-      className={className}
-      style={{
-        width: `${value * 100}%`,
-      }}
-    />
-  )
-
-  renderSliderAction = ({ value, className }) => (
-    <div
-      className={className}
-      style={{
-        left: `${value * 100}%`,
-      }}
-    />
-  )
-
-  renderSliderHandle = ({ value, className, classNameButton }) => (
-    <div
-      className={className}
-      style={{
-        left: `${value * 100}%`,
-      }}
-    >
-      <div className={classNameButton} />
-    </div>
-  )
 
   render() {
     const { records } = this.props;
@@ -324,12 +301,11 @@ class CodebattlePlayer extends Component {
                   onIntent={intent => this.onSliderHandleChangeIntent(intent)}
                   onIntentEnd={endIntent => this.onSliderHandleChangeIntentEnd(endIntent)}
                 >
-                  {this.renderSliderAction({ value: 0.5, className: 'x-slider-action bg-info' })}
-                  <div className="x-slider-timeline bg-gray">
-                    {!isHold && this.renderSliderBar({ value: lastIntent, className: 'x-slider-bar x-intent-background' })}
-                    {this.renderSliderBar({ value: currentValue, className: 'x-slider-bar bg-danger' })}
-                    {this.renderSliderHandle({ value: currentValue, className: 'x-slider-handle', classNameButton: 'x-slider-handle-button bg-danger' })}
-                  </div>
+                  <CodebattleSliderBar
+                    value={currentValue}
+                    lastIntent={lastIntent}
+                    isHold={isHold}
+                  />
                 </Slider>
               </div>
             </div>
