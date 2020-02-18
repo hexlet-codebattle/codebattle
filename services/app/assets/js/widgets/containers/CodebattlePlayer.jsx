@@ -19,7 +19,7 @@ class CodebattlePlayer extends Component {
     props.setStepCoefficient();
 
     this.state = {
-      mode: "pause",
+      mode: 'pause',
       isEnabled: true,
       nextRecordId: 0,
       isStop: true,
@@ -44,6 +44,8 @@ class CodebattlePlayer extends Component {
         this.onPauseClick();
         break;
       }
+      default:
+        break;
     }
   }
 
@@ -132,7 +134,7 @@ class CodebattlePlayer extends Component {
     const {
       players: editorsState,
       chat: chatState,
-      nextRecordId
+      nextRecordId,
     } = getFinalState({ recordId: resultId, records, gameInitialState });
 
     this.setState({ nextRecordId });
@@ -243,6 +245,13 @@ class CodebattlePlayer extends Component {
     });
   }
 
+  handleKeyPress(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      this.onControlButtonClick();
+    }
+  }
+
   renderSliderBar = ({ value, className }) => (
     <div
       className={className}
@@ -290,7 +299,7 @@ class CodebattlePlayer extends Component {
           <div className="px-1">
             <div className="border bg-light py-2">
               <div className="row align-items-center justify-content-center">
-                <div className="mr-4 btn btn-light" onClick={() => this.onControlButtonClick()}>
+                <div className="mr-4 btn btn-light" role="button" tabIndex={0} onClick={() => this.onControlButtonClick()} onKeyPress={this.handleKeyPress}>
                   {isStop
                     ? (
                       <PlayerIcon.Play
