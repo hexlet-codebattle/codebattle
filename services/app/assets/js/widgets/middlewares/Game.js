@@ -320,30 +320,27 @@ export const activeGameEditorReady = () => dispatch => {
 };
 
 export const storedGameEditorReady = () => dispatch => {
-  try {
-    axios.get(`/api/v1/playbook/${gameId}`).then(response => {
-      const data = camelizeKeys(response.data);
-      const resolvedData = resolveDiffs(data);
+  axios.get(`/api/v1/playbook/${gameId}`).then(response => {
+    const data = camelizeKeys(response.data);
+    const resolvedData = resolveDiffs(data);
 
-      const gameStatus = {
-        status: GameStatusCodes.stored,
-      };
+    const gameStatus = {
+      status: GameStatusCodes.stored,
+    };
 
-      initStore(dispatch)({
-        firstPlayer: resolvedData.players[0],
-        secondPlayer: resolvedData.players[1],
-        task: resolvedData.task,
-        gameStatus,
-        playbookStatusCode: PlaybookStatusCodes.stored,
-      });
-
-      dispatch(actions.loadStoredPlaybook(resolvedData));
-      dispatch(actions.fetchChatData(resolvedData.chat));
-      dispatch(actions.finishStoreInit());
+    initStore(dispatch)({
+      firstPlayer: resolvedData.players[0],
+      secondPlayer: resolvedData.players[1],
+      task: resolvedData.task,
+      gameStatus,
+      playbookStatusCode: PlaybookStatusCodes.stored,
     });
-  } catch (e) {
-    console.log(e.message);
-  }
+
+    dispatch(actions.loadStoredPlaybook(resolvedData));
+    dispatch(actions.fetchChatData(resolvedData.chat));
+    dispatch(actions.finishStoreInit());
+  })
+    .catch(e => console.log(e.message));
 };
 
 export const init = () => dispatch => {
