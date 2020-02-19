@@ -23,11 +23,10 @@ export const loadUserStats = dispatch => async user => {
   }
 };
 
-export const getUsersRatingPage = (page = 1, filter = '') => dispatch => {
-  //TODO: add s parameter for sort, example: s=inserted_at+asc
-  // should have next format <attr>+<direction>
+export const getUsersRatingPage = (page = 1, filter = '', sort = '') => dispatch => {
   const queryParamsString = qs.stringify({
     page,
+    s: sort,
     q: { name_ilike: filter }
   });
 
