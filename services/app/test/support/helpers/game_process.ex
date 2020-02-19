@@ -5,12 +5,13 @@ defmodule Helpers.GameProcess do
 
   import CodebattleWeb.Factory
 
-  alias Codebattle.GameProcess.{GlobalSupervisor, Fsm, ActiveGames}
+  alias Codebattle.GameProcess.{Server, GlobalSupervisor, Fsm, ActiveGames}
 
   def setup_game(state, data) do
     # TODO: FIXME
     game = insert(:game)
     task = Map.get(data, :task, game.task)
+    players = Map.get(data, :players, game)
 
     data = Map.put(data, :game_id, game.id)
     data = Map.put(data, :task, task)
@@ -19,6 +20,7 @@ defmodule Helpers.GameProcess do
     fsm = Fsm.set_data(state, data)
     ActiveGames.setup_game(fsm)
     GlobalSupervisor.start_game(game.id, fsm)
+    Server.update_playbook(game.id, :join, %{players: players})
     game
   end
 
