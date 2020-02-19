@@ -7,7 +7,7 @@ defmodule Codebattle.User.Scope do
   import Ecto.Query, warn: false
 
   @sort_order ~w(asc desc)
-  @sortable_attributes ~w(id rank games_played rating)
+  @sortable_attributes ~w(id rank games_played rating inserted_at)
 
   def list_users_with_raiting(params) do
     initial_with_raiting_scope
@@ -53,11 +53,15 @@ defmodule Codebattle.User.Scope do
 
   defp sort(query, attribute, direction)
        when is_binary(direction) and is_binary(attribute) do
+    direction = direction |> String.to_atom
+    attribute = attribute |> String.to_atom
     from(
       u in subquery(query),
       order_by: {^direction, ^attribute}
     )
   end
+
+  defp sort(query, _), do: query
 
   defp sort(query, _, _), do: query
 
