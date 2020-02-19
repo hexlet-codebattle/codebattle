@@ -47,6 +47,13 @@ class UsersRating extends React.Component {
     </tr>
   );
 
+  sort = attribute => {
+    const direction = this.sort.direction === 'desc' ? 'asc' : 'desc';
+    this.sort.direction = direction;
+    const { getRatingPage } = this.props;
+    getRatingPage(1, this.filterNode.value, `${attribute}+${direction}`);
+  };
+
   renderPagination = () => {
     const {
       getRatingPage,
@@ -105,12 +112,32 @@ class UsersRating extends React.Component {
         <table className="table">
           <thead className="text-left">
             <tr>
-              <th className="p-3 border-0">Rank</th>
+              <th
+                className="p-3 border-0"
+                onClick={_.debounce(() => this.sort('rank'))}
+              >
+                Rank
+              </th>
               <th className="p-3 border-0">User</th>
-              <th className="p-3 border-0">Rating</th>
-              <th className="p-3 border-0">Games played</th>
+              <th
+                className="p-3 border-0"
+                onClick={_.debounce(() => this.sort('rating'))}
+              >
+                Rating
+              </th>
+              <th
+                className="p-3 border-0"
+                onClick={_.debounce(() => this.sort('games_played'))}
+              >
+                Games played
+              </th>
               <th className="p-3 border-0">Performance</th>
-              <th className="p-3 border-0">Joined</th>
+              <th
+                className="p-3 border-0"
+                onClick={_.debounce(() => this.sort('id'))}
+              >
+                Joined
+              </th>
               <th className="p-3 border-0">Github</th>
             </tr>
           </thead>
