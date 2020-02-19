@@ -3,7 +3,7 @@ defmodule Codebattle.User.Scope do
     module with scopes for user repo
   """
 
-  alias Codebattle.{Repo, User, UserGame}
+  alias Codebattle.{User, UserGame}
   import Ecto.Query, warn: false
 
   @sort_order ~w(asc desc)
