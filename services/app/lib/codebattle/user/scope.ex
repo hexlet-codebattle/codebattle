@@ -51,17 +51,18 @@ defmodule Codebattle.User.Scope do
     |> sort(attribute, direction)
   end
 
+  defp sort(query, _), do: query
+
   defp sort(query, attribute, direction)
        when is_binary(direction) and is_binary(attribute) do
-    direction = direction |> String.to_atom
-    attribute = attribute |> String.to_atom
+    direction = direction |> String.to_atom()
+    attribute = attribute |> String.to_atom()
+
     from(
       u in subquery(query),
       order_by: {^direction, ^attribute}
     )
   end
-
-  defp sort(query, _), do: query
 
   defp sort(query, _, _), do: query
 
