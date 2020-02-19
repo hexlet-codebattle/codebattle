@@ -23,6 +23,7 @@ class CodebattlePlayer extends Component {
       mode: 'pause',
       isEnabled: true,
       nextRecordId: 0,
+      delaySetGameState: 10,
       isStop: true,
       isHold: false,
       isHoldPlay: false,
@@ -70,7 +71,7 @@ class CodebattlePlayer extends Component {
   async onSliderHandleChange(value) {
     this.setState({ value });
 
-    const { isHold } = this.state;
+    const { isHold, delaySetGameState } = this.state;
 
     const run = () => {
       const { value: currentValue } = this.state;
@@ -81,7 +82,7 @@ class CodebattlePlayer extends Component {
     };
 
     if (isHold) {
-      setTimeout(run, 10);
+      setTimeout(run, delaySetGameState);
     }
   }
 
