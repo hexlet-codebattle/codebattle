@@ -1,12 +1,22 @@
 import React from 'react';
 import _ from 'lodash';
+import { connect } from 'react-redux';
 import LanguageIcon from './LanguageIcon';
+import { loadUser } from '../middlewares/Users';
+import { getUsersInfo } from '../selectors';
 
-const UserName = ({
-  user: {
-    id, githubId, name, rating, lang, ratingDiff,
-  },
-}) => {
+const UserName = ({ user, users, dispatch }) => {
+  const userInfo = !user.githubId ? users[user.id] : user;
+
+  if (!userInfo) {
+    dispatch(loadUser)({ id: user.id });
+    return null;
+  }
+
+  const {
+    id, name, githubId, lang, rating, ratingDiff,
+  } = userInfo;
+
   const anonymousUser = (
     <span className="text-secondary">
       <span className="border rounded align-middle text-center p-1 mr-1">
@@ -55,4 +65,8 @@ const UserName = ({
   );
 };
 
-export default UserName;
+const mapStateToProps = state => ({
+  users: getUsersInfo(state),
+});
+
+export default connect(mapStateToProps)(UserName);

@@ -6,27 +6,45 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
   alias CodebattleWeb.UserSocket
 
   test "Bot playing with user", %{conn: conn} do
-    task = insert(:task, level: "elementary")
+    task = insert(:task, level: "easy")
     user = insert(:user, %{name: "first", email: "test1@test.test", github_id: 1, rating: 1400})
 
     conn = put_session(conn, :user_id, user.id)
 
     playbook_data = %{
-      meta: %{total_time_ms: 1_000_000, init_lang: "ruby"},
-      playbook: [
-        %{"delta" => [%{"insert" => "t"}], "time" => 20},
-        %{"delta" => [%{"retain" => 1}, %{"insert" => "e"}], "time" => 20},
-        %{"delta" => [%{"retain" => 2}, %{"insert" => "s"}], "time" => 20},
-        %{"lang" => "ruby", "time" => 100}
+      players: [%{id: 2, total_time_ms: 1_000_000}],
+      records: [
+        %{"type" => "init", "id" => 2, "editor_text" => "", "editor_lang" => "ruby"},
+        %{
+          "diff" => %{"delta" => [%{"insert" => "t"}], "time" => 20},
+          "type" => "editor_text",
+          "id" => 2
+        },
+        %{
+          "diff" => %{"delta" => [%{"retain" => 1}, %{"insert" => "e"}], "time" => 20},
+          "type" => "editor_text",
+          "id" => 2
+        },
+        %{
+          "diff" => %{"delta" => [%{"retain" => 2}, %{"insert" => "s"}], "time" => 20},
+          "type" => "editor_text",
+          "id" => 2
+        },
+        %{
+          "diff" => %{"prev_lang" => "ruby", "next_lang" => "ruby", "time" => 100},
+          "type" => "editor_lang",
+          "id" => 2
+        },
+        %{"type" => "check_complete", "id" => 2, "lang" => "ruby"}
       ]
     }
 
-    insert(:bot_playbook, %{data: playbook_data, task: task, lang: "ruby"})
+    insert(:playbook, %{data: playbook_data, task: task, winner_id: 2, winner_lang: "ruby"})
 
     socket = socket(UserSocket, "user_id", %{user_id: user.id, current_user: user})
 
     # Create game
-    level = "elementary"
+    level = "easy"
     {:ok, game_id, bot} = Codebattle.Bot.GameCreator.call(level)
     game_topic = "game:#{game_id}"
 
@@ -40,12 +58,6 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
 
     {:ok, _response, _socket} = subscribe_and_join(socket, GameChannel, game_topic)
     :timer.sleep(100)
-
-    Codebattle.Bot.PlaybookAsyncRunner.run!(%{
-      game_id: game_id,
-      task_id: task.id,
-      bot_id: bot.id
-    })
 
     {:ok, fsm} = Server.fsm(game_id)
     assert fsm.state == :playing

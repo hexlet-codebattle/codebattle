@@ -10,15 +10,33 @@ defmodule CodebattleWeb.Live.Tournament.IndividialTest do
     task = insert(:task, level: "elementary")
 
     playbook_data = %{
-      playbook: [
-        %{"delta" => [%{"insert" => "t"}], "time" => 20},
-        %{"delta" => [%{"retain" => 1}, %{"insert" => "e"}], "time" => 20},
-        %{"delta" => [%{"retain" => 2}, %{"insert" => "s"}], "time" => 20},
-        %{"lang" => "ruby", "time" => 100}
+      records: [
+        %{"type" => "init", "id" => 2, "editor_text" => "", "editor_lang" => "ruby"},
+        %{
+          "diff" => %{"delta" => [%{"insert" => "t"}], "time" => 20},
+          "type" => "editor_text",
+          "id" => 2
+        },
+        %{
+          "diff" => %{"delta" => [%{"retain" => 1}, %{"insert" => "e"}], "time" => 20},
+          "type" => "editor_text",
+          "id" => 2
+        },
+        %{
+          "diff" => %{"delta" => [%{"retain" => 2}, %{"insert" => "s"}], "time" => 20},
+          "type" => "editor_text",
+          "id" => 2
+        },
+        %{
+          "diff" => %{"prev_lang" => "ruby", "next_lang" => "ruby", "time" => 100},
+          "type" => "editor_lang",
+          "id" => 2
+        },
+        %{"type" => "check_complete", "id" => 2, "lang" => "ruby"}
       ]
     }
 
-    insert(:bot_playbook, %{data: playbook_data, task: task, lang: "ruby"})
+    insert(:playbook, %{data: playbook_data, task: task, winner_lang: "ruby"})
 
     conn1 = put_session(conn, :user_id, user1.id)
     conn2 = put_session(conn, :user_id, user2.id)

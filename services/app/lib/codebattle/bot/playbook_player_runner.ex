@@ -4,8 +4,7 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
   """
 
   require Logger
-
-  alias Codebattle.Bot.{Playbook}
+  alias Codebattle.Bot.{Playbook, ChatClientRunner}
 
   @timeout Application.get_env(:codebattle, Codebattle.Bot.PlaybookPlayerRunner)[:timeout]
 
@@ -14,66 +13,112 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
     playbook = Playbook.random(params.task_id)
 
     if playbook do
-      {id, playbook_data} = playbook
-      diffs = Map.get(playbook_data, "playbook")
-      meta = Map.get(playbook_data, "meta")
-
-      step_coefficient = params.bot_time_ms / Map.get(meta, "total_time_ms")
+      %Playbook{id: id, winner_id: winner_id, data: playbook_data} = playbook
+      [init_state | actions] = create_user_playbook(playbook_data.records, winner_id)
+      player_meta = Enum.find(playbook_data.players, &(&1["id"] == winner_id))
+      step_coefficient = params.bot_time_ms / Map.get(player_meta, "total_time_ms")
 
       Logger.info("#{__MODULE__} BOT START with playbook_id: #{id};
         bot_time_ms: #{params.bot_time_ms},
         k: #{step_coefficient},
-        total_time_ms: #{meta["total_time_ms"]}
+        total_time_ms: #{player_meta["total_time_ms"]}
         ")
 
-      start_bot_cycle(meta, diffs, params.game_channel, step_coefficient)
+      start_bot_cycle(init_state, actions, params.game_channel, step_coefficient)
+    else
+      Task.start(fn -> ChatClientRunner.say_some_excuse(params.chat_channel) end)
     end
   end
 
-  defp start_bot_cycle(meta, diffs, channel_pid, step_coefficient) do
-    # Diff is one the maps
+  defp start_bot_cycle(
+         %{"editor_text" => editor_text, "editor_lang" => init_lang},
+         playbook,
+         channel_pid,
+         step_coefficient
+       ) do
+    # Action is one the maps
     #
     # 1 Main map with action to update text
-    # %{"time" => 10, "delta" => []}
+    # %{"type" => "editor_text", "diff" => %{time" => 10, "delta" => []}}
     #
     # 2 Map with action to update lang
-    # %{"time" => 10, "lang" => "elixir"}
+    # %{"type" => "editor_lang", "diff" => %{"time" => 10, "prev_lang" => "elixir", "next_lang" => "ruby"}}
+    #
+    # 3 Map with action to send solution
+    # %{"type" => "check_complete"}
 
-    init_document = TextDelta.new() |> TextDelta.insert("")
-    init_lang = meta["init_lang"]
+    init_document = TextDelta.new() |> TextDelta.insert(editor_text)
 
-    {editor_text, lang} =
-      Enum.reduce(diffs, {init_document, init_lang}, fn diff_map, {document, lang} ->
-        timer_value = Map.get(diff_map, "time") * step_coefficient
-        :timer.sleep(Kernel.trunc(timer_value))
-        # TODO: maybe optimize serialization/deserialization process
-        delta = diff_map |> Map.get("delta", nil)
+    Enum.reduce(playbook, {init_document, init_lang}, fn action, editor_state ->
+      timer_value = get_timer_value(action, step_coefficient)
+      # TODO: maybe optimize serialization/deserialization process
+      # delta = diff_map |> Map.get("delta", nil)
+      :timer.sleep(Kernel.trunc(timer_value))
 
-        if delta do
-          text_delta = delta |> AtomicMap.convert(safe: true) |> TextDelta.new()
-          new_document = TextDelta.apply!(document, text_delta)
+      perform_action(action, editor_state, channel_pid)
+    end)
+  end
 
-          PhoenixClient.Channel.push_async(channel_pid, "editor:data", %{
-            "lang" => lang,
-            "editor_text" => new_document.ops |> hd |> Map.get(:insert)
-          })
+  defp perform_action(
+         %{"type" => "editor_text", "diff" => diff},
+         {document, editor_lang},
+         channel_pid
+       ) do
+    next_document = create_next_document(document, diff)
+    next_editor_state = {next_document, editor_lang}
+    send_editor_state(channel_pid, next_editor_state)
 
-          {new_document, lang}
-        else
-          lang = diff_map |> Map.get("lang")
+    next_editor_state
+  end
 
-          PhoenixClient.Channel.push_async(channel_pid, "editor:data", %{
-            "lang" => lang,
-            "editor_text" => document.ops |> hd |> Map.get(:insert)
-          })
+  defp perform_action(
+         %{"type" => "editor_lang", "diff" => diff},
+         {document, _editor_lang},
+         channel_pid
+       ) do
+    next_lang = diff |> Map.get("next_lang")
+    next_editor_state = {document, next_lang}
+    send_editor_state(channel_pid, next_editor_state)
 
-          {document, lang}
-        end
-      end)
+    next_editor_state
+  end
 
+  defp perform_action(%{"type" => "check_complete"}, editor_state, channel_pid) do
+    send_check_request(channel_pid, editor_state)
+
+    editor_state
+  end
+
+  defp create_user_playbook(records, user_id) do
+    Enum.filter(
+      records,
+      &(&1["id"] == user_id &&
+          &1["type"] in ["init", "editor_text", "editor_lang", "check_complete"])
+    )
+  end
+
+  defp create_next_document(document, diff) do
+    delta = diff |> Map.get("delta")
+    text_delta = delta |> AtomicMap.convert(safe: true) |> TextDelta.new()
+    TextDelta.apply!(document, text_delta)
+  end
+
+  defp get_timer_value(%{"type" => "check_complete"}, _step_coefficient), do: 0
+
+  defp get_timer_value(%{"diff" => diff}, step_coefficient),
+    do: Map.get(diff, "time") * step_coefficient
+
+  defp send_editor_state(channel_pid, {document, lang}) do
+    PhoenixClient.Channel.push_async(channel_pid, "editor:data", %{
+      "lang" => lang,
+      "editor_text" => document.ops |> hd |> Map.get(:insert)
+    })
+  end
+
+  defp send_check_request(channel_pid, {document, lang}) do
     PhoenixClient.Channel.push_async(channel_pid, "check_result", %{
       "lang" => lang,
-      "editor_text" => editor_text.ops |> hd |> Map.get(:insert)
+      "editor_text" => document.ops |> hd |> Map.get(:insert)
     })
   end
 end

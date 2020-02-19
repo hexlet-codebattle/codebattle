@@ -3,7 +3,7 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
 
   alias CodebattleWeb.{GameChannel, UserSocket}
   alias Codebattle.Bot.Playbook
-  alias Codebattle.Repo
+  # alias Codebattle.Repo
   alias CodebattleWeb.UserSocket
 
   setup %{conn: conn} do
@@ -62,9 +62,9 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
     {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
     Mix.Shell.Process.flush()
 
-    Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text1})
+    Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text1, lang: "js"})
     :timer.sleep(40)
-    Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text2})
+    Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text2, lang: "js"})
     :timer.sleep(40)
 
     Phoenix.ChannelTest.push(socket1, "editor:data", %{
@@ -73,27 +73,38 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
     })
 
     :timer.sleep(40)
-    Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text3})
+    Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text3, lang: "elixir"})
     :timer.sleep(500)
-    Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text4})
+    Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text4, lang: "elixir"})
     :timer.sleep(40)
-    Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text4, lang: "js"})
+
+    Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text4, lang: "elixir"})
 
     #       playbook = [
-    #         %{"delta" => [%{"insert" => "t"}], "time" => 100},
-    #         %{"delta" => [%{"retain" => 1}, %{"insert" => "e"}], "time" => 100},
-    #         %{"delta" => [%{"retain" => 2}, %{"insert" => "s"}], "time" => 100},
-    #         %{"delta" => [], "time" => 100},
-    #         %{"lang" => "js", "time" => 100},
-    #         %{"delta" => [], "time" => 100},
-    #         %{"lang" => "js", "time" => 100}
+    #         %{type: "check_complete", id: 1, time: ....},
+    #         %{type: "result_check", id: 1, result: ..., output: ..., time: ....},
+    #         %{type: "start_check", id: 1, editor_lang: "elixir", editor_text: "testf", time: ....}
+    #         %{type: "editor_text", editor_text: "testf", id: 1, time: ....},
+    #         %{type: "editor_text", editor_text: "tes", id: 1, time: ....},
+    #         %{type: "editor_lang", editor_lang: "elixir", id: 1, time: ....},
+    #         %{type: "editor_text", editor_text: "te", id: 1, time: ....},
+    #         %{type: "editor_text", editor_text: "t", id: 1, time: ....},
+    #         %{type: "editor_text", editor_text: "t", id: 1, time: ....},
+    #         %{type: :init, editor_text: "t", editor_lang: "js", id: 1, time: ....},
+    #         %{type: :init, editor_text: ..., editor_lang: "js", id: 2, time: ....},
     #       ]
 
     # sleep, because GameProcess need time to write Playbook with Ecto.connection
     :timer.sleep(400)
-    playbook = Repo.get_by(Playbook, user_id: user1.id)
-    assert Enum.count(playbook.data["playbook"]) == 8
 
-    assert Enum.all?(playbook.data["playbook"], fn x -> x["time"] <= 3000 end) == true
+    playbook = Repo.get_by(Playbook, winner_id: user1.id)
+    assert Enum.count(playbook.data.records) == 10
+
+    user_playbook =
+      Enum.filter(playbook.data.records, fn x ->
+        x["id"] == user1.id && x["type"] in ["editor_text", "editor_lang"]
+      end)
+
+    assert Enum.all?(user_playbook, fn x -> x["diff"]["time"] <= 3000 end) == true
   end
 end

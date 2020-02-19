@@ -15,7 +15,6 @@ defmodule Codebattle.GameProcess.Engine.Standard do
   }
 
   alias Codebattle.{Repo, Game}
-  alias Codebattle.Bot.RecorderServer
   alias CodebattleWeb.Notifications
 
   def create_game(player, params) do
@@ -84,7 +83,6 @@ defmodule Codebattle.GameProcess.Engine.Standard do
       ActiveGames.add_participant(fsm)
 
       update_game!(game_id, %{state: "playing", task_id: task.id})
-      start_record_fsm(game_id, FsmHelpers.get_players(fsm), fsm)
 
       Task.start(fn ->
         Notifier.call(:game_opponent_join, %{
@@ -112,9 +110,12 @@ defmodule Codebattle.GameProcess.Engine.Standard do
     end
   end
 
-  def handle_won_game(game_id, winner, fsm, editor_text) do
+  def handle_won_game(game_id, winner, fsm, _editor_text) do
     loser = FsmHelpers.get_opponent(fsm, winner.id)
-    RecorderServer.check_and_store_result(game_id, winner.id, editor_text)
+    task = FsmHelpers.get_task(fsm)
+
+    {:ok, playbook} = Server.playbook(game_id)
+    store_playbook(playbook, game_id, task.id)
 
     store_game_result!(fsm, {winner, "won"}, {loser, "lost"})
     ActiveGames.terminate_game(game_id)
