@@ -19,6 +19,13 @@ const mapDispatchToProps = {
 };
 
 class UsersRating extends React.Component {
+  state = {
+    sort: {
+      attribute: null,
+      direction: 'desc'
+    }
+  }
+
   componentDidMount() {
     const { getRatingPage } = this.props;
 
@@ -47,11 +54,18 @@ class UsersRating extends React.Component {
     </tr>
   );
 
-  sort = attribute => {
-    const direction = this.sort.direction === 'desc' ? 'asc' : 'desc';
-    this.sort.direction = direction;
+  triggerSort = attribute => {
+    const { sort: { direction: prevDirection } } = this.state;
+    const direction = prevDirection === 'desc' ? 'asc' : 'desc';
+    this.state.sort = { direction, attribute };
     const { getRatingPage } = this.props;
     getRatingPage(1, this.filterNode.value, `${attribute}+${direction}`);
+  };
+
+  sortArrow = attribute => {
+    const { sort: { attribute: currentAttribute, direction } } = this.state;
+    const arrowDirection = attribute === currentAttribute ? direction : '';
+    return (<span className={`sort-arrow ${arrowDirection}`}></span>);
   };
 
   renderPagination = () => {
@@ -114,29 +128,33 @@ class UsersRating extends React.Component {
             <tr>
               <th
                 className="p-3 border-0"
-                onClick={_.debounce(() => this.sort('rank'))}
+                onClick={_.debounce(() => this.triggerSort('rank'))}
               >
                 Rank
+                {this.sortArrow('rank')}
               </th>
               <th className="p-3 border-0">User</th>
               <th
                 className="p-3 border-0"
-                onClick={_.debounce(() => this.sort('rating'))}
+                onClick={_.debounce(() => this.triggerSort('rating'))}
               >
                 Rating
+                {this.sortArrow('rating')}
               </th>
               <th
                 className="p-3 border-0"
-                onClick={_.debounce(() => this.sort('games_played'))}
+                onClick={_.debounce(() => this.triggerSort('games_played'))}
               >
                 Games played
+                {this.sortArrow('games_played')}
               </th>
               <th className="p-3 border-0">Performance</th>
               <th
                 className="p-3 border-0"
-                onClick={_.debounce(() => this.sort('id'))}
+                onClick={_.debounce(() => this.triggerSort('id'))}
               >
                 Joined
+                {this.sortArrow('id')}
               </th>
               <th className="p-3 border-0">Github</th>
             </tr>
