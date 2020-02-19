@@ -46,10 +46,12 @@ func assertSolution(result, expected, message interface{}, success bool) bool {
 
 func sendMessage(status string, result interface{}) {
 	fmt.Printf(`{"status": "%s", "result": %s}`, status, toJSON(result))
+  fmt.Println()
 }
 
 func sendFailureMessage(status string, result, arguments interface{}) {
 	fmt.Printf(`{"status": "%s", "result": %s, "arguments": %s}`, status, toJSON(result), toJSON(arguments))
+  fmt.Println()
 }
 
 func toJSON(data interface{}) []byte {
