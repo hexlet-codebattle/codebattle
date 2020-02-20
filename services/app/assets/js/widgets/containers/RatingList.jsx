@@ -22,8 +22,8 @@ class UsersRating extends React.Component {
   state = {
     sort: {
       attribute: null,
-      direction: 'desc'
-    }
+      direction: 'desc',
+    },
   }
 
   componentDidMount() {
