@@ -80,13 +80,9 @@ const Task = ({
         </div>
         <div className="d-flex align-items-end flex-column flex-sm-row justify-content-between">
           <h6 className="card-text small font-italic text-black-50">
-<<<<<<< HEAD
             <span className="mr-2">
               {i18n.t('Found a mistake? Have something to add? Pull Requests are welcome: ')}
             </span>
-=======
-            {i18n.t('Found a mistake? Have something to add? Pull Requests are welcome: ')}
->>>>>>> 5c55357c99391d0273243599b86af892a5aa5ca8
             {renderTaskLink(task.name)}
           </h6>
         </div>
