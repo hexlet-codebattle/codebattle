@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<ruleset name="Codebattle rules">
+    <description>PSR12 standards.</description>
+
+    <arg name="basepath" value="."/>
+    <arg name="colors"/>
+    <arg name="parallel" value="100"/>
+    <arg value="np"/>
+    <rule ref="PSR12">
+    </rule>
+    <rule ref="Generic.ControlStructures.InlineControlStructure">
+        <properties>
+            <property name="error" value="true"/>
+        </properties>
+    </rule>
+
+</ruleset>
