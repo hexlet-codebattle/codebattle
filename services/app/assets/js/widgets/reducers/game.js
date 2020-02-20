@@ -16,7 +16,6 @@ export default createReducer(initialState, {
   [actions.updateGameStatus](state, { payload }) {
     Object.assign(state.gameStatus, payload);
   },
-
   [actions.updateGamePlayers](state, { payload: { players: playersList } }) {
     const { players } = state;
     const newPlayersState = playersList.reduce((acc, player) => ({
@@ -26,11 +25,9 @@ export default createReducer(initialState, {
 
     state.players = newPlayersState;
   },
-
   [actions.setGameTask](state, { payload: { task } }) {
     state.task = task;
   },
-
   [actions.updateCheckStatus](state, { payload }) {
     Object.assign(state.gameStatus.checking, payload);
   },

@@ -7,6 +7,7 @@ defmodule Codebattle.GameProcess.Engine.Bot do
     GlobalSupervisor,
     Player,
     FsmHelpers,
+    TasksQueuesServer,
     ActiveGames
   }
 
@@ -83,7 +84,14 @@ defmodule Codebattle.GameProcess.Engine.Bot do
 
   def handle_won_game(game_id, winner, fsm) do
     loser = FsmHelpers.get_opponent(fsm, winner.id)
+    task_id = FsmHelpers.get_task(fsm).id
+
     store_game_result!(fsm, {winner, "won"}, {loser, "lost"})
+
+    {:ok, playbook} = Server.get_playbook(game_id)
+
+    store_playbook(playbook, game_id, task_id)
+
     ActiveGames.terminate_game(game_id)
 
     Notifications.notify_tournament(:game_over, fsm, %{
@@ -97,6 +105,12 @@ defmodule Codebattle.GameProcess.Engine.Bot do
   end
 
   def get_task(level) do
+    task = TasksQueuesServer.call_next_task(level)
+
+    {:ok, task}
+  end
+
+  def get_solved_task(level) do
     query =
       from(
         playbook in Playbook,

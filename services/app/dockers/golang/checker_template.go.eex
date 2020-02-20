@@ -1,68 +1,61 @@
 package main
 
 import (
-  "fmt";
-  "os";
-  "reflect";
-  "encoding/json"
+	"encoding/json"
+	"fmt"
+	"os"
+	"reflect"
 )
 
 func main() {
-  var success bool = true;
-
   defer func() {
     if err := recover(); err != nil {
-      SendMessage("error", err);
+      sendMessage("error", fmt.Sprintf("%s", err))
     }
-    os.Exit(0);
-  }();
+    os.Exit(0)
+  }()
+
+  success := true
 
   <%= for %{arguments: arguments, expected: expected, index: i} <- checks do %>
     <%= for %{defining: defining, value: value} <- arguments.info do %>
-      var <%= defining %> = <%= value %>;
+      var <%= defining %> = <%= value %>
     <% end %>
-    var <%= expected.defining %> = <%= expected.value %>;
+    var <%= expected.defining %> = <%= expected.value %>
 
-    success = AssertSolution(solution(<%= arguments.expression %>), expected<%= i %>, []interface{}{<%= arguments.expression %>}, success);
+    success = assertSolution(solution(<%= arguments.expression %>), expected<%= i %>, []interface{}{<%= arguments.expression %>}, success)
   <% end %>
 
   if success {
-    SendMessage("ok", <%= hash_sum %>);
+    sendMessage("ok", <%= hash_sum %>)
   }
 }
 
-func AssertSolution(result interface{}, expected interface{}, message []interface{}, success bool) bool {
-  var status bool = reflect.DeepEqual(result, expected);
-  if status == false {
-    SendFailureMessage("failure", result, message);
-    return false;
-  }
+func assertSolution(result, expected, message interface{}, success bool) bool {
+	status := reflect.DeepEqual(result, expected)
+	if !status {
+		sendFailureMessage("failure", result, message)
+		return false
+	}
 
-  SendSuccessMessage("success", result);
-  return success;
+	return success
 }
 
-func SendMessage(status string, result interface{}) {
-  fmt.Printf("{\"status\": \"%s\", \"result\": \"%s\"}\n", status, result);
+func sendMessage(status string, result interface{}) {
+	fmt.Printf(`{"status": "%s", "result": %s}`, status, toJSON(result))
+  fmt.Println()
 }
 
-func SendSuccessMessage(status string, result interface{}) {
-  resultMessage, err := json.Marshal(result)
-  if err != nil {
-    fmt.Println("Marshaler error")
-    os.Exit(0)
-  }
-
-  fmt.Printf("{\"status\": \"%s\", \"result\": %s}\n", status, resultMessage);
+func sendFailureMessage(status string, result, arguments interface{}) {
+  fmt.Printf(`{"status": "%s", "result": %s, "arguments": %s}`, status, toJSON(result), toJSON(arguments))
+  fmt.Println()
 }
 
-func SendFailureMessage(status string, result interface{}, message []interface{}) {
-  resultMessage, err1 := json.Marshal(result)
-  errorMessage, err2 := json.Marshal(message)
-  if err1 != nil || err2 != nil {
-    fmt.Println("Marshaler error")
-    os.Exit(0)
-  }
-
-  fmt.Printf("{\"status\": \"%s\", \"result\": %s, \"arguments\": %s}\n", status, resultMessage, errorMessage);
+func toJSON(data interface{}) []byte {
+	result, err := json.Marshal(data)
+	if err != nil {
+		fmt.Println("Marshaler error")
+		os.Exit(0)
+	}
+	return result
 }

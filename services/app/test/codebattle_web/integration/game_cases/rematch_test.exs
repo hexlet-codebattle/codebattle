@@ -96,7 +96,7 @@ defmodule Codebattle.GameCases.RematchTest do
     task = insert(:task, level: "elementary")
 
     playbook_data = %{
-      playbook: [
+      records: [
         %{"delta" => [%{"insert" => "t"}], "time" => 20},
         %{"lang" => "ruby", "time" => 100}
       ]
@@ -107,7 +107,7 @@ defmodule Codebattle.GameCases.RematchTest do
 
     editor_text_edited = "Hello world1!"
 
-    insert(:bot_playbook, %{data: playbook_data, task: task, lang: "ruby"})
+    insert(:playbook, %{data: playbook_data, task: task, winner_lang: "ruby"})
 
     # Create game
     level = "elementary"

@@ -42,6 +42,10 @@ defmodule Codebattle.GameProcess.Engine.Base do
         Server.call_transition(FsmHelpers.get_game_id(fsm), :update_editor_data, params)
       end
 
+      def store_playbook(playbook, game_id, task_id) do
+        Task.start(fn -> Playbook.store_playbook(playbook, game_id, task_id) end)
+      end
+
       import Codebattle.GameProcess.Engine.Base
     end
   end

@@ -13,8 +13,7 @@ defmodule Codebattle.GameProcess.Supervisor do
     children = [
       worker(Codebattle.Chat.Server, [game_id]),
       worker(Codebattle.GameProcess.Server, [game_id, fsm]),
-      worker(Codebattle.GameProcess.TimeoutServer, [game_id]),
-      supervisor(Codebattle.Bot.Supervisor, [game_id])
+      worker(Codebattle.GameProcess.TimeoutServer, [game_id])
     ]
 
     supervise(children, strategy: :one_for_one)

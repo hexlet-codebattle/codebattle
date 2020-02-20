@@ -108,6 +108,11 @@ defmodule Codebattle.GameProcess.Engine.Standard do
 
   def handle_won_game(game_id, winner, fsm) do
     loser = FsmHelpers.get_opponent(fsm, winner.id)
+    task = FsmHelpers.get_task(fsm)
+
+    {:ok, playbook} = Server.get_playbook(game_id)
+    store_playbook(playbook, game_id, task.id)
+
     store_game_result!(fsm, {winner, "won"}, {loser, "lost"})
     ActiveGames.terminate_game(game_id)
 

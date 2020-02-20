@@ -77,6 +77,7 @@ defmodule Codebattle.GameProcess.Play do
     case get_fsm(id) do
       {:ok, fsm} ->
         check_result = checker_adapter().call(FsmHelpers.get_task(fsm), editor_text, editor_lang)
+              Server.update_playbook( id, :start_check, %{id: user.id, editor_text: editor_text, editor_lang: editor_lang})
 
         {:ok, new_fsm} =
           Server.call_transition(id, :check_complete, %{
@@ -103,6 +104,9 @@ defmodule Codebattle.GameProcess.Play do
     case Server.call_transition(id, :give_up, %{id: user.id}) do
       {:ok, fsm} ->
         FsmHelpers.get_module(fsm).handle_give_up(id, user.id, fsm)
+        Server.update_playbook( id, :give_up, %{id: user.id})
+
+
         {:ok, fsm}
 
       {:error, reason} ->

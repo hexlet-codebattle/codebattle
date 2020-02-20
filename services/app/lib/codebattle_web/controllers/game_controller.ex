@@ -6,6 +6,7 @@ defmodule CodebattleWeb.GameController do
 
   alias Codebattle.GameProcess.{Play, ActiveGames, FsmHelpers}
   alias Codebattle.Languages
+  alias Codebattle.Bot.Playbook
 
   plug(CodebattleWeb.Plugs.RequireAuth when action in [:create, :join])
 
@@ -44,6 +45,26 @@ defmodule CodebattleWeb.GameController do
 
   def show(conn, %{"id" => id}) do
     case Play.get_fsm(id) do
+      {:error, _reason} ->
+        case Play.get_game(id) do
+          nil ->
+            conn
+            |> put_status(:not_found)
+            |> put_view(CodebattleWeb.ErrorView)
+            |> render("404.html", %{msg: gettext("Game not found")})
+
+          game ->
+            if Playbook.exists?(id) do
+              langs = Languages.meta() |> Map.values()
+
+              conn
+              |> put_gon(is_record: true, game_id: id, langs: langs)
+              |> render("show.html", %{layout_template: "full_width.html"})
+            else
+              render(conn, "game_result.html", %{game: game})
+            end
+        end
+
       {:ok, fsm} ->
         task = FsmHelpers.get_task(fsm)
         langs = Languages.meta() |> Map.values() |> Languages.update_solutions(task)

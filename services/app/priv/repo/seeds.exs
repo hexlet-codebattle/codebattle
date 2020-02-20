@@ -20,23 +20,69 @@ levels = ["elementary", "easy", "medium", "hard"]
     task = Codebattle.Task.changeset(Map.merge(task_data, %{level: level})) |> Repo.insert!()
 
     playbook_data = %{
-      meta: %{total_time_ms: 5_000, init_lang: "ruby" },
-      playbook: [
-        %{"time" => 0, "delta" => [%{"insert" => "def solution()\n\nend"}]},
-        %{"lang" => "ruby", "time" => 24},
-        %{"time" => 2058, "delta" => [%{"retain" => 13}, %{"insert" => "a"}]},
-        %{"time" => 145, "delta" => [%{"retain" => 14}, %{"insert" => ","}]},
-        %{"time" => 725, "delta" => [%{"retain" => 15}, %{"insert" => "b"}]},
-        %{"time" => 620, "delta" => [%{"retain" => 19}, %{"insert" => "\n"}]},
-        %{"time" => 593, "delta" => [%{"retain" => 18}, %{"insert" => "a"}]},
-        %{"time" => 329, "delta" => [%{"retain" => 19}, %{"insert" => " "}]},
-        %{"time" => 500, "delta" => [%{"retain" => 20}, %{"insert" => "+"}]},
-        %{"time" => 251, "delta" => [%{"retain" => 21}, %{"insert" => " "}]},
-        %{"time" => 183, "delta" => [%{"retain" => 22}, %{"insert" => "b"}]}
+      players: [%{ id: 2, total_time_ms: 5_000, editor_lang: "ruby", editor_text: ""}],
+      records: [
+        %{"type" => "init", "id" => 2, "editor_text" => "", "editor_lang" => "ruby"},
+        %{
+          "diff" => %{"delta" => [%{"insert" => "def solution()\n\nend"}], "time" => 0},
+          "type" => "editor_text",
+          "id" => 2
+        },
+        %{
+          "diff" => %{"prev_lang" => "ruby", "next_lang" => "ruby", "time" => 24},
+          "type" => "editor_lang",
+          "id" => 2
+        },
+        %{
+          "diff" => %{"delta" => [%{"retain" => 13}, %{"insert" => "a"}], "time" => 2058},
+          "type" => "editor_text",
+          "id" => 2
+        },
+        %{
+          "diff" => %{"delta" => [%{"retain" => 14}, %{"insert" => ","}], "time" => 145},
+          "type" => "editor_text",
+          "id" => 2
+        },
+        %{
+          "diff" => %{"delta" => [%{"retain" => 15}, %{"insert" => "b"}], "time" => 725},
+          "type" => "editor_text",
+          "id" => 2
+        },
+        %{
+          "diff" => %{"delta" => [%{"retain" => 19}, %{"insert" => "\n"}], "time" => 620},
+          "type" => "editor_text",
+          "id" => 2
+        },
+        %{
+          "diff" => %{"delta" => [%{"retain" => 18}, %{"insert" => "a"}], "time" => 593},
+          "type" => "editor_text",
+          "id" => 2
+        },
+        %{
+          "diff" => %{"delta" => [%{"retain" => 19}, %{"insert" => " "}], "time" => 329},
+          "type" => "editor_text",
+          "id" => 2
+        },
+        %{
+          "diff" => %{"delta" => [%{"retain" => 20}, %{"insert" => "+"}], "time" => 500},
+          "type" => "editor_text",
+          "id" => 2
+        },
+        %{
+          "diff" => %{"delta" => [%{"retain" => 21}, %{"insert" => " "}], "time" => 251},
+          "type" => "editor_text",
+          "id" => 2
+        },
+        %{
+          "diff" => %{"delta" => [%{"retain" => 22}, %{"insert" => "b"}], "time" => 183},
+          "type" => "editor_text",
+          "id" => 2
+        },
+        %{"type" => "check_complete", "id" => 2, "lang" => "ruby"}
       ]
     }
 
-    Repo.insert!(%Codebattle.Bot.Playbook{data: playbook_data, task: task, lang: "ruby"})
+    Repo.insert!(%Codebattle.Bot.Playbook{data: playbook_data, task: task, winner_lang: "ruby", winner_id: 2})
 
     IO.puts("Upsert #{task_name}")
   end

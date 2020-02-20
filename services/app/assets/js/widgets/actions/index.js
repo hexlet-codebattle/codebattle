@@ -22,6 +22,7 @@ export const updateUsersRatingPage = createAction('UPDATE_USERS_RATING_PAGE');
 export const sendPlayerCode = createAction('SEND_PLAYER_CODE');
 export const updateEditorLang = createAction('UPDATE_EDITOR_LANG');
 export const updateEditorText = createAction('UPDATE_EDITOR_TEXT');
+export const updateEditorTextPlaybook = createAction('UPDATE_EDITOR_TEXT_PLAYBOOK');
 
 export const updateGameStatus = createAction('UPDATE_GAME_STATUS');
 export const setGameTask = createAction('SET_GAME_TASK');
@@ -40,3 +41,10 @@ export const redirectToNewGame = gameId => {
 };
 
 export const selectNewGameTimeout = createAction('SELECT_NEW_GAME_TIMEOUT');
+
+export const loadStoredPlaybook = createAction('LOAD_PLAYBOOK');
+export const loadActivePlaybook = createAction('LOAD_ACTIVE_PLAYBOOK');
+export const updateRecords = createAction('UPDATE_RECORDS');
+export const setStepCoefficient = createAction('SET_STEP_COEFFICIENT');
+
+export const setUserInfo = createAction('SET_USER_INFO');

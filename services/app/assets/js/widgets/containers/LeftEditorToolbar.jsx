@@ -105,6 +105,7 @@ class LeftEditorToolbar extends Component {
   render() {
     const {
       currentUserId,
+      gameStatus,
       leftEditorLangSlug,
       leftUserId,
       rightUserId,
@@ -115,7 +116,8 @@ class LeftEditorToolbar extends Component {
       expandEditor,
     } = this.props;
 
-    const isSpectator = !_.hasIn(players, currentUserId);
+    const isStoredGame = gameStatus.status === GameStatusCodes.stored;
+    const isSpectator = isStoredGame || !_.hasIn(players, currentUserId);
 
     if (leftEditorLangSlug === null) {
       return null;

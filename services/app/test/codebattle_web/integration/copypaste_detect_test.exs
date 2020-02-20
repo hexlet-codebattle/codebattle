@@ -58,7 +58,7 @@ defmodule Codebattle.CopyPasteDetectTest do
     Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text1, lang: "js"})
     :timer.sleep(100)
 
-    assert Codebattle.Repo.aggregate(Codebattle.Bot.Playbook, :count, :id) == play_books_count
+    assert Codebattle.Repo.aggregate(Codebattle.Bot.Playbook, :count, :id) == play_books_count + 1
   end
 
   test "Detect user copypaste, part 2", %{

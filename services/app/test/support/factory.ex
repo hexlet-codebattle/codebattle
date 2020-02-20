@@ -65,7 +65,7 @@ defmodule CodebattleWeb.Factory do
     }
   end
 
-  def bot_playbook_factory do
+  def playbook_factory do
     %Playbook{}
   end
 
