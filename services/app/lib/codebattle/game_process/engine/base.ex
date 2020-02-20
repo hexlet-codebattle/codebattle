@@ -1,60 +1,64 @@
 defmodule Codebattle.GameProcess.Engine.Base do
   alias Codebattle.GameProcess.{
     Play,
+    Player,
     Server,
     FsmHelpers,
-    Elo
+    ActiveGames,
+    Fsm,
+    Elo,
+    GlobalSupervisor
   }
 
   alias Codebattle.{Repo, User, Game, UserGame}
-  alias Codebattle.Bot.RecorderServer
   alias Codebattle.User.Achievements
   alias CodebattleWeb.Api.GameView
 
+  alias CodebattleWeb.Notifications
+  import Codebattle.GameProcess.Auth
+
   defmacro __using__(_opts) do
     quote do
-      def update_text(game_id, player, editor_text) do
-        unless player.is_bot do
-          RecorderServer.update_text(game_id, player.id, editor_text)
-        end
+      def cancel_game(id, user) do
+        with {:ok, fsm} <- Play.get_fsm(id),
+             %Player{} = player <- FsmHelpers.get_player(fsm, user.id),
+             :ok <- player_can_cancel_game?(id, player) do
+          ActiveGames.terminate_game(id)
+          GlobalSupervisor.terminate_game(id)
+          Notifications.remove_active_game(id)
 
-        Server.call_transition(game_id, :update_editor_params, %{
-          id: player.id,
-          editor_text: editor_text
-        })
+          id
+          |> Play.get_game()
+          |> Game.changeset(%{state: "canceled"})
+          |> Repo.update!()
+
+          :ok
+        else
+          {:error, reason} -> {:error, reason}
+        end
       end
 
-      def update_lang(game_id, player, editor_lang) do
-        unless player.is_bot do
-          RecorderServer.update_lang(game_id, player.id, editor_lang)
-        end
-
-        Server.call_transition(game_id, :update_editor_params, %{
-          id: player.id,
-          editor_lang: editor_lang
-        })
-
-        Task.start(fn ->
-          Repo.get!(User, player.id)
-          |> User.changeset(%{lang: editor_lang})
-          |> Repo.update!()
-        end)
+      def update_editor_data(fsm, params) do
+        Server.call_transition(FsmHelpers.get_game_id(fsm), :update_editor_data, params)
       end
 
       import Codebattle.GameProcess.Engine.Base
     end
   end
 
-  def start_record_fsm(game_id, [first_player, second_player], fsm) do
-    unless first_player.is_bot do
-      {:ok, _} = Codebattle.Bot.Supervisor.start_record_server(game_id, first_player, fsm)
-    end
+  def handle_give_up(game_id, loser_id, fsm) do
+    loser = FsmHelpers.get_player(fsm, loser_id)
+    winner = FsmHelpers.get_opponent(fsm, loser.id)
 
-    unless second_player.is_bot do
-      {:ok, _} = Codebattle.Bot.Supervisor.start_record_server(game_id, second_player, fsm)
-    end
+    store_game_result!(fsm, {winner, "won"}, {loser, "gave_up"})
+    ActiveGames.terminate_game(game_id)
 
-    {:ok, fsm}
+    Notifications.notify_tournament(:game_over, fsm, %{
+      state: "finished",
+      game_id: game_id,
+      winner: {winner.id, "won"},
+      loser: {loser.id, "gave_up"}
+    })
   end
 
   def store_game_result!(fsm, {winner, winner_result}, {loser, loser_result}) do
@@ -97,6 +101,12 @@ defmodule Codebattle.GameProcess.Engine.Base do
       update_user!(winner.id, %{rating: new_winner_rating, achievements: winner_achievements})
       update_user!(loser.id, %{rating: new_loser_rating, achievements: loser_achievements})
     end)
+
+    # Task.start(fn ->
+    #   Repo.get!(User, player.id)
+    #   |> User.changeset(%{lang: editor_lang})
+    #   |> Repo.update!()
+    # end)
   end
 
   def update_user!(user_id, params) do
@@ -126,4 +136,6 @@ defmodule Codebattle.GameProcess.Engine.Base do
       game: GameView.render_active_game(fsm)
     })
   end
+
+  def build_fsm(params), do: Fsm.new() |> Fsm.create(params)
 end

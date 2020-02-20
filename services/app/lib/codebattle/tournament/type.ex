@@ -1,6 +1,7 @@
 defmodule Codebattle.Tournament.Type do
   alias Codebattle.Repo
   alias Codebattle.Tournament
+  alias Codebattle.GameProcess.{Play, FsmHelpers}
 
   @moduledoc """
   Defines interface for tournament type
@@ -117,14 +118,13 @@ defmodule Codebattle.Tournament.Type do
           |> Enum.map(fn match ->
             case match.state do
               "waiting" ->
-                {:ok, game_id} =
-                  Codebattle.GameProcess.Play.create_tournament_game(
-                    tournament,
-                    match.players,
-                    Application.fetch_env!(:codebattle, :tournament_match_timeout)
-                  )
+                {:ok, fsm} =
+                  Play.create_game(%{
+                    tournament: tournament,
+                    players: match.players
+                  })
 
-                %{match | game_id: game_id, state: "active"}
+                %{match | game_id: FsmHelpers.get_game_id(fsm), state: "active"}
 
               _ ->
                 match

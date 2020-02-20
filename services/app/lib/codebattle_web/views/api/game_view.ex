@@ -41,7 +41,7 @@ defmodule CodebattleWeb.Api.GameView do
   end
 
   def can_player_receive_game?(game, user_id) do
-    Enum.any?(game.players, fn player -> player.id === user_id end) or game.type === "public"
+    Enum.any?(game.players, fn player -> player.id === user_id end) or game.type != "private"
   end
 
   def render_active_game(fsm) do

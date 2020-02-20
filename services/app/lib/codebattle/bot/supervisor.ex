@@ -2,8 +2,6 @@ defmodule Codebattle.Bot.Supervisor do
   # Automatically defines child_spec/1
   use DynamicSupervisor
 
-  alias Codebattle.Bot.RecorderServer
-
   def start_link(game_id) do
     DynamicSupervisor.start_link(__MODULE__, game_id,
       name: String.to_atom("bot_server_#{game_id}")

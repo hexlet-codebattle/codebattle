@@ -13,7 +13,7 @@ defmodule Codebattle.GameProcess.TasksQueuesServer do
     GenServer.start_link(__MODULE__, %{}, name: __MODULE__)
   end
 
-  def call_next_task(level) do
+  def get_task(level) do
     GenServer.call(__MODULE__, {:next_task, level})
   end
 

@@ -286,26 +286,6 @@ class GameList extends React.Component {
     );
   };
 
-  // TODO: add this render under "Play with the bot" when the server part is ready
-  renderPlayWithBotSelector = () => (
-    <div className="dropdown">
-      <button
-        id="btnGroupPlayWithBot"
-        type="button"
-        className="btn btn-sm btn-outline-success dropdown-toggle"
-        data-toggle="dropdown"
-        aria-haspopup="true"
-        aria-expanded="false"
-      >
-        <i className="fa fa-android mr-2" />
-        Play with the bot
-      </button>
-      <div className="dropdown-menu" aria-labelledby="btnGroupPlayWithBot">
-        {this.renderStartNewGameDropdownMenu('withBot')}
-      </div>
-    </div>
-  );
-
   renderLiveTournaments = tournaments => {
     if (_.isEmpty(tournaments)) {
       return (

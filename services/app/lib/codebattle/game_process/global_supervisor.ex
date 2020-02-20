@@ -6,12 +6,14 @@ defmodule Codebattle.GameProcess.GlobalSupervisor do
   use DynamicSupervisor
 
   alias Codebattle.GameProcess.ActiveGames
+  alias Codebattle.GameProcess.FsmHelpers
 
   def start_link do
     DynamicSupervisor.start_link(__MODULE__, [], name: __MODULE__)
   end
 
-  def start_game(game_id, fsm) do
+  def start_game(fsm) do
+    game_id = FsmHelpers.get_game_id(fsm)
     spec = {Codebattle.GameProcess.Supervisor, [game_id, fsm]}
     DynamicSupervisor.start_child(__MODULE__, spec)
   end

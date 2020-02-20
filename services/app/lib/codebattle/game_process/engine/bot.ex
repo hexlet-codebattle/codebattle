@@ -3,68 +3,62 @@ defmodule Codebattle.GameProcess.Engine.Bot do
   import Codebattle.GameProcess.Auth
 
   alias Codebattle.GameProcess.{
-    Play,
     Server,
     GlobalSupervisor,
-    Fsm,
     Player,
     FsmHelpers,
     ActiveGames
   }
 
   alias Codebattle.{Repo, Game}
-  alias Codebattle.Bot.{RecorderServer, Playbook, PlaybookAsyncRunner}
+  alias Codebattle.Bot.{Playbook, PlaybookAsyncRunner}
   alias CodebattleWeb.Notifications
 
   import Ecto.Query, warn: false
 
-  def create_game(bot, %{"level" => level, "type" => type}) do
-    case player_can_create_game?(bot) do
-      :ok ->
-        bot_player = Player.build(bot, %{creator: true})
+  # 1 hour
+  @default_timeout 3600
 
-        game = Repo.insert!(%Game{state: "waiting_opponent", level: level, type: type})
+  def create_game(%{user: user, level: level, type: type} = params) do
+    player = Player.build(user, %{creator: true})
+    timeout_seconds = params[:timeout_seconds] || @default_timeout
+    game = Repo.insert!(%Game{state: "waiting_opponent", level: level, type: type})
 
-        fsm =
-          Fsm.new()
-          |> Fsm.create(%{
-            players: [bot_player],
-            level: level,
-            game_id: game.id,
-            is_bot_game: true,
-            type: type,
-            timeout_seconds: 3600,
-            inserted_at: game.inserted_at
-          })
+    fsm =
+      build_fsm(%{
+        module: __MODULE__,
+        players: [player],
+        level: level,
+        game_id: game.id,
+        type: type,
+        timeout_seconds: timeout_seconds,
+        inserted_at: game.inserted_at
+      })
 
-        ActiveGames.create_game(game.id, fsm)
-        {:ok, _} = GlobalSupervisor.start_game(game.id, fsm)
+    ActiveGames.create_game(fsm)
+    {:ok, _} = GlobalSupervisor.start_game(fsm)
 
-        {:ok, fsm}
-
-      {:error, reason} ->
-        {:error, reason}
-    end
+    {:ok, fsm}
   end
 
-  def join_game(game_id, second_player) do
-    with {:ok, fsm} <- Play.get_fsm(game_id),
+  def join_game(fsm, second_user) do
+    with :ok <- player_can_join_game?(second_user),
+         game_id <- FsmHelpers.get_game_id(fsm),
          level <- FsmHelpers.get_level(fsm),
          first_player <- FsmHelpers.get_first_player(fsm),
          {:ok, task} <- get_task(level),
          {:ok, fsm} <-
            Server.call_transition(game_id, :join, %{
              players: [
-               Player.rebuild(first_player, task),
-               Player.rebuild(second_player, task)
+               Player.setup_editor_params(first_player, %{task: task}),
+               Player.build(second_user, %{task: task})
              ],
-             task: task,
-             starts_at: TimeHelper.utc_now()
+             starts_at: TimeHelper.utc_now(),
+             task: task
            }) do
       ActiveGames.update_game(fsm)
 
       update_game!(game_id, %{state: "playing", task_id: task.id})
-      start_record_fsm(game_id, FsmHelpers.get_players(fsm), fsm)
       run_bot!(fsm)
 
       broadcast_active_game(fsm)
@@ -87,15 +81,9 @@ defmodule Codebattle.GameProcess.Engine.Bot do
     })
   end
 
-  def handle_won_game(game_id, winner, fsm, editor_text) do
+  def handle_won_game(game_id, winner, fsm) do
     loser = FsmHelpers.get_opponent(fsm, winner.id)
-
     store_game_result!(fsm, {winner, "won"}, {loser, "lost"})
-
-    unless winner.is_bot do
-      RecorderServer.check_and_store_result(game_id, winner.id, editor_text)
-    end
-
     ActiveGames.terminate_game(game_id)
 
     Notifications.notify_tournament(:game_over, fsm, %{
@@ -106,20 +94,6 @@ defmodule Codebattle.GameProcess.Engine.Bot do
     })
 
     :ok
-  end
-
-  def handle_give_up(game_id, loser, fsm) do
-    winner = FsmHelpers.get_opponent(fsm, loser.id)
-
-    store_game_result!(fsm, {winner, "won"}, {loser, "gave_up"})
-    ActiveGames.terminate_game(game_id)
-
-    Notifications.notify_tournament(:game_over, fsm, %{
-      state: "finished",
-      game_id: game_id,
-      winner: {winner.id, "won"},
-      loser: {loser.id, "gave_up"}
-    })
   end
 
   def get_task(level) do
@@ -177,32 +151,61 @@ defmodule Codebattle.GameProcess.Engine.Bot do
     k / (player.rating + b) * 1000
   end
 
-  # TODO do create and join in one action
-  def handle_rematch_offer_send(fsm, _user_id) do
-    task = FsmHelpers.get_task(fsm)
-    real_player = FsmHelpers.get_second_player(fsm) |> Player.rebuild(task)
+  def rematch_send_offer(game_id, user_id) do
+    {:ok, fsm} = Server.call_transition(game_id, :rematch_send_offer, %{player_id: user_id})
+
+    case FsmHelpers.get_rematch_state(fsm) do
+      :in_approval ->
+        {:ok, new_game_id} = create_rematch_game(fsm)
+
+        {:rematch_new_game, %{game_id: new_game_id}}
+
+      _ ->
+        {:error, "undefined rematch state"}
+    end
+  end
+
+  defp create_rematch_game(fsm) do
     level = FsmHelpers.get_level(fsm)
     type = FsmHelpers.get_type(fsm)
     timeout_seconds = FsmHelpers.get_timeout_seconds(fsm)
-    game_params = %{"level" => level, "type" => type, "timeout_seconds" => timeout_seconds}
+    {:ok, task} = get_task(level)
 
-    bot = Codebattle.Bot.Builder.build_free_bot()
+    players =
+      fsm
+      |> FsmHelpers.get_players()
+      |> Enum.map(fn player -> Player.setup_editor_params(player, %{task: task}) end)
 
-    case create_game(bot, game_params) do
-      {:ok, new_fsm} ->
-        new_game_id = FsmHelpers.get_game_id(new_fsm)
-        {:ok, _bot_pid} = PlaybookAsyncRunner.create_server(%{game_id: new_game_id, bot: bot})
+    game =
+      Repo.insert!(%Game{
+        state: "playing",
+        level: level,
+        type: type
+      })
 
-        {:ok, new_fsm} = join_game(new_game_id, real_player)
+    fsm =
+      build_fsm(%{
+        module: __MODULE__,
+        state: :playing,
+        players: players,
+        game_id: game.id,
+        level: level,
+        type: type,
+        task: task,
+        inserted_at: game.inserted_at,
+        starts_at: game.inserted_at,
+        timeout_seconds: timeout_seconds
+      })
 
-        start_timeout_timer(new_game_id, new_fsm)
+    ActiveGames.create_game(fsm)
+    {:ok, _} = GlobalSupervisor.start_game(fsm)
 
-        broadcast_active_game(new_fsm)
+    {:ok, _bot_pid} =
+      PlaybookAsyncRunner.create_server(%{game_id: game.id, bot: FsmHelpers.get_first_player(fsm)})
 
-        {:new_game, new_game_id}
-
-      {:error, reason} ->
-        {:error, reason}
-    end
+    run_bot!(fsm)
+    start_timeout_timer(game.id, fsm)
+    broadcast_active_game(fsm)
+    {:ok, game.id}
   end
 end

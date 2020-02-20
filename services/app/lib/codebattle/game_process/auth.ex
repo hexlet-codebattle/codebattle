@@ -30,36 +30,4 @@ defmodule Codebattle.GameProcess.Auth do
         {:error, "Not authorized"}
     end
   end
-
-  def player_can_give_up?(id, player) do
-    case ActiveGames.participant?(id, player.id, :playing) do
-      true ->
-        :ok
-
-      _ ->
-        {:error, "Not authorized"}
-    end
-  end
-
-  def player_can_check_game?(_id, _player) do
-    :ok
-    # case ActiveGames.participant?(id, player.id) do
-    #   true ->
-    #     :ok
-
-    #   _ ->
-    #     {:error, "Not authorized"}
-    # end
-  end
-
-  def player_can_update_editor_data?(_id, _player) do
-    :ok
-    # case ActiveGames.participant?(id, player.id) do
-    #   true ->
-    #     :ok
-
-    #   _ ->
-    #     {:error, "Not authorized"}
-    # end
-  end
 end

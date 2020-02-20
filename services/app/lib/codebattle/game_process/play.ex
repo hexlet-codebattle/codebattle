@@ -6,15 +6,12 @@ defmodule Codebattle.GameProcess.Play do
   """
 
   import Ecto.Query, warn: false
-  import Codebattle.GameProcess.Auth
 
   alias Codebattle.{Repo, Game}
 
   alias Codebattle.GameProcess.{
     Server,
-    GlobalSupervisor,
     Engine,
-    Player,
     FsmHelpers,
     ActiveGames
   }
@@ -43,57 +40,80 @@ defmodule Codebattle.GameProcess.Play do
 
   def get_fsm(id), do: Server.get_fsm(id)
 
-  # main api interface
+  def create_game(params) do
+    module = get_module(params)
+    module.create_game(params)
+  end
 
-  def create_game(
-        user,
-        game_params,
-        engine_type \\ :standard,
-        default_timeout \\ Application.get_env(:codebattle, :default_timeout)
-      ) do
-    player = Player.build(user, %{creator: true})
-    engine = get_engine(engine_type)
+  def join_game(id, user) do
+    case get_fsm(id) do
+      {:ok, fsm} -> FsmHelpers.get_module(fsm).join_game(fsm, user)
+      {:error, reason} -> {:error, reason}
+    end
+  end
 
-    case engine.create_game(player, game_params) do
+  def cancel_game(id, user) do
+    case get_fsm(id) do
+      {:ok, fsm} -> FsmHelpers.get_module(fsm).cancel_game(fsm, user)
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
+  def update_editor_data(id, user, editor_text, editor_lang) do
+    case get_fsm(id) do
       {:ok, fsm} ->
-        game_id = FsmHelpers.get_game_id(fsm)
-        Codebattle.GameProcess.TimeoutServer.restart(game_id, default_timeout)
-
-        {:ok, game_id}
+        FsmHelpers.get_module(fsm).update_editor_data(fsm, %{
+          id: user.id,
+          editor_text: editor_text,
+          editor_lang: editor_lang
+        })
 
       {:error, reason} ->
         {:error, reason}
     end
   end
 
-  def create_tournament_game(tournament, players, timeout_seconds) do
-    engine = get_engine(:tournament)
+  def check_game(id, user, editor_text, editor_lang) do
+    case get_fsm(id) do
+      {:ok, fsm} ->
+        check_result = checker_adapter().call(FsmHelpers.get_task(fsm), editor_text, editor_lang)
 
-    {:ok, fsm} =
-      engine.create_game(players, %{
-        tournament_id: tournament.id,
-        timeout_seconds: timeout_seconds
-      })
+        {:ok, new_fsm} =
+          Server.call_transition(id, :check_complete, %{
+            id: user.id,
+            check_result: check_result,
+            editor_text: editor_text,
+            editor_lang: editor_lang
+          })
 
-    {:ok, FsmHelpers.get_game_id(fsm)}
+        if {fsm.state, new_fsm.state} == {:playing, :game_over} do
+          FsmHelpers.get_module(fsm).handle_won_game(id, user, fsm)
+          CodebattleWeb.Notifications.finish_active_game(fsm)
+          {:ok, new_fsm, %{solution_status: true, check_result: check_result}}
+        else
+          {:ok, new_fsm, %{solution_status: false, check_result: check_result}}
+        end
+
+      {:error, reason} ->
+        {:error, reason}
+    end
+  end
+
+  def give_up(id, user) do
+    case Server.call_transition(id, :give_up, %{id: user.id}) do
+      {:ok, fsm} ->
+        FsmHelpers.get_module(fsm).handle_give_up(id, user.id, fsm)
+        {:ok, fsm}
+
+      {:error, reason} ->
+        {:error, reason}
+    end
   end
 
   def rematch_send_offer(game_id, user_id) do
     case get_fsm(game_id) do
       {:ok, fsm} ->
-        engine = get_engine(fsm)
-        engine.handle_rematch_offer_send(fsm, user_id)
-
-      {:error, reason} ->
-        {:error, reason}
-    end
-  end
-
-  def rematch_accept_offer(game_id) do
-    case get_fsm(game_id) do
-      {:ok, fsm} ->
-        engine = get_engine(fsm)
-        engine.handle_accept_offer(fsm)
+        FsmHelpers.get_module(fsm).rematch_send_offer(game_id, user_id)
 
       {:error, reason} ->
         {:error, reason}
@@ -101,18 +121,12 @@ defmodule Codebattle.GameProcess.Play do
   end
 
   def rematch_reject(game_id) do
-    {_response, new_fsm} = Server.call_transition(game_id, :rematch_reject, %{})
-    {:ok, new_fsm}
-  end
+    case Server.call_transition(game_id, :rematch_reject, %{}) do
+      {:ok, fsm} ->
+        {:rematch_update_status, FsmHelpers.get_rematch_state(fsm)}
 
-  def join_game(id, user) do
-    with {:ok, fsm} <- get_fsm(id),
-         %Player{} = player <- Player.build(user),
-         :ok <- player_can_join_game?(player) do
-      engine = get_engine(fsm)
-      engine.join_game(id, player)
-    else
-      {:error, reason} -> {:error, reason}
+      {:error, reason} ->
+        {:error, reason}
     end
   end
 
@@ -137,114 +151,9 @@ defmodule Codebattle.GameProcess.Play do
     end
   end
 
-  def cancel_game(id, user) do
-    with {:ok, fsm} <- get_fsm(id),
-         %Player{} = player <- FsmHelpers.get_player(fsm, user.id),
-         :ok <- player_can_cancel_game?(id, player) do
-      ActiveGames.terminate_game(id)
-      GlobalSupervisor.terminate_game(id)
-      Notifications.remove_active_game(id)
+  defp get_module(%{tournament: _}), do: Engine.Tournament
+  defp get_module(%{type: "bot"}), do: Engine.Bot
+  defp get_module(_), do: Engine.Standard
 
-      id
-      |> get_game
-      |> Game.changeset(%{state: "canceled"})
-      |> Repo.update!()
-
-      :ok
-    else
-      {:error, reason} -> {:error, reason}
-    end
-  end
-
-  def update_editor_data(id, user, editor_text, editor_lang) do
-    with {:ok, fsm} <- get_fsm(id),
-         %Player{} = player <- FsmHelpers.get_player(fsm, user.id),
-         :ok <- player_can_update_editor_data?(id, player) do
-      engine = get_engine(fsm)
-      update_editor(id, engine, player, editor_text, editor_lang)
-      :ok
-    else
-      {:error, reason} -> {:error, reason}
-    end
-  end
-
-  def give_up(id, user) do
-    with {:ok, fsm} <- get_fsm(id),
-         %Player{} = player <- FsmHelpers.get_player(fsm, user.id),
-         :ok <- player_can_give_up?(id, player),
-         {_response, fsm} <- Server.call_transition(id, :give_up, %{id: player.id}) do
-      engine = get_engine(fsm)
-      engine.handle_give_up(id, player, fsm)
-      {:ok, fsm}
-    else
-      {:error, reason} -> {:error, reason}
-    end
-  end
-
-  def check_game(id, user, editor_text, editor_lang) do
-    with {:ok, fsm} <- get_fsm(id),
-         %Player{} = player <- FsmHelpers.get_player(fsm, user.id),
-         :ok <- player_can_check_game?(id, player) do
-      engine = get_engine(fsm)
-      update_editor(id, engine, player, editor_text, editor_lang)
-      check_result = checker_adapter().call(FsmHelpers.get_task(fsm), editor_text, editor_lang)
-
-      Server.call_transition(id, :update_editor_params, %{
-        id: player.id,
-        result: check_result.result,
-        output: check_result.output
-      })
-
-      case {fsm.state, check_result} do
-        {:waiting_opponent, %{status: :ok}} ->
-          %{check_result | status: :error}
-
-        {:playing, %{status: :ok}} ->
-          {_response, fsm} = Server.call_transition(id, :complete, %{id: player.id})
-
-          case engine.handle_won_game(id, player, fsm, editor_text) do
-            :ok -> %{check_result | status: :game_won}
-            :copypaste -> %{check_result | status: :copypaste}
-          end
-
-        _ ->
-          check_result
-      end
-    else
-      {:error, reason} -> {:error, reason}
-    end
-  end
-
-  defp get_engine(:standard), do: Engine.Standard
-  defp get_engine(:bot), do: Engine.Bot
-  defp get_engine(:tournament), do: Engine.Tournament
-
-  defp get_engine(fsm) do
-    case FsmHelpers.bot_game?(fsm) do
-      true ->
-        Engine.Bot
-
-      _ ->
-        Engine.Standard
-    end
-  end
-
-  defp update_editor(id, engine, player, editor_text, editor_lang) do
-    %{editor_text: prev_text, editor_lang: prev_lang} = player
-
-    is_text_changed = editor_text != prev_text
-    is_lang_changed = editor_lang != prev_lang
-
-    if is_text_changed do
-      engine.update_text(id, player, editor_text)
-    end
-
-    if is_lang_changed do
-      engine.update_lang(id, player, editor_lang)
-    end
-  end
-
-  defp checker_adapter do
-    Application.get_env(:codebattle, :checker_adapter)
-  end
+  defp checker_adapter, do: Application.get_env(:codebattle, :checker_adapter)
 end

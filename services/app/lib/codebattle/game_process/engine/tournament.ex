@@ -5,49 +5,44 @@ defmodule Codebattle.GameProcess.Engine.Tournament do
 
   alias Codebattle.GameProcess.{
     GlobalSupervisor,
-    Fsm,
-    Player,
     ActiveGames,
     TasksQueuesServer
   }
 
-  alias Codebattle.{Repo, Game, User, Languages}
+  alias Codebattle.{Repo, Game}
 
-  def create_game(players, params) do
-    level = "elementary"
+  @default_timeout Application.get_env(:codebattle, :tournament_match_timeout)
+
+  def create_game(%{players: players} = params) do
+    level = params[:level] || "elementary"
+    timeout_seconds = params[:timeout_seconds] || @default_timeout
     task = get_task(level, players)
-    is_bot_game = Enum.any?(players, fn x -> x.is_bot end)
 
     game =
-      Repo.insert!(%Game{state: "playing", level: level, type: "tournament", task_id: task.id})
+      Repo.insert!(%Game{
+        state: "playing",
+        type: "tournament",
+        level: level,
+        task_id: task.id
+      })
 
     fsm =
-      Fsm.new()
-      |> Fsm.create_playing_game(%{
-        players:
-          Enum.map(players, fn player ->
-            user = Repo.get(User, player.id)
-
-            params = %{
-              editor_lang: user.lang || "js",
-              editor_text: Languages.get_solution(user.lang || "js", task)
-            }
-
-            Player.build(player, params)
-          end),
+      build_fsm(%{
+        module: __MODULE__,
+        state: :playing,
+        players: players,
         game_id: game.id,
-        is_bot_game: is_bot_game,
         level: level,
         type: "tournament",
         inserted_at: game.inserted_at,
         task: task,
-        tournament_id: params.tournament_id,
-        timeout_seconds: params.timeout_seconds,
+        tournament_id: params.tournament.id,
+        timeout_seconds: timeout_seconds,
         starts_at: TimeHelper.utc_now()
       })
 
-    ActiveGames.create_game(game.id, fsm)
-    {:ok, _} = GlobalSupervisor.start_game(game.id, fsm)
+    ActiveGames.create_game(fsm)
+    {:ok, _} = GlobalSupervisor.start_game(fsm)
 
     Enum.each(players, fn player ->
       if player.is_bot do
@@ -68,7 +63,7 @@ defmodule Codebattle.GameProcess.Engine.Tournament do
   end
 
   def get_task(level, [%{is_bot: false}, %{is_bot: false}]) do
-    TasksQueuesServer.call_next_task(level)
+    TasksQueuesServer.get_task(level)
   end
 
   def get_task(level, _players) do

@@ -4,41 +4,60 @@ defmodule CodebattleWeb.GameController do
   import PhoenixGon.Controller
   require Logger
 
-  alias Codebattle.GameProcess.{Play, ActiveGames, Server, FsmHelpers}
-  alias Codebattle.{Languages}
+  alias Codebattle.GameProcess.{Play, ActiveGames, FsmHelpers}
+  alias Codebattle.Languages
 
   plug(CodebattleWeb.Plugs.RequireAuth when action in [:create, :join])
 
-  def create(conn, _params) do
+  @timeout_seconds_default 3600
+  @timeout_seconds_whitelist [0, 60, 120, 300, 600, 1200, 3600]
+
+  def create(conn, params) do
     type =
-      case conn.params["type"] do
+      case params["type"] do
         "withFriend" -> "private"
-        "private" -> "private"
-        _ -> "public"
+        "withRandomPlayer" -> "public"
       end
 
     game_params =
-      conn.params
-      |> Map.take(["level", "type"])
-      |> Map.merge(%{"type" => type})
-      |> Map.merge(%{"timeout_seconds" => timeout_seconds(conn.params)})
+      params
+      |> Map.take(["level"])
+      |> Map.merge(%{
+        "type" => type,
+        "timeout_seconds" => get_timeout_seconds(params),
+        "user" => conn.assigns.current_user
+      })
 
-    case Play.create_game(conn.assigns.current_user, game_params) do
-      {:ok, id} ->
-        game = Play.get_game(id)
+    case Play.create_game(game_params) do
+      {:ok, fsm} ->
+        game_id = FsmHelpers.get_game_id(fsm)
+        level = FsmHelpers.get_level(fsm)
 
+        redirect(conn, to: game_path(conn, :show, game_id, level: level))
+
+      {:error, reason} ->
         conn
-        |> redirect(to: game_path(conn, :show, id, level: game.level))
-
-      {:error, _reason} ->
-        conn
-        |> put_flash(:danger, gettext("You are in a different game"))
+        |> put_flash(:danger, reason)
         |> redirect(to: page_path(conn, :index))
     end
   end
 
   def show(conn, %{"id" => id}) do
     case Play.get_fsm(id) do
+      {:ok, fsm} ->
+        task = FsmHelpers.get_task(fsm)
+        langs = Languages.meta() |> Map.values() |> Languages.update_solutions(task)
+        conn = put_gon(conn, game_id: id, langs: langs)
+        is_participant = ActiveGames.participant?(id, conn.assigns.current_user.id)
+
+        case {fsm.state, is_participant} do
+          {:waiting_opponent, false} ->
+            render(conn, "join.html", %{fsm: fsm})
+
+          _ ->
+            render(conn, "show.html", %{fsm: fsm, layout_template: "full_width.html"})
+        end
+
       {:error, _reason} ->
         case Play.get_game(id) do
           nil ->
@@ -50,52 +69,23 @@ defmodule CodebattleWeb.GameController do
           game ->
             render(conn, "game_result.html", %{game: game})
         end
-
-      {:ok, fsm} ->
-        task = FsmHelpers.get_task(fsm)
-        langs = Languages.meta() |> Map.values() |> Languages.update_solutions(task)
-        conn = put_gon(conn, game_id: id, langs: langs)
-        is_participant = ActiveGames.participant?(id, conn.assigns.current_user.id)
-
-        case {fsm.state, is_participant} do
-          {:waiting_opponent, false} ->
-            render(conn, "join.html", %{fsm: fsm})
-
-          # {:game_over, false} ->
-          # render(conn, "game_over.html", %{fsm: fsm})
-
-          _ ->
-            render(conn, "show.html", %{fsm: fsm, layout_template: "full_width.html"})
-        end
     end
   end
 
   def join(conn, %{"id" => id}) do
-    case Server.game_pid(id) do
-      :undefined ->
+    case Play.join_game(id, conn.assigns.current_user) do
+      {:ok, _fsm} ->
         conn
-        |> put_flash(:danger, "Sorry, the game doesn't exist")
+        |> redirect(to: game_path(conn, :show, id))
+
+      {:error, reason} ->
+        conn
+        |> put_flash(:danger, reason)
         |> redirect(to: page_path(conn, :index))
-
-      _pid ->
-        case Play.join_game(id, conn.assigns.current_user) do
-          # TODO: move to Play.ex; @mimikria, we miss you))))
-          {:ok, _fsm} ->
-            conn
-            # |> put_flash(:info, gettext("Joined the game"))
-            |> redirect(to: game_path(conn, :show, id))
-
-          {:error, reason} ->
-            conn
-            |> put_flash(:danger, reason)
-            |> redirect(to: page_path(conn, :index))
-        end
     end
   end
 
   def delete(conn, %{"id" => id}) do
-    id = String.to_integer(id)
-
     case Play.cancel_game(id, conn.assigns.current_user) do
       :ok ->
         redirect(conn, to: page_path(conn, :index))
@@ -107,29 +97,11 @@ defmodule CodebattleWeb.GameController do
     end
   end
 
-  @timeout_seconds_whitelist [
-    0,
-    60,
-    120,
-    300,
-    600,
-    1200,
-    3600
-  ]
-
-  @timeout_seconds_default 0
-
-  defp timeout_seconds(%{"timeout_seconds" => timeout_seconds}) do
+  defp get_timeout_seconds(%{"timeout_seconds" => timeout_seconds}) do
     timeout_seconds_int =
-      cond do
-        timeout_seconds == "" ->
-          0
-
-        timeout_seconds == nil ->
-          0
-
-        true ->
-          String.to_integer(timeout_seconds)
+      case timeout_seconds do
+        value when value in ["", nil] -> 0
+        value -> String.to_integer(value)
       end
 
     if Enum.member?(@timeout_seconds_whitelist, timeout_seconds_int) do
@@ -139,7 +111,5 @@ defmodule CodebattleWeb.GameController do
     end
   end
 
-  defp timeout_seconds(_) do
-    @timeout_seconds_default
-  end
+  defp get_timeout_seconds(_), do: @timeout_seconds_default
 end

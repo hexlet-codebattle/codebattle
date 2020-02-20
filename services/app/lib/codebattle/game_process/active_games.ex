@@ -3,11 +3,11 @@ defmodule Codebattle.GameProcess.ActiveGames do
     ActiveGames for game list
   """
 
+  alias Codebattle.GameProcess.FsmHelpers
+
   @table_name :active_games
 
   # {game_id, active, %{player_id => Player, player_id => Player}, %{level: "easy", state: :playing, timeout_seconds: 0, starts_at: Time, type: "private"}}
-
-  alias Codebattle.GameProcess.FsmHelpers
 
   def init do
     try do
@@ -41,7 +41,8 @@ defmodule Codebattle.GameProcess.ActiveGames do
     :ok
   end
 
-  def create_game(game_id, fsm) do
+  def create_game(fsm) do
+    game_id = FsmHelpers.get_game_id(fsm)
     :ets.insert_new(@table_name, {game_key(game_id), build_players(fsm), build_game_params(fsm)})
     :ok
   end

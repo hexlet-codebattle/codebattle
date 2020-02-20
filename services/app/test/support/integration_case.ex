@@ -15,8 +15,8 @@ defmodule Codebattle.IntegrationCase do
       import Helpers.GameProcess
 
       alias Codebattle.{Repo, User, Game, UserGame}
-      alias Codebattle.GameProcess.{FsmHelpers}
-      alias CodebattleWeb.{GameChannel}
+      alias Codebattle.GameProcess.FsmHelpers
+      alias CodebattleWeb.GameChannel
 
       @endpoint CodebattleWeb.Endpoint
 

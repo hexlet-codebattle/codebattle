@@ -111,11 +111,7 @@ export const sendEditorText = (editorText, langSlug = null) => (dispatch, getSta
   const currentLangSlug = langSlug || selectors.userLangSelector(userId)(state);
   dispatch(actions.updateEditorText({ userId, editorText, langSlug: currentLangSlug }));
 
-  channel.push('editor:data', { editor_text: editorText, lang: currentLangSlug });
-
-  // if (langSlug !== null) {
-  //   channel.push('editor:lang', { lang: currentLangSlug });
-  // }
+  channel.push('editor:data', { editor_text: editorText, lang_slug: currentLangSlug });
 };
 
 export const sendGiveUp = () => {
@@ -161,108 +157,102 @@ export const editorReady = () => dispatch => {
     dispatch(actions.updateExecutionOutput(camelizeKeys(data)));
   });
 
-  channel.on('user:start_check', ({ user }) => {
-    dispatch(actions.updateCheckStatus({ [user.id]: true }));
+  channel.on('user:start_check', ({ user_id: userId }) => {
+    dispatch(actions.updateCheckStatus({ [userId]: true }));
   });
 
   channel.on('user:finish_check', ({ user }) => {
     dispatch(actions.updateCheckStatus({ [user.id]: false }));
   });
 
-  channel.on(
-    'user:check_result',
-    responseData => {
-      const {
-        status,
-        players,
-        solutionStatus,
+  channel.on('user:check_result', responseData => {
+    const {
+      status,
+      players,
+      solutionStatus,
+      output,
+      result,
+      assertsCount,
+      successCount,
+      userId,
+    } = camelizeKeys(responseData);
+    const newGameStatus = solutionStatus ? { status } : {};
+    const asserts = { assertsCount, successCount };
+    if (players) {
+      dispatch(actions.updateGamePlayers({ players }));
+    }
+    dispatch(
+      actions.updateExecutionOutput({
         output,
         result,
-        assertsCount,
-        successCount,
+        asserts,
         userId,
-      } = camelizeKeys(responseData);
-      const newGameStatus = solutionStatus ? { status } : {};
-      const asserts = { assertsCount, successCount };
-      if (players) {
-        dispatch(actions.updateGamePlayers({ players }));
-      }
+      }),
+    );
+    dispatch(actions.updateGameStatus({ ...newGameStatus, solutionStatus }));
+    dispatch(actions.updateCheckStatus({ [userId]: false }));
+  });
+
+  channel.on('user:joined', responseData => {
+    const {
+      status,
+      startsAt,
+      joinsAt,
+      timeoutSeconds,
+      players: [firstPlayer, secondPlayer],
+      task,
+    } = camelizeKeys(responseData);
+    const players = [
+      { ...firstPlayer, type: userTypes.firstPlayer },
+      { ...secondPlayer, type: userTypes.secondPlayer },
+    ];
+
+    dispatch(actions.updateGamePlayers({ players }));
+    dispatch(actions.setGameTask({ task }));
+
+    dispatch(
+      actions.updateEditorText({
+        userId: firstPlayer.id,
+        editorText: firstPlayer.editorText,
+        langSlug: firstPlayer.editorLang,
+      }),
+    );
+
+    dispatch(
+      actions.updateExecutionOutput({
+        userId: firstPlayer.id,
+        result: firstPlayer.result,
+        output: firstPlayer.output,
+      }),
+    );
+
+    if (secondPlayer) {
       dispatch(
-        actions.updateExecutionOutput({
-          output,
-          result,
-          asserts,
-          userId,
+        actions.updateEditorText({
+          userId: secondPlayer.id,
+          editorText: secondPlayer.editorText,
+          langSlug: secondPlayer.editorLang,
         }),
       );
-      dispatch(actions.updateGameStatus({ ...newGameStatus, solutionStatus }));
-      dispatch(actions.updateCheckStatus({ [userId]: false }));
-    },
-  );
 
-  channel.on(
-    'user:joined',
-    responseData => {
-      const {
+      dispatch(
+        actions.updateExecutionOutput({
+          userId: secondPlayer.id,
+          result: secondPlayer.result,
+          output: secondPlayer.output,
+        }),
+      );
+    }
+
+    dispatch(
+      actions.updateGameStatus({
         status,
         startsAt,
         joinsAt,
         timeoutSeconds,
-        players: [firstPlayer, secondPlayer],
-        task,
-      } = camelizeKeys(responseData);
-      const players = [
-        { ...firstPlayer, type: userTypes.firstPlayer },
-        { ...secondPlayer, type: userTypes.secondPlayer },
-      ];
-
-      dispatch(actions.updateGamePlayers({ players }));
-      dispatch(actions.setGameTask({ task }));
-
-      dispatch(
-        actions.updateEditorText({
-          userId: firstPlayer.id,
-          editorText: firstPlayer.editorText,
-          langSlug: firstPlayer.editorLang,
-        }),
-      );
-
-      dispatch(
-        actions.updateExecutionOutput({
-          userId: firstPlayer.id,
-          result: firstPlayer.result,
-          output: firstPlayer.output,
-        }),
-      );
-
-      if (secondPlayer) {
-        dispatch(
-          actions.updateEditorText({
-            userId: secondPlayer.id,
-            editorText: secondPlayer.editorText,
-            langSlug: secondPlayer.editorLang,
-          }),
-        );
-
-        dispatch(
-          actions.updateExecutionOutput({
-            userId: secondPlayer.id,
-            result: secondPlayer.result,
-            output: secondPlayer.output,
-          }),
-        );
-      }
-
-      dispatch(
-        actions.updateGameStatus({
-          status,
-          startsAt,
-          joinsAt,
-          timeoutSeconds,
-        }),
-      );
-    },
-  );
+      }),
+    );
+  });
 
   channel.on('user:won', data => {
     const { players, status, msg } = camelizeKeys(data);
@@ -270,7 +260,7 @@ export const editorReady = () => dispatch => {
     dispatch(actions.updateGameStatus({ status, msg }));
   });
 
-  channel.on('give_up', data => {
+  channel.on('user:give_up', data => {
     const { players, status, msg } = camelizeKeys(data);
     dispatch(actions.updateGamePlayers({ players }));
     dispatch(actions.updateGameStatus({ status, msg }));
@@ -301,10 +291,11 @@ export const checkGameResult = () => (dispatch, getState) => {
 
   const payload = {
     editor_text: currentUserEditor.text,
-    lang: currentUserEditor.currentLangSlug,
+    lang_slug: currentUserEditor.currentLangSlug,
   };
   channel.push('check_result', payload);
 };
+
 
 export const compressEditorHeight = userId => dispatch => (
   dispatch(actions.compressEditorHeight({ userId }))

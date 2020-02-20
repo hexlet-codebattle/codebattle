@@ -10,8 +10,8 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
         ...>    %{check_code: "-1", lang: %{slug: "js"}}
         ...> )
         %Codebattle.CodeCheck.CheckResult{
-          failure_tests_count: nil,
-          success_tests_count: nil,
+          asserts_count: nil,
+          success_count: nil,
           status: :error,
           output: ~s({"status": "error", "result": "sdf"}),
           result: ~s({"status": "error", "result": "sdf"})
@@ -22,8 +22,8 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
         ...>      %{check_code: "-1", lang: %{slug: "js"}}
         ...> )
         %Codebattle.CodeCheck.CheckResult{
-          failure_tests_count: nil,
-          success_tests_count: nil,
+          asserts_count: nil,
+          success_count: nil,
           status: :ok,
           output: ~s({"status": "ok", "result": "__code-1__"}),
           result: ~s({"status": "ok", "result": "__code-1__"})
@@ -35,8 +35,8 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
         ...>), %{check_code: "-1", lang: %{slug: "js"}}
         ...> )
         %Codebattle.CodeCheck.CheckResult{
-          failure_tests_count: 1,
-          success_tests_count: 1,
+          asserts_count: 1,
+          success_count: 1,
           status: :failure,
           output: ~s({"status": "failure", "result": "0", "arguments": [0]}),
           result: ~s({"status": "failure", "result": "0", "arguments": [0]})
@@ -122,11 +122,7 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
         failure_count = length(failure_list)
         success_count = length(success_list)
 
-        # percent_of_success_tests = div(100 * success_count, (failure_count + success_count))
-
         [first_failure_json] = List.first(failure_list)
-
-        # asserts_list = List.flatten(json_result)
 
         new_container_output =
           container_output
@@ -136,9 +132,9 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
         %CheckResult{
           status: :failure,
           result: first_failure_json,
-          failure_tests_count: failure_count,
-          success_tests_count: success_count,
-          output: new_container_output
+          output: new_container_output,
+          success_count: success_count,
+          asserts_count: failure_count + success_count
         }
 
       [_] ->
