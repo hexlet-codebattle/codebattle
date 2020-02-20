@@ -27,7 +27,9 @@ export const getUsersRatingPage = (page = 1, filter = '', sort = '') => dispatch
   const queryParamsString = qs.stringify({
     page,
     s: sort,
-    q: { name_ilike: filter }
+    q: {
+      name_ilike: filter,
+    },
   });
 
   axios.get(`/api/v1/users?${queryParamsString}`)
