@@ -10,7 +10,7 @@ defmodule Codebattle.User.Scope do
   @sortable_attributes ~w(id rank games_played rating inserted_at)
 
   def list_users_with_raiting(params) do
-    initial_with_raiting_scope
+    initial_with_raiting_scope()
     |> search_by_name(params)
     |> sort(params)
   end
