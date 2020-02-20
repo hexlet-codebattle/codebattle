@@ -15,7 +15,8 @@ defmodule Codebattle.User.ScopeTest do
         insert(:user, %{name: "third", email: "test3@test.test", github_id: 3, rating: 2210})
 
       params = %{"q" => %{"name_ilike" => "first"}}
-      [result] = Scope.list_users_with_raiting(params) |> Repo.all()
+      query = Scope.list_users_with_raiting(params)
+      [result] = query |> Repo.all()
       assert user1.id == result.id
     end
 
@@ -30,7 +31,8 @@ defmodule Codebattle.User.ScopeTest do
         insert(:user, %{name: "third", email: "test3@test.test", github_id: 3, rating: 2210})
 
       params = %{"s" => "rating+desc"}
-      [result_1, result_2] = Scope.list_users_with_raiting(params) |> Repo.all() |> Enum.take(2)
+      query = Scope.list_users_with_raiting(params)
+      [result_1, result_2] = query |> Repo.all() |> Enum.take(2)
       assert result_1.id == user1.id
       assert result_2.id == user2.id
     end
@@ -46,7 +48,8 @@ defmodule Codebattle.User.ScopeTest do
         insert(:user, %{name: "third", email: "test3@test.test", github_id: 3, rating: 2210})
 
       params = %{"s" => "rating+asc"}
-      [result_1, result_2] = Scope.list_users_with_raiting(params) |> Repo.all() |> Enum.take(2)
+      query = Scope.list_users_with_raiting(params)
+      [result_1, result_2] = query |> Repo.all() |> Enum.take(2)
       assert result_1.id == user1.id
       assert result_2.id == user2.id
     end
