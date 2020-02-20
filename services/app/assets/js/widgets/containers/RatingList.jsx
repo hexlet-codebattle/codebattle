@@ -65,7 +65,7 @@ class UsersRating extends React.Component {
   sortArrow = attribute => {
     const { sort: { attribute: currentAttribute, direction } } = this.state;
     const arrowDirection = attribute === currentAttribute ? direction : '';
-    return (<span className={`sort-arrow ${arrowDirection}`}></span>);
+    return (<span className={`sort-arrow ${arrowDirection}`} />);
   };
 
   renderPagination = () => {
