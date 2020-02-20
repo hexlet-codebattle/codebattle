@@ -37,7 +37,7 @@ defmodule Codebattle.User.ScopeTest do
       assert result_2.id == user2.id
     end
 
-    test "sorts users by permitted attributes in desc order" do
+    test "sorts users by permitted attributes in asc order" do
       user1 =
         insert(:user, %{name: "first", email: "test1@test.test", github_id: 1, rating: -2400})
 
