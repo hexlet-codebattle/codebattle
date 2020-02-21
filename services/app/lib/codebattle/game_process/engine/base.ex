@@ -13,6 +13,7 @@ defmodule Codebattle.GameProcess.Engine.Base do
   alias Codebattle.{Repo, User, Game, UserGame}
   alias Codebattle.User.Achievements
   alias CodebattleWeb.Api.GameView
+  alias Codebattle.Bot.Playbook
 
   alias CodebattleWeb.Notifications
   import Codebattle.GameProcess.Auth
@@ -47,22 +48,22 @@ defmodule Codebattle.GameProcess.Engine.Base do
       end
 
       import Codebattle.GameProcess.Engine.Base
+
+      def handle_give_up(game_id, loser_id, fsm) do
+        loser = FsmHelpers.get_player(fsm, loser_id)
+        winner = FsmHelpers.get_opponent(fsm, loser.id)
+
+        store_game_result!(fsm, {winner, "won"}, {loser, "gave_up"})
+        ActiveGames.terminate_game(game_id)
+
+        Notifications.notify_tournament(:game_over, fsm, %{
+          state: "finished",
+          game_id: game_id,
+          winner: {winner.id, "won"},
+          loser: {loser.id, "gave_up"}
+        })
+      end
     end
-  end
-
-  def handle_give_up(game_id, loser_id, fsm) do
-    loser = FsmHelpers.get_player(fsm, loser_id)
-    winner = FsmHelpers.get_opponent(fsm, loser.id)
-
-    store_game_result!(fsm, {winner, "won"}, {loser, "gave_up"})
-    ActiveGames.terminate_game(game_id)
-
-    Notifications.notify_tournament(:game_over, fsm, %{
-      state: "finished",
-      game_id: game_id,
-      winner: {winner.id, "won"},
-      loser: {loser.id, "gave_up"}
-    })
   end
 
   def store_game_result!(fsm, {winner, winner_result}, {loser, loser_result}) do

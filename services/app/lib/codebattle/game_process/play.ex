@@ -77,7 +77,12 @@ defmodule Codebattle.GameProcess.Play do
     case get_fsm(id) do
       {:ok, fsm} ->
         check_result = checker_adapter().call(FsmHelpers.get_task(fsm), editor_text, editor_lang)
-              Server.update_playbook( id, :start_check, %{id: user.id, editor_text: editor_text, editor_lang: editor_lang})
+
+        Server.update_playbook(id, :start_check, %{
+          id: user.id,
+          editor_text: editor_text,
+          editor_lang: editor_lang
+        })
 
         {:ok, new_fsm} =
           Server.call_transition(id, :check_complete, %{
@@ -88,8 +93,11 @@ defmodule Codebattle.GameProcess.Play do
           })
 
         if {fsm.state, new_fsm.state} == {:playing, :game_over} do
-          FsmHelpers.get_module(fsm).handle_won_game(id, user, fsm)
-          CodebattleWeb.Notifications.finish_active_game(fsm)
+          Server.update_playbook(id, :game_over, %{id: user.id, lang: editor_lang})
+
+          player = FsmHelpers.get_player(new_fsm, user.id)
+          FsmHelpers.get_module(fsm).handle_won_game(id, player, new_fsm)
+          CodebattleWeb.Notifications.finish_active_game(new_fsm)
           {:ok, new_fsm, %{solution_status: true, check_result: check_result}}
         else
           {:ok, new_fsm, %{solution_status: false, check_result: check_result}}
@@ -104,8 +112,7 @@ defmodule Codebattle.GameProcess.Play do
     case Server.call_transition(id, :give_up, %{id: user.id}) do
       {:ok, fsm} ->
         FsmHelpers.get_module(fsm).handle_give_up(id, user.id, fsm)
-        Server.update_playbook( id, :give_up, %{id: user.id})
-
+        Server.update_playbook(id, :give_up, %{id: user.id})
 
         {:ok, fsm}
 

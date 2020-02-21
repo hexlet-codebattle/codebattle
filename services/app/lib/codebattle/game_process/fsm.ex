@@ -151,7 +151,7 @@ defmodule Codebattle.GameProcess.Fsm do
         |> Map.get(:players)
         |> update_player_params(%{check_result: params.check_result, id: params.id})
 
-      next_state(:playing, %{data | players: players})
+      next_state(:game_over, %{data | players: players})
     end
 
     defevent update_editor_data(params), data: data do

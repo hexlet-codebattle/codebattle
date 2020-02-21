@@ -105,7 +105,7 @@ defmodule Codebattle.GameProcess.Engine.Bot do
   end
 
   def get_task(level) do
-    task = TasksQueuesServer.call_next_task(level)
+    task = TasksQueuesServer.get_task(level)
 
     {:ok, task}
   end
