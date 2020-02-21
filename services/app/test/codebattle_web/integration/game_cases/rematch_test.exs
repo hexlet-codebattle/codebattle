@@ -185,7 +185,7 @@ defmodule Codebattle.GameCases.RematchTest do
     conn1: conn1,
     conn2: conn2,
     socket1: socket1,
-    socket2: socket2,
+    socket2: socket2
   } do
     # Create game
     conn =
@@ -226,7 +226,7 @@ defmodule Codebattle.GameCases.RematchTest do
     conn1: conn1,
     conn2: conn2,
     socket1: socket1,
-    socket2: socket2,
+    socket2: socket2
   } do
     conn =
       conn1

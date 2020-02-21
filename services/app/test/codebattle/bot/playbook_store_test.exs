@@ -63,19 +63,38 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
     Mix.Shell.Process.flush()
 
     Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text1, lang_slug: "js"})
+
     :timer.sleep(40)
+
     Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text2, lang_slug: "js"})
-    :timer.sleep(40)
-
-    Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text2, lang_slug: "elixir"})
 
     :timer.sleep(40)
-    Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text3, lang_slug: "elixir"})
+
+    Phoenix.ChannelTest.push(socket1, "editor:data", %{
+      editor_text: editor_text2,
+      lang_slug: "elixir"
+    })
+
+    :timer.sleep(40)
+
+    Phoenix.ChannelTest.push(socket1, "editor:data", %{
+      editor_text: editor_text3,
+      lang_slug: "elixir"
+    })
+
     :timer.sleep(500)
-    Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text4, lang_slug: "elixir"})
+
+    Phoenix.ChannelTest.push(socket1, "editor:data", %{
+      editor_text: editor_text4,
+      lang_slug: "elixir"
+    })
+
     :timer.sleep(40)
 
-    Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text4, lang_slug: "elixir"})
+    Phoenix.ChannelTest.push(socket1, "check_result", %{
+      editor_text: editor_text4,
+      lang_slug: "elixir"
+    })
 
     #       playbook = [
     #         %{type: "check_complete", id: 1, time: ....},

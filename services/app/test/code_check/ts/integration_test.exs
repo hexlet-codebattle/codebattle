@@ -55,7 +55,7 @@ defmodule Codebattle.CodeCheck.TS.IntegrationTest do
       payload: %{check_result: check_result}
     }
 
-    assert %Codebattle.CodeCheck.CheckResult{status: :error, success_count: 0}  = check_result
+    assert %Codebattle.CodeCheck.CheckResult{status: :error, success_count: 0} = check_result
     {:ok, fsm} = Server.get_fsm(game.id)
     assert fsm.state == :playing
   end
@@ -95,7 +95,7 @@ defmodule Codebattle.CodeCheck.TS.IntegrationTest do
       payload: %{check_result: check_result}
     }
 
-    assert %Codebattle.CodeCheck.CheckResult{status: :failure, success_count: 0}  = check_result
+    assert %Codebattle.CodeCheck.CheckResult{status: :failure, success_count: 0} = check_result
 
     {:ok, fsm} = Server.get_fsm(game.id)
     assert fsm.state == :playing

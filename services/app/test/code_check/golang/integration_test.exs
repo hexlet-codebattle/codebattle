@@ -132,9 +132,11 @@ defmodule Codebattle.CodeCheck.Golang.IntegrationTest do
     })
 
     assert_code_check()
+
     assert_receive %Phoenix.Socket.Broadcast{
       payload: %{status: :game_over}
     }
+
     {:ok, fsm} = Server.get_fsm(game.id)
     assert fsm.state == :game_over
   end

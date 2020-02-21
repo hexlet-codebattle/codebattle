@@ -161,12 +161,20 @@ defmodule Codebattle.Tournament.IndividualTest do
           "id" => 2
         },
         %{
-          "diff" => %{"delta" => [%{"retain" => 1}, %{"insert" => "e"}], "next_lang" => "ruby", "time" => 20},
+          "diff" => %{
+            "delta" => [%{"retain" => 1}, %{"insert" => "e"}],
+            "next_lang" => "ruby",
+            "time" => 20
+          },
           "type" => "update_editor_data",
           "id" => 2
         },
         %{
-          "diff" => %{"delta" => [%{"retain" => 2}, %{"insert" => "s"}], "next_lang" => "ruby", "time" => 20},
+          "diff" => %{
+            "delta" => [%{"retain" => 2}, %{"insert" => "s"}],
+            "next_lang" => "ruby",
+            "time" => 20
+          },
           "type" => "update_editor_data",
           "id" => 2
         },

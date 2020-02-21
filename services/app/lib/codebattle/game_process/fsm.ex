@@ -12,7 +12,6 @@ defmodule Codebattle.GameProcess.Fsm do
   import CodebattleWeb.Gettext
   import Codebattle.GameProcess.FsmHelpers
 
-
   use Fsm,
     initial_state: :initial,
     initial_data: %{

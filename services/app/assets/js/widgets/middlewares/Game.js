@@ -195,7 +195,9 @@ export const activeGameEditorReady = () => dispatch => {
     const {
       status,
       solutionStatus,
-      checkResult: { output, result, assertsCount, successCount },
+      checkResult: {
+        output, result, assertsCount, successCount,
+      },
       players,
       userId,
     } = camelizeKeys(responseData);
