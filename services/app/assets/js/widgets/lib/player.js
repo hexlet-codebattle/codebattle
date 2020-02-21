@@ -15,7 +15,7 @@ const updatePlayersGameResult = (players, firstPlayer, secondPlayer) => (
     : { ...player, ...secondPlayer }))
 );
 
-export const parse = JSON.parse;
+export const { parse } = JSON;
 
 export const minify = JSON.stringify;
 
