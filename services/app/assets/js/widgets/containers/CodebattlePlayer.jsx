@@ -151,9 +151,8 @@ class CodebattlePlayer extends Component {
       });
 
       updateExecutionOutput({
+        ...player.checkResult,
         userId: player.id,
-        result: player.checkResult.result,
-        output: player.checkResult.output,
       });
     });
 
@@ -184,9 +183,8 @@ class CodebattlePlayer extends Component {
       }
       case 'check_complete': {
         updateExecutionOutput({
+          ...nextRecord.checkResult,
           userId: nextRecord.userId,
-          result: nextRecord.checkResult.result,
-          output: nextRecord.checkResult.output,
         });
         break;
       }

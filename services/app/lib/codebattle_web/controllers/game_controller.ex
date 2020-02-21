@@ -11,7 +11,7 @@ defmodule CodebattleWeb.GameController do
   plug(CodebattleWeb.Plugs.RequireAuth when action in [:create, :join])
 
   @timeout_seconds_default 3600
-  @timeout_seconds_whitelist [0, 60, 120, 300, 600, 1200, 3600]
+  @timeout_seconds_whitelist [60, 120, 300, 600, 1200, 3600]
 
   action_fallback(CodebattleWeb.FallbackController)
 

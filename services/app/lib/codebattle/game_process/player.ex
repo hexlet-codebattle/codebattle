@@ -32,6 +32,7 @@ defmodule Codebattle.GameProcess.Player do
             editor_lang: "js",
             lang: "",
             game_result: :undefined,
+            check_result: CheckResult.new(),
             creator: false,
             is_bot: false,
             github_id: "",

@@ -11,7 +11,6 @@ import { resolveDiffs } from '../lib/player';
 import PlaybookStatusCodes from '../config/playbookStatusCodes';
 import GameStatusCodes from '../config/gameStatusCodes';
 
-
 const languages = Gon.getAsset('langs');
 const gameId = Gon.getAsset('game_id');
 const isRecord = Gon.getAsset('is_record');
@@ -29,9 +28,8 @@ const initEditors = dispatch => (updateEditorTextAction, firstPlayer, secondPlay
 
   dispatch(
     actions.updateExecutionOutput({
+      ...firstPlayer.checkResult,
       userId: firstPlayer.id,
-      result: firstPlayer.checkResult.result,
-      output: firstPlayer.checkResult.output,
     }),
   );
 
@@ -46,16 +44,19 @@ const initEditors = dispatch => (updateEditorTextAction, firstPlayer, secondPlay
 
     dispatch(
       actions.updateExecutionOutput({
+        ...secondPlayer.checkResult,
         userId: secondPlayer.id,
-        result: secondPlayer.checkResult.result,
-        output: secondPlayer.checkResult.output,
       }),
     );
   }
 };
 
 const initStore = dispatch => ({
-  firstPlayer, secondPlayer, task, gameStatus, playbookStatusCode,
+  firstPlayer,
+  secondPlayer,
+  task,
+  gameStatus,
+  playbookStatusCode,
 }) => {
   const isStored = playbookStatusCode === PlaybookStatusCodes.stored;
   const players = [{ ...firstPlayer, type: userTypes.firstPlayer }];
@@ -91,7 +92,6 @@ const initGameChannel = dispatch => {
     const {
       status,
       startsAt,
-      joinsAt,
       timeoutSeconds,
       players: [firstPlayer, secondPlayer],
       task,
@@ -111,7 +111,6 @@ const initGameChannel = dispatch => {
     const gameStatus = {
       status,
       startsAt,
-      joinsAt,
       timeoutSeconds,
       rematchState,
       rematchInitiatorId,
@@ -183,10 +182,6 @@ export const activeGameEditorReady = () => dispatch => {
     dispatch(actions.updateEditorText(camelizeKeys(data)));
   });
 
-  channel.on('output:data', data => {
-    dispatch(actions.updateExecutionOutput(camelizeKeys(data)));
-  });
-
   channel.on('user:start_check', ({ user_id: userId }) => {
     dispatch(actions.updateCheckStatus({ [userId]: true }));
   });
@@ -195,22 +190,17 @@ export const activeGameEditorReady = () => dispatch => {
     const {
       status,
       solutionStatus,
-      checkResult: {
-        output, result, assertsCount, successCount,
-      },
+      checkResult,
       players,
       userId,
     } = camelizeKeys(responseData);
     const newGameStatus = solutionStatus ? { status } : {};
-    const asserts = { assertsCount, successCount };
 
     dispatch(actions.updateGamePlayers({ players }));
 
     dispatch(
       actions.updateExecutionOutput({
-        output,
-        result,
-        asserts,
+        ...checkResult,
         userId,
       }),
     );
@@ -222,7 +212,6 @@ export const activeGameEditorReady = () => dispatch => {
     const {
       status,
       startsAt,
-      joinsAt,
       timeoutSeconds,
       players: [firstPlayer, secondPlayer],
       task,
@@ -245,9 +234,8 @@ export const activeGameEditorReady = () => dispatch => {
 
     dispatch(
       actions.updateExecutionOutput({
+        ...firstPlayer.checkResult,
         userId: firstPlayer.id,
-        result: firstPlayer.checkResult.result,
-        output: firstPlayer.checkResult.output,
       }),
     );
 
@@ -262,9 +250,8 @@ export const activeGameEditorReady = () => dispatch => {
 
       dispatch(
         actions.updateExecutionOutput({
+          ...secondPlayer.checkResult,
           userId: secondPlayer.id,
-          result: secondPlayer.checkResult.result,
-          output: secondPlayer.checkResult.output,
         }),
       );
     }
@@ -273,7 +260,6 @@ export const activeGameEditorReady = () => dispatch => {
       actions.updateGameStatus({
         status,
         startsAt,
-        joinsAt,
         timeoutSeconds,
       }),
     );
@@ -305,26 +291,28 @@ export const activeGameEditorReady = () => dispatch => {
 };
 
 export const storedGameEditorReady = () => dispatch => {
-  axios.get(`/api/v1/playbook/${gameId}`).then(response => {
-    const data = camelizeKeys(response.data);
-    const resolvedData = resolveDiffs(data);
+  axios
+    .get(`/api/v1/playbook/${gameId}`)
+    .then(response => {
+      const data = camelizeKeys(response.data);
+      const resolvedData = resolveDiffs(data);
 
-    const gameStatus = {
-      status: GameStatusCodes.stored,
-    };
+      const gameStatus = {
+        status: GameStatusCodes.stored,
+      };
 
-    initStore(dispatch)({
-      firstPlayer: resolvedData.players[0],
-      secondPlayer: resolvedData.players[1],
-      task: resolvedData.task,
-      gameStatus,
-      playbookStatusCode: PlaybookStatusCodes.stored,
-    });
+      initStore(dispatch)({
+        firstPlayer: resolvedData.players[0],
+        secondPlayer: resolvedData.players[1],
+        task: resolvedData.task,
+        gameStatus,
+        playbookStatusCode: PlaybookStatusCodes.stored,
+      });
 
-    dispatch(actions.loadStoredPlaybook(resolvedData));
-    dispatch(actions.fetchChatData(resolvedData.chat));
-    dispatch(actions.finishStoreInit());
-  })
+      dispatch(actions.loadStoredPlaybook(resolvedData));
+      dispatch(actions.fetchChatData(resolvedData.chat));
+      dispatch(actions.finishStoreInit());
+    })
     .catch(e => console.log(e.message));
 };
 
@@ -348,7 +336,6 @@ export const checkGameResult = () => (dispatch, getState) => {
   };
   channel.push('check_result', payload);
 };
-
 
 export const compressEditorHeight = userId => dispatch => (
   dispatch(actions.compressEditorHeight({ userId }))
