@@ -38,14 +38,11 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
        ) do
     # Action is one the maps
     #
-    # 1 Main map with action to update text
-    # %{"type" => "editor_text", "diff" => %{time" => 10, "delta" => []}}
+    # 1 Main map with action to update text or lang
+    # %{"type" => "editor_text", "diff" => %{time" => 10, "delta" => [], prev_lang: "", next_lang: ''}}
     #
-    # 2 Map with action to update lang
-    # %{"type" => "editor_lang", "diff" => %{"time" => 10, "prev_lang" => "elixir", "next_lang" => "ruby"}}
-    #
-    # 3 Map with action to send solution
-    # %{"type" => "check_complete"}
+    # 2 Map with action to send solution
+    # %{"type" => "game_over"}
 
     init_document = TextDelta.new() |> TextDelta.insert(editor_text)
 
@@ -60,30 +57,19 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
   end
 
   defp perform_action(
-         %{"type" => "editor_text", "diff" => diff},
-         {document, editor_lang},
-         channel_pid
-       ) do
-    next_document = create_next_document(document, diff)
-    next_editor_state = {next_document, editor_lang}
-    send_editor_state(channel_pid, next_editor_state)
-
-    next_editor_state
-  end
-
-  defp perform_action(
-         %{"type" => "editor_lang", "diff" => diff},
+         %{"type" => "update_editor_data", "diff" => diff},
          {document, _editor_lang},
          channel_pid
        ) do
+    next_document = create_next_document(document, diff)
     next_lang = diff |> Map.get("next_lang")
-    next_editor_state = {document, next_lang}
+    next_editor_state = {next_document, next_lang}
     send_editor_state(channel_pid, next_editor_state)
 
     next_editor_state
   end
 
-  defp perform_action(%{"type" => "check_complete"}, editor_state, channel_pid) do
+  defp perform_action(%{"type" => "game_over"}, editor_state, channel_pid) do
     send_check_request(channel_pid, editor_state)
 
     editor_state
@@ -93,7 +79,7 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
     Enum.filter(
       records,
       &(&1["id"] == user_id &&
-          &1["type"] in ["init", "editor_text", "editor_lang", "check_complete"])
+          &1["type"] in ["init", "update_editor_data", "game_over"])
     )
   end
 
@@ -103,21 +89,21 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
     TextDelta.apply!(document, text_delta)
   end
 
-  defp get_timer_value(%{"type" => "check_complete"}, _step_coefficient), do: 0
+  defp get_timer_value(%{"type" => "game_over"}, _step_coefficient), do: 0
 
   defp get_timer_value(%{"diff" => diff}, step_coefficient),
     do: Map.get(diff, "time") * step_coefficient
 
   defp send_editor_state(channel_pid, {document, lang}) do
     PhoenixClient.Channel.push_async(channel_pid, "editor:data", %{
-      "lang" => lang,
+      "lang_slug" => lang,
       "editor_text" => document.ops |> hd |> Map.get(:insert)
     })
   end
 
   defp send_check_request(channel_pid, {document, lang}) do
     PhoenixClient.Channel.push_async(channel_pid, "check_result", %{
-      "lang" => lang,
+      "lang_slug" => lang,
       "editor_text" => document.ops |> hd |> Map.get(:insert)
     })
   end

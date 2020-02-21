@@ -68,10 +68,11 @@ defmodule Codebattle.Bot.Playbook do
     :leave_chat,
     :chat_message,
     :init,
-    :update_editor_params,
     :give_up,
+    :update_editor_data,
     :start_check,
-    :complete
+    :check_complete,
+    :game_over
   ]
 
   def add_event(playbook, event, params)
@@ -80,16 +81,24 @@ defmodule Codebattle.Bot.Playbook do
     count = Enum.count(playbook)
 
     record =
-      {event, params}
-      |> create_record
-      |> Map.merge(params)
+      %{type: event}
+      |> merge(event, params)
       |> Map.merge(%{time: time, record_id: count})
 
     [record | playbook]
   end
 
   def add_event(playbook, :join, %{players: players}) do
-    Enum.reduce(players, playbook, &add_event(&2, :init, Map.from_struct(&1)))
+    Enum.reduce(players, playbook, fn player, acc ->
+      data = %{
+        id: player.id,
+        editor_text: player.editor_text,
+        editor_lang: player.editor_lang,
+        check_result: %{result: "{}", output: ""}
+      }
+
+      add_event(acc, :init, data)
+    end)
   end
 
   def add_event(playbook, _event, _params) do
@@ -121,20 +130,12 @@ defmodule Codebattle.Bot.Playbook do
     |> Playbook.changeset(params)
   end
 
-  defp create_record({:update_editor_params, %{editor_lang: _}}),
-    do: %{type: :editor_lang}
+  defp merge(record, :check_complete, params) do
+    new_params = Map.update!(params, :check_result, &Map.from_struct/1)
+    Map.merge(record, new_params)
+  end
 
-  defp create_record({:update_editor_params, %{editor_text: _}}),
-    do: %{type: :editor_text}
-
-  defp create_record({:update_editor_params, %{result: _, output: _}}),
-    do: %{type: :result_check}
-
-  defp create_record({:complete, _params}),
-    do: %{type: :check_complete}
-
-  defp create_record({type, _params}),
-    do: %{type: type}
+  defp merge(record, _event, params), do: Map.merge(record, params)
 
   defp create_final_game_playbook(playbook) do
     init_data = %{records: [], players: [], count: 0}
@@ -151,31 +152,35 @@ defmodule Codebattle.Bot.Playbook do
     data |> add_player_state(player_state) |> update_history(record)
   end
 
-  defp add_final_record(%{type: type, record_id: record_id, id: id, time: time} = record, data)
-       when type in [:editor_text, :editor_lang] do
+  defp add_final_record(
+         %{type: :update_editor_data, record_id: record_id, id: id, time: time} = record,
+         data
+       ) do
     player_state = Enum.find(data.players, &(&1.id == id))
-    diff = create_diff(type, player_state, record)
+    diff = create_diff(player_state, record)
     new_player_state = update_editor_state(player_state, record, diff.time)
-    new_record = %{type: type, record_id: record_id, id: id, diff: diff, time: time}
+
+    new_record = %{
+      type: :update_editor_data,
+      record_id: record_id,
+      id: id,
+      diff: diff,
+      time: time
+    }
 
     data |> update_players_state(new_player_state) |> update_history(new_record)
   end
 
   defp add_final_record(record, data), do: update_history(data, record)
 
-  defp create_diff(:editor_lang, player_state, %{time: time, editor_lang: lang}),
-    do: %{
-      prev_lang: player_state.editor_lang,
-      next_lang: lang,
-      time: time_diff(time, player_state.time)
-    }
-
-  defp create_diff(:editor_text, player_state, %{time: time, editor_text: text}) do
+  defp create_diff(player_state, %{time: time, editor_text: text, editor_lang: editor_lang}) do
     player_state_delta = create_delta(player_state.editor_text)
     new_delta = create_delta(text)
 
     %{
       delta: TextDelta.diff!(player_state_delta, new_delta).ops,
+      prev_lang: player_state.editor_lang,
+      next_lang: editor_lang,
       time: time_diff(time, player_state.time)
     }
   end
@@ -196,12 +201,17 @@ defmodule Codebattle.Bot.Playbook do
         player -> player
       end)
 
-  defp update_editor_state(player_state, %{type: type, time: time} = record, diff_time),
-    do:
-      player_state
-      |> Map.put(type, record[type])
-      |> Map.put(:time, time)
-      |> Map.update!(:total_time_ms, &(&1 + diff_time))
+  defp update_editor_state(
+         player_state,
+         %{time: time, editor_text: editor_text, editor_lang: editor_lang},
+         diff_time
+       ),
+       do:
+         player_state
+         |> Map.put(:editor_text, editor_text)
+         |> Map.put(:editor_lang, editor_lang)
+         |> Map.put(:time, time)
+         |> Map.update!(:total_time_ms, &(&1 + diff_time))
 
   defp update_history(data, record),
     do: Map.update!(data, :records, &[record | &1]) |> increase_count
