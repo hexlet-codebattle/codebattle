@@ -175,7 +175,9 @@ class GameList extends React.Component {
   };
 
   renderStartNewGameButton = (gameLevel, gameType, timeoutSeconds, gameId) => {
-    const gameUrl = makeCreateGameUrl({gameLevel, gameType, timeoutSeconds, gameId});
+    const gameUrl = makeCreateGameUrl({
+      gameLevel, gameType, timeoutSeconds, gameId,
+    });
 
     return (
       <button
@@ -207,7 +209,7 @@ class GameList extends React.Component {
       </button>
       <div className="dropdown-menu" aria-labelledby="btnGroupStartNewGame">
         <DropdownMenuDefault
-          renderLevel={(level) => this.renderStartNewGameButton(level, 'withRandomPlayer', timeoutSeconds)}
+          renderLevel={level => this.renderStartNewGameButton(level, 'withRandomPlayer', timeoutSeconds)}
         />
       </div>
     </div>
@@ -227,9 +229,9 @@ class GameList extends React.Component {
         Play with a friend
       </button>
       <div className="dropdown-menu" aria-labelledby="btnGroupPlayWithFriend">
-      <DropdownMenuDefault
-        renderLevel={(level) => this.renderStartNewGameButton(level, 'withFriend', timeoutSeconds)}
-      />
+        <DropdownMenuDefault
+          renderLevel={level => this.renderStartNewGameButton(level, 'withFriend', timeoutSeconds)}
+        />
       </div>
     </div>
   );
@@ -277,10 +279,10 @@ class GameList extends React.Component {
 
   // TODO: add this render under "Play with the bot" when the server part is ready
   renderPlayWithBotSelector = () => {
-    const {activeGames} = this.props;
+    const { activeGames } = this.props;
     const gamesWithBot = activeGames.filter(game => game.gameInfo.isBot);
-    const selectGameByLevel = (type) => gamesWithBot.find(game => game.gameInfo.level === type);
-    const getGameId = (level) => selectGameByLevel(level)['gameId'];
+    const selectGameByLevel = type => gamesWithBot.find(game => game.gameInfo.level === type);
+    const getGameId = level => selectGameByLevel(level).gameId;
     return (
       <div className="dropdown">
         <button
@@ -293,11 +295,11 @@ class GameList extends React.Component {
         >
           <i className="fa fa-robot mr-2" />
           Play with the bot
-      </button>
+        </button>
         <div className="dropdown-menu" aria-labelledby="btnGroupPlayWithBot">
-        <DropdownMenuDefault 
-          renderLevel={(level) => this.renderStartNewGameButton(level, 'withBot', 0, getGameId(level))}
-        />
+          <DropdownMenuDefault
+            renderLevel={level => this.renderStartNewGameButton(level, 'withBot', 0, getGameId(level))}
+          />
         </div>
       </div>
     );
@@ -469,7 +471,7 @@ class GameList extends React.Component {
     const { loaded, newGame } = this.props;
     const timeoutSeconds = newGame.timeoutSeconds || 0;
     if (!loaded) {
-      return <Loading />
+      return <Loading />;
     }
     return (
       <>
