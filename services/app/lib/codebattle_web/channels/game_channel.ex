@@ -89,6 +89,7 @@ defmodule CodebattleWeb.GameChannel do
           solution_status: solution_status,
           user_id: user.id,
           status: FsmHelpers.get_state(fsm),
+          players: FsmHelpers.get_players(fsm),
           check_result: check_result
         })
 

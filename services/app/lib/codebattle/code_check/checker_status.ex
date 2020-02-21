@@ -10,8 +10,8 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
         ...>    %{check_code: "-1", lang: %{slug: "js"}}
         ...> )
         %Codebattle.CodeCheck.CheckResult{
-          asserts_count: nil,
-          success_count: nil,
+          asserts_count: 0,
+          success_count: 0,
           status: :error,
           output: ~s({"status": "error", "result": "sdf"}),
           result: ~s({"status": "error", "result": "sdf"})
@@ -22,8 +22,8 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
         ...>      %{check_code: "-1", lang: %{slug: "js"}}
         ...> )
         %Codebattle.CodeCheck.CheckResult{
-          asserts_count: nil,
-          success_count: nil,
+          asserts_count: 0,
+          success_count: 0,
           status: :ok,
           output: ~s({"status": "ok", "result": "__code-1__"}),
           result: ~s({"status": "ok", "result": "__code-1__"})
@@ -35,7 +35,7 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
         ...>), %{check_code: "-1", lang: %{slug: "js"}}
         ...> )
         %Codebattle.CodeCheck.CheckResult{
-          asserts_count: 1,
+          asserts_count: 2,
           success_count: 1,
           status: :failure,
           output: ~s({"status": "failure", "result": "0", "arguments": [0]}),

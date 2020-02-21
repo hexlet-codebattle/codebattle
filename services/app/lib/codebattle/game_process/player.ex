@@ -64,6 +64,8 @@ defmodule Codebattle.GameProcess.Player do
     end
   end
 
+  def build(data, params \\ {})
+
   def build(%Tournament.Types.Player{} = player, params) do
     new_player = %__MODULE__{
       id: player.id,
