@@ -15,6 +15,7 @@ import GamesHeatmap from '../components/GamesHeatmap';
 import Card from '../components/Card';
 import UserInfo from './UserInfo';
 import makeCreateGameUrl from '../utils/makeCreateGameUrl';
+import DropdownMenuDefault from '../components/DropdownMenuDefault';
 
 const timeoutOptions = {
   0: i18n.t('Timeout - no timeout'),
@@ -25,8 +26,6 @@ const timeoutOptions = {
   1200: i18n.t('Timeout 1200 seconds'),
   3600: i18n.t('Timeout 3600 seconds'),
 };
-
-const orderedLevels = ['elementary', 'easy', 'medium', 'hard'];
 
 class GameList extends React.Component {
   levelToClass = {
@@ -180,6 +179,7 @@ class GameList extends React.Component {
 
     return (
       <button
+        key={gameUrl}
         className="dropdown-item"
         type="button"
         data-method="post"
@@ -191,31 +191,6 @@ class GameList extends React.Component {
       </button>
     );
   };
-
-  renderStartNewGameDropdownMenu = (gameType, timeoutSeconds = 0) => {
-    const renderButton = (level) => {
-      const rendererMap = {
-        withBot: () => {
-          const { activeGames } = this.props;
-          const gamesWithBot = activeGames.filter(game => game.gameInfo.isBot);
-          const selectGameByLevel = (type) => gamesWithBot.find(game => game.gameInfo.level === type);
-          const game = selectGameByLevel(level);
-          return this.renderStartNewGameButton(level, gameType, 0, game.gameId);
-        }
-      }
-      const render = rendererMap[gameType] && rendererMap[gameType]();
-      return render || this.renderStartNewGameButton(level, gameType, timeoutSeconds);
-    };
-    return (
-      <>
-        <div className="dropdown-header">Select a difficulty</div>
-        <div className="dropdown-divider" />
-        {orderedLevels.map(level => <div key={level}>
-          {renderButton(level, gameType, timeoutSeconds)}
-        </div>)}
-      </>
-    );
-  }
 
   renderStartNewGameSelector = timeoutSeconds => (
     <div className="dropdown mr-sm-3 mr-0 mb-sm-0 mx-3">
@@ -231,7 +206,9 @@ class GameList extends React.Component {
         Create a game
       </button>
       <div className="dropdown-menu" aria-labelledby="btnGroupStartNewGame">
-        {this.renderStartNewGameDropdownMenu('withRandomPlayer', timeoutSeconds)}
+        <DropdownMenuDefault
+          renderLevel={(level) => this.renderStartNewGameButton(level, 'withRandomPlayer', timeoutSeconds)}
+        />
       </div>
     </div>
   );
@@ -250,7 +227,9 @@ class GameList extends React.Component {
         Play with a friend
       </button>
       <div className="dropdown-menu" aria-labelledby="btnGroupPlayWithFriend">
-        {this.renderStartNewGameDropdownMenu('withFriend', timeoutSeconds)}
+      <DropdownMenuDefault
+        renderLevel={(level) => this.renderStartNewGameButton(level, 'withFriend', timeoutSeconds)}
+      />
       </div>
     </div>
   );
@@ -297,24 +276,32 @@ class GameList extends React.Component {
   };
 
   // TODO: add this render under "Play with the bot" when the server part is ready
-  renderPlayWithBotSelector = () => (
-    <div className="dropdown">
-      <button
-        id="btnGroupPlayWithBot"
-        type="button"
-        className="btn btn-outline-success dropdown-toggle"
-        data-toggle="dropdown"
-        aria-haspopup="true"
-        aria-expanded="false"
-      >
-        <i className="fa fa-robot mr-2" />
-        Play with the bot
-    </button>
-      <div className="dropdown-menu" aria-labelledby="btnGroupPlayWithBot">
-        {this.renderStartNewGameDropdownMenu('withBot')}
+  renderPlayWithBotSelector = () => {
+    const {activeGames} = this.props;
+    const gamesWithBot = activeGames.filter(game => game.gameInfo.isBot);
+    const selectGameByLevel = (type) => gamesWithBot.find(game => game.gameInfo.level === type);
+    const getGameId = (level) => selectGameByLevel(level)['gameId'];
+    return (
+      <div className="dropdown">
+        <button
+          id="btnGroupPlayWithBot"
+          type="button"
+          className="btn btn-outline-success dropdown-toggle"
+          data-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false"
+        >
+          <i className="fa fa-robot mr-2" />
+          Play with the bot
+      </button>
+        <div className="dropdown-menu" aria-labelledby="btnGroupPlayWithBot">
+        <DropdownMenuDefault 
+          renderLevel={(level) => this.renderStartNewGameButton(level, 'withBot', 0, getGameId(level))}
+        />
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 
   renderLiveTournaments = tournaments => {
     if (_.isEmpty(tournaments)) {
