@@ -145,7 +145,7 @@ const reduceOriginalRecords = (acc, record, index) => {
   }
 
   if (type === 'leave_chat') {
-    const newUsers = users.filter(user => user.id === record.id);
+    const newUsers = users.filter(user => user.id !== record.id);
     const newChatState = { users: newUsers, messages };
     const data = {
       type,
