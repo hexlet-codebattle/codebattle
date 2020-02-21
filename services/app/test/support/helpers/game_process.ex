@@ -12,11 +12,16 @@ defmodule Helpers.GameProcess do
     task = Map.get(data, :task, game.task)
     players = Map.get(data, :players, game)
 
-    data = Map.put(data, :game_id, game.id)
-    data = Map.put(data, :task, task)
-    data = Map.put(data, :level, task.level)
-    data = Map.put(data, :starts_at, TimeHelper.utc_now())
-    fsm = Fsm.set_data(state, data)
+    fsm = Fsm.new()
+    |> Fsm.create(%{
+      game_id: game.id,
+      players: players,
+      task: task,
+      level: task.level,
+      starts_at: TimeHelper.utc_now(),
+      state: state
+    })
+
     ActiveGames.setup_game(fsm)
     GlobalSupervisor.start_game(fsm)
     Server.update_playbook(game.id, :join, %{players: players})

@@ -7,15 +7,17 @@ defmodule Codebattle.GameProcess.Fsm do
   rematch_states -> [:none, :in_approval, :rejected, :accepted]
   Player.game_result -> [:undefined, :gave_up, :won, :lost]
   """
+  alias Codebattle.GameProcess.Engine.Standard
 
   import CodebattleWeb.Gettext
   import Codebattle.GameProcess.FsmHelpers
+
 
   use Fsm,
     initial_state: :initial,
     initial_data: %{
       # Atom, module with game functions; OOP for poor
-      module: nil,
+      module: Standard,
       # Integer
       game_id: nil,
       # Integer
@@ -95,6 +97,8 @@ defmodule Codebattle.GameProcess.Fsm do
             |> update_player_params(%{
               game_result: :won,
               check_result: params.check_result,
+              editor_text: params.editor_text,
+              editor_lang: params.editor_lang,
               id: params.id
             })
             |> update_player_params(%{game_result: :lost, id: opponent.id})
@@ -149,7 +153,12 @@ defmodule Codebattle.GameProcess.Fsm do
       players =
         data
         |> Map.get(:players)
-        |> update_player_params(%{check_result: params.check_result, id: params.id})
+        |> update_player_params(%{
+          id: params.id,
+          check_result: params.check_result,
+          editor_text: params.editor_text,
+          editor_lang: params.editor_lang
+        })
 
       next_state(:game_over, %{data | players: players})
     end
@@ -184,7 +193,7 @@ defmodule Codebattle.GameProcess.Fsm do
       :none ->
         %{rematch_state: :in_approval, rematch_initiator_id: params.player_id}
 
-      :in_aprroval ->
+      :in_approval ->
         if params.player_id == data.rematch_initiator_id,
           do: %{},
           else: %{rematch_state: :accepted}

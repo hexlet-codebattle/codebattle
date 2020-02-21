@@ -134,7 +134,11 @@ defmodule Codebattle.GameProcess.Play do
   def rematch_reject(game_id) do
     case Server.call_transition(game_id, :rematch_reject, %{}) do
       {:ok, fsm} ->
-        {:rematch_update_status, FsmHelpers.get_rematch_state(fsm)}
+        {:rematch_update_status,
+         %{
+           rematch_initiator_id: FsmHelpers.get_rematch_initiator_id(fsm),
+           rematch_state: FsmHelpers.get_rematch_state(fsm)
+         }}
 
       {:error, reason} ->
         {:error, reason}

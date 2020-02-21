@@ -52,25 +52,28 @@ defmodule Codebattleweb.GameControllerTest do
 
   test "cancel game", %{conn: conn} do
     user1 = insert(:user)
-    state = :waiting_opponent
 
-    data = %{
-      players: [
-        Player.build(user1, %{game_result: :undefined})
-      ]
-    }
+    conn1 =
+      create_game(
+        conn,
+        user1,
+        %{"type" => "withRandomPlayer", "level" => "elementary"}
+      )
 
-    game = setup_game(state, data)
-    assert ActiveGames.game_exists?(game.id) == true
+    %{id: created_game_id} = redirected_params(conn1)
+
+    game_id = String.to_integer(created_game_id)
+
+    assert ActiveGames.game_exists?(game_id) == true
 
     conn =
       conn
       |> put_session(:user_id, user1.id)
-      |> delete(Routes.game_path(conn, :delete, game.id))
+      |> delete(Routes.game_path(conn, :delete, game_id))
 
     assert conn.status == 302
 
-    game = from(g in Game) |> Repo.get(game.id)
+    game = from(g in Game) |> Repo.get(game_id)
 
     assert game.state == "canceled"
     assert ActiveGames.game_exists?(game.id) == false
@@ -92,12 +95,12 @@ defmodule Codebattleweb.GameControllerTest do
 
     id = String.to_integer(created_game_id)
 
-    {_, users, game_info} = active_game(id)
+    game = active_game(id)
 
-    assert users[user.id] != nil
-    assert game_info[:timeout_seconds] == 0
-    assert game_info[:type] == "public"
-    assert game_info[:level] == "elementary"
+    assert game.players |> Enum.count() == 1
+    assert game.timeout_seconds == 3600
+    assert game.type == "public"
+    assert game.level == "elementary"
   end
 
   test "create private game with timeout", %{conn: conn} do

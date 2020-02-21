@@ -47,20 +47,15 @@ defmodule Codebattle.CodeCheck.Cpp.IntegrationTest do
     {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
     Mix.Shell.Process.flush()
 
-    Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: "sdf\n", lang: "cpp"})
+    Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: "sdf\n", lang_slug: "cpp"})
 
     assert_code_check()
 
     assert_receive %Phoenix.Socket.Broadcast{
-      payload: %{result: result, output: output}
+      payload: %{check_result: check_result}
     }
 
-    expected_result = %{
-      "status" => "error",
-      "result" => "./check/solution.cpp:1:1: error: 'sdf' does not name a type"
-    }
-
-    assert expected_result == Jason.decode!(result)
+    assert %Codebattle.CodeCheck.CheckResult{status: :error, success_count: 0} = check_result
 
     {:ok, fsm} = Server.get_fsm(game.id)
     assert fsm.state == :playing
@@ -91,17 +86,16 @@ defmodule Codebattle.CodeCheck.Cpp.IntegrationTest do
 
     Phoenix.ChannelTest.push(socket1, "check_result", %{
       editor_text: "int solution(int a, int b) { return a - b;}",
-      lang: "cpp"
+      lang_slug: "cpp"
     })
 
     assert_code_check()
 
     assert_receive %Phoenix.Socket.Broadcast{
-      payload: %{result: result, output: output}
+      payload: %{check_result: check_result}
     }
 
-    expected_result = %{"status" => "failure", "result" => 0, "arguments" => "[1, 1]"}
-    assert expected_result == Jason.decode!(result)
+    assert %Codebattle.CodeCheck.CheckResult{status: :failure, success_count: 0} = check_result
 
     {:ok, fsm} = Server.get_fsm(game.id)
     assert fsm.state == :playing
@@ -130,14 +124,19 @@ defmodule Codebattle.CodeCheck.Cpp.IntegrationTest do
     {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
     Mix.Shell.Process.flush()
 
-    Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: "test"})
+    Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: "test", lang_slug: "js"})
 
     Phoenix.ChannelTest.push(socket1, "check_result", %{
       editor_text: "int solution(int a, int b) { return a + b;}",
-      lang: "cpp"
+      lang_slug: "cpp"
     })
 
     assert_code_check()
+
+    assert_receive %Phoenix.Socket.Broadcast{
+      payload: %{status: :game_over}
+    }
+
     {:ok, fsm} = Server.get_fsm(game.id)
 
     assert fsm.state == :game_over
@@ -166,16 +165,21 @@ defmodule Codebattle.CodeCheck.Cpp.IntegrationTest do
     {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
     Mix.Shell.Process.flush()
 
-    Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: "test"})
+    Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: "test", lang_slug: "js"})
 
     Phoenix.ChannelTest.push(socket1, "check_result", %{
       editor_text:
         "#include <iostream> \n #include <vector> \n using namespace std; \n
       vector<string> solution(vector<string> a, vector<string> b) { return vector<string> {\"abcdef\"};}",
-      lang: "cpp"
+      lang_slug: "cpp"
     })
 
     assert_code_check()
+
+    assert_receive %Phoenix.Socket.Broadcast{
+      payload: %{status: :game_over}
+    }
+
     {:ok, fsm} = Server.get_fsm(game.id)
 
     assert fsm.state == :game_over

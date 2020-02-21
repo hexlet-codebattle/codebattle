@@ -47,21 +47,15 @@ defmodule Codebattle.CodeCheck.Php.IntegrationTest do
     {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
     Mix.Shell.Process.flush()
 
-    Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: "sdf();", lang: "php"})
+    Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: "sdf();", lang_slug: "php"})
 
     assert_code_check()
 
     assert_receive %Phoenix.Socket.Broadcast{
-      payload: %{result: result, output: output}
+      payload: %{check_result: check_result}
     }
 
-    expected_result = %{
-      "status" => "error",
-      "result" =>
-        "Uncaught Error: Call to undefined function solution() in /usr/src/app/check/checker.php:53"
-    }
-
-    assert expected_result == Jason.decode!(result)
+    assert %Codebattle.CodeCheck.CheckResult{status: :error, success_count: 0} = check_result
 
     {:ok, fsm} = Server.get_fsm(game.id)
 
@@ -93,18 +87,16 @@ defmodule Codebattle.CodeCheck.Php.IntegrationTest do
 
     Phoenix.ChannelTest.push(socket1, "check_result", %{
       editor_text: "<?php\nfunction solution($a, $b) { return $a; }\n",
-      lang: "php"
+      lang_slug: "php"
     })
 
     assert_code_check()
 
     assert_receive %Phoenix.Socket.Broadcast{
-      payload: %{result: result, output: output}
+      payload: %{check_result: check_result}
     }
 
-    expected_result = %{"status" => "failure", "result" => 1, "arguments" => [1, 1]}
-
-    assert expected_result == Jason.decode!(result)
+    assert %Codebattle.CodeCheck.CheckResult{status: :failure, success_count: 0} = check_result
 
     {:ok, fsm} = Server.get_fsm(game.id)
 
@@ -135,11 +127,11 @@ defmodule Codebattle.CodeCheck.Php.IntegrationTest do
 
     Mix.Shell.Process.flush()
 
-    Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: "test"})
+    Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: "test", lang_slug: "js"})
 
     Phoenix.ChannelTest.push(socket1, "check_result", %{
       editor_text: "<?php\nfunction solution($x, $y){ return $x + $y; }\n",
-      lang: "php"
+      lang_slug: "php"
     })
 
     assert_code_check()

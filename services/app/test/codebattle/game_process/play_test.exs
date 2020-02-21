@@ -46,11 +46,4 @@ defmodule Codebattle.GameProcess.PlayTest do
 
     assert game.state == "timeout"
   end
-
-  test "timeouts the game by default", %{user1: _, user2: _, game_id: game_id} do
-    :timer.sleep(1100)
-    game = Repo.get(Game, game_id)
-
-    assert game.state == "timeout"
-  end
 end

@@ -24,7 +24,7 @@ defmodule Codebattle.IntegrationCase do
         timeout = Application.fetch_env!(:codebattle, :code_check_timeout)
 
         receive do
-          %Phoenix.Socket.Message{event: "user:check_result"} ->
+          %Phoenix.Socket.Broadcast{event: "user:check_complete"} ->
             true
         after
           timeout ->

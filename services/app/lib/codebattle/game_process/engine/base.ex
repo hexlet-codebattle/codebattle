@@ -20,9 +20,9 @@ defmodule Codebattle.GameProcess.Engine.Base do
 
   defmacro __using__(_opts) do
     quote do
-      def cancel_game(id, user) do
-        with {:ok, fsm} <- Play.get_fsm(id),
-             %Player{} = player <- FsmHelpers.get_player(fsm, user.id),
+      def cancel_game(fsm, user) do
+        with %Player{} = player <- FsmHelpers.get_player(fsm, user.id),
+             id <- FsmHelpers.get_game_id(fsm),
              :ok <- player_can_cancel_game?(id, player) do
           ActiveGames.terminate_game(id)
           GlobalSupervisor.terminate_game(id)

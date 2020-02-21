@@ -77,7 +77,7 @@ defmodule Codebattle.GameCases.GiveUpTest do
     {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
 
     # First player give_up
-    Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: "won", lang: "js"})
+    Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: "won", lang_slug: "js"})
     Phoenix.ChannelTest.push(socket1, "give_up", %{})
     :timer.sleep(70)
     {:ok, fsm} = Server.get_fsm(game_id)

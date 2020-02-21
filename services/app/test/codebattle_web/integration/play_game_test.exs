@@ -85,7 +85,7 @@ defmodule Codebattle.PlayGameTest do
     editor_text2 = "Hello world2!"
     editor_text3 = "Hello world3!"
 
-    Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text1, lang: "js"})
+    Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text1, lang_slug: "js"})
     :timer.sleep(100)
     {:ok, fsm} = Server.get_fsm(game_id)
     assert fsm.state == :game_over
@@ -98,7 +98,7 @@ defmodule Codebattle.PlayGameTest do
              "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nmodule.exports = (a, b) => {\n\treturn 0;\n};"
 
     # Winner cannot check results again
-    Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text2, lang: "js"})
+    Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text2, lang_slug: "js"})
     :timer.sleep(100)
     {:ok, fsm} = Server.get_fsm(game_id)
 
@@ -112,7 +112,7 @@ defmodule Codebattle.PlayGameTest do
              "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nmodule.exports = (a, b) => {\n\treturn 0;\n};"
 
     # Second player complete game
-    Phoenix.ChannelTest.push(socket2, "check_result", %{editor_text: editor_text3, lang: "js"})
+    Phoenix.ChannelTest.push(socket2, "check_result", %{editor_text: editor_text3, lang_slug: "js"})
 
     game = Repo.get(Game, game_id)
     user1 = Repo.get(User, user1.id)
@@ -158,7 +158,7 @@ defmodule Codebattle.PlayGameTest do
 
     # Other player cannot win game
     {:ok, _response, socket3} = subscribe_and_join(socket3, GameChannel, game_topic)
-    Phoenix.ChannelTest.push(socket3, "check_result", %{editor_text: "Hello world!", lang: "js"})
+    Phoenix.ChannelTest.push(socket3, "check_result", %{editor_text: "Hello world!", lang_slug: "js"})
     {:ok, fsm} = Server.get_fsm(game_id)
 
     assert fsm.state == :playing

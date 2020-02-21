@@ -49,17 +49,16 @@ defmodule Codebattle.CodeCheck.Phython.IntegrationTest do
 
     Phoenix.ChannelTest.push(socket1, "check_result", %{
       editor_text: "def solution(x, y): return x - y",
-      lang: "python"
+      lang_slug: "python"
     })
 
     assert_code_check()
 
     assert_receive %Phoenix.Socket.Broadcast{
-      payload: %{result: result, output: output}
+      payload: %{check_result: check_result}
     }
 
-    expected_result = %{"status" => "failure", "result" => 0, "arguments" => [1, 1]}
-    assert expected_result == Jason.decode!(result)
+    assert %Codebattle.CodeCheck.CheckResult{status: :failure, success_count: 0} = check_result
 
     {:ok, fsm} = Server.get_fsm(game.id)
 
@@ -89,16 +88,15 @@ defmodule Codebattle.CodeCheck.Phython.IntegrationTest do
     {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
     Mix.Shell.Process.flush()
 
-    Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: "sdf", lang: "python"})
+    Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: "sdf", lang_slug: "python"})
 
     assert_code_check()
 
     assert_receive %Phoenix.Socket.Broadcast{
-      payload: %{result: result, output: output}
+      payload: %{check_result: check_result}
     }
 
-    expected_result = %{"status" => "error", "result" => ["name 'sdf' is not defined"]}
-    assert expected_result == Jason.decode!(result)
+    assert %Codebattle.CodeCheck.CheckResult{status: :error, success_count: 0} = check_result
 
     {:ok, fsm} = Server.get_fsm(game.id)
 
@@ -128,17 +126,17 @@ defmodule Codebattle.CodeCheck.Phython.IntegrationTest do
     {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
     Mix.Shell.Process.flush()
 
-    Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: "test"})
+    Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: "test", lang_slug: "js"})
 
     Phoenix.ChannelTest.push(socket1, "check_result", %{
       editor_text: "def solution(x, y): return x + y",
-      lang: "python"
+      lang_slug: "python"
     })
 
     assert_code_check()
 
     assert_receive %Phoenix.Socket.Broadcast{
-      payload: %{status: "game_over"}
+      payload: %{status: :game_over}
     }
 
     {:ok, fsm} = Server.get_fsm(game.id)

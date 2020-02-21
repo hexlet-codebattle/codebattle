@@ -41,30 +41,33 @@ defmodule Codebattle.GameProcess.Player do
             rating_diff: 0,
             achievements: []
 
-  def build(%UserGame{} = user_game) do
-    case user_game.user do
-      nil ->
-        %__MODULE__{}
+  def build(userable, params \\ %{})
 
-      user ->
-        %__MODULE__{
-          id: user.id,
-          public_id: user.public_id,
-          is_bot: user.is_bot,
-          github_id: user.github_id,
-          name: user.name,
-          achievements: user_game.user.achievements,
-          rating: user_game.rating,
-          rating_diff: user_game.rating_diff,
-          editor_lang: user_game.lang,
-          lang: user_game.lang,
-          creator: user_game.creator,
-          game_result: user_game.result
-        }
-    end
+  def build(%UserGame{} = user_game, params) do
+    new_player =
+      case user_game.user do
+        nil ->
+          %__MODULE__{}
+
+        user ->
+          %__MODULE__{
+            id: user.id,
+            public_id: user.public_id,
+            is_bot: user.is_bot,
+            github_id: user.github_id,
+            name: user.name,
+            achievements: user_game.user.achievements,
+            rating: user_game.rating,
+            rating_diff: user_game.rating_diff,
+            editor_lang: user_game.lang,
+            lang: user_game.lang,
+            creator: user_game.creator,
+            game_result: user_game.result
+          }
+      end
+
+    Map.merge(new_player, params)
   end
-
-  def build(data, params \\ {})
 
   def build(%Tournament.Types.Player{} = player, params) do
     new_player = %__MODULE__{
@@ -111,21 +114,6 @@ defmodule Codebattle.GameProcess.Player do
   end
 
   def setup_editor_params(%__MODULE__{} = player, %{task: task}) do
-    editor_lang = player.editor_lang
-    editor_text = Languages.get_solution(editor_lang, task)
-
-    params = %{
-      editor_lang: editor_lang,
-      editor_text: editor_text,
-      game_result: :undefined,
-      check_result: CheckResult.new()
-    }
-
-    Map.merge(player, params)
-  end
-
-  # deprecated, use setup_editor_params
-  def rebuild(%__MODULE__{} = player, %{task: task}) do
     editor_lang = player.editor_lang
     editor_text = Languages.get_solution(editor_lang, task)
 

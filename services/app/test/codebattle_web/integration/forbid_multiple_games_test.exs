@@ -19,7 +19,8 @@ defmodule Codebattle.ForbidMultipleGamesTest do
       |> get(page_path(conn, :index))
       |> post(game_path(conn, :create, level: "easy", type: "withRandomPlayer"))
 
-    assert conn.status == 302
+    assert conn.status == 422
+    assert get_flash(conn, :danger) != nil
 
     assert Game |> Repo.all() |> Enum.count() == 1
   end

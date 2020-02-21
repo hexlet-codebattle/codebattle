@@ -7,7 +7,7 @@ defmodule Codebattle.GameProcess.Engine.Tournament do
     GlobalSupervisor,
     ActiveGames,
     TasksQueuesServer,
-    FsmHelpers,
+    Player,
     Server
   }
 
@@ -28,11 +28,13 @@ defmodule Codebattle.GameProcess.Engine.Tournament do
         task_id: task.id
       })
 
+    new_players = Enum.map(players, &Player.build/1)
+
     fsm =
       build_fsm(%{
         module: __MODULE__,
         state: :playing,
-        players: players,
+        players: new_players,
         game_id: game.id,
         level: level,
         type: "tournament",
@@ -46,10 +48,9 @@ defmodule Codebattle.GameProcess.Engine.Tournament do
     ActiveGames.create_game(fsm)
     {:ok, _} = GlobalSupervisor.start_game(fsm)
 
-    players = FsmHelpers.get_players(fsm)
-    Server.update_playbook(game.id, :join, %{players: players})
+    Server.update_playbook(game.id, :join, %{players: new_players})
 
-    Enum.each(players, fn player ->
+    Enum.each(new_players, fn player ->
       if player.is_bot do
         PlaybookAsyncRunner.create_server(%{game_id: game.id, bot: player})
 

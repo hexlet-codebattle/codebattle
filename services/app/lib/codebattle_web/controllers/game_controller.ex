@@ -91,14 +91,8 @@ defmodule CodebattleWeb.GameController do
   end
 
   def delete(conn, %{"id" => id}) do
-    case Play.cancel_game(id, conn.assigns.current_user) do
-      :ok ->
+    with :ok <- Play.cancel_game(id, conn.assigns.current_user) do
         redirect(conn, to: page_path(conn, :index))
-
-      {:error, reason} ->
-        conn
-        |> put_flash(:danger, reason)
-        |> redirect(to: page_path(conn, :index))
     end
   end
 

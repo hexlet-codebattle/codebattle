@@ -49,21 +49,6 @@ defmodule Codebattle.GameCases.TimeoutTest do
     {:ok, fsm} = Server.get_fsm(game_id)
     assert fsm.state == :timeout
     assert ActiveGames.game_exists?(game_id) == false
-
-    # rematch
-
-    Phoenix.ChannelTest.push(socket1, "rematch:send_offer", %{})
-    :timer.sleep(70)
-
-    {:ok, fsm} = Server.get_fsm(game_id)
-    assert fsm.state == :rematch_in_approval
-
-    Phoenix.ChannelTest.push(socket2, "rematch:accept_offer", %{})
-    :timer.sleep(70)
-
-    {:ok, fsm} = Server.get_fsm(game_id + 1)
-    assert fsm.state == :playing
-    assert fsm.data.timeout_seconds == 60
   end
 
   test "After timeout user can create games", %{conn1: conn1, conn2: conn2, socket1: socket1} do
