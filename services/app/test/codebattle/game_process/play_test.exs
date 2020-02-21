@@ -1,7 +1,7 @@
 defmodule Codebattle.GameProcess.PlayTest do
   use Codebattle.IntegrationCase
 
-  alias Codebattle.GameProcess.{Play}
+  alias Codebattle.GameProcess.{Play, FsmHelpers}
   alias Codebattle.{Game}
 
   setup _ do
@@ -9,14 +9,21 @@ defmodule Codebattle.GameProcess.PlayTest do
     user1 = insert(:user, %{name: "first", email: "test1@test.test", github_id: 1, rating: 1000})
     user2 = insert(:user, %{name: "second", email: "test2@test.test", github_id: 2, rating: 1000})
 
-    {:ok, game_id} =
-      Play.create_game(%{"user" => user1, "level" => "medium", "timeout_seconds" => 60, "type" => "public"})
+    {:ok, fsm} =
+      Play.create_game(%{
+        "user" => user1,
+        "level" => "medium",
+        "timeout_seconds" => 60,
+        "type" => "public"
+      })
+
+    game_id = FsmHelpers.get_game_id(fsm)
 
     %{user1: user1, user2: user2, game_id: game_id}
   end
 
   test "joins the game", %{user1: user1, user2: user2, game_id: game_id} do
-    assert {:ok, fsm} = Play.join_game(game_id, user2) |> IO.inspect
+    assert {:ok, fsm} = Play.join_game(game_id, user2)
 
     player_ids =
       fsm.data.players

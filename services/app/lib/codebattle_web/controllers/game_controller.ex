@@ -13,11 +13,14 @@ defmodule CodebattleWeb.GameController do
   @timeout_seconds_default 3600
   @timeout_seconds_whitelist [0, 60, 120, 300, 600, 1200, 3600]
 
+  action_fallback(CodebattleWeb.FallbackController)
+
   def create(conn, params) do
     type =
       case params["type"] do
         "withFriend" -> "private"
         "withRandomPlayer" -> "public"
+        type -> type
       end
 
     game_params =
@@ -29,17 +32,10 @@ defmodule CodebattleWeb.GameController do
         "user" => conn.assigns.current_user
       })
 
-    case Play.create_game(game_params) do
-      {:ok, fsm} ->
-        game_id = FsmHelpers.get_game_id(fsm)
-        level = FsmHelpers.get_level(fsm)
-
-        redirect(conn, to: game_path(conn, :show, game_id, level: level))
-
-      {:error, reason} ->
-        conn
-        |> put_flash(:danger, reason)
-        |> redirect(to: page_path(conn, :index))
+    with {:ok, fsm} <- Play.create_game(game_params) do
+      game_id = FsmHelpers.get_game_id(fsm)
+      level = FsmHelpers.get_level(fsm)
+      redirect(conn, to: game_path(conn, :show, game_id, level: level))
     end
   end
 

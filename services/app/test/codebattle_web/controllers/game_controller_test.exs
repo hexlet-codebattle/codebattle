@@ -114,12 +114,12 @@ defmodule Codebattleweb.GameControllerTest do
     assert %{id: created_game_id} = redirected_params(conn)
     id = String.to_integer(created_game_id)
 
-    {_, users, game_info} = active_game(id)
+    game = active_game(id)
 
-    assert users[user.id] != nil
-    assert game_info[:timeout_seconds] == 60
-    assert game_info[:type] == "private"
-    assert game_info[:level] == "medium"
+    assert game.players |> Enum.count() == 1
+    assert game.timeout_seconds == 60
+    assert game.type == "private"
+    assert game.level == "medium"
   end
 
   test "create game and normalizes incorrect timeout and type values", %{conn: conn} do
@@ -132,17 +132,9 @@ defmodule Codebattleweb.GameControllerTest do
         %{"type" => "wrongType", "level" => "medium", "timeout_seconds" => "8"}
       )
 
-    assert conn.status == 302
-    assert %{id: created_game_id} = redirected_params(conn)
-
-    id = String.to_integer(created_game_id)
-
-    {_, users, game_info} = active_game(id)
-
-    assert users[user.id] != nil
-    assert game_info[:timeout_seconds] == 0
-    assert game_info[:type] == "public"
-    assert game_info[:level] == "medium"
+    assert conn.status == 422
+    assert get_flash(conn, :danger) != nil
+    assert ActiveGames.get_games() == []
   end
 
   defp create_game(conn, user, params) do
@@ -152,7 +144,7 @@ defmodule Codebattleweb.GameControllerTest do
   end
 
   defp active_game(id) do
-    ActiveGames.list_games()
-    |> Enum.find(fn {game_id, _, _} -> game_id == id end)
+    ActiveGames.get_games()
+    |> Enum.find(fn %{id: game_id} -> game_id == id end)
   end
 end

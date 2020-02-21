@@ -18,7 +18,7 @@ defmodule Codebattle.GameProcess.ActiveGames do
     end
   end
 
-  def get_games(params) do
+  def get_games(params \\ %{}) do
     list_games(params)
     |> Enum.map(fn {_game_id, players, game_params} ->
       Map.merge(game_params, %{players: Map.values(players)})

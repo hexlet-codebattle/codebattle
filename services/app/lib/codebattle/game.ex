@@ -11,6 +11,7 @@ defmodule Codebattle.Game do
   end
 
   @derive {Poison.Encoder, only: [:id, :users, :state, :starts_at, :finishs_at]}
+  @types ~w(public bot tournament private)
 
   schema "games" do
     field(:state, :string)
@@ -31,5 +32,6 @@ defmodule Codebattle.Game do
     game
     |> cast(attrs, [:state, :task_id, :level, :type, :starts_at, :finishs_at])
     |> validate_required([:state])
+    |> validate_inclusion(:type, @types)
   end
 end

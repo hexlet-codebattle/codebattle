@@ -23,45 +23,46 @@ defmodule Codebattle.GameProcess.Engine.Standard do
 
     timeout_seconds = params["timeout_seconds"] || @default_timeout
 
-    case player_can_create_game?(player) do
-      :ok ->
-        game =
-          Repo.insert!(%Game{
-            state: "waiting_opponent",
-            level: level,
-            type: type
-          })
+    with :ok <- player_can_create_game?(player),
+         {:ok, game} <-
+           %Game{}
+           |> Game.changeset(%{
+             state: "waiting_opponent",
+             level: level,
+             type: type
+           })
+           |> Repo.insert(),
+         fsm <-
+           build_fsm(%{
+             module: __MODULE__,
+             players: [player],
+             game_id: game.id,
+             level: level,
+             type: type,
+             inserted_at: game.inserted_at,
+             timeout_seconds: timeout_seconds
+           }),
+         :ok <- ActiveGames.create_game(fsm),
+         {:ok, _} <- GlobalSupervisor.start_game(fsm),
+         :ok <- Codebattle.GameProcess.TimeoutServer.restart(game.id, timeout_seconds) do
+      case type do
+        "public" ->
+          Task.start(fn ->
+            Notifier.call(:game_created, %{level: level, game: game, player: player})
+          end)
 
-        fsm =
-          build_fsm(%{
-            module: __MODULE__,
-            players: [player],
-            game_id: game.id,
-            level: level,
-            type: type,
-            inserted_at: game.inserted_at,
-            timeout_seconds: timeout_seconds
-          })
+          broadcast_active_game(fsm)
 
-        ActiveGames.create_game(fsm)
-        {:ok, _} = GlobalSupervisor.start_game(fsm)
-        Codebattle.GameProcess.TimeoutServer.restart(game.id, timeout_seconds)
+        _ ->
+          nil
+      end
 
-        case type do
-          "public" ->
-            Task.start(fn ->
-              Notifier.call(:game_created, %{level: level, game: game, player: player})
-            end)
-
-            broadcast_active_game(fsm)
-
-          _ ->
-            nil
-        end
-
-        {:ok, fsm}
-
+      {:ok, fsm}
+    else
       {:error, reason} ->
+        {:error, reason}
+
+      {:error, reason, _fsm} ->
         {:error, reason}
     end
   end
