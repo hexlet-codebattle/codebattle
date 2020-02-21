@@ -15,6 +15,10 @@ const updatePlayersGameResult = (players, firstPlayer, secondPlayer) => (
     : { ...player, ...secondPlayer }))
 );
 
+export const parse = JSON.parse;
+
+export const minify = JSON.stringify;
+
 export const getText = (text, { delta: d }) => {
   const textDelta = new Delta().insert(text);
   const delta = new Delta(d);
@@ -22,7 +26,8 @@ export const getText = (text, { delta: d }) => {
   return finalDelta.ops[0].insert;
 };
 
-const collectFinalRecord = (acc, record) => {
+const collectFinalRecord = (acc, strRecord) => {
+  const record = parse(strRecord);
   const { players } = acc;
   switch (record.type) {
     case 'update_editor_data': {
@@ -57,10 +62,10 @@ const collectFinalRecord = (acc, record) => {
 
 const createFinalRecord = (index, record, params) => {
   if (index % snapshotStep === 0) {
-    return { ...record, ...params };
+    return minify({ ...record, ...params });
   }
 
-  return record;
+  return minify(record);
 };
 
 const reduceOriginalRecords = (acc, record, index) => {
@@ -196,7 +201,7 @@ const reduceOriginalRecords = (acc, record, index) => {
 
 export const getFinalState = ({ recordId, records, gameInitialState }) => {
   const closestFullRecordId = Math.floor(recordId / snapshotStep) * snapshotStep;
-  const closestFullRecord = records[closestFullRecordId];
+  const closestFullRecord = parse(records[closestFullRecordId]);
   const finalRecord = records
     .slice(closestFullRecordId + 1, recordId)
     .reduce(collectFinalRecord, closestFullRecord);

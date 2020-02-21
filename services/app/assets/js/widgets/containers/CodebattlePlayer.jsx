@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { Direction } from 'react-player-controls/dist/constants';
 import * as selectors from '../selectors';
 import * as actions from '../actions';
-import { getText, getFinalState } from '../lib/player';
+import { getText, getFinalState, parse } from '../lib/player';
 import CodebattleSliderBar from '../components/CodebattleSliderBar';
 
 const isEqual = (float1, float2) => {
@@ -168,7 +168,7 @@ class CodebattlePlayer extends Component {
       getEditorTextPlaybook,
     } = this.props;
     const { nextRecordId } = this.state;
-    const nextRecord = records[nextRecordId] || {};
+    const nextRecord = parse(records[nextRecordId]) || {};
 
     switch (nextRecord.type) {
       case 'update_editor_data': {
