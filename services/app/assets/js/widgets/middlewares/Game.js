@@ -16,7 +16,7 @@ const languages = Gon.getAsset('langs');
 const gameId = Gon.getAsset('game_id');
 const isRecord = Gon.getAsset('is_record');
 const channelName = `game:${gameId}`;
-const channel = socket.channel(channelName);
+const channel = !isRecord ? socket.channel(channelName) : null;
 
 const initEditors = dispatch => (updateEditorTextAction, firstPlayer, secondPlayer) => {
   dispatch(
@@ -30,8 +30,8 @@ const initEditors = dispatch => (updateEditorTextAction, firstPlayer, secondPlay
   dispatch(
     actions.updateExecutionOutput({
       userId: firstPlayer.id,
-      result: firstPlayer.result,
-      output: firstPlayer.output,
+      result: firstPlayer.checkResult.result,
+      output: firstPlayer.checkResult.output,
     }),
   );
 
@@ -47,8 +47,8 @@ const initEditors = dispatch => (updateEditorTextAction, firstPlayer, secondPlay
     dispatch(
       actions.updateExecutionOutput({
         userId: secondPlayer.id,
-        result: secondPlayer.result,
-        output: secondPlayer.output,
+        result: secondPlayer.checkResult.result,
+        output: secondPlayer.checkResult.output,
       }),
     );
   }
@@ -191,26 +191,19 @@ export const activeGameEditorReady = () => dispatch => {
     dispatch(actions.updateCheckStatus({ [userId]: true }));
   });
 
-  channel.on('user:finish_check', ({ user }) => {
-    dispatch(actions.updateCheckStatus({ [user.id]: false }));
-  });
-
-  channel.on('user:check_result', responseData => {
+  channel.on('user:check_complete', responseData => {
     const {
       status,
-      players,
       solutionStatus,
-      output,
-      result,
-      assertsCount,
-      successCount,
+      checkResult: { output, result, assertsCount, successCount },
+      players,
       userId,
     } = camelizeKeys(responseData);
     const newGameStatus = solutionStatus ? { status } : {};
     const asserts = { assertsCount, successCount };
-    if (players) {
-      dispatch(actions.updateGamePlayers({ players }));
-    }
+
+    dispatch(actions.updateGamePlayers({ players }));
+
     dispatch(
       actions.updateExecutionOutput({
         output,
@@ -251,8 +244,8 @@ export const activeGameEditorReady = () => dispatch => {
     dispatch(
       actions.updateExecutionOutput({
         userId: firstPlayer.id,
-        result: firstPlayer.result,
-        output: firstPlayer.output,
+        result: firstPlayer.checkResult.result,
+        output: firstPlayer.checkResult.output,
       }),
     );
 
@@ -268,8 +261,8 @@ export const activeGameEditorReady = () => dispatch => {
       dispatch(
         actions.updateExecutionOutput({
           userId: secondPlayer.id,
-          result: secondPlayer.result,
-          output: secondPlayer.output,
+          result: secondPlayer.checkResult.result,
+          output: secondPlayer.checkResult.output,
         }),
       );
     }

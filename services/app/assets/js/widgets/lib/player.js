@@ -25,22 +25,21 @@ export const getText = (text, { delta: d }) => {
 const collectFinalRecord = (acc, record) => {
   const { players } = acc;
   switch (record.type) {
-    case 'editor_text': {
+    case 'update_editor_data': {
       const player = _.find(players, { id: record.userId });
       const editorText = getText(player.editorText, record.diff);
       const newPlayers = updatePlayers(players, {
         id: record.userId,
         editorText,
-        editorLang: record.editorLang,
+        editorLang: record.diff.nextLang,
       });
 
       return { ...acc, players: newPlayers };
     }
-    case 'result_check': {
+    case 'check_complete': {
       const newPlayers = updatePlayers(players, {
-        id: record.id,
-        result: record.result,
-        output: record.output,
+        id: record.userId,
+        checkResult: record.checkResult,
       });
 
       return { ...acc, players: newPlayers };
@@ -67,14 +66,15 @@ const createFinalRecord = (index, record, params) => {
 const reduceOriginalRecords = (acc, record, index) => {
   const { players: playersState, records, chat: chatState } = acc;
   const { messages, users } = chatState;
-  const { editorText, editorLang } = _.find(playersState, { id: record.id });
+  const { editorText } = _.find(playersState, { id: record.id });
 
   const { type } = record;
 
-  if (type === 'editor_text') {
+  if (type === 'update_editor_data') {
     const { diff } = record;
 
     const newEditorText = getText(editorText, diff);
+    const editorLang = diff.nextLang;
     const newPlayers = updatePlayers(
       playersState,
       { id: record.id, editorText: newEditorText, editorLang },
@@ -82,7 +82,6 @@ const reduceOriginalRecords = (acc, record, index) => {
     const data = {
       type,
       userId: record.id,
-      editorLang,
       diff: record.diff,
     };
     const newRecord = createFinalRecord(index, data, {
@@ -93,25 +92,14 @@ const reduceOriginalRecords = (acc, record, index) => {
     return { ...acc, players: newPlayers, records: [...records, newRecord] };
   }
 
-  if (type === 'editor_lang') {
-    const lang = record.diff.nextLang;
-    const newPlayers = updatePlayers(playersState, { id: record.id, editorLang: lang });
-    const newRecord = createFinalRecord(index, record, {
-      players: playersState,
-      chat: chatState,
-    });
-    return { ...acc, players: newPlayers, records: [...records, newRecord] };
-  }
+  if (type === 'check_complete') {
+    const { checkResult } = record;
 
-  if (type === 'result_check') {
-    const { result, output } = record;
-
-    const newPlayers = updatePlayers(playersState, { id: record.id, result, output });
+    const newPlayers = updatePlayers(playersState, { id: record.id, checkResult });
     const data = {
       type,
       userId: record.id,
-      result,
-      output,
+      checkResult,
     };
     const newRecord = createFinalRecord(index, data, {
       players: newPlayers,
@@ -183,7 +171,7 @@ const reduceOriginalRecords = (acc, record, index) => {
     return { ...acc, players: newPlayers, records: [...records, newRecord] };
   }
 
-  if (type === 'check_complete') {
+  if (type === 'game_over') {
     const newPlayers = updatePlayersGameResult(
       playersState,
       { id: record.id, gameResult: 'won' },
@@ -209,7 +197,6 @@ const reduceOriginalRecords = (acc, record, index) => {
 export const getFinalState = ({ recordId, records, gameInitialState }) => {
   const closestFullRecordId = Math.floor(recordId / snapshotStep) * snapshotStep;
   const closestFullRecord = records[closestFullRecordId];
-
   const finalRecord = records
     .slice(closestFullRecordId + 1, recordId)
     .reduce(collectFinalRecord, closestFullRecord);
@@ -235,7 +222,6 @@ export const resolveDiffs = playbook => {
   const finalPlaybook = {
     ...playbook, initRecords: [initPlayerOne, initPlayerTwo], records: newRecords, chat, players,
   };
-
   return finalPlaybook;
 };
 

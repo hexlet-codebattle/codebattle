@@ -68,7 +68,7 @@ class CodebattlePlayer extends Component {
     this.stop();
   }
 
-  async onSliderHandleChange(value) {
+  onSliderHandleChange(value) {
     this.setState({ value });
 
     const { isHold, delaySetGameState } = this.state;
@@ -86,7 +86,7 @@ class CodebattlePlayer extends Component {
     }
   }
 
-  async onSliderHandleChangeStart() {
+  onSliderHandleChangeStart() {
     this.setState({ isHold: true });
 
     const { isStop } = this.state;
@@ -96,7 +96,7 @@ class CodebattlePlayer extends Component {
     }
   }
 
-  async onSliderHandleChangeEnd() {
+  onSliderHandleChangeEnd() {
     this.setState({ isHold: false });
 
     const { isHoldPlay } = this.state;
@@ -108,11 +108,11 @@ class CodebattlePlayer extends Component {
     }
   }
 
-  async onSliderHandleChangeIntent(intent) {
+  onSliderHandleChangeIntent(intent) {
     this.setState(() => ({ lastIntent: intent }));
   }
 
-  async onSliderHandleChangeIntentEnd() {
+  onSliderHandleChangeIntentEnd() {
     this.setState(() => ({ lastIntent: 0 }));
   }
 
@@ -141,7 +141,6 @@ class CodebattlePlayer extends Component {
       chat: chatState,
       nextRecordId,
     } = getFinalState({ recordId: resultId, records, gameInitialState });
-
     this.setState({ nextRecordId });
 
     editorsState.forEach(player => {
@@ -153,8 +152,8 @@ class CodebattlePlayer extends Component {
 
       updateExecutionOutput({
         userId: player.id,
-        result: player.result,
-        output: player.output,
+        result: player.checkResult.result,
+        output: player.checkResult.output,
       });
     });
 
@@ -173,21 +172,21 @@ class CodebattlePlayer extends Component {
     const nextRecord = records[nextRecordId] || {};
 
     switch (nextRecord.type) {
-      case 'editor_text': {
+      case 'update_editor_data': {
         const editorText = getEditorTextPlaybook(nextRecord);
         const newEditorText = getText(editorText, nextRecord.diff);
         updateEditorTextPlaybook({
           userId: nextRecord.userId,
           editorText: newEditorText,
-          langSlug: nextRecord.editorLang,
+          langSlug: nextRecord.diff.nextLang,
         });
         break;
       }
-      case 'result_check': {
+      case 'check_complete': {
         updateExecutionOutput({
           userId: nextRecord.userId,
-          result: nextRecord.result,
-          output: nextRecord.output,
+          result: nextRecord.checkResult.result,
+          output: nextRecord.checkResult.output,
         });
         break;
       }
@@ -205,7 +204,7 @@ class CodebattlePlayer extends Component {
     this.setState({ nextRecordId: nextRecordId + 1 });
   }
 
-  async play() {
+  play() {
     const { value, speed } = this.state;
 
     const run = () => {
