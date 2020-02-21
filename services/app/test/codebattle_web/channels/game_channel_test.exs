@@ -56,7 +56,7 @@ defmodule CodebattleWeb.GameChannelTest do
       payload: ^payload
     }
 
-    {:ok, fsm} = Server.fsm(game.id)
+    {:ok, fsm} = Server.get_fsm(game.id)
 
     assert fsm.state == :rematch_in_approval
   end
@@ -97,7 +97,7 @@ defmodule CodebattleWeb.GameChannelTest do
       payload: ^payload
     }
 
-    {:ok, fsm} = Server.fsm(game.id)
+    {:ok, fsm} = Server.get_fsm(game.id)
 
     assert fsm.state == :rematch_rejected
   end
@@ -139,7 +139,7 @@ defmodule CodebattleWeb.GameChannelTest do
       payload: ^payload
     }
 
-    {:ok, fsm} = Server.fsm(game.id + 1)
+    {:ok, fsm} = Server.get_fsm(game.id + 1)
 
     assert fsm.state == :playing
   end
@@ -182,7 +182,7 @@ defmodule CodebattleWeb.GameChannelTest do
       payload: ^payload
     }
 
-    {:ok, fsm} = Server.fsm(game.id + 1)
+    {:ok, fsm} = Server.get_fsm(game.id + 1)
 
     assert fsm.state == :playing
   end
@@ -357,7 +357,7 @@ defmodule CodebattleWeb.GameChannelTest do
 
     message = "#{user1.name} gave up!"
     :timer.sleep(100)
-    {:ok, fsm} = Server.fsm(game.id)
+    {:ok, fsm} = Server.get_fsm(game.id)
     players = FsmHelpers.get_players(fsm)
 
     payload = %{
@@ -372,7 +372,7 @@ defmodule CodebattleWeb.GameChannelTest do
       payload: ^payload
     }
 
-    {:ok, fsm} = Server.fsm(game.id)
+    {:ok, fsm} = Server.get_fsm(game.id)
 
     assert fsm.state == :game_over
     assert FsmHelpers.gave_up?(fsm, user1.id) == true

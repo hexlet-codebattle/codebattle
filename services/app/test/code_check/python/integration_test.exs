@@ -61,7 +61,7 @@ defmodule Codebattle.CodeCheck.Phython.IntegrationTest do
     expected_result = %{"status" => "failure", "result" => 0, "arguments" => [1, 1]}
     assert expected_result == Jason.decode!(result)
 
-    {:ok, fsm} = Server.fsm(game.id)
+    {:ok, fsm} = Server.get_fsm(game.id)
 
     assert fsm.state == :playing
   end
@@ -100,7 +100,7 @@ defmodule Codebattle.CodeCheck.Phython.IntegrationTest do
     expected_result = %{"status" => "error", "result" => ["name 'sdf' is not defined"]}
     assert expected_result == Jason.decode!(result)
 
-    {:ok, fsm} = Server.fsm(game.id)
+    {:ok, fsm} = Server.get_fsm(game.id)
 
     assert fsm.state == :playing
   end
@@ -141,7 +141,7 @@ defmodule Codebattle.CodeCheck.Phython.IntegrationTest do
       payload: %{status: "game_over"}
     }
 
-    {:ok, fsm} = Server.fsm(game.id)
+    {:ok, fsm} = Server.get_fsm(game.id)
     assert fsm.state == :game_over
   end
 end

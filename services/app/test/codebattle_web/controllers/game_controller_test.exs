@@ -84,7 +84,7 @@ defmodule Codebattleweb.GameControllerTest do
       create_game(
         conn,
         user,
-        %{"type" => "public", "level" => "elementary"}
+        %{"type" => "withRandomPlayer", "level" => "elementary"}
       )
 
     assert conn.status == 302

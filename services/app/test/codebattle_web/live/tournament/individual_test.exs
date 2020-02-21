@@ -14,17 +14,17 @@ defmodule CodebattleWeb.Live.Tournament.IndividialTest do
         %{"type" => "init", "id" => 2, "editor_text" => "", "editor_lang" => "ruby"},
         %{
           "diff" => %{"delta" => [%{"insert" => "t"}], "time" => 20},
-          "type" => "editor_text",
+          "type" => "update_editor_data",
           "id" => 2
         },
         %{
           "diff" => %{"delta" => [%{"retain" => 1}, %{"insert" => "e"}], "time" => 20},
-          "type" => "editor_text",
+          "type" => "update_editor_data",
           "id" => 2
         },
         %{
           "diff" => %{"delta" => [%{"retain" => 2}, %{"insert" => "s"}], "time" => 20},
-          "type" => "editor_text",
+          "type" => "update_editor_data",
           "id" => 2
         },
         %{
@@ -32,7 +32,7 @@ defmodule CodebattleWeb.Live.Tournament.IndividialTest do
           "type" => "editor_lang",
           "id" => 2
         },
-        %{"type" => "check_complete", "id" => 2, "lang" => "ruby"}
+        %{"type" => "game_over", "id" => 2, "lang" => "ruby"}
       ]
     }
 

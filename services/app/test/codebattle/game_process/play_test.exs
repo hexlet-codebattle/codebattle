@@ -10,18 +10,13 @@ defmodule Codebattle.GameProcess.PlayTest do
     user2 = insert(:user, %{name: "second", email: "test2@test.test", github_id: 2, rating: 1000})
 
     {:ok, game_id} =
-      Play.create_game(
-        user1,
-        %{"type" => "public", "level" => "medium", "timeout_seconds" => 60},
-        :standard,
-        1
-      )
+      Play.create_game(%{"user" => user1, "level" => "medium", "timeout_seconds" => 60, "type" => "public"})
 
     %{user1: user1, user2: user2, game_id: game_id}
   end
 
   test "joins the game", %{user1: user1, user2: user2, game_id: game_id} do
-    assert {:ok, fsm} = Play.join_game(game_id, user2)
+    assert {:ok, fsm} = Play.join_game(game_id, user2) |> IO.inspect
 
     player_ids =
       fsm.data.players
@@ -32,7 +27,7 @@ defmodule Codebattle.GameProcess.PlayTest do
   end
 
   test "tries to join the missing game", %{user1: user1, user2: user2, game_id: game_id} do
-    :ok = Play.cancel_game(game_id, user1)
+    _ = Play.cancel_game(game_id, user1)
 
     assert {:error, :game_terminated} = Play.join_game(game_id, user2)
   end

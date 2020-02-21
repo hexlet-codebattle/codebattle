@@ -44,7 +44,7 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
     conn =
       conn1
       |> get(page_path(conn1, :index))
-      |> post(game_path(conn1, :create, level: "easy"))
+      |> post(game_path(conn1, :create, level: "easy", type: "withRandomPlayer"))
 
     game_id = game_id_from_conn(conn)
 
@@ -62,23 +62,20 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
     {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
     Mix.Shell.Process.flush()
 
-    Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text1, lang: "js"})
+    Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text1, lang_slug: "js"})
     :timer.sleep(40)
-    Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text2, lang: "js"})
+    Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text2, lang_slug: "js"})
     :timer.sleep(40)
 
-    Phoenix.ChannelTest.push(socket1, "editor:data", %{
-      "editor_text" => editor_text2,
-      "lang" => "elixir"
-    })
+    Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text2, lang_slug: "elixir"})
 
     :timer.sleep(40)
-    Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text3, lang: "elixir"})
+    Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text3, lang_slug: "elixir"})
     :timer.sleep(500)
-    Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text4, lang: "elixir"})
+    Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: editor_text4, lang_slug: "elixir"})
     :timer.sleep(40)
 
-    Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text4, lang: "elixir"})
+    Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text4, lang_slug: "elixir"})
 
     #       playbook = [
     #         %{type: "check_complete", id: 1, time: ....},
@@ -102,7 +99,7 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
 
     user_playbook =
       Enum.filter(playbook.data.records, fn x ->
-        x["id"] == user1.id && x["type"] in ["editor_text", "editor_lang"]
+        x["id"] == user1.id && x["type"] == "update_editor_data"
       end)
 
     assert Enum.all?(user_playbook, fn x -> x["diff"]["time"] <= 3000 end) == true

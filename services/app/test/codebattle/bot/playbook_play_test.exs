@@ -16,26 +16,21 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
       records: [
         %{"type" => "init", "id" => 2, "editor_text" => "", "editor_lang" => "ruby"},
         %{
-          "diff" => %{"delta" => [%{"insert" => "t"}], "time" => 20},
-          "type" => "editor_text",
+          "diff" => %{"delta" => [%{"insert" => "t"}], "next_lang" => "ruby", "time" => 20},
+          "type" => "update_editor_data",
           "id" => 2
         },
         %{
-          "diff" => %{"delta" => [%{"retain" => 1}, %{"insert" => "e"}], "time" => 20},
-          "type" => "editor_text",
+          "diff" => %{"delta" => [%{"retain" => 1}, %{"insert" => "e"}], "next_lang" => "ruby", "time" => 20},
+          "type" => "update_editor_data",
           "id" => 2
         },
         %{
-          "diff" => %{"delta" => [%{"retain" => 2}, %{"insert" => "s"}], "time" => 20},
-          "type" => "editor_text",
+          "diff" => %{"delta" => [%{"retain" => 2}, %{"insert" => "s"}], "next_lang" => "ruby", "time" => 20},
+          "type" => "update_editor_data",
           "id" => 2
         },
-        %{
-          "diff" => %{"prev_lang" => "ruby", "next_lang" => "ruby", "time" => 100},
-          "type" => "editor_lang",
-          "id" => 2
-        },
-        %{"type" => "check_complete", "id" => 2, "lang" => "ruby"}
+        %{"type" => "game_over", "id" => 2, "lang" => "ruby"}
       ]
     }
 
@@ -45,7 +40,8 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
 
     # Create game
     level = "easy"
-    {:ok, game_id, bot} = Codebattle.Bot.GameCreator.call(level)
+    {:ok, fsm, bot} = Codebattle.Bot.GameCreator.call(level)
+    game_id = FsmHelpers.get_game_id(fsm)
     game_topic = "game:#{game_id}"
 
     # Run bot
@@ -59,12 +55,12 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
     {:ok, _response, _socket} = subscribe_and_join(socket, GameChannel, game_topic)
     :timer.sleep(100)
 
-    {:ok, fsm} = Server.fsm(game_id)
+    {:ok, fsm} = Server.get_fsm(game_id)
     assert fsm.state == :playing
 
     :timer.sleep(6000)
     # bot write_some_text
-    {:ok, fsm} = Server.fsm(game_id)
+    {:ok, fsm} = Server.get_fsm(game_id)
 
     assert FsmHelpers.get_first_player(fsm).editor_text == "tes"
     assert FsmHelpers.get_winner(fsm).name == bot.name

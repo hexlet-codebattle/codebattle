@@ -31,7 +31,7 @@ defmodule Codebattle.GameCases.GiveUpTest do
     conn =
       conn1
       |> get(user_path(conn1, :index))
-      |> post(game_path(conn1, :create, level: "elementary"))
+      |> post(game_path(conn1, :create, level: "elementary", type: "withRandomPlayer"))
 
     game_id = game_id_from_conn(conn)
 
@@ -45,7 +45,7 @@ defmodule Codebattle.GameCases.GiveUpTest do
     # First player give_up
     Phoenix.ChannelTest.push(socket1, "give_up", %{})
     :timer.sleep(70)
-    {:ok, fsm} = Server.fsm(game_id)
+    {:ok, fsm} = Server.get_fsm(game_id)
 
     assert fsm.state == :game_over
     assert FsmHelpers.gave_up?(fsm, user1.id) == true
@@ -65,7 +65,7 @@ defmodule Codebattle.GameCases.GiveUpTest do
     conn =
       conn1
       |> get(user_path(conn1, :index))
-      |> post(game_path(conn1, :create, level: "elementary"))
+      |> post(game_path(conn1, :create, level: "elementary", type: "withRandomPlayer"))
 
     game_id = game_id_from_conn(conn)
 
@@ -80,7 +80,7 @@ defmodule Codebattle.GameCases.GiveUpTest do
     Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: "won", lang: "js"})
     Phoenix.ChannelTest.push(socket1, "give_up", %{})
     :timer.sleep(70)
-    {:ok, fsm} = Server.fsm(game_id)
+    {:ok, fsm} = Server.get_fsm(game_id)
 
     assert fsm.state == :game_over
     assert FsmHelpers.winner?(fsm, user1.id) == true
@@ -91,7 +91,7 @@ defmodule Codebattle.GameCases.GiveUpTest do
     conn =
       conn1
       |> get(page_path(conn1, :index))
-      |> post(game_path(conn1, :create, level: "elementary"))
+      |> post(game_path(conn1, :create, level: "elementary", type: "withRandomPlayer"))
 
     game_id = game_id_from_conn(conn)
 
@@ -106,18 +106,18 @@ defmodule Codebattle.GameCases.GiveUpTest do
 
     :timer.sleep(100)
 
-    {:ok, fsm} = Server.fsm(game_id)
+    {:ok, fsm} = Server.get_fsm(game_id)
 
     assert fsm.state == :game_over
 
     conn =
       conn1
       |> get(page_path(conn1, :index))
-      |> post(game_path(conn, :create, level: "elementary"))
+      |> post(game_path(conn, :create, level: "elementary", type: "withRandomPlayer"))
 
     game_id = game_id_from_conn(conn)
 
-    {:ok, fsm} = Server.fsm(game_id)
+    {:ok, fsm} = Server.get_fsm(game_id)
 
     assert fsm.state == :waiting_opponent
   end
