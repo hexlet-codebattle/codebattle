@@ -23,10 +23,13 @@ export const loadUserStats = dispatch => async user => {
   }
 };
 
-export const getUsersRatingPage = (page = 1, filter = '') => dispatch => {
+export const getUsersRatingPage = (page = 1, filter = '', sort = '') => dispatch => {
   const queryParamsString = qs.stringify({
     page,
-    filter,
+    s: sort,
+    q: {
+      name_ilike: filter,
+    },
   });
 
   axios.get(`/api/v1/users?${queryParamsString}`)

@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import _ from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Pagination from 'react-js-pagination';
+import moment from 'moment';
 import UserInfo from './UserInfo';
 import { getUsersList } from '../selectors';
 import * as UsersMiddlewares from '../middlewares/Users';
@@ -18,11 +19,20 @@ const mapDispatchToProps = {
 };
 
 class UsersRating extends React.Component {
+  state = {
+    sort: {
+      attribute: null,
+      direction: 'desc',
+    },
+  }
+
   componentDidMount() {
     const { getRatingPage } = this.props;
 
     getRatingPage(1);
   }
+
+  decorateJoinedDate = str => (moment.utc(str).format('LL'))
 
   renderUser = user => (
     <tr key={user.id}>
@@ -33,6 +43,7 @@ class UsersRating extends React.Component {
       <td className="p-3 align-middle">{user.rating}</td>
       <td className="p-3 align-middle">{user.gamesPlayed}</td>
       <td className="p-3 align-middle">{user.performance}</td>
+      <td className="p-3 align-middle">{this.decorateJoinedDate(user.insertedAt)}</td>
       <td className="p-3 align-middle">
         <a className="text-muted" href={`https://github.com/${user.name}`}>
           <span className="h3">
@@ -42,6 +53,25 @@ class UsersRating extends React.Component {
       </td>
     </tr>
   );
+
+  triggerSort = attribute => {
+    const { sort: { direction: prevDirection } } = this.state;
+    const direction = prevDirection === 'desc' ? 'asc' : 'desc';
+    this.setState(state => ({
+      sort: {
+        direction: state.sort.direction === 'desc' ? 'asc' : 'desc',
+        attribute,
+      },
+    }));
+    const { getRatingPage } = this.props;
+    getRatingPage(1, this.filterNode.value, `${attribute}+${direction}`);
+  };
+
+  sortArrow = attribute => {
+    const { sort: { attribute: currentAttribute, direction } } = this.state;
+    const arrowDirection = attribute === currentAttribute ? direction : '';
+    return (<span className={`sort-arrow ${arrowDirection}`} />);
+  };
 
   renderPagination = () => {
     const {
@@ -92,7 +122,7 @@ class UsersRating extends React.Component {
               placeholder="Username"
               aria-label="Username"
               aria-describedby="basic-addon1"
-              onChange={_.debounce(() => getRatingPage(1, this.filterNode.value), 500)}
+              onChange={() => getRatingPage(1, this.filterNode.value)}
               // eslint-disable-next-line react/no-find-dom-node
               ref={c => { this.filterNode = ReactDOM.findDOMNode(c); }}
             />
@@ -101,11 +131,36 @@ class UsersRating extends React.Component {
         <table className="table">
           <thead className="text-left">
             <tr>
-              <th className="p-3 border-0">Rank</th>
+              <th
+                className="p-3 border-0"
+                onClick={() => this.triggerSort('rank')}
+              >
+                Rank
+                {this.sortArrow('rank')}
+              </th>
               <th className="p-3 border-0">User</th>
-              <th className="p-3 border-0">Rating</th>
-              <th className="p-3 border-0">Games played</th>
+              <th
+                className="p-3 border-0"
+                onClick={() => this.triggerSort('rating')}
+              >
+                Rating
+                {this.sortArrow('rating')}
+              </th>
+              <th
+                className="p-3 border-0"
+                onClick={() => this.triggerSort('games_played')}
+              >
+                Games played
+                {this.sortArrow('games_played')}
+              </th>
               <th className="p-3 border-0">Performance</th>
+              <th
+                className="p-3 border-0"
+                onClick={() => this.triggerSort('id')}
+              >
+                Joined
+                {this.sortArrow('id')}
+              </th>
               <th className="p-3 border-0">Github</th>
             </tr>
           </thead>
