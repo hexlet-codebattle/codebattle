@@ -113,7 +113,6 @@ defmodule Codebattle.GameProcess.Play do
     case Server.call_transition(id, :give_up, %{id: user.id}) do
       {:ok, fsm} ->
         FsmHelpers.get_module(fsm).handle_give_up(id, user.id, fsm)
-        Server.update_playbook(id, :give_up, %{id: user.id})
 
         {:ok, fsm}
 
