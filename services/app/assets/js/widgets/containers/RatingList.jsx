@@ -57,9 +57,11 @@ class UsersRating extends React.Component {
   triggerSort = attribute => {
     const { sort: { direction: prevDirection } } = this.state;
     const direction = prevDirection === 'desc' ? 'asc' : 'desc';
-    this.setState((state) => ({
-      direction: state.sort.direction === 'desc' ? 'asc' : 'desc',
-      attribute
+    this.setState(state => ({
+      sort: {
+        direction: state.sort.direction === 'desc' ? 'asc' : 'desc',
+        attribute,
+      },
     }));
     const { getRatingPage } = this.props;
     getRatingPage(1, this.filterNode.value, `${attribute}+${direction}`);
@@ -120,7 +122,7 @@ class UsersRating extends React.Component {
               placeholder="Username"
               aria-label="Username"
               aria-describedby="basic-addon1"
-              onChange={() => getRatingPage(1, this.filterNode.value), 500}
+              onChange={() => getRatingPage(1, this.filterNode.value)}
               // eslint-disable-next-line react/no-find-dom-node
               ref={c => { this.filterNode = ReactDOM.findDOMNode(c); }}
             />
