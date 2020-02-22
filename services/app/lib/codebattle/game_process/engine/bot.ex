@@ -164,6 +164,7 @@ defmodule Codebattle.GameProcess.Engine.Bot do
 
     ActiveGames.create_game(fsm)
     {:ok, _} = GlobalSupervisor.start_game(fsm)
+    Server.update_playbook(game.id, :join, %{players: players})
 
     {:ok, _bot_pid} =
       PlaybookAsyncRunner.create_server(%{game_id: game.id, bot: FsmHelpers.get_first_player(fsm)})

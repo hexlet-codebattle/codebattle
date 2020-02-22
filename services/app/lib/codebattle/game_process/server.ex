@@ -47,9 +47,7 @@ defmodule Codebattle.GameProcess.Server do
     end
   end
 
-  def game_pid(game_id) do
-    :gproc.where(game_key(game_id))
-  end
+  def game_pid(game_id), do: :gproc.where(game_key(game_id))
 
   # SERVER
   def init(fsm) do
@@ -105,11 +103,6 @@ defmodule Codebattle.GameProcess.Server do
   end
 
   # HELPERS
-  defp server_name(game_id) do
-    {:via, :gproc, game_key(game_id)}
-  end
-
-  defp game_key(game_id) do
-    {:n, :l, {:game, "#{game_id}"}}
-  end
+  defp server_name(game_id), do: {:via, :gproc, game_key(game_id)}
+  defp game_key(game_id), do: {:n, :l, {:game, "#{game_id}"}}
 end

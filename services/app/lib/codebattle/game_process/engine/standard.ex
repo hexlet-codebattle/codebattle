@@ -83,7 +83,6 @@ defmodule Codebattle.GameProcess.Engine.Standard do
       ActiveGames.update_game(fsm)
       update_game!(game_id, %{state: "playing", task_id: task.id})
       Notifications.broadcast_join_game(fsm)
-
       Task.start(fn ->
         Notifier.call(:game_opponent_join, %{
           first_player: FsmHelpers.get_first_player(fsm),
@@ -157,6 +156,7 @@ defmodule Codebattle.GameProcess.Engine.Standard do
 
     ActiveGames.create_game(fsm)
     {:ok, _} = GlobalSupervisor.start_game(fsm)
+    Server.update_playbook(game.id, :join, %{players: players})
 
     Codebattle.GameProcess.TimeoutServer.restart(game.id, timeout_seconds)
     broadcast_active_game(fsm)
