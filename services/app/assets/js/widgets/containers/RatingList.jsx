@@ -58,10 +58,9 @@ class UsersRating extends React.Component {
     const { sort: { direction: prevDirection } } = this.state;
     const direction = prevDirection === 'desc' ? 'asc' : 'desc';
     this.setState((state) => ({
-      direction: state.sort.direction,
+      direction: state.sort.direction === 'desc' ? 'asc' : 'desc',
       attribute
     }));
-    // this.state.sort = { direction, attribute };
     const { getRatingPage } = this.props;
     getRatingPage(1, this.filterNode.value, `${attribute}+${direction}`);
   };
