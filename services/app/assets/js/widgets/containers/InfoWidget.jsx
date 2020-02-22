@@ -6,7 +6,7 @@ import * as selectors from '../selectors';
 
 const InfoWidget = props => {
   const {
-    taskText, gameStatusName, timeoutSeconds, joinsAt,
+    taskText, gameStatusName, timeoutSeconds, startsAt,
   } = props;
 
   return (
@@ -14,7 +14,7 @@ const InfoWidget = props => {
       <div className="col-12 col-lg-6 p-1 h-100">
         <Task
           task={taskText}
-          time={joinsAt}
+          time={startsAt}
           timeoutSeconds={timeoutSeconds}
           gameStatusName={gameStatusName}
         />
@@ -29,10 +29,9 @@ const InfoWidget = props => {
 
 const mapStateToProps = state => {
   const gameStatus = selectors.gameStatusSelector(state);
-
   return {
     taskText: selectors.gameTaskSelector(state),
-    joinsAt: gameStatus.joinsAt,
+    startsAt: gameStatus.startsAt,
     timeoutSeconds: gameStatus.timeoutSeconds,
     gameStatusName: gameStatus.status,
   };

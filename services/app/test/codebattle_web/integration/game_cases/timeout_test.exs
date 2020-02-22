@@ -31,7 +31,13 @@ defmodule Codebattle.GameCases.TimeoutTest do
     conn =
       conn1
       |> get(user_path(conn1, :index))
-      |> post(game_path(conn1, :create, level: "elementary", timeout_seconds: 60))
+      |> post(
+        game_path(conn1, :create,
+          level: "elementary",
+          timeout_seconds: 60,
+          type: "withRandomPlayer"
+        )
+      )
 
     game_id = game_id_from_conn(conn)
 
@@ -46,31 +52,22 @@ defmodule Codebattle.GameCases.TimeoutTest do
     TimeoutServer.restart(game_id, 1)
     :timer.sleep(1500)
 
-    {:ok, fsm} = Server.fsm(game_id)
+    {:ok, fsm} = Server.get_fsm(game_id)
     assert fsm.state == :timeout
     assert ActiveGames.game_exists?(game_id) == false
-
-    # rematch
-
-    Phoenix.ChannelTest.push(socket1, "rematch:send_offer", %{})
-    :timer.sleep(70)
-
-    {:ok, fsm} = Server.fsm(game_id)
-    assert fsm.state == :rematch_in_approval
-
-    Phoenix.ChannelTest.push(socket2, "rematch:accept_offer", %{})
-    :timer.sleep(70)
-
-    {:ok, fsm} = Server.fsm(game_id + 1)
-    assert fsm.state == :playing
-    assert fsm.data.timeout_seconds == 60
   end
 
   test "After timeout user can create games", %{conn1: conn1, conn2: conn2, socket1: socket1} do
     conn =
       conn1
       |> get(page_path(conn1, :index))
-      |> post(game_path(conn1, :create, level: "elementary", timeout_seconds: 60))
+      |> post(
+        game_path(conn1, :create,
+          level: "elementary",
+          timeout_seconds: 60,
+          type: "withRandomPlayer"
+        )
+      )
 
     game_id = game_id_from_conn(conn)
 
@@ -85,18 +82,18 @@ defmodule Codebattle.GameCases.TimeoutTest do
 
     :timer.sleep(1000)
 
-    {:ok, fsm} = Server.fsm(game_id)
+    {:ok, fsm} = Server.get_fsm(game_id)
 
     assert fsm.state == :timeout
 
     conn =
       conn1
       |> get(page_path(conn1, :index))
-      |> post(game_path(conn, :create, level: "elementary"))
+      |> post(game_path(conn, :create, level: "elementary", type: "withRandomPlayer"))
 
     game_id = game_id_from_conn(conn)
 
-    {:ok, fsm} = Server.fsm(game_id)
+    {:ok, fsm} = Server.get_fsm(game_id)
 
     assert fsm.state == :waiting_opponent
   end

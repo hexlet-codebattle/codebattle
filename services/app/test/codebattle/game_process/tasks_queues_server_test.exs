@@ -12,13 +12,13 @@ defmodule Codebattle.GameProcess.TasksQueuesServerTest do
   end
 
   test "gets next task", %{tasks_list: tasks_list} do
-    assert %Task{} = task1 = TasksQueuesServer.call_next_task("easy")
+    assert %Task{} = task1 = TasksQueuesServer.get_task("easy")
     assert task1 in tasks_list
 
-    assert %Task{} = task2 = TasksQueuesServer.call_next_task("easy")
+    assert %Task{} = task2 = TasksQueuesServer.get_task("easy")
     assert task2 in tasks_list
     assert task1 != task2
 
-    assert TasksQueuesServer.call_next_task("easy") in tasks_list
+    assert TasksQueuesServer.get_task("easy") in tasks_list
   end
 end

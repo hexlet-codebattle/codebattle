@@ -9,5 +9,4 @@ export default {
   php: 'php',
   python: 'python',
   clojure: 'clojure',
-  perl: 'perl',
 };

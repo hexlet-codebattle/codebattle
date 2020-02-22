@@ -133,7 +133,6 @@ class NotificationsHandler extends Component {
     }
 
     const winner = _.find(players, ['gameResult', 'won']);
-
     if (currentUserId === winner.id) {
       return this.showSuccessMessage('Congratulations! You have won the game!');
     }

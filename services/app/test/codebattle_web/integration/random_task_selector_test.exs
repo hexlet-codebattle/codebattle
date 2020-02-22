@@ -47,7 +47,7 @@ defmodule Codebattle.RandomTaskSelectorTest do
       conn =
         conn1
         |> get(page_path(conn1, :index))
-        |> post(game_path(conn1, :create, level: "easy"))
+        |> post(game_path(conn1, :create, level: "easy", type: "withRandomPlayer"))
 
       game_id = game_id_from_conn(conn)
 
@@ -62,7 +62,10 @@ defmodule Codebattle.RandomTaskSelectorTest do
 
       editor_text1 = "Hello world1!"
 
-      Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text1, lang: "js"})
+      Phoenix.ChannelTest.push(socket1, "check_result", %{
+        editor_text: editor_text1,
+        lang_slug: "js"
+      })
 
       :timer.sleep(100)
     end)

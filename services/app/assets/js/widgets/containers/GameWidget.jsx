@@ -13,8 +13,6 @@ import NotificationsHandler from './NotificationsHandler';
 import editorModes from '../config/editorModes';
 import GameStatusCodes from '../config/gameStatusCodes';
 
-// const languages = Gon.getAsset('langs');
-
 class GameWidget extends Component {
   static defaultProps = {
     leftEditor: {},
@@ -41,7 +39,6 @@ class GameWidget extends Component {
       ? value => { updateEditorValue(value); }
       : _.noop;
 
-    // const syntax = _.find(languages, { slug: editorState. });
     return {
       onChange,
       editable,

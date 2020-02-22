@@ -12,7 +12,6 @@ const iconsToClass = {
   clojure: 'icon-clojure',
   python: 'icon-python',
   php: 'icon-php-alt',
-  perl: 'icon-perl',
 };
 
 const LanguageIcon = ({ lang }) => <span className={cn('d-flex', iconsToClass[lang])} />;

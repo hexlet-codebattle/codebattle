@@ -38,8 +38,7 @@ defmodule Codebattle.LanguagesTest do
         "from typing import List, Dict\n\ndef solution():",
         "<?php\nfunction solution(){\n\n}",
         "(defn solution [] )",
-        "module Check.Solution where\n\nimport Data.HashMap.Lazy\n\nsolution :: \nsolution =\n\n{- Included packages:\naeson\nbytestring\ncase-insensitive\ncontainers\ndeepseq\nfgl\ninteger-logarithms\nmegaparsec\nmtl\nparser-combinators\npretty\nrandom\nregex-base\nregex-compat\nregex-posix\nscientific\nsplit\ntemplate-haskell\ntext\ntime\ntransformers\nunordered-containers\nvector\nvector-algorithms -}",
-        "sub solution {\n\n}\n1;"
+        "module Check.Solution where\n\nimport Data.HashMap.Lazy\n\nsolution :: \nsolution =\n\n{- Included packages:\naeson\nbytestring\ncase-insensitive\ncontainers\ndeepseq\nfgl\ninteger-logarithms\nmegaparsec\nmtl\nparser-combinators\npretty\nrandom\nregex-base\nregex-compat\nregex-posix\nscientific\nsplit\ntemplate-haskell\ntext\ntime\ntransformers\nunordered-containers\nvector\nvector-algorithms -}"
       ])
 
     %{
@@ -79,8 +78,6 @@ defmodule Codebattle.LanguagesTest do
     haskell_expected =
       "module Check.Solution where\n\nimport Data.HashMap.Lazy\n\nsolution :: Int -> Double -> String -> [[Int]] -> Bool -> HashMap String Int -> [String]\nsolution =\n\n{- Included packages:\naeson\nbytestring\ncase-insensitive\ncontainers\ndeepseq\nfgl\ninteger-logarithms\nmegaparsec\nmtl\nparser-combinators\npretty\nrandom\nregex-base\nregex-compat\nregex-posix\nscientific\nsplit\ntemplate-haskell\ntext\ntime\ntransformers\nunordered-containers\nvector\nvector-algorithms -}"
 
-    perl_expected = "sub solution {\n\n}\n1;"
-
     cpp_expected =
       "#include <iostream>\n#include <map>\n#include <vector>\n\nusing namespace std;\n\nvector<string> solution(int a, double b, string text, vector<vector<int>> arr, bool condition, map<string,int> hashtable) {\n\n}"
 
@@ -93,7 +90,6 @@ defmodule Codebattle.LanguagesTest do
     assert Languages.get_solution("php", signature) == php_expected
     assert Languages.get_solution("clojure", signature) == clojure_expected
     assert Languages.get_solution("haskell", signature) == haskell_expected
-    assert Languages.get_solution("perl", signature) == perl_expected
     assert Languages.get_solution("cpp", signature) == cpp_expected
   end
 

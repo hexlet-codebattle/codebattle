@@ -128,9 +128,9 @@ class GameList extends React.Component {
   );
 
   renderGameActionButtons = game => {
-    const gameUrl = `/games/${game.gameId}`;
+    const gameUrl = `/games/${game.id}`;
     const currentUser = Gon.getAsset('current_user');
-    const gameState = game.gameInfo.state;
+    const gameState = game.state;
 
     if (gameState === GameStatusCodes.playing) {
       return this.renderShowButton(gameUrl);
@@ -144,7 +144,7 @@ class GameList extends React.Component {
             <button
               type="button"
               className="btn btn-danger btn-sm"
-              onClick={lobbyMiddlewares.cancelGame(game.gameId)}
+              onClick={lobbyMiddlewares.cancelGame(game.id)}
             >
               Cancel
             </button>
@@ -286,26 +286,6 @@ class GameList extends React.Component {
     );
   };
 
-  // TODO: add this render under "Play with the bot" when the server part is ready
-  renderPlayWithBotSelector = () => (
-    <div className="dropdown">
-      <button
-        id="btnGroupPlayWithBot"
-        type="button"
-        className="btn btn-sm btn-outline-success dropdown-toggle"
-        data-toggle="dropdown"
-        aria-haspopup="true"
-        aria-expanded="false"
-      >
-        <i className="fa fa-android mr-2" />
-        Play with the bot
-      </button>
-      <div className="dropdown-menu" aria-labelledby="btnGroupPlayWithBot">
-        {this.renderStartNewGameDropdownMenu('withBot')}
-      </div>
-    </div>
-  );
-
   renderLiveTournaments = tournaments => {
     if (_.isEmpty(tournaments)) {
       return (
@@ -378,22 +358,22 @@ class GameList extends React.Component {
           </thead>
           <tbody>
             {games.map(game => (
-              <tr key={game.gameId}>
+              <tr key={game.id}>
                 <td className="p-3 align-middle text-nowrap">
                   {moment
-                    .utc(game.gameInfo.startsAt)
+                    .utc(game.insertedAt)
                     .local()
                     .format('YYYY-MM-DD HH:mm')}
                 </td>
                 <td className="p-3 align-middle text-nowrap">
-                  {this.renderGameLevelBadge(game.gameInfo.level)}
+                  {this.renderGameLevelBadge(game.level)}
                 </td>
                 {this.renderPlayers(game.id, game.players)}
                 <td className="p-3 align-middle text-nowrap">
-                  {game.gameInfo.state}
+                  {game.state}
                 </td>
                 <td className="p-3 align-middle text-nowrap">
-                  {timeoutOptions[game.gameInfo.timeoutSeconds]}
+                  {timeoutOptions[game.timeoutSeconds]}
                 </td>
                 <td className="p-3 align-middle">{this.renderGameActionButtons(game)}</td>
               </tr>
@@ -421,7 +401,7 @@ class GameList extends React.Component {
             <tr key={game.id}>
               <td className="p-3 align-middle text-nowrap">
                 {moment
-                  .utc(game.updatedAt)
+                  .utc(game.finishsAt)
                   .local()
                   .format('YYYY-MM-DD HH:mm')}
               </td>

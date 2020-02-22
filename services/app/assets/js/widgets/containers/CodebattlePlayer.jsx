@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { Direction } from 'react-player-controls/dist/constants';
 import * as selectors from '../selectors';
 import * as actions from '../actions';
-import { getText, getFinalState } from '../lib/player';
+import { getText, getFinalState, parse } from '../lib/player';
 import CodebattleSliderBar from '../components/CodebattleSliderBar';
 
 const isEqual = (float1, float2) => {
@@ -23,6 +23,7 @@ class CodebattlePlayer extends Component {
       mode: 'pause',
       isEnabled: true,
       nextRecordId: 0,
+      delaySetGameState: 10,
       isStop: true,
       isHold: false,
       isHoldPlay: false,
@@ -67,10 +68,10 @@ class CodebattlePlayer extends Component {
     this.stop();
   }
 
-  async onSliderHandleChange(value) {
+  onSliderHandleChange(value) {
     this.setState({ value });
 
-    const { isHold } = this.state;
+    const { isHold, delaySetGameState } = this.state;
 
     const run = () => {
       const { value: currentValue } = this.state;
@@ -81,11 +82,11 @@ class CodebattlePlayer extends Component {
     };
 
     if (isHold) {
-      setTimeout(run, 10);
+      setTimeout(run, delaySetGameState);
     }
   }
 
-  async onSliderHandleChangeStart() {
+  onSliderHandleChangeStart() {
     this.setState({ isHold: true });
 
     const { isStop } = this.state;
@@ -95,7 +96,7 @@ class CodebattlePlayer extends Component {
     }
   }
 
-  async onSliderHandleChangeEnd() {
+  onSliderHandleChangeEnd() {
     this.setState({ isHold: false });
 
     const { isHoldPlay } = this.state;
@@ -107,11 +108,11 @@ class CodebattlePlayer extends Component {
     }
   }
 
-  async onSliderHandleChangeIntent(intent) {
+  onSliderHandleChangeIntent(intent) {
     this.setState(() => ({ lastIntent: intent }));
   }
 
-  async onSliderHandleChangeIntentEnd() {
+  onSliderHandleChangeIntentEnd() {
     this.setState(() => ({ lastIntent: 0 }));
   }
 
@@ -140,7 +141,6 @@ class CodebattlePlayer extends Component {
       chat: chatState,
       nextRecordId,
     } = getFinalState({ recordId: resultId, records, gameInitialState });
-
     this.setState({ nextRecordId });
 
     editorsState.forEach(player => {
@@ -151,9 +151,8 @@ class CodebattlePlayer extends Component {
       });
 
       updateExecutionOutput({
+        ...player.checkResult,
         userId: player.id,
-        result: player.result,
-        output: player.output,
       });
     });
 
@@ -169,42 +168,39 @@ class CodebattlePlayer extends Component {
       getEditorTextPlaybook,
     } = this.props;
     const { nextRecordId } = this.state;
-    const nextRecord = records[nextRecordId] || {};
+    const nextRecord = parse(records[nextRecordId]) || {};
 
+    let editorText;
+    let newEditorText;
     switch (nextRecord.type) {
-      case 'editor_text': {
-        const editorText = getEditorTextPlaybook(nextRecord);
-        const newEditorText = getText(editorText, nextRecord.diff);
+      case 'update_editor_data':
+        editorText = getEditorTextPlaybook(nextRecord);
+        newEditorText = getText(editorText, nextRecord.diff);
         updateEditorTextPlaybook({
           userId: nextRecord.userId,
           editorText: newEditorText,
-          langSlug: nextRecord.editorLang,
+          langSlug: nextRecord.diff.nextLang,
         });
         break;
-      }
-      case 'result_check': {
+      case 'check_complete':
         updateExecutionOutput({
+          ...nextRecord.checkResult,
           userId: nextRecord.userId,
-          result: nextRecord.result,
-          output: nextRecord.output,
         });
         break;
-      }
       case 'chat_message':
       case 'join_chat':
-      case 'leave_chat': {
+      case 'leave_chat':
         fetchChatData(nextRecord.chat);
         break;
-      }
-      default: {
+      default:
         break;
-      }
     }
 
     this.setState({ nextRecordId: nextRecordId + 1 });
   }
 
-  async play() {
+  play() {
     const { value, speed } = this.state;
 
     const run = () => {

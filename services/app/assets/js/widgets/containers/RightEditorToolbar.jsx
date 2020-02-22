@@ -5,7 +5,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import GameStatusCodes from '../config/gameStatusCodes';
 import * as selectors from '../selectors';
 import {
-  checkGameResult, changeCurrentLangAndSetTemplate, compressEditorHeight, expandEditorHeight,
+  checkGameResult,
+  changeCurrentLangAndSetTemplate,
+  compressEditorHeight,
+  expandEditorHeight,
 } from '../middlewares/Game';
 import LanguagePicker from '../components/LanguagePicker';
 import UserInfo from './UserInfo';
@@ -26,11 +29,11 @@ class RightEditorToolbar extends Component {
       <div className="d-flex align-items-center">
         <UserInfo user={player} />
         <div>
-          {
-            isOnline
-              ? <FontAwesomeIcon icon="snowman" className="text-success ml-2" />
-              : <FontAwesomeIcon icon="skull-crossbones" className="text-secondary ml-2" />
-          }
+          {isOnline ? (
+            <FontAwesomeIcon icon="snowman" className="text-success ml-2" />
+          ) : (
+            <FontAwesomeIcon icon="skull-crossbones" className="text-secondary ml-2" />
+          )}
         </div>
       </div>
     );
@@ -71,7 +74,10 @@ class RightEditorToolbar extends Component {
     }
 
     return (
-      <div className="py-2 px-3 btn-toolbar justify-content-between align-items-center" role="toolbar">
+      <div
+        className="py-2 px-3 btn-toolbar justify-content-between align-items-center"
+        role="toolbar"
+      >
         <GameResultIcon
           className="mr-2"
           resultUser1={_.get(players, [[rightUserId], 'gameResult'])}
@@ -81,6 +87,7 @@ class RightEditorToolbar extends Component {
         <div className="ml-auto btn-group" role="group" aria-label="Editor settings">
           {this.renderEditorHeightButtons(compressEditor, expandEditor, rightUserId)}
           <LanguagePicker
+            languages
             currentLangSlug={rightEditorLangSlug}
             onChange={_.noop}
             disabled
@@ -98,6 +105,7 @@ const mapStateToProps = state => {
   return {
     rightUserId,
     leftUserId,
+    languages: selectors.editorLangsSelector(state),
     onlineUsers: selectors.chatUsersSelector(state),
     rightEditorLangSlug: selectors.userLangSelector(rightUserId)(state),
     gameStatus: selectors.gameStatusSelector(state),

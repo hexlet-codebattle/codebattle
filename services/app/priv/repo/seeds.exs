@@ -1,26 +1,4 @@
 alias Codebattle.Repo
-# Script for populating the database. You can run it as:
-#
-#     mix run priv/repo/seeds.exs
-#
-# Inside the script, you can read and write to any of your
-# repositories directly:
-
-# create task for testing, delete after creating admin tools for crud on tasks
-# Codebattle.Repo.get_by(Codebattle.Task, id: 1) ||
-#     Codebattle.Repo.insert!(%Codebattle.Task{id: 1, description: "test_task"})
-
-# create a bot
-# Codebattle.Repo.get_by(Codebattle.User, id: 0) ||
-#   Codebattle.Repo.insert!(%Codebattle.User{
-#     id: 0,
-#     name: "bot",
-#     email: "bot@bot.bot",
-#     github_id: 0
-#   })
-#
-#
-
 levels = ["elementary", "easy", "medium", "hard"]
 
 1..3
@@ -46,65 +24,60 @@ levels = ["elementary", "easy", "medium", "hard"]
       records: [
         %{"type" => "init", "id" => 2, "editor_text" => "", "editor_lang" => "ruby"},
         %{
-          "diff" => %{"delta" => [%{"insert" => "def solution()\n\nend"}], "time" => 0},
-          "type" => "editor_text",
+          "diff" => %{"delta" => [%{"insert" => "def solution()\n\nend"}], "next_lang" => "ruby", "time" => 0},
+          "type" => "update_editor_data",
           "id" => 2
         },
         %{
-          "diff" => %{"prev_lang" => "ruby", "next_lang" => "ruby", "time" => 24},
-          "type" => "editor_lang",
+          "diff" => %{"delta" => [%{"retain" => 13}, %{"insert" => "a"}], "next_lang" => "ruby", "time" => 2058},
+          "type" => "update_editor_data",
           "id" => 2
         },
         %{
-          "diff" => %{"delta" => [%{"retain" => 13}, %{"insert" => "a"}], "time" => 2058},
-          "type" => "editor_text",
+          "diff" => %{"delta" => [%{"retain" => 14}, %{"insert" => ","}], "next_lang" => "ruby", "time" => 145},
+          "type" => "update_editor_data",
           "id" => 2
         },
         %{
-          "diff" => %{"delta" => [%{"retain" => 14}, %{"insert" => ","}], "time" => 145},
-          "type" => "editor_text",
+          "diff" => %{"delta" => [%{"retain" => 15}, %{"insert" => "b"}], "next_lang" => "ruby", "time" => 725},
+          "type" => "update_editor_data",
           "id" => 2
         },
         %{
-          "diff" => %{"delta" => [%{"retain" => 15}, %{"insert" => "b"}], "time" => 725},
-          "type" => "editor_text",
+          "diff" => %{"delta" => [%{"retain" => 19}, %{"insert" => "\n"}], "next_lang" => "ruby", "time" => 620},
+          "type" => "update_editor_data",
           "id" => 2
         },
         %{
-          "diff" => %{"delta" => [%{"retain" => 19}, %{"insert" => "\n"}], "time" => 620},
-          "type" => "editor_text",
+          "diff" => %{"delta" => [%{"retain" => 18}, %{"insert" => "a"}], "next_lang" => "ruby", "time" => 593},
+          "type" => "update_editor_data",
           "id" => 2
         },
         %{
-          "diff" => %{"delta" => [%{"retain" => 18}, %{"insert" => "a"}], "time" => 593},
-          "type" => "editor_text",
+          "diff" => %{"delta" => [%{"retain" => 19}, %{"insert" => " "}], "next_lang" => "ruby", "time" => 329},
+          "type" => "update_editor_data",
           "id" => 2
         },
         %{
-          "diff" => %{"delta" => [%{"retain" => 19}, %{"insert" => " "}], "time" => 329},
-          "type" => "editor_text",
+          "diff" => %{"delta" => [%{"retain" => 20}, %{"insert" => "+"}], "next_lang" => "ruby", "time" => 500},
+          "type" => "update_editor_data",
           "id" => 2
         },
         %{
-          "diff" => %{"delta" => [%{"retain" => 20}, %{"insert" => "+"}], "time" => 500},
-          "type" => "editor_text",
+          "diff" => %{"delta" => [%{"retain" => 21}, %{"insert" => " "}], "next_lang" => "ruby", "time" => 251},
+          "type" => "update_editor_data",
           "id" => 2
         },
         %{
-          "diff" => %{"delta" => [%{"retain" => 21}, %{"insert" => " "}], "time" => 251},
-          "type" => "editor_text",
+          "diff" => %{"delta" => [%{"retain" => 22}, %{"insert" => "b"}], "next_lang" => "ruby", "time" => 183},
+          "type" => "update_editor_data",
           "id" => 2
         },
-        %{
-          "diff" => %{"delta" => [%{"retain" => 22}, %{"insert" => "b"}], "time" => 183},
-          "type" => "editor_text",
-          "id" => 2
-        },
-        %{"type" => "check_complete", "id" => 2, "lang" => "ruby"}
+        %{"type" => "game_over", "id" => 2, "lang" => "ruby"}
       ]
     }
 
-    Repo.insert!(%Codebattle.Bot.Playbook{data: playbook_data, task: task, winner_lang: "ruby", winner_id: 2})
+    Repo.insert!(%Codebattle.Bot.Playbook{data: playbook_data, task: task, winner_lang: "ruby", winner_id: 2, is_complete_solution: true})
 
     IO.puts("Upsert #{task_name}")
   end
