@@ -30,6 +30,7 @@ defmodule Codebattle.Bot.Playbook do
     field(:game_id, :integer)
     field(:winner_id, :integer)
     field(:winner_lang, :string)
+    field(:is_complete_solution, :boolean)
 
     belongs_to(:task, Codebattle.Task)
 
@@ -39,14 +40,24 @@ defmodule Codebattle.Bot.Playbook do
   @doc false
   def changeset(%Playbook{} = playbook, attrs) do
     playbook
-    |> cast(attrs, [:data, :game_id, :winner_id, :winner_lang, :task_id])
-    |> validate_required([:data, :game_id, :winner_id, :winner_lang, :task_id])
+    |> cast(attrs, [:data, :game_id, :winner_id, :winner_lang, :is_complete_solution, :task_id])
+    |> validate_required([
+      :data,
+      :game_id,
+      :winner_id,
+      :winner_lang,
+      :is_complete_solution,
+      :task_id
+    ])
   end
 
   def random(task_id) do
     from(
       p in Playbook,
-      where: not is_nil(p.winner_id) and p.task_id == ^task_id,
+      where:
+        not is_nil(p.winner_id) and
+          p.task_id == ^task_id and
+          p.is_complete_solution,
       order_by: fragment("RANDOM()"),
       limit: 1
     )
@@ -94,7 +105,7 @@ defmodule Codebattle.Bot.Playbook do
         id: player.id,
         editor_text: player.editor_text,
         editor_lang: player.editor_lang,
-        check_result: %{result: "{}", output: ""}
+        check_result: %{result: "", output: ""}
       }
 
       add_event(acc, :init, data)
@@ -109,13 +120,15 @@ defmodule Codebattle.Bot.Playbook do
     {:ok, fsm} = Play.get_fsm(game_id)
     data = create_final_game_playbook(playbook)
     winner = FsmHelpers.get_winner(fsm)
+    loser = FsmHelpers.get_opponent(fsm, winner.id)
 
     %Playbook{
       data: data,
       task_id: task_id,
       game_id: String.to_integer(game_id),
       winner_id: winner.id,
-      winner_lang: winner.id && winner.editor_lang
+      winner_lang: winner.id && winner.editor_lang,
+      is_complete_solution: !FsmHelpers.gave_up?(fsm, loser.id)
     }
     |> Repo.insert()
   end
