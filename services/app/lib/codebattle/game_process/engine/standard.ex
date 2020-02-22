@@ -1,9 +1,7 @@
 defmodule Codebattle.GameProcess.Engine.Standard do
-  use Codebattle.GameProcess.Engine.Base
-  import Codebattle.GameProcess.Auth
-
   alias Codebattle.GameProcess.{
     Server,
+    Engine,
     GlobalSupervisor,
     Player,
     FsmHelpers,
@@ -14,10 +12,13 @@ defmodule Codebattle.GameProcess.Engine.Standard do
   alias Codebattle.Languages
   alias CodebattleWeb.Notifications
 
+  use Engine.Base
+
   # 1 hour
   @default_timeout 3600
   @timeout_seconds_whitelist [60, 120, 300, 600, 1200, 3600]
 
+  @impl Engine.Base
   def create_game(%{user: user, level: level, type: type} = params) do
     player = Player.build(user, %{creator: true})
 
@@ -102,6 +103,7 @@ defmodule Codebattle.GameProcess.Engine.Standard do
     end
   end
 
+  @impl Engine.Base
   def rematch_send_offer(game_id, user_id) do
     {:ok, fsm} = Server.call_transition(game_id, :rematch_send_offer, %{player_id: user_id})
 

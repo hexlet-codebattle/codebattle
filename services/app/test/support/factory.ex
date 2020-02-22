@@ -15,7 +15,12 @@ defmodule CodebattleWeb.Factory do
   end
 
   def game_factory do
-    %Game{state: "waiting_opponent", task: insert(:task)}
+    %Game{
+      state: "waiting_opponent",
+      level: "elementary",
+      type: "public",
+      task: insert(:task)
+    }
   end
 
   def user_game_factory do

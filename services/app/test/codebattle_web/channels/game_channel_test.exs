@@ -31,27 +31,6 @@ defmodule CodebattleWeb.GameChannelTest do
     assert response.level == game.task.level
   end
 
-  test "broadcasts user:joined with state after user join", %{
-    user1: user1,
-    user2: user2,
-    socket2: socket2
-  } do
-    # setup
-    state = :playing
-    data = %{players: [Player.build(user1), Player.build(user2)]}
-    game = setup_game(state, data)
-    game_topic = "game:" <> to_string(game.id)
-    {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
-
-    assert_receive %Phoenix.Socket.Broadcast{
-      topic: ^game_topic,
-      event: "user:joined",
-      payload: response
-    }
-
-    assert response.level == game.task.level
-  end
-
   test "broadcasts editor:data, after editor:data", %{
     user1: user1,
     user2: user2,

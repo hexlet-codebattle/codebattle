@@ -1,23 +1,25 @@
 defmodule Codebattle.GameProcess.Engine.Tournament do
-  use Codebattle.GameProcess.Engine.Base
-
   alias Codebattle.Bot.PlaybookAsyncRunner
 
   alias Codebattle.GameProcess.{
     GlobalSupervisor,
+    Engine,
     ActiveGames,
     Player,
     Server
   }
 
+  use Engine.Base
+
   @default_timeout Application.get_env(:codebattle, :tournament_match_timeout)
 
+  @impl Engine.Base
   def create_game(%{players: players} = params) do
     level = params[:level] || "elementary"
     timeout_seconds = params[:timeout_seconds] || @default_timeout
     task = get_task(level)
 
-    game =
+    {:ok, game} =
       insert_game(%{
         state: "playing",
         type: "tournament",
@@ -63,5 +65,10 @@ defmodule Codebattle.GameProcess.Engine.Tournament do
     start_timeout_timer(game.id, fsm)
 
     {:ok, fsm}
+  end
+
+  @impl Engine.Base
+  def rematch_send_offer(_, _) do
+    {:error, "Cannot create a rematch in a tournament"}
   end
 end

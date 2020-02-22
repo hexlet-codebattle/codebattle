@@ -2,6 +2,7 @@ defmodule Codebattle.GameProcess.Engine.Base do
   alias Codebattle.GameProcess.{
     Play,
     Player,
+    Engine,
     Server,
     FsmHelpers,
     ActiveGames,
@@ -17,10 +18,20 @@ defmodule Codebattle.GameProcess.Engine.Base do
   alias Codebattle.Bot.Playbook
 
   alias CodebattleWeb.Notifications
-  import Codebattle.GameProcess.Auth
+
+  @callback create_game(map()) ::
+              {:ok, %Fsm{}}
+              | {:error, any()}
+  @callback rematch_send_offer(any(), any()) ::
+              {:rematch_new_game, map()}
+              | {:rematch_update_status, map()}
+              | {:error, any()}
 
   defmacro __using__(_opts) do
     quote do
+      @behaviour Engine.Base
+      import Codebattle.GameProcess.Auth
+
       def cancel_game(fsm, user) do
         with %Player{} = player <- FsmHelpers.get_player(fsm, user.id),
              id <- FsmHelpers.get_game_id(fsm),

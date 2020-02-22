@@ -1,28 +1,27 @@
 defmodule Codebattle.GameProcess.Engine.Bot do
-  use Codebattle.GameProcess.Engine.Base
-  import Codebattle.GameProcess.Auth
-
   alias Codebattle.GameProcess.{
     Server,
+    Engine,
     GlobalSupervisor,
     Player,
     FsmHelpers,
     ActiveGames
   }
 
-  alias Codebattle.{Repo, Game, Languages}
+  alias Codebattle.Languages
   alias Codebattle.Bot.{PlaybookAsyncRunner}
   alias CodebattleWeb.Notifications
 
-  import Ecto.Query, warn: false
+  use Engine.Base
 
   # 1 hour
   @default_timeout 3600
 
+  @impl Engine.Base
   def create_game(%{user: user, level: level, type: type} = params) do
     player = Player.build(user, %{creator: true})
     timeout_seconds = params[:timeout_seconds] || @default_timeout
-    game = Repo.insert!(%Game{state: "waiting_opponent", level: level, type: type})
+    {:ok, game} = insert_game(%{state: "waiting_opponent", level: level, type: type})
 
     fsm =
       build_fsm(%{
@@ -115,6 +114,7 @@ defmodule Codebattle.GameProcess.Engine.Bot do
     k / (player.rating + b) * 1000
   end
 
+  @impl Engine.Base
   def rematch_send_offer(game_id, user_id) do
     {:ok, fsm} = Server.call_transition(game_id, :rematch_send_offer, %{player_id: user_id})
 
@@ -140,7 +140,7 @@ defmodule Codebattle.GameProcess.Engine.Bot do
       |> FsmHelpers.get_players()
       |> Enum.map(fn player -> Player.setup_editor_params(player, %{task: task}) end)
 
-    game =
+    {:ok, game} =
       insert_game(%{
         state: "playing",
         level: level,
