@@ -57,7 +57,11 @@ class UsersRating extends React.Component {
   triggerSort = attribute => {
     const { sort: { direction: prevDirection } } = this.state;
     const direction = prevDirection === 'desc' ? 'asc' : 'desc';
-    this.state.sort = { direction, attribute };
+    this.setState((state) => ({
+      direction: state.sort.direction,
+      attribute
+    }));
+    // this.state.sort = { direction, attribute };
     const { getRatingPage } = this.props;
     getRatingPage(1, this.filterNode.value, `${attribute}+${direction}`);
   };
@@ -117,7 +121,7 @@ class UsersRating extends React.Component {
               placeholder="Username"
               aria-label="Username"
               aria-describedby="basic-addon1"
-              onChange={_.debounce(() => getRatingPage(1, this.filterNode.value), 500)}
+              onChange={() => getRatingPage(1, this.filterNode.value), 500}
               // eslint-disable-next-line react/no-find-dom-node
               ref={c => { this.filterNode = ReactDOM.findDOMNode(c); }}
             />
@@ -128,7 +132,7 @@ class UsersRating extends React.Component {
             <tr>
               <th
                 className="p-3 border-0"
-                onClick={_.debounce(() => this.triggerSort('rank'))}
+                onClick={() => this.triggerSort('rank')}
               >
                 Rank
                 {this.sortArrow('rank')}
@@ -136,14 +140,14 @@ class UsersRating extends React.Component {
               <th className="p-3 border-0">User</th>
               <th
                 className="p-3 border-0"
-                onClick={_.debounce(() => this.triggerSort('rating'))}
+                onClick={() => this.triggerSort('rating')}
               >
                 Rating
                 {this.sortArrow('rating')}
               </th>
               <th
                 className="p-3 border-0"
-                onClick={_.debounce(() => this.triggerSort('games_played'))}
+                onClick={() => this.triggerSort('games_played')}
               >
                 Games played
                 {this.sortArrow('games_played')}
@@ -151,7 +155,7 @@ class UsersRating extends React.Component {
               <th className="p-3 border-0">Performance</th>
               <th
                 className="p-3 border-0"
-                onClick={_.debounce(() => this.triggerSort('id'))}
+                onClick={() => this.triggerSort('id')}
               >
                 Joined
                 {this.sortArrow('id')}
