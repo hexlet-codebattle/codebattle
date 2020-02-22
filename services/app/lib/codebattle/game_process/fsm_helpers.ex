@@ -31,6 +31,14 @@ defmodule Codebattle.GameProcess.FsmHelpers do
     |> Enum.find(fn player -> player.id == id end)
   end
 
+  def is_player?(fsm, id) do
+    fsm
+    |> get_players
+    |> Enum.find(fn player -> player.id == id end)
+    |> Kernel.!()
+    |> Kernel.!()
+  end
+
   def get_opponent(fsm, player_id) do
     fsm
     |> get_players

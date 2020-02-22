@@ -5,6 +5,7 @@ defmodule Codebattle.GameProcess.Play do
   """
 
   import Ecto.Query, warn: false
+  import Codebattle.GameProcess.Auth
 
   alias Codebattle.{Repo, Game}
 
@@ -122,10 +123,10 @@ defmodule Codebattle.GameProcess.Play do
   end
 
   def rematch_send_offer(game_id, user_id) do
-    case get_fsm(game_id) do
-      {:ok, fsm} ->
-        FsmHelpers.get_module(fsm).rematch_send_offer(game_id, user_id)
-
+    with {:ok, fsm} <- get_fsm(game_id),
+         :ok <- player_can_rematch?(fsm, user_id) do
+      FsmHelpers.get_module(fsm).rematch_send_offer(game_id, user_id)
+    else
       {:error, reason} ->
         {:error, reason}
     end
