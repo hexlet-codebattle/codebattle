@@ -103,7 +103,7 @@ export const gameStatusTitleSelector = state => {
 
 export const gameTaskSelector = state => state.game.task;
 
-export const gameLangsSelector = state => state.game.langs;
+export const editorLangsSelector = state => state.editor.langs.langs;
 
 export const editorHeightSelector = userId => state => _.get(editorDataSelector(userId)(state), 'editorHeight', defaultEditorHeight);
 

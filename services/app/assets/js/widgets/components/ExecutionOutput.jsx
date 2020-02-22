@@ -78,7 +78,6 @@ class ExecutionOutput extends PureComponent {
         output, result, assertsCount, successCount,
       } = {}, id,
     } = this.props;
-    console.log();
     const resultObj = this.parseOutput(result);
 
     return (

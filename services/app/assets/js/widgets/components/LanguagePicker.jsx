@@ -4,7 +4,7 @@ import _ from 'lodash';
 import Gon from 'gon';
 import LanguageIcon from './LanguageIcon';
 
-const languages = Gon.getAsset('langs');
+const defaultLanguages = Gon.getAsset('langs');
 
 const LangTitle = ({ slug, name, version }) => (
   <div className="d-inline-flex align-items-center">
@@ -14,19 +14,15 @@ const LangTitle = ({ slug, name, version }) => (
   </div>
 );
 
-const LanguagePicker = ({ currentLangSlug, onChange, disabled }) => {
-  const [[currentLang], otherLangs] = _.partition(
-    languages,
-    lang => lang.slug === currentLangSlug,
-  );
+const LanguagePicker = ({
+  languages, currentLangSlug, onChange, disabled,
+}) => {
+  const langs = languages || defaultLanguages;
+  const [[currentLang], otherLangs] = _.partition(langs, lang => lang.slug === currentLangSlug);
 
   if (disabled) {
     return (
-      <button
-        className="btn btn-sm"
-        type="button"
-        disabled
-      >
+      <button className="btn btn-sm" type="button" disabled>
         <LangTitle {...currentLang} />
       </button>
     );
@@ -50,7 +46,9 @@ const LanguagePicker = ({ currentLangSlug, onChange, disabled }) => {
             type="button"
             className="dropdown-item btn rounded-0"
             key={slug}
-            onClick={() => { onChange(slug); }}
+            onClick={() => {
+              onChange(slug);
+            }}
           >
             <LangTitle slug={slug} name={name} version={version} />
           </button>

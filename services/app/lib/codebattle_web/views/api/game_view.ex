@@ -8,7 +8,6 @@ defmodule CodebattleWeb.Api.GameView do
   def render_fsm(fsm) do
     %{
       status: fsm.state,
-      inserted_at: get_inserted_at(fsm),
       players: get_players(fsm),
       task: get_task(fsm),
       level: get_level(fsm),
@@ -17,7 +16,9 @@ defmodule CodebattleWeb.Api.GameView do
       rematch_state: get_rematch_state(fsm),
       rematch_initiator_id: get_rematch_initiator_id(fsm),
       tournament_id: get_tournament_id(fsm),
-      starts_at: get_starts_at(fsm)
+      inserted_at: get_inserted_at(fsm),
+      starts_at: get_starts_at(fsm),
+      langs: get_langs(fsm)
     }
   end
 

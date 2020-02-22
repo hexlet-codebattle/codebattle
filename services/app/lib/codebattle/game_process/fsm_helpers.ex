@@ -14,6 +14,7 @@ defmodule Codebattle.GameProcess.FsmHelpers do
   def get_rematch_initiator_id(fsm), do: fsm.data.rematch_initiator_id
   def get_players(fsm), do: fsm.data.players
   def get_task(fsm), do: fsm.data.task
+  def get_langs(fsm), do: fsm.data.langs
   def get_first_player(fsm), do: fsm |> get_players |> Enum.at(0)
   def get_second_player(fsm), do: fsm |> get_players |> Enum.at(1)
   def bot_game?(fsm), do: fsm |> get_players |> Enum.any?(fn p -> p.is_bot end)

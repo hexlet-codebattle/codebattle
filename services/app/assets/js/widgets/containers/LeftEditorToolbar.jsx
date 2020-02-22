@@ -18,6 +18,7 @@ import { setEditorsMode, switchEditorsTheme } from '../actions';
 import EditorModes from '../config/editorModes';
 import EditorThemes from '../config/editorThemes';
 
+
 class LeftEditorToolbar extends Component {
   static defaultProps = {
     status: GameStatusCodes.initial,
@@ -32,11 +33,11 @@ class LeftEditorToolbar extends Component {
       <div className="d-flex align-items-center">
         <UserInfo user={player} />
         <div>
-          {
-              isOnline
-                ? <FontAwesomeIcon icon="snowman" className="text-success ml-2" />
-                : <FontAwesomeIcon icon="skull-crossbones" className="text-secondary ml-2" />
-            }
+          {isOnline ? (
+            <FontAwesomeIcon icon="snowman" className="text-success ml-2" />
+          ) : (
+            <FontAwesomeIcon icon="skull-crossbones" className="text-secondary ml-2" />
+          )}
         </div>
       </div>
     );
@@ -71,15 +72,11 @@ class LeftEditorToolbar extends Component {
     });
 
     return (
-      <button
-        type="button"
-        className={classNames}
-        onClick={() => setMode(nextMode)}
-      >
+      <button type="button" className={classNames} onClick={() => setMode(nextMode)}>
         Vim
       </button>
     );
-  }
+  };
 
   renderSwitchThemeBtn = () => {
     const { switchTheme, theme } = this.props;
@@ -92,15 +89,11 @@ class LeftEditorToolbar extends Component {
     const text = isDarkTheme ? 'Dark' : 'Light';
 
     return (
-      <button
-        type="button"
-        className={classNames}
-        onClick={() => switchTheme(nextTheme)}
-      >
+      <button type="button" className={classNames} onClick={() => switchTheme(nextTheme)}>
         {text}
       </button>
     );
-  }
+  };
 
   render() {
     const {
@@ -112,6 +105,7 @@ class LeftEditorToolbar extends Component {
       onlineUsers,
       setLang,
       players,
+      languages,
       compressEditor,
       expandEditor,
     } = this.props;
@@ -124,9 +118,13 @@ class LeftEditorToolbar extends Component {
     }
 
     return (
-      <div className="py-2 px-3 btn-toolbar justify-content-between align-items-center" role="toolbar">
+      <div
+        className="py-2 px-3 btn-toolbar justify-content-between align-items-center"
+        role="toolbar"
+      >
         <div className="btn-group " role="group" aria-label="Editor settings">
           <LanguagePicker
+            languages={languages}
             currentLangSlug={leftEditorLangSlug}
             onChange={setLang}
             disabled={isSpectator}
@@ -153,6 +151,7 @@ const mapStateToProps = state => {
   return {
     leftUserId,
     rightUserId,
+    languages: selectors.editorLangsSelector(state),
     currentUserId: selectors.currentUserIdSelector(state),
     onlineUsers: selectors.chatUsersSelector(state),
     leftEditorLangSlug: selectors.userLangSelector(leftUserId)(state),

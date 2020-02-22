@@ -10,9 +10,6 @@ defmodule CodebattleWeb.GameController do
 
   plug(CodebattleWeb.Plugs.RequireAuth when action in [:create, :join])
 
-  @timeout_seconds_default 3600
-  @timeout_seconds_whitelist [60, 120, 300, 600, 1200, 3600]
-
   action_fallback(CodebattleWeb.FallbackController)
 
   def create(conn, params) do
@@ -23,14 +20,12 @@ defmodule CodebattleWeb.GameController do
         type -> type
       end
 
-    game_params =
-      params
-      |> Map.take(["level"])
-      |> Map.merge(%{
-        "type" => type,
-        "timeout_seconds" => get_timeout_seconds(params),
-        "user" => conn.assigns.current_user
-      })
+    game_params = %{
+      level: params["level"],
+      type: type,
+      timeout_seconds: params["timeout_seconds"],
+      user: conn.assigns.current_user
+    }
 
     with {:ok, fsm} <- Play.create_game(game_params) do
       game_id = FsmHelpers.get_game_id(fsm)
@@ -43,8 +38,7 @@ defmodule CodebattleWeb.GameController do
     case Play.get_fsm(id) do
       {:ok, fsm} ->
         task = FsmHelpers.get_task(fsm)
-        langs = Languages.meta() |> Map.values() |> Languages.update_solutions(task)
-        conn = put_gon(conn, game_id: id, langs: langs)
+        conn = put_gon(conn, game_id: id )
         is_participant = ActiveGames.participant?(id, conn.assigns.current_user.id)
 
         case {fsm.state, is_participant} do
@@ -95,20 +89,4 @@ defmodule CodebattleWeb.GameController do
       redirect(conn, to: page_path(conn, :index))
     end
   end
-
-  defp get_timeout_seconds(%{"timeout_seconds" => timeout_seconds}) do
-    timeout_seconds_int =
-      case timeout_seconds do
-        value when value in ["", nil] -> 0
-        value -> String.to_integer(value)
-      end
-
-    if Enum.member?(@timeout_seconds_whitelist, timeout_seconds_int) do
-      timeout_seconds_int
-    else
-      @timeout_seconds_default
-    end
-  end
-
-  defp get_timeout_seconds(_), do: @timeout_seconds_default
 end

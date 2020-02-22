@@ -7,12 +7,11 @@ defmodule Codebattle.GameProcess.Engine.Bot do
     GlobalSupervisor,
     Player,
     FsmHelpers,
-    TasksQueuesServer,
     ActiveGames
   }
 
-  alias Codebattle.{Repo, Game}
-  alias Codebattle.Bot.{Playbook, PlaybookAsyncRunner}
+  alias Codebattle.{Repo, Game, Languages}
+  alias Codebattle.Bot.{PlaybookAsyncRunner}
   alias CodebattleWeb.Notifications
 
   import Ecto.Query, warn: false
@@ -38,7 +37,6 @@ defmodule Codebattle.GameProcess.Engine.Bot do
 
     ActiveGames.create_game(fsm)
     {:ok, _} = GlobalSupervisor.start_game(fsm)
-
     {:ok, fsm}
   end
 
@@ -47,7 +45,8 @@ defmodule Codebattle.GameProcess.Engine.Bot do
          game_id <- FsmHelpers.get_game_id(fsm),
          level <- FsmHelpers.get_level(fsm),
          first_player <- FsmHelpers.get_first_player(fsm),
-         {:ok, task} <- get_task(level),
+         task <- get_task(level),
+         langs <- Languages.get_langs_with_solutions(task),
          {:ok, fsm} <-
            Server.call_transition(game_id, :join, %{
              players: [
@@ -55,11 +54,13 @@ defmodule Codebattle.GameProcess.Engine.Bot do
                Player.build(second_user, %{task: task})
              ],
              starts_at: TimeHelper.utc_now(),
-             task: task
+             task: task,
+             langs: langs
            }) do
       ActiveGames.update_game(fsm)
 
       update_game!(game_id, %{state: "playing", task_id: task.id})
+      Notifications.broadcast_join_game(fsm)
       run_bot!(fsm)
 
       broadcast_active_game(fsm)
@@ -80,57 +81,6 @@ defmodule Codebattle.GameProcess.Engine.Bot do
       bot_id: FsmHelpers.get_first_player(fsm).id,
       bot_time_ms: get_bot_time(fsm)
     })
-  end
-
-  def handle_won_game(game_id, winner, fsm) do
-    loser = FsmHelpers.get_opponent(fsm, winner.id)
-    task_id = FsmHelpers.get_task(fsm).id
-
-    store_game_result!(fsm, {winner, "won"}, {loser, "lost"})
-
-    {:ok, playbook} = Server.get_playbook(game_id)
-
-    store_playbook(playbook, game_id, task_id)
-
-    ActiveGames.terminate_game(game_id)
-
-    Notifications.notify_tournament(:game_over, fsm, %{
-      state: "finished",
-      game_id: game_id,
-      winner: {winner.id, "won"},
-      loser: {loser.id, "lost"}
-    })
-
-    :ok
-  end
-
-  def get_task(level) do
-    task = TasksQueuesServer.get_task(level)
-
-    {:ok, task}
-  end
-
-  def get_solved_task(level) do
-    query =
-      from(
-        playbook in Playbook,
-        join: task in "tasks",
-        on: task.id == playbook.task_id,
-        order_by: fragment("RANDOM()"),
-        preload: [:task],
-        where: task.level == ^level,
-        where: task.disabled == false,
-        limit: 1
-      )
-
-    playbook = Repo.one(query)
-
-    if playbook do
-      %{task: task} = playbook
-      {:ok, task}
-    else
-      {:error, :playbook_not_found}
-    end
   end
 
   defp get_bot_time(fsm) do
@@ -183,7 +133,7 @@ defmodule Codebattle.GameProcess.Engine.Bot do
     level = FsmHelpers.get_level(fsm)
     type = FsmHelpers.get_type(fsm)
     timeout_seconds = FsmHelpers.get_timeout_seconds(fsm)
-    {:ok, task} = get_task(level)
+    task = get_task(level)
 
     players =
       fsm
@@ -191,7 +141,7 @@ defmodule Codebattle.GameProcess.Engine.Bot do
       |> Enum.map(fn player -> Player.setup_editor_params(player, %{task: task}) end)
 
     game =
-      Repo.insert!(%Game{
+      insert_game(%{
         state: "playing",
         level: level,
         type: type
@@ -206,6 +156,7 @@ defmodule Codebattle.GameProcess.Engine.Bot do
         level: level,
         type: type,
         task: task,
+        langs: Languages.get_langs_with_solutions(task),
         inserted_at: game.inserted_at,
         starts_at: game.inserted_at,
         timeout_seconds: timeout_seconds

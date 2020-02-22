@@ -40,7 +40,10 @@ defmodule Codebattle.GameProcess.Fsm do
       # Atom, state of rematch negotiations
       rematch_state: :none,
       # Integer, player_id who sended offer to rematch
-      rematch_initiator_id: nil
+      rematch_initiator_id: nil,
+
+      # {List, Map}, maps with langs for game and solution templates
+      langs: []
     }
 
   # For tests
