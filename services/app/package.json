@@ -17,12 +17,8 @@
     "@fortawesome/fontawesome-free": "^5.11.2",
     "@fortawesome/fontawesome-svg-core": "^1.2.25",
     "@fortawesome/react-fontawesome": "^0.1.7",
-<<<<<<< HEAD
     "@reduxjs/toolkit": "^1.2.1",
     "apexcharts": "^3.15.3",
-=======
-    "apexcharts": "^3.14.0",
->>>>>>> 5c55357c99391d0273243599b86af892a5aa5ca8
     "axios": "^0.19.0",
     "bootstrap": "^4.4.1",
     "classnames": "^2.2.6",
