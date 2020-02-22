@@ -14,8 +14,10 @@ import Loading from '../components/Loading';
 import GamesHeatmap from '../components/GamesHeatmap';
 import Card from '../components/Card';
 import UserInfo from './UserInfo';
-import makeCreateGameUrl from '../utils/makeCreateGameUrl';
-import DropdownMenuDefault from '../components/DropdownMenuDefault';
+import { makeCreateGameBotUrl } from '../utils/urlBuilders';
+import SelectorPlayWithBot from '../components/SelectorPlayWithBot';
+import SelectorStartNewGame from '../components/SelectorCreateGame';
+import SelectorPlayWithFriend from '../components/SelectorPlayWithFriend';
 
 const timeoutOptions = {
   0: i18n.t('Timeout - no timeout'),
@@ -44,7 +46,7 @@ class GameList extends React.Component {
   updateTimeoutSeconds = timeoutSeconds => {
     const { selectNewGameTimeout } = this.props;
     selectNewGameTimeout({ timeoutSeconds });
-  }
+  };
 
   renderResultIcon = (gameId, player1, player2) => {
     const tooltipId = `tooltip-${gameId}-${player1.id}`;
@@ -129,7 +131,8 @@ class GameList extends React.Component {
   );
 
   renderGameActionButton = game => {
-    const gameUrl = `/games/${game.gameId}`;
+    const gameUrl = makeCreateGameBotUrl(game.gameId);
+    const gameUrlJoin = makeCreateGameBotUrl(game.gameId, 'join');
     const currentUser = Gon.getAsset('current_user');
     const gameState = game.gameInfo.state;
 
@@ -162,7 +165,7 @@ class GameList extends React.Component {
             className="btn btn-success btn-sm"
             data-method="post"
             data-csrf={window.csrf_token}
-            data-to={`${gameUrl}/join`}
+            data-to={gameUrlJoin}
           >
             Join
           </button>
@@ -174,66 +177,18 @@ class GameList extends React.Component {
     return null;
   };
 
-  renderStartNewGameButton = (gameLevel, gameType, timeoutSeconds, gameId) => {
-    const gameUrl = makeCreateGameUrl({
-      gameLevel, gameType, timeoutSeconds, gameId,
-    });
-
-    return (
-      <button
-        key={gameUrl}
-        className="dropdown-item"
-        type="button"
-        data-method="post"
-        data-csrf={window.csrf_token}
-        data-to={gameUrl}
-      >
-        <span className={`badge badge-pill badge-${this.levelToClass[gameLevel]} mr-1`}>&nbsp;</span>
-        {gameLevel}
-      </button>
-    );
-  };
-
-  renderStartNewGameSelector = timeoutSeconds => (
-    <div className="dropdown mr-sm-3 mr-0 mb-sm-0 mx-3">
-      <button
-        id="btnGroupStartNewGame"
-        type="button"
-        className="btn btn-success dropdown-toggle"
-        data-toggle="dropdown"
-        aria-haspopup="true"
-        aria-expanded="false"
-      >
-        <i className="fa fa-random mr-2" />
-        Create a game
-      </button>
-      <div className="dropdown-menu" aria-labelledby="btnGroupStartNewGame">
-        <DropdownMenuDefault
-          renderLevel={level => this.renderStartNewGameButton(level, 'withRandomPlayer', timeoutSeconds)}
-        />
-      </div>
-    </div>
-  );
-
-  renderPlayWithFriendSelector = timeoutSeconds => (
-    <div className="dropdown">
-      <button
-        id="btnGroupPlayWithFriend"
-        type="button"
-        className="btn btn-outline-success dropdown-toggle"
-        data-toggle="dropdown"
-        aria-haspopup="true"
-        aria-expanded="false"
-      >
-        <i className="fa fa-male mr-2" />
-        Play with a friend
-      </button>
-      <div className="dropdown-menu" aria-labelledby="btnGroupPlayWithFriend">
-        <DropdownMenuDefault
-          renderLevel={level => this.renderStartNewGameButton(level, 'withFriend', timeoutSeconds)}
-        />
-      </div>
-    </div>
+  renderStartNewGameButton = (gameLevel, gameUrl) => (
+    <button
+      key={gameUrl}
+      className="dropdown-item"
+      type="button"
+      data-method="post"
+      data-csrf={window.csrf_token}
+      data-to={gameUrl}
+    >
+      <span className={`badge badge-pill badge-${this.levelToClass[gameLevel]} mr-1`}>&nbsp;</span>
+      {gameLevel}
+    </button>
   );
 
   renderTimeoutSelector = timeoutSeconds => (
@@ -276,34 +231,6 @@ class GameList extends React.Component {
       </>
     );
   };
-
-  // TODO: add this render under "Play with the bot" when the server part is ready
-  renderPlayWithBotSelector = () => {
-    const { activeGames } = this.props;
-    const gamesWithBot = activeGames.filter(game => game.gameInfo.isBot);
-    const selectGameByLevel = type => gamesWithBot.find(game => game.gameInfo.level === type);
-    const getGameId = level => selectGameByLevel(level).gameId;
-    return (
-      <div className="dropdown">
-        <button
-          id="btnGroupPlayWithBot"
-          type="button"
-          className="btn btn-outline-success dropdown-toggle"
-          data-toggle="dropdown"
-          aria-haspopup="true"
-          aria-expanded="false"
-        >
-          <i className="fa fa-robot mr-2" />
-          Play with the bot
-        </button>
-        <div className="dropdown-menu" aria-labelledby="btnGroupPlayWithBot">
-          <DropdownMenuDefault
-            renderLevel={level => this.renderStartNewGameButton(level, 'withBot', 0, getGameId(level))}
-          />
-        </div>
-      </div>
-    );
-  }
 
   renderLiveTournaments = tournaments => {
     if (_.isEmpty(tournaments)) {
@@ -465,10 +392,10 @@ class GameList extends React.Component {
         )}
       </>
     );
-  }
+  };
 
   render() {
-    const { loaded, newGame } = this.props;
+    const { loaded, newGame, activeGames } = this.props;
     const timeoutSeconds = newGame.timeoutSeconds || 0;
     if (!loaded) {
       return <Loading />;
@@ -477,9 +404,18 @@ class GameList extends React.Component {
       <>
         <Card title="New game">
           <div className="d-flex flex-sm-row flex-column align-items-center justify-content-center flex-wrap">
-            {this.renderPlayWithBotSelector()}
-            {this.renderStartNewGameSelector(timeoutSeconds)}
-            {this.renderPlayWithFriendSelector(timeoutSeconds)}
+            <SelectorPlayWithBot
+              activeGames={activeGames}
+              renderStartNewGameButton={this.renderStartNewGameButton}
+            />
+            <SelectorStartNewGame
+              timeoutSeconds={timeoutSeconds}
+              renderStartNewGameButton={this.renderStartNewGameButton}
+            />
+            <SelectorPlayWithFriend
+              timeoutSeconds={timeoutSeconds}
+              renderStartNewGameButton={this.renderStartNewGameButton}
+            />
           </div>
         </Card>
         {this.renderGameContainers()}
