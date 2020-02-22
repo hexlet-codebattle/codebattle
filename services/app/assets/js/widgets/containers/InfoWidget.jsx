@@ -29,7 +29,6 @@ const InfoWidget = props => {
 
 const mapStateToProps = state => {
   const gameStatus = selectors.gameStatusSelector(state);
-
   return {
     taskText: selectors.gameTaskSelector(state),
     startsAt: gameStatus.startsAt,

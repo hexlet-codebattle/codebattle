@@ -8,30 +8,28 @@ defmodule Codebattle.GameProcess.Engine.Standard do
     Player,
     FsmHelpers,
     ActiveGames,
-    Notifier,
-    TasksQueuesServer
+    Notifier
   }
 
-  alias Codebattle.{Repo, Game}
+  alias Codebattle.Languages
   alias CodebattleWeb.Notifications
 
   # 1 hour
   @default_timeout 3600
+  @timeout_seconds_whitelist [60, 120, 300, 600, 1200, 3600]
 
-  def create_game(%{"user" => user, "level" => level, "type" => type} = params) do
+  def create_game(%{user: user, level: level, type: type} = params) do
     player = Player.build(user, %{creator: true})
 
-    timeout_seconds = params["timeout_seconds"] || @default_timeout
+    timeout_seconds = get_timeout_seconds(params[:timeout_seconds])
 
     with :ok <- player_can_create_game?(player),
          {:ok, game} <-
-           %Game{}
-           |> Game.changeset(%{
+           insert_game(%{
              state: "waiting_opponent",
              level: level,
              type: type
-           })
-           |> Repo.insert(),
+           }),
          fsm <-
            build_fsm(%{
              module: __MODULE__,
@@ -61,9 +59,6 @@ defmodule Codebattle.GameProcess.Engine.Standard do
     else
       {:error, reason} ->
         {:error, reason}
-
-      {:error, reason, _fsm} ->
-        {:error, reason}
     end
   end
 
@@ -72,7 +67,8 @@ defmodule Codebattle.GameProcess.Engine.Standard do
          game_id <- FsmHelpers.get_game_id(fsm),
          level <- FsmHelpers.get_level(fsm),
          first_player <- FsmHelpers.get_first_player(fsm),
-         task <- TasksQueuesServer.get_task(level),
+         task <- get_task(level),
+         langs <- Languages.get_langs_with_solutions(task),
          {:ok, fsm} <-
            Server.call_transition(game_id, :join, %{
              players: [
@@ -80,10 +76,12 @@ defmodule Codebattle.GameProcess.Engine.Standard do
                Player.build(second_user, %{task: task})
              ],
              starts_at: TimeHelper.utc_now(),
-             task: task
+             task: task,
+             langs: langs
            }) do
       ActiveGames.update_game(fsm)
       update_game!(game_id, %{state: "playing", task_id: task.id})
+      Notifications.broadcast_join_game(fsm)
 
       Task.start(fn ->
         Notifier.call(:game_opponent_join, %{
@@ -101,28 +99,7 @@ defmodule Codebattle.GameProcess.Engine.Standard do
     else
       {:error, reason} ->
         {:error, reason}
-
-      {:error, reason, _fsm} ->
-        {:error, reason}
     end
-  end
-
-  def handle_won_game(game_id, winner, fsm) do
-    loser = FsmHelpers.get_opponent(fsm, winner.id)
-    task = FsmHelpers.get_task(fsm)
-
-    {:ok, playbook} = Server.get_playbook(game_id)
-    store_playbook(playbook, game_id, task.id)
-
-    store_game_result!(fsm, {winner, "won"}, {loser, "lost"})
-    ActiveGames.terminate_game(game_id)
-
-    Notifications.notify_tournament(:game_over, fsm, %{
-      state: "finished",
-      game_id: game_id,
-      winner: {winner.id, "won"},
-      loser: {loser.id, "lost"}
-    })
   end
 
   def rematch_send_offer(game_id, user_id) do
@@ -147,15 +124,15 @@ defmodule Codebattle.GameProcess.Engine.Standard do
     level = FsmHelpers.get_level(fsm)
     type = FsmHelpers.get_type(fsm)
     timeout_seconds = FsmHelpers.get_timeout_seconds(fsm)
-    task = TasksQueuesServer.get_task(level)
+    task = get_task(level)
 
     players =
       fsm
       |> FsmHelpers.get_players()
       |> Enum.map(fn player -> Player.setup_editor_params(player, %{task: task}) end)
 
-    game =
-      Repo.insert!(%Game{
+    {:ok, game} =
+      insert_game(%{
         state: "playing",
         level: level,
         type: type
@@ -170,6 +147,7 @@ defmodule Codebattle.GameProcess.Engine.Standard do
         level: level,
         type: type,
         task: task,
+        langs: Languages.get_langs_with_solutions(task),
         inserted_at: game.inserted_at,
         starts_at: game.inserted_at,
         timeout_seconds: timeout_seconds
@@ -181,5 +159,21 @@ defmodule Codebattle.GameProcess.Engine.Standard do
     Codebattle.GameProcess.TimeoutServer.restart(game.id, timeout_seconds)
     broadcast_active_game(fsm)
     {:ok, game.id}
+  end
+
+  defp get_timeout_seconds(timeout) when is_integer(timeout) do
+    if Enum.member?(@timeout_seconds_whitelist, timeout) do
+      timeout
+    else
+      @default_timeout
+    end
+  end
+
+  defp get_timeout_seconds(timeout) do
+    case timeout do
+      value when value in ["", nil] -> @default_timeout
+      value when is_binary(value) -> value |> String.to_integer() |> get_timeout_seconds()
+      _ -> @default_timeout
+    end
   end
 end

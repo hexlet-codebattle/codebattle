@@ -1,8 +1,7 @@
 defmodule Codebattle.GameProcess.Play do
-  require Logger
-
   @moduledoc """
   The GameProcess context.
+  Public interface to interacting with games.
   """
 
   import Ecto.Query, warn: false
@@ -12,6 +11,7 @@ defmodule Codebattle.GameProcess.Play do
   alias Codebattle.GameProcess.{
     Server,
     Engine,
+    Fsm,
     FsmHelpers,
     ActiveGames
   }
@@ -147,7 +147,6 @@ defmodule Codebattle.GameProcess.Play do
 
   def timeout_game(id) do
     if ActiveGames.game_exists?(id) do
-      Logger.info("Timeout triggered for game_id: #{id}")
       Server.call_transition(id, :timeout, %{})
       ActiveGames.terminate_game(id)
       Notifications.game_timeout(id)
@@ -168,6 +167,7 @@ defmodule Codebattle.GameProcess.Play do
 
   defp get_module(%{tournament: _}), do: Engine.Tournament
   defp get_module(%{type: "bot"}), do: Engine.Bot
+  defp get_module(%Fsm{} = fsm), do: FsmHelpers.get_module(fsm)
   defp get_module(_), do: Engine.Standard
 
   defp checker_adapter, do: Application.get_env(:codebattle, :checker_adapter)

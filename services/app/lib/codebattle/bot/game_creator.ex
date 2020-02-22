@@ -3,13 +3,15 @@ defmodule Codebattle.Bot.GameCreator do
 
   import Ecto.Query, warn: false
 
+  @default_timeout 3600
+
   def call(level) do
     games = Play.get_active_games(%{is_bot: true, state: :waiting_opponent, level: level})
 
     if Enum.count(games) < 1 do
       bot = Codebattle.Bot.Builder.build()
 
-      case Play.create_game(%{user: bot, level: level, type: "bot"}) do
+      case Play.create_game(%{user: bot, level: level, type: "bot", timeout_seconds: @default_timeout}) do
         {:ok, fsm} -> {:ok, fsm, bot}
         {:error, reason} -> {:error, reason}
       end

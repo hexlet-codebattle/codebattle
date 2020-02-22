@@ -15,7 +15,6 @@
         - "codebattle/php:7.3.0"
         - "codebattle/haskell:8.4.3"
         - "codebattle/clojure:1.10.0"
-        - "codebattle/perl:5.26.2"
 
     - name: prune docker images
       shell: docker rmi -f $(docker images | grep "<none>" | awk '{print $3}')

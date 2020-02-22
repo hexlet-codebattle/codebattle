@@ -6,22 +6,19 @@ defmodule Codebattle.GameProcess.Engine.Tournament do
   alias Codebattle.GameProcess.{
     GlobalSupervisor,
     ActiveGames,
-    TasksQueuesServer,
     Player,
     Server
   }
-
-  alias Codebattle.{Repo, Game}
 
   @default_timeout Application.get_env(:codebattle, :tournament_match_timeout)
 
   def create_game(%{players: players} = params) do
     level = params[:level] || "elementary"
     timeout_seconds = params[:timeout_seconds] || @default_timeout
-    task = get_task(level, players)
+    task = get_task(level)
 
     game =
-      Repo.insert!(%Game{
+      insert_game(%{
         state: "playing",
         type: "tournament",
         level: level,
@@ -66,14 +63,5 @@ defmodule Codebattle.GameProcess.Engine.Tournament do
     start_timeout_timer(game.id, fsm)
 
     {:ok, fsm}
-  end
-
-  def get_task(level, [%{is_bot: false}, %{is_bot: false}]) do
-    TasksQueuesServer.get_task(level)
-  end
-
-  def get_task(level, _players) do
-    {:ok, task} = Codebattle.GameProcess.Engine.Bot.get_solved_task(level)
-    task
   end
 end

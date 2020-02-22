@@ -92,7 +92,7 @@ defmodule Codebattle.GameProcess.Server do
   def handle_call({:transition, event, params}, _from, %{fsm: fsm, playbook: playbook} = state) do
     case Fsm.transition(fsm, event, [params]) do
       {{:error, reason}, _} ->
-        {:reply, {:error, reason, fsm}, state}
+        {:reply, {:error, reason}, state}
 
       new_fsm ->
         new_state = %{

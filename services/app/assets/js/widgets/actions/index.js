@@ -23,6 +23,7 @@ export const sendPlayerCode = createAction('SEND_PLAYER_CODE');
 export const updateEditorLang = createAction('UPDATE_EDITOR_LANG');
 export const updateEditorText = createAction('UPDATE_EDITOR_TEXT');
 export const updateEditorTextPlaybook = createAction('UPDATE_EDITOR_TEXT_PLAYBOOK');
+export const setLangs = createAction('SET_LANGS');
 
 export const updateGameStatus = createAction('UPDATE_GAME_STATUS');
 export const setGameTask = createAction('SET_GAME_TASK');

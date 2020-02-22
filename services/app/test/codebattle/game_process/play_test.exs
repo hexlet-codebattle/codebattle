@@ -11,10 +11,10 @@ defmodule Codebattle.GameProcess.PlayTest do
 
     {:ok, fsm} =
       Play.create_game(%{
-        "user" => user1,
-        "level" => "medium",
-        "timeout_seconds" => 60,
-        "type" => "public"
+        user: => user1,
+        level: => "medium",
+        timeout_seconds: => 60,
+        type: => "public"
       })
 
     game_id = FsmHelpers.get_game_id(fsm)

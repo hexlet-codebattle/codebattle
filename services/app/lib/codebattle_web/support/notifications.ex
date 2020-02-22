@@ -1,5 +1,6 @@
 defmodule CodebattleWeb.Notifications do
   alias Codebattle.GameProcess.Play
+  alias Codebattle.GameProcess.Fsm
   alias CodebattleWeb.Api.GameView
 
   import CodebattleWeb.Gettext
@@ -26,6 +27,14 @@ defmodule CodebattleWeb.Notifications do
     })
   end
 
+  def broadcast_join_game(fsm) do
+    CodebattleWeb.Endpoint.broadcast!(
+      game_channel_name(fsm),
+      "user:joined",
+      GameView.render_fsm(fsm)
+    )
+  end
+
   def notify_tournament(event_type, fsm, params) do
     case get_tournament_id(fsm) do
       nil ->
@@ -37,5 +46,6 @@ defmodule CodebattleWeb.Notifications do
   end
 
   defp game_channel_name(nil), do: :error
+  defp game_channel_name(%Fsm{} = fsm), do: fsm |> get_game_id |> game_channel_name
   defp game_channel_name(game_id), do: "game:#{game_id}"
 end

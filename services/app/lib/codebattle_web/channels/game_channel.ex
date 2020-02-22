@@ -7,31 +7,12 @@ defmodule CodebattleWeb.GameChannel do
 
   def join("game:" <> game_id, _payload, socket) do
     case Play.get_fsm(game_id) do
-      {:ok, fsm} ->
-        send(self(), :after_join)
-        {:ok, GameView.render_fsm(fsm), socket}
-
-      {:error, reason} ->
-        {:error, reason}
+      {:ok, fsm} -> {:ok, GameView.render_fsm(fsm), socket}
+      {:error, reason} -> {:error, reason}
     end
   end
 
-  def handle_info(:after_join, socket) do
-    game_id = get_game_id(socket)
-
-    case Play.get_fsm(game_id) do
-      {:ok, fsm} ->
-        broadcast_from!(socket, "user:joined", GameView.render_fsm(fsm))
-        {:noreply, socket}
-
-      {:error, _reason} ->
-        {:noreply, socket}
-    end
-  end
-
-  def handle_in("ping", payload, socket) do
-    {:reply, {:ok, payload}, socket}
-  end
+  def handle_in("ping", payload, socket), do: {:reply, {:ok, payload}, socket}
 
   def handle_in("editor:data", payload, socket) do
     game_id = get_game_id(socket)

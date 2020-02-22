@@ -11,7 +11,7 @@ import { resolveDiffs } from '../lib/player';
 import PlaybookStatusCodes from '../config/playbookStatusCodes';
 import GameStatusCodes from '../config/gameStatusCodes';
 
-const languages = Gon.getAsset('langs');
+const defaultLanguages = Gon.getAsset('langs');
 const gameId = Gon.getAsset('game_id');
 const isRecord = Gon.getAsset('is_record');
 const channelName = `game:${gameId}`;
@@ -55,6 +55,7 @@ const initStore = dispatch => ({
   firstPlayer,
   secondPlayer,
   task,
+  langs,
   gameStatus,
   playbookStatusCode,
 }) => {
@@ -65,6 +66,7 @@ const initStore = dispatch => ({
     players.push({ ...secondPlayer, type: userTypes.secondPlayer });
   }
 
+  dispatch(actions.setLangs({ langs }));
   dispatch(actions.updateGamePlayers({ players }));
 
   const updateEditorTextAction = isStored
@@ -84,7 +86,6 @@ const initStore = dispatch => ({
 
 const initGameChannel = dispatch => {
   const onJoinFailure = response => {
-    console.log(response);
     window.location.reload();
   };
 
@@ -95,18 +96,11 @@ const initGameChannel = dispatch => {
       timeoutSeconds,
       players: [firstPlayer, secondPlayer],
       task,
+      langs,
       rematchState,
       tournamentId,
       rematchInitiatorId,
     } = camelizeKeys(response);
-
-    // const firstEditorLang = _.find(languages, { slug: user1.editor_lang });
-    // const users = [{ ...user1, type: userTypes.firstPlayer }];
-
-    // if (user2) {
-    // const secondEditorLang = _.find(languages, { slug: user2.editor_lang });
-    // users.push({ ...user2, type: userTypes.secondPlayer });
-    // }
 
     const gameStatus = {
       status,
@@ -121,6 +115,7 @@ const initGameChannel = dispatch => {
       firstPlayer,
       secondPlayer,
       task,
+      langs,
       gameStatus,
       playbookStatusCode: PlaybookStatusCodes.active,
     });
@@ -139,7 +134,6 @@ export const sendEditorText = (editorText, langSlug = null) => (dispatch, getSta
   const userId = selectors.currentUserIdSelector(state);
   const currentLangSlug = langSlug || selectors.userLangSelector(userId)(state);
   dispatch(actions.updateEditorText({ userId, editorText, langSlug: currentLangSlug }));
-
   channel.push('editor:data', { editor_text: editorText, lang_slug: currentLangSlug });
 };
 
@@ -164,14 +158,13 @@ export const sendEditorLang = currentLangSlug => (dispatch, getState) => {
   const userId = selectors.currentUserIdSelector(state);
 
   dispatch(actions.updateEditorLang({ userId, currentLangSlug }));
-
-  // channel.push('editor:lang', { lang: currentLangSlug });
 };
 
 export const changeCurrentLangAndSetTemplate = langSlug => (dispatch, getState) => {
   const state = getState();
+  const langs = selectors.editorLangsSelector(state) || defaultLanguages;
   const currentText = selectors.currentPlayerTextByLangSelector(langSlug)(state);
-  const { solution_template: template } = _.find(languages, { slug: langSlug });
+  const { solutionTemplate: template } = _.find(langs, { slug: langSlug });
   const textToSet = currentText || template;
   dispatch(sendEditorText(textToSet, langSlug));
 };
@@ -188,11 +181,7 @@ export const activeGameEditorReady = () => dispatch => {
 
   channel.on('user:check_complete', responseData => {
     const {
-      status,
-      solutionStatus,
-      checkResult,
-      players,
-      userId,
+      status, solutionStatus, checkResult, players, userId,
     } = camelizeKeys(responseData);
     const newGameStatus = solutionStatus ? { status } : {};
 
@@ -213,6 +202,7 @@ export const activeGameEditorReady = () => dispatch => {
       status,
       startsAt,
       timeoutSeconds,
+      langs,
       players: [firstPlayer, secondPlayer],
       task,
     } = camelizeKeys(responseData);
@@ -223,6 +213,7 @@ export const activeGameEditorReady = () => dispatch => {
 
     dispatch(actions.updateGamePlayers({ players }));
     dispatch(actions.setGameTask({ task }));
+    dispatch(actions.setLangs({ langs }));
 
     dispatch(
       actions.updateEditorText({
@@ -338,9 +329,5 @@ export const checkGameResult = () => (dispatch, getState) => {
   channel.push('check_result', payload);
 };
 
-export const compressEditorHeight = userId => dispatch => (
-  dispatch(actions.compressEditorHeight({ userId }))
-);
-export const expandEditorHeight = userId => dispatch => (
-  dispatch(actions.expandEditorHeight({ userId }))
-);
+export const compressEditorHeight = userId => dispatch => dispatch(actions.compressEditorHeight({ userId }));
+export const expandEditorHeight = userId => dispatch => dispatch(actions.expandEditorHeight({ userId }));

@@ -1,7 +1,6 @@
 defmodule Codebattle.Languages do
   @moduledoc false
 
-  # require Logger
   alias Codebattle.Generators.SolutionTemplateGenerator
 
   def get_solution(lang, task) do
@@ -10,8 +9,10 @@ defmodule Codebattle.Languages do
     |> SolutionTemplateGenerator.get_solution(task)
   end
 
-  def update_solutions(list_meta, task) do
-    Enum.map(list_meta, fn el ->
+  def get_langs_with_solutions(task) do
+    meta()
+    |> Map.values()
+    |> Enum.map(fn el ->
       Map.replace!(el, :solution_template, SolutionTemplateGenerator.get_solution(el, task))
     end)
   end
@@ -351,17 +352,6 @@ defmodule Codebattle.Languages do
             hash_empty: "empty"
           }
         }
-      },
-      "perl" => %{
-        name: "perl",
-        slug: "perl",
-        version: "5.26.2",
-        base_image: :ubuntu,
-        check_dir: "check",
-        extension: "pl",
-        docker_image: "codebattle/perl:5.26.2",
-        solution_version: :empty,
-        solution_template: "sub solution {\n\n}\n1;"
       }
     }
   end
