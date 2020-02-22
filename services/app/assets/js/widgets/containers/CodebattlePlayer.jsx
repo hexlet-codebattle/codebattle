@@ -170,33 +170,31 @@ class CodebattlePlayer extends Component {
     const { nextRecordId } = this.state;
     const nextRecord = parse(records[nextRecordId]) || {};
 
+    let editorText;
+    let newEditorText;
     switch (nextRecord.type) {
-      case 'update_editor_data': {
-        const editorText = getEditorTextPlaybook(nextRecord);
-        const newEditorText = getText(editorText, nextRecord.diff);
+      case 'update_editor_data':
+        editorText = getEditorTextPlaybook(nextRecord);
+        newEditorText = getText(editorText, nextRecord.diff);
         updateEditorTextPlaybook({
           userId: nextRecord.userId,
           editorText: newEditorText,
           langSlug: nextRecord.diff.nextLang,
         });
         break;
-      }
-      case 'check_complete': {
+      case 'check_complete':
         updateExecutionOutput({
           ...nextRecord.checkResult,
           userId: nextRecord.userId,
         });
         break;
-      }
       case 'chat_message':
       case 'join_chat':
-      case 'leave_chat': {
+      case 'leave_chat':
         fetchChatData(nextRecord.chat);
         break;
-      }
-      default: {
+      default:
         break;
-      }
     }
 
     this.setState({ nextRecordId: nextRecordId + 1 });

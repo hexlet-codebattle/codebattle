@@ -29,34 +29,34 @@ export const getText = (text, { delta: d }) => {
 const collectFinalRecord = (acc, strRecord) => {
   const record = parse(strRecord);
   const { players } = acc;
+
+  let player;
+  let editorText;
+  let newPlayers;
   switch (record.type) {
-    case 'update_editor_data': {
-      const player = _.find(players, { id: record.userId });
-      const editorText = getText(player.editorText, record.diff);
-      const newPlayers = updatePlayers(players, {
+    case 'update_editor_data':
+      player = _.find(players, { id: record.userId });
+      editorText = getText(player.editorText, record.diff);
+      newPlayers = updatePlayers(players, {
         id: record.userId,
         editorText,
         editorLang: record.diff.nextLang,
       });
 
       return { ...acc, players: newPlayers };
-    }
-    case 'check_complete': {
-      const newPlayers = updatePlayers(players, {
+    case 'check_complete':
+      newPlayers = updatePlayers(players, {
         id: record.userId,
         checkResult: record.checkResult,
       });
 
       return { ...acc, players: newPlayers };
-    }
     case 'chat_message':
     case 'join_chat':
-    case 'leave_chat': {
+    case 'leave_chat':
       return { ...acc, chat: record.chat };
-    }
-    default: {
+    default:
       return acc;
-    }
   }
 };
 
