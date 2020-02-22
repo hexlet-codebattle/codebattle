@@ -25,31 +25,29 @@ defmodule Codebattle.GameProcess.Server do
     GenServer.call(server_name(game_id), {:transition, event, params}, 20_000)
   end
 
-  def playbook(game_id) do
+  def get_fsm(game_id) do
     case game_pid(game_id) do
       :undefined ->
         {:error, :game_terminated}
 
       _pid ->
-        playbook = GenServer.call(server_name(game_id), :playbook, 20_000)
-        {:ok, playbook}
-    end
-  end
-
-  def fsm(game_id) do
-    case game_pid(game_id) do
-      :undefined ->
-        {:error, :game_terminated}
-
-      _pid ->
-        fsm = GenServer.call(server_name(game_id), :fsm, 20_000)
+        fsm = GenServer.call(server_name(game_id), :get_fsm, 20_000)
         {:ok, fsm}
     end
   end
 
-  def game_pid(game_id) do
-    :gproc.where(game_key(game_id))
+  def get_playbook(game_id) do
+    case game_pid(game_id) do
+      :undefined ->
+        {:error, :game_terminated}
+
+      _pid ->
+        playbook = GenServer.call(server_name(game_id), :get_playbook, 20_000)
+        {:ok, playbook}
+    end
   end
+
+  def game_pid(game_id), do: :gproc.where(game_key(game_id))
 
   # SERVER
   def init(fsm) do
@@ -81,18 +79,18 @@ defmodule Codebattle.GameProcess.Server do
     {:noreply, new_state}
   end
 
-  def handle_call(:playbook, _from, %{playbook: playbook} = state) do
+  def handle_call(:get_playbook, _from, %{playbook: playbook} = state) do
     {:reply, playbook, state}
   end
 
-  def handle_call(:fsm, _from, %{fsm: fsm} = state) do
+  def handle_call(:get_fsm, _from, %{fsm: fsm} = state) do
     {:reply, fsm, state}
   end
 
   def handle_call({:transition, event, params}, _from, %{fsm: fsm, playbook: playbook} = state) do
     case Fsm.transition(fsm, event, [params]) do
       {{:error, reason}, _} ->
-        {:reply, {:error, reason, fsm}, state}
+        {:reply, {:error, reason}, state}
 
       new_fsm ->
         new_state = %{
@@ -105,11 +103,6 @@ defmodule Codebattle.GameProcess.Server do
   end
 
   # HELPERS
-  defp server_name(game_id) do
-    {:via, :gproc, game_key(game_id)}
-  end
-
-  defp game_key(game_id) do
-    {:n, :l, {:game, "#{game_id}"}}
-  end
+  defp server_name(game_id), do: {:via, :gproc, game_key(game_id)}
+  defp game_key(game_id), do: {:n, :l, {:game, "#{game_id}"}}
 end

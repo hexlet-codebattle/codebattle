@@ -15,6 +15,10 @@ const updatePlayersGameResult = (players, firstPlayer, secondPlayer) => (
     : { ...player, ...secondPlayer }))
 );
 
+export const { parse } = JSON;
+
+export const minify = JSON.stringify;
+
 export const getText = (text, { delta: d }) => {
   const textDelta = new Delta().insert(text);
   const delta = new Delta(d);
@@ -22,59 +26,60 @@ export const getText = (text, { delta: d }) => {
   return finalDelta.ops[0].insert;
 };
 
-const collectFinalRecord = (acc, record) => {
+const collectFinalRecord = (acc, strRecord) => {
+  const record = parse(strRecord);
   const { players } = acc;
+
+  let player;
+  let editorText;
+  let newPlayers;
   switch (record.type) {
-    case 'editor_text': {
-      const player = _.find(players, { id: record.userId });
-      const editorText = getText(player.editorText, record.diff);
-      const newPlayers = updatePlayers(players, {
+    case 'update_editor_data':
+      player = _.find(players, { id: record.userId });
+      editorText = getText(player.editorText, record.diff);
+      newPlayers = updatePlayers(players, {
         id: record.userId,
         editorText,
-        editorLang: record.editorLang,
+        editorLang: record.diff.nextLang,
       });
 
       return { ...acc, players: newPlayers };
-    }
-    case 'result_check': {
-      const newPlayers = updatePlayers(players, {
-        id: record.id,
-        result: record.result,
-        output: record.output,
+    case 'check_complete':
+      newPlayers = updatePlayers(players, {
+        id: record.userId,
+        checkResult: record.checkResult,
       });
 
       return { ...acc, players: newPlayers };
-    }
     case 'chat_message':
     case 'join_chat':
-    case 'leave_chat': {
+    case 'leave_chat':
       return { ...acc, chat: record.chat };
-    }
-    default: {
+    default:
       return acc;
-    }
   }
 };
 
 const createFinalRecord = (index, record, params) => {
   if (index % snapshotStep === 0) {
-    return { ...record, ...params };
+    return minify({ ...record, ...params });
   }
 
-  return record;
+  return minify(record);
 };
 
 const reduceOriginalRecords = (acc, record, index) => {
   const { players: playersState, records, chat: chatState } = acc;
   const { messages, users } = chatState;
-  const { editorText, editorLang } = _.find(playersState, { id: record.id });
+  const { editorText } = _.find(playersState, { id: record.id });
 
   const { type } = record;
 
-  if (type === 'editor_text') {
+  if (type === 'update_editor_data') {
     const { diff } = record;
 
     const newEditorText = getText(editorText, diff);
+    const editorLang = diff.nextLang;
     const newPlayers = updatePlayers(
       playersState,
       { id: record.id, editorText: newEditorText, editorLang },
@@ -82,7 +87,6 @@ const reduceOriginalRecords = (acc, record, index) => {
     const data = {
       type,
       userId: record.id,
-      editorLang,
       diff: record.diff,
     };
     const newRecord = createFinalRecord(index, data, {
@@ -93,25 +97,14 @@ const reduceOriginalRecords = (acc, record, index) => {
     return { ...acc, players: newPlayers, records: [...records, newRecord] };
   }
 
-  if (type === 'editor_lang') {
-    const lang = record.diff.nextLang;
-    const newPlayers = updatePlayers(playersState, { id: record.id, editorLang: lang });
-    const newRecord = createFinalRecord(index, record, {
-      players: playersState,
-      chat: chatState,
-    });
-    return { ...acc, players: newPlayers, records: [...records, newRecord] };
-  }
+  if (type === 'check_complete') {
+    const { checkResult } = record;
 
-  if (type === 'result_check') {
-    const { result, output } = record;
-
-    const newPlayers = updatePlayers(playersState, { id: record.id, result, output });
+    const newPlayers = updatePlayers(playersState, { id: record.id, checkResult });
     const data = {
       type,
       userId: record.id,
-      result,
-      output,
+      checkResult,
     };
     const newRecord = createFinalRecord(index, data, {
       players: newPlayers,
@@ -157,7 +150,7 @@ const reduceOriginalRecords = (acc, record, index) => {
   }
 
   if (type === 'leave_chat') {
-    const newUsers = users.filter(user => user.id === record.id);
+    const newUsers = users.filter(user => user.id !== record.id);
     const newChatState = { users: newUsers, messages };
     const data = {
       type,
@@ -183,7 +176,7 @@ const reduceOriginalRecords = (acc, record, index) => {
     return { ...acc, players: newPlayers, records: [...records, newRecord] };
   }
 
-  if (type === 'check_complete') {
+  if (type === 'game_over') {
     const newPlayers = updatePlayersGameResult(
       playersState,
       { id: record.id, gameResult: 'won' },
@@ -208,8 +201,7 @@ const reduceOriginalRecords = (acc, record, index) => {
 
 export const getFinalState = ({ recordId, records, gameInitialState }) => {
   const closestFullRecordId = Math.floor(recordId / snapshotStep) * snapshotStep;
-  const closestFullRecord = records[closestFullRecordId];
-
+  const closestFullRecord = parse(records[closestFullRecordId]);
   const finalRecord = records
     .slice(closestFullRecordId + 1, recordId)
     .reduce(collectFinalRecord, closestFullRecord);
@@ -235,7 +227,6 @@ export const resolveDiffs = playbook => {
   const finalPlaybook = {
     ...playbook, initRecords: [initPlayerOne, initPlayerTwo], records: newRecords, chat, players,
   };
-
   return finalPlaybook;
 };
 

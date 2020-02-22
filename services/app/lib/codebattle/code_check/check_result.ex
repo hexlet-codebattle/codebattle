@@ -1,7 +1,14 @@
 defmodule Codebattle.CodeCheck.CheckResult do
   @moduledoc false
 
-  @enforce_keys [:status, :result, :output]
+  # statuses: :initial, :ok, :failure, :error
+  @derive {Poison.Encoder, only: [:status, :output, :result, :asserts_count, :success_count]}
 
-  defstruct [:status, :result, :output, :failure_tests_count, :success_tests_count]
+  defstruct success_count: 0,
+            asserts_count: 0,
+            status: :initial,
+            result: "{}",
+            output: ""
+
+  def new, do: %__MODULE__{}
 end

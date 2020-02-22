@@ -19,174 +19,6 @@ defmodule CodebattleWeb.GameChannelTest do
     {:ok, %{user1: user1, user2: user2, socket1: socket1, socket2: socket2, game: game}}
   end
 
-  test "rematch:send_offer with real player", %{
-    user1: user1,
-    user2: user2,
-    socket1: socket1,
-    socket2: socket2,
-    game: game
-  } do
-    # setup
-    state = :game_over
-
-    data = %{
-      task: game.task,
-      players: [Player.build(user1), Player.build(user2)]
-    }
-
-    game = setup_game(state, data)
-    game_topic = "game:" <> to_string(game.id)
-
-    {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
-    {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
-    Mix.Shell.Process.flush()
-
-    push(socket1, "rematch:send_offer")
-
-    :timer.sleep(100)
-
-    payload = %{
-      rematchState: :in_approval,
-      rematchInitiatorId: socket1.assigns.user_id
-    }
-
-    assert_receive %Phoenix.Socket.Broadcast{
-      topic: ^game_topic,
-      event: "rematch:update_status",
-      payload: ^payload
-    }
-
-    {:ok, fsm} = Server.fsm(game.id)
-
-    assert fsm.state == :rematch_in_approval
-  end
-
-  test "rematch:reject_offer", %{
-    user1: user1,
-    user2: user2,
-    socket1: socket1,
-    socket2: socket2,
-    game: game
-  } do
-    # setup
-    state = :rematch_in_approval
-
-    data = %{
-      task: game.task,
-      players: [Player.build(user1), Player.build(user2)]
-    }
-
-    game = setup_game(state, data)
-    game_topic = "game:" <> to_string(game.id)
-
-    {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
-    {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
-    Mix.Shell.Process.flush()
-
-    push(socket1, "rematch:reject_offer")
-
-    :timer.sleep(100)
-
-    payload = %{
-      rematchState: :rejected
-    }
-
-    assert_receive %Phoenix.Socket.Broadcast{
-      topic: ^game_topic,
-      event: "rematch:update_status",
-      payload: ^payload
-    }
-
-    {:ok, fsm} = Server.fsm(game.id)
-
-    assert fsm.state == :rematch_rejected
-  end
-
-  test "rematch:accept_offer", %{
-    user1: user1,
-    user2: user2,
-    socket1: socket1,
-    socket2: socket2,
-    game: game
-  } do
-    # setup
-    state = :game_over
-
-    data = %{
-      task: game.task,
-      players: [Player.build(user1), Player.build(user2)]
-    }
-
-    game = setup_game(state, data)
-    game_topic = "game:" <> to_string(game.id)
-
-    {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
-    {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
-    Mix.Shell.Process.flush()
-
-    push(socket1, "rematch:send_offer")
-    push(socket2, "rematch:accept_offer")
-
-    :timer.sleep(100)
-
-    payload = %{
-      game_id: game.id + 1
-    }
-
-    assert_receive %Phoenix.Socket.Broadcast{
-      topic: ^game_topic,
-      event: "rematch:redirect_to_new_game",
-      payload: ^payload
-    }
-
-    {:ok, fsm} = Server.fsm(game.id + 1)
-
-    assert fsm.state == :playing
-  end
-
-  test "rematch when players make rematch at same time", %{
-    user1: user1,
-    user2: user2,
-    socket1: socket1,
-    socket2: socket2,
-    game: game
-  } do
-    # setup
-    state = :game_over
-
-    data = %{
-      task: game.task,
-      players: [Player.build(user1), Player.build(user2)]
-    }
-
-    game = setup_game(state, data)
-    game_topic = "game:" <> to_string(game.id)
-
-    {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
-    {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
-    Mix.Shell.Process.flush()
-
-    push(socket1, "rematch:send_offer")
-    :timer.sleep(100)
-    push(socket2, "rematch:send_offer")
-
-    :timer.sleep(100)
-
-    payload = %{
-      game_id: game.id + 1
-    }
-
-    assert_receive %Phoenix.Socket.Broadcast{
-      topic: ^game_topic,
-      event: "rematch:redirect_to_new_game",
-      payload: ^payload
-    }
-
-    {:ok, fsm} = Server.fsm(game.id + 1)
-
-    assert fsm.state == :playing
-  end
-
   test "sends game info when user join", %{user1: user1, socket1: socket1} do
     # setup
     state = :waiting_opponent
@@ -196,56 +28,7 @@ defmodule CodebattleWeb.GameChannelTest do
 
     {:ok, response, _socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
 
-    assert Poison.encode!(response) ==
-             Poison.encode!(%{
-               "level" => game.task.level,
-               "players" => [
-                 Player.build(user1),
-                 Player.build(%User{})
-               ],
-               "starts_at" => TimeHelper.utc_now(),
-               "status" => "waiting_opponent",
-               "task" => game.task,
-               "tournament_id" => nil,
-               "type" => "public",
-               "timeout_seconds" => 0,
-               "rematch_state" => "none",
-               "rematch_initiator_id" => nil,
-               "joins_at" => nil
-             })
-  end
-
-  test "broadcasts user:joined with state after user join", %{
-    user1: user1,
-    user2: user2,
-    socket2: socket2
-  } do
-    # setup
-    state = :playing
-    data = %{players: [Player.build(user1), Player.build(user2)]}
-    game = setup_game(state, data)
-    game_topic = "game:" <> to_string(game.id)
-    {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
-
-    assert_receive %Phoenix.Socket.Broadcast{
-      topic: ^game_topic,
-      event: "user:joined",
-      payload: response
-    }
-
-    assert Poison.encode!(response) ==
-             Poison.encode!(%{
-               "level" => game.task.level,
-               "players" => [
-                 Player.build(user1),
-                 Player.build(user2)
-               ],
-               "starts_at" => TimeHelper.utc_now(),
-               "status" => "playing",
-               "task" => game.task,
-               "timeout_seconds" => 0,
-               "joins_at" => nil
-             })
+    assert response.level == game.task.level
   end
 
   test "broadcasts editor:data, after editor:data", %{
@@ -266,8 +49,8 @@ defmodule CodebattleWeb.GameChannelTest do
     {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
     Mix.Shell.Process.flush()
 
-    push(socket1, "editor:data", %{editor_text: editor_text1, lang: "js"})
-    push(socket2, "editor:data", %{editor_text: editor_text2, lang: "js"})
+    push(socket1, "editor:data", %{editor_text: editor_text1, lang_slug: "js"})
+    push(socket2, "editor:data", %{editor_text: editor_text2, lang_slug: "js"})
 
     payload1 = %{user_id: user1.id, editor_text: editor_text1, lang_slug: "js"}
     payload2 = %{user_id: user2.id, editor_text: editor_text2, lang_slug: "js"}
@@ -303,8 +86,8 @@ defmodule CodebattleWeb.GameChannelTest do
     {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
     Mix.Shell.Process.flush()
 
-    push(socket1, "editor:data", %{lang: editor_lang1, editor_text: 'text1'})
-    push(socket2, "editor:data", %{lang: editor_lang2, editor_text: 'text2'})
+    push(socket1, "editor:data", %{lang_slug: editor_lang1, editor_text: 'text1'})
+    push(socket2, "editor:data", %{lang_slug: editor_lang2, editor_text: 'text2'})
 
     payload1 = %{
       user_id: user1.id,
@@ -357,22 +140,22 @@ defmodule CodebattleWeb.GameChannelTest do
 
     message = "#{user1.name} gave up!"
     :timer.sleep(100)
-    {:ok, fsm} = Server.fsm(game.id)
+    {:ok, fsm} = Server.get_fsm(game.id)
     players = FsmHelpers.get_players(fsm)
 
     payload = %{
       players: players,
-      status: "game_over",
+      status: :game_over,
       msg: message
     }
 
     assert_receive %Phoenix.Socket.Broadcast{
       topic: ^game_topic,
-      event: "give_up",
+      event: "user:give_up",
       payload: ^payload
     }
 
-    {:ok, fsm} = Server.fsm(game.id)
+    {:ok, fsm} = Server.get_fsm(game.id)
 
     assert fsm.state == :game_over
     assert FsmHelpers.gave_up?(fsm, user1.id) == true

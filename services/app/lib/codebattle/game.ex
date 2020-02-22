@@ -10,13 +10,15 @@ defmodule Codebattle.Game do
     %{"elementary" => 0, "easy" => 1, "medium" => 2, "hard" => 3}
   end
 
-  @derive {Poison.Encoder, only: [:id, :users, :state]}
+  @derive {Poison.Encoder, only: [:id, :users, :state, :starts_at, :finishs_at]}
+  @types ~w(public bot tournament private)
 
   schema "games" do
     field(:state, :string)
     field(:level, :string)
-    field(:duration_in_seconds, :integer)
     field(:type, :string)
+    field(:starts_at, :naive_datetime)
+    field(:finishs_at, :naive_datetime)
 
     timestamps()
 
@@ -28,7 +30,8 @@ defmodule Codebattle.Game do
   @doc false
   def changeset(%Game{} = game, attrs) do
     game
-    |> cast(attrs, [:state, :task_id, :level, :duration_in_seconds, :type])
-    |> validate_required([:state])
+    |> cast(attrs, [:state, :task_id, :level, :type, :starts_at, :finishs_at])
+    |> validate_required([:state, :level, :type])
+    |> validate_inclusion(:type, @types)
   end
 end

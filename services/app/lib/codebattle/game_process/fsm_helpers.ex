@@ -1,141 +1,59 @@
 defmodule Codebattle.GameProcess.FsmHelpers do
   @moduledoc false
 
-  alias Codebattle.GameProcess.Player
+  def get_state(fsm), do: fsm.state
+  def get_module(fsm), do: fsm.data.module
+  def get_game_id(fsm), do: fsm.data.game_id
+  def get_tournament_id(fsm), do: fsm.data.tournament_id
+  def get_inserted_at(fsm), do: fsm.data.inserted_at
+  def get_starts_at(fsm), do: fsm.data.starts_at
+  def get_timeout_seconds(fsm), do: fsm.data.timeout_seconds
+  def get_type(fsm), do: fsm.data.type
+  def get_level(fsm), do: fsm.data.level
+  def get_rematch_state(fsm), do: fsm.data.rematch_state
+  def get_rematch_initiator_id(fsm), do: fsm.data.rematch_initiator_id
+  def get_players(fsm), do: fsm.data.players
+  def get_task(fsm), do: fsm.data.task
+  def get_langs(fsm), do: fsm.data.langs
+  def get_first_player(fsm), do: fsm |> get_players |> Enum.at(0)
+  def get_second_player(fsm), do: fsm |> get_players |> Enum.at(1)
+  def bot_game?(fsm), do: fsm |> get_players |> Enum.any?(fn p -> p.is_bot end)
 
-  # HELPERS
   def get_winner(fsm) do
-    player =
-      fsm.data.players
-      |> Enum.find(fn player -> player.game_result == :won end)
-
-    player || %Player{}
+    fsm
+    |> get_players
+    |> Enum.find(fn player -> player.game_result == :won end)
   end
 
   def get_player(fsm, id) do
-    player =
-      get_players(fsm)
-      |> Enum.find(fn player -> player.id == id end)
-
-    player || %Player{}
+    fsm
+    |> get_players
+    |> Enum.find(fn player -> player.id == id end)
   end
 
-  def get_players(fsm) do
-    fsm.data.players
-  end
-
-  def get_task(fsm) do
-    fsm.data.task
-  end
-
-  # def get_users(fsm) do
-  #   fsm.data.players
-  #   |> Enum.filter(fn player -> player.id end)
-  #   |> Enum.map(fn player -> player.user end)
-  # end
-
-  def get_first_player(fsm) do
-    get_players(fsm) |> Enum.at(0)
-  end
-
-  def get_second_player(fsm) do
-    get_players(fsm) |> Enum.at(1)
+  def is_player?(fsm, id) do
+    fsm
+    |> get_players
+    |> Enum.find(fn player -> player.id == id end)
+    |> Kernel.!()
+    |> Kernel.!()
   end
 
   def get_opponent(fsm, player_id) do
-    player =
-      get_players(fsm)
-      |> Enum.find(fn player -> player.id != player_id end)
-
-    player || %Player{}
+    fsm
+    |> get_players
+    |> Enum.find(fn player -> player.id != player_id end)
   end
 
-  def get_game_id(fsm) do
-    fsm.data.game_id
-  end
+  def winner?(fsm, player_id), do: is_player_result?(fsm, player_id, :won)
+  def lost?(fsm, player_id), do: is_player_result?(fsm, player_id, :lost)
+  def gave_up?(fsm, player_id), do: is_player_result?(fsm, player_id, :gave_up)
 
-  def get_tournament_id(fsm) do
-    fsm.data.tournament_id
-  end
-
-  def get_starts_at(fsm) do
-    fsm.data.starts_at
-  end
-
-  def get_joins_at(fsm) do
-    fsm.data.joins_at
-  end
-
-  def get_timeout_seconds(fsm) do
-    fsm.data.timeout_seconds
-  end
-
-  def get_type(fsm) do
-    fsm.data.type
-  end
-
-  def get_level(fsm) do
-    fsm.data.level
-  end
-
-  def get_rematch_state(fsm) do
-    fsm.data.rematch_state
-  end
-
-  def get_rematch_initiator_id(fsm) do
-    fsm.data.rematch_initiator_id
-  end
-
-  # TODO: implement is_true function instead Kernel.! * 2
-  def winner?(fsm, player_id) do
-    fsm.data.players
-    |> Enum.find_value(fn player ->
-      player.id == player_id && player.game_result == :won
-    end)
+  defp is_player_result?(fsm, player_id, result) do
+    fsm
+    |> get_players
+    |> Enum.find_value(fn p -> p.id == player_id && p.game_result == result end)
     |> Kernel.!()
     |> Kernel.!()
-  end
-
-  def lost?(fsm, player_id) do
-    fsm.data.players
-    |> Enum.find_value(fn player ->
-      player.id == player_id && player.game_result == :lost
-    end)
-    |> Kernel.!()
-    |> Kernel.!()
-  end
-
-  def gave_up?(fsm, player_id) do
-    fsm.data.players
-    |> Enum.find_value(fn player ->
-      player.id == player_id && player.game_result == :gave_up
-    end)
-    |> Kernel.!()
-    |> Kernel.!()
-  end
-
-  def player?(fsm, player_id) do
-    fsm.data.players
-    |> Enum.find_value(fn player -> player.id == player_id end)
-    |> Kernel.!()
-    |> Kernel.!()
-  end
-
-  def bot_game?(fsm) do
-    fsm.data.is_bot_game
-  end
-
-  def lobby_format(fsm) do
-    %{
-      game_info: %{
-        state: fsm.state,
-        level: fsm.data.level,
-        starts_at: fsm.data.starts_at,
-        type: fsm.data.type,
-        timeout_seconds: fsm.data.timeout_seconds
-      },
-      players: fsm.data.players,
-      game_id: fsm.data.game_id
-    }
   end
 end

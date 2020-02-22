@@ -8,7 +8,6 @@ defmodule Codebattle.CodeCheck.Checker do
   alias Codebattle.CodeCheck.CheckerStatus
   alias Codebattle.CodeCheck.CheckResult
 
-  @advanced_checker_stop_list ["perl"]
   @langs_needs_compiling ["golang", "cpp"]
 
   def call(task, editor_text, editor_lang) do
@@ -73,12 +72,7 @@ defmodule Codebattle.CodeCheck.Checker do
           "solution.#{lang.extension}"
       end
 
-    if lang.slug in @advanced_checker_stop_list do
-      asserts = task.asserts <> "{\"check\": #{hash_sum}}"
-      File.write!(Path.join(dir_path, "data.jsons"), asserts)
-    else
-      CheckerGenerator.create(lang, task, dir_path, hash_sum)
-    end
+    CheckerGenerator.create(lang, task, dir_path, hash_sum)
 
     File.write!(Path.join(dir_path, file_name), editor_text)
     {dir_path, check_code}

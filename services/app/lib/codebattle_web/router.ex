@@ -1,5 +1,6 @@
 defmodule CodebattleWeb.Router do
   use CodebattleWeb, :router
+  use Plug.ErrorHandler
 
   pipeline :browser do
     plug(:accepts, ["html"])
@@ -59,8 +60,21 @@ defmodule CodebattleWeb.Router do
     end
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", Codebattle do
-  #   pipe_through :api
-  # end
+  def handle_errors(conn, %{reason: %Ecto.NoResultsError{}}) do
+    conn
+    |> put_status(:not_found)
+    |> json(%{error: "NOT_FOUND"})
+    |> halt
+  end
+
+  def handle_errors(conn, %{reason: %Phoenix.Router.NoRouteError{}}) do
+    conn
+    |> put_status(:not_found)
+    |> json(%{error: "NOT_FOUND"})
+    |> halt
+  end
+
+  def handle_errors(conn, %{kind: _kind, reason: _reason}) do
+    send_resp(conn, conn.status, "SOMETHING_WENT_WRONG")
+  end
 end
