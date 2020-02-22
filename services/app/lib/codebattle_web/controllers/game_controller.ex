@@ -38,7 +38,7 @@ defmodule CodebattleWeb.GameController do
     case Play.get_fsm(id) do
       {:ok, fsm} ->
         task = FsmHelpers.get_task(fsm)
-        conn = put_gon(conn, game_id: id )
+        conn = put_gon(conn, game_id: id)
         is_participant = ActiveGames.participant?(id, conn.assigns.current_user.id)
 
         case {fsm.state, is_participant} do

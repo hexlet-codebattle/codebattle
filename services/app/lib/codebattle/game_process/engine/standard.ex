@@ -83,6 +83,7 @@ defmodule Codebattle.GameProcess.Engine.Standard do
       ActiveGames.update_game(fsm)
       update_game!(game_id, %{state: "playing", task_id: task.id})
       Notifications.broadcast_join_game(fsm)
+
       Task.start(fn ->
         Notifier.call(:game_opponent_join, %{
           first_player: FsmHelpers.get_first_player(fsm),

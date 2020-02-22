@@ -80,7 +80,7 @@ const textPlaybook = createReducer(initialState.textPlaybook, {
   },
 });
 
-const langs = createReducer(initialState.langs, {
+const langReducer = createReducer(initialState.langs, {
   [actions.setLangs](state, { payload: { langs } }) {
     state.langs = langs;
   },
@@ -90,5 +90,5 @@ export default combineReducers({
   meta,
   text,
   textPlaybook,
-  langs,
+  langReducer,
 });
