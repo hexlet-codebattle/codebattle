@@ -15,6 +15,10 @@ const updatePlayersGameResult = (players, firstPlayer, secondPlayer) => (
     : { ...player, ...secondPlayer }))
 );
 
+export const { parse } = JSON;
+
+export const minify = JSON.stringify;
+
 export const getText = (text, { delta: d }) => {
   const textDelta = new Delta().insert(text);
   const delta = new Delta(d);
@@ -22,45 +26,46 @@ export const getText = (text, { delta: d }) => {
   return finalDelta.ops[0].insert;
 };
 
-const collectFinalRecord = (acc, record) => {
+const collectFinalRecord = (acc, strRecord) => {
+  const record = parse(strRecord);
   const { players } = acc;
+
+  let player;
+  let editorText;
+  let newPlayers;
   switch (record.type) {
-    case 'update_editor_data': {
-      const player = _.find(players, { id: record.userId });
-      const editorText = getText(player.editorText, record.diff);
-      const newPlayers = updatePlayers(players, {
+    case 'update_editor_data':
+      player = _.find(players, { id: record.userId });
+      editorText = getText(player.editorText, record.diff);
+      newPlayers = updatePlayers(players, {
         id: record.userId,
         editorText,
         editorLang: record.diff.nextLang,
       });
 
       return { ...acc, players: newPlayers };
-    }
-    case 'check_complete': {
-      const newPlayers = updatePlayers(players, {
+    case 'check_complete':
+      newPlayers = updatePlayers(players, {
         id: record.userId,
         checkResult: record.checkResult,
       });
 
       return { ...acc, players: newPlayers };
-    }
     case 'chat_message':
     case 'join_chat':
-    case 'leave_chat': {
+    case 'leave_chat':
       return { ...acc, chat: record.chat };
-    }
-    default: {
+    default:
       return acc;
-    }
   }
 };
 
 const createFinalRecord = (index, record, params) => {
   if (index % snapshotStep === 0) {
-    return { ...record, ...params };
+    return minify({ ...record, ...params });
   }
 
-  return record;
+  return minify(record);
 };
 
 const reduceOriginalRecords = (acc, record, index) => {
@@ -145,7 +150,7 @@ const reduceOriginalRecords = (acc, record, index) => {
   }
 
   if (type === 'leave_chat') {
-    const newUsers = users.filter(user => user.id === record.id);
+    const newUsers = users.filter(user => user.id !== record.id);
     const newChatState = { users: newUsers, messages };
     const data = {
       type,
@@ -196,7 +201,7 @@ const reduceOriginalRecords = (acc, record, index) => {
 
 export const getFinalState = ({ recordId, records, gameInitialState }) => {
   const closestFullRecordId = Math.floor(recordId / snapshotStep) * snapshotStep;
-  const closestFullRecord = records[closestFullRecordId];
+  const closestFullRecord = parse(records[closestFullRecordId]);
   const finalRecord = records
     .slice(closestFullRecordId + 1, recordId)
     .reduce(collectFinalRecord, closestFullRecord);

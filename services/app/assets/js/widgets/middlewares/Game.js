@@ -269,7 +269,8 @@ export const activeGameEditorReady = () => dispatch => {
   });
 
   channel.on('rematch:update_status', payload => {
-    dispatch(actions.updateGameStatus(payload));
+    const data = camelizeKeys(payload);
+    dispatch(actions.updateGameStatus(data));
   });
 
   channel.on('rematch:redirect_to_new_game', ({ game_id: newGameId }) => {

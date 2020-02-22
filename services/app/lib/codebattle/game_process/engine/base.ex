@@ -72,8 +72,13 @@ defmodule Codebattle.GameProcess.Engine.Base do
       def handle_give_up(game_id, loser_id, fsm) do
         loser = FsmHelpers.get_player(fsm, loser_id)
         winner = FsmHelpers.get_opponent(fsm, loser.id)
+        task = FsmHelpers.get_task(fsm)
 
         store_game_result!(fsm, {winner, "won"}, {loser, "gave_up"})
+
+        {:ok, playbook} = Server.get_playbook(game_id)
+        store_playbook(playbook, game_id, task.id)
+
         ActiveGames.terminate_game(game_id)
 
         Notifications.notify_tournament(:game_over, fsm, %{

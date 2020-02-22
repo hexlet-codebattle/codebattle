@@ -42,7 +42,13 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
       ]
     }
 
-    insert(:playbook, %{data: playbook_data, task: task, winner_id: 2, winner_lang: "ruby"})
+    insert(:playbook, %{
+      data: playbook_data,
+      task: task,
+      winner_id: 2,
+      winner_lang: "ruby",
+      is_complete_solution: true
+    })
 
     socket = socket(UserSocket, "user_id", %{user_id: user.id, current_user: user})
 

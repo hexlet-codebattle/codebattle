@@ -77,7 +77,7 @@ levels = ["elementary", "easy", "medium", "hard"]
       ]
     }
 
-    Repo.insert!(%Codebattle.Bot.Playbook{data: playbook_data, task: task, winner_lang: "ruby", winner_id: 2})
+    Repo.insert!(%Codebattle.Bot.Playbook{data: playbook_data, task: task, winner_lang: "ruby", winner_id: 2, is_complete_solution: true})
 
     IO.puts("Upsert #{task_name}")
   end
