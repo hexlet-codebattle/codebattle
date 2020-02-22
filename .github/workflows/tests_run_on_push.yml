@@ -109,7 +109,6 @@ jobs:
           docker pull codebattle/php:7.3.0
           docker pull codebattle/clojure:1.10.0
           docker pull codebattle/haskell:8.4.3
-          docker pull codebattle/perl:5.26.2
 
       - name: Run code checkers tests
         run: make test-code-checkers

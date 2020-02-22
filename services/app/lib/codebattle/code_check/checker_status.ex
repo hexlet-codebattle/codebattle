@@ -105,15 +105,6 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
     end
   end
 
-  defp get_error_status(
-         json_result,
-         container_output,
-         %{slug: slug}
-       )
-       when slug in ["perl"] do
-    %CheckResult{status: :error, result: json_result, output: container_output}
-  end
-
   defp get_error_status(json_result, container_output, _meta) do
     case Regex.scan(~r/{"status":.*"error".+}/, container_output) do
       [] ->
