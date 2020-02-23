@@ -67,6 +67,7 @@ class RightEditorToolbar extends Component {
       players,
       compressEditor,
       expandEditor,
+      languages,
     } = this.props;
 
     if (rightEditorLangSlug === null) {
@@ -87,7 +88,7 @@ class RightEditorToolbar extends Component {
         <div className="ml-auto btn-group" role="group" aria-label="Editor settings">
           {this.renderEditorHeightButtons(compressEditor, expandEditor, rightUserId)}
           <LanguagePicker
-            languages
+            languages={languages}
             currentLangSlug={rightEditorLangSlug}
             onChange={_.noop}
             disabled
