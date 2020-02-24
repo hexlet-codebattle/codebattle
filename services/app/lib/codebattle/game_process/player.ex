@@ -71,7 +71,7 @@ defmodule Codebattle.GameProcess.Player do
   end
 
   def build(%Tournament.Types.Player{} = player, params) do
-    new_player = %__MODULE__{
+    init_player = %__MODULE__{
       id: player.id,
       public_id: player.public_id,
       is_bot: player.is_bot,
@@ -82,7 +82,13 @@ defmodule Codebattle.GameProcess.Player do
       lang: player.lang || "js"
     }
 
-    Map.merge(new_player, params)
+    player =
+      case params[:task] do
+        nil -> init_player
+        task -> setup_editor_params(init_player, %{task: task})
+      end
+
+    Map.merge(player, params)
   end
 
   def build(user, params) do

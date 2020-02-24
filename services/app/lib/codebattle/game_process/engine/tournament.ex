@@ -1,6 +1,8 @@
 defmodule Codebattle.GameProcess.Engine.Tournament do
   alias Codebattle.Bot.PlaybookAsyncRunner
 
+  alias Codebattle.Languages
+
   alias Codebattle.GameProcess.{
     GlobalSupervisor,
     Engine,
@@ -27,7 +29,7 @@ defmodule Codebattle.GameProcess.Engine.Tournament do
         task_id: task.id
       })
 
-    new_players = Enum.map(players, &Player.build/1)
+    new_players = Enum.map(players, &Player.build(&1, %{task: task}))
 
     fsm =
       build_fsm(%{
@@ -39,6 +41,7 @@ defmodule Codebattle.GameProcess.Engine.Tournament do
         type: "tournament",
         inserted_at: game.inserted_at,
         task: task,
+        langs: Languages.get_langs_with_solutions(task),
         tournament_id: params.tournament.id,
         timeout_seconds: timeout_seconds,
         starts_at: TimeHelper.utc_now()
