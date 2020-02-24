@@ -59,7 +59,9 @@ config :scrivener_html,
 
 config :codebattle, CodebattleWeb.Endpoint, live_view: [signing_salt: "asdfasdf"]
 
-config :codebattle, Codebattle.Bot.PlaybookPlayerRunner, timeout: 2_000
+config :codebattle, Codebattle.Bot.PlaybookPlayerRunner,
+  timeout: 2_000,
+  max_minutes_timeout: 5
 
 config :codebattle, Codebattle.DockerLangsPuller, timeout: 5_000 * 60
 

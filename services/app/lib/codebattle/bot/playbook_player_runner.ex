@@ -7,6 +7,9 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
   alias Codebattle.Bot.{Playbook, ChatClientRunner}
 
   @timeout Application.get_env(:codebattle, Codebattle.Bot.PlaybookPlayerRunner)[:timeout]
+  @max_minutes_timeout Application.get_env(:codebattle, Codebattle.Bot.PlaybookPlayerRunner)[
+                         :max_minutes_timeout
+                       ]
 
   def call(params) do
     :timer.sleep(@timeout)
@@ -111,8 +114,8 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
 
   defp activate_random_long_sleep(_) do
     unless :rand.uniform(16) > 12 do
-      minutes = :rand.uniform(5)
-      :timer.sleep(minutes * 60 * 1000)
+      minutes = Kernel.round(@max_minutes_timeout * :rand.uniform())
+      :timer.sleep(minutes * 60 * 1_000)
     end
   end
 end
