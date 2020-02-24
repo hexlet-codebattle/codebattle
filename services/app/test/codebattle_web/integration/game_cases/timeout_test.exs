@@ -42,11 +42,11 @@ defmodule Codebattle.GameCases.TimeoutTest do
     game_id = game_id_from_conn(conn)
 
     game_topic = "game:" <> to_string(game_id)
-    {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
+    {:ok, _response, _socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
 
     # Second player join game
     post(conn2, game_path(conn2, :join, game_id))
-    {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
+    {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
     :timer.sleep(70)
 
     TimeoutServer.restart(game_id, 1)

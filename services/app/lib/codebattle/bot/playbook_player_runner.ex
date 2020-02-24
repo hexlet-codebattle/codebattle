@@ -51,7 +51,7 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
       # TODO: maybe optimize serialization/deserialization process
       # delta = diff_map |> Map.get("delta", nil)
       :timer.sleep(Kernel.trunc(timer_value))
-      activate_random_sleap(channel_pid)
+      activate_random_long_sleep(channel_pid)
 
       perform_action(action, editor_state, channel_pid)
     end)

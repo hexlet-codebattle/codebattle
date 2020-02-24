@@ -53,17 +53,16 @@ defmodule CodebattleWeb.Api.V1.UserControllerTest do
   end
 
   test "show rating list sorted by inserted at", %{conn: conn} do
-    user1 =
-      insert(
-        :user,
-        %{
-          name: "aaa",
-          email: "test1@test.test",
-          github_id: 1,
-          rating: 2400,
-          inserted_at: ~N[2000-01-01 23:00:07]
-        }
-      )
+    insert(
+      :user,
+      %{
+        name: "aaa",
+        email: "test1@test.test",
+        github_id: 1,
+        rating: 2400,
+        inserted_at: ~N[2000-01-01 23:00:07]
+      }
+    )
 
     conn =
       conn
