@@ -211,9 +211,12 @@ export const getFinalState = ({ recordId, records, gameInitialState }) => {
 };
 
 export const resolveDiffs = playbook => {
-  const [initPlayerOne, initPlayerTwo, ...restRecords] = playbook.records;
+  const [initRecords, restRecords] = _.partition(
+    playbook.records,
+    record => record.type === 'init',
+  );
   const initGameState = {
-    players: [initPlayerOne, initPlayerTwo],
+    players: initRecords,
     records: [],
     chat: {
       messages: [],
@@ -221,11 +224,11 @@ export const resolveDiffs = playbook => {
     },
   };
 
-  const { records: newRecords, chat, players } = restRecords
+  const finalGameState = restRecords
     .reduce(reduceOriginalRecords, initGameState);
 
   const finalPlaybook = {
-    ...playbook, initRecords: [initPlayerOne, initPlayerTwo], records: newRecords, chat, players,
+    ...playbook, initRecords, ...finalGameState,
   };
   return finalPlaybook;
 };
