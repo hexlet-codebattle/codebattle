@@ -51,6 +51,7 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
       # TODO: maybe optimize serialization/deserialization process
       # delta = diff_map |> Map.get("delta", nil)
       :timer.sleep(Kernel.trunc(timer_value))
+      activate_random_sleap(channel_pid)
 
       perform_action(action, editor_state, channel_pid)
     end)
@@ -106,5 +107,12 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
       "lang_slug" => lang,
       "editor_text" => document.ops |> hd |> Map.get(:insert)
     })
+  end
+
+  defp activate_random_long_sleep(_) do
+    unless :rand.uniform(16) > 12 do
+      minutes = :rand.uniform(5)
+      :timer.sleep(minutes * 60 * 1000)
+    end
   end
 end
