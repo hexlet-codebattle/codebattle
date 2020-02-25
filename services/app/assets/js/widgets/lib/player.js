@@ -71,11 +71,11 @@ const createFinalRecord = (index, record, params) => {
 const reduceOriginalRecords = (acc, record, index) => {
   const { players: playersState, records, chat: chatState } = acc;
   const { messages, users } = chatState;
-  const { editorText } = _.find(playersState, { id: record.id });
 
   const { type } = record;
 
   if (type === 'update_editor_data') {
+    const { editorText } = _.find(playersState, { id: record.id });
     const { diff } = record;
 
     const newEditorText = getText(editorText, diff);

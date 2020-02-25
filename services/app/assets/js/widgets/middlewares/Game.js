@@ -305,7 +305,6 @@ export const storedGameEditorReady = () => dispatch => {
       dispatch(actions.fetchChatData(resolvedData.chat));
       dispatch(actions.finishStoreInit());
     })
-    .catch(e => console.log(e.message));
 };
 
 export const init = () => dispatch => {

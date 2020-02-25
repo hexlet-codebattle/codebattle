@@ -26,7 +26,7 @@ defmodule Codebattle.Bot.Playbook do
   end
 
   schema "playbooks" do
-    embeds_one(:data, Data)
+    embeds_one(:data, Data, on_replace: :delete)
     field(:game_id, :integer)
     field(:winner_id, :integer)
     field(:winner_lang, :string)
@@ -40,7 +40,8 @@ defmodule Codebattle.Bot.Playbook do
   @doc false
   def changeset(%Playbook{} = playbook, attrs) do
     playbook
-    |> cast(attrs, [:data, :game_id, :winner_id, :winner_lang, :is_complete_solution, :task_id])
+    |> cast(attrs, [:game_id, :winner_id, :winner_lang, :is_complete_solution, :task_id])
+    |> cast_embed(:data)
     |> validate_required([
       :data,
       :game_id,

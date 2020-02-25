@@ -23,7 +23,6 @@ helm-install-keel:
 	helm repo update
 	helm upgrade --install keel --namespace keel keel/keel
 
-
 kb-app-%: POD_NAME = $(shell kubectl get pod -l "app.kubernetes.io/instance=app" -o name --kubeconfig=$(KUBECONFIG))
 
 kb-app-tailf:
