@@ -269,13 +269,6 @@ class CodebattlePlayer extends Component {
     });
   }
 
-  handleKeyPress(e) {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      this.onControlButtonClick();
-    }
-  }
-
   render() {
     const { records } = this.props;
 
@@ -298,19 +291,17 @@ class CodebattlePlayer extends Component {
           <div className="px-1">
             <div className="border bg-light py-2">
               <div className="row align-items-center justify-content-center">
-                <div
+                <button
+                  type="button"
                   className="mr-4 btn btn-light"
-                  role="button"
-                  tabIndex={0}
                   onClick={() => this.onControlButtonClick()}
-                  onKeyPress={this.handleKeyPress}
                 >
                   {isStop ? (
                     <PlayerIcon.Play width={32} height={32} />
                   ) : (
                     <PlayerIcon.Pause width={32} height={32} />
                   )}
-                </div>
+                </button>
                 <Slider
                   className="x-slider col-md-7 ml-1"
                   isEnabled={isEnabled}
