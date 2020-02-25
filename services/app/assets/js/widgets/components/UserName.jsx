@@ -5,8 +5,12 @@ import LanguageIcon from './LanguageIcon';
 import { loadUser } from '../middlewares/Users';
 import { getUsersInfo } from '../selectors';
 
+const isValidUserInfo = user => (
+  Boolean(user.githubId && user.rating && user.ratingDiff && user.lang)
+);
+
 const UserName = ({ user, users, dispatch }) => {
-  const userInfo = !user.githubId ? users[user.id] : user;
+  const userInfo = isValidUserInfo(user) ? user : users[user.id];
 
   if (!userInfo) {
     dispatch(loadUser)({ id: user.id });

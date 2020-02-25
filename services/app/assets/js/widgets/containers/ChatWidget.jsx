@@ -56,7 +56,7 @@ class ChatWidget extends React.Component {
 
   render() {
     const { messages, users, isStoredGame } = this.props;
-    const listOfUsers = _.uniqBy(users, 'githubId');
+    const listOfUsers = _.uniqBy(users, 'id');
 
     return (
       <div className="d-flex shadow-sm h-100">
