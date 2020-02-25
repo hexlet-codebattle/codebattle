@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Slider, PlayerIcon } from 'react-player-controls';
 import { connect } from 'react-redux';
+import cn from 'classnames';
 
 import { Direction } from 'react-player-controls/dist/constants';
 import * as selectors from '../selectors';
@@ -16,12 +17,14 @@ const isEqual = (float1, float2) => {
 class CodebattlePlayer extends Component {
   constructor(props) {
     super(props);
+    const defaultSpeed = 100;
 
     props.setStepCoefficient();
 
     this.state = {
       mode: 'pause',
       isEnabled: true,
+      speedMode: 'normal',
       nextRecordId: 0,
       delaySetGameState: 10,
       isStop: true,
@@ -29,7 +32,8 @@ class CodebattlePlayer extends Component {
       isHoldPlay: false,
       direction: Direction.HORIZONTAL,
       value: 0,
-      speed: 70,
+      defaultSpeed,
+      speed: defaultSpeed,
       lastIntent: 0,
     };
   }
@@ -50,6 +54,21 @@ class CodebattlePlayer extends Component {
         break;
     }
   }
+
+  onChangeSpeed() {
+    const { speedMode } = this.state;
+    switch (speedMode) {
+      case 'normal':
+        this.setState(state => ({ speedMode: 'fast', speed: state.defaultSpeed / 2 }));
+        break;
+      case 'fast':
+        this.setState(state => ({ speedMode: 'normal', speed: state.defaultSpeed }));
+        break;
+      default:
+        break;
+    }
+  }
+
 
   onPlayClick() {
     const { isStop, value } = this.state;
@@ -261,12 +280,16 @@ class CodebattlePlayer extends Component {
     const { records } = this.props;
 
     const {
-      isEnabled, direction, value: currentValue, isStop, isHold, lastIntent,
+      isEnabled, direction, value: currentValue, isStop, isHold, lastIntent, speedMode,
     } = this.state;
 
     if (records == null) {
       return null;
     }
+    const speedControlClassNames = cn('btn btn-sm border rounded ml-4', {
+      'btn-light': speedMode === 'normal',
+      'btn-secondary': speedMode === 'fast',
+    });
 
     return (
       <>
@@ -304,6 +327,7 @@ class CodebattlePlayer extends Component {
                     isHold={isHold}
                   />
                 </Slider>
+                <button type="button" className={speedControlClassNames} onClick={() => this.onChangeSpeed()}>x2</button>
               </div>
             </div>
           </div>
