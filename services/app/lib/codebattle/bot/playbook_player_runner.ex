@@ -42,7 +42,7 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
     # Action is one the maps
     #
     # 1 Main map with action to update text or lang
-    # %{"type" => "editor_text", "diff" => %{time" => 10, "delta" => [], prev_lang: "", next_lang: ''}}
+    # %{"type" => "editor_text", "diff" => %{time" => 10, "delta" => [], next_lang: "js"}}
     #
     # 2 Map with action to send solution
     # %{"type" => "game_over"}
@@ -62,11 +62,11 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
 
   defp perform_action(
          %{"type" => "update_editor_data", "diff" => diff},
-         {document, _editor_lang},
+         {document, editor_lang},
          channel_pid
        ) do
     next_document = create_next_document(document, diff)
-    next_lang = diff |> Map.get("next_lang")
+    next_lang = diff |> Map.get("next_lang", editor_lang)
     next_editor_state = {next_document, next_lang}
     send_editor_state(channel_pid, next_editor_state)
 

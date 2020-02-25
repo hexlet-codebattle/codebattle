@@ -40,7 +40,7 @@ const collectFinalRecord = (acc, strRecord) => {
       newPlayers = updatePlayers(players, {
         id: record.userId,
         editorText,
-        editorLang: record.diff.nextLang,
+        editorLang: record.diff.nextLang || player.editorLang,
       });
 
       return { ...acc, players: newPlayers };
@@ -75,11 +75,11 @@ const reduceOriginalRecords = (acc, record, index) => {
   const { type } = record;
 
   if (type === 'update_editor_data') {
-    const { editorText } = _.find(playersState, { id: record.id });
+    const { editorText, editorLang: prevEditorLang } = _.find(playersState, { id: record.id });
     const { diff } = record;
 
     const newEditorText = getText(editorText, diff);
-    const editorLang = diff.nextLang;
+    const editorLang = diff.nextLang || prevEditorLang;
     const newPlayers = updatePlayers(
       playersState,
       { id: record.id, editorText: newEditorText, editorLang },

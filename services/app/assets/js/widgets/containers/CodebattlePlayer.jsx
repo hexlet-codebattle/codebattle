@@ -136,11 +136,11 @@ class CodebattlePlayer extends Component {
       nextRecordId: 0,
     };
 
-    const {
-      players: editorsState,
-      chat: chatState,
-      nextRecordId,
-    } = getFinalState({ recordId: resultId, records, gameInitialState });
+    const { players: editorsState, chat: chatState, nextRecordId } = getFinalState({
+      recordId: resultId,
+      records,
+      gameInitialState,
+    });
     this.setState({ nextRecordId });
 
     editorsState.forEach(player => {
@@ -166,20 +166,23 @@ class CodebattlePlayer extends Component {
       updateExecutionOutput,
       fetchChatData,
       getEditorTextPlaybook,
+      getEditorLangPlaybook,
     } = this.props;
     const { nextRecordId } = this.state;
     const nextRecord = parse(records[nextRecordId]) || {};
 
     let editorText;
+    let editorLang;
     let newEditorText;
     switch (nextRecord.type) {
       case 'update_editor_data':
         editorText = getEditorTextPlaybook(nextRecord);
+        editorLang = getEditorLangPlaybook(nextRecord);
         newEditorText = getText(editorText, nextRecord.diff);
         updateEditorTextPlaybook({
           userId: nextRecord.userId,
           editorText: newEditorText,
-          langSlug: nextRecord.diff.nextLang,
+          langSlug: nextRecord.diff.nextLang || editorLang,
         });
         break;
       case 'check_complete':
@@ -272,20 +275,18 @@ class CodebattlePlayer extends Component {
           <div className="px-1">
             <div className="border bg-light py-2">
               <div className="row align-items-center justify-content-center">
-                <div className="mr-4 btn btn-light" role="button" tabIndex={0} onClick={() => this.onControlButtonClick()} onKeyPress={this.handleKeyPress}>
-                  {isStop
-                    ? (
-                      <PlayerIcon.Play
-                        width={32}
-                        height={32}
-                      />
-                    )
-                    : (
-                      <PlayerIcon.Pause
-                        width={32}
-                        height={32}
-                      />
-                    )}
+                <div
+                  className="mr-4 btn btn-light"
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => this.onControlButtonClick()}
+                  onKeyPress={this.handleKeyPress}
+                >
+                  {isStop ? (
+                    <PlayerIcon.Play width={32} height={32} />
+                  ) : (
+                    <PlayerIcon.Pause width={32} height={32} />
+                  )}
                 </div>
                 <Slider
                   className="x-slider col-md-7 ml-1"
@@ -317,6 +318,7 @@ const mapStateToProps = state => ({
   records: selectors.getPlaybookRecords(state),
   stepCoefficient: selectors.getStepCoefficient(state),
   getEditorTextPlaybook: ({ userId }) => selectors.getEditorTextPlaybook(state, userId),
+  getEditorLangPlaybook: ({ userId }) => selectors.userLangSelector(userId)(state),
 });
 
 const mapDispatchToProps = {

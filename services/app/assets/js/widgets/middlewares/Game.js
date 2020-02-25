@@ -304,7 +304,7 @@ export const storedGameEditorReady = () => dispatch => {
       dispatch(actions.loadStoredPlaybook(resolvedData));
       dispatch(actions.fetchChatData(resolvedData.chat));
       dispatch(actions.finishStoreInit());
-    })
+    });
 };
 
 export const init = () => dispatch => {

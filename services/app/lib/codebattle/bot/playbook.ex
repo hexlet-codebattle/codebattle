@@ -89,7 +89,7 @@ defmodule Codebattle.Bot.Playbook do
 
   def add_event(playbook, event, params)
       when event in @events do
-    time = NaiveDateTime.utc_now()
+    time = System.system_time(:millisecond)
     count = Enum.count(playbook)
 
     record =
@@ -191,12 +191,18 @@ defmodule Codebattle.Bot.Playbook do
     player_state_delta = create_delta(player_state.editor_text)
     new_delta = create_delta(text)
 
+    lang_delta =
+      if player_state.editor_lang == editor_lang do
+        %{}
+      else
+        %{next_lang: editor_lang}
+      end
+
     %{
       delta: TextDelta.diff!(player_state_delta, new_delta).ops,
-      prev_lang: player_state.editor_lang,
-      next_lang: editor_lang,
-      time: time_diff(time, player_state.time)
+      time: time - player_state.time
     }
+    |> Map.merge(lang_delta)
   end
 
   defp create_init_state(record),
@@ -231,8 +237,6 @@ defmodule Codebattle.Bot.Playbook do
     do: Map.update!(data, :records, &[record | &1]) |> increase_count
 
   defp create_delta(text), do: TextDelta.new() |> TextDelta.insert(text)
-
-  defp time_diff(new_time, time), do: NaiveDateTime.diff(new_time, time, :millisecond)
 
   defp increase_count(data), do: Map.update!(data, :count, &(&1 + 1))
 end
