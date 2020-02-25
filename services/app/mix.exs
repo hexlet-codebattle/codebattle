@@ -65,7 +65,6 @@ defmodule Codebattle.Mixfile do
       {:text_delta, "~> 1.3.0"},
       {:yaml_elixir, "~> 2.1"},
       {:temp, "~> 0.4"},
-      {:logger_file_backend, "~> 0.0.10"},
       {:atomic_map, "~> 0.8"},
       {:envy, "~> 1.1.1"},
       {:one_signal, git: "https://github.com/vtm9/one_signal.git"},

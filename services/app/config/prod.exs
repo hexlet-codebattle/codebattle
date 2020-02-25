@@ -33,15 +33,7 @@ config :codebattle, Codebattle.Repo,
   hostname: System.get_env("CODEBATTLE_DB_HOSTNAME"),
   pool_size: 15
 
-config :logger, backends: [{LoggerFileBackend, :info}, {LoggerFileBackend, :error}]
-
-config :logger, :error,
-  path: "/var/log/codebattle/error.log",
-  level: :error
-
-config :logger, :info,
-  path: "/var/log/codebattle/info.log",
-  level: :info
+config :logger, level: :error
 
 config :codebattle, Codebattle.Bot, timeout: 1000
 
