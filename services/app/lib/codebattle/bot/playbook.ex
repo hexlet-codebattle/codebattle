@@ -104,6 +104,7 @@ defmodule Codebattle.Bot.Playbook do
     Enum.reduce(players, playbook, fn player, acc ->
       data = %{
         id: player.id,
+        name: player.name,
         editor_text: player.editor_text,
         editor_lang: player.editor_lang,
         check_result: %{result: "", output: ""}
