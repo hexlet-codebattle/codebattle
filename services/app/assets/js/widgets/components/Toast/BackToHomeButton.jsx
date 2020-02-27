@@ -6,10 +6,10 @@ import { sendRejectToRematch } from '../../middlewares/Game';
 const handleClick = () => {
   sendRejectToRematch();
   window.location = '/';
-}
+};
 
 const BackToHomeButton = () => (
-  <button className="btn btn-secondary btn-block" onClick={handleClick}>
+  <button className="btn btn-secondary btn-block" onClick={handleClick} type="button">
     Back to home
   </button>
 );
