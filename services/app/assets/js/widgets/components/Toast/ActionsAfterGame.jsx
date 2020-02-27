@@ -11,12 +11,15 @@ const ActionsAfterGame = props => {
     gameStatus: { tournamentId },
   } = props;
   return tournamentId ? (
-    <BackToTournamentButton />
+    <>
+      <BackToTournamentButton />
+      <BackToHomeButton isRejectRequired={false} />
+    </>
   ) : (
     <>
       <NewGameButton />
       <RematchButton />
-      <BackToHomeButton />
+      <BackToHomeButton isRejectRequired={false} />
     </>
   );
 };
