@@ -4,6 +4,7 @@ import * as selectors from '../../selectors';
 import BackToTournamentButton from './BackToTournamentButton';
 import NewGameButton from './NewGameButton';
 import RematchButton from './RematchButton';
+import BackToHomeButton from './BackToHomeButton';
 
 const ActionsAfterGame = props => {
   const {
@@ -15,6 +16,7 @@ const ActionsAfterGame = props => {
     <>
       <NewGameButton />
       <RematchButton />
+      <BackToHomeButton />
     </>
   );
 };
