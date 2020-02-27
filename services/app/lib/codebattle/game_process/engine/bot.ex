@@ -87,8 +87,8 @@ defmodule Codebattle.GameProcess.Engine.Bot do
     game_level = FsmHelpers.get_level(fsm)
 
     low_level_time = %{
-      "elementary" => 60 * 3,
-      "easy" => 60 * 5,
+      "elementary" => 60 * 5,
+      "easy" => 60 * 6,
       "medium" => 60 * 7,
       "hard" => 60 * 9
     }

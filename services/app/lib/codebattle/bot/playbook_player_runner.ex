@@ -113,7 +113,7 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
   end
 
   defp activate_random_long_sleep(_) do
-    if :rand.uniform(16) > 14 do
+    if :rand.uniform(100) > 98 do
       minutes = Kernel.round(@max_minutes_timeout * :rand.uniform())
       :timer.sleep(minutes * 60 * 1_000)
     end
