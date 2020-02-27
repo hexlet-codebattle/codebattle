@@ -10,6 +10,7 @@ levels = ["elementary", "easy", "medium", "hard"]
       name: task_name,
       description: "test sum: for ruby `def solution(a,b); a+b;end;`",
       asserts: "{\"arguments\":[1,1],\"expected\":2}\n{\"arguments\":[2,2],\"expected\":4}\n",
+      disabled: false,
       input_signature: [
         %{"argument-name" => "a", "type" => %{"name" => "integer"}},
         %{"argument-name" => "b", "type" => %{"name" => "integer"}}

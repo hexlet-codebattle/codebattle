@@ -50,6 +50,7 @@ defmodule Codebattle.GameProcess.TasksQueuesServer do
     from(task in Task,
       where: task.level == ^level
     )
+    |> Task.visible()
     |> Repo.all()
     |> Enum.shuffle()
   end
