@@ -1,10 +1,18 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import * as selectors from '../../selectors';
+import { sendRejectToRematch } from '../../middlewares/Game';
 import BackToTournamentButton from './BackToTournamentButton';
 import NewGameButton from './NewGameButton';
 import RematchButton from './RematchButton';
 import BackToHomeButton from './BackToHomeButton';
+
+const handleClick = isRejectRequired => () => {
+  if (isRejectRequired) {
+    sendRejectToRematch();
+  }
+  window.location = '/';
+};
 
 const ActionsAfterGame = props => {
   const {
@@ -13,13 +21,13 @@ const ActionsAfterGame = props => {
   return tournamentId ? (
     <>
       <BackToTournamentButton />
-      <BackToHomeButton isRejectRequired={false} />
+      <BackToHomeButton handleClick={handleClick(false)} />
     </>
   ) : (
     <>
       <NewGameButton />
       <RematchButton />
-      <BackToHomeButton isRejectRequired={false} />
+      <BackToHomeButton handleClick={handleClick(true)} />
     </>
   );
 };
@@ -28,4 +36,6 @@ const mapStateToProps = state => ({
   gameStatus: selectors.gameStatusSelector(state),
 });
 
-export default connect(mapStateToProps)(ActionsAfterGame);
+const mapDispatchToProps = { sendRejectToRematch };
+
+export default connect(mapStateToProps, mapDispatchToProps)(ActionsAfterGame);
