@@ -6,6 +6,7 @@ on:
       - master
 jobs:
   build:
+    if: github.repository == 'hexlet-codebattle/codebattle'
     runs-on: ubuntu-latest
 
     services:
