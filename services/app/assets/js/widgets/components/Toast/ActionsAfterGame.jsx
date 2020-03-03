@@ -4,17 +4,22 @@ import * as selectors from '../../selectors';
 import BackToTournamentButton from './BackToTournamentButton';
 import NewGameButton from './NewGameButton';
 import RematchButton from './RematchButton';
+import BackToHomeButton from './BackToHomeButton';
 
 const ActionsAfterGame = props => {
   const {
     gameStatus: { tournamentId },
   } = props;
   return tournamentId ? (
-    <BackToTournamentButton />
+    <>
+      <BackToTournamentButton />
+      <BackToHomeButton isRejectRequired={false} />
+    </>
   ) : (
     <>
       <NewGameButton />
       <RematchButton />
+      <BackToHomeButton isRejectRequired />
     </>
   );
 };
@@ -22,5 +27,6 @@ const ActionsAfterGame = props => {
 const mapStateToProps = state => ({
   gameStatus: selectors.gameStatusSelector(state),
 });
+
 
 export default connect(mapStateToProps)(ActionsAfterGame);
