@@ -1,14 +1,11 @@
 defmodule Codebattle.Mixfile do
-  @moduledoc """
-  """
-
   use Mix.Project
 
   def project do
     [
       app: :codebattle,
       version: "0.0.12",
-      elixir: "~> 1.9",
+      elixir: "~> 1.10",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,

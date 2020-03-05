@@ -22,7 +22,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
-      - uses: actions/setup-elixir@v1.1.0
+      - uses: actions/setup-elixir@v1.2.0
         with:
           otp-version: 22.x
           elixir-version: 1.9.x
@@ -99,17 +99,10 @@ jobs:
           fail_ci_if_error: true
 
       - name: Pull dockers
-        run: |
-          docker pull codebattle/js:11.6.0
-          docker pull codebattle/ts:3.5.2
-          docker pull codebattle/golang:1.12.6
-          docker pull codebattle/cpp:17
-          docker pull codebattle/ruby:2.6.0
-          docker pull codebattle/elixir:1.7.3
-          docker pull codebattle/python:3.7.2
-          docker pull codebattle/php:7.3.0
-          docker pull codebattle/clojure:1.10.0
-          docker pull codebattle/haskell:8.4.3
+        run: mix dockers.pull
+        working-directory: ./services/app
+        env:
+          MIX_ENV: test
 
       - name: Run code checkers tests
         run: make test-code-checkers

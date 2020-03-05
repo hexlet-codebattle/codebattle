@@ -9,4 +9,4 @@ ansible-edit-secrets:
 
 
 ansible-vault-edit-production:
-	docker run -v $(CURDIR):/app -it -w /app ansible ansible-vault --vault-password-file tmp/ansible-vault-password edit ansible/production/group_vars/all/vault.yml
+	docker run -v $(CURDIR):/app -it -w /app williamyeh/ansible:ubuntu18.04 ansible-vault --vault-password-file tmp/ansible-vault-password edit ansible/production/group_vars/all/vault.yml

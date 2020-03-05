@@ -12,6 +12,7 @@ resource "kubernetes_secret" "codebattle_secrets" {
     CODEBATTLE_DB_NAME         = "codebattle"
     CODEBATTLE_PORT            = "${var.codebattle_port}"
     CODEBATTLE_SECRET_KEY_BASE = "${var.codebattle_secret_key_base}"
+    CODEBATTLE_LIVE_VIEW_SALT  = "${var.codebattle_live_view_salt}"
     CODEBATTLE_DB_HOSTNAME     = "${var.codebattle_db_hostname}"
     CODEBATTLE_DB_USERNAME     = "${var.codebattle_db_username}"
     CODEBATTLE_DB_PASSWORD     = "${var.codebattle_db_password}"
