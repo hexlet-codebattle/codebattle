@@ -1,6 +1,4 @@
 include make-compose.mk
-include make-ansible.mk
-include make-production.mk
 
 pg:
 	docker-compose up -d db-local
@@ -21,3 +19,12 @@ test-code-checkers:
 
 terraform-vars-generate:
 	docker run -it -v $(CURDIR):/app -w /app williamyeh/ansible:ubuntu18.04 ansible-playbook ansible/terraform.yml -i ansible/production -vv --vault-password-file=tmp/ansible-vault-password
+
+setup-env:
+	docker run  -v $(CURDIR):/app -w /app williamyeh/ansible:ubuntu18.04 ansible-playbook ansible/development.yml -i ansible/development -vv
+
+ansible-edit-secrets:
+	ansible-vault edit --vault-password-file tmp/ansible-vault-password ansible/production/group_vars/all/vault.yml
+
+ansible-vault-edit-production:
+	docker run -v $(CURDIR):/app -it -w /app williamyeh/ansible:ubuntu18.04 ansible-vault edit --vault-password-file tmp/ansible-vault-password ansible/production/group_vars/all/vault.yml

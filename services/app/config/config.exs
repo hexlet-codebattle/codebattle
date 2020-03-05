@@ -65,12 +65,6 @@ config :codebattle, Codebattle.Bot.PlaybookPlayerRunner,
 
 config :codebattle, Codebattle.DockerLangsPuller, timeout: 5_000 * 60
 
-bot_limit =
-  case System.get_env("CODEBATTLE_BOT_TIME_SLEEP_LIMIT") do
-    nil -> 7_000
-    x -> Integer.parse(x) |> elem(0)
-  end
-
 config :codebattle, checker_adapter: Codebattle.CodeCheck.Checker
 config :codebattle, tournament_match_timeout: 3 * 60
 
