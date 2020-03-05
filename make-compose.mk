@@ -36,11 +36,16 @@ compose-db-init:
 	docker-compose run app mix ecto.migrate
 	docker-compose run app mix run priv/repo/seeds.exs
 
-compose-credo:
+compose-lint:  compose-mix-format compose-mix-credo compose-lint-js-fix
+
+compose-mix-format:
+	docker-compose run app mix format
+
+compose-mix-credo:
 	docker-compose run app mix credo
 
-compose-credo-full:
-	docker-compose run app mix credo -a
+compose-lint-js-fix:
+	docker-compose run app yarn lint --fix
 
 compose-console:
 	docker-compose run app iex -S mix

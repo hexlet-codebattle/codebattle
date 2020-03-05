@@ -17,13 +17,9 @@
 
 ### Install
 
-- Clone repo
-
 ```bash
 $ git clone git@github.com:hexlet-codebattle/codebattle.git
 $ cd codebattle
-$ mkdir -p tmp
-$ echo 'asdf' > tmp/ansible-vault-password
 $ make setup-env
 $ make compose-setup
 ```
@@ -45,11 +41,12 @@ $ make compose-test
 ### Lint
 
 ```bash
-$ make compose-bash
-$ make lint-js
+$ make compose-lint
 
-# To autofix warnings run:
-$ make lint-js-fix
+# To run specific
+$ make compose-mix-format
+$ make compose-mix-credo
+$ make compose-lint-js-fix
 ```
 
 ### Useful
@@ -65,8 +62,6 @@ $ mix dockers.build elixir
 
 $ mix dockers.pull # all
 $ mix dockers.pull elixir
-
-$ mix test test/code_check/
 
 $ mix issues.upload # Upsert issues by name in db
 
