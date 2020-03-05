@@ -20,8 +20,7 @@
 ```bash
 $ git clone git@github.com:hexlet-codebattle/codebattle.git
 $ cd codebattle
-$ make setup-env
-$ make compose-setup
+$ make setup
 ```
 
 ### Run

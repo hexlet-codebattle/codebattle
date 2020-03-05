@@ -20,6 +20,8 @@ test-code-checkers:
 terraform-vars-generate:
 	docker run -it -v $(CURDIR):/app -w /app williamyeh/ansible:ubuntu18.04 ansible-playbook ansible/terraform.yml -i ansible/production -vv --vault-password-file=tmp/ansible-vault-password
 
+setup: setup-env compose-setup
+
 setup-env:
 	docker run  -v $(CURDIR):/app -w /app williamyeh/ansible:ubuntu18.04 ansible-playbook ansible/development.yml -i ansible/development -vv
 
