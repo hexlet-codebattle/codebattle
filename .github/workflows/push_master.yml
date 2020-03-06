@@ -58,12 +58,6 @@ jobs:
         env:
           MIX_ENV: test
 
-      - name: Mix credo
-        run: mix credo
-        working-directory: ./services/app
-        env:
-          MIX_ENV: test
-
       - name: Get yarn cache
         id: yarn-cache
         run: echo "::set-output name=dir::$(yarn cache dir)"
