@@ -1,5 +1,5 @@
 resource "digitalocean_kubernetes_cluster" "codebattle" {
-  version = "1.15.3-do.1"
+  version = "1.16.6-do.0"
 
   name = "codebattle"
   region = "fra1"
