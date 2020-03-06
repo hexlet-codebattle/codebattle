@@ -1717,17 +1717,10 @@ anymatch@^2.0.0:
     micromatch "^3.1.4"
     normalize-path "^2.1.1"
 
-<<<<<<< HEAD
 apexcharts@^3.15.3:
   version "3.15.3"
   resolved "https://registry.yarnpkg.com/apexcharts/-/apexcharts-3.15.3.tgz#e839ee30cad55c23e9bc2e80c279eae1a883c28c"
   integrity sha512-DfXhSqFaulF3C7YyMR77Jk4ESa66QjoqrBvxw3gLvRs5KK0fhmk0kuuWtxtpBulm2oWBVsi6VKHiy+YlBRPasg==
-=======
-apexcharts@^3.14.0:
-  version "3.14.0"
-  resolved "https://registry.yarnpkg.com/apexcharts/-/apexcharts-3.14.0.tgz#6c9d2343e8511acfe2527cea46679f3b4ea9b647"
-  integrity sha512-5n12kX9pn7bzVSQOKMezVs14YQqyV+aKv5oy4tWrevie+q3oGtkihc4DmmJlEnibORTX4IRl1xhodfxrBeETIA==
->>>>>>> 5c55357c99391d0273243599b86af892a5aa5ca8
   dependencies:
     svg.draggable.js "^2.2.2"
     svg.easing.js "^2.0.0"

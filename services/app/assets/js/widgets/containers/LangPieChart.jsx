@@ -1,41 +1,68 @@
 import React from 'react';
-import ReactApexChart from 'react-apexcharts'
+import ReactApexChart from 'react-apexcharts';
+import { connect } from 'react-redux';
+import { loadLangStats } from '../middlewares/Users';
 
 class LangPieChart extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-          
-      series: [44, 55, 13, 43, 22],
-      options: {
-        chart: {
-          width: 380,
-          type: 'pie',
-        },
-        labels: ['Ruby', 'PHP', 'JavaScript', 'Erlang', 'C++'],
-        responsive: [{
-          breakpoint: 480,
-          options: {
-            chart: {
-              width: 200
-            },
-            legend: {
-              position: 'bottom'
-            }
-          }
-        }]
-      },
-    
-    
-    };
+  componentDidMount() {
+    const userId = Gon.getAsset('user_id');
+    console.log(userId);
+    const { loadLangStats } = this.props;
+    loadLangStats(userId);
   }
+
+  setStats() {
+    const { stats } = this.props;
+    Object.keys(stats).forEach((lang) => {
+      this.setState({
+        options: {labels: [...this.state.options.labels, lang]}
+      });
+    });
+  }
+
   render() {
+    const { stats } = this.props;
+    if (!stats) {
+      return null;
+    }
+    const options = {
+      chart: {
+        width: 380,
+        type: 'pie',
+      },
+      labels: Object.keys(stats),
+      responsive: [{
+        breakpoint: 480,
+        options: {
+          chart: {
+            width: 200
+          },
+          legend: {
+            position: 'bottom'
+          }
+        }
+      }]
+    }
+    const sumOfGames = Object.values(stats).reduce((acc, value) => (value + acc), 0);
+    const series = Object.keys(stats).reduce((acc, lang) => {
+      const amountGames = stats[lang];
+      return [...acc, Number(((amountGames * 100) / sumOfGames).toFixed(1))];
+    }, []);
     return (
 <div id="chart">
-<ReactApexChart options={this.state.options} series={this.state.series} type="pie" width={380} />
+<ReactApexChart options={options} series={series} type="pie" width={380} />
 </div>
     );
   }
 }
-export default LangPieChart;
+const mapDispatchToProps = (dispatch) => {
+  return {
+    loadLangStats: (userId) => {
+      dispatch(loadLangStats)(userId);
+    },
+  };
+}
+const mapStateToProps = (state) => {
+  return {stats: state.chart.stats};
+}
+export default connect(mapStateToProps, mapDispatchToProps)(LangPieChart);

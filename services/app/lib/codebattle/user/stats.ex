@@ -23,6 +23,22 @@ defmodule Codebattle.User.Stats do
     Map.merge(%{"won" => 0, "lost" => 0, "gave_up" => 0}, Enum.into(stats, %{}))
   end
 
+  def lang_stats_for_user(user_id) do
+    query =
+      from(ug in UserGame,
+        select: {
+          ug.lang,
+          count(ug.id)
+        },
+        where: ug.user_id == ^user_id,
+        group_by: ug.lang
+      )
+
+    stats = Repo.all(query)
+    
+    Enum.into(stats, %{})
+  end
+
   def get_user_rank(user_id) do
     query =
       from(u in User,

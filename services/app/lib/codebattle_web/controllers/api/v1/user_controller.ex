@@ -73,6 +73,12 @@ defmodule CodebattleWeb.Api.V1.UserController do
     json(conn, %{users: users, page_info: page_info})
   end
 
+  def lang_stats(conn, %{ "id" => user_id}) do
+    stats = Stats.lang_stats_for_user(user_id)
+
+    json(conn, %{stats: stats})
+  end
+
   # def index(conn, _params) do
   #  index(conn, %{"page" => 1})
   # end

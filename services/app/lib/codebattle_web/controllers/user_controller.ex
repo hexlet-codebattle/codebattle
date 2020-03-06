@@ -5,6 +5,7 @@ defmodule CodebattleWeb.UserController do
 
   alias Codebattle.{Repo, User, UserGame}
   import Ecto.Query
+  import PhoenixGon.Controller
 
   plug(CodebattleWeb.Plugs.RequireAuth when action in @all)
 
@@ -18,7 +19,9 @@ defmodule CodebattleWeb.UserController do
     rank = User.Stats.get_user_rank(user_id)
     user = Repo.get!(User, user_id)
 
-    render(conn, "show.html", user: user, rank: rank, games: games, stats: stats)
+    conn 
+      |> put_gon(user_id: user_id)
+      |> render("show.html", user: user, rank: rank, games: games, stats: stats)
   end
 
   def edit(conn, _params) do

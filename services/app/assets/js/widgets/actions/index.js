@@ -40,3 +40,4 @@ export const redirectToNewGame = gameId => {
 };
 
 export const selectNewGameTimeout = createAction('SELECT_NEW_GAME_TIMEOUT');
+export const fetchLangStats = createAction('FETCH_LANG_STATS');

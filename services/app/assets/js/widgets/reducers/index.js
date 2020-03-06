@@ -7,6 +7,7 @@ import editor from './editor';
 import game from './game';
 import editorUI from './editorUI';
 import gameUI from './gameUI';
+import chart from './chart';
 
 export default {
   game,
@@ -18,5 +19,6 @@ export default {
   gameList,
   storeLoaded,
   executionOutput,
+  chart,
 };
 export { makeEditorTextKey } from './editor';

@@ -8,6 +8,7 @@ import RootContainer from './containers/RootContainer';
 import reducers from './reducers';
 import GameList from './containers/GameList';
 import RatingList from './containers/RatingList';
+import LangPieChart from './containers/LangPieChart';
 
 const { editorUI: editorUIReducer, ...otherReducers } = reducers;
 
@@ -49,5 +50,11 @@ export const UsersRating = () => (
     <PersistGate loading={null} persistor={persistor}>
       <RatingList />
     </PersistGate>
+  </Provider>
+);
+
+export const Chart = () => (
+  <Provider store={store}>
+      <LangPieChart />
   </Provider>
 );
