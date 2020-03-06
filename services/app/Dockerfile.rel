@@ -3,7 +3,7 @@ FROM ubuntu:18.04
 WORKDIR /app
 
 RUN apt-get update \
-  && apt-get install -y inotify-tools vim curl postgresql-client make
+  && apt-get install -y inotify-tools vim curl postgresql-client make erlang-crypto
 
 ENV DOCKER_CHANNEL edge
 ENV DOCKER_VERSION 19.03.5
