@@ -1,5 +1,5 @@
 resource "kubernetes_service_account" "tiller" {
-  depends_on = ["digitalocean_kubernetes_cluster.codebattle"]
+  depends_on = [digitalocean_kubernetes_cluster.codebattle]
 
   metadata {
     name = "tiller"
@@ -8,7 +8,7 @@ resource "kubernetes_service_account" "tiller" {
 }
 
 resource "kubernetes_cluster_role_binding" "tiller-cluster-rule" {
-  depends_on = ["kubernetes_service_account.tiller"]
+  depends_on = [kubernetes_service_account.tiller]
 
   metadata {
     name = "tiller-cluster-rule"
