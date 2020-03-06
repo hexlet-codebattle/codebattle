@@ -30,3 +30,12 @@ ansible-edit-secrets:
 
 ansible-vault-edit-production:
 	docker run -v $(CURDIR):/app -it -w /app williamyeh/ansible:ubuntu18.04 ansible-vault edit --vault-password-file tmp/ansible-vault-password ansible/production/group_vars/all/vault.yml
+
+release:
+	make -C services/app release
+
+docker-build-app:
+	docker build --cache-from=codebattle/app --tag codebattle/app --file services/app/Dockerfile.rel services/app
+
+docker-push-app:
+	docker push codebattle/app:latest

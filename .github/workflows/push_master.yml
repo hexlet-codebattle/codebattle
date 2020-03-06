@@ -7,7 +7,7 @@ on:
 jobs:
   build:
     if: github.repository == 'hexlet-codebattle/codebattle'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
 
     services:
       db:
@@ -98,14 +98,22 @@ jobs:
           file: ./services/app/cover/excoveralls.json
           fail_ci_if_error: true
 
-      - name: Pull dockers
-        run: mix dockers.pull
-        working-directory: ./services/app
-        env:
-          MIX_ENV: test
+      - run: make release
 
-      - name: Run code checkers tests
-        run: make test-code-checkers
-        env:
-          MIX_ENV: test
+      - name: Login to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
+      - run: docker-build-app
+      - run: docker-push-app
+
+      # - name: Pull dockers
+      #   run: mix dockers.pull
+      #   working-directory: ./services/app
+      #   env:
+      #     MIX_ENV: test
+
+      # - name: Run code checkers tests
+      #   run: make test-code-checkers
+      #   env:
+      #     MIX_ENV: test
 

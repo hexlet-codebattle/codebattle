@@ -2,6 +2,8 @@ defmodule CodebattleWeb.Router do
   use CodebattleWeb, :router
   use Plug.ErrorHandler
 
+  require Logger
+
   pipeline :browser do
     plug(:accepts, ["html"])
     plug(:fetch_session)
@@ -74,7 +76,8 @@ defmodule CodebattleWeb.Router do
     |> halt
   end
 
-  def handle_errors(conn, %{kind: _kind, reason: _reason}) do
+  def handle_errors(conn, %{kind: _kind, reason: reason}) do
+    Logger.error(inspect(reason))
     send_resp(conn, conn.status, "SOMETHING_WENT_WRONG")
   end
 end

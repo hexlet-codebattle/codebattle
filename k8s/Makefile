@@ -2,6 +2,7 @@ PWD:=$(shell pwd)
 
 kb-%: export KUBECONFIG=$(PWD)/kubeconfig.yml
 helm-%: export KUBECONFIG=$(PWD)/kubeconfig.yml
+kb-app-%: POD_NAME = $(shell kubectl get pod -l "app.kubernetes.io/instance=app" -o name --kubeconfig=$(KUBECONFIG))
 
 kb-get-pods:
 	kubectl get pod -w -o wide
@@ -9,21 +10,25 @@ kb-get-pods:
 kb-get-nodes:
 	kubectl get nodes
 
-helm-init:
-	helm install --name app $(PWD)/app-chart
+helm-init: helm-add-repos  helm-install-ingress helm-install-app helm-install-keel
+
+helm-add-repos:
+	helm repo add stable https://kubernetes-charts.storage.googleapis.com
+	helm repo add keel https://charts.keel.sh
+
+helm-install-app:
+	helm install app $(PWD)/app-chart
 
 helm-upgrade-app:
 	helm upgrade app $(PWD)/app-chart
 
 helm-install-ingress:
-	helm install stable/nginx-ingress --name ingress --set rbac.create=true
+	helm repo update
+	helm install ingress stable/nginx-ingress
 
 helm-install-keel:
-	helm repo add keel https://charts.keel.sh
 	helm repo update
-	helm upgrade --install keel --namespace keel keel/keel
-
-kb-app-%: POD_NAME = $(shell kubectl get pod -l "app.kubernetes.io/instance=app" -o name --kubeconfig=$(KUBECONFIG))
+	helm upgrade --install keel --namespace=kube-system keel/keel
 
 kb-app-tailf:
 	kubectl logs -f $(POD_NAME) -c app

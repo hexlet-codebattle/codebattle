@@ -1,8 +1,6 @@
-.PHONY: test tarball
+.PHONY: test release test-code-checkers
 
 CACHE_MANIFEST  := priv/static/cache_manifest.json
-RELEASE         := _build/prod/rel/codebattle
-RELEASE_TARBALL := release.tar.gz
 WEBPACK := ./node_modules/webpack/bin/webpack.js
 
 default: format lint-js-fix credo test
@@ -24,13 +22,8 @@ lint-js-fix:
 	yarn lint --fix
 
 start:
-	mix ecto.migrate
-	mix phx.server
-
-update:
-	mix deps.update --all
-	ncu -u
-	npm update
+	bin/codebattle  eval "Codebattle.Utils.Release.migrate"
+	bin/codebattle  start
 
 console:
 	iex -S mix
@@ -42,12 +35,7 @@ test-code-checkers: export CODEBATTLE_RUN_CODE_CHECK = true
 test-code-checkers:
 	mix test test/code_check --max-failures 1
 
-tarball: $(RELEASE_TARBALL)
-
-$(RELEASE_TARBALL): build-release
-	tar czf $(RELEASE_TARBALL) $(RELEASE)
-
-build-release: $(CACHE_MANIFEST)
+release: $(CACHE_MANIFEST)
 	MIX_ENV=prod mix release --overwrite
 
 $(CACHE_MANIFEST): build-assets
@@ -58,3 +46,7 @@ build-assets: $(WEBPACK)
 
 $(WEBPACK):
 	yarn install --frozen-lockfile
+
+build-and-push-base:
+	docker build -t codebattle/base --file Dockerfile.base .
+	docker push codebattle/base:latest

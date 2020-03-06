@@ -46,7 +46,7 @@
             div.polyglot[title="#{achievement}"]
               div.d-flex.h-75.flex-wrap.align-items-center.justify-content-around
                 - langs = String.split(achievement, "?") |> Enum.at(1) |> String.split("_")
-                = for _lang <- langs do
-                  img[alt="#{_lang}" title="#{_lang}" src="/assets/images/achievements/#{_lang}.png" width="38" height="38"]
+                = for lang <- langs do
+                  img[alt="#{lang}" title="#{lang}" src="/assets/images/achievements/#{lang}.png" width="38" height="38"]
           - else
             img.mr-1[alt="#{achievement}" title="#{achievement}" src="/assets/images/achievements/#{achievement}.png" width="200" height="200"]

@@ -4,7 +4,7 @@ defmodule Codebattle.Mixfile do
   def project do
     [
       app: :codebattle,
-      version: "0.0.12",
+      version: "0.1.0",
       elixir: "~> 1.10",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
@@ -19,7 +19,7 @@ defmodule Codebattle.Mixfile do
       ],
       test_coverage: [tool: ExCoveralls],
       deps: deps(),
-      elixirc_options: [warnings_as_errors: false]
+      elixirc_options: [warnings_as_errors: true]
     ]
   end
 
@@ -29,7 +29,7 @@ defmodule Codebattle.Mixfile do
   def application do
     [
       mod: {Codebattle.Application, []},
-      extra_applications: [:runtime_tools, :logger]
+      extra_applications: [:ssl, :mix, :runtime_tools, :logger]
     ]
   end
 

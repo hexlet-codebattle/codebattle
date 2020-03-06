@@ -1,11 +1,11 @@
 import Config
 
-port = System.fetch_env!("CODEBATTLE_PORT", "4000")
+port = System.get_env("CODEBATTLE_PORT", "4000")
 host = System.get_env("CODEBATTLE_HOSTNAME", "codebattle.hexlet.io")
 secret_key_base = System.fetch_env!("CODEBATTLE_SECRET_KEY_BASE")
 live_view_salt = System.fetch_env!("CODEBATTLE_LIVE_VIEW_SALT")
 
-config :hr, HrWeb.Endpoint,
+config :codebattle, CodebattleWeb.Endpoint,
   http: [:inet6, port: port],
   url: [host: host, port: 80],
   cache_static_manifest: "priv/static/cache_manifest.json",
@@ -13,9 +13,9 @@ config :hr, HrWeb.Endpoint,
   live_view: [signing_salt: live_view_salt],
   server: true
 
-config :hr, host: host
+config :codebattle, host: host
 
-config :hr, Hr.Repo,
+config :codebattle, Codebattle.Repo,
   adapter: Ecto.Adapters.Postgres,
   database: System.get_env("CODEBATTLE_DB_NAME"),
   ssl: true,
