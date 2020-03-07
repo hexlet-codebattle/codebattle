@@ -15,7 +15,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
       |> Keyword.put(:hash_sum, hash_sum)
       |> put_types(meta, task)
 
-    source_dir = "/dockers/#{slug}"
+    source_dir = "/lib/codebattle/generators/templates"
 
     Logger.info(
       "Create checker for #{slug} language. NAME: checker.#{extension}, TASK: #{inspect(task)}, BINDING #{
@@ -298,23 +298,20 @@ defmodule Codebattle.Generators.CheckerGenerator do
     Logger.info("Create types for #{slug} language. NAME: types.#{extension}")
 
     [
-      {:new_eex, "checker_template.#{extension}.eex",
-       Path.join(target_dir, "checker.#{extension}")},
-      {:new_eex, "types_template.#{extension}.eex", Path.join(target_dir, "types.#{extension}")}
+      {:new_eex, "#{slug}.eex", Path.join(target_dir, "checker.#{extension}")},
+      {:new_eex, "#{slug}.types.eex", Path.join(target_dir, "types.#{extension}")}
     ]
   end
 
   defp get_template_specs(target_dir, %{slug: "haskell", extension: extension}) do
     [
-      {:new_eex, "checker_template.#{extension}.eex",
-       Path.join(target_dir, "Checker.#{extension}")}
+      {:new_eex, "haskell.eex", Path.join(target_dir, "Checker.#{extension}")}
     ]
   end
 
-  defp get_template_specs(target_dir, %{extension: extension}) do
+  defp get_template_specs(target_dir, %{extension: extension, slug: slug}) do
     [
-      {:new_eex, "checker_template.#{extension}.eex",
-       Path.join(target_dir, "checker.#{extension}")}
+      {:new_eex, "#{slug}.eex", Path.join(target_dir, "checker.#{extension}")}
     ]
   end
 end
