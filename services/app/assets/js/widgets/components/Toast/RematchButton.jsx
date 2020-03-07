@@ -76,15 +76,19 @@ class RematchButton extends React.Component {
     </div>
   );
 
-  renderBtnByDefault = () => (
-    <button
-      type="button"
-      className="btn btn-secondary btn-block"
-      onClick={sendOfferToRematch}
-    >
-      {i18n.t('Rematch')}
-    </button>
-  );
+  renderBtnByDefault = () => {
+    const { disabled } = this.props;
+    return (
+      <button
+        type="button"
+        className="btn btn-secondary btn-block"
+        onClick={sendOfferToRematch}
+        disabled={disabled}
+      >
+        {i18n.t('Rematch')}
+      </button>
+    );
+  };
 
   isOpponentInGame = () => {
     const { opponentPlayer, chatUsers } = this.props;
