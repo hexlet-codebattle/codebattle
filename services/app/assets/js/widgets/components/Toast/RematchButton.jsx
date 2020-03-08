@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import React from 'react';
 import { connect } from 'react-redux';
 import cn from 'classnames';
@@ -37,7 +36,7 @@ class RematchButton extends React.Component {
   );
 
   renderBtnAfterSendOffer = () => {
-    const isOpponentInGame = this.isOpponentInGame();
+    const { isOpponentInGame } = this;
     const text = isOpponentInGame ? 'Wait For An Answer...' : 'Opponent Left The Game';
     const classNames = cn('btn btn-block', {
       'btn-secondary': isOpponentInGame,
@@ -90,12 +89,6 @@ class RematchButton extends React.Component {
     );
   };
 
-  isOpponentInGame = () => {
-    const { opponentPlayer, chatUsers } = this.props;
-    const findedUser = _.find(chatUsers, { id: opponentPlayer.id });
-    return !_.isUndefined(findedUser);
-  }
-
   getPlayerStatus = (rematchInitiatorId, currentUserId) => {
     if (rematchInitiatorId === null) {
       return null;
@@ -119,8 +112,7 @@ const mapStateToProps = state => {
     gameTask: selectors.gameTaskSelector(state),
     gameStatus: selectors.gameStatusSelector(state),
     currentUserId,
-    opponentPlayer: selectors.opponentPlayerSelector(state),
-    chatUsers: selectors.chatUsersSelector(state),
+    isOpponentInGame: selectors.isOpponentInGame(state),
   };
 };
 

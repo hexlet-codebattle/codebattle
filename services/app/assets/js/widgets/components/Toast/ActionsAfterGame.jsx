@@ -1,5 +1,4 @@
 import React from 'react';
-import _ from 'lodash';
 import { connect } from 'react-redux';
 import * as selectors from '../../selectors';
 import BackToTournamentButton from './BackToTournamentButton';
@@ -10,16 +9,10 @@ import BackToHomeButton from './BackToHomeButton';
 const ActionsAfterGame = props => {
   const {
     gameStatus: { tournamentId },
-    chatUsers,
-    opponentPlayer,
+    isOpponentInGame,
   } = props;
 
-  const isOpponentInGame = () => {
-    const findedUser = _.find(chatUsers, { id: opponentPlayer.id });
-    return !_.isUndefined(findedUser);
-  };
-
-  const isRematchDisabled = !isOpponentInGame();
+  const isRematchDisabled = !isOpponentInGame;
 
   return tournamentId ? (
     <>
@@ -40,8 +33,7 @@ const mapStateToProps = state => {
 
   return {
     currentUserId,
-    opponentPlayer: selectors.opponentPlayerSelector(state),
-    chatUsers: selectors.chatUsersSelector(state),
+    isOpponentInGame: selectors.isOpponentInGame(state),
     gameStatus: selectors.gameStatusSelector(state),
   };
 };
