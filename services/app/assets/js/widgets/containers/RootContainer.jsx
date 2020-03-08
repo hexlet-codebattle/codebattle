@@ -13,8 +13,8 @@ import { gameStatusSelector } from '../selectors';
 import WaitingOpponentInfo from '../components/WaitingOpponentInfo';
 import CodebattlePlayer from './CodebattlePlayer';
 
-const ComponentForHandlers = ({ children }) => (
-  <div style={{ outline: 'none' }}>{children}</div>
+const ComponentForHandlers = ({ children, ...props }) => (
+  <div {...props} style={{ outline: 'none' }}>{children}</div>
 );
 
 class RootContainer extends React.Component {
@@ -31,11 +31,14 @@ class RootContainer extends React.Component {
       storeLoaded, gameStatusCode, checkResult,
     } = this.props;
     const keyMap = {
-      CHECK_GAME: ['command+enter', 'ctrl+enter'],
+      CHECK_GAME: ['command+enter', 'ctrl+enter', 'capslock+enter'],
     };
 
     const handlers = {
-      CHECK_GAME: () => { checkResult(); },
+      CHECK_GAME: e => {
+        e.preventDefault();
+        checkResult();
+      },
     };
 
     if (!storeLoaded) {
