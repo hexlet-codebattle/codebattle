@@ -15,7 +15,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
       |> Keyword.put(:hash_sum, hash_sum)
       |> put_types(meta, task)
 
-    source_dir = "/lib/codebattle/generators/templates"
+    source_dir = Application.app_dir(:codebattle, "priv/templates/")
 
     Logger.info(
       "Create checker for #{slug} language. NAME: checker.#{extension}, TASK: #{inspect(task)}, BINDING #{
@@ -23,7 +23,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
       }"
     )
 
-    Mix.Phoenix.copy_from(["."], source_dir, binding, get_template_specs(target_dir, meta))
+    Mix.Phoenix.copy_from(["/"], source_dir, binding, get_template_specs(target_dir, meta))
   end
 
   @doc ~S"""
