@@ -35,7 +35,7 @@ class RootContainer extends React.Component {
     };
 
     const handlers = {
-      CHECK_GAME: (e) => {
+      CHECK_GAME: e => {
         e.preventDefault();
         checkResult();
       },
