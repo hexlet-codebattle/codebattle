@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import React from 'react';
 import { connect } from 'react-redux';
 import cn from 'classnames';
@@ -37,7 +36,7 @@ class RematchButton extends React.Component {
   );
 
   renderBtnAfterSendOffer = () => {
-    const isOpponentInGame = this.isOpponentInGame();
+    const { isOpponentInGame } = this;
     const text = isOpponentInGame ? 'Wait For An Answer...' : 'Opponent Left The Game';
     const classNames = cn('btn btn-block', {
       'btn-secondary': isOpponentInGame,
@@ -76,21 +75,19 @@ class RematchButton extends React.Component {
     </div>
   );
 
-  renderBtnByDefault = () => (
-    <button
-      type="button"
-      className="btn btn-secondary btn-block"
-      onClick={sendOfferToRematch}
-    >
-      {i18n.t('Rematch')}
-    </button>
-  );
-
-  isOpponentInGame = () => {
-    const { opponentPlayer, chatUsers } = this.props;
-    const findedUser = _.find(chatUsers, { id: opponentPlayer.id });
-    return !_.isUndefined(findedUser);
-  }
+  renderBtnByDefault = () => {
+    const { disabled } = this.props;
+    return (
+      <button
+        type="button"
+        className="btn btn-secondary btn-block"
+        onClick={sendOfferToRematch}
+        disabled={disabled}
+      >
+        {disabled ? i18n.t('Opponent has left') : i18n.t('Rematch')}
+      </button>
+    );
+  };
 
   getPlayerStatus = (rematchInitiatorId, currentUserId) => {
     if (rematchInitiatorId === null) {
@@ -115,8 +112,7 @@ const mapStateToProps = state => {
     gameTask: selectors.gameTaskSelector(state),
     gameStatus: selectors.gameStatusSelector(state),
     currentUserId,
-    opponentPlayer: selectors.opponentPlayerSelector(state),
-    chatUsers: selectors.chatUsersSelector(state),
+    isOpponentInGame: selectors.isOpponentInGame(state),
   };
 };
 

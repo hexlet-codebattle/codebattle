@@ -9,24 +9,34 @@ import BackToHomeButton from './BackToHomeButton';
 const ActionsAfterGame = props => {
   const {
     gameStatus: { tournamentId },
+    isOpponentInGame,
   } = props;
+
+  const isRematchDisabled = !isOpponentInGame;
+
   return tournamentId ? (
     <>
       <BackToTournamentButton />
-      <BackToHomeButton isRejectRequired={false} />
+      <BackToHomeButton />
     </>
   ) : (
     <>
       <NewGameButton />
-      <RematchButton />
-      <BackToHomeButton isRejectRequired />
+      <RematchButton disabled={isRematchDisabled} />
+      <BackToHomeButton />
     </>
   );
 };
 
-const mapStateToProps = state => ({
-  gameStatus: selectors.gameStatusSelector(state),
-});
+const mapStateToProps = state => {
+  const currentUserId = selectors.currentUserIdSelector(state);
+
+  return {
+    currentUserId,
+    isOpponentInGame: selectors.isOpponentInGame(state),
+    gameStatus: selectors.gameStatusSelector(state),
+  };
+};
 
 
 export default connect(mapStateToProps)(ActionsAfterGame);

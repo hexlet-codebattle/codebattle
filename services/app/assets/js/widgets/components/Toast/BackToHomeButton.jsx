@@ -1,12 +1,7 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import { sendRejectToRematch } from '../../middlewares/Game';
 
-const BackToHomeButton = ({ isRejectRequired }) => {
+export default function BackToHomeButton() {
   const handleClick = () => {
-    if (isRejectRequired) {
-      sendRejectToRematch();
-    }
     window.location = '/';
   };
 
@@ -15,8 +10,4 @@ const BackToHomeButton = ({ isRejectRequired }) => {
       Back to home
     </button>
   );
-};
-
-const mapDispatchToProps = { sendRejectToRematch };
-
-export default connect(null, mapDispatchToProps)(BackToHomeButton);
+}
