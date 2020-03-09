@@ -84,7 +84,7 @@ class RematchButton extends React.Component {
         onClick={sendOfferToRematch}
         disabled={disabled}
       >
-        {i18n.t('Rematch')}
+        {disabled ? i18n.t('Opponent has left') : i18n.t('Rematch')}
       </button>
     );
   };
