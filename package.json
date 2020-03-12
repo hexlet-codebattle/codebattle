@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "babel-core": "^6.26.3",
+    "babel-runtime": "^6.26.0",
+    "emoji-mart": "^2.11.2"
+  },
+  "devDependencies": {
+    "@babel/runtime-corejs2": "^7.8.7",
+    "core-js": "^3.6.4"
+  }
+}
