@@ -1,14 +1,19 @@
 import React from 'react';
 import _ from 'lodash';
 import { connect } from 'react-redux';
+import { Emoji } from 'emoji-mart';
 import { fetchState, addMessage } from '../middlewares/Chat';
 import * as selectors from '../selectors';
 import Messages from '../components/Messages';
 import UserName from '../components/UserName';
+import EmojiPicker from '../components/EmojiPicker';
+import EmojiToolTip from '../components/ EmojiTooltip';
 import GameStatusCodes from '../config/gameStatusCodes';
+import 'emoji-mart/css/emoji-mart.css';
+
 
 class ChatWidget extends React.Component {
-  state = { message: '' };
+  state = { message: '', isEmojiPickerVisible: false, isEmojiTooltipVisible: false };
 
   componentDidMount() {
     const { dispatch, isStoredGame } = this.props;
@@ -17,8 +22,9 @@ class ChatWidget extends React.Component {
     }
   }
 
-  handleChange = e => {
-    this.setState({ message: e.target.value });
+  handleChange = ({ target: { value } }) => {
+    const isEmojiTooltipVisible = /.*:[a-zA-Z]{1,}([^ ])+$/.test(value);
+    this.setState({ message: value, isEmojiTooltipVisible });
   };
 
   handleSubmit = e => {
@@ -34,17 +40,63 @@ class ChatWidget extends React.Component {
     }
   };
 
+  toggleEmojiPickerVisibility = isVisible => e => {
+    e.preventDefault();
+    const { isEmojiPickerVisible } = this.state;
+    if (isVisible === undefined) {
+      this.setState({ isEmojiPickerVisible: !isEmojiPickerVisible });
+    } else {
+      this.setState({ isEmojiPickerVisible: isVisible });
+    }
+  }
+
+  handleSelectEmodji = (colons = null) => emoji => {
+    const { message } = this.state;
+    const messageWithoutColons = colons ? message.slice(0, -colons.length - 2) : message;
+    this.setState({ message: `${messageWithoutColons}${emoji.native}`, isEmojiPickerVisible: false });
+  }
+
+  hideEmojiTooltip = () => this.setState({ isEmojiTooltipVisible: false })
+
   renderChatInput() {
-    const { message: typedMessage } = this.state;
+    const { message, isEmojiPickerVisible, isEmojiTooltipVisible } = this.state;
 
     return (
       <form className="p-2 input-group input-group-sm position-absolute" style={{ bottom: 0 }} onSubmit={this.handleSubmit}>
         <input
-          className="form-control border-secondary"
+          className="form-control border-secondary relative"
           placeholder="Type message here..."
-          value={typedMessage}
+          value={message}
           onChange={this.handleChange}
         />
+        <button
+          type="button"
+          className="btn btn-link position-absolute"
+          style={{ right: '50px', zIndex: 5 }}
+          onClick={this.toggleEmojiPickerVisibility()}
+        >
+          <Emoji
+            emoji="grinning"
+            set="apple"
+            size={20}
+          />
+        </button>
+        {isEmojiPickerVisible
+          && (
+          <EmojiPicker
+            handleSelect={this.handleSelectEmodji}
+            hidePicker={this.toggleEmojiPickerVisibility(false)}
+            isShown={isEmojiPickerVisible}
+          />
+          )}
+        {isEmojiTooltipVisible
+        && (
+        <EmojiToolTip
+          message={message}
+          handleSelect={this.handleSelectEmodji}
+          hide={this.hideEmojiTooltip}
+        />
+        )}
         <div className="input-group-append">
           <button className="btn btn-outline-secondary" type="button" onClick={this.handleSubmit}>
             Send
