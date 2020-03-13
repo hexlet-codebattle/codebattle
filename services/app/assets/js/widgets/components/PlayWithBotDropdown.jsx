@@ -2,7 +2,7 @@ import React from 'react';
 import DropdownMenuDefault from './DropdownMenuDefault';
 import { makeCreateGameBotUrl } from '../utils/urlBuilders';
 
-const SelectorPlayWithBot = ({ activeGames, renderStartNewGameButton }) => {
+const PlayWithBotDropdown = ({ activeGames, renderStartNewGameButton }) => {
   const gamesWithBot = activeGames.filter(game => game.isBot);
   const selectGameByLevel = type => gamesWithBot.find(game => game.level === type);
   const getGameId = level => selectGameByLevel(level).id;
@@ -33,4 +33,4 @@ const SelectorPlayWithBot = ({ activeGames, renderStartNewGameButton }) => {
   );
 };
 
-export default SelectorPlayWithBot;
+export default PlayWithBotDropdown;

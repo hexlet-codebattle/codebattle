@@ -14,9 +14,9 @@ import GamesHeatmap from '../components/GamesHeatmap';
 import Card from '../components/Card';
 import UserInfo from './UserInfo';
 import { makeCreateGameBotUrl } from '../utils/urlBuilders';
-import SelectorPlayWithBot from '../components/SelectorPlayWithBot';
-import SelectorStartNewGame from '../components/SelectorCreateGame';
-import SelectorPlayWithFriend from '../components/SelectorPlayWithFriend';
+import PlayWithBotDropdown from '../components/PlayWithBotDropdown';
+import CreateGameDropdown from '../components/CreateGameDropdown';
+import PlayWithFriendDropdown from '../components/PlayWithFriendDropdown';
 
 class GameList extends React.Component {
   levelToClass = {
@@ -341,14 +341,14 @@ class GameList extends React.Component {
       <>
         <Card title="New game">
           <div className="d-flex flex-sm-row flex-column align-items-center justify-content-center flex-wrap">
-            <SelectorPlayWithBot
+            <PlayWithBotDropdown
               activeGames={activeGames}
               renderStartNewGameButton={this.renderStartNewGameButton}
             />
-            <SelectorStartNewGame
+            <CreateGameDropdown
               renderStartNewGameButton={this.renderStartNewGameButton}
             />
-            <SelectorPlayWithFriend
+            <PlayWithFriendDropdown
               renderStartNewGameButton={this.renderStartNewGameButton}
             />
           </div>
