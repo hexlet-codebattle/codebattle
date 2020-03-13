@@ -2,9 +2,9 @@ import React from 'react';
 import { makeCreateGameUrlDefault } from '../utils/urlBuilders';
 import DropdownMenuDefault from './DropdownMenuDefault';
 
-const SelectorPlayWithFriend = ({ timeoutSeconds, renderStartNewGameButton }) => {
+const SelectorPlayWithFriend = ({ renderStartNewGameButton }) => {
   const renderLevel = level => {
-    const gameUrl = makeCreateGameUrlDefault(level, 'withFriend', timeoutSeconds);
+    const gameUrl = makeCreateGameUrlDefault(level, 'withFriend');
     return renderStartNewGameButton(level, gameUrl);
   };
 
