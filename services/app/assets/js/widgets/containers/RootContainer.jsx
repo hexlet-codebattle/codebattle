@@ -31,7 +31,7 @@ class RootContainer extends React.Component {
       storeLoaded, gameStatusCode, checkResult,
     } = this.props;
     const keyMap = {
-      CHECK_GAME: ['command+enter', 'ctrl+enter', 'capslock+enter'],
+      CHECK_GAME: ['command+enter', 'ctrl+enter'],
     };
 
     const handlers = {
