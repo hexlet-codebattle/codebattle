@@ -1,12 +1,14 @@
 import React, { useEffect } from 'react';
 import { Picker } from 'emoji-mart';
+import { useHotkeys } from 'react-hotkeys-hook';
 import 'emoji-mart/css/emoji-mart.css';
 
-export default function EmojiPicker({ handleSelect, hidePicker }) {
+export default function EmojiPicker({ handleSelect, hideEmojiPicker }) {
   useEffect(() => {
     const listener = e => {
       if (e.key === 'Escape') {
-        hidePicker(e);
+        hideEmojiPicker();
+        e.preventDefault;
       }
     };
 
