@@ -57,6 +57,13 @@ class ChatWidget extends React.Component {
     });
   };
 
+  handleInputKeydown = (e) => {
+    const { isEmojiTooltipVisible } = this.state;
+    if (e.key === 'Enter' && isEmojiTooltipVisible) {
+      e.preventDefault();
+    }
+  }
+
   hideEmojiTooltip = () => this.setState({ isEmojiTooltipVisible: false });
 
   renderChatInput() {
@@ -73,6 +80,7 @@ class ChatWidget extends React.Component {
           placeholder="Type message here..."
           value={message}
           onChange={this.handleChange}
+          onKeyDown={this.handleInputKeydown}
         />
         <button
           type="button"
@@ -82,18 +90,18 @@ class ChatWidget extends React.Component {
         >
           <Emoji emoji="grinning" set="apple" size={20} />
         </button>
-        {isEmojiPickerVisible && (
-          <EmojiPicker
-            handleSelect={this.handleSelectEmodji}
-            hideEmojiPicker={this.hideEmojiPicker}
-            isShown={isEmojiPickerVisible}
-          />
-        )}
         {isEmojiTooltipVisible && (
           <EmojiToolTip
             message={message}
             handleSelect={this.handleSelectEmodji}
             hide={this.hideEmojiTooltip}
+          />
+        )}
+        {isEmojiPickerVisible && (
+          <EmojiPicker
+            handleSelect={this.handleSelectEmodji}
+            hideEmojiPicker={this.hideEmojiPicker}
+            isShown={isEmojiPickerVisible}
           />
         )}
         <div className="input-group-append">
