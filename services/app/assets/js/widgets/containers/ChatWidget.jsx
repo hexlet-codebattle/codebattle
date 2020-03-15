@@ -57,7 +57,7 @@ class ChatWidget extends React.Component {
     });
   };
 
-  handleInputKeydown = (e) => {
+  handleInputKeydown = e => {
     const { isEmojiTooltipVisible } = this.state;
     if (e.key === 'Enter' && isEmojiTooltipVisible) {
       e.preventDefault();

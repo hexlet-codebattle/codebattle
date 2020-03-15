@@ -33,49 +33,17 @@ export default function EmojiTooltip({ message, handleSelect, hide }) {
     setActiveIndex(prevIndex => {
       const decrement = prevIndex !== 0 ? 1 : -emojies.length + 1;
       return prevIndex - decrement;
-    })
+    });
   };
 
-  useHotkeys('escape', () => hide(), [], { filter: (e) => e.target });
+  useHotkeys('escape', () => hide(), [], { filter: e => e.target });
   useHotkeys('enter', () => {
     handleSelect(colons)(emojies[activeIndex]);
     hide();
-  }, [], { filter: (e) => e.target })
+  }, [], { filter: e => e.target });
 
-  useHotkeys('up', () => decreaseIndex(), [], { filter: (e) => e.target });
-  useHotkeys('down', () => increaseIndex(), [], { filter: (e) => e.target });
-
-
-
-  // const keydownListener = e => {
-  //   // if (e.key === 'Escape') {
-  //   //   hide();
-  //   // }
-
-  //   if (e.key === 'Enter') {
-  //     handleSelect(colons)(emojies[activeIndex]);
-  //     hide();
-  //   }
-
-  //   if (e.key === 'ArrowDown') {
-  //     setActiveIndex(prevIndex => {
-  //       const increment = prevIndex !== emojies.length - 1 ? 1 : -emojies.length + 1;
-  //       return prevIndex + increment;
-  //     });
-  //   }
-
-  //   if (e.key === 'ArrowUp') {
-  //     setActiveIndex(prevIndex => {
-  //       const decrement = prevIndex !== 0 ? 1 : -emojies.length + 1;
-  //       return prevIndex - decrement;
-  //     });
-  //   }
-  // };
-
-  // useEffect(() => {
-    // document.body.addEventListener('keydown', keydownListener);
-    // return () => document.body.removeEventListener('keydown', keydownListener);
-  // }, []);
+  useHotkeys('up', () => decreaseIndex(), [], { filter: e => e.target });
+  useHotkeys('down', () => increaseIndex(), [], { filter: e => e.target });
 
   const onChange = e => {
     const [currentIndex] = e.target.value;
