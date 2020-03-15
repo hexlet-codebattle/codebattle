@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Picker } from 'emoji-mart';
 import { useHotkeys } from 'react-hotkeys-hook';
 import 'emoji-mart/css/emoji-mart.css';

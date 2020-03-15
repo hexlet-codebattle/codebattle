@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { emojiIndex } from 'emoji-mart';
 import { useHotkeys } from 'react-hotkeys-hook';
 
