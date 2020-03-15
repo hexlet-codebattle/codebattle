@@ -26,7 +26,7 @@ export default function EmojiTooltip({ message, handleSelect, hide }) {
     setActiveIndex(prevIndex => {
       const increment = prevIndex !== emojies.length - 1 ? 1 : -emojies.length + 1;
       return prevIndex + increment;
-    })
+    });
   };
 
   const decreaseIndex = () => {
