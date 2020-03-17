@@ -1,0 +1,34 @@
+import 'package:test/test.dart';
+import 'package:dart_json/dart_json.dart';
+
+import 'package:dart/solution.dart';
+
+void main() {
+  test("Run Asserts", () {
+    var success = true;
+
+    <%= for %{arguments: arguments, expected: expected} <- checks do %>
+    success = assert_solution(solution(<%= arguments %>), <%= expected %>, [<%= arguments %>], success);
+    <% end %>
+
+    if (success) {
+      print_message({'status': 'ok', 'result': <%= hash_sum %>});
+    }
+  });
+}
+
+bool assert_solution(result, expected, arguments, success) {
+  try {
+    expect(expected, equals(result));
+    print_message({'status': 'success', 'result': result});
+  } catch (e) {
+    print_message({'status': 'failure', 'result': result, 'arguments': arguments});
+    return false;
+  }
+
+  return success;
+}
+
+void print_message(json) {
+  print(Json.serialize(json));
+}

@@ -31,6 +31,7 @@ defmodule Codebattle.LanguagesTest do
       MapSet.new([
         "#include <iostream>\n#include <map>\n#include <vector>\n\nusing namespace std;\n\n solution() {\n\n}",
         "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nmodule.exports = () => {\n\n};",
+        "solution() {\n\n}",
         "import * as _ from \"lodash\";\nfunction solution(){\n\n};\n\nexport default solution;",
         "package main;\n\nfunc solution() {\n\n}",
         "def solution()\n\nend",
@@ -59,6 +60,9 @@ defmodule Codebattle.LanguagesTest do
     ts_expected =
       "import * as _ from \"lodash\";\nimport {Hashtable} from \"./types\";\n\nfunction solution(a: number, b: number, text: string, arr: Array<Array<number>>, condition: boolean, hashtable: Hashtable): Array<string> {\n\n};\n\nexport default solution;"
 
+    dart_expected =
+      "List<String> solution(int a, double b, String text, List<List<int>> arr, bool condition, Map<String, int> hashtable) {\n\n}"
+
     golang_expected =
       "package main;\n\nfunc solution(a int64, b float64, text string, arr [][]int64, condition bool, hashtable map[string]int64) []string {\n\n}"
 
@@ -83,6 +87,7 @@ defmodule Codebattle.LanguagesTest do
 
     assert Languages.get_solution("js", signature) == js_expected
     assert Languages.get_solution("ts", signature) == ts_expected
+    assert Languages.get_solution("dart", signature) == dart_expected
     assert Languages.get_solution("golang", signature) == golang_expected
     assert Languages.get_solution("ruby", signature) == ruby_expected
     assert Languages.get_solution("elixir", signature) == elixir_expected
