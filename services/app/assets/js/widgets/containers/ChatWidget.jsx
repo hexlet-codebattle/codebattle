@@ -8,8 +8,15 @@ import Messages from '../components/Messages';
 import UserName from '../components/UserName';
 import EmojiPicker from '../components/EmojiPicker';
 import EmojiToolTip from '../components/ EmojiTooltip';
+import ChatInput from '../components/ChatInput';
 import GameStatusCodes from '../config/gameStatusCodes';
 import 'emoji-mart/css/emoji-mart.css';
+import sanitizeHtml from 'sanitize-html';
+
+const sanitizeConf = {
+  allowedTags: ["b", "i", "em", "strong", "a", "p", "h1", "img"],
+  allowedAttributes: { a: ["href"], img: ['src', 'style'] }
+};
 
 class ChatWidget extends React.Component {
   state = { message: '', isEmojiPickerVisible: false, isEmojiTooltipVisible: false };
@@ -21,9 +28,10 @@ class ChatWidget extends React.Component {
     }
   }
 
-  handleChange = ({ target: { value } }) => {
-    const isEmojiTooltipVisible = /.*:[a-zA-Z]{1,}([^ ])+$/.test(value);
-    this.setState({ message: value, isEmojiTooltipVisible });
+  handleChange = (e) => {
+    console.log(e.target.value);
+    const isEmojiTooltipVisible = /.*:[a-zA-Z]{1,}([^ ])+$/.test(e.target.value);
+    this.setState({ message: e.target.value, isEmojiTooltipVisible });
   };
 
   handleSubmit = e => {
@@ -34,7 +42,7 @@ class ChatWidget extends React.Component {
     } = this.props;
 
     if (message) {
-      addMessage(name, message);
+      addMessage(name, sanitizeHtml(message, sanitizeConf));
       this.setState({ message: '' });
     }
   };
@@ -48,14 +56,22 @@ class ChatWidget extends React.Component {
     this.setState({ isEmojiPickerVisible: false });
   };
 
-  handleSelectEmodji = (colons = null) => emoji => {
-    const { message } = this.state;
-    const messageWithoutColons = colons ? message.slice(0, -colons.length - 2) : message;
-    this.setState({
-      message: `${messageWithoutColons}${emoji.native}`,
-      isEmojiPickerVisible: false,
-    });
-  };
+  sanitize = () => this.setState({ message: sanitizeHtml(this.state.message, sanitizeConf) })
+
+  // handleSelectEmodji = (colons = null) => emoji => {
+  //   const { message } = this.state;
+  //   const messageWithoutColons = colons ? message.slice(0, -colons.length - 2) : message;
+  //   this.setState({
+  //     message: `${messageWithoutColons}${emoji.native}`,
+  //     isEmojiPickerVisible: false,
+  //   });
+  // };
+
+  handleSelectEmodji = (emoji) => {
+    const image = `<img src="${emoji.imageUrl}" style="; width: 16px; height: 19px" />`
+    const newMessage = `${this.state.message}${image}`;
+    this.setState({ message: newMessage, isEmojiPickerVisible: false });
+  }
 
   handleInputKeydown = e => {
     const { isEmojiTooltipVisible } = this.state;
@@ -75,12 +91,10 @@ class ChatWidget extends React.Component {
         style={{ bottom: 0 }}
         onSubmit={this.handleSubmit}
       >
-        <input
-          className="form-control border-secondary relative"
-          placeholder="Type message here..."
-          value={message}
+        <ChatInput
+          message={message}
           onChange={this.handleChange}
-          onKeyDown={this.handleInputKeydown}
+          onKeydown={this.handleInputKeydown}
         />
         <button
           type="button"

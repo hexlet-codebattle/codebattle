@@ -44,6 +44,7 @@
     "react": "^16.13.0",
     "react-bootstrap": "^1.0.0-beta.17",
     "react-calendar-heatmap": "^1.8.1",
+    "react-contenteditable": "^3.3.3",
     "react-dom": "^16.13.0",
     "react-hotkeys": "^1.1.4",
     "react-hotkeys-hook": "^1.6.0",
@@ -56,6 +57,7 @@
     "react-stay-scrolled": "^7.0.0",
     "react-toastify": "^5.5.0",
     "redux-persist": "^6.0.0",
+    "sanitize-html": "^1.22.1",
     "set-value": "^3.0.1"
   },
   "devDependencies": {
