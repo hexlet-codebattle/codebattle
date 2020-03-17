@@ -13,10 +13,10 @@ export default function EmojiPicker({ handleSelect, hideEmojiPicker }) {
       showSkinTones={false}
       darkMode={false}
       perLine={10}
-      include={["custom"]}
+      include={['custom']}
       custom={customEmoji}
       onClick={handleSelect}
-      emojiTooltip={true}
+      emojiTooltip
       style={{ position: 'absolute', right: '88px', bottom: '10px' }}
     />
   );

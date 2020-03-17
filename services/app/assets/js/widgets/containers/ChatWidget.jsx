@@ -2,6 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import { connect } from 'react-redux';
 import { Emoji } from 'emoji-mart';
+import sanitizeHtml from 'sanitize-html';
 import { fetchState, addMessage } from '../middlewares/Chat';
 import * as selectors from '../selectors';
 import Messages from '../components/Messages';
@@ -11,11 +12,10 @@ import EmojiToolTip from '../components/ EmojiTooltip';
 import ChatInput from '../components/ChatInput';
 import GameStatusCodes from '../config/gameStatusCodes';
 import 'emoji-mart/css/emoji-mart.css';
-import sanitizeHtml from 'sanitize-html';
 
 const sanitizeConf = {
-  allowedTags: ["b", "i", "em", "strong", "a", "p", "h1", "img"],
-  allowedAttributes: { a: ["href"], img: ['src', 'style'] }
+  allowedTags: ['b', 'i', 'em', 'strong', 'a', 'p', 'h1', 'img'],
+  allowedAttributes: { a: ['href'], img: ['src', 'style'] },
 };
 
 class ChatWidget extends React.Component {
@@ -28,8 +28,7 @@ class ChatWidget extends React.Component {
     }
   }
 
-  handleChange = (e) => {
-    console.log(e.target.value);
+  handleChange = e => {
     const isEmojiTooltipVisible = /.*:[a-zA-Z]{1,}([^ ])+$/.test(e.target.value);
     this.setState({ message: e.target.value, isEmojiTooltipVisible });
   };
@@ -56,7 +55,10 @@ class ChatWidget extends React.Component {
     this.setState({ isEmojiPickerVisible: false });
   };
 
-  sanitize = () => this.setState({ message: sanitizeHtml(this.state.message, sanitizeConf) })
+  // sanitize = () => {
+  //   const { message } = this.state;
+  //   this.setState({ message: sanitizeHtml(message, sanitizeConf) })
+  // };
 
   // handleSelectEmodji = (colons = null) => emoji => {
   //   const { message } = this.state;
@@ -67,10 +69,11 @@ class ChatWidget extends React.Component {
   //   });
   // };
 
-  handleSelectEmodji = (emoji) => {
-    const image = `<img src="${emoji.imageUrl}" style="; width: 16px; height: 19px" />`
-    const newMessage = `${this.state.message}${image}`;
-    this.setState({ message: newMessage, isEmojiPickerVisible: false });
+  handleSelectEmodji = emoji => {
+    const { message } = this.state;
+    const image = `<img src="${emoji.imageUrl}" style="; width: 16px; height: 19px" />`;
+    const newMessage = `${message}${image}`;
+    this.setState(() => ({ message: newMessage, isEmojiPickerVisible: false }));
   }
 
   handleInputKeydown = e => {

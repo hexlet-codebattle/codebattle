@@ -1,13 +1,14 @@
+/* eslint-disable react/no-danger */
+
 import React from 'react';
 
 const Message = ({ message = '', user = '' }) => {
-  console.log('message', message);
+  const innerHtml = `<b>${user}</b>: ${message}`;
   return (
-  <div>
-    <span className="font-weight-bold">{`${user}: `}</span>
-    <div dangerouslySetInnerHTML={{ __html: message }}></div>
-  </div>
-);
-  };
+    <div>
+      <div dangerouslySetInnerHTML={{ __html: innerHtml }} />
+    </div>
+  );
+};
 
 export default Message;

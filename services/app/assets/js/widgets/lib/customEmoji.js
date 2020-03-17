@@ -17,10 +17,9 @@ const buildEmoji = filename => {
     colons: `:${name}:`,
     imageUrl,
   };
-}
+};
 
 export default filenames.map(buildEmoji);
-
 
 
 // export default [
