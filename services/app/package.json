@@ -6,6 +6,7 @@
     "last 2 versions"
   ],
   "scripts": {
+    "test": "jest",
     "watch": "webpack --watch-stdin --color --mode development",
     "profile": "webpack --profile --json > stats.json",
     "build-dev": "webpack --mode development",
@@ -75,6 +76,7 @@
     "eslint": "^6.8.0",
     "eslint-config-airbnb": "^18.1.0",
     "eslint-plugin-import": "2.20.1",
+    "eslint-plugin-jest": "^23.8.2",
     "eslint-plugin-jsx": "0.1.0",
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-react": "^7.19.0",
