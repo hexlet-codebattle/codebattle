@@ -6,5 +6,6 @@ import Message from '../widgets/components/Message';
 test('test rendering Message Component', async () => {
   const { getByText } = render(<Message message="txt" user="user" />);
 
+  expect(getByText(/txt/)).toBeInTheDocument();
   expect(getByText(/user/)).toBeInTheDocument();
 });
