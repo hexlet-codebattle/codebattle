@@ -14,6 +14,8 @@ import 'emoji-mart/css/emoji-mart.css';
 class ChatWidget extends React.Component {
   state = { message: '', isEmojiPickerVisible: false, isEmojiTooltipVisible: false };
 
+  chatInput = React.createRef()
+
   componentDidMount() {
     const { dispatch, isStoredGame } = this.props;
     if (!isStoredGame) {
@@ -51,8 +53,12 @@ class ChatWidget extends React.Component {
   handleSelectEmodji = (colons = null) => emoji => {
     const { message } = this.state;
     const messageWithoutColons = colons ? message.slice(0, -colons.length - 2) : message;
+    const caretPosition = this.chatInput.current.selectionStart;
+    const before = messageWithoutColons.slice(0, caretPosition);
+    const after = messageWithoutColons.slice(caretPosition);
+    const newMessage = `${before}${emoji.native}${after}`;
     this.setState({
-      message: `${messageWithoutColons}${emoji.native}`,
+      message: newMessage,
       isEmojiPickerVisible: false,
     });
   };
@@ -65,6 +71,7 @@ class ChatWidget extends React.Component {
   }
 
   hideEmojiTooltip = () => this.setState({ isEmojiTooltipVisible: false });
+
 
   renderChatInput() {
     const { message, isEmojiPickerVisible, isEmojiTooltipVisible } = this.state;
@@ -79,6 +86,7 @@ class ChatWidget extends React.Component {
           className="form-control border-secondary relative"
           placeholder="Type message here..."
           value={message}
+          ref={this.chatInput}
           onChange={this.handleChange}
           onKeyDown={this.handleInputKeydown}
         />
