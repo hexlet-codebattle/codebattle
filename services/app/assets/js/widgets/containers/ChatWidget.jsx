@@ -1,14 +1,10 @@
 import React from 'react';
 import _ from 'lodash';
 import { connect } from 'react-redux';
-import { Emoji } from 'emoji-mart';
-import sanitizeHtml from 'sanitize-html';
 import { fetchState, addMessage } from '../middlewares/Chat';
 import * as selectors from '../selectors';
 import Messages from '../components/Messages';
 import UserName from '../components/UserName';
-import EmojiPicker from '../components/EmojiPicker';
-import EmojiToolTip from '../components/ EmojiTooltip';
 import ChatInput from '../components/ChatInput';
 import GameStatusCodes from '../config/gameStatusCodes';
 import 'emoji-mart/css/emoji-mart.css';
@@ -16,11 +12,6 @@ import 'emoji-mart/css/emoji-mart.css';
 
 class ChatWidget extends React.Component {
   state = { message: '', isEmojiPickerVisible: false, isEmojiTooltipVisible: false };
-
-  sanitizeConf = {
-    allowedTags: ['img'],
-    allowedAttributes: { img: ['src', 'width', 'height'] },
-  }
 
   inputRef = React.createRef();
 
@@ -31,10 +22,10 @@ class ChatWidget extends React.Component {
     }
   }
 
-  handleChange = (e) => {
+  handleChange = e => {
     const isEmojiTooltipVisible = /.*:[a-zA-Z]{1,}([^ ])+$/.test(e.target.value);
-    const sanitizedMsg = e.target.value.replace(/<br>/, '&nbsp;');
-    this.setState({ message: sanitizedMsg, isEmojiTooltipVisible });
+    const processedMsg = e.target.value.replace(/<br>/, '&nbsp;');
+    this.setState({ message: processedMsg, isEmojiTooltipVisible });
   };
 
   handleSubmit = e => {
@@ -45,7 +36,7 @@ class ChatWidget extends React.Component {
     } = this.props;
 
     if (message) {
-      addMessage(name, sanitizeHtml(message, this.sanitizeConf));
+      addMessage(name, message);
       this.setState({ message: '' });
     }
   };
@@ -60,7 +51,6 @@ class ChatWidget extends React.Component {
   };
 
   handleSelectEmodji = emoji => {
-    const { message } = this.state;
     const selection = window.getSelection();
     const range = selection.getRangeAt(0);
     const image = new Image(20, 20);
