@@ -1,29 +1,41 @@
 require 'json'
+require 'stringio'
 require 'test/unit'
-$stdout = STDERR
 
 extend Test::Unit::Assertions
+
+original_stdout = $stdout
+$stdout = StringIO.new
+
+@execution_result = []
 
 begin
   require './check/solution'
 
   success = true
 
-  def assert_result(result, expected, error_message, success)
+  def assert_result(result, expected, arguments, success)
     begin
       assert_equal(expected, result)
 
-      puts JSON.dump(
-        status: :success,
-        result: result
-      )
+      @execution_result <<
+        JSON.dump(
+          status: :success,
+          result: result,
+          output: $stdout.string,
+          expected: expected,
+          arguments: arguments
+        )
       success
     rescue Test::Unit::AssertionFailedError
-      puts JSON.dump(
-        status: :failure,
-        result: result,
-        arguments: error_message
-      )
+      @execution_result <<
+        JSON.dump(
+          status: :failure,
+          result: result,
+          output: $stdout.string,
+          expected: expected,
+          arguments: arguments
+        )
       false
     end
   end
@@ -33,15 +45,19 @@ begin
   <% end %>
 
   if success
-    puts JSON.dump(
-      status: :ok,
-      result: <%= hash_sum %>
-    )
+    @execution_result <<
+      JSON.dump(
+        status: :ok,
+        result: '__code-0__'
+      )
   end
 rescue Exception => e
-  puts(JSON.dump(
-         status: :error,
-         result: e.message
-       ))
-  exit(0)
+  @execution_result <<
+    JSON.dump(
+      status: :error,
+      result: e.message
+    )
 end
+
+$stdout = original_stdout
+puts @execution_result
