@@ -20,37 +20,3 @@ const buildEmoji = filename => {
 };
 
 export default filenames.map(buildEmoji);
-
-
-// export default [
-//   {
-//     name: 'Octocat',
-//     short_names: ['octocat'],
-//     text: '',
-//     html: true,
-//     emoticons: [],
-//     colons: ':octocat:',
-//     keywords: ['github'],
-//     imageUrl: 'https://assets-cdn.github.com/images/icons/emoji/octocat.png?v7',
-//   },
-//   {
-//     name: 'Troll',
-//     short_names: ['troll'],
-//     text: '',
-//     emoticons: [],
-//     colons: ':trollface:',
-//     keywords: ['troll'],
-//     html: true,
-//     imageUrl: '/assets/images/emoji/troll.png',
-//   },
-//   {
-//     name: 'Ah_year',
-//     short_names: ['ah_yeah'],
-//     text: '',
-//     colons: ':ahyeah:',
-//     emoticons: [],
-//     html: false,
-//     keywords: ['ah_yeah'],
-//     imageUrl: '/assets/images/emoji/aw_yeah.gif',
-//   },
-// ];
