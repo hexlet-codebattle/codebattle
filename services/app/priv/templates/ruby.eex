@@ -14,8 +14,11 @@ begin
 
   success = true
 
-  def assert_result(result, expected, arguments, success)
+  def assert_result(solution, expected, arguments, success)
     begin
+      start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+      result = solution.call(*arguments)
+      finish = Process.clock_gettime(Process::CLOCK_MONOTONIC)
       assert_equal(expected, result)
 
       @execution_result <<
@@ -23,8 +26,8 @@ begin
           status: :success,
           result: result,
           output: $stdout.string,
-          expected: expected,
-          arguments: arguments
+          arguments: arguments,
+          execution_time: finish - start
         )
       success
     rescue Test::Unit::AssertionFailedError
@@ -35,13 +38,17 @@ begin
           output: $stdout.string,
           expected: expected,
           arguments: arguments
+          arguments: arguments,
+          execution_time: finish - start
+        )
+      success
         )
       false
     end
   end
 
   <%= for %{arguments: arguments, expected: expected} <- checks do %>
-    success = assert_result(method(:solution).call(<%= arguments %>), <%= expected %>, [<%= arguments %>], success)
+    success = assert_result(method(:solution), <%= expected %>, [<%= arguments %>], success)
   <% end %>
 
   if success

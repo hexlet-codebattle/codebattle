@@ -14,8 +14,11 @@ begin
 
   success = true
 
-  def assert_result(result, expected, arguments, success)
+  def assert_result(solution, expected, arguments, success)
     begin
+      start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+      result = solution.call(*arguments)
+      finish = Process.clock_gettime(Process::CLOCK_MONOTONIC)
       assert_equal(expected, result)
 
       @execution_result <<
@@ -24,7 +27,8 @@ begin
           result: result,
           output: $stdout.string,
           expected: expected,
-          arguments: arguments
+          arguments: arguments,
+          execution_time: finish - start
         )
       success
     rescue Test::Unit::AssertionFailedError
@@ -34,14 +38,15 @@ begin
           result: result,
           output: $stdout.string,
           expected: expected,
-          arguments: arguments
+          arguments: arguments,
+          execution_time: finish - start
         )
       false
     end
   end
 
-  success = assert_result(method(:solution).call(1, 2), 3, [1, 2], success)
-  success = assert_result(method(:solution).call(5, 3), 8, [5, 3], success)
+  success = assert_result(method(:solution), 3, [1, 2], success)
+  success = assert_result(method(:solution), 8, [5, 3], success)
   if success
     @execution_result <<
       JSON.dump(
