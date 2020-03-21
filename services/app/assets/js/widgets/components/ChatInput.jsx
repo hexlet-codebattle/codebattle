@@ -1,23 +1,22 @@
 import React, { useState } from 'react';
 import ContentEditable from 'react-contenteditable';
 import { Emoji } from 'emoji-mart';
-import { addMessage } from '../middlewares/Chat';
 import { connect } from 'react-redux';
+import sanitizeHtml from 'sanitize-html';
+import { addMessage } from '../middlewares/Chat';
 import * as selectors from '../selectors';
 import EmojiPicker from './EmojiPicker';
-import sanitizeHtml from 'sanitize-html';
 
-  const ChatInput = props => {
-
+const ChatInput = props => {
   const [caretPosition, setCaretPosition] = useState(0);
   const [msgHtml, setMsgHtml] = useState('');
   const [isEmojiPickerVisible, setEmojiPickerVisibility] = useState(false);
-  const [isTooltipVisible, setTooltipVisibility] = useState(false);
+  // const [isTooltipVisible, setTooltipVisibility] = useState(false);
   const { innerRef } = props;
   const sanitizeConf = {
     allowedTags: ['img'],
     allowedAttributes: { img: ['src', 'width', 'height'] },
-  }
+  };
 
   const updateCaretPosition = () => {
     const selection = window.getSelection();
@@ -27,10 +26,11 @@ import sanitizeHtml from 'sanitize-html';
     const { offsetLeft } = marker;
     const containerPadding = window.getComputedStyle(innerRef.current).getPropertyValue('padding-left');
     const containerOffset = parseInt(containerPadding, 10);
-    const newPosition = offsetLeft || containerOffset  // fix chrome wrong offsetLeft in the beginning of the line
+    // fix chrome wrong offsetLeft in the beginning of the line
+    const newPosition = offsetLeft || containerOffset;
     setCaretPosition(newPosition);
     range.deleteContents();
-  }
+  };
 
   const handleSubmit = e => {
     e.preventDefault();
@@ -47,10 +47,10 @@ import sanitizeHtml from 'sanitize-html';
     updateCaretPosition();
   };
 
-  const handleChange = (e) => {
-    const isEmojiTooltipVisible = /.*:[a-zA-Z]{1,}([^ ])+$/.test(e.target.value);
-    const sanitizedMsg = e.target.value.replace(/<br>/, '&nbsp;');
-    setMsgHtml(sanitizedMsg);
+  const handleChange = e => {
+    // const isEmojiTooltipVisible = /.*:[a-zA-Z]{1,}([^ ])+$/.test(e.target.value);
+    const normalizedMsg = e.target.value.replace(/<br>/, '&nbsp;');
+    setMsgHtml(normalizedMsg);
   };
 
   const toggleEmojiPickerVisibility = () => setEmojiPickerVisibility(!isEmojiPickerVisible);
@@ -68,9 +68,9 @@ import sanitizeHtml from 'sanitize-html';
     selection.removeAllRanges();
     selection.addRange(range);
     updateCaretPosition();
-  }
+  };
 
-  const hideEmojiTooltip = () => setTooltipVisibility(false);
+  // const hideEmojiTooltip = () => setTooltipVisibility(false);
 
   const hideEmojiPicker = () => setEmojiPickerVisibility(false);
 
@@ -80,33 +80,26 @@ import sanitizeHtml from 'sanitize-html';
       style={{ bottom: 0 }}
       onSubmit={handleSubmit}
     >
-    <div className="position-relative flex-grow-1 position-relative">
-    <div className="cursor position-absolute" style={{ transform: `translateX(${caretPosition}px)`}}></div>
-     <ContentEditable
-      style={{ caretColor: 'transparent'}}
-      className="form-control border-secondary"
-      onChange={handleChange}
-      html={msgHtml}
-      innerRef={innerRef}
-      onClick={updateCaretPosition}
-      onKeyUp={updateCaretPosition}
-     />
-      <button
-        type="button"
-        className="btn btn-link position-absolute"
-        style={{ right: '0', top: '3px', zIndex: 5 }}
-        onClick={toggleEmojiPickerVisibility}
-      >
-        <Emoji emoji="grinning" set="apple" size={20} />
-      </button>
-      </div>
-      {isTooltipVisible && (
-        <EmojiToolTip
-          message={message}
-          handleSelect={handleSelectEmodji}
-          hide={hideEmojiTooltip}
+      <div className="position-relative flex-grow-1 position-relative">
+        <div className="x-emoji-cursor position-absolute" style={{ transform: `translateX(${caretPosition}px)` }} />
+        <ContentEditable
+          style={{ caretColor: 'transparent' }}
+          className="form-control border-secondary"
+          onChange={handleChange}
+          html={msgHtml}
+          innerRef={innerRef}
+          onClick={updateCaretPosition}
+          onKeyUp={updateCaretPosition}
         />
-      )}
+        <button
+          type="button"
+          className="btn btn-link position-absolute"
+          style={{ right: '0', top: '3px', zIndex: 5 }}
+          onClick={toggleEmojiPickerVisibility}
+        >
+          <Emoji emoji="grinning" set="apple" size={20} />
+        </button>
+      </div>
       {isEmojiPickerVisible && (
         <EmojiPicker
           handleSelect={handleSelectEmodji}
@@ -121,8 +114,8 @@ import sanitizeHtml from 'sanitize-html';
       </div>
     </form>
   );
-      };
+};
 
-  const mapStateToProps = state => ({ currentUser: selectors.currentChatUserSelector(state) });
+const mapStateToProps = state => ({ currentUser: selectors.currentChatUserSelector(state) });
 
-  export default connect(mapStateToProps)(ChatInput);
+export default connect(mapStateToProps)(ChatInput);
