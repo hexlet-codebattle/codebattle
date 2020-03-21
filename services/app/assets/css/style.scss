@@ -196,3 +196,21 @@ a {
     border-top: 5px solid black;
   }
 }
+
+.cursor {
+  top: 24%;
+  animation: 1s blink step-end infinite;
+  width: 0;
+  height: 50%;
+  border-left: 1px solid #000;
+}
+
+@keyframes blink {
+  from,
+  to {
+    opacity: 70%;
+  }
+  50% {
+    opacity: 0;
+  }
+}

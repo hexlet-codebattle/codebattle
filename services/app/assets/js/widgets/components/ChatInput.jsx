@@ -1,12 +1,152 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ContentEditable from 'react-contenteditable';
+import { Emoji } from 'emoji-mart';
+import { addMessage } from '../middlewares/Chat';
+import { connect } from 'react-redux';
+import * as selectors from '../selectors';
+import EmojiPicker from './EmojiPicker';
+import sanitizeHtml from 'sanitize-html';
 
-export default function ChatInput({ onChange, message }) {
-  return (
+const ChatInput = ({ message, onChange, onKeydown, innerRef }) => {
+  const [caretPosition, setCaretPosition] = useState(0);
+//   const [msgHtml, setMsgHtml] = useState('');
+//   const [isEmojiPickerVisible, setEmojiPickerVisibility] = useState(false);
+//   const [isTooltipVisible, setTooltipVisibility] = useState(false);
+//   const inputRef = React.createRef();
+
+//   const sanitizeConf = {
+//     allowedTags: ['img'],
+//     allowedAttributes: { img: ['src', 'width', 'height'] },
+//   }
+
+  const updateCaretPosition = () => {
+    const selection = window.getSelection();
+    const range = selection.getRangeAt(0);
+    const marker = document.createElement('span');
+    range.insertNode(marker);
+    const { offsetLeft } = marker;
+    setCaretPosition(offsetLeft);
+    range.deleteContents();
+    // selection.focusNode.focus();
+    // inputRef.current.focus()
+  }
+
+//   const handleSubmit = e => {
+//     e.preventDefault();
+//     const {
+//       currentUser: { name },
+//     } = props;
+
+//     if (msgHtml) {
+//       addMessage(name, sanitizeHtml(msgHtml, sanitizeConf));
+//       setMsgHtml('');
+//     }
+//     updateCaretPosition();
+//   };
+
+//   const handleChange = (e) => {
+//     const isEmojiTooltipVisible = /.*:[a-zA-Z]{1,}([^ ])+$/.test(e.target.value);
+//     const sanitizedMsg = e.target.value.replace(/<br>/, '&nbsp;');
+//     setMsgHtml(sanitizedMsg);
+//   };
+
+//   const toggleEmojiPickerVisibility = () => setEmojiPickerVisibility(!isEmojiPickerVisible);
+
+//   const handleSelectEmodji = emoji => {
+//     const selection = window.getSelection();
+//     const range = selection.getRangeAt(0);
+//     const image = new Image(20, 20);
+//     image.setAttribute('src', emoji.imageUrl);
+//     range.insertNode(image);
+//     const newMsgHtml = inputRef.current.innerHTML;
+//     setMsgHtml(newMsgHtml);
+//     setEmojiPickerVisibility(false);
+//     range.setStartAfter(image);
+//     selection.removeAllRanges();
+//     selection.addRange(range);
+//     updateCaretPosition();
+//   }
+
+//   const hideEmojiTooltip = () => setTooltipVisibility(false);
+
+//   const hideEmojiPicker = () => setEmojiPickerVisibility(false);
+
+//   return (
+//     <form
+//       className="p-2 input-group input-group-sm position-absolute"
+//       style={{ bottom: 0 }}
+//       onSubmit={handleSubmit}
+//     >
+//     <div className="position-relative flex-grow-1 position-relative">
+//      <ContentEditable
+//        className="form-control border-secondary"
+//        onChange={handleChange}
+//        html={msgHtml}
+//        innerRef={inputRef}
+//        onClick={updateCaretPosition}
+//        onKeyDown={updateCaretPosition}
+//      />
+//       <button
+//         type="button"
+//         className="btn btn-link position-absolute"
+//         style={{ right: '0', top: '3px', zIndex: 5 }}
+//         onClick={toggleEmojiPickerVisibility}
+//       >
+//         <Emoji emoji="grinning" set="apple" size={20} />
+//       </button>
+//       </div>
+//       {isTooltipVisible && (
+//         <EmojiToolTip
+//           message={message}
+//           handleSelect={handleSelectEmodji}
+//           hide={hideEmojiTooltip}
+//         />
+//       )}
+//       {isEmojiPickerVisible && (
+//         <EmojiPicker
+//           handleSelect={handleSelectEmodji}
+//           hideEmojiPicker={hideEmojiPicker}
+//           isShown={isEmojiPickerVisible}
+//         />
+//       )}
+//       <div className="input-group-append">
+//         <button className="btn btn-outline-secondary" type="button" onClick={handleSubmit}>
+//           Send
+//         </button>
+//       </div>
+//     </form>
+//   );
+//       };
+
+  // const mapStateToProps = state => ({ currentUser: selectors.currentChatUserSelector(state) });
+
+  // export default connect(mapStateToProps)(ChatInput);
+
+
+
+
+// const handleSelectEmoji
+
+return (
+  <div className="position-relative flex-grow-1 position-relative">
+<div className="cursor position-absolute" style={{ transform: `translateX(${caretPosition}px)`}}></div>
     <ContentEditable
       className="form-control border-secondary"
       onChange={onChange}
       html={message}
+      innerRef={innerRef}
+      onKeyUp={updateCaretPosition}
+      onClick={updateCaretPosition}
     />
-  );
-}
+    <button
+        type="button"
+        className="btn btn-link position-absolute"
+        style={{ right: '50px', zIndex: 5 }}
+      >
+        <Emoji emoji="grinning" set="apple" size={20} />
+      </button>
+  </div>
+);
+};
+
+export default ChatInput;
