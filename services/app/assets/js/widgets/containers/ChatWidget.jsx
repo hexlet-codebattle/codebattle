@@ -22,7 +22,7 @@ class ChatWidget extends React.Component {
     allowedAttributes: { img: ['src', 'width', 'height'] },
   }
 
-  chatInput = React.createRef();
+  inputRef = React.createRef();
 
   componentDidMount() {
     const { dispatch, isStoredGame } = this.props;
@@ -80,55 +80,7 @@ class ChatWidget extends React.Component {
     }
   }
 
-  renderCI = () => <ChatInput />
-
   hideEmojiTooltip = () => this.setState({ isEmojiTooltipVisible: false });
-
-  renderChatInput() {
-    const { message, isEmojiPickerVisible, isEmojiTooltipVisible } = this.state;
-
-    return (
-      <form
-        className="p-2 input-group input-group-sm position-absolute"
-        style={{ bottom: 0 }}
-        onSubmit={this.handleSubmit}
-      >
-        <ChatInput
-          message={message}
-          onChange={this.handleChange}
-          onKeydown={this.handleInputKeydown}
-          innerRef={this.chatInput}
-        />
-        <button
-          type="button"
-          className="btn btn-link position-absolute"
-          style={{ right: '50px', zIndex: 5 }}
-          onClick={this.toggleEmojiPickerVisibility}
-        >
-          <Emoji emoji="grinning" set="apple" size={20} />
-        </button>
-        {isEmojiTooltipVisible && (
-          <EmojiToolTip
-            message={message}
-            handleSelect={this.handleSelectEmodji}
-            hide={this.hideEmojiTooltip}
-          />
-        )}
-        {isEmojiPickerVisible && (
-          <EmojiPicker
-            handleSelect={this.handleSelectEmodji}
-            hideEmojiPicker={this.hideEmojiPicker}
-            isShown={isEmojiPickerVisible}
-          />
-        )}
-        <div className="input-group-append">
-          <button className="btn btn-outline-secondary" type="button" onClick={this.handleSubmit}>
-            Send
-          </button>
-        </div>
-      </form>
-    );
-  }
 
   render() {
     const { messages, users, isStoredGame } = this.props;
@@ -138,7 +90,7 @@ class ChatWidget extends React.Component {
       <div className="d-flex shadow-sm h-100">
         <div className="col-12 col-sm-8 p-0 bg-white rounded-left h-100 position-relative">
           <Messages messages={messages} />
-          {!isStoredGame && this.renderChatInput()}
+          {!isStoredGame && <ChatInput innerRef={this.inputRef} />}
         </div>
         <div className="col-4 d-none d-sm-block p-0 border-left bg-white rounded-right">
           <div className="d-flex flex-direction-column flex-wrap justify-content-between">
