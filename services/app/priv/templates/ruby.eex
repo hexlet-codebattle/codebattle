@@ -55,7 +55,7 @@ begin
     @execution_result <<
       JSON.dump(
         status: :ok,
-        result: '__code-0__'
+        result: <%= hash_sum %>
       )
   end
 rescue Exception => e
