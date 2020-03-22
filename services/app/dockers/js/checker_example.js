@@ -4,6 +4,8 @@ const chai = require('chai');
 const { assert } = chai;
 const buildRespose = data => `${JSON.stringify(data)}\n`;
 
+const NS_PER_SEC = 1e9;
+
 let success = true;
 let output = '';
 const finalResult = [];
@@ -21,10 +23,21 @@ try {
 
   output = '';
 
-  const assertSolution = (result, expected, arguments) => {
+  const assertSolution = (solutionLambda, expected, args) => {
+    const start = process.hrtime()
+    const result = solutionLambda(args)
+    const diff = process.hrtime(start) // returns [seconds, nanoseconds]
+    const executionTime = diff[0] + diff[1] / NS_PER_SEC;
     try {
       assert.deepEqual(result, expected);
-      finalResult.push(buildRespose({ status: 'success', result, output, expected, arguments }));
+      finalResult.push(buildRespose({
+        status: 'success',
+        result,
+        output,
+        expected,
+        arguments: args,
+        execution_time: executionTime,
+      }));
     } catch (e) {
       finalResult.push(
         buildRespose({
@@ -32,7 +45,8 @@ try {
           result,
           output,
           expected,
-          arguments,
+          arguments: args,
+          executionTime,
         }),
       );
       success = false;
@@ -40,8 +54,9 @@ try {
     output = '';
   };
 
-  assertSolution(solution(1, 2), 3, [1, 2]); // arguments1, expected1
-  assertSolution(solution(5, 6), 11, [5, 6]); // arguments2, expected2
+  const solutionLambda = args => { return solution(...args); };
+  assertSolution(solutionLambda, 3, [1, 2]);
+  assertSolution(solutionLambda, 11, [5, 6]);
 
   if (success) {
     finalResult.push(buildRespose({ status: 'ok', result: '__code0.0__' }));

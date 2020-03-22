@@ -1,7 +1,7 @@
 test:
 	mix run ./check/checker.exs
 
-test_example:
+test-example:
 	mix run checker_example.exs
 
 .PHONY: test
