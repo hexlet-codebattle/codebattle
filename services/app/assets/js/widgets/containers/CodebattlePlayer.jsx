@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
-import { Slider, PlayerIcon } from 'react-player-controls';
+import { Slider } from 'react-player-controls';
 import { connect } from 'react-redux';
-import cn from 'classnames';
 
 import { Direction } from 'react-player-controls/dist/constants';
 import * as selectors from '../selectors';
 import * as actions from '../actions';
 import { getText, getFinalState, parse } from '../lib/player';
 import CodebattleSliderBar from '../components/CodebattleSliderBar';
+import ControlPanel from '../components/CBPlayer/ControlPanel';
 
 const isEqual = (float1, float2) => {
   const compareEpsilon = Number.EPSILON;
@@ -22,9 +22,7 @@ class CodebattlePlayer extends Component {
     props.setStepCoefficient();
 
     this.state = {
-      mode: 'pause',
       isEnabled: true,
-      speedMode: 'normal',
       nextRecordId: 0,
       delaySetGameState: 10,
       isStop: true,
@@ -38,39 +36,7 @@ class CodebattlePlayer extends Component {
     };
   }
 
-  onControlButtonClick() {
-    const { mode } = this.state;
-
-    switch (mode) {
-      case 'pause': {
-        this.onPlayClick();
-        break;
-      }
-      case 'playing': {
-        this.onPauseClick();
-        break;
-      }
-      default:
-        break;
-    }
-  }
-
-  onChangeSpeed() {
-    const { speedMode } = this.state;
-    switch (speedMode) {
-      case 'normal':
-        this.setState(state => ({ speedMode: 'fast', speed: state.defaultSpeed / 2 }));
-        break;
-      case 'fast':
-        this.setState(state => ({ speedMode: 'normal', speed: state.defaultSpeed }));
-        break;
-      default:
-        break;
-    }
-  }
-
-
-  onPlayClick() {
+  onPlayClick = () => {
     const { isStop, value } = this.state;
 
     if (value === 0) {
@@ -83,7 +49,7 @@ class CodebattlePlayer extends Component {
     }
   }
 
-  onPauseClick() {
+  onPauseClick = () => {
     this.stop();
   }
 
@@ -133,6 +99,10 @@ class CodebattlePlayer extends Component {
 
   onSliderHandleChangeIntentEnd() {
     this.setState(() => ({ lastIntent: 0 }));
+  }
+
+  setSpeed = newSpeed => {
+    this.setState({ speed: newSpeed });
   }
 
   async setGameState() {
@@ -256,33 +226,23 @@ class CodebattlePlayer extends Component {
   }
 
   start() {
-    this.setState({
-      mode: 'playing',
-      isStop: false,
-    });
+    this.setState({ isStop: false });
   }
 
   stop() {
-    this.setState({
-      mode: 'pause',
-      isStop: true,
-    });
+    this.setState({ isStop: true });
   }
 
   render() {
     const { records } = this.props;
 
     const {
-      isEnabled, direction, value: currentValue, isStop, isHold, lastIntent, speedMode,
+      isEnabled, direction, value: currentValue, isHold, isStop, lastIntent, defaultSpeed,
     } = this.state;
 
     if (records == null) {
       return null;
     }
-    const speedControlClassNames = cn('btn btn-sm border rounded ml-4', {
-      'btn-light': speedMode === 'normal',
-      'btn-secondary': speedMode === 'fast',
-    });
 
     return (
       <>
@@ -291,34 +251,30 @@ class CodebattlePlayer extends Component {
           <div className="px-1">
             <div className="border bg-light py-2">
               <div className="row align-items-center justify-content-center">
-                <button
-                  type="button"
-                  className="mr-4 btn btn-light"
-                  onClick={() => this.onControlButtonClick()}
+                <ControlPanel
+                  onPlayClick={this.onPlayClick}
+                  onPauseClick={this.onPauseClick}
+                  defaultSpeed={defaultSpeed}
+                  setSpeed={this.setSpeed}
+                  hasStopped={() => isStop}
                 >
-                  {isStop ? (
-                    <PlayerIcon.Play width={32} height={32} />
-                  ) : (
-                    <PlayerIcon.Pause width={32} height={32} />
-                  )}
-                </button>
-                <Slider
-                  className="x-slider col-md-7 ml-1"
-                  isEnabled={isEnabled}
-                  direction={direction}
-                  onChange={value => this.onSliderHandleChange(value)}
-                  onChangeStart={startValue => this.onSliderHandleChangeStart(startValue)}
-                  onChangeEnd={endValue => this.onSliderHandleChangeEnd(endValue)}
-                  onIntent={intent => this.onSliderHandleChangeIntent(intent)}
-                  onIntentEnd={endIntent => this.onSliderHandleChangeIntentEnd(endIntent)}
-                >
-                  <CodebattleSliderBar
-                    value={currentValue}
-                    lastIntent={lastIntent}
-                    isHold={isHold}
-                  />
-                </Slider>
-                <button type="button" className={speedControlClassNames} onClick={() => this.onChangeSpeed()}>x2</button>
+                  <Slider
+                    className="x-slider col-md-7 ml-1"
+                    isEnabled={isEnabled}
+                    direction={direction}
+                    onChange={value => this.onSliderHandleChange(value)}
+                    onChangeStart={startValue => this.onSliderHandleChangeStart(startValue)}
+                    onChangeEnd={endValue => this.onSliderHandleChangeEnd(endValue)}
+                    onIntent={intent => this.onSliderHandleChangeIntent(intent)}
+                    onIntentEnd={endIntent => this.onSliderHandleChangeIntentEnd(endIntent)}
+                  >
+                    <CodebattleSliderBar
+                      value={currentValue}
+                      lastIntent={lastIntent}
+                      isHold={isHold}
+                    />
+                  </Slider>
+                </ControlPanel>
               </div>
             </div>
           </div>
