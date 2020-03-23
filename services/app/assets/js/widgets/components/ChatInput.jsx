@@ -1,22 +1,28 @@
 import React, { useState } from 'react';
 import ContentEditable from 'react-contenteditable';
 import { Emoji } from 'emoji-mart';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import sanitizeHtml from 'sanitize-html';
 import { addMessage } from '../middlewares/Chat';
 import * as selectors from '../selectors';
 import EmojiPicker from './EmojiPicker';
+import { useHotkeys } from 'react-hotkeys-hook';
+
 
 const ChatInput = props => {
   const [caretPosition, setCaretPosition] = useState(0);
   const [msgHtml, setMsgHtml] = useState('');
   const [isEmojiPickerVisible, setEmojiPickerVisibility] = useState(false);
   // const [isTooltipVisible, setTooltipVisibility] = useState(false);
+  const selector = useSelector((state) => ({ currentUser: selectors.currentChatUserSelector(state) }));
+
   const { innerRef } = props;
   const sanitizeConf = {
     allowedTags: ['img'],
     allowedAttributes: { img: ['src', 'width', 'height'] },
   };
+
+  useHotkeys('enter', e => handleSubmit(e), [selector], { filter: e => e.target })
 
   const updateCaretPosition = () => {
     const selection = window.getSelection();
@@ -33,10 +39,10 @@ const ChatInput = props => {
   };
 
   const handleSubmit = e => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     const {
       currentUser: { name },
-    } = props;
+    } = selector;
 
     if (msgHtml) {
       addMessage(name, sanitizeHtml(msgHtml, sanitizeConf));
@@ -116,6 +122,4 @@ const ChatInput = props => {
   );
 };
 
-const mapStateToProps = state => ({ currentUser: selectors.currentChatUserSelector(state) });
-
-export default connect(mapStateToProps)(ChatInput);
+export default ChatInput;
