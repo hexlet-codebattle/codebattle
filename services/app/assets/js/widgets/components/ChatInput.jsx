@@ -1,20 +1,23 @@
 import React, { useState } from 'react';
 import ContentEditable from 'react-contenteditable';
 import { Emoji } from 'emoji-mart';
-import { connect, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
+import { useHotkeys } from 'react-hotkeys-hook';
 import sanitizeHtml from 'sanitize-html';
 import { addMessage } from '../middlewares/Chat';
 import * as selectors from '../selectors';
 import EmojiPicker from './EmojiPicker';
-import { useHotkeys } from 'react-hotkeys-hook';
+import EmojiTooltip from './EmojiTooltip';
 
 
 const ChatInput = props => {
   const [caretPosition, setCaretPosition] = useState(0);
   const [msgHtml, setMsgHtml] = useState('');
   const [isEmojiPickerVisible, setEmojiPickerVisibility] = useState(false);
-  // const [isTooltipVisible, setTooltipVisibility] = useState(false);
-  const selector = useSelector((state) => ({ currentUser: selectors.currentChatUserSelector(state) }));
+  const [isTooltipVisible, setTooltipVisibility] = useState(false);
+  const selector = useSelector(state => (
+    { currentUser: selectors.currentChatUserSelector(state) })
+    );
 
   const { innerRef } = props;
   const sanitizeConf = {
@@ -22,7 +25,6 @@ const ChatInput = props => {
     allowedAttributes: { img: ['src', 'width', 'height'] },
   };
 
-  useHotkeys('enter', e => handleSubmit(e), [selector], { filter: e => e.target })
 
   const updateCaretPosition = () => {
     const selection = window.getSelection();
@@ -39,10 +41,8 @@ const ChatInput = props => {
   };
 
   const handleSubmit = e => {
-    if (e) e.preventDefault();
-    const {
-      currentUser: { name },
-    } = selector;
+    e.preventDefault();
+    const { currentUser: { name } } = selector;
 
     if (msgHtml) {
       addMessage(name, sanitizeHtml(msgHtml, sanitizeConf));
@@ -53,8 +53,15 @@ const ChatInput = props => {
     updateCaretPosition();
   };
 
+  useHotkeys('enter', e => handleSubmit(e), [selector], { filter: e => e.target });
+
   const handleChange = e => {
-    // const isEmojiTooltipVisible = /.*:[a-zA-Z]{1,}([^ ])+$/.test(e.target.value);
+    if (/.*:[a-zA-Z]{1,}([^ ])+$/.test(e.target.value)) {
+      setTooltipVisibility(true);
+    }
+
+    console.log(isTooltipVisible);
+
     const normalizedMsg = e.target.value.replace(/<br>/, '&nbsp;');
     setMsgHtml(normalizedMsg);
   };
@@ -106,13 +113,19 @@ const ChatInput = props => {
           <Emoji emoji="grinning" set="apple" size={20} />
         </button>
       </div>
-      {isEmojiPickerVisible && (
+      {isEmojiPickerVisible &&
         <EmojiPicker
           handleSelect={handleSelectEmodji}
           hideEmojiPicker={hideEmojiPicker}
           isShown={isEmojiPickerVisible}
         />
-      )}
+      }
+      {isTooltipVisible &&
+        <EmojiTooltip
+        message={msgHtml}
+        handleSelect={handleSelectEmodji}
+        />
+      }
       <div className="input-group-append">
         <button className="btn btn-outline-secondary" type="button" onClick={handleSubmit}>
           Send
