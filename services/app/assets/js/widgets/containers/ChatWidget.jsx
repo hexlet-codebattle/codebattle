@@ -5,7 +5,7 @@ import { Emoji } from 'emoji-mart';
 import { fetchState, addMessage } from '../middlewares/Chat';
 import * as selectors from '../selectors';
 import Messages from '../components/Messages';
-import UserName from '../components/UserName';
+import UserName from '../components/User/UserName';
 import EmojiPicker from '../components/EmojiPicker';
 import EmojiToolTip from '../components/ EmojiTooltip';
 import GameStatusCodes from '../config/gameStatusCodes';
