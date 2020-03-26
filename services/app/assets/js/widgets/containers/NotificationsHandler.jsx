@@ -48,12 +48,10 @@ class NotificationsHandler extends Component {
     }
 
     if (status === GameStatusCodes.gameOver && statusChanged) {
-      this.showGameResultMessage();
       this.showActionsAfterGame();
     }
 
     if (status === GameStatusCodes.timeout && statusChanged) {
-      this.showGameResultMessage();
       this.showActionsAfterGame();
     }
 
@@ -83,6 +81,9 @@ class NotificationsHandler extends Component {
       isCurrentUserPlayer,
       updateGameUI,
       isShowActionsAfterGame,
+      currentUserId,
+      players,
+      gameStatus
     } = this.props;
 
     if (!isCurrentUserPlayer) {
@@ -93,8 +94,25 @@ class NotificationsHandler extends Component {
       return;
     }
 
+    let msg = "";
+    let alertStyle = "";
+    const winner = _.find(players, ['gameResult', 'won']);
+
+    if (gameStatus.status === GameStatusCodes.timeout) {
+      msg = this.gameStatus.msg;
+      alertStyle = 'danger';
+    } else if (currentUserId === winner.id) {
+        msg = 'Congratulations! You have won the game!';
+        alertStyle = 'success';
+      } else if (isCurrentUserPlayer) {    
+        msg = 'Oh snap! Your opponent has won the game';
+        alertStyle = 'danger';
+        }
+   
+
     toast(
-      <Toast header="Next Action">
+      <Toast header="Game over">
+        <Alert variant={alertStyle}>{msg}</Alert>
         <ActionsAfterGame />
       </Toast>,
       {
@@ -106,42 +124,6 @@ class NotificationsHandler extends Component {
         onOpen: () => updateGameUI({ showToastActionsAfterGame: true }),
       },
     );
-  }
-
-  showFailureMessage = msg => toast(
-    <Toast header="Failed">
-      <Alert variant="danger">{msg}</Alert>
-    </Toast>,
-  )
-
-  showSuccessMessage = msg => toast(
-    <Toast header="Success">
-      <Alert variant="success">{msg}</Alert>
-    </Toast>,
-  )
-
-  showGameResultMessage = () => {
-    const {
-      isCurrentUserPlayer,
-      currentUserId,
-      players,
-      gameStatus,
-    } = this.props;
-
-    if (gameStatus.status === GameStatusCodes.timeout) {
-      return this.showFailureMessage(gameStatus.msg);
-    }
-
-    const winner = _.find(players, ['gameResult', 'won']);
-    if (currentUserId === winner.id) {
-      return this.showSuccessMessage('Congratulations! You have won the game!');
-    }
-
-    if (isCurrentUserPlayer) {
-      return this.showFailureMessage('Oh snap! Your opponent has won the game');
-    }
-
-    return this.showSuccessMessage(`${winner.name} has won the game!`);
   }
 
   render() {
