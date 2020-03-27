@@ -1,7 +1,9 @@
 import axios from 'axios';
 import { camelizeKeys } from 'humps';
 import qs from 'qs';
-import { updateUsersRatingPage, updateUsersStats, setUserInfo } from '../actions';
+import {
+  updateUsersRatingPage, updateUsersStats, setUserInfo, finishStoreInit,
+} from '../actions';
 
 export const loadUser = dispatch => async user => {
   try {
@@ -35,6 +37,7 @@ export const getUsersRatingPage = (page = 1, filter = '', sort = '') => dispatch
   axios.get(`/api/v1/users?${queryParamsString}`)
     .then(({ data }) => {
       dispatch(updateUsersRatingPage(camelizeKeys(data)));
+      dispatch(finishStoreInit());
     });
 };
 

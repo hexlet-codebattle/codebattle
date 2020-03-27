@@ -12,6 +12,7 @@ import Loading from '../components/Loading';
 
 const mapStateToProps = state => ({
   usersRatingPage: getUsersList(state),
+  storeLoaded: state.storeLoaded,
 });
 
 const mapDispatchToProps = {
@@ -99,9 +100,9 @@ class UsersRating extends React.Component {
   };
 
   render() {
-    const { usersRatingPage, getRatingPage } = this.props;
+    const { storeLoaded, usersRatingPage, getRatingPage } = this.props;
 
-    if (!usersRatingPage) {
+    if (!storeLoaded) {
       return <Loading />;
     }
 
