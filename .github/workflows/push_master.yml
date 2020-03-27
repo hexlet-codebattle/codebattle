@@ -71,10 +71,13 @@ jobs:
 
       - name: Install yarn dependencies
         run: yarn install --froze-lockfile
-        working-directory: ./services/app
 
       - name: Eslint
         run: yarn lint
+        working-directory: ./services/app
+
+      - name: Run jest
+        run: yarn test
         working-directory: ./services/app
 
       - name: Setup db
