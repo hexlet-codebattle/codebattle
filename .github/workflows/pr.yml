@@ -83,7 +83,8 @@ jobs:
         working-directory: ./services/app
 
       - name: Run jest
-        uses: stefanoeb/jest-action@1.0.2
+        run: yarn test
+        working-directory: ./services/app
 
       - name: Setup db
         run: mix ecto.create && mix ecto.migrate

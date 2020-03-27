@@ -71,14 +71,14 @@ jobs:
 
       - name: Install yarn dependencies
         run: yarn install --froze-lockfile
-        working-directory: ./services/app
 
       - name: Eslint
         run: yarn lint
         working-directory: ./services/app
 
       - name: Run jest
-        uses: stefanoeb/jest-action@1.0.2
+        run: yarn test
+        working-directory: ./services/app
 
       - name: Setup db
         run: mix ecto.create && mix ecto.migrate
