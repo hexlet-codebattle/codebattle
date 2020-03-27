@@ -214,3 +214,10 @@ a {
     opacity: 0;
   }
 }
+
+.x-emoji-option::before {
+  width: 20px;
+  height: 20px;
+  background-image: src(attr(data-src));
+  background-size: contain;
+}

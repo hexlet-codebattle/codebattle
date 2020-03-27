@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import ContentEditable from 'react-contenteditable';
 import { Emoji } from 'emoji-mart';
 import { useSelector } from 'react-redux';
@@ -10,22 +10,23 @@ import EmojiPicker from './EmojiPicker';
 import EmojiTooltip from './EmojiTooltip';
 
 
-const ChatInput = props => {
+const ChatInput = () => {
   const [caretPosition, setCaretPosition] = useState(0);
   const [msgHtml, setMsgHtml] = useState('');
   const [isEmojiPickerVisible, setEmojiPickerVisibility] = useState(false);
-  const [isTooltipVisible, setTooltipVisibility] = useState(false);
+  const [isEmojiTooltipVisible, setEmojiTooltipVisibility] = useState(false);
+  const innerRef = useRef(null);
   const selector = useSelector(state => (
-    { currentUser: selectors.currentChatUserSelector(state) })
-    );
+    { currentUser: selectors.currentChatUserSelector(state) }));
 
-  const { innerRef } = props;
   const sanitizeConf = {
     allowedTags: ['img'],
     allowedAttributes: { img: ['src', 'width', 'height'] },
   };
 
-
+  // the only way to find out the current position of a caret (i.e. its left offsef
+  // from contenteditable div border) is to phisically insert a non-text node (marker)
+  // where the caret is, get that node's offsetLeft value and them remove it
   const updateCaretPosition = () => {
     const selection = window.getSelection();
     const range = selection.getRangeAt(0);
@@ -34,7 +35,7 @@ const ChatInput = props => {
     const { offsetLeft } = marker;
     const containerPadding = window.getComputedStyle(innerRef.current).getPropertyValue('padding-left');
     const containerOffset = parseInt(containerPadding, 10);
-    // fix chrome wrong offsetLeft in the beginning of the line
+    // fix chrome wrong offsetLeft when the caret is in the beginning of the line
     const newPosition = offsetLeft || containerOffset;
     setCaretPosition(newPosition);
     range.deleteContents();
@@ -57,18 +58,26 @@ const ChatInput = props => {
 
   const handleChange = e => {
     if (/.*:[a-zA-Z]{1,}([^ ])+$/.test(e.target.value)) {
-      setTooltipVisibility(true);
+      setEmojiTooltipVisibility(true);
     }
-
-    console.log(isTooltipVisible);
-
     const normalizedMsg = e.target.value.replace(/<br>/, '&nbsp;');
     setMsgHtml(normalizedMsg);
   };
 
-  const toggleEmojiPickerVisibility = () => setEmojiPickerVisibility(!isEmojiPickerVisible);
+  const toggleEmojiPickerVisibility = () => {
+    setEmojiPickerVisibility(!isEmojiPickerVisible);
+  };
+
+  const trimColons = () => {
+    if (isEmojiTooltipVisible) {
+      const trimmedMsgHtml = msgHtml.slice(0, msgHtml.lastIndexOf(':'));
+      setMsgHtml(trimmedMsgHtml);
+    }
+  };
 
   const handleSelectEmodji = emoji => {
+    innerRef.current.focus();
+    trimColons();
     const selection = window.getSelection();
     const range = selection.getRangeAt(0);
     const image = new Image(20, 20);
@@ -77,13 +86,14 @@ const ChatInput = props => {
     const newMsgHtml = innerRef.current.innerHTML;
     setMsgHtml(newMsgHtml);
     setEmojiPickerVisibility(false);
+    setEmojiTooltipVisibility(false);
     range.setStartAfter(image);
     selection.removeAllRanges();
     selection.addRange(range);
     updateCaretPosition();
   };
 
-  // const hideEmojiTooltip = () => setTooltipVisibility(false);
+  const hideEmojiTooltip = () => setEmojiTooltipVisibility(false);
 
   const hideEmojiPicker = () => setEmojiPickerVisibility(false);
 
@@ -113,19 +123,22 @@ const ChatInput = props => {
           <Emoji emoji="grinning" set="apple" size={20} />
         </button>
       </div>
-      {isEmojiPickerVisible &&
+      {isEmojiPickerVisible
+        && (
         <EmojiPicker
           handleSelect={handleSelectEmodji}
           hideEmojiPicker={hideEmojiPicker}
           isShown={isEmojiPickerVisible}
         />
-      }
-      {isTooltipVisible &&
+        )}
+      {isEmojiTooltipVisible
+        && (
         <EmojiTooltip
-        message={msgHtml}
-        handleSelect={handleSelectEmodji}
+          message={msgHtml}
+          handleSelect={handleSelectEmodji}
+          hide={hideEmojiTooltip}
         />
-      }
+        )}
       <div className="input-group-append">
         <button className="btn btn-outline-secondary" type="button" onClick={handleSubmit}>
           Send
