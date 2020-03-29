@@ -1,6 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
-import Loading from './Loading';
+import Loading from '../Loading';
 import UserAchievements from './UserAchievements';
 
 const UserStats = ({ data }) => {
