@@ -9,34 +9,24 @@ import {
   sendAcceptToRematch,
 } from '../../middlewares/Game';
 
-class RematchButton extends React.Component {
-  constructor(props) {
-    super(props);
-    this.mapRematchStateToButtons = {
-      in_approval_initiator: 'renderBtnAfterSendOffer',
-      in_approval_acceptor: 'renderBtnAfterRecieveOffer',
-      rejected_initiator: 'renderBtnAfterReject',
-      rejected_acceptor: 'renderBtnAfterReject',
-      none: 'renderBtnByDefault',
-    };
-  }
+const RematchButton = ({
+  gameStatus: { rematchState, rematchInitiatorId },
+  currentUserId,
+  isOpponentInGame,
+  disabled
+}) => {
 
-  handleAcceptRematch = () => {
-    sendAcceptToRematch();
-  }
-
-  renderBtnAfterReject = () => (
+  const renderBtnAfterReject = () => (
     <button
       type="button"
       className="btn btn-danger btn-block"
-      disabled
+      disabled=""
     >
       {i18n.t('Rejected Offer')}
     </button>
   );
 
-  renderBtnAfterSendOffer = () => {
-    const { isOpponentInGame } = this;
+  const renderBtnAfterSendOffer = () => {
     const text = isOpponentInGame ? 'Wait For An Answer...' : 'Opponent Left The Game';
     const classNames = cn('btn btn-block', {
       'btn-secondary': isOpponentInGame,
@@ -53,14 +43,14 @@ class RematchButton extends React.Component {
     );
   };
 
-  renderBtnAfterRecieveOffer = () => (
+  const renderBtnAfterRecieveOffer = () => (
     <div className="input-group mt-2">
       <input type="text" className="form-control" placeholder="Accept Rematch?" disabled="" />
       <div className="input-group-append">
         <button
           className="btn btn-outline-secondary"
           type="button"
-          onClick={this.handleAcceptRematch}
+          onClick={sendAcceptToRematch}
         >
           {i18n.t('Yes')}
         </button>
@@ -75,8 +65,7 @@ class RematchButton extends React.Component {
     </div>
   );
 
-  renderBtnByDefault = () => {
-    const { disabled } = this.props;
+  const renderBtnByDefault = () => {
     return (
       <button
         type="button"
@@ -89,21 +78,26 @@ class RematchButton extends React.Component {
     );
   };
 
-  getPlayerStatus = (rematchInitiatorId, currentUserId) => {
+  const mapRematchStateToButtons = {
+    in_approval_initiator: renderBtnAfterSendOffer,
+    in_approval_acceptor: renderBtnAfterRecieveOffer,
+    rejected_initiator: renderBtnAfterReject,
+    rejected_acceptor: renderBtnAfterReject,
+    none: renderBtnByDefault,
+  };
+
+  const getPlayerStatus = (rematchInitiatorId, currentUserId) => {
     if (rematchInitiatorId === null) {
       return null;
     }
     return rematchInitiatorId === currentUserId ? 'initiator' : 'acceptor';
-  }
+  };
 
-  render() {
-    const { gameStatus: { rematchState, rematchInitiatorId }, currentUserId } = this.props;
-    const playerStatus = this.getPlayerStatus(rematchInitiatorId, currentUserId);
-    const fnRenderBtn = this.mapRematchStateToButtons[`${rematchState}_${playerStatus}`]
-      || this.mapRematchStateToButtons.none;
-    return this[fnRenderBtn]();
-  }
-}
+  const playerStatus = getPlayerStatus(rematchInitiatorId, currentUserId);
+  const fnRenderBtn = mapRematchStateToButtons[`${rematchState}_${playerStatus}`]
+    || mapRematchStateToButtons.none;
+  return fnRenderBtn();
+};
 
 const mapStateToProps = state => {
   const currentUserId = selectors.currentUserIdSelector(state);
