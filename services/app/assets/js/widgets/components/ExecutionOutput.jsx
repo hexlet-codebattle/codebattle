@@ -6,8 +6,7 @@ const ExecutionOutput = ({
     output, result, assertsCount, successCount,
   } = {}, id,
 }) => {
-
-  const getInfoAboutFailuresAsserts = (assertsCount, successCount) => {
+  const getInfoAboutFailuresAsserts = () => {
     if (assertsCount === 0) {
       return '';
     }
@@ -29,7 +28,7 @@ const ExecutionOutput = ({
     return <span className={`badge badge-${stautsColors[status]}`}>{status}</span>;
   };
 
-  const renderTestResults = (resultObj, assertsCount, successCount) => {
+  const renderTestResults = (resultObj) => {
     switch (resultObj.status) {
       case '':
         return i18n.t('Run your code!');
@@ -42,13 +41,13 @@ const ExecutionOutput = ({
         if (Array.isArray(resultObj.result)) {
           return i18n.t('Test failed with arguments (%{arguments})%{assertsInfo}', {
             arguments: resultObj.arguments.map(JSON.stringify).join(', '),
-            assertsInfo: getInfoAboutFailuresAsserts(assertsCount, successCount),
+            assertsInfo: getInfoAboutFailuresAsserts(),
             interpolation: { escapeValue: false },
           });
         }
         return i18n.t('Test failed with arguments (%{arguments})%{assertsInfo}', {
           arguments: JSON.stringify(resultObj.arguments),
-          assertsInfo: getInfoAboutFailuresAsserts(assertsCount, successCount),
+          assertsInfo: getInfoAboutFailuresAsserts(),
           interpolation: { escapeValue: false },
         });
       case 'ok':
@@ -58,7 +57,7 @@ const ExecutionOutput = ({
     }
   };
 
-  const parseOutput = result => {
+  const parseOutput = () => {
     try {
       return JSON.parse(result || '{"result": "nothing", "status": "nothing"}');
     } catch (e) {
@@ -74,7 +73,7 @@ const ExecutionOutput = ({
     return false;
   };
 
-  const resultObj = parseOutput(result);
+  const resultObj = parseOutput();
 
   return (
     <div className="card-body border-top">
@@ -110,7 +109,7 @@ const ExecutionOutput = ({
         </div>
       </div>
       <p className="card-text mb-0">
-        <code>{renderTestResults(resultObj, assertsCount, successCount)}</code>
+        <code>{renderTestResults(resultObj)}</code>
       </p>
       <div className="tab-content">
         <div

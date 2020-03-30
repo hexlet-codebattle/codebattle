@@ -13,9 +13,8 @@ const RematchButton = ({
   gameStatus: { rematchState, rematchInitiatorId },
   currentUserId,
   isOpponentInGame,
-  disabled
+  disabled,
 }) => {
-
   const renderBtnAfterReject = () => (
     <button
       type="button"
@@ -65,18 +64,16 @@ const RematchButton = ({
     </div>
   );
 
-  const renderBtnByDefault = () => {
-    return (
-      <button
-        type="button"
-        className="btn btn-secondary btn-block"
-        onClick={sendOfferToRematch}
-        disabled={disabled}
-      >
-        {disabled ? i18n.t('Opponent has left') : i18n.t('Rematch')}
-      </button>
-    );
-  };
+  const renderBtnByDefault = () => (
+    <button
+      type="button"
+      className="btn btn-secondary btn-block"
+      onClick={sendOfferToRematch}
+      disabled={disabled}
+    >
+      {disabled ? i18n.t('Opponent has left') : i18n.t('Rematch')}
+    </button>
+  );
 
   const mapRematchStateToButtons = {
     in_approval_initiator: renderBtnAfterSendOffer,
@@ -86,14 +83,14 @@ const RematchButton = ({
     none: renderBtnByDefault,
   };
 
-  const getPlayerStatus = (rematchInitiatorId, currentUserId) => {
+  const getPlayerStatus = () => {
     if (rematchInitiatorId === null) {
       return null;
     }
     return rematchInitiatorId === currentUserId ? 'initiator' : 'acceptor';
   };
 
-  const playerStatus = getPlayerStatus(rematchInitiatorId, currentUserId);
+  const playerStatus = getPlayerStatus();
   const fnRenderBtn = mapRematchStateToButtons[`${rematchState}_${playerStatus}`]
     || mapRematchStateToButtons.none;
   return fnRenderBtn();
