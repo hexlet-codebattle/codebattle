@@ -1,14 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { addMessage } from '../middlewares/Chat';
 import { Emoji } from 'emoji-mart';
 import EmojiPicker from '../components/EmojiPicker';
 import EmojiToolTip from '../components/EmojiTooltip';
+import { redirectToNewGame } from '../actions';
 
 
 const ChatInput = () => {
   const [isPickerVisible, setPickerVisibility] = useState(false);
   const [isTooltipVisible, setTooltipVisibility] = useState(false);
   const [message, setMessage] = useState('');
+  const inputRef = useRef(null);
+
+  // useEffect(() => {
+  //   const { selectionStart, selectionEnd } = inputRef.current
+  //   inputRef.current.focus();
+  //   inputRef.current.setSelectionRange(selectionStart, selectionEnd);
+  // }, [message]);
 
   const handleChange = ({ target: { value } }) => {
     setTooltipVisibility(/.*:[a-zA-Z]{1,}([^ ])+$/.test(value));
@@ -28,10 +36,16 @@ const ChatInput = () => {
 
   const hidePicker = () => setPickerVisibility(false);
 
-  const handleSelectEmodji = (colons = null) => emoji => {
+  const handleSelectEmodji = (colons = null) => async ({ native }) => {
     const messageWithoutColons = colons ? message.slice(0, -colons.length - 2) : message;
-    setMessage(`${messageWithoutColons}${emoji.native}`);
+    const caretPosition = inputRef.current.selectionStart || 0;
+    const before = messageWithoutColons.slice(0, caretPosition);
+    const after = messageWithoutColons.slice(caretPosition);
+    setMessage(`${before}${native}${after}`);
     hidePicker();
+    hideTooltip();
+    await inputRef.current.focus();
+    inputRef.current.setSelectionRange(caretPosition + native.length, caretPosition + native.length)
   };
 
   const handleInputKeydown = e => {
@@ -54,6 +68,7 @@ const ChatInput = () => {
         value={message}
         onChange={handleChange}
         onKeyDown={handleInputKeydown}
+        ref={inputRef}
       />
       <button
         type="button"
