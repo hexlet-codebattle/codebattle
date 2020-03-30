@@ -1,8 +1,24 @@
-import React, { PureComponent } from 'react';
+import React from 'react';
 import i18n from '../../i18n';
 
-class ExecutionOutput extends PureComponent {
-  renderStatusBadge = status => {
+const ExecutionOutput = ({
+  output: {
+    output, result, assertsCount, successCount,
+  } = {}, id,
+}) => {
+
+  const getInfoAboutFailuresAsserts = (assertsCount, successCount) => {
+    if (assertsCount === 0) {
+      return '';
+    }
+    const percent = (100 * successCount) / assertsCount;
+    return i18n.t(
+      ', and you passed %{successCount} from %{assertsCount} asserts. (%{percent}%)',
+      { percent, successCount, assertsCount },
+    );
+  };
+
+  const renderStatusBadge = status => {
     const stautsColors = {
       error: 'danger',
       failure: 'warning',
@@ -13,7 +29,7 @@ class ExecutionOutput extends PureComponent {
     return <span className={`badge badge-${stautsColors[status]}`}>{status}</span>;
   };
 
-  renderTestResults = (resultObj, assertsCount, successCount) => {
+  const renderTestResults = (resultObj, assertsCount, successCount) => {
     switch (resultObj.status) {
       case '':
         return i18n.t('Run your code!');
@@ -26,13 +42,13 @@ class ExecutionOutput extends PureComponent {
         if (Array.isArray(resultObj.result)) {
           return i18n.t('Test failed with arguments (%{arguments})%{assertsInfo}', {
             arguments: resultObj.arguments.map(JSON.stringify).join(', '),
-            assertsInfo: this.getInfoAboutFailuresAsserts(assertsCount, successCount),
+            assertsInfo: getInfoAboutFailuresAsserts(assertsCount, successCount),
             interpolation: { escapeValue: false },
           });
         }
         return i18n.t('Test failed with arguments (%{arguments})%{assertsInfo}', {
           arguments: JSON.stringify(resultObj.arguments),
-          assertsInfo: this.getInfoAboutFailuresAsserts(assertsCount, successCount),
+          assertsInfo: getInfoAboutFailuresAsserts(assertsCount, successCount),
           interpolation: { escapeValue: false },
         });
       case 'ok':
@@ -42,21 +58,7 @@ class ExecutionOutput extends PureComponent {
     }
   };
 
-  getInfoAboutFailuresAsserts = (assertsCount, successCount) => {
-    switch (assertsCount) {
-      case 0:
-        return '';
-      default: {
-        const percent = (100 * successCount) / assertsCount;
-        return i18n.t(
-          ', and you passed %{successCount} from %{assertsCount} asserts. (%{percent}%)',
-          { percent, successCount, assertsCount },
-        );
-      }
-    }
-  };
-
-  parseOutput = result => {
+  const parseOutput = result => {
     try {
       return JSON.parse(result || '{"result": "nothing", "status": "nothing"}');
     } catch (e) {
@@ -64,7 +66,7 @@ class ExecutionOutput extends PureComponent {
     }
   };
 
-  isError = result => {
+  const isError = result => {
     if (result && result.status === 'error') {
       return true;
     }
@@ -72,67 +74,60 @@ class ExecutionOutput extends PureComponent {
     return false;
   };
 
-  render() {
-    const {
-      output: {
-        output, result, assertsCount, successCount,
-      } = {}, id,
-    } = this.props;
-    const resultObj = this.parseOutput(result);
+  const resultObj = parseOutput(result);
 
-    return (
-      <div className="card-body border-top">
-        <div className="d-flex justify-content-between">
-          <ul className="nav nav-tabs card-title">
-            <li>
-              <a
-                className={`btn btn-sm rounded border btn-light ${
-                  this.isError(resultObj) ? '' : 'active'
-                }`}
-                data-toggle="tab"
-                href={`#asserts_${id}`}
-              >
-                Asserts
-              </a>
-            </li>
-            <li>
-              <a
-                className={`btn btn-sm rounded border btn-light ${
-                  this.isError(resultObj) ? 'active' : ''
-                }`}
-                data-toggle="tab"
-                href={`#output_${id}`}
-              >
-                Output
-              </a>
-            </li>
-          </ul>
-          <div className="card-subtitle mb-2 text-muted">
-            Check status:
-            {' '}
-            {this.renderStatusBadge(resultObj.status)}
-          </div>
-        </div>
-        <p className="card-text mb-0">
-          <code>{this.renderTestResults(resultObj, assertsCount, successCount)}</code>
-        </p>
-        <div className="tab-content">
-          <div
-            id={`asserts_${id}`}
-            className={`tab-pane ${this.isError(resultObj) ? '' : 'active'}`}
-          >
-            <pre className="card-text d-none d-md-block mt-3">{result}</pre>
-          </div>
-          <div
-            id={`output_${id}`}
-            className={`tab-pane ${this.isError(resultObj) ? 'active' : ''}`}
-          >
-            <pre className="card-text d-none d-md-block mt-3">{output}</pre>
-          </div>
+  return (
+    <div className="card-body border-top">
+      <div className="d-flex justify-content-between">
+        <ul className="nav nav-tabs card-title">
+          <li>
+            <a
+              className={`btn btn-sm rounded border btn-light ${
+                isError(resultObj) ? '' : 'active'
+              }`}
+              data-toggle="tab"
+              href={`#asserts_${id}`}
+            >
+              Asserts
+            </a>
+          </li>
+          <li>
+            <a
+              className={`btn btn-sm rounded border btn-light ${
+                isError(resultObj) ? 'active' : ''
+              }`}
+              data-toggle="tab"
+              href={`#output_${id}`}
+            >
+              Output
+            </a>
+          </li>
+        </ul>
+        <div className="card-subtitle mb-2 text-muted">
+          Check status:
+          {' '}
+          {renderStatusBadge(resultObj.status)}
         </div>
       </div>
-    );
-  }
-}
+      <p className="card-text mb-0">
+        <code>{renderTestResults(resultObj, assertsCount, successCount)}</code>
+      </p>
+      <div className="tab-content">
+        <div
+          id={`asserts_${id}`}
+          className={`tab-pane ${isError(resultObj) ? '' : 'active'}`}
+        >
+          <pre className="card-text d-none d-md-block mt-3">{result}</pre>
+        </div>
+        <div
+          id={`output_${id}`}
+          className={`tab-pane ${isError(resultObj) ? 'active' : ''}`}
+        >
+          <pre className="card-text d-none d-md-block mt-3">{output}</pre>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default ExecutionOutput;
