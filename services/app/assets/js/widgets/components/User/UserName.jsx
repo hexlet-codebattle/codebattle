@@ -1,9 +1,9 @@
 import React from 'react';
 import _ from 'lodash';
 import { connect } from 'react-redux';
-import LanguageIcon from './LanguageIcon';
-import { loadUser } from '../middlewares/Users';
-import { getUsersInfo } from '../selectors';
+import LanguageIcon from '../LanguageIcon';
+import { loadUser } from '../../middlewares/Users';
+import { getUsersInfo } from '../../selectors';
 
 const isValidUserInfo = user => (
   Boolean(user.githubId && user.rating && user.ratingDiff && user.lang)

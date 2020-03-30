@@ -1,0 +1,8 @@
+name: dart
+description: Codebattle checker for testing player's solution
+version: 0.0.1
+author: rdb
+
+dependencies:
+  dart_json: ^2.0.0
+  test: ^1.6.0

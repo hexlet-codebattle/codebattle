@@ -2,6 +2,7 @@
 plugins:
   - react
   - jsx-a11y
+  - jest
 
 env:
   node: true
@@ -11,6 +12,7 @@ parser: babel-eslint
 
 extends:
   - "airbnb"
+  - "plugin:jest/recommended"
 
 rules:
   no-console: 0
@@ -23,3 +25,8 @@ rules:
   react/jsx-props-no-spreading: 0
   react/static-property-placement: 0
   react/state-in-constructor: 0
+  jest/no-disabled-tests: "warn"
+  jest/no-focused-tests: "error"
+  jest/no-identical-title: "error"
+  jest/prefer-to-have-length: "warn"
+  jest/valid-expect: "error"

@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from 'react';
+
+import React, { useState } from 'react';
 import { emojiIndex } from 'emoji-mart';
+import { useHotkeys } from 'react-hotkeys-hook';
 
 const selectStyles = {
   position: 'absolute',
@@ -21,35 +23,28 @@ export default function EmojiTooltip({ message, handleSelect, hide }) {
 
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const keydownListener = e => {
-    if (e.key === 'Escape') {
-      hide();
-    }
-
-    if (e.key === 'Enter') {
-      handleSelect(colons)(emojies[activeIndex]);
-      hide();
-    }
-
-    if (e.key === 'ArrowDown') {
-      setActiveIndex(prevIndex => {
-        const increment = prevIndex !== emojies.length - 1 ? 1 : -emojies.length + 1;
-        return prevIndex + increment;
-      });
-    }
-
-    if (e.key === 'ArrowUp') {
-      setActiveIndex(prevIndex => {
-        const decrement = prevIndex !== 0 ? 1 : -emojies.length + 1;
-        return prevIndex - decrement;
-      });
-    }
+  const increaseIndex = () => {
+    setActiveIndex(prevIndex => {
+      const increment = prevIndex !== emojies.length - 1 ? 1 : -emojies.length + 1;
+      return prevIndex + increment;
+    });
   };
 
-  useEffect(() => {
-    document.body.addEventListener('keydown', keydownListener);
-    return () => document.body.removeEventListener('keydown', keydownListener);
-  }, []);
+  const decreaseIndex = () => {
+    setActiveIndex(prevIndex => {
+      const decrement = prevIndex !== 0 ? 1 : -emojies.length + 1;
+      return prevIndex - decrement;
+    });
+  };
+
+  useHotkeys('escape', () => hide(), [], { filter: e => e.target });
+  useHotkeys('enter', () => {
+    handleSelect(colons)(emojies[activeIndex]);
+    hide();
+  }, [], { filter: e => e.target });
+
+  useHotkeys('up', () => decreaseIndex(), [], { filter: e => e.target });
+  useHotkeys('down', () => increaseIndex(), [], { filter: e => e.target });
 
   const onChange = e => {
     const [currentIndex] = e.target.value;

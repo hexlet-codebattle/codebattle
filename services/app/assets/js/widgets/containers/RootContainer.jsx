@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { HotKeys } from 'react-hotkeys';
@@ -17,57 +17,53 @@ const ComponentForHandlers = ({ children, ...props }) => (
   <div {...props} style={{ outline: 'none' }}>{children}</div>
 );
 
-class RootContainer extends React.Component {
-  componentDidMount() {
+const RootContainer = ({
+  storeLoaded, gameStatusCode, checkResult, init, setCurrentUser,
+}) => {
+  useEffect(() => {
     const user = Gon.getAsset('current_user');
-    const { setCurrentUser, init } = this.props;
     // FIXME: maybe take from gon?
     setCurrentUser({ user: { ...user, type: userTypes.spectator } });
     init();
+  }, []);
+
+  const keyMap = {
+    CHECK_GAME: ['command+enter', 'ctrl+enter'],
+  };
+
+  const handlers = {
+    CHECK_GAME: e => {
+      e.preventDefault();
+      checkResult();
+    },
+  };
+
+  if (!storeLoaded) {
+    // TODO: add loader
+    return null;
   }
 
-  render() {
-    const {
-      storeLoaded, gameStatusCode, checkResult,
-    } = this.props;
-    const keyMap = {
-      CHECK_GAME: ['command+enter', 'ctrl+enter', 'capslock+enter'],
-    };
-
-    const handlers = {
-      CHECK_GAME: e => {
-        e.preventDefault();
-        checkResult();
-      },
-    };
-
-    if (!storeLoaded) {
-      // TODO: add loader
-      return null;
-    }
-
-    if (gameStatusCode === GameStatusCodes.waitingOpponent) {
-      const gameUrl = window.location.href;
-      return <WaitingOpponentInfo gameUrl={gameUrl} />;
-    }
-
-    const isStoredGame = gameStatusCode === GameStatusCodes.stored;
-
-    return (
-      <HotKeys
-        keyMap={keyMap}
-        handlers={handlers}
-        component={ComponentForHandlers}
-      >
-        <div className="container-fluid">
-          <InfoWidget />
-          <GameWidget />
-        </div>
-        {isStoredGame && <CodebattlePlayer />}
-      </HotKeys>
-    );
+  if (gameStatusCode === GameStatusCodes.waitingOpponent) {
+    const gameUrl = window.location.href;
+    return <WaitingOpponentInfo gameUrl={gameUrl} />;
   }
-}
+
+  const isStoredGame = gameStatusCode === GameStatusCodes.stored;
+
+  return (
+    <HotKeys
+      keyMap={keyMap}
+      handlers={handlers}
+      component={ComponentForHandlers}
+    >
+      <div className="container-fluid">
+        <InfoWidget />
+        <GameWidget />
+      </div>
+      {isStoredGame && <CodebattlePlayer />}
+    </HotKeys>
+  );
+};
 
 RootContainer.propTypes = {
   storeLoaded: PropTypes.bool.isRequired,

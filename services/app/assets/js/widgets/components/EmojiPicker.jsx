@@ -1,18 +1,11 @@
-import React, { useEffect } from 'react';
+
+import React from 'react';
 import { Picker } from 'emoji-mart';
+import { useHotkeys } from 'react-hotkeys-hook';
 import 'emoji-mart/css/emoji-mart.css';
 
-export default function EmojiPicker({ handleSelect, hidePicker }) {
-  useEffect(() => {
-    const listener = e => {
-      if (e.key === 'Escape') {
-        hidePicker(e);
-      }
-    };
-
-    document.body.addEventListener('keydown', listener);
-    return () => document.body.removeEventListener('keydown', listener);
-  }, []);
+export default function EmojiPicker({ handleSelect, hideEmojiPicker }) {
+  useHotkeys('escape', hideEmojiPicker);
 
   return (
     <Picker
