@@ -28,7 +28,7 @@ const ExecutionOutput = ({
     return <span className={`badge badge-${stautsColors[status]}`}>{status}</span>;
   };
 
-  const renderTestResults = (resultObj) => {
+  const renderTestResults = resultObj => {
     switch (resultObj.status) {
       case '':
         return i18n.t('Run your code!');
@@ -65,8 +65,8 @@ const ExecutionOutput = ({
     }
   };
 
-  const isError = result => {
-    if (result && result.status === 'error') {
+  const isError = resultObj => {
+    if (resultObj && resultObj.status === 'error') {
       return true;
     }
 
