@@ -1,10 +1,12 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
+import { Emoji, emojiIndex } from 'emoji-mart';
 import { addMessage } from '../middlewares/Chat';
-import { Emoji } from 'emoji-mart';
-import EmojiPicker from '../components/EmojiPicker';
-import EmojiToolTip from '../components/EmojiTooltip';
-import { redirectToNewGame } from '../actions';
+import EmojiPicker from './EmojiPicker';
+import EmojiToolTip from './EmojiTooltip';
 
+const trimColons = message => message.slice(0, message.lastIndexOf(':'));
+
+const getColons = message => message.slice(message.lastIndexOf(':') + 1);
 
 const ChatInput = () => {
   const [isPickerVisible, setPickerVisibility] = useState(false);
@@ -12,14 +14,14 @@ const ChatInput = () => {
   const [message, setMessage] = useState('');
   const inputRef = useRef(null);
 
-  // useEffect(() => {
-  //   const { selectionStart, selectionEnd } = inputRef.current
-  //   inputRef.current.focus();
-  //   inputRef.current.setSelectionRange(selectionStart, selectionEnd);
-  // }, [message]);
+  const getTooltipVisibility = msg => {
+    if (!/.*:[a-zA-Z]{1,}([^ ])+$/.test(msg)) return false;
+    const colons = getColons(msg);
+    return emojiIndex.search(colons).length > 0;
+  };
 
   const handleChange = ({ target: { value } }) => {
-    setTooltipVisibility(/.*:[a-zA-Z]{1,}([^ ])+$/.test(value));
+    setTooltipVisibility(getTooltipVisibility(value));
     setMessage(value);
   };
 
@@ -27,7 +29,7 @@ const ChatInput = () => {
     e.preventDefault();
 
     if (message) {
-      addMessage(name, message);
+      addMessage(null, message);
       setMessage('');
     }
   };
@@ -36,16 +38,19 @@ const ChatInput = () => {
 
   const hidePicker = () => setPickerVisibility(false);
 
-  const handleSelectEmodji = (colons = null) => async ({ native }) => {
-    const messageWithoutColons = colons ? message.slice(0, -colons.length - 2) : message;
-    const caretPosition = inputRef.current.selectionStart || 0;
-    const before = messageWithoutColons.slice(0, caretPosition);
-    const after = messageWithoutColons.slice(caretPosition);
-    setMessage(`${before}${native}${after}`);
+  const hideTooltip = () => setTooltipVisibility(false);
+
+  const handleSelectEmodji = async ({ native }) => {
+    const processedMessage = isTooltipVisible ? trimColons(message) : message;
+    const input = inputRef.current;
+    const caretPosition = input.selectionStart || 0;
+    const before = processedMessage.slice(0, caretPosition);
+    const after = processedMessage.slice(caretPosition);
+    await setMessage(`${before}${native}${after}`);
     hidePicker();
     hideTooltip();
-    await inputRef.current.focus();
-    inputRef.current.setSelectionRange(caretPosition + native.length, caretPosition + native.length)
+    input.focus();
+    input.setSelectionRange(caretPosition + native.length, caretPosition + native.length);
   };
 
   const handleInputKeydown = e => {
@@ -54,16 +59,14 @@ const ChatInput = () => {
     }
   };
 
-  const hideTooltip = () => setTooltipVisibility(false);
 
   return (
     <form
-      className="p-2 input-group input-group-sm position-absolute"
-      style={{ bottom: 0 }}
+      className="p-2 input-group input-group-sm position-absolute x-bottom-0"
       onSubmit={handleSubmit}
     >
       <input
-        className="form-control border-secondary relative"
+        className="form-control border-secondary relative pr-4"
         placeholder="Type message here..."
         value={message}
         onChange={handleChange}
@@ -72,15 +75,14 @@ const ChatInput = () => {
       />
       <button
         type="button"
-        className="btn btn-link position-absolute"
-        style={{ right: '50px', zIndex: 5 }}
+        className="btn btn-link position-absolute cb-emoji-button"
         onClick={togglePickerVisibility}
       >
         <Emoji emoji="grinning" set="apple" size={20} />
       </button>
       {isTooltipVisible && (
         <EmojiToolTip
-          message={message}
+          emojis={emojiIndex.search(getColons(message))}
           handleSelect={handleSelectEmodji}
           hide={hideTooltip}
         />

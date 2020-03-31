@@ -12,7 +12,7 @@ export default function EmojiPicker({ handleSelect, hide }) {
       showSkinTones={false}
       darkMode={false}
       perLine={10}
-      onClick={handleSelect()}
+      onClick={handleSelect}
       style={{ position: 'absolute', right: '88px', bottom: '10px' }}
     />
   );

@@ -1,7 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 import { connect } from 'react-redux';
-import { fetchState, addMessage } from '../middlewares/Chat';
+import { fetchState } from '../middlewares/Chat';
 import * as selectors from '../selectors';
 import Messages from '../components/Messages';
 import UserName from '../components/UserName';
