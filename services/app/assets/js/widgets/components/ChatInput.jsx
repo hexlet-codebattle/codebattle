@@ -8,7 +8,7 @@ const trimColons = message => message.slice(0, message.lastIndexOf(':'));
 
 const getColons = message => message.slice(message.lastIndexOf(':') + 1);
 
-const ChatInput = () => {
+export default function ChatInput() {
   const [isPickerVisible, setPickerVisibility] = useState(false);
   const [isTooltipVisible, setTooltipVisibility] = useState(false);
   const [message, setMessage] = useState('');
@@ -101,6 +101,4 @@ const ChatInput = () => {
       </div>
     </form>
   );
-};
-
-export default ChatInput;
+}
