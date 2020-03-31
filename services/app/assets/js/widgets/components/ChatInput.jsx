@@ -68,7 +68,7 @@ export default function ChatInput() {
       onSubmit={handleSubmit}
     >
       <input
-        className="form-control border-secondary relative pr-4"
+        className="form-control border-secondary pr-4"
         placeholder="Type message here..."
         value={message}
         onChange={handleChange}
