@@ -66,9 +66,9 @@ class GameWidget extends Component {
     };
   }
 
-  renderGameActionButtons = editor => (
+  renderGameActionButtons = (editor, disabled) => (
     <GameActionButtons
-      disabled={false}
+      disabled={disabled}
       editorUser={editor.userId}
     />
   );
@@ -89,7 +89,7 @@ class GameWidget extends Component {
               <LeftEditorToolbar />
               <Editor {...this.getLeftEditorParams()} />
               {/* TODO: move state to parent component */}
-              { !isStoredGame && this.renderGameActionButtons(leftEditor) }
+              { !isStoredGame && this.renderGameActionButtons(leftEditor, false) }
               <ExecutionOutput output={leftOutput} id="1" />
             </div>
           </div>
@@ -98,7 +98,7 @@ class GameWidget extends Component {
               <RightEditorToolbar />
               <Editor {...this.getRightEditorParams()} />
               {/* TODO: move state to parent component */}
-              { !isStoredGame && this.renderGameActionButtons(rightEditor) }
+              { !isStoredGame && this.renderGameActionButtons(rightEditor, true) }
               <ExecutionOutput output={rightOutput} id="2" />
             </div>
           </div>

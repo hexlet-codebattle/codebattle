@@ -120,6 +120,35 @@ defmodule Codebattle.Languages do
           nested_value_expression_template: "<%= value %>"
         }
       },
+      "dart" => %{
+        name: "Dart",
+        slug: "dart",
+        version: "2.7.1",
+        base_image: :ubuntu,
+        check_dir: "lib",
+        extension: "dart",
+        docker_image: "codebattle/dart:2.7.1",
+        solution_version: :typed,
+        solution_template: "<%= expected %>solution(<%= arguments %>) {\n\n}",
+        arguments_template: %{
+          argument: "<%= type %> <%= name %>",
+          delimeter: ", "
+        },
+        expected_template: "<%= type %> ",
+        types: %{
+          "integer" => "int",
+          "float" => "double",
+          "string" => "String",
+          "array" => "List<<%= inner_type %>>",
+          "boolean" => "bool",
+          "hash" => "Map<String, <%= inner_type %>>"
+        },
+        checker_meta: %{
+          version: :dynamic,
+          arguments_delimeter: ", ",
+          type_templates: %TypeTemplates{}
+        }
+      },
       "cpp" => %{
         name: "C++",
         slug: "cpp",

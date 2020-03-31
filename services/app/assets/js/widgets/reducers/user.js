@@ -6,6 +6,10 @@ export const initState = {
   currentUserId: null,
   users: {},
   usersStats: {},
+  usersRatingPage: {
+    users: [],
+    pageInfo: { totalEntries: 0 },
+  },
 };
 
 const reducer = createReducer(initState, {

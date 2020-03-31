@@ -2,8 +2,8 @@ import { connect } from 'react-redux';
 import React from 'react';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
 import cn from 'classnames';
-import UserName from '../components/UserName';
-import UserStats from '../components/UserStats';
+import UserName from '../components/User/UserName';
+import UserStats from '../components/User/UserStats';
 import { getUsersStats } from '../selectors';
 import { loadUserStats } from '../middlewares/Users';
 

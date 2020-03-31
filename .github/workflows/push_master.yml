@@ -77,6 +77,10 @@ jobs:
         run: yarn lint
         working-directory: ./services/app
 
+      - name: Run jest
+        run: yarn test
+        working-directory: ./services/app
+
       - name: Setup db
         run: mix ecto.create && mix ecto.migrate
         working-directory: ./services/app

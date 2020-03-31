@@ -4,6 +4,7 @@ import cn from 'classnames';
 const iconsToClass = {
   js: 'icon-nodejs',
   ts: 'icon-nodejs',
+  dart: 'icon-ghost',
   golang: 'icon-go',
   cpp: 'icon-cplusplus',
   ruby: 'icon-ruby',
