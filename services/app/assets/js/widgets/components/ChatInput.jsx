@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import * as _ from 'lodash';
 import { Emoji, emojiIndex } from 'emoji-mart';
 import { addMessage } from '../middlewares/Chat';
 import EmojiPicker from './EmojiPicker';
@@ -17,7 +18,7 @@ export default function ChatInput() {
   const getTooltipVisibility = msg => {
     if (!/.*:[a-zA-Z]{1,}([^ ])+$/.test(msg)) return false;
     const colons = getColons(msg);
-    return _.isEmpty(emojiIndex.search(colons));
+    return !_.isEmpty(emojiIndex.search(colons));
   };
 
   const handleChange = ({ target: { value } }) => {
