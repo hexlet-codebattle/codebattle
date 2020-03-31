@@ -31,7 +31,7 @@ export default function ChatInput() {
     e.preventDefault();
 
     if (message) {
-      addMessage(null, message);
+      addMessage(message);
       setMessage('');
     }
   };
