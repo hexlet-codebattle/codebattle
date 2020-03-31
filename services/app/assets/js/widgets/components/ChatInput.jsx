@@ -16,7 +16,8 @@ export default function ChatInput() {
   const inputRef = useRef(null);
 
   const getTooltipVisibility = msg => {
-    if (!/.*:[a-zA-Z]{1,}([^ ])+$/.test(msg)) return false;
+    const endsWithEmojiCodeRegex = /.*:[a-zA-Z]{1,}([^ ])+$/;
+    if (!endsWithEmojiCodeRegex.test(msg)) return false;
     const colons = getColons(msg);
     return !_.isEmpty(emojiIndex.search(colons));
   };
