@@ -9,6 +9,13 @@ import {
   sendAcceptToRematch,
 } from '../../middlewares/Game';
 
+const getPlayerStatus = (rematchInitiatorId, currentUserId) => {
+  if (rematchInitiatorId === null) {
+    return null;
+  }
+  return rematchInitiatorId === currentUserId ? 'initiator' : 'acceptor';
+};
+
 const RematchButton = ({
   gameStatus: { rematchState, rematchInitiatorId },
   currentUserId,
@@ -76,24 +83,17 @@ const RematchButton = ({
   );
 
   const mapRematchStateToButtons = {
-    in_approval_initiator: renderBtnAfterSendOffer,
-    in_approval_acceptor: renderBtnAfterRecieveOffer,
-    rejected_initiator: renderBtnAfterReject,
-    rejected_acceptor: renderBtnAfterReject,
-    none: renderBtnByDefault,
+    in_approval_initiator: renderBtnAfterSendOffer(),
+    in_approval_acceptor: renderBtnAfterRecieveOffer(),
+    rejected_initiator: renderBtnAfterReject(),
+    rejected_acceptor: renderBtnAfterReject(),
+    none: renderBtnByDefault(),
   };
 
-  const getPlayerStatus = () => {
-    if (rematchInitiatorId === null) {
-      return null;
-    }
-    return rematchInitiatorId === currentUserId ? 'initiator' : 'acceptor';
-  };
+  const playerStatus = getPlayerStatus(rematchInitiatorId, currentUserId);
 
-  const playerStatus = getPlayerStatus();
-  const fnRenderBtn = mapRematchStateToButtons[`${rematchState}_${playerStatus}`]
+  return mapRematchStateToButtons[`${rematchState}_${playerStatus}`]
     || mapRematchStateToButtons.none;
-  return fnRenderBtn();
 };
 
 const mapStateToProps = state => {
