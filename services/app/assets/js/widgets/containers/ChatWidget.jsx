@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { fetchState } from '../middlewares/Chat';
 import * as selectors from '../selectors';
 import Messages from '../components/Messages';
-import UserName from '../components/UserName';
+import UserName from '../components/User/UserName';
 import ChatInput from '../components/ChatInput';
 import GameStatusCodes from '../config/gameStatusCodes';
 import 'emoji-mart/css/emoji-mart.css';
