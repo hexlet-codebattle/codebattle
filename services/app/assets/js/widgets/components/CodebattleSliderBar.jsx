@@ -1,7 +1,8 @@
 import React from 'react';
 
-const sliderHandleClassnames = 'cb-slider-handle position-absolute rounded-circle';
-const sliderButtonClassnames = 'cb-slider-handle-button position-absolute rounded-circle bg-danger';
+const handlerClassnames = 'cb-slider-handle position-absolute rounded-circle';
+const buttonClassnames = 'cb-slider-handle-button position-absolute rounded-circle bg-danger';
+const sliderBarClassnames = 'cb-slider-bar position-absolute rounded';
 
 const CodebattleSliderBar = ({ value: currentValue, lastIntent, isHold }) => {
   const renderSliderBar = ({ value, className }) => (
@@ -37,9 +38,11 @@ const CodebattleSliderBar = ({ value: currentValue, lastIntent, isHold }) => {
     <>
       {renderSliderAction({ value: 0.5, className: 'cb-slider-action position-absolute bg-info' })}
       <div className="cb-slider-timeline position-absolute rounded w-100 bg-gray">
-        {!isHold && renderSliderBar({ value: lastIntent, className: 'cb-slider-bar  position-absolute rounded x-intent-background' })}
-        {renderSliderBar({ value: currentValue, className: 'cb-slider-bar position-absolute rounded bg-danger' })}
-        {renderSliderHandle({ value: currentValue, className: sliderHandleClassnames, classNameButton: sliderButtonClassnames })}
+        {!isHold && renderSliderBar({ value: lastIntent, className: `${sliderBarClassnames} x-intent-background` })}
+        {renderSliderBar({ value: currentValue, className: `${sliderBarClassnames} bg-danger'` })}
+        {renderSliderHandle({
+          value: currentValue, className: handlerClassnames, classNameButton: buttonClassnames,
+        })}
       </div>
     </>
   );
