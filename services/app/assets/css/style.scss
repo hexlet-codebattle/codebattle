@@ -18,22 +18,6 @@ a {
   transition: color ease-in 0.1s;
 }
 
-.embed-container {
-  position: relative;
-  padding-bottom: 56.25%;
-  overflow: hidden;
-}
-
-.embed-container iframe,
-.embed-container object,
-.embed-container embed {
-  position: absolute;
-  top: 0;
-  left: 2%;
-  width: 96%;
-  height: 100%;
-}
-
 .cb-slider {
   height: 32px;
 
@@ -94,39 +78,6 @@ a {
   background-color: rgba(0, 0, 0, 0.25);
 }
 
-.react-calendar-heatmap {
-  .color-huge {
-    fill: #1e6823;
-  }
-  .color-huge:hover {
-    fill: #0e5813;
-  }
-  .color-large {
-    fill: #44a340;
-  }
-  .color-large:hover {
-    fill: #349330;
-  }
-  .color-small {
-    fill: #d6e685;
-  }
-  .color-small:hover {
-    fill: #c6d675;
-  }
-  .color-empty {
-    fill: #eee;
-  }
-  .color-empty:hover {
-    fill: #ccc;
-  }
-}
-.react-calendar-heatmap rect:hover {
-  stroke: #555;
-  stroke-width: 1px;
-}
-.react-calendar-heatmap {
-  font-size: 8px;
-}
 .x-username-td {
   max-width: 350px;
   overflow: hidden;
