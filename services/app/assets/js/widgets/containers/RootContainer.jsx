@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { HotKeys } from 'react-hotkeys';
+import { useHotkeys } from 'react-hotkeys-hook';
 import Gon from 'gon';
 import GameWidget from './GameWidget';
 import InfoWidget from './InfoWidget';
@@ -13,10 +13,6 @@ import { gameStatusSelector } from '../selectors';
 import WaitingOpponentInfo from '../components/WaitingOpponentInfo';
 import CodebattlePlayer from './CodebattlePlayer';
 
-const ComponentForHandlers = ({ children, ...props }) => (
-  <div {...props} style={{ outline: 'none' }}>{children}</div>
-);
-
 const RootContainer = ({
   storeLoaded, gameStatusCode, checkResult, init, setCurrentUser,
 }) => {
@@ -27,16 +23,10 @@ const RootContainer = ({
     init();
   }, []);
 
-  const keyMap = {
-    CHECK_GAME: ['command+enter', 'ctrl+enter'],
-  };
-
-  const handlers = {
-    CHECK_GAME: e => {
-      e.preventDefault();
-      checkResult();
-    },
-  };
+  useHotkeys('command+enter, ctrl+enter', e => {
+    e.preventDefault();
+    checkResult();
+  }, [], { filter: () => true });
 
   if (!storeLoaded) {
     // TODO: add loader
@@ -51,17 +41,13 @@ const RootContainer = ({
   const isStoredGame = gameStatusCode === GameStatusCodes.stored;
 
   return (
-    <HotKeys
-      keyMap={keyMap}
-      handlers={handlers}
-      component={ComponentForHandlers}
-    >
+    <>
       <div className="container-fluid">
         <InfoWidget />
         <GameWidget />
       </div>
       {isStoredGame && <CodebattlePlayer />}
-    </HotKeys>
+    </>
   );
 };
 
