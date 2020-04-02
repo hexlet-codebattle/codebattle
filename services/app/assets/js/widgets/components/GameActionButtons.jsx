@@ -11,16 +11,8 @@ import { checkGameResult, sendGiveUp } from '../middlewares/Game';
 
 const GameActionButtons = props => {
   const [modalShowing, setModalShowing] = useState(false);
-  const {
-    disabled,
-    gameStatus,
-    checkResult,
-    players,
-    currentUserId,
-    editorUser,
-  } = props;
+
   const modalHide = () => {
-   
     setModalShowing(false);
   };
 
@@ -63,7 +55,14 @@ const GameActionButtons = props => {
       {i18n.t('Give up')}
     </button>
   );
-
+  const {
+    disabled,
+    gameStatus,
+    checkResult,
+    players,
+    currentUserId,
+    editorUser,
+  } = props;
   const renderModal = () => (
     <Modal show={modalShowing} onHide={modalHide}>
       <Modal.Body className="text-center">
@@ -75,7 +74,7 @@ const GameActionButtons = props => {
       </Modal.Footer>
     </Modal>
   );
-  
+
 
   const isSpectator = !_.hasIn(players, currentUserId);
   const canGiveUp = gameStatus.status === GameStatusCodes.playing;
