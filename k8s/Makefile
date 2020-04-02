@@ -31,7 +31,7 @@ helm-install-keel:
 	helm upgrade --install keel --namespace=kube-system keel/keel
 
 kb-app-tailf:
-	kubectl logs -f $(POD_NAME) -c app
+	kubectl logs -f $(POD_NAME) --tail=2000 -c app
 
 kb-app-console:
 	kubectl exec -it $(POD_NAME) -c app  -- bash
