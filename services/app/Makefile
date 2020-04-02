@@ -36,7 +36,7 @@ test-code-checkers:
 	mix test test/code_check --max-failures 1
 
 release: $(CACHE_MANIFEST)
-	MIX_ENV=prod mix release --overwrite
+	DEBUG=1 MIX_ENV=prod mix release --overwrite
 
 $(CACHE_MANIFEST): build-assets
 	MIX_ENV=prod mix phx.digest
