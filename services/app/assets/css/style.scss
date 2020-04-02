@@ -136,3 +136,22 @@ a {
     border-top: 5px solid black;
   }
 }
+
+.cb-toast-close {
+  top: 5px;
+  right: 10px;
+}
+
+.cb-messages-list {
+  top: 5px;
+  height: 80%;
+  word-break: break-all;
+}
+
+.x-whitespace-nowrap {
+  white-space: nowrap;
+}
+
+.cb-info-widget {
+  height: 300px;
+}

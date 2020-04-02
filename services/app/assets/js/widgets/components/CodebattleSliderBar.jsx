@@ -1,6 +1,6 @@
 import React from 'react';
 
-const handlerClassnames = 'cb-slider-handle position-absolute rounded-circle';
+const handleClassnames = 'cb-slider-handle position-absolute rounded-circle';
 const buttonClassnames = 'cb-slider-handle-button position-absolute rounded-circle bg-danger';
 const sliderBarClassnames = 'cb-slider-bar position-absolute rounded';
 
@@ -39,9 +39,9 @@ const CodebattleSliderBar = ({ value: currentValue, lastIntent, isHold }) => {
       {renderSliderAction({ value: 0.5, className: 'cb-slider-action position-absolute bg-info' })}
       <div className="cb-slider-timeline position-absolute rounded w-100 bg-gray">
         {!isHold && renderSliderBar({ value: lastIntent, className: `${sliderBarClassnames} x-intent-background` })}
-        {renderSliderBar({ value: currentValue, className: `${sliderBarClassnames} bg-danger'` })}
+        {renderSliderBar({ value: currentValue, className: `${sliderBarClassnames} bg-danger` })}
         {renderSliderHandle({
-          value: currentValue, className: handlerClassnames, classNameButton: buttonClassnames,
+          value: currentValue, className: handleClassnames, classNameButton: buttonClassnames,
         })}
       </div>
     </>
