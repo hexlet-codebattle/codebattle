@@ -47,7 +47,7 @@ const UserName = ({ user, users, dispatch }) => {
           className="attachment rounded border mr-1"
           alt={name}
           src={`https://avatars0.githubusercontent.com/u/${githubId}`}
-          width='25px'
+          width="25px"
         />
         <span>{name}</span>
       </a>

@@ -1,14 +1,12 @@
 import React from 'react';
 
-export default ({ closeToast }) => {
-  return (
-    <button
-      type="button"
-      onClick={closeToast}
-      className="ml-2 mb-1 close position-absolute cb-toast-close"
-      aria-label="Close"
-    >
-      <span aria-hidden="true">&times;</span>
-    </button>
-  );
-};
+export default ({ closeToast }) => (
+  <button
+    type="button"
+    onClick={closeToast}
+    className="ml-2 mb-1 close position-absolute cb-toast-close"
+    aria-label="Close"
+  >
+    <span aria-hidden="true">&times;</span>
+  </button>
+);
