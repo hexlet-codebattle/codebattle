@@ -30,7 +30,7 @@ defmodule CodebattleWeb.GameController do
     with {:ok, fsm} <- Play.create_game(game_params) do
       game_id = FsmHelpers.get_game_id(fsm)
       level = FsmHelpers.get_level(fsm)
-      redirect(conn, to: game_path(conn, :show, game_id, level: level))
+      redirect(conn, to: Routes.game_path(conn, :show, game_id, level: level))
     end
   end
 
@@ -74,18 +74,18 @@ defmodule CodebattleWeb.GameController do
     case Play.join_game(id, conn.assigns.current_user) do
       {:ok, _fsm} ->
         conn
-        |> redirect(to: game_path(conn, :show, id))
+        |> redirect(to: Routes.game_path(conn, :show, id))
 
       {:error, reason} ->
         conn
         |> put_flash(:danger, reason)
-        |> redirect(to: page_path(conn, :index))
+        |> redirect(to: Routes.page_path(conn, :index))
     end
   end
 
   def delete(conn, %{"id" => id}) do
     with :ok <- Play.cancel_game(id, conn.assigns.current_user) do
-      redirect(conn, to: page_path(conn, :index))
+      redirect(conn, to: Routes.page_path(conn, :index))
     end
   end
 end

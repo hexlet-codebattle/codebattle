@@ -10,14 +10,14 @@ defmodule CodebattleWeb.FallbackController do
     conn
     |> put_status(:unprocessable_entity)
     |> put_flash(:danger, changeset_error_to_string(changeset))
-    |> redirect(to: page_path(conn, :index))
+    |> redirect(to: Routes.page_path(conn, :index))
   end
 
   def call(conn, {:error, reason}) do
     conn
     |> put_status(:unprocessable_entity)
     |> put_flash(:danger, reason)
-    |> redirect(to: page_path(conn, :index))
+    |> redirect(to: Routes.page_path(conn, :index))
   end
 
   def changeset_error_to_string(changeset) do

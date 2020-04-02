@@ -43,15 +43,15 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
     # Create game
     conn =
       conn1
-      |> get(page_path(conn1, :index))
-      |> post(game_path(conn1, :create, level: "easy", type: "withRandomPlayer"))
+      |> get(Routes.page_path(conn1, :index))
+      |> post(Routes.game_path(conn1, :create, level: "easy", type: "withRandomPlayer"))
 
     game_id = game_id_from_conn(conn)
 
     game_topic = "game:" <> to_string(game_id)
     #
     # Second player join game
-    post(conn2, game_path(conn2, :join, game_id))
+    post(conn2, Routes.game_path(conn2, :join, game_id))
 
     editor_text1 = "t"
     editor_text2 = "te"

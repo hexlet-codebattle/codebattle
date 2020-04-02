@@ -27,13 +27,13 @@ defmodule CodebattleWeb.ConnCase do
       # Import conveniences for testing with connections
       use Phoenix.ConnTest
 
-      alias CodebattleWeb.Router.Helpers, as: Routes
 
       import Phoenix.LiveViewTest
       import CodebattleWeb.Factory
       import Helpers.GameProcess
       alias Codebattle.{Repo, User, Game, UserGame}
       alias Codebattle.GameProcess.{Player}
+      alias CodebattleWeb.Router.Helpers, as: Routes
 
       # The default endpoint for testing
       @endpoint CodebattleWeb.Endpoint

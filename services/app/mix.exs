@@ -19,7 +19,7 @@ defmodule Codebattle.Mixfile do
       ],
       test_coverage: [tool: ExCoveralls],
       deps: deps(),
-      elixirc_options: [warnings_as_errors: true]
+      elixirc_options: [warnings_as_errors: false]
     ]
   end
 
@@ -42,12 +42,12 @@ defmodule Codebattle.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "1.4.12"},
+      {:phoenix, "~> 1.4.16"},
       {:phoenix_pubsub, "~> 1.0"},
       {:phoenix_ecto, "~> 4.0"},
-      {:phoenix_live_view, "~> 0.6"},
+      {:phoenix_live_view, "~> 0.10"},
       {:postgrex, ">= 0.0.0"},
-      {:phoenix_html, "~> 2.10"},
+      {:phoenix_html, "~> 2.14"},
       {:gettext, "~> 0.11"},
       {:cowboy, "~> 1.0"},
       {:plug_cowboy, "~> 1.0"},

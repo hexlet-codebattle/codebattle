@@ -86,7 +86,7 @@ defmodule CodebattleWeb.Live.Tournament.View do
       user: socket.assigns.current_user
     })
 
-    {:stop, redirect(socket, to: "/tournaments")}
+    {:noreply, redirect(socket, to: "/tournaments")}
   end
 
   def handle_event("start", _params, socket) do
