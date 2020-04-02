@@ -15,6 +15,7 @@ RUN mix do deps.get, compile
 COPY . .
 
 RUN cd ${phoenix_subdir}/assets \
+    && npm i -g yarn \
     && yarn install --froze-lockfile \
     && ./node_modules/webpack/bin/webpack.js --mode production \
     && cd .. \
