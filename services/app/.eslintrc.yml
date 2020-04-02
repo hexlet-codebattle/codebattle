@@ -3,7 +3,7 @@ plugins:
   - react
   - jsx-a11y
   - jest
-
+  - react-hooks
 env:
   node: true
   browser: true
@@ -30,3 +30,5 @@ rules:
   jest/no-identical-title: "error"
   jest/prefer-to-have-length: "warn"
   jest/valid-expect: "error"
+  react-hooks/rules-of-hooks: "error"
+  react-hooks/exhaustive-deps: "warn"
