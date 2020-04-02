@@ -27,7 +27,6 @@ defmodule CodebattleWeb.ConnCase do
       # Import conveniences for testing with connections
       use Phoenix.ConnTest
 
-
       import Phoenix.LiveViewTest
       import CodebattleWeb.Factory
       import Helpers.GameProcess
