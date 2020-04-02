@@ -41,13 +41,13 @@ const RootContainer = ({
   const isStoredGame = gameStatusCode === GameStatusCodes.stored;
 
   return (
-    <>
+    <div className="x-outline-none">
       <div className="container-fluid">
         <InfoWidget />
         <GameWidget />
       </div>
       {isStoredGame && <CodebattlePlayer />}
-    </>
+    </div>
   );
 };
 
