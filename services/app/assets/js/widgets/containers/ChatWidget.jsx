@@ -11,10 +11,8 @@ import 'emoji-mart/css/emoji-mart.css';
 
 
 const ChatWidget = () => {
-  //  shallowEqual нужен?
   const users = useSelector(state => selectors.chatUsersSelector(state), shallowEqual);
   const messages = useSelector(state => selectors.chatMessagesSelector(state), shallowEqual);
-  // const currentUser = useSelector(state => selectors.currentChatUserSelector(state)); потерялся
   const isStoredGame = useSelector(state => (
     selectors.gameStatusSelector(state).status === GameStatusCodes.stored), shallowEqual);
   const dispatch = useDispatch();
@@ -22,7 +20,7 @@ const ChatWidget = () => {
     if (!isStoredGame) {
       dispatch(fetchState());
     }
-  }, []);
+  }, [isStoredGame, dispatch]);
 
   const listOfUsers = _.uniqBy(users, 'id');
   return (
