@@ -9,16 +9,16 @@ RUN apk update \
     && mix local.rebar --force \
     && mix local.hex --force
 
+RUN npm i -g yarn
+
 COPY mix.* ./
 RUN mix do deps.get, compile
 
 COPY . .
 
-RUN cd ${phoenix_subdir}/assets \
-    && npm i -g yarn \
-    && yarn install --froze-lockfile \
-    && ./node_modules/webpack/bin/webpack.js --mode production \
-    && cd .. \
+RUN yarn install --froze-lockfile
+
+RUN ./node_modules/webpack/bin/webpack.js --mode production \
     && mix phx.digest
 
 RUN mix release  \
