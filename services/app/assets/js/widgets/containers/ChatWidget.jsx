@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import _ from 'lodash';
-import { useSelector, useDispatch, shallowEqual } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { fetchState } from '../middlewares/Chat';
 import * as selectors from '../selectors';
 import Messages from '../components/Messages';
@@ -11,16 +11,17 @@ import 'emoji-mart/css/emoji-mart.css';
 
 
 const ChatWidget = () => {
-  const users = useSelector(state => selectors.chatUsersSelector(state), shallowEqual);
-  const messages = useSelector(state => selectors.chatMessagesSelector(state), shallowEqual);
+  const users = useSelector(state => selectors.chatUsersSelector(state));
+  const messages = useSelector(state => selectors.chatMessagesSelector(state));
   const isStoredGame = useSelector(state => (
-    selectors.gameStatusSelector(state).status === GameStatusCodes.stored), shallowEqual);
+    selectors.gameStatusSelector(state).status === GameStatusCodes.stored));
   const dispatch = useDispatch();
+
   useEffect(() => {
     if (!isStoredGame) {
       dispatch(fetchState());
     }
-  }, [isStoredGame, dispatch]);
+  }, [dispatch, isStoredGame]);
 
   const listOfUsers = _.uniqBy(users, 'id');
   return (
