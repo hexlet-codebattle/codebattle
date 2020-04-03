@@ -44,6 +44,14 @@ const GameActionButtons = ({ disabled, editorUser }) => {
   const dispatch = useDispatch();
   const checkResult = () => dispatch(checkGameResult());
 
+  const players = useSelector(state => selectors.gamePlayersSelector(state));
+  const currentUserId = useSelector(state => selectors.currentUserIdSelector(state));
+  const gameStatus = useSelector(state => selectors.gameStatusSelector(state));
+
+  const isSpectator = !_.hasIn(players, currentUserId);
+  const canGiveUp = gameStatus.status === GameStatusCodes.playing;
+  const realDisabled = isSpectator || disabled;
+
   const modalHide = () => {
     setModalShowing(false);
   };
@@ -56,9 +64,6 @@ const GameActionButtons = ({ disabled, editorUser }) => {
     modalHide();
     sendGiveUp();
   };
-  const players = useSelector(state => selectors.gamePlayersSelector(state));
-  const currentUserId = useSelector(state => selectors.currentUserIdSelector(state));
-  const gameStatus = useSelector(state => selectors.gameStatusSelector(state));
 
   const renderModal = () => (
     <Modal show={modalShowing} onHide={modalHide}>
@@ -71,11 +76,6 @@ const GameActionButtons = ({ disabled, editorUser }) => {
       </Modal.Footer>
     </Modal>
   );
-
-
-  const isSpectator = !_.hasIn(players, currentUserId);
-  const canGiveUp = gameStatus.status === GameStatusCodes.playing;
-  const realDisabled = isSpectator || disabled;
 
   return (
     <div className="btn-toolbar py-3 px-3" role="toolbar">
