@@ -11,13 +11,13 @@ defmodule Codebattle.ForbidMultipleGamesTest do
       |> get(user_path(conn, :index))
 
     conn
-    |> get(page_path(conn, :index))
-    |> post(game_path(conn, :create, level: "easy", type: "withRandomPlayer"))
+    |> get(Routes.page_path(conn, :index))
+    |> post(Routes.game_path(conn, :create, level: "easy", type: "withRandomPlayer"))
 
     conn =
       conn
-      |> get(page_path(conn, :index))
-      |> post(game_path(conn, :create, level: "easy", type: "withRandomPlayer"))
+      |> get(Routes.page_path(conn, :index))
+      |> post(Routes.game_path(conn, :create, level: "easy", type: "withRandomPlayer"))
 
     assert conn.status == 422
     assert get_flash(conn, :danger) != nil

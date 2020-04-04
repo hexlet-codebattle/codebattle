@@ -5,6 +5,7 @@ defmodule Codebattle.IntegrationCase do
 
   using do
     quote do
+      alias CodebattleWeb.Router.Helpers, as: Routes
       use Phoenix.ChannelTest
       import CodebattleWeb.Router.Helpers
       import CodebattleWeb.Factory

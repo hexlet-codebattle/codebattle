@@ -1,116 +1,20 @@
 import React from 'react';
 import _ from 'lodash';
 import { connect } from 'react-redux';
-import { Emoji } from 'emoji-mart';
-import { fetchState, addMessage } from '../middlewares/Chat';
+import { fetchState } from '../middlewares/Chat';
 import * as selectors from '../selectors';
 import Messages from '../components/Messages';
 import UserName from '../components/User/UserName';
-import EmojiPicker from '../components/EmojiPicker';
-import EmojiToolTip from '../components/ EmojiTooltip';
+import ChatInput from '../components/ChatInput';
 import GameStatusCodes from '../config/gameStatusCodes';
 import 'emoji-mart/css/emoji-mart.css';
 
 class ChatWidget extends React.Component {
-  state = { message: '', isEmojiPickerVisible: false, isEmojiTooltipVisible: false };
-
   componentDidMount() {
     const { dispatch, isStoredGame } = this.props;
     if (!isStoredGame) {
       dispatch(fetchState());
     }
-  }
-
-  handleChange = ({ target: { value } }) => {
-    const isEmojiTooltipVisible = /.*:[a-zA-Z]{1,}([^ ])+$/.test(value);
-    this.setState({ message: value, isEmojiTooltipVisible });
-  };
-
-  handleSubmit = e => {
-    e.preventDefault();
-    const { message } = this.state;
-    const {
-      currentUser: { name },
-    } = this.props;
-
-    if (message) {
-      addMessage(name, message);
-      this.setState({ message: '' });
-    }
-  };
-
-  toggleEmojiPickerVisibility = () => {
-    const { isEmojiPickerVisible } = this.state;
-    this.setState({ isEmojiPickerVisible: !isEmojiPickerVisible });
-  };
-
-  hideEmojiPicker = () => {
-    this.setState({ isEmojiPickerVisible: false });
-  };
-
-  handleSelectEmodji = (colons = null) => emoji => {
-    const { message } = this.state;
-    const messageWithoutColons = colons ? message.slice(0, -colons.length - 2) : message;
-    this.setState({
-      message: `${messageWithoutColons}${emoji.native}`,
-      isEmojiPickerVisible: false,
-    });
-  };
-
-  handleInputKeydown = e => {
-    const { isEmojiTooltipVisible } = this.state;
-    if (e.key === 'Enter' && isEmojiTooltipVisible) {
-      e.preventDefault();
-    }
-  }
-
-  hideEmojiTooltip = () => this.setState({ isEmojiTooltipVisible: false });
-
-  renderChatInput() {
-    const { message, isEmojiPickerVisible, isEmojiTooltipVisible } = this.state;
-
-    return (
-      <form
-        className="p-2 input-group input-group-sm position-absolute"
-        style={{ bottom: 0 }}
-        onSubmit={this.handleSubmit}
-      >
-        <input
-          className="form-control border-secondary relative"
-          placeholder="Type message here..."
-          value={message}
-          onChange={this.handleChange}
-          onKeyDown={this.handleInputKeydown}
-        />
-        <button
-          type="button"
-          className="btn btn-link position-absolute"
-          style={{ right: '50px', zIndex: 5 }}
-          onClick={this.toggleEmojiPickerVisibility}
-        >
-          <Emoji emoji="grinning" set="apple" size={20} />
-        </button>
-        {isEmojiTooltipVisible && (
-          <EmojiToolTip
-            message={message}
-            handleSelect={this.handleSelectEmodji}
-            hide={this.hideEmojiTooltip}
-          />
-        )}
-        {isEmojiPickerVisible && (
-          <EmojiPicker
-            handleSelect={this.handleSelectEmodji}
-            hideEmojiPicker={this.hideEmojiPicker}
-            isShown={isEmojiPickerVisible}
-          />
-        )}
-        <div className="input-group-append">
-          <button className="btn btn-outline-secondary" type="button" onClick={this.handleSubmit}>
-            Send
-          </button>
-        </div>
-      </form>
-    );
   }
 
   render() {
@@ -121,7 +25,7 @@ class ChatWidget extends React.Component {
       <div className="d-flex shadow-sm h-100">
         <div className="col-12 col-sm-8 p-0 bg-white rounded-left h-100 position-relative">
           <Messages messages={messages} />
-          {!isStoredGame && this.renderChatInput()}
+          {!isStoredGame && <ChatInput />}
         </div>
         <div className="col-4 d-none d-sm-block p-0 border-left bg-white rounded-right">
           <div className="d-flex flex-direction-column flex-wrap justify-content-between">

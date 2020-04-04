@@ -37,7 +37,7 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
 
     case Tournament.create(Map.merge(params, %{"creator_id" => creator_id})) do
       {:ok, tournament} ->
-        {:stop,
+        {:noreply,
          socket
          |> put_flash(:info, "user created")
          |> redirect(to: "/tournaments/#{tournament.id}")}

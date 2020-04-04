@@ -31,13 +31,12 @@ defmodule CodebattleWeb do
       use Phoenix.Controller, namespace: CodebattleWeb
 
       alias Codebattle.Repo
+      alias CodebattleWeb.Router.Helpers, as: Routes
 
       import Ecto
       import Ecto.Query
-      import CodebattleWeb.Router.Helpers
       import CodebattleWeb.Gettext
       import Phoenix.LiveView.Controller, only: [live_render: 3]
-      alias CodebattleWeb.Router.Helpers, as: Routes
     end
   end
 
@@ -47,17 +46,17 @@ defmodule CodebattleWeb do
         root: "lib/codebattle_web/templates",
         namespace: CodebattleWeb
 
+      alias CodebattleWeb.Router.Helpers, as: Routes
+
       # Import convenience functions from controllers
       import Phoenix.Controller, only: [get_flash: 1, view_module: 1]
 
       # Use all HTML functionality (forms, tags, etc)
       use Phoenix.HTML
 
-      import CodebattleWeb.Router.Helpers
       import CodebattleWeb.ErrorHelpers
       import CodebattleWeb.Gettext
       import Phoenix.LiveView.Helpers
-      alias CodebattleWeb.Router.Helpers, as: Routes
     end
   end
 

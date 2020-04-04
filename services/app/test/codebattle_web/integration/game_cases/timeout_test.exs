@@ -60,7 +60,7 @@ defmodule Codebattle.GameCases.TimeoutTest do
   test "After timeout user can create games", %{conn1: conn1, conn2: conn2, socket1: socket1} do
     conn =
       conn1
-      |> get(page_path(conn1, :index))
+      |> get(Routes.page_path(conn1, :index))
       |> post(
         game_path(conn1, :create,
           level: "elementary",
@@ -88,8 +88,8 @@ defmodule Codebattle.GameCases.TimeoutTest do
 
     conn =
       conn1
-      |> get(page_path(conn1, :index))
-      |> post(game_path(conn, :create, level: "elementary", type: "withRandomPlayer"))
+      |> get(Routes.page_path(conn1, :index))
+      |> post(Routes.game_path(conn, :create, level: "elementary", type: "withRandomPlayer"))
 
     game_id = game_id_from_conn(conn)
 

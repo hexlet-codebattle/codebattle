@@ -46,8 +46,8 @@ defmodule Codebattle.RandomTaskSelectorTest do
     |> Enum.each(fn _x ->
       conn =
         conn1
-        |> get(page_path(conn1, :index))
-        |> post(game_path(conn1, :create, level: "easy", type: "withRandomPlayer"))
+        |> get(Routes.page_path(conn1, :index))
+        |> post(Routes.game_path(conn1, :create, level: "easy", type: "withRandomPlayer"))
 
       game_id = game_id_from_conn(conn)
 

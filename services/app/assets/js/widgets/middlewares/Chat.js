@@ -23,8 +23,8 @@ export const fetchState = () => dispatch => {
   channel.on('new:message', camelizeKeysAndDispatch(newMessageChat));
 };
 
-export const addMessage = (user, message) => {
-  const payload = { user, message };
+export const addMessage = message => {
+  const payload = { message };
 
   channel.push('new:message', payload)
     .receive('error', error => console.error(error));

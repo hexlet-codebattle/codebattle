@@ -64,7 +64,7 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
     :timer.sleep(100)
 
     # User join to the game
-    post(conn, game_path(conn, :join, game_id))
+    post(conn, Routes.game_path(conn, :join, game_id))
 
     {:ok, _response, _socket} = subscribe_and_join(socket, GameChannel, game_topic)
     :timer.sleep(100)

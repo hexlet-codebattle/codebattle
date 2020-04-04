@@ -35,7 +35,7 @@ release:
 	make -C services/app release
 
 docker-build-app:
-	docker build --cache-from=codebattle/app --tag codebattle/app --file services/app/Dockerfile.rel services/app
+	docker build --cache-from=codebattle/app --tag codebattle/app --file services/app/Dockerfile services/app
 
 docker-push-app:
 	docker push codebattle/app:latest
