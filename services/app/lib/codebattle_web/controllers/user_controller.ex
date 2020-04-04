@@ -38,7 +38,7 @@ defmodule CodebattleWeb.UserController do
       {:ok, _} ->
         conn
         |> put_flash(:info, "User was successfully updated.")
-        |> redirect(to: user_setting_path(conn, :edit))
+        |> redirect(to: Routes.user_setting_path(conn, :edit))
 
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", user: current_user, changeset: changeset)

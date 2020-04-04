@@ -49,7 +49,7 @@ defmodule RecalculateAchivementsTest do
 
     conn =
       conn1
-      |> get(page_path(conn1, :index))
+      |> get(Routes.page_path(conn1, :index))
       |> post(game_path(conn1, :create, level: "easy", lang: "js", type: "withRandomPlayer"))
 
     game_id = game_id_from_conn(conn)
@@ -90,7 +90,7 @@ defmodule RecalculateAchivementsTest do
     # Create game
     conn =
       conn1
-      |> get(page_path(conn1, :index))
+      |> get(Routes.page_path(conn1, :index))
       |> post(game_path(conn1, :create, level: "easy", lang: "js", type: "withRandomPlayer"))
 
     game_id = game_id_from_conn(conn)

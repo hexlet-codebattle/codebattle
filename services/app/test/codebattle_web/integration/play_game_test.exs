@@ -43,7 +43,7 @@ defmodule Codebattle.PlayGameTest do
     # Create game
     conn =
       conn1
-      |> get(page_path(conn1, :index))
+      |> get(Routes.page_path(conn1, :index))
       |> post(game_path(conn1, :create, level: "easy", type: "withRandomPlayer"))
 
     game_id = game_id_from_conn(conn)
@@ -150,7 +150,7 @@ defmodule Codebattle.PlayGameTest do
     # Create game
     conn1 =
       conn1
-      |> get(page_path(conn1, :index))
+      |> get(Routes.page_path(conn1, :index))
       |> post(game_path(conn1, :create, level: "easy", type: "withRandomPlayer"))
 
     game_id = game_id_from_conn(conn1)
