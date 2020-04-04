@@ -18,6 +18,40 @@ a {
   transition: color ease-in 0.1s;
 }
 
+.react-calendar-heatmap {
+  .color-huge {
+    fill: #1e6823;
+  }
+  .color-huge:hover {
+    fill: #0e5813;
+  }
+  .color-large {
+    fill: #44a340;
+  }
+  .color-large:hover {
+    fill: #349330;
+  }
+  .color-small {
+    fill: #d6e685;
+  }
+  .color-small:hover {
+    fill: #c6d675;
+  }
+  .color-empty {
+    fill: #eee;
+  }
+  .color-empty:hover {
+    fill: #ccc;
+  }
+}
+.react-calendar-heatmap rect:hover {
+  stroke: #555;
+  stroke-width: 1px;
+}
+.react-calendar-heatmap {
+  font-size: 8px;
+}
+
 .cb-slider {
   height: 32px;
 
@@ -146,10 +180,6 @@ a {
   top: 5px;
   height: 80%;
   word-break: break-all;
-}
-
-.x-whitespace-nowrap {
-  white-space: nowrap;
 }
 
 .cb-info-widget {

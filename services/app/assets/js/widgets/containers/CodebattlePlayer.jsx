@@ -259,7 +259,7 @@ class CodebattlePlayer extends Component {
                   hasStopped={() => isStop}
                 >
                   <Slider
-                    className="cb-slider w-100 col-md-7 ml-1"
+                    className="cb-slider col-md-7 ml-1"
                     isEnabled={isEnabled}
                     direction={direction}
                     onChange={value => this.onSliderHandleChange(value)}
