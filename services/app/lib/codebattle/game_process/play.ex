@@ -40,6 +40,7 @@ defmodule Codebattle.GameProcess.Play do
   end
 
   def get_fsm(id), do: Server.get_fsm(id)
+  def get_playbook(id), do: Server.get_playbook(id)
 
   def create_game(params) do
     module = get_module(params)

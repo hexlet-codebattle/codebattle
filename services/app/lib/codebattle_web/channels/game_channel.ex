@@ -6,9 +6,24 @@ defmodule CodebattleWeb.GameChannel do
   alias CodebattleWeb.Api.GameView
 
   def join("game:" <> game_id, _payload, socket) do
+    send(self(), :after_join)
+
     case Play.get_fsm(game_id) do
       {:ok, fsm} -> {:ok, GameView.render_fsm(fsm), socket}
       {:error, reason} -> {:error, reason}
+    end
+  end
+
+  def handle_info(:after_join, socket) do
+    game_id = get_game_id(socket)
+
+    case Play.get_playbook(game_id) do
+      {:ok, playbook} ->
+        push(socket, "playbook:init", %{playbook: GameView.render_playbook(playbook)})
+        {:noreply, socket}
+
+      {:error, reason} ->
+        {:error, reason}
     end
   end
 

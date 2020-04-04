@@ -22,6 +22,10 @@ defmodule CodebattleWeb.Api.GameView do
     }
   end
 
+  def render_playbook(playbook) do
+    playbook
+  end
+
   def render_completed_games(games) do
     Enum.map(games, &render_completed_game/1)
   end

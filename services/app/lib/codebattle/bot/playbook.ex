@@ -87,7 +87,7 @@ defmodule Codebattle.Bot.Playbook do
     :game_over
   ]
 
-  def add_event(playbook, event, params)
+  def add_event(playbook, event, params, game_id)
       when event in @events do
     time = System.system_time(:millisecond)
     count = Enum.count(playbook)
@@ -97,10 +97,12 @@ defmodule Codebattle.Bot.Playbook do
       |> merge(event, params)
       |> Map.merge(%{time: time, record_id: count})
 
+    broadcast_event(record, game_id)
+
     [record | playbook]
   end
 
-  def add_event(playbook, :join, %{players: players}) do
+  def add_event(playbook, :join, %{players: players}, game_id) do
     Enum.reduce(players, playbook, fn player, acc ->
       data = %{
         id: player.id,
@@ -110,11 +112,11 @@ defmodule Codebattle.Bot.Playbook do
         check_result: %{result: "", output: ""}
       }
 
-      add_event(acc, :init, data)
+      add_event(acc, :init, data, game_id)
     end)
   end
 
-  def add_event(playbook, _event, _params) do
+  def add_event(playbook, _event, _params, _game_id) do
     playbook
   end
 
@@ -240,4 +242,14 @@ defmodule Codebattle.Bot.Playbook do
   defp create_delta(text), do: TextDelta.new() |> TextDelta.insert(text)
 
   defp increase_count(data), do: Map.update!(data, :count, &(&1 + 1))
+
+  defp broadcast_event(event,game_id) do
+    CodebattleWeb.Endpoint.broadcast!(
+      game_channel_name(game_id),
+      "playbook:add_event",
+      %{event: event}
+    )
+  end
+
+  defp game_channel_name(game_id), do: "game:#{game_id}"
 end

@@ -7,6 +7,7 @@ defmodule Codebattle.GameProcess.Server do
 
   alias Codebattle.GameProcess.Fsm
   alias Codebattle.Bot.Playbook
+  alias Codebattle.GameProcess.FsmHelpers
 
   # API
   def start_link(game_id, fsm) do
@@ -62,18 +63,20 @@ defmodule Codebattle.GameProcess.Server do
   end
 
   def handle_cast({:update_playbook, event, params}, %{fsm: fsm, playbook: playbook}) do
+    game_id = FsmHelpers.get_game_id(fsm)
     new_state = %{
       fsm: fsm,
-      playbook: Playbook.add_event(playbook, event, params)
+      playbook: Playbook.add_event(playbook, event, params, game_id)
     }
 
     {:noreply, new_state}
   end
 
   def handle_cast({:transition, event, params}, %{fsm: fsm, playbook: playbook}) do
+    game_id = FsmHelpers.get_game_id(fsm)
     new_state = %{
       fsm: Fsm.transition(fsm, event, [params]),
-      playbook: Playbook.add_event(playbook, event, params)
+      playbook: Playbook.add_event(playbook, event, params, game_id)
     }
 
     {:noreply, new_state}
@@ -93,9 +96,10 @@ defmodule Codebattle.GameProcess.Server do
         {:reply, {:error, reason}, state}
 
       new_fsm ->
+        game_id = FsmHelpers.get_game_id(new_fsm)
         new_state = %{
           fsm: new_fsm,
-          playbook: Playbook.add_event(playbook, event, params)
+          playbook: Playbook.add_event(playbook, event, params, game_id)
         }
 
         {:reply, {:ok, new_fsm}, new_state}
