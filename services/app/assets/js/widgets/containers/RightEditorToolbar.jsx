@@ -13,14 +13,14 @@ const renderEditorHeightButtons = (compressEditor, expandEditor, userId) => (
     <button
       type="button"
       className="btn btn-sm btn-light border rounded"
-      onClick={() => compressEditor(userId)}
+      onClick={compressEditor(userId)}
     >
       <i className="fas fa-compress-arrows-alt" aria-hidden="true" />
     </button>
     <button
       type="button"
       className="btn btn-sm btn-light border rounded ml-2"
-      onClick={() => expandEditor(userId)}
+      onClick={expandEditor(userId)}
     >
       <i className="fas fa-expand-arrows-alt" aria-hidden="true" />
     </button>
@@ -53,8 +53,8 @@ const RightEditorToolbar = () => {
   const players = useSelector(state => selectors.gamePlayersSelector(state));
 
   const dispatch = useDispatch();
-  const compressEditor = userId => dispatch(compressEditorHeight(userId));
-  const expandEditor = userId => dispatch(expandEditorHeight(userId));
+  const compressEditor = userId => () => dispatch(compressEditorHeight(userId));
+  const expandEditor = userId => () => dispatch(expandEditorHeight(userId));
 
   if (rightEditorLangSlug === null) { return null; }
 
