@@ -18,93 +18,6 @@ a {
   transition: color ease-in 0.1s;
 }
 
-.embed-container {
-  position: relative;
-  padding-bottom: 56.25%;
-  overflow: hidden;
-}
-
-.embed-container iframe,
-.embed-container object,
-.embed-container embed {
-  position: absolute;
-  top: 0;
-  left: 2%;
-  width: 96%;
-  height: 100%;
-}
-
-.x-slider {
-  position: relative;
-  width: 100%;
-  height: 32px;
-  cursor: pointer;
-
-  &:hover {
-    .x-slider-timeline {
-      transform: translateY(-50%) scale(1, 1.095);
-    }
-    .x-slider-handle {
-      opacity: 1;
-    }
-  }
-}
-
-.x-slider-timeline {
-  position: absolute;
-  width: 100%;
-  height: 7px;
-  border-radius: 4px;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  transition: transform 0.1s;
-}
-
-.x-slider-action {
-  width: 20px;
-  height: 20px;
-  position: absolute;
-  left: 0;
-  top: 12px;
-  opacity: 0;
-  transform: translateY(-100%)
-}
-
-.x-slider-handle {
-  position: absolute;
-  width: 32px;
-  height: 32px;
-  border-radius: 100%;
-  transform: translate(-50%, -50%);
-  top: 50%;
-  left: 50%;
-  opacity: 0;
-  transition: opacity 0.28s;
-}
-
-.x-slider-handle-button {
-  position: absolute;
-  width: 15px;
-  height: 15px;
-  border-radius: 100%;
-  transform: translate(-50%, -50%);
-  top: 50%;
-  left: 50%;
-}
-
-.x-slider-bar {
-  position: absolute;
-  border-radius: 4px;
-  top: 0;
-  bottom: 0;
-  left: 0;
-}
-
-.x-intent-background {
-  background-color: rgba(0, 0, 0, 0.25);
-}
-
 .react-calendar-heatmap {
   .color-huge {
     fill: #1e6823;
@@ -138,6 +51,67 @@ a {
 .react-calendar-heatmap {
   font-size: 8px;
 }
+
+.cb-slider {
+  height: 32px;
+
+  &:hover {
+    cursor: pointer;
+
+    .cb-slider-timeline {
+      transform: translateY(-50%) scale(1, 1.095);
+    }
+    .cb-slider-handle {
+      opacity: 1;
+    }
+  }
+}
+
+.cb-slider-timeline {
+  height: 7px;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: transform 0.1s;
+}
+
+.cb-slider-action {
+  width: 20px;
+  height: 20px;
+  left: 0;
+  top: 12px;
+  opacity: 0;
+  transform: translateY(-100%)
+}
+
+.cb-slider-handle {
+  width: 32px;
+  height: 32px;
+  transform: translate(-50%, -50%);
+  top: 50%;
+  left: 50%;
+  opacity: 0;
+  transition: opacity 0.28s;
+}
+
+.cb-slider-handle-button {
+  width: 15px;
+  height: 15px;
+  transform: translate(-50%, -50%);
+  top: 50%;
+  left: 50%;
+}
+
+.cb-slider-bar {
+  top: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.x-intent-background {
+  background-color: rgba(0, 0, 0, 0.25);
+}
+
 .x-username-td {
   max-width: 350px;
   overflow: hidden;
@@ -197,6 +171,21 @@ a {
   }
 }
 
+.cb-toast-close {
+  top: 5px;
+  right: 10px;
+}
+
+.cb-messages-list {
+  top: 5px;
+  height: 80%;
+  word-break: break-all;
+}
+
+.cb-info-widget {
+  height: 300px;
+}
+
 .cb-emoji-button {
   z-index: 5;
   right: 10%;
@@ -208,4 +197,8 @@ a {
 
 .x-bottom-75 {
   bottom: 75%;
+}
+
+.x-outline-none {
+  outline: none;
 }

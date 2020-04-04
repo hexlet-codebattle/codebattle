@@ -41,15 +41,15 @@ const UserName = ({ user, users, dispatch }) => {
       <a
         href={`/users/${id}`}
         key={githubId}
-        className="d-flex align-items-center mr-1"
+        className="d-flex align-items-center mr-1 w-75"
       >
         <img
           className="attachment rounded border mr-1"
           alt={name}
           src={`https://avatars0.githubusercontent.com/u/${githubId}`}
-          style={{ width: '25px' }}
+          width="25px"
         />
-        <span>{name}</span>
+        <span className="w-75 text-truncate">{name}</span>
       </a>
       <LanguageIcon lang={lang} />
       <small>
@@ -61,7 +61,6 @@ const UserName = ({ user, users, dispatch }) => {
 
   return (
     <div
-      style={{ whiteSpace: 'nowrap' }}
       className="d-inline align-middle"
     >
       {id === 'anonymous' ? anonymousUser : githubUser}
