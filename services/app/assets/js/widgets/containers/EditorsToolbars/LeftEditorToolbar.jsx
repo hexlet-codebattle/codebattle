@@ -3,37 +3,16 @@ import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
 import cn from 'classnames';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import GameStatusCodes from '../config/gameStatusCodes';
-import * as selectors from '../selectors';
-import {
-  changeCurrentLangAndSetTemplate, compressEditorHeight,
-  expandEditorHeight,
-} from '../middlewares/Game';
-import LanguagePicker from '../components/LanguagePicker';
-import UserInfo from './UserInfo';
-import GameResultIcon from '../components/GameResultIcon';
-import { setEditorsMode, switchEditorsTheme } from '../actions';
-import EditorModes from '../config/editorModes';
-import EditorThemes from '../config/editorThemes';
-
-const renderEditorHeightButtons = (compressEditor, expandEditor, userId) => (
-  <div className="btn-group btn-group-sm ml-2" role="group" aria-label="Editor height">
-    <button
-      type="button"
-      className="btn btn-sm btn-light border rounded"
-      onClick={compressEditor(userId)}
-    >
-      <i className="fas fa-compress-arrows-alt" aria-hidden="true" />
-    </button>
-    <button
-      type="button"
-      className="btn btn-sm btn-light border rounded ml-2"
-      onClick={expandEditor(userId)}
-    >
-      <i className="fas fa-expand-arrows-alt" aria-hidden="true" />
-    </button>
-  </div>
-);
+import GameStatusCodes from '../../config/gameStatusCodes';
+import * as selectors from '../../selectors';
+import { changeCurrentLangAndSetTemplate } from '../../middlewares/Game';
+import LanguagePicker from '../../components/LanguagePicker';
+import UserInfo from '../UserInfo';
+import GameResultIcon from '../../components/GameResultIcon';
+import { setEditorsMode, switchEditorsTheme } from '../../actions';
+import EditorModes from '../../config/editorModes';
+import EditorThemes from '../../config/editorThemes';
+import EditorHeightButtons from './EditorHeightButtons';
 
 const renderVimModeBtn = (setMode, leftEditorsMode) => {
   const isVimMode = leftEditorsMode === EditorModes.vim;
@@ -98,9 +77,6 @@ const LeftEditorToolbar = () => {
   const setMode = nextMode => () => dispatch(setEditorsMode(nextMode));
   const switchTheme = nextTheme => () => dispatch(switchEditorsTheme(nextTheme));
   const setLang = langSlug => dispatch(changeCurrentLangAndSetTemplate(langSlug));
-  const compressEditor = userId => () => dispatch(compressEditorHeight(userId));
-  const expandEditor = userId => () => dispatch(expandEditorHeight(userId));
-
   const isStoredGame = gameStatus.status === GameStatusCodes.stored;
   const isSpectator = isStoredGame || !_.hasIn(players, currentUserId);
 
@@ -111,7 +87,7 @@ const LeftEditorToolbar = () => {
       className="py-2 px-3 btn-toolbar justify-content-between align-items-center"
       role="toolbar"
     >
-      <div className="btn-group " role="group" aria-label="Editor settings">
+      <div className="btn-group" role="group" aria-label="Editor settings">
         <LanguagePicker
           languages={languages}
           currentLangSlug={leftEditorLangSlug}
@@ -120,7 +96,9 @@ const LeftEditorToolbar = () => {
         />
         {!isSpectator && renderVimModeBtn(setMode, leftEditorsMode)}
         {renderSwitchThemeBtn(switchTheme, theme)}
-        {renderEditorHeightButtons(compressEditor, expandEditor, leftUserId)}
+        <EditorHeightButtons
+          typeEditor="left"
+        />
       </div>
       <GameResultIcon
         className="ml-auto mr-2"
