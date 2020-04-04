@@ -20,8 +20,8 @@ const Heatmap = () => {
   useEffect(() => {
     const userId = window.location.pathname.split('/').pop();
     axios.get(`/api/v1/${userId}/activity`)
-      .then(response => { setActivities(response.data); });
-  });
+      .then(response => { setActivities(response.data.activities); });
+  }, [setActivities]);
 
   if (!activities) {
     return (<Loading />);
