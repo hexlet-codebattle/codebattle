@@ -9,7 +9,7 @@ const editorSelector = {
   left: state => _.get(selectors.leftEditorSelector(state), ['userId'], null),
   right: state => _.get(selectors.rightEditorSelector(state), ['userId'], null),
 };
-const renderEditorHeightButtons = ({ typeEditor }) => {
+const EditorHeightButtons = ({ typeEditor }) => {
   const leftUserId = useSelector(editorSelector[typeEditor]);
   const dispatch = useDispatch();
   const compressEditor = userId => () => dispatch(compressEditorHeight(userId));
@@ -39,4 +39,4 @@ const renderEditorHeightButtons = ({ typeEditor }) => {
   );
 };
 
-export default renderEditorHeightButtons;
+export default EditorHeightButtons;
