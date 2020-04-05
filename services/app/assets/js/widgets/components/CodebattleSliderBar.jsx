@@ -37,7 +37,7 @@ const CodebattleSliderBar = ({ value: currentValue, lastIntent, isHold }) => {
   return (
     <>
       {renderSliderAction({ value: 0.5, className: 'cb-slider-action position-absolute bg-info' })}
-      <div className="cb-slider-timeline position-absolute rounded w-100 bg-gray">
+      <div className="cb-slider-timeline position-absolute rounded w-100 x-bg-gray">
         {!isHold && renderSliderBar({ value: lastIntent, className: `${sliderBarClassnames} x-intent-background` })}
         {renderSliderBar({ value: currentValue, className: `${sliderBarClassnames} bg-danger` })}
         {renderSliderHandle({

@@ -17,7 +17,7 @@ const toastOptions = {
   position: toast.POSITION.TOP_CENTER,
   autoClose: 3000,
   closeOnClick: false,
-  toastClassName: 'toast-container',
+  toastClassName: 'cb-toast-container',
   closeButton: <CloseButton />,
 };
 

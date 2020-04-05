@@ -66,7 +66,7 @@ class GameList extends React.Component {
 
   renderEmptyResultIcon = () => (
     <span className="align-middle mr-1">
-      <i className="fa  fa-hidden">&nbsp;</i>
+      <i className="fa text-white">&nbsp;</i>
     </span>
   );
 
@@ -83,13 +83,13 @@ class GameList extends React.Component {
     }
     return (
       <>
-        <td className="p-3 align-middle text-nowrap x-username-td text-truncate">
+        <td className="p-3 align-middle text-nowrap cb-username-td text-truncate">
           <div className="d-flex align-items-center">
             {this.renderResultIcon(gameId, players[0], players[1])}
             <UserInfo user={players[0]} />
           </div>
         </td>
-        <td className="p-3 align-middle text-nowrap x-username-td text-truncate">
+        <td className="p-3 align-middle text-nowrap cb-username-td text-truncate">
           <div className="d-flex align-items-center">
             {this.renderResultIcon(gameId, players[1], players[0])}
             <UserInfo user={players[1]} />

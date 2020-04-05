@@ -44,6 +44,7 @@ a {
     fill: #ccc;
   }
 }
+
 .react-calendar-heatmap rect:hover {
   stroke: #555;
   stroke-width: 1px;
@@ -112,38 +113,35 @@ a {
   background-color: rgba(0, 0, 0, 0.25);
 }
 
-.x-username-td {
+.cb-username-td {
   max-width: 350px;
   overflow: hidden;
 }
 
-.toast-container {
+.cb-toast-container {
   box-shadow: none;
   background: rgba(0, 0, 0, 0);
   padding: 0;
 }
-.polyglot {
+
+.cb-polyglot {
   width: 50px;
   height: 50px;
   background: url("/assets/images/achievements/polyglot.png");
   background-size: cover;
   padding: 5px;
 }
-.profile .polyglot {
+.cb-profile .cb-polyglot {
   width: 200px;
   height: 200px;
   padding: 12px;
-}
-
-.fa-hidden {
-  color: transparent;
 }
 
 .x-user-avatar {
   width: 25px;
 }
 
-.bg-gray {
+.x-bg-gray {
   background-color: #dedede !important;
 }
 
@@ -155,7 +153,7 @@ a {
   border-bottom-left-radius: $border-radius !important;
 }
 
-.sort-arrow {
+.cb-sort-arrow {
   display: inline-block;
   height: 0;
   width: 0;
