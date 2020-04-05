@@ -21,7 +21,7 @@ const RootContainer = ({
     // FIXME: maybe take from gon?
     setCurrentUser({ user: { ...user, type: userTypes.spectator } });
     init();
-  }, []);
+  }, [init, setCurrentUser]);
 
   useHotkeys('command+enter, ctrl+enter', e => {
     e.preventDefault();

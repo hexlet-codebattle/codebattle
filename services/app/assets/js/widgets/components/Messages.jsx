@@ -11,7 +11,7 @@ const Messages = ({ messages = [] }) => {
   // useLayoutEffect, because it measures and changes DOM attributes (scrollTop) directly
   useLayoutEffect(() => {
     stayScrolled();
-  }, [messages.length]);
+  }, [messages.length, stayScrolled]);
 
   return (
     <ul
