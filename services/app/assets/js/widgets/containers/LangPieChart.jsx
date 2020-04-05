@@ -11,15 +11,6 @@ class LangPieChart extends React.Component {
     loadLangStats(userId);
   }
 
-  setStats() {
-    const { stats } = this.props;
-    Object.keys(stats).forEach((lang) => {
-      this.setState({
-        options: {labels: [...this.state.options.labels, lang]}
-      });
-    });
-  }
-
   render() {
     const { stats } = this.props;
     if (!stats) {
