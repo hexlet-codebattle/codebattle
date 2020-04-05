@@ -1,19 +1,36 @@
 import sys
 import json
+import time
+from io import StringIO
 
-def assert_result(result, expected, errorMessage, success):
+original_stdout = sys.stdout
+sys.stdout = StringIO()
+
+execution_result = []
+
+def assert_result(solution, expected, arguments, success):
     try:
-        assert result == expected, errorMessage
-        print(json.dumps({
+        start = time.clock()
+        result = solution(arguments)
+        finish = time.clock()
+        assert result == expected
+        execution_result.append(json.dumps({
             'status': 'success',
             'result': result,
+            'output': sys.stdout.getvalue(),
+            'expected': expected,
+            'arguments': arguments,
+            'execution_time': finish - start
         }))
         return success
     except AssertionError as exc:
-        print(json.dumps({
+        execution_result.append(json.dumps({
             'status': 'failure',
-            'result': exc.args[0],
-            'arguments': errorMessage,
+            'result': result,
+            'output': sys.stdout.getvalue(),
+            'expected': expected,
+            'arguments': arguments,
+            'execution_time': finish - start
         }))
         return False
 
@@ -21,17 +38,20 @@ try:
     from solution_example import solution
     success = True
 
-    success = assert_result(solution(1, 2), 3, [1, 2], success)
-    success = assert_result(solution(5, 3), 8, [5, 3], success)
+    solution_lambda = lambda arguments: solution(*arguments)
+    success = assert_result(solution_lambda, 3, [1, 2], success)
+    success = assert_result(solution_lambda, 7, [5, 3], success)
 
     if success:
-        print(json.dumps({
+        execution_result.append(json.dumps({
             'status': 'ok',
             'result': '__code-0__',
         }))
 except Exception as exc:
-    print(json.dumps({
+    execution_result.append(json.dumps({
         'status': 'error',
         'result': exc.args,
     }))
-    exit(0)
+
+sys.stdout = original_stdout
+print(execution_result)

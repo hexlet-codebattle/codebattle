@@ -62,11 +62,11 @@ defmodule Codebattle.Languages do
       "js" => %{
         name: "Node.js",
         slug: "js",
-        version: "11.6.0",
+        version: "13.8.0",
         base_image: :ubuntu,
         check_dir: "check",
         extension: "js",
-        docker_image: "codebattle/js:11.6.0",
+        docker_image: "codebattle/js:13.8.0",
         solution_version: :default,
         solution_template:
           "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nmodule.exports = (<%= arguments %>) => {\n<%= return_statement %>\n};",
