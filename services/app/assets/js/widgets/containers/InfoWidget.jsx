@@ -10,7 +10,7 @@ const InfoWidget = props => {
   } = props;
 
   return (
-    <div className="row no-gutters" style={{ height: '300px' }}>
+    <div className="row no-gutters cb-info-widget">
       <div className="col-12 col-lg-6 p-1 h-100">
         <Task
           task={taskText}
