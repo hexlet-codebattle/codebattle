@@ -13,6 +13,7 @@ export default function EmojiPicker({ handleSelect, hide }) {
       darkMode={false}
       perLine={10}
       onClick={handleSelect}
+      autoFocus
       style={{ position: 'absolute', right: '88px', bottom: '10px' }}
     />
   );

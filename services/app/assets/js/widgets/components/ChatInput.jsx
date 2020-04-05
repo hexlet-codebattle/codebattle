@@ -9,18 +9,18 @@ const trimColons = message => message.slice(0, message.lastIndexOf(':'));
 
 const getColons = message => message.slice(message.lastIndexOf(':') + 1);
 
+const getTooltipVisibility = msg => {
+  const endsWithEmojiCodeRegex = /.*:[a-zA-Z]{1,}([^ ])+$/;
+  if (!endsWithEmojiCodeRegex.test(msg)) return false;
+  const colons = getColons(msg);
+  return !_.isEmpty(emojiIndex.search(colons));
+};
+
 export default function ChatInput() {
   const [isPickerVisible, setPickerVisibility] = useState(false);
   const [isTooltipVisible, setTooltipVisibility] = useState(false);
   const [message, setMessage] = useState('');
   const inputRef = useRef(null);
-
-  const getTooltipVisibility = msg => {
-    const endsWithEmojiCodeRegex = /.*:[a-zA-Z]{1,}([^ ])+$/;
-    if (!endsWithEmojiCodeRegex.test(msg)) return false;
-    const colons = getColons(msg);
-    return !_.isEmpty(emojiIndex.search(colons));
-  };
 
   const handleChange = ({ target: { value } }) => {
     setTooltipVisibility(getTooltipVisibility(value));
@@ -66,6 +66,7 @@ export default function ChatInput() {
     <form
       className="p-2 input-group input-group-sm position-absolute x-bottom-0"
       onSubmit={handleSubmit}
+      onBlur={hidePicker}
     >
       <input
         className="form-control border-secondary pr-4"
@@ -73,6 +74,7 @@ export default function ChatInput() {
         value={message}
         onChange={handleChange}
         onKeyDown={handleInputKeydown}
+        onBlur={hideTooltip}
         ref={inputRef}
       />
       <button
@@ -89,12 +91,11 @@ export default function ChatInput() {
           hide={hideTooltip}
         />
       )}
-      {isPickerVisible && (
-        <EmojiPicker
-          handleSelect={handleSelectEmodji}
-          hide={hidePicker}
-          isShown={isPickerVisible}
-        />
+      { isPickerVisible && (
+      <EmojiPicker
+        handleSelect={handleSelectEmodji}
+        hide={hidePicker}
+      />
       )}
       <div className="input-group-append">
         <button className="btn btn-outline-secondary" type="button" onClick={handleSubmit}>
