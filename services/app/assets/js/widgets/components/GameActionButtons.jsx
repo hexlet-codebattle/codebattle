@@ -1,6 +1,5 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-// import PropTypes from 'prop-types';
+import React, { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button, Modal } from 'react-bootstrap';
@@ -9,110 +8,87 @@ import GameStatusCodes from '../config/gameStatusCodes';
 import * as selectors from '../selectors';
 import { checkGameResult, sendGiveUp } from '../middlewares/Game';
 
-class GameActionButtons extends Component {
-  static defaultProps = {
-    status: GameStatusCodes.initial,
-  }
+const renderCheckResultButton = (checkResult, gameStatus, disabled, editorUser) => (
+  <button
+    type="button"
+    className="btn btn-success btn-sm ml-auto"
+    onClick={checkResult}
+    disabled={gameStatus.checking[editorUser] || disabled}
+  >
 
-  state = { modalShowing: false };
+    {
+      (gameStatus.checking[editorUser])
+        ? <FontAwesomeIcon icon="spinner" pulse />
+        : <FontAwesomeIcon icon="play-circle" />
+    }
 
-  modalHide = () => {
-    this.setState({ modalShowing: false });
-  }
+    {` ${i18n.t('Check')}`}
+    <small> (ctrl+enter)</small>
+  </button>
+);
 
-  modalShow = () => {
-    this.setState({ modalShowing: true });
-  }
+const renderGiveUpButton = (modalShow, canGiveUp, disabled) => (
+  <button
+    type="button"
+    className="btn btn-outline-danger btn-sm"
+    onClick={modalShow}
+    disabled={!canGiveUp ? true : disabled}
+  >
+    <span className="fa fa-times-circle mr-1" />
+    {i18n.t('Give up')}
+  </button>
+);
 
-  handleGiveUp = () => {
-    this.modalHide();
+const GameActionButtons = ({ disabled, editorUser }) => {
+  const [modalShowing, setModalShowing] = useState(false);
+  const dispatch = useDispatch();
+  const checkResult = () => dispatch(checkGameResult());
+
+  const players = useSelector(state => selectors.gamePlayersSelector(state));
+  const currentUserId = useSelector(state => selectors.currentUserIdSelector(state));
+  const gameStatus = useSelector(state => selectors.gameStatusSelector(state));
+
+  const isSpectator = !_.hasIn(players, currentUserId);
+  const canGiveUp = gameStatus.status === GameStatusCodes.playing;
+  const realDisabled = isSpectator || disabled;
+
+  const modalHide = () => {
+    setModalShowing(false);
+  };
+
+  const modalShow = () => {
+    setModalShowing(true);
+  };
+
+  const handleGiveUp = () => {
+    modalHide();
     sendGiveUp();
-  }
+  };
 
-  renderCheckResultButton = (checkResult, gameStatus, disabled, editorUser) => (
-    <button
-      type="button"
-      className="btn btn-success btn-sm ml-auto"
-      onClick={checkResult}
-      disabled={gameStatus.checking[editorUser] || disabled}
-    >
+  const renderModal = () => (
+    <Modal show={modalShowing} onHide={modalHide}>
+      <Modal.Body className="text-center">
+        Are you sure you want to give up?
+      </Modal.Body>
+      <Modal.Footer className="mx-auto">
+        <Button onClick={handleGiveUp} className="btn-danger">Give up</Button>
+        <Button onClick={modalHide} className="btn-secondary">Cancel</Button>
+      </Modal.Footer>
+    </Modal>
+  );
 
-      {
-        (gameStatus.checking[editorUser])
-          ? <FontAwesomeIcon icon="spinner" pulse />
-          : <FontAwesomeIcon icon="play-circle" />
-      }
-
-      {` ${i18n.t('Check')}`}
-      <small> (ctrl+enter)</small>
-    </button>
-  )
-
-  renderGiveUpButton = (canGiveUp, disabled) => (
-    <button
-      type="button"
-      className="btn btn-outline-danger btn-sm"
-      onClick={this.modalShow}
-      disabled={!canGiveUp ? true : disabled}
-    >
-      <span className="fa fa-times-circle mr-1" />
-      {i18n.t('Give up')}
-    </button>
-  )
-
-  renderModal = () => {
-    const { modalShowing } = this.state;
-    return (
-      <Modal show={modalShowing} onHide={this.modalHide}>
-        <Modal.Body className="text-center">
-          Are you sure you want to give up?
-        </Modal.Body>
-        <Modal.Footer className="mx-auto">
-          <Button onClick={this.handleGiveUp} className="btn-danger">Give up</Button>
-          <Button onClick={this.modalHide} className="btn-secondary">Cancel</Button>
-        </Modal.Footer>
-      </Modal>
-    );
-  }
-
-  render() {
-    const {
-      disabled,
-      gameStatus,
-      checkResult,
-      players,
-      currentUserId,
-      editorUser,
-    } = this.props;
-
-    const isSpectator = !_.hasIn(players, currentUserId);
-    const canGiveUp = gameStatus.status === GameStatusCodes.playing;
-    const realDisabled = isSpectator || disabled;
-
-    return (
-      <div className="btn-toolbar py-3 px-3" role="toolbar">
-        {this.renderGiveUpButton(canGiveUp, realDisabled)}
-        {this.renderCheckResultButton(
-          checkResult,
-          gameStatus,
-          realDisabled,
-          editorUser,
-        )}
-        {this.renderModal()}
-      </div>
-    );
-  }
-}
-
-const mapStateToProps = state => ({
-  players: selectors.gamePlayersSelector(state),
-  currentUserId: selectors.currentUserIdSelector(state),
-  gameStatus: selectors.gameStatusSelector(state),
-  task: selectors.gameTaskSelector(state),
-});
-
-const mapDispatchToProps = {
-  checkResult: checkGameResult,
+  return (
+    <div className="btn-toolbar py-3 px-3" role="toolbar">
+      {renderGiveUpButton(modalShow, canGiveUp, realDisabled)}
+      {renderCheckResultButton(
+        checkResult,
+        gameStatus,
+        realDisabled,
+        editorUser,
+      )}
+      {renderModal()}
+    </div>
+  );
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(GameActionButtons);
+export default GameActionButtons;
