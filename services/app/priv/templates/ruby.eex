@@ -41,8 +41,6 @@ begin
           arguments: arguments,
           execution_time: finish - start
         )
-      success
-        )
       false
     end
   end
