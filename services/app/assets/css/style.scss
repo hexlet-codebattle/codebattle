@@ -9,7 +9,7 @@ $fa-font-path: "/fonts";
 @import "../../deps/phoenix_live_view/assets/css/live_view.css";
 @import "fonts";
 @import "~font-mfizz/dist/font-mfizz.css";
-@import "tournaments.scss";
+@import "tournaments";
 
 a {
   transition: color ease-in 0.1s;
@@ -135,11 +135,11 @@ a {
   border-right: 5px solid transparent;
 
   &.asc {
-    border-bottom: 5px solid black;
+    border-bottom: 5px solid $black;
   }
 
   &.desc {
-    border-top: 5px solid black;
+    border-top: 5px solid $black;
   }
 }
 
@@ -176,7 +176,7 @@ a {
 }
 
 .x-intent-background {
-  background-color: rgba(0, 0, 0, 0.25);
+  background-color: rgba($black, 0.25);
 }
 
 .x-opacity-0 {
