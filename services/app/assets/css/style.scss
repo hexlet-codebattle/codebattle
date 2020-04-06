@@ -1,18 +1,15 @@
 $body-bg: #fafafa;
+$green: #64b079;
+$secondary: #477591;
+@import "~bootstrap/scss/bootstrap";
 
-$green: #64b079 !default;
-
-$secondary: #477591 !default;
-$success: $green !default;
+$font-family-sans-serif: "Roboto", sans-serif;
+$fa-font-path: "/fonts";
 
 @import "../../deps/phoenix_live_view/assets/css/live_view.css";
-$box-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.18);
 @import "fonts";
-$font-family-sans-serif: "Roboto", sans-serif;
-@import "~bootstrap/scss/bootstrap";
-$fa-font-path: "/fonts";
 @import "~font-mfizz/dist/font-mfizz.css";
-@import "tournaments.css";
+@import "tournaments";
 
 a {
   transition: color ease-in 0.1s;
@@ -44,6 +41,7 @@ a {
     fill: #ccc;
   }
 }
+
 .react-calendar-heatmap rect:hover {
   stroke: #555;
   stroke-width: 1px;
@@ -108,66 +106,40 @@ a {
   left: 0;
 }
 
-.x-intent-background {
-  background-color: rgba(0, 0, 0, 0.25);
-}
 
-.x-username-td {
+.cb-username-td {
   max-width: 350px;
-  overflow: hidden;
 }
 
-.toast-container {
-  box-shadow: none;
-  background: rgba(0, 0, 0, 0);
-  padding: 0;
-}
-.polyglot {
+.cb-polyglot {
   width: 50px;
   height: 50px;
   background: url("/assets/images/achievements/polyglot.png");
   background-size: cover;
   padding: 5px;
 }
-.profile .polyglot {
+.cb-profile .cb-polyglot {
   width: 200px;
   height: 200px;
   padding: 12px;
 }
 
-.fa-hidden {
-  color: transparent;
-}
-
-.x-user-avatar {
+.cb-user-avatar {
   width: 25px;
 }
 
-.bg-gray {
-  background-color: #dedede !important;
-}
-
-.x-rounded-bottom-right {
-  border-bottom-right-radius: $border-radius !important;
-}
-
-.x-rounded-bottom-left {
-  border-bottom-left-radius: $border-radius !important;
-}
-
-.sort-arrow {
-  display: inline-block;
+.cb-sort-arrow {
   height: 0;
   width: 0;
   border-left: 5px solid transparent;
   border-right: 5px solid transparent;
 
   &.asc {
-    border-bottom: 5px solid black;
+    border-bottom: 5px solid $black;
   }
 
   &.desc {
-    border-top: 5px solid black;
+    border-top: 5px solid $black;
   }
 }
 
@@ -201,4 +173,24 @@ a {
 
 .x-outline-none {
   outline: none;
+}
+
+.x-intent-background {
+  background-color: rgba($black, 0.25);
+}
+
+.x-opacity-0 {
+  opacity: 0;
+}
+
+.x-bg-gray {
+  background-color: $gray-300 !important;
+}
+
+.x-rounded-bottom-right {
+  border-bottom-right-radius: $border-radius !important;
+}
+
+.x-rounded-bottom-left {
+  border-bottom-left-radius: $border-radius !important;
 }

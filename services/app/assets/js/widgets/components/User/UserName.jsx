@@ -41,7 +41,7 @@ const UserName = ({ user, users, dispatch }) => {
       <a
         href={`/users/${id}`}
         key={githubId}
-        className="d-flex align-items-center mr-1 w-75"
+        className="d-flex align-items-center mr-1 mw-100"
       >
         <img
           className="attachment rounded border mr-1"

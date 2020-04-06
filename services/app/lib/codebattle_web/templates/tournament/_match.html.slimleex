@@ -13,5 +13,5 @@
         = render "_player.html", player: player2
 
 - else
-  .d-flex.align-items-center.justify-content-center.bg-gray
+  .d-flex.align-items-center.justify-content-center.x-bg-gray
      p Waiting
