@@ -1,18 +1,15 @@
 $body-bg: #fafafa;
+$green: #64b079;
+$secondary: #477591;
+@import "~bootstrap/scss/bootstrap";
 
-$green: #64b079 !default;
-
-$secondary: #477591 !default;
-$success: $green !default;
+$font-family-sans-serif: "Roboto", sans-serif;
+$fa-font-path: "/fonts";
 
 @import "../../deps/phoenix_live_view/assets/css/live_view.css";
-$box-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.18);
 @import "fonts";
-$font-family-sans-serif: "Roboto", sans-serif;
-@import "~bootstrap/scss/bootstrap";
-$fa-font-path: "/fonts";
 @import "~font-mfizz/dist/font-mfizz.css";
-@import "tournaments.css";
+@import "tournaments.scss";
 
 a {
   transition: color ease-in 0.1s;
@@ -109,19 +106,9 @@ a {
   left: 0;
 }
 
-.x-intent-background {
-  background-color: rgba(0, 0, 0, 0.25);
-}
 
 .cb-username-td {
   max-width: 350px;
-  overflow: hidden;
-}
-
-.cb-toast-container {
-  box-shadow: none;
-  background: rgba(0, 0, 0, 0);
-  padding: 0;
 }
 
 .cb-polyglot {
@@ -137,20 +124,8 @@ a {
   padding: 12px;
 }
 
-.x-user-avatar {
+.cb-user-avatar {
   width: 25px;
-}
-
-.x-bg-gray {
-  background-color: #dedede !important;
-}
-
-.x-rounded-bottom-right {
-  border-bottom-right-radius: $border-radius !important;
-}
-
-.x-rounded-bottom-left {
-  border-bottom-left-radius: $border-radius !important;
 }
 
 .cb-sort-arrow {
@@ -198,4 +173,24 @@ a {
 
 .x-outline-none {
   outline: none;
+}
+
+.x-intent-background {
+  background-color: rgba(0, 0, 0, 0.25);
+}
+
+.x-opacity-0 {
+  opacity: 0;
+}
+
+.x-bg-gray {
+  background-color: $gray-300 !important;
+}
+
+.x-rounded-bottom-right {
+  border-bottom-right-radius: $border-radius !important;
+}
+
+.x-rounded-bottom-left {
+  border-bottom-left-radius: $border-radius !important;
 }

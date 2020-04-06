@@ -66,7 +66,7 @@ class GameList extends React.Component {
 
   renderEmptyResultIcon = () => (
     <span className="align-middle mr-1">
-      <i className="fa text-white">&nbsp;</i>
+      <i className="fa x-opacity-0">&nbsp;</i>
     </span>
   );
 

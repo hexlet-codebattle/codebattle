@@ -1,7 +1,7 @@
 -fa_class = get_icon_class(@player)
 .d-flex.align-items-center
   a.d-inline-flex.align-items-center href="/users/#{@player.id}"
-    img.attachment.rounded.border.mr-1.x-user-avatar src="https://avatars0.githubusercontent.com/u/#{@player.github_id}"
+    img.attachment.rounded.border.mr-1.cb-user-avatar src="https://avatars0.githubusercontent.com/u/#{@player.github_id}"
     span.mr-1.text-truncate style="max-width: 130px;" = @player.name
   small.mr-1 = @player.rating
   = if fa_class do
