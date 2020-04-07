@@ -48,12 +48,10 @@ class NotificationsHandler extends Component {
     }
 
     if (status === GameStatusCodes.gameOver && statusChanged) {
-      this.showGameResultMessage();
       this.showActionsAfterGame();
     }
 
     if (status === GameStatusCodes.timeout && statusChanged) {
-      this.showGameResultMessage();
       this.showActionsAfterGame();
     }
 
@@ -62,21 +60,52 @@ class NotificationsHandler extends Component {
     }
   }
 
-  showCheckingStatusMessage = solutionStatus => {
-    if (solutionStatus) {
-      toast(
-        <Toast header="Success">
-          <Alert variant="success">Yay! All tests passed!</Alert>
-        </Toast>,
-      );
-    } else {
-      toast(
-        <Toast header="Failed">
-          <Alert variant="error">Oh no, some test has failed!</Alert>
-        </Toast>,
-      );
+
+  getResultMessage() {
+    const {
+      isCurrentUserPlayer,
+      currentUserId,
+      players,
+      gameStatus,
+    } = this.props;
+
+    const winner = _.find(players, ['gameResult', 'won']);
+
+    if (gameStatus.status === GameStatusCodes.timeout) {
+      return ({
+        alertStyle: 'danger',
+        msg: this.gameStatus.msg,
+      });
+    } if (currentUserId === winner.id) {
+      return ({
+        alertStyle: 'success',
+        msg: 'Congratulations! You have won the game!',
+      });
+    } if (isCurrentUserPlayer) {
+      return ({
+        alertStyle: 'danger',
+        msg: 'Oh snap! Your opponent has won the game',
+      });
     }
+
+    return null;
   }
+
+    showCheckingStatusMessage = solutionStatus => {
+      if (solutionStatus) {
+        toast(
+          <Toast header="Success">
+            <Alert variant="success">Yay! All tests passed!</Alert>
+          </Toast>,
+        );
+      } else {
+        toast(
+          <Toast header="Failed">
+            <Alert variant="error">Oh no, some test has failed!</Alert>
+          </Toast>,
+        );
+      }
+    }
 
   showActionsAfterGame = () => {
     const {
@@ -94,7 +123,8 @@ class NotificationsHandler extends Component {
     }
 
     toast(
-      <Toast header="Next Action">
+      <Toast header="Game over">
+        {this.showGameResultMessage()}
         <ActionsAfterGame />
       </Toast>,
       {
@@ -108,40 +138,9 @@ class NotificationsHandler extends Component {
     );
   }
 
-  showFailureMessage = msg => toast(
-    <Toast header="Failed">
-      <Alert variant="danger">{msg}</Alert>
-    </Toast>,
-  )
-
-  showSuccessMessage = msg => toast(
-    <Toast header="Success">
-      <Alert variant="success">{msg}</Alert>
-    </Toast>,
-  )
-
-  showGameResultMessage = () => {
-    const {
-      isCurrentUserPlayer,
-      currentUserId,
-      players,
-      gameStatus,
-    } = this.props;
-
-    if (gameStatus.status === GameStatusCodes.timeout) {
-      return this.showFailureMessage(gameStatus.msg);
-    }
-
-    const winner = _.find(players, ['gameResult', 'won']);
-    if (currentUserId === winner.id) {
-      return this.showSuccessMessage('Congratulations! You have won the game!');
-    }
-
-    if (isCurrentUserPlayer) {
-      return this.showFailureMessage('Oh snap! Your opponent has won the game');
-    }
-
-    return this.showSuccessMessage(`${winner.name} has won the game!`);
+  showGameResultMessage() {
+    const { alertStyle, msg } = this.getResultMessage();
+    return (<Alert variant={alertStyle}>{msg}</Alert>);
   }
 
   render() {
