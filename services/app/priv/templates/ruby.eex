@@ -37,7 +37,6 @@ begin
           result: result,
           output: $stdout.string,
           expected: expected,
-          arguments: arguments
           arguments: arguments,
           execution_time: finish - start
         )
