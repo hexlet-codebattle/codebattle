@@ -60,30 +60,58 @@ class NotificationsHandler extends Component {
     }
   }
 
-  showCheckingStatusMessage = solutionStatus => {
-    if (solutionStatus) {
-      toast(
-        <Toast header="Success">
-          <Alert variant="success">Yay! All tests passed!</Alert>
-        </Toast>,
-      );
-    } else {
-      toast(
-        <Toast header="Failed">
-          <Alert variant="error">Oh no, some test has failed!</Alert>
-        </Toast>,
-      );
+
+  getResultMessage() {
+    const {
+      isCurrentUserPlayer,
+      currentUserId,
+      players,
+      gameStatus,
+    } = this.props;
+
+    const winner = _.find(players, ['gameResult', 'won']);
+
+    if (gameStatus.status === GameStatusCodes.timeout) {
+      return ({
+        alertStyle: 'danger',
+        msg: this.gameStatus.msg,
+      });
+    } if (currentUserId === winner.id) {
+      return ({
+        alertStyle: 'success',
+        msg: 'Congratulations! You have won the game!',
+      });
+    } if (isCurrentUserPlayer) {
+      return ({
+        alertStyle: 'danger',
+        msg: 'Oh snap! Your opponent has won the game',
+      });
     }
+
+    return null;
   }
+
+    showCheckingStatusMessage = solutionStatus => {
+      if (solutionStatus) {
+        toast(
+          <Toast header="Success">
+            <Alert variant="success">Yay! All tests passed!</Alert>
+          </Toast>,
+        );
+      } else {
+        toast(
+          <Toast header="Failed">
+            <Alert variant="error">Oh no, some test has failed!</Alert>
+          </Toast>,
+        );
+      }
+    }
 
   showActionsAfterGame = () => {
     const {
       isCurrentUserPlayer,
       updateGameUI,
       isShowActionsAfterGame,
-      currentUserId,
-      players,
-      gameStatus
     } = this.props;
 
     if (!isCurrentUserPlayer) {
@@ -94,25 +122,9 @@ class NotificationsHandler extends Component {
       return;
     }
 
-    let msg = "";
-    let alertStyle = "";
-    const winner = _.find(players, ['gameResult', 'won']);
-
-    if (gameStatus.status === GameStatusCodes.timeout) {
-      msg = this.gameStatus.msg;
-      alertStyle = 'danger';
-    } else if (currentUserId === winner.id) {
-        msg = 'Congratulations! You have won the game!';
-        alertStyle = 'success';
-      } else if (isCurrentUserPlayer) {    
-        msg = 'Oh snap! Your opponent has won the game';
-        alertStyle = 'danger';
-        }
-   
-
     toast(
       <Toast header="Game over">
-        <Alert variant={alertStyle}>{msg}</Alert>
+        {this.showGameResultMessage()}
         <ActionsAfterGame />
       </Toast>,
       {
@@ -124,6 +136,11 @@ class NotificationsHandler extends Component {
         onOpen: () => updateGameUI({ showToastActionsAfterGame: true }),
       },
     );
+  }
+
+  showGameResultMessage() {
+    const { alertStyle, msg } = this.getResultMessage();
+    return (<Alert variant={alertStyle}>{msg}</Alert>);
   }
 
   render() {
