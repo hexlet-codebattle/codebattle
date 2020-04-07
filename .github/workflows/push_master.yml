@@ -102,14 +102,14 @@ jobs:
       - run: make docker-build-app
       - run: make docker-push-app
 
-      # - name: Pull dockers
-      #   run: mix dockers.pull
-      #   working-directory: ./services/app
-      #   env:
-      #     MIX_ENV: test
+      - name: Pull dockers
+        run: mix dockers.pull
+        working-directory: ./services/app
+        env:
+          MIX_ENV: test
 
-      # - name: Run code checkers tests
-      #   run: make test-code-checkers
-      #   env:
-      #     MIX_ENV: test
+      - name: Run code checkers tests
+        run: make test-code-checkers
+        env:
+          MIX_ENV: test
 
