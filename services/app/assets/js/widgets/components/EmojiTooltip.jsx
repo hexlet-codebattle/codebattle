@@ -19,7 +19,8 @@ export default function EmojiTooltip({ emojis, handleSelect, hide }) {
   };
 
   useHotkeys('escape', () => hide(), [], { filter: e => e.target });
-  useHotkeys('enter', () => {
+  useHotkeys('enter', e => {
+    e.preventDefault();
     handleSelect(emojis[activeIndex]);
     hide();
   }, [], { filter: e => e.target });

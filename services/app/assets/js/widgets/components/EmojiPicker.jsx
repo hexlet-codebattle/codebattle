@@ -1,17 +1,21 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Picker } from 'emoji-mart';
 import { useHotkeys } from 'react-hotkeys-hook';
 import 'emoji-mart/css/emoji-mart.css';
 
 export default function EmojiPicker({ handleSelect, hide }) {
+  const wrapperRef = useRef(null);
   useHotkeys('escape', hide);
 
-  // handler must return nothing, handleBlur => () => setTimeout will cause an error
-  const handleBlur = () => { setTimeout(() => hide(), 0); };
+  const handleBlur = e => {
+    const isActivePicker = wrapperRef.isEqualNode(e.currentTarget);
+    if (isActivePicker) return;
+    hide();
+  };
 
 
   return (
-    <div onBlur={handleBlur}>
+    <div onBlur={handleBlur} ref={wrapperRef}>
       <Picker
         showPreview={false}
         showSkinTones={false}
