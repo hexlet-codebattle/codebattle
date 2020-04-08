@@ -30,7 +30,7 @@ defmodule Codebattle.LanguagesTest do
     empty_solutions =
       MapSet.new([
         "#include <iostream>\n#include <map>\n#include <vector>\n\nusing namespace std;\n\n solution() {\n\n}",
-        "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nmodule.exports = () => {\n\n};",
+        "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = () => {\n\n};\n\nmodule.exports = solution;",
         "solution() {\n\n}",
         "import * as _ from \"lodash\";\nfunction solution(){\n\n};\n\nexport default solution;",
         "package main;\n\nfunc solution() {\n\n}",
@@ -55,7 +55,7 @@ defmodule Codebattle.LanguagesTest do
     empty_solutions: _
   } do
     js_expected =
-      "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nmodule.exports = (a, b, text, arr, condition, hashtable) => {\n\treturn [\"value\"];\n};"
+      "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b, text, arr, condition, hashtable) => {\n\treturn [\"value\"];\n};\n\nmodule.exports = solution;"
 
     ts_expected =
       "import * as _ from \"lodash\";\nimport {Hashtable} from \"./types\";\n\nfunction solution(a: number, b: number, text: string, arr: Array<Array<number>>, condition: boolean, hashtable: Hashtable): Array<string> {\n\n};\n\nexport default solution;"

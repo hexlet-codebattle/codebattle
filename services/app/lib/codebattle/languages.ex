@@ -69,7 +69,7 @@ defmodule Codebattle.Languages do
         docker_image: "codebattle/js:13.8.0",
         solution_version: :default,
         solution_template:
-          "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nmodule.exports = (<%= arguments %>) => {\n<%= return_statement %>\n};",
+          "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (<%= arguments %>) => {\n<%= return_statement %>\n};\n\nmodule.exports = solution;",
         arguments_template: %{
           argument: "<%= name %>",
           delimeter: ", "

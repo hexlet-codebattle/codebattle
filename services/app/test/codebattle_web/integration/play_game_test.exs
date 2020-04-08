@@ -75,10 +75,10 @@ defmodule Codebattle.PlayGameTest do
     assert FsmHelpers.get_second_player(fsm).name == "second"
 
     assert FsmHelpers.get_first_player(fsm).editor_text ==
-             "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nmodule.exports = (a, b) => {\n\treturn 0;\n};"
+             "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n\treturn 0;\n};\n\nmodule.exports = solution;"
 
     assert FsmHelpers.get_second_player(fsm).editor_text ==
-             "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nmodule.exports = (a, b) => {\n\treturn 0;\n};"
+             "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n\treturn 0;\n};\n\nmodule.exports = solution;"
 
     # First player won
     editor_text1 = "Hello world1!"
@@ -99,7 +99,7 @@ defmodule Codebattle.PlayGameTest do
     assert FsmHelpers.get_first_player(fsm).editor_text == "Hello world1!"
 
     assert FsmHelpers.get_second_player(fsm).editor_text ==
-             "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nmodule.exports = (a, b) => {\n\treturn 0;\n};"
+             "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n\treturn 0;\n};\n\nmodule.exports = solution;"
 
     # Winner cannot check results again
     Phoenix.ChannelTest.push(socket1, "check_result", %{
@@ -117,7 +117,7 @@ defmodule Codebattle.PlayGameTest do
     assert FsmHelpers.get_first_player(fsm).editor_text == "Hello world2!"
 
     assert FsmHelpers.get_second_player(fsm).editor_text ==
-             "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nmodule.exports = (a, b) => {\n\treturn 0;\n};"
+             "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n\treturn 0;\n};\n\nmodule.exports = solution;"
 
     # Second player complete game
     Phoenix.ChannelTest.push(socket2, "check_result", %{
