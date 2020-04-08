@@ -1,17 +1,12 @@
 import React, { useState } from 'react';
 import { PlayerIcon } from 'react-player-controls';
-import cn from 'classnames';
+import DropDownItem from './DropDownItem';
 
 const ControlPanel = ({
   onPlayClick, onPauseClick, defaultSpeed, setSpeed, hasStopped, children,
 }) => {
   const [mode, setMode] = useState('pause');
   const [speedMode, setSpeedMode] = useState('normal');
-
-  const speedControlClassNames = cn('btn btn-sm border rounded ml-4', {
-    'btn-light': speedMode === 'normal',
-    'btn-secondary': speedMode === 'fast',
-  });
 
   const onControlButtonClick = () => {
     switch (mode) {
@@ -57,7 +52,33 @@ const ControlPanel = ({
         )}
       </button>
       {children}
-      <button type="button" className={speedControlClassNames} onClick={onChangeSpeed}>x2</button>
+      <div className="dropdown ml-4 ">
+        <button
+          className="btn btn-secondary dropdown-toggle btn-sm"
+          type="button"
+          id="dropdownMenuButton"
+
+          data-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false"
+        >
+          <i className="fa fa-cog" aria-hidden="true" />
+        </button>
+
+        <form
+          className="dropdown-menu "
+          aria-labelledby="dropdownMenuButton"
+          style={{ maxWidth: '450px' }}
+        >
+          <DropDownItem
+            icon="fa fa-forward"
+            onClick={onChangeSpeed}
+            speedMode={speedMode}
+            text="change speed x2"
+            id="1"
+          />
+        </form>
+      </div>
     </>
   );
 };
