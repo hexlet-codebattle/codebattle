@@ -51,24 +51,27 @@ defmodule CodebattleWeb.ChatChannel do
 
   def handle_in("new:message", payload, socket) do
     %{"message" => message} = payload
-    user = socket.assigns.current_user.name
+    name = get_user_name(socket.assigns.current_user)
     chat_id = get_chat_id(socket)
 
-    Chat.Server.add_msg(chat_id, user, message)
+    Chat.Server.add_msg(chat_id, name, message)
 
     GameProcess.Server.update_playbook(
       chat_id,
       :chat_message,
       %{
         id: socket.assigns.current_user.id,
-        name: user,
+        name: name,
         message: message
       }
     )
 
-    broadcast!(socket, "new:message", %{user: user, message: message})
+    broadcast!(socket, "new:message", %{user: name, message: message})
     {:noreply, socket}
   end
+
+  defp get_user_name(%{is_bot: true, name: name}), do: "#{name} (bot)"
+  defp get_user_name(%{name: name}), do: name
 
   defp get_chat_id(socket) do
     "chat:" <> chat_id = socket.topic
