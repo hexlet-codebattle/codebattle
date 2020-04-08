@@ -66,7 +66,6 @@ export default function ChatInput() {
     <form
       className="p-2 input-group input-group-sm position-absolute x-bottom-0"
       onSubmit={handleSubmit}
-      onBlur={hidePicker}
     >
       <input
         className="form-control border-secondary pr-4"
