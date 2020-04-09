@@ -1639,6 +1639,27 @@
     "@testing-library/dom" "^7.1.0"
     "@types/testing-library__react" "^10.0.0"
 
+"@trendmicro/react-buttons@^1.3.0", "@trendmicro/react-buttons@^1.3.1":
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/@trendmicro/react-buttons/-/react-buttons-1.3.1.tgz#921f3924025dc68678fcbe1a19fa65b667bdb670"
+  integrity sha512-9zvt/fdkqCb9kxUdZnvTZKmbmykM2wDQ3VEJFtztGcKAkm4Wkq4oZOQLJXKfUQ1vX3w+YDJob18LkNOzaHI1UQ==
+  dependencies:
+    classnames "^2.2.5"
+    prop-types "^15.5.8"
+
+"@trendmicro/react-dropdown@^1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@trendmicro/react-dropdown/-/react-dropdown-1.4.0.tgz#a7be11f6998f5de98516fe9c41747d231f57cc82"
+  integrity sha512-tXNUQ94MHdo4CqS2yq+M8bx4EkqEBbGE5OHQ7KwmGAYRyE6dvV+cULW8BJUwrVf/nQeOKZKcGwLLUD8NZ5Xpew==
+  dependencies:
+    "@trendmicro/react-buttons" "^1.3.0"
+    chained-function "^0.5.0"
+    classnames "^2.2.5"
+    dom-helpers "^3.3.1"
+    prop-types "^15.6.0"
+    uncontrollable "^7.0.0"
+    warning "^3.0.0"
+
 "@types/anymatch@*":
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/@types/anymatch/-/anymatch-1.3.1.tgz#336badc1beecb9dacc38bea2cf32adf627a8421a"
@@ -3105,6 +3126,11 @@ caw@^2.0.0, caw@^2.0.1:
     tunnel-agent "^0.6.0"
     url-to-options "^1.0.1"
 
+chained-function@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/chained-function/-/chained-function-0.5.0.tgz#2564bbdfdf7803194bebf75a6b2bd041ede23b3a"
+  integrity sha1-JWS73994AxlL6/daayvQQe3iOzo=
+
 chalk@2.4.2, chalk@^2.0.0, chalk@^2.1.0, chalk@^2.4.1, chalk@^2.4.2:
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/chalk/-/chalk-2.4.2.tgz#cd42541677a54333cf541a49108c1432b44c9424"
@@ -4268,7 +4294,7 @@ dom-accessibility-api@^0.4.2:
   resolved "https://registry.yarnpkg.com/dom-accessibility-api/-/dom-accessibility-api-0.4.3.tgz#93ca9002eb222fd5a343b6e5e6b9cf5929411c4c"
   integrity sha512-JZ8iPuEHDQzq6q0k7PKMGbrIdsgBB7TRrtVOUm4nSMCExlg5qQG4KXWTH2k90yggjM4tTumRGwTKJSldMzKyLA==
 
-dom-helpers@^3.4.0:
+dom-helpers@^3.3.1, dom-helpers@^3.4.0:
   version "3.4.0"
   resolved "https://registry.yarnpkg.com/dom-helpers/-/dom-helpers-3.4.0.tgz#e9b369700f959f62ecde5a6babde4bccd9169af8"
   integrity sha512-LnuPJ+dwqKDIyotW1VzmOZ5TONUN7CwkCR5hrgawTUbkBGYdeoNLZo6nNfGkCrjtE1nXXaj7iMMpDa8/d9WoIA==
@@ -9668,7 +9694,7 @@ prop-types-extra@^1.1.0:
     react-is "^16.3.2"
     warning "^3.0.0"
 
-"prop-types@15.x.x - 16.x.x", prop-types@^15.5.10, prop-types@^15.6.0, prop-types@^15.6.2, prop-types@^15.7.2:
+"prop-types@15.x.x - 16.x.x", prop-types@^15.5.10, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.2, prop-types@^15.7.2:
   version "15.7.2"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.7.2.tgz#52c41e75b8c87e72b9d9360e0206b99dcbffa6c5"
   integrity sha512-8QQikdH7//R2vurIJSutZ1smHYTcLpRWEOlHnzcWHmBYrOGUysKwSsrC89BCiFj3CbrfJ/nXFdJepOVrY1GCHQ==

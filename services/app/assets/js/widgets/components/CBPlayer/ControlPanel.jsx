@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { PlayerIcon } from 'react-player-controls';
-import DropDownItem from './DropDownItem';
+import Dropdown, { MenuItem } from './ControlPanel/DropDown/index';
 
 const ControlPanel = ({
   onPlayClick, onPauseClick, defaultSpeed, setSpeed, hasStopped, children,
@@ -23,15 +23,15 @@ const ControlPanel = ({
     }
   };
 
-  const onChangeSpeed = () => {
-    switch (speedMode) {
-      case 'normal':
-        setSpeed(defaultSpeed / 2);
-        setSpeedMode('fast');
-        break;
+  const onChangeSpeed = speedMode2 => {
+    switch (speedMode2) {
       case 'fast':
+        setSpeed(defaultSpeed / 2);
+        setSpeedMode(speedMode2);
+        break;
+      case 'normal':
         setSpeed(defaultSpeed);
-        setSpeedMode('normal');
+        setSpeedMode(speedMode2);
         break;
       default:
         break;
@@ -52,33 +52,30 @@ const ControlPanel = ({
         )}
       </button>
       {children}
-      <div className="dropdown ml-4 ">
-        <button
-          className="btn btn-secondary dropdown-toggle btn-sm"
-          type="button"
-          id="dropdownMenuButton"
 
-          data-toggle="dropdown"
-          aria-haspopup="true"
-          aria-expanded="false"
-        >
-          <i className="fa fa-cog" aria-hidden="true" />
-        </button>
+      <Dropdown dropup className="ml-3">
+        <Dropdown.Toggle btnSize="lg"><i className="fa fa-cog" /></Dropdown.Toggle>
+        <Dropdown.Menu>
+          <MenuItem>
+            { `Speed: ${speedMode}` }
+            <MenuItem
+              active={speedMode === 'normal'}
+              onSelect={() => onChangeSpeed('normal')}
+            >
+              <i className="fa fa-play mr-2" />
+              normal
+            </MenuItem>
+            <MenuItem
+              active={speedMode === 'fast'}
+              onSelect={() => onChangeSpeed('fast')}
+            >
+              <i className="fa fa-forward mr-2" />
+              fast
+            </MenuItem>
+          </MenuItem>
+        </Dropdown.Menu>
+      </Dropdown>
 
-        <form
-          className="dropdown-menu "
-          aria-labelledby="dropdownMenuButton"
-          style={{ maxWidth: '450px' }}
-        >
-          <DropDownItem
-            icon="fa fa-forward"
-            onClick={onChangeSpeed}
-            speedMode={speedMode}
-            text="change speed x2"
-            id="1"
-          />
-        </form>
-      </div>
     </>
   );
 };
