@@ -19,7 +19,7 @@ defmodule Codebattle.Mixfile do
       ],
       test_coverage: [tool: ExCoveralls],
       deps: deps(),
-      elixirc_options: [warnings_as_errors: false]
+      elixirc_options: [warnings_as_errors: true]
     ]
   end
 

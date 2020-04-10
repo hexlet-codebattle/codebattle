@@ -3,8 +3,6 @@ defmodule Codebattle.GameProcess.TasksQueuesServer do
 
   use GenServer
 
-  alias Codebattle.{Repo, Task}
-
   ## Client API
 
   def start_link do
@@ -22,7 +20,7 @@ defmodule Codebattle.GameProcess.TasksQueuesServer do
 
     tasks_queues =
       Enum.reduce(levels, %{}, fn level, acc ->
-        Map.put(acc, level, Task.get_shuffled_tasks(level))
+        Map.put(acc, level, Codebattle.Task.get_shuffled_tasks(level))
       end)
 
     {:ok, tasks_queues}
@@ -35,7 +33,7 @@ defmodule Codebattle.GameProcess.TasksQueuesServer do
           [next_task, tail_tasks]
 
         _any ->
-          [next_task | tail_tasks] = Task.get_shuffled_tasks(level)
+          [next_task | tail_tasks] = Codebattle.Task.get_shuffled_tasks(level)
           [next_task, tail_tasks]
       end
 

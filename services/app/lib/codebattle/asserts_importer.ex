@@ -10,7 +10,6 @@ defmodule Codebattle.AssertsImporter do
   # 24 hours
   @timeout 24 * 60 * 60 * 1000
   @issues_link "https://github.com/hexlet-codebattle/battle_asserts/releases/latest/download/issues.tar.gz"
-  @issues_path "/tmp/codebattle.tar.gz"
 
   # API
   def start_link() do
@@ -25,7 +24,7 @@ defmodule Codebattle.AssertsImporter do
   end
 
   def handle_info(:run_job, _state) do
-    call
+    call()
     Process.send_after(self(), :run_job, @timeout)
     {:noreply, %{}}
   end
