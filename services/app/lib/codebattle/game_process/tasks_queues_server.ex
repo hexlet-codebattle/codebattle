@@ -3,8 +3,6 @@ defmodule Codebattle.GameProcess.TasksQueuesServer do
 
   use GenServer
 
-  import Ecto.Query
-
   alias Codebattle.{Repo, Task}
 
   ## Client API
@@ -23,7 +21,7 @@ defmodule Codebattle.GameProcess.TasksQueuesServer do
     levels = ["elementary", "easy", "medium", "hard"]
 
     tasks_queues =
-      Enum.reduce(levels, %{}, fn level, acc -> Map.put(acc, level, get_shuffled_tasks(level)) end)
+      Enum.reduce(levels, %{}, fn level, acc -> Map.put(acc, level, Task.get_shuffled_tasks(level)) end)
 
     {:ok, tasks_queues}
   end
@@ -35,7 +33,7 @@ defmodule Codebattle.GameProcess.TasksQueuesServer do
           [next_task, tail_tasks]
 
         _any ->
-          [next_task | tail_tasks] = get_shuffled_tasks(level)
+          [next_task | tail_tasks] = Task.get_shuffled_tasks(level)
           [next_task, tail_tasks]
       end
 
@@ -45,13 +43,4 @@ defmodule Codebattle.GameProcess.TasksQueuesServer do
   end
 
   ## Helpers
-
-  defp get_shuffled_tasks(level) do
-    from(task in Task,
-      where: task.level == ^level
-    )
-    |> Task.visible()
-    |> Repo.all()
-    |> Enum.shuffle()
-  end
 end

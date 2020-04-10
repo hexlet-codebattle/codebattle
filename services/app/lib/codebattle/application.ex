@@ -12,7 +12,10 @@ defmodule Codebattle.Application do
 
     prod_workers =
       if Mix.env() == :prod do
-        [worker(Codebattle.DockerLangsPuller, [])]
+        [
+          worker(Codebattle.DockerLangsPuller, []),
+          worker(Codebattle.AssertsImporter, [])
+        ]
       else
         []
       end

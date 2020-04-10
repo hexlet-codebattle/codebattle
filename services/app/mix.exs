@@ -75,6 +75,7 @@ defmodule Codebattle.Mixfile do
       {:socket, "~> 0.3"},
       {:timex, "~> 3.5"},
       {:deep_merge, "~> 1.0"},
+      {:httpoison, "~> 1.5"},
 
       # dev_and_test
       {:credo, ">= 0.0.0", only: [:dev, :test], runtime: false},
