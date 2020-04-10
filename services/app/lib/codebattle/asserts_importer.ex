@@ -20,7 +20,7 @@ defmodule Codebattle.AssertsImporter do
   # SERVER
   def init(state) do
     Logger.info("Start Asserts Importer")
-    Process.send_after(self(), :run_job, 1000_000)
+    Process.send_after(self(), :run_job, 10_000)
     {:ok, state}
   end
 

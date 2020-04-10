@@ -21,7 +21,9 @@ defmodule Codebattle.GameProcess.TasksQueuesServer do
     levels = ["elementary", "easy", "medium", "hard"]
 
     tasks_queues =
-      Enum.reduce(levels, %{}, fn level, acc -> Map.put(acc, level, Task.get_shuffled_tasks(level)) end)
+      Enum.reduce(levels, %{}, fn level, acc ->
+        Map.put(acc, level, Task.get_shuffled_tasks(level))
+      end)
 
     {:ok, tasks_queues}
   end
