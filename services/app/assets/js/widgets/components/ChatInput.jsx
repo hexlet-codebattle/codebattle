@@ -48,32 +48,23 @@ export default function ChatInput() {
     const caretPosition = input.selectionStart || 0;
     const before = processedMessage.slice(0, caretPosition);
     const after = processedMessage.slice(caretPosition);
-    await setMessage(`${before}${native}${after}`);
     hidePicker();
     hideTooltip();
+    await setMessage(`${before}${native}${after}`);
     input.focus();
     input.setSelectionRange(caretPosition + native.length, caretPosition + native.length);
   };
-
-  const handleInputKeydown = e => {
-    if (e.key === 'Enter' && isTooltipVisible) {
-      e.preventDefault();
-    }
-  };
-
 
   return (
     <form
       className="p-2 input-group input-group-sm position-absolute x-bottom-0"
       onSubmit={handleSubmit}
-      onBlur={hidePicker}
     >
       <input
         className="form-control border-secondary pr-4"
         placeholder="Type message here..."
         value={message}
         onChange={handleChange}
-        onKeyDown={handleInputKeydown}
         onBlur={hideTooltip}
         ref={inputRef}
       />

@@ -41,7 +41,7 @@ const UserName = ({ user, users, dispatch }) => {
       <a
         href={`/users/${id}`}
         key={githubId}
-        className="d-flex align-items-center mr-1 mw-100"
+        className="d-flex align-items-center mr-1 text-truncate"
       >
         <img
           className="attachment rounded border mr-1"
@@ -49,7 +49,7 @@ const UserName = ({ user, users, dispatch }) => {
           src={`https://avatars0.githubusercontent.com/u/${githubId}`}
           width="25px"
         />
-        <span className="w-75 text-truncate">{name}</span>
+        <span className="text-truncate">{name}</span>
       </a>
       <LanguageIcon lang={lang} />
       <small>
