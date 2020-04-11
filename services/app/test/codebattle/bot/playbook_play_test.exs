@@ -58,10 +58,6 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
     game_id = FsmHelpers.get_game_id(fsm)
     game_topic = "game:#{game_id}"
 
-    # Run bot
-    # {:ok, _pid} = Codebattle.Bot.Server.create_server(%{game_id: game_id, bot: bot})
-    Codebattle.Bot.Server.ping(game_id) |> IO.inspect
-
     :timer.sleep(100)
 
     # User join to the game

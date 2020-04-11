@@ -21,7 +21,6 @@ defmodule Codebattle.Bot.PlaybookPlayer do
         total_time_ms: #{player_meta["total_time_ms"]}
         ")
 
-      IO.inspect(init_state)
       start_playbook_seq(init_state, actions, params.game_channel, step_coefficient)
     else
       :no_playbook
@@ -29,11 +28,11 @@ defmodule Codebattle.Bot.PlaybookPlayer do
   end
 
   defp start_playbook_seq(
-    %{"editor_text" => editor_text, "editor_lang" => init_lang},
-    playbook,
-    channel_pid,
-    step_coefficient
-  ) do
+         %{"editor_text" => editor_text, "editor_lang" => init_lang},
+         playbook,
+         channel_pid,
+         step_coefficient
+       ) do
     # Action is one the maps
     #
     # 1 Main map with action to update text or lang
@@ -52,10 +51,10 @@ defmodule Codebattle.Bot.PlaybookPlayer do
   end
 
   def update_solution(
-    {document, editor_lang},
-    [%{"type" => "update_editor_data", "diff" => diff} = event | rest],
-    {channel_pid, step_coefficient}
-  ) do
+        {document, editor_lang},
+        [%{"type" => "update_editor_data", "diff" => diff} = event | rest],
+        {channel_pid, step_coefficient}
+      ) do
     next_document = create_next_document(document, diff)
     next_lang = diff |> Map.get("next_lang", editor_lang)
     next_editor_state = {next_document, next_lang}
@@ -66,7 +65,11 @@ defmodule Codebattle.Bot.PlaybookPlayer do
     {next_editor_state, rest, Kernel.trunc(timeout)}
   end
 
-  def update_solution(editor_state, [%{"type" => "game_over"} | _rest], {channel_pid, _step_coefficient}) do
+  def update_solution(
+        editor_state,
+        [%{"type" => "game_over"} | _rest],
+        {channel_pid, _step_coefficient}
+      ) do
     send_check_request(channel_pid, editor_state)
 
     :stop
@@ -76,7 +79,7 @@ defmodule Codebattle.Bot.PlaybookPlayer do
     Enum.filter(
       records,
       &(&1["id"] == user_id &&
-        &1["type"] in ["init", "update_editor_data", "game_over"])
+          &1["type"] in ["init", "update_editor_data", "game_over"])
     )
   end
 
@@ -89,7 +92,7 @@ defmodule Codebattle.Bot.PlaybookPlayer do
   defp get_timer_value(%{"type" => "game_over"}, _step_coefficient), do: 0
 
   defp get_timer_value(%{"diff" => diff}, step_coefficient),
-  do: Map.get(diff, "time") * step_coefficient
+    do: Map.get(diff, "time") * step_coefficient
 
   defp send_editor_state(_channel_pid, {%{ops: []}, _lang}) do
     :ok

@@ -8,18 +8,14 @@ defmodule Codebattle.Bot.Server do
 
   alias Codebattle.Bot.{ChatClient, PlaybookPlayer}
 
-  @timeout_start_playbook Application.get_env(:codebattle, Codebattle.Bot.Server)[:timeout_start_playbook]
+  @timeout_start_playbook Application.get_env(:codebattle, Codebattle.Bot.Server)[
+                            :timeout_start_playbook
+                          ]
 
   # API
   # Starts GenServer for bot for every game. When GenServer receives :run, bot starts play
   def start_link(game_id) do
-    GenServer.start(__MODULE__, %{game_id: game_id},
-      name: server_name(game_id)
-    )
-  end
-
-  def ping(game_id) do
-    GenServer.call(server_name(game_id), :ping)
+    GenServer.start(__MODULE__, %{game_id: game_id}, name: server_name(game_id))
   end
 
   # Bot strats play and chat
@@ -33,9 +29,6 @@ defmodule Codebattle.Bot.Server do
     Logger.info("Start bot palyer server for game_id: #{inspect(params.game_id)}")
     {:ok, %{}}
   end
-
-  def handle_call(:ping, _from, state), do:
-    {:reply, state, state}
 
   def handle_cast({:run, params}, state) do
     port = Application.get_env(:codebattle, :ws_port, 4000)
@@ -64,6 +57,7 @@ defmodule Codebattle.Bot.Server do
 
         Process.send_after(self(), {:send_message, :hello, new_params}, 500)
         Process.send_after(self(), {:init_playbook, new_params}, @timeout_start_playbook)
+
       {{:error, reason}, _} ->
         {:error, reason}
 
@@ -74,12 +68,11 @@ defmodule Codebattle.Bot.Server do
     {:noreply, state}
   end
 
-
   def handle_info({:init_playbook, opts}, state) do
-    IO.inspect("Init playbook runner")
     case PlaybookPlayer.call(opts) do
       :no_playbook ->
         ChatClient.say_some_excuse(opts.chat_channel)
+
       payload ->
         send(self(), {:update_solution, payload})
     end
@@ -90,9 +83,10 @@ defmodule Codebattle.Bot.Server do
   def handle_info({:send_message, type, opts}, state) do
     case ChatClient.call(type, opts) do
       {next_type, timeout} ->
-        IO.inspect("Send message after #{timeout} ms")
         Process.send_after(self(), {:send_message, next_type, opts}, timeout)
-      :stop -> nil
+
+      :stop ->
+        nil
     end
 
     {:noreply, state}
@@ -100,12 +94,14 @@ defmodule Codebattle.Bot.Server do
 
   def handle_info({:update_solution, payload}, state) do
     {editor_state, playbook, opts} = payload
+
     case PlaybookPlayer.update_solution(editor_state, playbook, opts) do
       {new_editor_state, new_playbook, timeout} ->
-        IO.inspect("Update playbook after #{timeout} ms")
         new_payload = {new_editor_state, new_playbook, opts}
         Process.send_after(self(), {:update_solution, new_payload}, timeout)
-      :stop -> nil
+
+      :stop ->
+        nil
     end
 
     {:noreply, state}
@@ -116,7 +112,6 @@ defmodule Codebattle.Bot.Server do
   def handle_info(_message, state) do
     {:noreply, state}
   end
-
 
   defp server_name(game_id) do
     {:via, :gproc, game_key(game_id)}
