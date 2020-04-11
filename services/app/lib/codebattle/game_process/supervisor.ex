@@ -13,6 +13,7 @@ defmodule Codebattle.GameProcess.Supervisor do
     children = [
       worker(Codebattle.Chat.Server, [game_id]),
       worker(Codebattle.GameProcess.Server, [game_id, fsm]),
+      worker(Codebattle.Bot.Server, [game_id]),
       worker(Codebattle.GameProcess.TimeoutServer, [game_id])
     ]
 

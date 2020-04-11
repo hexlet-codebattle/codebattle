@@ -1,18 +1,12 @@
-defmodule Codebattle.Bot.PlaybookPlayerRunner do
+defmodule Codebattle.Bot.PlaybookPlayer do
   @moduledoc """
   Process for playing playbooks of tasks
   """
 
   require Logger
-  alias Codebattle.Bot.{Playbook, ChatClientRunner}
-
-  @timeout Application.get_env(:codebattle, Codebattle.Bot.PlaybookPlayerRunner)[:timeout]
-  @max_minutes_timeout Application.get_env(:codebattle, Codebattle.Bot.PlaybookPlayerRunner)[
-                         :max_minutes_timeout
-                       ]
+  alias Codebattle.Bot.Playbook
 
   def call(params) do
-    :timer.sleep(@timeout)
     playbook = Playbook.random(params.task_id)
 
     if playbook do
@@ -27,18 +21,19 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
         total_time_ms: #{player_meta["total_time_ms"]}
         ")
 
-      start_bot_cycle(init_state, actions, params.game_channel, step_coefficient)
+      IO.inspect(init_state)
+      start_playbook_seq(init_state, actions, params.game_channel, step_coefficient)
     else
-      Task.start(fn -> ChatClientRunner.say_some_excuse(params.chat_channel) end)
+      :no_playbook
     end
   end
 
-  defp start_bot_cycle(
-         %{"editor_text" => editor_text, "editor_lang" => init_lang},
-         playbook,
-         channel_pid,
-         step_coefficient
-       ) do
+  defp start_playbook_seq(
+    %{"editor_text" => editor_text, "editor_lang" => init_lang},
+    playbook,
+    channel_pid,
+    step_coefficient
+  ) do
     # Action is one the maps
     #
     # 1 Main map with action to update text or lang
@@ -48,42 +43,40 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
     # %{"type" => "game_over"}
 
     init_document = TextDelta.new() |> TextDelta.insert(editor_text)
+    state = {init_document, init_lang}
+    send_editor_state(channel_pid, state)
 
-    Enum.reduce(playbook, {init_document, init_lang}, fn action, editor_state ->
-      timer_value = get_timer_value(action, step_coefficient)
-      # TODO: maybe optimize serialization/deserialization process
-      # delta = diff_map |> Map.get("delta", nil)
-      :timer.sleep(Kernel.trunc(timer_value))
-      activate_random_long_sleep(channel_pid)
-
-      perform_action(action, editor_state, channel_pid)
-    end)
+    opts = {channel_pid, step_coefficient}
+    {state, playbook, opts}
+    # perform_action(action, editor_state, channel_pid)
   end
 
-  defp perform_action(
-         %{"type" => "update_editor_data", "diff" => diff},
-         {document, editor_lang},
-         channel_pid
-       ) do
+  def update_solution(
+    {document, editor_lang},
+    [%{"type" => "update_editor_data", "diff" => diff} = event | rest],
+    {channel_pid, step_coefficient}
+  ) do
     next_document = create_next_document(document, diff)
     next_lang = diff |> Map.get("next_lang", editor_lang)
     next_editor_state = {next_document, next_lang}
     send_editor_state(channel_pid, next_editor_state)
 
-    next_editor_state
+    timeout = get_timer_value(event, step_coefficient)
+
+    {next_editor_state, rest, Kernel.trunc(timeout)}
   end
 
-  defp perform_action(%{"type" => "game_over"}, editor_state, channel_pid) do
+  def update_solution(editor_state, [%{"type" => "game_over"} | _rest], {channel_pid, _step_coefficient}) do
     send_check_request(channel_pid, editor_state)
 
-    editor_state
+    :stop
   end
 
   defp create_user_playbook(records, user_id) do
     Enum.filter(
       records,
       &(&1["id"] == user_id &&
-          &1["type"] in ["init", "update_editor_data", "game_over"])
+        &1["type"] in ["init", "update_editor_data", "game_over"])
     )
   end
 
@@ -96,7 +89,11 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
   defp get_timer_value(%{"type" => "game_over"}, _step_coefficient), do: 0
 
   defp get_timer_value(%{"diff" => diff}, step_coefficient),
-    do: Map.get(diff, "time") * step_coefficient
+  do: Map.get(diff, "time") * step_coefficient
+
+  defp send_editor_state(_channel_pid, {%{ops: []}, _lang}) do
+    :ok
+  end
 
   defp send_editor_state(channel_pid, {document, lang}) do
     PhoenixClient.Channel.push_async(channel_pid, "editor:data", %{
@@ -110,12 +107,5 @@ defmodule Codebattle.Bot.PlaybookPlayerRunner do
       "lang_slug" => lang,
       "editor_text" => document.ops |> hd |> Map.get(:insert)
     })
-  end
-
-  defp activate_random_long_sleep(_) do
-    if :rand.uniform(100) > 98 do
-      minutes = Kernel.round(@max_minutes_timeout * :rand.uniform())
-      :timer.sleep(minutes * 60 * 1_000)
-    end
   end
 end

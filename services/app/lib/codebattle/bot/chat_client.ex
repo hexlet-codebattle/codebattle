@@ -1,19 +1,19 @@
-defmodule Codebattle.Bot.ChatClientRunner do
+defmodule Codebattle.Bot.ChatClient do
   @moduledoc """
   Process for playing playbooks of tasks
   """
   require Logger
 
-  def call(params) do
-    :timer.sleep(500)
-
+  def call(:hello, params) do
     PhoenixClient.Channel.push_async(params.chat_channel, "new:message", %{
       "message" => greet_opponent(params.chat_state),
       "user" => "test_bot"
     })
 
-    :timer.sleep(2 * 60 * 1000)
+    {:announce, 6 * 1000}
+  end
 
+  def call(:announce, params) do
     unless :rand.uniform(16) > 8 do
       PhoenixClient.Channel.push_async(params.chat_channel, "new:message", %{
         "message" => say_announcement(params.chat_state),
@@ -21,14 +21,18 @@ defmodule Codebattle.Bot.ChatClientRunner do
       })
     end
 
-    :timer.sleep(10 * 60 * 1000)
+    {:about_code, 3 * 60 * 1000}
+  end
 
+  def call(:about_code, params) do
     unless :rand.uniform(20) > 5 do
       PhoenixClient.Channel.push_async(params.chat_channel, "new:message", %{
         "message" => say_about_code(params.chat_state),
         "user" => "test_bot"
       })
     end
+
+    :stop
   end
 
   def say_some_excuse(chat_channel) do
@@ -44,6 +48,7 @@ defmodule Codebattle.Bot.ChatClientRunner do
       "Perhaps, you can solve this better than i can",
       "Dame it!!!! It's hard task...",
       "It's X0xl0ma, Argh!!! I knew she would do something",
+      "Irkin, fix me",
       "Vtm, Master, Guide Me"
     ]
     |> Enum.random()
