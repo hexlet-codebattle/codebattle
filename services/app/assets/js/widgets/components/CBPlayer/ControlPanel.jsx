@@ -14,8 +14,8 @@ const ControlPanel = ({
   });
 
   useEffect(() => {
-    if(isStop) {
-      setMode("pause");
+    if (isStop) {
+      setMode('pause');
     }
   }, [isStop]);
 
