@@ -256,7 +256,7 @@ class CodebattlePlayer extends Component {
                   onPauseClick={this.onPauseClick}
                   defaultSpeed={defaultSpeed}
                   setSpeed={this.setSpeed}
-                  hasStopped={() => isStop}
+                  isStop={isStop}
                 >
                   <Slider
                     className="cb-slider col-md-7 ml-1"

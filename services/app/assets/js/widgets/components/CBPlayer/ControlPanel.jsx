@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PlayerIcon } from 'react-player-controls';
 import cn from 'classnames';
 
 const ControlPanel = ({
-  onPlayClick, onPauseClick, defaultSpeed, setSpeed, hasStopped, children,
+  onPlayClick, onPauseClick, defaultSpeed, setSpeed, isStop, children,
 }) => {
   const [mode, setMode] = useState('pause');
   const [speedMode, setSpeedMode] = useState('normal');
@@ -12,6 +12,12 @@ const ControlPanel = ({
     'btn-light': speedMode === 'normal',
     'btn-secondary': speedMode === 'fast',
   });
+
+  useEffect(() => {
+    if(isStop) {
+      setMode("pause");
+    }
+  }, [isStop]);
 
   const onControlButtonClick = () => {
     switch (mode) {
@@ -50,7 +56,7 @@ const ControlPanel = ({
         className="mr-4 btn btn-light"
         onClick={onControlButtonClick}
       >
-        {hasStopped() ? (
+        {isStop ? (
           <PlayerIcon.Play width={32} height={32} />
         ) : (
           <PlayerIcon.Pause width={32} height={32} />
