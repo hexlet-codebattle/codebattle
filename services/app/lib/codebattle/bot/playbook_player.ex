@@ -29,7 +29,7 @@ defmodule Codebattle.Bot.PlaybookPlayer do
 
   defp start_playbook_seq(
          %{"editor_text" => editor_text, "editor_lang" => init_lang},
-         playbook,
+         actions,
          channel_pid,
          step_coefficient
        ) do
@@ -45,31 +45,47 @@ defmodule Codebattle.Bot.PlaybookPlayer do
     state = {init_document, init_lang}
     send_editor_state(channel_pid, state)
 
-    opts = {channel_pid, step_coefficient}
-    {state, playbook, opts}
+    %{
+      editor_state: state,
+      actions: actions,
+      step_coefficient: step_coefficient
+    }
+
     # perform_action(action, editor_state, channel_pid)
   end
 
-  def update_solution(
-        {document, editor_lang},
-        [%{"type" => "update_editor_data", "diff" => diff} = event | rest],
-        {channel_pid, step_coefficient}
-      ) do
+  def update_solution(%{
+        playbook_params:
+          %{
+            editor_state: {document, editor_lang},
+            actions: [%{"type" => "update_editor_data", "diff" => diff} = event | rest],
+            step_coefficient: step_coefficient
+          } = playbook_params,
+        game_channel: channel_pid
+      }) do
     next_document = create_next_document(document, diff)
     next_lang = diff |> Map.get("next_lang", editor_lang)
     next_editor_state = {next_document, next_lang}
     send_editor_state(channel_pid, next_editor_state)
 
+    new_playbook_params =
+      Map.merge(playbook_params, %{
+        editor_state: next_editor_state,
+        actions: rest
+      })
+
     timeout = get_timer_value(event, step_coefficient)
 
-    {next_editor_state, rest, Kernel.trunc(timeout)}
+    {new_playbook_params, Kernel.trunc(timeout)}
   end
 
-  def update_solution(
-        editor_state,
-        [%{"type" => "game_over"} | _rest],
-        {channel_pid, _step_coefficient}
-      ) do
+  def update_solution(%{
+        playbook_params: %{
+          editor_state: editor_state,
+          actions: [%{"type" => "game_over"} | _rest]
+        },
+        game_channel: channel_pid
+      }) do
     send_check_request(channel_pid, editor_state)
 
     :stop

@@ -1,19 +1,16 @@
 defmodule Codebattle.Bot.Server do
   @moduledoc """
-  Process for playing playbooks of tasks
+  Process for activate bot
   """
+
   use GenServer
 
   require Logger
 
-  alias Codebattle.Bot.{ChatClient, PlaybookPlayer}
-
-  @timeout_start_playbook Application.get_env(:codebattle, Codebattle.Bot.Server)[
-                            :timeout_start_playbook
-                          ]
+  alias Codebattle.Bot.{Player, PlayersSupervisor}
 
   # API
-  # Starts GenServer for bot for every game. When GenServer receives :run, bot starts play
+  # Starts GenServer for bot for every game. When GenServer receives :run, create bot_player and starts play
   def start_link(game_id) do
     GenServer.start(__MODULE__, %{game_id: game_id}, name: server_name(game_id))
   end
@@ -26,7 +23,7 @@ defmodule Codebattle.Bot.Server do
   # SERVER
 
   def init(params) do
-    Logger.info("Start bot palyer server for game_id: #{inspect(params.game_id)}")
+    Logger.info("Start bot server for game_id: #{inspect(params.game_id)}")
     {:ok, %{}}
   end
 
@@ -55,53 +52,14 @@ defmodule Codebattle.Bot.Server do
             chat_state: chat_state
           })
 
-        Process.send_after(self(), {:send_message, :hello, new_params}, 500)
-        Process.send_after(self(), {:init_playbook, new_params}, @timeout_start_playbook)
+        PlayersSupervisor.create_player(new_params)
+        Player.run!(new_params)
 
       {{:error, reason}, _} ->
         {:error, reason}
 
       {_, {:error, reason}} ->
         {:error, reason}
-    end
-
-    {:noreply, state}
-  end
-
-  def handle_info({:init_playbook, opts}, state) do
-    case PlaybookPlayer.call(opts) do
-      :no_playbook ->
-        ChatClient.say_some_excuse(opts.chat_channel)
-
-      payload ->
-        send(self(), {:update_solution, payload})
-    end
-
-    {:noreply, state}
-  end
-
-  def handle_info({:send_message, type, opts}, state) do
-    case ChatClient.call(type, opts) do
-      {next_type, timeout} ->
-        Process.send_after(self(), {:send_message, next_type, opts}, timeout)
-
-      :stop ->
-        nil
-    end
-
-    {:noreply, state}
-  end
-
-  def handle_info({:update_solution, payload}, state) do
-    {editor_state, playbook, opts} = payload
-
-    case PlaybookPlayer.update_solution(editor_state, playbook, opts) do
-      {new_editor_state, new_playbook, timeout} ->
-        new_payload = {new_editor_state, new_playbook, opts}
-        Process.send_after(self(), {:update_solution, new_payload}, timeout)
-
-      :stop ->
-        nil
     end
 
     {:noreply, state}

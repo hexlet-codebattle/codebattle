@@ -4,16 +4,16 @@ defmodule Codebattle.Bot.ChatClient do
   """
   require Logger
 
-  def call(:hello, params) do
+  def call([:hello | rest], params) do
     PhoenixClient.Channel.push_async(params.chat_channel, "new:message", %{
       "message" => greet_opponent(params.chat_state),
       "user" => "test_bot"
     })
 
-    {:announce, 6 * 1000}
+    {rest, 6 * 1000}
   end
 
-  def call(:announce, params) do
+  def call([:announce | rest], params) do
     unless :rand.uniform(16) > 8 do
       PhoenixClient.Channel.push_async(params.chat_channel, "new:message", %{
         "message" => say_announcement(params.chat_state),
@@ -21,10 +21,10 @@ defmodule Codebattle.Bot.ChatClient do
       })
     end
 
-    {:about_code, 3 * 60 * 1000}
+    {rest, 3 * 60 * 1000}
   end
 
-  def call(:about_code, params) do
+  def call([:about_code | _rest], params) do
     unless :rand.uniform(20) > 5 do
       PhoenixClient.Channel.push_async(params.chat_channel, "new:message", %{
         "message" => say_about_code(params.chat_state),

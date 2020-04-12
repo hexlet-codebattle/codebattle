@@ -14,6 +14,7 @@ defmodule Codebattle.GameProcess.Supervisor do
       worker(Codebattle.Chat.Server, [game_id]),
       worker(Codebattle.GameProcess.Server, [game_id, fsm]),
       worker(Codebattle.Bot.Server, [game_id]),
+      supervisor(Codebattle.Bot.PlayersSupervisor, [game_id]),
       worker(Codebattle.GameProcess.TimeoutServer, [game_id])
     ]
 
