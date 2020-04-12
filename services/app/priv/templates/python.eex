@@ -54,4 +54,4 @@ except Exception as exc:
     }))
 
 sys.stdout = original_stdout
-print(execution_result)
+print('\n'.join(execution_result))
