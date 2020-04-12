@@ -50,8 +50,6 @@ defmodule Codebattle.Bot.PlaybookPlayer do
       actions: actions,
       step_coefficient: step_coefficient
     }
-
-    # perform_action(action, editor_state, channel_pid)
   end
 
   def update_solution(%{
