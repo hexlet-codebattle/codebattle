@@ -62,14 +62,18 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
 
     # User join to the game
     post(conn, Routes.game_path(conn, :join, game_id))
+    :timer.sleep(100)
 
-    {:ok, _response, _socket} = subscribe_and_join(socket, GameChannel, game_topic)
+    {:ok, _response, socket} = subscribe_and_join(socket, GameChannel, game_topic)
+    :timer.sleep(3_000)
+
+    Phoenix.ChannelTest.push(socket, "editor:data", %{editor_text: "test", lang_slug: "js"})
     :timer.sleep(100)
 
     {:ok, fsm} = Server.get_fsm(game_id)
     assert fsm.state == :playing
 
-    :timer.sleep(6000)
+    :timer.sleep(3_000)
     # bot write_some_text
     {:ok, fsm} = Server.get_fsm(game_id)
 

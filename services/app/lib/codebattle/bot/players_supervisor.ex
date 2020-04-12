@@ -5,14 +5,14 @@ defmodule Codebattle.Bot.PlayersSupervisor do
 
   use DynamicSupervisor
 
-  alias Codebattle.Bot.Player
+  alias Codebattle.Bot.PlayerServer
 
   def start_link(game_id) do
     DynamicSupervisor.start_link(__MODULE__, %{game_id: game_id}, name: supervisor_name(game_id))
   end
 
   def create_player(params) do
-    spec = {Player, params}
+    spec = {PlayerServer, params}
     DynamicSupervisor.start_child(supervisor_name(params.game_id), spec)
   end
 

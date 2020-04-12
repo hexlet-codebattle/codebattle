@@ -49,14 +49,16 @@ defmodule Codebattle.Bot.ChatClient do
       "Dame it!!!! It's hard task...",
       "It's X0xl0ma, Argh!!! I knew she would do something",
       "Irkin, fix me",
-      "Vtm, Master, Guide Me"
+      "Vtm, Master, Guide Me",
+      "Huge Lebowski, where are you man?!",
+      "RedBrother, HELP me, please!!!!"
     ]
     |> Enum.random()
   end
 
   defp greet_opponent(chat_state) do
     opponent = get_opponent(chat_state)
-    "Hi, #{opponent["name"]}!"
+    "Hi, #{opponent["name"]}, I'll join when you start writing code"
   end
 
   defp say_announcement(chat_state) do

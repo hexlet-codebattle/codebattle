@@ -74,7 +74,7 @@ defmodule Codebattle.GameProcess.Engine.Bot do
   end
 
   def run_bot!(fsm) do
-    Bot.Server.run!(%{
+    Bot.PlayersSupervisor.create_player(%{
       game_id: FsmHelpers.get_game_id(fsm),
       task_id: FsmHelpers.get_task(fsm).id,
       bot_id: FsmHelpers.get_first_player(fsm).id,

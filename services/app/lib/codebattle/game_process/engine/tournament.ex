@@ -54,7 +54,7 @@ defmodule Codebattle.GameProcess.Engine.Tournament do
 
     Enum.each(new_players, fn player ->
       if player.is_bot do
-        Bot.Server.run!(%{
+        Bot.PlayersSupervisor.create_player(%{
           game_id: game.id,
           task_id: task.id,
           bot_id: player.id,
