@@ -9,7 +9,7 @@ defmodule Codebattle.GameProcess.Engine.Bot do
   }
 
   alias Codebattle.Languages
-  alias Codebattle.Bot.{PlaybookAsyncRunner}
+  alias Codebattle.Bot
   alias CodebattleWeb.Notifications
 
   use Engine.Base
@@ -74,7 +74,7 @@ defmodule Codebattle.GameProcess.Engine.Bot do
   end
 
   def run_bot!(fsm) do
-    PlaybookAsyncRunner.run!(%{
+    Bot.PlayersSupervisor.create_player(%{
       game_id: FsmHelpers.get_game_id(fsm),
       task_id: FsmHelpers.get_task(fsm).id,
       bot_id: FsmHelpers.get_first_player(fsm).id,
@@ -165,9 +165,6 @@ defmodule Codebattle.GameProcess.Engine.Bot do
     ActiveGames.create_game(fsm)
     {:ok, _} = GlobalSupervisor.start_game(fsm)
     Server.update_playbook(game.id, :join, %{players: players})
-
-    {:ok, _bot_pid} =
-      PlaybookAsyncRunner.create_server(%{game_id: game.id, bot: FsmHelpers.get_first_player(fsm)})
 
     run_bot!(fsm)
     start_timeout_timer(game.id, fsm)

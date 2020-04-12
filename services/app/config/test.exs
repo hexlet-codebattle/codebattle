@@ -22,9 +22,7 @@ config :codebattle, Codebattle.Repo,
 
 config :codebattle, Codebattle.Bot, timeout: 60_000
 
-config :codebattle, Codebattle.Bot.PlaybookPlayerRunner,
-  timeout: 300,
-  max_minutes_timeout: 0
+config :codebattle, Codebattle.Bot.Server, timeout_start_playbook: 0
 
 adapter =
   case System.get_env("CODEBATTLE_RUN_CODE_CHECK") do

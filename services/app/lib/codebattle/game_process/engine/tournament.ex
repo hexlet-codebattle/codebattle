@@ -1,5 +1,5 @@
 defmodule Codebattle.GameProcess.Engine.Tournament do
-  alias Codebattle.Bot.PlaybookAsyncRunner
+  alias Codebattle.Bot
 
   alias Codebattle.Languages
 
@@ -54,9 +54,7 @@ defmodule Codebattle.GameProcess.Engine.Tournament do
 
     Enum.each(new_players, fn player ->
       if player.is_bot do
-        PlaybookAsyncRunner.create_server(%{game_id: game.id, bot: player})
-
-        PlaybookAsyncRunner.run!(%{
+        Bot.PlayersSupervisor.create_player(%{
           game_id: game.id,
           task_id: task.id,
           bot_id: player.id,

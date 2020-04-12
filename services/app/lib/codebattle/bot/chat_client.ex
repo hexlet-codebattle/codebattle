@@ -1,19 +1,19 @@
-defmodule Codebattle.Bot.ChatClientRunner do
+defmodule Codebattle.Bot.ChatClient do
   @moduledoc """
   Process for playing playbooks of tasks
   """
   require Logger
 
-  def call(params) do
-    :timer.sleep(500)
-
+  def call([:hello | rest], params) do
     PhoenixClient.Channel.push_async(params.chat_channel, "new:message", %{
       "message" => greet_opponent(params.chat_state),
       "user" => "test_bot"
     })
 
-    :timer.sleep(2 * 60 * 1000)
+    {rest, 6 * 1000}
+  end
 
+  def call([:announce | rest], params) do
     unless :rand.uniform(16) > 8 do
       PhoenixClient.Channel.push_async(params.chat_channel, "new:message", %{
         "message" => say_announcement(params.chat_state),
@@ -21,14 +21,18 @@ defmodule Codebattle.Bot.ChatClientRunner do
       })
     end
 
-    :timer.sleep(10 * 60 * 1000)
+    {rest, 3 * 60 * 1000}
+  end
 
+  def call([:about_code | _rest], params) do
     unless :rand.uniform(20) > 5 do
       PhoenixClient.Channel.push_async(params.chat_channel, "new:message", %{
         "message" => say_about_code(params.chat_state),
         "user" => "test_bot"
       })
     end
+
+    :stop
   end
 
   def say_some_excuse(chat_channel) do
@@ -44,14 +48,17 @@ defmodule Codebattle.Bot.ChatClientRunner do
       "Perhaps, you can solve this better than i can",
       "Dame it!!!! It's hard task...",
       "It's X0xl0ma, Argh!!! I knew she would do something",
-      "Vtm, Master, Guide Me"
+      "Irkin, fix me",
+      "Vtm, Master, Guide Me",
+      "Huge Lebowski, where are you man?!",
+      "RedBrother, HELP me, please!!!!"
     ]
     |> Enum.random()
   end
 
   defp greet_opponent(chat_state) do
     opponent = get_opponent(chat_state)
-    "Hi, #{opponent["name"]}!"
+    "Hi, #{opponent["name"]}, I'll join when you start writing code"
   end
 
   defp say_announcement(chat_state) do
