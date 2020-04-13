@@ -29,6 +29,7 @@ defmodule CodebattleWeb do
   def controller do
     quote do
       use Phoenix.Controller, namespace: CodebattleWeb
+      use PhoenixMetaTags.TagController
 
       alias Codebattle.Repo
       alias CodebattleWeb.Router.Helpers, as: Routes
@@ -45,6 +46,8 @@ defmodule CodebattleWeb do
       use Phoenix.View,
         root: "lib/codebattle_web/templates",
         namespace: CodebattleWeb
+
+      use PhoenixMetaTags.TagView
 
       alias CodebattleWeb.Router.Helpers, as: Routes
 

@@ -37,14 +37,33 @@ defmodule CodebattleWeb.GameController do
   def show(conn, %{"id" => id}) do
     case Play.get_fsm(id) do
       {:ok, fsm} ->
+        current_user = conn.assigns.current_user
         conn = put_gon(conn, game_id: id)
-        is_participant = ActiveGames.participant?(id, conn.assigns.current_user.id)
+        is_participant = ActiveGames.participant?(id, current_user.id)
 
         case {fsm.state, is_participant} do
           {:waiting_opponent, false} ->
-            render(conn, "join.html", %{fsm: fsm})
+            player = FsmHelpers.get_first_player(fsm)
+
+            conn
+            |> put_meta_tags(%{
+              title: "Join game",
+              description: "Game against #{player_info(player, fsm)}",
+              url: Routes.game_path(conn, :show, id, level: FsmHelpers.get_level(fsm))
+            })
+            |> render("join.html", %{fsm: fsm})
 
           _ ->
+            first = FsmHelpers.get_first_player(fsm)
+            second = FsmHelpers.get_second_player(fsm)
+
+            conn
+            |> put_meta_tags(%{
+              title: "Cool game",
+              description: "#{player_info(first, fsm)} vs #{player_info(second, fsm)}",
+              url: Routes.game_path(conn, :show, id)
+            })
+
             render(conn, "show.html", %{fsm: fsm, layout_template: "full_width.html"})
         end
 
@@ -59,9 +78,15 @@ defmodule CodebattleWeb.GameController do
           game ->
             if Playbook.exists?(id) do
               langs = Languages.meta() |> Map.values()
+              [first, second] = game.users
 
               conn
               |> put_gon(is_record: true, game_id: id, langs: langs)
+              |> put_meta_tags(%{
+                title: "Cool archived game",
+                description: "#{user_info(first)} vs #{user_info(second)}",
+                url: Routes.game_path(conn, :show, id)
+              })
               |> render("show.html", %{layout_template: "full_width.html"})
             else
               render(conn, "game_result.html", %{game: game})
@@ -87,5 +112,13 @@ defmodule CodebattleWeb.GameController do
     with :ok <- Play.cancel_game(id, conn.assigns.current_user) do
       redirect(conn, to: Routes.page_path(conn, :index))
     end
+  end
+
+  defp user_info(user), do: "@#{user.name}(#{user.lang})-#{user.rating}"
+
+  defp player_info(nil, _fsm), do: ""
+
+  defp player_info(player, fsm) do
+    "@#{player.name}(#{player.lang})-#{player.rating} level:#{FsmHelpers.get_level(fsm)}"
   end
 end

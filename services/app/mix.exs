@@ -19,7 +19,7 @@ defmodule Codebattle.Mixfile do
       ],
       test_coverage: [tool: ExCoveralls],
       deps: deps(),
-      elixirc_options: [warnings_as_errors: true]
+      elixirc_options: [warnings_as_errors: false]
     ]
   end
 
@@ -76,6 +76,7 @@ defmodule Codebattle.Mixfile do
       {:timex, "~> 3.5"},
       {:deep_merge, "~> 1.0"},
       {:httpoison, "~> 1.5"},
+      {:phoenix_meta_tags, ">= 0.1.8"},
 
       # dev_and_test
       {:credo, ">= 0.0.0", only: [:dev, :test], runtime: false},

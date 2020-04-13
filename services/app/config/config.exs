@@ -57,6 +57,24 @@ config :one_signal, OneSignal,
 config :scrivener_html,
   routes_helper: CodebattleWeb.Router.Helpers
 
+config :phoenix_meta_tags,
+  title: "Hexlet Codebattle",
+  description: "Game for programmers",
+  url: "https://codebattle.hexlet.io",
+  image: "https://raw.githubusercontent.com/v1valasvegan/og-test/master/codebattle.png",
+  "og:text": "Hexlet Codebattle",
+  fb: %{
+    name: "Hexlet Codebattle",
+    size: %{
+      width: 100,
+      height: 200,
+      position: %{
+        x: 10,
+        y: 15
+      }
+    }
+  }
+
 config :codebattle, CodebattleWeb.Endpoint, live_view: [signing_salt: "asdfasdf"]
 
 config :codebattle, Codebattle.Bot.Server, timeout_start_playbook: 2_000

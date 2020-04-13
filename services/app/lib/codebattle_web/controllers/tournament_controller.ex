@@ -4,7 +4,13 @@ defmodule CodebattleWeb.TournamentController do
   plug(CodebattleWeb.Plugs.RequireAuth)
 
   def index(conn, _params) do
-    live_render(conn, CodebattleWeb.Live.Tournament.IndexView,
+    conn
+    |> put_meta_tags(%{
+      title: "Hexlet Codebattle Tournaments",
+      description: "Create or join nice tournaments",
+      url: Routes.tournament_url(conn, :index)
+    })
+    |> live_render(CodebattleWeb.Live.Tournament.IndexView,
       session: %{
         "current_user" => conn.assigns[:current_user],
         "tournaments" => Codebattle.Tournament.all()
@@ -15,7 +21,13 @@ defmodule CodebattleWeb.TournamentController do
   def show(conn, params) do
     tournament = Codebattle.Tournament.get!(params["id"])
 
-    live_render(conn, CodebattleWeb.Live.Tournament.View,
+    conn
+    |> put_meta_tags(%{
+      title: "Join tournament",
+      description: "Join tournament: #{String.slice(tournament.name, 0, 100)}",
+      url: Routes.tournament_url(conn, :show, tournament.id)
+    })
+    |> live_render(CodebattleWeb.Live.Tournament.View,
       session: %{"current_user" => conn.assigns[:current_user], "tournament" => tournament}
     )
   end
