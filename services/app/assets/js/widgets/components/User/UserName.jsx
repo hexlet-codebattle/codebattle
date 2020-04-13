@@ -6,7 +6,7 @@ import { loadUser } from '../../middlewares/Users';
 import { getUsersInfo } from '../../selectors';
 
 const isValidUserInfo = user => (
-  Boolean(user.githubId && user.rating && user.ratingDiff && user.lang)
+  Boolean(user.githubId && user.rating)
 );
 
 const UserName = ({ user, users, dispatch }) => {

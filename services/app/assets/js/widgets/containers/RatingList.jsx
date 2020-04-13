@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import _ from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Pagination from 'react-js-pagination';
 import moment from 'moment';
@@ -22,7 +21,7 @@ const renderUser = user => (
   <tr key={user.id}>
     <td className="p-3 align-middle">{user.rank}</td>
     <td className="tex-left p-3 align-middle">
-      <UserInfo user={_.omit(user, 'rating')} />
+      <UserInfo user={user} />
     </td>
     <td className="p-3 align-middle">{user.rating}</td>
     <td className="p-3 align-middle">{user.gamesPlayed}</td>
