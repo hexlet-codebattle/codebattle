@@ -10,8 +10,8 @@ const InfoWidget = () => {
   const timeoutSeconds = useSelector(state => gameStatusSelector(state).timeoutSeconds);
   const gameStatusName = useSelector(state => gameStatusSelector(state).status);
   return (
-    <div className="row no-gutters cb-info-widget">
-      <div className="col-12 col-lg-6 p-1 h-100">
+    <>
+      <div className="col-12 col-lg-6 p-1 cb-height-info">
         <Task
           task={taskText}
           time={startsAt}
@@ -19,10 +19,10 @@ const InfoWidget = () => {
           gameStatusName={gameStatusName}
         />
       </div>
-      <div className="col-12 col-lg-6 p-1 h-100">
+      <div className="col-12 col-lg-6 p-1 cb-height-info">
         <ChatWidget />
       </div>
-    </div>
+    </>
   );
 };
 

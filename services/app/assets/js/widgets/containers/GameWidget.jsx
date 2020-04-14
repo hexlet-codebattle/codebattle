@@ -83,24 +83,22 @@ class GameWidget extends Component {
     }
     return (
       <>
-        <div className="row no-gutters">
-          <div className="col-12 col-md-6 p-1">
-            <div className="card">
-              <LeftEditorToolbar />
-              <Editor {...this.getLeftEditorParams()} />
-              {/* TODO: move state to parent component */}
-              { !isStoredGame && this.renderGameActionButtons(leftEditor, false) }
-              <ExecutionOutput output={leftOutput} id="1" />
-            </div>
+        <div className="col-12 col-md-6 p-1">
+          <div className="card">
+            <LeftEditorToolbar />
+            <Editor {...this.getLeftEditorParams()} />
+            {/* TODO: move state to parent component */}
+            { !isStoredGame && this.renderGameActionButtons(leftEditor, false) }
+            <ExecutionOutput output={leftOutput} id="1" />
           </div>
-          <div className="col-12 col-md-6 p-1">
-            <div className="card">
-              <RightEditorToolbar />
-              <Editor {...this.getRightEditorParams()} />
-              {/* TODO: move state to parent component */}
-              { !isStoredGame && this.renderGameActionButtons(rightEditor, true) }
-              <ExecutionOutput output={rightOutput} id="2" />
-            </div>
+        </div>
+        <div className="col-12 col-md-6 p-1">
+          <div className="card">
+            <RightEditorToolbar />
+            <Editor {...this.getRightEditorParams()} />
+            {/* TODO: move state to parent component */}
+            { !isStoredGame && this.renderGameActionButtons(rightEditor, true) }
+            <ExecutionOutput output={rightOutput} id="2" />
           </div>
         </div>
         <NotificationsHandler />
