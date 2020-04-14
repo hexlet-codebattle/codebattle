@@ -43,8 +43,10 @@ const RootContainer = ({
   return (
     <div className="x-outline-none">
       <div className="container-fluid">
-        <InfoWidget />
-        <GameWidget />
+        <div className="row no-gutter cb-game">
+          <InfoWidget />
+          <GameWidget />
+        </div>
       </div>
       {isStoredGame && <CodebattlePlayer />}
     </div>
