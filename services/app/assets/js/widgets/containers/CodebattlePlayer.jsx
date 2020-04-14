@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Slider } from 'react-player-controls';
 import { connect } from 'react-redux';
+import _ from 'lodash';
 
 import { Direction } from 'react-player-controls/dist/constants';
 import * as selectors from '../selectors';
@@ -18,8 +19,6 @@ class CodebattlePlayer extends Component {
   constructor(props) {
     super(props);
     const defaultSpeed = 100;
-
-    props.setStepCoefficient();
 
     this.state = {
       isEnabled: true,
@@ -240,7 +239,7 @@ class CodebattlePlayer extends Component {
       isEnabled, direction, value: currentValue, isHold, isStop, lastIntent, defaultSpeed,
     } = this.state;
 
-    if (records == null) {
+    if (_.isEmpty(records)) {
       return null;
     }
 
@@ -293,7 +292,6 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-  setStepCoefficient: actions.setStepCoefficient,
   updateEditorTextPlaybook: actions.updateEditorTextPlaybook,
   updateExecutionOutput: actions.updateExecutionOutput,
   fetchChatData: actions.fetchChatData,

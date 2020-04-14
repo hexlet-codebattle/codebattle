@@ -302,6 +302,7 @@ export const storedGameEditorReady = () => dispatch => {
       });
 
       dispatch(actions.loadStoredPlaybook(resolvedData));
+      dispatch(actions.setStepCoefficient());
       dispatch(actions.fetchChatData(resolvedData.chat));
       dispatch(actions.finishStoreInit());
     });

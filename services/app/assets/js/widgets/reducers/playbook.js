@@ -6,7 +6,7 @@ const initialState = {
   players: [],
   task: {},
   initRecords: [],
-  records: null,
+  records: [],
   stepCoefficient: 0,
   status: PlaybookStatusCodes.none,
 };

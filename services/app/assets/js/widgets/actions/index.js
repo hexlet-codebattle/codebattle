@@ -49,3 +49,5 @@ export const updateRecords = createAction('UPDATE_RECORDS');
 export const setStepCoefficient = createAction('SET_STEP_COEFFICIENT');
 
 export const setUserInfo = createAction('SET_USER_INFO');
+
+export const setReplayerModeOn = createAction('SET_REPLAYER_MODE_ON');

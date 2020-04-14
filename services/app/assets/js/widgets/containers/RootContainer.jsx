@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { connect, useDispatch, useSelector } from 'react-redux';
 import { useHotkeys } from 'react-hotkeys-hook';
 import Gon from 'gon';
 import GameWidget from './GameWidget';
@@ -9,13 +9,17 @@ import userTypes from '../config/userTypes';
 import * as actions from '../actions';
 import * as GameActions from '../middlewares/Game';
 import GameStatusCodes from '../config/gameStatusCodes';
-import { gameStatusSelector } from '../selectors';
+import { gameStatusSelector, playerModeSelector } from '../selectors';
 import WaitingOpponentInfo from '../components/WaitingOpponentInfo';
 import CodebattlePlayer from './CodebattlePlayer';
+import ReplayerModes from '../config/replayerModes';
 
 const RootContainer = ({
   storeLoaded, gameStatusCode, checkResult, init, setCurrentUser,
 }) => {
+  const playerMode = useSelector((state) => playerModeSelector(state));
+  const dispatch = useDispatch();
+
   useEffect(() => {
     const user = Gon.getAsset('current_user');
     // FIXME: maybe take from gon?
@@ -40,6 +44,17 @@ const RootContainer = ({
 
   const isStoredGame = gameStatusCode === GameStatusCodes.stored;
 
+  const isGameOver = gameStatusCode === GameStatusCodes.gameOver;
+
+  const isReplayerModeOff = playerMode !== ReplayerModes.on;
+
+  const isReplayerModeInitialized = playerMode !== ReplayerModes.none;
+
+  const showReplayer = () => {
+    dispatch(actions.setReplayerModeOn());
+    if (isReplayerModeInitialized) dispatch(GameActions.storedGameEditorReady());
+  }
+
   return (
     <div className="x-outline-none">
       <div className="container-fluid">
@@ -49,6 +64,9 @@ const RootContainer = ({
         </div>
       </div>
       {isStoredGame && <CodebattlePlayer />}
+      {isGameOver && isReplayerModeOff && (
+        <button className="btn btn-primary" onClick={showReplayer}>Show replayer</button>
+      )}
     </div>
   );
 };

@@ -9,6 +9,7 @@ import editorUI from './editorUI';
 import gameUI from './gameUI';
 import playbook from './playbook';
 import usersInfo from './usersInfo';
+import replayerMode from './replayerMode';
 
 export default {
   game,
@@ -22,5 +23,6 @@ export default {
   gameList,
   storeLoaded,
   executionOutput,
+  replayerMode,
 };
 export { makeEditorTextKey } from './editor';
