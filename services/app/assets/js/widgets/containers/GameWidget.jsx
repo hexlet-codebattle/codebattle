@@ -83,7 +83,7 @@ class GameWidget extends Component {
     }
     return (
       <>
-        <div className="col-12 col-md-6 p-1 h-100">
+        <div className="col-12 col-md-6 p-1">
           <div className="card">
             <LeftEditorToolbar />
             <Editor {...this.getLeftEditorParams()} />
@@ -92,7 +92,7 @@ class GameWidget extends Component {
             <ExecutionOutput output={leftOutput} id="1" />
           </div>
         </div>
-        <div className="col-12 col-md-6 p-1 h-100">
+        <div className="col-12 col-md-6 p-1">
           <div className="card">
             <RightEditorToolbar />
             <Editor {...this.getRightEditorParams()} />
