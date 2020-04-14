@@ -16,7 +16,7 @@ const Messages = ({ messages = [] }) => {
   return (
     <ul
       ref={listRef}
-      className="overflow-auto pt-0 pl-3 pr-1 text-break position-relative cb-messages-list"
+      className="overflow-auto pt-0 pl-3 pr-2 position-relative cb-messages-list"
     >
       {/* eslint-disable-next-line react/no-array-index-key */}
       {messages.map(({ user, message }, i) => <Message user={user} message={message} key={i} />)}
