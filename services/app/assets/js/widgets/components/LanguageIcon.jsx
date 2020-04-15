@@ -7,6 +7,7 @@ const iconsToClass = {
   dart: 'icon-ghost',
   golang: 'icon-go',
   cpp: 'icon-cplusplus',
+  java: 'icon-java',
   ruby: 'icon-ruby',
   elixir: 'icon-elixir',
   haskell: 'icon-haskell',
