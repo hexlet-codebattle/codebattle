@@ -1,11 +1,12 @@
-FROM openjdk:13-alpine3.10
+FROM openjdk:12-alpine3.9
 
 WORKDIR /usr/src/app
 
-RUN apk add --update make
+RUN apk add --update make gradle
 
-ADD CheckerExample.java .
-ADD SolutionExample.java .
-ADD Makefile .
+COPY CheckerExample.java ./src/main/java/solution/Checker.java
+COPY SolutionExample.java ./src/main/java/solution/Solution.java
+COPY build.gradle .
+COPY Makefile .
 
-RUN make test-example-compile test-example
+RUN gradle buildDependents

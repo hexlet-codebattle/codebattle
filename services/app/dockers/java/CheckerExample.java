@@ -1,19 +1,117 @@
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+package solution;
 
-public class CheckerExample {
+import java.io.*;
+import java.time.LocalTime;
+import java.util.*;
+
+import javax.json.*;
+
+public class Checker {
     public static void main(String... args) {
-        try {
-            Class<?> clazz = Class.forName("SolutionExample");
-            Class[] argTypes = new Class[] {int.class, int.class};
-            Object instance = clazz.getDeclaredConstructor().newInstance();
-            Method method = clazz.getDeclaredMethod("solution", argTypes);
+        PrintStream oldOut = System.out;
+        List<JsonObject> executionResults = new ArrayList<JsonObject>();
 
-            Object[] args1 = {1, 2};
-            int result = (int) method.invoke(instance, args1);
-            System.out.println(result);
-        } catch (ClassNotFoundException | InvocationTargetException | InstantiationException | NoSuchMethodException | IllegalAccessException e) {
+        try {
+            Solution instance = new Solution();
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            PrintStream newOut = new PrintStream(baos);
+            System.setOut(newOut);
+
+            boolean success = true;
+
+            int start = 0;
+            int executionTime = 0;
+            String output = "";
+
+            int a1 = 1;
+            int b1 = 2;
+            start = LocalTime.now().getNano();
+            int result1 = instance.solution(a1, b1);
+            executionTime = getMills(LocalTime.now().getNano() - start);
+            int expected1 = 3;
+            output = getOutputAndResetIO(baos);
+            Object[] arr1 = {a1, b1};
+            List<Object> arguments1 = Arrays.asList(arr1);
+            success = assertSolution(result1, expected1, output, arguments1, executionTime, executionResults, success);
+
+            int a2 = 3;
+            int b2 = 5;
+            start = LocalTime.now().getNano();
+            int result2 = instance.solution(a2, b2);
+            executionTime = getMills(LocalTime.now().getNano() - start);
+            int expected2 = 8;
+            output = getOutputAndResetIO(baos);
+            Object[] arr2 = {a2, b2};
+            List<Object> arguments2 = Arrays.asList(arr2);
+            success = assertSolution(result2, expected2, output, arguments2, executionTime, executionResults, success);
+
+            if (success) {
+                JsonObject okMessage = getOkMessage("__code-0__");
+                executionResults.add(okMessage);
+            }
+        } catch (Exception e) {
             e.printStackTrace();
+            String errMessage = e.getMessage();
+            JsonObject errorMessage = getErrorMessage(errMessage);
+            executionResults.add(errorMessage);
         }
+
+        System.setOut(oldOut);
+        print(executionResults);
+    }
+
+    private static String getOutputAndResetIO(ByteArrayOutputStream baos) {
+        System.out.flush();
+        String output = baos.toString();
+        baos.reset();
+        return output;
+    }
+
+    private static boolean assertSolution(Object result, Object expected, String output, List args, int executionTime, List<JsonObject> executionResults, boolean success) {
+        boolean assertResult = expected.equals(result);
+
+        if (assertResult) {
+            JsonObject assertMessage = getAssertMessage("success", result, expected, output, args, executionTime);
+            executionResults.add(assertMessage);
+            return success;
+        }
+
+        JsonObject assertMessage = getAssertMessage("failure", result, expected, output, args, executionTime);
+        executionResults.add(assertMessage);
+        return false;
+    }
+
+    private static JsonObject getAssertMessage(String status, Object result, Object expected, String output, List args, int executionTime) {
+        return Json.createObjectBuilder()
+            .add("status", status)
+            .add("result", result.toString())
+            .add("expected", expected.toString())
+            .add("output", output)
+            .add("arguments", args.toString())
+            .add("executionTime", executionTime)
+            .build();
+    }
+
+    private static JsonObject getOkMessage(String result) {
+        return Json.createObjectBuilder()
+            .add("status", "ok")
+            .add("result", result)
+            .build();
+    }
+
+    private static JsonObject getErrorMessage(String message) {
+        return Json.createObjectBuilder()
+            .add("status", "error")
+            .add("result", message)
+            .build();
+    }
+
+    private static void print(List<JsonObject> executionResults) {
+        executionResults.forEach((JsonObject message) -> System.out.println(message));
+    }
+
+    private static int getMills(int nano) {
+        return nano >= 1000000 ? nano / 1000000 : 0;
     }
 }

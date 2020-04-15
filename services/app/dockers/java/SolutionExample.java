@@ -1,5 +1,8 @@
-public class SolutionExample {
+package solution;
+
+public class Solution {
     public int solution(int a, int b) {
-        return b;
+        System.out.println("Hello World");
+        return a + b;
     }
 }

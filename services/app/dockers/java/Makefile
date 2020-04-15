@@ -1,13 +1,8 @@
 test:
-	java checker
-
-test-example:
-	java CheckerExample
+	gradle -q compileJava
+	gradle -q run
 
 test-compile:
-	javac ./check/checker.java
-
-test-example-compile:
-	javac CheckerExample.java SolutionExample.java
+	gradle -q compileJava
 
 .PHONY: test
