@@ -1,0 +1,61 @@
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"os"
+	"reflect"
+)
+
+func main() {
+  defer func() {
+    if err := recover(); err != nil {
+      sendMessage("error", fmt.Sprintf("%s", err))
+    }
+    os.Exit(0)
+  }()
+
+  success := true
+
+  <%= for %{arguments: arguments, expected: expected, index: i} <- checks do %>
+    <%= for %{defining: defining, value: value} <- arguments.info do %>
+      var <%= defining %> = <%= value %>
+    <% end %>
+    var <%= expected.defining %> = <%= expected.value %>
+
+    success = assertSolution(solution(<%= arguments.expression %>), expected<%= i %>, []interface{}{<%= arguments.expression %>}, success)
+  <% end %>
+
+  if success {
+    sendMessage("ok", <%= hash_sum %>)
+  }
+}
+
+func assertSolution(result, expected, message interface{}, success bool) bool {
+	status := reflect.DeepEqual(result, expected)
+	if !status {
+		sendFailureMessage("failure", result, message)
+		return false
+	}
+
+	return success
+}
+
+func sendMessage(status string, result interface{}) {
+	fmt.Printf(`{"status": "%s", "result": %s}`, status, toJSON(result))
+  fmt.Println()
+}
+
+func sendFailureMessage(status string, result, arguments interface{}) {
+  fmt.Printf(`{"status": "%s", "result": %s, "arguments": %s}`, status, toJSON(result), toJSON(arguments))
+  fmt.Println()
+}
+
+func toJSON(data interface{}) []byte {
+	result, err := json.Marshal(data)
+	if err != nil {
+		fmt.Println("Marshaler error")
+		os.Exit(0)
+	}
+	return result
+}

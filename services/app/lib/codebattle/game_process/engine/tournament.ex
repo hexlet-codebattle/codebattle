@@ -1,59 +1,60 @@
 defmodule Codebattle.GameProcess.Engine.Tournament do
-  use Codebattle.GameProcess.Engine.Base
+  alias Codebattle.Bot
 
-  alias Codebattle.Bot.PlaybookAsyncRunner
+  alias Codebattle.Languages
 
   alias Codebattle.GameProcess.{
     GlobalSupervisor,
-    Fsm,
-    Player,
+    Engine,
     ActiveGames,
-    TasksQueuesServer
+    Player,
+    Server
   }
 
-  alias Codebattle.{Repo, Game, User, Languages}
+  use Engine.Base
 
-  def create_game(players, params) do
-    level = "elementary"
-    task = get_task(level, players)
-    is_bot_game = Enum.any?(players, fn x -> x.is_bot end)
+  @default_timeout Application.get_env(:codebattle, :tournament_match_timeout)
 
-    game =
-      Repo.insert!(%Game{state: "playing", level: level, type: "tournament", task_id: task.id})
+  @impl Engine.Base
+  def create_game(%{players: players} = params) do
+    level = params[:level] || "elementary"
+    timeout_seconds = params[:timeout_seconds] || @default_timeout
+    task = get_task(level)
 
-    fsm =
-      Fsm.new()
-      |> Fsm.create_playing_game(%{
-        players:
-          Enum.map(players, fn player ->
-            user = Repo.get(User, player.id)
-
-            params = %{
-              editor_lang: user.lang || "js",
-              editor_text: Languages.get_solution(user.lang || "js", task)
-            }
-
-            Player.build(player, params)
-          end),
-        game_id: game.id,
-        is_bot_game: is_bot_game,
-        level: level,
+    {:ok, game} =
+      insert_game(%{
+        state: "playing",
         type: "tournament",
-        starts_at: TimeHelper.utc_now(),
-        task: task,
-        tournament_id: params.tournament_id,
-        timeout_seconds: params.timeout_seconds,
-        joins_at: TimeHelper.utc_now()
+        level: level,
+        task_id: task.id
       })
 
-    ActiveGames.create_game(game.id, fsm)
-    {:ok, _} = GlobalSupervisor.start_game(game.id, fsm)
+    new_players = Enum.map(players, &Player.build(&1, %{task: task}))
 
-    Enum.each(players, fn player ->
+    fsm =
+      build_fsm(%{
+        module: __MODULE__,
+        state: :playing,
+        players: new_players,
+        game_id: game.id,
+        level: level,
+        type: "tournament",
+        inserted_at: game.inserted_at,
+        task: task,
+        langs: Languages.get_langs_with_solutions(task),
+        tournament_id: params.tournament.id,
+        timeout_seconds: timeout_seconds,
+        starts_at: TimeHelper.utc_now()
+      })
+
+    ActiveGames.create_game(fsm)
+    {:ok, _} = GlobalSupervisor.start_game(fsm)
+
+    Server.update_playbook(game.id, :join, %{players: new_players})
+
+    Enum.each(new_players, fn player ->
       if player.is_bot do
-        PlaybookAsyncRunner.create_server(%{game_id: game.id, bot: player})
-
-        PlaybookAsyncRunner.run!(%{
+        Bot.PlayersSupervisor.create_player(%{
           game_id: game.id,
           task_id: task.id,
           bot_id: player.id,
@@ -67,12 +68,8 @@ defmodule Codebattle.GameProcess.Engine.Tournament do
     {:ok, fsm}
   end
 
-  def get_task(level, [%{is_bot: false}, %{is_bot: false}]) do
-    TasksQueuesServer.call_next_task(level)
-  end
-
-  def get_task(level, _players) do
-    {:ok, task} = Codebattle.GameProcess.Engine.Bot.get_task(level)
-    task
+  @impl Engine.Base
+  def rematch_send_offer(_, _) do
+    {:error, "Cannot create a rematch in a tournament"}
   end
 end

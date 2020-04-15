@@ -13,12 +13,16 @@ import defaultEditorHeight from '../config/editorSettings';
 const initialState = {
   meta: {},
   text: {},
+  textPlaybook: {},
+  langs: {},
 };
 
 export const makeEditorTextKey = (userId, lang) => `${userId}:${lang}`;
 
 const getCurrentEditorHeight = (state, userId) => {
-  const { [userId]: { editorHeight } } = state;
+  const {
+    [userId]: { editorHeight },
+  } = state;
   return editorHeight || defaultEditorHeight;
 };
 
@@ -28,6 +32,13 @@ const meta = createReducer(initialState.meta, {
       ...state[userId],
       userId,
       currentLangSlug,
+    };
+  },
+  [actions.updateEditorTextPlaybook](state, { payload: { userId, langSlug } }) {
+    state[userId] = {
+      ...state[userId],
+      userId,
+      currentLangSlug: langSlug,
     };
   },
 
@@ -63,7 +74,21 @@ const text = createReducer(initialState.text, {
   },
 });
 
+const textPlaybook = createReducer(initialState.textPlaybook, {
+  [actions.updateEditorTextPlaybook](state, { payload: { userId, editorText } }) {
+    state[userId] = editorText;
+  },
+});
+
+const langs = createReducer(initialState.langs, {
+  [actions.setLangs](state, { payload: { langs: newLangs } }) {
+    state.langs = newLangs;
+  },
+});
+
 export default combineReducers({
   meta,
   text,
+  textPlaybook,
+  langs,
 });

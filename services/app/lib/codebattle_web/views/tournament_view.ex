@@ -19,7 +19,7 @@ defmodule CodebattleWeb.TournamentView do
     case {match.state, is_participant} do
       {"waiting", true} -> {"Wait", "bg-warning"}
       {"active", true} -> {"Join", "bg-warning"}
-      {_, true} -> {"Show", "bg-gray"}
+      {_, true} -> {"Show", "x-bg-gray"}
       _ -> {"Show", ""}
     end
   end

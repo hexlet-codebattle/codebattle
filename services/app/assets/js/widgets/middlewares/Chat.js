@@ -6,8 +6,9 @@ import {
 } from '../actions';
 
 const chatId = Gon.getAsset('game_id');
+const isRecord = Gon.getAsset('is_record');
 const channelName = `chat:${chatId}`;
-const channel = socket.channel(channelName);
+const channel = !isRecord ? socket.channel(channelName) : null;
 
 export const fetchState = () => dispatch => {
   const camelizeKeysAndDispatch = actionCreator => data => (
@@ -22,8 +23,8 @@ export const fetchState = () => dispatch => {
   channel.on('new:message', camelizeKeysAndDispatch(newMessageChat));
 };
 
-export const addMessage = (user, message) => {
-  const payload = { user, message };
+export const addMessage = message => {
+  const payload = { message };
 
   channel.push('new:message', payload)
     .receive('error', error => console.error(error));

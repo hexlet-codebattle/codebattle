@@ -5,6 +5,7 @@ defmodule Codebattle.IntegrationCase do
 
   using do
     quote do
+      alias CodebattleWeb.Router.Helpers, as: Routes
       use Phoenix.ChannelTest
       import CodebattleWeb.Router.Helpers
       import CodebattleWeb.Factory
@@ -15,8 +16,8 @@ defmodule Codebattle.IntegrationCase do
       import Helpers.GameProcess
 
       alias Codebattle.{Repo, User, Game, UserGame}
-      alias Codebattle.GameProcess.{FsmHelpers}
-      alias CodebattleWeb.{GameChannel}
+      alias Codebattle.GameProcess.FsmHelpers
+      alias CodebattleWeb.GameChannel
 
       @endpoint CodebattleWeb.Endpoint
 
@@ -24,7 +25,7 @@ defmodule Codebattle.IntegrationCase do
         timeout = Application.fetch_env!(:codebattle, :code_check_timeout)
 
         receive do
-          %Phoenix.Socket.Message{event: "user:check_result"} ->
+          %Phoenix.Socket.Broadcast{event: "user:check_complete"} ->
             true
         after
           timeout ->

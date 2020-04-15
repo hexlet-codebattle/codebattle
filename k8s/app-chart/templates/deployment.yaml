@@ -80,5 +80,7 @@ spec:
           env:
             - name: CODEBATTLE_VERSION
               value: {{ .Values.version }}
+            - name: CODEBATTLE_PORT
+              value: "4000"
             - name: DEPLOYED_AT
               value: "{{ now }}"

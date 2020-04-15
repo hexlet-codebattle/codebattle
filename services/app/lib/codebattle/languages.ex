@@ -1,7 +1,6 @@
 defmodule Codebattle.Languages do
   @moduledoc false
 
-  # require Logger
   alias Codebattle.Generators.SolutionTemplateGenerator
 
   def get_solution(lang, task) do
@@ -10,8 +9,10 @@ defmodule Codebattle.Languages do
     |> SolutionTemplateGenerator.get_solution(task)
   end
 
-  def update_solutions(list_meta, task) do
-    Enum.map(list_meta, fn el ->
+  def get_langs_with_solutions(task) do
+    meta()
+    |> Map.values()
+    |> Enum.map(fn el ->
       Map.replace!(el, :solution_template, SolutionTemplateGenerator.get_solution(el, task))
     end)
   end
@@ -61,14 +62,14 @@ defmodule Codebattle.Languages do
       "js" => %{
         name: "Node.js",
         slug: "js",
-        version: "11.6.0",
+        version: "13.8.0",
         base_image: :ubuntu,
         check_dir: "check",
         extension: "js",
-        docker_image: "codebattle/js:11.6.0",
+        docker_image: "codebattle/js:13.8.0",
         solution_version: :default,
         solution_template:
-          "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nmodule.exports = (<%= arguments %>) => {\n<%= return_statement %>\n};",
+          "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (<%= arguments %>) => {\n<%= return_statement %>\n};\n\nmodule.exports = solution;",
         arguments_template: %{
           argument: "<%= name %>",
           delimeter: ", "
@@ -117,6 +118,35 @@ defmodule Codebattle.Languages do
           type_templates: %TypeTemplates{},
           defining_variable_template: "<%= name %>: <%= type %>",
           nested_value_expression_template: "<%= value %>"
+        }
+      },
+      "dart" => %{
+        name: "Dart",
+        slug: "dart",
+        version: "2.7.1",
+        base_image: :ubuntu,
+        check_dir: "lib",
+        extension: "dart",
+        docker_image: "codebattle/dart:2.7.1",
+        solution_version: :typed,
+        solution_template: "<%= expected %>solution(<%= arguments %>) {\n\n}",
+        arguments_template: %{
+          argument: "<%= type %> <%= name %>",
+          delimeter: ", "
+        },
+        expected_template: "<%= type %> ",
+        types: %{
+          "integer" => "int",
+          "float" => "double",
+          "string" => "String",
+          "array" => "List<<%= inner_type %>>",
+          "boolean" => "bool",
+          "hash" => "Map<String, <%= inner_type %>>"
+        },
+        checker_meta: %{
+          version: :dynamic,
+          arguments_delimeter: ", ",
+          type_templates: %TypeTemplates{}
         }
       },
       "cpp" => %{
@@ -351,17 +381,6 @@ defmodule Codebattle.Languages do
             hash_empty: "empty"
           }
         }
-      },
-      "perl" => %{
-        name: "perl",
-        slug: "perl",
-        version: "5.26.2",
-        base_image: :ubuntu,
-        check_dir: "check",
-        extension: "pl",
-        docker_image: "codebattle/perl:5.26.2",
-        solution_version: :empty,
-        solution_template: "sub solution {\n\n}\n1;"
       }
     }
   end

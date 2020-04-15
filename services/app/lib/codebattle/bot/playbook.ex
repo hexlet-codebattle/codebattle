@@ -3,13 +3,34 @@ defmodule Codebattle.Bot.Playbook do
 
   use Ecto.Schema
   import Ecto.Changeset
+  import Ecto.Query
   alias Codebattle.Bot.Playbook
+  alias Codebattle.Repo
+  alias Codebattle.GameProcess.{Play, FsmHelpers}
 
-  schema "bot_playbooks" do
-    field(:data, :map)
-    field(:user_id, :integer)
+  defmodule Data do
+    use Ecto.Schema
+    import Ecto.Changeset
+    @primary_key false
+
+    embedded_schema do
+      field(:players, {:array, :map}, default: [])
+      field(:records, {:array, :map}, default: [])
+      field(:count, :integer)
+    end
+
+    def changeset(struct, params) do
+      struct
+      |> cast(params, [:players, :records, :count])
+    end
+  end
+
+  schema "playbooks" do
+    embeds_one(:data, Data, on_replace: :delete)
     field(:game_id, :integer)
-    field(:lang, :string)
+    field(:winner_id, :integer)
+    field(:winner_lang, :string)
+    field(:is_complete_solution, :boolean)
 
     belongs_to(:task, Codebattle.Task)
 
@@ -19,23 +40,204 @@ defmodule Codebattle.Bot.Playbook do
   @doc false
   def changeset(%Playbook{} = playbook, attrs) do
     playbook
-    |> cast(attrs, [:data, :user_id, :game_id, :task_id, :lang, :level])
-    |> validate_required([:data, :user_id, :game_id, :task_id, :lang, :level])
+    |> cast(attrs, [:game_id, :winner_id, :winner_lang, :is_complete_solution, :task_id])
+    |> cast_embed(:data)
+    |> validate_required([
+      :data,
+      :game_id,
+      :winner_id,
+      :winner_lang,
+      :is_complete_solution,
+      :task_id
+    ])
   end
 
   def random(task_id) do
-    try do
-      {:ok, query} =
-        Ecto.Adapters.SQL.query(
-          Codebattle.Repo,
-          "SELECT * from bot_playbooks WHERE task_id = $1 ORDER BY RANDOM() LIMIT 1",
-          [task_id]
-        )
-
-      %Postgrex.Result{rows: [[id | [diff | _tail]]]} = query
-      {id, diff}
-    rescue
-      _e in MatchError -> nil
-    end
+    from(
+      p in Playbook,
+      where:
+        not is_nil(p.winner_id) and
+          p.task_id == ^task_id and
+          p.is_complete_solution,
+      order_by: fragment("RANDOM()"),
+      limit: 1
+    )
+    |> Repo.one()
   end
+
+  def exists?(game_id) do
+    from(
+      p in Playbook,
+      where: p.game_id == ^game_id
+    )
+    |> Repo.one()
+  end
+
+  def init(_), do: []
+
+  @events [
+    :join_chat,
+    :leave_chat,
+    :chat_message,
+    :init,
+    :give_up,
+    :update_editor_data,
+    :start_check,
+    :check_complete,
+    :game_over
+  ]
+
+  def add_event(playbook, event, params)
+      when event in @events do
+    time = System.system_time(:millisecond)
+    count = Enum.count(playbook)
+
+    record =
+      %{type: event}
+      |> merge(event, params)
+      |> Map.merge(%{time: time, record_id: count})
+
+    [record | playbook]
+  end
+
+  def add_event(playbook, :join, %{players: players}) do
+    Enum.reduce(players, playbook, fn player, acc ->
+      data = %{
+        id: player.id,
+        name: player.name,
+        editor_text: player.editor_text,
+        editor_lang: player.editor_lang,
+        check_result: %{result: "", output: ""}
+      }
+
+      add_event(acc, :init, data)
+    end)
+  end
+
+  def add_event(playbook, _event, _params) do
+    playbook
+  end
+
+  def store_playbook(playbook, game_id, task_id) do
+    {:ok, fsm} = Play.get_fsm(game_id)
+    data = create_final_game_playbook(playbook)
+    winner = FsmHelpers.get_winner(fsm)
+    loser = FsmHelpers.get_opponent(fsm, winner.id)
+
+    %Playbook{
+      data: data,
+      task_id: task_id,
+      game_id: String.to_integer(game_id),
+      winner_id: winner.id,
+      winner_lang: winner.id && winner.editor_lang,
+      is_complete_solution: !FsmHelpers.gave_up?(fsm, loser.id)
+    }
+    |> Repo.insert()
+  end
+
+  def update_stored_playbook(playbook, game) do
+    params = %{
+      data: create_final_game_playbook(playbook)
+    }
+
+    Playbook
+    |> Repo.get_by!(game_id: game.id)
+    |> Playbook.changeset(params)
+  end
+
+  defp merge(record, :check_complete, params) do
+    new_params = Map.update!(params, :check_result, &Map.from_struct/1)
+    Map.merge(record, new_params)
+  end
+
+  defp merge(record, _event, params), do: Map.merge(record, params)
+
+  defp create_final_game_playbook(playbook) do
+    init_data = %{records: [], players: [], count: 0}
+
+    playbook
+    |> Enum.reverse()
+    |> Enum.reduce(init_data, &add_final_record/2)
+    |> Map.update!(:records, &Enum.reverse/1)
+  end
+
+  defp add_final_record(%{type: :init} = record, data) do
+    player_state = create_init_state(record)
+
+    data |> add_player_state(player_state) |> update_history(record)
+  end
+
+  defp add_final_record(
+         %{type: :update_editor_data, record_id: record_id, id: id, time: time} = record,
+         data
+       ) do
+    player_state = Enum.find(data.players, &(&1.id == id))
+    diff = create_diff(player_state, record)
+    new_player_state = update_editor_state(player_state, record, diff.time)
+
+    new_record = %{
+      type: :update_editor_data,
+      record_id: record_id,
+      id: id,
+      diff: diff,
+      time: time
+    }
+
+    data |> update_players_state(new_player_state) |> update_history(new_record)
+  end
+
+  defp add_final_record(record, data), do: update_history(data, record)
+
+  defp create_diff(player_state, %{time: time, editor_text: text, editor_lang: editor_lang}) do
+    player_state_delta = create_delta(player_state.editor_text)
+    new_delta = create_delta(text)
+
+    lang_delta =
+      if player_state.editor_lang == editor_lang do
+        %{}
+      else
+        %{next_lang: editor_lang}
+      end
+
+    %{
+      delta: TextDelta.diff!(player_state_delta, new_delta).ops,
+      time: time - player_state.time
+    }
+    |> Map.merge(lang_delta)
+  end
+
+  defp create_init_state(record),
+    do: Map.merge(record, %{type: :player_state, total_time_ms: 0})
+
+  defp add_player_state(data, player_state),
+    do: Map.update!(data, :players, &[player_state | &1])
+
+  defp update_players_state(data, player_state),
+    do: Map.update!(data, :players, &update_player(&1, player_state))
+
+  defp update_player(players, %{id: id} = player_state),
+    do:
+      Enum.map(players, fn
+        %{id: ^id} -> player_state
+        player -> player
+      end)
+
+  defp update_editor_state(
+         player_state,
+         %{time: time, editor_text: editor_text, editor_lang: editor_lang},
+         diff_time
+       ),
+       do:
+         player_state
+         |> Map.put(:editor_text, editor_text)
+         |> Map.put(:editor_lang, editor_lang)
+         |> Map.put(:time, time)
+         |> Map.update!(:total_time_ms, &(&1 + diff_time))
+
+  defp update_history(data, record),
+    do: Map.update!(data, :records, &[record | &1]) |> increase_count
+
+  defp create_delta(text), do: TextDelta.new() |> TextDelta.insert(text)
+
+  defp increase_count(data), do: Map.update!(data, :count, &(&1 + 1))
 end

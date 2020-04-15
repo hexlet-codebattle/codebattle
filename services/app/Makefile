@@ -1,3 +1,5 @@
+.PHONY: test test-code-checkers
+
 default: format lint-js-fix credo test
 
 format:
@@ -17,13 +19,8 @@ lint-js-fix:
 	yarn lint --fix
 
 start:
-	mix ecto.migrate
-	mix phx.server
-
-update:
-	mix deps.update --all
-	ncu -u
-	npm update
+	bin/codebattle eval "Codebattle.Utils.Release.migrate"
+	bin/codebattle start
 
 console:
 	iex -S mix
@@ -35,4 +32,6 @@ test-code-checkers: export CODEBATTLE_RUN_CODE_CHECK = true
 test-code-checkers:
 	mix test test/code_check --max-failures 1
 
-.PHONY: test
+build-and-push-base:
+	docker build -t codebattle/base --file Dockerfile.base .
+	docker push codebattle/base:latest

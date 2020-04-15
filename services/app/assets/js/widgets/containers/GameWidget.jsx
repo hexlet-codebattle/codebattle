@@ -2,27 +2,16 @@ import React, { Component } from 'react';
 import _ from 'lodash';
 import { connect } from 'react-redux';
 // import Gon from 'gon';
-import {
-  rightEditorSelector,
-  leftEditorSelector,
-  editorHeightSelector,
-  currentUserIdSelector,
-  gamePlayersSelector,
-  leftExecutionOutputSelector,
-  rightExecutionOutputSelector,
-  editorsModeSelector,
-  editorsThemeSelector,
-} from '../selectors';
+import * as selectors from '../selectors';
 import Editor from './Editor';
-import LeftEditorToolbar from './LeftEditorToolbar';
-import RightEditorToolbar from './RightEditorToolbar';
+import LeftEditorToolbar from './EditorsToolbars/LeftEditorToolbar';
+import RightEditorToolbar from './EditorsToolbars/RightEditorToolbar';
 import GameActionButtons from '../components/GameActionButtons';
 import { sendEditorText } from '../middlewares/Game';
 import ExecutionOutput from '../components/ExecutionOutput';
 import NotificationsHandler from './NotificationsHandler';
 import editorModes from '../config/editorModes';
-
-// const languages = Gon.getAsset('langs');
+import GameStatusCodes from '../config/gameStatusCodes';
 
 class GameWidget extends Component {
   static defaultProps = {
@@ -32,6 +21,7 @@ class GameWidget extends Component {
 
   getLeftEditorParams = () => {
     const {
+      isStoredGame,
       currentUserId,
       players,
       leftEditor,
@@ -43,13 +33,12 @@ class GameWidget extends Component {
 
     // FIXME: currentUser shouldn't return {} for spectator
     const isPlayer = _.hasIn(players, currentUserId);
-    const editable = isPlayer;
+    const editable = !isStoredGame && isPlayer;
     const editorState = leftEditor;
-    const onChange = isPlayer
+    const onChange = editable
       ? value => { updateEditorValue(value); }
       : _.noop;
 
-    // const syntax = _.find(languages, { slug: editorState. });
     return {
       onChange,
       editable,
@@ -77,9 +66,16 @@ class GameWidget extends Component {
     };
   }
 
+  renderGameActionButtons = (editor, disabled) => (
+    <GameActionButtons
+      disabled={disabled}
+      editorUser={editor.userId}
+    />
+  );
+
   render() {
     const {
-      leftEditor, rightEditor, leftOutput, rightOutput,
+      isStoredGame, leftEditor, rightEditor, leftOutput, rightOutput,
     } = this.props;
     if (leftEditor === null || rightEditor === null) {
       // FIXME: render loader
@@ -93,7 +89,7 @@ class GameWidget extends Component {
               <LeftEditorToolbar />
               <Editor {...this.getLeftEditorParams()} />
               {/* TODO: move state to parent component */}
-              <GameActionButtons disabled={false} editorUser={leftEditor.userId} />
+              { !isStoredGame && this.renderGameActionButtons(leftEditor, false) }
               <ExecutionOutput output={leftOutput} id="1" />
             </div>
           </div>
@@ -102,7 +98,7 @@ class GameWidget extends Component {
               <RightEditorToolbar />
               <Editor {...this.getRightEditorParams()} />
               {/* TODO: move state to parent component */}
-              <GameActionButtons disabled editorUser={rightEditor.userId} />
+              { !isStoredGame && this.renderGameActionButtons(rightEditor, true) }
               <ExecutionOutput output={rightOutput} id="2" />
             </div>
           </div>
@@ -114,22 +110,23 @@ class GameWidget extends Component {
 }
 
 const mapStateToProps = state => {
-  const leftEditor = leftEditorSelector(state);
-  const rightEditor = rightEditorSelector(state);
+  const leftEditor = selectors.leftEditorSelector(state);
+  const rightEditor = selectors.rightEditorSelector(state);
   const leftUserId = _.get(leftEditor, ['userId'], null);
   const rightUserId = _.get(rightEditor, ['userId'], null);
 
   return {
-    currentUserId: currentUserIdSelector(state),
-    players: gamePlayersSelector(state),
+    currentUserId: selectors.currentUserIdSelector(state),
+    players: selectors.gamePlayersSelector(state),
     leftEditor,
     rightEditor,
-    leftEditorHeight: editorHeightSelector(leftUserId)(state),
-    rightEditorHeight: editorHeightSelector(rightUserId)(state),
-    leftOutput: leftExecutionOutputSelector(state),
-    rightOutput: rightExecutionOutputSelector(state),
-    leftEditorsMode: editorsModeSelector(leftUserId)(state),
-    theme: editorsThemeSelector(leftUserId)(state),
+    leftEditorHeight: selectors.editorHeightSelector(leftUserId)(state),
+    rightEditorHeight: selectors.editorHeightSelector(rightUserId)(state),
+    leftOutput: selectors.leftExecutionOutputSelector(state),
+    rightOutput: selectors.rightExecutionOutputSelector(state),
+    leftEditorsMode: selectors.editorsModeSelector(leftUserId)(state),
+    theme: selectors.editorsThemeSelector(leftUserId)(state),
+    isStoredGame: selectors.gameStatusSelector(state).status === GameStatusCodes.stored,
   };
 };
 

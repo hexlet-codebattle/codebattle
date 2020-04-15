@@ -17,6 +17,7 @@ html lang="en"
     meta content="#b91d47" name="msapplication-TileColor"
     meta content="/assets/images/favicons/browserconfig.xml" name="msapplication-config"
     meta content="#ffffff" name="theme-color"
+    = render_tags_all(assigns[:meta_tags] || %{})
     = csrf_meta_tag()
     link rel="stylesheet" href=static_path(@conn,"/assets/style.css")
     title Codebattle
@@ -37,13 +38,15 @@ html lang="en"
           });
         });
     /! Google Tag Manager
-    javascript:
-      (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0], j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src= 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-N6C9TFH');
+    = if Mix.env() == :prod do
+      javascript:
+        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0], j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src= 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-N6C9TFH');
     /! End Google Tag Manager
   body.position-relative
     /! Google Tag Manager (noscript)
-    noscript
-      iframe height="0" src="https://www.googletagmanager.com/ns.html?id=GTM-N6C9TFH" style="display:none;visibility:hidden" width="0"
+    = if Mix.env() == :prod do
+      noscript
+        iframe height="0" src="https://www.googletagmanager.com/ns.html?id=GTM-N6C9TFH" style="display:none;visibility:hidden" width="0"
     /! End Google Tag Manager (noscript)
     .bg-white
       .container-fluid
@@ -69,8 +72,8 @@ html lang="en"
                     img.attachment.rounded.border.mr-1[alt="#{@current_user.name}" src="https://avatars0.githubusercontent.com/u/#{@current_user.github_id}" style="width:25px"]
                     = @current_user.name
                   .dropdown-menu.dropdown-menu-right
-                    = link gettext("My Profile"), to: user_path(@conn, :show, @current_user.id), class: "dropdown-item"
-                    = link gettext("Settings"), to: user_setting_path(@conn, :edit), class: "dropdown-item"
+                    = link gettext("My Profile"), to: Routes.user_path(@conn, :show, @current_user.id), class: "dropdown-item"
+                    = link gettext("Settings"), to: Routes.user_setting_path(@conn, :edit), class: "dropdown-item"
                     .dropdown-divider
                     a.dropdown-item.d-flex.align-items-center.justify-content-between[href="https://github.com/hexlet-codebattle/codebattle" target="_blank"]
                       = gettext "SourceCode"

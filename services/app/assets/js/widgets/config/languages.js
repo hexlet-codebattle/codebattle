@@ -1,6 +1,7 @@
 export default {
   js: 'javascript',
   ts: 'typescript',
+  dart: 'dart',
   golang: 'go',
   cpp: 'cpp',
   haskell: 'haskell',
@@ -9,5 +10,4 @@ export default {
   php: 'php',
   python: 'python',
   clojure: 'clojure',
-  perl: 'perl',
 };

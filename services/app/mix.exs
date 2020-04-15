@@ -1,14 +1,11 @@
 defmodule Codebattle.Mixfile do
-  @moduledoc """
-  """
-
   use Mix.Project
 
   def project do
     [
       app: :codebattle,
-      version: "0.0.12",
-      elixir: "~> 1.9",
+      version: "0.1.0",
+      elixir: "~> 1.10",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
@@ -22,7 +19,7 @@ defmodule Codebattle.Mixfile do
       ],
       test_coverage: [tool: ExCoveralls],
       deps: deps(),
-      elixirc_options: [warnings_as_errors: true]
+      elixirc_options: [warnings_as_errors: false]
     ]
   end
 
@@ -32,7 +29,7 @@ defmodule Codebattle.Mixfile do
   def application do
     [
       mod: {Codebattle.Application, []},
-      extra_applications: [:runtime_tools, :logger]
+      extra_applications: [:ssl, :mix, :runtime_tools, :logger]
     ]
   end
 
@@ -45,12 +42,12 @@ defmodule Codebattle.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.3"},
+      {:phoenix, "~> 1.4.16"},
       {:phoenix_pubsub, "~> 1.0"},
       {:phoenix_ecto, "~> 4.0"},
-      {:phoenix_live_view, "~> 0.6"},
+      {:phoenix_live_view, "0.10.0"},
       {:postgrex, ">= 0.0.0"},
-      {:phoenix_html, "~> 2.10"},
+      {:phoenix_html, "~> 2.14"},
       {:gettext, "~> 0.11"},
       {:cowboy, "~> 1.0"},
       {:plug_cowboy, "~> 1.0"},
@@ -65,7 +62,6 @@ defmodule Codebattle.Mixfile do
       {:text_delta, "~> 1.3.0"},
       {:yaml_elixir, "~> 2.1"},
       {:temp, "~> 0.4"},
-      {:logger_file_backend, "~> 0.0.10"},
       {:atomic_map, "~> 0.8"},
       {:envy, "~> 1.1.1"},
       {:one_signal, git: "https://github.com/vtm9/one_signal.git"},
@@ -79,6 +75,8 @@ defmodule Codebattle.Mixfile do
       {:socket, "~> 0.3"},
       {:timex, "~> 3.5"},
       {:deep_merge, "~> 1.0"},
+      {:httpoison, "~> 1.5"},
+      {:phoenix_meta_tags, ">= 0.1.8"},
 
       # dev_and_test
       {:credo, ">= 0.0.0", only: [:dev, :test], runtime: false},

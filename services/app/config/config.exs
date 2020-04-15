@@ -57,23 +57,32 @@ config :one_signal, OneSignal,
 config :scrivener_html,
   routes_helper: CodebattleWeb.Router.Helpers
 
+config :phoenix_meta_tags,
+  title: "Hexlet Codebattle",
+  description: "Game for programmers",
+  url: "https://codebattle.hexlet.io",
+  image: "https://raw.githubusercontent.com/v1valasvegan/og-test/master/codebattle.png",
+  "og:text": "Hexlet Codebattle",
+  fb: %{
+    name: "Hexlet Codebattle",
+    size: %{
+      width: 100,
+      height: 200,
+      position: %{
+        x: 10,
+        y: 15
+      }
+    }
+  }
+
 config :codebattle, CodebattleWeb.Endpoint, live_view: [signing_salt: "asdfasdf"]
 
-config :codebattle, Codebattle.Bot.PlaybookPlayerRunner, timeout: 2_000
+config :codebattle, Codebattle.Bot.Server, timeout_start_playbook: 2_000
 
 config :codebattle, Codebattle.DockerLangsPuller, timeout: 5_000 * 60
 
-bot_limit =
-  case System.get_env("CODEBATTLE_BOT_TIME_SLEEP_LIMIT") do
-    nil -> 7_000
-    x -> Integer.parse(x) |> elem(0)
-  end
-
-config :codebattle, Codebattle.Bot.RecorderServer, limit: bot_limit
 config :codebattle, checker_adapter: Codebattle.CodeCheck.Checker
 config :codebattle, tournament_match_timeout: 3 * 60
-# 3 hours in seconds
-config :codebattle, default_timeout: 10_800
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

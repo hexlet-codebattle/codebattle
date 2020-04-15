@@ -1,5 +1,6 @@
 variable "codebattle_port" {}
 variable "codebattle_secret_key_base" {}
+variable "codebattle_live_view_salt" {}
 variable "codebattle_db_hostname" {}
 variable "codebattle_db_username" {}
 variable "codebattle_db_password" {}

@@ -1,37 +1,18 @@
 $body-bg: #fafafa;
+$green: #64b079;
+$secondary: #477591;
+@import "~bootstrap/scss/bootstrap";
 
-$green: #64b079 !default;
-
-$secondary: #477591 !default;
-$success: $green !default;
+$font-family-sans-serif: "Roboto", sans-serif;
+$fa-font-path: "/fonts";
 
 @import "../../deps/phoenix_live_view/assets/css/live_view.css";
-$box-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.18);
 @import "fonts";
-$font-family-sans-serif: "Roboto", sans-serif;
-@import "~bootstrap/scss/bootstrap";
-$fa-font-path: "/fonts";
 @import "~font-mfizz/dist/font-mfizz.css";
-@import "tournaments.css";
+@import "tournaments";
 
 a {
   transition: color ease-in 0.1s;
-}
-
-.embed-container {
-  position: relative;
-  padding-bottom: 56.25%;
-  overflow: hidden;
-}
-
-.embed-container iframe,
-.embed-container object,
-.embed-container embed {
-  position: absolute;
-  top: 0;
-  left: 2%;
-  width: 96%;
-  height: 100%;
 }
 
 .react-calendar-heatmap {
@@ -60,6 +41,7 @@ a {
     fill: #ccc;
   }
 }
+
 .react-calendar-heatmap rect:hover {
   stroke: #555;
   stroke-width: 1px;
@@ -67,39 +49,142 @@ a {
 .react-calendar-heatmap {
   font-size: 8px;
 }
-.x-username-td {
-  max-width: 350px;
-  overflow: hidden;
+
+.cb-slider {
+  height: 32px;
+
+  &:hover {
+    cursor: pointer;
+
+    .cb-slider-timeline {
+      transform: translateY(-50%) scale(1, 1.095);
+    }
+    .cb-slider-handle {
+      opacity: 1;
+    }
+  }
 }
 
-.toast-container {
-  box-shadow: none;
-  background: rgba(0, 0, 0, 0);
-  padding: 0;
+.cb-slider-timeline {
+  height: 7px;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: transform 0.1s;
 }
-.polyglot {
+
+.cb-slider-action {
+  width: 20px;
+  height: 20px;
+  left: 0;
+  top: 12px;
+  opacity: 0;
+  transform: translateY(-100%)
+}
+
+.cb-slider-handle {
+  width: 32px;
+  height: 32px;
+  transform: translate(-50%, -50%);
+  top: 50%;
+  left: 50%;
+  opacity: 0;
+  transition: opacity 0.28s;
+}
+
+.cb-slider-handle-button {
+  width: 15px;
+  height: 15px;
+  transform: translate(-50%, -50%);
+  top: 50%;
+  left: 50%;
+}
+
+.cb-slider-bar {
+  top: 0;
+  bottom: 0;
+  left: 0;
+}
+
+
+.cb-username-td {
+  max-width: 350px;
+}
+
+.cb-polyglot {
   width: 50px;
   height: 50px;
   background: url("/assets/images/achievements/polyglot.png");
   background-size: cover;
   padding: 5px;
 }
-.profile .polyglot {
+.cb-profile .cb-polyglot {
   width: 200px;
   height: 200px;
   padding: 12px;
 }
 
-.fa-hidden {
-  color: transparent;
-}
-
-.x-user-avatar {
+.cb-user-avatar {
   width: 25px;
 }
 
-.bg-gray {
-  background-color: #dedede !important;
+.cb-sort-arrow {
+  height: 0;
+  width: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+
+  &.asc {
+    border-bottom: 5px solid $black;
+  }
+
+  &.desc {
+    border-top: 5px solid $black;
+  }
+}
+
+.cb-toast-close {
+  top: 5px;
+  right: 10px;
+}
+
+.cb-messages-list {
+  top: 5px;
+  height: 80%;
+  word-break: break-all;
+}
+
+.cb-info-widget {
+  height: 300px;
+}
+
+.cb-emoji-button {
+  z-index: 5;
+  right: 10%;
+}
+
+.x-bottom-0 {
+  bottom: 0;
+}
+
+.x-bottom-75 {
+  bottom: 75%;
+}
+
+.x-outline-none {
+  outline: none;
+}
+
+.x-intent-background {
+  background-color: rgba($black, 0.25);
+}
+
+.x-opacity-0 {
+  opacity: 0;
+}
+
+.x-bg-gray {
+  background-color: $gray-300 !important;
 }
 
 .x-rounded-bottom-right {

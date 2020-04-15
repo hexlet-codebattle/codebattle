@@ -50,19 +50,18 @@ defmodule Codebattle.CodeCheck.Haskell.IntegrationTest do
     Phoenix.ChannelTest.push(socket1, "check_result", %{
       editor_text:
         "module Check.Solution where\n\nsolution :: Int -> Int -> Int\nsolution x y = x - y",
-      lang: "haskell"
+      lang_slug: "haskell"
     })
 
     assert_code_check()
 
     assert_receive %Phoenix.Socket.Broadcast{
-      payload: %{result: result, output: output}
+      payload: %{check_result: check_result}
     }
 
-    expected_result = %{"status" => "failure", "arguments" => "[1, 1]", "result" => 0}
-    assert expected_result == Jason.decode!(result)
+    assert %Codebattle.CodeCheck.CheckResult{status: :failure, success_count: 0} = check_result
 
-    {:ok, fsm} = Server.fsm(game.id)
+    {:ok, fsm} = Server.get_fsm(game.id)
 
     assert fsm.state == :playing
   end
@@ -90,23 +89,17 @@ defmodule Codebattle.CodeCheck.Haskell.IntegrationTest do
     {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
     Mix.Shell.Process.flush()
 
-    Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: "sdf", lang: "haskell"})
+    Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: "sdf", lang_slug: "haskell"})
 
     assert_code_check()
 
     assert_receive %Phoenix.Socket.Broadcast{
-      payload: %{result: result, output: output}
+      payload: %{check_result: check_result}
     }
 
-    expected_result = %{
-      "status" => "error",
-      "result" =>
-        "Check/Solution.hs:1:1: error:    File name does not match module name:    Saw: Main    Expected: Check.Solution  |1 | sdf  | ^"
-    }
+    assert %Codebattle.CodeCheck.CheckResult{status: :error, success_count: 0} = check_result
 
-    assert expected_result == Jason.decode!(result)
-
-    {:ok, fsm} = Server.fsm(game.id)
+    {:ok, fsm} = Server.get_fsm(game.id)
 
     assert fsm.state == :playing
   end
@@ -134,17 +127,21 @@ defmodule Codebattle.CodeCheck.Haskell.IntegrationTest do
     {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
     Mix.Shell.Process.flush()
 
-    Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: "test"})
+    Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: "test", lang_slug: "js"})
 
     Phoenix.ChannelTest.push(socket1, "check_result", %{
       editor_text:
         "module Check.Solution where\n\nsolution :: Int -> Int -> Int\nsolution x y = x + y",
-      lang: "haskell"
+      lang_slug: "haskell"
     })
 
     assert_code_check()
 
-    {:ok, fsm} = Server.fsm(game.id)
+    assert_receive %Phoenix.Socket.Broadcast{
+      payload: %{status: :game_over}
+    }
+
+    {:ok, fsm} = Server.get_fsm(game.id)
     assert fsm.state == :game_over
   end
 end

@@ -43,4 +43,11 @@ defmodule Codebattle.Task do
   def invisible(query) do
     from(t in query, where: t.disabled == true)
   end
+
+  def get_shuffled_tasks(level) do
+    from(task in Codebattle.Task, where: task.level == ^level)
+    |> visible()
+    |> Codebattle.Repo.all()
+    |> Enum.shuffle()
+  end
 end

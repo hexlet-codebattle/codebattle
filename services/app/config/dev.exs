@@ -42,6 +42,6 @@ config :codebattle, Codebattle.Repo,
   password: System.get_env("CODEBATTLE_DB_PASSWORD", "postgres"),
   hostname: System.get_env("CODEBATTLE_DB_HOSTNAME", "localhost"),
   database: System.get_env("CODEBATTLE_DB_NAME", "codebattle_dev"),
-  pool_size: 5
+  pool_size: 7
 
 config :codebattle, Codebattle.Bot, timeout: 2_000

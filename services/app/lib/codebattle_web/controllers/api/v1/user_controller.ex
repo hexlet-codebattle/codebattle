@@ -1,8 +1,14 @@
 defmodule CodebattleWeb.Api.V1.UserController do
   use CodebattleWeb, :controller
 
-  alias Codebattle.{Repo, User, User.Stats, UserGame}
+  alias Codebattle.{Repo, User, User.Stats}
   import Ecto.Query, warn: false
+
+  def info(conn, %{"id" => id}) do
+    user = Repo.get(User, id)
+
+    json(conn, %{user: user})
+  end
 
   def stats(conn, %{"id" => id}) do
     stats = Stats.for_user(id)
@@ -21,39 +27,8 @@ defmodule CodebattleWeb.Api.V1.UserController do
 
   def index(conn, params) do
     page_number = Map.get(params, "page", "1")
-    filter = Map.get(params, "filter")
 
-    subquery =
-      from(u in User,
-        order_by: {:desc, :rating},
-        left_join: ug in UserGame,
-        on: u.id == ug.user_id,
-        group_by: u.id,
-        select: %User{
-          id: u.id,
-          name: u.name,
-          rating: u.rating,
-          github_id: u.github_id,
-          lang: u.lang,
-          games_played: count(ug.user_id),
-          rank: fragment("row_number() OVER(order by ? desc)", u.rating)
-        }
-      )
-
-    query =
-      case filter do
-        nil ->
-          subquery
-
-        "" ->
-          subquery
-
-        _ ->
-          from(t in subquery(subquery),
-            where: ilike(t.name, ^"%#{filter}%")
-          )
-      end
-
+    query = Codebattle.User.Scope.list_users_with_raiting(params)
     page = Repo.paginate(query, %{page: page_number})
 
     page_info = Map.take(page, [:page_number, :page_size, :total_entries, :total_pages])
@@ -72,8 +47,4 @@ defmodule CodebattleWeb.Api.V1.UserController do
 
     json(conn, %{users: users, page_info: page_info})
   end
-
-  # def index(conn, _params) do
-  #  index(conn, %{"page" => 1})
-  # end
 end

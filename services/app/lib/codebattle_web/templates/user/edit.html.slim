@@ -1,7 +1,7 @@
 .container.bg-white.shadow-sm.py-4
   .text-center
     h2.font-weight-normal= "Settings"
-  = form_for @changeset, user_setting_path(@conn, :update),  fn f ->
+  = form_for @changeset, Routes.user_setting_path(@conn, :update),  fn f ->
     div.col-4
       .form-group
         = label f, :name

@@ -1,17 +1,16 @@
 resource "kubernetes_secret" "codebattle_secrets" {
-  depends_on = ["digitalocean_kubernetes_cluster.codebattle"]
+  depends_on = [digitalocean_kubernetes_cluster.codebattle]
 
   metadata {
     name = "codebattle-secrets"
   }
 
   data = {
-    PORT                       = "4000"
     MIX_ENV                    = "prod"
     NODE_ENV                   = "production"
-    CODEBATTLE_DB_NAME         = "codebattle"
     CODEBATTLE_PORT            = "${var.codebattle_port}"
     CODEBATTLE_SECRET_KEY_BASE = "${var.codebattle_secret_key_base}"
+    CODEBATTLE_LIVE_VIEW_SALT  = "${var.codebattle_live_view_salt}"
     CODEBATTLE_DB_HOSTNAME     = "${var.codebattle_db_hostname}"
     CODEBATTLE_DB_USERNAME     = "${var.codebattle_db_username}"
     CODEBATTLE_DB_PASSWORD     = "${var.codebattle_db_password}"
@@ -21,6 +20,5 @@ resource "kubernetes_secret" "codebattle_secrets" {
     GITHUB_CLIENT_ID           = "${var.github_client_id}"
     ONESIGNAL_API_KEY          = "${var.onesignal_api_key}"
     ONESIGNAL_APP_ID           = "${var.onesignal_app_id}"
-    FORCE                      = "2"
   }
 }

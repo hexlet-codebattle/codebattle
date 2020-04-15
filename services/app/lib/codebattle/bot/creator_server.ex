@@ -3,8 +3,6 @@ defmodule Codebattle.Bot.CreatorServer do
 
   use GenServer
 
-  alias Codebattle.Bot.PlaybookAsyncRunner
-
   @timeout Application.get_env(:codebattle, Codebattle.Bot)[:timeout]
 
   def start_link() do
@@ -21,14 +19,7 @@ defmodule Codebattle.Bot.CreatorServer do
 
     for level <- levels do
       # create fsm for every level, if no waiting opponent games
-      case Codebattle.Bot.GameCreator.call(level) do
-        {:ok, game_id, bot} ->
-          # create bots gen_server for every game
-          {:ok, _pid} = PlaybookAsyncRunner.create_server(%{game_id: game_id, bot: bot})
-
-        {:error, _reason} ->
-          nil
-      end
+      Codebattle.Bot.GameCreator.call(level)
     end
 
     Process.send_after(self(), :create_bot_if_needed, 3_000)

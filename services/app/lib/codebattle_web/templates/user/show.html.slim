@@ -39,14 +39,14 @@
     .col-12.text-center.mt-4
       h2.mt-1.mb-0
         | Achievements:
-      div.d-flex.justify-content-center.profile
+      div.d-flex.justify-content-center.cb-profile
         = Enum.map @user.achievements, fn achievement ->
           - condition = String.contains?(achievement, "win_games_with")
           = if condition do
-            div.polyglot[title="#{achievement}"]
+            div.cb-polyglot[title="#{achievement}"]
               div.d-flex.h-75.flex-wrap.align-items-center.justify-content-around
                 - langs = String.split(achievement, "?") |> Enum.at(1) |> String.split("_")
-                = for _lang <- langs do
-                  img.[alt="#{_lang}" title="#{_lang}" src="/assets/images/achievements/#{_lang}.png" width="38" height="38"]
+                = for lang <- langs do
+                  img[alt="#{lang}" title="#{lang}" src="/assets/images/achievements/#{lang}.png" width="38" height="38"]
           - else
             img.mr-1[alt="#{achievement}" title="#{achievement}" src="/assets/images/achievements/#{achievement}.png" width="200" height="200"]

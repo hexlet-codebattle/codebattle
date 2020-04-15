@@ -19,7 +19,8 @@ defmodule Codebattle.User do
              :achievements,
              :rank,
              :games_played,
-             :performance
+             :performance,
+             :inserted_at
            ]}
 
   schema "users" do

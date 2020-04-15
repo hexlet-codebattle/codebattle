@@ -1,9 +1,11 @@
 import { camelizeKeys } from 'humps';
+import Gon from 'gon';
 import socket from '../../socket';
 import * as actions from '../actions';
 
 const channelName = 'lobby';
-const channel = socket.channel(channelName);
+const isRecord = Gon.getAsset('is_record');
+const channel = !isRecord ? socket.channel(channelName) : null;
 
 export const fetchState = () => dispatch => {
   const camelizeKeysAndDispatch = actionCreator => data => (
@@ -12,10 +14,9 @@ export const fetchState = () => dispatch => {
 
   channel.join().receive('ok', camelizeKeysAndDispatch(actions.initGameList));
 
-  channel.on('game:new', camelizeKeysAndDispatch(actions.newGameLobby));
-  channel.on('game:update', camelizeKeysAndDispatch(actions.updateGameLobby));
-  channel.on('game:cancel', camelizeKeysAndDispatch(actions.cancelGameLobby));
-  channel.on('game:game_over', camelizeKeysAndDispatch(actions.fetchGameList));
+  channel.on('game:upsert', camelizeKeysAndDispatch(actions.upsertGameLobby));
+  channel.on('game:remove', camelizeKeysAndDispatch(actions.removeGameLobby));
+  channel.on('game:finish', camelizeKeysAndDispatch(actions.finishGame));
 };
 
 export const cancelGame = gameId => () => {

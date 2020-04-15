@@ -1,115 +1,30 @@
-import React from 'react';
+import React, { useRef } from 'react';
+import { Picker } from 'emoji-mart';
+import { useHotkeys } from 'react-hotkeys-hook';
 import 'emoji-mart/css/emoji-mart.css';
-import { Picker, Emoji } from 'emoji-mart';
-import customEmoji from '../lib/customEmoji';
-import Modal from './Modal';
 
-const styles = {
-  pickerEmoji: {
-    position: 'absolute',
-    zIndex: 1000,
-  },
-  emoji: {
-    position: 'relative',
-  },
-};
+export default function EmojiPicker({ handleSelect, hide }) {
+  const wrapperRef = useRef(null);
+  useHotkeys('escape', hide);
 
-class EmojiPicker extends React.Component {
-  state = {
-    isOpen: false,
-    positionX: 0,
-    positionY: 0,
-    width: 0,
-    height: 0,
+  const handleBlur = e => {
+    const isActivePicker = wrapperRef.isEqualNode(e.currentTarget);
+    if (isActivePicker) return;
+    hide();
   };
 
-  buttonRef = React.createRef();
 
-  toggleVisibility = () => {
-    const { isOpen } = this.state;
-    if (isOpen) {
-      this.closeEmoji();
-    } else {
-      this.openEmoji();
-    }
-  }
-
-  onSelect = emoji => {
-    const { addEmoji } = this.props;
-    addEmoji(emoji, this.closeEmoji);
-  }
-
-  openEmoji = () => {
-    const {
-      x, y, width, height,
-    } = this.buttonRef.current.getBoundingClientRect();
-    const { setSelectionAndRange } = this.props;
-    setSelectionAndRange();
-    this.setState({
-      isOpen: true,
-      positionX: x,
-      positionY: y,
-      width,
-      height,
-    }, () => document.addEventListener('click', this.closeEmojiOutsideClick, false));
-  }
-
-  closeEmoji = () => {
-    this.setState({
-      isOpen: false,
-    }, () => document.removeEventListener('click', this.closeEmojiOutsideClick, false));
-  }
-
-  closeEmojiOutsideClick = e => {
-    const { target } = e;
-    const isPickerEmoji = target.closest('.emoji-mart');
-    if (!isPickerEmoji) {
-      this.closeEmoji();
-    }
-  }
-
-  render() {
-    const {
-      isOpen, positionX, positionY, width, height,
-    } = this.state;
-    return (
-      <>
-        <div
-          className="input-group-append"
-          role="button"
-          tabIndex="-1"
-          onClick={this.toggleVisibility}
-          onKeyPress={this.toggleVisibility}
-          ref={this.buttonRef}
-        >
-          <button className="btn btn-outline-secondary d-flex align-items-center" type="button">
-            <Emoji
-              emoji="grinning"
-              set="apple"
-              size={15}
-            />
-          </button>
-        </div>
-        {isOpen && (
-          <Modal>
-            <Picker
-              title="Pick your emoji..."
-              emoji="point_up"
-              onSelect={this.onSelect}
-              custom={customEmoji}
-              showPreview={false}
-              emojiTooltip
-              style={{
-                ...styles.pickerEmoji,
-                top: positionY + height,
-                left: Math.max(positionX - 338 + width, 0),
-              }}
-            />
-          </Modal>
-        )}
-      </>
-    );
-  }
+  return (
+    <div onBlur={handleBlur} ref={wrapperRef}>
+      <Picker
+        showPreview={false}
+        showSkinTones={false}
+        darkMode={false}
+        perLine={10}
+        onClick={handleSelect}
+        autoFocus
+        style={{ position: 'absolute', right: '88px', bottom: '10px' }}
+      />
+    </div>
+  );
 }
-
-export default EmojiPicker;

@@ -1,14 +1,16 @@
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import React from 'react';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
 import cn from 'classnames';
-import UserName from '../components/UserName';
-import UserStats from '../components/UserStats';
+import UserName from '../components/User/UserName';
+import UserStats from '../components/User/UserStats';
 import { getUsersStats } from '../selectors';
 import { loadUserStats } from '../middlewares/Users';
 
-const UserInfo = ({ dispatch, user, usersStats }) => {
+const UserInfo = ({ user }) => {
+  const usersStats = useSelector(state => getUsersStats(state));
   const userStats = usersStats[user.id];
+  const dispatch = useDispatch();
   const statsPopover = ({ show, ...rest }) => (
     <Popover className={cn({ 'd-none': !userStats })} {...rest}>
       <Popover.Title as="h3">{user.name}</Popover.Title>
@@ -37,8 +39,5 @@ const UserInfo = ({ dispatch, user, usersStats }) => {
   );
 };
 
-const mapStateToProps = state => ({
-  usersStats: getUsersStats(state),
-});
 
-export default connect(mapStateToProps)(UserInfo);
+export default UserInfo;

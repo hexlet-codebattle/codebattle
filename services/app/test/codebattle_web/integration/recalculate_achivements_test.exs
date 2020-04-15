@@ -49,8 +49,8 @@ defmodule RecalculateAchivementsTest do
 
     conn =
       conn1
-      |> get(page_path(conn1, :index))
-      |> post(game_path(conn1, :create, level: "easy", lang: "js"))
+      |> get(Routes.page_path(conn1, :index))
+      |> post(game_path(conn1, :create, level: "easy", lang: "js", type: "withRandomPlayer"))
 
     game_id = game_id_from_conn(conn)
 
@@ -62,7 +62,12 @@ defmodule RecalculateAchivementsTest do
     subscribe_and_join(socket2, GameChannel, game_topic)
     # First player won
     editor_text1 = "Hello world1!"
-    Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text1, lang: "js"})
+
+    Phoenix.ChannelTest.push(socket1, "check_result", %{
+      editor_text: editor_text1,
+      lang_slug: "js"
+    })
+
     :timer.sleep(100)
 
     user = Repo.get!(User, user1.id)
@@ -85,8 +90,8 @@ defmodule RecalculateAchivementsTest do
     # Create game
     conn =
       conn1
-      |> get(page_path(conn1, :index))
-      |> post(game_path(conn1, :create, level: "easy", lang: "js"))
+      |> get(Routes.page_path(conn1, :index))
+      |> post(game_path(conn1, :create, level: "easy", lang: "js", type: "withRandomPlayer"))
 
     game_id = game_id_from_conn(conn)
 
@@ -98,7 +103,12 @@ defmodule RecalculateAchivementsTest do
     subscribe_and_join(socket2, GameChannel, game_topic)
     # First player won
     editor_text1 = "Hello world1!"
-    Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: editor_text1, lang: "js"})
+
+    Phoenix.ChannelTest.push(socket1, "check_result", %{
+      editor_text: editor_text1,
+      lang_slug: "js"
+    })
+
     :timer.sleep(100)
 
     user = Repo.get(User, user1.id)

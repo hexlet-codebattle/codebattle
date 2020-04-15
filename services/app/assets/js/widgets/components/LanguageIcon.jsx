@@ -4,6 +4,7 @@ import cn from 'classnames';
 const iconsToClass = {
   js: 'icon-nodejs',
   ts: 'icon-nodejs',
+  dart: 'icon-ghost',
   golang: 'icon-go',
   cpp: 'icon-cplusplus',
   ruby: 'icon-ruby',
@@ -12,7 +13,6 @@ const iconsToClass = {
   clojure: 'icon-clojure',
   python: 'icon-python',
   php: 'icon-php-alt',
-  perl: 'icon-perl',
 };
 
 const LanguageIcon = ({ lang }) => <span className={cn('d-flex', iconsToClass[lang])} />;

@@ -1,9 +1,9 @@
 defmodule Mix.Tasks.Issues.Upload do
   @moduledoc false
 
-  use Mix.Task
+  # TODO: get rid of this file move existing tests to Codebattle.AssertsImporter
 
-  # require Logger
+  use Mix.Task
 
   alias Codebattle.{Repo, Task}
 
