@@ -34,6 +34,7 @@ defmodule Codebattle.LanguagesTest do
         "solution() {\n\n}",
         "import * as _ from \"lodash\";\nfunction solution(){\n\n};\n\nexport default solution;",
         "package main;\n\nfunc solution() {\n\n}",
+        "package solution;\n\nimport java.util.*;\n\npublic class Solution {\n\tpublic solution() {\n\n\t}\n}",
         "def solution()\n\nend",
         "defmodule Solution do\n\tdef solution() do\n\n\tend\nend",
         "from typing import List, Dict\n\ndef solution():",
@@ -85,6 +86,9 @@ defmodule Codebattle.LanguagesTest do
     cpp_expected =
       "#include <iostream>\n#include <map>\n#include <vector>\n\nusing namespace std;\n\nvector<string> solution(int a, double b, string text, vector<vector<int>> arr, bool condition, map<string,int> hashtable) {\n\n}"
 
+    java_expected =
+      "package solution;\n\nimport java.util.*;\n\npublic class Solution {\n\tpublic List<String> solution(Integer a, Double b, String text, List<List<Integer>> arr, Boolean condition, Map<String, Integer> hashtable) {\n\n\t}\n}"
+
     assert Languages.get_solution("js", signature) == js_expected
     assert Languages.get_solution("ts", signature) == ts_expected
     assert Languages.get_solution("dart", signature) == dart_expected
@@ -96,6 +100,7 @@ defmodule Codebattle.LanguagesTest do
     assert Languages.get_solution("clojure", signature) == clojure_expected
     assert Languages.get_solution("haskell", signature) == haskell_expected
     assert Languages.get_solution("cpp", signature) == cpp_expected
+    assert Languages.get_solution("java", signature) == java_expected
   end
 
   test "check solutions for empty signature", %{

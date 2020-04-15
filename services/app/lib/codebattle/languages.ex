@@ -183,6 +183,42 @@ defmodule Codebattle.Languages do
           nested_value_expression_template: "<%= type_name %><%= value %>"
         }
       },
+      "java" => %{
+        name: "Java",
+        slug: "java",
+        version: "12",
+        base_image: :alpine,
+        check_dir: "src/main/java/solution/",
+        extension: "java",
+        docker_image: "codebattle/java:12",
+        solution_version: :typed,
+        solution_template:
+          "package solution;\n\nimport java.util.*;\n\npublic class Solution {\n\tpublic <%= expected %>solution(<%= arguments %>) {\n\n\t}\n}",
+        arguments_template: %{
+          argument: "<%= type %> <%= name %>",
+          delimeter: ", "
+        },
+        expected_template: "<%= type %> ",
+        types: %{
+          "integer" => "Integer",
+          "float" => "Double",
+          "string" => "String",
+          "array" => "List<<%= inner_type %>>",
+          "boolean" => "Boolean",
+          "hash" => "Map<String, <%= inner_type %>>"
+        },
+        checker_meta: %{
+          version: :static,
+          type_templates: %TypeTemplates{
+            array: "List.of(<%= entries %>)",
+            hash_empty: "Map.of()",
+            hash_value: "Map.of(<%= entries %>)",
+            hash_inners: "\"<%= key %>\", <%= value %>"
+          },
+          defining_variable_template: "<%= type %> <%= name %>",
+          nested_value_expression_template: "<%= value %>"
+        }
+      },
       "golang" => %{
         name: "golang",
         slug: "golang",

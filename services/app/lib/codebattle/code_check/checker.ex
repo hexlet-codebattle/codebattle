@@ -8,7 +8,7 @@ defmodule Codebattle.CodeCheck.Checker do
   alias Codebattle.CodeCheck.CheckerStatus
   alias Codebattle.CodeCheck.CheckResult
 
-  @langs_needs_compiling ["golang", "cpp"]
+  @langs_needs_compiling ["golang", "cpp", "java"]
 
   def call(task, editor_text, editor_lang) do
     case Languages.meta() |> Map.get(editor_lang) do
@@ -66,6 +66,9 @@ defmodule Codebattle.CodeCheck.Checker do
     file_name =
       case lang.slug do
         "haskell" ->
+          "Solution.#{lang.extension}"
+
+        "java" ->
           "Solution.#{lang.extension}"
 
         _ ->
