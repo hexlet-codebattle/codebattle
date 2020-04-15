@@ -8,7 +8,7 @@ import LeftEditorToolbar from './EditorsToolbars/LeftEditorToolbar';
 import RightEditorToolbar from './EditorsToolbars/RightEditorToolbar';
 import GameActionButtons from '../components/GameActionButtons';
 import { sendEditorText } from '../middlewares/Game';
-import ExecutionOutput from '../components/ExecutionOutput';
+import ExecutionOutput from '../components/ExecutionOutput/ExecutionOutput';
 import NotificationsHandler from './NotificationsHandler';
 import editorModes from '../config/editorModes';
 import GameStatusCodes from '../config/gameStatusCodes';
