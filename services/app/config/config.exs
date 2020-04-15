@@ -77,7 +77,9 @@ config :phoenix_meta_tags,
 
 config :codebattle, CodebattleWeb.Endpoint, live_view: [signing_salt: "asdfasdf"]
 
-config :codebattle, Codebattle.Bot.Server, timeout_start_playbook: 2_000
+config :codebattle, Codebattle.Bot,
+  timeout_start_playbook: 2_000,
+  min_bot_player_speed: 1_000
 
 config :codebattle, Codebattle.DockerLangsPuller, timeout: 5_000 * 60
 
