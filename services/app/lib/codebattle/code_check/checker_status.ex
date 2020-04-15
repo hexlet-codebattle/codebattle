@@ -35,6 +35,7 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
         ...>), %{check_code: "-1", lang: %{slug: "js"}}
         ...> )
         %Codebattle.CodeCheck.CheckResult{
+          asserts: [~s({"status": "success", "result": "1"}), ~s({"status": "failure", "result": "0", "arguments": [0]})],
           asserts_count: 2,
           success_count: 1,
           status: :failure,
@@ -114,6 +115,7 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
         success_count = length(success_list)
 
         [first_failure_json] = List.first(failure_list)
+        asserts = extract_jsons(success_list) ++ extract_jsons(failure_list)
 
         new_container_output =
           container_output
@@ -124,6 +126,7 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
           status: :failure,
           result: first_failure_json,
           output: new_container_output,
+          asserts: asserts,
           success_count: success_count,
           asserts_count: failure_count + success_count
         }
@@ -147,4 +150,6 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
       String.replace(output, "#{str}\n", "", global: false)
     end)
   end
+
+  defp extract_jsons(list), do: Enum.map(list, &List.first/1)
 end

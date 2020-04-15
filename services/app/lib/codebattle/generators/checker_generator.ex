@@ -282,6 +282,8 @@ defmodule Codebattle.Generators.CheckerGenerator do
     |> String.replace("\\", "\\\\")
     |> String.replace("\n", "\\n")
     |> String.replace("\t", "\\t")
+    |> String.replace("\"", "\\\"")
+    |> String.replace("\'", "\\\'")
   end
 
   defp put_types(binding, %{slug: slug} = meta, task)
