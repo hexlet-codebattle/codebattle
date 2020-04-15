@@ -4,7 +4,8 @@ import java.io.*;
 import java.time.LocalTime;
 import java.util.*;
 
-import javax.json.*;
+import javax.json.JsonObject;
+import javax.json.Json;
 
 public class Checker {
     public static void main(String... args) {
