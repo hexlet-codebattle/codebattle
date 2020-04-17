@@ -219,6 +219,42 @@ defmodule Codebattle.Languages do
           nested_value_expression_template: "<%= value %>"
         }
       },
+      "kotlin" => %{
+        name: "Kotlin",
+        slug: "kotlin",
+        version: "1.2.71",
+        base_image: :alpine,
+        check_dir: "check",
+        extension: "kt",
+        docker_image: "codebattle/kotlin:1.2.71",
+        solution_version: :typed,
+        solution_template:
+          "package solution\n\nimport kotlin.collections.*\n\nfun solution(<%= arguments %>):<%= expected %> {\n\n}",
+        arguments_template: %{
+          argument: "<%= name %>: <%= type %>",
+          delimeter: ", "
+        },
+        expected_template: " <%= type %>",
+        types: %{
+          "integer" => "Int",
+          "float" => "Double",
+          "string" => "String",
+          "array" => "List<<%= inner_type %>>",
+          "boolean" => "Boolean",
+          "hash" => "Map<String, <%= inner_type %>>"
+        },
+        checker_meta: %{
+          version: :static,
+          type_templates: %TypeTemplates{
+            array: "listOf(<%= entries %>)",
+            hash_empty: "mapOf()",
+            hash_value: "mapOf(<%= entries %>)",
+            hash_inners: "\"<%= key %>\" to <%= value %>"
+          },
+          defining_variable_template: "<%= name %>: <%= type %>",
+          nested_value_expression_template: "<%= value %>"
+        }
+      },
       "golang" => %{
         name: "golang",
         slug: "golang",

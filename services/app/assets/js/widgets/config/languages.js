@@ -5,6 +5,7 @@ export default {
   golang: 'go',
   cpp: 'cpp',
   java: 'java',
+  kotlin: 'kotlin',
   haskell: 'haskell',
   ruby: 'ruby',
   elixir: 'elixir',

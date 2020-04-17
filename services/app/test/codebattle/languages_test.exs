@@ -35,6 +35,7 @@ defmodule Codebattle.LanguagesTest do
         "import * as _ from \"lodash\";\nfunction solution(){\n\n};\n\nexport default solution;",
         "package main;\n\nfunc solution() {\n\n}",
         "package solution;\n\nimport java.util.*;\n\npublic class Solution {\n\tpublic solution() {\n\n\t}\n}",
+        "package solution\n\nimport kotlin.collections.*\n\nfun solution(): {\n\n}",
         "def solution()\n\nend",
         "defmodule Solution do\n\tdef solution() do\n\n\tend\nend",
         "from typing import List, Dict\n\ndef solution():",
@@ -89,6 +90,9 @@ defmodule Codebattle.LanguagesTest do
     java_expected =
       "package solution;\n\nimport java.util.*;\n\npublic class Solution {\n\tpublic List<String> solution(Integer a, Double b, String text, List<List<Integer>> arr, Boolean condition, Map<String, Integer> hashtable) {\n\n\t}\n}"
 
+    kotlin_expected =
+      "package solution\n\nimport kotlin.collections.*\n\nfun solution(a: Int, b: Double, text: String, arr: List<List<Int>>, condition: Boolean, hashtable: Map<String, Int>): List<String> {\n\n}"
+
     assert Languages.get_solution("js", signature) == js_expected
     assert Languages.get_solution("ts", signature) == ts_expected
     assert Languages.get_solution("dart", signature) == dart_expected
@@ -101,6 +105,7 @@ defmodule Codebattle.LanguagesTest do
     assert Languages.get_solution("haskell", signature) == haskell_expected
     assert Languages.get_solution("cpp", signature) == cpp_expected
     assert Languages.get_solution("java", signature) == java_expected
+    assert Languages.get_solution("kotlin", signature) == kotlin_expected
   end
 
   test "check solutions for empty signature", %{

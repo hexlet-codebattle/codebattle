@@ -73,24 +73,9 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
     end
   end
 
-  def get_compile_check_result(container_output, %{slug: "golang"}) do
-    case Regex.run(~r/\.\/check\/solution\.go:.+/, container_output) do
-      nil ->
-        :ok
-
-      result ->
-        json_result =
-          Jason.encode!(%{
-            status: "error",
-            result: List.first(result)
-          })
-
-        {:error, json_result, container_output}
-    end
-  end
-
-  def get_compile_check_result(container_output, %{slug: "cpp"}) do
-    case Regex.run(~r/\.\/check\/solution\.cpp:.+/, container_output) do
+  def get_compile_check_result(container_output, %{slug: slug, extension: extension})
+      when slug in ["golang", "kotlin", "cpp"] do
+    case Regex.run(~r/check\/solution\.#{extension}:.+/, container_output) do
       nil ->
         :ok
 
