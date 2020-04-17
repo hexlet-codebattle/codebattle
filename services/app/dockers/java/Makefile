@@ -1,8 +1,8 @@
 test:
-	gradle -q compileJava
-	gradle -q run
+	javac ./check/Checker.java ./check/Solution.java -cp ./javax_json_api.jar -d solution.jar
+	java -cp javax_json.jar:javax_json_api.jar:solution.jar solution.Checker
 
 test-compile:
-	gradle -q compileJava
+	javac ./check/Solution.java
 
 .PHONY: test

@@ -188,7 +188,7 @@ defmodule Codebattle.Languages do
         slug: "java",
         version: "12",
         base_image: :alpine,
-        check_dir: "src/main/java/solution/",
+        check_dir: "check",
         extension: "java",
         docker_image: "codebattle/java:12",
         solution_version: :typed,

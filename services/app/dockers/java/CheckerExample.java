@@ -1,7 +1,6 @@
 package solution;
 
 import java.io.*;
-import java.time.LocalTime;
 import java.util.*;
 
 import javax.json.JsonObject;
@@ -21,15 +20,15 @@ public class Checker {
 
             boolean success = true;
 
-            int start = 0;
-            int executionTime = 0;
+            long start = 0;
+            long executionTime = 0;
             String output = "";
 
             int a1 = 1;
             int b1 = 2;
-            start = LocalTime.now().getNano();
+            start = System.currentTimeMillis();
             int result1 = instance.solution(a1, b1);
-            executionTime = getMills(LocalTime.now().getNano() - start);
+            executionTime = System.currentTimeMillis() - start;
             int expected1 = 3;
             output = getOutputAndResetIO(baos);
             Object[] arr1 = {a1, b1};
@@ -38,9 +37,9 @@ public class Checker {
 
             int a2 = 3;
             int b2 = 5;
-            start = LocalTime.now().getNano();
+            start = System.currentTimeMillis();
             int result2 = instance.solution(a2, b2);
-            executionTime = getMills(LocalTime.now().getNano() - start);
+            executionTime = System.currentTimeMillis() - start;
             int expected2 = 8;
             output = getOutputAndResetIO(baos);
             Object[] arr2 = {a2, b2};
@@ -69,7 +68,7 @@ public class Checker {
         return output;
     }
 
-    private static boolean assertSolution(Object result, Object expected, String output, List args, int executionTime, List<JsonObject> executionResults, boolean success) {
+    private static boolean assertSolution(Object result, Object expected, String output, List args, long executionTime, List<JsonObject> executionResults, boolean success) {
         boolean assertResult = expected.equals(result);
 
         if (assertResult) {
@@ -83,7 +82,7 @@ public class Checker {
         return false;
     }
 
-    private static JsonObject getAssertMessage(String status, Object result, Object expected, String output, List args, int executionTime) {
+    private static JsonObject getAssertMessage(String status, Object result, Object expected, String output, List args, long executionTime) {
         return Json.createObjectBuilder()
             .add("status", status)
             .add("result", result.toString())
@@ -110,9 +109,5 @@ public class Checker {
 
     private static void print(List<JsonObject> executionResults) {
         executionResults.forEach((JsonObject message) -> System.out.println(message));
-    }
-
-    private static int getMills(int nano) {
-        return nano >= 1000000 ? nano / 1000000 : 0;
     }
 }

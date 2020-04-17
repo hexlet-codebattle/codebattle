@@ -2,11 +2,11 @@ FROM openjdk:12-alpine3.9
 
 WORKDIR /usr/src/app
 
-RUN apk add --update make gradle
+RUN apk add --update make curl
 
-COPY CheckerExample.java ./src/main/java/solution/Checker.java
-COPY SolutionExample.java ./src/main/java/solution/Solution.java
-COPY build.gradle .
+RUN curl -L https://repo1.maven.org/maven2/javax/json/javax.json-api/1.1.4/javax.json-api-1.1.4.jar > /usr/src/app/javax_json_api.jar
+RUN curl -L https://repo1.maven.org/maven2/org/glassfish/javax.json/1.1.4/javax.json-1.1.4.jar > /usr/src/app/javax_json.jar
+
+COPY CheckerExample.java ./check/Checker.java
+COPY SolutionExample.java ./check/Solution.java
 COPY Makefile .
-
-RUN gradle buildDependents
