@@ -232,7 +232,8 @@ defmodule Codebattle.Generators.CheckerGenerator do
     get_value({type, value}, meta)
   end
 
-  defp get_value({%{"name" => "string"}, value}, meta), do: ~s("#{double_backslashes(value, meta)}")
+  defp get_value({%{"name" => "string"}, value}, meta),
+    do: ~s("#{double_backslashes(value, meta)}")
 
   defp get_value({%{"name" => "boolean"}, value}, %{checker_meta: checker_meta}),
     do: get_boolean_value(checker_meta.type_templates, value)
