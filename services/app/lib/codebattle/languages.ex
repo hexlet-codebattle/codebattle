@@ -31,11 +31,11 @@ defmodule Codebattle.Languages do
       "ruby" => %{
         name: "ruby",
         slug: "ruby",
-        version: "2.6.0",
+        version: "2.7.1",
         base_image: :ubuntu,
         check_dir: "check",
         extension: "rb",
-        docker_image: "codebattle/ruby:2.6.0",
+        docker_image: "codebattle/ruby:2.7.1",
         solution_version: :default,
         solution_template: "def solution(<%= arguments %>)\n<%= return_statement %>\nend",
         arguments_template: %{
@@ -62,11 +62,11 @@ defmodule Codebattle.Languages do
       "js" => %{
         name: "Node.js",
         slug: "js",
-        version: "13.8.0",
+        version: "13.13.0",
         base_image: :ubuntu,
         check_dir: "check",
         extension: "js",
-        docker_image: "codebattle/js:13.8.0",
+        docker_image: "codebattle/js:13.13.0",
         solution_version: :default,
         solution_template:
           "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (<%= arguments %>) => {\n<%= return_statement %>\n};\n\nmodule.exports = solution;",
@@ -252,11 +252,11 @@ defmodule Codebattle.Languages do
       "python" => %{
         name: "python",
         slug: "python",
-        version: "3.7.2",
+        version: "3.8.2",
         base_image: :ubuntu,
         check_dir: "check",
         extension: "py",
-        docker_image: "codebattle/python:3.7.2",
+        docker_image: "codebattle/python:3.8.2",
         solution_version: :typed,
         solution_template:
           "from typing import List, Dict\n\ndef solution(<%= arguments %>)<%= expected %>:",

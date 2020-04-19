@@ -10,9 +10,10 @@ execution_result = []
 
 def assert_result(solution, expected, arguments, success):
     try:
-        start = time.clock()
+        start = time.perf_counter()
         result = solution(arguments)
-        finish = time.clock()
+        finish = time.perf_counter()
+
         assert result == expected
         execution_result.append(json.dumps({
             'status': 'success',
