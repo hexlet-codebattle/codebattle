@@ -22,6 +22,8 @@ def assert_result(solution, expected, arguments, success):
             'arguments': arguments,
             'execution_time': finish - start
         }))
+        sys.stdout.truncate(0)
+        sys.stdout.seek(0)
         return success
     except AssertionError as exc:
         execution_result.append(json.dumps({
@@ -32,6 +34,8 @@ def assert_result(solution, expected, arguments, success):
             'arguments': arguments,
             'execution_time': finish - start
         }))
+        sys.stdout.truncate(0)
+        sys.stdout.seek(0)
         return False
 
 try:
