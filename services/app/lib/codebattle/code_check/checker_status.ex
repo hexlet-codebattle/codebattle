@@ -35,7 +35,7 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
         ...>), %{check_code: "-1", lang: %{slug: "js"}}
         ...> )
         %Codebattle.CodeCheck.CheckResult{
-          asserts: [~s({"status": "success", "result": "1"}), ~s({"status": "failure", "result": "0", "arguments": [0]})],
+          asserts: [~s({"status": "failure", "result": "0", "arguments": [0]}), ~s({"status": "success", "result": "1"})],
           asserts_count: 2,
           success_count: 1,
           status: :failure,
