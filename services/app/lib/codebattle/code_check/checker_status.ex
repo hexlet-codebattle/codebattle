@@ -115,7 +115,7 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
         success_count = length(success_list)
 
         [first_failure_json] = List.first(failure_list)
-        asserts = extract_jsons(success_list) ++ extract_jsons(failure_list)
+        asserts = extract_jsons(failure_list) ++ extract_jsons(success_list)
 
         new_container_output =
           container_output
