@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'json'
 require 'stringio'
 require 'test/unit'
@@ -15,33 +17,33 @@ begin
   success = true
 
   def assert_result(solution, expected, arguments, success)
-    begin
-      start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
-      result = solution.call(*arguments)
-      finish = Process.clock_gettime(Process::CLOCK_MONOTONIC)
-      assert_equal(expected, result)
+    start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+    result = solution.call(*arguments)
+    finish = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+    assert_equal(expected, result)
 
-      @execution_result <<
-        JSON.dump(
-          status: :success,
-          result: result,
-          output: $stdout.string,
-          arguments: arguments,
-          execution_time: finish - start
-        )
-      success
-    rescue Test::Unit::AssertionFailedError
-      @execution_result <<
-        JSON.dump(
-          status: :failure,
-          result: result,
-          output: $stdout.string,
-          expected: expected,
-          arguments: arguments,
-          execution_time: finish - start
-        )
-      false
-    end
+    @execution_result <<
+      JSON.dump(
+        status: :success,
+        result: result,
+        output: $stdout.string,
+        arguments: arguments,
+        execution_time: finish - start
+      )
+    $stdout.reopen()
+    success
+  rescue Test::Unit::AssertionFailedError
+    @execution_result <<
+      JSON.dump(
+        status: :failure,
+        result: result,
+        output: $stdout.string,
+        expected: expected,
+        arguments: arguments,
+        execution_time: finish - start
+      )
+    $stdout.reopen()
+    false
   end
 
   <%= for %{arguments: arguments, expected: expected} <- checks do %>

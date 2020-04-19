@@ -35,7 +35,7 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
         ...>), %{check_code: "-1", lang: %{slug: "js"}}
         ...> )
         %Codebattle.CodeCheck.CheckResult{
-          asserts: [~s({"status": "success", "result": "1"}), ~s({"status": "failure", "result": "0", "arguments": [0]})],
+          asserts: [~s({"status": "failure", "result": "0", "arguments": [0]}), ~s({"status": "success", "result": "1"})],
           asserts_count: 2,
           success_count: 1,
           status: :failure,
@@ -116,7 +116,7 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
         success_count = length(success_list)
 
         [first_failure_json] = List.first(failure_list)
-        asserts = extract_jsons(success_list) ++ extract_jsons(failure_list)
+        asserts = extract_jsons(failure_list) ++ extract_jsons(success_list)
 
         new_container_output =
           container_output
