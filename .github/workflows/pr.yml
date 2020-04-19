@@ -24,7 +24,7 @@ jobs:
       - uses: actions/setup-elixir@v1.2.0
         with:
           otp-version: 22.x
-          elixir-version: 1.10.x
+          elixir-version: 1.10.2
 
       - uses: actions/cache@v1
         with:
