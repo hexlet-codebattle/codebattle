@@ -3,6 +3,9 @@ ASSERTS_PATH = "tmp/battle_asserts"
 compose:
 	docker-compose up app
 
+compose-d:
+	docker-compose up -d app
+
 compose-build:
 	docker-compose build
 
