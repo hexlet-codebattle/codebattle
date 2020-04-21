@@ -43,7 +43,6 @@ const ExecutionOutput = ({
           statusColor={statusColor[resultData.status]}
           message={getMessage(resultData.status)}
         >
-          {}
           {resultData.status === 'error'
             ? (
               <AccordeonBox.Item
