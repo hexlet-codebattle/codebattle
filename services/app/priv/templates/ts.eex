@@ -1,25 +1,58 @@
+const originalStdoutWrite = process.stdout.write.bind(process.stdout);
+
 import solution from './solution';
 import { assert } from 'chai';
 <%= imports %>
+
+const buildResponse = (data) => `${JSON.stringify(data)}\n`;
+
 let success: boolean = true;
+let output: string = "";
+const finalResult: Array<string> = [];
+let solutionLambda;
+
+process.stdout.write = (chunk: string): boolean => {
+  if (typeof chunk === 'string') {
+    output += chunk;
+  }
+
+  return true;
+}
 
 try {
-  const assertEqual = function (result, expected, errorMessage) {
+  const assertSolution = (solutionLambda, expected, args) => {
+    const start = Date.now();
+    const result = solutionLambda();
+    const executionTime = Date.now() - start;
+
     try {
       assert.deepEqual(result, expected);
 
-      process.stdout.write(`${JSON.stringify({
-        status: 'success',
-        result,
-      })}\n`);
+      finalResult.push(
+        buildResponse({
+          status: 'success',
+          result,
+          output,
+          expected,
+          arguments: args,
+          execution_time: executionTime
+        })
+      );
     } catch (err) {
-      process.stdout.write(`${JSON.stringify({
-        status: 'failure',
-        result,
-        arguments: errorMessage,
-      })}\n`);
+      finalResult.push(
+        buildResponse({
+          status: 'failure',
+          result,
+          output,
+          expected,
+          arguments: args,
+          execution_time: executionTime
+        })
+      );
       success = false;
     }
+
+    output = "";
   };
 
   <%= for %{arguments: arguments, expected: expected, index: i} <- checks do %>
@@ -27,26 +60,32 @@ try {
       const <%= defining %> = <%= value %>;
     <% end %>
     const <%= expected.defining %> = <%= expected.value %>;
+    solutionLambda = () => solution(<%= arguments.expression %>)
 
-    assertEqual(
-      solution(<%= arguments.expression %>),
+    assertSolution(
+      solutionLambda,
       expected<%= i %>,
       [<%= arguments.expression %>]
     );
   <% end %>
 
   if (success) {
-    process.stdout.write(`${JSON.stringify({
-      status: 'ok',
-      result: <%= hash_sum %>,
-    })}\n`);
+    finalResult.push(
+      buildResponse({
+        status: 'ok',
+        result: <%= hash_sum %>,
+      })
+    );
   }
-  process.exit(0);
-
 } catch (err) {
-  process.stdout.write(`${JSON.stringify({
-    status: 'failure',
-    result: err.message,
-  })}\n`);
-  process.exit(0);
+  finalResult.push(
+    buildResponse({
+      status: 'error',
+      result: err.message,
+    })
+  );
 }
+
+process.stdout.write = originalStdoutWrite;
+process.stdout.write(finalResult.join(""));
+process.exit(0);

@@ -11,8 +11,8 @@ import System.Exit
 
 output = BS.putStrLn . A.encode . A.object
 handleOk = output ["status" A..= ("ok" :: String), "result" A..= (<%= hash_sum %> :: String)]
-handleSuccess res = output ["status" A..= ("success" :: String), "result" A..= res]
-handleFailure res args = output ["status" A..= ("failure" :: String), "result" A..= res, "arguments" A..= args]
+handleSuccess res exp args = output ["status" A..= ("success" :: String), "result" A..= res, "expected" A..= exp, "arguments" A..= args]
+handleFailure res exp args = output ["status" A..= ("failure" :: String), "result" A..= res, "expected" A..= exp, "arguments" A..= args]
 handleRuntimeError e = output ["status" A..= ("error" :: String), "result" A..= show e]
 
 test :: IO ()
@@ -24,8 +24,8 @@ test = do
     let resAssert<%= i %> = res<%= i %> == expected<%= i %>
 
     (if resAssert<%= i %>
-        then handleSuccess res<%= i %>
-        else handleFailure res<%= i %> ("[<%= message %>]" :: String))
+    then handleSuccess res<%= i %> expected<%= i %> ("[<%= message %>]" :: String)
+      else handleFailure res<%= i %> expected<%= i %> ("[<%= message %>]" :: String))
         `catch` \(e ::ErrorCall) -> handleRuntimeError e
     <% end %>
 

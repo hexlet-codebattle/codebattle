@@ -7,13 +7,13 @@
      )))
 
 (defn assert_result
-  [expected result errorMessage]
+  [expected result args]
   (try (assert (= expected result))
-       (println (json/write-str {:status "success" :result result}))
+       (println (json/write-str {:status "success" :result result :expected expected :arguments args}))
        true
        (catch java.lang.AssertionError e
          (do
-           (println (json/write-str {:status "failure" :result result :arguments errorMessage}))
+           (println (json/write-str {:status "failure" :result result :expected expected :arguments args}))
            false
            ))))
 

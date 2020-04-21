@@ -6,70 +6,70 @@ import java.util.*;
 import javax.json.*;
 
 public class Checker {
-    public static void main(String... args) {
-        PrintStream oldOut = System.out;
-        List<JsonObject> executionResults = new ArrayList<JsonObject>();
+    public static void main(String... _args) {
+        PrintStream _oldOut = System.out;
+        List<JsonObject> executionResults_ = new ArrayList<JsonObject>();
 
         try {
-            Solution instance = new Solution();
+            Solution instance_ = new Solution();
 
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            PrintStream newOut = new PrintStream(baos);
-            System.setOut(newOut);
+            ByteArrayOutputStream baos_ = new ByteArrayOutputStream();
+            PrintStream newOut_ = new PrintStream(baos_);
+            System.setOut(newOut_);
 
-            boolean success = true;
+            boolean success_ = true;
 
-            long start = 0;
-            long executionTime = 0;
-            String output = "";
+            long start_ = 0;
+            long executionTime_ = 0;
+            String output_ = "";
 
             <%= for %{arguments: arguments, expected: expected, index: i} <- checks do %>
               <%= for %{defining: defining, value: value} <- arguments.info do %>
             <%= defining %> = <%= value %>;
               <% end %>
-            start = System.currentTimeMillis();
-            Object result<%= i %> = instance.solution(<%= arguments.expression %>);
-            executionTime = System.currentTimeMillis() - start;
+            start_ = System.currentTimeMillis();
+            Object result<%= i %>_ = instance_.solution(<%= arguments.expression %>);
+            executionTime_ = System.currentTimeMillis() - start_;
             <%= expected.defining %> = <%= expected.value %>;
-            output = getOutputAndResetIO(baos);
-            Object[] arr<%= i %> = {<%= arguments.expression %>};
-            List<Object> arguments<%= i %> = Arrays.asList(arr1);
-            success = assertSolution(result<%= i %>, expected<%= i %>, output, arguments<%= i %>, executionTime, executionResults, success);
+            output_ = getOutputAndResetIO(baos_);
+            Object[] args_<%= i %>_ = {<%= arguments.expression %>};
+            List<Object> arguments<%= i %>_ = Arrays.asList(args_<%= i %>_);
+            success_ = assertSolution(result<%= i %>_, expected<%= i %>, output_, arguments<%= i %>_, executionTime_, executionResults_, success_);
             <% end %>
 
-            if (success) {
+            if (success_) {
                 JsonObject okMessage = getOkMessage(<%= hash_sum %>);
-                executionResults.add(okMessage);
+                executionResults_.add(okMessage);
             }
         } catch (Exception e) {
             e.printStackTrace();
             String errMessage = e.getMessage();
             JsonObject errorMessage = getErrorMessage(errMessage);
-            executionResults.add(errorMessage);
+            executionResults_.add(errorMessage);
         }
 
-        System.setOut(oldOut);
-        print(executionResults);
+        System.setOut(_oldOut);
+        print(executionResults_);
     }
 
-    private static String getOutputAndResetIO(ByteArrayOutputStream baos) {
+    private static String getOutputAndResetIO(ByteArrayOutputStream baos_) {
         System.out.flush();
-        String output = baos.toString();
-        baos.reset();
+        String output = baos_.toString();
+        baos_.reset();
         return output;
     }
 
-    private static boolean assertSolution(Object result, Object expected, String output, List args, long executionTime, List<JsonObject> executionResults, boolean success) {
+    private static boolean assertSolution(Object result, Object expected, String output, List args, long executionTime, List<JsonObject> executionResults_, boolean success_) {
         boolean assertResult = expected.equals(result);
 
         if (assertResult) {
-            JsonObject assertMessage = getAssertMessage("success", result, expected, output, args, executionTime);
-            executionResults.add(assertMessage);
-            return success;
+            JsonObject assertMessage = getAssertMessage("success_", result, expected, output, args, executionTime);
+            executionResults_.add(assertMessage);
+            return success_;
         }
 
         JsonObject assertMessage = getAssertMessage("failure", result, expected, output, args, executionTime);
-        executionResults.add(assertMessage);
+        executionResults_.add(assertMessage);
         return false;
     }
 
@@ -98,7 +98,7 @@ public class Checker {
             .build();
     }
 
-    private static void print(List<JsonObject> executionResults) {
-        executionResults.forEach((JsonObject message) -> System.out.println(message));
+    private static void print(List<JsonObject> executionResults_) {
+        executionResults_.forEach((JsonObject message) -> System.out.println(message));
     }
 }
