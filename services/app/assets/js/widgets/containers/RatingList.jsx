@@ -9,6 +9,8 @@ import { getUsersList } from '../selectors';
 import { getUsersRatingPage } from '../middlewares/Users';
 import Loading from '../components/Loading';
 
+import i18n from '../../i18n';
+
 const decorateJoinedDate = str => (moment.utc(str).format('LL'));
 
 const renderSortArrow = (attribute, sort) => {
@@ -72,9 +74,8 @@ const UsersRating = () => {
 
   let filterNode;
 
-  const triggerSort = attribute => {
-    const { direction: prevDirection } = sort;
-    const direction = prevDirection === 'desc' ? 'asc' : 'desc';
+  const triggerSort = event => {
+    const [attribute, direction] = event.target.value.split(',');
 
     setSort({
       attribute,
@@ -92,7 +93,7 @@ const UsersRating = () => {
     <div className="text-center">
       <h2 className="font-weight-normal">Users rating</h2>
       <p>{`Total: ${usersRatingPage.pageInfo.totalEntries}`}</p>
-      <div className="form-inline">
+      <div className="form-inline justify-content-between">
         <div className="input-group">
           <div className="input-group-prepend">
             <span className="input-group-text" id="basic-addon1">
@@ -110,13 +111,41 @@ const UsersRating = () => {
             ref={c => { filterNode = ReactDOM.findDOMNode(c); }}
           />
         </div>
+        <div className="form-group">
+          <span className="mr-3">{i18n.t('Sort by:')}</span>
+          <select className="custom-select" onChange={triggerSort}>
+            <option value={['rank', 'asc']}>
+              (high)
+              {i18n.t('Rank')}
+            </option>
+            <option value={['rank', 'desc']}>
+              (low)
+              {i18n.t('Rank')}
+            </option>
+            <option value={['games_played', 'desc']}>
+              (high)
+              {i18n.t('Games played')}
+            </option>
+            <option value={['games_played', 'asc']}>
+              (low)
+              {i18n.t('Games played')}
+            </option>
+            <option value={['id', 'asc']}>
+              (new)
+              {i18n.t('Joined')}
+            </option>
+            <option value={['id', 'desc']}>
+              (old)
+              {i18n.t('Joined')}
+            </option>
+          </select>
+        </div>
       </div>
       <table className="table">
         <thead className="text-left">
           <tr>
             <th
               className="p-3 border-0"
-              onClick={() => triggerSort('rank')}
             >
               Rank
               {renderSortArrow('rank', sort)}
@@ -124,14 +153,12 @@ const UsersRating = () => {
             <th className="p-3 border-0">User</th>
             <th
               className="p-3 border-0"
-              onClick={() => triggerSort('rating')}
             >
               Rating
               {renderSortArrow('rating', sort)}
             </th>
             <th
               className="p-3 border-0"
-              onClick={() => triggerSort('games_played')}
             >
               Games played
               {renderSortArrow('games_played', sort)}
@@ -139,7 +166,6 @@ const UsersRating = () => {
             <th className="p-3 border-0">Performance</th>
             <th
               className="p-3 border-0"
-              onClick={() => triggerSort('id')}
             >
               Joined
               {renderSortArrow('id', sort)}
