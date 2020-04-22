@@ -5,7 +5,7 @@ import _ from 'lodash';
 
 
 const AccordeonBox = ({ children }) => (
-  <div className="accordion card-body border-top" id="accordionExample">
+  <div className="accordion border-top" id="accordionExample">
     { children }
   </div>
 );
@@ -24,12 +24,12 @@ const Menu = ({
   const uniqIndex = _.uniqueId('heading');
 
   return (
-    <div className="card">
+    <div className="card border-0 rounded-0">
       {(statusColor === 'warning' || statusColor === 'danger')
         ? (
-          <div className="card-header" id={`heading${uniqIndex}`}>
+          <div className="card-header" id={`heading${uniqIndex} `}>
             <button
-              className={`btn btn-sm btn-outline-${statusColor}`}
+              className="btn btn-sm btn-outline-secondary mr-3"
               type="button"
               onClick={handleClick}
               data-toggle="collapse"
@@ -38,12 +38,14 @@ const Menu = ({
             >
               { show ? <FontAwesomeIcon icon="arrow-circle-up" /> : <FontAwesomeIcon icon="arrow-circle-down" /> }
             </button>
-            <span className={`badge badge-${statusColor} ml-2`}>{count}</span>
-            <span className={`badge badge-${statusColor} ml-2`}>{message}</span>
+            <span className="font-weight-bold small mr-3">{count}</span>
+            <span className={`badge badge-${statusColor}`}>{message}</span>
           </div>
         ) : <span className={`badge badge-${statusColor}`}>{message}</span>}
       <div id={`collapse${uniqIndex}`} className={classCollapse} aria-labelledby={`heading${uniqIndex}`}>
-        {children}
+        <div className="list-group list-group-flush">
+          {children}
+        </div>
       </div>
 
     </div>
@@ -52,7 +54,7 @@ const Menu = ({
 
 
 const SubMenu = ({
-  children, statusColor, assert,
+  children, statusColor, assert, hasOutput,
 }) => {
   const [show, setShow] = useState(false);
   const classCollapse = cn('collapse', {
@@ -64,39 +66,49 @@ const SubMenu = ({
   const uniqIndex = _.uniqueId('heading');
 
   return (
-    <div className="card ">
-
-      <div className="card-header" id={`heading${uniqIndex}`}>
-        <button
-          className={`btn btn-sm btn-outline-${statusColor}`}
-          type="button"
-          onClick={handleClick}
-          data-toggle="collapse"
-          aria-expanded="true"
-          aria-controls={`collapse${uniqIndex}`}
-        >
+    <div className="list-group-item">
+      <div id={`heading${uniqIndex}`}>
+        <div className="border-bottom d-flex pb-2">
           {statusColor === 'success'
-            ? <FontAwesomeIcon className="mr-2" icon="check-circle" />
-            : <FontAwesomeIcon className="mr-2" icon="exclamation-circle" />}
-          { show ? <FontAwesomeIcon icon="arrow-circle-up" /> : <FontAwesomeIcon icon="arrow-circle-down" /> }
-        </button>
-        <span className={`badge badge-${statusColor} ml-2`}>{assert.status}</span>
-        {assert.execution_time ? (
-          <span className={`badge badge-${statusColor} ml-2`}>
-            {`executionTime: ${assert.execution_time} ms`}
-          </span>
-        ) : null}
-        <pre className={`text-${statusColor} mt-2`}>
-          {assert.result !== undefined ? <b>{`Receive: ${assert.result} \n`}</b> : null}
-          {assert.expected !== undefined ? <b>{`Expected: ${assert.expected} \n`}</b> : null}
-          {assert.arguments !== undefined ? <b>{`Arguments: [${assert.arguments}]`}</b> : null}
+            ? <FontAwesomeIcon className={`text-${statusColor} mr-2`} icon="check-circle" />
+            : <FontAwesomeIcon className={`text-${statusColor} mr-2`} icon="exclamation-circle" />}
+
+          <span className={`badge badge-${statusColor} mr-3`}>{assert.status}</span>
+          {assert.execution_time ? (
+            <span className="font-weight-bold small ml-auto">
+              {`executionTime: ${assert.execution_time} ms`}
+            </span>
+          ) : null}
+        </div>
+        <pre className="my-2">
+          {assert.result !== undefined ? <span className="d-block">{`Receive: ${assert.result}`}</span> : null}
+          {assert.expected !== undefined ? <span className="d-block">{`Expected: ${assert.expected}`}</span> : null}
+          {assert.arguments !== undefined ? <span className="d-block">{`Arguments: [${assert.arguments}]`}</span> : null}
         </pre>
+        {hasOutput ? (
+          <button
+            className="btn btn-sm btn-outline-secondary mr-3"
+            type="button"
+            onClick={handleClick}
+            data-toggle="collapse"
+            aria-expanded="true"
+            aria-controls={`collapse${uniqIndex}`}
+          >
+            <span className="mr-2">Output </span>
+            { show ? <FontAwesomeIcon icon="arrow-circle-up" /> : <FontAwesomeIcon icon="arrow-circle-down" /> }
+
+          </button>
+        ) : null}
       </div>
 
 
-      <div id={`collapse${uniqIndex}`} className={classCollapse} aria-labelledby={`heading${uniqIndex}`}>
-        {children}
-      </div>
+      {hasOutput ? (
+        <div id={`collapse${uniqIndex}`} className={classCollapse} aria-labelledby={`heading${uniqIndex}`}>
+          <div className="mt-3">
+            {children}
+          </div>
+        </div>
+      ) : null}
 
     </div>
   );
@@ -106,24 +118,18 @@ const SubMenu = ({
 const Item = ({ output, result }) => (
   <>
     {output ? (
-      <div className="card-body ">
-        <span>
-          {result ? (
-            <pre className="card-text d-none d-md-block mt-3">
-              Result:
-              {'\n'}
-              {result}
-            </pre>
-          ) : null}
-
-          <pre className="card-text d-none d-md-block mt-3">
-            Output:
-            {'\n'}
-            {output}
+      <div className="alert alert-secondary mb-0">
+        {result ? (
+          <pre className="border-bottom border-dark card-text pb-3">
+            <span className="font-weight-bold d-block">Result:</span>
+            {result}
           </pre>
+        ) : null}
 
-        </span>
-
+        <pre className="card-text">
+          <span className="font-weight-bold d-block">Output:</span>
+          {output}
+        </pre>
       </div>
     ) : null}
   </>

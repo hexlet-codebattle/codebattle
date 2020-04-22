@@ -6,7 +6,7 @@ import AccordeonBox from './AccordeonBox';
 const statusColor = {
   '': 'info',
   error: 'danger',
-  failure: 'warning',
+  failure: 'danger',
   ok: 'success',
   success: 'success',
 };
@@ -43,7 +43,6 @@ const ExecutionOutput = ({
           statusColor={statusColor[resultData.status]}
           message={getMessage(resultData.status)}
         >
-          {}
           {resultData.status === 'error'
             ? (
               <AccordeonBox.Item
@@ -57,6 +56,7 @@ const ExecutionOutput = ({
                 key={index.toString()}
                 statusColor={statusColor[assert.status]}
                 assert={assert}
+                hasOutput={assert.output}
               >
                 <AccordeonBox.Item
                   statusColor={statusColor[assert.status]}
