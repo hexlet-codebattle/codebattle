@@ -20,24 +20,30 @@ register_shutdown_function(function() {
   }
 });
 
+$stdout = STDERR;
+
 $success = true;
+$final_result = array();
 
-function assert_result($result, $expected, $error_message, $success)
+function assert_result($result, $expected, $args, $execution_time, &$final_result, $success)
 {
-    $stdout = STDERR;
-
     if (assert($result !== $expected)) {
-        fwrite($stdout, json_encode(array(
+        array_push($final_result, json_encode(array(
             'status' => 'failure',
             'result' => $result,
-            'arguments' => $error_message
+            'expected' => $expected,
+            'arguments' => $args,
+            'execution_time' => $execution_time
         )) . "\n");
         return false;
     }
-    fwrite($stdout, json_encode(array(
+    array_push($final_result, json_encode(array(
         'status' => 'success',
-        'result' => $result
-      )) . "\n");
+        'result' => $result,
+        'expected' => $expected,
+        'arguments' => $args,
+        'execution_time' => $execution_time
+    )) . "\n");
     return $success;
 }
 
@@ -47,16 +53,22 @@ assert_options(ASSERT_ACTIVE, 1);
 assert_options(ASSERT_WARNING, 0);
 assert_options(ASSERT_QUIET_EVAL, 1);
 
-$stdout = STDERR;
 
 <%= for %{arguments: arguments, expected: expected} <- checks do %>
-    $success = assert_result(solution(<%= arguments %>), <%= expected %>, array(<%= arguments %>), $success);
+    $start = microtime(true);
+    $result = solution(<%= arguments %>);
+    $execution_time = microtime(true) - $start;
+    $success = assert_result($result, <%= expected %>, array(<%= arguments %>), $execution_time, $final_result, $success);
 <% end %>
 
 if ($success) {
-  fwrite($stdout, json_encode(array(
+  array_push($final_result, json_encode(array(
       'status' => 'ok',
       'result' => <%= hash_sum %>
   )) . "\n");
+}
+
+foreach ($final_result as &$message) {
+  fwrite($stdout, $message);
 }
 ?>

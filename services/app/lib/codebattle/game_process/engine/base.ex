@@ -118,7 +118,7 @@ defmodule Codebattle.GameProcess.Engine.Base do
             creator: winner.creator,
             rating: new_winner_rating,
             rating_diff: winner_rating_diff,
-            lang: Map.get(winner, :editor_lang)
+            lang: winner.editor_lang
           })
 
           create_user_game!(%{
@@ -128,7 +128,7 @@ defmodule Codebattle.GameProcess.Engine.Base do
             creator: loser.creator,
             rating: new_loser_rating,
             rating_diff: loser_rating_diff,
-            lang: Map.get(loser, :editor_lang)
+            lang: loser.editor_lang
           })
 
           update_game!(game_id, %{
@@ -139,8 +139,18 @@ defmodule Codebattle.GameProcess.Engine.Base do
 
           winner_achievements = Achievements.recalculate_achievements(winner)
           loser_achievements = Achievements.recalculate_achievements(loser)
-          update_user!(winner.id, %{rating: new_winner_rating, achievements: winner_achievements})
-          update_user!(loser.id, %{rating: new_loser_rating, achievements: loser_achievements})
+
+          update_user!(winner.id, %{
+            rating: new_winner_rating,
+            achievements: winner_achievements,
+            lang: winner.editor_lang
+          })
+
+          update_user!(loser.id, %{
+            rating: new_loser_rating,
+            achievements: loser_achievements,
+            lang: loser.editor_lang
+          })
         end)
       end
 

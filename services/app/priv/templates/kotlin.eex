@@ -1,0 +1,102 @@
+package solution
+
+import kotlin.collections.*
+
+import java.io.PrintStream
+import java.io.ByteArrayOutputStream
+import java.util.LinkedHashMap
+import org.json.simple.JSONValue
+
+fun main(args: Array<String>) {
+  var oldOut_: PrintStream = System.out
+  var executionResults_: ArrayList<LinkedHashMap<String, Any>> = ArrayList<LinkedHashMap<String, Any>>()
+
+  try {
+    var baos_: ByteArrayOutputStream = ByteArrayOutputStream()
+    var newOut_: PrintStream = PrintStream(baos_)
+    System.setOut(newOut_)
+
+    var success_: Boolean = true
+
+    var start_: Long
+    var executionTime_: Long
+    var output_: String
+
+    <%= for %{arguments: arguments, expected: expected, index: i} <- checks do %>
+      <%= for %{defining: defining, value: value} <- arguments.info do %>
+    var <%= defining %> = <%= value %>;
+      <% end %>
+    start_ = System.currentTimeMillis()
+    var result<%= i %>_: Any = solution(<%= arguments.expression %>)
+    executionTime_ = System.currentTimeMillis() - start_
+    var <%= expected.defining %> = <%= expected.value %>;
+    output_ = getOutputAndResetIO(baos_)
+    var args<%= i %>_ = mutableListOf(<%= arguments.expression %>)
+    success_ = assertSolution(result<%= i %>_, expected<%= i %>, output_, args<%= i %>_, executionTime_, executionResults_, success_)
+    <% end %>
+
+    if (success_) {
+      var okMessage: LinkedHashMap<String, Any> = getOkMessage(<%= hash_sum %>)
+      executionResults_.add(okMessage)
+    }
+
+  } catch (e: Exception) {
+    e.printStackTrace()
+    var errMessage: LinkedHashMap<String, Any> = getErrorMessage(e.toString())
+    executionResults_.add(errMessage)
+  }
+
+  System.setOut(oldOut_)
+  executionResults_.forEach { message -> println(JSONValue.toJSONString(message)) }
+}
+
+fun assertSolution(result: Any, expected: Any, output_: String, args: List<Any>, executionTime_: Long, executionResults_: ArrayList<LinkedHashMap<String, Any>>, success_: Boolean): Boolean {
+  var status: Boolean = expected.equals(result)
+  if (status) {
+    var assertMessage: LinkedHashMap<String, Any> = getAssertMessage("success", result, expected, output_, args, executionTime_)
+    executionResults_.add(assertMessage)
+    return success_
+  }
+
+  var assertMessage: LinkedHashMap<String, Any> = getAssertMessage("failure", result, expected, output_, args, executionTime_)
+  executionResults_.add(assertMessage)
+  return false
+}
+
+fun getOutputAndResetIO(baos_: ByteArrayOutputStream): String {
+  System.out.flush()
+  var output_: String = baos_.toString()
+  baos_.reset()
+  return output_
+}
+
+fun getAssertMessage(status: String, result: Any, expected: Any, output_: String, args: List<Any>, executionTime_: Long): LinkedHashMap<String, Any> {
+  var message: LinkedHashMap<String, Any> = LinkedHashMap<String, Any>()
+
+  message.put("status", status)
+  message.put("result", result.toString())
+  message.put("expected", expected.toString())
+  message.put("output_", output_)
+  message.put("arguments", args.toString())
+  message.put("executionTime", executionTime_)
+
+  return message
+}
+
+fun getErrorMessage(result: String): LinkedHashMap<String, Any> {
+  var message: LinkedHashMap<String, Any> = LinkedHashMap<String, Any>()
+
+  message.put("status", "error")
+  message.put("result", result)
+
+  return message
+}
+
+fun getOkMessage(code: String): LinkedHashMap<String, Any> {
+  var message: LinkedHashMap<String, Any> = LinkedHashMap<String, Any>()
+
+  message.put("status", "ok")
+  message.put("result", code)
+
+  return message
+}

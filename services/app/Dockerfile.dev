@@ -1,18 +1,16 @@
 FROM elixir:1.10.2
 
 RUN mix local.hex --force \
- && mix local.rebar --force
-
-RUN mix local.rebar --force
+  && mix local.rebar --force
 
 RUN apt-get update \
- && apt-get install -y inotify-tools \
- && apt-get install -y vim
+  && apt-get install -y inotify-tools \
+  && apt-get install -y vim
 
 RUN curl -sL https://deb.nodesource.com/setup_13.x | bash - \
- && apt-get update \
- && apt-get install -y nodejs \
- && npm install --global yarn@1.21.1
+  && apt-get update \
+  && apt-get install -y nodejs \
+  && npm install --global yarn@1.21.1
 
 ENV DOCKER_CHANNEL edge
 ENV DOCKER_VERSION 18.09.3

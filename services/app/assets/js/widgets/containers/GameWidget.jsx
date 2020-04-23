@@ -8,7 +8,7 @@ import LeftEditorToolbar from './EditorsToolbars/LeftEditorToolbar';
 import RightEditorToolbar from './EditorsToolbars/RightEditorToolbar';
 import GameActionButtons from '../components/GameActionButtons';
 import { sendEditorText } from '../middlewares/Game';
-import ExecutionOutput from '../components/ExecutionOutput';
+import ExecutionOutput from '../components/ExecutionOutput/ExecutionOutput';
 import NotificationsHandler from './NotificationsHandler';
 import editorModes from '../config/editorModes';
 import GameStatusCodes from '../config/gameStatusCodes';
@@ -84,7 +84,7 @@ class GameWidget extends Component {
     return (
       <>
         <div className="col-12 col-md-6 p-1">
-          <div className="card">
+          <div className="card overflow-hidden">
             <LeftEditorToolbar />
             <Editor {...this.getLeftEditorParams()} />
             {/* TODO: move state to parent component */}
@@ -93,7 +93,7 @@ class GameWidget extends Component {
           </div>
         </div>
         <div className="col-12 col-md-6 p-1">
-          <div className="card">
+          <div className="card overflow-hidden">
             <RightEditorToolbar />
             <Editor {...this.getRightEditorParams()} />
             {/* TODO: move state to parent component */}

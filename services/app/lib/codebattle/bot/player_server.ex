@@ -9,7 +9,7 @@ defmodule Codebattle.Bot.PlayerServer do
   alias Codebattle.Bot.{ChatClient, PlaybookPlayer}
   alias PhoenixClient.Message
 
-  @timeout_start_playbook Application.get_env(:codebattle, Codebattle.Bot.Server)[
+  @timeout_start_playbook Application.get_env(:codebattle, Codebattle.Bot)[
                             :timeout_start_playbook
                           ]
 

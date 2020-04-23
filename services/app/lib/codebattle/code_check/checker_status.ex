@@ -35,6 +35,7 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
         ...>), %{check_code: "-1", lang: %{slug: "js"}}
         ...> )
         %Codebattle.CodeCheck.CheckResult{
+          asserts: [~s({"status": "failure", "result": "0", "arguments": [0]}), ~s({"status": "success", "result": "1"})],
           asserts_count: 2,
           success_count: 1,
           status: :failure,
@@ -73,8 +74,9 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
     end
   end
 
-  def get_compile_check_result(container_output, %{slug: "golang"}) do
-    case Regex.run(~r/\.\/check\/solution\.go:.+/, container_output) do
+  def get_compile_check_result(container_output, %{slug: slug, extension: extension})
+      when slug in ["golang", "kotlin", "cpp"] do
+    case Regex.run(~r/check\/solution\.#{extension}:.+/, container_output) do
       nil ->
         :ok
 
@@ -89,8 +91,8 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
     end
   end
 
-  def get_compile_check_result(container_output, %{slug: "cpp"}) do
-    case Regex.run(~r/\.\/check\/solution\.cpp:.+/, container_output) do
+  def get_compile_check_result(container_output, %{slug: "java"}) do
+    case Regex.run(~r/Solution\.java:.+/, container_output) do
       nil ->
         :ok
 
@@ -114,6 +116,7 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
         success_count = length(success_list)
 
         [first_failure_json] = List.first(failure_list)
+        asserts = extract_jsons(failure_list) ++ extract_jsons(success_list)
 
         new_container_output =
           container_output
@@ -124,6 +127,7 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
           status: :failure,
           result: first_failure_json,
           output: new_container_output,
+          asserts: asserts,
           success_count: success_count,
           asserts_count: failure_count + success_count
         }
@@ -147,4 +151,6 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
       String.replace(output, "#{str}\n", "", global: false)
     end)
   end
+
+  defp extract_jsons(list), do: Enum.map(list, &List.first/1)
 end

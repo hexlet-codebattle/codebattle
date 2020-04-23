@@ -232,7 +232,8 @@ defmodule Codebattle.Generators.CheckerGenerator do
     get_value({type, value}, meta)
   end
 
-  defp get_value({%{"name" => "string"}, value}, _meta), do: ~s("#{double_backslashes(value)}")
+  defp get_value({%{"name" => "string"}, value}, meta),
+    do: ~s("#{double_backslashes(value, meta)}")
 
   defp get_value({%{"name" => "boolean"}, value}, %{checker_meta: checker_meta}),
     do: get_boolean_value(checker_meta.type_templates, value)
@@ -241,8 +242,13 @@ defmodule Codebattle.Generators.CheckerGenerator do
          {%{"name" => "array", "nested" => nested}, value},
          %{checker_meta: checker_meta} = meta
        ) do
+    inner_type = TypesGenerator.get_type(nested, meta)
     array_values = Enum.map_join(value, ", ", &get_value({nested, &1}, meta))
-    EEx.eval_string(checker_meta.type_templates.array, entries: array_values)
+
+    EEx.eval_string(checker_meta.type_templates.array,
+      entries: array_values,
+      inner_type: inner_type
+    )
   end
 
   defp get_value({%{"name" => "hash"} = signature, value}, %{checker_meta: checker_meta} = meta) do
@@ -277,13 +283,21 @@ defmodule Codebattle.Generators.CheckerGenerator do
 
   defp filter_empty_items(items), do: items |> Enum.filter(&(&1 != ""))
 
-  defp double_backslashes(string) do
+  defp double_backslashes(string, %{slug: "dart"}) do
     string
     |> String.replace("\\", "\\\\")
     |> String.replace("\n", "\\n")
     |> String.replace("\t", "\\t")
     |> String.replace("\"", "\\\"")
-    |> String.replace("\'", "\\\'")
+    |> String.replace("$", "\\$")
+  end
+
+  defp double_backslashes(string, _meta) do
+    string
+    |> String.replace("\\", "\\\\")
+    |> String.replace("\n", "\\n")
+    |> String.replace("\t", "\\t")
+    |> String.replace("\"", "\\\"")
   end
 
   defp put_types(binding, %{slug: slug} = meta, task)
@@ -305,9 +319,10 @@ defmodule Codebattle.Generators.CheckerGenerator do
     ]
   end
 
-  defp get_template_specs(target_dir, %{slug: "haskell", extension: extension}) do
+  defp get_template_specs(target_dir, %{slug: slug, extension: extension})
+       when slug in ["haskell", "java"] do
     [
-      {:new_eex, "haskell.eex", Path.join(target_dir, "Checker.#{extension}")}
+      {:new_eex, "#{slug}.eex", Path.join(target_dir, "Checker.#{extension}")}
     ]
   end
 

@@ -1,0 +1,104 @@
+package solution;
+
+import java.io.*;
+import java.util.*;
+
+import javax.json.*;
+
+public class Checker {
+    public static void main(String... _args) {
+        PrintStream _oldOut = System.out;
+        List<JsonObject> executionResults_ = new ArrayList<JsonObject>();
+
+        try {
+            Solution instance_ = new Solution();
+
+            ByteArrayOutputStream baos_ = new ByteArrayOutputStream();
+            PrintStream newOut_ = new PrintStream(baos_);
+            System.setOut(newOut_);
+
+            boolean success_ = true;
+
+            long start_ = 0;
+            long executionTime_ = 0;
+            String output_ = "";
+
+            <%= for %{arguments: arguments, expected: expected, index: i} <- checks do %>
+              <%= for %{defining: defining, value: value} <- arguments.info do %>
+            <%= defining %> = <%= value %>;
+              <% end %>
+            start_ = System.currentTimeMillis();
+            Object result<%= i %>_ = instance_.solution(<%= arguments.expression %>);
+            executionTime_ = System.currentTimeMillis() - start_;
+            <%= expected.defining %> = <%= expected.value %>;
+            output_ = getOutputAndResetIO(baos_);
+            Object[] args_<%= i %>_ = {<%= arguments.expression %>};
+            List<Object> arguments<%= i %>_ = Arrays.asList(args_<%= i %>_);
+            success_ = assertSolution(result<%= i %>_, expected<%= i %>, output_, arguments<%= i %>_, executionTime_, executionResults_, success_);
+            <% end %>
+
+            if (success_) {
+                JsonObject okMessage = getOkMessage(<%= hash_sum %>);
+                executionResults_.add(okMessage);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            String errMessage = e.getMessage();
+            JsonObject errorMessage = getErrorMessage(errMessage);
+            executionResults_.add(errorMessage);
+        }
+
+        System.setOut(_oldOut);
+        print(executionResults_);
+    }
+
+    private static String getOutputAndResetIO(ByteArrayOutputStream baos_) {
+        System.out.flush();
+        String output = baos_.toString();
+        baos_.reset();
+        return output;
+    }
+
+    private static boolean assertSolution(Object result, Object expected, String output, List args, long executionTime, List<JsonObject> executionResults_, boolean success_) {
+        boolean assertResult = expected.equals(result);
+
+        if (assertResult) {
+            JsonObject assertMessage = getAssertMessage("success_", result, expected, output, args, executionTime);
+            executionResults_.add(assertMessage);
+            return success_;
+        }
+
+        JsonObject assertMessage = getAssertMessage("failure", result, expected, output, args, executionTime);
+        executionResults_.add(assertMessage);
+        return false;
+    }
+
+    private static JsonObject getAssertMessage(String status, Object result, Object expected, String output, List args, long executionTime) {
+        return Json.createObjectBuilder()
+            .add("status", status)
+            .add("result", result.toString())
+            .add("expected", expected.toString())
+            .add("output", output)
+            .add("arguments", args.toString())
+            .add("executionTime", executionTime)
+            .build();
+    }
+
+    private static JsonObject getOkMessage(String result) {
+        return Json.createObjectBuilder()
+            .add("status", "ok")
+            .add("result", result)
+            .build();
+    }
+
+    private static JsonObject getErrorMessage(String message) {
+        return Json.createObjectBuilder()
+            .add("status", "error")
+            .add("result", message)
+            .build();
+    }
+
+    private static void print(List<JsonObject> executionResults_) {
+        executionResults_.forEach((JsonObject message) -> System.out.println(message));
+    }
+}

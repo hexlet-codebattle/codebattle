@@ -20,9 +20,10 @@ config :codebattle, Codebattle.Repo,
   pool: Ecto.Adapters.SQL.Sandbox,
   ownership_timeout: 99_999_999
 
-config :codebattle, Codebattle.Bot, timeout: 60_000
-
-config :codebattle, Codebattle.Bot.Server, timeout_start_playbook: 0
+config :codebattle, Codebattle.Bot,
+  timeout: 60_000,
+  timeout_start_playbook: 0,
+  min_bot_player_speed: 0
 
 adapter =
   case System.get_env("CODEBATTLE_RUN_CODE_CHECK") do

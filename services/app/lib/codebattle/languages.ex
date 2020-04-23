@@ -31,11 +31,11 @@ defmodule Codebattle.Languages do
       "ruby" => %{
         name: "ruby",
         slug: "ruby",
-        version: "2.6.0",
+        version: "2.7.1",
         base_image: :ubuntu,
         check_dir: "check",
         extension: "rb",
-        docker_image: "codebattle/ruby:2.6.0",
+        docker_image: "codebattle/ruby:2.7.1",
         solution_version: :default,
         solution_template: "def solution(<%= arguments %>)\n<%= return_statement %>\nend",
         arguments_template: %{
@@ -62,11 +62,11 @@ defmodule Codebattle.Languages do
       "js" => %{
         name: "Node.js",
         slug: "js",
-        version: "13.8.0",
+        version: "13.13.0",
         base_image: :ubuntu,
         check_dir: "check",
         extension: "js",
-        docker_image: "codebattle/js:13.8.0",
+        docker_image: "codebattle/js:13.13.0",
         solution_version: :default,
         solution_template:
           "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (<%= arguments %>) => {\n<%= return_statement %>\n};\n\nmodule.exports = solution;",
@@ -183,6 +183,78 @@ defmodule Codebattle.Languages do
           nested_value_expression_template: "<%= type_name %><%= value %>"
         }
       },
+      "java" => %{
+        name: "Java",
+        slug: "java",
+        version: "12",
+        base_image: :alpine,
+        check_dir: "check",
+        extension: "java",
+        docker_image: "codebattle/java:12",
+        solution_version: :typed,
+        solution_template:
+          "package solution;\n\nimport java.util.*;\n\npublic class Solution {\n\tpublic <%= expected %>solution(<%= arguments %>) {\n\n\t}\n}",
+        arguments_template: %{
+          argument: "<%= type %> <%= name %>",
+          delimeter: ", "
+        },
+        expected_template: "<%= type %> ",
+        types: %{
+          "integer" => "Integer",
+          "float" => "Double",
+          "string" => "String",
+          "array" => "List<<%= inner_type %>>",
+          "boolean" => "Boolean",
+          "hash" => "Map<String, <%= inner_type %>>"
+        },
+        checker_meta: %{
+          version: :static,
+          type_templates: %TypeTemplates{
+            array: "List.of(<%= entries %>)",
+            hash_empty: "Map.of()",
+            hash_value: "Map.of(<%= entries %>)",
+            hash_inners: "\"<%= key %>\", <%= value %>"
+          },
+          defining_variable_template: "<%= type %> <%= name %>",
+          nested_value_expression_template: "<%= value %>"
+        }
+      },
+      "kotlin" => %{
+        name: "Kotlin",
+        slug: "kotlin",
+        version: "1.2.71",
+        base_image: :alpine,
+        check_dir: "check",
+        extension: "kt",
+        docker_image: "codebattle/kotlin:1.2.71",
+        solution_version: :typed,
+        solution_template:
+          "package solution\n\nimport kotlin.collections.*\n\nfun solution(<%= arguments %>):<%= expected %> {\n\n}",
+        arguments_template: %{
+          argument: "<%= name %>: <%= type %>",
+          delimeter: ", "
+        },
+        expected_template: " <%= type %>",
+        types: %{
+          "integer" => "Int",
+          "float" => "Double",
+          "string" => "String",
+          "array" => "List<<%= inner_type %>>",
+          "boolean" => "Boolean",
+          "hash" => "Map<String, <%= inner_type %>>"
+        },
+        checker_meta: %{
+          version: :static,
+          type_templates: %TypeTemplates{
+            array: "listOf(<%= entries %>)",
+            hash_empty: "mapOf()",
+            hash_value: "mapOf(<%= entries %>)",
+            hash_inners: "\"<%= key %>\" to <%= value %>"
+          },
+          defining_variable_template: "<%= name %>: <%= type %>",
+          nested_value_expression_template: "<%= value %>"
+        }
+      },
       "golang" => %{
         name: "golang",
         slug: "golang",
@@ -252,11 +324,11 @@ defmodule Codebattle.Languages do
       "python" => %{
         name: "python",
         slug: "python",
-        version: "3.7.2",
+        version: "3.8.2",
         base_image: :ubuntu,
         check_dir: "check",
         extension: "py",
-        docker_image: "codebattle/python:3.7.2",
+        docker_image: "codebattle/python:3.8.2",
         solution_version: :typed,
         solution_template:
           "from typing import List, Dict\n\ndef solution(<%= arguments %>)<%= expected %>:",

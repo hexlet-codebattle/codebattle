@@ -262,6 +262,21 @@ msgstr "Статус проверки:"
 msgid "Oops"
 msgstr "Упс"
 
+msgid "Sort by:"
+msgstr "Cортировать по:"
+
+msgid "Rank"
+msgstr "Ранг"
+
+msgid "Rating"
+msgstr "Рейтинг"
+
+msgid "Games played"
+msgstr "Сыгранные игры"
+
+msgid "Joined"
+msgstr "Дата регистрации"
+
 #, elixir-format
 #: lib/codebattle_web/support/notifications.ex:13
 msgid "Oh no, the time is out! Both players lost ;("

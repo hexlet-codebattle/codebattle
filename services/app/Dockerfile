@@ -5,9 +5,9 @@ ARG build_env=prod
 ENV MIX_ENV=${build_env} TERM=xterm
 WORKDIR /opt/app
 RUN apk update \
-    && apk --no-cache --update add nodejs git nodejs-npm make build-base \
-    && mix local.rebar --force \
-    && mix local.hex --force
+  && apk --no-cache --update add nodejs git nodejs-npm make build-base \
+  && mix local.rebar --force \
+  && mix local.hex --force
 
 RUN npm i -g yarn
 
@@ -19,10 +19,10 @@ COPY . .
 RUN yarn install --froze-lockfile
 
 RUN ./node_modules/webpack/bin/webpack.js --mode production \
-    && mix phx.digest
+  && mix phx.digest
 
 RUN mix release  \
-    && mv _build/${build_env}/rel/${app_name} /opt/release
+  && mv _build/${build_env}/rel/${app_name} /opt/release
 
 FROM alpine:3.9.4
 

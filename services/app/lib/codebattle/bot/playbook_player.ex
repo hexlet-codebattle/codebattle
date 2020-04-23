@@ -6,6 +6,7 @@ defmodule Codebattle.Bot.PlaybookPlayer do
   require Logger
   alias Codebattle.Bot.Playbook
 
+  @min_bot_player_speed Application.get_env(:codebattle, Codebattle.Bot)[:min_bot_player_speed]
   def call(params) do
     playbook = Playbook.random(params.task_id)
 
@@ -105,8 +106,15 @@ defmodule Codebattle.Bot.PlaybookPlayer do
 
   defp get_timer_value(%{"type" => "game_over"}, _step_coefficient), do: 0
 
-  defp get_timer_value(%{"diff" => diff}, step_coefficient),
-    do: Map.get(diff, "time") * step_coefficient
+  defp get_timer_value(%{"diff" => diff}, step_coefficient) do
+    time = Map.get(diff, "time") * step_coefficient
+
+    if time < 700 do
+      @min_bot_player_speed
+    else
+      time
+    end
+  end
 
   defp send_editor_state(_channel_pid, {%{ops: []}, _lang}) do
     :ok

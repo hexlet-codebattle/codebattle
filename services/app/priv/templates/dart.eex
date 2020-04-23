@@ -6,33 +6,40 @@ import 'package:dart/solution.dart';
 
 void main() {
   test("Run Asserts", () {
-    bool success = true;
-    var asserts = [];
-    var output = "";
+    bool success_ = true;
+    var asserts_ = [];
+    var output_ = "";
 
-    var startTime;
-    var result;
-    var executionTime;
+    var startTime_;
+    var result_;
+    var executionTime_;
 
-    runZoned(() {
-    <%= for %{arguments: arguments, expected: expected} <- checks do %>
-      startTime = new DateTime.now().millisecondsSinceEpoch;
-      result = solution(<%= arguments %>);
-      executionTime = new DateTime.now().millisecondsSinceEpoch - startTime;
-      success = assert_solution(result, <%= expected %>, [<%= arguments %>], output, asserts, executionTime, success);
-      output = "";
-    <% end %>
-    }, zoneSpecification: new ZoneSpecification(
-      print: (Zone self, ZoneDelegate parent, Zone zone, String line) {
-        output += line + "\n";
-      }
-    ));
+    try {
+      runZoned(() {
+      <%= for %{arguments: arguments, expected: expected} <- checks do %>
+        startTime_ = new DateTime.now().millisecondsSinceEpoch;
+        result_ = solution(<%= arguments %>);
+        executionTime_ = new DateTime.now().millisecondsSinceEpoch - startTime_;
+        success_ = assert_solution(result_, <%= expected %>, [<%= arguments %>], output_, asserts_, executionTime_, success_);
+        output_ = "";
+      <% end %>
+      }, zoneSpecification: new ZoneSpecification(
+        print: (Zone self, ZoneDelegate parent, Zone zone, String line) {
+          output_ += line + "\n";
+        }
+      ));
+    } catch (e) {
+      asserts_.add({
+        "status": "error",
+        "result": e,
+      });
+    }
 
-    asserts.forEach(
+    asserts_.forEach(
       (message) => print_message(message)
     );
 
-    if (success) {
+    if (success_) {
       print_message({'status': 'ok', 'result': <%= hash_sum %>});
     }
   });

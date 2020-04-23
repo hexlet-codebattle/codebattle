@@ -4,6 +4,8 @@ export default {
   dart: 'dart',
   golang: 'go',
   cpp: 'cpp',
+  java: 'java',
+  kotlin: 'kotlin',
   haskell: 'haskell',
   ruby: 'ruby',
   elixir: 'elixir',

@@ -65,7 +65,7 @@ try {
     );
   }
 } catch (e) {
-  finalResult.push(buildRespose({ status: 'error', output: e.message }));
+  finalResult.push(buildRespose({ status: 'error', result: e.message }));
 }
 
 process.stdout.write = originalStdoutWrite;

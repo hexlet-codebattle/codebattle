@@ -9,26 +9,29 @@ try do
     alias Jason.Helpers
     import Helpers
 
-    defp assert_result(result, expected, error_message, success) do
+    defp assert_result(result, expected, args, execution_time, success) do
       try do
         assert result == expected
-        message = json_map(status: :success, result: result)
+        message = json_map(status: :success, result: result, expected: expected, arguments: args, execution_time: execution_time)
         IO.puts(Jason.encode!(message))
         success
       rescue
         _e in ExUnit.AssertionError ->
-          message = json_map(status: :failure, result: result, arguments: error_message)
+          message = json_map(status: :failure, result: result, expected: expected, arguments: args, execution_time: execution_time)
           IO.puts(Jason.encode!(message))
           false
       end
     end
 
-    defp test_solution(success) do
+    defp test_solution(success_) do
       <%= for %{arguments: arguments, expected: expected} <- checks do %>
-          success = assert_result(apply(Solution, :solution, [<%= arguments %>]), <%= expected %>, [<%= arguments %>], success)
+          start_ = System.system_time(:millisecond)
+          result_ = apply(Solution, :solution, [<%= arguments %>])
+          execution_time_ = System.system_time(:millisecond) - start_
+          success_ = assert_result(result_, <%= expected %>, [<%= arguments %>], execution_time_, success_)
       <% end %>
-      if success do
-        message = json_map(status: :ok, result: <%= hash_sum %>)
+      if success_ do
+        message = json_map(status: :ok, result_: <%= hash_sum %>)
         IO.puts(Jason.encode!(message))
       end
       :ok

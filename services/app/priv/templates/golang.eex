@@ -5,17 +5,23 @@ import (
 	"fmt"
 	"os"
 	"reflect"
+  "time"
 )
 
 func main() {
   defer func() {
     if err := recover(); err != nil {
-      sendMessage("error", fmt.Sprintf("%s", err))
+      message := buildMessage("error", fmt.Sprintf("%s", err))
+      sendMessage(message)
     }
     os.Exit(0)
   }()
 
-  success := true
+  success_ := true
+  message_ := ""
+  var start_ time.Time
+  var result_ interface{}
+  var executionTime_ interface{}
 
   <%= for %{arguments: arguments, expected: expected, index: i} <- checks do %>
     <%= for %{defining: defining, value: value} <- arguments.info do %>
@@ -23,32 +29,36 @@ func main() {
     <% end %>
     var <%= expected.defining %> = <%= expected.value %>
 
-    success = assertSolution(solution(<%= arguments.expression %>), expected<%= i %>, []interface{}{<%= arguments.expression %>}, success)
+    start_ = time.Now()
+    result_ = solution(<%= arguments.expression %>)
+    executionTime_ = time.Now().Sub(start_)
+    success_, message_ = assertSolution(result_, expected<%= i %>, executionTime_, []interface{}{<%= arguments.expression %>}, success_)
+    sendMessage(message_)
   <% end %>
 
-  if success {
-    sendMessage("ok", <%= hash_sum %>)
+  if success_ {
+    successMessage := buildMessage("ok", <%= hash_sum %>)
+    sendMessage(successMessage)
   }
 }
 
-func assertSolution(result, expected, message interface{}, success bool) bool {
+func assertSolution(result, expected, executionTime, args interface{}, success bool) (bool, string) {
 	status := reflect.DeepEqual(result, expected)
 	if !status {
-		sendFailureMessage("failure", result, message)
-		return false
+		message := buildAssertMessage("failure", result, expected, executionTime, args)
+		return false, message
 	}
 
-	return success
+	message := buildAssertMessage("success", result, expected, executionTime, args)
+	return success, message
 }
 
-func sendMessage(status string, result interface{}) {
-	fmt.Printf(`{"status": "%s", "result": %s}`, status, toJSON(result))
-  fmt.Println()
+func buildMessage(status string, result interface{}) string {
+	return fmt.Sprintf(`{"status": "%s", "result": %s}`, status, toJSON(result))
 }
 
-func sendFailureMessage(status string, result, arguments interface{}) {
-  fmt.Printf(`{"status": "%s", "result": %s, "arguments": %s}`, status, toJSON(result), toJSON(arguments))
-  fmt.Println()
+func buildAssertMessage(status string, result, expected, executionTime, arguments interface{}) string {
+  return fmt.Sprintf(`{"status": "%s", "result": %s, "expected": %s, "arguments": %s, "execution_time": %s}`, status, toJSON(result), toJSON(expected), toJSON(arguments), toJSON(executionTime))
 }
 
 func toJSON(data interface{}) []byte {
@@ -58,4 +68,8 @@ func toJSON(data interface{}) []byte {
 		os.Exit(0)
 	}
 	return result
+}
+
+func sendMessage(message string) {
+  fmt.Println(message);
 }
