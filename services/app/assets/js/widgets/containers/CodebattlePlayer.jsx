@@ -234,20 +234,23 @@ class CodebattlePlayer extends Component {
 
   render() {
     const { records } = this.props;
+    console.log(records);
 
     const {
-      isEnabled, direction, value: currentValue, isHold, isStop, lastIntent, defaultSpeed,
+      isEnabled, direction, value: currentValue, isHold, isStop, lastIntent, defaultSpeed, isStoreLoaded,
     } = this.state;
 
-    if (_.isEmpty(records)) {
+    if (isStoreLoaded) {
       return null;
     }
+
 
     return (
       <>
         <div className="py-4" />
         <div className="container-fluid fixed-bottom my-1">
           <div className="px-1">
+            <button className="btn">Hide replayer</button>
             <div className="border bg-light py-2">
               <div className="row align-items-center justify-content-center">
                 <ControlPanel
@@ -289,6 +292,7 @@ const mapStateToProps = state => ({
   stepCoefficient: selectors.getStepCoefficient(state),
   getEditorTextPlaybook: ({ userId }) => selectors.getEditorTextPlaybook(state, userId),
   getEditorLangPlaybook: ({ userId }) => selectors.userLangSelector(userId)(state),
+  isStoreLoded: selectors.isStoreLoaded,
 });
 
 const mapDispatchToProps = {

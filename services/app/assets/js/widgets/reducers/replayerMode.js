@@ -6,6 +6,9 @@ const replayerMode = createReducer(ReplayerModes.none, {
   [actions.setReplayerModeOn]() {
     return ReplayerModes.on;
   },
+  [actions.serReplayerModeOff]() {
+    return ReplayerModes.off;
+  }
 });
 
 export default replayerMode;

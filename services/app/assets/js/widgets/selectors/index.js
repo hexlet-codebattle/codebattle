@@ -182,4 +182,4 @@ export const isOpponentInGame = state => {
   return !_.isUndefined(findedUser);
 };
 
-export const playerModeSelector = state => state.playerMode;
+export const  replayerModeSelector = state => state.replayerMode;

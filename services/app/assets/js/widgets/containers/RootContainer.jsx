@@ -9,7 +9,7 @@ import userTypes from '../config/userTypes';
 import * as actions from '../actions';
 import * as GameActions from '../middlewares/Game';
 import GameStatusCodes from '../config/gameStatusCodes';
-import { gameStatusSelector, playerModeSelector } from '../selectors';
+import { gameStatusSelector, replayerModeSelector } from '../selectors';
 import WaitingOpponentInfo from '../components/WaitingOpponentInfo';
 import CodebattlePlayer from './CodebattlePlayer';
 import ReplayerModes from '../config/replayerModes';
@@ -17,7 +17,8 @@ import ReplayerModes from '../config/replayerModes';
 const RootContainer = ({
   storeLoaded, gameStatusCode, checkResult, init, setCurrentUser,
 }) => {
-  const playerMode = useSelector((state) => playerModeSelector(state));
+  const replayerMode = useSelector((state) => replayerModeSelector(state));
+  console.log(replayerMode);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -46,9 +47,15 @@ const RootContainer = ({
 
   const isGameOver = gameStatusCode === GameStatusCodes.gameOver;
 
-  const isReplayerModeOff = playerMode !== ReplayerModes.on;
+  const isReplayerModeOff = replayerMode !== ReplayerModes.on;
 
-  const isReplayerModeInitialized = playerMode !== ReplayerModes.none;
+  const isReplayerModeInitialized = replayerMode !== ReplayerModes.none;
+
+  const isReplayerModeOn = replayerMode === ReplayerModes.on;
+
+  console.log(isReplayerModeOn);
+  console.log(ReplayerModes.on);
+  console.log(replayerMode);
 
   const showReplayer = () => {
     dispatch(actions.setReplayerModeOn());
@@ -63,7 +70,7 @@ const RootContainer = ({
           <GameWidget />
         </div>
       </div>
-      {isStoredGame && <CodebattlePlayer />}
+      {isReplayerModeOn && <CodebattlePlayer />}
       {isGameOver && isReplayerModeOff && (
         <button className="btn btn-primary" onClick={showReplayer}>Show replayer</button>
       )}
