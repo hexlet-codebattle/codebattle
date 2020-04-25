@@ -61,7 +61,7 @@ config :phoenix_meta_tags,
   title: "Hexlet Codebattle",
   description: "Game for programmers",
   url: "https://codebattle.hexlet.io",
-  image: "https://raw.githubusercontent.com/v1valasvegan/og-test/master/codebattle.png",
+  image: "https://codebattle.hexlet.io/assets/images/natasha.png",
   "og:text": "Hexlet Codebattle",
   fb: %{
     name: "Hexlet Codebattle",
