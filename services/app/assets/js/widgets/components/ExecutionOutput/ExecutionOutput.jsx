@@ -1,5 +1,4 @@
 import React from 'react';
-import _ from 'lodash';
 import i18n from '../../../i18n';
 import AccordeonBox from './AccordeonBox';
 
@@ -28,7 +27,6 @@ const ExecutionOutput = ({
     output, result = {}, asserts = [], assertsCount, successCount,
   } = {},
 }) => {
-  
   const resultData = JSON.parse(result);
   const assertsData = asserts.map(JSON.parse);
   const countFailAsserts = assertsCount - successCount;
