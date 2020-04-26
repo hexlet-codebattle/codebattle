@@ -81,9 +81,9 @@ const SubMenu = ({
           ) : null}
         </div>
         <pre className="my-2">
-          {assert.result !== undefined ? <span className="d-block">{`Receive: ${assert.result}`}</span> : null}
-          {assert.expected !== undefined ? <span className="d-block">{`Expected: ${assert.expected}`}</span> : null}
-          {assert.arguments !== undefined ? <span className="d-block">{`Arguments: [${assert.arguments}]`}</span> : null}
+          {assert.result !== undefined ? <span className="d-block">{`Receive: ${JSON.stringify(assert.result)}`}</span> : null}
+          {assert.expected !== undefined ? <span className="d-block">{`Expected: ${JSON.stringify(assert.expected)}`}</span> : null}
+          {assert.arguments !== undefined ? <span className="d-block">{`Arguments: ${JSON.stringify(assert.arguments)}`}</span> : null}
         </pre>
         {hasOutput ? (
           <button

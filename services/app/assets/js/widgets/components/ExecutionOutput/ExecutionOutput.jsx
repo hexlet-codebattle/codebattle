@@ -4,7 +4,7 @@ import i18n from '../../../i18n';
 import AccordeonBox from './AccordeonBox';
 
 const statusColor = {
-  '': 'info',
+  undefined: 'info',
   error: 'danger',
   failure: 'danger',
   ok: 'success',
@@ -19,7 +19,7 @@ const getMessage = status => {
     case 'ok':
       return i18n.t('Yay! All tests passed!!111');
     default:
-      return i18n.t('Oops');
+      return i18n.t('Press "Check Solution" to check the solution or press "Give up"');
   }
 };
 
@@ -28,9 +28,7 @@ const ExecutionOutput = ({
     output, result = {}, asserts = [], assertsCount, successCount,
   } = {},
 }) => {
-  if (_.isEmpty(output)) {
-    return null;
-  }
+  
   const resultData = JSON.parse(result);
   const assertsData = asserts.map(JSON.parse);
   const countFailAsserts = assertsCount - successCount;
