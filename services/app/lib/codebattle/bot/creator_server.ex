@@ -14,7 +14,7 @@ defmodule Codebattle.Bot.CreatorServer do
     {:ok, %{}}
   end
 
-  def handle_info(:create_bot_if_needed, _state) do
+  def handle_info(:create_bot_if_needed, state) do
     levels = ["elementary", "easy", "medium", "hard"]
 
     for level <- levels do
@@ -23,7 +23,7 @@ defmodule Codebattle.Bot.CreatorServer do
     end
 
     Process.send_after(self(), :create_bot_if_needed, 3_000)
-    {:noreply, %{}}
+    {:noreply, state}
   end
 
   def handle_info(_, state) do

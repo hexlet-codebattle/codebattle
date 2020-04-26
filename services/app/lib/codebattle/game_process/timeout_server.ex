@@ -34,7 +34,16 @@ defmodule Codebattle.GameProcess.TimeoutServer do
   end
 
   def handle_info(:trigger_timeout, game_id) do
-    Play.timeout_game(game_id)
+
+    # case Play.timeout_game(game_id) do
+    # {:ok, :restart}
+
+    #   Process.send_after(self(), :trigger_timeout, timeout_seconds * 1000)
+
+    # {:noreply, game_id}
+    #   _ ->
+    # {:noreply, game_id}
+    # end
     {:noreply, game_id}
   end
 

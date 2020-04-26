@@ -146,6 +146,13 @@ defmodule Codebattle.GameProcess.Play do
   end
 
   def timeout_game(id) do
+    # {:ok, fsm} = get_fsm(id)
+    # case fsm.state do
+    #   :waiting_opponent  -> :retrigger_timeout_if_exists
+    #   :playing -> :terminate_game
+    #   :game_over -> :terminate_game
+    #   Codebattle.GameProcess.GlobalSupervisor.terminate_game(game_id)
+    # end
     if ActiveGames.game_exists?(id) do
       Server.call_transition(id, :timeout, %{})
       ActiveGames.terminate_game(id)
