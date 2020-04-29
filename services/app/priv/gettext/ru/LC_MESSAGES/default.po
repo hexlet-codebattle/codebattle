@@ -235,20 +235,29 @@ msgid "SourceCode"
 msgstr "Исходный Код"
 
 # JSX
+msgid "Task: "
+msgstr "Задачи: "
+
+msgid "Found a mistake? Have something to add? Pull Requests are welcome: "
+msgstr ""
+
 msgid "Run your code!"
 msgstr "Запустите ваш код!"
 
-msgid "You have some syntax errors: %{errors}"
+msgid "You have some syntax errors"
 msgstr "У вас есть синтаксические ошибки: %{errors}"
 
-msgid "Test failed with arguments (%{arguments})"
-msgstr "Тест провалился с аргументами (%{arguments})"
+msgid "Tests failed"
+msgstr "Тесты не пройдены"
 
-msgid ", and you passed %{successCount} from %{assertsCount} asserts. (%{percent}%)"
-msgstr ", и вы прошли %{successCount} из %{assertsCount} тестов. (%{percent}%)"
+msgid "You passed %{successCount} from %{assertsCount} asserts. (%{percent}%)"
+msgstr "Вы прошли %{successCount} из %{assertsCount} тестов. (%{percent}%)"
 
 msgid "Yay! All tests passed!!111"
 msgstr "Поздравляю! Вы прошли все тесты!!111"
+
+msgid "Press Check solution or Give up"
+msgstr "Нажмите 'Проверить решение' или 'Сдаться'"
 
 msgid "Give up"
 msgstr "Cдаться"
@@ -258,6 +267,18 @@ msgstr "Отправить решение"
 
 msgid "Сheck status:"
 msgstr "Статус проверки:"
+
+msgid "execution time: %{time} ms"
+msgstr "время выполнения: %{time} ms"
+
+msgid "Receive:"
+msgstr "Получено:"
+
+msgid "Expected:"
+msgstr "Ожидалось:"
+
+msgid "Arguments:"
+msgstr "Аргументы:"
 
 msgid "Oops"
 msgstr "Упс"

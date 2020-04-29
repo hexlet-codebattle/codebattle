@@ -14,11 +14,11 @@ const getMessage = status => {
     case 'error':
       return i18n.t('You have some syntax errors');
     case 'failure':
-      return i18n.t('Test failed ');
+      return i18n.t('Test failed');
     case 'ok':
       return i18n.t('Yay! All tests passed!!111');
     default:
-      return i18n.t('Press "Check Solution" to check the solution or press "Give up"');
+      return i18n.t('Press Check solution or press Give up');
   }
 };
 
@@ -29,13 +29,12 @@ const ExecutionOutput = ({
 }) => {
   const resultData = JSON.parse(result);
   const assertsData = asserts.map(JSON.parse);
-  const countFailAsserts = assertsCount - successCount;
-
+  const percent = (100 * successCount) / assertsCount;
   return (
     <>
       <AccordeonBox>
         <AccordeonBox.Menu
-          count={`${countFailAsserts} of ${assertsData.length}`}
+          count={i18n.t('You passed %{successCount} from %{assertsCount} asserts. (%{percent}%)', { successCount, assertsCount, percent })}
           statusColor={statusColor[resultData.status]}
           message={getMessage(resultData.status)}
         >
