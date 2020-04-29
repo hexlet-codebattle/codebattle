@@ -19,6 +19,7 @@ defmodule Checker.Mixfile do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      {:credo, "~> 1.4"}
       {:poison, "~> 3.1"},
       {:jason, "~> 1.1"}
     ]
