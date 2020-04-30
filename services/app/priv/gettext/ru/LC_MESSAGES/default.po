@@ -236,7 +236,7 @@ msgstr "Исходный Код"
 
 # JSX
 msgid "Task: "
-msgstr "Задачи: "
+msgstr "Задача: "
 
 msgid "Found a mistake? Have something to add? Pull Requests are welcome: "
 msgstr ""
