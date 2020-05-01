@@ -11,7 +11,7 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
   end
 
   def mount(_params, session, socket) do
-    CodebattleWeb.Endpoint.subscribe(@topic)
+    Phoenix.PubSub.subscribe(:cb_pubsub, @topic)
 
     {:ok,
      assign(socket,

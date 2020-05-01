@@ -19,7 +19,7 @@ defmodule Codebattle.Mixfile do
       ],
       test_coverage: [tool: ExCoveralls],
       deps: deps(),
-      elixirc_options: [warnings_as_errors: false]
+      elixirc_options: [warnings_as_errors: true]
     ]
   end
 
@@ -29,7 +29,7 @@ defmodule Codebattle.Mixfile do
   def application do
     [
       mod: {Codebattle.Application, []},
-      extra_applications: [:ssl, :mix, :runtime_tools, :logger]
+      extra_applications: [:ssl, :mix, :runtime_tools, :logger, :os_mon]
     ]
   end
 
@@ -42,29 +42,30 @@ defmodule Codebattle.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.4.16"},
-      {:phoenix_pubsub, "~> 1.0"},
+      {:phoenix, "~> 1.5.0", override: true},
       {:phoenix_ecto, "~> 4.0"},
-      {:phoenix_live_view, "0.10.0"},
+      {:phoenix_live_view, "0.12.0"},
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 2.14"},
+      {:phoenix_live_dashboard, "~> 0.2.0"},
+      {:telemetry_metrics, "~> 0.4"},
+      {:telemetry_poller, "~> 0.4"},
       {:gettext, "~> 0.11"},
-      {:cowboy, "~> 1.0"},
-      {:plug_cowboy, "~> 1.0"},
+      {:cowboy, "~> 2.0"},
+      {:plug_cowboy, "~> 2.0"},
       {:phoenix_slime, github: "slime-lang/phoenix_slime"},
       {:slime, github: "slime-lang/slime", override: true},
       {:ueberauth, "~> 0.5"},
       {:ueberauth_github, "~> 0.7"},
       {:gproc, "~> 0.6"},
       {:fsm, "~> 0.3"},
-      {:poison, "~> 3.1.0", override: true},
-      {:phoenix_gon, "~> 0.2.0"},
+      {:phoenix_gon, "~> 0.4.0"},
       {:text_delta, "~> 1.3.0"},
       {:yaml_elixir, "~> 2.1"},
       {:temp, "~> 0.4"},
       {:atomic_map, "~> 0.8"},
       {:envy, "~> 1.1.1"},
-      {:one_signal, git: "https://github.com/vtm9/one_signal.git"},
+      {:one_signal, "~> 0.0.9"},
       {:paginator, "~> 0.6"},
       {:scrivener_ecto, "~> 2.2"},
       {:scrivener_html, git: "https://github.com/hlongvu/scrivener_html.git"},

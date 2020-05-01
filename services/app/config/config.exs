@@ -23,12 +23,15 @@ config :codebattle, CodebattleWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "zQ3/vT3oIVM94qXO7IgWeAqbLSAyGA9em6fdBw7OdbDnbeotEkWYANrjJWYNWpd/",
   render_errors: [view: CodebattleWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: Codebattle.PubSub, adapter: Phoenix.PubSub.PG2]
+  pubsub_server: :cb_pubsub,
+  live_view: [signing_salt: "asdfasdf"]
 
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
+
+config :phoenix, :json_library, Jason
 
 config :phoenix, :template_engines,
   slim: PhoenixSlime.Engine,
@@ -74,8 +77,6 @@ config :phoenix_meta_tags,
       }
     }
   }
-
-config :codebattle, CodebattleWeb.Endpoint, live_view: [signing_salt: "asdfasdf"]
 
 config :codebattle, Codebattle.Bot,
   timeout_start_playbook: 2_000,

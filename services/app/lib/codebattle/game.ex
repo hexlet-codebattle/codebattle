@@ -10,7 +10,7 @@ defmodule Codebattle.Game do
     %{"elementary" => 0, "easy" => 1, "medium" => 2, "hard" => 3}
   end
 
-  @derive {Poison.Encoder, only: [:id, :users, :state, :starts_at, :finishs_at]}
+  @derive {Jason.Encoder, only: [:id, :users, :state, :starts_at, :finishs_at]}
   @types ~w(public bot tournament private)
 
   schema "games" do

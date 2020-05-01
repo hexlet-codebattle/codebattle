@@ -6,7 +6,8 @@ config :codebattle, CodebattleWeb.Endpoint,
   cache_static_manifest: "priv/static/cache_manifest.json",
   server: true,
   root: ".",
-  version: Mix.Project.config()[:version]
+  version: Mix.Project.config()[:version],
+  check_origin: ["//codebattle.hexlet.io"]
 
 config :logger, level: :error
 

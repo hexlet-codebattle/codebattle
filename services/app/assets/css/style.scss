@@ -2,11 +2,11 @@ $body-bg: #fafafa;
 $green: #64b079;
 $secondary: #477591;
 @import "~bootstrap/scss/bootstrap";
+@import "~nprogress/nprogress.css";
 
 $font-family-sans-serif: "Roboto", sans-serif;
 $fa-font-path: "/fonts";
 
-@import "../../deps/phoenix_live_view/assets/css/live_view.css";
 @import "fonts";
 @import "~font-mfizz/dist/font-mfizz.css";
 @import "tournaments";
@@ -79,7 +79,7 @@ a {
   left: 0;
   top: 12px;
   opacity: 0;
-  transform: translateY(-100%)
+  transform: translateY(-100%);
 }
 
 .cb-slider-handle {
@@ -105,7 +105,6 @@ a {
   bottom: 0;
   left: 0;
 }
-
 
 .cb-username-td {
   max-width: 350px;

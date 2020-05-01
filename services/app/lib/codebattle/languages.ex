@@ -18,6 +18,8 @@ defmodule Codebattle.Languages do
   end
 
   defmodule TypeTemplates do
+    @derive Jason.Encoder
+
     defstruct boolean_true: "true",
               boolean_false: "false",
               array: "[<%= entries %>]",

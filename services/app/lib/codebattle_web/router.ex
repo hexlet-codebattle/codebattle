@@ -1,6 +1,7 @@
 defmodule CodebattleWeb.Router do
   use CodebattleWeb, :router
   use Plug.ErrorHandler
+  import Phoenix.LiveDashboard.Router
 
   require Logger
 
@@ -59,6 +60,11 @@ defmodule CodebattleWeb.Router do
       post("/:id/join", GameController, :join)
       post("/:id/check", GameController, :check)
     end
+  end
+
+  scope "/" do
+    pipe_through(:browser)
+    live_dashboard("/dashboard_codebattle", metrics: CodebattleWeb.Telemetry)
   end
 
   def handle_errors(conn, %{reason: %Ecto.NoResultsError{}}) do

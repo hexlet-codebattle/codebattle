@@ -6,10 +6,11 @@ defmodule Codebattle.IntegrationCase do
   using do
     quote do
       alias CodebattleWeb.Router.Helpers, as: Routes
-      use Phoenix.ChannelTest
+      import Phoenix.ChannelTest
       import CodebattleWeb.Router.Helpers
       import CodebattleWeb.Factory
-      use Phoenix.ConnTest
+      import Plug.Conn
+      import Phoenix.ConnTest
       use CodebattleWeb.ConnCase
       use PhoenixIntegration
 

@@ -5,7 +5,7 @@ defmodule Codebattle.Task do
   import Ecto.Changeset
   import Ecto.Query
 
-  @derive {Poison.Encoder, only: [:id, :name, :level, :description]}
+  @derive {Jason.Encoder, only: [:id, :name, :level, :description]}
 
   schema "tasks" do
     field(:description, :string)
