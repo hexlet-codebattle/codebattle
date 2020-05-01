@@ -77,6 +77,7 @@ defmodule Codebattle.Mixfile do
       {:timex, "~> 3.5"},
       {:deep_merge, "~> 1.0"},
       {:httpoison, "~> 1.5"},
+      {:poison, "~> 3.0"},
       {:phoenix_meta_tags, ">= 0.1.8"},
 
       # dev_and_test
