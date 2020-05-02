@@ -14,7 +14,7 @@ defmodule Codebattle.Application do
       if Mix.env() == :prod do
         [
           worker(Codebattle.DockerLangsPuller, []),
-          worker(Codebattle.AssertsImporter, [])
+          worker(Codebattle.TasksImporter, [])
         ]
       else
         []
