@@ -15,3 +15,4 @@ ADD Check/Solution.hs ./Check/Solution.hs
 RUN ln -s check Check
 RUN cabal new-update
 RUN cabal new-build
+RUN cabal new-install hlint
