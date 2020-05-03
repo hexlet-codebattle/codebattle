@@ -3,7 +3,7 @@ import i18n from '../../../i18n';
 import AccordeonBox from './AccordeonBox';
 
 const statusColor = {
-  undefined: 'info',
+  info: 'info',
   error: 'danger',
   failure: 'danger',
   ok: 'success',
@@ -22,31 +22,38 @@ const getMessage = status => {
   }
 };
 
+const parseResult = result => {
+  if (result) return JSON.parse(result);
+  return { status: 'info' };
+};
+
 const ExecutionOutput = ({
   output: {
-    output, result = '{}', asserts = [], assertsCount, successCount,
+    output, result, asserts = [], assertsCount, successCount,
   } = {},
 }) => {
-  const resultData = JSON.parse(result);
+  const resultData = parseResult(result);
   const assertsData = asserts.map(JSON.parse);
   const percent = (100 * successCount) / assertsCount;
   return (
     <>
       <AccordeonBox>
         <AccordeonBox.Menu
-          count={i18n.t('You passed %{successCount} from %{assertsCount} asserts. (%{percent}%)', { successCount, assertsCount, percent })}
+          count={i18n.t(
+            'You passed %{successCount} from %{assertsCount} asserts. (%{percent}%)',
+            { successCount, assertsCount, percent },
+          )}
           statusColor={statusColor[resultData.status]}
           message={getMessage(resultData.status)}
         >
-          {resultData.status === 'error'
-            ? (
-              <AccordeonBox.Item
-                statusColor={statusColor[resultData.status]}
-                output={output}
-                result={resultData.result}
-              />
-            )
-            : assertsData.map((assert, index) => (
+          {resultData.status === 'error' ? (
+            <AccordeonBox.Item
+              statusColor={statusColor[resultData.status]}
+              output={output}
+              result={resultData.result}
+            />
+          ) : (
+            assertsData.map((assert, index) => (
               <AccordeonBox.SubMenu
                 key={index.toString()}
                 statusColor={statusColor[assert.status]}
@@ -58,11 +65,10 @@ const ExecutionOutput = ({
                   output={assert.output}
                 />
               </AccordeonBox.SubMenu>
-            ))}
+            ))
+          )}
         </AccordeonBox.Menu>
       </AccordeonBox>
-
-
     </>
   );
 };
