@@ -146,7 +146,7 @@ defmodule Codebattle.GameProcess.Play do
   end
 
   def timeout_game(id) do
-    {:ok, fsm} = get_fsm(game_id)
+    {:ok, fsm} = get_fsm(id)
 
     case fsm.state do
       :game_over ->
