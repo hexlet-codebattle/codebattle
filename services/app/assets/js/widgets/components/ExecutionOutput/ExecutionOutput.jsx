@@ -24,7 +24,7 @@ const getMessage = status => {
 
 const ExecutionOutput = ({
   output: {
-    output, result = "", asserts = [], assertsCount, successCount,
+    output, result = "{}", asserts = [], assertsCount, successCount,
   } = {},
 }) => {
   const resultData = JSON.parse(result);
