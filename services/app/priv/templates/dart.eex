@@ -2,7 +2,7 @@ import 'package:test/test.dart';
 import 'package:dart_json/dart_json.dart';
 import 'dart:async';
 
-import 'package:dart/solution.dart';
+import 'package:check/solution.dart';
 
 void main() {
   test("Run Asserts", () {
@@ -30,8 +30,8 @@ void main() {
       ));
     } catch (e) {
       asserts_.add({
-        "status": "error",
-        "result": e,
+        'status': 'error',
+        'result': e
       });
     }
 

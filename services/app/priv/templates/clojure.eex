@@ -6,16 +6,37 @@
      (System/exit 0)
      )))
 
+(defmacro with-out-str-data-map
+  [& body]
+  `(let [s# (new java.io.StringWriter)]
+     (binding [*out* s#]
+       (let [r# ~@body]
+         {:result r#
+          :output    (str s#)}))))
+
+(defn get_solution_result
+  [solution args]
+  (let [start (System/currentTimeMillis)
+    run_info (with-out-str-data-map (apply solution args))
+    execution_time (- (System/currentTimeMillis) start)
+  ]
+  {:result (get run_info :result) :output (get run_info :output) :execution_time execution_time}))
+
 (defn assert_result
-  [expected result args]
-  (try (assert (= expected result))
-       (println (json/write-str {:status "success" :result result :expected expected :arguments args}))
-       true
-       (catch java.lang.AssertionError e
-         (do
-           (println (json/write-str {:status "failure" :result result :expected expected :arguments args}))
-           false
-           ))))
+  [expected solution args]
+  (let [info (get_solution_result solution args)
+    result (get info :result)
+    execution_time (get info :execution_time)
+    output (get info :output)]
+
+    (try (assert (= expected result))
+      (println (json/write-str {:status "success" :result result :expected expected :output output :arguments args :execution_time execution_time}))
+      true
+    (catch java.lang.AssertionError e
+      (do
+        (println (json/write-str {:status "failure" :result result :expected expected :output output :arguments args :execution_time execution_time}))
+        false
+        )))))
 
 (defn get_test_status [status_test status_assert]
   (if status_test
@@ -27,13 +48,17 @@
 
 (defn generate-tests
   [solution]
-  (let [success
-        (reduce get_test_status
-          [
-            <%= for %{arguments: arguments, expected: expected } <- checks do %>
-              (assert_result <%= expected %> (apply solution [<%= arguments %>]), [<%= arguments %>])
-            <% end %>
-          ])]
-    (if success
-      (println (json/write-str {:status "ok" :result <%= hash_sum %>})))))
-
+  (try (let [success
+              (reduce get_test_status
+                [
+                  <%= for %{arguments: arguments, expected: expected } <- checks do %>
+                  (assert_result <%= expected %> solution [<%= arguments %>])
+                  <% end %>
+                ])]
+        (if success
+          (println (json/write-str {:status "ok" :result <%= hash_sum %>}))))
+    (catch Exception ex
+      (do
+        (println (json/write-str {:status "error" :result (.getMessage ex)}))
+        (System/exit 0)
+      ))))

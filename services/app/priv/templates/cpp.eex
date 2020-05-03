@@ -82,7 +82,6 @@ int main() {
       json message = BuildMessage("ok", <%= hash_sum %>);
       finalResults_.push_back(message);
     }
-
   } catch (const std::exception& e) {
     json message = BuildMessage("error", e.what());
     finalResults_.push_back(message);
