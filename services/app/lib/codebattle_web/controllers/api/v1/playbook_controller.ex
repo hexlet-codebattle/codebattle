@@ -9,7 +9,8 @@ defmodule CodebattleWeb.Api.V1.PlaybookController do
     query =
       from(
         p in Playbook,
-        where: p.game_id == ^game_id
+        where: p.game_id == ^game_id,
+        limit: 1
       )
 
     playbook = Repo.one(query)
