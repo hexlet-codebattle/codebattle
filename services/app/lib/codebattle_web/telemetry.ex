@@ -9,7 +9,7 @@ defmodule CodebattleWeb.Telemetry do
   @impl true
   def init(_arg) do
     children = [
-      {:telemetry_poller, measurements: periodic_measurements(), period: 5_000}
+      {:telemetry_poller, measurements: periodic_measurements(), period: 1_000}
       # Add reporters as children of your supervision tree.
       # {Telemetry.Metrics.ConsoleReporter, metrics: metrics()}
     ]

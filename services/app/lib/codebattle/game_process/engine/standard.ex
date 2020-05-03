@@ -14,9 +14,9 @@ defmodule Codebattle.GameProcess.Engine.Standard do
 
   use Engine.Base
 
-  # 1 hour
-  @default_timeout 3600
-  @timeout_seconds_whitelist [60, 120, 300, 600, 1200, 3600]
+  # 2 hour
+  @default_timeout 7200
+  @timeout_seconds_whitelist [60, 120, 300, 600, 1200, 3600, 7200]
 
   @impl Engine.Base
   def create_game(%{user: user, level: level, type: type} = params) do
@@ -43,7 +43,7 @@ defmodule Codebattle.GameProcess.Engine.Standard do
            }),
          :ok <- ActiveGames.create_game(fsm),
          {:ok, _} <- GlobalSupervisor.start_game(fsm),
-         :ok <- Codebattle.GameProcess.TimeoutServer.restart(game.id, timeout_seconds) do
+         :ok <- start_timeout_timer(game.id, fsm) do
       case type do
         "public" ->
           Task.start(fn ->
@@ -93,7 +93,6 @@ defmodule Codebattle.GameProcess.Engine.Standard do
       end)
 
       broadcast_active_game(fsm)
-
       start_timeout_timer(game_id, fsm)
 
       {:ok, fsm}
@@ -159,7 +158,7 @@ defmodule Codebattle.GameProcess.Engine.Standard do
     {:ok, _} = GlobalSupervisor.start_game(fsm)
     Server.update_playbook(game.id, :join, %{players: players})
 
-    Codebattle.GameProcess.TimeoutServer.restart(game.id, timeout_seconds)
+    start_timeout_timer(game.id, fsm)
     broadcast_active_game(fsm)
     {:ok, game.id}
   end

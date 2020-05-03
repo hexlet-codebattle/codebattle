@@ -63,7 +63,6 @@ defmodule Codebattle.GameProcess.Engine.Bot do
       run_bot!(fsm)
 
       broadcast_active_game(fsm)
-
       start_timeout_timer(game_id, fsm)
 
       {:ok, fsm}

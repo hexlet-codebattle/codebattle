@@ -25,9 +25,9 @@ defmodule Codebattle.GameProcess.Play do
     query =
       from(
         games in Game,
-        order_by: [desc: games.id],
+        order_by: [desc_nulls_last: games.finishs_at],
         where: [state: "game_over"],
-        limit: 20,
+        limit: 30,
         preload: [:users, :user_games]
       )
 
@@ -146,22 +146,26 @@ defmodule Codebattle.GameProcess.Play do
   end
 
   def timeout_game(id) do
-    if ActiveGames.game_exists?(id) do
-      Server.call_transition(id, :timeout, %{})
-      ActiveGames.terminate_game(id)
-      Notifications.game_timeout(id)
-      Notifications.remove_active_game(id)
-      {:ok, fsm} = get_fsm(id)
-      Notifications.notify_tournament(:game_over, fsm, %{game_id: id, state: "canceled"})
+    {:ok, fsm} = get_fsm(id)
 
-      id
-      |> get_game
-      |> Game.changeset(%{state: "timeout"})
-      |> Repo.update!()
+    case fsm.state do
+      :game_over ->
+        Codebattle.GameProcess.GlobalSupervisor.terminate_game(id)
 
-      :ok
-    else
-      :error
+      _ ->
+        Server.call_transition(id, :timeout, %{})
+        ActiveGames.terminate_game(id)
+        Notifications.game_timeout(id)
+        Notifications.remove_active_game(id)
+        Notifications.notify_tournament(:game_over, fsm, %{game_id: id, state: "canceled"})
+        Codebattle.GameProcess.GlobalSupervisor.terminate_game(id)
+
+        id
+        |> get_game
+        |> Game.changeset(%{state: "timeout"})
+        |> Repo.update!()
+
+        :ok
     end
   end
 
