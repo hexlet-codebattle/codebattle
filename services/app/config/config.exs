@@ -62,7 +62,8 @@ config :scrivener_html,
 
 config :phoenix_meta_tags,
   title: "Hexlet Codebattle • Game for programmers",
-  description: "Free online game for programmers. No ads, registration from github. Solve Tasks with the bot, friends or random players.",
+  description:
+    "Free online game for programmers. No ads, registration from github. Solve Tasks with the bot, friends or random players.",
   url: "https://codebattle.hexlet.io",
   image: "https://codebattle.hexlet.io/assets/images/natasha.png",
   fb: %{
