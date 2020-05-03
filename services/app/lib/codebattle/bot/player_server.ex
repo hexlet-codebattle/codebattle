@@ -139,7 +139,7 @@ defmodule Codebattle.Bot.PlayerServer do
         {:keep_state, new_state}
 
       :stop ->
-        {:keep_state, state}
+        {:next_state, :stop, state}
     end
   end
 
