@@ -43,7 +43,7 @@ defmodule Codebattle.GameProcess.Engine.Standard do
            }),
          :ok <- ActiveGames.create_game(fsm),
          {:ok, _} <- GlobalSupervisor.start_game(fsm),
-         :ok <- Codebattle.GameProcess.TimeoutServer.restart(game.id, timeout_seconds) do
+         :ok <- start_timeout_timer(game.id, fsm) do
       case type do
         "public" ->
           Task.start(fn ->
@@ -93,7 +93,6 @@ defmodule Codebattle.GameProcess.Engine.Standard do
       end)
 
       broadcast_active_game(fsm)
-
       start_timeout_timer(game_id, fsm)
 
       {:ok, fsm}
@@ -159,7 +158,7 @@ defmodule Codebattle.GameProcess.Engine.Standard do
     {:ok, _} = GlobalSupervisor.start_game(fsm)
     Server.update_playbook(game.id, :join, %{players: players})
 
-    Codebattle.GameProcess.TimeoutServer.restart(game.id, timeout_seconds)
+    start_timeout_timer(game.id, fsm)
     broadcast_active_game(fsm)
     {:ok, game.id}
   end

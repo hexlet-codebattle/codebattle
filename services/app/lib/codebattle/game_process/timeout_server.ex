@@ -9,7 +9,7 @@ defmodule Codebattle.GameProcess.TimeoutServer do
 
   # API
 
-  def restart(game_id, timeout_seconds) do
+  def start(game_id, timeout_seconds) do
     Logger.info(
       "Restart timeout server timer for game_id: #{game_id}, new timeout: #{timeout_seconds} seconds"
     )
@@ -25,23 +25,28 @@ defmodule Codebattle.GameProcess.TimeoutServer do
 
   def init(game_id) do
     Logger.info("Start timeout server for game_id: #{game_id}")
-    {:ok, game_id}
+    {:ok, %{game_id: game_id, timeouts_count: 0}}
   end
 
-  def handle_cast({:restart, timeout_seconds}, game_id) do
+  def handle_cast({:restart, timeout_seconds}, %{game_id: game_id, timeouts_count: timeouts_count}) do
     Process.send_after(self(), :trigger_timeout, timeout_seconds * 1000)
-    {:noreply, game_id}
+    {:noreply, %{game_id: game_id, timeouts_count: timeouts_count + 1}}
   end
 
-  def handle_info(:trigger_timeout, game_id) do
+  def handle_info(:trigger_timeout, %{game_id: game_id, timeouts_count: timeouts_count} = state)
+      when timeouts_count == 0 do
     case Play.timeout_game(game_id) do
-      :retrigger_timeout ->
+      {:retrigger_timeout, timeout_seconds} ->
         Process.send_after(self(), :trigger_timeout, timeout_seconds * 1000)
-        {:noreply, game_id}
+        {:noreply, state}
 
       _ ->
-        {:noreply, game_id}
+        {:noreply, state}
     end
+  end
+
+  def handle_info(:trigger_timeout, %{game_id: game_id, timeouts_count: timeouts_count}) do
+    {:noreply, %{game_id: game_id, timeouts_count: timeouts_count - 1}}
   end
 
   # TODO: FIXME without these prints error in tests

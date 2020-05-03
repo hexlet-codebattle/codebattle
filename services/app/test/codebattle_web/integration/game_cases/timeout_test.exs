@@ -49,7 +49,7 @@ defmodule Codebattle.GameCases.TimeoutTest do
     {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
     :timer.sleep(70)
 
-    TimeoutServer.restart(game_id, 1)
+    TimeoutServer.start(game_id, 1)
     :timer.sleep(1500)
 
     {:ok, fsm} = Server.get_fsm(game_id)
@@ -78,7 +78,7 @@ defmodule Codebattle.GameCases.TimeoutTest do
     |> get(game_path(conn2, :show, game_id))
     |> follow_button("Join")
 
-    TimeoutServer.restart(game_id, 0)
+    TimeoutServer.start(game_id, 0)
 
     :timer.sleep(1000)
 
