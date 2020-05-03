@@ -244,17 +244,20 @@ msgstr ""
 msgid "Run your code!"
 msgstr ""
 
-msgid "You have some syntax errors: %{errors}"
+msgid "You have some syntax errors"
 msgstr ""
 
-msgid "Test failed with arguments (%{arguments})"
+msgid "Tests failed"
 msgstr ""
 
-msgid ", and you passed %{successCount} from %{assertsCount} asserts. (%{percent}%)"
+msgid "You passed %{successCount} from %{assertsCount} asserts. (%{percent}%)"
 msgstr ""
 
 msgid "Yay! All tests passed!!111"
 msgstr ""
+
+msgid "Press Check solution or Give up"
+msgstr "Press 'Check solution' or 'Give up'"
 
 msgid "Give up"
 msgstr ""
@@ -263,6 +266,18 @@ msgid "Сheck"
 msgstr ""
 
 msgid "Сheck status:"
+msgstr ""
+
+msgid "execution time: %{time} ms"
+msgstr ""
+
+msgid "Receive:"
+msgstr ""
+
+msgid "Expected:"
+msgstr ""
+
+msgid "Arguments:"
 msgstr ""
 
 msgid "Oops"

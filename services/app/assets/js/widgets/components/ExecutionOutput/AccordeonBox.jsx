@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import cn from 'classnames';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import _ from 'lodash';
+import i18n from '../../../i18n';
 
 
 const AccordeonBox = ({ children }) => (
@@ -76,14 +77,14 @@ const SubMenu = ({
           <span className={`badge badge-${statusColor} mr-3`}>{assert.status}</span>
           {assert.execution_time ? (
             <span className="font-weight-bold small ml-auto">
-              {`executionTime: ${assert.execution_time} ms`}
+              {i18n.t('execution time: %{time} ms', { time: assert.execution_time })}
             </span>
           ) : null}
         </div>
         <pre className="my-2">
-          {assert.result !== undefined ? <span className="d-block">{`Receive: ${assert.result}`}</span> : null}
-          {assert.expected !== undefined ? <span className="d-block">{`Expected: ${assert.expected}`}</span> : null}
-          {assert.arguments !== undefined ? <span className="d-block">{`Arguments: [${assert.arguments}]`}</span> : null}
+          <span className="d-block">{`${i18n.t('Receive:')} ${JSON.stringify(assert.result)}`}</span>
+          <span className="d-block">{`${i18n.t('Expected:')} ${JSON.stringify(assert.expected)}`}</span>
+          <span className="d-block">{`${i18n.t('Arguments:')} ${JSON.stringify(assert.arguments)}`}</span>
         </pre>
         {hasOutput ? (
           <button
