@@ -74,7 +74,7 @@ class NotificationsHandler extends Component {
     if (gameStatus.status === GameStatusCodes.timeout) {
       return ({
         alertStyle: 'danger',
-        msg: this.gameStatus.msg,
+        msg: gameStatus.msg,
       });
     } if (currentUserId === winner.id) {
       return ({
