@@ -47,7 +47,7 @@ defmodule CodebattleWeb.GameController do
 
             conn
             |> put_meta_tags(%{
-              title: "Join game",
+              title: "Hexlet Codebattle • Join game",
               description: "Game against #{player_info(player, fsm)}",
               url: Routes.game_path(conn, :show, id, level: FsmHelpers.get_level(fsm))
             })
@@ -59,7 +59,7 @@ defmodule CodebattleWeb.GameController do
 
             conn
             |> put_meta_tags(%{
-              title: "Cool game",
+              title: "Hexlet Codebattle • Cool game",
               description: "#{player_info(first, fsm)} vs #{player_info(second, fsm)}",
               url: Routes.game_path(conn, :show, id)
             })
@@ -83,7 +83,7 @@ defmodule CodebattleWeb.GameController do
               conn
               |> put_gon(is_record: true, game_id: id, langs: langs)
               |> put_meta_tags(%{
-                title: "Cool archived game",
+                title: "Hexlet Codebattle • Cool archived game",
                 description: "#{user_info(first)} vs #{user_info(second)}",
                 url: Routes.game_path(conn, :show, id)
               })
