@@ -34,17 +34,14 @@ defmodule Codebattle.GameProcess.TimeoutServer do
   end
 
   def handle_info(:trigger_timeout, game_id) do
+    case Play.timeout_game(game_id) do
+      :retrigger_timeout ->
+        Process.send_after(self(), :trigger_timeout, timeout_seconds * 1000)
+        {:noreply, game_id}
 
-    # case Play.timeout_game(game_id) do
-    # {:ok, :restart}
-
-    #   Process.send_after(self(), :trigger_timeout, timeout_seconds * 1000)
-
-    # {:noreply, game_id}
-    #   _ ->
-    # {:noreply, game_id}
-    # end
-    {:noreply, game_id}
+      _ ->
+        {:noreply, game_id}
+    end
   end
 
   # TODO: FIXME without these prints error in tests

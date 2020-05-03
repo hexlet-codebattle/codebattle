@@ -146,29 +146,33 @@ defmodule Codebattle.GameProcess.Play do
   end
 
   def timeout_game(id) do
-    # {:ok, fsm} = get_fsm(id)
-    # case fsm.state do
-    #   :waiting_opponent  -> :retrigger_timeout_if_exists
-    #   :playing -> :terminate_game
-    #   :game_over -> :terminate_game
-    #   Codebattle.GameProcess.GlobalSupervisor.terminate_game(game_id)
-    # end
-    if ActiveGames.game_exists?(id) do
-      Server.call_transition(id, :timeout, %{})
-      ActiveGames.terminate_game(id)
-      Notifications.game_timeout(id)
-      Notifications.remove_active_game(id)
-      {:ok, fsm} = get_fsm(id)
-      Notifications.notify_tournament(:game_over, fsm, %{game_id: id, state: "canceled"})
+    {:ok, fsm} = get_fsm(id)
 
-      id
-      |> get_game
-      |> Game.changeset(%{state: "timeout"})
-      |> Repo.update!()
+    case {fsm.state, FsmHelpers.bot_game?(fsm)} do
+      {:waiting_opponent, true} ->
+        :retrigger_timeout
 
-      :ok
-    else
-      :error
+      {:game_over, _} ->
+        Codebattle.GameProcess.GlobalSupervisor.terminate_game(game_id)
+
+      _ ->
+        if ActiveGames.game_exists?(id) do
+          Server.call_transition(id, :timeout, %{})
+          ActiveGames.terminate_game(id)
+          Notifications.game_timeout(id)
+          Notifications.remove_active_game(id)
+          Notifications.notify_tournament(:game_over, fsm, %{game_id: id, state: "canceled"})
+          Codebattle.GameProcess.GlobalSupervisor.terminate_game(game_id)
+
+          id
+          |> get_game
+          |> Game.changeset(%{state: "timeout"})
+          |> Repo.update!()
+
+          :ok
+        else
+          :error
+        end
     end
   end
 
