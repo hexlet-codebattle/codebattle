@@ -65,7 +65,7 @@ config :phoenix_meta_tags,
   description:
     "Free online game for programmers. No ads, registration from github. Solve Tasks with the bot, friends or random players.",
   url: "https://codebattle.hexlet.io",
-  image: "https://codebattle.hexlet.io/assets/images/natasha.png",
+  image: "https://codebattle.hexlet.io/assets/images/opengraph-main.png",
   fb: %{
     size: %{
       width: 100,

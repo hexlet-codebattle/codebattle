@@ -9,7 +9,13 @@ defmodule CodebattleWeb.UserController do
   plug(CodebattleWeb.Plugs.RequireAuth when action in @all)
 
   def index(conn, _params) do
-    render(conn, "index.html")
+    conn
+    |> put_meta_tags(%{
+      title: "Hexlet Codebattle • Users rating",
+      description: "Top Codebattle players ever, compare your skills with other developers",
+      url: Routes.user_path(conn, :index)
+    })
+    |> render("index.html")
   end
 
   def show(conn, %{"id" => user_id}) do
