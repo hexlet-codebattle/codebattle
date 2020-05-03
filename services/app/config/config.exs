@@ -61,13 +61,12 @@ config :scrivener_html,
   routes_helper: CodebattleWeb.Router.Helpers
 
 config :phoenix_meta_tags,
-  title: "Hexlet Codebattle",
-  description: "Game for programmers",
+  title: "Hexlet Codebattle • Game for programmers",
+  description:
+    "Free online game for programmers. No ads, registration from github. Solve Tasks with the bot, friends or random players.",
   url: "https://codebattle.hexlet.io",
   image: "https://codebattle.hexlet.io/assets/images/natasha.png",
-  "og:text": "Hexlet Codebattle",
   fb: %{
-    name: "Hexlet Codebattle",
     size: %{
       width: 100,
       height: 200,
@@ -76,6 +75,9 @@ config :phoenix_meta_tags,
         y: 15
       }
     }
+  },
+  twitter: %{
+    card: "summary_large_image"
   }
 
 config :codebattle, Codebattle.Bot,

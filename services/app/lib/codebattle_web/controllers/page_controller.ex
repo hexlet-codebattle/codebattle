@@ -6,4 +6,12 @@ defmodule CodebattleWeb.PageController do
 
     render(conn, "index.html", current_user: current_user)
   end
+
+  def robots(conn, _) do
+    render(conn, "robots.txt")
+  end
+
+  def sitemap(conn, _) do
+    render(conn, "sitemap.xml")
+  end
 end
