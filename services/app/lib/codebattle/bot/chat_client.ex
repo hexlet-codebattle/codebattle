@@ -42,6 +42,13 @@ defmodule Codebattle.Bot.ChatClient do
     })
   end
 
+  def send_congrats(chat_channel) do
+    PhoenixClient.Channel.push_async(chat_channel, "new:message", %{
+      "message" => some_congrats(),
+      "user" => "test_bot"
+    })
+  end
+
   defp some_excuse() do
     [
       "You lucky. I don't have a clue, how solve it",
@@ -52,6 +59,14 @@ defmodule Codebattle.Bot.ChatClient do
       "Vtm, Master, Guide Me",
       "Huge Lebowski, where are you man?!",
       "RedBrother, HELP me, please!!!!"
+    ]
+    |> Enum.random()
+  end
+
+  defp some_congrats() do
+    [
+      "GG WP",
+      "Vtm, you are a bad teacher."
     ]
     |> Enum.random()
   end
