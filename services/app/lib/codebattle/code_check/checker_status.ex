@@ -75,8 +75,8 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
   end
 
   def get_compile_check_result(container_output, %{slug: slug, extension: extension})
-      when slug in ["golang", "kotlin", "cpp"] do
-    case Regex.run(~r/check\/solution\.#{extension}:.+/, container_output) do
+      when slug in ["golang", "kotlin", "cpp", "csharp"] do
+    case Regex.run(~r/check\/solution\.#{extension}.+/, container_output) do
       nil ->
         :ok
 
