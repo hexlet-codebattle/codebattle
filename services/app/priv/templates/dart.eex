@@ -37,8 +37,8 @@ void main() {
         print_message({'status': 'ok', 'result': <%= hash_sum %>});
       }
     } catch (e) {
-      print(output_)
-      print(e)
+      print(output_);
+      print(e);
       asserts_.add({
         'status': 'error',
         'result': e
