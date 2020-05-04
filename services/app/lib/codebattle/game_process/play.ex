@@ -93,9 +93,9 @@ defmodule Codebattle.GameProcess.Play do
             editor_lang: editor_lang
           })
 
-        winner_id = FsmHelpers.get_winner(new_fsm).id
+        winner = FsmHelpers.get_winner(new_fsm) || %{id: nil}
 
-        if {fsm.state, new_fsm.state, winner_id} == {:playing, :game_over, user.id} do
+        if {fsm.state, new_fsm.state, winner.id} == {:playing, :game_over, user.id} do
           Server.update_playbook(id, :game_over, %{id: user.id, lang: editor_lang})
 
           player = FsmHelpers.get_player(new_fsm, user.id)
