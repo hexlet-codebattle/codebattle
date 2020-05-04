@@ -40,7 +40,7 @@ const LanguagePicker = ({
       >
         <LangTitle {...currentLang} />
       </button>
-      <div className="dropdown-menu" aria-labelledby="dropdownLangButton">
+      <div className="dropdown-menu cb-langs-dropdown" aria-labelledby="dropdownLangButton">
         {_.map(otherLangs, ({ slug, name, version }) => (
           <button
             type="button"
