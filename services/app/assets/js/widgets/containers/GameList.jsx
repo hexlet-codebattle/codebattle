@@ -13,10 +13,11 @@ import Loading from '../components/Loading';
 import GamesHeatmap from '../components/GamesHeatmap';
 import Card from '../components/Card';
 import UserInfo from './UserInfo';
-import { makeCreateGameBotUrl } from '../utils/urlBuilders';
+import { makeCreateGameBotUrl, getSignGithubUrl } from '../utils/urlBuilders';
 import PlayWithBotDropdown from '../components/PlayWithBotDropdown';
 import CreateGameDropdown from '../components/CreateGameDropdown';
 import PlayWithFriendDropdown from '../components/PlayWithFriendDropdown';
+import i18n from '../../i18n';
 
 class GameList extends React.Component {
   levelToClass = {
@@ -119,6 +120,8 @@ class GameList extends React.Component {
     const gameUrlJoin = makeCreateGameBotUrl(game.id, 'join');
     const currentUser = Gon.getAsset('current_user');
     const gameState = game.state;
+    const signUrl = getSignGithubUrl();
+
 
     if (gameState === GameStatusCodes.playing) {
       return this.renderShowButton(gameUrl);
@@ -140,7 +143,17 @@ class GameList extends React.Component {
         );
       }
       if (currentUser.id === 'anonymous') {
-        return null;
+        return (
+          <button
+            type="button"
+            className="btn btn-outline-success btn-sm"
+            data-method="get"
+            data-csrf={window.csrf_token}
+            data-to={signUrl}
+          >
+            {i18n.t('Sign in with %{name}', { name: 'Github' })}
+          </button>
+        );
       }
       return (
         <div className="btn-group">

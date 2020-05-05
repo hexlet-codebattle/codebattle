@@ -10,3 +10,4 @@ export const makeCreateGameUrlDefault = (gameLevel, gameType, timeoutSeconds) =>
 };
 
 export const makeCreateGameBotUrl = (...paths) => `/games/${paths.join('/')}/`;
+export const getSignGithubUrl = () => 'auth/github';
