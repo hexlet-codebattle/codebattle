@@ -29,17 +29,18 @@ void main() {
         }
       ));
 
-      asserts_.forEach(
-        (message) => print_message(message)
-      );
+    asserts_.forEach(
+      (message) => print_message(message)
+    );
 
-      if (success_) {
-        print_message({'status': 'ok', 'result': <%= hash_sum %>});
-      }
+    if (success_) {
+      print_message({'status': 'ok', 'result': <%= hash_sum %>});
+    }
+
     } catch (e) {
       print(output_);
       print(e);
-      asserts_.add({
+      print_message({
         'status': 'error',
         'result': e
       });
