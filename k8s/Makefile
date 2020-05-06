@@ -16,11 +16,8 @@ helm-add-repos:
 	helm repo add stable https://kubernetes-charts.storage.googleapis.com
 	helm repo add keel https://charts.keel.sh
 
-helm-install-app:
-	helm install app $(PWD)/app-chart
-
 helm-upgrade-app:
-	helm upgrade app $(PWD)/app-chart
+	helm upgrade --install app $(PWD)/app-chart
 
 helm-install-ingress:
 	helm repo update
