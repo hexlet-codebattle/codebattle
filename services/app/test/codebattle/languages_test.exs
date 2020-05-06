@@ -34,7 +34,7 @@ defmodule Codebattle.LanguagesTest do
         "solution() {\n\n}",
         "import * as _ from \"lodash\";\nfunction solution(){\n\n};\n\nexport default solution;",
         "package main;\n\nfunc solution() {\n\n}",
-        "package solution;\n\nimport java.util.*;\n\npublic class Solution {\n\tpublic solution() {\n\n\t}\n}",
+        "package solution;\n\nimport java.util.*;import java.util.stream.*;\n\npublic class Solution {\n\tpublic solution() {\n\n\t}\n}",
         "package solution\n\nimport kotlin.collections.*\n\nfun solution(): {\n\n}",
         "using System;using System.Collections.Generic;\n\nnamespace app\n{\n\tpublic class Solution\n\t{\n\t\tpublic solution()\n\t\t{\n\n\t\t}\n\t}\n}",
         "def solution()\n\nend",
@@ -89,7 +89,7 @@ defmodule Codebattle.LanguagesTest do
       "#include <iostream>\n#include <map>\n#include <vector>\n\nusing namespace std;\n\nvector<string> solution(int a, double b, string text, vector<vector<int>> arr, bool condition, map<string,int> hashtable) {\n\n}"
 
     java_expected =
-      "package solution;\n\nimport java.util.*;\n\npublic class Solution {\n\tpublic List<String> solution(Integer a, Double b, String text, List<List<Integer>> arr, Boolean condition, Map<String, Integer> hashtable) {\n\n\t}\n}"
+      "package solution;\n\nimport java.util.*;import java.util.stream.*;\n\npublic class Solution {\n\tpublic List<String> solution(Integer a, Double b, String text, List<List<Integer>> arr, Boolean condition, Map<String, Integer> hashtable) {\n\n\t}\n}"
 
     kotlin_expected =
       "package solution\n\nimport kotlin.collections.*\n\nfun solution(a: Int, b: Double, text: String, arr: List<List<Int>>, condition: Boolean, hashtable: Map<String, Int>): List<String> {\n\n}"
