@@ -10,7 +10,7 @@ defmodule Codebattle.Bot.ChatClient do
       "user" => "test_bot"
     })
 
-    {rest, 6 * 1000}
+    {rest, 60 * 1000}
   end
 
   def call([:announce | rest], params) do

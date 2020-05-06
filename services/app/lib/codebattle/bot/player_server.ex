@@ -64,8 +64,7 @@ defmodule Codebattle.Bot.PlayerServer do
             chat_state: chat_state
           })
 
-        Process.send_after(self(), :send_hello_message, 500)
-        Process.send_after(self(), :send_message, 500)
+        Process.send_after(self(), :send_hello_message, 100)
         Process.send_after(self(), :init_playbook, @timeout_start_playbook)
 
         {:keep_state, new_state}
@@ -84,27 +83,21 @@ defmodule Codebattle.Bot.PlayerServer do
   end
 
   def initial(:info, :init_playbook, state) do
-    case PlaybookPlayer.call(state) do
-      :no_playbook ->
-        ChatClient.say_some_excuse(state.chat_channel)
-        {:next_state, :stop, state}
+    handle_event(:info, {:init_playbook, :ready_to_play}, state)
+  end
 
-      playbook_params ->
-        send(self(), :update_solution)
-        new_state = Map.put(state, :playbook_params, playbook_params)
-
-        {:next_state, :ready_to_play, new_state}
-    end
+  def initial(:info, %Message{event: "editor:data"}, state) do
+    Logger.error("Bot start codding")
+    {:next_state, :playing, state}
   end
 
   def initial(:info, :send_hello_message, state) do
-    handle_event(:info, :send_message, state)
+    Logger.info("init state state_message")
+    handle_event(:info, :send, state)
   end
 
   def initial(:info, :send_message, state) do
-    Logger.info("init state state_message")
-    Process.send_after(self(), :send_message, 300)
-    {:keep_state, state}
+    handle_event(:info, :keep_sending_message, state)
   end
 
   def initial(event_type, payload, state) do
@@ -122,12 +115,15 @@ defmodule Codebattle.Bot.PlayerServer do
   end
 
   def ready_to_play(:info, :send_message, state) do
-    Process.send_after(self(), :send_message, 300)
-    {:keep_state, state}
+    handle_event(:info, :keep_sending_message, state)
   end
 
   def ready_to_play(event_type, payload, state) do
     handle_event(event_type, payload, state)
+  end
+
+  def playing(:info, :init_playbook, state) do
+    handle_event(:info, {:init_playbook, :playing}, state)
   end
 
   def playing(:info, :update_solution, state) do
@@ -144,7 +140,7 @@ defmodule Codebattle.Bot.PlayerServer do
   end
 
   def playing(:info, :send_message, state) do
-    handle_event(:info, :send_message, state)
+    handle_event(:info, :send, state)
   end
 
   def playing(:info, %Message{event: "user:check_complete", payload: payload}, state) do
@@ -167,7 +163,21 @@ defmodule Codebattle.Bot.PlayerServer do
     handle_event(event_type, payload, state)
   end
 
-  def handle_event(:info, :send_message, state) do
+  def handle_event(:info, {:init_playbook, next_state}, state) do
+    case PlaybookPlayer.call(state) do
+      :no_playbook ->
+        ChatClient.say_some_excuse(state.chat_channel)
+        {:next_state, :stop, state}
+
+      playbook_params ->
+        send(self(), :update_solution)
+        new_state = Map.put(state, :playbook_params, playbook_params)
+
+        {:next_state, next_state, new_state}
+    end
+  end
+
+  def handle_event(:info, :send, state) do
     messages = state.chat_params.messages
 
     case ChatClient.call(messages, state) do
@@ -180,6 +190,11 @@ defmodule Codebattle.Bot.PlayerServer do
       :stop ->
         {:keep_state, state}
     end
+  end
+
+  def handle_event(:info, :keep_sending_message, state) do
+    Process.send_after(self(), :send_message, 60 * 1000)
+    {:keep_state, state}
   end
 
   def handle_event(event_type, payload, state) do
