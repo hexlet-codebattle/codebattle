@@ -7,7 +7,7 @@ defmodule Codebattle.CodeCheck.CheckResult do
   defstruct success_count: 0,
             asserts_count: 0,
             status: :initial,
-            result: "{}",
+            result: ~s({"status": "info"}),
             asserts: [],
             output: ""
 
