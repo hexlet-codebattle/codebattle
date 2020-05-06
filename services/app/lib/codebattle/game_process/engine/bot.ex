@@ -120,6 +120,7 @@ defmodule Codebattle.GameProcess.Engine.Bot do
     case FsmHelpers.get_rematch_state(fsm) do
       :in_approval ->
         {:ok, new_game_id} = create_rematch_game(fsm)
+        GlobalSupervisor.terminate_game(game_id)
 
         {:rematch_new_game, %{game_id: new_game_id}}
 

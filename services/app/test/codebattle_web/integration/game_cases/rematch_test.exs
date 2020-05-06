@@ -171,8 +171,8 @@ defmodule Codebattle.GameCases.RematchTest do
 
     Phoenix.ChannelTest.push(socket2, "rematch:send_offer", %{})
     :timer.sleep(70)
-    {:ok, fsm} = Server.get_fsm(game_id)
-    assert FsmHelpers.get_rematch_state(fsm) == :accepted
+    # Check game server is killed
+    {:error, _} = Server.get_fsm(game_id)
 
     {:ok, fsm} = Server.get_fsm(game_id + 1)
     assert fsm.state == :playing
