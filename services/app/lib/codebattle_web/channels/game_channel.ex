@@ -4,6 +4,7 @@ defmodule CodebattleWeb.GameChannel do
 
   alias Codebattle.GameProcess.{Play, FsmHelpers}
   alias CodebattleWeb.Api.GameView
+  alias Codebattle.Bot.{ChatClient, PlaybookPlayer}
 
   def join("game:" <> game_id, _payload, socket) do
     case Play.get_fsm(game_id) do
@@ -42,12 +43,23 @@ defmodule CodebattleWeb.GameChannel do
     case Play.give_up(game_id, user) do
       {:ok, fsm} ->
         CodebattleWeb.Notifications.finish_active_game(fsm)
-
-        broadcast!(socket, "user:give_up", %{
-          players: FsmHelpers.get_players(fsm),
-          status: FsmHelpers.get_state(fsm),
-          msg: "#{user.name} gave up!"
-        })
+        players = FsmHelpers.get_players(fsm)
+        [first_player, second_player] = players
+        if first_player.is_bot and not second_player.is_bot do
+          broadcast!(socket, "user:give_up", %{
+            players: players,
+            status: FsmHelpers.get_state(fsm),
+            need_advice: true,
+            msg: "#{user.name} gave up!"
+          })
+        else
+          broadcast!(socket, "user:give_up", %{
+            players: players,
+            status: FsmHelpers.get_state(fsm),
+            need_advice: false,
+            msg: "#{user.name} gave up!"
+          })
+        end
 
         {:noreply, socket}
 
