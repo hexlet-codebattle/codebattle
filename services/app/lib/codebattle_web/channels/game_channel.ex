@@ -4,7 +4,6 @@ defmodule CodebattleWeb.GameChannel do
 
   alias Codebattle.GameProcess.{Play, FsmHelpers}
   alias CodebattleWeb.Api.GameView
-  alias Codebattle.Bot.{ChatClient, PlaybookPlayer}
 
   def join("game:" <> game_id, _payload, socket) do
     case Play.get_fsm(game_id) do
