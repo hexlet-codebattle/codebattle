@@ -44,6 +44,7 @@ defmodule CodebattleWeb.GameChannel do
         CodebattleWeb.Notifications.finish_active_game(fsm)
         players = FsmHelpers.get_players(fsm)
         [first_player, second_player] = players
+
         if first_player.is_bot and not second_player.is_bot do
           broadcast!(socket, "user:give_up", %{
             players: players,

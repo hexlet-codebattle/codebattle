@@ -169,6 +169,7 @@ defmodule Codebattle.Bot.PlayerServer do
 
   def handle_event(:info, :send_message, state) do
     messages = state.chat_params.messages
+
     case ChatClient.call(messages, state) do
       {new_messages, timeout} ->
         Process.send_after(self(), :send_message, timeout)
@@ -184,11 +185,13 @@ defmodule Codebattle.Bot.PlayerServer do
   def handle_event(event_type, payload, state) do
     Logger.info("#{event_type} state")
     Logger.info(inspect(payload))
+
     case payload do
       %Message{event: "user:give_up", payload: %{"need_advice" => true}} ->
         ChatClient.send_advice(state.chat_channel)
         {:keep_state, state}
-        _ ->
+
+      _ ->
         {:keep_state, state}
     end
   end
