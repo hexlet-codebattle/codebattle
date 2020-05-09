@@ -182,18 +182,15 @@ defmodule Codebattle.Bot.PlayerServer do
     end
   end
 
+  def handle_event(:info, %Message{event: "user:give_up"}, state) do
+    ChatClient.send_advice(state.chat_channel)
+    {:keep_state, state}
+  end
+
   def handle_event(event_type, payload, state) do
     Logger.info("#{event_type} state")
     Logger.info(inspect(payload))
-
-    case payload do
-      %Message{event: "user:give_up"} ->
-        ChatClient.send_advice(state.chat_channel)
-        {:keep_state, state}
-
-      _ ->
-        {:keep_state, state}
-    end
+    {:keep_state, state}
   end
 
   defp update_messages(state, messages) do

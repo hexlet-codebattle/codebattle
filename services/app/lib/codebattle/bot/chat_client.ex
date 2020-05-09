@@ -80,7 +80,7 @@ defmodule Codebattle.Bot.ChatClient do
 
   defp some_advice() do
     [
-      "Did the task seem complicated? Here, at hexlet.io will teach you to solve such tasks!"
+      "Did the task seems complicated? Here, at hexlet.io we will teach you how to solve such tasks!"
     ]
   end
 
