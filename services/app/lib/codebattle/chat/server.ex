@@ -46,7 +46,7 @@ defmodule Codebattle.Chat.Server do
     %{users: users} = state
 
     new_users =
-      case Enum.member?(users, user) do
+      case member?(users, user) do
         false -> [user | users]
         _ -> users
       end
@@ -75,4 +75,8 @@ defmodule Codebattle.Chat.Server do
     new_msgs = [%{user: user, message: msg} | messages]
     {:noreply, %{state | messages: new_msgs}}
   end
+
+  defp member?(_users, %{"id" => "anonymous"}), do: false
+
+  defp member?(users, user), do: Enum.member?(users, user)
 end
