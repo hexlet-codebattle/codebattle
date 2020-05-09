@@ -2,8 +2,8 @@ import Gon from 'gon';
 import { camelizeKeys } from 'humps';
 import socket from '../../socket';
 import {
-  userJoinedChat, userLeftChat, fetchChatData, newMessageChat,
-} from '../actions';
+  fetchChatData, userJoinedChat, userLeftChat, newMessageChat
+} from '../reducers/chat';
 
 const chatId = Gon.getAsset('game_id');
 const isRecord = Gon.getAsset('is_record');
