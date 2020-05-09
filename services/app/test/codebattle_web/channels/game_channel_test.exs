@@ -146,7 +146,6 @@ defmodule CodebattleWeb.GameChannelTest do
     payload = %{
       players: players,
       status: :game_over,
-      need_advice: false,
       msg: message
     }
 

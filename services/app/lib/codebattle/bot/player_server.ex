@@ -187,7 +187,7 @@ defmodule Codebattle.Bot.PlayerServer do
     Logger.info(inspect(payload))
 
     case payload do
-      %Message{event: "user:give_up", payload: %{"need_advice" => true}} ->
+      %Message{event: "user:give_up"} ->
         ChatClient.send_advice(state.chat_channel)
         {:keep_state, state}
 
