@@ -110,30 +110,25 @@ const SubMenu = ({
           </div>
         </div>
       ) : null}
-
     </div>
   );
 };
 
 
 const Item = ({ output, result }) => (
-  <>
-    {output ? (
-      <div className="alert alert-secondary mb-0">
-        {result ? (
-          <pre className="border-bottom border-dark card-text pb-3">
-            <span className="font-weight-bold d-block">Result:</span>
-            {result}
-          </pre>
-        ) : null}
-
-        <pre className="card-text">
-          <span className="font-weight-bold d-block">Output:</span>
-          {output}
-        </pre>
-      </div>
+  <div className="alert alert-secondary mb-0">
+    {result ? (
+      <pre className="border-bottom border-dark card-text pb-3">
+        <span className="font-weight-bold d-block">Result:</span>
+        {result}
+      </pre>
     ) : null}
-  </>
+
+    <pre className="card-text">
+      <span className="font-weight-bold d-block">Output:</span>
+      {output}
+    </pre>
+  </div>
 );
 
 

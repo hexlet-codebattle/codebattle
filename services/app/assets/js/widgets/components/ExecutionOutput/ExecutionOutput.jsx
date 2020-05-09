@@ -36,40 +36,38 @@ const ExecutionOutput = ({
   const assertsData = asserts.map(JSON.parse);
   const percent = (100 * successCount) / assertsCount;
   return (
-    <>
-      <AccordeonBox>
-        <AccordeonBox.Menu
-          count={i18n.t(
-            'You passed %{successCount} from %{assertsCount} asserts. (%{percent}%)',
-            { successCount, assertsCount, percent },
-          )}
-          statusColor={statusColor[resultData.status]}
-          message={getMessage(resultData.status)}
-        >
-          {resultData.status === 'error' ? (
-            <AccordeonBox.Item
-              statusColor={statusColor[resultData.status]}
-              output={output}
-              result={resultData.result}
-            />
-          ) : (
-            assertsData.map((assert, index) => (
-              <AccordeonBox.SubMenu
-                key={index.toString()}
+    <AccordeonBox>
+      <AccordeonBox.Menu
+        count={i18n.t(
+          'You passed %{successCount} from %{assertsCount} asserts. (%{percent}%)',
+          { successCount, assertsCount, percent },
+        )}
+        statusColor={statusColor[resultData.status]}
+        message={getMessage(resultData.status)}
+      >
+        {resultData.status === 'error' ? (
+          <AccordeonBox.Item
+            statusColor={statusColor[resultData.status]}
+            output={output}
+            result={resultData.result}
+          />
+        ) : (
+          assertsData.map((assert, index) => (
+            <AccordeonBox.SubMenu
+              key={index.toString()}
+              statusColor={statusColor[assert.status]}
+              assert={assert}
+              hasOutput={assert.output}
+            >
+              <AccordeonBox.Item
                 statusColor={statusColor[assert.status]}
-                assert={assert}
-                hasOutput={assert.output}
-              >
-                <AccordeonBox.Item
-                  statusColor={statusColor[assert.status]}
-                  output={assert.output}
-                />
-              </AccordeonBox.SubMenu>
-            ))
-          )}
-        </AccordeonBox.Menu>
-      </AccordeonBox>
-    </>
+                output={assert.output}
+              />
+            </AccordeonBox.SubMenu>
+          ))
+        )}
+      </AccordeonBox.Menu>
+    </AccordeonBox>
   );
 };
 

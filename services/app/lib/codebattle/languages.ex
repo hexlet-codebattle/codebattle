@@ -195,7 +195,7 @@ defmodule Codebattle.Languages do
         docker_image: "codebattle/java:12",
         solution_version: :typed,
         solution_template:
-          "package solution;\n\nimport java.util.*;\n\npublic class Solution {\n\tpublic <%= expected %>solution(<%= arguments %>) {\n\n\t}\n}",
+          "package solution;\n\nimport java.util.*;import java.util.stream.*;\n\npublic class Solution {\n\tpublic <%= expected %>solution(<%= arguments %>) {\n\n\t}\n}",
         arguments_template: %{
           argument: "<%= type %> <%= name %>",
           delimeter: ", "

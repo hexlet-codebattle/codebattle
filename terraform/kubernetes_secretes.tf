@@ -1,5 +1,5 @@
 resource "kubernetes_secret" "codebattle_secrets" {
-  depends_on = [digitalocean_kubernetes_cluster.codebattle]
+  depends_on = [digitalocean_kubernetes_cluster.codebattle-2]
 
   metadata {
     name = "codebattle-secrets"

@@ -81,7 +81,7 @@ config :phoenix_meta_tags,
   }
 
 config :codebattle, Codebattle.Bot,
-  timeout_start_playbook: 2_000,
+  timeout_start_playbook: 10_000,
   min_bot_player_speed: 1_000
 
 config :codebattle, Codebattle.DockerLangsPuller, timeout: 5_000 * 60

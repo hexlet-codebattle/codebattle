@@ -48,6 +48,7 @@
 
 (defn generate-tests
   [solution]
+  (println "\n")
   (try (let [success
               (reduce get_test_status
                 [
