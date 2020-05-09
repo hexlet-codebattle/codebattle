@@ -1,24 +1,34 @@
-import { createReducer } from '@reduxjs/toolkit';
-import * as actions from '../actions';
+import { createSlice } from "@reduxjs/toolkit";
 
-const initState = {
+const initialState = {
   users: [],
   messages: [],
 };
 
-const chat = createReducer(initState, {
-  [actions.fetchChatData](state, { payload }) {
-    return payload;
-  },
-  [actions.userJoinedChat](state, { payload: { users } }) {
-    state.users = users;
-  },
-  [actions.userLeftChat](state, { payload: { users } }) {
-    state.users = users;
-  },
-  [actions.newMessageChat](state, { payload }) {
-    state.messages.push(payload);
+const chat = createSlice({
+  name: "chat",
+  initialState,
+  reducers: {
+    fetchChatData: (state, { payload }) => {
+      return payload;
+    },
+    userJoinedChat: (state, { payload: { users } }) => {
+      state.users = users;
+    },
+    userLeftChat: (state, { payload: { users } }) => {
+      state.users = users;
+    },
+    newMessageChat: (state, { payload }) => {
+      state.messages = [...state.messages, payload];
+    },
   },
 });
 
-export default chat;
+const { actions, reducer } = chat;
+export const {
+  fetchChatData,
+  userJoinedChat,
+  userLeftChat,
+  newMessageChat,
+} = actions;
+export default reducer;
