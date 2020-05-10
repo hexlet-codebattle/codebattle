@@ -1,4 +1,4 @@
-import chat from './chat';
+import chat, { actions as chatActions } from './chat';
 import gameList from './gameList';
 import storeLoaded from './store';
 import user from './user';
@@ -9,6 +9,11 @@ import editorUI from './editorUI';
 import gameUI from './gameUI';
 import playbook from './playbook';
 import usersInfo from './usersInfo';
+
+
+export const actions = {
+  ...chatActions,
+};
 
 export default {
   game,
