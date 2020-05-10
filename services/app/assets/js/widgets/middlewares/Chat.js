@@ -2,7 +2,7 @@ import Gon from 'gon';
 import { camelizeKeys } from 'humps';
 import socket from '../../socket';
 import {
-  fetchChatData, userJoinedChat, userLeftChat, newMessageChat
+  fetchChatData, userJoinedChat, userLeftChat, newMessageChat,
 } from '../reducers/chat';
 
 const chatId = Gon.getAsset('game_id');
