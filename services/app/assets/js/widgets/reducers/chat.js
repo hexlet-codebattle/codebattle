@@ -23,10 +23,5 @@ const chat = createSlice({
 });
 
 const { actions, reducer } = chat;
-export const {
-  fetchChatData,
-  userJoinedChat,
-  userLeftChat,
-  newMessageChat,
-} = actions;
+export { actions };
 export default reducer;

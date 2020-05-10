@@ -1,9 +1,7 @@
 import Gon from 'gon';
 import { camelizeKeys } from 'humps';
 import socket from '../../socket';
-import {
-  fetchChatData, userJoinedChat, userLeftChat, newMessageChat,
-} from '../reducers/chat';
+import { actions } from '../reducers';
 
 const chatId = Gon.getAsset('game_id');
 const isRecord = Gon.getAsset('is_record');
@@ -15,17 +13,17 @@ export const fetchState = () => dispatch => {
     dispatch(actionCreator(camelizeKeys(data)))
   );
 
-  channel.join()
-    .receive('ok', camelizeKeysAndDispatch(fetchChatData));
+  channel.join().receive('ok', camelizeKeysAndDispatch(actions.fetchChatData));
 
-  channel.on('user:joined', camelizeKeysAndDispatch(userJoinedChat));
-  channel.on('user:left', camelizeKeysAndDispatch(userLeftChat));
-  channel.on('new:message', camelizeKeysAndDispatch(newMessageChat));
+  channel.on('user:joined', camelizeKeysAndDispatch(actions.userJoinedChat));
+  channel.on('user:left', camelizeKeysAndDispatch(actions.userLeftChat));
+  channel.on('new:message', camelizeKeysAndDispatch(actions.newMessageChat));
 };
 
 export const addMessage = message => {
   const payload = { message };
 
-  channel.push('new:message', payload)
+  channel
+    .push('new:message', payload)
     .receive('error', error => console.error(error));
 };
