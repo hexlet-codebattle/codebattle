@@ -102,8 +102,8 @@ const LeftEditorToolbar = () => {
       </div>
       <GameResultIcon
         className="ml-auto mr-2"
-        resultUser1={_.get(players, [[leftUserId], 'gameResult'])}
-        resultUser2={_.get(players, [[rightUserId], 'gameResult'])}
+        resultUser1={_.get(players, [leftUserId, 'gameResult'])}
+        resultUser2={_.get(players, [rightUserId, 'gameResult'])}
       />
       {renderNameplate(players[leftUserId], onlineUsers)}
     </div>

@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Slider } from 'react-player-controls';
 import { connect } from 'react-redux';
-
 import { Direction } from 'react-player-controls/dist/constants';
 import * as selectors from '../selectors';
 import * as actions from '../actions';
@@ -263,10 +262,10 @@ class CodebattlePlayer extends Component {
                     isEnabled={isEnabled}
                     direction={direction}
                     onChange={value => this.onSliderHandleChange(value)}
-                    onChangeStart={startValue => this.onSliderHandleChangeStart(startValue)}
-                    onChangeEnd={endValue => this.onSliderHandleChangeEnd(endValue)}
+                    onChangeStart={this.onSliderHandleChangeStart}
+                    onChangeEnd={this.onSliderHandleChangeEnd}
                     onIntent={intent => this.onSliderHandleChangeIntent(intent)}
-                    onIntentEnd={endIntent => this.onSliderHandleChangeIntentEnd(endIntent)}
+                    onIntentEnd={this.onSliderHandleChangeIntentEnd}
                   >
                     <CodebattleSliderBar
                       value={currentValue}
