@@ -1,14 +1,10 @@
 import React from 'react';
 import DropdownMenuDefault from './DropdownMenuDefault';
-import { makeCreateGameBotUrl } from '../utils/urlBuilders';
+import { makeCreateGameUrlDefault } from '../utils/urlBuilders';
 
-const PlayWithBotDropdown = ({ activeGames, renderStartNewGameButton }) => {
-  const gamesWithBot = activeGames.filter(game => game.isBot);
-  const selectGameByLevel = type => gamesWithBot.find(game => game.level === type);
-  const getGameId = level => selectGameByLevel(level).id;
+const PlayWithBotDropdown = ({ renderStartNewGameButton }) => {
   const renderLevel = level => {
-    const gameId = getGameId(level);
-    const gameUrl = makeCreateGameBotUrl(gameId, 'join');
+    const gameUrl = makeCreateGameUrlDefault(level, 'bot', 7200);
     return renderStartNewGameButton(level, gameUrl);
   };
   return (

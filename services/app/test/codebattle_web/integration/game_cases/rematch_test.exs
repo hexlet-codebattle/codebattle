@@ -109,7 +109,7 @@ defmodule Codebattle.GameCases.RematchTest do
 
     # Create game
     level = "elementary"
-    {:ok, fsm, _bot} = Codebattle.Bot.GameCreator.call(level)
+    {:ok, fsm} = Codebattle.Bot.GameCreator.call(level)
     game_id = FsmHelpers.get_game_id(fsm)
     game_topic = "game:" <> to_string(game_id)
 

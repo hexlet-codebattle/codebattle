@@ -344,7 +344,7 @@ class GameList extends React.Component {
   };
 
   render() {
-    const { loaded, activeGames } = this.props;
+    const { loaded } = this.props;
     if (!loaded) {
       return <Loading />;
     }
@@ -353,7 +353,6 @@ class GameList extends React.Component {
         <Card title="New game">
           <div className="d-flex flex-sm-row flex-column align-items-center justify-content-center flex-wrap">
             <PlayWithBotDropdown
-              activeGames={activeGames}
               renderStartNewGameButton={this.renderStartNewGameButton}
             />
             <CreateGameDropdown

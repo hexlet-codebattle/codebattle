@@ -54,7 +54,8 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
 
     # Create game
     level = "easy"
-    {:ok, fsm, bot} = Codebattle.Bot.GameCreator.call(level)
+    {:ok, fsm} = Codebattle.Bot.GameCreator.call(level)
+    bot = FsmHelpers.get_first_player(fsm)
     game_id = FsmHelpers.get_game_id(fsm)
     game_topic = "game:#{game_id}"
 
