@@ -196,7 +196,7 @@ defmodule Codebattle.Bot.PlayerServer do
     ChatClient.send_advice(state.chat_channel)
     {:keep_state, state}
   end
-  
+
   def handle_event(:info, :keep_sending_message, state) do
     Process.send_after(self(), :send_message, 60 * 1000)
     {:keep_state, state}
