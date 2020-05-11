@@ -4,7 +4,6 @@ import moment from 'moment';
 import { connect } from 'react-redux';
 import Gon from 'gon';
 import { Tooltip, OverlayTrigger } from 'react-bootstrap';
-
 import * as lobbyMiddlewares from '../middlewares/Lobby';
 import GameStatusCodes from '../config/gameStatusCodes';
 import * as actions from '../actions';
@@ -250,7 +249,7 @@ class GameList extends React.Component {
             <tr>
               <th className="p-3 border-0">Date</th>
               <th className="p-3 border-0">Level</th>
-              <th className="p-3 border-0 text-center" colSpan="2">Players</th>
+              <th className="p-3 border-0 text-center" colSpan={2}>Players</th>
               <th className="p-3 border-0">State</th>
               <th className="p-3 border-0">Actions</th>
             </tr>
@@ -287,7 +286,7 @@ class GameList extends React.Component {
           <tr>
             <th className="p-3 border-0">Date</th>
             <th className="p-3 border-0">Level</th>
-            <th className="p-3 border-0 text-center" colSpan="2">Players</th>
+            <th className="p-3 border-0 text-center" colSpan={2}>Players</th>
             <th className="p-3 border-0">Duration</th>
             <th className="p-3 border-0">Actions</th>
           </tr>

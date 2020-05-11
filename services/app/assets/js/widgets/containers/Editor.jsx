@@ -9,7 +9,6 @@ import languages from '../config/languages';
 class Editor extends PureComponent {
   static propTypes = {
     value: PropTypes.string,
-    name: PropTypes.string.isRequired,
     editable: PropTypes.bool,
     syntax: PropTypes.string,
     onChange: PropTypes.func,
@@ -68,7 +67,7 @@ class Editor extends PureComponent {
     }
     if (prevProps.editable !== editable) {
       this.options = {
-        ...this.props,
+        ...this.options,
         readOnly: !editable,
         contextMenu: editable,
       };
@@ -122,7 +121,6 @@ class Editor extends PureComponent {
   render() {
     const {
       value,
-      name,
       syntax,
       onChange,
       editorHeight,
@@ -141,7 +139,6 @@ class Editor extends PureComponent {
           height={editorHeightWithStatusBar}
           language={mappedSyntax}
           editorDidMount={this.editorDidMount}
-          name={name}
           value={value}
           onChange={onChange}
         />

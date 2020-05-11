@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import _ from 'lodash';
 import { connect } from 'react-redux';
-// import Gon from 'gon';
 import * as selectors from '../selectors';
 import Editor from './Editor';
 import LeftEditorToolbar from './EditorsToolbars/LeftEditorToolbar';
@@ -44,7 +43,6 @@ class GameWidget extends Component {
       editable,
       syntax: editorState.currentLangSlug || 'javascript',
       value: editorState.text,
-      name: 'left-editor',
       editorHeight: leftEditorHeight,
       mode: editable ? leftEditorsMode : editorModes.default,
       theme,
@@ -61,7 +59,6 @@ class GameWidget extends Component {
       mode: editorModes.default,
       syntax: editorState.currentLangSlug || 'javascript',
       value: editorState.text,
-      name: 'right-editor',
       editorHeight: rightEditorHeight,
     };
   }

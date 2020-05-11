@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default ({ closeToast }) => (
+const CloseButton = ({ closeToast }) => (
   <button
     type="button"
     onClick={closeToast}
@@ -10,3 +10,5 @@ export default ({ closeToast }) => (
     <span aria-hidden="true">&times;</span>
   </button>
 );
+
+export default CloseButton;

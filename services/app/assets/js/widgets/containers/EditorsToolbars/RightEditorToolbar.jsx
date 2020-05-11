@@ -42,8 +42,8 @@ const RightEditorToolbar = () => {
     >
       <GameResultIcon
         className="mr-2"
-        resultUser1={_.get(players, [[rightUserId], 'gameResult'])}
-        resultUser2={_.get(players, [[leftUserId], 'gameResult'])}
+        resultUser1={_.get(players, [rightUserId, 'gameResult'])}
+        resultUser2={_.get(players, [leftUserId, 'gameResult'])}
       />
       {renderNameplate(players[rightUserId], onlineUsers)}
       <div className="ml-auto btn-group" role="group" aria-label="Editor settings">
