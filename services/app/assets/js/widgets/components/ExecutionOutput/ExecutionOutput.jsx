@@ -47,7 +47,6 @@ const ExecutionOutput = ({
       >
         {resultData.status === 'error' ? (
           <AccordeonBox.Item
-            statusColor={statusColor[resultData.status]}
             output={output}
             result={resultData.result}
           />
@@ -60,7 +59,6 @@ const ExecutionOutput = ({
               hasOutput={assert.output}
             >
               <AccordeonBox.Item
-                statusColor={statusColor[assert.status]}
                 output={assert.output}
               />
             </AccordeonBox.SubMenu>

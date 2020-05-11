@@ -13,7 +13,7 @@ const AccordeonBox = ({ children }) => (
 
 
 const Menu = ({
-  count = 0, children, statusColor, message,
+  count, children, statusColor, message,
 }) => {
   const [show, setShow] = useState(false);
   const classCollapse = cn('collapse', {
@@ -115,7 +115,7 @@ const SubMenu = ({
 };
 
 
-const Item = ({ output, result }) => (
+const Item = ({ output, result = null }) => (
   <div className="alert alert-secondary mb-0">
     {result ? (
       <pre className="border-bottom border-dark card-text pb-3">
