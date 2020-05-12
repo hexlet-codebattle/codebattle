@@ -52,7 +52,7 @@ class CodebattlePlayer extends Component {
     this.stop();
   }
 
-  onSliderHandleChange(value) {
+  onSliderHandleChange = value => {
     this.setState({ value });
 
     const { isHold, delaySetGameState } = this.state;
@@ -70,7 +70,7 @@ class CodebattlePlayer extends Component {
     }
   }
 
-  onSliderHandleChangeStart() {
+  onSliderHandleChangeStart = () => {
     this.setState({ isHold: true });
 
     const { isStop } = this.state;
@@ -80,7 +80,7 @@ class CodebattlePlayer extends Component {
     }
   }
 
-  onSliderHandleChangeEnd() {
+  onSliderHandleChangeEnd = () => {
     this.setState({ isHold: false });
 
     const { isHoldPlay } = this.state;
@@ -92,11 +92,11 @@ class CodebattlePlayer extends Component {
     }
   }
 
-  onSliderHandleChangeIntent(intent) {
+  onSliderHandleChangeIntent = intent => {
     this.setState(() => ({ lastIntent: intent }));
   }
 
-  onSliderHandleChangeIntentEnd() {
+  onSliderHandleChangeIntentEnd = () => {
     this.setState(() => ({ lastIntent: 0 }));
   }
 
@@ -104,7 +104,7 @@ class CodebattlePlayer extends Component {
     this.setState({ speed: newSpeed });
   }
 
-  async setGameState() {
+  setGameState = async () => {
     const {
       initRecords,
       records,
@@ -147,7 +147,7 @@ class CodebattlePlayer extends Component {
     fetchChatData(chatState);
   }
 
-  async changeGameState() {
+  changeGameState = async () => {
     const {
       records,
       updateEditorTextPlaybook,
@@ -191,7 +191,7 @@ class CodebattlePlayer extends Component {
     this.setState({ nextRecordId: nextRecordId + 1 });
   }
 
-  play() {
+  play = () => {
     const { value, speed } = this.state;
 
     const run = () => {
@@ -216,19 +216,19 @@ class CodebattlePlayer extends Component {
     }
   }
 
-  resetNextRecordId() {
+  resetNextRecordId = () => {
     this.setState({ nextRecordId: 0 });
   }
 
-  resetValue() {
+  resetValue = () => {
     this.setState({ value: 0.0 });
   }
 
-  start() {
+  start = () => {
     this.setState({ isStop: false });
   }
 
-  stop() {
+  stop = () => {
     this.setState({ isStop: true });
   }
 
