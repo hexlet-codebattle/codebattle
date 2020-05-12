@@ -26,7 +26,7 @@ const RematchButton = ({
     <button
       type="button"
       className="btn btn-danger btn-block"
-      disabled=""
+      disabled={disabled}
     >
       {i18n.t('Rejected Offer')}
     </button>
@@ -51,7 +51,7 @@ const RematchButton = ({
 
   const renderBtnAfterRecieveOffer = () => (
     <div className="input-group mt-2">
-      <input type="text" className="form-control" placeholder="Accept Rematch?" disabled="" />
+      <input type="text" className="form-control" placeholder="Accept Rematch?" />
       <div className="input-group-append">
         <button
           className="btn btn-outline-secondary"
