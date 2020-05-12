@@ -46,7 +46,9 @@ class NotificationsHandler extends Component {
     const prevCheckingResult = prevProps.gameStatus.checking[currentUserId];
     const checkingResult = checking[currentUserId];
 
-    if (isCurrentUserPlayer && prevCheckingResult && !checkingResult) {
+    if (
+      isCurrentUserPlayer && prevCheckingResult && !checkingResult
+      && status === GameStatusCodes.playing) {
       this.showCheckingStatusMessage(solutionStatus);
     }
 

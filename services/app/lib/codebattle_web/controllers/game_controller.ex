@@ -133,11 +133,15 @@ defmodule CodebattleWeb.GameController do
   defp get_twitter_labels_meta(players) do
     players
     |> Enum.with_index(1)
-    |> Enum.reduce(%{}, fn {player, i}, acc ->
-      label = player.name
-      data = "#{player.rating} - #{player.lang}"
+    |> Enum.reduce(%{}, fn
+      {nil, i}, acc ->
+        acc
 
-      acc |> Map.put("label#{i}", label) |> Map.put("data#{i}", data)
+      {player, i}, acc ->
+        label = player.name
+        data = "#{player.rating} - #{player.lang}"
+
+        acc |> Map.put("label#{i}", label) |> Map.put("data#{i}", data)
     end)
   end
 end
