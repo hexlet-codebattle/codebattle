@@ -1,7 +1,7 @@
 .container-fluid
   .row
     .col-7
-      h1
+      h3
         span.mr-3 = @tournament.name |> String.upcase
         span.small.text-muted = @tournament.state
       = if @tournament.state == "waiting_participants" do

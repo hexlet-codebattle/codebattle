@@ -14,7 +14,7 @@
       tbody
         = for tournament <- @tournaments do
           tr
-            td.align-middle.text-nowrap = tournament.name
+            td.align-middle = tournament.name
             td.align-middle.text-nowrap = tournament.type
             td.align-middle.text-nowrap = tournament.state
             td.align-middle.text-nowrap = render_datetime(tournament.starts_at)

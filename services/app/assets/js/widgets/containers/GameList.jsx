@@ -210,7 +210,7 @@ class GameList extends React.Component {
           <tbody>
             {tournaments.map(tournament => (
               <tr key={tournament.id}>
-                <td className="p-3 align-middle text-nowrap">
+                <td className="p-3 align-middle">
                   {tournament.name}
                 </td>
                 <td className="p-3 align-middle text-nowrap">
