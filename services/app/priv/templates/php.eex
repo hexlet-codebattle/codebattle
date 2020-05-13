@@ -27,7 +27,7 @@ $final_result = array();
 
 function assert_result($result, $expected, $args, $execution_time, &$final_result, $success)
 {
-    if (assert($result !== $expected)) {
+    if (assert($result != $expected)) {
         array_push($final_result, json_encode(array(
             'status' => 'failure',
             'result' => $result,
