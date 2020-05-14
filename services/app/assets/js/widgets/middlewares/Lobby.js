@@ -1,7 +1,7 @@
 import { camelizeKeys } from 'humps';
 import Gon from 'gon';
 import socket from '../../socket';
-import * as actions from '../actions';
+import { actions } from '../slices';
 
 const channelName = 'lobby';
 const isRecord = Gon.getAsset('is_record');

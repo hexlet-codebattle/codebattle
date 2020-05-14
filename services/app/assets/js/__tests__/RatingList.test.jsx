@@ -6,7 +6,7 @@ import axios from 'axios';
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 
-import reducers from '../widgets/reducers';
+import reducers from '../widgets/slices';
 import RatingList from '../widgets/containers/RatingList';
 
 jest.mock('gon', () => {

@@ -3,7 +3,7 @@ import { Slider } from 'react-player-controls';
 import { connect } from 'react-redux';
 import { Direction } from 'react-player-controls/dist/constants';
 import * as selectors from '../selectors';
-import * as actions from '../actions';
+import { actions } from '../slices';
 import { getText, getFinalState, parse } from '../lib/player';
 import CodebattleSliderBar from '../components/CodebattleSliderBar';
 import ControlPanel from '../components/CBPlayer/ControlPanel';

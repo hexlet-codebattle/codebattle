@@ -5,7 +5,7 @@ import storage from 'redux-persist/lib/storage';
 import { PersistGate } from 'redux-persist/integration/react';
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import RootContainer from './containers/RootContainer';
-import reducers from './reducers';
+import reducers from './slices';
 import GameList from './containers/GameList';
 import RatingList from './containers/RatingList';
 

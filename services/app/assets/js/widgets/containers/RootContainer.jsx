@@ -6,7 +6,7 @@ import Gon from 'gon';
 import GameWidget from './GameWidget';
 import InfoWidget from './InfoWidget';
 import userTypes from '../config/userTypes';
-import * as actions from '../actions';
+import { actions } from '../slices';
 import * as GameActions from '../middlewares/Game';
 import GameStatusCodes from '../config/gameStatusCodes';
 import { gameStatusSelector } from '../selectors';

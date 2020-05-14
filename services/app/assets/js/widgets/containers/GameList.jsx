@@ -6,7 +6,7 @@ import Gon from 'gon';
 import { Tooltip, OverlayTrigger } from 'react-bootstrap';
 import * as lobbyMiddlewares from '../middlewares/Lobby';
 import GameStatusCodes from '../config/gameStatusCodes';
-import * as actions from '../actions';
+import { actions } from '../slices';
 import * as selectors from '../selectors';
 import Loading from '../components/Loading';
 import GamesHeatmap from '../components/GamesHeatmap';

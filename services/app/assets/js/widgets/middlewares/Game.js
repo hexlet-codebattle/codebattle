@@ -5,7 +5,7 @@ import { camelizeKeys } from 'humps';
 import socket from '../../socket';
 import * as selectors from '../selectors';
 import userTypes from '../config/userTypes';
-import * as actions from '../actions';
+import { actions } from '../slices';
 
 import { resolveDiffs } from '../lib/player';
 import PlaybookStatusCodes from '../config/playbookStatusCodes';

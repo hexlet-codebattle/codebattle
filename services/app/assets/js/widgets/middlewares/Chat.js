@@ -1,7 +1,7 @@
 import Gon from 'gon';
 import { camelizeKeys } from 'humps';
 import socket from '../../socket';
-import { actions } from '../reducers';
+import { actions } from '../slices';
 
 const chatId = Gon.getAsset('game_id');
 const isRecord = Gon.getAsset('is_record');
