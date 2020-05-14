@@ -50,21 +50,21 @@ const ControlPanel = ({
   };
 
   return (
-    <>
+    <div className="ml-5 d-flex flex-grow-1">
       <button
         type="button"
         className="mr-4 btn btn-light"
         onClick={onControlButtonClick}
       >
         {isStop ? (
-          <PlayerIcon.Play width={32} height={32} />
+          <PlayerIcon.Play width={23} height={23} />
         ) : (
-          <PlayerIcon.Pause width={32} height={32} />
+          <PlayerIcon.Pause width={23} height={23} />
         )}
       </button>
       {children}
       <button type="button" className={speedControlClassNames} onClick={onChangeSpeed}>x2</button>
-    </>
+    </div>
   );
 };
 

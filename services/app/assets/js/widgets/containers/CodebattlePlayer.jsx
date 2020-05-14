@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Slider } from 'react-player-controls';
 import { connect } from 'react-redux';
-import _ from 'lodash';
 
 import { Direction } from 'react-player-controls/dist/constants';
 import * as selectors from '../selectors';
@@ -9,6 +8,9 @@ import * as actions from '../actions';
 import { getText, getFinalState, parse } from '../lib/player';
 import CodebattleSliderBar from '../components/CodebattleSliderBar';
 import ControlPanel from '../components/CBPlayer/ControlPanel';
+import * as GameActions from '../middlewares/Game';
+import replayerModes from '../config/replayerModes';
+import gameStatusCodes from '../config/gameStatusCodes';
 
 const isEqual = (float1, float2) => {
   const compareEpsilon = Number.EPSILON;
@@ -51,6 +53,7 @@ class CodebattlePlayer extends Component {
   onPauseClick = () => {
     this.stop();
   }
+
 
   onSliderHandleChange(value) {
     this.setState({ value });
@@ -147,6 +150,20 @@ class CodebattlePlayer extends Component {
     fetchChatData(chatState);
   }
 
+  handleHideReplayer = () => {
+    const { setReplayerModeOff } = this.props;
+    setReplayerModeOff();
+  }
+
+  handleShowReplayer = ({ replayerMode, storedGameEditorReady }) => async () => {
+    const isReplayerModeInitialized = replayerMode !== replayerModes.none;
+    if (!isReplayerModeInitialized) {
+      await storedGameEditorReady();
+    }
+    const { setReplayerModeOn } = this.props;
+    setReplayerModeOn();
+  }
+
   async changeGameState() {
     const {
       records,
@@ -237,47 +254,63 @@ class CodebattlePlayer extends Component {
     console.log(records);
 
     const {
-      isEnabled, direction, value: currentValue, isHold, isStop, lastIntent, defaultSpeed, isStoreLoaded,
+      isEnabled, direction, value: currentValue, isHold, isStop, lastIntent, defaultSpeed,
+      isStoreLoaded,
     } = this.state;
 
     if (isStoreLoaded) {
       return null;
     }
+    const { replayerMode, gameStatusCode, storedGameEditorReady } = this.props;
 
+    const isStoredGame = gameStatusCode === gameStatusCodes.stored;
+    const isGameOver = gameStatusCode === gameStatusCodes.gameOver;
+    const isReplayerModeOff = replayerMode !== replayerModes.on;
+    const isReplayerModeOn = replayerMode === replayerModes.on;
 
     return (
       <>
         <div className="py-4" />
-        <div className="container-fluid fixed-bottom my-1">
-          <div className="px-1">
-            <button className="btn">Hide replayer</button>
-            <div className="border bg-light py-2">
-              <div className="row align-items-center justify-content-center">
-                <ControlPanel
-                  onPlayClick={this.onPlayClick}
-                  onPauseClick={this.onPauseClick}
-                  defaultSpeed={defaultSpeed}
-                  setSpeed={this.setSpeed}
-                  isStop={isStop}
-                >
-                  <Slider
-                    className="cb-slider col-md-7 ml-1"
-                    isEnabled={isEnabled}
-                    direction={direction}
-                    onChange={value => this.onSliderHandleChange(value)}
-                    onChangeStart={startValue => this.onSliderHandleChangeStart(startValue)}
-                    onChangeEnd={endValue => this.onSliderHandleChangeEnd(endValue)}
-                    onIntent={intent => this.onSliderHandleChangeIntent(intent)}
-                    onIntentEnd={endIntent => this.onSliderHandleChangeIntentEnd(endIntent)}
+        <div className="container-fluid fixed-bottom my-1 px-1">
+          <div className="border bg-light py-2">
+            <div className="row align-items-center d-flex">
+              {(isGameOver || isStoredGame)
+                && isReplayerModeOff
+                && (
+                <button type="button" className="btn btn-info cb-replayer-button ml-4" onClick={this.handleShowReplayer({ replayerMode, storedGameEditorReady })}>
+                  Show replayer
+                </button>
+                )}
+              {isReplayerModeOn
+                && (
+                <>
+                  <button type="button" className="btn btn-info cb-replayer-button ml-4" onClick={this.handleHideReplayer}>Hide replayer</button>
+                  <ControlPanel
+                    onPlayClick={this.onPlayClick}
+                    onPauseClick={this.onPauseClick}
+                    defaultSpeed={defaultSpeed}
+                    setSpeed={this.setSpeed}
+                    isStop={isStop}
                   >
-                    <CodebattleSliderBar
-                      value={currentValue}
-                      lastIntent={lastIntent}
-                      isHold={isHold}
-                    />
-                  </Slider>
-                </ControlPanel>
-              </div>
+                    <Slider
+                      className="cb-slider col-md-7 ml-1"
+                      isEnabled={isEnabled}
+                      direction={direction}
+                      onChange={value => this.onSliderHandleChange(value)}
+                      onChangeStart={startValue => this.onSliderHandleChangeStart(startValue)}
+                      onChangeEnd={endValue => this.onSliderHandleChangeEnd(endValue)}
+                      onIntent={intent => this.onSliderHandleChangeIntent(intent)}
+                      onIntentEnd={endIntent => this.onSliderHandleChangeIntentEnd(endIntent)}
+                    >
+                      <CodebattleSliderBar
+                        value={currentValue}
+                        lastIntent={lastIntent}
+                        isHold={isHold}
+                      />
+                    </Slider>
+                  </ControlPanel>
+                </>
+                )}
             </div>
           </div>
         </div>
@@ -293,12 +326,17 @@ const mapStateToProps = state => ({
   getEditorTextPlaybook: ({ userId }) => selectors.getEditorTextPlaybook(state, userId),
   getEditorLangPlaybook: ({ userId }) => selectors.userLangSelector(userId)(state),
   isStoreLoded: selectors.isStoreLoaded,
+  replayerMode: selectors.replayerModeSelector(state),
+  gameStatusCode: selectors.gameStatusSelector(state).status,
 });
 
 const mapDispatchToProps = {
   updateEditorTextPlaybook: actions.updateEditorTextPlaybook,
   updateExecutionOutput: actions.updateExecutionOutput,
   fetchChatData: actions.fetchChatData,
+  setReplayerModeOff: actions.setReplayerModeOff,
+  setReplayerModeOn: actions.setReplayerModeOn,
+  storedGameEditorReady: GameActions.storedGameEditorReady,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(CodebattlePlayer);
