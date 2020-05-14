@@ -1,4 +1,4 @@
-defmodule Tasks.Issues.UploadTest do
+defmodule Codebattle.TasksImporterTest do
   use CodebattleWeb.ConnCase
 
   alias Codebattle.{Repo, Task}
@@ -33,7 +33,7 @@ defmodule Tasks.Issues.UploadTest do
     path: path,
     issue_names: issue_names
   } do
-    Mix.Tasks.Issues.Upload.run([path])
+    Codebattle.TasksImporter.upsert([path])
 
     task_names =
       Task
@@ -45,8 +45,8 @@ defmodule Tasks.Issues.UploadTest do
   end
 
   test "is idempotent", %{path: path, issue_names: issue_names, signatures: _signatures} do
-    Mix.Tasks.Issues.Upload.run([path])
-    Mix.Tasks.Issues.Upload.run([path])
+    Codebattle.TasksImporter.upsert([path])
+    Codebattle.TasksImporter.upsert([path])
 
     task_names =
       Task
@@ -58,7 +58,7 @@ defmodule Tasks.Issues.UploadTest do
   end
 
   test "is correct signature", %{path: path, issue_names: _issue_names, signatures: signatures} do
-    Mix.Tasks.Issues.Upload.run([path])
+    Codebattle.TasksImporter.upsert([path])
 
     task_signatures =
       Task
@@ -73,7 +73,7 @@ defmodule Tasks.Issues.UploadTest do
 
   test "respect disabled" do
     path = Path.join(@root_dir, "test/support/fixtures/issues_with_disabled")
-    Mix.Tasks.Issues.Upload.run([path])
+    Codebattle.TasksImporter.upsert([path])
 
     assert Repo.all(Task) |> Enum.count() == 2
 
@@ -85,7 +85,7 @@ defmodule Tasks.Issues.UploadTest do
   test "update fields", %{path: path} do
     new_path = Path.join(@root_dir, "test/support/fixtures/new_issues")
 
-    Mix.Tasks.Issues.Upload.run([path])
+    Codebattle.TasksImporter.upsert([path])
 
     task = Task |> Repo.all() |> List.first()
 
@@ -96,13 +96,12 @@ defmodule Tasks.Issues.UploadTest do
     assert task.output_signature == %{"type" => %{"name" => "integer"}}
     assert task.asserts |> String.split("\n") |> Enum.count() == 21
 
-    Mix.Tasks.Issues.Upload.run([new_path])
+    Codebattle.TasksImporter.upsert([new_path])
 
-    tasks = Task |> Repo.all()
-    new_task = List.first(tasks)
+    [new_task] = Repo.all(Task)
 
-    assert Enum.count(tasks) == 1
     assert new_task.name == "asserts"
+    assert new_task.disabled == true
     assert new_task.description == "new_description"
     assert new_task.level == "easy"
 

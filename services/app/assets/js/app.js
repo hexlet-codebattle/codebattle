@@ -1,3 +1,5 @@
+/* eslint no-unused-vars: ["error", { "argsIgnorePattern": "^_" }] */
+
 // Brunch automatically concatenates all files in your
 // watched paths. Those paths can be configured at
 // config.paths.watched in "brunch-config.js".
@@ -15,6 +17,7 @@ import 'phoenix_html';
 import '@babel/polyfill';
 import '@fortawesome/fontawesome-free/js/all';
 import 'bootstrap';
+import NProgress from 'nprogress';
 import { Socket } from 'phoenix';
 import { LiveSocket } from 'phoenix_live_view';
 
@@ -24,7 +27,10 @@ import { LiveSocket } from 'phoenix_live_view';
 // paths "./socket" or full ones "web/static/js/socket".
 
 import {
-  renderGameWidget, renderLobby, renderHeatmapWidget, renderUsersRating,
+  renderGameWidget,
+  renderLobby,
+  renderHeatmapWidget,
+  renderUsersRating,
 } from './widgets';
 
 const Hooks = {
@@ -37,11 +43,16 @@ const Hooks = {
     },
   },
 };
-const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute('content');
+const csrfToken = document
+  .querySelector("meta[name='csrf-token']")
+  .getAttribute('content');
 const liveSocket = new LiveSocket('/live', Socket, {
   hooks: Hooks,
   params: { _csrf_token: csrfToken },
 });
+window.addEventListener('phx:page-loading-start', _info => NProgress.start());
+window.addEventListener('phx:page-loading-stop', _info => NProgress.done());
+
 liveSocket.connect();
 
 const gameWidgetRoot = document.getElementById('game-widget-root');

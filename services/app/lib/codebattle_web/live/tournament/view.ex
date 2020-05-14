@@ -18,7 +18,7 @@ defmodule CodebattleWeb.Live.Tournament.View do
     tournament = session["tournament"]
     messages = Tournament.Server.get_messages(tournament.id)
 
-    CodebattleWeb.Endpoint.subscribe(topic_name(tournament))
+    Phoenix.PubSub.subscribe(:cb_pubsub, topic_name(tournament))
 
     {:ok,
      assign(socket,

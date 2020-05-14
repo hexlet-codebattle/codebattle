@@ -171,9 +171,8 @@ defmodule Codebattle.GameProcess.Engine.Base do
       end
 
       def start_timeout_timer(id, fsm) do
-        if fsm.data.timeout_seconds > 0 do
-          Codebattle.GameProcess.TimeoutServer.restart(id, fsm.data.timeout_seconds)
-        end
+        Codebattle.GameProcess.TimeoutServer.start(id, fsm.data.timeout_seconds)
+        :ok
       end
 
       def broadcast_active_game(fsm) do

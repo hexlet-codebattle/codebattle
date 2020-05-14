@@ -7,16 +7,13 @@ defmodule Codebattle.GameProcess.Player do
   alias Codebattle.UserGame
 
   # @game_result [:undefined, :gave_up, :won, :lost]
-  @derive {Poison.Encoder,
+  @derive {Jason.Encoder,
            only: [
              :id,
              :name,
-             :guest,
              :is_bot,
              :github_id,
              :lang,
-             :editor_mode,
-             :editor_theme,
              :editor_text,
              :editor_lang,
              :creator,
@@ -31,7 +28,7 @@ defmodule Codebattle.GameProcess.Player do
             editor_text: "module.exports = () => {\n\n};",
             editor_lang: "js",
             lang: "",
-            game_result: :undefined,
+            game_result: "undefined",
             check_result: CheckResult.new(),
             creator: false,
             is_bot: false,

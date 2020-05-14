@@ -7,16 +7,7 @@ defmodule Codebattle.Bot.GameCreator do
     games = Play.get_active_games(%{is_bot: true, state: :waiting_opponent, level: level})
 
     if Enum.count(games) < 1 do
-      bot = Codebattle.Bot.Builder.build()
-
-      case Play.create_game(%{
-             user: bot,
-             level: level,
-             type: "bot"
-           }) do
-        {:ok, fsm} -> {:ok, fsm, bot}
-        {:error, reason} -> {:error, reason}
-      end
+      Play.create_game(%{level: level, type: "bot"})
     else
       {:error, :game_limit}
     end

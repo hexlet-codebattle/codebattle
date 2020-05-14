@@ -18,8 +18,9 @@ defmodule Codebattle.GameProcess.Engine.Bot do
   @default_timeout 3600
 
   @impl Engine.Base
-  def create_game(%{user: user, level: level, type: type} = params) do
-    player = Player.build(user, %{creator: true})
+  def create_game(%{level: level, type: type} = params) do
+    bot = Codebattle.Bot.Builder.build()
+    player = Player.build(bot, %{creator: true})
     timeout_seconds = params[:timeout_seconds] || @default_timeout
     {:ok, game} = insert_game(%{state: "waiting_opponent", level: level, type: type})
 
@@ -36,7 +37,11 @@ defmodule Codebattle.GameProcess.Engine.Bot do
 
     ActiveGames.create_game(fsm)
     {:ok, _} = GlobalSupervisor.start_game(fsm)
-    {:ok, fsm}
+
+    case params[:user] do
+      nil -> {:ok, fsm}
+      user -> join_game(fsm, user)
+    end
   end
 
   def join_game(fsm, second_user) do
@@ -63,7 +68,6 @@ defmodule Codebattle.GameProcess.Engine.Bot do
       run_bot!(fsm)
 
       broadcast_active_game(fsm)
-
       start_timeout_timer(game_id, fsm)
 
       {:ok, fsm}
@@ -121,6 +125,7 @@ defmodule Codebattle.GameProcess.Engine.Bot do
     case FsmHelpers.get_rematch_state(fsm) do
       :in_approval ->
         {:ok, new_game_id} = create_rematch_game(fsm)
+        GlobalSupervisor.terminate_game(game_id)
 
         {:rematch_new_game, %{game_id: new_game_id}}
 

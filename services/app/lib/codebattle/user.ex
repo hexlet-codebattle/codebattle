@@ -5,7 +5,7 @@ defmodule Codebattle.User do
   use Ecto.Schema
   import Ecto.Changeset
 
-  @derive {Poison.Encoder,
+  @derive {Jason.Encoder,
            only: [
              :id,
              :name,

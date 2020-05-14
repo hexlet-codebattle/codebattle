@@ -8,7 +8,7 @@ export default function EmojiPicker({ handleSelect, hide }) {
   useHotkeys('escape', hide);
 
   const handleBlur = e => {
-    const isActivePicker = wrapperRef.isEqualNode(e.currentTarget);
+    const isActivePicker = wrapperRef.current.isEqualNode(e.currentTarget);
     if (isActivePicker) return;
     hide();
   };
@@ -19,7 +19,6 @@ export default function EmojiPicker({ handleSelect, hide }) {
       <Picker
         showPreview={false}
         showSkinTones={false}
-        darkMode={false}
         perLine={10}
         onClick={handleSelect}
         autoFocus

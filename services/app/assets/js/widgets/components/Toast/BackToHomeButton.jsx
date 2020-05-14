@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function BackToHomeButton() {
   const handleClick = () => {
-    window.location = '/';
+    window.location.href = '/';
   };
 
   return (

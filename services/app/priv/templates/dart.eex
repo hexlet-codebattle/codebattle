@@ -2,7 +2,7 @@ import 'package:test/test.dart';
 import 'package:dart_json/dart_json.dart';
 import 'dart:async';
 
-import 'package:dart/solution.dart';
+import 'package:check/solution.dart';
 
 void main() {
   test("Run Asserts", () {
@@ -28,12 +28,6 @@ void main() {
           output_ += line + "\n";
         }
       ));
-    } catch (e) {
-      asserts_.add({
-        "status": "error",
-        "result": e,
-      });
-    }
 
     asserts_.forEach(
       (message) => print_message(message)
@@ -41,6 +35,15 @@ void main() {
 
     if (success_) {
       print_message({'status': 'ok', 'result': <%= hash_sum %>});
+    }
+
+    } catch (e) {
+      print(output_);
+      print(e);
+      print_message({
+        'status': 'error',
+        'result': e
+      });
     }
   });
 }
@@ -71,6 +74,6 @@ bool assert_solution(result, expected, arguments, output, asserts, executionTime
   return success;
 }
 
-void print_message(json) {
-  print(Json.serialize(json));
+void print_message(obj) {
+  print(Json.serialize(obj));
 }

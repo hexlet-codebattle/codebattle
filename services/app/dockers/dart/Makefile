@@ -1,7 +1,7 @@
 test:
-	dart lib/checker.dart
+	dart --packages=.packages package:check/checker.dart
 
 test-example:
-	dart lib/checker_example.dart
+	dart --packages=.packages package:check/checker_example.dart
 
 .PHONY: test

@@ -1,3 +1,4 @@
+// @ts-check
 import { useSelector, useDispatch } from 'react-redux';
 import React from 'react';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
@@ -11,8 +12,10 @@ const UserInfo = ({ user }) => {
   const usersStats = useSelector(state => getUsersStats(state));
   const userStats = usersStats[user.id];
   const dispatch = useDispatch();
+  const popoverID = `popover-userInfo-${user.id}`;
+
   const statsPopover = ({ show, ...rest }) => (
-    <Popover className={cn({ 'd-none': !userStats })} {...rest}>
+    <Popover className={cn({ 'd-none': !userStats })} id={popoverID} {...rest}>
       <Popover.Title as="h3">{user.name}</Popover.Title>
       {userStats && (
         <Popover.Content>
@@ -30,7 +33,6 @@ const UserInfo = ({ user }) => {
       placement="left"
       overlay={statsPopover}
       onEnter={onEnter}
-      shouldUpdatePosition
     >
       <span>
         <UserName user={user} />

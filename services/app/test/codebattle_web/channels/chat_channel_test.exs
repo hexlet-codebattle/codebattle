@@ -25,8 +25,8 @@ defmodule CodebattleWeb.ChatChannelTest do
 
     {:ok, response, _socket1} = subscribe_and_join(socket1, ChatChannel, chat_topic)
 
-    assert Poison.encode(response) ==
-             Poison.encode(%{
+    assert Jason.encode(response) ==
+             Jason.encode(%{
                users: [user1],
                messages: []
              })
@@ -44,8 +44,8 @@ defmodule CodebattleWeb.ChatChannelTest do
       payload: response
     }
 
-    assert Poison.encode(response) ==
-             Poison.encode(%{
+    assert Jason.encode(response) ==
+             Jason.encode(%{
                users: [user2]
              })
   end
@@ -66,7 +66,7 @@ defmodule CodebattleWeb.ChatChannelTest do
       payload: response
     }
 
-    assert Poison.encode(response) == Poison.encode(%{user: user1.name, message: message})
+    assert Jason.encode(response) == Jason.encode(%{user: user1.name, message: message})
 
     {:ok, %{users: users, messages: messages}, _socket2} =
       subscribe_and_join(socket2, ChatChannel, chat_topic)

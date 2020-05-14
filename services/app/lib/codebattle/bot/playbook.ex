@@ -68,7 +68,8 @@ defmodule Codebattle.Bot.Playbook do
   def exists?(game_id) do
     from(
       p in Playbook,
-      where: p.game_id == ^game_id
+      where: p.game_id == ^game_id,
+      limit: 1
     )
     |> Repo.one()
   end

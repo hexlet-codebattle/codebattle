@@ -31,7 +31,3 @@ test:
 test-code-checkers: export CODEBATTLE_RUN_CODE_CHECK = true
 test-code-checkers:
 	mix test test/code_check --max-failures 1
-
-build-and-push-base:
-	docker build -t codebattle/base --file Dockerfile.base .
-	docker push codebattle/base:latest

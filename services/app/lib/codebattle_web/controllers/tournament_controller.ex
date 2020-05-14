@@ -6,8 +6,9 @@ defmodule CodebattleWeb.TournamentController do
   def index(conn, _params) do
     conn
     |> put_meta_tags(%{
-      title: "Hexlet Codebattle Tournaments",
-      description: "Create or join nice tournaments",
+      title: "Hexlet Codebattle • Tournaments",
+      description:
+        "Create or join nice tournaments, have fun with your teammates! You can play `Frontend vs Backend` or `Ruby vs Js`",
       url: Routes.tournament_url(conn, :index)
     })
     |> live_render(CodebattleWeb.Live.Tournament.IndexView,
@@ -23,7 +24,7 @@ defmodule CodebattleWeb.TournamentController do
 
     conn
     |> put_meta_tags(%{
-      title: "Join tournament",
+      title: "Hexlet Codebattle • Join tournament",
       description: "Join tournament: #{String.slice(tournament.name, 0, 100)}",
       url: Routes.tournament_url(conn, :show, tournament.id)
     })

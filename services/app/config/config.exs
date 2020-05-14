@@ -23,12 +23,15 @@ config :codebattle, CodebattleWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "zQ3/vT3oIVM94qXO7IgWeAqbLSAyGA9em6fdBw7OdbDnbeotEkWYANrjJWYNWpd/",
   render_errors: [view: CodebattleWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: Codebattle.PubSub, adapter: Phoenix.PubSub.PG2]
+  pubsub_server: :cb_pubsub,
+  live_view: [signing_salt: "asdfasdf"]
 
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
+
+config :phoenix, :json_library, Jason
 
 config :phoenix, :template_engines,
   slim: PhoenixSlime.Engine,
@@ -58,13 +61,13 @@ config :scrivener_html,
   routes_helper: CodebattleWeb.Router.Helpers
 
 config :phoenix_meta_tags,
-  title: "Hexlet Codebattle",
-  description: "Game for programmers",
+  title: "Hexlet Codebattle • Game for programmers",
+  description:
+    "Free online game for programmers. No ads, registration from github. Solve Tasks with the bot, friends or random players.",
   url: "https://codebattle.hexlet.io",
-  image: "https://raw.githubusercontent.com/v1valasvegan/og-test/master/codebattle.png",
-  "og:text": "Hexlet Codebattle",
+  image: "https://codebattle.hexlet.io/assets/images/opengraph-main.png",
+  "og:type": "website",
   fb: %{
-    name: "Hexlet Codebattle",
     size: %{
       width: 100,
       height: 200,
@@ -73,12 +76,13 @@ config :phoenix_meta_tags,
         y: 15
       }
     }
+  },
+  twitter: %{
+    card: "summary_large_image"
   }
 
-config :codebattle, CodebattleWeb.Endpoint, live_view: [signing_salt: "asdfasdf"]
-
 config :codebattle, Codebattle.Bot,
-  timeout_start_playbook: 2_000,
+  timeout_start_playbook: 10_000,
   min_bot_player_speed: 1_000
 
 config :codebattle, Codebattle.DockerLangsPuller, timeout: 5_000 * 60

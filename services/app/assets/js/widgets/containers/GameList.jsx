@@ -4,7 +4,6 @@ import moment from 'moment';
 import { connect } from 'react-redux';
 import Gon from 'gon';
 import { Tooltip, OverlayTrigger } from 'react-bootstrap';
-
 import * as lobbyMiddlewares from '../middlewares/Lobby';
 import GameStatusCodes from '../config/gameStatusCodes';
 import * as actions from '../actions';
@@ -13,10 +12,11 @@ import Loading from '../components/Loading';
 import GamesHeatmap from '../components/GamesHeatmap';
 import Card from '../components/Card';
 import UserInfo from './UserInfo';
-import { makeCreateGameBotUrl } from '../utils/urlBuilders';
+import { makeCreateGameBotUrl, getSignInGithubUrl } from '../utils/urlBuilders';
 import PlayWithBotDropdown from '../components/PlayWithBotDropdown';
 import CreateGameDropdown from '../components/CreateGameDropdown';
 import PlayWithFriendDropdown from '../components/PlayWithFriendDropdown';
+import i18n from '../../i18n';
 
 class GameList extends React.Component {
   levelToClass = {
@@ -119,6 +119,8 @@ class GameList extends React.Component {
     const gameUrlJoin = makeCreateGameBotUrl(game.id, 'join');
     const currentUser = Gon.getAsset('current_user');
     const gameState = game.state;
+    const signInUrl = getSignInGithubUrl();
+
 
     if (gameState === GameStatusCodes.playing) {
       return this.renderShowButton(gameUrl);
@@ -139,8 +141,17 @@ class GameList extends React.Component {
           </div>
         );
       }
-      if (currentUser.id === 'anonymous') {
-        return null;
+      if (currentUser.guest) {
+        return (
+          <button
+            type="button"
+            className="btn btn-outline-success btn-sm"
+            data-method="get"
+            data-to={signInUrl}
+          >
+            {i18n.t('Sign in with %{name}', { name: 'Github' })}
+          </button>
+        );
       }
       return (
         <div className="btn-group">
@@ -238,7 +249,7 @@ class GameList extends React.Component {
             <tr>
               <th className="p-3 border-0">Date</th>
               <th className="p-3 border-0">Level</th>
-              <th className="p-3 border-0 text-center" colSpan="2">Players</th>
+              <th className="p-3 border-0 text-center" colSpan={2}>Players</th>
               <th className="p-3 border-0">State</th>
               <th className="p-3 border-0">Actions</th>
             </tr>
@@ -275,7 +286,7 @@ class GameList extends React.Component {
           <tr>
             <th className="p-3 border-0">Date</th>
             <th className="p-3 border-0">Level</th>
-            <th className="p-3 border-0 text-center" colSpan="2">Players</th>
+            <th className="p-3 border-0 text-center" colSpan={2}>Players</th>
             <th className="p-3 border-0">Duration</th>
             <th className="p-3 border-0">Actions</th>
           </tr>
@@ -333,7 +344,7 @@ class GameList extends React.Component {
   };
 
   render() {
-    const { loaded, activeGames } = this.props;
+    const { loaded } = this.props;
     if (!loaded) {
       return <Loading />;
     }
@@ -342,7 +353,6 @@ class GameList extends React.Component {
         <Card title="New game">
           <div className="d-flex flex-sm-row flex-column align-items-center justify-content-center flex-wrap">
             <PlayWithBotDropdown
-              activeGames={activeGames}
               renderStartNewGameButton={this.renderStartNewGameButton}
             />
             <CreateGameDropdown

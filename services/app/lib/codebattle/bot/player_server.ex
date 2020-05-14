@@ -2,7 +2,7 @@ defmodule Codebattle.Bot.PlayerServer do
   @moduledoc """
   Process for playing playbooks of tasks and working with chat
   """
-  use GenServer
+  use GenStateMachine, callback_mode: :state_functions
 
   require Logger
 
@@ -14,7 +14,7 @@ defmodule Codebattle.Bot.PlayerServer do
                           ]
 
   def start_link(%{game_id: game_id, bot_id: bot_id} = params) do
-    GenServer.start(__MODULE__, params, name: server_name(game_id, bot_id))
+    GenStateMachine.start(__MODULE__, params, name: server_name(game_id, bot_id))
   end
 
   # SERVER
@@ -28,7 +28,6 @@ defmodule Codebattle.Bot.PlayerServer do
 
     state =
       Map.merge(params, %{
-        is_playbook_running: false,
         playbook_params: %{},
         chat_params: %{
           messages: [:hello, :announce, :about_code]
@@ -37,10 +36,10 @@ defmodule Codebattle.Bot.PlayerServer do
 
     send(self(), :after_init)
 
-    {:ok, state}
+    {:ok, :initial, state}
   end
 
-  def handle_info(:after_init, state) do
+  def initial(:info, :after_init, state) do
     port = Application.get_env(:codebattle, :ws_port, 4000)
 
     socket_opts = [
@@ -65,39 +64,120 @@ defmodule Codebattle.Bot.PlayerServer do
             chat_state: chat_state
           })
 
-        Process.send_after(self(), :send_message, 500)
+        Process.send_after(self(), :send_hello_message, 100)
         Process.send_after(self(), :init_playbook, @timeout_start_playbook)
 
-        {:noreply, new_state}
+        {:keep_state, new_state}
 
       # TODO: add more pretty error handling
       {{:error, reason}, _} ->
         Logger.error(reason)
         {:error, reason}
-        {:noreply, state}
+        {:keep_state, state}
 
       {_, {:error, reason}} ->
         Logger.error(reason)
         {:error, reason}
-        {:noreply, state}
+        {:keep_state, state}
     end
   end
 
-  def handle_info(:init_playbook, state) do
+  def initial(:info, :init_playbook, state) do
+    handle_event(:info, {:init_playbook, :ready_to_play}, state)
+  end
+
+  def initial(:info, %Message{event: "editor:data"}, state) do
+    Logger.error("Bot start codding")
+    {:next_state, :playing, state}
+  end
+
+  def initial(:info, :send_hello_message, state) do
+    Logger.info("init state state_message")
+    handle_event(:info, :send, state)
+  end
+
+  def initial(:info, :send_message, state) do
+    handle_event(:info, :keep_sending_message, state)
+  end
+
+  def initial(event_type, payload, state) do
+    handle_event(event_type, payload, state)
+  end
+
+  def ready_to_play(:info, :update_solution, state) do
+    Process.send_after(self(), :update_solution, 300)
+    {:keep_state, state}
+  end
+
+  def ready_to_play(:info, %Message{event: "editor:data"}, state) do
+    Logger.error("Bot start codding")
+    {:next_state, :playing, state}
+  end
+
+  def ready_to_play(:info, :send_message, state) do
+    handle_event(:info, :keep_sending_message, state)
+  end
+
+  def ready_to_play(event_type, payload, state) do
+    handle_event(event_type, payload, state)
+  end
+
+  def playing(:info, :init_playbook, state) do
+    handle_event(:info, {:init_playbook, :playing}, state)
+  end
+
+  def playing(:info, :update_solution, state) do
+    case PlaybookPlayer.update_solution(state) do
+      {new_playbook_params, timeout} ->
+        Process.send_after(self(), :update_solution, timeout)
+        new_state = Map.put(state, :playbook_params, new_playbook_params)
+
+        {:keep_state, new_state}
+
+      :stop ->
+        {:next_state, :stop, state}
+    end
+  end
+
+  def playing(:info, :send_message, state) do
+    handle_event(:info, :send, state)
+  end
+
+  def playing(:info, %Message{event: "user:check_complete", payload: payload}, state) do
+    case payload do
+      %{"solution_status" => true} ->
+        Logger.error("Bot ending codding")
+        ChatClient.send_congrats(state.chat_channel)
+        {:next_state, :stop, state}
+
+      _ ->
+        {:keep_state, state}
+    end
+  end
+
+  def playing(event_type, payload, state) do
+    handle_event(event_type, payload, state)
+  end
+
+  def stop(event_type, payload, state) do
+    handle_event(event_type, payload, state)
+  end
+
+  def handle_event(:info, {:init_playbook, next_state}, state) do
     case PlaybookPlayer.call(state) do
       :no_playbook ->
         ChatClient.say_some_excuse(state.chat_channel)
-        {:noreply, state}
+        {:next_state, :stop, state}
 
       playbook_params ->
         send(self(), :update_solution)
         new_state = Map.put(state, :playbook_params, playbook_params)
 
-        {:noreply, new_state}
+        {:next_state, next_state, new_state}
     end
   end
 
-  def handle_info(:send_message, state) do
+  def handle_event(:info, :send, state) do
     messages = state.chat_params.messages
 
     case ChatClient.call(messages, state) do
@@ -105,42 +185,30 @@ defmodule Codebattle.Bot.PlayerServer do
         Process.send_after(self(), :send_message, timeout)
         new_state = update_messages(state, new_messages)
 
-        {:noreply, new_state}
+        {:keep_state, new_state}
 
       :stop ->
-        {:noreply, state}
+        {:keep_state, state}
     end
   end
 
-  def handle_info(:update_solution, %{is_playbook_running: false} = state) do
-    Process.send_after(self(), :update_solution, 300)
-    {:noreply, state}
+  def handle_event(:info, %Message{event: "user:give_up"}, state) do
+    ChatClient.send_advice(state.chat_channel)
+    {:keep_state, state}
   end
 
-  def handle_info(:update_solution, state) do
-    case PlaybookPlayer.update_solution(state) do
-      {new_playbook_params, timeout} ->
-        Process.send_after(self(), :update_solution, timeout)
-        new_state = Map.put(state, :playbook_params, new_playbook_params)
-
-        {:noreply, new_state}
-
-      :stop ->
-        {:noreply, state}
-    end
+  def handle_event(:info, :keep_sending_message, state) do
+    Process.send_after(self(), :send_message, 60 * 1000)
+    {:keep_state, state}
   end
 
-  def handle_info(%Message{event: "editor:data"}, %{is_playbook_running: false} = state) do
-    Logger.error("Bot start codding")
-    {:noreply, Map.put(state, :is_playbook_running, true)}
+  def handle_event(event_type, payload, state) do
+    Logger.info("#{event_type} state")
+    Logger.info(inspect(payload))
+    {:keep_state, state}
   end
 
-  def handle_info(message, state) do
-    Logger.info(inspect(message))
-    {:noreply, state}
-  end
-
-  def update_messages(state, messages) do
+  defp update_messages(state, messages) do
     new_chat_params = Map.put(state.chat_params, :messages, messages)
     Map.put(state, :chat_params, new_chat_params)
   end

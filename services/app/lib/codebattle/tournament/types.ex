@@ -3,6 +3,7 @@ defmodule Codebattle.Tournament.Types do
     use Ecto.Schema
     import Ecto.Changeset
     @primary_key false
+    @derive Jason.Encoder
 
     embedded_schema do
       field(:id, :integer)
@@ -37,6 +38,7 @@ defmodule Codebattle.Tournament.Types do
     import Ecto.Changeset
     @primary_key false
     @states ~w(waiting active canceled finished)
+    @derive Jason.Encoder
 
     embedded_schema do
       field(:state, :string)
@@ -57,6 +59,7 @@ defmodule Codebattle.Tournament.Types do
     use Ecto.Schema
     import Ecto.Changeset
     @primary_key false
+    @derive Jason.Encoder
 
     embedded_schema do
       embeds_many(:players, Player, on_replace: :delete)

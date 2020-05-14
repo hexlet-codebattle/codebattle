@@ -52,24 +52,24 @@ public class Checker {
         print(executionResults_);
     }
 
-    private static String getOutputAndResetIO(ByteArrayOutputStream baos_) {
+    private static String getOutputAndResetIO(ByteArrayOutputStream baos) {
         System.out.flush();
-        String output = baos_.toString();
-        baos_.reset();
+        String output = baos.toString();
+        baos.reset();
         return output;
     }
 
-    private static boolean assertSolution(Object result, Object expected, String output, List args, long executionTime, List<JsonObject> executionResults_, boolean success_) {
+    private static boolean assertSolution(Object result, Object expected, String output, List args, long executionTime, List<JsonObject> executionResults, boolean success) {
         boolean assertResult = expected.equals(result);
 
         if (assertResult) {
-            JsonObject assertMessage = getAssertMessage("success_", result, expected, output, args, executionTime);
-            executionResults_.add(assertMessage);
-            return success_;
+            JsonObject assertMessage = getAssertMessage("success", result, expected, output, args, executionTime);
+            executionResults.add(assertMessage);
+            return success;
         }
 
         JsonObject assertMessage = getAssertMessage("failure", result, expected, output, args, executionTime);
-        executionResults_.add(assertMessage);
+        executionResults.add(assertMessage);
         return false;
     }
 
@@ -98,7 +98,7 @@ public class Checker {
             .build();
     }
 
-    private static void print(List<JsonObject> executionResults_) {
-        executionResults_.forEach((JsonObject message) -> System.out.println(message));
+    private static void print(List<JsonObject> executionResults) {
+        executionResults.forEach((JsonObject message) -> System.out.println(message));
     }
 }

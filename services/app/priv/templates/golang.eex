@@ -3,22 +3,16 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"os"
+  "os"
 	"reflect"
   "time"
 )
 
 func main() {
-  defer func() {
-    if err := recover(); err != nil {
-      message := buildMessage("error", fmt.Sprintf("%s", err))
-      sendMessage(message)
-    }
-    os.Exit(0)
-  }()
-
   success_ := true
   message_ := ""
+  executionResults_ := []string{}
+
   var start_ time.Time
   var result_ interface{}
   var executionTime_ interface{}
@@ -33,12 +27,16 @@ func main() {
     result_ = solution(<%= arguments.expression %>)
     executionTime_ = time.Now().Sub(start_)
     success_, message_ = assertSolution(result_, expected<%= i %>, executionTime_, []interface{}{<%= arguments.expression %>}, success_)
-    sendMessage(message_)
+    executionResults_ = append(executionResults_, message_)
   <% end %>
 
   if success_ {
     successMessage := buildMessage("ok", <%= hash_sum %>)
     sendMessage(successMessage)
+  } else {
+    for _, m_ := range executionResults_ {
+      sendMessage(m_)
+    }
   }
 }
 

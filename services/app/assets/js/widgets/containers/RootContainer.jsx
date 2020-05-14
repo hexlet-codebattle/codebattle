@@ -66,14 +66,10 @@ const mapStateToProps = state => ({
   gameStatusCode: gameStatusSelector(state).status,
 });
 
-const mapDispatchToProps = dispatch => ({
-  setCurrentUser: (...args) => {
-    dispatch(actions.setCurrentUser(...args));
-  },
-  init: () => {
-    dispatch(GameActions.init());
-  },
-  checkResult: () => { dispatch(GameActions.checkGameResult()); },
-});
+const mapDispatchToProps = {
+  setCurrentUser: actions.setCurrentUser,
+  init: GameActions.init,
+  checkResult: GameActions.checkGameResult,
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(RootContainer);

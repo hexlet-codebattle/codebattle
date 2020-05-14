@@ -18,6 +18,8 @@ defmodule Codebattle.Languages do
   end
 
   defmodule TypeTemplates do
+    @derive Jason.Encoder
+
     defstruct boolean_true: "true",
               boolean_false: "false",
               array: "[<%= entries %>]",
@@ -193,7 +195,7 @@ defmodule Codebattle.Languages do
         docker_image: "codebattle/java:12",
         solution_version: :typed,
         solution_template:
-          "package solution;\n\nimport java.util.*;\n\npublic class Solution {\n\tpublic <%= expected %>solution(<%= arguments %>) {\n\n\t}\n}",
+          "package solution;\n\nimport java.util.*;import java.util.stream.*;\n\npublic class Solution {\n\tpublic <%= expected %>solution(<%= arguments %>) {\n\n\t}\n}",
         arguments_template: %{
           argument: "<%= type %> <%= name %>",
           delimeter: ", "
@@ -253,6 +255,42 @@ defmodule Codebattle.Languages do
           },
           defining_variable_template: "<%= name %>: <%= type %>",
           nested_value_expression_template: "<%= value %>"
+        }
+      },
+      "csharp" => %{
+        name: "C#",
+        slug: "csharp",
+        version: "3.1.201",
+        base_image: :ubuntu,
+        check_dir: "check",
+        extension: "cs",
+        docker_image: "codebattle/csharp:3.1.201",
+        solution_version: :typed,
+        solution_template:
+          "using System;using System.Collections.Generic;\n\nnamespace app\n{\n\tpublic class Solution\n\t{\n\t\tpublic<%= expected %> solution(<%= arguments %>)\n\t\t{\n\n\t\t}\n\t}\n}",
+        arguments_template: %{
+          argument: "<%= type %> <%= name %>",
+          delimeter: ", "
+        },
+        expected_template: " <%= type %>",
+        types: %{
+          "integer" => "int",
+          "float" => "double",
+          "string" => "string",
+          "array" => "List<<%= inner_type %>>",
+          "boolean" => "bool",
+          "hash" => "Dictionary<string, <%= inner_type %>>"
+        },
+        checker_meta: %{
+          version: :static,
+          type_templates: %TypeTemplates{
+            array: "{<%= entries %>}",
+            hash_empty: "{}",
+            hash_value: "{<%= entries %>}",
+            hash_inners: "{\"<%= key %>\", <%= value %>}"
+          },
+          defining_variable_template: "<%= type %> <%= name %>",
+          nested_value_expression_template: "new <%= type_name %>()<%= value %>"
         }
       },
       "golang" => %{

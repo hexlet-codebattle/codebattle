@@ -14,7 +14,7 @@ defmodule Codebattle.Application do
       if Mix.env() == :prod do
         [
           worker(Codebattle.DockerLangsPuller, []),
-          worker(Codebattle.AssertsImporter, [])
+          worker(Codebattle.TasksImporter, [])
         ]
       else
         []
@@ -23,6 +23,8 @@ defmodule Codebattle.Application do
     children =
       [
         supervisor(Codebattle.Repo, []),
+        CodebattleWeb.Telemetry,
+        {Phoenix.PubSub, [name: :cb_pubsub, adapter: Phoenix.PubSub.PG2]},
         supervisor(CodebattleWeb.Endpoint, []),
         worker(Codebattle.GameProcess.TasksQueuesServer, []),
         supervisor(Codebattle.GameProcess.GlobalSupervisor, []),

@@ -2,32 +2,40 @@ import React, { useState, useEffect } from 'react';
 import { PlayerIcon } from 'react-player-controls';
 import cn from 'classnames';
 
+const modes = {
+  pause: 'pause',
+  playing: 'playing',
+};
+
+const speedModes = {
+  normal: 'normal',
+  fast: 'fast',
+};
+
 const ControlPanel = ({
   onPlayClick, onPauseClick, defaultSpeed, setSpeed, isStop, children,
 }) => {
-  const [mode, setMode] = useState('pause');
-  const [speedMode, setSpeedMode] = useState('normal');
+  const [mode, setMode] = useState(modes.pause);
+  const [speedMode, setSpeedMode] = useState(speedModes.normal);
 
   const speedControlClassNames = cn('btn btn-sm border rounded ml-4', {
-    'btn-light': speedMode === 'normal',
-    'btn-secondary': speedMode === 'fast',
+    'btn-light': speedMode === speedModes.normal,
+    'btn-secondary': speedMode === speedModes.fast,
   });
 
   useEffect(() => {
-    if (isStop) {
-      setMode('pause');
-    }
+    setMode(isStop ? modes.pause : modes.playing);
   }, [isStop]);
 
   const onControlButtonClick = () => {
     switch (mode) {
-      case 'pause':
+      case modes.pause:
         onPlayClick();
-        setMode('playing');
+        setMode(modes.playing);
         break;
-      case 'playing':
+      case modes.playing:
         onPauseClick();
-        setMode('pause');
+        setMode(modes.pause);
         break;
       default:
         break;
@@ -36,13 +44,13 @@ const ControlPanel = ({
 
   const onChangeSpeed = () => {
     switch (speedMode) {
-      case 'normal':
+      case speedModes.normal:
         setSpeed(defaultSpeed / 2);
-        setSpeedMode('fast');
+        setSpeedMode(speedModes.fast);
         break;
-      case 'fast':
+      case speedModes.fast:
         setSpeed(defaultSpeed);
-        setSpeedMode('normal');
+        setSpeedMode(speedModes.normal);
         break;
       default:
         break;
@@ -56,8 +64,8 @@ const ControlPanel = ({
         className="mr-4 btn btn-light"
         onClick={onControlButtonClick}
       >
-        {isStop ? (
-          <PlayerIcon.Play width={23} height={23} />
+        {mode === modes.pause ? (
+          <PlayerIcon.Play width={32} height={32} />
         ) : (
           <PlayerIcon.Pause width={23} height={23} />
         )}

@@ -37,13 +37,18 @@ class NotificationsHandler extends Component {
       gameStatus: {
         solutionStatus, status, checking, rematchState,
       },
+      currentUserId,
       isCurrentUserPlayer,
     } = this.props;
 
     const isChangeRematchState = prevProps.gameStatus.rematchState !== rematchState;
     const statusChanged = prevProps.gameStatus.status !== status;
+    const prevCheckingResult = prevProps.gameStatus.checking[currentUserId];
+    const checkingResult = checking[currentUserId];
 
-    if (isCurrentUserPlayer && prevProps.gameStatus.checking && !checking) {
+    if (
+      isCurrentUserPlayer && prevCheckingResult && !checkingResult
+      && status === GameStatusCodes.playing) {
       this.showCheckingStatusMessage(solutionStatus);
     }
 
@@ -74,7 +79,7 @@ class NotificationsHandler extends Component {
     if (gameStatus.status === GameStatusCodes.timeout) {
       return ({
         alertStyle: 'danger',
-        msg: this.gameStatus.msg,
+        msg: gameStatus.msg,
       });
     } if (currentUserId === winner.id) {
       return ({
@@ -101,7 +106,7 @@ class NotificationsHandler extends Component {
       } else {
         toast(
           <Toast header="Failed">
-            <Alert variant="error">Oh no, some test has failed!</Alert>
+            <Alert variant="danger">Oh no, some test has failed!</Alert>
           </Toast>,
         );
       }
@@ -139,8 +144,11 @@ class NotificationsHandler extends Component {
   }
 
   showGameResultMessage() {
-    const { alertStyle, msg } = this.getResultMessage();
-    return (<Alert variant={alertStyle}>{msg}</Alert>);
+    const result = this.getResultMessage();
+    if (result) {
+      return (<Alert variant={result.alertStyle}>{result.msg}</Alert>);
+    }
+    return null;
   }
 
   render() {

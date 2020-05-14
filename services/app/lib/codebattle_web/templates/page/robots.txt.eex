@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /api*
+Disallow: /auth*
+Disallow: /settings
+Sitemap: https://codebattle.hexlet.io/sitemap.xml

@@ -2,7 +2,7 @@ import 'package:test/test.dart';
 import 'package:dart_json/dart_json.dart';
 import 'dart:async';
 
-import 'package:dart/solution_example.dart';
+import 'package:check/solution_example.dart';
 
 void main() {
   test("Run Asserts", () {

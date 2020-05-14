@@ -23,21 +23,16 @@ export default function EmojiTooltip({ emojis, handleSelect, hide }) {
     e.preventDefault();
     handleSelect(emojis[activeIndex]);
     hide();
-  }, [], { filter: e => e.target });
+  }, [activeIndex], { filter: e => e.target });
 
   useHotkeys('up', () => decreaseIndex(), [], { filter: e => e.target });
   useHotkeys('down', () => increaseIndex(), [], { filter: e => e.target });
 
-  const onChange = e => {
-    const [currentIndex] = e.target.value;
-    setActiveIndex(currentIndex);
-  };
-
   return (
     <select
+
       multiple
-      value={[activeIndex]}
-      onChange={onChange}
+      value={[`${activeIndex}`]}
       className="d-flex position-absolute flex-column border rounded w-50 x-bottom-75"
     >
       {emojis?.map((emoji, i) => (

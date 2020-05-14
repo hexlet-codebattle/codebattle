@@ -10,7 +10,7 @@ defmodule Codebattle.Bot.ChatClient do
       "user" => "test_bot"
     })
 
-    {rest, 6 * 1000}
+    {rest, 60 * 1000}
   end
 
   def call([:announce | rest], params) do
@@ -42,6 +42,20 @@ defmodule Codebattle.Bot.ChatClient do
     })
   end
 
+  def send_congrats(chat_channel) do
+    PhoenixClient.Channel.push_async(chat_channel, "new:message", %{
+      "message" => some_congrats(),
+      "user" => "test_bot"
+    })
+  end
+
+  def send_advice(chat_channel) do
+    PhoenixClient.Channel.push_async(chat_channel, "new:message", %{
+      "message" => some_advice(),
+      "user" => "test_bot"
+    })
+  end
+
   defp some_excuse() do
     [
       "You lucky. I don't have a clue, how solve it",
@@ -54,6 +68,20 @@ defmodule Codebattle.Bot.ChatClient do
       "RedBrother, HELP me, please!!!!"
     ]
     |> Enum.random()
+  end
+
+  defp some_congrats() do
+    [
+      "GG WP",
+      "Vtm, you are a bad teacher."
+    ]
+    |> Enum.random()
+  end
+
+  defp some_advice() do
+    [
+      "Did the task seems complicated? Here, at hexlet.io we will teach you how to solve such tasks!"
+    ]
   end
 
   defp greet_opponent(chat_state) do
