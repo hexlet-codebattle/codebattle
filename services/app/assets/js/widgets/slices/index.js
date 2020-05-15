@@ -26,6 +26,10 @@ export const actions = {
   ...gameListActions,
 };
 
+export const redirectToNewGame = gameId => {
+  window.location.href = `/games/${gameId}`;
+};
+
 export default {
   game,
   usersInfo,
