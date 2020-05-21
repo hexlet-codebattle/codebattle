@@ -8,7 +8,7 @@ import GameStatusCodes from '../config/gameStatusCodes';
 import Toast from '../components/Toast';
 import ActionsAfterGame from '../components/Toast/ActionsAfterGame';
 import CloseButton from '../components/Toast/CloseButton';
-import { updateGameUI as updateGameUIAction } from '../actions';
+import { actions } from '../slices';
 import { sendRejectToRematch } from '../middlewares/Game';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -172,7 +172,7 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = {
-  updateGameUI: updateGameUIAction,
+  updateGameUI: actions.updateGameUI,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(NotificationsHandler);

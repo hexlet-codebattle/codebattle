@@ -4,7 +4,7 @@ import GameStatusCodes from '../config/gameStatusCodes';
 import EditorModes from '../config/editorModes';
 import EditorThemes from '../config/editorThemes';
 import i18n from '../../i18n';
-import { makeEditorTextKey } from '../reducers';
+import { makeEditorTextKey } from '../slices';
 import defaultEditorHeight from '../config/editorSettings';
 
 export const currentUserIdSelector = state => state.user.currentUserId;

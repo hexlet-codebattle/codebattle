@@ -9,7 +9,7 @@ import { changeCurrentLangAndSetTemplate } from '../../middlewares/Game';
 import LanguagePicker from '../../components/LanguagePicker';
 import UserInfo from '../UserInfo';
 import GameResultIcon from '../../components/GameResultIcon';
-import { setEditorsMode, switchEditorsTheme } from '../../actions';
+import { actions } from '../../slices';
 import EditorModes from '../../config/editorModes';
 import EditorThemes from '../../config/editorThemes';
 import EditorHeightButtons from './EditorHeightButtons';
@@ -74,8 +74,8 @@ const LeftEditorToolbar = () => {
   const theme = useSelector(state => selectors.editorsThemeSelector(leftUserId)(state));
 
   const dispatch = useDispatch();
-  const setMode = nextMode => () => dispatch(setEditorsMode(nextMode));
-  const switchTheme = nextTheme => () => dispatch(switchEditorsTheme(nextTheme));
+  const setMode = nextMode => () => dispatch(actions.setEditorsMode(nextMode));
+  const switchTheme = nextTheme => () => dispatch(actions.switchEditorsTheme(nextTheme));
   const setLang = langSlug => dispatch(changeCurrentLangAndSetTemplate(langSlug));
   const isStoredGame = gameStatus.status === GameStatusCodes.stored;
   const isSpectator = isStoredGame || !_.hasIn(players, currentUserId);

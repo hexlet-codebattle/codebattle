@@ -7,7 +7,7 @@ import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import RootContainer from '../widgets/containers/RootContainer';
 
-import reducers from '../widgets/reducers';
+import reducers from '../widgets/slices';
 import userTypes from '../widgets/config/userTypes';
 import GameStatusCodes from '../widgets/config/gameStatusCodes';
 
