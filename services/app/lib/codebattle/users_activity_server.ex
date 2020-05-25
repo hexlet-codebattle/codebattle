@@ -6,9 +6,10 @@ defmodule Codebattle.UsersActivityServer do
   alias Codebattle.Analitics
   require Logger
 
-  @max_size Application.get_env(:codebattle, Codebattle.AnaliticsServer)[
-              :max_size_activity_server
-            ]
+  @max_size Application.get_env(:codebattle, Codebattle.Analitics)[:max_size_activity_server]
+
+  ## 5 minutes
+  @timeout 5 * 60 * 1_000
 
   # API
   def start_link() do
@@ -18,13 +19,7 @@ defmodule Codebattle.UsersActivityServer do
   def add_event(%{user_id: user_id}) when user_id < 0, do: :ok
 
   def add_event(params) do
-    event =
-      params
-      |> Map.put(:date, NaiveDateTime.utc_now())
-      |> Map.update!(:user_id, fn
-        "anonymous" -> nil
-        name -> name
-      end)
+    event = Map.put(params, :date, NaiveDateTime.utc_now())
 
     GenServer.cast(__MODULE__, {:add_event, event})
   end
@@ -36,6 +31,7 @@ defmodule Codebattle.UsersActivityServer do
   # SERVER
   def init(state) do
     Logger.info("Start Events Server")
+    Process.send_after(self(), :store_events, @timeout)
     {:ok, state}
   end
 
@@ -50,4 +46,10 @@ defmodule Codebattle.UsersActivityServer do
   def handle_call(:get_events, _from, events), do: {:reply, events, events}
 
   def handle_call(:reset, _from, _events), do: {:reply, [], []}
+
+  def handle_info(:store_events, events) do
+    Process.send_after(self(), :store_events, @timeout)
+    Analitics.store_user_events(events)
+    {:noreply, []}
+  end
 end
