@@ -18,29 +18,13 @@ defmodule Codebattle.GameProcess.Engine.Bot do
   @default_timeout 3600
 
   @impl Engine.Base
-  def create_game(%{level: level, type: type} = params) do
-    bot = Codebattle.Bot.Builder.build()
-    player = Player.build(bot, %{creator: true})
-    timeout_seconds = params[:timeout_seconds] || @default_timeout
-    {:ok, game} = insert_game(%{state: "waiting_opponent", level: level, type: type})
-
-    fsm =
-      build_fsm(%{
-        module: __MODULE__,
-        players: [player],
-        level: level,
-        game_id: game.id,
-        type: type,
-        timeout_seconds: timeout_seconds,
-        inserted_at: game.inserted_at
-      })
-
-    ActiveGames.create_game(fsm)
-    {:ok, _} = GlobalSupervisor.start_game(fsm)
-
+  def create_game(params) do
     case params[:user] do
-      nil -> {:ok, fsm}
-      user -> join_game(fsm, user)
+      nil ->
+        build_game(params, :ok)
+
+      user ->
+        build_game(params, player_can_create_game?(user))
     end
   end
 
@@ -176,4 +160,29 @@ defmodule Codebattle.GameProcess.Engine.Bot do
     broadcast_active_game(fsm)
     {:ok, game.id}
   end
+
+  defp build_game(%{level: level, type: type} = params, :ok) do
+    bot = Codebattle.Bot.Builder.build()
+    player = Player.build(bot, %{creator: true})
+    timeout_seconds = params[:timeout_seconds] || @default_timeout
+    {:ok, game} = insert_game(%{state: "waiting_opponent", level: level, type: type})
+
+    fsm =
+      build_fsm(%{
+        module: __MODULE__,
+        players: [player],
+        level: level,
+        game_id: game.id,
+        type: type,
+        timeout_seconds: timeout_seconds,
+        inserted_at: game.inserted_at
+      })
+
+    ActiveGames.create_game(fsm)
+    {:ok, _} = GlobalSupervisor.start_game(fsm)
+
+    {:ok, fsm}
+  end
+
+  defp build_game(_params, {:error, reason}), do: {:error, reason}
 end
