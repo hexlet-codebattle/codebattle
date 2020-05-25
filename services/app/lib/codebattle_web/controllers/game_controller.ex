@@ -5,7 +5,7 @@ defmodule CodebattleWeb.GameController do
   require Logger
 
   alias Codebattle.GameProcess.{Play, ActiveGames, FsmHelpers}
-  alias Codebattle.Languages
+  alias Codebattle.{Languages, UsersActivityServer}
   alias Codebattle.Bot.Playbook
 
   plug(CodebattleWeb.Plugs.RequireAuth when action in [:create, :join])
@@ -20,30 +20,54 @@ defmodule CodebattleWeb.GameController do
         type -> type
       end
 
+    user = conn.assigns.current_user
+
     game_params = %{
       level: params["level"],
       type: type,
       timeout_seconds: params["timeout_seconds"],
-      user: conn.assigns.current_user
+      user: user
     }
 
     with {:ok, fsm} <- Play.create_game(game_params) do
       game_id = FsmHelpers.get_game_id(fsm)
       level = FsmHelpers.get_level(fsm)
+
+      UsersActivityServer.add_event(%{
+        event: "create_game",
+        user_id: user.id,
+        data: %{
+          game_id: game_id,
+          type: params["type"],
+          level: level
+        }
+      })
+
       redirect(conn, to: Routes.game_path(conn, :show, game_id, level: level))
     end
   end
 
   def show(conn, %{"id" => id}) do
+    user = conn.assigns.current_user
+
     case Play.get_fsm(id) do
       {:ok, fsm} ->
-        current_user = conn.assigns.current_user
         conn = put_gon(conn, game_id: id)
-        is_participant = ActiveGames.participant?(id, current_user.id)
+        is_participant = ActiveGames.participant?(id, user.id)
 
         case {fsm.state, is_participant} do
           {:waiting_opponent, false} ->
             player = FsmHelpers.get_first_player(fsm)
+
+            UsersActivityServer.add_event(%{
+              event: "show_waiting_game_page",
+              user_id: user.id,
+              data: %{
+                game_id: id,
+                type: FsmHelpers.get_type(fsm),
+                level: FsmHelpers.get_level(fsm)
+              }
+            })
 
             conn
             |> put_meta_tags(%{
@@ -58,6 +82,16 @@ defmodule CodebattleWeb.GameController do
             first = FsmHelpers.get_first_player(fsm)
             second = FsmHelpers.get_second_player(fsm)
 
+            UsersActivityServer.add_event(%{
+              event: "show_playing_game_page",
+              user_id: user.id,
+              data: %{
+                game_id: id,
+                type: FsmHelpers.get_type(fsm),
+                level: FsmHelpers.get_level(fsm)
+              }
+            })
+
             conn
             |> put_meta_tags(%{
               title: "Hexlet Codebattle • Cool game",
@@ -71,6 +105,14 @@ defmodule CodebattleWeb.GameController do
       {:error, _reason} ->
         case Play.get_game(id) do
           nil ->
+            UsersActivityServer.add_event(%{
+              event: "show_not_exist_game_page",
+              user_id: user.id,
+              data: %{
+                game_id: id
+              }
+            })
+
             conn
             |> put_status(:not_found)
             |> put_view(CodebattleWeb.ErrorView)
@@ -80,6 +122,14 @@ defmodule CodebattleWeb.GameController do
             if Playbook.exists?(id) do
               langs = Languages.meta() |> Map.values()
               [first, second] = game.users
+
+              UsersActivityServer.add_event(%{
+                event: "show_archived_game_page",
+                user_id: user.id,
+                data: %{
+                  game_id: id
+                }
+              })
 
               conn
               |> put_gon(is_record: true, game_id: id, langs: langs)
@@ -91,6 +141,14 @@ defmodule CodebattleWeb.GameController do
               })
               |> render("show.html", %{layout_template: "full_width.html"})
             else
+              UsersActivityServer.add_event(%{
+                event: "show_game_result_page",
+                user_id: user.id,
+                data: %{
+                  game_id: id
+                }
+              })
+
               conn
               |> put_meta_tags(%{
                 title: "Hexlet Codebattle • Game Result",
@@ -104,12 +162,33 @@ defmodule CodebattleWeb.GameController do
   end
 
   def join(conn, %{"id" => id}) do
+    user = conn.assigns.current_user
+
     case Play.join_game(id, conn.assigns.current_user) do
-      {:ok, _fsm} ->
+      {:ok, fsm} ->
+        UsersActivityServer.add_event(%{
+          event: "join_created_game",
+          user_id: user.id,
+          data: %{
+            game_id: id,
+            type: FsmHelpers.get_type(fsm),
+            level: FsmHelpers.get_level(fsm)
+          }
+        })
+
         conn
         |> redirect(to: Routes.game_path(conn, :show, id))
 
       {:error, reason} ->
+        UsersActivityServer.add_event(%{
+          event: "failure_join_game",
+          user_id: user.id,
+          data: %{
+            game_id: id,
+            reason: reason
+          }
+        })
+
         conn
         |> put_flash(:danger, reason)
         |> redirect(to: Routes.page_path(conn, :index))
@@ -117,7 +196,21 @@ defmodule CodebattleWeb.GameController do
   end
 
   def delete(conn, %{"id" => id}) do
-    with :ok <- Play.cancel_game(id, conn.assigns.current_user) do
+    user = conn.assigns.current_user
+
+    with :ok <- Play.cancel_game(id, user) do
+      fsm = Play.get_game(id)
+
+      UsersActivityServer.add_event(%{
+        event: "cancel_created_game",
+        user_id: user.id,
+        data: %{
+          game_id: id,
+          type: FsmHelpers.get_type(fsm),
+          level: FsmHelpers.get_level(fsm)
+        }
+      })
+
       redirect(conn, to: Routes.page_path(conn, :index))
     end
   end
@@ -134,7 +227,7 @@ defmodule CodebattleWeb.GameController do
     players
     |> Enum.with_index(1)
     |> Enum.reduce(%{}, fn
-      {nil, i}, acc ->
+      {nil, _i}, acc ->
         acc
 
       {player, i}, acc ->

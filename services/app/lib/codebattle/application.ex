@@ -29,7 +29,8 @@ defmodule Codebattle.Application do
         worker(Codebattle.GameProcess.TasksQueuesServer, []),
         supervisor(Codebattle.GameProcess.GlobalSupervisor, []),
         supervisor(Codebattle.Tournament.Supervisor, []),
-        worker(Codebattle.Bot.CreatorServer, [])
+        worker(Codebattle.Bot.CreatorServer, []),
+        worker(Codebattle.UsersActivityServer, [])
       ] ++ prod_workers
 
     Supervisor.start_link(children, strategy: :one_for_one, name: __MODULE__)

@@ -7,7 +7,7 @@ defmodule Codebattle.GameProcess.Play do
   import Ecto.Query, warn: false
   import Codebattle.GameProcess.Auth
 
-  alias Codebattle.{Repo, Game}
+  alias Codebattle.{Repo, Game, UsersActivityServer}
 
   alias Codebattle.GameProcess.{
     Server,
@@ -101,9 +101,9 @@ defmodule Codebattle.GameProcess.Play do
           player = FsmHelpers.get_player(new_fsm, user.id)
           FsmHelpers.get_module(fsm).handle_won_game(id, player, new_fsm)
           CodebattleWeb.Notifications.finish_active_game(new_fsm)
-          {:ok, new_fsm, %{solution_status: true, check_result: check_result}}
+          {:ok, fsm, new_fsm, %{solution_status: true, check_result: check_result}}
         else
-          {:ok, new_fsm, %{solution_status: false, check_result: check_result}}
+          {:ok, fsm, new_fsm, %{solution_status: false, check_result: check_result}}
         end
 
       {:error, reason} ->
@@ -162,6 +162,8 @@ defmodule Codebattle.GameProcess.Play do
         Notifications.notify_tournament(:game_over, fsm, %{game_id: id, state: "canceled"})
         Codebattle.GameProcess.GlobalSupervisor.terminate_game(id)
 
+        store_terminate_event(fsm)
+
         id
         |> get_game
         |> Game.changeset(%{state: "timeout"})
@@ -177,4 +179,23 @@ defmodule Codebattle.GameProcess.Play do
   defp get_module(_), do: Engine.Standard
 
   defp checker_adapter, do: Application.get_env(:codebattle, :checker_adapter)
+
+  defp store_terminate_event(fsm) do
+    data = %{
+      game_id: FsmHelpers.get_game_id(fsm),
+      type: FsmHelpers.get_type(fsm),
+      level: FsmHelpers.get_level(fsm),
+      task_id: FsmHelpers.get_task(fsm).id
+    }
+
+    players = FsmHelpers.get_players(fsm)
+
+    Enum.each(players, fn player ->
+      UsersActivityServer.add_event(%{
+        event: "game_time_is_over",
+        user_id: player.id,
+        data: data
+      })
+    end)
+  end
 end

@@ -4,7 +4,7 @@ defmodule Codebattle.GithubUser do
   """
 
   alias Ueberauth.Auth
-  alias Codebattle.{Repo, User}
+  alias Codebattle.{Repo, User, UsersActivityServer}
 
   def find_or_create(%Auth{provider: :github} = auth) do
     user = User |> Repo.get_by(github_id: auth.uid)
@@ -23,11 +23,29 @@ defmodule Codebattle.GithubUser do
         nil ->
           changeset = User.changeset(%User{}, user_data)
           {:ok, user} = Repo.insert(changeset)
+
+          UsersActivityServer.add_event(%{
+            event: "user_is_authorized",
+            user_id: user.id,
+            data: %{
+              provider: "github"
+            }
+          })
+
           user
 
         _ ->
           changeset = User.changeset(user, user_data)
           {:ok, user} = Repo.update(changeset)
+
+          UsersActivityServer.add_event(%{
+            event: "user_is_authenticated",
+            user_id: user.id,
+            data: %{
+              provider: "github"
+            }
+          })
+
           user
       end
 

@@ -4,8 +4,7 @@ defmodule CodebattleWeb.ChatChannel do
 
   require Logger
 
-  alias Codebattle.Chat
-  alias Codebattle.GameProcess
+  alias Codebattle.{Chat, UsersActivityServer, GameProcess}
 
   def join("chat:" <> chat_id, _payload, socket) do
     send(self(), :after_join)
@@ -51,16 +50,25 @@ defmodule CodebattleWeb.ChatChannel do
 
   def handle_in("new:message", payload, socket) do
     %{"message" => message} = payload
-    name = get_user_name(socket.assigns.current_user)
+    user = socket.assigns.current_user
+    name = get_user_name(user)
     chat_id = get_chat_id(socket)
 
     Chat.Server.add_msg(chat_id, name, message)
+
+    UsersActivityServer.add_event(%{
+      event: "new_message_game",
+      user_id: user.id,
+      data: %{
+        game_id: chat_id
+      }
+    })
 
     GameProcess.Server.update_playbook(
       chat_id,
       :chat_message,
       %{
-        id: socket.assigns.current_user.id,
+        id: user.id,
         name: name,
         message: message
       }

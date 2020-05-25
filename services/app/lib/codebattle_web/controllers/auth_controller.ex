@@ -4,6 +4,7 @@ defmodule CodebattleWeb.AuthController do
 
   require Logger
   alias Ueberauth.Strategy.Helpers
+  alias Codebattle.UsersActivityServer
 
   plug(Ueberauth)
 
@@ -17,12 +18,21 @@ defmodule CodebattleWeb.AuthController do
         inspect(reason) <> "\nParams: " <> inspect(params)
     )
 
+    UsersActivityServer.add_event(%{
+      event: "failure_auth",
+      user_id: nil,
+      data: %{
+        params: params,
+        reason: reason
+      }
+    })
+
     conn
     |> put_flash(:danger, gettext("Failed to authenticate."))
     |> redirect(to: "/")
   end
 
-  def callback(%{assigns: %{ueberauth_auth: auth}} = conn, _params) do
+  def callback(%{assigns: %{ueberauth_auth: auth}} = conn, params) do
     case Codebattle.GithubUser.find_or_create(auth) do
       {:ok, user} ->
         conn
@@ -31,6 +41,15 @@ defmodule CodebattleWeb.AuthController do
         |> redirect(to: "/")
 
       {:error, reason} ->
+        UsersActivityServer.add_event(%{
+          event: "failure_auth",
+          user_id: nil,
+          data: %{
+            params: params,
+            reason: reason
+          }
+        })
+
         conn
         |> put_flash(:danger, reason)
         |> redirect(to: "/")
