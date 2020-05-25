@@ -5,15 +5,14 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/a99a88d28ad37a79dbf6/maintainability)](https://codeclimate.com/github/hexlet-codebattle/codebattle/maintainability)
 [![codebeat badge](https://codebeat.co/badges/7557979e-74a7-45a6-b9ab-dcd44bab7e5b)](https://codebeat.co/projects/github-com-hexlet-codebattle-codebattle-master)
 
-Кодбатл - это игра с открытым исходным кодом, которая разрабатывается сообществом Хекслета. Подробнее о проекте читайте в [вики репозитория](https://github.com/hexlet-codebattle/codebattle/wiki). Мы будем очень рады, если вы решите [принять участие в разработке проекта](https://github.com/hexlet-codebattle/codebattle/blob/master/CONTRIBUTING.md).
+Кодбатл - это игра с открытым исходным кодом, которая разрабатывается сообществом Хекслета.
 Текущая версия приложения доступна по адресу [codebattle.hexlet.io](https://codebattle.hexlet.io).
-Следить за процессом разработки можно в [ленте новостей](https://github.com/hexlet-codebattle/codebattle/wiki/News-Feed).
 
 ### Requirements
 
 - Mac / Linux
-- Docker
-- Docker Compose
+- docker
+- docker-compose
 
 ### Install
 
@@ -23,7 +22,7 @@ $ cd codebattle
 $ make setup
 ```
 
-### Run
+### Start Server
 
 ```bash
 $ make compose
@@ -31,7 +30,7 @@ $ make compose
 
 - Open <http://localhost:4000>
 
-### Test
+### Run Tests
 
 ```bash
 $ make compose-test
