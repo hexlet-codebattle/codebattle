@@ -171,7 +171,7 @@ defmodule Codebattle.GameProcess.Engine.Base do
       end
 
       def start_timeout_timer(id, fsm) do
-        Codebattle.GameProcess.TimeoutServer.start(id, fsm.data.timeout_seconds)
+        Codebattle.GameProcess.TimeoutServer.start_timer(id, fsm.data.timeout_seconds)
         :ok
       end
 

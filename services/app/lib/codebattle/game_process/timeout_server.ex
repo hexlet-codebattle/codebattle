@@ -8,8 +8,7 @@ defmodule Codebattle.GameProcess.TimeoutServer do
   alias Codebattle.GameProcess.{Play}
 
   # API
-
-  def start(game_id, timeout_seconds) do
+  def start_timer(game_id, timeout_seconds) do
     Logger.info(
       "Restart timeout server timer for game_id: #{game_id}, new timeout: #{timeout_seconds} seconds"
     )
