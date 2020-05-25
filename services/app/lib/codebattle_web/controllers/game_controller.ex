@@ -29,21 +29,35 @@ defmodule CodebattleWeb.GameController do
       user: user
     }
 
-    with {:ok, fsm} <- Play.create_game(game_params) do
-      game_id = FsmHelpers.get_game_id(fsm)
-      level = FsmHelpers.get_level(fsm)
+    case Play.create_game(game_params) do
+      {:ok, fsm} ->
+        game_id = FsmHelpers.get_game_id(fsm)
+        level = FsmHelpers.get_level(fsm)
 
-      UsersActivityServer.add_event(%{
-        event: "create_game",
-        user_id: user.id,
-        data: %{
-          game_id: game_id,
-          type: params["type"],
-          level: level
-        }
-      })
+        UsersActivityServer.add_event(%{
+          event: "success_create_game",
+          user_id: user.id,
+          data: %{
+            game_id: game_id,
+            type: params["type"],
+            level: level
+          }
+        })
 
-      redirect(conn, to: Routes.game_path(conn, :show, game_id, level: level))
+        redirect(conn, to: Routes.game_path(conn, :show, game_id, level: level))
+
+      {:error, reason} ->
+        UsersActivityServer.add_event(%{
+          event: "failure_create_game",
+          user_id: user.id,
+          data: %{
+            reason: reason
+          }
+        })
+
+        conn
+        |> put_flash(:danger, reason)
+        |> redirect(to: Routes.page_path(conn, :index))
     end
   end
 

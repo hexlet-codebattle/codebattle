@@ -135,7 +135,7 @@ defmodule Codebattleweb.GameControllerTest do
         %{"type" => "wrongType", "level" => "medium", "timeout_seconds" => "8"}
       )
 
-    assert conn.status == 422
+    assert conn.status == 302
     assert get_flash(conn, :danger) != nil
     assert ActiveGames.get_games() == []
   end
