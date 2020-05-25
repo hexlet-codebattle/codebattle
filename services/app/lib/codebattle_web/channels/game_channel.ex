@@ -178,7 +178,7 @@ defmodule CodebattleWeb.GameChannel do
 
   def handle_in("rematch:accept_offer", _, socket) do
     game_id = get_game_id(socket)
-    user = socket.assigns.current
+    user = socket.assigns.current_user
 
     UsersActivityServer.add_event(%{
       event: "rematch_accept_offer_game",

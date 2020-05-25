@@ -197,10 +197,9 @@ defmodule CodebattleWeb.GameController do
 
   def delete(conn, %{"id" => id}) do
     user = conn.assigns.current_user
+    {:ok, fsm} = Play.get_fsm(id)
 
     with :ok <- Play.cancel_game(id, user) do
-      fsm = Play.get_game(id)
-
       UsersActivityServer.add_event(%{
         event: "cancel_created_game",
         user_id: user.id,
