@@ -19,7 +19,13 @@ defmodule Codebattle.UsersActivityServer do
   def add_event(%{user_id: user_id}) when user_id < 0, do: :ok
 
   def add_event(params) do
-    event = Map.put(params, :date, NaiveDateTime.utc_now())
+    event =
+      params
+      |> Map.update!(:user_id, fn
+        "anonymous" -> nil
+        id -> id
+      end)
+      |> Map.put(:date, NaiveDateTime.utc_now())
 
     GenServer.cast(__MODULE__, {:add_event, event})
   end
