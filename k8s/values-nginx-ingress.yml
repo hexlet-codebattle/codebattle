@@ -1,0 +1,20 @@
+controller:
+  replicaCount: 1
+  config:
+    use-forwarded-headers: "true"
+
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+              - key: "app"
+                operator: In
+                values:
+                - nginx-ingress
+              - key: "component"
+                operator: In
+                values:
+                - controller
+
+          topologyKey: "kubernetes.io/hostname"

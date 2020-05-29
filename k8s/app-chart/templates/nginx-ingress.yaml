@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: nginx-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt-issuer"
+spec:
+  tls:
+  - hosts:
+    - codebattle.hexlet.io
+    secretName: certificate-frontend
+  rules:
+  - host: codebattle.hexlet.io
+    http:
+      paths:
+      - backend:
+          serviceName: "{{ .Release.Name }}-frontend"
+          servicePort: 8080

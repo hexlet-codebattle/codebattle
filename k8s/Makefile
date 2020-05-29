@@ -10,18 +10,25 @@ kb-get-pods:
 kb-get-nodes:
 	kubectl get nodes
 
-helm-init: helm-add-repos  helm-install-ingress helm-install-app helm-install-keel
+helm-init: helm-add-repos  helm-install-ingress helm-install-app helm-install-keel helm-install-cert-manager helm-install-ingress
+
+helm-upgrade-nginx-ingress:
+	helm upgrade -f $(PWD)/k8s/values-nginx-ingress.yml nginx-ingress nginx-stable/nginx-ingress
 
 helm-add-repos:
 	helm repo add stable https://kubernetes-charts.storage.googleapis.com
+	helm repo add stable https://kubernetes-charts.storage.googleapis.com
+	helm repo add nginx-stable https://helm.nginx.com/stable
 	helm repo add keel https://charts.keel.sh
 
 helm-upgrade-app:
 	helm upgrade --install app $(PWD)/app-chart
 
+helm-install-cert-manager:
+	helm install cert-manager jetstack/cert-manager --namespace cert-manager --version v0.15.0 --set installCRDs=true
+
 helm-install-ingress:
-	helm repo update
-	helm install ingress stable/nginx-ingress
+	helm install nginx-ingress nginx-stable/nginx-ingress
 
 helm-install-keel:
 	helm repo update
