@@ -35,6 +35,10 @@ defmodule Codebattle.Bot.ChatClient do
     :stop
   end
 
+  def call([], _params) do
+    :stop
+  end
+
   def say_some_excuse(chat_channel) do
     PhoenixClient.Channel.push_async(chat_channel, "new:message", %{
       "message" => some_excuse(),
@@ -42,9 +46,9 @@ defmodule Codebattle.Bot.ChatClient do
     })
   end
 
-  def send_congrats(chat_channel) do
+  def send_congrats(%{game_type: game_type, chat_channel: chat_channel}) do
     PhoenixClient.Channel.push_async(chat_channel, "new:message", %{
-      "message" => some_congrats(),
+      "message" => some_congrats(game_type),
       "user" => "test_bot"
     })
   end
@@ -70,7 +74,11 @@ defmodule Codebattle.Bot.ChatClient do
     |> Enum.random()
   end
 
-  defp some_congrats() do
+  defp some_congrats("training") do
+    "Congratulations! You win training game. Now you can register and fight for a place in the ranking."
+  end
+
+  defp some_congrats(_) do
     [
       "GG WP",
       "Vtm, you are a bad teacher."

@@ -30,7 +30,7 @@ defmodule Codebattle.Bot.PlayerServer do
       Map.merge(params, %{
         playbook_params: %{},
         chat_params: %{
-          messages: [:hello, :announce, :about_code]
+          messages: get_messages(params)
         }
       })
 
@@ -87,7 +87,7 @@ defmodule Codebattle.Bot.PlayerServer do
   end
 
   def initial(:info, %Message{event: "editor:data"}, state) do
-    Logger.error("Bot start codding")
+    Logger.info("Bot start codding")
     {:next_state, :playing, state}
   end
 
@@ -110,7 +110,7 @@ defmodule Codebattle.Bot.PlayerServer do
   end
 
   def ready_to_play(:info, %Message{event: "editor:data"}, state) do
-    Logger.error("Bot start codding")
+    Logger.info("Bot start codding")
     {:next_state, :playing, state}
   end
 
@@ -146,8 +146,8 @@ defmodule Codebattle.Bot.PlayerServer do
   def playing(:info, %Message{event: "user:check_complete", payload: payload}, state) do
     case payload do
       %{"solution_status" => true} ->
-        Logger.error("Bot ending codding")
-        ChatClient.send_congrats(state.chat_channel)
+        Logger.info("Bot ending codding")
+        ChatClient.send_congrats(state)
         {:next_state, :stop, state}
 
       _ ->
@@ -188,6 +188,7 @@ defmodule Codebattle.Bot.PlayerServer do
         {:keep_state, new_state}
 
       :stop ->
+        Logger.info("Bot ending chatting")
         {:keep_state, state}
     end
   end
@@ -224,4 +225,7 @@ defmodule Codebattle.Bot.PlayerServer do
   defp bot_token(bot_id) do
     Phoenix.Token.sign(%Phoenix.Socket{endpoint: CodebattleWeb.Endpoint}, "user_token", bot_id)
   end
+
+  defp get_messages(%{game_type: "training"}), do: [:hello]
+  defp get_messages(_), do: [:hello, :announce, :about_code]
 end
