@@ -97,6 +97,7 @@ const initGameChannel = dispatch => {
     const {
       status,
       startsAt,
+      type,
       timeoutSeconds,
       players: [firstPlayer, secondPlayer],
       task,
@@ -108,6 +109,7 @@ const initGameChannel = dispatch => {
 
     const gameStatus = {
       status,
+      type,
       startsAt,
       timeoutSeconds,
       rematchState,
