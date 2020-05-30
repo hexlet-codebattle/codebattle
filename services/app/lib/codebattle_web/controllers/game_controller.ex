@@ -23,7 +23,7 @@ defmodule CodebattleWeb.GameController do
     level =
       case params["type"] do
         "training" -> "elementary"
-        _ -> params["level"]
+        _ -> get_level(params["level"])
       end
 
     user = conn.assigns.current_user
