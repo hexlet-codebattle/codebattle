@@ -58,7 +58,8 @@ const LobbyMainPanel = () => (
     <div className="row">
       <div className="col-12 col-lg col-md bg-white py-4 mb-3 mr-2">
         <div className="card border-white">
-          <p>{i18n.t('Lobby Main Intro')}</p>
+
+          <p className="h4 font-weight-normal x-line-height-15 my-4">{i18n.t('Lobby Main Intro')}</p>
         </div>
       </div>
       <div className="col-12 col-lg col-md bg-white py-4 mb-3 mr-2">

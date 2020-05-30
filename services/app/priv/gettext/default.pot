@@ -183,6 +183,9 @@ msgstr ""
 msgid "Sign Out"
 msgstr ""
 
+msgid "Sign up"
+msgstr ""
+
 #, elixir-format
 #: lib/codebattle_web/controllers/auth_controller.ex:23
 #: lib/codebattle_web/controllers/dev_login_controller.ex:15
@@ -256,6 +259,21 @@ msgstr ""
 msgid "Yay! All tests passed!!111"
 msgstr ""
 
+msgid "Success Test Message"
+msgstr ""
+
+msgid "Failure Test Message"
+msgstr ""
+
+msgid "Win Game Message"
+msgstr ""
+
+msgid "Win Training Message"
+msgstr ""
+
+msgid "Lose Game Message"
+msgstr ""
+
 msgid "Press Check solution or Give up"
 msgstr ""
 
@@ -296,6 +314,30 @@ msgid "Games played"
 msgstr ""
 
 msgid "Joined"
+msgstr ""
+
+msgid "Codebattle Intro"
+msgstr ""
+
+msgid "Codebattle Intro Title"
+msgstr ""
+
+msgid "Start simple battle"
+msgstr ""
+
+msgid "Start battle"
+msgstr ""
+
+msgid "Try again"
+msgstr ""
+
+msgid "%{name} (bot)"
+msgstr ""
+
+msgid "%{name} (you)"
+msgstr ""
+
+msgid "Fight"
 msgstr ""
 
 #, elixir-format
