@@ -234,6 +234,9 @@ defmodule CodebattleWeb.GameController do
     end
   end
 
+  defp get_level("random"), do: Enum.random(["elementary", "easy", "medium", "hard"])
+  defp get_level(level), do: level
+
   defp user_info(user), do: "@#{user.name}(#{user.lang})-#{user.rating}"
 
   defp player_info(nil, _fsm), do: ""
