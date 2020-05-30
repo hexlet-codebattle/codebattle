@@ -5,7 +5,7 @@ import Task from '../components/Task';
 import { gameTaskSelector, gameStatusSelector } from '../selectors';
 
 const InfoWidget = () => {
-  const taskText = useSelector(state => gameTaskSelector(state));
+  const taskText = useSelector(gameTaskSelector);
   const startsAt = useSelector(state => gameStatusSelector(state).startsAt);
   const timeoutSeconds = useSelector(state => gameStatusSelector(state).timeoutSeconds);
   const gameStatusName = useSelector(state => gameStatusSelector(state).status);

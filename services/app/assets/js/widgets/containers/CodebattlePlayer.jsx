@@ -284,10 +284,10 @@ class CodebattlePlayer extends Component {
 }
 
 const mapStateToProps = state => ({
-  initRecords: selectors.getPlaybookInitRecords(state),
-  records: selectors.getPlaybookRecords(state),
-  stepCoefficient: selectors.getStepCoefficient(state),
-  getEditorTextPlaybook: ({ userId }) => selectors.getEditorTextPlaybook(state, userId),
+  initRecords: selectors.playbookInitRecordsSelector(state),
+  records: selectors.playbookRecordsSelector(state),
+  stepCoefficient: selectors.stepCoefficientSelector(state),
+  getEditorTextPlaybook: ({ userId }) => selectors.editorTextPlaybookSelector(state, userId),
   getEditorLangPlaybook: ({ userId }) => selectors.userLangSelector(userId)(state),
 });
 

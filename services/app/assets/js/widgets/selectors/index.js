@@ -46,7 +46,7 @@ export const editorDataSelector = playerId => state => {
   };
 };
 
-export const getEditorTextPlaybook = (state, userId) => state.editor.textPlaybook[userId];
+export const editorTextPlaybookSelector = (state, userId) => state.editor.textPlaybook[userId];
 
 export const firstEditorSelector = state => {
   const playerId = firstPlayerSelector(state).id;
@@ -137,7 +137,7 @@ export const rightExecutionOutputSelector = state => {
   return outputSelector(state);
 };
 
-export const getUsersInfo = state => state.usersInfo;
+export const usersInfoSelector = state => state.usersInfo;
 
 export const chatUsersSelector = state => state.chat.users;
 
@@ -163,21 +163,23 @@ export const editorsThemeSelector = currentUserId => state => {
   return EditorThemes.dark;
 };
 
-export const getPlaybookStatus = state => state.playbook.status;
+export const playbookStatusSelector = state => state.playbook.status;
 
-export const getPlaybookInitRecords = state => state.playbook.initRecords;
+export const playbookInitRecordsSelector = state => state.playbook.initRecords;
 
-export const getPlaybookRecords = state => state.playbook.records;
+export const playbookRecordsSelector = state => state.playbook.records;
 
-export const getStepCoefficient = state => state.playbook.stepCoefficient;
+export const stepCoefficientSelector = state => state.playbook.stepCoefficient;
 
 export const gameListSelector = state => state.gameList;
 
-export const getUsersStats = state => state.user.usersStats;
+export const usersStatsSelector = state => state.user.usersStats;
 
-export const getUsersList = state => state.user.usersRatingPage;
+export const usersListSelector = state => state.user.usersRatingPage;
 
-export const isOpponentInGame = state => {
+export const gameTypeSelector = state => state.game.gameStatus.type;
+
+export const isOpponentInGameSelector = state => {
   const findedUser = _.find(chatUsersSelector(state), { id: opponentPlayerSelector(state).id });
   return !_.isUndefined(findedUser);
 };

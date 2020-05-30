@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Pagination from 'react-js-pagination';
 import moment from 'moment';
 import UserInfo from './UserInfo';
-import { getUsersList } from '../selectors';
+import { usersListSelector } from '../selectors';
 import { getUsersRatingPage } from '../middlewares/Users';
 import Loading from '../components/Loading';
 
@@ -63,7 +63,7 @@ const UsersRating = () => {
     direction: 'desc',
   });
 
-  const usersRatingPage = useSelector(state => getUsersList(state));
+  const usersRatingPage = useSelector(usersListSelector);
   const storeLoaded = useSelector(state => state.storeLoaded);
 
   const dispatch = useDispatch();
