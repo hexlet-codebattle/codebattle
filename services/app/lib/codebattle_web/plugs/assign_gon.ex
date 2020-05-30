@@ -18,7 +18,7 @@ defmodule CodebattleWeb.Plugs.AssignGon do
         conn
         |> put_gon(
           user_token: user_token,
-          current_user: %Codebattle.User{guest: true, id: "anonymous"}
+          current_user: %Codebattle.User{guest: true, id: 0, name: "Anonymous", rating: 0}
         )
 
       _ ->

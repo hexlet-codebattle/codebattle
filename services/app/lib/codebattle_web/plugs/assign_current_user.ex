@@ -12,14 +12,14 @@ defmodule CodebattleWeb.Plugs.AssignCurrentUser do
 
     case user_id do
       nil ->
-        conn |> assign(:current_user, %User{guest: true})
+        conn |> assign(:current_user, User.create_guest())
 
       id ->
         case Codebattle.Repo.get(User, id) do
           nil ->
             conn
             |> clear_session()
-            |> assign(:current_user, %User{guest: true})
+            |> assign(:current_user, User.create_guest())
 
           user ->
             conn |> assign(:current_user, user)
