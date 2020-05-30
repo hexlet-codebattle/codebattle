@@ -6,10 +6,10 @@ import DropdownMenuDefault from './DropdownMenuDefault';
 const StartGameCard = ({ title, type }) => {
   const [level, setLevel] = useState('random');
   const [levelClass, setLevelClass] = useState('secondary');
-  const [gameUrl, setGameUrl] = useState(makeCreateGameUrlDefault(level, type, 3600));
+  const [gameUrl, setGameUrl] = useState(makeCreateGameUrlDefault(level, type));
 
   useEffect(() => {
-    const newGameUrl = makeCreateGameUrlDefault(level, type, 3600);
+    const newGameUrl = makeCreateGameUrlDefault(level, type);
     setGameUrl(newGameUrl);
   }, [level, type]);
 
