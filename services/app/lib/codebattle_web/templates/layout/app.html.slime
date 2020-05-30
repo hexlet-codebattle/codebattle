@@ -88,11 +88,11 @@ html lang="en"
                     = link gettext("Sign Out"), to: session_path(@conn, :delete), method: "delete", class: "dropdown-item"
               - else
                 li.nav-item
-                  a href="#{auth_path(@conn, :request, :github)}"
+                  a href="#{auth_path(@conn, :request, :github, "locale": :en)}"
                     button.btn.btn-outline-success = gettext "Sign in with %{name}", name: "Github"
                 = if Mix.env() == :dev do
                   li.nav-item
-                    = button("Dev sign_in", to: "/auth/dev_login", class: "btn btn-outline-danger")
+                    = button("Dev sign_in", to: "/auth/dev_login?locale=en", class: "btn btn-outline-danger")
     div
       = for {type, message} <- get_flash(@conn) do
         div class="m-0 rounded-0 alert alert-#{type} alert-dismissible fade show" role="alert"

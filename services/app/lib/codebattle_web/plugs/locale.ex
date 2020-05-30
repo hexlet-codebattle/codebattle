@@ -10,7 +10,7 @@ defmodule CodebattleWeb.Plugs.Locale do
   def call(conn, _opts) do
     case conn.params["locale"] || get_session(conn, :locale) do
       nil ->
-        put_gon(conn, locale: :en)
+        conn
 
       locale ->
         Gettext.put_locale(CodebattleWeb.Gettext, locale)
