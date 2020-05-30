@@ -89,7 +89,10 @@ defmodule Codebattle.GameProcess.Engine.Bot do
       Notifications.broadcast_join_game(fsm)
       run_bot!(fsm)
 
-      broadcast_active_game(fsm)
+      if type == "bot" do
+        broadcast_active_game(fsm)
+      end
+
       start_timeout_timer(game_id, fsm)
 
       {:ok, fsm}
@@ -102,6 +105,7 @@ defmodule Codebattle.GameProcess.Engine.Bot do
   def run_bot!(fsm) do
     Bot.PlayersSupervisor.create_player(%{
       game_id: FsmHelpers.get_game_id(fsm),
+      game_type: FsmHelpers.get_type(fsm),
       task_id: FsmHelpers.get_task(fsm).id,
       bot_id: FsmHelpers.get_first_player(fsm).id,
       bot_time_ms: get_bot_time(fsm)
@@ -199,6 +203,8 @@ defmodule Codebattle.GameProcess.Engine.Bot do
     {:ok, game.id}
   end
 
+  defp get_timeout_seconds(timeout) when is_binary(timeout), do: String.to_integer(timeout)
+  defp get_timeout_seconds(timeout), do: timeout
 
   defp init_rematch_state("training"), do: :rejected
   defp init_rematch_state("bot"), do: :none

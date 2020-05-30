@@ -56,6 +56,7 @@ defmodule Codebattle.GameProcess.Engine.Tournament do
       if player.is_bot do
         Bot.PlayersSupervisor.create_player(%{
           game_id: game.id,
+          game_type: "tournament",
           task_id: task.id,
           bot_id: player.id,
           bot_time_ms: (50 * 3 + :rand.uniform(23)) * 1000
