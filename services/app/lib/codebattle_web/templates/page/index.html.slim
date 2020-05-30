@@ -1,7 +1,3 @@
-= if @current_user.guest do
-  h1.text-center = gettext "Welcome to %{name}!", name: "Codebattle"
-  p.text-center.lead = gettext "%{name}: game for programmers.", name: "Codebattle"
-
 #game-list
 javascript:
     window.csrf_token = "<%= csrf_token() %>"

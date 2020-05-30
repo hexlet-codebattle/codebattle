@@ -6,7 +6,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import RootContainer from './containers/RootContainer';
 import reducers from './slices';
-import GameList from './containers/GameList';
+import LobbyWidget from './containers/LobbyWidget';
 import RatingList from './containers/RatingList';
 
 const { editorUI: editorUIReducer, ...otherReducers } = reducers;
@@ -39,7 +39,7 @@ export const Game = () => (
 export const Lobby = () => (
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
-      <GameList />
+      <LobbyWidget />
     </PersistGate>
   </Provider>
 );

@@ -7,7 +7,7 @@ import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 
 import reducers from '../widgets/slices';
-import GameList from '../widgets/containers/GameList';
+import LobbyWidget from '../widgets/containers/LobbyWidget';
 
 jest.mock('gon', () => {
   const gonParams = { local: 'en' };
@@ -22,20 +22,7 @@ test('test rendering GameList', async () => {
 
   const preloadedState = {
     gameList: {
-      activeGames: [
-        {
-          level: 'elementary', isBot: true, id: 1, players: [{ id: -1 }],
-        },
-        {
-          level: 'easy', isBot: true, id: 2, players: [{ id: -2 }],
-        },
-        {
-          level: 'medium', isBot: true, id: 3, players: [{ id: -3 }],
-        },
-        {
-          level: 'hard', isBot: true, id: 4, players: [{ id: -4 }],
-        },
-      ],
+      activeGames: [],
       completedGames: [
         { level: 'elementary', players: [{ id: -4 }] },
       ],
@@ -48,7 +35,7 @@ test('test rendering GameList', async () => {
     preloadedState,
   });
 
-  const { getByText } = render(<Provider store={store}><GameList /></Provider>);
+  const { getByText } = render(<Provider store={store}><LobbyWidget /></Provider>);
 
   expect(getByText(/Active games/)).toBeInTheDocument();
   expect(getByText(/Active tournaments/)).toBeInTheDocument();

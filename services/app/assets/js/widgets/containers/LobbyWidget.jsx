@@ -6,26 +6,18 @@ import Gon from 'gon';
 import { Tooltip, OverlayTrigger } from 'react-bootstrap';
 import * as lobbyMiddlewares from '../middlewares/Lobby';
 import GameStatusCodes from '../config/gameStatusCodes';
+import levelToClass from '../config/levelToClass';
 import { actions } from '../slices';
 import * as selectors from '../selectors';
 import Loading from '../components/Loading';
 import GamesHeatmap from '../components/GamesHeatmap';
 import Card from '../components/Card';
 import UserInfo from './UserInfo';
-import { makeCreateGameBotUrl, getSignInGithubUrl } from '../utils/urlBuilders';
-import PlayWithBotDropdown from '../components/PlayWithBotDropdown';
-import CreateGameDropdown from '../components/CreateGameDropdown';
-import PlayWithFriendDropdown from '../components/PlayWithFriendDropdown';
+import { makeCreateGameBotUrl, getSignInGithubUrl, makeCreateGameUrlDefault } from '../utils/urlBuilders';
 import i18n from '../../i18n';
+import StartGamePanel from '../components/StartGamePanel';
 
-class GameList extends React.Component {
-  levelToClass = {
-    elementary: 'info',
-    easy: 'success',
-    medium: 'warning',
-    hard: 'danger',
-  };
-
+class LobbyWidget extends React.Component {
   componentDidMount() {
     const { setCurrentUser, fetchState, currentUser } = this.props;
     setCurrentUser({ user: { ...currentUser } });
@@ -101,7 +93,7 @@ class GameList extends React.Component {
 
   renderGameLevelBadge = level => (
     <div>
-      <span className={`badge badge-pill badge-${this.levelToClass[level]} mr-1`}>&nbsp;</span>
+      <span className={`badge badge-pill badge-${levelToClass[level]} mr-1`}>&nbsp;</span>
       {level}
     </div>
   );
@@ -157,12 +149,12 @@ class GameList extends React.Component {
         <div className="btn-group">
           <button
             type="button"
-            className="btn btn-success btn-sm"
+            className="btn btn-danger btn-sm"
             data-method="post"
             data-csrf={window.csrf_token}
             data-to={gameUrlJoin}
           >
-            Join
+            {i18n.t('Fight')}
           </button>
           {this.renderShowButton(gameUrl)}
         </div>
@@ -172,19 +164,48 @@ class GameList extends React.Component {
     return null;
   };
 
-  renderStartNewGameButton = (gameLevel, gameUrl) => (
-    <button
-      key={gameUrl}
-      className="dropdown-item"
-      type="button"
-      data-method="post"
-      data-csrf={window.csrf_token}
-      data-to={gameUrl}
-    >
-      <span className={`badge badge-pill badge-${this.levelToClass[gameLevel]} mr-1`}>&nbsp;</span>
-      {gameLevel}
-    </button>
-  );
+  renderIntro = () => (
+    <div className="container-xl bg-white shadow-sm rounded py-4 mb-3">
+      <h1 className="font-weight-light mb-4 text-center">
+        {i18n.t('Codebattle Intro Title')}
+      </h1>
+      <div className="row align-items-center">
+        <div className="col-12 col-md-7 col-lg-7">
+          <p className="h4 font-weight-normal x-line-height-15 my-4">
+            {i18n.t('Codebattle Intro')}
+          </p>
+          {this.renderIntroButtons()}
+        </div>
+        <div className="d-none d-md-block col-md-5 col-lg-4">
+          <video autoPlay className="w-100 shadow-lg" poster="/assets/images/opengraph-main.png" loop muted playsInline src="https://files.fm/down.php?i=x3hybevp" width="100%" />
+        </div>
+      </div>
+    </div>
+  )
+
+  renderIntroButtons = () => {
+    const level = 'elementary';
+    const gameUrl = makeCreateGameUrlDefault(level, 'training', 3600);
+
+    return (
+      <>
+        <button
+          key={gameUrl}
+          type="button"
+          data-method="post"
+          data-csrf={window.csrf_token}
+          data-to={gameUrl}
+          className="btn btn-primary mr-2"
+        >
+          <i className="fa fa-robot mr-2" />
+          {i18n.t('Start simple battle')}
+        </button>
+        <a className="btn btn-success" href="/auth/github">
+          {i18n.t('Sign up')}
+        </a>
+      </>
+    );
+  }
 
   renderLiveTournaments = tournaments => {
     if (_.isEmpty(tournaments)) {
@@ -201,10 +222,10 @@ class GameList extends React.Component {
           <thead className="text-left">
             <tr>
               <th className="p-3 border-0">title</th>
+              <th className="p-3 border-0">actions</th>
               <th className="p-3 border-0">starts_at</th>
               <th className="p-3 border-0">type</th>
               <th className="p-3 border-0">state</th>
-              <th className="p-3 border-0">actions</th>
             </tr>
           </thead>
           <tbody>
@@ -212,6 +233,9 @@ class GameList extends React.Component {
               <tr key={tournament.id}>
                 <td className="p-3 align-middle">
                   {tournament.name}
+                </td>
+                <td className="p-3 align-middle">
+                  {this.renderShowButton(`/tournaments/${tournament.id}/`)}
                 </td>
                 <td className="p-3 align-middle text-nowrap">
                   {moment
@@ -224,9 +248,6 @@ class GameList extends React.Component {
                 </td>
                 <td className="p-3 align-middle text-nowrap">
                   {tournament.state}
-                </td>
-                <td className="p-3 align-middle">
-                  {this.renderShowButton(`/tournaments/${tournament.id}/`)}
                 </td>
               </tr>
             ))}
@@ -247,30 +268,30 @@ class GameList extends React.Component {
         <table className="table">
           <thead className="text-left">
             <tr>
-              <th className="p-3 border-0">Date</th>
               <th className="p-3 border-0">Level</th>
+              <th className="p-3 border-0">Actions</th>
               <th className="p-3 border-0 text-center" colSpan={2}>Players</th>
               <th className="p-3 border-0">State</th>
-              <th className="p-3 border-0">Actions</th>
+              <th className="p-3 border-0">Date</th>
             </tr>
           </thead>
           <tbody>
             {games.map(game => (
               <tr key={game.id}>
                 <td className="p-3 align-middle text-nowrap">
+                  {this.renderGameLevelBadge(game.level)}
+                </td>
+                <td className="p-3 align-middle">{this.renderGameActionButton(game)}</td>
+                {this.renderPlayers(game.id, game.players)}
+                <td className="p-3 align-middle text-nowrap">
+                  {game.state}
+                </td>
+                <td className="p-3 align-middle text-nowrap">
                   {moment
                     .utc(game.insertedAt)
                     .local()
                     .format('YYYY-MM-DD HH:mm')}
                 </td>
-                <td className="p-3 align-middle text-nowrap">
-                  {this.renderGameLevelBadge(game.level)}
-                </td>
-                {this.renderPlayers(game.id, game.players)}
-                <td className="p-3 align-middle text-nowrap">
-                  {game.state}
-                </td>
-                <td className="p-3 align-middle">{this.renderGameActionButton(game)}</td>
               </tr>
             ))}
           </tbody>
@@ -284,30 +305,30 @@ class GameList extends React.Component {
       <table className="table table-sm">
         <thead>
           <tr>
-            <th className="p-3 border-0">Date</th>
             <th className="p-3 border-0">Level</th>
+            <th className="p-3 border-0">Actions</th>
             <th className="p-3 border-0 text-center" colSpan={2}>Players</th>
             <th className="p-3 border-0">Duration</th>
-            <th className="p-3 border-0">Actions</th>
+            <th className="p-3 border-0">Date</th>
           </tr>
         </thead>
         <tbody>
           {games.map(game => (
             <tr key={game.id}>
               <td className="p-3 align-middle text-nowrap">
+                {this.renderGameLevelBadge(game.level)}
+              </td>
+              <td className="p-3 align-middle">{this.renderShowButton(`/games/${game.id}`)}</td>
+              {this.renderPlayers(game.id, game.players)}
+              <td className="p-3 align-middle text-nowrap">
+                {moment.duration(game.duration, 'seconds').humanize()}
+              </td>
+              <td className="p-3 align-middle text-nowrap">
                 {moment
                   .utc(game.finishsAt)
                   .local()
                   .format('YYYY-MM-DD HH:mm')}
               </td>
-              <td className="p-3 align-middle text-nowrap">
-                {this.renderGameLevelBadge(game.level)}
-              </td>
-              {this.renderPlayers(game.id, game.players)}
-              <td className="p-3 align-middle text-nowrap">
-                {moment.duration(game.duration, 'seconds').humanize()}
-              </td>
-              <td className="p-3 align-middle">{this.renderShowButton(`/games/${game.id}`)}</td>
             </tr>
           ))}
         </tbody>
@@ -344,26 +365,16 @@ class GameList extends React.Component {
   };
 
   render() {
-    const { loaded } = this.props;
+    const { loaded, currentUser } = this.props;
+    const isGuestCurrentUser = !currentUser || currentUser.guest;
+
     if (!loaded) {
       return <Loading />;
     }
+
     return (
       <>
-        <Card title="New game">
-          <div className="d-flex flex-sm-row flex-column align-items-center justify-content-center flex-wrap">
-            <PlayWithBotDropdown
-              renderStartNewGameButton={this.renderStartNewGameButton}
-            />
-            <CreateGameDropdown
-              renderStartNewGameButton={this.renderStartNewGameButton}
-            />
-            <PlayWithFriendDropdown
-              renderStartNewGameButton={this.renderStartNewGameButton}
-            />
-          </div>
-        </Card>
-
+        {isGuestCurrentUser ? this.renderIntro() : <StartGamePanel />}
         {!loaded ? <Loading /> : this.renderGameContainers()}
       </>
     );
@@ -385,4 +396,4 @@ const mapDispatchToProps = {
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(GameList);
+)(LobbyWidget);
