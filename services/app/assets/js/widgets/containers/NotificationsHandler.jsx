@@ -3,8 +3,10 @@ import _ from 'lodash';
 import { connect } from 'react-redux';
 import { ToastContainer, toast } from 'react-toastify';
 import { Alert } from 'react-bootstrap';
+import i18n from '../../i18n';
 import * as selectors from '../selectors';
 import GameStatusCodes from '../config/gameStatusCodes';
+import GameTypeCodes from '../config/gameTypeCodes';
 import Toast from '../components/Toast';
 import ActionsAfterGame from '../components/Toast/ActionsAfterGame';
 import CloseButton from '../components/Toast/CloseButton';
@@ -65,13 +67,13 @@ class NotificationsHandler extends Component {
     }
   }
 
-
   getResultMessage() {
     const {
       isCurrentUserPlayer,
       currentUserId,
       players,
       gameStatus,
+      gameType,
     } = this.props;
 
     const winner = _.find(players, ['gameResult', 'won']);
@@ -82,14 +84,18 @@ class NotificationsHandler extends Component {
         msg: gameStatus.msg,
       });
     } if (currentUserId === winner.id) {
+      const msg = gameType === GameTypeCodes.training
+        ? i18n.t('Win Training Message')
+        : i18n.t('Win Game Message');
+
       return ({
         alertStyle: 'success',
-        msg: 'Congratulations! You have won the game!',
+        msg,
       });
     } if (isCurrentUserPlayer) {
       return ({
         alertStyle: 'danger',
-        msg: 'Oh snap! Your opponent has won the game',
+        msg: i18n.t('Lose Game Message'),
       });
     }
 
@@ -100,13 +106,13 @@ class NotificationsHandler extends Component {
       if (solutionStatus) {
         toast(
           <Toast header="Success">
-            <Alert variant="success">Yay! All tests passed!</Alert>
+            <Alert variant="success">{i18n.t('Success Test Message')}</Alert>
           </Toast>,
         );
       } else {
         toast(
           <Toast header="Failed">
-            <Alert variant="danger">Oh no, some test has failed!</Alert>
+            <Alert variant="danger">{i18n.t('Failure Test Message')}</Alert>
           </Toast>,
         );
       }
@@ -168,6 +174,7 @@ const mapStateToProps = state => {
     isCurrentUserPlayer,
     isShowActionsAfterGame,
     gameStatus: selectors.gameStatusSelector(state),
+    gameType: selectors.gameTypeSelector(state),
   };
 };
 
