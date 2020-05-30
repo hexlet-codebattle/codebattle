@@ -1,42 +1,55 @@
 import React from 'react';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
+import GameTypeCodes from '../../config/gameTypeCodes';
 import * as selectors from '../../selectors';
 import BackToTournamentButton from './BackToTournamentButton';
 import NewGameButton from './NewGameButton';
+import StartTrainingButton from './StartTrainingButton';
+import SignUpButton from './SignUpButton';
 import RematchButton from './RematchButton';
 import BackToHomeButton from './BackToHomeButton';
 
-const ActionsAfterGame = props => {
-  const {
-    gameStatus: { tournamentId },
-    isOpponentInGame,
-  } = props;
+const ActionsAfterGame = () => {
+  const gameType = useSelector(selectors.gameTypeSelector);
+  const isOpponentInGame = useSelector(selectors.isOpponentInGameSelector);
 
   const isRematchDisabled = !isOpponentInGame;
 
-  return tournamentId ? (
+  if (gameType === GameTypeCodes.training) {
+    return (
+      <>
+        <StartTrainingButton />
+        <SignUpButton />
+        <BackToHomeButton />
+      </>
+    );
+  }
+
+  if (gameType === GameTypeCodes.tournament) {
+    return (
+      <>
+        <BackToTournamentButton />
+        <BackToHomeButton />
+      </>
+    );
+  }
+
+  if (gameType === GameTypeCodes.bot) {
+    return (
+      <>
+        <RematchButton disabled={isRematchDisabled} />
+        <BackToHomeButton />
+      </>
+    );
+  }
+
+  return (
     <>
-      <BackToTournamentButton />
-      <BackToHomeButton />
-    </>
-  ) : (
-    <>
-      <NewGameButton />
+      <NewGameButton type={gameType} />
       <RematchButton disabled={isRematchDisabled} />
       <BackToHomeButton />
     </>
   );
 };
 
-const mapStateToProps = state => {
-  const currentUserId = selectors.currentUserIdSelector(state);
-
-  return {
-    currentUserId,
-    isOpponentInGame: selectors.isOpponentInGame(state),
-    gameStatus: selectors.gameStatusSelector(state),
-  };
-};
-
-
-export default connect(mapStateToProps)(ActionsAfterGame);
+export default ActionsAfterGame;

@@ -103,7 +103,7 @@ const mapStateToProps = state => {
     gameTask: selectors.gameTaskSelector(state),
     gameStatus: selectors.gameStatusSelector(state),
     currentUserId,
-    isOpponentInGame: selectors.isOpponentInGame(state),
+    isOpponentInGame: selectors.isOpponentInGameSelector(state),
   };
 };
 

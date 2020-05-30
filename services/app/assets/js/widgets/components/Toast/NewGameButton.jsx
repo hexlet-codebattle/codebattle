@@ -1,11 +1,14 @@
 import React from 'react';
 import qs from 'qs';
 import { connect } from 'react-redux';
+import i18n from '../../../i18n';
+import GameTypeCodes from '../../config/gameTypeCodes';
 import * as selectors from '../../selectors';
 
 const NewGameButton = props => {
-  const { gameTask: { level }, timeoutSeconds } = props;
-  const queryParamsString = qs.stringify({ level, type: 'withRandomPlayer', timeout_seconds: timeoutSeconds });
+  const { gameTask: { level }, gameType, timeoutSeconds } = props;
+  const type = gameType === GameTypeCodes.public ? 'withRandomPlayer' : 'withFriend';
+  const queryParamsString = qs.stringify({ level, type, timeout_seconds: timeoutSeconds });
   const gameUrl = `/games?${queryParamsString}`;
 
   return (
@@ -16,7 +19,7 @@ const NewGameButton = props => {
       data-csrf={window.csrf_token}
       data-to={gameUrl}
     >
-      New Game
+      {i18n.t('Start new game')}
     </button>
   );
 };
