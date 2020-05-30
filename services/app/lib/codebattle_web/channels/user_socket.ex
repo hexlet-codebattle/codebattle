@@ -16,8 +16,9 @@ defmodule CodebattleWeb.UserSocket do
         socket =
           assign(socket, :current_user, %Codebattle.User{
             guest: true,
-            id: "anonymous",
-            name: "Anonymous"
+            id: 0,
+            name: "Anonymous",
+            rating: 0
           })
 
         {:ok, assign(socket, :user_id, "anonymous")}
