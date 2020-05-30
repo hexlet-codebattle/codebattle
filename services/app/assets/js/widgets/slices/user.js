@@ -18,7 +18,7 @@ const userSlice = createSlice({
     setCurrentUser: (state, { payload }) => {
       const { user } = payload;
       const currentUserId = user.id;
-      if (currentUserId) {
+      if (currentUserId || currentUserId === 0) {
         state.currentUserId = currentUserId;
         state.users[user.id] = user;
       }
