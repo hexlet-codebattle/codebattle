@@ -78,7 +78,7 @@ const LeftEditorToolbar = () => {
   const switchTheme = nextTheme => () => dispatch(actions.switchEditorsTheme(nextTheme));
   const setLang = langSlug => dispatch(changeCurrentLangAndSetTemplate(langSlug));
   const isStoredGame = gameStatus.status === GameStatusCodes.stored;
-  const isSpectator = isStoredGame || !_.hasIn(players, currentUserId);
+  const isDisabled = isStoredGame || !_.hasIn(players, currentUserId);
 
   if (leftEditorLangSlug === null) { return null; }
 
@@ -92,9 +92,9 @@ const LeftEditorToolbar = () => {
           languages={languages}
           currentLangSlug={leftEditorLangSlug}
           onChange={setLang}
-          disabled={isSpectator}
+          disabled={isDisabled}
         />
-        {!isSpectator && renderVimModeBtn(setMode, leftEditorsMode)}
+        {!isDisabled && renderVimModeBtn(setMode, leftEditorsMode)}
         {renderSwitchThemeBtn(switchTheme, theme)}
         <EditorHeightButtons
           typeEditor="left"
