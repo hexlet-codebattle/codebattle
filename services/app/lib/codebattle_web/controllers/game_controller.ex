@@ -23,7 +23,7 @@ defmodule CodebattleWeb.GameController do
     level =
       case params["type"] do
         "training" -> "elementary"
-        _ -> get_level(params["level"])
+        _ -> params["level"]
       end
 
     user = conn.assigns.current_user
@@ -35,13 +35,15 @@ defmodule CodebattleWeb.GameController do
       user: user
     }
 
-    case Play.create_game(game_params) do
+    case Play.start_game(game_params) do
       {:ok, fsm} ->
+        event = get_start_game_event(fsm, type)
+
         game_id = FsmHelpers.get_game_id(fsm)
         level = FsmHelpers.get_level(fsm)
 
         UsersActivityServer.add_event(%{
-          event: "success_create_game",
+          event: event,
           user_id: user.id,
           data: %{
             game_id: game_id,
@@ -234,8 +236,14 @@ defmodule CodebattleWeb.GameController do
     end
   end
 
-  defp get_level("random"), do: Enum.random(["elementary", "easy", "medium", "hard"])
-  defp get_level(level), do: level
+  defp get_start_game_event(fsm, "public") do
+    case FsmHelpers.get_state(fsm) do
+      :waiting_opponent -> "success_create_game"
+      :playing -> "join_created_game"
+    end
+  end
+
+  defp get_start_game_event(_fsm, _type), do: "success_create_game"
 
   defp user_info(user), do: "@#{user.name}(#{user.lang})-#{user.rating}"
 

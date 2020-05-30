@@ -42,6 +42,37 @@ defmodule Codebattle.GameProcess.Play do
 
   def get_fsm(id), do: Server.get_fsm(id)
 
+  def start_game(%{level: level, type: "public", user: user} = params) do
+    games =
+      %{type: "public", state: :waiting_opponent}
+      |> ActiveGames.get_games()
+      |> Enum.filter(fn %{level: game_level} ->
+        case level do
+          "random" -> true
+          _ -> game_level == level
+        end
+      end)
+
+    case games do
+      [] ->
+        create_game(params)
+
+      games ->
+        game = Enum.random(games)
+
+        case join_game(game.id, user) do
+          {:ok, fsm} -> {:ok, fsm}
+          {:error, _reason} -> create_game(params)
+        end
+    end
+  end
+
+  def start_game(params), do: create_game(params)
+
+  def create_game(%{level: "random"} = params) do
+    params |> set_random_level() |> create_game()
+  end
+
   def create_game(params) do
     module = get_module(params)
     module.create_game(params)
@@ -173,6 +204,11 @@ defmodule Codebattle.GameProcess.Play do
 
         :ok
     end
+  end
+
+  defp set_random_level(params) do
+    level = Enum.random(["elementary", "easy", "medium", "hard"])
+    Map.put(params, :level, level)
   end
 
   defp get_module(%{tournament: _}), do: Engine.Tournament
