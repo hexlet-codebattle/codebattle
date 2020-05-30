@@ -71,4 +71,6 @@ defmodule Codebattle.User do
     |> unique_constraint(:name)
     |> validate_length(:name, min: 3, max: 16)
   end
+
+  def create_guest(), do: %__MODULE__{guest: true, id: 0, name: "Jon Dou", rating: 0}
 end

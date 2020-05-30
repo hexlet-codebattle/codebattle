@@ -21,15 +21,53 @@ defmodule Codebattle.GameProcess.Engine.Bot do
   def create_game(params) do
     case params[:user] do
       nil ->
-        build_game(params, :ok)
+        create_game(params, :ok)
 
-      user ->
-        build_game(params, player_can_create_game?(user))
+      _ ->
+        create_game_and_join(params)
     end
   end
 
+  defp create_game_and_join(%{user: user, type: type} = params) do
+    case create_game(params, player_can_create_game?(user, type)) do
+      {:ok, fsm} ->
+        join_game(fsm, user)
+
+      {:error, reason} ->
+        {:error, reason}
+    end
+  end
+
+  defp create_game(%{level: level, type: type} = params, :ok) do
+    bot = Codebattle.Bot.Builder.build()
+    player = Player.build(bot, %{creator: true})
+    timeout_seconds = get_timeout_seconds(params[:timeout_seconds]) || @default_timeout
+    {:ok, game} = insert_game(%{state: "waiting_opponent", level: level, type: type})
+
+    fsm =
+      build_fsm(%{
+        module: __MODULE__,
+        players: [player],
+        level: level,
+        game_id: game.id,
+        type: type,
+        timeout_seconds: timeout_seconds,
+        inserted_at: game.inserted_at,
+        rematch_state: init_rematch_state(type)
+      })
+
+    ActiveGames.create_game(fsm)
+
+    {:ok, _} = GlobalSupervisor.start_game(fsm)
+
+    {:ok, fsm}
+  end
+
+  defp create_game(_params, {:error, reason}), do: {:error, reason}
+
   def join_game(fsm, second_user) do
-    with :ok <- player_can_join_game?(second_user),
+    with type <- FsmHelpers.get_type(fsm),
+         :ok <- player_can_join_game?(second_user, type),
          game_id <- FsmHelpers.get_game_id(fsm),
          level <- FsmHelpers.get_level(fsm),
          first_player <- FsmHelpers.get_first_player(fsm),
@@ -161,28 +199,7 @@ defmodule Codebattle.GameProcess.Engine.Bot do
     {:ok, game.id}
   end
 
-  defp build_game(%{level: level, type: type} = params, :ok) do
-    bot = Codebattle.Bot.Builder.build()
-    player = Player.build(bot, %{creator: true})
-    timeout_seconds = params[:timeout_seconds] || @default_timeout
-    {:ok, game} = insert_game(%{state: "waiting_opponent", level: level, type: type})
 
-    fsm =
-      build_fsm(%{
-        module: __MODULE__,
-        players: [player],
-        level: level,
-        game_id: game.id,
-        type: type,
-        timeout_seconds: timeout_seconds,
-        inserted_at: game.inserted_at
-      })
-
-    ActiveGames.create_game(fsm)
-    {:ok, _} = GlobalSupervisor.start_game(fsm)
-
-    {:ok, fsm}
-  end
-
-  defp build_game(_params, {:error, reason}), do: {:error, reason}
+  defp init_rematch_state("training"), do: :rejected
+  defp init_rematch_state("bot"), do: :none
 end

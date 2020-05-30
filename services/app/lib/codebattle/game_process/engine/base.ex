@@ -105,6 +105,7 @@ defmodule Codebattle.GameProcess.Engine.Base do
       def store_game_result!(fsm, {winner, winner_result}, {loser, loser_result}) do
         level = FsmHelpers.get_level(fsm)
         game_id = FsmHelpers.get_game_id(fsm)
+        type = FsmHelpers.get_type(fsm)
         {new_winner_rating, new_loser_rating} = Elo.calc_elo(winner.rating, loser.rating, level)
 
         winner_rating_diff = new_winner_rating - winner.rating
@@ -140,17 +141,19 @@ defmodule Codebattle.GameProcess.Engine.Base do
           winner_achievements = Achievements.recalculate_achievements(winner)
           loser_achievements = Achievements.recalculate_achievements(loser)
 
-          update_user!(winner.id, %{
-            rating: new_winner_rating,
-            achievements: winner_achievements,
-            lang: winner.editor_lang
-          })
+          unless type == "training" do
+            update_user!(winner.id, %{
+              rating: new_winner_rating,
+              achievements: winner_achievements,
+              lang: winner.editor_lang
+            })
 
-          update_user!(loser.id, %{
-            rating: new_loser_rating,
-            achievements: loser_achievements,
-            lang: loser.editor_lang
-          })
+            update_user!(loser.id, %{
+              rating: new_loser_rating,
+              achievements: loser_achievements,
+              lang: loser.editor_lang
+            })
+          end
         end)
       end
 

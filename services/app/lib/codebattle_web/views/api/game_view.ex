@@ -23,7 +23,7 @@ defmodule CodebattleWeb.Api.GameView do
   end
 
   def render_completed_games(games) do
-    Enum.map(games, &render_completed_game/1)
+    games |> Enum.filter(&(&1.type != "training")) |> Enum.map(&render_completed_game/1)
   end
 
   def render_completed_game(game) do
@@ -42,7 +42,8 @@ defmodule CodebattleWeb.Api.GameView do
   end
 
   def can_player_receive_game?(game, user_id) do
-    Enum.any?(game.players, fn player -> player.id === user_id end) or game.type != "private"
+    Enum.any?(game.players, fn player -> player.id === user_id end) or
+      game.type not in ["private", "training"]
   end
 
   def render_active_game(fsm) do

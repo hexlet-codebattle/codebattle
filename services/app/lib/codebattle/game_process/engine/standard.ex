@@ -64,7 +64,8 @@ defmodule Codebattle.GameProcess.Engine.Standard do
   end
 
   def join_game(fsm, second_user) do
-    with :ok <- player_can_join_game?(second_user),
+    with type <- FsmHelpers.get_type(fsm),
+         :ok <- player_can_join_game?(second_user, type),
          game_id <- FsmHelpers.get_game_id(fsm),
          level <- FsmHelpers.get_level(fsm),
          first_player <- FsmHelpers.get_first_player(fsm),

@@ -5,10 +5,10 @@ defmodule CodebattleWeb.GameController do
   require Logger
 
   alias Codebattle.GameProcess.{Play, ActiveGames, FsmHelpers}
-  alias Codebattle.{Languages, UsersActivityServer}
+  alias Codebattle.{User, Languages, UsersActivityServer}
   alias Codebattle.Bot.Playbook
 
-  plug(CodebattleWeb.Plugs.RequireAuth when action in [:create, :join])
+  plug(CodebattleWeb.Plugs.RequireAuth when action in [:join])
 
   action_fallback(CodebattleWeb.FallbackController)
 
@@ -20,10 +20,16 @@ defmodule CodebattleWeb.GameController do
         type -> type
       end
 
+    level =
+      case params["type"] do
+        "training" -> "elementary"
+        _ -> params["level"]
+      end
+
     user = conn.assigns.current_user
 
     game_params = %{
-      level: params["level"],
+      level: level,
       type: type,
       timeout_seconds: params["timeout_seconds"],
       user: user
@@ -39,7 +45,7 @@ defmodule CodebattleWeb.GameController do
           user_id: user.id,
           data: %{
             game_id: game_id,
-            type: params["type"],
+            type: type,
             level: level
           }
         })
@@ -135,7 +141,7 @@ defmodule CodebattleWeb.GameController do
           game ->
             if Playbook.exists?(id) do
               langs = Languages.meta() |> Map.values()
-              [first, second] = game.users
+              [first, second] = get_users(game)
 
               UsersActivityServer.add_event(%{
                 event: "show_archived_game_page",
@@ -249,5 +255,18 @@ defmodule CodebattleWeb.GameController do
 
         acc |> Map.put("label#{i}", label) |> Map.put("data#{i}", data)
     end)
+  end
+
+  defp get_users(game) do
+    case Enum.count(game.users) do
+      1 ->
+        [first] = game.users
+        second = User.create_guest()
+
+        [first, second]
+
+      _ ->
+        game.users
+    end
   end
 end

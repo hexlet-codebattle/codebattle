@@ -11,7 +11,7 @@ defmodule Codebattle.Game do
   end
 
   @derive {Jason.Encoder, only: [:id, :users, :state, :starts_at, :finishs_at]}
-  @types ~w(public bot tournament private)
+  @types ~w(public bot training tournament private)
 
   schema "games" do
     field(:state, :string)

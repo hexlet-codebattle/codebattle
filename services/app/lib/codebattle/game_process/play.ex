@@ -14,7 +14,8 @@ defmodule Codebattle.GameProcess.Play do
     Engine,
     Fsm,
     FsmHelpers,
-    ActiveGames
+    ActiveGames,
+    GlobalSupervisor
   }
 
   alias CodebattleWeb.Notifications
@@ -99,8 +100,9 @@ defmodule Codebattle.GameProcess.Play do
           Server.update_playbook(id, :game_over, %{id: user.id, lang: editor_lang})
 
           player = FsmHelpers.get_player(new_fsm, user.id)
+          type = FsmHelpers.get_type(new_fsm)
           FsmHelpers.get_module(fsm).handle_won_game(id, player, new_fsm)
-          CodebattleWeb.Notifications.finish_active_game(new_fsm)
+          finish_active_game(new_fsm, type)
           {:ok, fsm, new_fsm, %{solution_status: true, check_result: check_result}}
         else
           {:ok, fsm, new_fsm, %{solution_status: false, check_result: check_result}}
@@ -152,7 +154,7 @@ defmodule Codebattle.GameProcess.Play do
 
     case fsm.state do
       :game_over ->
-        Codebattle.GameProcess.GlobalSupervisor.terminate_game(id)
+        GlobalSupervisor.terminate_game(id)
 
       _ ->
         Server.call_transition(id, :timeout, %{})
@@ -160,7 +162,7 @@ defmodule Codebattle.GameProcess.Play do
         Notifications.game_timeout(id)
         Notifications.remove_active_game(id)
         Notifications.notify_tournament(:game_over, fsm, %{game_id: id, state: "canceled"})
-        Codebattle.GameProcess.GlobalSupervisor.terminate_game(id)
+        GlobalSupervisor.terminate_game(id)
 
         store_terminate_event(fsm)
 
@@ -174,11 +176,14 @@ defmodule Codebattle.GameProcess.Play do
   end
 
   defp get_module(%{tournament: _}), do: Engine.Tournament
-  defp get_module(%{type: "bot"}), do: Engine.Bot
+  defp get_module(%{type: type}) when type in ["training", "bot"], do: Engine.Bot
   defp get_module(%Fsm{} = fsm), do: FsmHelpers.get_module(fsm)
   defp get_module(_), do: Engine.Standard
 
   defp checker_adapter, do: Application.get_env(:codebattle, :checker_adapter)
+
+  defp finish_active_game(_fsm, "training"), do: :ok
+  defp finish_active_game(fsm, _type), do: Notifications.finish_active_game(fsm)
 
   defp store_terminate_event(fsm) do
     data = %{
