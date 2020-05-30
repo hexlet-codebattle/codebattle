@@ -45,18 +45,17 @@ defmodule Codebattle.Chat.Server do
   def handle_call({:join, user}, _from, state) do
     %{users: users} = state
 
-    new_users =
-      case member?(users, user) do
-        false -> [user | users]
-        _ -> users
-      end
+    new_users = [user | users]
 
     {:reply, {:ok, new_users}, %{state | users: new_users}}
   end
 
   def handle_call({:leave, user}, _from, state) do
     %{users: users} = state
-    new_users = Enum.filter(users, fn u -> u != user end)
+
+    {rest_users, finded_users} = Enum.split_with(users, fn u -> u != user end)
+    new_users = finded_users |> Enum.drop(1) |> Enum.concat(rest_users)
+
     {:reply, {:ok, new_users}, %{state | users: new_users}}
   end
 
@@ -75,8 +74,4 @@ defmodule Codebattle.Chat.Server do
     new_msgs = [%{user: user, message: msg} | messages]
     {:noreply, %{state | messages: new_msgs}}
   end
-
-  defp member?(_users, %{"id" => "anonymous"}), do: false
-
-  defp member?(users, user), do: Enum.member?(users, user)
 end
