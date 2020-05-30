@@ -6,6 +6,7 @@ import i18n from '../../i18n';
 import Timer from './Timer';
 import CountdownTimer from './CountdownTimer';
 import GameStatusCodes from '../config/gameStatusCodes';
+import levelToClass from '../config/levelToClass';
 
 const renderTaskLink = name => {
   const link = `https://github.com/hexlet-codebattle/battle_asserts/tree/master/src/battle_asserts/issues/${name}.clj`;
@@ -18,21 +19,12 @@ const renderTaskLink = name => {
   );
 };
 
-const renderGameLevelBadge = level => {
-  const levels = {
-    elementary: 'info',
-    easy: 'success',
-    medium: 'warning',
-    hard: 'danger',
-  };
-
-  return (
-    <small className="ml-2">
-      <span className={`badge badge-pill badge-${levels[level]} mr-1`}>&nbsp;</span>
-      {level}
-    </small>
-  );
-};
+const renderGameLevelBadge = level => (
+  <small className="ml-2">
+    <span className={`badge badge-pill badge-${levelToClass[level]} mr-1`}>&nbsp;</span>
+    {level}
+  </small>
+);
 
 const renderTimeoutText = timeoutSeconds => {
   if (!timeoutSeconds) { return false; }
