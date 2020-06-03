@@ -200,9 +200,6 @@ class LobbyWidget extends React.Component {
           <i className="fa fa-robot mr-2" />
           {i18n.t('Start simple battle')}
         </button>
-        <a className="btn btn-success" href="/auth/github">
-          {i18n.t('Sign up')}
-        </a>
       </>
     );
   }
