@@ -133,7 +133,7 @@ msgstr "Игра успешно создана"
 
 #: lib/codebattle_web/controllers/game_controller.ex:53
 msgid "Yay, you won the game!"
-msgstr "Ура, победили!"
+msgstr "Ура, Вы победили!"
 
 #: lib/codebattle_web/channels/game_channel.ex:116
 msgid "You lost the game"
