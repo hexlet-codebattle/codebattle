@@ -33,7 +33,7 @@ msgstr "Общий чат"
 
 #: lib/codebattle_web/templates/page/index.html.slim:18
 msgid "Type a message..."
-msgstr "Начните писать..."
+msgstr "Введите сообщение..."
 
 #: lib/codebattle_web/templates/page/index.html.slim:25
 msgid "Online users"
@@ -133,7 +133,7 @@ msgstr "Игра успешно создана"
 
 #: lib/codebattle_web/controllers/game_controller.ex:53
 msgid "Yay, you won the game!"
-msgstr "Ура, вы победили в игре!"
+msgstr "Ура, победили!"
 
 #: lib/codebattle_web/channels/game_channel.ex:116
 msgid "You lost the game"
@@ -149,15 +149,15 @@ msgstr "Внутренняя ошибка сервера"
 
 #: lib/codebattle_web/plugs/require_auth.ex:12
 msgid "You must be logged in to access that page"
-msgstr "Для просмотра этой страницы вам нужно войти"
+msgstr "Для просмотра этой страницы Вам нужно войти"
 
 #: assets/js/socket.js:49
 msgid "joined to"
-msgstr "вошёл в"
+msgstr "Вошёл в"
 
 #: assets/js/socket.js:49
 msgid "left"
-msgstr "покинул"
+msgstr "Покинул"
 
 #: assets/js/socket.js:52
 msgid "channel"
@@ -242,13 +242,13 @@ msgid "Task: "
 msgstr "Задача: "
 
 msgid "Found a mistake? Have something to add? Pull Requests are welcome: "
-msgstr "Нашли ошибку? Вам есть что добавить описанию? Мы будем рады вашим Pull Requests: "
+msgstr "Нашли ошибку? Вам есть что добавить к описанию? Мы будем рады вашим Pull Requests: "
 
 msgid "Run your code!"
-msgstr "Запустите ваш код!"
+msgstr "Запустите Ваш код!"
 
 msgid "You have some syntax errors"
-msgstr "У вас есть синтаксические ошибки: %{errors}"
+msgstr "У Вас есть синтаксические ошибки: %{errors}"
 
 msgid "Tests failed"
 msgstr "Тесты не пройдены"
@@ -257,22 +257,22 @@ msgid "You passed %{successCount} from %{assertsCount} asserts. (%{percent}%)"
 msgstr "Вы прошли %{successCount} из %{assertsCount} тестов. (%{percent}%)"
 
 msgid "Yay! All tests passed!!111"
-msgstr "Поздравляю! Вы прошли все тесты!!111"
+msgstr "Поздравляю! Все тесты пройдены!!111"
 
 msgid "Success Test Message"
-msgstr "Поздравляю! Вы прошли все тесты!"
+msgstr "Поздравляю! Тесты пройдены!"
 
 msgid "Failure Test Message"
-msgstr "О нет, вы не прошли все тесты"
+msgstr "О нет, тесты не пройдены!"
 
 msgid "Win Game Message"
-msgstr "Поздравляю! Вы выйграли эту битву"
+msgstr "Поздравляю! Вы победили!"
 
 msgid "Win Training Message"
-msgstr "Поздравляю! Если вы хотите сражаться с живыми игроками за место в рейтинге, то вам нужно зарегистрировать"
+msgstr "Поздравляю! Если вы хотите сражаться с живыми игроками за место в рейтинге - зарегистрируйтесь!"
 
 msgid "Lose Game Message"
-msgstr "К сожалению, ваш оппонент выйграл эту битву"
+msgstr "К сожалению, Ваш оппонент выйграл эту битву"
 
 msgid "Press Check solution or Give up"
 msgstr "Нажмите 'Проверить решение' или 'Сдаться'"
@@ -298,8 +298,8 @@ msgstr "Ожидалось:"
 msgid "Arguments:"
 msgstr "Аргументы:"
 
-msgid "Oops"
-msgstr "Упс"
+msgid "Oops!"
+msgstr "Упс!"
 
 msgid "Sort by:"
 msgstr "Cортировать по:"
@@ -317,7 +317,7 @@ msgid "Joined"
 msgstr "Дата регистрации"
 
 msgid "Codebattle Intro"
-msgstr "Прочтите описание простой задачи и решите её быстрее вашего оппонента в реальном времени. Регистрируйтесь и играйте с ботами, друзьями и другими игроками. Так же, вы можете сражаться в турнирах."
+msgstr "Прочтите описание простой задачи и решите её быстрее вашего оппонента в реальном времени. Регистрируйтесь и играйте с ботами, друзьями и другими игроками. Так же, Вы можете сражаться в турнирах."
 
 msgid "Codebattle Intro Title"
 msgstr "Добро пожаловать в Codebattle. Продемонстрируй свои умения!"
@@ -338,7 +338,7 @@ msgid "Game With Bots Title"
 msgstr "Игра с ботами"
 
 msgid "Try again"
-msgstr "Начать заного"
+msgstr "Начать заново"
 
 msgid "%{name} (bot)"
 msgstr "%{name} (бот)"
