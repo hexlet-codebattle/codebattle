@@ -13,7 +13,11 @@ import Loading from '../components/Loading';
 import GamesHeatmap from '../components/GamesHeatmap';
 import Card from '../components/Card';
 import UserInfo from './UserInfo';
-import { makeCreateGameBotUrl, getSignInGithubUrl, makeCreateGameUrlDefault } from '../utils/urlBuilders';
+import {
+  makeCreateGameBotUrl,
+  getSignInGithubUrl,
+  makeCreateGameUrlDefault,
+} from '../utils/urlBuilders';
 import i18n from '../../i18n';
 import StartGamePanel from '../components/StartGamePanel';
 
@@ -93,7 +97,9 @@ class LobbyWidget extends React.Component {
 
   renderGameLevelBadge = level => (
     <div>
-      <span className={`badge badge-pill badge-${levelToClass[level]} mr-1`}>&nbsp;</span>
+      <span className={`badge badge-pill badge-${levelToClass[level]} mr-1`}>
+        &nbsp;
+      </span>
       {level}
     </div>
   );
@@ -101,7 +107,12 @@ class LobbyWidget extends React.Component {
   isPlayer = (user, game) => !_.isEmpty(_.find(game.players, { id: user.id }));
 
   renderShowButton = url => (
-    <button type="button" className="btn btn-info btn-sm" data-method="get" data-to={url}>
+    <button
+      type="button"
+      className="btn btn-info btn-sm"
+      data-method="get"
+      data-to={url}
+    >
       Show
     </button>
   );
@@ -112,7 +123,6 @@ class LobbyWidget extends React.Component {
     const currentUser = Gon.getAsset('current_user');
     const gameState = game.state;
     const signInUrl = getSignInGithubUrl();
-
 
     if (gameState === GameStatusCodes.playing) {
       return this.renderShowButton(gameUrl);
@@ -177,11 +187,20 @@ class LobbyWidget extends React.Component {
           {this.renderIntroButtons()}
         </div>
         <div className="d-none d-md-block col-md-5 col-lg-4">
-          <video autoPlay className="w-100 shadow-lg" poster="/assets/images/opengraph-main.png" loop muted playsInline src="https://files.fm/down.php?i=x3hybevp" width="100%" />
+          <video
+            autoPlay
+            className="w-100 shadow-lg"
+            poster="/assets/images/opengraph-main.png"
+            loop
+            muted
+            playsInline
+            src="https://files.fm/down.php?i=x3hybevp"
+            width="100%"
+          />
         </div>
       </div>
     </div>
-  )
+  );
 
   renderIntroButtons = () => {
     const level = 'elementary';
@@ -202,7 +221,7 @@ class LobbyWidget extends React.Component {
         </button>
       </>
     );
-  }
+  };
 
   renderLiveTournaments = tournaments => {
     if (_.isEmpty(tournaments)) {
@@ -228,9 +247,7 @@ class LobbyWidget extends React.Component {
           <tbody>
             {tournaments.map(tournament => (
               <tr key={tournament.id}>
-                <td className="p-3 align-middle">
-                  {tournament.name}
-                </td>
+                <td className="p-3 align-middle">{tournament.name}</td>
                 <td className="p-3 align-middle">
                   {this.renderShowButton(`/tournaments/${tournament.id}/`)}
                 </td>
@@ -267,7 +284,9 @@ class LobbyWidget extends React.Component {
             <tr>
               <th className="p-3 border-0">Level</th>
               <th className="p-3 border-0">Actions</th>
-              <th className="p-3 border-0 text-center" colSpan={2}>Players</th>
+              <th className="p-3 border-0 text-center" colSpan={2}>
+                Players
+              </th>
               <th className="p-3 border-0">State</th>
               <th className="p-3 border-0">Date</th>
             </tr>
@@ -278,11 +297,11 @@ class LobbyWidget extends React.Component {
                 <td className="p-3 align-middle text-nowrap">
                   {this.renderGameLevelBadge(game.level)}
                 </td>
-                <td className="p-3 align-middle">{this.renderGameActionButton(game)}</td>
-                {this.renderPlayers(game.id, game.players)}
-                <td className="p-3 align-middle text-nowrap">
-                  {game.state}
+                <td className="p-3 align-middle">
+                  {this.renderGameActionButton(game)}
                 </td>
+                {this.renderPlayers(game.id, game.players)}
+                <td className="p-3 align-middle text-nowrap">{game.state}</td>
                 <td className="p-3 align-middle text-nowrap">
                   {moment
                     .utc(game.insertedAt)
@@ -304,7 +323,9 @@ class LobbyWidget extends React.Component {
           <tr>
             <th className="p-3 border-0">Level</th>
             <th className="p-3 border-0">Actions</th>
-            <th className="p-3 border-0 text-center" colSpan={2}>Players</th>
+            <th className="p-3 border-0 text-center" colSpan={2}>
+              Players
+            </th>
             <th className="p-3 border-0">Duration</th>
             <th className="p-3 border-0">Date</th>
           </tr>
@@ -315,16 +336,15 @@ class LobbyWidget extends React.Component {
               <td className="p-3 align-middle text-nowrap">
                 {this.renderGameLevelBadge(game.level)}
               </td>
-              <td className="p-3 align-middle">{this.renderShowButton(`/games/${game.id}`)}</td>
+              <td className="p-3 align-middle">
+                {this.renderShowButton(`/games/${game.id}`)}
+              </td>
               {this.renderPlayers(game.id, game.players)}
               <td className="p-3 align-middle text-nowrap">
                 {moment.duration(game.duration, 'seconds').humanize()}
               </td>
               <td className="p-3 align-middle text-nowrap">
-                {moment
-                  .utc(game.finishsAt)
-                  .local()
-                  .format('YYYY-MM-DD HH:mm')}
+                {moment.utc(game.finishsAt).local().format('YYYY-MM-DD HH:mm')}
               </td>
             </tr>
           ))}
@@ -334,14 +354,10 @@ class LobbyWidget extends React.Component {
   );
 
   renderGameContainers = () => {
-    const {
-      activeGames, completedGames, liveTournaments,
-    } = this.props;
+    const { activeGames, completedGames, liveTournaments } = this.props;
     return (
       <>
-        <Card title="Active games">
-          {this.renderActiveGames(activeGames)}
-        </Card>
+        <Card title="Active games">{this.renderActiveGames(activeGames)}</Card>
         <Card title="Active tournaments">
           {this.renderLiveTournaments(liveTournaments)}
         </Card>
@@ -390,7 +406,4 @@ const mapDispatchToProps = {
   selectNewGameTimeout: actions.selectNewGameTimeout,
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(LobbyWidget);
+export default connect(mapStateToProps, mapDispatchToProps)(LobbyWidget);

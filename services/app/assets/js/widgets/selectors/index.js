@@ -11,15 +11,13 @@ export const currentUserIdSelector = state => state.user.currentUserId;
 
 export const gamePlayersSelector = state => state.game.players;
 
-export const firstPlayerSelector = state => _
-  .find(gamePlayersSelector(state), { type: userTypes.firstPlayer });
+export const firstPlayerSelector = state => _.find(gamePlayersSelector(state), { type: userTypes.firstPlayer });
 
-export const secondPlayerSelector = state => _
-  .find(gamePlayersSelector(state), { type: userTypes.secondPlayer });
+export const secondPlayerSelector = state => _.find(gamePlayersSelector(state), { type: userTypes.secondPlayer });
 
 export const opponentPlayerSelector = state => {
   const currentUserId = currentUserIdSelector(state);
-  return _.find(gamePlayersSelector(state), ({ id }) => (id !== currentUserId));
+  return _.find(gamePlayersSelector(state), ({ id }) => id !== currentUserId);
 };
 
 const editorsMetaSelector = state => state.editor.meta;
@@ -61,18 +59,18 @@ export const secondEditorSelector = state => {
 export const leftEditorSelector = state => {
   const currentUserId = currentUserIdSelector(state);
   const player = _.get(gamePlayersSelector(state), currentUserId, false);
-  const editorSelector = (!!player && player.type === userTypes.secondPlayer)
-    ? secondEditorSelector
-    : firstEditorSelector;
+  const editorSelector = !!player && player.type === userTypes.secondPlayer
+      ? secondEditorSelector
+      : firstEditorSelector;
   return editorSelector(state);
 };
 
 export const rightEditorSelector = state => {
   const currentUserId = currentUserIdSelector(state);
   const player = _.get(gamePlayersSelector(state), currentUserId, false);
-  const editorSelector = (!!player && player.type === userTypes.secondPlayer)
-    ? firstEditorSelector
-    : secondEditorSelector;
+  const editorSelector = !!player && player.type === userTypes.secondPlayer
+      ? firstEditorSelector
+      : secondEditorSelector;
   return editorSelector(state);
 };
 
@@ -88,14 +86,11 @@ export const gameStatusTitleSelector = state => {
   const gameStatus = gameStatusSelector(state);
   switch (gameStatus.status) {
     case GameStatusCodes.waitingOpponent:
-      return i18n
-        .t('%{state}', { state: i18n.t('Waiting for an opponent') });
+      return i18n.t('%{state}', { state: i18n.t('Waiting for an opponent') });
     case GameStatusCodes.playing:
-      return i18n
-        .t('%{state}', { state: i18n.t('Playing') });
+      return i18n.t('%{state}', { state: i18n.t('Playing') });
     case GameStatusCodes.gameOver:
-      return i18n
-        .t('%{state}', { state: gameStatus.msg });
+      return i18n.t('%{state}', { state: gameStatus.msg });
     default:
       return '';
   }
@@ -122,18 +117,18 @@ export const secondExecutionOutputSelector = state => {
 export const leftExecutionOutputSelector = state => {
   const currentUserId = currentUserIdSelector(state);
   const player = _.get(gamePlayersSelector(state), currentUserId, false);
-  const outputSelector = (!!player && player.type === userTypes.secondPlayer)
-    ? secondExecutionOutputSelector
-    : firstExecutionOutputSelector;
+  const outputSelector = !!player && player.type === userTypes.secondPlayer
+      ? secondExecutionOutputSelector
+      : firstExecutionOutputSelector;
   return outputSelector(state);
 };
 
 export const rightExecutionOutputSelector = state => {
   const currentUserId = currentUserIdSelector(state);
   const player = _.get(gamePlayersSelector(state), currentUserId, false);
-  const outputSelector = (!!player && player.type === userTypes.secondPlayer)
-    ? firstExecutionOutputSelector
-    : secondExecutionOutputSelector;
+  const outputSelector = !!player && player.type === userTypes.secondPlayer
+      ? firstExecutionOutputSelector
+      : secondExecutionOutputSelector;
   return outputSelector(state);
 };
 
@@ -180,6 +175,8 @@ export const usersListSelector = state => state.user.usersRatingPage;
 export const gameTypeSelector = state => state.game.gameStatus.type;
 
 export const isOpponentInGameSelector = state => {
-  const findedUser = _.find(chatUsersSelector(state), { id: opponentPlayerSelector(state).id });
+  const findedUser = _.find(chatUsersSelector(state), {
+    id: opponentPlayerSelector(state).id,
+  });
   return !_.isUndefined(findedUser);
 };

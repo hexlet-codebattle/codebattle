@@ -1,16 +1,16 @@
-import React, { Component } from "react";
-import _ from "lodash";
-import { connect } from "react-redux";
-import * as selectors from "../selectors";
-import Editor from "./Editor";
-import LeftEditorToolbar from "./EditorsToolbars/LeftEditorToolbar";
-import RightEditorToolbar from "./EditorsToolbars/RightEditorToolbar";
-import GameActionButtons from "../components/GameActionButtons";
-import * as GameActions from "../middlewares/Game";
-import ExecutionOutput from "../components/ExecutionOutput/ExecutionOutput";
-import NotificationsHandler from "./NotificationsHandler";
-import editorModes from "../config/editorModes";
-import GameStatusCodes from "../config/gameStatusCodes";
+import React, { Component } from 'react';
+import _ from 'lodash';
+import { connect } from 'react-redux';
+import * as selectors from '../selectors';
+import Editor from './Editor';
+import LeftEditorToolbar from './EditorsToolbars/LeftEditorToolbar';
+import RightEditorToolbar from './EditorsToolbars/RightEditorToolbar';
+import GameActionButtons from '../components/GameActionButtons';
+import * as GameActions from '../middlewares/Game';
+import ExecutionOutput from '../components/ExecutionOutput/ExecutionOutput';
+import NotificationsHandler from './NotificationsHandler';
+import editorModes from '../config/editorModes';
+import GameStatusCodes from '../config/gameStatusCodes';
 
 class GameWidget extends Component {
   static defaultProps = {
@@ -36,15 +36,15 @@ class GameWidget extends Component {
     const editable = !isStoredGame && isPlayer;
     const editorState = leftEditor;
     const onChange = editable
-      ? (value) => {
-          updateEditorValue(value);
-        }
+      ? value => {
+        updateEditorValue(value);
+      }
       : _.noop;
 
     return {
       onChange,
       editable,
-      syntax: editorState.currentLangSlug || "javascript",
+      syntax: editorState.currentLangSlug || 'javascript',
       value: editorState.text,
       editorHeight: leftEditorHeight,
       mode: editable ? leftEditorsMode : editorModes.default,
@@ -61,7 +61,7 @@ class GameWidget extends Component {
       onChange: _.noop,
       editable: false,
       mode: editorModes.default,
-      syntax: editorState.currentLangSlug || "javascript",
+      syntax: editorState.currentLangSlug || 'javascript',
       value: editorState.text,
       editorHeight: rightEditorHeight,
     };
@@ -109,11 +109,11 @@ class GameWidget extends Component {
   }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   const leftEditor = selectors.leftEditorSelector(state);
   const rightEditor = selectors.rightEditorSelector(state);
-  const leftUserId = _.get(leftEditor, ["userId"], null);
-  const rightUserId = _.get(rightEditor, ["userId"], null);
+  const leftUserId = _.get(leftEditor, ['userId'], null);
+  const rightUserId = _.get(rightEditor, ['userId'], null);
 
   return {
     currentUserId: selectors.currentUserIdSelector(state),

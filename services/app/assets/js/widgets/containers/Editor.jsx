@@ -1,10 +1,10 @@
 /* eslint-disable no-bitwise */
-import React, { PureComponent } from "react";
-import PropTypes from "prop-types";
-import MonacoEditor from "react-monaco-editor";
-import { registerRulesForLanguage } from "monaco-ace-tokenizer";
-import { initVimMode } from "monaco-vim";
-import languages from "../config/languages";
+import React, { PureComponent } from 'react';
+import PropTypes from 'prop-types';
+import MonacoEditor from 'react-monaco-editor';
+import { registerRulesForLanguage } from 'monaco-ace-tokenizer';
+import { initVimMode } from 'monaco-vim';
+import languages from '../config/languages';
 
 class Editor extends PureComponent {
   static propTypes = {
@@ -16,20 +16,19 @@ class Editor extends PureComponent {
   };
 
   static defaultProps = {
-    value: "",
+    value: '',
     editable: false,
     onChange: null,
-    syntax: "javascript",
+    syntax: 'javascript',
   };
 
   // eslint-disable-next-line react/sort-comp
-  notIncludedSyntaxHightlight = new Set(["haskell", "elixir"]);
+  notIncludedSyntaxHightlight = new Set(['haskell', 'elixir']);
 
   constructor(props) {
     super(props);
     this.statusBarRef = React.createRef();
-    const convertRemToPixels = (rem) =>
-      rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
+    const convertRemToPixels = rem => rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
     // statusBarHeight = lineHeight = current fontSize * 1.5
     this.statusBarHeight = convertRemToPixels(1) * 1.5;
     this.options = {
@@ -61,7 +60,7 @@ class Editor extends PureComponent {
       if (this.currentMode) {
         this.currentMode.dispose();
       }
-      this.statusBarRef.current.innerHTML = "";
+      this.statusBarRef.current.innerHTML = '';
       this.currentMode = this.modes[mode]();
     }
     if (prevProps.editable !== editable) {
@@ -80,10 +79,10 @@ class Editor extends PureComponent {
   }
 
   componentWillUnmount() {
-    window.removeEventListener("resize", this.handleResize);
+    window.removeEventListener('resize', this.handleResize);
   }
 
-  updateHightLightForNotIncludeSyntax = async (syntax) => {
+  updateHightLightForNotIncludeSyntax = async syntax => {
     if (this.notIncludedSyntaxHightlight.has(syntax)) {
       const { default: HighlightRules } = await import(
         `monaco-ace-tokenizer/lib/ace/definitions/${syntax}`
@@ -108,7 +107,7 @@ class Editor extends PureComponent {
       // disable copying for spectator
       this.editor.addCommand(
         monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_C,
-        () => null
+        () => null,
       );
       this.editor.onDidChangeCursorSelection(() => {
         const { column, lineNumber } = this.editor.getPosition();
@@ -117,8 +116,8 @@ class Editor extends PureComponent {
     }
 
     if (checkResult) {
-      editor.onKeyDown((e) => {
-        if (e.code === "Enter" && e.ctrlKey === true) {
+      editor.onKeyDown(e => {
+        if (e.code === 'Enter' && e.ctrlKey === true) {
           checkResult();
         }
       });
@@ -127,18 +126,19 @@ class Editor extends PureComponent {
 
     this.editor.addCommand(
       this.monaco.KeyMod.CtrlCmd | this.monaco.KeyCode.Enter,
-      () => null
+      () => null,
     );
 
-    window.addEventListener("resize", this.handleResize);
+    window.addEventListener('resize', this.handleResize);
   };
 
   render() {
-    const { value, syntax, onChange, editorHeight, mode, theme } = this.props;
+    const {
+ value, syntax, onChange, editorHeight, mode, theme,
+} = this.props;
     // FIXME: move here and apply mapping object
     const mappedSyntax = languages[syntax];
-    const editorHeightWithStatusBar =
-      mode === "vim" ? editorHeight - this.statusBarHeight : editorHeight;
+    const editorHeightWithStatusBar = mode === 'vim' ? editorHeight - this.statusBarHeight : editorHeight;
     return (
       <>
         <MonacoEditor
