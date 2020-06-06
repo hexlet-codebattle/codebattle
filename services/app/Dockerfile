@@ -1,11 +1,11 @@
-FROM elixir:1.10.2-alpine
+FROM elixir:1.10.3-alpine
 ARG app_name=codebattle
 ARG phoenix_subdir=.
 ARG build_env=prod
 ENV MIX_ENV=${build_env} TERM=xterm
 WORKDIR /opt/app
 RUN apk update \
-  && apk --no-cache --update add nodejs git nodejs-npm make build-base \
+  && apk --no-cache --update add nodejs git nodejs-npm make build-base g++ libpng-dev \
   && mix local.rebar --force \
   && mix local.hex --force
 
