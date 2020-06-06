@@ -8386,10 +8386,10 @@ moment@^2.26.0:
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.26.0.tgz#5e1f82c6bafca6e83e808b30c8705eed0dcbd39a"
   integrity sha512-oIixUO+OamkUkwjhAVE18rAMfRJNsNe/Stid/gwHSOfHrOtw9EhAY2AHvdKZ/k/MggcYELFCJz/Sn2pL8b8JMw==
 
-monaco-ace-tokenizer@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/monaco-ace-tokenizer/-/monaco-ace-tokenizer-0.1.1.tgz#710f00b2e2d9663a2a632db5ca8dfc386ebd1f99"
-  integrity sha512-17rMKkj2YKGIfslKXNhMydv4ewX+QO3/bTzcR+WKscinUcL/I03g2ImvokdvOy3syfb918cwOPQU2Jj7hEzFjA==
+monaco-ace-tokenizer@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/monaco-ace-tokenizer/-/monaco-ace-tokenizer-0.2.0.tgz#67bd9ebf26c3a2828ab2f7b2579291f67ef13fc4"
+  integrity sha512-kKOcp6Ty0QNoc73IXBBmfxgd985O3WtKYB3255GWwSoMiETz0R58TICaZhZdSk5RfG31kBJfPYNUrYIsdcw0cg==
 
 monaco-editor-webpack-plugin@^1.9.0:
   version "1.9.0"
