@@ -23,7 +23,7 @@ const RootContainer = ({
     init();
   }, [init, setCurrentUser]);
 
-  useHotkeys('command+enter, ctrl+enter', e => {
+  useHotkeys('ctrl+enter, command+enter', e => {
     e.preventDefault();
     checkResult();
   }, [], { filter: () => true });

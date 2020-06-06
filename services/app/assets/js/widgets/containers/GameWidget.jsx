@@ -6,7 +6,7 @@ import Editor from './Editor';
 import LeftEditorToolbar from './EditorsToolbars/LeftEditorToolbar';
 import RightEditorToolbar from './EditorsToolbars/RightEditorToolbar';
 import GameActionButtons from '../components/GameActionButtons';
-import { sendEditorText } from '../middlewares/Game';
+import * as GameActions from '../middlewares/Game';
 import ExecutionOutput from '../components/ExecutionOutput/ExecutionOutput';
 import NotificationsHandler from './NotificationsHandler';
 import editorModes from '../config/editorModes';
@@ -16,7 +16,7 @@ class GameWidget extends Component {
   static defaultProps = {
     leftEditor: {},
     rightEditor: {},
-  }
+  };
 
   getLeftEditorParams = () => {
     const {
@@ -25,6 +25,7 @@ class GameWidget extends Component {
       players,
       leftEditor,
       updateEditorValue,
+      checkResult,
       leftEditorHeight,
       leftEditorsMode,
       theme,
@@ -35,7 +36,9 @@ class GameWidget extends Component {
     const editable = !isStoredGame && isPlayer;
     const editorState = leftEditor;
     const onChange = editable
-      ? value => { updateEditorValue(value); }
+      ? value => {
+        updateEditorValue(value);
+      }
       : _.noop;
 
     return {
@@ -45,9 +48,10 @@ class GameWidget extends Component {
       value: editorState.text,
       editorHeight: leftEditorHeight,
       mode: editable ? leftEditorsMode : editorModes.default,
+      checkResult: editable ? checkResult : _.noop,
       theme,
     };
-  }
+  };
 
   getRightEditorParams = () => {
     const { rightEditor, rightEditorHeight } = this.props;
@@ -61,18 +65,19 @@ class GameWidget extends Component {
       value: editorState.text,
       editorHeight: rightEditorHeight,
     };
-  }
+  };
 
   renderGameActionButtons = (editor, disabled) => (
-    <GameActionButtons
-      disabled={disabled}
-      editorUser={editor.userId}
-    />
+    <GameActionButtons disabled={disabled} editorUser={editor.userId} />
   );
 
   render() {
     const {
-      isStoredGame, leftEditor, rightEditor, leftOutput, rightOutput,
+      isStoredGame,
+      leftEditor,
+      rightEditor,
+      leftOutput,
+      rightOutput,
     } = this.props;
     if (leftEditor === null || rightEditor === null) {
       // FIXME: render loader
@@ -85,7 +90,7 @@ class GameWidget extends Component {
             <LeftEditorToolbar />
             <Editor {...this.getLeftEditorParams()} />
             {/* TODO: move state to parent component */}
-            { !isStoredGame && this.renderGameActionButtons(leftEditor, false) }
+            {!isStoredGame && this.renderGameActionButtons(leftEditor, false)}
             <ExecutionOutput output={leftOutput} id="1" />
           </div>
         </div>
@@ -94,7 +99,7 @@ class GameWidget extends Component {
             <RightEditorToolbar />
             <Editor {...this.getRightEditorParams()} />
             {/* TODO: move state to parent component */}
-            { !isStoredGame && this.renderGameActionButtons(rightEditor, true) }
+            {!isStoredGame && this.renderGameActionButtons(rightEditor, true)}
             <ExecutionOutput output={rightOutput} id="2" />
           </div>
         </div>
@@ -121,12 +126,14 @@ const mapStateToProps = state => {
     rightOutput: selectors.rightExecutionOutputSelector(state),
     leftEditorsMode: selectors.editorsModeSelector(leftUserId)(state),
     theme: selectors.editorsThemeSelector(leftUserId)(state),
-    isStoredGame: selectors.gameStatusSelector(state).status === GameStatusCodes.stored,
+    isStoredGame:
+      selectors.gameStatusSelector(state).status === GameStatusCodes.stored,
   };
 };
 
 const mapDispatchToProps = {
-  updateEditorValue: sendEditorText,
+  updateEditorValue: GameActions.sendEditorText,
+  checkResult: GameActions.checkGameResult,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(GameWidget);

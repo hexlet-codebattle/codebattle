@@ -13,23 +13,22 @@ class Editor extends PureComponent {
     syntax: PropTypes.string,
     onChange: PropTypes.func,
     mode: PropTypes.string.isRequired,
-  }
+  };
 
   static defaultProps = {
     value: '',
     editable: false,
     onChange: null,
     syntax: 'javascript',
-  }
+  };
 
   // eslint-disable-next-line react/sort-comp
-  notIncludedSyntaxHightlight = new Set(['haskell', 'elixir'])
+  notIncludedSyntaxHightlight = new Set(['haskell', 'elixir']);
 
   constructor(props) {
     super(props);
     this.statusBarRef = React.createRef();
-    const convertRemToPixels = rem => rem * parseFloat(getComputedStyle(document.documentElement)
-      .fontSize);
+    const convertRemToPixels = rem => rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
     // statusBarHeight = lineHeight = current fontSize * 1.5
     this.statusBarHeight = convertRemToPixels(1) * 1.5;
     this.options = {
@@ -44,7 +43,6 @@ class Editor extends PureComponent {
       contextmenu: props.editable,
     };
   }
-
 
   async componentDidMount() {
     const { mode, syntax } = this.props;
@@ -86,47 +84,58 @@ class Editor extends PureComponent {
 
   updateHightLightForNotIncludeSyntax = async syntax => {
     if (this.notIncludedSyntaxHightlight.has(syntax)) {
-      const { default: HighlightRules } = await import(`monaco-ace-tokenizer/lib/ace/definitions/${syntax}`);
+      const { default: HighlightRules } = await import(
+        `monaco-ace-tokenizer/lib/ace/definitions/${syntax}`
+      );
       this.notIncludedSyntaxHightlight.delete(syntax);
       this.monaco.languages.register({
         id: syntax,
       });
       registerRulesForLanguage(syntax, new HighlightRules());
     }
-  }
+  };
 
   handleResize = () => this.editor.layout();
 
   editorDidMount = (editor, monaco) => {
     this.editor = editor;
     this.monaco = monaco;
-    const { editable } = this.props;
+    const { editable, checkResult } = this.props;
     if (editable) {
       this.editor.focus();
     } else {
       // disable copying for spectator
-      this.editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_C, () => null);
+      this.editor.addCommand(
+        monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_C,
+        () => null,
+      );
       this.editor.onDidChangeCursorSelection(() => {
         const { column, lineNumber } = this.editor.getPosition();
         this.editor.setPosition({ lineNumber, column });
       });
     }
+
+    if (checkResult) {
+      editor.onKeyDown(e => {
+        if (e.code === 'Enter' && e.ctrlKey === true) {
+          checkResult();
+        }
+      });
+    }
     // this.editor.getModel().updateOptions({ tabSize: this.tabSize });
 
-    this.editor.addCommand(this.monaco.KeyMod.CtrlCmd | this.monaco.KeyCode.Enter, () => null);
+    this.editor.addCommand(
+      this.monaco.KeyMod.CtrlCmd | this.monaco.KeyCode.Enter,
+      () => null,
+    );
 
     window.addEventListener('resize', this.handleResize);
-  }
+  };
 
   render() {
     const {
-      value,
-      syntax,
-      onChange,
-      editorHeight,
-      mode,
-      theme,
-    } = this.props;
+ value, syntax, onChange, editorHeight, mode, theme,
+} = this.props;
     // FIXME: move here and apply mapping object
     const mappedSyntax = languages[syntax];
     const editorHeightWithStatusBar = mode === 'vim' ? editorHeight - this.statusBarHeight : editorHeight;

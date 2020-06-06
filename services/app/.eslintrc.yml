@@ -1,4 +1,6 @@
 ---
+root: true
+
 plugins:
   - react
   - jsx-a11y
@@ -32,3 +34,6 @@ rules:
   jest/valid-expect: "error"
   react-hooks/rules-of-hooks: "error"
   react-hooks/exhaustive-deps: "warn"
+  template-curly-spacing: "off"
+  indent: "off"
+  max-len: ["error", 140, 2]
