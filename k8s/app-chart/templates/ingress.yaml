@@ -10,8 +10,17 @@ metadata:
     app.kubernetes.io/managed-by: "{{ .Release.Service }}"
     helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
   annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-issuer"
     external-dns.alpha.kubernetes.io/hostname: "codebattle.hexlet.io."
 spec:
-  backend:
-    serviceName: "{{ .Release.Name }}-frontend"
-    servicePort: 8080
+  tls:
+    - hosts:
+      - codebattle.hexlet.io
+      secretName: certificate-frontend
+  rules:
+    - host: codebattle.hexlet.io
+      http:
+        paths:
+        - backend:
+            serviceName: "{{ .Release.Name }}-frontend"
+            servicePort: 8080
