@@ -1,10 +1,14 @@
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: nginx-ingress
   annotations:
-    kubernetes.io/ingress.class: nginx
+    kubernetes.io/ingress.class: "nginx"
 spec:
+  tls:
+  - hosts:
+    - codebattle.hexlet.io
+    secretName: certificate-frontend
   rules:
   - host: codebattle.hexlet.io
     http:
