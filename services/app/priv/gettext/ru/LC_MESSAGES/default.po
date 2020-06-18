@@ -272,7 +272,7 @@ msgid "Win Training Message"
 msgstr "Поздравляю! Если вы хотите сражаться с живыми игроками за место в рейтинге - зарегистрируйтесь!"
 
 msgid "Lose Game Message"
-msgstr "К сожалению, Ваш оппонент выйграл эту битву"
+msgstr "К сожалению, Ваш оппонент выиграл эту битву"
 
 msgid "Press Check solution or Give up"
 msgstr "Нажмите 'Проверить решение' или 'Сдаться'"
