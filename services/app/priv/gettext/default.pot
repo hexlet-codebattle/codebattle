@@ -331,6 +331,9 @@ msgstr ""
 msgid "Try again"
 msgstr ""
 
+msgid "Back to Home"
+msgstr ""
+
 msgid "%{name} (bot)"
 msgstr ""
 

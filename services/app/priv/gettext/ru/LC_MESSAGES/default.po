@@ -340,6 +340,9 @@ msgstr "Игра с ботами"
 msgid "Try again"
 msgstr "Начать заново"
 
+msgid "Back to Home"
+msgstr "Вернуться на главную"
+
 msgid "%{name} (bot)"
 msgstr "%{name} (бот)"
 
