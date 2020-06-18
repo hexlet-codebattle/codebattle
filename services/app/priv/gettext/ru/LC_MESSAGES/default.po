@@ -272,7 +272,7 @@ msgid "Win Training Message"
 msgstr "Поздравляю! Если вы хотите сражаться с живыми игроками за место в рейтинге - зарегистрируйтесь!"
 
 msgid "Lose Game Message"
-msgstr "К сожалению, Ваш оппонент выйграл эту битву"
+msgstr "К сожалению, Ваш оппонент выиграл эту битву"
 
 msgid "Press Check solution or Give up"
 msgstr "Нажмите 'Проверить решение' или 'Сдаться'"
@@ -323,7 +323,7 @@ msgid "Codebattle Intro Title"
 msgstr "Добро пожаловать в Codebattle. Продемонстрируй свои умения!"
 
 msgid "Start simple battle"
-msgstr "Начать простое сражения"
+msgstr "Начать простое сражение"
 
 msgid "Start battle"
 msgstr "Начать битву"
@@ -339,6 +339,9 @@ msgstr "Игра с ботами"
 
 msgid "Try again"
 msgstr "Начать заново"
+
+msgid "Back to Home"
+msgstr "Вернуться на главную"
 
 msgid "%{name} (bot)"
 msgstr "%{name} (бот)"
