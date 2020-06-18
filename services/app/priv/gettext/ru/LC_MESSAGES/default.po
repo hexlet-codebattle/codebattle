@@ -323,7 +323,7 @@ msgid "Codebattle Intro Title"
 msgstr "Добро пожаловать в Codebattle. Продемонстрируй свои умения!"
 
 msgid "Start simple battle"
-msgstr "Начать простое сражения"
+msgstr "Начать простое сражение"
 
 msgid "Start battle"
 msgstr "Начать битву"
