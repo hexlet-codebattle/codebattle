@@ -10,7 +10,8 @@ config :codebattle, CodebattleWeb.Endpoint,
   check_origin: [
     "//codebattle.hexlet.io",
     "chrome-extension://epepkfdgfmbcpibpiolipjkkogpcbmod",
-    "chrome-extension://fgponpodhbmadfljofbimhhlengambbn"
+    "chrome-extension://ldpjikeeofdoolngoackgepodhjeklgn",
+    "chrome-extension://"
   ]
 
 config :logger, level: :error
