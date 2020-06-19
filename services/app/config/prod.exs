@@ -7,7 +7,11 @@ config :codebattle, CodebattleWeb.Endpoint,
   server: true,
   root: ".",
   version: Mix.Project.config()[:version],
-  check_origin: ["//codebattle.hexlet.io", "chrome-extension://epepkfdgfmbcpibpiolipjkkogpcbmod", "chrome-extension://fgponpodhbmadfljofbimhhlengambbn"]
+  check_origin: [
+    "//codebattle.hexlet.io",
+    "chrome-extension://epepkfdgfmbcpibpiolipjkkogpcbmod",
+    "chrome-extension://fgponpodhbmadfljofbimhhlengambbn"
+  ]
 
 config :logger, level: :error
 
