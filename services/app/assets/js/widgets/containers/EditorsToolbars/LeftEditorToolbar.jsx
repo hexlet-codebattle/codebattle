@@ -44,26 +44,32 @@ const renderSwitchThemeBtn = (switchTheme, theme) => {
     </button>
   );
 };
-const renderNameplate = (player = {}, onlineUsers) => {
 
+const TypingIconLeft = () => {
   const text = useSelector(state => selectors.editorTextsSelector(state));
   const keys = Object.keys(text);
-  const leftGamerText = keys[1];
+  const leftGamerText = text[keys[1]];
   const [showTyping, setShowTyping] = useState(true);
   useEffect(() => {
     setShowTyping(true);
     setTimeout(() => {
       setShowTyping(false);
     }, 500);
-  }, [text[leftGamerText]]);
+  }, [leftGamerText]);
 
+  return (
+    <div>
+      <FontAwesomeIcon icon="keyboard" className={`text-info ml-2 ${showTyping ? 'shown' : 'hidden'}`} />
+    </div>
+  );
+};
+
+const renderNameplate = (player = {}, onlineUsers) => {
   const isOnline = _.find(onlineUsers, { id: player.id });
 
   return (
     <div className="d-flex align-items-center">
-      <div>
-        <FontAwesomeIcon icon="keyboard" className={`text-info ml-2 ${showTyping ? 'shown' : 'hidden'}`} />
-      </div>
+      <TypingIconLeft />
       <UserInfo user={player} />
       <div>
         {isOnline ? (
