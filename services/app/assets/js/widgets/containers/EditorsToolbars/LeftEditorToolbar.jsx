@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
 import cn from 'classnames';
@@ -45,10 +45,25 @@ const renderSwitchThemeBtn = (switchTheme, theme) => {
   );
 };
 const renderNameplate = (player = {}, onlineUsers) => {
+
+  const text = useSelector(state => selectors.editorTextsSelector(state));
+  const keys = Object.keys(text);
+  const leftGamerText = keys[1];
+  const [showTyping, setShowTyping] = useState(true);
+  useEffect(() => {
+    setShowTyping(true);
+    setTimeout(() => {
+      setShowTyping(false);
+    }, 500);
+  }, [text[leftGamerText]]);
+
   const isOnline = _.find(onlineUsers, { id: player.id });
 
   return (
     <div className="d-flex align-items-center">
+      <div>
+        <FontAwesomeIcon icon="keyboard" className={`text-info ml-2 ${showTyping ? 'shown' : 'hidden'}`} />
+      </div>
       <UserInfo user={player} />
       <div>
         {isOnline ? (

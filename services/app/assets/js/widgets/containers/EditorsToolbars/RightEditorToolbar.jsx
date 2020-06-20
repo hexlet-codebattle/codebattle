@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import _ from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -9,6 +9,18 @@ import GameResultIcon from '../../components/GameResultIcon';
 import EditorHeightButtons from './EditorHeightButtons';
 
 const renderNameplate = (player = {}, onlineUsers) => {
+
+  const text = useSelector(state => selectors.editorTextsSelector(state));
+  const keys = Object.keys(text);
+  const rightGamerText = keys[0];
+  const [showTyping, setShowTyping] = useState(true);
+  useEffect(() => {
+    setShowTyping(true);
+    setTimeout(() => {
+      setShowTyping(false);
+    }, 500);
+  }, [text[rightGamerText]]);
+
   const isOnline = _.find(onlineUsers, { id: player.id });
 
   return (
@@ -20,6 +32,9 @@ const renderNameplate = (player = {}, onlineUsers) => {
         ) : (
           <FontAwesomeIcon icon="skull-crossbones" className="text-secondary ml-2" />
         )}
+      </div>
+      <div>
+        <FontAwesomeIcon icon="keyboard" className={`text-info ml-2 ${showTyping ? 'shown' : 'hidden'}`} />
       </div>
     </div>
   );
