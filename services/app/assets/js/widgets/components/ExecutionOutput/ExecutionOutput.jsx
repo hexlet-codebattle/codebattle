@@ -1,14 +1,8 @@
 import React from 'react';
 import i18n from '../../../i18n';
 import AccordeonBox from './AccordeonBox';
+import statusColor from '../../config/statusColor';
 
-const statusColor = {
-  info: 'info',
-  error: 'danger',
-  failure: 'danger',
-  ok: 'success',
-  success: 'success',
-};
 const getMessage = status => {
   switch (status) {
     case 'error':
@@ -33,7 +27,8 @@ const ExecutionOutput = ({
   } = {},
 }) => {
   const resultData = parseResult(result);
-  const assertsData = asserts.map(JSON.parse);
+  const allAsserts = asserts.map(JSON.parse);
+  const [firstAssert, ...restAsserts] = allAsserts;
   const percent = (100 * successCount) / assertsCount;
   return (
     <AccordeonBox>
@@ -44,6 +39,7 @@ const ExecutionOutput = ({
         )}
         statusColor={statusColor[resultData.status]}
         message={getMessage(resultData.status)}
+        firstAssert={firstAssert}
       >
         {resultData.status === 'error' ? (
           <AccordeonBox.Item
@@ -51,7 +47,7 @@ const ExecutionOutput = ({
             result={resultData.result}
           />
         ) : (
-          assertsData.map((assert, index) => (
+          restAsserts && restAsserts.map((assert, index) => (
             <AccordeonBox.SubMenu
               key={index.toString()}
               statusColor={statusColor[assert.status]}
