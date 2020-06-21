@@ -10,19 +10,27 @@ const AccordeonBox = ({ children }) => (
     { children }
   </div>
 );
+const renderFirstAssert = firstAssert => (
+  <AccordeonBox.SubMenu
+    statusColor={color[firstAssert.status]}
+    assert={firstAssert}
+    hasOutput={firstAssert.output}
+  >
+    <AccordeonBox.Item
+      output={firstAssert.output}
+    />
+  </AccordeonBox.SubMenu>
+  );
 
 const Menu = ({
   count, children, statusColor, message, firstAssert,
 }) => {
   const [show, setShow] = useState(false);
-  const classCollapse = cn('collapse', {
-    show,
-  });
+  const classCollapse = cn('collapse', { show });
   const handleClick = () => {
     setShow(!show);
   };
   const uniqIndex = _.uniqueId('heading');
-
   return (
     <div className="card border-0 rounded-0">
       {(statusColor === 'warning' || statusColor === 'danger')
@@ -42,17 +50,7 @@ const Menu = ({
               <span className="font-weight-bold small mr-3">{count}</span>
               <span className={`badge badge-${statusColor}`}>{message}</span>
             </div>
-            {firstAssert && (
-            <AccordeonBox.SubMenu
-              statusColor={color[firstAssert.status]}
-              assert={firstAssert}
-              hasOutput={firstAssert.output}
-            >
-              <AccordeonBox.Item
-                output={firstAssert.output}
-              />
-            </AccordeonBox.SubMenu>
-            )}
+            {firstAssert && renderFirstAssert(firstAssert)}
           </>
         ) : <span className={`badge badge-${statusColor}`}>{message}</span>}
       <div id={`collapse${uniqIndex}`} className={classCollapse} aria-labelledby={`heading${uniqIndex}`}>
@@ -60,7 +58,6 @@ const Menu = ({
           {children}
         </div>
       </div>
-
     </div>
   );
 };
@@ -112,7 +109,10 @@ const SubMenu = ({
           </button>
         ) : null}
       </div>
+<<<<<<< HEAD
 
+=======
+>>>>>>> fix for codebeat
       {hasOutput ? (
         <div id={`collapse${uniqIndex}`} className={classCollapse} aria-labelledby={`heading${uniqIndex}`}>
           <div className="mt-3">
