@@ -3,7 +3,7 @@ import cn from 'classnames';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import _ from 'lodash';
 import i18n from '../../../i18n';
-
+import color from '../../config/statusColor';
 
 const AccordeonBox = ({ children }) => (
   <div className="accordion border-top" id="accordionExample">
@@ -13,7 +13,7 @@ const AccordeonBox = ({ children }) => (
 
 
 const Menu = ({
-  count, children, statusColor, message,
+  count, children, statusColor, message, firstAssert,
 }) => {
   const [show, setShow] = useState(false);
   const classCollapse = cn('collapse', {
@@ -28,20 +28,33 @@ const Menu = ({
     <div className="card border-0 rounded-0">
       {(statusColor === 'warning' || statusColor === 'danger')
         ? (
-          <div className="card-header" id={`heading${uniqIndex} `}>
-            <button
-              className="btn btn-sm btn-outline-secondary mr-3"
-              type="button"
-              onClick={handleClick}
-              data-toggle="collapse"
-              aria-expanded="true"
-              aria-controls={`collapse${uniqIndex}`}
+          <>
+            <div className="card-header" id={`heading${uniqIndex} `}>
+              <button
+                className="btn btn-sm btn-outline-secondary mr-3"
+                type="button"
+                onClick={handleClick}
+                data-toggle="collapse"
+                aria-expanded="true"
+                aria-controls={`collapse${uniqIndex}`}
+              >
+                { show ? <FontAwesomeIcon icon="arrow-circle-up" /> : <FontAwesomeIcon icon="arrow-circle-down" /> }
+              </button>
+              <span className="font-weight-bold small mr-3">{count}</span>
+              <span className={`badge badge-${statusColor}`}>{message}</span>
+            </div>
+            {firstAssert && (
+            <AccordeonBox.SubMenu
+              statusColor={color[firstAssert.status]}
+              assert={firstAssert}
+              hasOutput={firstAssert.output}
             >
-              { show ? <FontAwesomeIcon icon="arrow-circle-up" /> : <FontAwesomeIcon icon="arrow-circle-down" /> }
-            </button>
-            <span className="font-weight-bold small mr-3">{count}</span>
-            <span className={`badge badge-${statusColor}`}>{message}</span>
-          </div>
+              <AccordeonBox.Item
+                output={firstAssert.output}
+              />
+            </AccordeonBox.SubMenu>
+            )}
+          </>
         ) : <span className={`badge badge-${statusColor}`}>{message}</span>}
       <div id={`collapse${uniqIndex}`} className={classCollapse} aria-labelledby={`heading${uniqIndex}`}>
         <div className="list-group list-group-flush">
