@@ -197,13 +197,4 @@ a {
 .x-rounded-bottom-left {
   border-bottom-left-radius: $border-radius !important;
 }
-.shown {
-  margin: 5px;
-  opacity: 1;
-  transition: all 250ms linear;
-}
-.hidden {
-  margin: 5px;
-  opacity: 0;
-  transition: all 250ms linear;
-}
+

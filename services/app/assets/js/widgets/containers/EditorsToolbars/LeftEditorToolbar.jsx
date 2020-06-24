@@ -46,20 +46,22 @@ const renderSwitchThemeBtn = (switchTheme, theme) => {
 };
 
 const TypingIconLeft = () => {
-  const text = useSelector(state => selectors.editorTextsSelector(state));
-  const keys = Object.keys(text);
-  const leftGamerText = text[keys[1]];
+  const leftEditor = useSelector(state => selectors.leftEditorSelector(state));
+  const { text } = leftEditor;
   const [showTyping, setShowTyping] = useState(true);
   useEffect(() => {
     setShowTyping(true);
     setTimeout(() => {
       setShowTyping(false);
     }, 500);
-  }, [leftGamerText]);
+  }, [text]);
+  const classNames = cn('text-info mr-3', {
+    'd-none': !showTyping,
+  });
 
   return (
     <div>
-      <FontAwesomeIcon icon="keyboard" className={`text-info ml-2 ${showTyping ? 'shown' : 'hidden'}`} />
+      <FontAwesomeIcon icon="keyboard" className={classNames} />
     </div>
   );
 };
