@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import _ from 'lodash';
+import cn from 'classnames';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as selectors from '../../selectors';
 import LanguagePicker from '../../components/LanguagePicker';
@@ -9,20 +10,22 @@ import GameResultIcon from '../../components/GameResultIcon';
 import EditorHeightButtons from './EditorHeightButtons';
 
 const TypingIconRight = () => {
-  const text = useSelector(state => selectors.editorTextsSelector(state));
-  const keys = Object.keys(text);
-  const rightGamerText = text[keys[0]];
+  const rightEditor = useSelector(state => selectors.rightEditorSelector(state));
+  const { text } = rightEditor;
   const [showTyping, setShowTyping] = useState(true);
   useEffect(() => {
     setShowTyping(true);
     setTimeout(() => {
       setShowTyping(false);
     }, 500);
-  }, [rightGamerText]);
+  }, [text]);
+  const classNames = cn('text-info ml-3', {
+    'd-none': !showTyping,
+  });
 
   return (
     <div>
-      <FontAwesomeIcon icon="keyboard" className={`text-info ml-2 ${showTyping ? 'shown' : 'hidden'}`} />
+      <FontAwesomeIcon icon="keyboard" className={classNames} />
     </div>
   );
 };
