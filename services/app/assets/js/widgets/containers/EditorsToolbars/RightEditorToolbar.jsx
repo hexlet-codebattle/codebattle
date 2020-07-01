@@ -1,12 +1,34 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import _ from 'lodash';
+import cn from 'classnames';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as selectors from '../../selectors';
 import LanguagePicker from '../../components/LanguagePicker';
 import UserInfo from '../UserInfo';
 import GameResultIcon from '../../components/GameResultIcon';
 import EditorHeightButtons from './EditorHeightButtons';
+
+const TypingIconRight = () => {
+  const rightEditor = useSelector(state => selectors.rightEditorSelector(state));
+  const { text } = rightEditor;
+  const [showTyping, setShowTyping] = useState(true);
+  useEffect(() => {
+    setShowTyping(true);
+    setTimeout(() => {
+      setShowTyping(false);
+    }, 500);
+  }, [text]);
+  const classNames = cn('text-info ml-3', {
+    'd-none': !showTyping,
+  });
+
+  return (
+    <div>
+      <FontAwesomeIcon icon="keyboard" className={classNames} />
+    </div>
+  );
+};
 
 const renderNameplate = (player = {}, onlineUsers) => {
   const isOnline = _.find(onlineUsers, { id: player.id });
@@ -21,6 +43,7 @@ const renderNameplate = (player = {}, onlineUsers) => {
           <FontAwesomeIcon icon="skull-crossbones" className="text-secondary ml-2" />
         )}
       </div>
+      <TypingIconRight />
     </div>
   );
 };

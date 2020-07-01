@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
 import cn from 'classnames';
@@ -44,11 +44,34 @@ const renderSwitchThemeBtn = (switchTheme, theme) => {
     </button>
   );
 };
+
+const TypingIconLeft = () => {
+  const leftEditor = useSelector(state => selectors.leftEditorSelector(state));
+  const { text } = leftEditor;
+  const [showTyping, setShowTyping] = useState(true);
+  useEffect(() => {
+    setShowTyping(true);
+    setTimeout(() => {
+      setShowTyping(false);
+    }, 500);
+  }, [text]);
+  const classNames = cn('text-info mr-3', {
+    'd-none': !showTyping,
+  });
+
+  return (
+    <div>
+      <FontAwesomeIcon icon="keyboard" className={classNames} />
+    </div>
+  );
+};
+
 const renderNameplate = (player = {}, onlineUsers) => {
   const isOnline = _.find(onlineUsers, { id: player.id });
 
   return (
     <div className="d-flex align-items-center">
+      <TypingIconLeft />
       <UserInfo user={player} />
       <div>
         {isOnline ? (
