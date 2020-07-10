@@ -7,6 +7,7 @@ import Timer from './Timer';
 import CountdownTimer from './CountdownTimer';
 import GameStatusCodes from '../config/gameStatusCodes';
 import levelToClass from '../config/levelToClass';
+import ContributorsList from './ContributorsList';
 
 const renderTaskLink = name => {
   const link = `https://github.com/hexlet-codebattle/battle_asserts/tree/master/src/battle_asserts/issues/${name}.clj`;
@@ -48,7 +49,6 @@ const Task = ({
   if (_.isEmpty(task)) {
     return null;
   }
-
   return (
     <div className="card h-100 border-0 shadow-sm">
       <div className="px-3 py-3 h-100 overflow-auto">
@@ -70,6 +70,7 @@ const Task = ({
             <ReactMarkdown source={task.description} />
           </div>
         </div>
+        <ContributorsList name={task.name} />
         <div className="d-flex align-items-end flex-column flex-sm-row justify-content-between">
           <h6 className="card-text small font-italic text-black-50">
             <span className="mr-2">
