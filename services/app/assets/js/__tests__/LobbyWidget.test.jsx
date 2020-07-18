@@ -24,7 +24,7 @@ test('test rendering GameList', async () => {
     gameList: {
       activeGames: [],
       completedGames: [
-        { level: 'elementary', players: [{ id: -4 }] },
+        { id: -1, level: 'elementary', players: [{ id: -4 }] },
       ],
       loaded: true,
       liveTournaments: [],

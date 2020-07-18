@@ -48,5 +48,4 @@ const CodebattleSliderBar = ({ value: currentValue, lastIntent, isHold }) => {
   );
 };
 
-
 export default CodebattleSliderBar;

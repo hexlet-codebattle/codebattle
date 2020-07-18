@@ -60,7 +60,6 @@ const meta = createSlice({
   },
 });
 
-
 const text = createSlice({
   name: 'text',
   initialState: initialState.text,

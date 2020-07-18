@@ -13,7 +13,6 @@ export default function EmojiPicker({ handleSelect, hide }) {
     hide();
   };
 
-
   return (
     <div onBlur={handleBlur} ref={wrapperRef}>
       <Picker

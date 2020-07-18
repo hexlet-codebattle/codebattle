@@ -4,13 +4,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import _ from 'lodash';
 import i18n from '../../../i18n';
 
-
 const AccordeonBox = ({ children }) => (
   <div className="accordion border-top" id="accordionExample">
     { children }
   </div>
 );
-
 
 const Menu = ({
   count, children, statusColor, message,
@@ -52,7 +50,6 @@ const Menu = ({
     </div>
   );
 };
-
 
 const SubMenu = ({
   children, statusColor, assert, hasOutput,
@@ -102,7 +99,6 @@ const SubMenu = ({
         ) : null}
       </div>
 
-
       {hasOutput ? (
         <div id={`collapse${uniqIndex}`} className={classCollapse} aria-labelledby={`heading${uniqIndex}`}>
           <div className="mt-3">
@@ -113,7 +109,6 @@ const SubMenu = ({
     </div>
   );
 };
-
 
 const Item = ({ output, result = null }) => (
   <div className="alert alert-secondary mb-0">
@@ -130,7 +125,6 @@ const Item = ({ output, result = null }) => (
     </pre>
   </div>
 );
-
 
 AccordeonBox.Item = Item;
 AccordeonBox.Menu = Menu;

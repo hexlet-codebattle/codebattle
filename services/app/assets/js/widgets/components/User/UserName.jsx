@@ -18,7 +18,6 @@ const getName = ({ id, name }, isCurrentUser) => {
   return isCurrentUser ? i18n.t('%{name} (you)', { name }) : name;
 };
 
-
 const displayDiff = num => {
   if (num < 0) {
     return <small className="text-danger">{` ${num}`}</small>;

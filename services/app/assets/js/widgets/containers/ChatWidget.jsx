@@ -9,7 +9,6 @@ import ChatInput from '../components/ChatInput';
 import GameStatusCodes from '../config/gameStatusCodes';
 import 'emoji-mart/css/emoji-mart.css';
 
-
 const ChatWidget = () => {
   const users = useSelector(state => selectors.chatUsersSelector(state));
   const messages = useSelector(state => selectors.chatMessagesSelector(state));
