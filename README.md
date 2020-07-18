@@ -66,6 +66,13 @@ $ mix issues.upload # Upsert issues by name in db
 #If you use docker in dev env, run commands in make compose-bash
 ```
 
+### Profile js bundle
+To build stat.json and see details in browser run:
+```
+yarn profile:build
+yarn profile:visualize
+```
+
 ### Support
 
 - <https://hexlet-ru.slack.com> channel: codebattle

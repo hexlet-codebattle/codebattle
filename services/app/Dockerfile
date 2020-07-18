@@ -18,10 +18,10 @@ COPY . .
 
 RUN yarn install --froze-lockfile
 
-RUN ./node_modules/webpack/bin/webpack.js --mode production \
+RUN yarn build \
   && mix phx.digest
 
-RUN mix release  \
+RUN mix release \
   && mv _build/${build_env}/rel/${app_name} /opt/release
 
 FROM alpine:3.9.4

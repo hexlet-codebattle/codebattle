@@ -13,8 +13,9 @@
 //
 // If you no longer want to use a dependency, remember
 // to also remove its path from "config.paths.watched".
+import 'core-js/stable';
+import 'regenerator-runtime/runtime';
 import 'phoenix_html';
-import '@babel/polyfill';
 import '@fortawesome/fontawesome-free/js/all';
 import 'bootstrap';
 import NProgress from 'nprogress';

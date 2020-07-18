@@ -53,3 +53,5 @@ google.key.json
 .iml
 
 kubeconfig.yml
+
+stats.json
