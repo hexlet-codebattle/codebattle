@@ -84,5 +84,4 @@ const RightEditorToolbar = () => {
   );
 };
 
-
 export default RightEditorToolbar;

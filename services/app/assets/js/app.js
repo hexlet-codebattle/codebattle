@@ -14,6 +14,7 @@
 // If you no longer want to use a dependency, remember
 // to also remove its path from "config.paths.watched".
 import 'core-js/stable';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import 'regenerator-runtime/runtime';
 import 'phoenix_html';
 import '@fortawesome/fontawesome-free/js/all';

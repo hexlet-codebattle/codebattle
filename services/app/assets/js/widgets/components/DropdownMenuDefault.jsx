@@ -2,7 +2,6 @@ import React from 'react';
 import i18n from '../../i18n';
 import levelToClass from '../config/levelToClass';
 
-
 const DropdownItem = ({ level, setLevel, setLevelClass }) => (
   <button
     key={level}
