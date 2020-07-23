@@ -32,5 +32,4 @@ test('test rendering ContributorsList', async () => {
   const { getByText } = render(<Provider store={store}><ContributorsList /></Provider>);
 
   expect(getByText(/This users have contributed to this task:/)).toBeInTheDocument();
-
 });
