@@ -166,22 +166,8 @@ a {
   right: 10%;
 }
 
-.cb-icon-setting {
-  display: flex;
-  font-size: 17px;
-}
-
 .cb-icon-setting:active, .cb-icon-setting:focus {
-  outline: none;
   box-shadow: none;
-}
-
-.dropdown-toggle::after {
-  content: none;
-}
-
-.dropup .dropdown-toggle::after {
-  content: none;
 }
 
 .x-bottom-0 {
