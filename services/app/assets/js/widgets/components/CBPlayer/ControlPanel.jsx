@@ -74,7 +74,8 @@ const ControlPanel = ({
       <button type="button" className={speedControlClassNames} onClick={onChangeSpeed}>x2</button>
       <div className="dropup">
         <button
-          className="btn d-flex cb-icon-setting"
+          className="btn btn-light d-flex"
+          style={{ 'box-shadow': 'none', border: 'none', padding: '7px 9px 8px 9px' }}
           type="button"
           id="dropdownMenuButton"
           data-toggle="dropdown"
