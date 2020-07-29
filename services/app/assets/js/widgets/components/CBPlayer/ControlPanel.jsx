@@ -72,6 +72,23 @@ const ControlPanel = ({
       </button>
       {children}
       <button type="button" className={speedControlClassNames} onClick={onChangeSpeed}>x2</button>
+      <div className="dropup">
+        <button
+          className="btn dropdown-toggle cb-icon-setting"
+          type="button"
+          id="dropdownMenuButton"
+          data-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false"
+        >
+          <i className="fas fa-cog" />
+        </button>
+        <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          <button type="button" className="dropdown-item" href="/">Action</button>
+          <button type="button" className="dropdown-item" href="/">Another action</button>
+          <button type="button" className="dropdown-item" href="/">Something else here</button>
+        </div>
+      </div>
     </>
   );
 };
