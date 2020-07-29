@@ -72,7 +72,7 @@ const ControlPanel = ({
       </button>
       {children}
       <button type="button" className={speedControlClassNames} onClick={onChangeSpeed}>x2</button>
-      <div>
+      <div className="dropup">
         <button
           className="btn d-flex cb-icon-setting"
           type="button"
