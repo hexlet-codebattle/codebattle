@@ -18,7 +18,7 @@ const ControlPanel = ({
   const [mode, setMode] = useState(modes.pause);
   const [speedMode, setSpeedMode] = useState(speedModes.normal);
 
-  const speedControlClassNames = cn('btn btn-sm border rounded ml-4', {
+  const speedControlClassNames = cn('btn btn-sm rounded ml-2 border', {
     'btn-light': speedMode === speedModes.normal,
     'btn-secondary': speedMode === speedModes.fast,
   });
@@ -71,7 +71,6 @@ const ControlPanel = ({
         )}
       </button>
       {children}
-      <button type="button" className={speedControlClassNames} onClick={onChangeSpeed}>x2</button>
       <div className="dropup">
         <button
           className="btn btn-light px-2 ml-1 shadow-none d-flex"
@@ -84,9 +83,7 @@ const ControlPanel = ({
           <i className="fas fa-cog" />
         </button>
         <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
-          <button type="button" className="dropdown-item">Action</button>
-          <button type="button" className="dropdown-item">Another action</button>
-          <button type="button" className="dropdown-item">Something else here</button>
+          <button type="button" className={speedControlClassNames} onClick={onChangeSpeed}>x2</button>
         </div>
       </div>
     </>
