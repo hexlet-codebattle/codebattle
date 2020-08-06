@@ -468,7 +468,7 @@ defmodule Codebattle.Languages do
         docker_image: "codebattle/haskell:8.4.3",
         solution_version: :typed,
         solution_template:
-          "module Check.Solution where\n\nimport qualified Data.HashMap.Lazy as HM\n\nsolution :: <%= arguments %><%= expected %>\nsolution =\n\n{- Included packages:\naeson\nbytestring\ncase-insensitive\ncontainers\ndeepseq\nfgl\ninteger-logarithms\nmegaparsec\nmtl\nparser-combinators\npretty\nrandom\nregex-base\nregex-compat\nregex-posix\nscientific\nsplit\ntemplate-haskell\ntext\ntime\ntransformers\nunordered-containers\nvector\nvector-algorithms -}",
+          "module Check.Solution where\n\nimport Data.HashMap.Lazy\n\nsolution :: <%= arguments %><%= expected %>\nsolution =\n\n{- Included packages:\naeson\nbytestring\ncase-insensitive\ncontainers\ndeepseq\nfgl\ninteger-logarithms\nmegaparsec\nmtl\nparser-combinators\npretty\nrandom\nregex-base\nregex-compat\nregex-posix\nscientific\nsplit\ntemplate-haskell\ntext\ntime\ntransformers\nunordered-containers\nvector\nvector-algorithms -}",
         arguments_template: %{
           argument: "<%= type %>",
           delimeter: " -> "
@@ -480,7 +480,7 @@ defmodule Codebattle.Languages do
           "string" => "String",
           "array" => "[<%= inner_type %>]",
           "boolean" => "Bool",
-          "hash" => "HM.HashMap String <%= inner_type %>"
+          "hash" => "HashMap String <%= inner_type %>"
         },
         checker_meta: %{
           version: :dynamic,
