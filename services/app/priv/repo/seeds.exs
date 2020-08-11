@@ -89,6 +89,7 @@ end)
   name: "Codebattle Hexlet summer tournament 2019",
   creator_id: 1,
   players_count: 16,
+  diffculty: "elementary",
   starts_at: ~N[2019-08-22 19:33:08.910767]
 })
 |> Codebattle.Repo.insert!()
