@@ -13,10 +13,12 @@ defmodule Codebattle.Tournament do
   @types ~w(individual team)
   @states ~w(waiting_participants canceled active finished)
   @starts_at_types ~w(1_min 5_min 10_min 30_min)
+  @difficulties ~w(elementary easy medium hard)
 
   schema "tournaments" do
     field(:name, :string)
     field(:type, :string, default: "individual")
+    field(:difficulty, :string, default: "elementary")
     field(:state, :string, default: "waiting_participants")
     field(:players_count, :integer, default: 16)
     field(:step, :integer, default: 0)
@@ -33,10 +35,21 @@ defmodule Codebattle.Tournament do
 
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:name, :type, :step, :state, :starts_at, :players_count, :creator_id, :meta])
+    |> cast(params, [
+      :name,
+      :difficulty,
+      :type,
+      :step,
+      :state,
+      :starts_at,
+      :players_count,
+      :creator_id,
+      :meta
+    ])
     |> cast_embed(:data)
     |> validate_inclusion(:state, @states)
     |> validate_inclusion(:type, @types)
+    |> validate_inclusion(:difficulty, @difficulties)
     |> validate_inclusion(:starts_at_type, @starts_at_types)
     |> validate_required([:name, :players_count, :creator_id, :starts_at])
   end
@@ -70,6 +83,7 @@ defmodule Codebattle.Tournament do
 
   def types, do: @types
   def starts_at_types, do: @starts_at_types
+  def difficulties, do: @difficulties
 
   def get_live_tournaments do
     query =

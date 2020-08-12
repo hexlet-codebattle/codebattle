@@ -6,6 +6,7 @@
         tr
           th name
           th type
+          th difficulty
           th state
           th starts_at
           th players_count
@@ -16,6 +17,7 @@
           tr
             td.align-middle = tournament.name
             td.align-middle.text-nowrap = tournament.type
+            td.align-middle.text-nowrap = tournament.difficulty
             td.align-middle.text-nowrap = tournament.state
             td.align-middle.text-nowrap = render_datetime(tournament.starts_at)
             td.align-middle.text-nowrap = tournament.players_count
@@ -37,6 +39,10 @@
       = label f, :name
       = text_input f, :name, class: "form-control", placeholder: "My tournament"
       = error_tag f, :name
+    .form-group
+      = label f, :difficulty
+      = select f, :difficulty, Codebattle.Tournament.difficulties, class: "form-control"
+      = error_tag f, :difficulty
     .form-group
       = label f, :starts_at_type
       = select f, :starts_at_type, Codebattle.Tournament.starts_at_types, class: "form-control"

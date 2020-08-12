@@ -120,6 +120,7 @@ defmodule Codebattle.Tournament.Type do
               "waiting" ->
                 {:ok, fsm} =
                   Play.create_game(%{
+                    level: tournament.difficulty,
                     tournament: tournament,
                     players: match.players
                   })
