@@ -33,6 +33,7 @@ const WaitingOpponentInfo = ({ gameUrl }) => {
                 className="btn btn-outline-secondary btn-block"
                 type="button"
                 onClick={onClick}
+                data-testid="copy-button"
               >
                 {i18n.t(textButtonCopy)}
               </button>
