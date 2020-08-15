@@ -109,10 +109,6 @@ const SubMenu = ({
           </button>
         ) : null}
       </div>
-<<<<<<< HEAD
-
-=======
->>>>>>> fix for codebeat
       {hasOutput ? (
         <div id={`collapse${uniqIndex}`} className={classCollapse} aria-labelledby={`heading${uniqIndex}`}>
           <div className="mt-3">
