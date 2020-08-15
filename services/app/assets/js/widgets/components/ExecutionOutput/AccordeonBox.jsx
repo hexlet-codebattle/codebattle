@@ -27,14 +27,9 @@ const Menu = ({
   count, children, statusColor, message, firstAssert,
 }) => {
   const [show, setShow] = useState(false);
-  const classCollapse = cn('collapse', {
-    show,
-  });
-  const handleClick = () => {
-    setShow(!show);
-  };
+  const classCollapse = cn('collapse', { show });
+  const handleClick = () => { setShow(!show); };
   const uniqIndex = _.uniqueId('heading');
-
   return (
     <div className="card border-0 rounded-0">
       {(statusColor === 'warning' || statusColor === 'danger')
@@ -62,7 +57,6 @@ const Menu = ({
           {children}
         </div>
       </div>
-
     </div>
   );
 };
