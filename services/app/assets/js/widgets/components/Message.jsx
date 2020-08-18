@@ -8,7 +8,7 @@ const Message = ({ message = '', user = '' }) => {
       <span className="font-weight-bold">{`${user}: `}</span>
       <span>
         {/* eslint-disable-next-line react/no-array-index-key */}
-        {parts.map((part, i) => (part.slice(1) === user ? <span key={i} className="text-info">{part}</span> : `${part}`))}
+        {parts.map((part, i) => (part.slice(1) === user ? <span key={i} className="font-weight-bold bg-warning">{part}</span> : `${part}`))}
       </span>
     </div>
   );
