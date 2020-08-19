@@ -32,6 +32,13 @@ const ChatWidget = () => {
       <div className="col-4 d-none d-sm-block p-0 border-left bg-white rounded-right">
         <div className="d-flex flex-direction-column flex-wrap justify-content-between">
           <div className="px-3 pt-3 pb-2 w-100">
+            TODO: Lera, please add normal LInk/button
+            {/* if game.tournamentId */}
+            {/* SEE: js/widgets/components/Toast/BackToTournamentButton.jsx */}
+              <button className="btn btn-outline-success">Back to tournament</button>
+                </div>
+            {/* if game tournament */}
+          <div className="px-3 pt-3 pb-2 w-100">
             <p className="mb-1">{`Online users: ${users.length}`}</p>
             <div className="overflow-auto" style={{ height: '175px' }}>
               {listOfUsers.map(user => (
