@@ -214,8 +214,8 @@ defmodule Codebattle.Languages do
           type_templates: %TypeTemplates{
             array: "List.of(<%= entries %>)",
             hash_empty: "Map.of()",
-            hash_value: "Map.of(<%= entries %>)",
-            hash_inners: "\"<%= key %>\", <%= value %>"
+            hash_value: "Map.ofEntries(<%= entries %>)",
+            hash_inners: "entry(\"<%= key %>\", <%= value %>)"
           },
           defining_variable_template: "<%= type %> <%= name %>",
           nested_value_expression_template: "<%= value %>"
