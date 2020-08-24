@@ -7,6 +7,8 @@ import Messages from '../components/Messages';
 import UserName from '../components/User/UserName';
 import ChatInput from '../components/ChatInput';
 import GameStatusCodes from '../config/gameStatusCodes';
+import GameTypeCodes from '../config/gameTypeCodes';
+import BackToTournamentButton from '../components/Toast/BackToTournamentButton';
 import 'emoji-mart/css/emoji-mart.css';
 
 const ChatWidget = () => {
@@ -14,6 +16,7 @@ const ChatWidget = () => {
   const messages = useSelector(state => selectors.chatMessagesSelector(state));
   const isStoredGame = useSelector(state => (
     selectors.gameStatusSelector(state).status === GameStatusCodes.stored));
+  const gameType = useSelector(state => selectors.gameTypeSelector(state));
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -31,6 +34,9 @@ const ChatWidget = () => {
       </div>
       <div className="col-4 d-none d-sm-block p-0 border-left bg-white rounded-right">
         <div className="d-flex flex-direction-column flex-wrap justify-content-between">
+          <div className="px-3 pt-3 pb-2 w-100">
+            {gameType === GameTypeCodes.tournament && <BackToTournamentButton />}
+          </div>
           <div className="px-3 pt-3 pb-2 w-100">
             <p className="mb-1">{`Online users: ${users.length}`}</p>
             <div className="overflow-auto" style={{ height: '175px' }}>

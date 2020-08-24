@@ -1,6 +1,10 @@
 import React from 'react';
 
 const Message = ({ message = '', user = '' }) => {
+  if (!message) {
+    return null;
+  }
+
   const parts = message.split(/(@+[-a-zA-Z0-9_]+\b)/g);
 
   return (
