@@ -2,6 +2,8 @@ defmodule CodebattleWeb.Api.V1.UserController do
   use CodebattleWeb, :controller
 
   alias Codebattle.{Repo, User, User.Stats}
+  alias CodebattleWeb.Api.GameView
+
   import Ecto.Query, warn: false
 
   def info(conn, %{"id" => id}) do
@@ -11,18 +13,27 @@ defmodule CodebattleWeb.Api.V1.UserController do
   end
 
   def stats(conn, %{"id" => id}) do
-    stats = Stats.for_user(id)
+    game_stats = Stats.get_game_stats(id)
+    rank = Stats.get_user_rank(id)
+
+    completed_games =
+      id
+      |> Stats.get_completed_games()
+      |> GameView.render_completed_games()
 
     achievements =
       case id do
-        "bot" ->
-          [:bot]
-
-        _user_id ->
-          Repo.get(User, id).achievements
+        "bot" -> [:bot]
+        _user_id -> Repo.get(User, id).achievements
       end
 
-    json(conn, %{achievements: achievements, stats: stats, user_id: id})
+    json(conn, %{
+      achievements: achievements,
+      rank: rank,
+      completed_games: completed_games,
+      stats: game_stats,
+      user_id: id
+    })
   end
 
   def index(conn, params) do
