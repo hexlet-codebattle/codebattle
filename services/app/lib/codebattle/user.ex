@@ -9,6 +9,7 @@ defmodule Codebattle.User do
            only: [
              :id,
              :name,
+             :github_name,
              :rating,
              :is_bot,
              :guest,

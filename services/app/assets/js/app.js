@@ -33,6 +33,7 @@ import {
   renderLobby,
   renderHeatmapWidget,
   renderUsersRating,
+  renderUserPage,
 } from './widgets';
 
 const Hooks = {
@@ -61,6 +62,7 @@ const gameWidgetRoot = document.getElementById('game-widget-root');
 const heatmapRoot = document.getElementById('heatmap-root');
 const gameListRoot = document.getElementById('game-list');
 const ratingList = document.getElementById('rating-list');
+const userPageRoot = document.getElementById('user-page-root');
 
 if (gameWidgetRoot) {
   renderGameWidget(gameWidgetRoot);
@@ -77,3 +79,9 @@ if (gameListRoot) {
 if (ratingList) {
   renderUsersRating(ratingList);
 }
+
+if (userPageRoot) {
+  renderUserPage(userPageRoot);
+  // renderUsersRating(userPageRoot);
+}
+

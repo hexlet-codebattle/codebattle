@@ -1,18 +1,19 @@
-import React from 'react';
-import { Provider } from 'react-redux';
-import { persistStore, persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
-import { PersistGate } from 'redux-persist/integration/react';
-import { configureStore, combineReducers } from '@reduxjs/toolkit';
-import RootContainer from './containers/RootContainer';
-import reducers from './slices';
-import LobbyWidget from './containers/LobbyWidget';
-import RatingList from './containers/RatingList';
+import React from "react";
+import { Provider } from "react-redux";
+import { persistStore, persistReducer } from "redux-persist";
+import storage from "redux-persist/lib/storage";
+import { PersistGate } from "redux-persist/integration/react";
+import { configureStore, combineReducers } from "@reduxjs/toolkit";
+import RootContainer from "./containers/RootContainer";
+import reducers from "./slices";
+import LobbyWidget from "./containers/LobbyWidget";
+import RatingList from "./containers/RatingList";
+import UserProfile from "./containers/UserProfile";
 
 const { editorUI: editorUIReducer, ...otherReducers } = reducers;
 
 const editorUIPersistConfig = {
-  key: 'editorUI',
+  key: "editorUI",
   storage,
 };
 
@@ -51,3 +52,5 @@ export const UsersRating = () => (
     </PersistGate>
   </Provider>
 );
+
+export const UserPage = () => <UserProfile />;
