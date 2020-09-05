@@ -23,7 +23,6 @@ defmodule CodebattleWeb.FallbackController do
     })
 
     conn
-    |> put_status(:unprocessable_entity)
     |> put_flash(:danger, reason)
     |> redirect(to: Routes.page_path(conn, :index))
   end

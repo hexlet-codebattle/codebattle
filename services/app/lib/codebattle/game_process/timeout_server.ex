@@ -9,9 +9,7 @@ defmodule Codebattle.GameProcess.TimeoutServer do
 
   # API
   def start_timer(game_id, timeout_seconds) do
-    Logger.info(
-      "Start timer for game_id: #{game_id}, timeout: #{timeout_seconds} seconds"
-    )
+    Logger.info("Start timer for game_id: #{game_id},  timeout: #{timeout_seconds} seconds")
 
     GenServer.cast(server_name(game_id), {:start, timeout_seconds})
   end

@@ -17,7 +17,8 @@ defmodule CodebattleWeb.ConnCase do
 
   @session Plug.Session.init(
              store: :cookie,
-             key: "_codebattle_key",
+             key: "_app",
+             encryption_salt: "yadayada",
              signing_salt: "yadayada"
            )
 

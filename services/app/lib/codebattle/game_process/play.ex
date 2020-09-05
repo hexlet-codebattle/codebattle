@@ -183,7 +183,16 @@ defmodule Codebattle.GameProcess.Play do
   def timeout_game(id) do
     {:ok, fsm} = get_fsm(id)
 
-    case fsm.state do
+    case FsmHelpers.get_state(fsm) do
+      :game_over -> {:terminate_after, 15}
+      _ -> terminate_game(id)
+    end
+  end
+
+  def terminate_game(id) do
+    {:ok, fsm} = get_fsm(id)
+
+    case FsmHelpers.get_state(fsm) do
       :game_over ->
         GlobalSupervisor.terminate_game(id)
 
@@ -193,6 +202,7 @@ defmodule Codebattle.GameProcess.Play do
         Notifications.game_timeout(id)
         Notifications.remove_active_game(id)
         Notifications.notify_tournament(:game_over, fsm, %{game_id: id, state: "canceled"})
+        FsmHelpers.get_module(fsm).store_playbook(fsm)
         GlobalSupervisor.terminate_game(id)
 
         store_terminate_event(fsm)

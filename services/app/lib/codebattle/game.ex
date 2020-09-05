@@ -31,7 +31,7 @@ defmodule Codebattle.Game do
   @doc false
   def changeset(%Game{} = game, attrs) do
     game
-    |> cast(attrs, [:state, :task_id, :tournament_id,  :level, :type, :starts_at, :finishs_at])
+    |> cast(attrs, [:state, :task_id, :tournament_id, :level, :type, :starts_at, :finishs_at])
     |> validate_required([:state, :level, :type])
     |> validate_inclusion(:type, @types)
   end
