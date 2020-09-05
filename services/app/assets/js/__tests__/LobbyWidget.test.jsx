@@ -17,7 +17,7 @@ jest.mock('gon', () => {
 jest.mock('axios');
 axios.get.mockResolvedValue({ data: {} });
 
-test('rendering GameList', async () => {
+test('test rendering GameList', async () => {
   const reducer = combineReducers(reducers);
 
   const preloadedState = {

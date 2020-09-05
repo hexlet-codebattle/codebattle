@@ -19,7 +19,7 @@ jest.mock('gon', () => {
 jest.mock('axios');
 axios.get.mockResolvedValue({ data: {} });
 
-test('rendering active game components', async () => {
+test('test rendering active game components', async () => {
   const reducer = combineReducers(reducers);
 
   const createPlayer = params => ({

@@ -44,7 +44,7 @@ defmodule Codebattle.Mixfile do
     [
       {:phoenix, "~> 1.5.0", override: true},
       {:phoenix_ecto, "~> 4.0"},
-      {:phoenix_live_view, "0.14.4"},
+      {:phoenix_live_view, "0.13.3"},
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 2.14"},
       {:phoenix_live_dashboard, "~> 0.2.0"},
