@@ -9,7 +9,6 @@
           th difficulty
           th state
           th starts_at
-          th players_count
           th creator
           th actions
       tbody
@@ -17,10 +16,12 @@
           tr
             td.align-middle = tournament.name
             td.align-middle.text-nowrap = tournament.type
-            td.align-middle.text-nowrap = tournament.difficulty
+            td.align-middle.text-nowrap
+              div
+                span.badge.badge-pill.mr-1 class="badge-#{difficulty_to_color(tournament.difficulty)}" &nbsp;
+                = tournament.difficulty
             td.align-middle.text-nowrap = tournament.state
             td.align-middle.text-nowrap = render_datetime(tournament.starts_at)
-            td.align-middle.text-nowrap = tournament.players_count
             td.align-middle.text-nowrap
               = render "_player.html", player: tournament.creator
             td.align-middle.text-nowrap
@@ -30,22 +31,43 @@
 
 .container-xl.bg-white.shadow-sm.rounded.py-4
   h2.text-center Create new tournament
-  = f = form_for @changeset, "#", phx_change: :validate, phx_submit: :create
+  = f = form_for @changeset, "#", phx_change: :validate, phx_submit: :create, class: 'col-8  offset-2'
+    .form-group
+      = render_base_errors(@changeset.errors[:base])
     .form-group
       = label f, :type
-      = select f, :type, Codebattle.Tournament.types, class: "form-control"
+      = select f, :type, Codebattle.Tournament.types, class: "form-control form-control-lg"
       = error_tag f, :type
+    = if f.params["type"] == "team" do
+      = label f, "Team names"
+      .form-row.justify-content-between
+        .from-group
+          = text_input f, :team_1_name, maxlength: "17",
+            class: "form-control form-control-lg",
+            value: f.params["team_1_name"] || "Backend"
+        .from-group
+          = text_input f, :team_2_name, maxlength: "17",
+            class: "form-control form-control-lg",
+            value: f.params["team_2_name"] || "Frontend"
     .form-group
       = label f, :name
-      = text_input f, :name, class: "form-control", placeholder: "My tournament"
+      = text_input f, :name, class: "form-control form-control-lg", maxlength: "37"
       = error_tag f, :name
     .form-group
       = label f, :difficulty
-      = select f, :difficulty, Codebattle.Tournament.difficulties, class: "form-control"
+      = select f, :difficulty, Codebattle.Tournament.difficulties, class: "form-control form-control-lg"
       = error_tag f, :difficulty
-    .form-group
-      = label f, :starts_at_type
-      = select f, :starts_at_type, Codebattle.Tournament.starts_at_types, class: "form-control"
+    .form-row.justify-content-between
+      .form-group
+        = label f, :starts_after_in_minutes
+        = number_input f, :starts_after_in_minutes, class: "form-control form-control-lg",
+          value: f.params["starts_after_in_minutes"] || "5",
+          min: "1", max: "30"
+      .form-group
+        = label f, :match_timeout_in_seconds
+        = number_input f, :match_timeout_seconds, class: "form-control form-control-lg",
+          value: f.params["match_timeout_seconds"] || "177",
+          min: "1", max: "1000"
     = submit "Create", phx_disable_with: "Creating...", class: "btn btn-primary mb-2"
 
 

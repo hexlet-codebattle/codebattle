@@ -12,6 +12,7 @@ defmodule CodebattleWeb.GameController do
 
   action_fallback(CodebattleWeb.FallbackController)
 
+  # TODO: cleanUp controller. Move join and creation logic to separate services
   def create(conn, params) do
     type =
       case params["type"] do
@@ -59,13 +60,11 @@ defmodule CodebattleWeb.GameController do
           event: "failure_create_game",
           user_id: user.id,
           data: %{
-            reason: reason
+            reason: inspect(reason)
           }
         })
 
-        conn
-        |> put_flash(:danger, reason)
-        |> redirect(to: Routes.page_path(conn, :index))
+        {:error, reason}
     end
   end
 
@@ -143,6 +142,7 @@ defmodule CodebattleWeb.GameController do
           game ->
             if Playbook.exists?(id) do
               langs = Languages.meta() |> Map.values()
+
               [first, second] = get_users(game)
 
               UsersActivityServer.add_event(%{
@@ -207,13 +207,11 @@ defmodule CodebattleWeb.GameController do
           user_id: user.id,
           data: %{
             game_id: id,
-            reason: reason
+            reason: inspect(reason)
           }
         })
 
-        conn
-        |> put_flash(:danger, reason)
-        |> redirect(to: Routes.page_path(conn, :index))
+        {:error, reason}
     end
   end
 
@@ -270,14 +268,9 @@ defmodule CodebattleWeb.GameController do
 
   defp get_users(game) do
     case Enum.count(game.users) do
-      1 ->
-        [first] = game.users
-        second = User.create_guest()
-
-        [first, second]
-
-      _ ->
-        game.users
+      0 -> [User.create_guest(), User.create_guest()]
+      1 -> game.users ++ [User.create_guest()]
+      _ -> game.users
     end
   end
 end

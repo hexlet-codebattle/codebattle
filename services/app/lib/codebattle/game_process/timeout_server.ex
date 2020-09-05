@@ -9,11 +9,9 @@ defmodule Codebattle.GameProcess.TimeoutServer do
 
   # API
   def start_timer(game_id, timeout_seconds) do
-    Logger.info(
-      "Restart timeout server timer for game_id: #{game_id}, new timeout: #{timeout_seconds} seconds"
-    )
+    Logger.info("Start timer for game_id: #{game_id},  timeout: #{timeout_seconds} seconds")
 
-    GenServer.cast(server_name(game_id), {:restart, timeout_seconds})
+    GenServer.cast(server_name(game_id), {:start, timeout_seconds})
   end
 
   def start_link(game_id) do
@@ -24,19 +22,18 @@ defmodule Codebattle.GameProcess.TimeoutServer do
 
   def init(game_id) do
     Logger.info("Start timeout server for game_id: #{game_id}")
-    {:ok, %{game_id: game_id, timeouts_count: 0}}
+    {:ok, %{game_id: game_id}}
   end
 
-  def handle_cast({:restart, timeout_seconds}, %{game_id: game_id, timeouts_count: timeouts_count}) do
-    Process.send_after(self(), :trigger_timeout, timeout_seconds * 1000)
-    {:noreply, %{game_id: game_id, timeouts_count: timeouts_count + 1}}
+  def handle_cast({:start, timeout_seconds}, %{game_id: game_id}) do
+    Process.send_after(self(), :trigger_timeout, :timer.seconds(timeout_seconds))
+    {:noreply, %{game_id: game_id}}
   end
 
-  def handle_info(:trigger_timeout, %{game_id: game_id, timeouts_count: timeouts_count} = state)
-      when timeouts_count == 1 do
+  def handle_info(:trigger_timeout, %{game_id: game_id} = state) do
     case Play.timeout_game(game_id) do
-      {:retrigger_timeout, timeout_seconds} ->
-        Process.send_after(self(), :trigger_timeout, timeout_seconds * 1000)
+      {:terminate_after, minutes} ->
+        Process.send_after(self(), :terminate, :timer.minutes(minutes))
         {:noreply, state}
 
       _ ->
@@ -44,8 +41,9 @@ defmodule Codebattle.GameProcess.TimeoutServer do
     end
   end
 
-  def handle_info(:trigger_timeout, %{game_id: game_id, timeouts_count: timeouts_count}) do
-    {:noreply, %{game_id: game_id, timeouts_count: timeouts_count - 1}}
+  def handle_info(:terminate, %{game_id: game_id}) do
+    Play.terminate_game(game_id)
+    {:noreply, %{game_id: game_id}}
   end
 
   # TODO: FIXME without these prints error in tests

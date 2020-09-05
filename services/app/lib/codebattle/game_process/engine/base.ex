@@ -55,18 +55,18 @@ defmodule Codebattle.GameProcess.Engine.Base do
         Server.call_transition(FsmHelpers.get_game_id(fsm), :update_editor_data, params)
       end
 
-      def store_playbook(playbook, game_id, task_id) do
+      def store_playbook(fsm) do
+        game_id = FsmHelpers.get_game_id(fsm)
+        task_id = FsmHelpers.get_task(fsm).id
+        {:ok, playbook} = Server.get_playbook(game_id)
+
         Task.start(fn -> Playbook.store_playbook(playbook, game_id, task_id) end)
       end
 
       def handle_won_game(game_id, winner, fsm) do
         loser = FsmHelpers.get_opponent(fsm, winner.id)
-        task_id = FsmHelpers.get_task(fsm).id
-
         store_game_result!(fsm, {winner, "won"}, {loser, "lost"})
-
-        {:ok, playbook} = Server.get_playbook(game_id)
-        store_playbook(playbook, game_id, task_id)
+        store_playbook(fsm)
 
         ActiveGames.terminate_game(game_id)
 
@@ -87,8 +87,7 @@ defmodule Codebattle.GameProcess.Engine.Base do
 
         store_game_result!(fsm, {winner, "won"}, {loser, "gave_up"})
 
-        {:ok, playbook} = Server.get_playbook(game_id)
-        store_playbook(playbook, game_id, task.id)
+        store_playbook(fsm)
 
         ActiveGames.terminate_game(game_id)
 

@@ -19,13 +19,16 @@ defmodule Codebattle.Tournament.Server do
     end
   end
 
-  def get_tournament(id) do
-    case get_pid(id) do
-      :undefined ->
-        nil
+  def get_tournament(pid) when is_pid(pid) do
+    GenServer.call(pid, :get_tournament)
+  end
 
-      _pid ->
-        GenServer.call(server_name(id), :get_tournament)
+  def get_tournament(id) do
+    try do
+      GenServer.call(server_name(id), :get_tournament)
+    catch
+      :exit, _reason ->
+        nil
     end
   end
 

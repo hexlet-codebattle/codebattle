@@ -49,17 +49,26 @@ defmodule CodebattleWeb.Live.Tournament.TeamTest do
 
     {:error, {:redirect, %{to: "/tournaments/" <> tournament_id}}} =
       render_submit(view, :create, %{
-        "tournament" => %{type: "team", starts_at_type: "1_min", name: "test"}
+        "tournament" => %{
+          type: "team",
+          starts_after_in_minutes: "1",
+          team_1_name: "Elixir",
+          team_2_name: "",
+          match_timeout_seconds: "140",
+          name: "test"
+        }
       })
 
-    tournament = Codebattle.Tournament.get!(tournament_id)
+    tournament = Codebattle.Tournament.Context.get!(tournament_id)
+    assert tournament.meta == %{teams: [%{id: 0, title: "Elixir"}, %{id: 1, title: "Frontend"}]}
+    assert tournament.match_timeout_seconds == 140
 
     {:ok, view1, _html} = live(conn1, Routes.tournament_path(conn, :show, tournament.id))
 
     render_click(view1, :join, %{"team_id" => "0"})
     render_click(view1, :join, %{"team_id" => "1"})
 
-    tournament = Codebattle.Tournament.get!(tournament.id)
+    tournament = Codebattle.Tournament.Context.get!(tournament.id)
     assert Helpers.players_count(tournament) == 1
 
     {:ok, view2, _html} = live(conn2, Routes.tournament_path(conn, :show, tournament.id))
@@ -68,26 +77,27 @@ defmodule CodebattleWeb.Live.Tournament.TeamTest do
     render_click(view2, :leave, %{"team_id" => "1"})
     render_click(view2, :join, %{"team_id" => "1"})
 
-    tournament = Codebattle.Tournament.get!(tournament.id)
+    tournament = Codebattle.Tournament.Context.get!(tournament.id)
     assert Helpers.players_count(tournament) == 2
 
     {:ok, view3, _html} = live(conn3, Routes.tournament_path(conn, :show, tournament.id))
 
     render_click(view3, :join, %{"team_id" => "0"})
 
-    tournament = Codebattle.Tournament.get!(tournament.id)
+    tournament = Codebattle.Tournament.Context.get!(tournament.id)
     assert Helpers.players_count(tournament) == 3
 
     render_click(view1, :start)
 
-    tournament = Codebattle.Tournament.get!(tournament.id)
+    tournament = Codebattle.Tournament.Context.get!(tournament.id)
     assert tournament.state == "active"
     assert Helpers.players_count(tournament) == 4
     assert Enum.count(tournament.data.matches) == 2
 
     render_click(view1, :cancel)
 
-    tournament = Codebattle.Tournament.get!(tournament.id)
+    tournament = Codebattle.Tournament.Context.get!(tournament.id)
+    assert Codebattle.Tournament.Context.get_live_tournaments() == []
     assert tournament.state == "canceled"
     assert Helpers.players_count(tournament) == 4
     assert Enum.count(tournament.data.matches) == 2

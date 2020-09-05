@@ -30,9 +30,14 @@ defmodule Codebattle.Tournament.Type do
 
       def cancel(tournament, %{user: user}) do
         if is_creator?(tournament, user.id) do
-          tournament
-          |> Tournament.changeset(%{state: "canceled"})
-          |> Repo.update!()
+          new_tournament =
+            tournament
+            |> Tournament.changeset(%{state: "canceled"})
+            |> Repo.update!()
+
+          Tournament.Supervisor.terminate_tournament(tournament.id)
+
+          new_tournament
         else
           tournament
         end
@@ -43,7 +48,10 @@ defmodule Codebattle.Tournament.Type do
           tournament
           |> complete_players
           |> start_step!
-          |> Tournament.changeset(%{state: "active"})
+          |> Tournament.changeset(%{
+            last_round_started_at: NaiveDateTime.utc_now(),
+            state: "active"
+          })
           |> Repo.update!()
         else
           tournament
@@ -57,7 +65,10 @@ defmodule Codebattle.Tournament.Type do
           tournament
         else
           tournament
-          |> Tournament.changeset(%{step: tournament.step + 1})
+          |> Tournament.changeset(%{
+            step: tournament.step + 1,
+            last_round_started_at: NaiveDateTime.utc_now()
+          })
           |> Repo.update!()
           |> maybe_finish
           |> start_step!

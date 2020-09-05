@@ -18,6 +18,7 @@ defmodule CodebattleWeb.Api.V1.ActivityController do
     query =
       from(ug in UserGame,
         where: ug.user_id == ^user_id,
+        where: ug.result in ["won", "lost", "gave_up"],
         group_by: to_char(ug.inserted_at, "YYYY-mm-dd"),
         select: %{date: to_char(ug.inserted_at, "YYYY-mm-dd"), count: count(ug.id)}
       )

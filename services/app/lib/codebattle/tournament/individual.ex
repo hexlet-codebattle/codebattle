@@ -77,9 +77,13 @@ defmodule Codebattle.Tournament.Individual do
 
   @impl Tournament.Type
   def maybe_finish(%{step: 4} = tournament) do
-    tournament
-    |> Tournament.changeset(%{state: "finished"})
-    |> Repo.update!()
+    new_tournament =
+      tournament
+      |> Tournament.changeset(%{state: "finished"})
+      |> Repo.update!()
+
+    Tournament.Supervisor.terminate_tournament(tournament.id)
+    new_tournament
   end
 
   @impl Tournament.Type

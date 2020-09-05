@@ -14,9 +14,10 @@ import 'emoji-mart/css/emoji-mart.css';
 const ChatWidget = () => {
   const users = useSelector(state => selectors.chatUsersSelector(state));
   const messages = useSelector(state => selectors.chatMessagesSelector(state));
-  const isStoredGame = useSelector(state => (
-    selectors.gameStatusSelector(state).status === GameStatusCodes.stored));
-  const gameType = useSelector(state => selectors.gameTypeSelector(state));
+  const isStoredGame = useSelector(
+    state => selectors.gameStatusSelector(state).status === GameStatusCodes.stored,
+  );
+  const gameType = useSelector(selectors.gameTypeSelector);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -35,7 +36,9 @@ const ChatWidget = () => {
       <div className="col-4 d-none d-sm-block p-0 border-left bg-white rounded-right">
         <div className="d-flex flex-direction-column flex-wrap justify-content-between">
           <div className="px-3 pt-3 pb-2 w-100">
-            {gameType === GameTypeCodes.tournament && <BackToTournamentButton />}
+            {gameType === GameTypeCodes.tournament && (
+              <BackToTournamentButton />
+            )}
           </div>
           <div className="px-3 pt-3 pb-2 w-100">
             <p className="mb-1">{`Online users: ${users.length}`}</p>

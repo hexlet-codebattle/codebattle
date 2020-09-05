@@ -22,24 +22,23 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
   end
 
   def handle_event("validate", %{"tournament" => params}, socket) do
-    creator_id = socket.assigns.current_user.id
+    creator = socket.assigns.current_user
 
     changeset =
       %Tournament{}
-      |> Tournament.changeset(Map.merge(params, %{"creator_id" => creator_id}))
+      |> Tournament.changeset(Map.merge(params, %{"creator" => creator}))
       |> Map.put(:action, :insert)
 
     {:noreply, assign(socket, changeset: changeset)}
   end
 
   def handle_event("create", %{"tournament" => params}, socket) do
-    creator_id = socket.assigns.current_user.id
+    creator = socket.assigns.current_user
 
-    case Tournament.create(Map.merge(params, %{"creator_id" => creator_id})) do
+    case Tournament.Context.create(Map.merge(params, %{"creator" => creator})) do
       {:ok, tournament} ->
         {:noreply,
          socket
-         |> put_flash(:info, "user created")
          |> redirect(to: "/tournaments/#{tournament.id}")}
 
       {:error, %Ecto.Changeset{} = changeset} ->

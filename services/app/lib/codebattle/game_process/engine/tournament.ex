@@ -13,12 +13,9 @@ defmodule Codebattle.GameProcess.Engine.Tournament do
 
   use Engine.Base
 
-  @default_timeout Application.get_env(:codebattle, :tournament_match_timeout)
-
   @impl Engine.Base
   def create_game(%{players: players} = params) do
     level = params[:level] || "elementary"
-    timeout_seconds = params[:timeout_seconds] || @default_timeout
     task = get_task(level)
 
     {:ok, game} =
@@ -26,6 +23,7 @@ defmodule Codebattle.GameProcess.Engine.Tournament do
         state: "playing",
         type: "tournament",
         level: level,
+        tournament_id: params.tournament.id,
         task_id: task.id
       })
 
@@ -43,7 +41,7 @@ defmodule Codebattle.GameProcess.Engine.Tournament do
         task: task,
         langs: Languages.get_langs_with_solutions(task),
         tournament_id: params.tournament.id,
-        timeout_seconds: timeout_seconds,
+        timeout_seconds: params.tournament.match_timeout_seconds,
         starts_at: TimeHelper.utc_now()
       })
 

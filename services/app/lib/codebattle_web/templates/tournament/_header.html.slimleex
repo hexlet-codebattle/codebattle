@@ -1,15 +1,26 @@
 .container-fluid
   .row
     .col-7
-      h1
-        span.mr-3 = @tournament.name |> String.upcase
-        span.small.text-muted = @tournament.state
-      = if @tournament.state == "waiting_participants" do
-        p  Will start in #{@time.minutes} minutes #{@time.seconds} seconds
+      .d-flex.align-items-center
+        h1
+          span.mr-3 = @tournament.name
+        div
+          span.badge.badge-pill.mr-1 class="badge-#{difficulty_to_color(@tournament.difficulty)}" &nbsp;
+          = @tournament.difficulty
+      p
+        span.small.text-muted.mx-2 State: #{@tournament.state}
+        = if @tournament.state == "waiting_participants" do
+          = if @time.minutes >= 0 and @time.seconds >= 0  do
+            span The trounament will start in #{@time.minutes} minutes #{@time.seconds} seconds
+          - else
+            span The trounament will start soon
+
+        = if  @tournament.state == "active"  do
+          span The next round will start in #{@time.minutes} minutes #{@time.seconds} seconds, or after all matches are over
 
     .col-5
       .text-right
-        = if is_creator?(@tournament, @current_user.id) do
+        = if is_creator?(@tournament, @current_user.id) and @tournament.state in ["waiting_participants", "active"] do
           button.btn.btn-outline-success.mx-2[phx-click="start" disabled=!can_start_tournament?(@tournament)] Start
           button.btn.btn-outline-danger.mx-2[phx-click="cancel"] Cancel
         = link "Back to tournaments", to: CodebattleWeb.Router.Helpers.tournament_path(@socket, :index), class: "btn btn-success ml-2"

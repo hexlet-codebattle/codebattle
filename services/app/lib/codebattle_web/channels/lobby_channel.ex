@@ -12,7 +12,7 @@ defmodule CodebattleWeb.LobbyChannel do
     {:ok,
      %{
        active_games: GameView.render_active_games(Play.get_active_games(), user_id),
-       live_tournaments: Tournament.get_live_tournaments(),
+       live_tournaments: Tournament.Context.get_live_tournaments(),
        completed_games: GameView.render_completed_games(Play.get_completed_games())
      }, socket}
   end

@@ -309,6 +309,8 @@ export const storedGameEditorReady = () => dispatch => {
 
     const gameStatus = {
       status: GameStatusCodes.stored,
+      type: data.type,
+      tournamentId: data.tournamentId,
     };
 
     initStore(dispatch)({

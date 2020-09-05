@@ -123,15 +123,14 @@ defmodule Codebattle.Bot.Playbook do
     {:ok, fsm} = Play.get_fsm(game_id)
     data = create_final_game_playbook(playbook)
     winner = FsmHelpers.get_winner(fsm)
-    loser = FsmHelpers.get_opponent(fsm, winner.id)
 
     %Playbook{
       data: data,
       task_id: task_id,
-      game_id: String.to_integer(game_id),
-      winner_id: winner.id,
-      winner_lang: winner.id && winner.editor_lang,
-      is_complete_solution: !FsmHelpers.gave_up?(fsm, loser.id)
+      game_id: String.to_integer(to_string(game_id)),
+      winner_id: winner && winner.id,
+      winner_lang: winner && winner.id && winner.editor_lang,
+      is_complete_solution: !!winner && FsmHelpers.winner?(fsm, winner.id)
     }
     |> Repo.insert()
   end
