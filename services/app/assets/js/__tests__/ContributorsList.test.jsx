@@ -18,7 +18,7 @@ jest.mock('axios');
 const users = [];
 axios.get.mockResolvedValue({ data: users });
 
-test('test rendering ContributorsList', async () => {
+test('rendering ContributorsList', async () => {
   const reducer = combineReducers(reducers);
 
   const preloadedState = {

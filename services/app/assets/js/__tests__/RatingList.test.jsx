@@ -22,7 +22,7 @@ axios.get.mockResolvedValue({
   },
 });
 
-test('test rendering RatingList', async () => {
+test('rendering RatingList', async () => {
   const reducer = combineReducers(reducers);
 
   const preloadedState = {

@@ -7,14 +7,14 @@ import WaitingOpponentInfo from '../widgets/components/WaitingOpponentInfo';
 
 jest.mock('copy-to-clipboard', () => jest.fn());
 
-test('test WaitingOpponentInfo url', async () => {
+test('WaitingOpponentInfo url', async () => {
   const url = 'some-url-for.test';
   render(<WaitingOpponentInfo gameUrl={url} />);
 
   expect(screen.getByDisplayValue(url)).toBeInTheDocument();
 });
 
-test('test WaitingOpponentInfo copy button', async () => {
+test('WaitingOpponentInfo copy button', async () => {
   const url = 'some-url-for.test';
   render(<WaitingOpponentInfo gameUrl={url} />);
 
