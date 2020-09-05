@@ -1,6 +1,8 @@
 defmodule CodebattleWeb.TournamentController do
   use CodebattleWeb, :controller
 
+  alias Codebattle.Tournament
+
   plug(CodebattleWeb.Plugs.RequireAuth)
 
   def index(conn, _params) do
@@ -14,13 +16,13 @@ defmodule CodebattleWeb.TournamentController do
     |> live_render(CodebattleWeb.Live.Tournament.IndexView,
       session: %{
         "current_user" => conn.assigns[:current_user],
-        "tournaments" => Codebattle.Tournament.all()
+        "tournaments" => Tournament.Context.all()
       }
     )
   end
 
   def show(conn, params) do
-    tournament = Codebattle.Tournament.get!(params["id"])
+    tournament = Tournament.Context.get!(params["id"])
 
     conn
     |> put_meta_tags(%{
@@ -28,7 +30,7 @@ defmodule CodebattleWeb.TournamentController do
       description: "Join tournament: #{String.slice(tournament.name, 0, 100)}",
       url: Routes.tournament_url(conn, :show, tournament.id)
     })
-    |> live_render(CodebattleWeb.Live.Tournament.View,
+    |> live_render(CodebattleWeb.Live.Tournament.ShowView,
       session: %{"current_user" => conn.assigns[:current_user], "tournament" => tournament}
     )
   end

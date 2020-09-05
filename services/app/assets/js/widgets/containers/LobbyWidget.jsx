@@ -242,6 +242,7 @@ class LobbyWidget extends React.Component {
               <th className="p-3 border-0">starts_at</th>
               <th className="p-3 border-0">type</th>
               <th className="p-3 border-0">state</th>
+              <th className="p-3 border-0">creator</th>
             </tr>
           </thead>
           <tbody>
@@ -262,6 +263,9 @@ class LobbyWidget extends React.Component {
                 </td>
                 <td className="p-3 align-middle text-nowrap">
                   {tournament.state}
+                </td>
+                <td className="p-3 align-middle text-nowrap">
+                  <UserInfo user={tournament.creator} />
                 </td>
               </tr>
             ))}

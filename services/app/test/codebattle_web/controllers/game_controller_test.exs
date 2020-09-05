@@ -132,7 +132,7 @@ defmodule Codebattleweb.GameControllerTest do
       create_game(
         conn,
         user,
-        %{"type" => "wrongType", "level" => "medium", "timeout_seconds" => "8"}
+        %{"type" => "a", "level" => "medium", "timeout_seconds" => "8"}
       )
 
     assert conn.status == 302

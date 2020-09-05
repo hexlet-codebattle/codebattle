@@ -109,7 +109,7 @@ defmodule RecalculateAchivementsTest do
       lang_slug: "js"
     })
 
-    :timer.sleep(100)
+    :timer.sleep(200)
 
     user = Repo.get(User, user1.id)
     assert user.achievements == ["played_ten_games", "win_games_with?js_php_ruby"]

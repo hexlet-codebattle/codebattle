@@ -15,6 +15,7 @@ defmodule Codebattle.User.Stats do
           count(ug.id)
         },
         where: ug.user_id == ^user_id,
+        where: ug.result in ["won", "lost", "gave_up"],
         group_by: ug.result
       )
 

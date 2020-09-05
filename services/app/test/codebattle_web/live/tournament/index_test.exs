@@ -1,5 +1,7 @@
 defmodule CodebattleWeb.Live.Tournament.IndexTest do
-  use CodebattleWeb.ConnCase
+  alias Codebattle.Tournament.Context
+
+  use CodebattleWeb.ConnCase, async: false
 
   test "create individual tournament", %{conn: conn} do
     user = insert(:user)
@@ -11,10 +13,10 @@ defmodule CodebattleWeb.Live.Tournament.IndexTest do
     {:ok, view, _html} = live(conn, Routes.tournament_path(conn, :index))
 
     render_submit(view, :create, %{
-      "tournament" => %{type: "individual", starts_at_type: "1_min", name: "test"}
+      "tournament" => %{type: "individual", starts_after_in_minutes: "1", name: "test"}
     })
 
-    assert Codebattle.Repo.count(Codebattle.Tournament) == 1
+    assert Enum.count(Context.get_live_tournaments()) == 1
   end
 
   test "create team tournament", %{conn: conn} do
@@ -27,10 +29,10 @@ defmodule CodebattleWeb.Live.Tournament.IndexTest do
     {:ok, view, _html} = live(conn, Routes.tournament_path(conn, :index))
 
     render_submit(view, :create, %{
-      "tournament" => %{type: "team", starts_at_type: "1_min", name: "test"}
+      "tournament" => %{type: "team", starts_after_in_minutes: "1", name: "test"}
     })
 
-    assert Codebattle.Repo.count(Codebattle.Tournament) == 1
+    assert Enum.count(Context.get_live_tournaments()) == 1
   end
 
   test "validate tournament type", %{conn: conn} do
@@ -45,7 +47,7 @@ defmodule CodebattleWeb.Live.Tournament.IndexTest do
     render_change(view, :validate, %{"tournament" => %{name: "a"}})
 
     render_submit(view, :create, %{
-      "tournament" => %{type: "asdf", starts_at_type: "1_min", name: "test"}
+      "tournament" => %{type: "asdf", starts_after_in_minutes: "1", name: "test"}
     })
 
     assert Codebattle.Repo.count(Codebattle.Tournament) == 0

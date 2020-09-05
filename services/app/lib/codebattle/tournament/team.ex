@@ -86,9 +86,13 @@ defmodule Codebattle.Tournament.Team do
     {score1, score2} = calc_team_score(tournament)
 
     if max(score1, score2) >= @team_rounds_need_to_win_num do
-      tournament
-      |> Tournament.changeset(%{state: "finished"})
-      |> Repo.update!()
+      new_tournament =
+        tournament
+        |> Tournament.changeset(%{state: "finished"})
+        |> Repo.update!()
+
+      Tournament.Supervisor.terminate_tournament(tournament.id)
+      new_tournament
     else
       tournament
     end

@@ -17,7 +17,7 @@ defmodule Codebattle.GameProcess.Supervisor do
       supervisor(Codebattle.Bot.PlayersSupervisor, [game_id])
     ]
 
-    supervise(children, strategy: :one_for_one)
+    Supervisor.init(children, strategy: :one_for_one)
   end
 
   def get_pid(game_id) do

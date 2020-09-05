@@ -1,4 +1,4 @@
-defmodule CodebattleWeb.Live.Tournament.View do
+defmodule CodebattleWeb.Live.Tournament.ShowView do
   use Phoenix.LiveView
   use Timex
 
@@ -12,7 +12,7 @@ defmodule CodebattleWeb.Live.Tournament.View do
 
   def mount(_params, session, socket) do
     if connected?(socket) do
-      :timer.send_interval(@update_frequency, self(), :update)
+      :timer.send_interval(@update_frequency, self(), :update_time)
     end
 
     tournament = session["tournament"]
@@ -25,15 +25,15 @@ defmodule CodebattleWeb.Live.Tournament.View do
        current_user: session["current_user"],
        tournament: tournament,
        messages: messages,
-       time: updated_time(tournament.starts_at)
+       time: get_next_round_time(tournament)
      )}
   end
 
-  def handle_info(:update, socket) do
+  def handle_info(:update_time, socket) do
     tournament = socket.assigns.tournament
-    time = updated_time(tournament.starts_at)
+    time = get_next_round_time(tournament)
 
-    if tournament.state == "waiting_participants" and time.seconds >= 0 do
+    if tournament.state in ["waiting_participants", "active"] and time.seconds >= 0 do
       {:noreply, assign(socket, time: time)}
     else
       {:noreply, socket}
@@ -110,7 +110,7 @@ defmodule CodebattleWeb.Live.Tournament.View do
       params["message"]["content"]
     )
 
-    messages = Codebattle.Tournament.Server.get_messages(tournament.id)
+    messages = Tournament.Server.get_messages(tournament.id)
 
     CodebattleWeb.Endpoint.broadcast_from(
       self(),
@@ -122,20 +122,31 @@ defmodule CodebattleWeb.Live.Tournament.View do
     {:noreply, assign(socket, messages: messages)}
   end
 
-  defp updated_time(starts_at) do
-    days = round(Timex.diff(starts_at, Timex.now(), :days))
-    hours = round(Timex.diff(starts_at, Timex.now(), :hours) - days * 24)
-    minutes = round(Timex.diff(starts_at, Timex.now(), :minutes) - days * 24 * 60 - hours * 60)
+  defp get_next_round_time(tournament) do
+    time =
+      case tournament.state do
+        "active" ->
+          NaiveDateTime.add(tournament.last_round_started_at, tournament.match_timeout_seconds)
+
+        _ ->
+          tournament.starts_at
+      end
+
+    minutes_and_seconds(time)
+  end
+
+  defp minutes_and_seconds(time) do
+    days = round(Timex.diff(time, Timex.now(), :days))
+    hours = round(Timex.diff(time, Timex.now(), :hours) - days * 24)
+    minutes = round(Timex.diff(time, Timex.now(), :minutes) - days * 24 * 60 - hours * 60)
 
     seconds =
       round(
-        Timex.diff(starts_at, Timex.now(), :seconds) - days * 24 * 60 * 60 - hours * 60 * 60 -
+        Timex.diff(time, Timex.now(), :seconds) - days * 24 * 60 * 60 - hours * 60 * 60 -
           minutes * 60
       )
 
     %{
-      days: days,
-      hours: hours,
       minutes: minutes,
       seconds: seconds
     }
