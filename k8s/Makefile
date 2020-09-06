@@ -29,7 +29,7 @@ helm-install-ingress:
 
 helm-install-keel:
 	helm repo update
-	helm upgrade --install keel --namespace=kube-system keel/keel
+	helm upgrade --install keel --namespace=kube-system keel/keel --set  helmProvider.version="v3"
 
 kb-app-tailf:
 	kubectl logs -f $(POD_NAME) --tail=2000 -c app
