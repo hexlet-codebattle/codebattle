@@ -14,8 +14,8 @@ defmodule CodebattleWeb.Api.V1.PlaybookController do
       )
 
     playbook = Repo.one(query)
-    game = Repo.get!(Game, game_id)
-    task = Repo.get!(Task, game.task_id)
+    game = Repo.get(Game, game_id)
+    task = Repo.get(Task, playbook.task_id)
 
     json(conn, %{
       players: playbook.data.players,
