@@ -36,3 +36,6 @@ kb-app-tailf:
 
 kb-app-console:
 	kubectl exec -it $(POD_NAME) -c app  -- bash
+
+kb-k9s:
+	k9s
