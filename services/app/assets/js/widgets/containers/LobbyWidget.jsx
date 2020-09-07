@@ -28,6 +28,7 @@ class LobbyWidget extends React.Component {
     fetchState();
   }
 
+Game/ResultIcon
   renderResultIcon = (gameId, player1, player2) => {
     const tooltipId = `tooltip-${gameId}-${player1.id}`;
 
@@ -57,22 +58,21 @@ class LobbyWidget extends React.Component {
       );
     }
 
-    return this.renderEmptyResultIcon();
-  };
-
-  renderEmptyResultIcon = () => (
+    return (
     <span className="align-middle mr-1">
       <i className="fa x-opacity-0">&nbsp;</i>
-    </span>
-  );
+        </span>
+          )
+  };
 
   renderPlayers = (gameId, players) => {
     if (players.length === 1) {
       return (
         <td className="p-3 align-middle text-nowrap" colSpan={2}>
           <div className="d-flex align-items-center">
-            {this.renderEmptyResultIcon()}
-            <UserInfo user={players[0]} />
+            <span className="align-middle mr-1">
+              <i className="fa x-opacity-0">&nbsp;</i>
+            </span>
           </div>
         </td>
       );
@@ -107,14 +107,13 @@ class LobbyWidget extends React.Component {
   isPlayer = (user, game) => !_.isEmpty(_.find(game.players, { id: user.id }));
 
   renderShowButton = url => (
-    <button
+    <a
       type="button"
       className="btn btn-info btn-sm"
-      data-method="get"
       data-to={url}
     >
       Show
-    </button>
+    </a>
   );
 
   renderGameActionButton = game => {
@@ -296,6 +295,7 @@ class LobbyWidget extends React.Component {
               <tr key={game.id}>
                 <td className="p-3 align-middle text-nowrap">
                   {this.renderGameLevelBadge(game.level)}
+
                 </td>
                 <td className="p-3 align-middle">
                   {this.renderGameActionButton(game)}
@@ -316,6 +316,7 @@ class LobbyWidget extends React.Component {
     );
   };
 
+        /Game/CompltedGames.jsx
   renderCompletedGames = games => (
     <div className="table-responsive">
       <table className="table table-sm">
@@ -334,12 +335,35 @@ class LobbyWidget extends React.Component {
           {games.map(game => (
             <tr key={game.id}>
               <td className="p-3 align-middle text-nowrap">
-                {this.renderGameLevelBadge(game.level)}
+    <div>
+      <span classname={`badge badge-pill badge-${leveltoclass[level]} mr-1`}>
+        &nbsp;
+      </span>
+      {level}
+    </div>
               </td>
               <td className="p-3 align-middle">
-                {this.renderShowButton(`/games/${game.id}`)}
+
+    <a
+      type="button"
+      className="btn btn-info btn-sm"
+      data-to={url}
+    >
+      Show
+    </a>
               </td>
-              {this.renderPlayers(game.id, game.players)}
+        <td className="p-3 align-middle text-nowrap cb-username-td text-truncate">
+          <div className="d-flex align-items-center">
+            {this.renderResultIcon(gameId, players[0], players[1])}
+            <UserInfo user={players[0]} />
+          </div>
+        </td>
+        <td className="p-3 align-middle text-nowrap cb-username-td text-truncate">
+          <div className="d-flex align-items-center">
+            {this.renderResultIcon(gameId, players[1], players[0])}
+            <UserInfo user={players[1]} />
+          </div>
+        </td>
               <td className="p-3 align-middle text-nowrap">
                 {moment.duration(game.duration, 'seconds').humanize()}
               </td>
