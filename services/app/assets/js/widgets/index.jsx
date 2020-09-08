@@ -1,6 +1,8 @@
 import React from 'react';
 import { render } from 'react-dom';
-import { Game, Lobby, UsersRating, UserPage } from './App';
+import {
+ Game, Lobby, UsersRating, UserPage,
+} from './App';
 import Heatmap from './containers/Heatmap';
 
 export const renderGameWidget = domElement => render(<Game />, domElement);

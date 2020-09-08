@@ -1,48 +1,41 @@
-import React, { useState, useEffect } from "react";
-import ReactDOM from "react-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Pagination from "react-js-pagination";
-import moment from "moment";
-import UserInfo from "./UserInfo";
-import { usersListSelector } from "../selectors";
-import { getUsersRatingPage } from "../middlewares/Users";
-import Loading from "../components/Loading";
-import i18n from "../../i18n";
-import axios from "axios";
-import { camelizeKeys } from "humps";
-import Heatmap from "./Heatmap";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { camelizeKeys } from 'humps';
+import Loading from '../components/Loading';
+import Heatmap from './Heatmap';
+import CompletedGames from '../components/Game/CompletedGames';
 
 const UserProfile = () => {
   const [stats, setStats] = useState(null);
 
   useEffect(() => {
-    const userId = window.location.pathname.split("/").pop();
-    axios.get(`/api/v1/user/${userId}/stats`).then((response) => {
+    const userId = window.location.pathname.split('/').pop();
+    axios.get(`/api/v1/user/${userId}/stats`).then(response => {
       setStats(camelizeKeys(response.data));
     });
   }, [setStats]);
 
-  const renderAchievemnt = (achievement) => {
-    if (achievement.includes("win_games_with")) {
-      const langs = achievement.split("?").pop().split("_");
+  const renderAchievemnt = achievement => {
+    if (achievement.includes('win_games_with')) {
+      const langs = achievement.split('?').pop().split('_');
 
       return (
-        <div className="cb-polyglot" title="#{achievement}">
+        <div className="cb-polyglot" title={achievement}>
           <div className="d-flex h-75 flex-wrap align-items-center justify-content-around">
-            {langs.map((lang) => (
+            {langs.map(lang => (
               <img
                 src={`/assets/images/achievements/${lang}.png`}
                 alt={lang}
                 title={lang}
                 width="38"
                 height="38"
+                key={lang}
               />
             ))}
           </div>
         </div>
       );
-    } else {
+    }
       return (
         <img
           className="mr-1"
@@ -53,15 +46,13 @@ const UserProfile = () => {
           height="200"
         />
       );
-    }
   };
-  if (console.log("12321321342@!#$!@#$", stats) || !stats) {
+  if (!stats) {
     return <Loading />;
   }
   return (
     <div className="text-center">
-      <h2 className="font-weight-normal">User Profile</h2>
-      <div className="container bg-white shadow-sm">
+      <div className="container bg-white">
         <div className="row">
           <div className="col-12 text-center mt-4">
             <div className="row">
@@ -69,6 +60,7 @@ const UserProfile = () => {
                 <img
                   className="attachment user avatar img-fluid rounded"
                   src={`https://avatars0.githubusercontent.com/u/${stats.user.githubId}`}
+                  alt={stats.user.name}
                 />
               </div>
             </div>
@@ -78,10 +70,10 @@ const UserProfile = () => {
                 className="text-muted"
                 href={`https://github.com/${stats.user.githubName}`}
               >
-                <span className="fab fa-github mt-5 pl-3"></span>
+                <span className="fab fa-github mt-5 pl-3" />
               </a>
             </h1>
-            <h2 className="mt-1 mb-0">{`Lang ${stats.user.lang}`}</h2>
+            <h2 className="mt-1 mb-0">{`Lang: ${stats.user.lang}`}</h2>
           </div>
         </div>
         <div className="row px-4 mt-5 justify-content-center">
@@ -110,13 +102,26 @@ const UserProfile = () => {
           </div>
         </div>
         <div className="row">
-          <div className="col-12 text-center mt-4">
-            <h2 className="mt-1 mb-0">Achievements:</h2>
-
-            <div className="d-flex justify-content-center cb-profile">
-              {stats.user.achievements.map((achievement) => (
-                <div key={achievement}>{renderAchievemnt(achievement)}</div>
-              ))}
+          <div className="col-12 mt-4">
+            {stats.user.achievements.length > 0
+              && (
+              <>
+                <h2 className="mt-1 mb-0">Achievements</h2>
+                <div className="d-flex justify-content-center cb-profile mt-4">
+                  {stats.user.achievements.map(achievement => (
+                    <div key={achievement}>{renderAchievemnt(achievement)}</div>
+                  ))}
+                </div>
+              </>
+)}
+            <div className="text-left mt-5">
+              {stats.completedGames.length > 0
+              && (
+              <>
+                <h2 className="text-center">Completed games</h2>
+                {CompletedGames(stats.completedGames)}
+              </>
+)}
             </div>
           </div>
         </div>
@@ -126,9 +131,3 @@ const UserProfile = () => {
 };
 
 export default UserProfile;
-
-      // 1. почистить импорты в этом компоненте
-      // 2. Сделать компонент completed_games на базе renderCompletedGames
-      // 3. Отрисовать под ачивками последние игры игрока, если они есть
-      // Если нет можно оставить пустоту
-      // 4. Добавить key в lang.map

@@ -82,6 +82,4 @@ if (ratingList) {
 
 if (userPageRoot) {
   renderUserPage(userPageRoot);
-  // renderUsersRating(userPageRoot);
 }
-
