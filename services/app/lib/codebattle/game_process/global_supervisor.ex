@@ -30,7 +30,7 @@ defmodule Codebattle.GameProcess.GlobalSupervisor do
     try do
       Supervisor.terminate_child(__MODULE__, pid)
     rescue
-      _ -> Logger.error("game not found")
+      _ -> Logger.info("game not found")
     end
   end
 end

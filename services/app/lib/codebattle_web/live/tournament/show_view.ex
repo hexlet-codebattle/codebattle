@@ -104,11 +104,15 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     tournament = socket.assigns.tournament
     current_user = socket.assigns.current_user
 
-    Tournament.Server.add_message(
-      tournament.id,
+    Chat.Server.add_msg({:tournament, tournament.id},
       current_user,
-      params["message"]["content"]
-    )
+      params["message"]["content"])
+
+    # Tournament.Server.add_message(
+    #   tournament.id,
+    #   current_user,
+    #   params["message"]["content"]
+    # )
 
     messages = Tournament.Server.get_messages(tournament.id)
 

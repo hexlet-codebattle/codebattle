@@ -1,26 +1,27 @@
 defmodule Codebattle.Tournament.Supervisor do
-  alias Codebattle.Tournament
-  use DynamicSupervisor
+  use Supervisor
 
   require Logger
 
-  def start_link() do
-    DynamicSupervisor.start_link(__MODULE__, [], name: __MODULE__)
+  def start_link(tournament) do
+    Supervisor.start_link(__MODULE__, tournament, name: supervisor_name(tournament.id))
   end
 
-  def start_tournament(tournament) do
-    spec = {Codebattle.Tournament.Server, tournament}
-    DynamicSupervisor.start_child(__MODULE__, spec)
+  def init(tournament) do
+    children = [
+      worker(Codebattle.Tournament.Server, [tournament]),
+      worker(Codebattle.Chat.Server, [{:tournament, tournament.id}])
+    ]
+
+    Supervisor.init(children, strategy: :one_for_one)
   end
 
-  @impl true
-  def init(_init_arg) do
-    DynamicSupervisor.init(strategy: :one_for_one)
+  # HELPERS
+  defp supervisor_name(tournament_id) do
+    {:via, :gproc, supervisor_key(tournament_id)}
   end
 
-  def terminate_tournament(tournament_id) do
-    pid = Tournament.Server.get_pid(tournament_id)
-
-    Supervisor.terminate_child(__MODULE__, pid)
+  defp supervisor_key(tournament_id) do
+    {:n, :l, {:tournament_sup, "#{tournament_id}"}}
   end
 end

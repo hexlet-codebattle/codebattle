@@ -1,13 +1,13 @@
 defmodule Codebattle.Chat.Server do
   use GenServer
 
-  def start_link(id) do
-    GenServer.start_link(__MODULE__, [], name: chat_key(id))
+  def start_link(type) do
+    GenServer.start_link(__MODULE__, [], name: chat_key(type))
   end
 
-  def join_chat(id, user) do
+  def join_chat(type, user) do
     try do
-      GenServer.call(chat_key(id), {:join, user})
+      GenServer.call(chat_key(type), {:join, user})
     catch
       :exit, _reason ->
         # TODO: add error handler
@@ -15,29 +15,29 @@ defmodule Codebattle.Chat.Server do
     end
   end
 
-  def leave_chat(id, user) do
+  def leave_chat(type, user) do
     try do
-      GenServer.call(chat_key(id), {:leave, user})
+      GenServer.call(chat_key(type), {:leave, user})
     catch
       :exit, _reason ->
         {:ok, []}
     end
   end
 
-  def get_users(id) do
-    GenServer.call(chat_key(id), :get_users)
+  def get_users(type) do
+    GenServer.call(chat_key(type), :get_users)
   end
 
-  def add_msg(id, user, msg) do
-    GenServer.cast(chat_key(id), {:add_msg, user, msg})
+  def add_msg(type, user, msg) do
+    GenServer.cast(chat_key(type), {:add_msg, user, msg})
   end
 
-  def get_msgs(id) do
-    GenServer.call(chat_key(id), :get_msgs)
+  def get_msgs(type) do
+    GenServer.call(chat_key(type), :get_msgs)
   end
 
-  defp chat_key(id) do
-    {:via, :gproc, {:n, :l, {:chat, "#{id}"}}}
+  defp chat_key({type, id}) do
+    {:via, :gproc, {:n, :l, {:chat, "#{type}_#{id}"}}}
   end
 
   def init(_) do

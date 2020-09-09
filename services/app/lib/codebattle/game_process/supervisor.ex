@@ -1,9 +1,9 @@
 defmodule Codebattle.GameProcess.Supervisor do
-  @moduledoc false
-
   require Logger
 
   use Supervisor
+
+  alias Codebattle.GameProcess.FsmHelpers
 
   def start_link([game_id, fsm]) do
     Supervisor.start_link(__MODULE__, [game_id, fsm], name: supervisor_name(game_id))
@@ -11,13 +11,18 @@ defmodule Codebattle.GameProcess.Supervisor do
 
   def init([game_id, fsm]) do
     children = [
-      worker(Codebattle.Chat.Server, [game_id]),
       worker(Codebattle.GameProcess.Server, [game_id, fsm]),
       worker(Codebattle.GameProcess.TimeoutServer, [game_id]),
       supervisor(Codebattle.Bot.PlayersSupervisor, [game_id])
     ]
 
-    Supervisor.init(children, strategy: :one_for_one)
+    chat =
+      case FsmHelpers.get_tournament_id(fsm) do
+        nil -> [worker(Codebattle.Chat.Server, [{:game, game_id}])]
+        _ -> []
+      end
+
+    Supervisor.init(children ++ chat, strategy: :one_for_one)
   end
 
   def get_pid(game_id) do

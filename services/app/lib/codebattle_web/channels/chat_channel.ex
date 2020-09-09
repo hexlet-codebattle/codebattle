@@ -6,9 +6,16 @@ defmodule CodebattleWeb.ChatChannel do
 
   alias Codebattle.{Chat, UsersActivityServer, GameProcess}
 
-  def join("chat:" <> chat_id, _payload, socket) do
+  def join(topic, _payload, socket) do
+    type = get_chat_type(topic)
+    {:ok, users} = Chat.Server.join_chat(type, socket.assigns.current_user)
+    msgs = Chat.Server.get_msgs(type)
     send(self(), :after_join)
-    {:ok, users} = Chat.Server.join_chat(chat_id, socket.assigns.current_user)
+    {:ok, %{users: users, messages: msgs}, socket}
+  end
+
+  def handle_info(:after_join, socket) do
+    {type, chat_id} = get_chat_type(socket)
 
     GameProcess.Server.update_playbook(
       chat_id,
@@ -19,21 +26,14 @@ defmodule CodebattleWeb.ChatChannel do
       }
     )
 
-    msgs = Chat.Server.get_msgs(chat_id)
-
-    {:ok, %{users: users, messages: msgs}, socket}
-  end
-
-  def handle_info(:after_join, socket) do
-    chat_id = get_chat_id(socket)
-    users = Chat.Server.get_users(chat_id)
+    users = Chat.Server.get_users({type, chat_id})
     broadcast_from!(socket, "user:joined", %{users: users})
     {:noreply, socket}
   end
 
   def terminate(_reason, socket) do
-    chat_id = get_chat_id(socket)
-    {:ok, users} = Chat.Server.leave_chat(chat_id, socket.assigns.current_user)
+    {type, chat_id} = get_chat_type(socket)
+    {:ok, users} = Chat.Server.leave_chat({type, chat_id}, socket.assigns.current_user)
 
     GameProcess.Server.update_playbook(
       chat_id,
@@ -52,9 +52,9 @@ defmodule CodebattleWeb.ChatChannel do
     %{"message" => message} = payload
     user = socket.assigns.current_user
     name = get_user_name(user)
-    chat_id = get_chat_id(socket)
+    {type, chat_id} = get_chat_type(socket)
 
-    Chat.Server.add_msg(chat_id, name, message)
+    Chat.Server.add_msg({type, chat_id}, name, message)
 
     UsersActivityServer.add_event(%{
       event: "new_message_game",
@@ -81,8 +81,12 @@ defmodule CodebattleWeb.ChatChannel do
   defp get_user_name(%{is_bot: true, name: name}), do: "#{name} (bot)"
   defp get_user_name(%{name: name}), do: name
 
-  defp get_chat_id(socket) do
-    "chat:" <> chat_id = socket.topic
-    chat_id
+  defp get_chat_type(topic) when is_binary(topic) do
+    case topic do
+      "chat:g_" <> chat_id -> {:game, chat_id}
+      "chat:t_" <> tournament_id -> {:tournament, tournament_id}
+    end
   end
+
+  defp get_chat_type(socket), do: get_chat_type(socket.topic)
 end

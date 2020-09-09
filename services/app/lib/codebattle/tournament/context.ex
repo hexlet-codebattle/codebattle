@@ -29,13 +29,16 @@ defmodule Codebattle.Tournament.Context do
   end
 
   def get_live_tournaments do
-    Tournament.Supervisor
+    Tournament.GlobalSupervisor
     |> DynamicSupervisor.which_children()
+    |> Enum.map(fn {_, pid, _, _} -> Supervisor.which_children(pid) end)
+    |> Enum.map(fn x -> Enum.filter(x, fn {module, _, _, _} -> module == Codebattle.Tournament.Server end) end)
+    |> List.flatten()
     |> Enum.map(fn {_, pid, _, _} -> Tournament.Server.get_tournament(pid) end)
   end
 
   def get_live_tournaments_count do
-    Tournament.Supervisor
+    Tournament.GlobalSupervisor
     |> DynamicSupervisor.which_children()
     |> Enum.count()
   end
@@ -85,7 +88,7 @@ defmodule Codebattle.Tournament.Context do
         {:ok, _pid} =
           tournament
           |> add_module
-          |> Tournament.Supervisor.start_tournament()
+          |> Tournament.GlobalSupervisor.start_tournament()
 
         {:ok, tournament}
 

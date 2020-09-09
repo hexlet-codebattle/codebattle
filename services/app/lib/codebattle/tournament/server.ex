@@ -11,12 +11,12 @@ defmodule Codebattle.Tournament.Server do
   end
 
   def get_messages(id) do
-    try do
+    # try do
       GenServer.call(server_name(id), :get_messages)
-    catch
-      :exit, _reason ->
-        []
-    end
+    # catch
+    #   :exit, _reason ->
+    #     []
+    # end
   end
 
   def get_tournament(pid) when is_pid(pid) do
