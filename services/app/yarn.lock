@@ -8376,7 +8376,7 @@ performance-now@^2.1.0:
   integrity sha1-Ywn04OX6kT7BxpMHrjZLSzd8nns=
 
 "phoenix@file:deps/phoenix":
-  version "1.5.3"
+  version "1.5.4"
 
 "phoenix_html@file:deps/phoenix_html":
   version "2.14.2"

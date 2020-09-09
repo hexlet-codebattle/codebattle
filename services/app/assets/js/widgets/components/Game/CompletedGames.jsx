@@ -30,13 +30,13 @@ const CompletedGames = games => (
               </div>
             </td>
             <td className="p-3 align-middle">
-              <button
+              <a
                 type="button"
                 className="btn btn-info btn-sm"
                 href={`/games/${game.id}`}
               >
                 Show
-              </button>
+              </a>
             </td>
             <td className="p-3 align-middle text-nowrap cb-username-td text-truncate">
               <div className="d-flex align-items-center">

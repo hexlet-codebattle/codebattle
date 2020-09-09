@@ -72,13 +72,13 @@ class LobbyWidget extends React.Component {
   isPlayer = (user, game) => !_.isEmpty(_.find(game.players, { id: user.id }));
 
   renderShowButton = url => (
-    <button
+    <a
       type="button"
       className="btn btn-info btn-sm"
-      data-to={url}
+      href={url}
     >
       Show
-    </button>
+    </a>
   );
 
   renderGameActionButton = game => {
