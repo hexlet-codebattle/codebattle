@@ -3,7 +3,6 @@ import _ from 'lodash';
 import moment from 'moment';
 import { connect } from 'react-redux';
 import Gon from 'gon';
-import { Tooltip, OverlayTrigger } from 'react-bootstrap';
 import * as lobbyMiddlewares from '../middlewares/Lobby';
 import GameStatusCodes from '../config/gameStatusCodes';
 import levelToClass from '../config/levelToClass';
@@ -20,6 +19,8 @@ import {
 } from '../utils/urlBuilders';
 import i18n from '../../i18n';
 import StartGamePanel from '../components/StartGamePanel';
+import ResultIcon from '../components/Game/ResultIcon';
+import CompletedGames from '../components/Game/CompletedGames';
 
 class LobbyWidget extends React.Component {
   componentDidMount() {
@@ -28,50 +29,14 @@ class LobbyWidget extends React.Component {
     fetchState();
   }
 
-  renderResultIcon = (gameId, player1, player2) => {
-    const tooltipId = `tooltip-${gameId}-${player1.id}`;
-
-    if (player1.gameResult === 'gave_up') {
-      return (
-        <OverlayTrigger
-          overlay={<Tooltip id={tooltipId}>Player gave up</Tooltip>}
-          placement="left"
-        >
-          <span className="align-middle mr-1">
-            <i className="far fa-flag" aria-hidden="true" />
-          </span>
-        </OverlayTrigger>
-      );
-    }
-
-    if (player1.gameResult === 'won' && player2.gameResult !== 'gave_up') {
-      return (
-        <OverlayTrigger
-          overlay={<Tooltip id={tooltipId}>Player won</Tooltip>}
-          placement="left"
-        >
-          <span className="align-middle mr-1">
-            <i className="fa fa-trophy text-warning" aria-hidden="true" />
-          </span>
-        </OverlayTrigger>
-      );
-    }
-
-    return this.renderEmptyResultIcon();
-  };
-
-  renderEmptyResultIcon = () => (
-    <span className="align-middle mr-1">
-      <i className="fa x-opacity-0">&nbsp;</i>
-    </span>
-  );
-
   renderPlayers = (gameId, players) => {
     if (players.length === 1) {
       return (
         <td className="p-3 align-middle text-nowrap" colSpan={2}>
           <div className="d-flex align-items-center">
-            {this.renderEmptyResultIcon()}
+            <span className="align-middle mr-1">
+              <i className="fa x-opacity-0">&nbsp;</i>
+            </span>
             <UserInfo user={players[0]} />
           </div>
         </td>
@@ -81,13 +46,13 @@ class LobbyWidget extends React.Component {
       <>
         <td className="p-3 align-middle text-nowrap cb-username-td text-truncate">
           <div className="d-flex align-items-center">
-            {this.renderResultIcon(gameId, players[0], players[1])}
+            {ResultIcon(gameId, players[0], players[1])}
             <UserInfo user={players[0]} />
           </div>
         </td>
         <td className="p-3 align-middle text-nowrap cb-username-td text-truncate">
           <div className="d-flex align-items-center">
-            {this.renderResultIcon(gameId, players[1], players[0])}
+            {ResultIcon(gameId, players[1], players[0])}
             <UserInfo user={players[1]} />
           </div>
         </td>
@@ -110,7 +75,6 @@ class LobbyWidget extends React.Component {
     <button
       type="button"
       className="btn btn-info btn-sm"
-      data-method="get"
       data-to={url}
     >
       Show
@@ -300,6 +264,7 @@ class LobbyWidget extends React.Component {
               <tr key={game.id}>
                 <td className="p-3 align-middle text-nowrap">
                   {this.renderGameLevelBadge(game.level)}
+
                 </td>
                 <td className="p-3 align-middle">
                   {this.renderGameActionButton(game)}
@@ -320,43 +285,6 @@ class LobbyWidget extends React.Component {
     );
   };
 
-  renderCompletedGames = games => (
-    <div className="table-responsive">
-      <table className="table table-sm">
-        <thead>
-          <tr>
-            <th className="p-3 border-0">Level</th>
-            <th className="p-3 border-0">Actions</th>
-            <th className="p-3 border-0 text-center" colSpan={2}>
-              Players
-            </th>
-            <th className="p-3 border-0">Duration</th>
-            <th className="p-3 border-0">Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          {games.map(game => (
-            <tr key={game.id}>
-              <td className="p-3 align-middle text-nowrap">
-                {this.renderGameLevelBadge(game.level)}
-              </td>
-              <td className="p-3 align-middle">
-                {this.renderShowButton(`/games/${game.id}`)}
-              </td>
-              {this.renderPlayers(game.id, game.players)}
-              <td className="p-3 align-middle text-nowrap">
-                {moment.duration(game.duration, 'seconds').humanize()}
-              </td>
-              <td className="p-3 align-middle text-nowrap">
-                {moment.utc(game.finishsAt).local().format('YYYY-MM-DD HH:mm')}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-
   renderGameContainers = () => {
     const { activeGames, completedGames, liveTournaments } = this.props;
     return (
@@ -374,7 +302,7 @@ class LobbyWidget extends React.Component {
         </Card>
         {!_.isEmpty(completedGames) && (
           <Card title="Completed games">
-            {this.renderCompletedGames(completedGames)}
+            {CompletedGames(completedGames)}
           </Card>
         )}
       </>

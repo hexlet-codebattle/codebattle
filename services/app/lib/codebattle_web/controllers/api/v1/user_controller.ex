@@ -21,18 +21,13 @@ defmodule CodebattleWeb.Api.V1.UserController do
       |> Stats.get_completed_games()
       |> GameView.render_completed_games()
 
-    achievements =
-      case id do
-        "bot" -> [:bot]
-        _user_id -> Repo.get(User, id).achievements
-      end
+    user = Repo.get(User, id)
 
     json(conn, %{
-      achievements: achievements,
       rank: rank,
       completed_games: completed_games,
       stats: game_stats,
-      user_id: id
+      user: user
     })
   end
 
