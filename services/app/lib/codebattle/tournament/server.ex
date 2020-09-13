@@ -52,7 +52,6 @@ defmodule Codebattle.Tournament.Server do
 
   # HELPERS
 
-
   defp broadcast_tournament(tournament) do
     CodebattleWeb.Endpoint.broadcast!(
       tournament_topic_name(tournament.id),
