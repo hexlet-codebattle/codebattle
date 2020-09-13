@@ -9,10 +9,13 @@ defmodule Codebattle.Tournament.Team do
   @impl Tournament.Type
   def join(tournament, %{user: user, team_id: team_id}) do
     if is_waiting_partisipants?(tournament) do
+      user_params =
+        user |> Map.put(:team_id, team_id) |> Map.put(:lang, tournament.default_language)
+
       new_players =
         tournament.data.players
         |> Enum.filter(fn x -> x.id != user.id end)
-        |> Enum.concat([Map.put(user, :team_id, team_id)])
+        |> Enum.concat([user_params])
 
       tournament
       |> Tournament.changeset(%{

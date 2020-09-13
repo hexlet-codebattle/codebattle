@@ -7,9 +7,11 @@ defmodule Codebattle.Tournament.Individual do
   @impl Tournament.Type
   def join(tournament, %{user: user}) do
     if is_waiting_partisipants?(tournament) do
+      user_params = Map.put(user, :lang, tournament.default_language)
+
       new_players =
         tournament.data.players
-        |> Enum.concat([user])
+        |> Enum.concat([user_params])
         |> Enum.uniq_by(fn x -> x.id end)
 
       tournament

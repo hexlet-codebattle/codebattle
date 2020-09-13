@@ -67,7 +67,23 @@ const Task = ({
         </div>
         <div className="d-flex align-items-stretch flex-column">
           <div className="card-text mb-0  h-100  overflow-auto">
-            <ReactMarkdown source={task.description} />
+            <ReactMarkdown
+              source={task.description}
+              renderers={{
+                linkReference: reference => {
+                  if (!reference.href) {
+                    return (
+                      <>
+                        [
+                        {reference.children}
+                        ]
+                      </>
+);
+                  }
+                  return <a href={reference.$ref}>{reference.children}</a>;
+                },
+              }}
+            />
           </div>
         </div>
         <ContributorsList name={task.name} />

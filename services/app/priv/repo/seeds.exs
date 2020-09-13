@@ -137,6 +137,7 @@ creator = Repo.get!(Codebattle.User, -15)
   name: "Codebattle Hexlet summer tournament 2019",
   state: "finished",
   creator: creator,
+  default_language: "clojure",
   players_count: 16,
   diffculty: "elementary",
   starts_at: ~N[2019-08-22 19:33:08.910767]

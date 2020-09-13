@@ -23,6 +23,7 @@ defmodule Codebattle.Tournament.Types do
       |> cast(Map.from_struct(params), [
         :id,
         :team_id,
+        :lang,
         :name,
         :github_id,
         :rating,

@@ -31,6 +31,7 @@ defmodule Codebattle.Tournament do
     field(:type, :string, default: "individual")
     field(:difficulty, :string, default: "elementary")
     field(:state, :string, default: "waiting_participants")
+    field(:default_language, :string, default: "js")
     field(:players_count, :integer, default: 16)
     field(:match_timeout_seconds, :integer, default: @default_match_timeout)
     field(:step, :integer, default: 0)
@@ -57,6 +58,7 @@ defmodule Codebattle.Tournament do
       :match_timeout_seconds,
       :last_round_started_at,
       :players_count,
+      :default_language,
       :meta
     ])
     |> cast_embed(:data)

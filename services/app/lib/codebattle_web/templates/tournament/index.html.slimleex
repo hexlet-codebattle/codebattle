@@ -59,6 +59,10 @@
       = error_tag f, :difficulty
     .form-row.justify-content-between
       .form-group
+        = label f, :default_language
+        = select f, :default_language, @langs, class: "form-control form-control-lg"
+        = error_tag f, :default_language
+      .form-group
         = label f, :starts_after_in_minutes
         = number_input f, :starts_after_in_minutes, class: "form-control form-control-lg",
           value: f.params["starts_after_in_minutes"] || "5",
