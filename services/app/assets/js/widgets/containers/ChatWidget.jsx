@@ -19,6 +19,7 @@ const ChatWidget = () => {
   );
   const gameType = useSelector(selectors.gameTypeSelector);
   const dispatch = useDispatch();
+  const isTournamentGame = (gameType === GameTypeCodes.tournament);
 
   useEffect(() => {
     if (!isStoredGame) {
@@ -26,7 +27,8 @@ const ChatWidget = () => {
     }
   }, [dispatch, isStoredGame]);
 
-  const listOfUsers = _.uniqBy(users, 'id');
+  const uniqUsers = _.uniqBy(users, 'id');
+  const listOfUsers = isTournamentGame ? _.filter(uniqUsers, { isBot: false }) : uniqUsers;
   return (
     <div className="d-flex shadow-sm h-100">
       <div className="col-12 col-sm-8 p-0 bg-white rounded-left h-100 position-relative">
@@ -36,12 +38,10 @@ const ChatWidget = () => {
       <div className="col-4 d-none d-sm-block p-0 border-left bg-white rounded-right">
         <div className="d-flex flex-direction-column flex-wrap justify-content-between">
           <div className="px-3 pt-3 pb-2 w-100">
-            {gameType === GameTypeCodes.tournament && (
-              <BackToTournamentButton />
-            )}
+            {isTournamentGame && (<BackToTournamentButton />)}
           </div>
           <div className="px-3 pt-3 pb-2 w-100">
-            <p className="mb-1">{`Online users: ${users.length}`}</p>
+            <p className="mb-1">{`Online users: ${listOfUsers.length}`}</p>
             <div className="overflow-auto" style={{ height: '175px' }}>
               {listOfUsers.map(user => (
                 <div key={user.id} className="my-2">
