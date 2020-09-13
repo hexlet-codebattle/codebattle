@@ -70,12 +70,18 @@ const Task = ({
             <ReactMarkdown
               source={task.description}
               renderers={{
-                linkReference: (reference) => {
+                linkReference: reference => {
                   if (!reference.href) {
-                    return <React.Fragment>[{reference.children}]</React.Fragment>;
+                    return (
+                      <>
+                        [
+                        {reference.children}
+                        ]
+                      </>
+);
                   }
-                  return <a href={reference.$ref}>{reference.children}</a>
-                }
+                  return <a href={reference.$ref}>{reference.children}</a>;
+                },
               }}
             />
           </div>
