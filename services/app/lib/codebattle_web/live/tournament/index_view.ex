@@ -17,6 +17,7 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
      assign(socket,
        current_user: session["current_user"],
        tournaments: session["tournaments"],
+       langs: Codebattle.Languages.get_langs(),
        changeset: Codebattle.Tournament.changeset(%Codebattle.Tournament{})
      )}
   end

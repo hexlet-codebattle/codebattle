@@ -9,6 +9,12 @@ defmodule Codebattle.Languages do
     |> SolutionTemplateGenerator.get_solution(task)
   end
 
+  def get_langs() do
+    meta()
+    |> Map.values()
+    |> Enum.map(fn el -> Map.get(el, :slug) end)
+  end
+
   def get_langs_with_solutions(task) do
     meta()
     |> Map.values()
