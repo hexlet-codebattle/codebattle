@@ -217,7 +217,7 @@ export const activeGameEditorReady = () => dispatch => {
     dispatch(actions.updateCheckStatus({ [userId]: false }));
   });
 
-  channel.on('user:joined', responseData => {
+  channel.on('chat:user_joined', responseData => {
     const {
       status,
       startsAt,

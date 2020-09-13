@@ -84,7 +84,7 @@ defmodule Codebattle.Tournament.Individual do
       |> Tournament.changeset(%{state: "finished"})
       |> Repo.update!()
 
-    Tournament.Supervisor.terminate_tournament(tournament.id)
+    # Tournament.GlobalSupervisor.terminate_tournament(tournament.id)
     new_tournament
   end
 

@@ -2,6 +2,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
   use Phoenix.LiveView
   use Timex
 
+  alias Codebattle.Chat
   alias Codebattle.Tournament
 
   @update_frequency 1_000
@@ -16,7 +17,6 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     end
 
     tournament = session["tournament"]
-    messages = Tournament.Server.get_messages(tournament.id)
 
     Phoenix.PubSub.subscribe(:cb_pubsub, topic_name(tournament))
 
@@ -24,7 +24,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
      assign(socket,
        current_user: session["current_user"],
        tournament: tournament,
-       messages: messages,
+       messages: get_chat_messages(tournament.id),
        time: get_next_round_time(tournament)
      )}
   end
@@ -51,6 +51,17 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
   def handle_info(%{topic: topic, event: "update_chat", payload: payload}, socket) do
     if is_current_topic?(topic, socket.assigns.tournament) do
       {:noreply, assign(socket, messages: payload.messages)}
+    else
+      {:noreply, socket}
+    end
+  end
+
+  def handle_info(%{topic: topic, event: "chat:new_msg", payload: _payload}, socket) do
+    # TODO: add only one message without refetching
+    tournament = socket.assigns.tournament
+
+    if is_current_topic?(topic, tournament) do
+      {:noreply, assign(socket, messages: get_chat_messages(tournament.id))}
     else
       {:noreply, socket}
     end
@@ -104,13 +115,13 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     tournament = socket.assigns.tournament
     current_user = socket.assigns.current_user
 
-    Tournament.Server.add_message(
-      tournament.id,
-      current_user,
+    Chat.Server.add_msg(
+      {:tournament, tournament.id},
+      current_user.name,
       params["message"]["content"]
     )
 
-    messages = Tournament.Server.get_messages(tournament.id)
+    messages = get_chat_messages(tournament.id)
 
     CodebattleWeb.Endpoint.broadcast_from(
       self(),
@@ -158,5 +169,13 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
 
   defp is_current_topic?(topic, tournament) do
     topic == topic_name(tournament)
+  end
+
+  defp get_chat_messages(id) do
+    try do
+      Chat.Server.get_msgs({:tournament, id})
+    catch
+      :exit, _reason -> [%{user_name: "Bot", message: "Game over!"}]
+    end
   end
 end

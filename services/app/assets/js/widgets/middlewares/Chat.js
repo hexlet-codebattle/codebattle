@@ -5,25 +5,27 @@ import { actions } from '../slices';
 
 const chatId = Gon.getAsset('game_id');
 const isRecord = Gon.getAsset('is_record');
-const channelName = `chat:${chatId}`;
-const channel = !isRecord ? socket.channel(channelName) : null;
+const tournamentId = Gon.getAsset('tournament_id');
+const channelName = tournamentId
+  ? `chat:t_${tournamentId}`
+  : `chat:g_${chatId}`;
+
+const channel = isRecord ? null : socket.channel(channelName);
 
 export const fetchState = () => dispatch => {
-  const camelizeKeysAndDispatch = actionCreator => data => (
-    dispatch(actionCreator(camelizeKeys(data)))
-  );
+  const camelizeKeysAndDispatch = actionCreator => data => dispatch(actionCreator(camelizeKeys(data)));
 
   channel.join().receive('ok', camelizeKeysAndDispatch(actions.fetchChatData));
 
-  channel.on('user:joined', camelizeKeysAndDispatch(actions.userJoinedChat));
-  channel.on('user:left', camelizeKeysAndDispatch(actions.userLeftChat));
-  channel.on('new:message', camelizeKeysAndDispatch(actions.newMessageChat));
+  channel.on('chat:user_joined', camelizeKeysAndDispatch(actions.userJoinedChat));
+  channel.on('chat:user_left', camelizeKeysAndDispatch(actions.userLeftChat));
+  channel.on('chat:new_msg', camelizeKeysAndDispatch(actions.newMessageChat));
 };
 
 export const addMessage = message => {
   const payload = { message };
 
   channel
-    .push('new:message', payload)
+    .push('chat:new_msg', payload)
     .receive('error', error => console.error(error));
 };

@@ -6,29 +6,19 @@ defmodule Codebattle.Tournament.Server do
     GenServer.start(__MODULE__, tournament, name: server_name(tournament.id))
   end
 
-  def add_message(id, user, msg) do
-    GenServer.cast(server_name(id), {:add_message, user, msg})
-  end
-
-  def get_messages(id) do
-    try do
-      GenServer.call(server_name(id), :get_messages)
-    catch
-      :exit, _reason ->
-        []
-    end
-  end
-
   def get_tournament(pid) when is_pid(pid) do
-    GenServer.call(pid, :get_tournament)
+    try do
+      GenServer.call(pid, :get_tournament)
+    catch
+      :exit, _reason -> nil
+    end
   end
 
   def get_tournament(id) do
     try do
       GenServer.call(server_name(id), :get_tournament)
     catch
-      :exit, _reason ->
-        nil
+      :exit, _reason -> nil
     end
   end
 
@@ -42,12 +32,7 @@ defmodule Codebattle.Tournament.Server do
 
   # SERVER
   def init(tournament) do
-    {:ok, %{tournament: tournament, messages: []}}
-  end
-
-  def handle_call(:get_messages, _from, state) do
-    %{messages: messages} = state
-    {:reply, Enum.reverse(messages), state}
+    {:ok, %{tournament: tournament}}
   end
 
   def handle_call(:get_tournament, _from, state) do
@@ -63,13 +48,10 @@ defmodule Codebattle.Tournament.Server do
     {:noreply, Map.merge(state, %{tournament: new_tournament})}
   end
 
-  def handle_cast({:add_message, user, msg}, state) do
-    %{messages: messages} = state
-    new_msgs = [%{user_name: user.name, message: msg} | messages]
-    {:noreply, %{state | messages: new_msgs}}
-  end
+  def tournament_topic_name(tournament_id), do: "tournament_#{tournament_id}"
 
   # HELPERS
+
 
   defp broadcast_tournament(tournament) do
     CodebattleWeb.Endpoint.broadcast!(
@@ -86,6 +68,4 @@ defmodule Codebattle.Tournament.Server do
   defp tournament_key(id) do
     {:n, :l, {:tournament, "#{id}"}}
   end
-
-  defp tournament_topic_name(tournament_id), do: "tournament_#{tournament_id}"
 end

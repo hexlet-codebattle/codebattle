@@ -1,13 +1,15 @@
 defmodule Codebattle.Chat.Server do
   use GenServer
 
-  def start_link(id) do
-    GenServer.start_link(__MODULE__, [], name: chat_key(id))
+  alias Codebattle.Tournament
+
+  def start_link(type) do
+    GenServer.start_link(__MODULE__, [], name: chat_key(type))
   end
 
-  def join_chat(id, user) do
+  def join_chat(type, user) do
     try do
-      GenServer.call(chat_key(id), {:join, user})
+      GenServer.call(chat_key(type), {:join, user})
     catch
       :exit, _reason ->
         # TODO: add error handler
@@ -15,29 +17,53 @@ defmodule Codebattle.Chat.Server do
     end
   end
 
-  def leave_chat(id, user) do
+  def leave_chat(type, user) do
     try do
-      GenServer.call(chat_key(id), {:leave, user})
+      GenServer.call(chat_key(type), {:leave, user})
     catch
       :exit, _reason ->
         {:ok, []}
     end
   end
 
-  def get_users(id) do
-    GenServer.call(chat_key(id), :get_users)
+  def get_users(type) do
+    GenServer.call(chat_key(type), :get_users)
   end
 
-  def add_msg(id, user, msg) do
-    GenServer.cast(chat_key(id), {:add_msg, user, msg})
+  def add_msg(type, user_name, msg) do
+    GenServer.cast(chat_key(type), {:add_msg, user_name, msg})
+
+    case type do
+      {:tournament, id} ->
+        CodebattleWeb.Endpoint.broadcast!(
+          Tournament.Server.tournament_topic_name(id),
+          "chat:new_msg",
+          %{user_name: user_name, message: msg}
+        )
+
+        CodebattleWeb.Endpoint.broadcast!(
+          "chat:t_#{id}",
+          "chat:new_msg",
+          %{user_name: user_name, message: msg}
+        )
+
+      {:game, id} ->
+        CodebattleWeb.Endpoint.broadcast!(
+          "chat:g_#{id}",
+          "chat:new_msg",
+          %{user_name: user_name, message: msg}
+        )
+
+        nil
+    end
   end
 
-  def get_msgs(id) do
-    GenServer.call(chat_key(id), :get_msgs)
+  def get_msgs(type) do
+    GenServer.call(chat_key(type), :get_msgs)
   end
 
-  defp chat_key(id) do
-    {:via, :gproc, {:n, :l, {:chat, "#{id}"}}}
+  defp chat_key({type, id}) do
+    {:via, :gproc, {:n, :l, {:chat, "#{type}_#{id}"}}}
   end
 
   def init(_) do
@@ -71,9 +97,9 @@ defmodule Codebattle.Chat.Server do
     {:reply, Enum.reverse(messages), state}
   end
 
-  def handle_cast({:add_msg, user, msg}, state) do
+  def handle_cast({:add_msg, user_name, msg}, state) do
     %{messages: messages} = state
-    new_msgs = [%{user: user, message: msg} | messages]
+    new_msgs = [%{user_name: user_name, message: msg} | messages]
     {:noreply, %{state | messages: new_msgs}}
   end
 end

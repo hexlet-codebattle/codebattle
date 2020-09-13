@@ -73,7 +73,7 @@ defmodule CodebattleWeb.GameController do
 
     case Play.get_fsm(id) do
       {:ok, fsm} ->
-        conn = put_gon(conn, game_id: id)
+        conn = put_gon(conn, game_id: id, tournament_id: FsmHelpers.get_tournament_id(fsm))
         is_participant = ActiveGames.participant?(id, user.id)
 
         case {fsm.state, is_participant} do
@@ -154,7 +154,12 @@ defmodule CodebattleWeb.GameController do
               })
 
               conn
-              |> put_gon(is_record: true, game_id: id, langs: langs)
+              |> put_gon(
+                is_record: true,
+                game_id: id,
+                tournament_id: game.tournament_id,
+                langs: langs
+              )
               |> put_meta_tags(%{
                 title: "Hexlet Codebattle • Cool archived game",
                 description: "#{user_info(first)} vs #{user_info(second)}",

@@ -46,4 +46,9 @@ defmodule CodebattleWeb.TournamentView do
 
   def render_base_errors(nil), do: nil
   def render_base_errors(errors), do: elem(errors, 0)
+
+  def render_chat_message(%{user_name: _user_name, message: message}) do
+    # TODO: add highlight to usernames
+    message
+  end
 end

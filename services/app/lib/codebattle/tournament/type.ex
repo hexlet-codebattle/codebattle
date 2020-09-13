@@ -35,7 +35,7 @@ defmodule Codebattle.Tournament.Type do
             |> Tournament.changeset(%{state: "canceled"})
             |> Repo.update!()
 
-          Tournament.Supervisor.terminate_tournament(tournament.id)
+          Tournament.GlobalSupervisor.terminate_tournament(tournament.id)
 
           new_tournament
         else

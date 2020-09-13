@@ -10,19 +10,7 @@
 .container-fluid
   .row
     .col-3
-      .container.bg-white.shadow-sm.p-2
-        h6.text-center Please, be nice in chat
-        div.list-group-item.p-0 style="height: 350px;"
-          ul.overflow-auto.pt-2.px-2 style=("word-break: break-all; height: 80%; top: 5px;") phx-hook="NewChatMessage"
-            div
-              = for message <- @messages do
-                div
-                  span.font-weight-bold = "#{message.user_name}:"
-                  span.ml-1 = message.message
-          = form_for :message, "#", [phx_submit: :chat_message, class: "p-2 input-group input-group-sm position-absolute"],  fn f ->
-            = text_input f, :content, placeholder: "write your message here...", class: "form-control border-secondary"
-            .input-group-append
-              = submit "Send", class: "btn btn-outline-secondary"
+      = render "_chat.html", messages: @messages
       .container.mt-2.bg-white.shadow-sm.p-2
         .d-flex.align-items-center
           h5.mb-0.mr-5 Participants

@@ -28,7 +28,7 @@ defmodule Codebattle.Application do
         supervisor(CodebattleWeb.Endpoint, []),
         worker(Codebattle.GameProcess.TasksQueuesServer, []),
         supervisor(Codebattle.GameProcess.GlobalSupervisor, []),
-        supervisor(Codebattle.Tournament.Supervisor, []),
+        supervisor(Codebattle.Tournament.GlobalSupervisor, []),
         worker(Codebattle.Bot.CreatorServer, []),
         worker(Codebattle.UsersActivityServer, [])
       ] ++ prod_workers
