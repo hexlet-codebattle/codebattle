@@ -20,6 +20,9 @@ defmodule Codebattle.GameProcess.ActiveGames do
 
   def get_games(params \\ %{}) do
     list_games(params)
+    |> Enum.filter(fn {_game_id, _players, %{type: type}} ->
+      type in ["public", "bot", "private"]
+    end)
     |> Enum.map(fn {_game_id, players, game_params} ->
       Map.merge(game_params, %{players: Map.values(players)})
     end)

@@ -22,6 +22,8 @@ defmodule Codebattle.Bot.PlayerServer do
   # SERVER
 
   def init(params) do
+    params.game_type
+
     Logger.info(
       "Start bot player server for game_id: #{inspect(params.game_id)}, and bot_id: #{
         inspect(params.bot_id)
@@ -97,12 +99,10 @@ defmodule Codebattle.Bot.PlayerServer do
   end
 
   def initial(:info, %Message{event: "editor:data"}, state) do
-    Logger.info("Bot start codding")
     {:next_state, :playing, state}
   end
 
   def initial(:info, :send_hello_message, state) do
-    Logger.info("init state state_message")
     handle_event(:info, :send, state)
   end
 
@@ -120,7 +120,6 @@ defmodule Codebattle.Bot.PlayerServer do
   end
 
   def ready_to_play(:info, %Message{event: "editor:data"}, state) do
-    Logger.info("Bot start codding")
     {:next_state, :playing, state}
   end
 
@@ -156,8 +155,7 @@ defmodule Codebattle.Bot.PlayerServer do
   def playing(:info, %Message{event: "user:check_complete", payload: payload}, state) do
     case payload do
       %{"solution_status" => true} ->
-        Logger.info("Bot ending codding")
-        ChatClient.send_congrats(state)
+        send_chat_message(state, :send_congrats)
         {:next_state, :stop, state}
 
       _ ->
@@ -176,7 +174,7 @@ defmodule Codebattle.Bot.PlayerServer do
   def handle_event(:info, {:init_playbook, next_state}, state) do
     case PlaybookPlayer.call(state) do
       :no_playbook ->
-        ChatClient.say_some_excuse(state.chat_channel)
+        send_chat_message(state, :say_some_excuse)
         {:next_state, :stop, state}
 
       playbook_params ->
@@ -198,13 +196,12 @@ defmodule Codebattle.Bot.PlayerServer do
         {:keep_state, new_state}
 
       :stop ->
-        Logger.info("Bot ending chatting")
         {:keep_state, state}
     end
   end
 
   def handle_event(:info, %Message{event: "user:give_up"}, state) do
-    ChatClient.send_advice(state.chat_channel)
+    send_chat_message(state, :send_advice)
     {:keep_state, state}
   end
 
@@ -236,6 +233,10 @@ defmodule Codebattle.Bot.PlayerServer do
     Phoenix.Token.sign(%Phoenix.Socket{endpoint: CodebattleWeb.Endpoint}, "user_token", bot_id)
   end
 
+  defp send_chat_message(%{game_type: "tournament"}, _type), do: nil
+  defp send_chat_message(state, type), do: apply(ChatClient, type, [state])
+
+  defp get_messages(%{game_type: "tournament"}), do: []
   defp get_messages(%{game_type: "training"}), do: [:hello]
   defp get_messages(_), do: [:hello, :announce, :about_code]
 end

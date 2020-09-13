@@ -1,6 +1,8 @@
 defmodule Codebattle.Chat.Server do
   use GenServer
 
+  alias Codebattle.Tournament
+
   def start_link(type) do
     GenServer.start_link(__MODULE__, [], name: chat_key(type))
   end
@@ -28,8 +30,32 @@ defmodule Codebattle.Chat.Server do
     GenServer.call(chat_key(type), :get_users)
   end
 
-  def add_msg(type, user, msg) do
-    GenServer.cast(chat_key(type), {:add_msg, user, msg})
+  def add_msg(type, user_name, msg) do
+    GenServer.cast(chat_key(type), {:add_msg, user_name, msg})
+
+    case type do
+      {:tournament, id} ->
+        CodebattleWeb.Endpoint.broadcast!(
+          Tournament.Server.tournament_topic_name(id),
+          "chat:new_msg",
+          %{user_name: user_name, message: msg}
+        )
+
+        CodebattleWeb.Endpoint.broadcast!(
+          "chat:t_#{id}",
+          "chat:new_msg",
+          %{user_name: user_name, message: msg}
+        )
+
+      {:game, id} ->
+        CodebattleWeb.Endpoint.broadcast!(
+          "chat:g_#{id}",
+          "chat:new_msg",
+          %{user_name: user_name, message: msg}
+        )
+
+        nil
+    end
   end
 
   def get_msgs(type) do
@@ -71,9 +97,9 @@ defmodule Codebattle.Chat.Server do
     {:reply, Enum.reverse(messages), state}
   end
 
-  def handle_cast({:add_msg, user, msg}, state) do
+  def handle_cast({:add_msg, user_name, msg}, state) do
     %{messages: messages} = state
-    new_msgs = [%{user: user, message: msg} | messages]
+    new_msgs = [%{user_name: user_name, message: msg} | messages]
     {:noreply, %{state | messages: new_msgs}}
   end
 end

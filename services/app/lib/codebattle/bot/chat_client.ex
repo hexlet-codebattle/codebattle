@@ -5,7 +5,7 @@ defmodule Codebattle.Bot.ChatClient do
   require Logger
 
   def call([:hello | rest], params) do
-    PhoenixClient.Channel.push_async(params.chat_channel, "new:message", %{
+    PhoenixClient.Channel.push_async(params.chat_channel, "chat:new_msg", %{
       "message" => greet_opponent(params.chat_state),
       "user" => "test_bot"
     })
@@ -15,7 +15,7 @@ defmodule Codebattle.Bot.ChatClient do
 
   def call([:announce | rest], params) do
     unless :rand.uniform(16) > 8 do
-      PhoenixClient.Channel.push_async(params.chat_channel, "new:message", %{
+      PhoenixClient.Channel.push_async(params.chat_channel, "chat:new_msg", %{
         "message" => say_announcement(params.chat_state),
         "user" => "test_bot"
       })
@@ -26,7 +26,7 @@ defmodule Codebattle.Bot.ChatClient do
 
   def call([:about_code | _rest], params) do
     unless :rand.uniform(20) > 5 do
-      PhoenixClient.Channel.push_async(params.chat_channel, "new:message", %{
+      PhoenixClient.Channel.push_async(params.chat_channel, "chat:new_msg", %{
         "message" => say_about_code(params.chat_state),
         "user" => "test_bot"
       })
@@ -39,22 +39,22 @@ defmodule Codebattle.Bot.ChatClient do
     :stop
   end
 
-  def say_some_excuse(chat_channel) do
-    PhoenixClient.Channel.push_async(chat_channel, "new:message", %{
+  def say_some_excuse(%{chat_channel: chat_channel}) do
+    PhoenixClient.Channel.push_async(chat_channel, "chat:new_msg", %{
       "message" => some_excuse(),
       "user" => "test_bot"
     })
   end
 
   def send_congrats(%{game_type: game_type, chat_channel: chat_channel}) do
-    PhoenixClient.Channel.push_async(chat_channel, "new:message", %{
+    PhoenixClient.Channel.push_async(chat_channel, "chat:new_msg", %{
       "message" => some_congrats(game_type),
       "user" => "test_bot"
     })
   end
 
-  def send_advice(chat_channel) do
-    PhoenixClient.Channel.push_async(chat_channel, "new:message", %{
+  def send_advice(%{chat_channel: chat_channel}) do
+    PhoenixClient.Channel.push_async(chat_channel, "chat:new_msg", %{
       "message" => some_advice(),
       "user" => "test_bot"
     })

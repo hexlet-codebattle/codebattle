@@ -25,7 +25,7 @@ defmodule Codebattle.Tournament.GlobalSupervisor do
     try do
       Supervisor.terminate_child(__MODULE__, pid)
     rescue
-      _ -> Logger.info("game not found")
+      _ -> Logger.error("tournament not found while terminating #{pid}")
     end
   end
 end

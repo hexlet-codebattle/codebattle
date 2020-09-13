@@ -20,8 +20,8 @@ defmodule CodebattleWeb.ChatChannelTest do
 
   test "sends chat info when user join", %{user1: user1, socket1: socket1} do
     chat_id = :rand.uniform(1000)
-    Server.start_link(chat_id)
-    chat_topic = "chat:" <> to_string(chat_id)
+    Server.start_link({:game, chat_id})
+    chat_topic = get_chat_topic(chat_id)
 
     {:ok, response, _socket1} = subscribe_and_join(socket1, ChatChannel, chat_topic)
 
@@ -32,15 +32,15 @@ defmodule CodebattleWeb.ChatChannelTest do
              })
   end
 
-  test "broadcasts user:joined with state after user join", %{user2: user2, socket2: socket2} do
+  test "broadcasts chat:user_joined with state after user join", %{user2: user2, socket2: socket2} do
     chat_id = :rand.uniform(1000)
-    Server.start_link(chat_id)
-    chat_topic = "chat:" <> to_string(chat_id)
+    Server.start_link({:game, chat_id})
+    chat_topic = get_chat_topic(chat_id)
     {:ok, _response, _socket2} = subscribe_and_join(socket2, ChatChannel, chat_topic)
 
     assert_receive %Phoenix.Socket.Broadcast{
       topic: ^chat_topic,
-      event: "user:joined",
+      event: "chat:user_joined",
       payload: response
     }
 
@@ -52,35 +52,35 @@ defmodule CodebattleWeb.ChatChannelTest do
 
   test "messaging process", %{user1: user1, socket1: socket1, socket2: socket2} do
     chat_id = :rand.uniform(1000)
-    Server.start_link(chat_id)
-    chat_topic = "chat:" <> to_string(chat_id)
+    Server.start_link({:game, chat_id})
+    chat_topic = get_chat_topic(chat_id)
     {:ok, _response, socket1} = subscribe_and_join(socket1, ChatChannel, chat_topic)
 
     message = "test message"
 
-    push(socket1, "new:message", %{message: message})
+    push(socket1, "chat:new_msg", %{message: message})
 
     assert_receive %Phoenix.Socket.Broadcast{
       topic: ^chat_topic,
-      event: "new:message",
+      event: "chat:new_msg",
       payload: response
     }
 
-    assert Jason.encode(response) == Jason.encode(%{user: user1.name, message: message})
+    assert Jason.encode(response) == Jason.encode(%{user_name: user1.name, message: message})
 
     {:ok, %{users: users, messages: messages}, _socket2} =
       subscribe_and_join(socket2, ChatChannel, chat_topic)
 
     assert length(users) == 2
-    assert [%{user: user1.name, message: message}] == messages
+    assert [%{user_name: user1.name, message: message}] == messages
   end
 
   @tag :skip
   # TODO: fix test
   test "removes user from list on leaving channel", %{socket1: socket1, socket2: socket2} do
     chat_id = :rand.uniform(1000)
-    Server.start_link(chat_id)
-    chat_topic = "chat:" <> to_string(chat_id)
+    Server.start_link({:game, chat_id})
+    chat_topic = get_chat_topic(chat_id)
 
     {:ok, _response, _socket1} = subscribe_and_join(socket1, ChatChannel, chat_topic)
     {:ok, response, socket2} = subscribe_and_join(socket2, ChatChannel, chat_topic)
@@ -94,7 +94,7 @@ defmodule CodebattleWeb.ChatChannelTest do
 
     assert_receive %Phoenix.Socket.Broadcast{
       topic: ^chat_topic,
-      event: "user:left",
+      event: "chat:user_left",
       payload: response
     }
 
@@ -102,4 +102,6 @@ defmodule CodebattleWeb.ChatChannelTest do
 
     assert length(users) == 1
   end
+
+  def get_chat_topic(id), do: "chat:g_#{id}"
 end

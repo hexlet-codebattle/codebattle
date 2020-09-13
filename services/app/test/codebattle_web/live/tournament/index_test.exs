@@ -1,5 +1,6 @@
 defmodule CodebattleWeb.Live.Tournament.IndexTest do
   alias Codebattle.Tournament.Context
+  alias Codebattle.Tournament
 
   use CodebattleWeb.ConnCase, async: false
 
@@ -16,7 +17,8 @@ defmodule CodebattleWeb.Live.Tournament.IndexTest do
       "tournament" => %{type: "individual", starts_after_in_minutes: "1", name: "test"}
     })
 
-    assert Enum.count(Context.get_live_tournaments()) == 1
+    assert Codebattle.Repo.count(Tournament) == 1
+    assert Enum.count(Context.get_live_tournaments()) >= 1
   end
 
   test "create team tournament", %{conn: conn} do
@@ -32,7 +34,8 @@ defmodule CodebattleWeb.Live.Tournament.IndexTest do
       "tournament" => %{type: "team", starts_after_in_minutes: "1", name: "test"}
     })
 
-    assert Enum.count(Context.get_live_tournaments()) == 1
+    assert Codebattle.Repo.count(Tournament) == 1
+    assert Enum.count(Context.get_live_tournaments()) >= 1
   end
 
   test "validate tournament type", %{conn: conn} do

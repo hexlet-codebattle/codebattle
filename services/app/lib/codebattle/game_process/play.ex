@@ -190,7 +190,7 @@ defmodule Codebattle.GameProcess.Play do
       {_, nil} ->
         terminate_game(id)
 
-      {_, tournament_id} ->
+      {_, _tournament_id} ->
         Notifications.notify_tournament(:game_over, fsm, %{game_id: id, state: "canceled"})
         {:terminate_after, 20}
     end

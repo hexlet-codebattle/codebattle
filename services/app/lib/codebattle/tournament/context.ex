@@ -16,31 +16,34 @@ defmodule Codebattle.Tournament.Context do
   end
 
   def all() do
-    query =
-      from(
-        t in Tournament,
-        order_by: [desc: t.inserted_at],
-        where: t.state in ["finished"],
-        limit: 7,
-        preload: :creator
-      )
+    get_live_tournaments() ++ get_db_tournaments()
+  end
 
-    get_live_tournaments() ++ Codebattle.Repo.all(query)
+  def get_db_tournaments do
+    from(
+      t in Tournament,
+      order_by: [desc: t.inserted_at],
+      where: t.state in ["finished"],
+      limit: 7,
+      preload: :creator
+    )
+    |> Codebattle.Repo.all()
   end
 
   def get_live_tournaments do
     Tournament.GlobalSupervisor
     |> DynamicSupervisor.which_children()
     |> Enum.map(fn {_, pid, _, _} -> Supervisor.which_children(pid) end)
-    |> Enum.map(fn x -> Enum.filter(x, fn {module, _, _, _} -> module == Codebattle.Tournament.Server end) end)
+    |> Enum.map(fn x ->
+      Enum.filter(x, fn {module, _, _, _} -> module == Codebattle.Tournament.Server end)
+    end)
     |> List.flatten()
     |> Enum.map(fn {_, pid, _, _} -> Tournament.Server.get_tournament(pid) end)
+    |> Enum.filter(&Function.identity/1)
   end
 
   def get_live_tournaments_count do
-    Tournament.GlobalSupervisor
-    |> DynamicSupervisor.which_children()
-    |> Enum.count()
+    get_live_tournaments() |> Enum.count()
   end
 
   def create(params) do

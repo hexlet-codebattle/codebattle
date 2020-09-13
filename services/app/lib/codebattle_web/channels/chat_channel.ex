@@ -27,7 +27,7 @@ defmodule CodebattleWeb.ChatChannel do
     )
 
     users = Chat.Server.get_users({type, chat_id})
-    broadcast_from!(socket, "user:joined", %{users: users})
+    broadcast_from!(socket, "chat:user_joined", %{users: users})
     {:noreply, socket}
   end
 
@@ -44,11 +44,11 @@ defmodule CodebattleWeb.ChatChannel do
       }
     )
 
-    broadcast_from!(socket, "user:left", %{users: users})
+    broadcast_from!(socket, "chat:user_left", %{users: users})
     {:noreply, socket}
   end
 
-  def handle_in("new:message", payload, socket) do
+  def handle_in("chat:new_msg", payload, socket) do
     %{"message" => message} = payload
     user = socket.assigns.current_user
     name = get_user_name(user)
@@ -74,7 +74,6 @@ defmodule CodebattleWeb.ChatChannel do
       }
     )
 
-    broadcast!(socket, "new:message", %{user: name, message: message})
     {:noreply, socket}
   end
 

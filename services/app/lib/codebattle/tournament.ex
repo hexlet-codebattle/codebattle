@@ -23,7 +23,7 @@ defmodule Codebattle.Tournament do
   @types ~w(individual team)
   @states ~w(waiting_participants canceled active finished)
   @difficulties ~w(elementary easy medium hard)
-  @max_alive_tournaments 1
+  @max_alive_tournaments 3
   @default_match_timeout Application.get_env(:codebattle, :tournament_match_timeout)
 
   schema "tournaments" do
