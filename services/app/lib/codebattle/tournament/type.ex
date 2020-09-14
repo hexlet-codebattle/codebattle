@@ -93,7 +93,8 @@ defmodule Codebattle.Tournament.Type do
           |> Enum.map(fn match ->
             case match.game_id do
               ^game_id ->
-                update_match_params(match, params)
+                new_params = Map.put(params, :started_at, tournament.last_round_started_at)
+                update_match_params(match, new_params)
 
               _ ->
                 match
@@ -154,7 +155,13 @@ defmodule Codebattle.Tournament.Type do
       defp update_match_params(match, %{state: "canceled"} = params), do: Map.merge(match, params)
 
       defp update_match_params(match, %{state: "finished"} = params) do
-        %{winner: {winner_id, winner_result}, loser: {loser_id, loser_result}} = params
+        %{
+          winner: {winner_id, winner_result},
+          loser: {loser_id, loser_result},
+          started_at: started_at
+        } = params
+
+        new_duration = get_new_duration(started_at)
 
         new_players =
           Enum.map(match.players, fn player ->
@@ -165,8 +172,14 @@ defmodule Codebattle.Tournament.Type do
             end
           end)
 
-        Map.merge(match, %{players: new_players, state: "finished"})
+        Map.merge(match, %{players: new_players, duration: new_duration, state: "finished"})
       end
+
+      # for individual game
+      defp get_new_duration(nil), do: 0
+      # for team game
+      defp get_new_duration(started_at),
+        do: NaiveDateTime.diff(NaiveDateTime.utc_now(), started_at, :millisecond)
     end
   end
 end

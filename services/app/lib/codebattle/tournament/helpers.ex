@@ -63,6 +63,33 @@ defmodule Codebattle.Tournament.Helpers do
     tournament |> get_players |> Enum.filter(&(&1.team_id == team_id))
   end
 
+  def get_players_statistics(%{type: "team"} = tournament) do
+    all_win_matches = tournament |> get_matches() |> Enum.filter(&is_finished?/1)
+
+    unless Enum.empty?(all_win_matches) do
+      tournament
+      |> get_players()
+      |> Enum.map(fn player ->
+        team = tournament |> get_teams() |> get_team_by_id(player.team_id)
+        win_matches = Enum.filter(all_win_matches, &is_winner?(&1, player))
+
+        params = %{
+          team: team.title,
+          score: Enum.count(win_matches),
+          average_time: get_average_time(win_matches)
+        }
+
+        player
+        |> Map.from_struct()
+        |> Map.merge(params)
+      end)
+      |> Enum.sort(&(&1.score > &2.score or &1.average_time > &2.average_time))
+    end
+  end
+
+  def filter_statistics(statistics, "show"), do: statistics
+  def filter_statistics(statistics, "hide"), do: [List.first(statistics)]
+
   def calc_team_score(tournament) do
     tournament
     |> get_rounds()
@@ -82,4 +109,19 @@ defmodule Codebattle.Tournament.Helpers do
   defp calc_match_result(%{players: [_, %{game_result: "gave_up"}]}), do: {1, 0}
   defp calc_match_result(%{players: [%{game_result: "gave_up"}, _]}), do: {0, 1}
   defp calc_match_result(_), do: {0, 0}
+
+  defp is_finished?(%{state: "finished"}), do: true
+  defp is_finished?(_match), do: false
+
+  defp is_winner?(%{players: players}, player) do
+    Enum.any?(players, fn x -> x.id == player.id and x.game_result == "won" end)
+  end
+
+  defp get_average_time([]), do: 0
+
+  defp get_average_time(matches) do
+    div(Enum.reduce(matches, 0, fn x, acc -> acc + x.duration end), Enum.count(matches))
+  end
+
+  defp get_team_by_id(teams, team_id), do: Enum.find(teams, fn x -> x.id == team_id end)
 end

@@ -1,11 +1,14 @@
 defmodule Codebattle.Tournament.TeamTest do
   use Codebattle.IntegrationCase, async: false
 
+  alias Codebattle.Tournament.Helpers
   @module Codebattle.Tournament.Team
 
   def build_team_player(user, params \\ %{}) do
     struct(Codebattle.Tournament.Types.Player, Map.from_struct(user)) |> Map.merge(params)
   end
+
+  def get_matches_states(tournament), do: tournament.data.matches |> Enum.map(fn x -> x.state end)
 
   test "#maybe_start_new_step do not calls next step" do
     user1 = insert(:user)
@@ -64,7 +67,7 @@ defmodule Codebattle.Tournament.TeamTest do
 
     assert new_tournament.step == 1
 
-    states = new_tournament.data.matches |> Enum.map(fn x -> x.state end)
+    states = get_matches_states(new_tournament)
 
     assert states == ["finished", "active"]
   end
@@ -111,6 +114,10 @@ defmodule Codebattle.Tournament.TeamTest do
       |> @module.maybe_start_new_step()
 
     assert new_tournament.state == "finished"
+
+    states = get_matches_states(new_tournament)
+
+    assert states == ["finished", "finished", "finished"]
   end
 
   test "#maybe_start_new_step finishs tournament after 3 scores with draws" do
@@ -150,6 +157,7 @@ defmodule Codebattle.Tournament.TeamTest do
       },
       %{
         round_id: 5,
+        duration: 1,
         state: "finished",
         players: [Map.merge(player1, %{game_result: "won"}), player2]
       }
@@ -169,5 +177,14 @@ defmodule Codebattle.Tournament.TeamTest do
       |> @module.maybe_start_new_step()
 
     assert new_tournament.state == "finished"
+
+    states = get_matches_states(new_tournament)
+
+    assert states == ["finished", "finished", "finished", "finished", "finished", "finished"]
+
+    winner_stats = new_tournament |> Helpers.get_players_statistics() |> List.first()
+
+    assert winner_stats.average_time == 1
+    assert winner_stats.score == 1
   end
 end
