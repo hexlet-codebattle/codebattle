@@ -64,7 +64,12 @@ defmodule Codebattle.Tournament.Helpers do
   end
 
   def get_players_statistics(%{type: "team"} = tournament) do
-    all_win_matches = tournament |> get_matches() |> Enum.filter(&is_finished?/1)
+    all_win_matches =
+      tournament
+      |> get_matches()
+      |> Enum.filter(fn match ->
+        is_finished?(match) and !is_anyone_gave_up?(match)
+      end)
 
     unless Enum.empty?(all_win_matches) do
       tournament
@@ -112,6 +117,10 @@ defmodule Codebattle.Tournament.Helpers do
 
   defp is_finished?(%{state: "finished"}), do: true
   defp is_finished?(_match), do: false
+
+  defp is_anyone_gave_up?(%{players: [%{game_result: "gave_up"}, _]}), do: true
+  defp is_anyone_gave_up?(%{players: [_, %{game_result: "gave_up"}]}), do: true
+  defp is_anyone_gave_up?(_), do: false
 
   defp is_winner?(%{players: players}, player) do
     Enum.any?(players, fn x -> x.id == player.id and x.game_result == "won" end)
