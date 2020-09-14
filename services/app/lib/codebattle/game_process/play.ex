@@ -187,6 +187,9 @@ defmodule Codebattle.GameProcess.Play do
       {:game_over, nil} ->
         {:terminate_after, 15}
 
+      {:game_over, _tournament_id} ->
+        {:terminate_after, 20}
+
       {_, nil} ->
         terminate_game(id)
 
