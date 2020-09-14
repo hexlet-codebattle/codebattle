@@ -11,6 +11,8 @@ import { resolveDiffs } from '../lib/player';
 import PlaybookStatusCodes from '../config/playbookStatusCodes';
 import GameStatusCodes from '../config/gameStatusCodes';
 
+import notification from '../../widgets/utils/notification';
+
 const defaultLanguages = Gon.getAsset('langs');
 const gameId = Gon.getAsset('game_id');
 const isRecord = Gon.getAsset('is_record');
@@ -217,6 +219,8 @@ export const activeGameEditorReady = () => dispatch => {
     dispatch(actions.updateCheckStatus({ [userId]: false }));
   });
 
+  const ntx = notification();
+
   channel.on('chat:user_joined', responseData => {
     const {
       status,
@@ -231,6 +235,7 @@ export const activeGameEditorReady = () => dispatch => {
       { ...secondPlayer, type: userTypes.secondPlayer },
     ];
 
+    ntx.start();
     dispatch(actions.updateGamePlayers({ players }));
     dispatch(actions.setGameTask({ task }));
     dispatch(actions.setLangs({ langs }));
