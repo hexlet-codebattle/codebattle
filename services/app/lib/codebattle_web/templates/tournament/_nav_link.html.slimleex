@@ -1,0 +1,4 @@
+= if @active_tab == @id do
+  a.nav-link.active[id="#{@id}-tab" href="##{@id}" data-toggle="tab" role="tab" aria-controls=@id aria-selected="true"] = @title
+- else
+  a.nav-link[id="#{@id}-tab" href="##{@id}" data-toggle="tab" role="tab" aria-controls=@id aria-selected="false" phx-click="select_tab" phx-value-target="team_tournament_tab" phx-value-tab=@id] = @title

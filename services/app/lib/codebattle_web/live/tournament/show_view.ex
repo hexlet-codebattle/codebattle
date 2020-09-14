@@ -25,7 +25,9 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
        current_user: session["current_user"],
        tournament: tournament,
        messages: get_chat_messages(tournament.id),
-       time: get_next_round_time(tournament)
+       time: get_next_round_time(tournament),
+       rating_toggle: "hide",
+       team_tournament_tab: "scores"
      )}
   end
 
@@ -131,6 +133,16 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     )
 
     {:noreply, assign(socket, messages: messages)}
+  end
+
+  def handle_event("toggle", params, socket) do
+    target = String.to_atom(params["target"])
+    {:noreply, assign(socket, target, params["event"])}
+  end
+
+  def handle_event("select_tab", params, socket) do
+    target = String.to_atom(params["target"])
+    {:noreply, assign(socket, target, params["tab"])}
   end
 
   defp get_next_round_time(tournament) do
