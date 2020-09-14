@@ -50,7 +50,7 @@ const RematchButton = ({
   };
 
   const renderBtnAfterRecieveOffer = () => (
-    <div className="input-group mt-2">
+    <div className="input-group mt-2 mb-2">
       <input type="text" className="form-control" placeholder="Accept Rematch?" />
       <div className="input-group-append">
         <button

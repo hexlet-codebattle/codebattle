@@ -8,8 +8,8 @@ import UserName from '../components/User/UserName';
 import ChatInput from '../components/ChatInput';
 import GameStatusCodes from '../config/gameStatusCodes';
 import GameTypeCodes from '../config/gameTypeCodes';
-import BackToTournamentButton from '../components/Toast/BackToTournamentButton';
 import 'emoji-mart/css/emoji-mart.css';
+import Notifications from './Notifications';
 
 const ChatWidget = () => {
   const users = useSelector(state => selectors.chatUsersSelector(state));
@@ -38,11 +38,11 @@ const ChatWidget = () => {
       <div className="col-4 d-none d-sm-block p-0 border-left bg-white rounded-right">
         <div className="d-flex flex-direction-column flex-wrap justify-content-between">
           <div className="px-3 pt-3 pb-2 w-100">
-            {isTournamentGame && (<BackToTournamentButton />)}
+            <Notifications />
           </div>
-          <div className="px-3 pt-3 pb-2 w-100">
+          <div className="px-3 pt-3 pb-2 w-100 ">
             <p className="mb-1">{`Online users: ${listOfUsers.length}`}</p>
-            <div className="overflow-auto" style={{ height: '175px' }}>
+            <div className="overflow-auto" style={{ height: '100px' }}>
               {listOfUsers.map(user => (
                 <div key={user.id} className="my-2">
                   <UserName user={user} />
