@@ -11,9 +11,9 @@
         span.small.text-muted.mx-2 State: #{@tournament.state}
         = if @tournament.state == "waiting_participants" do
           = if @time.minutes >= 0 and @time.seconds >= 0  do
-            span The trounament will start in #{@time.minutes} minutes #{@time.seconds} seconds
+            span The tournament will start in #{@time.minutes} minutes #{@time.seconds} seconds
           - else
-            span The trounament will start soon
+            span The tournament will start soon
 
         = if  @tournament.state == "active"  do
           span The next round will start in #{@time.minutes} minutes #{@time.seconds} seconds, or after all matches are over
