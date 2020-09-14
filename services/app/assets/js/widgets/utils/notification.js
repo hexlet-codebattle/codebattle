@@ -8,7 +8,7 @@ const intervalBlinking = 500;
 const startBlinkingMsg = () => {
     timerID = setInterval(() => {
       audioFile.play();
-      document.title = document.title  === message ? defaultTitle : message;
+      document.title = document.title === message ? defaultTitle : message;
     }, intervalBlinking);
 };
 
@@ -38,7 +38,7 @@ const notification = () => {
         startBlinkingMsg();
       }
     },
-  }
-}
+  };
+};
 
 export default notification;

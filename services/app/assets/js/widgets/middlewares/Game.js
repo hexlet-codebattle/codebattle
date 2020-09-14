@@ -11,7 +11,7 @@ import { resolveDiffs } from '../lib/player';
 import PlaybookStatusCodes from '../config/playbookStatusCodes';
 import GameStatusCodes from '../config/gameStatusCodes';
 
-import notification from '../../widgets/utils/notification';
+import notification from '../utils/notification';
 
 const defaultLanguages = Gon.getAsset('langs');
 const gameId = Gon.getAsset('game_id');
