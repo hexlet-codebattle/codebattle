@@ -7,6 +7,13 @@ defmodule CodebattleWeb.TournamentView do
 
   def render_datetime(nil), do: "none"
 
+  def render_average_time(ms) do
+    ms
+    |> Timex.Duration.from_milliseconds()
+    |> Timex.Duration.to_time!()
+    |> Timex.format!("%H:%M:%S:%L", :strftime)
+  end
+
   def render_datetime(utc_datetime) do
     utc_datetime
     |> Timex.Timezone.convert(@default_timezone)

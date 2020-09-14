@@ -1,0 +1,25 @@
+- {r1, r2} = calc_team_score(@tournament)
+- [%{title: title1}, %{title: title2}] = get_teams(@tournament)
+
+.py-2.bg-white.shadow-sm.rounded
+  .row.align-items-center
+    .col-4
+      h3.mb-0.px-3.font-weight-light = title1
+    .col-2.text-right
+      span.display-4 = r1
+    .col-2
+      span.display-4 = r2
+    .col-4.text-right
+      h3.mb-0.px-3.font-weight-light = title2
+
+  .row.px-3.pt-2
+    = for %{id: team_id} <- get_teams(@tournament) do
+      .col
+        .d-flex.align-items-center
+          = if is_waiting_partisipants?(@tournament) do
+            = if is_participant?(@tournament, @current_user.id, team_id) do
+              button.btn.btn-outline-danger[phx-click="leave"] Leave
+            - else
+              button.btn.btn-outline-info[phx-click="join" phx-value-team_id=team_id] Join
+
+        = render "_players.html", players: get_team_players(@tournament, team_id)

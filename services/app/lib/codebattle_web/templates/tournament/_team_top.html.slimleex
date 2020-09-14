@@ -1,0 +1,23 @@
+.card
+  .card-body
+    .table-responsive.mt-1
+      table.table.table-sm
+        thead
+          tr
+            th player
+            th team
+            th score
+            th average_time
+        tbody
+          = for player <- filter_statistics(@statistics, @rating_toggle) do
+            tr
+              td.align-middle
+                = render "_player.html", player: player
+              td.align-middle.text-nowrap = player.team
+              td.align-middle.text-nowrap = player.score
+              td.align-middle.text-nowrap = render_average_time(player.average_time)
+  .card.footer.text-center
+    = if @rating_toggle == "show" do
+      .btn.btn-link.pt-0[phx-click="toggle" phx-value-target="rating_toggle" phx-value-event="hide"] hide
+    - else
+      .btn.btn-link.pt-0[phx-click="toggle" phx-value-target="rating_toggle" phx-value-event="show"] show
