@@ -210,7 +210,7 @@ class LobbyWidget extends React.Component {
             </tr>
           </thead>
           <tbody>
-            {tournaments.map(tournament => (
+            {_.orderBy(tournaments, 'startsAt', 'desc').map(tournament => (
               <tr key={tournament.id}>
                 <td className="p-3 align-middle">{tournament.name}</td>
                 <td className="p-3 align-middle">
