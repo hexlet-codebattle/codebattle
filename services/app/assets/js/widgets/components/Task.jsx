@@ -22,17 +22,18 @@ const renderTaskLink = name => {
 
 const renderGameLevelBadge = level => (
   <small className="ml-2">
-    <span className={`badge badge-pill badge-${levelToClass[level]} mr-1`}>&nbsp;</span>
+    <span className={`badge badge-pill badge-${levelToClass[level]} mr-1`}>
+      &nbsp;
+    </span>
     {level}
   </small>
 );
 
-const renderTimeoutText = timeoutSeconds => {
-  if (!timeoutSeconds) { return false; }
-  return 'Timeout in: ';
-};
 const renderTimer = (time, timeoutSeconds, gameStatusName) => {
-  if (gameStatusName === GameStatusCodes.gameOver || gameStatusName === GameStatusCodes.timeout) {
+  if (
+    gameStatusName === GameStatusCodes.gameOver
+    || gameStatusName === GameStatusCodes.timeout
+  ) {
     return gameStatusName;
   }
 
@@ -44,7 +45,7 @@ const renderTimer = (time, timeoutSeconds, gameStatusName) => {
 };
 
 const Task = ({
-  task, time, gameStatusName, timeoutSeconds,
+ task, time, gameStatusName, timeoutSeconds,
 }) => {
   if (_.isEmpty(task)) {
     return null;
@@ -59,10 +60,7 @@ const Task = ({
             {renderGameLevelBadge(task.level)}
           </h6>
           <div className="card-text">
-            <span className="text-muted">
-              {renderTimeoutText(timeoutSeconds)}
-              {time && renderTimer(time, timeoutSeconds, gameStatusName)}
-            </span>
+            {time && renderTimer(time, timeoutSeconds, gameStatusName)}
           </div>
         </div>
         <div className="d-flex align-items-stretch flex-column">
@@ -90,7 +88,9 @@ const Task = ({
         <div className="d-flex align-items-end flex-column flex-sm-row justify-content-between">
           <h6 className="card-text small font-italic text-black-50">
             <span className="mr-2">
-              {i18n.t('Found a mistake? Have something to add? Pull Requests are welcome: ')}
+              {i18n.t(
+                'Found a mistake? Have something to add? Pull Requests are welcome: ',
+              )}
             </span>
             {renderTaskLink(task.name)}
           </h6>
