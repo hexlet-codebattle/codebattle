@@ -12,13 +12,13 @@
     .col-3
       = render "_chat.html", messages: @messages
       .container.mt-2.bg-white.shadow-sm.p-2
-        .d-flex.align-items-center
-          h5.mb-0.mr-5 Participants
+        .d-flex.align-items-center.flex-wrap.justify-content-start
+          h5.mb-2.mr-5 Participants
           = if is_waiting_partisipants?(@tournament) do
             = if is_participant?(@tournament, @current_user.id) do
               button.btn.btn-outline-danger[phx-click="leave"] Leave
             - else
-              button.btn.btn-outline-info[phx-click="join"] Join
+              button.btn.btn-outline-secondary[phx-click="join"] Join
         = render "_players.html", players: players
 
     .col-9.bg-white.shadow-sm.py-4
