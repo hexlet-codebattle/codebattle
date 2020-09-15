@@ -107,11 +107,11 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
     end
   end
 
-  defp get_error_status(json_result, container_output, _meta) do
-    case Regex.scan(~r/{"status":.*"error".+}/, container_output) do
+  defp get_error_status(error_message, container_output, _meta) do
+    case Regex.scan(~r/{"status":.{0,3}"error".+}/, container_output) do
       [] ->
-        failure_list = Regex.scan(~r/{"status":.*"failure".+}/, container_output)
-        success_list = Regex.scan(~r/{"status":.*"success".+}/, container_output)
+        failure_list = Regex.scan(~r/{"status":.{0,3}"failure".+}/, container_output)
+        success_list = Regex.scan(~r/{"status":.{0,3}"success".+}/, container_output)
         failure_count = length(failure_list)
         success_count = length(success_list)
 
@@ -133,7 +133,7 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
         }
 
       [_] ->
-        %CheckResult{status: :error, result: json_result, output: container_output}
+        %CheckResult{status: :error, result: error_message, output: container_output}
     end
   end
 
