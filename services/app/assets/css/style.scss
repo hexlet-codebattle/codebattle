@@ -139,11 +139,13 @@ a {
   border-right: 5px solid transparent;
 
   &.asc {
-    border-bottom: 5px solid $black;
+    border-bottom: 5px solid #666;
+    margin-bottom: 3px;
   }
 
   &.desc {
-    border-top: 5px solid $black;
+    border-top: 5px solid #666;
+    padding-bottom: 2px;
   }
 }
 
@@ -164,6 +166,27 @@ a {
 .cb-emoji-button {
   z-index: 5;
   right: 10%;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.sort-arrows:before,
+.sort-arrows:after {
+	border: 5px solid transparent;
+	content: "";
+	display: block;
+}
+
+.sort-arrows:before {
+	border-bottom-color: #666;
+}
+
+.sort-arrows:after {
+	border-top-color: #666;
+  margin-top: 2px; 
+  margin-bottom: -5px;
 }
 
 .x-bottom-0 {
