@@ -130,11 +130,11 @@ const UsersRating = () => {
               (low)
               {i18n.t('Games played')}
             </option>
-            <option value={['id', 'asc']}>
+            <option value={['id', 'desc']}>
               (new)
               {i18n.t('Joined')}
             </option>
-            <option value={['id', 'desc']}>
+            <option value={['id', 'asc']}>
               (old)
               {i18n.t('Joined')}
             </option>
