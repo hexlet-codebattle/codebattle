@@ -110,7 +110,6 @@ const UsersRating = () => {
             ref={c => { filterNode = ReactDOM.findDOMNode(c); }}
           />
         </div>
-
       </div>
       <table className="table">
         <thead className="text-left">

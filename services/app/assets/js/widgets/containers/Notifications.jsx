@@ -27,7 +27,7 @@ const Notifications = () => {
           </>
       )}
       { isTournamentGame && <BackToTournamentButton /> }
-      <BackToHomeButton />
+      { !isTournamentGame && <BackToHomeButton />}
     </>
 );
 };
