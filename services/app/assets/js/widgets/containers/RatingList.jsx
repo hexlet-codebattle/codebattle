@@ -116,7 +116,7 @@ const UsersRating = () => {
         <thead className="text-left">
           <tr>
             <th
-              className="p-3 border-0"
+              className="p-3 border-0 cursor-pointer"
               onClick={() => triggerSort('rank')}
             >
               Rank
@@ -125,7 +125,7 @@ const UsersRating = () => {
             </th>
             <th className="p-3 border-0">User</th>
             <th
-              className="p-3 border-0"
+              className="p-3 border-0 cursor-pointer"
               onClick={() => triggerSort('rating')}
             >
               Rating
@@ -133,7 +133,7 @@ const UsersRating = () => {
               {renderSortArrow('rating', sort)}
             </th>
             <th
-              className="p-3 border-0"
+              className="p-3 border-0 cursor-pointer"
               onClick={() => triggerSort('games_played')}
             >
               Games played
@@ -144,7 +144,7 @@ const UsersRating = () => {
               Performance
             </th>
             <th
-              className="p-3 border-0"
+              className="p-3 border-0 cursor-pointer"
               onClick={() => triggerSort('id')}
             >
               Joined
