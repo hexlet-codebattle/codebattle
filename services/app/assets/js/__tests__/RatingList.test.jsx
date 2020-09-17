@@ -37,5 +37,4 @@ test('test rendering RatingList', async () => {
 
   expect(getByText(/Users rating/)).toBeInTheDocument();
   expect(getByText(/Total: 0/)).toBeInTheDocument();
-  expect(getByText(/Sort by:/)).toBeInTheDocument();
 });
