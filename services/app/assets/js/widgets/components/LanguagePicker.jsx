@@ -54,12 +54,10 @@ const LanguagePicker = ({
         <input
           type="text"
           name="langInput"
+          className="w-75 ml-4"
+          placeholder="search..."
           onChange={handleInputChange}
           value={langInput}
-          style={{
-              width: '90%',
-              margin: '8px',
-                 }}
         />
         {_.map(filterLangs, ({ slug, name, version }) => (
           <button
