@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import Gon from 'gon';
@@ -13,13 +13,23 @@ const LangTitle = ({ slug, name, version }) => (
     <span>{version}</span>
   </div>
 );
-
 const LanguagePicker = ({
-  languages, currentLangSlug, onChange, disabled,
+  languages, currentLangSlug, onChangeLang, disabled,
 }) => {
   const langs = languages || defaultLanguages;
   const [[currentLang], otherLangs] = _.partition(langs, lang => lang.slug === currentLangSlug);
-
+    const [langInput, setLangInput] = useState('');
+    const handleInputChange = e => {
+      setLangInput(e.target.value);
+    };
+    const filterLangs = langInput === '' ? otherLangs : otherLangs.filter(lang => {
+      const a = lang.name.toLowerCase().split('');
+      const b = langInput.toLowerCase().split('');
+      const result = _.includes(lang.name.toLowerCase(), langInput.toLowerCase());
+      console.log(a);
+      console.log(b);
+      return result;
+    });
   if (disabled) {
     return (
       <button className="btn btn-sm" type="button" disabled>
@@ -41,13 +51,21 @@ const LanguagePicker = ({
         <LangTitle {...currentLang} />
       </button>
       <div className="dropdown-menu cb-langs-dropdown" aria-labelledby="dropdownLangButton">
-        {_.map(otherLangs, ({ slug, name, version }) => (
+        <input
+          type="text"
+          name="langInput"
+          className="w-75 ml-4"
+          placeholder="search..."
+          onChange={handleInputChange}
+          value={langInput}
+        />
+        {_.map(filterLangs, ({ slug, name, version }) => (
           <button
             type="button"
             className="dropdown-item btn rounded-0"
             key={slug}
             onClick={() => {
-              onChange(slug);
+              onChangeLang(slug);
             }}
           >
             <LangTitle slug={slug} name={name} version={version} />
@@ -60,7 +78,7 @@ const LanguagePicker = ({
 
 LanguagePicker.propTypes = {
   currentLangSlug: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
+  onChangeLang: PropTypes.func.isRequired,
   disabled: PropTypes.bool.isRequired,
 };
 
