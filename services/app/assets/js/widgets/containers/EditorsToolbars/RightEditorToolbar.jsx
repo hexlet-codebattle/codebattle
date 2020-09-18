@@ -76,7 +76,7 @@ const RightEditorToolbar = () => {
         <LanguagePicker
           languages={languages}
           currentLangSlug={rightEditorLangSlug}
-          onChange={_.noop}
+          onChangeLang={_.noop}
           disabled
         />
       </div>

@@ -95,7 +95,6 @@ const LeftEditorToolbar = () => {
   const players = useSelector(state => selectors.gamePlayersSelector(state));
   const leftEditorsMode = useSelector(state => selectors.editorsModeSelector(leftUserId)(state));
   const theme = useSelector(state => selectors.editorsThemeSelector(leftUserId)(state));
-
   const dispatch = useDispatch();
   const setMode = nextMode => () => dispatch(actions.setEditorsMode(nextMode));
   const switchTheme = nextTheme => () => dispatch(actions.switchEditorsTheme(nextTheme));
@@ -114,7 +113,7 @@ const LeftEditorToolbar = () => {
         <LanguagePicker
           languages={languages}
           currentLangSlug={leftEditorLangSlug}
-          onChange={setLang}
+          onChangeLang={setLang}
           disabled={isDisabled}
         />
         {!isDisabled && renderVimModeBtn(setMode, leftEditorsMode)}

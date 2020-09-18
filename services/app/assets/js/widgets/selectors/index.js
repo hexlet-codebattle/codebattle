@@ -100,6 +100,8 @@ export const gameTaskSelector = state => state.game.task;
 
 export const editorLangsSelector = state => state.editor.langs.langs;
 
+export const langInputSelector = state => state.editor.langInput;
+
 export const editorHeightSelector = userId => state => _.get(editorDataSelector(userId)(state), 'editorHeight', defaultEditorHeight);
 
 export const executionOutputSelector = userId => state => state.executionOutput[userId];
