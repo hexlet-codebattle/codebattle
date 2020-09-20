@@ -85,6 +85,7 @@ const renderNameplate = (player = {}, onlineUsers) => {
 };
 
 const LeftEditorToolbar = () => {
+  const [langInput, setLangInput] = useState('');
   const leftUserId = useSelector(state => _.get(selectors.leftEditorSelector(state), ['userId'], null));
   const rightUserId = useSelector(state => _.get(selectors.rightEditorSelector(state), ['userId'], null));
   const languages = useSelector(state => selectors.editorLangsSelector(state));
@@ -98,7 +99,11 @@ const LeftEditorToolbar = () => {
   const dispatch = useDispatch();
   const setMode = nextMode => () => dispatch(actions.setEditorsMode(nextMode));
   const switchTheme = nextTheme => () => dispatch(actions.switchEditorsTheme(nextTheme));
-  const setLang = langSlug => dispatch(changeCurrentLangAndSetTemplate(langSlug));
+  const changeText = e => setLangInput(e.target.value);
+  const setLang = langSlug => {
+    dispatch(changeCurrentLangAndSetTemplate(langSlug));
+    setLangInput('');
+    };
   const isStoredGame = gameStatus.status === GameStatusCodes.stored;
   const isDisabled = isStoredGame || !_.hasIn(players, currentUserId);
 
@@ -113,6 +118,8 @@ const LeftEditorToolbar = () => {
         <LanguagePicker
           languages={languages}
           currentLangSlug={leftEditorLangSlug}
+          langInput={langInput}
+          changeText={changeText}
           onChangeLang={setLang}
           disabled={isDisabled}
         />
