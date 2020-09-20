@@ -40,7 +40,7 @@ defmodule Codebattle.LanguagesTest do
         "def solution()\n\nend",
         "defmodule Solution do\n\tdef solution() do\n\n\tend\nend",
         "from typing import List, Dict\n\ndef solution():",
-        "<?php\nfunction solution(){\n\n}",
+        "<?php\n\nfunction solution()\n{\n}",
         "(defn solution [] )",
         "module Check.Solution where\n\nimport qualified Data.HashMap.Lazy as HM\n\nsolution :: \nsolution =\n\n{- Included packages:\naeson\nbytestring\ncase-insensitive\ncontainers\ndeepseq\nfgl\ninteger-logarithms\nmegaparsec\nmtl\nparser-combinators\npretty\nrandom\nregex-base\nregex-compat\nregex-posix\nscientific\nsplit\ntemplate-haskell\ntext\ntime\ntransformers\nunordered-containers\nvector\nvector-algorithms -}"
       ])
@@ -78,7 +78,7 @@ defmodule Codebattle.LanguagesTest do
       "from typing import List, Dict\n\ndef solution(a: int, b: float, text: str, arr: List[List[int]], condition: bool, hashtable: Dict[str, int]) -> List[str]:"
 
     php_expected =
-      "<?php\nfunction solution($a, $b, $text, $arr, $condition, $hashtable){\n\treturn [\"value\"];\n}"
+      "<?php\n\nfunction solution(int $a, float $b, string $text, array $arr, bool $condition, array $hashtable)\n{\n    return [\"value\"];\n}"
 
     clojure_expected = "(defn solution [a b text arr condition hashtable] [\"value\"])"
 
