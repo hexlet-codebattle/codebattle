@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import Gon from 'gon';
@@ -14,22 +14,20 @@ const LangTitle = ({ slug, name, version }) => (
   </div>
 );
 const LanguagePicker = ({
-  languages, currentLangSlug, onChangeLang, disabled,
+  languages, currentLangSlug, onChangeLang, disabled, langInput, changeText,
 }) => {
   const langs = languages || defaultLanguages;
+  const inputRef = useRef(null);
   const [[currentLang], otherLangs] = _.partition(langs, lang => lang.slug === currentLangSlug);
-    const [langInput, setLangInput] = useState('');
-    const handleInputChange = e => {
-      setLangInput(e.target.value);
-    };
-    const filterLangs = langInput === '' ? otherLangs : otherLangs.filter(lang => {
-      const a = lang.name.toLowerCase().split('');
-      const b = langInput.toLowerCase().split('');
-      const result = _.includes(lang.name.toLowerCase(), langInput.toLowerCase());
-      console.log(a);
-      console.log(b);
-      return result;
-    });
+  const filteredLangs = otherLangs.filter(l => _.includes(l.name.toLowerCase(), langInput));
+  const filterLangs = langInput === ''
+  ? otherLangs : filteredLangs;
+
+  const handleFocus = () => {
+    const input = inputRef.current;
+    input.focus();
+  };
+
   if (disabled) {
     return (
       <button className="btn btn-sm" type="button" disabled>
@@ -43,22 +41,24 @@ const LanguagePicker = ({
       <button
         className="btn btn-sm border btn-light dropdown-toggle"
         type="button"
+        onFocus={handleFocus}
         id="dropdownLangButton"
         data-toggle="dropdown"
         aria-haspopup="true"
         aria-expanded="false"
       >
-        <LangTitle {...currentLang} />
-      </button>
-      <div className="dropdown-menu cb-langs-dropdown" aria-labelledby="dropdownLangButton">
         <input
           type="text"
           name="langInput"
-          className="w-75 ml-4"
-          placeholder="search..."
-          onChange={handleInputChange}
+          ref={inputRef}
+          placeholder={_.capitalize(currentLang.name)}
+          onClick={e => e.stopPropagation()}
+          onChange={changeText}
           value={langInput}
         />
+      </button>
+      <div className="dropdown-menu cb-langs-dropdown" aria-labelledby="dropdownLangButton">
+
         {_.map(filterLangs, ({ slug, name, version }) => (
           <button
             type="button"
@@ -80,6 +80,7 @@ LanguagePicker.propTypes = {
   currentLangSlug: PropTypes.string.isRequired,
   onChangeLang: PropTypes.func.isRequired,
   disabled: PropTypes.bool.isRequired,
+  langInput: PropTypes.string.isRequired,
 };
 
 export default LanguagePicker;
