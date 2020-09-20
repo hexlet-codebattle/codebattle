@@ -408,8 +408,8 @@ defmodule Codebattle.Languages do
         docker_image: "codebattle/php:7.4.7",
         solution_version: :typed,
         solution_template:
-          "<?php\n\nfunction solution(<%= arguments %>)\n{\n<%= return_statement %>\n}",
-        return_template: "    return <%= default_value %>;",
+          "<?php\n\nfunction solution(<%= arguments %>)\n{<%= return_statement %>\n}",
+        return_template: "\n    return <%= default_value %>;",
         arguments_template: %{
           argument: "<%= type %> $<%= name %>",
           delimeter: ", "
@@ -437,7 +437,7 @@ defmodule Codebattle.Languages do
           "float" => "float",
           "string" => "string",
           "array" => "array",
-          "boolean" => "boolean",
+          "boolean" => "bool",
           "hash" => "array"
         }
       },
