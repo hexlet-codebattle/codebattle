@@ -19,7 +19,6 @@ const LanguagePicker = ({
 }) => {
   const langs = languages || defaultLanguages;
   const inputRef = useRef(null);
-
   const [[currentLang], otherLangs] = _.partition(langs, lang => lang.slug === currentLangSlug);
   const filteredLangs = otherLangs.filter(l => _.includes(l.name.toLowerCase(), langInput));
   const filterLangs = langInput === ''
