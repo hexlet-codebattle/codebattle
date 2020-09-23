@@ -48,9 +48,9 @@ const LanguagePicker = ({
           value={langInput}
         />
 ) : (
-  <button className="btn btn-md" type="button">
+  <div className="btn btn-md" type="button">
     <LangTitle {...currentLang} />
-  </button>
+  </div>
 )}
     </button>
 );
@@ -89,7 +89,6 @@ LanguagePicker.propTypes = {
   currentLangSlug: PropTypes.string.isRequired,
   onChangeLang: PropTypes.func.isRequired,
   disabled: PropTypes.bool.isRequired,
-  langInput: PropTypes.string.isRequired,
 };
 
 export default LanguagePicker;
