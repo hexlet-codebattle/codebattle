@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import Gon from 'gon';
+import { useHover } from 'react-use';
 import LanguageIcon from './LanguageIcon';
 
 const defaultLanguages = Gon.getAsset('langs');
@@ -13,13 +14,48 @@ const LangTitle = ({ slug, name, version }) => (
     <span>{version}</span>
   </div>
 );
-
 const LanguagePicker = ({
-  languages, currentLangSlug, onChange, disabled,
+  languages, currentLangSlug, onChangeLang, disabled, langInput, changeText,
 }) => {
   const langs = languages || defaultLanguages;
-  const [[currentLang], otherLangs] = _.partition(langs, lang => lang.slug === currentLangSlug);
+  const inputRef = useRef(null);
 
+  const [[currentLang], otherLangs] = _.partition(langs, lang => lang.slug === currentLangSlug);
+  const filteredLangs = otherLangs.filter(l => _.includes(l.name.toLowerCase(), langInput));
+  const filterLangs = langInput === ''
+  ? otherLangs : filteredLangs;
+
+  const handleFocus = () => inputRef.current.focus();
+
+  const element = hovered => (
+    <button
+      className="btn p-0"
+      type="button"
+      onFocus={handleFocus}
+      id="dropdownLangButton"
+      data-toggle="dropdown"
+      aria-haspopup="true"
+      aria-expanded="false"
+    >
+      {hovered ? (
+        <input
+          type="text"
+          name="langInput"
+          className="form-control input-text"
+          ref={inputRef}
+          placeholder={_.capitalize(currentLang.name)}
+          onClick={e => e.stopPropagation()}
+          onChange={changeText}
+          value={langInput}
+        />
+) : (
+  <button className="btn btn-md" type="button">
+    <LangTitle {...currentLang} />
+  </button>
+)}
+    </button>
+);
+  const [hovered] = useHover(element);
   if (disabled) {
     return (
       <button className="btn btn-sm" type="button" disabled>
@@ -28,40 +64,33 @@ const LanguagePicker = ({
     );
   }
 
-  return (
-    <div className="dropdown">
-      <button
-        className="btn btn-sm border btn-light dropdown-toggle"
-        type="button"
-        id="dropdownLangButton"
-        data-toggle="dropdown"
-        aria-haspopup="true"
-        aria-expanded="false"
-      >
-        <LangTitle {...currentLang} />
-      </button>
-      <div className="dropdown-menu cb-langs-dropdown" aria-labelledby="dropdownLangButton">
-        {_.map(otherLangs, ({ slug, name, version }) => (
-          <button
-            type="button"
-            className="dropdown-item btn rounded-0"
-            key={slug}
-            onClick={() => {
-              onChange(slug);
+return (
+  <div className="dropdown col-7">
+    {hovered}
+    <div className="dropdown-menu cb-langs-dropdown" aria-labelledby="dropdownLangButton">
+
+      {_.map(filterLangs, ({ slug, name, version }) => (
+        <button
+          type="button"
+          className="dropdown-item btn rounded-0"
+          key={slug}
+          onClick={() => {
+              onChangeLang(slug);
             }}
-          >
-            <LangTitle slug={slug} name={name} version={version} />
-          </button>
+        >
+          <LangTitle slug={slug} name={name} version={version} />
+        </button>
         ))}
-      </div>
     </div>
+  </div>
   );
 };
 
 LanguagePicker.propTypes = {
   currentLangSlug: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
+  onChangeLang: PropTypes.func.isRequired,
   disabled: PropTypes.bool.isRequired,
+  langInput: PropTypes.string.isRequired,
 };
 
 export default LanguagePicker;
