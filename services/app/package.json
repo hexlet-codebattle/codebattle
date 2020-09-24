@@ -64,7 +64,6 @@
     "react-redux": "^7.2.0",
     "react-stay-scrolled": "^7.1.0",
     "react-toastify": "^6.0.5",
-    "react-use": "^15.3.4",
     "redux-persist": "^6.0.0",
     "set-value": "^3.0.2"
   },

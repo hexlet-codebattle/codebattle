@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import Gon from 'gon';
-import { useHover } from 'react-use';
+import useHover from '../utils/useHover';
 import LanguageIcon from './LanguageIcon';
 
 const defaultLanguages = Gon.getAsset('langs');
