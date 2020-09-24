@@ -1,13 +1,13 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import Gon from 'gon';
-import useHover from '../utils/useHover';
 import LanguageIcon from './LanguageIcon';
+import LanguageSwitcher from './LanguageSwitcher';
 
 const defaultLanguages = Gon.getAsset('langs');
 
-const LangTitle = ({ slug, name, version }) => (
+export const LangTitle = ({ slug, name, version }) => (
   <div className="d-inline-flex align-items-center">
     <LanguageIcon lang={slug} />
     <span className="mx-1">{_.capitalize(name)}</span>
@@ -18,43 +18,12 @@ const LanguagePicker = ({
   languages, currentLangSlug, onChangeLang, disabled, langInput, changeText,
 }) => {
   const langs = languages || defaultLanguages;
-  const inputRef = useRef(null);
+
   const [[currentLang], otherLangs] = _.partition(langs, lang => lang.slug === currentLangSlug);
   const filteredLangs = otherLangs.filter(l => _.includes(l.name.toLowerCase(), langInput));
   const filterLangs = langInput === ''
   ? otherLangs : filteredLangs;
 
-  const handleFocus = () => inputRef.current.focus();
-
-  const element = hovered => (
-    <button
-      className="btn p-0"
-      type="button"
-      onFocus={handleFocus}
-      id="dropdownLangButton"
-      data-toggle="dropdown"
-      aria-haspopup="true"
-      aria-expanded="false"
-    >
-      {hovered ? (
-        <input
-          type="text"
-          name="langInput"
-          className="form-control input-text"
-          ref={inputRef}
-          placeholder={_.capitalize(currentLang.name)}
-          onClick={e => e.stopPropagation()}
-          onChange={changeText}
-          value={langInput}
-        />
-) : (
-  <div className="btn btn-md" type="button">
-    <LangTitle {...currentLang} />
-  </div>
-)}
-    </button>
-);
-  const [hovered] = useHover(element);
   if (disabled) {
     return (
       <button className="btn btn-sm" type="button" disabled>
@@ -65,7 +34,7 @@ const LanguagePicker = ({
 
 return (
   <div className="dropdown col-7">
-    {hovered}
+    <LanguageSwitcher changeText={changeText} langInput={langInput} currentLang={currentLang} />
     <div className="dropdown-menu cb-langs-dropdown" aria-labelledby="dropdownLangButton">
 
       {_.map(filterLangs, ({ slug, name, version }) => (
