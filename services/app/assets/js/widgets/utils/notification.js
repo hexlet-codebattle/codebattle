@@ -5,7 +5,7 @@ const settings = {
   defaultTitle: document.title,
   intervalBlinking: 500,
   isActiveWindows: true,
-}
+};
 
 let timerID = null;
 
@@ -33,14 +33,16 @@ const initialize = () => {
   window.addEventListener('blur', () => {
     settings.isActiveWindows = false;
   });
-}
+};
 
 const notification = () => {
   initialize();
 
   return {
     getVolume: () => audioObj.volume,
-    setVolume: (value = 0.5) => audioObj.volume = value,
+    setVolume: (value = 0.5) => {
+      audioObj.volume = value;
+    },
     testSound: () => {
       audioObj.play();
     },
