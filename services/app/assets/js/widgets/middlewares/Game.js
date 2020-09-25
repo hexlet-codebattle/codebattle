@@ -187,6 +187,8 @@ export const changeCurrentLangAndSetTemplate = langSlug => (
   dispatch(sendEditorText(textToSet, langSlug));
 };
 
+export const soundNotification = notification();
+
 export const activeGameEditorReady = () => dispatch => {
   initGameChannel(dispatch);
   channel.on('editor:data', data => {
@@ -219,8 +221,6 @@ export const activeGameEditorReady = () => dispatch => {
     dispatch(actions.updateCheckStatus({ [userId]: false }));
   });
 
-  const ntx = notification();
-
   channel.on('chat:user_joined', responseData => {
     const {
       status,
@@ -235,7 +235,7 @@ export const activeGameEditorReady = () => dispatch => {
       { ...secondPlayer, type: userTypes.secondPlayer },
     ];
 
-    ntx.start();
+    soundNotification.start();
     dispatch(actions.updateGamePlayers({ players }));
     dispatch(actions.setGameTask({ task }));
     dispatch(actions.setLangs({ langs }));

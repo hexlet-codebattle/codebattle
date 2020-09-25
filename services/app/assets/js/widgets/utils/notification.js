@@ -1,40 +1,51 @@
-const audioFile = new Audio('/assets/audio/audio_player_joined.wav');
+const audioObj = new Audio('/assets/audio/audio_player_joined.wav');
+
+const settings = {
+  message: '*******',
+  defaultTitle: document.title,
+  intervalBlinking: 500,
+  isActiveWindows: true,
+}
 
 let timerID = null;
-const message = '*******';
-const defaultTitle = document.title;
-const intervalBlinking = 500;
 
 const startBlinkingMsg = () => {
-    timerID = setInterval(() => {
-      audioFile.play();
-      document.title = document.title === message ? defaultTitle : message;
-    }, intervalBlinking);
+  timerID = setInterval(() => {
+    audioObj.play();
+    document.title = document.title === settings.message ? settings.defaultTitle : settings.message;
+  }, settings.intervalBlinking);
 };
 
 const stopBlinkingMsg = () => {
-    audioFile.pause();
-    document.title = defaultTitle;
-    if (timerID) {
-      clearInterval(timerID);
-    }
+  audioObj.pause();
+  document.title = settings.defaultTitle;
+  if (timerID) {
+    clearInterval(timerID);
+  }
 };
 
-const notification = () => {
-  let isActiveWindows = true;
-
+const initialize = () => {
   window.addEventListener('focus', () => {
     stopBlinkingMsg();
-    isActiveWindows = true;
+    settings.isActiveWindows = true;
   });
 
   window.addEventListener('blur', () => {
-    isActiveWindows = false;
+    settings.isActiveWindows = false;
   });
+}
+
+const notification = () => {
+  initialize();
 
   return {
+    getVolume: () => audioObj.volume,
+    setVolume: (value = 0.5) => audioObj.volume = value,
+    testSound: () => {
+      audioObj.play();
+    },
     start: () => {
-      if (!isActiveWindows) {
+      if (!settings.isActiveWindows) {
         startBlinkingMsg();
       }
     },
