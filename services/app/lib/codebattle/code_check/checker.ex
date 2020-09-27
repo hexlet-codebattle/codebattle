@@ -7,6 +7,7 @@ defmodule Codebattle.CodeCheck.Checker do
   alias Codebattle.Generators.CheckerGenerator
   alias Codebattle.CodeCheck.CheckerStatus
   alias Codebattle.CodeCheck.CheckResult
+  alias Codebattle.Utils.GameKiller
 
   @langs_needs_compiling ["golang", "cpp", "java", "kotlin", "csharp"]
 
@@ -34,7 +35,8 @@ defmodule Codebattle.CodeCheck.Checker do
 
         {dir_path, check_code} = prepare_tmp_dir!(task, editor_text, lang)
         volume = "-v #{dir_path}:/usr/src/app/#{lang.check_dir}"
-        image_name = "--name match_#{game_id}_#{editor_lang}"
+        game_name = "match_#{game_id}_#{editor_lang}"
+        image_name = "--name #{game_name}}"
 
         check_command =
           docker_command_template
@@ -45,6 +47,8 @@ defmodule Codebattle.CodeCheck.Checker do
           docker_command_compile_template
           |> :io_lib.format([image_name, volume, lang.docker_image])
           |> to_string
+
+        GenServer.cast(GameKiller, {:add_game, game_name})
 
         result =
           start_check_solution(
