@@ -2,10 +2,10 @@ import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import Gon from 'gon';
+import useHover from '../utils/useHover';
 import LanguageIcon from './LanguageIcon';
 
 const defaultLanguages = Gon.getAsset('langs');
-
 const LangTitle = ({ slug, name, version }) => (
   <div className="d-inline-flex align-items-center">
     <LanguageIcon lang={slug} />
@@ -13,20 +13,37 @@ const LangTitle = ({ slug, name, version }) => (
     <span>{version}</span>
   </div>
 );
+const LangSwitcher = (first, second, refs) => {
+  // const inputRef = useRef(null);
+  const handleFocus = () => refs.current.focus();
+
+  const ButtonToggler = hovered => (
+    <button
+      className="btn p-0"
+      type="button"
+      onFocus={handleFocus}
+      id="dropdownLangButton"
+      data-toggle="dropdown"
+      aria-haspopup="true"
+      aria-expanded="false"
+    >
+      {hovered ? first : second}
+    </button>
+);
+  const [hovered] = useHover(ButtonToggler);
+  return hovered;
+};
+
 const LanguagePicker = ({
   languages, currentLangSlug, onChangeLang, disabled, langInput, changeText,
 }) => {
-  const langs = languages || defaultLanguages;
   const inputRef = useRef(null);
+
+  const langs = languages || defaultLanguages;
   const [[currentLang], otherLangs] = _.partition(langs, lang => lang.slug === currentLangSlug);
   const filteredLangs = otherLangs.filter(l => _.includes(l.name.toLowerCase(), langInput));
   const filterLangs = langInput === ''
   ? otherLangs : filteredLangs;
-
-  const handleFocus = () => {
-    const input = inputRef.current;
-    input.focus();
-  };
 
   if (disabled) {
     return (
@@ -36,27 +53,29 @@ const LanguagePicker = ({
     );
   }
 
+  const LangSwitchBtn = (
+    <button className="btn btn-md" type="button">
+      <LangTitle {...currentLang} />
+    </button>
+  );
+
+  const LangSwitchInput = (
+    <input
+      type="text"
+      name="langInput"
+      className="form-control input-text"
+      ref={inputRef}
+      placeholder={_.capitalize(currentLang.name)}
+      onClick={e => e.stopPropagation()}
+      onChange={changeText}
+      value={langInput}
+    />
+  );
+  const langPicker = LangSwitcher(LangSwitchInput, LangSwitchBtn, inputRef);
+
   return (
-    <div className="dropdown">
-      <button
-        className="btn btn-sm border btn-light dropdown-toggle"
-        type="button"
-        onFocus={handleFocus}
-        id="dropdownLangButton"
-        data-toggle="dropdown"
-        aria-haspopup="true"
-        aria-expanded="false"
-      >
-        <input
-          type="text"
-          name="langInput"
-          ref={inputRef}
-          placeholder={_.capitalize(currentLang.name)}
-          onClick={e => e.stopPropagation()}
-          onChange={changeText}
-          value={langInput}
-        />
-      </button>
+    <div className="dropdown col-7">
+      {langPicker}
       <div className="dropdown-menu cb-langs-dropdown" aria-labelledby="dropdownLangButton">
 
         {_.map(filterLangs, ({ slug, name, version }) => (
@@ -65,8 +84,8 @@ const LanguagePicker = ({
             className="dropdown-item btn rounded-0"
             key={slug}
             onClick={() => {
-              onChangeLang(slug);
-            }}
+                onChangeLang(slug);
+              }}
           >
             <LangTitle slug={slug} name={name} version={version} />
           </button>

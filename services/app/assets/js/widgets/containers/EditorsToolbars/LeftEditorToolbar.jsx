@@ -85,7 +85,10 @@ const renderNameplate = (player = {}, onlineUsers) => {
 };
 
 const LeftEditorToolbar = () => {
+  const dispatch = useDispatch();
   const [langInput, setLangInput] = useState('');
+  const changeText = e => setLangInput(e.target.value);
+
   const leftUserId = useSelector(state => _.get(selectors.leftEditorSelector(state), ['userId'], null));
   const rightUserId = useSelector(state => _.get(selectors.rightEditorSelector(state), ['userId'], null));
   const languages = useSelector(state => selectors.editorLangsSelector(state));
@@ -96,10 +99,8 @@ const LeftEditorToolbar = () => {
   const players = useSelector(state => selectors.gamePlayersSelector(state));
   const leftEditorsMode = useSelector(state => selectors.editorsModeSelector(leftUserId)(state));
   const theme = useSelector(state => selectors.editorsThemeSelector(leftUserId)(state));
-  const dispatch = useDispatch();
   const setMode = nextMode => () => dispatch(actions.setEditorsMode(nextMode));
   const switchTheme = nextTheme => () => dispatch(actions.switchEditorsTheme(nextTheme));
-  const changeText = e => setLangInput(e.target.value);
   const setLang = langSlug => {
     dispatch(changeCurrentLangAndSetTemplate(langSlug));
     setLangInput('');
@@ -111,10 +112,10 @@ const LeftEditorToolbar = () => {
 
   return (
     <div
-      className="py-2 px-3 btn-toolbar justify-content-between align-items-center"
+      className="py-1 px-3 btn-toolbar justify-content-between align-items-center"
       role="toolbar"
     >
-      <div className="btn-group" role="group" aria-label="Editor settings">
+      <div className="btn-group col-6 align-items-center" role="group" aria-label="Editor settings">
         <LanguagePicker
           languages={languages}
           currentLangSlug={leftEditorLangSlug}
