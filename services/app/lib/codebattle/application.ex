@@ -30,7 +30,7 @@ defmodule Codebattle.Application do
         supervisor(Codebattle.GameProcess.GlobalSupervisor, []),
         supervisor(Codebattle.Tournament.GlobalSupervisor, []),
         worker(Codebattle.Bot.CreatorServer, []),
-        worker(Codebattle.Utils.GameKiller, []),
+        worker(Codebattle.Utils.ContainerGameKiller, []),
         worker(Codebattle.UsersActivityServer, [])
       ] ++ prod_workers
 

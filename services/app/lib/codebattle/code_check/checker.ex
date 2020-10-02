@@ -7,7 +7,7 @@ defmodule Codebattle.CodeCheck.Checker do
   alias Codebattle.Generators.CheckerGenerator
   alias Codebattle.CodeCheck.CheckerStatus
   alias Codebattle.CodeCheck.CheckResult
-  alias Codebattle.Utils.GameKiller
+  alias Codebattle.Utils.ContainerGameKiller
 
   @langs_needs_compiling ["golang", "cpp", "java", "kotlin", "csharp"]
 
@@ -35,7 +35,7 @@ defmodule Codebattle.CodeCheck.Checker do
 
         {dir_path, check_code} = prepare_tmp_dir!(task, editor_text, lang)
         volume = "-v #{dir_path}:/usr/src/app/#{lang.check_dir}"
-        game_name = "match_#{game_id}_#{editor_lang}"
+        game_name = "match_#{game_id}_#{editor_lang}_#{:os.system_time(:millisecond)}"
         image_name = "--name #{game_name}}"
 
         check_command =
@@ -48,7 +48,7 @@ defmodule Codebattle.CodeCheck.Checker do
           |> :io_lib.format([image_name, volume, lang.docker_image])
           |> to_string
 
-        GenServer.cast(GameKiller, {:add_game, game_name})
+        GenServer.cast(ContainerGameKiller, {:add_game, game_name})
 
         result =
           start_check_solution(

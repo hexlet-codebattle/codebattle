@@ -1,4 +1,4 @@
-defmodule Codebattle.Utils.GameKiller do
+defmodule Codebattle.Utils.ContainerGameKiller do
   use GenServer
 
   @game_timeout 15
@@ -8,22 +8,21 @@ defmodule Codebattle.Utils.GameKiller do
     GenServer.start(__MODULE__, [], name: __MODULE__)
   end
 
-  def kill_game(game_name) do
-    System.cmd("docker", ["kill", game_name])
+  def kill_game_container(game_name) do
+    System.cmd("docker", ["rm", "-f", game_name])
   end
 
   # SERVER
   def init(state \\ []) do
-    Process.send_after(self(), :tick_games, 1000)
+    Process.send_after(self(), :tick_game_containers, 1000)
     {:ok, state}
   end
 
   def handle_cast({:add_game, game_name}, state) do
-    Process.send_after(self(), :tick_games, 1000)
     {:noreply, [[game_name, @game_timeout] | state]}
   end
 
-  def handle_info(:tick_games, state) do
+  def handle_info(:tick_game_containers, state) do
     ticked_games =
       state
       |> Enum.reduce(
@@ -33,7 +32,7 @@ defmodule Codebattle.Utils.GameKiller do
           time = List.last(game)
 
           if time <= 0 do
-            kill_game(game_name)
+            kill_game_container(game_name)
             acc
           else
             [[game_name, time - 1] | acc]
@@ -41,7 +40,7 @@ defmodule Codebattle.Utils.GameKiller do
         end
       )
 
-    Process.send_after(self(), :tick_games, 1000)
+    Process.send_after(self(), :tick_game_containers, 1000)
     {:noreply, ticked_games}
   end
 end
