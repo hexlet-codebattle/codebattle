@@ -83,13 +83,11 @@ defmodule Codebattle.Bot.PlayerServer do
 
       # TODO: add more pretty error handling
       {{:error, reason}, _} ->
-        Logger.error(reason)
-        {:error, reason}
+        Logger.error("#{inspect(reason)}")
         {:keep_state, state}
 
       {_, {:error, reason}} ->
-        Logger.error(reason)
-        {:error, reason}
+        Logger.error("#{inspect(reason)}")
         {:keep_state, state}
     end
   end
