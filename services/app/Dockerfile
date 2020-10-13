@@ -1,4 +1,4 @@
-FROM elixir:1.10.4-alpine
+FROM elixir:1.10.3-alpine
 ARG app_name=codebattle
 ARG phoenix_subdir=.
 ARG build_env=prod
