@@ -8376,13 +8376,13 @@ performance-now@^2.1.0:
   integrity sha1-Ywn04OX6kT7BxpMHrjZLSzd8nns=
 
 "phoenix@file:deps/phoenix":
-  version "1.5.4"
+  version "1.5.6"
 
 "phoenix_html@file:deps/phoenix_html":
   version "2.14.2"
 
 "phoenix_live_view@file:deps/phoenix_live_view":
-  version "0.13.3"
+  version "0.14.7"
 
 picomatch@^2.0.4, picomatch@^2.0.5, picomatch@^2.2.1:
   version "2.2.2"
