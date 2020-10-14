@@ -73,7 +73,7 @@ const getDateFromByNavItem = navItem => {
 
 const renderRatingModeNavItem = (navItem, activeMode, dispatch) => {
   const dateFrom = getDateFromByNavItem(navItem);
-  const classes = activeMode === navItem ? 'btn nav-link active' : 'btn btn-link nav-link'
+  const classes = activeMode === navItem ? 'btn nav-link active' : 'btn btn-link nav-link';
 
   return (
     <li key={navItem} className="nav-item">
@@ -115,7 +115,7 @@ const UsersRating = () => {
     return <Loading />;
   }
 
-  const ratingModes = ['weekly', 'monthly', 'total']
+  const ratingModes = ['weekly', 'monthly', 'total'];
 
   return (
     <div className="text-center">
