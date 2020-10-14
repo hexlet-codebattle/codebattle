@@ -35,6 +35,7 @@ import {
   renderUsersRating,
   renderUserPage,
 } from './widgets';
+import renderExtensionPopup from './widgets/components/ExtensionPopup';
 
 const Hooks = {
   NewChatMessage: {
@@ -57,6 +58,8 @@ window.addEventListener('phx:page-loading-start', _info => NProgress.start());
 window.addEventListener('phx:page-loading-stop', _info => NProgress.done());
 
 liveSocket.connect();
+
+renderExtensionPopup();
 
 const gameWidgetRoot = document.getElementById('game-widget-root');
 const heatmapRoot = document.getElementById('heatmap-root');
