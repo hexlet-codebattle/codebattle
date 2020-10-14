@@ -8,6 +8,7 @@ export const initialState = {
   usersRatingPage: {
     users: [],
     pageInfo: { totalEntries: 0 },
+    dateFrom: null,
   },
 };
 
@@ -39,8 +40,8 @@ const userSlice = createSlice({
       state.usersStats[userId] = { stats, achievements };
     },
     updateUsersRatingPage: (state, { payload }) => {
-      const { users, pageInfo } = payload;
-      state.usersRatingPage = { users, pageInfo };
+      const { users, pageInfo, dateFrom } = payload;
+      state.usersRatingPage = { users, pageInfo, dateFrom };
     },
   },
 });

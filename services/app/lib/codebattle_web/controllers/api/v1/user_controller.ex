@@ -6,7 +6,33 @@ defmodule CodebattleWeb.Api.V1.UserController do
 
   import Ecto.Query, warn: false
 
-  def info(conn, %{"id" => id}) do
+  def index(conn, params) do
+    page_number = Map.get(params, "page", "1")
+
+    query = Codebattle.User.Scope.list_users_with_raiting(params)
+    page = Repo.paginate(query, %{page: page_number})
+
+    page_info = Map.take(page, [:page_number, :page_size, :total_entries, :total_pages])
+
+    users =
+      Enum.map(
+        page.entries,
+        fn user ->
+          performance =
+            if is_nil(user.rating) do
+              nil
+            else
+              Kernel.round((user.rating - 1200) * 100 / (user.games_played + 1))
+            end
+
+          Map.put(user, :performance, performance)
+        end
+      )
+
+    json(conn, %{users: users, page_info: page_info, date_from: Map.get(params, "date_from")})
+  end
+
+  def show(conn, %{"id" => id}) do
     user = Repo.get(User, id)
 
     json(conn, %{user: user})
@@ -29,28 +55,5 @@ defmodule CodebattleWeb.Api.V1.UserController do
       stats: game_stats,
       user: user
     })
-  end
-
-  def index(conn, params) do
-    page_number = Map.get(params, "page", "1")
-
-    query = Codebattle.User.Scope.list_users_with_raiting(params)
-    page = Repo.paginate(query, %{page: page_number})
-
-    page_info = Map.take(page, [:page_number, :page_size, :total_entries, :total_pages])
-
-    users =
-      Enum.map(
-        page.entries,
-        fn user ->
-          Map.put(
-            user,
-            :performance,
-            Kernel.round((user.rating - 1200) * 100 / (user.games_played + 1))
-          )
-        end
-      )
-
-    json(conn, %{users: users, page_info: page_info})
   end
 end

@@ -5,7 +5,7 @@ import { actions } from '../slices';
 
 export const loadUser = dispatch => async user => {
   try {
-    const response = await axios.get(`/api/v1/user/${user.id}/info`);
+    const response = await axios.get(`/api/v1/users/${user.id}`);
     const data = camelizeKeys(response.data);
     dispatch(actions.setUserInfo(data));
   } catch (e) {
@@ -23,13 +23,14 @@ export const loadUserStats = dispatch => async user => {
   }
 };
 
-export const getUsersRatingPage = (page = 1, filter = '', sort = '') => dispatch => {
+export const getUsersRatingPage = (dateFrom = null, page = 1, filter = '', sort = '') => dispatch => {
   const queryParamsString = qs.stringify({
     page,
     s: sort,
     q: {
       name_ilike: filter,
     },
+    date_from: dateFrom,
   });
 
   axios.get(`/api/v1/users?${queryParamsString}`)

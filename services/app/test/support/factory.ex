@@ -19,6 +19,8 @@ defmodule CodebattleWeb.Factory do
       state: "waiting_opponent",
       level: "elementary",
       type: "public",
+      starts_at: TimeHelper.utc_now(),
+      finishs_at: TimeHelper.utc_now(),
       task: insert(:task)
     }
   end
@@ -26,6 +28,7 @@ defmodule CodebattleWeb.Factory do
   def user_game_factory do
     %UserGame{
       result: "won",
+      game: build(:game),
       user: build(:user)
     }
   end
