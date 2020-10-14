@@ -25,7 +25,7 @@ const toastOptions = {
   draggable: false,
 };
 
-export default () => {
+export default domElement => {
   const lastCheckTime = window.localStorage.getItem('lastCheckTime');
   const nowTime = Date.now();
   const oneMonth = 1000 * 60 * 60 * 24 * 30;
@@ -34,10 +34,6 @@ export default () => {
     const extensionInfo = { id: 'embfhnfkfobkdohleknckodkmhgmpdli', path: 'assets/128.png' };
     isExtensionInstalled(extensionInfo).then(isInstall => {
       if (isInstall === false) { return; }
-
-      const domElement = document.createElement('div');
-      domElement.setAttribute('id', 'extension');
-      document.body.appendChild(domElement);
 
       render(<ToastContainer {...toastOptions} />, domElement);
 
