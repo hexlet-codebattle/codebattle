@@ -31,6 +31,7 @@ export default domElement => {
   const oneMonth = 1000 * 60 * 60 * 24 * 30;
   if (window.chrome && (Number(lastCheckTime) + oneMonth < nowTime)) {
     window.localStorage.setItem('lastCheckTime', nowTime);
+    // TODO: move to env config extension id and icon path
     const extensionInfo = { id: 'embfhnfkfobkdohleknckodkmhgmpdli', path: 'assets/128.png' };
     isExtensionInstalled(extensionInfo).then(isInstall => {
       if (isInstall === false) { return; }
