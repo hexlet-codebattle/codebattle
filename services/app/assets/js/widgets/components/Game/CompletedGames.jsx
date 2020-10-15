@@ -4,7 +4,7 @@ import levelToClass from '../../config/levelToClass';
 import ResultIcon from './ResultIcon';
 import UserInfo from '../../containers/UserInfo';
 
-const CompletedGames = games => (
+const CompletedGames = ({ games }) => (
   <div className="table-responsive">
     <table className="table table-sm">
       <thead>
@@ -40,13 +40,13 @@ const CompletedGames = games => (
             </td>
             <td className="p-3 align-middle text-nowrap cb-username-td text-truncate">
               <div className="d-flex align-items-center">
-                {ResultIcon(game.id, game.players[0], game.players[1])}
+                <ResultIcon gameId={game.id} player1={game.players[0]} player2={game.players[1]} />
                 <UserInfo user={game.players[0]} />
               </div>
             </td>
             <td className="p-3 align-middle text-nowrap cb-username-td text-truncate">
               <div className="d-flex align-items-center">
-                {ResultIcon(game.id, game.players[1], game.players[0])}
+                <ResultIcon gameId={game.id} player1={game.players[1]} player2={game.players[0]} />
                 <UserInfo user={game.players[1]} />
               </div>
             </td>
