@@ -119,7 +119,7 @@ const UserProfile = () => {
               && (
               <>
                 <h2 className="text-center">Completed games</h2>
-                {CompletedGames(stats.completedGames)}
+                <CompletedGames games={stats.completedGames} />
               </>
 )}
             </div>
