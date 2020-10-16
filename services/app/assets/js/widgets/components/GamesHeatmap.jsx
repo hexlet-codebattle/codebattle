@@ -1,18 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import CalendarHeatmap from 'react-calendar-heatmap';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+
 import Loading from './Loading';
 
 const GamesHeatmap = () => {
   const [activities, setActivities] = useState(null);
 
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    axios.get('/api/v1/game_activity')
-      .then(response => { setActivities(response.data.activities); });
-  }, []);
+    axios
+      .get('/api/v1/game_activity')
+      .then(response => {
+        setActivities(response.data.activities);
+      })
+      .catch(error => {
+        dispatch({ type: 'FETCH_USER_ACTIVITY', error: true, payload: error });
+      });
+  }, [dispatch]);
 
   if (!activities) {
-    return (<Loading />);
+    return <Loading />;
   }
   return (
     <div className="card rounded">

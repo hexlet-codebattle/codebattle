@@ -1,23 +1,35 @@
+import { camelizeKeys } from 'humps';
+import { useDispatch } from 'react-redux';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { camelizeKeys } from 'humps';
-import Loading from '../components/Loading';
-import Heatmap from './Heatmap';
+
 import CompletedGames from '../components/Game/CompletedGames';
+import Heatmap from './Heatmap';
+import Loading from '../components/Loading';
 
 const UserProfile = () => {
   const [stats, setStats] = useState(null);
 
+  const dispatch = useDispatch();
+
   useEffect(() => {
     const userId = window.location.pathname.split('/').pop();
-    axios.get(`/api/v1/user/${userId}/stats`).then(response => {
-      setStats(camelizeKeys(response.data));
-    });
-  }, [setStats]);
+    axios
+      .get(`/api/v1/user/${userId}/stats`)
+      .then(response => {
+        setStats(camelizeKeys(response.data));
+      })
+      .catch(error => {
+        dispatch({ type: 'FETCH_USER_STATS_ERROR', error: true, payload: error });
+      });
+  }, [dispatch, setStats]);
 
   const renderAchievemnt = achievement => {
     if (achievement.includes('win_games_with')) {
-      const langs = achievement.split('?').pop().split('_');
+      const langs = achievement
+        .split('?')
+        .pop()
+        .split('_');
 
       return (
         <div className="cb-polyglot" title={achievement}>
@@ -36,16 +48,16 @@ const UserProfile = () => {
         </div>
       );
     }
-      return (
-        <img
-          className="mr-1"
-          src={`/assets/images/achievements/${achievement}.png`}
-          alt={achievement}
-          title={achievement}
-          width="200"
-          height="200"
-        />
-      );
+    return (
+      <img
+        className="mr-1"
+        src={`/assets/images/achievements/${achievement}.png`}
+        alt={achievement}
+        title={achievement}
+        width="200"
+        height="200"
+      />
+    );
   };
   if (!stats) {
     return <Loading />;
@@ -66,10 +78,7 @@ const UserProfile = () => {
             </div>
             <h1 className="mt-1 mb-0">
               {stats.user.name}
-              <a
-                className="text-muted"
-                href={`https://github.com/${stats.user.githubName}`}
-              >
+              <a className="text-muted" href={`https://github.com/${stats.user.githubName}`}>
                 <span className="fab fa-github mt-5 pl-3" />
               </a>
             </h1>
@@ -95,16 +104,13 @@ const UserProfile = () => {
             <p className="lead">won::lost::gave up</p>
           </div>
           <div className="col-12 col-md-4 col-lg-2 text-center">
-            <div className="h1">
-              {stats.stats.won + stats.stats.lost + stats.stats.gaveUp}
-            </div>
+            <div className="h1">{stats.stats.won + stats.stats.lost + stats.stats.gaveUp}</div>
             <p className="lead">games_played</p>
           </div>
         </div>
         <div className="row">
           <div className="col-12 mt-4">
-            {stats.user.achievements.length > 0
-              && (
+            {stats.user.achievements.length > 0 && (
               <>
                 <h2 className="mt-1 mb-0">Achievements</h2>
                 <div className="d-flex justify-content-center cb-profile mt-4">
@@ -113,15 +119,14 @@ const UserProfile = () => {
                   ))}
                 </div>
               </>
-)}
+            )}
             <div className="text-left mt-5">
-              {stats.completedGames.length > 0
-              && (
-              <>
-                <h2 className="text-center">Completed games</h2>
-                <CompletedGames games={stats.completedGames} />
-              </>
-)}
+              {stats.completedGames.length > 0 && (
+                <>
+                  <h2 className="text-center">Completed games</h2>
+                  <CompletedGames games={stats.completedGames} />
+                </>
+              )}
             </div>
           </div>
         </div>
