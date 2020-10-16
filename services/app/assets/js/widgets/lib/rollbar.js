@@ -1,6 +1,6 @@
-import Rollbar from "rollbar";
+import Rollbar from 'rollbar';
 
-const isProd = process.env.NODE_ENV === 'production'
+const isProd = process.env.NODE_ENV === 'production';
 
 const rollbar = new Rollbar({
   accessToken: process.env.ROLLBAR_API_TOKEN,
@@ -8,8 +8,13 @@ const rollbar = new Rollbar({
   captureUnhandledRejections: true,
   enabled: isProd,
   payload: {
-    environment: `${process.env.NODE_ENV}:frontend`
-  }
+    environment: process.env.NODE_ENV,
+  },
+});
+
+rollbar.global({
+  itemsPerMinute: 5,
+  maxItems: 10,
 });
 
 export default rollbar;
