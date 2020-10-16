@@ -4,6 +4,8 @@ import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import { PersistGate } from 'redux-persist/integration/react';
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
+import rollbarMiddleware from 'rollbar-redux-middleware';
+import rollbar from './lib/rollbar';
 import RootContainer from './containers/RootContainer';
 import reducers from './slices';
 import LobbyWidget from './containers/LobbyWidget';
@@ -22,6 +24,7 @@ const rootReducer = combineReducers({
   ...otherReducers,
 });
 
+const rollbarRedux = rollbarMiddleware(Rollbar);
 // TODO: put initial state from gon
 const store = configureStore({
   reducer: rootReducer,
