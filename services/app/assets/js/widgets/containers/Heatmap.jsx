@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import CalendarHeatmap from 'react-calendar-heatmap';
-import axios from 'axios';
 import { useDispatch } from 'react-redux';
+import CalendarHeatmap from 'react-calendar-heatmap';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+
+import { actions } from '../slices';
 import Loading from '../components/Loading';
 
 const getColorScale = count => {
@@ -30,7 +32,7 @@ const Heatmap = () => {
         setActivities(response.data.activities);
       })
       .catch(error => {
-        dispatch({ type: 'FETCH_USER_ACTIVITY_ERROR', error: true, payload: error });
+        dispatch(actions.setError(error));
       });
   }, [setActivities, dispatch]);
 

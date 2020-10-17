@@ -9,7 +9,7 @@ export const loadUser = dispatch => async user => {
     const data = camelizeKeys(response.data);
     dispatch(actions.setUserInfo(data));
   } catch (error) {
-    dispatch({ type: 'FETCH_USER_INFO_ERROR', error: true, payload: error });
+    dispatch(actions.setError(error));
   }
 };
 
@@ -19,7 +19,7 @@ export const loadUserStats = dispatch => async user => {
     const data = camelizeKeys(response.data);
     dispatch(actions.updateUsersStats(data));
   } catch (error) {
-    dispatch({ type: 'FETCH_USER_STATS_ERROR', error: true, payload: error });
+    dispatch(actions.setError(error));
   }
 };
 
@@ -39,7 +39,7 @@ export const getUsersRatingPage = (page = 1, filter = '', sort = '') => dispatch
       dispatch(actions.finishStoreInit());
     })
     .catch(error => {
-      dispatch({ type: 'FETCH_USER_ERORR', error: true, payload: error });
+      dispatch(actions.setError(error));
     });
 };
 

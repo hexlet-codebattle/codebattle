@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
+import { actions } from '../slices';
 import CompletedGames from '../components/Game/CompletedGames';
 import Heatmap from './Heatmap';
 import Loading from '../components/Loading';
@@ -20,7 +21,7 @@ const UserProfile = () => {
         setStats(camelizeKeys(response.data));
       })
       .catch(error => {
-        dispatch({ type: 'FETCH_USER_STATS_ERROR', error: true, payload: error });
+        dispatch(actions.setError(error));
       });
   }, [dispatch, setStats]);
 

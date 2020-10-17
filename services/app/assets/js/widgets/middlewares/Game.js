@@ -313,7 +313,7 @@ export const storedGameEditorReady = () => dispatch => {
       dispatch(actions.finishStoreInit());
     })
     .catch(error => {
-      dispatch({ type: 'FETCH_PLAYBOOK_ERROR', error: true, payload: error });
+      dispatch(actions.setError(error));
     });
 };
 

@@ -3,6 +3,7 @@ import CalendarHeatmap from 'react-calendar-heatmap';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
+import { actions } from '../slices';
 import Loading from './Loading';
 
 const GamesHeatmap = () => {
@@ -17,7 +18,7 @@ const GamesHeatmap = () => {
         setActivities(response.data.activities);
       })
       .catch(error => {
-        dispatch({ type: 'FETCH_USER_ACTIVITY', error: true, payload: error });
+        dispatch(actions.setError(error));
       });
   }, [dispatch]);
 
