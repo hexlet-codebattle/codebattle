@@ -28,7 +28,8 @@ jobs:
           version: ${{ github.sha }}
           status: 'started'
         env:
-          ROLLBAR_ACCESS_TOKEN: ${{ secrets.ROLLBAR_API_KEY }}
+          ROLLBAR_ACCESS_TOKEN: ${{ secrets.ROLLBAR_ACCESS_TOKEN }}
+          ROLLBAR_USERNAME: ${{ secrets.ROLLBAR_USERNAME }}
 
       - uses: actions/checkout@v1
 
@@ -121,6 +122,7 @@ jobs:
           status: 'succeeded'
         env:
           ROLLBAR_ACCESS_TOKEN: ${{ secrets.ROLLBAR_ACCESS_TOKEN }}
+          ROLLBAR_USERNAME: ${{ secrets.ROLLBAR_USERNAME }}
 
       # stop integratoin tests on CI becaues of https://github.com/hexlet-codebattle/codebattle/runs/580337561?check_suite_focus=true
       # - name: Pull dockers
