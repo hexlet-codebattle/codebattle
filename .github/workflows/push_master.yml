@@ -28,7 +28,7 @@ jobs:
           version: ${{ github.sha }}
           status: 'started'
         env:
-          ROLLBAR_ACCESS_TOKEN: ${{ secrets.ROLLBAR_ACCESS_TOKEN }}
+          ROLLBAR_ACCESS_TOKEN: ${{ secrets.ROLLBAR_API_KEY }}
 
       - uses: actions/checkout@v1
 
