@@ -8,8 +8,8 @@ export const loadUser = dispatch => async user => {
     const response = await axios.get(`/api/v1/user/${user.id}/info`);
     const data = camelizeKeys(response.data);
     dispatch(actions.setUserInfo(data));
-  } catch (e) {
-    console.log(e.message);
+  } catch (error) {
+    dispatch({ type: 'FETCH_USER_INFO_ERROR', error: true, payload: error });
   }
 };
 
@@ -18,8 +18,8 @@ export const loadUserStats = dispatch => async user => {
     const response = await axios.get(`/api/v1/user/${user.id}/stats`);
     const data = camelizeKeys(response.data);
     dispatch(actions.updateUsersStats(data));
-  } catch (e) {
-    console.log(e.message);
+  } catch (error) {
+    dispatch({ type: 'FETCH_USER_STATS_ERROR', error: true, payload: error });
   }
 };
 
@@ -32,10 +32,14 @@ export const getUsersRatingPage = (page = 1, filter = '', sort = '') => dispatch
     },
   });
 
-  axios.get(`/api/v1/users?${queryParamsString}`)
+  axios
+    .get(`/api/v1/users?${queryParamsString}`)
     .then(({ data }) => {
       dispatch(actions.updateUsersRatingPage(camelizeKeys(data)));
       dispatch(actions.finishStoreInit());
+    })
+    .catch(error => {
+      dispatch({ type: 'FETCH_USER_ERORR', error: true, payload: error });
     });
 };
 
