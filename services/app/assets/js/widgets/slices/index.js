@@ -10,7 +10,14 @@ import game, { actions as gameActions } from './game';
 import gameList, { actions as gameListActions } from './gameList';
 import user, { actions as userActions } from './user';
 
+const setError = error => ({
+  type: 'ERROR',
+  error: true,
+  payload: error,
+});
+
 export const actions = {
+  setError,
   ...chatActions,
   ...editorActions,
   ...gameActions,
@@ -28,12 +35,6 @@ export const redirectToNewGame = gameId => {
   window.location.href = `/games/${gameId}`;
 };
 
-const setError = error => ({
-  type: 'ERROR',
-  error: true,
-  payload: error,
-});
-
 export default {
   game,
   usersInfo,
@@ -46,6 +47,5 @@ export default {
   gameList,
   storeLoaded,
   executionOutput,
-  setError,
 };
 export { makeEditorTextKey } from './editor';
