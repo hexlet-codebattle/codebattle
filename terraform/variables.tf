@@ -10,3 +10,4 @@ variable "github_client_secret" {}
 variable "github_client_id" {}
 variable "onesignal_api_key" {}
 variable "onesignal_app_id" {}
+variable "rollbar_api_key" {}
