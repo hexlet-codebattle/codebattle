@@ -29,7 +29,12 @@ defmodule CodebattleWeb.Api.V1.UserController do
         end
       )
 
-    json(conn, %{users: users, page_info: page_info, date_from: Map.get(params, "date_from")})
+    json(conn, %{
+      users: users,
+      page_info: page_info,
+      date_from: Map.get(params, "date_from"),
+      with_bots: Map.get(params, "with_bots")
+    })
   end
 
   def show(conn, %{"id" => id}) do

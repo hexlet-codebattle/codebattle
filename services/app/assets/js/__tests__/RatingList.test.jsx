@@ -20,6 +20,7 @@ axios.get.mockResolvedValue({
     users: [],
     pageInfo: { totalEntries: 0 },
     dateFrom: null,
+    withBots: false,
   },
 });
 

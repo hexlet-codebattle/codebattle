@@ -13,7 +13,7 @@ defmodule Codebattle.User.Scope do
     params
     |> initial_with_raiting_scope()
     |> search_by_name(params)
-    |> without_bots()
+    |> without_bots(params)
     |> sort(params)
   end
 
@@ -62,7 +62,9 @@ defmodule Codebattle.User.Scope do
     )
   end
 
-  defp without_bots(query) do
+  defp without_bots(query, %{"with_bots" => "true"}), do: query
+
+  defp without_bots(query, _params) do
     from(u in subquery(query),
       where: u.is_bot == false
     )
