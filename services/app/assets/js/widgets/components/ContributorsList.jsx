@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import axios from 'axios';
 
+import { actions } from '../slices';
+
 const renderContributorsList = contributors => (
   <ul className="d-flex flex-row align-items-begin list-unstyled mb-2">
     {contributors
@@ -46,7 +48,7 @@ const ContributorsList = ({ name }) => {
         setAvatars(_.uniqBy(contributorsList, 'avatarLink'));
       })
       .catch(error => {
-        dispatch({ type: 'FETCH_CONTRIBUTORS_ERROR', error: true, payload: error });
+        dispatch(actions.setError(error));
       });
   }, [url, name, dispatch]);
 

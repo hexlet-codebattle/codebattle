@@ -28,7 +28,14 @@ const rollbarRedux = rollbarMiddleware(rollbar);
 // TODO: put initial state from gon
 const store = configureStore({
   reducer: rootReducer,
-  middleware: [rollbarRedux, ...getDefaultMiddleware()],
+  middleware: [
+    rollbarRedux,
+    ...getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: ['ERROR'],
+      },
+    }),
+  ],
 });
 
 const persistor = persistStore(store);

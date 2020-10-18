@@ -4,15 +4,20 @@ import storeLoaded, { actions as storeLoadedActions } from './store';
 import usersInfo, { actions as usersInfoActions } from './usersInfo';
 import editorUI, { actions as editorUIActions } from './editorUI';
 import gameUI, { actions as gameUIActions } from './gameUI';
-import executionOutput, {
-  actions as executionOutputActions,
-} from './executionOutput';
+import executionOutput, { actions as executionOutputActions } from './executionOutput';
 import playbook, { actions as playbookActions } from './playbook';
 import game, { actions as gameActions } from './game';
 import gameList, { actions as gameListActions } from './gameList';
 import user, { actions as userActions } from './user';
 
+const setError = error => ({
+  type: 'ERROR',
+  error: true,
+  payload: error,
+});
+
 export const actions = {
+  setError,
   ...chatActions,
   ...editorActions,
   ...gameActions,
