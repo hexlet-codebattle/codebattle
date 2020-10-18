@@ -19,6 +19,8 @@ axios.get.mockResolvedValue({
   data: {
     users: [],
     pageInfo: { totalEntries: 0 },
+    dateFrom: null,
+    withBots: false,
   },
 });
 
@@ -36,5 +38,5 @@ test('test rendering RatingList', async () => {
   const { getByText } = render(<Provider store={store}><RatingList /></Provider>);
 
   expect(getByText(/Users rating/)).toBeInTheDocument();
-  expect(getByText(/Total: 0/)).toBeInTheDocument();
+  expect(getByText(/Total entries: 0/)).toBeInTheDocument();
 });

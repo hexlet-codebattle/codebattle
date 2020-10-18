@@ -9,7 +9,11 @@ config :codebattle, CodebattleWeb.Endpoint,
 config :phoenix_integration, endpoint: CodebattleWeb.Endpoint
 
 # Print only warnings and errors during test
-config :logger, level: :error
+if is_nil(System.get_env("DEBUG")) do
+  config :logger, level: :error
+else
+  config :logger, :console, level: :debug
+end
 
 # Configure your database
 config :codebattle, Codebattle.Repo,

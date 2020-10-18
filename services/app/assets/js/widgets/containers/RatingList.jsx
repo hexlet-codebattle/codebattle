@@ -44,17 +44,44 @@ const renderPagination = ({
     pageSize: itemsCountPerPage,
     totalEntries: totalItemsCount,
   },
+  dateFrom,
+  withBots,
 }, dispatch) => (
   <Pagination
     activePage={activePage}
     itemsCountPerPage={itemsCountPerPage}
     totalItemsCount={totalItemsCount}
     pageRangeDisplayed={5}
-    onChange={page => dispatch(getUsersRatingPage(page))}
+    onChange={page => dispatch(getUsersRatingPage(dateFrom, withBots, page))}
     itemClass="page-item"
     linkClass="page-link"
   />
 );
+
+const getActiveModeByDateFrom = dateFrom => {
+  if (!dateFrom) return 'total';
+  if (moment.utc(dateFrom) <= moment().startOf('month')) return 'monthly';
+
+  return 'weekly';
+};
+
+const getDateFromByNavItem = navItem => {
+  if (navItem === 'weekly') return moment().startOf('week').utc().format('YYYY-MM-DD');
+  if (navItem === 'monthly') return moment().startOf('month').utc().format('YYYY-MM-DD');
+
+  return null;
+};
+
+const renderRatingModeNavItem = (navItem, activeMode, withBots, dispatch) => {
+  const dateFrom = getDateFromByNavItem(navItem);
+  const classes = activeMode === navItem ? 'btn nav-link active' : 'btn btn-link nav-link';
+
+  return (
+    <li key={navItem} className="nav-item">
+      <button type="button" className={classes} onClick={() => dispatch(getUsersRatingPage(dateFrom, withBots))}>{navItem}</button>
+    </li>
+  );
+};
 
 const UsersRating = () => {
   const [sort, setSort] = useState({
@@ -64,11 +91,17 @@ const UsersRating = () => {
 
   const usersRatingPage = useSelector(usersListSelector);
   const storeLoaded = useSelector(state => state.storeLoaded);
-
   const dispatch = useDispatch();
 
+  const {
+    pageInfo: { totalEntries },
+    users,
+    dateFrom,
+    withBots,
+  } = usersRatingPage;
+
   useEffect(() => {
-    dispatch(getUsersRatingPage(1));
+    dispatch(getUsersRatingPage(null, true, 1));
   }, [dispatch]);
 
   let filterNode;
@@ -81,17 +114,24 @@ const UsersRating = () => {
       direction,
     });
 
-    dispatch(getUsersRatingPage(1, filterNode.value, `${attribute}+${direction}`));
+    dispatch(getUsersRatingPage(dateFrom, withBots, 1, filterNode.value, `${attribute}+${direction}`));
   };
 
   if (!storeLoaded) {
     return <Loading />;
   }
 
+  const ratingModes = ['weekly', 'monthly', 'total'];
+
   return (
     <div className="text-center">
       <h2 className="font-weight-normal">Users rating</h2>
-      <p>{`Total: ${usersRatingPage.pageInfo.totalEntries}`}</p>
+      <p>{`Total entries: ${totalEntries}`}</p>
+
+      <ul className="nav nav-pills justify-content-center">
+        {ratingModes.map(item => renderRatingModeNavItem(item, getActiveModeByDateFrom(dateFrom), withBots, dispatch))}
+      </ul>
+
       <div className="form-inline justify-content-between">
         <div className="input-group">
           <div className="input-group-prepend">
@@ -105,10 +145,23 @@ const UsersRating = () => {
             placeholder="Username"
             aria-label="Username"
             aria-describedby="basic-addon1"
-            onChange={() => dispatch(getUsersRatingPage(1, filterNode.value))}
+            onChange={() => dispatch(getUsersRatingPage(dateFrom, withBots, 1, filterNode.value))}
             // eslint-disable-next-line react/no-find-dom-node
             ref={c => { filterNode = ReactDOM.findDOMNode(c); }}
           />
+        </div>
+        <div className="form-check">
+          <label className="form-check-label" htmlFor="withBots">
+            <input
+              id="withBots"
+              className="form-check-input"
+              type="checkbox"
+              name="with_bots"
+              onChange={() => dispatch(getUsersRatingPage(dateFrom, !withBots, 1, filterNode.value))}
+              defaultChecked={withBots}
+            />
+            With bots
+          </label>
         </div>
       </div>
       <table className="table">
@@ -154,7 +207,7 @@ const UsersRating = () => {
           </tr>
         </thead>
         <tbody className="text-left">
-          {usersRatingPage.users.map(renderUser)}
+          {users.map(renderUser)}
         </tbody>
       </table>
       <div>
