@@ -7,9 +7,20 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const env = process.env.NODE_ENV || 'development';
 const isProd = env === 'production';
 
+function recursiveIssuer(m) {
+  if (m.issuer) {
+    return recursiveIssuer(m.issuer);
+  } else if (m.name) {
+    return m.name;
+  } else {
+    return false;
+  }
+}
+
 module.exports = {
   entry: {
     app: ['./assets/js/app.js', './assets/css/style.scss'],
+    landing: ['./assets/js/app.js', './assets/css/landing.scss'],
   },
   output: {
     path: path.resolve(__dirname, '../priv/static/assets'),
@@ -50,7 +61,38 @@ module.exports = {
         test: /\.(eot|svg|ttf|woff|woff2)$/,
         use: 'url-loader',
       },
+      {
+        test: /\.(png|jpg|gif|svg)$/,
+        use: [
+          {
+            loader: "file-loader",
+            options: {
+              name: "[name].[ext]",
+            },
+          },
+        ],
+      },
     ],
+  },
+  optimization: {
+    splitChunks: {
+      cacheGroups: {
+        fooStyles: {
+          name: 'app',
+          test: (m, c, entry = 'app') =>
+            m.constructor.name === 'CssModule' && recursiveIssuer(m) === entry,
+          chunks: 'all',
+          enforce: true,
+        },
+        barStyles: {
+          name: 'landing',
+          test: (m, c, entry = 'landing') =>
+            m.constructor.name === 'CssModule' && recursiveIssuer(m) === entry,
+          chunks: 'all',
+          enforce: true,
+        },
+      },
+    },
   },
   plugins: [
     new CopyWebpackPlugin({
@@ -74,7 +116,7 @@ module.exports = {
       ],
     }),
     new MiniCssExtractPlugin({
-      filename: 'style.css',
+      filename: '[name].css',
     }),
     new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /(en|ru)$/),
   ],
