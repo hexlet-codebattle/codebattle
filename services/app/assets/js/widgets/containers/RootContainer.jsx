@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import { useHotkeys } from 'react-hotkeys-hook';
 import Gon from 'gon';
 import GameWidget from './GameWidget';
@@ -9,13 +9,20 @@ import userTypes from '../config/userTypes';
 import { actions } from '../slices';
 import * as GameActions from '../middlewares/Game';
 import GameStatusCodes from '../config/gameStatusCodes';
-import { gameStatusSelector } from '../selectors';
+import { gameStatusSelector, replayIsShownSelector } from '../selectors';
 import WaitingOpponentInfo from '../components/WaitingOpponentInfo';
 import CodebattlePlayer from './CodebattlePlayer';
 
 const RootContainer = ({
-  storeLoaded, gameStatusCode, checkResult, init, setCurrentUser,
+  storeLoaded,
+  gameStatusCode,
+  checkResult,
+  init,
+  setCurrentUser,
+  replayIsShown,
 }) => {
+  const dispatch = useDispatch();
+
   useEffect(() => {
     const user = Gon.getAsset('current_user');
     // FIXME: maybe take from gon?
@@ -23,10 +30,15 @@ const RootContainer = ({
     init();
   }, [init, setCurrentUser]);
 
-  useHotkeys('ctrl+enter, command+enter', e => {
-    e.preventDefault();
-    checkResult();
-  }, [], { filter: () => true });
+  useHotkeys(
+    'ctrl+enter, command+enter',
+    e => {
+      e.preventDefault();
+      checkResult();
+    },
+    [],
+    { filter: () => true },
+  );
 
   if (!storeLoaded) {
     // TODO: add loader
@@ -38,7 +50,13 @@ const RootContainer = ({
     return <WaitingOpponentInfo gameUrl={gameUrl} />;
   }
 
-  const isStoredGame = gameStatusCode === GameStatusCodes.stored;
+  const handleShowReplay = () => {
+    dispatch(actions.showPlayer());
+  };
+
+  const handleHideReplay = () => {
+    dispatch(actions.hidePlayer());
+  };
 
   return (
     <div className="x-outline-none">
@@ -47,8 +65,15 @@ const RootContainer = ({
           <InfoWidget />
           <GameWidget />
         </div>
+        <button
+          type="button"
+          className="btn btn-info"
+          onClick={replayIsShown ? handleHideReplay : handleShowReplay}
+        >
+          {replayIsShown ? 'Hide replay timeline' : 'Show replay timeline'}
+        </button>
       </div>
-      {isStoredGame && <CodebattlePlayer />}
+      {replayIsShown && <CodebattlePlayer />}
     </div>
   );
 };
@@ -62,6 +87,7 @@ RootContainer.propTypes = {
 const mapStateToProps = state => ({
   storeLoaded: state.storeLoaded,
   gameStatusCode: gameStatusSelector(state).status,
+  replayIsShown: replayIsShownSelector(state),
 });
 
 const mapDispatchToProps = {
