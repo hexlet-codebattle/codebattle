@@ -16,7 +16,9 @@ defmodule CodebattleWeb.PageController do
         conn
         |> put_layout("landing.html")
         |> render("landing.html")
-      _ -> render(conn, "index.html", current_user: current_user)
+
+      _ ->
+        render(conn, "index.html", current_user: current_user)
     end
   end
 
