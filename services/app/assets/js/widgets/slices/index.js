@@ -49,5 +49,6 @@ export default {
   gameList,
   storeLoaded,
   executionOutput,
+  replayPlayer,
 };
 export { makeEditorTextKey } from './editor';
