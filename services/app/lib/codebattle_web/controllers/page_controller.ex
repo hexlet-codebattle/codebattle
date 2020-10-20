@@ -11,7 +11,15 @@ defmodule CodebattleWeb.PageController do
       user_id: current_user.id
     })
 
-    render(conn, "index.html", current_user: current_user)
+    case current_user.guest do
+      true ->
+        conn
+        |> put_layout("landing.html")
+        |> render("landing.html")
+
+      _ ->
+        render(conn, "index.html", current_user: current_user)
+    end
   end
 
   def robots(conn, _) do
