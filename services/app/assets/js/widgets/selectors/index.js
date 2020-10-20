@@ -59,18 +59,14 @@ export const secondEditorSelector = state => {
 export const leftEditorSelector = state => {
   const currentUserId = currentUserIdSelector(state);
   const player = _.get(gamePlayersSelector(state), currentUserId, false);
-  const editorSelector = !!player && player.type === userTypes.secondPlayer
-      ? secondEditorSelector
-      : firstEditorSelector;
+  const editorSelector = !!player && player.type === userTypes.secondPlayer ? secondEditorSelector : firstEditorSelector;
   return editorSelector(state);
 };
 
 export const rightEditorSelector = state => {
   const currentUserId = currentUserIdSelector(state);
   const player = _.get(gamePlayersSelector(state), currentUserId, false);
-  const editorSelector = !!player && player.type === userTypes.secondPlayer
-      ? firstEditorSelector
-      : secondEditorSelector;
+  const editorSelector = !!player && player.type === userTypes.secondPlayer ? firstEditorSelector : secondEditorSelector;
   return editorSelector(state);
 };
 
@@ -182,3 +178,5 @@ export const isOpponentInGameSelector = state => {
   });
   return !_.isUndefined(findedUser);
 };
+
+export const replayIsShownSelector = state => state.replayPlayer.isShown;
