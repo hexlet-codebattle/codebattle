@@ -61,20 +61,13 @@ export default function ChatInput() {
       onSubmit={handleSubmit}
     >
       <input
-        className="form-control border-secondary pr-4"
+        className="h-auto form-control border-secondary"
         placeholder="Type message here..."
         value={message}
         onChange={handleChange}
         onBlur={hideTooltip}
         ref={inputRef}
       />
-      <button
-        type="button"
-        className="btn btn-link position-absolute cb-emoji-button"
-        onClick={togglePickerVisibility}
-      >
-        <Emoji emoji="grinning" set="apple" size={20} />
-      </button>
       {isTooltipVisible && (
         <EmojiToolTip
           emojis={emojiIndex.search(getColons(message))}
@@ -89,6 +82,13 @@ export default function ChatInput() {
       />
       )}
       <div className="input-group-append">
+        <button
+          type="button"
+          className="btn btn-outline-secondary "
+          onClick={togglePickerVisibility}
+        >
+          <Emoji emoji="grinning" set="apple" size={16} />
+        </button>
         <button className="btn btn-outline-secondary" type="button" onClick={handleSubmit}>
           Send
         </button>
