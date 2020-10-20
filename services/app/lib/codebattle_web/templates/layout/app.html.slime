@@ -19,7 +19,7 @@ html lang="en"
     meta content="#ffffff" name="theme-color"
     = render_tags_all(assigns[:meta_tags] || %{})
     = csrf_meta_tag()
-    link rel="stylesheet" href=static_path(@conn,"/assets/style.css")
+    link rel="stylesheet" href=static_path(@conn,"/assets/app.css")
     title Codebattle
     = unless @current_user.guest do
       - app_id = "#{Application.get_env(:one_signal, OneSignal)[:app_id]}"
