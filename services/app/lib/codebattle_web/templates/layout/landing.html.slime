@@ -1,0 +1,38 @@
+doctype html
+html lang="en"
+  head
+    meta charset="utf-8"
+    meta content="IE=edge" http-equiv="X-UA-Compatible"
+    meta content="width=device-width, initial-scale=1" name="viewport"
+    meta content="" name="description"
+    meta content="" name="author"
+    meta name="yandex-verification" content="118841763f58b514"
+    link href="/assets/images/favicons/apple-icon-180x180.png" rel="apple-touch-icon" sizes="180x180"
+    link href="/assets/images/favicons/favicon-96x96.png" rel="icon" sizes="96x96" type="image/png"
+    link href="/assets/images/favicons/favicon-32x32.png" rel="icon" sizes="32x32" type="image/png"
+    link href="/assets/images/favicons/favicon-16x16.png" rel="icon" sizes="16x16" type="image/png"
+    link href="/assets/images/favicons/manifest.json" rel="manifest"
+    link color="#5bbad5" href="/assets/images/favicons/safari-pinned-tab.svg" rel="mask-icon"
+    link href="/assets/images/favicons/favicon.ico" rel="shortcut icon"
+    meta content="#b91d47" name="msapplication-TileColor"
+    meta content="/assets/images/favicons/browserconfig.xml" name="msapplication-config"
+    meta content="#ffffff" name="theme-color"
+    = render_tags_all(assigns[:meta_tags] || %{})
+    = csrf_meta_tag()
+    link rel="stylesheet" href=static_path(@conn,"/assets/landing.css")
+    title Codebattle
+    meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport"
+    script async="" defer="" src="https://buttons.github.io/buttons.js"
+    /! Google Tag Manager
+    = if Mix.env() == :prod do
+      javascript:
+        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0], j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src= 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-N6C9TFH');
+    /! End Google Tag Manager
+  body
+    /! Google Tag Manager (noscript)
+    = if Mix.env() == :prod do
+      noscript
+        iframe height="0" src="https://www.googletagmanager.com/ns.html?id=GTM-N6C9TFH" style="display:none;visibility:hidden" width="0"
+    /! End Google Tag Manager (noscript)
+    = @inner_content
+  script src=static_path(@conn,"/assets/landing.js")

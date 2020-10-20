@@ -4,6 +4,7 @@
 
 .btn:hover {
   color: red;
+  border-color: red;
   text-decoration: if($link-hover-decoration == underline, none, null);
 }
 
@@ -27,12 +28,15 @@ h2 {
   font-size: 50px;
   font-weight: 400;
   font-style: normal;
-}
 
-@media (max-width: $sm) {
-  h2{
+  @media (max-width: $sm) {
     font-size: 9vw;
   }
+}
+
+.header-txt {
+  font-size: 18px;
+  line-height: 18px;
 }
 
 .btn-outline-grey {
@@ -44,7 +48,7 @@ h2 {
 }
 
 .bg-codebattle {
-  //background-image: url("../assets/bg3.svg");
+  background-image: url("/assets/images/landing/bg-codebattle.svg");
   background-repeat: no-repeat;
   background-size: 70%;
   background-position: right;
@@ -60,20 +64,22 @@ h2 {
   border-radius: 0%;
 }
 
-.x-translate-y-50 {
-  transform: translateY(-50%);
+.x-translate-xl-y-50 {
+  @media (min-width: $xl) {
+    transform: translateY(-50%) !important;
+  }
 }
 
 .x-top-0 {
   top: 0;
 }
 
-.footer {
-  background-color: rgba($color: $dark, $alpha: 0.91);
+.x-tranform-none {
+  transform: none;
 }
 
-.block-diagram {
-  height: 1400px;
+.footer {
+  background-color: rgba($color: $dark, $alpha: 0.91);
 }
 
 .comment {
@@ -83,6 +89,7 @@ h2 {
     min-height: 492px;
   }
 }
+
 .comment-img {
   width: 100%;
 }
@@ -94,9 +101,11 @@ h2 {
 .contributor-img {
   width: 40px;
 }
+
 .contributor-img:hover {
   transform: scale(1.2);
 }
+
 .hr-red {
   border: 1px solid $dark-red;
 }
@@ -106,15 +115,6 @@ h2 {
 }
 
 .factoid {
-  width: 308px;
-  height: 215px;
+  max-width: 308px;
+  max-height: 215px;
 }
-
-@media (max-width: 1200px) {
-  .factoids{
-    transform: none !important;
-    padding-top: 10%;
-    padding-bottom: 10%;
-  }
-}
-

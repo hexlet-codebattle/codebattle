@@ -3,14 +3,14 @@ $font-family-base: "Source Code Pro", sans-serif;
 $sm: 540px;
 $md: 720px;
 $lg: 960px;
-$xl: 1140px;
+$xl: 1200px;
 
 $container-max-widths: (
   sm: $sm,
   md: $md,
   lg: $lg,
   xl: $xl,
-) !default;
+);
 
 $spacer: 1rem !default;
 $spacers: (
@@ -24,15 +24,5 @@ $gray: #a0a0a0;
 $gray-100: $gray-dark;
 $orange: rgba(238, 55, 55, 0.76);
 
-
 $headings-line-height: 1.09;
 $btn-link-hover-color: red;
-
-.btn:hover {
-  color: red;
-}
-
-.header-txt {
-  font-size: 18px;
-  line-height: 18px;
-}

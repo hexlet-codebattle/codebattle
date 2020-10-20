@@ -101,6 +101,5 @@ html lang="en"
             span aria-hidden="true" &times;
     .content.my-3
     = @inner_content
-      /* = render @view_module, @view_template, Map.put(assigns, :layout, {CodebattleWeb.LayoutView, assigns[:layout_template] || "standart.html"}) */
       = render_gon_script(@conn)
     script src=static_path(@conn,"/assets/app.js")

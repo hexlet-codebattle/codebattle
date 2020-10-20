@@ -20,7 +20,7 @@ function recursiveIssuer(m) {
 module.exports = {
   entry: {
     app: ['./assets/js/app.js', './assets/css/style.scss'],
-    landing: ['./assets/js/app.js', './assets/css/landing.scss'],
+    landing: ['./assets/js/landing.js', './assets/css/landing.scss'],
   },
   output: {
     path: path.resolve(__dirname, '../priv/static/assets'),
@@ -65,9 +65,9 @@ module.exports = {
         test: /\.(png|jpg|gif|svg)$/,
         use: [
           {
-            loader: "file-loader",
+            loader: 'file-loader',
             options: {
-              name: "[name].[ext]",
+              name: '[name].[ext]',
             },
           },
         ],
@@ -77,14 +77,14 @@ module.exports = {
   optimization: {
     splitChunks: {
       cacheGroups: {
-        fooStyles: {
+        appStyles: {
           name: 'app',
           test: (m, c, entry = 'app') =>
             m.constructor.name === 'CssModule' && recursiveIssuer(m) === entry,
           chunks: 'all',
           enforce: true,
         },
-        barStyles: {
+        landingStyles: {
           name: 'landing',
           test: (m, c, entry = 'landing') =>
             m.constructor.name === 'CssModule' && recursiveIssuer(m) === entry,
