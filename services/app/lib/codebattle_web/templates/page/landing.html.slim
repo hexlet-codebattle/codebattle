@@ -3,18 +3,18 @@
     nav.navbar.navbar-dark.navbar-expand-md.px-0.pt-4
       a.navbar-brand.d-flex.align-items-end href="/"
         img alt="Logo" src="/assets/images/logo.svg"
-      .d-flex.flex-column.text-gray.ml-1.pb-1
-        span.font-weight-bold.header-txt Codebattle
-        span.header-txt by Hexlet’s community
+        .d-flex.flex-column.text-gray.ml-1.pb-1
+          span.font-weight-bold.header-txt Codebattle
+          span.header-txt by Hexlet’s community
       button.navbar-toggler aria-controls="navbarResponsive" aria-expanded="false" aria-label=("Toggle navigation") data-target="#navbarResponsive" data-toggle="collapse" type="button"
         span.navbar-toggler-icon
       #navbarResponsive.collapse.navbar-collapse
         ul.navbar-nav.ml-auto
-          li.nav-item
+          li.nav-item.mx-1
             a href="#{Routes.auth_path(@conn, :request, :github, locale: :en)}"
               button.btn.btn-outline-grey Sign in
           = if Mix.env() == :dev do
-            li.nav-item.ml-4
+            li.nav-item.mx-1
               = button("Dev sign_in", to: "/auth/dev_login?locale=en", class: "btn btn-outline-grey")
     .bg-codebattle
       .text-white.py-6
