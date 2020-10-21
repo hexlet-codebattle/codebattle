@@ -19,6 +19,24 @@ jest.mock('gon', () => {
 jest.mock('axios');
 axios.get.mockResolvedValue({ data: {} });
 
+jest.mock('react-select', () => ({ options, value, onChange }) => {
+  function handleChange(event) {
+    const option = options.find(
+      opt => opt.value === event.currentTarget.value,
+    );
+    onChange(option);
+  }
+  return (
+    <select data-testid="select" value={value} onChange={handleChange}>
+      {options.map(({ label, val }) => (
+        <option key={val} value={val}>
+          {label}
+        </option>
+      ))}
+    </select>
+  );
+});
+
 test('test rendering active game components', async () => {
   const reducer = combineReducers(reducers);
 
