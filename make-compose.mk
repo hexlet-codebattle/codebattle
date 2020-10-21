@@ -21,9 +21,6 @@ compose-test-yarn:
 compose-test:
 	docker-compose run app mix test --exclude code_check
 
-compose-test-yarn:
-	docker-compose run app yarn test
-
 compose-kill:
 	docker-compose kill
 
