@@ -14,6 +14,9 @@ const replayPlayer = createSlice({
     hidePlayer: state => {
       state.isShown = false;
     },
+    togglePlayer: state => {
+      state.isShown = !state.isShown;
+    },
   },
 });
 
