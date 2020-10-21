@@ -496,23 +496,21 @@
     .row
       .col-3.d-none.d-md-block.border-top.border-left.border-bottom.border-secondary
       .col-6.py-5.mx-auto
-        .text-center
-          img alt="chocolateIceCream" src="/assets/images/landing/icecream.svg" /
         h2.text-uppercase.text-center.text-light.mt-3
           | What now?
         p.text-center.mt-3
           | Start to code on your ❤ language
         .d-block.text-center.mt-3
-          button.btn.btn-outline-red.text-uppercase[data-method="post" data-csrf="<%= csrf_token() %>" data-to="/games?level=elementary&amp;type=training&amp;timeout_seconds=3600"]
+          button.btn.btn-outline-red.mt-2.text-uppercase[data-method="post" data-csrf="<%= csrf_token() %>" data-to="/games?level=elementary&amp;type=training&amp;timeout_seconds=3600"]
             | Try simple battle
       .col-3.d-none.d-md-block.border-top.border-bottom.border-right.border-secondary
 .footer.text-white
-  .container-lg.pt-4.pb-2.d-flex.justify-content-between.text-gray.flex-column.flex-sm-row
+  .container-lg.py-4.d-flex.justify-content-between.text-gray.flex-column.flex-sm-row
     div
       p.mb-0 
         | Support:
-        a.text-muted.ml-1 href="https://slack-ru.hexlet.io" target="_blank"  Slack#codebattle
+        a.text-muted.ml-1 href="https://slack-ru.hexlet.io" target="_blank" Slack#codebattle
     div.mt-3.mt-sm-0
       p.mb-0 
-        | Powered by:
-        a.text-muted.ml-2 href="https://www.behance.net/caspermosh" target="_blank"  CasperMosh
+        | Design by:
+        a.text-muted.ml-2 href="https://www.behance.net/caspermosh" target="_blank" CasperMosh
