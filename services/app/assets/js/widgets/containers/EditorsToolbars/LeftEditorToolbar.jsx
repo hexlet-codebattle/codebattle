@@ -70,7 +70,7 @@ const renderNameplate = (player = {}, onlineUsers) => {
   const isOnline = _.find(onlineUsers, { id: player.id });
 
   return (
-    <div className="d-flex align-items-center">
+    <div className="d-none d-xl-flex align-items-center">
       <TypingIconLeft />
       <UserInfo user={player} />
       <div>
@@ -86,8 +86,6 @@ const renderNameplate = (player = {}, onlineUsers) => {
 
 const LeftEditorToolbar = () => {
   const dispatch = useDispatch();
-  const [langInput, setLangInput] = useState('');
-  const changeText = e => setLangInput(e.target.value);
 
   const leftUserId = useSelector(state => _.get(selectors.leftEditorSelector(state), ['userId'], null));
   const rightUserId = useSelector(state => _.get(selectors.rightEditorSelector(state), ['userId'], null));
@@ -103,7 +101,6 @@ const LeftEditorToolbar = () => {
   const switchTheme = nextTheme => () => dispatch(actions.switchEditorsTheme(nextTheme));
   const setLang = langSlug => {
     dispatch(changeCurrentLangAndSetTemplate(langSlug));
-    setLangInput('');
     };
   const isStoredGame = gameStatus.status === GameStatusCodes.stored;
   const isDisabled = isStoredGame || !_.hasIn(players, currentUserId);
@@ -119,8 +116,6 @@ const LeftEditorToolbar = () => {
         <LanguagePicker
           languages={languages}
           currentLangSlug={leftEditorLangSlug}
-          langInput={langInput}
-          changeText={changeText}
           onChangeLang={setLang}
           disabled={isDisabled}
         />

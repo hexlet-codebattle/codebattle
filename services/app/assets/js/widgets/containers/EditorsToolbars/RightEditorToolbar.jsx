@@ -34,7 +34,7 @@ const renderNameplate = (player = {}, onlineUsers) => {
   const isOnline = _.find(onlineUsers, { id: player.id });
 
   return (
-    <div className="d-flex align-items-center">
+    <div className="d-none d-xl-flex align-items-center">
       <UserInfo user={player} />
       <div>
         {isOnline ? (
