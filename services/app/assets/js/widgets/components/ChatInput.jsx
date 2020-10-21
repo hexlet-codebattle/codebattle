@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import * as _ from 'lodash';
 import { Emoji, emojiIndex } from 'emoji-mart';
+import { useClickAway } from 'react-use';
 import { addMessage } from '../middlewares/Chat';
 import EmojiPicker from './EmojiPicker';
 import EmojiToolTip from './EmojiTooltip';
@@ -10,7 +11,7 @@ const trimColons = message => message.slice(0, message.lastIndexOf(':'));
 const getColons = message => message.slice(message.lastIndexOf(':') + 1);
 
 const getTooltipVisibility = msg => {
-  const endsWithEmojiCodeRegex = /.*:[a-zA-Z]{1,}([^ ])+$/;
+  const endsWithEmojiCodeRegex = /.*:[a-zA-Z]{0,}([^ ])+$/;
   if (!endsWithEmojiCodeRegex.test(msg)) return false;
   const colons = getColons(msg);
   return !_.isEmpty(emojiIndex.search(colons));
@@ -29,7 +30,9 @@ export default function ChatInput() {
 
   const handleSubmit = e => {
     e.preventDefault();
-
+    if (isTooltipVisible) {
+      return;
+    }
     if (message) {
       addMessage(message);
       setMessage('');
@@ -55,6 +58,10 @@ export default function ChatInput() {
     input.setSelectionRange(caretPosition + native.length, caretPosition + native.length);
   };
 
+  useClickAway(inputRef, () => {
+    hideTooltip();
+  }, ['click']);
+
   return (
     <form
       className="p-2 input-group input-group-sm position-absolute x-bottom-0"
@@ -65,15 +72,14 @@ export default function ChatInput() {
         placeholder="Type message here..."
         value={message}
         onChange={handleChange}
-        onBlur={hideTooltip}
         ref={inputRef}
       />
       {isTooltipVisible && (
-        <EmojiToolTip
-          emojis={emojiIndex.search(getColons(message))}
-          handleSelect={handleSelectEmodji}
-          hide={hideTooltip}
-        />
+      <EmojiToolTip
+        emojis={emojiIndex.search(getColons(message))}
+        handleSelect={handleSelectEmodji}
+        hide={hideTooltip}
+      />
       )}
       { isPickerVisible && (
       <EmojiPicker
@@ -84,10 +90,15 @@ export default function ChatInput() {
       <div className="input-group-append">
         <button
           type="button"
-          className="btn btn-outline-secondary "
+          className="btn btn-outline-secondary py-0 px-1"
           onClick={togglePickerVisibility}
         >
-          <Emoji emoji="grinning" set="apple" size={16} />
+          <Emoji
+            emoji="grinning"
+            native
+            size={20}
+            emojiTooltip="true"
+          />
         </button>
         <button className="btn btn-outline-secondary" type="button" onClick={handleSubmit}>
           Send

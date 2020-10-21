@@ -1,20 +1,18 @@
 import React, { useRef } from 'react';
 import { Picker } from 'emoji-mart';
-import { useHotkeys } from 'react-hotkeys-hook';
+import { useKey, useClickAway } from 'react-use';
 import 'emoji-mart/css/emoji-mart.css';
 
 export default function EmojiPicker({ handleSelect, hide }) {
   const wrapperRef = useRef(null);
-  useHotkeys('escape', hide);
+  useKey('Escape', () => hide());
 
-  const handleBlur = e => {
-    const isActivePicker = wrapperRef.current.isEqualNode(e.currentTarget);
-    if (isActivePicker) return;
+  useClickAway(wrapperRef, () => {
     hide();
-  };
+  }, ['click']);
 
   return (
-    <div onBlur={handleBlur} ref={wrapperRef}>
+    <div ref={wrapperRef}>
       <Picker
         showPreview={false}
         showSkinTones={false}

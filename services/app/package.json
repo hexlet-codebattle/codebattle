@@ -65,6 +65,7 @@
     "react-select": "^3.1.0",
     "react-stay-scrolled": "^7.1.0",
     "react-toastify": "^6.0.5",
+    "react-use": "^15.3.4",
     "redux-persist": "^6.0.0",
     "rollbar": "^2.19.4",
     "rollbar-redux-middleware": "^0.2.0",
