@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { Picker } from 'emoji-mart';
-import { useKey, useClickAway } from 'react-use';
+import useKey from '../utils/useKey';
+import useClickAway from '../utils/useClickAway';
 import 'emoji-mart/css/emoji-mart.css';
 
 export default function EmojiPicker({ handleSelect, hide }) {

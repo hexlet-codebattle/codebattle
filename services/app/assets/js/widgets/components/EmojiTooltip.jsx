@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useKey } from 'react-use';
+import useKey from '../utils/useKey';
 
 export default function EmojiTooltip({ emojis, handleSelect, hide }) {
   const [activeIndex, setActiveIndex] = useState(0);

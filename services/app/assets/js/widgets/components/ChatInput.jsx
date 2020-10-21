@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import * as _ from 'lodash';
 import { Emoji, emojiIndex } from 'emoji-mart';
-import { useClickAway } from 'react-use';
+import useClickAway from '../utils/useClickAway';
 import { addMessage } from '../middlewares/Chat';
 import EmojiPicker from './EmojiPicker';
 import EmojiToolTip from './EmojiTooltip';
