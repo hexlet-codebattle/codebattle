@@ -8,7 +8,7 @@ import userTypes from '../config/userTypes';
 import { actions, redirectToNewGame } from '../slices';
 
 import { resolveDiffs } from '../lib/player';
-import PlaybookStatusCodes from '../config/playbookStatusCodes';
+import GameSessionStatusCodes from '../config/gameSessionStatusCodes';
 import GameStatusCodes from '../config/gameStatusCodes';
 
 const defaultLanguages = Gon.getAsset('langs');
@@ -59,7 +59,7 @@ const initStore = dispatch => ({
   gameStatus,
   playbookStatusCode,
 }) => {
-  const isStored = playbookStatusCode === PlaybookStatusCodes.stored;
+  const isStored = playbookStatusCode === GameSessionStatusCodes.stored;
   const players = [{ ...firstPlayer, type: userTypes.firstPlayer }];
 
   if (secondPlayer) {
@@ -119,7 +119,7 @@ const initGameChannel = dispatch => {
       task,
       langs,
       gameStatus,
-      playbookStatusCode: PlaybookStatusCodes.active,
+      playbookStatusCode: GameSessionStatusCodes.active,
     });
 
     dispatch(actions.finishStoreInit());
@@ -305,10 +305,10 @@ export const storedGameEditorReady = () => dispatch => {
         secondPlayer: resolvedData.players[1],
         task: resolvedData.task,
         gameStatus,
-        playbookStatusCode: PlaybookStatusCodes.stored,
+        playbookStatusCode: GameSessionStatusCodes.stored,
       });
 
-      dispatch(actions.loadStoredPlaybook(resolvedData));
+      dispatch(actions.loadStoredGameSession(resolvedData));
       dispatch(actions.fetchChatData(resolvedData.chat));
       dispatch(actions.finishStoreInit());
     })
