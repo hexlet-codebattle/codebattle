@@ -11,7 +11,6 @@ import * as GameActions from '../middlewares/Game';
 import GameStatusCodes from '../config/gameStatusCodes';
 import GameWidget from './GameWidget';
 import InfoWidget from './InfoWidget';
-import ReplayWidget from './ReplayWidget';
 import WaitingOpponentInfo from '../components/WaitingOpponentInfo';
 import userTypes from '../config/userTypes';
 
@@ -51,7 +50,6 @@ const RootContainer = ({
         <div className="row no-gutter cb-game">
           <InfoWidget />
           <GameWidget />
-          <ReplayWidget />
         </div>
       </div>
     </div>

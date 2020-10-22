@@ -1,13 +1,15 @@
-import React from 'react';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
+import React from 'react';
 import ReactMarkdown from 'react-markdown';
-import i18n from '../../i18n';
-import Timer from './Timer';
+import _ from 'lodash';
+
+import ContributorsList from './ContributorsList';
 import CountdownTimer from './CountdownTimer';
 import GameStatusCodes from '../config/gameStatusCodes';
+import ReplayWidget from '../containers/ReplayWidget';
+import Timer from './Timer';
+import i18n from '../../i18n';
 import levelToClass from '../config/levelToClass';
-import ContributorsList from './ContributorsList';
 
 const renderTaskLink = name => {
   const link = `https://github.com/hexlet-codebattle/battle_asserts/tree/master/src/battle_asserts/issues/${name}.clj`;
@@ -22,18 +24,13 @@ const renderTaskLink = name => {
 
 const renderGameLevelBadge = level => (
   <small className="ml-2">
-    <span className={`badge badge-pill badge-${levelToClass[level]} mr-1`}>
-      &nbsp;
-    </span>
+    <span className={`badge badge-pill badge-${levelToClass[level]} mr-1`}>&nbsp;</span>
     {level}
   </small>
 );
 
 const renderTimer = (time, timeoutSeconds, gameStatusName) => {
-  if (
-    gameStatusName === GameStatusCodes.gameOver
-    || gameStatusName === GameStatusCodes.timeout
-  ) {
+  if (gameStatusName === GameStatusCodes.gameOver || gameStatusName === GameStatusCodes.timeout) {
     return gameStatusName;
   }
 
@@ -88,13 +85,12 @@ const Task = ({
         <div className="d-flex align-items-end flex-column flex-sm-row justify-content-between">
           <h6 className="card-text small font-italic text-black-50">
             <span className="mr-2">
-              {i18n.t(
-                'Found a mistake? Have something to add? Pull Requests are welcome: ',
-              )}
+              {i18n.t('Found a mistake? Have something to add? Pull Requests are welcome: ')}
             </span>
             {renderTaskLink(task.name)}
           </h6>
         </div>
+        <ReplayWidget />
       </div>
     </div>
   );
