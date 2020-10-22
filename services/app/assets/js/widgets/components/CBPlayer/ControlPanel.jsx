@@ -13,7 +13,7 @@ const speedModes = {
 };
 
 const ControlPanel = ({
-  onPlayClick, onPauseClick, defaultSpeed, setSpeed, isStop, children,
+ onPlayClick, onPauseClick, defaultSpeed, setSpeed, isStop, children,
 }) => {
   const [mode, setMode] = useState(modes.pause);
   const [speedMode, setSpeedMode] = useState(speedModes.normal);
@@ -59,11 +59,7 @@ const ControlPanel = ({
 
   return (
     <>
-      <button
-        type="button"
-        className="mr-4 btn btn-light"
-        onClick={onControlButtonClick}
-      >
+      <button type="button" className="mr-1 btn btn-light" onClick={onControlButtonClick}>
         {mode === modes.pause ? (
           <PlayerIcon.Play width={32} height={32} />
         ) : (
@@ -83,7 +79,9 @@ const ControlPanel = ({
           <i className="fas fa-cog" />
         </button>
         <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
-          <button type="button" className={speedControlClassNames} onClick={onChangeSpeed}>x2</button>
+          <button type="button" className={speedControlClassNames} onClick={onChangeSpeed}>
+            x2
+          </button>
         </div>
       </div>
     </>

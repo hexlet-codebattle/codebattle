@@ -46,11 +46,11 @@ class CodebattlePlayer extends Component {
       this.start();
       this.play();
     }
-  }
+  };
 
   onPauseClick = () => {
     this.stop();
-  }
+  };
 
   onSliderHandleChange = value => {
     this.setState({ value });
@@ -68,7 +68,7 @@ class CodebattlePlayer extends Component {
     if (isHold) {
       setTimeout(run, delaySetGameState);
     }
-  }
+  };
 
   onSliderHandleChangeStart = () => {
     this.setState({ isHold: true });
@@ -78,7 +78,7 @@ class CodebattlePlayer extends Component {
       this.stop();
       this.setState({ isHoldPlay: true });
     }
-  }
+  };
 
   onSliderHandleChangeEnd = () => {
     this.setState({ isHold: false });
@@ -90,19 +90,19 @@ class CodebattlePlayer extends Component {
       this.start();
       this.play();
     }
-  }
+  };
 
   onSliderHandleChangeIntent = intent => {
     this.setState(() => ({ lastIntent: intent }));
-  }
+  };
 
   onSliderHandleChangeIntentEnd = () => {
     this.setState(() => ({ lastIntent: 0 }));
-  }
+  };
 
   setSpeed = newSpeed => {
     this.setState({ speed: newSpeed });
-  }
+  };
 
   setGameState = async () => {
     const {
@@ -145,7 +145,7 @@ class CodebattlePlayer extends Component {
     });
 
     fetchChatData(chatState);
-  }
+  };
 
   changeGameState = async () => {
     const {
@@ -189,7 +189,7 @@ class CodebattlePlayer extends Component {
     }
 
     this.setState({ nextRecordId: nextRecordId + 1 });
-  }
+  };
 
   play = () => {
     const { value, speed } = this.state;
@@ -214,29 +214,35 @@ class CodebattlePlayer extends Component {
       this.resetNextRecordId();
       this.stop();
     }
-  }
+  };
 
   resetNextRecordId = () => {
     this.setState({ nextRecordId: 0 });
-  }
+  };
 
   resetValue = () => {
     this.setState({ value: 0.0 });
-  }
+  };
 
   start = () => {
     this.setState({ isStop: false });
-  }
+  };
 
   stop = () => {
     this.setState({ isStop: true });
-  }
+  };
 
   render() {
     const { records } = this.props;
 
     const {
-      isEnabled, direction, value: currentValue, isHold, isStop, lastIntent, defaultSpeed,
+      isEnabled,
+      direction,
+      value: currentValue,
+      isHold,
+      isStop,
+      lastIntent,
+      defaultSpeed,
     } = this.state;
 
     if (records == null) {
@@ -245,37 +251,28 @@ class CodebattlePlayer extends Component {
 
     return (
       <>
-        <div className="py-4" />
-        <div className="container-fluid fixed-bottom my-1">
-          <div className="px-1">
-            <div className="border bg-light py-2">
-              <div className="row align-items-center justify-content-center">
-                <ControlPanel
-                  onPlayClick={this.onPlayClick}
-                  onPauseClick={this.onPauseClick}
-                  defaultSpeed={defaultSpeed}
-                  setSpeed={this.setSpeed}
-                  isStop={isStop}
-                >
-                  <Slider
-                    className="cb-slider col-md-7 ml-1"
-                    isEnabled={isEnabled}
-                    direction={direction}
-                    onChange={value => this.onSliderHandleChange(value)}
-                    onChangeStart={this.onSliderHandleChangeStart}
-                    onChangeEnd={this.onSliderHandleChangeEnd}
-                    onIntent={intent => this.onSliderHandleChangeIntent(intent)}
-                    onIntentEnd={this.onSliderHandleChangeIntentEnd}
-                  >
-                    <CodebattleSliderBar
-                      value={currentValue}
-                      lastIntent={lastIntent}
-                      isHold={isHold}
-                    />
-                  </Slider>
-                </ControlPanel>
-              </div>
-            </div>
+        <div className="container">
+          <div className="row align-items-center justify-content-start ml-1">
+            <ControlPanel
+              onPlayClick={this.onPlayClick}
+              onPauseClick={this.onPauseClick}
+              defaultSpeed={defaultSpeed}
+              setSpeed={this.setSpeed}
+              isStop={isStop}
+            >
+              <Slider
+                className="cb-slider w-75"
+                isEnabled={isEnabled}
+                direction={direction}
+                onChange={value => this.onSliderHandleChange(value)}
+                onChangeStart={this.onSliderHandleChangeStart}
+                onChangeEnd={this.onSliderHandleChangeEnd}
+                onIntent={intent => this.onSliderHandleChangeIntent(intent)}
+                onIntentEnd={this.onSliderHandleChangeIntentEnd}
+              >
+                <CodebattleSliderBar value={currentValue} lastIntent={lastIntent} isHold={isHold} />
+              </Slider>
+            </ControlPanel>
           </div>
         </div>
       </>
@@ -284,8 +281,8 @@ class CodebattlePlayer extends Component {
 }
 
 const mapStateToProps = state => ({
-  initRecords: selectors.playbookInitRecordsSelector(state),
-  records: selectors.playbookRecordsSelector(state),
+  initRecords: selectors.gameSessionInitRecordsSelector(state),
+  records: selectors.gameSessionRecordsSelector(state),
   stepCoefficient: selectors.stepCoefficientSelector(state),
   getEditorTextPlaybook: ({ userId }) => selectors.editorTextPlaybookSelector(state, userId),
   getEditorLangPlaybook: ({ userId }) => selectors.userLangSelector(userId)(state),
