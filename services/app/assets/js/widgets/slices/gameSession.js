@@ -17,16 +17,15 @@ const gameSession = createSlice({
   name: 'gameSession',
   initialState,
   reducers: {
-    loadStoredGameSession: (state, { payload }) => ({
+    loadGameSessionOnStore: (state, { payload }) => ({
       ...state,
       ...payload,
-      status: GameSessionStatusCodes.stored,
-      // gameSessionPlayer: { isShown: true },
+      status: GameSessionStatusCodes.recorded,
     }),
     loadActiveGameSession: (state, { payload: records }) => ({
       ...state,
       records,
-      status: GameSessionStatusCodes.active,
+      status: GameSessionStatusCodes.inProgress,
     }),
     updateGameHistoryRecords: (state, { payload: record }) => {
       state.records.push(record);

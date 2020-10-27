@@ -1,5 +1,7 @@
 export default {
-  stored: 'stored',
-  active: 'active',
   none: 'none',
+  recorded: 'recorded',
+  inProgress: 'in progress',
+  // active: 'active',
+  // stored: 'stored',
 };
