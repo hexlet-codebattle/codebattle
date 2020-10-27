@@ -261,7 +261,7 @@ class CodebattlePlayer extends Component {
               isStop={isStop}
             >
               <Slider
-                className="cb-slider w-75"
+                className="cb-slider w-75 mx-2"
                 isEnabled={isEnabled}
                 direction={direction}
                 onChange={value => this.onSliderHandleChange(value)}
