@@ -15,6 +15,9 @@ compose-down:
 compose-test-code-checkers:
 	docker-compose run app mix test test/code_check
 
+compose-test-yarn:
+	docker-compose run app yarn test
+
 compose-test:
 	docker-compose run app mix test --exclude code_check
 

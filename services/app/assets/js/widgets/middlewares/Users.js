@@ -5,11 +5,11 @@ import { actions } from '../slices';
 
 export const loadUser = dispatch => async user => {
   try {
-    const response = await axios.get(`/api/v1/user/${user.id}/info`);
+    const response = await axios.get(`/api/v1/users/${user.id}`);
     const data = camelizeKeys(response.data);
     dispatch(actions.setUserInfo(data));
-  } catch (e) {
-    console.log(e.message);
+  } catch (error) {
+    dispatch(actions.setError(error));
   }
 };
 
@@ -18,24 +18,30 @@ export const loadUserStats = dispatch => async user => {
     const response = await axios.get(`/api/v1/user/${user.id}/stats`);
     const data = camelizeKeys(response.data);
     dispatch(actions.updateUsersStats(data));
-  } catch (e) {
-    console.log(e.message);
+  } catch (error) {
+    dispatch(actions.setError(error));
   }
 };
 
-export const getUsersRatingPage = (page = 1, filter = '', sort = '') => dispatch => {
+export const getUsersRatingPage = (dateFrom = null, withBots = true, page = 1, filter = '', sort = '') => dispatch => {
   const queryParamsString = qs.stringify({
     page,
     s: sort,
     q: {
       name_ilike: filter,
     },
+    date_from: dateFrom,
+    with_bots: withBots,
   });
 
-  axios.get(`/api/v1/users?${queryParamsString}`)
+  axios
+    .get(`/api/v1/users?${queryParamsString}`)
     .then(({ data }) => {
       dispatch(actions.updateUsersRatingPage(camelizeKeys(data)));
       dispatch(actions.finishStoreInit());
+    })
+    .catch(error => {
+      dispatch(actions.setError(error));
     });
 };
 

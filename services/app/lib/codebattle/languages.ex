@@ -406,12 +406,12 @@ defmodule Codebattle.Languages do
         check_dir: "check",
         extension: "php",
         docker_image: "codebattle/php:7.4.7",
-        solution_version: :default,
+        solution_version: :typed,
         solution_template:
-          "<?php\nfunction solution(<%= arguments %>){\n<%= return_statement %>\n}",
-        return_template: "\treturn <%= default_value %>;",
+          "<?php\n\nfunction solution(<%= arguments %>)\n{<%= return_statement %>\n}",
+        return_template: "\n    return <%= default_value %>;",
         arguments_template: %{
-          argument: "$<%= name %>",
+          argument: "<%= type %> $<%= name %>",
           delimeter: ", "
         },
         default_values: %{
@@ -431,6 +431,14 @@ defmodule Codebattle.Languages do
             hash_value: "array(<%= entries %>)",
             hash_inners: "\"<%= key %>\" => <%= value %>"
           }
+        },
+        types: %{
+          "integer" => "int",
+          "float" => "float",
+          "string" => "string",
+          "array" => "array",
+          "boolean" => "bool",
+          "hash" => "array"
         }
       },
       "clojure" => %{

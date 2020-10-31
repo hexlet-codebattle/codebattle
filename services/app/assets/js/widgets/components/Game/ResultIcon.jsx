@@ -1,7 +1,7 @@
 import React from 'react';
 import { Tooltip, OverlayTrigger } from 'react-bootstrap';
 
-const ResultIcon = (gameId, player1, player2) => {
+const ResultIcon = ({ gameId, player1, player2 }) => {
   const tooltipId = `tooltip-${gameId}-${player1.id}`;
 
   if (player1.gameResult === 'gave_up') {

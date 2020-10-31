@@ -20,6 +20,17 @@ jobs:
           --health-retries 5
 
     steps:
+      - name: Notify Rollbar of deploy start
+        uses: rollbar/github-deploy-action@2.0.0
+        id: rollbar_pre_deploy
+        with:
+          environment: 'production'
+          version: ${{ github.sha }}
+          status: 'started'
+        env:
+          ROLLBAR_ACCESS_TOKEN: ${{ secrets.ROLLBAR_ACCESS_TOKEN }}
+          ROLLBAR_USERNAME: ${{ secrets.ROLLBAR_USERNAME }}
+
       - uses: actions/checkout@v1
 
       - uses: actions/setup-elixir@v1.2.0
@@ -101,6 +112,17 @@ jobs:
 
       - run: make docker-build-app
       - run: make docker-push-app
+
+      - name: Notify Rollbar of deploy finish
+        uses: rollbar/github-deploy-action@1.1.0
+        id: rollbar_post_deploy
+        with:
+          environment: 'production'
+          version: ${{ github.sha }}
+          status: 'succeeded'
+        env:
+          ROLLBAR_ACCESS_TOKEN: ${{ secrets.ROLLBAR_ACCESS_TOKEN }}
+          ROLLBAR_USERNAME: ${{ secrets.ROLLBAR_USERNAME }}
 
       # stop integratoin tests on CI becaues of https://github.com/hexlet-codebattle/codebattle/runs/580337561?check_suite_focus=true
       # - name: Pull dockers

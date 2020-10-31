@@ -19,7 +19,7 @@ html lang="en"
     meta content="#ffffff" name="theme-color"
     = render_tags_all(assigns[:meta_tags] || %{})
     = csrf_meta_tag()
-    link rel="stylesheet" href=static_path(@conn,"/assets/style.css")
+    link rel="stylesheet" href=static_path(@conn,"/assets/app.css")
     title Codebattle
     = unless @current_user.guest do
       - app_id = "#{Application.get_env(:one_signal, OneSignal)[:app_id]}"
@@ -99,8 +99,8 @@ html lang="en"
           = message
           button type="button" class="close" data-dismiss="alert" aria-label="Close"
             span aria-hidden="true" &times;
+    #extension        
     .content.my-3
     = @inner_content
-      /* = render @view_module, @view_template, Map.put(assigns, :layout, {CodebattleWeb.LayoutView, assigns[:layout_template] || "standart.html"}) */
       = render_gon_script(@conn)
     script src=static_path(@conn,"/assets/app.js")

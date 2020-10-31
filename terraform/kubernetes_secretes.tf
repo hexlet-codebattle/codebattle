@@ -20,5 +20,6 @@ resource "kubernetes_secret" "codebattle_secrets" {
     GITHUB_CLIENT_ID           = "${var.github_client_id}"
     ONESIGNAL_API_KEY          = "${var.onesignal_api_key}"
     ONESIGNAL_APP_ID           = "${var.onesignal_app_id}"
+    ROLLBAR_API_KEY            = "9f1dcbb7a9c94769add0a66639cf8bc1"
   }
 }

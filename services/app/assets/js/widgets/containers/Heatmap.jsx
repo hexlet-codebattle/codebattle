@@ -1,14 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import CalendarHeatmap from 'react-calendar-heatmap';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+
+import { actions } from '../slices';
 import Loading from '../components/Loading';
 
 const getColorScale = count => {
   if (count >= 5) {
     return 'color-huge';
-  } if (count >= 3) {
+  }
+  if (count >= 3) {
     return 'color-large';
-  } if (count >= 1) {
+  }
+  if (count >= 1) {
     return 'color-small';
   }
   return 'color-empty';
@@ -17,14 +22,22 @@ const getColorScale = count => {
 const Heatmap = () => {
   const [activities, setActivities] = useState(null);
 
+  const dispatch = useDispatch();
+
   useEffect(() => {
     const userId = window.location.pathname.split('/').pop();
-    axios.get(`/api/v1/${userId}/activity`)
-      .then(response => { setActivities(response.data.activities); });
-  }, [setActivities]);
+    axios
+      .get(`/api/v1/${userId}/activity`)
+      .then(response => {
+        setActivities(response.data.activities);
+      })
+      .catch(error => {
+        dispatch(actions.setError(error));
+      });
+  }, [setActivities, dispatch]);
 
   if (!activities) {
-    return (<Loading />);
+    return <Loading />;
   }
 
   return (

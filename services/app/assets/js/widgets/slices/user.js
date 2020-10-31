@@ -8,6 +8,8 @@ export const initialState = {
   usersRatingPage: {
     users: [],
     pageInfo: { totalEntries: 0 },
+    dateFrom: null,
+    withBots: true,
   },
 };
 
@@ -39,8 +41,12 @@ const userSlice = createSlice({
       state.usersStats[userId] = { stats, achievements };
     },
     updateUsersRatingPage: (state, { payload }) => {
-      const { users, pageInfo } = payload;
-      state.usersRatingPage = { users, pageInfo };
+      const {
+        users, pageInfo, dateFrom, withBots,
+      } = payload;
+      state.usersRatingPage = {
+        users, pageInfo, dateFrom, withBots: (withBots === 'true'),
+      };
     },
   },
 });

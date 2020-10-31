@@ -21,6 +21,14 @@ helm-add-repos:
 helm-upgrade-app:
 	helm upgrade --install app $(PWD)/app-chart
 
+helm-rollback-app:
+	helm rollback app 108
+
+helm-ls:
+	helm ls
+helm-history:
+	helm history app
+
 helm-install-cert-manager:
 	helm install cert-manager jetstack/cert-manager --namespace cert-manager --version v0.15.0 --set installCRDs=true
 
