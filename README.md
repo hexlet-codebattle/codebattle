@@ -5,8 +5,8 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/a99a88d28ad37a79dbf6/maintainability)](https://codeclimate.com/github/hexlet-codebattle/codebattle/maintainability)
 [![codebeat badge](https://codebeat.co/badges/7557979e-74a7-45a6-b9ab-dcd44bab7e5b)](https://codebeat.co/projects/github-com-hexlet-codebattle-codebattle-master)
 
-Кодбатл - это игра с открытым исходным кодом, которая разрабатывается сообществом Хекслета.
-Текущая версия приложения доступна по адресу [codebattle.hexlet.io](https://codebattle.hexlet.io).
+Сodebattle - is an open source game being developed by the Hexlet community.
+The current version of the application is available at [codebattle.hexlet.io](https://codebattle.hexlet.io).
 
 ### Requirements
 
