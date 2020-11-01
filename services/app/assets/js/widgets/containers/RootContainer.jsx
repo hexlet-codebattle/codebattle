@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { useHotkeys } from 'react-hotkeys-hook';
 import Gon from 'gon';
+import ReactJoyride, { STATUS } from 'react-joyride';
 import GameWidget from './GameWidget';
 import InfoWidget from './InfoWidget';
 import userTypes from '../config/userTypes';
@@ -12,6 +13,56 @@ import GameStatusCodes from '../config/gameStatusCodes';
 import { gameStatusSelector } from '../selectors';
 import WaitingOpponentInfo from '../components/WaitingOpponentInfo';
 import CodebattlePlayer from './CodebattlePlayer';
+
+const steps = [
+  {
+    disableBeacon: true,
+    target: '[data-tutorial-id="Task"]',
+    title: 'Задача',
+    content: 'Внимательно прочитайте задачу, обратите внимание на примеры',
+  },
+  {
+    target: '[data-tutorial-id="LeftEditor"] .tutorial-LanguagePicker',
+    title: 'Выбор языка',
+    content: 'Выберите язык программирования который вам больше нравится ',
+  },
+  {
+    target: '[data-tutorial-id="LeftEditor"] .react-monaco-editor-container',
+    title: 'Редактор',
+    content: 'Введите ваше решение, будьте внимательны к ошибкам',
+  },
+  {
+    target: '[data-tutorial-id="LeftEditor"] [data-tutorial-id="CheckResultButton"]',
+    title: 'Кнопка проверки',
+    content: 'Нажмите для проверки вашего решения',
+
+  },
+];
+const GameWidgetTutorial = () => {
+  const isFirstTime = window.localStorage.getItem('tutorialPassed') === null;
+  return (isFirstTime && (
+  <ReactJoyride
+    continuous
+    run
+    scrollToFirstStep
+    showProgress
+    showSkipButton
+    steps={steps}
+    spotlightPadding={6}
+    callback={({ status }) => {
+      if (([STATUS.FINISHED, STATUS.SKIPPED]).includes(status)) {
+        window.localStorage.setItem('tutorialPassed', 'false');
+      }
+    }}
+    styles={{
+    options: {
+      primaryColor: '#0275d8',
+      zIndex: 1000,
+    },
+  }}
+  />
+));
+};
 
 const RootContainer = ({
   storeLoaded, gameStatusCode, checkResult, init, setCurrentUser,
@@ -42,6 +93,7 @@ const RootContainer = ({
 
   return (
     <div className="x-outline-none">
+      <GameWidgetTutorial />
       <div className="container-fluid">
         <div className="row no-gutter cb-game">
           <InfoWidget />

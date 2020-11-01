@@ -48,7 +48,7 @@ const LanguagePicker = ({
     <>
       <Select
         styles={customStyle}
-        className="col-12 col-xl-7"
+        className="col-12 col-xl-7 tutorial-LanguagePicker"
         defaultValue={defaultLang}
         onChange={changeLang}
         options={options}
