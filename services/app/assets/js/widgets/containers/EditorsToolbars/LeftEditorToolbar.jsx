@@ -46,12 +46,12 @@ const renderSwitchThemeBtn = (switchTheme, theme) => {
   );
 };
 
-const renderNameplate = (player = {}, onlineUsers, editor) => {
+const renderNameplate = (player = {}, onlineUsers, editor, isStoredGame) => {
   const isOnline = _.find(onlineUsers, { id: player.id });
 
   return (
     <div className="d-none d-xl-flex align-items-center">
-      <TypingIcon editor={editor} />
+      {!isStoredGame && <TypingIcon editor={editor} />}
       <UserInfo user={player} />
       <div>
         {isOnline ? (
@@ -111,7 +111,7 @@ const LeftEditorToolbar = () => {
         resultUser1={_.get(players, [leftUserId, 'gameResult'])}
         resultUser2={_.get(players, [rightUserId, 'gameResult'])}
       />
-      {renderNameplate(players[leftUserId], onlineUsers, leftEditor)}
+      {renderNameplate(players[leftUserId], onlineUsers, leftEditor, isStoredGame)}
     </div>
   );
 };

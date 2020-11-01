@@ -8,8 +8,9 @@ import UserInfo from '../UserInfo';
 import GameResultIcon from '../../components/GameResultIcon';
 import EditorHeightButtons from './EditorHeightButtons';
 import TypingIcon from './TypingIcon';
+import GameStatusCodes from '../../config/gameStatusCodes';
 
-const renderNameplate = (player = {}, onlineUsers, editor) => {
+const renderNameplate = (player = {}, onlineUsers, editor, isStoredGame) => {
   const isOnline = _.find(onlineUsers, { id: player.id });
 
   return (
@@ -22,7 +23,7 @@ const renderNameplate = (player = {}, onlineUsers, editor) => {
           <FontAwesomeIcon icon="skull-crossbones" className="text-secondary ml-2" />
         )}
       </div>
-      <TypingIcon editor={editor} />
+      {!isStoredGame && <TypingIcon editor={editor} />}
     </div>
   );
 };
@@ -35,6 +36,8 @@ const RightEditorToolbar = () => {
   const rightEditorLangSlug = useSelector(state => selectors.userLangSelector(rightUserId)(state));
   const players = useSelector(state => selectors.gamePlayersSelector(state));
   const rightEditor = useSelector(state => selectors.rightEditorSelector(state));
+  const gameStatus = useSelector(state => selectors.gameStatusSelector(state));
+  const isStoredGame = gameStatus.status === GameStatusCodes.stored;
 
   if (rightEditorLangSlug === null) { return null; }
 
@@ -48,7 +51,7 @@ const RightEditorToolbar = () => {
         resultUser1={_.get(players, [rightUserId, 'gameResult'])}
         resultUser2={_.get(players, [leftUserId, 'gameResult'])}
       />
-      {renderNameplate(players[rightUserId], onlineUsers, rightEditor)}
+      {renderNameplate(players[rightUserId], onlineUsers, rightEditor, isStoredGame)}
       <div className="ml-auto btn-group" role="group" aria-label="Editor settings">
         <EditorHeightButtons
           typeEditor="right"
