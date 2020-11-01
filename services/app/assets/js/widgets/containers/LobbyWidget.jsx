@@ -3,6 +3,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
 import Gon from 'gon';
+import cn from 'classnames';
 import * as lobbyMiddlewares from '../middlewares/Lobby';
 import gameStatusCodes from '../config/gameStatusCodes';
 import levelToClass from '../config/levelToClass';
@@ -67,12 +68,32 @@ const isPlayer = (user, game) => !_.isEmpty(_.find(game.players, { id: user.id }
 const ShowButton = ({ url }) => (
   <a
     type="button"
-    className="btn btn-info btn-sm"
+    className="btn btn-info btn-sm w-100"
     href={url}
   >
     Show
   </a>
 );
+
+const ContinueButton = ({ url }) => (
+  <a
+    type="button"
+    className="btn btn-success btn-sm w-100"
+    href={url}
+  >
+    Continue
+  </a>
+);
+
+const renderButton = (url, type) => {
+  const buttons = {
+    show: ShowButton,
+    continue: ContinueButton,
+  };
+
+  const ButtonType = buttons[type];
+  return <ButtonType url={url} />;
+};
 
 const GameActionButton = ({ game }) => {
   const gameUrl = makeCreateGameBotUrl(game.id);
@@ -82,7 +103,8 @@ const GameActionButton = ({ game }) => {
   const signInUrl = getSignInGithubUrl();
 
   if (gameState === gameStatusCodes.playing) {
-    return <ShowButton url={gameUrl} />;
+    const type = isPlayer(currentUser, game) ? 'continue' : 'show';
+    return renderButton(gameUrl, type);
   }
 
   if (gameState === gameStatusCodes.waitingOpponent) {
@@ -113,10 +135,10 @@ const GameActionButton = ({ game }) => {
       );
     }
     return (
-      <div className="btn-group">
+      <div className="btn-group w-100">
         <button
           type="button"
-          className="btn btn-danger btn-sm"
+          className="btn btn-danger btn-sm w-100"
           data-method="post"
           data-csrf={window.csrf_token}
           data-to={gameUrlJoin}
@@ -231,6 +253,7 @@ const LiveTournaments = ({ tournaments }) => {
 };
 
 const ActiveGames = ({ games }) => {
+  const currentUser = Gon.getAsset('current_user');
   if (_.isEmpty(games)) {
     return (
       <p className="text-center">There are no active games right now.</p>
@@ -251,24 +274,30 @@ const ActiveGames = ({ games }) => {
           </tr>
         </thead>
         <tbody>
-          {games.map(game => (
-            <tr key={game.id}>
-              <td className="p-3 align-middle text-nowrap">
-                <GameLevelBadge level={game.level} />
-              </td>
-              <td className="p-3 align-middle">
-                <GameActionButton game={game} />
-              </td>
-              <Players gameId={game.id} players={game.players} />
-              <td className="p-3 align-middle text-nowrap">{game.state}</td>
-              <td className="p-3 align-middle text-nowrap">
-                {moment
+          {games.map(game => {
+           const activeGameClasses = cn('text-dark', {
+             alert: isPlayer(currentUser, game),
+             'alert-info': isPlayer(currentUser, game),
+           });
+           return (
+             <tr key={game.id} className={activeGameClasses}>
+               <td className="p-3 align-middle text-nowrap">
+                 <GameLevelBadge level={game.level} />
+               </td>
+               <td className="p-3 align-middle">
+                 <GameActionButton game={game} />
+               </td>
+               <Players gameId={game.id} players={game.players} />
+               <td className="p-3 align-middle text-nowrap">{game.state}</td>
+               <td className="p-3 align-middle text-nowrap">
+                 {moment
                   .utc(game.insertedAt)
                   .local()
                   .format('YYYY-MM-DD HH:mm')}
-              </td>
-            </tr>
-          ))}
+               </td>
+             </tr>
+           );
+})}
         </tbody>
       </table>
     </div>
