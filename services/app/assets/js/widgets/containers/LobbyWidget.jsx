@@ -110,11 +110,11 @@ const GameActionButton = ({ game }) => {
   if (gameState === gameStatusCodes.waitingOpponent) {
     if (isPlayer(currentUser, game)) {
       return (
-        <div className="btn-group">
-          <ShowButton url={gameUrl} />
+        <div className="btn-group w-100">
+          <ContinueButton url={gameUrl} />
           <button
             type="button"
-            className="btn btn-danger btn-sm"
+            className="btn btn-danger btn-sm w-100"
             onClick={lobbyMiddlewares.cancelGame(game.id)}
           >
             Cancel
@@ -276,7 +276,6 @@ const ActiveGames = ({ games }) => {
         <tbody>
           {games.map(game => {
            const activeGameClasses = cn('text-dark', {
-             alert: isPlayer(currentUser, game),
              'alert-info': isPlayer(currentUser, game),
            });
            return (
