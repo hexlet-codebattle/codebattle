@@ -307,9 +307,9 @@ const GameContainers = ({ activeGames, completedGames, liveTournaments }) => (
   <div className="container-lg mt-5 p-0">
     <nav>
       <div className="nav nav-tabs bg-gray" id="nav-tab" role="tablist">
-        <a className="nav-item nav-link active text-uppercase rounded-0 tab-item" id="lobby-tab" data-toggle="tab" href="#lobby" role="tab" aria-controls="lobby" aria-selected="true">Lobby</a>
-        <a className="nav-item nav-link text-uppercase rounded-0 tab-item" id="tournaments-tab" data-toggle="tab" href="#tournaments" role="tab" aria-controls="tournaments" aria-selected="false">Tournaments</a>
-        <a className="nav-item nav-link text-uppercase rounded-0 tab-item" id="completedGames-tab" data-toggle="tab" href="#completedGames" role="tab" aria-controls="completedGames" aria-selected="false">Completed Games</a>
+        <a className="nav-item nav-link active text-uppercase rounded-0 text-black font-weight-bold" id="lobby-tab" data-toggle="tab" href="#lobby" role="tab" aria-controls="lobby" aria-selected="true">Lobby</a>
+        <a className="nav-item nav-link text-uppercase rounded-0 text-black font-weight-bold" id="tournaments-tab" data-toggle="tab" href="#tournaments" role="tab" aria-controls="tournaments" aria-selected="false">Tournaments</a>
+        <a className="nav-item nav-link text-uppercase rounded-0 text-black font-weight-bold" id="completedGames-tab" data-toggle="tab" href="#completedGames" role="tab" aria-controls="completedGames" aria-selected="false">Completed Games</a>
       </div>
     </nav>
     <div className="tab-content" id="nav-tabContent">
@@ -343,69 +343,45 @@ const LobbyWidget = () => {
       <div className="container-lg">
         <div className="row">
           {/* {isGuestCurrentUser ? <Intro /> : <StartGamePanel />} */}
-          <div className="col-10 p-0">
+          <div className="col p-0">
             <GameContainers
               activeGames={activeGames}
               completedGames={completedGames}
               liveTournaments={liveTournaments}
             />
           </div>
+        </div>
 
-          <div className="col-2 mt-5">
-            <div className="d-flex flex-column">
-              <table className="table table-striped border border-secondary">
-                <thead className="bg-gray">
-                  <tr>
-                    <th>Rating</th>
-                    <th></th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>DimaLol (bot)</td>
-                    <td>1376</td>
-                    <td>4</td>
-                  </tr>
-                  <tr>
-                    <td>DimaLol (bot)</td>
-                    <td>1376</td>
-                    <td>4</td>
-                  </tr>
-                  <tr>
-                    <td>DimaLol (bot)</td>
-                    <td>1376</td>
-                    <td>4</td>
-                  </tr>
-                </tbody>
-              </table>
+        <div className="row">
+          <div className="d-flex col mt-5">
+            <div className="border border-secondary">
+                <div className="d-flex flex-column bg-gray p-3">
+                  <span>Rating</span>
+                  <span>DimaLol&nbsp;(bot)&nbsp;1376&nbsp;4</span>
+                  <span>DimaLol&nbsp;(bot)&nbsp;1376&nbsp;4</span>
+                  <span>DimaLol&nbsp;(bot)&nbsp;1376&nbsp;4</span>
+                  <span>DimaLol&nbsp;(bot)&nbsp;1376&nbsp;4</span>
+                  <span>DimaLol&nbsp;(bot)&nbsp;1376&nbsp;4</span>
+                  <span>DimaLol&nbsp;(bot)&nbsp;1376&nbsp;4</span>
+                  <span>DimaLol&nbsp;(bot)&nbsp;1376&nbsp;4</span>
+                  <span>DimaLol&nbsp;(bot)&nbsp;1376&nbsp;4</span>
+                  <span>DimaLol&nbsp;(bot)&nbsp;1376&nbsp;4</span>
+              </div>
             </div>
-            <table className="table table-striped border border-secondary">
-              <thead className="bg-gray">
-                <tr>
-                  <th>Rating</th>
-                  <th></th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>DimaLol (bot)</td>
-                  <td>1376</td>
-                  <td>4</td>
-                </tr>
-                <tr>
-                  <td>DimaLol (bot)</td>
-                  <td>1376</td>
-                  <td>4</td>
-                </tr>
-                <tr>
-                  <td>DimaLol (bot)</td>
-                  <td>1376</td>
-                  <td>4</td>
-                </tr>
-              </tbody>
-            </table>
+            <div className="border border-secondary ml-5">
+                <div className="d-flex flex-column bg-gray p-3">
+                  <span>Rating</span>
+                  <span>DimaLol&nbsp;(bot)&nbsp;1376&nbsp;4</span>
+                  <span>DimaLol&nbsp;(bot)&nbsp;1376&nbsp;4</span>
+                  <span>DimaLol&nbsp;(bot)&nbsp;1376&nbsp;4</span>
+                  <span>DimaLol&nbsp;(bot)&nbsp;1376&nbsp;4</span>
+                  <span>DimaLol&nbsp;(bot)&nbsp;1376&nbsp;4</span>
+                  <span>DimaLol&nbsp;(bot)&nbsp;1376&nbsp;4</span>
+                  <span>DimaLol&nbsp;(bot)&nbsp;1376&nbsp;4</span>
+                  <span>DimaLol&nbsp;(bot)&nbsp;1376&nbsp;4</span>
+                  <span>DimaLol&nbsp;(bot)&nbsp;1376&nbsp;4</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>

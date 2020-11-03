@@ -1,4 +1,4 @@
-$body-bg: #E5E5E5;
+$body-bg: #e5e5e5;
 $green: #64b079;
 $secondary: #477591;
 @import "variables";
@@ -16,12 +16,7 @@ $fa-font-path: "/fonts";
   background: $dark;
 }
 
-h3 {
-  font-family: "League_Gothic", sans-serif;
-}
-
 .tab-item {
-  font-family: "League_Gothic", sans-serif;
   color: black;
   font-size: 21px;
 }
@@ -141,8 +136,8 @@ a {
 }
 
 .cb-langs-dropdown {
-  height:300px;
-  overflow-y:auto;
+  height: 300px;
+  overflow-y: auto;
 }
 
 .cb-username-td {
@@ -203,18 +198,18 @@ a {
 
 .sort-arrows:before,
 .sort-arrows:after {
-	border: 5px solid transparent;
-	content: "";
-	display: block;
+  border: 5px solid transparent;
+  content: "";
+  display: block;
 }
 
 .sort-arrows:before {
-	border-bottom-color: #666;
+  border-bottom-color: #666;
 }
 
 .sort-arrows:after {
-	border-top-color: #666;
-  margin-top: 2px; 
+  border-top-color: #666;
+  margin-top: 2px;
   margin-bottom: -5px;
 }
 
@@ -249,4 +244,3 @@ a {
 .x-rounded-bottom-left {
   border-bottom-left-radius: $border-radius !important;
 }
-
