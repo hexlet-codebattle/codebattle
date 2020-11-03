@@ -1,16 +1,17 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import { useHotkeys } from 'react-hotkeys-hook';
 import Gon from 'gon';
 import ReactJoyride, { STATUS } from 'react-joyride';
+import _ from 'lodash';
 import GameWidget from './GameWidget';
 import InfoWidget from './InfoWidget';
 import userTypes from '../config/userTypes';
 import { actions } from '../slices';
 import * as GameActions from '../middlewares/Game';
 import GameStatusCodes from '../config/gameStatusCodes';
-import { gameStatusSelector } from '../selectors';
+import { gameStatusSelector, gamePlayersSelector, currentUserIdSelector } from '../selectors';
 import WaitingOpponentInfo from '../components/WaitingOpponentInfo';
 import CodebattlePlayer from './CodebattlePlayer';
 
@@ -70,9 +71,14 @@ const steps = [
     },
   },
 ];
-const GameWidgetTutorial = () => {
+const GameWidgetGuide = () => {
+  const isNotStoredGame = useSelector(state => gameStatusSelector(state).status !== GameStatusCodes.stored);
+  const players = useSelector(state => gamePlayersSelector(state));
+  const currentUser = useSelector(state => currentUserIdSelector(state));
+  const isCurrentPlayer = _.has(players, currentUser);
   const isFirstTime = window.localStorage.getItem('guideGamePassed') === null;
-  return (isFirstTime && (
+
+  return (isFirstTime && isNotStoredGame && isCurrentPlayer && (
   <ReactJoyride
     continuous
     run
@@ -83,7 +89,7 @@ const GameWidgetTutorial = () => {
     spotlightPadding={6}
     callback={({ status }) => {
       if (([STATUS.FINISHED, STATUS.SKIPPED]).includes(status)) {
-        window.localStorage.setItem('guideGamePassed', 'false');
+        window.localStorage.setItem('guideGamePassed', 'true');
       }
 }}
 
@@ -126,7 +132,7 @@ const RootContainer = ({
 
   return (
     <div className="x-outline-none">
-      <GameWidgetTutorial />
+      <GameWidgetGuide />
       <div className="container-fluid">
         <div className="row no-gutter cb-game">
           <InfoWidget />
