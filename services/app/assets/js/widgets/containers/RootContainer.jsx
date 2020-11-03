@@ -29,6 +29,7 @@ const steps = [
     disableOverlayClose: true,
     spotlightClicks: true,
     target: '[data-guide-id="LeftEditor"] .guide-LanguagePicker',
+    placement: 'top',
     title: 'Выбор языка',
     content: 'Выберите язык программирования который вам больше нравится ',
     locale: {
