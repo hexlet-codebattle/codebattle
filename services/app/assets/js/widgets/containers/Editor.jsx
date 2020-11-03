@@ -150,7 +150,7 @@ class Editor extends PureComponent {
           editorDidMount={this.editorDidMount}
           value={value}
           onChange={onChange}
-          data-tutorial-id="Editor"
+          data-guide-id="Editor"
         />
         <div ref={this.statusBarRef} className="bg-dark text-white px-1" />
       </>

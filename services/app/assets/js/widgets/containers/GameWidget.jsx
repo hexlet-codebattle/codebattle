@@ -86,7 +86,7 @@ class GameWidget extends Component {
     return (
       <>
         <div className="col-12 col-md-6 p-1">
-          <div className="card overflow-hidden" data-tutorial-id="LeftEditor">
+          <div className="card overflow-hidden" data-guide-id="LeftEditor">
             <LeftEditorToolbar />
             <Editor {...this.getLeftEditorParams()} />
             {/* TODO: move state to parent component */}

@@ -17,29 +17,60 @@ import CodebattlePlayer from './CodebattlePlayer';
 const steps = [
   {
     disableBeacon: true,
-    target: '[data-tutorial-id="Task"]',
+    disableOverlayClose: true,
+    target: '[data-guide-id="Task"]',
     title: 'Задача',
     content: 'Внимательно прочитайте задачу, обратите внимание на примеры',
+    locale: {
+      skip: 'Skip guide',
+    },
   },
   {
-    target: '[data-tutorial-id="LeftEditor"] .tutorial-LanguagePicker',
+    disableOverlayClose: true,
+    spotlightClicks: true,
+    target: '[data-guide-id="LeftEditor"] .guide-LanguagePicker',
     title: 'Выбор языка',
     content: 'Выберите язык программирования который вам больше нравится ',
+    locale: {
+      skip: 'Skip guide',
+    },
   },
   {
-    target: '[data-tutorial-id="LeftEditor"] .react-monaco-editor-container',
+    disableOverlayClose: true,
+    target: '[data-guide-id="LeftEditor"] .react-monaco-editor-container',
     title: 'Редактор',
-    content: 'Введите ваше решение, будьте внимательны к ошибкам',
+    content: 'В редакторе вы будете вводить ваше решение, будьте внимательны к ошибкам',
+    locale: {
+      skip: 'Skip guide',
+    },
   },
   {
-    target: '[data-tutorial-id="LeftEditor"] [data-tutorial-id="CheckResultButton"]',
+    spotlightClicks: true,
+    disableOverlayClose: true,
+    styles: {
+      options: {
+        zIndex: 10000,
+      },
+    },
+    target: '[data-guide-id="LeftEditor"] [data-guide-id="CheckResultButton"]',
     title: 'Кнопка проверки',
     content: 'Нажмите для проверки вашего решения',
-
+    locale: {
+      skip: 'Skip guide',
+    },
+  },
+  {
+    disableOverlayClose: true,
+    target: '[data-guide-id="LeftEditor"] #accordionExample',
+    title: 'Вывод результатов',
+    content: 'Здесь вы увидите результат выполнения',
+    locale: {
+      skip: 'Skip guide',
+    },
   },
 ];
 const GameWidgetTutorial = () => {
-  const isFirstTime = window.localStorage.getItem('tutorialPassed') === null;
+  const isFirstTime = window.localStorage.getItem('guideGamePassed') === null;
   return (isFirstTime && (
   <ReactJoyride
     continuous
@@ -51,9 +82,10 @@ const GameWidgetTutorial = () => {
     spotlightPadding={6}
     callback={({ status }) => {
       if (([STATUS.FINISHED, STATUS.SKIPPED]).includes(status)) {
-        window.localStorage.setItem('tutorialPassed', 'false');
+        window.localStorage.setItem('guideGamePassed', 'false');
       }
-    }}
+}}
+
     styles={{
     options: {
       primaryColor: '#0275d8',

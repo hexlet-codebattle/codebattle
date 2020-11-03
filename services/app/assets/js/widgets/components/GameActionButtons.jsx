@@ -12,7 +12,7 @@ const renderCheckResultButton = (checkResult, gameStatus, disabled, editorUser) 
   <button
     type="button"
     className="btn btn-success btn-sm ml-auto"
-    data-tutorial-id="CheckResultButton"
+    data-guide-id="CheckResultButton"
     onClick={checkResult}
     disabled={gameStatus.checking[editorUser] || disabled}
   >
