@@ -93,7 +93,11 @@ const LeftEditorToolbar = () => {
       className="py-1 px-3 btn-toolbar justify-content-between align-items-center"
       role="toolbar"
     >
-      <div className="btn-group col-6 align-items-center" role="group" aria-label="Editor settings">
+      <div
+        className="btn-group col-6 align-items-center"
+        role="group"
+        aria-label="Editor settings"
+      >
         <LanguagePicker
           languages={languages}
           currentLangSlug={leftEditorLangSlug}
