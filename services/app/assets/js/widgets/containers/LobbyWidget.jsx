@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
@@ -261,7 +261,7 @@ const ActiveGames = ({ games }) => {
   }
   return (
     <div className="table-responsive">
-      <table className="table">
+      <table className="table table-striped">
         <thead className="text-left">
           <tr>
             <th className="p-3 border-0">Level</th>
@@ -304,26 +304,20 @@ const ActiveGames = ({ games }) => {
 };
 
 const GameContainers = ({ activeGames, completedGames, liveTournaments }) => (
-  <>
-    <Card title="Active games">
-      <ActiveGames games={activeGames} />
-    </Card>
-    <Card title="Active tournaments">
-      <LiveTournaments tournaments={liveTournaments} />
-    </Card>
-    <Card title="Game activity">
-      <div className="row justify-content-center">
-        <div className="col-md-8">
-          <GamesHeatmap />
-        </div>
+  <div className="container-lg mt-5 p-0">
+    <nav>
+      <div className="nav nav-tabs bg-gray" id="nav-tab" role="tablist">
+        <a className="nav-item nav-link active text-uppercase rounded-0 tab-item" id="lobby-tab" data-toggle="tab" href="#lobby" role="tab" aria-controls="lobby" aria-selected="true">Lobby</a>
+        <a className="nav-item nav-link text-uppercase rounded-0 tab-item" id="tournaments-tab" data-toggle="tab" href="#tournaments" role="tab" aria-controls="tournaments" aria-selected="false">Tournaments</a>
+        <a className="nav-item nav-link text-uppercase rounded-0 tab-item" id="completedGames-tab" data-toggle="tab" href="#completedGames" role="tab" aria-controls="completedGames" aria-selected="false">Completed Games</a>
       </div>
-    </Card>
-    {!_.isEmpty(completedGames) && (
-    <Card title="Completed games">
-      <CompletedGames games={completedGames} />
-    </Card>
-      )}
-  </>
+    </nav>
+    <div className="tab-content" id="nav-tabContent">
+      <div className="tab-pane fade show active" id="lobby" role="tabpanel" aria-labelledby="lobby-tab"><ActiveGames games={activeGames} /></div>
+      <div className="tab-pane fade" id="tournaments" role="tabpanel" aria-labelledby="tournaments-tab"><LiveTournaments tournaments={liveTournaments} /></div>
+      <div className="tab-pane fade" id="completedGames" role="tabpanel" aria-labelledby="completedGames-tab"><CompletedGames games={completedGames} /></div>
+    </div>
+  </div>
   );
 
 const LobbyWidget = () => {
@@ -346,14 +340,75 @@ const LobbyWidget = () => {
     }
 
     return (
-      <>
-        {isGuestCurrentUser ? <Intro /> : <StartGamePanel />}
-        <GameContainers
-          activeGames={activeGames}
-          completedGames={completedGames}
-          liveTournaments={liveTournaments}
-        />
-      </>
+      <div className="container-lg">
+        <div className="row">
+          {/* {isGuestCurrentUser ? <Intro /> : <StartGamePanel />} */}
+          <div className="col-10 p-0">
+            <GameContainers
+              activeGames={activeGames}
+              completedGames={completedGames}
+              liveTournaments={liveTournaments}
+            />
+          </div>
+
+          <div className="col-2 mt-5">
+            <div className="d-flex flex-column">
+              <table className="table table-striped border border-secondary">
+                <thead className="bg-gray">
+                  <tr>
+                    <th>Rating</th>
+                    <th></th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>DimaLol (bot)</td>
+                    <td>1376</td>
+                    <td>4</td>
+                  </tr>
+                  <tr>
+                    <td>DimaLol (bot)</td>
+                    <td>1376</td>
+                    <td>4</td>
+                  </tr>
+                  <tr>
+                    <td>DimaLol (bot)</td>
+                    <td>1376</td>
+                    <td>4</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <table className="table table-striped border border-secondary">
+              <thead className="bg-gray">
+                <tr>
+                  <th>Rating</th>
+                  <th></th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>DimaLol (bot)</td>
+                  <td>1376</td>
+                  <td>4</td>
+                </tr>
+                <tr>
+                  <td>DimaLol (bot)</td>
+                  <td>1376</td>
+                  <td>4</td>
+                </tr>
+                <tr>
+                  <td>DimaLol (bot)</td>
+                  <td>1376</td>
+                  <td>4</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     );
 };
 

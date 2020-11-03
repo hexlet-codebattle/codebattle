@@ -1,6 +1,7 @@
-$body-bg: #fafafa;
+$body-bg: #E5E5E5;
 $green: #64b079;
 $secondary: #477591;
+@import "variables";
 @import "~bootstrap/scss/bootstrap";
 @import "~nprogress/nprogress.css";
 
@@ -10,6 +11,39 @@ $fa-font-path: "/fonts";
 @import "fonts";
 @import "~font-mfizz/dist/font-mfizz.css";
 @import "tournaments";
+
+.dark-bg {
+  background: $dark;
+}
+
+h3 {
+  font-family: "League_Gothic", sans-serif;
+}
+
+.tab-item {
+  font-family: "League_Gothic", sans-serif;
+  color: black;
+  font-size: 21px;
+}
+
+.btn-outline-orange {
+  border: 2px solid rgba(238, 55, 55, 1);
+  border-radius: 0%;
+  color: rgba(238, 55, 55, 1);
+}
+
+.header-txt {
+  font-size: 18px;
+  line-height: 18px;
+}
+
+.text-black {
+  color: black !important;
+}
+
+.bg-gray {
+  background-color: rgba(128, 128, 128, 1);
+}
 
 a {
   transition: color ease-in 0.1s;
