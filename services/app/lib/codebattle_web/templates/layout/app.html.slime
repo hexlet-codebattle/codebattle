@@ -50,7 +50,7 @@ html lang="en"
     /! End Google Tag Manager (noscript)
     .dark-bg
       .container-lg
-        nav.navbar.navbar-dark.navbar-expand-md.px-0.py-3
+        nav.navbar.navbar-dark.navbar-expand-md.px-0
           a.navbar-brand.d-flex.align-items-end href="/"
             img.my-auto[alt="Logo" src="/assets/images/logo.svg"]
             .d-flex.flex-column.text-gray.ml-1.pb-1
@@ -110,7 +110,7 @@ html lang="en"
           = message
           button type="button" class="close" data-dismiss="alert" aria-label="Close"
             span aria-hidden="true" &times;
-    #extension        
+    #extension
     .content.my-3
     = @inner_content
       = render_gon_script(@conn)

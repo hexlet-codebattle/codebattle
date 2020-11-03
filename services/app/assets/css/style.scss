@@ -5,7 +5,6 @@ $secondary: #477591;
 @import "~bootstrap/scss/bootstrap";
 @import "~nprogress/nprogress.css";
 
-$font-family-sans-serif: "Roboto", sans-serif;
 $fa-font-path: "/fonts";
 
 @import "fonts";
@@ -14,11 +13,6 @@ $fa-font-path: "/fonts";
 
 .dark-bg {
   background: $dark;
-}
-
-.tab-item {
-  color: black;
-  font-size: 21px;
 }
 
 .btn-outline-orange {
