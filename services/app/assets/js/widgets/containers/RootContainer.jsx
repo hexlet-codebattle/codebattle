@@ -72,7 +72,7 @@ const steps = [
   },
 ];
 const GameWidgetGuide = () => {
-  const isActiveGame = useSelector(state => gameStatusSelector(state).status === GameStatusCodes.active);
+  const isActiveGame = useSelector(state => gameStatusSelector(state).status === GameStatusCodes.playing);
   const players = useSelector(state => gamePlayersSelector(state));
   const currentUser = useSelector(state => currentUserIdSelector(state));
   const isCurrentPlayer = _.has(players, currentUser);
