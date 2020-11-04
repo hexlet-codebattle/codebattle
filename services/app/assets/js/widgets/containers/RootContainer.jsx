@@ -72,13 +72,13 @@ const steps = [
   },
 ];
 const GameWidgetGuide = () => {
-  const isNotStoredGame = useSelector(state => gameStatusSelector(state).status !== GameStatusCodes.stored);
+  const isActiveGame = useSelector(state => gameStatusSelector(state).status === GameStatusCodes.active);
   const players = useSelector(state => gamePlayersSelector(state));
   const currentUser = useSelector(state => currentUserIdSelector(state));
   const isCurrentPlayer = _.has(players, currentUser);
   const isFirstTime = window.localStorage.getItem('guideGamePassed') === null;
 
-  return (isFirstTime && isNotStoredGame && isCurrentPlayer && (
+  return (isFirstTime && isActiveGame && isCurrentPlayer && (
   <ReactJoyride
     continuous
     run
