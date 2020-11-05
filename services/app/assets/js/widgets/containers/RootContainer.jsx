@@ -20,8 +20,8 @@ const steps = [
     disableBeacon: true,
     disableOverlayClose: true,
     target: '[data-guide-id="Task"]',
-    title: 'Задача',
-    content: 'Внимательно прочитайте задачу, обратите внимание на примеры',
+    title: 'Task',
+    content: 'Read the task carefully, pay attention to examples',
     locale: {
       skip: 'Skip guide',
     },
@@ -31,8 +31,8 @@ const steps = [
     spotlightClicks: true,
     target: '[data-guide-id="LeftEditor"] .guide-LanguagePicker',
     placement: 'top',
-    title: 'Выбор языка',
-    content: 'Выберите язык программирования который вам больше нравится ',
+    title: 'Language',
+    content: 'Choose the programming language that you like best',
     locale: {
       skip: 'Skip guide',
     },
@@ -40,8 +40,8 @@ const steps = [
   {
     disableOverlayClose: true,
     target: '[data-guide-id="LeftEditor"] .react-monaco-editor-container',
-    title: 'Редактор',
-    content: 'В редакторе вы будете вводить ваше решение, будьте внимательны к ошибкам',
+    title: 'Editor',
+    content: 'Write the solution of task in the editor',
     locale: {
       skip: 'Skip guide',
     },
@@ -55,8 +55,8 @@ const steps = [
       },
     },
     target: '[data-guide-id="LeftEditor"] [data-guide-id="CheckResultButton"]',
-    title: 'Кнопка проверки',
-    content: 'Нажмите для проверки вашего решения',
+    title: 'Check button',
+    content: 'Click the button to check your solution or use Ctrl+Enter/Cmd+Enter',
     locale: {
       skip: 'Skip guide',
     },
@@ -64,8 +64,8 @@ const steps = [
   {
     disableOverlayClose: true,
     target: '[data-guide-id="LeftEditor"] #accordionExample',
-    title: 'Вывод результатов',
-    content: 'Здесь вы увидите результат выполнения',
+    title: 'Result output',
+    content: 'Here you will see the results of the tests or compilation errors after check',
     locale: {
       skip: 'Skip guide',
     },
