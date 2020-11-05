@@ -24,6 +24,7 @@ const LanguagePicker = ({
       maxWidth: '220px',
       marginLeft: 0,
       paddingLeft: '0.5rem',
+      'z-index': 11000,
     }),
   };
   const langs = languages || defaultLanguages;
@@ -48,7 +49,7 @@ const LanguagePicker = ({
     <>
       <Select
         styles={customStyle}
-        className="col-12 col-xl-7"
+        className="col-12 col-xl-7 guide-LanguagePicker"
         defaultValue={defaultLang}
         onChange={changeLang}
         options={options}
