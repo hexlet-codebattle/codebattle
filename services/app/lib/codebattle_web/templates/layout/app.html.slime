@@ -72,12 +72,9 @@ html lang="en"
                 li.nav-item.dropdown.d
                   a.nav-link.noborder.d-flex[href='#' aria-expanded="false" aria-haspopup="true" data-toggle="dropdown"]
                     .d-flex.flex-column.mr-2
-                      h3.text-uppercase.text-white.mr-1.mb-0
+                      h5.text-white.mr-1.mb-0
                         = @current_user.name
-                      .d-flex
-                        span.mr-2
-                          img[alt="#{@current_user.rating}" src="/assets/images/trophy.svg" style="width:20px"]
-                          = @current_user.rating
+                      .text-right
                         span
                           img[alt="#{@current_user.rating}" src="/assets/images/rating.svg" style="width:20px"]
                           = @current_user.rating

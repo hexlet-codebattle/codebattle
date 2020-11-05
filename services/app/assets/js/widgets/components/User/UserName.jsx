@@ -12,10 +12,10 @@ const isValidUserInfo = user => (
 
 const getName = ({ id, name }, isCurrentUser) => {
   if (id < 0) {
-    return i18n.t('%{name} (bot)', { name });
+    return i18n.t('%{name}(bot)', { name });
   }
 
-  return isCurrentUser ? i18n.t('%{name} (you)', { name }) : name;
+  return isCurrentUser ? i18n.t('%{name}(you)', { name }) : name;
 };
 
 const displayDiff = num => {
@@ -56,10 +56,6 @@ const UserName = ({ user }) => {
         <span className="text-truncate">{getName(userInfo, isCurrentUser)}</span>
       </a>
       <LanguageIcon lang={lang} />
-      <small>
-        {_.isFinite(rating) && rating}
-      </small>
-      {ratingDiff ? displayDiff(ratingDiff) : ''}
     </span>
   );
 

@@ -1,6 +1,9 @@
 $body-bg: #e5e5e5;
 $green: #64b079;
 $secondary: #477591;
+$link-color: black;
+$orange: rgba(238, 55, 55, 0.76);
+$link-hover-color: $orange;
 @import "variables";
 @import "~bootstrap/scss/bootstrap";
 @import "~nprogress/nprogress.css";
@@ -16,9 +19,9 @@ $fa-font-path: "/fonts";
 }
 
 .btn-outline-orange {
-  border: 2px solid rgba(238, 55, 55, 1);
+  border: 2px solid $orange;
   border-radius: 0%;
-  color: rgba(238, 55, 55, 1);
+  color: $orange;
 }
 
 .header-txt {
@@ -35,7 +38,7 @@ $fa-font-path: "/fonts";
 }
 
 a {
-  transition: color ease-in 0.1s;
+  text-decoration: underline;
 }
 
 .react-calendar-heatmap {
