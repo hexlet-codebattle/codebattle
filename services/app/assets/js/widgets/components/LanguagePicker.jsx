@@ -18,12 +18,15 @@ const LangTitle = ({ slug, name, version }) => (
 const LanguagePicker = ({
   languages, currentLangSlug, onChangeLang, disabled,
 }) => {
-  const customStyle = {
-    menu: provided => ({
-      ...provided,
-      maxWidth: '220px',
-      marginLeft: 0,
-      paddingLeft: '0.5rem',
+  const selectStyles = {
+    control: style => ({ ...style, minWidth: '200px' }),
+    // container: style => ({ ...style, margin: '0.5rem' }),
+    menu: style => ({
+      ...style,
+      maxWidth: '200px',
+      // margin: '1rem',
+      padding: '0.5rem',
+      boxShadow: 'inset 0 1px 0 rgba(0, 0, 0, 0.1)',
     }),
   };
   const langs = languages || defaultLanguages;
@@ -47,8 +50,7 @@ const LanguagePicker = ({
   return (
     <>
       <Select
-        styles={customStyle}
-        className="col-12 col-xl-7"
+        styles={selectStyles}
         defaultValue={defaultLang}
         onChange={changeLang}
         options={options}

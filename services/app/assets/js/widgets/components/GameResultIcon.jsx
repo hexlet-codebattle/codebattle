@@ -8,7 +8,7 @@ const GameResultIcon = ({ resultUser1, resultUser2, className }) => {
     return (
       <OverlayTrigger
         overlay={<Tooltip id={tooltipId}>Player gave up</Tooltip>}
-        placement="left"
+        placement="top"
       >
         <div className={className}>
           <i className="far fa-flag fa-lg align-middle" aria-hidden="true" />
@@ -21,7 +21,7 @@ const GameResultIcon = ({ resultUser1, resultUser2, className }) => {
     return (
       <OverlayTrigger
         overlay={<Tooltip id={tooltipId}>Player won</Tooltip>}
-        placement="left"
+        placement="top"
       >
         <div className={className}>
           <i className="fa fa-trophy fa-lg text-warning align-middle" aria-hidden="true" />

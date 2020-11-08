@@ -15,8 +15,9 @@ const EditorHeightButtons = ({ typeEditor }) => {
   const compressEditor = userId => () => dispatch(compressEditorHeight(userId));
   const expandEditor = userId => () => dispatch(expandEditorHeight(userId));
   const editorClassNames = cn('btn-group btn-group-sm', {
-    'ml-2': typeEditor === 'left',
-    'mr-2': typeEditor === 'right',
+    // 'ml-2': typeEditor === 'left',
+    // 'mr-2': typeEditor === 'right',
+    'm-1': true,
   });
 
   return (

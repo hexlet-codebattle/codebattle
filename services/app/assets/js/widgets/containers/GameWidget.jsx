@@ -3,14 +3,15 @@ import _ from 'lodash';
 import { connect } from 'react-redux';
 import * as selectors from '../selectors';
 import Editor from './Editor';
-import LeftEditorToolbar from './EditorsToolbars/LeftEditorToolbar';
-import RightEditorToolbar from './EditorsToolbars/RightEditorToolbar';
+import EditorToolbar from './EditorsToolbars/EditorToolbar';
 import GameActionButtons from '../components/GameActionButtons';
 import * as GameActions from '../middlewares/Game';
 import ExecutionOutput from '../components/ExecutionOutput/ExecutionOutput';
 import NotificationsHandler from './NotificationsHandler';
 import editorModes from '../config/editorModes';
 import GameStatusCodes from '../config/gameStatusCodes';
+// import RightEditorToolbar from './EditorsToolbars/RightEditorToolbar';
+// import LeftEditorToolbar from './EditorsToolbars/LeftEditorToolbar';
 
 class GameWidget extends Component {
   static defaultProps = {
@@ -53,6 +54,28 @@ class GameWidget extends Component {
     };
   };
 
+  getToolbarParams = () => {
+    const {
+ leftEditor, rightEditor, currentUserId, leftUserId, rightUserId, players, isStoredGame,
+} = this.props;
+    const rightUser = players[rightUserId];
+    const leftUser = players[leftUserId];
+    const resultLeftUser = _.get(players, [leftUserId, 'gameResult']);
+    const resultRightUser = _.get(players, [rightUserId, 'gameResult']);
+    const isPlayer = _.hasIn(players, currentUserId);
+
+    return {
+      leftEditor,
+      rightEditor,
+      leftUser,
+      rightUser,
+      resultLeftUser,
+      resultRightUser,
+      isStoredGame,
+      isPlayer,
+    };
+  };
+
   getRightEditorParams = () => {
     const { rightEditor, rightEditorHeight } = this.props;
     const editorState = rightEditor;
@@ -87,7 +110,7 @@ class GameWidget extends Component {
       <>
         <div className="col-12 col-md-6 p-1">
           <div className="card overflow-hidden">
-            <LeftEditorToolbar />
+            <EditorToolbar {...this.getToolbarParams()} side="left" />
             <Editor {...this.getLeftEditorParams()} />
             {/* TODO: move state to parent component */}
             {!isStoredGame && this.renderGameActionButtons(leftEditor, false)}
@@ -96,7 +119,7 @@ class GameWidget extends Component {
         </div>
         <div className="col-12 col-md-6 p-1">
           <div className="card overflow-hidden">
-            <RightEditorToolbar />
+            <EditorToolbar {...this.getToolbarParams()} side="right" />
             <Editor {...this.getRightEditorParams()} />
             {/* TODO: move state to parent component */}
             {!isStoredGame && this.renderGameActionButtons(rightEditor, true)}
@@ -120,6 +143,8 @@ const mapStateToProps = state => {
     players: selectors.gamePlayersSelector(state),
     leftEditor,
     rightEditor,
+    leftUserId,
+    rightUserId,
     leftEditorHeight: selectors.editorHeightSelector(leftUserId)(state),
     rightEditorHeight: selectors.editorHeightSelector(rightUserId)(state),
     leftOutput: selectors.leftExecutionOutputSelector(state),
