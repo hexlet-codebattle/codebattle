@@ -38,7 +38,7 @@ $fa-font-path: "/fonts";
 }
 
 a {
-  text-decoration: underline;
+  transition: color ease-in 0.1s;
 }
 
 .react-calendar-heatmap {

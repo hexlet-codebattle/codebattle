@@ -53,7 +53,7 @@ const UserName = ({ user }) => {
         key={id}
         className="d-flex align-items-center mr-1 text-truncate"
       >
-        <span className="text-truncate">{getName(userInfo, isCurrentUser)}</span>
+        <span className="text-truncate"><u>{getName(userInfo, isCurrentUser)}</u></span>
       </a>
       <LanguageIcon lang={lang} />
     </span>

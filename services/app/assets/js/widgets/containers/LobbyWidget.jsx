@@ -1,28 +1,29 @@
-import React, { useEffect, useState } from "react";
-import _ from "lodash";
-import moment from "moment";
-import { useDispatch, useSelector } from "react-redux";
-import Gon from "gon";
-import cn from "classnames";
-import * as lobbyMiddlewares from "../middlewares/Lobby";
-import gameStatusCodes from "../config/gameStatusCodes";
-import levelToClass from "../config/levelToClass";
-import { actions } from "../slices";
-import * as selectors from "../selectors";
-import Loading from "../components/Loading";
-import GamesHeatmap from "../components/GamesHeatmap";
-import Card from "../components/Card";
-import UserInfo from "./UserInfo";
+import React, { useEffect, useState } from 'react';
+import _ from 'lodash';
+import moment from 'moment';
+import { useDispatch, useSelector } from 'react-redux';
+import Gon from 'gon';
+import cn from 'classnames';
+import axios from 'axios';
+import qs from 'qs';
+import * as lobbyMiddlewares from '../middlewares/Lobby';
+import gameStatusCodes from '../config/gameStatusCodes';
+import levelToClass from '../config/levelToClass';
+import { actions } from '../slices';
+import * as selectors from '../selectors';
+import Loading from '../components/Loading';
+import GamesHeatmap from '../components/GamesHeatmap';
+import Card from '../components/Card';
+import UserInfo from './UserInfo';
 import {
   makeCreateGameBotUrl,
   getSignInGithubUrl,
   makeCreateGameUrlDefault,
-} from "../utils/urlBuilders";
-import i18n from "../../i18n";
-import StartGamePanel from "../components/StartGamePanel";
-import ResultIcon from "../components/Game/ResultIcon";
-import CompletedGames from "../components/Game/CompletedGames";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+} from '../utils/urlBuilders';
+import i18n from '../../i18n';
+import StartGamePanel from '../components/StartGamePanel';
+import ResultIcon from '../components/Game/ResultIcon';
+import CompletedGames from '../components/Game/CompletedGames';
 
 const Players = ({ gameId, players }) => {
   if (players.length === 1) {
@@ -64,15 +65,12 @@ const Players = ({ gameId, players }) => {
 };
 
 const GameLevelBadge = ({ level }) => (
-  <div className="d-flex flex-wrap flex-wrap-reverse" style={{maxWidth: "50px"}}>
-    <FontAwesomeIcon icon="star" />
-    <FontAwesomeIcon icon="star" />
-    <FontAwesomeIcon icon="star" />
+  <div className="text-center">
+    <img alt={level} src={`/assets/images/levels/${level}.svg`} />
   </div>
 );
 
-const isPlayer = (user, game) =>
-  !_.isEmpty(_.find(game.players, { id: user.id }));
+const isPlayer = (user, game) => !_.isEmpty(_.find(game.players, { id: user.id }));
 
 const ShowButton = ({ url }) => (
   <a type="button" className="btn btn-info btn-sm w-100" href={url}>
@@ -81,7 +79,7 @@ const ShowButton = ({ url }) => (
 );
 
 const ContinueButton = ({ url }) => (
-  <a type="button" className="btn btn-success btn-sm" href={url}>
+  <a type="button" className="btn btn-outline-orange btn-sm" href={url}>
     Continue
   </a>
 );
@@ -98,13 +96,13 @@ const renderButton = (url, type) => {
 
 const GameActionButton = ({ game }) => {
   const gameUrl = makeCreateGameBotUrl(game.id);
-  const gameUrlJoin = makeCreateGameBotUrl(game.id, "join");
-  const currentUser = Gon.getAsset("current_user");
+  const gameUrlJoin = makeCreateGameBotUrl(game.id, 'join');
+  const currentUser = Gon.getAsset('current_user');
   const gameState = game.state;
   const signInUrl = getSignInGithubUrl();
 
   if (gameState === gameStatusCodes.playing) {
-    const type = isPlayer(currentUser, game) ? "continue" : "show";
+    const type = isPlayer(currentUser, game) ? 'continue' : 'show';
     return renderButton(gameUrl, type);
   }
 
@@ -131,7 +129,7 @@ const GameActionButton = ({ game }) => {
           data-method="get"
           data-to={signInUrl}
         >
-          {i18n.t("Sign in with %{name}", { name: "Github" })}
+          {i18n.t('Sign in with %{name}', { name: 'Github' })}
         </button>
       );
     }
@@ -139,12 +137,12 @@ const GameActionButton = ({ game }) => {
       <div className="btn-group">
         <button
           type="button"
-          className="btn btn-danger btn-sm"
+          className="btn btn-outline-orange btn-sm"
           data-method="post"
           data-csrf={window.csrf_token}
           data-to={gameUrlJoin}
         >
-          {i18n.t("Fight")}
+          {i18n.t('Fight')}
         </button>
       </div>
     );
@@ -154,8 +152,8 @@ const GameActionButton = ({ game }) => {
 };
 
 const IntroButtons = () => {
-  const level = "elementary";
-  const gameUrl = makeCreateGameUrlDefault(level, "training", 3600);
+  const level = 'elementary';
+  const gameUrl = makeCreateGameUrlDefault(level, 'training', 3600);
 
   return (
     <>
@@ -168,7 +166,7 @@ const IntroButtons = () => {
         className="btn btn-primary mr-2"
       >
         <i className="fa fa-robot mr-2" />
-        {i18n.t("Start simple battle")}
+        {i18n.t('Start simple battle')}
       </button>
     </>
   );
@@ -176,12 +174,12 @@ const IntroButtons = () => {
 const Intro = () => (
   <div className="container-xl bg-white shadow-sm rounded py-4 mb-3">
     <h1 className="font-weight-light mb-4 text-center">
-      {i18n.t("Codebattle Intro Title")}
+      {i18n.t('Codebattle Intro Title')}
     </h1>
     <div className="row align-items-center">
       <div className="col-12 col-md-7 col-lg-7">
         <p className="h4 font-weight-normal x-line-height-15 my-4">
-          {i18n.t("Codebattle Intro")}
+          {i18n.t('Codebattle Intro')}
         </p>
         <IntroButtons />
       </div>
@@ -205,14 +203,14 @@ const LiveTournaments = ({ tournaments }) => {
     return (
       <div className="text-center">
         <p className="mb-0">There are no active tournaments right now</p>
-        <a href="/tournaments/#create">You may want to create one</a>
+        <a href="/tournaments/#create"><u>You may want to create one</u></a>
       </div>
     );
   }
   return (
     <div className="table-responsive">
       <table className="table">
-        <thead className="text-left">
+        <thead className="text-center">
           <tr>
             <th className="p-3 border-0">title</th>
             <th className="p-3 border-0">actions</th>
@@ -223,7 +221,7 @@ const LiveTournaments = ({ tournaments }) => {
           </tr>
         </thead>
         <tbody>
-          {_.orderBy(tournaments, "startsAt", "desc").map((tournament) => (
+          {_.orderBy(tournaments, 'startsAt', 'desc').map(tournament => (
             <tr key={tournament.id}>
               <td className="p-3 align-middle">{tournament.name}</td>
               <td className="p-3 align-middle">
@@ -233,7 +231,7 @@ const LiveTournaments = ({ tournaments }) => {
                 {moment
                   .utc(tournament.startsAt)
                   .local()
-                  .format("YYYY-MM-DD HH:mm")}
+                  .format('YYYY-MM-DD HH:mm')}
               </td>
               <td className="p-3 align-middle text-nowrap">
                 {tournament.type}
@@ -253,14 +251,14 @@ const LiveTournaments = ({ tournaments }) => {
 };
 
 const ActiveGames = ({ games }) => {
-  const currentUser = Gon.getAsset("current_user");
+  const currentUser = Gon.getAsset('current_user');
   if (_.isEmpty(games)) {
     return <p className="text-center">There are no active games right now.</p>;
   }
   return (
     <div className="table-responsive">
       <table className="table table-striped">
-        <thead className="text-left">
+        <thead className="text-center">
           <tr>
             <th className="p-3 border-0">Level</th>
             <th className="p-3 border-0">State</th>
@@ -271,20 +269,20 @@ const ActiveGames = ({ games }) => {
           </tr>
         </thead>
         <tbody>
-          {games.map((game) => {
-            const activeGameClasses = cn("text-dark", {
-              "alert-info": isPlayer(currentUser, game),
+          {games.map(game => {
+            const activeGameClasses = cn('text-dark', {
+              'alert-info': isPlayer(currentUser, game),
             });
             return (
               <tr key={game.id} className={activeGameClasses}>
                 <td className="p-3 align-middle text-nowrap">
                   <GameLevelBadge level={game.level} />
                 </td>
-                <td className="p-3 align-middle text-nowrap">
-                  <FontAwesomeIcon icon="fist-raised" />
+                <td className="p-3 align-middle text-center text-nowrap">
+                  <img alt={game.state} src={game.state === 'playing' ? '/assets/images/playing.svg' : '/assets/images/waitingOpponent.svg'} />
                 </td>
                 <Players gameId={game.id} players={game.players} />
-                <td className="p-3 align-middle">
+                <td className="p-3 align-middle text-center">
                   <GameActionButton game={game} />
                 </td>
               </tr>
@@ -297,11 +295,11 @@ const ActiveGames = ({ games }) => {
 };
 
 const GameContainers = ({ activeGames, completedGames, liveTournaments }) => (
-  <div className="container-lg mt-5 p-0">
+  <div className="p-0">
     <nav>
       <div className="nav nav-tabs bg-gray" id="nav-tab" role="tablist">
         <a
-          className="nav-item nav-link active text-uppercase rounded-0 text-black font-weight-bold"
+          className="nav-item nav-link active text-uppercase rounded-0 text-black font-weight-bold p-3"
           id="lobby-tab"
           data-toggle="tab"
           href="#lobby"
@@ -312,7 +310,7 @@ const GameContainers = ({ activeGames, completedGames, liveTournaments }) => (
           Lobby
         </a>
         <a
-          className="nav-item nav-link text-uppercase rounded-0 text-black font-weight-bold"
+          className="nav-item nav-link text-uppercase rounded-0 text-black font-weight-bold p-3"
           id="tournaments-tab"
           data-toggle="tab"
           href="#tournaments"
@@ -323,7 +321,7 @@ const GameContainers = ({ activeGames, completedGames, liveTournaments }) => (
           Tournaments
         </a>
         <a
-          className="nav-item nav-link text-uppercase rounded-0 text-black font-weight-bold"
+          className="nav-item nav-link text-uppercase rounded-0 text-black font-weight-bold p-3"
           id="completedGames-tab"
           data-toggle="tab"
           href="#completedGames"
@@ -364,8 +362,51 @@ const GameContainers = ({ activeGames, completedGames, liveTournaments }) => (
   </div>
 );
 
+const TopPlayersWeekly = () => {
+  const [rating, setRating] = useState(null);
+
+  useEffect(() => {
+    const queryParamsString = qs.stringify({
+      s: 'rating+desc',
+      date_from: moment().startOf('week').utc().format('YYYY-MM-DD'),
+      with_bots: false,
+    });
+
+    axios
+      .get(`/api/v1/users?${queryParamsString}`)
+      .then(res => {
+        const { data: { users } } = res;
+        setRating(users);
+      });
+  }, []);
+
+  return (
+    <table className="table table-borderless border border-dark m-0">
+      <thead>
+        <tr className="bg-gray">
+          <th scope="col" className="text-uppercase p-1" colSpan="3">
+            <img alt="rating" src="/assets/images/topPlayers.svg" className="m-2" />
+            Top players weekly
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {rating && rating.map(item => (
+          <tr>
+            <td>
+              <UserInfo user={item} />
+            </td>
+            <td>{item.rating}</td>
+            <td>+3</td>
+          </tr>
+          ))}
+      </tbody>
+    </table>
+  );
+};
+
 const LobbyWidget = () => {
-  const currentUser = Gon.getAsset("current_user");
+  const currentUser = Gon.getAsset('current_user');
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -378,7 +419,7 @@ const LobbyWidget = () => {
     activeGames,
     completedGames,
     liveTournaments,
-  } = useSelector((state) => selectors.gameListSelector(state));
+  } = useSelector(state => selectors.gameListSelector(state));
 
   const isGuestCurrentUser = !currentUser || currentUser.guest;
 
@@ -387,10 +428,10 @@ const LobbyWidget = () => {
   }
 
   return (
-    <div className="container-lg">
+    <div className="px-6 py-5">
       <div className="row">
         {/* {isGuestCurrentUser ? <Intro /> : <StartGamePanel />} */}
-        <div className="col-md-9 p-0">
+        <div className="col-9 p-0">
           <GameContainers
             activeGames={activeGames}
             completedGames={completedGames}
@@ -398,8 +439,8 @@ const LobbyWidget = () => {
           />
         </div>
 
-        <div className="d-flex flex-column col-md-3 mt-5">
-          <div className="border border-secondary">
+        <div className="d-flex flex-column col-3">
+          {/* <div className="border border-secondary">
             <div className="d-flex flex-column bg-gray p-3">
               <span>Rating</span>
               <span>DimaLol&nbsp;(bot)&nbsp;1376&nbsp;4</span>
@@ -412,7 +453,8 @@ const LobbyWidget = () => {
               <span>DimaLol&nbsp;(bot)&nbsp;1376&nbsp;4</span>
               <span>DimaLol&nbsp;(bot)&nbsp;1376&nbsp;4</span>
             </div>
-          </div>
+          </div> */}
+          <TopPlayersWeekly />
           <div className="border border-secondary mt-2">
             <div className="d-flex flex-column bg-gray p-3">
               <span>Rating</span>

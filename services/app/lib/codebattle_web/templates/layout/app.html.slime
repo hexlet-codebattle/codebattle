@@ -72,11 +72,11 @@ html lang="en"
                 li.nav-item.dropdown.d
                   a.nav-link.noborder.d-flex[href='#' aria-expanded="false" aria-haspopup="true" data-toggle="dropdown"]
                     .d-flex.flex-column.mr-2
-                      h5.text-white.mr-1.mb-0
+                      h5.text-white.mb-0
                         = @current_user.name
                       .text-right
-                        span
-                          img[alt="#{@current_user.rating}" src="/assets/images/rating.svg" style="width:20px"]
+                        img[alt="#{@current_user.rating}" src="/assets/images/rating.svg"]
+                        span.align-middle
                           = @current_user.rating
                     img.attachment.ml-1[alt="#{@current_user.name}" src="https://avatars0.githubusercontent.com/u/#{@current_user.github_id}" style="width:46px; height:46px"]
                     .dropdown-menu.dropdown-menu-right
