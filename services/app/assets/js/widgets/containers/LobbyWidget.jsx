@@ -294,6 +294,39 @@ const ActiveGames = ({ games }) => {
   );
 };
 
+const CreateGame = () => {
+  const [game, setGame] = useState({ level: 'elementary ', type: 'withRandomPlayer' });
+  const [gameUrl, setGameUrl] = useState(makeCreateGameUrlDefault(game.level, game.type));
+
+  useEffect(() => {
+    const newGameUrl = makeCreateGameUrlDefault(game.level, game.type);
+    setGameUrl(newGameUrl);
+  }, [game.level, game.type]);
+
+  return (
+    <div>
+      <h3>Level</h3>
+      <button type="button" className="btn btn-outline-orange" onClick={() => setGame({ ...game, level: 'elementary' })}>elementary</button>
+      <button type="button" className="btn btn-outline-orange" onClick={() => setGame({ ...game, level: 'easy' })}>easy</button>
+      <button type="button" className="btn btn-outline-orange" onClick={() => setGame({ ...game, level: 'medium' })}>medium</button>
+      <button type="button" className="btn btn-outline-orange" onClick={() => setGame({ ...game, level: 'hard' })}>hard</button>
+      <h3>Players</h3>
+      <button type="button" className="btn btn-outline-orange" onClick={() => setGame({ ...game, type: 'bot' })}>With bot</button>
+      <button type="button" className="btn btn-outline-orange" onClick={() => setGame({ ...game, type: 'withRandomPlayer' })}>With random player</button>
+
+      <button
+        type="button"
+        data-method="post"
+        data-csrf={window.csrf_token}
+        data-to={gameUrl}
+        className="btn btn-success mb-2"
+      >
+        {i18n.t('Start battle')}
+      </button>
+    </div>
+  );
+};
+
 const GameContainers = ({ activeGames, completedGames, liveTournaments }) => (
   <div className="p-0">
     <nav>
@@ -331,6 +364,17 @@ const GameContainers = ({ activeGames, completedGames, liveTournaments }) => (
         >
           Completed Games
         </a>
+        <a
+          className="nav-item nav-link text-uppercase rounded-0 text-black font-weight-bold p-3 ml-auto"
+          id="createGame-tab"
+          data-toggle="tab"
+          href="#createGame"
+          role="tab"
+          aria-controls="createGame"
+          aria-selected="false"
+        >
+          Create Game
+        </a>
       </div>
     </nav>
     <div className="tab-content" id="nav-tabContent">
@@ -357,6 +401,14 @@ const GameContainers = ({ activeGames, completedGames, liveTournaments }) => (
         aria-labelledby="completedGames-tab"
       >
         <CompletedGames games={completedGames} />
+      </div>
+      <div
+        className="tab-pane fade"
+        id="createGame"
+        role="tabpanel"
+        aria-labelledby="createGame-tab"
+      >
+        <CreateGame />
       </div>
     </div>
   </div>
