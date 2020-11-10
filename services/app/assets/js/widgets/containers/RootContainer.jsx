@@ -19,6 +19,32 @@ const steps = [
   {
     disableBeacon: true,
     disableOverlayClose: true,
+    title: 'Training game page',
+    content:
+  <>
+    <div className="text-justify">
+      This is a
+      <b> training game </b>
+      against a
+      <b> bot</b>
+      .
+      But in the future you’ll be against the real player
+      You need must solve the task
+      <b> first </b>
+      and pass all tests
+      <b> successfully</b>
+      .
+    </div>
+  </>,
+    locale: {
+      skip: 'Skip guide',
+    },
+    placement: 'center',
+    target: 'body',
+  },
+  {
+    disableBeacon: true,
+    disableOverlayClose: true,
     target: '[data-guide-id="Task"]',
     title: 'Task',
     content: 'Read the task carefully, pay attention to examples',
