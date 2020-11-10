@@ -29,7 +29,6 @@ const Menu = ({
   const [show, setShow] = useState(true);
 
   useEffect(() => {
-    console.log(collapse);
     setShow(collapse);
   }, [collapse]);
 
