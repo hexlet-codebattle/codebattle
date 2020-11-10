@@ -24,14 +24,13 @@ const renderFirstAssert = firstAssert => (
   );
 
 const Menu = ({
-  count, children, statusColor, message, firstAssert, collapse,
+  count, children, statusColor, message, firstAssert, isSyntaxError,
 }) => {
   const [show, setShow] = useState(true);
 
   useEffect(() => {
-    setShow(collapse);
-  }, [collapse]);
-
+    setShow(isSyntaxError);
+  }, [isSyntaxError]);
   const classCollapse = cn('collapse', { show });
   const handleClick = () => { setShow(!show); };
   const uniqIndex = _.uniqueId('heading');
@@ -52,7 +51,7 @@ const Menu = ({
               >
                 { show ? <FontAwesomeIcon icon="arrow-circle-up" /> : <FontAwesomeIcon icon="arrow-circle-down" /> }
               </button>
-              <span className="font-weight-bold small mr-3">{count}</span>
+              {!isSyntaxError && <span className="font-weight-bold small mr-3">{count}</span>}
               <span className={`badge badge-${statusColor}`}>{message}</span>
             </div>
             {firstAssert && renderFirstAssert(firstAssert)}

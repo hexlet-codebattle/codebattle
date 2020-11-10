@@ -41,7 +41,7 @@ const ExecutionOutput = ({
         statusColor={statusColor[resultData.status]}
         message={getMessage(resultData.status)}
         firstAssert={firstAssert}
-        collapse={isSyntaxError}
+        isSyntaxError={isSyntaxError}
       >
         {resultData.status === 'error' ? (
           <AccordeonBox.Item
