@@ -30,6 +30,7 @@ const ExecutionOutput = ({
   const allAsserts = asserts.map(JSON.parse);
   const [firstAssert, ...restAsserts] = allAsserts;
   const percent = (100 * successCount) / assertsCount;
+  const isSyntaxError = resultData.status === 'error';
   return (
     <AccordeonBox>
       <AccordeonBox.Menu
@@ -40,6 +41,7 @@ const ExecutionOutput = ({
         statusColor={statusColor[resultData.status]}
         message={getMessage(resultData.status)}
         firstAssert={firstAssert}
+        collapse={isSyntaxError}
       >
         {resultData.status === 'error' ? (
           <AccordeonBox.Item

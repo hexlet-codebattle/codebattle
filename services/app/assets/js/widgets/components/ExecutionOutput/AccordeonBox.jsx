@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import cn from 'classnames';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import _ from 'lodash';
@@ -24,12 +24,19 @@ const renderFirstAssert = firstAssert => (
   );
 
 const Menu = ({
-  count, children, statusColor, message, firstAssert,
+  count, children, statusColor, message, firstAssert, collapse,
 }) => {
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState(true);
+
+  useEffect(() => {
+    console.log(collapse);
+    setShow(collapse);
+  }, [collapse]);
+
   const classCollapse = cn('collapse', { show });
   const handleClick = () => { setShow(!show); };
   const uniqIndex = _.uniqueId('heading');
+
   return (
     <div className="card border-0 rounded-0">
       {(statusColor === 'warning' || statusColor === 'danger')
@@ -64,6 +71,7 @@ const SubMenu = ({
   children, statusColor, assert, hasOutput,
 }) => {
   const [show, setShow] = useState(false);
+
   const classCollapse = cn('collapse', {
     show,
   });
