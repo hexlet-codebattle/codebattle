@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import copy from 'copy-to-clipboard';
 import moment from 'moment';
+import { Modal, Button } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import Gon from 'gon';
 import cn from 'classnames';
@@ -319,7 +320,9 @@ const CreateGame = () => {
   );
 };
 
-const GameContainers = ({ activeGames, completedGames, liveTournaments }) => (
+const GameContainers = ({
+  activeGames, completedGames, liveTournaments, handleShowModal,
+}) => (
   <div className="p-0">
     <nav>
       <div className="nav nav-tabs bg-gray" id="nav-tab" role="tablist">
@@ -356,17 +359,13 @@ const GameContainers = ({ activeGames, completedGames, liveTournaments }) => (
         >
           Completed Games
         </a>
-        <a
+        <button
+          type="button"
           className="nav-item nav-link text-uppercase rounded-0 text-black font-weight-bold p-3 ml-auto"
-          id="createGame-tab"
-          data-toggle="tab"
-          href="#createGame"
-          role="tab"
-          aria-controls="createGame"
-          aria-selected="false"
+          onClick={handleShowModal}
         >
           Create Game
-        </a>
+        </button>
       </div>
     </nav>
     <div className="tab-content" id="nav-tabContent">
@@ -394,17 +393,9 @@ const GameContainers = ({ activeGames, completedGames, liveTournaments }) => (
       >
         <CompletedGames games={completedGames} />
       </div>
-      <div
-        className="tab-pane fade"
-        id="createGame"
-        role="tabpanel"
-        aria-labelledby="createGame-tab"
-      >
-        <CreateGame />
-      </div>
     </div>
   </div>
-);
+    );
 
 const TopPlayersWeekly = () => {
   const [rating, setRating] = useState(null);
@@ -452,9 +443,24 @@ const TopPlayersWeekly = () => {
   );
 };
 
+const renderModal = (show, handleCloseModal) => (
+  <Modal show={show} onHide={handleCloseModal}>
+    <Modal.Header closeButton>
+      <Modal.Title>Create game</Modal.Title>
+    </Modal.Header>
+    <Modal.Body>
+      <CreateGame />
+    </Modal.Body>
+  </Modal>
+  );
+
 const LobbyWidget = () => {
   const currentUser = Gon.getAsset('current_user');
   const dispatch = useDispatch();
+
+  const [show, setShow] = useState(false);
+  const handleCloseModal = () => setShow(false);
+  const handleShowModal = () => setShow(true);
 
   useEffect(() => {
     dispatch(actions.setCurrentUser({ user: { ...currentUser } }));
@@ -474,6 +480,7 @@ const LobbyWidget = () => {
 
   return (
     <div className="container-lg">
+      {renderModal(show, handleCloseModal)}
       <div className="row">
         {/* {isGuestCurrentUser ? <Intro /> : <StartGamePanel />} */}
         <div className="col-9 p-0">
@@ -481,6 +488,7 @@ const LobbyWidget = () => {
             activeGames={activeGames}
             completedGames={completedGames}
             liveTournaments={liveTournaments}
+            handleShowModal={handleShowModal}
           />
         </div>
 
