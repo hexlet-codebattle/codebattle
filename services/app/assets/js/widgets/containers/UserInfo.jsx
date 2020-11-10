@@ -42,9 +42,7 @@ import UserName from '../components/User/UserName';
 // }
 
 const UserInfo = ({ user }) => (
-  <span>
-    <UserName user={user} />
-  </span>
+  <UserName user={user} />
 );
 
 export default UserInfo;

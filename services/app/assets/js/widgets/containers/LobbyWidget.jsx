@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
+import copy from 'copy-to-clipboard';
 import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
 import Gon from 'gon';
@@ -25,14 +26,11 @@ import StartGamePanel from '../components/StartGamePanel';
 import ResultIcon from '../components/Game/ResultIcon';
 import CompletedGames from '../components/Game/CompletedGames';
 
-const Players = ({ gameId, players }) => {
+const Players = ({ players }) => {
   if (players.length === 1) {
     return (
       <td className="p-3 align-middle text-nowrap" colSpan={2}>
         <div className="d-flex align-items-center">
-          <span className="align-middle mr-1">
-            <i className="fa x-opacity-0">&nbsp;</i>
-          </span>
           <UserInfo user={players[0]} />
         </div>
       </td>
@@ -42,21 +40,11 @@ const Players = ({ gameId, players }) => {
     <>
       <td className="p-3 align-middle text-nowrap cb-username-td text-truncate">
         <div className="d-flex align-items-center">
-          <ResultIcon
-            gameId={gameId}
-            player1={players[0]}
-            player2={players[1]}
-          />
           <UserInfo user={players[0]} />
         </div>
       </td>
       <td className="p-3 align-middle text-nowrap cb-username-td text-truncate">
         <div className="d-flex align-items-center">
-          <ResultIcon
-            gameId={gameId}
-            player1={players[1]}
-            player2={players[0]}
-          />
           <UserInfo user={players[1]} />
         </div>
       </td>
@@ -73,13 +61,13 @@ const GameLevelBadge = ({ level }) => (
 const isPlayer = (user, game) => !_.isEmpty(_.find(game.players, { id: user.id }));
 
 const ShowButton = ({ url }) => (
-  <a type="button" className="btn btn-info btn-sm w-100" href={url}>
+  <a type="button" className="btn btn-outline-orange btn-sm" href={url}>
     Show
   </a>
 );
 
 const ContinueButton = ({ url }) => (
-  <a type="button" className="btn btn-outline-orange btn-sm" href={url}>
+  <a type="button" className="btn btn-outline-success btn-sm" href={url}>
     Continue
   </a>
 );
@@ -109,14 +97,23 @@ const GameActionButton = ({ game }) => {
   if (gameState === gameStatusCodes.waitingOpponent) {
     if (isPlayer(currentUser, game)) {
       return (
-        <div className="btn-group">
-          <ContinueButton url={gameUrl} />
+        <div className="d-flex justify-content-center">
+          <div className="btn-group ml-5">
+            <ContinueButton url={gameUrl} />
+            <button
+              type="button"
+              className="btn btn-sm"
+              onClick={() => copy(`${window.location}${gameUrl}`)}
+            >
+              <i className="far fa-copy" />
+            </button>
+          </div>
           <button
             type="button"
-            className="btn btn-danger btn-sm"
+            className="btn btn-hover btn-sm"
             onClick={lobbyMiddlewares.cancelGame(game.id)}
           >
-            Cancel
+            <i className="fas fa-times" />
           </button>
         </div>
       );
@@ -151,53 +148,53 @@ const GameActionButton = ({ game }) => {
   return null;
 };
 
-const IntroButtons = () => {
-  const level = 'elementary';
-  const gameUrl = makeCreateGameUrlDefault(level, 'training', 3600);
+// const IntroButtons = () => {
+//   const level = 'elementary';
+//   const gameUrl = makeCreateGameUrlDefault(level, 'training', 3600);
 
-  return (
-    <>
-      <button
-        key={gameUrl}
-        type="button"
-        data-method="post"
-        data-csrf={window.csrf_token}
-        data-to={gameUrl}
-        className="btn btn-primary mr-2"
-      >
-        <i className="fa fa-robot mr-2" />
-        {i18n.t('Start simple battle')}
-      </button>
-    </>
-  );
-};
-const Intro = () => (
-  <div className="container-xl bg-white shadow-sm rounded py-4 mb-3">
-    <h1 className="font-weight-light mb-4 text-center">
-      {i18n.t('Codebattle Intro Title')}
-    </h1>
-    <div className="row align-items-center">
-      <div className="col-12 col-md-7 col-lg-7">
-        <p className="h4 font-weight-normal x-line-height-15 my-4">
-          {i18n.t('Codebattle Intro')}
-        </p>
-        <IntroButtons />
-      </div>
-      <div className="d-none d-md-block col-md-5 col-lg-4">
-        <video
-          autoPlay
-          className="w-100 shadow-lg"
-          poster="/assets/images/opengraph-main.png"
-          loop
-          muted
-          playsInline
-          src="https://files.fm/down.php?i=x3hybevp"
-          width="100%"
-        />
-      </div>
-    </div>
-  </div>
-);
+//   return (
+//     <>
+//       <button
+//         key={gameUrl}
+//         type="button"
+//         data-method="post"
+//         data-csrf={window.csrf_token}
+//         data-to={gameUrl}
+//         className="btn btn-primary mr-2"
+//       >
+//         <i className="fa fa-robot mr-2" />
+//         {i18n.t('Start simple battle')}
+//       </button>
+//     </>
+//   );
+// };
+// const Intro = () => (
+//   <div className="container-xl bg-white shadow-sm rounded py-4 mb-3">
+//     <h1 className="font-weight-light mb-4 text-center">
+//       {i18n.t('Codebattle Intro Title')}
+//     </h1>
+//     <div className="row align-items-center">
+//       <div className="col-12 col-md-7 col-lg-7">
+//         <p className="h4 font-weight-normal x-line-height-15 my-4">
+//           {i18n.t('Codebattle Intro')}
+//         </p>
+//         <IntroButtons />
+//       </div>
+//       <div className="d-none d-md-block col-md-5 col-lg-4">
+//         <video
+//           autoPlay
+//           className="w-100 shadow-lg"
+//           poster="/assets/images/opengraph-main.png"
+//           loop
+//           muted
+//           playsInline
+//           src="https://files.fm/down.php?i=x3hybevp"
+//           width="100%"
+//         />
+//       </div>
+//     </div>
+//   </div>
+// );
 const LiveTournaments = ({ tournaments }) => {
   if (_.isEmpty(tournaments)) {
     return (
@@ -257,7 +254,7 @@ const ActiveGames = ({ games }) => {
   }
   return (
     <div className="table-responsive">
-      <table className="table table-striped">
+      <table className="table table-striped border-gray border-top-0 mb-0">
         <thead className="text-center">
           <tr>
             <th className="p-3 border-0">Level</th>
@@ -269,25 +266,20 @@ const ActiveGames = ({ games }) => {
           </tr>
         </thead>
         <tbody>
-          {games.map(game => {
-            const activeGameClasses = cn('text-dark', {
-              'alert-info': isPlayer(currentUser, game),
-            });
-            return (
-              <tr key={game.id} className={activeGameClasses}>
-                <td className="p-3 align-middle text-nowrap">
-                  <GameLevelBadge level={game.level} />
-                </td>
-                <td className="p-3 align-middle text-center text-nowrap">
-                  <img alt={game.state} src={game.state === 'playing' ? '/assets/images/playing.svg' : '/assets/images/waitingOpponent.svg'} />
-                </td>
-                <Players gameId={game.id} players={game.players} />
-                <td className="p-3 align-middle text-center">
-                  <GameActionButton game={game} />
-                </td>
-              </tr>
-            );
-          })}
+          {games.map(game => (
+            <tr key={game.id} className="text-dark game-item">
+              <td className="p-3 align-middle text-nowrap">
+                <GameLevelBadge level={game.level} />
+              </td>
+              <td className="p-3 align-middle text-center text-nowrap">
+                <img alt={game.state} src={game.state === 'playing' ? '/assets/images/playing.svg' : '/assets/images/waitingOpponent.svg'} />
+              </td>
+              <Players gameId={game.id} players={game.players} />
+              <td className="p-3 align-middle text-center">
+                <GameActionButton game={game} />
+              </td>
+            </tr>
+            ))}
         </tbody>
       </table>
     </div>
@@ -295,7 +287,7 @@ const ActiveGames = ({ games }) => {
 };
 
 const CreateGame = () => {
-  const [game, setGame] = useState({ level: 'elementary ', type: 'withRandomPlayer' });
+  const [game, setGame] = useState({ level: 'elementary', type: 'withRandomPlayer' });
   const [gameUrl, setGameUrl] = useState(makeCreateGameUrlDefault(game.level, game.type));
 
   useEffect(() => {
@@ -436,7 +428,7 @@ const TopPlayersWeekly = () => {
     <table className="table table-borderless border border-dark m-0">
       <thead>
         <tr className="bg-gray">
-          <th scope="col" className="text-uppercase p-1" colSpan="3">
+          <th scope="col" className="text-uppercase p-1" colSpan="2">
             <img alt="rating" src="/assets/images/topPlayers.svg" className="m-2" />
             Top players weekly
           </th>
@@ -444,12 +436,15 @@ const TopPlayersWeekly = () => {
       </thead>
       <tbody>
         {rating && rating.map(item => (
-          <tr>
-            <td>
-              <UserInfo user={item} />
+          <tr key={item.name}>
+            <td className="pr-0">
+              <div className="d-flex">
+                <UserInfo user={item} />
+                &nbsp;
+                {item.rating}
+              </div>
             </td>
-            <td>{item.rating}</td>
-            <td>+3</td>
+            <td className="pl-0">+3</td>
           </tr>
           ))}
       </tbody>
@@ -473,14 +468,12 @@ const LobbyWidget = () => {
     liveTournaments,
   } = useSelector(state => selectors.gameListSelector(state));
 
-  const isGuestCurrentUser = !currentUser || currentUser.guest;
-
   if (!loaded) {
     return <Loading />;
   }
 
   return (
-    <div className="px-6 py-5">
+    <div className="container-lg">
       <div className="row">
         {/* {isGuestCurrentUser ? <Intro /> : <StartGamePanel />} */}
         <div className="col-9 p-0">
@@ -492,35 +485,8 @@ const LobbyWidget = () => {
         </div>
 
         <div className="d-flex flex-column col-3">
-          {/* <div className="border border-secondary">
-            <div className="d-flex flex-column bg-gray p-3">
-              <span>Rating</span>
-              <span>DimaLol&nbsp;(bot)&nbsp;1376&nbsp;4</span>
-              <span>DimaLol&nbsp;(bot)&nbsp;1376&nbsp;4</span>
-              <span>DimaLol&nbsp;(bot)&nbsp;1376&nbsp;4</span>
-              <span>DimaLol&nbsp;(bot)&nbsp;1376&nbsp;4</span>
-              <span>DimaLol&nbsp;(bot)&nbsp;1376&nbsp;4</span>
-              <span>DimaLol&nbsp;(bot)&nbsp;1376&nbsp;4</span>
-              <span>DimaLol&nbsp;(bot)&nbsp;1376&nbsp;4</span>
-              <span>DimaLol&nbsp;(bot)&nbsp;1376&nbsp;4</span>
-              <span>DimaLol&nbsp;(bot)&nbsp;1376&nbsp;4</span>
-            </div>
-          </div> */}
           <TopPlayersWeekly />
-          <div className="border border-secondary mt-2">
-            <div className="d-flex flex-column bg-gray p-3">
-              <span>Rating</span>
-              <span>DimaLol&nbsp;(bot)&nbsp;1376&nbsp;4</span>
-              <span>DimaLol&nbsp;(bot)&nbsp;1376&nbsp;4</span>
-              <span>DimaLol&nbsp;(bot)&nbsp;1376&nbsp;4</span>
-              <span>DimaLol&nbsp;(bot)&nbsp;1376&nbsp;4</span>
-              <span>DimaLol&nbsp;(bot)&nbsp;1376&nbsp;4</span>
-              <span>DimaLol&nbsp;(bot)&nbsp;1376&nbsp;4</span>
-              <span>DimaLol&nbsp;(bot)&nbsp;1376&nbsp;4</span>
-              <span>DimaLol&nbsp;(bot)&nbsp;1376&nbsp;4</span>
-              <span>DimaLol&nbsp;(bot)&nbsp;1376&nbsp;4</span>
-            </div>
-          </div>
+          <div className="mt-2"><TopPlayersWeekly /></div>
         </div>
       </div>
     </div>
