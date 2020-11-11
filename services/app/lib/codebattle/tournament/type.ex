@@ -115,6 +115,7 @@ defmodule Codebattle.Tournament.Type do
         tournament
         |> build_matches
         |> start_games()
+        |> broadcast_new_step()
       end
 
       defp pick_winner(%{players: [%{game_result: "won"} = winner, _]}), do: winner
@@ -173,6 +174,16 @@ defmodule Codebattle.Tournament.Type do
           end)
 
         Map.merge(match, %{players: new_players, duration: new_duration, state: "finished"})
+      end
+
+      defp broadcast_new_step(tournament) do
+        CodebattleWeb.Endpoint.broadcast!(
+          "tournaments",
+          "round:created",
+          %{tournament: tournament}
+        )
+
+        tournament
       end
 
       # for individual game
