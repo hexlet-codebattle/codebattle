@@ -5,8 +5,7 @@ defmodule Codebattle.GameProcess.Engine.Standard do
     GlobalSupervisor,
     Player,
     FsmHelpers,
-    ActiveGames,
-    Notifier
+    ActiveGames
   }
 
   alias Codebattle.Languages
@@ -46,10 +45,6 @@ defmodule Codebattle.GameProcess.Engine.Standard do
          :ok <- start_timeout_timer(game.id, fsm) do
       case type do
         "public" ->
-          Task.start(fn ->
-            Notifier.call(:game_created, %{level: level, game: game, player: player})
-          end)
-
           broadcast_active_game(fsm)
 
         _ ->
@@ -84,14 +79,6 @@ defmodule Codebattle.GameProcess.Engine.Standard do
       ActiveGames.update_game(fsm)
       update_game!(game_id, %{state: "playing", task_id: task.id})
       Notifications.broadcast_join_game(fsm)
-
-      Task.start(fn ->
-        Notifier.call(:game_opponent_join, %{
-          first_player: FsmHelpers.get_first_player(fsm),
-          second_player: FsmHelpers.get_second_player(fsm),
-          game_id: game_id
-        })
-      end)
 
       broadcast_active_game(fsm)
       start_timeout_timer(game_id, fsm)
