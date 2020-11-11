@@ -8,9 +8,17 @@ import CompletedGames from '../components/Game/CompletedGames';
 const UserProfile = () => {
   const [stats, setStats] = useState(null);
 
+  const getProxyUrl = url => {
+    const proxy = 'https://cors-anywhere.herokuapp.com/';
+    const feedUrl = new URL(url);
+    const proxyUrl = new URL(`${feedUrl.host}${feedUrl.pathname}`, proxy);
+
+    return proxyUrl.href;
+  };
+
   useEffect(() => {
     const userId = window.location.pathname.split('/').pop();
-    axios.get(`/api/v1/user/${userId}/stats`).then(response => {
+    axios.get(getProxyUrl(`/api/v1/user/${userId}/stats`)).then(response => {
       setStats(camelizeKeys(response.data));
     });
   }, [setStats]);
