@@ -1,12 +1,12 @@
 defmodule CodebattleWeb.Api.V1.UserControllerTest do
   use CodebattleWeb.ConnCase, async: true
 
-  describe "index" do
-    test "show rating list", %{conn: conn} do
+  describe "#index" do
+    test "shows rating list", %{conn: conn} do
       user1 =
         insert(:user, %{name: "first", email: "test1@test.test", github_id: 1, rating: 2400})
 
-      insert_list(1, :user_game, user: user1, inserted_at: ~N[2000-01-01 23:00:07])
+      _user_game = insert(:user_game, user: user1, inserted_at: ~N[2000-01-01 23:00:07])
 
       _user2 =
         insert(:user, %{name: "second", email: "test2@test.test", github_id: 2, rating: 2310})
@@ -26,19 +26,60 @@ defmodule CodebattleWeb.Api.V1.UserControllerTest do
       assert resp_body["page_info"] == %{
                "page_number" => 1,
                "page_size" => 50,
-               "total_entries" => 31,
+               "total_entries" => 4,
                "total_pages" => 1
              }
 
-      assert Enum.count(resp_body["users"]) == 31
+      assert resp_body["date_from"] == nil
+      assert Enum.count(resp_body["users"]) == 4
     end
 
-    test "show rating list with with search by name_ilike", %{conn: conn} do
+    test "shows rating list with date_from filter", %{conn: conn} do
+      date_from = "2020-10-10"
+
+      starts_at =
+        date_from
+        |> Timex.parse!("{YYYY}-{0M}-{0D}")
+        |> Timex.to_naive_datetime()
+        |> NaiveDateTime.truncate(:second)
+
+      user1 =
+        insert(:user, %{name: "first", email: "test1@test.test", github_id: 1, rating: 2400})
+
+      game = insert(:game, starts_at: starts_at)
+      _user_game = insert(:user_game, user: user1, game: game)
+
+      _user2 =
+        insert(:user, %{name: "second", email: "test2@test.test", github_id: 2, rating: 2310})
+
+      _user3 =
+        insert(:user, %{name: "third", email: "test3@test.test", github_id: 3, rating: 2210})
+
+      _user4 =
+        insert(:user, %{name: "forth", email: "test4@test.test", github_id: 4, rating: 2210})
+
+      conn =
+        conn
+        |> get(Routes.api_v1_user_path(conn, :index), %{"date_from" => date_from})
+
+      resp_body = json_response(conn, 200)
+
+      assert resp_body["page_info"] == %{
+               "page_number" => 1,
+               "page_size" => 50,
+               "total_entries" => 1,
+               "total_pages" => 1
+             }
+
+      assert resp_body["date_from"] == date_from
+      assert Enum.count(resp_body["users"]) == 1
+    end
+
+    test "shows rating list with with search by name_ilike", %{conn: conn} do
       user1 = insert(:user, %{name: "aaa", email: "test1@test.test", github_id: 1, rating: 2400})
-      insert_list(1, :user_game, user: user1, inserted_at: ~N[2000-01-01 23:00:07])
+      _user_game = insert(:user_game, user: user1, inserted_at: ~N[2000-01-01 23:00:07])
 
       _user2 = insert(:user, %{name: "bbb", email: "test2@test.test", github_id: 2, rating: 2310})
-
       _user3 = insert(:user, %{name: "ab", email: "test3@test.test", github_id: 3, rating: 2210})
 
       conn =
@@ -50,14 +91,15 @@ defmodule CodebattleWeb.Api.V1.UserControllerTest do
       assert resp_body["page_info"] == %{
                "page_number" => 1,
                "page_size" => 50,
-               "total_entries" => 19,
+               "total_entries" => 2,
                "total_pages" => 1
              }
 
-      assert Enum.count(resp_body["users"]) == 19
+      assert resp_body["date_from"] == nil
+      assert Enum.count(resp_body["users"]) == 2
     end
 
-    test "show rating list sorted by inserted at", %{conn: conn} do
+    test "shows rating list sorted by inserted at", %{conn: conn} do
       insert(
         :user,
         %{
@@ -78,9 +120,11 @@ defmodule CodebattleWeb.Api.V1.UserControllerTest do
       assert resp_body["page_info"] == %{
                "page_number" => 1,
                "page_size" => 50,
-               "total_entries" => 28,
+               "total_entries" => 1,
                "total_pages" => 1
              }
+
+      assert resp_body["date_from"] == nil
 
       [first_user | _] = resp_body["users"]
 
@@ -91,8 +135,8 @@ defmodule CodebattleWeb.Api.V1.UserControllerTest do
     end
   end
 
-  describe "stats" do
-    test "show user stats", %{conn: conn} do
+  describe "#stats" do
+    test "shows user stats", %{conn: conn} do
       user1 =
         insert(:user, %{
           name: "first",

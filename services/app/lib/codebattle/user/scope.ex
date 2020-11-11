@@ -3,19 +3,46 @@ defmodule Codebattle.User.Scope do
     module with scopes for user repo
   """
 
-  alias Codebattle.{User, UserGame}
+  alias Codebattle.{User, UserGame, Game}
   import Ecto.Query, warn: false
 
   @sort_order ~w(asc desc)
   @sortable_attributes ~w(id rank games_played rating inserted_at)
 
   def list_users_with_raiting(params) do
-    initial_with_raiting_scope()
+    params
+    |> initial_with_raiting_scope()
     |> search_by_name(params)
+    |> without_bots(params)
     |> sort(params)
   end
 
-  defp initial_with_raiting_scope do
+  defp initial_with_raiting_scope(%{"date_from" => date_from}) when date_from !== "" do
+    starts_at = Timex.parse!(date_from, "{YYYY}-{0M}-{D}")
+
+    from(u in User,
+      order_by: {:desc, :rating},
+      left_join: ug in UserGame,
+      on: u.id == ug.user_id,
+      left_join: g in Game,
+      on: g.id == ug.game_id,
+      where: g.starts_at >= type(^starts_at, :naive_datetime),
+      group_by: u.id,
+      select: %User{
+        id: u.id,
+        is_bot: u.is_bot,
+        name: u.name,
+        rating: sum(ug.rating_diff),
+        github_id: u.github_id,
+        lang: u.lang,
+        games_played: count(ug.user_id),
+        rank: fragment("row_number() OVER(order by ? desc)", u.rating),
+        inserted_at: u.inserted_at
+      }
+    )
+  end
+
+  defp initial_with_raiting_scope(_params) do
     from(u in User,
       order_by: {:desc, :rating},
       left_join: ug in UserGame,
@@ -23,6 +50,7 @@ defmodule Codebattle.User.Scope do
       group_by: u.id,
       select: %User{
         id: u.id,
+        is_bot: u.is_bot,
         name: u.name,
         rating: u.rating,
         github_id: u.github_id,
@@ -31,6 +59,14 @@ defmodule Codebattle.User.Scope do
         rank: fragment("row_number() OVER(order by ? desc)", u.rating),
         inserted_at: u.inserted_at
       }
+    )
+  end
+
+  defp without_bots(query, %{"with_bots" => "true"}), do: query
+
+  defp without_bots(query, _params) do
+    from(u in subquery(query),
+      where: u.is_bot == false
     )
   end
 

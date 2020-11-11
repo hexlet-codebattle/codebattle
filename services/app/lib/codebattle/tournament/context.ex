@@ -40,6 +40,7 @@ defmodule Codebattle.Tournament.Context do
     |> List.flatten()
     |> Enum.map(fn {_, pid, _, _} -> Tournament.Server.get_tournament(pid) end)
     |> Enum.filter(&Function.identity/1)
+    |> Enum.filter(fn tournament -> tournament.state in ["waiting_participants", "active"] end)
   end
 
   def get_live_tournaments_count do

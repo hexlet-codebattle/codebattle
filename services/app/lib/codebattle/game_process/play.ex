@@ -194,7 +194,10 @@ defmodule Codebattle.GameProcess.Play do
         terminate_game(id)
 
       {_, _tournament_id} ->
+        # TODO: terminate now after auto redirect to next tournament game
         Notifications.notify_tournament(:game_over, fsm, %{game_id: id, state: "canceled"})
+        ActiveGames.terminate_game(id)
+        Notifications.game_timeout(id)
         {:terminate_after, 20}
     end
   end

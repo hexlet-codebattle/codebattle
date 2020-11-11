@@ -9,14 +9,13 @@ import { usersListSelector } from '../selectors';
 import { getUsersRatingPage } from '../middlewares/Users';
 import Loading from '../components/Loading';
 
-import i18n from '../../i18n';
-
 const decorateJoinedDate = str => (moment.utc(str).format('LL'));
 
 const renderSortArrow = (attribute, sort) => {
   const { attribute: currentAttribute, direction } = sort;
-  const arrowDirection = attribute === currentAttribute ? direction : '';
-  return (<span className={`d-inline-block cb-sort-arrow ${arrowDirection}`} />);
+  const classes = attribute === currentAttribute ? `cb-sort-arrow ${direction}` : 'sort-arrows';
+
+  return (<span className={`d-inline-block ${classes}`} />);
 };
 
 const renderUser = user => (
@@ -45,54 +44,94 @@ const renderPagination = ({
     pageSize: itemsCountPerPage,
     totalEntries: totalItemsCount,
   },
+  dateFrom,
+  withBots,
 }, dispatch) => (
   <Pagination
     activePage={activePage}
     itemsCountPerPage={itemsCountPerPage}
     totalItemsCount={totalItemsCount}
     pageRangeDisplayed={5}
-    onChange={page => dispatch(getUsersRatingPage(page))}
+    onChange={page => dispatch(getUsersRatingPage(dateFrom, withBots, page))}
     itemClass="page-item"
     linkClass="page-link"
   />
 );
 
+const getActiveModeByDateFrom = dateFrom => {
+  if (!dateFrom) return 'total';
+  if (moment.utc(dateFrom) <= moment().startOf('month')) return 'monthly';
+
+  return 'weekly';
+};
+
+const getDateFromByNavItem = navItem => {
+  if (navItem === 'weekly') return moment().startOf('week').utc().format('YYYY-MM-DD');
+  if (navItem === 'monthly') return moment().startOf('month').utc().format('YYYY-MM-DD');
+
+  return null;
+};
+
+const renderRatingModeNavItem = (navItem, activeMode, withBots, dispatch) => {
+  const dateFrom = getDateFromByNavItem(navItem);
+  const classes = activeMode === navItem ? 'btn nav-link active' : 'btn btn-link nav-link';
+
+  return (
+    <li key={navItem} className="nav-item">
+      <button type="button" className={classes} onClick={() => dispatch(getUsersRatingPage(dateFrom, withBots))}>{navItem}</button>
+    </li>
+  );
+};
+
 const UsersRating = () => {
   const [sort, setSort] = useState({
-    attribute: null,
-    direction: 'desc',
+    attribute: 'rank',
+    direction: 'asc',
   });
 
   const usersRatingPage = useSelector(usersListSelector);
   const storeLoaded = useSelector(state => state.storeLoaded);
-
   const dispatch = useDispatch();
 
+  const {
+    pageInfo: { totalEntries },
+    users,
+    dateFrom,
+    withBots,
+  } = usersRatingPage;
+
   useEffect(() => {
-    dispatch(getUsersRatingPage(1));
+    dispatch(getUsersRatingPage(null, true, 1));
   }, [dispatch]);
 
   let filterNode;
 
-  const triggerSort = event => {
-    const [attribute, direction] = event.target.value.split(',');
+  const triggerSort = attribute => {
+    const direction = sort.direction === 'desc' ? 'asc' : 'desc';
 
     setSort({
       attribute,
       direction,
     });
 
-    dispatch(getUsersRatingPage(1, filterNode.value, `${attribute}+${direction}`));
+    dispatch(getUsersRatingPage(dateFrom, withBots, 1, filterNode.value, `${attribute}+${direction}`));
   };
 
   if (!storeLoaded) {
     return <Loading />;
   }
 
+  const ratingModes = ['weekly', 'monthly', 'total'];
+
   return (
     <div className="text-center">
       <h2 className="font-weight-normal">Users rating</h2>
-      <p>{`Total: ${usersRatingPage.pageInfo.totalEntries}`}</p>
+      <p>{`Total entries: ${totalEntries}`}</p>
+
+      <ul className="nav nav-pills justify-content-center">
+        {ratingModes.map(item => renderRatingModeNavItem(item, getActiveModeByDateFrom(dateFrom), withBots, dispatch))}
+      </ul>
+
       <div className="form-inline justify-content-between">
         <div className="input-group">
           <div className="input-group-prepend">
@@ -106,75 +145,69 @@ const UsersRating = () => {
             placeholder="Username"
             aria-label="Username"
             aria-describedby="basic-addon1"
-            onChange={() => dispatch(getUsersRatingPage(1, filterNode.value))}
+            onChange={() => dispatch(getUsersRatingPage(dateFrom, withBots, 1, filterNode.value))}
             // eslint-disable-next-line react/no-find-dom-node
             ref={c => { filterNode = ReactDOM.findDOMNode(c); }}
           />
         </div>
-        <div className="form-group">
-          <span className="mr-3">{i18n.t('Sort by:')}</span>
-          <select className="custom-select" onChange={triggerSort}>
-            <option value={['rank', 'asc']}>
-              (high)
-              {i18n.t('Rank')}
-            </option>
-            <option value={['rank', 'desc']}>
-              (low)
-              {i18n.t('Rank')}
-            </option>
-            <option value={['games_played', 'desc']}>
-              (high)
-              {i18n.t('Games played')}
-            </option>
-            <option value={['games_played', 'asc']}>
-              (low)
-              {i18n.t('Games played')}
-            </option>
-            <option value={['id', 'asc']}>
-              (new)
-              {i18n.t('Joined')}
-            </option>
-            <option value={['id', 'desc']}>
-              (old)
-              {i18n.t('Joined')}
-            </option>
-          </select>
+        <div className="form-check">
+          <label className="form-check-label" htmlFor="withBots">
+            <input
+              id="withBots"
+              className="form-check-input"
+              type="checkbox"
+              name="with_bots"
+              onChange={() => dispatch(getUsersRatingPage(dateFrom, !withBots, 1, filterNode.value))}
+              defaultChecked={withBots}
+            />
+            With bots
+          </label>
         </div>
       </div>
       <table className="table">
         <thead className="text-left">
           <tr>
             <th
-              className="p-3 border-0"
+              className="p-3 border-0 cursor-pointer"
+              onClick={() => triggerSort('rank')}
             >
               Rank
+              &nbsp;
               {renderSortArrow('rank', sort)}
             </th>
             <th className="p-3 border-0">User</th>
             <th
-              className="p-3 border-0"
+              className="p-3 border-0 cursor-pointer"
+              onClick={() => triggerSort('rating')}
             >
               Rating
+              &nbsp;
               {renderSortArrow('rating', sort)}
             </th>
             <th
-              className="p-3 border-0"
+              className="p-3 border-0 cursor-pointer"
+              onClick={() => triggerSort('games_played')}
             >
               Games played
+              &nbsp;
               {renderSortArrow('games_played', sort)}
             </th>
-            <th className="p-3 border-0">Performance</th>
+            <th className="p-3 border-0">
+              Performance
+            </th>
             <th
-              className="p-3 border-0"
+              className="p-3 border-0 cursor-pointer"
+              onClick={() => triggerSort('id')}
             >
               Joined
+              &nbsp;
               {renderSortArrow('id', sort)}
             </th>
             <th className="p-3 border-0">Github</th>
           </tr>
         </thead>
         <tbody className="text-left">
-          {usersRatingPage.users.map(renderUser)}
+          {users.map(renderUser)}
         </tbody>
       </table>
       <div>

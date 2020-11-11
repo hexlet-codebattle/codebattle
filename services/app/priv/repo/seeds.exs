@@ -1,4 +1,6 @@
 alias Codebattle.Repo
+alias Codebattle.{Game, User, UserGame}
+
 levels = ["elementary", "easy", "medium", "hard"]
 
 1..3
@@ -142,4 +144,90 @@ creator = Repo.get!(Codebattle.User, -15)
   diffculty: "elementary",
   starts_at: ~N[2019-08-22 19:33:08.910767]
 })
-|> Codebattle.Repo.insert!()
+|> Repo.insert!()
+
+now = Timex.now()
+one_month_ago = Timex.shift(now, months: -1)
+two_weeks_ago = Timex.shift(now, weeks: -2)
+five_days_ago = Timex.shift(now, days: -5)
+six_hours_ago = Timex.shift(now, hours: -6)
+
+[one_month_ago, two_weeks_ago, five_days_ago, six_hours_ago]
+|> Enum.each(fn t ->
+  game_params = %{
+    state: "game_over",
+    level: "easy",
+    type: "public",
+    starts_at: t |> Timex.to_naive_datetime() |> NaiveDateTime.truncate(:second),
+    finishs_at: t |> Timex.to_naive_datetime() |> NaiveDateTime.truncate(:second),
+    inserted_at: TimeHelper.utc_now(),
+    updated_at: TimeHelper.utc_now()
+  }
+
+  {:ok, game} =
+    %Game{}
+    |> Game.changeset(game_params)
+    |> Repo.insert()
+
+  user_1_params = %{
+    name: "User1_#{Timex.format!(t, "%FT%T%:z", :strftime)}",
+    is_bot: false,
+    rating: 1300,
+    email: "#{Timex.format!(t, "%FT%T%:z", :strftime)}@user1",
+    lang: "ruby",
+    github_id: 35_539_033,
+    inserted_at: TimeHelper.utc_now(),
+    updated_at: TimeHelper.utc_now()
+  }
+
+  {:ok, user_1} =
+    %User{}
+    |> User.changeset(user_1_params)
+    |> Repo.insert()
+
+  user_2_params = %{
+    name: "User2_#{Timex.format!(t, "%FT%T%:z", :strftime)}",
+    is_bot: false,
+    rating: -500,
+    email: "#{Timex.format!(t, "%FT%T%:z", :strftime)}@user2",
+    lang: "java",
+    github_id: 35_539_033,
+    inserted_at: TimeHelper.utc_now(),
+    updated_at: TimeHelper.utc_now()
+  }
+
+  {:ok, user_2} =
+    %User{}
+    |> User.changeset(user_2_params)
+    |> Repo.insert()
+
+  user_game_1_params = %{
+    game_id: game.id,
+    user_id: user_1.id,
+    result: "won",
+    creator: true,
+    rating: user_1.rating + 32,
+    rating_diff: 32,
+    lang: user_1.lang
+  }
+
+  {:ok, user_game_1_params} =
+    %UserGame{}
+    |> UserGame.changeset(user_game_1_params)
+    |> Repo.insert()
+
+  user_game_2_params = %{
+    game_id: game.id,
+    user_id: user_2.id,
+    result: "lost",
+    creator: false,
+    rating: user_2.rating - 32,
+    rating_diff: -32,
+    lang: user_2.lang
+  }
+
+  {:ok, user_game_2_params} =
+    %UserGame{}
+    |> UserGame.changeset(user_game_2_params)
+    |> Repo.insert()
+end)

@@ -266,13 +266,13 @@ msgid "Failure Test Message"
 msgstr "Oh no, some test has failed!"
 
 msgid "Win Game Message"
-msgstr "Congratulations! You have won the game!"
+msgstr "You have won the game!"
 
 msgid "Win Training Message"
 msgstr "Congratulations! If you want to fight with real players for a place in the ranking, you need to sign up"
 
 msgid "Lose Game Message"
-msgstr "Oh snap! Your opponent has won the game"
+msgstr "Your opponent has won the game"
 
 msgid "Press Check solution or Give up"
 msgstr "Press 'Check solution' or 'Give up'"

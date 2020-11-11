@@ -88,7 +88,7 @@ defmodule Codebattle.Tournament.Helpers do
         |> Map.from_struct()
         |> Map.merge(params)
       end)
-      |> Enum.sort(&(&1.score > &2.score or &1.average_time > &2.average_time))
+      |> Enum.sort_by(&{-&1.score, &1.average_time})
     end
   end
 

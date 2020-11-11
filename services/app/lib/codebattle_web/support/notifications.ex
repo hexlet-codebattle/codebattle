@@ -10,7 +10,7 @@ defmodule CodebattleWeb.Notifications do
     Task.start(fn ->
       CodebattleWeb.Endpoint.broadcast!(game_channel_name(game_id), "game:timeout", %{
         status: "timeout",
-        msg: gettext("Oh no, the time is out! Both players lost ;(")
+        msg: gettext("The time is out! Both players lost ;(")
       })
     end)
   end

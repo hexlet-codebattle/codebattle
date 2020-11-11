@@ -36,6 +36,7 @@ import {
   renderUserPage,
   renderSettingPage,
 } from './widgets';
+import renderExtensionPopup from './widgets/components/ExtensionPopup';
 
 const Hooks = {
   NewChatMessage: {
@@ -59,12 +60,17 @@ window.addEventListener('phx:page-loading-stop', _info => NProgress.done());
 
 liveSocket.connect();
 
+const extension = document.getElementById('extension');
 const gameWidgetRoot = document.getElementById('game-widget-root');
 const heatmapRoot = document.getElementById('heatmap-root');
 const gameListRoot = document.getElementById('game-list');
 const ratingList = document.getElementById('rating-list');
 const userPageRoot = document.getElementById('user-page-root');
 const settingsRoot = document.getElementById('settings');
+
+if (extension) {
+  renderExtensionPopup(extension);
+}
 
 if (gameWidgetRoot) {
   renderGameWidget(gameWidgetRoot);

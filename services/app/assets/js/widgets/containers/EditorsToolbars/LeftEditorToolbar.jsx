@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
 import cn from 'classnames';
@@ -13,6 +13,7 @@ import { actions } from '../../slices';
 import EditorModes from '../../config/editorModes';
 import EditorThemes from '../../config/editorThemes';
 import EditorHeightButtons from './EditorHeightButtons';
+import TypingIcon from './TypingIcon';
 
 const renderVimModeBtn = (setMode, leftEditorsMode) => {
   const isVimMode = leftEditorsMode === EditorModes.vim;
@@ -45,33 +46,12 @@ const renderSwitchThemeBtn = (switchTheme, theme) => {
   );
 };
 
-const TypingIconLeft = () => {
-  const leftEditor = useSelector(state => selectors.leftEditorSelector(state));
-  const { text } = leftEditor;
-  const [showTyping, setShowTyping] = useState(true);
-  useEffect(() => {
-    setShowTyping(true);
-    setTimeout(() => {
-      setShowTyping(false);
-    }, 500);
-  }, [text]);
-  const classNames = cn('text-info mr-3', {
-    'd-none': !showTyping,
-  });
-
-  return (
-    <div>
-      <FontAwesomeIcon icon="keyboard" className={classNames} />
-    </div>
-  );
-};
-
-const renderNameplate = (player = {}, onlineUsers) => {
+const renderNameplate = (player = {}, onlineUsers, editor, isStoredGame) => {
   const isOnline = _.find(onlineUsers, { id: player.id });
 
   return (
     <div className="d-none d-xl-flex align-items-center">
-      <TypingIconLeft />
+      {!isStoredGame && <TypingIcon editor={editor} />}
       <UserInfo user={player} />
       <div>
         {isOnline ? (
@@ -87,6 +67,7 @@ const renderNameplate = (player = {}, onlineUsers) => {
 const LeftEditorToolbar = () => {
   const dispatch = useDispatch();
 
+  const leftEditor = useSelector(state => selectors.leftEditorSelector(state));
   const leftUserId = useSelector(state => _.get(selectors.leftEditorSelector(state), ['userId'], null));
   const rightUserId = useSelector(state => _.get(selectors.rightEditorSelector(state), ['userId'], null));
   const languages = useSelector(state => selectors.editorLangsSelector(state));
@@ -112,7 +93,11 @@ const LeftEditorToolbar = () => {
       className="py-1 px-3 btn-toolbar justify-content-between align-items-center"
       role="toolbar"
     >
-      <div className="btn-group col-6 align-items-center" role="group" aria-label="Editor settings">
+      <div
+        className="btn-group col-6 align-items-center"
+        role="group"
+        aria-label="Editor settings"
+      >
         <LanguagePicker
           languages={languages}
           currentLangSlug={leftEditorLangSlug}
@@ -130,7 +115,7 @@ const LeftEditorToolbar = () => {
         resultUser1={_.get(players, [leftUserId, 'gameResult'])}
         resultUser2={_.get(players, [rightUserId, 'gameResult'])}
       />
-      {renderNameplate(players[leftUserId], onlineUsers)}
+      {renderNameplate(players[leftUserId], onlineUsers, leftEditor, isStoredGame)}
     </div>
   );
 };

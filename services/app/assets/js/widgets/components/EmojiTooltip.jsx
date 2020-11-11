@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useHotkeys } from 'react-hotkeys-hook';
+import useKey from '../utils/useKey';
 
 export default function EmojiTooltip({ emojis, handleSelect, hide }) {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -18,26 +18,26 @@ export default function EmojiTooltip({ emojis, handleSelect, hide }) {
     });
   };
 
-  useHotkeys('escape', () => hide(), [], { filter: e => e.target });
-  useHotkeys('enter', e => {
+  useKey('Escape', () => hide());
+
+  useKey('Enter', e => {
     e.preventDefault();
     handleSelect(emojis[activeIndex]);
-    hide();
-  }, [activeIndex], { filter: e => e.target });
+  }, {}, [activeIndex, emojis]);
 
-  useHotkeys('up', () => decreaseIndex(), [], { filter: e => e.target });
-  useHotkeys('down', () => increaseIndex(), [], { filter: e => e.target });
+  useKey('ArrowUp', () => decreaseIndex(), {}, [emojis]);
+  useKey('ArrowDown', () => increaseIndex(), {}, [emojis]);
 
   return (
     <select
-
-      multiple
-      value={[`${activeIndex}`]}
-      className="d-flex position-absolute flex-column border rounded w-50 x-bottom-75"
+      value={activeIndex}
+      className="d-flex position-absolute flex-column border rounded w-50 x-bottom-75 custom-select mb-2"
+      onChange={e => { setActiveIndex(e.target.value); }}
+      onClick={() => { handleSelect(emojis[activeIndex]); }}
+      size="4"
     >
       {emojis?.map((emoji, i) => (
         <option
-          onClick={() => handleSelect(emoji)}
           key={emoji.id}
           value={+i}
         >
