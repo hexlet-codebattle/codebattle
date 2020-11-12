@@ -5,6 +5,19 @@ import _ from 'lodash';
 import i18n from '../../../i18n';
 import color from '../../config/statusColor';
 
+const getMessage = status => {
+  switch (status) {
+    case 'error':
+      return i18n.t('You have some syntax errors');
+    case 'failure':
+      return i18n.t('Test failed');
+    case 'ok':
+      return i18n.t('Yay! All tests passed!!111');
+    default:
+      return i18n.t('Press Check solution or press Give up');
+  }
+};
+
 const AccordeonBox = ({ children }) => (
   <div className="accordion border-top" id="accordionExample">
     { children }
@@ -24,16 +37,23 @@ const renderFirstAssert = firstAssert => (
   );
 
 const Menu = ({
-  count, children, statusColor, message, firstAssert, isSyntaxError,
+  children, firstAssert, resultData, assertsCount, successCount,
 }) => {
   const [show, setShow] = useState(true);
-
-  useEffect(() => {
-    setShow(isSyntaxError);
-  }, [isSyntaxError]);
+  const isSyntaxError = resultData.status === 'error';
+  const statusColor = color[resultData.status];
+  const message = getMessage(resultData.status);
   const classCollapse = cn('collapse', { show });
   const handleClick = () => { setShow(!show); };
   const uniqIndex = _.uniqueId('heading');
+  const percent = (100 * successCount) / assertsCount;
+  const count = i18n.t(
+    'You passed %{successCount} from %{assertsCount} asserts. (%{percent}%)',
+    { successCount, assertsCount, percent },
+  );
+  useEffect(() => {
+    setShow(isSyntaxError);
+  }, [isSyntaxError]);
 
   return (
     <div className="card border-0 rounded-0">
