@@ -40,6 +40,7 @@ defmodule CodebattleWeb.Router do
       get("/playbook/:id", PlaybookController, :show)
       get("/user/:id/stats", UserController, :stats)
       resources("/users", UserController, only: [:index, :show])
+      resources("/settings", SettingsController, only: [:show, :update], singleton: true)
     end
   end
 

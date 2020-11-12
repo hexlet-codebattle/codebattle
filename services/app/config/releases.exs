@@ -29,7 +29,3 @@ config :codebattle, Codebattle.Repo,
 config :ueberauth, Ueberauth.Strategy.Github.OAuth,
   client_id: System.get_env("GITHUB_CLIENT_ID"),
   client_secret: System.get_env("GITHUB_CLIENT_SECRET")
-
-config :one_signal, OneSignal,
-  app_id: System.get_env("ONESIGNAL_APP_ID"),
-  api_key: System.get_env("ONESIGNAL_API_KEY")
