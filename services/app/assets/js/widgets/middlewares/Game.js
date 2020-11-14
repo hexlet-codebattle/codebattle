@@ -285,6 +285,10 @@ export const activeGameEditorReady = () => dispatch => {
   channel.on('game:timeout', ({ status, msg }) => {
     dispatch(actions.updateGameStatus({ status, msg }));
   });
+
+  channel.on('tournament:round_created', payload => {
+    dispatch(actions.setTournamentsInfo(payload));
+  });
 };
 
 export const storedGameEditorReady = () => dispatch => {
