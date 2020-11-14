@@ -1,12 +1,10 @@
 import React from 'react';
 import _ from 'lodash';
 
-const GoToNextGame = ({ currentUserId, info: { state, data: { matches } } }) => {
-  if (state !== 'active') {
-    return null;
-  }
+const GoToNextGame = ({ currentUserId, info: { data: { matches } } }) => {
   const activeMatches = matches.filter(match => match.state === 'active');
   const nextMatch = _.find(activeMatches, ({ players }) => players.some(({ id }) => id === currentUserId));
+
   return (
     <>
       {
