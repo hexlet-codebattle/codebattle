@@ -1,57 +1,65 @@
-import React, { useState } from 'react';
+import React from 'react';
 import axios from 'axios';
+import { Formik, Form, useField } from 'formik';
+import * as Yup from 'yup';
 
-const UserSettings = () => {
-  const [text, setText] = useState('');
-  const getProxyUrl = url => {
-    const proxy = 'https://cors-anywhere.herokuapp.com/';
-    const feedUrl = new URL(url);
-    const proxyUrl = new URL(`${feedUrl.host}${feedUrl.pathname}`, proxy);
-
-    return proxyUrl.href;
-  };
-
-  const handleChange = e => setText(e.target.value);
-
-  const handleSubmit = async e => {
-    e.preventDefault();
-    // axios({
-    //   url: '/settings',
-    //   method: 'put',
-    //   data: { name: text },
-    //   xsrfCookieName: 'XSRF-TOKEN',
-    //   xsrfHeaderName: 'X-XSRF-TOKEN',
-    // })
-
-    const bodyFormData = new FormData();
-    bodyFormData.append('user[name]', text);
-    bodyFormData.append('_method', 'put');
-    bodyFormData.append('xsrfHeaderName', 'X-CSRF-TOKEN');
-
-    await axios.post('/settings', bodyFormData)
-    .catch(err => {
-      console.error(err);
-    });
-  };
+ const TextInput = ({ label, ...props }) => {
+  const [field, meta] = useField(props);
+  const { id, name } = props;
   return (
-    <div className="container bg-white shadow-sm py-4">
-      <div className="text-center">
-        <h2 className="font-weight-normal">Settings</h2>
+    <div className="form-group ml-2">
+      <div>
+        <label htmlFor={id || name}>{label}</label>
       </div>
-      <form onSubmit={handleSubmit}>
-        <input type="hidden" name="_method" value="put" />
-        <input type="hidden" name="_csrf_token" value="@changeset" />
-        <div className="col-4 form-group">
-          <div className="form-group">
-            <div>
-              <label htmlFor="user_name">Name</label>
-              <input onChange={handleChange} id="user_name" className="form-control" type="text" value={text} />
-            </div>
-          </div>
-          <button className="btn btn-primary" aria-label="Save" type="submit">Save</button>
-        </div>
-      </form>
+      <input className="" {...field} {...props} />
+      {meta.touched && meta.error ? (
+        <span className="error text-danger ml-3">{meta.error}</span>
+      ) : null}
     </div>
+  );
+};
+const UserSettings = () => {
+  const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute('content');
+
+  return (
+    <>
+      <div className="container bg-white shadow-sm py-4">
+        <div className="text-center">
+          <h2 className="font-weight-normal">Settings</h2>
+        </div>
+        <Formik
+          initialValues={{
+        name: '',
+        _csrf_token: csrfToken,
+      }}
+          validationSchema={Yup.object({
+        name: Yup.string()
+          .max(16, 'Must be 16 characters or less'),
+      })}
+          onSubmit={async (values, { setSubmitting }) => {
+          try {
+            const response = await axios.patch('/api/v1/settings', values);
+            if (response.status === 200) {
+              window.location = '/settings';
+              setSubmitting(false);
+            }
+          } catch (e) {
+              console.error(e);
+          }
+      }}
+        >
+          <Form>
+            <TextInput
+              label="Name"
+              name="name"
+              type="text"
+              placeholder="Enter your name"
+            />
+            <button type="submit" className="btn btn-primary ml-2">Save</button>
+          </Form>
+        </Formik>
+      </div>
+    </>
 );
 };
 
