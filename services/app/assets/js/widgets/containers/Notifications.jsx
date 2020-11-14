@@ -28,7 +28,8 @@ const Notifications = () => {
             <ActionsAfterGame />
           </>
       )}
-      {isTournamentGame && tournamentsInfo !== null && <GoToNextGame info={tournamentsInfo} currentUserId={currentUserId} />}
+      { isTournamentGame && tournamentsInfo !== null && tournamentsInfo.state === 'active'
+        && <GoToNextGame info={tournamentsInfo} currentUserId={currentUserId} /> }
       { isTournamentGame && <BackToTournamentButton /> }
       { !isTournamentGame && <BackToHomeButton />}
     </>
