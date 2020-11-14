@@ -19,6 +19,8 @@ const Notifications = () => {
   const isCurrentUserPlayer = _.hasIn(players, currentUserId);
   const isGameNotPlaying = status !== GameStatusCodes.playing;
   const isTournamentGame = gameType === GameTypeCodes.tournament;
+  const isActiveTournament = tournamentsInfo !== null && tournamentsInfo.state === 'active';
+
   return (
     <>
       {(isCurrentUserPlayer && isGameNotPlaying)
@@ -28,7 +30,7 @@ const Notifications = () => {
             <ActionsAfterGame />
           </>
       )}
-      { isTournamentGame && tournamentsInfo !== null && tournamentsInfo.state === 'active'
+      { isTournamentGame && isActiveTournament
         && <GoToNextGame info={tournamentsInfo} currentUserId={currentUserId} /> }
       { isTournamentGame && <BackToTournamentButton /> }
       { !isTournamentGame && <BackToHomeButton />}
