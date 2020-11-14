@@ -6,7 +6,6 @@ import axios from 'axios';
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import RootContainer from '../widgets/containers/RootContainer';
-import UserSettings from '../widgets/containers/UserSettings';
 import reducers from '../widgets/slices';
 import userTypes from '../widgets/config/userTypes';
 import GameStatusCodes from '../widgets/config/gameStatusCodes';
@@ -69,9 +68,7 @@ test('test rendering active game components', async () => {
   });
 
   render(<Provider store={store}><RootContainer /></Provider>);
-  render(<Provider store={store}><UserSettings /></Provider>);
 
   expect(screen.getByText(/Online users:/)).toBeInTheDocument();
   expect(screen.getByText(/Task/)).toBeInTheDocument();
-  expect(screen.getByText(/Settings/)).toBeInTheDocument();
 });
