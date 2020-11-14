@@ -19,7 +19,7 @@ const Notifications = () => {
   const isCurrentUserPlayer = _.hasIn(players, currentUserId);
   const isGameNotPlaying = status !== GameStatusCodes.playing;
   const isTournamentGame = gameType === GameTypeCodes.tournament;
-  const isActiveTournament = tournamentsInfo !== null && tournamentsInfo.state === 'active';
+  const isActiveTournament = !!tournamentsInfo && tournamentsInfo.state === 'active';
 
   return (
     <>
