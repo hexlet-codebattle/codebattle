@@ -53,10 +53,6 @@ config :codebattle, CodebattleWeb.Gettext,
   priv: "priv/gettext",
   default_locale: "en"
 
-config :one_signal, OneSignal,
-  app_id: System.get_env("ONESIGNAL_APP_ID"),
-  api_key: System.get_env("ONESIGNAL_API_KEY")
-
 config :scrivener_html,
   routes_helper: CodebattleWeb.Router.Helpers
 

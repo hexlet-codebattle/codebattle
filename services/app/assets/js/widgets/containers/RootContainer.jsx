@@ -19,9 +19,35 @@ const steps = [
   {
     disableBeacon: true,
     disableOverlayClose: true,
+    title: 'Training game page',
+    content:
+  <>
+    <div className="text-justify">
+      This is a
+      <b> training game </b>
+      against a
+      <b> bot</b>
+      .
+      But in the future you’ll be against the real player
+      You need must solve the task
+      <b> first </b>
+      and pass all tests
+      <b> successfully</b>
+      .
+    </div>
+  </>,
+    locale: {
+      skip: 'Skip guide',
+    },
+    placement: 'center',
+    target: 'body',
+  },
+  {
+    disableBeacon: true,
+    disableOverlayClose: true,
     target: '[data-guide-id="Task"]',
-    title: 'Задача',
-    content: 'Внимательно прочитайте задачу, обратите внимание на примеры',
+    title: 'Task',
+    content: 'Read the task carefully, pay attention to examples',
     locale: {
       skip: 'Skip guide',
     },
@@ -31,8 +57,8 @@ const steps = [
     spotlightClicks: true,
     target: '[data-guide-id="LeftEditor"] .guide-LanguagePicker',
     placement: 'top',
-    title: 'Выбор языка',
-    content: 'Выберите язык программирования который вам больше нравится ',
+    title: 'Language',
+    content: 'Choose the programming language that you like best',
     locale: {
       skip: 'Skip guide',
     },
@@ -40,8 +66,8 @@ const steps = [
   {
     disableOverlayClose: true,
     target: '[data-guide-id="LeftEditor"] .react-monaco-editor-container',
-    title: 'Редактор',
-    content: 'В редакторе вы будете вводить ваше решение, будьте внимательны к ошибкам',
+    title: 'Editor',
+    content: 'Write the solution of task in the editor',
     locale: {
       skip: 'Skip guide',
     },
@@ -55,8 +81,8 @@ const steps = [
       },
     },
     target: '[data-guide-id="LeftEditor"] [data-guide-id="CheckResultButton"]',
-    title: 'Кнопка проверки',
-    content: 'Нажмите для проверки вашего решения',
+    title: 'Check button',
+    content: 'Click the button to check your solution or use Ctrl+Enter/Cmd+Enter',
     locale: {
       skip: 'Skip guide',
     },
@@ -64,8 +90,8 @@ const steps = [
   {
     disableOverlayClose: true,
     target: '[data-guide-id="LeftEditor"] #accordionExample',
-    title: 'Вывод результатов',
-    content: 'Здесь вы увидите результат выполнения',
+    title: 'Result output',
+    content: 'Here you will see the results of the tests or compilation errors after check',
     locale: {
       skip: 'Skip guide',
     },

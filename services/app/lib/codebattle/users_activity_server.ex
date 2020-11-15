@@ -6,7 +6,7 @@ defmodule Codebattle.UsersActivityServer do
   alias Codebattle.Analitics
   require Logger
 
-  @max_size Application.get_env(:codebattle, Codebattle.Analitics)[:max_size_activity_server]
+  @max_size Application.compile_env(:codebattle, Codebattle.Analitics)[:max_size_activity_server]
 
   ## 5 minutes
   @timeout 5 * 60 * 1_000

@@ -1,4 +1,4 @@
-FROM elixir:1.10.4-alpine
+FROM elixir:1.11.2-alpine
 ARG app_name=codebattle
 ARG phoenix_subdir=.
 ARG build_env=prod
@@ -24,7 +24,7 @@ RUN yarn build \
 RUN mix release \
   && mv _build/${build_env}/rel/${app_name} /opt/release
 
-FROM alpine:3.9.4
+FROM alpine:3.12
 
 # RUN mkdir -p /usr/local/bin \
 #     && cd /usr/local/bin \

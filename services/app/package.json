@@ -114,5 +114,6 @@
     "webpack-cli": "^3.3.11",
     "webpack-dev-server": "^3.11.0",
     "webpack-merge": "^5.0.9"
-  }
+  },
+  "version": "0.0.0"
 }

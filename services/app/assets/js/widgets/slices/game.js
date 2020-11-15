@@ -9,6 +9,7 @@ const initialState = {
   },
   task: null,
   players: {},
+  tournamentsInfo: null,
 };
 
 const game = createSlice({
@@ -33,6 +34,9 @@ const game = createSlice({
     },
     updateCheckStatus: (state, { payload }) => {
       Object.assign(state.gameStatus.checking, payload);
+    },
+    setTournamentsInfo: (state, { payload }) => {
+      state.tournamentsInfo = payload;
     },
   },
 });

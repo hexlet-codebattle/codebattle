@@ -6,7 +6,9 @@ defmodule Codebattle.Bot.PlaybookPlayer do
   require Logger
   alias Codebattle.Bot.Playbook
 
-  @min_bot_player_speed Application.get_env(:codebattle, Codebattle.Bot)[:min_bot_player_speed]
+  @min_bot_player_speed Application.compile_env(:codebattle, Codebattle.Bot)[
+                          :min_bot_player_speed
+                        ]
   def call(params) do
     playbook = Playbook.random(params.task_id)
 

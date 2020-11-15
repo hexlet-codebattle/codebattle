@@ -65,7 +65,6 @@ defmodule Codebattle.Mixfile do
       {:temp, "~> 0.4"},
       {:atomic_map, "~> 0.8"},
       {:envy, "~> 1.1.1"},
-      {:one_signal, "~> 0.0.9"},
       {:paginator, "~> 1.0.1"},
       {:scrivener_ecto, "~> 2.5"},
       {:scrivener_html, "~> 1.8"},

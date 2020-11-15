@@ -8,8 +8,12 @@ defmodule CodebattleWeb.GameChannel do
 
   def join("game:" <> game_id, _payload, socket) do
     case Play.get_fsm(game_id) do
-      {:ok, fsm} -> {:ok, GameView.render_fsm(fsm), socket}
-      {:error, reason} -> {:error, reason}
+      {:ok, fsm} ->
+        Phoenix.PubSub.subscribe(:cb_pubsub, "tournaments")
+        {:ok, GameView.render_fsm(fsm), socket}
+
+      {:error, reason} ->
+        {:error, reason}
     end
   end
 
@@ -191,6 +195,20 @@ defmodule CodebattleWeb.GameChannel do
     game_id
     |> Play.rematch_send_offer(user.id)
     |> handle_rematch_result(socket)
+  end
+
+  def handle_info(%{topic: "tournaments", event: "round:created", payload: payload}, socket) do
+    {:ok, fsm} = Play.get_fsm(get_game_id(socket))
+
+    if is_current_tournament?(payload.tournament, fsm) do
+      push(socket, "tournament:round_created", payload.tournament)
+    end
+
+    {:noreply, socket}
+  end
+
+  defp is_current_tournament?(tournament, fsm) do
+    FsmHelpers.get_tournament_id(fsm) == tournament.id
   end
 
   defp handle_rematch_result(result, socket) do
