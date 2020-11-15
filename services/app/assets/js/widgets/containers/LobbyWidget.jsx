@@ -309,10 +309,8 @@ const CreateGame = () => {
 
       <button
         type="button"
-        data-method="post"
-        data-csrf={window.csrf_token}
-        data-to={gameUrl}
         className="btn btn-success mb-2"
+        onClick={ lobbyMiddlewares.createGame({level: 'elementary', type: "withRandomPlayer"}) }
       >
         {i18n.t('Start battle')}
       </button>
@@ -483,7 +481,7 @@ const LobbyWidget = () => {
       {renderModal(show, handleCloseModal)}
       <div className="row">
         {/* {isGuestCurrentUser ? <Intro /> : <StartGamePanel />} */}
-        <div className="col-9 p-0">
+        <div className="col-sm-9 p-0">
           <GameContainers
             activeGames={activeGames}
             completedGames={completedGames}
@@ -492,7 +490,7 @@ const LobbyWidget = () => {
           />
         </div>
 
-        <div className="d-flex flex-column col-3">
+        <div className="d-flex flex-column col-sm-3">
           <TopPlayersWeekly />
           <div className="mt-2"><TopPlayersWeekly /></div>
         </div>
