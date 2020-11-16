@@ -3,7 +3,11 @@ import axios from 'axios';
 import { Formik, Form, useField } from 'formik';
 import * as Yup from 'yup';
 
- const TextInput = ({ label, ...props }) => {
+const csrfToken = document
+.querySelector("meta[name='csrf-token']")
+.getAttribute('content'); // validation token
+
+const TextInput = ({ label, ...props }) => {
   const [field, meta] = useField(props);
   const { id, name } = props;
   return (
@@ -11,21 +15,23 @@ import * as Yup from 'yup';
       <div>
         <label htmlFor={id || name}>{label}</label>
       </div>
-      <input className="" {...field} {...props} />
+      <input {...field} {...props} />
       {meta.touched && meta.error ? (
         <span className="error text-danger ml-3">{meta.error}</span>
       ) : null}
     </div>
   );
 };
-const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute('content');
 
 const UserSettings = () => {
-  const sumbitForm = async values => {
-    const response = await axios.patch('/api/v1/settings', values);
-      if (response.status === 200) {
-        window.location = '/settings';
-        }
+  const sendForm = async (values, { setSubmitting }) => {
+    try {
+      await axios.patch('/api/v1/settings', values);
+        window.location = '/settings'; // page update
+        setSubmitting(false);
+    } catch (e) {
+        console.error(e);
+    }
   };
 
     return (
@@ -42,14 +48,7 @@ const UserSettings = () => {
         name: Yup.string()
           .max(16, 'Must be 16 characters or less'),
         })}
-          onSubmit={async (values, { setSubmitting }) => {
-          try {
-            sumbitForm(values);
-            setSubmitting(false);
-          } catch (e) {
-              console.error(e);
-          }
-      }}
+          onSubmit={sendForm}
         >
           <Form>
             <TextInput

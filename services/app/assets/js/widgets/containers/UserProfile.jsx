@@ -10,6 +10,7 @@ import Loading from '../components/Loading';
 
 const UserProfile = () => {
   const [stats, setStats] = useState(null);
+
   const dispatch = useDispatch();
 
   useEffect(() => {
