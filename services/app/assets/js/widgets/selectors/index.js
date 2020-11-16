@@ -74,6 +74,14 @@ export const rightEditorSelector = state => {
   return editorSelector(state);
 };
 
+export const editorSideSelector = side => state => {
+  const editors = {
+    left: leftEditorSelector,
+    right: rightEditorSelector,
+  };
+  return editors[side](state);
+};
+
 export const currentPlayerTextByLangSelector = lang => state => {
   const userId = currentUserIdSelector(state);
   const editorTexts = editorTextsSelector(state);
