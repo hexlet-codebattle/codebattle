@@ -113,7 +113,8 @@ defmodule Codebattle.GameProcess.Play do
           checker_adapter().call(
             FsmHelpers.get_task(fsm),
             editor_text,
-            editor_lang)
+            editor_lang
+          )
 
         Server.update_playbook(id, :start_check, %{
           id: user.id,

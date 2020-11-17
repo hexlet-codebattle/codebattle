@@ -13,23 +13,25 @@ defmodule Codebattle.Utils.ContainerGameKiller do
   end
 
   def handle_info(:check_game_containers, state) do
-    containers = list_containers()
-    containers
+    containers =
+      list_containers()
       |> Enum.map(fn game ->
         [game_id, uptime] = String.split(game, ":::", trim: true)
         {:ok, converted_time} = NaiveDateTime.from_iso8601(uptime)
         time_diff = NaiveDateTime.diff(NaiveDateTime.utc_now(), converted_time)
+
         if time_diff > @game_timeout do
           kill_game_container(game_id)
         end
-       end)
 
-    Process.send_after(self(), :check_game_containers, 10000)
+        [game_id, uptime]
+      end)
+
+    Process.send_after(self(), :check_game_containers, 10_000)
     {:noreply, state}
   end
 
   def kill_game_container(container_id) do
-    IO.inspect("Killing #{container_id} container")
     System.cmd("docker", ["rm", "-f", container_id])
   end
 
@@ -40,10 +42,16 @@ defmodule Codebattle.Utils.ContainerGameKiller do
 
   def list_containers() do
     {containers, _} =
-      System.cmd("docker", ["ps", "--filter", "label=codebattle_game", "--format", "{{.ID}}:::{{.CreatedAt}}"])
+      System.cmd("docker", [
+        "ps",
+        "--filter",
+        "label=codebattle_game",
+        "--format",
+        "{{.ID}}:::{{.CreatedAt}}"
+      ])
+
     containers
     |> String.split("\n", trim: true)
     |> Enum.map(&pull_game_info/1)
   end
-
 end
