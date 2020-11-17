@@ -1,13 +1,14 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
 import axios from 'axios';
 import { Formik, Form, useField } from 'formik';
 import * as Yup from 'yup';
+import { actions } from '../slices';
 
 const csrfToken = document
 .querySelector("meta[name='csrf-token']")
 .getAttribute('content'); // validation token
-
-const TextInput = ({ label, ...props }) => {
+ const TextInput = ({ label, ...props }) => {
   const [field, meta] = useField(props);
   const { id, name } = props;
   return (
@@ -24,13 +25,14 @@ const TextInput = ({ label, ...props }) => {
 };
 
 const UserSettings = () => {
+  const dispatch = useDispatch();
   const sendForm = async (values, { setSubmitting }) => {
     try {
       await axios.patch('/api/v1/settings', values);
         window.location = '/settings'; // page update
         setSubmitting(false);
-    } catch (e) {
-        console.error(e);
+    } catch (error) {
+        dispatch(actions.setError(error));
     }
   };
 
