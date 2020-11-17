@@ -3,44 +3,47 @@ defmodule Codebattle.Utils.ContainerGameKiller do
 
   @game_timeout 15
 
-  # API
   def start_link() do
     GenServer.start(__MODULE__, [], name: __MODULE__)
   end
 
-  def kill_game_container(game_name) do
-    System.cmd("docker", ["rm", "-f", game_name])
-  end
-
-  # SERVER
   def init(state \\ []) do
-    Process.send_after(self(), :tick_game_containers, 1000)
+    Process.send_after(self(), :check_game_containers, 1000)
     {:ok, state}
   end
 
-  def handle_cast({:add_game, game_name}, state) do
-    {:noreply, [[game_name, @game_timeout] | state]}
-  end
-
-  def handle_info(:tick_game_containers, state) do
-    ticked_games =
-      state
-      |> Enum.reduce(
-        [],
-        fn game, acc ->
-          game_name = List.first(game)
-          time = List.last(game)
-
-          if time <= 0 do
-            kill_game_container(game_name)
-            acc
-          else
-            [[game_name, time - 1] | acc]
-          end
+  def handle_info(:check_game_containers, state) do
+    containers = list_containers()
+    containers
+      |> Enum.map(fn game ->
+        [game_id, uptime] = String.split(game, ":::", trim: true)
+        {:ok, converted_time} = NaiveDateTime.from_iso8601(uptime)
+        time_diff = NaiveDateTime.diff(NaiveDateTime.utc_now(), converted_time)
+        if time_diff > @game_timeout do
+          kill_game_container(game_id)
         end
-      )
+       end)
 
-    Process.send_after(self(), :tick_game_containers, 1000)
-    {:noreply, ticked_games}
+    Process.send_after(self(), :check_game_containers, 10000)
+    {:noreply, state}
   end
+
+  def kill_game_container(container_id) do
+    IO.inspect("Killing #{container_id} container")
+    System.cmd("docker", ["rm", "-f", container_id])
+  end
+
+  def pull_game_info(game) do
+    [head | _] = String.split(game, " +", trum: true)
+    head
+  end
+
+  def list_containers() do
+    {containers, _} =
+      System.cmd("docker", ["ps", "--filter", "label=codebattle_game", "--format", "{{.ID}}:::{{.CreatedAt}}"])
+    containers
+    |> String.split("\n", trim: true)
+    |> Enum.map(&pull_game_info/1)
+  end
+
 end

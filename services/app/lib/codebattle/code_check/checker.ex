@@ -11,7 +11,7 @@ defmodule Codebattle.CodeCheck.Checker do
 
   @langs_needs_compiling ["golang", "cpp", "java", "kotlin", "csharp"]
 
-  def call(task, editor_text, editor_lang, game_id) do
+  def call(task, editor_text, editor_lang) do
     case Languages.meta() |> Map.get(editor_lang) do
       nil ->
         %CheckResult{status: :error, result: "Lang #{editor_lang} is undefined", output: ""}
@@ -35,20 +35,17 @@ defmodule Codebattle.CodeCheck.Checker do
 
         {dir_path, check_code} = prepare_tmp_dir!(task, editor_text, lang)
         volume = "-v #{dir_path}:/usr/src/app/#{lang.check_dir}"
-        game_name = "match_#{game_id}_#{editor_lang}_#{:os.system_time(:millisecond)}"
-        image_name = "--name #{game_name}}"
+        label_name = "-l codebattle_game"
 
         check_command =
           docker_command_template
-          |> :io_lib.format([image_name, volume, lang.docker_image])
+          |> :io_lib.format([label_name, volume, lang.docker_image])
           |> to_string
 
         compile_check_command =
           docker_command_compile_template
-          |> :io_lib.format([image_name, volume, lang.docker_image])
+          |> :io_lib.format([label_name, volume, lang.docker_image])
           |> to_string
-
-        GenServer.cast(ContainerGameKiller, {:add_game, game_name})
 
         result =
           start_check_solution(
