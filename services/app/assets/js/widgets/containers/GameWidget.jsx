@@ -87,11 +87,17 @@ class GameWidget extends Component {
       // FIXME: render loader
       return null;
     }
+
     return (
       <>
         <div className="col-12 col-md-6 p-1">
           <div className="card overflow-hidden" data-guide-id="LeftEditor">
-            <EditorToolbar {...this.getToolbarParams(leftEditor)} />
+            <EditorToolbar
+              {...this.getToolbarParams(leftEditor)}
+              toolbarClassNames="btn-toolbar justify-content-between align-items-center m-1"
+              editorSettingClassNames="btn-group align-items-center m-1"
+              userInfoClassNames="btn-group align-items-center justify-content-end m-1"
+            />
             <Editor {...this.getLeftEditorParams()} />
             {/* TODO: move state to parent component */}
             {!isStoredGame && this.renderGameActionButtons(leftEditor, false)}
@@ -100,7 +106,12 @@ class GameWidget extends Component {
         </div>
         <div className="col-12 col-md-6 p-1">
           <div className="card overflow-hidden">
-            <EditorToolbar {...this.getToolbarParams(rightEditor)} isRightEditor />
+            <EditorToolbar
+              {...this.getToolbarParams(rightEditor)}
+              toolbarClassNames="btn-toolbar justify-content-between align-items-center m-1 flex-row-reverse"
+              editorSettingClassNames="btn-group align-items-center m-1 flex-row-reverse justify-content-end"
+              userInfoClassNames="btn-group align-items-center justify-content-end m-1 flex-row-reverse"
+            />
             <Editor {...this.getRightEditorParams()} />
             {/* TODO: move state to parent component */}
             {!isStoredGame && this.renderGameActionButtons(rightEditor, true)}
