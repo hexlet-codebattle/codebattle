@@ -3,7 +3,7 @@ defmodule Codebattle.Bot.CreatorServer do
 
   use GenServer
 
-  @timeout Application.get_env(:codebattle, Codebattle.Bot)[:timeout]
+  @timeout Application.compile_env(:codebattle, Codebattle.Bot)[:timeout]
 
   def start_link() do
     GenServer.start_link(__MODULE__, %{}, name: __MODULE__)

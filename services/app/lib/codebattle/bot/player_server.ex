@@ -11,7 +11,7 @@ defmodule Codebattle.Bot.PlayerServer do
   alias Codebattle.GameProcess.Play
   alias PhoenixClient.Message
 
-  @timeout_start_playbook Application.get_env(:codebattle, Codebattle.Bot)[
+  @timeout_start_playbook Application.compile_env(:codebattle, Codebattle.Bot)[
                             :timeout_start_playbook
                           ]
 

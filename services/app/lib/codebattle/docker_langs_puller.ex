@@ -5,7 +5,7 @@ defmodule Codebattle.DockerLangsPuller do
 
   require Logger
 
-  @timeout Application.get_env(:codebattle, Codebattle.DockerLangsPuller)[:timeout]
+  @timeout Application.compile_env(:codebattle, Codebattle.DockerLangsPuller)[:timeout]
 
   alias Mix.Tasks.Dockers
 
