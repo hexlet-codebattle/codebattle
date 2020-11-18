@@ -47,10 +47,11 @@ const Menu = ({
   const handleClick = () => { setShow(!show); };
   const uniqIndex = _.uniqueId('heading');
   const percent = (100 * successCount) / assertsCount;
-  const count = i18n.t(
+  const assertsStatusMessage = i18n.t(
     'You passed %{successCount} from %{assertsCount} asserts. (%{percent}%)',
     { successCount, assertsCount, percent },
   );
+
   useEffect(() => {
     setShow(isSyntaxError);
   }, [isSyntaxError]);
@@ -71,7 +72,7 @@ const Menu = ({
               >
                 { show ? <FontAwesomeIcon icon="arrow-circle-up" /> : <FontAwesomeIcon icon="arrow-circle-down" /> }
               </button>
-              {!isSyntaxError && <span className="font-weight-bold small mr-3">{count}</span>}
+              {!isSyntaxError && <span className="font-weight-bold small mr-3">{assertsStatusMessage}</span>}
               <span className={`badge badge-${statusColor}`}>{message}</span>
             </div>
             {firstAssert && renderFirstAssert(firstAssert)}
