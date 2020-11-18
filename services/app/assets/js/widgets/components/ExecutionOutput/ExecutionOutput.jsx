@@ -5,6 +5,8 @@ import statusColor from '../../config/statusColor';
 
 const getMessage = status => {
   switch (status) {
+    case 'memory_leak':
+      return i18n.t('Your solution ran out of memory');
     case 'error':
       return i18n.t('You have some syntax errors');
     case 'failure':
@@ -41,7 +43,7 @@ const ExecutionOutput = ({
         message={getMessage(resultData.status)}
         firstAssert={firstAssert}
       >
-        {resultData.status === 'error' ? (
+        {resultData.status === 'error' || resultData.status === 'memory_leak' ? (
           <AccordeonBox.Item
             output={output}
             result={resultData.result}
