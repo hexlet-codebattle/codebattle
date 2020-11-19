@@ -1,9 +1,12 @@
 import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import Gon from 'gon';
 import Select from 'react-select';
 import LanguageIcon from './LanguageIcon';
+import * as selectors from '../selectors';
+import { changeCurrentLangAndSetTemplate } from '../middlewares/Game';
 
 const defaultLanguages = Gon.getAsset('langs');
 
@@ -15,24 +18,43 @@ const LangTitle = ({ slug, name, version }) => (
   </div>
 );
 
-const LanguagePicker = ({
-  languages, currentLangSlug, onChangeLang, disabled,
-}) => {
+const LanguagePicker = ({ disabled, editor: { currentLangSlug } }) => {
   const customStyle = {
-    menu: provided => ({
+    control: provided => ({
       ...provided,
-      maxWidth: '220px',
-      marginLeft: 0,
-      paddingLeft: '0.5rem',
-      'z-index': 11000,
+      height: '31px',
+      minHeight: '31px',
+      minWidth: '190px',
+      backgroundColor: 'hsl(0, 0%, 100%)',
+    }),
+    indicatorsContainer: provided => ({
+      ...provided,
+      height: '29px',
+    }),
+    clearIndicator: provided => ({
+      ...provided,
+      padding: '5px',
+    }),
+    dropdownIndicator: provided => ({
+      ...provided,
+      padding: '5px',
+    }),
+    input: provided => ({
+      ...provided,
+      height: '21px',
     }),
   };
+
+  const dispatch = useDispatch();
+
+  const languages = useSelector(state => selectors.editorLangsSelector(state));
+
   const langs = languages || defaultLanguages;
   const [[currentLang], otherLangs] = _.partition(langs, lang => lang.slug === currentLangSlug);
 
   const options = otherLangs.map(lang => ({ label: <LangTitle {...lang} />, value: lang.name }));
   const changeLang = ({ label: { props } }) => {
-    onChangeLang(props.slug);
+    dispatch(changeCurrentLangAndSetTemplate(props.slug));
   };
 
   const defaultLang = { label: <LangTitle {...currentLang} /> };
@@ -49,7 +71,7 @@ const LanguagePicker = ({
     <>
       <Select
         styles={customStyle}
-        className="col-12 col-xl-7 guide-LanguagePicker"
+        className="mx-1 guide-LanguagePicker"
         defaultValue={defaultLang}
         onChange={changeLang}
         options={options}
@@ -59,8 +81,6 @@ const LanguagePicker = ({
 };
 
 LanguagePicker.propTypes = {
-  currentLangSlug: PropTypes.string.isRequired,
-  onChangeLang: PropTypes.func.isRequired,
   disabled: PropTypes.bool.isRequired,
 };
 

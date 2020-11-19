@@ -1,7 +1,17 @@
 import React from 'react';
 import { Tooltip, OverlayTrigger } from 'react-bootstrap';
+import { useSelector } from 'react-redux';
+import _ from 'lodash';
+import * as selectors from '../selectors';
 
-const GameResultIcon = ({ resultUser1, resultUser2, className }) => {
+const GameResultIcon = ({ editor: { userId } }) => {
+  const players = useSelector(selectors.gamePlayersSelector);
+
+  const { id: opponentId } = _.find(players, ({ id }) => id !== userId);
+
+  const resultUser1 = _.get(players, [userId, 'gameResult']);
+  const resultUser2 = _.get(players, [opponentId, 'gameResult']);
+
   const tooltipId = `tooltip-${resultUser1}`;
 
   if (resultUser1 === 'gave_up') {
@@ -10,7 +20,7 @@ const GameResultIcon = ({ resultUser1, resultUser2, className }) => {
         overlay={<Tooltip id={tooltipId}>Player gave up</Tooltip>}
         placement="left"
       >
-        <div className={className}>
+        <div className="mx-1">
           <i className="far fa-flag fa-lg align-middle" aria-hidden="true" />
         </div>
       </OverlayTrigger>
@@ -23,7 +33,7 @@ const GameResultIcon = ({ resultUser1, resultUser2, className }) => {
         overlay={<Tooltip id={tooltipId}>Player won</Tooltip>}
         placement="left"
       >
-        <div className={className}>
+        <div className="mx-1">
           <i className="fa fa-trophy fa-lg text-warning align-middle" aria-hidden="true" />
         </div>
       </OverlayTrigger>
