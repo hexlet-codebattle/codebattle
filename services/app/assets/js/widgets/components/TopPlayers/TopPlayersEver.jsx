@@ -17,7 +17,7 @@ const TopPlayersEver = () => {
       .get(`/api/v1/users?${queryParamsString}`)
       .then(res => {
         const { data: { users } } = res;
-        setRating(users.slice(0, 5));
+        setRating(users);
       });
   }, []);
 
