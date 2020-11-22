@@ -11,6 +11,7 @@ import reducers from './slices';
 import LobbyWidget from './containers/LobbyWidget';
 import RatingList from './containers/RatingList';
 import UserProfile from './containers/UserProfile';
+import UserSettings from './containers/UserSettings';
 
 const { editorUI: editorUIReducer, ...otherReducers } = reducers;
 
@@ -68,6 +69,14 @@ export const UserPage = () => (
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
       <UserProfile />
+    </PersistGate>
+  </Provider>
+);
+
+export const SettingsPage = () => (
+  <Provider store={store}>
+    <PersistGate loading={null} persistor={persistor}>
+      <UserSettings />
     </PersistGate>
   </Provider>
 );
