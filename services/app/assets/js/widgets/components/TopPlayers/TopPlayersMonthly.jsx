@@ -10,6 +10,7 @@ const TopPlayersMonthly = () => {
   useEffect(() => {
     const queryParamsString = qs.stringify({
       s: 'rating+desc',
+      page_size: '5',
       date_from: moment().startOf('month').utc().format('YYYY-MM-DD'),
       with_bots: false,
     });
@@ -23,12 +24,12 @@ const TopPlayersMonthly = () => {
   }, []);
 
   return (
-    <table className="table table-borderless border border-dark m-0">
+    <table className="table table-striped  table-borderless border border-dark m-0">
       <thead>
         <tr className="bg-gray">
           <th scope="col" className="text-uppercase p-1" colSpan="2">
             <img alt="rating" src="/assets/images/topPlayers.svg" className="m-2" />
-            Top players monthly
+            Leaderboard monthly
           </th>
         </tr>
       </thead>
@@ -37,12 +38,10 @@ const TopPlayersMonthly = () => {
           <tr key={item.name}>
             <td className="pr-0">
               <div className="d-flex">
-                <UserInfo user={item} />
-                &nbsp;
-                {item.rating}
+                <UserInfo user={item} truncate />
               </div>
             </td>
-            <td className="pl-0">+3</td>
+            <td className="text-right pl-0">{item.rating}</td>
           </tr>
         ))}
       </tbody>

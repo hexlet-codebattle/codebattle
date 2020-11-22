@@ -1,6 +1,5 @@
 import React from 'react';
 import moment from 'moment';
-import levelToClass from '../../config/levelToClass';
 import ResultIcon from './ResultIcon';
 import UserInfo from '../../containers/UserInfo';
 

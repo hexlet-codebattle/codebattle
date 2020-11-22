@@ -10,17 +10,17 @@ import gameStatusCodes from '../config/gameStatusCodes';
 import { actions } from '../slices';
 import * as selectors from '../selectors';
 import Loading from '../components/Loading';
-import GamesHeatmap from '../components/GamesHeatmap';
-import Card from '../components/Card';
+// import GamesHeatmap from '../components/GamesHeatmap';
+// import Card from '../components/Card';
 import UserInfo from './UserInfo';
 import {
   makeCreateGameBotUrl,
   getSignInGithubUrl,
 } from '../utils/urlBuilders';
 import i18n from '../../i18n';
-import StartGamePanel from '../components/StartGamePanel';
+// import StartGamePanel from '../components/StartGamePanel';
 import CompletedGames from '../components/Game/CompletedGames';
-import CreateGame from '../components/Game/CreateGame';
+import CreateGameDialog from '../components/Game/CreateGameDialog';
 import TopPlayersEver from '../components/TopPlayers/TopPlayersEver';
 import TopPlayersMonthly from '../components/TopPlayers/TopPlayersMonthly';
 
@@ -163,24 +163,20 @@ const LiveTournaments = ({ tournaments }) => {
   }
   return (
     <div className="table-responsive">
-      <table className="table">
-        <thead className="text-center">
+      <h2 className="text-center mt-3">Live tournaments</h2>
+      <table className="table table-striped">
+        <thead className="">
           <tr>
-            <th className="p-3 border-0">title</th>
-            <th className="p-3 border-0">actions</th>
-            <th className="p-3 border-0">starts_at</th>
-            <th className="p-3 border-0">type</th>
-            <th className="p-3 border-0">state</th>
-            <th className="p-3 border-0">creator</th>
+            <th className="p-3 border-0">Title</th>
+            <th className="p-3 border-0">Starts_at</th>
+            <th className="p-3 border-0">Creator</th>
+            <th className="p-3 border-0">Actions</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="">
           {_.orderBy(tournaments, 'startsAt', 'desc').map(tournament => (
             <tr key={tournament.id}>
               <td className="p-3 align-middle">{tournament.name}</td>
-              <td className="p-3 align-middle">
-                <ShowButton url={`/tournaments/${tournament.id}/`} />
-              </td>
               <td className="p-3 align-middle text-nowrap">
                 {moment
                   .utc(tournament.startsAt)
@@ -188,18 +184,18 @@ const LiveTournaments = ({ tournaments }) => {
                   .format('YYYY-MM-DD HH:mm')}
               </td>
               <td className="p-3 align-middle text-nowrap">
-                {tournament.type}
-              </td>
-              <td className="p-3 align-middle text-nowrap">
-                {tournament.state}
-              </td>
-              <td className="p-3 align-middle text-nowrap">
                 <UserInfo user={tournament.creator} />
+              </td>
+              <td className="p-3 align-middle">
+                <ShowButton url={`/tournaments/${tournament.id}/`} />
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+      <div className="text-center mt-5">
+        <a href="/tournaments"><u>Tournamets Info</u></a>
+      </div>
     </div>
   );
 };
@@ -228,7 +224,12 @@ const ActiveGames = ({ games }) => {
                 <GameLevelBadge level={game.level} />
               </td>
               <td className="p-3 align-middle text-center text-nowrap">
-                <img alt={game.state} src={game.state === 'playing' ? '/assets/images/playing.svg' : '/assets/images/waitingOpponent.svg'} />
+                <img
+                  alt={game.state}
+                  src={game.state === 'playing'
+                ? '/assets/images/playing.svg'
+                : '/assets/images/waitingOpponent.svg'}
+                />
               </td>
               <Players gameId={game.id} players={game.players} />
               <td className="p-3 align-middle text-center">
@@ -283,7 +284,7 @@ const GameContainers = ({
         </a>
         <button
           type="button"
-          className="nav-item nav-link text-uppercase rounded-0 text-black font-weight-bold p-3 ml-auto"
+          className="nav-item nav-link text-uppercase rounded-0 text-orange font-weight-bold p-3 ml-auto"
           onClick={handleShowModal}
         >
           Create Game
@@ -325,7 +326,7 @@ const renderModal = (show, handleCloseModal) => (
       <Modal.Title>Create game</Modal.Title>
     </Modal.Header>
     <Modal.Body>
-      <CreateGame hideModal={handleCloseModal} />
+      <CreateGameDialog hideModal={handleCloseModal} />
     </Modal.Body>
   </Modal>
   );

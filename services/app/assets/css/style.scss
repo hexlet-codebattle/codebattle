@@ -1,5 +1,5 @@
 $body-bg: #e5e5e5;
-$success: #82B792;
+$success: #82b792;
 $secondary: #477591;
 $link-color: black;
 $orange: rgba(238, 55, 55, 0.76);
@@ -35,6 +35,10 @@ $fa-font-path: "/fonts";
   color: black !important;
 }
 
+.text-orange {
+  color: $orange !important;
+}
+
 .bg-gray {
   background-color: rgba(128, 128, 128, 1);
 }
@@ -44,7 +48,7 @@ $fa-font-path: "/fonts";
 }
 
 .border-gray {
-  border: 2px solid #D9D9D9;
+  border: 2px solid #d9d9d9;
 }
 
 .btn-hover {
@@ -258,4 +262,11 @@ a {
 
 .x-rounded-bottom-left {
   border-bottom-left-radius: $border-radius !important;
+}
+
+.x-username-truncated {
+  max-width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

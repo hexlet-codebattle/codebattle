@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import * as lobbyMiddlewares from '../../middlewares/Lobby';
+// TODO_LERA: add cn
 import i18n from '../../../i18n';
 
-const CreateGame = ({ hideModal }) => {
+const CreateGameDialog = ({ hideModal }) => {
   const [game, setGame] = useState({ level: 'elementary', type: 'withRandomPlayer' });
 
   const gameLevels = ['elementary', 'easy', 'medium', 'hard'];
@@ -58,4 +59,4 @@ const CreateGame = ({ hideModal }) => {
   );
 };
 
-export default CreateGame;
+export default CreateGameDialog;
