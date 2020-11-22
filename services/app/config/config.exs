@@ -81,7 +81,7 @@ config :codebattle, Codebattle.Bot,
   timeout_start_playbook: 10_000,
   min_bot_player_speed: 1_000
 
-config :codebattle, Codebattle.DockerLangsPuller, timeout: :timer.minutes(60)
+config :codebattle, Codebattle.DockerLangsPuller, timeout: :timer.hours(7)
 
 config :codebattle, checker_adapter: Codebattle.CodeCheck.Checker
 config :codebattle, tournament_match_timeout: 3 * 60
