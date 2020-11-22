@@ -23,6 +23,6 @@ export const cancelGame = gameId => () => {
   channel.push('game:cancel', { gameId }).receive('error', error => console.error(error));
 };
 
-export const createGame = params => () => {
+export const createGame = params => {
   channel.push('game:create', params).receive('error', error => console.error(error));
 };

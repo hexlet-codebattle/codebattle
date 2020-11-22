@@ -2,15 +2,11 @@ import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import copy from 'copy-to-clipboard';
 import moment from 'moment';
-import { Modal, Button } from 'react-bootstrap';
+import { Modal } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import Gon from 'gon';
-import cn from 'classnames';
-import axios from 'axios';
-import qs from 'qs';
 import * as lobbyMiddlewares from '../middlewares/Lobby';
 import gameStatusCodes from '../config/gameStatusCodes';
-import levelToClass from '../config/levelToClass';
 import { actions } from '../slices';
 import * as selectors from '../selectors';
 import Loading from '../components/Loading';
@@ -20,12 +16,13 @@ import UserInfo from './UserInfo';
 import {
   makeCreateGameBotUrl,
   getSignInGithubUrl,
-  makeCreateGameUrlDefault,
 } from '../utils/urlBuilders';
 import i18n from '../../i18n';
 import StartGamePanel from '../components/StartGamePanel';
-import ResultIcon from '../components/Game/ResultIcon';
 import CompletedGames from '../components/Game/CompletedGames';
+import CreateGame from '../components/Game/CreateGame';
+import TopPlayersEver from '../components/TopPlayers/TopPlayersEver';
+import TopPlayersMonthly from '../components/TopPlayers/TopPlayersMonthly';
 
 const Players = ({ players }) => {
   if (players.length === 1) {
@@ -54,7 +51,7 @@ const Players = ({ players }) => {
 };
 
 const GameLevelBadge = ({ level }) => (
-  <div className="text-center">
+  <div className="text-center" data-toggle="tooltip" data-placement="right" title={level}>
     <img alt={level} src={`/assets/images/levels/${level}.svg`} />
   </div>
 );
@@ -105,6 +102,9 @@ const GameActionButton = ({ game }) => {
               type="button"
               className="btn btn-sm"
               onClick={() => copy(`${window.location}${gameUrl}`)}
+              data-toggle="tooltip"
+              data-placement="right"
+              title="Copy link"
             >
               <i className="far fa-copy" />
             </button>
@@ -113,6 +113,9 @@ const GameActionButton = ({ game }) => {
             type="button"
             className="btn btn-hover btn-sm"
             onClick={lobbyMiddlewares.cancelGame(game.id)}
+            data-toggle="tooltip"
+            data-placement="right"
+            title="Cancel game"
           >
             <i className="fas fa-times" />
           </button>
@@ -149,53 +152,6 @@ const GameActionButton = ({ game }) => {
   return null;
 };
 
-// const IntroButtons = () => {
-//   const level = 'elementary';
-//   const gameUrl = makeCreateGameUrlDefault(level, 'training', 3600);
-
-//   return (
-//     <>
-//       <button
-//         key={gameUrl}
-//         type="button"
-//         data-method="post"
-//         data-csrf={window.csrf_token}
-//         data-to={gameUrl}
-//         className="btn btn-primary mr-2"
-//       >
-//         <i className="fa fa-robot mr-2" />
-//         {i18n.t('Start simple battle')}
-//       </button>
-//     </>
-//   );
-// };
-// const Intro = () => (
-//   <div className="container-xl bg-white shadow-sm rounded py-4 mb-3">
-//     <h1 className="font-weight-light mb-4 text-center">
-//       {i18n.t('Codebattle Intro Title')}
-//     </h1>
-//     <div className="row align-items-center">
-//       <div className="col-12 col-md-7 col-lg-7">
-//         <p className="h4 font-weight-normal x-line-height-15 my-4">
-//           {i18n.t('Codebattle Intro')}
-//         </p>
-//         <IntroButtons />
-//       </div>
-//       <div className="d-none d-md-block col-md-5 col-lg-4">
-//         <video
-//           autoPlay
-//           className="w-100 shadow-lg"
-//           poster="/assets/images/opengraph-main.png"
-//           loop
-//           muted
-//           playsInline
-//           src="https://files.fm/down.php?i=x3hybevp"
-//           width="100%"
-//         />
-//       </div>
-//     </div>
-//   </div>
-// );
 const LiveTournaments = ({ tournaments }) => {
   if (_.isEmpty(tournaments)) {
     return (
@@ -249,7 +205,6 @@ const LiveTournaments = ({ tournaments }) => {
 };
 
 const ActiveGames = ({ games }) => {
-  const currentUser = Gon.getAsset('current_user');
   if (_.isEmpty(games)) {
     return <p className="text-center">There are no active games right now.</p>;
   }
@@ -283,37 +238,6 @@ const ActiveGames = ({ games }) => {
             ))}
         </tbody>
       </table>
-    </div>
-  );
-};
-
-const CreateGame = () => {
-  const [game, setGame] = useState({ level: 'elementary', type: 'withRandomPlayer' });
-  const [gameUrl, setGameUrl] = useState(makeCreateGameUrlDefault(game.level, game.type));
-
-  useEffect(() => {
-    const newGameUrl = makeCreateGameUrlDefault(game.level, game.type);
-    setGameUrl(newGameUrl);
-  }, [game.level, game.type]);
-
-  return (
-    <div>
-      <h3>Level</h3>
-      <button type="button" className="btn btn-outline-orange" onClick={() => setGame({ ...game, level: 'elementary' })}>elementary</button>
-      <button type="button" className="btn btn-outline-orange" onClick={() => setGame({ ...game, level: 'easy' })}>easy</button>
-      <button type="button" className="btn btn-outline-orange" onClick={() => setGame({ ...game, level: 'medium' })}>medium</button>
-      <button type="button" className="btn btn-outline-orange" onClick={() => setGame({ ...game, level: 'hard' })}>hard</button>
-      <h3>Players</h3>
-      <button type="button" className="btn btn-outline-orange" onClick={() => setGame({ ...game, type: 'bot' })}>With bot</button>
-      <button type="button" className="btn btn-outline-orange" onClick={() => setGame({ ...game, type: 'withRandomPlayer' })}>With random player</button>
-
-      <button
-        type="button"
-        className="btn btn-success mb-2"
-        onClick={ lobbyMiddlewares.createGame({level: 'elementary', type: "withRandomPlayer"}) }
-      >
-        {i18n.t('Start battle')}
-      </button>
     </div>
   );
 };
@@ -395,59 +319,13 @@ const GameContainers = ({
   </div>
     );
 
-const TopPlayersWeekly = () => {
-  const [rating, setRating] = useState(null);
-
-  useEffect(() => {
-    const queryParamsString = qs.stringify({
-      s: 'rating+desc',
-      date_from: moment().startOf('week').utc().format('YYYY-MM-DD'),
-      with_bots: false,
-    });
-
-    axios
-      .get(`/api/v1/users?${queryParamsString}`)
-      .then(res => {
-        const { data: { users } } = res;
-        setRating(users);
-      });
-  }, []);
-
-  return (
-    <table className="table table-borderless border border-dark m-0">
-      <thead>
-        <tr className="bg-gray">
-          <th scope="col" className="text-uppercase p-1" colSpan="2">
-            <img alt="rating" src="/assets/images/topPlayers.svg" className="m-2" />
-            Top players weekly
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        {rating && rating.map(item => (
-          <tr key={item.name}>
-            <td className="pr-0">
-              <div className="d-flex">
-                <UserInfo user={item} />
-                &nbsp;
-                {item.rating}
-              </div>
-            </td>
-            <td className="pl-0">+3</td>
-          </tr>
-          ))}
-      </tbody>
-    </table>
-  );
-};
-
 const renderModal = (show, handleCloseModal) => (
   <Modal show={show} onHide={handleCloseModal}>
     <Modal.Header closeButton>
       <Modal.Title>Create game</Modal.Title>
     </Modal.Header>
     <Modal.Body>
-      <CreateGame />
+      <CreateGame hideModal={handleCloseModal} />
     </Modal.Body>
   </Modal>
   );
@@ -491,8 +369,10 @@ const LobbyWidget = () => {
         </div>
 
         <div className="d-flex flex-column col-sm-3">
-          <TopPlayersWeekly />
-          <div className="mt-2"><TopPlayersWeekly /></div>
+          <TopPlayersMonthly />
+          <div className="mt-2">
+            <TopPlayersEver />
+          </div>
         </div>
       </div>
     </div>
