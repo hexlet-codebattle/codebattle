@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import axios from 'axios';
 import { Formik, Form, useField } from 'formik';
@@ -8,30 +8,39 @@ import { actions } from '../slices';
 const csrfToken = document
 .querySelector("meta[name='csrf-token']")
 .getAttribute('content'); // validation token
- const TextInput = ({ label, ...props }) => {
-  const [field, meta] = useField(props);
-  const { id, name } = props;
-  return (
-    <div className="form-group ml-2">
-      <div>
-        <label htmlFor={id || name}>{label}</label>
-      </div>
-      <input {...field} {...props} />
-      {meta.touched && meta.error ? (
-        <span className="error text-danger ml-3">{meta.error}</span>
-      ) : null}
-    </div>
-  );
-};
 
 const UserSettings = () => {
+  const [unprocessableError, setUnprocessableError] = useState('');
   const dispatch = useDispatch();
+
+  const TextInput = ({ label, ...props }) => {
+    const [field, meta] = useField(props);
+    const { id, name } = props;
+
+    return (
+      <div className="form-group ml-2">
+        <div>
+          <label htmlFor={id || name}>{label}</label>
+        </div>
+        <input {...field} {...props} />
+        {meta.touched && meta.error ? (
+          <span className="error text-danger ml-3">{meta.error}</span>
+        ) : <span className="error text-danger ml-3">{unprocessableError}</span>}
+      </div>
+    );
+  };
+
   const sendForm = async (values, { setSubmitting }) => {
     try {
       await axios.patch('/api/v1/settings', values);
         window.location = '/settings'; // page update
         setSubmitting(false);
     } catch (error) {
+      const { data: { errors } } = error.response;
+      if (error.response.status === 422) {
+        const errorMessage = errors.name[0];
+        setUnprocessableError(errorMessage);
+      }
         dispatch(actions.setError(error));
     }
   };
@@ -48,11 +57,13 @@ const UserSettings = () => {
         }}
           validationSchema={Yup.object({
         name: Yup.string()
-          .max(16, 'Must be 16 characters or less'),
+          .required('Field can\'t be empty')
+          .min(3, 'Should be at least 3 characters')
+          .max(16, 'Should be 16 character(s) or less'),
         })}
           onSubmit={sendForm}
         >
-          <Form>
+          <Form className="">
             <TextInput
               label="Name"
               name="name"
