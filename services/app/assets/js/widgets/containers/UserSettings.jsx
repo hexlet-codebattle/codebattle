@@ -36,12 +36,13 @@ const UserSettings = () => {
         window.location = '/settings'; // page update
         setSubmitting(false);
     } catch (error) {
-      const { data: { errors } } = error.response;
-      if (error.response.status === 422) {
+      if (error.response && error.response.status === 422) {
+        const { data: { errors } } = error.response;
         const errorMessage = errors.name[0];
         setUnprocessableError(errorMessage);
-      }
+      } else {
         dispatch(actions.setError(error));
+      }
     }
   };
 
