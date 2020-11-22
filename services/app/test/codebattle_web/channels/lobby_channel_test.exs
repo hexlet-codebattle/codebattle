@@ -47,4 +47,14 @@ defmodule CodebattleWeb.LobbyChannelTest do
     assert live_tournaments
     assert completed_games
   end
+
+  test "creates game", %{winner: winner, socket1: socket1, task: task} do
+    {:ok, _payload, socket1} = subscribe_and_join(socket1, LobbyChannel, "lobby")
+
+    push(socket1, "game:create", %{type: "withRandomPlayer", level: "elementary"})
+
+    assert_receive %Phoenix.Socket.Broadcast{
+      event: "game:upsert"
+    }
+  end
 end

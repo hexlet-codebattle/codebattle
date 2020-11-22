@@ -9,8 +9,13 @@ defmodule CodebattleWeb.Api.V1.UserController do
   def index(conn, params) do
     page_number = Map.get(params, "page", "1")
 
+    page_size =
+      params
+      |> Map.get("page_size", "50")
+      |> min("50")
+
     query = Codebattle.User.Scope.list_users_with_raiting(params)
-    page = Repo.paginate(query, %{page: page_number})
+    page = Repo.paginate(query, %{page: page_number, page_size: page_size})
 
     page_info = Map.take(page, [:page_number, :page_size, :total_entries, :total_pages])
 
