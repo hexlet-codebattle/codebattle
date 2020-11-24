@@ -23,7 +23,7 @@ const ExecutionOutput = ({
         firstAssert={firstAssert}
         resultData={resultData}
       >
-        {resultData.status === 'error' ? (
+        {resultData.status === 'error' || resultData.status === 'memory_leak' ? (
           <AccordeonBox.Item
             output={output}
             result={resultData.result}

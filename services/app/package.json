@@ -33,6 +33,7 @@
     "core-js": "3.6",
     "emoji-mart": "^3.0.0",
     "font-mfizz": "^2.4.1",
+    "formik": "^2.2.5",
     "humps": "^2.0.1",
     "i18next": "^19.4.5",
     "jquery": "^3.5.1",
@@ -69,7 +70,8 @@
     "redux-persist": "^6.0.0",
     "rollbar": "^2.19.4",
     "rollbar-redux-middleware": "^0.2.0",
-    "set-value": "^3.0.2"
+    "set-value": "^3.0.2",
+    "yup": "^0.29.3"
   },
   "devDependencies": {
     "@babel/cli": "^7.10.5",

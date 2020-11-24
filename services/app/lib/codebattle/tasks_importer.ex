@@ -5,8 +5,7 @@ defmodule Codebattle.TasksImporter do
 
   require Logger
 
-  # 24 hours
-  @timeout 24 * 60 * 60 * 1000
+  @timeout :timer.hours(24)
   @issues_link "https://github.com/hexlet-codebattle/battle_asserts/releases/latest/download/issues.tar.gz"
 
   # API

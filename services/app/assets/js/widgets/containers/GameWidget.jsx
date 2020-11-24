@@ -3,8 +3,7 @@ import _ from 'lodash';
 import { connect } from 'react-redux';
 import * as selectors from '../selectors';
 import Editor from './Editor';
-import LeftEditorToolbar from './EditorsToolbars/LeftEditorToolbar';
-import RightEditorToolbar from './EditorsToolbars/RightEditorToolbar';
+import EditorToolbar from './EditorsToolbars/EditorToolbar';
 import GameActionButtons from '../components/GameActionButtons';
 import * as GameActions from '../middlewares/Game';
 import ExecutionOutput from '../components/ExecutionOutput/ExecutionOutput';
@@ -37,8 +36,8 @@ class GameWidget extends Component {
     const editorState = leftEditor;
     const onChange = editable
       ? value => {
-        updateEditorValue(value);
-      }
+          updateEditorValue(value);
+        }
       : _.noop;
 
     return {
@@ -67,27 +66,38 @@ class GameWidget extends Component {
     };
   };
 
-  renderGameActionButtons = (editor, disabled) => (
-    <GameActionButtons disabled={disabled} editorUser={editor.userId} />
-  );
+  renderGameActionButtons = (editor, disabled) => <GameActionButtons disabled={disabled} editorUser={editor.userId} />;
+
+  getToolbarParams = editor => {
+    const { currentUserId, players, isStoredGame } = this.props;
+    const isPlayer = editor.userId === currentUserId;
+
+    return {
+      isSpectator: isStoredGame || !isPlayer,
+      player: players[editor.userId],
+      editor,
+    };
+  };
 
   render() {
     const {
-      isStoredGame,
-      leftEditor,
-      rightEditor,
-      leftOutput,
-      rightOutput,
-    } = this.props;
+ isStoredGame, leftEditor, rightEditor, leftOutput, rightOutput,
+} = this.props;
     if (leftEditor === null || rightEditor === null) {
       // FIXME: render loader
       return null;
     }
+
     return (
       <>
         <div className="col-12 col-md-6 p-1">
           <div className="card overflow-hidden" data-guide-id="LeftEditor">
-            <LeftEditorToolbar />
+            <EditorToolbar
+              {...this.getToolbarParams(leftEditor)}
+              toolbarClassNames="btn-toolbar justify-content-between align-items-center m-1"
+              editorSettingClassNames="btn-group align-items-center m-1"
+              userInfoClassNames="btn-group align-items-center justify-content-end m-1"
+            />
             <Editor {...this.getLeftEditorParams()} />
             {/* TODO: move state to parent component */}
             {!isStoredGame && this.renderGameActionButtons(leftEditor, false)}
@@ -96,7 +106,12 @@ class GameWidget extends Component {
         </div>
         <div className="col-12 col-md-6 p-1">
           <div className="card overflow-hidden">
-            <RightEditorToolbar />
+            <EditorToolbar
+              {...this.getToolbarParams(rightEditor)}
+              toolbarClassNames="btn-toolbar justify-content-between align-items-center m-1 flex-row-reverse"
+              editorSettingClassNames="btn-group align-items-center m-1 flex-row-reverse justify-content-end"
+              userInfoClassNames="btn-group align-items-center justify-content-end m-1 flex-row-reverse"
+            />
             <Editor {...this.getRightEditorParams()} />
             {/* TODO: move state to parent component */}
             {!isStoredGame && this.renderGameActionButtons(rightEditor, true)}
@@ -126,8 +141,7 @@ const mapStateToProps = state => {
     rightOutput: selectors.rightExecutionOutputSelector(state),
     leftEditorsMode: selectors.editorsModeSelector(leftUserId)(state),
     theme: selectors.editorsThemeSelector(leftUserId)(state),
-    isStoredGame:
-      selectors.gameStatusSelector(state).status === GameStatusCodes.stored,
+    isStoredGame: selectors.gameStatusSelector(state).status === GameStatusCodes.stored,
   };
 };
 

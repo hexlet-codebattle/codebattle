@@ -3,6 +3,7 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
 
   require Logger
   alias Codebattle.CodeCheck.CheckResult
+  @memory_overflow "Error 137"
 
   @doc """
         iex> Codebattle.CodeCheck.CheckerStatus.get_check_result(
@@ -48,10 +49,21 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
   def get_check_result(container_output, %{check_code: check_code, lang: lang}) do
     case Regex.scan(~r/{\"status\":.+}/, container_output) do
       [] ->
+        error_msg =
+          if String.contains?(container_output, @memory_overflow),
+            do: %{
+              status: "memory_leak",
+              result: "Your solution ran out of memory, please, rewrite it."
+            },
+            else: %{
+              status: "error",
+              result: "Something went wrong! Please, write to dev team in our Slack"
+            }
+
         result =
           Jason.encode!(%{
-            status: "error",
-            result: "Something went wrong! Please, write to dev team in our Slack"
+            status: error_msg[:status],
+            result: error_msg[:result]
           })
 
         %CheckResult{status: :error, result: result, output: container_output}

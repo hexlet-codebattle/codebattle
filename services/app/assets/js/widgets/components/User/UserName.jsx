@@ -1,5 +1,5 @@
 import React from 'react';
-import _ from 'lodash';
+// import _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
 import i18n from '../../../i18n';
 import LanguageIcon from '../LanguageIcon';
@@ -12,20 +12,20 @@ const isValidUserInfo = user => (
 
 const getName = ({ id, name }, isCurrentUser) => {
   if (id < 0) {
-    return i18n.t('%{name} (bot)', { name });
+    return i18n.t('%{name}(bot)', { name });
   }
 
-  return isCurrentUser ? i18n.t('%{name} (you)', { name }) : name;
+  return isCurrentUser ? i18n.t('%{name}(you)', { name }) : name;
 };
 
-const displayDiff = num => {
-  if (num < 0) {
-    return <small className="text-danger">{` ${num}`}</small>;
-  }
-  return <small className="text-success">{` +${num}`}</small>;
-};
+// const displayDiff = num => {
+//   if (num < 0) {
+//     return <small className="text-danger">{` ${num}`}</small>;
+//   }
+//   return <small className="text-success">{` +${num}`}</small>;
+// };
 
-const UserName = ({ user }) => {
+const UserName = ({ user, truncate }) => {
   const users = useSelector(usersInfoSelector);
   const isCurrentUser = useSelector(state => currentUserIdSelector(state) === user.id);
   const dispatch = useDispatch();
@@ -38,7 +38,7 @@ const UserName = ({ user }) => {
   }
 
   const {
-    id, lang, rating, ratingDiff,
+    id, lang,
   } = userInfo;
 
   const anonymousUser = (
@@ -51,15 +51,11 @@ const UserName = ({ user }) => {
       <a
         href={`/users/${id}`}
         key={id}
-        className="d-flex align-items-center mr-1 text-truncate"
+        className="d-flex align-items-center mr-1"
       >
-        <span className="text-truncate">{getName(userInfo, isCurrentUser)}</span>
+        <span className={`text-truncate ${truncate ? 'x-username-truncated' : ''}`}><u>{getName(userInfo, isCurrentUser)}</u></span>
       </a>
       <LanguageIcon lang={lang} />
-      <small>
-        {_.isFinite(rating) && rating}
-      </small>
-      {ratingDiff ? displayDiff(ratingDiff) : ''}
     </span>
   );
 

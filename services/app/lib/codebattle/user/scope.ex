@@ -65,9 +65,7 @@ defmodule Codebattle.User.Scope do
   defp without_bots(query, %{"with_bots" => "true"}), do: query
 
   defp without_bots(query, _params) do
-    from(u in subquery(query),
-      where: u.is_bot == false
-    )
+    from(u in subquery(query), where: u.is_bot == false)
   end
 
   defp search_by_name(query, %{"q" => %{"name_ilike" => term}})

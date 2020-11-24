@@ -34,6 +34,7 @@ import {
   renderHeatmapWidget,
   renderUsersRating,
   renderUserPage,
+  renderSettingPage,
 } from './widgets';
 import renderExtensionPopup from './widgets/components/ExtensionPopup';
 
@@ -65,6 +66,7 @@ const heatmapRoot = document.getElementById('heatmap-root');
 const gameListRoot = document.getElementById('game-list');
 const ratingList = document.getElementById('rating-list');
 const userPageRoot = document.getElementById('user-page-root');
+const settingsRoot = document.getElementById('settings');
 
 if (extension) {
   renderExtensionPopup(extension);
@@ -88,4 +90,8 @@ if (ratingList) {
 
 if (userPageRoot) {
   renderUserPage(userPageRoot);
+}
+
+if (settingsRoot) {
+  renderSettingPage(settingsRoot);
 }
