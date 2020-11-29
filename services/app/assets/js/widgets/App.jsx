@@ -1,8 +1,17 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import { PersistGate } from 'redux-persist/integration/react';
+import {
+  persistStore,
+  persistReducer,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from 'redux-persist';
 import { configureStore, combineReducers, getDefaultMiddleware } from '@reduxjs/toolkit';
 import rollbarMiddleware from 'rollbar-redux-middleware';
 import rollbar from './lib/rollbar';
@@ -25,15 +34,22 @@ const rootReducer = combineReducers({
   ...otherReducers,
 });
 
+const persistConfig = {
+  key: 'root',
+  version: 1,
+  storage,
+};
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+
 const rollbarRedux = rollbarMiddleware(rollbar);
 // TODO: put initial state from gon
 const store = configureStore({
-  reducer: rootReducer,
+  reducer: persistedReducer,
   middleware: [
     rollbarRedux,
     ...getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: ['ERROR'],
+      ignoredActions: ['ERROR', FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
     }),
   ],
