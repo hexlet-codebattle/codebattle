@@ -143,19 +143,19 @@ export const sendEditorText = (editorText, langSlug = null) => (dispatch, getSta
 };
 
 export const sendGiveUp = () => {
-  channel.push('give_up');
+  channel.push('give_up', {});
 };
 
 export const sendOfferToRematch = () => {
-  channel.push('rematch:send_offer');
+  channel.push('rematch:send_offer', {});
 };
 
 export const sendRejectToRematch = () => {
-  channel.push('rematch:reject_offer');
+  channel.push('rematch:reject_offer', {});
 };
 
 export const sendAcceptToRematch = () => {
-  channel.push('rematch:accept_offer');
+  channel.push('rematch:accept_offer', {});
 };
 
 export const sendEditorLang = currentLangSlug => (dispatch, getState) => {

@@ -69,6 +69,7 @@ defmodule Codebattle.Bot.ChatClient do
       "Irkin, fix me",
       "Vtm, Master, Guide Me",
       "Huge Lebowski, where are you man?!",
+      "Lera-Valera Help!!!111",
       "RedBrother, HELP me, please!!!!"
     ]
     |> Enum.random()
@@ -96,7 +97,7 @@ defmodule Codebattle.Bot.ChatClient do
 
   defp greet_opponent(chat_state) do
     opponent = get_opponent(chat_state)
-    "Hi, #{opponent["name"]}, I'll join when you start writing code"
+    "Hey, #{opponent["name"]}, I'll join when you start writing code"
   end
 
   defp say_announcement(chat_state) do
@@ -122,7 +123,7 @@ defmodule Codebattle.Bot.ChatClient do
   defp pick_language(_), do: "Golang"
 
   defp default_user do
-    %{"name" => "dude", "lang" => "php"}
+    %{"name" => "there", "lang" => "php"}
   end
 
   # Chat state

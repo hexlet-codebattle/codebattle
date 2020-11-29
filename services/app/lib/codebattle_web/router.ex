@@ -66,7 +66,11 @@ defmodule CodebattleWeb.Router do
 
   scope "/" do
     pipe_through(:browser)
-    live_dashboard("/dashboard_codebattle", metrics: CodebattleWeb.Telemetry)
+
+    live_dashboard("/dashboard_codebattle",
+      metrics: CodebattleWeb.Telemetry,
+      ecto_repos: [Codebattle.Repo]
+    )
   end
 
   def handle_errors(conn, %{reason: %Ecto.NoResultsError{}}) do

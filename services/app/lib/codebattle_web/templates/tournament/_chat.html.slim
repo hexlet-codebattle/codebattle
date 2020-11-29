@@ -1,6 +1,6 @@
 .sticky-top.bg-white
   .rounded-top.shadow-sm style="height: 350px;"
-    .overflow-auto.px-3.pt-3.h-100.text-break phx-hook="NewChatMessage"
+    #new-chat-message.overflow-auto.px-3.pt-3.h-100.text-break phx-hook="NewChatMessage"
       div
         span.text-muted Please, be nice in chat
       = for message <- @messages do
