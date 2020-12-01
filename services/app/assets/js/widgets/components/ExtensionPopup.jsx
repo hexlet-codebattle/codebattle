@@ -52,7 +52,6 @@ const ExtensionPopup = () => {
         >
           Close
         </Button>
-
       </Modal.Footer>
     </Modal>
 );
