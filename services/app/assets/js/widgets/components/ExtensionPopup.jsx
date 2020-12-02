@@ -58,15 +58,16 @@ const ExtensionPopup = () => {
 };
 
 export default domElement => {
-  const lastCheckTime = window.localStorage.getItem('lastCheckTime');
+  const lastCheckExtension = window.localStorage.getItem('lastCheckExtension');
   const nowTime = Date.now();
-  const oneMonth = 1000 * 60 * 60 * 24 * 30;
-  if (window.chrome && (Number(lastCheckTime) + oneMonth < nowTime)) {
+  const threeDay = 1000 * 60 * 60 * 24 * 3;
+  const isExpired = Number(lastCheckExtension) + threeDay < nowTime;
+  if (window.chrome && isExpired) {
     // TODO: move to env config extension id and icon path
     const extensionInfo = { id: 'embfhnfkfobkdohleknckodkmhgmpdli', path: 'assets/128.png' };
     isExtensionInstalled(extensionInfo).then(isInstall => {
       if (!isInstall) {
-        window.localStorage.setItem('lastCheckTime', nowTime);
+        window.localStorage.setItem('lastCheckExtension', nowTime);
         render(<ExtensionPopup />, domElement);
       }
     });
