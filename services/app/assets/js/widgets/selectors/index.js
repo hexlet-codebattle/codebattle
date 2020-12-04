@@ -193,5 +193,8 @@ export const isOpponentInGameSelector = state => {
 
 export const currentUserNameSelector = state => {
   const currentUserId = currentUserIdSelector(state);
+  if (!currentUserId) {
+    return 'Anonymous user';
+  }
   return state.user.users[currentUserId].name;
 };
