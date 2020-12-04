@@ -18,6 +18,7 @@ import {
 } from '../selectors';
 import WaitingOpponentInfo from '../components/WaitingOpponentInfo';
 import CodebattlePlayer from './CodebattlePlayer';
+import FeedBackWidget from '../components/FeedBackWidget';
 
 const steps = [
   {
@@ -183,6 +184,7 @@ const RootContainer = ({
         <div className="row no-gutter cb-game">
           <InfoWidget />
           <GameWidget />
+          <FeedBackWidget />
         </div>
       </div>
       {isStoredGame && <CodebattlePlayer />}
