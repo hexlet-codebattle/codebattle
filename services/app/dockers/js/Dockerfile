@@ -1,4 +1,4 @@
-FROM node:13.13.0
+FROM node:14.15.1
 
 RUN apt-get update && apt-get install -y build-essential --no-install-recommends && apt-get clean && rm -rf /var/lib/apt/lists/*
 
