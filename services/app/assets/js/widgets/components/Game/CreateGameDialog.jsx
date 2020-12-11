@@ -41,7 +41,14 @@ const CreateGameDialog = ({ hideModal }) => {
           className={`btn ${game.type === 'withRandomPlayer' ? 'bg-orange text-white' : 'btn-outline-orange'}`}
           onClick={() => setGame({ ...game, type: 'withRandomPlayer' })}
         >
-          With random player
+          With human
+        </button>
+        <button
+          type="button"
+          className={`btn ${game.type === 'withFriend' ? 'bg-orange text-white' : 'btn-outline-orange'}`}
+          onClick={() => setGame({ ...game, type: 'withFriend' })}
+        >
+          With friend
         </button>
       </div>
 
