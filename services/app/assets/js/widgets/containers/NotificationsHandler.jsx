@@ -1,15 +1,18 @@
-import React, { Component } from 'react';
+import React, { useEffect, useRef } from 'react';
 import _ from 'lodash';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { Alert } from 'react-bootstrap';
 import i18n from '../../i18n';
-import * as selectors from '../selectors';
-import GameStatusCodes from '../config/gameStatusCodes';
+
+import {
+  gameStatusSelector,
+  gamePlayersSelector,
+  currentUserIdSelector,
+} from '../selectors';
 import Toast from '../components/Toast';
 import CloseButton from '../components/Toast/CloseButton';
-import { actions } from '../slices';
-import 'react-toastify/dist/ReactToastify.css';
 
 const toastOptions = {
   hideProgressBar: true,
@@ -20,61 +23,47 @@ const toastOptions = {
   closeButton: <CloseButton />,
 };
 
-class NotificationsHandler extends Component {
-  componentDidUpdate(prevProps) {
-    const {
-      gameStatus: {
-        solutionStatus, status, checking,
-      },
-      currentUserId,
-      isCurrentUserPlayer,
-    } = this.props;
-    const prevCheckingResult = prevProps.gameStatus.checking[currentUserId];
-    const checkingResult = checking[currentUserId];
-
-    if (
-      isCurrentUserPlayer && prevCheckingResult && !checkingResult
-      && status === GameStatusCodes.playing) {
-      this.showCheckingStatusMessage(solutionStatus);
-    }
+const showCheckingStatusMessage = solutionStatus => {
+  if (solutionStatus) {
+    toast(
+      <Toast header="Success">
+        <Alert variant="success">{i18n.t('Success Test Message')}</Alert>
+      </Toast>,
+    );
+  } else {
+    toast(
+      <Toast header="Failed">
+        <Alert variant="danger">{i18n.t('Failure Test Message')}</Alert>
+      </Toast>,
+    );
   }
+};
 
-    showCheckingStatusMessage = solutionStatus => {
-      if (solutionStatus) {
-        toast(
-          <Toast header="Success">
-            <Alert variant="success">{i18n.t('Success Test Message')}</Alert>
-          </Toast>,
-        );
-      } else {
-        toast(
-          <Toast header="Failed">
-            <Alert variant="danger">{i18n.t('Failure Test Message')}</Alert>
-          </Toast>,
-        );
-      }
-    }
+const NotificationsHandler = () => {
+  const currentUserId = useSelector(currentUserIdSelector);
 
-  render() {
-    return <ToastContainer {...toastOptions} />;
-  }
-}
-
-const mapStateToProps = state => {
-  const currentUserId = selectors.currentUserIdSelector(state);
-  const players = selectors.gamePlayersSelector(state);
-  const isCurrentUserPlayer = _.hasIn(players, currentUserId);
-
-  return {
-    currentUserId,
-    players,
-    isCurrentUserPlayer,
-    gameStatus: selectors.gameStatusSelector(state),
+  const usePrevious = () => {
+    const ref = useRef();
+    const gameStatus = useSelector(gameStatusSelector);
+    useEffect(() => {
+      ref.current = gameStatus.checking[currentUserId];
+    });
+    return ref.current;
   };
+
+  const prevCheckingResult = usePrevious();
+  const { solutionStatus, checking } = useSelector(gameStatusSelector);
+  const players = useSelector(gamePlayersSelector);
+  const isCurrentUserPlayer = _.hasIn(players, currentUserId);
+  const checkingResult = checking[currentUserId];
+
+  useEffect(() => {
+    if (isCurrentUserPlayer && prevCheckingResult && !checkingResult) {
+      showCheckingStatusMessage(solutionStatus);
+    }
+  });
+
+  return <ToastContainer {...toastOptions} />;
 };
 
-const mapDispatchToProps = {
-  updateGameUI: actions.updateGameUI,
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(NotificationsHandler);
+export default NotificationsHandler;
