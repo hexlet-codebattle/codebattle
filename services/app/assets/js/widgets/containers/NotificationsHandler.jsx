@@ -61,7 +61,7 @@ const NotificationsHandler = () => {
     if (isCurrentUserPlayer && prevCheckingResult && !checkingResult) {
       showCheckingStatusMessage(solutionStatus);
     }
-  });
+  }, [checkingResult, isCurrentUserPlayer, prevCheckingResult, solutionStatus]);
 
   return <ToastContainer {...toastOptions} />;
 };
