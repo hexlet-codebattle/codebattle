@@ -1,11 +1,9 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import * as selectors from '../../selectors';
+import { useSelector } from 'react-redux';
+import { gameStatusSelector } from '../../selectors';
 
-const BackToTournamentButton = props => {
-  const {
-    gameStatus: { tournamentId },
-  } = props;
+const BackToTournamentButton = () => {
+  const { tournamentId } = useSelector(gameStatusSelector);
   const tournamentUrl = `/tournaments/${tournamentId}`;
 
   return (
@@ -15,8 +13,4 @@ const BackToTournamentButton = props => {
   );
 };
 
-const mapStateToProps = state => ({
-  gameStatus: selectors.gameStatusSelector(state),
-});
-
-export default connect(mapStateToProps)(BackToTournamentButton);
+export default BackToTournamentButton;
