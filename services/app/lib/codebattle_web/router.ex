@@ -41,6 +41,7 @@ defmodule CodebattleWeb.Router do
       get("/user/:id/stats", UserController, :stats)
       resources("/users", UserController, only: [:index, :show])
       resources("/settings", SettingsController, only: [:show, :update], singleton: true)
+      post("/feedback", FeedBackController, :index)
     end
   end
 

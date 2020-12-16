@@ -65,12 +65,14 @@
     "react-player-controls": "^1.1.0",
     "react-redux": "^7.2.2",
     "react-select": "^3.1.1",
+    "react-slack-feedback": "^2.1.0",
     "react-stay-scrolled": "^7.1.0",
     "react-toastify": "^6.1.0",
     "redux-persist": "^6.0.0",
     "rollbar": "^2.19.4",
     "rollbar-redux-middleware": "^0.2.0",
     "set-value": "^3.0.2",
+    "styled-components": "^5.2.1",
     "yup": "^0.29.3"
   },
   "devDependencies": {
