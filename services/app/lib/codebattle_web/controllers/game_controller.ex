@@ -73,7 +73,13 @@ defmodule CodebattleWeb.GameController do
 
     case Play.get_fsm(id) do
       {:ok, fsm} ->
-        conn = put_gon(conn, game_id: id, tournament_id: FsmHelpers.get_tournament_id(fsm))
+        conn =
+          put_gon(conn,
+            game_id: id,
+            tournament_id: FsmHelpers.get_tournament_id(fsm),
+            players: present_users_for_gon(FsmHelpers.get_players(fsm))
+          )
+
         is_participant = ActiveGames.participant?(id, user.id)
 
         case {fsm.state, is_participant} do
@@ -158,7 +164,8 @@ defmodule CodebattleWeb.GameController do
                 is_record: true,
                 game_id: id,
                 tournament_id: game.tournament_id,
-                langs: langs
+                langs: langs,
+                players: present_users_for_gon(game.users)
               )
               |> put_meta_tags(%{
                 title: "Hexlet Codebattle • Cool archived game",
@@ -277,5 +284,11 @@ defmodule CodebattleWeb.GameController do
       1 -> game.users ++ [User.create_guest()]
       _ -> game.users
     end
+  end
+
+  defp present_users_for_gon(users) do
+    Enum.map(users, fn u ->
+      Map.take(u, [:github_id, :id, :is_bot, :rating, :rank, :lang, :name, :guest, :achievements])
+    end)
   end
 end
