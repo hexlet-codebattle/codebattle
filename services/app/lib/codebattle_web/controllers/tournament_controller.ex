@@ -28,6 +28,7 @@ defmodule CodebattleWeb.TournamentController do
     |> put_meta_tags(%{
       title: "Hexlet Codebattle • Join tournament",
       description: "Join tournament: #{String.slice(tournament.name, 0, 100)}",
+      image: Routes.tournament_image_url(conn, :show, tournament.id),
       url: Routes.tournament_url(conn, :show, tournament.id)
     })
     |> live_render(CodebattleWeb.Live.Tournament.ShowView,

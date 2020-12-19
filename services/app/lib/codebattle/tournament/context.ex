@@ -3,6 +3,13 @@ defmodule Codebattle.Tournament.Context do
 
   import Ecto.Query
 
+  def get(id) do
+    case Tournament.Server.get_tournament(id) do
+      nil -> get_from_db(id)
+      tournament -> {:ok, tournament}
+    end
+  end
+
   def get!(id) do
     case Tournament.Server.get_tournament(id) do
       nil -> get_from_db!(id)
@@ -13,6 +20,20 @@ defmodule Codebattle.Tournament.Context do
   def get_from_db!(id) do
     tournament = Codebattle.Repo.get!(Tournament, id)
     add_module(tournament)
+  end
+
+  def get_from_db(id) do
+    q =
+      from(
+        t in Tournament,
+        where: t.id == ^id,
+        preload: :creator
+      )
+
+    case Codebattle.Repo.one(q) do
+      nil -> {:error, :not_found}
+      t -> {:ok, add_module(t)}
+    end
   end
 
   def all() do

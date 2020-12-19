@@ -48,7 +48,7 @@ defmodule CodebattleWeb.LobbyChannelTest do
     assert completed_games
   end
 
-  test "creates game", %{winner: winner, socket1: socket1, task: task} do
+  test "creates game", %{socket1: socket1} do
     {:ok, _payload, socket1} = subscribe_and_join(socket1, LobbyChannel, "lobby")
 
     push(socket1, "game:create", %{type: "withRandomPlayer", level: "elementary"})
