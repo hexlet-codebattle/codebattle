@@ -69,6 +69,10 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     end
   end
 
+  def handle_event(_event, _params, %{assigns: %{current_user: %{guest: true}} = socket}) do
+    {:noreply, socket}
+  end
+
   def handle_event("join", %{"team_id" => team_id}, socket) do
     Tournament.Server.update_tournament(socket.assigns.tournament.id, :join, %{
       user: socket.assigns.current_user,

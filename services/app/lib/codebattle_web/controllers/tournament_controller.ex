@@ -3,8 +3,6 @@ defmodule CodebattleWeb.TournamentController do
 
   alias Codebattle.Tournament
 
-  plug(CodebattleWeb.Plugs.RequireAuth)
-
   def index(conn, _params) do
     conn
     |> put_meta_tags(%{
