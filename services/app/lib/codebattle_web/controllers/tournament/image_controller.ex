@@ -9,7 +9,7 @@ defmodule CodebattleWeb.Tournament.ImageController do
         {:ok, image} =
           tournament
           |> render_image
-          |> HtmlToImage.convert(width: 637, quality: 100)
+          |> HtmlToImage.convert(width: 777, quality: 100)
 
         conn
         |> put_resp_content_type("image/jpeg")
