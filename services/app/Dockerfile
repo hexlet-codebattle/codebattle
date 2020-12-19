@@ -26,6 +26,7 @@ RUN mix release \
 
 FROM alpine:3.12
 
+RUN apk --no-cache --update add wkhtmltopdf
 # RUN mkdir -p /usr/local/bin \
 #     && cd /usr/local/bin \
 #     && wget -O goon.tar.gz https://github.com/alco/goon/releases/download/v1.1.1/goon_linux_amd64.tar.gz \
