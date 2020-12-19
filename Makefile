@@ -38,7 +38,18 @@ release:
 	make -C services/app release
 
 docker-build-app:
-	docker build --cache-from=codebattle/app --tag codebattle/app --file services/app/Dockerfile services/app
+	docker pull codebattle/app:compile-stage || true
+	docker pull codebattle/app:latest        || true
+	docker build --target compile-image \
+				--cache-from=codebattle/app:compile-stage \
+				--file services/app/Dockerfile \
+				--tag codebattle/app:compile-stage services/app
+	docker build --target runtime-image \
+				--cache-from=codebattle/app:compile-stage \
+				--cache-from=codebattle/app:latest \
+				--file services/app/Dockerfile \
+				--tag codebattle/app:latest services/app
 
 docker-push-app:
+	docker push codebattle/app:compile-stage
 	docker push codebattle/app:latest
