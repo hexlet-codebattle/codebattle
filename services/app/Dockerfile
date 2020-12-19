@@ -6,9 +6,10 @@ WORKDIR /opt/app
 RUN mix local.hex --force \
   && mix local.rebar --force
 
-RUN curl -sL https://deb.nodesource.com/setup_14.x | bash - \
-  && apt-get update \
-  && apt-get install -y nodejs \
+RUN apt-get update \
+  && curl -sL https://deb.nodesource.com/setup_14.x | bash - \
+  && apt-get install --no-install-recommends -y nodejs \
+  && rm -rf /var/lib/apt/lists/* \
   && npm install --global yarn@1.22.10
 
 COPY mix.lock .
@@ -28,8 +29,8 @@ RUN mix release \
 
 FROM debian:buster AS runtime-image
 
-RUN apt-get update && apt-get install -y vim wkhtmltopdf \
-  git ca-certificates build-essential curl
+RUN apt-get update && apt-get install --no-install-recommends -y ca-certificates wkhtmltopdf git make curl \
+  && rm -rf /var/lib/apt/lists/*
 
 RUN curl -fsSL "https://download.docker.com/linux/static/edge/x86_64/docker-18.09.3.tgz" \
   | tar -xzC /usr/local/bin --strip=1 docker/docker
