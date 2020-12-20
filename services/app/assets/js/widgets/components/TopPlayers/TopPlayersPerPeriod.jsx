@@ -1,5 +1,3 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
-
 import React, { useEffect, useState, useRef } from 'react';
 import { Table } from 'react-bootstrap';
 import qs from 'qs';
