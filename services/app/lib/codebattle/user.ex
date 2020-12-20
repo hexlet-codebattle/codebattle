@@ -94,5 +94,12 @@ defmodule Codebattle.User do
     |> validate_length(:name, min: 3, max: 16)
   end
 
-  def create_guest(), do: %__MODULE__{guest: true, id: 0, name: "Jon Dou", rating: 0}
+  def create_guest(),
+    do: %__MODULE__{
+      guest: true,
+      id: 0,
+      name: "Jon Dou",
+      rating: 0,
+      sound_settings: %SoundSettings{}
+    }
 end
