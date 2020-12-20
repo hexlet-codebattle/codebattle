@@ -12,6 +12,11 @@ const periodType = {
   WEEKLY: 'weekly',
 };
 
+const periodMapping = {
+  [periodType.MONTHLY]: 'month',
+  [periodType.WEEKLY]: 'week',
+};
+
 const TopPlayersPerPeriod = () => {
   const [rating, setRating] = useState(null);
 
@@ -24,7 +29,7 @@ const TopPlayersPerPeriod = () => {
       s: 'rating+desc',
       page_size: '5',
       date_from: moment()
-        .startOf(period === periodType.MONTHLY ? 'month' : 'week')
+        .startOf(periodMapping[period])
         .utc()
         .format('YYYY-MM-DD'),
       with_bots: false,

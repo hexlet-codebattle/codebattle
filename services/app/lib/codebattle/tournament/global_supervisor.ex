@@ -23,7 +23,7 @@ defmodule Codebattle.Tournament.GlobalSupervisor do
     pid = Tournament.Supervisor.get_pid(tournament_id)
 
     try do
-      Supervisor.terminate_child(__MODULE__, pid)
+      DynamicSupervisor.terminate_child(__MODULE__, pid)
     rescue
       _ -> Logger.error("tournament not found while terminating #{pid}")
     end
