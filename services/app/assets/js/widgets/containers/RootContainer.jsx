@@ -165,8 +165,12 @@ const RootContainer = ({
     { filter: () => true },
   );
 
+  const players = Gon.getAsset('players');
+  const player1 = players[0];
+  const player2 = players[1];
+
   if (!storeLoaded) {
-    return <GamePreview />;
+    return <GamePreview player1={player1} player2={player2} />;
   }
 
   if (gameStatusCode === GameStatusCodes.waitingOpponent) {
