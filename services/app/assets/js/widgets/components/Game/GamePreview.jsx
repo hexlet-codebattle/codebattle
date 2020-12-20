@@ -1,7 +1,6 @@
 import React from 'react';
 import Gon from 'gon';
 import LanguageIcon from '../LanguageIcon';
-import '../../../../css/gamePreview.scss';
 
 const GamePreview = () => {
   const players = Gon.getAsset('players');
