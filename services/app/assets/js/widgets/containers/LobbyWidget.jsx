@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Modal } from 'react-bootstrap';
+import { Modal } from 'react-bootstrap';
 import _ from 'lodash';
 import copy from 'copy-to-clipboard';
 import moment from 'moment';
@@ -395,14 +395,12 @@ const LobbyWidget = () => {
             <TopPlayersEver />
           </div>
           <div className="mt-2">
-            <Button
-              variant="outline-orange"
-              size="sm"
-              // eslint-disable-next-line
-              onClick={() => (window.location.href = 'https://codebattle.hexlet.io/users')}
+            <a
+              href="https://codebattle.hexlet.io/users"
+              className="btn btn-sm btn-outline-orange"
             >
               More
-            </Button>
+            </a>
           </div>
         </div>
       </div>
