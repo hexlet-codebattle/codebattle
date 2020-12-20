@@ -1,6 +1,7 @@
 _build
 deps
 node_modules
+Dockerfile
 test
 priv/static
 tmp

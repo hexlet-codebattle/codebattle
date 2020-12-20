@@ -24,9 +24,9 @@ jobs:
         uses: rollbar/github-deploy-action@2.0.0
         id: rollbar_pre_deploy
         with:
-          environment: 'production'
+          environment: "production"
           version: ${{ github.sha }}
-          status: 'started'
+          status: "started"
         env:
           ROLLBAR_ACCESS_TOKEN: ${{ secrets.ROLLBAR_ACCESS_TOKEN }}
           ROLLBAR_USERNAME: ${{ secrets.ROLLBAR_USERNAME }}
@@ -98,7 +98,10 @@ jobs:
         env:
           MIX_ENV: test
 
-      - run: make test
+      - name: TEST
+        run: make test
+        env:
+          MIX_ENV: test
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
@@ -117,9 +120,9 @@ jobs:
         uses: rollbar/github-deploy-action@1.1.0
         id: rollbar_post_deploy
         with:
-          environment: 'production'
+          environment: "production"
           version: ${{ github.sha }}
-          status: 'succeeded'
+          status: "succeeded"
         env:
           ROLLBAR_ACCESS_TOKEN: ${{ secrets.ROLLBAR_ACCESS_TOKEN }}
           ROLLBAR_USERNAME: ${{ secrets.ROLLBAR_USERNAME }}
@@ -135,4 +138,3 @@ jobs:
       #   run: make test-code-checkers
       #   env:
       #     MIX_ENV: test
-
