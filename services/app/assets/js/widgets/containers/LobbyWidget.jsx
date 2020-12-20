@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import { Button, Modal } from 'react-bootstrap';
 import _ from 'lodash';
 import copy from 'copy-to-clipboard';
 import moment from 'moment';
-import { Modal } from 'react-bootstrap';
+
 import { useDispatch, useSelector } from 'react-redux';
 import Gon from 'gon';
 import * as lobbyMiddlewares from '../middlewares/Lobby';
@@ -19,7 +20,7 @@ import i18n from '../../i18n';
 import CompletedGames from '../components/Game/CompletedGames';
 import CreateGameDialog from '../components/Game/CreateGameDialog';
 import TopPlayersEver from '../components/TopPlayers/TopPlayersEver';
-import TopPlayersMonthly from '../components/TopPlayers/TopPlayersMonthly';
+import TopPlayersPerPeriod from '../components/TopPlayers/TopPlayersPerPeriod';
 
 const Players = ({ players }) => {
   if (players.length === 1) {
@@ -389,9 +390,19 @@ const LobbyWidget = () => {
         </div>
 
         <div className="d-flex flex-column col-sm-3">
-          <TopPlayersMonthly />
+          <TopPlayersPerPeriod />
           <div className="mt-2">
             <TopPlayersEver />
+          </div>
+          <div className="mt-2">
+            <Button
+              variant="outline-orange"
+              size="sm"
+              // eslint-disable-next-line
+              onClick={() => (window.location.href = 'https://codebattle.hexlet.io/users')}
+            >
+              More
+            </Button>
           </div>
         </div>
       </div>
