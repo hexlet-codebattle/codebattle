@@ -10,13 +10,15 @@ defmodule Codebattle.User do
     import Ecto.Changeset
     @primary_key false
 
+    @derive {Jason.Encoder, only: [:level, :type]}
+
     embedded_schema do
       field(:level, :integer, default: 7)
       field(:type, :string, default: "silent")
     end
 
     def changeset(struct, params) do
-      cast(struct, Map.from_struct(params), [:level, :type])
+      cast(struct, params, [:level, :type])
     end
   end
 
@@ -57,7 +59,7 @@ defmodule Codebattle.User do
     field(:performance, :integer, virtual: true)
     field(:achievements, {:array, :string}, default: [], null: false)
     # level range: 0..10, types: ["standard", "silent"]
-    embeds_one(:sound_settings, SoundSettings)
+    embeds_one(:sound_settings, SoundSettings, on_replace: :update)
 
     has_many(:user_games, Codebattle.UserGame)
     has_many(:games, through: [:user_games, :game])
@@ -81,13 +83,13 @@ defmodule Codebattle.User do
       :editor_theme,
       :achievements
     ])
-    |> cast_embed(:sound_settings)
     |> validate_required([:name, :email, :github_id])
   end
 
   def settings_changeset(model, params \\ %{}) do
     model
-    |> cast(params, [:name, :sound_settings], [])
+    |> cast(params, [:name])
+    |> cast_embed(:sound_settings)
     |> unique_constraint(:name)
     |> validate_length(:name, min: 3, max: 16)
   end
