@@ -18,6 +18,7 @@ import {
 } from '../selectors';
 import WaitingOpponentInfo from '../components/WaitingOpponentInfo';
 import CodebattlePlayer from './CodebattlePlayer';
+import GamePreview from '../components/Game/GamePreview';
 
 const steps = [
   {
@@ -165,8 +166,7 @@ const RootContainer = ({
   );
 
   if (!storeLoaded) {
-    // TODO: add loader
-    return null;
+    return <GamePreview />;
   }
 
   if (gameStatusCode === GameStatusCodes.waitingOpponent) {
