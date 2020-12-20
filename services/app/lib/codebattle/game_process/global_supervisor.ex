@@ -28,7 +28,7 @@ defmodule Codebattle.GameProcess.GlobalSupervisor do
     pid = Codebattle.GameProcess.Supervisor.get_pid(game_id)
 
     try do
-      Supervisor.terminate_child(__MODULE__, pid)
+      DynamicSupervisor.terminate_child(__MODULE__, pid)
     rescue
       _ -> Logger.info("game not found")
     end

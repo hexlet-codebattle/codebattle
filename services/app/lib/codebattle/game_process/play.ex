@@ -109,7 +109,12 @@ defmodule Codebattle.GameProcess.Play do
   def check_game(id, user, editor_text, editor_lang) do
     case get_fsm(id) do
       {:ok, fsm} ->
-        check_result = checker_adapter().call(FsmHelpers.get_task(fsm), editor_text, editor_lang)
+        check_result =
+          checker_adapter().call(
+            FsmHelpers.get_task(fsm),
+            editor_text,
+            editor_lang
+          )
 
         Server.update_playbook(id, :start_check, %{
           id: user.id,

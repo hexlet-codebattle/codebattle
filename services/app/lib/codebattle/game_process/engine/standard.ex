@@ -43,13 +43,7 @@ defmodule Codebattle.GameProcess.Engine.Standard do
          :ok <- ActiveGames.create_game(fsm),
          {:ok, _} <- GlobalSupervisor.start_game(fsm),
          :ok <- start_timeout_timer(game.id, fsm) do
-      case type do
-        "public" ->
-          broadcast_active_game(fsm)
-
-        _ ->
-          nil
-      end
+      broadcast_active_game(fsm)
 
       {:ok, fsm}
     else

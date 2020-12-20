@@ -22,6 +22,10 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
      )}
   end
 
+  def handle_event(_event, _params, %{assigns: %{current_user: %{guest: true}} = socket}) do
+    {:noreply, socket}
+  end
+
   def handle_event("validate", %{"tournament" => params}, socket) do
     creator = socket.assigns.current_user
 

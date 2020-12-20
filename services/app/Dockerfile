@@ -1,30 +1,39 @@
-FROM elixir:1.11.2-alpine
-ARG app_name=codebattle
-ARG phoenix_subdir=.
-ARG build_env=prod
-ENV MIX_ENV=${build_env} TERM=xterm
+FROM elixir:1.11.2 AS compile-image
+ENV MIX_ENV=prod
+
 WORKDIR /opt/app
-RUN apk update \
-  && apk --no-cache --update add nodejs git nodejs-npm make build-base g++ libpng-dev \
-  && mix local.rebar --force \
-  && mix local.hex --force
 
-RUN npm i -g yarn
+RUN mix local.hex --force \
+  && mix local.rebar --force
 
-COPY mix.* ./
+RUN apt-get update \
+  && curl -sL https://deb.nodesource.com/setup_14.x | bash - \
+  && apt-get install --no-install-recommends -y nodejs \
+  && rm -rf /var/lib/apt/lists/* \
+  && npm install --global yarn@1.22.10
+
+COPY mix.lock .
+COPY mix.exs .
 RUN mix do deps.get, compile
+
+COPY package.json .
+COPY yarn.lock .
+RUN yarn install --froze-lockfile
 
 COPY . .
 
-RUN yarn install --froze-lockfile
-
-RUN yarn build \
-  && mix phx.digest
+RUN yarn build && mix phx.digest
 
 RUN mix release \
-  && mv _build/${build_env}/rel/${app_name} /opt/release
+  && mv _build/prod/rel/codebattle /opt/release
 
-FROM alpine:3.12
+FROM debian:buster AS runtime-image
+
+RUN apt-get update && apt-get install --no-install-recommends -y ca-certificates wkhtmltopdf git make curl \
+  && rm -rf /var/lib/apt/lists/*
+
+RUN curl -fsSL "https://download.docker.com/linux/static/edge/x86_64/docker-18.09.3.tgz" \
+  | tar -xzC /usr/local/bin --strip=1 docker/docker
 
 # RUN mkdir -p /usr/local/bin \
 #     && cd /usr/local/bin \
@@ -32,11 +41,9 @@ FROM alpine:3.12
 #     && tar -xzf goon.tar.gz \
 #     && chmod a+x goon
 
-RUN apk update && apk --no-cache --update add bash ca-certificates openssl-dev make docker
-
 ENV PORT=4000
 EXPOSE ${PORT}
 WORKDIR /opt/app
-COPY --from=0 /opt/release .
+COPY --from=compile-image /opt/release .
 COPY Makefile Makefile
 CMD exec /opt/app/bin/codebattle start

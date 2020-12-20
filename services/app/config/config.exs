@@ -7,13 +7,13 @@ use Mix.Config
 
 config :codebattle,
   alpine_docker_command_template:
-    "docker run --rm --net none ~s ~s timeout -s 9 -t 10 make --silent test",
+    "docker run --rm -m 400m --cpus=1 --net none ~s ~s ~s timeout -s 9 -t 10 make --silent test",
   ubuntu_docker_command_template:
-    "docker run --rm --net none ~s ~s timeout -s 9 10s make --silent test",
+    "docker run --rm -m 400m --cpus=1 --net none ~s ~s ~s timeout -s 9 10s make --silent test",
   alpine_docker_command_compile_template:
-    "docker run --net none ~s ~s timeout -s 9 -t 10 make --silent test-compile",
+    "docker run -m 400m --cpus=1 --net none ~s ~s ~s timeout -s 9 -t 10 make --silent test-compile",
   ubuntu_docker_command_compile_template:
-    "docker run --net none ~s ~s timeout -s 9 10s make --silent test-compile"
+    "docker run -m 400m --cpus=1 --net none ~s ~s ~s timeout -s 9 10s make --silent test-compile"
 
 # General application configuration
 config :codebattle, ecto_repos: [Codebattle.Repo]
@@ -81,7 +81,7 @@ config :codebattle, Codebattle.Bot,
   timeout_start_playbook: 10_000,
   min_bot_player_speed: 1_000
 
-config :codebattle, Codebattle.DockerLangsPuller, timeout: 5_000 * 60
+config :codebattle, Codebattle.DockerLangsPuller, timeout: :timer.hours(7)
 
 config :codebattle, checker_adapter: Codebattle.CodeCheck.Checker
 config :codebattle, tournament_match_timeout: 3 * 60

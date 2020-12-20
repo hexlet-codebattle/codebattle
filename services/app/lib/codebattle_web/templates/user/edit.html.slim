@@ -1,11 +1,1 @@
-.container.bg-white.shadow-sm.py-4
-  .text-center
-    h2.font-weight-normal= "Settings"
-  = form_for @changeset, Routes.user_setting_path(@conn, :update),  fn f ->
-    div.col-4
-      .form-group
-        = label f, :name
-        div
-          = text_input f, :name, class: "form-control"
-      = error_tag f, :name
-      = submit "Save", class: "btn btn-primary"
+#settings

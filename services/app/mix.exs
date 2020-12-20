@@ -44,10 +44,10 @@ defmodule Codebattle.Mixfile do
     [
       {:phoenix, "~> 1.5.5", override: true},
       {:phoenix_ecto, "~> 4.2"},
-      {:phoenix_live_view, "~> 0.14.7"},
+      {:phoenix_live_view, "~> 0.15"},
       {:postgrex, "~> 0.15.6"},
       {:phoenix_html, "~> 2.14"},
-      {:phoenix_live_dashboard, "~> 0.2.9"},
+      {:phoenix_live_dashboard, "~> 0.4"},
       {:telemetry_metrics, "~> 0.5.0"},
       {:telemetry_poller, "~> 0.5.0"},
       {:gettext, "~> 0.18"},
@@ -67,6 +67,7 @@ defmodule Codebattle.Mixfile do
       {:envy, "~> 1.1.1"},
       {:paginator, "~> 1.0.1"},
       {:scrivener_ecto, "~> 2.5"},
+      {:ecto_psql_extras, "~> 0.2"},
       {:scrivener_html, "~> 1.8"},
       {:phoenix_client, "~> 0.11"},
       {:websocket_client, "~> 1.3"},
@@ -79,6 +80,7 @@ defmodule Codebattle.Mixfile do
       {:poison, "~> 3.0"},
       {:phoenix_meta_tags, "~> 0.1.8"},
       {:gen_state_machine, "~> 2.1"},
+      {:html_to_image, git: "https://github.com/koss-lebedev/html_to_image"},
 
       # dev_and_test
       {:credo, "~> 1.4", only: [:dev, :test], runtime: false},

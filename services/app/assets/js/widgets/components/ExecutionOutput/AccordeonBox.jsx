@@ -1,9 +1,22 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import cn from 'classnames';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import _ from 'lodash';
 import i18n from '../../../i18n';
 import color from '../../config/statusColor';
+
+const getMessage = status => {
+  switch (status) {
+    case 'error':
+      return i18n.t('You have some syntax errors');
+    case 'failure':
+      return i18n.t('Test failed');
+    case 'ok':
+      return i18n.t('Yay! All tests passed!!111');
+    default:
+      return i18n.t('Press Check solution or press Give up');
+  }
+};
 
 const AccordeonBox = ({ children }) => (
   <div className="accordion border-top" id="accordionExample">
@@ -24,12 +37,25 @@ const renderFirstAssert = firstAssert => (
   );
 
 const Menu = ({
-  count, children, statusColor, message, firstAssert,
+  children, firstAssert, resultData, assertsCount, successCount,
 }) => {
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState(true);
+  const isSyntaxError = resultData.status === 'error';
+  const statusColor = color[resultData.status];
+  const message = getMessage(resultData.status);
   const classCollapse = cn('collapse', { show });
   const handleClick = () => { setShow(!show); };
   const uniqIndex = _.uniqueId('heading');
+  const percent = (100 * successCount) / assertsCount;
+  const assertsStatusMessage = i18n.t(
+    'You passed %{successCount} from %{assertsCount} asserts. (%{percent}%)',
+    { successCount, assertsCount, percent },
+  );
+
+  useEffect(() => {
+    setShow(isSyntaxError);
+  }, [isSyntaxError]);
+
   return (
     <div className="card border-0 rounded-0">
       {(statusColor === 'warning' || statusColor === 'danger')
@@ -46,7 +72,7 @@ const Menu = ({
               >
                 { show ? <FontAwesomeIcon icon="arrow-circle-up" /> : <FontAwesomeIcon icon="arrow-circle-down" /> }
               </button>
-              <span className="font-weight-bold small mr-3">{count}</span>
+              {!isSyntaxError && <span className="font-weight-bold small mr-3">{assertsStatusMessage}</span>}
               <span className={`badge badge-${statusColor}`}>{message}</span>
             </div>
             {firstAssert && renderFirstAssert(firstAssert)}
@@ -64,6 +90,7 @@ const SubMenu = ({
   children, statusColor, assert, hasOutput,
 }) => {
   const [show, setShow] = useState(false);
+
   const classCollapse = cn('collapse', {
     show,
   });
