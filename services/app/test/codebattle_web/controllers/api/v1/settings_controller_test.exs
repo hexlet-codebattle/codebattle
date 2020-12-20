@@ -32,9 +32,10 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
 
       assert json_response(conn, 200) == new_settings
 
-      updated = Repo.get!(Codebattle.User, user)
+      updated = Repo.get!(Codebattle.User, user.id)
 
-      assert updated.sound_settings == %{"level" => 3, "type" => "silent"}
+      assert updated.sound_settings.level == 3
+      assert updated.sound_settings.type == "silent"
       assert updated.name == "evgen"
     end
 

@@ -13,8 +13,7 @@ defmodule CodebattleWeb.Api.V1.SettingsController do
     current_user = conn.assigns.current_user
 
     current_user
-    |> IO.inspect
-    |> User.settings_changeset(user_params |> IO.inspect)
+    |> User.settings_changeset(user_params)
     |> Repo.update()
     |> case do
       {:ok, user} ->
