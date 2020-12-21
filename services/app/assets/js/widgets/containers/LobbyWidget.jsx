@@ -204,6 +204,34 @@ const ActiveGames = ({ games }) => {
   if (_.isEmpty(games)) {
     return <p className="text-center">There are no active games right now.</p>;
   }
+  const currentUser = Gon.getAsset('current_user');
+  const gamesSortByLevel = games.slice().sort((a, b) => {
+    const levelRatio = {
+      elementary: 0,
+      easy: 1,
+      medium: 2,
+      hard: 3,
+    };
+    return levelRatio[a.level] - levelRatio[b.level];
+  });
+  const { gamesWithCurrentUser, gamesWithActiveUsers, gamesWithBots } = gamesSortByLevel.reduce((acc, game) => {
+    const isCurrentUserPlay = game.players.some(({ id }) => id === currentUser.id);
+    if (isCurrentUserPlay) {
+      acc.gamesWithCurrentUser.push(game);
+      return acc;
+    }
+    if (!game.isBot) {
+      acc.gamesWithActiveUsers.push(game);
+      return acc;
+    }
+    acc.gamesWithBots.push(game);
+    return acc;
+  }, {
+    gamesWithCurrentUser: [],
+    gamesWithActiveUsers: [],
+    gamesWithBots: [],
+  });
+  const sortedGames = [...gamesWithCurrentUser, ...gamesWithActiveUsers, ...gamesWithBots];
   return (
     <div className="table-responsive">
       <table className="table table-striped border-gray border-top-0 mb-0">
@@ -218,7 +246,7 @@ const ActiveGames = ({ games }) => {
           </tr>
         </thead>
         <tbody>
-          {games.map(game => (
+          {sortedGames.map(game => (
             <tr key={game.id} className="text-dark game-item">
               <td className="p-3 align-middle text-nowrap">
                 <GameLevelBadge level={game.level} />
