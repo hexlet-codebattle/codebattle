@@ -19,6 +19,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     tournament = session["tournament"]
 
     Phoenix.PubSub.subscribe(:cb_pubsub, topic_name(tournament))
+    Phoenix.PubSub.subscribe(:cb_pubsub, "tournaments")
 
     {:ok,
      assign(socket,
@@ -64,6 +65,32 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
 
     if is_current_topic?(topic, tournament) do
       {:noreply, assign(socket, messages: get_chat_messages(tournament.id))}
+    else
+      {:noreply, socket}
+    end
+  end
+
+  def handle_info(%{topic: "tournaments", event: "round:created", payload: payload}, socket) do
+    tournament = socket.assigns.tournament
+    current_user = socket.assigns.current_user
+
+    if payload.tournament.id == tournament.id do
+      current_match =
+        payload
+        |> Map.get(:tournament)
+        |> Map.get(:data)
+        |> Map.get(:matches)
+        |> Enum.filter(fn m ->
+          m.state == "active" and Enum.any?(m.players, fn p -> p.id == current_user.id end)
+        end)
+
+      case current_match do
+        [] ->
+          {:noreply, socket}
+
+        [match | _] ->
+          {:noreply, redirect(socket, to: "/games/#{match.game_id}")}
+      end
     else
       {:noreply, socket}
     end

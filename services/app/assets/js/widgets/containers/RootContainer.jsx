@@ -33,7 +33,7 @@ const steps = [
           against a
           <b> bot</b>
           . But in the future you’ll be against the real
-          player You need must solve the task
+          player. You need to solve the task
           <b> first </b>
           and pass all tests
           <b> successfully</b>

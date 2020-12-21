@@ -2,7 +2,7 @@ defmodule CodebattleWeb.Plugs.AssignGon do
   @moduledoc false
 
   import PhoenixGon.Controller
-  require Logger
+  alias Codebattle.User
 
   @spec init(Keyword.t()) :: Keyword.t()
   def init(opts), do: opts
@@ -11,23 +11,36 @@ defmodule CodebattleWeb.Plugs.AssignGon do
   def call(conn, _opts) do
     current_user = conn.assigns[:current_user]
 
-    case current_user.guest do
-      true ->
-        user_token = Phoenix.Token.sign(conn, "user_token", "anonymous")
+    user_token =
+      case current_user.guest do
+        true -> Phoenix.Token.sign(conn, "user_token", "anonymous")
+        _ -> Phoenix.Token.sign(conn, "user_token", current_user.id)
+      end
 
-        conn
-        |> put_gon(
-          user_token: user_token,
-          current_user: %Codebattle.User{guest: true, id: 0, name: "Anonymous", rating: 0}
-        )
+    put_gon(conn,
+      user_token: user_token,
+      current_user: prepare_user(current_user)
+    )
+  end
 
-      _ ->
-        user_token = Phoenix.Token.sign(conn, "user_token", current_user.id)
-        params = %{user_token: user_token, current_user: current_user}
-        Logger.debug(inspect(["Params For Gon", params]))
-
-        conn
-        |> put_gon(params)
-    end
+  defp prepare_user(user) do
+    Map.take(user, [
+      :id,
+      :name,
+      :github_name,
+      :rating,
+      :is_bot,
+      :guest,
+      :github_id,
+      :lang,
+      :editor_mode,
+      :editor_theme,
+      :achievements,
+      :rank,
+      :games_played,
+      :performance,
+      :inserted_at,
+      :sound_settings
+    ])
   end
 end
