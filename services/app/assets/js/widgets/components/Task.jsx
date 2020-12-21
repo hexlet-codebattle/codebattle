@@ -6,7 +6,6 @@ import i18n from '../../i18n';
 import Timer from './Timer';
 import CountdownTimer from './CountdownTimer';
 import GameStatusCodes from '../config/gameStatusCodes';
-import levelToClass from '../config/levelToClass';
 import ContributorsList from './ContributorsList';
 
 const renderTaskLink = name => {
@@ -21,12 +20,14 @@ const renderTaskLink = name => {
 };
 
 const renderGameLevelBadge = level => (
-  <small className="ml-2">
-    <span className={`badge badge-pill badge-${levelToClass[level]} mr-1`}>
-      &nbsp;
-    </span>
-    {level}
-  </small>
+  <div
+    className="text-center mr-2"
+    data-toggle="tooltip"
+    data-placement="right"
+    title={level}
+  >
+    <img alt={level} src={`/assets/images/levels/${level}.svg`} />
+  </div>
 );
 
 const renderTimer = (time, timeoutSeconds, gameStatusName) => {
@@ -54,10 +55,12 @@ const Task = ({
     <div className="card h-100 border-0 shadow-sm">
       <div className="px-3 py-3 h-100 overflow-auto" data-guide-id="Task">
         <div className="d-flex align-items-begin flex-column flex-sm-row justify-content-between">
-          <h6 className="card-text">
-            {i18n.t('Task: ')}
-            <span className="card-subtitle mb-2 text-muted">{task.name}</span>
+          <h6 className="card-text d-flex align-items-center">
             {renderGameLevelBadge(task.level)}
+            <div>
+              {i18n.t('Task: ')}
+              <span className="card-subtitle mb-2 text-muted">{task.name}</span>
+            </div>
           </h6>
           <div className="card-text">
             {time && renderTimer(time, timeoutSeconds, gameStatusName)}

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import { Modal } from 'react-bootstrap';
 import _ from 'lodash';
 import copy from 'copy-to-clipboard';
 import moment from 'moment';
-import { Modal } from 'react-bootstrap';
+
 import { useDispatch, useSelector } from 'react-redux';
 import Gon from 'gon';
 import * as lobbyMiddlewares from '../middlewares/Lobby';
@@ -13,16 +14,13 @@ import Loading from '../components/Loading';
 // import GamesHeatmap from '../components/GamesHeatmap';
 // import Card from '../components/Card';
 import UserInfo from './UserInfo';
-import {
-  makeCreateGameBotUrl,
-  getSignInGithubUrl,
-} from '../utils/urlBuilders';
+import { makeCreateGameBotUrl, getSignInGithubUrl } from '../utils/urlBuilders';
 import i18n from '../../i18n';
 // import StartGamePanel from '../components/StartGamePanel';
 import CompletedGames from '../components/Game/CompletedGames';
 import CreateGameDialog from '../components/Game/CreateGameDialog';
 import TopPlayersEver from '../components/TopPlayers/TopPlayersEver';
-import TopPlayersMonthly from '../components/TopPlayers/TopPlayersMonthly';
+import TopPlayersPerPeriod from '../components/TopPlayers/TopPlayersPerPeriod';
 
 const Players = ({ players }) => {
   if (players.length === 1) {
@@ -51,7 +49,12 @@ const Players = ({ players }) => {
 };
 
 const GameLevelBadge = ({ level }) => (
-  <div className="text-center" data-toggle="tooltip" data-placement="right" title={level}>
+  <div
+    className="text-center"
+    data-toggle="tooltip"
+    data-placement="right"
+    title={level}
+  >
     <img alt={level} src={`/assets/images/levels/${level}.svg`} />
   </div>
 );
@@ -157,7 +160,9 @@ const LiveTournaments = ({ tournaments }) => {
     return (
       <div className="text-center">
         <p className="mb-0">There are no active tournaments right now</p>
-        <a href="/tournaments/#create"><u>You may want to create one</u></a>
+        <a href="/tournaments/#create">
+          <u>You may want to create one</u>
+        </a>
       </div>
     );
   }
@@ -194,18 +199,27 @@ const LiveTournaments = ({ tournaments }) => {
         </tbody>
       </table>
       <div className="text-center mt-5">
-        <a href="/tournaments"><u>Tournamets Info</u></a>
+        <a href="/tournaments">
+          <u>Tournamets Info</u>
+        </a>
       </div>
     </div>
   );
 };
 
 const ActiveGames = ({ games }) => {
-  if (_.isEmpty(games)) {
+  const currentUser = Gon.getAsset('current_user');
+  const filterGames = game => {
+    if (game.type === 'private') {
+      return !!_.find(game.players, { id: currentUser.id });
+    }
+    return true;
+  };
+  const filtetedGames = games.filter(filterGames);
+  if (_.isEmpty(filtetedGames)) {
     return <p className="text-center">There are no active games right now.</p>;
   }
-  const currentUser = Gon.getAsset('current_user');
-  const gamesSortByLevel = games.slice().sort((a, b) => {
+  const gamesSortByLevel = filtetedGames.slice().sort((a, b) => {
     const levelRatio = {
       elementary: 0,
       easy: 1,
@@ -254,9 +268,11 @@ const ActiveGames = ({ games }) => {
               <td className="p-3 align-middle text-center text-nowrap">
                 <img
                   alt={game.state}
-                  src={game.state === 'playing'
-                ? '/assets/images/playing.svg'
-                : '/assets/images/waitingOpponent.svg'}
+                  src={
+                    game.state === 'playing'
+                      ? '/assets/images/playing.svg'
+                      : '/assets/images/waitingOpponent.svg'
+                  }
                 />
               </td>
               <Players gameId={game.id} players={game.players} />
@@ -264,7 +280,7 @@ const ActiveGames = ({ games }) => {
                 <GameActionButton game={game} />
               </td>
             </tr>
-            ))}
+          ))}
         </tbody>
       </table>
     </div>
@@ -272,7 +288,10 @@ const ActiveGames = ({ games }) => {
 };
 
 const GameContainers = ({
-  activeGames, completedGames, liveTournaments, handleShowModal,
+  activeGames,
+  completedGames,
+  liveTournaments,
+  handleShowModal,
 }) => (
   <div className="p-0">
     <nav>
@@ -346,7 +365,7 @@ const GameContainers = ({
       </div>
     </div>
   </div>
-    );
+);
 
 const renderModal = (show, handleCloseModal) => (
   <Modal show={show} onHide={handleCloseModal}>
@@ -357,7 +376,7 @@ const renderModal = (show, handleCloseModal) => (
       <CreateGameDialog hideModal={handleCloseModal} />
     </Modal.Body>
   </Modal>
-  );
+);
 
 const LobbyWidget = () => {
   const currentUser = Gon.getAsset('current_user');
@@ -398,9 +417,17 @@ const LobbyWidget = () => {
         </div>
 
         <div className="d-flex flex-column col-sm-3">
-          <TopPlayersMonthly />
+          <TopPlayersPerPeriod />
           <div className="mt-2">
             <TopPlayersEver />
+          </div>
+          <div className="mt-2">
+            <a
+              href="https://codebattle.hexlet.io/users"
+              className="btn btn-sm btn-outline-orange"
+            >
+              More
+            </a>
           </div>
         </div>
       </div>

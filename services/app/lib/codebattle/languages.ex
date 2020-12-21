@@ -419,7 +419,7 @@ defmodule Codebattle.Languages do
           "float" => "0.1",
           "string" => "\"value\"",
           "array" => "[<%= value %>]",
-          "boolean" => "False",
+          "boolean" => "false",
           "hash" => "array(\"key\" => <%= value %>)"
         },
         checker_meta: %{
