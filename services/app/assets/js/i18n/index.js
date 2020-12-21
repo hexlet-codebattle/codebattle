@@ -9,7 +9,7 @@ export const getLocale = () => lng;
 i18next.init({
   nsSeparator: false,
   keySeparator: false,
-  lng: ['ru', 'en'].includes(lng) ? lng : 'en',
+  lng: 'en',
   interpolation: {
     prefix: '%{',
     suffix: '}',
@@ -17,9 +17,6 @@ i18next.init({
   resources: {
     en: {
       translation: require('../../../priv/gettext/en/LC_MESSAGES/default.po'),
-    },
-    ru: {
-      translation: require('../../../priv/gettext/ru/LC_MESSAGES/default.po'),
     },
   },
 });
