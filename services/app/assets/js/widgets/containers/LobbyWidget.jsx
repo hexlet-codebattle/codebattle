@@ -219,31 +219,24 @@ const ActiveGames = ({ games }) => {
   if (_.isEmpty(filtetedGames)) {
     return <p className="text-center">There are no active games right now.</p>;
   }
-  const gamesSortByLevel = filtetedGames.slice().sort((a, b) => {
+  const gamesSortByLevel = _.sortBy(filtetedGames, [(game) => {
     const levelRatio = {
       elementary: 0,
       easy: 1,
       medium: 2,
       hard: 3,
     };
-    return levelRatio[a.level] - levelRatio[b.level];
-  });
-  const { gamesWithCurrentUser, gamesWithActiveUsers, gamesWithBots } = gamesSortByLevel.reduce((acc, game) => {
+    return levelRatio[game.level];
+  }]);
+  const { gamesWithCurrentUser = [], gamesWithActiveUsers = [], gamesWithBots = [] } = _.groupBy(gamesSortByLevel, (game) => {
     const isCurrentUserPlay = game.players.some(({ id }) => id === currentUser.id);
     if (isCurrentUserPlay) {
-      acc.gamesWithCurrentUser.push(game);
-      return acc;
+      return 'gamesWithCurrentUser';
     }
     if (!game.isBot) {
-      acc.gamesWithActiveUsers.push(game);
-      return acc;
+      return 'gamesWithActiveUsers';
     }
-    acc.gamesWithBots.push(game);
-    return acc;
-  }, {
-    gamesWithCurrentUser: [],
-    gamesWithActiveUsers: [],
-    gamesWithBots: [],
+    return 'gamesWithBots';
   });
   const sortedGames = [...gamesWithCurrentUser, ...gamesWithActiveUsers, ...gamesWithBots];
   return (
