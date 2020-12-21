@@ -18,6 +18,7 @@ import {
 } from '../selectors';
 import WaitingOpponentInfo from '../components/WaitingOpponentInfo';
 import CodebattlePlayer from './CodebattlePlayer';
+import GamePreview from '../components/Game/GamePreview';
 
 const steps = [
   {
@@ -164,9 +165,15 @@ const RootContainer = ({
     { filter: () => true },
   );
 
-  if (!storeLoaded) {
-    // TODO: add loader
-    return null;
+  const players = Gon.getAsset('players');
+
+  if (!storeLoaded && players) {
+    const defaultPlayer = {
+      name: 'John Doe', github_id: 35539033, lang: 'js', rating: '0',
+    };
+    const player1 = players[0] || defaultPlayer;
+    const player2 = players[1] || defaultPlayer;
+    return <GamePreview player1={player1} player2={player2} />;
   }
 
   if (gameStatusCode === GameStatusCodes.waitingOpponent) {

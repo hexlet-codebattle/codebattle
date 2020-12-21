@@ -12,7 +12,7 @@ import userTypes from '../widgets/config/userTypes';
 import GameStatusCodes from '../widgets/config/gameStatusCodes';
 
 jest.mock('gon', () => {
-  const gonParams = { local: 'en', game_id: 10 };
+  const gonParams = { local: 'en', game_id: 10, players: [] };
   return { getAsset: type => gonParams[type] };
 }, { virtual: true });
 
