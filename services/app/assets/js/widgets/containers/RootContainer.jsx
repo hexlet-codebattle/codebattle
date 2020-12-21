@@ -166,10 +166,13 @@ const RootContainer = ({
   );
 
   const players = Gon.getAsset('players');
-  const player1 = players[0];
-  const player2 = players[1];
 
-  if (!storeLoaded) {
+  if (!storeLoaded && players) {
+    const defaultPlayer = {
+      name: 'John Doe', github_id: 35539033, lang: 'js', rating: '0',
+    };
+    const player1 = players[0] || defaultPlayer;
+    const player2 = players[1] || defaultPlayer;
     return <GamePreview player1={player1} player2={player2} />;
   }
 
