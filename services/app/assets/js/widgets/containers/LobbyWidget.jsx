@@ -21,6 +21,7 @@ import CompletedGames from '../components/Game/CompletedGames';
 import CreateGameDialog from '../components/Game/CreateGameDialog';
 import TopPlayersEver from '../components/TopPlayers/TopPlayersEver';
 import TopPlayersPerPeriod from '../components/TopPlayers/TopPlayersPerPeriod';
+import levelRatio from '../config/levelRatio';
 
 const Players = ({ players }) => {
   if (players.length === 1) {
@@ -219,15 +220,7 @@ const ActiveGames = ({ games }) => {
   if (_.isEmpty(filtetedGames)) {
     return <p className="text-center">There are no active games right now.</p>;
   }
-  const gamesSortByLevel = _.sortBy(filtetedGames, [game => {
-    const levelRatio = {
-      elementary: 0,
-      easy: 1,
-      medium: 2,
-      hard: 3,
-    };
-    return levelRatio[game.level];
-  }]);
+  const gamesSortByLevel = _.sortBy(filtetedGames, [game => levelRatio[game.level]]);
   const { gamesWithCurrentUser = [], gamesWithActiveUsers = [], gamesWithBots = [] } = _.groupBy(gamesSortByLevel, game => {
     const isCurrentUserPlay = game.players.some(({ id }) => id === currentUser.id);
     if (isCurrentUserPlay) {
