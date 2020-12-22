@@ -228,7 +228,7 @@ const ActiveGames = ({ games }) => {
     };
     return levelRatio[game.level];
   }]);
-  const { gamesWithCurrentUser = [], gamesWithActiveUsers = [], gamesWithBots = [] } = _.groupBy(gamesSortByLevel, (game) => {
+  const { gamesWithCurrentUser = [], gamesWithActiveUsers = [], gamesWithBots = [] } = _.groupBy(gamesSortByLevel, game => {
     const isCurrentUserPlay = game.players.some(({ id }) => id === currentUser.id);
     if (isCurrentUserPlay) {
       return 'gamesWithCurrentUser';
