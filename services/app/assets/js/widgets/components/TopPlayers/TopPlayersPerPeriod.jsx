@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { useDispatch } from 'react-redux';
 import { Table } from 'react-bootstrap';
 import moment from 'moment';
-import axios from 'axios';
 import classnames from 'classnames';
 import UserInfo from '../../containers/UserInfo';
+import { actions } from '../../slices';
 
 const periodType = {
   MONTHLY: 'monthly',
@@ -23,6 +24,8 @@ const TopPlayersPerPeriod = () => {
   const anchorMonthRef = useRef(null);
 
   const anchorWeekRef = useRef(null);
+
+  const dispatch = useDispatch();
 
   const handlePeriodClick = ({ target: { textContent } }) => {
     const periodValue = textContent && textContent.trim();
@@ -67,11 +70,11 @@ const TopPlayersPerPeriod = () => {
 
     (async () => {
       try {
-        const {
-          data: { users },
-        } = await axios.get('/api/v1/users', { params });
+        const response = await dispatch(
+          actions.fetchUsers({ type: 'perPeriod', params }),
+        );
 
-        setRating(users);
+        setRating(response.payload.users);
       } catch (e) {
         throw new Error(e.message);
       }
