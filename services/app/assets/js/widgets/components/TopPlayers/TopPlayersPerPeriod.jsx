@@ -20,7 +20,9 @@ const TopPlayersPerPeriod = () => {
 
   const [period, setPeriod] = useState(periodType.MONTHLY);
 
-  const periodRef = useRef(null);
+  const anchorMonthRef = useRef(null);
+
+  const anchorWeekRef = useRef(null);
 
   const handlePeriodClick = ({ target: { textContent } }) => {
     const periodValue = textContent && textContent.trim();
@@ -36,6 +38,19 @@ const TopPlayersPerPeriod = () => {
 
       default:
         throw new Error(`Unknown period: ${periodValue}`);
+    }
+  };
+
+  const handlePeriodMouseEnter = element => {
+    if (!element.classList.contains('text-orange')) {
+      element.classList.add('text-orange');
+    }
+  };
+
+  const handlePeriodMouseLeave = element => {
+    if (element.textContent !== period) {
+      element.classList.remove('text-orange');
+      element.classList.add('text-black');
     }
   };
 
@@ -80,8 +95,10 @@ const TopPlayersPerPeriod = () => {
                   <u>
                     <a
                       href="#!"
-                      ref={periodRef}
+                      ref={anchorMonthRef}
                       onClick={handlePeriodClick}
+                      onMouseEnter={() => handlePeriodMouseEnter(anchorMonthRef.current)}
+                      onMouseLeave={() => handlePeriodMouseLeave(anchorMonthRef.current)}
                       className={classnames({
                         'text-orange': period === periodType.MONTHLY,
                         'text-black': period !== periodType.MONTHLY,
@@ -94,8 +111,10 @@ const TopPlayersPerPeriod = () => {
                   <u>
                     <a
                       href="#!"
-                      ref={periodRef}
+                      ref={anchorWeekRef}
                       onClick={handlePeriodClick}
+                      onMouseEnter={() => handlePeriodMouseEnter(anchorWeekRef.current)}
+                      onMouseLeave={() => handlePeriodMouseLeave(anchorWeekRef.current)}
                       className={classnames({
                         'text-orange': period === periodType.WEEKLY,
                         'text-black': period !== periodType.WEEKLY,
