@@ -8,6 +8,7 @@ import { connect } from 'react-redux';
 
 import { gameTypeSelector } from '../selectors/index';
 import languages from '../config/languages';
+import GameTypeCodes from '../config/gameTypeCodes';
 
 class Editor extends PureComponent {
   static propTypes = {
@@ -104,7 +105,7 @@ class Editor extends PureComponent {
     this.editor = editor;
     this.monaco = monaco;
     const { editable, checkResult, gameType } = this.props;
-    const isTournament = gameType === 'tournament';
+    const isTournament = gameType === GameTypeCodes.tournament;
 
     if (editable && !isTournament) {
       this.editor.focus();
