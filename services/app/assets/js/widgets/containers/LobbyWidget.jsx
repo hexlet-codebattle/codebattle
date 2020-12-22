@@ -219,7 +219,7 @@ const ActiveGames = ({ games }) => {
   if (_.isEmpty(filtetedGames)) {
     return <p className="text-center">There are no active games right now.</p>;
   }
-  const gamesSortByLevel = _.sortBy(filtetedGames, [(game) => {
+  const gamesSortByLevel = _.sortBy(filtetedGames, [game => {
     const levelRatio = {
       elementary: 0,
       easy: 1,
