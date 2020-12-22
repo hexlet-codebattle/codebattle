@@ -1,45 +1,60 @@
 import React, { useEffect, useState } from 'react';
-import qs from 'qs';
-import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { Table } from 'react-bootstrap';
 import UserInfo from '../../containers/UserInfo';
+import { actions } from '../../slices';
 
 const TopPlayersEver = () => {
   const [rating, setRating] = useState(null);
 
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    const queryParamsString = qs.stringify({
+    const params = {
       s: 'rating+desc',
       page_size: '5',
       with_bots: false,
-    });
+    };
 
-    axios
-      .get(`/api/v1/users?${queryParamsString}`)
-      .then(res => {
-        const { data: { users } } = res;
-        setRating(users);
-      });
+    (async () => {
+      try {
+        const response = await dispatch(
+          actions.fetchUsers({ type: 'ever', params }),
+        );
+
+        setRating(response.payload.users);
+      } catch (e) {
+        throw new Error(e.message);
+      }
+    })();
   }, []);
 
   return (
-    <table className="table table-striped table-borderless border border-dark m-0">
+    <Table striped borderless className="border border-dark m-0">
       <thead>
         <tr className="bg-gray">
           <th scope="col" className="text-uppercase p-1" colSpan="2">
-            <img alt="rating" src="/assets/images/topPlayers.svg" className="m-2" />
+            <img
+              alt="rating"
+              src="/assets/images/topPlayers.svg"
+              className="m-2"
+            />
             <span>Leaderboard</span>
           </th>
         </tr>
       </thead>
       <tbody>
-        {rating && rating.map(item => (
-          <tr key={item.name}>
-            <td className="pr-0"><UserInfo user={item} truncate /></td>
-            <td className="text-right pl-0">{item.rating}</td>
-          </tr>
-        ))}
+        {rating
+          && rating.map(item => (
+            <tr key={item.name}>
+              <td className="pr-0">
+                <UserInfo user={item} truncate />
+              </td>
+              <td className="text-right pl-0">{item.rating}</td>
+            </tr>
+          ))}
       </tbody>
-    </table>
+    </Table>
   );
 };
 
