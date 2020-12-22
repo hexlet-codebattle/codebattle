@@ -50,12 +50,17 @@ const TopPlayersPerPeriod = () => {
       with_bots: false,
     };
 
-    axios.get('/api/v1/users', { params }).then(res => {
-      const {
-        data: { users },
-      } = res;
-      setRating(users);
-    });
+    (async () => {
+      try {
+        const {
+          data: { users },
+        } = await axios.get('/api/v1/users', { params });
+
+        setRating(users);
+      } catch (e) {
+        throw new Error(e.message);
+      }
+    })();
   }, [period]);
 
   return (
