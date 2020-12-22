@@ -4,6 +4,9 @@ import PropTypes from 'prop-types';
 import MonacoEditor from 'react-monaco-editor';
 import { registerRulesForLanguage } from 'monaco-ace-tokenizer';
 import { initVimMode } from 'monaco-vim';
+import { connect } from 'react-redux';
+
+import { gameTypeSelector } from '../selectors/index';
 import languages from '../config/languages';
 
 class Editor extends PureComponent {
@@ -100,8 +103,16 @@ class Editor extends PureComponent {
   editorDidMount = (editor, monaco) => {
     this.editor = editor;
     this.monaco = monaco;
-    const { editable, checkResult } = this.props;
-    if (editable) {
+    const { editable, checkResult, gameType } = this.props;
+    const isTournament = gameType === 'tournament';
+
+    if (editable && !isTournament) {
+      this.editor.focus();
+    } else if (editable && isTournament) {
+      this.editor.addCommand(
+        monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_V,
+        () => null,
+      );
       this.editor.focus();
     } else {
       // disable copying for spectator
@@ -158,4 +169,11 @@ class Editor extends PureComponent {
   }
 }
 
-export default Editor;
+const mapStateToProps = state => {
+  const gameType = gameTypeSelector(state);
+  return {
+    gameType,
+  };
+};
+
+export default connect(mapStateToProps)(Editor);
