@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Table } from 'react-bootstrap';
-import qs from 'qs';
 import moment from 'moment';
 import axios from 'axios';
 import classnames from 'classnames';
@@ -41,7 +40,7 @@ const TopPlayersPerPeriod = () => {
   };
 
   useEffect(() => {
-    const queryParamsString = qs.stringify({
+    const params = {
       s: 'rating+desc',
       page_size: '5',
       date_from: moment()
@@ -49,9 +48,9 @@ const TopPlayersPerPeriod = () => {
         .utc()
         .format('YYYY-MM-DD'),
       with_bots: false,
-    });
+    };
 
-    axios.get(`/api/v1/users?${queryParamsString}`).then(res => {
+    axios.get('/api/v1/users', { params }).then(res => {
       const {
         data: { users },
       } = res;
