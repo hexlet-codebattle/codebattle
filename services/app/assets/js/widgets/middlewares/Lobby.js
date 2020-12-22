@@ -19,7 +19,7 @@ export const fetchState = () => (dispatch, getState) => {
   channel.on('game:upsert', data => {
     const { game: { players, id, state: gameStatus } } = data;
     const currentPlayerId = getState().user.currentUserId;
-    const isGameStarted = () => gameStatus === 'playing';
+    const isGameStarted = gameStatus === 'playing';
     const isCurrentUserInGame = _.some(players, ({ id: playerId }) => playerId === currentPlayerId);
 
     if (isGameStarted && isCurrentUserInGame) {
