@@ -88,7 +88,7 @@ defmodule Codebattle.User do
 
   def settings_changeset(model, params \\ %{}) do
     model
-    |> cast(params, [:name])
+    |> cast(params, [:name, :lang])
     |> cast_embed(:sound_settings)
     |> unique_constraint(:name)
     |> validate_length(:name, min: 3, max: 16)
