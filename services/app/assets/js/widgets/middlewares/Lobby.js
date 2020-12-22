@@ -1,5 +1,7 @@
 import { camelizeKeys } from 'humps';
 import Gon from 'gon';
+import _ from 'lodash';
+
 import socket from '../../socket';
 import { actions } from '../slices';
 
@@ -16,22 +18,11 @@ export const fetchState = () => (dispatch, getState) => {
 
   channel.on('game:upsert', data => {
     const { game: { players, id, state: gameStatus } } = data;
-    const isRedirecting = () => {
-      if (!gameStatus === 'playing') {
-        return false;
-      }
-      if (players.length < 2) {
-        return false;
-      }
-      const currentGamePlayersIds = players.map(player => player.id);
-      const currentPlayerId = getState().user.currentUserId;
-      if (!currentGamePlayersIds.includes(currentPlayerId)) {
-        return false;
-      }
-      return true;
-    };
-    const redirectToGame = isRedirecting();
-    if (redirectToGame) {
+    const currentPlayerId = getState().user.currentUserId;
+    const isGameStarted = () => gameStatus === 'playing';
+    const isCurrentUserInGame = _.some(players, ({ id: playerId }) => playerId === currentPlayerId);
+
+    if (isGameStarted && isCurrentUserInGame) {
       window.location.href = `/games/${id}`;
     } else {
       dispatch(actions.upsertGameLobby(camelizeKeys(data)));
