@@ -20,7 +20,8 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
     test "updates current user settings", %{conn: conn} do
       new_settings = %{
         "name" => "evgen",
-        "sound_settings" => %{"level" => 3, "type" => "silent"}
+        "sound_settings" => %{"level" => 3, "type" => "silent"},
+        "lang" => "ruby"
       }
 
       user = insert(:user)
@@ -37,6 +38,7 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
       assert updated.sound_settings.level == 3
       assert updated.sound_settings.type == "silent"
       assert updated.name == "evgen"
+      assert updated.lang == "ruby"
     end
 
     test "returns validation errors", %{conn: conn} do
