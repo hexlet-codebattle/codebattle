@@ -1,32 +1,29 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { Table } from 'react-bootstrap';
 import UserInfo from '../../containers/UserInfo';
 import { actions } from '../../slices';
+import { ratingSelector } from '../../slices/leaderboard';
+import leaderboardTypes from '../../config/leaderboardTypes';
 
 const TopPlayersEver = () => {
-  const [rating, setRating] = useState(null);
-
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    const params = {
-      s: 'rating+desc',
-      page_size: '5',
-      with_bots: false,
-    };
+  const rating = useSelector(ratingSelector);
 
+  useEffect(() => {
     (async () => {
       try {
-        const response = await dispatch(
-          actions.fetchUsers({ type: 'ever', params }),
+        await dispatch(
+          actions.fetchUsers({
+            leaderboardType: leaderboardTypes.EVER,
+          }),
         );
-
-        setRating(response.payload.users);
       } catch (e) {
         throw new Error(e.message);
       }
     })();
+    /* eslint-disable-next-line */
   }, []);
 
   return (

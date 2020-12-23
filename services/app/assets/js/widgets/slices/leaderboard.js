@@ -1,13 +1,43 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
+import moment from 'moment';
+import periodTypes from '../config/periodTypes';
+import leaderboardTypes from '../config/leaderboardTypes';
+
+const periodMapping = {
+  [periodTypes.MONTHLY]: 'month',
+  [periodTypes.WEEKLY]: 'week',
+};
+
+export const ratingSelector = state => state.leaderboard.perPeriod.users;
+
+export const periodSelector = state => state.leaderboard.perPeriod.period;
 
 const fetchUsers = createAsyncThunk(
   'users/fetchUsers',
-  async ({ type, params }, { getState, requestId }) => {
-    const { currentRequestId, loading } = getState().leaderboard[type];
+  async ({ leaderboardType, periodType }, { getState, requestId }) => {
+    const { currentRequestId, loading } = getState().leaderboard[
+      leaderboardType
+    ];
     if (loading !== 'pending' || requestId !== currentRequestId) {
       return;
     }
+
+    const baseParams = {
+      s: 'rating+desc',
+      page_size: '5',
+      with_bots: false,
+    };
+
+    const params = leaderboardType === leaderboardTypes.PER_PERIOD
+        ? {
+            ...baseParams,
+            date_from: moment()
+              .startOf(periodMapping[periodType])
+              .utc()
+              .format('YYYY-MM-DD'),
+          }
+        : baseParams;
 
     const response = await axios.get('/api/v1/users', { params });
 
@@ -21,56 +51,65 @@ const leaderboardSlice = createSlice({
   initialState: {
     perPeriod: {
       loading: 'idle',
-      error: null,
-      users: null,
       currentRequestId: undefined,
+      users: null,
+      period: periodTypes.MONTHLY,
+      error: null,
     },
     ever: {
       loading: 'idle',
-      error: null,
-      users: null,
       currentRequestId: undefined,
+      users: null,
+      error: null,
     },
   },
-  reducers: {},
+  reducers: {
+    changePeriod(state, action) {
+      state.perPeriod.period = action.payload;
+    },
+  },
   extraReducers: {
     [fetchUsers.pending]: (state, action) => {
-      const { type } = action.meta.arg;
+      const { leaderboardType } = action.meta.arg;
 
-      if (state[type].loading === 'idle') {
-        state[type].loading = 'pending';
-        state[type].currentRequestId = action.meta.requestId;
+      if (state[leaderboardType].loading === 'idle') {
+        state[leaderboardType].loading = 'pending';
+        state[leaderboardType].currentRequestId = action.meta.requestId;
       }
     },
     [fetchUsers.fulfilled]: (state, action) => {
       const { requestId } = action.meta;
 
-      const { type } = action.meta.arg;
+      const { leaderboardType } = action.meta.arg;
       if (
-        state[type].loading === 'pending'
-        && state[type].currentRequestId === requestId
+        state[leaderboardType].loading === 'pending'
+        && state[leaderboardType].currentRequestId === requestId
       ) {
-        state[type].loading = 'idle';
-        state[type].users = action.payload.users;
-        state[type].currentRequestId = undefined;
+        state[leaderboardType].loading = 'idle';
+        state[leaderboardType].users = action.payload.users;
+        state[leaderboardType].currentRequestId = undefined;
       }
     },
     [fetchUsers.rejected]: (state, action) => {
       const { requestId } = action.meta;
 
-      const { type } = action.meta.arg;
+      const { leaderboardType } = action.meta.arg;
       if (
-        state[type].loading === 'pending'
-        && state[type].currentRequestId === requestId
+        state[leaderboardType].loading === 'pending'
+        && state[leaderboardType].currentRequestId === requestId
       ) {
-        state[type].loading = 'idle';
-        state[type].error = action.error;
-        state[type].currentRequestId = undefined;
+        state[leaderboardType].loading = 'idle';
+        state[leaderboardType].error = action.error;
+        state[leaderboardType].currentRequestId = undefined;
       }
     },
   },
 });
 
-const { reducer } = leaderboardSlice;
-export const actions = { fetchUsers };
+const { actions, reducer } = leaderboardSlice;
+
+actions.fetchUsers = fetchUsers;
+
+export { actions };
+
 export default reducer;

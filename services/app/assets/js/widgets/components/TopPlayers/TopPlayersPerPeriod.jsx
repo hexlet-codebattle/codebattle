@@ -1,42 +1,34 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useEffect, useRef } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { Table } from 'react-bootstrap';
-import moment from 'moment';
 import classnames from 'classnames';
 import UserInfo from '../../containers/UserInfo';
 import { actions } from '../../slices';
-
-const periodType = {
-  MONTHLY: 'monthly',
-  WEEKLY: 'weekly',
-};
-
-const periodMapping = {
-  [periodType.MONTHLY]: 'month',
-  [periodType.WEEKLY]: 'week',
-};
+import { ratingSelector, periodSelector } from '../../slices/leaderboard';
+import periodTypes from '../../config/periodTypes';
+import leaderboardTypes from '../../config/leaderboardTypes';
 
 const TopPlayersPerPeriod = () => {
-  const [rating, setRating] = useState(null);
+  const dispatch = useDispatch();
 
-  const [period, setPeriod] = useState(periodType.MONTHLY);
+  const rating = useSelector(ratingSelector);
+
+  const period = useSelector(periodSelector);
 
   const anchorMonthRef = useRef(null);
 
   const anchorWeekRef = useRef(null);
 
-  const dispatch = useDispatch();
-
   const handlePeriodClick = ({ target: { textContent } }) => {
     const periodValue = textContent && textContent.trim();
 
     switch (periodValue) {
-      case periodType.MONTHLY:
-        setPeriod(periodType.MONTHLY);
+      case periodTypes.MONTHLY:
+        dispatch(actions.changePeriod(periodTypes.MONTHLY));
         break;
 
-      case periodType.WEEKLY:
-        setPeriod(periodType.WEEKLY);
+      case periodTypes.WEEKLY:
+        dispatch(actions.changePeriod(periodTypes.WEEKLY));
         break;
 
       default:
@@ -44,41 +36,20 @@ const TopPlayersPerPeriod = () => {
     }
   };
 
-  const handlePeriodMouseEnter = element => {
-    if (!element.classList.contains('text-orange')) {
-      element.classList.add('text-orange');
-    }
-  };
-
-  const handlePeriodMouseLeave = element => {
-    if (element.textContent !== period) {
-      element.classList.remove('text-orange');
-      element.classList.add('text-black');
-    }
-  };
-
   useEffect(() => {
-    const params = {
-      s: 'rating+desc',
-      page_size: '5',
-      date_from: moment()
-        .startOf(periodMapping[period])
-        .utc()
-        .format('YYYY-MM-DD'),
-      with_bots: false,
-    };
-
     (async () => {
       try {
-        const response = await dispatch(
-          actions.fetchUsers({ type: 'perPeriod', params }),
+        await dispatch(
+          actions.fetchUsers({
+            leaderboardType: leaderboardTypes.PER_PERIOD,
+            periodType: period,
+          }),
         );
-
-        setRating(response.payload.users);
       } catch (e) {
         throw new Error(e.message);
       }
     })();
+    /* eslint-disable-next-line */
   }, [period]);
 
   return (
@@ -100,14 +71,11 @@ const TopPlayersPerPeriod = () => {
                       href="#!"
                       ref={anchorMonthRef}
                       onClick={handlePeriodClick}
-                      onMouseEnter={() => handlePeriodMouseEnter(anchorMonthRef.current)}
-                      onMouseLeave={() => handlePeriodMouseLeave(anchorMonthRef.current)}
                       className={classnames({
-                        'text-orange': period === periodType.MONTHLY,
-                        'text-black': period !== periodType.MONTHLY,
+                        'text-orange': period === periodTypes.MONTHLY,
                       })}
                     >
-                      {periodType.MONTHLY}
+                      {periodTypes.MONTHLY}
                     </a>
                   </u>
                   /
@@ -116,14 +84,11 @@ const TopPlayersPerPeriod = () => {
                       href="#!"
                       ref={anchorWeekRef}
                       onClick={handlePeriodClick}
-                      onMouseEnter={() => handlePeriodMouseEnter(anchorWeekRef.current)}
-                      onMouseLeave={() => handlePeriodMouseLeave(anchorWeekRef.current)}
                       className={classnames({
-                        'text-orange': period === periodType.WEEKLY,
-                        'text-black': period !== periodType.WEEKLY,
+                        'text-orange': period === periodTypes.WEEKLY,
                       })}
                     >
-                      {periodType.WEEKLY}
+                      {periodTypes.WEEKLY}
                     </a>
                   </u>
                 </span>
