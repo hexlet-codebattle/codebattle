@@ -119,8 +119,18 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
 
   def handle_event("leave", _params, socket) do
     Tournament.Server.update_tournament(socket.assigns.tournament.id, :leave, %{
-      user: socket.assigns.current_user
+      user_id: socket.assigns.current_user.id
     })
+
+    {:noreply, socket}
+  end
+
+  def handle_event("kick", %{"user_id" => user_id}, socket) do
+    if is_creator?(socket.assigns.tournament, socket.assigns.current_user.id) do
+      Tournament.Server.update_tournament(socket.assigns.tournament.id, :leave, %{
+        user_id: String.to_integer(user_id)
+      })
+    end
 
     {:noreply, socket}
   end
@@ -212,6 +222,10 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
 
   defp is_current_topic?(topic, tournament) do
     topic == topic_name(tournament)
+  end
+
+  defp is_creator?(tournament, user_id) do
+    tournament.creator_id == user_id
   end
 
   defp get_chat_messages(id) do

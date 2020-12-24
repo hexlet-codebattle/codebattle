@@ -22,4 +22,4 @@
             - else
               button.btn.btn-outline-info[phx-click="join" phx-value-team_id=team_id] Join
 
-        = render "_players.html", players: get_team_players(@tournament, team_id)
+        = render "_players.html", players: get_team_players(@tournament, team_id), tournament: @tournament, current_user: @current_user

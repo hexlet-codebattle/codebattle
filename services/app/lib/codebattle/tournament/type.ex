@@ -16,10 +16,10 @@ defmodule Codebattle.Tournament.Type do
       @behaviour Tournament.Type
       import Tournament.Helpers
 
-      def leave(tournament, %{user: user}) do
+      def leave(tournament, %{user_id: user_id}) do
         new_players =
           tournament.data.players
-          |> Enum.filter(fn x -> x.id != user.id end)
+          |> Enum.filter(fn x -> x.id != user_id end)
 
         tournament
         |> Tournament.changeset(%{

@@ -21,6 +21,7 @@ import CompletedGames from '../components/Game/CompletedGames';
 import CreateGameDialog from '../components/Game/CreateGameDialog';
 import TopPlayersEver from '../components/TopPlayers/TopPlayersEver';
 import TopPlayersPerPeriod from '../components/TopPlayers/TopPlayersPerPeriod';
+import levelRatio from '../config/levelRatio';
 
 const Players = ({ players }) => {
   if (players.length === 1) {
@@ -219,6 +220,18 @@ const ActiveGames = ({ games }) => {
   if (_.isEmpty(filtetedGames)) {
     return <p className="text-center">There are no active games right now.</p>;
   }
+  const gamesSortByLevel = _.sortBy(filtetedGames, [game => levelRatio[game.level]]);
+  const { gamesWithCurrentUser = [], gamesWithActiveUsers = [], gamesWithBots = [] } = _.groupBy(gamesSortByLevel, game => {
+    const isCurrentUserPlay = game.players.some(({ id }) => id === currentUser.id);
+    if (isCurrentUserPlay) {
+      return 'gamesWithCurrentUser';
+    }
+    if (!game.isBot) {
+      return 'gamesWithActiveUsers';
+    }
+    return 'gamesWithBots';
+  });
+  const sortedGames = [...gamesWithCurrentUser, ...gamesWithActiveUsers, ...gamesWithBots];
   return (
     <div className="table-responsive">
       <table className="table table-striped border-gray border-top-0 mb-0">
@@ -233,7 +246,7 @@ const ActiveGames = ({ games }) => {
           </tr>
         </thead>
         <tbody>
-          {filtetedGames.map(game => (
+          {sortedGames.map(game => (
             <tr key={game.id} className="text-dark game-item">
               <td className="p-3 align-middle text-nowrap">
                 <GameLevelBadge level={game.level} />
