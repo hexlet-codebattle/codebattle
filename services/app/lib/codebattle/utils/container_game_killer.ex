@@ -14,7 +14,7 @@ defmodule Codebattle.Utils.ContainerGameKiller do
 
   def handle_info(:check_game_containers, state) do
     list_containers()
-    |> Enum.map(fn game ->
+    |> Enum.each(fn game ->
       [game_id, uptime] = String.split(game, ":::", trim: true)
       {:ok, converted_time} = NaiveDateTime.from_iso8601(uptime)
       time_diff = NaiveDateTime.diff(NaiveDateTime.utc_now(), converted_time)
