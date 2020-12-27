@@ -15,7 +15,7 @@
     background-size: contain;
     @media (max-width: $lg) {
       top: 50%;
-      left: 50%;
+      left: 45%;
       transform: rotate(90deg);
     }
   }
@@ -32,7 +32,7 @@
     transform: rotate(180deg);
     @media (max-width: $lg) {
       top: -40%;
-      left: 50%;
+      left: 45%;
       transform: rotate(90deg);
     }
   }
@@ -46,6 +46,7 @@
 .player1,
 .player2 {
   display: flex;
+  max-width: 30%;
   flex-direction: column;
   color: #fff;
   align-items: center;
@@ -53,14 +54,17 @@
 
 .player1__name,
 .player2__name {
+  display: inline-block;
   color: #fff;
   text-transform: uppercase;
+  word-wrap: break-word;
   font-weight: bold;
   font-size: 36px;
   margin: 0;
   margin-bottom: 15px;
   @media (max-width: $sm) {
     font-size: 20px;
+    width: 120px;
   }
 }
 

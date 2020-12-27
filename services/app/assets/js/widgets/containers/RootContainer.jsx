@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect, useSelector } from 'react-redux';
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -165,15 +165,25 @@ const RootContainer = ({
     { filter: () => true },
   );
 
+  const [isPreviewTimerExpired, setPreviewTimerExpired] = useState(false);
+
+  useEffect(() => {
+    const time = 3000;
+    const timer = setTimeout(() => setPreviewTimerExpired(true), time);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, []);
+
   const players = Gon.getAsset('players');
 
-  if (!storeLoaded && players) {
-    // const defaultPlayer = {
-    //   name: 'John Doe', github_id: 35539033, lang: 'js', rating: '0',
-    // };
-    // const player1 = players[0] || defaultPlayer;
-    // const player2 = players[1] || defaultPlayer;
-    // return <GamePreview player1={player1} player2={player2} />;
+  if (!isPreviewTimerExpired || (!storeLoaded && players)) {
+    const defaultPlayer = {
+      name: 'John Doe', github_id: 35539033, lang: 'js', rating: '0',
+    };
+    const player1 = players[0] || defaultPlayer;
+    const player2 = players[1] || defaultPlayer;
+    return <GamePreview player1={player1} player2={player2} />;
   }
 
   if (gameStatusCode === GameStatusCodes.waitingOpponent) {
@@ -182,25 +192,17 @@ const RootContainer = ({
   }
 
   const isStoredGame = gameStatusCode === GameStatusCodes.stored;
-  const defaultPlayer = {
-    name: 'John Doe', github_id: 35539033, lang: 'js', rating: '0',
-  };
-  const player1 = players[0] || defaultPlayer;
-  const player2 = players[1] || defaultPlayer;
 
   return (
     <div className="x-outline-none">
-      {/* <GameWidgetGuide />
+      <GameWidgetGuide />
       <div className="container-fluid">
         <div className="row no-gutter cb-game">
           <InfoWidget />
           <GameWidget />
         </div>
       </div>
-      {isStoredGame && <CodebattlePlayer />} */}
-
-      <GamePreview player1={player1} player2={player2} />
-
+      {isStoredGame && <CodebattlePlayer />}
     </div>
   );
 };
