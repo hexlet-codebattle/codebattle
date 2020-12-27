@@ -398,12 +398,9 @@ const LobbyWidget = () => {
             <TopPlayersEver />
           </div>
           <div className="mt-2">
-            <a
-              href="https://codebattle.hexlet.io/users"
-              className="btn btn-sm btn-outline-orange"
-            >
-              More
-            </a>
+            <u>
+              <a href="https://codebattle.hexlet.io/users">More</a>
+            </u>
           </div>
         </div>
       </div>
