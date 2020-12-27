@@ -13,19 +13,18 @@ defmodule Codebattle.Utils.ContainerGameKiller do
   end
 
   def handle_info(:check_game_containers, state) do
-    containers =
-      list_containers()
-      |> Enum.map(fn game ->
-        [game_id, uptime] = String.split(game, ":::", trim: true)
-        {:ok, converted_time} = NaiveDateTime.from_iso8601(uptime)
-        time_diff = NaiveDateTime.diff(NaiveDateTime.utc_now(), converted_time)
+    list_containers()
+    |> Enum.each(fn game ->
+      [game_id, uptime] = String.split(game, ":::", trim: true)
+      {:ok, converted_time} = NaiveDateTime.from_iso8601(uptime)
+      time_diff = NaiveDateTime.diff(NaiveDateTime.utc_now(), converted_time)
 
-        if time_diff > @game_timeout do
-          kill_game_container(game_id)
-        end
+      if time_diff > @game_timeout do
+        kill_game_container(game_id)
+      end
 
-        [game_id, uptime]
-      end)
+      [game_id, uptime]
+    end)
 
     Process.send_after(self(), :check_game_containers, 10_000)
     {:noreply, state}

@@ -19,7 +19,7 @@
               button.btn.btn-outline-danger[phx-click="leave"] Leave
             - else
               button.btn.btn-outline-secondary[phx-click="join"] Join
-        = render "_players.html", players: players
+        = render "_players.html", players: players, tournament: @tournament, current_user: @current_user
 
     .col-9.bg-white.shadow-sm.py-4
       .d-flex.justify-content-around

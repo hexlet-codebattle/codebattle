@@ -12,252 +12,252 @@ msgstr ""
 
 #: lib/codebattle_web/templates/page/index.html.slim:1
 msgid "Welcome to %{name}!"
-msgstr ""
+msgstr "Welcome to %{name}!"
 
 #: lib/codebattle_web/templates/page/index.html.slim:1
 msgid "%{name}: game for programmers."
-msgstr ""
+msgstr "%{name}: game for programmers."
 
 #: lib/codebattle_web/templates/page/index.html.slim:6
 #: lib/codebattle_web/templates/game/index.html.slim:11
 msgid "Create game"
-msgstr ""
+msgstr "Create game"
 
 #: lib/codebattle_web/templates/user/index.html.slim:1
 msgid "List of games"
-msgstr ""
+msgstr "List of games"
 
 #: lib/codebattle_web/templates/page/index.html.slim:16
 msgid "Lobby chat"
-msgstr ""
+msgstr "Lobby chat"
 
 #: lib/codebattle_web/templates/page/index.html.slim:18
 msgid "Type a message..."
-msgstr ""
+msgstr "Type a message..."
 
 #: lib/codebattle_web/templates/page/index.html.slim:25
 msgid "Online users"
-msgstr ""
+msgstr "Online users"
 
 #: lib/codebattle_web/templates/layout/app.html.slim:26
 msgid "Logout"
-msgstr ""
+msgstr "Logout"
 
 #: lib/codebattle_web/templates/layout/app.html.slim:13
 msgid "Sign in with %{name}"
-msgstr ""
+msgstr "Sign in with %{name}"
 
 #: lib/codebattle_web/templates/game/index.html.slim:1
 msgid "Listing games"
-msgstr ""
+msgstr "Listing games"
 
 #: lib/codebattle_web/templates/user/index.html.slim:1
 msgid "Total: "
-msgstr ""
+msgstr "Total: "
 
 #: lib/codebattle_web/templates/game/index.html.slim:2
 msgid "Users rating: "
-msgstr ""
+msgstr "Users rating: "
 
 #: lib/codebattle_web/templates/game/index.html.slim:17
 msgid "id: %{id}, state: %{state}, players: %{players}  "
-msgstr ""
+msgstr "id: %{id}, state: %{state}, players: %{players}  "
 
 #: lib/codebattle_web/templates/game/index.html.slim:19
 msgid "Join"
-msgstr ""
+msgstr "Join"
 
 #: lib/codebattle_web/templates/game/index.html.slim:21
 msgid "Show"
-msgstr ""
+msgstr "Show"
 
 #: lib/codebattle_web/templates/game/index.html.slim:25
 msgid "Main page"
-msgstr ""
+msgstr "Main page"
 
 #: lib/codebattle_web/templates/game/show.html.slim:1
 msgid "Game: %{id}"
-msgstr ""
+msgstr "Game: %{id}"
 
 #: lib/codebattle_web/templates/game/show.html.slim:2
 msgid "State: %{state}"
-msgstr ""
+msgstr "State: %{state}"
 
 #: lib/codebattle_web/templates/game/show.html.slim:4
 msgid "The winner is: %{name}"
-msgstr ""
+msgstr "The winner is: %{name}"
 
 #: lib/codebattle_web/templates/game/show.html.slim:5
 msgid "Players"
-msgstr ""
+msgstr "Players"
 
 #: lib/codebattle_web/templates/game/show.html.slim:13
 msgid "Check result"
-msgstr ""
+msgstr "Check result"
 
 #: lib/codebattle_web/templates/game/show.html.slim:15
 msgid "Waiting for an opponent"
-msgstr ""
+msgstr "Waiting for an opponent"
 
 #: lib/codebattle_web/templates/game/show.html.slim:21
 msgid "Back to the list of games"
-msgstr ""
+msgstr "Back to the list of games"
 
 #: lib/codebattle_web/templates/game/show.html.slim:31
 msgid "Game chat"
-msgstr ""
+msgstr "Game chat"
 
 #: lib/codebattle_web/templates/user/index.html.slim:12
 msgid "%{index}) name: %{name}, rating: %{rating}"
-msgstr ""
+msgstr "%{index}) name: %{name}, rating: %{rating}"
 
 #: lib/codebattle_web/controllers/session_controller.ex:6
 msgid "You have been logged out!"
-msgstr ""
+msgstr "You have been logged out!"
 
 #: lib/codebattle_web/controllers/auth_controller.ex:15
 msgid "Failed to authenticate."
-msgstr ""
+msgstr "Failed to authenticate."
 
 #: lib/codebattle_web/controllers/auth_controller.ex:30
 msgid "Successfully authenticated"
-msgstr ""
+msgstr "Successfully authenticated"
 
 #: lib/codebattle_web/controllers/game_controller.ex:41
 msgid "Game not found"
-msgstr ""
+msgstr "Game not found"
 
 #: lib/codebattle_web/controllers/game_controller.ex:27
 msgid "Game has been created"
-msgstr ""
+msgstr "Game has been created"
 
 #: lib/codebattle_web/controllers/game_controller.ex:53
 msgid "Yay, you won the game!"
-msgstr ""
+msgstr "Yay, you won the game!"
 
 #: lib/codebattle_web/channels/game_channel.ex:116
 msgid "You lost the game"
-msgstr ""
+msgstr "You lost the game"
 
 #: lib/codebattle_web/views/error_view.ex:8
 msgid "Page not found"
-msgstr ""
+msgstr "Page not found"
 
 #: lib/codebattle_web/views/error_view.ex:13
 msgid "Internal server error"
-msgstr ""
+msgstr "Internal server error"
 
 #: lib/codebattle_web/plugs/require_auth.ex:12
 msgid "You must be logged in to access that page"
-msgstr ""
+msgstr "You must be logged in to access that page"
 
 #: assets/js/socket.js:49
 msgid "joined to"
-msgstr ""
+msgstr "joined to"
 
 #: assets/js/socket.js:49
 msgid "left"
-msgstr ""
+msgstr "left"
 
 #: assets/js/socket.js:52
 msgid "channel"
-msgstr ""
+msgstr "channel"
 
 #, elixir-format
 #: lib/codebattle_web/templates/game/game_over.html.slim:1
 msgid "Game over"
-msgstr ""
+msgstr "Game over"
 
 #, elixir-format
 #: lib/codebattle_web/templates/game/game_result.html.slim:1
 msgid "Game status"
-msgstr ""
+msgstr "Game status"
 
 #, elixir-format
 #: lib/codebattle_web/templates/game/join.html.slim:1
 msgid "Join the game"
-msgstr ""
+msgstr "Join the game"
 
 #, elixir-format
 #: lib/codebattle_web/templates/layout/app.html.slim:13
 msgid "Sign Out"
-msgstr ""
+msgstr "Sign Out"
 
 msgid "Sign up"
-msgstr ""
+msgstr "Sign up"
 
 #, elixir-format
 #: lib/codebattle_web/controllers/auth_controller.ex:23
 #: lib/codebattle_web/controllers/dev_login_controller.ex:15
 msgid "Successfully authenticated."
-msgstr ""
+msgstr "Successfully authenticated."
 
 #, elixir-format
 #: lib/codebattle_web/templates/layout/app.html.slim:13
 msgid "Users rating"
-msgstr ""
+msgstr "Users rating"
 
 #, elixir-format
 #: lib/codebattle_web/controllers/game_controller.ex:28
 msgid "You are in a different game"
-msgstr ""
+msgstr "You are in a different game"
 
 #, elixir-format
 #: lib/codebattle_web/channels/game_channel.ex:57
 msgid "gave up!"
-msgstr ""
+msgstr "gave up!"
 
 #, elixir-format
 #: lib/codebattle_web/channels/game_channel.ex:162
 msgid "won the game!"
-msgstr ""
+msgstr "won the game!"
 
 #, elixir-format
 #: lib/codebattle_web/templates/layout/app.html.slim:13
 msgid "Hexlet"
-msgstr ""
+msgstr "Hexlet"
 
 #, elixir-format
 #: lib/codebattle_web/templates/layout/app.html.slim:13
 msgid "My Profile"
-msgstr ""
+msgstr "My Profile"
 
 #, elixir-format
 #: lib/codebattle_web/templates/layout/app.html.slim:13
 msgid "Settings"
-msgstr ""
+msgstr "Settings"
 
 #, elixir-format
 #: lib/codebattle_web/templates/layout/app.html.slim:13
 msgid "Slack#codebattle"
-msgstr ""
+msgstr "Slack#codebattle"
 
 #, elixir-format
 #: lib/codebattle_web/templates/layout/app.html.slim:13
 msgid "SourceCode"
-msgstr ""
+msgstr "SourceCode"
 
 # JSX
 msgid "Task: "
-msgstr ""
+msgstr "Task: "
 
 msgid "Found a mistake? Have something to add? Pull Requests are welcome: "
-msgstr ""
+msgstr "Found a mistake? Have something to add? Pull Requests are welcome: "
 
 msgid "Run your code!"
-msgstr ""
+msgstr "Run your code!"
 
 msgid "You have some syntax errors"
-msgstr ""
+msgstr "You have some syntax errors: %{errors}"
 
 msgid "Tests failed"
-msgstr ""
+msgstr "Tests failed"
 
 msgid "You passed %{successCount} from %{assertsCount} asserts. (%{percent}%)"
-msgstr ""
+msgstr "You passed %{successCount} from %{assertsCount} asserts. (%{percent}%)"
 
 msgid "Yay! All tests passed!!111"
-msgstr ""
+msgstr "Yay! All tests passed!!111"
 
 msgid "Success Test Message"
 msgstr "Yay! All tests passed!"
@@ -278,43 +278,43 @@ msgid "Press Check solution or Give up"
 msgstr "Press 'Check solution' or 'Give up'"
 
 msgid "Give up"
-msgstr ""
+msgstr "Give up"
 
 msgid "Сheck"
-msgstr ""
+msgstr "Check"
 
 msgid "Сheck status:"
-msgstr ""
+msgstr "Check status:"
 
 msgid "execution time: %{time} ms"
-msgstr ""
+msgstr "execution time: %{time} ms"
 
 msgid "Receive:"
-msgstr ""
+msgstr "Receive:"
 
 msgid "Expected:"
-msgstr ""
+msgstr "Expected:"
 
 msgid "Arguments:"
-msgstr ""
+msgstr "Arguments:"
 
 msgid "Oops"
-msgstr ""
+msgstr "Oops"
 
 msgid "Sort by:"
-msgstr ""
+msgstr "Sort by:"
 
 msgid "Rank"
-msgstr ""
+msgstr "Rank"
 
 msgid "Rating"
-msgstr ""
+msgstr "Rating"
 
 msgid "Games played"
-msgstr ""
+msgstr "Games played"
 
 msgid "Joined"
-msgstr ""
+msgstr "Joined"
 
 msgid "Codebattle Intro"
 msgstr "Read a simple task and solve it faster than your opponent in live time. Play with bots, friends and other players. Also you can fight in great tournaments."
@@ -323,10 +323,10 @@ msgid "Codebattle Intro Title"
 msgstr "Welcome to Codebattle. Show your skill!"
 
 msgid "Start simple battle"
-msgstr ""
+msgstr "Start simple battle"
 
 msgid "Start battle"
-msgstr ""
+msgstr "Start battle"
 
 msgid "Lobby Main Intro"
 msgstr "Press \"Start battle\" and fight with other players or join to created game in list down below."
@@ -338,24 +338,24 @@ msgid "Game With Bots Title"
 msgstr "Start game with bot"
 
 msgid "Try again"
-msgstr ""
+msgstr "Try again"
 
 msgid "Back to Home"
-msgstr ""
+msgstr "Back to Home"
 
 msgid "%{name} (bot)"
-msgstr ""
+msgstr "%{name} (bot)"
 
 msgid "%{name} (you)"
-msgstr ""
+msgstr "%{name} (you)"
 
 msgid "Fight"
-msgstr ""
+msgstr "Fight"
 
 #, elixir-format
 #: lib/codebattle_web/support/notifications.ex:13
 msgid "Oh no, the time is out! Both players lost ;("
-msgstr ""
+msgstr "Oh no, the time is out! Both players lost ;("
 
 msgid "Timeout - no timeout"
 msgstr "No timeout"
