@@ -2,8 +2,8 @@ import React from 'react';
 import LanguageIcon from '../LanguageIcon';
 
 const GamePreview = ({ player1, player2 }) => (
-  <div className="preview">
-    <div className="preview__container">
+  <div className="preview container-fluid">
+    <div className="preview__container w-100 d-flex justify-content-around align-items-center">
       <div className="player1">
         <img src={`https://avatars0.githubusercontent.com/u/${player1.github_id}`} alt="avatar" className="player1__avatar" />
         <p className="player1__name">{player1.name}</p>
@@ -15,6 +15,10 @@ const GamePreview = ({ player1, player2 }) => (
         </div>
       </div>
 
+      <div className="preview__middle">
+        <img src="/assets/images/fight.svg" alt="fight" className="preview__fight" />
+      </div>
+
       <div className="player2">
         <img src={`https://avatars0.githubusercontent.com/u/${player2.github_id}`} alt="avatar" className="player2__avatar" />
         <p className="player2__name">{player2.name}</p>
@@ -24,10 +28,6 @@ const GamePreview = ({ player1, player2 }) => (
           <img className="preview__icon" src="/assets/images/rating.svg" alt="rating" />
           <span className="preview__info">{player2.rating}</span>
         </div>
-      </div>
-
-      <div className="preview__middle">
-        <img src="/assets/images/fight.svg" alt="fight" className="preview__fight" />
       </div>
     </div>
   </div>

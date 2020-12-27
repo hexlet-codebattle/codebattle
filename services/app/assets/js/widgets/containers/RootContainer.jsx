@@ -168,12 +168,12 @@ const RootContainer = ({
   const players = Gon.getAsset('players');
 
   if (!storeLoaded && players) {
-    const defaultPlayer = {
-      name: 'John Doe', github_id: 35539033, lang: 'js', rating: '0',
-    };
-    const player1 = players[0] || defaultPlayer;
-    const player2 = players[1] || defaultPlayer;
-    return <GamePreview player1={player1} player2={player2} />;
+    // const defaultPlayer = {
+    //   name: 'John Doe', github_id: 35539033, lang: 'js', rating: '0',
+    // };
+    // const player1 = players[0] || defaultPlayer;
+    // const player2 = players[1] || defaultPlayer;
+    // return <GamePreview player1={player1} player2={player2} />;
   }
 
   if (gameStatusCode === GameStatusCodes.waitingOpponent) {
@@ -182,17 +182,25 @@ const RootContainer = ({
   }
 
   const isStoredGame = gameStatusCode === GameStatusCodes.stored;
+  const defaultPlayer = {
+    name: 'John Doe', github_id: 35539033, lang: 'js', rating: '0',
+  };
+  const player1 = players[0] || defaultPlayer;
+  const player2 = players[1] || defaultPlayer;
 
   return (
     <div className="x-outline-none">
-      <GameWidgetGuide />
+      {/* <GameWidgetGuide />
       <div className="container-fluid">
         <div className="row no-gutter cb-game">
           <InfoWidget />
           <GameWidget />
         </div>
       </div>
-      {isStoredGame && <CodebattlePlayer />}
+      {isStoredGame && <CodebattlePlayer />} */}
+
+      <GamePreview player1={player1} player2={player2} />
+
     </div>
   );
 };
