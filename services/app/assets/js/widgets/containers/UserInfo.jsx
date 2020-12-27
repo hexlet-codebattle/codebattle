@@ -1,48 +1,75 @@
-// @ts-check
-// import { useSelector, useDispatch } from 'react-redux';
-import React from 'react';
-// import { OverlayTrigger, Popover } from 'react-bootstrap';
-// import cn from 'classnames';
+import { camelizeKeys } from 'humps';
+import { useDispatch } from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { Popover, OverlayTrigger } from 'react-bootstrap';
+
+import { actions } from '../slices';
 import UserName from '../components/User/UserName';
-// import UserStats from '../components/User/UserStats';
-// import { getUsersStats } from '../selectors';
-// import { loadUserStats } from '../middlewares/Users';
 
-// const UserInfo = ({ user }) => {
-//   const usersStats = useSelector(state => getUsersStats(state));
-//   const userStats = usersStats[user.id];
-//   const dispatch = useDispatch();
-//   const popoverID = `popover-userInfo-${user.id}`;
+const UserStats = ({ user, data }) => (
+  <div className="popover">
+    <div className="popover-info">
+      <div className="popover-info-top">
+        <span>{user.name}</span>
+      </div>
+      <div className="popover-info-body">
+        <span>
+          Rank:
+          {data.rank}
+        </span>
+        <span>
+          Rating:
+          {data.user.rating}
+        </span>
+        <span>
+          Games:
+          {data.completedGames.length}
+        </span>
+        <span>
+          Won:
+          {data.stats.won}
+        </span>
+        <span>
+          Lost:
+          {data.stats.lost}
+        </span>
+        <span>
+          GaveUp:
+          {data.stats.gaveUp}
+        </span>
+      </div>
+    </div>
+  </div>
+);
 
-//   const statsPopover = ({ show, ...rest }) => (
-//     <Popover className={cn({ 'd-none': !userStats })} id={popoverID} {...rest}>
-//       <Popover.Title as="h3">{user.name}</Popover.Title>
-//       {userStats && (
-//         <Popover.Content>
-//           <UserStats data={userStats} />
-//         </Popover.Content>
-//       )}
-//     </Popover>
-//   );
+const CustomOverlay = ({ user, overLayProps }) => {
+  const [stats, setStats] = useState(null);
+  const dispatch = useDispatch();
 
-//   const onEnter = () => !userStats && dispatch(loadUserStats)(user);
+  useEffect(() => {
+    const userId = user.id;
+    axios
+      .get(`/api/v1/user/${userId}/stats`)
+      .then(response => {
+        setStats(camelizeKeys(response.data));
+      })
+      .catch(error => {
+        dispatch(actions.setError(error));
+      });
+  }, [dispatch, setStats, user.id]);
 
-//   return (
-//     <OverlayTrigger
-//       trigger={['hover', 'focus']}
-//       placement="left"
-//       overlay={statsPopover}
-//       onEnter={onEnter}
-//     >
-//       <span>
-//         <UserName user={user} />
-//       </span>
-//     </OverlayTrigger>
-//   );
-// }
+  return (
+    <Popover {...overLayProps} id="popover-user">
+      {!stats ? '' : <UserStats user={user} data={stats} />}
+    </Popover>
+  );
+};
 
 const UserInfo = ({ user, truncate = false }) => (
-  <UserName user={user} truncate={truncate} />
+  <OverlayTrigger placement="bottom" delay={1000} overlay={props => <CustomOverlay user={user} overLayProps={props} />}>
+    <div><UserName user={user} truncate={truncate} /></div>
+  </OverlayTrigger>
 );
 
 export default UserInfo;
