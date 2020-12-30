@@ -401,11 +401,11 @@ defmodule Codebattle.Languages do
       "php" => %{
         name: "php",
         slug: "php",
-        version: "7.4.7",
+        version: "8.0.0",
         base_image: :ubuntu,
         check_dir: "check",
         extension: "php",
-        docker_image: "codebattle/php:7.4.7",
+        docker_image: "codebattle/php:8.0.0",
         solution_version: :typed,
         solution_template:
           "<?php\n\nfunction solution(<%= arguments %>)\n{<%= return_statement %>\n}",
