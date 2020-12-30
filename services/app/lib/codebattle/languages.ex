@@ -39,11 +39,11 @@ defmodule Codebattle.Languages do
       "ruby" => %{
         name: "ruby",
         slug: "ruby",
-        version: "2.7.1",
+        version: "3.0.0",
         base_image: :ubuntu,
         check_dir: "check",
         extension: "rb",
-        docker_image: "codebattle/ruby:2.7.1",
+        docker_image: "codebattle/ruby:3.0.0",
         solution_version: :default,
         solution_template: "def solution(<%= arguments %>)\n<%= return_statement %>\nend",
         arguments_template: %{
