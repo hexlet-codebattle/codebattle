@@ -130,7 +130,7 @@ const UserSettings = () => {
             </Field>
           </div>
 
-          <button type="submit" className="btn btn-primary ml-2" disabled={Formik.isSubmitting}>Save</button>
+          <button type="submit" className="btn btn-primary ml-2">Save</button>
         </Form>
       </Formik>
     </div>
