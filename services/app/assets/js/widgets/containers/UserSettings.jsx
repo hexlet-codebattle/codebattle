@@ -100,7 +100,6 @@ const UserSettings = () => {
             .max(16, 'Should be 16 character(s) or less'),
         })}
         onSubmit={sendForm}
-        onChange={Formik.handleChange}
       >
         <Form className="">
           <TextInput
