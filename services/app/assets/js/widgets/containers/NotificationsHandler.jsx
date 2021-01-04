@@ -10,6 +10,7 @@ import {
   gameStatusSelector,
   gamePlayersSelector,
   currentUserIdSelector,
+  executionOutputSelector,
 } from '../selectors';
 import Toast from '../components/Toast';
 import CloseButton from '../components/Toast/CloseButton';
@@ -23,8 +24,8 @@ const toastOptions = {
   closeButton: <CloseButton />,
 };
 
-const showCheckingStatusMessage = solutionStatus => {
-  if (solutionStatus) {
+const showCheckingStatusMessage = executionOutputStatus => {
+  if (executionOutputStatus === 'ok') {
     toast(
       <Toast header="Success">
         <Alert variant="success">{i18n.t('Success Test Message')}</Alert>
@@ -52,16 +53,17 @@ const NotificationsHandler = () => {
   };
 
   const prevCheckingResult = usePrevious();
-  const { solutionStatus, checking } = useSelector(gameStatusSelector);
+  const { checking } = useSelector(gameStatusSelector);
   const players = useSelector(gamePlayersSelector);
   const isCurrentUserPlayer = _.hasIn(players, currentUserId);
   const checkingResult = checking[currentUserId];
+  const { status } = useSelector(executionOutputSelector(currentUserId));
 
   useEffect(() => {
     if (isCurrentUserPlayer && prevCheckingResult && !checkingResult) {
-      showCheckingStatusMessage(solutionStatus);
+      showCheckingStatusMessage(status);
     }
-  }, [checkingResult, isCurrentUserPlayer, prevCheckingResult, solutionStatus]);
+  }, [checkingResult, isCurrentUserPlayer, prevCheckingResult, status]);
 
   return <ToastContainer {...toastOptions} />;
 };
