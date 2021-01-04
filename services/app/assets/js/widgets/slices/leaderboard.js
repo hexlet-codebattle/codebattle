@@ -9,9 +9,7 @@ const periodMapping = {
   [periodTypes.WEEKLY]: 'week',
 };
 
-export const ratingSelector = state => state.leaderboard.perPeriod.users;
-
-export const periodSelector = state => state.leaderboard.perPeriod.period;
+export const leaderboardSelector = state => state.leaderboard;
 
 const fetchUsers = createAsyncThunk(
   'users/fetchUsers',

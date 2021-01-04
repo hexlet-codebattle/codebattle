@@ -4,16 +4,16 @@ import { Table } from 'react-bootstrap';
 import classnames from 'classnames';
 import UserInfo from '../../containers/UserInfo';
 import { actions } from '../../slices';
-import { ratingSelector, periodSelector } from '../../slices/leaderboard';
+import { leaderboardSelector } from '../../slices/leaderboard';
 import periodTypes from '../../config/periodTypes';
 import leaderboardTypes from '../../config/leaderboardTypes';
 
 const TopPlayersPerPeriod = () => {
   const dispatch = useDispatch();
 
-  const rating = useSelector(ratingSelector);
-
-  const period = useSelector(periodSelector);
+  const {
+    perPeriod: { users: rating, period },
+  } = useSelector(leaderboardSelector);
 
   const anchorMonthRef = useRef(null);
 
