@@ -1,44 +1,55 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { Table } from 'react-bootstrap';
-import qs from 'qs';
-import moment from 'moment';
-import axios from 'axios';
+import classnames from 'classnames';
 import UserInfo from '../../containers/UserInfo';
-
-const periodType = {
-  MONTHLY: 'monthly',
-  WEEKLY: 'weekly',
-};
-
-const periodMapping = {
-  [periodType.MONTHLY]: 'month',
-  [periodType.WEEKLY]: 'week',
-};
+import { actions } from '../../slices';
+import { ratingSelector, periodSelector } from '../../slices/leaderboard';
+import periodTypes from '../../config/periodTypes';
+import leaderboardTypes from '../../config/leaderboardTypes';
 
 const TopPlayersPerPeriod = () => {
-  const [rating, setRating] = useState(null);
+  const dispatch = useDispatch();
 
-  const [period, setPeriod] = useState(periodType.MONTHLY);
+  const rating = useSelector(ratingSelector);
 
-  const periodRef = useRef(null);
+  const period = useSelector(periodSelector);
+
+  const anchorMonthRef = useRef(null);
+
+  const anchorWeekRef = useRef(null);
+
+  const handlePeriodClick = ({ target: { textContent } }) => {
+    const periodValue = textContent && textContent.trim();
+
+    switch (periodValue) {
+      case periodTypes.MONTHLY:
+        dispatch(actions.changePeriod(periodTypes.MONTHLY));
+        break;
+
+      case periodTypes.WEEKLY:
+        dispatch(actions.changePeriod(periodTypes.WEEKLY));
+        break;
+
+      default:
+        throw new Error(`Unknown period: ${periodValue}`);
+    }
+  };
 
   useEffect(() => {
-    const queryParamsString = qs.stringify({
-      s: 'rating+desc',
-      page_size: '5',
-      date_from: moment()
-        .startOf(periodMapping[period])
-        .utc()
-        .format('YYYY-MM-DD'),
-      with_bots: false,
-    });
-
-    axios.get(`/api/v1/users?${queryParamsString}`).then(res => {
-      const {
-        data: { users },
-      } = res;
-      setRating(users);
-    });
+    (async () => {
+      try {
+        await dispatch(
+          actions.fetchUsers({
+            leaderboardType: leaderboardTypes.PER_PERIOD,
+            periodType: period,
+          }),
+        );
+      } catch (e) {
+        throw new Error(e.message);
+      }
+    })();
+    /* eslint-disable-next-line */
   }, [period]);
 
   return (
@@ -46,41 +57,43 @@ const TopPlayersPerPeriod = () => {
       <thead>
         <tr className="bg-gray">
           <th scope="col" className="text-uppercase p-1" colSpan="2">
-            <img
-              alt="rating"
-              src="/assets/images/topPlayers.svg"
-              className="m-2"
-            />
-            Leaderboard
-            {' '}
-            <u>
-              <a
-                href="#!"
-                ref={periodRef}
-                onClick={e => {
-                  e.preventDefault();
-
-                  const {
-                    target: { textContent: periodValue },
-                  } = e;
-
-                  switch (periodValue.trim()) {
-                    case periodType.MONTHLY:
-                      setPeriod(periodType.WEEKLY);
-                      break;
-
-                    case periodType.WEEKLY:
-                      setPeriod(periodType.MONTHLY);
-                      break;
-
-                    default:
-                      throw new Error(`Unknown period: ${periodValue.trim()}`);
-                  }
-                }}
-              >
-                {period}
-              </a>
-            </u>
+            <div className="d-flex align-items-center flex-nowrap">
+              <img
+                alt="rating"
+                src="/assets/images/topPlayers.svg"
+                className="m-2"
+              />
+              <p className="d-inline-flex align-items-baseline flex-nowrap m-0 p-0">
+                <span className="d-flex">Leaderboard&thinsp;</span>
+                <span className="small d-flex">
+                  <u>
+                    <a
+                      href="#!"
+                      ref={anchorMonthRef}
+                      onClick={handlePeriodClick}
+                      className={classnames({
+                        'text-orange': period === periodTypes.MONTHLY,
+                      })}
+                    >
+                      {periodTypes.MONTHLY}
+                    </a>
+                  </u>
+                  /
+                  <u>
+                    <a
+                      href="#!"
+                      ref={anchorWeekRef}
+                      onClick={handlePeriodClick}
+                      className={classnames({
+                        'text-orange': period === periodTypes.WEEKLY,
+                      })}
+                    >
+                      {periodTypes.WEEKLY}
+                    </a>
+                  </u>
+                </span>
+              </p>
+            </div>
           </th>
         </tr>
       </thead>

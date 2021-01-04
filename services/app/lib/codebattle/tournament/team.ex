@@ -10,7 +10,9 @@ defmodule Codebattle.Tournament.Team do
   def join(tournament, %{user: user, team_id: team_id}) do
     if is_waiting_partisipants?(tournament) do
       user_params =
-        user |> Map.put(:team_id, team_id) |> Map.put(:lang, tournament.default_language)
+        user
+        |> Map.put(:team_id, team_id)
+        |> Map.put(:lang, user.lang || tournament.default_language)
 
       new_players =
         tournament.data.players

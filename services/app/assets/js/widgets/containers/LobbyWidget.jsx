@@ -21,6 +21,8 @@ import CompletedGames from '../components/Game/CompletedGames';
 import CreateGameDialog from '../components/Game/CreateGameDialog';
 import TopPlayersEver from '../components/TopPlayers/TopPlayersEver';
 import TopPlayersPerPeriod from '../components/TopPlayers/TopPlayersPerPeriod';
+import GameLevelBadge from '../components/GameLevelBadge';
+import levelRatio from '../config/levelRatio';
 
 const Players = ({ players }) => {
   if (players.length === 1) {
@@ -47,17 +49,6 @@ const Players = ({ players }) => {
     </>
   );
 };
-
-const GameLevelBadge = ({ level }) => (
-  <div
-    className="text-center"
-    data-toggle="tooltip"
-    data-placement="right"
-    title={level}
-  >
-    <img alt={level} src={`/assets/images/levels/${level}.svg`} />
-  </div>
-);
 
 const isPlayer = (user, game) => !_.isEmpty(_.find(game.players, { id: user.id }));
 
@@ -219,6 +210,18 @@ const ActiveGames = ({ games }) => {
   if (_.isEmpty(filtetedGames)) {
     return <p className="text-center">There are no active games right now.</p>;
   }
+  const gamesSortByLevel = _.sortBy(filtetedGames, [game => levelRatio[game.level]]);
+  const { gamesWithCurrentUser = [], gamesWithActiveUsers = [], gamesWithBots = [] } = _.groupBy(gamesSortByLevel, game => {
+    const isCurrentUserPlay = game.players.some(({ id }) => id === currentUser.id);
+    if (isCurrentUserPlay) {
+      return 'gamesWithCurrentUser';
+    }
+    if (!game.isBot) {
+      return 'gamesWithActiveUsers';
+    }
+    return 'gamesWithBots';
+  });
+  const sortedGames = [...gamesWithCurrentUser, ...gamesWithActiveUsers, ...gamesWithBots];
   return (
     <div className="table-responsive">
       <table className="table table-striped border-gray border-top-0 mb-0">
@@ -233,7 +236,7 @@ const ActiveGames = ({ games }) => {
           </tr>
         </thead>
         <tbody>
-          {filtetedGames.map(game => (
+          {sortedGames.map(game => (
             <tr key={game.id} className="text-dark game-item">
               <td className="p-3 align-middle text-nowrap">
                 <GameLevelBadge level={game.level} />
@@ -395,12 +398,9 @@ const LobbyWidget = () => {
             <TopPlayersEver />
           </div>
           <div className="mt-2">
-            <a
-              href="https://codebattle.hexlet.io/users"
-              className="btn btn-sm btn-outline-orange"
-            >
-              More
-            </a>
+            <u>
+              <a href="https://codebattle.hexlet.io/users">More</a>
+            </u>
           </div>
         </div>
       </div>

@@ -93,13 +93,5 @@ defmodule CodebattleWeb.Live.Tournament.TeamTest do
     assert tournament.state == "active"
     assert Helpers.players_count(tournament) == 4
     assert Enum.count(tournament.data.matches) == 2
-
-    render_click(view1, :cancel)
-
-    tournament = Codebattle.Tournament.Context.get!(tournament.id)
-    assert Codebattle.Tournament.Context.get_live_tournaments() == []
-    assert tournament.state == "canceled"
-    assert Helpers.players_count(tournament) == 4
-    assert Enum.count(tournament.data.matches) == 2
   end
 end

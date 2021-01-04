@@ -14,6 +14,7 @@ defmodule Codebattle.Bot.PlayerServer do
   @timeout_start_playbook Application.compile_env(:codebattle, Codebattle.Bot)[
                             :timeout_start_playbook
                           ]
+  @prep_time Application.compile_env(:codebattle, Codebattle.Bot)[:prep_time]
 
   def start_link(%{game_id: game_id, bot_id: bot_id} = params) do
     GenStateMachine.start(__MODULE__, params, name: server_name(game_id, bot_id))
@@ -78,6 +79,7 @@ defmodule Codebattle.Bot.PlayerServer do
 
         Process.send_after(self(), :send_hello_message, 100)
         Process.send_after(self(), :init_playbook, @timeout_start_playbook)
+        Process.send_after(self(), :prep_time_is_over, @prep_time)
 
         {:keep_state, new_state}
 
@@ -118,6 +120,10 @@ defmodule Codebattle.Bot.PlayerServer do
   end
 
   def ready_to_play(:info, %Message{event: "editor:data"}, state) do
+    {:next_state, :playing, state}
+  end
+
+  def ready_to_play(:info, :prep_time_is_over, state) do
     {:next_state, :playing, state}
   end
 

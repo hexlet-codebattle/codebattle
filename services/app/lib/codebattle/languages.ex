@@ -39,11 +39,11 @@ defmodule Codebattle.Languages do
       "ruby" => %{
         name: "ruby",
         slug: "ruby",
-        version: "2.7.1",
+        version: "3.0.0",
         base_image: :ubuntu,
         check_dir: "check",
         extension: "rb",
-        docker_image: "codebattle/ruby:2.7.1",
+        docker_image: "codebattle/ruby:3.0.0",
         solution_version: :default,
         solution_template: "def solution(<%= arguments %>)\n<%= return_statement %>\nend",
         arguments_template: %{
@@ -335,11 +335,11 @@ defmodule Codebattle.Languages do
       "elixir" => %{
         name: "elixir",
         slug: "elixir",
-        version: "1.7.3",
-        base_image: :alpine,
+        version: "1.11.2",
+        base_image: :ubuntu,
         check_dir: "check",
         extension: "exs",
-        docker_image: "codebattle/elixir:1.7.3",
+        docker_image: "codebattle/elixir:1.11.2",
         solution_version: :default,
         solution_template:
           "defmodule Solution do\n\tdef solution(<%= arguments %>) do\n<%= return_statement %>\n\tend\nend",
@@ -401,11 +401,11 @@ defmodule Codebattle.Languages do
       "php" => %{
         name: "php",
         slug: "php",
-        version: "7.4.7",
+        version: "8.0.0",
         base_image: :ubuntu,
         check_dir: "check",
         extension: "php",
-        docker_image: "codebattle/php:7.4.7",
+        docker_image: "codebattle/php:8.0.0",
         solution_version: :typed,
         solution_template:
           "<?php\n\nfunction solution(<%= arguments %>)\n{<%= return_statement %>\n}",
@@ -444,11 +444,11 @@ defmodule Codebattle.Languages do
       "clojure" => %{
         name: "clojure",
         slug: "clojure",
-        version: "1.10.0",
+        version: "1.10.1",
         base_image: :ubuntu,
         check_dir: "check",
         extension: "clj",
-        docker_image: "codebattle/clojure:1.10.0",
+        docker_image: "codebattle/clojure:1.10.1",
         solution_version: :default,
         solution_template: "(defn solution [<%= arguments %>] <%= return_statement %>)",
         arguments_template: %{
