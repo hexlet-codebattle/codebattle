@@ -1,16 +1,65 @@
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
 import _ from 'lodash';
 import { connect } from 'react-redux';
+import cn from 'classnames';
 import * as selectors from '../selectors';
 import Editor from './Editor';
 import EditorToolbar from './EditorsToolbars/EditorToolbar';
 import GameActionButtons from '../components/GameActionButtons';
 import * as GameActions from '../middlewares/Game';
-import ExecutionOutput from '../components/ExecutionOutput/ExecutionOutput';
 import NotificationsHandler from './NotificationsHandler';
 import editorModes from '../config/editorModes';
 import GameStatusCodes from '../config/gameStatusCodes';
+import OutputTab from '../components/ExecutionOutput/OutputTab';
+import Output from '../components/ExecutionOutput/Output';
 
+const RightSide = ({ output, children }) => {
+  const [showTab, setShowTab] = useState('editor');
+  return (
+    <div className="h-100 d-flex flex-column">
+      <div className="flex-grow-1" id="editor">
+        <div className="h-100">
+          {showTab === 'editor' ? children
+           : (
+             <div className="overflow-auto">
+               <Output sideOutput={output} />
+             </div>
+)}
+        </div>
+      </div>
+      <nav>
+        <div className="nav nav-tabs bg-gray" id="nav-tab" role="tablist">
+          <a
+            className={cn(
+                'nav-item nav-link text-uppercase rounded-0 text-black font-weight-bold px-5',
+                { active: showTab === 'editor' },
+              )}
+            href="#Editor"
+            onClick={e => {
+              e.preventDefault();
+              setShowTab('editor');
+            }}
+          >
+            Editor
+          </a>
+          <a
+            className={cn(
+              'nav-item nav-link flex-grow-1 text-uppercase rounded-0 text-black text-center font-weight-bold p-2 block',
+                          { active: showTab === 'output' },
+                        )}
+            href="#Output"
+            onClick={e => {
+              e.preventDefault();
+              setShowTab('output');
+            }}
+          >
+            <OutputTab sideOutput={output} side="right" />
+          </a>
+        </div>
+      </nav>
+    </div>
+);
+};
 class GameWidget extends Component {
   static defaultProps = {
     leftEditor: {},
@@ -55,7 +104,6 @@ class GameWidget extends Component {
   getRightEditorParams = () => {
     const { rightEditor, rightEditorHeight } = this.props;
     const editorState = rightEditor;
-
     return {
       onChange: _.noop,
       editable: false,
@@ -81,7 +129,7 @@ class GameWidget extends Component {
 
   render() {
     const {
- isStoredGame, leftEditor, rightEditor, leftOutput, rightOutput,
+ isStoredGame, leftEditor, rightEditor, rightOutput,
 } = this.props;
     if (leftEditor === null || rightEditor === null) {
       // FIXME: render loader
@@ -101,21 +149,19 @@ class GameWidget extends Component {
             <Editor {...this.getLeftEditorParams()} />
             {/* TODO: move state to parent component */}
             {!isStoredGame && this.renderGameActionButtons(leftEditor, false)}
-            <ExecutionOutput output={leftOutput} id="1" />
           </div>
         </div>
         <div className="col-12 col-md-6 p-1">
-          <div className="card overflow-hidden">
+          <div className="card overflow-hidden h-100">
             <EditorToolbar
               {...this.getToolbarParams(rightEditor)}
               toolbarClassNames="btn-toolbar justify-content-between align-items-center m-1 flex-row-reverse"
               editorSettingClassNames="btn-group align-items-center m-1 flex-row-reverse justify-content-end"
               userInfoClassNames="btn-group align-items-center justify-content-end m-1 flex-row-reverse"
             />
-            <Editor {...this.getRightEditorParams()} />
-            {/* TODO: move state to parent component */}
-            {!isStoredGame && this.renderGameActionButtons(rightEditor, true)}
-            <ExecutionOutput output={rightOutput} id="2" />
+            <RightSide output={rightOutput}>
+              <Editor {...this.getRightEditorParams()} />
+            </RightSide>
           </div>
         </div>
         <NotificationsHandler />
@@ -137,7 +183,6 @@ const mapStateToProps = state => {
     rightEditor,
     leftEditorHeight: selectors.editorHeightSelector(leftUserId)(state),
     rightEditorHeight: selectors.editorHeightSelector(rightUserId)(state),
-    leftOutput: selectors.leftExecutionOutputSelector(state),
     rightOutput: selectors.rightExecutionOutputSelector(state),
     leftEditorsMode: selectors.editorsModeSelector(leftUserId)(state),
     theme: selectors.editorsThemeSelector(leftUserId)(state),

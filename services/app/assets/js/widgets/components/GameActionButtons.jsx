@@ -11,18 +11,16 @@ import { checkGameResult, sendGiveUp } from '../middlewares/Game';
 const renderCheckResultButton = (checkResult, gameStatus, disabled, editorUser) => (
   <button
     type="button"
-    className="btn btn-success btn-sm ml-auto"
+    className="btn btn-success ml-auto"
     data-guide-id="CheckResultButton"
     onClick={checkResult}
     disabled={gameStatus.checking[editorUser] || disabled}
   >
-
     {
       (gameStatus.checking[editorUser])
         ? <FontAwesomeIcon icon="spinner" pulse />
         : <FontAwesomeIcon icon="play-circle" />
     }
-
     {` ${i18n.t('Check')}`}
     <small> (ctrl+enter)</small>
   </button>
@@ -31,7 +29,7 @@ const renderCheckResultButton = (checkResult, gameStatus, disabled, editorUser) 
 const renderGiveUpButton = (modalShow, canGiveUp, disabled) => (
   <button
     type="button"
-    className="btn btn-outline-danger btn-sm"
+    className="btn btn-outline-danger"
     onClick={modalShow}
     disabled={!canGiveUp ? true : disabled}
   >
@@ -79,7 +77,7 @@ const GameActionButtons = ({ disabled, editorUser }) => {
   );
 
   return (
-    <div className="btn-toolbar py-3 px-3" role="toolbar">
+    <div className="d-flex" role="toolbar">
       {renderGiveUpButton(modalShow, canGiveUp, realDisabled)}
       {renderCheckResultButton(
         checkResult,
