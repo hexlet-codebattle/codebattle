@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import axios from 'axios';
@@ -38,7 +37,7 @@ const UserSettings = () => {
       .then(response => {
         setCurrentUserSettings({
           name: response.data.name,
-          soundLevel: defaultSoundLevel,
+          soundLevel: defaultSoundLevel, // response.data.soundLevel
           soundType: '', // response.data.soundType
           language: '', // response.data.language
           _csrf_token: csrfToken,
@@ -86,7 +85,9 @@ const UserSettings = () => {
 
   if (!currentUserSettings) {
     return <Loading />;
-  } return (
+  }
+
+  return (
     <div className="container bg-white shadow-sm py-4">
       <div className="text-center">
         <h2 className="font-weight-normal">Settings</h2>
@@ -110,22 +111,22 @@ const UserSettings = () => {
           />
 
           <div className="form-group ml-2 mb-3">
-            <label className="h6">Sound level</label>
-            <Field as="select" name="soundLevel" className="form-control">
+            <p className="h6">Sound level</p>
+            <Field as="select" aria-label="Sound level select" name="soundLevel" className="form-control">
               {renderOptions(soundLevels)}
             </Field>
           </div>
 
           <div className="form-group ml-2 mb-3">
-            <label className="h6">Sound type</label>
-            <Field as="select" name="soundType" className="form-control">
+            <p className="h6">Sound type</p>
+            <Field as="select" aria-label="Sound type select" name="soundType" className="form-control">
               {renderOptions(soundTypes)}
             </Field>
           </div>
 
           <div className="form-group ml-2 mb-3">
-            <label htmlFor="" className="h6">Your weapon</label>
-            <Field as="select" name="language" className="form-control" id="languageSelect">
+            <p className="h6">Your weapon</p>
+            <Field as="select" aria-label="Programming language select" name="language" className="form-control">
               {renderOptions(playingLanguages)}
             </Field>
           </div>
