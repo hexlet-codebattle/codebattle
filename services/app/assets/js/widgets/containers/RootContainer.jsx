@@ -165,6 +165,12 @@ const RootContainer = ({
     { filter: () => true },
   );
 
+
+  if (gameStatusCode === GameStatusCodes.waitingOpponent) {
+    const gameUrl = window.location.href;
+    return <WaitingOpponentInfo gameUrl={gameUrl} />;
+  }
+
   const players = Gon.getAsset('players');
 
   if (!storeLoaded && players) {
@@ -174,11 +180,6 @@ const RootContainer = ({
     const player1 = players[0] || defaultPlayer;
     const player2 = players[1] || defaultPlayer;
     return <GamePreview player1={player1} player2={player2} />;
-  }
-
-  if (gameStatusCode === GameStatusCodes.waitingOpponent) {
-    const gameUrl = window.location.href;
-    return <WaitingOpponentInfo gameUrl={gameUrl} />;
   }
 
   const isStoredGame = gameStatusCode === GameStatusCodes.stored;
