@@ -117,5 +117,6 @@
     "webpack-dev-server": "^3.11.0",
     "webpack-merge": "^5.4.0"
   },
-  "version": "0.0.0"
+  "version": "0.0.0",
+  "proxy": "http://localhost:8080"
 }

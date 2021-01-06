@@ -3,13 +3,15 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Table } from 'react-bootstrap';
 import UserInfo from '../../containers/UserInfo';
 import { actions } from '../../slices';
-import { ratingSelector } from '../../slices/leaderboard';
+import { leaderboardSelector } from '../../slices/leaderboard';
 import leaderboardTypes from '../../config/leaderboardTypes';
 
 const TopPlayersEver = () => {
   const dispatch = useDispatch();
 
-  const rating = useSelector(ratingSelector);
+  const {
+    ever: { users: rating },
+  } = useSelector(leaderboardSelector);
 
   useEffect(() => {
     (async () => {
