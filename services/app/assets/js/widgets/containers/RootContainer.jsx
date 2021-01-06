@@ -5,6 +5,7 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import Gon from 'gon';
 import ReactJoyride, { STATUS } from 'react-joyride';
 import _ from 'lodash';
+import { useMachine } from '@xstate/react';
 import GameWidget from './GameWidget';
 import InfoWidget from './InfoWidget';
 import userTypes from '../config/userTypes';
@@ -19,6 +20,7 @@ import {
 import WaitingOpponentInfo from '../components/WaitingOpponentInfo';
 import CodebattlePlayer from './CodebattlePlayer';
 import GamePreview from '../components/Game/GamePreview';
+import gameMachine from '../machines/game';
 
 const steps = [
   {
@@ -148,6 +150,8 @@ const RootContainer = ({
   init,
   setCurrentUser,
 }) => {
+  // const [current, send, service] = useMachine(gameMachine);
+
   useEffect(() => {
     const user = Gon.getAsset('current_user');
     // FIXME: maybe take from gon?

@@ -26,6 +26,9 @@
     "@fortawesome/fontawesome-svg-core": "^1.2.32",
     "@fortawesome/react-fontawesome": "^0.1.13",
     "@reduxjs/toolkit": "^1.5.0",
+    "@xstate/inspect": "^0.4.1",
+    "@xstate/react": "^1.2.2",
+    "@xstate/test": "^0.4.1",
     "axios": "^0.21.1",
     "bootstrap": "^4.5.3",
     "classnames": "^2.2.6",
@@ -71,6 +74,7 @@
     "rollbar": "^2.19.4",
     "rollbar-redux-middleware": "^0.2.0",
     "set-value": "^3.0.2",
+    "xstate": "^4.15.3",
     "yup": "^0.29.3"
   },
   "devDependencies": {
