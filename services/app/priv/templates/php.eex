@@ -1,5 +1,10 @@
 <?php
 
+error_reporting(E_ERROR | E_PARSE);
+ini_set('assert.exception', '0');
+ini_set('assert.warning', '0');
+ini_set('assert.active', '1');
+
 register_shutdown_function(function() {
   $stdout = STDERR;
   $last_error = error_get_last();
@@ -48,10 +53,6 @@ function assert_result($result, $expected, $args, $execution_time, &$final_resul
 }
 
 include './check/solution.php';
-
-assert_options(ASSERT_ACTIVE, 1);
-assert_options(ASSERT_WARNING, 0);
-assert_options(ASSERT_QUIET_EVAL, 1);
 
 
 <%= for %{arguments: arguments, expected: expected} <- checks do %>

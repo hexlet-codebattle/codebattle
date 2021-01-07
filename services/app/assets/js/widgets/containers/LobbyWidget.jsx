@@ -21,6 +21,7 @@ import CompletedGames from '../components/Game/CompletedGames';
 import CreateGameDialog from '../components/Game/CreateGameDialog';
 import TopPlayersEver from '../components/TopPlayers/TopPlayersEver';
 import TopPlayersPerPeriod from '../components/TopPlayers/TopPlayersPerPeriod';
+import GameLevelBadge from '../components/GameLevelBadge';
 import levelRatio from '../config/levelRatio';
 
 const Players = ({ players }) => {
@@ -48,17 +49,6 @@ const Players = ({ players }) => {
     </>
   );
 };
-
-const GameLevelBadge = ({ level }) => (
-  <div
-    className="text-center"
-    data-toggle="tooltip"
-    data-placement="right"
-    title={level}
-  >
-    <img alt={level} src={`/assets/images/levels/${level}.svg`} />
-  </div>
-);
 
 const isPlayer = (user, game) => !_.isEmpty(_.find(game.players, { id: user.id }));
 
@@ -408,12 +398,9 @@ const LobbyWidget = () => {
             <TopPlayersEver />
           </div>
           <div className="mt-2">
-            <a
-              href="https://codebattle.hexlet.io/users"
-              className="btn btn-sm btn-outline-orange"
-            >
-              More
-            </a>
+            <u>
+              <a href="https://codebattle.hexlet.io/users">More</a>
+            </u>
           </div>
         </div>
       </div>

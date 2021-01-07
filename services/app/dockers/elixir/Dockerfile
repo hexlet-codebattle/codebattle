@@ -1,6 +1,6 @@
-FROM elixir:1.7.3-alpine
+FROM elixir:1.11.2-slim
 
-RUN apk add --update make
+RUN apt-get update && apt-get install --no-install-recommends -y make
 
 WORKDIR /usr/src/app
 

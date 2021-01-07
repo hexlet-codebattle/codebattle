@@ -372,8 +372,29 @@ msgstr "5 minutes"
 msgid "Timeout 600 seconds"
 msgstr "10 minutes"
 
+msgid "Timeout 900 seconds"
+msgstr "15 minutes"
+
+msgid "Timeout 1800 seconds"
+msgstr "30 minutes"
+
 msgid "Timeout 1200 seconds"
 msgstr "20 minutes"
 
 msgid "Timeout 3600 seconds"
 msgstr "1 hour"
+
+msgid "private game"
+msgstr "With friend"
+
+msgid "public game"
+msgstr "With human"
+
+msgid "bot game"
+msgstr "With bot"
+
+msgid "Time control"
+msgstr "Time control"
+
+msgid "Level"
+msgstr "Level"

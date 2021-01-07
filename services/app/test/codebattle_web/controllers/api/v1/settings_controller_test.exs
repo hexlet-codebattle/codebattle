@@ -5,14 +5,25 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
 
   describe "#show" do
     test "shows current user settings", %{conn: conn} do
-      user = insert(:user, %{name: "first", email: "test1@test.test", github_id: 1, rating: 2400})
+      user =
+        insert(:user, %{
+          name: "first",
+          email: "test1@test.test",
+          github_id: 1,
+          rating: 2400,
+          lang: "dart"
+        })
 
       conn =
         conn
         |> put_session(:user_id, user.id)
         |> get(Routes.api_v1_settings_path(conn, :show))
 
-      assert json_response(conn, 200) == %{"name" => user.name}
+      assert json_response(conn, 200) == %{
+               "name" => "first",
+               "lang" => "dart",
+               "sound_settings" => %{"level" => 7, "type" => "silent"}
+             }
     end
   end
 
