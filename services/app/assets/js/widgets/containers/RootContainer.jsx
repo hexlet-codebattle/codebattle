@@ -165,7 +165,6 @@ const RootContainer = ({
     { filter: () => true },
   );
 
-
   if (gameStatusCode === GameStatusCodes.waitingOpponent) {
     const gameUrl = window.location.href;
     return <WaitingOpponentInfo gameUrl={gameUrl} />;
