@@ -8,36 +8,57 @@ import { actions } from '../slices';
 import UserName from '../components/User/UserName';
 
 const UserStats = ({ user, data }) => (
-  <div className="popover">
-    <div className="popover-info">
-      <div className="popover-info-top">
+  <div className="container-fluid p-2">
+    <div className="row">
+      <div className="col-12 d-flex flex-row align-items-center">
+        <img
+          className="img-fluid"
+          style={{
+            maxHeight: '15px',
+            width: '15px',
+          }}
+          src={`https://avatars0.githubusercontent.com/u/${data.user.githubId}`}
+          alt={data.user.name}
+        />
         <span>{user.name}</span>
       </div>
-      <div className="popover-info-body">
-        <span>
-          Rank:
+      <div className="col-12 d-flex flex-wrap justify-content-between">
+        <div>
+          <span>
+            Rank:
+          </span>
           {data.rank}
-        </span>
-        <span>
-          Rating:
+        </div>
+        <div className="ml-1">
+          <span>
+            Rating:
+          </span>
           {data.user.rating}
-        </span>
-        <span>
-          Games:
+        </div>
+        <div className="ml-1">
+          <span>
+            Games:
+          </span>
           {data.completedGames.length}
-        </span>
-        <span>
-          Won:
+        </div>
+        <div>
+          <span>
+            Won:
+          </span>
           {data.stats.won}
-        </span>
-        <span>
-          Lost:
+        </div>
+        <div className="ml-1">
+          <span>
+            Lost:
+          </span>
           {data.stats.lost}
-        </span>
-        <span>
-          GaveUp:
+        </div>
+        <div className="ml-1">
+          <span>
+            GaveUp:
+          </span>
           {data.stats.gaveUp}
-        </span>
+        </div>
       </div>
     </div>
   </div>
