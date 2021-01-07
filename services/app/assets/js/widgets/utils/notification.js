@@ -3,10 +3,10 @@ import Gon from 'gon';
 const currentUser = Gon.getAsset('current_user');
 const getSoundLevel = user => {
   const defaultSoundLevel = 5;
-  const currentUserSoundLevel = user.sound_settings.level;
-  if (!currentUserSoundLevel) {
+  if (!currentUser) {
     return defaultSoundLevel;
   }
+  const currentUserSoundLevel = user.sound_settings.level;
   return currentUserSoundLevel / 10;
 };
 
