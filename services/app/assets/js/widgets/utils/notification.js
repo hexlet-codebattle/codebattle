@@ -1,3 +1,15 @@
+import Gon from 'gon';
+
+const currentUser = Gon.getAsset('current_user');
+const getSoundLevel = user => {
+  const defaultSoundLevel = 5;
+  const currentUserSoundLevel = user.sound_settings.level;
+  if (!currentUserSoundLevel) {
+    return defaultSoundLevel;
+  }
+  return currentUserSoundLevel / 10;
+};
+
 const audioObj = new Audio('/assets/audio/audio_player_joined.wav');
 
 const settings = {
@@ -37,10 +49,11 @@ const initialize = () => {
 
 const notification = () => {
   initialize();
+  const userSoundLevel = getSoundLevel(currentUser);
 
   return {
     getVolume: () => audioObj.volume,
-    setVolume: (value = 0.5) => {
+    setVolume: (value = userSoundLevel) => {
       audioObj.volume = value;
     },
     testSound: () => {
