@@ -124,6 +124,7 @@ defmodule Codebattle.Bot.PlayerServer do
   end
 
   def ready_to_play(:info, :prep_time_is_over, state) do
+    ChatClient.say_time_is_up(state)
     {:next_state, :playing, state}
   end
 

@@ -46,6 +46,13 @@ defmodule Codebattle.Bot.ChatClient do
     })
   end
 
+  def say_time_is_up(%{chat_channel: chat_channel}) do
+    PhoenixClient.Channel.push_async(chat_channel, "chat:new_msg", %{
+      "message" => time_is_up_message(),
+      "user" => "test_bot"
+    })
+  end
+
   def send_congrats(%{game_type: game_type, chat_channel: chat_channel}) do
     PhoenixClient.Channel.push_async(chat_channel, "chat:new_msg", %{
       "message" => some_congrats(game_type),
@@ -58,6 +65,15 @@ defmodule Codebattle.Bot.ChatClient do
       "message" => some_advice(),
       "user" => "test_bot"
     })
+  end
+
+  defp time_is_up_message() do
+    [
+      "Sorry, can't wait much longer. I'll start now.",
+      "I'm done with waiting",
+      "Come on, time is running out",
+    ]
+    |> Enum.random()
   end
 
   defp some_excuse() do
