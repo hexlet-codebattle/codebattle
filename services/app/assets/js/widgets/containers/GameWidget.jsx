@@ -7,7 +7,7 @@ import Editor from './Editor';
 import EditorToolbar from './EditorsToolbars/EditorToolbar';
 import GameActionButtons from '../components/GameActionButtons';
 import * as GameActions from '../middlewares/Game';
-import NotificationsHandler from './NotificationsHandler';
+import OutputClicker from './OutputClicker';
 import editorModes from '../config/editorModes';
 import GameStatusCodes from '../config/gameStatusCodes';
 import OutputTab from '../components/ExecutionOutput/OutputTab';
@@ -15,23 +15,24 @@ import Output from '../components/ExecutionOutput/Output';
 
 const RightSide = ({ output, children }) => {
   const [showTab, setShowTab] = useState('editor');
+  const over = showTab === 'editor' ? '' : 'overflow-auto';
   return (
-    <div className="h-100 d-flex flex-column">
-      <div className="flex-grow-1" id="editor">
-        <div className="h-100">
-          {showTab === 'editor' ? children
-           : (
-             <div className="overflow-auto">
-               <Output sideOutput={output} />
-             </div>
+    <>
+      <div className={`flex-grow-1 ${over}`} id="editor">
+
+        {showTab === 'editor' ? <div className="h-100">{children}</div>
+        : (
+          <div className="h-auto">
+            <Output sideOutput={output} />
+          </div>
 )}
-        </div>
+
       </div>
       <nav>
-        <div className="nav nav-tabs bg-gray" id="nav-tab" role="tablist">
+        <div className="nav nav-tabs bg-gray text-uppercase text-center font-weight-bold" id="nav-tab" role="tablist">
           <a
             className={cn(
-                'nav-item nav-link text-uppercase rounded-0 text-black font-weight-bold px-5',
+                'nav-item nav-link flex-grow-1 text-black rounded-0 px-5',
                 { active: showTab === 'editor' },
               )}
             href="#Editor"
@@ -44,7 +45,7 @@ const RightSide = ({ output, children }) => {
           </a>
           <a
             className={cn(
-              'nav-item nav-link flex-grow-1 text-uppercase rounded-0 text-black text-center font-weight-bold p-2 block',
+              'nav-item nav-link flex-grow-1 text-black rounded-0 p-2 block',
                           { active: showTab === 'output' },
                         )}
             href="#Output"
@@ -57,7 +58,7 @@ const RightSide = ({ output, children }) => {
           </a>
         </div>
       </nav>
-    </div>
+    </>
 );
 };
 class GameWidget extends Component {
@@ -138,21 +139,24 @@ class GameWidget extends Component {
 
     return (
       <>
-        <div className="col-12 col-md-6 p-1">
-          <div className="card overflow-hidden" data-guide-id="LeftEditor">
+        <div className="col-12 col-lg-6 p-1">
+          <div className="card " style={{ height: '500px' }} data-guide-id="LeftEditor">
             <EditorToolbar
               {...this.getToolbarParams(leftEditor)}
               toolbarClassNames="btn-toolbar justify-content-between align-items-center m-1"
               editorSettingClassNames="btn-group align-items-center m-1"
               userInfoClassNames="btn-group align-items-center justify-content-end m-1"
             />
-            <Editor {...this.getLeftEditorParams()} />
+            <div className="flex-grow-1">
+              <Editor {...this.getLeftEditorParams()} />
+            </div>
+
             {/* TODO: move state to parent component */}
             {!isStoredGame && this.renderGameActionButtons(leftEditor, false)}
           </div>
         </div>
-        <div className="col-12 col-md-6 p-1">
-          <div className="card overflow-hidden h-100">
+        <div className="col-12 col-lg-6 p-1">
+          <div className="card " style={{ height: '500px' }}>
             <EditorToolbar
               {...this.getToolbarParams(rightEditor)}
               toolbarClassNames="btn-toolbar justify-content-between align-items-center m-1 flex-row-reverse"
@@ -164,7 +168,7 @@ class GameWidget extends Component {
             </RightSide>
           </div>
         </div>
-        <NotificationsHandler />
+        <OutputClicker />
       </>
     );
   }

@@ -7,35 +7,8 @@ import {
   currentUserIdSelector,
   executionOutputSelector,
 } from '../selectors';
-import Toast from '../components/Toast';
-import CloseButton from '../components/Toast/CloseButton';
 
-const toastOptions = {
-  hideProgressBar: true,
-  position: toast.POSITION.TOP_CENTER,
-  autoClose: 3000,
-  closeOnClick: false,
-  toastClassName: 'bg-transparent p-0 shadow-none',
-  closeButton: <CloseButton />,
-};
-
-const showCheckingStatusMessage = executionOutputStatus => {
-  if (executionOutputStatus === 'ok') {
-    toast(
-      <Toast header="Success">
-        <Alert variant="success">{i18n.t('Success Test Message')}</Alert>
-      </Toast>,
-    );
-  } else {
-    toast(
-      <Toast header="Failed">
-        <Alert variant="danger">{i18n.t('Failure Test Message')}</Alert>
-      </Toast>,
-    );
-  }
-};
-
-const NotificationsHandler = () => {
+const OutputClicker = () => {
   const currentUserId = useSelector(currentUserIdSelector);
 
   const usePrevious = () => {
@@ -56,11 +29,11 @@ const NotificationsHandler = () => {
 
   useEffect(() => {
     if (isCurrentUserPlayer && prevCheckingResult && !checkingResult) {
-     document.getElementById('leftOutput-tab').click();
+      document.getElementById('leftOutput-tab').click();
     }
   }, [checkingResult, isCurrentUserPlayer, prevCheckingResult, status]);
 
   return <></>;
 };
 
-export default NotificationsHandler;
+export default OutputClicker;

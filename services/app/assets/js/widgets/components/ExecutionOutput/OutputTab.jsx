@@ -29,7 +29,6 @@ const getMessageRightSide = status => {
 
 const OutputTab = ({ sideOutput, side }) => {
   const { successCount, assertsCount, status } = sideOutput;
-  console.log('🚀 ~ file: OutputTab.jsx ~ line 20 ~ OutputTab ~ sideOutput', sideOutput);
   const isShowMessage = status === 'failure';
   const statusColor = color[status];
   const message = side === 'left' ? getMessageLeftSide(status) : getMessageRightSide(status);
