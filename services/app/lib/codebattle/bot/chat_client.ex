@@ -71,7 +71,7 @@ defmodule Codebattle.Bot.ChatClient do
     [
       "Sorry, can't wait much longer. I'll start now.",
       "I'm done with waiting",
-      "Come on, time is running out",
+      "Come on, time is running out"
     ]
     |> Enum.random()
   end
@@ -116,9 +116,13 @@ defmodule Codebattle.Bot.ChatClient do
     "Hey, #{opponent["name"]}, I'll join when you start writing code"
   end
 
-  defp say_announcement(chat_state) do
-    opponent = get_opponent(chat_state)
-    "I have some great news))) You may choose #{pick_language(opponent["lang"])} for this task"
+  defp say_announcement(game_state) do
+    [
+      "I have some great news))) Soon you may choose 1C language. Stay tuned.",
+      "If you don't know, we have a chrome extension. Which announces about new active games that you can join",
+      "13th of every month, we have tournaments. "
+    ]
+    |> Enum.random()
   end
 
   defp say_about_code(_chat_state) do
