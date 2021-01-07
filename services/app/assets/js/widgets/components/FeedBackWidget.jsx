@@ -10,6 +10,7 @@ const FeedBackWidget = () => {
   const sendToServer = (payload, success, error) => fetch('/api/v1/feedback', {
     method: 'POST',
     headers: {
+      'Content-type': 'application/json',
       'x-csrf-token': window.csrf_token,
     },
     body: JSON.stringify(payload),
