@@ -1,28 +1,62 @@
 import React, { useState } from 'react';
+import classnames from 'classnames';
 import * as lobbyMiddlewares from '../../middlewares/Lobby';
-// TODO_LERA: add cn
 import i18n from '../../../i18n';
+import levelRatio from '../../config/levelRatio';
+import gameTypeCodes from '../../config/gameTypeCodes';
+
+const TIMEOUTS = [3600, 1800, 900, 600, 60];
 
 const CreateGameDialog = ({ hideModal }) => {
+  const gameLevels = Object.keys(levelRatio);
+  const currentGameTypeCodes = [gameTypeCodes.bot, gameTypeCodes.public, gameTypeCodes.private];
+
   const [game, setGame] = useState({
-    level: 'elementary',
-    type: 'withRandomPlayer',
-    timeoutSeconds: 600,
+    level: gameLevels[0],
+    type: gameTypeCodes.public,
+    timeoutSeconds: TIMEOUTS[3],
   });
 
-  const gameLevels = ['elementary', 'easy', 'medium', 'hard'];
+  const renderPickTimeouts = () => TIMEOUTS.map(timeout => (
+    <button
+      key={timeout}
+      type="button"
+      className={classnames('btn mr-1', {
+          'bg-orange text-white': game.timeoutSeconds === timeout,
+          'btn-outline-orange': game.timeoutSeconds !== timeout,
+        })}
+      onClick={() => setGame({ ...game, timeoutSeconds: timeout })}
+    >
+      {i18n.t(`Timeout ${timeout} seconds`)}
+    </button>
+  ));
+
+  const renderPickPlayer = () => currentGameTypeCodes.map(gameType => (
+    <button
+      type="button"
+      key={gameType}
+      className={classnames('btn', {
+        'bg-orange text-white': game.type === gameType,
+        'btn-outline-orange': game.type !== gameType,
+      })}
+      onClick={() => setGame({ ...game, type: gameType })}
+    >
+      {i18n.t(`${gameType} game`)}
+    </button>
+    ));
 
   return (
     <div>
-      <h5>Level</h5>
+      <h5>{i18n.t('Level')}</h5>
       <div className="d-flex justify-content-around px-5 mt-3">
         {gameLevels.map(level => (
           <button
             key={level}
             type="button"
-            className={`btn ${
-              game.level === level ? 'bg-orange' : 'btn-outline-orange border-0'
-            }`}
+            className={classnames('btn mb-2', {
+              'bg-orange': game.level === level,
+              'btn-outline-orange border-0': game.level !== level,
+            })}
             onClick={() => setGame({ ...game, level })}
             data-toggle="tooltip"
             data-placement="right"
@@ -33,97 +67,13 @@ const CreateGameDialog = ({ hideModal }) => {
         ))}
       </div>
 
-      <h5>Players</h5>
-      <div className="d-flex justify-content-around px-5 mt-3">
-        <button
-          type="button"
-          className={`btn ${
-            game.type === 'bot' ? 'bg-orange text-white' : 'btn-outline-orange'
-          }`}
-          onClick={() => setGame({ ...game, type: 'bot' })}
-        >
-          With bot
-        </button>
-        <button
-          type="button"
-          className={`btn ${
-            game.type === 'withRandomPlayer'
-              ? 'bg-orange text-white'
-              : 'btn-outline-orange'
-          }`}
-          onClick={() => setGame({ ...game, type: 'withRandomPlayer' })}
-        >
-          With human
-        </button>
-        <button
-          type="button"
-          className={`btn ${
-            game.type === 'withFriend'
-              ? 'bg-orange text-white'
-              : 'btn-outline-orange'
-          }`}
-          onClick={() => setGame({ ...game, type: 'withFriend' })}
-        >
-          With friend
-        </button>
+      <h5>{i18n.t('Players')}</h5>
+      <div className="d-flex justify-content-around px-5 mt-3 mb-2">
+        {renderPickPlayer()}
       </div>
-      <h5>Time control </h5>
+      <h5>{i18n.t('Time control')}</h5>
       <div className="d-flex justify-content-around px-5 mt-3">
-        <button
-          type="button"
-          className={`btn ${
-            game.timeoutSeconds === 3600
-              ? 'bg-orange text-white'
-              : 'btn-outline-orange'
-          }`}
-          onClick={() => setGame({ ...game, timeoutSeconds: 3600 })}
-        >
-          1 hour
-        </button>
-        <button
-          type="button"
-          className={`btn ${
-            game.timeoutSeconds === 1800
-              ? 'bg-orange text-white'
-              : 'btn-outline-orange'
-          }`}
-          onClick={() => setGame({ ...game, timeoutSeconds: 1800 })}
-        >
-          30 min
-        </button>
-        <button
-          type="button"
-          className={`btn ${
-            game.timeoutSeconds === 900
-              ? 'bg-orange text-white'
-              : 'btn-outline-orange'
-          }`}
-          onClick={() => setGame({ ...game, timeoutSeconds: 900 })}
-        >
-          15 min
-        </button>
-        <button
-          type="button"
-          className={`btn ${
-            game.timeoutSeconds === 600
-              ? 'bg-orange text-white'
-              : 'btn-outline-orange'
-          }`}
-          onClick={() => setGame({ ...game, timeoutSeconds: 600 })}
-        >
-          10 min
-        </button>
-        <button
-          type="button"
-          className={`btn ${
-            game.timeoutSeconds === 60
-              ? 'bg-orange text-white'
-              : 'btn-outline-orange'
-          }`}
-          onClick={() => setGame({ ...game, timeoutSeconds: 60 })}
-        >
-          1 min
-        </button>
+        {renderPickTimeouts()}
       </div>
 
       <button
