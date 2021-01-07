@@ -174,14 +174,16 @@ export const changeCurrentLangAndSetTemplate = langSlug => (dispatch, getState) 
   dispatch(sendEditorText(textToSet, langSlug));
 };
 
-export const activeGameEditorReady = () => dispatch => {
+export const activeGameEditorReady = (machine) => dispatch => {
   initGameChannel(dispatch);
   channel.on('editor:data', data => {
     dispatch(actions.updateEditorText(camelizeKeys(data)));
+    machine.send('editor:data', camelizeKeys(data));
   });
 
   channel.on('user:start_check', ({ user_id: userId }) => {
     dispatch(actions.updateCheckStatus({ [userId]: true }));
+    machine.send('user:start_check', {userId});
   });
 
   channel.on('user:check_complete', responseData => {
@@ -200,6 +202,7 @@ export const activeGameEditorReady = () => dispatch => {
     );
     dispatch(actions.updateGameStatus({ ...newGameStatus, solutionStatus }));
     dispatch(actions.updateCheckStatus({ [userId]: false }));
+    machine.send('user:check_complete', camelizeKeys(responseData));
   });
 
   channel.on('chat:user_joined', responseData => {
@@ -259,35 +262,42 @@ export const activeGameEditorReady = () => dispatch => {
         timeoutSeconds,
       }),
     );
+    machine.send('chat:user_joined', camelizeKeys(responseData));
   });
 
   channel.on('user:won', data => {
     const { players, status, msg } = camelizeKeys(data);
     dispatch(actions.updateGamePlayers({ players }));
     dispatch(actions.updateGameStatus({ status, msg }));
+    machine.send('user:won', camelizeKeys(data));
   });
 
   channel.on('user:give_up', data => {
     const { players, status, msg } = camelizeKeys(data);
     dispatch(actions.updateGamePlayers({ players }));
     dispatch(actions.updateGameStatus({ status, msg }));
+    machine.send('user:give_up', camelizeKeys(data));
   });
 
   channel.on('rematch:update_status', payload => {
     const data = camelizeKeys(payload);
     dispatch(actions.updateGameStatus(data));
+    machine.send('rematch:update_status', data);
   });
 
   channel.on('rematch:redirect_to_new_game', ({ game_id: newGameId }) => {
+    machine.send('rematch:redirect_to_new_game', {newGameId});
     redirectToNewGame(newGameId);
   });
 
   channel.on('game:timeout', ({ status, msg }) => {
     dispatch(actions.updateGameStatus({ status, msg }));
+    machine.send('game:timeout', {status, msg});
   });
 
   channel.on('tournament:round_created', payload => {
     dispatch(actions.setTournamentsInfo(payload));
+    machine.send('tournament:round_created', {payload});
   });
 };
 
@@ -321,8 +331,8 @@ export const storedGameEditorReady = () => dispatch => {
     });
 };
 
-export const init = () => dispatch => {
-  dispatch(isRecord ? storedGameEditorReady() : activeGameEditorReady());
+export const init = (machine) => dispatch => {
+  dispatch(isRecord ? storedGameEditorReady() : activeGameEditorReady(machine));
 };
 
 export const checkGameResult = () => (dispatch, getState) => {

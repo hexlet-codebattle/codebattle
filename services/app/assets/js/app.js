@@ -37,6 +37,9 @@ import {
   renderSettingPage,
 } from './widgets';
 import renderExtensionPopup from './widgets/components/ExtensionPopup';
+import {inspect} from '@xstate/inspect';
+
+// inspect();
 
 const Hooks = {
   NewChatMessage: {

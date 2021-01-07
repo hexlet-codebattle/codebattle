@@ -23,7 +23,7 @@ const toastOptions = {
   closeButton: <CloseButton />,
 };
 
-const showCheckingStatusMessage = solutionStatus => {
+export const showCheckingStatusMessage = solutionStatus => {
   if (solutionStatus) {
     toast(
       <Toast header="Success">
