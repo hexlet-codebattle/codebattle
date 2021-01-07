@@ -1,0 +1,94 @@
+.preview {
+  width: 100vw;
+  height: calc(100vh - 95px);
+  display: flex;
+  position: relative;
+  background-color: #000;
+  &::before {
+    position: absolute;
+    top: 30px;
+    left: 0;
+    content: '';
+    width: 160px;
+    height: calc(100% - 60px);
+    background: url('/assets/images/CODEBATTLE.svg') no-repeat center;
+    background-size: contain;
+  }
+
+  &::after {
+    position: absolute;
+    top: 30px;
+    right: 0;
+    content: '';
+    width: 160px;
+    height: calc(100% - 60px);
+    background: url('/assets/images/CODEBATTLE.svg') no-repeat center;
+    background-size: contain;
+    transform: rotate(180deg);
+  }
+}
+
+.preview__container {
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.preview__middle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.preview__icon {
+  width: 30px;
+  height: 30px;
+}
+
+.player1,
+.player2 {
+  display: flex;
+  flex-direction: column;
+  color: #fff;
+  align-items: center;
+}
+
+.player1__name,
+.player2__name {
+  color: #fff;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 36px;
+  margin: 0;
+  margin-bottom: 15px;
+}
+
+.player1__status,
+.player2__status {
+  width: 200px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.player1__avatar,
+.player2__avatar {
+  display: block;
+  width: 200px;
+  height: 200px;
+  background-color: grey;
+  border: 4px solid #fff;
+  margin-bottom: 40px;
+}
+
+.preview__info {
+  font-size: 24px;
+  color: #a0a0a0;
+}
+
+.preview__fight {
+  width: 150px;
+  height: 150px;
+}

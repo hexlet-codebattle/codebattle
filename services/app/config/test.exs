@@ -35,7 +35,7 @@ adapter =
     _ -> Codebattle.CodeCheck.FakeChecker
   end
 
-config :codebattle, code_check_timeout: 15_000
+config :codebattle, code_check_timeout: 25_000
 config :codebattle, checker_adapter: adapter
 config :codebattle, tournament_match_timeout: 1
 

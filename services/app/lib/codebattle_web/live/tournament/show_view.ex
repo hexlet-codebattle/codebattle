@@ -19,6 +19,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     tournament = session["tournament"]
 
     Phoenix.PubSub.subscribe(:cb_pubsub, topic_name(tournament))
+    Phoenix.PubSub.subscribe(:cb_pubsub, "tournaments")
 
     {:ok,
      assign(socket,
@@ -69,6 +70,36 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     end
   end
 
+  def handle_info(%{topic: "tournaments", event: "round:created", payload: payload}, socket) do
+    tournament = socket.assigns.tournament
+    current_user = socket.assigns.current_user
+
+    if payload.tournament.id == tournament.id do
+      current_match =
+        payload
+        |> Map.get(:tournament)
+        |> Map.get(:data)
+        |> Map.get(:matches)
+        |> Enum.filter(fn m ->
+          m.state == "active" and Enum.any?(m.players, fn p -> p.id == current_user.id end)
+        end)
+
+      case current_match do
+        [] ->
+          {:noreply, socket}
+
+        [match | _] ->
+          {:noreply, redirect(socket, to: "/games/#{match.game_id}")}
+      end
+    else
+      {:noreply, socket}
+    end
+  end
+
+  def handle_event(_event, _params, %{assigns: %{current_user: %{guest: true}} = socket}) do
+    {:noreply, socket}
+  end
+
   def handle_event("join", %{"team_id" => team_id}, socket) do
     Tournament.Server.update_tournament(socket.assigns.tournament.id, :join, %{
       user: socket.assigns.current_user,
@@ -88,8 +119,18 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
 
   def handle_event("leave", _params, socket) do
     Tournament.Server.update_tournament(socket.assigns.tournament.id, :leave, %{
-      user: socket.assigns.current_user
+      user_id: socket.assigns.current_user.id
     })
+
+    {:noreply, socket}
+  end
+
+  def handle_event("kick", %{"user_id" => user_id}, socket) do
+    if is_creator?(socket.assigns.tournament, socket.assigns.current_user.id) do
+      Tournament.Server.update_tournament(socket.assigns.tournament.id, :leave, %{
+        user_id: String.to_integer(user_id)
+      })
+    end
 
     {:noreply, socket}
   end
@@ -181,6 +222,10 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
 
   defp is_current_topic?(topic, tournament) do
     topic == topic_name(tournament)
+  end
+
+  defp is_creator?(tournament, user_id) do
+    tournament.creator_id == user_id
   end
 
   defp get_chat_messages(id) do

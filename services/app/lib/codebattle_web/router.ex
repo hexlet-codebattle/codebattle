@@ -55,6 +55,11 @@ defmodule CodebattleWeb.Router do
     get("/", PageController, :index)
     resources("/users", UserController, only: [:index, :show])
     resources("/tournaments", TournamentController, only: [:index, :show])
+
+    scope "/tournaments" do
+      get("/:id/image", Tournament.ImageController, :show, as: :tournament_image)
+    end
+
     get("/settings", UserController, :edit, as: :user_setting)
     put("/settings", UserController, :update, as: :user_setting)
     resources("/games", GameController, only: [:create, :show, :delete])
@@ -62,6 +67,7 @@ defmodule CodebattleWeb.Router do
     scope "/games" do
       post("/:id/join", GameController, :join)
       post("/:id/check", GameController, :check)
+      get("/:id/image", Game.ImageController, :show, as: :game_image)
     end
   end
 

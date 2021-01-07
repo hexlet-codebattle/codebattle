@@ -1,9 +1,13 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-import { persistStore, persistReducer } from 'redux-persist';
+import { persistStore, persistReducer, PERSIST } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import { PersistGate } from 'redux-persist/integration/react';
-import { configureStore, combineReducers, getDefaultMiddleware } from '@reduxjs/toolkit';
+import {
+  configureStore,
+  combineReducers,
+  getDefaultMiddleware,
+} from '@reduxjs/toolkit';
 import rollbarMiddleware from 'rollbar-redux-middleware';
 import rollbar from './lib/rollbar';
 import RootContainer from './containers/RootContainer';
@@ -33,7 +37,7 @@ const store = configureStore({
     rollbarRedux,
     ...getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: ['ERROR'],
+        ignoredActions: ['ERROR', PERSIST],
       },
     }),
   ],

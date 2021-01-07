@@ -20,6 +20,7 @@ import {
 import WaitingOpponentInfo from '../components/WaitingOpponentInfo';
 import CodebattlePlayer from './CodebattlePlayer';
 import FeedBackWidget from '../components/FeedBackWidget';
+import GamePreview from '../components/Game/';
 
 const steps = [
   {
@@ -34,7 +35,7 @@ const steps = [
           against a
           <b> bot</b>
           . But in the future you’ll be against the real
-          player You need must solve the task
+          player. You need to solve the task
           <b> first </b>
           and pass all tests
           <b> successfully</b>
@@ -166,14 +167,20 @@ const RootContainer = ({
     { filter: () => true },
   );
 
-  if (!storeLoaded) {
-    // TODO: add loader
-    return null;
-  }
-
   if (gameStatusCode === GameStatusCodes.waitingOpponent) {
     const gameUrl = window.location.href;
     return <WaitingOpponentInfo gameUrl={gameUrl} />;
+  }
+
+  const players = Gon.getAsset('players');
+
+  if (!storeLoaded && players) {
+    const defaultPlayer = {
+      name: 'John Doe', github_id: 35539033, lang: 'js', rating: '0',
+    };
+    const player1 = players[0] || defaultPlayer;
+    const player2 = players[1] || defaultPlayer;
+    return <GamePreview player1={player1} player2={player2} />;
   }
 
   const isStoredGame = gameStatusCode === GameStatusCodes.stored;

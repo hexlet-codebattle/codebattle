@@ -73,7 +73,13 @@ defmodule CodebattleWeb.GameController do
 
     case Play.get_fsm(id) do
       {:ok, fsm} ->
-        conn = put_gon(conn, game_id: id, tournament_id: FsmHelpers.get_tournament_id(fsm))
+        conn =
+          put_gon(conn,
+            game_id: id,
+            tournament_id: FsmHelpers.get_tournament_id(fsm),
+            players: present_users_for_gon(FsmHelpers.get_players(fsm))
+          )
+
         is_participant = ActiveGames.participant?(id, user.id)
 
         case {fsm.state, is_participant} do
@@ -94,7 +100,8 @@ defmodule CodebattleWeb.GameController do
             |> put_meta_tags(%{
               title: "Hexlet Codebattle • Join game",
               description: "Game against #{player_info(player, fsm)}",
-              url: Routes.game_path(conn, :show, id, level: FsmHelpers.get_level(fsm)),
+              url: Routes.game_url(conn, :show, id, level: FsmHelpers.get_level(fsm)),
+              image: Routes.game_image_url(conn, :show, id),
               twitter: get_twitter_labels_meta([player])
             })
             |> render("join.html", %{fsm: fsm})
@@ -117,7 +124,8 @@ defmodule CodebattleWeb.GameController do
             |> put_meta_tags(%{
               title: "Hexlet Codebattle • Cool game",
               description: "#{player_info(first, fsm)} vs #{player_info(second, fsm)}",
-              url: Routes.game_path(conn, :show, id),
+              url: Routes.game_url(conn, :show, id),
+              image: Routes.game_image_url(conn, :show, id),
               twitter: get_twitter_labels_meta([first, second])
             })
             |> render("show.html", %{fsm: fsm, layout_template: "full_width.html"})
@@ -158,12 +166,14 @@ defmodule CodebattleWeb.GameController do
                 is_record: true,
                 game_id: id,
                 tournament_id: game.tournament_id,
-                langs: langs
+                langs: langs,
+                players: present_users_for_gon(game.users)
               )
               |> put_meta_tags(%{
                 title: "Hexlet Codebattle • Cool archived game",
                 description: "#{user_info(first)} vs #{user_info(second)}",
-                url: Routes.game_path(conn, :show, id),
+                url: Routes.game_url(conn, :show, id),
+                image: Routes.game_image_url(conn, :show, id),
                 twitter: get_twitter_labels_meta(game.users)
               })
               |> render("show.html", %{layout_template: "full_width.html"})
@@ -180,7 +190,8 @@ defmodule CodebattleWeb.GameController do
               |> put_meta_tags(%{
                 title: "Hexlet Codebattle • Game Result",
                 description: "Game is over",
-                url: Routes.game_path(conn, :show, id)
+                image: Routes.game_image_url(conn, :show, id),
+                url: Routes.game_url(conn, :show, id)
               })
               |> render("game_result.html", %{game: game})
             end
@@ -277,5 +288,11 @@ defmodule CodebattleWeb.GameController do
       1 -> game.users ++ [User.create_guest()]
       _ -> game.users
     end
+  end
+
+  defp present_users_for_gon(users) do
+    Enum.map(users, fn u ->
+      Map.take(u, [:github_id, :id, :is_bot, :rating, :rank, :lang, :name, :guest, :achievements])
+    end)
   end
 end

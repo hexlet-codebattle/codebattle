@@ -49,6 +49,8 @@ config :ueberauth, Ueberauth.Strategy.Github.OAuth,
   client_id: System.get_env("GITHUB_CLIENT_ID"),
   client_secret: System.get_env("GITHUB_CLIENT_SECRET")
 
+config :phoenix_gon, :json_library, Jason
+
 config :codebattle, CodebattleWeb.Gettext,
   priv: "priv/gettext",
   default_locale: "en"
@@ -79,6 +81,7 @@ config :phoenix_meta_tags,
 
 config :codebattle, Codebattle.Bot,
   timeout_start_playbook: 10_000,
+  prep_time: 120_000,
   min_bot_player_speed: 1_000
 
 config :codebattle, Codebattle.DockerLangsPuller, timeout: :timer.hours(7)
