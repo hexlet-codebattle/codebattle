@@ -5,6 +5,7 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import Gon from 'gon';
 import ReactJoyride, { STATUS } from 'react-joyride';
 import _ from 'lodash';
+
 import GameWidget from './GameWidget';
 import InfoWidget from './InfoWidget';
 import userTypes from '../config/userTypes';
@@ -18,6 +19,7 @@ import {
 } from '../selectors';
 import WaitingOpponentInfo from '../components/WaitingOpponentInfo';
 import CodebattlePlayer from './CodebattlePlayer';
+import FeedBackWidget from '../components/FeedBackWidget';
 import GamePreview from '../components/Game/GamePreview';
 
 const steps = [
@@ -190,6 +192,7 @@ const RootContainer = ({
         <div className="row no-gutter cb-game">
           <InfoWidget />
           <GameWidget />
+          <FeedBackWidget />
         </div>
       </div>
       {isStoredGame && <CodebattlePlayer />}

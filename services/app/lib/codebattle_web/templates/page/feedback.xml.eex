@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:hexlet="https://hexlet.io" xmlns:site="https://codebattle.hexlet.io" version="2.0">
+    <channel>
+        <title>Users Feedback</title>
+        <link>https://codebattle.hexlet.io</link>
+        <description>Codebattle is game for programmers.</description>
+        <language>en-us</language>
+        <%= for item <- feedback() do %>
+          <%= item %>
+        <% end %>
+    </channel>
+</rss>

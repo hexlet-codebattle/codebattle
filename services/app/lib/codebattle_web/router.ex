@@ -41,6 +41,7 @@ defmodule CodebattleWeb.Router do
       get("/user/:id/stats", UserController, :stats)
       resources("/users", UserController, only: [:index, :show])
       resources("/settings", SettingsController, only: [:show, :update], singleton: true)
+      post("/feedback", FeedBackController, :index)
     end
   end
 
@@ -49,6 +50,7 @@ defmodule CodebattleWeb.Router do
     pipe_through(:browser)
     get("/robots.txt", PageController, :robots)
     get("/sitemap.xml", PageController, :sitemap)
+    get("/feedback/rss.xml", PageController, :feedback)
 
     resources("/session", SessionController, singleton: true, only: [:delete])
     get("/", PageController, :index)
