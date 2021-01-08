@@ -24,7 +24,7 @@ const toastOptions = {
   closeButton: <CloseButton />,
 };
 
-const showCheckingStatusMessage = executionOutputStatus => {
+const showCheckingStatusMessage = ({ status: executionOutputStatus }) => {
   if (executionOutputStatus === 'ok') {
     toast(
       <Toast header="Success">
@@ -57,13 +57,13 @@ const NotificationsHandler = () => {
   const players = useSelector(gamePlayersSelector);
   const isCurrentUserPlayer = _.hasIn(players, currentUserId);
   const checkingResult = checking[currentUserId];
-  const { status } = useSelector(executionOutputSelector(currentUserId));
+  const executionOutput = useSelector(executionOutputSelector(currentUserId));
 
   useEffect(() => {
     if (isCurrentUserPlayer && prevCheckingResult && !checkingResult) {
-      showCheckingStatusMessage(status);
+      showCheckingStatusMessage(executionOutput);
     }
-  }, [checkingResult, isCurrentUserPlayer, prevCheckingResult, status]);
+  }, [checkingResult, isCurrentUserPlayer, prevCheckingResult, executionOutput]);
 
   return <ToastContainer {...toastOptions} />;
 };
