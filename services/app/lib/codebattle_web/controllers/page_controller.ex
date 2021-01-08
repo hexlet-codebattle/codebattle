@@ -2,6 +2,7 @@ defmodule CodebattleWeb.PageController do
   use CodebattleWeb, :controller
 
   alias Codebattle.UsersActivityServer
+  alias Codebattle.FeedBack
 
   def index(conn, _params) do
     current_user = conn.assigns.current_user
@@ -20,6 +21,10 @@ defmodule CodebattleWeb.PageController do
       _ ->
         render(conn, "index.html", current_user: current_user)
     end
+  end
+
+  def feedback(conn, _) do
+    render(conn, "feedback.xml")
   end
 
   def robots(conn, _) do

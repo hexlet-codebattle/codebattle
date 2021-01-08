@@ -50,6 +50,7 @@ defmodule CodebattleWeb.Router do
     pipe_through(:browser)
     get("/robots.txt", PageController, :robots)
     get("/sitemap.xml", PageController, :sitemap)
+    get("/feedback/rss.xml", PageController, :feedback)
 
     resources("/session", SessionController, singleton: true, only: [:delete])
     get("/", PageController, :index)
