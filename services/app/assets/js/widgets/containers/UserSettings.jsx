@@ -8,7 +8,8 @@ import {
   useField,
 } from 'formik';
 import * as Yup from 'yup';
-import _ from 'lodash';
+import Slider from 'calcite-react/Slider';
+import * as Icon from 'react-feather';
 
 import { actions } from '../slices';
 import languages from '../config/languages';
@@ -18,12 +19,7 @@ const csrfToken = document
   .querySelector("meta[name='csrf-token']")
   .getAttribute('content'); // validation token
 
-const soundLevels = _.range(1, 11);
 const playingLanguages = Object.keys(languages);
-const soundTypes = ['standart', 'silent'];
-
-const renderOptions = data => data
-  .map(option => <option key={`select option: ${option}`} value={option}>{option}</option>);
 
 const renderLanguages = data => data
   .map(language => <option key={`select option: ${language}`} value={language}>{languages[language]}</option>);
@@ -124,18 +120,25 @@ const UserSettings = () => {
             placeholder="Enter your name"
           />
 
-          <div className="form-group ml-2 mb-3">
-            <p className="h6">Sound level</p>
-            <Field as="select" aria-label="Sound level select" name="soundLevel" className="form-control">
-              {renderOptions(soundLevels)}
-            </Field>
+          <div className="h6 ml-2">
+            Select sound level
+          </div>
+          <div className="ml-2 d-flex">
+            <Icon.VolumeX />
+            <Field component={Slider} min={0} max={10} name="soundLevel" className="ml-3 mr-3 mb-3 form-control" />
+            <Icon.Volume2 />
           </div>
 
-          <div className="form-group ml-2 mb-3">
-            <p className="h6">Sound type</p>
-            <Field as="select" aria-label="Sound type select" name="soundType" className="form-control">
-              {renderOptions(soundTypes)}
-            </Field>
+          <div id="my-radio-group" className="h6 ml-2">Select sound type</div>
+          <div role="group" aria-labelledby="my-radio-group" className="ml-3 mb-3">
+            <div>
+              <Field type="radio" name="soundType" value="standart" className="mr-2" />
+              Standart
+            </div>
+            <div>
+              <Field type="radio" name="soundType" value="silent" className="mr-2" />
+              Silent
+            </div>
           </div>
 
           <div className="form-group ml-2 mb-3">
