@@ -81,7 +81,6 @@ defmodule Codebattle.Mixfile do
       {:phoenix_meta_tags, "~> 0.1.8"},
       {:gen_state_machine, "~> 2.1"},
       {:html_to_image, git: "https://github.com/koss-lebedev/html_to_image"},
-      {:rss, "~> 0.2.1"},
 
       # dev_and_test
       {:credo, "~> 1.4", only: [:dev, :test], runtime: false},
