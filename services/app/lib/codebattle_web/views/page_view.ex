@@ -19,12 +19,12 @@ defmodule CodebattleWeb.PageView do
   end
 
   defp item(%{
-    title: title,
-    description: description,
-    pubDate: pub_date,
-    link: link,
-    guid: guid
-  }) do
+         title: title,
+         description: description,
+         pubDate: pub_date,
+         link: link,
+         guid: guid
+       }) do
     """
     <item>
       <title>#{title}</title>
