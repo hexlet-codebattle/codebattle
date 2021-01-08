@@ -19,12 +19,14 @@ const csrfToken = document
   .getAttribute('content'); // validation token
 
 const soundLevels = _.range(1, 11);
-const playingLanguages = Object.values(languages);
+const playingLanguages = Object.keys(languages);
 const soundTypes = ['standart', 'silent'];
-const defaultSoundLevel = 5;
 
 const renderOptions = data => data
   .map(option => <option key={`select option: ${option}`} value={option}>{option}</option>);
+
+const renderLanguages = data => data
+  .map(language => <option key={`select option: ${language}`} value={language}>{languages[language]}</option>);
 
 const UserSettings = () => {
   const [unprocessableError, setUnprocessableError] = useState('');
@@ -37,10 +39,9 @@ const UserSettings = () => {
       .then(response => {
         setCurrentUserSettings({
           name: response.data.name,
-          soundLevel: defaultSoundLevel, // response.data.soundLevel
-          soundType: '', // response.data.soundType
-          language: '', // response.data.language
-          _csrf_token: csrfToken,
+          soundLevel: response.data.sound_settings.level,
+          soundType: response.data.sound_settings.type,
+          language: response.data.lang,
         });
       })
       .catch(error => {
@@ -67,8 +68,21 @@ const UserSettings = () => {
   };
 
   const sendForm = async (values, { setSubmitting }) => {
+    const newSettings = {
+      name: values.name,
+      sound_settings: {
+        level: values.soundLevel,
+        type: values.soundType,
+      },
+      lang: values.language,
+    };
     try {
-      await axios.patch('/api/v1/settings', values);
+      axios.patch('/api/v1/settings', newSettings, {
+        headers: {
+        'Content-Type': 'application/json',
+        'x-csrf-token': csrfToken,
+        },
+      });
       window.location = '/settings'; // page update
       setSubmitting(false);
     } catch (error) {
@@ -127,7 +141,7 @@ const UserSettings = () => {
           <div className="form-group ml-2 mb-3">
             <p className="h6">Your weapon</p>
             <Field as="select" aria-label="Programming language select" name="language" className="form-control">
-              {renderOptions(playingLanguages)}
+              {renderLanguages(playingLanguages)}
             </Field>
           </div>
 
