@@ -20,7 +20,7 @@ import {
 import WaitingOpponentInfo from '../components/WaitingOpponentInfo';
 import CodebattlePlayer from './CodebattlePlayer';
 import FeedBackWidget from '../components/FeedBackWidget';
-import GamePreview from '../components/Game/';
+import GamePreview from '../components/Game/GamePreview';
 
 const steps = [
   {
