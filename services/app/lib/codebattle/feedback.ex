@@ -47,7 +47,7 @@ defmodule Codebattle.FeedBack do
           inserted_at: inserted_at
         } = feedback
       ) do
-    pub_date = Calendar.strftime(inserted_at, "%a, %d %B %Y %I:%M:%S GMT")
+    pub_date = Calendar.strftime(inserted_at, "%a, %d %B %Y %H:%M:%S GMT")
 
     %{
       title: status <> " " <> name,
