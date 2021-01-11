@@ -132,6 +132,7 @@ class GameWidget extends Component {
     const {
  isStoredGame, leftEditor, rightEditor, rightOutput,
 } = this.props;
+console.log('🚀 ~ file: GameWidget.jsx ~ line 167 ~ GameWidget ~ render ~ rightOutput', rightOutput);
     if (leftEditor === null || rightEditor === null) {
       // FIXME: render loader
       return null;
@@ -140,7 +141,7 @@ class GameWidget extends Component {
     return (
       <>
         <div className="col-12 col-lg-6 p-1">
-          <div className="card " style={{ height: '500px' }} data-guide-id="LeftEditor">
+          <div className="card " style={{ height: '470px' }} data-guide-id="LeftEditor">
             <EditorToolbar
               {...this.getToolbarParams(leftEditor)}
               toolbarClassNames="btn-toolbar justify-content-between align-items-center m-1"
@@ -156,7 +157,7 @@ class GameWidget extends Component {
           </div>
         </div>
         <div className="col-12 col-lg-6 p-1">
-          <div className="card " style={{ height: '500px' }}>
+          <div className="card " style={{ height: '470px' }}>
             <EditorToolbar
               {...this.getToolbarParams(rightEditor)}
               toolbarClassNames="btn-toolbar justify-content-between align-items-center m-1 flex-row-reverse"
