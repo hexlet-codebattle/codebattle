@@ -25,13 +25,13 @@ const OutputClicker = () => {
   const players = useSelector(gamePlayersSelector);
   const isCurrentUserPlayer = _.hasIn(players, currentUserId);
   const checkingResult = checking[currentUserId];
-  const { status } = useSelector(executionOutputSelector(currentUserId));
+  const executionOutput = useSelector(executionOutputSelector(currentUserId));
 
   useEffect(() => {
     if (isCurrentUserPlayer && prevCheckingResult && !checkingResult) {
       document.getElementById('leftOutput-tab').click();
     }
-  }, [checkingResult, isCurrentUserPlayer, prevCheckingResult, status]);
+  }, [checkingResult, isCurrentUserPlayer, prevCheckingResult, executionOutput]);
 
   return <></>;
 };
