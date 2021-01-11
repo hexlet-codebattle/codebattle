@@ -16,14 +16,14 @@ import Output from '../components/ExecutionOutput/Output';
 const RightSide = ({ output, children }) => {
   const [showTab, setShowTab] = useState('editor');
   const over = showTab === 'editor' ? '' : 'overflow-auto';
+  const isShowOutput = output && output.status;
   return (
     <>
       <div className={`flex-grow-1 ${over}`} id="editor">
-
         {showTab === 'editor' ? <div className="h-100">{children}</div>
         : (
           <div className="h-auto">
-            <Output sideOutput={output} />
+            {isShowOutput && <Output sideOutput={output} />}
           </div>
 )}
 
@@ -54,7 +54,7 @@ const RightSide = ({ output, children }) => {
               setShowTab('output');
             }}
           >
-            <OutputTab sideOutput={output} side="right" />
+            {isShowOutput && <OutputTab sideOutput={output} side="right" />}
           </a>
         </div>
       </nav>

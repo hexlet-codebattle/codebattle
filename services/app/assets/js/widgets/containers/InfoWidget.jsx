@@ -12,6 +12,7 @@ const InfoWidget = () => {
   const timeoutSeconds = useSelector(state => gameStatusSelector(state).timeoutSeconds);
   const gameStatusName = useSelector(state => gameStatusSelector(state).status);
   const leftOutput = useSelector(state => leftExecutionOutputSelector(state));
+  const isShowOutput = leftOutput && leftOutput.status;
   const idOutput = 'leftOutput';
   return (
     <>
@@ -39,7 +40,7 @@ const InfoWidget = () => {
                 aria-controls={`${idOutput}`}
                 aria-selected="false"
               >
-                <OutputTab sideOutput={leftOutput} side="left" />
+                {isShowOutput && <OutputTab sideOutput={leftOutput} side="left" />}
               </a>
             </div>
           </nav>
@@ -63,7 +64,7 @@ const InfoWidget = () => {
               role="tabpanel"
               aria-labelledby={`${idOutput}-tab`}
             >
-              <Output sideOutput={leftOutput} />
+              {isShowOutput && <Output sideOutput={leftOutput} />}
             </div>
 
           </div>
