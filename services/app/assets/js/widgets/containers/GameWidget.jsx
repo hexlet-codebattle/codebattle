@@ -132,7 +132,6 @@ class GameWidget extends Component {
     const {
  isStoredGame, leftEditor, rightEditor, rightOutput,
 } = this.props;
-console.log('🚀 ~ file: GameWidget.jsx ~ line 167 ~ GameWidget ~ render ~ rightOutput', rightOutput);
     if (leftEditor === null || rightEditor === null) {
       // FIXME: render loader
       return null;
