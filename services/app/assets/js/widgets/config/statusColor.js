@@ -5,4 +5,5 @@ export default {
   memory_leak: 'danger',
   ok: 'success',
   success: 'success',
+  initial: 'info',
 };

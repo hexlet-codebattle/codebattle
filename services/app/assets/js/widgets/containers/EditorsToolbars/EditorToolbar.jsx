@@ -1,6 +1,5 @@
 import React from 'react';
 import DarkModeButton from './DarkModeButton';
-import EditorHeightButtons from './EditorHeightButtons';
 import GameResultIcon from '../../components/GameResultIcon';
 import LanguagePicker from '../../components/LanguagePicker';
 import OnlineIndicator from './OnlineIndicator';
@@ -9,11 +8,10 @@ import UserName from '../../components/User/UserName';
 import VimModeButton from './VimModeButton';
 
 export default ({
- isSpectator, player, editor, toolbarClassNames, editorSettingClassNames, userInfoClassNames,
+  isSpectator, player, editor, toolbarClassNames, editorSettingClassNames, userInfoClassNames,
 }) => (
   <div className={toolbarClassNames} role="toolbar">
     <div className={editorSettingClassNames} role="group" aria-label="Editor settings">
-      <EditorHeightButtons editor={editor} />
       <LanguagePicker editor={editor} disabled={isSpectator} />
     </div>
 

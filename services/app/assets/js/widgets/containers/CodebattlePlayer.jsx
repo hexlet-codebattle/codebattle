@@ -245,10 +245,10 @@ class CodebattlePlayer extends Component {
 
     return (
       <>
-        <div className="py-4" />
-        <div className="container-fluid fixed-bottom my-1">
+        <div className="py-5" />
+        <div className="container-fluid fixed-bottom">
           <div className="px-1">
-            <div className="border bg-light py-2">
+            <div className="border bg-light">
               <div className="row align-items-center justify-content-center">
                 <ControlPanel
                   onPlayClick={this.onPlayClick}
