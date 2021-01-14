@@ -92,6 +92,40 @@ defmodule Codebattle.Tournament.Helpers do
     end
   end
 
+  def get_tournament_statistics(%{type: "team"} = tournament) do
+    all_win_matches =
+      tournament
+      |> get_matches()
+      |> Enum.filter(fn match ->
+        is_finished?(match) and !is_anyone_gave_up?(match)
+      end)
+
+    best_lang =
+      all_win_matches
+      |> Enum.map(fn match ->
+        pick_winner(match).lang
+      end)
+      |> Enum.chunk_by(fn x -> x end)
+      |> Enum.max_by(fn x -> Enum.count(x) end, fn -> [] end)
+      |> Enum.at(0, "None")
+
+    best_time =
+      all_win_matches
+      |> Enum.map(fn match -> match.duration end)
+      |> Enum.min(fn -> [] end)
+
+    %{
+      best_lang: best_lang,
+      best_time: best_time
+    }
+  end
+
+  def pick_winner(%{players: [%{game_result: "won"} = winner, _]}), do: winner
+  def pick_winner(%{players: [_, %{game_result: "won"} = winner]}), do: winner
+  def pick_winner(%{players: [winner, %{game_result: "gave_up"}]}), do: winner
+  def pick_winner(%{players: [%{game_result: "gave_up"}, winner]}), do: winner
+  def pick_winner(match), do: Enum.random(match.players)
+
   def filter_statistics(statistics, "show"), do: statistics
   def filter_statistics(statistics, "hide"), do: [List.first(statistics)]
 
@@ -133,4 +167,6 @@ defmodule Codebattle.Tournament.Helpers do
   end
 
   defp get_team_by_id(teams, team_id), do: Enum.find(teams, fn x -> x.id == team_id end)
+
+  defp round_is_active?(matches), do: Enum.any?(matches, fn x -> !is_finished?(x) end)
 end

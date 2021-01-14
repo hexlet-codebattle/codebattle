@@ -1,0 +1,11 @@
+.card
+  .card-body
+    .table-responsive.mt-1
+      table.table.table-sm
+        tbody
+            tr
+              td.align-middle = "Best Language"
+              td.align-middle.text-nowrap = @statistics.best_lang
+            tr
+              td.align-middle = "Best Match Time"
+              td.align-middle.text-nowrap = render_time(@statistics.best_time)
