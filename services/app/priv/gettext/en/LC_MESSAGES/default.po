@@ -248,13 +248,13 @@ msgid "Run your code!"
 msgstr "Run your code!"
 
 msgid "You have some syntax errors"
-msgstr "You have some syntax errors: %{errors}"
+msgstr "Have some syntax errors%{errors}"
 
 msgid "Tests failed"
 msgstr "Tests failed"
 
 msgid "You passed %{successCount} from %{assertsCount} asserts. (%{percent}%)"
-msgstr "You passed %{successCount} from %{assertsCount} asserts. (%{percent}%)"
+msgstr "Passed %{successCount} from %{assertsCount} asserts. (%{percent}%)"
 
 msgid "Yay! All tests passed!!111"
 msgstr "Yay! All tests passed!!111"

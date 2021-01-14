@@ -72,6 +72,16 @@ class Editor extends PureComponent {
         ...this.options,
         readOnly: !editable,
         contextMenu: editable,
+        scrollbar: {
+          useShadows: false,
+          verticalHasArrows: true,
+          horizontalHasArrows: true,
+          vertical: 'visible',
+          horizontal: 'visible',
+          verticalScrollbarSize: 17,
+          horizontalScrollbarSize: 17,
+          arrowSize: 30,
+        },
       };
     }
     if (prevProps.syntax !== syntax) {
@@ -146,18 +156,16 @@ class Editor extends PureComponent {
 
   render() {
     const {
- value, syntax, onChange, editorHeight, mode, theme,
+ value, syntax, onChange, theme,
 } = this.props;
     // FIXME: move here and apply mapping object
     const mappedSyntax = languages[syntax];
-    const editorHeightWithStatusBar = mode === 'vim' ? editorHeight - this.statusBarHeight : editorHeight;
     return (
       <>
         <MonacoEditor
           theme={theme}
           options={this.options}
-          width="auto"
-          height={editorHeightWithStatusBar}
+          width="100%"
           language={mappedSyntax}
           editorDidMount={this.editorDidMount}
           value={value}

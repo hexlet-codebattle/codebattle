@@ -97,7 +97,7 @@ const steps = [
   },
   {
     disableOverlayClose: true,
-    target: '[data-guide-id="LeftEditor"] #accordionExample',
+    target: '#leftOutput-tab',
     title: 'Result output',
     content:
       'Here you will see the results of the tests or compilation errors after check',
