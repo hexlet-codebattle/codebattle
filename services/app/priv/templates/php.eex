@@ -1,7 +1,7 @@
 <?php
 
 error_reporting(E_ERROR | E_PARSE);
-ini_set('assert.exception', '0');
+ini_set('assert.exception', '1');
 ini_set('assert.warning', '0');
 ini_set('assert.active', '1');
 
@@ -34,25 +34,25 @@ function assert_result($result, $expected, $args, $execution_time, &$final_resul
 {
     try {
         assert($result != $expected);
-    } catch (Exception $e) {
+
         array_push($final_result, json_encode(array(
             'status' => 'failure',
             'result' => $result,
             'expected' => $expected,
             'arguments' => $args,
-            'execution_time' => $execution_time,
+            'execution_time' => $execution_time
         )) . "\n");
         return false;
+    } catch (AssertionError $e) {
+        array_push($final_result, json_encode(array(
+            'status' => 'success',
+            'result' => $result,
+            'expected' => $expected,
+            'arguments' => $args,
+            'execution_time' => $execution_time
+        )) . "\n");
+        return $success;
     }
-
-    array_push($final_result, json_encode(array(
-        'status' => 'success',
-        'result' => $result,
-        'expected' => $expected,
-        'arguments' => $args,
-        'execution_time' => $execution_time
-    )) . "\n");
-    return $success;
 }
 
 include './check/solution.php';
