@@ -25,28 +25,32 @@ register_shutdown_function(function () {
   }
 });
 
+$stdout = STDERR;
 $success = true;
 
-function assert_result($result, $expected, $error_message, $success)
+function assert_result($result, $expected, $args, $execution_time, &$final_result, $success)
 {
-  $stdout = STDERR;
+    try {
+        assert($result != $expected);
 
-  try {
-    assert($result !== $expected);
-  } catch (Throwable $e) {
-    fwrite($stdout, json_encode(array(
-      'status' => 'failure',
-      'result' => $result,
-      'arguments' => $error_message
-    )) . "\n");
-    return false;
-  }
-
-  fwrite($stdout, json_encode(array(
-    'status' => 'success',
-    'result' => $result
-  )) . "\n");
-  return $success;
+        array_push($final_result, json_encode(array(
+            'status' => 'success',
+            'result' => $result,
+            'expected' => $expected,
+            'arguments' => $args,
+            'execution_time' => $execution_time
+        )) . "\n");
+        return $success;
+    } catch (Exception $e) {
+        array_push($final_result, json_encode(array(
+            'status' => 'failure',
+            'result' => $result,
+            'expected' => $expected,
+            'arguments' => $args,
+            'execution_time' => $execution_time
+        )) . "\n");
+        return false;
+    }
 }
 
 include 'solution_example.php';
