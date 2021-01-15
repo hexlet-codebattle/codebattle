@@ -88,7 +88,7 @@ const CustomOverlay = ({ user, overLayProps }) => {
 };
 
 const UserInfo = ({ user, truncate = false }) => (
-  <OverlayTrigger placement="bottom" delay={1000} overlay={props => <CustomOverlay user={user} overLayProps={props} />}>
+  <OverlayTrigger placement="bottom" delay={100} overlay={props => <CustomOverlay user={user} overLayProps={props} />}>
     <div><UserName user={user} truncate={truncate} /></div>
   </OverlayTrigger>
 );
