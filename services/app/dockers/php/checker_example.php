@@ -28,6 +28,14 @@ register_shutdown_function(function () {
 $stdout = STDERR;
 $success = true;
 
+function equals($result, $expected)
+{
+    if(gettype($result) != gettype($expected))
+        result false;
+
+    return $result == $expected;
+}
+
 function assert_result($result, $expected, $args, $execution_time, &$final_result, $success)
 {
     try {
