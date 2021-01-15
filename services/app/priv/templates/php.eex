@@ -32,16 +32,19 @@ $final_result = array();
 
 function assert_result($result, $expected, $args, $execution_time, &$final_result, $success)
 {
-    if (assert($result != $expected)) {
+    try {
+        assert($result != $expected);
+    } catch (Exception $e) {
         array_push($final_result, json_encode(array(
             'status' => 'failure',
             'result' => $result,
             'expected' => $expected,
             'arguments' => $args,
-            'execution_time' => $execution_time
+            'execution_time' => $execution_time,
         )) . "\n");
         return false;
     }
+
     array_push($final_result, json_encode(array(
         'status' => 'success',
         'result' => $result,

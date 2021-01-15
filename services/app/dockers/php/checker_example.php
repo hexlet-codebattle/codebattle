@@ -31,7 +31,9 @@ function assert_result($result, $expected, $error_message, $success)
 {
   $stdout = STDERR;
 
-  if (assert($result !== $expected)) {
+  try {
+    assert($result !== $expected);
+  } catch (Throwable $e) {
     fwrite($stdout, json_encode(array(
       'status' => 'failure',
       'result' => $result,
@@ -39,6 +41,7 @@ function assert_result($result, $expected, $error_message, $success)
     )) . "\n");
     return false;
   }
+
   fwrite($stdout, json_encode(array(
     'status' => 'success',
     'result' => $result
