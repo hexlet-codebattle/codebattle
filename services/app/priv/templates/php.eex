@@ -30,28 +30,38 @@ $stdout = STDERR;
 $success = true;
 $final_result = array();
 
-function assert_result($result, $expected, $args, $execution_time, &$final_result, $success)
+function equals($result, $expected)
+{
+    if(gettype($result) != gettype($expected))
+        return false;
+
+    return $result == $expected;
+}
+
+function assert_result($result, $expected, $args, $execution_time, &$final_result, $output, $success)
 {
     try {
-        assert($result != $expected);
+        assert(equals($result, $expected));
 
-        array_push($final_result, json_encode(array(
-            'status' => 'failure',
-            'result' => $result,
-            'expected' => $expected,
-            'arguments' => $args,
-            'execution_time' => $execution_time
-        )) . "\n");
-        return false;
-    } catch (AssertionError $e) {
         array_push($final_result, json_encode(array(
             'status' => 'success',
             'result' => $result,
             'expected' => $expected,
             'arguments' => $args,
-            'execution_time' => $execution_time
+            'execution_time' => $execution_time,
+            'output' => $output
         )) . "\n");
         return $success;
+    } catch (AssertionError $e) {
+        array_push($final_result, json_encode(array(
+            'status' => 'failure',
+            'result' => $result,
+            'expected' => $expected,
+            'arguments' => $args,
+            'execution_time' => $execution_time,
+            'output' => $output
+        )) . "\n");
+        return false;
     }
 }
 
@@ -60,9 +70,11 @@ include './check/solution.php';
 
 <%= for %{arguments: arguments, expected: expected} <- checks do %>
     $start = microtime(true);
+    ob_start();
     $result = solution(<%= arguments %>);
+    $output = ob_get_clean();
     $execution_time = microtime(true) - $start;
-    $success = assert_result($result, <%= expected %>, array(<%= arguments %>), $execution_time, $final_result, $success);
+    $success = assert_result($result, <%= expected %>, array(<%= arguments %>), $execution_time, $final_result, $output, $success);
 <% end %>
 
 if ($success) {
