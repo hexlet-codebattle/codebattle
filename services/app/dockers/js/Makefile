@@ -1,5 +1,5 @@
 test:
-	node ./checker.js
+	node ./check/checker.js
 
 test-example:
 	node ./checker_example.js

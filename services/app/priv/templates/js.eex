@@ -1,7 +1,3 @@
-import { run } from './runner'
+import { run } from '../runner.js'
 
-run([
-<%= for %{arguments: arguments, expected: expected} <- checks do %>
-  [<%= arguments %>],
-<% end %>
-])
+run(JSON.parse(<%= asserts %>))
