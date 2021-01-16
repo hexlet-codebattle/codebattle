@@ -30,12 +30,21 @@ $stdout = STDERR;
 $success = true;
 $final_result = array();
 
-function equals($result, $expected)
+function equals($a, $b)
 {
-    if(gettype($result) != gettype($expected))
-        return false;
+  $typeA = gettype($a);
+  $typeB = gettype($b);
 
-    return $result == $expected;
+  if ($typeA == 'integer')
+    $typeA = 'double';
+
+  if ($typeB == 'integer')
+    $typeB = 'double';
+
+  if ($typeA != $typeB)
+    return false;
+
+  return $a == $b;
 }
 
 function assert_result($result, $expected, $args, $execution_time, &$final_result, $output, $success)
