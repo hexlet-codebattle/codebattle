@@ -1,7 +1,15 @@
-const reduce = fn => arr => arr.reduce(fn);
+const _ = require('lodash')
+const R = require('rambda')
 
-module.exports = (a, b) => (
-  console.log(a),
-  console.log(b),
-  [a, b] |> reduce((acc, x) => acc + x)
-);
+console.log(_)
+
+module.exports = (a, b) => {
+  const res = a / b
+
+  if(res == Infinity) {
+    console.log('Патаму, что', res)
+    throw new Error('Брысь от сюда!')
+  }
+
+  return res
+}
