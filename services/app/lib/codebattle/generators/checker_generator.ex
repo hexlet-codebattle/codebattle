@@ -7,7 +7,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
 
   @langs_need_types ["ts"]
 
-  def create(%{extension: extension, slug: slug} = meta, task, target_dir, hash_sum) do
+  def create(%{extension: extension, slug: slug} = meta, task, target_dir, check_code, hash_sum) do
     binding = inflect(task, meta)
 
     binding =
@@ -16,14 +16,20 @@ defmodule Codebattle.Generators.CheckerGenerator do
       |> put_types(meta, task)
 
     source_dir = Application.app_dir(:codebattle, "priv/templates/")
+    checker_name = "checker#{check_code}"
 
     Logger.info(
-      "Create checker for #{slug} language. NAME: checker.#{extension}, TASK: #{inspect(task)}, BINDING #{
-        inspect(binding)
-      }"
+      "Create checker for #{slug} language. NAME: #{checker_name}.#{extension}, TASK: #{
+        inspect(task)
+      }, BINDING #{inspect(binding)}"
     )
 
-    Mix.Phoenix.copy_from(["/"], source_dir, binding, get_template_specs(target_dir, meta))
+    Mix.Phoenix.copy_from(
+      ["/"],
+      source_dir,
+      binding,
+      get_template_specs(target_dir, checker_name, meta)
+    )
   end
 
   @doc ~S"""
@@ -309,26 +315,33 @@ defmodule Codebattle.Generators.CheckerGenerator do
 
   defp put_types(binding, _, _), do: binding
 
-  defp get_template_specs(target_dir, %{slug: slug, extension: extension})
+  defp get_template_specs(target_dir, checker_name, %{slug: slug, extension: extension})
        when slug in @langs_need_types do
     Logger.info("Create types for #{slug} language. NAME: types.#{extension}")
 
     [
-      {:new_eex, "#{slug}.eex", Path.join(target_dir, "checker.#{extension}")},
+      {:new_eex, "#{slug}.eex", Path.join(target_dir, "#{checker_name}.#{extension}")},
       {:new_eex, "#{slug}.types.eex", Path.join(target_dir, "types.#{extension}")}
     ]
   end
 
-  defp get_template_specs(target_dir, %{slug: slug, extension: extension})
-       when slug in ["haskell", "java"] do
+  defp get_template_specs(target_dir, _, %{slug: slug, extension: extension})
+       when slug in ["haskell"] do
     [
       {:new_eex, "#{slug}.eex", Path.join(target_dir, "Checker.#{extension}")}
     ]
   end
 
-  defp get_template_specs(target_dir, %{extension: extension, slug: slug}) do
+  defp get_template_specs(target_dir, _, %{extension: extension, slug: slug})
+       when slug in ["clojure"] do
     [
       {:new_eex, "#{slug}.eex", Path.join(target_dir, "checker.#{extension}")}
+    ]
+  end
+
+  defp get_template_specs(target_dir, checker_name, %{extension: extension, slug: slug}) do
+    [
+      {:new_eex, "#{slug}.eex", Path.join(target_dir, "#{checker_name}.#{extension}")}
     ]
   end
 end

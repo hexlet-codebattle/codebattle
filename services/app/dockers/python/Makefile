@@ -1,5 +1,5 @@
 test:
-	python ./check/checker.py
+	python ./check/${checker_name}.py
 
 test-example:
 	python checker_example.py

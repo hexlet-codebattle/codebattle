@@ -39,7 +39,7 @@ defmodule Codebattle.CodeCheck.Checker do
 
         check_command =
           docker_command_template
-          |> :io_lib.format([label_name, volume, lang.docker_image])
+          |> :io_lib.format([label_name, volume, lang.docker_image, "checker#{check_code}"])
           |> to_string
 
         compile_check_command =
@@ -77,7 +77,7 @@ defmodule Codebattle.CodeCheck.Checker do
           "solution.#{lang.extension}"
       end
 
-    CheckerGenerator.create(lang, task, dir_path, hash_sum)
+    CheckerGenerator.create(lang, task, dir_path, check_code, hash_sum)
 
     File.write!(Path.join(dir_path, file_name), editor_text)
     {dir_path, check_code}
