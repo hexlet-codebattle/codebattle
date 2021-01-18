@@ -35,11 +35,12 @@ defmodule Codebattle.CodeCheck.Checker do
 
         {dir_path, check_code} = prepare_tmp_dir!(task, editor_text, lang)
         volume = "-v #{dir_path}:/usr/src/app/#{lang.check_dir}"
+        checker_name = CheckerGenerator.get_checker_name(check_code, editor_lang)
         label_name = "-l codebattle_game"
 
         check_command =
           docker_command_template
-          |> :io_lib.format([label_name, volume, lang.docker_image, "checker#{check_code}"])
+          |> :io_lib.format([label_name, volume, lang.docker_image, checker_name])
           |> to_string
 
         compile_check_command =

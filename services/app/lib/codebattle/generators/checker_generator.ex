@@ -144,6 +144,14 @@ defmodule Codebattle.Generators.CheckerGenerator do
     ]
   end
 
+  def get_checker_name(_, "java") do
+    "Checker"
+  end
+
+  def get_checker_name(code, _lang) do
+    "checker#{check_code}"
+  end
+
   defp get_arguments(
          {assert, index},
          %{input_signature: input_signature},
