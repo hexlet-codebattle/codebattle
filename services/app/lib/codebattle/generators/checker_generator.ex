@@ -153,7 +153,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
   end
 
   def get_checker_name(code, _lang) do
-    "checker#{check_code}"
+    "checker#{code}"
   end
 
   defp get_arguments(
