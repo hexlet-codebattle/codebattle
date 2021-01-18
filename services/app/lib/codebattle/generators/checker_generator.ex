@@ -148,6 +148,10 @@ defmodule Codebattle.Generators.CheckerGenerator do
     "Checker"
   end
 
+  def get_checker_name(_, "kotlin") do
+    "checker"
+  end
+
   def get_checker_name(code, _lang) do
     "checker#{check_code}"
   end
