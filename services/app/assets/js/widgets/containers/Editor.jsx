@@ -166,13 +166,14 @@ class Editor extends PureComponent {
           theme={theme}
           options={this.options}
           width="100%"
+          height="100%"
           language={mappedSyntax}
           editorDidMount={this.editorDidMount}
           value={value}
           onChange={onChange}
           data-guide-id="Editor"
         />
-        <div ref={this.statusBarRef} className="bg-dark text-white px-1" />
+        <div ref={this.statusBarRef} className="bg-dark text-white px-1 position-absolute" style={{ bottom: '40px' }} />
       </>
     );
   }

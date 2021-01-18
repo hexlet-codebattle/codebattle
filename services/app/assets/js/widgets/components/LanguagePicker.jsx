@@ -22,9 +22,9 @@ const LanguagePicker = ({ disabled, editor: { currentLangSlug } }) => {
   const customStyle = {
     control: provided => ({
       ...provided,
-      height: '31px',
+      height: '33px',
       minHeight: '31px',
-      minWidth: '190px',
+      minWidth: '210px',
       backgroundColor: 'hsl(0, 0%, 100%)',
     }),
     indicatorsContainer: provided => ({
