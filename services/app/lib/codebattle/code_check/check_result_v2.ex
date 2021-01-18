@@ -21,7 +21,7 @@ defmodule Codebattle.CodeCheck.CheckResultV2 do
   defmodule AssertResult do
     @moduledoc
     """
-    statuses:
+    types:
     :result -> value from solution()
     :error -> catched error from solution()
     """
@@ -29,8 +29,9 @@ defmodule Codebattle.CodeCheck.CheckResultV2 do
     @derive Jason.Encoder
 
     defstruct type: "result",
+              value: false,
               time: 0.0,
-              value: nil,
+              received: nil,
               expected: nil,
               arguments: nil,
               output: ""
