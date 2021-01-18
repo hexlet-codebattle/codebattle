@@ -82,7 +82,7 @@ html lang="en"
                       = link gettext("Sign Out"), to: session_path(@conn, :delete), method: "delete", class: "dropdown-item"
               - else
                 li.nav-item
-                  a href="#{auth_path(@conn, :request, :github, locale: :en)}"
+                  a href="#{auth_path(@conn, :request, :github, locale: :en, next: get_next_path(@conn))}"
                     button.btn.btn-outline-success = gettext "Sign in with %{name}", name: "Github"
                 = if Mix.env() == :dev do
                   li.nav-item
