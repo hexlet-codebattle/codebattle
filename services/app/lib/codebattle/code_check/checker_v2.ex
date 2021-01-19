@@ -18,7 +18,7 @@ defmodule Codebattle.CodeCheck.CheckerV2 do
     # Task.start(File, :rm_rf, [dir_path])
 
     container_output
-    |> OutputParserV2.call(lang, task)
+    |> OutputParserV2.call(task)
   end
 
   defp prepare_tmp_dir!(task, editor_text, lang) do

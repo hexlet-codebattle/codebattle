@@ -5,7 +5,9 @@ defmodule Codebattle.CodeCheck.OutputParserV2 do
   alias Codebattle.CodeCheck.CheckResultV2
   alias Codebattle.Task
 
-  def call(container_output, lang, task) do
+  @memory_overflow "Error 137"
+
+  def call(container_output, task) do
     asserts = Task.get_asserts(task)
 
     try do
@@ -21,16 +23,20 @@ defmodule Codebattle.CodeCheck.OutputParserV2 do
         |> Enum.with_index()
         |> Enum.reduce(
           Codebattle.CodeCheck.CheckResultV2.new(),
-          # TODO: calculate result here
+          # TODO: calculate result on a single pass through list
           fn {item, index}, acc ->
             assert = Enum.at(asserts, index)
 
             new_item = %CheckResultV2.AssertResult{
-              value: item["value"] == assert["expected"],
               output: item["output"],
               time: item["time"],
-              received: item["value"],
-              type: item["type"],
+              value: item["value"],
+              type:
+                if item["type"] == "result" and item["value"] == assert["expected"] do
+                  "success"
+                else
+                  "failure"
+                end,
               expected: assert["expected"],
               arguments: assert["arguments"]
             }
@@ -39,14 +45,14 @@ defmodule Codebattle.CodeCheck.OutputParserV2 do
           end
         )
 
-      success_count = Enum.count(assert_result.asserts, fn x -> x.value end)
+      success_count = Enum.count(assert_result.asserts, fn x -> x.type == "success" end)
       asserts_count = Enum.count(asserts)
 
       status =
         if asserts_count == success_count do
-          :success
+          "success"
         else
-          :failure
+          "failure"
         end
 
       output =
@@ -65,10 +71,17 @@ defmodule Codebattle.CodeCheck.OutputParserV2 do
       e ->
         Logger.error(e)
 
-        %CheckResultV2{
-          output: container_output,
-          status: :error
-        }
+        if String.contains?(container_output, @memory_overflow) do
+          %CheckResultV2{
+            output: "Your solution ran out of memory, please, rewrite it",
+            status: :error
+          }
+        else
+          %CheckResultV2{
+            output: container_output,
+            status: :error
+          }
+        end
     end
   end
 
