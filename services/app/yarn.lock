@@ -10382,10 +10382,10 @@ react-select@^3.1.1:
     react-input-autosize "^2.2.2"
     react-transition-group "^4.3.0"
 
-react-slack-feedback@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/react-slack-feedback/-/react-slack-feedback-2.1.0.tgz#da24315469d2cf25c31cc8cf46e9926b33184884"
-  integrity sha512-NpWBlgmtUaZDR3qQrnGTiLcgjcT848y8Y78Vhf2ATMbpq9KEdHYuC02aj2eermWCR280pWWMr3MODZD2gX94tQ==
+react-slack-feedback@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/react-slack-feedback/-/react-slack-feedback-2.1.1.tgz#b6c96f01d6ac98ad88507de39cbd405a6a74ee95"
+  integrity sha512-I+AUaDNnTOYpyGlZgiFDt3oNATZOesAdOwh9aCJq9Sfl+EZhjuPoJ0vgIVeNBLDPXrzWfmv3a7bkXdWHqYkCYw==
   dependencies:
     classnames "^2.2.5"
     deepmerge "^3.2.0"
