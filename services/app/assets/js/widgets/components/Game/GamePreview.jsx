@@ -2,8 +2,8 @@ import React from 'react';
 import LanguageIcon from '../LanguageIcon';
 
 const GamePreview = ({ player1, player2 }) => (
-  <div className="preview container-fluid">
-    <div className="preview__container w-100 d-flex justify-content-around align-items-center">
+  <div className="preview container-fluid slideInLeft">
+    <div className="preview__container w-100 d-flex align-items-center">
       <div className="player1">
         <img src={`https://avatars0.githubusercontent.com/u/${player1.github_id}`} alt="avatar" className="player1__avatar" />
         <p className="player1__name">{player1.name}</p>

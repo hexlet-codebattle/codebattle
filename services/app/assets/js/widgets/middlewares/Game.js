@@ -122,7 +122,7 @@ const initGameChannel = dispatch => {
       playbookStatusCode: PlaybookStatusCodes.active,
     });
 
-    dispatch(actions.finishStoreInit());
+    setTimeout(() => dispatch(actions.finishStoreInit()), 2000);
   };
 
   channel

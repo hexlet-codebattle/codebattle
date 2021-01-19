@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect, useSelector } from 'react-redux';
 import { useHotkeys } from 'react-hotkeys-hook';
 import Gon from 'gon';
 import ReactJoyride, { STATUS } from 'react-joyride';
+import { CSSTransition, SwitchTransition } from 'react-transition-group';
 import _ from 'lodash';
 import GameWidget from './GameWidget';
 import InfoWidget from './InfoWidget';
@@ -165,26 +166,14 @@ const RootContainer = ({
     { filter: () => true },
   );
 
-  const [isPreviewTimerExpired, setPreviewTimerExpired] = useState(false);
-
-  useEffect(() => {
-    const time = 3000;
-    const timer = setTimeout(() => setPreviewTimerExpired(true), time);
-    return () => {
-      clearTimeout(timer);
-    };
-  }, []);
-
   const players = Gon.getAsset('players');
+  const isRenderPreview = (!storeLoaded && players);
 
-  if (!isPreviewTimerExpired || (!storeLoaded && players)) {
-    const defaultPlayer = {
-      name: 'John Doe', github_id: 35539033, lang: 'js', rating: '0',
-    };
-    const player1 = players[0] || defaultPlayer;
-    const player2 = players[1] || defaultPlayer;
-    return <GamePreview player1={player1} player2={player2} />;
-  }
+  const defaultPlayer = {
+    name: 'John Doe', github_id: 35539033, lang: 'js', rating: '0',
+  };
+  const player1 = players[0] || defaultPlayer;
+  const player2 = players[1] || defaultPlayer;
 
   if (gameStatusCode === GameStatusCodes.waitingOpponent) {
     const gameUrl = window.location.href;
@@ -194,16 +183,31 @@ const RootContainer = ({
   const isStoredGame = gameStatusCode === GameStatusCodes.stored;
 
   return (
-    <div className="x-outline-none">
-      <GameWidgetGuide />
-      <div className="container-fluid">
-        <div className="row no-gutter cb-game">
-          <InfoWidget />
-          <GameWidget />
-        </div>
-      </div>
-      {isStoredGame && <CodebattlePlayer />}
-    </div>
+    <SwitchTransition mode="out-in">
+      <CSSTransition
+        key={isRenderPreview ? 'preview' : 'game'}
+        addEndListener={(node, done) => {
+          node.addEventListener('transitionend', done, false);
+        }}
+        classNames="preview"
+      >
+        {isRenderPreview
+          ? (<GamePreview className="animate" player1={player1} player2={player2} />)
+          : (
+            <div className="x-outline-none">
+              <GameWidgetGuide />
+              <div className="container-fluid">
+                <div className="row no-gutter cb-game">
+                  <InfoWidget />
+                  <GameWidget />
+                </div>
+              </div>
+              {isStoredGame && <CodebattlePlayer />}
+            </div>
+        )}
+
+      </CSSTransition>
+    </SwitchTransition>
   );
 };
 
