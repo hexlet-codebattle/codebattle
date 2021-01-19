@@ -338,7 +338,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
   end
 
   defp get_template_specs(target_dir, _, %{slug: slug, extension: extension})
-       when slug in ["haskell"] do
+       when slug in ["haskell", "java"] do
     [
       {:new_eex, "#{slug}.eex", Path.join(target_dir, "Checker.#{extension}")}
     ]
