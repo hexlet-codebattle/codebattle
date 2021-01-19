@@ -345,7 +345,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
   end
 
   defp get_template_specs(target_dir, _, %{extension: extension, slug: slug})
-       when slug in ["clojure"] do
+       when slug in ["clojure", "kotlin"] do
     [
       {:new_eex, "#{slug}.eex", Path.join(target_dir, "checker.#{extension}")}
     ]
