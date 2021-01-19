@@ -75,6 +75,9 @@ html lang="en"
                       a.dropdown-item.d-flex.align-items-center.justify-content-between[href="https://hexlet.io" target="_blank"]
                         = gettext "Hexlet"
                         span.fa.fa-university.ml-3
+                      a.dropdown-item.d-flex.align-items-center.justify-content-between[href="https://discord.gg/dTpFXrYU3v" target="_blank"]
+                        = gettext "Join Discord"
+                        span.fab.fa-discord.ml-3
                       a.dropdown-item.d-flex.align-items-center.justify-content-between[href="http://slack-ru.hexlet.io/" target="_blank"]
                         = gettext "Slack#codebattle"
                         span.fab.fa-slack.ml-3
