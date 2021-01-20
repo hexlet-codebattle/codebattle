@@ -1,3 +1,7 @@
 const { run } = require('../runner.js')
 
-run(JSON.parse("<%= asserts %>"))
+run([
+  [0, 1],
+  [1, 1],
+  [1, 0]
+])

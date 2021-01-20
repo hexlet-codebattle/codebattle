@@ -20,7 +20,7 @@ const getMessage = status => {
 
 const AccordeonBox = ({ children }) => (
   <div className="accordion border-top" id="accordionExample">
-    { children }
+    { children}
   </div>
 );
 
@@ -34,7 +34,7 @@ const renderFirstAssert = firstAssert => (
       output={firstAssert.output}
     />
   </AccordeonBox.SubMenu>
-  );
+);
 
 const Menu = ({
   children, firstAssert, resultData, assertsCount, successCount,
@@ -70,7 +70,7 @@ const Menu = ({
                 aria-expanded="true"
                 aria-controls={`collapse${uniqIndex}`}
               >
-                { show ? <FontAwesomeIcon icon="arrow-circle-up" /> : <FontAwesomeIcon icon="arrow-circle-down" /> }
+                {show ? <FontAwesomeIcon icon="arrow-circle-up" /> : <FontAwesomeIcon icon="arrow-circle-down" />}
               </button>
               {!isSyntaxError && <span className="font-weight-bold small mr-3">{assertsStatusMessage}</span>}
               <span className={`badge badge-${statusColor}`}>{message}</span>
@@ -93,62 +93,68 @@ const SubMenu = ({
   const classCollapse = cn('collapse', {
     show: isShowLog,
   });
+
+
+  const { result = assert.value } = assert
+
   return (
     <div className="list-group-item">
       <div id={`heading${uniqIndex}`}>
         <div>
           <div>
             {statusColor === 'success'
-            ? <FontAwesomeIcon className={`text-${statusColor} mr-2`} icon="check-circle" />
-            : <FontAwesomeIcon className={`text-${statusColor} mr-2`} icon="exclamation-circle" />}
+              ? <FontAwesomeIcon className={`text-${statusColor} mr-2`} icon="check-circle" />
+              : <FontAwesomeIcon className={`text-${statusColor} mr-2`} icon="exclamation-circle" />}
             <div className={`badge badge-${statusColor} mr-3`}>{assert.status}</div>
             {assert.output
               && (
-              <button
-                className="btn btn-sm btn-info rounded ml-2"
-                type="button"
-                onClick={() => setIsShowLog(!isShowLog)}
-                data-toggle="collapse"
-                aria-expanded="true"
-                aria-controls={`collapse${uniqIndex}`}
-              >
+                <button
+                  className="btn btn-sm btn-info rounded ml-2"
+                  type="button"
+                  onClick={() => setIsShowLog(!isShowLog)}
+                  data-toggle="collapse"
+                  aria-expanded="true"
+                  aria-controls={`collapse${uniqIndex}`}
+                >
 
-                <span>
-                  { isShowLog ? <FontAwesomeIcon icon="arrow-circle-up" /> : <FontAwesomeIcon icon="arrow-circle-down" /> }
-                  {' Log'}
-                </span>
-              </button>
-            )}
+                  <span>
+                    {isShowLog ? <FontAwesomeIcon icon="arrow-circle-up" /> : <FontAwesomeIcon icon="arrow-circle-down" />}
+                    {' Log'}
+                  </span>
+                </button>
+              )}
           </div>
         </div>
         <pre className="my-1">
-          <span className="d-block">{`${i18n.t('Receive:')} ${JSON.stringify(assert.result)}`}</span>
+          <span className="d-block">{`${i18n.t('Receive:')} ${JSON.stringify(result)}`}</span>
           <span className="d-block">{`${i18n.t('Expected:')} ${JSON.stringify(assert.expected)}`}</span>
           <span className="d-block">{`${i18n.t('Arguments:')} ${JSON.stringify(assert.arguments)}`}</span>
         </pre>
         {hasOutput && (
-        <>
-          <div id={`collapse${uniqIndex}`} className={classCollapse} aria-labelledby={`heading${uniqIndex}`}>
-            {children}
-          </div>
-        </>
+          <>
+            <div id={`collapse${uniqIndex}`} className={classCollapse} aria-labelledby={`heading${uniqIndex}`}>
+              {children}
+            </div>
+          </>
         )}
       </div>
     </div>
   );
 };
+
 const Item = ({ output, result = null }) => (
   <div className="alert alert-secondary mb-0">
     <pre>
       <span className="font-weight-bold d-block">Output:</span>
       {output}
     </pre>
-    <pre>
+    {/* <pre>
       <span className="font-weight-bold d-block">Result:</span>
       {result}
-    </pre>
+    </pre> */}
   </div>
 );
+
 AccordeonBox.Item = Item;
 AccordeonBox.Menu = Menu;
 AccordeonBox.SubMenu = SubMenu;

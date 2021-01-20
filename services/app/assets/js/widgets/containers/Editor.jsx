@@ -46,6 +46,14 @@ class Editor extends PureComponent {
       readOnly: !props.editable,
       contextmenu: props.editable,
     };
+
+    this.ctrPlusS = this.ctrPlusS.bind(this)
+  }
+
+  /** @param {KeyboardEvent} e */
+  ctrPlusS(e) {
+    if(e.key == 's' && (e.metaKey || e.ctrlKey))
+      e.preventDefault()
   }
 
   async componentDidMount() {
@@ -56,6 +64,7 @@ class Editor extends PureComponent {
     };
     await this.updateHightLightForNotIncludeSyntax(syntax);
     this.currentMode = this.modes[mode]();
+    window.addEventListener('keydown', this.ctrPlusS)
   }
 
   async componentDidUpdate(prevProps) {
@@ -94,6 +103,7 @@ class Editor extends PureComponent {
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.handleResize);
+    window.removeEventListener('keydown', this.ctrPlusS)
   }
 
   updateHightLightForNotIncludeSyntax = async syntax => {

@@ -68,13 +68,14 @@ defmodule Codebattle.Languages do
         }
       },
       "js" => %{
+        checker_version: 2,
         name: "Node.js",
         slug: "js",
-        version: "13.13.0",
+        version: "15.5.1",
         base_image: :ubuntu,
         check_dir: "check",
         extension: "js",
-        docker_image: "codebattle/js:13.13.0",
+        docker_image: "codebattle/js:15.5.1",
         solution_version: :default,
         solution_template:
           "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (<%= arguments %>) => {\n<%= return_statement %>\n};\n\nmodule.exports = solution;",
@@ -98,13 +99,14 @@ defmodule Codebattle.Languages do
         }
       },
       "ts" => %{
+        checker_version: 2,
         name: "typescript",
         slug: "ts",
-        version: "3.5.2",
+        version: "4.1.3",
         base_image: :ubuntu,
         check_dir: "check",
-        extension: "ts",
-        docker_image: "codebattle/ts:3.5.2",
+        extension: "js",
+        docker_image: "codebattle/js:15.5.1",
         solution_version: :typed,
         solution_template:
           "<%= import %>function solution(<%= arguments %>)<%= expected %>{\n\n};\n\nexport default solution;",

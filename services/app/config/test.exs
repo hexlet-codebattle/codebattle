@@ -31,7 +31,7 @@ config :codebattle, Codebattle.Bot,
 
 adapter =
   case System.get_env("CODEBATTLE_RUN_CODE_CHECK") do
-    "true" -> Codebattle.CodeCheck.Checker
+    "true" -> Codebattle.CodeCheck.DockerChecker
     _ -> Codebattle.CodeCheck.FakeChecker
   end
 

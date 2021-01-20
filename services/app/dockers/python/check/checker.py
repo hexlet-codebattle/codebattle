@@ -39,7 +39,7 @@ def assert_result(solution, expected, arguments, success):
         return False
 
 try:
-    from solution_example import solution
+    from solution import solution
     success = True
 
     solution_lambda = lambda arguments: solution(*arguments)

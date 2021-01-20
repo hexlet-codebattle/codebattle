@@ -44,10 +44,20 @@ defmodule Codebattle.Task do
     from(t in query, where: t.disabled == true)
   end
 
+  def get_asserts(task) do
+    task
+    |> Map.get(:asserts)
+    |> String.split("\n")
+    |> filter_empty_items()
+    |> Enum.map(&Jason.decode!/1)
+  end
+
   def get_shuffled_tasks(level) do
     from(task in Codebattle.Task, where: task.level == ^level)
     |> visible()
     |> Codebattle.Repo.all()
     |> Enum.shuffle()
   end
+
+  defp filter_empty_items(items), do: items |> Enum.filter(&(&1 != ""))
 end
