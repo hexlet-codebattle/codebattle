@@ -11,6 +11,4 @@ ENV NODE_PATH /usr/local/lib/node_modules/
 WORKDIR /usr/src/app
 
 ADD runner.js .
-ADD checker_example.js .
-ADD solution_example.js .
 ADD Makefile .

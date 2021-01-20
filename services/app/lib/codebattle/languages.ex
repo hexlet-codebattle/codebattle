@@ -105,7 +105,7 @@ defmodule Codebattle.Languages do
         version: "4.1.3",
         base_image: :ubuntu,
         check_dir: "check",
-        extension: "ts",
+        extension: "js",
         docker_image: "codebattle/js:15.5.1",
         solution_version: :typed,
         solution_template:

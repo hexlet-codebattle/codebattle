@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect, useSelector } from 'react-redux';
-import { useHotkeys } from 'react-hotkeys-hook';
 import Gon from 'gon';
 import ReactJoyride, { STATUS } from 'react-joyride';
 import _ from 'lodash';
@@ -106,6 +105,8 @@ const steps = [
     },
   },
 ];
+
+
 const GameWidgetGuide = () => {
   const isActiveGame = useSelector(
     state => gameStatusSelector(state).status === GameStatusCodes.playing,
@@ -157,15 +158,22 @@ const RootContainer = ({
     init();
   }, [init, setCurrentUser]);
 
-  useHotkeys(
-    'ctrl+enter, command+enter',
-    e => {
-      e.preventDefault();
-      checkResult();
-    },
-    [],
-    { filter: () => true },
-  );
+  useEffect(() => {
+    /** @param {KeyboardEvent} e */
+    const check = (e) => {
+      if((e.ctrlKey || e.metaKey) && e.key == 'Enter') {
+        e.preventDefault()
+        checkResult()
+        console.log('Я тут!')
+      }
+    }
+
+    window.addEventListener('keydown', check)
+
+    return () => {
+      window.removeEventListener('keydown', check)
+    }
+  }, [])
 
   if (gameStatusCode === GameStatusCodes.waitingOpponent) {
     const gameUrl = window.location.href;

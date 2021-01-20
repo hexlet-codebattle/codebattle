@@ -1,17 +1,18 @@
-import { readFileSync, readdirSync } from "fs";
-import { createContext, runInContext } from "vm";
-import { Writable } from "stream";
-import { Console } from "console";
-import { performance } from "perf_hooks";
-import pkg from "typescript";
-import _ from "lodash";
-import R from "rambda";
+const { readFileSync, readdirSync } = require("fs");
+const { join } = require("path");
+const { createContext, runInContext } = require("vm");
+const { Writable } = require("stream");
+const { Console } = require("console");
+const { performance } = require("perf_hooks");
+const pkg = require("typescript");
+const _ = require("lodash");
+const R = require("rambda");
 
 const { transpile } = pkg;
 const limitLength = 100;
 const limitCode = " ...";
 
-export function run(args = []) {
+exports.run = function run(args = []) {
   let output = "";
   const fakeStream = new Writable();
   const myConsole = new Console(fakeStream);
@@ -35,7 +36,8 @@ export function run(args = []) {
     output = "";
   };
 
-  const list = readdirSync("./", "utf-8");
+  process.chdir('./check')
+  const list = readdirSync('./', "utf-8");
 
   list.sort((a, b) => a.length - b.length);
 
@@ -44,6 +46,7 @@ export function run(args = []) {
   if (!file) throw new Error("No find solution file!");
 
   const scriptTest = readFileSync(file, "utf-8");
+  process.chdir('../')
   const context = createContext({
     require(name = "") {
       switch (name) {
@@ -71,11 +74,14 @@ export function run(args = []) {
 
     for (const a of args) {
       const now = performance.now();
+      let runner = context.exports
 
+      if(typeof runner != 'function')
+        runner = runner.default
       try {
         toOut({
           type: "result",
-          value: context.module.exports(...a),
+          value: runner(...a),
           time: performance.now() - now,
         });
       } catch (e) {

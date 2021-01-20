@@ -1,7 +1,6 @@
 {
   "name": "js-checker",
   "version": "0.0.1",
-  "type": "module",
   "dependencies": {
     "@types/lodash": "~4.14.167",
     "lodash": "~4.17.20",
