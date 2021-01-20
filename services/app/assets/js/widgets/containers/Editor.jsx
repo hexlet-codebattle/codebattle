@@ -28,6 +28,11 @@ class Editor extends PureComponent {
 
   // eslint-disable-next-line react/sort-comp
   notIncludedSyntaxHightlight = new Set(["haskell", "elixir"]);
+  
+  /** @param {KeyboardEvent} e */
+  ctrPlusS = (e) => {
+    if (e.key === "s" && (e.metaKey || e.ctrlKey)) e.preventDefault();
+  }
 
   constructor(props) {
     super(props);
@@ -47,14 +52,8 @@ class Editor extends PureComponent {
       readOnly: !props.editable,
       contextmenu: props.editable,
     };
-
-    this.ctrPlusS = this.ctrPlusS.bind(this);
   }
 
-  /** @param {KeyboardEvent} e */
-  ctrPlusS(e) {
-    if (e.key === "s" && (e.metaKey || e.ctrlKey)) e.preventDefault();
-  }
 
   async componentDidMount() {
     const { mode, syntax } = this.props;
