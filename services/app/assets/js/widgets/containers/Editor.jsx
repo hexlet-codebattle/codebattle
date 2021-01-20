@@ -29,6 +29,8 @@ class Editor extends PureComponent {
   // eslint-disable-next-line react/sort-comp
   notIncludedSyntaxHightlight = new Set(['haskell', 'elixir']);
 
+  ctrPlusS = null
+
   constructor(props) {
     super(props);
     this.statusBarRef = React.createRef();
@@ -46,14 +48,10 @@ class Editor extends PureComponent {
       readOnly: !props.editable,
       contextmenu: props.editable,
     };
-
-    this.ctrPlusS = this.ctrPlusS.bind(this)
-  }
-
-  /** @param {KeyboardEvent} e */
-  ctrPlusS(e) {
-    if(e.key == 's' && (e.metaKey || e.ctrlKey))
-      e.preventDefault()
+    /** @param {KeyboardEvent} e */
+    this.ctrPlusS = e => {
+      if (e.key === 's' && (e.metaKey || e.ctrlKey)) e.preventDefault();
+    };
   }
 
   async componentDidMount() {
@@ -64,7 +62,7 @@ class Editor extends PureComponent {
     };
     await this.updateHightLightForNotIncludeSyntax(syntax);
     this.currentMode = this.modes[mode]();
-    window.addEventListener('keydown', this.ctrPlusS)
+    window.addEventListener('keydown', this.ctrPlusS);
   }
 
   async componentDidUpdate(prevProps) {
@@ -103,7 +101,7 @@ class Editor extends PureComponent {
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.handleResize);
-    window.removeEventListener('keydown', this.ctrPlusS)
+    window.removeEventListener('keydown', this.ctrPlusS);
   }
 
   updateHightLightForNotIncludeSyntax = async syntax => {
@@ -183,7 +181,11 @@ class Editor extends PureComponent {
           onChange={onChange}
           data-guide-id="Editor"
         />
-        <div ref={this.statusBarRef} className="bg-dark text-white px-1 position-absolute" style={{ bottom: '40px' }} />
+        <div
+          ref={this.statusBarRef}
+          className="bg-dark text-white px-1 position-absolute"
+          style={{ bottom: '40px' }}
+        />
       </>
     );
   }

@@ -107,7 +107,6 @@ const steps = [
   },
 ];
 
-
 const GameWidgetGuide = () => {
   const isActiveGame = useSelector(
     state => gameStatusSelector(state).status === GameStatusCodes.playing,
@@ -161,20 +160,20 @@ const RootContainer = ({
 
   useEffect(() => {
     /** @param {KeyboardEvent} e */
-    const check = (e) => {
-      if((e.ctrlKey || e.metaKey) && e.key == 'Enter') {
-        e.preventDefault()
-        checkResult()
-        console.log('Я тут!')
+    const check = e => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        checkResult();
       }
-    }
+    };
 
-    window.addEventListener('keydown', check)
+    window.addEventListener('keydown', check);
 
     return () => {
-      window.removeEventListener('keydown', check)
-    }
-  }, [])
+      window.removeEventListener('keydown', check);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (gameStatusCode === GameStatusCodes.waitingOpponent) {
     const gameUrl = window.location.href;
