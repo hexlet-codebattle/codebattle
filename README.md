@@ -7,7 +7,7 @@
 
 Сodebattle - is an open source game being developed by the Hexlet community.
 The current version of the application is available at [codebattle.hexlet.io](https://codebattle.hexlet.io).
-
+We also have [chrome extension](https://chrome.google.com/webstore/detail/codebattle-web-extension/embfhnfkfobkdohleknckodkmhgmpdli). Which allow subscribe on last game updates.
 ### Requirements
 
 - Mac / Linux

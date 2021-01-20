@@ -11,6 +11,8 @@ import { resolveDiffs } from '../lib/player';
 import PlaybookStatusCodes from '../config/playbookStatusCodes';
 import GameStatusCodes from '../config/gameStatusCodes';
 
+import notification from '../utils/notification';
+
 const defaultLanguages = Gon.getAsset('langs');
 const gameId = Gon.getAsset('game_id');
 const isRecord = Gon.getAsset('is_record');
@@ -174,6 +176,8 @@ export const changeCurrentLangAndSetTemplate = langSlug => (dispatch, getState) 
   dispatch(sendEditorText(textToSet, langSlug));
 };
 
+export const soundNotification = notification();
+
 export const activeGameEditorReady = () => dispatch => {
   initGameChannel(dispatch);
   channel.on('editor:data', data => {
@@ -216,6 +220,7 @@ export const activeGameEditorReady = () => dispatch => {
       { ...secondPlayer, type: userTypes.secondPlayer },
     ];
 
+    soundNotification.start();
     dispatch(actions.updateGamePlayers({ players }));
     dispatch(actions.setGameTask({ task }));
     dispatch(actions.setLangs({ langs }));

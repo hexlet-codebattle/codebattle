@@ -7,9 +7,9 @@ use Mix.Config
 
 config :codebattle,
   alpine_docker_command_template:
-    "docker run --rm -m 400m --cpus=1 --net none ~s ~s ~s timeout -s 9 -t 10 make --silent test",
+    "docker run --rm -m 400m --cpus=1 --net none ~s ~s ~s timeout -s 9 -t 10 make --silent test checker_name=~s",
   ubuntu_docker_command_template:
-    "docker run --rm -m 400m --cpus=1 --net none ~s ~s ~s timeout -s 9 10s make --silent test",
+    "docker run --rm -m 400m --cpus=1 --net none ~s ~s ~s timeout -s 9 10s make --silent test checker_name=~s",
   alpine_docker_command_compile_template:
     "docker run -m 400m --cpus=1 --net none ~s ~s ~s timeout -s 9 -t 10 make --silent test-compile",
   ubuntu_docker_command_compile_template:
@@ -81,6 +81,7 @@ config :phoenix_meta_tags,
 
 config :codebattle, Codebattle.Bot,
   timeout_start_playbook: 10_000,
+  prep_time: 120_000,
   min_bot_player_speed: 1_000
 
 config :codebattle, Codebattle.DockerLangsPuller, timeout: :timer.hours(7)

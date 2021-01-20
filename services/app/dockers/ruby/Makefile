@@ -1,5 +1,5 @@
 test:
-	ruby ./check/checker.rb
+	ruby ./check/${checker_name}.rb
 
 test-example:
 	ruby checker_example.rb

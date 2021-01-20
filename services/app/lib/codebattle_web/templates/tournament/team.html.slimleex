@@ -1,4 +1,5 @@
 - statistics = get_players_statistics(@tournament)
+- tournament_stats = get_tournament_statistics(@tournament)
 
 = render "_header.html", tournament: @tournament, time: @time, current_user: @current_user, socket: @socket
 
@@ -13,10 +14,11 @@
         .col-12
           ul.nav.nav-tabs[id="team-tournament-tab" role="tablist"]
             li.nav-item
-              = render "_nav_link.html", title: "Team scores", active_tab: @team_tournament_tab, id: "scores"
-            = unless is_nil(statistics) do
-              li.nav-item
-                = render "_nav_link.html", title: "Rating players", active_tab: @team_tournament_tab, id: "rating"
+              = render "_nav_link.html", title: "Team scores", active_tab: @team_tournament_tab, id: "scores", disabled: false
+            li.nav-item
+                = render "_nav_link.html", title: "Rating players", active_tab: @team_tournament_tab, id: "rating", disabled: is_nil(statistics)
+            li.nav-item
+                = render "_nav_link.html", title: "Tournament Statistics", active_tab: @team_tournament_tab, id: "statistics", disabled: is_nil(statistics)
           .tab-content[id="tournament_content"]
             = if @team_tournament_tab == "scores" do
               .tab-pane.fade.show.active[id="scores" role="tabpanel" aria-labelledby="scores-tab"]
@@ -31,6 +33,13 @@
               - else
                 .tab-pane.fade[id="rating" role="tabpanel" aria-labelledby="rating-tab"]
                   = render "_team_top.html", statistics: statistics, current_user: @current_user, rating_toggle: @rating_toggle
+            = unless is_nil(statistics) do
+              = if @team_tournament_tab == "statistics" do
+                .tab-pane.fade.show.active[id="statistics" role="tabpanel" aria-labelledby="statistics-tab"]
+                  = render "_team_statistics.html", statistics: tournament_stats, current_user: @current_user
+              - else
+                .tab-pane.fade[id="statistics" role="tabpanel" aria-labelledby="statistics-tab"]
+                  = render "_team_statistics.html", statistics: tournament_stats, current_user: @current_user
 
         .col-12.mt-4
           = for round <- Enum.reverse(get_rounds(@tournament)) do

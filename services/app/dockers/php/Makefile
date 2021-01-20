@@ -1,5 +1,5 @@
 test:
-	php ./check/checker.php
+	php ./check/${checker_name}.php
 
 test-example:
 	php ./checker_example.php

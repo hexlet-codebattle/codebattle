@@ -71,5 +71,5 @@ test('test rendering active game components', async () => {
   render(<Provider store={store}><RootContainer /></Provider>);
 
   expect(screen.getByText(/Online users:/)).toBeInTheDocument();
-  expect(screen.getByText(/Task/)).toBeInTheDocument();
+  expect(screen.getByText(/^(Task)$/)).toBeInTheDocument();
 });

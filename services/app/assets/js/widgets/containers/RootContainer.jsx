@@ -6,6 +6,7 @@ import Gon from 'gon';
 import ReactJoyride, { STATUS } from 'react-joyride';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
 import _ from 'lodash';
+
 import GameWidget from './GameWidget';
 import InfoWidget from './InfoWidget';
 import userTypes from '../config/userTypes';
@@ -19,6 +20,7 @@ import {
 } from '../selectors';
 import WaitingOpponentInfo from '../components/WaitingOpponentInfo';
 import CodebattlePlayer from './CodebattlePlayer';
+import FeedBackWidget from '../components/FeedBackWidget';
 import GamePreview from '../components/Game/GamePreview';
 
 const steps = [
@@ -96,7 +98,7 @@ const steps = [
   },
   {
     disableOverlayClose: true,
-    target: '[data-guide-id="LeftEditor"] #accordionExample',
+    target: '#leftOutput-tab',
     title: 'Result output',
     content:
       'Here you will see the results of the tests or compilation errors after check',
@@ -166,6 +168,11 @@ const RootContainer = ({
     { filter: () => true },
   );
 
+  if (gameStatusCode === GameStatusCodes.waitingOpponent) {
+    const gameUrl = window.location.href;
+    return <WaitingOpponentInfo gameUrl={gameUrl} />;
+  }
+
   const players = Gon.getAsset('players');
   const isRenderPreview = (!storeLoaded && players);
 
@@ -174,11 +181,6 @@ const RootContainer = ({
   };
   const player1 = players[0] || defaultPlayer;
   const player2 = players[1] || defaultPlayer;
-
-  if (gameStatusCode === GameStatusCodes.waitingOpponent) {
-    const gameUrl = window.location.href;
-    return <WaitingOpponentInfo gameUrl={gameUrl} />;
-  }
 
   const isStoredGame = gameStatusCode === GameStatusCodes.stored;
 
@@ -200,6 +202,7 @@ const RootContainer = ({
                 <div className="row no-gutter cb-game">
                   <InfoWidget />
                   <GameWidget />
+                  <FeedBackWidget />
                 </div>
               </div>
               {isStoredGame && <CodebattlePlayer />}

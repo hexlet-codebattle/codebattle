@@ -11,11 +11,16 @@
       #navbarResponsive.collapse.navbar-collapse
         ul.navbar-nav.ml-auto
           li.nav-item.mx-1
-            a href="#{Routes.auth_path(@conn, :request, :github, locale: :en)}"
+            a href="#{Routes.auth_path(@conn, :request, :github, locale: :en, next: @conn.params["next"])}"
               button.btn.btn-outline-grey Sign in
           = if Mix.env() == :dev do
             li.nav-item.mx-1
               = button("Dev sign_in", to: "/auth/dev_login?locale=en", class: "btn btn-outline-grey")
+    = for {type, message} <- get_flash(@conn) do
+      div class="m-0 rounded-0 alert alert-#{type} alert-dismissible fade show" role="alert"
+        = message
+        button type="button" class="close" data-dismiss="alert" aria-label="Close"
+          span aria-hidden="true" &times;
     .bg-codebattle
       .text-white.py-6
         p.mb-0 Have fun and improve your skills

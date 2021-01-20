@@ -248,13 +248,13 @@ msgid "Run your code!"
 msgstr "Run your code!"
 
 msgid "You have some syntax errors"
-msgstr "You have some syntax errors: %{errors}"
+msgstr "Have some syntax errors%{errors}"
 
 msgid "Tests failed"
 msgstr "Tests failed"
 
 msgid "You passed %{successCount} from %{assertsCount} asserts. (%{percent}%)"
-msgstr "You passed %{successCount} from %{assertsCount} asserts. (%{percent}%)"
+msgstr "Passed %{successCount} from %{assertsCount} asserts. (%{percent}%)"
 
 msgid "Yay! All tests passed!!111"
 msgstr "Yay! All tests passed!!111"
@@ -372,8 +372,29 @@ msgstr "5 minutes"
 msgid "Timeout 600 seconds"
 msgstr "10 minutes"
 
+msgid "Timeout 900 seconds"
+msgstr "15 minutes"
+
+msgid "Timeout 1800 seconds"
+msgstr "30 minutes"
+
 msgid "Timeout 1200 seconds"
 msgstr "20 minutes"
 
 msgid "Timeout 3600 seconds"
 msgstr "1 hour"
+
+msgid "private game"
+msgstr "With friend"
+
+msgid "public game"
+msgstr "With human"
+
+msgid "bot game"
+msgstr "With bot"
+
+msgid "Time control"
+msgstr "Time control"
+
+msgid "Level"
+msgstr "Level"
