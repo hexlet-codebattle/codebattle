@@ -4,6 +4,4 @@ RUN apt-get update && apt-get install -y build-essential --no-install-recommends
 
 WORKDIR /usr/src/app
 
-ADD checker_example.py .
-ADD solution_example.py .
 ADD Makefile .
