@@ -9,10 +9,15 @@
     top: 30px;
     left: 0;
     content: '';
-    width: 160px;
-    height: calc(100% - 60px);
+    width: 10%;
+    height: 90%;
     background: url('/assets/images/CODEBATTLE.svg') no-repeat center;
     background-size: contain;
+    @media (max-width: $lg) {
+      top: 50%;
+      left: 45%;
+      transform: rotate(90deg);
+    }
   }
 
   &::after {
@@ -20,26 +25,21 @@
     top: 30px;
     right: 0;
     content: '';
-    width: 160px;
-    height: calc(100% - 60px);
+    width: 10%;
+    height: 90%;
     background: url('/assets/images/CODEBATTLE.svg') no-repeat center;
     background-size: contain;
     transform: rotate(180deg);
+    @media (max-width: $lg) {
+      top: -40%;
+      left: 45%;
+      transform: rotate(90deg);
+    }
   }
 }
 
 .preview__container {
-  width: 100%;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-}
-
-.preview__middle {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  justify-content: space-evenly;
 }
 
 .preview__icon {
@@ -50,6 +50,7 @@
 .player1,
 .player2 {
   display: flex;
+  max-width: 30%;
   flex-direction: column;
   color: #fff;
   align-items: center;
@@ -57,17 +58,23 @@
 
 .player1__name,
 .player2__name {
+  display: inline-block;
   color: #fff;
   text-transform: uppercase;
+  word-wrap: break-word;
   font-weight: bold;
   font-size: 36px;
   margin: 0;
   margin-bottom: 15px;
+  @media (max-width: $sm) {
+    font-size: 20px;
+    width: 120px;
+  }
 }
 
 .player1__status,
 .player2__status {
-  width: 200px;
+  width: 80%;
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -81,14 +88,25 @@
   background-color: grey;
   border: 4px solid #fff;
   margin-bottom: 40px;
+  @media (max-width: $sm) {
+    width: 80px;
+    height: 80px;
+  }
 }
 
 .preview__info {
   font-size: 24px;
   color: #a0a0a0;
+  @media (max-width: $sm) {
+    font-size: 16px;
+  }
 }
 
 .preview__fight {
   width: 150px;
   height: 150px;
+  @media (max-width: $sm) {
+    width: 50px;
+    height: 50px;
+  }
 }

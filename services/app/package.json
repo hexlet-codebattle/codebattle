@@ -70,6 +70,7 @@
     "react-slack-feedback": "^2.1.1",
     "react-stay-scrolled": "^7.1.0",
     "react-toastify": "^6.1.0",
+    "react-transition-group": "^4.4.1",
     "redux-persist": "^6.0.0",
     "rollbar": "^2.19.4",
     "rollbar-redux-middleware": "^0.2.0",
