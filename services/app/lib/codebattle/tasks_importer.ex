@@ -83,7 +83,7 @@ defmodule Codebattle.TasksImporter do
     description = Map.get(issue_info, "description")
 
     description_ru =
-      if Map.get(description, "ru") == nil, do: "", else: Map.get(description, "ru")
+      if Map.get(description, "ru") == nil, do: "Описание на русском отсутствует.", else: Map.get(description, "ru")
 
     %{
       name: issue_name,
