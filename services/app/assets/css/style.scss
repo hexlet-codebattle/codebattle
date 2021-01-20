@@ -271,3 +271,38 @@ a {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.preview-enter {
+  opacity: 0;
+  transform: translateX(-100%);
+}
+.preview-enter-active {
+  opacity: 1;
+  transform: translateX(0%);
+}
+.preview-exit {
+  opacity: 1;
+  transform: translateX(0%);
+}
+.preview-exit-active {
+  opacity: 0;
+  transform: translateX(100%);
+}
+.preview-enter-active,
+.preview-exit-active {
+  transition: opacity 200ms, transform 200ms;
+}
+
+@keyframes scale {
+  0% {
+    transform: scale(0.5);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate {
+  animation-name: scale;
+  animation-duration: 0.7s;
+}

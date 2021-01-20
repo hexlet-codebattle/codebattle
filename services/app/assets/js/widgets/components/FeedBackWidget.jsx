@@ -20,7 +20,7 @@ const FeedBackWidget = () => {
 
   return (
     <SlackFeedback
-      theme={themes.default}
+      theme={themes.dark}
       user={currentUserName}
       onSubmit={(payload, success, error) => sendToServer(payload)
         .then(success)

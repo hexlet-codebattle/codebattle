@@ -19,7 +19,7 @@ const RightSide = ({ output, children }) => {
   const isShowOutput = output && output.status;
   return (
     <>
-      <div className={`flex-grow-1 ${over}`} id="editor">
+      <div className={`h-100 ${over}`} id="editor">
         {showTab === 'editor' ? <div className="h-100">{children}</div>
         : (
           <div className="h-auto">
@@ -140,23 +140,21 @@ class GameWidget extends Component {
     return (
       <>
         <div className="col-12 col-lg-6 p-1">
-          <div className="card " style={{ height: '470px' }} data-guide-id="LeftEditor">
+          <div className="card h-100 position-relative" style={{ minHeight: '470px' }} data-guide-id="LeftEditor">
             <EditorToolbar
               {...this.getToolbarParams(leftEditor)}
               toolbarClassNames="btn-toolbar justify-content-between align-items-center m-1"
               editorSettingClassNames="btn-group align-items-center m-1"
               userInfoClassNames="btn-group align-items-center justify-content-end m-1"
             />
-            <div className="flex-grow-1">
-              <Editor {...this.getLeftEditorParams()} />
-            </div>
+            <Editor {...this.getLeftEditorParams()} />
 
             {/* TODO: move state to parent component */}
             {!isStoredGame && this.renderGameActionButtons(leftEditor, false)}
           </div>
         </div>
         <div className="col-12 col-lg-6 p-1">
-          <div className="card " style={{ height: '470px' }}>
+          <div className="card h-100" style={{ minHeight: '470px' }} data-guide-id="LeftEditor">
             <EditorToolbar
               {...this.getToolbarParams(rightEditor)}
               toolbarClassNames="btn-toolbar justify-content-between align-items-center m-1 flex-row-reverse"

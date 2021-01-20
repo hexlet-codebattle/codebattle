@@ -1,4 +1,4 @@
 test:
-	python ./check/checker.py
+	python ./check/${checker_name}.py
 
 .PHONY: test
