@@ -14,6 +14,7 @@ defmodule Codebattle.CodeCheck.CheckResultV2 do
             asserts_count: 0,
             status: :initial,
             output: "",
+            version: 2,
             asserts: []
 
   def new, do: %__MODULE__{}
@@ -22,7 +23,8 @@ defmodule Codebattle.CodeCheck.CheckResultV2 do
     @moduledoc
     """
     types:
-    :result -> value from solution()
+    :failure -> wrong assert check
+    :success -> success assert check
     :error -> catched error from solution()
     """
 
@@ -31,7 +33,6 @@ defmodule Codebattle.CodeCheck.CheckResultV2 do
     defstruct type: "result",
               value: false,
               time: 0.0,
-              received: nil,
               expected: nil,
               arguments: nil,
               output: ""

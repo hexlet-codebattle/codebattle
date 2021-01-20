@@ -18,6 +18,7 @@ defmodule Codebattle.CodeCheck.OutputParserV2Test do
   """
   @failure_expected %CheckResultV2{
     success_count: 2,
+    version: 2,
     asserts_count: 3,
     status: "failure",
     output: "pre_output",
