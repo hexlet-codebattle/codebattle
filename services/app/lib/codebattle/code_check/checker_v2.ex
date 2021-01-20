@@ -34,7 +34,7 @@ defmodule Codebattle.CodeCheck.CheckerV2 do
   end
 
   defp get_check_command(dir_path, lang) do
-    volume = "-v #{dir_path}:/usr/src/app/#{lang.check_dir}" |> IO.inspect
+    volume = "-v #{dir_path}:/usr/src/app/#{lang.check_dir}"
 
     lang
     |> get_docker_command_template()
