@@ -31,6 +31,12 @@ defmodule CodebattleWeb.Router do
     get("/:provider/callback", AuthController, :callback)
   end
 
+  scope "/user/auth", CodebattleWeb, as: :user do
+    pipe_through(:browser)
+    get("/:provider", User.AuthController, :request)
+    get("/:provider/callback", User.AuthController, :callback)
+  end
+
   scope "/api", CodebattleWeb.Api, as: :api do
     pipe_through(:api)
 

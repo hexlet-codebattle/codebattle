@@ -1,4 +1,4 @@
-defmodule Codebattle.GithubUser do
+defmodule Codebattle.Oauth.User.GithubUser do
   @moduledoc """
     Retrieve user information from github oauth request
   """
@@ -48,20 +48,6 @@ defmodule Codebattle.GithubUser do
 
           user
       end
-
-    {:ok, user}
-  end
-
-  def find_or_create(%{provider: :dev_local} = auth) do
-    user_data = %{
-      github_id: "35539033",
-      name: auth.name,
-      github_name: auth.name,
-      email: auth.email
-    }
-
-    changeset = User.changeset(%User{}, user_data)
-    {:ok, user} = Repo.insert(changeset)
 
     {:ok, user}
   end

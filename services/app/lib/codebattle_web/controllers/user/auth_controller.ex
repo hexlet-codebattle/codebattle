@@ -1,4 +1,4 @@
-defmodule CodebattleWeb.AuthController do
+defmodule CodebattleWeb.User.AuthController do
   use CodebattleWeb, :controller
   import CodebattleWeb.Gettext
 
@@ -10,20 +10,12 @@ defmodule CodebattleWeb.AuthController do
 
     provider_config =
       case provider_name do
-        "github" ->
-          {Ueberauth.Strategy.Github,
-           [
-             default_scope: "user:email",
-             request_path: conn.request_path,
-             callback_path: Routes.auth_path(conn, :callback, provider_name, next: params["next"])
-           ]}
-
         "discord" ->
           {Ueberauth.Strategy.Discord,
            [
              default_scope: "email",
              request_path: conn.request_path,
-             callback_path: Routes.auth_path(conn, :callback, provider_name)
+             callback_path: Routes.user_auth_path(conn, :callback, provider_name)
            ]}
       end
 
@@ -38,7 +30,7 @@ defmodule CodebattleWeb.AuthController do
     )
 
     UsersActivityServer.add_event(%{
-      event: "failure_auth",
+      event: "failure_update_auth",
       user_id: nil,
       data: %{
         params: params,
@@ -47,12 +39,13 @@ defmodule CodebattleWeb.AuthController do
     })
 
     conn
-    |> put_flash(:danger, gettext("Failed to authenticate."))
+    |> put_flash(:danger, gettext("Failed to update authentication settings."))
     |> redirect(to: "/")
   end
 
   def callback(%{assigns: %{ueberauth_auth: auth}} = conn, params) do
     next = params["next"]
+    user = conn.assigns.current_user
 
     next_path =
       case next do
@@ -61,16 +54,15 @@ defmodule CodebattleWeb.AuthController do
         _ -> next
       end
 
-    case Codebattle.Oauth.User.find_or_create(auth) do
+    case Codebattle.Oauth.User.update(user, auth) do
       {:ok, user} ->
         conn
-        |> put_flash(:info, gettext("Successfully authenticated."))
-        |> put_session(:user_id, user.id)
+        |> put_flash(:info, gettext("Successfully updated authentication settings."))
         |> redirect(to: next_path)
 
       {:error, reason} ->
         UsersActivityServer.add_event(%{
-          event: "failure_auth",
+          event: "failure_update_auth",
           user_id: nil,
           data: %{
             params: params,
@@ -89,25 +81,18 @@ defmodule CodebattleWeb.AuthController do
 
     provider_config =
       case provider_name do
-        :github ->
-          {Ueberauth.Strategy.Github,
-           [
-             default_scope: "user:email",
-             request_path: conn.request_path,
-             callback_path: Routes.auth_path(conn, :callback, provider_name, next: params["next"])
-           ]}
-
         :discord ->
           {Ueberauth.Strategy.Discord,
            [
              default_scope: "email",
              request_path: conn.request_path,
-             callback_path: Routes.auth_path(conn, :callback, provider_name)
+             callback_path: Routes.user_auth_path(conn, :callback, provider_name)
            ]}
       end
 
-    conn
-    |> Ueberauth.run_callback(provider_name, provider_config)
-    |> callback(params)
+    result =
+      conn
+      |> Ueberauth.run_callback(provider_name, provider_config)
+      |> callback(params)
   end
 end
