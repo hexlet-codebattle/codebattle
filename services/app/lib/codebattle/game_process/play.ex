@@ -107,6 +107,12 @@ defmodule Codebattle.GameProcess.Play do
   end
 
   def check_game(id, user, editor_text, editor_lang) do
+    Server.update_playbook(id, :start_check, %{
+      id: user.id,
+      editor_text: editor_text,
+      editor_lang: editor_lang
+    })
+
     case get_fsm(id) do
       {:ok, fsm} ->
         check_result =
@@ -115,12 +121,6 @@ defmodule Codebattle.GameProcess.Play do
             editor_text,
             editor_lang
           )
-
-        Server.update_playbook(id, :start_check, %{
-          id: user.id,
-          editor_text: editor_text,
-          editor_lang: editor_lang
-        })
 
         {:ok, new_fsm} =
           Server.call_transition(id, :check_complete, %{

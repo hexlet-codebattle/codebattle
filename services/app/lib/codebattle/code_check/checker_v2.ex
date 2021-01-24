@@ -15,7 +15,7 @@ defmodule Codebattle.CodeCheck.CheckerV2 do
     now = :os.system_time(:millisecond)
     {container_output, _status} = System.cmd(cmd, cmd_opts, stderr_to_stdout: true)
     Logger.error("Execution time: #{:os.system_time(:millisecond) - now}, lang: #{lang.slug}")
-    # Task.start(File, :rm_rf, [dir_path])
+    Task.start(File, :rm_rf, [dir_path])
 
     container_output
     |> OutputParserV2.call(task)
@@ -38,7 +38,7 @@ defmodule Codebattle.CodeCheck.CheckerV2 do
 
     lang
     |> get_docker_command_template()
-    |> :io_lib.format([@docker_lable, volume, lang.docker_image])
+    |> :io_lib.format([@docker_lable, volume, lang.docker_image, ""])
     |> to_string
     |> String.split()
   end
