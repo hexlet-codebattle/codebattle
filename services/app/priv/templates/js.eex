@@ -1,3 +1,3 @@
 const { run } = require('../runner.js')
 
-run(JSON.parse("<%= asserts %>"))
+run(<%= asserts %>)
