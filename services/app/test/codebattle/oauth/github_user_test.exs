@@ -1,7 +1,7 @@
-defmodule Codebattle.GithubUserTest do
+defmodule Codebattle.Oauth.User.GithubUserTest do
   use CodebattleWeb.ConnCase, async: true
 
-  alias Codebattle.GithubUser
+  alias Codebattle.Oauth.User.GithubUser
 
   import CodebattleWeb.Factory
 

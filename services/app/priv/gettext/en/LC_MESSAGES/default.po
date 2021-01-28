@@ -398,3 +398,12 @@ msgstr "Time control"
 
 msgid "Level"
 msgstr "Level"
+
+msgid "Successfully updated authentication settings."
+msgstr "Successfully updated authentication settings."
+
+msgid "Bind Discord"
+msgstr "Bind Discord"
+
+msgid "Failed to update authentication settings."
+msgstr "Failed to update authentication settings."

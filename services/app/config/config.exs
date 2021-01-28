@@ -42,12 +42,17 @@ config :phoenix_slime, :use_slim_extension, true
 
 config :ueberauth, Ueberauth,
   providers: [
-    github: {Ueberauth.Strategy.Github, [default_scope: "user:email", send_redirect_uri: false]}
+    github: {Ueberauth.Strategy.Github, [default_scope: "user:email", send_redirect_uri: false]},
+    discord: {Ueberauth.Strategy.Discord, []}
   ]
 
 config :ueberauth, Ueberauth.Strategy.Github.OAuth,
   client_id: System.get_env("GITHUB_CLIENT_ID"),
   client_secret: System.get_env("GITHUB_CLIENT_SECRET")
+
+config :ueberauth, Ueberauth.Strategy.Discord.OAuth,
+  client_id: System.get_env("DISCORD_CLIENT_ID"),
+  client_secret: System.get_env("DISCORD_CLIENT_SECRET")
 
 config :phoenix_gon, :json_library, Jason
 

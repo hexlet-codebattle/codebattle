@@ -11,8 +11,10 @@
       #navbarResponsive.collapse.navbar-collapse
         ul.navbar-nav.ml-auto
           li.nav-item.mx-1
-            a href="#{Routes.auth_path(@conn, :request, :github, locale: :en, next: @conn.params["next"])}"
-              button.btn.btn-outline-grey Sign in
+            a.mr-2 href="#{Routes.auth_path(@conn, :request, :github, locale: :en, next: @conn.params["next"])}"
+              button.btn.btn-outline-grey = gettext "Sign in with %{name}", name: "Github"
+            a href="#{Routes.auth_path(@conn, :request, :discord, locale: :en, next: @conn.params["next"])}"
+              button.btn.btn-outline-grey = gettext "Sign in with %{name}", name: "Discord"
           = if Mix.env() == :dev do
             li.nav-item.mx-1
               = button("Dev sign_in", to: "/auth/dev_login?locale=en", class: "btn btn-outline-grey")
