@@ -176,6 +176,13 @@ export const changeCurrentLangAndSetTemplate = langSlug => (dispatch, getState) 
   dispatch(sendEditorText(textToSet, langSlug));
 };
 
+export const resetTextToTemplate = langSlug => (dispatch, getState) => {
+  const state = getState();
+  const langs = selectors.editorLangsSelector(state) || defaultLanguages;
+  const { solutionTemplate: template } = _.find(langs, { slug: langSlug });
+  dispatch(sendEditorText(template, langSlug));
+};
+
 export const soundNotification = notification();
 
 export const activeGameEditorReady = () => dispatch => {
