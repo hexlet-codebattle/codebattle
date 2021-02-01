@@ -42,12 +42,17 @@ config :phoenix_slime, :use_slim_extension, true
 
 config :ueberauth, Ueberauth,
   providers: [
-    github: {Ueberauth.Strategy.Github, [default_scope: "user:email", send_redirect_uri: false]}
+    github: {Ueberauth.Strategy.Github, [default_scope: "user:email", send_redirect_uri: false]},
+    discord: {Ueberauth.Strategy.Discord, []}
   ]
 
 config :ueberauth, Ueberauth.Strategy.Github.OAuth,
   client_id: System.get_env("GITHUB_CLIENT_ID"),
   client_secret: System.get_env("GITHUB_CLIENT_SECRET")
+
+config :ueberauth, Ueberauth.Strategy.Discord.OAuth,
+  client_id: System.get_env("DISCORD_CLIENT_ID"),
+  client_secret: System.get_env("DISCORD_CLIENT_SECRET")
 
 config :phoenix_gon, :json_library, Jason
 
@@ -86,7 +91,7 @@ config :codebattle, Codebattle.Bot,
 
 config :codebattle, Codebattle.DockerLangsPuller, timeout: :timer.hours(7)
 
-config :codebattle, checker_adapter: Codebattle.CodeCheck.Checker
+config :codebattle, checker_adapter: Codebattle.CodeCheck.DockerChecker
 config :codebattle, tournament_match_timeout: 3 * 60
 
 config :codebattle, Codebattle.Analitics, max_size_activity_server: 10_000

@@ -5,7 +5,7 @@ import color from '../../config/statusColor';
 
 const Output = ({ sideOutput }) => {
   const {
-  status, output, result, asserts,
+ status, output, result, asserts, version = 0,
 } = sideOutput;
   const uniqIndex = _.uniqueId('heading');
   return (
@@ -15,12 +15,12 @@ const Output = ({ sideOutput }) => {
           output={output}
           result={result}
         />
-        ) : (
-          asserts && asserts.map(JSON.parse).map((assert, index) => (
+      ) : (
+          asserts && asserts.map((assert, index) => (
             <AccordeonBox.SubMenu
               key={index.toString()}
               statusColor={color[assert.status]}
-              assert={assert}
+              assert={version === 2 ? assert : JSON.parse(assert)}
               hasOutput={assert.output}
               uniqIndex={uniqIndex}
             >
@@ -28,10 +28,10 @@ const Output = ({ sideOutput }) => {
                 <pre>{assert.output}</pre>
               </div>
             </AccordeonBox.SubMenu>
-          ))
+            ))
         )}
     </>
-);
+  );
 };
 
 export default Output;

@@ -9,7 +9,7 @@ defmodule CodebattleWeb.DevLoginController do
         email: "Diman@#{:rand.uniform(10000)}.co"
       }
 
-      case Codebattle.GithubUser.find_or_create(auth) do
+      case Codebattle.Oauth.User.find_or_create(auth) do
         {:ok, user} ->
           conn
           |> put_flash(:info, gettext("Successfully authenticated."))

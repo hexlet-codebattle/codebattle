@@ -14,6 +14,11 @@ defmodule CodebattleWeb.Endpoint do
     check_origin: false
   )
 
+  socket("/discord", CodebattleWeb.DiscordSocket,
+    websocket: [timeout: :infinity, check_origin: false],
+    check_origin: false
+  )
+
   socket("/live", Phoenix.LiveView.Socket, websocket: [connect_info: [session: @session_options]])
 
   # Serve at "/" the static files from "priv/static" directory.

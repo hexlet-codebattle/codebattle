@@ -10,6 +10,7 @@ import {
 import * as Yup from 'yup';
 import Slider from 'calcite-react/Slider';
 import * as Icon from 'react-feather';
+import i18n from '../../i18n';
 
 import { actions } from '../slices';
 import languages from '../config/languages';
@@ -147,6 +148,8 @@ const UserSettings = () => {
               {renderLanguages(playingLanguages)}
             </Field>
           </div>
+
+          <a href="/user/auth/discord/" className="text-primary d-block mx-2 my-3">{i18n.t('Bind Discord')}</a>
 
           <button type="submit" className="btn btn-primary ml-2">Save</button>
         </Form>
