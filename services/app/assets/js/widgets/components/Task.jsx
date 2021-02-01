@@ -69,7 +69,7 @@ const Task = ({
         <div className="d-flex align-items-stretch flex-column">
           <div className="card-text mb-0  h-100  overflow-auto">
             <ReactMarkdown
-              source={task.description}
+              source={`${task.descriptionEn}\n\n${task.examples}`}
               renderers={{
                 linkReference: reference => {
                   if (!reference.href) {
@@ -106,7 +106,8 @@ const Task = ({
 Task.propTypes = {
   task: PropTypes.shape({
     name: PropTypes.string.isRequired,
-    description: PropTypes.string.isRequired,
+    descriptionEn: PropTypes.string.isRequired,
+    examples: PropTypes.string.isRequired,
     level: PropTypes.string.isRequired,
   }).isRequired,
 };

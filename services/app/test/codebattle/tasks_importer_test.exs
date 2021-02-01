@@ -90,7 +90,7 @@ defmodule Codebattle.TasksImporterTest do
     task = Task |> Repo.all() |> List.first()
 
     assert task.name == "asserts"
-    assert task.description == "description"
+    assert task.description_en == "description"
     assert task.level == "medium"
     assert task.input_signature == [%{"argument-name" => "num", "type" => %{"name" => "integer"}}]
     assert task.output_signature == %{"type" => %{"name" => "integer"}}
@@ -102,7 +102,7 @@ defmodule Codebattle.TasksImporterTest do
 
     assert new_task.name == "asserts"
     assert new_task.disabled == true
-    assert new_task.description == "new_description"
+    assert new_task.description_en == "new_description"
     assert new_task.level == "easy"
 
     assert new_task.input_signature == [
