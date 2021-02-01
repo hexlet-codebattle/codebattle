@@ -82,16 +82,11 @@ defmodule Codebattle.TasksImporter do
     signature = Map.get(issue_info, "signature")
     description = Map.get(issue_info, "description")
 
-    description_ru =
-      if Map.get(description, "ru") == nil,
-        do: "Описание на русском отсутствует.",
-        else: Map.get(description, "ru")
-
     %{
       name: issue_name,
       disabled: Map.get(issue_info, "disabled"),
       examples: Map.get(issue_info, "examples"),
-      description_ru: description_ru,
+      description_ru: Map.get(description, "ru"),
       description_en: Map.get(description, "en"),
       level: Map.get(issue_info, "level"),
       input_signature: Map.get(signature, "input"),
