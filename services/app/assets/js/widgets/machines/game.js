@@ -7,9 +7,9 @@ export default Machine({
   states: {
     preview: {
       on: {
-        'load_active_game': 'active',
-        'load_finished_game': 'game_over',
-      }
+        load_active_game: 'active',
+        load_finished_game: 'game_over',
+      },
     },
     active: {
       on: {
