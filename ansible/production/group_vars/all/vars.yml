@@ -1,6 +1,8 @@
 codebattle_port: 4000
 codebattle_github_id: "{{ vault_codebattle_github_id }}"
 codebattle_github_secret: "{{ vault_codebattle_github_secret }}"
+codebattle_discord_id: "{{ vault_codebattle_discord_id }}"
+codebattle_discord_secret: "{{ vault_codebattle_discord_secret }}"
 codebattle_db_hostname: "{{ vault_codebattle_db_hostname }}"
 codebattle_db_username: "{{ vault_codebattle_db_username }}"
 codebattle_db_password: "{{ vault_codebattle_db_password }}"
