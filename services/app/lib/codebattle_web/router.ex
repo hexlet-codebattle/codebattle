@@ -45,6 +45,7 @@ defmodule CodebattleWeb.Router do
       get("/game_activity", GameActivityController, :show)
       get("/playbook/:id", PlaybookController, :show)
       get("/user/:id/stats", UserController, :stats)
+      get("/user/current", UserController, :current)
       resources("/users", UserController, only: [:index, :show])
       resources("/settings", SettingsController, only: [:show, :update], singleton: true)
       post("/feedback", FeedBackController, :index)
