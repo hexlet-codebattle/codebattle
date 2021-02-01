@@ -6,12 +6,12 @@ import { Button, Modal } from 'react-bootstrap';
 import i18n from '../../i18n';
 import GameStatusCodes from '../config/gameStatusCodes';
 import * as selectors from '../selectors';
-import { checkGameResult, sendGiveUp } from '../middlewares/Game';
+import { checkGameResult, sendGiveUp, resetTextToTemplate } from '../middlewares/Game';
 
 const renderCheckResultButton = (checkResult, gameStatus, disabled, editorUser) => (
   <button
     type="button"
-    className="btn btn-success ml-auto"
+    className="btn btn-success"
     data-guide-id="CheckResultButton"
     onClick={checkResult}
     disabled={gameStatus.checking[editorUser] || disabled}
@@ -38,6 +38,18 @@ const renderGiveUpButton = (modalShow, canGiveUp, disabled) => (
   </button>
 );
 
+const renderResetButton = (handleReset, canReset, disabled) => (
+  <button
+    type="button"
+    className="btn btn-outline-secondary ml-auto mr-2"
+    disabled={!canReset ? true : disabled}
+    onClick={handleReset}
+  >
+    <span className="fa fa-times-circle mr-1" />
+    {i18n.t('Reset')}
+  </button>
+);
+
 const GameActionButtons = ({ disabled, editorUser }) => {
   const [modalShowing, setModalShowing] = useState(false);
   const dispatch = useDispatch();
@@ -45,10 +57,12 @@ const GameActionButtons = ({ disabled, editorUser }) => {
 
   const players = useSelector(state => selectors.gamePlayersSelector(state));
   const currentUserId = useSelector(state => selectors.currentUserIdSelector(state));
+  const currentEditorLangSlug = useSelector(state => selectors.userLangSelector(currentUserId)(state));
   const gameStatus = useSelector(state => selectors.gameStatusSelector(state));
 
   const isSpectator = !_.hasIn(players, currentUserId);
   const canGiveUp = gameStatus.status === GameStatusCodes.playing;
+  const canReset = gameStatus.status === GameStatusCodes.playing;
   const realDisabled = isSpectator || disabled;
 
   const modalHide = () => {
@@ -62,6 +76,10 @@ const GameActionButtons = ({ disabled, editorUser }) => {
   const handleGiveUp = () => {
     modalHide();
     sendGiveUp();
+  };
+
+  const handleReset = () => {
+    dispatch(resetTextToTemplate(currentEditorLangSlug));
   };
 
   const renderModal = () => (
@@ -79,6 +97,7 @@ const GameActionButtons = ({ disabled, editorUser }) => {
   return (
     <div className="d-flex" role="toolbar">
       {renderGiveUpButton(modalShow, canGiveUp, realDisabled)}
+      {renderResetButton(handleReset, canReset, realDisabled)}
       {renderCheckResultButton(
         checkResult,
         gameStatus,
