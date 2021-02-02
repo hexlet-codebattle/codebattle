@@ -1,5 +1,5 @@
-import { Machine } from "xstate";
-import {showCheckingStatusMessage} from '../containers/NotificationsHandler';
+import { Machine } from 'xstate';
+import { showCheckingStatusMessage } from '../containers/NotificationsHandler';
 
 export default Machine({
   id: 'game',
@@ -30,57 +30,57 @@ export default Machine({
         },
         'user:won': {
           target: 'game_over',
-          actions: ['sound_win', 'notify']
+          actions: ['sound_win', 'notify'],
         },
         'user:give_up': {
           target: 'game_over',
-          actions: ['sound_give_up', 'notify']
+          actions: ['sound_give_up', 'notify'],
         },
         'game:timeout': {
           target: 'game_over',
-          actions: ['sound_time_is_over', 'notify']
+          actions: ['sound_time_is_over', 'notify'],
         },
         'tournament:round_created': {
           target: 'active',
-          actions: ['sound_tournament_round_created', 'notify']
+          actions: ['sound_tournament_round_created', 'notify'],
         },
-      }
+      },
     },
-    'game_over': {
+    game_over: {
       on: {
         'rematch:update_status': {
           target: 'game_over',
-          actions: ['sound_rematch_update_status']
+          actions: ['sound_rematch_update_status'],
         },
         'tournament:round_created': {
           target: 'game_over',
-          actions: ['notify']
+          actions: ['notify'],
         },
-      }
+      },
     },
-  }
+  },
 }, {
   actions: {
-    'sound_user_typing': (ctx, event) => console.log('sound_user_typing', ctx, event),
-    'sound_checking': (ctx, event) => console.log('sound_checking', ctx, event),
-    'start_checking': (ctx, event) => console.log('start_checking', ctx, event),
-    'stop_checking': (ctx, event) => console.log('stop_checking', ctx, event),
-    'sound_complete': (ctx, event) => console.log('sound_complete', ctx, event),
-    'sound_win': (ctx, event) => console.log('sound_win', ctx, event),
-    'notify': (ctx, event) => {
+    sound_user_typing: (ctx, event) => console.log('sound_user_typing', ctx, event),
+    sound_checking: (ctx, event) => console.log('sound_checking', ctx, event),
+    start_checking: (ctx, event) => console.log('start_checking', ctx, event),
+    stop_checking: (ctx, event) => console.log('stop_checking', ctx, event),
+    sound_complete: (ctx, event) => console.log('sound_complete', ctx, event),
+    sound_win: (ctx, event) => console.log('sound_win', ctx, event),
+    notify: (ctx, event) => {
       console.log('notify', ctx, event);
       showCheckingStatusMessage(event);
     },
-    'notify_checking_result': (ctx, event) => {
+    notify_checking_result: (ctx, event) => {
       console.log('notify_checking_result', ctx, event);
       showCheckingStatusMessage(event);
     },
-    'sound_give_up': (ctx, event) => console.log('sound_give_up', ctx, event),
-    'sound_time_is_over': (ctx, event) => console.log('sound_time_is_over', ctx, event),
-    'sound_tournament_round_created': (ctx, event) => console.log('sound_tournament_round_created', ctx, event),
-    'sound_rematch_update_status': (ctx, event) => console.log('sound_rematch_update_status', ctx, event),
-  }
-})
+    sound_give_up: (ctx, event) => console.log('sound_give_up', ctx, event),
+    sound_time_is_over: (ctx, event) => console.log('sound_time_is_over', ctx, event),
+    sound_tournament_round_created: (ctx, event) => console.log('sound_tournament_round_created', ctx, event),
+    sound_rematch_update_status: (ctx, event) => console.log('sound_rematch_update_status', ctx, event),
+  },
+});
 
 // export default Machine({
 //   id: "game",
