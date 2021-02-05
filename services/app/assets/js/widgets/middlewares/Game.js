@@ -231,7 +231,7 @@ export const activeGameEditorReady = machine => dispatch => {
     );
     dispatch(actions.updateGameStatus({ ...newGameStatus, solutionStatus }));
     dispatch(actions.updateCheckStatus({ [userId]: false }));
-    machine.send('user:check_complete', camelizeKeys(responseData));
+    machine.send('user:check_complete', { target: `editor-${userId}` });
   });
 
   channel.on('chat:user_joined', responseData => {
@@ -379,6 +379,10 @@ export const checkGameResult = editorMachine => (dispatch, getState) => {
     editor_text: currentUserEditor.text,
     lang_slug: currentUserEditor.currentLangSlug,
   };
+
+  const [, send] = editorMachine;
+
+  send('check_solution');
   channel.push('check_result', payload);
 };
 

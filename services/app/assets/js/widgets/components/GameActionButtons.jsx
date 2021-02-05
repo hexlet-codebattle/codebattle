@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button, Modal } from 'react-bootstrap';
+import { useActor } from '@xstate/react';
+import GameContext from '../containers/GameContext';
 import i18n from '../../i18n';
-import GameStatusCodes from '../config/gameStatusCodes';
 import * as selectors from '../selectors';
 import { checkGameResult, sendGiveUp, resetTextToTemplate } from '../middlewares/Game';
 
@@ -50,10 +51,11 @@ const renderResetButton = (handleReset, canReset, disabled) => (
   </button>
 );
 
-const GameActionButtons = ({ disabled, editorUser }) => {
+const GameActionButtons = ({ disabled, editorUser, actorRef }) => {
   const [modalShowing, setModalShowing] = useState(false);
   const dispatch = useDispatch();
-  const checkResult = () => dispatch(checkGameResult());
+  const editorMachine = useActor(actorRef);
+  const checkResult = () => dispatch(checkGameResult(editorMachine));
 
   const players = useSelector(state => selectors.gamePlayersSelector(state));
   const currentUserId = useSelector(state => selectors.currentUserIdSelector(state));

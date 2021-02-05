@@ -122,7 +122,7 @@ class Editor extends PureComponent {
   editorDidMount = (editor, monaco) => {
     this.editor = editor;
     this.monaco = monaco;
-    const { editable, checkResult, gameType } = this.props;
+    const { editable, gameType } = this.props;
     const isTournament = gameType === GameTypeCodes.tournament;
 
     if (editable && !isTournament) {

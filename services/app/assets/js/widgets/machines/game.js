@@ -88,23 +88,23 @@ export default Machine({
 }, {
   actions: {
     sound_user_typing: (ctx, event) => console.log('sound_user_typing', ctx, event),
-    sound_checking: (ctx, event) => console.log('sound_checking', ctx, event),
-    start_checking: (ctx, event) => console.log('start_checking', ctx, event),
-    stop_checking: (ctx, event) => console.log('stop_checking', ctx, event),
-    sound_complete: (ctx, event) => console.log('sound_complete', ctx, event),
+    start_checking: sendEditor('check_solution'),
+    stop_checking: sendEditor('receive_check_result'),
+
     sound_win: (ctx, event) => console.log('sound_win', ctx, event),
-    notify: (ctx, event) => {
-      console.log('notify', ctx, event);
-      showCheckingStatusMessage(event);
-    },
-    notify_checking_result: (ctx, event) => {
-      console.log('notify_checking_result', ctx, event);
-      showCheckingStatusMessage(event);
-    },
     sound_give_up: (ctx, event) => console.log('sound_give_up', ctx, event),
     sound_time_is_over: (ctx, event) => console.log('sound_time_is_over', ctx, event),
     sound_tournament_round_created: (ctx, event) => console.log('sound_tournament_round_created', ctx, event),
     sound_rematch_update_status: (ctx, event) => console.log('sound_rematch_update_status', ctx, event),
+    initEditor:
+      assign((ctx, { config, context, name }) => ({
+        ...ctx,
+        [name]: spawn(
+          editorMachine.withConfig(config).withContext(context),
+          { name },
+        ),
+      })),
+    proceed_typing: sendEditor('typing'),
   },
 });
 
