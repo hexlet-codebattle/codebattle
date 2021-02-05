@@ -25,16 +25,16 @@ const RightSide = ({ output, children }) => {
           <div className="h-auto">
             {isShowOutput && <Output sideOutput={output} />}
           </div>
-)}
+        )}
 
       </div>
       <nav>
         <div className="nav nav-tabs bg-gray text-uppercase text-center font-weight-bold" id="nav-tab" role="tablist">
           <a
             className={cn(
-                'nav-item nav-link flex-grow-1 text-black rounded-0 px-5',
-                { active: showTab === 'editor' },
-              )}
+              'nav-item nav-link flex-grow-1 text-black rounded-0 px-5',
+              { active: showTab === 'editor' },
+            )}
             href="#Editor"
             onClick={e => {
               e.preventDefault();
@@ -46,8 +46,8 @@ const RightSide = ({ output, children }) => {
           <a
             className={cn(
               'nav-item nav-link flex-grow-1 text-black rounded-0 p-2 block',
-                          { active: showTab === 'output' },
-                        )}
+              { active: showTab === 'output' },
+            )}
             href="#Output"
             onClick={e => {
               e.preventDefault();

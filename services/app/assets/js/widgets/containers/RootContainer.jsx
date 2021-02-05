@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import PropTypes from 'prop-types';
 import { connect, useSelector } from 'react-redux';
 import Gon from 'gon';
@@ -8,6 +8,7 @@ import _ from 'lodash';
 import { useMachine } from '@xstate/react';
 
 import GameWidget from './GameWidget';
+import GameContext from './GameContext';
 import InfoWidget from './InfoWidget';
 import userTypes from '../config/userTypes';
 import { actions } from '../slices';
@@ -92,7 +93,7 @@ const steps = [
     target: '[data-guide-id="LeftEditor"] [data-guide-id="CheckResultButton"]',
     title: 'Check button',
     content:
-      'Click the button to check your solution or use Ctrl+Enter/Cmd+Enter',
+    'Click the button to check your solution or use Ctrl+Enter/Cmd+Enter',
     locale: {
       skip: 'Skip guide',
     },
@@ -102,7 +103,7 @@ const steps = [
     target: '#leftOutput-tab',
     title: 'Result output',
     content:
-      'Here you will see the results of the tests or compilation errors after check',
+    'Here you will see the results of the tests or compilation errors after check',
     locale: {
       skip: 'Skip guide',
     },
@@ -110,9 +111,8 @@ const steps = [
 ];
 
 const GameWidgetGuide = () => {
-  const isActiveGame = useSelector(
-    state => gameStatusSelector(state).status === GameStatusCodes.playing,
-  );
+  const { current } = useContext(GameContext);
+  const isActiveGame = current.matches('active');
   const players = useSelector(state => gamePlayersSelector(state));
   const currentUser = useSelector(state => currentUserIdSelector(state));
   const isCurrentPlayer = _.has(players, currentUser);
@@ -147,9 +147,8 @@ const GameWidgetGuide = () => {
 };
 
 const RootContainer = ({
-  storeLoaded,
-  gameStatusCode,
   checkResult,
+  gameStatusCode,
   init,
   setCurrentUser,
 }) => {
@@ -161,8 +160,8 @@ const RootContainer = ({
     const user = Gon.getAsset('current_user');
     // FIXME: maybe take from gon?
     setCurrentUser({ user: { ...user, type: userTypes.spectator } });
-    init({send});
-  }, [init, setCurrentUser]);
+    init(service);
+  }, [init, service, setCurrentUser]);
 
   useEffect(() => {
     /** @param {KeyboardEvent} e */
@@ -178,7 +177,7 @@ const RootContainer = ({
     return () => {
       window.removeEventListener('keydown', check);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (gameStatusCode === GameStatusCodes.waitingOpponent) {
@@ -187,7 +186,7 @@ const RootContainer = ({
   }
 
   const players = Gon.getAsset('players');
-  const isRenderPreview = (!storeLoaded && players);
+  const isRenderPreview = current.matches('preview');
 
   const defaultPlayer = {
     name: 'John Doe', github_id: 35539033, lang: 'js', rating: '0',
@@ -209,18 +208,20 @@ const RootContainer = ({
         {isRenderPreview
           ? (<GamePreview className="animate" player1={player1} player2={player2} />)
           : (
-            <div className="x-outline-none">
-              <GameWidgetGuide />
-              <div className="container-fluid">
-                <div className="row no-gutter cb-game">
-                  <InfoWidget />
-                  <GameWidget />
-                  <FeedBackWidget />
+            <GameContext.Provider value={{ current, send, service }}>
+              <div className="x-outline-none">
+                <GameWidgetGuide />
+                <div className="container-fluid">
+                  <div className="row no-gutter cb-game">
+                    <InfoWidget />
+                    <GameWidget />
+                    <FeedBackWidget />
+                  </div>
                 </div>
+                {isStoredGame && <CodebattlePlayer />}
               </div>
-              {isStoredGame && <CodebattlePlayer />}
-            </div>
-        )}
+            </GameContext.Provider>
+          )}
 
       </CSSTransition>
     </SwitchTransition>

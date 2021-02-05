@@ -86,7 +86,7 @@ const initStore = dispatch => ({
   }
 };
 
-const initGameChannel = dispatch => {
+const initGameChannel = (dispatch, machine) => {
   const onJoinFailure = () => {
     window.location.reload();
   };
@@ -124,7 +124,25 @@ const initGameChannel = dispatch => {
       playbookStatusCode: PlaybookStatusCodes.active,
     });
 
-    setTimeout(() => dispatch(actions.finishStoreInit()), 2000);
+    setTimeout(() => {
+      switch (status) {
+        case GameStatusCodes.playing: {
+          machine.send('load_active_game');
+          break;
+        }
+        case GameStatusCodes.gameOver:
+        case GameStatusCodes.timeout: {
+          machine.send('load_finished_game');
+          break;
+        }
+        default: {
+          const error = new Error('(loading game state) unexpected status');
+          dispatch(actions.setError(error));
+        }
+      }
+    }, 2000);
+
+    // setTimeout(() => dispatch(actions.finishStoreInit()), 2000);
   };
 
   channel
@@ -185,8 +203,8 @@ export const resetTextToTemplate = langSlug => (dispatch, getState) => {
 
 export const soundNotification = notification();
 
-export const activeGameEditorReady = (machine) => dispatch => {
-  initGameChannel(dispatch);
+export const activeGameEditorReady = machine => dispatch => {
+  initGameChannel(dispatch, machine);
   channel.on('editor:data', data => {
     dispatch(actions.updateEditorText(camelizeKeys(data)));
     machine.send('editor:data', camelizeKeys(data));
@@ -194,7 +212,7 @@ export const activeGameEditorReady = (machine) => dispatch => {
 
   channel.on('user:start_check', ({ user_id: userId }) => {
     dispatch(actions.updateCheckStatus({ [userId]: true }));
-    machine.send('user:start_check', {userId});
+    machine.send('user:start_check', { userId });
   });
 
   channel.on('user:check_complete', responseData => {
@@ -298,18 +316,18 @@ export const activeGameEditorReady = (machine) => dispatch => {
   });
 
   channel.on('rematch:redirect_to_new_game', ({ game_id: newGameId }) => {
-    machine.send('rematch:redirect_to_new_game', {newGameId});
+    machine.send('rematch:redirect_to_new_game', { newGameId });
     redirectToNewGame(newGameId);
   });
 
   channel.on('game:timeout', ({ status, msg }) => {
     dispatch(actions.updateGameStatus({ status, msg }));
-    machine.send('game:timeout', {status, msg});
+    machine.send('game:timeout', { status, msg });
   });
 
   channel.on('tournament:round_created', payload => {
     dispatch(actions.setTournamentsInfo(payload));
-    machine.send('tournament:round_created', {payload});
+    machine.send('tournament:round_created', { payload });
   });
 };
 
@@ -343,11 +361,11 @@ export const storedGameEditorReady = () => dispatch => {
     });
 };
 
-export const init = (machine) => dispatch => {
+export const init = machine => dispatch => {
   dispatch(isRecord ? storedGameEditorReady() : activeGameEditorReady(machine));
 };
 
-export const checkGameResult = () => (dispatch, getState) => {
+export const checkGameResult = editorMachine => (dispatch, getState) => {
   const state = getState();
   const currentUserId = selectors.currentUserIdSelector(state);
   const currentUserEditor = selectors.editorDataSelector(currentUserId)(state);

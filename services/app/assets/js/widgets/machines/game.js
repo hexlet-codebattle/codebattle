@@ -1,9 +1,30 @@
-import { Machine } from 'xstate';
-import { showCheckingStatusMessage } from '../containers/NotificationsHandler';
+import {
+  Machine,
+  spawn,
+  assign,
+  send,
+} from 'xstate';
+
+import editorMachine from './editor';
+
+const sendEditor = type => send(type, {
+  to: (_ctx, { target }) => target,
+});
 
 export default Machine({
   id: 'game',
   initial: 'preview',
+  context: {
+    // editor-{id}
+  },
+  on: {
+    initEditorActor: {
+      actions: ['initEditor'],
+    },
+    typing: {
+      actions: ['proceed_typing'],
+    },
+  },
   states: {
     preview: {
       on: {
@@ -14,47 +35,52 @@ export default Machine({
     active: {
       on: {
         'editor:data': {
-          target: 'active',
-          actions: ['sound_user_typing'],
+          actions: ['sound_user_typing', 'proceed_typing'],
         },
         'user:start_check': {
-          target: 'active',
-          actions: ['sound_checking', 'start_checking'],
+          actions: ['start_checking'],
         },
         'user:check_complete': {
-          target: 'active',
-          actions: ['sound_complete', 'stop_checking', 'notify_checking_result'],
+          actions: ['stop_checking'],
         },
         'chat:user_joined': {
           target: 'active',
         },
         'user:won': {
           target: 'game_over',
-          actions: ['sound_win', 'notify'],
+          actions: ['sound_win'],
         },
         'user:give_up': {
           target: 'game_over',
-          actions: ['sound_give_up', 'notify'],
+          actions: ['sound_give_up'],
         },
         'game:timeout': {
           target: 'game_over',
-          actions: ['sound_time_is_over', 'notify'],
+          actions: ['sound_time_is_over'],
         },
         'tournament:round_created': {
           target: 'active',
-          actions: ['sound_tournament_round_created', 'notify'],
+          actions: ['sound_tournament_round_created'],
         },
       },
     },
     game_over: {
       on: {
+        'editor:data': {
+          actions: ['sound_user_typing', 'proceed_typing'],
+        },
+        'user:start_check': {
+          actions: ['start_checking'],
+        },
+        'user:check_complete': {
+          actions: ['stop_checking'],
+        },
         'rematch:update_status': {
           target: 'game_over',
           actions: ['sound_rematch_update_status'],
         },
         'tournament:round_created': {
           target: 'game_over',
-          actions: ['notify'],
         },
       },
     },

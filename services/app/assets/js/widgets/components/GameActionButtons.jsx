@@ -61,8 +61,10 @@ const GameActionButtons = ({ disabled, editorUser }) => {
   const gameStatus = useSelector(state => selectors.gameStatusSelector(state));
 
   const isSpectator = !_.hasIn(players, currentUserId);
-  const canGiveUp = gameStatus.status === GameStatusCodes.playing;
-  const canReset = gameStatus.status === GameStatusCodes.playing;
+
+  const { current } = useContext(GameContext);
+  const canGiveUp = current.matches('active');
+  const canReset = current.matches('active');
   const realDisabled = isSpectator || disabled;
 
   const modalHide = () => {
