@@ -8,4 +8,7 @@ signature:
   output:
     type:
       name: integer
-description: 'description'
+description:
+  en: 'description'
+examples:
+  'examples'

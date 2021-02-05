@@ -11,6 +11,7 @@ services:
       - "USER=${USER}"
     ports:
       - "${CODEBATTLE_PORT}:${CODEBATTLE_PORT}"
+      - "8080:8080"
     volumes:
       - "./services/app:/app:delegated"
       - "~/.bash_history:/root/.bash_history:delegated"

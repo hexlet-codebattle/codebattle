@@ -6,7 +6,12 @@ defmodule CodebattleWeb.Api.V1.SettingsController do
 
   def show(conn, _params) do
     current_user = conn.assigns.current_user
-    json(conn, %{name: current_user.name})
+
+    json(conn, %{
+      name: current_user.name,
+      sound_settings: current_user.sound_settings,
+      lang: current_user.lang
+    })
   end
 
   def update(conn, user_params) do

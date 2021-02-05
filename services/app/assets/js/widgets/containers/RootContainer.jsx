@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect, useSelector } from 'react-redux';
-import { useHotkeys } from 'react-hotkeys-hook';
 import Gon from 'gon';
 import ReactJoyride, { STATUS } from 'react-joyride';
+import { CSSTransition, SwitchTransition } from 'react-transition-group';
 import _ from 'lodash';
 import { useMachine } from '@xstate/react';
+
 import GameWidget from './GameWidget';
 import InfoWidget from './InfoWidget';
 import userTypes from '../config/userTypes';
@@ -19,6 +20,7 @@ import {
 } from '../selectors';
 import WaitingOpponentInfo from '../components/WaitingOpponentInfo';
 import CodebattlePlayer from './CodebattlePlayer';
+import FeedBackWidget from '../components/FeedBackWidget';
 import GamePreview from '../components/Game/GamePreview';
 import gameMachine from '../machines/game';
 
@@ -97,7 +99,7 @@ const steps = [
   },
   {
     disableOverlayClose: true,
-    target: '[data-guide-id="LeftEditor"] #accordionExample',
+    target: '#leftOutput-tab',
     title: 'Result output',
     content:
       'Here you will see the results of the tests or compilation errors after check',
@@ -106,6 +108,7 @@ const steps = [
     },
   },
 ];
+
 const GameWidgetGuide = () => {
   const isActiveGame = useSelector(
     state => gameStatusSelector(state).status === GameStatusCodes.playing,
@@ -161,45 +164,66 @@ const RootContainer = ({
     init({send});
   }, [init, setCurrentUser]);
 
-  useHotkeys(
-    'ctrl+enter, command+enter',
-    e => {
-      e.preventDefault();
-      checkResult();
-    },
-    [],
-    { filter: () => true },
-  );
-
-  const players = Gon.getAsset('players');
-
-  if (!storeLoaded && players) {
-    const defaultPlayer = {
-      name: 'John Doe', github_id: 35539033, lang: 'js', rating: '0',
+  useEffect(() => {
+    /** @param {KeyboardEvent} e */
+    const check = e => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        checkResult();
+      }
     };
-    const player1 = players[0] || defaultPlayer;
-    const player2 = players[1] || defaultPlayer;
-    return <GamePreview player1={player1} player2={player2} />;
-  }
+
+    window.addEventListener('keydown', check);
+
+    return () => {
+      window.removeEventListener('keydown', check);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (gameStatusCode === GameStatusCodes.waitingOpponent) {
     const gameUrl = window.location.href;
     return <WaitingOpponentInfo gameUrl={gameUrl} />;
   }
 
+  const players = Gon.getAsset('players');
+  const isRenderPreview = (!storeLoaded && players);
+
+  const defaultPlayer = {
+    name: 'John Doe', github_id: 35539033, lang: 'js', rating: '0',
+  };
+  const player1 = players[0] || defaultPlayer;
+  const player2 = players[1] || defaultPlayer;
+
   const isStoredGame = gameStatusCode === GameStatusCodes.stored;
 
   return (
-    <div className="x-outline-none">
-      <GameWidgetGuide />
-      <div className="container-fluid">
-        <div className="row no-gutter cb-game">
-          <InfoWidget />
-          <GameWidget />
-        </div>
-      </div>
-      {isStoredGame && <CodebattlePlayer />}
-    </div>
+    <SwitchTransition mode="out-in">
+      <CSSTransition
+        key={isRenderPreview ? 'preview' : 'game'}
+        addEndListener={(node, done) => {
+          node.addEventListener('transitionend', done, false);
+        }}
+        classNames="preview"
+      >
+        {isRenderPreview
+          ? (<GamePreview className="animate" player1={player1} player2={player2} />)
+          : (
+            <div className="x-outline-none">
+              <GameWidgetGuide />
+              <div className="container-fluid">
+                <div className="row no-gutter cb-game">
+                  <InfoWidget />
+                  <GameWidget />
+                  <FeedBackWidget />
+                </div>
+              </div>
+              {isStoredGame && <CodebattlePlayer />}
+            </div>
+        )}
+
+      </CSSTransition>
+    </SwitchTransition>
   );
 };
 

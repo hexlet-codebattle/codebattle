@@ -19,6 +19,7 @@ import 'regenerator-runtime/runtime';
 import 'phoenix_html';
 import '@fortawesome/fontawesome-free/js/all';
 import 'bootstrap';
+
 import NProgress from 'nprogress';
 import { Socket } from 'phoenix';
 import { LiveSocket } from 'phoenix_live_view';
@@ -58,6 +59,7 @@ const liveSocket = new LiveSocket('/live', Socket, {
   hooks: Hooks,
   params: { _csrf_token: csrfToken },
 });
+
 window.addEventListener('phx:page-loading-start', _info => NProgress.start());
 window.addEventListener('phx:page-loading-stop', _info => NProgress.done());
 

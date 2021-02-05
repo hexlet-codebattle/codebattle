@@ -2,6 +2,7 @@ defmodule Codebattle.Tournament.Types do
   defmodule Player do
     use Ecto.Schema
     import Ecto.Changeset
+    import Codebattle.Tournament.Helpers
     @primary_key false
     @derive Jason.Encoder
 

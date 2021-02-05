@@ -18,8 +18,9 @@ resource "kubernetes_secret" "codebattle_secrets" {
     CODEBATTLE_DB_PORT         = "${var.codebattle_db_port}"
     GITHUB_CLIENT_SECRET       = "${var.github_client_secret}"
     GITHUB_CLIENT_ID           = "${var.github_client_id}"
+    DISCORD_CLIENT_SECRET      = "${var.discord_client_secret}"
+    DISCORD_CLIENT_ID          = "${var.discord_client_id}"
     ONESIGNAL_API_KEY          = "${var.onesignal_api_key}"
     ONESIGNAL_APP_ID           = "${var.onesignal_app_id}"
-    ROLLBAR_API_KEY            = "9f1dcbb7a9c94769add0a66639cf8bc1"
   }
 }

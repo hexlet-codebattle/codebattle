@@ -11,6 +11,8 @@ import { resolveDiffs } from '../lib/player';
 import PlaybookStatusCodes from '../config/playbookStatusCodes';
 import GameStatusCodes from '../config/gameStatusCodes';
 
+import notification from '../utils/notification';
+
 const defaultLanguages = Gon.getAsset('langs');
 const gameId = Gon.getAsset('game_id');
 const isRecord = Gon.getAsset('is_record');
@@ -122,7 +124,7 @@ const initGameChannel = dispatch => {
       playbookStatusCode: PlaybookStatusCodes.active,
     });
 
-    dispatch(actions.finishStoreInit());
+    setTimeout(() => dispatch(actions.finishStoreInit()), 2000);
   };
 
   channel
@@ -174,6 +176,15 @@ export const changeCurrentLangAndSetTemplate = langSlug => (dispatch, getState) 
   dispatch(sendEditorText(textToSet, langSlug));
 };
 
+export const resetTextToTemplate = langSlug => (dispatch, getState) => {
+  const state = getState();
+  const langs = selectors.editorLangsSelector(state) || defaultLanguages;
+  const { solutionTemplate: template } = _.find(langs, { slug: langSlug });
+  dispatch(sendEditorText(template, langSlug));
+};
+
+export const soundNotification = notification();
+
 export const activeGameEditorReady = (machine) => dispatch => {
   initGameChannel(dispatch);
   channel.on('editor:data', data => {
@@ -188,8 +199,8 @@ export const activeGameEditorReady = (machine) => dispatch => {
 
   channel.on('user:check_complete', responseData => {
     const {
- status, solutionStatus, checkResult, players, userId,
-} = camelizeKeys(responseData);
+      status, solutionStatus, checkResult, players, userId,
+    } = camelizeKeys(responseData);
     const newGameStatus = solutionStatus ? { status } : {};
 
     dispatch(actions.updateGamePlayers({ players }));
@@ -219,6 +230,7 @@ export const activeGameEditorReady = (machine) => dispatch => {
       { ...secondPlayer, type: userTypes.secondPlayer },
     ];
 
+    soundNotification.start();
     dispatch(actions.updateGamePlayers({ players }));
     dispatch(actions.setGameTask({ task }));
     dispatch(actions.setLangs({ langs }));

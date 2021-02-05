@@ -7,9 +7,9 @@ use Mix.Config
 
 config :codebattle,
   alpine_docker_command_template:
-    "docker run --rm -m 400m --cpus=1 --net none ~s ~s ~s timeout -s 9 -t 10 make --silent test",
+    "docker run --rm -m 400m --cpus=1 --net none ~s ~s ~s timeout -s 9 -t 10 make --silent test checker_name=~s",
   ubuntu_docker_command_template:
-    "docker run --rm -m 400m --cpus=1 --net none ~s ~s ~s timeout -s 9 10s make --silent test",
+    "docker run --rm -m 400m --cpus=1 --net none ~s ~s ~s timeout -s 9 10s make --silent test checker_name=~s",
   alpine_docker_command_compile_template:
     "docker run -m 400m --cpus=1 --net none ~s ~s ~s timeout -s 9 -t 10 make --silent test-compile",
   ubuntu_docker_command_compile_template:
@@ -42,12 +42,17 @@ config :phoenix_slime, :use_slim_extension, true
 
 config :ueberauth, Ueberauth,
   providers: [
-    github: {Ueberauth.Strategy.Github, [default_scope: "user:email", send_redirect_uri: false]}
+    github: {Ueberauth.Strategy.Github, [default_scope: "user:email", send_redirect_uri: false]},
+    discord: {Ueberauth.Strategy.Discord, []}
   ]
 
 config :ueberauth, Ueberauth.Strategy.Github.OAuth,
   client_id: System.get_env("GITHUB_CLIENT_ID"),
   client_secret: System.get_env("GITHUB_CLIENT_SECRET")
+
+config :ueberauth, Ueberauth.Strategy.Discord.OAuth,
+  client_id: System.get_env("DISCORD_CLIENT_ID"),
+  client_secret: System.get_env("DISCORD_CLIENT_SECRET")
 
 config :phoenix_gon, :json_library, Jason
 
@@ -86,7 +91,7 @@ config :codebattle, Codebattle.Bot,
 
 config :codebattle, Codebattle.DockerLangsPuller, timeout: :timer.hours(7)
 
-config :codebattle, checker_adapter: Codebattle.CodeCheck.Checker
+config :codebattle, checker_adapter: Codebattle.CodeCheck.DockerChecker
 config :codebattle, tournament_match_timeout: 3 * 60
 
 config :codebattle, Codebattle.Analitics, max_size_activity_server: 10_000

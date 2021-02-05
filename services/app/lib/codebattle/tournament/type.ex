@@ -118,12 +118,6 @@ defmodule Codebattle.Tournament.Type do
         |> broadcast_new_step()
       end
 
-      defp pick_winner(%{players: [%{game_result: "won"} = winner, _]}), do: winner
-      defp pick_winner(%{players: [_, %{game_result: "won"} = winner]}), do: winner
-      defp pick_winner(%{players: [winner, %{game_result: "gave_up"}]}), do: winner
-      defp pick_winner(%{players: [%{game_result: "gave_up"}, winner]}), do: winner
-      defp pick_winner(match), do: Enum.random(match.players)
-
       defp start_games(tournament) do
         new_matches =
           tournament

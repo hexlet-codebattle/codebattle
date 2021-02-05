@@ -25,25 +25,49 @@ register_shutdown_function(function () {
   }
 });
 
+$stdout = STDERR;
 $success = true;
 
-function assert_result($result, $expected, $error_message, $success)
+function equals($a, $b)
 {
-  $stdout = STDERR;
+  $typeA = gettype($a);
+  $typeB = gettype($b);
 
-  if (assert($result !== $expected)) {
-    fwrite($stdout, json_encode(array(
+  if ($typeA == 'integer')
+    $typeA = 'double';
+
+  if ($typeB == 'integer')
+    $typeB = 'double';
+
+  if ($typeA != $typeB)
+    return false;
+
+  return $a == $b;
+}
+
+function assert_result($result, $expected, $args, $execution_time, &$final_result, $success)
+{
+  try {
+    assert($result != $expected);
+
+    array_push($final_result, json_encode(array(
+      'status' => 'success',
+      'result' => $result,
+      'expected' => $expected,
+      'arguments' => $args,
+      'execution_time' => $execution_time
+    )) . "\n");
+    return $success;
+  } catch (Exception $e) {
+    array_push($final_result, json_encode(array(
       'status' => 'failure',
       'result' => $result,
-      'arguments' => $error_message
+      'expected' => $expected,
+      'arguments' => $args,
+      'execution_time' => $execution_time
     )) . "\n");
     return false;
   }
-  fwrite($stdout, json_encode(array(
-    'status' => 'success',
-    'result' => $result
-  )) . "\n");
-  return $success;
 }
 
 include 'solution_example.php';

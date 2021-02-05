@@ -31,6 +31,12 @@ defmodule CodebattleWeb.Router do
     get("/:provider/callback", AuthController, :callback)
   end
 
+  scope "/user/auth", CodebattleWeb, as: :user do
+    pipe_through(:browser)
+    get("/:provider", User.AuthController, :request)
+    get("/:provider/callback", User.AuthController, :callback)
+  end
+
   scope "/api", CodebattleWeb.Api, as: :api do
     pipe_through(:api)
 
@@ -39,8 +45,10 @@ defmodule CodebattleWeb.Router do
       get("/game_activity", GameActivityController, :show)
       get("/playbook/:id", PlaybookController, :show)
       get("/user/:id/stats", UserController, :stats)
+      get("/user/current", UserController, :current)
       resources("/users", UserController, only: [:index, :show])
       resources("/settings", SettingsController, only: [:show, :update], singleton: true)
+      post("/feedback", FeedBackController, :index)
     end
   end
 
@@ -49,6 +57,7 @@ defmodule CodebattleWeb.Router do
     pipe_through(:browser)
     get("/robots.txt", PageController, :robots)
     get("/sitemap.xml", PageController, :sitemap)
+    get("/feedback/rss.xml", PageController, :feedback)
 
     resources("/session", SessionController, singleton: true, only: [:delete])
     get("/", PageController, :index)

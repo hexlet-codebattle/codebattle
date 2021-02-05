@@ -5,10 +5,12 @@ defmodule Codebattle.Task do
   import Ecto.Changeset
   import Ecto.Query
 
-  @derive {Jason.Encoder, only: [:id, :name, :level, :description]}
+  @derive {Jason.Encoder, only: [:id, :name, :level, :examples, :description_ru, :description_en]}
 
   schema "tasks" do
-    field(:description, :string)
+    field(:examples, :string)
+    field(:description_ru, :string)
+    field(:description_en, :string)
     field(:name, :string)
     field(:level, :string)
     field(:input_signature, {:array, :map})
@@ -24,7 +26,9 @@ defmodule Codebattle.Task do
   def changeset(struct, params \\ %{}) do
     struct
     |> cast(params, [
-      :description,
+      :examples,
+      :description_ru,
+      :description_en,
       :name,
       :level,
       :input_signature,
@@ -32,7 +36,7 @@ defmodule Codebattle.Task do
       :asserts,
       :disabled
     ])
-    |> validate_required([:description, :name, :level, :asserts])
+    |> validate_required([:examples, :description_en, :name, :level, :asserts])
     |> unique_constraint(:name)
   end
 
@@ -44,10 +48,20 @@ defmodule Codebattle.Task do
     from(t in query, where: t.disabled == true)
   end
 
+  def get_asserts(task) do
+    task
+    |> Map.get(:asserts)
+    |> String.split("\n")
+    |> filter_empty_items()
+    |> Enum.map(&Jason.decode!/1)
+  end
+
   def get_shuffled_tasks(level) do
     from(task in Codebattle.Task, where: task.level == ^level)
     |> visible()
     |> Codebattle.Repo.all()
     |> Enum.shuffle()
   end
+
+  defp filter_empty_items(items), do: items |> Enum.filter(&(&1 != ""))
 end

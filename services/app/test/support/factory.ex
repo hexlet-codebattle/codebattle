@@ -36,7 +36,8 @@ defmodule CodebattleWeb.Factory do
   def task_factory do
     %Task{
       name: Base.encode16(:crypto.strong_rand_bytes(2)),
-      description: "test sum",
+      description_en: "test sum",
+      description_ru: "проверка суммы",
       level: "easy",
       asserts:
         "{\"arguments\":[1,1],\"expected\":2}\n{\"arguments\":[2,2],\"expected\":4}\n{\"arguments\":[1,3],\"expected\":4}\n",
@@ -52,7 +53,7 @@ defmodule CodebattleWeb.Factory do
   def task_vectors_factory do
     %Task{
       name: Base.encode16(:crypto.strong_rand_bytes(2)),
-      description: "test sum",
+      description_en: "test sum",
       level: "easy",
       asserts:
         "{\"arguments\":[[\"a\", \"b\", \"c\"], [\"d\", \"e\", \"f\"]],\"expected\":[\"abcdef\"]}\n",

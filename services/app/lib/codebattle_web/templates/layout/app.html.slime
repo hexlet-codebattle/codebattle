@@ -62,7 +62,10 @@ html lang="en"
                         img[alt="#{@current_user.rating}" src="/assets/images/rating.svg"]
                         span.align-middle
                           = @current_user.rating
-                    img.attachment.ml-1[alt="#{@current_user.name}" src="https://avatars0.githubusercontent.com/u/#{@current_user.github_id}" style="width:46px; height:46px"]
+                    = if @current_user.github_id do
+                      img.attachment.ml-1[alt="#{@current_user.name}" src="https://avatars0.githubusercontent.com/u/#{@current_user.github_id}" style="width:46px; height:46px"]
+                    - else
+                      img.attachment.ml-1[alt="#{@current_user.name}" src="https://cdn.discordapp.com/avatars/#{@current_user.discord_id}/#{@current_user.discord_avatar}.png" style="width:46px; height:46px"]
                     .dropdown-menu.dropdown-menu-right
                       = link gettext("My Profile"), to: Routes.user_path(@conn, :show, @current_user.id), class: "dropdown-item"
                       = link gettext("Settings"), to: Routes.user_setting_path(@conn, :edit), class: "dropdown-item"
@@ -75,6 +78,9 @@ html lang="en"
                       a.dropdown-item.d-flex.align-items-center.justify-content-between[href="https://hexlet.io" target="_blank"]
                         = gettext "Hexlet"
                         span.fa.fa-university.ml-3
+                      a.dropdown-item.d-flex.align-items-center.justify-content-between[href="https://discord.gg/dTpFXrYU3v" target="_blank"]
+                        = gettext "Join Discord"
+                        span.fab.fa-discord.ml-3
                       a.dropdown-item.d-flex.align-items-center.justify-content-between[href="http://slack-ru.hexlet.io/" target="_blank"]
                         = gettext "Slack#codebattle"
                         span.fab.fa-slack.ml-3
@@ -82,11 +88,13 @@ html lang="en"
                       = link gettext("Sign Out"), to: session_path(@conn, :delete), method: "delete", class: "dropdown-item"
               - else
                 li.nav-item
-                  a href="#{auth_path(@conn, :request, :github, locale: :en)}"
+                  a.mr-2 href="#{auth_path(@conn, :request, :github, locale: :en, next: get_next_path(@conn))}"
                     button.btn.btn-outline-success = gettext "Sign in with %{name}", name: "Github"
+                  a href="#{auth_path(@conn, :request, :discord, locale: :en, next: get_next_path(@conn))}"
+                    button.btn.btn-outline-success = gettext "Sign in with %{name}", name: "Discord"
                 = if Mix.env() == :dev do
                   li.nav-item
-                    = button("Dev sign_in", to: "/auth/dev_login?locale=en", class: "btn btn-outline-danger")
+                    = button("Dev sign_in", to: "/auth/dev_login?locale=en", class: "btn btn-outline-danger ml-2")
     div
       = for {type, message} <- get_flash(@conn) do
         div class="m-0 rounded-0 alert alert-#{type} alert-dismissible fade show" role="alert"

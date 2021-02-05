@@ -29,6 +29,8 @@ class Editor extends PureComponent {
   // eslint-disable-next-line react/sort-comp
   notIncludedSyntaxHightlight = new Set(['haskell', 'elixir']);
 
+  ctrPlusS = null
+
   constructor(props) {
     super(props);
     this.statusBarRef = React.createRef();
@@ -46,6 +48,10 @@ class Editor extends PureComponent {
       readOnly: !props.editable,
       contextmenu: props.editable,
     };
+    /** @param {KeyboardEvent} e */
+    this.ctrPlusS = e => {
+      if (e.key === 's' && (e.metaKey || e.ctrlKey)) e.preventDefault();
+    };
   }
 
   async componentDidMount() {
@@ -56,6 +62,7 @@ class Editor extends PureComponent {
     };
     await this.updateHightLightForNotIncludeSyntax(syntax);
     this.currentMode = this.modes[mode]();
+    window.addEventListener('keydown', this.ctrPlusS);
   }
 
   async componentDidUpdate(prevProps) {
@@ -72,6 +79,16 @@ class Editor extends PureComponent {
         ...this.options,
         readOnly: !editable,
         contextMenu: editable,
+        scrollbar: {
+          useShadows: false,
+          verticalHasArrows: true,
+          horizontalHasArrows: true,
+          vertical: 'visible',
+          horizontal: 'visible',
+          verticalScrollbarSize: 17,
+          horizontalScrollbarSize: 17,
+          arrowSize: 30,
+        },
       };
     }
     if (prevProps.syntax !== syntax) {
@@ -84,6 +101,7 @@ class Editor extends PureComponent {
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.handleResize);
+    window.removeEventListener('keydown', this.ctrPlusS);
   }
 
   updateHightLightForNotIncludeSyntax = async syntax => {
@@ -146,25 +164,28 @@ class Editor extends PureComponent {
 
   render() {
     const {
- value, syntax, onChange, editorHeight, mode, theme,
+ value, syntax, onChange, theme,
 } = this.props;
     // FIXME: move here and apply mapping object
     const mappedSyntax = languages[syntax];
-    const editorHeightWithStatusBar = mode === 'vim' ? editorHeight - this.statusBarHeight : editorHeight;
     return (
       <>
         <MonacoEditor
           theme={theme}
           options={this.options}
-          width="auto"
-          height={editorHeightWithStatusBar}
+          width="100%"
+          height="100%"
           language={mappedSyntax}
           editorDidMount={this.editorDidMount}
           value={value}
           onChange={onChange}
           data-guide-id="Editor"
         />
-        <div ref={this.statusBarRef} className="bg-dark text-white px-1" />
+        <div
+          ref={this.statusBarRef}
+          className="bg-dark text-white px-1 position-absolute"
+          style={{ bottom: '40px' }}
+        />
       </>
     );
   }

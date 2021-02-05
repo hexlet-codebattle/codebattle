@@ -39,7 +39,10 @@ defmodule Codebattle.User do
              :games_played,
              :performance,
              :inserted_at,
-             :sound_settings
+             :sound_settings,
+             :discord_name,
+             :discord_id,
+             :discord_avatar
            ]}
 
   schema "users" do
@@ -58,6 +61,9 @@ defmodule Codebattle.User do
     field(:games_played, :integer, virtual: true)
     field(:performance, :integer, virtual: true)
     field(:achievements, {:array, :string}, default: [], null: false)
+    field(:discord_name, :string)
+    field(:discord_id, :integer)
+    field(:discord_avatar, :string)
     # level range: 0..10, types: ["standard", "silent"]
     embeds_one(:sound_settings, SoundSettings, on_replace: :update)
 
@@ -81,9 +87,12 @@ defmodule Codebattle.User do
       :lang,
       :editor_mode,
       :editor_theme,
-      :achievements
+      :achievements,
+      :discord_name,
+      :discord_id,
+      :discord_avatar
     ])
-    |> validate_required([:name, :email, :github_id])
+    |> validate_required([:name, :email])
   end
 
   def settings_changeset(model, params \\ %{}) do

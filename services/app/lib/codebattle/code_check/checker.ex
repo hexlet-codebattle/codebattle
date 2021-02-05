@@ -3,59 +3,52 @@ defmodule Codebattle.CodeCheck.Checker do
 
   require Logger
 
-  alias Codebattle.Languages
   alias Codebattle.Generators.CheckerGenerator
   alias Codebattle.CodeCheck.CheckerStatus
   alias Codebattle.CodeCheck.CheckResult
-  alias Codebattle.Utils.ContainerGameKiller
 
   @langs_needs_compiling ["golang", "cpp", "java", "kotlin", "csharp"]
 
-  def call(task, editor_text, editor_lang) do
-    case Languages.meta() |> Map.get(editor_lang) do
-      nil ->
-        %CheckResult{status: :error, result: "Lang #{editor_lang} is undefined", output: ""}
+  def call(task, editor_text, lang) do
+    # TODO: add hash to data.jsons or forbid read data.jsons
+    {docker_command_template, docker_command_compile_template} =
+      case lang.base_image do
+        :ubuntu ->
+          {
+            Application.fetch_env!(:codebattle, :ubuntu_docker_command_template),
+            Application.fetch_env!(:codebattle, :ubuntu_docker_command_compile_template)
+          }
 
-      lang ->
-        # TODO: add hash to data.jsons or forbid read data.jsons
-        {docker_command_template, docker_command_compile_template} =
-          case lang.base_image do
-            :ubuntu ->
-              {
-                Application.fetch_env!(:codebattle, :ubuntu_docker_command_template),
-                Application.fetch_env!(:codebattle, :ubuntu_docker_command_compile_template)
-              }
+        :alpine ->
+          {
+            Application.fetch_env!(:codebattle, :alpine_docker_command_template),
+            Application.fetch_env!(:codebattle, :alpine_docker_command_compile_template)
+          }
+      end
 
-            :alpine ->
-              {
-                Application.fetch_env!(:codebattle, :alpine_docker_command_template),
-                Application.fetch_env!(:codebattle, :alpine_docker_command_compile_template)
-              }
-          end
+    {dir_path, check_code} = prepare_tmp_dir!(task, editor_text, lang)
+    volume = "-v #{dir_path}:/usr/src/app/#{lang.check_dir}"
+    checker_name = CheckerGenerator.get_checker_name(check_code, lang.slug)
+    label_name = "-l codebattle_game"
 
-        {dir_path, check_code} = prepare_tmp_dir!(task, editor_text, lang)
-        volume = "-v #{dir_path}:/usr/src/app/#{lang.check_dir}"
-        label_name = "-l codebattle_game"
+    check_command =
+      docker_command_template
+      |> :io_lib.format([label_name, volume, lang.docker_image, checker_name])
+      |> to_string
 
-        check_command =
-          docker_command_template
-          |> :io_lib.format([label_name, volume, lang.docker_image])
-          |> to_string
+    compile_check_command =
+      docker_command_compile_template
+      |> :io_lib.format([label_name, volume, lang.docker_image])
+      |> to_string
 
-        compile_check_command =
-          docker_command_compile_template
-          |> :io_lib.format([label_name, volume, lang.docker_image])
-          |> to_string
+    result =
+      start_check_solution(
+        {check_command, compile_check_command},
+        %{task: task, lang: lang, check_code: check_code}
+      )
 
-        result =
-          start_check_solution(
-            {check_command, compile_check_command},
-            %{task: task, lang: lang, check_code: check_code}
-          )
-
-        Task.start(File, :rm_rf, [dir_path])
-        result
-    end
+    Task.start(File, :rm_rf, [dir_path])
+    result
   end
 
   defp prepare_tmp_dir!(task, editor_text, lang) do
@@ -77,7 +70,7 @@ defmodule Codebattle.CodeCheck.Checker do
           "solution.#{lang.extension}"
       end
 
-    CheckerGenerator.create(lang, task, dir_path, hash_sum)
+    CheckerGenerator.create(lang, task, dir_path, check_code, hash_sum)
 
     File.write!(Path.join(dir_path, file_name), editor_text)
     {dir_path, check_code}

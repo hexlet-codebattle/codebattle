@@ -6,16 +6,10 @@ defmodule CodebattleWeb.Api.V1.UserControllerTest do
       user1 =
         insert(:user, %{name: "first", email: "test1@test.test", github_id: 1, rating: 2400})
 
-      _user_game = insert(:user_game, user: user1, inserted_at: ~N[2000-01-01 23:00:07])
-
-      _user2 =
-        insert(:user, %{name: "second", email: "test2@test.test", github_id: 2, rating: 2310})
-
-      _user3 =
-        insert(:user, %{name: "third", email: "test3@test.test", github_id: 3, rating: 2210})
-
-      _user4 =
-        insert(:user, %{name: "forth", email: "test4@test.test", github_id: 4, rating: 2210})
+      insert(:user_game, user: user1, inserted_at: ~N[2000-01-01 23:00:07])
+      insert(:user, %{name: "second", email: "test2@test.test", github_id: 2, rating: 2310})
+      insert(:user, %{name: "third", email: "test3@test.test", github_id: 3, rating: 2210})
+      insert(:user, %{name: "forth", email: "test4@test.test", github_id: 4, rating: 2210})
 
       conn =
         conn
@@ -47,16 +41,10 @@ defmodule CodebattleWeb.Api.V1.UserControllerTest do
         insert(:user, %{name: "first", email: "test1@test.test", github_id: 1, rating: 2400})
 
       game = insert(:game, starts_at: starts_at)
-      _user_game = insert(:user_game, user: user1, game: game)
-
-      _user2 =
-        insert(:user, %{name: "second", email: "test2@test.test", github_id: 2, rating: 2310})
-
-      _user3 =
-        insert(:user, %{name: "third", email: "test3@test.test", github_id: 3, rating: 2210})
-
-      _user4 =
-        insert(:user, %{name: "forth", email: "test4@test.test", github_id: 4, rating: 2210})
+      insert(:user_game, user: user1, game: game)
+      insert(:user, %{name: "second", email: "test2@test.test", github_id: 2, rating: 2310})
+      insert(:user, %{name: "third", email: "test3@test.test", github_id: 3, rating: 2210})
+      insert(:user, %{name: "forth", email: "test4@test.test", github_id: 4, rating: 2210})
 
       conn =
         conn
@@ -77,10 +65,9 @@ defmodule CodebattleWeb.Api.V1.UserControllerTest do
 
     test "shows rating list with with search by name_ilike", %{conn: conn} do
       user1 = insert(:user, %{name: "aaa", email: "test1@test.test", github_id: 1, rating: 2400})
-      _user_game = insert(:user_game, user: user1, inserted_at: ~N[2000-01-01 23:00:07])
-
-      _user2 = insert(:user, %{name: "bbb", email: "test2@test.test", github_id: 2, rating: 2310})
-      _user3 = insert(:user, %{name: "ab", email: "test3@test.test", github_id: 3, rating: 2210})
+      insert(:user_game, user: user1, inserted_at: ~N[2000-01-01 23:00:07])
+      insert(:user, %{name: "bbb", email: "test2@test.test", github_id: 2, rating: 2310})
+      insert(:user, %{name: "ab", email: "test3@test.test", github_id: 3, rating: 2210})
 
       conn =
         conn
@@ -164,6 +151,29 @@ defmodule CodebattleWeb.Api.V1.UserControllerTest do
       resp_body = json_response(conn, 200)
 
       assert Enum.count(resp_body["completed_games"]) == 2
+    end
+  end
+
+  describe "#current" do
+    test "shows current_user when logged in", %{conn: conn} do
+      user = insert(:user)
+
+      conn =
+        conn
+        |> put_session(:user_id, user.id)
+        |> get(Routes.api_v1_user_path(conn, :current))
+
+      resp_body = json_response(conn, 200)
+
+      assert resp_body == %{"id" => user.id}
+    end
+
+    test "shows current_user when not logged in", %{conn: conn} do
+      conn = get(conn, Routes.api_v1_user_path(conn, :current))
+
+      resp_body = json_response(conn, 200)
+
+      assert resp_body == %{"id" => 0}
     end
   end
 end

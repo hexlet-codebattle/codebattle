@@ -1,7 +1,4 @@
 test:
-	python ./check/checker.py
-
-test-example:
-	python checker_example.py
+	python ./check/${checker_name}.py
 
 .PHONY: test

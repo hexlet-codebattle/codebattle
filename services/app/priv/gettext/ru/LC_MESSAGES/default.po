@@ -248,13 +248,13 @@ msgid "Run your code!"
 msgstr "Запустите Ваш код!"
 
 msgid "You have some syntax errors"
-msgstr "У Вас есть синтаксические ошибки: %{errors}"
+msgstr "Есть синтаксические ошибки: %{errors}"
 
 msgid "Tests failed"
 msgstr "Тесты не пройдены"
 
 msgid "You passed %{successCount} from %{assertsCount} asserts. (%{percent}%)"
-msgstr "Вы прошли %{successCount} из %{assertsCount} тестов. (%{percent}%)"
+msgstr "Прошли %{successCount} из %{assertsCount} тестов. (%{percent}%)"
 
 msgid "Yay! All tests passed!!111"
 msgstr "Поздравляю! Все тесты пройдены!!111"

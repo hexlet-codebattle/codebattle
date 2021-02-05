@@ -60,7 +60,9 @@ defmodule Codebattle.TasksImporter do
         struct(Codebattle.Task, params),
         on_conflict: [
           set: [
-            description: params.description,
+            examples: params.examples,
+            description_en: params.description_en,
+            description_ru: params.description_ru,
             disabled: params.disabled,
             level: params.level,
             input_signature: params.input_signature,
@@ -78,11 +80,14 @@ defmodule Codebattle.TasksImporter do
 
     asserts = File.read!(Path.join(path, "#{issue_name}.jsons"))
     signature = Map.get(issue_info, "signature")
+    description = Map.get(issue_info, "description")
 
     %{
       name: issue_name,
       disabled: Map.get(issue_info, "disabled"),
-      description: Map.get(issue_info, "description"),
+      examples: Map.get(issue_info, "examples"),
+      description_ru: Map.get(description, "ru"),
+      description_en: Map.get(description, "en"),
       level: Map.get(issue_info, "level"),
       input_signature: Map.get(signature, "input"),
       output_signature: Map.get(signature, "output"),

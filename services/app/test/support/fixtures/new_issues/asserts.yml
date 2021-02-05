@@ -8,4 +8,7 @@ signature:
   output:
     type:
       name: string
-description: 'new_description'
+description: 
+  en: 'new_description'
+examples: |-
+  new Example: `4227 == solution(200)`

@@ -66,4 +66,10 @@ defmodule CodebattleWeb.Api.V1.UserController do
       user: user
     })
   end
+
+  def current(conn, _) do
+    current_user = conn.assigns.current_user
+
+    json(conn, %{id: current_user.id})
+  end
 end

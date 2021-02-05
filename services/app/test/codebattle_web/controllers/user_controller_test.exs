@@ -17,7 +17,8 @@ defmodule CodebattleWeb.UserControllerTest do
       conn
       |> get(Routes.user_path(conn, :index))
 
-    assert redirected_to(conn, 302) == "/"
+    assert redirected_to(conn, 302) ==
+             Routes.page_path(CodebattleWeb.Endpoint, :index, next: Routes.user_path(conn, :index))
   end
 
   test "show user: signed in", %{conn: conn} do
@@ -38,7 +39,10 @@ defmodule CodebattleWeb.UserControllerTest do
       conn
       |> get(Routes.user_path(conn, :show, user.id))
 
-    assert redirected_to(conn, 302) == "/"
+    assert redirected_to(conn, 302) ==
+             Routes.page_path(CodebattleWeb.Endpoint, :index,
+               next: Routes.user_path(conn, :show, user.id)
+             )
   end
 
   test "edit user", %{conn: conn} do
