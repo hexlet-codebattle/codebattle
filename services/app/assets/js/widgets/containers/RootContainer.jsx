@@ -229,7 +229,6 @@ const RootContainer = ({
 };
 
 RootContainer.propTypes = {
-  storeLoaded: PropTypes.bool.isRequired,
   setCurrentUser: PropTypes.func.isRequired,
   init: PropTypes.func.isRequired,
 };
