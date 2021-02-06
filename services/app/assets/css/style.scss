@@ -27,6 +27,10 @@ $fa-font-path: "/fonts";
   @include button-outline-variant($orange);
 }
 
+.btn-check:hover {
+  color: #ffffff;
+}
+
 .header-txt {
   font-size: 18px;
   line-height: 18px;

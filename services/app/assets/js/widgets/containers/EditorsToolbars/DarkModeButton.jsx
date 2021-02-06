@@ -5,7 +5,7 @@ import EditorThemes from '../../config/editorThemes';
 import { editorsThemeSelector } from '../../selectors';
 import { actions } from '../../slices';
 
-export default ({ player }) => {
+export default function DakModeButton({ player }) {
   const dispatch = useDispatch();
 
   const currentTheme = useSelector(state => editorsThemeSelector(player.id)(state));
@@ -14,7 +14,7 @@ export default ({ player }) => {
 
   const mode = isDarkMode ? EditorThemes.light : EditorThemes.dark;
 
-  const classNames = cn('btn btn-sm border rounded mr-2', {
+  const classNames = cn('btn btn-sm rounded mr-2', {
     'btn-light': isDarkMode,
     'btn-secondary': !isDarkMode,
   });
@@ -28,4 +28,4 @@ export default ({ player }) => {
       {isDarkMode ? 'Light' : 'Dark'}
     </button>
   );
-};
+}
