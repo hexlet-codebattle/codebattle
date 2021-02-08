@@ -145,13 +145,6 @@ class Editor extends PureComponent {
       });
     }
 
-    if (checkResult) {
-      editor.onKeyDown(e => {
-        if (e.code === 'Enter' && e.ctrlKey === true) {
-          checkResult();
-        }
-      });
-    }
     // this.editor.getModel().updateOptions({ tabSize: this.tabSize });
 
     this.editor.addCommand(
