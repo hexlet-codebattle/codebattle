@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button, Modal } from 'react-bootstrap';
-import i18n from '../../i18n';
 import GameStatusCodes from '../config/gameStatusCodes';
 import * as selectors from '../selectors';
 import { checkGameResult, sendGiveUp, resetTextToTemplate } from '../middlewares/Game';
@@ -16,13 +15,13 @@ const renderCheckResultButton = (checkResult, gameStatus, disabled, editorUser) 
     onClick={checkResult}
     data-toggle="tooltip"
     data-placement="top"
-    title="Check solution"
+    title="Check solution&#013;Ctrl + Enter"
     disabled={gameStatus.checking[editorUser] || disabled}
   >
     {
       (gameStatus.checking[editorUser])
         ? <FontAwesomeIcon icon="spinner" pulse />
-        : <FontAwesomeIcon icon="check" className="success" />
+        : <FontAwesomeIcon icon={['fas', 'play-circle']} className="success" />
     }
   </button>
 );
@@ -37,7 +36,7 @@ const renderGiveUpButton = (modalShow, canGiveUp, disabled) => (
     title="Give Up"
     disabled={!canGiveUp ? true : disabled}
   >
-    <span className="far fa-flag" />
+    <FontAwesomeIcon icon={['far', 'flag']} />
   </button>
 );
 
@@ -47,9 +46,11 @@ const renderResetButton = (handleReset, canReset, disabled) => (
     className="btn btn-outline-secondary btn-sm rounded mr-2"
     disabled={!canReset ? true : disabled}
     onClick={handleReset}
+    data-toggle="tooltip"
+    data-placement="top"
+    title="Reset editor"
   >
-    <span className="fa fa-times-circle mr-1" />
-    {i18n.t('Reset')}
+    <FontAwesomeIcon icon={['fas', 'sync']} />
   </button>
 );
 
