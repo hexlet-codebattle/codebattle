@@ -29,6 +29,11 @@ defmodule CodebattleWeb.Router do
     post("/dev_login", DevLoginController, :create)
     get("/:provider", AuthController, :request)
     get("/:provider/callback", AuthController, :callback)
+
+    # for binding
+    get("/:provider/bind", AuthBindController, :request)
+    get("/:provider/callback/bind", AuthBindController, :callback)
+    delete("/:provider", AuthBindController, :unbind)
   end
 
   scope "/user/auth", CodebattleWeb, as: :user do

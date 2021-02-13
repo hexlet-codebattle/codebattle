@@ -106,3 +106,5 @@ html lang="en"
     = @inner_content
       = render_gon_script(@conn)
     script src=static_path(@conn,"/assets/app.js")
+javascript:
+  window.csrf_token = "<%= Plug.CSRFProtection.get_csrf_token() %>"

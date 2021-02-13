@@ -10,6 +10,10 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
           name: "first",
           email: "test1@test.test",
           github_id: 1,
+          github_name: "g_name",
+          discord_id: 2,
+          discord_name: "d_name",
+          discord_avatar: "d_avatar",
           rating: 2400,
           lang: "dart"
         })
@@ -22,7 +26,12 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
       assert json_response(conn, 200) == %{
                "name" => "first",
                "lang" => "dart",
-               "sound_settings" => %{"level" => 7, "type" => "silent"}
+               "sound_settings" => %{"level" => 7, "type" => "silent"},
+               "discord_avatar" => "d_avatar",
+               "discord_id" => 2,
+               "discord_name" => "d_name",
+               "github_id" => 1,
+               "github_name" => "g_name"
              }
     end
   end

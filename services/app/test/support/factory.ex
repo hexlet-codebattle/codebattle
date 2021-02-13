@@ -11,6 +11,10 @@ defmodule CodebattleWeb.Factory do
       email: sequence(:username, &"test#{&1}@test.io"),
       rating: 123,
       github_id: :rand.uniform(9_999_999),
+      github_name: sequence(:github_name, &"github_name#{&1}"),
+      discord_id: :rand.uniform(9_999_999),
+      discord_name: sequence(:discord_name, &"discord_name#{&1}"),
+      discord_avatar: sequence(:discord_avatar, &"discord_avatar#{&1}"),
       sound_settings: %User.SoundSettings{}
     }
   end
