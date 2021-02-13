@@ -36,7 +36,7 @@ const renderBindButton = (currentUserSettings, provider) => {
           data-csrf={window.csrf_token}
           data-to={`/auth/${provider}`}
         >
-          {`${i18n.t('Unbind Github')} for user  ${currentUserSettings[`${provider }_name`]}`}
+          {`${i18n.t(`Unbind ${provider}`)} for user  ${currentUserSettings[`${provider }_name`]}`}
         </button>
       );
   }
