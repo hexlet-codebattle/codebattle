@@ -13,7 +13,7 @@ defmodule CodebattleWeb.User.AuthController do
         "discord" ->
           {Ueberauth.Strategy.Discord,
            [
-             default_scope: "email",
+             default_scope: "identify email",
              request_path: conn.request_path,
              callback_path: Routes.user_auth_path(conn, :callback, provider_name)
            ]}
@@ -84,7 +84,7 @@ defmodule CodebattleWeb.User.AuthController do
         :discord ->
           {Ueberauth.Strategy.Discord,
            [
-             default_scope: "email",
+             default_scope: "identify email",
              request_path: conn.request_path,
              callback_path: Routes.user_auth_path(conn, :callback, provider_name)
            ]}
