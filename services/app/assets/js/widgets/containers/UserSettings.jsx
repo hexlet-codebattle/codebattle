@@ -24,35 +24,34 @@ const playingLanguages = Object.keys(languages);
 
 const renderLanguages = data => data
   .map(language => <option key={`select option: ${language}`} value={language}>{languages[language]}</option>);
-const renderBindButtons = currentUserSettings => {
-  return(["github", "discord"].map((provider) =>(renderBindButton(currentUserSettings, provider) )))
-}
-const renderBindButton = (currentUserSettings, provider) => {
-  console.log(currentUserSettings)
-  console.log(provider)
-  console.log(currentUserSettings[provider + "_name"])
-  if(currentUserSettings[provider + "_name"]) {
-      return(
-              <button
-                key={provider}
-                type="button"
-                className="btn btn-danger btn-sm"
-                data-method="delete"
-                data-csrf={window.csrf_token}
-                data-to={`/auth/${provider}`}
-              >
-                {`${i18n.t('Unbind Github')} for user  ${currentUserSettings[provider + "_name"]}`}
-              </button>
-      )
-  } else {
-      return(<a
-        key={provider}
-        href={`/auth/${provider}/bind/`}
-        className="text-primary d-block mx-2 my-3">
-      {i18n.t(`Bind ${provider}`)}</a>)
-  }
-}
 
+const renderBindButton = (currentUserSettings, provider) => {
+  if (currentUserSettings[`${provider }_name`]) {
+      return (
+        <button
+          key={provider}
+          type="button"
+          className="btn btn-danger btn-sm"
+          data-method="delete"
+          data-csrf={window.csrf_token}
+          data-to={`/auth/${provider}`}
+        >
+          {`${i18n.t('Unbind Github')} for user  ${currentUserSettings[`${provider }_name`]}`}
+        </button>
+      );
+  }
+      return (
+        <a
+          key={provider}
+          href={`/auth/${provider}/bind/`}
+          className="text-primary d-block mx-2 my-3"
+        >
+          {i18n.t(`Bind ${provider}`)}
+        </a>
+);
+};
+
+const renderBindButtons = currentUserSettings => (['github', 'discord'].map(provider => (renderBindButton(currentUserSettings, provider))));
 
 const UserSettings = () => {
   const [unprocessableError, setUnprocessableError] = useState('');
@@ -180,13 +179,12 @@ const UserSettings = () => {
             </Field>
           </div>
 
-
           <button type="submit" className="btn btn-primary ml-2">Save</button>
         </Form>
       </Formik>
-          <div className="mt-3 d-flex flex-column">
-              {renderBindButtons(currentUserSettings)}
-          </div>
+      <div className="mt-3 d-flex flex-column">
+        {renderBindButtons(currentUserSettings)}
+      </div>
     </div>
   );
 };

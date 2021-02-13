@@ -119,6 +119,7 @@ defmodule CodebattleWeb.AuthBindController do
         conn
         |> put_flash(:info, gettext("Successfully unbinded authentication settings."))
         |> redirect(to: "/settings")
+
       {:error, reason} ->
         conn
         |> put_flash(:danger, inspect(reason))
