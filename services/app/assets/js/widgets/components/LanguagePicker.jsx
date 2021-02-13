@@ -71,7 +71,7 @@ const LanguagePicker = ({ disabled, editor: { currentLangSlug } }) => {
     <>
       <Select
         styles={customStyle}
-        className="mx-1 guide-LanguagePicker"
+        className="guide-LanguagePicker"
         defaultValue={defaultLang}
         onChange={changeLang}
         options={options}

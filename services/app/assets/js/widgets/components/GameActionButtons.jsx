@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button, Modal } from 'react-bootstrap';
-import i18n from '../../i18n';
 import GameStatusCodes from '../config/gameStatusCodes';
 import * as selectors from '../selectors';
 import { checkGameResult, sendGiveUp, resetTextToTemplate } from '../middlewares/Game';
@@ -11,46 +10,51 @@ import { checkGameResult, sendGiveUp, resetTextToTemplate } from '../middlewares
 const renderCheckResultButton = (checkResult, gameStatus, disabled, editorUser) => (
   <button
     type="button"
-    className="btn btn-success"
+    className="btn btn-outline-success btn-check btn-sm rounded"
     data-guide-id="CheckResultButton"
     onClick={checkResult}
+    data-toggle="tooltip"
+    data-placement="top"
+    title="Check solution&#013;Ctrl + Enter"
     disabled={gameStatus.checking[editorUser] || disabled}
   >
     {
       (gameStatus.checking[editorUser])
         ? <FontAwesomeIcon icon="spinner" pulse />
-        : <FontAwesomeIcon icon="play-circle" />
+        : <FontAwesomeIcon icon={['fas', 'play-circle']} className="success" />
     }
-    {` ${i18n.t('Check')}`}
-    <small> (ctrl+enter)</small>
   </button>
 );
 
 const renderGiveUpButton = (modalShow, canGiveUp, disabled) => (
   <button
     type="button"
-    className="btn btn-outline-danger"
+    className="btn btn-outline-danger btn-sm rounded mr-2"
     onClick={modalShow}
+    data-toggle="tooltip"
+    data-placement="top"
+    title="Give Up"
     disabled={!canGiveUp ? true : disabled}
   >
-    <span className="fa fa-times-circle mr-1" />
-    {i18n.t('Give up')}
+    <FontAwesomeIcon icon={['far', 'flag']} />
   </button>
 );
 
 const renderResetButton = (handleReset, canReset, disabled) => (
   <button
     type="button"
-    className="btn btn-outline-secondary ml-auto mr-2"
+    className="btn btn-outline-secondary btn-sm rounded mr-2"
     disabled={!canReset ? true : disabled}
     onClick={handleReset}
+    data-toggle="tooltip"
+    data-placement="top"
+    title="Reset editor"
   >
-    <span className="fa fa-times-circle mr-1" />
-    {i18n.t('Reset')}
+    <FontAwesomeIcon icon={['fas', 'sync']} />
   </button>
 );
 
-const GameActionButtons = ({ disabled, editorUser }) => {
+const GameActionButtons = ({ disabled, editorUser, modifiers }) => {
   const [modalShowing, setModalShowing] = useState(false);
   const dispatch = useDispatch();
   const checkResult = () => dispatch(checkGameResult());
@@ -95,9 +99,9 @@ const GameActionButtons = ({ disabled, editorUser }) => {
   );
 
   return (
-    <div className="d-flex" role="toolbar">
-      {renderGiveUpButton(modalShow, canGiveUp, realDisabled)}
+    <div className={`py-2 ${modifiers}`} role="toolbar">
       {renderResetButton(handleReset, canReset, realDisabled)}
+      {renderGiveUpButton(modalShow, canGiveUp, realDisabled)}
       {renderCheckResultButton(
         checkResult,
         gameStatus,

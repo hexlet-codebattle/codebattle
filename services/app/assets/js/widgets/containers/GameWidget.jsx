@@ -5,7 +5,6 @@ import cn from 'classnames';
 import * as selectors from '../selectors';
 import Editor from './Editor';
 import EditorToolbar from './EditorsToolbars/EditorToolbar';
-import GameActionButtons from '../components/GameActionButtons';
 import * as GameActions from '../middlewares/Game';
 import OutputClicker from './OutputClicker';
 import editorModes from '../config/editorModes';
@@ -115,8 +114,6 @@ class GameWidget extends Component {
     };
   };
 
-  renderGameActionButtons = (editor, disabled) => <GameActionButtons disabled={disabled} editorUser={editor.userId} />;
-
   getToolbarParams = editor => {
     const { currentUserId, players, isStoredGame } = this.props;
     const isPlayer = editor.userId === currentUserId;
@@ -130,7 +127,7 @@ class GameWidget extends Component {
 
   render() {
     const {
- isStoredGame, leftEditor, rightEditor, rightOutput,
+    leftEditor, rightEditor, rightOutput,
 } = this.props;
     if (leftEditor === null || rightEditor === null) {
       // FIXME: render loader
@@ -143,23 +140,22 @@ class GameWidget extends Component {
           <div className="card h-100 position-relative" style={{ minHeight: '470px' }} data-guide-id="LeftEditor">
             <EditorToolbar
               {...this.getToolbarParams(leftEditor)}
-              toolbarClassNames="btn-toolbar justify-content-between align-items-center m-1"
-              editorSettingClassNames="btn-group align-items-center m-1"
-              userInfoClassNames="btn-group align-items-center justify-content-end m-1"
+              toolbarClassNames="btn-toolbar align-items-center p-2"
+              editorSettingClassNames="btn-group align-items-center mr-2"
+              userInfoClassNames="btn-group align-items-center justify-content-end p-2"
             />
             <Editor {...this.getLeftEditorParams()} />
 
             {/* TODO: move state to parent component */}
-            {!isStoredGame && this.renderGameActionButtons(leftEditor, false)}
           </div>
         </div>
         <div className="col-12 col-lg-6 p-1">
           <div className="card h-100" style={{ minHeight: '470px' }} data-guide-id="LeftEditor">
             <EditorToolbar
               {...this.getToolbarParams(rightEditor)}
-              toolbarClassNames="btn-toolbar justify-content-between align-items-center m-1 flex-row-reverse"
+              toolbarClassNames="btn-toolbar justify-content-between align-items-center flex-row-reverse p-2"
               editorSettingClassNames="btn-group align-items-center m-1 flex-row-reverse justify-content-end"
-              userInfoClassNames="btn-group align-items-center justify-content-end m-1 flex-row-reverse"
+              userInfoClassNames="btn-group align-items-center justify-content-end flex-row-reverse mt-1"
             />
             <RightSide output={rightOutput}>
               <Editor {...this.getRightEditorParams()} />
