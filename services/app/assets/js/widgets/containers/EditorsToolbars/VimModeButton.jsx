@@ -5,7 +5,7 @@ import EditorModes from '../../config/editorModes';
 import { editorsModeSelector } from '../../selectors';
 import { actions } from '../../slices';
 
-export default function VimModeButton({ player }) {
+const VimModeButton = ({ player }) => {
   const dispatch = useDispatch();
   const currentMode = useSelector(state => editorsModeSelector(player.id)(state));
 
@@ -27,4 +27,6 @@ export default function VimModeButton({ player }) {
       Vim
     </button>
   );
-}
+};
+
+export default VimModeButton;

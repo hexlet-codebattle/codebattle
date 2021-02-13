@@ -5,7 +5,7 @@ import EditorThemes from '../../config/editorThemes';
 import { editorsThemeSelector } from '../../selectors';
 import { actions } from '../../slices';
 
-export default function DakModeButton({ player }) {
+const DakModeButton = ({ player }) => {
   const dispatch = useDispatch();
 
   const currentTheme = useSelector(state => editorsThemeSelector(player.id)(state));
@@ -28,4 +28,6 @@ export default function DakModeButton({ player }) {
       {isDarkMode ? 'Light' : 'Dark'}
     </button>
   );
-}
+};
+
+export default DakModeButton;
