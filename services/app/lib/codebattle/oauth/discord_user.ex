@@ -76,6 +76,12 @@ defmodule Codebattle.Oauth.User.DiscordUser do
     end
   end
 
+  def unbind(user) do
+    user
+    |> User.changeset(%{discord_id: nil, discord_name: nil, discord_avatar: nil})
+    |> Repo.update()
+  end
+
   defp name(user, discord_name) do
     case user do
       nil ->

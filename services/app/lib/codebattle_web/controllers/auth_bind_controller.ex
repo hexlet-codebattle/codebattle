@@ -1,4 +1,4 @@
-defmodule CodebattleWeb.User.AuthController do
+defmodule CodebattleWeb.AuthBindController do
   use CodebattleWeb, :controller
   import CodebattleWeb.Gettext
 
@@ -10,12 +10,20 @@ defmodule CodebattleWeb.User.AuthController do
 
     provider_config =
       case provider_name do
+        "github" ->
+          {Ueberauth.Strategy.Github,
+           [
+             default_scope: "user:email",
+             request_path: conn.request_path,
+             callback_path: Routes.auth_bind_path(conn, :callback, provider_name)
+           ]}
+
         "discord" ->
           {Ueberauth.Strategy.Discord,
            [
              default_scope: "identify email",
              request_path: conn.request_path,
-             callback_path: Routes.user_auth_path(conn, :callback, provider_name)
+             callback_path: Routes.auth_bind_path(conn, :callback, provider_name)
            ]}
       end
 
@@ -81,18 +89,41 @@ defmodule CodebattleWeb.User.AuthController do
 
     provider_config =
       case provider_name do
+        :github ->
+          {Ueberauth.Strategy.Github,
+           [
+             default_scope: "user:email",
+             request_path: conn.request_path,
+             callback_path: Routes.auth_bind_path(conn, :callback, provider_name)
+           ]}
+
         :discord ->
           {Ueberauth.Strategy.Discord,
            [
              default_scope: "identify email",
              request_path: conn.request_path,
-             callback_path: Routes.user_auth_path(conn, :callback, provider_name)
+             callback_path: Routes.auth_bind_path(conn, :callback, provider_name)
            ]}
       end
 
-    result =
-      conn
-      |> Ueberauth.run_callback(provider_name, provider_config)
-      |> callback(params)
+    conn
+    |> Ueberauth.run_callback(provider_name, provider_config)
+    |> callback(params)
+  end
+
+  def unbind(conn, params) do
+    provider_name = String.to_existing_atom(params["provider"])
+
+    case Codebattle.Oauth.User.unbind(conn.assigns.current_user, provider_name) do
+      {:ok, user} ->
+        conn
+        |> put_flash(:info, gettext("Successfully unbinded authentication settings."))
+        |> redirect(to: "/settings")
+
+      {:error, reason} ->
+        conn
+        |> put_flash(:danger, inspect(reason))
+        |> redirect(to: "/settings")
+    end
   end
 end

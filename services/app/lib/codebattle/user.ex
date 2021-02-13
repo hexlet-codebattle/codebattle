@@ -26,11 +26,11 @@ defmodule Codebattle.User do
            only: [
              :id,
              :name,
-             :github_name,
              :rating,
              :is_bot,
              :guest,
              :github_id,
+             :github_name,
              :lang,
              :editor_mode,
              :editor_theme,

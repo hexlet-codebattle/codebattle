@@ -1,6 +1,8 @@
 codebattle_port: 4000
 codebattle_github_id: "22fdd43a4b3766546204"
 codebattle_github_secret: "eaac6e0cb603e652a133bde58902507a13cb0901"
+codebattle_discord_id: "810202610597888012"
+codebattle_discord_secret: "t1vNZXXsw8kueHXWr3RgUTmjsBjjAoBl"
 codebattle_db_hostname: "db"
 codebattle_db_username: "postgres"
 codebattle_db_password: ""

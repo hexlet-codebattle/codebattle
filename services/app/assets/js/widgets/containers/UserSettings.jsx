@@ -25,6 +25,34 @@ const playingLanguages = Object.keys(languages);
 const renderLanguages = data => data
   .map(language => <option key={`select option: ${language}`} value={language}>{languages[language]}</option>);
 
+const renderBindButton = (currentUserSettings, provider) => {
+  if (currentUserSettings[`${provider }_name`]) {
+      return (
+        <button
+          key={provider}
+          type="button"
+          className="btn btn-danger btn-sm"
+          data-method="delete"
+          data-csrf={window.csrf_token}
+          data-to={`/auth/${provider}`}
+        >
+          {`${i18n.t('Unbind Github')} for user  ${currentUserSettings[`${provider }_name`]}`}
+        </button>
+      );
+  }
+      return (
+        <a
+          key={provider}
+          href={`/auth/${provider}/bind/`}
+          className="text-primary d-block mx-2 my-3"
+        >
+          {i18n.t(`Bind ${provider}`)}
+        </a>
+);
+};
+
+const renderBindButtons = currentUserSettings => (['github', 'discord'].map(provider => (renderBindButton(currentUserSettings, provider))));
+
 const UserSettings = () => {
   const [unprocessableError, setUnprocessableError] = useState('');
   const [currentUserSettings, setCurrentUserSettings] = useState(null);
@@ -35,6 +63,8 @@ const UserSettings = () => {
       .get('/api/v1/settings')
       .then(response => {
         setCurrentUserSettings({
+          discord_name: response.data.discord_name,
+          github_name: response.data.github_name,
           name: response.data.name,
           soundLevel: response.data.sound_settings.level,
           soundType: response.data.sound_settings.type,
@@ -149,11 +179,12 @@ const UserSettings = () => {
             </Field>
           </div>
 
-          <a href="/user/auth/discord/" className="text-primary d-block mx-2 my-3">{i18n.t('Bind Discord')}</a>
-
           <button type="submit" className="btn btn-primary ml-2">Save</button>
         </Form>
       </Formik>
+      <div className="mt-3 d-flex flex-column">
+        {renderBindButtons(currentUserSettings)}
+      </div>
     </div>
   );
 };

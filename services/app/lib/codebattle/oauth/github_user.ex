@@ -52,6 +52,32 @@ defmodule Codebattle.Oauth.User.GithubUser do
     {:ok, user}
   end
 
+  def update(user, auth) do
+    github_user = User |> Repo.get_by(github_id: auth.uid)
+
+    if github_user != nil && github_user.id != user.id do
+      {:error, "github_id has been taken"}
+    else
+      github_name = auth.extra.raw_info.user["login"]
+
+      user_data = %{
+        github_id: auth.uid,
+        name: name(user, github_name),
+        github_name: github_name,
+        email: email_from_auth(auth)
+      }
+
+      changeset = User.changeset(user, user_data)
+      Repo.update(changeset)
+    end
+  end
+
+  def unbind(user) do
+    user
+    |> User.changeset(%{github_id: nil, github_name: nil})
+    |> Repo.update()
+  end
+
   defp name(user, github_name) do
     case user do
       nil ->

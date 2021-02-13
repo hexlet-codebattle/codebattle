@@ -27,8 +27,7 @@ defmodule CodebattleWeb.AuthController do
            ]}
       end
 
-    conn
-    |> Ueberauth.run_request(provider_name, provider_config)
+    Ueberauth.run_request(conn, provider_name, provider_config)
   end
 
   def callback(%{assigns: %{ueberauth_failure: reason}} = conn, params) do
