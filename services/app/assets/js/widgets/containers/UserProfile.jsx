@@ -8,6 +8,18 @@ import CompletedGames from '../components/Game/CompletedGames';
 import Heatmap from './Heatmap';
 import Loading from '../components/Loading';
 
+const getUserAvatarUrl = ({ githubId, discordId, discordAvatar }) => {
+  if (githubId) {
+    return `https://avatars0.githubusercontent.com/u/${githubId}`;
+  }
+
+  if (discordId) {
+    return `https://cdn.discordapp.com/avatars/${discordId}/${discordAvatar}`;
+  }
+
+  return null;
+};
+
 const UserProfile = () => {
   const [stats, setStats] = useState(null);
 
@@ -15,6 +27,7 @@ const UserProfile = () => {
 
   useEffect(() => {
     const userId = window.location.pathname.split('/').pop();
+
     axios
       .get(`/api/v1/user/${userId}/stats`)
       .then(response => {
@@ -23,7 +36,7 @@ const UserProfile = () => {
       .catch(error => {
         dispatch(actions.setError(error));
       });
-  }, [dispatch, setStats]);
+  }, [dispatch]);
 
   const renderAchievemnt = achievement => {
     if (achievement.includes('win_games_with')) {
@@ -72,16 +85,18 @@ const UserProfile = () => {
               <div className="col-10 col-sm-4 col-md-2 m-auto">
                 <img
                   className="attachment user avatar img-fluid rounded"
-                  src={`https://avatars0.githubusercontent.com/u/${stats.user.githubId}`}
+                  src={getUserAvatarUrl(stats.user)}
                   alt={stats.user.name}
                 />
               </div>
             </div>
-            <h1 className="mt-1 mb-0">
+            <h1 className="mt-5 mb-0">
               {stats.user.name}
-              <a className="text-muted" href={`https://github.com/${stats.user.githubName}`}>
-                <span className="fab fa-github mt-5 pl-3" />
-              </a>
+              {stats.user.githubId && (
+                <a className="text-muted" href={`https://github.com/${stats.user.githubName}`}>
+                  <span className="fab fa-github pl-3" />
+                </a>
+              )}
             </h1>
             <h2 className="mt-1 mb-0">{`Lang: ${stats.user.lang}`}</h2>
           </div>
