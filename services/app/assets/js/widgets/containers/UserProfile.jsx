@@ -17,7 +17,7 @@ const getUserAvatarUrl = ({ githubId, discordId, discordAvatar }) => {
     return `https://cdn.discordapp.com/avatars/${discordId}/${discordAvatar}`;
   }
 
-  return null;
+  return 'https://avatars0.githubusercontent.com/u/35539033';
 };
 
 const UserProfile = () => {
