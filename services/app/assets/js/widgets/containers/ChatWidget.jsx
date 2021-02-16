@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchState } from '../middlewares/Chat';
@@ -6,26 +6,25 @@ import * as selectors from '../selectors';
 import Messages from '../components/Messages';
 import UserName from '../components/User/UserName';
 import ChatInput from '../components/ChatInput';
-import GameStatusCodes from '../config/gameStatusCodes';
 import GameTypeCodes from '../config/gameTypeCodes';
 import 'emoji-mart/css/emoji-mart.css';
 import Notifications from './Notifications';
+import GameContext from './GameContext';
 
 const ChatWidget = () => {
   const users = useSelector(state => selectors.chatUsersSelector(state));
   const messages = useSelector(state => selectors.chatMessagesSelector(state));
-  const isStoredGame = useSelector(
-    state => selectors.gameStatusSelector(state).status === GameStatusCodes.stored,
-  );
   const gameType = useSelector(selectors.gameTypeSelector);
   const dispatch = useDispatch();
+  const { current } = useContext(GameContext);
   const isTournamentGame = (gameType === GameTypeCodes.tournament);
 
   useEffect(() => {
-    if (!isStoredGame) {
+    if (!current.matches('stored')) {
       dispatch(fetchState());
     }
-  }, [dispatch, isStoredGame]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const uniqUsers = _.uniqBy(users, 'id');
   const listOfUsers = isTournamentGame ? _.filter(uniqUsers, { isBot: false }) : uniqUsers;
@@ -33,7 +32,7 @@ const ChatWidget = () => {
     <div className="d-flex shadow-sm h-100">
       <div className="col-12 col-sm-8 p-0 bg-white rounded-left h-100 position-relative">
         <Messages messages={messages} />
-        {!isStoredGame && <ChatInput />}
+        {!current.matches('stored') && <ChatInput />}
       </div>
       <div className="col-4 d-none d-sm-block p-0 border-left bg-white rounded-right">
         <div className="d-flex flex-column justify-content-start overflow-auto h-100">

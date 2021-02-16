@@ -50,6 +50,7 @@ const Task = ({
   if (_.isEmpty(task)) {
     return null;
   }
+
   return (
     <div className="card h-100 border-0 shadow-sm">
       <div className="px-3 py-3 h-100 overflow-auto" data-guide-id="Task">

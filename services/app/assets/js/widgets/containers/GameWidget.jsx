@@ -1,17 +1,17 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import _ from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import cn from 'classnames';
-import { useActor } from '@xstate/react';
+import { useMachine } from '@xstate/react';
+import GameContext from './GameContext';
+import editorMachine, { initContext } from '../machines/editor';
 import * as selectors from '../selectors';
 import Editor from './Editor';
-import GameContext from './GameContext';
 import EditorToolbar from './EditorsToolbars/EditorToolbar';
 import GameActionButtons from '../components/GameActionButtons';
 import * as GameActions from '../middlewares/Game';
 import OutputClicker from './OutputClicker';
 import editorModes from '../config/editorModes';
-import GameStatusCodes from '../config/gameStatusCodes';
 import OutputTab from '../components/ExecutionOutput/OutputTab';
 import Output from '../components/ExecutionOutput/Output';
 
@@ -64,147 +64,174 @@ const RightSide = ({ output, children }) => {
   );
 };
 
-const useEditor = id => {
-  const [bg, setBg] = useState('bg-white');
-  const { send } = useContext(GameContext);
+const EditorContainer = ({
+  id,
+  type,
+  cardClassName,
+  theme,
+  editorState,
+  editorHeight,
+  editorMode,
+  children,
+}) => {
+  const dispatch = useDispatch();
+  const updateEditorValue = data => dispatch(GameActions.sendEditorText(data));
+  const players = useSelector(selectors.gamePlayersSelector);
+  const { current: gameCurrent } = useContext(GameContext);
+
+  const context = initContext({ type, userId: id });
+
+  const config = {
+    actions: {
+      user_start_checking: () => {
+        dispatch(GameActions.checkGameResult());
+      },
+    },
+  };
+
+  const [editorCurrent, send, service] = useMachine(editorMachine.withConfig(config), {
+    context,
+    devTools: true,
+    id: `editor_${id}`,
+  });
+
+  const checkResult = () => {
+    send('user_check_solution');
+  };
 
   useEffect(() => {
-    send('initEditorActor', {
-      context: {},
-      config: {
-        actions: {
-          startTyping: () => setBg('bg-secondary'),
-          endTyping: () => setBg('bg-white'),
-          startChecking: () => setBg('bg-warning'),
-          endChecking: () => setBg('bg-white'),
-        },
-      },
-      name: `editor-${id}`,
-    });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    GameActions.connectToEditor(service)(dispatch);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return { bg };
-};
+  const isNeedHotKeys = editorCurrent.context.type === 'current_user';
 
-const EditorContainer = props => {
-  const { actorRef } = props;
-  const editorMachine = useActor(actorRef);
+  useEffect(() => {
+    /** @param {KeyboardEvent} e */
+    const check = e => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        checkResult();
+      }
+    };
 
-  return <Editor editorMachine={editorMachine} {...props} />;
+    if (isNeedHotKeys) {
+      window.addEventListener('keydown', check);
+
+      return () => {
+        window.removeEventListener('keydown', check);
+      };
+    }
+
+    return () => {};
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const toolbarParams = {
+    player: players[id],
+    editor: editorState,
+    status: editorCurrent.value,
+    ...editorCurrent.context,
+  };
+
+  const editorParams = {
+    syntax: editorState.currentLangSlug || 'javascript',
+    onChange: editorCurrent.context.type === 'current_user' ? value => {
+      updateEditorValue(value);
+    } : _.noop(),
+    checkResult,
+    value: editorState.text,
+    editorHeight,
+    mode: editorCurrent.context.editable ? editorMode : editorModes.default,
+    theme,
+    ...editorCurrent.context,
+  };
+
+  const isWon = players[id].gameResult === 'won';
+
+  const pannelBackground = cn('col-12 col-lg-6 p-1', {
+    'bg-warning': editorCurrent.matches('checking'),
+    'bg-primary': editorCurrent.matches('typing'),
+    'bg-success': gameCurrent.matches('active') && editorCurrent.matches('idle') && editorCurrent.context.type === 'current_user',
+    'bg-secondary': gameCurrent.matches('active') && editorCurrent.matches('idle') && editorCurrent.context.type === 'player',
+    'bg-danger': gameCurrent.matches('active') && editorCurrent.matches('idle') && !isWon && editorCurrent.context.type === 'opponent',
+    'bg-orange': gameCurrent.matches('game_over') && editorCurrent.matches('idle') && isWon,
+  });
+
+  return (
+    <>
+      <div
+        data-editor-state={editorCurrent.value}
+        className={pannelBackground}
+      >
+        <div className={cardClassName} style={{ minHeight: '470px' }} data-guide-id="LeftEditor">
+          <EditorToolbar
+            {...toolbarParams}
+            toolbarClassNames="btn-toolbar justify-content-between align-items-center m-1"
+            editorSettingClassNames="btn-group align-items-center m-1"
+            userInfoClassNames="btn-group align-items-center justify-content-end m-1"
+          />
+          {children({
+            ...editorParams,
+          })}
+          {/* TODO: move state to parent component */}
+          {editorCurrent.context.type === 'current_user'
+              && (
+                <GameActionButtons
+                  checkResult={checkResult}
+                  {...editorCurrent.context}
+                />
+              )}
+        </div>
+      </div>
+    </>
+  );
 };
 
 const GameWidget = () => {
+  const currentUserId = useSelector(selectors.currentUserIdSelector);
+
   const leftEditor = useSelector(selectors.leftEditorSelector);
   const rightEditor = useSelector(selectors.rightEditorSelector);
   const leftUserId = _.get(leftEditor, ['userId'], null);
   const rightUserId = _.get(rightEditor, ['userId'], null);
+  const leftUserType = currentUserId === leftUserId ? 'current_user' : 'player';
+  const rightUserType = leftUserType === 'current_user' ? 'opponent' : 'player';
 
-  const currentUserId = useSelector(selectors.currentUserIdSelector);
-  const players = useSelector(selectors.gamePlayersSelector);
   const leftEditorHeight = useSelector(selectors.editorHeightSelector(leftUserId));
   const rightEditorHeight = useSelector(selectors.editorHeightSelector(rightUserId));
   const rightOutput = useSelector(selectors.rightExecutionOutputSelector);
   const leftEditorsMode = useSelector(selectors.editorsModeSelector(leftUserId));
   const theme = useSelector(selectors.editorsThemeSelector(leftUserId));
-  const isStoredGame = useSelector(state => selectors.gameStatusSelector(state).status === GameStatusCodes.stored);
-
-  const dispatch = useDispatch();
-  const updateEditorValue = event => dispatch(GameActions.sendEditorText(event));
-  const { current, send } = useContext(GameContext);
-  // editor-{id}
-
-  const leftEditorProps = useEditor(leftUserId);
-  const rightEditorProps = useEditor(rightUserId);
-
-  if (current.context[`editor-${leftUserId}`] === undefined && current.context[`editor-${rightUserId}`] === undefined) {
-    return null;
-  }
-
-  const getLeftEditorParams = () => {
-    // FIXME: currentUser shouldn't return {} for spectator
-    const isPlayer = _.hasIn(players, currentUserId);
-    const editable = !isStoredGame && isPlayer;
-    const editorState = leftEditor;
-    const onChange = editable
-      ? value => {
-        send('typing', { target: `editor-${leftUserId}` });
-        updateEditorValue(value);
-      }
-      : _.noop;
-
-    return {
-      actorRef: current.context[`editor-${leftUserId}`],
-      onChange,
-      editable,
-      syntax: editorState.currentLangSlug || 'javascript',
-      value: editorState.text,
-      editorHeight: leftEditorHeight,
-      mode: editable ? leftEditorsMode : editorModes.default,
-      theme,
-    };
-  };
-
-  const getRightEditorParams = () => {
-    const editorState = rightEditor;
-
-    return {
-      actorRef: current.context[`editor-${rightUserId}`],
-      onChange: _.noop,
-      editable: false,
-      mode: editorModes.default,
-      syntax: editorState.currentLangSlug || 'javascript',
-      value: editorState.text,
-      editorHeight: rightEditorHeight,
-    };
-  };
-
-  const getToolbarParams = editor => {
-    const isPlayer = editor.userId === currentUserId;
-
-    return {
-      isSpectator: isStoredGame || !isPlayer,
-      player: players[editor.userId],
-      editor,
-    };
-  };
 
   return (
     <>
-      <div className={`col-12 col-lg-6 p-1 ${leftEditorProps.bg}`}>
-        <div className="card h-100 position-relative" style={{ minHeight: '470px' }} data-guide-id="LeftEditor">
-          <EditorToolbar
-            {...getToolbarParams(leftEditor)}
-            toolbarClassNames="btn-toolbar justify-content-between align-items-center m-1"
-            editorSettingClassNames="btn-group align-items-center m-1"
-            userInfoClassNames="btn-group align-items-center justify-content-end m-1"
-          />
-          <EditorContainer {...getLeftEditorParams()} />
-
-          {/* TODO: move state to parent component */}
-          {!isStoredGame
-            && (
-            <GameActionButtons
-              disabled={false}
-              editorUser={leftEditor.userId}
-              actorRef={current.context[`editor-${leftUserId}`]}
-            />
-)}
-        </div>
-      </div>
-      <div className={`col-12 col-lg-6 p-1 ${rightEditorProps.bg}`}>
-        <div className="card h-100" style={{ minHeight: '470px' }} data-guide-id="LeftEditor">
-          <EditorToolbar
-            {...getToolbarParams(rightEditor)}
-            toolbarClassNames="btn-toolbar justify-content-between align-items-center m-1 flex-row-reverse"
-            editorSettingClassNames="btn-group align-items-center m-1 flex-row-reverse justify-content-end"
-            userInfoClassNames="btn-group align-items-center justify-content-end m-1 flex-row-reverse"
-          />
+      <EditorContainer
+        id={leftUserId}
+        type={leftUserType}
+        editorState={leftEditor}
+        cardClassName="card h-100 position-relative"
+        theme={theme}
+        editorHeight={leftEditorHeight}
+        editorMode={leftEditorsMode}
+      >
+        {params => <Editor {...params} />}
+      </EditorContainer>
+      <EditorContainer
+        id={rightUserId}
+        type={rightUserType}
+        editorState={rightEditor}
+        cardClassName="card h-100"
+        theme={theme}
+        editorHeight={rightEditorHeight}
+        editorMode={editorModes.default}
+      >
+        {params => (
           <RightSide output={rightOutput}>
-            <EditorContainer {...getRightEditorParams()} />
+            <Editor {...params} />
           </RightSide>
-        </div>
-      </div>
+        )}
+      </EditorContainer>
       <OutputClicker />
     </>
   );

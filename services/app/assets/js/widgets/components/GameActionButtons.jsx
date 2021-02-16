@@ -1,73 +1,140 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import _ from 'lodash';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button, Modal } from 'react-bootstrap';
-import { useActor } from '@xstate/react';
-import GameContext from '../containers/GameContext';
 import i18n from '../../i18n';
 import * as selectors from '../selectors';
-import { checkGameResult, sendGiveUp, resetTextToTemplate } from '../middlewares/Game';
+import { sendGiveUp, resetTextToTemplate } from '../middlewares/Game';
+import { actions } from '../slices';
 
-const renderCheckResultButton = (checkResult, gameStatus, disabled, editorUser) => (
-  <button
-    type="button"
-    className="btn btn-success"
-    data-guide-id="CheckResultButton"
-    onClick={checkResult}
-    disabled={gameStatus.checking[editorUser] || disabled}
-  >
-    {
-      (gameStatus.checking[editorUser])
-        ? <FontAwesomeIcon icon="spinner" pulse />
-        : <FontAwesomeIcon icon="play-circle" />
+const CheckResultButton = ({ onClick, status }) => {
+  const dispatch = useDispatch();
+
+  switch (status) {
+    case 'enabled':
+      return (
+        <button
+          type="button"
+          className="btn btn-success"
+          data-guide-id="CheckResultButton"
+          onClick={onClick}
+        >
+          <FontAwesomeIcon icon="play-circle" />
+          {` ${i18n.t('Check')}`}
+          <small> (ctrl+enter)</small>
+        </button>
+      );
+    case 'checking':
+      return (
+        <button
+          type="button"
+          className="btn btn-success"
+          data-guide-id="CheckResultButton"
+          onClick={onClick}
+          disabled
+        >
+          <FontAwesomeIcon icon="spinner" pulse />
+          {` ${i18n.t('Check')}`}
+          <small> (ctrl+enter)</small>
+        </button>
+      );
+    case 'disabled':
+      return (
+        <button
+          type="button"
+          className="btn btn-success"
+          data-guide-id="CheckResultButton"
+          disabled
+        >
+          <FontAwesomeIcon icon="play-circle" />
+          {` ${i18n.t('Check')}`}
+          <small> (ctrl+enter)</small>
+        </button>
+      );
+    default: {
+      dispatch(actions.setError(new Error('unnexpected check status')));
+      return null;
     }
-    {` ${i18n.t('Check')}`}
-    <small> (ctrl+enter)</small>
-  </button>
-);
+  }
+};
 
-const renderGiveUpButton = (modalShow, canGiveUp, disabled) => (
-  <button
-    type="button"
-    className="btn btn-outline-danger"
-    onClick={modalShow}
-    disabled={!canGiveUp ? true : disabled}
-  >
-    <span className="fa fa-times-circle mr-1" />
-    {i18n.t('Give up')}
-  </button>
-);
+const GiveUpButton = ({ onClick, status }) => {
+  const dispatch = useDispatch();
 
-const renderResetButton = (handleReset, canReset, disabled) => (
-  <button
-    type="button"
-    className="btn btn-outline-secondary ml-auto mr-2"
-    disabled={!canReset ? true : disabled}
-    onClick={handleReset}
-  >
-    <span className="fa fa-times-circle mr-1" />
-    {i18n.t('Reset')}
-  </button>
-);
+  switch (status) {
+    case 'enabled':
+      return (
+        <button
+          type="button"
+          className="btn btn-outline-danger"
+          onClick={onClick}
+        >
+          <span className="fa fa-times-circle mr-1" />
+          {i18n.t('Give up')}
+        </button>
+      );
+    case 'disabled':
+      return (
+        <button
+          type="button"
+          className="btn btn-outline-danger"
+          disabled
+        >
+          <span className="fa fa-times-circle mr-1" />
+          {i18n.t('Give up')}
+        </button>
+      );
+    default: {
+      dispatch(actions.setError(new Error('unnexpected give up status')));
+      return null;
+    }
+  }
+};
 
-const GameActionButtons = ({ disabled, editorUser, actorRef }) => {
+const ResetButton = ({ onClick, status }) => {
+  const dispatch = useDispatch();
+
+  switch (status) {
+    case 'enabled':
+      return (
+        <button
+          type="button"
+          className="btn btn-outline-secondary ml-auto mr-2"
+          onClick={onClick}
+        >
+          <span className="fa fa-times-circle mr-1" />
+          {i18n.t('Reset')}
+        </button>
+      );
+    case 'disabled':
+      return (
+        <button
+          type="button"
+          className="btn btn-outline-secondary ml-auto mr-2"
+          disabled
+        >
+          <span className="fa fa-times-circle mr-1" />
+          {i18n.t('Reset')}
+        </button>
+      );
+    default: {
+      dispatch(actions.setError(new Error('unnexpected reset status')));
+      return null;
+    }
+  }
+};
+
+const GameActionButtons = ({
+  checkResult,
+  checkBtnStatus,
+  resetBtnStatus,
+  giveUpBtnStatus,
+}) => {
   const [modalShowing, setModalShowing] = useState(false);
   const dispatch = useDispatch();
-  const editorMachine = useActor(actorRef);
-  const checkResult = () => dispatch(checkGameResult(editorMachine));
 
-  const players = useSelector(state => selectors.gamePlayersSelector(state));
   const currentUserId = useSelector(state => selectors.currentUserIdSelector(state));
   const currentEditorLangSlug = useSelector(state => selectors.userLangSelector(currentUserId)(state));
-  const gameStatus = useSelector(state => selectors.gameStatusSelector(state));
-
-  const isSpectator = !_.hasIn(players, currentUserId);
-
-  const { current } = useContext(GameContext);
-  const canGiveUp = current.matches('active');
-  const canReset = current.matches('active');
-  const realDisabled = isSpectator || disabled;
 
   const modalHide = () => {
     setModalShowing(false);
@@ -100,14 +167,9 @@ const GameActionButtons = ({ disabled, editorUser, actorRef }) => {
 
   return (
     <div className="d-flex" role="toolbar">
-      {renderGiveUpButton(modalShow, canGiveUp, realDisabled)}
-      {renderResetButton(handleReset, canReset, realDisabled)}
-      {renderCheckResultButton(
-        checkResult,
-        gameStatus,
-        realDisabled,
-        editorUser,
-      )}
+      <GiveUpButton onClick={modalShow} status={giveUpBtnStatus} />
+      <ResetButton onClick={handleReset} status={resetBtnStatus} />
+      <CheckResultButton onClick={checkResult} status={checkBtnStatus} />
       {renderModal()}
     </div>
   );
