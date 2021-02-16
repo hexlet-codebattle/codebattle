@@ -30,7 +30,7 @@ defmodule CodebattleWeb.Notifications do
   def broadcast_join_game(fsm) do
     CodebattleWeb.Endpoint.broadcast!(
       game_channel_name(fsm),
-      "chat:user_joined",
+      "game:user_joined",
       GameView.render_fsm(fsm)
     )
   end

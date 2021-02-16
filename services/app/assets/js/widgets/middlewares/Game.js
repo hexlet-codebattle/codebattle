@@ -126,6 +126,10 @@ const initGameChannel = (dispatch, machine) => {
 
     setTimeout(() => {
       switch (status) {
+        case GameStatusCodes.waitingOpponent: {
+          machine.send('load_waiting_game');
+          break;
+        }
         case GameStatusCodes.playing: {
           machine.send('load_active_game');
           break;
@@ -141,8 +145,6 @@ const initGameChannel = (dispatch, machine) => {
         }
       }
     }, 2000);
-
-    // setTimeout(() => dispatch(actions.finishStoreInit()), 2000);
   };
 
   channel
@@ -203,16 +205,32 @@ export const resetTextToTemplate = langSlug => (dispatch, getState) => {
 
 export const soundNotification = notification();
 
-export const activeGameEditorReady = machine => dispatch => {
+export const activeEditorReady = machine => () => {
+  machine.send('load_active_editor');
+  channel.on('editor:data', data => {
+    const { userId } = camelizeKeys(data);
+    machine.send('typing', { userId });
+  });
+
+  channel.on('user:start_check', data => {
+    const { userId } = camelizeKeys(data);
+    machine.send('check_solution', { userId });
+  });
+
+  channel.on('user:check_complete', data => {
+    const { userId } = camelizeKeys(data);
+    machine.send('receive_check_result', { userId });
+  });
+};
+
+export const activeGameReady = machine => dispatch => {
   initGameChannel(dispatch, machine);
   channel.on('editor:data', data => {
     dispatch(actions.updateEditorText(camelizeKeys(data)));
-    machine.send('editor:data', camelizeKeys(data));
   });
 
   channel.on('user:start_check', ({ user_id: userId }) => {
     dispatch(actions.updateCheckStatus({ [userId]: true }));
-    machine.send('user:start_check', { userId });
   });
 
   channel.on('user:check_complete', responseData => {
@@ -231,10 +249,12 @@ export const activeGameEditorReady = machine => dispatch => {
     );
     dispatch(actions.updateGameStatus({ ...newGameStatus, solutionStatus }));
     dispatch(actions.updateCheckStatus({ [userId]: false }));
-    machine.send('user:check_complete', { target: `editor-${userId}` });
+
+    const payload = { status };
+    machine.send('user:check_complete', { payload });
   });
 
-  channel.on('chat:user_joined', responseData => {
+  channel.on('game:user_joined', responseData => {
     const {
       status,
       startsAt,
@@ -292,27 +312,27 @@ export const activeGameEditorReady = machine => dispatch => {
         timeoutSeconds,
       }),
     );
-    machine.send('chat:user_joined', camelizeKeys(responseData));
+    machine.send('game:user_joined', { payload: camelizeKeys(responseData) });
   });
 
   channel.on('user:won', data => {
     const { players, status, msg } = camelizeKeys(data);
     dispatch(actions.updateGamePlayers({ players }));
     dispatch(actions.updateGameStatus({ status, msg }));
-    machine.send('user:won', camelizeKeys(data));
+    machine.send('user:won', { payload: camelizeKeys(data) });
   });
 
   channel.on('user:give_up', data => {
     const { players, status, msg } = camelizeKeys(data);
     dispatch(actions.updateGamePlayers({ players }));
     dispatch(actions.updateGameStatus({ status, msg }));
-    machine.send('user:give_up', camelizeKeys(data));
+    machine.send('user:give_up', { payload: camelizeKeys(data) });
   });
 
   channel.on('rematch:update_status', payload => {
     const data = camelizeKeys(payload);
     dispatch(actions.updateGameStatus(data));
-    machine.send('rematch:update_status', data);
+    machine.send('rematch:update_status', { payload: data });
   });
 
   channel.on('rematch:redirect_to_new_game', ({ game_id: newGameId }) => {
@@ -321,8 +341,9 @@ export const activeGameEditorReady = machine => dispatch => {
   });
 
   channel.on('game:timeout', ({ status, msg }) => {
-    dispatch(actions.updateGameStatus({ status, msg }));
-    machine.send('game:timeout', { status, msg });
+    const data = { status, msg };
+    dispatch(actions.updateGameStatus(data));
+    machine.send('game:timeout', { payload: data });
   });
 
   channel.on('tournament:round_created', payload => {
@@ -331,7 +352,7 @@ export const activeGameEditorReady = machine => dispatch => {
   });
 };
 
-export const storedGameEditorReady = () => dispatch => {
+export const storedGameReady = machine => dispatch => {
   axios
     .get(`/api/v1/playbook/${gameId}`)
     .then(response => {
@@ -354,18 +375,29 @@ export const storedGameEditorReady = () => dispatch => {
 
       dispatch(actions.loadStoredPlaybook(resolvedData));
       dispatch(actions.fetchChatData(resolvedData.chat));
-      dispatch(actions.finishStoreInit());
+
+      setTimeout(() => {
+        machine.send('load_stored_game', { payload: data });
+      }, 2000);
     })
     .catch(error => {
       dispatch(actions.setError(error));
     });
 };
 
-export const init = machine => dispatch => {
-  dispatch(isRecord ? storedGameEditorReady() : activeGameEditorReady(machine));
+export const storedEditorReady = machine => () => {
+  machine.send('load_stored_editor');
 };
 
-export const checkGameResult = editorMachine => (dispatch, getState) => {
+export const connectToGame = machine => dispatch => {
+  dispatch(isRecord ? storedGameReady(machine) : activeGameReady(machine));
+};
+
+export const connectToEditor = machine => dispatch => {
+  dispatch(isRecord ? storedEditorReady(machine) : activeEditorReady(machine));
+};
+
+export const checkGameResult = () => (dispatch, getState) => {
   const state = getState();
   const currentUserId = selectors.currentUserIdSelector(state);
   const currentUserEditor = selectors.editorDataSelector(currentUserId)(state);
@@ -380,9 +412,6 @@ export const checkGameResult = editorMachine => (dispatch, getState) => {
     lang_slug: currentUserEditor.currentLangSlug,
   };
 
-  const [, send] = editorMachine;
-
-  send('check_solution');
   channel.push('check_result', payload);
 };
 
