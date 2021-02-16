@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button, Modal } from 'react-bootstrap';
-import i18n from '../../i18n';
 import * as selectors from '../selectors';
 import { sendGiveUp, resetTextToTemplate } from '../middlewares/Game';
 import { actions } from '../slices';
@@ -15,40 +14,44 @@ const CheckResultButton = ({ onClick, status }) => {
       return (
         <button
           type="button"
-          className="btn btn-success"
+          className="btn btn-outline-success btn-check btn-sm rounded"
           data-guide-id="CheckResultButton"
           onClick={onClick}
+          data-toggle="tooltip"
+          data-placement="top"
+          title="Check solution&#013;Ctrl + Enter"
         >
-          <FontAwesomeIcon icon="play-circle" />
-          {` ${i18n.t('Check')}`}
-          <small> (ctrl+enter)</small>
+          <FontAwesomeIcon icon={['fas', 'play-circle']} className="success" />
         </button>
       );
     case 'checking':
       return (
         <button
           type="button"
-          className="btn btn-success"
+          className="btn btn-outline-success btn-check btn-sm rounded"
           data-guide-id="CheckResultButton"
           onClick={onClick}
+          data-toggle="tooltip"
+          data-placement="top"
+          title="Check solution&#013;Ctrl + Enter"
           disabled
         >
           <FontAwesomeIcon icon="spinner" pulse />
-          {` ${i18n.t('Check')}`}
-          <small> (ctrl+enter)</small>
         </button>
       );
     case 'disabled':
       return (
         <button
           type="button"
-          className="btn btn-success"
+          className="btn btn-outline-success btn-check btn-sm rounded"
           data-guide-id="CheckResultButton"
+          onClick={onClick}
+          data-toggle="tooltip"
+          data-placement="top"
+          title="Check solution&#013;Ctrl + Enter"
           disabled
         >
-          <FontAwesomeIcon icon="play-circle" />
-          {` ${i18n.t('Check')}`}
-          <small> (ctrl+enter)</small>
+          <FontAwesomeIcon icon={['fas', 'play-circle']} className="success" />
         </button>
       );
     default: {
@@ -66,22 +69,26 @@ const GiveUpButton = ({ onClick, status }) => {
       return (
         <button
           type="button"
-          className="btn btn-outline-danger"
+          className="btn btn-outline-danger btn-sm rounded mr-2"
           onClick={onClick}
+          data-toggle="tooltip"
+          data-placement="top"
+          title="Give Up"
         >
-          <span className="fa fa-times-circle mr-1" />
-          {i18n.t('Give up')}
+          <FontAwesomeIcon icon={['far', 'flag']} />
         </button>
       );
     case 'disabled':
       return (
         <button
           type="button"
-          className="btn btn-outline-danger"
+          className="btn btn-outline-danger btn-sm rounded mr-2"
+          data-toggle="tooltip"
+          data-placement="top"
+          title="Give Up"
           disabled
         >
-          <span className="fa fa-times-circle mr-1" />
-          {i18n.t('Give up')}
+          <FontAwesomeIcon icon={['far', 'flag']} />
         </button>
       );
     default: {
@@ -99,22 +106,26 @@ const ResetButton = ({ onClick, status }) => {
       return (
         <button
           type="button"
-          className="btn btn-outline-secondary ml-auto mr-2"
+          className="btn btn-outline-secondary btn-sm rounded mr-2"
           onClick={onClick}
+          data-toggle="tooltip"
+          data-placement="top"
+          title="Reset editor"
         >
-          <span className="fa fa-times-circle mr-1" />
-          {i18n.t('Reset')}
+          <FontAwesomeIcon icon={['fas', 'sync']} />
         </button>
       );
     case 'disabled':
       return (
         <button
           type="button"
-          className="btn btn-outline-secondary ml-auto mr-2"
+          className="btn btn-outline-secondary btn-sm rounded mr-2"
+          data-toggle="tooltip"
+          data-placement="top"
+          title="Reset editor"
           disabled
         >
-          <span className="fa fa-times-circle mr-1" />
-          {i18n.t('Reset')}
+          <FontAwesomeIcon icon={['fas', 'sync']} />
         </button>
       );
     default: {
@@ -166,7 +177,7 @@ const GameActionButtons = ({
   );
 
   return (
-    <div className="d-flex" role="toolbar">
+    <div className="py-2 mr-2" role="toolbar">
       <GiveUpButton onClick={modalShow} status={giveUpBtnStatus} />
       <ResetButton onClick={handleReset} status={resetBtnStatus} />
       <CheckResultButton onClick={checkResult} status={checkBtnStatus} />

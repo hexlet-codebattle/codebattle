@@ -21,14 +21,13 @@ defmodule CodebattleWeb.AuthController do
         "discord" ->
           {Ueberauth.Strategy.Discord,
            [
-             default_scope: "email",
+             default_scope: "identify email",
              request_path: conn.request_path,
              callback_path: Routes.auth_path(conn, :callback, provider_name)
            ]}
       end
 
-    conn
-    |> Ueberauth.run_request(provider_name, provider_config)
+    Ueberauth.run_request(conn, provider_name, provider_config)
   end
 
   def callback(%{assigns: %{ueberauth_failure: reason}} = conn, params) do
@@ -100,7 +99,7 @@ defmodule CodebattleWeb.AuthController do
         :discord ->
           {Ueberauth.Strategy.Discord,
            [
-             default_scope: "email",
+             default_scope: "identify email",
              request_path: conn.request_path,
              callback_path: Routes.auth_path(conn, :callback, provider_name)
            ]}

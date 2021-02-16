@@ -383,7 +383,7 @@ const LobbyWidget = () => {
       {renderModal(show, handleCloseModal)}
       <div className="row">
         {/* {isGuestCurrentUser ? <Intro /> : <StartGamePanel />} */}
-        <div className="col-sm-9 p-0">
+        <div className="col-lg-8 col-md-12 p-0 mb-2 pr-lg-2">
           <GameContainers
             activeGames={activeGames}
             completedGames={completedGames}
@@ -392,7 +392,7 @@ const LobbyWidget = () => {
           />
         </div>
 
-        <div className="d-flex flex-column col-sm-3">
+        <div className="d-flex flex-column col-lg-4 col-md-12 p-0">
           <TopPlayersPerPeriod />
           <div className="mt-2">
             <TopPlayersEver />

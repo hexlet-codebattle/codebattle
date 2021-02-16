@@ -5,7 +5,7 @@ import EditorModes from '../../config/editorModes';
 import { editorsModeSelector } from '../../selectors';
 import { actions } from '../../slices';
 
-export default ({ player }) => {
+const VimModeButton = ({ player }) => {
   const dispatch = useDispatch();
   const currentMode = useSelector(state => editorsModeSelector(player.id)(state));
 
@@ -13,7 +13,7 @@ export default ({ player }) => {
 
   const mode = isVimMode ? EditorModes.default : EditorModes.vim;
 
-  const classNames = cn('btn btn-sm border rounded mr-2', {
+  const classNames = cn('btn btn-sm rounded mr-2', {
     'btn-light': !isVimMode,
     'btn-secondary': isVimMode,
   });
@@ -28,3 +28,5 @@ export default ({ player }) => {
     </button>
   );
 };
+
+export default VimModeButton;

@@ -8,7 +8,6 @@ import editorMachine, { initContext } from '../machines/editor';
 import * as selectors from '../selectors';
 import Editor from './Editor';
 import EditorToolbar from './EditorsToolbars/EditorToolbar';
-import GameActionButtons from '../components/GameActionButtons';
 import * as GameActions from '../middlewares/Game';
 import OutputClicker from './OutputClicker';
 import editorModes from '../config/editorModes';
@@ -126,11 +125,16 @@ const EditorContainer = ({
     return () => {};
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  const actionBtnsProps = {
+    checkResult,
+    ...editorCurrent.context,
+  };
 
   const toolbarParams = {
     player: players[id],
     editor: editorState,
     status: editorCurrent.value,
+    actionBtnsProps,
     ...editorCurrent.context,
   };
 
@@ -174,14 +178,6 @@ const EditorContainer = ({
           {children({
             ...editorParams,
           })}
-          {/* TODO: move state to parent component */}
-          {editorCurrent.context.type === 'current_user'
-              && (
-                <GameActionButtons
-                  checkResult={checkResult}
-                  {...editorCurrent.context}
-                />
-              )}
         </div>
       </div>
     </>

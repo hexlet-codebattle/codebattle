@@ -9,8 +9,9 @@ import TypingIcon from './TypingIcon';
 import UserName from '../../components/User/UserName';
 import VimModeButton from './VimModeButton';
 import { actions } from '../../slices';
+import GameActionButtons from '../../components/GameActionButtons';
 
-export default ({
+const EditorToolbar = ({
   player,
   editor,
   status,
@@ -18,6 +19,7 @@ export default ({
   editorSettingClassNames,
   userInfoClassNames,
   langPickerStatus,
+  actionBtnsProps,
 }) => {
   const dispatch = useDispatch();
 
@@ -34,13 +36,15 @@ export default ({
             <DarkModeButton player={player} />
           </div>
 
+          <GameActionButtons {...actionBtnsProps} />
+
           <div className={userInfoClassNames} role="group" aria-label="User info">
             <UserName user={player} />
             <OnlineIndicator player={player} />
             <GameResultIcon editor={editor} />
           </div>
         </div>
-);
+      );
 
     case 'disabled':
       return (
@@ -49,6 +53,8 @@ export default ({
             <LanguagePicker editor={editor} disabled />
           </div>
 
+          <GameActionButtons {...actionBtnsProps} />
+
           <div className={userInfoClassNames} role="group" aria-label="User info">
             <TypingIcon status={status} />
             <UserName user={player} />
@@ -56,10 +62,12 @@ export default ({
             <GameResultIcon editor={editor} />
           </div>
         </div>
-);
+      );
     default: {
       dispatch(actions.setError(new Error('unnexpected lang picker status')));
       return null;
     }
   }
 };
+
+export default EditorToolbar;
