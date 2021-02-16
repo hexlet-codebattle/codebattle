@@ -1,5 +1,4 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
 
 import DarkModeButton from './DarkModeButton';
 import GameResultIcon from '../../components/GameResultIcon';
