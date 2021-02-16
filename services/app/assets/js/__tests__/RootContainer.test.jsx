@@ -11,8 +11,26 @@ import reducers from '../widgets/slices';
 import userTypes from '../widgets/config/userTypes';
 import GameStatusCodes from '../widgets/config/gameStatusCodes';
 
+const createPlayer = params => ({
+  id: 0,
+  name: '',
+  githubId: 0,
+  rating: 0,
+  ratingDiff: 0,
+  lang: 'js',
+  ...params,
+});
+
 jest.mock('gon', () => {
-  const gonParams = { local: 'en', game_id: 10, players: [] };
+  const gonParams = {
+    local: 'en',
+    game_id: 10,
+    players: [
+      createPlayer({ name: 'Tim Urban' }),
+      createPlayer({ name: 'John Kramer' }),
+    ],
+  };
+
   return { getAsset: type => gonParams[type] };
 }, { virtual: true });
 
@@ -37,20 +55,12 @@ jest.mock('react-select', () => ({ options, value, onChange }) => {
   );
 });
 
-test('test rendering active game components', async () => {
+test('test rendering preview game component', async () => {
   const reducer = combineReducers(reducers);
 
-  const createPlayer = params => ({
-    ...params,
-    name: '',
-    githubId: 0,
-    rating: 0,
-    ratingDiff: 0,
-    lang: 'js',
-  });
   const players = {
-    1: createPlayer({ type: userTypes.firstPlayer, id: 1 }),
-    2: createPlayer({ type: userTypes.secondPlayer, id: 2 }),
+    1: createPlayer({ name: 'John Kramer', type: userTypes.firstPlayer, id: 1 }),
+    2: createPlayer({ name: 'Tim Urban', type: userTypes.secondPlayer, id: 2 }),
   };
 
   const preloadedState = {
@@ -61,7 +71,6 @@ test('test rendering active game components', async () => {
     },
     editor: {},
     usersInfo: { 1: {}, 2: {} },
-    storeLoaded: true,
   };
   const store = configureStore({
     reducer,
@@ -70,6 +79,5 @@ test('test rendering active game components', async () => {
 
   render(<Provider store={store}><RootContainer /></Provider>);
 
-  expect(screen.getByText(/Online users:/)).toBeInTheDocument();
-  expect(screen.getByText(/^(Task)$/)).toBeInTheDocument();
+  expect(screen.getByText(/Tim Urban/)).toBeInTheDocument();
 });
