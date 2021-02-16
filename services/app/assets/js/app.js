@@ -23,6 +23,7 @@ import 'bootstrap';
 import NProgress from 'nprogress';
 import { Socket } from 'phoenix';
 import { LiveSocket } from 'phoenix_live_view';
+import { inspect } from '@xstate/inspect';
 
 // Import local files
 //
@@ -38,9 +39,12 @@ import {
   renderSettingPage,
 } from './widgets';
 import renderExtensionPopup from './widgets/components/ExtensionPopup';
-import {inspect} from '@xstate/inspect';
 
-// inspect();
+if (process.env.NODE_ENV === 'development') {
+  inspect({
+    iframe: () => document.querySelector('.xstate'),
+  });
+}
 
 const Hooks = {
   NewChatMessage: {
