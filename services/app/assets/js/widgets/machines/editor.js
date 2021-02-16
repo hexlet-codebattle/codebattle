@@ -1,32 +1,42 @@
 import { Machine, assign } from 'xstate';
 
 // settings
+// type - user type for viewers current_user/opponent/player (request features) teammate, clanmate, friend
 // editable - can be change Editor value true/false
+// showControlBtns -  true/false
 // checkBtnStatus - 'disabled', 'enabled', 'checking'
 // resetBtnStatus - 'disabled', 'enabled'
 // giveUpBtnStatus - 'disabled', 'enabled'
+// langPickerStatus: 'enabled', 'disabled'
+// modeBtnsStatus: 'disabled', 'enabled'
 
 const settingsByType = {
   current_user: {
     editable: true,
+    showControlBtns: true,
     checkBtnStatus: 'enabled',
     resetBtnStatus: 'enabled',
     giveUpBtnStatus: 'enabled',
     langPickerStatus: 'enabled',
+    modeBtnsStatus: 'enabled',
   },
   opponent: {
     editable: false,
+    showControlBtns: false,
     checkBtnStatus: 'disabled',
     resetBtnStatus: 'disabled',
     langPickerStatus: 'disabled',
     giveUpBtnStatus: 'disabled',
+    modeBtnsStatus: 'disabled',
   },
   player: {
     editable: false,
+    showControlBtns: false,
     checkBtnStatus: 'disabled',
     resetBtnStatus: 'disabled',
     langPickerStatus: 'disabled',
     giveUpBtnStatus: 'disabled',
+    modeBtnsStatus: 'disabled',
   },
 };
 
@@ -46,14 +56,17 @@ const settingsByState = {
     resetBtnStatus: 'disabled',
     langPickerStatus: 'disabled',
     giveUpBtnStatus: 'disabled',
+    modeBtnsStatus: 'disabled',
   },
   history: {
     type: 'player',
     editable: false,
+    showControlBtns: false,
     checkBtnStatus: 'disabled',
     resetBtnStatus: 'disabled',
     langPickerStatus: 'disabled',
     giveUpBtnStatus: 'disabled',
+    modeBtnsStatus: 'disabled',
   },
 };
 

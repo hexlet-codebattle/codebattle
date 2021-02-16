@@ -18,7 +18,7 @@ const LangTitle = ({ slug, name, version }) => (
   </div>
 );
 
-const LanguagePicker = ({ disabled, editor: { currentLangSlug } }) => {
+const LanguagePicker = ({ status, editor: { currentLangSlug } }) => {
   const customStyle = {
     control: provided => ({
       ...provided,
@@ -59,7 +59,7 @@ const LanguagePicker = ({ disabled, editor: { currentLangSlug } }) => {
 
   const defaultLang = { label: <LangTitle {...currentLang} /> };
 
-  if (disabled) {
+  if (status === 'disabled') {
     return (
       <button className="btn btn-sm" type="button" disabled>
         <LangTitle {...currentLang} />
