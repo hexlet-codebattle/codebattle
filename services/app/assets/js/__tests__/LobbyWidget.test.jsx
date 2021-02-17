@@ -25,12 +25,13 @@ test('test rendering GameList', async () => {
   const reducer = combineReducers(reducers);
 
   const preloadedState = {
-    gameList: {
+    lobby: {
       activeGames: [],
       completedGames: [
         { id: -1, level: 'elementary', players: [{ id: -4 }, { id: -2 }] },
       ],
       loaded: true,
+      presenceList: [{}, {}],
       liveTournaments: [],
     },
   };
@@ -46,6 +47,7 @@ test('test rendering GameList', async () => {
   );
 
   expect(getByText(/Lobby/)).toBeInTheDocument();
+  expect(getByText(/Online players: 2/)).toBeInTheDocument();
   expect(getByText(/Tournaments/)).toBeInTheDocument();
   expect(getByText(/Completed Games/)).toBeInTheDocument();
   expect(getByText(/Create Game/)).toBeInTheDocument();
