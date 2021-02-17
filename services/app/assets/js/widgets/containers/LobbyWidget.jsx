@@ -372,7 +372,8 @@ const LobbyWidget = () => {
     activeGames,
     completedGames,
     liveTournaments,
-  } = useSelector(state => selectors.gameListSelector(state));
+    presenceList,
+  } = useSelector(selectors.lobbyDataSelector);
 
   if (!loaded) {
     return <Loading />;
@@ -390,6 +391,7 @@ const LobbyWidget = () => {
             liveTournaments={liveTournaments}
             handleShowModal={handleShowModal}
           />
+          <span className="pt-2">{`Online players: ${presenceList.length}`}</span>
         </div>
 
         <div className="d-flex flex-column col-lg-4 col-md-12 p-0">

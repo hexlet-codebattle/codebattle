@@ -176,7 +176,7 @@ export const playbookRecordsSelector = state => state.playbook.records;
 
 export const stepCoefficientSelector = state => state.playbook.stepCoefficient;
 
-export const gameListSelector = state => state.gameList;
+export const lobbyDataSelector = state => state.lobby;
 
 export const usersStatsSelector = state => state.user.usersStats;
 

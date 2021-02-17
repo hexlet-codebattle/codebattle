@@ -4,12 +4,13 @@ import _ from 'lodash';
 const initialState = {
   activeGames: [],
   completedGames: null,
+  presenceList: [],
   loaded: false,
   newGame: { timeoutSeconds: null },
 };
 
-const gameList = createSlice({
-  name: 'gameList',
+const lobby = createSlice({
+  name: 'lobby',
   initialState,
   reducers: {
     initGameList: (state, { payload: { activeGames, completedGames, liveTournaments } }) => ({
