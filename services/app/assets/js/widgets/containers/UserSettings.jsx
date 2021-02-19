@@ -16,6 +16,8 @@ import { actions } from '../slices';
 import languages from '../config/languages';
 import Loading from '../components/Loading';
 
+const PROVIDERS = ['github', 'discord'];
+
 const csrfToken = document
   .querySelector("meta[name='csrf-token']")
   .getAttribute('content'); // validation token
@@ -35,7 +37,7 @@ const BindSocialBtn = ({ provider, disabled, isBinded }) => {
           'mr-2': true,
           'text-muted': isBinded,
         })}
-        icon={['fab', `${provider}`]}
+        icon={['fab', provider]}
       />
       { isBinded
           ? (
@@ -60,18 +62,14 @@ const BindSocialBtn = ({ provider, disabled, isBinded }) => {
 };
 
 const renderSocialBtns = currentUserSettings => {
-  const providers = Object.keys(currentUserSettings)
-    .filter(i => i.endsWith('_name'))
-    .map(i => i.replace('_name', ''));
-
-  const numberOfActiveProviders = providers.reduce((acc, provider) => {
+  const numberOfActiveProviders = PROVIDERS.reduce((acc, provider) => {
     if (currentUserSettings[`${provider }_name`]) {
       return acc + 1;
     }
     return acc;
   }, 0);
 
-  return providers.map(provider => (
+  return PROVIDERS.map(provider => (
     <BindSocialBtn
       provider={provider}
       isBinded={currentUserSettings[`${provider }_name`]}
