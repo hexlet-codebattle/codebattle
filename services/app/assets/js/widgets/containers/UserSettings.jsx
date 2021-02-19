@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
+import cn from 'classnames';
 import axios from 'axios';
 import {
   Formik,
@@ -10,11 +11,12 @@ import {
 import * as Yup from 'yup';
 import Slider from 'calcite-react/Slider';
 import * as Icon from 'react-feather';
-import i18n from '../../i18n';
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { actions } from '../slices';
 import languages from '../config/languages';
 import Loading from '../components/Loading';
+
+const PROVIDERS = ['github', 'discord'];
 
 const csrfToken = document
   .querySelector("meta[name='csrf-token']")
@@ -25,33 +27,57 @@ const playingLanguages = Object.keys(languages);
 const renderLanguages = data => data
   .map(language => <option key={`select option: ${language}`} value={language}>{languages[language]}</option>);
 
-const renderBindButton = (currentUserSettings, provider) => {
-  if (currentUserSettings[`${provider }_name`]) {
-      return (
-        <button
-          key={provider}
-          type="button"
-          className="btn btn-danger btn-sm"
-          data-method="delete"
-          data-csrf={window.csrf_token}
-          data-to={`/auth/${provider}`}
-        >
-          {`${i18n.t(`Unbind ${provider}`)} for user  ${currentUserSettings[`${provider }_name`]}`}
-        </button>
-      );
-  }
-      return (
-        <a
-          key={provider}
-          href={`/auth/${provider}/bind/`}
-          className="text-primary d-block mx-2 my-3"
-        >
-          {i18n.t(`Bind ${provider}`)}
-        </a>
-);
+const BindSocialBtn = ({ provider, disabled, isBinded }) => {
+  const formatedProviderName = provider.replace(/./, provider[0].toUpperCase());
+
+  return (
+    <div className="d-flex mb-3 align-items-center">
+      <FontAwesomeIcon
+        className={cn({
+          'mr-2': true,
+          'text-muted': isBinded,
+        })}
+        icon={['fab', `${provider}`]}
+      />
+      { isBinded
+          ? (
+            <button
+              type="button"
+              className="bind-social"
+              data-method="delete"
+              data-csrf={window.csrf_token}
+              data-to={`/auth/${provider}`}
+              disabled={disabled}
+            >
+              {`Unbind ${formatedProviderName}`}
+            </button>
+          )
+          : (
+            <a className="bind-social" href={`/auth/${provider}/bind/`}>
+              {`Bind ${formatedProviderName}`}
+            </a>
+          )}
+    </div>
+  );
 };
 
-const renderBindButtons = currentUserSettings => (['github', 'discord'].map(provider => (renderBindButton(currentUserSettings, provider))));
+const renderSocialBtns = currentUserSettings => {
+  const numberOfActiveProviders = PROVIDERS.reduce((acc, provider) => {
+    if (currentUserSettings[`${provider }_name`]) {
+      return acc + 1;
+    }
+    return acc;
+  }, 0);
+
+  return PROVIDERS.map(provider => (
+    <BindSocialBtn
+      provider={provider}
+      isBinded={currentUserSettings[`${provider }_name`]}
+      disabled={numberOfActiveProviders === 1}
+      key={provider}
+    />
+  ));
+};
 
 const UserSettings = () => {
   const [unprocessableError, setUnprocessableError] = useState('');
@@ -182,8 +208,9 @@ const UserSettings = () => {
           <button type="submit" className="btn btn-primary ml-2">Save</button>
         </Form>
       </Formik>
-      <div className="mt-3 d-flex flex-column">
-        {renderBindButtons(currentUserSettings)}
+      <div className="mt-3 ml-2 d-flex flex-column">
+        <h3 className="mb-3 font-weight-normal">Socials</h3>
+        {renderSocialBtns(currentUserSettings)}
       </div>
     </div>
   );
