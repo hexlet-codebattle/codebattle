@@ -1,10 +1,4 @@
-- matches = get_matches(@tournament)
 - players = get_players(@tournament)
-- first_round_left_range = 0..7
-- second_round_left_range = 8..11
-- sm_final_range = 12..13
-- final = 14
-
 = render "_header.html", tournament: @tournament, time: @time, current_user: @current_user, socket: @socket
 
 .container-fluid
