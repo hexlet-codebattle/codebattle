@@ -25,6 +25,7 @@ defmodule Codebattle.Application do
         supervisor(Codebattle.Repo, []),
         CodebattleWeb.Telemetry,
         {Phoenix.PubSub, [name: :cb_pubsub, adapter: Phoenix.PubSub.PG2]},
+        supervisor(CodebattleWeb.Presence, []),
         supervisor(CodebattleWeb.Endpoint, []),
         worker(Codebattle.GameProcess.TasksQueuesServer, []),
         supervisor(Codebattle.GameProcess.GlobalSupervisor, []),

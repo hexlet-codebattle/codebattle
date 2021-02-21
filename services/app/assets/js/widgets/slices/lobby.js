@@ -4,12 +4,13 @@ import _ from 'lodash';
 const initialState = {
   activeGames: [],
   completedGames: null,
+  presenceList: [],
   loaded: false,
   newGame: { timeoutSeconds: null },
 };
 
-const gameList = createSlice({
-  name: 'gameList',
+const lobby = createSlice({
+  name: 'lobby',
   initialState,
   reducers: {
     initGameList: (state, { payload: { activeGames, completedGames, liveTournaments } }) => ({
@@ -19,6 +20,9 @@ const gameList = createSlice({
       liveTournaments,
       loaded: true,
     }),
+    syncPresenceList: (state, { payload }) => {
+      state.presenceList = payload;
+    },
     removeGameLobby: (state, { payload: { id } }) => {
       state.activeGames = _.reject(state.activeGames, { id });
     },
@@ -40,7 +44,7 @@ const gameList = createSlice({
   },
 });
 
-const { actions, reducer } = gameList;
+const { actions, reducer } = lobby;
 
 export { actions };
 

@@ -55,13 +55,30 @@ class Editor extends PureComponent {
   }
 
   async componentDidMount() {
-    const { mode, syntax } = this.props;
+    const {
+      mode,
+      syntax,
+      checkResult,
+    } = this.props;
+
     this.modes = {
       default: () => null,
       vim: () => initVimMode(this.editor, this.statusBarRef.current),
     };
     await this.updateHightLightForNotIncludeSyntax(syntax);
     this.currentMode = this.modes[mode]();
+
+    this.editor.addAction({
+      id: 'codebattle-hot-keys',
+      label: 'Codebattle check start',
+      keybindings: [this.monaco.KeyMod.CtrlCmd | this.monaco.KeyCode.Enter],
+      run: () => {
+        if (!this.options.readOnly) {
+          console.log(this.options);
+          checkResult();
+        }
+      },
+    });
     window.addEventListener('keydown', this.ctrPlusS);
   }
 
@@ -90,6 +107,7 @@ class Editor extends PureComponent {
           arrowSize: 30,
         },
       };
+      this.editor.updateOptions(this.options);
     }
     if (prevProps.syntax !== syntax) {
       await this.updateHightLightForNotIncludeSyntax(syntax);
@@ -122,7 +140,7 @@ class Editor extends PureComponent {
   editorDidMount = (editor, monaco) => {
     this.editor = editor;
     this.monaco = monaco;
-    const { editable, checkResult, gameType } = this.props;
+    const { editable, gameType } = this.props;
     const isTournament = gameType === GameTypeCodes.tournament;
 
     if (editable && !isTournament) {
@@ -145,13 +163,6 @@ class Editor extends PureComponent {
       });
     }
 
-    if (checkResult) {
-      editor.onKeyDown(e => {
-        if (e.code === 'Enter' && e.ctrlKey === true) {
-          checkResult();
-        }
-      });
-    }
     // this.editor.getModel().updateOptions({ tabSize: this.tabSize });
 
     this.editor.addCommand(
@@ -164,8 +175,8 @@ class Editor extends PureComponent {
 
   render() {
     const {
- value, syntax, onChange, theme,
-} = this.props;
+      value, syntax, onChange, theme,
+    } = this.props;
     // FIXME: move here and apply mapping object
     const mappedSyntax = languages[syntax];
     return (

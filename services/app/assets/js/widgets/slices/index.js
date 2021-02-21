@@ -7,7 +7,7 @@ import gameUI, { actions as gameUIActions } from './gameUI';
 import executionOutput, { actions as executionOutputActions } from './executionOutput';
 import playbook, { actions as playbookActions } from './playbook';
 import game, { actions as gameActions } from './game';
-import gameList, { actions as gameListActions } from './gameList';
+import lobby, { actions as lobbyActions } from './lobby';
 import user, { actions as userActions } from './user';
 import leaderboard, { actions as leaderboardActions } from './leaderboard';
 
@@ -29,7 +29,7 @@ export const actions = {
   ...editorUIActions,
   ...gameUIActions,
   ...userActions,
-  ...gameListActions,
+  ...lobbyActions,
   ...leaderboardActions,
 };
 
@@ -46,7 +46,7 @@ export default {
   playbook,
   user,
   chat,
-  gameList,
+  lobby,
   storeLoaded,
   executionOutput,
   leaderboard,
