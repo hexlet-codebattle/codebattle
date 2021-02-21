@@ -12,9 +12,12 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
   end
 
   def mount(_params, session, socket) do
-    if connected?(socket) do
-      :timer.send_interval(@update_frequency, self(), :update_time)
-    end
+    {:ok, timer_ref} =
+      if connected?(socket) do
+        :timer.send_interval(@update_frequency, self(), :update_time)
+      else
+        {:ok, nil}
+      end
 
     tournament = session["tournament"]
 
@@ -23,6 +26,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
 
     {:ok,
      assign(socket,
+       timer_ref: timer_ref,
        current_user: session["current_user"],
        tournament: tournament,
        messages: get_chat_messages(tournament.id),
@@ -32,6 +36,10 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
      )}
   end
 
+  def handle_info(:update_time, %{assigns: %{timer_fer: nil}} = socket) do
+    {:noreply, socket}
+  end
+
   def handle_info(:update_time, socket) do
     tournament = socket.assigns.tournament
     time = get_next_round_time(tournament)
@@ -39,6 +47,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     if tournament.state in ["waiting_participants", "active"] and time.seconds >= 0 do
       {:noreply, assign(socket, time: time)}
     else
+      :timer.cancel(socket.assigns.timer_ref)
       {:noreply, socket}
     end
   end

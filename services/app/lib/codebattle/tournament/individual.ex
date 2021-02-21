@@ -26,7 +26,22 @@ defmodule Codebattle.Tournament.Individual do
 
   @impl Tournament.Type
   def complete_players(tournament) do
-    bots_count = tournament.players_count - players_count(tournament)
+    bots_count =
+      if tournament.players_count do
+        tournament.players_count - players_count(tournament)
+      else
+        if players_count(tournament) > 1 do
+          power =
+            tournament
+            |> players_count()
+            |> :math.log2()
+            |> ceil()
+
+          round(:math.pow(2, power)) - players_count(tournament)
+        else
+          1
+        end
+      end
 
     new_players =
       tournament
@@ -35,19 +50,17 @@ defmodule Codebattle.Tournament.Individual do
 
     tournament
     |> Tournament.changeset(%{
-      data: DeepMerge.deep_merge(tournament.data, %{players: new_players})
+      data: DeepMerge.deep_merge(tournament.data, %{players: new_players}),
+      players_count: Enum.count(new_players)
     })
     |> Repo.update!()
   end
 
   @impl Tournament.Type
-  def build_matches(%{step: 4} = tournament), do: tournament
-
-  @impl Tournament.Type
   def build_matches(%{step: 0} = tournament) do
     players = tournament |> get_players |> Enum.shuffle()
 
-    matches = pair_players_to_matches(players)
+    matches = pair_players_to_matches(players, tournament.step)
 
     tournament
     |> Tournament.changeset(%{
@@ -58,47 +71,49 @@ defmodule Codebattle.Tournament.Individual do
 
   @impl Tournament.Type
   def build_matches(tournament) do
-    matches_range =
-      case(tournament.step) do
-        1 -> 0..7
-        2 -> 8..11
-        3 -> 12..13
-      end
-
-    matches = tournament |> get_matches |> Enum.map(&Map.from_struct/1)
-
-    winners = Enum.map(matches_range, fn index -> pick_winner(Enum.at(matches, index)) end)
-    new_matches = matches ++ pair_players_to_matches(winners)
-
-    tournament
-    |> Tournament.changeset(%{
-      data: DeepMerge.deep_merge(Map.from_struct(tournament.data), %{matches: new_matches})
-    })
-    |> Repo.update!()
-  end
-
-  @impl Tournament.Type
-  def maybe_finish(%{step: 4} = tournament) do
-    new_tournament =
+    if final_step?(tournament) do
       tournament
-      |> Tournament.changeset(%{state: "finished"})
-      |> Repo.update!()
+    else
+      matches = tournament |> get_matches |> Enum.map(&Map.from_struct/1)
 
-    # Tournament.GlobalSupervisor.terminate_tournament(tournament.id)
-    new_tournament
+      winners =
+        matches
+        |> Enum.filter(fn match -> match.round_id == tournament.step - 1 end)
+        |> Enum.map(fn match -> pick_winner(match) end)
+
+      new_matches = matches ++ pair_players_to_matches(winners, tournament.step)
+
+      tournament
+      |> Tournament.changeset(%{
+        data: DeepMerge.deep_merge(Map.from_struct(tournament.data), %{matches: new_matches})
+      })
+      |> Repo.update!()
+    end
   end
 
   @impl Tournament.Type
-  def maybe_finish(tournament), do: tournament
+  def maybe_finish(tournament) do
+    if final_step?(tournament) do
+      new_tournament =
+        tournament
+        |> Tournament.changeset(%{state: "finished"})
+        |> Repo.update!()
 
-  defp pair_players_to_matches(players) do
+      # Tournament.GlobalSupervisor.terminate_tournament(tournament.id)
+      new_tournament
+    else
+      tournament
+    end
+  end
+
+  defp pair_players_to_matches(players, step) do
     Enum.reduce(players, [%{}], fn player, acc ->
       player = Map.merge(player, %{game_result: "waiting"})
 
       case List.first(acc) do
         map when map == %{} ->
           [_h | t] = acc
-          [%{state: "waiting", players: [player]} | t]
+          [%{state: "waiting", round_id: step, players: [player]} | t]
 
         match ->
           case(Enum.count(match.players)) do
@@ -107,10 +122,14 @@ defmodule Codebattle.Tournament.Individual do
               [DeepMerge.deep_merge(match, %{players: match.players ++ [player]}) | t]
 
             _ ->
-              [%{state: "waiting", players: [player]} | acc]
+              [%{state: "waiting", round_id: step, players: [player]} | acc]
           end
       end
     end)
     |> Enum.reverse()
+  end
+
+  defp final_step?(tournament) do
+    tournament.players_count == :math.pow(2, tournament.step)
   end
 end

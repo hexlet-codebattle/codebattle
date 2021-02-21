@@ -15,8 +15,11 @@
           - else
             span The tournament will start soon
 
-        = if  @tournament.state == "active"  do
-          span The next round will start in #{@time.minutes}:#{@time.seconds}, or after all matches are over
+        = if @tournament.state == "active"  do
+          = if @time.minutes >= 0 and @time.seconds >= 0  do
+            span The next round will start in #{@time.minutes}:#{@time.seconds}, or after all matches are over
+          - else
+            span The next round will start soon
 
     .col-5
       .text-right

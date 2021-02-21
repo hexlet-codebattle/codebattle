@@ -32,7 +32,7 @@ defmodule Codebattle.Tournament do
     field(:difficulty, :string, default: "elementary")
     field(:state, :string, default: "waiting_participants")
     field(:default_language, :string, default: "js")
-    field(:players_count, :integer, default: 16)
+    field(:players_count, :integer)
     field(:match_timeout_seconds, :integer, default: @default_match_timeout)
     field(:step, :integer, default: 0)
     field(:starts_at, :naive_datetime)
@@ -65,7 +65,7 @@ defmodule Codebattle.Tournament do
     |> validate_inclusion(:state, @states)
     |> validate_inclusion(:type, @types)
     |> validate_inclusion(:difficulty, @difficulties)
-    |> validate_required([:name, :players_count, :starts_at])
+    |> validate_required([:name, :starts_at])
     |> validate_alive_maximum(params)
     |> add_creator(params["creator"] || params[:creator])
   end

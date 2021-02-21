@@ -2,6 +2,63 @@ defmodule Codebattle.Tournament.IndividualTest do
   use Codebattle.IntegrationCase, async: false
 
   @module Codebattle.Tournament.Individual
+  import Codebattle.Tournament.Helpers
+
+  describe "starts a tournament with completed players_count" do
+    test "when 1" do
+      user = insert(:user)
+      insert(:task, level: "elementary")
+
+      player = struct(Codebattle.Tournament.Types.Player, Map.from_struct(user))
+
+      tournament =
+        insert(:tournament,
+          creator_id: user.id,
+          data: %{players: [player]},
+          players_count: nil
+        )
+
+      new_tournament = @module.start(tournament, %{user: user})
+      assert new_tournament.players_count == 2
+      assert players_count(new_tournament) == 2
+    end
+
+    test "when 7" do
+      user = insert(:user)
+      insert(:task, level: "elementary")
+
+      player = struct(Codebattle.Tournament.Types.Player, Map.from_struct(user))
+
+      tournament =
+        insert(:tournament,
+          creator_id: user.id,
+          data: %{players: List.duplicate(player, 7)},
+          players_count: nil
+        )
+
+      new_tournament = @module.start(tournament, %{user: user})
+      assert new_tournament.players_count == 8
+      assert players_count(new_tournament) == 8
+    end
+
+    test "when players_count" do
+      user = insert(:user)
+      insert(:task, level: "elementary")
+
+      player = struct(Codebattle.Tournament.Types.Player, Map.from_struct(user))
+
+      tournament =
+        insert(:tournament,
+          creator_id: user.id,
+          data: %{players: List.duplicate(player, 3)},
+          players_count: 16
+        )
+
+      new_tournament = @module.start(tournament, %{user: user})
+      assert new_tournament.players_count == 16
+      assert players_count(new_tournament) == 16
+    end
+  end
 
   test "#update_match, state canceled" do
     user1 = insert(:user)
