@@ -314,6 +314,21 @@ a {
   text-overflow: ellipsis;
 }
 
+.bind-social {
+  padding: 0;
+  border: 0;
+  background: none;
+
+  &:hover:not([disabled]) {
+    color: $orange;
+    text-decoration: none;
+    box-shadow: 0 1px 0 0 currentColor;
+    transition-property: box-shadow, color;
+    transition-duration: .33s;
+    transition-timing-function: ease-out;
+  }
+}
+
 .preview-enter {
   opacity: 0;
   transform: translateX(-100%);
