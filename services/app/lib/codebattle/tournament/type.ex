@@ -123,8 +123,11 @@ defmodule Codebattle.Tournament.Type do
           tournament
           |> get_matches
           |> Enum.map(fn match ->
-            case match.state do
-              "waiting" ->
+            case match do
+              %{players: [%{is_bot: true}, %{is_bot: true}]} ->
+                %{match | state: "canceled"}
+
+              %{state: "waiting"} ->
                 {:ok, fsm} =
                   Play.create_game(%{
                     level: tournament.difficulty,

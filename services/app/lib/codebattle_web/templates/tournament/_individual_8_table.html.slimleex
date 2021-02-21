@@ -1,0 +1,24 @@
+- matches = get_matches(@tournament)
+- first_round_left_range = 0..3
+- sm_final_range = 4..5
+- final = 6
+
+.d-flex.justify-content-around
+  h4 1/4
+  h4 1/2
+  h4 Final
+.bracket
+  .round
+    = Enum.map first_round_left_range,  fn index ->
+      .match
+        .match__content.bg-light
+          = render "_match.html", match:  Enum.at(matches, index), current_user: @current_user
+  .round
+    = Enum.map sm_final_range, fn index ->
+      .match
+        .match__content
+          = render "_match.html", match:  Enum.at(matches, index), current_user: @current_user
+  .round
+    .match
+      .match__content
+        = render "_match.html", match:  Enum.at(matches, final), current_user: @current_user

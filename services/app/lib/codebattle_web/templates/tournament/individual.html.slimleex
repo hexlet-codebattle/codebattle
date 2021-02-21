@@ -22,28 +22,7 @@
         = render "_players.html", players: players, tournament: @tournament, current_user: @current_user
 
     .col-9.bg-white.shadow-sm.py-4
-      .d-flex.justify-content-around
-        h4 1/8
-        h4 1/4
-        h4 1/2
-        h4 Final
-      .bracket
-        .round
-          = Enum.map first_round_left_range,  fn index ->
-            .match
-              .match__content.bg-light
-                = render "_match.html", match:  Enum.at(matches, index), current_user: @current_user
-        .round
-          = Enum.map second_round_left_range,  fn index ->
-            .match
-              .match__content
-                = render "_match.html", match:  Enum.at(matches, index), current_user: @current_user
-        .round
-          = Enum.map sm_final_range, fn index ->
-            .match
-              .match__content
-                = render "_match.html", match:  Enum.at(matches, index), current_user: @current_user
-        .round
-          .match
-            .match__content
-              = render "_match.html", match:  Enum.at(matches, final), current_user: @current_user
+      = if @tournament.players_count do
+        = render "_individual_#{@tournament.players_count}_table.html", tournament: @tournament, time: @time, current_user: @current_user, socket: @socket
+      - else
+        h1 Waiting participants...

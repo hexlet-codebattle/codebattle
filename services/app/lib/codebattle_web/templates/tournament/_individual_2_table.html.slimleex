@@ -1,0 +1,10 @@
+- matches = get_matches(@tournament)
+- final = 0
+
+.d-flex.justify-content-around
+  h4 Final
+.bracket
+  .round
+    .match
+      .match__content
+        = render "_match.html", match:  Enum.at(matches, final), current_user: @current_user

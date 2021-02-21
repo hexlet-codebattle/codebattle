@@ -32,7 +32,7 @@ defmodule Codebattle.GameProcess.TasksQueuesServer do
         [next_task | tail_tasks] ->
           [next_task, tail_tasks]
 
-        _any ->
+        _ ->
           [next_task | tail_tasks] = Codebattle.Task.get_shuffled_tasks(level)
           [next_task, tail_tasks]
       end
