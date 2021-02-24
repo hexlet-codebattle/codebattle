@@ -132,6 +132,7 @@ const initGameChannel = (dispatch, machine) => {
         }
         case GameStatusCodes.playing: {
           machine.send('load_active_game');
+          machine.send('tournament:round_created');
           break;
         }
         case GameStatusCodes.gameOver:
