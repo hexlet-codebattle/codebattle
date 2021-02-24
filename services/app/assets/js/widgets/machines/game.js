@@ -56,10 +56,22 @@ export default Machine({
   },
 }, {
   actions: {
-    sound_win: () => {},
-    sound_give_up: () => {},
-    sound_time_is_over: () => {},
-    sound_tournament_round_created: () => {},
+    sound_win: () => {
+      const audioWin = new Audio('/assets/audio/win.wav');
+      audioWin.play();
+    },
+    sound_give_up: () => {
+      const audioGiveUp = new Audio('/assets/audio/giveup2.wav');
+      audioGiveUp.play();
+    },
+    sound_time_is_over: () => {
+      const audioTimeIsOver = new Audio('/assets/audio/over.wav');
+      audioTimeIsOver.play();
+    },
+    sound_tournament_round_created: () => {
+      const audioRound = new Audio('/assets/audio/round_created.wav');
+      audioRound.play();
+    },
     sound_rematch_update_status: () => {},
   },
 });

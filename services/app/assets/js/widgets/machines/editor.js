@@ -75,6 +75,8 @@ export const initContext = ctx => ({
   ...settingsByType[ctx.type],
 });
 
+const audioCheck = new Audio('/assets/audio/check.wav');
+
 export default Machine({
   initial: 'loading',
   states: {
@@ -160,8 +162,17 @@ export default Machine({
       ...settingsByState.checking,
     })),
     user_start_checking: () => {},
-    sound_failure_checking: () => {},
-    sound_start_checking: () => {},
+    sound_failure_checking: () => {
+      const audioFailure = new Audio('/assets/audio/failure.wav');
+      audioFailure.play();
+    },
+    sound_start_checking: () => {
+      audioCheck.play();
+      audioCheck.loop = true;
+    },
+    sound_finished_checking: () => {
+      audioCheck.pause();
+    },
     sound_start_typing: () => {},
     sound_end_typing: () => {},
   },
