@@ -2,6 +2,7 @@ defmodule CodebattleWeb.PageView do
   use CodebattleWeb, :view
 
   alias Codebattle.FeedBack
+  import CodebattleWeb.Router.Helpers
 
   def csrf_token() do
     Plug.CSRFProtection.get_csrf_token()
@@ -34,5 +35,15 @@ defmodule CodebattleWeb.PageView do
       <guid>#{guid}</guid>
     </item>
     """
+  end
+
+  def get_next_path(conn) do
+    next = conn.params["next"]
+
+    case next do
+      "" -> conn.request_path
+      nil -> conn.request_path
+      _ -> next
+    end
   end
 end

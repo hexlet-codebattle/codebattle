@@ -12,7 +12,7 @@ defmodule CodebattleWeb.Plugs.RequireAuth do
     if conn.assigns.current_user.guest do
       conn
       |> put_flash(:danger, gettext("You must be logged in to access that page"))
-      |> redirect(to: Routes.page_path(conn, :index, next: next_path))
+      |> redirect(to: Routes.session_path(conn, :new, next: next_path))
       |> halt
     else
       conn

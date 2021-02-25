@@ -1,4 +1,4 @@
-defmodule CodebattleWeb.UserView do
+defmodule CodebattleWeb.SessionView do
   use CodebattleWeb, :view
 
   def csrf_token() do

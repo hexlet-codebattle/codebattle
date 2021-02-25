@@ -88,10 +88,10 @@ html lang="en"
                       = link gettext("Sign Out"), to: session_path(@conn, :delete), method: "delete", class: "dropdown-item"
               - else
                 li.nav-item
-                  a.mr-2 href="#{auth_path(@conn, :request, :github, locale: :en, next: get_next_path(@conn))}"
-                    button.btn.btn-outline-success = gettext "Sign in with %{name}", name: "Github"
-                  a href="#{auth_path(@conn, :request, :discord, locale: :en, next: get_next_path(@conn))}"
-                    button.btn.btn-outline-success = gettext "Sign in with %{name}", name: "Discord"
+                  a.mr-2 href="#{session_path(@conn, :new, locale: :en, next: get_next_path(@conn))}"
+                    button.btn.btn-outline-success = gettext "Sign in"
+                  a href="#{user_path(@conn, :new, locale: :en, next: get_next_path(@conn))}"
+                    button.btn.btn-outline-success = gettext "Sign up"
                 = if Mix.env() == :dev do
                   li.nav-item
                     = button("Dev sign_in", to: "/auth/dev_login?locale=en", class: "btn btn-outline-danger ml-2")

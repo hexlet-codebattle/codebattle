@@ -25,6 +25,7 @@ defmodule Codebattle.User do
   @derive {Jason.Encoder,
            only: [
              :id,
+             :firebase_uid,
              :name,
              :rating,
              :is_bot,
@@ -64,6 +65,7 @@ defmodule Codebattle.User do
     field(:discord_name, :string)
     field(:discord_id, :integer)
     field(:discord_avatar, :string)
+    field(:firebase_uid, :string)
     # level range: 0..10, types: ["standard", "silent"]
     embeds_one(:sound_settings, SoundSettings, on_replace: :update)
 
@@ -79,6 +81,7 @@ defmodule Codebattle.User do
   def changeset(struct, params \\ %{}) do
     struct
     |> cast(params, [
+      :firebase_uid,
       :name,
       :github_name,
       :email,

@@ -48,6 +48,24 @@ defmodule CodebattleWeb.Api.V1.UserController do
     json(conn, %{user: user})
   end
 
+  def create(conn, params) do
+    auth = %{
+      name: params["name"],
+      email: params["email"],
+      uid: params["uid"]
+    }
+
+    case Codebattle.Oauth.User.create(auth) do
+      {:ok, user} ->
+        conn
+        |> put_session(:user_id, user.id)
+        |> json(%{status: :created})
+
+      {:error, reason} ->
+        json(conn, %{errors: reason})
+    end
+  end
+
   def stats(conn, %{"id" => id}) do
     game_stats = Stats.get_game_stats(id)
     rank = Stats.get_user_rank(id)

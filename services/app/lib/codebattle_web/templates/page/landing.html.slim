@@ -11,10 +11,10 @@
       #navbarResponsive.collapse.navbar-collapse
         ul.navbar-nav.ml-auto
           li.nav-item.mx-1
-            a.mr-2 href="#{Routes.auth_path(@conn, :request, :github, locale: :en, next: @conn.params["next"])}"
-              button.btn.btn-outline-grey = gettext "Sign in with %{name}", name: "Github"
-            a href="#{Routes.auth_path(@conn, :request, :discord, locale: :en, next: @conn.params["next"])}"
-              button.btn.btn-outline-grey = gettext "Sign in with %{name}", name: "Discord"
+            a.mr-2 href="#{session_path(@conn, :new, locale: :en, next: get_next_path(@conn))}"
+              button.btn.btn-outline-grey = gettext "Sign in"
+            a href="#{user_path(@conn, :new, locale: :en, next: get_next_path(@conn))}"
+              button.btn.btn-outline-grey = gettext "Sign up"
           = if Mix.env() == :dev do
             li.nav-item.mx-1
               = button("Dev sign_in", to: "/auth/dev_login?locale=en", class: "btn btn-outline-grey")
@@ -513,10 +513,10 @@
 .footer.text-white
   .container-lg.py-3.d-flex.justify-content-between.text-gray.flex-column.flex-sm-row
     div
-      p.mb-0 
+      p.mb-0
         | Support:
         a.text-muted.ml-1 href="https://slack-ru.hexlet.io" target="_blank" Slack#codebattle
     div.mt-3.mt-sm-0
-      p.mb-0 
+      p.mb-0
         | Design by:
         a.text-muted.ml-2 href="https://www.behance.net/caspermosh" target="_blank" CasperMosh

@@ -51,7 +51,8 @@ defmodule CodebattleWeb.Router do
       get("/playbook/:id", PlaybookController, :show)
       get("/user/:id/stats", UserController, :stats)
       get("/user/current", UserController, :current)
-      resources("/users", UserController, only: [:index, :show])
+      resources("/users", UserController, only: [:index, :show, :create])
+      resources("/session", SessionController, only: [:create], singleton: true)
       resources("/settings", SettingsController, only: [:show, :update], singleton: true)
       post("/feedback", FeedBackController, :index)
     end
@@ -64,9 +65,10 @@ defmodule CodebattleWeb.Router do
     get("/sitemap.xml", PageController, :sitemap)
     get("/feedback/rss.xml", PageController, :feedback)
 
-    resources("/session", SessionController, singleton: true, only: [:delete])
     get("/", PageController, :index)
-    resources("/users", UserController, only: [:index, :show])
+    resources("/session", SessionController, singleton: true, only: [:delete, :new])
+    get("/remind_password", SessionController, :remind_password)
+    resources("/users", UserController, only: [:index, :show, :new])
     resources("/tournaments", TournamentController, only: [:index, :show])
 
     scope "/tournaments" do

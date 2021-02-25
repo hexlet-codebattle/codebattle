@@ -18,6 +18,10 @@ defmodule CodebattleWeb.UserController do
     |> render("index.html")
   end
 
+  def new(conn, _params) do
+    render(conn, "new.html")
+  end
+
   def show(conn, %{"id" => user_id}) do
     games = Repo.all(from(games in UserGame, where: games.user_id == ^user_id))
     stats = User.Stats.get_game_stats(user_id)

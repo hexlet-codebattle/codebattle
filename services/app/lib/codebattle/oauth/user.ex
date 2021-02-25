@@ -30,6 +30,14 @@ defmodule Codebattle.Oauth.User do
     Codebattle.Oauth.User.GithubUser.find_or_create(auth)
   end
 
+  def find(auth) do
+    Codebattle.Oauth.User.FirebaseUser.find(auth)
+  end
+
+  def create(auth) do
+    Codebattle.Oauth.User.FirebaseUser.create(auth)
+  end
+
   def find_or_create(%{provider: :dev_local} = auth) do
     user_data = %{
       github_id: "35539033",
