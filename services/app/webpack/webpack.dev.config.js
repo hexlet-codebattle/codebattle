@@ -1,4 +1,5 @@
 const webpack = require('webpack');
+const Dotenv = require('dotenv-webpack');
 const { merge } = require('webpack-merge');
 const baseWebpackConfig = require('./webpack.base.config');
 
@@ -16,6 +17,9 @@ const devWebpackConfig = merge(baseWebpackConfig, {
   plugins: [
     new webpack.SourceMapDevToolPlugin({
       filename: '[file].map',
+    }),
+    new Dotenv({
+      path: '.env',
     }),
   ],
 });

@@ -1,4 +1,5 @@
 const { merge } = require('webpack-merge');
+const Dotenv = require('dotenv-webpack');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const baseWebpackConfig = require('./webpack.base.config');
 
@@ -11,6 +12,9 @@ const buildWebpackConfig = merge(baseWebpackConfig, {
         preset: ['default', { discardComments: { removeAll: true } }],
       },
       canPrint: true,
+    }),
+    new Dotenv({
+      path: '.env',
     }),
   ],
 });
