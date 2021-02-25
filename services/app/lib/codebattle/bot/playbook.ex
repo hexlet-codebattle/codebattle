@@ -25,7 +25,7 @@ defmodule Codebattle.Bot.Playbook do
     end
   end
 
-  @types ["complete", "incomplete", "baned"]
+  @types ~w(complete incomplete baned)
 
   schema "playbooks" do
     embeds_one(:data, Data, on_replace: :delete)
@@ -244,5 +244,10 @@ defmodule Codebattle.Bot.Playbook do
 
   defp increase_count(data), do: Map.update!(data, :count, &(&1 + 1))
 
-  defp get_solution_type(winner, fsm), do: !!winner && FsmHelpers.winner?(fsm, winner.id)
+  defp get_solution_type(winner, fsm) do
+    case !!winner && FsmHelpers.winner?(fsm, winner.id) do
+      true -> "complete"
+      false -> "incomplete"
+    end
+  end
 end
