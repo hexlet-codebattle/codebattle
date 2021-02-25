@@ -47,7 +47,7 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
       task: task,
       winner_id: 2,
       winner_lang: "ruby",
-      is_complete_solution: true
+      solution_type: "complete"
     })
 
     socket = socket(UserSocket, "user_id", %{user_id: user.id, current_user: user})

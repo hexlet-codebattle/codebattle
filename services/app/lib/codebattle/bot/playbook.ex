@@ -25,12 +25,14 @@ defmodule Codebattle.Bot.Playbook do
     end
   end
 
+  @types ["complete", "incomplete", "baned"]
+
   schema "playbooks" do
     embeds_one(:data, Data, on_replace: :delete)
     field(:game_id, :integer)
     field(:winner_id, :integer)
     field(:winner_lang, :string)
-    field(:is_complete_solution, :boolean)
+    field(:solution_type, :string)
 
     belongs_to(:task, Codebattle.Task)
 
@@ -40,16 +42,17 @@ defmodule Codebattle.Bot.Playbook do
   @doc false
   def changeset(%Playbook{} = playbook, attrs) do
     playbook
-    |> cast(attrs, [:game_id, :winner_id, :winner_lang, :is_complete_solution, :task_id])
+    |> cast(attrs, [:game_id, :winner_id, :winner_lang, :solution_type, :task_id])
     |> cast_embed(:data)
     |> validate_required([
       :data,
       :game_id,
       :winner_id,
       :winner_lang,
-      :is_complete_solution,
+      :solution_type,
       :task_id
     ])
+    |> validate_inclusion(:solution_type, @types)
   end
 
   def random(task_id) do
@@ -58,7 +61,7 @@ defmodule Codebattle.Bot.Playbook do
       where:
         not is_nil(p.winner_id) and
           p.task_id == ^task_id and
-          p.is_complete_solution,
+          p.solution_type == "complete",
       order_by: fragment("RANDOM()"),
       limit: 1
     )
@@ -130,7 +133,7 @@ defmodule Codebattle.Bot.Playbook do
       game_id: String.to_integer(to_string(game_id)),
       winner_id: winner && winner.id,
       winner_lang: winner && winner.id && winner.editor_lang,
-      is_complete_solution: !!winner && FsmHelpers.winner?(fsm, winner.id)
+      solution_type: get_solution_type(winner, fsm)
     }
     |> Repo.insert()
   end
@@ -240,4 +243,6 @@ defmodule Codebattle.Bot.Playbook do
   defp create_delta(text), do: TextDelta.new() |> TextDelta.insert(text)
 
   defp increase_count(data), do: Map.update!(data, :count, &(&1 + 1))
+
+  defp get_solution_type(winner, fsm), do: !!winner && FsmHelpers.winner?(fsm, winner.id)
 end

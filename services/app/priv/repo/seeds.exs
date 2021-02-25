@@ -127,7 +127,7 @@ levels = ["elementary", "easy", "medium", "hard"]
       task: task,
       winner_lang: "ruby",
       winner_id: 2,
-      is_complete_solution: true
+      solution_type: "complete"
     })
 
     IO.puts("Upsert #{task_name}")
