@@ -12,3 +12,6 @@ variable "discord_client_secret" {}
 variable "discord_client_id" {}
 variable "onesignal_api_key" {}
 variable "onesignal_app_id" {}
+variable "firebase_api_key" {}
+variable "firebase_sender_id" {}
+variable "rollbar_api_key" {}
