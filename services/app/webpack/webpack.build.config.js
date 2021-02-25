@@ -14,7 +14,7 @@ const buildWebpackConfig = merge(baseWebpackConfig, {
       canPrint: true,
     }),
     new Dotenv({
-      path: '.env',
+      path: '../.env',
     }),
   ],
 });

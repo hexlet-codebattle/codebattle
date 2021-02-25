@@ -19,7 +19,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       filename: '[file].map',
     }),
     new Dotenv({
-      path: '.env',
+      path: '../.env',
     }),
   ],
 });
