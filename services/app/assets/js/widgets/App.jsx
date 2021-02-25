@@ -16,6 +16,7 @@ import LobbyWidget from './containers/LobbyWidget';
 import RatingList from './containers/RatingList';
 import UserProfile from './containers/UserProfile';
 import UserSettings from './containers/UserSettings';
+import Registration from './containers/Registration';
 
 const { editorUI: editorUIReducer, ...otherReducers } = reducers;
 
@@ -81,6 +82,14 @@ export const SettingsPage = () => (
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
       <UserSettings />
+    </PersistGate>
+  </Provider>
+);
+
+export const RegistrationPage = () => (
+  <Provider store={store}>
+    <PersistGate loading={null} persistor={persistor}>
+      <Registration />
     </PersistGate>
   </Provider>
 );

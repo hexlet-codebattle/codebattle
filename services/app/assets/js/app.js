@@ -37,6 +37,7 @@ import {
   renderUsersRating,
   renderUserPage,
   renderSettingPage,
+  renderRegistrationPage,
 } from './widgets';
 import renderExtensionPopup from './widgets/components/ExtensionPopup';
 
@@ -76,6 +77,7 @@ const gameListRoot = document.getElementById('game-list');
 const ratingList = document.getElementById('rating-list');
 const userPageRoot = document.getElementById('user-page-root');
 const settingsRoot = document.getElementById('settings');
+const registrationRoot = document.getElementById('registration');
 
 if (extension) {
   renderExtensionPopup(extension);
@@ -103,4 +105,8 @@ if (userPageRoot) {
 
 if (settingsRoot) {
   renderSettingPage(settingsRoot);
+}
+
+if (registrationRoot) {
+  renderRegistrationPage(registrationRoot);
 }

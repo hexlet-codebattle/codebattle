@@ -36,6 +36,7 @@
     "copy-to-clipboard": "^3.3.1",
     "core-js": "3.8.0",
     "emoji-mart": "^3.0.0",
+    "firebase": "^8.2.9",
     "font-mfizz": "^2.4.1",
     "formik": "^2.2.5",
     "humps": "^2.0.1",
@@ -78,8 +79,8 @@
     "rollbar": "^2.19.4",
     "rollbar-redux-middleware": "^0.2.0",
     "set-value": "^3.0.2",
-    "xstate": "^4.15.3",
     "styled-components": "^5.2.1",
+    "xstate": "^4.15.3",
     "yup": "^0.29.3"
   },
   "devDependencies": {
