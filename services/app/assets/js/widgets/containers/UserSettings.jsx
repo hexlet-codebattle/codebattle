@@ -16,6 +16,8 @@ import { actions } from '../slices';
 import languages from '../config/languages';
 import Loading from '../components/Loading';
 
+const audioObj = new Audio('/assets/audio/check_sound_level.wav');
+
 const PROVIDERS = ['github', 'discord'];
 
 const csrfToken = document
@@ -169,44 +171,58 @@ const UserSettings = () => {
         })}
         onSubmit={sendForm}
       >
-        <Form className="">
-          <TextInput
-            label="Name"
-            name="name"
-            type="text"
-            placeholder="Enter your name"
-          />
+        {({ handleChange }) => (
+          <Form className="">
+            <TextInput
+              label="Name"
+              name="name"
+              type="text"
+              placeholder="Enter your name"
+            />
 
-          <div className="h6 ml-2">
-            Select sound level
-          </div>
-          <div className="ml-2 d-flex">
-            <Icon.VolumeX />
-            <Field component={Slider} min={0} max={10} name="soundLevel" className="ml-3 mr-3 mb-3 form-control" />
-            <Icon.Volume2 />
-          </div>
-
-          <div id="my-radio-group" className="h6 ml-2">Select sound type</div>
-          <div role="group" aria-labelledby="my-radio-group" className="ml-3 mb-3">
-            <div>
-              <Field type="radio" name="soundType" value="standart" className="mr-2" />
-              Standart
+            <div className="h6 ml-2">
+              Select sound level
             </div>
-            <div>
-              <Field type="radio" name="soundType" value="silent" className="mr-2" />
-              Silent
+            <div className="ml-2 d-flex">
+              <Icon.VolumeX />
+              <Field
+                component={Slider}
+                type="range"
+                min={0}
+                max={10}
+                name="soundLevel"
+                onInput={e => {
+                  handleChange(e);
+                  audioObj.volume = e.target.value * 0.01;
+                  audioObj.play();
+                }}
+                className="ml-3 mr-3 mb-3 form-control"
+              />
+              <Icon.Volume2 />
             </div>
-          </div>
 
-          <div className="form-group ml-2 mb-3">
-            <p className="h6">Your weapon</p>
-            <Field as="select" aria-label="Programming language select" name="language" className="form-control">
-              {renderLanguages(playingLanguages)}
-            </Field>
-          </div>
+            <div id="my-radio-group" className="h6 ml-2">Select sound type</div>
+            <div role="group" aria-labelledby="my-radio-group" className="ml-3 mb-3">
+              <div>
+                <Field type="radio" name="soundType" value="standart" className="mr-2" />
+                Standart
+              </div>
+              <div>
+                <Field type="radio" name="soundType" value="silent" className="mr-2" />
+                Silent
+              </div>
+            </div>
 
-          <button type="submit" className="btn btn-primary ml-2">Save</button>
-        </Form>
+            <div className="form-group ml-2 mb-3">
+              <p className="h6">Your weapon</p>
+              <Field as="select" aria-label="Programming language select" name="language" className="form-control">
+                {renderLanguages(playingLanguages)}
+              </Field>
+            </div>
+
+            <button type="submit" className="btn btn-primary ml-2">Save</button>
+          </Form>
+        )}
       </Formik>
       <div className="mt-3 ml-2 d-flex flex-column">
         <h3 className="mb-3 font-weight-normal">Socials</h3>
