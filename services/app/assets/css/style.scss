@@ -252,6 +252,14 @@ a {
 
 .cb-height-info {
   height: 300px;
+  .nav-link.active {
+    color: black;
+    border-bottom: 1px;
+    background-color: white;
+  }
+  .nav-link:hover {
+    color: #b60314;
+  }
 }
 
 .cursor-pointer {
