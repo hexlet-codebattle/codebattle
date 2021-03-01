@@ -363,3 +363,13 @@ a {
   animation-name: scale;
   animation-duration: 0.7s;
 }
+
+.nav-tabs {
+  border-bottom: 1px solid black;
+  .nav-item.active,
+  .nav-item:hover {
+    border-top: 1px solid black;
+    border-right: 1px solid black;
+    border-left: 1px solid black;
+  }
+}
