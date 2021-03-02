@@ -1,10 +1,27 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useSelector } from 'react-redux';
 import ChatWidget from './ChatWidget';
 import Task from '../components/Task';
 import { gameTaskSelector, gameStatusSelector, leftExecutionOutputSelector } from '../selectors';
 import Output from '../components/ExecutionOutput/Output';
 import OutputTab from '../components/ExecutionOutput/OutputTab';
+import CountdownTimer from '../components/CountdownTimer';
+import Timer from '../components/Timer';
+import GameContext from './GameContext';
+
+const TimerContainer = ({ time, timeoutSeconds, gameStatusName }) => {
+  const { current } = useContext(GameContext);
+
+  if (current.matches('game_over')) {
+    return gameStatusName;
+  }
+
+  if (timeoutSeconds) {
+    return <CountdownTimer time={time} timeoutSeconds={timeoutSeconds} />;
+  }
+
+  return <Timer time={time} />;
+};
 
 const InfoWidget = () => {
   const taskText = useSelector(gameTaskSelector);
@@ -19,9 +36,13 @@ const InfoWidget = () => {
       <div className="col-12 col-lg-6 p-1 cb-height-info">
         <div className="d-flex flex-column h-100">
           <nav>
-            <div className="nav nav-tabs bg-gray text-uppercase font-weight-bold text-center" id="nav-tab" role="tablist">
+            <div
+              className="nav nav-tabs bg-gray text-uppercase font-weight-bold text-center"
+              id="nav-tab"
+              role="tablist"
+            >
               <a
-                className="nav-item nav-link flex-grow-1 active  text-black rounded-0 py-2 px-5"
+                className="nav-item nav-link col-3 active rounded-0 px-1 py-2"
                 id="task-tab"
                 data-toggle="tab"
                 href="#task"
@@ -32,7 +53,7 @@ const InfoWidget = () => {
                 Task
               </a>
               <a
-                className="nav-item nav-link flex-grow-1 text-black rounded-0 p-2 block"
+                className="nav-item nav-link col-3 rounded-0 px-1 py-2"
                 id={`${idOutput}-tab`}
                 data-toggle="tab"
                 href={`#${idOutput}`}
@@ -40,8 +61,17 @@ const InfoWidget = () => {
                 aria-controls={`${idOutput}`}
                 aria-selected="false"
               >
-                {isShowOutput && <OutputTab sideOutput={leftOutput} side="left" />}
+                Output
               </a>
+              <div
+                className="rounded-0 text-center bg-white col-6 text-black px-1 py-2"
+              >
+                <TimerContainer
+                  time={startsAt}
+                  timeoutSeconds={timeoutSeconds}
+                  gameStatusName={gameStatusName}
+                />
+              </div>
             </div>
           </nav>
           <div className="tab-content flex-grow-1 overflow-auto " id="nav-tabContent">
@@ -53,9 +83,6 @@ const InfoWidget = () => {
             >
               <Task
                 task={taskText}
-                time={startsAt}
-                timeoutSeconds={timeoutSeconds}
-                gameStatusName={gameStatusName}
               />
             </div>
             <div
@@ -64,7 +91,12 @@ const InfoWidget = () => {
               role="tabpanel"
               aria-labelledby={`${idOutput}-tab`}
             >
-              {isShowOutput && <Output sideOutput={leftOutput} />}
+              {isShowOutput && (
+                <>
+                  <OutputTab sideOutput={leftOutput} side="left" />
+                  <Output sideOutput={leftOutput} />
+                </>
+              )}
             </div>
 
           </div>

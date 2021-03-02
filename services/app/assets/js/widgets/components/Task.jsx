@@ -1,12 +1,9 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import ReactMarkdown from 'react-markdown';
 import i18n from '../../i18n';
-import Timer from './Timer';
-import CountdownTimer from './CountdownTimer';
 import ContributorsList from './ContributorsList';
-import GameContext from '../containers/GameContext';
 
 const renderTaskLink = name => {
   const link = `https://github.com/hexlet-codebattle/battle_asserts/tree/master/src/battle_asserts/issues/${name}.clj`;
@@ -30,23 +27,7 @@ const renderGameLevelBadge = level => (
   </div>
 );
 
-const TimerContainer = ({ time, timeoutSeconds, gameStatusName }) => {
-  const { current } = useContext(GameContext);
-
-  if (current.matches('game_over')) {
-    return gameStatusName;
-  }
-
-  if (timeoutSeconds) {
-    return <CountdownTimer time={time} timeoutSeconds={timeoutSeconds} />;
-  }
-
-  return <Timer time={time} />;
-};
-
-const Task = ({
- task, time, gameStatusName, timeoutSeconds,
-}) => {
+const Task = ({ task }) => {
   if (_.isEmpty(task)) {
     return null;
   }
@@ -62,15 +43,7 @@ const Task = ({
               <span className="card-subtitle mb-2 text-muted">{task.name}</span>
             </div>
           </h6>
-          <div className="card-text">
-            {time && (
-            <TimerContainer
-              time={time}
-              timeoutSeconds={timeoutSeconds}
-              gameStatusName={gameStatusName}
-            />
-)}
-          </div>
+
         </div>
         <div className="d-flex align-items-stretch flex-column">
           <div className="card-text mb-0  h-100  overflow-auto">
