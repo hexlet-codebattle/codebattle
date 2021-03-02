@@ -44,4 +44,6 @@ config :codebattle, Codebattle.Repo,
   database: System.get_env("CODEBATTLE_DB_NAME", "codebattle_dev"),
   pool_size: 7
 
+config :codebattle, Codebattle.Plugs, rollbar_api_key: System.get_env("ROLLBAR_API_KEY")
+
 config :codebattle, Codebattle.Bot, timeout: 2_000
