@@ -254,7 +254,7 @@ export const activeGameReady = machine => dispatch => {
     machine.send('user:check_complete', { payload });
   });
 
-  channel.on('game:user_joined', responseData => { 
+  channel.on('game:user_joined', responseData => {
     const {
       status,
       startsAt,
@@ -350,7 +350,6 @@ export const activeGameReady = machine => dispatch => {
     dispatch(actions.setTournamentsInfo(payload));
     machine.send('tournament:round_created', { payload });
   });
-  channel.push('round:created', {});
 };
 
 export const storedGameReady = machine => dispatch => {

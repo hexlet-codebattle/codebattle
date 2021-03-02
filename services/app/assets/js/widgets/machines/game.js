@@ -49,6 +49,7 @@ export default Machine({
         },
         'tournament:round_created': {
           target: 'game_over',
+          actions: ['sound_tournament_round_created'],
         },
       },
     },
