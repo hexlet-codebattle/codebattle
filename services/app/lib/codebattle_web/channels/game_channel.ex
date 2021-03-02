@@ -199,7 +199,7 @@ defmodule CodebattleWeb.GameChannel do
 
   def handle_info(%{topic: "tournaments", event: "round:created", payload: payload}, socket) do
     {:ok, fsm} = Play.get_fsm(get_game_id(socket))
-
+  
     if is_current_tournament?(payload.tournament, fsm) do
       push(socket, "tournament:round_created", payload.tournament)
     end

@@ -164,6 +164,7 @@ export default Machine({
     user_start_checking: () => {},
     sound_failure_checking: () => {
       const audioFailure = new Audio('/assets/audio/failure.wav');
+      audioCheck.pause();
       audioFailure.play();
     },
     sound_start_checking: () => {

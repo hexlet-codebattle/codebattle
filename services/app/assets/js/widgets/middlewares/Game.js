@@ -132,7 +132,6 @@ const initGameChannel = (dispatch, machine) => {
         }
         case GameStatusCodes.playing: {
           machine.send('load_active_game');
-          machine.send('tournament:round_created');
           break;
         }
         case GameStatusCodes.gameOver:
@@ -147,7 +146,6 @@ const initGameChannel = (dispatch, machine) => {
       }
     }, 2000);
   };
-
   channel
     .join()
     .receive('ok', onJoinSuccess)
@@ -226,6 +224,7 @@ export const activeEditorReady = machine => () => {
 
 export const activeGameReady = machine => dispatch => {
   initGameChannel(dispatch, machine);
+  //setTimeout(() => channel.push('tournament:round_created', {}), 3000);
   channel.on('editor:data', data => {
     dispatch(actions.updateEditorText(camelizeKeys(data)));
   });
@@ -255,7 +254,7 @@ export const activeGameReady = machine => dispatch => {
     machine.send('user:check_complete', { payload });
   });
 
-  channel.on('game:user_joined', responseData => {
+  channel.on('game:user_joined', responseData => { 
     const {
       status,
       startsAt,
@@ -351,6 +350,7 @@ export const activeGameReady = machine => dispatch => {
     dispatch(actions.setTournamentsInfo(payload));
     machine.send('tournament:round_created', { payload });
   });
+  channel.push('round:created', {});
 };
 
 export const storedGameReady = machine => dispatch => {
