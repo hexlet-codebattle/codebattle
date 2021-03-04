@@ -1,4 +1,10 @@
 import { Machine } from 'xstate';
+import Gon from 'gon';
+import getPathDirectory from '../utils/getPathDirectoryAudio';
+
+const soundSettingType = Gon.getAsset('current_user').sound_settings.type;
+const soundLevel = soundSettingType === 'silent' ? 0 : Gon.getAsset('current_user').sound_settings.level * 0.1;
+const pathDirectory = getPathDirectory(soundSettingType);
 
 export default Machine({
   id: 'game',
@@ -58,19 +64,23 @@ export default Machine({
 }, {
   actions: {
     sound_win: () => {
-      const audioWin = new Audio('/assets/audio/win.wav');
+      const audioWin = new Audio(`${pathDirectory}/win.wav`);
+      audioWin.volume = soundLevel;
       audioWin.play();
     },
     sound_give_up: () => {
-      const audioGiveUp = new Audio('/assets/audio/giveup2.wav');
+      const audioGiveUp = new Audio(`${pathDirectory}/give_up.wav`);
+      audioGiveUp.volume = soundLevel;
       audioGiveUp.play();
     },
     sound_time_is_over: () => {
-      const audioTimeIsOver = new Audio('/assets/audio/over.wav');
+      const audioTimeIsOver = new Audio(`${pathDirectory}/time_is_over.wav`);
+      audioTimeIsOver.volume = soundLevel;
       audioTimeIsOver.play();
     },
     sound_tournament_round_created: () => {
-      const audioRound = new Audio('/assets/audio/round_created.wav');
+      const audioRound = new Audio(`${pathDirectory}/round_created.wav`);
+      audioRound.volume = soundLevel;
       audioRound.play();
     },
     sound_rematch_update_status: () => {},

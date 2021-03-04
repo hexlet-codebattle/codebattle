@@ -1,4 +1,6 @@
 import { Machine, assign } from 'xstate';
+import Gon from 'gon';
+import getPathDirectory from '../utils/getPathDirectoryAudio';
 
 // settings
 // type - user type for viewers current_user/opponent/player (request features) teammate, clanmate, friend
@@ -75,7 +77,10 @@ export const initContext = ctx => ({
   ...settingsByType[ctx.type],
 });
 
-const audioCheck = new Audio('/assets/audio/check.wav');
+const soundSettingType = Gon.getAsset('current_user').sound_settings.type;
+const soundLevel = soundSettingType === 'silent' ? 0 : Gon.getAsset('current_user').sound_settings.level * 0.1;
+const pathDirectory = getPathDirectory(soundSettingType);
+const audioCheck = new Audio(`${pathDirectory}/check.wav`);
 
 export default Machine({
   initial: 'loading',
@@ -163,12 +168,14 @@ export default Machine({
     })),
     user_start_checking: () => {},
     sound_failure_checking: () => {
-      const audioFailure = new Audio('/assets/audio/failure.wav');
+      const audioFailure =  new Audio(`${pathDirectory}/failure.wav`);
+      audioFailure.volume = soundLevel;
       audioCheck.pause();
       audioFailure.play();
     },
     sound_start_checking: () => {
       audioCheck.play();
+      audioCheck.volume = soundLevel;
       audioCheck.loop = true;
     },
     sound_finished_checking: () => {
