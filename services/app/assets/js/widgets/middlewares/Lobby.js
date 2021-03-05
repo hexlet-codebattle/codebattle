@@ -53,3 +53,19 @@ export const cancelGame = gameId => () => {
 export const createGame = params => {
   channel.push('game:create', params).receive('error', error => console.error(error));
 };
+
+export const createInvite = invite => {
+  channel.push('game:create_invite', invite).receive('error', error => console.error(error));
+};
+
+export const acceptInvite = invite => () => {
+  channel.push('game:accept_invite', invite).receive('error', error => console.error(error));
+};
+
+export const declineInvite = invite => () => {
+  channel.push('game:decline_invite', invite).receive('error', error => console.error(error));
+};
+
+export const cancelInvite = invite => () => {
+  channel.push('game:cancel_invite', invite).receive('error', error => console.error(error));
+};

@@ -10,6 +10,7 @@ import {
 } from '@reduxjs/toolkit';
 import rollbarMiddleware from 'rollbar-redux-middleware';
 import rollbar from './lib/rollbar';
+import InvitesContainer from './containers/InvitesContainer';
 import RootContainer from './containers/RootContainer';
 import reducers from './slices';
 import LobbyWidget from './containers/LobbyWidget';
@@ -45,6 +46,12 @@ const store = configureStore({
 });
 
 const persistor = persistStore(store);
+
+export const Invites = () => (
+  <Provider store={store}>
+    <InvitesContainer />
+  </Provider>
+);
 
 export const Game = () => (
   <Provider store={store}>
