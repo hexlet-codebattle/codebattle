@@ -10,6 +10,7 @@ import game, { actions as gameActions } from './game';
 import lobby, { actions as lobbyActions } from './lobby';
 import user, { actions as userActions } from './user';
 import leaderboard, { actions as leaderboardActions } from './leaderboard';
+import invites, { actions as invitesActions } from './invites';
 
 const setError = error => ({
   type: 'ERROR',
@@ -31,6 +32,7 @@ export const actions = {
   ...userActions,
   ...lobbyActions,
   ...leaderboardActions,
+  ...invitesActions,
 };
 
 export const redirectToNewGame = gameId => {
@@ -50,5 +52,6 @@ export default {
   storeLoaded,
   executionOutput,
   leaderboard,
+  invites,
 };
 export { makeEditorTextKey } from './editor';
