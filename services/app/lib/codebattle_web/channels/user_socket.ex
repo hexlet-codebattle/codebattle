@@ -6,7 +6,7 @@ defmodule CodebattleWeb.UserSocket do
   channel("lobby", CodebattleWeb.LobbyChannel)
   channel("game:*", CodebattleWeb.GameChannel)
   channel("chat:*", CodebattleWeb.ChatChannel)
-  channel("main", CodebattleWeb.MainChannel)
+  channel("main:*", CodebattleWeb.MainChannel)
 
   def connect(%{"token" => user_token}, socket) do
     case Phoenix.Token.verify(socket, "user_token", user_token, max_age: 1_000_000) do

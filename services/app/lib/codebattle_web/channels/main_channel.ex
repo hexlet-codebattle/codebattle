@@ -3,10 +3,12 @@ defmodule CodebattleWeb.MainChannel do
   use CodebattleWeb, :channel
 
   alias CodebattleWeb.Presence
+  alias Codebattle.Invite
 
-  def join("online_list", _payload, socket) do
-    user_id = socket.assigns.user_id
-    Phoenix.PubSub.subscribe(:cb_pubsub, "main")
+  def join("main:" <> user_id, _payload, socket) do
+    if (String.to_integer(user_id)  != socket.assigns.user_id) do
+      raise "Not authorized!"
+    end
     send(self(), :after_join)
 
     {:ok, %{}, socket}
@@ -31,18 +33,66 @@ defmodule CodebattleWeb.MainChannel do
   #   "invites:decline" -> "invites:canceled", "invites:already_expired", "invites:not_exists"
 
   def handle_info(:after_join, socket) do
-    {:ok, _} =
-      Presence.track(socket, socket.assigns.user_id, %{
-        online_at: inspect(System.system_time(:second)),
-        user: socket.assigns.current_user,
-        id: socket.assigns.user_id,
-      })
+    #{:ok, _} =
+    #  Presence.track(socket, socket.assigns.user_id, %{
+    #    online_at: inspect(System.system_time(:second)),
+    #    user: socket.assigns.current_user,
+    #    id: socket.assigns.user_id,
+    #  })
 
-    push(socket, "presence_state", Presence.list(socket))
+   # push(socket, "presence_state", Presence.list(socket))
 
     # TODO: Create Invite model
-    ## invites = Invite.get_all_active()
-    # push(socket, "invites:init", invites)
+    invites = Invite.list_active_invites(socket.assigns.user_id)
+    push(socket, "invites:init", %{invites: invites})
     {:noreply, socket}
   end
+
+  def handle_in("invites:create", payload, socket) do
+    creator_id = socket.assigns.user_id
+    recepient_id = payload["recepient_id"] || raise "Recepient is absent!"
+    if creator_id == recepient_id do
+      raise "Creator can't be recepient!"
+    end
+
+    level = payload["level"] || "elementary"
+    type = payload["type"] || "public"
+    game_params = %{
+      level: level,
+      type: type
+    }
+
+    params = %{creator_id: creator_id, recepient_id: recepient_id, game_params: game_params}
+    case Invite.create_invite(params) do
+      {:ok, invite} ->
+        CodebattleWeb.Endpoint.broadcast!(
+          "main:#{recepient_id}",
+          "invites:created",
+          %{invite: invite}
+        )
+        {:reply, {:ok, %{invite: invite}}, socket}
+      {:error, reason} -> {:reply, {:error, %{reason: reason}}, socket}
+    end
+  end
+
+  def handle_in("invites:cancel", payload, socket) do
+
+  end
+
+  def handle_in("invites:accept", payload, socket) do
+    case Invite.accept_invite(%{
+      id: payload["id"],
+      recepient_id: socket.assigns.user_id
+    }) do
+      {:ok, invite} ->
+        CodebattleWeb.Endpoint.broadcast!(
+          "main:#{invite.creator_id}",
+          "invites:accepted",
+          %{invite: invite}
+        )
+        {:reply, {:ok, %{invite: invite}}, socket}
+      {:error, reason} -> {:reply, {:error, %{reason: reason}}, socket}
+    end
+  end
+
 end

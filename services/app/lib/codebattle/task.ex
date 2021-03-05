@@ -60,6 +60,7 @@ defmodule Codebattle.Task do
     from(task in Codebattle.Task, where: task.level == ^level)
     |> visible()
     |> Codebattle.Repo.all()
+    |> IO.inspect()
     |> Enum.shuffle()
   end
 
