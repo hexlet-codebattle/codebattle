@@ -4,19 +4,19 @@ const initialState = {
   list: [],
 };
 
-const invites = createSlice({
+const invitesSlice = createSlice({
   name: 'invites',
   initialState,
   reducers: {
-    setInvites: (state, { payload: list }) => ({
+    setInvites: (state, { payload: { invites } }) => ({
       ...state,
-      list,
+      list: invites,
     }),
-    addInvites: (state, { payload: invite }) => ({
+    addInvites: (state, { payload: { invite } }) => ({
       ...state,
       list: [...state.list, invite],
     }),
-    updateInvites: (state, { payload: invite }) => ({
+    updateInvites: (state, { payload: { invite } }) => ({
       ...state,
       list: state.list.map(value => {
         if (invite.id === value.id) {
@@ -29,7 +29,7 @@ const invites = createSlice({
   },
 });
 
-const { actions, reducer } = invites;
+const { actions, reducer } = invitesSlice;
 
 export { actions };
 
