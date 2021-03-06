@@ -29,7 +29,7 @@ defmodule Codebattle.Invite do
   @derive {Jason.Encoder, only: [:state, :creator, :recepient, :game_params]}
 
   schema "invites" do
-    field :state, :string, default: "pending"
+    field(:state, :string, default: "pending")
     embeds_one(:game_params, GameParams, on_replace: :update)
     belongs_to(:creator, Codebattle.User)
     belongs_to(:recepient, Codebattle.User)
@@ -50,8 +50,10 @@ defmodule Codebattle.Invite do
 
   def list_active_invites(user_id) do
     query =
-      from i in Invite,
-      where: i.state == "pending" and (i.creator_id == ^user_id or i.recepient_id == ^user_id)
+      from(i in Invite,
+        where: i.state == "pending" and (i.creator_id == ^user_id or i.recepient_id == ^user_id)
+      )
+
     Repo.all(query)
     |> Repo.preload([:creator, :recepient])
   end
@@ -82,15 +84,32 @@ defmodule Codebattle.Invite do
     recepient_id = params.recepient_id
     invite_id = params.id || raise "Not found!"
     invite = get_invite!(invite_id)
-    if (invite.recepient_id != recepient_id) do
+
+    if invite.recepient_id != recepient_id do
       raise "Not authorized!"
     end
+
     users = [invite.creator, invite.recepient]
+
     case Play.start_game(Map.merge(invite.game_params, %{users: users})) do
       {:ok, fsm} ->
         game_id = FsmHelpers.get_game_id(fsm)
         Invite.update_invite(invite, %{state: "accepted", game_id: game_id})
-      {:error, reason} -> {:error, reason}
+
+      {:error, reason} ->
+        {:error, reason}
     end
+  end
+
+  def cancel_invite(params) do
+    user_id = params.user_id
+    invite_id = params.id || raise "Not found!"
+    invite = get_invite!(invite_id)
+
+    if invite.recepient_id != user_id and invite.creator_id != user_id do
+      raise "Not authorized!"
+    end
+
+    Invite.update_invite(invite, %{state: "cancelled"})
   end
 end
