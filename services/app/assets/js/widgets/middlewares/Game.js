@@ -224,7 +224,6 @@ export const activeEditorReady = machine => () => {
 
 export const activeGameReady = machine => dispatch => {
   initGameChannel(dispatch, machine);
-  //setTimeout(() => channel.push('tournament:round_created', {}), 3000);
   channel.on('editor:data', data => {
     dispatch(actions.updateEditorText(camelizeKeys(data)));
   });

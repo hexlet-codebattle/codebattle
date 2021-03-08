@@ -203,11 +203,11 @@ const UserSettings = () => {
 
             <div id="my-radio-group" className="h6 ml-2">Select sound type</div>
             <div role="group" aria-labelledby="my-radio-group" className="ml-3 mb-3">
-            <div>
+              <div>
                 <Field type="radio" name="soundType" value="dandy" className="mr-2" />
                 Dandy
               </div>
-            <div>
+              <div>
                 <Field type="radio" name="soundType" value="counter-strike" className="mr-2" />
                 Counter-Strike
               </div>

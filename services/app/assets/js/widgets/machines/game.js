@@ -1,10 +1,11 @@
 import { Machine } from 'xstate';
 import Gon from 'gon';
-import getPathDirectory from '../utils/getPathDirectoryAudio';
+import { Howl } from 'howler';
 
-const soundSettingType = Gon.getAsset('current_user').sound_settings.type;
-const soundLevel = soundSettingType === 'silent' ? 0 : Gon.getAsset('current_user').sound_settings.level * 0.1;
-const pathDirectory = getPathDirectory(soundSettingType);
+const soundSettings = Gon.getAsset('current_user').sound_settings;
+const soundType = soundSettings.type === 'silent' ? 'standart' : soundSettings.type;
+const soundLevel = soundSettings.level * 0.1;
+const pathDirectory = `/assets/audio/${soundType}`;
 
 export default Machine({
   id: 'game',
@@ -64,24 +65,40 @@ export default Machine({
 }, {
   actions: {
     sound_win: () => {
-      const audioWin = new Audio(`${pathDirectory}/win.wav`);
-      audioWin.volume = soundLevel;
-      audioWin.play();
+      const sound = new Howl({
+        src: [`${pathDirectory}/win.wav`],
+        volume: soundLevel,
+        onload() {
+          return soundSettings.type === 'silent' ? sound.stop() : sound.play();
+        },
+      });
     },
     sound_give_up: () => {
-      const audioGiveUp = new Audio(`${pathDirectory}/give_up.wav`);
-      audioGiveUp.volume = soundLevel;
-      audioGiveUp.play();
+      const sound = new Howl({
+        src: [`${pathDirectory}/give_up.wav`],
+        volume: soundLevel,
+        onload() {
+          return soundSettings.type === 'silent' ? sound.stop() : sound.play();
+        },
+      });
     },
     sound_time_is_over: () => {
-      const audioTimeIsOver = new Audio(`${pathDirectory}/time_is_over.wav`);
-      audioTimeIsOver.volume = soundLevel;
-      audioTimeIsOver.play();
+      const sound = new Howl({
+        src: [`${pathDirectory}/time_is_over.wav`],
+        volume: soundLevel,
+        onload() {
+          return soundSettings.type === 'silent' ? sound.stop() : sound.play();
+        },
+      });
     },
     sound_tournament_round_created: () => {
-      const audioRound = new Audio(`${pathDirectory}/round_created.wav`);
-      audioRound.volume = soundLevel;
-      audioRound.play();
+      const sound = new Howl({
+        src: [`${pathDirectory}/round_created.wav`],
+        volume: soundLevel,
+        onload() {
+          return soundSettings.type === 'silent' ? sound.stop() : sound.play();
+        },
+      });
     },
     sound_rematch_update_status: () => {},
   },

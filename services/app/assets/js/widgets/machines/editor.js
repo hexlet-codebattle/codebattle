@@ -1,6 +1,6 @@
 import { Machine, assign } from 'xstate';
 import Gon from 'gon';
-import getPathDirectory from '../utils/getPathDirectoryAudio';
+import { Howl } from 'howler';
 
 // settings
 // type - user type for viewers current_user/opponent/player (request features) teammate, clanmate, friend
@@ -72,15 +72,21 @@ const settingsByState = {
   },
 };
 
+const soundSettings = Gon.getAsset('current_user').sound_settings;
+const soundType = soundSettings.type === 'silent' ? 'standart' : soundSettings.type;
+const soundLevel = soundSettings.level * 0.1;
+const pathDirectory = `/assets/audio/${soundType}`;
+
+const soundStartCheking = new Howl({
+  src: [`${pathDirectory}/check.wav`],
+  volume: soundLevel,
+  loop: true,
+});
+
 export const initContext = ctx => ({
   ...ctx,
   ...settingsByType[ctx.type],
 });
-
-const soundSettingType = Gon.getAsset('current_user').sound_settings.type;
-const soundLevel = soundSettingType === 'silent' ? 0 : Gon.getAsset('current_user').sound_settings.level * 0.1;
-const pathDirectory = getPathDirectory(soundSettingType);
-const audioCheck = new Audio(`${pathDirectory}/check.wav`);
 
 export default Machine({
   initial: 'loading',
@@ -154,8 +160,8 @@ export default Machine({
 }, {
   actions: {
     init_active_context: assign(ctx => ({
-        ...ctx,
-        ...settingsByType[ctx.type],
+      ...ctx,
+      ...settingsByType[ctx.type],
     })),
     init_history_context: assign(settingsByState.history),
     assign_typing_context: assign(ctx => ({
@@ -168,18 +174,18 @@ export default Machine({
     })),
     user_start_checking: () => {},
     sound_failure_checking: () => {
-      const audioFailure =  new Audio(`${pathDirectory}/failure.wav`);
-      audioFailure.volume = soundLevel;
-      audioCheck.pause();
-      audioFailure.play();
+      const sound = new Howl({
+        src: [`${pathDirectory}/failure.wav`],
+        volume: soundLevel,
+        onload() {
+          soundStartCheking.stop();
+          return soundSettings.type === 'silent' ? sound.stop() : sound.play();
+        },
+      });
     },
-    sound_start_checking: () => {
-      audioCheck.play();
-      audioCheck.volume = soundLevel;
-      audioCheck.loop = true;
-    },
+    sound_start_checking: () => (soundSettings.type === 'silent' ? soundStartCheking.stop() : soundStartCheking.play()),
     sound_finished_checking: () => {
-      audioCheck.pause();
+      soundStartCheking.stop();
     },
     sound_start_typing: () => {},
     sound_end_typing: () => {},
