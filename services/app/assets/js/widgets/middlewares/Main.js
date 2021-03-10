@@ -37,6 +37,8 @@ export const init = () => dispatch => {
     .receive('ok', onJoinSuccess);
 };
 
+export const createInvite = params => channel.push('invites:create', params);
+
 export const acceptInvite = id => channel.push('invites:accept', { id });
 
 export const declineInvite = id => channel.push('invites:decline', { id });
