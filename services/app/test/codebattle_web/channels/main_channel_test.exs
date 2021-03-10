@@ -87,10 +87,9 @@ defmodule CodebattleWeb.MainChannelTest do
       payload: response
     }
 
-    assert response.invite.id
-    assert response.invite.state == "pending"
-    assert response.invite.creator_id == creator.id
-    assert response.invite.recepient_id == recepient.id
+    assert response.id
+    assert response.creator_id == creator.id
+    assert response.recepient_id == recepient.id
 
     topic = topic_name(recepient.id)
 
@@ -100,7 +99,6 @@ defmodule CodebattleWeb.MainChannelTest do
     }
 
     assert response.invite.id
-    assert response.invite.state == "pending"
     assert response.invite.creator_id == creator.id
     assert response.invite.recepient_id == recepient.id
   end
@@ -176,7 +174,7 @@ defmodule CodebattleWeb.MainChannelTest do
       payload: response
     }
 
-    ## Creator cancel invite to himself
+    ## Creator cancels invite
     creator_response_ref = push(creator_socket, "invites:cancel", %{"id" => recepient_invite.id})
 
     assert_receive %Phoenix.Socket.Reply{
