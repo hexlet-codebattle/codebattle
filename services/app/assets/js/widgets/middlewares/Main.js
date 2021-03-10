@@ -41,6 +41,10 @@ export const createInvite = params => channel.push('invites:create', params);
 
 export const acceptInvite = id => channel.push('invites:accept', { id });
 
-export const declineInvite = id => channel.push('invites:decline', { id });
+export const declineInvite = id => {
+  console.log(id);
+  channel.push('invites:cancel', { id })};
 
-export const cancelInvite = id => channel.push('invites:cancel', { id });
+export const cancelInvite = id => {
+  console.log(id);
+  channel.push('invites:cancel', { id })};

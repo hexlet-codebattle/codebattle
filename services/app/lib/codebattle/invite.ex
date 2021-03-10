@@ -26,7 +26,7 @@ defmodule Codebattle.Invite do
     end
   end
 
-  @derive {Jason.Encoder, only: [:state, :creator, :recepient, :game_params]}
+  @derive {Jason.Encoder, only: [:id, :state, :creator, :recepient, :game_params, :creator_id, :recepient_id]}
 
   schema "invites" do
     field(:state, :string, default: "pending")

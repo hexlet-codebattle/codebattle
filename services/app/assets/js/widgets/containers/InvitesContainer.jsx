@@ -23,7 +23,7 @@ const InvitesList = ({ list, currentUserId }) => (
   }) => (
     <div key={id} className="dropdown-item">
       <span className="small mx-1">{`id: ${id}, state: ${state}`}</span>
-      {currentUserId === creatorId && (
+      {currentUserId === recepientId && (
         <>
           <button
             type="submit"
@@ -41,7 +41,7 @@ const InvitesList = ({ list, currentUserId }) => (
           </button>
         </>
       )}
-      {currentUserId === recepientId && (
+      {currentUserId === creatorId && (
         <>
           <button
             type="submit"
@@ -62,8 +62,9 @@ const InvitesContainer = () => {
   const currentUserId = useSelector(selectors.currentUserIdSelector);
   const checkInvitePlayers = ({ creatorId, recepientId }) => (creatorId === currentUserId || recepientId === currentUserId);
   const filterInvites = invite => invite.state === 'pending' && checkInvitePlayers(invite);
-  const invites = useSelector(state => state.invites.list.filter(filterInvites));
-
+  const invites = useSelector(state => 
+    {console.log(state.invites);
+    return state.invites.list.filter(filterInvites)});
   useEffect(() => {
     const user = Gon.getAsset('current_user');
     dispatch(actions.setCurrentUser({ user }));

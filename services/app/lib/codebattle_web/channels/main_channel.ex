@@ -69,13 +69,18 @@ defmodule CodebattleWeb.MainChannel do
 
     case Invite.create_invite(params) do
       {:ok, invite} ->
+        data = %{
+          id: invite.id,
+          creator_id: invite.creator_id,
+          recepient_id: invite.recepient_id
+        }
         CodebattleWeb.Endpoint.broadcast!(
           "main:#{recepient_id}",
           "invites:created",
-          %{invite: invite}
+          %{invite: data}
         )
 
-        {:reply, {:ok, %{invite: invite}}, socket}
+        {:reply, {:ok, data}, socket}
 
       {:error, reason} ->
         {:reply, {:error, %{reason: reason}}, socket}
