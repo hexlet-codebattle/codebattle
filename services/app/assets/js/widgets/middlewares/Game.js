@@ -21,38 +21,31 @@ const isRecord = Gon.getAsset('is_record');
 const channelName = `game:${gameId}`;
 const channel = !isRecord ? socket.channel(channelName) : null;
 
-const initEditors = dispatch => (updateEditorTextAction, firstPlayer, secondPlayer) => {
-  dispatch(
-    updateEditorTextAction({
-      userId: firstPlayer.id,
-      editorText: firstPlayer.editorText,
-      langSlug: firstPlayer.editorLang,
-    }),
-  );
+const initEditors = dispatch => (playbookStatusCode, players) => {
+  const isHistory = playbookStatusCode === PlaybookStatusCodes.stored;
+  const updateEditorTextAction = isHistory
+    ? actions.updateEditorTextHistory
+    : actions.updateEditorText;
+  const updateExecutionOutputAction = isHistory
+    ? actions.updateExecutionOutputHistory
+    : actions.updateExecutionOutput;
 
-  dispatch(
-    actions.updateExecutionOutput({
-      ...firstPlayer.checkResult,
-      userId: firstPlayer.id,
-    }),
-  );
-
-  if (secondPlayer) {
+  players.forEach(player => {
     dispatch(
       updateEditorTextAction({
-        userId: secondPlayer.id,
-        editorText: secondPlayer.editorText,
-        langSlug: secondPlayer.editorLang,
+        userId: player.id,
+        editorText: player.editorText,
+        langSlug: player.editorLang,
       }),
     );
 
     dispatch(
-      actions.updateExecutionOutput({
-        ...secondPlayer.checkResult,
-        userId: secondPlayer.id,
+      updateExecutionOutputAction({
+        ...player.checkResult,
+        userId: player.id,
       }),
     );
-  }
+  });
 };
 
 const initStore = dispatch => ({
@@ -63,7 +56,6 @@ const initStore = dispatch => ({
   gameStatus,
   playbookStatusCode,
 }) => {
-  const isStored = playbookStatusCode === PlaybookStatusCodes.stored;
   const players = [{ ...firstPlayer, type: userTypes.firstPlayer }];
 
   if (secondPlayer) {
@@ -73,11 +65,7 @@ const initStore = dispatch => ({
   dispatch(actions.setLangs({ langs }));
   dispatch(actions.updateGamePlayers({ players }));
 
-  const updateEditorTextAction = isStored
-    ? actions.updateEditorTextPlaybook
-    : actions.updateEditorText;
-
-  initEditors(dispatch)(updateEditorTextAction, firstPlayer, secondPlayer);
+  initEditors(dispatch)(playbookStatusCode, players);
 
   if (task) {
     dispatch(actions.setGameTask({ task }));
@@ -88,8 +76,34 @@ const initStore = dispatch => ({
   }
 };
 
+const initStoredGame = dispatch => data => {
+  const gameStatus = {
+    status: GameStatusCodes.stored,
+    type: data.type,
+    tournamentId: data.tournamentId,
+  };
+
+  initStore(dispatch)({
+    firstPlayer: data.players[0],
+    secondPlayer: data.players[1],
+    task: data.task,
+    gameStatus,
+    playbookStatusCode: PlaybookStatusCodes.stored,
+  });
+
+  dispatch(actions.loadPlaybook(data));
+  dispatch(actions.updateChatData(data.chat));
+};
+
+const initPlaybook = dispatch => data => {
+  initEditors(dispatch)(PlaybookStatusCodes.stored, data.players);
+
+  dispatch(actions.loadPlaybook(data));
+};
+
 const initGameChannel = (dispatch, machine) => {
-  const onJoinFailure = () => {
+  const onJoinFailure = payload => {
+    machine.send('REJECT_LOADING_GAME', { payload });
     window.location.reload();
   };
 
@@ -158,7 +172,7 @@ const initGameChannel = (dispatch, machine) => {
 export const sendEditorText = (editorText, langSlug = null) => (dispatch, getState) => {
   const state = getState();
   const userId = selectors.currentUserIdSelector(state);
-  const currentLangSlug = langSlug || selectors.userLangSelector(userId)(state);
+  const currentLangSlug = langSlug || selectors.userLangSelector(state)(userId);
   dispatch(actions.updateEditorText({ userId, editorText, langSlug: currentLangSlug }));
   channel.push('editor:data', {
     editor_text: editorText,
@@ -354,36 +368,23 @@ export const activeGameReady = machine => dispatch => {
   });
 };
 
-export const storedGameReady = machine => dispatch => {
+const fetchPlaybook = (machine, init) => dispatch => {
   axios
     .get(`/api/v1/playbook/${gameId}`)
     .then(response => {
       const data = camelizeKeys(response.data);
-      const resolvedData = resolveDiffs(data);
+      const type = isRecord
+        ? PlaybookStatusCodes.stored
+        : PlaybookStatusCodes.active;
+      const resolvedData = resolveDiffs(data, type);
 
-      const gameStatus = {
-        status: GameStatusCodes.stored,
-        type: data.type,
-        tournamentId: data.tournamentId,
-      };
+      init(dispatch)(resolvedData);
 
-      initStore(dispatch)({
-        firstPlayer: resolvedData.players[0],
-        secondPlayer: resolvedData.players[1],
-        task: resolvedData.task,
-        gameStatus,
-        playbookStatusCode: PlaybookStatusCodes.stored,
-      });
-
-      dispatch(actions.loadStoredPlaybook(resolvedData));
-      dispatch(actions.fetchChatData(resolvedData.chat));
-
-      setTimeout(() => {
-        machine.send('load_stored_game', { payload: data });
-      }, 2000);
+      machine.send('LOAD_PLAYBOOK', { payload: resolvedData });
     })
     .catch(error => {
       dispatch(actions.setError(error));
+      machine.send('REJECT_LOADING_PLAYBOOK', { payload: error });
     });
 };
 
@@ -391,8 +392,12 @@ export const storedEditorReady = machine => () => {
   machine.send('load_stored_editor');
 };
 
+export const downloadPlaybook = machine => dispatch => {
+  dispatch(fetchPlaybook(machine, initPlaybook));
+};
+
 export const connectToGame = machine => dispatch => {
-  dispatch(isRecord ? storedGameReady(machine) : activeGameReady(machine));
+  dispatch(isRecord ? fetchPlaybook(machine, initStoredGame) : activeGameReady(machine));
 };
 
 export const connectToEditor = machine => dispatch => {
