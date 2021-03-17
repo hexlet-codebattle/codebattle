@@ -6,8 +6,10 @@ import socket from '../../socket';
 import * as selectors from '../selectors';
 import userTypes from '../config/userTypes';
 import { actions, redirectToNewGame } from '../slices';
+import {
+ parse, getFinalState, getText, resolveDiffs,
+} from '../lib/player';
 
-import { resolveDiffs } from '../lib/player';
 import PlaybookStatusCodes from '../config/playbookStatusCodes';
 import GameStatusCodes from '../config/gameStatusCodes';
 
@@ -417,3 +419,68 @@ export const checkGameResult = () => (dispatch, getState) => {
 
 export const compressEditorHeight = userId => dispatch => dispatch(actions.compressEditorHeight({ userId }));
 export const expandEditorHeight = userId => dispatch => dispatch(actions.expandEditorHeight({ userId }));
+
+/*
+ * Middleware actions for CodebattlePlayer
+*/
+
+export const setGameHistoryState = recordId => (dispatch, getState) => {
+  const state = getState();
+  const initRecords = selectors.playbookInitRecordsSelector(state);
+  const records = selectors.playbookRecordsSelector(state);
+
+  const { players: editorsState, chat: chatState } = getFinalState({
+    recordId,
+    records,
+    initRecords,
+  });
+
+  editorsState.forEach(player => {
+    dispatch(actions.updateEditorTextHistory({
+      userId: player.id,
+      editorText: player.editorText,
+      langSlug: player.editorLang,
+    }));
+
+    dispatch(actions.updateExecutionOutputHistory({
+      ...player.checkResult,
+      userId: player.id,
+    }));
+  });
+
+  dispatch(actions.updateChatDataHistory(chatState));
+};
+
+export const updateGameHistoryState = nextRecordId => (dispatch, getState) => {
+  const state = getState();
+  const records = selectors.playbookRecordsSelector(state);
+  const nextRecord = parse(records[nextRecordId]) || {};
+
+  switch (nextRecord.type) {
+    case 'update_editor_data': {
+      const editorText = selectors.editorTextHistorySelector(state, nextRecord);
+      const editorLang = selectors.editorLangHistorySelector(state, nextRecord);
+      const newEditorText = getText(editorText, nextRecord.diff);
+
+      dispatch(actions.updateEditorTextHistory({
+        userId: nextRecord.userId,
+        editorText: newEditorText,
+        langSlug: nextRecord.diff.nextLang || editorLang,
+      }));
+      break;
+    }
+    case 'check_complete':
+      dispatch(actions.updateExecutionOutputHistory({
+        ...nextRecord.checkResult,
+        userId: nextRecord.userId,
+      }));
+      break;
+    case 'chat_message':
+    case 'join_chat':
+    case 'leave_chat':
+      dispatch(actions.updateChatDataHistory(nextRecord.chat));
+      break;
+    default:
+      break;
+  }
+};

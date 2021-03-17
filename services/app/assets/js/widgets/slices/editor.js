@@ -4,8 +4,9 @@ import defaultEditorHeight from '../config/editorSettings';
 const initialState = {
   meta: {},
   text: {},
-  textPlaybook: {},
+  textHistory: {},
   langs: {},
+  langsHistory: {},
 };
 
 export const makeEditorTextKey = (userId, lang) => `${userId}:${lang}`;
@@ -28,11 +29,11 @@ const meta = createSlice({
         currentLangSlug,
       };
     },
-    updateEditorTextPlaybook: (state, { payload: { userId, langSlug } }) => {
+    updateEditorTextHistory: (state, { payload: { userId, langSlug } }) => {
       state[userId] = {
         ...state[userId],
         userId,
-        currentLangSlug: langSlug,
+        historyCurrentLangSlug: langSlug,
       };
     },
     updateEditorText: (state, { payload: { userId, langSlug } }) => {
@@ -73,11 +74,11 @@ const text = createSlice({
   },
 });
 
-const textPlaybook = createSlice({
-  name: 'textPlaybook',
-  initialState: initialState.textPlaybook,
+const textHistory = createSlice({
+  name: 'textHistory',
+  initialState: initialState.textHistory,
   extraReducers: {
-    [meta.actions.updateEditorTextPlaybook]: (state, { payload: { userId, editorText } }) => {
+    [meta.actions.updateEditorTextHistory]: (state, { payload: { userId, editorText } }) => {
       state[userId] = editorText;
     },
   },
@@ -93,16 +94,28 @@ const langs = createSlice({
   },
 });
 
+const langsHistory = createSlice({
+  name: 'langsHistory',
+  initialState: initialState.langsHistory,
+  extraReducers: {
+    [meta.actions.updateEditorTextHistory]: (state, { payload: { userId, langSlug } }) => {
+      state[userId] = langSlug;
+    },
+  },
+});
+
 export const actions = {
   ...text.actions,
-  ...textPlaybook.actions,
+  ...textHistory.actions,
   ...langs.actions,
   ...meta.actions,
+  ...langsHistory.actions,
 };
 
 export default combineReducers({
   meta: meta.reducer,
   text: text.reducer,
-  textPlaybook: textPlaybook.reducer,
+  textHistory: textHistory.reducer,
   langs: langs.reducer,
+  langsHistory: langsHistory.reducer,
 });
