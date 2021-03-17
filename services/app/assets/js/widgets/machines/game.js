@@ -1,94 +1,222 @@
-import { Machine } from 'xstate';
+import { Machine, assign } from 'xstate';
+import speedModes from '../config/speedModes';
 
-export default Machine({
-  id: 'game',
-  initial: 'preview',
+const recordMachine = {
+  initial: 'ended',
   states: {
-    preview: {
+    paused: {
       on: {
-        load_waiting_game: 'waiting',
-        load_active_game: 'active',
-        load_finished_game: 'game_over',
-        load_stored_game: 'stored',
-      },
-    },
-    waiting: {
-      on: {
-        'game:user_joined': 'active',
-      },
-    },
-    active: {
-      on: {
-        'user:check_complete': {
-          target: 'game_over',
-          cond: (_ctx, { payload }) => payload.status === 'game_over',
-        },
-        'user:won': {
-          target: 'game_over',
-          actions: ['sound_win'],
-        },
-        'user:give_up': {
-          target: 'game_over',
-          actions: ['sound_give_up'],
-        },
-        'game:timeout': {
-          target: 'game_over',
-          actions: ['sound_time_is_over'],
-        },
-        'tournament:round_created': {
-          target: 'active',
-          actions: ['sound_tournament_round_created'],
+        PLAY: 'playing',
+        END: 'ended',
+        HOLD: {
+          target: 'holded',
+          actions: assign({
+            holding: 'pause',
+          }),
         },
       },
     },
-    game_over: {
+    playing: {
       on: {
-        'rematch:update_status': {
-          target: 'game_over',
-          actions: ['sound_rematch_update_status'],
-        },
-        'tournament:round_created': {
-          target: 'game_over',
+        PAUSE: 'paused',
+        END: 'ended',
+        HOLD: {
+          target: 'holded',
+          actions: assign({
+            holding: 'play',
+          }),
         },
       },
     },
-    stored: {},
+    holded: {
+      on: {
+        RELEASE_AND_PLAY: {
+          target: 'playing',
+          actions: assign({
+            holding: 'none',
+          }),
+        },
+        RELEASE_AND_PAUSE: {
+          target: 'paused',
+          actions: assign({
+            holding: 'none',
+          }),
+        },
+      },
+    },
+    ended: {
+      on: {
+        PLAY: 'playing',
+        HOLD: {
+          target: 'holded',
+          actions: assign({
+            holding: 'pause',
+          }),
+        },
+      },
+    },
+  },
+};
+
+const machine = Machine({
+  id: 'main',
+  type: 'parallel',
+  context: {
+    // common context
+    errorMessage: null,
+    // context for replayer
+    holding: 'none', // ['none', 'play', 'pause']
+    speedMode: speedModes.normal,
+  },
+  states: {
+    game: {
+      initial: 'preview',
+      states: {
+        preview: {
+          on: {
+            LOAD_WAITING_GAME: 'waiting',
+            LOAD_ACTIVE_GAME: 'active',
+            LOAD_FINISHED_GAME: 'game_over',
+            REJECT_LOADING_GAME: {
+              target: 'failure',
+              actions: ['handleError', 'throwError'],
+            },
+            LOAD_PLAYBOOK: 'stored',
+          },
+        },
+        waiting: {
+          on: {
+            'game:user_joined': 'active',
+          },
+        },
+        active: {
+          on: {
+            'user:check_complete': {
+              target: 'game_over',
+              cond: (_ctx, { payload }) => payload.status === 'game_over',
+            },
+            'user:won': {
+              target: 'game_over',
+              actions: ['soundWin'],
+            },
+            'user:give_up': {
+              target: 'game_over',
+              actions: ['soundGiveUp'],
+            },
+            'game:timeout': {
+              target: 'game_over',
+              actions: ['soundTimeIsOver'],
+            },
+            'tournament:round_created': {
+              target: 'active',
+              actions: ['soundTournamentRoundCreated'],
+            },
+          },
+        },
+        game_over: {
+          on: {
+            'rematch:update_status': {
+              target: 'game_over',
+              actions: ['soundRematchUpdateStatus'],
+            },
+            'tournament:round_created': {
+              target: 'game_over',
+            },
+          },
+        },
+        stored: {
+          type: 'final',
+        },
+        failure: {
+          type: 'final',
+        },
+      },
+    },
+    replayer: {
+      initial: 'empty',
+      states: {
+        empty: {
+          on: {
+            LOAD_PLAYBOOK: 'on',
+            REJECT_LOADING_PLAYBOOK: {
+              target: 'failure',
+              actions: ['handleError', 'throwError'],
+            },
+          },
+        },
+        on: {
+          on: {
+            CLOSE_REPLAYER: 'off',
+            TOGGLE_SPEED_MODE: {
+              actions: 'toggleSpeedMode',
+            },
+          },
+          ...recordMachine,
+        },
+        off: {
+          on: {
+            OPEN_REPLAYER: 'on',
+          },
+        },
+        failure: {
+          type: 'final',
+        },
+      },
+    },
   },
 }, {
   actions: {
-    sound_win: () => {},
-    sound_give_up: () => {},
-    sound_time_is_over: () => {},
-    sound_tournament_round_created: () => {},
-    sound_rematch_update_status: () => {},
+    // common actions
+    handleError: assign({
+      errorMessage: (_ctx, { payload }) => payload.message,
+    }),
+    throwError: (_ctx, { payload }) => { throw payload; },
+
+    // game actions
+    soundWin: () => {},
+    soundGiveUp: () => {},
+    soundTimeIsOver: () => {},
+    soundTournamentRoundCreated: () => {},
+    soundRematchUpdateStatus: () => {},
+
+    // replayer actions
+    toggleSpeedMode: assign({
+      speedMode: ({ speedMode }) => {
+        switch (speedMode) {
+          case speedModes.normal:
+            return speedModes.fast;
+          case speedModes.fast:
+            return speedModes.normal;
+          default:
+            throw new Error('Unexpected speedMode [replayer machine]');
+        }
+      },
+    }),
   },
 });
 
-// export default Machine({
-//   id: "game",
-//   initial: "idle",
-//   states: {
-//     idle: {
-//       entry: (ctx, event) => {},
-//       exit: (ctx, event) => {},
-//       on: {
-//         START: {
-//           target: "started",
-//           actions: [],
-//           cond: (ctx, event) => true,
-//         },
-//       },
-//     },
-//     started: {},
-//   },
-// }, {
-//   services: {
-//     give_up: () => {},
-//   },
-//   guards: {
-//     messageValid: () => true,
-//   },
-//   actions: {
-//     action: () => {},
-//   },
-// })
+const states = {
+  game: {
+    preview: 'preview',
+    failure: 'failure',
+    waiting: 'waiting',
+    active: 'active',
+    game_over: 'game_over',
+    stored: 'stored',
+  },
+  replayer: {
+    empty: 'empty',
+    failure: 'failure',
+    on: 'on',
+    paused: 'on.paused',
+    playing: 'on.playing',
+    holded: 'on.holded',
+    ended: 'on.ended',
+    off: 'off',
+  },
+};
+
+export const gameMachineStates = states.game;
+export const replayerMachineStates = states.replayer;
+
+export default machine;
