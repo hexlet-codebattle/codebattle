@@ -1,18 +1,16 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import _ from 'lodash';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import cn from 'classnames';
-import { useMachine } from '@xstate/react';
 import GameContext from './GameContext';
-import editorMachine, { initContext } from '../machines/editor';
 import * as selectors from '../selectors';
 import Editor from './Editor';
-import EditorToolbar from './EditorsToolbars/EditorToolbar';
-import * as GameActions from '../middlewares/Game';
+import EditorContainer from './EditorContainer';
 import OutputClicker from './OutputClicker';
 import editorModes from '../config/editorModes';
 import OutputTab from '../components/ExecutionOutput/OutputTab';
 import Output from '../components/ExecutionOutput/Output';
+import editorUserTypes from '../config/editorUserTypes';
 
 const RightSide = ({ output, children }) => {
   const [showTab, setShowTab] = useState('editor');
@@ -63,140 +61,24 @@ const RightSide = ({ output, children }) => {
   );
 };
 
-const EditorContainer = ({
-  id,
-  type,
-  cardClassName,
-  theme,
-  editorState,
-  editorHeight,
-  editorMode,
-  children,
-}) => {
-  const dispatch = useDispatch();
-  const updateEditorValue = data => dispatch(GameActions.sendEditorText(data));
-  const players = useSelector(selectors.gamePlayersSelector);
-  const { current: gameCurrent } = useContext(GameContext);
-
-  const context = initContext({ type, userId: id });
-
-  const config = {
-    actions: {
-      user_start_checking: () => {
-        dispatch(GameActions.checkGameResult());
-      },
-    },
-  };
-
-  const [editorCurrent, send, service] = useMachine(editorMachine.withConfig(config), {
-    context,
-    devTools: true,
-    id: `editor_${id}`,
-  });
-
-  const checkResult = () => {
-    send('user_check_solution');
-  };
-
-  useEffect(() => {
-    GameActions.connectToEditor(service)(dispatch);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const isNeedHotKeys = editorCurrent.context.type === 'current_user';
-
-  useEffect(() => {
-    /** @param {KeyboardEvent} e */
-    const check = e => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-        e.preventDefault();
-        checkResult();
-      }
-    };
-
-    if (isNeedHotKeys) {
-      window.addEventListener('keydown', check);
-
-      return () => {
-        window.removeEventListener('keydown', check);
-      };
-    }
-
-    return () => {};
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  const actionBtnsProps = {
-    checkResult,
-    ...editorCurrent.context,
-  };
-
-  const toolbarParams = {
-    player: players[id],
-    editor: editorState,
-    status: editorCurrent.value,
-    actionBtnsProps,
-    ...editorCurrent.context,
-  };
-
-  const editorParams = {
-    syntax: editorState.currentLangSlug || 'javascript',
-    onChange: editorCurrent.context.type === 'current_user' ? value => {
-      updateEditorValue(value);
-    } : _.noop(),
-    checkResult,
-    value: editorState.text,
-    editorHeight,
-    mode: editorCurrent.context.editable ? editorMode : editorModes.default,
-    theme,
-    ...editorCurrent.context,
-  };
-
-  const isWon = players[id].gameResult === 'won';
-
-  const pannelBackground = cn('col-12 col-lg-6 p-1', {
-    'bg-warning': editorCurrent.matches('checking'),
-    'bg-primary': editorCurrent.matches('typing'),
-    'bg-success': gameCurrent.matches('active') && editorCurrent.matches('idle') && editorCurrent.context.type === 'current_user',
-    'bg-secondary': gameCurrent.matches('active') && editorCurrent.matches('idle') && editorCurrent.context.type === 'player',
-    'bg-danger': gameCurrent.matches('active') && editorCurrent.matches('idle') && !isWon && editorCurrent.context.type === 'opponent',
-    'bg-orange': gameCurrent.matches('game_over') && editorCurrent.matches('idle') && isWon,
-  });
-
-  return (
-    <>
-      <div
-        data-editor-state={editorCurrent.value}
-        className={pannelBackground}
-      >
-        <div className={cardClassName} style={{ minHeight: '470px' }} data-guide-id="LeftEditor">
-          <EditorToolbar
-            {...toolbarParams}
-            toolbarClassNames="btn-toolbar justify-content-between align-items-center m-1"
-            editorSettingClassNames="btn-group align-items-center m-1"
-            userInfoClassNames="btn-group align-items-center justify-content-end m-1"
-          />
-          {children({
-            ...editorParams,
-          })}
-        </div>
-      </div>
-    </>
-  );
-};
-
 const GameWidget = () => {
   const currentUserId = useSelector(selectors.currentUserIdSelector);
+  const { current: gameCurrent } = useContext(GameContext);
 
-  const leftEditor = useSelector(selectors.leftEditorSelector);
-  const rightEditor = useSelector(selectors.rightEditorSelector);
+  const leftEditor = useSelector(selectors.leftEditorSelector(gameCurrent));
+  const rightEditor = useSelector(selectors.rightEditorSelector(gameCurrent));
   const leftUserId = _.get(leftEditor, ['userId'], null);
   const rightUserId = _.get(rightEditor, ['userId'], null);
-  const leftUserType = currentUserId === leftUserId ? 'current_user' : 'player';
-  const rightUserType = leftUserType === 'current_user' ? 'opponent' : 'player';
+  const leftUserType = currentUserId === leftUserId
+    ? editorUserTypes.currentUser
+    : editorUserTypes.player;
+  const rightUserType = leftUserType === editorUserTypes.currentUser
+    ? editorUserTypes.opponent
+    : editorUserTypes.player;
 
-  const leftEditorHeight = useSelector(selectors.editorHeightSelector(leftUserId));
-  const rightEditorHeight = useSelector(selectors.editorHeightSelector(rightUserId));
-  const rightOutput = useSelector(selectors.rightExecutionOutputSelector);
+  const leftEditorHeight = useSelector(selectors.editorHeightSelector(gameCurrent, leftUserId));
+  const rightEditorHeight = useSelector(selectors.editorHeightSelector(gameCurrent, rightUserId));
+  const rightOutput = useSelector(selectors.rightExecutionOutputSelector(gameCurrent));
   const leftEditorsMode = useSelector(selectors.editorsModeSelector(leftUserId));
   const theme = useSelector(selectors.editorsThemeSelector(leftUserId));
 
@@ -205,6 +87,7 @@ const GameWidget = () => {
       <EditorContainer
         id={leftUserId}
         type={leftUserType}
+        orientation="left"
         editorState={leftEditor}
         cardClassName="card h-100 position-relative"
         theme={theme}
@@ -216,6 +99,7 @@ const GameWidget = () => {
       <EditorContainer
         id={rightUserId}
         type={rightUserType}
+        orientation="right"
         editorState={rightEditor}
         cardClassName="card h-100"
         theme={theme}

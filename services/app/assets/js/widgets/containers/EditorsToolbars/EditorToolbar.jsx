@@ -21,6 +21,7 @@ const ModeButtons = ({ player }) => (
 );
 
 const EditorToolbar = ({
+  type,
   player,
   editor,
   status,
@@ -31,23 +32,25 @@ const EditorToolbar = ({
   actionBtnsProps,
   showControlBtns,
 }) => (
-  <div className={toolbarClassNames} role="toolbar">
-    <div className={editorSettingClassNames} role="group" aria-label="Editor settings">
-      <LanguagePicker editor={editor} status={langPickerStatus} />
-    </div>
+  <div data-player-type={type}>
+    <div className={toolbarClassNames} role="toolbar">
+      <div className={editorSettingClassNames} role="group" aria-label="Editor settings">
+        <LanguagePicker editor={editor} status={langPickerStatus} />
+      </div>
 
-    {showControlBtns && (
-    <>
-      <ModeButtons player={player} />
-      <GameActionButtons {...actionBtnsProps} />
-    </>
-)}
+      {showControlBtns && (
+        <>
+          <ModeButtons player={player} />
+          <GameActionButtons {...actionBtnsProps} />
+        </>
+      )}
 
-    <div className={userInfoClassNames} role="group" aria-label="User info">
-      <TypingIcon status={status} />
-      <UserName user={player} />
-      <OnlineIndicator player={player} />
-      <GameResultIcon editor={editor} />
+      <div className={userInfoClassNames} role="group" aria-label="User info">
+        <TypingIcon status={status} />
+        <UserName user={player} />
+        <OnlineIndicator player={player} />
+        <GameResultIcon editor={editor} />
+      </div>
     </div>
   </div>
 );
