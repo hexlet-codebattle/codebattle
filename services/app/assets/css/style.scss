@@ -6,6 +6,7 @@ $orange: rgba(238, 55, 55, 0.76);
 $link-hover-color: $orange;
 $border-radius-sm: 0%;
 $btn-border-width: 2px;
+$gold: radial-gradient(#daa520 85%, #ffffff);
 @import "variables";
 @import "~bootstrap/scss/bootstrap";
 @import "~nprogress/nprogress.css";
@@ -33,30 +34,34 @@ $fa-font-path: "/fonts";
   to { opacity: 1.0; }
 }
 
-@keyframes typing_fade {
-  from { opacity: 1.0; }
-  50% { opacity: 0.9; }
-  to { opacity: 1.0; }
-}
-
-@-webkit-keyframes typing_fade {
-  from { opacity: 1.0; }
-  50% { opacity: 0.9; }
-  to { opacity: 1.0; }
-}
-
 [data-editor-state="checking"] {
   animation:checking_fade 1000ms infinite;
   -webkit-animation:checking_fade 1000ms infinite;
 }
 
-[data-editor-state="typing"] {
-  animation:typing_fade 300ms 1;
-  -webkit-animation:typing_fade 300ms 1;
-}
-
 .dark-bg {
   background: $dark;
+}
+
+.bg-winner {
+  background: $gold;
+}
+
+[data-player-type] {
+  --flag-color: var(--white);
+  background: linear-gradient(to top, var(--flag-color), var(--white) 15%);
+}
+
+[data-player-type="current_user"] {
+  --flag-color: var(--success);
+}
+
+[data-player-type="player"] {
+  --flag-color: var(--gray);
+}
+
+[data-player-type="opponent"] {
+  --flag-color: var(--danger);
 }
 
 .btn-outline-orange {
