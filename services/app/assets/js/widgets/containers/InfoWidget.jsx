@@ -12,7 +12,10 @@ import GameContext from './GameContext';
 const TimerContainer = ({ time, timeoutSeconds, gameStatusName }) => {
   const { current } = useContext(GameContext);
 
-  if (current.matches('game_over')) {
+  if (
+    current.matches({ game: 'game_over' })
+    || current.matches({ game: 'stored' })
+  ) {
     return gameStatusName;
   }
 
@@ -24,11 +27,12 @@ const TimerContainer = ({ time, timeoutSeconds, gameStatusName }) => {
 };
 
 const InfoWidget = () => {
+  const { current: gameCurrent } = useContext(GameContext);
   const taskText = useSelector(gameTaskSelector);
   const startsAt = useSelector(state => gameStatusSelector(state).startsAt);
   const timeoutSeconds = useSelector(state => gameStatusSelector(state).timeoutSeconds);
   const gameStatusName = useSelector(state => gameStatusSelector(state).status);
-  const leftOutput = useSelector(state => leftExecutionOutputSelector(state));
+  const leftOutput = useSelector(leftExecutionOutputSelector(gameCurrent));
   const isShowOutput = leftOutput && leftOutput.status;
   const idOutput = 'leftOutput';
   return (
