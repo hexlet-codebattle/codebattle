@@ -141,6 +141,14 @@ a {
   font-size: 8px;
 }
 
+.cb-timer-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0.3;
+  height: 100%;
+}
+
 .cb-slider {
   height: 32px;
 

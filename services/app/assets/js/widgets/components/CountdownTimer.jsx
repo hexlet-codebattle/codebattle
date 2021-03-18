@@ -3,19 +3,21 @@ import moment from 'moment';
 import cn from 'classnames';
 import PropTypes from 'prop-types';
 
-const CountdownTimer = ({ time, timeoutSeconds }) => {
-  const [duration, setDuration] = useState(60 * 3 * 1000);
+const getProgress = (a, b) => (
+  100 - Math.ceil((a / b) * 100)
+);
 
-  const getBgColor = () => {
-    const seconds = duration / 1000;
-    if (seconds > 45) {
-      return '';
-    }
-    if (seconds > 15) {
-      return 'bg-warning';
-    }
-    return 'bg-danger';
-  };
+const CountdownTimer = ({ time, timeoutSeconds }) => {
+  const [duration, setDuration] = useState(timeoutSeconds * 1000);
+  const seconds = duration / 1000;
+  const progress = getProgress(seconds, timeoutSeconds);
+
+  const progressBgColor = cn('cb-timer-progress', {
+    'bg-secondary': seconds > 45,
+    'bg-warning': seconds <= 45 && seconds >= 15,
+    'bg-danger': seconds < 15,
+  });
+
   const updateTimer = () => {
     const diff = moment().diff(moment.utc(time));
     const timeoutMiliseconds = timeoutSeconds * 1000;
@@ -29,13 +31,20 @@ const CountdownTimer = ({ time, timeoutSeconds }) => {
     return () => {
       clearInterval(interval);
     };
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
-    <span className={cn('text-monospace', getBgColor())}>
-      {timeoutSeconds && 'Timeout in: '}
-      <span>{moment.utc(duration).format('HH:mm:ss')}</span>
-    </span>
+    <>
+      <span className="text-monospace">
+        {timeoutSeconds && 'Timeout in: '}
+        <span>{moment.utc(duration).format('HH:mm:ss')}</span>
+      </span>
+      <div
+        className={progressBgColor}
+        style={{ width: `${progress}%` }}
+      />
+    </>
   );
 };
 
