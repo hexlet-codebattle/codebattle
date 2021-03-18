@@ -143,16 +143,16 @@ const initGameChannel = (dispatch, machine) => {
     setTimeout(() => {
       switch (status) {
         case GameStatusCodes.waitingOpponent: {
-          machine.send('load_waiting_game');
+          machine.send('LOAD_WAITING_GAME');
           break;
         }
         case GameStatusCodes.playing: {
-          machine.send('load_active_game');
+          machine.send('LOAD_ACTIVE_GAME');
           break;
         }
         case GameStatusCodes.gameOver:
         case GameStatusCodes.timeout: {
-          machine.send('load_finished_game');
+          machine.send('LOAD_FINISHED_GAME');
           break;
         }
         default: {
@@ -407,7 +407,7 @@ export const connectToEditor = machine => dispatch => {
 export const checkGameResult = () => (dispatch, getState) => {
   const state = getState();
   const currentUserId = selectors.currentUserIdSelector(state);
-  const currentUserEditor = selectors.editorDataSelector(currentUserId)(state);
+  const { text, lang } = selectors.getSolution(currentUserId)(state);
 
   // FIXME: create actions for this state transitions
   // FIXME: create statuses for solutionStatus
@@ -415,8 +415,8 @@ export const checkGameResult = () => (dispatch, getState) => {
   dispatch(actions.updateCheckStatus({ [currentUserId]: true }));
 
   const payload = {
-    editor_text: currentUserEditor.text,
-    lang_slug: currentUserEditor.currentLangSlug,
+    editor_text: text,
+    lang_slug: lang,
   };
 
   channel.push('check_result', payload);
