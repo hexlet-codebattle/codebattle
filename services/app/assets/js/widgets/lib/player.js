@@ -27,6 +27,13 @@ export const getText = (text, { delta: d }) => {
   return finalDelta.ops[0].insert;
 };
 
+export const getDiff = (prevText, nextText) => {
+  const a = new Delta().insert(prevText);
+  const b = new Delta().insert(nextText);
+  const delta = a.diff(b).ops;
+  return { delta };
+};
+
 const collectFinalRecord = (acc, strRecord) => {
   const record = parse(strRecord);
   const { players } = acc;
@@ -216,14 +223,82 @@ const reduceOriginalRecords = (acc, record, index) => {
   }
 
   const newRecord = createFinalRecord(index, record, {
-    players: playersState,
+    players,
     chat: chatState,
   });
 
   return { ...acc, records: [...records, newRecord] };
 };
 
-export const getFinalState = ({ recordId, records, gameInitialState }) => {
+export const addRecord = ({
+  records, players, type, payload,
+}) => {
+  if (!records) {
+    return { records, players };
+  }
+
+  const recordId = records.length;
+
+  switch (type) {
+    case 'update_editor_data': {
+      const { userId, langSlug, editorText } = payload;
+      const { editorText: prevEditorText } = _.find(players, { id: userId });
+
+      const diff = getDiff(prevEditorText, editorText);
+
+      const newPlayers = updatePlayers(
+        players,
+        { id: userId, editorText, editorLang: langSlug },
+      );
+      const data = {
+        type,
+        userId,
+        diff,
+      };
+      const newRecord = createFinalRecord(recordId, data, {
+        players: newPlayers,
+        chat: [], // we don't need show chat history for active game
+      });
+
+      return {
+        records: [...records, newRecord],
+        players: newPlayers,
+      };
+    }
+    case 'check_complete': {
+      const { userId, ...checkResult } = payload;
+
+      const newPlayers = updatePlayers(players, { id: userId, checkResult });
+      const data = {
+        type,
+        userId,
+        checkResult,
+      };
+      const newRecord = createFinalRecord(recordId, data, {
+        players: newPlayers,
+        chat: [], // we don't need show chat history for active game
+      });
+
+      return {
+        records: [...records, newRecord],
+        players: newPlayers,
+      };
+    }
+    default:
+      return { records, players };
+  }
+};
+
+export const getFinalState = ({ recordId, records, initRecords }) => {
+  const gameInitialState = {
+    players: initRecords,
+    chat: {
+      users: [],
+      messages: [],
+    },
+    nextRecordId: 0,
+  };
+
   const closestFullRecordId = Math.floor(recordId / snapshotStep) * snapshotStep;
   const closestFullRecord = parse(records[closestFullRecordId]);
   const finalRecord = records
