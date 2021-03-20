@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { camelizeKeys } from 'humps';
-import qs from 'qs';
 import { useDispatch, useSelector } from 'react-redux';
+import cn from 'classnames';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import AsyncSelect from 'react-select/async';
-import classnames from 'classnames';
+import axios from 'axios';
+import qs from 'qs';
+import { camelizeKeys } from 'humps';
 import * as selectors from '../../selectors';
 import { actions } from '../../slices';
 import * as lobbyMiddlewares from '../../middlewares/Lobby';
@@ -11,22 +13,33 @@ import * as mainMiddlewares from '../../middlewares/Main';
 import i18n from '../../../i18n';
 import levelRatio from '../../config/levelRatio';
 import gameTypeCodes from '../../config/gameTypeCodes';
-import axios from 'axios';
 
 const TIMEOUTS = [3600, 1800, 900, 600, 60];
 
-const UserLabel = ({ user }) => (
-  <span className="text-truncate">
-    {`${user.name} (${user.rating})`}
-  </span>
-);
+const UserLabel = ({ user }) => {
+  const { presenceList } = useSelector(selectors.lobbyDataSelector);
+  const isOnline = presenceList.some(({ id }) => id === user.id);
+  const onlineIndicatorClassName = cn('mr-1', {
+    'cb-user-online': isOnline,
+    'cb-user-offline': !isOnline,
+  });
 
-const hasOption = (options, option) => options.some(({ value }) => value.id === option.value.id);
+  return (
+    <>
+      <span className="text-truncate">
+        <FontAwesomeIcon
+          icon={['fa', 'circle']}
+          className={onlineIndicatorClassName}
+        />
+        <span>{`${user.name} (${user.rating})`}</span>
+      </span>
+    </>
+);
+};
 
 const OpponentSelect = ({ setOpponent }) => {
   const currentUserId = useSelector(selectors.currentUserIdSelector);
   const dispatch = useDispatch();
-
 
   const loadOptions = (inputValue, callback) => {
     const queryParamsString = qs.stringify({
@@ -43,7 +56,7 @@ const OpponentSelect = ({ setOpponent }) => {
         const options = users
           .filter(({ id }) => currentUserId !== id)
           .map(
-            user => ({ label: <UserLabel user={user} />, value: user })
+            user => ({ label: <UserLabel user={user} />, value: user }),
           );
 
         callback(options);
@@ -54,28 +67,20 @@ const OpponentSelect = ({ setOpponent }) => {
   };
 
   return (
-    <>
-      <div className="d-flex justify-content-around px-5 mt-3">
-        <AsyncSelect
-          className="w-100"
-          defaultOptions
-          onChange={({ value }) => setOpponent(value)}
-          loadOptions={loadOptions}
-        />
-      </div>
-    </>
+    <AsyncSelect
+      className="w-100"
+      defaultOptions
+      onChange={({ value }) => setOpponent(value)}
+      loadOptions={loadOptions}
+    />
   );
 };
 
 const CreateGameDialog = ({ hideModal }) => {
+  const dispatch = useDispatch();
   const gameLevels = Object.keys(levelRatio);
   const currentGameTypeCodes = [gameTypeCodes.bot, gameTypeCodes.public, gameTypeCodes.private];
-  const defaultValue = {
-    label: <div>No opponent</div>,
-    value: null,
-  };
-
-  const [opponent, setOpponent] = useState(defaultValue);
+  const [opponent, setOpponent] = useState();
 
   const [game, setGame] = useState({
     level: gameLevels[0],
@@ -85,20 +90,22 @@ const CreateGameDialog = ({ hideModal }) => {
 
   const isPrivateGame = game.type === gameTypeCodes.private;
 
+  const createBtnClassname = cn('btn btn-success mb-2 mt-4 d-flex ml-auto text-white font-weight-bold', {
+    disabled: isPrivateGame && !opponent,
+  });
   const createBtnTitle = isPrivateGame
     ? i18n.t('Create Invite')
     : i18n.t('Create Battle');
 
   const create = () => {
-    if (isPrivateGame) {
-      console.log(opponent);
-      mainMiddlewares.createInvite({
+    if (isPrivateGame && opponent) {
+      dispatch(mainMiddlewares.createInvite({
         level: game.level,
         type: game.type,
         timeout_seconds: game.timeoutSeconds,
         recepient_id: opponent.id,
-      })
-    } else {
+      }));
+    } else if (!isPrivateGame) {
       lobbyMiddlewares.createGame({
         level: game.level,
         type: game.type,
@@ -112,7 +119,7 @@ const CreateGameDialog = ({ hideModal }) => {
     <button
       key={timeout}
       type="button"
-      className={classnames('btn mr-1', {
+      className={cn('btn mr-1', {
         'bg-orange text-white': game.timeoutSeconds === timeout,
         'btn-outline-orange': game.timeoutSeconds !== timeout,
       })}
@@ -126,7 +133,7 @@ const CreateGameDialog = ({ hideModal }) => {
     <button
       type="button"
       key={gameType}
-      className={classnames('btn', {
+      className={cn('btn', {
         'bg-orange text-white': game.type === gameType,
         'btn-outline-orange': game.type !== gameType,
       })}
@@ -144,7 +151,7 @@ const CreateGameDialog = ({ hideModal }) => {
           <button
             key={level}
             type="button"
-            className={classnames('btn mb-2', {
+            className={cn('btn mb-2', {
               'bg-orange': game.level === level,
               'btn-outline-orange border-0': game.level !== level,
             })}
@@ -167,12 +174,18 @@ const CreateGameDialog = ({ hideModal }) => {
         {renderPickTimeouts()}
       </div>
       {
-        isPrivateGame && <OpponentSelect setOpponent={setOpponent} />
+        isPrivateGame && (
+        <>
+          <h5>{i18n.t('Choose opponent')}</h5>
+          <div className="d-flex justify-content-around px-5 mt-3 mb-2">
+            <OpponentSelect setOpponent={setOpponent} />
+          </div>
+        </>
+)
       }
-
       <button
         type="button"
-        className="btn btn-success mb-2 mt-4 d-flex ml-auto text-white font-weight-bold"
+        className={createBtnClassname}
         onClick={create}
       >
         {createBtnTitle}

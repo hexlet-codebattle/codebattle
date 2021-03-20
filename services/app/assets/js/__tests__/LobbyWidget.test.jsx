@@ -21,6 +21,8 @@ jest.mock(
 jest.mock('axios');
 axios.get.mockResolvedValue({ data: {} });
 
+jest.mock('react-select/async', () => () => <></>);
+
 test('test rendering GameList', async () => {
   const reducer = combineReducers(reducers);
 
