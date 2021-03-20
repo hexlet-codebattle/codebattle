@@ -141,6 +141,17 @@ a {
   font-size: 8px;
 }
 
+.cb-user-online {
+  color: var(--green) !important;
+}
+
+.cb-user-offline {
+  color: var(--white) !important;
+  border: 0.2rem solid transparent;
+  border-color: var(--gray);
+  border-radius: 0.5rem;
+}
+
 .cb-slider {
   height: 32px;
 
