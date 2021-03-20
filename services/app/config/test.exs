@@ -38,5 +38,6 @@ adapter =
 config :codebattle, code_check_timeout: 25_000
 config :codebattle, checker_adapter: adapter
 config :codebattle, tournament_match_timeout: 1
+config :codebattle, Codebattle.Invite, timeout: :timer.seconds(10)
 
 config :codebattle, ws_port: 4001

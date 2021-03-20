@@ -58,6 +58,17 @@ defmodule Codebattle.Invite do
     |> Repo.preload([:creator, :recepient])
   end
 
+  def list_all_active_invites() do
+    query =
+      from(i in Invite,
+        where: i.state == "pending")
+    Repo.all(query)
+  end
+
+  def expire_invite(invite) do
+    Invite.update_invite(invite, %{state: "expired"})
+  end
+
   def get_invite!(id), do: Repo.get!(Invite, id) |> Repo.preload([:creator, :recepient])
 
   def create_invite(attrs \\ %{}) do

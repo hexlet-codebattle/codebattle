@@ -12,4 +12,5 @@ config :codebattle, CodebattleWeb.Endpoint,
 config :logger, level: :error
 
 config :codebattle, Codebattle.Bot, timeout: 1000
+config :codebattle, Codebattle.Invite, timeout: :timer.minutes(15)
 config :codebattle, ws_port: 8080
