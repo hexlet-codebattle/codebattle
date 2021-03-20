@@ -28,7 +28,12 @@ export const init = () => dispatch => {
 
     channel.on('invites:created', camelizeKeysAndDispatch(dispatch, actions.addInvite));
     channel.on('invites:canceled', camelizeKeysAndDispatch(dispatch, actions.updateInvite));
-    channel.on('invites:applied', camelizeKeysAndDispatch(dispatch, actions.updateInvite));
+    channel.on('invites:applied', data => {
+      window.location.href = `/games/${data.invite.game_id}`;
+      camelizeKeysAndDispatch(dispatch, actions.updateInvite)(data);
+    });
+    channel.on('invites:expired', camelizeKeysAndDispatch(dispatch, actions.updateInvite));
+    channel.on('invites:dropped', camelizeKeysAndDispatch(dispatch, actions.updateInvite));
   };
 
   channel
@@ -42,7 +47,10 @@ export const createInvite = params => dispatch => channel
 
 export const acceptInvite = id => dispatch => channel
     .push('invites:accept', { id })
-    .receive('ok', camelizeKeysAndDispatch(dispatch, actions.updateInvite));
+  .receive('ok', data => {
+    window.location.href = `/games/${data.invite.game_id}`;
+    camelizeKeysAndDispatch(dispatch, actions.updateInvite)(data);
+  });
 
 export const declineInvite = id => dispatch => channel
     .push('invites:cancel', { id })

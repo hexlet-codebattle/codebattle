@@ -39,7 +39,7 @@ defmodule Codebattle.Invite do
 
   def changeset(invite, attrs) do
     invite
-    |> cast(attrs, [:state, :creator_id, :recepient_id])
+    |> cast(attrs, [:state, :creator_id, :recepient_id, :game_id])
     |> cast_embed(:game_params)
     |> validate_required([:state])
   end
@@ -61,7 +61,9 @@ defmodule Codebattle.Invite do
   def list_all_active_invites() do
     query =
       from(i in Invite,
-        where: i.state == "pending")
+        where: i.state == "pending"
+      )
+
     Repo.all(query)
   end
 
@@ -91,6 +93,17 @@ defmodule Codebattle.Invite do
     Invite.changeset(invite, attrs)
   end
 
+  def drop_invites_by_users(creator_id, recepient_id) do
+    query =
+      from(i in Invite,
+        where:
+          i.state == "pending" and (i.creator_id == ^creator_id or i.creator_id == ^recepient_id),
+        select: i
+      )
+
+    Repo.update_all(query, set: [state: "dropped"])
+  end
+
   def accept_invite(params) do
     recepient_id = params.recepient_id
     invite_id = params.id || raise "Not found!"
@@ -105,8 +118,15 @@ defmodule Codebattle.Invite do
 
     case Play.start_game(game_params) do
       {:ok, fsm} ->
-        game_id = FsmHelpers.get_game_id(fsm)
-        Invite.update_invite(invite, %{state: "accepted", game_id: game_id})
+        game_id = FsmHelpers.get_game_id(fsm) |> IO.inspect()
+
+        {:ok, invite} =
+          Invite.update_invite(invite, %{state: "accepted", game_id: game_id}) |> IO.inspect()
+
+        {_, dropped_invites} =
+          Invite.drop_invites_by_users(invite.creator_id, invite.recepient_id)
+
+        {:ok, %{invite: invite, dropped_invites: dropped_invites}}
 
       {:error, reason} ->
         {:error, reason}

@@ -78,8 +78,8 @@ defmodule CodebattleWeb.MainChannel do
           id: invite.id,
           creator_id: invite.creator_id,
           recepient_id: invite.recepient_id,
-          creator: invite.creator,
-          recepient: invite.recepient
+          creator: Map.from_struct(invite.creator),
+          recepient: Map.from_struct(invite.recepient)
         }
 
         CodebattleWeb.Endpoint.broadcast!(
@@ -133,12 +133,13 @@ defmodule CodebattleWeb.MainChannel do
            id: payload["id"],
            recepient_id: socket.assigns.user_id
          }) do
-      {:ok, invite} ->
+      {:ok, %{invite: invite, dropped_invites: dropped_invites}} ->
         data = %{
           state: invite.state,
           id: invite.id,
           creator_id: invite.creator_id,
-          recepient_id: invite.recepient_id
+          recepient_id: invite.recepient_id,
+          game_id: invite.game_id
         }
 
         CodebattleWeb.Endpoint.broadcast!(
@@ -146,6 +147,19 @@ defmodule CodebattleWeb.MainChannel do
           "invites:accepted",
           %{invite: data}
         )
+
+        Enum.each(dropped_invites, fn invite ->
+          data = %{
+            state: invite.state,
+            id: invite.id
+          }
+
+          CodebattleWeb.Endpoint.broadcast!(
+            "main:#{invite.recepient_id}",
+            "invites:dropped",
+            %{invite: data}
+          )
+        end)
 
         {:reply, {:ok, %{invite: data}}, socket}
 

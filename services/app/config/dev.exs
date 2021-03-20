@@ -45,7 +45,7 @@ config :codebattle, Codebattle.Repo,
   pool_size: 7
 
 config :codebattle, Codebattle.Plugs, rollbar_api_key: System.get_env("ROLLBAR_API_KEY")
-
 config :codebattle, Codebattle.Invite, timeout: :timer.minutes(15)
+config :codebattle, Codebattle.Invite, lifetime: :timer.minutes(15)
 
 config :codebattle, Codebattle.Bot, timeout: 2_000
