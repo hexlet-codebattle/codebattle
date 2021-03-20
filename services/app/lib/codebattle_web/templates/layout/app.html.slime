@@ -53,8 +53,8 @@ html lang="en"
                 /   = link to: user_path(@conn, :index), class: "nav-link" do
                 /     span.fa.fa-chart-bar.mr-1
                 /     = gettext "Users rating"
-                li#invites-root.nav-item.dropdown.d
-                li.nav-item.dropdown.d
+                li#invites-root.nav-item.align-self-center.dropdown
+                li.nav-item.dropdown
                   a.nav-link.noborder.d-flex.px-0[href='#' aria-expanded="false" aria-haspopup="true" data-toggle="dropdown"]
                     .d-flex.flex-column.mr-2
                       h5.text-white.mb-0
