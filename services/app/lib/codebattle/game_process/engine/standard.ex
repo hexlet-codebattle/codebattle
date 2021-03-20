@@ -24,10 +24,10 @@ defmodule Codebattle.GameProcess.Engine.Standard do
     creator_player = Player.build(creator, %{creator: true, task: task})
     recipient_player = Player.build(recipient, %{task: task})
 
-    timeout_seconds = get_timeout_seconds(params[:timeout_seconds])
+    timeout_seconds = get_timeout_seconds(params.timeout_seconds)
 
     with :ok <- player_can_create_game?(recipient_player),
-    langs <- Languages.get_langs_with_solutions(task),
+         langs <- Languages.get_langs_with_solutions(task),
          {:ok, game} <-
            insert_game(%{
              state: "playing",

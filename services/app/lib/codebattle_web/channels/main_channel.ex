@@ -5,12 +5,14 @@ defmodule CodebattleWeb.MainChannel do
   alias CodebattleWeb.Presence
   alias Codebattle.Invite
 
-  def join("main:" <> user_id, _payload, socket) do
-    if String.to_integer(user_id) != socket.assigns.user_id do
-      raise "Not authorized!"
-    end
+  def join("main", _payload, socket) do
+    user_id = socket.assigns.user_id
+    topic = "main:#{user_id}"
 
-    send(self(), :after_join)
+    if user_id != "anonymous" do
+      Phoenix.PubSub.subscribe(:cb_pubsub, topic)
+      send(self(), :after_join)
+    end
 
     {:ok, %{}, socket}
   end
@@ -34,14 +36,14 @@ defmodule CodebattleWeb.MainChannel do
   #   "invites:decline" -> "invites:canceled", "invites:already_expired", "invites:not_exists"
 
   def handle_info(:after_join, socket) do
-    # {:ok, _} =
-    #  Presence.track(socket, socket.assigns.user_id, %{
-    #    online_at: inspect(System.system_time(:second)),
-    #    user: socket.assigns.current_user,
-    #    id: socket.assigns.user_id,
-    #  })
+    {:ok, _} =
+      Presence.track(socket, socket.assigns.user_id, %{
+        online_at: inspect(System.system_time(:second)),
+        user: socket.assigns.current_user,
+        id: socket.assigns.user_id
+      })
 
-    # push(socket, "presence_state", Presence.list(socket))
+    push(socket, "presence_state", Presence.list(socket))
 
     # TODO: Create Invite model
     invites = Invite.list_active_invites(socket.assigns.user_id)
@@ -58,11 +60,13 @@ defmodule CodebattleWeb.MainChannel do
     end
 
     level = payload["level"] || "elementary"
-    type = payload["type"] || "public"
+    type = "public"
+    timeout_seconds = payload["timeout_seconds"] || 3600
 
     game_params = %{
       level: level,
-      type: type
+      type: type,
+      timeout_seconds: timeout_seconds
     }
 
     params = %{creator_id: creator_id, recepient_id: recepient_id, game_params: game_params}
@@ -70,17 +74,21 @@ defmodule CodebattleWeb.MainChannel do
     case Invite.create_invite(params) do
       {:ok, invite} ->
         data = %{
+          state: invite.state,
           id: invite.id,
           creator_id: invite.creator_id,
-          recepient_id: invite.recepient_id
+          recepient_id: invite.recepient_id,
+          creator: invite.creator,
+          recepient: invite.recepient
         }
+
         CodebattleWeb.Endpoint.broadcast!(
           "main:#{recepient_id}",
           "invites:created",
           %{invite: data}
         )
 
-        {:reply, {:ok, data}, socket}
+        {:reply, {:ok, %{invite: data}}, socket}
 
       {:error, reason} ->
         {:reply, {:error, %{reason: reason}}, socket}
@@ -95,18 +103,25 @@ defmodule CodebattleWeb.MainChannel do
            user_id: user_id
          }) do
       {:ok, invite} ->
-        socket_channel =
+        data = %{
+          state: invite.state,
+          id: invite.id,
+          creator_id: invite.creator_id,
+          recepient_id: invite.recepient_id
+        }
+
+        topic =
           if user_id == invite.creator_id,
             do: "main:#{invite.recepient_id}",
             else: "main:#{invite.creator_id}"
 
         CodebattleWeb.Endpoint.broadcast!(
-          socket_channel,
-          "invites:cancelled",
-          %{invite: invite}
+          topic,
+          "invites:canceled",
+          %{invite: data}
         )
 
-        {:reply, {:ok, %{invite: invite}}, socket}
+        {:reply, {:ok, %{invite: data}}, socket}
 
       {:error, reason} ->
         {:reply, {:error, %{reason: reason}}, socket}
@@ -119,16 +134,34 @@ defmodule CodebattleWeb.MainChannel do
            recepient_id: socket.assigns.user_id
          }) do
       {:ok, invite} ->
+        data = %{
+          state: invite.state,
+          id: invite.id,
+          creator_id: invite.creator_id,
+          recepient_id: invite.recepient_id
+        }
+
         CodebattleWeb.Endpoint.broadcast!(
           "main:#{invite.creator_id}",
           "invites:accepted",
-          %{invite: invite}
+          %{invite: data}
         )
 
-        {:reply, {:ok, %{invite: invite}}, socket}
+        {:reply, {:ok, %{invite: data}}, socket}
 
       {:error, reason} ->
         {:reply, {:error, %{reason: reason}}, socket}
     end
+  end
+
+  def handle_info(
+        %{topic: "main:" <> user_id, event: "invites:" <> action, payload: payload},
+        socket
+      ) do
+    if String.to_integer(user_id) == socket.assigns.user_id do
+      push(socket, "invites:#{action}", payload)
+    end
+
+    {:noreply, socket}
   end
 end

@@ -26,7 +26,8 @@ defmodule Codebattle.Invite do
     end
   end
 
-  @derive {Jason.Encoder, only: [:id, :state, :creator, :recepient, :game_params, :creator_id, :recepient_id]}
+  @derive {Jason.Encoder,
+           only: [:id, :state, :creator, :recepient, :game_params, :creator_id, :recepient_id]}
 
   schema "invites" do
     field(:state, :string, default: "pending")
@@ -90,8 +91,9 @@ defmodule Codebattle.Invite do
     end
 
     users = [invite.creator, invite.recepient]
+    game_params = Map.merge(invite.game_params, %{users: users})
 
-    case Play.start_game(Map.merge(invite.game_params, %{users: users})) do
+    case Play.start_game(game_params) do
       {:ok, fsm} ->
         game_id = FsmHelpers.get_game_id(fsm)
         Invite.update_invite(invite, %{state: "accepted", game_id: game_id})
@@ -110,6 +112,6 @@ defmodule Codebattle.Invite do
       raise "Not authorized!"
     end
 
-    Invite.update_invite(invite, %{state: "cancelled"})
+    Invite.update_invite(invite, %{state: "canceled"})
   end
 end

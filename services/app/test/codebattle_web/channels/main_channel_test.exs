@@ -1,9 +1,10 @@
 defmodule CodebattleWeb.MainChannelTest do
-  use CodebattleWeb.ChannelCase, async: true
+  # use CodebattleWeb.ChannelCase, async: true
+  use CodebattleWeb.ChannelCase
 
   alias CodebattleWeb.MainChannel
-  alias Codebattle.Invite
   alias CodebattleWeb.UserSocket
+  alias CodebattleWeb.Presence
 
   setup do
     creator = insert(:user)
@@ -25,20 +26,28 @@ defmodule CodebattleWeb.MainChannelTest do
      }}
   end
 
-  test "on connect pushes initial invites", %{creator_socket: creator_socket, creator: creator} do
-    {:ok, response, _socket} =
-      subscribe_and_join(creator_socket, MainChannel, "main:#{creator.id}")
+  test "on connect pushes initial invites", %{creator_socket: creator_socket} do
+    {:ok, response, socket} = subscribe_and_join(creator_socket, MainChannel, "main")
 
     assert response == %{}
-    topic = topic_name(creator.id)
 
     assert_receive %Phoenix.Socket.Message{
-      topic: ^topic,
+      topic: "main",
       event: "invites:init",
       payload: response
     }
 
     assert response == %{invites: []}
+
+    list = Presence.list(socket)
+
+    assert_receive %Phoenix.Socket.Message{
+      topic: "main",
+      event: "presence_state",
+      payload: payload
+    }
+
+    assert list == payload
   end
 
   test "on connect pushes and filters initial invites", %{
@@ -49,15 +58,12 @@ defmodule CodebattleWeb.MainChannelTest do
     insert(:invite, creator: insert(:user))
     insert(:invite, recepient: creator)
 
-    {:ok, response, _socket} =
-      subscribe_and_join(creator_socket, MainChannel, "main:#{creator.id}")
+    {:ok, response, _socket} = subscribe_and_join(creator_socket, MainChannel, "main")
 
     assert response == %{}
 
-    topic = topic_name(creator.id)
-
     assert_receive %Phoenix.Socket.Message{
-      topic: ^topic,
+      topic: "main",
       event: "invites:init",
       payload: response
     }
@@ -71,30 +77,26 @@ defmodule CodebattleWeb.MainChannelTest do
     recepient: recepient,
     recepient_socket: recepient_socket
   } do
-    {:ok, response, creator_socket} =
-      subscribe_and_join(creator_socket, MainChannel, "main:#{creator.id}")
+    {:ok, _response, creator_socket} = subscribe_and_join(creator_socket, MainChannel, "main")
 
-    {:ok, response, recepient_socket} =
-      subscribe_and_join(recepient_socket, MainChannel, "main:#{recepient.id}")
+    {:ok, _response, _recepient_socket} =
+      subscribe_and_join(recepient_socket, MainChannel, "main")
 
     response_ref = push(creator_socket, "invites:create", %{recepient_id: recepient.id})
 
-    topic = topic_name(creator.id)
-
     assert_receive %Phoenix.Socket.Reply{
-      topic: ^topic,
+      topic: "main",
       ref: ^response_ref,
       payload: response
     }
 
-    assert response.id
-    assert response.creator_id == creator.id
-    assert response.recepient_id == recepient.id
+    assert response.invite.id
+    assert response.invite.creator_id == creator.id
+    assert response.invite.recepient_id == recepient.id
 
-    topic = topic_name(recepient.id)
-
-    assert_receive %Phoenix.Socket.Broadcast{
-      topic: ^topic,
+    assert_receive %Phoenix.Socket.Message{
+      topic: "main",
+      event: "invites:created",
       payload: response
     }
 
@@ -109,19 +111,16 @@ defmodule CodebattleWeb.MainChannelTest do
     recepient: recepient,
     recepient_socket: recepient_socket
   } do
-    {:ok, response, creator_socket} =
-      subscribe_and_join(creator_socket, MainChannel, "main:#{creator.id}")
+    {:ok, _response, _creator_socket} = subscribe_and_join(creator_socket, MainChannel, "main")
 
-    {:ok, response, recepient_socket} =
-      subscribe_and_join(recepient_socket, MainChannel, "main:#{recepient.id}")
+    {:ok, _response, recepient_socket} = subscribe_and_join(recepient_socket, MainChannel, "main")
 
     invite = insert(:invite, creator: creator, recepient: recepient, game_params: %{})
 
     response_ref = push(recepient_socket, "invites:accept", %{"id" => invite.id})
-    topic = topic_name(recepient.id)
 
     assert_receive %Phoenix.Socket.Reply{
-      topic: ^topic,
+      topic: "main",
       ref: ^response_ref,
       payload: response
     }
@@ -132,8 +131,8 @@ defmodule CodebattleWeb.MainChannelTest do
     assert response.invite.recepient_id == recepient.id
 
     assert_receive %Phoenix.Socket.Broadcast{
-      topic: ^topic,
-      payload: response
+      topic: "main",
+      payload: _response
     }
   end
 
@@ -143,11 +142,9 @@ defmodule CodebattleWeb.MainChannelTest do
     recepient: recepient,
     recepient_socket: recepient_socket
   } do
-    {:ok, response, creator_socket} =
-      subscribe_and_join(creator_socket, MainChannel, "main:#{creator.id}")
+    {:ok, _response, creator_socket} = subscribe_and_join(creator_socket, MainChannel, "main")
 
-    {:ok, response, recepient_socket} =
-      subscribe_and_join(recepient_socket, MainChannel, "main:#{recepient.id}")
+    {:ok, _response, recepient_socket} = subscribe_and_join(recepient_socket, MainChannel, "main")
 
     creator_invite = insert(:invite, creator: creator, recepient: recepient, game_params: %{})
     recepient_invite = insert(:invite, creator: creator, recepient: recepient, game_params: %{})
@@ -155,46 +152,39 @@ defmodule CodebattleWeb.MainChannelTest do
     recepient_response_ref =
       push(recepient_socket, "invites:cancel", %{"id" => creator_invite.id})
 
-    creator_topic = topic_name(creator.id)
-    recepient_topic = topic_name(recepient.id)
-
     assert_receive %Phoenix.Socket.Reply{
-      topic: ^recepient_topic,
+      topic: "main",
       ref: ^recepient_response_ref,
       payload: response
     }
 
     assert response.invite.id
-    assert response.invite.state == "cancelled"
+    assert response.invite.state == "canceled"
     assert response.invite.creator_id == creator.id
     assert response.invite.recepient_id == recepient.id
 
     assert_receive %Phoenix.Socket.Broadcast{
-      topic: ^creator_topic,
-      payload: response
+      topic: "main",
+      payload: _response
     }
 
     ## Creator cancels invite
     creator_response_ref = push(creator_socket, "invites:cancel", %{"id" => recepient_invite.id})
 
     assert_receive %Phoenix.Socket.Reply{
-      topic: ^creator_topic,
+      topic: "main",
       ref: ^creator_response_ref,
       payload: response
     }
 
     assert response.invite.id
-    assert response.invite.state == "cancelled"
+    assert response.invite.state == "canceled"
     assert response.invite.creator_id == creator.id
     assert response.invite.recepient_id == recepient.id
 
     assert_receive %Phoenix.Socket.Broadcast{
-      topic: ^recepient_topic,
-      payload: response
+      topic: "main",
+      payload: _response
     }
-  end
-
-  defp topic_name(user_id) do
-    "main:#{user_id}"
   end
 end
