@@ -4,8 +4,7 @@ defmodule Codebattle.Invite do
   import Ecto.Query, warn: false
   alias Codebattle.Repo
   alias __MODULE__
-  alias Codebattle.GameProcess.{Play, ActiveGames, FsmHelpers}
-  alias Codebattle.{User, Languages, UsersActivityServer}
+  alias Codebattle.GameProcess.{Play, FsmHelpers}
 
   defmodule GameParams do
     use Ecto.Schema
