@@ -28,7 +28,7 @@ defmodule Codebattle.InvitesKillerServer do
     Enum.each(invites, fn invite ->
       diff = Time.diff(current_time, invite.inserted_at, :millisecond)
 
-      if diff > 0 do
+      if diff > @lifetime do
         Invite.expire_invite(invite)
 
         data = %{
