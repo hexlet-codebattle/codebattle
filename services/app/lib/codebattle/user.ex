@@ -14,7 +14,7 @@ defmodule Codebattle.User do
 
     embedded_schema do
       field(:level, :integer, default: 7)
-      field(:type, :string, default: "silent")
+      field(:type, :string, default: "dendy")
     end
 
     def changeset(struct, params) do

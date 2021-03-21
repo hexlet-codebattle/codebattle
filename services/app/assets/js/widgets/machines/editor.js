@@ -1,5 +1,5 @@
 import { Machine, assign } from "xstate";
-import sprite from '../../sound';
+import sound from '../lib/sound';
 
 // settings
 // type - user type for viewers current_user/opponent/player (request features) teammate, clanmate, friend
@@ -171,13 +171,13 @@ export default Machine(
       })),
       user_start_checking: () => {},
       sound_failure_checking: () => {
-        sprite.play('failure');
+        sound.play('failure');
       },
       sound_start_checking: () => {
-        sprite.play('check');
+        sound.play('check');
       },
       sound_finished_checking: () => {
-        sprite.stop();
+        sound.stop();
       },
       sound_start_typing: () => {},
       sound_end_typing: () => {},

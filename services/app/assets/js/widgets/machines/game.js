@@ -1,6 +1,5 @@
 import { Machine } from "xstate";
-import sprite from '../../sound';
-console.log(sprite)
+import sound from '../lib/sound';
 export default Machine(
   {
     id: "game",
@@ -61,16 +60,16 @@ export default Machine(
   {
     actions: {
       sound_win: () => {
-        sprite.play('win');
+        sound.play('win');
       },
       sound_give_up: () => {
-        sprite.play('give_up');
+        sound.play('give_up');
       },
       sound_time_is_over: () => {
-        sprite.play('time_is_over');
+        sound.play('time_is_over');
       },
       sound_tournament_round_created: () => {
-        sprite.play('round_created');
+        sound.play('round_created');
       },
       sound_rematch_update_status: () => {},
     },

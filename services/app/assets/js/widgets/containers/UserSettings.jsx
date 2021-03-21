@@ -15,8 +15,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { actions } from '../slices';
 import languages from '../config/languages';
 import Loading from '../components/Loading';
-
-const audioObj = new Audio('/assets/audio/check_sound_level.wav');
+import sound from '../lib/sound';
 
 const PROVIDERS = ['github', 'discord'];
 
@@ -132,13 +131,14 @@ const UserSettings = () => {
       lang: values.language,
     };
     try {
-      axios.patch('/api/v1/settings', newSettings, {
+      const response = await axios.patch('/api/v1/settings', newSettings, {
         headers: {
         'Content-Type': 'application/json',
         'x-csrf-token': csrfToken,
         },
       });
-      window.location = '/settings'; // page update
+      // TODO: instead of reloading page, just put new user from response to store
+      window.location = '/settings';
       setSubmitting(false);
     } catch (error) {
       if (error.response && error.response.status === 422) {
@@ -192,9 +192,7 @@ const UserSettings = () => {
                 max={10}
                 name="soundLevel"
                 onInput={e => {
-                  handleChange(e);
-                  audioObj.volume = e.target.value * 0.01;
-                  audioObj.play();
+                  sound.play('win', e.target.value * 0.1);
                 }}
                 className="ml-3 mr-3 mb-3 form-control"
               />
@@ -204,11 +202,11 @@ const UserSettings = () => {
             <div id="my-radio-group" className="h6 ml-2">Select sound type</div>
             <div role="group" aria-labelledby="my-radio-group" className="ml-3 mb-3">
               <div>
-                <Field type="radio" name="soundType" value="dandy" className="mr-2" />
-                Dandy
+                <Field type="radio" name="soundType" value="dendy" className="mr-2" />
+                Dendy
               </div>
               <div>
-                <Field type="radio" name="soundType" value="counter-strike" className="mr-2" />
+                <Field type="radio" name="soundType" value="cs" className="mr-2" />
                 CS
               </div>
               <div>
