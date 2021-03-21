@@ -131,7 +131,7 @@ const UserSettings = () => {
       lang: values.language,
     };
     try {
-      const response = await axios.patch('/api/v1/settings', newSettings, {
+      await axios.patch('/api/v1/settings', newSettings, {
         headers: {
         'Content-Type': 'application/json',
         'x-csrf-token': csrfToken,
@@ -192,6 +192,7 @@ const UserSettings = () => {
                 max={10}
                 name="soundLevel"
                 onInput={e => {
+                  handleChange(e);
                   sound.play('win', e.target.value * 0.1);
                 }}
                 className="ml-3 mr-3 mb-3 form-control"
