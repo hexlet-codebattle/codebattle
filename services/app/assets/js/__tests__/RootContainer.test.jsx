@@ -24,6 +24,7 @@ const createPlayer = params => ({
 jest.mock('gon', () => {
   const gonParams = {
     local: 'en',
+    current_user: { sound_settings: {} },
     game_id: 10,
     players: [
       createPlayer({ name: 'Tim Urban' }),
