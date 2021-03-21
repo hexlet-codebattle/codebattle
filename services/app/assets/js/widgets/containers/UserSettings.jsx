@@ -209,7 +209,7 @@ const UserSettings = () => {
               </div>
               <div>
                 <Field type="radio" name="soundType" value="counter-strike" className="mr-2" />
-                Counter-Strike
+                CS
               </div>
               <div>
                 <Field type="radio" name="soundType" value="standart" className="mr-2" />
