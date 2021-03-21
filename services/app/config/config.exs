@@ -96,6 +96,11 @@ config :codebattle, tournament_match_timeout: 3 * 60
 
 config :codebattle, Codebattle.Analitics, max_size_activity_server: 10_000
 
+config :codebattle, :firebase,
+  sender_id: System.get_env("FIREBASE_SENDER_ID"),
+  api_key: System.get_env("FIREBASE_API_KEY")
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"
+
