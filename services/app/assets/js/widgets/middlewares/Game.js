@@ -162,7 +162,6 @@ const initGameChannel = (dispatch, machine) => {
       }
     }, 2000);
   };
-
   channel
     .join()
     .receive('ok', onJoinSuccess)

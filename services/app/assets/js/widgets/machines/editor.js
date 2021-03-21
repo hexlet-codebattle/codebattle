@@ -1,4 +1,5 @@
 import { Machine, assign } from 'xstate';
+import sound from '../lib/sound';
 import editorUserTypes from '../config/editorUserTypes';
 
 // settings
@@ -41,90 +42,97 @@ const settingsByState = {
   },
 };
 
-const initContextByState = state => assign(
-  ({ userId }) => ({ ...settingsByState[state], userId }),
-);
+const initContextByState = state => assign(({ userId }) => ({ ...settingsByState[state], userId }));
 
-export default Machine({
-  initial: 'loading',
-  states: {
-    loading: {
-      on: {
-        load_active_editor: 'idle',
-        load_stored_editor: 'history',
+export default Machine(
+  {
+    initial: 'loading',
+    states: {
+      loading: {
+        on: {
+          load_active_editor: 'idle',
+          load_stored_editor: 'history',
+        },
+      },
+      history: {
+        type: 'final',
+        entry: initContextByState('history'),
+      },
+      idle: {
+        entry: initContextByState('idle'),
+        on: {
+          typing: {
+            target: 'typing',
+            actions: ['soundStartTyping'],
+            cond: 'isUserEvent',
+          },
+          user_check_solution: {
+            target: 'checking',
+            actions: ['soundStartChecking', 'userStartChecking'],
+          },
+          check_solution: {
+            target: 'checking',
+            actions: ['soundStartChecking'],
+            cond: 'isUserEvent',
+          },
+        },
+      },
+      typing: {
+        entry: initContextByState('typing'),
+        after: {
+          1000: {
+            target: 'idle',
+            actions: ['soundEndTyping'],
+          },
+        },
+        on: {
+          typing: {
+            target: 'typing',
+            cond: 'isUserEvent',
+          },
+          check_solution: {
+            target: 'checking',
+            actions: ['soundEndTyping', 'soundStartChecking'],
+            cond: 'isUserEvent',
+          },
+        },
+      },
+      checking: {
+        entry: initContextByState('checking'),
+        after: {
+          30000: {
+            target: 'idle',
+            actions: ['soundFailureChecking'],
+          },
+        },
+        on: {
+          receive_check_result: {
+            target: 'idle',
+            actions: ['soundFinishedChecking'],
+            cond: 'isUserEvent',
+          },
+        },
+        baned: {},
       },
     },
-    history: {
-      type: 'final',
-      entry: initContextByState('history'),
-    },
-    idle: {
-      entry: initContextByState('idle'),
-      on: {
-        typing: {
-          target: 'typing',
-          actions: ['soundStartTyping'],
-          cond: 'isUserEvent',
-        },
-        user_check_solution: {
-          target: 'checking',
-          actions: ['soundStartChecking', 'userStartChecking'],
-        },
-        check_solution: {
-          target: 'checking',
-          actions: ['soundStartChecking'],
-          cond: 'isUserEvent',
-        },
-      },
-    },
-    typing: {
-      entry: initContextByState('typing'),
-      after: {
-        1000: {
-          target: 'idle',
-          actions: ['soundEndTyping'],
-        },
-      },
-      on: {
-        typing: {
-          target: 'typing',
-          cond: 'isUserEvent',
-        },
-        check_solution: {
-          target: 'checking',
-          actions: ['soundEndTyping', 'soundStartChecking'],
-          cond: 'isUserEvent',
-        },
-      },
-    },
-    checking: {
-      entry: initContextByState('checking'),
-      after: {
-        30000: {
-          target: 'idle',
-          actions: ['soundFailureChecking'],
-        },
-      },
-      on: {
-        receive_check_result: {
-          target: 'idle',
-          actions: ['soundFinishedChecking'],
-          cond: 'isUserEvent',
-        },
-      },
-    },
-    baned: {},
   },
-}, {
-  actions: {
-    userStartChecking: () => {},
-    soundFailureChecking: () => {},
-    soundFinishedChecking: () => {},
-    soundStartChecking: () => {},
-    soundStartTyping: () => {},
-    soundEndTyping: () => {},
+  {
+    actions: {
+      userStartChecking: () => {},
+      soundStartChecking: () => {
+        sound.play('check');
+      },
+      soundFailureChecking: () => {
+        sound.play('failure');
+      },
+      soundFinishedChecking: () => {
+        sound.stop();
+      },
+      soundStartTyping: () => {},
+      soundEndTyping: () => {},
+    },
+    guards: {
+      isUserEvent: (ctx, { userId }) => ctx.userId === userId,
+    },
   },
-  guards: {
-    isUserEvent: (ctx, { userId }) => ctx.userId === userId,
-  },
-});
+);

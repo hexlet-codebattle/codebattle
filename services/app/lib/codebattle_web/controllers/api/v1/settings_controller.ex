@@ -27,7 +27,7 @@ defmodule CodebattleWeb.Api.V1.SettingsController do
     |> Repo.update()
     |> case do
       {:ok, user} ->
-        json(conn, %{name: user.name, sound_settings: user.sound_settings, lang: user.lang})
+        json(conn, %{user: user})
 
       {:error, %Ecto.Changeset{} = changeset} ->
         conn
