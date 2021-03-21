@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { useSelector } from 'react-redux';
 import _ from 'lodash';
+import ReplayerControlButton from '../components/Toast/ReplayerControlButton';
 import ActionsAfterGame from '../components/Toast/ActionsAfterGame';
 import GameResult from './GameResult';
 import BackToHomeButton from '../components/Toast/BackToHomeButton';
@@ -22,7 +23,8 @@ const Notifications = () => {
 
   return (
     <>
-      {(isCurrentUserPlayer && current.matches('game_over'))
+      <ReplayerControlButton />
+      {(isCurrentUserPlayer && current.matches({ game: 'game_over' }))
         && (
           <>
             <GameResult />

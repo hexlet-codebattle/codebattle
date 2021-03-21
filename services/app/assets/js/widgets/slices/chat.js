@@ -3,13 +3,18 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
   users: [],
   messages: [],
+  history: {
+    users: [],
+    messages: [],
+  },
 };
 
 const chat = createSlice({
   name: 'chat',
   initialState,
   reducers: {
-    fetchChatData: (state, { payload }) => payload,
+    updateChatData: (state, { payload }) => ({ ...state, ...payload }),
+    updateChatDataHistory: (state, { payload }) => ({ ...state, history: payload }),
     userJoinedChat: (state, { payload: { users } }) => {
       state.users = users;
     },

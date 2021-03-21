@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import _ from 'lodash';
 import { useSelector } from 'react-redux';
 import {
@@ -7,8 +7,10 @@ import {
   currentUserIdSelector,
   executionOutputSelector,
 } from '../selectors';
+import GameContext from './GameContext';
 
 const OutputClicker = () => {
+  const { current: gameCurrent } = useContext(GameContext);
   const currentUserId = useSelector(currentUserIdSelector);
 
   const usePrevious = () => {
@@ -25,7 +27,7 @@ const OutputClicker = () => {
   const players = useSelector(gamePlayersSelector);
   const isCurrentUserPlayer = _.hasIn(players, currentUserId);
   const checkingResult = checking[currentUserId];
-  const executionOutput = useSelector(executionOutputSelector(currentUserId));
+  const executionOutput = useSelector(executionOutputSelector(gameCurrent, currentUserId));
 
   useEffect(() => {
     if (isCurrentUserPlayer && prevCheckingResult && !checkingResult) {

@@ -145,7 +145,7 @@ const GameActionButtons = ({
   const dispatch = useDispatch();
 
   const currentUserId = useSelector(state => selectors.currentUserIdSelector(state));
-  const currentEditorLangSlug = useSelector(state => selectors.userLangSelector(currentUserId)(state));
+  const currentEditorLangSlug = useSelector(state => selectors.userLangSelector(state)(currentUserId));
 
   const modalHide = () => {
     setModalShowing(false);

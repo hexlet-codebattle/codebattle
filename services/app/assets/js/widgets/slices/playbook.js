@@ -1,30 +1,49 @@
 import { createSlice } from '@reduxjs/toolkit';
-import PlaybookStatusCodes from '../config/playbookStatusCodes';
+import { addRecord } from '../lib/player';
+import { actions as editorActions } from './editor';
+import { actions as executionOutputActions } from './executionOutput';
 
 const initialState = {
   players: [],
   task: {},
   initRecords: [],
-  records: null,
-  stepCoefficient: 0,
-  status: PlaybookStatusCodes.none,
+  records: undefined,
 };
 
 const playbook = createSlice({
   name: 'playbook',
   initialState,
   reducers: {
-    loadStoredPlaybook: (state, { payload }) => (
-      { ...state, ...payload, status: PlaybookStatusCodes.stored }
+    loadPlaybook: (state, { payload }) => (
+      { ...state, ...payload }
     ),
-    loadActivePlaybook: (state, { payload: records }) => (
-      { ...state, records, status: PlaybookStatusCodes.active }
-    ),
-    updateRecords: (state, { payload: record }) => {
-      state.records.push(record);
+  },
+  extraReducers: {
+    [editorActions.updateEditorText]: (state, { payload }) => {
+      const { players, records } = addRecord({
+        ...state,
+        payload,
+        type: 'update_editor_data',
+      });
+
+      return {
+        ...state,
+        players,
+        records,
+      };
     },
-    setStepCoefficient: state => {
-      state.stepCoefficient = 1.0 / state.records.length;
+    [executionOutputActions.updateExecutionOutput]: (state, { payload }) => {
+      const { players, records } = addRecord({
+        ...state,
+        payload,
+        type: 'check_complete',
+      });
+
+      return {
+        ...state,
+        players,
+        records,
+      };
     },
   },
 });

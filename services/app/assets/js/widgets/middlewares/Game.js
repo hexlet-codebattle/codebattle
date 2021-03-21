@@ -6,8 +6,10 @@ import socket from '../../socket';
 import * as selectors from '../selectors';
 import userTypes from '../config/userTypes';
 import { actions, redirectToNewGame } from '../slices';
+import {
+ parse, getFinalState, getText, resolveDiffs,
+} from '../lib/player';
 
-import { resolveDiffs } from '../lib/player';
 import PlaybookStatusCodes from '../config/playbookStatusCodes';
 import GameStatusCodes from '../config/gameStatusCodes';
 
@@ -19,38 +21,31 @@ const isRecord = Gon.getAsset('is_record');
 const channelName = `game:${gameId}`;
 const channel = !isRecord ? socket.channel(channelName) : null;
 
-const initEditors = dispatch => (updateEditorTextAction, firstPlayer, secondPlayer) => {
-  dispatch(
-    updateEditorTextAction({
-      userId: firstPlayer.id,
-      editorText: firstPlayer.editorText,
-      langSlug: firstPlayer.editorLang,
-    }),
-  );
+const initEditors = dispatch => (playbookStatusCode, players) => {
+  const isHistory = playbookStatusCode === PlaybookStatusCodes.stored;
+  const updateEditorTextAction = isHistory
+    ? actions.updateEditorTextHistory
+    : actions.updateEditorText;
+  const updateExecutionOutputAction = isHistory
+    ? actions.updateExecutionOutputHistory
+    : actions.updateExecutionOutput;
 
-  dispatch(
-    actions.updateExecutionOutput({
-      ...firstPlayer.checkResult,
-      userId: firstPlayer.id,
-    }),
-  );
-
-  if (secondPlayer) {
+  players.forEach(player => {
     dispatch(
       updateEditorTextAction({
-        userId: secondPlayer.id,
-        editorText: secondPlayer.editorText,
-        langSlug: secondPlayer.editorLang,
+        userId: player.id,
+        editorText: player.editorText,
+        langSlug: player.editorLang,
       }),
     );
 
     dispatch(
-      actions.updateExecutionOutput({
-        ...secondPlayer.checkResult,
-        userId: secondPlayer.id,
+      updateExecutionOutputAction({
+        ...player.checkResult,
+        userId: player.id,
       }),
     );
-  }
+  });
 };
 
 const initStore = dispatch => ({
@@ -61,7 +56,6 @@ const initStore = dispatch => ({
   gameStatus,
   playbookStatusCode,
 }) => {
-  const isStored = playbookStatusCode === PlaybookStatusCodes.stored;
   const players = [{ ...firstPlayer, type: userTypes.firstPlayer }];
 
   if (secondPlayer) {
@@ -71,11 +65,7 @@ const initStore = dispatch => ({
   dispatch(actions.setLangs({ langs }));
   dispatch(actions.updateGamePlayers({ players }));
 
-  const updateEditorTextAction = isStored
-    ? actions.updateEditorTextPlaybook
-    : actions.updateEditorText;
-
-  initEditors(dispatch)(updateEditorTextAction, firstPlayer, secondPlayer);
+  initEditors(dispatch)(playbookStatusCode, players);
 
   if (task) {
     dispatch(actions.setGameTask({ task }));
@@ -86,8 +76,34 @@ const initStore = dispatch => ({
   }
 };
 
+const initStoredGame = dispatch => data => {
+  const gameStatus = {
+    status: GameStatusCodes.stored,
+    type: data.type,
+    tournamentId: data.tournamentId,
+  };
+
+  initStore(dispatch)({
+    firstPlayer: data.players[0],
+    secondPlayer: data.players[1],
+    task: data.task,
+    gameStatus,
+    playbookStatusCode: PlaybookStatusCodes.stored,
+  });
+
+  dispatch(actions.loadPlaybook(data));
+  dispatch(actions.updateChatData(data.chat));
+};
+
+const initPlaybook = dispatch => data => {
+  initEditors(dispatch)(PlaybookStatusCodes.stored, data.players);
+
+  dispatch(actions.loadPlaybook(data));
+};
+
 const initGameChannel = (dispatch, machine) => {
-  const onJoinFailure = () => {
+  const onJoinFailure = payload => {
+    machine.send('REJECT_LOADING_GAME', { payload });
     window.location.reload();
   };
 
@@ -127,16 +143,16 @@ const initGameChannel = (dispatch, machine) => {
     setTimeout(() => {
       switch (status) {
         case GameStatusCodes.waitingOpponent: {
-          machine.send('load_waiting_game');
+          machine.send('LOAD_WAITING_GAME');
           break;
         }
         case GameStatusCodes.playing: {
-          machine.send('load_active_game');
+          machine.send('LOAD_ACTIVE_GAME');
           break;
         }
         case GameStatusCodes.gameOver:
         case GameStatusCodes.timeout: {
-          machine.send('load_finished_game');
+          machine.send('LOAD_FINISHED_GAME');
           break;
         }
         default: {
@@ -155,7 +171,7 @@ const initGameChannel = (dispatch, machine) => {
 export const sendEditorText = (editorText, langSlug = null) => (dispatch, getState) => {
   const state = getState();
   const userId = selectors.currentUserIdSelector(state);
-  const currentLangSlug = langSlug || selectors.userLangSelector(userId)(state);
+  const currentLangSlug = langSlug || selectors.userLangSelector(state)(userId);
   dispatch(actions.updateEditorText({ userId, editorText, langSlug: currentLangSlug }));
   channel.push('editor:data', {
     editor_text: editorText,
@@ -351,36 +367,23 @@ export const activeGameReady = machine => dispatch => {
   });
 };
 
-export const storedGameReady = machine => dispatch => {
+const fetchPlaybook = (machine, init) => dispatch => {
   axios
     .get(`/api/v1/playbook/${gameId}`)
     .then(response => {
       const data = camelizeKeys(response.data);
-      const resolvedData = resolveDiffs(data);
+      const type = isRecord
+        ? PlaybookStatusCodes.stored
+        : PlaybookStatusCodes.active;
+      const resolvedData = resolveDiffs(data, type);
 
-      const gameStatus = {
-        status: GameStatusCodes.stored,
-        type: data.type,
-        tournamentId: data.tournamentId,
-      };
+      init(dispatch)(resolvedData);
 
-      initStore(dispatch)({
-        firstPlayer: resolvedData.players[0],
-        secondPlayer: resolvedData.players[1],
-        task: resolvedData.task,
-        gameStatus,
-        playbookStatusCode: PlaybookStatusCodes.stored,
-      });
-
-      dispatch(actions.loadStoredPlaybook(resolvedData));
-      dispatch(actions.fetchChatData(resolvedData.chat));
-
-      setTimeout(() => {
-        machine.send('load_stored_game', { payload: data });
-      }, 2000);
+      machine.send('LOAD_PLAYBOOK', { payload: resolvedData });
     })
     .catch(error => {
       dispatch(actions.setError(error));
+      machine.send('REJECT_LOADING_PLAYBOOK', { payload: error });
     });
 };
 
@@ -388,8 +391,12 @@ export const storedEditorReady = machine => () => {
   machine.send('load_stored_editor');
 };
 
+export const downloadPlaybook = machine => dispatch => {
+  dispatch(fetchPlaybook(machine, initPlaybook));
+};
+
 export const connectToGame = machine => dispatch => {
-  dispatch(isRecord ? storedGameReady(machine) : activeGameReady(machine));
+  dispatch(isRecord ? fetchPlaybook(machine, initStoredGame) : activeGameReady(machine));
 };
 
 export const connectToEditor = machine => dispatch => {
@@ -399,7 +406,7 @@ export const connectToEditor = machine => dispatch => {
 export const checkGameResult = () => (dispatch, getState) => {
   const state = getState();
   const currentUserId = selectors.currentUserIdSelector(state);
-  const currentUserEditor = selectors.editorDataSelector(currentUserId)(state);
+  const { text, lang } = selectors.getSolution(currentUserId)(state);
 
   // FIXME: create actions for this state transitions
   // FIXME: create statuses for solutionStatus
@@ -407,8 +414,8 @@ export const checkGameResult = () => (dispatch, getState) => {
   dispatch(actions.updateCheckStatus({ [currentUserId]: true }));
 
   const payload = {
-    editor_text: currentUserEditor.text,
-    lang_slug: currentUserEditor.currentLangSlug,
+    editor_text: text,
+    lang_slug: lang,
   };
 
   channel.push('check_result', payload);
@@ -416,3 +423,68 @@ export const checkGameResult = () => (dispatch, getState) => {
 
 export const compressEditorHeight = userId => dispatch => dispatch(actions.compressEditorHeight({ userId }));
 export const expandEditorHeight = userId => dispatch => dispatch(actions.expandEditorHeight({ userId }));
+
+/*
+ * Middleware actions for CodebattlePlayer
+*/
+
+export const setGameHistoryState = recordId => (dispatch, getState) => {
+  const state = getState();
+  const initRecords = selectors.playbookInitRecordsSelector(state);
+  const records = selectors.playbookRecordsSelector(state);
+
+  const { players: editorsState, chat: chatState } = getFinalState({
+    recordId,
+    records,
+    initRecords,
+  });
+
+  editorsState.forEach(player => {
+    dispatch(actions.updateEditorTextHistory({
+      userId: player.id,
+      editorText: player.editorText,
+      langSlug: player.editorLang,
+    }));
+
+    dispatch(actions.updateExecutionOutputHistory({
+      ...player.checkResult,
+      userId: player.id,
+    }));
+  });
+
+  dispatch(actions.updateChatDataHistory(chatState));
+};
+
+export const updateGameHistoryState = nextRecordId => (dispatch, getState) => {
+  const state = getState();
+  const records = selectors.playbookRecordsSelector(state);
+  const nextRecord = parse(records[nextRecordId]) || {};
+
+  switch (nextRecord.type) {
+    case 'update_editor_data': {
+      const editorText = selectors.editorTextHistorySelector(state, nextRecord);
+      const editorLang = selectors.editorLangHistorySelector(state, nextRecord);
+      const newEditorText = getText(editorText, nextRecord.diff);
+
+      dispatch(actions.updateEditorTextHistory({
+        userId: nextRecord.userId,
+        editorText: newEditorText,
+        langSlug: nextRecord.diff.nextLang || editorLang,
+      }));
+      break;
+    }
+    case 'check_complete':
+      dispatch(actions.updateExecutionOutputHistory({
+        ...nextRecord.checkResult,
+        userId: nextRecord.userId,
+      }));
+      break;
+    case 'chat_message':
+    case 'join_chat':
+    case 'leave_chat':
+      dispatch(actions.updateChatDataHistory(nextRecord.chat));
+      break;
+    default:
+      break;
+  }
+};

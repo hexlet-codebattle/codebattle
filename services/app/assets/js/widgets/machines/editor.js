@@ -1,5 +1,6 @@
 import { Machine, assign } from 'xstate';
 import sound from '../lib/sound';
+import editorUserTypes from '../config/editorUserTypes';
 
 // settings
 // type - user type for viewers current_user/opponent/player (request features) teammate, clanmate, friend
@@ -10,36 +11,6 @@ import sound from '../lib/sound';
 // giveUpBtnStatus - 'disabled', 'enabled'
 // langPickerStatus: 'enabled', 'disabled'
 // modeBtnsStatus: 'disabled', 'enabled'
-
-const settingsByType = {
-  current_user: {
-    editable: true,
-    showControlBtns: true,
-    checkBtnStatus: 'enabled',
-    resetBtnStatus: 'enabled',
-    giveUpBtnStatus: 'enabled',
-    langPickerStatus: 'enabled',
-    modeBtnsStatus: 'enabled',
-  },
-  opponent: {
-    editable: false,
-    showControlBtns: false,
-    checkBtnStatus: 'disabled',
-    resetBtnStatus: 'disabled',
-    langPickerStatus: 'disabled',
-    giveUpBtnStatus: 'disabled',
-    modeBtnsStatus: 'disabled',
-  },
-  player: {
-    editable: false,
-    showControlBtns: false,
-    checkBtnStatus: 'disabled',
-    resetBtnStatus: 'disabled',
-    langPickerStatus: 'disabled',
-    giveUpBtnStatus: 'disabled',
-    modeBtnsStatus: 'disabled',
-  },
-};
 
 const settingsByState = {
   idle: {},
@@ -60,7 +31,7 @@ const settingsByState = {
     modeBtnsStatus: 'disabled',
   },
   history: {
-    type: 'player',
+    type: editorUserTypes.player,
     editable: false,
     showControlBtns: false,
     checkBtnStatus: 'disabled',
@@ -71,109 +42,89 @@ const settingsByState = {
   },
 };
 
-export const initContext = ctx => ({
-  ...ctx,
-  ...settingsByType[ctx.type],
-});
+const initContextByState = state => assign(
+  ({ userId }) => ({ ...settingsByState[state], userId }),
+);
 
-export default Machine(
-  {
-    initial: 'loading',
-    states: {
-      loading: {
-        on: {
-          load_active_editor: 'idle',
-          load_stored_editor: 'history',
+export default Machine({
+  initial: 'loading',
+  states: {
+    loading: {
+      on: {
+        load_active_editor: 'idle',
+        load_stored_editor: 'history',
+      },
+    },
+    history: {
+      type: 'final',
+      entry: initContextByState('history'),
+    },
+    idle: {
+      entry: initContextByState('idle'),
+      on: {
+        typing: {
+          target: 'typing',
+          actions: ['soundStartTyping'],
+          cond: 'isUserEvent',
+        },
+        user_check_solution: {
+          target: 'checking',
+          actions: ['soundStartChecking', 'userStartChecking'],
+        },
+        check_solution: {
+          target: 'checking',
+          actions: ['soundStartChecking'],
+          cond: 'isUserEvent',
         },
       },
-      history: {
-        entry: 'init_history_context',
-      },
-      idle: {
-        entry: 'init_active_context',
-        on: {
-          typing: {
-            target: 'typing',
-            actions: ['sound_start_typing'],
-            cond: (ctx, event) => ctx.userId === event.userId,
-          },
-          user_check_solution: {
-            target: 'checking',
-            actions: ['sound_start_checking', 'user_start_checking'],
-          },
-          check_solution: {
-            target: 'checking',
-            actions: ['sound_start_checking'],
-            cond: (ctx, event) => ctx.userId === event.userId,
-          },
+    },
+    typing: {
+      entry: initContextByState('typing'),
+      after: {
+        1000: {
+          target: 'idle',
+          actions: ['soundEndTyping'],
         },
       },
-      typing: {
-        entry: 'assign_typing_context',
-        after: {
-          1000: {
-            target: 'idle',
-            actions: ['sound_end_typing'],
-          },
+      on: {
+        typing: {
+          target: 'typing',
+          cond: 'isUserEvent',
         },
-        on: {
-          typing: {
-            target: 'typing',
-            cond: (ctx, event) => ctx.userId === event.userId,
-          },
-          check_solution: {
-            target: 'checking',
-            actions: ['sound_end_typing', 'sound_start_checking'],
-            cond: (ctx, event) => ctx.userId === event.userId,
-          },
+        check_solution: {
+          target: 'checking',
+          actions: ['soundEndTyping', 'soundStartChecking'],
+          cond: 'isUserEvent',
         },
       },
-      checking: {
-        entry: 'assign_checking_context',
-        after: {
-          30000: {
-            target: 'idle',
-            actions: ['sound_failure_checking'],
-          },
+    },
+    checking: {
+      entry: initContextByState('checking'),
+      after: {
+        30000: {
+          target: 'idle',
+          actions: ['soundFailureChecking'],
         },
-        on: {
-          receive_check_result: {
-            target: 'idle',
-            actions: ['sound_finished_checking'],
-            cond: (ctx, event) => ctx.userId === event.userId,
-          },
+      },
+      on: {
+        receive_check_result: {
+          target: 'idle',
+          actions: ['soundFinishedChecking'],
+          cond: 'isUserEvent',
         },
       },
       baned: {},
     },
   },
-  {
-    actions: {
-      init_active_context: assign(ctx => ({
-        ...ctx,
-        ...settingsByType[ctx.type],
-      })),
-      init_history_context: assign(settingsByState.history),
-      assign_typing_context: assign(ctx => ({
-        ...settingsByType[ctx.type],
-        ...settingsByState.typing,
-      })),
-      assign_checking_context: assign(ctx => ({
-        ...settingsByType[ctx.type],
-        ...settingsByState.checking,
-      })),
-      user_start_checking: () => {},
-      sound_failure_checking: () => {
-        sound.play('failure');
-      },
-      sound_start_checking: () => {
-        sound.play('check');
-      },
-      sound_finished_checking: () => {
-        sound.stop();
-      },
-      sound_start_typing: () => {},
-      sound_end_typing: () => {},
-    },
+  actions: {
+    userStartChecking: () => { sound.play('check'); },
+    soundFailureChecking: () => { sound.play('failure'); },
+    soundFinishedChecking: () => { sound.stop(); },
+    soundStartChecking: () => {},
+    soundStartTyping: () => {},
+    soundEndTyping: () => {},
   },
-);
+  guards: {
+    isUserEvent: (ctx, { userId }) => ctx.userId === userId,
+  },
+});

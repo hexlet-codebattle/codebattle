@@ -1,13 +1,25 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-const initialState = {};
+const initialState = {
+  results: {},
+  historyResults: {},
+};
 
 const executionOutput = createSlice({
   name: 'executionOutput',
   initialState,
   reducers: {
-    updateExecutionOutput: (state, { payload: { userId, ...rest } }) => {
-      state[userId] = rest;
+    updateExecutionOutput: (
+      state,
+      { payload: { userId, ...rest } },
+    ) => {
+      state.results[userId] = rest;
+    },
+    updateExecutionOutputHistory: (
+      state,
+      { payload: { userId, ...rest } },
+    ) => {
+      state.historyResults[userId] = rest;
     },
   },
 });

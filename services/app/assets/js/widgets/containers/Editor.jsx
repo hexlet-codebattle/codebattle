@@ -74,7 +74,6 @@ class Editor extends PureComponent {
       keybindings: [this.monaco.KeyMod.CtrlCmd | this.monaco.KeyCode.Enter],
       run: () => {
         if (!this.options.readOnly) {
-          console.log(this.options);
           checkResult();
         }
       },

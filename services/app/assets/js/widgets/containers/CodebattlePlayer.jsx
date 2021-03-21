@@ -1,12 +1,20 @@
 import React, { Component } from 'react';
-import { Slider } from 'react-player-controls';
 import { connect } from 'react-redux';
+import { Slider } from 'react-player-controls';
 import { Direction } from 'react-player-controls/dist/constants';
-import * as selectors from '../selectors';
-import { actions } from '../slices';
-import { getText, getFinalState, parse } from '../lib/player';
 import CodebattleSliderBar from '../components/CodebattleSliderBar';
 import ControlPanel from '../components/CBPlayer/ControlPanel';
+import GameContext from './GameContext';
+import speedModes from '../config/speedModes';
+import { actions } from '../slices';
+import * as GameActions from '../middlewares/Game';
+import { replayerMachineStates } from '../machines/game';
+import { playbookRecordsSelector } from '../selectors';
+
+const playDelays = {
+  [speedModes.normal]: 100,
+  [speedModes.fast]: 50,
+};
 
 const isEqual = (float1, float2) => {
   const compareEpsilon = Number.EPSILON;
@@ -16,79 +24,79 @@ const isEqual = (float1, float2) => {
 class CodebattlePlayer extends Component {
   constructor(props) {
     super(props);
-    const defaultSpeed = 100;
-
-    props.setStepCoefficient();
 
     this.state = {
       isEnabled: true,
-      nextRecordId: 0,
-      delaySetGameState: 10,
-      isStop: true,
-      isHold: false,
-      isHoldPlay: false,
+      setGameStateDelay: 10,
       direction: Direction.HORIZONTAL,
-      value: 0,
-      defaultSpeed,
-      speed: defaultSpeed,
+      nextRecordId: 0,
+      // handlerPosition and intent have range from 0.0 to 1.0
+      handlerPosition: 0.0,
       lastIntent: 0,
     };
   }
 
-  onPlayClick = () => {
-    const { isStop, value } = this.state;
+  // ControlPanel API
 
-    if (value === 0) {
-      this.setGameState();
+  onPlayClick = () => {
+    const { handlerPosition } = this.state;
+    const { current: gameCurrent, send } = this.context;
+
+    if (gameCurrent.matches({ replayer: replayerMachineStates.ended })) {
+      this.setGameState(0.0);
+      send('PLAY');
+      this.play(0.0);
     }
 
-    if (isStop) {
-      this.start();
-      this.play();
+    if (gameCurrent.matches({ replayer: replayerMachineStates.paused })) {
+      send('PLAY');
+      this.play(handlerPosition);
     }
   }
 
   onPauseClick = () => {
-    this.stop();
+    const { send } = this.context;
+    send('PAUSE');
   }
 
+  onChangeSpeed = () => {
+    const { send } = this.context;
+    send('TOGGLE_SPEED_MODE');
+  }
+
+  // Slider callbacks
+
   onSliderHandleChange = value => {
-    this.setState({ value });
+    this.setState({ handlerPosition: value });
 
-    const { isHold, delaySetGameState } = this.state;
+    const { setGameStateDelay } = this.state;
+    const { current: gameCurrent } = this.context;
 
-    const run = () => {
-      const { value: currentValue } = this.state;
-      const isSync = isEqual(currentValue, value);
-      if (isSync) {
-        this.setGameState();
-      }
-    };
-
-    if (isHold) {
-      setTimeout(run, delaySetGameState);
+    if (gameCurrent.matches({ replayer: replayerMachineStates.holded })) {
+      setTimeout(this.runSetGameState, setGameStateDelay, value);
     }
   }
 
   onSliderHandleChangeStart = () => {
-    this.setState({ isHold: true });
-
-    const { isStop } = this.state;
-    if (!isStop) {
-      this.stop();
-      this.setState({ isHoldPlay: true });
-    }
+    const { send } = this.context;
+    send('HOLD');
   }
 
-  onSliderHandleChangeEnd = () => {
-    this.setState({ isHold: false });
+  onSliderHandleChangeEnd = handlerPosition => {
+    const { setError } = this.props;
+    const { current: gameCurrent, send } = this.context;
+    const { holding } = gameCurrent.context;
 
-    const { isHoldPlay } = this.state;
-
-    if (isHoldPlay) {
-      this.setState({ isHoldPlay: false });
-      this.start();
-      this.play();
+    switch (holding) {
+      case 'play':
+        send('RELEASE_AND_PLAY');
+        this.play(handlerPosition);
+        break;
+      case 'pause':
+        send('RELEASE_AND_PAUSE');
+        break;
+      default:
+        setError(new Error('Unexpected holding state [replayer machine]'));
     }
   }
 
@@ -100,146 +108,92 @@ class CodebattlePlayer extends Component {
     this.setState(() => ({ lastIntent: 0 }));
   }
 
-  setSpeed = newSpeed => {
-    this.setState({ speed: newSpeed });
+  // Helpers
+
+  setGameState = handlerPosition => {
+    const { setGameStateByRecordId, stepCoefficient, recordsCount } = this.props;
+    const { send } = this.context;
+
+    // Based on handler position we can calculate next record
+    const nextRecordId = Math.floor(handlerPosition / stepCoefficient);
+
+    setGameStateByRecordId(nextRecordId);
+
+    if (nextRecordId + 1 >= recordsCount) {
+      send('END');
+    }
+
+    this.setState({ handlerPosition, nextRecordId });
   }
 
-  setGameState = async () => {
-    const {
-      initRecords,
-      records,
-      stepCoefficient,
-      updateEditorTextPlaybook,
-      updateExecutionOutput,
-      fetchChatData,
-    } = this.props;
+  updateGameState = () => {
+    const { updateGameStateByRecordId, recordsCount } = this.props;
+    const { nextRecordId: recordId } = this.state;
+    const { send } = this.context;
+    const nextRecordId = recordId + 1;
 
-    const { value } = this.state;
+    updateGameStateByRecordId(recordId);
 
-    const resultId = Math.floor(value / stepCoefficient);
+    if (nextRecordId >= recordsCount) {
+      send('END');
+      this.setState({ handlerPosition: 1.0 });
+    }
 
-    const gameInitialState = {
-      players: initRecords,
-      chat: { users: [], messages: [] },
-      nextRecordId: 0,
-    };
-
-    const { players: editorsState, chat: chatState, nextRecordId } = getFinalState({
-      recordId: resultId,
-      records,
-      gameInitialState,
-    });
     this.setState({ nextRecordId });
-
-    editorsState.forEach(player => {
-      updateEditorTextPlaybook({
-        userId: player.id,
-        editorText: player.editorText,
-        langSlug: player.editorLang,
-      });
-
-      updateExecutionOutput({
-        ...player.checkResult,
-        userId: player.id,
-      });
-    });
-
-    fetchChatData(chatState);
   }
 
-  changeGameState = async () => {
-    const {
-      records,
-      updateEditorTextPlaybook,
-      updateExecutionOutput,
-      fetchChatData,
-      getEditorTextPlaybook,
-      getEditorLangPlaybook,
-    } = this.props;
-    const { nextRecordId } = this.state;
-    const nextRecord = parse(records[nextRecordId]) || {};
+  play = handlerPosition => {
+    const { current: gameCurrent } = this.context;
 
-    let editorText;
-    let editorLang;
-    let newEditorText;
-    switch (nextRecord.type) {
-      case 'update_editor_data':
-        editorText = getEditorTextPlaybook(nextRecord);
-        editorLang = getEditorLangPlaybook(nextRecord);
-        newEditorText = getText(editorText, nextRecord.diff);
-        updateEditorTextPlaybook({
-          userId: nextRecord.userId,
-          editorText: newEditorText,
-          langSlug: nextRecord.diff.nextLang || editorLang,
-        });
-        break;
-      case 'check_complete':
-        updateExecutionOutput({
-          ...nextRecord.checkResult,
-          userId: nextRecord.userId,
-        });
-        break;
-      case 'chat_message':
-      case 'join_chat':
-      case 'leave_chat':
-        fetchChatData(nextRecord.chat);
-        break;
-      default:
-        break;
+    const { speedMode } = gameCurrent.context;
+    const playDelay = playDelays[speedMode];
+
+    setTimeout(this.runPlay, playDelay, handlerPosition);
+  }
+
+  runPlay = handlerPosition => {
+    const { stepCoefficient } = this.props;
+    const { handlerPosition: currentHandlerPosition } = this.state;
+    const { current: gameCurrent } = this.context;
+
+    /*
+     * User can change handler position and replayer state.
+     * We need check them before setting next state.
+     */
+    const isSync = isEqual(currentHandlerPosition, handlerPosition);
+
+    if (gameCurrent.matches({ replayer: replayerMachineStates.playing }) && isSync) {
+      const offset = handlerPosition + stepCoefficient;
+      const newPosition = offset > 1 ? 1 : offset;
+
+      this.setState({ handlerPosition: newPosition });
+
+      this.updateGameState();
+      this.play(newPosition);
     }
+  };
 
-    this.setState({ nextRecordId: nextRecordId + 1 });
-  }
+  runSetGameState = handlerPosition => {
+    const { handlerPosition: currentHandlerPosition } = this.state;
 
-  play = () => {
-    const { value, speed } = this.state;
-
-    const run = () => {
-      const { isStop, value: currentValue } = this.state;
-      const { stepCoefficient } = this.props;
-      const isSync = isEqual(currentValue, value);
-
-      if (!isStop && isSync) {
-        const newValue = value + stepCoefficient;
-        this.setState({ value: newValue > 1 ? 1 : newValue });
-        this.changeGameState();
-        this.play();
-      }
-    };
-
-    if (value < 1) {
-      setTimeout(run, speed);
-    } else {
-      this.resetValue();
-      this.resetNextRecordId();
-      this.stop();
+    /*
+     * User can change handler position.
+     * We need check this before setting state.
+     */
+    const isSync = isEqual(currentHandlerPosition, handlerPosition);
+    if (isSync) {
+      this.setGameState(currentHandlerPosition);
     }
-  }
-
-  resetNextRecordId = () => {
-    this.setState({ nextRecordId: 0 });
-  }
-
-  resetValue = () => {
-    this.setState({ value: 0.0 });
-  }
-
-  start = () => {
-    this.setState({ isStop: false });
-  }
-
-  stop = () => {
-    this.setState({ isStop: true });
-  }
+  };
 
   render() {
-    const { records } = this.props;
+    const { current: gameCurrent } = this.context;
 
     const {
-      isEnabled, direction, value: currentValue, isHold, isStop, lastIntent, defaultSpeed,
+      isEnabled, direction, handlerPosition, lastIntent,
     } = this.state;
 
-    if (records == null) {
+    if (!gameCurrent.matches({ replayer: replayerMachineStates.on })) {
       return null;
     }
 
@@ -251,26 +205,26 @@ class CodebattlePlayer extends Component {
             <div className="border bg-light">
               <div className="row align-items-center justify-content-center">
                 <ControlPanel
+                  gameCurrent={gameCurrent}
                   onPlayClick={this.onPlayClick}
                   onPauseClick={this.onPauseClick}
-                  defaultSpeed={defaultSpeed}
-                  setSpeed={this.setSpeed}
-                  isStop={isStop}
+                  onChangeSpeed={this.onChangeSpeed}
                 >
                   <Slider
                     className="cb-slider col-md-7 ml-1"
+                    value={handlerPosition}
                     isEnabled={isEnabled}
                     direction={direction}
-                    onChange={value => this.onSliderHandleChange(value)}
+                    onChange={this.onSliderHandleChange}
                     onChangeStart={this.onSliderHandleChangeStart}
                     onChangeEnd={this.onSliderHandleChangeEnd}
-                    onIntent={intent => this.onSliderHandleChangeIntent(intent)}
+                    onIntent={this.onSliderHandleChangeIntent}
                     onIntentEnd={this.onSliderHandleChangeIntentEnd}
                   >
                     <CodebattleSliderBar
-                      value={currentValue}
+                      gameCurrent={gameCurrent}
+                      handlerPosition={handlerPosition}
                       lastIntent={lastIntent}
-                      isHold={isHold}
                     />
                   </Slider>
                 </ControlPanel>
@@ -283,19 +237,21 @@ class CodebattlePlayer extends Component {
   }
 }
 
-const mapStateToProps = state => ({
-  initRecords: selectors.playbookInitRecordsSelector(state),
-  records: selectors.playbookRecordsSelector(state),
-  stepCoefficient: selectors.stepCoefficientSelector(state),
-  getEditorTextPlaybook: ({ userId }) => selectors.editorTextPlaybookSelector(state, userId),
-  getEditorLangPlaybook: ({ userId }) => selectors.userLangSelector(userId)(state),
-});
+CodebattlePlayer.contextType = GameContext;
+
+const mapStateToProps = state => {
+  const recordsCount = playbookRecordsSelector(state).length;
+
+  return {
+    recordsCount,
+    stepCoefficient: 1.0 / recordsCount,
+  };
+};
 
 const mapDispatchToProps = {
-  setStepCoefficient: actions.setStepCoefficient,
-  updateEditorTextPlaybook: actions.updateEditorTextPlaybook,
-  updateExecutionOutput: actions.updateExecutionOutput,
-  fetchChatData: actions.fetchChatData,
+  setError: actions.setError,
+  setGameStateByRecordId: GameActions.setGameHistoryState,
+  updateGameStateByRecordId: GameActions.updateGameHistoryState,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(CodebattlePlayer);

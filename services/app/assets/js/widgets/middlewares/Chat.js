@@ -12,14 +12,20 @@ const channelName = tournamentId
 
 const channel = isRecord ? null : socket.channel(channelName);
 
-export const fetchState = () => dispatch => {
+const fetchState = () => dispatch => {
   const camelizeKeysAndDispatch = actionCreator => data => dispatch(actionCreator(camelizeKeys(data)));
 
-  channel.join().receive('ok', camelizeKeysAndDispatch(actions.fetchChatData));
+  channel.join().receive('ok', camelizeKeysAndDispatch(actions.updateChatData));
 
   channel.on('chat:user_joined', camelizeKeysAndDispatch(actions.userJoinedChat));
   channel.on('chat:user_left', camelizeKeysAndDispatch(actions.userLeftChat));
   channel.on('chat:new_msg', camelizeKeysAndDispatch(actions.newMessageChat));
+};
+
+export const connectToChat = () => dispatch => {
+  if (!isRecord) {
+    dispatch(fetchState());
+  }
 };
 
 export const addMessage = message => {

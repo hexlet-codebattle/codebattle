@@ -13,6 +13,7 @@ import InfoWidget from './InfoWidget';
 import userTypes from '../config/userTypes';
 import { actions } from '../slices';
 import * as GameActions from '../middlewares/Game';
+import * as ChatActions from '../middlewares/Chat';
 import {
   gamePlayersSelector,
   currentUserIdSelector,
@@ -21,7 +22,7 @@ import WaitingOpponentInfo from '../components/WaitingOpponentInfo';
 import CodebattlePlayer from './CodebattlePlayer';
 import FeedBackWidget from '../components/FeedBackWidget';
 import GamePreview from '../components/Game/GamePreview';
-import gameMachine from '../machines/game';
+import gameMachine, { replayerMachineStates } from '../machines/game';
 
 const steps = [
   {
@@ -144,8 +145,12 @@ const GameWidgetGuide = () => {
   );
 };
 
+const currentUser = Gon.getAsset('current_user');
+const players = Gon.getAsset('players');
+
 const RootContainer = ({
   connectToGame,
+  connectToChat,
   setCurrentUser,
 }) => {
   const [current, send, service] = useMachine(gameMachine, {
@@ -153,20 +158,19 @@ const RootContainer = ({
   });
 
   useEffect(() => {
-    const user = Gon.getAsset('current_user');
     // FIXME: maybe take from gon?
-    setCurrentUser({ user: { ...user, type: userTypes.spectator } });
+    setCurrentUser({ user: { ...currentUser, type: userTypes.spectator } });
     connectToGame(service);
+    connectToChat();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [connectToGame, setCurrentUser]);
+  }, []);
 
-  if (current.matches('waiting')) {
+  if (current.matches({ game: 'waiting' })) {
     const gameUrl = window.location.href;
     return <WaitingOpponentInfo gameUrl={gameUrl} />;
   }
 
-  const players = Gon.getAsset('players');
-  const isRenderPreview = current.matches('preview');
+  const isRenderPreview = current.matches({ game: 'preview' });
 
   const defaultPlayer = {
     name: 'John Doe', github_id: 35539033, lang: 'js', rating: '0',
@@ -196,7 +200,7 @@ const RootContainer = ({
                     <FeedBackWidget />
                   </div>
                 </div>
-                {current.matches('stored') && <CodebattlePlayer />}
+                {current.matches({ replayer: replayerMachineStates.on }) && <CodebattlePlayer />}
               </div>
             </GameContext.Provider>
           )}
@@ -214,6 +218,7 @@ RootContainer.propTypes = {
 const mapDispatchToProps = {
   setCurrentUser: actions.setCurrentUser,
   connectToGame: GameActions.connectToGame,
+  connectToChat: ChatActions.connectToChat,
 };
 
 export default connect(null, mapDispatchToProps)(RootContainer);

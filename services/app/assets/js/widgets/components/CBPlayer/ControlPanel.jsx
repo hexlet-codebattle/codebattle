@@ -1,59 +1,39 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { useDispatch } from 'react-redux';
 import { PlayerIcon } from 'react-player-controls';
 import cn from 'classnames';
-
-const modes = {
-  pause: 'pause',
-  playing: 'playing',
-};
-
-const speedModes = {
-  normal: 'normal',
-  fast: 'fast',
-};
+import { actions } from '../../slices';
+import speedModes from '../../config/speedModes';
+import { replayerMachineStates } from '../../machines/game';
 
 const ControlPanel = ({
-  onPlayClick, onPauseClick, defaultSpeed, setSpeed, isStop, children,
+  gameCurrent,
+  onPauseClick,
+  onPlayClick,
+  onChangeSpeed,
+  children,
 }) => {
-  const [mode, setMode] = useState(modes.pause);
-  const [speedMode, setSpeedMode] = useState(speedModes.normal);
+  const dispatch = useDispatch();
+
+  const { speedMode } = gameCurrent.context;
+  const isPaused = !gameCurrent.matches({ replayer: replayerMachineStates.playing });
 
   const speedControlClassNames = cn('btn btn-sm rounded ml-2 border', {
     'btn-light': speedMode === speedModes.normal,
     'btn-secondary': speedMode === speedModes.fast,
   });
 
-  useEffect(() => {
-    setMode(isStop ? modes.pause : modes.playing);
-  }, [isStop]);
-
   const onControlButtonClick = () => {
-    switch (mode) {
-      case modes.pause:
+    switch (true) {
+      case gameCurrent.matches({ replayer: replayerMachineStates.ended }):
+      case gameCurrent.matches({ replayer: replayerMachineStates.paused }):
         onPlayClick();
-        setMode(modes.playing);
         break;
-      case modes.playing:
+      case gameCurrent.matches({ replayer: replayerMachineStates.playing }):
         onPauseClick();
-        setMode(modes.pause);
         break;
       default:
-        break;
-    }
-  };
-
-  const onChangeSpeed = () => {
-    switch (speedMode) {
-      case speedModes.normal:
-        setSpeed(defaultSpeed / 2);
-        setSpeedMode(speedModes.fast);
-        break;
-      case speedModes.fast:
-        setSpeed(defaultSpeed);
-        setSpeedMode(speedModes.normal);
-        break;
-      default:
-        break;
+        dispatch(actions.setError(new Error('unexpected game state [players ControlPanel]')));
     }
   };
 
@@ -64,7 +44,7 @@ const ControlPanel = ({
         className="mr-4 btn btn-light"
         onClick={onControlButtonClick}
       >
-        {mode === modes.pause ? (
+        {isPaused ? (
           <PlayerIcon.Play width={32} height={32} />
         ) : (
           <PlayerIcon.Pause width={32} height={32} />

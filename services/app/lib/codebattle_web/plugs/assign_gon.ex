@@ -19,7 +19,8 @@ defmodule CodebattleWeb.Plugs.AssignGon do
 
     put_gon(conn,
       user_token: user_token,
-      current_user: prepare_user(current_user)
+      current_user: prepare_user(current_user),
+      rollbar_api_key: @rollbar_api_key
     )
   end
 
