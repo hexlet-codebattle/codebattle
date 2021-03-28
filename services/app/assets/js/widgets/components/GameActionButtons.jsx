@@ -61,6 +61,43 @@ const CheckResultButton = ({ onClick, status }) => {
   }
 };
 
+const ShowGuideButton = ({ onClick, status }) => {
+      const dispatch = useDispatch();
+
+      switch (status) {
+        case 'enabled':
+          return (
+            <button
+              type="button"
+              className="btn btn-outline-secondary btn-sm rounded mr-2"
+              onClick={onClick}
+              data-toggle="tooltip"
+              data-placement="top"
+              title="Show guide"
+            >
+              <FontAwesomeIcon icon="question" />
+            </button>
+      );
+        case 'disabled':
+          return (
+            <button
+              type="button"
+              className="btn btn-outline-secondary btn-sm rounded mr-2"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="Show guide"
+              disabled
+            >
+              <FontAwesomeIcon icon="question" />
+            </button>
+          );
+        default: {
+          dispatch(actions.setError(new Error('unnexpected show guide status')));
+          return null;
+        }
+      }
+};
+
 const GiveUpButton = ({ onClick, status }) => {
   const dispatch = useDispatch();
 
@@ -137,6 +174,7 @@ const ResetButton = ({ onClick, status }) => {
 
 const GameActionButtons = ({
   checkResult,
+  showGuideBtnStatus,
   checkBtnStatus,
   resetBtnStatus,
   giveUpBtnStatus,
@@ -153,6 +191,10 @@ const GameActionButtons = ({
 
   const modalShow = () => {
     setModalShowing(true);
+  };
+
+  const guideShow = () => {
+    dispatch(actions.updateGameUI({ isShowGuide: true }));
   };
 
   const handleGiveUp = () => {
@@ -178,6 +220,7 @@ const GameActionButtons = ({
 
   return (
     <div className="py-2 mr-2" role="toolbar">
+      <ShowGuideButton onClick={guideShow} status={showGuideBtnStatus} />
       <GiveUpButton onClick={modalShow} status={giveUpBtnStatus} />
       <ResetButton onClick={handleReset} status={resetBtnStatus} />
       <CheckResultButton onClick={checkResult} status={checkBtnStatus} />

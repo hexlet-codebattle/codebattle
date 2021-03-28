@@ -1,6 +1,6 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 import PropTypes from 'prop-types';
-import { connect, useSelector } from 'react-redux';
+import { connect, useSelector, useDispatch } from 'react-redux';
 import Gon from 'gon';
 import ReactJoyride, { STATUS } from 'react-joyride';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
@@ -17,6 +17,7 @@ import * as ChatActions from '../middlewares/Chat';
 import {
   gamePlayersSelector,
   currentUserIdSelector,
+  isShowGuideSelector,
 } from '../selectors';
 import WaitingOpponentInfo from '../components/WaitingOpponentInfo';
 import CodebattlePlayer from './CodebattlePlayer';
@@ -110,15 +111,17 @@ const steps = [
 ];
 
 const GameWidgetGuide = () => {
+  const dispatch = useDispatch();
   const { current } = useContext(GameContext);
-  const isActiveGame = current.matches('active');
+  const [isFirstTime, setIsFirstTime] = useState(window.localStorage.getItem('guideGamePassed') === null);
+  const isActiveGame = current.matches({ game: 'active' });
   const players = useSelector(state => gamePlayersSelector(state));
   const currentUser = useSelector(state => currentUserIdSelector(state));
+  const isShowGuide = useSelector(state => isShowGuideSelector(state));
   const isCurrentPlayer = _.has(players, currentUser);
-  const isFirstTime = window.localStorage.getItem('guideGamePassed') === null;
 
   return (
-    isFirstTime
+    (isShowGuide || isFirstTime)
     && isActiveGame
     && isCurrentPlayer && (
       <ReactJoyride
@@ -132,6 +135,8 @@ const GameWidgetGuide = () => {
         callback={({ status }) => {
           if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status)) {
             window.localStorage.setItem('guideGamePassed', 'true');
+            setIsFirstTime(false);
+            dispatch(actions.updateGameUI({ isShowGuide: false }));
           }
         }}
         styles={{
