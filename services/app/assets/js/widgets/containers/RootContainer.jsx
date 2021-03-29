@@ -1,10 +1,9 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { connect, useSelector } from 'react-redux';
+import { connect, useSelector, useDispatch } from 'react-redux';
 import Gon from 'gon';
 import ReactJoyride, { STATUS } from 'react-joyride';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
-import _ from 'lodash';
 import { useMachine } from '@xstate/react';
 
 import GameWidget from './GameWidget';
@@ -15,8 +14,7 @@ import { actions } from '../slices';
 import * as GameActions from '../middlewares/Game';
 import * as ChatActions from '../middlewares/Chat';
 import {
-  gamePlayersSelector,
-  currentUserIdSelector,
+  isShowGuideSelector,
 } from '../selectors';
 import WaitingOpponentInfo from '../components/WaitingOpponentInfo';
 import CodebattlePlayer from './CodebattlePlayer';
@@ -28,16 +26,14 @@ const steps = [
   {
     disableBeacon: true,
     disableOverlayClose: true,
-    title: 'Training game page',
+    title: 'Game page',
     content: (
       <>
         <div className="text-justify">
           This is a
-          <b> training game </b>
-          against a
-          <b> bot</b>
-          . But in the future you’ll be against the real
-          player. You need to solve the task
+          <b> game page</b>
+          .
+          You need to solve the task
           <b> first </b>
           and pass all tests
           <b> successfully</b>
@@ -110,17 +106,12 @@ const steps = [
 ];
 
 const GameWidgetGuide = () => {
-  const { current } = useContext(GameContext);
-  const isActiveGame = current.matches('active');
-  const players = useSelector(state => gamePlayersSelector(state));
-  const currentUser = useSelector(state => currentUserIdSelector(state));
-  const isCurrentPlayer = _.has(players, currentUser);
-  const isFirstTime = window.localStorage.getItem('guideGamePassed') === null;
+  const dispatch = useDispatch();
+  const [isFirstTime, setIsFirstTime] = useState(window.localStorage.getItem('guideGamePassed') === null);
+  const isShowGuide = useSelector(state => isShowGuideSelector(state));
 
   return (
-    isFirstTime
-    && isActiveGame
-    && isCurrentPlayer && (
+    (isShowGuide || isFirstTime) && (
       <ReactJoyride
         continuous
         run
@@ -132,6 +123,8 @@ const GameWidgetGuide = () => {
         callback={({ status }) => {
           if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status)) {
             window.localStorage.setItem('guideGamePassed', 'true');
+            setIsFirstTime(false);
+            dispatch(actions.updateGameUI({ isShowGuide: false }));
           }
         }}
         styles={{

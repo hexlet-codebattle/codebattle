@@ -10,6 +10,8 @@ import { replayerMachineStates } from '../machines/game';
 
 export const currentUserIdSelector = state => state.user.currentUserId;
 
+export const isShowGuideSelector = state => state.gameUI.isShowGuide;
+
 export const gamePlayersSelector = state => state.game.players;
 
 export const firstPlayerSelector = state => _.find(gamePlayersSelector(state), { type: userTypes.firstPlayer });

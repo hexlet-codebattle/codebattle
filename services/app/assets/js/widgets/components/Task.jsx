@@ -2,8 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import ReactMarkdown from 'react-markdown';
+import { useDispatch } from 'react-redux';
 import i18n from '../../i18n';
 import ContributorsList from './ContributorsList';
+import { actions } from '../slices';
 
 const renderTaskLink = name => {
   const link = `https://github.com/hexlet-codebattle/battle_asserts/tree/master/src/battle_asserts/issues/${name}.clj`;
@@ -14,6 +16,24 @@ const renderTaskLink = name => {
       link
     </a>
   );
+};
+const ShowGuideButton = () => {
+  const dispatch = useDispatch();
+  const guideShow = () => {
+    dispatch(actions.updateGameUI({ isShowGuide: true }));
+  };
+      return (
+        <button
+          type="button"
+          className="btn btn-outline-secondary btn-sm rounded mr-2 text-nowrap"
+          onClick={guideShow}
+          data-toggle="tooltip"
+          data-placement="top"
+          title="Show guide"
+        >
+          Show guide
+        </button>
+);
 };
 
 const renderGameLevelBadge = level => (
@@ -43,7 +63,7 @@ const Task = ({ task }) => {
               <span className="card-subtitle mb-2 text-muted">{task.name}</span>
             </div>
           </h6>
-
+          <ShowGuideButton />
         </div>
         <div className="d-flex align-items-stretch flex-column">
           <div className="card-text mb-0  h-100  overflow-auto">
