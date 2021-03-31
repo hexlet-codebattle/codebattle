@@ -211,6 +211,8 @@ export const usersListSelector = state => state.user.usersRatingPage;
 
 export const gameTypeSelector = state => state.game.gameStatus.type;
 
+export const userSettingsSelector = state => state.userSettings;
+
 export const isOpponentInGameSelector = state => {
   const findedUser = _.find(chatUsersSelector(state), {
     id: opponentPlayerSelector(state).id,
