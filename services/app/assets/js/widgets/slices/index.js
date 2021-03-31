@@ -9,6 +9,8 @@ import playbook, { actions as playbookActions } from './playbook';
 import game, { actions as gameActions } from './game';
 import lobby, { actions as lobbyActions } from './lobby';
 import user, { actions as userActions } from './user';
+import userSettings, { actions as userSettingActions } from './userSettings';
+
 import leaderboard, { actions as leaderboardActions } from './leaderboard';
 
 const setError = error => ({
@@ -31,6 +33,7 @@ export const actions = {
   ...userActions,
   ...lobbyActions,
   ...leaderboardActions,
+  ...userSettingActions,
 };
 
 export const redirectToNewGame = gameId => {
@@ -50,5 +53,6 @@ export default {
   storeLoaded,
   executionOutput,
   leaderboard,
+  userSettings,
 };
 export { makeEditorTextKey } from './editor';

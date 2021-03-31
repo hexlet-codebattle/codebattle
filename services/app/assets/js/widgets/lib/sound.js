@@ -24,18 +24,42 @@ const soundType = soundSettings.type;
 const defaultSoundLevel = soundSettings.level * 0.1;
 
 const sprite = audioConfigs[soundType]?.sprite;
-
-const audio = new Howl({
+const audio = () => new Howl({
   src: [audioPaths[soundType]],
   sprite,
   volume: defaultSoundLevel,
 });
 
-export default {
+const sound =  {
   play: (type, soundLevel) => {
+    const sound = audio();
     if (soundType === 'silent') return;
     Howler.volume(_.isUndefined(soundLevel) ? defaultSoundLevel : soundLevel);
-    audio.play(type);
+    sound.play(type);
   },
   stop: () => Howler.stop(),
 };
+
+  function createSound(slug) {
+    if (slug?.sprite?.win) {
+      return new Howl({
+        usingWebAudio: false,
+        src: [slug.src],
+        sprite: {
+          win: slug.sprite.win,
+        },
+      });
+    }
+    return new Howl({ src: [slug.src] });
+  }
+
+  function soundFactory() {
+    return {
+      dendy: createSound(dendy),
+      cs: createSound(cs),
+      standart: createSound(standart),
+      silent: null,
+    };
+  }
+  export const sounds = () => soundFactory();
+  export default sound;
