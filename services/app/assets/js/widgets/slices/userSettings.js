@@ -3,10 +3,14 @@ import axios from 'axios';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 const userSettings = Gon.getAsset('current_user');
-const csrfToken = document
-  .querySelector("meta[name='csrf-token']")
-  .getAttribute('content'); // validation token
+let csrfToken;
 
+if (process.browser) { // for testing purposes
+  csrfToken = document
+  .querySelector("meta[name='csrf-token']")
+  .getAttribute('content');
+}
+  console.log('env ', process.browser);
 export const updateUserSettings = createAsyncThunk(
   'userSettings/update',
   async (userData, { rejectWithValue }) => {
