@@ -30,12 +30,12 @@ const audio = () => new Howl({
   volume: defaultSoundLevel,
 });
 
-const sound =  {
+const sound = {
   play: (type, soundLevel) => {
-    const sound = audio();
+    const soundEffect = audio();
     if (soundType === 'silent') return;
     Howler.volume(_.isUndefined(soundLevel) ? defaultSoundLevel : soundLevel);
-    sound.play(type);
+    soundEffect.play(type);
   },
   stop: () => Howler.stop(),
 };

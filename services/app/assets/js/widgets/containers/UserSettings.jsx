@@ -1,26 +1,27 @@
-import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import _ from "lodash";
-import cn from "classnames";
-import { Formik, Form, Field, useField } from "formik";
-import * as Yup from "yup";
-import Slider from "calcite-react/Slider";
-import * as Icon from "react-feather";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import languages from "../config/languages";
-import Loading from "../components/Loading";
-import sound, { sounds } from "../lib/sound";
-import { userSettingsSelector } from "../selectors";
-import { updateUserSettings } from "../slices/userSettings";
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import _ from 'lodash';
+import cn from 'classnames';
+import {
+ Formik, Form, Field, useField,
+} from 'formik';
+import * as Yup from 'yup';
+import Slider from 'calcite-react/Slider';
+import * as Icon from 'react-feather';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import languages from '../config/languages';
+import Loading from '../components/Loading';
+import sound, { sounds } from '../lib/sound';
+import { userSettingsSelector } from '../selectors';
+import { updateUserSettings } from '../slices/userSettings';
 
-const PROVIDERS = ["github", "discord"];
+const PROVIDERS = ['github', 'discord'];
 const playingLanguages = Object.entries(languages);
 
-const renderLanguages = (langs) =>
-  langs.map(([slug, lang]) => (
-    <option key={slug} value={lang}>
-      {_.capitalize(lang)}
-    </option>
+const renderLanguages = langs => langs.map(([slug, lang]) => (
+  <option key={slug} value={lang}>
+    {_.capitalize(lang)}
+  </option>
   ));
 
 const BindSocialBtn = ({ provider, disabled, isBinded }) => {
@@ -30,10 +31,10 @@ const BindSocialBtn = ({ provider, disabled, isBinded }) => {
     <div className="d-flex mb-2 align-items-center">
       <FontAwesomeIcon
         className={cn({
-          "mr-2": true,
-          "text-muted": isBinded,
+          'mr-2': true,
+          'text-muted': isBinded,
         })}
-        icon={["fab", provider]}
+        icon={['fab', provider]}
       />
       {isBinded ? (
         <button
@@ -55,9 +56,9 @@ const BindSocialBtn = ({ provider, disabled, isBinded }) => {
   );
 };
 
-const renderSocialBtns = (currentUserSettings) => {
-  const getProviderName = (slug) => currentUserSettings[`${slug}_name`];
-  return PROVIDERS.map((provider) => {
+const renderSocialBtns = currentUserSettings => {
+  const getProviderName = slug => currentUserSettings[`${slug}_name`];
+  return PROVIDERS.map(provider => {
     const providerName = getProviderName(provider);
     return (
       <BindSocialBtn
@@ -71,54 +72,52 @@ const renderSocialBtns = (currentUserSettings) => {
 };
 
 const UserSettings = () => {
-  const [unprocessableError, setUnprocessableError] = useState("");
-  const [notification, setNotification] = useState("pending");
-  const [animation, setAnimation] = useState("done");
+  const [unprocessableError] = useState('');
+  const [notification, setNotification] = useState('pending');
+  const [animation, setAnimation] = useState('done');
 
   const settings = useSelector(userSettingsSelector);
   const dispatch = useDispatch();
 
   const notificationStyles = cn({
-    "alert-success": notification === "editSuccess",
-    "alert-error": notification === "editError",
+    'alert-success': notification === 'editSuccess',
+    'alert-error': notification === 'editError',
     alert: true,
-    fade: animation === "done",
+    fade: animation === 'done',
   });
 
   const handleUpdateUserSettings = async (values, formikHelpers) => {
     const resultAction = await dispatch(updateUserSettings(values));
     if (updateUserSettings.fulfilled.match(resultAction)) {
       // const userSettings = resultAction.payload;
-      setAnimation("progress");
-      setNotification("editSuccess");
+      setAnimation('progress');
+      setNotification('editSuccess');
+    } else if (resultAction.payload) {
+      setNotification(resultAction.payload.field_errors);
+      formikHelpers.setErrors(resultAction.payload.field_errors);
     } else {
-      if (resultAction.payload) {
-        setNotification(resultAction.payload.field_errors);
-        formikHelpers.setErrors(resultAction.payload.field_errors);
-      } else {
-        setNotification("editError");
-      }
+      setNotification('editError');
     }
-    await setTimeout(() => setAnimation("done"), 1600);
+    await setTimeout(() => setAnimation('done'), 1600);
   };
 
-  const getNotificationMessage = (status) => {
+  const getNotificationMessage = status => {
     let message;
     switch (status) {
-      case "editSuccess": {
-        message = "Your settings has been changed";
+      case 'editSuccess': {
+        message = 'Your settings has been changed';
         break;
       }
-      case "editError": {
-        message = "Oops, something has gone wrong";
+      case 'editError': {
+        message = 'Oops, something has gone wrong';
         break;
       }
-      case "pending": {
-        message = "pending";
+      case 'pending': {
+        message = 'pending';
         break;
       }
       default: {
-        message = "unfamiliar status";
+        message = 'unfamiliar status';
         break;
       }
     }
@@ -170,115 +169,117 @@ const UserSettings = () => {
         validationSchema={Yup.object({
           name: Yup.string()
             .required("Field can't be empty")
-            .min(3, "Should be at least 3 characters")
-            .max(16, "Should be 16 character(s) or less"),
+            .min(3, 'Should be at least 3 characters')
+            .max(16, 'Should be 16 character(s) or less'),
         })}
         onSubmit={handleUpdateUserSettings}
       >
-        {({ handleChange, dirty, isSubmitting, values }) => (
-          <Form className="">
-            <div className="container">
-              <div className="row form-group mb-3">
-                <div className="col-3">
-                  <TextInput
-                    className="col-5"
-                    label="Your name"
-                    name="name"
-                    type="text"
-                    placeholder="Enter your name"
-                  />
-                </div>
-                <div className="col-3">
-                  <p className="h6 pt-1">Your weapon</p>
-                  <Field
-                    as="select"
-                    aria-label="Programming language select"
-                    name="lang"
-                    className="custom-select"
-                  >
-                    {renderLanguages(playingLanguages)}
-                  </Field>
-                </div>
-              </div>
-            </div>
+        {({
+ handleChange, dirty, isSubmitting, values,
+}) => (
+  <Form className="">
+    <div className="container">
+      <div className="row form-group mb-3">
+        <div className="col-3">
+          <TextInput
+            className="col-5"
+            label="Your name"
+            name="name"
+            type="text"
+            placeholder="Enter your name"
+          />
+        </div>
+        <div className="col-3">
+          <p className="h6 pt-1">Your weapon</p>
+          <Field
+            as="select"
+            aria-label="Programming language select"
+            name="lang"
+            className="custom-select"
+          >
+            {renderLanguages(playingLanguages)}
+          </Field>
+        </div>
+      </div>
+    </div>
 
-            <div id="my-radio-group" className="h6 ml-2">
-              Select sound type
-            </div>
-            <div
-              role="group"
-              aria-labelledby="my-radio-group"
-              className="ml-3 mb-3"
-            >
-              <div>
-                <Field
-                  type="radio"
-                  name="sound_settings.type"
-                  value="dendy"
-                  className="mr-2"
-                  onClick={() => sounds().dendy.play("win")}
-                />
-                Dendy
-              </div>
-              <div>
-                <Field
-                  type="radio"
-                  name="sound_settings.type"
-                  value="cs"
-                  className="mr-2"
-                  onClick={() => sounds().cs.play("win")}
-                />
-                CS
-              </div>
-              <div>
-                <Field
-                  type="radio"
-                  name="sound_settings.type"
-                  value="standart"
-                  className="mr-2"
-                  onClick={() => sounds().standart.play("win")}
-                />
-                Standart
-              </div>
-              <div>
-                <Field
-                  type="radio"
-                  name="sound_settings.type"
-                  value="silent"
-                  className="mr-2"
-                />
-                Silent
-              </div>
-            </div>
+    <div id="my-radio-group" className="h6 ml-2">
+      Select sound type
+    </div>
+    <div
+      role="group"
+      aria-labelledby="my-radio-group"
+      className="ml-3 mb-3"
+    >
+      <div>
+        <Field
+          type="radio"
+          name="sound_settings.type"
+          value="dendy"
+          className="mr-2"
+          onClick={() => sounds().dendy.play('win')}
+        />
+        Dendy
+      </div>
+      <div>
+        <Field
+          type="radio"
+          name="sound_settings.type"
+          value="cs"
+          className="mr-2"
+          onClick={() => sounds().cs.play('win')}
+        />
+        CS
+      </div>
+      <div>
+        <Field
+          type="radio"
+          name="sound_settings.type"
+          value="standart"
+          className="mr-2"
+          onClick={() => sounds().standart.play('win')}
+        />
+        Standart
+      </div>
+      <div>
+        <Field
+          type="radio"
+          name="sound_settings.type"
+          value="silent"
+          className="mr-2"
+        />
+        Silent
+      </div>
+    </div>
 
-            <div className="h6 ml-2">Select sound level</div>
-            <div className="ml-2 mb-3 d-flex align-items-center">
-              <Icon.VolumeX />
-              <Field
-                component={Slider}
-                type="range"
-                min={0}
-                max={10}
-                name="sound_settings.level"
-                disabled={values.sound_settings.type === "silent"}
-                onInput={(e) => {
+    <div className="h6 ml-2">Select sound level</div>
+    <div className="ml-2 mb-3 d-flex align-items-center">
+      <Icon.VolumeX />
+      <Field
+        component={Slider}
+        type="range"
+        min={0}
+        max={10}
+        name="sound_settings.level"
+        disabled={values.sound_settings.type === 'silent'}
+        onInput={e => {
                   handleChange(e);
-                  sound.play("win", e.target.value * 0.1);
+                  sound.play('win', e.target.value * 0.1);
                 }}
-                className="ml-3 mr-3 form-control"
-              />
-              <Icon.Volume2 />
-            </div>
+        className="ml-3 mr-3 form-control"
+      />
+      <Icon.Volume2 />
+    </div>
 
-            <div className="d-flex justify-content-center">
-              <button
-                disabled={!dirty}
-                style={{ width: "120px" }}
-                type="submit"
-                className="btn py-1 btn-primary"
-              >
-                {!isSubmitting ? (
-                  "Save"
+    <div className="d-flex justify-content-center">
+      <button
+        disabled={!dirty}
+        style={{ width: '120px' }}
+        type="submit"
+        className="btn py-1 btn-primary"
+      >
+        {!isSubmitting ? (
+                  'Save'
                 ) : (
                   <div
                     className="spinner-border spinner-border-sm"
@@ -287,9 +288,9 @@ const UserSettings = () => {
                     <span className="sr-only">Loading...</span>
                   </div>
                 )}
-              </button>
-            </div>
-          </Form>
+      </button>
+    </div>
+  </Form>
         )}
       </Formik>
       <div className="mt-3 ml-2 d-flex flex-column">
