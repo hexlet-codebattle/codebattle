@@ -22,14 +22,12 @@ test('test rendering ContributorsList', async () => {
   const reducer = combineReducers(reducers);
 
   const preloadedState = {
-    name: '',
+    user: '',
   };
   const store = configureStore({
     reducer,
     preloadedState,
   });
-
-  const { getByText } = render(<Provider store={store}><ContributorsList /></Provider>);
-
-  expect(getByText(/This users have contributed to this task:/)).toBeInTheDocument();
+  const { findByText } = render(<Provider store={store}><ContributorsList /></Provider>);
+    expect(await findByText(/This users have contributed to this task:/)).toBeInTheDocument();
 });

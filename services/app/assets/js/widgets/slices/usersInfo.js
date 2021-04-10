@@ -7,7 +7,7 @@ const userInfo = createSlice({
   initialState,
   reducers: {
     setUserInfo: (state, { payload: { user } }) => {
-      state[user.id] = user;
+      if (user && user.id) state[user.id] = user;
     },
   },
 });
