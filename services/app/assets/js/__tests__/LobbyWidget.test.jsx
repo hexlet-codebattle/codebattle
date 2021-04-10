@@ -9,6 +9,27 @@ import { Provider } from 'react-redux';
 import reducers from '../widgets/slices';
 import LobbyWidget from '../widgets/containers/LobbyWidget';
 
+jest.mock('../widgets/containers/UserInfo', () => function UserInfo() {
+  return (
+    <div>
+      <ul className="list-inline">
+        <li className="list-inline-item">
+          Won:&nbsp;
+          <b className="text-success">1</b>
+        </li>
+        <li className="list-inline-item">
+          Lost:&nbsp;
+          <b className="text-danger">10</b>
+        </li>
+        <li className="list-inline-item">
+          Gave up:&nbsp;
+          <b className="text-warning">5</b>
+        </li>
+      </ul>
+    </div>
+  );
+});
+
 jest.mock(
   'gon',
   () => {
@@ -34,19 +55,27 @@ test('test rendering GameList', async () => {
       presenceList: [{}, {}],
       liveTournaments: [],
     },
+     user: {
+
+      usersInfo: {
+        1: { },
+        2: { },
+      },
+     },
   };
   const store = configureStore({
     reducer,
     preloadedState,
   });
 
-  const { getByText } = render(
+  const { getByText, getAllByText } = render(
     <Provider store={store}>
       <LobbyWidget />
     </Provider>,
   );
 
   expect(getByText(/Lobby/)).toBeInTheDocument();
+  expect(getAllByText(/Won:/)).toHaveLength(2);
   expect(getByText(/Online players: 2/)).toBeInTheDocument();
   expect(getByText(/Tournaments/)).toBeInTheDocument();
   expect(getByText(/Completed Games/)).toBeInTheDocument();

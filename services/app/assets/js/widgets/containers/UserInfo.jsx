@@ -82,15 +82,15 @@ const CustomOverlay = ({ user, overLayProps }) => {
 
   return (
     <Popover {...overLayProps} id="popover-user">
-      {!stats ? '' : <UserStats user={user} data={stats} />}
+      {!stats ? 'no stats' : <UserStats user={user} data={stats} />}
     </Popover>
   );
 };
 
-const UserInfo = ({ user, truncate = false }) => (
+const UserInfo = ({ user, truncate = false }) => {
   <OverlayTrigger placement="bottom" delay={100} overlay={props => <CustomOverlay user={user} overLayProps={props} />}>
     <div><UserName user={user} truncate={truncate} /></div>
-  </OverlayTrigger>
-);
+  </OverlayTrigger>;
+};
 
 export default UserInfo;

@@ -27,11 +27,11 @@ const getName = ({ id, name }, isCurrentUser) => {
 
 const UserName = ({ user, truncate }) => {
   const users = useSelector(usersInfoSelector);
-  const isCurrentUser = useSelector(state => currentUserIdSelector(state) === user.id);
+  // const isCurrentUser = useSelector(state => currentUserIdSelector(state) === user.id);
+  const isCurrentUser = useSelector(currentUserIdSelector);
   const dispatch = useDispatch();
 
   const userInfo = isValidUserInfo(user) ? user : users[user.id];
-
   if (!userInfo) {
     dispatch(loadUser)({ id: user.id });
     return null;
