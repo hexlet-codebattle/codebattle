@@ -23,6 +23,7 @@ import CodebattlePlayer from './CodebattlePlayer';
 import FeedBackWidget from '../components/FeedBackWidget';
 import GamePreview from '../components/Game/GamePreview';
 import gameMachine, { replayerMachineStates } from '../machines/game';
+import AnimationModal from '../components/AnimationModal';
 
 const steps = [
   {
@@ -195,6 +196,7 @@ const RootContainer = ({
                 <GameWidgetGuide />
                 <div className="container-fluid">
                   <div className="row no-gutter cb-game">
+                    <AnimationModal />
                     <InfoWidget />
                     <GameWidget />
                     <FeedBackWidget />
