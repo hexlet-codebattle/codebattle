@@ -23,11 +23,11 @@ const AnimationModal = () => {
           <Modal.Title>{titleModal}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-            <img
-              style={{ width: '400px', marginLeft: '30px', height: '300px' }}
-              src={gifs[gameResult]}
-              alt="animation"
-            />
+          <img
+            style={{ width: '400px', marginLeft: '30px', height: '300px' }}
+            src={gifs[gameResult]}
+            alt="animation"
+          />
         </Modal.Body>
         <Modal.Footer>
           <Button onClick={handleCloseModal} className="btn btn-secondary">
