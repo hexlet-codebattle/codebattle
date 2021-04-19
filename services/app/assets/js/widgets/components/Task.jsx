@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import ReactMarkdown from 'react-markdown';
@@ -48,6 +48,12 @@ const renderGameLevelBadge = level => (
 );
 
 const Task = ({ task }) => {
+  const [isUseRuLocale, setRu] = useState(false);
+  // TODO: remove russion text from string (create ru/en templates of basic description)
+  const description = isUseRuLocale
+        ? `${task.descriptionRu}\n\n**Примеры:**\n${task.examples}`
+        : `${task.descriptionEn}\n\n**Examples:**\n${task.examples}`;
+
   if (_.isEmpty(task)) {
     return null;
   }
@@ -63,12 +69,39 @@ const Task = ({ task }) => {
               <span className="card-subtitle mb-2 text-muted">{task.name}</span>
             </div>
           </h6>
+          {task.descriptionRu && !isUseRuLocale
+           && (
+           <button
+             type="button"
+             className="btn btn-outline-primary btn-sm rounded mr-2 text-nowrap"
+             onClick={() => setRu(true)}
+             data-toggle="tooltip"
+             data-placement="top"
+             title="RU"
+           >
+             RU
+           </button>
+           )}
+
+          {isUseRuLocale
+           && (
+           <button
+             type="button"
+             className="btn btn-outline-primary btn-sm rounded mr-2 text-nowrap"
+             onClick={() => setRu(false)}
+             data-toggle="tooltip"
+             data-placement="top"
+             title="EN"
+           >
+             EN
+           </button>
+           )}
           <ShowGuideButton />
         </div>
         <div className="d-flex align-items-stretch flex-column">
           <div className="card-text mb-0  h-100  overflow-auto">
             <ReactMarkdown
-              source={`${task.descriptionEn}\n\n${task.examples}`}
+              source={description}
               renderers={{
                 linkReference: reference => {
                   if (!reference.href) {
@@ -78,7 +111,7 @@ const Task = ({ task }) => {
                         {reference.children}
                         ]
                       </>
-);
+                    );
                   }
                   return <a href={reference.$ref}>{reference.children}</a>;
                 },
