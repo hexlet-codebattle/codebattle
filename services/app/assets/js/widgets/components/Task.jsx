@@ -49,6 +49,7 @@ const renderGameLevelBadge = level => (
 
 const Task = ({ task }) => {
   const [isUseRuLocale, setRu] = useState(false);
+  // TODO: remove russion text from string (create ru/en templates of basic description)
   const description = isUseRuLocale
         ? `${task.descriptionRu}\n\n**Примеры:**\n${task.examples}`
         : `${task.descriptionEn}\n\n**Examples:**\n${task.examples}`;
