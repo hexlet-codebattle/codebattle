@@ -48,14 +48,14 @@ const renderGameLevelBadge = level => (
 );
 
 const Task = ({ task }) => {
-  if (_.isEmpty(task)) {
-    return null;
-  }
-
   const [isUseRuLocale, setRu] = useState(false);
   const description = isUseRuLocale
         ? `${task.descriptionRu}\n\n**Примеры:**\n${task.examples}`
         : `${task.descriptionEn}\n\n**Examples:**\n${task.examples}`;
+
+  if (_.isEmpty(task)) {
+    return null;
+  }
 
   return (
     <div className="card h-100 border-0 shadow-sm">
@@ -80,7 +80,7 @@ const Task = ({ task }) => {
            >
              RU
            </button>
-)}
+           )}
 
           {isUseRuLocale
            && (
@@ -94,7 +94,7 @@ const Task = ({ task }) => {
            >
              EN
            </button>
-)}
+           )}
           <ShowGuideButton />
         </div>
         <div className="d-flex align-items-stretch flex-column">
@@ -110,7 +110,7 @@ const Task = ({ task }) => {
                         {reference.children}
                         ]
                       </>
-);
+                    );
                   }
                   return <a href={reference.$ref}>{reference.children}</a>;
                 },
