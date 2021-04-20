@@ -1,14 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
 import { gamePlayersSelector, currentUserIdSelector } from '../selectors';
 import gifs from '../config/gifs';
 
-const AnimationModal = () => {
+const AnimationModal = ({ setModalShowing, modalShowing }) => {
   const players = useSelector(state => gamePlayersSelector(state));
   const currentUserId = useSelector(state => currentUserIdSelector(state));
   const { gameResult } = players[currentUserId];
-  const [modalShowing, setModalShowing] = useState(true);
   const titleModal = gameResult === 'won'
       ? "Woohoo, you're Champion!!!!!"
       : "If you read this you've lost the game";

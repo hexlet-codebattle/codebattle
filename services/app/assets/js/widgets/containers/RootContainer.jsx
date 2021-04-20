@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect, useSelector } from 'react-redux';
 import Gon from 'gon';
@@ -14,10 +14,7 @@ import userTypes from '../config/userTypes';
 import { actions } from '../slices';
 import * as GameActions from '../middlewares/Game';
 import * as ChatActions from '../middlewares/Chat';
-import {
-  gamePlayersSelector,
-  currentUserIdSelector,
-} from '../selectors';
+import { gamePlayersSelector, currentUserIdSelector } from '../selectors';
 import WaitingOpponentInfo from '../components/WaitingOpponentInfo';
 import CodebattlePlayer from './CodebattlePlayer';
 import FeedBackWidget from '../components/FeedBackWidget';
@@ -93,7 +90,7 @@ const steps = [
     target: '[data-guide-id="LeftEditor"] [data-guide-id="CheckResultButton"]',
     title: 'Check button',
     content:
-    'Click the button to check your solution or use Ctrl+Enter/Cmd+Enter',
+      'Click the button to check your solution or use Ctrl+Enter/Cmd+Enter',
     locale: {
       skip: 'Skip guide',
     },
@@ -103,7 +100,7 @@ const steps = [
     target: '#leftOutput-tab',
     title: 'Result output',
     content:
-    'Here you will see the results of the tests or compilation errors after check',
+      'Here you will see the results of the tests or compilation errors after check',
     locale: {
       skip: 'Skip guide',
     },
@@ -149,13 +146,15 @@ const GameWidgetGuide = () => {
 const currentUser = Gon.getAsset('current_user');
 const players = Gon.getAsset('players');
 
-const RootContainer = ({
-  connectToGame,
-  connectToChat,
-  setCurrentUser,
-}) => {
+const RootContainer = ({ connectToGame, connectToChat, setCurrentUser }) => {
+  const [modalShowing, setModalShowing] = useState(false);
   const [current, send, service] = useMachine(gameMachine, {
     devTools: true,
+    actions: {
+      showModal: () => {
+        setModalShowing(true);
+      },
+    },
   });
 
   useEffect(() => {
@@ -174,7 +173,10 @@ const RootContainer = ({
   const isRenderPreview = current.matches({ game: 'preview' });
 
   const defaultPlayer = {
-    name: 'John Doe', github_id: 35539033, lang: 'js', rating: '0',
+    name: 'John Doe',
+    github_id: 35539033,
+    lang: 'js',
+    rating: '0',
   };
   const player1 = players[0] || defaultPlayer;
   const player2 = players[1] || defaultPlayer;
@@ -188,25 +190,30 @@ const RootContainer = ({
         }}
         classNames="preview"
       >
-        {isRenderPreview
-          ? (<GamePreview className="animate" player1={player1} player2={player2} />)
-          : (
-            <GameContext.Provider value={{ current, send, service }}>
-              <div className="x-outline-none">
-                <GameWidgetGuide />
-                <div className="container-fluid">
-                  <div className="row no-gutter cb-game">
-                    <AnimationModal />
-                    <InfoWidget />
-                    <GameWidget />
-                    <FeedBackWidget />
-                  </div>
+        {isRenderPreview ? (
+          <GamePreview
+            className="animate"
+            player1={player1}
+            player2={player2}
+          />
+        ) : (
+          <GameContext.Provider value={{ current, send, service }}>
+            <div className="x-outline-none">
+              <GameWidgetGuide />
+              <div className="container-fluid">
+                <div className="row no-gutter cb-game">
+                  <AnimationModal setModalShowing={setModalShowing} modalShowing={modalShowing} />
+                  <InfoWidget />
+                  <GameWidget />
+                  <FeedBackWidget />
                 </div>
-                {current.matches({ replayer: replayerMachineStates.on }) && <CodebattlePlayer />}
               </div>
-            </GameContext.Provider>
-          )}
-
+              {current.matches({ replayer: replayerMachineStates.on }) && (
+                <CodebattlePlayer />
+              )}
+            </div>
+          </GameContext.Provider>
+        )}
       </CSSTransition>
     </SwitchTransition>
   );
