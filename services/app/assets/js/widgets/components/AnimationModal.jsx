@@ -7,6 +7,13 @@ import gifs from '../config/gifs';
 const AnimationModal = ({ setModalShowing, modalShowing }) => {
   const players = useSelector(state => gamePlayersSelector(state));
   const currentUserId = useSelector(state => currentUserIdSelector(state));
+  // TODO: Сделать анимацию для спектаторов указать кто победил а кто проиграл
+  // Можно сделать в виде MortalCombat
+  // assigned to karen9999
+  // можно сделать random из нескольких чтобы добавить веселье
+  if (!players[currentUserId]) {
+    return null;
+  }
   const { gameResult } = players[currentUserId];
   const titleModal = gameResult === 'won'
       ? "Woohoo, you're Champion!!!!!"

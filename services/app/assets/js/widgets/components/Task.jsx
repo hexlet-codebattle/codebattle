@@ -138,7 +138,7 @@ const Task = ({ task }) => {
 Task.propTypes = {
   task: PropTypes.shape({
     name: PropTypes.string.isRequired,
-    descriptionEn: PropTypes.string.isRequired,
+    descriptionEn: PropTypes.string,
     examples: PropTypes.string.isRequired,
     level: PropTypes.string.isRequired,
   }).isRequired,
