@@ -145,7 +145,7 @@ const RootContainer = ({ connectToGame, connectToChat, setCurrentUser }) => {
   const [current, send, service] = useMachine(gameMachine, {
     devTools: true,
     actions: {
-      showModal: () => {
+      showGameResultModal: () => {
         setModalShowing(true);
       },
     },
