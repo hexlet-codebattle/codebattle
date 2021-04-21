@@ -104,7 +104,7 @@ const machine = Machine(
               },
               'user:give_up': {
                 target: 'game_over',
-                actions: ['soundGiveUp', 'showModal'],
+                actions: ['soundGiveUp', 'showGameResultModal'],
               },
               'game:timeout': {
                 target: 'game_over',
