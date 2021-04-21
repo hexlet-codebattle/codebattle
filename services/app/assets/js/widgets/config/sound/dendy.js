@@ -1,4 +1,5 @@
 export default {
+  src: '/assets/audio/audioSprites/dendySpritesAudio.wav',
   sprite: {
     check: [0, 40321.45124716553],
     failure: [42000, 4121.541950113382],

@@ -1,4 +1,5 @@
 export default {
+  src: '/assets/audio/audioSprites/csSpritesAudio.wav',
   sprite: {
     check: [0, 1500.5895691609978],
     failure: [3000, 1983.2653061224494],

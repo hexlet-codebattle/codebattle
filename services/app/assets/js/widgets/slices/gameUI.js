@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   showToastActionsAfterGame: false,
+  isShowGuide: false,
 };
 
 const gameUI = createSlice({
