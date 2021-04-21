@@ -96,6 +96,7 @@ const machine = Machine(
               'user:check_complete': {
                 target: 'game_over',
                 cond: (_ctx, { payload }) => payload.status === 'game_over',
+                actions: ['showGameResultModal'],
               },
               'user:won': {
                 target: 'game_over',
@@ -103,7 +104,7 @@ const machine = Machine(
               },
               'user:give_up': {
                 target: 'game_over',
-                actions: ['soundGiveUp'],
+                actions: ['soundGiveUp', 'showModal'],
               },
               'game:timeout': {
                 target: 'game_over',
