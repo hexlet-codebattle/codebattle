@@ -14,7 +14,7 @@ const CheckResultButton = ({ onClick, status }) => {
       return (
         <button
           type="button"
-          className="btn btn-outline-success btn-check btn-sm rounded"
+          className="btn btn-outline-success btn-check btn-sm"
           data-guide-id="CheckResultButton"
           onClick={onClick}
           data-toggle="tooltip"
@@ -28,7 +28,7 @@ const CheckResultButton = ({ onClick, status }) => {
       return (
         <button
           type="button"
-          className="btn btn-outline-success btn-check btn-sm rounded"
+          className="btn btn-outline-success btn-check btn-sm"
           data-guide-id="CheckResultButton"
           onClick={onClick}
           data-toggle="tooltip"
@@ -43,7 +43,7 @@ const CheckResultButton = ({ onClick, status }) => {
       return (
         <button
           type="button"
-          className="btn btn-outline-success btn-check btn-sm rounded"
+          className="btn btn-outline-success btn-check btn-sm"
           data-guide-id="CheckResultButton"
           onClick={onClick}
           data-toggle="tooltip"
@@ -69,7 +69,7 @@ const GiveUpButton = ({ onClick, status }) => {
       return (
         <button
           type="button"
-          className="btn btn-outline-danger btn-sm rounded mr-2"
+          className="btn btn-outline-danger btn-sm mr-2"
           onClick={onClick}
           data-toggle="tooltip"
           data-placement="top"
@@ -82,7 +82,7 @@ const GiveUpButton = ({ onClick, status }) => {
       return (
         <button
           type="button"
-          className="btn btn-outline-danger btn-sm rounded mr-2"
+          className="btn btn-outline-danger btn-sm mr-2"
           data-toggle="tooltip"
           data-placement="top"
           title="Give Up"
@@ -106,7 +106,7 @@ const ResetButton = ({ onClick, status }) => {
       return (
         <button
           type="button"
-          className="btn btn-outline-secondary btn-sm rounded mr-2"
+          className="btn btn-outline-secondary btn-sm mr-2"
           onClick={onClick}
           data-toggle="tooltip"
           data-placement="top"
@@ -119,7 +119,7 @@ const ResetButton = ({ onClick, status }) => {
       return (
         <button
           type="button"
-          className="btn btn-outline-secondary btn-sm rounded mr-2"
+          className="btn btn-outline-secondary btn-sm mr-2"
           data-toggle="tooltip"
           data-placement="top"
           title="Reset editor"

@@ -26,6 +26,7 @@ const LanguagePicker = ({ status, editor: { currentLangSlug } }) => {
       height: '33px',
       minHeight: '31px',
       minWidth: '210px',
+      borderRadius: 'unset',
       backgroundColor: 'hsl(0, 0%, 100%)',
     }),
     indicatorsContainer: provided => ({

@@ -13,7 +13,7 @@ const VimModeButton = ({ player }) => {
 
   const mode = isVimMode ? EditorModes.default : EditorModes.vim;
 
-  const classNames = cn('btn btn-sm rounded mr-2', {
+  const classNames = cn('btn btn-sm mr-2', {
     'btn-light': !isVimMode,
     'btn-secondary': isVimMode,
   });

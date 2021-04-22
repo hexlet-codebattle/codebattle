@@ -131,6 +131,9 @@ const GameWidgetGuide = () => {
             primaryColor: '#0275d8',
             zIndex: 1000,
           },
+          buttonNext: {
+            borderRadius: 'unset',
+          },
         }}
       />
     )
