@@ -25,7 +25,7 @@ const ShowGuideButton = () => {
       return (
         <button
           type="button"
-          className="btn btn-outline-secondary btn-sm rounded mr-2 text-nowrap"
+          className="btn btn-outline-secondary btn-sm mr-2 text-nowrap"
           onClick={guideShow}
           data-toggle="tooltip"
           data-placement="top"
@@ -73,7 +73,7 @@ const Task = ({ task }) => {
            && (
            <button
              type="button"
-             className="btn btn-outline-primary btn-sm rounded mr-2 text-nowrap"
+             className="btn btn-outline-primary btn-sm mr-2 text-nowrap"
              onClick={() => setRu(true)}
              data-toggle="tooltip"
              data-placement="top"
@@ -87,7 +87,7 @@ const Task = ({ task }) => {
            && (
            <button
              type="button"
-             className="btn btn-outline-primary btn-sm rounded mr-2 text-nowrap"
+             className="btn btn-outline-primary btn-sm mr-2 text-nowrap"
              onClick={() => setRu(false)}
              data-toggle="tooltip"
              data-placement="top"

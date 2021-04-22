@@ -14,7 +14,7 @@ const DakModeButton = ({ player }) => {
 
   const mode = isDarkMode ? EditorThemes.light : EditorThemes.dark;
 
-  const classNames = cn('btn btn-sm rounded mr-2', {
+  const classNames = cn('btn btn-sm mr-2', {
     'btn-light': isDarkMode,
     'btn-secondary': !isDarkMode,
   });
