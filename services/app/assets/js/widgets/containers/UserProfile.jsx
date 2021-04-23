@@ -1,12 +1,12 @@
-import { camelizeKeys } from 'humps';
-import { useDispatch } from 'react-redux';
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { camelizeKeys } from "humps";
+import { useDispatch } from "react-redux";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
-import { actions } from '../slices';
-import CompletedGames from '../components/Game/CompletedGames';
-import Heatmap from './Heatmap';
-import Loading from '../components/Loading';
+import { actions } from "../slices";
+import CompletedGames from "../components/Game/CompletedGames";
+import Heatmap from "./Heatmap";
+import Loading from "../components/Loading";
 
 const getUserAvatarUrl = ({ githubId, discordId, discordAvatar }) => {
   if (githubId) {
@@ -17,7 +17,7 @@ const getUserAvatarUrl = ({ githubId, discordId, discordAvatar }) => {
     return `https://cdn.discordapp.com/avatars/${discordId}/${discordAvatar}`;
   }
 
-  return 'https://avatars0.githubusercontent.com/u/35539033';
+  return "https://avatars0.githubusercontent.com/u/35539033";
 };
 
 const UserProfile = () => {
@@ -26,29 +26,26 @@ const UserProfile = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const userId = window.location.pathname.split('/').pop();
+    const userId = window.location.pathname.split("/").pop();
 
     axios
       .get(`/api/v1/user/${userId}/stats`)
-      .then(response => {
+      .then((response) => {
         setStats(camelizeKeys(response.data));
       })
-      .catch(error => {
+      .catch((error) => {
         dispatch(actions.setError(error));
       });
   }, [dispatch]);
 
-  const renderAchievemnt = achievement => {
-    if (achievement.includes('win_games_with')) {
-      const langs = achievement
-        .split('?')
-        .pop()
-        .split('_');
+  const renderAchievemnt = (achievement) => {
+    if (achievement.includes("win_games_with")) {
+      const langs = achievement.split("?").pop().split("_");
 
       return (
         <div className="cb-polyglot" title={achievement}>
           <div className="d-flex h-75 flex-wrap align-items-center justify-content-around">
-            {langs.map(lang => (
+            {langs.map((lang) => (
               <img
                 src={`/assets/images/achievements/${lang}.png`}
                 alt={lang}
@@ -92,10 +89,15 @@ const UserProfile = () => {
             </div>
             <h1 className="mt-5 mb-0">
               {stats.user.name}
-              {stats.user.githubId && (
-                <a className="text-muted" href={`https://github.com/${stats.user.githubName}`}>
+              {stats.user.githubId && stats.user.githubName ? (
+                <a
+                  className="text-muted"
+                  href={`https://github.com/${stats.user.githubName}`}
+                >
                   <span className="fab fa-github pl-3" />
                 </a>
+              ) : (
+                ""
               )}
             </h1>
             <h2 className="mt-1 mb-0">{`Lang: ${stats.user.lang}`}</h2>
@@ -120,7 +122,9 @@ const UserProfile = () => {
             <p className="lead">won::lost::gave up</p>
           </div>
           <div className="col-12 col-md-4 col-lg-2 text-center">
-            <div className="h1">{stats.stats.won + stats.stats.lost + stats.stats.gaveUp}</div>
+            <div className="h1">
+              {stats.stats.won + stats.stats.lost + stats.stats.gaveUp}
+            </div>
             <p className="lead">games_played</p>
           </div>
         </div>
@@ -130,7 +134,7 @@ const UserProfile = () => {
               <>
                 <h2 className="mt-1 mb-0">Achievements</h2>
                 <div className="d-flex justify-content-center cb-profile mt-4">
-                  {stats.user.achievements.map(achievement => (
+                  {stats.user.achievements.map((achievement) => (
                     <div key={achievement}>{renderAchievemnt(achievement)}</div>
                   ))}
                 </div>
