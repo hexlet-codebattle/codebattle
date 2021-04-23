@@ -1,12 +1,12 @@
-import { camelizeKeys } from "humps";
-import { useDispatch } from "react-redux";
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { camelizeKeys } from 'humps';
+import { useDispatch } from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
-import { actions } from "../slices";
-import CompletedGames from "../components/Game/CompletedGames";
-import Heatmap from "./Heatmap";
-import Loading from "../components/Loading";
+import { actions } from '../slices';
+import CompletedGames from '../components/Game/CompletedGames';
+import Heatmap from './Heatmap';
+import Loading from '../components/Loading';
 
 const getUserAvatarUrl = ({ githubId, discordId, discordAvatar }) => {
   if (githubId) {
@@ -17,7 +17,7 @@ const getUserAvatarUrl = ({ githubId, discordId, discordAvatar }) => {
     return `https://cdn.discordapp.com/avatars/${discordId}/${discordAvatar}`;
   }
 
-  return "https://avatars0.githubusercontent.com/u/35539033";
+  return 'https://avatars0.githubusercontent.com/u/35539033';
 };
 
 const UserProfile = () => {
@@ -26,7 +26,7 @@ const UserProfile = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const userId = window.location.pathname.split("/").pop();
+    const userId = window.location.pathname.split('/').pop();
 
     axios
       .get(`/api/v1/user/${userId}/stats`)
