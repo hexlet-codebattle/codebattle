@@ -89,15 +89,13 @@ const UserProfile = () => {
             </div>
             <h1 className="mt-5 mb-0">
               {stats.user.name}
-              {stats.user.githubId && stats.user.githubName ? (
+              {stats.user.githubName && (
                 <a
                   className="text-muted"
                   href={`https://github.com/${stats.user.githubName}`}
                 >
                   <span className="fab fa-github pl-3" />
                 </a>
-              ) : (
-                ''
               )}
             </h1>
             <h2 className="mt-1 mb-0">{`Lang: ${stats.user.lang}`}</h2>
