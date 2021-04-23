@@ -30,22 +30,22 @@ const UserProfile = () => {
 
     axios
       .get(`/api/v1/user/${userId}/stats`)
-      .then((response) => {
+      .then(response => {
         setStats(camelizeKeys(response.data));
       })
-      .catch((error) => {
+      .catch(error => {
         dispatch(actions.setError(error));
       });
   }, [dispatch]);
 
-  const renderAchievemnt = (achievement) => {
-    if (achievement.includes("win_games_with")) {
-      const langs = achievement.split("?").pop().split("_");
+  const renderAchievemnt = achievement => {
+    if (achievement.includes('win_games_with')) {
+      const langs = achievement.split('?').pop().split('_');
 
       return (
         <div className="cb-polyglot" title={achievement}>
           <div className="d-flex h-75 flex-wrap align-items-center justify-content-around">
-            {langs.map((lang) => (
+            {langs.map(lang => (
               <img
                 src={`/assets/images/achievements/${lang}.png`}
                 alt={lang}
@@ -97,7 +97,7 @@ const UserProfile = () => {
                   <span className="fab fa-github pl-3" />
                 </a>
               ) : (
-                ""
+                ''
               )}
             </h1>
             <h2 className="mt-1 mb-0">{`Lang: ${stats.user.lang}`}</h2>
@@ -134,7 +134,7 @@ const UserProfile = () => {
               <>
                 <h2 className="mt-1 mb-0">Achievements</h2>
                 <div className="d-flex justify-content-center cb-profile mt-4">
-                  {stats.user.achievements.map((achievement) => (
+                  {stats.user.achievements.map(achievement => (
                     <div key={achievement}>{renderAchievemnt(achievement)}</div>
                   ))}
                 </div>
