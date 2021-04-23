@@ -40,10 +40,7 @@ const UserProfile = () => {
 
   const renderAchievemnt = achievement => {
     if (achievement.includes('win_games_with')) {
-      const langs = achievement
-        .split('?')
-        .pop()
-        .split('_');
+      const langs = achievement.split('?').pop().split('_');
 
       return (
         <div className="cb-polyglot" title={achievement}>
@@ -92,8 +89,11 @@ const UserProfile = () => {
             </div>
             <h1 className="mt-5 mb-0">
               {stats.user.name}
-              {stats.user.githubId && (
-                <a className="text-muted" href={`https://github.com/${stats.user.githubName}`}>
+              {stats.user.githubName && (
+                <a
+                  className="text-muted"
+                  href={`https://github.com/${stats.user.githubName}`}
+                >
                   <span className="fab fa-github pl-3" />
                 </a>
               )}
@@ -120,7 +120,9 @@ const UserProfile = () => {
             <p className="lead">won::lost::gave up</p>
           </div>
           <div className="col-12 col-md-4 col-lg-2 text-center">
-            <div className="h1">{stats.stats.won + stats.stats.lost + stats.stats.gaveUp}</div>
+            <div className="h1">
+              {stats.stats.won + stats.stats.lost + stats.stats.gaveUp}
+            </div>
             <p className="lead">games_played</p>
           </div>
         </div>
