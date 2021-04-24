@@ -1,0 +1,14 @@
+#lang-dropdown {
+  &-toggle, &-menu {
+    min-width: 70px;
+  }
+
+  &-menu {
+    .active, :active, :focus {
+      background-color: #538aaa;
+    }
+    :hover:not(.active) {
+      background-color: #f1f1f1;
+    }
+  }
+}

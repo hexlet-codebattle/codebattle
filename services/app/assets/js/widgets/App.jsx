@@ -18,15 +18,15 @@ import UserProfile from './containers/UserProfile';
 import UserSettings from './containers/UserSettings';
 import Registration from './containers/Registration';
 
-const { editorUI: editorUIReducer, ...otherReducers } = reducers;
+const { UIState: UIStateReducer, ...otherReducers } = reducers;
 
-const editorUIPersistConfig = {
-  key: 'editorUI',
+const UIStatePersistConfig = {
+  key: 'UIState',
   storage,
 };
 
 const rootReducer = combineReducers({
-  editorUI: persistReducer(editorUIPersistConfig, editorUIReducer),
+  UIState: persistReducer(UIStatePersistConfig, UIStateReducer),
   ...otherReducers,
 });
 
