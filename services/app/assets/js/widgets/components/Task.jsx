@@ -166,11 +166,18 @@ const Task = ({ task, currentUserId }) => {
 
 Task.propTypes = {
   task: PropTypes.shape({
+    id: PropTypes.number.isRequired,
     name: PropTypes.string.isRequired,
-    descriptionEn: PropTypes.string,
-    examples: PropTypes.string.isRequired,
     level: PropTypes.string.isRequired,
+    examples: PropTypes.string.isRequired,
+    descriptionEn: PropTypes.string,
+    descriptionRu: PropTypes.string,
+    tags: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.oneOf([null]),
+    ]),
   }).isRequired,
+  currentUserId: PropTypes.number.isRequired,
 };
 
 export default Task;
