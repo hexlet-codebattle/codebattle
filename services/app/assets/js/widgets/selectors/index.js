@@ -186,21 +186,21 @@ export const currentChatUserSelector = state => {
 
 export const editorsModeSelector = currentUserId => state => {
   if (_.hasIn(gamePlayersSelector(state), currentUserId)) {
-    return state.UIState.editorMode;
+    return state.gameUI.editorMode;
   }
   return EditorModes.default;
 };
 
 export const editorsThemeSelector = currentUserId => state => {
   if (_.hasIn(gamePlayersSelector(state), currentUserId)) {
-    return state.UIState.editorTheme;
+    return state.gameUI.editorTheme;
   }
   return EditorThemes.dark;
 };
 
 export const taskDescriptionLanguageSelector = currentUserId => state => {
   if (_.hasIn(gamePlayersSelector(state), currentUserId)) {
-    return state.UIState.taskDescriptionLanguage;
+    return state.gameUI.taskDescriptionLanguage;
   }
   return TaskDescriptionLanguages.default;
 };

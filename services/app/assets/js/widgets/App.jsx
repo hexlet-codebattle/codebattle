@@ -12,21 +12,23 @@ import rollbarMiddleware from 'rollbar-redux-middleware';
 import rollbar from './lib/rollbar';
 import RootContainer from './containers/RootContainer';
 import reducers from './slices';
+import { persistWhitelist as gameUIWhitelist } from './slices/gameUI';
 import LobbyWidget from './containers/LobbyWidget';
 import RatingList from './containers/RatingList';
 import UserProfile from './containers/UserProfile';
 import UserSettings from './containers/UserSettings';
 import Registration from './containers/Registration';
 
-const { UIState: UIStateReducer, ...otherReducers } = reducers;
+const { gameUI: gameUIReducer, ...otherReducers } = reducers;
 
-const UIStatePersistConfig = {
-  key: 'UIState',
+const gameUIPersistConfig = {
+  key: 'gameUI',
+  whitelist: gameUIWhitelist,
   storage,
 };
 
 const rootReducer = combineReducers({
-  UIState: persistReducer(UIStatePersistConfig, UIStateReducer),
+  gameUI: persistReducer(gameUIPersistConfig, gameUIReducer),
   ...otherReducers,
 });
 

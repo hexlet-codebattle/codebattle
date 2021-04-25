@@ -2,7 +2,6 @@ import chat, { actions as chatActions } from './chat';
 import editor, { actions as editorActions } from './editor';
 import storeLoaded, { actions as storeLoadedActions } from './store';
 import usersInfo, { actions as usersInfoActions } from './usersInfo';
-import UIState, { actions as UIStateActions } from './UIState';
 import gameUI, { actions as gameUIActions } from './gameUI';
 import executionOutput, { actions as executionOutputActions } from './executionOutput';
 import playbook, { actions as playbookActions } from './playbook';
@@ -27,7 +26,6 @@ export const actions = {
   ...executionOutputActions,
   ...playbookActions,
   ...usersInfoActions,
-  ...UIStateActions,
   ...gameUIActions,
   ...userActions,
   ...lobbyActions,
@@ -43,7 +41,6 @@ export default {
   game,
   usersInfo,
   editor,
-  UIState,
   gameUI,
   playbook,
   user,
@@ -54,4 +51,5 @@ export default {
   leaderboard,
   userSettings,
 };
+
 export { makeEditorTextKey } from './editor';
