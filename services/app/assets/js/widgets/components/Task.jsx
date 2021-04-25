@@ -50,9 +50,7 @@ const renderGameLevelBadge = level => (
   </div>
 );
 
-const TaskLanguagesSelection = ({
-  avaibleLanguages, displayLanguage, setTaskDescriptionLanguage,
-}) => {
+const TaskLanguagesSelection = ({ avaibleLanguages, displayLanguage, handleSetLanguage }) => {
   if (avaibleLanguages.length < 2) {
     return null;
   }
@@ -61,7 +59,7 @@ const TaskLanguagesSelection = ({
     <Dropdown.Item
       key={language}
       active={language === displayLanguage}
-      onClick={setTaskDescriptionLanguage(language)}
+      onClick={handleSetLanguage(language)}
     >
       {`${language.toUpperCase()}`}
     </Dropdown.Item>
@@ -86,7 +84,7 @@ const TaskLanguagesSelection = ({
 const Task = ({ task, currentUserId }) => {
   const taskLanguage = useSelector(selectors.taskDescriptionLanguageSelector(currentUserId));
   const dispatch = useDispatch();
-  const setTaskDescriptionLanguage = lang => () => dispatch(actions.setTaskDescriptionLanguage(lang));
+  const handleSetLanguage = lang => () => dispatch(actions.setTaskDescriptionLanguage(lang));
 
   const avaibleLanguages = _.keys(task)
     .filter(key => key.includes('description'))
@@ -120,7 +118,7 @@ const Task = ({ task, currentUserId }) => {
             </div>
           </h6>
           <TaskLanguagesSelection
-            setTaskDescriptionLanguage={setTaskDescriptionLanguage}
+            handleSetLanguage={handleSetLanguage}
             avaibleLanguages={avaibleLanguages}
             displayLanguage={displayLanguage}
           />
