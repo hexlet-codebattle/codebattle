@@ -8,7 +8,7 @@ import i18n from '../../i18n';
 import ContributorsList from './ContributorsList';
 import { actions } from '../slices';
 import * as selectors from '../selectors';
-import TaskDescriptionLanguages from '../config/taskDescriptionLanguages';
+import taskDescriptionLanguages from '../config/taskDescriptionLanguages';
 
 const renderTaskLink = name => {
   const link = `https://github.com/hexlet-codebattle/battle_asserts/tree/master/src/battle_asserts/issues/${name}.clj`;
@@ -82,7 +82,7 @@ const TaskLanguagesSelection = ({ avaibleLanguages, displayLanguage, handleSetLa
 };
 
 const Task = ({ task, currentUserId }) => {
-  const taskLanguage = useSelector(selectors.taskDescriptionLanguageSelector(currentUserId));
+  const taskLanguage = useSelector(selectors.taskDescriptionLanguageselector(currentUserId));
   const dispatch = useDispatch();
   const handleSetLanguage = lang => () => dispatch(actions.setTaskDescriptionLanguage(lang));
 
@@ -93,7 +93,7 @@ const Task = ({ task, currentUserId }) => {
 
   const displayLanguage = _.includes(avaibleLanguages, taskLanguage)
     ? taskLanguage
-    : TaskDescriptionLanguages.default;
+    : taskDescriptionLanguages.default;
 
   // TODO: remove russian text from string (create ru/en templates of basic description)
   const taskDescriptionMapping = {
