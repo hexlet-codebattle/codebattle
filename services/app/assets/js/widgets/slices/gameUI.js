@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import editorModes from '../config/editorModes';
-import EditorThemes from '../config/editorThemes';
+import editorThemes from '../config/editorThemes';
 import taskDescriptionLanguages from '../config/taskDescriptionLanguages';
 
 const persistWhitelist = [
@@ -11,7 +11,7 @@ const persistWhitelist = [
 
 const initialState = {
   editorMode: editorModes.default,
-  editorTheme: EditorThemes.dark,
+  editorTheme: editorThemes.dark,
   taskDescriptionLanguage: taskDescriptionLanguages.default,
   showToastActionsAfterGame: false,
   isShowGuide: false,

@@ -2,7 +2,7 @@ import _ from 'lodash';
 import userTypes from '../config/userTypes';
 import GameStatusCodes from '../config/gameStatusCodes';
 import editorModes from '../config/editorModes';
-import EditorThemes from '../config/editorThemes';
+import editorThemes from '../config/editorThemes';
 import taskDescriptionLanguages from '../config/taskDescriptionLanguages';
 import i18n from '../../i18n';
 import { makeEditorTextKey } from '../slices';
@@ -195,7 +195,7 @@ export const editorsThemeSelector = currentUserId => state => {
   if (_.hasIn(gamePlayersSelector(state), currentUserId)) {
     return state.gameUI.editorTheme;
   }
-  return EditorThemes.dark;
+  return editorThemes.dark;
 };
 
 export const taskDescriptionLanguageselector = currentUserId => state => {
