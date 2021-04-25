@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import i18n from '../../i18n';
 import ContributorsList from './ContributorsList';
 import { actions } from '../slices';
-import { taskDescriptionLanguageSelector } from '../selectors';
+import * as selectors from '../selectors';
 import TaskDescriptionLanguages from '../config/taskDescriptionLanguages';
 
 const renderTaskLink = name => {
@@ -84,7 +84,7 @@ const TaskLanguagesSelection = ({
 };
 
 const Task = ({ task, currentUserId }) => {
-  const taskLanguage = useSelector(taskDescriptionLanguageSelector(currentUserId));
+  const taskLanguage = useSelector(selectors.taskDescriptionLanguageSelector(currentUserId));
   const dispatch = useDispatch();
   const setTaskDescriptionLanguage = lang => () => dispatch(actions.setTaskDescriptionLanguage(lang));
 
