@@ -9,7 +9,6 @@ import ContributorsList from './ContributorsList';
 import { actions } from '../slices';
 import { taskDescriptionLanguageSelector } from '../selectors';
 import TaskDescriptionLanguages from '../config/taskDescriptionLanguages';
-import '../../../css/taskComponent.scss';
 
 const renderTaskLink = name => {
   const link = `https://github.com/hexlet-codebattle/battle_asserts/tree/master/src/battle_asserts/issues/${name}.clj`;
@@ -71,13 +70,13 @@ const TaskLanguagesSelection = ({
   return (
     <Dropdown className="d-flex ml-auto">
       <Dropdown.Toggle
-        id="lang-dropdown-toggle"
+        id="tasklang-dropdown-toggle"
         className="shadow-none"
         variant="outline-secondary"
       >
         {displayLanguage.toUpperCase() }
       </Dropdown.Toggle>
-      <Dropdown.Menu id="lang-dropdown-menu">
+      <Dropdown.Menu id="tasklang-dropdown-menu">
         {avaibleLanguages.map(renderLanguage)}
       </Dropdown.Menu>
     </Dropdown>
@@ -113,7 +112,7 @@ const Task = ({ task, currentUserId }) => {
     <div className="card h-100 border-0 shadow-sm">
       <div className="px-3 py-3 h-100 overflow-auto" data-guide-id="Task">
         <div className="d-flex align-items-begin flex-column flex-sm-row justify-content-between">
-          <h6 className="card-text d-flex align-items-center">
+          <h6 className="card-text d-flex align-items-center mr-2">
             {renderGameLevelBadge(task.level)}
             <div>
               {i18n.t('Task: ')}
