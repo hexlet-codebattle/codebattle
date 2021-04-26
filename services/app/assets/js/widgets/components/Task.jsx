@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import ReactMarkdown from 'react-markdown';
-import { useDispatch } from 'react-redux';
+import { Dropdown } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
 import i18n from '../../i18n';
 import ContributorsList from './ContributorsList';
 import { actions } from '../slices';
+import * as selectors from '../selectors';
+import taskDescriptionLanguages from '../config/taskDescriptionLanguages';
 
 const renderTaskLink = name => {
   const link = `https://github.com/hexlet-codebattle/battle_asserts/tree/master/src/battle_asserts/issues/${name}.clj`;
@@ -25,7 +28,7 @@ const ShowGuideButton = () => {
       return (
         <button
           type="button"
-          className="btn btn-outline-secondary btn-sm mr-2 text-nowrap"
+          className="btn btn-outline-secondary btn-sm mx-2 text-nowrap"
           onClick={guideShow}
           data-toggle="tooltip"
           data-placement="top"
@@ -47,12 +50,57 @@ const renderGameLevelBadge = level => (
   </div>
 );
 
-const Task = ({ task }) => {
-  const [isUseRuLocale, setRu] = useState(false);
-  // TODO: remove russion text from string (create ru/en templates of basic description)
-  const description = isUseRuLocale
-        ? `${task.descriptionRu}\n\n**Примеры:**\n${task.examples}`
-        : `${task.descriptionEn}\n\n**Examples:**\n${task.examples}`;
+const TaskLanguagesSelection = ({ avaibleLanguages, displayLanguage, handleSetLanguage }) => {
+  if (avaibleLanguages.length < 2) {
+    return null;
+  }
+
+  const renderLanguage = language => (
+    <Dropdown.Item
+      key={language}
+      active={language === displayLanguage}
+      onClick={handleSetLanguage(language)}
+    >
+      {`${language.toUpperCase()}`}
+    </Dropdown.Item>
+  );
+
+  return (
+    <Dropdown className="d-flex ml-auto">
+      <Dropdown.Toggle
+        id="tasklang-dropdown-toggle"
+        className="shadow-none"
+        variant="outline-secondary"
+      >
+        {displayLanguage.toUpperCase() }
+      </Dropdown.Toggle>
+      <Dropdown.Menu id="tasklang-dropdown-menu">
+        {avaibleLanguages.map(renderLanguage)}
+      </Dropdown.Menu>
+    </Dropdown>
+  );
+};
+
+const Task = ({ task, currentUserId }) => {
+  const taskLanguage = useSelector(selectors.taskDescriptionLanguageselector(currentUserId));
+  const dispatch = useDispatch();
+  const handleSetLanguage = lang => () => dispatch(actions.setTaskDescriptionLanguage(lang));
+
+  const avaibleLanguages = _.keys(task)
+    .filter(key => key.includes('description'))
+    .map(key => key.split('description'))
+    .map(([, language]) => language.toLowerCase());
+
+  const displayLanguage = _.includes(avaibleLanguages, taskLanguage)
+    ? taskLanguage
+    : taskDescriptionLanguages.default;
+
+  // TODO: remove russian text from string (create ru/en templates of basic description)
+  const taskDescriptionMapping = {
+    en: `${task.descriptionEn}\n\n**Examples:**\n${task.examples}`,
+    ru: `${task.descriptionRu}\n\n**Примеры:**\n${task.examples}`,
+  };
+  const description = taskDescriptionMapping[taskLanguage];
 
   if (_.isEmpty(task)) {
     return null;
@@ -62,44 +110,22 @@ const Task = ({ task }) => {
     <div className="card h-100 border-0 shadow-sm">
       <div className="px-3 py-3 h-100 overflow-auto" data-guide-id="Task">
         <div className="d-flex align-items-begin flex-column flex-sm-row justify-content-between">
-          <h6 className="card-text d-flex align-items-center">
+          <h6 className="card-text d-flex align-items-center mr-2">
             {renderGameLevelBadge(task.level)}
             <div>
               {i18n.t('Task: ')}
               <span className="card-subtitle mb-2 text-muted">{task.name}</span>
             </div>
           </h6>
-          {task.descriptionRu && !isUseRuLocale
-           && (
-           <button
-             type="button"
-             className="btn btn-outline-primary btn-sm mr-2 text-nowrap"
-             onClick={() => setRu(true)}
-             data-toggle="tooltip"
-             data-placement="top"
-             title="RU"
-           >
-             RU
-           </button>
-           )}
-
-          {isUseRuLocale
-           && (
-           <button
-             type="button"
-             className="btn btn-outline-primary btn-sm mr-2 text-nowrap"
-             onClick={() => setRu(false)}
-             data-toggle="tooltip"
-             data-placement="top"
-             title="EN"
-           >
-             EN
-           </button>
-           )}
+          <TaskLanguagesSelection
+            handleSetLanguage={handleSetLanguage}
+            avaibleLanguages={avaibleLanguages}
+            displayLanguage={displayLanguage}
+          />
           <ShowGuideButton />
         </div>
         <div className="d-flex align-items-stretch flex-column">
-          <div className="card-text mb-0  h-100  overflow-auto">
+          <div className="card-text mb-0 h-100 overflow-auto">
             <ReactMarkdown
               source={description}
               renderers={{
@@ -137,11 +163,18 @@ const Task = ({ task }) => {
 
 Task.propTypes = {
   task: PropTypes.shape({
+    id: PropTypes.number.isRequired,
     name: PropTypes.string.isRequired,
-    descriptionEn: PropTypes.string,
-    examples: PropTypes.string.isRequired,
     level: PropTypes.string.isRequired,
+    examples: PropTypes.string.isRequired,
+    descriptionEn: PropTypes.string,
+    descriptionRu: PropTypes.string,
+    tags: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.oneOf([null]),
+    ]),
   }).isRequired,
+  currentUserId: PropTypes.number.isRequired,
 };
 
 export default Task;
