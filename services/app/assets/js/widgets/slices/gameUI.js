@@ -3,12 +3,6 @@ import editorModes from '../config/editorModes';
 import editorThemes from '../config/editorThemes';
 import taskDescriptionLanguages from '../config/taskDescriptionLanguages';
 
-const persistWhitelist = [
-  'editorMode',
-  'editorTheme',
-  'taskDescriptionLanguage',
-];
-
 const initialState = {
   editorMode: editorModes.default,
   editorTheme: editorThemes.dark,
@@ -38,6 +32,6 @@ const gameUI = createSlice({
 
 const { actions, reducer } = gameUI;
 
-export { actions, persistWhitelist };
+export { actions };
 
 export default reducer;

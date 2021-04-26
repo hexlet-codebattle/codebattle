@@ -12,7 +12,6 @@ import rollbarMiddleware from 'rollbar-redux-middleware';
 import rollbar from './lib/rollbar';
 import RootContainer from './containers/RootContainer';
 import reducers from './slices';
-import { persistWhitelist as gameUIWhitelist } from './slices/gameUI';
 import LobbyWidget from './containers/LobbyWidget';
 import RatingList from './containers/RatingList';
 import UserProfile from './containers/UserProfile';
@@ -21,9 +20,15 @@ import Registration from './containers/Registration';
 
 const { gameUI: gameUIReducer, ...otherReducers } = reducers;
 
+const gameUIPersistWhitelist = [
+  'editorMode',
+  'editorTheme',
+  'taskDescriptionLanguage',
+];
+
 const gameUIPersistConfig = {
   key: 'gameUI',
-  whitelist: gameUIWhitelist,
+  whitelist: gameUIPersistWhitelist,
   storage,
 };
 
