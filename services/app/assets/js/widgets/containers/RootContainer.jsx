@@ -84,6 +84,38 @@ const steps = [
         zIndex: 10000,
       },
     },
+    target: '[data-guide-id="LeftEditor"] [data-guide-id="GiveUpButton"]',
+    title: 'Give up button',
+    content:
+      'Click the button to give up',
+    locale: {
+      skip: 'Skip guide',
+    },
+  },
+  {
+    spotlightClicks: true,
+    disableOverlayClose: true,
+    styles: {
+      options: {
+        zIndex: 10000,
+      },
+    },
+    target: '[data-guide-id="LeftEditor"] [data-guide-id="ResetButton"]',
+    title: 'Reset button',
+    content:
+      'Click the button to reset',
+    locale: {
+      skip: 'Skip guide',
+    },
+  },
+  {
+    spotlightClicks: true,
+    disableOverlayClose: true,
+    styles: {
+      options: {
+        zIndex: 10000,
+      },
+    },
     target: '[data-guide-id="LeftEditor"] [data-guide-id="CheckResultButton"]',
     title: 'Check button',
     content:

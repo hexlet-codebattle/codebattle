@@ -70,6 +70,7 @@ const GiveUpButton = ({ onClick, status }) => {
         <button
           type="button"
           className="btn btn-outline-danger btn-sm mr-2"
+          data-guide-id="GiveUpButton"
           onClick={onClick}
           data-toggle="tooltip"
           data-placement="top"
@@ -83,6 +84,7 @@ const GiveUpButton = ({ onClick, status }) => {
         <button
           type="button"
           className="btn btn-outline-danger btn-sm mr-2"
+          data-guide-id="GiveUpButton"
           data-toggle="tooltip"
           data-placement="top"
           title="Give Up"
@@ -107,6 +109,7 @@ const ResetButton = ({ onClick, status }) => {
         <button
           type="button"
           className="btn btn-outline-secondary btn-sm mr-2"
+          data-guide-id="ResetButton"
           onClick={onClick}
           data-toggle="tooltip"
           data-placement="top"
@@ -120,6 +123,7 @@ const ResetButton = ({ onClick, status }) => {
         <button
           type="button"
           className="btn btn-outline-secondary btn-sm mr-2"
+          data-guide-id="ResetButton"
           data-toggle="tooltip"
           data-placement="top"
           title="Reset editor"
