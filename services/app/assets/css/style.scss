@@ -380,6 +380,16 @@ a {
   transition: opacity 200ms, transform 200ms;
 }
 
+.table-layout {
+  table-layout: fixed;
+}
+
+.tr-display-flex {
+  display: flex;
+  justify-content: space-between;
+  width: 790px;
+}
+
 @keyframes scale {
   0% {
     transform: scale(0.5);
