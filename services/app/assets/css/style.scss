@@ -35,6 +35,14 @@ $fa-font-path: "/fonts";
   to { opacity: 1.0; }
 }
 
+#create-game-button {
+  filter: brightness(110%);
+
+  &:hover {
+    filter: saturate(150%);
+  }
+}
+
 [data-editor-state="checking"] {
   animation:checking_fade 1000ms infinite;
   -webkit-animation:checking_fade 1000ms infinite;
