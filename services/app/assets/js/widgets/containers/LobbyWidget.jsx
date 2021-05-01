@@ -349,8 +349,7 @@ const renderModal = (show, handleCloseModal) => (
 const CreateGameButton = ({ handleClick }) => (
   <button
     type="button"
-    id="create-game-button"
-    className="btn btn-outline-orange bg-orange text-uppercase font-weight-bold text-black p-3"
+    className="btn btn-success text-uppercase font-weight-bold py-3 mb-3"
     onClick={handleClick}
   >
     Create Game
@@ -397,9 +396,7 @@ const LobbyWidget = () => {
         </div>
 
         <div className="d-flex flex-column col-lg-4 col-md-12 p-0">
-          <div className="text-center mb-3">
-            <CreateGameButton handleClick={handleShowModal} />
-          </div>
+          <CreateGameButton handleClick={handleShowModal} />
           <TopPlayersPerPeriod />
           <div className="mt-2">
             <TopPlayersEver />
