@@ -267,7 +267,6 @@ const GameContainers = ({
   activeGames,
   completedGames,
   liveTournaments,
-  handleShowModal,
 }) => (
   <div className="p-0">
     <nav>
@@ -305,13 +304,6 @@ const GameContainers = ({
         >
           Completed Games
         </a>
-        <button
-          type="button"
-          className="nav-item nav-link text-uppercase rounded-0 text-orange font-weight-bold p-3 ml-auto"
-          onClick={handleShowModal}
-        >
-          Create Game
-        </button>
       </div>
     </nav>
     <div className="tab-content" id="nav-tabContent">
@@ -354,6 +346,16 @@ const renderModal = (show, handleCloseModal) => (
   </Modal>
 );
 
+const CreateGameButton = ({ handleClick }) => (
+  <button
+    type="button"
+    className="btn btn-success text-uppercase font-weight-bold py-3 mb-3"
+    onClick={handleClick}
+  >
+    Create Game
+  </button>
+);
+
 const LobbyWidget = () => {
   const currentUser = Gon.getAsset('current_user');
   const dispatch = useDispatch();
@@ -384,17 +386,17 @@ const LobbyWidget = () => {
       {renderModal(show, handleCloseModal)}
       <div className="row">
         {/* {isGuestCurrentUser ? <Intro /> : <StartGamePanel />} */}
-        <div className="col-lg-8 col-md-12 p-0 mb-2 pr-lg-2">
+        <div className="col-lg-8 col-md-12 p-0 mb-2 pr-lg-2 pb-3">
           <GameContainers
             activeGames={activeGames}
             completedGames={completedGames}
             liveTournaments={liveTournaments}
-            handleShowModal={handleShowModal}
           />
           <span className="pt-2">{`Online players: ${presenceList.length}`}</span>
         </div>
 
         <div className="d-flex flex-column col-lg-4 col-md-12 p-0">
+          <CreateGameButton handleClick={handleShowModal} />
           <TopPlayersPerPeriod />
           <div className="mt-2">
             <TopPlayersEver />
