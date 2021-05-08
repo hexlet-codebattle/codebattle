@@ -1,10 +1,9 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { connect, useSelector } from 'react-redux';
+import { connect, useSelector, useDispatch } from 'react-redux';
 import Gon from 'gon';
 import ReactJoyride, { STATUS } from 'react-joyride';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
-import _ from 'lodash';
 import { useMachine } from '@xstate/react';
 
 import GameWidget from './GameWidget';
@@ -14,30 +13,26 @@ import userTypes from '../config/userTypes';
 import { actions } from '../slices';
 import * as GameActions from '../middlewares/Game';
 import * as ChatActions from '../middlewares/Chat';
-import {
-  gamePlayersSelector,
-  currentUserIdSelector,
-} from '../selectors';
+import { isShowGuideSelector } from '../selectors';
 import WaitingOpponentInfo from '../components/WaitingOpponentInfo';
 import CodebattlePlayer from './CodebattlePlayer';
 import FeedBackWidget from '../components/FeedBackWidget';
 import GamePreview from '../components/Game/GamePreview';
 import gameMachine, { replayerMachineStates } from '../machines/game';
+import AnimationModal from '../components/AnimationModal';
 
 const steps = [
   {
     disableBeacon: true,
     disableOverlayClose: true,
-    title: 'Training game page',
+    title: 'Game page',
     content: (
       <>
         <div className="text-justify">
           This is a
-          <b> training game </b>
-          against a
-          <b> bot</b>
-          . But in the future you’ll be against the real
-          player. You need to solve the task
+          <b> game page</b>
+          .
+          You need to solve the task
           <b> first </b>
           and pass all tests
           <b> successfully</b>
@@ -92,7 +87,7 @@ const steps = [
     target: '[data-guide-id="LeftEditor"] [data-guide-id="CheckResultButton"]',
     title: 'Check button',
     content:
-    'Click the button to check your solution or use Ctrl+Enter/Cmd+Enter',
+      'Click the button to check your solution or use Ctrl+Enter/Cmd+Enter',
     locale: {
       skip: 'Skip guide',
     },
@@ -102,7 +97,7 @@ const steps = [
     target: '#leftOutput-tab',
     title: 'Result output',
     content:
-    'Here you will see the results of the tests or compilation errors after check',
+      'Here you will see the results of the tests or compilation errors after check',
     locale: {
       skip: 'Skip guide',
     },
@@ -110,17 +105,12 @@ const steps = [
 ];
 
 const GameWidgetGuide = () => {
-  const { current } = useContext(GameContext);
-  const isActiveGame = current.matches('active');
-  const players = useSelector(state => gamePlayersSelector(state));
-  const currentUser = useSelector(state => currentUserIdSelector(state));
-  const isCurrentPlayer = _.has(players, currentUser);
-  const isFirstTime = window.localStorage.getItem('guideGamePassed') === null;
+  const dispatch = useDispatch();
+  const [isFirstTime, setIsFirstTime] = useState(window.localStorage.getItem('guideGamePassed') === null);
+  const isShowGuide = useSelector(state => isShowGuideSelector(state));
 
   return (
-    isFirstTime
-    && isActiveGame
-    && isCurrentPlayer && (
+    (isShowGuide || isFirstTime) && (
       <ReactJoyride
         continuous
         run
@@ -132,12 +122,17 @@ const GameWidgetGuide = () => {
         callback={({ status }) => {
           if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status)) {
             window.localStorage.setItem('guideGamePassed', 'true');
+            setIsFirstTime(false);
+            dispatch(actions.updateGameUI({ isShowGuide: false }));
           }
         }}
         styles={{
           options: {
             primaryColor: '#0275d8',
             zIndex: 1000,
+          },
+          buttonNext: {
+            borderRadius: 'unset',
           },
         }}
       />
@@ -148,13 +143,15 @@ const GameWidgetGuide = () => {
 const currentUser = Gon.getAsset('current_user');
 const players = Gon.getAsset('players');
 
-const RootContainer = ({
-  connectToGame,
-  connectToChat,
-  setCurrentUser,
-}) => {
+const RootContainer = ({ connectToGame, connectToChat, setCurrentUser }) => {
+  const [modalShowing, setModalShowing] = useState(false);
   const [current, send, service] = useMachine(gameMachine, {
     devTools: true,
+    actions: {
+      showGameResultModal: () => {
+        setModalShowing(true);
+      },
+    },
   });
 
   useEffect(() => {
@@ -173,7 +170,10 @@ const RootContainer = ({
   const isRenderPreview = current.matches({ game: 'preview' });
 
   const defaultPlayer = {
-    name: 'John Doe', github_id: 35539033, lang: 'js', rating: '0',
+    name: 'John Doe',
+    github_id: 35539033,
+    lang: 'js',
+    rating: '0',
   };
   const player1 = players[0] || defaultPlayer;
   const player2 = players[1] || defaultPlayer;
@@ -187,24 +187,30 @@ const RootContainer = ({
         }}
         classNames="preview"
       >
-        {isRenderPreview
-          ? (<GamePreview className="animate" player1={player1} player2={player2} />)
-          : (
-            <GameContext.Provider value={{ current, send, service }}>
-              <div className="x-outline-none">
-                <GameWidgetGuide />
-                <div className="container-fluid">
-                  <div className="row no-gutter cb-game">
-                    <InfoWidget />
-                    <GameWidget />
-                    <FeedBackWidget />
-                  </div>
+        {isRenderPreview ? (
+          <GamePreview
+            className="animate"
+            player1={player1}
+            player2={player2}
+          />
+        ) : (
+          <GameContext.Provider value={{ current, send, service }}>
+            <div className="x-outline-none">
+              <GameWidgetGuide />
+              <div className="container-fluid">
+                <div className="row no-gutter cb-game">
+                  <AnimationModal setModalShowing={setModalShowing} modalShowing={modalShowing} />
+                  <InfoWidget />
+                  <GameWidget />
+                  <FeedBackWidget />
                 </div>
-                {current.matches({ replayer: replayerMachineStates.on }) && <CodebattlePlayer />}
               </div>
-            </GameContext.Provider>
-          )}
-
+              {current.matches({ replayer: replayerMachineStates.on }) && (
+                <CodebattlePlayer />
+              )}
+            </div>
+          </GameContext.Provider>
+        )}
       </CSSTransition>
     </SwitchTransition>
   );

@@ -17,6 +17,7 @@ $fa-font-path: "/fonts";
 @import "fonts";
 @import "~font-mfizz/dist/font-mfizz.css";
 @import "tournaments";
+@import "taskComponent";
 
 .xstate {
   height: 1000px;
@@ -64,14 +65,8 @@ $fa-font-path: "/fonts";
   --flag-color: var(--danger);
 }
 
-.btn-outline-orange {
-  border-color: $orange;
-  color: $orange;
-  @include button-outline-variant($orange);
-}
-
-.btn-check:hover {
-  color: #ffffff;
+.alert {
+  border-radius: unset;
 }
 
 .header-txt {
@@ -97,6 +92,20 @@ $fa-font-path: "/fonts";
 
 .border-gray {
   border: 2px solid #d9d9d9;
+}
+
+.btn {
+  border-radius: unset;
+}
+
+.btn-outline-orange {
+  border-color: $orange;
+  color: $orange;
+  @include button-outline-variant($orange);
+}
+
+.btn-check:hover {
+  color: #ffffff;
 }
 
 .btn-hover {

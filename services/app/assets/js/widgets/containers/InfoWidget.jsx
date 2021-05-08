@@ -2,7 +2,9 @@ import React, { useContext } from 'react';
 import { useSelector } from 'react-redux';
 import ChatWidget from './ChatWidget';
 import Task from '../components/Task';
-import { gameTaskSelector, gameStatusSelector, leftExecutionOutputSelector } from '../selectors';
+import {
+  gameTaskSelector, gameStatusSelector, leftExecutionOutputSelector, currentUserIdSelector,
+} from '../selectors';
 import Output from '../components/ExecutionOutput/Output';
 import OutputTab from '../components/ExecutionOutput/OutputTab';
 import CountdownTimer from '../components/CountdownTimer';
@@ -28,6 +30,7 @@ const TimerContainer = ({ time, timeoutSeconds, gameStatusName }) => {
 
 const InfoWidget = () => {
   const { current: gameCurrent } = useContext(GameContext);
+  const currentUserId = useSelector(currentUserIdSelector);
   const taskText = useSelector(gameTaskSelector);
   const startsAt = useSelector(state => gameStatusSelector(state).startsAt);
   const timeoutSeconds = useSelector(state => gameStatusSelector(state).timeoutSeconds);
@@ -87,6 +90,7 @@ const InfoWidget = () => {
             >
               <Task
                 task={taskText}
+                currentUserId={currentUserId}
               />
             </div>
             <div

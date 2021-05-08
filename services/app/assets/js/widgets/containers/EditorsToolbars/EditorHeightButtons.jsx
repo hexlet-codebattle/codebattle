@@ -11,14 +11,14 @@ const EditorHeightButtons = ({ editor: { userId } }) => {
     <div className="mx-1" role="group" aria-label="Editor height">
       <button
         type="button"
-        className="btn btn-sm btn-light border rounded"
+        className="btn btn-sm btn-light border"
         onClick={compressEditor(userId)}
       >
         <i className="fas fa-compress-arrows-alt" aria-hidden="true" />
       </button>
       <button
         type="button"
-        className="btn btn-sm btn-light border rounded ml-2"
+        className="btn btn-sm btn-light border ml-2"
         onClick={expandEditor(userId)}
       >
         <i className="fas fa-expand-arrows-alt" aria-hidden="true" />

@@ -26,7 +26,7 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
       assert json_response(conn, 200) == %{
                "name" => "first",
                "lang" => "dart",
-               "sound_settings" => %{"level" => 7, "type" => "silent"},
+               "sound_settings" => %{"level" => 7, "type" => "dendy"},
                "discord_avatar" => "d_avatar",
                "discord_id" => 2,
                "discord_name" => "d_name",
@@ -40,7 +40,7 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
     test "updates current user settings", %{conn: conn} do
       new_settings = %{
         "name" => "evgen",
-        "sound_settings" => %{"level" => 3, "type" => "silent"},
+        "sound_settings" => %{"level" => 3, "type" => "cs"},
         "lang" => "ruby"
       }
 
@@ -56,7 +56,7 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
       updated = Repo.get!(Codebattle.User, user.id)
 
       assert updated.sound_settings.level == 3
-      assert updated.sound_settings.type == "silent"
+      assert updated.sound_settings.type == "cs"
       assert updated.name == "evgen"
       assert updated.lang == "ruby"
     end
