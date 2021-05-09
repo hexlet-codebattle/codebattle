@@ -84,6 +84,38 @@ const steps = [
         zIndex: 10000,
       },
     },
+    target: '[data-guide-id="LeftEditor"] [data-guide-id="GiveUpButton"]',
+    title: 'Give up button',
+    content:
+      'Click this button to give up. You will lose the game and can try it again next time, or ask your opponent to an immediate rematch',
+    locale: {
+      skip: 'Skip guide',
+    },
+  },
+  {
+    spotlightClicks: true,
+    disableOverlayClose: true,
+    styles: {
+      options: {
+        zIndex: 10000,
+      },
+    },
+    target: '[data-guide-id="LeftEditor"] [data-guide-id="ResetButton"]',
+    title: 'Reset button',
+    content:
+      'Click this button to reset the code to the original template',
+    locale: {
+      skip: 'Skip guide',
+    },
+  },
+  {
+    spotlightClicks: true,
+    disableOverlayClose: true,
+    styles: {
+      options: {
+        zIndex: 10000,
+      },
+    },
     target: '[data-guide-id="LeftEditor"] [data-guide-id="CheckResultButton"]',
     title: 'Check button',
     content:
