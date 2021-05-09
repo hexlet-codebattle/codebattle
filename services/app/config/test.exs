@@ -39,4 +39,9 @@ config :codebattle, code_check_timeout: 25_000
 config :codebattle, checker_adapter: adapter
 config :codebattle, tournament_match_timeout: 1
 
+config :codebattle, :firebase,
+  sender_id: "ASDF",
+  api_key: "ASDF",
+  firebase_autn_url: "http://localhost:4000"
+
 config :codebattle, ws_port: 4001

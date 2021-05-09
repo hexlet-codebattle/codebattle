@@ -53,6 +53,7 @@ defmodule CodebattleWeb.Router do
       get("/user/current", UserController, :current)
       resources("/users", UserController, only: [:index, :show, :create])
       resources("/session", SessionController, only: [:create], singleton: true)
+      resources("/reset_password", ResetPasswordController, only: [:create], singleton: true)
       resources("/settings", SettingsController, only: [:show, :update], singleton: true)
       post("/feedback", FeedBackController, :index)
     end

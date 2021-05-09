@@ -49,20 +49,22 @@ defmodule CodebattleWeb.Api.V1.UserController do
   end
 
   def create(conn, params) do
-    auth = %{
+    user_attrs = %{
       name: params["name"],
       email: params["email"],
-      uid: params["uid"]
+      passowrd: params["password"]
     }
 
-    case Codebattle.Oauth.User.create(auth) do
+    case Codebattle.Oauth.User.create_in_firebase(user_attrs) do
       {:ok, user} ->
         conn
         |> put_session(:user_id, user.id)
         |> json(%{status: :created})
 
-      {:error, reason} ->
-        json(conn, %{errors: reason})
+      {:error, errors} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> json(%{errors: errors})
     end
   end
 
