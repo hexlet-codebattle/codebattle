@@ -17,7 +17,7 @@ defmodule Codebattle.User.Scope do
     |> sort(params)
   end
 
-  def by_email_or_name(query = User, %{name: name, email: email}) do
+  def by_email_or_name(query, %{name: name, email: email}) do
     from(u in query, where: u.name == ^name or u.email == ^email)
   end
 
