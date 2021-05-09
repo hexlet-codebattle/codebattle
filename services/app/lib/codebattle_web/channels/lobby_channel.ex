@@ -61,13 +61,20 @@ defmodule CodebattleWeb.LobbyChannel do
   end
 
   def handle_info(:after_join, socket) do
-    {:ok, _} =
-      Presence.track(socket, socket.assigns.user_id, %{
-        online_at: inspect(System.system_time(:second)),
-        user: socket.assigns.current_user
-      })
+    case socket.assigns.user_id do
+      "extension" ->
+        nil
 
-    push(socket, "presence_state", Presence.list(socket))
+      _ ->
+        {:ok, _} =
+          Presence.track(socket, socket.assigns.user_id, %{
+            online_at: inspect(System.system_time(:second)),
+            user: socket.assigns.current_user
+          })
+
+        push(socket, "presence_state", Presence.list(socket))
+    end
+
     {:noreply, socket}
   end
 end
