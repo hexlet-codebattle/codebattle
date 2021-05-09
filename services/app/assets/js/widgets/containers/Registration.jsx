@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import firebase from 'firebase';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import cn from 'classnames';
@@ -139,43 +138,25 @@ const SignIn = () => {
       password: Yup.string().required('Password required'),
     }),
     onSubmit: ({ email, password }) => {
-      firebase
-        .auth()
-        .signInWithEmailAndPassword(email, password)
-        .then(result => {
-          const data = {
-            email: result.user.email,
-            uid: result.user.uid,
-          };
+      const data = { email, password };
 
-          return axios.post('/api/v1/session', data, {
-            headers: {
-              'Content-Type': 'application/json',
-              'x-csrf-token': csrfToken,
-            },
-          });
+      axios
+        .post('/api/v1/session', data, {
+          headers: {
+            'Content-Type': 'application/json',
+            'x-csrf-token': csrfToken,
+          },
         })
-        .then(result => {
-          if (result.data.errors) {
-            const message = result.data.errors;
-            formik.setFieldError('email', message);
-            formik.setFieldError('password', message);
-            return;
-          }
-
+        .then(() => {
           window.location.href = getNextLocation();
         })
         .catch(error => {
           // TODO: add log for auth error
-          if (error.code === 'auth/user-not-found') {
-            formik.setFieldError('email', 'User with this email not found');
-            return;
-          }
-
-          if (error.message) {
-            const { message } = error;
-            formik.setFieldError('email', message);
-            formik.setFieldError('password', message);
+          // TODO: Add better errors handler
+          if (error.response.data.errors) {
+            const { errors } = error.response.data;
+            if (errors.email) { formik.setFieldError('email', errors.email); }
+            if (errors.base) { formik.setFieldError('base', errors.base); }
           }
         });
     },
@@ -186,6 +167,7 @@ const SignIn = () => {
       <Body>
         <Form onSubmit={formik.handleSubmit} id="login">
           <Title text="Sign In" />
+          <Input id="base" type="hidden" formik={formik} />
           <Input id="email" type="email" title="Email" formik={formik} />
           <Input
             id="password"
@@ -226,30 +208,23 @@ const SignUp = () => {
       ),
     }),
     onSubmit: formData => {
-      // const defaultAuth = firebase.auth();
-
-      // defaultAuth.createUserWithEmailAndPassword(email, password)
-      //   .then(result => {
-      //     const data = {
-      //       name,
-      //       email: result.user.email,
-      //       uid: result.user.uid,
-      //     };
-
-      axios.post('/api/v1/users', formData, {
+      axios
+        .post('/api/v1/users', formData, {
           headers: {
             'Content-Type': 'application/json',
             'x-csrf-token': csrfToken,
           },
-        }).then(result => {
+        })
+        .then(() => {
           window.location.href = getNextLocation();
-        }).catch(error => {
+        })
+        .catch(error => {
           // TODO: Add better errors handler
           if (error.response.data.errors) {
             const { errors } = error.response.data;
-            errors.name && formik.setFieldError('name', errors.name);
-            errors.email && formik.setFieldError('email', errors.email);
-            errors.base && formik.setFieldError('base', errors.base);
+            if (errors.name) { formik.setFieldError('name', errors.name); }
+            if (errors.email) { formik.setFieldError('email', errors.email); }
+            if (errors.base) { formik.setFieldError('base', errors.base); }
           }
         });
     },
@@ -260,7 +235,7 @@ const SignUp = () => {
       <Body>
         <Form onSubmit={formik.handleSubmit} id="registration">
           <Title text="Sign Up" />
-          <Input id="base" type="hidden" title="Base" formik={formik} />
+          <Input id="base" type="hidden" formik={formik} />
           <Input id="name" type="text" title="Nickname" formik={formik} />
           <Input id="email" type="email" title="Email" formik={formik} />
           <Input
@@ -285,7 +260,7 @@ const SignUp = () => {
   );
 };
 
-const RememberPassword = () => {
+const ResetPassword = () => {
   const [isSend, setIsSend] = useState(false);
 
   const formik = useFormik({
@@ -296,16 +271,23 @@ const RememberPassword = () => {
       email: Yup.string().email('Invalid email').required('Email required'),
     }),
     onSubmit: ({ email }) => {
-      firebase
-        .auth()
-        .sendPasswordResetEmail(email)
+      axios
+        .post('/api/v1/reset_password', { email }, {
+          headers: {
+            'Content-Type': 'application/json',
+            'x-csrf-token': csrfToken,
+          },
+        })
         .then(() => {
           setIsSend(true);
         })
         .catch(error => {
           // TODO: add log for auth error
-          if (error.message) {
-            formik.setFieldError('email', error.message);
+          // TODO: Add better errors handler
+          if (error.response.data.errors) {
+            const { errors } = error.response.data;
+            if (errors.email) { formik.setFieldError('email', errors.email); }
+            if (errors.base) { formik.setFieldError('base', errors.base); }
           }
         });
     },
@@ -327,6 +309,7 @@ const RememberPassword = () => {
       <Body>
         <Form onSubmit={formik.handleSubmit} id="remindPassword">
           <Title text="Forgot your password?" />
+          <Input id="base" type="hidden" formik={formik} />
           <Input id="email" type="email" title="Email" formik={formik} />
         </Form>
       </Body>
@@ -341,20 +324,13 @@ const RememberPassword = () => {
 const Registration = () => {
   const { pathname } = window.location;
 
-  const firebaseConfig = {
-    apiKey: process.env.FIREBASE_API_KEY,
-    messagingSenderId: process.env.FIREBASE_SENDER_ID,
-  };
-
-  firebase.initializeApp(firebaseConfig);
-
   switch (pathname) {
     case '/session/new':
       return <SignIn />;
     case '/users/new':
       return <SignUp />;
     case '/remind_password':
-      return <RememberPassword />;
+      return <ResetPassword />;
     default:
       throw new Error('Unexpected Registration page route');
   }
