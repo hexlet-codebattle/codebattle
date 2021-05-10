@@ -1,11 +1,11 @@
-import React, { useEffect, useRef } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { Table } from "react-bootstrap";
-import classnames from "classnames";
-import UserInfo from "../containers/UserInfo";
-import { actions } from "../slices";
-import { leaderboardSelector } from "../slices/leaderboard";
-import periodTypes from "../config/periodTypes";
+import React, { useEffect, useRef } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { Table } from 'react-bootstrap';
+import classnames from 'classnames';
+import UserInfo from '../containers/UserInfo';
+import { actions } from '../slices';
+import { leaderboardSelector } from '../slices/leaderboard';
+import periodTypes from '../config/periodTypes';
 
 const Leaderboard = () => {
   const dispatch = useDispatch();
@@ -67,7 +67,7 @@ const Leaderboard = () => {
                       ref={anchorWeekRef}
                       onClick={handlePeriodClick}
                       className={classnames({
-                        "text-orange": period === periodTypes.WEEKLY,
+                        'text-orange': period === periodTypes.WEEKLY,
                       })}
                     >
                       {periodTypes.WEEKLY}
@@ -80,7 +80,7 @@ const Leaderboard = () => {
                       ref={anchorMonthRef}
                       onClick={handlePeriodClick}
                       className={classnames({
-                        "text-orange": period === periodTypes.MONTHLY,
+                        'text-orange': period === periodTypes.MONTHLY,
                       })}
                     >
                       {periodTypes.MONTHLY}
@@ -93,7 +93,7 @@ const Leaderboard = () => {
                       ref={anchorAllRef}
                       onClick={handlePeriodClick}
                       className={classnames({
-                        "text-orange": period === periodTypes.ALL,
+                        'text-orange': period === periodTypes.ALL,
                       })}
                     >
                       {periodTypes.ALL}
@@ -106,8 +106,8 @@ const Leaderboard = () => {
         </tr>
       </thead>
       <tbody>
-        {rating &&
-          rating.map((item) => (
+        {rating
+          && rating.map(item => (
             <tr key={item.name}>
               <td className="pr-0">
                 <div className="d-flex">
@@ -125,7 +125,7 @@ const Leaderboard = () => {
               </u>
             </div>
           </td>
-          <td className="text-right pl-0"></td>
+          <td className="text-right pl-0" />
         </tr>
       </tbody>
     </Table>
