@@ -37,7 +37,6 @@
     "core-js": "3.8.0",
     "dotenv-webpack": "^6.0.2",
     "emoji-mart": "^3.0.0",
-    "firebase": "^8.2.9",
     "font-mfizz": "^2.4.1",
     "formik": "^2.2.5",
     "howler": "^2.2.1",
