@@ -17,7 +17,7 @@ defmodule Codebattle.InvitesKillerServer do
   ## Server callbacks
 
   def init(_) do
-    Process.send_after(self(), :trigger_timeout, @timeout)
+    Process.send_after(__MODULE__, :trigger_timeout, @timeout)
     {:ok, %{}}
   end
 

@@ -120,8 +120,7 @@ defmodule Codebattle.Invite do
       {:ok, fsm} ->
         game_id = FsmHelpers.get_game_id(fsm)
 
-        {:ok, invite} =
-          Invite.update_invite(invite, %{state: "accepted", game_id: game_id}) |> IO.inspect()
+        {:ok, invite} = Invite.update_invite(invite, %{state: "accepted", game_id: game_id})
 
         {_, dropped_invites} =
           Invite.drop_invites_by_users(invite.creator_id, invite.recepient_id)

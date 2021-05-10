@@ -20,6 +20,15 @@ defmodule Codebattle.Application do
         []
       end
 
+    without_tests_workers =
+      if Mix.env() != :test do
+        [
+          worker(Codebattle.InvitesKillerServer, [])
+        ]
+      else
+        []
+      end
+
     children =
       [
         supervisor(Codebattle.Repo, []),
@@ -28,13 +37,12 @@ defmodule Codebattle.Application do
         supervisor(CodebattleWeb.Presence, []),
         supervisor(CodebattleWeb.Endpoint, []),
         worker(Codebattle.GameProcess.TasksQueuesServer, []),
-        worker(Codebattle.InvitesKillerServer, []),
         supervisor(Codebattle.GameProcess.GlobalSupervisor, []),
         supervisor(Codebattle.Tournament.GlobalSupervisor, []),
         worker(Codebattle.Bot.CreatorServer, []),
         worker(Codebattle.Utils.ContainerGameKiller, []),
         worker(Codebattle.UsersActivityServer, [])
-      ] ++ prod_workers
+      ] ++ prod_workers ++ without_tests_workers
 
     Supervisor.start_link(children, strategy: :one_for_one, name: __MODULE__)
   end
