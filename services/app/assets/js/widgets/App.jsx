@@ -19,15 +19,22 @@ import UserProfile from './containers/UserProfile';
 import UserSettings from './containers/UserSettings';
 import Registration from './containers/Registration';
 
-const { editorUI: editorUIReducer, ...otherReducers } = reducers;
+const { gameUI: gameUIReducer, ...otherReducers } = reducers;
 
-const editorUIPersistConfig = {
-  key: 'editorUI',
+const gameUIPersistWhitelist = [
+  'editorMode',
+  'editorTheme',
+  'taskDescriptionLanguage',
+];
+
+const gameUIPersistConfig = {
+  key: 'gameUI',
+  whitelist: gameUIPersistWhitelist,
   storage,
 };
 
 const rootReducer = combineReducers({
-  editorUI: persistReducer(editorUIPersistConfig, editorUIReducer),
+  gameUI: persistReducer(gameUIPersistConfig, gameUIReducer),
   ...otherReducers,
 });
 

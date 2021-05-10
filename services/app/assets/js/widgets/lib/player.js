@@ -1,5 +1,6 @@
 import Delta from 'quill-delta';
 import _ from 'lodash';
+import PlaybookStatusCodes from '../config/playbookStatusCodes';
 
 const snapshotStep = 400;
 
@@ -24,6 +25,13 @@ export const getText = (text, { delta: d }) => {
   const delta = new Delta(d);
   const finalDelta = textDelta.compose(delta);
   return finalDelta.ops[0].insert;
+};
+
+export const getDiff = (prevText, nextText) => {
+  const a = new Delta().insert(prevText);
+  const b = new Delta().insert(nextText);
+  const delta = a.diff(b).ops;
+  return { delta };
 };
 
 const collectFinalRecord = (acc, strRecord) => {
@@ -69,19 +77,42 @@ const createFinalRecord = (index, record, params) => {
 };
 
 const reduceOriginalRecords = (acc, record, index) => {
-  const { players: playersState, records, chat: chatState } = acc;
+  const {
+    players, records, chat: chatState, type: playbookType,
+  } = acc;
   const { messages, users } = chatState;
 
   const { type } = record;
 
-  if (type === 'update_editor_data') {
-    const { editorText, editorLang: prevEditorLang } = _.find(playersState, { id: record.id });
+  if (type === 'update_editor_data' && playbookType === PlaybookStatusCodes.active) {
+    const { editorText: prevEditorText } = _.find(players, { id: record.id });
+
+    const diff = getDiff(prevEditorText, record.editorText);
+    const newPlayers = updatePlayers(
+      players,
+      { id: record.id, editorText: record.editorText, editorLang: record.editorLang },
+    );
+    const data = {
+      type,
+      userId: record.id,
+      diff,
+    };
+    const newRecord = createFinalRecord(index, data, {
+      players: newPlayers,
+      chat: chatState,
+    });
+
+    return { ...acc, players: newPlayers, records: [...records, newRecord] };
+  }
+
+  if (type === 'update_editor_data' && playbookType === PlaybookStatusCodes.stored) {
+    const { editorText, editorLang: prevEditorLang } = _.find(players, { id: record.id });
     const { diff } = record;
 
     const newEditorText = getText(editorText, diff);
     const editorLang = diff.nextLang || prevEditorLang;
     const newPlayers = updatePlayers(
-      playersState,
+      players,
       { id: record.id, editorText: newEditorText, editorLang },
     );
     const data = {
@@ -100,7 +131,7 @@ const reduceOriginalRecords = (acc, record, index) => {
   if (type === 'check_complete') {
     const { checkResult } = record;
 
-    const newPlayers = updatePlayers(playersState, { id: record.id, checkResult });
+    const newPlayers = updatePlayers(players, { id: record.id, checkResult });
     const data = {
       type,
       userId: record.id,
@@ -127,7 +158,7 @@ const reduceOriginalRecords = (acc, record, index) => {
       type,
       chat: newChatState,
     };
-    const newRecord = createFinalRecord(index, data, { players: playersState });
+    const newRecord = createFinalRecord(index, data, { players });
 
     return { ...acc, chat: newChatState, records: [...records, newRecord] };
   }
@@ -144,7 +175,7 @@ const reduceOriginalRecords = (acc, record, index) => {
       type,
       chat: newChatState,
     };
-    const newRecord = createFinalRecord(index, data, { players: playersState });
+    const newRecord = createFinalRecord(index, data, { players });
 
     return { ...acc, chat: newChatState, records: [...records, newRecord] };
   }
@@ -156,14 +187,14 @@ const reduceOriginalRecords = (acc, record, index) => {
       type,
       chat: newChatState,
     };
-    const newRecord = createFinalRecord(index, data, { players: playersState });
+    const newRecord = createFinalRecord(index, data, { players });
 
     return { ...acc, chat: newChatState, records: [...records, newRecord] };
   }
 
   if (type === 'give_up') {
     const newPlayers = updatePlayersGameResult(
-      playersState,
+      players,
       { id: record.id, gameResult: 'gave_up' },
       { gameResult: 'won' },
     );
@@ -178,7 +209,7 @@ const reduceOriginalRecords = (acc, record, index) => {
 
   if (type === 'game_over') {
     const newPlayers = updatePlayersGameResult(
-      playersState,
+      players,
       { id: record.id, gameResult: 'won' },
       { gameResult: 'lost' },
     );
@@ -192,14 +223,82 @@ const reduceOriginalRecords = (acc, record, index) => {
   }
 
   const newRecord = createFinalRecord(index, record, {
-    players: playersState,
+    players,
     chat: chatState,
   });
 
   return { ...acc, records: [...records, newRecord] };
 };
 
-export const getFinalState = ({ recordId, records, gameInitialState }) => {
+export const addRecord = ({
+  records, players, type, payload,
+}) => {
+  if (!records) {
+    return { records, players };
+  }
+
+  const recordId = records.length;
+
+  switch (type) {
+    case 'update_editor_data': {
+      const { userId, langSlug, editorText } = payload;
+      const { editorText: prevEditorText } = _.find(players, { id: userId });
+
+      const diff = getDiff(prevEditorText, editorText);
+
+      const newPlayers = updatePlayers(
+        players,
+        { id: userId, editorText, editorLang: langSlug },
+      );
+      const data = {
+        type,
+        userId,
+        diff,
+      };
+      const newRecord = createFinalRecord(recordId, data, {
+        players: newPlayers,
+        chat: [], // we don't need show chat history for active game
+      });
+
+      return {
+        records: [...records, newRecord],
+        players: newPlayers,
+      };
+    }
+    case 'check_complete': {
+      const { userId, ...checkResult } = payload;
+
+      const newPlayers = updatePlayers(players, { id: userId, checkResult });
+      const data = {
+        type,
+        userId,
+        checkResult,
+      };
+      const newRecord = createFinalRecord(recordId, data, {
+        players: newPlayers,
+        chat: [], // we don't need show chat history for active game
+      });
+
+      return {
+        records: [...records, newRecord],
+        players: newPlayers,
+      };
+    }
+    default:
+      return { records, players };
+  }
+};
+
+export const getFinalState = ({ recordId, records, initRecords }) => {
+  const gameInitialState = {
+    players: initRecords,
+    chat: {
+      users: [],
+      messages: [],
+    },
+    nextRecordId: 0,
+  };
+
   const closestFullRecordId = Math.floor(recordId / snapshotStep) * snapshotStep;
   const closestFullRecord = parse(records[closestFullRecordId]);
   const finalRecord = records
@@ -210,12 +309,13 @@ export const getFinalState = ({ recordId, records, gameInitialState }) => {
   return nextRecordId === 0 ? gameInitialState : { ...finalRecord, nextRecordId };
 };
 
-export const resolveDiffs = playbook => {
+export const resolveDiffs = (playbook, type) => {
   const [initRecords, restRecords] = _.partition(
     playbook.records,
     record => record.type === 'init',
   );
   const initGameState = {
+    type,
     players: initRecords,
     records: [],
     chat: {

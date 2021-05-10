@@ -2,9 +2,9 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 import moment from 'moment';
 import periodTypes from '../config/periodTypes';
-import leaderboardTypes from '../config/leaderboardTypes';
 
 const periodMapping = {
+  [periodTypes.ALL]: 'all',
   [periodTypes.MONTHLY]: 'month',
   [periodTypes.WEEKLY]: 'week',
 };
@@ -13,29 +13,27 @@ export const leaderboardSelector = state => state.leaderboard;
 
 const fetchUsers = createAsyncThunk(
   'users/fetchUsers',
-  async ({ leaderboardType, periodType }, { getState, requestId }) => {
-    const { currentRequestId, loading } = getState().leaderboard[
-      leaderboardType
-    ];
-    if (loading !== 'pending' || requestId !== currentRequestId) {
+  async ({ periodType }, { getState }) => {
+    const { loading } = getState().leaderboard;
+    if (loading !== 'pending') {
       return;
     }
 
     const baseParams = {
       s: 'rating+desc',
-      page_size: '5',
+      page_size: '7',
       with_bots: false,
     };
 
-    const params = leaderboardType === leaderboardTypes.PER_PERIOD
-        ? {
+    const params = periodType === periodTypes.ALL
+        ? baseParams
+        : {
             ...baseParams,
             date_from: moment()
               .startOf(periodMapping[periodType])
               .utc()
               .format('YYYY-MM-DD'),
-          }
-        : baseParams;
+          };
 
     const response = await axios.get('/api/v1/users', { params });
 
@@ -47,58 +45,32 @@ const fetchUsers = createAsyncThunk(
 const leaderboardSlice = createSlice({
   name: 'leaderboard',
   initialState: {
-    perPeriod: {
-      loading: 'idle',
-      currentRequestId: undefined,
-      users: null,
-      period: periodTypes.MONTHLY,
-      error: null,
-    },
-    ever: {
-      loading: 'idle',
-      currentRequestId: undefined,
-      users: null,
-      error: null,
-    },
+    loading: 'idle',
+    users: null,
+    period: periodTypes.WEEKLY,
+    error: null,
   },
   reducers: {
     changePeriod(state, action) {
-      state.perPeriod.period = action.payload;
+      state.period = action.payload;
     },
   },
   extraReducers: {
-    [fetchUsers.pending]: (state, action) => {
-      const { leaderboardType } = action.meta.arg;
-
-      if (state[leaderboardType].loading === 'idle') {
-        state[leaderboardType].loading = 'pending';
-        state[leaderboardType].currentRequestId = action.meta.requestId;
+    [fetchUsers.pending]: state => {
+      if (state.loading === 'idle') {
+        state.loading = 'pending';
       }
     },
     [fetchUsers.fulfilled]: (state, action) => {
-      const { requestId } = action.meta;
-
-      const { leaderboardType } = action.meta.arg;
-      if (
-        state[leaderboardType].loading === 'pending'
-        && state[leaderboardType].currentRequestId === requestId
-      ) {
-        state[leaderboardType].loading = 'idle';
-        state[leaderboardType].users = action.payload.users;
-        state[leaderboardType].currentRequestId = undefined;
+      if (state.loading === 'pending') {
+        state.loading = 'idle';
+        state.users = action.payload.users;
       }
     },
     [fetchUsers.rejected]: (state, action) => {
-      const { requestId } = action.meta;
-
-      const { leaderboardType } = action.meta.arg;
-      if (
-        state[leaderboardType].loading === 'pending'
-        && state[leaderboardType].currentRequestId === requestId
-      ) {
-        state[leaderboardType].loading = 'idle';
-        state[leaderboardType].error = action.error;
-        state[leaderboardType].currentRequestId = undefined;
+      if (state.loading === 'pending') {
+        state.loading = 'idle';
+        state.error = action.error;
       }
     },
   },

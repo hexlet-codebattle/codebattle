@@ -132,7 +132,7 @@ const SubMenu = ({
             </div>
             {assert.output && (
               <button
-                className="btn btn-sm btn-info rounded ml-2"
+                className="btn btn-sm btn-info ml-2"
                 type="button"
                 onClick={() => setIsShowLog(!isShowLog)}
                 data-toggle="collapse"

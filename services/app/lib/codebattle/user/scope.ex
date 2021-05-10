@@ -17,6 +17,10 @@ defmodule Codebattle.User.Scope do
     |> sort(params)
   end
 
+  def by_email_or_name(query, %{name: name, email: email}) do
+    from(u in query, where: u.name == ^name or u.email == ^email)
+  end
+
   defp initial_with_raiting_scope(%{"date_from" => date_from}) when date_from !== "" do
     starts_at = Timex.parse!(date_from, "{YYYY}-{0M}-{D}")
 

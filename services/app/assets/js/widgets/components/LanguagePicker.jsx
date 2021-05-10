@@ -1,12 +1,13 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import PropTypes from 'prop-types';
 import _ from 'lodash';
 import Gon from 'gon';
 import Select from 'react-select';
 import LanguageIcon from './LanguageIcon';
 import * as selectors from '../selectors';
 import { changeCurrentLangAndSetTemplate } from '../middlewares/Game';
+import GameContext from '../containers/GameContext';
+import { replayerMachineStates } from '../machines/game';
 
 const defaultLanguages = Gon.getAsset('langs');
 
@@ -25,6 +26,7 @@ const LanguagePicker = ({ status, editor: { currentLangSlug } }) => {
       height: '33px',
       minHeight: '31px',
       minWidth: '210px',
+      borderRadius: 'unset',
       backgroundColor: 'hsl(0, 0%, 100%)',
     }),
     indicatorsContainer: provided => ({
@@ -47,7 +49,8 @@ const LanguagePicker = ({ status, editor: { currentLangSlug } }) => {
 
   const dispatch = useDispatch();
 
-  const languages = useSelector(state => selectors.editorLangsSelector(state));
+  const { current: gameCurrent } = useContext(GameContext);
+  const languages = useSelector(selectors.editorLangsSelector);
 
   const langs = languages || defaultLanguages;
   const [[currentLang], otherLangs] = _.partition(langs, lang => lang.slug === currentLangSlug);
@@ -59,7 +62,7 @@ const LanguagePicker = ({ status, editor: { currentLangSlug } }) => {
 
   const defaultLang = { label: <LangTitle {...currentLang} /> };
 
-  if (status === 'disabled') {
+  if (gameCurrent.matches({ replayer: replayerMachineStates.on }) || status === 'disabled') {
     return (
       <button className="btn btn-sm" type="button" disabled>
         <LangTitle {...currentLang} />
@@ -78,10 +81,6 @@ const LanguagePicker = ({ status, editor: { currentLangSlug } }) => {
       />
     </>
   );
-};
-
-LanguagePicker.propTypes = {
-  disabled: PropTypes.bool.isRequired,
 };
 
 export default LanguagePicker;

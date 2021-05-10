@@ -10,7 +10,7 @@ import reducers from '../widgets/slices';
 import RatingList from '../widgets/containers/RatingList';
 
 jest.mock('gon', () => {
-  const gonParams = { local: 'en' };
+  const gonParams = { local: 'en', current_user: { sound_settings: {} } };
   return { getAsset: type => gonParams[type] };
 }, { virtual: true });
 

@@ -10,7 +10,7 @@ jobs:
 
     services:
       db:
-        image: postgres:10.11
+        image: postgres:10.11-alpine
         ports: ["5432:5432"]
         options: >-
           --health-cmd pg_isready
@@ -20,27 +20,26 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-
-      - uses: actions/setup-elixir@v1.4.2
+      - uses: erlef/setup-beam@v1
         with:
-          otp-version: 23.x
-          elixir-version: 1.11.x
+          otp-version: "23.x"
+          elixir-version: "1.11.x"
 
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2
         with:
           path: services/app/deps
           key: ${{ runner.os }}-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/services/app/mix.lock')) }}
           restore-keys: |
             ${{ runner.os }}-deps-
 
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2
         with:
           path: services/app/_build
           key: ${{ runner.os }}-build-${{ hashFiles(format('{0}{1}', github.workspace, '/services/app/mix.lock')) }}
           restore-keys: |
             ${{ runner.os }}-build-
 
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2
         with:
           path: ~/.mix
           key: ${{ runner.os }}-mix-${{ hashFiles(format('{0}{1}', github.workspace, '/services/app/mix.lock')) }}
@@ -67,7 +66,7 @@ jobs:
         id: yarn-cache
         run: echo "::set-output name=dir::$(yarn cache dir)"
 
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2
         with:
           path: ${{ steps.yarn-cache.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}

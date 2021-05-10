@@ -1,51 +1,65 @@
 import React from 'react';
+import { replayerMachineStates } from '../machines/game';
 
 const handleClassnames = 'cb-slider-handle position-absolute rounded-circle';
 const buttonClassnames = 'cb-slider-handle-button position-absolute rounded-circle bg-danger';
 const sliderBarClassnames = 'cb-slider-bar position-absolute rounded';
 
-const CodebattleSliderBar = ({ value: currentValue, lastIntent, isHold }) => {
-  const renderSliderBar = ({ value, className }) => (
-    <div
-      className={className}
-      style={{
-        width: `${value * 100}%`,
-      }}
-    />
-  );
+const SliderBar = ({ value, className }) => (
+  <div
+    className={className}
+    style={{
+      width: `${value * 100}%`,
+    }}
+  />
+);
 
-  const renderSliderAction = ({ value, className }) => (
-    <div
-      className={className}
-      style={{
-        left: `${value * 100}%`,
-      }}
-    />
-  );
+const SliderAction = ({ value, className }) => (
+  <div
+    className={className}
+    style={{
+      left: `${value * 100}%`,
+    }}
+  />
+);
 
-  const renderSliderHandle = ({ value, className, classNameButton }) => (
-    <div
-      className={className}
-      style={{
-        left: `${value * 100}%`,
-      }}
-    >
-      <div className={classNameButton} />
+const SliderHandle = ({ value, className }) => (
+  <div
+    className={className}
+    style={{
+      left: `${value * 100}%`,
+    }}
+  >
+    <div className={buttonClassnames} />
+  </div>
+);
+
+const CodebattleSliderBar = ({ gameCurrent, handlerPosition, lastIntent }) => (
+  <>
+    <SliderAction
+      value={0.5}
+      className="cb-slider-action position-absolute bg-info"
+    />
+    <div className="cb-slider-timeline position-absolute rounded w-100 x-bg-gray">
+      {
+        gameCurrent.matches({ replayer: replayerMachineStates.holded })
+          && (
+          <SliderBar
+            className={`${sliderBarClassnames} x-intent-background`}
+            value={lastIntent}
+          />
+)
+      }
+      <SliderBar
+        className={`${sliderBarClassnames} bg-danger`}
+        value={handlerPosition}
+      />
+      <SliderHandle
+        className={handleClassnames}
+        value={handlerPosition}
+      />
     </div>
-  );
-
-  return (
-    <>
-      {renderSliderAction({ value: 0.5, className: 'cb-slider-action position-absolute bg-info' })}
-      <div className="cb-slider-timeline position-absolute rounded w-100 x-bg-gray">
-        {!isHold && renderSliderBar({ value: lastIntent, className: `${sliderBarClassnames} x-intent-background` })}
-        {renderSliderBar({ value: currentValue, className: `${sliderBarClassnames} bg-danger` })}
-        {renderSliderHandle({
-          value: currentValue, className: handleClassnames, classNameButton: buttonClassnames,
-        })}
-      </div>
-    </>
-  );
-};
+  </>
+);
 
 export default CodebattleSliderBar;

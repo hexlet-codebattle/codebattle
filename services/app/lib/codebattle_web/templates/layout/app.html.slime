@@ -34,7 +34,7 @@ html lang="en"
     /! End Google Tag Manager (noscript)
     .dark-bg
       .container-lg
-        nav.navbar.navbar-dark.navbar-expand-md.px-0
+        nav.navbar.navbar-dark.navbar-expand-md.px-0 style="margin-right:-15px; margin-left:-15px;"
           a.navbar-brand.d-flex.align-items-end href="/"
             img.my-auto[alt="Logo" src="/assets/images/logo.svg"]
             .d-flex.flex-column.text-gray.ml-1.pb-1
@@ -57,7 +57,7 @@ html lang="en"
                 li.nav-item.dropdown
                   a.nav-link.noborder.d-flex.px-0[href='#' aria-expanded="false" aria-haspopup="true" data-toggle="dropdown"]
                     .d-flex.flex-column.mr-2
-                      h5.text-white.mb-0
+                      h5.text-white.text-right.mb-0
                         = @current_user.name
                       .text-right
                         img[alt="#{@current_user.rating}" src="/assets/images/rating.svg"]

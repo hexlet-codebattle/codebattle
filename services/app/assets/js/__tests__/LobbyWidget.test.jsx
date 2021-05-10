@@ -12,7 +12,7 @@ import LobbyWidget from '../widgets/containers/LobbyWidget';
 jest.mock(
   'gon',
   () => {
-    const gonParams = { local: 'en' };
+    const gonParams = { local: 'en', current_user: { sound_settings: {} } };
     return { getAsset: type => gonParams[type] };
   },
   { virtual: true },

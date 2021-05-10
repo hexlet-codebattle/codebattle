@@ -67,7 +67,8 @@ defmodule Codebattle.TasksImporter do
             level: params.level,
             input_signature: params.input_signature,
             output_signature: params.output_signature,
-            asserts: params.asserts
+            asserts: params.asserts,
+            tags: params.tags
           ]
         ],
         conflict_target: :name
@@ -91,7 +92,8 @@ defmodule Codebattle.TasksImporter do
       level: Map.get(issue_info, "level"),
       input_signature: Map.get(signature, "input"),
       output_signature: Map.get(signature, "output"),
-      asserts: asserts
+      asserts: asserts,
+      tags: Map.get(issue_info, "tags")
     }
   end
 end
