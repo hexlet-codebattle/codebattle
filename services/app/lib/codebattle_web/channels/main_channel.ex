@@ -77,9 +77,10 @@ defmodule CodebattleWeb.MainChannel do
           state: invite.state,
           id: invite.id,
           creator_id: invite.creator_id,
+          game_params: game_params,
           recepient_id: invite.recepient_id,
-          creator: Map.from_struct(invite.creator),
-          recepient: Map.from_struct(invite.recepient)
+          creator: invite.creator,
+          recepient: invite.recepient
         }
 
         CodebattleWeb.Endpoint.broadcast!(

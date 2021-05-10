@@ -79,7 +79,7 @@ const OpponentSelect = ({ setOpponent }) => {
 const CreateGameDialog = ({ hideModal }) => {
   const dispatch = useDispatch();
   const gameLevels = Object.keys(levelRatio);
-  const currentGameTypeCodes = [gameTypeCodes.bot, gameTypeCodes.public, gameTypeCodes.private];
+  const currentGameTypeCodes = [gameTypeCodes.public, gameTypeCodes.private, gameTypeCodes.bot];
   const [opponent, setOpponent] = useState();
 
   const [game, setGame] = useState({

@@ -52,5 +52,5 @@ test('test rendering GameList', async () => {
   expect(getByText(/Online players: 2/)).toBeInTheDocument();
   expect(getByText(/Tournaments/)).toBeInTheDocument();
   expect(getByText(/Completed Games/)).toBeInTheDocument();
-  expect(getByText(/Create Game/)).toBeInTheDocument();
+  expect(getByText(/Create a Game/)).toBeInTheDocument();
 });
