@@ -91,13 +91,19 @@ jobs:
         run: yarn test
         working-directory: ./services/app
 
+      - name: Compile
+        run: mix compile
+        working-directory: ./services/app
+        env:
+          MIX_ENV: test
+
       - name: Setup db
         run: mix ecto.create && mix ecto.migrate
         working-directory: ./services/app
         env:
           MIX_ENV: test
 
-      - name: TEST
+      - name: Mix tests
         run: make test
         env:
           MIX_ENV: test
