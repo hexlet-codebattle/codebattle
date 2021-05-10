@@ -24,20 +24,32 @@ $fa-font-path: "/fonts";
 }
 
 @keyframes checking_fade {
-  from { opacity: 1.0; }
-  50% { opacity: 0.6; }
-  to { opacity: 1.0; }
+  from {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @-webkit-keyframes checking_fade {
-  from { opacity: 1.0; }
-  50% { opacity: 0.6; }
-  to { opacity: 1.0; }
+  from {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 [data-editor-state="checking"] {
-  animation:checking_fade 1000ms infinite;
-  -webkit-animation:checking_fade 1000ms infinite;
+  animation: checking_fade 1000ms infinite;
+  -webkit-animation: checking_fade 1000ms infinite;
 }
 
 .dark-bg {
@@ -155,6 +167,16 @@ a {
   font-size: 8px;
 }
 
+.cb-user-online {
+  color: var(--green) !important;
+}
+
+.cb-user-offline {
+  color: var(--white) !important;
+  border: 0.2rem solid transparent;
+  border-color: var(--gray);
+  border-radius: 0.5rem;
+}
 .cb-timer-progress {
   position: absolute;
   top: 0;
@@ -354,7 +376,7 @@ a {
     text-decoration: none;
     box-shadow: 0 1px 0 0 currentColor;
     transition-property: box-shadow, color;
-    transition-duration: .33s;
+    transition-duration: 0.33s;
     transition-timing-function: ease-out;
   }
 }
@@ -402,4 +424,8 @@ a {
     border-right: 1px solid black;
     border-left: 1px solid black;
   }
+}
+
+.popover{
+    max-width: 100%; /* Max Width of the popover (depending on the container!) */
 }

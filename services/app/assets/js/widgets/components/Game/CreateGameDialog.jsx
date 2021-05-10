@@ -1,15 +1,86 @@
 import React, { useState } from 'react';
-import classnames from 'classnames';
+import { useDispatch, useSelector } from 'react-redux';
+import cn from 'classnames';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import AsyncSelect from 'react-select/async';
+import axios from 'axios';
+import qs from 'qs';
+import { camelizeKeys } from 'humps';
+import * as selectors from '../../selectors';
+import { actions } from '../../slices';
 import * as lobbyMiddlewares from '../../middlewares/Lobby';
+import * as mainMiddlewares from '../../middlewares/Main';
 import i18n from '../../../i18n';
 import levelRatio from '../../config/levelRatio';
 import gameTypeCodes from '../../config/gameTypeCodes';
 
 const TIMEOUTS = [3600, 1800, 1200, 900, 600, 300, 120, 60];
 
+const UserLabel = ({ user }) => {
+  const { presenceList } = useSelector(selectors.lobbyDataSelector);
+  const isOnline = presenceList.some(({ id }) => id === user.id);
+  const onlineIndicatorClassName = cn('mr-1', {
+    'cb-user-online': isOnline,
+    'cb-user-offline': !isOnline,
+  });
+
+  return (
+    <>
+      <span className="text-truncate">
+        <FontAwesomeIcon
+          icon={['fa', 'circle']}
+          className={onlineIndicatorClassName}
+        />
+        <span>{`${user.name} (${user.rating})`}</span>
+      </span>
+    </>
+);
+};
+
+const OpponentSelect = ({ setOpponent }) => {
+  const currentUserId = useSelector(selectors.currentUserIdSelector);
+  const dispatch = useDispatch();
+
+  const loadOptions = (inputValue, callback) => {
+    const queryParamsString = qs.stringify({
+      q: {
+        name_ilike: inputValue,
+      },
+    });
+
+    axios
+      .get(`/api/v1/users?${queryParamsString}`)
+      .then(({ data }) => {
+        const { users } = camelizeKeys(data);
+
+        const options = users
+          .filter(({ id }) => currentUserId !== id)
+          .map(
+            user => ({ label: <UserLabel user={user} />, value: user }),
+          );
+
+        callback(options);
+      })
+      .catch(error => {
+        dispatch(actions.setError(error));
+      });
+  };
+
+  return (
+    <AsyncSelect
+      className="w-100"
+      defaultOptions
+      onChange={({ value }) => setOpponent(value)}
+      loadOptions={loadOptions}
+    />
+  );
+};
+
 const CreateGameDialog = ({ hideModal }) => {
+  const dispatch = useDispatch();
   const gameLevels = Object.keys(levelRatio);
-  const currentGameTypeCodes = [gameTypeCodes.bot, gameTypeCodes.public, gameTypeCodes.private];
+  const currentGameTypeCodes = [gameTypeCodes.public, gameTypeCodes.private, gameTypeCodes.bot];
+  const [opponent, setOpponent] = useState();
 
   const [game, setGame] = useState({
     level: gameLevels[0],
@@ -17,25 +88,52 @@ const CreateGameDialog = ({ hideModal }) => {
     timeoutSeconds: TIMEOUTS[3],
   });
 
+  const isPrivateGame = game.type === gameTypeCodes.private;
+
+  const createBtnClassname = cn('btn btn-success mb-2 mt-4 d-flex ml-auto text-white font-weight-bold', {
+    disabled: isPrivateGame && !opponent,
+  });
+  const createBtnTitle = isPrivateGame
+    ? i18n.t('Create Invite')
+    : i18n.t('Create Battle');
+
+  const create = () => {
+    if (isPrivateGame && opponent) {
+      dispatch(mainMiddlewares.createInvite({
+        level: game.level,
+        type: game.type,
+        timeout_seconds: game.timeoutSeconds,
+        recepient_id: opponent.id,
+      }));
+    } else if (!isPrivateGame) {
+      lobbyMiddlewares.createGame({
+        level: game.level,
+        type: game.type,
+        timeout_seconds: game.timeoutSeconds,
+      });
+    }
+    hideModal();
+  };
+
   const renderPickTimeouts = () => TIMEOUTS.map(timeout => (
     <button
       key={timeout}
       type="button"
-      className={classnames('btn mr-1', {
-          'bg-orange text-white': game.timeoutSeconds === timeout,
-          'btn-outline-orange': game.timeoutSeconds !== timeout,
-        })}
+      className={cn('btn mr-1', {
+        'bg-orange text-white': game.timeoutSeconds === timeout,
+        'btn-outline-orange': game.timeoutSeconds !== timeout,
+      })}
       onClick={() => setGame({ ...game, timeoutSeconds: timeout })}
     >
       {i18n.t(`Timeout ${timeout} seconds`)}
     </button>
   ));
 
-  const renderPickPlayer = () => currentGameTypeCodes.map(gameType => (
+  const renderPickGameType = () => currentGameTypeCodes.map(gameType => (
     <button
       type="button"
       key={gameType}
-      className={classnames('btn', {
+      className={cn('btn', {
         'bg-orange text-white': game.type === gameType,
         'btn-outline-orange': game.type !== gameType,
       })}
@@ -43,7 +141,7 @@ const CreateGameDialog = ({ hideModal }) => {
     >
       {i18n.t(`${gameType} game`)}
     </button>
-    ));
+  ));
 
   return (
     <div>
@@ -53,7 +151,7 @@ const CreateGameDialog = ({ hideModal }) => {
           <button
             key={level}
             type="button"
-            className={classnames('btn mb-2', {
+            className={cn('btn mb-2', {
               'bg-orange': game.level === level,
               'btn-outline-orange border-0': game.level !== level,
             })}
@@ -67,28 +165,30 @@ const CreateGameDialog = ({ hideModal }) => {
         ))}
       </div>
 
-      <h5>{i18n.t('Players')}</h5>
+      <h5>{i18n.t('Game Type')}</h5>
       <div className="d-flex justify-content-around px-5 mt-3 mb-2">
-        {renderPickPlayer()}
+        {renderPickGameType()}
       </div>
       <h5>{i18n.t('Time control')}</h5>
-      <div className="d-flex justify-content-around px-5 mt-3">
+      <div className="d-flex justify-content-around px-5 mt-3 mb-2">
         {renderPickTimeouts()}
       </div>
-
+      {
+        isPrivateGame && (
+        <>
+          <h5>{i18n.t('Choose opponent')}</h5>
+          <div className="d-flex justify-content-around px-5 mt-3 mb-2">
+            <OpponentSelect setOpponent={setOpponent} />
+          </div>
+        </>
+)
+      }
       <button
         type="button"
-        className="btn btn-success mb-2 mt-4 d-flex ml-auto text-white font-weight-bold"
-        onClick={() => {
-          lobbyMiddlewares.createGame({
-            level: game.level,
-            type: game.type,
-            timeout_seconds: game.timeoutSeconds,
-          });
-          hideModal();
-        }}
+        className={createBtnClassname}
+        onClick={create}
       >
-        {i18n.t('Start battle')}
+        {createBtnTitle}
       </button>
     </div>
   );

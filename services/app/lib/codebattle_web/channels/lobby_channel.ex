@@ -6,11 +6,9 @@ defmodule CodebattleWeb.LobbyChannel do
   alias Codebattle.GameProcess.Play
   alias Codebattle.Tournament
   alias CodebattleWeb.Api.GameView
-  alias CodebattleWeb.Presence
 
   def join("lobby", _payload, socket) do
     user_id = socket.assigns.user_id
-    send(self(), :after_join)
 
     {:ok,
      %{

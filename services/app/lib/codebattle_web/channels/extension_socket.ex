@@ -6,6 +6,7 @@ defmodule CodebattleWeb.ExtensionSocket do
 
   ## Channels
   channel("lobby", CodebattleWeb.LobbyChannel)
+  channel("main", CodebattleWeb.MainChannel)
 
   def connect(_params, socket) do
     UsersActivityServer.add_event(%{

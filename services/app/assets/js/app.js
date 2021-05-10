@@ -31,6 +31,7 @@ import { inspect } from '@xstate/inspect';
 // paths "./socket" or full ones "web/static/js/socket".
 
 import {
+  renderInvitesWidget,
   renderGameWidget,
   renderLobby,
   renderHeatmapWidget,
@@ -70,6 +71,7 @@ window.addEventListener('phx:page-loading-stop', _info => NProgress.done());
 
 liveSocket.connect();
 
+const invitesRoot = document.getElementById('invites-root');
 const extension = document.getElementById('extension');
 const gameWidgetRoot = document.getElementById('game-widget-root');
 const heatmapRoot = document.getElementById('heatmap-root');
@@ -78,6 +80,10 @@ const ratingList = document.getElementById('rating-list');
 const userPageRoot = document.getElementById('user-page-root');
 const settingsRoot = document.getElementById('settings');
 const registrationRoot = document.getElementById('registration');
+
+if (invitesRoot) {
+  renderInvitesWidget(invitesRoot);
+}
 
 if (extension) {
   renderExtensionPopup(extension);

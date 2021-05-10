@@ -10,6 +10,7 @@ import lobby, { actions as lobbyActions } from './lobby';
 import user, { actions as userActions } from './user';
 import userSettings, { actions as userSettingActions } from './userSettings';
 import leaderboard, { actions as leaderboardActions } from './leaderboard';
+import invites, { actions as invitesActions } from './invites';
 
 const setError = error => ({
   type: 'ERROR',
@@ -30,6 +31,7 @@ export const actions = {
   ...userActions,
   ...lobbyActions,
   ...leaderboardActions,
+  ...invitesActions,
   ...userSettingActions,
 };
 
@@ -49,6 +51,7 @@ export default {
   storeLoaded,
   executionOutput,
   leaderboard,
+  invites,
   userSettings,
 };
 

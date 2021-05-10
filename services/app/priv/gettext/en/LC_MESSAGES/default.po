@@ -385,13 +385,13 @@ msgid "Timeout 3600 seconds"
 msgstr "60 min"
 
 msgid "private game"
-msgstr "With friend"
+msgstr "With a friend"
 
 msgid "public game"
-msgstr "With human"
+msgstr "With other users"
 
 msgid "bot game"
-msgstr "With bot"
+msgstr "With a bot"
 
 msgid "Time control"
 msgstr "Time control"

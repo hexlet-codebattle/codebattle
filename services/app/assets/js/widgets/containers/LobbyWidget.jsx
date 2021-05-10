@@ -346,7 +346,7 @@ const GameContainers = ({ activeGames, completedGames, liveTournaments }) => (
 const renderModal = (show, handleCloseModal) => (
   <Modal show={show} onHide={handleCloseModal}>
     <Modal.Header closeButton>
-      <Modal.Title>Create game</Modal.Title>
+      <Modal.Title>Create a game</Modal.Title>
     </Modal.Header>
     <Modal.Body>
       <CreateGameDialog hideModal={handleCloseModal} />
@@ -360,7 +360,7 @@ const CreateGameButton = ({ handleClick }) => (
     className="btn btn-success text-uppercase font-weight-bold py-3 mb-3"
     onClick={handleClick}
   >
-    Create Game
+    Create a Game
   </button>
 );
 

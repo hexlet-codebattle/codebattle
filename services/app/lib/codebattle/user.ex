@@ -25,7 +25,6 @@ defmodule Codebattle.User do
   @derive {Jason.Encoder,
            only: [
              :id,
-             :firebase_uid,
              :name,
              :rating,
              :is_bot,

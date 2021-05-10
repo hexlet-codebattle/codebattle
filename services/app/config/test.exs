@@ -38,6 +38,8 @@ adapter =
 config :codebattle, code_check_timeout: 25_000
 config :codebattle, checker_adapter: adapter
 config :codebattle, tournament_match_timeout: 1
+config :codebattle, Codebattle.Invite, timeout: :timer.seconds(1)
+config :codebattle, Codebattle.Invite, lifetime: :timer.seconds(0)
 
 config :codebattle, :firebase,
   sender_id: "ASDF",
