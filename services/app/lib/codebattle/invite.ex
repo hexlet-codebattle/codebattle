@@ -118,7 +118,7 @@ defmodule Codebattle.Invite do
 
     case Play.start_game(game_params) do
       {:ok, fsm} ->
-        game_id = FsmHelpers.get_game_id(fsm) |> IO.inspect()
+        game_id = FsmHelpers.get_game_id(fsm)
 
         {:ok, invite} =
           Invite.update_invite(invite, %{state: "accepted", game_id: game_id}) |> IO.inspect()
