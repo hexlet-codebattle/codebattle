@@ -13,9 +13,9 @@ defmodule Codebattle.GameProcess.Engine.Standard do
 
   use Engine.Base
 
-  # 2 hour
-  @default_timeout 7200
-  @timeout_seconds_whitelist [60, 120, 300, 600, 1200, 3600, 7200]
+  # 1 hour
+  @default_timeout 3600
+  @timeout_seconds_whitelist [60, 120, 300, 600, 900, 1200, 1800, 3600, 7200]
 
   @impl Engine.Base
   def create_game(%{user: user, level: level, type: type} = params) do

@@ -5,7 +5,7 @@ import i18n from '../../../i18n';
 import levelRatio from '../../config/levelRatio';
 import gameTypeCodes from '../../config/gameTypeCodes';
 
-const TIMEOUTS = [3600, 1800, 900, 600, 60];
+const TIMEOUTS = [3600, 1800, 1200, 900, 600, 300, 120, 60];
 
 const CreateGameDialog = ({ hideModal }) => {
   const gameLevels = Object.keys(levelRatio);

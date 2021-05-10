@@ -1,28 +1,28 @@
-import React, { useEffect, useRef } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { Table } from 'react-bootstrap';
-import classnames from 'classnames';
-import UserInfo from '../../containers/UserInfo';
-import { actions } from '../../slices';
-import { leaderboardSelector } from '../../slices/leaderboard';
-import periodTypes from '../../config/periodTypes';
-import leaderboardTypes from '../../config/leaderboardTypes';
+import React, { useEffect, useRef } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { Table } from "react-bootstrap";
+import classnames from "classnames";
+import UserInfo from "../containers/UserInfo";
+import { actions } from "../slices";
+import { leaderboardSelector } from "../slices/leaderboard";
+import periodTypes from "../config/periodTypes";
 
-const TopPlayersPerPeriod = () => {
+const Leaderboard = () => {
   const dispatch = useDispatch();
 
-  const {
-    perPeriod: { users: rating, period },
-  } = useSelector(leaderboardSelector);
-
-  const anchorMonthRef = useRef(null);
+  const { users: rating, period } = useSelector(leaderboardSelector);
 
   const anchorWeekRef = useRef(null);
+  const anchorMonthRef = useRef(null);
+  const anchorAllRef = useRef(null);
 
   const handlePeriodClick = ({ target: { textContent } }) => {
     const periodValue = textContent && textContent.trim();
 
     switch (periodValue) {
+      case periodTypes.ALL:
+        dispatch(actions.changePeriod(periodTypes.ALL));
+        break;
       case periodTypes.MONTHLY:
         dispatch(actions.changePeriod(periodTypes.MONTHLY));
         break;
@@ -39,12 +39,7 @@ const TopPlayersPerPeriod = () => {
   useEffect(() => {
     (async () => {
       try {
-        await dispatch(
-          actions.fetchUsers({
-            leaderboardType: leaderboardTypes.PER_PERIOD,
-            periodType: period,
-          }),
-        );
+        await dispatch(actions.fetchUsers({ periodType: period }));
       } catch (e) {
         throw new Error(e.message);
       }
@@ -64,15 +59,28 @@ const TopPlayersPerPeriod = () => {
                 className="m-2"
               />
               <p className="d-inline-flex align-items-baseline flex-nowrap m-0 p-0">
-                <span className="d-flex">Leaderboard&thinsp;</span>
-                <span className="small d-flex">
+                <span className="d-flex">Leaderboard</span>
+                <span className="ml-2 small d-flex">
+                  <u>
+                    <a
+                      href="#!"
+                      ref={anchorWeekRef}
+                      onClick={handlePeriodClick}
+                      className={classnames({
+                        "text-orange": period === periodTypes.WEEKLY,
+                      })}
+                    >
+                      {periodTypes.WEEKLY}
+                    </a>
+                  </u>
+                  /
                   <u>
                     <a
                       href="#!"
                       ref={anchorMonthRef}
                       onClick={handlePeriodClick}
                       className={classnames({
-                        'text-orange': period === periodTypes.MONTHLY,
+                        "text-orange": period === periodTypes.MONTHLY,
                       })}
                     >
                       {periodTypes.MONTHLY}
@@ -82,13 +90,13 @@ const TopPlayersPerPeriod = () => {
                   <u>
                     <a
                       href="#!"
-                      ref={anchorWeekRef}
+                      ref={anchorAllRef}
                       onClick={handlePeriodClick}
                       className={classnames({
-                        'text-orange': period === periodTypes.WEEKLY,
+                        "text-orange": period === periodTypes.ALL,
                       })}
                     >
-                      {periodTypes.WEEKLY}
+                      {periodTypes.ALL}
                     </a>
                   </u>
                 </span>
@@ -98,8 +106,8 @@ const TopPlayersPerPeriod = () => {
         </tr>
       </thead>
       <tbody>
-        {rating
-          && rating.map(item => (
+        {rating &&
+          rating.map((item) => (
             <tr key={item.name}>
               <td className="pr-0">
                 <div className="d-flex">
@@ -109,9 +117,19 @@ const TopPlayersPerPeriod = () => {
               <td className="text-right pl-0">{item.rating}</td>
             </tr>
           ))}
+        <tr>
+          <td className="pr-0">
+            <div className="mt-2">
+              <u>
+                <a href="/users">More users...</a>
+              </u>
+            </div>
+          </td>
+          <td className="text-right pl-0"></td>
+        </tr>
       </tbody>
     </Table>
   );
 };
 
-export default TopPlayersPerPeriod;
+export default Leaderboard;

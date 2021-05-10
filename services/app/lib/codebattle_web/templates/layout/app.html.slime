@@ -34,7 +34,7 @@ html lang="en"
     /! End Google Tag Manager (noscript)
     .dark-bg
       .container-lg
-        nav.navbar.navbar-dark.navbar-expand-md.px-0
+        nav.navbar.navbar-dark.navbar-expand-md.px-0 style="margin-right:-15px; margin-left:-15px;"
           a.navbar-brand.d-flex.align-items-end href="/"
             img.my-auto[alt="Logo" src="/assets/images/logo.svg"]
             .d-flex.flex-column.text-gray.ml-1.pb-1

@@ -1,28 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import { Modal } from 'react-bootstrap';
-import _ from 'lodash';
-import copy from 'copy-to-clipboard';
-import moment from 'moment';
+import React, { useEffect, useState } from "react";
+import { Modal } from "react-bootstrap";
+import _ from "lodash";
+import copy from "copy-to-clipboard";
+import moment from "moment";
 
-import { useDispatch, useSelector } from 'react-redux';
-import Gon from 'gon';
-import * as lobbyMiddlewares from '../middlewares/Lobby';
-import gameStatusCodes from '../config/gameStatusCodes';
-import { actions } from '../slices';
-import * as selectors from '../selectors';
-import Loading from '../components/Loading';
+import { useDispatch, useSelector } from "react-redux";
+import Gon from "gon";
+import * as lobbyMiddlewares from "../middlewares/Lobby";
+import gameStatusCodes from "../config/gameStatusCodes";
+import { actions } from "../slices";
+import * as selectors from "../selectors";
+import Loading from "../components/Loading";
 // import GamesHeatmap from '../components/GamesHeatmap';
 // import Card from '../components/Card';
-import UserInfo from './UserInfo';
-import { makeCreateGameBotUrl, getSignInGithubUrl } from '../utils/urlBuilders';
-import i18n from '../../i18n';
+import UserInfo from "./UserInfo";
+import { makeCreateGameBotUrl, getSignInGithubUrl } from "../utils/urlBuilders";
+import i18n from "../../i18n";
 // import StartGamePanel from '../components/StartGamePanel';
-import CompletedGames from '../components/Game/CompletedGames';
-import CreateGameDialog from '../components/Game/CreateGameDialog';
-import TopPlayersEver from '../components/TopPlayers/TopPlayersEver';
-import TopPlayersPerPeriod from '../components/TopPlayers/TopPlayersPerPeriod';
-import GameLevelBadge from '../components/GameLevelBadge';
-import levelRatio from '../config/levelRatio';
+import CompletedGames from "../components/Game/CompletedGames";
+import CreateGameDialog from "../components/Game/CreateGameDialog";
+import Leaderboard from "../components/Leaderboard";
+import Announcement from "../components/Announcement";
+import GameLevelBadge from "../components/GameLevelBadge";
+import levelRatio from "../config/levelRatio";
 
 const Players = ({ players }) => {
   if (players.length === 1) {
@@ -50,7 +50,8 @@ const Players = ({ players }) => {
   );
 };
 
-const isPlayer = (user, game) => !_.isEmpty(_.find(game.players, { id: user.id }));
+const isPlayer = (user, game) =>
+  !_.isEmpty(_.find(game.players, { id: user.id }));
 
 const ShowButton = ({ url }) => (
   <a type="button" className="btn btn-outline-orange btn-sm" href={url}>
@@ -76,13 +77,13 @@ const renderButton = (url, type) => {
 
 const GameActionButton = ({ game }) => {
   const gameUrl = makeCreateGameBotUrl(game.id);
-  const gameUrlJoin = makeCreateGameBotUrl(game.id, 'join');
-  const currentUser = Gon.getAsset('current_user');
+  const gameUrlJoin = makeCreateGameBotUrl(game.id, "join");
+  const currentUser = Gon.getAsset("current_user");
   const gameState = game.state;
   const signInUrl = getSignInGithubUrl();
 
   if (gameState === gameStatusCodes.playing) {
-    const type = isPlayer(currentUser, game) ? 'continue' : 'show';
+    const type = isPlayer(currentUser, game) ? "continue" : "show";
     return renderButton(gameUrl, type);
   }
 
@@ -124,7 +125,7 @@ const GameActionButton = ({ game }) => {
           data-method="get"
           data-to={signInUrl}
         >
-          {i18n.t('Sign in with %{name}', { name: 'Github' })}
+          {i18n.t("Sign in with %{name}", { name: "Github" })}
         </button>
       );
     }
@@ -137,7 +138,7 @@ const GameActionButton = ({ game }) => {
           data-csrf={window.csrf_token}
           data-to={gameUrlJoin}
         >
-          {i18n.t('Fight')}
+          {i18n.t("Fight")}
         </button>
       </div>
     );
@@ -170,14 +171,14 @@ const LiveTournaments = ({ tournaments }) => {
           </tr>
         </thead>
         <tbody className="">
-          {_.orderBy(tournaments, 'startsAt', 'desc').map(tournament => (
+          {_.orderBy(tournaments, "startsAt", "desc").map((tournament) => (
             <tr key={tournament.id}>
               <td className="p-3 align-middle">{tournament.name}</td>
               <td className="p-3 align-middle text-nowrap">
                 {moment
                   .utc(tournament.startsAt)
                   .local()
-                  .format('YYYY-MM-DD HH:mm')}
+                  .format("YYYY-MM-DD HH:mm")}
               </td>
               <td className="p-3 align-middle text-nowrap">
                 <UserInfo user={tournament.creator} />
@@ -199,9 +200,9 @@ const LiveTournaments = ({ tournaments }) => {
 };
 
 const ActiveGames = ({ games }) => {
-  const currentUser = Gon.getAsset('current_user');
-  const filterGames = game => {
-    if (game.type === 'private') {
+  const currentUser = Gon.getAsset("current_user");
+  const filterGames = (game) => {
+    if (game.type === "private") {
       return !!_.find(game.players, { id: currentUser.id });
     }
     return true;
@@ -210,18 +211,30 @@ const ActiveGames = ({ games }) => {
   if (_.isEmpty(filtetedGames)) {
     return <p className="text-center">There are no active games right now.</p>;
   }
-  const gamesSortByLevel = _.sortBy(filtetedGames, [game => levelRatio[game.level]]);
-  const { gamesWithCurrentUser = [], gamesWithActiveUsers = [], gamesWithBots = [] } = _.groupBy(gamesSortByLevel, game => {
-    const isCurrentUserPlay = game.players.some(({ id }) => id === currentUser.id);
+  const gamesSortByLevel = _.sortBy(filtetedGames, [
+    (game) => levelRatio[game.level],
+  ]);
+  const {
+    gamesWithCurrentUser = [],
+    gamesWithActiveUsers = [],
+    gamesWithBots = [],
+  } = _.groupBy(gamesSortByLevel, (game) => {
+    const isCurrentUserPlay = game.players.some(
+      ({ id }) => id === currentUser.id
+    );
     if (isCurrentUserPlay) {
-      return 'gamesWithCurrentUser';
+      return "gamesWithCurrentUser";
     }
     if (!game.isBot) {
-      return 'gamesWithActiveUsers';
+      return "gamesWithActiveUsers";
     }
-    return 'gamesWithBots';
+    return "gamesWithBots";
   });
-  const sortedGames = [...gamesWithCurrentUser, ...gamesWithActiveUsers, ...gamesWithBots];
+  const sortedGames = [
+    ...gamesWithCurrentUser,
+    ...gamesWithActiveUsers,
+    ...gamesWithBots,
+  ];
   return (
     <div className="table-responsive">
       <table className="table table-striped border-gray border-top-0 mb-0">
@@ -236,7 +249,7 @@ const ActiveGames = ({ games }) => {
           </tr>
         </thead>
         <tbody>
-          {sortedGames.map(game => (
+          {sortedGames.map((game) => (
             <tr key={game.id} className="text-dark game-item">
               <td className="p-3 align-middle text-nowrap">
                 <GameLevelBadge level={game.level} />
@@ -245,9 +258,9 @@ const ActiveGames = ({ games }) => {
                 <img
                   alt={game.state}
                   src={
-                    game.state === 'playing'
-                      ? '/assets/images/playing.svg'
-                      : '/assets/images/waitingOpponent.svg'
+                    game.state === "playing"
+                      ? "/assets/images/playing.svg"
+                      : "/assets/images/waitingOpponent.svg"
                   }
                 />
               </td>
@@ -263,11 +276,7 @@ const ActiveGames = ({ games }) => {
   );
 };
 
-const GameContainers = ({
-  activeGames,
-  completedGames,
-  liveTournaments,
-}) => (
+const GameContainers = ({ activeGames, completedGames, liveTournaments }) => (
   <div className="p-0">
     <nav>
       <div className="nav nav-tabs bg-gray" id="nav-tab" role="tablist">
@@ -357,7 +366,7 @@ const CreateGameButton = ({ handleClick }) => (
 );
 
 const LobbyWidget = () => {
-  const currentUser = Gon.getAsset('current_user');
+  const currentUser = Gon.getAsset("current_user");
   const dispatch = useDispatch();
 
   const [show, setShow] = useState(false);
@@ -385,7 +394,6 @@ const LobbyWidget = () => {
     <div className="container-lg">
       {renderModal(show, handleCloseModal)}
       <div className="row">
-        {/* {isGuestCurrentUser ? <Intro /> : <StartGamePanel />} */}
         <div className="col-lg-8 col-md-12 p-0 mb-2 pr-lg-2 pb-3">
           <GameContainers
             activeGames={activeGames}
@@ -397,14 +405,11 @@ const LobbyWidget = () => {
 
         <div className="d-flex flex-column col-lg-4 col-md-12 p-0">
           <CreateGameButton handleClick={handleShowModal} />
-          <TopPlayersPerPeriod />
           <div className="mt-2">
-            <TopPlayersEver />
+            <Announcement />
           </div>
           <div className="mt-2">
-            <u>
-              <a href="https://codebattle.hexlet.io/users">More</a>
-            </u>
+            <Leaderboard />
           </div>
         </div>
       </div>

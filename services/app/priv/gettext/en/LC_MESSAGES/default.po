@@ -361,28 +361,28 @@ msgid "Timeout - no timeout"
 msgstr "No timeout"
 
 msgid "Timeout 60 seconds"
-msgstr "1 minute"
+msgstr "1 min"
 
 msgid "Timeout 120 seconds"
-msgstr "2 minutes"
+msgstr "2 min"
 
 msgid "Timeout 300 seconds"
-msgstr "5 minutes"
+msgstr "5 min"
 
 msgid "Timeout 600 seconds"
-msgstr "10 minutes"
+msgstr "10 min"
 
 msgid "Timeout 900 seconds"
-msgstr "15 minutes"
+msgstr "15 min"
 
 msgid "Timeout 1800 seconds"
-msgstr "30 minutes"
+msgstr "30 min"
 
 msgid "Timeout 1200 seconds"
-msgstr "20 minutes"
+msgstr "20 min"
 
 msgid "Timeout 3600 seconds"
-msgstr "1 hour"
+msgstr "60 min"
 
 msgid "private game"
 msgstr "With friend"
