@@ -17,11 +17,26 @@ defmodule Codebattle.InvitesKillerServer do
   ## Server callbacks
 
   def init(_) do
-    Process.send_after(self(), :trigger_timeout, @timeout)
+    Process.send_after(self(), :work, @timeout)
     {:ok, %{}}
   end
 
-  def handle_info(:trigger_timeout, _) do
+  def work do
+    GenServer.cast(__MODULE__, :work)
+  end
+
+  def handle_cast(:work, _) do
+    do_work()
+    {:noreply, %{}}
+  end
+
+  def handle_info(:work, _) do
+    do_work()
+    Process.send_after(self(), :work, @timeout)
+    {:noreply, %{}}
+  end
+
+  def do_work do
     invites = Invite.list_all_active_invites()
     current_time = NaiveDateTime.utc_now()
 
@@ -49,8 +64,5 @@ defmodule Codebattle.InvitesKillerServer do
         )
       end
     end)
-
-    Process.send_after(self(), :trigger_timeout, @timeout)
-    {:noreply, %{}}
   end
 end
