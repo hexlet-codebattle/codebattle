@@ -31,23 +31,35 @@ jobs:
           ROLLBAR_ACCESS_TOKEN: ${{ secrets.ROLLBAR_ACCESS_TOKEN }}
           ROLLBAR_USERNAME: ${{ secrets.ROLLBAR_USERNAME }}
 
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Setup Elixir
       - uses: erlef/setup-beam@v1
         with:
           otp-version: "23.x"
           elixir-version: "1.11.x"
 
-      - uses: actions/cache@v2
+      - name: Retrieve Cached Dependencies
+        uses: actions/cache@v2
+        id: mix-cache
+        with:
+          path: |
+            deps
+            _build
+          key: ${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}-${{ hashFiles('services/app/mix.lock') }}
         with:
           path: services/app/deps
-          key: ${{ runner.os }}-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/services/app/mix.lock')) }}
+          key: ${{ runner.os }}-deps-${{ hashFiles(format('{0}{1}', github.workspace, 'services/app/mix.lock')) }}
           restore-keys: |
             ${{ runner.os }}-deps-
 
       - uses: actions/cache@v2
         with:
           path: services/app/_build
-          key: ${{ runner.os }}-build-${{ hashFiles(format('{0}{1}', github.workspace, '/services/app/mix.lock')) }}
+          key: ${{ runner.os }}-build-${{ hashFiles(format('{0}{1}', github.workspace, 'services/app/mix.lock')) }}
           restore-keys: |
             ${{ runner.os }}-build-
 
