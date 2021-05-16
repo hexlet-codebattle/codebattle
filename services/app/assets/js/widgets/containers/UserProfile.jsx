@@ -108,7 +108,7 @@ const UserProfile = () => {
         </div>
         <div className="row px-4 mt-5 justify-content-center">
           <div className="col-12 col-md-4 col-lg-2 text-center">
-            <div className="h1">{stats.rank}</div>
+            <div className="h1">{stats.user.rank}</div>
             <p className="lead">rank</p>
           </div>
           <div className="col-12 col-md-4 col-lg-2 text-center">

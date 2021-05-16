@@ -18,13 +18,6 @@ const getName = ({ id, name }, isCurrentUser) => {
   return isCurrentUser ? i18n.t('%{name}(you)', { name }) : name;
 };
 
-// const displayDiff = num => {
-//   if (num < 0) {
-//     return <small className="text-danger">{` ${num}`}</small>;
-//   }
-//   return <small className="text-success">{` +${num}`}</small>;
-// };
-
 const UserName = ({ user, truncate }) => {
   const users = useSelector(usersInfoSelector);
   const isCurrentUser = useSelector(state => currentUserIdSelector(state) === user.id);
@@ -37,9 +30,7 @@ const UserName = ({ user, truncate }) => {
     return null;
   }
 
-  const {
-    id, lang,
-  } = userInfo;
+  const { id, lang } = userInfo;
 
   const anonymousUser = (
     <span className="text-secondary">

@@ -3,7 +3,7 @@ defmodule Codebattle.Utils.ContainerGameKiller do
 
   @game_timeout 15
 
-  def start_link() do
+  def start_link(_) do
     GenServer.start(__MODULE__, [], name: __MODULE__)
   end
 

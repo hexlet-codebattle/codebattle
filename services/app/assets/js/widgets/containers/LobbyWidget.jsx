@@ -22,6 +22,7 @@ import CreateGameDialog from '../components/Game/CreateGameDialog';
 import Leaderboard from '../components/Leaderboard';
 import Announcement from '../components/Announcement';
 import GameLevelBadge from '../components/GameLevelBadge';
+// import LobbyChat from '../components/LobbyChat';
 import levelRatio from '../config/levelRatio';
 
 const Players = ({ players }) => {
@@ -400,6 +401,7 @@ const LobbyWidget = () => {
             liveTournaments={liveTournaments}
           />
           <span className="pt-2">{`Online players: ${presenceList.length}`}</span>
+          {/* <LobbyChat users={presenceList} /> */}
         </div>
 
         <div className="d-flex flex-column col-lg-4 col-md-12 p-0">

@@ -4,7 +4,7 @@ import DarkModeButton from './DarkModeButton';
 import GameResultIcon from '../../components/GameResultIcon';
 import LanguagePicker from '../../components/LanguagePicker';
 import OnlineIndicator from './OnlineIndicator';
-import UserName from '../../components/User/UserName';
+import UserInfo from '../UserInfo';
 import VimModeButton from './VimModeButton';
 import GameActionButtons from '../../components/GameActionButtons';
 
@@ -49,7 +49,7 @@ const EditorToolbar = ({
         )}
 
         <div className={userInfoClassNames} role="group" aria-label="User info">
-          <UserName user={player} />
+          <UserInfo user={player} />
           <OnlineIndicator player={player} />
         </div>
       </div>

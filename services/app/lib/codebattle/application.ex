@@ -13,8 +13,8 @@ defmodule Codebattle.Application do
     prod_workers =
       if Mix.env() == :prod do
         [
-          worker(Codebattle.DockerLangsPuller, []),
-          worker(Codebattle.TasksImporter, [])
+          {Codebattle.DockerLangsPuller, []},
+          {Codebattle.TasksImporter, []}
         ]
       else
         []
@@ -22,18 +22,19 @@ defmodule Codebattle.Application do
 
     children =
       [
-        supervisor(Codebattle.Repo, []),
+        {Codebattle.Repo, []},
         CodebattleWeb.Telemetry,
         {Phoenix.PubSub, [name: :cb_pubsub, adapter: Phoenix.PubSub.PG2]},
-        supervisor(CodebattleWeb.Presence, []),
-        supervisor(CodebattleWeb.Endpoint, []),
-        worker(Codebattle.GameProcess.TasksQueuesServer, []),
-        worker(Codebattle.InvitesKillerServer, []),
-        supervisor(Codebattle.GameProcess.GlobalSupervisor, []),
-        supervisor(Codebattle.Tournament.GlobalSupervisor, []),
-        worker(Codebattle.Bot.CreatorServer, []),
-        worker(Codebattle.Utils.ContainerGameKiller, []),
-        worker(Codebattle.UsersActivityServer, [])
+        {CodebattleWeb.Presence, []},
+        {CodebattleWeb.Endpoint, []},
+        {Codebattle.GameProcess.TasksQueuesServer, []},
+        {Codebattle.InvitesKillerServer, []},
+        {Codebattle.GameProcess.GlobalSupervisor, []},
+        {Codebattle.Tournament.GlobalSupervisor, []},
+        {Codebattle.Bot.CreatorServer, []},
+        {Codebattle.Utils.ContainerGameKiller, []},
+        {Codebattle.UsersActivityServer, []},
+        {Codebattle.UsersRankUpdateServer, []}
       ] ++ prod_workers
 
     Supervisor.start_link(children, strategy: :one_for_one, name: __MODULE__)

@@ -9,9 +9,9 @@ defmodule Codebattle.User.Scope do
   @sort_order ~w(asc desc)
   @sortable_attributes ~w(id rank games_played rating inserted_at)
 
-  def list_users_with_raiting(params) do
+  def list_users(params) do
     params
-    |> initial_with_raiting_scope()
+    |> initial_scope()
     |> search_by_name(params)
     |> without_bots(params)
     |> sort(params)
@@ -21,7 +21,7 @@ defmodule Codebattle.User.Scope do
     from(u in query, where: u.name == ^name or u.email == ^email)
   end
 
-  defp initial_with_raiting_scope(%{"date_from" => date_from}) when date_from !== "" do
+  defp initial_scope(%{"date_from" => date_from}) when date_from !== "" do
     starts_at = Timex.parse!(date_from, "{YYYY}-{0M}-{D}")
 
     from(u in User,
@@ -40,13 +40,13 @@ defmodule Codebattle.User.Scope do
         github_id: u.github_id,
         lang: u.lang,
         games_played: count(ug.user_id),
-        rank: fragment("row_number() OVER(order by ? desc)", u.rating),
+        rank: u.rank,
         inserted_at: u.inserted_at
       }
     )
   end
 
-  defp initial_with_raiting_scope(_params) do
+  defp initial_scope(_params) do
     from(u in User,
       order_by: {:desc, :rating},
       left_join: ug in UserGame,
@@ -60,7 +60,7 @@ defmodule Codebattle.User.Scope do
         github_id: u.github_id,
         lang: u.lang,
         games_played: count(ug.user_id),
-        rank: fragment("row_number() OVER(order by ? desc)", u.rating),
+        rank: u.rank,
         inserted_at: u.inserted_at
       }
     )

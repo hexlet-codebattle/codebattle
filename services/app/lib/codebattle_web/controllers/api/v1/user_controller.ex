@@ -13,7 +13,7 @@ defmodule CodebattleWeb.Api.V1.UserController do
       params
       |> Map.get("page_size", "50")
 
-    query = Codebattle.User.Scope.list_users_with_raiting(params)
+    query = Codebattle.User.Scope.list_users(params)
     page = Repo.paginate(query, %{page: page_number, page_size: page_size})
 
     page_info = Map.take(page, [:page_number, :page_size, :total_entries, :total_pages])
@@ -69,7 +69,6 @@ defmodule CodebattleWeb.Api.V1.UserController do
 
   def stats(conn, %{"id" => id}) do
     game_stats = Stats.get_game_stats(id)
-    rank = Stats.get_user_rank(id)
 
     completed_games =
       id
@@ -79,7 +78,6 @@ defmodule CodebattleWeb.Api.V1.UserController do
     user = Repo.get(User, id)
 
     json(conn, %{
-      rank: rank,
       completed_games: completed_games,
       stats: game_stats,
       user: user
