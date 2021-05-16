@@ -38,11 +38,14 @@ const EditorContainer = ({
     },
   };
 
-  const [editorCurrent, send, service] = useMachine(editorMachine.withConfig(config), {
-    context,
-    devTools: true,
-    id: `editor_${id}`,
-  });
+  const [editorCurrent, send, service] = useMachine(
+    editorMachine.withConfig(config),
+    {
+      context,
+      devTools: true,
+      id: `editor_${id}`,
+    },
+  );
 
   const checkResult = () => {
     send('user_check_solution');
@@ -98,7 +101,9 @@ const EditorContainer = ({
   const canChange = userSettings.type === editorUserTypes.currentUser
     && !gameCurrent.matches({ replayer: replayerMachineStates.on });
   const onChange = canChange
-    ? value => { updateEditorValue(value); }
+    ? value => {
+        updateEditorValue(value);
+      }
     : _.noop();
   const editorParams = {
     syntax: editorState.currentLangSlug || 'javascript',
@@ -109,7 +114,9 @@ const EditorContainer = ({
     mode: editorCurrent.context.editable ? editorMode : editorModes.default,
     theme,
     ...userSettings,
-    editable: !gameCurrent.matches({ replayer: replayerMachineStates.on }) && userSettings.editable,
+    editable:
+      !gameCurrent.matches({ replayer: replayerMachineStates.on })
+      && userSettings.editable,
   };
 
   const isWon = players[id].gameResult === 'won';
@@ -117,28 +124,30 @@ const EditorContainer = ({
   const pannelBackground = cn('col-12 col-lg-6 p-1', {
     'bg-warning': editorCurrent.matches('checking'),
     'bg-primary': editorCurrent.matches('typing'),
-    'bg-winner': gameCurrent.matches({ game: 'game_over' }) && editorCurrent.matches('idle') && isWon,
+    'bg-winner':
+      gameCurrent.matches({ game: 'game_over' })
+      && editorCurrent.matches('idle')
+      && isWon,
   });
 
   return (
-    <>
+    <div data-editor-state={editorCurrent.value} className={pannelBackground}>
       <div
-        data-editor-state={editorCurrent.value}
-        className={pannelBackground}
+        className={cardClassName}
+        style={{ minHeight: '470px' }}
+        data-guide-id="LeftEditor"
       >
-        <div className={cardClassName} style={{ minHeight: '470px' }} data-guide-id="LeftEditor">
-          <EditorToolbar
-            {...toolbarParams}
-            toolbarClassNames="btn-toolbar justify-content-between align-items-center m-1"
-            editorSettingClassNames="btn-group align-items-center m-1"
-            userInfoClassNames="btn-group align-items-center justify-content-end m-1"
-          />
-          {children({
-            ...editorParams,
-          })}
-        </div>
+        <EditorToolbar
+          {...toolbarParams}
+          toolbarClassNames="btn-toolbar justify-content-between align-items-center m-1"
+          editorSettingClassNames="btn-group align-items-center m-1"
+          userInfoClassNames="btn-group align-items-center justify-content-end m-1"
+        />
+        {children({
+          ...editorParams,
+        })}
       </div>
-    </>
+    </div>
   );
 };
 
