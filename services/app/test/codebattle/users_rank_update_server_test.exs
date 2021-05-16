@@ -5,11 +5,11 @@ defmodule Codebattle.UsersRankUpdateServerTest do
   alias Codebattle.{Repo, User}
 
   test "updates all rank for users" do
-    user1 = insert(:user, rating: 10005)
-    user2 = insert(:user, rating: 10004)
-    user3 = insert(:user, rating: 10003)
-    user4 = insert(:user, rating: 10002)
-    user5 = insert(:user, rating: 10001)
+    user1 = insert(:user, rating: 10_005)
+    user2 = insert(:user, rating: 10_004)
+    user3 = insert(:user, rating: 10_003)
+    user4 = insert(:user, rating: 10_002)
+    user5 = insert(:user, rating: 10_001)
 
     :ok = UsersRankUpdateServer.update()
 
@@ -31,7 +31,7 @@ defmodule Codebattle.UsersRankUpdateServerTest do
 
     # add new user
 
-    user6 = insert(:user, rating: 10003)
+    user6 = insert(:user, rating: 10_003)
 
     :ok = UsersRankUpdateServer.update()
 
@@ -55,7 +55,7 @@ defmodule Codebattle.UsersRankUpdateServerTest do
     # rating has been updated
 
     user1
-    |> User.changeset(%{rating: 10000})
+    |> User.changeset(%{rating: 10_000})
     |> Repo.update!()
 
     user5
