@@ -1,14 +1,16 @@
 import { camelizeKeys } from 'humps';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
+import * as selectors from '../selectors';
 import { actions } from '../slices';
 import UserName from '../components/User/UserName';
 import UserStats from '../components/User/UserStats';
 import PopoverStickOnHover from '../components/User/PopoverStickOnHover';
 
 const UserPopoverContent = ({ user }) => {
+  // TODO: store stats in global redux state
   const [stats, setStats] = useState(null);
   const dispatch = useDispatch();
 
@@ -27,12 +29,26 @@ const UserPopoverContent = ({ user }) => {
   return <UserStats user={user} data={stats} />;
 };
 
-const UserInfo = ({ user, truncate = false }) => (
-  <PopoverStickOnHover id={`user-info-${user.id}`} placement="bottom-start" component={<UserPopoverContent user={user} />}>
-    <div>
-      <UserName user={user} truncate={truncate} />
-    </div>
-  </PopoverStickOnHover>
-);
+const UserInfo = ({ user, truncate = false }) => {
+  const { presenceList } = useSelector(selectors.lobbyDataSelector);
+
+  if (user.id === 0) {
+    return <span className="text-secondary">{`${user.name}`}</span>;
+  }
+
+  const isOnline = presenceList.some(({ id }) => id === user.id);
+
+    return (
+      <PopoverStickOnHover
+        id={`user-info-${user.id}`}
+        placement="bottom-start"
+        component={<UserPopoverContent user={user} />}
+      >
+        <div>
+          <UserName user={user} truncate={truncate} isOnline={isOnline} />
+        </div>
+      </PopoverStickOnHover>
+    );
+};
 
 export default UserInfo;

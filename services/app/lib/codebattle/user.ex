@@ -110,7 +110,8 @@ defmodule Codebattle.User do
       guest: true,
       id: 0,
       name: "Jon Dou",
-      rating: 0,
+      rating: -1,
+      rank: -1,
       sound_settings: %SoundSettings{}
     }
 end

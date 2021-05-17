@@ -121,7 +121,7 @@ const Leaderboard = () => {
           <td className="pr-0">
             <div className="mt-2">
               <u>
-                <a href="/users">More users...</a>
+                <a href="/users">TOP list</a>
               </u>
             </div>
           </td>

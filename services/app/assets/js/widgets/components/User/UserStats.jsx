@@ -15,12 +15,12 @@ const getUserAvatarUrl = ({ githubId, discordId, discordAvatar }) => {
   return 'https://avatars0.githubusercontent.com/u/35539033';
 };
 
-const UserStats = ({ user, data }) => {
+const UserStats = ({ data }) => {
   if (!data) {
     return <Loading small />;
   }
 
-  const { stats } = data;
+  const { stats, user } = data;
   return (
     <div className="container-fluid p-2">
       <div className="row">
@@ -36,17 +36,17 @@ const UserStats = ({ user, data }) => {
               <div className="d-flex align-items-center">
                 <span>{user.name}</span>
                 <div className="ml-1">
-                  <LanguageIcon lang={data.user.lang} />
+                  <LanguageIcon lang={user.lang} />
                 </div>
               </div>
               <div className="d-flex justify-content-between align-items-baseline">
                 <div className="d-flex align-items-baseline">
                   <img src="/assets/images/cup.svg" alt="rating" />
-                  <span className="ml-1">{data.user.rank}</span>
+                  <span className="ml-1">{user.rank}</span>
                 </div>
                 <div className="d-flex align-items-baseline ml-2">
                   <img src="/assets/images/rating.svg" alt="rating" />
-                  <span className="ml-1">{data.user.rating}</span>
+                  <span className="ml-1">{user.rating}</span>
                 </div>
               </div>
             </div>

@@ -1,62 +1,57 @@
 import React from 'react';
 // import _ from 'lodash';
-import { useSelector, useDispatch } from 'react-redux';
+import cn from 'classnames';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18n from '../../../i18n';
 import LanguageIcon from '../LanguageIcon';
-import { loadUser } from '../../middlewares/Users';
-import { usersInfoSelector, currentUserIdSelector } from '../../selectors';
 
-const isValidUserInfo = user => (
-  Boolean(user.id === 0 || user.rating)
-);
-
-const getName = ({ id, name }, isCurrentUser) => {
+const renderUserName = ({ id, name, rank }) => {
   if (id < 0) {
     return i18n.t('%{name}(bot)', { name });
   }
 
-  return isCurrentUser ? i18n.t('%{name}(you)', { name }) : name;
+  return `${name}(${rank})`;
 };
-
-const UserName = ({ user, truncate }) => {
-  const users = useSelector(usersInfoSelector);
-  const isCurrentUser = useSelector(state => currentUserIdSelector(state) === user.id);
-  const dispatch = useDispatch();
-
-  const userInfo = isValidUserInfo(user) ? user : users[user.id];
-
-  if (!userInfo) {
-    dispatch(loadUser)({ id: user.id });
+const renderOnlineIndicator = (user, isOnline) => {
+  if (user.id <= 0) {
     return null;
   }
 
-  const { id, lang } = userInfo;
-
-  const anonymousUser = (
-    <span className="text-secondary">
-      {getName(userInfo, isCurrentUser)}
-    </span>
-  );
-  const loggedUser = (
-    <span className="d-flex align-items-center">
-      <a
-        href={`/users/${id}`}
-        key={id}
-        className="d-flex align-items-center mr-1"
-      >
-        <span className={`text-truncate ${truncate ? 'x-username-truncated' : ''}`}><u>{getName(userInfo, isCurrentUser)}</u></span>
-      </a>
-      <LanguageIcon lang={lang} />
-    </span>
-  );
+  const onlineIndicatorClassName = cn('mr-1', {
+    'cb-user-online': isOnline,
+    'cb-user-offline': !isOnline,
+  });
 
   return (
-    <div
-      className="d-inline align-middle"
-    >
-      {id === 0 ? anonymousUser : loggedUser}
-    </div>
+    <span>
+      <FontAwesomeIcon
+        icon={['fa', 'circle']}
+        className={onlineIndicatorClassName}
+      />
+    </span>
   );
 };
+
+const UserName = ({ user, truncate, isOnline }) => (
+  <div className="d-flex align-items-baseline">
+    {renderOnlineIndicator(user, isOnline)}
+    <span className="d-flex align-items-center">
+      <a
+        href={`/users/${user.id}`}
+        key={user.id}
+        className="d-flex align-items-center mr-1"
+      >
+        <span
+          className={`text-truncate ${
+              truncate ? 'x-username-truncated' : ''
+            }`}
+        >
+          <u>{renderUserName(user)}</u>
+        </span>
+      </a>
+      <LanguageIcon lang={user.lang || 'js'} />
+    </span>
+  </div>
+  );
 
 export default UserName;
