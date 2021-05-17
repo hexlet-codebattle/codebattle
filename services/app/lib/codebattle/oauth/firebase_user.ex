@@ -26,7 +26,7 @@ defmodule Codebattle.Oauth.User.FirebaseUser do
     end
   end
 
-  def create(%{name: name, email: email} = user_attrs) do
+  def create(user_attrs) do
     with :ok <- check_existed_user(user_attrs),
          {:ok, firebase_uid} <- create_in_firebase(user_attrs),
          {:ok, user} <- create_in_db(user_attrs, firebase_uid) do

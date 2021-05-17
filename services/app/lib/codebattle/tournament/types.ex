@@ -2,7 +2,7 @@ defmodule Codebattle.Tournament.Types do
   defmodule Player do
     use Ecto.Schema
     import Ecto.Changeset
-    import Codebattle.Tournament.Helpers
+
     @primary_key false
     @derive Jason.Encoder
 
@@ -14,6 +14,7 @@ defmodule Codebattle.Tournament.Types do
       field(:lang, :string)
       field(:name, :string)
       field(:rating, :integer)
+      field(:rank, :integer, default: 5432)
       field(:guest, :boolean)
       field(:is_bot, :boolean)
       field(:game_result, :string, default: "waiting")
@@ -28,6 +29,7 @@ defmodule Codebattle.Tournament.Types do
         :name,
         :github_id,
         :rating,
+        :rank,
         :guest,
         :is_bot,
         :game_result

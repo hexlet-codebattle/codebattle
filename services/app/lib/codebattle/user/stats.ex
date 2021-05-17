@@ -3,7 +3,7 @@ defmodule Codebattle.User.Stats do
     Find user game statistic
   """
 
-  alias Codebattle.{Repo, UserGame, Game, User}
+  alias Codebattle.{Repo, UserGame, Game}
 
   import Ecto.Query, warn: false
 

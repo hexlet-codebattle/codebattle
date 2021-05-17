@@ -167,6 +167,4 @@ defmodule Codebattle.Tournament.Helpers do
   end
 
   defp get_team_by_id(teams, team_id), do: Enum.find(teams, fn x -> x.id == team_id end)
-
-  defp round_is_active?(matches), do: Enum.any?(matches, fn x -> !is_finished?(x) end)
 end

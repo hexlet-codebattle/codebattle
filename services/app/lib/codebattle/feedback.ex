@@ -37,16 +37,14 @@ defmodule Codebattle.FeedBack do
     |> Enum.map(&format_feedback/1)
   end
 
-  def format_feedback(
-        %FeedBack{
-          id: id,
-          author_name: name,
-          status: status,
-          text: text,
-          title_link: link,
-          inserted_at: inserted_at
-        } = feedback
-      ) do
+  def format_feedback(%FeedBack{
+        id: id,
+        author_name: name,
+        status: status,
+        text: text,
+        title_link: link,
+        inserted_at: inserted_at
+      }) do
     pub_date = Calendar.strftime(inserted_at, "%a, %d %B %Y %H:%M:%S GMT")
 
     %{

@@ -2,7 +2,6 @@ defmodule CodebattleWeb.PageController do
   use CodebattleWeb, :controller
 
   alias Codebattle.UsersActivityServer
-  alias Codebattle.FeedBack
 
   def index(conn, _params) do
     current_user = conn.assigns.current_user

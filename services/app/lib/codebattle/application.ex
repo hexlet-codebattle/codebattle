@@ -3,8 +3,6 @@ defmodule Codebattle.Application do
   use Application
 
   def start(_type, _args) do
-    import Supervisor.Spec
-
     unless Mix.env() == :prod do
       Envy.load(["../../.env"])
       Envy.reload_config()

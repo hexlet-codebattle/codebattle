@@ -2,7 +2,6 @@ defmodule CodebattleWeb.Plugs.AssignGon do
   @moduledoc false
 
   import PhoenixGon.Controller
-  alias Codebattle.User
 
   @spec init(Keyword.t()) :: Keyword.t()
   def init(opts), do: opts
@@ -20,7 +19,7 @@ defmodule CodebattleWeb.Plugs.AssignGon do
     put_gon(conn,
       user_token: user_token,
       current_user: prepare_user(current_user),
-      rollbar_api_key: @rollbar_api_key
+      rollbar_api_key: Application.get_env(:codebattle, Codebattle.Plugs)[:rollbar_api_key]
     )
   end
 

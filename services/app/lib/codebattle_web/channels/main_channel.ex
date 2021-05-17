@@ -51,6 +51,17 @@ defmodule CodebattleWeb.MainChannel do
     {:noreply, socket}
   end
 
+  def handle_info(
+        %{topic: "main:" <> user_id, event: "invites:" <> action, payload: payload},
+        socket
+      ) do
+    if String.to_integer(user_id) == socket.assigns.user_id do
+      push(socket, "invites:#{action}", payload)
+    end
+
+    {:noreply, socket}
+  end
+
   def handle_in("invites:create", payload, socket) do
     creator_id = socket.assigns.user_id
     recepient_id = payload["recepient_id"] || raise "Recepient is absent!"
@@ -167,16 +178,5 @@ defmodule CodebattleWeb.MainChannel do
       {:error, reason} ->
         {:reply, {:error, %{reason: reason}}, socket}
     end
-  end
-
-  def handle_info(
-        %{topic: "main:" <> user_id, event: "invites:" <> action, payload: payload},
-        socket
-      ) do
-    if String.to_integer(user_id) == socket.assigns.user_id do
-      push(socket, "invites:#{action}", payload)
-    end
-
-    {:noreply, socket}
   end
 end
