@@ -9,7 +9,7 @@ defmodule CodebattleWeb.ChatChannel do
   def join(topic, _payload, socket) do
     type = get_chat_type(topic)
     {:ok, users} = Chat.Server.join_chat(type, socket.assigns.current_user)
-    msgs = Chat.Server.get_msgs(type)
+    msgs = Chat.Server.get_messages(type)
     send(self(), :after_join)
     {:ok, %{users: users, messages: msgs}, socket}
   end
@@ -54,7 +54,7 @@ defmodule CodebattleWeb.ChatChannel do
     name = get_user_name(user)
     {type, chat_id} = get_chat_type(socket)
 
-    Chat.Server.add_msg({type, chat_id}, name, message)
+    Chat.Server.add_message({type, chat_id}, %{name: name, text: message})
 
     UsersActivityServer.add_event(%{
       event: "new_message_game",

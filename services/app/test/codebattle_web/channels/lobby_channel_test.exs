@@ -5,32 +5,22 @@ defmodule CodebattleWeb.LobbyChannelTest do
   alias CodebattleWeb.UserSocket
   alias Codebattle.GameProcess.Player
 
-  setup do
+  test "sends game info when user join" do
     task = insert(:task)
     game = insert(:game, task: task, level: task.level, state: "game_over")
-    insert(:tournament, %{state: "waiting_participants"})
     insert(:tournament, %{state: "active"})
-    insert(:tournament, %{state: "finished"})
-    winner = insert(:user)
-    loser = insert(:user)
+    user = insert(:user)
+    insert(:user_game, user: user, creator: false, game: game, result: "won")
+    insert(:user_game, user: user, creator: true, game: game, result: "gave_up")
 
-    _winner_user_game =
-      insert(:user_game, user: winner, creator: false, game: game, result: "won")
+    user_token = Phoenix.Token.sign(socket(UserSocket), "user_token", user.id)
+    {:ok, socket} = connect(UserSocket, %{"token" => user_token})
 
-    _loser_user_game =
-      insert(:user_game, user: loser, creator: true, game: game, result: "gave_up")
-
-    user_token1 = Phoenix.Token.sign(socket(UserSocket), "user_token", winner.id)
-    {:ok, socket1} = connect(UserSocket, %{"token" => user_token1})
-
-    {:ok, %{winner: winner, socket1: socket1, task: task}}
-  end
-
-  test "sends game info when user join", %{winner: winner, socket1: socket1, task: task} do
+    {:ok, %{winner: user, socket: socket, task: task}}
     state = :waiting_opponent
 
     data = %{
-      players: [%Player{id: winner.id}],
+      players: [%Player{id: user.id}],
       task: task
     }
 
@@ -41,17 +31,21 @@ defmodule CodebattleWeb.LobbyChannelTest do
        active_games: active_games,
        live_tournaments: live_tournaments,
        completed_games: completed_games
-     }, _socket1} = subscribe_and_join(socket1, LobbyChannel, "lobby")
+     }, _socket} = subscribe_and_join(socket, LobbyChannel, "lobby")
 
     assert active_games
     assert live_tournaments
     assert completed_games
   end
 
-  test "creates game", %{socket1: socket1} do
-    {:ok, _payload, socket1} = subscribe_and_join(socket1, LobbyChannel, "lobby")
+  test "creates game" do
+    user = insert(:user)
+    user_token = Phoenix.Token.sign(socket(UserSocket), "user_token", user.id)
+    {:ok, socket} = connect(UserSocket, %{"token" => user_token})
 
-    push(socket1, "game:create", %{type: "withRandomPlayer", level: "elementary"})
+    {:ok, _payload, socket} = subscribe_and_join(socket, LobbyChannel, "lobby")
+
+    push(socket, "game:create", %{type: "withRandomPlayer", level: "elementary"})
 
     assert_receive %Phoenix.Socket.Broadcast{
       event: "game:upsert"

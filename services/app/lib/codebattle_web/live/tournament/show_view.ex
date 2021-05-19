@@ -167,10 +167,12 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     tournament = socket.assigns.tournament
     current_user = socket.assigns.current_user
 
-    Chat.Server.add_msg(
+    Chat.Server.add_message(
       {:tournament, tournament.id},
-      current_user.name,
-      params["message"]["content"]
+      %{
+        name: current_user.name,
+        text: params["message"]["content"]
+      }
     )
 
     messages = get_chat_messages(tournament.id)
@@ -239,7 +241,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
 
   defp get_chat_messages(id) do
     try do
-      Chat.Server.get_msgs({:tournament, id})
+      Chat.Server.get_messages({:tournament, id})
     catch
       :exit, _reason -> [%{user_name: "Bot", message: "Game over!"}]
     end

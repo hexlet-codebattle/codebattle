@@ -29,6 +29,7 @@ defmodule Codebattle.Application do
         {Codebattle.InvitesKillerServer, []},
         {Codebattle.GameProcess.GlobalSupervisor, []},
         {Codebattle.Tournament.GlobalSupervisor, []},
+        {Codebattle.Chat.Server, :lobby},
         {Codebattle.Bot.CreatorServer, []},
         {Codebattle.Utils.ContainerGameKiller, []},
         {Codebattle.UsersActivityServer, []},
