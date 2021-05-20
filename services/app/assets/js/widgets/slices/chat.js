@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   users: [],
@@ -10,11 +10,14 @@ const initialState = {
 };
 
 const chat = createSlice({
-  name: 'chat',
+  name: "chat",
   initialState,
   reducers: {
     updateChatData: (state, { payload }) => ({ ...state, ...payload }),
-    updateChatDataHistory: (state, { payload }) => ({ ...state, history: payload }),
+    updateChatDataHistory: (state, { payload }) => ({
+      ...state,
+      history: payload,
+    }),
     userJoinedChat: (state, { payload: { users } }) => {
       state.users = users;
     },
@@ -23,6 +26,11 @@ const chat = createSlice({
     },
     newMessageChat: (state, { payload }) => {
       state.messages = [...state.messages, payload];
+    },
+    banUserChat: (state, { payload }) => {
+      state.messages = [
+        ...state.messages.filter((message) => message.name !== payload.name),
+      ];
     },
   },
 });

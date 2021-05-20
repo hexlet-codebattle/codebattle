@@ -3,6 +3,8 @@ defmodule Codebattle.Chat.Server do
 
   alias Codebattle.Tournament
 
+  @admins Application.compile_env(:codebattle, :admins)
+
   # API
   def start_link(type) do
     GenServer.start_link(__MODULE__, [], name: chat_key(type))
@@ -34,7 +36,7 @@ defmodule Codebattle.Chat.Server do
   def add_message(type, message) do
     GenServer.cast(chat_key(type), {:add_message, message})
     # TODO: use PubSup instead of direct broadcast
-    broadcast_message(type, message)
+    broadcast_message(type, "chat:new_msg", message)
     :ok
   end
 
@@ -42,16 +44,23 @@ defmodule Codebattle.Chat.Server do
     GenServer.call(chat_key(type), :get_messages)
   end
 
-  def command(chat_type, %{type: command_type} = command) do
-    case command_type do
-      "ban" ->
-        GenServer.cast(chat_key(type), {:ban, %{user_id: user.id}})
+  def command(chat_type, user, %{type: command_type} = payload) do
+    if is_admin?(user) do
+      case {command_type, payload} do
+        {"ban", %{name: banned_name}} ->
+          ban_message = %{
+            type: "info",
+            name: "CB",
+            text: "#{banned_name} has been banned by #{user.name}"
+          }
 
-        broadcast_message(chat_type, %{
-          type: :info,
-          name: command.name,
-          text: "User #{command.banned_name} was banned"
-        })
+          GenServer.call(chat_key(chat_type), {:ban, %{name: banned_name, message: ban_message}})
+          broadcast_message(chat_type, "chat:ban", %{name: banned_name})
+          broadcast_message(chat_type, "chat:new_msg", ban_message)
+
+        _ ->
+          :ok
+      end
     end
   end
 
@@ -87,6 +96,12 @@ defmodule Codebattle.Chat.Server do
     {:reply, Enum.reverse(messages), state}
   end
 
+  def handle_call({:ban, %{name: name, message: message}}, _from, %{messages: messages} = state) do
+    new_messages = Enum.filter(messages, fn message -> message.name != name end)
+
+    {:reply, :ok, %{state | messages: [message | new_messages]}}
+  end
+
   def handle_cast({:add_message, message}, state) do
     %{messages: messages} = state
     {:noreply, %{state | messages: [message | messages]}}
@@ -96,30 +111,34 @@ defmodule Codebattle.Chat.Server do
   defp chat_key(:lobby), do: :LOBBY_CHAT
   defp chat_key({type, id}), do: {:via, :gproc, {:n, :l, {:chat, "#{type}_#{id}"}}}
 
-  defp broadcast_message(type, message) do
+  defp broadcast_message(type, topic, message) do
     case type do
       {:tournament, id} ->
         CodebattleWeb.Endpoint.broadcast!(
           Tournament.Server.tournament_topic_name(id),
-          "chat:new_msg",
+          topic,
           message
         )
 
         CodebattleWeb.Endpoint.broadcast!(
           "chat:t_#{id}",
-          "chat:new_msg",
+          topic,
           message
         )
 
       {:game, id} ->
         CodebattleWeb.Endpoint.broadcast!(
           "chat:g_#{id}",
-          "chat:new_msg",
+          topic,
           message
         )
 
       _ ->
         :ok
     end
+  end
+
+  defp is_admin?(user) do
+    user.name in @admins || Mix.env() == :dev
   end
 end

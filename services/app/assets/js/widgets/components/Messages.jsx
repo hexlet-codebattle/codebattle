@@ -19,7 +19,7 @@ const Messages = ({ messages = [] }) => {
       className="overflow-auto pt-0 pl-3 pr-2 position-relative cb-messages-list"
     >
       {/* eslint-disable-next-line react/no-array-index-key */}
-      {messages.map(({ userName, message }, i) => <Message userName={userName} message={message} key={i} />)}
+      {messages.map(({ name, text, type }, i) => <Message name={name} text={text} key={i} type={type} />)}
     </ul>
   );
 };

@@ -47,3 +47,5 @@ config :codebattle, :firebase,
   firebase_autn_url: "http://localhost:4000"
 
 config :codebattle, ws_port: 4001
+
+config :codebattle, admins: ["bob"]

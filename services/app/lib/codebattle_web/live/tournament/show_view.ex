@@ -79,6 +79,17 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     end
   end
 
+  def handle_info(%{topic: topic, event: "chat:ban", payload: _payload}, socket) do
+    # TODO: add only one message without refetching
+    tournament = socket.assigns.tournament
+
+    if is_current_topic?(topic, tournament) do
+      {:noreply, assign(socket, messages: get_chat_messages(tournament.id))}
+    else
+      {:noreply, socket}
+    end
+  end
+
   def handle_info(%{topic: "tournaments", event: "round:created", payload: payload}, socket) do
     tournament = socket.assigns.tournament
     current_user = socket.assigns.current_user
@@ -167,13 +178,41 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     tournament = socket.assigns.tournament
     current_user = socket.assigns.current_user
 
-    Chat.Server.add_message(
-      {:tournament, tournament.id},
-      %{
-        name: current_user.name,
-        text: params["message"]["content"]
-      }
-    )
+    text = params["message"]["content"]
+
+    if String.starts_with?(text, "/") do
+      case Regex.scan(~r/\/(\w+)/, text) do
+        [[_, type]] ->
+          params =
+            text
+            |> String.slice(1..-1)
+            |> String.split()
+            |> Enum.slice(1..-1)
+            |> Enum.reduce(%{}, fn x, acc ->
+              case String.split(x, ":") do
+                [k, v] -> Map.put(acc, String.to_atom(k), v)
+                _ -> acc
+              end
+            end)
+
+          Chat.Server.command(
+            {:tournament, tournament.id},
+            current_user,
+            Map.merge(params, %{type: type})
+          )
+
+        _ ->
+          :ok
+      end
+    else
+      Chat.Server.add_message(
+        {:tournament, tournament.id},
+        %{
+          name: current_user.name,
+          text: text
+        }
+      )
+    end
 
     messages = get_chat_messages(tournament.id)
 
@@ -243,7 +282,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     try do
       Chat.Server.get_messages({:tournament, id})
     catch
-      :exit, _reason -> [%{user_name: "Bot", message: "Game over!"}]
+      :exit, _reason -> [%{type: "info", name: "Bot", text: "Tournament over, create a new one!"}]
     end
   end
 end
