@@ -31,24 +31,27 @@ const UserPopoverContent = ({ user }) => {
 
 const UserInfo = ({ user, truncate = false }) => {
   const { presenceList } = useSelector(selectors.lobbyDataSelector);
+  if (!user?.id) {
+    return <span className="text-secondary">No-User</span>;
+  }
 
-  if (user.id === 0) {
+  if (user?.id === 0) {
     return <span className="text-secondary">{`${user.name}`}</span>;
   }
 
-  const isOnline = presenceList.some(({ id }) => id === user.id);
+  const isOnline = presenceList.some(({ id }) => id === user?.id);
 
-    return (
-      <PopoverStickOnHover
-        id={`user-info-${user.id}`}
-        placement="bottom-start"
-        component={<UserPopoverContent user={user} />}
-      >
-        <div>
-          <UserName user={user} truncate={truncate} isOnline={isOnline} />
-        </div>
-      </PopoverStickOnHover>
-    );
+  return (
+    <PopoverStickOnHover
+      id={`user-info-${user?.id}`}
+      placement="bottom-start"
+      component={<UserPopoverContent user={user} />}
+    >
+      <div>
+        <UserName user={user} truncate={truncate} isOnline={isOnline} />
+      </div>
+    </PopoverStickOnHover>
+  );
 };
 
 export default UserInfo;
