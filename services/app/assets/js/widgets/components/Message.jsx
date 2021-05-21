@@ -1,16 +1,21 @@
-import React from "react";
+import React from 'react';
+import moment from 'moment';
 
-const Message = ({ text = "", name = "", type }) => {
+const Message = ({
+ text = '', name = '', type, time,
+}) => {
   if (!text) {
     return null;
   }
 
-  console.log( text, name, type)
-  if (type === "info") {
+  if (type === 'info') {
     return (
-      <small className="text-muted text-small">
-        {text}
-      </small>
+      <div className="d-flex align-items-baseline flex-wrap">
+        <small className="text-muted text-small">{text}</small>
+        <small className="text-muted text-small ml-auto">
+          {time ? moment.unix(time).format('HH:mm:ss') : ''}
+        </small>
+      </div>
     );
   }
 
@@ -24,7 +29,7 @@ const Message = ({ text = "", name = "", type }) => {
         </span>
       );
     }
-    if (part.startsWith("@")) {
+    if (part.startsWith('@')) {
       return (
         <span key={i} className="font-weight-bold text-primary">
           {part}
@@ -35,10 +40,13 @@ const Message = ({ text = "", name = "", type }) => {
   };
 
   return (
-    <div>
+    <div className="d-flex align-items-baseline flex-wrap">
       {/* eslint-disable-next-line react/no-array-index-key */}
       <span className="font-weight-bold">{`${name}: `}</span>
-      <span>{parts.map((part, i) => renderMessagePart(part, i))}</span>
+      <span className="ml-1">{parts.map((part, i) => renderMessagePart(part, i))}</span>
+      <small className="text-muted text-small ml-auto">
+        {time ? moment.unix(time).format('HH:mm:ss') : ''}
+      </small>
     </div>
   );
 };

@@ -6,18 +6,29 @@ import { actions } from '../slices';
 const chatId = Gon.getAsset('game_id');
 const isRecord = Gon.getAsset('is_record');
 const tournamentId = Gon.getAsset('tournament_id');
-const channelName = tournamentId
-  ? `chat:t_${tournamentId}`
-  : `chat:g_${chatId}`;
 
-const channel = isRecord ? null : socket.channel(channelName);
+const getChannelName = () => {
+  if (tournamentId) {
+    return `chat:t_${tournamentId}`;
+  }
+  if (chatId) {
+    return `chat:g_${chatId}`;
+  }
+
+  return 'chat:lobby';
+};
+
+const channel = isRecord ? null : socket.channel(getChannelName());
 
 const fetchState = () => dispatch => {
   const camelizeKeysAndDispatch = actionCreator => data => dispatch(actionCreator(camelizeKeys(data)));
 
   channel.join().receive('ok', camelizeKeysAndDispatch(actions.updateChatData));
 
-  channel.on('chat:user_joined', camelizeKeysAndDispatch(actions.userJoinedChat));
+  channel.on(
+    'chat:user_joined',
+    camelizeKeysAndDispatch(actions.userJoinedChat),
+  );
   channel.on('chat:user_left', camelizeKeysAndDispatch(actions.userLeftChat));
   channel.on('chat:new_msg', camelizeKeysAndDispatch(actions.newMessageChat));
   channel.on('chat:ban', camelizeKeysAndDispatch(actions.banUserChat));
@@ -38,7 +49,6 @@ export const addMessage = message => {
 };
 
 export const pushCommand = command => {
-
   channel
     .push('chat:command', command)
     .receive('error', error => console.error(error));

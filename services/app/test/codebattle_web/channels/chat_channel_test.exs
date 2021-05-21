@@ -43,7 +43,7 @@ defmodule CodebattleWeb.ChatChannelTest do
     assert Jason.encode(response) == Jason.encode(%{users: [user2]})
   end
 
-  test "messaging process", %{user1: user1, socket1: socket1, socket2: socket2} do
+  test "messaging process", %{socket1: socket1, socket2: socket2} do
     chat_id = :rand.uniform(1000)
     Server.start_link({:game, chat_id})
     chat_topic = get_chat_topic(chat_id)
@@ -51,7 +51,7 @@ defmodule CodebattleWeb.ChatChannelTest do
 
     message = "test message"
 
-    push(socket1, "chat:new_msg", %{message: message})
+    push(socket1, "chat:new_msg", %{text: message})
 
     assert_receive %Phoenix.Socket.Broadcast{
       topic: ^chat_topic,
@@ -59,13 +59,13 @@ defmodule CodebattleWeb.ChatChannelTest do
       payload: response
     }
 
-    assert Jason.encode(response) == Jason.encode(%{user_name: user1.name, message: message})
+    assert %{name: "alice", text: ^message, time: _} = response
 
     {:ok, %{users: users, messages: messages}, _socket2} =
       subscribe_and_join(socket2, ChatChannel, chat_topic)
 
     assert length(users) == 2
-    assert [%{user_name: user1.name, message: message}] == messages
+    assert [%{name: "alice", text: ^message, time: _}] = messages
   end
 
   test "removes user from list on leaving channel", %{socket1: socket1, socket2: socket2} do
@@ -95,7 +95,7 @@ defmodule CodebattleWeb.ChatChannelTest do
     assert length(users) == 1
   end
 
-  test ".ban_user ", %{user1: user1, user2: user2, socket1: socket1, socket2: socket2} do
+  test "bans_user ", %{socket1: socket1, socket2: socket2} do
     assert Server.get_messages(:lobby) == []
 
     {:ok, _response, socket1} = subscribe_and_join(socket1, ChatChannel, "chat:lobby")
@@ -108,16 +108,28 @@ defmodule CodebattleWeb.ChatChannelTest do
     push(socket1, "chat:new_msg", %{"text" => "invalid_content"})
     :timer.sleep(50)
 
-    assert Server.get_messages(:lobby) == [
-             %{name: "alice", text: "oi"},
-             %{name: "bob", text: "blz"},
-             %{name: "alice", text: "invalid_content"}
-           ]
+    assert [
+             %{name: "alice", text: "oi", time: _},
+             %{name: "bob", text: "blz", time: _},
+             %{name: "alice", text: "invalid_content", time: _}
+           ] = Server.get_messages(:lobby)
+
+    push(socket1, "chat:command", %{"type" => "ban", "name" => "bob", "duration" => "3h"})
+    :timer.sleep(50)
+
+    assert [
+             %{name: "alice", text: "oi", time: _},
+             %{name: "bob", text: "blz", time: _},
+             %{name: "alice", text: "invalid_content", time: _}
+           ] = Server.get_messages(:lobby)
 
     push(socket2, "chat:command", %{"type" => "ban", "name" => "alice", "duration" => "3h"})
     :timer.sleep(50)
 
-    assert Server.get_messages(:lobby) == [%{name: "bob", text: "blz"}]
+    assert [
+             %{name: "bob", text: "blz", time: _},
+             %{name: "CB", text: "alice has been banned by bob", type: "info", time: _}
+           ] = Server.get_messages(:lobby)
   end
 
   def get_chat_topic(id), do: "chat:g_#{id}"

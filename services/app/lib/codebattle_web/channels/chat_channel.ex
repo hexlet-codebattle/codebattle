@@ -43,22 +43,22 @@ defmodule CodebattleWeb.ChatChannel do
   def handle_in("chat:command", payload, socket) do
     chat_type = get_chat_type(socket)
 
-    :ok =
-      Chat.Server.command(chat_type, socket.assigns.current_user, %{
-        type: payload["type"],
-        name: payload["name"]
-      })
+    Chat.Server.command(chat_type, socket.assigns.current_user, %{
+      type: payload["type"],
+      name: payload["name"],
+      time: :os.system_time(:seconds)
+    })
 
     {:noreply, socket}
   end
 
   def handle_in("chat:new_msg", payload, socket) do
-    %{"text" => text} = payload
+    text = payload["text"] || payload[:text]
     user = socket.assigns.current_user
     name = get_user_name(user)
     chat_type = get_chat_type(socket)
 
-    Chat.Server.add_message(chat_type, %{name: name, text: text})
+    Chat.Server.add_message(chat_type, %{name: name, text: text, time: :os.system_time(:seconds)})
 
     update_paybook(chat_type, :chat_message, %{
       id: user.id,

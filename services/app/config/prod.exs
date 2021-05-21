@@ -16,4 +16,14 @@ config :codebattle, Codebattle.Invite, timeout: :timer.minutes(15)
 config :codebattle, Codebattle.Invite, lifetime: :timer.minutes(15)
 config :codebattle, ws_port: 8080
 
-config :codebattle, admins: ["vtm", "ReDBrother", "solar05", "krivtsov", "Melodyn", "NatMusina", "enmalafeev", "fey"]
+config :codebattle,
+  admins: [
+    "vtm",
+    "ReDBrother",
+    "solar05",
+    "krivtsov",
+    "Melodyn",
+    "NatMusina",
+    "enmalafeev",
+    "fey"
+  ]

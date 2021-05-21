@@ -4,6 +4,8 @@ defmodule Codebattle.Chat.Server do
   alias Codebattle.Tournament
 
   @admins Application.compile_env(:codebattle, :admins)
+  @message_ttl :timer.minutes(17)
+  @timeout :timer.minutes(1)
 
   # API
   def start_link(type) do
@@ -51,6 +53,7 @@ defmodule Codebattle.Chat.Server do
           ban_message = %{
             type: "info",
             name: "CB",
+            time: payload.time,
             text: "#{banned_name} has been banned by #{user.name}"
           }
 
@@ -66,6 +69,7 @@ defmodule Codebattle.Chat.Server do
 
   # SERVER
   def init(_) do
+    Process.send_after(self(), :clean_messages, @timeout)
     {:ok, %{users: [], messages: []}}
   end
 
@@ -107,12 +111,32 @@ defmodule Codebattle.Chat.Server do
     {:noreply, %{state | messages: [message | messages]}}
   end
 
+  def handle_info(:clean_messages, %{messages: messages} = state) do
+    new_messages =
+      Enum.filter(
+        messages,
+        fn message ->
+          message.time > :os.system_time(:seconds) - @message_ttl
+        end
+      )
+
+    Process.send_after(self(), :clean_messages, @timeout)
+    {:noreply, %{state | messages: new_messages}}
+  end
+
   # Helpers
   defp chat_key(:lobby), do: :LOBBY_CHAT
   defp chat_key({type, id}), do: {:via, :gproc, {:n, :l, {:chat, "#{type}_#{id}"}}}
 
   defp broadcast_message(type, topic, message) do
     case type do
+      :lobby ->
+        CodebattleWeb.Endpoint.broadcast!(
+          "chat:lobby",
+          topic,
+          message
+        )
+
       {:tournament, id} ->
         CodebattleWeb.Endpoint.broadcast!(
           Tournament.Server.tournament_topic_name(id),

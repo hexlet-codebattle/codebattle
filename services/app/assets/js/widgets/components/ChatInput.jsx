@@ -1,16 +1,16 @@
-import React, { useState, useRef } from "react";
-import * as _ from "lodash";
-import { Emoji, emojiIndex } from "emoji-mart";
-import useClickAway from "../utils/useClickAway";
-import { addMessage, pushCommand } from "../middlewares/Chat";
-import EmojiPicker from "./EmojiPicker";
-import EmojiToolTip from "./EmojiTooltip";
+import React, { useState, useRef } from 'react';
+import * as _ from 'lodash';
+import { Emoji, emojiIndex } from 'emoji-mart';
+import useClickAway from '../utils/useClickAway';
+import { addMessage, pushCommand } from '../middlewares/Chat';
+import EmojiPicker from './EmojiPicker';
+import EmojiToolTip from './EmojiTooltip';
 
-const trimColons = (message) => message.slice(0, message.lastIndexOf(":"));
+const trimColons = message => message.slice(0, message.lastIndexOf(':'));
 
-const getColons = (message) => message.slice(message.lastIndexOf(":") + 1);
+const getColons = message => message.slice(message.lastIndexOf(':') + 1);
 
-const getTooltipVisibility = (msg) => {
+const getTooltipVisibility = msg => {
   const endsWithEmojiCodeRegex = /.*:[a-zA-Z]{0,}([^ ])+$/;
   if (!endsWithEmojiCodeRegex.test(msg)) return false;
   const colons = getColons(msg);
@@ -20,7 +20,7 @@ const getTooltipVisibility = (msg) => {
 export default function ChatInput() {
   const [isPickerVisible, setPickerVisibility] = useState(false);
   const [isTooltipVisible, setTooltipVisibility] = useState(false);
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState('');
   const inputRef = useRef(null);
 
   const handleChange = ({ target: { value } }) => {
@@ -28,33 +28,31 @@ export default function ChatInput() {
     setMessage(value);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = e => {
     e.preventDefault();
     if (isTooltipVisible) {
       return;
     }
     if (message) {
       // TODO: think about command parser with autocomplete
-      if (message.startsWith("/")) {
-        let cmd_type = message.split(" ")[0].match(/\/([\w-=:.@]+)/gi)[0]?.slice(1);
+      if (message.startsWith('/')) {
+        const cmdType = message.split(' ')[0].match(/\/([\w-=:.@]+)/gi)[0]?.slice(1);
 
-        const command_list = message.slice(1).split(" ");
+        const commandList = message.slice(1).split(' ');
         const params = _.fromPairs(
-          command_list.slice(1).map((x) => {
-            return x.split(":");
-          })
+          commandList.slice(1).map(x => x.split(':')),
         );
 
         const command = {
           ...params,
-          type: cmd_type,
+          type: cmdType,
         };
         pushCommand(command);
       } else {
         addMessage(message);
       }
 
-      setMessage("");
+      setMessage('');
     }
   };
 
@@ -76,7 +74,7 @@ export default function ChatInput() {
     input.focus();
     input.setSelectionRange(
       caretPosition + native.length,
-      caretPosition + native.length
+      caretPosition + native.length,
     );
   };
 
@@ -85,7 +83,7 @@ export default function ChatInput() {
     () => {
       hideTooltip();
     },
-    ["click"]
+    ['click'],
   );
 
   return (
@@ -95,7 +93,7 @@ export default function ChatInput() {
     >
       <input
         className="h-auto form-control border-secondary"
-        placeholder="Type message here..."
+        placeholder="Please be nice in the chat!"
         value={message}
         onChange={handleChange}
         ref={inputRef}

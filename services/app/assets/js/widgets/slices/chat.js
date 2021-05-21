@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   users: [],
@@ -10,7 +10,7 @@ const initialState = {
 };
 
 const chat = createSlice({
-  name: "chat",
+  name: 'chat',
   initialState,
   reducers: {
     updateChatData: (state, { payload }) => ({ ...state, ...payload }),
@@ -29,7 +29,7 @@ const chat = createSlice({
     },
     banUserChat: (state, { payload }) => {
       state.messages = [
-        ...state.messages.filter((message) => message.name !== payload.name),
+        ...state.messages.filter(message => message.name !== payload.name),
       ];
     },
   },

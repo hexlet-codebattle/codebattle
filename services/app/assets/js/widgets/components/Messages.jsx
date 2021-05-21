@@ -5,7 +5,7 @@ import Message from './Message';
 
 const Messages = ({ messages = [] }) => {
   const listRef = useRef();
-  const { stayScrolled/* , scrollBottom */ } = useStayScrolled(listRef);
+  const { stayScrolled /* , scrollBottom */ } = useStayScrolled(listRef);
 
   // Typically you will want to use stayScrolled or scrollBottom inside
   // useLayoutEffect, because it measures and changes DOM attributes (scrollTop) directly
@@ -18,8 +18,17 @@ const Messages = ({ messages = [] }) => {
       ref={listRef}
       className="overflow-auto pt-0 pl-3 pr-2 position-relative cb-messages-list"
     >
-      {/* eslint-disable-next-line react/no-array-index-key */}
-      {messages.map(({ name, text, type }, i) => <Message name={name} text={text} key={i} type={type} />)}
+      {messages.map(({
+ name, text, type, time,
+}) => (
+  <Message
+    name={name}
+    text={text}
+    key={`${time}-${name}`}
+    type={type}
+    time={time}
+  />
+      ))}
     </ul>
   );
 };
