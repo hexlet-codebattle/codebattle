@@ -10,14 +10,16 @@ const renderUserName = ({ id, name, rank }) => {
     return i18n.t('%{name}(bot)', { name });
   }
 
-  return `${name}(${rank})`;
+  const displayRank = rank ? `(${rank})` : '';
+
+  return `${name}${displayRank}`;
 };
 const renderOnlineIndicator = (user, isOnline) => {
   if (user.id <= 0) {
     return null;
   }
 
-  const onlineIndicatorClassName = cn('mr-1', {
+  const onlineIndicatorClassName = cn('mr-2', {
     'cb-user-online': isOnline,
     'cb-user-offline': !isOnline,
   });
@@ -36,10 +38,11 @@ const UserName = ({ user, truncate, isOnline }) => (
   <div className="d-flex align-items-baseline">
     {renderOnlineIndicator(user, isOnline)}
     <span className="d-flex align-items-center">
+      <LanguageIcon lang={user.lang || 'js'} />
       <a
         href={`/users/${user.id}`}
         key={user.id}
-        className="d-flex align-items-center mr-1"
+        className="d-flex align-items-center"
       >
         <span
           className={`text-truncate ${
@@ -49,7 +52,6 @@ const UserName = ({ user, truncate, isOnline }) => (
           <u>{renderUserName(user)}</u>
         </span>
       </a>
-      <LanguageIcon lang={user.lang || 'js'} />
     </span>
   </div>
   );
