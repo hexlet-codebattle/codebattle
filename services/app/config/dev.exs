@@ -49,3 +49,5 @@ config :codebattle, Codebattle.Invite, timeout: :timer.minutes(15)
 config :codebattle, Codebattle.Invite, lifetime: :timer.minutes(15)
 
 config :codebattle, Codebattle.Bot, timeout: 2_000
+
+config :codebattle, admins: []
