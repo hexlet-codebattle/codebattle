@@ -10,7 +10,9 @@ const renderUserName = ({ id, name, rank }) => {
     return i18n.t('%{name}(bot)', { name });
   }
 
-  return `${name}(${rank})`;
+  const displayRank = rank ? `(${rank})` : '';
+
+  return `${name}${displayRank}`;
 };
 const renderOnlineIndicator = (user, isOnline) => {
   if (user.id <= 0) {
