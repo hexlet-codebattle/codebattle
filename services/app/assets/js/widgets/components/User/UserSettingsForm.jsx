@@ -1,6 +1,5 @@
 import React from 'react';
 import _ from 'lodash';
-import cn from 'classnames';
 import {
  Formik, Form, Field, useField,
 } from 'formik';
@@ -9,8 +8,6 @@ import Slider from 'calcite-react/Slider';
 import * as Icon from 'react-feather';
 import languages from '../../config/languages';
 import sound, { sounds } from '../../lib/sound';
-// import { userSettingsSelector } from '../selectors';
-// import { updateUserSettings } from '../slices/userSettings';
 
 export default ({ onSubmit, settings }) => {
   const [unprocessableError] = React.useState('');
