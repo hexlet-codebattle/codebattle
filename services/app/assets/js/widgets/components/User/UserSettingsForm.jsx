@@ -19,10 +19,12 @@ export default ({ onSubmit, settings }) => {
 
     return (
       <div className="form-group mb-3">
-        <label className="h6" htmlFor={name}>
-          {label}
+        <div>
+          <label className="h6" htmlFor={name}>
+            {label}
+          </label>
           <input {...field} {...props} className="form-control" />
-        </label>
+        </div>
         {meta.touched && meta.error ? (
           <span className="error text-danger">{meta.error}</span>
         ) : (
