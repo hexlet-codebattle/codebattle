@@ -11,7 +11,7 @@ import sound, { sounds } from '../../lib/sound';
 
 const playingLanguages = Object.entries(languages);
 
-const TextInput = ({ label, error, ...props }) => {
+const TextInput = ({ label, ...props }) => {
   const [field, meta] = useField(props);
   const { name } = props;
 
@@ -26,15 +26,13 @@ const TextInput = ({ label, error, ...props }) => {
       {meta.touched && meta.error ? (
         <span className="error text-danger">{meta.error}</span>
       ) : (
-        <span className="error text-danger">{error}</span>
+        <span className="error text-danger">{""}</span>
       )}
     </div>
   );
 };
 
 export default ({ onSubmit, settings }) => {
-  const [ unprocessableError ] = React.useState('');
-
   const renderLanguages = langs => langs.map(([slug, lang]) => (
     <option key={slug} value={lang}>
       {_.capitalize(lang)}
@@ -63,7 +61,9 @@ export default ({ onSubmit, settings }) => {
           validationSchema={validationSchema}
           onSubmit={onSubmit}
         >
-          {({ handleChange, dirty, isSubmitting, values }) => (
+          {({
+            handleChange, dirty, isSubmitting, values,
+          }) => (
             <Form>
               <div className="container">
                 <div className="row form-group mb-3">
@@ -75,7 +75,6 @@ export default ({ onSubmit, settings }) => {
                       name="name"
                       type="text"
                       placeholder="Enter your name"
-                      error={unprocessableError}
                     />
                   </div>
                   <div className="col-3">
