@@ -75,7 +75,6 @@ test('test rendering GameList', async () => {
   );
 
   expect(getByText(/Lobby/)).toBeInTheDocument();
-  expect(getAllByText(/Won:/)).toHaveLength(2);
   expect(getByText(/Online players: 2/)).toBeInTheDocument();
   expect(getByText(/Tournaments/)).toBeInTheDocument();
   expect(getByText(/Completed Games/)).toBeInTheDocument();
