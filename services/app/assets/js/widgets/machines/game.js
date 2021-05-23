@@ -96,14 +96,12 @@ const machine = Machine(
               'user:check_complete': {
                 target: 'game_over',
                 cond: (_ctx, { payload }) => payload.status === 'game_over',
-              },
-              'user:won': {
-                target: 'game_over',
-                actions: ['soundWin'],
+                // TODO: figureOut why soundWin doesn't work
+                actions: ['soundWin', 'showGameResultModal'],
               },
               'user:give_up': {
                 target: 'game_over',
-                actions: ['soundGiveUp'],
+                actions: ['soundGiveUp', 'showGameResultModal'],
               },
               'game:timeout': {
                 target: 'game_over',

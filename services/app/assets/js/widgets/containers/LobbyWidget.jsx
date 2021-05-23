@@ -19,9 +19,10 @@ import i18n from '../../i18n';
 // import StartGamePanel from '../components/StartGamePanel';
 import CompletedGames from '../components/Game/CompletedGames';
 import CreateGameDialog from '../components/Game/CreateGameDialog';
-import TopPlayersEver from '../components/TopPlayers/TopPlayersEver';
-import TopPlayersPerPeriod from '../components/TopPlayers/TopPlayersPerPeriod';
+import Leaderboard from '../components/Leaderboard';
+import Announcement from '../components/Announcement';
 import GameLevelBadge from '../components/GameLevelBadge';
+import LobbyChat from './LobbyChat';
 import levelRatio from '../config/levelRatio';
 
 const Players = ({ players }) => {
@@ -210,9 +211,17 @@ const ActiveGames = ({ games }) => {
   if (_.isEmpty(filtetedGames)) {
     return <p className="text-center">There are no active games right now.</p>;
   }
-  const gamesSortByLevel = _.sortBy(filtetedGames, [game => levelRatio[game.level]]);
-  const { gamesWithCurrentUser = [], gamesWithActiveUsers = [], gamesWithBots = [] } = _.groupBy(gamesSortByLevel, game => {
-    const isCurrentUserPlay = game.players.some(({ id }) => id === currentUser.id);
+  const gamesSortByLevel = _.sortBy(filtetedGames, [
+    game => levelRatio[game.level],
+  ]);
+  const {
+    gamesWithCurrentUser = [],
+    gamesWithActiveUsers = [],
+    gamesWithBots = [],
+  } = _.groupBy(gamesSortByLevel, game => {
+    const isCurrentUserPlay = game.players.some(
+      ({ id }) => id === currentUser.id,
+    );
     if (isCurrentUserPlay) {
       return 'gamesWithCurrentUser';
     }
@@ -221,7 +230,11 @@ const ActiveGames = ({ games }) => {
     }
     return 'gamesWithBots';
   });
-  const sortedGames = [...gamesWithCurrentUser, ...gamesWithActiveUsers, ...gamesWithBots];
+  const sortedGames = [
+    ...gamesWithCurrentUser,
+    ...gamesWithActiveUsers,
+    ...gamesWithBots,
+  ];
   return (
     <div className="table-responsive">
       <table className="table table-striped border-gray border-top-0 mb-0">
@@ -263,12 +276,7 @@ const ActiveGames = ({ games }) => {
   );
 };
 
-const GameContainers = ({
-  activeGames,
-  completedGames,
-  liveTournaments,
-  handleShowModal,
-}) => (
+const GameContainers = ({ activeGames, completedGames, liveTournaments }) => (
   <div className="p-0">
     <nav>
       <div className="nav nav-tabs bg-gray" id="nav-tab" role="tablist">
@@ -305,13 +313,6 @@ const GameContainers = ({
         >
           Completed Games
         </a>
-        <button
-          type="button"
-          className="nav-item nav-link text-uppercase rounded-0 text-orange font-weight-bold p-3 ml-auto"
-          onClick={handleShowModal}
-        >
-          Create Game
-        </button>
       </div>
     </nav>
     <div className="tab-content" id="nav-tabContent">
@@ -346,12 +347,22 @@ const GameContainers = ({
 const renderModal = (show, handleCloseModal) => (
   <Modal show={show} onHide={handleCloseModal}>
     <Modal.Header closeButton>
-      <Modal.Title>Create game</Modal.Title>
+      <Modal.Title>Create a game</Modal.Title>
     </Modal.Header>
     <Modal.Body>
       <CreateGameDialog hideModal={handleCloseModal} />
     </Modal.Body>
   </Modal>
+);
+
+const CreateGameButton = ({ handleClick }) => (
+  <button
+    type="button"
+    className="btn btn-success text-uppercase font-weight-bold py-3 mb-3"
+    onClick={handleClick}
+  >
+    Create a Game
+  </button>
 );
 
 const LobbyWidget = () => {
@@ -372,7 +383,6 @@ const LobbyWidget = () => {
     activeGames,
     completedGames,
     liveTournaments,
-    presenceList,
   } = useSelector(selectors.lobbyDataSelector);
 
   if (!loaded) {
@@ -383,26 +393,22 @@ const LobbyWidget = () => {
     <div className="container-lg">
       {renderModal(show, handleCloseModal)}
       <div className="row">
-        {/* {isGuestCurrentUser ? <Intro /> : <StartGamePanel />} */}
-        <div className="col-lg-8 col-md-12 p-0 mb-2 pr-lg-2">
+        <div className="col-lg-8 col-md-12 p-0 mb-2 pr-lg-2 pb-3">
           <GameContainers
             activeGames={activeGames}
             completedGames={completedGames}
             liveTournaments={liveTournaments}
-            handleShowModal={handleShowModal}
           />
-          <span className="pt-2">{`Online players: ${presenceList.length}`}</span>
+          <LobbyChat />
         </div>
 
         <div className="d-flex flex-column col-lg-4 col-md-12 p-0">
-          <TopPlayersPerPeriod />
+          <CreateGameButton handleClick={handleShowModal} />
           <div className="mt-2">
-            <TopPlayersEver />
+            <Announcement />
           </div>
           <div className="mt-2">
-            <u>
-              <a href="https://codebattle.hexlet.io/users">More</a>
-            </u>
+            <Leaderboard />
           </div>
         </div>
       </div>

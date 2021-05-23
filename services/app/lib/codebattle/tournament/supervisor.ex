@@ -9,8 +9,8 @@ defmodule Codebattle.Tournament.Supervisor do
 
   def init(tournament) do
     children = [
-      worker(Codebattle.Tournament.Server, [tournament]),
-      worker(Codebattle.Chat.Server, [{:tournament, tournament.id}])
+      {Codebattle.Tournament.Server, tournament},
+      {Codebattle.Chat.Server, {:tournament, tournament.id}}
     ]
 
     Supervisor.init(children, strategy: :one_for_one)

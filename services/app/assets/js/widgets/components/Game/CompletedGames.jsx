@@ -36,7 +36,7 @@ const CompletedGames = ({ games }) => (
               </div>
             </td>
             <td className="p-3 align-middle text-nowrap">
-              {moment.utc(game.finishsAt).local().format('YYYY-MM-DD HH:mm')}
+              {moment.utc(game.finishsAt).local().format('MM.DD HH:mm')}
             </td>
             <td className="p-3 align-middle">
               <a

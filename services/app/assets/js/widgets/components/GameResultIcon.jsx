@@ -20,9 +20,11 @@ const GameResultIcon = ({ editor: { userId } }) => {
         overlay={<Tooltip id={tooltipId}>Player gave up</Tooltip>}
         placement="left"
       >
-        <div className="mx-1">
-          <i className="far fa-flag fa-lg align-middle" aria-hidden="true" />
-        </div>
+        <img
+          src="/assets/images/big-flag.png"
+          alt="white-flag"
+          style={{ width: '200px' }}
+        />
       </OverlayTrigger>
     );
   }
@@ -33,9 +35,7 @@ const GameResultIcon = ({ editor: { userId } }) => {
         overlay={<Tooltip id={tooltipId}>Player won</Tooltip>}
         placement="left"
       >
-        <div className="mx-1">
-          <i className="fa fa-trophy fa-lg text-warning align-middle" aria-hidden="true" />
-        </div>
+        <img src="/assets/images/big-gold-cup.png" alt="gold-cup" />
       </OverlayTrigger>
     );
   }

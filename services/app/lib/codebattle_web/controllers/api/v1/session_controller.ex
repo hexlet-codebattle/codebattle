@@ -2,19 +2,21 @@ defmodule CodebattleWeb.Api.V1.SessionController do
   use CodebattleWeb, :controller
 
   def create(conn, params) do
-    auth = %{
+    user_attrs = %{
       email: params["email"],
-      uid: params["uid"]
+      password: params["password"]
     }
 
-    case Codebattle.Oauth.User.find(auth) do
+    case Codebattle.Oauth.User.find_by_firebase(user_attrs) do
       {:ok, user} ->
         conn
         |> put_session(:user_id, user.id)
         |> json(%{status: :created})
 
       {:error, reason} ->
-        json(conn, %{errors: reason})
+        conn
+        |> put_status(:unprocessable_entity)
+        |> json(%{errors: reason})
     end
   end
 end

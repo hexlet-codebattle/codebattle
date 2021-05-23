@@ -2,11 +2,14 @@
   .rounded-top.shadow-sm style="height: 350px;"
     #new-chat-message.overflow-auto.px-3.pt-3.h-100.text-break phx-hook="NewChatMessage"
       div
-        span.text-muted Please, be nice in chat
+        small.text-muted Please, be nice in chat
       = for message <- @messages do
         .pb-1
-          span.font-weight-bold = "#{message.user_name}:"
-          span.ml-1 = render_chat_message(message)
+          = if message[:type] == :info || message[:type] == "info" do
+            small.text-muted = message.text
+          - else
+            span.font-weight-bold = "#{message.name}:"
+            span.ml-1 = render_chat_message(message)
   = form_for :message, "#", [phx_submit: :chat_message],  fn f ->
     .d-flex.shadow-sm.rounded-bottom
       = text_input f, :content, autocomplete: "off", placeholder: "write your message here...", class: "form-control rounded-0 border-0 border-top x-rounded-bottom-left"

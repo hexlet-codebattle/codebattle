@@ -1,4 +1,5 @@
 export default {
-  MONTHLY: 'monthly',
-  WEEKLY: 'weekly',
+  MONTHLY: 'month',
+  WEEKLY: 'week',
+  ALL: 'all',
 };

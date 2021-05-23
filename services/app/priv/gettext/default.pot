@@ -20,7 +20,7 @@ msgstr ""
 
 #: lib/codebattle_web/templates/page/index.html.slim:6
 #: lib/codebattle_web/templates/game/index.html.slim:11
-msgid "Create game"
+msgid "Create a game"
 msgstr ""
 
 #: lib/codebattle_web/templates/user/index.html.slim:1

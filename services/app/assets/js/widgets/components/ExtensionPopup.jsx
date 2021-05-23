@@ -27,7 +27,7 @@ const ExtensionPopup = () => {
         <p>
           {'We have a '}
           <a
-            href="https://chrome.google.com/webstore/detail/codebattle-web-extension/embfhnfkfobkdohleknckodkmhgmpdli?hl=ru&"
+            href="https://chrome.google.com/webstore/detail/codebattle-web-extension/embfhnfkfobkdohleknckodkmhgmpdli?hl=en&"
             target="_blank"
             rel="noreferrer"
             className="alert-link"
@@ -42,7 +42,7 @@ const ExtensionPopup = () => {
           variant="outline-success"
           target="_blank"
           rel="noreferrer"
-          href="https://chrome.google.com/webstore/detail/codebattle-web-extension/embfhnfkfobkdohleknckodkmhgmpdli?hl=ru&"
+          href="https://chrome.google.com/webstore/detail/codebattle-web-extension/embfhnfkfobkdohleknckodkmhgmpdli?hl=en&"
         >
           Install
         </Button>

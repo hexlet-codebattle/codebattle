@@ -10,6 +10,7 @@ import {
 } from '@reduxjs/toolkit';
 import rollbarMiddleware from 'rollbar-redux-middleware';
 import rollbar from './lib/rollbar';
+import InvitesContainer from './containers/InvitesContainer';
 import RootContainer from './containers/RootContainer';
 import reducers from './slices';
 import LobbyWidget from './containers/LobbyWidget';
@@ -18,15 +19,22 @@ import UserProfile from './containers/UserProfile';
 import UserSettings from './containers/UserSettings';
 import Registration from './containers/Registration';
 
-const { editorUI: editorUIReducer, ...otherReducers } = reducers;
+const { gameUI: gameUIReducer, ...otherReducers } = reducers;
 
-const editorUIPersistConfig = {
-  key: 'editorUI',
+const gameUIPersistWhitelist = [
+  'editorMode',
+  'editorTheme',
+  'taskDescriptionLanguage',
+];
+
+const gameUIPersistConfig = {
+  key: 'gameUI',
+  whitelist: gameUIPersistWhitelist,
   storage,
 };
 
 const rootReducer = combineReducers({
-  editorUI: persistReducer(editorUIPersistConfig, editorUIReducer),
+  gameUI: persistReducer(gameUIPersistConfig, gameUIReducer),
   ...otherReducers,
 });
 
@@ -45,6 +53,12 @@ const store = configureStore({
 });
 
 const persistor = persistStore(store);
+
+export const Invites = () => (
+  <Provider store={store}>
+    <InvitesContainer />
+  </Provider>
+);
 
 export const Game = () => (
   <Provider store={store}>

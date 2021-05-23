@@ -1,6 +1,5 @@
 defmodule Codebattle.CodeCheck.CheckResultV2 do
-  @moduledoc
-  """
+  @moduledoc """
   statuses:
   :initial ->  no check runs
   :ok -> successfully all tests
@@ -20,8 +19,7 @@ defmodule Codebattle.CodeCheck.CheckResultV2 do
   def new, do: %__MODULE__{}
 
   defmodule AssertResult do
-    @moduledoc
-    """
+    @moduledoc """
     statuses:
     :failure -> wrong assert check
     :success -> success assert check

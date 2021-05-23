@@ -6,8 +6,8 @@ defmodule CodebattleWeb.ChatChannelTest do
   alias CodebattleWeb.UserSocket
 
   setup do
-    user1 = insert(:user)
-    user2 = insert(:user)
+    user1 = insert(:user, name: "alice")
+    user2 = insert(:user, name: "bob")
 
     user_token1 = Phoenix.Token.sign(socket(UserSocket), "user_token", user1.id)
     {:ok, socket1} = connect(UserSocket, %{"token" => user_token1})
@@ -25,11 +25,7 @@ defmodule CodebattleWeb.ChatChannelTest do
 
     {:ok, response, _socket1} = subscribe_and_join(socket1, ChatChannel, chat_topic)
 
-    assert Jason.encode(response) ==
-             Jason.encode(%{
-               users: [user1],
-               messages: []
-             })
+    assert Jason.encode(response) == Jason.encode(%{users: [user1], messages: []})
   end
 
   test "broadcasts chat:user_joined with state after user join", %{user2: user2, socket2: socket2} do
@@ -44,13 +40,10 @@ defmodule CodebattleWeb.ChatChannelTest do
       payload: response
     }
 
-    assert Jason.encode(response) ==
-             Jason.encode(%{
-               users: [user2]
-             })
+    assert Jason.encode(response) == Jason.encode(%{users: [user2]})
   end
 
-  test "messaging process", %{user1: user1, socket1: socket1, socket2: socket2} do
+  test "messaging process", %{socket1: socket1, socket2: socket2} do
     chat_id = :rand.uniform(1000)
     Server.start_link({:game, chat_id})
     chat_topic = get_chat_topic(chat_id)
@@ -58,7 +51,7 @@ defmodule CodebattleWeb.ChatChannelTest do
 
     message = "test message"
 
-    push(socket1, "chat:new_msg", %{message: message})
+    push(socket1, "chat:new_msg", %{text: message})
 
     assert_receive %Phoenix.Socket.Broadcast{
       topic: ^chat_topic,
@@ -66,13 +59,13 @@ defmodule CodebattleWeb.ChatChannelTest do
       payload: response
     }
 
-    assert Jason.encode(response) == Jason.encode(%{user_name: user1.name, message: message})
+    assert %{name: "alice", text: ^message, time: _} = response
 
     {:ok, %{users: users, messages: messages}, _socket2} =
       subscribe_and_join(socket2, ChatChannel, chat_topic)
 
     assert length(users) == 2
-    assert [%{user_name: user1.name, message: message}] == messages
+    assert [%{name: "alice", text: ^message, time: _}] = messages
   end
 
   test "removes user from list on leaving channel", %{socket1: socket1, socket2: socket2} do
@@ -100,6 +93,43 @@ defmodule CodebattleWeb.ChatChannelTest do
     %{users: users} = response
 
     assert length(users) == 1
+  end
+
+  test "bans_user ", %{socket1: socket1, socket2: socket2} do
+    assert Server.get_messages(:lobby) == []
+
+    {:ok, _response, socket1} = subscribe_and_join(socket1, ChatChannel, "chat:lobby")
+    {:ok, _response, socket2} = subscribe_and_join(socket2, ChatChannel, "chat:lobby")
+
+    push(socket1, "chat:new_msg", %{"text" => "oi"})
+    :timer.sleep(50)
+    push(socket2, "chat:new_msg", %{"text" => "blz"})
+    :timer.sleep(50)
+    push(socket1, "chat:new_msg", %{"text" => "invalid_content"})
+    :timer.sleep(50)
+
+    assert [
+             %{name: "alice", text: "oi", time: _},
+             %{name: "bob", text: "blz", time: _},
+             %{name: "alice", text: "invalid_content", time: _}
+           ] = Server.get_messages(:lobby)
+
+    push(socket1, "chat:command", %{"type" => "ban", "name" => "bob", "duration" => "3h"})
+    :timer.sleep(50)
+
+    assert [
+             %{name: "alice", text: "oi", time: _},
+             %{name: "bob", text: "blz", time: _},
+             %{name: "alice", text: "invalid_content", time: _}
+           ] = Server.get_messages(:lobby)
+
+    push(socket2, "chat:command", %{"type" => "ban", "name" => "alice", "duration" => "3h"})
+    :timer.sleep(50)
+
+    assert [
+             %{name: "bob", text: "blz", time: _},
+             %{name: "CB", text: "alice has been banned by bob", type: "info", time: _}
+           ] = Server.get_messages(:lobby)
   end
 
   def get_chat_topic(id), do: "chat:g_#{id}"

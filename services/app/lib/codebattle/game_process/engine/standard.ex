@@ -13,11 +13,54 @@ defmodule Codebattle.GameProcess.Engine.Standard do
 
   use Engine.Base
 
-  # 2 hour
-  @default_timeout 7200
-  @timeout_seconds_whitelist [60, 120, 300, 600, 1200, 3600, 7200]
+  # 1 hour
+  @default_timeout 3600
+  @timeout_seconds_whitelist [60, 120, 300, 600, 900, 1200, 1800, 3600, 7200]
 
   @impl Engine.Base
+
+  def create_game(%{users: [creator, recipient], level: level, type: type} = params) do
+    task = get_task(level)
+    creator_player = Player.build(creator, %{creator: true, task: task})
+    recipient_player = Player.build(recipient, %{task: task})
+
+    timeout_seconds = get_timeout_seconds(params.timeout_seconds)
+
+    with :ok <- player_can_create_game?(recipient_player),
+         langs <- Languages.get_langs_with_solutions(task),
+         {:ok, game} <-
+           insert_game(%{
+             state: "playing",
+             level: level,
+             type: type,
+             task_id: task.id
+           }),
+         fsm <-
+           build_fsm(%{
+             module: __MODULE__,
+             players: [creator_player, recipient_player],
+             game_id: game.id,
+             level: level,
+             type: type,
+             state: :playing,
+             langs: langs,
+             starts_at: TimeHelper.utc_now(),
+             inserted_at: game.inserted_at,
+             timeout_seconds: timeout_seconds,
+             task: task
+           }),
+         :ok <- ActiveGames.create_game(fsm),
+         {:ok, _} <- GlobalSupervisor.start_game(fsm),
+         :ok <- start_timeout_timer(game.id, fsm) do
+      broadcast_active_game(fsm)
+
+      {:ok, fsm}
+    else
+      {:error, reason} ->
+        {:error, reason}
+    end
+  end
+
   def create_game(%{user: user, level: level, type: type} = params) do
     player = Player.build(user, %{creator: true})
 

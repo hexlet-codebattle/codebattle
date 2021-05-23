@@ -5,20 +5,20 @@ defmodule Codebattle.GameProcess.Supervisor do
 
   alias Codebattle.GameProcess.FsmHelpers
 
-  def start_link([game_id, fsm]) do
+  def start_link({game_id, fsm}) do
     Supervisor.start_link(__MODULE__, [game_id, fsm], name: supervisor_name(game_id))
   end
 
   def init([game_id, fsm]) do
     children = [
-      worker(Codebattle.GameProcess.Server, [game_id, fsm]),
-      worker(Codebattle.GameProcess.TimeoutServer, [game_id]),
-      supervisor(Codebattle.Bot.PlayersSupervisor, [game_id])
+      {Codebattle.GameProcess.Server, {game_id, fsm}},
+      {Codebattle.GameProcess.TimeoutServer, game_id},
+      {Codebattle.Bot.PlayersSupervisor, game_id}
     ]
 
     chat =
       case FsmHelpers.get_tournament_id(fsm) do
-        nil -> [worker(Codebattle.Chat.Server, [{:game, game_id}])]
+        nil -> [{Codebattle.Chat.Server, {:game, game_id}}]
         _ -> []
       end
 

@@ -1,0 +1,14 @@
+#tasklang-dropdown {
+  &-toggle, &-menu {
+    min-width: 4.375rem;
+  }
+
+  &-menu {
+    .active, :active, :focus {
+      background-color: lighten($color: $secondary, $amount: 10) ;
+    }
+    :hover:not(.active) {
+      background-color: $gray-dark;
+    }
+  }
+}
