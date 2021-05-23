@@ -1,10 +1,11 @@
 import React from 'react';
 import { render } from 'react-dom';
 import {
- Game, Lobby, UsersRating, UserPage, SettingsPage, RegistrationPage,
+ Game, Lobby, UsersRating, UserPage, SettingsPage, RegistrationPage, Invites,
 } from './App';
 import Heatmap from './containers/Heatmap';
 
+export const renderInvitesWidget = domElement => render(<Invites />, domElement);
 export const renderGameWidget = domElement => render(<Game />, domElement);
 export const renderLobby = domElement => render(<Lobby />, domElement);
 export const renderHeatmapWidget = domElement => render(<Heatmap />, domElement);

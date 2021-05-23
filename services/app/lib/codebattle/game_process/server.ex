@@ -9,7 +9,7 @@ defmodule Codebattle.GameProcess.Server do
   alias Codebattle.Bot.Playbook
 
   # API
-  def start_link(game_id, fsm) do
+  def start_link({game_id, fsm}) do
     GenServer.start_link(__MODULE__, fsm, name: server_name(game_id))
   end
 

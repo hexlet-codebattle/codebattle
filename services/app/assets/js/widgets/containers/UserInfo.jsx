@@ -1,70 +1,16 @@
 import { camelizeKeys } from 'humps';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Popover, OverlayTrigger } from 'react-bootstrap';
 
+import * as selectors from '../selectors';
 import { actions } from '../slices';
 import UserName from '../components/User/UserName';
+import UserStats from '../components/User/UserStats';
+import PopoverStickOnHover from '../components/User/PopoverStickOnHover';
 
-const UserStats = ({ user, data }) => (
-  <div className="container-fluid p-2">
-    <div className="row">
-      <div className="col-12 d-flex flex-row align-items-center">
-        <img
-          className="img-fluid"
-          style={{
-            maxHeight: '15px',
-            width: '15px',
-          }}
-          src={`https://avatars0.githubusercontent.com/u/${data.user.githubId}`}
-          alt={data.user.name}
-        />
-        <span>{user.name}</span>
-      </div>
-      <div className="col-12 d-flex flex-wrap justify-content-between">
-        <div>
-          <span>
-            Rank:
-          </span>
-          {data.rank}
-        </div>
-        <div className="ml-1">
-          <span>
-            Rating:
-          </span>
-          {data.user.rating}
-        </div>
-        <div className="ml-1">
-          <span>
-            Games:
-          </span>
-          {data.completedGames.length}
-        </div>
-        <div>
-          <span>
-            Won:
-          </span>
-          {data.stats.won}
-        </div>
-        <div className="ml-1">
-          <span>
-            Lost:
-          </span>
-          {data.stats.lost}
-        </div>
-        <div className="ml-1">
-          <span>
-            GaveUp:
-          </span>
-          {data.stats.gaveUp}
-        </div>
-      </div>
-    </div>
-  </div>
-);
-
-const CustomOverlay = ({ user, overLayProps }) => {
+const UserPopoverContent = ({ user }) => {
+  // TODO: store stats in global redux state
   const [stats, setStats] = useState(null);
   const dispatch = useDispatch();
 
@@ -80,17 +26,32 @@ const CustomOverlay = ({ user, overLayProps }) => {
       });
   }, [dispatch, setStats, user.id]);
 
-  return (
-    <Popover {...overLayProps} id="popover-user">
-      {!stats ? 'no stats' : <UserStats user={user} data={stats} />}
-    </Popover>
-  );
+  return <UserStats user={user} data={stats} />;
 };
 
 const UserInfo = ({ user, truncate = false }) => {
-  <OverlayTrigger placement="bottom" delay={100} overlay={props => <CustomOverlay user={user} overLayProps={props} />}>
-    <div><UserName user={user} truncate={truncate} /></div>
-  </OverlayTrigger>;
+  const { presenceList } = useSelector(selectors.lobbyDataSelector);
+  if (!user?.id) {
+    return <span className="text-secondary">No-User</span>;
+  }
+
+  if (user?.id === 0) {
+    return <span className="text-secondary">{`${user.name}`}</span>;
+  }
+
+  const isOnline = presenceList.some(({ id }) => id === user?.id);
+
+  return (
+    <PopoverStickOnHover
+      id={`user-info-${user?.id}`}
+      placement="bottom-start"
+      component={<UserPopoverContent user={user} />}
+    >
+      <div>
+        <UserName user={user} truncate={truncate} isOnline={isOnline} />
+      </div>
+    </PopoverStickOnHover>
+  );
 };
 
 export default UserInfo;

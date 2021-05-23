@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import * as _ from 'lodash';
 import { Emoji, emojiIndex } from 'emoji-mart';
 import useClickAway from '../utils/useClickAway';
-import { addMessage } from '../middlewares/Chat';
+import { addMessage, pushCommand } from '../middlewares/Chat';
 import EmojiPicker from './EmojiPicker';
 import EmojiToolTip from './EmojiTooltip';
 
@@ -34,7 +34,24 @@ export default function ChatInput() {
       return;
     }
     if (message) {
-      addMessage(message);
+      // TODO: think about command parser with autocomplete
+      if (message.startsWith('/')) {
+        const cmdType = message.split(' ')[0].match(/\/([\w-=:.@]+)/gi)[0]?.slice(1);
+
+        const commandList = message.slice(1).split(' ');
+        const params = _.fromPairs(
+          commandList.slice(1).map(x => x.split(':')),
+        );
+
+        const command = {
+          ...params,
+          type: cmdType,
+        };
+        pushCommand(command);
+      } else {
+        addMessage(message);
+      }
+
       setMessage('');
     }
   };
@@ -55,12 +72,19 @@ export default function ChatInput() {
     hideTooltip();
     await setMessage(`${before}${native}${after}`);
     input.focus();
-    input.setSelectionRange(caretPosition + native.length, caretPosition + native.length);
+    input.setSelectionRange(
+      caretPosition + native.length,
+      caretPosition + native.length,
+    );
   };
 
-  useClickAway(inputRef, () => {
-    hideTooltip();
-  }, ['click']);
+  useClickAway(
+    inputRef,
+    () => {
+      hideTooltip();
+    },
+    ['click'],
+  );
 
   return (
     <form
@@ -69,23 +93,20 @@ export default function ChatInput() {
     >
       <input
         className="h-auto form-control border-secondary"
-        placeholder="Type message here..."
+        placeholder="Please be nice in the chat!"
         value={message}
         onChange={handleChange}
         ref={inputRef}
       />
       {isTooltipVisible && (
-      <EmojiToolTip
-        emojis={emojiIndex.search(getColons(message))}
-        handleSelect={handleSelectEmodji}
-        hide={hideTooltip}
-      />
+        <EmojiToolTip
+          emojis={emojiIndex.search(getColons(message))}
+          handleSelect={handleSelectEmodji}
+          hide={hideTooltip}
+        />
       )}
-      { isPickerVisible && (
-      <EmojiPicker
-        handleSelect={handleSelectEmodji}
-        hide={hidePicker}
-      />
+      {isPickerVisible && (
+        <EmojiPicker handleSelect={handleSelectEmodji} hide={hidePicker} />
       )}
       <div className="input-group-append">
         <button
@@ -93,14 +114,13 @@ export default function ChatInput() {
           className="btn btn-outline-secondary py-0 px-1"
           onClick={togglePickerVisibility}
         >
-          <Emoji
-            emoji="grinning"
-            native
-            size={20}
-            emojiTooltip="true"
-          />
+          <Emoji emoji="grinning" native size={20} emojiTooltip="true" />
         </button>
-        <button className="btn btn-outline-secondary" type="button" onClick={handleSubmit}>
+        <button
+          className="btn btn-outline-secondary"
+          type="button"
+          onClick={handleSubmit}
+        >
           Send
         </button>
       </div>

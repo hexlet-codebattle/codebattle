@@ -123,4 +123,8 @@ defmodule CodebattleWeb.Factory do
       }
     }
   end
+
+  def invite_factory do
+    %Codebattle.Invite{}
+  end
 end

@@ -116,7 +116,7 @@ defmodule Codebattle.Bot.ChatClient do
     "Hey, #{opponent["name"]}, I'll join when you start writing code"
   end
 
-  defp say_announcement(game_state) do
+  defp say_announcement(_game_state) do
     [
       "I have some great news))) Soon you may choose 1C language. Stay tuned.",
       "If you don't know, we have a chrome extension. Which announces about new active games that you can join",
@@ -138,9 +138,6 @@ defmodule Codebattle.Bot.ChatClient do
         user
     end
   end
-
-  defp pick_language("golang"), do: "TypeScript"
-  defp pick_language(_), do: "Golang"
 
   defp default_user do
     %{"name" => "there", "lang" => "php"}

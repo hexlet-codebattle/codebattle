@@ -36,12 +36,6 @@ defmodule CodebattleWeb.Router do
     delete("/:provider", AuthBindController, :unbind)
   end
 
-  scope "/user/auth", CodebattleWeb, as: :user do
-    pipe_through(:browser)
-    get("/:provider", User.AuthController, :request)
-    get("/:provider/callback", User.AuthController, :callback)
-  end
-
   scope "/api", CodebattleWeb.Api, as: :api do
     pipe_through(:api)
 
@@ -53,6 +47,7 @@ defmodule CodebattleWeb.Router do
       get("/user/current", UserController, :current)
       resources("/users", UserController, only: [:index, :show, :create])
       resources("/session", SessionController, only: [:create], singleton: true)
+      resources("/reset_password", ResetPasswordController, only: [:create], singleton: true)
       resources("/settings", SettingsController, only: [:show, :update], singleton: true)
       post("/feedback", FeedBackController, :index)
     end

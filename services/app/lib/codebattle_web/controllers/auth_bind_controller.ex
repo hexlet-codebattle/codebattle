@@ -63,7 +63,7 @@ defmodule CodebattleWeb.AuthBindController do
       end
 
     case Codebattle.Oauth.User.update(user, auth) do
-      {:ok, user} ->
+      {:ok, _user} ->
         conn
         |> put_flash(:info, gettext("Successfully updated authentication settings."))
         |> redirect(to: next_path)
@@ -115,7 +115,7 @@ defmodule CodebattleWeb.AuthBindController do
     provider_name = String.to_existing_atom(params["provider"])
 
     case Codebattle.Oauth.User.unbind(conn.assigns.current_user, provider_name) do
-      {:ok, user} ->
+      {:ok, _user} ->
         conn
         |> put_flash(:info, gettext("Successfully unbinded authentication settings."))
         |> redirect(to: "/settings")

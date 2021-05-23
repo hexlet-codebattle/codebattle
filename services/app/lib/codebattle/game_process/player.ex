@@ -21,7 +21,8 @@ defmodule Codebattle.GameProcess.Player do
              :check_result,
              :achievements,
              :rating,
-             :rating_diff
+             :rating_diff,
+             :rank
            ]}
 
   defstruct id: nil,
@@ -37,6 +38,7 @@ defmodule Codebattle.GameProcess.Player do
             name: "",
             rating: 0,
             rating_diff: 0,
+            rank: -1,
             achievements: []
 
   def build(userable, params \\ %{})
@@ -53,8 +55,9 @@ defmodule Codebattle.GameProcess.Player do
             public_id: user.public_id,
             is_bot: user.is_bot,
             github_id: user.github_id,
+            rank: user.rank,
             name: user.name,
-            achievements: user_game.user.achievements,
+            achievements: user.achievements,
             rating: user_game.rating,
             rating_diff: user_game.rating_diff,
             editor_lang: user_game.lang,
@@ -75,6 +78,7 @@ defmodule Codebattle.GameProcess.Player do
       github_id: player.github_id,
       name: player.name,
       rating: player.rating,
+      rank: player.rank,
       editor_lang: player.lang || "js",
       lang: player.lang || "js"
     }
@@ -102,6 +106,7 @@ defmodule Codebattle.GameProcess.Player do
             github_id: user.github_id,
             name: user.name,
             rating: user.rating,
+            rank: user.rank,
             editor_lang: user.lang || "js",
             lang: user.lang || "js",
             achievements: user.achievements

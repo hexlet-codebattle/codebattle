@@ -2,7 +2,6 @@ import chat, { actions as chatActions } from './chat';
 import editor, { actions as editorActions } from './editor';
 import storeLoaded, { actions as storeLoadedActions } from './store';
 import usersInfo, { actions as usersInfoActions } from './usersInfo';
-import editorUI, { actions as editorUIActions } from './editorUI';
 import gameUI, { actions as gameUIActions } from './gameUI';
 import executionOutput, { actions as executionOutputActions } from './executionOutput';
 import playbook, { actions as playbookActions } from './playbook';
@@ -10,8 +9,8 @@ import game, { actions as gameActions } from './game';
 import lobby, { actions as lobbyActions } from './lobby';
 import user, { actions as userActions } from './user';
 import userSettings, { actions as userSettingActions } from './userSettings';
-
 import leaderboard, { actions as leaderboardActions } from './leaderboard';
+import invites, { actions as invitesActions } from './invites';
 
 const setError = error => ({
   type: 'ERROR',
@@ -28,11 +27,11 @@ export const actions = {
   ...executionOutputActions,
   ...playbookActions,
   ...usersInfoActions,
-  ...editorUIActions,
   ...gameUIActions,
   ...userActions,
   ...lobbyActions,
   ...leaderboardActions,
+  ...invitesActions,
   ...userSettingActions,
 };
 
@@ -44,7 +43,6 @@ export default {
   game,
   usersInfo,
   editor,
-  editorUI,
   gameUI,
   playbook,
   user,
@@ -53,6 +51,8 @@ export default {
   storeLoaded,
   executionOutput,
   leaderboard,
+  invites,
   userSettings,
 };
+
 export { makeEditorTextKey } from './editor';

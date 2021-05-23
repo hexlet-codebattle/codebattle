@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { useSelector } from 'react-redux';
 import * as selectors from '../selectors';
 import Messages from '../components/Messages';
-import UserName from '../components/User/UserName';
+import UserInfo from './UserInfo';
 import ChatInput from '../components/ChatInput';
 import GameTypeCodes from '../config/gameTypeCodes';
 import 'emoji-mart/css/emoji-mart.css';
@@ -35,7 +35,7 @@ const ChatWidget = () => {
             <p className="mb-1">{`Online users: ${listOfUsers.length}`}</p>
             {listOfUsers.map(user => (
               <div key={user.id} className="my-1">
-                <UserName user={user} />
+                <UserInfo user={user} />
               </div>
               ))}
           </div>

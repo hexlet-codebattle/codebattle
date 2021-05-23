@@ -1,8 +1,9 @@
 import _ from 'lodash';
 import userTypes from '../config/userTypes';
 import GameStatusCodes from '../config/gameStatusCodes';
-import EditorModes from '../config/editorModes';
-import EditorThemes from '../config/editorThemes';
+import editorModes from '../config/editorModes';
+import editorThemes from '../config/editorThemes';
+import taskDescriptionLanguages from '../config/taskDescriptionLanguages';
 import i18n from '../../i18n';
 import { makeEditorTextKey } from '../slices';
 import defaultEditorHeight from '../config/editorSettings';
@@ -185,16 +186,23 @@ export const currentChatUserSelector = state => {
 
 export const editorsModeSelector = currentUserId => state => {
   if (_.hasIn(gamePlayersSelector(state), currentUserId)) {
-    return state.editorUI.mode;
+    return state.gameUI.editorMode;
   }
-  return EditorModes.default;
+  return editorModes.default;
 };
 
 export const editorsThemeSelector = currentUserId => state => {
   if (_.hasIn(gamePlayersSelector(state), currentUserId)) {
-    return state.editorUI.theme;
+    return state.gameUI.editorTheme;
   }
-  return EditorThemes.dark;
+  return editorThemes.dark;
+};
+
+export const taskDescriptionLanguageselector = currentUserId => state => {
+  if (_.hasIn(gamePlayersSelector(state), currentUserId)) {
+    return state.gameUI.taskDescriptionLanguage;
+  }
+  return taskDescriptionLanguages.default;
 };
 
 export const playbookStatusSelector = state => state.playbook.status;

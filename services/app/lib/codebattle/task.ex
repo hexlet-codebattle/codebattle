@@ -5,7 +5,8 @@ defmodule Codebattle.Task do
   import Ecto.Changeset
   import Ecto.Query
 
-  @derive {Jason.Encoder, only: [:id, :name, :level, :examples, :description_ru, :description_en]}
+  @derive {Jason.Encoder,
+           only: [:id, :name, :level, :examples, :description_ru, :description_en, :tags]}
 
   schema "tasks" do
     field(:examples, :string)
@@ -19,6 +20,7 @@ defmodule Codebattle.Task do
     field(:disabled, :boolean)
     field(:count, :integer, virtual: true)
     field(:task_id, :integer, virtual: true)
+    field(:tags, {:array, :string})
 
     timestamps()
   end
@@ -34,7 +36,8 @@ defmodule Codebattle.Task do
       :input_signature,
       :output_signature,
       :asserts,
-      :disabled
+      :disabled,
+      :tags
     ])
     |> validate_required([:examples, :description_en, :name, :level, :asserts])
     |> unique_constraint(:name)

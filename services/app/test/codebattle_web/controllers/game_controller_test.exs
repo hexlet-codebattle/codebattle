@@ -98,7 +98,7 @@ defmodule Codebattleweb.GameControllerTest do
     game = active_game(id)
 
     assert game.players |> Enum.count() == 1
-    assert game.timeout_seconds == 7200
+    assert game.timeout_seconds == 3600
     assert game.type == "public"
     assert game.level == "elementary"
   end

@@ -6,11 +6,9 @@ defmodule CodebattleWeb.LobbyChannel do
   alias Codebattle.GameProcess.Play
   alias Codebattle.Tournament
   alias CodebattleWeb.Api.GameView
-  alias CodebattleWeb.Presence
 
   def join("lobby", _payload, socket) do
     user_id = socket.assigns.user_id
-    send(self(), :after_join)
 
     {:ok,
      %{
@@ -58,16 +56,5 @@ defmodule CodebattleWeb.LobbyChannel do
       {:error, reason} ->
         {:reply, {:error, %{reason: reason}}, socket}
     end
-  end
-
-  def handle_info(:after_join, socket) do
-    {:ok, _} =
-      Presence.track(socket, socket.assigns.user_id, %{
-        online_at: inspect(System.system_time(:second)),
-        user: socket.assigns.current_user
-      })
-
-    push(socket, "presence_state", Presence.list(socket))
-    {:noreply, socket}
   end
 end
