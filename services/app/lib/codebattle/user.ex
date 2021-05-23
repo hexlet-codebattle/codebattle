@@ -25,7 +25,6 @@ defmodule Codebattle.User do
   @derive {Jason.Encoder,
            only: [
              :id,
-             :firebase_uid,
              :name,
              :rating,
              :is_bot,
@@ -57,8 +56,8 @@ defmodule Codebattle.User do
     field(:editor_theme, :string)
     field(:public_id, :binary_id)
     field(:is_bot, :boolean, default: false)
+    field(:rank, :integer, default: 5432)
     field(:guest, :boolean, virtual: true, default: false)
-    field(:rank, :integer, virtual: true)
     field(:games_played, :integer, virtual: true)
     field(:performance, :integer, virtual: true)
     field(:achievements, {:array, :string}, default: [], null: false)
@@ -111,7 +110,8 @@ defmodule Codebattle.User do
       guest: true,
       id: 0,
       name: "Jon Dou",
-      rating: 0,
+      rating: -1,
+      rank: -1,
       sound_settings: %SoundSettings{}
     }
 end

@@ -66,6 +66,7 @@ defmodule Codebattle.GameProcess.Engine.Base do
       def handle_won_game(game_id, winner, fsm) do
         loser = FsmHelpers.get_opponent(fsm, winner.id)
         store_game_result!(fsm, {winner, "won"}, {loser, "lost"})
+        update_rank_async()
         store_playbook(fsm)
 
         ActiveGames.terminate_game(game_id)
@@ -86,6 +87,7 @@ defmodule Codebattle.GameProcess.Engine.Base do
         task = FsmHelpers.get_task(fsm)
 
         store_game_result!(fsm, {winner, "won"}, {loser, "gave_up"})
+        update_rank_async()
 
         store_playbook(fsm)
 
@@ -100,6 +102,7 @@ defmodule Codebattle.GameProcess.Engine.Base do
       end
 
       def get_task(level), do: TasksQueuesServer.get_task(level)
+      def update_rank_async(), do: Codebattle.UsersRankUpdateServer.update()
 
       def store_game_result!(fsm, {winner, winner_result}, {loser, loser_result}) do
         level = FsmHelpers.get_level(fsm)

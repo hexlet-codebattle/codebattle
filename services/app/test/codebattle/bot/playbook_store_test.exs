@@ -111,7 +111,7 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
     #       ]
 
     # sleep, because GameProcess need time to write Playbook with Ecto.connection
-    :timer.sleep(400)
+    :timer.sleep(4000)
 
     playbook = Repo.get_by(Playbook, winner_id: user1.id)
     assert Enum.count(playbook.data.records) == 10

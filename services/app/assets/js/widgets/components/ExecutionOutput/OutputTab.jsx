@@ -41,7 +41,7 @@ const OutputTab = ({ sideOutput, side }) => {
   return (
     <>
       {isShowMessage && <span className="font-weight-bold small mr-3">{assertsStatusMessage}</span>}
-      <span className={`rounded p-2 bg-${statusColor}`}>{message}</span>
+      <span className={`p-2 bg-${statusColor}`}>{message}</span>
     </>
 );
 };

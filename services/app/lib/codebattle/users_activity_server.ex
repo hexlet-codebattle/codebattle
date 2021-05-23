@@ -8,11 +8,10 @@ defmodule Codebattle.UsersActivityServer do
 
   @max_size Application.compile_env(:codebattle, Codebattle.Analitics)[:max_size_activity_server]
 
-  ## 5 minutes
-  @timeout 5 * 60 * 1_000
+  @timeout :timer.minutes(5)
 
   # API
-  def start_link() do
+  def start_link(_) do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
   end
 

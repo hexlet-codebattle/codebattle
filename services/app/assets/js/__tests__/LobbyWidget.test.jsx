@@ -42,6 +42,8 @@ jest.mock(
 jest.mock('axios');
 axios.get.mockResolvedValue({ data: {} });
 
+jest.mock('react-select/async', () => () => <></>);
+
 test('test rendering GameList', async () => {
   const reducer = combineReducers(reducers);
 
@@ -68,7 +70,7 @@ test('test rendering GameList', async () => {
     preloadedState,
   });
 
-  const { getByText, getAllByText } = render(
+  const { getByText } = render(
     <Provider store={store}>
       <LobbyWidget />
     </Provider>,
@@ -78,5 +80,5 @@ test('test rendering GameList', async () => {
   expect(getByText(/Online players: 2/)).toBeInTheDocument();
   expect(getByText(/Tournaments/)).toBeInTheDocument();
   expect(getByText(/Completed Games/)).toBeInTheDocument();
-  expect(getByText(/Create Game/)).toBeInTheDocument();
+  expect(getByText(/Create a Game/)).toBeInTheDocument();
 });

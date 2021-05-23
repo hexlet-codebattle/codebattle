@@ -3,7 +3,7 @@ defmodule Codebattle.User.ScopeTest do
 
   alias Codebattle.User.Scope
 
-  describe "#list_users_with_raiting" do
+  describe "#list_users" do
     test "finds users by username" do
       user1 =
         insert(:user, %{name: "first", email: "test1@test.test", github_id: 1, rating: 2400})
@@ -15,7 +15,7 @@ defmodule Codebattle.User.ScopeTest do
         insert(:user, %{name: "third", email: "test3@test.test", github_id: 3, rating: 2210})
 
       params = %{"q" => %{"name_ilike" => "first"}}
-      query = Scope.list_users_with_raiting(params)
+      query = Scope.list_users(params)
       [result] = query |> Repo.all()
       assert user1.id == result.id
     end
@@ -31,7 +31,7 @@ defmodule Codebattle.User.ScopeTest do
         insert(:user, %{name: "third", email: "test3@test.test", github_id: 3, rating: 2210})
 
       params = %{"s" => "rating+desc"}
-      query = Scope.list_users_with_raiting(params)
+      query = Scope.list_users(params)
       [result_1, result_2] = query |> Repo.all() |> Enum.take(2)
       assert result_1.id == user1.id
       assert result_2.id == user2.id
@@ -48,7 +48,7 @@ defmodule Codebattle.User.ScopeTest do
         insert(:user, %{name: "third", email: "test3@test.test", github_id: 3, rating: 2210})
 
       params = %{"s" => "rating+asc"}
-      query = Scope.list_users_with_raiting(params)
+      query = Scope.list_users(params)
       [result_1, result_2] = query |> Repo.all() |> Enum.take(2)
       assert result_1.id == user1.id
       assert result_2.id == user2.id

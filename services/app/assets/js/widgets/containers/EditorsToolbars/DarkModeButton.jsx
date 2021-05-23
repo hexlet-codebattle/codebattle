@@ -1,7 +1,7 @@
 import cn from 'classnames';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import EditorThemes from '../../config/editorThemes';
+import editorThemes from '../../config/editorThemes';
 import { editorsThemeSelector } from '../../selectors';
 import { actions } from '../../slices';
 
@@ -10,11 +10,11 @@ const DakModeButton = ({ player }) => {
 
   const currentTheme = useSelector(state => editorsThemeSelector(player.id)(state));
 
-  const isDarkMode = currentTheme === EditorThemes.dark;
+  const isDarkMode = currentTheme === editorThemes.dark;
 
-  const mode = isDarkMode ? EditorThemes.light : EditorThemes.dark;
+  const mode = isDarkMode ? editorThemes.light : editorThemes.dark;
 
-  const classNames = cn('btn btn-sm rounded mr-2', {
+  const classNames = cn('btn btn-sm mr-2', {
     'btn-light': isDarkMode,
     'btn-secondary': !isDarkMode,
   });

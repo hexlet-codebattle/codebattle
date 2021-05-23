@@ -3,9 +3,7 @@ import React from 'react';
 import DarkModeButton from './DarkModeButton';
 import GameResultIcon from '../../components/GameResultIcon';
 import LanguagePicker from '../../components/LanguagePicker';
-import OnlineIndicator from './OnlineIndicator';
-import TypingIcon from './TypingIcon';
-import UserName from '../../components/User/UserName';
+import UserInfo from '../UserInfo';
 import VimModeButton from './VimModeButton';
 import GameActionButtons from '../../components/GameActionButtons';
 
@@ -24,7 +22,6 @@ const EditorToolbar = ({
   type,
   player,
   editor,
-  status,
   toolbarClassNames,
   editorSettingClassNames,
   userInfoClassNames,
@@ -32,27 +29,39 @@ const EditorToolbar = ({
   actionBtnsProps,
   showControlBtns,
 }) => (
-  <div data-player-type={type}>
-    <div className={toolbarClassNames} role="toolbar">
-      <div className={editorSettingClassNames} role="group" aria-label="Editor settings">
-        <LanguagePicker editor={editor} status={langPickerStatus} />
-      </div>
+  <>
+    <div data-player-type={type}>
+      <div className={toolbarClassNames} role="toolbar">
+        <div
+          className={editorSettingClassNames}
+          role="group"
+          aria-label="Editor settings"
+        >
+          <LanguagePicker editor={editor} status={langPickerStatus} />
+        </div>
 
-      {showControlBtns && (
-        <>
-          <ModeButtons player={player} />
-          <GameActionButtons {...actionBtnsProps} />
-        </>
-      )}
+        {showControlBtns && (
+          <>
+            <ModeButtons player={player} />
+            <GameActionButtons {...actionBtnsProps} />
+          </>
+        )}
 
-      <div className={userInfoClassNames} role="group" aria-label="User info">
-        <TypingIcon status={status} />
-        <UserName user={player} />
-        <OnlineIndicator player={player} />
-        <GameResultIcon editor={editor} />
+        <div className={userInfoClassNames} role="group" aria-label="User info">
+          <UserInfo user={player} />
+        </div>
       </div>
     </div>
-  </div>
+
+    <div
+      className="position-absolute"
+      style={{
+ bottom: '5%', right: '5%', opacity: '0.5', zIndex: '100',
+}}
+    >
+      <GameResultIcon editor={editor} />
+    </div>
+  </>
 );
 
 export default EditorToolbar;

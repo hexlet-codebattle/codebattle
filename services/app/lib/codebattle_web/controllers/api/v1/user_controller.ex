@@ -12,9 +12,8 @@ defmodule CodebattleWeb.Api.V1.UserController do
     page_size =
       params
       |> Map.get("page_size", "50")
-      |> min("50")
 
-    query = Codebattle.User.Scope.list_users_with_raiting(params)
+    query = Codebattle.User.Scope.list_users(params)
     page = Repo.paginate(query, %{page: page_number, page_size: page_size})
 
     page_info = Map.take(page, [:page_number, :page_size, :total_entries, :total_pages])
@@ -49,26 +48,27 @@ defmodule CodebattleWeb.Api.V1.UserController do
   end
 
   def create(conn, params) do
-    auth = %{
+    user_attrs = %{
       name: params["name"],
       email: params["email"],
-      uid: params["uid"]
+      passowrd: params["password"]
     }
 
-    case Codebattle.Oauth.User.create(auth) do
+    case Codebattle.Oauth.User.create_in_firebase(user_attrs) do
       {:ok, user} ->
         conn
         |> put_session(:user_id, user.id)
         |> json(%{status: :created})
 
-      {:error, reason} ->
-        json(conn, %{errors: reason})
+      {:error, errors} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> json(%{errors: errors})
     end
   end
 
   def stats(conn, %{"id" => id}) do
     game_stats = Stats.get_game_stats(id)
-    rank = Stats.get_user_rank(id)
 
     completed_games =
       id
@@ -78,7 +78,6 @@ defmodule CodebattleWeb.Api.V1.UserController do
     user = Repo.get(User, id)
 
     json(conn, %{
-      rank: rank,
       completed_games: completed_games,
       stats: game_stats,
       user: user

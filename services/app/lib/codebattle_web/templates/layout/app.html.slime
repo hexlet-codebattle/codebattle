@@ -34,7 +34,7 @@ html lang="en"
     /! End Google Tag Manager (noscript)
     .dark-bg
       .container-lg
-        nav.navbar.navbar-dark.navbar-expand-md.px-0
+        nav.navbar.navbar-dark.navbar-expand-md.px-0 style="margin-right:-15px; margin-left:-15px;"
           a.navbar-brand.d-flex.align-items-end href="/"
             img.my-auto[alt="Logo" src="/assets/images/logo.svg"]
             .d-flex.flex-column.text-gray.ml-1.pb-1
@@ -45,27 +45,22 @@ html lang="en"
           #navbarResponsive.collapse.navbar-collapse
             ul.navbar-nav.ml-auto
               = unless @current_user.guest do
-                / li.nav-item
-                /   = link to: tournament_path(@conn, :index), class: "nav-link" do
-                /     span.fa.fa-trophy.mr-1
-                /     = gettext "Tournaments"
-                / li.nav-item
-                /   = link to: user_path(@conn, :index), class: "nav-link" do
-                /     span.fa.fa-chart-bar.mr-1
-                /     = gettext "Users rating"
-                li.nav-item.dropdown.d
+                li#invites-root.nav-item.align-self-center.dropdown
+                li.nav-item.dropdown
                   a.nav-link.noborder.d-flex.px-0[href='#' aria-expanded="false" aria-haspopup="true" data-toggle="dropdown"]
                     .d-flex.flex-column.mr-2
-                      h5.text-white.mb-0
+                      h5.text-white.text-right.mb-0
                         = @current_user.name
-                      .text-right
-                        img[alt="#{@current_user.rating}" src="/assets/images/rating.svg"]
-                        span.align-middle
-                          = @current_user.rating
-                    = if @current_user.github_id do
-                      img.attachment.ml-1[alt="#{@current_user.name}" src="https://avatars0.githubusercontent.com/u/#{@current_user.github_id}" style="width:46px; height:46px"]
-                    - else
-                      img.attachment.ml-1[alt="#{@current_user.name}" src="https://cdn.discordapp.com/avatars/#{@current_user.discord_id}/#{@current_user.discord_avatar}.png" style="width:46px; height:46px"]
+                      .d-flex.justify-content-between.align-items-baseline
+                        .d-flex.align-items-baseline
+                          img[alt="#{@current_user.rank}" src="/assets/images/cup.svg"]
+                          span.ml-1
+                            = @current_user.rank
+                        .d-flex.align-items-baseline
+                          img[alt="#{@current_user.rating}" src="/assets/images/rating.svg"]
+                          span.ml-1
+                            = @current_user.rating
+                    img.attachment.ml-1[alt="#{@current_user.name}" src="#{get_user_avatar_url(@current_user)}" style="width:46px; height:46px"]
                     .dropdown-menu.dropdown-menu-right
                       = link gettext("My Profile"), to: Routes.user_path(@conn, :show, @current_user.id), class: "dropdown-item"
                       = link gettext("Settings"), to: Routes.user_setting_path(@conn, :edit), class: "dropdown-item"
