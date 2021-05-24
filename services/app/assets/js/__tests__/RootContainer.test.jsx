@@ -21,19 +21,23 @@ const createPlayer = params => ({
   ...params,
 });
 
-jest.mock('gon', () => {
-  const gonParams = {
-    local: 'en',
-    current_user: { sound_settings: {} },
-    game_id: 10,
-    players: [
-      createPlayer({ name: 'Tim Urban' }),
-      createPlayer({ name: 'John Kramer' }),
-    ],
-  };
+jest.mock(
+  'gon',
+  () => {
+    const gonParams = {
+      local: 'en',
+      current_user: { sound_settings: {} },
+      game_id: 10,
+      players: [
+        createPlayer({ name: 'Tim Urban' }),
+        createPlayer({ name: 'John Kramer' }),
+      ],
+    };
 
-  return { getAsset: type => gonParams[type] };
-}, { virtual: true });
+    return { getAsset: type => gonParams[type] };
+  },
+  { virtual: true },
+);
 
 jest.mock('axios');
 axios.get.mockResolvedValue({ data: {} });
@@ -60,7 +64,11 @@ test('test rendering preview game component', async () => {
   const reducer = combineReducers(reducers);
 
   const players = {
-    1: createPlayer({ name: 'John Kramer', type: userTypes.firstPlayer, id: 1 }),
+    1: createPlayer({
+      name: 'John Kramer',
+      type: userTypes.firstPlayer,
+      id: 1,
+    }),
     2: createPlayer({ name: 'Tim Urban', type: userTypes.secondPlayer, id: 2 }),
   };
 
@@ -71,14 +79,21 @@ test('test rendering preview game component', async () => {
       players,
     },
     editor: {},
-    usersInfo: { 1: {}, 2: {} },
+    usersInfo: {
+      1: { },
+      2: { },
+    },
   };
   const store = configureStore({
     reducer,
     preloadedState,
   });
 
-  render(<Provider store={store}><RootContainer /></Provider>);
+  render(
+    <Provider store={store}>
+      <RootContainer />
+    </Provider>,
+  );
 
   expect(screen.getByText(/Tim Urban/)).toBeInTheDocument();
 });

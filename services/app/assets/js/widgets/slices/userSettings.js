@@ -5,20 +5,20 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 const userSettings = Gon.getAsset('current_user');
 let csrfToken;
 
-if (process.browser) { // for testing purposes
+if (process.browser) {
+  // for testing purposes
   csrfToken = document
-  .querySelector("meta[name='csrf-token']")
-  .getAttribute('content');
+    .querySelector("meta[name='csrf-token']")
+    .getAttribute('content');
 }
-  console.log('env ', process.browser);
 export const updateUserSettings = createAsyncThunk(
   'userSettings/update',
   async (userData, { rejectWithValue }) => {
     try {
       const response = await axios.patch('/api/v1/settings', userData, {
         headers: {
-        'Content-Type': 'application/json',
-        'x-csrf-token': csrfToken,
+          'Content-Type': 'application/json',
+          'x-csrf-token': csrfToken,
         },
       });
       return response.data;
@@ -33,7 +33,8 @@ export const updateUserSettings = createAsyncThunk(
 );
 
 const initialState = {
-  ...userSettings, error: '',
+  ...userSettings,
+  error: '',
 };
 
 const userSettingsSlice = createSlice({
@@ -43,7 +44,7 @@ const userSettingsSlice = createSlice({
   extraReducers: builder => {
     // The `builder` callback form is used here because it provides correctly typed reducers from the action creators
     builder.addCase(updateUserSettings.fulfilled, (state, { payload }) => {
-        Object.assign(state, payload);
+      Object.assign(state, payload);
     });
     builder.addCase(updateUserSettings.rejected, (state, action) => {
       if (action.payload) {
