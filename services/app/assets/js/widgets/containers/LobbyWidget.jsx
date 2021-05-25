@@ -39,12 +39,12 @@ const Players = ({ players }) => {
     <>
       <td className="p-3 align-middle text-nowrap cb-username-td text-truncate">
         <div className="d-flex align-items-center">
-          <UserInfo user={players[0]} />
+          <UserInfo user={players[0]} hideOnlineIndicator />
         </div>
       </td>
       <td className="p-3 align-middle text-nowrap cb-username-td text-truncate">
         <div className="d-flex align-items-center">
-          <UserInfo user={players[1]} />
+          <UserInfo user={players[1]} hideOnlineIndicator />
         </div>
       </td>
     </>
