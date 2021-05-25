@@ -35,7 +35,7 @@ const ChatWidget = () => {
             <p className="mb-1">{`Online users: ${listOfUsers.length}`}</p>
             {listOfUsers.map(user => (
               <div key={user.id} className="my-1">
-                <UserInfo user={user} />
+                <UserInfo user={user} hideOnlineIndicator />
               </div>
               ))}
           </div>
