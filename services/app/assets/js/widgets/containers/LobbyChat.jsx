@@ -28,7 +28,7 @@ const LobbyChat = ({ connectToChat }) => {
             <p className="mb-1">{`Online players: ${presenceList.length}`}</p>
             {presenceList.map(presenceUser => (
               <div key={presenceUser.id} className="my-1">
-                <UserInfo user={presenceUser.user} />
+                <UserInfo user={presenceUser.user} hideOnlineIndicator />
               </div>
             ))}
           </div>

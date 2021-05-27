@@ -34,9 +34,11 @@ const renderOnlineIndicator = (user, isOnline) => {
   );
 };
 
-const UserName = ({ user, truncate, isOnline }) => (
+const UserName = ({
+  user, truncate, isOnline, hideOnlineIndicator,
+}) => (
   <div className="d-flex align-items-baseline">
-    {renderOnlineIndicator(user, isOnline)}
+    {!hideOnlineIndicator && renderOnlineIndicator(user, isOnline)}
     <span className="d-flex align-items-center">
       <LanguageIcon lang={user.lang || 'js'} />
       <a
