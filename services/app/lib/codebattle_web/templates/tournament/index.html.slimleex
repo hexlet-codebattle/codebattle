@@ -6,10 +6,10 @@
         tr
           th name
           th type
-          th difficulty
+          th level
           th state
           th starts_at
-          th creator
+          th players
           th actions
       tbody
         = for tournament <- @tournaments do
@@ -17,13 +17,11 @@
             td.align-middle = tournament.name
             td.align-middle.text-nowrap = tournament.type
             td.align-middle.text-nowrap
-              div
-                span.badge.badge-pill.mr-1 class="badge-#{difficulty_to_color(tournament.difficulty)}" &nbsp;
-                = tournament.difficulty
+              img alt=tournament.difficulty src="/assets/images/levels/#{tournament.difficulty}.svg"
             td.align-middle.text-nowrap = tournament.state
             td.align-middle.text-nowrap = render_datetime(tournament.starts_at)
             td.align-middle.text-nowrap
-              = render "_player.html", player: tournament.creator
+              = render "_players_row.html", players: Codebattle.Tournament.Helpers.get_players(tournament), current_user: @current_user, tournament: tournament
             td.align-middle.text-nowrap
               = link "Show",
                 to: CodebattleWeb.Router.Helpers.tournament_path(@socket, :show, tournament.id),
@@ -54,7 +52,7 @@
       = text_input f, :name, class: "form-control form-control-lg", maxlength: "37"
       = error_tag f, :name
     .form-group
-      = label f, :difficulty
+      = label f, :level
       = select f, :difficulty, Codebattle.Tournament.difficulties, class: "form-control form-control-lg"
       = error_tag f, :difficulty
     .form-row.justify-content-between

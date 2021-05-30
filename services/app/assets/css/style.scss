@@ -7,17 +7,17 @@ $link-hover-color: $orange;
 $border-radius-sm: 0%;
 $btn-border-width: 2px;
 $gold: #daa520;
-@import "variables";
-@import "~bootstrap/scss/bootstrap";
-@import "~nprogress/nprogress.css";
-@import "gamePreview";
+@import 'variables';
+@import '~bootstrap/scss/bootstrap';
+@import '~nprogress/nprogress.css';
+@import 'gamePreview';
 
-$fa-font-path: "/fonts";
+$fa-font-path: '/fonts';
 
-@import "fonts";
-@import "~font-mfizz/dist/font-mfizz.css";
-@import "tournaments";
-@import "taskComponent";
+@import 'fonts';
+@import '~font-mfizz/dist/font-mfizz.css';
+@import 'tournaments';
+@import 'taskComponent';
 
 .xstate {
   height: 1000px;
@@ -47,7 +47,7 @@ $fa-font-path: "/fonts";
   }
 }
 
-[data-editor-state="checking"] {
+[data-editor-state='checking'] {
   animation: checking_fade 1000ms infinite;
   -webkit-animation: checking_fade 1000ms infinite;
 }
@@ -65,15 +65,15 @@ $fa-font-path: "/fonts";
   background: linear-gradient(to top, var(--flag-color), var(--white) 15%);
 }
 
-[data-player-type="current_user"] {
+[data-player-type='current_user'] {
   --flag-color: var(--success);
 }
 
-[data-player-type="player"] {
+[data-player-type='player'] {
   --flag-color: var(--gray);
 }
 
-[data-player-type="opponent"] {
+[data-player-type='opponent'] {
   --flag-color: var(--danger);
 }
 
@@ -253,7 +253,7 @@ a {
 .cb-polyglot {
   width: 50px;
   height: 50px;
-  background: url("/assets/images/achievements/polyglot.png");
+  background: url('/assets/images/achievements/polyglot.png');
   background-size: cover;
   padding: 5px;
 }
@@ -313,7 +313,7 @@ a {
 .sort-arrows:before,
 .sort-arrows:after {
   border: 5px solid transparent;
-  content: "";
+  content: '';
   display: block;
 }
 
@@ -428,4 +428,26 @@ a {
 
 .popover {
   max-width: 100%; /* Max Width of the popover (depending on the container!) */
+}
+
+.cb-row-avatars {
+  direction: rtl;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.cb-row-avatar {
+  display: inline-block;
+  position: relative;
+  -webkit-transition: 0.2s ease;
+  transition: 0.2s ease;
+}
+
+.cb-row-avatar:nth-child(n + 2) {
+  margin-right: -15px;
+}
+
+.cb-row-avatars:hover .cb-row-avatar:nth-child(n + 2) {
+  margin-right: 3px;
 }

@@ -4,7 +4,7 @@ defmodule Codebattle.Chat.Server do
   alias Codebattle.Tournament
 
   @admins Application.compile_env(:codebattle, :admins)
-  @message_ttl 37 * 60
+  @message_ttl 60 * 60
   @timeout :timer.minutes(1)
 
   # API

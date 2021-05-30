@@ -11,6 +11,8 @@ defmodule Codebattle.Tournament.Types do
       field(:team_id, :integer)
       field(:public_id, :string)
       field(:github_id, :integer)
+      field(:discord_id, :integer)
+      field(:discord_avatar, :string)
       field(:lang, :string)
       field(:name, :string)
       field(:rating, :integer)
