@@ -1,0 +1,7 @@
+.cb-row-avatars
+  - players = Enum.filter(@players, fn p -> !p.is_bot end) |> Enum.reverse
+  = for player <- players do
+    .cb-row-avatar
+      a href="/users/#{player.id}"
+        img.attachment.cb-user-avatar.rounded.border src=Codebattle.User.avatar_url(player)
+

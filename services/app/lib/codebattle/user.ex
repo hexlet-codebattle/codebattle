@@ -105,8 +105,8 @@ defmodule Codebattle.User do
     |> validate_length(:name, min: 3, max: 16)
   end
 
-  def create_guest(),
-    do: %__MODULE__{
+  def create_guest() do
+    %__MODULE__{
       guest: true,
       id: 0,
       name: "Jon Dou",
@@ -114,4 +114,19 @@ defmodule Codebattle.User do
       rank: -1,
       sound_settings: %SoundSettings{}
     }
+  end
+
+  # TODO: add avatar_url field to user
+  def avatar_url(user) do
+    cond do
+      user.github_id ->
+        "https://avatars0.githubusercontent.com/u/#{user.github_id}"
+
+      user.discord_id ->
+        "https://cdn.discordapp.com/avatars/#{user.discord_id}/#{user.discord_avatar}.png"
+
+      true ->
+        "https://avatars0.githubusercontent.com/u/35539033"
+    end
+  end
 end
