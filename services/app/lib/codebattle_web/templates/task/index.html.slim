@@ -1,0 +1,20 @@
+.container-xl.bg-white.shadow-sm.rounded.py-4.mb-3
+  h1.text-center Tasks
+  .table-responsive.mt-4
+    table.table.table-sm
+      thead
+        tr
+          th task id
+          th name
+          th difficulty
+          th tags
+      tbody
+        = for task <- @tasks do
+          tr
+            td.align-middle.text-nowrap 
+              = link "Task #{task.id}"
+                to: CodebattleWeb.Router.Helpers.task_path(@socket, :show, task.id),
+                class: "btn btn-success mt-2"
+            td.align-middle.text #{task.name}
+            td.align-middle.text-nowrap = task.level
+            td.align-middle.text #{task.tags.join(", ")}

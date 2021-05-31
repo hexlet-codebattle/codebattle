@@ -65,6 +65,7 @@ defmodule CodebattleWeb.Router do
     get("/remind_password", SessionController, :remind_password)
     resources("/users", UserController, only: [:index, :show, :new])
     resources("/tournaments", TournamentController, only: [:index, :show])
+    resources("/tasks", TaskController, only: [:index, :show])
 
     scope "/tournaments" do
       get("/:id/image", Tournament.ImageController, :show, as: :tournament_image)
