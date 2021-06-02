@@ -66,5 +66,10 @@ defmodule Codebattle.Task do
     |> Enum.shuffle()
   end
 
+  def get_played_count(task_id) do
+    from(game in Codebattle.Game, where: game.task_id == ^task_id)
+    |> Codebattle.Repo.count()
+  end
+
   defp filter_empty_items(items), do: items |> Enum.filter(&(&1 != ""))
 end

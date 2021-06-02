@@ -1,0 +1,19 @@
+.container-xl.bg-white.shadow-sm.rounded.py-4.mb-3
+  h1.text-center Tasks
+  .table-responsive.mt-4
+    table.table.table-sm
+      thead
+        tr
+          th name
+          th level
+          th tags
+          th actions
+      tbody
+        = for task <- @tasks do
+          tr
+            td.align-middle.text = task.name
+            td.align-middle.text-nowrap
+              img alt=task.level src="/assets/images/levels/#{task.level}.svg"
+            td.align-middle.text = Enum.join(task.tags, ", ")
+            td.align-middle.text-nowrap
+              = link "Show", to: CodebattleWeb.Router.Helpers.task_path(@conn, :show, task.id), class: "btn btn-success mt-2"
