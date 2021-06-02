@@ -4,7 +4,8 @@ defmodule CodebattleWeb.TaskController do
   alias Codebattle.{Repo, Task}
 
   def index(conn, _params) do
-    # TODO: add pagination with sort or change to api and react :smile
+    # TODO: add order by name, add played count to main table(join with group_by subquery)
+    # use only visible tasks
     tasks = Repo.all(Task)
 
     conn
@@ -17,6 +18,7 @@ defmodule CodebattleWeb.TaskController do
   end
 
   def show(conn, %{"id" => task_id}) do
+    # use only visible tasks
     task = Repo.get!(Task, task_id)
     played_count = Task.get_played_count(task_id)
 
