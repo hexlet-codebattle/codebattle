@@ -1,3 +1,10 @@
-body 
-  h1 Task ID {task_id}
-  p Some informaton about task
+.container-xl.bg-white.shadow-sm.rounded.py-4.mb-3
+  h1.text-center
+    span = @task.name
+    img.ml-3 alt=@task.level src="/assets/images/levels/#{@task.level}.svg"
+  h2.text-center.mt-4 Played count: #{@played_count}
+  h3.text-center.mt-4  Description
+  .text-center
+    p = @task.description_en
+    p = @task.description_ru
+    p = @task.examples
