@@ -20,7 +20,7 @@ defmodule Codebattle.Task do
     field(:disabled, :boolean)
     field(:count, :integer, virtual: true)
     field(:task_id, :integer, virtual: true)
-    field(:tags, {:array, :string})
+    field(:tags, {:array, :string}, default: [])
 
     timestamps()
   end
