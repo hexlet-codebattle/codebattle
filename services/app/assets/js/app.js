@@ -75,7 +75,7 @@ const invitesRoot = document.getElementById('invites-root');
 const extension = document.getElementById('extension');
 const gameWidgetRoot = document.getElementById('game-widget-root');
 const heatmapRoot = document.getElementById('heatmap-root');
-const gameListRoot = document.getElementById('game-list');
+const lobbyRoot = document.getElementById('lobby-root');
 const ratingList = document.getElementById('rating-list');
 const userPageRoot = document.getElementById('user-page-root');
 const settingsRoot = document.getElementById('settings');
@@ -97,8 +97,8 @@ if (heatmapRoot) {
   renderHeatmapWidget(heatmapRoot);
 }
 
-if (gameListRoot) {
-  renderLobby(gameListRoot);
+if (lobbyRoot) {
+  renderLobby(lobbyRoot);
 }
 
 if (ratingList) {
