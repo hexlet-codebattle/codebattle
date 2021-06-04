@@ -14,7 +14,6 @@ import editorUserTypes from '../config/editorUserTypes';
 
 const settingsByState = {
   idle: {},
-  typing: {},
   checking: {
     editable: false,
     checkBtnStatus: 'checking',
@@ -61,11 +60,6 @@ export default Machine(
       idle: {
         entry: initContextByState('idle'),
         on: {
-          typing: {
-            target: 'typing',
-            actions: ['soundStartTyping'],
-            cond: 'isUserEvent',
-          },
           user_check_solution: {
             target: 'checking',
             actions: ['soundStartChecking', 'userStartChecking'],
@@ -73,26 +67,6 @@ export default Machine(
           check_solution: {
             target: 'checking',
             actions: ['soundStartChecking'],
-            cond: 'isUserEvent',
-          },
-        },
-      },
-      typing: {
-        entry: initContextByState('typing'),
-        after: {
-          1000: {
-            target: 'idle',
-            actions: ['soundEndTyping'],
-          },
-        },
-        on: {
-          typing: {
-            target: 'typing',
-            cond: 'isUserEvent',
-          },
-          check_solution: {
-            target: 'checking',
-            actions: ['soundEndTyping', 'soundStartChecking'],
             cond: 'isUserEvent',
           },
         },
@@ -128,8 +102,6 @@ export default Machine(
       soundFinishedChecking: () => {
         sound.stop();
       },
-      soundStartTyping: () => {},
-      soundEndTyping: () => {},
     },
     guards: {
       isUserEvent: (ctx, { userId }) => ctx.userId === userId,

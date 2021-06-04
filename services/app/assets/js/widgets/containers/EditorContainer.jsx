@@ -123,7 +123,6 @@ const EditorContainer = ({
 
   const pannelBackground = cn('col-12 col-lg-6 p-1', {
     'bg-warning': editorCurrent.matches('checking'),
-    'bg-primary': editorCurrent.matches('typing'),
     'bg-winner':
       gameCurrent.matches({ game: 'game_over' })
       && editorCurrent.matches('idle')
