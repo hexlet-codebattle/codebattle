@@ -26,7 +26,7 @@ const InvitesList = ({ list, currentUserId }) => {
     .map(({
       id, creatorId, recepientId, creator, recepient, gameParams,
     }) => (
-      <div key={id} className="d-inline-flex align-items-center justify-content-between p-2">
+      <div key={id} className="d-flex align-items-center justify-content-between p-2">
         <div className="mx-1">
           <GameLevelBadge level={gameParams.level} />
         </div>
