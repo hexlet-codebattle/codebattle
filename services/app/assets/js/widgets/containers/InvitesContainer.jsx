@@ -55,7 +55,7 @@ const InvitesList = ({ list, currentUserId }) => {
         {currentUserId === creatorId && (
           <>
             <span className="text-truncate small ml-2 mr-auto">
-              {'you invited '}
+              {'You invited '}
               <span className="font-weight-bold mr-2">{recepient.name}</span>
             </span>
             <button
