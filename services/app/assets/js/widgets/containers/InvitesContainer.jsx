@@ -26,13 +26,16 @@ const InvitesList = ({ list, currentUserId }) => {
     .map(({
       id, creatorId, recepientId, creator, recepient, gameParams,
     }) => (
-      <div key={id} className="d-flex align-items-center justify-content-between p-2">
+      <div key={id} className="d-flex align-items-center p-2">
         <div className="mx-1">
           <GameLevelBadge level={gameParams.level} />
         </div>
         {currentUserId === recepientId && (
           <>
-            <span className="text-truncate small mx-2">{`${creator.name} invited you`}</span>
+            <span className="text-truncate small mx-2 mr-auto">
+              <span className="font-weight-bold">{creator.name}</span>
+              <span className="mr-2"> invited you</span>
+            </span>
             <button
               type="submit"
               className="btn btn-outline-danger small px-1 mx-1"
@@ -51,7 +54,10 @@ const InvitesList = ({ list, currentUserId }) => {
         )}
         {currentUserId === creatorId && (
           <>
-            <span className="text-truncate small mx-2">{`${recepient.name} you invite`}</span>
+            <span className="text-truncate small ml-2 mr-auto">
+              {'you invited '}
+              <span className="font-weight-bold mr-2">{recepient.name}</span>
+            </span>
             <button
               type="submit"
               className="btn btn-outline-primary small mx-1 px-1"
