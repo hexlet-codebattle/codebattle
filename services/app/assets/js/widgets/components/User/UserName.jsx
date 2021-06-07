@@ -46,13 +46,13 @@ const UserName = ({
         key={user.id}
         className="d-flex align-items-center"
       >
-        <span
-          className={`text-truncate ${
+        <p
+          className={`text-truncate m-0 ${
               truncate ? 'x-username-truncated' : ''
             }`}
         >
           <u>{renderUserName(user)}</u>
-        </span>
+        </p>
       </a>
     </span>
   </div>
