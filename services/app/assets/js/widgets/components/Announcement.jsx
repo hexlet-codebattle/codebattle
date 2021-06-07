@@ -14,11 +14,11 @@ const Announcement = () => (
     </thead>
     <tbody>
       <tr>
-        <td className="pr-0"><p className="m-0">Monthly arena 2021.06.14 16:00(UTC)</p></td>
+        <td className="pr-0">Monthly arena 2021.06.14 16:00(UTC)</td>
         <td className="text-right pl-0" />
       </tr>
       <tr>
-        <td className="pr-0"><p className="m-0">Monthly Team Skirmish 2021.06.14 16:30(UTC)</p></td>
+        <td className="pr-0">Monthly Team Skirmish 2021.06.14 16:30(UTC)</td>
         <td className="text-right pl-0" />
       </tr>
     </tbody>
