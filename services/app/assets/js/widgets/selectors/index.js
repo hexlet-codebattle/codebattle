@@ -198,12 +198,7 @@ export const editorsThemeSelector = currentUserId => state => {
   return editorThemes.dark;
 };
 
-export const taskDescriptionLanguageselector = currentUserId => state => {
-  if (_.hasIn(gamePlayersSelector(state), currentUserId)) {
-    return state.gameUI.taskDescriptionLanguage;
-  }
-  return taskDescriptionLanguages.default;
-};
+export const taskDescriptionLanguageselector = state => state.gameUI.taskDescriptionLanguage;
 
 export const playbookStatusSelector = state => state.playbook.status;
 

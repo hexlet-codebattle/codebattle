@@ -81,8 +81,8 @@ const TaskLanguagesSelection = ({ avaibleLanguages, displayLanguage, handleSetLa
   );
 };
 
-const Task = ({ task, currentUserId }) => {
-  const taskLanguage = useSelector(selectors.taskDescriptionLanguageselector(currentUserId));
+const Task = ({ task }) => {
+  const taskLanguage = useSelector(selectors.taskDescriptionLanguageselector);
   const dispatch = useDispatch();
   const handleSetLanguage = lang => () => dispatch(actions.setTaskDescriptionLanguage(lang));
 
