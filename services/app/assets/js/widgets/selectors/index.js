@@ -3,7 +3,6 @@ import userTypes from '../config/userTypes';
 import GameStatusCodes from '../config/gameStatusCodes';
 import editorModes from '../config/editorModes';
 import editorThemes from '../config/editorThemes';
-import taskDescriptionLanguages from '../config/taskDescriptionLanguages';
 import i18n from '../../i18n';
 import { makeEditorTextKey } from '../slices';
 import defaultEditorHeight from '../config/editorSettings';

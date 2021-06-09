@@ -174,7 +174,6 @@ Task.propTypes = {
       PropTypes.oneOf([null]),
     ]),
   }).isRequired,
-  currentUserId: PropTypes.number.isRequired,
 };
 
 export default Task;
