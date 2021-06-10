@@ -3,7 +3,6 @@ import userTypes from '../config/userTypes';
 import GameStatusCodes from '../config/gameStatusCodes';
 import editorModes from '../config/editorModes';
 import editorThemes from '../config/editorThemes';
-import taskDescriptionLanguages from '../config/taskDescriptionLanguages';
 import i18n from '../../i18n';
 import { makeEditorTextKey } from '../slices';
 import defaultEditorHeight from '../config/editorSettings';
@@ -198,12 +197,7 @@ export const editorsThemeSelector = currentUserId => state => {
   return editorThemes.dark;
 };
 
-export const taskDescriptionLanguageselector = currentUserId => state => {
-  if (_.hasIn(gamePlayersSelector(state), currentUserId)) {
-    return state.gameUI.taskDescriptionLanguage;
-  }
-  return taskDescriptionLanguages.default;
-};
+export const taskDescriptionLanguageselector = state => state.gameUI.taskDescriptionLanguage;
 
 export const playbookStatusSelector = state => state.playbook.status;
 
