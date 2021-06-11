@@ -1,6 +1,7 @@
 defmodule CodebattleWeb.TournamentController do
   use CodebattleWeb, :controller
 
+  import PhoenixGon.Controller
   alias Codebattle.Tournament
 
   def index(conn, _params) do
@@ -29,8 +30,11 @@ defmodule CodebattleWeb.TournamentController do
       image: Routes.tournament_image_url(conn, :show, tournament.id),
       url: Routes.tournament_url(conn, :show, tournament.id)
     })
-    |> live_render(CodebattleWeb.Live.Tournament.ShowView,
-      session: %{"current_user" => conn.assigns[:current_user], "tournament" => tournament}
-    )
+    |> put_gon(tournament_id: params["id"])
+    |> render("show.html")
+
+    # |> live_render(CodebattleWeb.Live.Tournament.ShowView,
+    #   session: %{"current_user" => conn.assigns[:current_user], "tournament" => tournament}
+    # )
   end
 end

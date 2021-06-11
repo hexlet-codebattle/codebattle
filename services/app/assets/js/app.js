@@ -39,6 +39,7 @@ import {
   renderUserPage,
   renderSettingPage,
   renderRegistrationPage,
+  renderTournamentPage,
 } from './widgets';
 import renderExtensionPopup from './widgets/components/ExtensionPopup';
 
@@ -80,6 +81,7 @@ const ratingList = document.getElementById('rating-list');
 const userPageRoot = document.getElementById('user-page-root');
 const settingsRoot = document.getElementById('settings');
 const registrationRoot = document.getElementById('registration');
+const tournamentRoot = document.getElementById('tournament-root');
 
 if (invitesRoot) {
   renderInvitesWidget(invitesRoot);
@@ -115,4 +117,8 @@ if (settingsRoot) {
 
 if (registrationRoot) {
   renderRegistrationPage(registrationRoot);
+}
+
+if (tournamentRoot) {
+  renderTournamentPage(tournamentRoot);
 }

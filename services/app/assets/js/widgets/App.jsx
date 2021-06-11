@@ -18,6 +18,7 @@ import RatingList from './containers/RatingList';
 import UserProfile from './containers/UserProfile';
 import UserSettings from './containers/UserSettings';
 import Registration from './containers/Registration';
+import Tournament from './containers/Tournament';
 
 const { gameUI: gameUIReducer, ...otherReducers } = reducers;
 
@@ -104,6 +105,14 @@ export const RegistrationPage = () => (
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
       <Registration />
+    </PersistGate>
+  </Provider>
+);
+
+export const TournamentPage = () => (
+  <Provider store={store}>
+    <PersistGate loading={null} persistor={persistor}>
+      <Tournament />
     </PersistGate>
   </Provider>
 );

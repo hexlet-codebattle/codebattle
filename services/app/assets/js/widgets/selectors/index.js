@@ -171,6 +171,8 @@ export const rightExecutionOutputSelector = gameCurrent => state => {
   return outputSelector(gameCurrent)(state);
 };
 
+export const tournamentSelector = state => state.tournament;
+
 export const usersInfoSelector = state => state.usersInfo;
 
 export const chatUsersSelector = state => state.chat.users;

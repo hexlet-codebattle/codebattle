@@ -120,6 +120,8 @@ defmodule Codebattle.Tournament.Helpers do
     }
   end
 
+  def get_tournament_statistics(_), do: %{}
+
   def pick_winner(%{players: [%{game_result: "won"} = winner, _]}), do: winner
   def pick_winner(%{players: [_, %{game_result: "won"} = winner]}), do: winner
   def pick_winner(%{players: [winner, %{game_result: "gave_up"}]}), do: winner
