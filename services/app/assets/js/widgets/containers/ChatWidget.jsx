@@ -37,7 +37,7 @@ const ChatWidget = () => {
               <div key={user.id} className="my-1">
                 <UserInfo user={user} hideOnlineIndicator />
               </div>
-              ))}
+            ))}
           </div>
         </div>
       </div>
