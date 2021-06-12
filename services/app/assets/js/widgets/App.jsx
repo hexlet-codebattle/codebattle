@@ -19,6 +19,9 @@ import UserProfile from './containers/UserProfile';
 import UserSettings from './containers/UserSettings';
 import Registration from './containers/Registration';
 
+import machines from './machines';
+
+const { game: gameMachine, editor: editorMachine } = machines;
 const { gameUI: gameUIReducer, ...otherReducers } = reducers;
 
 const gameUIPersistWhitelist = [
@@ -63,7 +66,10 @@ export const Invites = () => (
 export const Game = () => (
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
-      <RootContainer />
+      <RootContainer
+        gameMachine={gameMachine}
+        editorMachine={editorMachine}
+      />
     </PersistGate>
   </Provider>
 );
