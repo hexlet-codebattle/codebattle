@@ -6,7 +6,7 @@ import GameLevelBadge from '../GameLevelBadge';
 
 const CompletedGames = ({ games }) => (
   <div className="table-responsive">
-    <table className="table table-sm table-striped border-gray border-top-0 mb-0">
+    <table className="table table-layout table-sm table-striped border-gray border-top-0 mb-0">
       <thead>
         <tr>
           <th className="p-3 border-0">Level</th>
@@ -19,7 +19,7 @@ const CompletedGames = ({ games }) => (
       </thead>
       <tbody>
         {games.map(game => (
-          <tr key={game.id}>
+          <tr className="tr-display-flex" key={game.id}>
             <td className="p-3 align-middle text-nowrap">
               <GameLevelBadge level={game.level} />
             </td>
