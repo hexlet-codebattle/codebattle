@@ -20,6 +20,10 @@ const tournament = createSlice({
   name: 'tournament',
   initialState,
   reducers: {
+    cancelTournament: (state, { payload }) => {
+      state.tournament.state = 'cancelled';
+      state.statistics = null;
+    },
     setTournamentData: (state, { payload }) => {
       state.tournament = payload.tournament;
       state.statistics = payload.statistics;

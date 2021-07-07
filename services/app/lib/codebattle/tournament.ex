@@ -13,6 +13,7 @@ defmodule Codebattle.Tournament do
              :type,
              :name,
              :state,
+             :difficulty,
              :starts_at,
              :players_count,
              :data,
