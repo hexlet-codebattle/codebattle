@@ -105,7 +105,7 @@ const HeaderOfTournament = ({ tournament, handleCancelTournament }) => {
             <div className="text-right">
               {creatorId === currentUserId && (state === 'waiting_participants' || state === 'active') && (
                 <>
-                  <button type="button" className="btn btn-outline-success mx-2">Start</button>
+                  {state === 'waiting_participants' && <button type="button" className="btn btn-outline-success mx-2">Start</button>}
                   <button type="button" onClick={handleCancelTournament} className="btn btn-outline-danger mx-2">Cancel</button>
                 </>
               )}
