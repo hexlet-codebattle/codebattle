@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Gon from 'gon';
+import moment from 'moment';
 
 import { connectToTournament, cancelTournament } from '../middlewares/Tournament';
 import { connectToChat } from '../middlewares/Chat';
@@ -11,11 +12,8 @@ import * as selectors from '../selectors';
 import Loading from '../components/Loading';
 
 const TournamentState = ({ state, startsAt }) => {
-  const timeStart = new Date(startsAt);
-  const timeNowMs = new Date().getTime();
-  const timeZoneOffset = timeStart.getTimezoneOffset();
-  const currentTimeMs = timeNowMs + (timeZoneOffset * 60 * 1000);
-  const diffTime = timeStart.getTime() - currentTimeMs;
+  const timeStart = moment.utc(startsAt);
+  const diffTime = moment(timeStart).diff(moment());
 
   const [seconds, setSeconds] = useState(Math.floor(diffTime / 1000));
 
@@ -28,22 +26,9 @@ const TournamentState = ({ state, startsAt }) => {
     }
   }, [seconds]);
 
-  if (state === 'waiting_participants') {
-    if (seconds > 0) {
-      return (
-        <span>
-          The tournament will start in&nbsp;
-          {minutesToStart}
-          :
-          {secondsToStart}
-        </span>
-      );
-    }
-    return (<span>The tournament will start soon</span>);
-  }
-  if (state === 'active') {
-    if (seconds > 0) {
-      return (
+  const titles = {
+    active: time => (time > 0
+      ? (
         <span>
           The next round will start in&nbsp;
           {minutesToStart}
@@ -51,11 +36,22 @@ const TournamentState = ({ state, startsAt }) => {
           {secondsToStart}
           , or after all matches are over
         </span>
-      );
-    }
-    return (<span>The next round will start soon</span>);
-  }
-  return (<span>The tournament will start soon</span>);
+      )
+      : (<span>The tournament will start soon</span>)),
+    waiting_participants: time => (time > 0
+      ? (
+        <span>
+          The tournament will start in&nbsp;
+          {minutesToStart}
+          :
+          {secondsToStart}
+        </span>
+      )
+      : (<span>The tournament will start soon</span>)),
+    cancelled: () => (<span>The tournament is cancelled</span>),
+    finished: () => (<span>The tournament is finished</span>),
+  };
+  return titles[state](seconds);
 };
 
 const HeaderOfTournament = ({ tournament, handleCancelTournament }) => {
@@ -76,22 +72,6 @@ const HeaderOfTournament = ({ tournament, handleCancelTournament }) => {
   };
 
   const difficultyClassName = `badge badge-pill mr-1 badge-${difficultyBadgeColor[difficulty]}`;
-
-  // TODO add actions for buttons
-  const renderButtons = () => {
-    if (creatorId === currentUserId) {
-      if (state === 'waiting_participants' || state === 'active') {
-        return (
-          <>
-            <button type="button" className="btn btn-outline-success mx-2">Start</button>
-            <button type="button" onClick={handleCancelTournament} className="btn btn-outline-danger mx-2">Cancel</button>
-            <a href="/tournaments" className="btn btn-success ml-2">Back to tournaments</a>
-          </>
-        );
-      }
-    }
-    return (<button type="button" className="btn btn-success ml-2">Back to tournaments</button>);
-  };
 
   if (tournament.state === 'loading') {
     return (<Loading />);
@@ -123,7 +103,13 @@ const HeaderOfTournament = ({ tournament, handleCancelTournament }) => {
           </div>
           <div className="col-5">
             <div className="text-right">
-              {renderButtons()}
+              {creatorId === currentUserId && (state === 'waiting_participants' || state === 'active') && (
+                <>
+                  <button type="button" className="btn btn-outline-success mx-2">Start</button>
+                  <button type="button" onClick={handleCancelTournament} className="btn btn-outline-danger mx-2">Cancel</button>
+                </>
+              )}
+              <a href="/tournaments" className="btn btn-success ml-2">Back to tournaments</a>
             </div>
           </div>
         </div>
@@ -146,8 +132,6 @@ const Tournament = () => {
     dispatch(connectToChat());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  console.log('statistics', statistics);
-  console.log('tournament', tournament);
 
   const handleCancelTournament = () => {
     dispatch(cancelTournament());
