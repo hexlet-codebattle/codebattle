@@ -7,6 +7,7 @@ import { actions } from '../slices';
 import CompletedGames from '../components/Game/CompletedGames';
 import Heatmap from './Heatmap';
 import Loading from '../components/Loading';
+import { Chart } from '../App';
 
 const getUserAvatarUrl = ({ githubId, discordId, discordAvatar }) => {
   if (githubId) {
@@ -104,6 +105,11 @@ const UserProfile = () => {
         <div className="row px-4 mt-5 justify-content-center">
           <div className="col-6">
             <Heatmap />
+          </div>
+        </div>
+        <div className="row px-4 mt-5 justify-content-lg-center">
+          <div className="col-6">
+            <Chart />
           </div>
         </div>
         <div className="row px-4 mt-5 justify-content-center">

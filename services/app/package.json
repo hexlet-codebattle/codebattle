@@ -30,6 +30,8 @@
     "@xstate/react": "^1.2.2",
     "@xstate/test": "^0.4.1",
     "axios": "^0.21.1",
+    "apexcharts": "^3.27.1",
+    "react-apexcharts": "^1.3.9",
     "bootstrap": "^4.5.3",
     "calcite-react": "^0.56.2",
     "classnames": "^2.2.6",

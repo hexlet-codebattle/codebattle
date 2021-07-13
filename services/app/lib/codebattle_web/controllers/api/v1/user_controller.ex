@@ -5,6 +5,7 @@ defmodule CodebattleWeb.Api.V1.UserController do
   alias CodebattleWeb.Api.GameView
 
   import Ecto.Query, warn: false
+  import PhoenixGon.Controller
 
   def index(conn, params) do
     page_number = Map.get(params, "page", "1")
@@ -43,8 +44,14 @@ defmodule CodebattleWeb.Api.V1.UserController do
 
   def show(conn, %{"id" => id}) do
     user = Repo.get(User, id)
+    games = Repo.all(from(games in UserGame, where: games.id == ^id))
+    stats = User.Stats.for_user(id)
+    rank = User.Stats.get_user_rank(id)
 
-    json(conn, %{user: user})
+    json(conn, %{user: user, rank: rank, games: games, stats: stats})
+    conn 
+      |> put_gon(id: id)
+      |> render("show.html", user: user, rank: rank, games: games, stats: stats)
   end
 
   def create(conn, params) do
@@ -88,5 +95,11 @@ defmodule CodebattleWeb.Api.V1.UserController do
     current_user = conn.assigns.current_user
 
     json(conn, %{id: current_user.id})
+  end
+
+  def lang_stats(conn, %{ "id" => user_id}) do
+    stats = Stats.lang_stats_for_user(user_id)
+
+    json(conn, %{stats: stats})
   end
 end

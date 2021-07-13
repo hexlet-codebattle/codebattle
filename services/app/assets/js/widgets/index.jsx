@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from 'react-dom';
 import {
- Game, Lobby, UsersRating, UserPage, SettingsPage, RegistrationPage, Invites,
+ Game, Lobby, UsersRating, UserPage, SettingsPage, RegistrationPage, Invites, Chart
 } from './App';
 import Heatmap from './containers/Heatmap';
 
@@ -13,3 +13,4 @@ export const renderUsersRating = domElement => render(<UsersRating />, domElemen
 export const renderUserPage = domElement => render(<UserPage />, domElement);
 export const renderSettingPage = domElement => render(<SettingsPage />, domElement);
 export const renderRegistrationPage = domElement => render(<RegistrationPage />, domElement);
+export const renderPieChartWidget = domElement => render(<Chart />, domElement);

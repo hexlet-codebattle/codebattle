@@ -9,6 +9,9 @@ const userInfo = createSlice({
     setUserInfo: (state, { payload: { user } }) => {
       state[user.id] = user;
     },
+    fetchLangStats: (state, { payload }) => {
+      payload;
+    }
   },
 });
 
