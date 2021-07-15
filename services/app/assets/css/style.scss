@@ -292,6 +292,11 @@ a {
 .cb-messages-list {
   top: 5px;
   height: 80%;
+
+  @media (max-width: $sm) {
+    height: 240px;
+    max-height: 80%;
+  }
 }
 
 .cb-height-info {
@@ -303,6 +308,10 @@ a {
   }
   .nav-link:hover {
     color: #b60314;
+  }
+
+  @media (max-width: $sm) {
+    height: auto;
   }
 }
 
