@@ -1,15 +1,23 @@
 import React from 'react';
+import { getGravatarURL } from '../../utils/urlBuilders';
+
 import Loading from '../Loading';
 import UserAchievements from './UserAchievements';
 import LanguageIcon from '../LanguageIcon';
 
-const getUserAvatarUrl = ({ githubId, discordId, discordAvatar }) => {
+const getUserAvatarUrl = ({
+  githubId, discordId, discordAvatar, email,
+}) => {
   if (githubId) {
     return `https://avatars0.githubusercontent.com/u/${githubId}`;
   }
 
   if (discordId) {
     return `https://cdn.discordapp.com/avatars/${discordId}/${discordAvatar}`;
+  }
+
+  if (email) {
+    return getGravatarURL(email);
   }
 
   return 'https://avatars0.githubusercontent.com/u/35539033';

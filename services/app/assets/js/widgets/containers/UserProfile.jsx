@@ -2,19 +2,26 @@ import { camelizeKeys } from 'humps';
 import { useDispatch } from 'react-redux';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { getGravatarURL } from '../utils/urlBuilders';
 
 import { actions } from '../slices';
 import CompletedGames from '../components/Game/CompletedGames';
 import Heatmap from './Heatmap';
 import Loading from '../components/Loading';
 
-const getUserAvatarUrl = ({ githubId, discordId, discordAvatar }) => {
+const getUserAvatarUrl = ({
+  githubId, discordId, discordAvatar, email,
+}) => {
   if (githubId) {
     return `https://avatars0.githubusercontent.com/u/${githubId}`;
   }
 
   if (discordId) {
     return `https://cdn.discordapp.com/avatars/${discordId}/${discordAvatar}`;
+  }
+
+  if (email) {
+    return getGravatarURL(email);
   }
 
   return 'https://avatars0.githubusercontent.com/u/35539033';
