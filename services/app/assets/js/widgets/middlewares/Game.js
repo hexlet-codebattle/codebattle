@@ -141,25 +141,8 @@ const initGameChannel = (dispatch, machine) => {
     });
 
     setTimeout(() => {
-      switch (status) {
-        case GameStatusCodes.waitingOpponent: {
-          machine.send('LOAD_WAITING_GAME');
-          break;
-        }
-        case GameStatusCodes.playing: {
-          machine.send('LOAD_ACTIVE_GAME');
-          break;
-        }
-        case GameStatusCodes.gameOver:
-        case GameStatusCodes.timeout: {
-          machine.send('LOAD_FINISHED_GAME');
-          break;
-        }
-        default: {
-          const error = new Error('(loading game state) unexpected status');
-          dispatch(actions.setError(error));
-        }
-      }
+      const payload = { status };
+      machine.send('LOAD_GAME', { payload });
     }, 2000);
   };
   channel

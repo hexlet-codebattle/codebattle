@@ -42,20 +42,20 @@ export const init = () => dispatch => {
 };
 
 export const createInvite = params => dispatch => channel
-    .push('invites:create', params)
-    .receive('ok', camelizeKeysAndDispatch(dispatch, actions.addInvite));
+  .push('invites:create', params)
+  .receive('ok', camelizeKeysAndDispatch(dispatch, actions.addInvite));
 
 export const acceptInvite = id => dispatch => channel
-    .push('invites:accept', { id })
+  .push('invites:accept', { id })
   .receive('ok', data => {
     window.location.href = `/games/${data.invite.game_id}`;
     camelizeKeysAndDispatch(dispatch, actions.updateInvite)(data);
   });
 
 export const declineInvite = id => dispatch => channel
-    .push('invites:cancel', { id })
-    .receive('ok', camelizeKeysAndDispatch(dispatch, actions.updateInvite));
+  .push('invites:cancel', { id })
+  .receive('ok', camelizeKeysAndDispatch(dispatch, actions.updateInvite));
 
 export const cancelInvite = id => dispatch => channel
-    .push('invites:cancel', { id })
-    .receive('ok', camelizeKeysAndDispatch(dispatch, actions.updateInvite));
+  .push('invites:cancel', { id })
+  .receive('ok', camelizeKeysAndDispatch(dispatch, actions.updateInvite));

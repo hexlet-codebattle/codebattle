@@ -21,12 +21,12 @@ const ChatWidget = () => {
   const uniqUsers = _.uniqBy(users, 'id');
   const listOfUsers = isTournamentGame ? _.filter(uniqUsers, { isBot: false }) : uniqUsers;
   return (
-    <div className="d-flex shadow-sm h-100">
-      <div className="col-12 col-sm-8 p-0 bg-white rounded-left h-100 position-relative">
+    <div className="d-flex flex-wrap flex-sm-nowrap shadow-sm h-100">
+      <div className="col-12 col-sm-8 p-0 bg-white rounded-left mh-100 position-relative">
         <Messages messages={messages} />
         {!gameCurrent.matches({ replayer: replayerMachineStates.on }) && <ChatInput />}
       </div>
-      <div className="col-4 d-none d-sm-block p-0 border-left bg-white rounded-right">
+      <div className="col-12 col-sm-4 d-block p-0 border-left bg-white rounded-right">
         <div className="d-flex flex-column justify-content-start overflow-auto h-100">
           <div className="px-3 py-3 w-100">
             <Notifications />
@@ -37,7 +37,7 @@ const ChatWidget = () => {
               <div key={user.id} className="my-1">
                 <UserInfo user={user} hideOnlineIndicator />
               </div>
-              ))}
+            ))}
           </div>
         </div>
       </div>

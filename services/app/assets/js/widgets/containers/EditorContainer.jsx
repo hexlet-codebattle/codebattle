@@ -3,7 +3,6 @@ import _ from 'lodash';
 import cn from 'classnames';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMachine } from '@xstate/react';
-import editorMachine from '../machines/editor';
 import editorModes from '../config/editorModes';
 import EditorToolbar from './EditorsToolbars/EditorToolbar';
 import * as GameActions from '../middlewares/Game';
@@ -15,6 +14,7 @@ import editorUserTypes from '../config/editorUserTypes';
 
 const EditorContainer = ({
   id,
+  editorMachine,
   type,
   cardClassName,
   theme,

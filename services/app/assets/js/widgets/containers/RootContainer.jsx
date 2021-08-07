@@ -18,7 +18,7 @@ import WaitingOpponentInfo from '../components/WaitingOpponentInfo';
 import CodebattlePlayer from './CodebattlePlayer';
 import FeedBackWidget from '../components/FeedBackWidget';
 import GamePreview from '../components/Game/GamePreview';
-import gameMachine, { replayerMachineStates } from '../machines/game';
+import { replayerMachineStates } from '../machines/game';
 import AnimationModal from '../components/AnimationModal';
 
 const steps = [
@@ -175,7 +175,13 @@ const GameWidgetGuide = () => {
 const currentUser = Gon.getAsset('current_user');
 const players = Gon.getAsset('players');
 
-const RootContainer = ({ connectToGame, connectToChat, setCurrentUser }) => {
+const RootContainer = ({
+  connectToGame,
+  connectToChat,
+  setCurrentUser,
+  gameMachine,
+  editorMachine,
+}) => {
   const [modalShowing, setModalShowing] = useState(false);
   const [current, send, service] = useMachine(gameMachine, {
     devTools: true,
@@ -233,7 +239,7 @@ const RootContainer = ({ connectToGame, connectToChat, setCurrentUser }) => {
                 <div className="row no-gutter cb-game">
                   <AnimationModal setModalShowing={setModalShowing} modalShowing={modalShowing} />
                   <InfoWidget />
-                  <GameWidget />
+                  <GameWidget editorMachine={editorMachine} />
                   <FeedBackWidget />
                 </div>
               </div>

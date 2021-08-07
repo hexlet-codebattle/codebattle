@@ -61,7 +61,7 @@ const RightSide = ({ output, children }) => {
   );
 };
 
-const GameWidget = () => {
+const GameWidget = ({ editorMachine }) => {
   const currentUserId = useSelector(selectors.currentUserIdSelector);
   const { current: gameCurrent } = useContext(GameContext);
 
@@ -86,6 +86,7 @@ const GameWidget = () => {
     <>
       <EditorContainer
         id={leftUserId}
+        editorMachine={editorMachine}
         type={leftUserType}
         orientation="left"
         editorState={leftEditor}
@@ -98,6 +99,7 @@ const GameWidget = () => {
       </EditorContainer>
       <EditorContainer
         id={rightUserId}
+        editorMachine={editorMachine}
         type={rightUserType}
         orientation="right"
         editorState={rightEditor}

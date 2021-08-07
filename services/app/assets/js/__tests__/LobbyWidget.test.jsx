@@ -47,14 +47,20 @@ jest.mock('react-select/async', () => () => <></>);
 test('test rendering GameList', async () => {
   const reducer = combineReducers(reducers);
 
+  const players = [{ id: -4 }, { id: -2 }];
+
   const preloadedState = {
     lobby: {
       activeGames: [],
       completedGames: [
-        { id: -1, level: 'elementary', players: [{ id: -4 }, { id: -2 }] },
+        {
+          id: -1,
+          level: 'elementary',
+          players,
+        },
       ],
       loaded: true,
-      presenceList: [{}, {}],
+      presenceList: players,
       liveTournaments: [],
     },
      user: {

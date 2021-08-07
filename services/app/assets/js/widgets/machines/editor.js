@@ -1,4 +1,4 @@
-import { Machine, assign } from 'xstate';
+import { assign } from 'xstate';
 import sound from '../lib/sound';
 import editorUserTypes from '../config/editorUserTypes';
 
@@ -43,68 +43,69 @@ const settingsByState = {
 
 const initContextByState = state => assign(({ userId }) => ({ ...settingsByState[state], userId }));
 
-export default Machine(
-  {
-    initial: 'loading',
-    states: {
-      loading: {
-        on: {
-          load_active_editor: 'idle',
-          load_stored_editor: 'history',
+const editor = {
+  initial: 'loading',
+  states: {
+    loading: {
+      on: {
+        load_active_editor: 'idle',
+        load_stored_editor: 'history',
+      },
+    },
+    history: {
+      type: 'final',
+      entry: initContextByState('history'),
+    },
+    idle: {
+      entry: initContextByState('idle'),
+      on: {
+        user_check_solution: {
+          target: 'checking',
+          actions: ['soundStartChecking', 'userStartChecking'],
+        },
+        check_solution: {
+          target: 'checking',
+          actions: ['soundStartChecking'],
+          cond: 'isUserEvent',
         },
       },
-      history: {
-        type: 'final',
-        entry: initContextByState('history'),
-      },
-      idle: {
-        entry: initContextByState('idle'),
-        on: {
-          user_check_solution: {
-            target: 'checking',
-            actions: ['soundStartChecking', 'userStartChecking'],
-          },
-          check_solution: {
-            target: 'checking',
-            actions: ['soundStartChecking'],
-            cond: 'isUserEvent',
-          },
+    },
+    checking: {
+      entry: initContextByState('checking'),
+      after: {
+        30000: {
+          target: 'idle',
+          actions: ['soundFailureChecking'],
         },
       },
-      checking: {
-        entry: initContextByState('checking'),
-        after: {
-          30000: {
-            target: 'idle',
-            actions: ['soundFailureChecking'],
-          },
+      on: {
+        receive_check_result: {
+          target: 'idle',
+          actions: ['soundFinishedChecking'],
+          cond: 'isUserEvent',
         },
-        on: {
-          receive_check_result: {
-            target: 'idle',
-            actions: ['soundFinishedChecking'],
-            cond: 'isUserEvent',
-          },
-        },
-        baned: {},
       },
+      baned: {},
     },
   },
-  {
-    actions: {
-      userStartChecking: () => {},
-      soundStartChecking: () => {
-        sound.play('check');
-      },
-      soundFailureChecking: () => {
-        sound.play('failure');
-      },
-      soundFinishedChecking: () => {
-        sound.stop();
-      },
+};
+
+export const config = {
+  actions: {
+    userStartChecking: () => {},
+    soundStartChecking: () => {
+      sound.play('check');
     },
-    guards: {
-      isUserEvent: (ctx, { userId }) => ctx.userId === userId,
+    soundFailureChecking: () => {
+      sound.play('failure');
+    },
+    soundFinishedChecking: () => {
+      sound.stop();
     },
   },
-);
+  guards: {
+    isUserEvent: (ctx, { userId }) => ctx.userId === userId,
+  },
+};
+
+export default editor;
