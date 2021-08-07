@@ -2,12 +2,11 @@ import { camelizeKeys } from 'humps';
 import { useDispatch } from 'react-redux';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-
 import { actions } from '../slices';
 import CompletedGames from '../components/Game/CompletedGames';
 import Heatmap from './Heatmap';
 import Loading from '../components/Loading';
-import { Chart } from '../App';
+import LangPieChart from './LangPieChart';
 
 const getUserAvatarUrl = ({ githubId, discordId, discordAvatar }) => {
   if (githubId) {
@@ -109,7 +108,7 @@ const UserProfile = () => {
         </div>
         <div className="row px-4 mt-5 justify-content-center">
           <div className="col-4">
-            <Chart />
+            <LangPieChart />
           </div>
         </div>
         <div className="row px-4 mt-5 justify-content-center">

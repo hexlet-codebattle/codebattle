@@ -18,7 +18,6 @@ import RatingList from './containers/RatingList';
 import UserProfile from './containers/UserProfile';
 import UserSettings from './containers/UserSettings';
 import Registration from './containers/Registration';
-import LangPieChart from './containers/LangPieChart';
 
 import machines from './machines';
 
@@ -112,11 +111,5 @@ export const RegistrationPage = () => (
     <PersistGate loading={null} persistor={persistor}>
       <Registration />
     </PersistGate>
-  </Provider>
-);
-
-export const Chart = () => (
-  <Provider store={store}>
-    <LangPieChart />
   </Provider>
 );

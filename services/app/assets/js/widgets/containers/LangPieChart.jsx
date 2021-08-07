@@ -3,8 +3,8 @@ import ReactApexChart from 'react-apexcharts';
 import { useDispatch } from 'react-redux';
 import { camelizeKeys } from 'humps';
 import axios from 'axios';
-import { loadLangStats } from '../middlewares/Users';
 import Loading from '../components/Loading';
+import { actions } from '../slices';
 
 const LangPieChart = () => {
     const [stats, setStats] = useState(null);
@@ -17,9 +17,8 @@ const LangPieChart = () => {
       .get(`/api/v1/user/${userId}/lang_stats`)
       .then(response => setStats(camelizeKeys(response.data)))
       .catch(error => {
-        dispatch(setError(error));
+        dispatch(actions.setError(error));
       });
-      loadLangStats(userId);
     }, [dispatch]);
 
       if (!stats) {

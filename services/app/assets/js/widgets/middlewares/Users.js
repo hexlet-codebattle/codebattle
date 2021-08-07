@@ -3,16 +3,6 @@ import { camelizeKeys } from 'humps';
 import qs from 'qs';
 import { actions } from '../slices';
 
-export const loadLangStats = dispatch => async user => {
-  try {
-    const response = await axios.get(`/api/v1/user/${user.id}/lang_stats`);
-    const data = camelizeKeys(response.data);
-    dispatch(actions.fetchLangStats(data));
-  } catch (error) {
-    dispatch(actions.setError(error));
-  }
-};
-
 export const loadUser = dispatch => async user => {
   try {
     const response = await axios.get(`/api/v1/users/${user.id}`);
