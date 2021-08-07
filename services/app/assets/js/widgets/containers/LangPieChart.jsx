@@ -11,6 +11,7 @@ const LangPieChart = () => {
 
     const dispatch = useDispatch();
 
+    
     useEffect(() => {
       const userId = window.location.pathname.split('/').pop();
       axios
@@ -39,7 +40,7 @@ const LangPieChart = () => {
               width: 200
             },
             legend: {
-              position: 'top'
+              position: 'bottom'
             }
           }
         }]

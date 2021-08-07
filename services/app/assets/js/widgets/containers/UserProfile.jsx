@@ -107,8 +107,8 @@ const UserProfile = () => {
             <Heatmap />
           </div>
         </div>
-        <div className="row px-4 mt-5 justify-content-lg-center">
-          <div className="col-6">
+        <div className="row px-4 mt-5 justify-content-center">
+          <div className="col-4">
             <Chart />
           </div>
         </div>
