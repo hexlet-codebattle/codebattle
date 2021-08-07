@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from 'react-dom';
 import {
- Game, Lobby, UsersRating, UserPage, SettingsPage, RegistrationPage, Invites, Chart
+ Game, Lobby, UsersRating, UserPage, SettingsPage, RegistrationPage, Invites, Chart,
 } from './App';
 import Heatmap from './containers/Heatmap';
 

@@ -117,6 +117,6 @@ export const RegistrationPage = () => (
 
 export const Chart = () => (
   <Provider store={store}>
-      <LangPieChart />
+    <LangPieChart />
   </Provider>
 );

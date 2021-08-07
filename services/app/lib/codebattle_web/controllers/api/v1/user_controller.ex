@@ -49,9 +49,10 @@ defmodule CodebattleWeb.Api.V1.UserController do
     rank = User.Stats.get_user_rank(id)
 
     json(conn, %{user: user, rank: rank, games: games, stats: stats})
-    conn 
-      |> put_gon(id: id)
-      |> render("show.html", user: user, rank: rank, games: games, stats: stats)
+
+    conn
+    |> put_gon(id: id)
+    |> render("show.html", user: user, rank: rank, games: games, stats: stats)
   end
 
   def create(conn, params) do
@@ -97,7 +98,7 @@ defmodule CodebattleWeb.Api.V1.UserController do
     json(conn, %{id: current_user.id})
   end
 
-  def lang_stats(conn, %{ "id" => user_id}) do
+  def lang_stats(conn, %{"id" => user_id}) do
     stats = Stats.lang_stats_for_user(user_id)
 
     json(conn, %{stats: stats})

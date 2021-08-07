@@ -11,7 +11,7 @@ const userInfo = createSlice({
     },
     fetchLangStats: (state, { payload }) => {
       payload;
-    }
+    },
   },
 });
 
