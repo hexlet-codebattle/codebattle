@@ -54,7 +54,7 @@ defmodule Codebattle.TasksImporter do
       |> Enum.filter(fn x -> String.length(x) > 0 end)
 
     Enum.each(issue_names, fn issue_name ->
-      params = get_task_parmas(path, issue_name)
+      params = get_task_params(path, issue_name)
 
       Codebattle.Repo.insert!(
         struct(Codebattle.Task, params),
@@ -76,7 +76,7 @@ defmodule Codebattle.TasksImporter do
     end)
   end
 
-  defp get_task_parmas(path, issue_name) do
+  defp get_task_params(path, issue_name) do
     issue_info = YamlElixir.read_from_file!(Path.join(path, "#{issue_name}.yml"))
 
     asserts = File.read!(Path.join(path, "#{issue_name}.jsons"))
