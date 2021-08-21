@@ -337,11 +337,11 @@ defmodule Codebattle.Languages do
       "elixir" => %{
         name: "elixir",
         slug: "elixir",
-        version: "1.11.2",
+        version: "1.12.2",
         base_image: :ubuntu,
         check_dir: "check",
         extension: "exs",
-        docker_image: "codebattle/elixir:1.11.2",
+        docker_image: "codebattle/elixir:1.12.2",
         solution_version: :default,
         solution_template:
           "defmodule Solution do\n\tdef solution(<%= arguments %>) do\n<%= return_statement %>\n\tend\nend",
