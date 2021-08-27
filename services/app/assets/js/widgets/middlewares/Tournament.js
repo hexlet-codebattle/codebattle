@@ -40,6 +40,10 @@ export const connectToTournament = () => dispatch => {
     dispatch(actions.setTournamentData(data));
   });
 
+  // TODO: (client/server) break update event on pieces
+  // round:update_match(round, newMatch)
+  // round:update_participants(players)
+  // round:update_statistics(statistics)
   channel.on('round:created', response => {
     const { tournament } = camelizeKeys(response);
 

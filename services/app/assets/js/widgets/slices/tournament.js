@@ -9,7 +9,8 @@ const initialState = {
     state: 'loading',
     startsAt: null,
     data: {
-      matches: [],
+      // TODO: (server) update tournaments match data (array -> object)
+      matches: {}, // {1: [], 2: []}
       players: [],
     },
   },
