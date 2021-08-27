@@ -52,4 +52,26 @@ export const connectToTournament = () => dispatch => {
   });
 };
 
+export const joinTournament = teamId => {
+  const params = teamId ? { team_id: teamId } : {};
+  channel.push('tournament:join', params).receive('error', error => console.error(error));
+};
+
+export const leaveTournament = teamId => {
+  const params = teamId ? { team_id: teamId } : {};
+  channel.push('tournament:leave', params).receive('error', error => console.error(error));
+};
+
+export const startTournament = () => {
+  channel.push('tournament:start', {}).receive('error', error => console.error(error));
+};
+
+export const cancelTournament = () => {
+  channel.push('tournament:cancel', {}).receive('error', error => console.error(error));
+};
+
+export const kickFromTournament = () => {
+  channel.push('tournament:kick', { user_id: userId }).receive('error', error => console.error(error));
+};
+
 export default {};
