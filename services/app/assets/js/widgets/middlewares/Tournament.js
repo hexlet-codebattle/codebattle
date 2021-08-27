@@ -31,11 +31,6 @@ const initTournamentChannel = dispatch => {
 
 // export const soundNotification = notification();
 
-export const cancelTournament = () => dispatch => {
-  channel.push('tournament:cancel', {});
-  dispatch(actions.cancelTournament());
-};
-
 export const connectToTournament = () => dispatch => {
   initTournamentChannel(dispatch);
 

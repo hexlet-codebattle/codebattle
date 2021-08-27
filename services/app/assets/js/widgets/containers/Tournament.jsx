@@ -1,17 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, memo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Gon from 'gon';
 import moment from 'moment';
 
-import { connectToTournament, cancelTournament } from '../middlewares/Tournament';
+import { connectToTournament, cancelTournament, startTournament } from '../middlewares/Tournament';
 import { connectToChat } from '../middlewares/Chat';
 
 import { actions } from '../slices';
 import * as selectors from '../selectors';
 
 import Loading from '../components/Loading';
+import TournamentChat from './TournamentChat';
+import Participants from './Participants';
+import TournamentStates from '../config/tournament';
 
-const TournamentState = ({ state, startsAt }) => {
+const currentUser = Gon.getAsset('current_user');
+
+const TournamentHeader = ({ state, startsAt }) => {
   const timeStart = moment.utc(startsAt);
   const diffTime = moment(timeStart).diff(moment());
 
@@ -27,7 +32,7 @@ const TournamentState = ({ state, startsAt }) => {
   }, [seconds]);
 
   const titles = {
-    active: time => (time > 0
+    [TournamentStates.active]: time => (time > 0
       ? (
         <span>
           The next round will start in&nbsp;
@@ -38,7 +43,7 @@ const TournamentState = ({ state, startsAt }) => {
         </span>
       )
       : (<span>The tournament will start soon</span>)),
-    waiting_participants: time => (time > 0
+    [TournamentStates.waitingParticipants]: time => (time > 0
       ? (
         <span>
           The tournament will start in&nbsp;
@@ -48,19 +53,22 @@ const TournamentState = ({ state, startsAt }) => {
         </span>
       )
       : (<span>The tournament will start soon</span>)),
-    cancelled: () => (<span>The tournament is cancelled</span>),
-    finished: () => (<span>The tournament is finished</span>),
+    [TournamentStates.cancelled]: () => (<span>The tournament is cancelled</span>),
+    [TournamentStates.finished]: () => (<span>The tournament is finished</span>),
   };
+
   return titles[state](seconds);
 };
 
-const HeaderOfTournament = ({ tournament, handleCancelTournament }) => {
+const HeaderOfTournament = memo((props) => {
   const {
     state,
     startsAt,
     creatorId,
     difficulty,
-  } = tournament;
+    handleStartTournament,
+    handleCancelTournament
+  } = props;
 
   const currentUserId = useSelector(selectors.currentUserIdSelector);
 
@@ -73,7 +81,7 @@ const HeaderOfTournament = ({ tournament, handleCancelTournament }) => {
 
   const difficultyClassName = `badge badge-pill mr-1 badge-${difficultyBadgeColor[difficulty]}`;
 
-  if (tournament.state === 'loading') {
+  if (tournament.state === TournamentStates.loading) {
     return (<Loading />);
   }
 
@@ -98,14 +106,14 @@ const HeaderOfTournament = ({ tournament, handleCancelTournament }) => {
                 State:&nbsp;
                 {state}
               </span>
-              <TournamentState state={state} startsAt={startsAt} />
+              <TournamentHeader state={state} startsAt={startsAt} />
             </p>
           </div>
           <div className="col-5">
             <div className="text-right">
-              {creatorId === currentUserId && (state === 'waiting_participants' || state === 'active') && (
+              {creatorId === currentUserId && (state === TournamentStates.waitingParticipants || state === TournamentStates.active) && (
                 <>
-                  {state === 'waiting_participants' && <button type="button" className="btn btn-outline-success mx-2">Start</button>}
+                  {state === TournamentStates.waitingParticipants && <button type="button" onClick={handleStartTournament} className="btn btn-outline-success mx-2">Start</button>}
                   <button type="button" onClick={handleCancelTournament} className="btn btn-outline-danger mx-2">Cancel</button>
                 </>
               )}
@@ -116,7 +124,62 @@ const HeaderOfTournament = ({ tournament, handleCancelTournament }) => {
       </div>
     </>
   );
+});
+
+const getLinkParams = (match) => {
+  const isParticipant = match.players.some(({ id }) => id === currentUser.id);
+
+  switch (true) {
+    case (match.state === "waiting" && isParticipant): return ['Wait', 'bg-warning'];
+    case (match.state === "active" && isParticipant): return ['Join', 'bg-warning'];
+    case isParticipant: return ['Show', 'x-bg-gray'];
+    default: return ['Show', ''];
+  }
 };
+
+const Matches = memo(({ type, matches, playersCount }) => {
+  const roundsCount = Math.log2(playersCount);
+  const roundsRange = Array(roundsCount).fill(roundsCount).map((, index) => index + 1);
+
+  return (<>
+      <div className="col-9 bg-white shadow-sm py-4">
+        <div className="d-flex justify-content-around">
+          {roundsRange.map(round => {
+            const tournamentStage = playersCount / Math.pow(2, round);
+            const title = tournamentStage === 1 ? "Final" : `1/${tournamentStage}`;
+
+            return <h4>{title}</h4>
+          })}
+        </div>
+
+        <div className="bracket">
+          {roundsRange.map(round => {
+            return (<div className="round">
+              <div className="match">
+                <div className="match__content">
+                  {matches[round].map((match) => (<>
+                    <div className={`d-flex p-1 border border-success ${getLinkParams(match)[1]}`}>
+                      <div className="d-flex flex-columnt justify-content-around align-items-center">
+                        <p>${match.state</p>
+                        <a href="/games/#{@match.game_id}" className="btn btn-success m-1">${getLinkParams(match)[0]}</a>
+                      </div>
+                      <div className="d-flex.flex-column.justify-content-around">
+                        <div className={`tournament-bg-${match.state}`}
+                          <UserInfo user={match.players[0] />
+                        </div>
+                        <div className={`tournament-bg-${match.state}`}
+                          <UserInfo user={match.players[1] />
+                        </div>
+                    </div>
+                  </>)}
+                </div>
+              </div>
+            </div>);
+          })}
+        </div>
+      </div>
+    </>);
+});
 
 const Tournament = () => {
   const dispatch = useDispatch();
@@ -125,7 +188,6 @@ const Tournament = () => {
   const messages = useSelector(selectors.chatMessagesSelector);
 
   useEffect(() => {
-    const currentUser = Gon.getAsset('current_user');
 
     dispatch(actions.setCurrentUser({ user: { ...currentUser } }));
     dispatch(connectToTournament());
@@ -133,29 +195,71 @@ const Tournament = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleCancelTournament = () => {
-    dispatch(cancelTournament());
-  };
-
   // tournament.type === "individual";
   // tournament.type === "team";
+  if (tournament.type === "team") {
+    return (<>
+      <HeaderOfTournament
+        state={tournament.state}
+        startsAt={tournament.startsAt}
+        creatorId={tournament.creatorId}
+        difficulty={tournament.difficulty}
+        handleStartTournament,
+        handleCancelTournament
+      />
+      // Panel with tournament info
+      // <Participants
+      //   players={tournament.data.players}
+      //   state={tournament.state}
+      //   creatorId={tournamet.creatorId}
+      // />
+      // <Statistics
+      //   statistics={statistics}
+      // />
+      //
+      // <Matches
+      //   matches={tournament.data.matches}
+      // >
+    </>);
+  }
 
-  // ToDO: Use React.memo to avoid unnecessary rerenders of components
+  // TODO: Use React.memo to avoid unnecessary rerenders of components
   //
   // Components:
-  //   Chat
+  //   + Header
+  //   + Chat
   //  ---- Individual Game ----
-  //   Participants
-  //   Matches
+  //   + Participants
+  //   ? Matches
   //  ---- Team Game -----
-  //   Panel with tournament info
-  //     Participants
-  //     Statistics
-  //   Matches
+  //   ? Panel with tournament info
+  //     ? Participants
+  //     ? Statistics
+  //   ? Matches
 
-  return (
-    <HeaderOfTournament tournament={tournament} handleCancelTournament={handleCancelTournament} />
-  );
+  return (<>
+    <HeaderOfTournament
+      state={tournament.state}
+      startsAt={tournament.startsAt}
+      creatorId={tournament.creatorId}
+      difficulty={tournament.difficulty}
+      handleStartTournament,
+      handleCancelTournament
+    />
+    <TournamentChat
+      messages={messages}
+    />
+    <Participants
+      players={tournament.data.players}
+      state={tournament.state}
+      creatorId={tournamet.creatorId}
+    />
+    <Matches
+      type={tournament.type}
+      matches={tournament.data.matches}
+    />
+
+  </>);
 };
 
 export default Tournament;

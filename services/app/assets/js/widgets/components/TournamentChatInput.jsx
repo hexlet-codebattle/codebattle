@@ -4,15 +4,15 @@ import { addMessage } from '../middlewares/Chat';
 export default function TournamentChatInput() {
   const [message, setMessage] = useState('');
   const inputRef = useRef(null);
-  const handleChange = ({ target: { value } }) => {
+  const handleChange = useCallback(({ target: { value } }) => {
     setMessage(value);
-  };
+  }, [setMessage]);
 
-  const handleSubmit = e => {
+  const handleSubmit = useCallback(e => {
     e.preventDefault();
     addMessage(message);
     setMessage('');
-  };
+  }, [setMessage, addMessage]);
 
   return (
     <form onSubmit={handleSubmit}>

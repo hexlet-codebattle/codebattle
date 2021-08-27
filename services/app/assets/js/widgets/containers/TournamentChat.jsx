@@ -6,13 +6,7 @@ import * as selectors from '../selectors';
 import TournamentChatInput from '../components/TournamentChatInput';
 import Messages from '../components/Messages';
 
-function TournamentChat() {
-  const messages = useSelector(state => selectors.chatMessagesSelector(state));
-
-  useEffect(() => {
-    connectToChat();
-  }, []);
-
+const TournamentChat = ({ messages }) => {
   return (
     <div className="sticky-top bg-white" style={{ height: '350px', maxWidth: '307px' }}>
       <div className="rounded-top shadow-sm" style={{ height: '350px', maxWidth: '307px' }}>
@@ -28,4 +22,4 @@ function TournamentChat() {
   );
 }
 
-export default TournamentChat;
+export default memo(TournamentChat);
