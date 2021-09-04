@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { addMessage } from '../middlewares/Chat';
 
 export default function TournamentChatInput() {
@@ -12,7 +12,7 @@ export default function TournamentChatInput() {
     e.preventDefault();
     addMessage(message);
     setMessage('');
-  }, [setMessage, addMessage]);
+  }, [message]);
 
   return (
     <form onSubmit={handleSubmit}>

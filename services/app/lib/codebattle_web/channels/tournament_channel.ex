@@ -6,7 +6,6 @@ defmodule CodebattleWeb.TournamentChannel do
   alias Codebattle.Tournament.Helpers
 
   def join("tournament:" <> tournament_id, _payload, socket) do
-    # current_user = socket.assigns.current_user
     tournament = Tournament.Context.get!(tournament_id)
     statistics = Helpers.get_tournament_statistics(tournament)
 
@@ -41,7 +40,7 @@ defmodule CodebattleWeb.TournamentChannel do
     tournament_id = get_tournament_id(socket)
 
     Tournament.Server.update_tournament(tournament_id, :leave, %{
-      user: socket.assigns.current_user,
+      user_id: socket.assigns.current_user.id,
       team_id: String.to_integer(team_id)
     })
 
@@ -53,7 +52,7 @@ defmodule CodebattleWeb.TournamentChannel do
     tournament_id = get_tournament_id(socket)
 
     Tournament.Server.update_tournament(tournament_id, :leave, %{
-      user: socket.assigns.current_user,
+      user_id: socket.assigns.current_user.id,
     })
 
     {:noreply, socket}
@@ -63,7 +62,7 @@ defmodule CodebattleWeb.TournamentChannel do
     tournament_id = get_tournament_id(socket)
     tournament = Tournament.Server.get_tournament(tournament_id)
 
-    if is_creator?(tournament, socket.assigns.current_user.id) do
+    if Helpers.is_creator?(tournament, socket.assigns.current_user.id) do
       Tournament.Server.update_tournament(tournament_id, :leave, %{
         user_id: String.to_integer(user_id)
       })
@@ -82,7 +81,7 @@ defmodule CodebattleWeb.TournamentChannel do
     {:noreply, socket}
   end
 
-  def handle_event("tornament:start", _, socket) do
+  def handle_in("tournament:start", _, socket) do
     tournament_id = get_tournament_id(socket)
 
     Tournament.Server.update_tournament(tournament_id, :start, %{
@@ -93,12 +92,13 @@ defmodule CodebattleWeb.TournamentChannel do
   end
 
   def handle_info(
-        %{topic: "tournament_" <> tournament_id, event: event, payload: payload},
+        %{topic: "tournament_" <> _tournament_id, event: event, payload: payload},
         socket
       ) do
     tournament = payload.tournament
     statistics = Helpers.get_tournament_statistics(tournament)
 
+    IO.inspect(event)
     broadcast!(socket, event, %{
       tournament: tournament,
       statistics: statistics

@@ -20,7 +20,7 @@ config :codebattle, Codebattle.Repo,
   username: System.get_env("CODEBATTLE_DB_USERNAME", "postgres"),
   password: System.get_env("CODEBATTLE_DB_PASSWORD", "postgres"),
   database: "codebattle_test",
-  hostname: System.get_env("CODEBATTLE_DB_HOSTNAME", "localhost"),
+  hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox,
   ownership_timeout: 99_999_999
 

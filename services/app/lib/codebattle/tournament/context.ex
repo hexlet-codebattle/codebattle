@@ -1,4 +1,5 @@
 defmodule Codebattle.Tournament.Context do
+  alias Codebattle.Repo
   alias Codebattle.Tournament
 
   import Ecto.Query
@@ -19,6 +20,7 @@ defmodule Codebattle.Tournament.Context do
 
   def get_from_db!(id) do
     tournament = Codebattle.Repo.get!(Tournament, id)
+    |> Repo.preload([:creator])
     add_module(tournament)
   end
 

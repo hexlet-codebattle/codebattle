@@ -2,6 +2,7 @@
 // import axios from 'axios';
 import Gon from 'gon';
 import { camelizeKeys } from 'humps';
+import _ from 'lodash';
 
 import socket from '../../socket';
 import { actions } from '../slices';
@@ -19,6 +20,9 @@ const initTournamentChannel = dispatch => {
 
   const onJoinSuccess = response => {
     const data = camelizeKeys(response);
+    const matches = _.groupBy(data.tournament.data.matches, 'roundId');
+    _.set(data, 'tournament.data.matches', matches);
+    console.log(data);
 
     dispatch(actions.setTournamentData(data));
   };
@@ -34,8 +38,10 @@ const initTournamentChannel = dispatch => {
 export const connectToTournament = () => dispatch => {
   initTournamentChannel(dispatch);
 
-  channel.on('tournament_update', response => {
+  channel.on('tournament:update', response => {
     const data = camelizeKeys(response);
+    const matches = _.groupBy(data.tournament.data.matches, 'roundId');
+    _.set(data, 'tournament.data.matches', matches);
 
     dispatch(actions.setTournamentData(data));
   });
@@ -69,7 +75,7 @@ export const cancelTournament = () => {
   channel.push('tournament:cancel', {}).receive('error', error => console.error(error));
 };
 
-export const kickFromTournament = () => {
+export const kickFromTournament = userId => {
   channel.push('tournament:kick', { user_id: userId }).receive('error', error => console.error(error));
 };
 

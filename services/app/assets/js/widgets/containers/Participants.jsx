@@ -8,20 +8,30 @@ import TournamentStates from '../config/tournament';
 const currentUser = Gon.getAsset('current_user');
 const { id } = currentUser;
 
-const JoinButton = ({ isShow, isParticipant, leave, join }) => {
-      if (!isShow) {
-        return null;
-      }
+const JoinButton = ({ isShow, isParticipant, matchId }) => {
+  if (!isShow) {
+    return null;
+  }
 
-      const onClick = isParticipant ? leave : join;
-      const text = isParticipant ? 'Leave' : 'Join';
+  const onClick = isParticipant ? leaveTournament : joinTournament;
+  const text = isParticipant ? 'Leave' : 'Join';
 
-      return (
-        <button type="button" className={`btn ${isParticipant ? 'btn-outline-danger' : 'btn-outline-secondary'}`}>{text}</button>
-      );
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        onClick(matchId);
+      }}
+      className={`btn ${
+        isParticipant ? 'btn-outline-danger' : 'btn-outline-secondary'
+      }`}
+    >
+      {text}
+    </button>
+  );
 };
 
-const Participants = props => {
+const Participants = (props) => {
   const { players, state, creatorId } = props;
 
   return (
@@ -30,9 +40,7 @@ const Participants = props => {
         <h5 className="mb-2 mr-5">Participants</h5>
         <JoinButton
           isShow={state === TournamentStates.waitingParticipants}
-          isParticipant={players.some(item => item.id === id)}
-          leave={leaveTournament}
-          join={joinTournament}
+          isParticipant={players.some((item) => item.id === id)}
         />
       </div>
       <div className="my-3">
@@ -40,7 +48,7 @@ const Participants = props => {
           <div className="my-3 d-flex" key={player.id}>
             <div className="d-flex align-items-center">
               <UserInfo user={player} />
-              {creatorId === id && isShow && (
+              {creatorId === id && (
                 <button type="button" className="btn btn-outline-danger ml-2">
                   Kick
                 </button>
