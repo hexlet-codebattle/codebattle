@@ -30,7 +30,7 @@ defmodule CodebattleWeb.TournamentChannel do
     tournament_id = get_tournament_id(socket)
 
     Tournament.Server.update_tournament(tournament_id, :join, %{
-      user: socket.assigns.current_user,
+      user: socket.assigns.current_user
     })
 
     {:noreply, socket}
@@ -47,12 +47,11 @@ defmodule CodebattleWeb.TournamentChannel do
     {:noreply, socket}
   end
 
-
   def handle_in("tournament:leave", _, socket) do
     tournament_id = get_tournament_id(socket)
 
     Tournament.Server.update_tournament(tournament_id, :leave, %{
-      user_id: socket.assigns.current_user.id,
+      user_id: socket.assigns.current_user.id
     })
 
     {:noreply, socket}
@@ -73,10 +72,21 @@ defmodule CodebattleWeb.TournamentChannel do
 
   def handle_in("tournament:cancel", _, socket) do
     tournament_id = get_tournament_id(socket)
+    tournament = Tournament.Server.get_tournament(tournament_id)
 
-    Tournament.Server.update_tournament(tournament_id, :cancel, %{
-      user: socket.assigns.current_user
-    })
+    if Helpers.is_creator?(tournament, socket.assigns.current_user.id) do
+      Tournament.Server.update_tournament(tournament_id, :cancel, %{
+        user: socket.assigns.current_user
+      })
+
+      new_tournament = Tournament.Context.get!(tournament_id)
+      statistics = Helpers.get_tournament_statistics(tournament)
+
+      broadcast!(socket, "tournament:update", %{
+        tournament: new_tournament,
+        statistics: statistics
+      })
+    end
 
     {:noreply, socket}
   end
@@ -99,6 +109,7 @@ defmodule CodebattleWeb.TournamentChannel do
     statistics = Helpers.get_tournament_statistics(tournament)
 
     IO.inspect(event)
+
     broadcast!(socket, event, %{
       tournament: tournament,
       statistics: statistics

@@ -18,6 +18,10 @@ defmodule Codebattle.Tournament.Helpers do
     tournament.state == "waiting_participants"
   end
 
+  def is_canceled?(tournament) do
+    tournament.state == "canceled"
+  end
+
   def is_participant?(tournament, player_id) do
     tournament.data.players
     |> Enum.find_value(fn player -> player.id == player_id end)

@@ -40,7 +40,7 @@ config :phoenix, :stacktrace_depth, 20
 config :codebattle, Codebattle.Repo,
   username: System.get_env("CODEBATTLE_DB_USERNAME", "postgres"),
   password: System.get_env("CODEBATTLE_DB_PASSWORD", "postgres"),
-  hostname: "db",
+  hostname: System.get_env("CODEBATTLE_DB_HOSTNAME", "localhost"),
   database: System.get_env("CODEBATTLE_DB_NAME", "codebattle_dev"),
   pool_size: 7
 

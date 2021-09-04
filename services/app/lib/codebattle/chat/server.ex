@@ -32,7 +32,12 @@ defmodule Codebattle.Chat.Server do
   end
 
   def get_users(type) do
-    GenServer.call(chat_key(type), :get_users)
+    try do
+      GenServer.call(chat_key(type), :get_users)
+    catch
+      :exit, _reason ->
+        {:ok, []}
+    end
   end
 
   def add_message(type, message) do
@@ -43,7 +48,12 @@ defmodule Codebattle.Chat.Server do
   end
 
   def get_messages(type) do
-    GenServer.call(chat_key(type), :get_messages)
+    try do
+      GenServer.call(chat_key(type), :get_messages)
+    catch
+      :exit, _reason ->
+        []
+    end
   end
 
   def command(chat_type, user, %{type: command_type} = payload) do
