@@ -5,10 +5,12 @@
         h1
           span.mr-3 = @tournament.name
         div
-          span.badge.badge-pill.mr-1 class="badge-#{difficulty_to_color(@tournament.difficulty)}" &nbsp;
-          = @tournament.difficulty
-      p
+          .text-center data-toggle="tooltip" data-placement="right" title=@tournament.difficulty
+            img alt=@tournament.difficulty src="/assets/images/levels/#{@tournament.difficulty}.svg"
         span.small.text-muted.mx-2 State: #{@tournament.state}
+        = if @tournament.state == "upcoming" do
+          span The tournament will start at #{render_datetime(@tournament.starts_at)}
+
         = if @tournament.state == "waiting_participants" do
           = if @time.minutes >= 0 and @time.seconds >= 0  do
             span The tournament will start in #{@time.minutes}:#{@time.seconds}

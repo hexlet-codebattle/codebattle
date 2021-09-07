@@ -17,11 +17,12 @@ defmodule Codebattle.Tournament do
              :players_count,
              :data,
              :creator,
-             :creator_id
+             :creator_id,
+             :is_live
            ]}
 
   @types ~w(individual team)
-  @states ~w(waiting_participants canceled active finished)
+  @states ~w(upcoming waiting_participants canceled active finished)
   @difficulties ~w(elementary easy medium hard)
   @max_alive_tournaments 5
   @default_match_timeout Application.compile_env(:codebattle, :tournament_match_timeout)
@@ -35,10 +36,11 @@ defmodule Codebattle.Tournament do
     field(:players_count, :integer)
     field(:match_timeout_seconds, :integer, default: @default_match_timeout)
     field(:step, :integer, default: 0)
-    field(:starts_at, :naive_datetime)
+    field(:starts_at, :utc_datetime)
     field(:meta, :map, default: %{})
     field(:last_round_started_at, :naive_datetime)
     field(:module, :any, virtual: true, default: Tournament.Individual)
+    field(:is_live, :boolean, virtual: true, default: false)
     embeds_one(:data, Types.Data, on_replace: :delete)
 
     belongs_to(:creator, Codebattle.User)

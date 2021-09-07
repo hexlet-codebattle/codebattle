@@ -3,7 +3,6 @@ defmodule Codebattle.Chat.Server do
 
   alias Codebattle.Tournament
 
-  @admins Application.compile_env(:codebattle, :admins)
   @message_ttl 60 * 60
   @timeout :timer.minutes(1)
 
@@ -47,7 +46,7 @@ defmodule Codebattle.Chat.Server do
   end
 
   def command(chat_type, user, %{type: command_type} = payload) do
-    if is_admin?(user) do
+    if Codebattle.User.is_admin?(user) do
       case {command_type, payload} do
         {"ban", %{name: banned_name}} ->
           ban_message = %{
@@ -160,9 +159,5 @@ defmodule Codebattle.Chat.Server do
       _ ->
         :ok
     end
-  end
-
-  defp is_admin?(user) do
-    user.name in @admins || Mix.env() == :dev
   end
 end

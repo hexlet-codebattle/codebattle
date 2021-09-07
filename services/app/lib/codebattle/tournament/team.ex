@@ -2,13 +2,13 @@ defmodule Codebattle.Tournament.Team do
   alias Codebattle.Repo
   alias Codebattle.Tournament
 
-  use Tournament.Type
+  use Tournament.Base
 
   @team_rounds_need_to_win_num 3
 
-  @impl Tournament.Type
+  @impl Tournament.Base
   def join(tournament, %{user: user, team_id: team_id}) do
-    if is_waiting_partisipants?(tournament) do
+    if is_waiting_participants?(tournament) do
       user_params =
         user
         |> Map.put(:team_id, team_id)
@@ -29,7 +29,7 @@ defmodule Codebattle.Tournament.Team do
     end
   end
 
-  @impl Tournament.Type
+  @impl Tournament.Base
   def complete_players(%{meta: meta} = tournament) do
     team_players_count =
       meta
@@ -60,7 +60,7 @@ defmodule Codebattle.Tournament.Team do
     |> Repo.update!()
   end
 
-  @impl Tournament.Type
+  @impl Tournament.Base
   def build_matches(tournament) do
     matches_for_round =
       tournament
@@ -86,7 +86,7 @@ defmodule Codebattle.Tournament.Team do
     |> Repo.update!()
   end
 
-  @impl Tournament.Type
+  @impl Tournament.Base
   def maybe_finish(tournament) do
     {score1, score2} = calc_team_score(tournament)
 

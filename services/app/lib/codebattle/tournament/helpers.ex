@@ -1,6 +1,16 @@
 defmodule Codebattle.Tournament.Helpers do
+  alias Codebattle.Repo
+  alias Codebattle.User
+
+  import Ecto.Query
+
   def get_players(tournament), do: tournament.data.players
   def get_matches(tournament), do: tournament.data.matches
+  def get_intended_player_ids(tournament), do: tournament.data.intended_player_ids
+
+  def get_intended_players(tournament) do
+    Repo.all(from(u in User, where: u.id in ^get_intended_player_ids(tournament)))
+  end
 
   def players_count(tournament) do
     tournament |> get_players |> Enum.count()
@@ -14,12 +24,23 @@ defmodule Codebattle.Tournament.Helpers do
     players_count(tournament) > 0 && tournament.state == "waiting_participants"
   end
 
-  def is_waiting_partisipants?(tournament) do
+  def is_waiting_participants?(tournament) do
     tournament.state == "waiting_participants"
   end
 
+  def is_upcoming?(tournament) do
+    tournament.state == "upcoming"
+  end
+
+  def is_intended?(tournament, player_id) do
+    tournament
+    |> get_intended_player_ids()
+    |> Enum.find_value(fn id -> id == player_id end)
+  end
+
   def is_participant?(tournament, player_id) do
-    tournament.data.players
+    tournament
+    |> get_players()
     |> Enum.find_value(fn player -> player.id == player_id end)
     |> Kernel.!()
     |> Kernel.!()

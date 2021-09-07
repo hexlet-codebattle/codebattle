@@ -1,22 +1,43 @@
 - players = get_players(@tournament)
-= render "_header.html", tournament: @tournament, time: @time, current_user: @current_user, socket: @socket
+/* = render "_header.html", tournament: @tournament, time: @time, current_user: @current_user, socket: @socket */
 
-.container-fluid
+.container-lg
   .row
-    .col-3
+    /* .col-3 */
       = render "_chat.html", messages: @messages
       .container.mt-2.bg-white.shadow-sm.p-2
         .d-flex.align-items-center.flex-wrap.justify-content-start
           h5.mb-2.mr-5 Participants
-          = if is_waiting_partisipants?(@tournament) do
+          = if is_waiting_participants?(@tournament) do
             = if is_participant?(@tournament, @current_user.id) do
               button.btn.btn-outline-danger[phx-click="leave"] Leave
             - else
               button.btn.btn-outline-secondary[phx-click="join"] Join
         = render "_players.html", players: players, tournament: @tournament, current_user: @current_user
 
-    .col-9.bg-white.shadow-sm.py-4
-      = if @tournament.players_count do
-        = render "_individual_#{@tournament.players_count}_table.html", tournament: @tournament, time: @time, current_user: @current_user, socket: @socket
-      - else
-        h1 Waiting participants...
+    .col-12.bg-white.shadow-sm.py-4.px-4
+      .d-flex.align-items-center
+        .text-center data-toggle="tooltip" data-placement="right" title=@tournament.difficulty
+          img alt=@tournament.difficulty src="/assets/images/levels/#{@tournament.difficulty}.svg"
+        h1.m-0.ml-3.text-capitalize = @tournament.name
+        span.small.text-muted.mx-2 State: #{@tournament.state}
+        span.small.text-muted.mx-2 Type: #{@tournament.type}
+        span.small.text-muted.mx-2 Live: #{@tournament.is_live}
+        span.small.text-muted.mx-2 Starts on #{render_datetime(@tournament.starts_at)}
+
+        = if is_upcoming?(@tournament) do
+          = if is_intended?(@tournament, @current_user.id) do
+            button.btn.btn-outline-danger[phx-click="leave"] Leave
+          - else
+            button.btn.btn-outline-secondary[phx-click="join"] Join
+
+        = render "_players.html", players: get_intended_players(@tournament), tournament: @tournament, current_user: @current_user
+      /* = if @tournament.players_count do */
+      /*   = render "_individual_#{@tournament.players_count}_table.html", tournament: @tournament, time: @time, current_user: @current_user, socket: @socket */
+      /* - else */
+      /*   = if @tournament.state == "upcoming" do */
+      /*     .m-3 */
+      /*       h2 */
+      /*       p.mt-3 You can join */
+      /*   - else */
+      /*     h1 Waiting participants... */

@@ -5,6 +5,16 @@ defmodule Codebattle.Tournament.IndividualTest do
   import Codebattle.Tournament.Helpers
 
   describe "starts a tournament with completed players_count" do
+    test "join to upcoming test" do
+      user = insert(:user)
+      insert(:task, level: "elementary")
+      player = struct(Codebattle.Tournament.Types.Player, Map.from_struct(user))
+      tournament = insert(:tournament, creator_id: user.id, state: "upcoming")
+
+
+      new_tournament = @module.join(tournament, %{user: user})
+    end
+
     test "when 1" do
       user = insert(:user)
       insert(:task, level: "elementary")
