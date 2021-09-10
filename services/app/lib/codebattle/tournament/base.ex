@@ -37,18 +37,31 @@ defmodule Codebattle.Tournament.Base do
           |> Enum.concat([player])
           |> Enum.uniq_by(fn x -> x.id end)
 
+        new_ids =
+          tournament
+          |> get_intended_player_ids
+          |> Enum.filter(fn id -> id != player.id end)
+
         tournament
         |> Tournament.changeset(%{
-          data: DeepMerge.deep_merge(tournament.data, %{players: players})
+          data:
+            DeepMerge.deep_merge(tournament.data, %{
+              players: players,
+              intended_player_ids: new_ids
+            })
         })
         |> Repo.update!()
       end
 
-      def leave(%{state: "upcoming"} = tournament, %{user: user}) do
+      def leave(tournament, %{user: user}) do
+        leave(tournament, %{user_id: user.id})
+      end
+
+      def leave(%{state: "upcoming"} = tournament, %{user_id: user_id}) do
         new_ids =
           tournament
           |> get_intended_player_ids
-          |> Enum.filter(fn id -> id != user.id end)
+          |> Enum.filter(fn id -> id != user_id end)
 
         tournament
         |> Tournament.changeset(%{
@@ -57,10 +70,10 @@ defmodule Codebattle.Tournament.Base do
         |> Repo.update!()
       end
 
-      def leave(%{state: "waiting_participants"} = tournament, %{user: user}) do
+      def leave(%{state: "waiting_participants"} = tournament, %{user_id: user_id}) do
         new_players =
           tournament.data.players
-          |> Enum.filter(fn player -> player.id != user.id end)
+          |> Enum.filter(fn player -> player.id != user_id end)
 
         tournament
         |> Tournament.changeset(%{
@@ -69,10 +82,18 @@ defmodule Codebattle.Tournament.Base do
         |> Repo.update!()
       end
 
-      def leave(tournament, _user), do: tournament
+      def leave(tournament, _user_id), do: tournament
+
+      def back(%{state: "waiting_participants"} = tournament, %{user: user}) do
+        tournament
+        |> Tournament.changeset(%{state: "upcoming"})
+        |> Repo.update!()
+      end
+
+      def back(tournament, _user), do: tournament
 
       def cancel(tournament, %{user: user}) do
-        if is_creator?(tournament, user.id) do
+        if can_manage?(tournament, user) do
           new_tournament =
             tournament
             |> Tournament.changeset(%{state: "canceled"})
@@ -86,8 +107,18 @@ defmodule Codebattle.Tournament.Base do
         end
       end
 
-      def start(tournament, %{user: user}) do
-        if is_creator?(tournament, user.id) do
+      def start(%{state: "upcoming"} = tournament, %{user: user}) do
+        if can_manage?(tournament, user) do
+          tournament
+          |> Tournament.changeset(%{state: "waiting_participants"})
+          |> Repo.update!()
+        else
+          tournament
+        end
+      end
+
+      def start(%{state: "waiting_participants"} = tournament, %{user: user}) do
+        if can_manage?(tournament, user) do
           tournament
           |> complete_players
           |> start_step!
@@ -100,6 +131,8 @@ defmodule Codebattle.Tournament.Base do
           tournament
         end
       end
+
+      def start(tournament, _params), do: tournament
 
       def maybe_start_new_step(tournament) do
         matches = tournament |> get_matches

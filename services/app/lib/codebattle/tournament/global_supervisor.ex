@@ -2,9 +2,8 @@ defmodule Codebattle.Tournament.GlobalSupervisor do
   use Supervisor
 
   alias Codebattle.Tournament
-  require Logger
 
-  alias Codebattle.Tournament
+  require Logger
 
   def start_link(_) do
     Supervisor.start_link(__MODULE__, [], name: __MODULE__)
@@ -12,7 +11,22 @@ defmodule Codebattle.Tournament.GlobalSupervisor do
 
   @impl true
   def init(_) do
-    Supervisor.init([], strategy: :one_for_one)
+    children =
+      case Mix.env() do
+        :test ->
+          []
+
+        _ ->
+          Tournament.Context.get_tournament_for_restore()
+          |> Enum.map(fn tournament ->
+            %{
+              id: tournament.id,
+              start: {Tournament.Supervisor, :start_link, [tournament]}
+            }
+          end)
+      end
+
+    Supervisor.init(children, strategy: :one_for_one)
   end
 
   def start_tournament(tournament) do
@@ -24,11 +38,6 @@ defmodule Codebattle.Tournament.GlobalSupervisor do
       }
     )
   end
-
-  # def start_tournament(tournament) do
-  #   spec = {Codebattle.Tournament.Supervisor, tournament}
-  #   DynamicSupervisor.start_child(__MODULE__, spec)
-  # end
 
   def terminate_tournament(tournament_id) do
     try do

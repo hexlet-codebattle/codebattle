@@ -25,7 +25,8 @@ defmodule CodebattleWeb.TournamentController do
     conn
     |> put_meta_tags(%{
       title: "#{tournament.name} • Hexlet Codebattle",
-      description: "Join tournament: #{String.slice(tournament.name, 0, 100)}, type: #{tournament.type}, starts_at: #{tournament.starts_at}",
+      description:
+        "Tournament: #{String.slice(tournament.name, 0, 100)}, type: #{tournament.type}, starts_at: #{tournament.starts_at}",
       image: Routes.tournament_image_url(conn, :show, tournament.id),
       url: Routes.tournament_url(conn, :show, tournament.id)
     })

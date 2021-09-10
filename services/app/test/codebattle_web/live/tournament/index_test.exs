@@ -14,7 +14,7 @@ defmodule CodebattleWeb.Live.Tournament.IndexTest do
     {:ok, view, _html} = live(conn, Routes.tournament_path(conn, :index))
 
     render_submit(view, :create, %{
-      "tournament" => %{type: "individual", starts_after_in_minutes: "1", name: "test"}
+      "tournament" => %{type: "individual", starts_at: "2021-09-01 08:30", name: "test"}
     })
 
     assert Codebattle.Repo.count(Tournament) == 1
@@ -31,7 +31,7 @@ defmodule CodebattleWeb.Live.Tournament.IndexTest do
     {:ok, view, _html} = live(conn, Routes.tournament_path(conn, :index))
 
     render_submit(view, :create, %{
-      "tournament" => %{type: "team", starts_after_in_minutes: "1", name: "test"}
+      "tournament" => %{type: "team", starts_at: "2021-09-01 08:30", name: "test"}
     })
 
     assert Codebattle.Repo.count(Tournament) == 1
@@ -50,7 +50,7 @@ defmodule CodebattleWeb.Live.Tournament.IndexTest do
     render_change(view, :validate, %{"tournament" => %{name: "a"}})
 
     render_submit(view, :create, %{
-      "tournament" => %{type: "asdf", starts_after_in_minutes: "1", name: "test"}
+      "tournament" => %{type: "asdf", starts_at: "2021-09-01 08:30", name: "test"}
     })
 
     assert Codebattle.Repo.count(Codebattle.Tournament) == 0

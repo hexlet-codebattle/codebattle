@@ -146,9 +146,19 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
   end
 
   def handle_event("kick", %{"user_id" => user_id}, socket) do
-    if is_creator?(socket.assigns.tournament, socket.assigns.current_user.id) do
+    if can_manage?(socket.assigns.tournament, socket.assigns.current_user.id) do
       Tournament.Server.update_tournament(socket.assigns.tournament.id, :leave, %{
         user_id: String.to_integer(user_id)
+      })
+    end
+
+    {:noreply, socket}
+  end
+
+  def handle_event("back", _params, socket) do
+    if can_manage?(socket.assigns.tournament, socket.assigns.current_user.id) do
+      Tournament.Server.update_tournament(socket.assigns.tournament.id, :back, %{
+        user: socket.assigns.current_user
       })
     end
 
@@ -274,7 +284,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     topic == topic_name(tournament)
   end
 
-  defp is_creator?(tournament, user_id) do
+  defp can_manage?(tournament, user_id) do
     tournament.creator_id == user_id
   end
 

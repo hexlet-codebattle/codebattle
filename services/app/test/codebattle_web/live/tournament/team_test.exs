@@ -51,7 +51,7 @@ defmodule CodebattleWeb.Live.Tournament.TeamTest do
       render_submit(view, :create, %{
         "tournament" => %{
           type: "team",
-          starts_after_in_minutes: "1",
+          starts_at: "2021-09-01 08:30",
           team_1_name: "Elixir",
           team_2_name: "",
           match_timeout_seconds: "140",

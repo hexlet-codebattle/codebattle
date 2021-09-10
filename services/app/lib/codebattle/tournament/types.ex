@@ -34,7 +34,7 @@ defmodule Codebattle.Tournament.Types do
         :rank,
         :guest,
         :is_bot,
-        :game_result,
+        :game_result
       ])
     end
   end

@@ -3,7 +3,7 @@ defmodule Codebattle.Tournament.Context do
 
   import Ecto.Query
 
-  @states_from_restore ["upcoming", "waiting_participants", "active"]
+  @states_from_restore ["upcoming", "waiting_participants"]
 
   def get(id) do
     case Tournament.Server.get_tournament(id) do
@@ -131,14 +131,13 @@ defmodule Codebattle.Tournament.Context do
     end
   end
 
-  def restore_from_database() do
+  def get_tournament_for_restore() do
     @states_from_restore
     |> get_db_tournaments()
-    |> Enum.each(fn tournament ->
+    |> Enum.map(fn tournament ->
       tournament
       |> add_module
       |> mark_as_live
-      |> Tournament.GlobalSupervisor.start_tournament()
     end)
   end
 

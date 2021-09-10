@@ -9,7 +9,12 @@ defmodule Codebattle.Tournament.Helpers do
   def get_intended_player_ids(tournament), do: tournament.data.intended_player_ids
 
   def get_intended_players(tournament) do
-    Repo.all(from(u in User, where: u.id in ^get_intended_player_ids(tournament)))
+    Repo.all(
+      from(u in User,
+        where: u.id in ^get_intended_player_ids(tournament),
+        order_by: {:desc, :rating}
+      )
+    )
   end
 
   def players_count(tournament) do
@@ -20,17 +25,26 @@ defmodule Codebattle.Tournament.Helpers do
     tournament |> get_team_players(team_id) |> Enum.count()
   end
 
-  def can_start_tournament?(tournament) do
-    players_count(tournament) > 0 && tournament.state == "waiting_participants"
+  def can_be_started?(%{state: "upcoming"} = tournament) do
+    get_intended_player_ids(tournament) != []
   end
 
-  def is_waiting_participants?(tournament) do
-    tournament.state == "waiting_participants"
+  def can_be_started?(%{state: "waiting_participants"} = tournament) do
+    players_count(tournament) > 0
   end
 
-  def is_upcoming?(tournament) do
-    tournament.state == "upcoming"
+  def can_be_started?(_t), do: false
+
+  def can_manage?(tournament, user) do
+    is_creator?(tournament, user) || User.is_admin?(user)
   end
+
+  def is_active?(tournament), do: tournament.state == "active"
+  def is_waiting_participants?(tournament), do: tournament.state == "waiting_participants"
+  def is_upcoming?(tournament), do: tournament.state == "upcoming"
+  def is_individual?(tournament), do: tournament.type == "individual"
+  def is_finished?(tournament), do: tournament.state == "finished"
+  def is_team?(tournament), do: tournament.type == "team"
 
   def is_intended?(tournament, player_id) do
     tournament
@@ -53,8 +67,8 @@ defmodule Codebattle.Tournament.Helpers do
     |> Kernel.!()
   end
 
-  def is_creator?(tournament, player_id) do
-    tournament.creator_id == player_id
+  def is_creator?(tournament, user) do
+    tournament.creator_id == user.id
   end
 
   def calc_round_result(round) do
@@ -89,7 +103,7 @@ defmodule Codebattle.Tournament.Helpers do
       tournament
       |> get_matches()
       |> Enum.filter(fn match ->
-        is_finished?(match) and !is_anyone_gave_up?(match)
+        match_is_finished?(match) and !is_anyone_gave_up?(match)
       end)
 
     unless Enum.empty?(all_win_matches) do
@@ -118,7 +132,7 @@ defmodule Codebattle.Tournament.Helpers do
       tournament
       |> get_matches()
       |> Enum.filter(fn match ->
-        is_finished?(match) and !is_anyone_gave_up?(match)
+        match_is_finished?(match) and !is_anyone_gave_up?(match)
       end)
 
     best_lang =
@@ -170,8 +184,8 @@ defmodule Codebattle.Tournament.Helpers do
   defp calc_match_result(%{players: [%{game_result: "gave_up"}, _]}), do: {0, 1}
   defp calc_match_result(_), do: {0, 0}
 
-  defp is_finished?(%{state: "finished"}), do: true
-  defp is_finished?(_match), do: false
+  defp match_is_finished?(%{state: "finished"}), do: true
+  defp match_is_finished?(_match), do: false
 
   defp is_anyone_gave_up?(%{players: [%{game_result: "gave_up"}, _]}), do: true
   defp is_anyone_gave_up?(%{players: [_, %{game_result: "gave_up"}]}), do: true

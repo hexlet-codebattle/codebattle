@@ -15,7 +15,12 @@ defmodule Codebattle.Tournament.Server do
   end
 
   def update_tournament(tournament_id, event_type, params) do
-    GenServer.call(server_name(tournament_id), {event_type, params})
+    try do
+      GenServer.call(server_name(tournament_id), {event_type, params})
+    catch
+      :exit, _reason ->
+        {:error, :no_proc}
+    end
   end
 
   def get_pid(id) do

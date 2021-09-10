@@ -8,11 +8,10 @@ defmodule Codebattle.Tournament.IndividualTest do
     test "join to upcoming test" do
       user = insert(:user)
       insert(:task, level: "elementary")
-      player = struct(Codebattle.Tournament.Types.Player, Map.from_struct(user))
       tournament = insert(:tournament, creator_id: user.id, state: "upcoming")
 
-
       new_tournament = @module.join(tournament, %{user: user})
+      assert get_intended_player_ids(new_tournament) == [user.id]
     end
 
     test "when 1" do

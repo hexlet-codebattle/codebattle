@@ -23,9 +23,7 @@ defmodule Mix.Tasks.Dockers.Build do
   defp build(langs) do
     for lang <- langs do
       command =
-        "docker build -t #{lang.docker_image} --file #{root()}/dockers/#{lang.slug}/Dockerfile #{
-          root()
-        }/dockers/#{lang.slug}/"
+        "docker build -t #{lang.docker_image} --file #{root()}/dockers/#{lang.slug}/Dockerfile #{root()}/dockers/#{lang.slug}/"
 
       [cmd | opts] = command |> String.split()
       IO.puts("Start building image for #{lang.slug}")

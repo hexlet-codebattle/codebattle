@@ -1,31 +1,43 @@
-.container-fluid
-  .row
-    .col-7
-      .d-flex.align-items-center
-        h1
-          span.mr-3 = @tournament.name
-        div
-          .text-center data-toggle="tooltip" data-placement="right" title=@tournament.difficulty
-            img alt=@tournament.difficulty src="/assets/images/levels/#{@tournament.difficulty}.svg"
-        span.small.text-muted.mx-2 State: #{@tournament.state}
-        = if @tournament.state == "upcoming" do
-          span The tournament will start at #{render_datetime(@tournament.starts_at)}
+.d-flex.align-items-center.border-bottom
+  h1.m-0.text-capitalize.text-nowrap = @tournament.name
+  .text-center.ml-3 data-toggle="tooltip" data-placement="right" title=@tournament.difficulty
+    img alt=@tournament.difficulty src="/assets/images/levels/#{@tournament.difficulty}.svg"
 
-        = if @tournament.state == "waiting_participants" do
-          = if @time.minutes >= 0 and @time.seconds >= 0  do
-            span The tournament will start in #{@time.minutes}:#{@time.seconds}
-          - else
-            span The tournament will start soon
+  = if is_upcoming?(@tournament) do
+    .ml-auto
+      = if is_intended?(@tournament, @current_user.id) do
+        button.btn.btn-outline-danger[phx-click="leave"] Leave
+      - else
+        button.btn.btn-outline-secondary[phx-click="join"] Join
+      = if can_manage?(@tournament, @current_user) do
+        button.btn.btn-success.ml-2[phx-click="start" disabled=!can_be_started?(@tournament)] Promote
+        button.btn.btn-danger.ml-2[phx-click="cancel"] Cancel
 
-        = if @tournament.state == "active"  do
-          = if @time.minutes >= 0 and @time.seconds >= 0  do
-            span The next round will start in #{@time.minutes}:#{@time.seconds}, or after all matches are over
-          - else
-            span The next round will start soon
+  = if is_waiting_participants?(@tournament) do
+    .ml-auto
+      = if is_individual?(@tournament) do
+        = if is_participant?(@tournament, @current_user.id) do
+          button.btn.btn-outline-danger[phx-click="leave"] Leave
+        - else
+          button.btn.btn-outline-secondary[phx-click="join"] Join
+      = if can_manage?(@tournament, @current_user) do
+        button.btn.btn-success.ml-2[phx-click="start" disabled=!can_be_started?(@tournament)] Start
+        button.btn.btn-info.ml-2[phx-click="back"] Back
+        button.btn.btn-danger.ml-2[phx-click="cancel"] Cancel
 
-    .col-5
-      .text-right
-        = if is_creator?(@tournament, @current_user.id) and @tournament.state in ["waiting_participants", "active"] do
-          button.btn.btn-outline-success.mx-2[phx-click="start" disabled=!can_start_tournament?(@tournament)] Start
-          button.btn.btn-outline-danger.mx-2[phx-click="cancel"] Cancel
-        = link "Back to tournaments", to: CodebattleWeb.Router.Helpers.tournament_path(@socket, :index), class: "btn btn-success ml-2"
+  = if is_active?(@tournament) do
+    .ml-auto
+      = if can_manage?(@tournament, @current_user) do
+        button.btn.btn-danger.ml-2[phx-click="cancel"] Cancel
+
+.d-flex.align-items-center.mt-2.small.text-muted
+  span State: #{@tournament.state}
+  span.ml-3 Type: #{@tournament.type}
+  = if is_upcoming?(@tournament) do
+    span.ml-3 Starts_on: #{render_datetime(@tournament.starts_at)}
+    span.ml-3 Inserted_at: #{render_datetime(@tournament.inserted_at)}
+  = if is_waiting_participants?(@tournament) do
+    = if @time.minutes >= 0 and @time.seconds >= 0  do
+      span.ml-3 The tournament will start in #{@time.minutes}:#{@time.seconds}
+    - else
+      span.ml-3 The tournament will start soon
