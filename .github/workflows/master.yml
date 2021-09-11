@@ -7,7 +7,7 @@ on:
 jobs:
   build:
     if: github.repository == 'hexlet-codebattle/codebattle'
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-20.04
 
     services:
       db:
@@ -35,8 +35,8 @@ jobs:
 
       - uses: erlef/setup-beam@v1
         with:
-          otp-version: "23.x"
-          elixir-version: "1.11.x"
+          otp-version: "24.x"
+          elixir-version: "1.12.3"
 
       - uses: actions/cache@v2
         with:
