@@ -42,8 +42,8 @@ defmodule Codebattle.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.5.12", override: true},
-      {:phoenix_ecto, "~> 4.2"},
+      {:phoenix, "~> 1.5.12"},
+      {:phoenix_ecto, "~> 4.4"},
       {:phoenix_live_view, "~> 0.15"},
       {:postgrex, "~> 0.15.6"},
       {:phoenix_html, "~> 2.14"},
@@ -52,10 +52,10 @@ defmodule Codebattle.Mixfile do
       {:gettext, "~> 0.18"},
       {:cowboy, "~> 2.8"},
       {:plug_cowboy, "~> 2.4"},
-      {:phoenix_slime, "~> 0.13"},
+      {:phoenix_slime, "~> 0.13.1"},
       {:slime, "~> 1.2"},
-      {:ueberauth, "~> 0.6"},
-      {:ueberauth_github, "~> 0.7"},
+      {:ueberauth, "~> 0.6.3"},
+      {:ueberauth_github, "~> 0.8"},
       {:gproc, "~> 0.8"},
       {:fsm, "~> 0.3"},
       {:phoenix_gon, "~> 0.4.0"},
@@ -67,7 +67,6 @@ defmodule Codebattle.Mixfile do
       {:paginator, "~> 1.0.1"},
       {:scrivener_ecto, "~> 2.5"},
       {:ecto_psql_extras, "~> 0.2"},
-      {:scrivener_html, "~> 1.8"},
       {:phoenix_client, "~> 0.11"},
       {:websocket_client, "~> 1.3"},
       {:jason, "~> 1.2"},

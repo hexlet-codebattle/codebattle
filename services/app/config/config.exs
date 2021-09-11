@@ -60,9 +60,6 @@ config :codebattle, CodebattleWeb.Gettext,
   priv: "priv/gettext",
   default_locale: "en"
 
-config :scrivener_html,
-  routes_helper: CodebattleWeb.Router.Helpers
-
 config :phoenix_meta_tags,
   title: "Hexlet Codebattle • Game for programmers",
   description:
