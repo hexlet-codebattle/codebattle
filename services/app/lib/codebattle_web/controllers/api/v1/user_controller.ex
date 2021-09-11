@@ -10,12 +10,12 @@ defmodule CodebattleWeb.Api.V1.UserController do
     page_number =
       params
       |> Map.get("page", "1")
-      |> String.to_integer
+      |> String.to_integer()
 
     page_size =
       params
       |> Map.get("page_size", "50")
-      |> String.to_integer
+      |> String.to_integer()
 
     query = Codebattle.User.Scope.list_users(params)
     page = Repo.paginate(query, %{page: page_number, page_size: page_size})
