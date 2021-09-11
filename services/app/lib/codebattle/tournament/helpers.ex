@@ -6,7 +6,7 @@ defmodule Codebattle.Tournament.Helpers do
 
   def get_players(tournament), do: tournament.data.players
   def get_matches(tournament), do: tournament.data.matches
-  def get_intended_player_ids(tournament), do: tournament.data.intended_player_ids
+  def get_intended_player_ids(tournament), do: Map.get(tournament.data, :intended_player_ids, [])
 
   def get_intended_players(tournament) do
     Repo.all(
