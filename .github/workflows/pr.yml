@@ -6,7 +6,7 @@ on:
       - master
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-18.04
 
     services:
       db:
@@ -22,27 +22,27 @@ jobs:
       - uses: actions/checkout@v2
       - uses: erlef/setup-beam@v1
         with:
-          otp-version: "24.x"
+          otp-version: "24.0.5"
           elixir-version: "1.12.3"
 
       - uses: actions/cache@v2
         with:
           path: services/app/deps
-          key: v1-${{ runner.os }}-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/services/app/mix.lock')) }}
+          key: v2-${{ runner.os }}-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/services/app/mix.lock')) }}
           restore-keys: |
             ${{ runner.os }}-deps-
 
       - uses: actions/cache@v2
         with:
           path: services/app/_build
-          key: v1-${{ runner.os }}-build-${{ hashFiles(format('{0}{1}', github.workspace, '/services/app/mix.lock')) }}
+          key: v2-${{ runner.os }}-build-${{ hashFiles(format('{0}{1}', github.workspace, '/services/app/mix.lock')) }}
           restore-keys: |
             ${{ runner.os }}-build-
 
       - uses: actions/cache@v2
         with:
           path: ~/.mix
-          key: v1-${{ runner.os }}-mix-${{ hashFiles(format('{0}{1}', github.workspace, '/services/app/mix.lock')) }}
+          key: v2-${{ runner.os }}-mix-${{ hashFiles(format('{0}{1}', github.workspace, '/services/app/mix.lock')) }}
           restore-keys: |
             ${{ runner.os }}-mix-
 
