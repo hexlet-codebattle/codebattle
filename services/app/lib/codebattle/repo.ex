@@ -21,7 +21,7 @@ defmodule Codebattle.Repo do
       page_number: params.page,
       page_size: params.page_size,
       total_entries: total_entries,
-      total_pages: div(total_entries, params.page_size)
+      total_pages: div(total_entries, params.page_size) + 1
     }
   end
 end
