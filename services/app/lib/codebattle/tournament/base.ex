@@ -1,4 +1,4 @@
-defmodule Codebattle.Tournament.Type do
+defmodule Codebattle.Tournament.Base do
   alias Codebattle.Repo
   alias Codebattle.Tournament
   alias Codebattle.GameProcess.{Play, FsmHelpers}
@@ -13,13 +13,67 @@ defmodule Codebattle.Tournament.Type do
 
   defmacro __using__(_opts) do
     quote do
-      @behaviour Tournament.Type
+      @behaviour Tournament.Base
       import Tournament.Helpers
 
-      def leave(tournament, %{user_id: user_id}) do
+      def add_intended_player_id(tournament, player_id) do
+        new_ids =
+          tournament
+          |> get_intended_player_ids
+          |> Enum.concat([player_id])
+          |> Enum.uniq()
+
+        tournament
+        |> Tournament.changeset(%{
+          data: DeepMerge.deep_merge(tournament.data, %{intended_player_ids: new_ids})
+        })
+        |> Repo.update!()
+      end
+
+      def add_player(tournament, player) do
+        players =
+          tournament
+          |> get_players
+          |> Enum.concat([player])
+          |> Enum.uniq_by(fn x -> x.id end)
+
+        new_ids =
+          tournament
+          |> get_intended_player_ids
+          |> Enum.filter(fn id -> id != player.id end)
+
+        tournament
+        |> Tournament.changeset(%{
+          data:
+            DeepMerge.deep_merge(tournament.data, %{
+              players: players,
+              intended_player_ids: new_ids
+            })
+        })
+        |> Repo.update!()
+      end
+
+      def leave(tournament, %{user: user}) do
+        leave(tournament, %{user_id: user.id})
+      end
+
+      def leave(%{state: "upcoming"} = tournament, %{user_id: user_id}) do
+        new_ids =
+          tournament
+          |> get_intended_player_ids
+          |> Enum.filter(fn id -> id != user_id end)
+
+        tournament
+        |> Tournament.changeset(%{
+          data: DeepMerge.deep_merge(tournament.data, %{intended_player_ids: new_ids})
+        })
+        |> Repo.update!()
+      end
+
+      def leave(%{state: "waiting_participants"} = tournament, %{user_id: user_id}) do
         new_players =
           tournament.data.players
-          |> Enum.filter(fn x -> x.id != user_id end)
+          |> Enum.filter(fn player -> player.id != user_id end)
 
         tournament
         |> Tournament.changeset(%{
@@ -28,8 +82,18 @@ defmodule Codebattle.Tournament.Type do
         |> Repo.update!()
       end
 
+      def leave(tournament, _user_id), do: tournament
+
+      def back(%{state: "waiting_participants"} = tournament, %{user: user}) do
+        tournament
+        |> Tournament.changeset(%{state: "upcoming"})
+        |> Repo.update!()
+      end
+
+      def back(tournament, _user), do: tournament
+
       def cancel(tournament, %{user: user}) do
-        if is_creator?(tournament, user.id) do
+        if can_manage?(tournament, user) do
           new_tournament =
             tournament
             |> Tournament.changeset(%{state: "canceled"})
@@ -43,8 +107,18 @@ defmodule Codebattle.Tournament.Type do
         end
       end
 
-      def start(tournament, %{user: user}) do
-        if is_creator?(tournament, user.id) do
+      def start(%{state: "upcoming"} = tournament, %{user: user}) do
+        if can_manage?(tournament, user) do
+          tournament
+          |> Tournament.changeset(%{state: "waiting_participants"})
+          |> Repo.update!()
+        else
+          tournament
+        end
+      end
+
+      def start(%{state: "waiting_participants"} = tournament, %{user: user}) do
+        if can_manage?(tournament, user) do
           tournament
           |> complete_players
           |> start_step!
@@ -57,6 +131,8 @@ defmodule Codebattle.Tournament.Type do
           tournament
         end
       end
+
+      def start(tournament, _params), do: tournament
 
       def maybe_start_new_step(tournament) do
         matches = tournament |> get_matches

@@ -1,31 +1,49 @@
 defmodule Codebattle.Tournament.GlobalSupervisor do
-  use DynamicSupervisor
-
-  require Logger
+  use Supervisor
 
   alias Codebattle.Tournament
 
-  def start_link(_) do
-    DynamicSupervisor.start_link(__MODULE__, [], name: __MODULE__)
-  end
+  require Logger
 
-  def start_tournament(tournament) do
-    spec = {Codebattle.Tournament.Supervisor, tournament}
-    DynamicSupervisor.start_child(__MODULE__, spec)
+  def start_link(_) do
+    Supervisor.start_link(__MODULE__, [], name: __MODULE__)
   end
 
   @impl true
-  def init(_init_arg) do
-    DynamicSupervisor.init(strategy: :one_for_one)
+  def init(_) do
+    children =
+      case Mix.env() do
+        :test ->
+          []
+
+        _ ->
+          Tournament.Context.get_tournament_for_restore()
+          |> Enum.map(fn tournament ->
+            %{
+              id: tournament.id,
+              start: {Tournament.Supervisor, :start_link, [tournament]}
+            }
+          end)
+      end
+
+    Supervisor.init(children, strategy: :one_for_one)
+  end
+
+  def start_tournament(tournament) do
+    Supervisor.start_child(
+      __MODULE__,
+      %{
+        id: tournament.id,
+        start: {Tournament.Supervisor, :start_link, [tournament]}
+      }
+    )
   end
 
   def terminate_tournament(tournament_id) do
-    pid = Tournament.Supervisor.get_pid(tournament_id)
-
     try do
-      DynamicSupervisor.terminate_child(__MODULE__, pid)
+      Supervisor.delete_child(__MODULE__, tournament_id)
     rescue
-      _ -> Logger.error("tournament not found while terminating #{pid}")
+      _ -> Logger.error("tournament not found while terminating #{tournament_id}")
     end
   end
 end

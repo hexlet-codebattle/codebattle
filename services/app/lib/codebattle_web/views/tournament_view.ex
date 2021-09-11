@@ -41,16 +41,6 @@ defmodule CodebattleWeb.TournamentView do
     end
   end
 
-  def difficulty_to_color(level) do
-    %{
-      "random" => "secondary",
-      "elementary" => "info",
-      "easy" => "success",
-      "medium" => "warning",
-      "hard" => "danger"
-    }[level]
-  end
-
   def render_base_errors(nil), do: nil
   def render_base_errors(errors), do: elem(errors, 0)
 

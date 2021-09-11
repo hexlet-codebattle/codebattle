@@ -2,34 +2,29 @@ defmodule Codebattle.Tournament.Team do
   alias Codebattle.Repo
   alias Codebattle.Tournament
 
-  use Tournament.Type
+  use Tournament.Base
 
   @team_rounds_need_to_win_num 3
 
-  @impl Tournament.Type
-  def join(tournament, %{user: user, team_id: team_id}) do
-    if is_waiting_partisipants?(tournament) do
-      user_params =
-        user
-        |> Map.put(:team_id, team_id)
-        |> Map.put(:lang, user.lang || tournament.default_language)
-
-      new_players =
-        tournament.data.players
-        |> Enum.filter(fn x -> x.id != user.id end)
-        |> Enum.concat([user_params])
-
-      tournament
-      |> Tournament.changeset(%{
-        data: DeepMerge.deep_merge(tournament.data, %{players: new_players})
-      })
-      |> Repo.update!()
-    else
-      tournament
-    end
+  @impl Tournament.Base
+  def join(%{state: "upcoming"} = tournament, %{user: user}) do
+    add_intended_player_id(tournament, user.id)
   end
 
-  @impl Tournament.Type
+  @impl Tournament.Base
+  def join(%{state: "waiting_participants"} = tournament, %{user: user, team_id: team_id}) do
+    player =
+      user
+      |> Map.put(:team_id, team_id)
+      |> Map.put(:lang, user.lang || tournament.default_language)
+
+    add_player(tournament, player)
+  end
+
+  @impl Tournament.Base
+  def join(tournament, _user), do: tournament
+
+  @impl Tournament.Base
   def complete_players(%{meta: meta} = tournament) do
     team_players_count =
       meta
@@ -60,7 +55,7 @@ defmodule Codebattle.Tournament.Team do
     |> Repo.update!()
   end
 
-  @impl Tournament.Type
+  @impl Tournament.Base
   def build_matches(tournament) do
     matches_for_round =
       tournament
@@ -86,7 +81,7 @@ defmodule Codebattle.Tournament.Team do
     |> Repo.update!()
   end
 
-  @impl Tournament.Type
+  @impl Tournament.Base
   def maybe_finish(tournament) do
     {score1, score2} = calc_team_score(tournament)
 

@@ -1,17 +1,20 @@
 - statistics = get_players_statistics(@tournament)
 - tournament_stats = get_tournament_statistics(@tournament)
 
-= render "_header.html", tournament: @tournament, time: @time, current_user: @current_user, socket: @socket
 
 .container-fluid.mt-4
   .row
     .col-3
       = render "_chat.html", messages: @messages
-
-    .col-9.mt-3
+    .col-9
       .row
-
         .col-12
+          .bg-white.shadow-sm.rounded.p-4
+            = render "_header.html", tournament: @tournament, time: @time, current_user: @current_user, socket: @socket
+            = if is_upcoming?(@tournament) || is_waiting_participants?(@tournament) do
+              h3.mt-3 Intended players
+              = render "_intended_players.html", players: get_intended_players(@tournament), tournament: @tournament, current_user: @current_user
+        .col-12.mt-3
           ul.nav.nav-tabs[id="team-tournament-tab" role="tablist"]
             li.nav-item
               = render "_nav_link.html", title: "Team scores", active_tab: @team_tournament_tab, id: "scores", disabled: false

@@ -1,0 +1,11 @@
+- players = Enum.sort_by(@players, fn p -> p.rank end) |> Enum.with_index()
+= if !Enum.empty?(@players) do
+  = for {player, i} <- players do
+    .d-flex.align-items-center.my-3
+      span=i
+      .ml-4
+        = render "_player.html", player: player
+      = if can_manage?(@tournament, @current_user) do
+        .ml-5.button.btn.btn-outline-danger[phx-click="kick" phx-value-user_id=player.id] Kick
+- else
+  p NO_INTENDED_PLAYERS

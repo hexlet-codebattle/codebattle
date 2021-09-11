@@ -16,7 +16,7 @@
     = for %{id: team_id} <- get_teams(@tournament) do
       .col
         .d-flex.align-items-center
-          = if is_waiting_partisipants?(@tournament) do
+          = if is_waiting_participants?(@tournament) do
             = if is_participant?(@tournament, @current_user.id, team_id) do
               button.btn.btn-outline-danger[phx-click="leave"] Leave
             - else

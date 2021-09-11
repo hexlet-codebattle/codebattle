@@ -46,7 +46,7 @@ defmodule CodebattleWeb.Live.Tournament.IndividialTest do
 
     {:error, {:redirect, %{to: "/tournaments/" <> tournament_id}}} =
       render_submit(view, :create, %{
-        "tournament" => %{type: "individual", starts_after_in_minutes: "1", name: "test"}
+        "tournament" => %{type: "individual", starts_at: "2021-09-01 08:30", name: "test"}
       })
 
     tournament = Codebattle.Tournament.Context.get!(tournament_id)

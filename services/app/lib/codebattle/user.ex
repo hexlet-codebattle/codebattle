@@ -5,6 +5,8 @@ defmodule Codebattle.User do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @admins Application.compile_env(:codebattle, :admins)
+
   defmodule SoundSettings do
     use Ecto.Schema
     import Ecto.Changeset
@@ -128,5 +130,9 @@ defmodule Codebattle.User do
       true ->
         "https://avatars0.githubusercontent.com/u/35539033"
     end
+  end
+
+  def is_admin?(user) do
+    user.name in @admins || Mix.env() == :dev
   end
 end

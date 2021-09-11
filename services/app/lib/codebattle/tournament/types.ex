@@ -69,13 +69,14 @@ defmodule Codebattle.Tournament.Types do
     @derive Jason.Encoder
 
     embedded_schema do
+      field(:intended_player_ids, {:array, :integer}, default: [])
       embeds_many(:players, Player, on_replace: :delete)
       embeds_many(:matches, Match)
     end
 
     def changeset(struct, params) do
       struct
-      |> cast(params, [])
+      |> cast(params, [:intended_player_ids])
       |> cast_embed(:matches)
       |> cast_embed(:players)
     end

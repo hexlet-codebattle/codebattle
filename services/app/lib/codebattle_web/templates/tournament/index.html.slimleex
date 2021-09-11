@@ -28,14 +28,27 @@
                 class: "btn btn-success mt-2"
 
 .container-xl.bg-white.shadow-sm.rounded.py-4
-  h2.text-center Create new tournament
+  h2.text-center Create a new tournament
   = f = form_for @changeset, "#", phx_change: :validate, phx_submit: :create, class: 'col-8  offset-2'
     .form-group
       = render_base_errors(@changeset.errors[:base])
     .form-group
-      = label f, :type
-      = select f, :type, Codebattle.Tournament.types, class: "form-control form-control-lg"
-      = error_tag f, :type
+      = label f, :name
+      = text_input f, :name, class: "form-control form-control-lg", maxlength: "37", required: true
+      = error_tag f, :name
+    .form-row.justify-content-between
+      .form-group
+        p.mb-1 Type
+        = select f, :type, Codebattle.Tournament.types, class: "form-control form-control-lg"
+        = error_tag f, :type
+      .form-group
+        p.mb-1 Starts at (UTC)
+        = datetime_local_input f, :starts_at, class: "form-control form-control-lg", required: true
+        = error_tag f, :starts_at
+      .form-group
+        p.mb-1 Upcoming
+        = checkbox f, :is_upcoming, checked: true, class: "form-control form-control-lg"
+        = error_tag f, :is_upcoming
     = if f.params["type"] == "team" do
       = label f, "Team names"
       .form-row.justify-content-between
@@ -47,24 +60,15 @@
           = text_input f, :team_2_name, maxlength: "17",
             class: "form-control form-control-lg",
             value: f.params["team_2_name"] || "Frontend"
-    .form-group
-      = label f, :name
-      = text_input f, :name, class: "form-control form-control-lg", maxlength: "37"
-      = error_tag f, :name
-    .form-group
-      = label f, :level
-      = select f, :difficulty, Codebattle.Tournament.difficulties, class: "form-control form-control-lg"
-      = error_tag f, :difficulty
     .form-row.justify-content-between
+      .form-group
+        = label f, :level
+        = select f, :difficulty, Codebattle.Tournament.difficulties, class: "form-control form-control-lg"
+        = error_tag f, :difficulty
       .form-group
         = label f, :default_language
         = select f, :default_language, @langs, class: "form-control form-control-lg"
         = error_tag f, :default_language
-      .form-group
-        = label f, :starts_after_in_minutes
-        = number_input f, :starts_after_in_minutes, class: "form-control form-control-lg",
-          value: f.params["starts_after_in_minutes"] || "5",
-          min: "1", max: "30"
       .form-group
         = label f, :match_timeout_in_seconds
         = number_input f, :match_timeout_seconds, class: "form-control form-control-lg",

@@ -37,7 +37,10 @@ defmodule CodebattleWeb.Notifications do
 
   def notify_tournament(event_type, fsm, params) do
     tournament_id = get_tournament_id(fsm)
-    Codebattle.Tournament.Server.update_tournament(tournament_id, event_type, params)
+
+    if tournament_id do
+      Codebattle.Tournament.Server.update_tournament(tournament_id, event_type, params)
+    end
   end
 
   defp game_channel_name(nil), do: :error
