@@ -42,7 +42,7 @@ defmodule Codebattle.Mixfile do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.5.5", override: true},
+      {:phoenix, "~> 1.5.12", override: true},
       {:phoenix_ecto, "~> 4.2"},
       {:phoenix_live_view, "~> 0.15"},
       {:postgrex, "~> 0.15.6"},
