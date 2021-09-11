@@ -47,7 +47,6 @@ defmodule Codebattle.Mixfile do
       {:phoenix_live_view, "~> 0.15"},
       {:postgrex, "~> 0.15.6"},
       {:phoenix_html, "~> 2.14"},
-      {:phoenix_live_dashboard, "~> 0.4"},
       {:telemetry_metrics, "~> 0.5.0"},
       {:telemetry_poller, "~> 0.5.0"},
       {:gettext, "~> 0.18"},
