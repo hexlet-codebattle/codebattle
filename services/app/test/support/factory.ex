@@ -83,7 +83,8 @@ defmodule CodebattleWeb.Factory do
       name: Base.encode16(:crypto.strong_rand_bytes(2)),
       description_en: "test sum",
       level: "easy",
-      asserts: "{\"arguments\":[1, \"a\", true, {\"a\":\"b\",\"c\":\"d\"}, [\"d\", \"e\"], [[\"Jack\",\"Alice\"]]],\"expected\":[\"asdf\"]}\n",
+      asserts:
+        "{\"arguments\":[1, \"a\", true, {\"a\":\"b\",\"c\":\"d\"}, [\"d\", \"e\"], [[\"Jack\",\"Alice\"]]],\"expected\":[\"asdf\"]}\n",
       input_signature: [
         %{
           "argument-name" => "int",
@@ -107,8 +108,11 @@ defmodule CodebattleWeb.Factory do
         },
         %{
           "argument-name" => "nested_array_of_array_of_strings",
-          "type" => %{"name" => "array", "nested" => %{"name" => "array", "nested" => %{"name" => "string"}}}
-        },
+          "type" => %{
+            "name" => "array",
+            "nested" => %{"name" => "array", "nested" => %{"name" => "string"}}
+          }
+        }
       ],
       output_signature: %{
         "type" => %{"name" => "array", "nested" => %{"name" => "string"}}
