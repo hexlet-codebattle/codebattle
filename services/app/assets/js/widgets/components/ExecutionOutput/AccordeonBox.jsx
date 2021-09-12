@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Tooltip, OverlayTrigger } from 'react-bootstrap';
 import cn from 'classnames';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import _ from 'lodash';
@@ -25,21 +26,13 @@ const AccordeonBox = ({ children }) => (
 );
 
 const renderFirstAssert = firstAssert => (
-  <AccordeonBox.SubMenu
-    statusColor={color[firstAssert.status]}
-    assert={firstAssert}
-    hasOutput={firstAssert.output}
-  >
+  <AccordeonBox.SubMenu statusColor={color[firstAssert.status]} assert={firstAssert} hasOutput={firstAssert.output}>
     <AccordeonBox.Item output={firstAssert.output} />
   </AccordeonBox.SubMenu>
 );
 
 const Menu = ({
-  children,
-  firstAssert,
-  resultData,
-  assertsCount,
-  successCount,
+ children, firstAssert, resultData, assertsCount, successCount,
 }) => {
   const [show, setShow] = useState(true);
   const isSyntaxError = resultData.status === 'error';
@@ -51,10 +44,11 @@ const Menu = ({
   };
   const uniqIndex = _.uniqueId('heading');
   const percent = (100 * successCount) / assertsCount;
-  const assertsStatusMessage = i18n.t(
-    'You passed %{successCount} from %{assertsCount} asserts. (%{percent}%)',
-    { successCount, assertsCount, percent },
-  );
+  const assertsStatusMessage = i18n.t('You passed %{successCount} from %{assertsCount} asserts. (%{percent}%)', {
+    successCount,
+    assertsCount,
+    percent,
+  });
 
   useEffect(() => {
     setShow(isSyntaxError);
@@ -73,36 +67,26 @@ const Menu = ({
               aria-expanded="true"
               aria-controls={`collapse${uniqIndex}`}
             >
-              {show ? (
-                <FontAwesomeIcon icon="arrow-circle-up" />
-              ) : (
-                <FontAwesomeIcon icon="arrow-circle-down" />
-              )}
+              {show ? <FontAwesomeIcon icon="arrow-circle-up" /> : <FontAwesomeIcon icon="arrow-circle-down" />}
             </button>
-            {!isSyntaxError && (
-              <span className="font-weight-bold small mr-3">
-                {assertsStatusMessage}
-              </span>
-            )}
+            {!isSyntaxError && <span className="font-weight-bold small mr-3">{assertsStatusMessage}</span>}
             <span className={`badge badge-${statusColor}`}>{message}</span>
           </div>
           {firstAssert && renderFirstAssert(firstAssert)}
         </>
       ) : (
-        <span className={`badge badge-${statusColor}`}>{message}</span>
+        <>
+          <span className={`badge badge-${statusColor}`}>{message}</span>
+        </>
       )}
-      <div
-        id={`collapse${uniqIndex}`}
-        className={classCollapse}
-        aria-labelledby={`heading${uniqIndex}`}
-      >
+      <div id={`collapse${uniqIndex}`} className={classCollapse} aria-labelledby={`heading${uniqIndex}`}>
         <div className="list-group list-group-flush">{children}</div>
       </div>
     </div>
   );
 };
 const SubMenu = ({
- children, statusColor, assert, hasOutput, uniqIndex,
+ children, statusColor, assert, hasOutput, uniqIndex, executionTime,
 }) => {
   const [isShowLog, setIsShowLog] = useState(true);
   const classCollapse = cn('collapse', {
@@ -117,22 +101,20 @@ const SubMenu = ({
         <div>
           <div>
             {statusColor === 'success' ? (
-              <FontAwesomeIcon
-                className={`text-${statusColor} mr-2`}
-                icon="check-circle"
-              />
+              <FontAwesomeIcon className={`text-${statusColor} mr-2`} icon="check-circle" />
             ) : (
-              <FontAwesomeIcon
-                className={`text-${statusColor} mr-2`}
-                icon="exclamation-circle"
-              />
+              <FontAwesomeIcon className={`text-${statusColor} mr-2`} icon="exclamation-circle" />
             )}
-            <div className={`badge badge-${statusColor} mr-3`}>
-              {assert.status}
-            </div>
+            <div className={`badge badge-${statusColor} mr-3`}>{assert.status}</div>
+            <OverlayTrigger
+              overlay={<Tooltip id={assert.id}>Execution Time</Tooltip>}
+              placement="top"
+            >
+              <div className="badge badge-secondary mr-3">{executionTime}</div>
+            </OverlayTrigger>
             {assert.output && (
               <button
-                className="btn btn-sm btn-info ml-2"
+                className="btn btn-sm btn-outline-info badge ml-2"
                 type="button"
                 onClick={() => setIsShowLog(!isShowLog)}
                 data-toggle="collapse"
@@ -140,11 +122,7 @@ const SubMenu = ({
                 aria-controls={`collapse${uniqIndex}`}
               >
                 <span>
-                  {isShowLog ? (
-                    <FontAwesomeIcon icon="arrow-circle-up" />
-                  ) : (
-                    <FontAwesomeIcon icon="arrow-circle-down" />
-                  )}
+                  {isShowLog ? <FontAwesomeIcon icon="arrow-circle-up" /> : <FontAwesomeIcon icon="arrow-circle-down" />}
                   {' Log'}
                 </span>
               </button>
@@ -152,29 +130,13 @@ const SubMenu = ({
           </div>
         </div>
         <pre className="my-1">
-          <span className="d-block">
-            {`${i18n.t('Receive:')} ${JSON.stringify(
-            result,
-          )}`}
-          </span>
-          <span className="d-block">
-            {`${i18n.t('Expected:')} ${JSON.stringify(
-            assert.expected,
-          )}`}
-          </span>
-          <span className="d-block">
-            {`${i18n.t('Arguments:')} ${JSON.stringify(
-            assert.arguments,
-          )}`}
-          </span>
+          <span className="d-block">{`${i18n.t('Receive:')} ${JSON.stringify(result)}`}</span>
+          <span className="d-block">{`${i18n.t('Expected:')} ${JSON.stringify(assert.expected)}`}</span>
+          <span className="d-block">{`${i18n.t('Arguments:')} ${JSON.stringify(assert.arguments)}`}</span>
         </pre>
         {hasOutput && (
           <>
-            <div
-              id={`collapse${uniqIndex}`}
-              className={classCollapse}
-              aria-labelledby={`heading${uniqIndex}`}
-            >
+            <div id={`collapse${uniqIndex}`} className={classCollapse} aria-labelledby={`heading${uniqIndex}`}>
               {children}
             </div>
           </>
