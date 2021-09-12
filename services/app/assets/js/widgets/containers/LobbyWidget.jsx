@@ -277,7 +277,7 @@ const ActiveGames = ({ games }) => {
 };
 
 const GameContainers = ({ activeGames, completedGames, liveTournaments }) => (
-  <div className="p-0">
+  <div className="p-0 flex-grow-1 overflow-auto" style={{ height: '400px' }}>
     <nav>
       <div className="nav nav-tabs bg-gray" id="nav-tab" role="tablist">
         <a
@@ -390,10 +390,10 @@ const LobbyWidget = () => {
   }
 
   return (
-    <div className="container-lg">
+    <div className="container-lg d-flex flex-column h-100 overflow-y">
       {renderModal(show, handleCloseModal)}
-      <div className="row">
-        <div className="col-lg-8 col-md-12 p-0 mb-2 pr-lg-2 pb-3">
+      <div className="row h-100">
+        <div className="col-lg-8 col-md-12 p-0 mb-2 pr-lg-2 pb-3 d-flex flex-column">
           <GameContainers
             activeGames={activeGames}
             completedGames={completedGames}
@@ -401,7 +401,6 @@ const LobbyWidget = () => {
           />
           <LobbyChat />
         </div>
-
         <div className="d-flex flex-column col-lg-4 col-md-12 p-0">
           <CreateGameButton handleClick={handleShowModal} />
           <div className="mt-2">
@@ -412,6 +411,20 @@ const LobbyWidget = () => {
           </div>
         </div>
       </div>
+      {/* <div className="row h-100">
+        <div className="col-lg-8 d-flex flex-column">
+          <div className="flex-grow-1" style={{backgroundColor: "yellow"}}>1
+          2
+          3
+          4
+          5</div>
+          <div className="" style={{backgroundColor: "black", minHeight: "300px"}}>2</div>
+        </div>
+        <div className="col-lg-4" style={{backgroundColor: "green"}}>
+        3
+        </div>
+      </div> */}
+
     </div>
   );
 };
