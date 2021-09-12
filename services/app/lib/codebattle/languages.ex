@@ -39,6 +39,7 @@ defmodule Codebattle.Languages do
       "ruby" => %{
         name: "ruby",
         slug: "ruby",
+        checker_version: 2,
         version: "3.0.2",
         base_image: :ubuntu,
         check_dir: "check",

@@ -78,6 +78,45 @@ defmodule CodebattleWeb.Factory do
     }
   end
 
+  def task_with_all_data_types_factory do
+    %Task{
+      name: Base.encode16(:crypto.strong_rand_bytes(2)),
+      description_en: "test sum",
+      level: "easy",
+      asserts: "{\"arguments\":[1, \"a\", true, {\"a\":\"b\",\"c\":\"d\"}, [\"d\", \"e\"], [[\"Jack\",\"Alice\"]]],\"expected\":[\"asdf\"]}\n",
+      input_signature: [
+        %{
+          "argument-name" => "int",
+          "type" => %{"name" => "integer"}
+        },
+        %{
+          "argument-name" => "str",
+          "type" => %{"name" => "string"}
+        },
+        %{
+          "argument-name" => "bool",
+          "type" => %{"name" => "boolean"}
+        },
+        %{
+          "argument-name" => "nested_hash_of_string",
+          "type" => %{"name" => "hash", "nested" => %{"name" => "string"}}
+        },
+        %{
+          "argument-name" => "nested_array_of_string",
+          "type" => %{"name" => "array", "nested" => %{"name" => "string"}}
+        },
+        %{
+          "argument-name" => "nested_array_of_array_of_strings",
+          "type" => %{"name" => "array", "nested" => %{"name" => "array", "nested" => %{"name" => "string"}}}
+        },
+      ],
+      output_signature: %{
+        "type" => %{"name" => "array", "nested" => %{"name" => "string"}}
+      },
+      disabled: false
+    }
+  end
+
   def playbook_factory do
     %Playbook{}
   end
