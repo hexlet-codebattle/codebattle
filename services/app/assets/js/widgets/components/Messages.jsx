@@ -18,14 +18,16 @@ const Messages = ({ messages = [] }) => {
       ref={listRef}
       className="overflow-auto pt-0 pl-3 pr-2 position-relative cb-messages-list"
     >
-      {messages.map(({ name, text, type, time }) => (
-        <Message
-          name={name}
-          text={text}
-          key={`${time}-${name}`}
-          type={type}
-          time={time}
-        />
+      {messages.map(({
+ name, text, type, time,
+}) => (
+  <Message
+    name={name}
+    text={text}
+    key={`${time}-${name}`}
+    type={type}
+    time={time}
+  />
       ))}
     </ul>
   );

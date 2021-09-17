@@ -6,11 +6,10 @@ import Messages from '../components/Messages';
 const TournamentChat = ({ messages }) => (
   <div
     className="sticky-top bg-white"
-    style={{ height: '350px', maxWidth: '307px' }}
   >
     <div
       className="rounded-top shadow-sm"
-      style={{ height: '350px', maxWidth: '307px' }}
+      style={{ height: '360px' }}
     >
       <div
         className="overflow-auto px-3 pt-3 h-100 text-break"

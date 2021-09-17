@@ -31,7 +31,7 @@ const JoinButton = ({ isShow, isParticipant, matchId }) => {
   );
 };
 
-const Participants = (props) => {
+const Participants = props => {
   const { players, state, creatorId } = props;
 
   return (
@@ -40,7 +40,7 @@ const Participants = (props) => {
         <h5 className="mb-2 mr-5">Participants</h5>
         <JoinButton
           isShow={state === TournamentStates.waitingParticipants}
-          isParticipant={players.some((item) => item.id === id)}
+          isParticipant={players.some(item => item.id === id)}
         />
       </div>
       <div className="my-3">
