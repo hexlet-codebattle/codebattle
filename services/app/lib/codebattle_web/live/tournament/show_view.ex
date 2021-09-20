@@ -219,7 +219,8 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
         {:tournament, tournament.id},
         %{
           name: current_user.name,
-          text: text
+          text: text,
+          time: :os.system_time(:seconds)
         }
       )
     end
