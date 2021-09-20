@@ -35,9 +35,18 @@ defmodule Codebattle.Tournament.Helpers do
 
   def can_be_started?(_t), do: false
 
-  def can_manage?(tournament, user) do
+  def can_moderate?(tournament, user) do
     is_creator?(tournament, user) || User.is_admin?(user)
   end
+
+  def can_participate?(%{access_type: "token"} = tournament, user, params) do
+    can_moderate?(tournament, user) ||
+      is_intended_player?(tournament, user) ||
+      params["access_token"] == tournament.access_token
+  end
+
+  # default public or null for old tournaments
+  def can_participate?(_tournament, _user, _params), do: true
 
   def is_active?(tournament), do: tournament.state == "active"
   def is_waiting_participants?(tournament), do: tournament.state == "waiting_participants"
@@ -46,10 +55,10 @@ defmodule Codebattle.Tournament.Helpers do
   def is_finished?(tournament), do: tournament.state == "finished"
   def is_team?(tournament), do: tournament.type == "team"
 
-  def is_intended?(tournament, player_id) do
+  def is_intended_player?(tournament, player) do
     tournament
     |> get_intended_player_ids()
-    |> Enum.find_value(fn id -> id == player_id end)
+    |> Enum.any?(fn id -> id == player.id end)
   end
 
   def is_participant?(tournament, player_id) do

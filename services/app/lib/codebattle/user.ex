@@ -133,6 +133,6 @@ defmodule Codebattle.User do
   end
 
   def is_admin?(user) do
-    user.name in @admins || Mix.env() == :dev
+    user.name in @admins
   end
 end

@@ -19,6 +19,20 @@ defmodule CodebattleWeb.Factory do
     }
   end
 
+  def admin_factory do
+    %User{
+      name: "bob",
+      email: sequence(:username, &"test#{&1}@test.io"),
+      rating: 123,
+      github_id: :rand.uniform(9_999_999),
+      github_name: sequence(:github_name, &"github_name#{&1}"),
+      discord_id: :rand.uniform(9_999_999),
+      discord_name: sequence(:discord_name, &"discord_name#{&1}"),
+      discord_avatar: sequence(:discord_avatar, &"discord_avatar#{&1}"),
+      sound_settings: %User.SoundSettings{}
+    }
+  end
+
   def game_factory do
     %Game{
       state: "waiting_opponent",
@@ -152,6 +166,20 @@ defmodule CodebattleWeb.Factory do
           %{id: 1, title: "backend"}
         ]
       }
+    }
+  end
+
+  def token_tournament_factory do
+    %Codebattle.Tournament{
+      type: "individual",
+      access_type: "token",
+      access_token: "asdfasdfasdf",
+      name: "name",
+      step: 0,
+      players_count: 16,
+      starts_at: NaiveDateTime.utc_now(),
+      creator_id: 1,
+      data: %{players: [], matches: []}
     }
   end
 

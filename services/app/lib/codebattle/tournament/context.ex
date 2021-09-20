@@ -78,12 +78,6 @@ defmodule Codebattle.Tournament.Context do
     starts_at = NaiveDateTime.from_iso8601!(params["starts_at"] <> ":00")
     match_timeout_seconds = params["match_timeout_seconds"] || "180"
 
-    state =
-      case params["is_upcoming"] do
-        "true" -> "upcoming"
-        _ -> "waiting_participants"
-      end
-
     meta =
       case params["type"] do
         "team" ->
@@ -101,14 +95,20 @@ defmodule Codebattle.Tournament.Context do
           %{}
       end
 
+    access_token =
+      case params["access_type"] do
+        "token" -> generate_access_token()
+        _ -> nil
+      end
+
     result =
       %Tournament{}
       |> Tournament.changeset(
         Map.merge(params, %{
+          "access_token" => access_token,
           "alive_count" => get_live_tournaments_count(),
           "match_timeout_seconds" => match_timeout_seconds,
           "starts_at" => starts_at,
-          "state" => state,
           "step" => 0,
           "meta" => meta,
           "data" => %{}
@@ -148,4 +148,8 @@ defmodule Codebattle.Tournament.Context do
   defp add_module(tournament), do: Map.put(tournament, :module, get_module(tournament))
 
   defp mark_as_live(tournament), do: Map.put(tournament, :is_live, true)
+
+  defp generate_access_token() do
+    :crypto.strong_rand_bytes(17) |> Base.url_encode64() |> binary_part(0, 17)
+  end
 end

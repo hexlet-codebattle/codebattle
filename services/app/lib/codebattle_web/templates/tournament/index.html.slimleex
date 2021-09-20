@@ -42,13 +42,13 @@
         = select f, :type, Codebattle.Tournament.types, class: "form-control form-control-lg"
         = error_tag f, :type
       .form-group
+        p.mb-1 Access Type
+        = select f, :access_type, Codebattle.Tournament.access_types, class: "form-control form-control-lg"
+        = error_tag f, :access_type
+      .form-group
         p.mb-1 Starts at (UTC)
         = datetime_local_input f, :starts_at, class: "form-control form-control-lg", required: true
         = error_tag f, :starts_at
-      .form-group
-        p.mb-1 Upcoming
-        = checkbox f, :is_upcoming, checked: true, class: "form-control form-control-lg"
-        = error_tag f, :is_upcoming
     = if f.params["type"] == "team" do
       = label f, "Team names"
       .form-row.justify-content-between

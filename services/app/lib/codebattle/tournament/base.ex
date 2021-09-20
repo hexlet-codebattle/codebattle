@@ -93,7 +93,7 @@ defmodule Codebattle.Tournament.Base do
       def back(tournament, _user), do: tournament
 
       def cancel(tournament, %{user: user}) do
-        if can_manage?(tournament, user) do
+        if can_moderate?(tournament, user) do
           new_tournament =
             tournament
             |> Tournament.changeset(%{state: "canceled"})
@@ -108,7 +108,7 @@ defmodule Codebattle.Tournament.Base do
       end
 
       def start(%{state: "upcoming"} = tournament, %{user: user}) do
-        if can_manage?(tournament, user) do
+        if can_moderate?(tournament, user) do
           tournament
           |> Tournament.changeset(%{state: "waiting_participants"})
           |> Repo.update!()
@@ -118,7 +118,7 @@ defmodule Codebattle.Tournament.Base do
       end
 
       def start(%{state: "waiting_participants"} = tournament, %{user: user}) do
-        if can_manage?(tournament, user) do
+        if can_moderate?(tournament, user) do
           tournament
           |> complete_players
           |> start_step!

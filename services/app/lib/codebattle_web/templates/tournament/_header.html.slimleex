@@ -5,11 +5,11 @@
 
   = if is_upcoming?(@tournament) do
     .ml-auto
-      = if is_intended?(@tournament, @current_user.id) do
+      = if is_intended_player?(@tournament, @current_user) do
         button.btn.btn-outline-danger[phx-click="leave"] Leave
       - else
         button.btn.btn-outline-secondary[phx-click="join"] Join
-      = if can_manage?(@tournament, @current_user) do
+      = if can_moderate?(@tournament, @current_user) do
         button.btn.btn-success.ml-2[phx-click="start" disabled=!can_be_started?(@tournament)] Promote
         button.btn.btn-danger.ml-2[phx-click="cancel"] Cancel
 
@@ -20,14 +20,14 @@
           button.btn.btn-outline-danger[phx-click="leave"] Leave
         - else
           button.btn.btn-outline-secondary[phx-click="join"] Join
-      = if can_manage?(@tournament, @current_user) do
+      = if can_moderate?(@tournament, @current_user) do
         button.btn.btn-success.ml-2[phx-click="start" disabled=!can_be_started?(@tournament)] Start
         button.btn.btn-info.ml-2[phx-click="back"] Back
         button.btn.btn-danger.ml-2[phx-click="cancel"] Cancel
 
   = if is_active?(@tournament) do
     .ml-auto
-      = if can_manage?(@tournament, @current_user) do
+      = if can_moderate?(@tournament, @current_user) do
         button.btn.btn-danger.ml-2[phx-click="cancel"] Cancel
 
 .d-flex.align-items-center.mt-2.small.text-muted

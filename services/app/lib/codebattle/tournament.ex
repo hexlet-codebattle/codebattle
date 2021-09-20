@@ -22,6 +22,7 @@ defmodule Codebattle.Tournament do
            ]}
 
   @types ~w(individual team)
+  @access_types ~w(public token)
   @states ~w(upcoming waiting_participants canceled active finished)
   @difficulties ~w(elementary easy medium hard)
   @max_alive_tournaments 5
@@ -31,7 +32,7 @@ defmodule Codebattle.Tournament do
     field(:name, :string)
     field(:type, :string, default: "individual")
     field(:difficulty, :string, default: "elementary")
-    field(:state, :string, default: "waiting_participants")
+    field(:state, :string, default: "upcoming")
     field(:default_language, :string, default: "js")
     field(:players_count, :integer)
     field(:match_timeout_seconds, :integer, default: @default_match_timeout)
@@ -39,6 +40,8 @@ defmodule Codebattle.Tournament do
     field(:starts_at, :utc_datetime)
     field(:meta, :map, default: %{})
     field(:last_round_started_at, :naive_datetime)
+    field(:access_type, :string, default: "public")
+    field(:access_token, :string)
     field(:module, :any, virtual: true, default: Tournament.Individual)
     field(:is_live, :boolean, virtual: true, default: false)
     embeds_one(:data, Types.Data, on_replace: :delete)
@@ -54,6 +57,8 @@ defmodule Codebattle.Tournament do
       :name,
       :difficulty,
       :type,
+      :access_type,
+      :access_token,
       :step,
       :state,
       :starts_at,
@@ -66,6 +71,7 @@ defmodule Codebattle.Tournament do
     |> cast_embed(:data)
     |> validate_inclusion(:state, @states)
     |> validate_inclusion(:type, @types)
+    |> validate_inclusion(:access_type, @access_types)
     |> validate_inclusion(:difficulty, @difficulties)
     |> validate_required([:name, :starts_at])
     |> validate_alive_maximum(params)
@@ -93,5 +99,6 @@ defmodule Codebattle.Tournament do
   end
 
   def types, do: @types
+  def access_types, do: @access_types
   def difficulties, do: @difficulties
 end
