@@ -1,0 +1,8 @@
+= if @current_user.guest do
+  h1.text-center = @tournament.name
+  p.text-center
+    span Please&nbsp
+    a href="#{Routes.session_path(@socket, :new, locale: :en)}" sign in
+    span &nbspto see the tournament details
+- else
+  = render("#{@tournament.type}.html", assigns)

@@ -73,7 +73,6 @@ defmodule Codebattle.Mixfile do
       {:websockex, "~> 0.4.2"},
       {:socket, "~> 0.3"},
       {:timex, "~> 3.6"},
-      {:deep_merge, "~> 1.0"},
       {:httpoison, "~> 1.5.0"},
       {:poison, "~> 3.0"},
       {:phoenix_meta_tags, "~> 0.1.8"},

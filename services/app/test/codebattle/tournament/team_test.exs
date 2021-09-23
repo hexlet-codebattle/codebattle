@@ -10,7 +10,7 @@ defmodule Codebattle.Tournament.TeamTest do
 
   def get_matches_states(tournament), do: tournament.data.matches |> Enum.map(fn x -> x.state end)
 
-  test "#maybe_start_new_step do not calls next step" do
+  test ".maybe_start_new_step do not calls next step" do
     user1 = insert(:user)
     user2 = insert(:user)
 
@@ -40,7 +40,7 @@ defmodule Codebattle.Tournament.TeamTest do
     assert states == ["finished", "active"]
   end
 
-  test "#maybe_start_new_step calls next step" do
+  test ".maybe_start_new_step calls next step" do
     user1 = insert(:user)
     user2 = insert(:user)
 
@@ -72,7 +72,7 @@ defmodule Codebattle.Tournament.TeamTest do
     assert states == ["finished", "active"]
   end
 
-  test "#maybe_start_new_step finishs tournament after 3 scores" do
+  test ".maybe_start_new_step finishs tournament after 3 scores" do
     user1 = insert(:user)
     user2 = insert(:user)
 
@@ -120,7 +120,7 @@ defmodule Codebattle.Tournament.TeamTest do
     assert states == ["finished", "finished", "finished"]
   end
 
-  test "#maybe_start_new_step finishs tournament after 3 scores with draws" do
+  test ".maybe_start_new_step finishs tournament after 3 scores with draws" do
     user1 = insert(:user)
     user2 = insert(:user)
 

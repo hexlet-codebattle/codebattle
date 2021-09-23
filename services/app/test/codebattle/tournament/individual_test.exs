@@ -5,15 +5,6 @@ defmodule Codebattle.Tournament.IndividualTest do
   import Codebattle.Tournament.Helpers
 
   describe "starts a tournament with completed players_count" do
-    test "join to upcoming test" do
-      user = insert(:user)
-      insert(:task, level: "elementary")
-      tournament = insert(:tournament, creator_id: user.id, state: "upcoming")
-
-      new_tournament = @module.join(tournament, %{user: user})
-      assert get_intended_player_ids(new_tournament) == [user.id]
-    end
-
     test "when 1" do
       user = insert(:user)
       insert(:task, level: "elementary")
@@ -22,6 +13,7 @@ defmodule Codebattle.Tournament.IndividualTest do
 
       tournament =
         insert(:tournament,
+          state: "waiting_participants",
           creator_id: user.id,
           data: %{players: [player]},
           players_count: nil
@@ -41,6 +33,7 @@ defmodule Codebattle.Tournament.IndividualTest do
       tournament =
         insert(:tournament,
           creator_id: user.id,
+          state: "waiting_participants",
           data: %{players: List.duplicate(player, 7)},
           players_count: nil
         )
@@ -59,6 +52,7 @@ defmodule Codebattle.Tournament.IndividualTest do
       tournament =
         insert(:tournament,
           creator_id: user.id,
+          state: "waiting_participants",
           data: %{players: List.duplicate(player, 3)},
           players_count: 16
         )

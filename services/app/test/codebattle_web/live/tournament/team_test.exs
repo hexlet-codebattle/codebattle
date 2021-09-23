@@ -69,6 +69,14 @@ defmodule CodebattleWeb.Live.Tournament.TeamTest do
     render_click(view1, :join, %{"team_id" => "1"})
 
     tournament = Codebattle.Tournament.Context.get!(tournament.id)
+    assert Helpers.players_count(tournament) == 0
+
+    render_click(view1, :start)
+
+    render_click(view1, :join, %{"team_id" => "0"})
+    render_click(view1, :join, %{"team_id" => "1"})
+
+    tournament = Codebattle.Tournament.Context.get!(tournament.id)
     assert Helpers.players_count(tournament) == 1
 
     {:ok, view2, _html} = live(conn2, Routes.tournament_path(conn, :show, tournament.id))

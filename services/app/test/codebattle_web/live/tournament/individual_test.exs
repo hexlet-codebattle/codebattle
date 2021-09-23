@@ -56,6 +56,14 @@ defmodule CodebattleWeb.Live.Tournament.IndividialTest do
     render_click(view1, :join)
 
     tournament = Codebattle.Tournament.Context.get!(tournament.id)
+    assert Helpers.players_count(tournament) == 0
+
+    render_click(view1, :start)
+
+    render_click(view1, :join)
+    render_click(view1, :join)
+
+    tournament = Codebattle.Tournament.Context.get!(tournament.id)
     assert Helpers.players_count(tournament) == 1
 
     render_click(view1, :leave)

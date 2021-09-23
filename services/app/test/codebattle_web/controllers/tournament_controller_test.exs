@@ -46,7 +46,6 @@ defmodule CodebattleWeb.TournamentControllerTest do
 
     assert new_conn.status == 200
 
-
     new_conn =
       get(
         conn,

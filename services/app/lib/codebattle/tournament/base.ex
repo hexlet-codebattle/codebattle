@@ -23,11 +23,13 @@ defmodule Codebattle.Tournament.Base do
           |> Enum.concat([player_id])
           |> Enum.uniq()
 
-        tournament
-        |> Tournament.changeset(%{
-          data: DeepMerge.deep_merge(tournament.data, %{intended_player_ids: new_ids})
-        })
-        |> Repo.update!()
+        new_data =
+          tournament
+          |> Map.get(:data)
+          |> Map.merge(%{intended_player_ids: new_ids})
+          |> Map.from_struct()
+
+        update!(tournament, %{data: new_data})
       end
 
       def add_player(tournament, player) do
@@ -37,20 +39,10 @@ defmodule Codebattle.Tournament.Base do
           |> Enum.concat([player])
           |> Enum.uniq_by(fn x -> x.id end)
 
-        new_ids =
-          tournament
-          |> get_intended_player_ids
-          |> Enum.filter(fn id -> id != player.id end)
+        new_data =
+          tournament |> Map.get(:data) |> Map.merge(%{players: players}) |> Map.from_struct()
 
-        tournament
-        |> Tournament.changeset(%{
-          data:
-            DeepMerge.deep_merge(tournament.data, %{
-              players: players,
-              intended_player_ids: new_ids
-            })
-        })
-        |> Repo.update!()
+        update!(tournament, %{data: new_data})
       end
 
       def leave(tournament, %{user: user}) do
@@ -63,11 +55,13 @@ defmodule Codebattle.Tournament.Base do
           |> get_intended_player_ids
           |> Enum.filter(fn id -> id != user_id end)
 
-        tournament
-        |> Tournament.changeset(%{
-          data: DeepMerge.deep_merge(tournament.data, %{intended_player_ids: new_ids})
-        })
-        |> Repo.update!()
+        new_data =
+          tournament
+          |> Map.get(:data)
+          |> Map.merge(%{intended_player_ids: new_ids})
+          |> Map.from_struct()
+
+        update!(tournament, %{data: new_data})
       end
 
       def leave(%{state: "waiting_participants"} = tournament, %{user_id: user_id}) do
@@ -75,29 +69,23 @@ defmodule Codebattle.Tournament.Base do
           tournament.data.players
           |> Enum.filter(fn player -> player.id != user_id end)
 
-        tournament
-        |> Tournament.changeset(%{
-          data: DeepMerge.deep_merge(tournament.data, %{players: new_players})
-        })
-        |> Repo.update!()
+        new_data =
+          tournament |> Map.get(:data) |> Map.merge(%{players: new_players}) |> Map.from_struct()
+
+        update!(tournament, %{data: new_data})
       end
 
       def leave(tournament, _user_id), do: tournament
 
       def back(%{state: "waiting_participants"} = tournament, %{user: user}) do
-        tournament
-        |> Tournament.changeset(%{state: "upcoming"})
-        |> Repo.update!()
+        update!(tournament, %{state: "upcoming"})
       end
 
       def back(tournament, _user), do: tournament
 
       def cancel(tournament, %{user: user}) do
         if can_moderate?(tournament, user) do
-          new_tournament =
-            tournament
-            |> Tournament.changeset(%{state: "canceled"})
-            |> Repo.update!()
+          new_tournament = update!(tournament, %{state: "canceled"})
 
           Tournament.GlobalSupervisor.terminate_tournament(tournament.id)
 
@@ -109,9 +97,7 @@ defmodule Codebattle.Tournament.Base do
 
       def start(%{state: "upcoming"} = tournament, %{user: user}) do
         if can_moderate?(tournament, user) do
-          tournament
-          |> Tournament.changeset(%{state: "waiting_participants"})
-          |> Repo.update!()
+          update!(tournament, %{state: "waiting_participants"})
         else
           tournament
         end
@@ -122,11 +108,10 @@ defmodule Codebattle.Tournament.Base do
           tournament
           |> complete_players
           |> start_step!
-          |> Tournament.changeset(%{
+          |> update!(%{
             last_round_started_at: NaiveDateTime.utc_now(),
             state: "active"
           })
-          |> Repo.update!()
         else
           tournament
         end
@@ -141,11 +126,10 @@ defmodule Codebattle.Tournament.Base do
           tournament
         else
           tournament
-          |> Tournament.changeset(%{
+          |> update!(%{
             step: tournament.step + 1,
             last_round_started_at: NaiveDateTime.utc_now()
           })
-          |> Repo.update!()
           |> maybe_finish
           |> start_step!
         end
@@ -178,11 +162,10 @@ defmodule Codebattle.Tournament.Base do
             |> Map.from_struct()
           end)
 
-        tournament
-        |> Tournament.changeset(%{
-          data: DeepMerge.deep_merge(Map.from_struct(tournament.data), %{matches: new_matches})
-        })
-        |> Repo.update!()
+        new_data =
+          tournament |> Map.get(:data) |> Map.merge(%{matches: new_matches}) |> Map.from_struct()
+
+        update!(tournament, %{data: new_data})
       end
 
       defp start_step!(%{state: "finished"} = tournament), do: tournament
@@ -219,11 +202,10 @@ defmodule Codebattle.Tournament.Base do
             |> Map.from_struct()
           end)
 
-        tournament
-        |> Tournament.changeset(%{
-          data: DeepMerge.deep_merge(Map.from_struct(tournament.data), %{matches: new_matches})
-        })
-        |> Repo.update!()
+        new_data =
+          tournament |> Map.get(:data) |> Map.merge(%{matches: new_matches}) |> Map.from_struct()
+
+        update!(tournament, %{data: new_data})
       end
 
       defp update_match_params(match, %{state: "canceled"} = params), do: Map.merge(match, params)
@@ -257,6 +239,10 @@ defmodule Codebattle.Tournament.Base do
         )
 
         tournament
+      end
+
+      defp update!(tournament, params) do
+        tournament |> Tournament.changeset(params) |> Repo.update!()
       end
 
       # for individual game

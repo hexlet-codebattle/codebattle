@@ -1,5 +1,4 @@
 defmodule Codebattle.Tournament.Team do
-  alias Codebattle.Repo
   alias Codebattle.Tournament
 
   use Tournament.Base
@@ -48,11 +47,13 @@ defmodule Codebattle.Tournament.Team do
       |> Enum.concat(bots)
       |> Enum.sort_by(fn p -> p.team_id end)
 
-    tournament
-    |> Tournament.changeset(%{
-      data: DeepMerge.deep_merge(tournament.data, %{players: new_players})
-    })
-    |> Repo.update!()
+    new_data =
+      tournament
+      |> Map.get(:data)
+      |> Map.merge(%{players: new_players})
+      |> Map.from_struct()
+
+    update!(tournament, %{data: new_data})
   end
 
   @impl Tournament.Base
@@ -74,11 +75,13 @@ defmodule Codebattle.Tournament.Team do
 
     new_matches = prev_matches ++ matches_for_round
 
-    tournament
-    |> Tournament.changeset(%{
-      data: DeepMerge.deep_merge(Map.from_struct(tournament.data), %{matches: new_matches})
-    })
-    |> Repo.update!()
+    new_data =
+      tournament
+      |> Map.get(:data)
+      |> Map.merge(%{matches: new_matches})
+      |> Map.from_struct()
+
+    update!(tournament, %{data: new_data})
   end
 
   @impl Tournament.Base
@@ -86,10 +89,7 @@ defmodule Codebattle.Tournament.Team do
     {score1, score2} = calc_team_score(tournament)
 
     if max(score1, score2) >= @team_rounds_need_to_win_num do
-      new_tournament =
-        tournament
-        |> Tournament.changeset(%{state: "finished"})
-        |> Repo.update!()
+      new_tournament = update!(tournament, %{state: "finished"})
 
       # Tournament.GlobalSupervisor.terminate_tournament(tournament.id)
       new_tournament
