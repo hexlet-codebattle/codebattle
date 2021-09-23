@@ -16,12 +16,14 @@ defmodule CodebattleWeb.TournamentControllerTest do
     creator = insert(:user)
     admin = insert(:admin)
     intended_player = insert(:user)
+    player = insert(:user)
 
     tournament =
       insert(:token_tournament,
         creator_id: creator.id,
         data: %{
-          intended_player_ids: [intended_player.id]
+          intended_player_ids: [intended_player.id],
+          players: [struct(Codebattle.Tournament.Types.Player, Map.from_struct(player))]
         }
       )
 
@@ -42,6 +44,13 @@ defmodule CodebattleWeb.TournamentControllerTest do
     new_conn =
       conn
       |> put_session(:user_id, intended_player.id)
+      |> get(Routes.tournament_path(conn, :show, tournament.id))
+
+    assert new_conn.status == 200
+
+    new_conn =
+      conn
+      |> put_session(:user_id, player.id)
       |> get(Routes.tournament_path(conn, :show, tournament.id))
 
     assert new_conn.status == 200

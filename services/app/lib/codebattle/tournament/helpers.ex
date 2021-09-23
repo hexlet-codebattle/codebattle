@@ -43,6 +43,7 @@ defmodule Codebattle.Tournament.Helpers do
   def can_access?(%{access_type: "token"} = tournament, user, params) do
     can_moderate?(tournament, user) ||
       is_intended_player?(tournament, user) ||
+      is_player?(tournament, user.id) ||
       params["access_token"] == tournament.access_token
   end
 
@@ -63,7 +64,7 @@ defmodule Codebattle.Tournament.Helpers do
     |> Enum.any?(fn id -> id == player.id end)
   end
 
-  def is_participant?(tournament, player_id) do
+  def is_player?(tournament, player_id) do
     tournament
     |> get_players()
     |> Enum.find_value(fn player -> player.id == player_id end)
@@ -71,7 +72,7 @@ defmodule Codebattle.Tournament.Helpers do
     |> Kernel.!()
   end
 
-  def is_participant?(tournament, player_id, team_id) do
+  def is_player?(tournament, player_id, team_id) do
     tournament.data.players
     |> Enum.find_value(fn p -> p.id == player_id and p.team_id == team_id end)
     |> Kernel.!()
