@@ -1,7 +1,6 @@
 - statistics = get_players_statistics(@tournament)
 - tournament_stats = get_tournament_statistics(@tournament)
 
-
 .container-fluid.mt-4
   .row
     .col-3

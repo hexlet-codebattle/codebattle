@@ -41,3 +41,6 @@
       span.ml-3 The tournament will start in #{@time.minutes}:#{@time.seconds}
     - else
       span.ml-3 The tournament will start soon
+  = if is_visible_by_token?(@tournament) do
+    span.ml-3 Private url: #{CodebattleWeb.Router.Helpers.tournament_url(@socket, :show, @tournament.id, access_token: @tournament.access_token)}
+

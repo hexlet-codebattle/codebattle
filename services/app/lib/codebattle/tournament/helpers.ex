@@ -7,6 +7,7 @@ defmodule Codebattle.Tournament.Helpers do
   def get_players(tournament), do: tournament.data.players
   def get_matches(tournament), do: tournament.data.matches
   def get_intended_player_ids(tournament), do: Map.get(tournament.data, :intended_player_ids, [])
+  def get_player_ids(tournament), do: tournament.data.players |> Enum.map(& &1.id)
 
   def get_intended_players(tournament) do
     Repo.all(
@@ -39,14 +40,14 @@ defmodule Codebattle.Tournament.Helpers do
     is_creator?(tournament, user) || User.is_admin?(user)
   end
 
-  def can_participate?(%{access_type: "token"} = tournament, user, params) do
+  def can_access?(%{access_type: "token"} = tournament, user, params) do
     can_moderate?(tournament, user) ||
       is_intended_player?(tournament, user) ||
       params["access_token"] == tournament.access_token
   end
 
   # default public or null for old tournaments
-  def can_participate?(_tournament, _user, _params), do: true
+  def can_access?(_tournament, _user, _params), do: true
 
   def is_active?(tournament), do: tournament.state == "active"
   def is_waiting_participants?(tournament), do: tournament.state == "waiting_participants"
@@ -54,6 +55,7 @@ defmodule Codebattle.Tournament.Helpers do
   def is_individual?(tournament), do: tournament.type == "individual"
   def is_finished?(tournament), do: tournament.state == "finished"
   def is_team?(tournament), do: tournament.type == "team"
+  def is_visible_by_token?(tournament), do: !is_nil(tournament.access_token)
 
   def is_intended_player?(tournament, player) do
     tournament

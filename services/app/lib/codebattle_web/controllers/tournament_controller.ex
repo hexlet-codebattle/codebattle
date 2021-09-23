@@ -4,6 +4,8 @@ defmodule CodebattleWeb.TournamentController do
   alias Codebattle.Tournament
 
   def index(conn, _params) do
+    current_user = conn.assigns[:current_user]
+
     conn
     |> put_meta_tags(%{
       title: "Hexlet Codebattle • Tournaments",
@@ -13,8 +15,8 @@ defmodule CodebattleWeb.TournamentController do
     })
     |> live_render(CodebattleWeb.Live.Tournament.IndexView,
       session: %{
-        "current_user" => conn.assigns[:current_user],
-        "tournaments" => Tournament.Context.list_live_and_finished()
+        "current_user" => current_user,
+        "tournaments" => Tournament.Context.list_live_and_finished(current_user)
       }
     )
   end
@@ -23,7 +25,7 @@ defmodule CodebattleWeb.TournamentController do
     current_user = conn.assigns[:current_user]
     tournament = Tournament.Context.get!(params["id"])
 
-    if Tournament.Helpers.can_participate?(tournament, current_user, params) do
+    if Tournament.Helpers.can_access?(tournament, current_user, params) do
       conn
       |> put_meta_tags(%{
         title: "#{tournament.name} • Hexlet Codebattle",

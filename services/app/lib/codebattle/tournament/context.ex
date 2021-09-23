@@ -38,8 +38,11 @@ defmodule Codebattle.Tournament.Context do
     end
   end
 
-  def list_live_and_finished() do
-    get_live_tournaments() ++ get_db_tournaments(["finished"])
+  def list_live_and_finished(user) do
+    (get_live_tournaments() ++ get_db_tournaments(["finished"]))
+    |> Enum.filter(fn tournament ->
+      Tournament.Helpers.can_access?(tournament, user, %{})
+    end)
   end
 
   def get_db_tournaments(states) do
@@ -47,7 +50,7 @@ defmodule Codebattle.Tournament.Context do
       t in Tournament,
       order_by: [desc: t.id],
       where: t.state in ^states,
-      limit: 10,
+      limit: 7,
       preload: :creator
     )
     |> Codebattle.Repo.all()
@@ -64,9 +67,7 @@ defmodule Codebattle.Tournament.Context do
     end)
   end
 
-  def get_live_tournaments_count do
-    get_live_tournaments() |> Enum.count()
-  end
+  def get_live_tournaments_count, do: get_live_tournaments() |> Enum.count()
 
   def validate(params) do
     %Tournament{}
