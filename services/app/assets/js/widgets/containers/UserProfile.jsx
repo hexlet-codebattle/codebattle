@@ -43,15 +43,15 @@ const UserProfile = () => {
       const langs = achievement.split('?').pop().split('_');
 
       return (
-        <div className="cb-polyglot" title={achievement}>
+        <div className="cb-polyglot mr-1 mb-1" title={achievement}>
           <div className="d-flex h-75 flex-wrap align-items-center justify-content-around">
             {langs.map(lang => (
               <img
                 src={`/assets/images/achievements/${lang}.png`}
                 alt={lang}
                 title={lang}
-                width="38"
-                height="38"
+                width="10"
+                height="10"
                 key={lang}
               />
             ))}
@@ -61,7 +61,7 @@ const UserProfile = () => {
     }
     return (
       <img
-        className="mr-1"
+        className="mr-1 mb-1"
         src={`/assets/images/achievements/${achievement}.png`}
         alt={achievement}
         title={achievement}
@@ -192,7 +192,7 @@ const UserProfile = () => {
           <h3 className="my-2">{`Lang: ${stats.user.lang}`}</h3>
           <hr />
           <p className="small text-monospace text-muted mb-2">
-            {'inserted at '}
+            {'joined at '}
             {dateParse(stats.user.insertedAt)}
           </p>
           <h1 className="my-2">
@@ -210,7 +210,7 @@ const UserProfile = () => {
               <>
                 <hr className="mt-2" />
                 <h5 className="text-break">Achievements</h5>
-                <div className="col d-flex justify-content-start cb-profile mt-3 pl-0">
+                <div className="col d-flex flex-wrap justify-content-start cb-profile mt-3 pl-0">
                   {stats.user.achievements.map(achievement => (
                     <div key={achievement}>{renderAchievemnt(achievement)}</div>
                   ))}
