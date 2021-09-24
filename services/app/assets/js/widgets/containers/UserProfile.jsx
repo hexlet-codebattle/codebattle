@@ -22,6 +22,7 @@ const getUserAvatarUrl = ({ githubId, discordId, discordAvatar }) => {
 
 const UserProfile = () => {
   const [stats, setStats] = useState(null);
+  const [completedGames, setCompletedGames] = useState([]);
 
   const dispatch = useDispatch();
 
@@ -37,6 +38,36 @@ const UserProfile = () => {
         dispatch(actions.setError(error));
       });
   }, [dispatch]);
+
+  useEffect(() => {
+    // TODO: fetch completed games when you activate completed games tab
+    // TODO: use loadCompletedGames(0)
+    const userId = window.location.pathname.split('/').pop();
+
+    axios
+      .get(`/api/v1/user/${userId}/completed_games?page_size=3`)
+      .then(response => {
+        setCompletedGames(camelizeKeys(response.data.games));
+      })
+      .catch(error => {
+        dispatch(actions.setError(error));
+      });
+  }, [dispatch]);
+
+  const dateParse = date => new Date(date).toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+  const loadCompletedGames = page => {
+    const userId = window.location.pathname.split('/').pop();
+
+    axios
+      .get(`/api/v1/user/${userId}/completed_games?page_size=3&page=${page}`)
+      .then(response => {
+        setCompletedGames(completedGames.concat(response.data.games));
+      })
+      .catch(error => {
+        dispatch(actions.setError(error));
+      });
+  };
 
   const renderAchievemnt = achievement => {
     if (achievement.includes('win_games_with')) {
@@ -73,8 +104,6 @@ const UserProfile = () => {
   if (!stats) {
     return <Loading />;
   }
-
-  const dateParse = date => new Date(date).toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
   const renderStatistics = () => (
     <>
@@ -118,9 +147,9 @@ const UserProfile = () => {
     <div className="row justify-content-center">
       <div className="col-11">
         <div className="text-left my-5">
-          {stats.completedGames.length > 0 && (
+          {completedGames && completedGames.length > 0 && (
           <>
-            <CompletedGames games={stats.completedGames} />
+            <CompletedGames games={completedGames} onShowMoreButtonClick={loadCompletedGames} />
           </>
               )}
         </div>

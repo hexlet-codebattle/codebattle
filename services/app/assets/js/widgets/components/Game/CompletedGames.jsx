@@ -4,7 +4,7 @@ import ResultIcon from './ResultIcon';
 import UserInfo from '../../containers/UserInfo';
 import GameLevelBadge from '../GameLevelBadge';
 
-const CompletedGames = ({ games }) => (
+const CompletedGames = ({ games, onShowMoreButtonClick = null }) => (
   <div className="table-responsive">
     <table className="table table-sm table-striped border-gray border mb-0">
       <thead>
@@ -35,15 +35,9 @@ const CompletedGames = ({ games }) => (
                 <UserInfo user={game.players[1]} />
               </div>
             </td>
-            <td className="p-3 align-middle text-nowrap">
-              {moment.utc(game.finishsAt).local().format('MM.DD HH:mm')}
-            </td>
+            <td className="p-3 align-middle text-nowrap">{moment.utc(game.finishsAt).local().format('MM.DD HH:mm')}</td>
             <td className="p-3 align-middle">
-              <a
-                type="button"
-                className="btn btn-outline-orange btn-sm"
-                href={`/games/${game.id}`}
-              >
+              <a type="button" className="btn btn-outline-orange btn-sm" href={`/games/${game.id}`}>
                 Show
               </a>
             </td>
@@ -51,6 +45,13 @@ const CompletedGames = ({ games }) => (
         ))}
       </tbody>
     </table>
+    { onShowMoreButtonClick
+        ? (
+          // TODO: use currentPage + 1
+          <button type="button" className="mr-4 btn btn-light" onClick={() => onShowMoreButtonClick(2)}>
+            Show More
+          </button>
+          ) : null}
   </div>
 );
 
