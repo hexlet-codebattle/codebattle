@@ -62,7 +62,7 @@ defmodule Codebattle.Tournament.Team do
       tournament
       |> get_players()
       |> Enum.chunk_by(&Map.get(&1, :team_id))
-      |> Enum.map(&Enum.shuffle/1)
+      |> shift_pairs(tournament)
       |> Enum.zip()
       |> Enum.map(fn {p1, p2} ->
         %{state: "waiting", players: [p1, p2], round_id: tournament.step}
@@ -96,5 +96,15 @@ defmodule Codebattle.Tournament.Team do
     else
       tournament
     end
+  end
+
+  defp shift_pairs(teams, tournament) do
+    %{step: step} = tournament
+
+    teams
+    |> Enum.with_index()
+    |> Enum.map(fn {players, index} ->
+      Utils.right_rotate(players, index * (step - 1))
+    end)
   end
 end

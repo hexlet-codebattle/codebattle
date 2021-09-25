@@ -120,7 +120,7 @@ defmodule Codebattle.Tournament.Base do
       def start(tournament, _params), do: tournament
 
       def maybe_start_new_step(tournament) do
-        matches = tournament |> get_matches
+        matches = get_matches(tournament)
 
         if Enum.any?(matches, fn match -> match.state == "active" end) do
           tournament
@@ -159,6 +159,21 @@ defmodule Codebattle.Tournament.Base do
               _ ->
                 match
             end
+            |> Map.from_struct()
+          end)
+
+        new_data =
+          tournament |> Map.get(:data) |> Map.merge(%{matches: new_matches}) |> Map.from_struct()
+
+        update!(tournament, %{data: new_data})
+      end
+
+      def finish_all_matches(tournament) do
+        new_matches =
+          tournament
+          |> get_matches
+          |> Enum.map(fn match ->
+            %{match | state: "canceled"}
             |> Map.from_struct()
           end)
 
@@ -241,7 +256,7 @@ defmodule Codebattle.Tournament.Base do
         tournament
       end
 
-      defp update!(tournament, params) do
+      def update!(tournament, params) do
         tournament |> Tournament.changeset(params) |> Repo.update!()
       end
 

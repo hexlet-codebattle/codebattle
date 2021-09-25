@@ -72,7 +72,7 @@ defmodule Codebattle.Tournament.TeamTest do
     assert states == ["finished", "active"]
   end
 
-  test ".maybe_start_new_step finishs tournament after 3 scores" do
+  test ".maybe_start_new_step finishes tournament after 3 scores" do
     user1 = insert(:user)
     user2 = insert(:user)
 
@@ -120,7 +120,7 @@ defmodule Codebattle.Tournament.TeamTest do
     assert states == ["finished", "finished", "finished"]
   end
 
-  test ".maybe_start_new_step finishs tournament after 3 scores with draws" do
+  test ".maybe_start_new_step finishes tournament after 3 scores with draws" do
     user1 = insert(:user)
     user2 = insert(:user)
 
@@ -186,5 +186,76 @@ defmodule Codebattle.Tournament.TeamTest do
 
     assert winner_stats.average_time == 1
     assert winner_stats.score == 1
+  end
+
+  test ".maybe_start_new_step builds matches using a consistent strategy" do
+    user1 = insert(:user)
+    user2 = insert(:user)
+    user3 = insert(:user)
+    user4 = insert(:user)
+    user5 = insert(:user)
+    user6 = insert(:user)
+
+    insert(:task, level: "elementary")
+
+    player1 = build_team_player(user1, %{team_id: 0})
+    player2 = build_team_player(user2, %{team_id: 0})
+    player3 = build_team_player(user3, %{team_id: 0})
+    player4 = build_team_player(user4, %{team_id: 1})
+    player5 = build_team_player(user5, %{team_id: 1})
+    player6 = build_team_player(user6, %{team_id: 1})
+
+    tournament =
+      insert(:team_tournament,
+        state: "active",
+        creator_id: user1.id,
+        data: %{players: [player1, player2, player3, player4, player5, player6]}
+      )
+
+    new_tournament = @module.maybe_start_new_step(tournament)
+
+    player_ids =
+      new_tournament
+      |> Helpers.get_matches()
+      |> Enum.map(fn match -> Enum.map(match.players, & &1.id) end)
+
+    assert player_ids == [[user1.id, user4.id], [user2.id, user5.id], [user3.id, user6.id]]
+
+    new_tournament = @module.finish_all_matches(new_tournament)
+    new_tournament = @module.maybe_start_new_step(new_tournament)
+
+    player_ids =
+      new_tournament
+      |> Helpers.get_matches()
+      |> Enum.map(fn match -> Enum.map(match.players, & &1.id) end)
+
+    assert player_ids == [
+             [user1.id, user4.id],
+             [user2.id, user5.id],
+             [user3.id, user6.id],
+             [user1.id, user6.id],
+             [user2.id, user4.id],
+             [user3.id, user5.id]
+           ]
+
+    new_tournament = @module.finish_all_matches(new_tournament)
+    new_tournament = @module.maybe_start_new_step(new_tournament)
+
+    player_ids =
+      new_tournament
+      |> Helpers.get_matches()
+      |> Enum.map(fn match -> Enum.map(match.players, & &1.id) end)
+
+    assert player_ids == [
+             [user1.id, user4.id],
+             [user2.id, user5.id],
+             [user3.id, user6.id],
+             [user1.id, user6.id],
+             [user2.id, user4.id],
+             [user3.id, user5.id],
+             [user1.id, user5.id],
+             [user2.id, user6.id],
+             [user3.id, user4.id]
+           ]
   end
 end
