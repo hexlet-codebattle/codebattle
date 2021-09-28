@@ -56,23 +56,21 @@ defmodule Codebattle.Chat.Server do
   end
 
   def command(chat_type, user, %{type: command_type} = payload) do
-    if Codebattle.User.is_admin?(user) do
-      case {command_type, payload} do
-        {"ban", %{name: banned_name}} ->
-          ban_message = %{
-            type: "info",
-            name: "CB",
-            time: payload.time,
-            text: "#{banned_name} has been banned by #{user.name}"
-          }
+    case {command_type, payload} do
+      {"ban", %{name: banned_name}} ->
+        ban_message = %{
+          type: "info",
+          name: "CB",
+          time: payload.time,
+          text: "#{banned_name} has been banned by #{user.name}"
+        }
 
-          GenServer.call(chat_key(chat_type), {:ban, %{name: banned_name, message: ban_message}})
-          broadcast_message(chat_type, "chat:ban", %{name: banned_name})
-          broadcast_message(chat_type, "chat:new_msg", ban_message)
+        GenServer.call(chat_key(chat_type), {:ban, %{name: banned_name, message: ban_message}})
+        broadcast_message(chat_type, "chat:ban", %{name: banned_name})
+        broadcast_message(chat_type, "chat:new_msg", ban_message)
 
-        _ ->
-          :ok
-      end
+      _ ->
+        :ok
     end
   end
 

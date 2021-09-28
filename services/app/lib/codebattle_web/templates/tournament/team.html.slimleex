@@ -4,7 +4,7 @@
 .container-fluid.mt-4
   .row
     .col-3
-      = render "_chat.html", messages: @messages
+      = render "_chat.html", messages: @messages, current_user: @current_user, tournament: @tournament
     .col-9
       .row
         .col-12

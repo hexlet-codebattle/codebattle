@@ -10,7 +10,7 @@ import { replayerMachineStates } from '../machines/game';
 
 export const currentUserIdSelector = state => state.user.currentUserId;
 
-export const currentUserIsAdminSelector = state => state.user.isAdmin;
+export const currentUserIsAdminSelector = state => state.user.users[state.user.currentUserId].is_admin;
 
 export const isShowGuideSelector = state => state.gameUI.isShowGuide;
 

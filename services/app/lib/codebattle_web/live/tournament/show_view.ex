@@ -189,6 +189,23 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     {:noreply, socket}
   end
 
+  def handle_event("chat_ban", params, socket) do
+    tournament = socket.assigns.tournament
+    current_user = socket.assigns.current_user
+
+    if Tournament.Helpers.can_moderate?(tournament, current_user) do
+      Chat.Server.command(
+        {:tournament, tournament.id},
+        current_user,
+        %{type: "ban", name: params["name"], time: :os.system_time(:seconds)}
+      )
+
+      {:noreply, socket}
+    else
+      {:noreply, socket}
+    end
+  end
+
   def handle_event("chat_message", %{"message" => %{"content" => ""}}, socket),
     do: {:noreply, socket}
 

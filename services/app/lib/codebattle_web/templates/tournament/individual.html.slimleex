@@ -4,7 +4,7 @@ reveal
 .container-fluid
   .row
     .col-3
-      = render "_chat.html", messages: @messages
+      = render "_chat.html", messages: @messages, current_user: @current_user, tournament: @tournament
       = if is_active?(@tournament) do
         .mt-2.bg-white.shadow-sm.p-2
           .d-flex.align-items-center.flex-wrap.justify-content-start
