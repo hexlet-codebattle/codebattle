@@ -146,7 +146,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
   end
 
   def handle_event("kick", %{"user_id" => user_id}, socket) do
-    if can_moderate?(socket.assigns.tournament, socket.assigns.current_user.id) do
+    if Tournament.Helpers.can_moderate?(socket.assigns.tournament, socket.assigns.current_user) do
       Tournament.Server.update_tournament(socket.assigns.tournament.id, :leave, %{
         user_id: String.to_integer(user_id)
       })
@@ -156,7 +156,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
   end
 
   def handle_event("back", _params, socket) do
-    if can_moderate?(socket.assigns.tournament, socket.assigns.current_user.id) do
+    if Tournament.Helpers.can_moderate?(socket.assigns.tournament, socket.assigns.current_user) do
       Tournament.Server.update_tournament(socket.assigns.tournament.id, :back, %{
         user: socket.assigns.current_user
       })
@@ -283,10 +283,6 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
 
   defp is_current_topic?(topic, tournament) do
     topic == topic_name(tournament)
-  end
-
-  defp can_moderate?(tournament, user_id) do
-    tournament.creator_id == user_id
   end
 
   defp get_chat_messages(id) do

@@ -49,28 +49,22 @@ defmodule Codebattle.Tournament.Base do
         leave(tournament, %{user_id: user.id})
       end
 
-      def leave(%{state: "upcoming"} = tournament, %{user_id: user_id}) do
+      def leave(tournament, %{user_id: user_id}) do
         new_ids =
           tournament
           |> get_intended_player_ids
           |> Enum.filter(fn id -> id != user_id end)
 
-        new_data =
-          tournament
-          |> Map.get(:data)
-          |> Map.merge(%{intended_player_ids: new_ids})
-          |> Map.from_struct()
-
-        update!(tournament, %{data: new_data})
-      end
-
-      def leave(%{state: "waiting_participants"} = tournament, %{user_id: user_id}) do
         new_players =
-          tournament.data.players
+          tournament
+          |> get_players
           |> Enum.filter(fn player -> player.id != user_id end)
 
         new_data =
-          tournament |> Map.get(:data) |> Map.merge(%{players: new_players}) |> Map.from_struct()
+          tournament
+          |> Map.get(:data)
+          |> Map.merge(%{players: new_players, intended_player_ids: new_ids})
+          |> Map.from_struct()
 
         update!(tournament, %{data: new_data})
       end

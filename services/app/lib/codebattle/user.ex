@@ -24,28 +24,35 @@ defmodule Codebattle.User do
     end
   end
 
-  @derive {Jason.Encoder,
-           only: [
-             :id,
-             :name,
-             :rating,
-             :is_bot,
-             :guest,
-             :github_id,
-             :github_name,
-             :lang,
-             :editor_mode,
-             :editor_theme,
-             :achievements,
-             :rank,
-             :games_played,
-             :performance,
-             :inserted_at,
-             :sound_settings,
-             :discord_name,
-             :discord_id,
-             :discord_avatar
-           ]}
+  defimpl Jason.Encoder, for: Codebattle.User do
+    def encode(user, opts) do
+      Jason.Encode.map(
+        Map.take(user, [
+          :id,
+          :name,
+          :rating,
+          :is_bot,
+          :guest,
+          :github_id,
+          :github_name,
+          :lang,
+          :editor_mode,
+          :editor_theme,
+          :achievements,
+          :rank,
+          :games_played,
+          :performance,
+          :inserted_at,
+          :sound_settings,
+          :discord_name,
+          :discord_id,
+          :discord_avatar
+        ])
+        |> Map.put(:is_admin, Codebattle.User.is_admin?(user)),
+        opts
+      )
+    end
+  end
 
   schema "users" do
     field(:name, :string)

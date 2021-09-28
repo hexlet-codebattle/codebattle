@@ -40,7 +40,7 @@ defmodule CodebattleWeb.ChatChannel do
     {:noreply, socket}
   end
 
-  def handle_in("chat:command", payload, socket) do
+  def handle_in("chat:command", %{"command" => payload}, socket) do
     chat_type = get_chat_type(socket)
 
     Chat.Server.command(chat_type, socket.assigns.current_user, %{
@@ -66,6 +66,10 @@ defmodule CodebattleWeb.ChatChannel do
       message: text
     })
 
+    {:noreply, socket}
+  end
+
+  def handle_in(_, _payload, socket) do
     {:noreply, socket}
   end
 

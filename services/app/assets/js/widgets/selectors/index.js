@@ -10,6 +10,8 @@ import { replayerMachineStates } from '../machines/game';
 
 export const currentUserIdSelector = state => state.user.currentUserId;
 
+export const currentUserIsAdminSelector = state => state.user.isAdmin;
+
 export const isShowGuideSelector = state => state.gameUI.isShowGuide;
 
 export const gamePlayersSelector = state => state.game.players;

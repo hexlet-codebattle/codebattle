@@ -123,7 +123,10 @@ defmodule CodebattleWeb.ChatChannelTest do
              %{name: "alice", text: "invalid_content", time: _}
            ] = Server.get_messages(:lobby)
 
-    push(socket2, "chat:command", %{"type" => "ban", "name" => "alice", "duration" => "3h"})
+    push(socket2, "chat:command", %{
+      "command" => %{"type" => "ban", "name" => "alice", "duration" => "3h"}
+    })
+
     :timer.sleep(50)
 
     assert [

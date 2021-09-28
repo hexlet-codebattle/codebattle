@@ -21,7 +21,7 @@ defmodule Codebattle.Tournament.BaseTest do
       assert get_player_ids(updated) == [user.id]
 
       updated = @module.leave(updated, %{user: user})
-      assert get_intended_player_ids(updated) == [user.id]
+      assert get_intended_player_ids(updated) == []
       assert get_player_ids(updated) == []
 
       updated = @module.back(updated, %{user: user})
