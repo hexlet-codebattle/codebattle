@@ -27,7 +27,8 @@ defmodule Codebattle.User do
   defimpl Jason.Encoder, for: Codebattle.User do
     def encode(user, opts) do
       Jason.Encode.map(
-        Map.take(user, [
+        user
+        |> Map.take([
           :id,
           :name,
           :rating,

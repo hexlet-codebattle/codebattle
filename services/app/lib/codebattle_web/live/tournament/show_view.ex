@@ -156,27 +156,35 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
   end
 
   def handle_event("back", _params, socket) do
-    if Tournament.Helpers.can_moderate?(socket.assigns.tournament, socket.assigns.current_user) do
-      Tournament.Server.update_tournament(socket.assigns.tournament.id, :back, %{
-        user: socket.assigns.current_user
-      })
-    end
+    Tournament.Server.update_tournament(socket.assigns.tournament.id, :back, %{
+      user: socket.assigns.current_user
+    })
+  end
+
+  def handle_event("open_up", _params, socket) do
+    Tournament.Server.update_tournament(socket.assigns.tournament.id, :open_up, %{
+      user: socket.assigns.current_user
+    })
 
     {:noreply, socket}
   end
 
   def handle_event("cancel", _params, socket) do
-    Tournament.Server.update_tournament(socket.assigns.tournament.id, :cancel, %{
-      user: socket.assigns.current_user
-    })
+    if Tournament.Helpers.can_moderate?(socket.assigns.tournament, socket.assigns.current_user) do
+      Tournament.Server.update_tournament(socket.assigns.tournament.id, :cancel, %{
+        user: socket.assigns.current_user
+      })
+    end
 
     {:noreply, redirect(socket, to: "/tournaments")}
   end
 
   def handle_event("start", _params, socket) do
-    Tournament.Server.update_tournament(socket.assigns.tournament.id, :start, %{
-      user: socket.assigns.current_user
-    })
+    if Tournament.Helpers.can_moderate?(socket.assigns.tournament, socket.assigns.current_user) do
+      Tournament.Server.update_tournament(socket.assigns.tournament.id, :start, %{
+        user: socket.assigns.current_user
+      })
+    end
 
     {:noreply, socket}
   end
@@ -245,6 +253,10 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
   def handle_event("select_tab", params, socket) do
     target = String.to_atom(params["target"])
     {:noreply, assign(socket, target, params["tab"])}
+  end
+
+  def handle_event(_event, _params, socket) do
+    {:noreply, socket}
   end
 
   defp get_next_round_time(tournament) do

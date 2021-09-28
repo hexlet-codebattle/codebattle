@@ -1,4 +1,5 @@
 - players = get_players(@tournament)
+reveal
 
 .container-fluid
   .row
@@ -14,10 +15,16 @@
       = render "_header.html", tournament: @tournament, time: @time, current_user: @current_user, socket: @socket
       .mt-3
         = if is_waiting_participants?(@tournament) do
+          = if is_intended_player?(@tournament, @current_user) && !is_player?(@tournament, @current_user.id) do
+            p Click join to confirm that you want to participate in this tournament
+            = if is_player?(@tournament, @current_user.id) do
+              button.btn.btn-outline-danger[phx-click="leave"] Leave
+            - else
+              button.btn.btn-outline-secondary[phx-click="join"] Join
           h3 Players
           = render "_players.html", players: players, tournament: @tournament, current_user: @current_user
         = if is_upcoming?(@tournament) or is_waiting_participants?(@tournament) do
-          h3 Intended players
+          h4 Intended players
           = render "_intended_players.html", players: get_intended_players(@tournament), tournament: @tournament, current_user: @current_user
       = if is_active?(@tournament) || is_finished?(@tournament) do
         = render "_individual_#{@tournament.players_count}_table.html", tournament: @tournament, time: @time, current_user: @current_user, socket: @socket

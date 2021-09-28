@@ -77,6 +77,14 @@ defmodule Codebattle.Tournament.Base do
 
       def back(tournament, _user), do: tournament
 
+      def open_up(tournament, %{user: user}) do
+        if can_moderate?(tournament, user) do
+          update!(tournament, %{access_type: "public"})
+        else
+          tournament
+        end
+      end
+
       def cancel(tournament, %{user: user}) do
         if can_moderate?(tournament, user) do
           new_tournament = update!(tournament, %{state: "canceled"})

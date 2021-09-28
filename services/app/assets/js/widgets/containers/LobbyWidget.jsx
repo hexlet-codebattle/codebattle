@@ -151,7 +151,7 @@ const LiveTournaments = ({ tournaments }) => {
   if (_.isEmpty(tournaments)) {
     return (
       <div className="text-center">
-        <p className="mb-0">There are no active tournaments right now</p>
+        <h3 className="mb-0 mt-3">There are no active tournaments right now</h3>
         <a href="/tournaments/#create">
           <u>You may want to create one</u>
         </a>
@@ -195,6 +195,46 @@ const LiveTournaments = ({ tournaments }) => {
           <u>Tournamets Info</u>
         </a>
       </div>
+    </div>
+  );
+};
+
+const CompletedTournaments = ({ tournaments }) => {
+  if (_.isEmpty(tournaments)) {
+    return null;
+  }
+  return (
+    <div className="table-responsive">
+      <h2 className="text-center mt-3">Completed tournaments</h2>
+      <table className="table table-striped">
+        <thead className="">
+          <tr>
+            <th className="p-3 border-0">Title</th>
+            <th className="p-3 border-0">Starts_at</th>
+            <th className="p-3 border-0">Creator</th>
+            <th className="p-3 border-0">Actions</th>
+          </tr>
+        </thead>
+        <tbody className="">
+          {_.orderBy(tournaments, 'startsAt', 'desc').map(tournament => (
+            <tr key={tournament.id}>
+              <td className="p-3 align-middle">{tournament.name}</td>
+              <td className="p-3 align-middle text-nowrap">
+                {moment
+                  .utc(tournament.startsAt)
+                  .local()
+                  .format('YYYY-MM-DD HH:mm')}
+              </td>
+              <td className="p-3 align-middle text-nowrap">
+                <UserInfo user={tournament.creator} />
+              </td>
+              <td className="p-3 align-middle">
+                <ShowButton url={`/tournaments/${tournament.id}/`} />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
@@ -276,7 +316,9 @@ const ActiveGames = ({ games }) => {
   );
 };
 
-const GameContainers = ({ activeGames, completedGames, liveTournaments }) => (
+const GameContainers = ({
+ activeGames, completedGames, liveTournaments, completedTournaments,
+}) => (
   <div className="p-0">
     <nav>
       <div className="nav nav-tabs bg-gray" id="nav-tab" role="tablist">
@@ -331,6 +373,7 @@ const GameContainers = ({ activeGames, completedGames, liveTournaments }) => (
         aria-labelledby="tournaments-tab"
       >
         <LiveTournaments tournaments={liveTournaments} />
+        <CompletedTournaments tournaments={completedTournaments} />
       </div>
       <div
         className="tab-pane fade"
@@ -383,6 +426,7 @@ const LobbyWidget = () => {
     activeGames,
     completedGames,
     liveTournaments,
+    completedTournaments,
   } = useSelector(selectors.lobbyDataSelector);
 
   if (!loaded) {
@@ -398,6 +442,7 @@ const LobbyWidget = () => {
             activeGames={activeGames}
             completedGames={completedGames}
             liveTournaments={liveTournaments}
+            completedTournaments={completedTournaments}
           />
           <LobbyChat />
         </div>

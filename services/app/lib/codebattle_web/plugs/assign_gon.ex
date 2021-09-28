@@ -24,7 +24,8 @@ defmodule CodebattleWeb.Plugs.AssignGon do
   end
 
   defp prepare_user(user) do
-    Map.take(user, [
+    user
+    |> Map.take([
       :id,
       :name,
       :rating,
@@ -45,5 +46,6 @@ defmodule CodebattleWeb.Plugs.AssignGon do
       :inserted_at,
       :sound_settings
     ])
+    |> Map.put(:is_admin, Codebattle.User.is_admin?(user))
   end
 end
