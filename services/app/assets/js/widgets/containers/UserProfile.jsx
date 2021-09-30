@@ -23,6 +23,8 @@ const getUserAvatarUrl = ({ githubId, discordId, discordAvatar }) => {
 const UserProfile = () => {
   const [stats, setStats] = useState(null);
   const [completedGames, setCompletedGames] = useState([]);
+  const [currentPage, setCurrenPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   const dispatch = useDispatch();
 
@@ -39,34 +41,23 @@ const UserProfile = () => {
       });
   }, [dispatch]);
 
-  useEffect(() => {
-    // TODO: fetch completed games when you activate completed games tab
-    // TODO: use loadCompletedGames(0)
-    const userId = window.location.pathname.split('/').pop();
-
-    axios
-      .get(`/api/v1/user/${userId}/completed_games?page_size=3`)
-      .then(response => {
-        setCompletedGames(camelizeKeys(response.data.games));
-      })
-      .catch(error => {
-        dispatch(actions.setError(error));
-      });
-  }, [dispatch]);
-
   const dateParse = date => new Date(date).toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
-  const loadCompletedGames = page => {
+  const loadCompletedGames = () => {
     const userId = window.location.pathname.split('/').pop();
 
-    axios
-      .get(`/api/v1/user/${userId}/completed_games?page_size=3&page=${page}`)
+    if (currentPage <= totalPages) {
+      axios
+      .get(`/api/v1/user/${userId}/completed_games?page_size=3&page=${currentPage}`)
       .then(response => {
+        setTotalPages(response.data.page_info.total_pages);
+        setCurrenPage(currentPage + 1);
         setCompletedGames(completedGames.concat(response.data.games));
       })
       .catch(error => {
         dispatch(actions.setError(error));
       });
+    }
   };
 
   const renderAchievemnt = achievement => {
@@ -149,9 +140,21 @@ const UserProfile = () => {
         <div className="text-left my-5">
           {completedGames && completedGames.length > 0 && (
           <>
-            <CompletedGames games={completedGames} onShowMoreButtonClick={loadCompletedGames} />
+            <CompletedGames
+              games={completedGames}
+              onShowMoreButtonClick={
+              currentPage <= totalPages ? loadCompletedGames : null
+            }
+            />
           </>
               )}
+          {completedGames && completedGames.length === 0 && (
+          <>
+            <div className="text-center text-muted">
+              No completed games
+            </div>
+          </>
+          )}
         </div>
       </div>
     </div>
@@ -180,6 +183,7 @@ const UserProfile = () => {
             role="tab"
             aria-controls="completedGames"
             aria-selected="false"
+            onClick={loadCompletedGames}
           >
             Completed games
           </a>

@@ -47,8 +47,7 @@ const CompletedGames = ({ games, onShowMoreButtonClick = null }) => (
     </table>
     { onShowMoreButtonClick
         ? (
-          // TODO: use currentPage + 1
-          <button type="button" className="mr-4 btn btn-light" onClick={() => onShowMoreButtonClick(2)}>
+          <button type="button" className="mt-2 btn btn-light" onClick={() => onShowMoreButtonClick()}>
             Show More
           </button>
           ) : null}
