@@ -71,13 +71,11 @@ defmodule Codebattle.TasksImporterTest do
     assert MapSet.equal?(task_signatures, signatures)
   end
 
-  test "respect disabled" do
+  test "respects disabled" do
     path = Path.join(@root_dir, "test/support/fixtures/issues_with_disabled")
     Codebattle.TasksImporter.upsert([path])
 
     assert Repo.all(Task) |> Enum.count() == 2
-
-    assert Repo.all(Task.invisible(Task)) |> Enum.count() == 1
 
     assert Repo.all(Task.visible(Task)) |> Enum.count() == 1
   end
@@ -92,25 +90,32 @@ defmodule Codebattle.TasksImporterTest do
     assert task.name == "asserts"
     assert task.description_en == "description"
     assert task.level == "medium"
+    assert task.state == "active"
+    assert task.visibility == "public"
+    assert task.origin == "github"
+    assert task.creator_id == nil
     assert task.input_signature == [%{"argument-name" => "num", "type" => %{"name" => "integer"}}]
     assert task.output_signature == %{"type" => %{"name" => "integer"}}
     assert task.asserts |> String.split("\n") |> Enum.count() == 21
 
     Codebattle.TasksImporter.upsert([new_path])
 
-    [new_task] = Repo.all(Task)
+    updated = Repo.get(Task, task.id)
 
-    assert new_task.name == "asserts"
-    assert new_task.disabled == true
-    assert new_task.description_en == "new_description"
-    assert new_task.level == "easy"
+    assert updated.name == "asserts"
+    assert updated.state == "disabled"
+    assert updated.visibility == "public"
+    assert updated.origin == "github"
+    assert updated.creator_id == nil
+    assert updated.description_en == "new_description"
+    assert updated.level == "easy"
 
-    assert new_task.input_signature == [
+    assert updated.input_signature == [
              %{"argument-name" => "str", "type" => %{"name" => "string"}}
            ]
 
-    assert new_task.output_signature == %{"type" => %{"name" => "string"}}
-    assert new_task.asserts |> String.split("\n") |> Enum.count() == 2
-    assert new_task.id == task.id
+    assert updated.output_signature == %{"type" => %{"name" => "string"}}
+    assert updated.asserts |> String.split("\n") |> Enum.count() == 2
+    assert updated.id == task.id
   end
 end

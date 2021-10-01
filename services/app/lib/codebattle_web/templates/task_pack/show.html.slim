@@ -1,0 +1,17 @@
+.container-xl.bg-white.shadow-sm.rounded.py-4.mb-3
+  h1.text-center
+    span = @task_pack.name
+  h3.text-center.mt-4  Params
+  .d-flex.flex-wrap.align-items-center.justify-content-around.text-muted
+    span Visibility: #{@task_pack.visibility}
+    span State: #{@task_pack.state}
+    = if @task_pack.creator_id do
+      span Creator_id: #{@task_pack.creator_id}
+
+  h3.text-center.mt-4  Task_ids
+  .text-center
+    span = render_task_ids(@task_pack)
+  .d-flex
+    = if Codebattle.TaskPack.can_access_task_pack?(@task_pack, @current_user) do
+      = link "Edit", to: CodebattleWeb.Router.Helpers.task_pack_path(@conn, :edit, @task_pack), class: "btn btn-success mt-2"
+    = link "Back", to: Routes.task_pack_path(@conn, :index), class: "ml-auto"

@@ -13,19 +13,25 @@ defmodule Codebattle.TasksImporter do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
   end
 
+  def run do
+    GenServer.cast(__MODULE__, :run)
+  end
+
   # SERVER
   def init(state) do
     Logger.info("Start Tasks Importer")
-    Process.send_after(self(), :run_job, 10_000)
+    Process.send_after(self(), :run, :timer.seconds(17))
     {:ok, state}
   end
 
-  def handle_info(:run_job, state) do
-    fetch_issues()
-    |> upsert()
+  def handle_info(:run, state) do
+    fetch_issues() |> upsert()
+    Process.send_after(self(), :run, @timeout)
+    {:noreply, state}
+  end
 
-    Process.send_after(self(), :run_job, @timeout)
-
+  def handle_cast(:run, state) do
+    fetch_issues() |> upsert()
     {:noreply, state}
   end
 
@@ -60,10 +66,13 @@ defmodule Codebattle.TasksImporter do
         struct(Codebattle.Task, params),
         on_conflict: [
           set: [
+            creator_id: params.creator_id,
+            origin: params.origin,
+            state: params.state,
+            visibility: params.visibility,
             examples: params.examples,
             description_en: params.description_en,
             description_ru: params.description_ru,
-            disabled: params.disabled,
             level: params.level,
             input_signature: params.input_signature,
             output_signature: params.output_signature,
@@ -83,9 +92,15 @@ defmodule Codebattle.TasksImporter do
     signature = Map.get(issue_info, "signature")
     description = Map.get(issue_info, "description")
 
+    state =
+      if Map.get(issue_info, "disabled") do
+        "disabled"
+      else
+        "active"
+      end
+
     %{
       name: issue_name,
-      disabled: Map.get(issue_info, "disabled"),
       examples: Map.get(issue_info, "examples"),
       description_ru: Map.get(description, "ru"),
       description_en: Map.get(description, "en"),
@@ -93,7 +108,11 @@ defmodule Codebattle.TasksImporter do
       input_signature: Map.get(signature, "input"),
       output_signature: Map.get(signature, "output"),
       asserts: asserts,
-      tags: Map.get(issue_info, "tags")
+      tags: Map.get(issue_info, "tags"),
+      origin: "github",
+      state: state,
+      visibility: "public",
+      creator_id: nil
     }
   end
 end

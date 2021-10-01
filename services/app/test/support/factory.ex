@@ -1,7 +1,7 @@
 defmodule CodebattleWeb.Factory do
   use ExMachina.Ecto, repo: Codebattle.Repo
 
-  alias Codebattle.{User, Game, Task, UserGame}
+  alias Codebattle.{User, Game, Task, TaskPack, UserGame}
   alias Codebattle.Bot.Playbook
   alias Ueberauth.Auth
 
@@ -64,7 +64,11 @@ defmodule CodebattleWeb.Factory do
         %{"argument-name" => "b", "type" => %{"name" => "integer"}}
       ],
       output_signature: %{"type" => %{"name" => "integer"}},
-      disabled: false
+      state: "active",
+      visibility: "public",
+      origin: "user",
+      disabled: false,
+      examples: "asfd"
     }
   end
 
@@ -133,6 +137,10 @@ defmodule CodebattleWeb.Factory do
       },
       disabled: false
     }
+  end
+
+  def task_pack_factory do
+    %TaskPack{name: "asdf", visibility: "public", state: "active"}
   end
 
   def playbook_factory do

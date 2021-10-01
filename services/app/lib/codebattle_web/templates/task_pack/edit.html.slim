@@ -1,0 +1,4 @@
+.container-xl.bg-white.shadow-sm.rounded.py-4.mb-3
+  h1.text-center Edit task pack
+  = render "_form.html", Map.put(assigns, :action, Routes.task_pack_path(@conn, :update, @task_pack))
+

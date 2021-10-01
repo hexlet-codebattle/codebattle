@@ -64,7 +64,18 @@ defmodule CodebattleWeb.Router do
     get("/remind_password", SessionController, :remind_password)
     resources("/users", UserController, only: [:index, :show, :new])
     resources("/tournaments", TournamentController, only: [:index, :show])
-    resources("/tasks", TaskController, only: [:index, :show])
+
+    resources("/tasks", TaskController, only: [:index, :show, :new, :edit, :create, :update]) do
+      patch("/activate", TaskController, :activate, as: :activate)
+      patch("/disable", TaskController, :disable, as: :disable)
+    end
+
+    resources("/task_packs", TaskPackController,
+      only: [:index, :show, :new, :edit, :create, :update]
+    ) do
+      patch("/activate", TaskPackController, :activate, as: :activate)
+      patch("/disable", TaskPackController, :disable, as: :disable)
+    end
 
     scope "/tournaments" do
       get("/:id/image", Tournament.ImageController, :show, as: :tournament_image)
