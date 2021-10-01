@@ -69,7 +69,7 @@ defmodule CodebattleWeb.TaskControllerTest do
       "input_signature" =>
         "[{\"argument-name\":\"a\",\"type\":{\"name\":\"integer\"}},{\"argument-name\":\"b\",\"type\":{\"name\":\"integer\"}}]",
       "level" => "easy",
-      "name" => "task_easy_1",
+      "name" => "asdfasdf",
       "output_signature" => "{\"type\":{\"name\":\"integer\"}}",
       "tags" => " kek,lol, asdf    "
     }
@@ -85,7 +85,7 @@ defmodule CodebattleWeb.TaskControllerTest do
     conn = get(conn, Routes.task_path(conn, :show, id))
     assert html_response(conn, 200)
 
-    task = Codebattle.Repo.get(Codebattle.Task, id)
+    task = Codebattle.Task.get!(id)
     user_id = user.id
 
     assert %{
@@ -100,7 +100,7 @@ defmodule CodebattleWeb.TaskControllerTest do
                %{"argument-name" => "b", "type" => %{"name" => "integer"}}
              ],
              level: "easy",
-             name: "task_easy_1",
+             name: "asdfasdf",
              origin: "user",
              output_signature: %{"type" => %{"name" => "integer"}},
              state: "draft",
@@ -134,7 +134,7 @@ defmodule CodebattleWeb.TaskControllerTest do
     assert %{id: id} = redirected_params(conn)
     assert redirected_to(conn) == Routes.task_path(conn, :edit, id)
 
-    task = Codebattle.Repo.get(Codebattle.Task, id)
+    task = Codebattle.Task.get!(id)
 
     assert %{
              asserts:
@@ -173,7 +173,7 @@ defmodule CodebattleWeb.TaskControllerTest do
 
     assert redirected_to(new_conn) == Routes.task_path(conn, :index)
 
-    task = Codebattle.Repo.get(Codebattle.Task, task.id)
+    task = Codebattle.Task.get!(task.id)
 
     assert task.state == "active"
   end
@@ -197,7 +197,7 @@ defmodule CodebattleWeb.TaskControllerTest do
 
     assert redirected_to(new_conn) == Routes.task_path(conn, :index)
 
-    task = Codebattle.Repo.get(Codebattle.Task, task.id)
+    task = Codebattle.Task.get!(task.id)
 
     assert task.state == "disabled"
   end

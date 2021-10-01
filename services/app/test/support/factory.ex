@@ -140,7 +140,11 @@ defmodule CodebattleWeb.Factory do
   end
 
   def task_pack_factory do
-    %TaskPack{name: "asdf", visibility: "public", state: "active"}
+    %TaskPack{
+      name: sequence(:taskpack, &"Pack #{&1}"),
+      visibility: "public",
+      state: "active"
+    }
   end
 
   def playbook_factory do
