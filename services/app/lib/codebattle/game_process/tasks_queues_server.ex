@@ -48,7 +48,7 @@ defmodule Codebattle.GameProcess.TasksQueuesServer do
     cursor = Map.get(state.cursors, level)
 
     case Map.get(state.task_ids, level) do
-      [] ->
+      x when x in [[], nil] ->
         case fetch_task_ids(level) do
           [] ->
             {:reply, nil, state}
