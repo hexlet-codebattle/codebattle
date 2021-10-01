@@ -7,6 +7,9 @@ defmodule Codebattle.GameProcess.TasksQueuesServerTest do
   test "gets next task" do
     tasks = insert_list(2, :task, level: "easy")
 
+    TasksQueuesServer.shuffle_task_ids()
+    TasksQueuesServer.reshuffle_task_ids()
+
     assert %Task{} = task1 = TasksQueuesServer.get_task("easy")
     assert task1 in tasks
 
@@ -14,8 +17,6 @@ defmodule Codebattle.GameProcess.TasksQueuesServerTest do
     assert task2 in tasks
     assert task1 != task2
 
-    TasksQueuesServer.shuffle_task_ids()
-    TasksQueuesServer.reshuffle_task_ids()
     assert TasksQueuesServer.get_task("easy") in tasks
 
     assert nil == TasksQueuesServer.get_task("hard")
