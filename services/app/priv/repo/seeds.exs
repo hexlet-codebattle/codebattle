@@ -6,13 +6,15 @@ levels = ["elementary", "easy", "medium", "hard"]
 1..3
 |> Enum.each(fn x ->
   for level <- levels do
-    task_name = "task_#{level}_#{:crypto.strong_rand_bytes(10) |> Base.encode32()}"
-
     task_data = %Codebattle.Task{
-      name: task_name,
+      name: "task_#{level}_#{x}",
+      tags: Enum.take_random(["math", "lol", "kek", "asdf"], 3),
+      origin: "github",
+      state: "active",
+      visibility: "public",
       description_en: "test sum: for ruby",
       description_ru: "проверка суммирования: для руби",
-      examples: "`def solution(a,b); a+b;end;`",
+      examples: "```\n2 == solution(1,1)\n10 == solution(9,1)\n```",
       asserts: "{\"arguments\":[1,1],\"expected\":2}\n{\"arguments\":[2,2],\"expected\":4}\n{\"arguments\":[1,2],\"expected\":3}\n{\"arguments\":[3,2],\"expected\":5}\n{\"arguments\":[5,1],\"expected\":6}\n{\"arguments\":[1,1],\"expected\":2}\n{\"arguments\":[2,2],\"expected\":4}\n{\"arguments\":[1,2],\"expected\":3}\n{\"arguments\":[3,2],\"expected\":5}\n{\"arguments\":[5,1],\"expected\":6}\n",
       disabled: false,
       input_signature: [
@@ -129,8 +131,6 @@ levels = ["elementary", "easy", "medium", "hard"]
       winner_id: 2,
       solution_type: "complete"
     })
-
-    IO.puts("Upsert #{task_name}")
   end
 end)
 

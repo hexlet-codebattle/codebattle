@@ -1,0 +1,27 @@
+.container-xl.bg-white.shadow-sm.rounded.py-4.mb-3
+  h1.text-center Task Packs
+  = link "Create new task pack", to: CodebattleWeb.Router.Helpers.task_pack_path(@conn, :new), class: "btn btn-success mt-2"
+  = link "Tasks", to: CodebattleWeb.Router.Helpers.task_path(@conn, :index), class: "btn btn-info mt-2 ml-2"
+  .table-responsive.mt-4
+    table.table.table-sm
+      thead
+        tr
+          th name
+          th state
+          th visibility
+          th task_ids
+          th actions
+      tbody
+        = for task_pack <- @task_packs do
+          tr
+            td.align-middle.text = task_pack.name
+            td.align-middle.text = task_pack.state
+            td.align-middle.text = task_pack.visibility
+            td.align-middle.text = render_task_ids(task_pack)
+            td.align-middle.text-nowrap
+              .d-flex
+                = link "Show", to: CodebattleWeb.Router.Helpers.task_pack_path(@conn, :show, task_pack.id), class: "btn btn-sm btn-info"
+                = if Codebattle.User.is_admin?(@current_user) do
+                  = button "Activate", to: CodebattleWeb.Router.Helpers.task_pack_activate_path(@conn, :activate, task_pack.id), method: "patch", class: "btn btn-sm btn-success"
+                  = button "Disable", to: CodebattleWeb.Router.Helpers.task_pack_disable_path(@conn, :disable, task_pack.id), method: "patch", class: "btn btn-sm btn-danger"
+

@@ -79,6 +79,7 @@ defmodule Codebattle.Mixfile do
       {:gen_state_machine, "~> 2.1"},
       {:html_to_image, git: "https://github.com/koss-lebedev/html_to_image"},
       {:ueberauth_discord, "~> 0.5.2"},
+      {:earmark, "~> 1.4"},
 
       # dev_and_test
       {:credo, "~> 1.4", only: [:dev, :test], runtime: false},

@@ -1,5 +1,7 @@
 .container-xl.bg-white.shadow-sm.rounded.py-4.mb-3
   h1.text-center Tasks
+  = link "Create new task", to: CodebattleWeb.Router.Helpers.task_path(@conn, :new), class: "btn btn-success mt-2"
+  = link "Task packs", to: CodebattleWeb.Router.Helpers.task_pack_path(@conn, :index), class: "btn btn-info mt-2 ml-2"
   .table-responsive.mt-4
     table.table.table-sm
       thead
@@ -7,6 +9,9 @@
           th name
           th level
           th tags
+          th origin
+          th state
+          th visibility
           th actions
       tbody
         = for task <- @tasks do
@@ -15,5 +20,12 @@
             td.align-middle.text-nowrap
               img alt=task.level src="/assets/images/levels/#{task.level}.svg"
             td.align-middle.text = Enum.join(task.tags, ", ")
+            td.align-middle.text = task.origin
+            td.align-middle.text = task.state
+            td.align-middle.text = task.visibility
             td.align-middle.text-nowrap
-              = link "Show", to: CodebattleWeb.Router.Helpers.task_path(@conn, :show, task.id), class: "btn btn-success mt-2"
+              .d-flex
+                = link "Show", to: CodebattleWeb.Router.Helpers.task_path(@conn, :show, task.id), class: "btn btn-sm btn-info"
+                = if Codebattle.User.is_admin?(@current_user) do
+                  = button "Activate", to: CodebattleWeb.Router.Helpers.task_activate_path(@conn, :activate, task.id), method: "patch", class: "btn btn-sm btn-success"
+                  = button "Disable", to: CodebattleWeb.Router.Helpers.task_disable_path(@conn, :disable, task.id), method: "patch", class: "btn btn-sm btn-danger"

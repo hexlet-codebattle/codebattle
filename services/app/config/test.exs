@@ -40,6 +40,7 @@ config :codebattle, checker_adapter: adapter
 config :codebattle, tournament_match_timeout: 1
 config :codebattle, Codebattle.Invite, timeout: :timer.seconds(1000)
 config :codebattle, Codebattle.Invite, lifetime: :timer.seconds(0)
+config :codebattle, tasks_provider: Codebattle.GameProcess.FakeTasksQueuesServer
 
 config :codebattle, :firebase,
   sender_id: "ASDF",
