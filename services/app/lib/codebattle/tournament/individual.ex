@@ -1,4 +1,6 @@
 defmodule Codebattle.Tournament.Individual do
+  alias Codebattle.GameProcess.FsmHelpers
+  alias Codebattle.GameProcess.Play
   alias Codebattle.Tournament
 
   use Tournament.Base
@@ -99,6 +101,18 @@ defmodule Codebattle.Tournament.Individual do
     else
       tournament
     end
+  end
+
+  @impl Tournament.Base
+  def create_game(tournament, match) do
+    {:ok, fsm} =
+      Play.create_game(%{
+        level: tournament.difficulty,
+        tournament: tournament,
+        players: match.players
+      })
+
+    FsmHelpers.get_game_id(fsm)
   end
 
   defp pair_players_to_matches(players, step) do

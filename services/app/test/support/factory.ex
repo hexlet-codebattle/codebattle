@@ -181,6 +181,19 @@ defmodule CodebattleWeb.Factory do
     }
   end
 
+  def stairway_tournament_factory do
+    %Codebattle.Tournament{
+      type: "stairway",
+      name: "Stairway tournament",
+      step: 0,
+      players_count: 16,
+      starts_at: NaiveDateTime.utc_now(),
+      creator_id: 1,
+      data: %{players: [], matches: []},
+      meta: %{}
+    }
+  end
+
   def token_tournament_factory do
     %Codebattle.Tournament{
       type: "individual",

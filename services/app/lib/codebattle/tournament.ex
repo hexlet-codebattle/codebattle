@@ -72,6 +72,7 @@ defmodule Codebattle.Tournament do
       :meta
     ])
     |> cast_embed(:data)
+    |> put_assoc(:task_pack, params["task_pack"])
     |> validate_inclusion(:state, @states)
     |> validate_inclusion(:type, @types)
     |> validate_inclusion(:access_type, @access_types)

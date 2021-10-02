@@ -10,6 +10,15 @@ defmodule Codebattle.TaskPack do
   @states ~w(draft on_moderation active disabled)
   @visibility_types ~w(hidden public)
 
+  @derive {Jason.Encoder,
+           only: [
+             :id,
+             :name,
+             :state,
+             :visibility,
+             :task_ids,
+             :creator_id
+           ]}
   schema "task_packs" do
     field(:name, :string)
     field(:state, :string)

@@ -198,6 +198,7 @@ six_hours_ago = Timex.shift(now, hours: -6)
     updated_at: TimeHelper.utc_now()
   }
 
+
   {:ok, user_2} =
     %User{}
     |> User.changeset(user_2_params)
@@ -233,3 +234,13 @@ six_hours_ago = Timex.shift(now, hours: -6)
     |> UserGame.changeset(user_game_2_params)
     |> Repo.insert()
 end)
+
+task_ids =
+Codebattle.Task
+|> Repo.all()
+|> Enum.map( &(&1.id))
+
+
+%Codebattle.TaskPack{name: "All_tasks", visibility: "public", state: "active", task_ids: task_ids}
+|> Repo.insert!
+

@@ -1,7 +1,6 @@
 defmodule Codebattle.Tournament.Base do
   alias Codebattle.Repo
   alias Codebattle.Tournament
-  alias Codebattle.GameProcess.{Play, FsmHelpers}
 
   @moduledoc """
   Defines interface for tournament type
@@ -10,6 +9,8 @@ defmodule Codebattle.Tournament.Base do
   @callback complete_players(%Codebattle.Tournament{}) :: %Codebattle.Tournament{}
   @callback build_matches(%Codebattle.Tournament{}) :: %Codebattle.Tournament{}
   @callback maybe_finish(%Codebattle.Tournament{}) :: %Codebattle.Tournament{}
+  @callback create_game(%Codebattle.Tournament{}, %Codebattle.Tournament.Types.Match{}) ::
+              %Codebattle.Tournament.Types.Match{}
 
   defmacro __using__(_opts) do
     quote do
@@ -204,14 +205,8 @@ defmodule Codebattle.Tournament.Base do
                 %{match | state: "canceled"}
 
               %{state: "waiting"} ->
-                {:ok, fsm} =
-                  Play.create_game(%{
-                    level: tournament.difficulty,
-                    tournament: tournament,
-                    players: match.players
-                  })
-
-                %{match | game_id: FsmHelpers.get_game_id(fsm), state: "active"}
+                game_id = create_game(tournament, match)
+                %{match | game_id: game_id, state: "active"}
 
               _ ->
                 match

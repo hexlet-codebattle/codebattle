@@ -1,5 +1,6 @@
 defmodule Codebattle.Tournament.Context do
   alias Codebattle.Tournament
+  alias Codebattle.TaskPack
 
   import Ecto.Query
 
@@ -102,10 +103,18 @@ defmodule Codebattle.Tournament.Context do
         _ -> nil
       end
 
+    task_pack =
+      case params["task_pack_id"] do
+        x when x in [nil, ""] -> nil
+        task_pack_id -> TaskPack.get!(task_pack_id)
+      end
+
     result =
       %Tournament{}
       |> Tournament.changeset(
         Map.merge(params, %{
+          "task_pack_id" => params["task_pack_id"],
+          "task_pack" => task_pack,
           "access_token" => access_token,
           "alive_count" => get_live_tournaments_count(),
           "match_timeout_seconds" => match_timeout_seconds,

@@ -47,7 +47,8 @@
         = error_tag f, :access_type
       .form-group
         p.mb-1 Starts at (UTC)
-        = datetime_local_input f, :starts_at, class: "form-control form-control-lg", required: true
+        = datetime_local_input f, :starts_at, class: "form-control form-control-lg", required: true,
+            value: f.params["starts_at"]
         = error_tag f, :starts_at
     = if f.params["type"] == "team" do
       = label f, "Team names"
@@ -64,7 +65,7 @@
       = if f.params["type"] == "stairway" do
         .form-group
           = label f, :task_pack_id
-          = number_input f, :task_pack_id, class: "form-control form-control-lg", value: f.params["task_pack_id"]
+          = number_input f, :task_pack_id, class: "form-control form-control-lg", value: f.params["task_pack_id"], required: true
           = error_tag f, :task_pack_id
       = if f.params["type"] != "stairway" do
         .form-group

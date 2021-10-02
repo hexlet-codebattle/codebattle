@@ -1,4 +1,6 @@
 defmodule Codebattle.Tournament.Stairway do
+  alias Codebattle.GameProcess.FsmHelpers
+  alias Codebattle.GameProcess.Play
   alias Codebattle.Tournament
 
   use Tournament.Base
@@ -24,42 +26,47 @@ defmodule Codebattle.Tournament.Stairway do
   end
 
   @impl Tournament.Base
-  def build_matches(%{step: 0} = tournament) do
-    players = tournament |> get_players |> Enum.shuffle()
+  def build_matches(tournament) do
+    current_task_id = Enum.at(tournament.task_pack.task_ids, tournament.step)
+    task = Codebattle.Task.get!(current_task_id)
+    new_meta = %{"current_task" => task}
 
-    matches = []
+    matches_for_round =
+      tournament
+      |> get_players
+      |> Enum.map(fn p ->
+        %{state: "waiting", players: [p], round_id: tournament.step}
+      end)
+
+    prev_matches =
+      tournament
+      |> get_matches()
+      |> Enum.map(&Map.from_struct/1)
+
+    new_matches = prev_matches ++ matches_for_round
 
     new_data =
       tournament
       |> Map.get(:data)
-      |> Map.merge(%{matches: matches})
+      |> Map.merge(%{matches: new_matches})
       |> Map.from_struct()
 
-    update!(tournament, %{data: new_data})
+    update!(tournament, %{data: new_data, meta: new_meta})
   end
 
   @impl Tournament.Base
-  def build_matches(tournament) do
-    if final_step?(tournament) do
-      tournament
-    else
-      matches = tournament |> get_matches |> Enum.map(&Map.from_struct/1)
+  def create_game(tournament, match) do
+    task = get_current_task(tournament)
 
-      winners =
-        matches
-        |> Enum.filter(fn match -> match.round_id == tournament.step - 1 end)
-        |> Enum.map(fn match -> pick_winner(match) end)
+    {:ok, fsm} =
+      Play.create_game(%{
+        task: task,
+        level: task.level,
+        tournament: tournament,
+        players: match.players
+      })
 
-      new_matches = matches ++ []
-
-      new_data =
-        tournament
-        |> Map.get(:data)
-        |> Map.merge(%{matches: new_matches})
-        |> Map.from_struct()
-
-      update!(tournament, %{data: new_data})
-    end
+    FsmHelpers.get_game_id(fsm)
   end
 
   @impl Tournament.Base
@@ -77,4 +84,5 @@ defmodule Codebattle.Tournament.Stairway do
   defp final_step?(tournament) do
     tournament.task_pack
   end
+
 end

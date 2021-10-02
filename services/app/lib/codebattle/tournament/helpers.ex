@@ -54,6 +54,7 @@ defmodule Codebattle.Tournament.Helpers do
   def is_waiting_participants?(tournament), do: tournament.state == "waiting_participants"
   def is_upcoming?(tournament), do: tournament.state == "upcoming"
   def is_individual?(tournament), do: tournament.type == "individual"
+  def is_stairway?(tournament), do: tournament.type == "stairway"
   def is_finished?(tournament), do: tournament.state == "finished"
   def is_team?(tournament), do: tournament.type == "team"
   def is_public?(tournament), do: tournament.access_type == "public"
@@ -215,4 +216,6 @@ defmodule Codebattle.Tournament.Helpers do
   end
 
   defp get_team_by_id(teams, team_id), do: Enum.find(teams, fn x -> x.id == team_id end)
+
+  def get_current_task(tournament), do: tournament.meta["current_task"]
 end

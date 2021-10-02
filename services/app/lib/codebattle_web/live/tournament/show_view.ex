@@ -159,6 +159,8 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     Tournament.Server.update_tournament(socket.assigns.tournament.id, :back, %{
       user: socket.assigns.current_user
     })
+
+    {:noreply, socket}
   end
 
   def handle_event("open_up", _params, socket) do

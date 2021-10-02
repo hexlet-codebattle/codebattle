@@ -16,7 +16,7 @@ defmodule Codebattle.GameProcess.Engine.Tournament do
   @impl Engine.Base
   def create_game(%{players: players} = params) do
     level = params[:level] || "elementary"
-    task = get_task(level)
+    task = params[:task] || get_task(level)
 
     {:ok, game} =
       insert_game(%{

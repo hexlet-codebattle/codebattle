@@ -1,6 +1,6 @@
 defmodule Codebattle.GameProcess.Fsm do
   @moduledoc """
-  Finit state machine for game process.
+  Finite state machine for game process.
   fsm -> data: %{}, state :initial
   types -> ["public", "bot", "training", "tournament", "private"]
   states -> [:initial, :waiting_opponent, :playing, :game_over, :timeout]

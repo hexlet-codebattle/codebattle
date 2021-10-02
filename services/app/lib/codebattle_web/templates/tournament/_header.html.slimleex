@@ -22,6 +22,11 @@
           button.btn.btn-outline-danger[phx-click="leave"] Leave
         - else
           button.btn.btn-outline-secondary[phx-click="join"] Join
+      = if is_stairway?(@tournament) do
+        = if is_player?(@tournament, @current_user.id) do
+          button.btn.btn-outline-danger[phx-click="leave"] Leave
+        - else
+          button.btn.btn-outline-secondary[phx-click="join"] Join
       = if can_moderate?(@tournament, @current_user) do
         button.btn.btn-success.ml-2[phx-click="start" disabled=!can_be_started?(@tournament)] Start
         button.btn.btn-info.ml-2[phx-click="back"] Back
@@ -33,7 +38,8 @@
     .ml-auto
       = if can_moderate?(@tournament, @current_user) do
         button.btn.btn-danger.ml-2[phx-click="cancel"] Cancel
-        button.btn.btn-danger.ml-2[phx-click="open_up"] Open Up
+        = if !is_public?(@tournament) do
+          button.btn.btn-danger.ml-2[phx-click="open_up"] Open Up
 
 .d-flex.align-items-center.mt-2
   .small.text-muted
