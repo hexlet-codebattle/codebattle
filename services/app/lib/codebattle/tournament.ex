@@ -18,10 +18,11 @@ defmodule Codebattle.Tournament do
              :data,
              :creator,
              :creator_id,
+             :task_pack_id,
              :is_live
            ]}
 
-  @types ~w(individual team)
+  @types ~w(individual team stairway)
   @access_types ~w(public token)
   @states ~w(upcoming waiting_participants canceled active finished)
   @difficulties ~w(elementary easy medium hard)
@@ -47,6 +48,7 @@ defmodule Codebattle.Tournament do
     embeds_one(:data, Types.Data, on_replace: :delete)
 
     belongs_to(:creator, Codebattle.User)
+    belongs_to(:task_pack, Codebattle.TaskPack)
 
     timestamps()
   end
@@ -59,6 +61,7 @@ defmodule Codebattle.Tournament do
       :type,
       :access_type,
       :access_token,
+      :task_pack_id,
       :step,
       :state,
       :starts_at,

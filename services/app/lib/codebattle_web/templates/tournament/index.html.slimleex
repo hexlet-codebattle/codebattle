@@ -61,10 +61,16 @@
             class: "form-control form-control-lg",
             value: f.params["team_2_name"] || "Frontend"
     .form-row.justify-content-between
-      .form-group
-        = label f, :level
-        = select f, :difficulty, Codebattle.Tournament.difficulties, class: "form-control form-control-lg"
-        = error_tag f, :difficulty
+      = if f.params["type"] == "stairway" do
+        .form-group
+          = label f, :task_pack_id
+          = number_input f, :task_pack_id, class: "form-control form-control-lg", value: f.params["task_pack_id"]
+          = error_tag f, :task_pack_id
+      = if f.params["type"] != "stairway" do
+        .form-group
+          = label f, :level
+          = select f, :difficulty, Codebattle.Tournament.difficulties, class: "form-control form-control-lg"
+          = error_tag f, :difficulty
       .form-group
         = label f, :default_language
         = select f, :default_language, @langs, class: "form-control form-control-lg"

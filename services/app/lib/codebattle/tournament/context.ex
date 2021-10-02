@@ -29,7 +29,7 @@ defmodule Codebattle.Tournament.Context do
       from(
         t in Tournament,
         where: t.id == ^id,
-        preload: :creator
+        preload: [:creator, :task_pack]
       )
 
     case Codebattle.Repo.one(q) do
@@ -144,6 +144,8 @@ defmodule Codebattle.Tournament.Context do
 
   defp get_module(%{type: "team"}), do: Tournament.Team
   defp get_module(%{"type" => "team"}), do: Tournament.Team
+  defp get_module(%{type: "stairway"}), do: Tournament.Stairway
+  defp get_module(%{"type" => "stairway"}), do: Tournament.Stairway
   defp get_module(_), do: Tournament.Individual
 
   defp add_module(tournament), do: Map.put(tournament, :module, get_module(tournament))
