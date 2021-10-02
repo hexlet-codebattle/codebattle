@@ -4,7 +4,10 @@
   h3.text-center.mt-4  Params
   .d-flex.flex-wrap.align-items-center.justify-content-around.text-muted
     span Played count: #{@played_count}
-    span Origin: #{@task.origin}
+    = if @task.origin == "github" do
+      a href="https://github.com/hexlet-codebattle/battle_asserts/tree/master/src/battle_asserts/issues/#{@task.name}.clj" Origin: #{@task.origin}
+    - else
+      span Origin: #{@task.origin}
     span Visibility: #{@task.visibility}
     span State: #{@task.state}
     = if @task.creator_id do

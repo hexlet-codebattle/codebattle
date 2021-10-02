@@ -1,4 +1,5 @@
 defmodule CodebattleWeb.Endpoint do
+  use Sentry.PlugCapture
   use Phoenix.Endpoint, otp_app: :codebattle
 
   @session_options [
@@ -52,6 +53,8 @@ defmodule CodebattleWeb.Endpoint do
     pass: ["*/*"],
     json_decoder: Jason
   )
+
+  plug(Sentry.PlugContext)
 
   plug(Plug.MethodOverride)
   plug(Plug.Head)
