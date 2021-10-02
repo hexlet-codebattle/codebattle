@@ -53,7 +53,8 @@ defmodule CodebattleWeb.Endpoint do
     pass: ["*/*"],
     json_decoder: Jason
   )
-  plug Sentry.PlugContext
+
+  plug(Sentry.PlugContext)
 
   plug(Plug.MethodOverride)
   plug(Plug.Head)
