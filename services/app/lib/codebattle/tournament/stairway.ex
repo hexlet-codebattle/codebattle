@@ -82,7 +82,6 @@ defmodule Codebattle.Tournament.Stairway do
   end
 
   defp final_step?(tournament) do
-    tournament.task_pack
+    length(tournament.task_pack.task_ids) == tournament.step
   end
-
 end
