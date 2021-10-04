@@ -86,7 +86,8 @@ defmodule Codebattle.Bot.ChatClient do
       "Vtm, Master, Guide Me",
       "Huge Lebowski, where are you man?!",
       "Lera-Valera Help!!!111",
-      "RedBrother, HELP me, please!!!!"
+      "RedBrother, HELP me, please!!!!",
+      "I seem to remember how to solve this task in Clojure..."
     ]
     |> Enum.random()
   end
@@ -98,7 +99,9 @@ defmodule Codebattle.Bot.ChatClient do
   defp some_congrats(_) do
     [
       "GG WP",
-      "Vtm, you are a bad teacher."
+      "Vtm, you are a bad teacher.",
+      "I'll be back next time!",
+      "I lost the battle, but I will win the war!"
     ]
     |> Enum.random()
   end
@@ -106,14 +109,21 @@ defmodule Codebattle.Bot.ChatClient do
   defp some_advice() do
     [
       "Did the task seems complicated? Here, at hexlet.io we will teach you how to solve such tasks!",
-      "Hey, there! Learn JS and be happy!"
+      "Hey, there! Learn JS and be happy!",
+      "Maybe you should pick Ruby for this task?",
+      "You now that PHP has levenshtein distance calculation function?"
     ]
     |> Enum.random()
   end
 
   defp greet_opponent(chat_state) do
     opponent = get_opponent(chat_state)
-    "Hey, #{opponent["name"]}, I'll join when you start writing code"
+    [
+      "Hey, @#{opponent["name"]}, I'll join when you start writing code",
+      "Hello, @#{opponent["name"]}! I will wait...Untill you start coding.",
+      "I won't start writing code. Only after you, @#{opponent["name"]} :)"
+    ]
+    |> Enum.random()
   end
 
   defp say_announcement(_game_state) do
@@ -126,7 +136,11 @@ defmodule Codebattle.Bot.ChatClient do
   end
 
   defp say_about_code(_chat_state) do
-    "Your code looks very strange..."
+    [
+      "Your code looks very strange...",
+      "What did you just type? Looks strange..."
+    ]
+    |> Enum.random()
   end
 
   defp get_opponent(chat_state) do
@@ -142,35 +156,4 @@ defmodule Codebattle.Bot.ChatClient do
   defp default_user do
     %{"name" => "there", "lang" => "php"}
   end
-
-  # Chat state
-  #   %{
-  #     "messages" => [],
-  #     "users" => [
-  #       %{
-  #         "achievements" => ["bot"],
-  #         "editor_mode" => nil,
-  #         "editor_theme" => nil,
-  #         "github_id" => 35_539_033,
-  #         "guest" => false,
-  #         "id" => -7,
-  #         "is_bot" => true,
-  #         "lang" => "js",
-  #         "name" => "VadimFront",
-  #         "rating" => 1300
-  #       },
-  #       %{
-  #         "achievements" => [],
-  #         "editor_mode" => nil,
-  #         "editor_theme" => nil,
-  #         "github_id" => 35_539_033,
-  #         "guest" => false,
-  #         "id" => 2,
-  #         "is_bot" => false,
-  #         "lang" => "ruby",
-  #         "name" => "Diman-8699",
-  #         "rating" => 1202
-  #       }
-  #     ]
-  #   }, '#PID<0.994.0>}'}}
 end
