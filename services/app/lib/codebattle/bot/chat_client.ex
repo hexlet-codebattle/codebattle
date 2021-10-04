@@ -118,6 +118,7 @@ defmodule Codebattle.Bot.ChatClient do
 
   defp greet_opponent(chat_state) do
     opponent = get_opponent(chat_state)
+
     [
       "Hey, @#{opponent["name"]}, I'll join when you start writing code",
       "Hello, @#{opponent["name"]}! I will wait...Untill you start coding.",
