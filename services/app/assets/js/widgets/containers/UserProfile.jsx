@@ -1,9 +1,10 @@
 import { camelizeKeys } from 'humps';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 import { actions } from '../slices';
+import { fetchCompletedGames, loadNextPage } from '../slices/completedGames';
 import CompletedGames from '../components/Game/CompletedGames';
 import Heatmap from './Heatmap';
 import Loading from '../components/Loading';
@@ -22,9 +23,7 @@ const getUserAvatarUrl = ({ githubId, discordId, discordAvatar }) => {
 
 const UserProfile = () => {
   const [stats, setStats] = useState(null);
-  const [completedGames, setCompletedGames] = useState([]);
-  const [currentPage, setCurrenPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const completedGames = useSelector(state => state.completedGames.completedGames);
 
   const dispatch = useDispatch();
 
@@ -41,24 +40,11 @@ const UserProfile = () => {
       });
   }, [dispatch]);
 
+  useEffect(() => {
+    dispatch(fetchCompletedGames());
+  }, [dispatch]);
+
   const dateParse = date => new Date(date).toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-
-  const loadCompletedGames = () => {
-    const userId = window.location.pathname.split('/').pop();
-
-    if (currentPage <= totalPages) {
-      axios
-      .get(`/api/v1/user/${userId}/completed_games?page_size=3&page=${currentPage}`)
-      .then(response => {
-        setTotalPages(response.data.page_info.total_pages);
-        setCurrenPage(currentPage + 1);
-        setCompletedGames(completedGames.concat(response.data.games));
-      })
-      .catch(error => {
-        dispatch(actions.setError(error));
-      });
-    }
-  };
 
   const renderAchievemnt = achievement => {
     if (achievement.includes('win_games_with')) {
@@ -142,9 +128,7 @@ const UserProfile = () => {
           <>
             <CompletedGames
               games={completedGames}
-              onShowMoreButtonClick={
-              currentPage <= totalPages ? loadCompletedGames : null
-            }
+              loadNextPage={loadNextPage}
             />
           </>
               )}
@@ -183,7 +167,6 @@ const UserProfile = () => {
             role="tab"
             aria-controls="completedGames"
             aria-selected="false"
-            onClick={loadCompletedGames}
           >
             Completed games
           </a>
