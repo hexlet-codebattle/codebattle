@@ -73,19 +73,15 @@ defmodule CodebattleWeb.Api.V1.UserController do
 
   def stats(conn, %{"id" => id}) do
     game_stats = Stats.get_game_stats(id)
-
-    completed_games =
-      id
-      |> Stats.get_completed_games()
-      |> GameView.render_completed_games()
-
     user = Repo.get(User, id)
 
-    json(conn, %{
-      completed_games: completed_games,
-      stats: game_stats,
-      user: user
-    })
+    json(conn, %{stats: game_stats, user: user})
+  end
+
+  def completed_games(conn, %{"id" => id} = params) do
+    %{games: games, page_info: page_info} = Stats.get_completed_games(id, params)
+
+    json(conn, %{games: GameView.render_completed_games(games), page_info: page_info})
   end
 
   def current(conn, _) do

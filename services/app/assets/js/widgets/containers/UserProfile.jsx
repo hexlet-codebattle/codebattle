@@ -1,9 +1,10 @@
 import { camelizeKeys } from 'humps';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 import { actions } from '../slices';
+import { fetchCompletedGames, loadNextPage } from '../slices/completedGames';
 import CompletedGames from '../components/Game/CompletedGames';
 import Heatmap from './Heatmap';
 import Loading from '../components/Loading';
@@ -22,6 +23,7 @@ const getUserAvatarUrl = ({ githubId, discordId, discordAvatar }) => {
 
 const UserProfile = () => {
   const [stats, setStats] = useState(null);
+  const completedGames = useSelector(state => state.completedGames.completedGames);
 
   const dispatch = useDispatch();
 
@@ -37,6 +39,12 @@ const UserProfile = () => {
         dispatch(actions.setError(error));
       });
   }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(fetchCompletedGames());
+  }, [dispatch]);
+
+  const dateParse = date => new Date(date).toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
   const renderAchievemnt = achievement => {
     if (achievement.includes('win_games_with')) {
@@ -73,8 +81,6 @@ const UserProfile = () => {
   if (!stats) {
     return <Loading />;
   }
-
-  const dateParse = date => new Date(date).toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
   const renderStatistics = () => (
     <>
@@ -118,11 +124,21 @@ const UserProfile = () => {
     <div className="row justify-content-center">
       <div className="col-11">
         <div className="text-left my-5">
-          {stats.completedGames.length > 0 && (
+          {completedGames && completedGames.length > 0 && (
           <>
-            <CompletedGames games={stats.completedGames} />
+            <CompletedGames
+              games={completedGames}
+              loadNextPage={loadNextPage}
+            />
           </>
               )}
+          {completedGames && completedGames.length === 0 && (
+          <>
+            <div className="text-center text-muted">
+              No completed games
+            </div>
+          </>
+          )}
         </div>
       </div>
     </div>
