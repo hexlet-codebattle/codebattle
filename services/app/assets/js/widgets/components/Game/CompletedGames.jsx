@@ -50,7 +50,7 @@ const CompletedGames = ({ games, loadNextPage = null }) => {
         ))}
         </tbody>
       </table>
-      { loadNextPage !== null && nextPage < totalPages
+      { loadNextPage !== null && nextPage <= totalPages
         ? (
           <button type="button" className="mt-2 btn btn-light" onClick={() => dispatch(loadNextPage(nextPage))}>
             Show More

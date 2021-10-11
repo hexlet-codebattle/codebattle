@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { camelizeKeys } from 'humps';
 
 export const fetchCompletedGames = createAsyncThunk(
   'completedGames/fetchCompletedGames',
@@ -8,7 +9,7 @@ export const fetchCompletedGames = createAsyncThunk(
 
     const response = await axios.get(`/api/v1/user/${userId}/completed_games?page_size=7`);
 
-    return response.data;
+    return camelizeKeys(response.data);
   },
 );
 
@@ -19,7 +20,7 @@ export const loadNextPage = createAsyncThunk(
 
     const response = await axios.get(`/api/v1/user/${userId}/completed_games?page_size=7&page=${page}`);
 
-    return response.data;
+    return camelizeKeys(response.data);
   },
 );
 
@@ -41,8 +42,8 @@ const completedGames = createSlice({
     [fetchCompletedGames.fulfilled]: (state, { payload }) => {
       state.status = 'loaded';
       state.completedGames = payload.games;
-      state.totalPages = payload.page_info.total_pages;
-      state.nextPage = payload.page_info.page_number + 1;
+      state.totalPages = payload.pageInfo.totalPages;
+      state.nextPage = payload.pageInfo.pageNumber + 1;
     },
     [fetchCompletedGames.rejected]: (state, action) => {
       state.status = 'rejected';

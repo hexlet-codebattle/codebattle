@@ -122,8 +122,8 @@ const UserProfile = () => {
 
   const renderCompletedGames = () => (
     <div className="row justify-content-center">
-      <div className="col-11">
-        <div className="text-left my-5">
+      <div className="col-12">
+        <div className="text-left">
           {completedGames && completedGames.length > 0 && (
           <>
             <CompletedGames
@@ -134,7 +134,7 @@ const UserProfile = () => {
               )}
           {completedGames && completedGames.length === 0 && (
           <>
-            <div className="text-center text-muted">
+            <div style={{ height: 498 }} className="d-flex align-items-center justify-content-center border text-muted">
               No completed games
             </div>
           </>
@@ -145,7 +145,7 @@ const UserProfile = () => {
   );
 
   const statContainers = () => (
-    <div className="border">
+    <div>
       <nav>
         <div className="nav nav-tabs bg-gray" id="nav-tab" role="tablist">
           <a
@@ -174,7 +174,7 @@ const UserProfile = () => {
       </nav>
       <div className="tab-content" id="nav-tabContent">
         <div
-          className="tab-pane fade show active"
+          className="tab-pane fade border show active"
           id="statistics"
           role="tabpanel"
           aria-labelledby="statistics-tab"
