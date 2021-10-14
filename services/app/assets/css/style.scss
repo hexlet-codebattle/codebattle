@@ -209,12 +209,17 @@ a {
 }
 
 .cb-slider-action {
-  width: 20px;
+  width: 5px;
   height: 20px;
   left: 0;
-  top: 12px;
-  opacity: 0;
-  transform: translateY(-100%);
+  top: 50%;
+  transform: translate(0, -50%);
+  z-index: 15;
+}
+
+.cb-slider-action:hover {
+  display: block;
+  height: 28px;
 }
 
 .cb-slider-handle {

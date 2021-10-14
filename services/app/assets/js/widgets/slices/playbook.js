@@ -1,9 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { addRecord } from '../lib/player';
+import { addRecord, parse } from '../lib/player';
 import { actions as editorActions } from './editor';
 import { actions as executionOutputActions } from './executionOutput';
 
 const initialState = {
+  mainEvents: [],
   players: [],
   task: {},
   initRecords: [],
@@ -14,9 +15,10 @@ const playbook = createSlice({
   name: 'playbook',
   initialState,
   reducers: {
-    loadPlaybook: (state, { payload }) => (
-      { ...state, ...payload }
-    ),
+    loadPlaybook: (state, { payload }) => {
+      const mainEvents = payload.records.filter(record => parse(record).type === 'check_complete').map(parse);
+      return { ...state, ...payload, mainEvents };
+    },
   },
   extraReducers: {
     [editorActions.updateEditorText]: (state, { payload }) => {
