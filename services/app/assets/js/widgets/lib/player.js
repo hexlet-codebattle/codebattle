@@ -317,6 +317,7 @@ export const resolveDiffs = (playbook, type) => {
     playbook.records,
     record => record.type === 'init',
   );
+  // record types "init"
   const initGameState = {
     type,
     players: initRecords,

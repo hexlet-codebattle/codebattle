@@ -104,10 +104,17 @@ const initPlaybook = dispatch => data => {
 const initGameChannel = (dispatch, machine) => {
   const onJoinFailure = payload => {
     machine.send('REJECT_LOADING_GAME', { payload });
+    machine.send('FAILURE_JOIN', { payload });
     window.location.reload();
   };
 
+  channel.onError(() => {
+    machine.send('FAILURE');
+  });
+
   const onJoinSuccess = response => {
+    machine.send('JOIN', { payload: response });
+
     const {
       status,
       startsAt,

@@ -73,9 +73,9 @@ const editor = {
     checking: {
       entry: initContextByState('checking'),
       after: {
-        30000: {
+        20000: {
           target: 'idle',
-          actions: ['soundFailureChecking'],
+          actions: ['soundFailureChecking', 'handleTimeoutFailureChecking'],
         },
       },
       on: {
@@ -85,8 +85,8 @@ const editor = {
           cond: 'isUserEvent',
         },
       },
-      baned: {},
     },
+    baned: {},
   },
 };
 
@@ -97,6 +97,7 @@ export const config = {
       sound.play('check');
     },
     soundFailureChecking: () => {
+      sound.stop();
       sound.play('failure');
     },
     soundFinishedChecking: () => {

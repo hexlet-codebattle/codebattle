@@ -12,7 +12,7 @@ const Output = ({ sideOutput }) => {
   const normalizedAsserts = version === 2 ? asserts : asserts.map(elem => camelizeKeys(JSON.parse(elem)));
   return (
     <>
-      {status === 'error' || status === 'memory_leak' ? (
+      {['error', 'memory_leak', 'timeout'].includes(status) ? (
         <AccordeonBox.Item output={output} result={result} />
       ) : (
         normalizedAsserts
