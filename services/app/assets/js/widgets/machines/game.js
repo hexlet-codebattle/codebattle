@@ -77,7 +77,8 @@ const machine = {
         none: {
           on: {
             JOIN: { target: 'connected' },
-            FAILURE: { target: 'disconnected', actions: ['handleFailureJoin'] },
+            FAILURE_JOIN: { target: 'disconnected', actions: ['handleFailureJoin'] },
+            FAILURE: { target: 'disconnected', actions: ['handleDisconnection'] },
           },
         },
         disconnected: {
@@ -265,9 +266,15 @@ const states = {
     ended: 'on.ended',
     off: 'off',
   },
+  network: {
+    none: 'none',
+    disconnected: 'disconnected',
+    connected: 'connected',
+  },
 };
 
 export const gameMachineStates = states.game;
 export const replayerMachineStates = states.replayer;
+export const networkMachineStates = states.network;
 
 export default machine;
