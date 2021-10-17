@@ -50,6 +50,8 @@ defmodule CodebattleWeb.Router do
       resources("/reset_password", ResetPasswordController, only: [:create], singleton: true)
       resources("/settings", SettingsController, only: [:show, :update], singleton: true)
       post("/feedback", FeedBackController, :index)
+      post("/playbooks/approve", PlaybookController, :approve)
+      post("/playbooks/reject", PlaybookController, :reject)
     end
   end
 

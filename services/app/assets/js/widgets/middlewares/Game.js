@@ -377,6 +377,31 @@ const fetchPlaybook = (machine, init) => dispatch => {
     });
 };
 
+export const changePlaybookSolution = method => dispatch => {
+  axios.post(`/api/v1/playbooks/${method}`, {
+    game_id: gameId,
+  }, {
+    headers: {
+      'Content-type': 'application/json',
+      'x-csrf-token': window.csrf_token,
+    },
+  }).then(response => {
+    const data = camelizeKeys(response.data);
+
+    if (data.errors) {
+      console.error(data.errors);
+      dispatch(actions.setError({
+        message: data.errors[0],
+      }));
+    } else {
+      dispatch(actions.changeSolutionType(data));
+    }
+  }).catch(error => {
+    console.error(error);
+    dispatch(actions.setError(error));
+  });
+};
+
 export const storedEditorReady = machine => () => {
   machine.send('load_stored_editor');
 };

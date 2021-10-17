@@ -17,7 +17,7 @@ const getMessage = status => {
   }
 };
 
-const OutputTab = ({ sideOutput, side }) => {
+const OutputTab = ({ sideOutput }) => {
   const { successCount, assertsCount, status } = sideOutput;
   const isShowMessage = status === 'failure';
   const statusColor = color[status];
