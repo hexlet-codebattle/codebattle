@@ -4,6 +4,7 @@ import ChatWidget from './ChatWidget';
 import StairwayGameInfo from '../components/StairwayGameInfo';
 import Editor from './Editor';
 import StairwayOutputTab from './StairwayOutputTab';
+import StairwayEditorContainer from './StairwayEditorContainer';
 
 const StairwayGameContainer = () => {
     const dispatch = useDispatch();
@@ -33,15 +34,10 @@ const StairwayGameContainer = () => {
         <div className="container-fluid">
           <div className="row no-gutter cb-game">
             <div className="col-12 col-lg-6 p-1 vh-100">
-              {/* <StairwayEditorContainer
-              editorValues={editorValues}
-            /> */}
-              <Editor
-                value="bla-bla"
-                editable={false}
-                syntax=""
-                onChange={() => {}}
-                mode=""
+              <StairwayEditorContainer
+                currentUserId={currentUserId}
+                currentTaskId={currentTaskId}
+                editorValues={editorValues}
               />
             </div>
 
