@@ -84,6 +84,7 @@ defmodule CodebattleWeb.Router do
     get("/settings", UserController, :edit, as: :user_setting)
     put("/settings", UserController, :update, as: :user_setting)
     resources("/games", GameController, only: [:create, :show, :delete])
+    get("/stairway", GameController, :stairway) ## localhost:4000/games/stairway
 
     scope "/games" do
       post("/:id/join", GameController, :join)
