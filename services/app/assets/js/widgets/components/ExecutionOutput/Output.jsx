@@ -6,14 +6,14 @@ import color from '../../config/statusColor';
 
 const Output = ({ sideOutput }) => {
   const {
- status, output, result, asserts, version = 0,
+ status, output, asserts, version = 0,
 } = sideOutput;
   const uniqIndex = _.uniqueId('heading');
   const normalizedAsserts = version === 2 ? asserts : asserts.map(elem => camelizeKeys(JSON.parse(elem)));
   return (
     <>
       {status === 'error' || status === 'memory_leak' ? (
-        <AccordeonBox.Item output={output} result={result} />
+        <AccordeonBox.Item output={output} />
       ) : (
         normalizedAsserts
         && normalizedAsserts.map((assert, index) => (

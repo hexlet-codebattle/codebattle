@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import ChatWidget from './ChatWidget';
 import StairwayGameInfo from '../components/StairwayGameInfo';
 import Editor from './Editor';
+import StairwayOutputTab from './StairwayOutputTab';
 
 const StairwayGameContainer = () => {
     const dispatch = useDispatch();
@@ -106,10 +107,10 @@ const StairwayGameContainer = () => {
                     role="tabpanel"
                     aria-labelledby="output-tab"
                   >
-                    {/* <StairwayOutputTab
-                  currentTaskId={currentTaskId}
-                  outputs={outputs}
-                /> */}
+                    <StairwayOutputTab
+                      currentTaskId={currentTaskId}
+                      outputs={outputs}
+                    />
                   </div>
                 </div>
               </div>
