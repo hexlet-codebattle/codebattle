@@ -71,6 +71,8 @@ defmodule CodebattleWeb.Router do
       get("/live", TournamentController, :live, as: :live)
     end
 
+    resources("/old_tournaments", OldTournamentController, only: [:index, :show])
+
     resources("/tasks", TaskController, only: [:index, :show, :new, :edit, :create, :update]) do
       patch("/activate", TaskController, :activate, as: :activate)
       patch("/disable", TaskController, :disable, as: :disable)

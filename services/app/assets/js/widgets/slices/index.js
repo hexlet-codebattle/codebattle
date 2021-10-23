@@ -13,6 +13,7 @@ import userSettings, { actions as userSettingActions } from './userSettings';
 import leaderboard, { actions as leaderboardActions } from './leaderboard';
 import invites, { actions as invitesActions } from './invites';
 import stairwayGame, { actions as stairwayGameActions } from './stairway';
+import tournament, { actions as tournamentActions } from './tournament';
 
 const setError = error => ({
   type: 'ERROR',
@@ -37,6 +38,7 @@ export const actions = {
   ...invitesActions,
   ...userSettingActions,
   ...stairwayGameActions,
+  ...tournamentActions,
 };
 
 export const redirectToNewGame = gameId => {
@@ -59,6 +61,7 @@ export default {
   invites,
   userSettings,
   stairwayGame,
+  tournament,
 };
 
 export { makeEditorTextKey } from './editor';

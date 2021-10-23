@@ -1,4 +1,5 @@
 defmodule Codebattle.Tournament.Context do
+  alias Codebattle.Repo
   alias Codebattle.Tournament
   alias Codebattle.TaskPack
 

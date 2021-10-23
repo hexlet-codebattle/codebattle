@@ -4,6 +4,7 @@ defmodule CodebattleWeb.UserSocket do
   require Logger
   ## Channels
   channel("lobby", CodebattleWeb.LobbyChannel)
+  channel("tournament:*", CodebattleWeb.TournamentChannel)
   channel("game:*", CodebattleWeb.GameChannel)
   channel("chat:*", CodebattleWeb.ChatChannel)
   channel("main", CodebattleWeb.MainChannel)

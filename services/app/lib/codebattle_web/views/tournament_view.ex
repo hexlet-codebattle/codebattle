@@ -52,4 +52,8 @@ defmodule CodebattleWeb.TournamentView do
     # TODO: add highlight to usernames
     text
   end
+
+  def csrf_token do
+    Plug.CSRFProtection.get_csrf_token()
+  end
 end

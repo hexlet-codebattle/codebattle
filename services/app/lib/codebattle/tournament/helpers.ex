@@ -53,9 +53,10 @@ defmodule Codebattle.Tournament.Helpers do
   def is_active?(tournament), do: tournament.state == "active"
   def is_waiting_participants?(tournament), do: tournament.state == "waiting_participants"
   def is_upcoming?(tournament), do: tournament.state == "upcoming"
+  def is_canceled(tournament), do: tournament.state == "canceled"
+  def is_finished?(tournament), do: tournament.state == "finished"
   def is_individual?(tournament), do: tournament.type == "individual"
   def is_stairway?(tournament), do: tournament.type == "stairway"
-  def is_finished?(tournament), do: tournament.state == "finished"
   def is_team?(tournament), do: tournament.type == "team"
   def is_public?(tournament), do: tournament.access_type == "public"
   def is_visible_by_token?(tournament), do: tournament.access_type == "token"
@@ -168,6 +169,8 @@ defmodule Codebattle.Tournament.Helpers do
       best_time: best_time
     }
   end
+
+  def get_tournament_statistics(_), do: %{}
 
   def pick_winner(%{players: [%{game_result: "won"} = winner, _]}), do: winner
   def pick_winner(%{players: [_, %{game_result: "won"} = winner]}), do: winner
