@@ -132,10 +132,13 @@ const reduceOriginalRecords = (acc, record, index) => {
     const { checkResult } = record;
 
     const newPlayers = updatePlayers(players, { id: record.id, checkResult });
+    const userName = _.find(players, { id: record.id }).name;
     const data = {
       type,
       userId: record.id,
       checkResult,
+      userName,
+      recordId: record.recordId,
     };
     const newRecord = createFinalRecord(index, data, {
       players: newPlayers,
@@ -314,6 +317,7 @@ export const resolveDiffs = (playbook, type) => {
     playbook.records,
     record => record.type === 'init',
   );
+  // record types "init"
   const initGameState = {
     type,
     players: initRecords,

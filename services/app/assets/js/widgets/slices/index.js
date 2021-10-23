@@ -1,4 +1,5 @@
 import chat, { actions as chatActions } from './chat';
+import completedGames, { actions as completedGamesActions } from './completedGames';
 import editor, { actions as editorActions } from './editor';
 import storeLoaded, { actions as storeLoadedActions } from './store';
 import usersInfo, { actions as usersInfoActions } from './usersInfo';
@@ -22,6 +23,7 @@ const setError = error => ({
 export const actions = {
   setError,
   ...chatActions,
+  ...completedGamesActions,
   ...editorActions,
   ...gameActions,
   ...storeLoadedActions,
@@ -49,6 +51,7 @@ export default {
   playbook,
   user,
   chat,
+  completedGames,
   lobby,
   storeLoaded,
   executionOutput,

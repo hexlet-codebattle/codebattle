@@ -1,9 +1,10 @@
 import { camelizeKeys } from 'humps';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 import { actions } from '../slices';
+import { fetchCompletedGames, loadNextPage } from '../slices/completedGames';
 import CompletedGames from '../components/Game/CompletedGames';
 import Heatmap from './Heatmap';
 import Loading from '../components/Loading';
@@ -22,6 +23,7 @@ const getUserAvatarUrl = ({ githubId, discordId, discordAvatar }) => {
 
 const UserProfile = () => {
   const [stats, setStats] = useState(null);
+  const completedGames = useSelector(state => state.completedGames.completedGames);
 
   const dispatch = useDispatch();
 
@@ -37,6 +39,12 @@ const UserProfile = () => {
         dispatch(actions.setError(error));
       });
   }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(fetchCompletedGames());
+  }, [dispatch]);
+
+  const dateParse = date => new Date(date).toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
   const renderAchievemnt = achievement => {
     if (achievement.includes('win_games_with')) {
@@ -73,8 +81,6 @@ const UserProfile = () => {
   if (!stats) {
     return <Loading />;
   }
-
-  const dateParse = date => new Date(date).toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
   const renderStatistics = () => (
     <>
@@ -116,20 +122,30 @@ const UserProfile = () => {
 
   const renderCompletedGames = () => (
     <div className="row justify-content-center">
-      <div className="col-11">
-        <div className="text-left my-5">
-          {stats.completedGames.length > 0 && (
+      <div className="col-12">
+        <div className="text-left">
+          {completedGames && completedGames.length > 0 && (
           <>
-            <CompletedGames games={stats.completedGames} />
+            <CompletedGames
+              games={completedGames}
+              loadNextPage={loadNextPage}
+            />
           </>
               )}
+          {completedGames && completedGames.length === 0 && (
+          <>
+            <div style={{ height: 498 }} className="d-flex align-items-center justify-content-center border text-muted">
+              No completed games
+            </div>
+          </>
+          )}
         </div>
       </div>
     </div>
   );
 
   const statContainers = () => (
-    <div className="border">
+    <div>
       <nav>
         <div className="nav nav-tabs bg-gray" id="nav-tab" role="tablist">
           <a
@@ -158,7 +174,7 @@ const UserProfile = () => {
       </nav>
       <div className="tab-content" id="nav-tabContent">
         <div
-          className="tab-pane fade show active"
+          className="tab-pane fade border show active"
           id="statistics"
           role="tabpanel"
           aria-labelledby="statistics-tab"

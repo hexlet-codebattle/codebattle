@@ -25,7 +25,7 @@ defmodule Codebattle.Bot.Playbook do
     end
   end
 
-  @types ~w(complete incomplete baned)
+  @types ~w(complete incomplete waiting_moderator baned)
 
   schema "playbooks" do
     embeds_one(:data, Data, on_replace: :delete)
