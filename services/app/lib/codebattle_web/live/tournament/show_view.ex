@@ -8,7 +8,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
   @update_frequency 1_000
 
   def render(assigns) do
-    CodebattleWeb.TournamentView.render("show.html", assigns)
+    CodebattleWeb.TournamentView.render("old_show.html", assigns)
   end
 
   def mount(_params, session, socket) do
