@@ -250,10 +250,6 @@ defmodule CodebattleWeb.GameController do
     end
   end
 
-  def stairway(conn, _) do
-    render(conn, "stairway.html")
-  end
-
   defp get_start_game_event(fsm, "public") do
     case FsmHelpers.get_state(fsm) do
       :waiting_opponent -> "success_create_game"

@@ -9,6 +9,7 @@ defmodule Codebattle.User do
 
   defmodule SoundSettings do
     use Ecto.Schema
+
     import Ecto.Changeset
     @primary_key false
 

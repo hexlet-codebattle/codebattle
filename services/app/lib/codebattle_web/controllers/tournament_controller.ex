@@ -21,6 +21,13 @@ defmodule CodebattleWeb.TournamentController do
     )
   end
 
+  def live(conn, params) do
+    current_user = conn.assigns[:current_user]
+    tournament = Tournament.Context.get!(params["tournament_id"]) |> IO.inspect
+
+    render(conn, "live.html")
+  end
+
   def show(conn, params) do
     current_user = conn.assigns[:current_user]
     tournament = Tournament.Context.get!(params["id"])

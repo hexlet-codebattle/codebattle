@@ -20,18 +20,15 @@ defmodule Codebattle.Tournament.Context do
     end
   end
 
-  def get_from_db!(id) do
-    tournament = Codebattle.Repo.get!(Tournament, id)
-    add_module(tournament)
+  defp get_from_db!(id) do
+    id
+    |> tournament_query()
+    |> Codebattle.Repo.one!()
+    |> add_module()
   end
 
-  def get_from_db(id) do
-    q =
-      from(
-        t in Tournament,
-        where: t.id == ^id,
-        preload: [:creator, :task_pack]
-      )
+  defp get_from_db(id) do
+    q = tournament_query(id)
 
     case Codebattle.Repo.one(q) do
       nil -> {:error, :not_found}
@@ -149,6 +146,14 @@ defmodule Codebattle.Tournament.Context do
       |> add_module
       |> mark_as_live
     end)
+  end
+
+  defp tournament_query(id) do
+    from(
+      t in Tournament,
+      where: t.id == ^id,
+      preload: [:creator, :task_pack]
+    )
   end
 
   defp get_module(%{type: "team"}), do: Tournament.Team
