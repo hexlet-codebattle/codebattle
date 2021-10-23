@@ -169,10 +169,7 @@ Task.propTypes = {
     examples: PropTypes.string.isRequired,
     descriptionEn: PropTypes.string,
     descriptionRu: PropTypes.string,
-    tags: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.oneOf([null]),
-    ]),
+    tags: PropTypes.arrayOf(PropTypes.string),
   }).isRequired,
 };
 

@@ -2,19 +2,14 @@ defmodule CodebattleWeb.ExtensionSocket do
   use Phoenix.Socket
 
   require Logger
-  alias Codebattle.UsersActivityServer
 
   ## Channels
   channel("lobby", CodebattleWeb.LobbyChannel)
   channel("main", CodebattleWeb.MainChannel)
 
   def connect(_params, socket) do
-    UsersActivityServer.add_event(%{
-      event: "extension_connection",
-      user_id: nil
-    })
-
-    {:ok, assign(socket, :user_id, "extension")}
+    # TODO: add auth for extension by token, now it works only like anonymous user
+    {:ok, assign(socket, :current_user, Codebattle.User.create_guest())}
   end
 
   def id(_socket), do: nil

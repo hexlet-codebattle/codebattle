@@ -5,14 +5,26 @@ defmodule CodebattleWeb.TournamentChannel do
   alias Codebattle.Tournament
   alias Codebattle.Tournament.Helpers
 
-  def join("tournament:" <> tournament_id, _payload, socket) do
-    tournament = Tournament.Context.get!(tournament_id)
-    statistics = Helpers.get_tournament_statistics(tournament)
+  def join("tournament:" <> tournament_id, payload, socket) do
+    current_user = socket.assigns.current_user
 
-    Phoenix.PubSub.subscribe(:cb_pubsub, topic_name(tournament))
-    Phoenix.PubSub.subscribe(:cb_pubsub, "tournaments")
+    with {:ok, tournament} <- Tournament.Context.get(tournament_id),
+         true <- Tournament.Helpers.can_access?(tournament, current_user, payload) do
+      statistics = Helpers.get_tournament_statistics(tournament)
+      active_match = Helpers.get_active_match(tournament, current_user)
+      Phoenix.PubSub.subscribe(:cb_pubsub, topic_name(tournament))
+      Phoenix.PubSub.subscribe(:cb_pubsub, "tournaments")
 
-    {:ok, %{tournament: tournament, statistics: statistics}, socket}
+      {:ok,
+       %{
+         active_match: active_match,
+         tournament: tournament,
+         statistics: statistics
+       }, socket}
+    else
+      _ ->
+        {:error, %{reason: "not_found"}}
+    end
   end
 
   def handle_in("tournament:join", %{"team_id" => team_id}, socket) do

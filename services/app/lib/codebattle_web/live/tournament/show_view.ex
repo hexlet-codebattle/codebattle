@@ -5,6 +5,8 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
   alias Codebattle.Chat
   alias Codebattle.Tournament
 
+  require Logger
+
   @update_frequency 1_000
 
   def render(assigns) do
@@ -114,6 +116,11 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     else
       {:noreply, socket}
     end
+  end
+
+  def handle_info(event, socket) do
+    Logger.error(event)
+    {:noreply, socket}
   end
 
   def handle_event(_event, _params, %{assigns: %{current_user: %{guest: true}} = socket}) do

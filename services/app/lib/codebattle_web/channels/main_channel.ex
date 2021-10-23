@@ -6,10 +6,10 @@ defmodule CodebattleWeb.MainChannel do
   alias Codebattle.Invite
 
   def join("main", _payload, socket) do
-    user_id = socket.assigns.user_id
-    topic = "main:#{user_id}"
+    current_user = socket.assigns.current_user
 
-    if user_id != "anonymous" do
+    if !current_user.guest do
+      topic = "main:#{current_user.id}"
       Phoenix.PubSub.subscribe(:cb_pubsub, topic)
       send(self(), :after_join)
     end
@@ -37,16 +37,16 @@ defmodule CodebattleWeb.MainChannel do
 
   def handle_info(:after_join, socket) do
     {:ok, _} =
-      Presence.track(socket, socket.assigns.user_id, %{
+      Presence.track(socket, socket.assigns.current_user.id, %{
         online_at: inspect(System.system_time(:second)),
         user: socket.assigns.current_user,
-        id: socket.assigns.user_id
+        id: socket.assigns.current_user.id
       })
 
     push(socket, "presence_state", Presence.list(socket))
 
     # TODO: Create Invite model
-    invites = Invite.list_active_invites(socket.assigns.user_id)
+    invites = Invite.list_active_invites(socket.assigns.current_user.id)
     push(socket, "invites:init", %{invites: invites})
     {:noreply, socket}
   end
@@ -55,7 +55,7 @@ defmodule CodebattleWeb.MainChannel do
         %{topic: "main:" <> user_id, event: "invites:" <> action, payload: payload},
         socket
       ) do
-    if String.to_integer(user_id) == socket.assigns.user_id do
+    if String.to_integer(user_id) == socket.assigns.current_user.id do
       push(socket, "invites:#{action}", payload)
     end
 
@@ -63,7 +63,7 @@ defmodule CodebattleWeb.MainChannel do
   end
 
   def handle_in("invites:create", payload, socket) do
-    creator_id = socket.assigns.user_id
+    creator_id = socket.assigns.current_user.id
     recepient_id = payload["recepient_id"] || raise "Recepient is absent!"
 
     if creator_id == recepient_id do
@@ -108,7 +108,7 @@ defmodule CodebattleWeb.MainChannel do
   end
 
   def handle_in("invites:cancel", payload, socket) do
-    user_id = socket.assigns.user_id
+    user_id = socket.assigns.current_user.id
 
     case Invite.cancel_invite(%{
            id: payload["id"],
@@ -143,7 +143,7 @@ defmodule CodebattleWeb.MainChannel do
   def handle_in("invites:accept", payload, socket) do
     case Invite.accept_invite(%{
            id: payload["id"],
-           recepient_id: socket.assigns.user_id
+           recepient_id: socket.assigns.current_user.id
          }) do
       {:ok, %{invite: invite, dropped_invites: dropped_invites}} ->
         data = %{

@@ -10,25 +10,15 @@ defmodule CodebattleWeb.UserSocket do
   channel("main", CodebattleWeb.MainChannel)
 
   def connect(%{"token" => user_token}, socket) do
+    guest_id = Codebattle.User.guest_id()
+
     case Phoenix.Token.verify(socket, "user_token", user_token, max_age: 1_000_000) do
-      {:ok, 0} ->
-        _socket = assign(socket, :current_user, Codebattle.Bot.Builder.build())
-
-      {:ok, "anonymous"} ->
-        socket =
-          assign(socket, :current_user, %Codebattle.User{
-            guest: true,
-            id: 0,
-            name: "Anonymous",
-            rating: 0
-          })
-
-        {:ok, assign(socket, :user_id, "anonymous")}
+      {:ok, ^guest_id} ->
+        {:ok, assign(socket, current_user: Codebattle.User.create_guest())}
 
       {:ok, user_id} ->
         user = Codebattle.User |> Codebattle.Repo.get!(user_id)
-        socket = assign(socket, :current_user, user)
-        {:ok, assign(socket, :user_id, user_id)}
+        {:ok, assign(socket, :current_user, user)}
 
       {:error, _reason} ->
         :error

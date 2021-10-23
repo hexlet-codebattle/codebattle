@@ -142,6 +142,22 @@ defmodule Codebattle.Tournament.Helpers do
     end
   end
 
+  def get_active_match(%{type: "stairway"} = tournament, current_user) do
+    match =
+      tournament
+      |> get_matches
+      |> Enum.find(fn match ->
+        match_is_active?(match) && Enum.any?(match.players, fn p -> p.id == current_user.id end)
+      end)
+
+    case match do
+      nil -> tournament |> get_matches |> Enum.find(&match_is_active?/1)
+      match -> match
+    end
+  end
+
+  def get_active_match(_, _), do: nil
+
   def get_tournament_statistics(%{type: "team"} = tournament) do
     all_win_matches =
       tournament
@@ -201,6 +217,8 @@ defmodule Codebattle.Tournament.Helpers do
   defp calc_match_result(%{players: [%{game_result: "gave_up"}, _]}), do: {0, 1}
   defp calc_match_result(_), do: {0, 0}
 
+  defp match_is_active?(%{state: "active"}), do: true
+  defp match_is_active?(_match), do: false
   defp match_is_finished?(%{state: "finished"}), do: true
   defp match_is_finished?(_match), do: false
 
