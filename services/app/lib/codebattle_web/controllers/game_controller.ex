@@ -250,6 +250,7 @@ defmodule CodebattleWeb.GameController do
     end
   end
 
+  ## TODO(add-stairways): remove controller after tempalte is done
   def stairway(conn, _) do
     langs = Languages.meta() |> Map.values()
 

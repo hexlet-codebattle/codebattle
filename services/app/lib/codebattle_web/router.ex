@@ -63,6 +63,10 @@ defmodule CodebattleWeb.Router do
     get("/feedback/rss.xml", PageController, :feedback)
 
     get("/", PageController, :index)
+
+    ## TODO (add-stairways) remove route after template is done
+    get("/stairway", GameController, :stairway)
+
     resources("/session", SessionController, singleton: true, only: [:delete, :new])
     get("/remind_password", SessionController, :remind_password)
     resources("/users", UserController, only: [:index, :show, :new])
