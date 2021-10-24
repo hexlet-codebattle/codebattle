@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 
-import TournamentChatInput from '../components/TournamentChatInput';
-import Messages from '../components/Messages';
+import TournamentChatInput from './TournamentChatInput';
+import Messages from './Messages';
 
 const TournamentChat = ({ messages }) => (
   <div

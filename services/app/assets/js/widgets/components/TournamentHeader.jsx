@@ -1,9 +1,7 @@
 import React, { useEffect, useState, memo } from 'react';
-import { useSelector } from 'react-redux';
 import moment from 'moment';
 
 import Loading from './Loading';
-import * as selectors from '../selectors';
 import TournamentStates from '../config/tournament';
 
 const TournamentTimer = ({ state, startsAt }) => {
@@ -54,17 +52,16 @@ const TournamentTimer = ({ state, startsAt }) => {
   return titles[state](seconds);
 };
 
-const TournamentHeader = memo(props => {
+const TournamentHeader = props => {
   const {
     state,
     startsAt,
     creatorId,
+    currentUserId,
     difficulty,
     handleStartTournament,
     handleCancelTournament,
   } = props;
-
-  const currentUserId = useSelector(selectors.currentUserIdSelector, selectors.currentUserIdSelector);
 
   const difficultyBadgeColor = {
     elementary: 'info',
@@ -133,6 +130,6 @@ const TournamentHeader = memo(props => {
       </div>
     </>
   );
-});
+};
 
-export default TournamentHeader;
+export default memo(TournamentHeader);

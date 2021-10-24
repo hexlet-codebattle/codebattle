@@ -10,22 +10,26 @@ import { connectToChat } from '../middlewares/Chat';
 
 import { actions } from '../slices';
 import * as selectors from '../selectors';
-
-import TournamentChat from './TournamentChat';
-import Participants from './Participants';
-import IndividualMatches from '../components/IndividualMatches';
-import TournamentHeader from '../components/TournamentHeader';
 import TournamentStates from '../config/tournament';
 
-const currentUser = Gon.getAsset('current_user');
+import TournamentChat from '../components/TournamentChat';
+import Participants from '../components/Participants';
+import IndividualMatches from '../components/IndividualMatches';
+import TournamentHeader from '../components/TournamentHeader';
+import TeamTournamentInfoPanel from '../components/TeamTournamentInfoPanel';
+import TeamMatches from '../components/TeamMatches';
+
 
 const Tournament = () => {
   const dispatch = useDispatch();
 
   const { statistics, tournament } = useSelector(selectors.tournamentSelector);
+  const currentUserId = useSelector(selectors.currentUserIdSelector);
   const messages = useSelector(selectors.chatMessagesSelector);
 
   useEffect(() => {
+    const currentUser = Gon.getAsset('current_user');
+
     dispatch(actions.setCurrentUser({ user: { ...currentUser } }));
     dispatch(connectToTournament());
     dispatch(connectToChat());
@@ -36,8 +40,6 @@ const Tournament = () => {
     return <></>;
   }
 
-  // tournament.type === "individual";
-  // tournament.type === "team";
   if (tournament.type === 'team') {
     return (
       <>
@@ -45,18 +47,36 @@ const Tournament = () => {
           state={tournament.state}
           startsAt={tournament.startsAt}
           creatorId={tournament.creatorId}
+          currentUserId={currentUserId}
           difficulty={tournament.difficulty}
           handleStartTournament={startTournament}
           handleCancelTournament={cancelTournament}
         />
-        {/* <TeamTournamentInfoPanel
-          players={tournament.players}
-          statistics={statistics}
-        />
-        <TeamMatches
-          state={tournament.state}
-          matches={tournament.matches}
-        /> */}
+        <div className="container-fluid mt-4">
+          <div className="row">
+            <div className="col-3">
+              <TournamentChat messages={messages} />
+            </div>
+            <div className="col-9 mt-3">
+              <div className="row">
+                <div className="col-12">
+                  <TeamTournamentInfoPanel
+                    state={tournament.state}
+                    players={tournament.players}
+                    statistics={statistics}
+                    currentUserId={currentUserId}
+                  />
+                </div>
+                <div className="col-12 mt-4">
+                  <TeamMatches
+                    matches={tournament.data.matches}
+                    currentUserId={currentUserId}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </>
     );
   }
@@ -66,6 +86,7 @@ const Tournament = () => {
       <TournamentHeader
         state={tournament.state}
         startsAt={tournament.startsAt}
+        currentUserId={currentUserId}
         creatorId={tournament.creatorId}
         difficulty={tournament.difficulty}
         handleStartTournament={startTournament}
@@ -79,13 +100,17 @@ const Tournament = () => {
               players={tournament.data.players}
               state={tournament.state}
               creatorId={tournament.creatorId}
+              currentUserId={currentUserId}
             />
           </div>
-          <IndividualMatches
-            state={tournament.state}
-            matches={tournament.data.matches}
-            playersCount={tournament.data.players.length}
-          />
+          <div className="col-9 bg-white shadow-sm py-4">
+            <IndividualMatches
+              state={tournament.state}
+              matches={tournament.data.matches}
+              playersCount={tournament.data.players.length}
+              currentUserId={currentUserId}
+            />
+          </div>
         </div>
       </div>
     </>

@@ -1,14 +1,11 @@
 import React, { useMemo, memo } from 'react';
-import Gon from 'gon';
 import _ from 'lodash';
 
 import TournamentStates from '../config/tournament';
 import UserInfo from '../containers/UserInfo';
 
-const currentUser = Gon.getAsset('current_user');
-
-const getLinkParams = match => {
-  const isParticipant = match.players.some(({ id }) => id === currentUser.id);
+const getLinkParams = (match, currentUserId) => {
+  const isParticipant = match.players.some(({ id }) => id === currentUserId);
 
   switch (true) {
     case match.state === 'waiting' && isParticipant:
@@ -22,7 +19,9 @@ const getLinkParams = match => {
   }
 };
 
-const IndividualMatches = memo(({ state, matches, playersCount }) => {
+const IndividualMatches = ({
+ state, matches, playersCount = 0, currentUserId,
+}) => {
   const roundsCount = useMemo(() => Math.log2(playersCount), [playersCount]);
   const roundsRange = useMemo(() => {
       if (roundsCount > 0) {
@@ -38,60 +37,55 @@ const IndividualMatches = memo(({ state, matches, playersCount }) => {
         {TournamentStates.waitingParticipants}
         ...
       </h1>
-);
+    );
   }
 
   return (
     <>
-      <div className="col-9 bg-white shadow-sm py-4">
-        <div className="d-flex justify-content-around">
-          {roundsRange.map(round => {
-            console.log(roundsRange, round, playersCount);
-            const tournamentStage = playersCount / (2 ** (round + 1));
-            const title = tournamentStage === 1 ? 'Final' : `1/${tournamentStage}`;
+      <div className="d-flex justify-content-around">
+        {roundsRange.map(round => {
+          const tournamentStage = playersCount / (2 ** (round + 1));
+          const title = tournamentStage === 1 ? 'Final' : `1/${tournamentStage}`;
 
-            return <h4>{title}</h4>;
-          })}
-        </div>
+          return <h4>{title}</h4>;
+        })}
+      </div>
 
-        <div className="bracket">
-          {roundsRange.map(round => (
-            <div className="round">
-              {matches[round].map(match => (
-                <div className="match">
-                  <div className="match__content bg-light">
-                    <div
-                      className={`d-flex p-1 border border-success ${
-                        getLinkParams(match)[1]
-                      }`}
-                    >
-                      <div className="d-flex flex-column justify-content-around align-items-center">
-                        <p>{match.state}</p>
-                        <a
-                          href="/games/#{@match.game_id}"
-                          className="btn btn-success m-1"
-                        >
-                          {getLinkParams(match)[0]}
-                        </a>
+      <div className="bracket">
+        {roundsRange.map(round => (
+          <div className="round">
+            {matches[round].map(match => (
+              <div className="match">
+                <div className="match__content bg-light">
+                  <div
+                    className={`d-flex p-1 border border-success ${getLinkParams(match, currentUserId)[1]}`}
+                  >
+                    <div className="d-flex flex-column justify-content-around align-items-center">
+                      <p>{match.state}</p>
+                      <a
+                        href="/games/#{@match.game_id}"
+                        className="btn btn-success m-1"
+                      >
+                        {getLinkParams(match, currentUserId)[0]}
+                      </a>
+                    </div>
+                    <div className="d-flex flex-column justify-content-around">
+                      <div className={`tournament-bg-${match.state}`}>
+                        <UserInfo user={match.players[0]} hideOnlineIndicator />
                       </div>
-                      <div className="d-flex flex-column justify-content-around">
-                        <div className={`tournament-bg-${match.state}`}>
-                          <UserInfo user={match.players[0]} hideOnlineIndicator />
-                        </div>
-                        <div className={`tournament-bg-${match.state}`}>
-                          <UserInfo user={match.players[1]} hideOnlineIndicator />
-                        </div>
+                      <div className={`tournament-bg-${match.state}`}>
+                        <UserInfo user={match.players[1]} hideOnlineIndicator />
                       </div>
                     </div>
                   </div>
                 </div>
+              </div>
               ))}
-            </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
     </>
   );
-});
+};
 
-export default IndividualMatches;
+export default memo(IndividualMatches);
