@@ -255,9 +255,7 @@ defmodule CodebattleWeb.GameController do
     langs = Languages.meta() |> Map.values()
 
     conn
-      |> put_gon(%{
-        langs: langs,
-      })
+      |> put_gon(%{ langs: langs, })
       |> render("stairway.html")
   end
 

@@ -50,7 +50,7 @@ defmodule Codebattle.Tournament.Context do
       order_by: [desc: t.id],
       where: t.state in ^states,
       limit: 7,
-      preload: :creator
+      preload: [:creator, :task_pack]
     )
     |> Codebattle.Repo.all()
   end

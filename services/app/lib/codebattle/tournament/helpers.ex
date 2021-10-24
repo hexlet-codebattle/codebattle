@@ -142,7 +142,7 @@ defmodule Codebattle.Tournament.Helpers do
     end
   end
 
-  def get_active_match(%{type: "stairway"} = tournament, current_user) do
+  def get_active_match(tournament, current_user) do
     match =
       tournament
       |> get_matches
@@ -155,8 +155,6 @@ defmodule Codebattle.Tournament.Helpers do
       match -> match
     end
   end
-
-  def get_active_match(_, _), do: nil
 
   def get_tournament_statistics(%{type: "team"} = tournament) do
     all_win_matches =

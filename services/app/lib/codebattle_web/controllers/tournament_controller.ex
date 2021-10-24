@@ -23,10 +23,14 @@ defmodule CodebattleWeb.TournamentController do
   end
 
   def live(conn, params) do
+    tournament_id = params["tournament_id"]
     current_user = conn.assigns[:current_user]
-    tournament = Tournament.Context.get!(params["tournament_id"]) |> IO.inspect()
+    tournament = Tournament.Context.get!(tournament_id)
+    langs = Codebattle.Languages.meta() |> Map.values()
 
-    render(conn, "live.html")
+    conn
+    |> put_gon(langs: langs, tournament_id: tournament_id)
+    |> render("live.html")
   end
 
   def show(conn, params) do
