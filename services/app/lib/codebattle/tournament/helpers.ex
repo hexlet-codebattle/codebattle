@@ -53,7 +53,7 @@ defmodule Codebattle.Tournament.Helpers do
   def is_active?(tournament), do: tournament.state == "active"
   def is_waiting_participants?(tournament), do: tournament.state == "waiting_participants"
   def is_upcoming?(tournament), do: tournament.state == "upcoming"
-  def is_canceled(tournament), do: tournament.state == "canceled"
+  def is_canceled?(tournament), do: tournament.state == "canceled"
   def is_finished?(tournament), do: tournament.state == "finished"
   def is_individual?(tournament), do: tournament.type == "individual"
   def is_stairway?(tournament), do: tournament.type == "stairway"
