@@ -1,6 +1,6 @@
 import React from 'react';
-import _ from 'lodash';
 import { useSelector } from 'react-redux';
+
 import Output from '../components/ExecutionOutput/Output';
 import OutputTab from '../components/ExecutionOutput/OutputTab';
 

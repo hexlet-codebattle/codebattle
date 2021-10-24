@@ -30,11 +30,11 @@ const initialState = {
   ],
   players: [
     {
-      id: 0,
+      id: 1,
       name: 'Vova',
       rank: 1600,
       tasks: [
-        { roundId: 0, status: 'active', results: {} }, // status: win/lost/active
+        { roundId: 0, status: 'active', results: {} }, // status: win/lost/active/disabled
         { roundId: 1, status: 'active', results: {} },
         { roundId: 2, status: 'active', results: {} },
         { roundId: 3, status: 'active', results: {} },

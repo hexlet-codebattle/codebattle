@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button, Modal } from 'react-bootstrap';
-import * as selectors from '../selectors';
 import { sendGiveUp, resetTextToTemplate } from '../middlewares/Game';
 import { actions } from '../slices';
 

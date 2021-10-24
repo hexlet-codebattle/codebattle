@@ -4,14 +4,14 @@ import defaultEditorHeight from '../config/editorSettings';
 const initialState = {
   // TODO (add-stairways): reset stub data
   meta: {
-    0: { userId: 0, currentLangSlug: 'js' },
     1: { userId: 1, currentLangSlug: 'js' },
+    2: { userId: 2, currentLangSlug: 'js' },
   },
   // TODO (add-stairways): reset stub data
   text: {
-    '0:ts': { userId: 0, editorText: 'text ts', currentLangSlug: 'ts' },
-    '0:js': { userId: 0, editorText: 'text js', currentLangSlug: 'js' },
-    '1:js': { userId: 1, editorText: 'text', currentLangSlug: 'js' },
+    '1:ts': { userId: 1, editorText: 'text ts', currentLangSlug: 'ts' },
+    '1:js': { userId: 1, editorText: 'text js', currentLangSlug: 'js' },
+    '2:js': { userId: 2, editorText: 'text', currentLangSlug: 'js' },
   },
   textHistory: {},
   langs: {},

@@ -13,7 +13,7 @@ const Output = ({ sideOutput }) => {
   return (
     <>
       {['error', 'memory_leak', 'timeout'].includes(status) ? (
-        <AccordeonBox.Item output={output}  />
+        <AccordeonBox.Item output={output} />
       ) : (
         normalizedAsserts
         && normalizedAsserts.map((assert, index) => (

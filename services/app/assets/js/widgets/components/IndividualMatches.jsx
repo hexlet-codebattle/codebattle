@@ -33,7 +33,12 @@ const IndividualMatches = memo(({ state, matches, playersCount }) => {
   }, [roundsCount]);
 
   if (state === TournamentStates.waitingParticipants) {
-    return <h1>{TournamentStates.waitingParticipants}...</h1>;
+    return (
+      <h1>
+        {TournamentStates.waitingParticipants}
+        ...
+      </h1>
+);
   }
 
   return (
@@ -71,10 +76,10 @@ const IndividualMatches = memo(({ state, matches, playersCount }) => {
                       </div>
                       <div className="d-flex flex-column justify-content-around">
                         <div className={`tournament-bg-${match.state}`}>
-                          <UserInfo user={match.players[0]} hideOnlineIndicator/>
+                          <UserInfo user={match.players[0]} hideOnlineIndicator />
                         </div>
                         <div className={`tournament-bg-${match.state}`}>
-                          <UserInfo user={match.players[1]} hideOnlineIndicator/>
+                          <UserInfo user={match.players[1]} hideOnlineIndicator />
                         </div>
                       </div>
                     </div>

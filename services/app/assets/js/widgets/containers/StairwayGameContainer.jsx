@@ -12,7 +12,7 @@ import StairwayOutputTab from './StairwayOutputTab';
 import StairwayEditorContainer from './StairwayEditorContainer';
 import StairwayEditorToolbar from '../components/StairwayEditorToolbar';
 
-const StairwayGameContainer = ({ defaultPlayerId = 0, defaultRoundId = 0 }) => {
+const StairwayGameContainer = ({ defaultPlayerId = 1, defaultRoundId = 0 }) => {
     const dispatch = useDispatch();
 
     const {
@@ -51,7 +51,9 @@ const StairwayGameContainer = ({ defaultPlayerId = 0, defaultRoundId = 0 }) => {
                   setactiveRoundId={setactiveRoundId}
                 /> */}
               <StairwayEditorToolbar
-                player={activePlayer}
+                players={players}
+                setActivePlayerId={setActivePlayerId}
+                activePlayer={activePlayer}
               />
               <StairwayEditorContainer
                 playerId={activePlayerId}

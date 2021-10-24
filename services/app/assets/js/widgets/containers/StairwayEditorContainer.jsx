@@ -1,14 +1,13 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-import _ from 'lodash';
 import Editor from './Editor';
 import { currentUserIdSelector, getSolution } from '../selectors';
 
 const StairwayEditorContainer = ({ playerId }) => {
   const editable = useSelector(currentUserIdSelector) === playerId;
   const solution = useSelector(getSolution(playerId));
-  const toolbarParams = {};
+  // const toolbarParams = {};
 
   return (
     <>
