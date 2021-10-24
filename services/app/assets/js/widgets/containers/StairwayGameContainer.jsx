@@ -1,43 +1,60 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import Gon from 'gon';
+import _ from 'lodash';
+
+import userTypes from '../config/userTypes';
+import { actions } from '../slices';
+
 import ChatWidget from './ChatWidget';
 import StairwayGameInfo from '../components/StairwayGameInfo';
-import Editor from './Editor';
 import StairwayOutputTab from './StairwayOutputTab';
 import StairwayEditorContainer from './StairwayEditorContainer';
+import StairwayEditorToolbar from '../components/StairwayEditorToolbar';
 
-const StairwayGameContainer = () => {
+const StairwayGameContainer = ({ defaultPlayerId = 0, defaultRoundId = 0 }) => {
     const dispatch = useDispatch();
-    const [currentUserId, setCurrentUserId] = useState(1);
-    const [currentTaskId, setCurrentTaskId] = useState(1);
 
     const {
         gameStatus,
-        tasks,
+        rounds,
         players,
-        outputs,
-        editorValues,
     } = useSelector(state => state.stairwayGame);
+
+    const [activePlayerId, setActivePlayerId] = useState(defaultPlayerId);
+    const [activeRoundId, setActiveRoundId] = useState(defaultRoundId);
+
+    useEffect(() => {
+      const currentUser = Gon.getAsset('current_user');
+      dispatch(
+        actions.setCurrentUser({ user: { ...currentUser, type: userTypes.spectator } }),
+      );
+
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     useEffect(() => {
         // connectToStairwayGame();
-    });
+    }, [activePlayerId]);
 
-    /*
-        rightSide: 1 tab: taskInfo 50%/ chat 50%
-                   2 tab: output
-                   3 tab (info): timer / rang player (stairway)
-    */
+    const activePlayer = useMemo(() => _.find(players, { id: activePlayerId }), [activePlayerId, players]);
 
     return (
       <>
         <div className="container-fluid">
           <div className="row no-gutter cb-game">
             <div className="col-12 col-lg-6 p-1 vh-100">
+              {/* <StairwayRounds
+                  players={players} // 5 rounds
+                  activePlayerId={activePlayerId}
+                  activeRoundId={activeRoundId}
+                  setactiveRoundId={setactiveRoundId}
+                /> */}
+              <StairwayEditorToolbar
+                player={activePlayer}
+              />
               <StairwayEditorContainer
-                currentUserId={currentUserId}
-                currentTaskId={currentTaskId}
-                editorValues={editorValues}
+                playerId={activePlayerId}
               />
             </div>
 
@@ -91,9 +108,8 @@ const StairwayGameContainer = () => {
                     aria-labelledby="task-tab"
                   >
                     <StairwayGameInfo
-                      currentUserId={currentUserId}
-                      currentTaskId={currentTaskId}
-                      tasks={tasks}
+                      rounds={rounds}
+                      roundId={activeRoundId}
                     />
                     {/* <ChatWidget /> */}
                   </div>
@@ -104,8 +120,7 @@ const StairwayGameContainer = () => {
                     aria-labelledby="output-tab"
                   >
                     <StairwayOutputTab
-                      currentTaskId={currentTaskId}
-                      outputs={outputs}
+                      playerId={activePlayerId}
                     />
                   </div>
                 </div>

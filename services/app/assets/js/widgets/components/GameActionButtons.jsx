@@ -140,6 +140,7 @@ const ResetButton = ({ onClick, status }) => {
 };
 
 const GameActionButtons = ({
+  currentEditorLangSlug,
   checkResult,
   checkBtnStatus,
   resetBtnStatus,
@@ -147,9 +148,6 @@ const GameActionButtons = ({
 }) => {
   const [modalShowing, setModalShowing] = useState(false);
   const dispatch = useDispatch();
-
-  const currentUserId = useSelector(state => selectors.currentUserIdSelector(state));
-  const currentEditorLangSlug = useSelector(state => selectors.userLangSelector(state)(currentUserId));
 
   const modalHide = () => {
     setModalShowing(false);

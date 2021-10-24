@@ -3,17 +3,16 @@ import React, { memo } from 'react';
 import _ from 'lodash';
 import Task from './Task';
 
-const StairwayGameInfo = ({ currentUserId, currentTaskId, tasks }) => {
-    const currentTask = _.find(tasks, { id: currentTaskId }, null);
+const StairwayGameInfo = ({ rounds, roundId }) => {
+    const task = _.find(rounds, { id: roundId }, null);
 
-    if (currentTask === null) {
-        throw new Error('invalid currentTaskId');
+    if (task === null) {
+        throw new Error('invalid roundId');
     }
 
     return (
       <Task
-        task={currentTask}
-        currentUserId={currentUserId}
+        task={task}
       />
     );
 };

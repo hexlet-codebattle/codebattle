@@ -26,6 +26,10 @@ const EditorContainer = ({
   const dispatch = useDispatch();
   const updateEditorValue = data => dispatch(GameActions.sendEditorText(data));
   const players = useSelector(selectors.gamePlayersSelector);
+
+  const currentUserId = useSelector(state => selectors.currentUserIdSelector(state));
+  const currentEditorLangSlug = useSelector(state => selectors.userLangSelector(state)(currentUserId));
+
   const { current: gameCurrent } = useContext(GameContext);
 
   const context = { userId: id };
@@ -88,6 +92,7 @@ const EditorContainer = ({
   const actionBtnsProps = {
     checkResult,
     ...userSettings,
+    currentEditorLangSlug,
   };
 
   const toolbarParams = {

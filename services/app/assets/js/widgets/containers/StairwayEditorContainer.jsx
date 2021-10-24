@@ -3,30 +3,19 @@ import { useSelector } from 'react-redux';
 
 import _ from 'lodash';
 import Editor from './Editor';
-import { currentUserIdSelector } from '../selectors';
-import EditorToolbar from './EditorsToolbars/EditorToolbar';
+import { currentUserIdSelector, getSolution } from '../selectors';
 
-const StairwayEditorContainer = ({ currentUserId, currentTaskId, editorValues }) => {
-    const editorValue = _.find(editorValues, { taskId: currentTaskId }, null);
-    const editable = useSelector(currentUserIdSelector) === currentUserId;
-    const toolbarParams = {};
-
-    if (editorValue === null) {
-        throw new Error('invalid currentTaskId');
-    }
+const StairwayEditorContainer = ({ playerId }) => {
+  const editable = useSelector(currentUserIdSelector) === playerId;
+  const solution = useSelector(getSolution(playerId));
+  const toolbarParams = {};
 
   return (
     <>
-      {/* <EditorToolbar
-        {...toolbarParams}
-        toolbarClassNames="btn-toolbar justify-content-between align-items-center m-1"
-        editorSettingClassNames="btn-group align-items-center m-1"
-        userInfoClassNames="btn-group align-items-center justify-content-end m-1"
-      /> */}
       <Editor
-        value={editorValue.editorText}
+        value={solution.text.editorText}
         editable={editable}
-        syntax="javascript"
+        syntax={solution.text.activeLangSlug}
         onChange={() => {}}
         checkResult={() => {}}
         mode="default"

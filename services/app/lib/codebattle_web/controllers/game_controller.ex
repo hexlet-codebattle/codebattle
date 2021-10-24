@@ -251,7 +251,13 @@ defmodule CodebattleWeb.GameController do
   end
 
   def stairway(conn, _) do
-    render(conn, "stairway.html")
+  langs = Languages.meta() |> Map.values()
+
+  conn
+    |> put_gon(%{
+      langs: langs,
+    })
+    |> render("stairway.html")
   end
 
   defp get_start_game_event(fsm, "public") do
