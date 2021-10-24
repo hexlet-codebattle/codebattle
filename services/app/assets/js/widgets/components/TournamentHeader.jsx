@@ -33,6 +33,16 @@ const TournamentTimer = ({ state, startsAt }) => {
       ) : (
         <span>The tournament will start soon</span>
       )),
+    [TournamentStates.upcoming]: time => (time > 0 ? (
+      <span>
+        The tournament will start in&nbsp;
+        {minutesToStart}
+        :
+        {secondsToStart}
+      </span>
+      ) : (
+        <span>The tournament will start soon</span>
+      )),
     [TournamentStates.waitingParticipants]: time => (time > 0 ? (
       <span>
         The tournament will start in&nbsp;

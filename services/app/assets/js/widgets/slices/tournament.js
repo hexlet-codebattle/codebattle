@@ -12,9 +12,11 @@ const initialState = {
       // TODO: (server) update tournaments match data (array -> object)
       matches: {}, // {1: [], 2: []}
       players: [],
+      intendedPlayerIds: [],
     },
   },
   statistics: null,
+  activeMatch: null,
 };
 
 const tournament = createSlice({
@@ -26,6 +28,7 @@ const tournament = createSlice({
       state.statistics = null;
     },
     setTournamentData: (state, { payload }) => {
+      state.activeMatch = payload.activeMatch;
       state.tournament = payload.tournament;
       state.statistics = payload.statistics;
     },

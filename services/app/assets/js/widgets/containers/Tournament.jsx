@@ -98,6 +98,7 @@ const Tournament = () => {
             <TournamentChat messages={messages} />
             <Participants
               players={tournament.data.players}
+              intendedPlayerIds={tournament.data.intendedPlayerIds}
               state={tournament.state}
               creatorId={tournament.creatorId}
               currentUserId={currentUserId}
