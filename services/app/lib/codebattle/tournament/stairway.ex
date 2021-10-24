@@ -28,8 +28,14 @@ defmodule Codebattle.Tournament.Stairway do
   @impl Tournament.Base
   def build_matches(tournament) do
     current_task_id = Enum.at(tournament.task_pack.task_ids, tournament.step)
+    tasks = Codebattle.TaskPack.get_tasks(tournament.task_pack)
     task = Codebattle.Task.get!(current_task_id)
-    new_meta = %{"current_task" => task}
+
+    new_meta = %{
+      "current_task_id" => task.id,
+      "current_task" => task,
+      "tasks" => tasks
+    }
 
     matches_for_round =
       tournament
@@ -82,7 +88,6 @@ defmodule Codebattle.Tournament.Stairway do
   end
 
   defp final_step?(tournament) do
-    tournament.task_pack
+    length(tournament.task_pack.task_ids) == tournament.step
   end
-
 end

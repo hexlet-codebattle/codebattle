@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from 'react-dom';
 import {
- Game, Lobby, UsersRating, UserPage, SettingsPage, RegistrationPage, Invites, StairwayGamePage,
+ Game, Lobby, UsersRating, UserPage, SettingsPage, RegistrationPage, Invites, StairwayGamePage, TournamentPage,
 } from './App';
 import Heatmap from './containers/Heatmap';
 
@@ -14,3 +14,4 @@ export const renderUserPage = domElement => render(<UserPage />, domElement);
 export const renderSettingPage = domElement => render(<SettingsPage />, domElement);
 export const renderRegistrationPage = domElement => render(<RegistrationPage />, domElement);
 export const renderStairwayGamePage = domElement => render(<StairwayGamePage />, domElement);
+export const renderTournamentPage = domElement => render(<TournamentPage />, domElement);

@@ -8,13 +8,9 @@ defmodule CodebattleWeb.Plugs.AssignGon do
 
   @spec call(Plug.Conn.t(), Keyword.t()) :: Plug.Conn.t()
   def call(conn, _opts) do
-    current_user = conn.assigns[:current_user]
+    current_user = conn.assigns.current_user
 
-    user_token =
-      case current_user.guest do
-        true -> Phoenix.Token.sign(conn, "user_token", "anonymous")
-        _ -> Phoenix.Token.sign(conn, "user_token", current_user.id)
-      end
+    user_token = Phoenix.Token.sign(conn, "user_token", current_user.id)
 
     put_gon(conn,
       user_token: user_token,

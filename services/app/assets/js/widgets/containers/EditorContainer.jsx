@@ -6,6 +6,7 @@ import { useMachine } from '@xstate/react';
 import editorModes from '../config/editorModes';
 import EditorToolbar from './EditorsToolbars/EditorToolbar';
 import * as GameActions from '../middlewares/Game';
+import { actions } from '../slices';
 import * as selectors from '../selectors';
 import GameContext from './GameContext';
 import { replayerMachineStates } from '../machines/game';
@@ -38,6 +39,17 @@ const EditorContainer = ({
     actions: {
       userStartChecking: () => {
         dispatch(GameActions.checkGameResult());
+      },
+      handleTimeoutFailureChecking: () => {
+        dispatch(actions.updateExecutionOutput({
+          userId: id,
+          status: 'timeout',
+          output: '',
+          result: {},
+          asserts: [],
+        }));
+
+        dispatch(actions.updateCheckStatus({ [id]: false }));
       },
     },
   };

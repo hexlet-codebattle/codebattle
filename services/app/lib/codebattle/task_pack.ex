@@ -6,6 +6,7 @@ defmodule Codebattle.TaskPack do
   import Ecto.Query
 
   alias Codebattle.Repo
+  alias Codebattle.Task
 
   @states ~w(draft on_moderation active disabled)
   @visibility_types ~w(hidden public)
@@ -46,6 +47,11 @@ defmodule Codebattle.TaskPack do
 
   def get!(id), do: Repo.get!(__MODULE__, id)
   def get(id), do: Repo.get(__MODULE__, id)
+
+  def get_tasks(%__MODULE__{} = task_pack) do
+    query = from(t in Task, where: t.id in ^task_pack.task_ids)
+    Repo.all(query)
+  end
 
   def can_see_task_pack?(%{visibility: "public"}, _user), do: true
 

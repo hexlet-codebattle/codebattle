@@ -53,9 +53,10 @@ defmodule Codebattle.Tournament.Helpers do
   def is_active?(tournament), do: tournament.state == "active"
   def is_waiting_participants?(tournament), do: tournament.state == "waiting_participants"
   def is_upcoming?(tournament), do: tournament.state == "upcoming"
+  def is_canceled?(tournament), do: tournament.state == "canceled"
+  def is_finished?(tournament), do: tournament.state == "finished"
   def is_individual?(tournament), do: tournament.type == "individual"
   def is_stairway?(tournament), do: tournament.type == "stairway"
-  def is_finished?(tournament), do: tournament.state == "finished"
   def is_team?(tournament), do: tournament.type == "team"
   def is_public?(tournament), do: tournament.access_type == "public"
   def is_visible_by_token?(tournament), do: tournament.access_type == "token"
@@ -141,6 +142,22 @@ defmodule Codebattle.Tournament.Helpers do
     end
   end
 
+  def get_active_match(%{type: "stairway"} = tournament, current_user) do
+    match =
+      tournament
+      |> get_matches
+      |> Enum.find(fn match ->
+        match_is_active?(match) && Enum.any?(match.players, fn p -> p.id == current_user.id end)
+      end)
+
+    case match do
+      nil -> tournament |> get_matches |> Enum.find(&match_is_active?/1)
+      match -> match
+    end
+  end
+
+  def get_active_match(_, _), do: nil
+
   def get_tournament_statistics(%{type: "team"} = tournament) do
     all_win_matches =
       tournament
@@ -168,6 +185,8 @@ defmodule Codebattle.Tournament.Helpers do
       best_time: best_time
     }
   end
+
+  def get_tournament_statistics(_), do: %{}
 
   def pick_winner(%{players: [%{game_result: "won"} = winner, _]}), do: winner
   def pick_winner(%{players: [_, %{game_result: "won"} = winner]}), do: winner
@@ -198,6 +217,8 @@ defmodule Codebattle.Tournament.Helpers do
   defp calc_match_result(%{players: [%{game_result: "gave_up"}, _]}), do: {0, 1}
   defp calc_match_result(_), do: {0, 0}
 
+  defp match_is_active?(%{state: "active"}), do: true
+  defp match_is_active?(_match), do: false
   defp match_is_finished?(%{state: "finished"}), do: true
   defp match_is_finished?(_match), do: false
 

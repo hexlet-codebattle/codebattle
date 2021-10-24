@@ -243,6 +243,28 @@ defmodule Codebattle.Tournament.Base do
         Map.merge(match, %{players: new_players, duration: new_duration, state: "finished"})
       end
 
+      def update!(tournament, params) do
+        tournament |> Tournament.changeset(params) |> Repo.update!()
+      end
+
+      def finish_all_active_matches(tournament) do
+        new_matches =
+          tournament
+          |> get_matches
+          |> Enum.map(fn match ->
+            case match.state do
+              "active" -> %{match | state: "finished"}
+              _ -> match
+            end
+            |> Map.from_struct()
+          end)
+
+        new_data =
+          tournament |> Map.get(:data) |> Map.merge(%{matches: new_matches}) |> Map.from_struct()
+
+        update!(tournament, %{data: new_data})
+      end
+
       defp broadcast_new_step(tournament) do
         CodebattleWeb.Endpoint.broadcast!(
           "tournaments",
@@ -251,10 +273,6 @@ defmodule Codebattle.Tournament.Base do
         )
 
         tournament
-      end
-
-      def update!(tournament, params) do
-        tournament |> Tournament.changeset(params) |> Repo.update!()
       end
 
       # for individual game

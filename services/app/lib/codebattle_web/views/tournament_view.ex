@@ -5,6 +5,10 @@ defmodule CodebattleWeb.TournamentView do
 
   import Codebattle.Tournament.Helpers
 
+  def csrf_token() do
+    Plug.CSRFProtection.get_csrf_token()
+  end
+
   def render_datetime(nil), do: "none"
 
   def render_time(ms) do
@@ -47,5 +51,9 @@ defmodule CodebattleWeb.TournamentView do
   def render_chat_message(%{name: _user_name, text: text}) do
     # TODO: add highlight to usernames
     text
+  end
+
+  def csrf_token do
+    Plug.CSRFProtection.get_csrf_token()
   end
 end

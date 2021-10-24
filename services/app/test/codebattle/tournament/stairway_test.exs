@@ -1,7 +1,7 @@
 defmodule Codebattle.Tournament.StairwayTest do
   use Codebattle.IntegrationCase, async: false
 
-  alias Codebattle.Tournament.Helpers
+  import Codebattle.Tournament.Helpers
   @module Codebattle.Tournament.Stairway
 
   def build_player(user, params \\ %{}) do
@@ -32,12 +32,68 @@ defmodule Codebattle.Tournament.StairwayTest do
         }
       )
 
-    new_tournament =
-      tournament
-      |> @module.start(%{user: user1})
+    new_tournament = @module.start(tournament, %{user: user1})
 
+    assert new_tournament.step == 0
     assert new_tournament.state == "active"
     assert new_tournament.players_count == 2
     assert new_tournament.meta["current_task"].id == Enum.at(task_ids, 0)
+    matches = get_matches(new_tournament)
+    assert length(matches) == 2
+    assert [%{state: "active"}, %{state: "active"}] = matches
+
+    new_tournament =
+      new_tournament
+      |> @module.finish_all_active_matches()
+      |> @module.maybe_start_new_step()
+
+    assert new_tournament.step == 1
+    assert new_tournament.state == "active"
+    assert new_tournament.meta["current_task"].id == Enum.at(task_ids, 1)
+    matches = get_matches(new_tournament)
+    assert length(matches) == 4
+
+    assert [%{state: "finished"}, %{state: "finished"}, %{state: "active"}, %{state: "active"}] =
+             matches
+
+    new_tournament =
+      new_tournament
+      |> @module.finish_all_active_matches()
+      |> @module.maybe_start_new_step()
+
+    assert new_tournament.step == 2
+    assert new_tournament.state == "active"
+    assert new_tournament.meta["current_task"].id == Enum.at(task_ids, 2)
+    matches = get_matches(new_tournament)
+    assert length(matches) == 6
+
+    assert [
+             %{state: "finished"},
+             %{state: "finished"},
+             %{state: "finished"},
+             %{state: "finished"},
+             %{state: "active"},
+             %{state: "active"}
+           ] = matches
+
+    new_tournament =
+      new_tournament
+      |> @module.finish_all_active_matches()
+      |> @module.maybe_start_new_step()
+
+    assert new_tournament.step == 3
+    assert new_tournament.state == "finished"
+    assert new_tournament.meta["current_task"].id == Enum.at(task_ids, 2)
+    matches = get_matches(new_tournament)
+    assert length(matches) == 6
+
+    assert [
+             %{state: "finished"},
+             %{state: "finished"},
+             %{state: "finished"},
+             %{state: "finished"},
+             %{state: "finished"},
+             %{state: "finished"}
+           ] = matches
   end
 end

@@ -188,6 +188,7 @@ class CodebattlePlayer extends Component {
 
   render() {
     const { current: gameCurrent } = this.context;
+    const { recordsCount, mainEvents } = this.props;
 
     const {
       isEnabled, direction, handlerPosition, lastIntent,
@@ -222,9 +223,12 @@ class CodebattlePlayer extends Component {
                     onIntentEnd={this.onSliderHandleChangeIntentEnd}
                   >
                     <CodebattleSliderBar
+                      mainEvents={mainEvents}
                       gameCurrent={gameCurrent}
                       handlerPosition={handlerPosition}
                       lastIntent={lastIntent}
+                      recordsCount={recordsCount}
+                      setGameState={this.setGameState}
                     />
                   </Slider>
                 </ControlPanel>
@@ -241,10 +245,12 @@ CodebattlePlayer.contextType = GameContext;
 
 const mapStateToProps = state => {
   const recordsCount = playbookRecordsSelector(state).length;
+  const { mainEvents } = state.playbook;
 
   return {
     recordsCount,
     stepCoefficient: 1.0 / recordsCount,
+    mainEvents,
   };
 };
 

@@ -104,10 +104,17 @@ const initPlaybook = dispatch => data => {
 const initGameChannel = (dispatch, machine) => {
   const onJoinFailure = payload => {
     machine.send('REJECT_LOADING_GAME', { payload });
+    machine.send('FAILURE_JOIN', { payload });
     window.location.reload();
   };
 
+  channel.onError(() => {
+    machine.send('FAILURE');
+  });
+
   const onJoinSuccess = response => {
+    machine.send('JOIN', { payload: response });
+
     const {
       status,
       startsAt,
@@ -368,6 +375,31 @@ const fetchPlaybook = (machine, init) => dispatch => {
       dispatch(actions.setError(error));
       machine.send('REJECT_LOADING_PLAYBOOK', { payload: error });
     });
+};
+
+export const changePlaybookSolution = method => dispatch => {
+  axios.post(`/api/v1/playbooks/${method}`, {
+    game_id: gameId,
+  }, {
+    headers: {
+      'Content-type': 'application/json',
+      'x-csrf-token': window.csrf_token,
+    },
+  }).then(response => {
+    const data = camelizeKeys(response.data);
+
+    if (data.errors) {
+      console.error(data.errors);
+      dispatch(actions.setError({
+        message: data.errors[0],
+      }));
+    } else {
+      dispatch(actions.changeSolutionType(data));
+    }
+  }).catch(error => {
+    console.error(error);
+    dispatch(actions.setError(error));
+  });
 };
 
 export const storedEditorReady = machine => () => {

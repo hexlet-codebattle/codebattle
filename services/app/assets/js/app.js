@@ -40,6 +40,7 @@ import {
   renderSettingPage,
   renderRegistrationPage,
   renderStairwayGamePage,
+  renderTournamentPage,
 } from './widgets';
 import renderExtensionPopup from './widgets/components/ExtensionPopup';
 
@@ -82,6 +83,7 @@ const userPageRoot = document.getElementById('user-page-root');
 const settingsRoot = document.getElementById('settings');
 const registrationRoot = document.getElementById('registration');
 const stairwayGameRoot = document.getElementById('stairway-game');
+const tournamentRoot = document.getElementById('tournament-root');
 
 if (invitesRoot) {
   renderInvitesWidget(invitesRoot);
@@ -121,4 +123,8 @@ if (registrationRoot) {
 
 if (stairwayGameRoot) {
   renderStairwayGamePage(stairwayGameRoot);
+}
+
+if (tournamentRoot) {
+  renderTournamentPage(tournamentRoot);
 }

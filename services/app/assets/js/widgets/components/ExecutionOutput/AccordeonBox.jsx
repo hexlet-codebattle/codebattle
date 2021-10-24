@@ -146,14 +146,20 @@ const SubMenu = ({
   );
 };
 
-const Item = ({ output }) => (
-  <div className="alert alert-secondary mb-0">
-    <pre>
-      <span className="font-weight-bold d-block">Output:</span>
-      {output}
-    </pre>
-  </div>
-);
+const Item = ({ output }) => {
+  if (output === '') {
+    return <></>;
+  }
+
+  return (
+    <div className="alert alert-secondary mb-0">
+      <pre>
+        <span className="font-weight-bold d-block">Output:</span>
+        {output}
+      </pre>
+    </div>
+  );
+};
 
 AccordeonBox.Item = Item;
 AccordeonBox.Menu = Menu;

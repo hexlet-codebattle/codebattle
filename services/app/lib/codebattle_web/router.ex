@@ -43,12 +43,15 @@ defmodule CodebattleWeb.Router do
       get("/game_activity", GameActivityController, :show)
       get("/playbook/:id", PlaybookController, :show)
       get("/user/:id/stats", UserController, :stats)
+      get("/user/:id/completed_games", UserController, :completed_games)
       get("/user/current", UserController, :current)
       resources("/users", UserController, only: [:index, :show, :create])
       resources("/session", SessionController, only: [:create], singleton: true)
       resources("/reset_password", ResetPasswordController, only: [:create], singleton: true)
       resources("/settings", SettingsController, only: [:show, :update], singleton: true)
       post("/feedback", FeedBackController, :index)
+      post("/playbooks/approve", PlaybookController, :approve)
+      post("/playbooks/reject", PlaybookController, :reject)
     end
   end
 
@@ -63,7 +66,12 @@ defmodule CodebattleWeb.Router do
     resources("/session", SessionController, singleton: true, only: [:delete, :new])
     get("/remind_password", SessionController, :remind_password)
     resources("/users", UserController, only: [:index, :show, :new])
-    resources("/tournaments", TournamentController, only: [:index, :show])
+
+    resources("/tournaments", TournamentController, only: [:index, :show]) do
+      get("/live", TournamentController, :live, as: :live)
+    end
+
+    resources("/old_tournaments", OldTournamentController, only: [:index, :show])
 
     resources("/tasks", TaskController, only: [:index, :show, :new, :edit, :create, :update]) do
       patch("/activate", TaskController, :activate, as: :activate)
@@ -84,7 +92,6 @@ defmodule CodebattleWeb.Router do
     get("/settings", UserController, :edit, as: :user_setting)
     put("/settings", UserController, :update, as: :user_setting)
     resources("/games", GameController, only: [:create, :show, :delete])
-    get("/stairway", GameController, :stairway) ## localhost:4000/games/stairway
 
     scope "/games" do
       post("/:id/join", GameController, :join)

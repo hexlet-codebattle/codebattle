@@ -8,25 +8,14 @@ defmodule CodebattleWeb.LobbyChannel do
   alias CodebattleWeb.Api.GameView
 
   def join("lobby", _payload, socket) do
-    user_id = socket.assigns.user_id
+    current_user = socket.assigns.current_user
 
-    # TODO: send user_if for extensions
-    case user_id do
-      "extension" ->
-        {:ok,
-         %{
-           active_games: GameView.render_active_games(Play.get_active_games(), user_id),
-           completed_games: GameView.render_completed_games(Play.get_completed_games())
-         }, socket}
-
-      _ ->
-        {:ok,
-         %{
-           active_games: GameView.render_active_games(Play.get_active_games(), user_id),
-           tournaments: Tournament.Context.list_live_and_finished(socket.assigns.current_user),
-           completed_games: GameView.render_completed_games(Play.get_completed_games())
-         }, socket}
-    end
+    {:ok,
+     %{
+       active_games: GameView.render_active_games(Play.get_active_games(), current_user.id),
+       tournaments: Tournament.Context.list_live_and_finished(socket.assigns.current_user),
+       completed_games: GameView.render_completed_games(Play.get_completed_games())
+     }, socket}
   end
 
   def handle_in("game:cancel", payload, socket) do

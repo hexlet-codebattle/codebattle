@@ -13,6 +13,7 @@ defmodule Codebattle.Tournament do
              :type,
              :name,
              :state,
+             :difficulty,
              :starts_at,
              :players_count,
              :data,
@@ -72,14 +73,20 @@ defmodule Codebattle.Tournament do
       :meta
     ])
     |> cast_embed(:data)
-    |> put_assoc(:task_pack, params["task_pack"])
     |> validate_inclusion(:state, @states)
     |> validate_inclusion(:type, @types)
     |> validate_inclusion(:access_type, @access_types)
     |> validate_inclusion(:difficulty, @difficulties)
     |> validate_required([:name, :starts_at])
     |> validate_alive_maximum(params)
+    |> add_task_pack(params["task_pack"] || params[:task_pack])
     |> add_creator(params["creator"] || params[:creator])
+  end
+
+  def add_task_pack(changeset, nil), do: changeset
+
+  def add_task_pack(changeset, task_pack) do
+    change(changeset, %{task_pack: task_pack})
   end
 
   def add_creator(changeset, nil), do: changeset

@@ -6,9 +6,11 @@ defmodule Codebattle.User do
   import Ecto.Changeset
 
   @admins Application.compile_env(:codebattle, :admins)
+  @guest_id 0
 
   defmodule SoundSettings do
     use Ecto.Schema
+
     import Ecto.Changeset
     @primary_key false
 
@@ -118,10 +120,10 @@ defmodule Codebattle.User do
   def create_guest() do
     %__MODULE__{
       guest: true,
-      id: 0,
+      id: @guest_id,
       name: "Jon Dou",
-      rating: -1,
-      rank: -1,
+      rating: 0,
+      rank: 0,
       sound_settings: %SoundSettings{}
     }
   end
@@ -143,4 +145,6 @@ defmodule Codebattle.User do
   def is_admin?(user) do
     user.name in @admins
   end
+
+  def guest_id(), do: @guest_id
 end

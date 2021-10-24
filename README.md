@@ -12,7 +12,6 @@ We also have [chrome extension](https://chrome.google.com/webstore/detail/codeba
 
 - Mac / Linux
 - docker
-- docker-compose
 
 ### Install
 

@@ -1,5 +1,6 @@
 defmodule Codebattle.Tournament.Server do
   use GenServer
+  require Logger
 
   # API
   def start_link(tournament) do
@@ -50,9 +51,10 @@ defmodule Codebattle.Tournament.Server do
   # HELPERS
 
   defp broadcast_tournament(tournament) do
+    IO.inspect(tournament)
     CodebattleWeb.Endpoint.broadcast!(
       tournament_topic_name(tournament.id),
-      "update_tournament",
+      "tournament:update",
       %{tournament: tournament}
     )
   end

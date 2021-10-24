@@ -20,6 +20,7 @@ import FeedBackWidget from '../components/FeedBackWidget';
 import GamePreview from '../components/Game/GamePreview';
 import { replayerMachineStates } from '../machines/game';
 import AnimationModal from '../components/AnimationModal';
+import NetworkAlert from './NetworkAlert';
 
 const steps = [
   {
@@ -235,6 +236,7 @@ const RootContainer = ({
           <GameContext.Provider value={{ current, send, service }}>
             <div className="x-outline-none">
               <GameWidgetGuide />
+              <NetworkAlert />
               <div className="container-fluid">
                 <div className="row no-gutter cb-game">
                   <AnimationModal setModalShowing={setModalShowing} modalShowing={modalShowing} />

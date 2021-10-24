@@ -71,6 +71,28 @@ const machine = {
     speedMode: speedModes.normal,
   },
   states: {
+    network: {
+      initial: 'none',
+      states: {
+        none: {
+          on: {
+            JOIN: { target: 'connected' },
+            FAILURE_JOIN: { target: 'disconnected', actions: ['handleFailureJoin'] },
+            FAILURE: { target: 'disconnected', actions: ['handleDisconnection'] },
+          },
+        },
+        disconnected: {
+          on: {
+            JOIN: { target: 'connected', actions: ['handleReconnection'] },
+          },
+        },
+        connected: {
+          on: {
+            FAILURE: { target: 'disconnected', actions: ['handleDisconnection'] },
+          },
+        },
+      },
+    },
     game: {
       initial: 'preview',
       states: {
@@ -189,6 +211,10 @@ export const config = {
     throwError: (_ctx, { payload }) => {
       throw new Error(`Unexpected behavior (payload: ${JSON.stringify(payload)})`);
     },
+    // network actions
+    handleFailureJoin: () => {},
+    handleDisconnection: () => {},
+    handleReconnection: () => {},
 
     // game actions
     soundWin: () => {
@@ -240,9 +266,15 @@ const states = {
     ended: 'on.ended',
     off: 'off',
   },
+  network: {
+    none: 'none',
+    disconnected: 'disconnected',
+    connected: 'connected',
+  },
 };
 
 export const gameMachineStates = states.game;
 export const replayerMachineStates = states.replayer;
+export const networkMachineStates = states.network;
 
 export default machine;

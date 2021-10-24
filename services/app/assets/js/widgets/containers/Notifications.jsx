@@ -10,12 +10,16 @@ import BackToTournamentButton from '../components/Toast/BackToTournamentButton';
 import * as selectors from '../selectors';
 import GameTypeCodes from '../config/gameTypeCodes';
 import GameContext from './GameContext';
+import { gameMachineStates, replayerMachineStates } from '../machines/game';
+import ApprovePlaybookButtons from '../components/ApprovePlaybookButtons';
 
 const Notifications = () => {
   const gameType = useSelector(selectors.gameTypeSelector);
   const currentUserId = useSelector(state => selectors.currentUserIdSelector(state));
   const players = useSelector(state => selectors.gamePlayersSelector(state));
+  const playbookSolutionType = useSelector(state => state.playbook.solutionType);
   const tournamentsInfo = useSelector(state => state.game.tournamentsInfo);
+  const isAdmin = useSelector(state => state.userSettings.is_admin);
   const isCurrentUserPlayer = _.hasIn(players, currentUserId);
   const { current } = useContext(GameContext);
   const isTournamentGame = gameType === GameTypeCodes.tournament;
@@ -24,12 +28,17 @@ const Notifications = () => {
   return (
     <>
       <ReplayerControlButton />
-      {(isCurrentUserPlayer && current.matches({ game: 'game_over' }))
+      {(isCurrentUserPlayer && current.matches({ game: gameMachineStates.game_over }))
         && (
           <>
             <GameResult />
             <ActionsAfterGame />
           </>
+      )}
+      {(isAdmin && !current.matches({ replayer: replayerMachineStates.off })) && (
+        <>
+          <ApprovePlaybookButtons playbookSolutionType={playbookSolutionType} />
+        </>
       )}
       { isTournamentGame && isActiveTournament
         && <GoToNextGame info={tournamentsInfo} currentUserId={currentUserId} /> }
