@@ -34,12 +34,12 @@ const initialState = {
       name: 'Vova',
       rank: 1600,
       tasks: [
-        { roundId: 0, status: 'active', results: {} }, // status: win/lost/active/disabled
-        { roundId: 1, status: 'active', results: {} },
-        { roundId: 2, status: 'active', results: {} },
+        { roundId: 0, status: 'win', results: {} }, // status: win/lost/active/disabled
+        { roundId: 1, status: 'win', results: {} },
+        { roundId: 2, status: 'lost', results: {} },
         { roundId: 3, status: 'active', results: {} },
-        { roundId: 4, status: 'active', results: {} },
-        { roundId: 5, status: 'active', results: {} },
+        { roundId: 4, status: 'disabled', results: {} },
+        { roundId: 5, status: 'disabled', results: {} },
       ],
     },
     {
@@ -47,12 +47,12 @@ const initialState = {
       name: 'Jopa',
       rank: 1600,
       tasks: [
-        { roundId: 0, status: 'active', results: {} },
-        { roundId: 1, status: 'active', results: {} },
-        { roundId: 2, status: 'active', results: {} },
-        { roundId: 3, status: 'active', results: {} },
+        { roundId: 0, status: 'lost', results: {} },
+        { roundId: 1, status: 'lost', results: {} },
+        { roundId: 2, status: 'lost', results: {} },
+        { roundId: 3, status: 'lost', results: {} },
         { roundId: 4, status: 'active', results: {} },
-        { roundId: 5, status: 'active', results: {} },
+        { roundId: 5, status: 'disabled', results: {} },
       ],
     },
   ],
