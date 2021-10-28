@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Slider } from 'react-player-controls';
 import { Direction } from 'react-player-controls/dist/constants';
+import qs from 'qs';
 import CodebattleSliderBar from '../components/CodebattleSliderBar';
 import ControlPanel from '../components/CBPlayer/ControlPanel';
 import GameContext from './GameContext';
@@ -24,14 +25,17 @@ const isEqual = (float1, float2) => {
 class CodebattlePlayer extends Component {
   constructor(props) {
     super(props);
+    const { stepCoefficient } = props;
 
+    const getParams = window.location.href.split('?')[1];
+    const nextRecordId = getParams ? Number(qs.parse(getParams).t || 0) : 0;
     this.state = {
       isEnabled: true,
       setGameStateDelay: 10,
       direction: Direction.HORIZONTAL,
-      nextRecordId: 0,
+      nextRecordId,
       // handlerPosition and intent have range from 0.0 to 1.0
-      handlerPosition: 0.0,
+      handlerPosition: stepCoefficient * nextRecordId,
       lastIntent: 0,
     };
   }
@@ -191,7 +195,7 @@ class CodebattlePlayer extends Component {
     const { recordsCount, mainEvents } = this.props;
 
     const {
-      isEnabled, direction, handlerPosition, lastIntent,
+      isEnabled, direction, handlerPosition, lastIntent, nextRecordId,
     } = this.state;
 
     if (!gameCurrent.matches({ replayer: replayerMachineStates.on })) {
@@ -206,6 +210,7 @@ class CodebattlePlayer extends Component {
             <div className="border bg-light">
               <div className="row align-items-center justify-content-center">
                 <ControlPanel
+                  nextRecordId={nextRecordId}
                   gameCurrent={gameCurrent}
                   onPlayClick={this.onPlayClick}
                   onPauseClick={this.onPauseClick}
