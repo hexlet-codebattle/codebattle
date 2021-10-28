@@ -1,7 +1,9 @@
-import { assign } from 'xstate';
+import { assign, actions } from 'xstate';
 import speedModes from '../config/speedModes';
 import sound from '../lib/sound';
 import GameStatusCodes from '../config/gameStatusCodes';
+
+const { send } = actions;
 
 const recordMachine = {
   initial: 'ended',
@@ -78,17 +80,29 @@ const machine = {
           on: {
             JOIN: { target: 'connected' },
             FAILURE_JOIN: { target: 'disconnected', actions: ['handleFailureJoin'] },
-            FAILURE: { target: 'disconnected', actions: ['handleDisconnection'] },
+            FAILURE: { target: 'disconnected' },
           },
         },
         disconnected: {
+          entry: send(
+            { type: 'SHOW_ERROR_MESSAGE' },
+            {
+              delay: 5000,
+            },
+          ),
+          on: {
+            JOIN: { target: 'connected', actions: ['handleReconnection'] },
+            SHOW_ERROR_MESSAGE: { target: 'disconnectedWithMessage', actions: ['handleDisconnection'] },
+          },
+        },
+        disconnectedWithMessage: {
           on: {
             JOIN: { target: 'connected', actions: ['handleReconnection'] },
           },
         },
         connected: {
           on: {
-            FAILURE: { target: 'disconnected', actions: ['handleDisconnection'] },
+            FAILURE: { target: 'disconnected' },
           },
         },
       },
@@ -269,6 +283,7 @@ const states = {
   network: {
     none: 'none',
     disconnected: 'disconnected',
+    disconnectedWithMessage: 'disconnectedWithMessage',
     connected: 'connected',
   },
 };
