@@ -9,6 +9,8 @@ import { connect } from 'react-redux';
 import { gameTypeSelector } from '../selectors/index';
 import languages from '../config/languages';
 import GameTypeCodes from '../config/gameTypeCodes';
+import sound from '../lib/sound';
+import { actions } from '../slices';
 
 class Editor extends PureComponent {
   static propTypes = {
@@ -17,6 +19,7 @@ class Editor extends PureComponent {
     syntax: PropTypes.string,
     onChange: PropTypes.func,
     mode: PropTypes.string.isRequired,
+    mute: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -24,6 +27,7 @@ class Editor extends PureComponent {
     editable: false,
     onChange: null,
     syntax: 'javascript',
+    mute: false,
   };
 
   // eslint-disable-next-line react/sort-comp
@@ -59,6 +63,7 @@ class Editor extends PureComponent {
       mode,
       syntax,
       checkResult,
+      toggleMuteSound,
     } = this.props;
 
     this.modes = {
@@ -69,13 +74,25 @@ class Editor extends PureComponent {
     this.currentMode = this.modes[mode]();
 
     this.editor.addAction({
-      id: 'codebattle-hot-keys',
+      id: 'codebattle-check-keys',
       label: 'Codebattle check start',
       keybindings: [this.monaco.KeyMod.CtrlCmd | this.monaco.KeyCode.Enter],
       run: () => {
         if (!this.options.readOnly) {
           checkResult();
         }
+      },
+    });
+
+    this.editor.addAction({
+      id: 'codebattle-mute-keys',
+      label: 'Codebattle mute sound',
+      keybindings: [this.monaco.KeyMod.CtrlCmd | this.monaco.KeyCode.KEY_M],
+      run: () => {
+        const { mute } = this.props;
+        // eslint-disable-next-line no-unused-expressions
+        mute ? sound.toggle() : sound.toggle(0);
+        toggleMuteSound();
       },
     });
     window.addEventListener('keydown', this.ctrPlusS);
@@ -169,6 +186,11 @@ class Editor extends PureComponent {
       () => null,
     );
 
+    this.editor.addCommand(
+      this.monaco.KeyMod.CtrlCmd | this.monaco.KeyCode.KEY_M,
+      () => null,
+    );
+
     window.addEventListener('resize', this.handleResize);
   };
 
@@ -205,7 +227,10 @@ const mapStateToProps = state => {
   const gameType = gameTypeSelector(state);
   return {
     gameType,
+    mute: state.userSettings.mute,
   };
 };
 
-export default connect(mapStateToProps)(Editor);
+const mapDispatchToProps = { toggleMuteSound: actions.toggleMuteSound };
+
+export default connect(mapStateToProps, mapDispatchToProps)(Editor);
