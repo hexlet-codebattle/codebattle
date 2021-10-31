@@ -13,6 +13,7 @@ import StairwayOutputTab from './StairwayOutputTab';
 import StairwayEditorContainer from './StairwayEditorContainer';
 import StairwayEditorToolbar from '../components/StairwayEditorToolbar';
 import Loading from '../components/Loading';
+import StairwayRounds from './StairwayRounds';
 
 const StairwayGameContainer = ({}) => {
   const dispatch = useDispatch();
@@ -59,16 +60,15 @@ const StairwayGameContainer = ({}) => {
       <div className="container-fluid">
         <div className="row no-gutter cb-game">
           <div className="col-12 col-lg-6 p-1 vh-100">
-            {/* <StairwayRounds
-                  players={players} // 5 rounds
-                  activePlayerId={activePlayerId}
-                  activeRoundId={activeRoundId}
-                  setactiveRoundId={setactiveRoundId}
-                /> */}
+            <StairwayRounds
+              players={players}
+              activePlayerId={activePlayerId}
+              activeRoundId={activeRoundId}
+              setActiveRoundId={setActiveRoundId}
+            />
             <StairwayEditorToolbar players={players} setActivePlayerId={setActivePlayerId} activePlayer={activePlayer} />
             <StairwayEditorContainer playerId={activePlayerId} />
           </div>
-
           <div className="col-12 col-lg-6 p-1 vh-100">
             <div className="d-flex flex-column h-100">
               <nav>

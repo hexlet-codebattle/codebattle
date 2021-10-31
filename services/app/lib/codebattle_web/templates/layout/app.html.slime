@@ -98,7 +98,7 @@ html lang="en"
           button type="button" class="close" data-dismiss="alert" aria-label="Close"
             span aria-hidden="true" &times;
     #extension
-    .content.my-3
+    .content.my-1
     = @inner_content
       = render_gon_script(@conn)
     script src=static_path(@conn,"/assets/app.js")
