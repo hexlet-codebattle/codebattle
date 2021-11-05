@@ -65,43 +65,22 @@ defmodule Codebattle.GameProcess.Engine.Base do
       def handle_won_game(game_id, winner, fsm) do
         loser = FsmHelpers.get_opponent(fsm, winner.id)
         store_game_result!(fsm, {winner, "won"}, {loser, "lost"})
-        update_rank_async()
         store_playbook(fsm)
-
         ActiveGames.terminate_game(game_id)
-
-        Notifications.notify_tournament(:game_over, fsm, %{
-          state: "finished",
-          game_id: game_id,
-          winner: {winner.id, "won"},
-          loser: {loser.id, "lost"}
-        })
-
+        Codebattle.PubSub.broadcast("game:finished", %{game: game, winner: winner, loser: loser})
         :ok
       end
 
       def handle_give_up(game_id, loser_id, fsm) do
         loser = FsmHelpers.get_player(fsm, loser_id)
         winner = FsmHelpers.get_opponent(fsm, loser.id)
-        task = FsmHelpers.get_task(fsm)
-
         store_game_result!(fsm, {winner, "won"}, {loser, "gave_up"})
-        update_rank_async()
-
         store_playbook(fsm)
-
         ActiveGames.terminate_game(game_id)
-
-        Notifications.notify_tournament(:game_over, fsm, %{
-          state: "finished",
-          game_id: game_id,
-          winner: {winner.id, "won"},
-          loser: {loser.id, "gave_up"}
-        })
+        Codebattle.PubSub.broadcast("game:finished", %{game: game, winner: winner, loser: loser})
       end
 
       def get_task(level), do: tasks_provider().get_task(level)
-      def update_rank_async(), do: Codebattle.UsersRankUpdateServer.update()
 
       def store_game_result!(fsm, {winner, winner_result}, {loser, loser_result}) do
         level = FsmHelpers.get_level(fsm)

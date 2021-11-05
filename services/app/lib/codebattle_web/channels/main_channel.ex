@@ -10,7 +10,7 @@ defmodule CodebattleWeb.MainChannel do
 
     if !current_user.guest do
       topic = "main:#{current_user.id}"
-      Phoenix.PubSub.subscribe(:cb_pubsub, topic)
+      Codebattle.PubSub.subscribe(topic)
       send(self(), :after_join)
     end
 

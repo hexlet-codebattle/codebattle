@@ -23,8 +23,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
 
     tournament = session["tournament"]
 
-    Phoenix.PubSub.subscribe(:cb_pubsub, topic_name(tournament))
-    Phoenix.PubSub.subscribe(:cb_pubsub, "tournaments")
+    Codebattle.PubSub.subscribe(topic_name(tournament))
 
     {:ok,
      assign(socket,
@@ -54,42 +53,23 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     end
   end
 
-  def handle_info(%{topic: topic, event: "update_tournament", payload: payload}, socket) do
-    if is_current_topic?(topic, socket.assigns.tournament) do
-      {:noreply, assign(socket, tournament: payload.tournament)}
-    else
-      {:noreply, socket}
-    end
+  def handle_info(%{topic: topic, event: "tournament:updated", payload: payload}, socket) do
+    {:noreply, assign(socket, tournament: payload.tournament)}
   end
 
-  def handle_info(%{topic: topic, event: "update_chat", payload: payload}, socket) do
-    if is_current_topic?(topic, socket.assigns.tournament) do
-      {:noreply, assign(socket, messages: payload.messages)}
-    else
-      {:noreply, socket}
-    end
+  def handle_info(%{topic: topic, event: "chat:updated", payload: payload}, socket) do
+    {:noreply, assign(socket, messages: payload.messages)}
   end
 
   def handle_info(%{topic: topic, event: "chat:new_msg", payload: _payload}, socket) do
-    # TODO: add only one message without refetching
     tournament = socket.assigns.tournament
 
-    if is_current_topic?(topic, tournament) do
-      {:noreply, assign(socket, messages: get_chat_messages(tournament.id))}
-    else
-      {:noreply, socket}
-    end
+    {:noreply, assign(socket, messages: get_chat_messages(tournament.id))}
   end
 
   def handle_info(%{topic: topic, event: "chat:ban", payload: _payload}, socket) do
-    # TODO: add only one message without refetching
     tournament = socket.assigns.tournament
-
-    if is_current_topic?(topic, tournament) do
-      {:noreply, assign(socket, messages: get_chat_messages(tournament.id))}
-    else
-      {:noreply, socket}
-    end
+    {:noreply, assign(socket, messages: get_chat_messages(tournament.id))}
   end
 
   def handle_info(%{topic: "tournaments", event: "round:created", payload: payload}, socket) do
@@ -264,7 +244,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     CodebattleWeb.Endpoint.broadcast_from(
       self(),
       topic_name(tournament),
-      "update_chat",
+      "chat:#{tournament.id}",
       %{messages: messages}
     )
 
@@ -315,13 +295,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     }
   end
 
-  defp topic_name(tournament) do
-    "tournament_#{tournament.id}"
-  end
-
-  defp is_current_topic?(topic, tournament) do
-    topic == topic_name(tournament)
-  end
+  defp topic_name(tournament), do: "tournament:#{tournament.id}"
 
   defp get_chat_messages(id) do
     try do

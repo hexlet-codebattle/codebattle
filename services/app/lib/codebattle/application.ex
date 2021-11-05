@@ -22,7 +22,14 @@ defmodule Codebattle.Application do
       [
         {Codebattle.Repo, []},
         CodebattleWeb.Telemetry,
-        {Phoenix.PubSub, [name: :cb_pubsub, adapter: Phoenix.PubSub.PG2]},
+        %{
+          id: Codebattle.PubSub,
+          start: {Phoenix.PubSub.Supervisor, :start_link, [[name: Codebattle.PubSub]]}
+        },
+        %{
+          id: CodebattleWeb.PubSub,
+          start: {Phoenix.PubSub.Supervisor, :start_link, [[name: CodebattleWeb.PubSub]]}
+        },
         {CodebattleWeb.Presence, []},
         {CodebattleWeb.Endpoint, []},
         {Codebattle.GameProcess.TasksQueuesServer, []},
@@ -36,7 +43,7 @@ defmodule Codebattle.Application do
         {Codebattle.UsersRankUpdateServer, []}
       ] ++ prod_workers
 
-    Supervisor.start_link(children, strategy: :one_for_one, name: __MODULE__)
+    Supervisor.start_link(children, strategy: :one_for_one, name: Codebattle.Supervisor)
   end
 
   def config_change(changed, _new, removed) do

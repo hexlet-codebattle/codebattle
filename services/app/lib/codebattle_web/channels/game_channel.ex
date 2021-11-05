@@ -9,8 +9,8 @@ defmodule CodebattleWeb.GameChannel do
   def join("game:" <> game_id, _payload, socket) do
     case Play.get_fsm(game_id) do
       {:ok, fsm} ->
-        Phoenix.PubSub.subscribe(:cb_pubsub, "tournaments")
-        {:ok, GameView.render_fsm(fsm), socket}
+        Codebattle.PubSub.subscribe("tournaments")
+        {:ok, GameView.render_fsm(fsm), assign(socket, :game_id, game_id)}
 
       {:error, reason} ->
         {:error, reason}
@@ -18,7 +18,7 @@ defmodule CodebattleWeb.GameChannel do
   end
 
   def terminate(_reason, socket) do
-    game_id = get_game_id(socket)
+    game_id = socket.assigns.game_id
     user_id = socket.assigns.current_user.id
 
     case Play.get_fsm(game_id) do
@@ -42,7 +42,7 @@ defmodule CodebattleWeb.GameChannel do
   def handle_in("ping", payload, socket), do: {:reply, {:ok, payload}, socket}
 
   def handle_in("editor:data", payload, socket) do
-    game_id = get_game_id(socket)
+    game_id = socket.assigns.game_id
     user = socket.assigns.current_user
 
     %{"editor_text" => editor_text, "lang_slug" => lang_slug} = payload
@@ -72,7 +72,7 @@ defmodule CodebattleWeb.GameChannel do
   end
 
   def handle_in("give_up", _, socket) do
-    game_id = get_game_id(socket)
+    game_id = socket.assigns.game_id
     user = socket.assigns.current_user
 
     case Play.give_up(game_id, user) do
@@ -84,8 +84,6 @@ defmodule CodebattleWeb.GameChannel do
             game_id: game_id
           }
         })
-
-        CodebattleWeb.Notifications.finish_active_game(fsm)
 
         broadcast!(socket, "user:give_up", %{
           players: FsmHelpers.get_players(fsm),
@@ -101,7 +99,7 @@ defmodule CodebattleWeb.GameChannel do
   end
 
   def handle_in("check_result", payload, socket) do
-    game_id = get_game_id(socket)
+    game_id = socket.assigns.game_id
     user = socket.assigns.current_user
 
     broadcast_from!(socket, "user:start_check", %{user_id: user.id})
@@ -148,8 +146,8 @@ defmodule CodebattleWeb.GameChannel do
   end
 
   def handle_in("rematch:send_offer", _, socket) do
+    game_id = socket.assigns.game_id
     user = socket.assigns.current_user
-    game_id = get_game_id(socket)
 
     UsersActivityServer.add_event(%{
       event: "rematch_send_offer_game",
@@ -165,7 +163,7 @@ defmodule CodebattleWeb.GameChannel do
   end
 
   def handle_in("rematch:reject_offer", _, socket) do
-    game_id = get_game_id(socket)
+    game_id = socket.assigns.game_id
 
     UsersActivityServer.add_event(%{
       event: "rematch_reject_offer_game",
@@ -181,7 +179,7 @@ defmodule CodebattleWeb.GameChannel do
   end
 
   def handle_in("rematch:accept_offer", _, socket) do
-    game_id = get_game_id(socket)
+    game_id = socket.assigns.game_id
     user = socket.assigns.current_user
 
     UsersActivityServer.add_event(%{
@@ -198,7 +196,8 @@ defmodule CodebattleWeb.GameChannel do
   end
 
   def handle_info(%{topic: "tournaments", event: "round:created", payload: payload}, socket) do
-    {:ok, fsm} = Play.get_fsm(get_game_id(socket))
+    game_id = socket.assigns.game_id
+    {:ok, fsm} = Play.get_fsm(game_id)
 
     if is_current_tournament?(payload.tournament, fsm) do
       push(socket, "tournament:round_created", payload.tournament)
@@ -227,10 +226,5 @@ defmodule CodebattleWeb.GameChannel do
       _ ->
         {:reply, {:error, %{reason: "sww"}}, socket}
     end
-  end
-
-  defp get_game_id(socket) do
-    "game:" <> game_id = socket.topic
-    game_id
   end
 end

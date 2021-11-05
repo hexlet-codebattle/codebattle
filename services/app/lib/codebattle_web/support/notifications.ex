@@ -19,14 +19,6 @@ defmodule CodebattleWeb.Notifications do
     CodebattleWeb.Endpoint.broadcast("lobby", "game:remove", %{id: game_id})
   end
 
-  def finish_active_game(fsm) do
-    game = Play.get_game(get_game_id(fsm))
-
-    CodebattleWeb.Endpoint.broadcast("lobby", "game:finish", %{
-      game: GameView.render_completed_game(game)
-    })
-  end
-
   def broadcast_join_game(fsm) do
     CodebattleWeb.Endpoint.broadcast!(
       game_channel_name(fsm),

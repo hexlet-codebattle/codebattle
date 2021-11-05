@@ -16,6 +16,7 @@ defmodule Codebattle.UsersRankUpdateServer do
 
   # SERVER
   def init(_) do
+    Codebattle.PubSub.subscribe("main")
     Logger.info("Start UsersRankServer")
     {:ok, true}
   end

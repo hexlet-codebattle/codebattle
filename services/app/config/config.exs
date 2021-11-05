@@ -22,8 +22,8 @@ config :codebattle, ecto_repos: [Codebattle.Repo]
 config :codebattle, CodebattleWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "zQ3/vT3oIVM94qXO7IgWeAqbLSAyGA9em6fdBw7OdbDnbeotEkWYANrjJWYNWpd/",
-  render_errors: [view: CodebattleWeb.ErrorView, accepts: ~w(html json)],
-  pubsub_server: :cb_pubsub,
+  render_errors: [view: CodebattleWeb.ErrorView, accepts: ~w(html json), layout: false],
+  pubsub_server: CodebattleWeb.PubSub,
   live_view: [signing_salt: "asdfasdf"]
 
 # Configures Elixir's Logger

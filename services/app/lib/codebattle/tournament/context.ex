@@ -1,7 +1,6 @@
 defmodule Codebattle.Tournament.Context do
-  alias Codebattle.Repo
-  alias Codebattle.Tournament
   alias Codebattle.TaskPack
+  alias Codebattle.Tournament
 
   import Ecto.Query
 
@@ -131,6 +130,8 @@ defmodule Codebattle.Tournament.Context do
           |> add_module
           |> mark_as_live
           |> Tournament.GlobalSupervisor.start_tournament()
+
+        Codebattle.PubSub.broadcast("tournament:created", %{tournament: tournament})
 
         {:ok, tournament}
 

@@ -136,9 +136,7 @@ defmodule Codebattle.GameProcess.Play do
           Server.update_playbook(id, :game_over, %{id: user.id, lang: editor_lang})
 
           player = FsmHelpers.get_player(new_fsm, user.id)
-          type = FsmHelpers.get_type(new_fsm)
           FsmHelpers.get_module(fsm).handle_won_game(id, player, new_fsm)
-          finish_active_game(new_fsm, type)
           {:ok, fsm, new_fsm, %{solution_status: true, check_result: check_result}}
         else
           {:ok, fsm, new_fsm, %{solution_status: false, check_result: check_result}}
@@ -244,9 +242,6 @@ defmodule Codebattle.GameProcess.Play do
   defp get_module(_), do: Engine.Standard
 
   defp checker_adapter, do: Application.get_env(:codebattle, :checker_adapter)
-
-  defp finish_active_game(_fsm, "training"), do: :ok
-  defp finish_active_game(fsm, _type), do: Notifications.finish_active_game(fsm)
 
   defp store_terminate_event(fsm) do
     data = %{
