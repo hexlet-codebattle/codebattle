@@ -80,7 +80,7 @@
     "redux-persist": "^6.0.0",
     "rollbar": "^2.19.4",
     "rollbar-redux-middleware": "^0.2.0",
-    "set-value": "^3.0.2",
+    "set-value": "^4.0.1",
     "styled-components": "^5.2.1",
     "xstate": "^4.15.3",
     "yup": "^0.29.3"

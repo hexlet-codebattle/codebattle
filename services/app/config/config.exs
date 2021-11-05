@@ -60,9 +60,6 @@ config :codebattle, CodebattleWeb.Gettext,
   priv: "priv/gettext",
   default_locale: "en"
 
-config :scrivener_html,
-  routes_helper: CodebattleWeb.Router.Helpers
-
 config :phoenix_meta_tags,
   title: "Hexlet Codebattle • Game for programmers",
   description:
@@ -93,6 +90,7 @@ config :codebattle, Codebattle.DockerLangsPuller, timeout: :timer.hours(7)
 
 config :codebattle, checker_adapter: Codebattle.CodeCheck.DockerChecker
 config :codebattle, tournament_match_timeout: 3 * 60
+config :codebattle, tasks_provider: Codebattle.GameProcess.TasksQueuesServer
 
 config :codebattle, Codebattle.Analitics, max_size_activity_server: 10_000
 
@@ -104,3 +102,9 @@ config :codebattle, :firebase,
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"
+
+config :codebattle,
+  admins: [
+    "vtm",
+    "ReDBrother"
+  ]

@@ -30,6 +30,7 @@ const Heatmap = () => {
       .get(`/api/v1/${userId}/activity`)
       .then(response => {
         setActivities(response.data.activities);
+        console.log(response);
       })
       .catch(error => {
         dispatch(actions.setError(error));

@@ -40,14 +40,16 @@ defmodule CodebattleWeb.ChatChannel do
     {:noreply, socket}
   end
 
-  def handle_in("chat:command", payload, socket) do
+  def handle_in("chat:command", %{"command" => payload}, socket) do
     chat_type = get_chat_type(socket)
 
-    Chat.Server.command(chat_type, socket.assigns.current_user, %{
-      type: payload["type"],
-      name: payload["name"],
-      time: :os.system_time(:seconds)
-    })
+    if Codebattle.User.is_admin?(socket.assigns.current_user) do
+      Chat.Server.command(chat_type, socket.assigns.current_user, %{
+        type: payload["type"],
+        name: payload["name"],
+        time: :os.system_time(:seconds)
+      })
+    end
 
     {:noreply, socket}
   end
@@ -66,6 +68,10 @@ defmodule CodebattleWeb.ChatChannel do
       message: text
     })
 
+    {:noreply, socket}
+  end
+
+  def handle_in(_, _payload, socket) do
     {:noreply, socket}
   end
 

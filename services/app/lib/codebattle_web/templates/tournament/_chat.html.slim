@@ -10,6 +10,8 @@
           - else
             span.font-weight-bold = "#{message.name}:"
             span.ml-1 = render_chat_message(message)
+            = if can_moderate?(@tournament, @current_user) do
+              button.btn.btn-sm.btn-outline-danger[phx-click="chat_ban" phx-value-name=message.name] Ban
   = form_for :message, "#", [phx_submit: :chat_message],  fn f ->
     .d-flex.shadow-sm.rounded-bottom
       = text_input f, :content, autocomplete: "off", placeholder: "write your message here...", class: "form-control rounded-0 border-0 border-top x-rounded-bottom-left"

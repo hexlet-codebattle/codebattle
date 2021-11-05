@@ -15,7 +15,9 @@ const LangPieChart = () => {
       const userId = window.location.pathname.split('/').pop();
       axios
       .get(`/api/v1/user/${userId}/lang_stats`)
-      .then(response => setStats(camelizeKeys(response.data)))
+      .then(response => {
+        setStats(camelizeKeys(response.data));
+      })
       .catch(error => {
         dispatch(actions.setError(error));
       });
@@ -53,7 +55,7 @@ const LangPieChart = () => {
 
     return (
       <div id="chart">
-        <ReactApexChart options={options} series={series} type="pie" width={380} />
+        <ReactApexChart options={options} series={series} type="pie" width={350} />
       </div>
     );
 };

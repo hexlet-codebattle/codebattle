@@ -3,7 +3,6 @@ defmodule Codebattle.Chat.Server do
 
   alias Codebattle.Tournament
 
-  @admins Application.compile_env(:codebattle, :admins)
   @message_ttl 60 * 60
   @timeout :timer.minutes(1)
 
@@ -32,7 +31,12 @@ defmodule Codebattle.Chat.Server do
   end
 
   def get_users(type) do
-    GenServer.call(chat_key(type), :get_users)
+    try do
+      GenServer.call(chat_key(type), :get_users)
+    catch
+      :exit, _reason ->
+        []
+    end
   end
 
   def add_message(type, message) do
@@ -43,27 +47,30 @@ defmodule Codebattle.Chat.Server do
   end
 
   def get_messages(type) do
-    GenServer.call(chat_key(type), :get_messages)
+    try do
+      GenServer.call(chat_key(type), :get_messages)
+    catch
+      :exit, _reason ->
+        []
+    end
   end
 
   def command(chat_type, user, %{type: command_type} = payload) do
-    if is_admin?(user) do
-      case {command_type, payload} do
-        {"ban", %{name: banned_name}} ->
-          ban_message = %{
-            type: "info",
-            name: "CB",
-            time: payload.time,
-            text: "#{banned_name} has been banned by #{user.name}"
-          }
+    case {command_type, payload} do
+      {"ban", %{name: banned_name}} ->
+        ban_message = %{
+          type: "info",
+          name: "CB",
+          time: payload.time,
+          text: "#{banned_name} has been banned by #{user.name}"
+        }
 
-          GenServer.call(chat_key(chat_type), {:ban, %{name: banned_name, message: ban_message}})
-          broadcast_message(chat_type, "chat:ban", %{name: banned_name})
-          broadcast_message(chat_type, "chat:new_msg", ban_message)
+        GenServer.call(chat_key(chat_type), {:ban, %{name: banned_name, message: ban_message}})
+        broadcast_message(chat_type, "chat:ban", %{name: banned_name})
+        broadcast_message(chat_type, "chat:new_msg", ban_message)
 
-        _ ->
-          :ok
-      end
+      _ ->
+        :ok
     end
   end
 
@@ -84,8 +91,8 @@ defmodule Codebattle.Chat.Server do
   def handle_call({:leave, user}, _from, state) do
     %{users: users} = state
 
-    {rest_users, finded_users} = Enum.split_with(users, fn u -> u != user end)
-    new_users = finded_users |> Enum.drop(1) |> Enum.concat(rest_users)
+    {rest_users, found_users} = Enum.split_with(users, fn u -> u != user end)
+    new_users = found_users |> Enum.drop(1) |> Enum.concat(rest_users)
 
     {:reply, {:ok, new_users}, %{state | users: new_users}}
   end
@@ -160,9 +167,5 @@ defmodule Codebattle.Chat.Server do
       _ ->
         :ok
     end
-  end
-
-  defp is_admin?(user) do
-    user.name in @admins || Mix.env() == :dev
   end
 end

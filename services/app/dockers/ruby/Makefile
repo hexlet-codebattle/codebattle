@@ -1,7 +1,4 @@
 test:
-	ruby ./check/${checker_name}.rb
-
-test-example:
-	ruby checker_example.rb
+	ruby ./check/checker.rb
 
 .PHONY: test

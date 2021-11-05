@@ -8,11 +8,15 @@ defmodule CodebattleWeb.Api.V1.UserController do
   import PhoenixGon.Controller
 
   def index(conn, params) do
-    page_number = Map.get(params, "page", "1")
+    page_number =
+      params
+      |> Map.get("page", "1")
+      |> String.to_integer()
 
     page_size =
       params
       |> Map.get("page_size", "50")
+      |> String.to_integer()
 
     query = Codebattle.User.Scope.list_users(params)
     page = Repo.paginate(query, %{page: page_number, page_size: page_size})
@@ -77,19 +81,15 @@ defmodule CodebattleWeb.Api.V1.UserController do
 
   def stats(conn, %{"id" => id}) do
     game_stats = Stats.get_game_stats(id)
-
-    completed_games =
-      id
-      |> Stats.get_completed_games()
-      |> GameView.render_completed_games()
-
     user = Repo.get(User, id)
 
-    json(conn, %{
-      completed_games: completed_games,
-      stats: game_stats,
-      user: user
-    })
+    json(conn, %{stats: game_stats, user: user})
+  end
+
+  def completed_games(conn, %{"id" => id} = params) do
+    %{games: games, page_info: page_info} = Stats.get_completed_games(id, params)
+
+    json(conn, %{games: GameView.render_completed_games(games), page_info: page_info})
   end
 
   def current(conn, _) do

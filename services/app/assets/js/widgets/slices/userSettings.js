@@ -35,12 +35,18 @@ export const updateUserSettings = createAsyncThunk(
 const initialState = {
   ...userSettings,
   error: '',
+  mute: JSON.parse(localStorage.getItem('ui_mute_sound')),
 };
 
 const userSettingsSlice = createSlice({
   name: 'userSettings',
   initialState,
-  reducers: {},
+  reducers: {
+    toggleMuteSound: state => {
+      localStorage.setItem('ui_mute_sound', !state.mute);
+      return ({ ...state, mute: !state.mute });
+    },
+  },
   extraReducers: builder => {
     // The `builder` callback form is used here because it provides correctly typed reducers from the action creators
     builder.addCase(updateUserSettings.fulfilled, (state, { payload }) => {

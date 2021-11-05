@@ -62,6 +62,7 @@ test('test rendering GameList', async () => {
       loaded: true,
       presenceList: players,
       liveTournaments: [],
+      completedTournaments: [],
     },
      user: {
 

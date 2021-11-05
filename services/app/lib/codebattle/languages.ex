@@ -39,11 +39,12 @@ defmodule Codebattle.Languages do
       "ruby" => %{
         name: "ruby",
         slug: "ruby",
-        version: "3.0.0",
+        checker_version: 2,
+        version: "3.0.2",
         base_image: :ubuntu,
         check_dir: "check",
         extension: "rb",
-        docker_image: "codebattle/ruby:3.0.0",
+        docker_image: "codebattle/ruby:3.0.2",
         solution_version: :default,
         solution_template: "def solution(<%= arguments %>)\n<%= return_statement %>\nend",
         arguments_template: %{
@@ -337,11 +338,11 @@ defmodule Codebattle.Languages do
       "elixir" => %{
         name: "elixir",
         slug: "elixir",
-        version: "1.11.2",
+        version: "1.12.2",
         base_image: :ubuntu,
         check_dir: "check",
         extension: "exs",
-        docker_image: "codebattle/elixir:1.11.2",
+        docker_image: "codebattle/elixir:1.12.2",
         solution_version: :default,
         solution_template:
           "defmodule Solution do\n\tdef solution(<%= arguments %>) do\n<%= return_statement %>\n\tend\nend",
@@ -446,11 +447,11 @@ defmodule Codebattle.Languages do
       "clojure" => %{
         name: "clojure",
         slug: "clojure",
-        version: "1.10.1",
+        version: "1.10.3",
         base_image: :ubuntu,
         check_dir: "check",
         extension: "clj",
-        docker_image: "codebattle/clojure:1.10.1",
+        docker_image: "codebattle/clojure:1.10.3",
         solution_version: :default,
         solution_template: "(defn solution [<%= arguments %>] <%= return_statement %>)",
         arguments_template: %{

@@ -40,3 +40,11 @@ config :codebattle, :firebase,
   sender_id: System.get_env("FIREBASE_SENDER_ID"),
   api_key: System.get_env("FIREBASE_API_KEY"),
   firebase_autn_url: "https://identitytoolkit.googleapis.com/v1/accounts"
+
+config :sentry,
+  dsn: System.get_env("SENTRY_DNS_URL"),
+  environment_name: :prod,
+  enable_source_code_context: true,
+  root_source_code_path: File.cwd!(),
+  tags: %{env: "prod"},
+  included_environments: [:prod]

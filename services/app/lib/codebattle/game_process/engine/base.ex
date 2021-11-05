@@ -6,7 +6,6 @@ defmodule Codebattle.GameProcess.Engine.Base do
     Server,
     FsmHelpers,
     ActiveGames,
-    TasksQueuesServer,
     Fsm,
     Elo,
     GlobalSupervisor
@@ -101,7 +100,7 @@ defmodule Codebattle.GameProcess.Engine.Base do
         })
       end
 
-      def get_task(level), do: TasksQueuesServer.get_task(level)
+      def get_task(level), do: tasks_provider().get_task(level)
       def update_rank_async(), do: Codebattle.UsersRankUpdateServer.update()
 
       def store_game_result!(fsm, {winner, winner_result}, {loser, loser_result}) do
@@ -192,6 +191,10 @@ defmodule Codebattle.GameProcess.Engine.Base do
         %Game{}
         |> Game.changeset(params)
         |> Repo.insert()
+      end
+
+      defp tasks_provider do
+        Application.get_env(:codebattle, :tasks_provider)
       end
     end
   end

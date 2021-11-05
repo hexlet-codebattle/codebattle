@@ -26,9 +26,7 @@ defmodule Codebattle.Bot.PlayerServer do
     params.game_type
 
     Logger.info(
-      "Start bot player server for game_id: #{inspect(params.game_id)}, and bot_id: #{
-        inspect(params.bot_id)
-      }"
+      "Start bot player server for game_id: #{inspect(params.game_id)}, and bot_id: #{inspect(params.bot_id)}"
     )
 
     state =

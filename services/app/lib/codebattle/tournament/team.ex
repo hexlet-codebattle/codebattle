@@ -1,35 +1,29 @@
 defmodule Codebattle.Tournament.Team do
-  alias Codebattle.Repo
   alias Codebattle.Tournament
 
-  use Tournament.Type
+  use Tournament.Base
 
   @team_rounds_need_to_win_num 3
 
-  @impl Tournament.Type
-  def join(tournament, %{user: user, team_id: team_id}) do
-    if is_waiting_partisipants?(tournament) do
-      user_params =
-        user
-        |> Map.put(:team_id, team_id)
-        |> Map.put(:lang, user.lang || tournament.default_language)
-
-      new_players =
-        tournament.data.players
-        |> Enum.filter(fn x -> x.id != user.id end)
-        |> Enum.concat([user_params])
-
-      tournament
-      |> Tournament.changeset(%{
-        data: DeepMerge.deep_merge(tournament.data, %{players: new_players})
-      })
-      |> Repo.update!()
-    else
-      tournament
-    end
+  @impl Tournament.Base
+  def join(%{state: "upcoming"} = tournament, %{user: user}) do
+    add_intended_player_id(tournament, user.id)
   end
 
-  @impl Tournament.Type
+  @impl Tournament.Base
+  def join(%{state: "waiting_participants"} = tournament, %{user: user, team_id: team_id}) do
+    player =
+      user
+      |> Map.put(:team_id, team_id)
+      |> Map.put(:lang, user.lang || tournament.default_language)
+
+    add_player(tournament, player)
+  end
+
+  @impl Tournament.Base
+  def join(tournament, _user), do: tournament
+
+  @impl Tournament.Base
   def complete_players(%{meta: meta} = tournament) do
     team_players_count =
       meta
@@ -53,20 +47,22 @@ defmodule Codebattle.Tournament.Team do
       |> Enum.concat(bots)
       |> Enum.sort_by(fn p -> p.team_id end)
 
-    tournament
-    |> Tournament.changeset(%{
-      data: DeepMerge.deep_merge(tournament.data, %{players: new_players})
-    })
-    |> Repo.update!()
+    new_data =
+      tournament
+      |> Map.get(:data)
+      |> Map.merge(%{players: new_players})
+      |> Map.from_struct()
+
+    update!(tournament, %{data: new_data})
   end
 
-  @impl Tournament.Type
+  @impl Tournament.Base
   def build_matches(tournament) do
     matches_for_round =
       tournament
       |> get_players()
       |> Enum.chunk_by(&Map.get(&1, :team_id))
-      |> Enum.map(&Enum.shuffle/1)
+      |> shift_pairs(tournament)
       |> Enum.zip()
       |> Enum.map(fn {p1, p2} ->
         %{state: "waiting", players: [p1, p2], round_id: tournament.step}
@@ -79,27 +75,36 @@ defmodule Codebattle.Tournament.Team do
 
     new_matches = prev_matches ++ matches_for_round
 
-    tournament
-    |> Tournament.changeset(%{
-      data: DeepMerge.deep_merge(Map.from_struct(tournament.data), %{matches: new_matches})
-    })
-    |> Repo.update!()
+    new_data =
+      tournament
+      |> Map.get(:data)
+      |> Map.merge(%{matches: new_matches})
+      |> Map.from_struct()
+
+    update!(tournament, %{data: new_data})
   end
 
-  @impl Tournament.Type
+  @impl Tournament.Base
   def maybe_finish(tournament) do
     {score1, score2} = calc_team_score(tournament)
 
     if max(score1, score2) >= @team_rounds_need_to_win_num do
-      new_tournament =
-        tournament
-        |> Tournament.changeset(%{state: "finished"})
-        |> Repo.update!()
+      new_tournament = update!(tournament, %{state: "finished"})
 
       # Tournament.GlobalSupervisor.terminate_tournament(tournament.id)
       new_tournament
     else
       tournament
     end
+  end
+
+  defp shift_pairs(teams, tournament) do
+    %{step: step} = tournament
+
+    teams
+    |> Enum.with_index()
+    |> Enum.map(fn {players, index} ->
+      Utils.right_rotate(players, index * (step - 1))
+    end)
   end
 end

@@ -13,11 +13,12 @@ const lobby = createSlice({
   name: 'lobby',
   initialState,
   reducers: {
-    initGameList: (state, { payload: { activeGames, completedGames, liveTournaments } }) => ({
+    initGameList: (state, { payload: { activeGames, completedGames, tournaments } }) => ({
       ...state,
       activeGames,
       completedGames,
-      liveTournaments,
+      liveTournaments: tournaments.filter(x => (x.isLive)),
+      completedTournaments: tournaments.filter(x => (!x.isLive)),
       loaded: true,
     }),
     syncPresenceList: (state, { payload }) => {

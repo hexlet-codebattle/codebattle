@@ -58,7 +58,7 @@ defmodule Codebattle.CodeCheck.Ruby.IntegrationTest do
       payload: %{check_result: check_result}
     }
 
-    assert %Codebattle.CodeCheck.CheckResult{status: :failure, success_count: 0} = check_result
+    assert %Codebattle.CodeCheck.CheckResultV2{status: :failure, success_count: 0} = check_result
 
     {:ok, fsm} = Server.get_fsm(game.id)
 
@@ -96,7 +96,7 @@ defmodule Codebattle.CodeCheck.Ruby.IntegrationTest do
       payload: %{check_result: check_result}
     }
 
-    assert %Codebattle.CodeCheck.CheckResult{status: :error, success_count: 0} = check_result
+    assert %Codebattle.CodeCheck.CheckResultV2{status: :error, success_count: 0} = check_result
 
     {:ok, fsm} = Server.get_fsm(game.id)
 
@@ -130,6 +130,45 @@ defmodule Codebattle.CodeCheck.Ruby.IntegrationTest do
 
     Phoenix.ChannelTest.push(socket1, "check_result", %{
       editor_text: "def solution(x,y); x + y; end",
+      lang_slug: "ruby"
+    })
+
+    assert_code_check()
+
+    assert_receive %Phoenix.Socket.Broadcast{
+      payload: %{status: :game_over}
+    }
+
+    {:ok, fsm} = Server.get_fsm(game.id)
+    assert fsm.state == :game_over
+  end
+
+  @tag :code_check
+  test "test all data cases", %{
+    user1: user1,
+    user2: user2,
+    socket1: socket1,
+    socket2: socket2
+  } do
+    # setup
+    state = :playing
+
+    data = %{
+      players: [%Player{id: user1.id}, %Player{id: user2.id}],
+      task: insert(:task_with_all_data_types)
+    }
+
+    game = setup_game(state, data)
+    game_topic = "game:" <> to_string(game.id)
+
+    {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
+    {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
+    Mix.Shell.Process.flush()
+
+    Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: "test", lang_slug: "js"})
+
+    Phoenix.ChannelTest.push(socket1, "check_result", %{
+      editor_text: "def solution(a,b,c,d,e,f); ['asdf']; end",
       lang_slug: "ruby"
     })
 

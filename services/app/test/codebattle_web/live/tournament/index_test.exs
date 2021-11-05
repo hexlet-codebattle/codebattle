@@ -14,7 +14,7 @@ defmodule CodebattleWeb.Live.Tournament.IndexTest do
     {:ok, view, _html} = live(conn, Routes.tournament_path(conn, :index))
 
     render_submit(view, :create, %{
-      "tournament" => %{type: "individual", starts_after_in_minutes: "1", name: "test"}
+      "tournament" => %{type: "individual", starts_at: "2021-09-01 08:30", name: "test"}
     })
 
     assert Codebattle.Repo.count(Tournament) == 1
@@ -31,28 +31,43 @@ defmodule CodebattleWeb.Live.Tournament.IndexTest do
     {:ok, view, _html} = live(conn, Routes.tournament_path(conn, :index))
 
     render_submit(view, :create, %{
-      "tournament" => %{type: "team", starts_after_in_minutes: "1", name: "test"}
+      "tournament" => %{type: "team", starts_at: "2021-09-01 08:30", name: "test"}
     })
 
     assert Codebattle.Repo.count(Tournament) == 1
     assert Enum.count(Context.get_live_tournaments()) >= 1
   end
 
-  test "validate tournament type", %{conn: conn} do
+  test "validates tournament type", %{conn: conn} do
     user = insert(:user)
 
-    conn =
-      conn
-      |> put_session(:user_id, user.id)
+    conn = put_session(conn, :user_id, user.id)
 
     {:ok, view, _html} = live(conn, Routes.tournament_path(conn, :index))
 
     render_change(view, :validate, %{"tournament" => %{name: "a"}})
 
     render_submit(view, :create, %{
-      "tournament" => %{type: "asdf", starts_after_in_minutes: "1", name: "test"}
+      "tournament" => %{type: "asdf", starts_at: "2021-09-01 08:30", name: "test"}
     })
 
     assert Codebattle.Repo.count(Codebattle.Tournament) == 0
+  end
+
+  test "creates tournament with access_type", %{conn: conn} do
+    user = insert(:user)
+
+    conn = put_session(conn, :user_id, user.id)
+
+    {:ok, view, _html} = live(conn, Routes.tournament_path(conn, :index))
+
+    render_submit(view, :create, %{
+      "tournament" => %{access_type: "token", starts_at: "2021-09-01 08:30", name: "test"}
+    })
+
+    created = Codebattle.Repo.one(Codebattle.Tournament)
+    assert created.access_type == "token"
+    assert is_binary(created.access_token)
+    assert String.length(created.access_token) > 7
   end
 end

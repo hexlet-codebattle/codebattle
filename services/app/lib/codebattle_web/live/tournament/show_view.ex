@@ -8,7 +8,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
   @update_frequency 1_000
 
   def render(assigns) do
-    CodebattleWeb.TournamentView.render("#{assigns.tournament.type}.html", assigns)
+    CodebattleWeb.TournamentView.render("show.html", assigns)
   end
 
   def mount(_params, session, socket) do
@@ -44,7 +44,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     tournament = socket.assigns.tournament
     time = get_next_round_time(tournament)
 
-    if tournament.state in ["waiting_participants", "active"] and time.seconds >= 0 do
+    if tournament.state in ["waiting_participants"] and time.seconds >= 0 do
       {:noreply, assign(socket, time: time)}
     else
       :timer.cancel(socket.assigns.timer_ref)
@@ -139,14 +139,14 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
 
   def handle_event("leave", _params, socket) do
     Tournament.Server.update_tournament(socket.assigns.tournament.id, :leave, %{
-      user_id: socket.assigns.current_user.id
+      user: socket.assigns.current_user
     })
 
     {:noreply, socket}
   end
 
   def handle_event("kick", %{"user_id" => user_id}, socket) do
-    if is_creator?(socket.assigns.tournament, socket.assigns.current_user.id) do
+    if Tournament.Helpers.can_moderate?(socket.assigns.tournament, socket.assigns.current_user) do
       Tournament.Server.update_tournament(socket.assigns.tournament.id, :leave, %{
         user_id: String.to_integer(user_id)
       })
@@ -155,20 +155,55 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     {:noreply, socket}
   end
 
-  def handle_event("cancel", _params, socket) do
-    Tournament.Server.update_tournament(socket.assigns.tournament.id, :cancel, %{
+  def handle_event("back", _params, socket) do
+    Tournament.Server.update_tournament(socket.assigns.tournament.id, :back, %{
       user: socket.assigns.current_user
     })
+  end
+
+  def handle_event("open_up", _params, socket) do
+    Tournament.Server.update_tournament(socket.assigns.tournament.id, :open_up, %{
+      user: socket.assigns.current_user
+    })
+
+    {:noreply, socket}
+  end
+
+  def handle_event("cancel", _params, socket) do
+    if Tournament.Helpers.can_moderate?(socket.assigns.tournament, socket.assigns.current_user) do
+      Tournament.Server.update_tournament(socket.assigns.tournament.id, :cancel, %{
+        user: socket.assigns.current_user
+      })
+    end
 
     {:noreply, redirect(socket, to: "/tournaments")}
   end
 
   def handle_event("start", _params, socket) do
-    Tournament.Server.update_tournament(socket.assigns.tournament.id, :start, %{
-      user: socket.assigns.current_user
-    })
+    if Tournament.Helpers.can_moderate?(socket.assigns.tournament, socket.assigns.current_user) do
+      Tournament.Server.update_tournament(socket.assigns.tournament.id, :start, %{
+        user: socket.assigns.current_user
+      })
+    end
 
     {:noreply, socket}
+  end
+
+  def handle_event("chat_ban", params, socket) do
+    tournament = socket.assigns.tournament
+    current_user = socket.assigns.current_user
+
+    if Tournament.Helpers.can_moderate?(tournament, current_user) do
+      Chat.Server.command(
+        {:tournament, tournament.id},
+        current_user,
+        %{type: "ban", name: params["name"], time: :os.system_time(:seconds)}
+      )
+
+      {:noreply, socket}
+    else
+      {:noreply, socket}
+    end
   end
 
   def handle_event("chat_message", %{"message" => %{"content" => ""}}, socket),
@@ -209,7 +244,8 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
         {:tournament, tournament.id},
         %{
           name: current_user.name,
-          text: text
+          text: text,
+          time: :os.system_time(:seconds)
         }
       )
     end
@@ -234,6 +270,10 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
   def handle_event("select_tab", params, socket) do
     target = String.to_atom(params["target"])
     {:noreply, assign(socket, target, params["tab"])}
+  end
+
+  def handle_event(_event, _params, socket) do
+    {:noreply, socket}
   end
 
   defp get_next_round_time(tournament) do
@@ -272,10 +312,6 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
 
   defp is_current_topic?(topic, tournament) do
     topic == topic_name(tournament)
-  end
-
-  defp is_creator?(tournament, user_id) do
-    tournament.creator_id == user_id
   end
 
   defp get_chat_messages(id) do

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Tooltip, OverlayTrigger } from 'react-bootstrap';
 import { replayerMachineStates } from '../machines/game';
 
 const handleClassnames = 'cb-slider-handle position-absolute rounded-circle';
@@ -14,14 +15,32 @@ const SliderBar = ({ value, className }) => (
   />
 );
 
-const SliderAction = ({ value, className }) => (
-  <div
-    className={className}
-    style={{
-      left: `${value * 100}%`,
-    }}
-  />
-);
+const SliderAction = ({
+ value, className, setGameState, event,
+}) => (
+  <div>
+    <OverlayTrigger
+      placement="top"
+      overlay={(
+        <Tooltip id="tooltip-top">
+          {`Check started by ${event.userName}`}
+        </Tooltip>
+        )}
+    >
+      <div
+        role="button"
+        aria-hidden="true"
+        onClick={() => {
+        setGameState(value);
+      }}
+        className={className}
+        style={{
+            left: `${value * 100}%`,
+          }}
+      />
+    </OverlayTrigger>
+  </div>
+  );
 
 const SliderHandle = ({ value, className }) => (
   <div
@@ -34,12 +53,10 @@ const SliderHandle = ({ value, className }) => (
   </div>
 );
 
-const CodebattleSliderBar = ({ gameCurrent, handlerPosition, lastIntent }) => (
+const CodebattleSliderBar = ({
+ gameCurrent, handlerPosition, lastIntent, mainEvents, recordsCount, setGameState,
+}) => (
   <>
-    <SliderAction
-      value={0.5}
-      className="cb-slider-action position-absolute bg-info"
-    />
     <div className="cb-slider-timeline position-absolute rounded w-100 x-bg-gray">
       {
         gameCurrent.matches({ replayer: replayerMachineStates.holded })
@@ -54,11 +71,20 @@ const CodebattleSliderBar = ({ gameCurrent, handlerPosition, lastIntent }) => (
         className={`${sliderBarClassnames} bg-danger`}
         value={handlerPosition}
       />
-      <SliderHandle
-        className={handleClassnames}
-        value={handlerPosition}
-      />
     </div>
+    {mainEvents.map(event => (
+      <SliderAction
+        value={event.recordId / recordsCount}
+        className="cb-slider-action position-absolute bg-warning rounded"
+        key={event.recordId}
+        event={event}
+        setGameState={setGameState}
+      />
+    ))}
+    <SliderHandle
+      className={handleClassnames}
+      value={handlerPosition}
+    />
   </>
 );
 

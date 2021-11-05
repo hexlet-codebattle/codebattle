@@ -1,7 +1,6 @@
 defmodule CodebattleWeb.Router do
   use CodebattleWeb, :router
   use Plug.ErrorHandler
-  import Phoenix.LiveDashboard.Router
 
   require Logger
 
@@ -44,14 +43,16 @@ defmodule CodebattleWeb.Router do
       get("/game_activity", GameActivityController, :show)
       get("/playbook/:id", PlaybookController, :show)
       get("/user/:id/stats", UserController, :stats)
+      get("/user/:id/completed_games", UserController, :completed_games)
       get("/user/current", UserController, :current)
-      get("/:user_id/lang_stats", LangStatsController, :show)
       get("/user/:id/lang_stats", UserController, :lang_stats)
       resources("/users", UserController, only: [:index, :show, :create])
       resources("/session", SessionController, only: [:create], singleton: true)
       resources("/reset_password", ResetPasswordController, only: [:create], singleton: true)
       resources("/settings", SettingsController, only: [:show, :update], singleton: true)
       post("/feedback", FeedBackController, :index)
+      post("/playbooks/approve", PlaybookController, :approve)
+      post("/playbooks/reject", PlaybookController, :reject)
     end
   end
 
@@ -67,7 +68,18 @@ defmodule CodebattleWeb.Router do
     get("/remind_password", SessionController, :remind_password)
     resources("/users", UserController, only: [:index, :show, :new])
     resources("/tournaments", TournamentController, only: [:index, :show])
-    resources("/tasks", TaskController, only: [:index, :show])
+
+    resources("/tasks", TaskController, only: [:index, :show, :new, :edit, :create, :update]) do
+      patch("/activate", TaskController, :activate, as: :activate)
+      patch("/disable", TaskController, :disable, as: :disable)
+    end
+
+    resources("/task_packs", TaskPackController,
+      only: [:index, :show, :new, :edit, :create, :update]
+    ) do
+      patch("/activate", TaskPackController, :activate, as: :activate)
+      patch("/disable", TaskPackController, :disable, as: :disable)
+    end
 
     scope "/tournaments" do
       get("/:id/image", Tournament.ImageController, :show, as: :tournament_image)
@@ -82,15 +94,6 @@ defmodule CodebattleWeb.Router do
       post("/:id/check", GameController, :check)
       get("/:id/image", Game.ImageController, :show, as: :game_image)
     end
-  end
-
-  scope "/" do
-    pipe_through(:browser)
-
-    live_dashboard("/dashboard_codebattle",
-      metrics: CodebattleWeb.Telemetry,
-      ecto_repos: [Codebattle.Repo]
-    )
   end
 
   def handle_errors(conn, %{reason: %Ecto.NoResultsError{}}) do

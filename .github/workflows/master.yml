@@ -7,12 +7,12 @@ on:
 jobs:
   build:
     if: github.repository == 'hexlet-codebattle/codebattle'
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-latest
 
     services:
       db:
         image: postgres:10.11
-        ports: ["5432:5432"]
+        ports: ['5432:5432']
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -24,9 +24,9 @@ jobs:
         uses: rollbar/github-deploy-action@2.0.0
         id: rollbar_pre_deploy
         with:
-          environment: "production"
+          environment: 'production'
           version: ${{ github.sha }}
-          status: "started"
+          status: 'started'
         env:
           ROLLBAR_ACCESS_TOKEN: ${{ secrets.ROLLBAR_ACCESS_TOKEN }}
           ROLLBAR_USERNAME: ${{ secrets.ROLLBAR_USERNAME }}
@@ -35,29 +35,29 @@ jobs:
 
       - uses: erlef/setup-beam@v1
         with:
-          otp-version: "23.x"
-          elixir-version: "1.11.x"
+          otp-version: '24.0.5'
+          elixir-version: '1.12.3'
 
       - uses: actions/cache@v2
         with:
           path: services/app/deps
-          key: ${{ runner.os }}-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/services/app/mix.lock')) }}
+          key: v2-${{ runner.os }}-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/services/app/mix.lock')) }}
           restore-keys: |
-            ${{ runner.os }}-deps-
+            v2-${{ runner.os }}-deps-
 
       - uses: actions/cache@v2
         with:
           path: services/app/_build
-          key: ${{ runner.os }}-build-${{ hashFiles(format('{0}{1}', github.workspace, '/services/app/mix.lock')) }}
+          key: v2-${{ runner.os }}-build-${{ hashFiles(format('{0}{1}', github.workspace, '/services/app/mix.lock')) }}
           restore-keys: |
-            ${{ runner.os }}-build-
+            v2-${{ runner.os }}-build-
 
       - uses: actions/cache@v2
         with:
           path: ~/.mix
-          key: ${{ runner.os }}-mix-${{ hashFiles(format('{0}{1}', github.workspace, '/services/app/mix.lock')) }}
+          key: v2-${{ runner.os }}-mix-${{ hashFiles(format('{0}{1}', github.workspace, '/services/app/mix.lock')) }}
           restore-keys: |
-            ${{ runner.os }}-mix-
+            v2-${{ runner.os }}-mix-
 
       - name: Get deps
         run: mix deps.get
@@ -126,9 +126,9 @@ jobs:
         uses: rollbar/github-deploy-action@1.1.0
         id: rollbar_post_deploy
         with:
-          environment: "production"
+          environment: 'production'
           version: ${{ github.sha }}
-          status: "succeeded"
+          status: 'succeeded'
         env:
           ROLLBAR_ACCESS_TOKEN: ${{ secrets.ROLLBAR_ACCESS_TOKEN }}
           ROLLBAR_USERNAME: ${{ secrets.ROLLBAR_USERNAME }}

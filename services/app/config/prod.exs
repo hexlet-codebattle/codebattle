@@ -9,7 +9,7 @@ config :codebattle, CodebattleWeb.Endpoint,
   version: Mix.Project.config()[:version],
   check_origin: false
 
-config :logger, level: :error
+config :logger, level: :error, backends: [:console, Sentry.LoggerBackend]
 
 config :codebattle, Codebattle.Bot, timeout: 1000
 config :codebattle, Codebattle.Invite, timeout: :timer.minutes(15)
@@ -22,6 +22,7 @@ config :codebattle,
     "ReDBrother",
     "solar05",
     "krivtsov",
+    "mokevnin",
     "Melodyn",
     "NatMusina",
     "enmalafeev",

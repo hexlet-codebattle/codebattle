@@ -1,4 +1,5 @@
 defmodule CodebattleWeb.Endpoint do
+  use Sentry.PlugCapture
   use Phoenix.Endpoint, otp_app: :codebattle
 
   @session_options [
@@ -42,11 +43,6 @@ defmodule CodebattleWeb.Endpoint do
     plug(Phoenix.Ecto.CheckRepoStatus, otp_app: :codebattle)
   end
 
-  plug(Phoenix.LiveDashboard.RequestLogger,
-    param_key: "request_logger",
-    cookie_key: "request_logger"
-  )
-
   plug(Plug.RequestId)
   plug(Plug.Telemetry, event_prefix: [:phoenix, :endpoint])
   plug(Plug.Logger)
@@ -57,6 +53,8 @@ defmodule CodebattleWeb.Endpoint do
     pass: ["*/*"],
     json_decoder: Jason
   )
+
+  plug(Sentry.PlugContext)
 
   plug(Plug.MethodOverride)
   plug(Plug.Head)

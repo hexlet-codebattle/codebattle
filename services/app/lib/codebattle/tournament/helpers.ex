@@ -1,6 +1,22 @@
 defmodule Codebattle.Tournament.Helpers do
+  alias Codebattle.Repo
+  alias Codebattle.User
+
+  import Ecto.Query
+
   def get_players(tournament), do: tournament.data.players
   def get_matches(tournament), do: tournament.data.matches
+  def get_intended_player_ids(tournament), do: Map.get(tournament.data, :intended_player_ids, [])
+  def get_player_ids(tournament), do: tournament.data.players |> Enum.map(& &1.id)
+
+  def get_intended_players(tournament) do
+    Repo.all(
+      from(u in User,
+        where: u.id in ^get_intended_player_ids(tournament),
+        order_by: {:desc, :rating}
+      )
+    )
+  end
 
   def players_count(tournament) do
     tournament |> get_players |> Enum.count()
@@ -10,30 +26,62 @@ defmodule Codebattle.Tournament.Helpers do
     tournament |> get_team_players(team_id) |> Enum.count()
   end
 
-  def can_start_tournament?(tournament) do
-    players_count(tournament) > 0 && tournament.state == "waiting_participants"
+  def can_be_started?(%{state: "upcoming"} = tournament) do
+    get_intended_player_ids(tournament) != []
   end
 
-  def is_waiting_partisipants?(tournament) do
-    tournament.state == "waiting_participants"
+  def can_be_started?(%{state: "waiting_participants"} = tournament) do
+    players_count(tournament) > 0
   end
 
-  def is_participant?(tournament, player_id) do
-    tournament.data.players
+  def can_be_started?(_t), do: false
+
+  def can_moderate?(tournament, user) do
+    is_creator?(tournament, user) || User.is_admin?(user)
+  end
+
+  def can_access?(%{access_type: "token"} = tournament, user, params) do
+    can_moderate?(tournament, user) ||
+      is_intended_player?(tournament, user) ||
+      is_player?(tournament, user.id) ||
+      params["access_token"] == tournament.access_token
+  end
+
+  # default public or null for old tournaments
+  def can_access?(_tournament, _user, _params), do: true
+
+  def is_active?(tournament), do: tournament.state == "active"
+  def is_waiting_participants?(tournament), do: tournament.state == "waiting_participants"
+  def is_upcoming?(tournament), do: tournament.state == "upcoming"
+  def is_individual?(tournament), do: tournament.type == "individual"
+  def is_finished?(tournament), do: tournament.state == "finished"
+  def is_team?(tournament), do: tournament.type == "team"
+  def is_public?(tournament), do: tournament.access_type == "public"
+  def is_visible_by_token?(tournament), do: tournament.access_type == "token"
+
+  def is_intended_player?(tournament, player) do
+    tournament
+    |> get_intended_player_ids()
+    |> Enum.any?(fn id -> id == player.id end)
+  end
+
+  def is_player?(tournament, player_id) do
+    tournament
+    |> get_players()
     |> Enum.find_value(fn player -> player.id == player_id end)
     |> Kernel.!()
     |> Kernel.!()
   end
 
-  def is_participant?(tournament, player_id, team_id) do
+  def is_player?(tournament, player_id, team_id) do
     tournament.data.players
     |> Enum.find_value(fn p -> p.id == player_id and p.team_id == team_id end)
     |> Kernel.!()
     |> Kernel.!()
   end
 
-  def is_creator?(tournament, player_id) do
-    tournament.creator_id == player_id
+  def is_creator?(tournament, user) do
+    tournament.creator_id == user.id
   end
 
   def calc_round_result(round) do
@@ -68,7 +116,7 @@ defmodule Codebattle.Tournament.Helpers do
       tournament
       |> get_matches()
       |> Enum.filter(fn match ->
-        is_finished?(match) and !is_anyone_gave_up?(match)
+        match_is_finished?(match) and !is_anyone_gave_up?(match)
       end)
 
     unless Enum.empty?(all_win_matches) do
@@ -97,7 +145,7 @@ defmodule Codebattle.Tournament.Helpers do
       tournament
       |> get_matches()
       |> Enum.filter(fn match ->
-        is_finished?(match) and !is_anyone_gave_up?(match)
+        match_is_finished?(match) and !is_anyone_gave_up?(match)
       end)
 
     best_lang =
@@ -149,8 +197,8 @@ defmodule Codebattle.Tournament.Helpers do
   defp calc_match_result(%{players: [%{game_result: "gave_up"}, _]}), do: {0, 1}
   defp calc_match_result(_), do: {0, 0}
 
-  defp is_finished?(%{state: "finished"}), do: true
-  defp is_finished?(_match), do: false
+  defp match_is_finished?(%{state: "finished"}), do: true
+  defp match_is_finished?(_match), do: false
 
   defp is_anyone_gave_up?(%{players: [%{game_result: "gave_up"}, _]}), do: true
   defp is_anyone_gave_up?(%{players: [_, %{game_result: "gave_up"}]}), do: true

@@ -19,9 +19,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
     checker_name = "checker#{check_code}"
 
     Logger.info(
-      "Create checker for #{slug} language. NAME: #{checker_name}.#{extension}, TASK: #{
-        inspect(task)
-      }, BINDING #{inspect(binding)}"
+      "Create checker for #{slug} language. NAME: #{checker_name}.#{extension}, TASK: #{inspect(task)}, BINDING #{inspect(binding)}"
     )
 
     Mix.Phoenix.copy_from(

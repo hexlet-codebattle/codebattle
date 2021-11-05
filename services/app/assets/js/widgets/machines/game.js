@@ -1,7 +1,9 @@
-import { assign } from 'xstate';
+import { assign, actions } from 'xstate';
 import speedModes from '../config/speedModes';
 import sound from '../lib/sound';
 import GameStatusCodes from '../config/gameStatusCodes';
+
+const { send } = actions;
 
 const recordMachine = {
   initial: 'ended',
@@ -71,6 +73,40 @@ const machine = {
     speedMode: speedModes.normal,
   },
   states: {
+    network: {
+      initial: 'none',
+      states: {
+        none: {
+          on: {
+            JOIN: { target: 'connected' },
+            FAILURE_JOIN: { target: 'disconnected', actions: ['handleFailureJoin'] },
+            FAILURE: { target: 'disconnected' },
+          },
+        },
+        disconnected: {
+          entry: send(
+            { type: 'SHOW_ERROR_MESSAGE' },
+            {
+              delay: 5000,
+            },
+          ),
+          on: {
+            JOIN: { target: 'connected', actions: ['handleReconnection'] },
+            SHOW_ERROR_MESSAGE: { target: 'disconnectedWithMessage', actions: ['handleDisconnection'] },
+          },
+        },
+        disconnectedWithMessage: {
+          on: {
+            JOIN: { target: 'connected', actions: ['handleReconnection'] },
+          },
+        },
+        connected: {
+          on: {
+            FAILURE: { target: 'disconnected' },
+          },
+        },
+      },
+    },
     game: {
       initial: 'preview',
       states: {
@@ -189,6 +225,10 @@ export const config = {
     throwError: (_ctx, { payload }) => {
       throw new Error(`Unexpected behavior (payload: ${JSON.stringify(payload)})`);
     },
+    // network actions
+    handleFailureJoin: () => {},
+    handleDisconnection: () => {},
+    handleReconnection: () => {},
 
     // game actions
     soundWin: () => {
@@ -240,9 +280,16 @@ const states = {
     ended: 'on.ended',
     off: 'off',
   },
+  network: {
+    none: 'none',
+    disconnected: 'disconnected',
+    disconnectedWithMessage: 'disconnectedWithMessage',
+    connected: 'connected',
+  },
 };
 
 export const gameMachineStates = states.game;
 export const replayerMachineStates = states.replayer;
+export const networkMachineStates = states.network;
 
 export default machine;

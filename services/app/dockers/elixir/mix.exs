@@ -20,8 +20,7 @@ defmodule Checker.Mixfile do
   defp deps do
     [
       {:poison, "~> 3.1"},
-      {:jason, "~> 1.1"}
+      {:jason, "~> 1.2"}
     ]
   end
 end
-

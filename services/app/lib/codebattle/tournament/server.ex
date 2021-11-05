@@ -6,14 +6,6 @@ defmodule Codebattle.Tournament.Server do
     GenServer.start(__MODULE__, tournament, name: server_name(tournament.id))
   end
 
-  def get_tournament(pid) when is_pid(pid) do
-    try do
-      GenServer.call(pid, :get_tournament)
-    catch
-      :exit, _reason -> nil
-    end
-  end
-
   def get_tournament(id) do
     try do
       GenServer.call(server_name(id), :get_tournament)
@@ -23,7 +15,12 @@ defmodule Codebattle.Tournament.Server do
   end
 
   def update_tournament(tournament_id, event_type, params) do
-    GenServer.cast(server_name(tournament_id), {event_type, params})
+    try do
+      GenServer.call(server_name(tournament_id), {event_type, params})
+    catch
+      :exit, _reason ->
+        {:error, :no_proc}
+    end
   end
 
   def get_pid(id) do
@@ -40,12 +37,12 @@ defmodule Codebattle.Tournament.Server do
     {:reply, tournament, state}
   end
 
-  def handle_cast({event_type, params}, %{tournament: tournament} = state) do
+  def handle_call({event_type, params}, _from, %{tournament: tournament} = state) do
     %{module: module} = tournament
     new_tournament = apply(module, event_type, [tournament, params])
 
     broadcast_tournament(new_tournament)
-    {:noreply, Map.merge(state, %{tournament: new_tournament})}
+    {:reply, tournament, Map.merge(state, %{tournament: new_tournament})}
   end
 
   def tournament_topic_name(tournament_id), do: "tournament_#{tournament_id}"

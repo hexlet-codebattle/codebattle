@@ -29,10 +29,7 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
   def handle_event("validate", %{"tournament" => params}, socket) do
     creator = socket.assigns.current_user
 
-    changeset =
-      %Tournament{}
-      |> Tournament.changeset(Map.merge(params, %{"creator" => creator}))
-      |> Map.put(:action, :insert)
+    changeset = Tournament.Context.validate(Map.merge(params, %{"creator" => creator}))
 
     {:noreply, assign(socket, changeset: changeset)}
   end

@@ -51,7 +51,7 @@ defmodule CodebattleWeb.Live.Tournament.TeamTest do
       render_submit(view, :create, %{
         "tournament" => %{
           type: "team",
-          starts_after_in_minutes: "1",
+          starts_at: "2021-09-01 08:30",
           team_1_name: "Elixir",
           team_2_name: "",
           match_timeout_seconds: "140",
@@ -64,6 +64,14 @@ defmodule CodebattleWeb.Live.Tournament.TeamTest do
     assert tournament.match_timeout_seconds == 140
 
     {:ok, view1, _html} = live(conn1, Routes.tournament_path(conn, :show, tournament.id))
+
+    render_click(view1, :join, %{"team_id" => "0"})
+    render_click(view1, :join, %{"team_id" => "1"})
+
+    tournament = Codebattle.Tournament.Context.get!(tournament.id)
+    assert Helpers.players_count(tournament) == 0
+
+    render_click(view1, :start)
 
     render_click(view1, :join, %{"team_id" => "0"})
     render_click(view1, :join, %{"team_id" => "1"})
