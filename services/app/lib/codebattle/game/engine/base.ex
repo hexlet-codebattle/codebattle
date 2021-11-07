@@ -1,10 +1,10 @@
-defmodule Codebattle.GameProcess.Engine do
-  alias Codebattle.GameProcess.{
+defmodule Codebattle.Game.Engine.Base do
+  alias Codebattle.Game.{
     Play,
     Player,
     Engine,
     Server,
-    FsmHelpers,
+    GameHelpers,
     ActiveGames,
     Fsm,
     Elo,
@@ -29,11 +29,11 @@ defmodule Codebattle.GameProcess.Engine do
   defmacro __using__(_opts) do
     quote do
       @behaviour Engine.Base
-      import Codebattle.GameProcess.Auth
+      import Codebattle.Game.Auth
 
       def cancel_game(fsm, user) do
-        with %Player{} = player <- FsmHelpers.get_player(fsm, user.id),
-             id <- FsmHelpers.get_game_id(fsm),
+        with %Player{} = player <- GameHelpers.get_player(fsm, user.id),
+             id <- GameHelpers.get_game_id(fsm),
              :ok <- player_can_cancel_game?(id, player) do
           ActiveGames.terminate_game(id)
           GlobalSupervisor.terminate_game(id)
@@ -51,41 +51,41 @@ defmodule Codebattle.GameProcess.Engine do
       end
 
       def update_editor_data(fsm, params) do
-        Server.call_transition(FsmHelpers.get_game_id(fsm), :update_editor_data, params)
+        Server.call_transition(GameHelpers.get_game_id(fsm), :update_editor_data, params)
       end
 
       def store_playbook(fsm) do
-        game_id = FsmHelpers.get_game_id(fsm)
-        task_id = FsmHelpers.get_task(fsm).id
+        game_id = GameHelpers.get_game_id(fsm)
+        task_id = GameHelpers.get_task(fsm).id
         {:ok, playbook} = Server.get_playbook(game_id)
 
         Task.start(fn -> Playbook.store_playbook(playbook, game_id, task_id) end)
       end
 
       def handle_won_game(game_id, winner, fsm) do
-        loser = FsmHelpers.get_opponent(fsm, winner.id)
+        loser = GameHelpers.get_opponent(fsm, winner.id)
         store_game_result!(fsm, {winner, "won"}, {loser, "lost"})
         store_playbook(fsm)
         ActiveGames.terminate_game(game_id)
-        # Codebattle.PubSub.broadcast("game:finished", %{game: game, winner: winner, loser: loser})
+        Codebattle.PubSub.broadcast("game:finished", %{game: game, winner: winner, loser: loser})
         :ok
       end
 
       def handle_give_up(game_id, loser_id, fsm) do
-        loser = FsmHelpers.get_player(fsm, loser_id)
-        winner = FsmHelpers.get_opponent(fsm, loser.id)
+        loser = GameHelpers.get_player(fsm, loser_id)
+        winner = GameHelpers.get_opponent(fsm, loser.id)
         store_game_result!(fsm, {winner, "won"}, {loser, "gave_up"})
         store_playbook(fsm)
         ActiveGames.terminate_game(game_id)
-        # Codebattle.PubSub.broadcast("game:finished", %{game: game, winner: winner, loser: loser})
+        Codebattle.PubSub.broadcast("game:finished", %{game: game, winner: winner, loser: loser})
       end
 
       def get_task(level), do: tasks_provider().get_task(level)
 
       def store_game_result!(fsm, {winner, winner_result}, {loser, loser_result}) do
-        level = FsmHelpers.get_level(fsm)
-        game_id = FsmHelpers.get_game_id(fsm)
-        type = FsmHelpers.get_type(fsm)
+        level = GameHelpers.get_level(fsm)
+        game_id = GameHelpers.get_game_id(fsm)
+        type = GameHelpers.get_type(fsm)
         {new_winner_rating, new_loser_rating} = Elo.calc_elo(winner.rating, loser.rating, level)
 
         winner_rating_diff = new_winner_rating - winner.rating
@@ -114,8 +114,8 @@ defmodule Codebattle.GameProcess.Engine do
 
           update_game!(game_id, %{
             state: to_string(fsm.state),
-            starts_at: FsmHelpers.get_starts_at(fsm),
-            finishes_at: TimeHelper.utc_now()
+            starts_at: GameHelpers.get_starts_at(fsm),
+            finishs_at: TimeHelper.utc_now()
           })
 
           winner_achievements = Achievements.recalculate_achievements(winner)
@@ -154,7 +154,7 @@ defmodule Codebattle.GameProcess.Engine do
       end
 
       def start_timeout_timer(id, fsm) do
-        Codebattle.GameProcess.TimeoutServer.start_timer(id, fsm.data.timeout_seconds)
+        Codebattle.Game.TimeoutServer.start_timer(id, fsm.data.timeout_seconds)
         :ok
       end
 

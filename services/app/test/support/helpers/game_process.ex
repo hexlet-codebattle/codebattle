@@ -1,11 +1,11 @@
-defmodule Helpers.GameProcess do
+defmodule Helpers.Game do
   @moduledoc """
-  Test helpers for GameProcess context
+  Test helpers for Game context
   """
 
   import CodebattleWeb.Factory
 
-  alias Codebattle.GameProcess.{Server, GlobalSupervisor, Fsm, ActiveGames}
+  alias Codebattle.Game.{Server, GlobalSupervisor, Fsm, ActiveGames}
 
   def setup_game(state, data) do
     game = insert(:game)

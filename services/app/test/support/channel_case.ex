@@ -20,7 +20,7 @@ defmodule CodebattleWeb.ChannelCase do
       # Import conveniences for testing with channels
       import Phoenix.ChannelTest
       import CodebattleWeb.Factory
-      import Helpers.GameProcess
+      import Helpers.Game
       alias CodebattleWeb.Router.Helpers, as: Routes
       alias Codebattle.{Repo, User, Game, UserGame}
 

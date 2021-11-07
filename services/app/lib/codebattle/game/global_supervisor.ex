@@ -1,20 +1,20 @@
-defmodule Codebattle.GameProcess.GlobalSupervisor do
+defmodule Codebattle.Game.GlobalSupervisor do
   @moduledoc false
 
   require Logger
 
   use DynamicSupervisor
 
-  alias Codebattle.GameProcess.ActiveGames
-  alias Codebattle.GameProcess.FsmHelpers
+  alias Codebattle.Game.ActiveGames
+  alias Codebattle.Game.GameHelpers
 
   def start_link(_) do
     DynamicSupervisor.start_link(__MODULE__, [], name: __MODULE__)
   end
 
   def start_game(fsm) do
-    game_id = FsmHelpers.get_game_id(fsm)
-    spec = {Codebattle.GameProcess.Supervisor, {game_id, fsm}}
+    game_id = GameHelpers.get_game_id(fsm)
+    spec = {Codebattle.Game.Supervisor, {game_id, fsm}}
     DynamicSupervisor.start_child(__MODULE__, spec)
   end
 
@@ -25,7 +25,7 @@ defmodule Codebattle.GameProcess.GlobalSupervisor do
   end
 
   def terminate_game(game_id) do
-    pid = Codebattle.GameProcess.Supervisor.get_pid(game_id)
+    pid = Codebattle.Game.Supervisor.get_pid(game_id)
 
     try do
       DynamicSupervisor.terminate_child(__MODULE__, pid)

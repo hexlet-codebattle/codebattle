@@ -1,7 +1,7 @@
 defmodule Codebattle.GameCases.TimeoutTest do
   use Codebattle.IntegrationCase
 
-  alias Codebattle.GameProcess.{ActiveGames, Server}
+  alias Codebattle.Game.{ActiveGames, Server}
   alias CodebattleWeb.UserSocket
 
   setup %{conn: conn} do
@@ -49,10 +49,10 @@ defmodule Codebattle.GameCases.TimeoutTest do
     {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
     :timer.sleep(70)
 
-    Codebattle.GameProcess.Play.timeout_game(game_id)
+    Codebattle.Game.Play.timeout_game(game_id)
 
     assert {:error, :game_terminated} = Server.get_fsm(game_id)
-    assert %{state: "timeout"} = Codebattle.GameProcess.Play.get_game(game_id)
+    assert %{state: "timeout"} = Codebattle.Game.Play.get_game(game_id)
 
     assert ActiveGames.game_exists?(game_id) == false
   end
@@ -77,10 +77,10 @@ defmodule Codebattle.GameCases.TimeoutTest do
     |> get(game_path(conn2, :show, game_id))
     |> follow_button("Join")
 
-    Codebattle.GameProcess.Play.timeout_game(game_id)
+    Codebattle.Game.Play.timeout_game(game_id)
 
     assert {:error, :game_terminated} = Server.get_fsm(game_id)
-    assert %{state: "timeout"} = Codebattle.GameProcess.Play.get_game(game_id)
+    assert %{state: "timeout"} = Codebattle.Game.Play.get_game(game_id)
 
     conn =
       conn1

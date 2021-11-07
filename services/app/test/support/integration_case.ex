@@ -14,10 +14,10 @@ defmodule Codebattle.IntegrationCase do
       use CodebattleWeb.ConnCase
       use PhoenixIntegration
 
-      import Helpers.GameProcess
+      import Helpers.Game
 
       alias Codebattle.{Repo, User, Game, UserGame}
-      alias Codebattle.GameProcess.FsmHelpers
+      alias Codebattle.Game.GameHelpers
       alias CodebattleWeb.GameChannel
 
       @endpoint CodebattleWeb.Endpoint

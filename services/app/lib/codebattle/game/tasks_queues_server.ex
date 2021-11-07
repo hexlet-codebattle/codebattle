@@ -1,4 +1,4 @@
-defmodule Codebattle.GameProcess.TasksQueuesServer do
+defmodule Codebattle.Game.TasksQueuesServer do
   @moduledoc "Gen server for tasks queues"
 
   use GenServer

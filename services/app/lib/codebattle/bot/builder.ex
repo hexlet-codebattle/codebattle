@@ -6,7 +6,7 @@ defmodule Codebattle.Bot.Builder do
 
   alias Codebattle.User
   alias Codebattle.Repo
-  alias Codebattle.GameProcess.ActiveGames
+  alias Codebattle.Game.ActiveGames
 
   def build(params \\ %{}) do
     query =

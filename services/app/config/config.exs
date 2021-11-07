@@ -90,7 +90,7 @@ config :codebattle, Codebattle.DockerLangsPuller, timeout: :timer.hours(7)
 
 config :codebattle, checker_adapter: Codebattle.CodeCheck.DockerChecker
 config :codebattle, tournament_match_timeout: 3 * 60
-config :codebattle, tasks_provider: Codebattle.GameProcess.TasksQueuesServer
+config :codebattle, tasks_provider: Codebattle.Game.TasksQueuesServer
 
 config :codebattle, Codebattle.Analitics, max_size_activity_server: 10_000
 

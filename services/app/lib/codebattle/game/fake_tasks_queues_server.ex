@@ -1,4 +1,4 @@
-defmodule Codebattle.GameProcess.FakeTasksQueuesServer do
+defmodule Codebattle.Game.FakeTasksQueuesServer do
   import Ecto.Query
 
   alias Codebattle.Repo

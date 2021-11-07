@@ -7,8 +7,8 @@ defmodule Codebattle.Bot.PlayerServer do
   require Logger
 
   alias Codebattle.Bot.{ChatClient, PlaybookPlayer}
-  alias Codebattle.GameProcess.FsmHelpers
-  alias Codebattle.GameProcess.Play
+  alias Codebattle.Game.GameHelpers
+  alias Codebattle.Game.Play
   alias PhoenixClient.Message
 
   @timeout_start_playbook Application.compile_env(:codebattle, Codebattle.Bot)[
@@ -56,7 +56,7 @@ defmodule Codebattle.Bot.PlayerServer do
     {:ok, fsm} = Play.get_fsm(state.game_id)
 
     chat_topic =
-      case FsmHelpers.get_tournament_id(fsm) do
+      case GameHelpers.get_tournament_id(fsm) do
         nil -> "chat:g_#{state.game_id}"
         tournament_id -> "chat:t_#{tournament_id}"
       end

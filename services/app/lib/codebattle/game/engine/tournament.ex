@@ -1,9 +1,9 @@
-defmodule Codebattle.GameProcess.Engine.Tournament do
+defmodule Codebattle.Game.Engine.Tournament do
   alias Codebattle.Bot
 
   alias Codebattle.Languages
 
-  alias Codebattle.GameProcess.{
+  alias Codebattle.Game.{
     GlobalSupervisor,
     Engine,
     ActiveGames,

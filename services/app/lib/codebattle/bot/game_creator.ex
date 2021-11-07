@@ -1,5 +1,5 @@
 defmodule Codebattle.Bot.GameCreator do
-  alias Codebattle.GameProcess.Play
+  alias Codebattle.Game.Play
 
   import Ecto.Query, warn: false
 

@@ -1,8 +1,8 @@
-defmodule Codebattle.GameProcess.TasksQueuesServerTest do
+defmodule Codebattle.Game.TasksQueuesServerTest do
   use Codebattle.IntegrationCase
 
   alias Codebattle.Task
-  alias Codebattle.GameProcess.TasksQueuesServer
+  alias Codebattle.Game.TasksQueuesServer
 
   test "gets next task" do
     tasks = insert_list(2, :task, level: "easy")

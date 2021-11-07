@@ -4,10 +4,10 @@ defmodule CodebattleWeb.GameController do
   import PhoenixGon.Controller
   require Logger
 
-  alias Codebattle.GameProcess.ActiveGames
-  alias Codebattle.GameProcess.CreateGame
-  alias Codebattle.GameProcess.FsmHelpers
-  alias Codebattle.GameProcess.Play
+  alias Codebattle.Game.ActiveGames
+  alias Codebattle.Game.CreateGame
+  alias Codebattle.Game.GameHelpers
+  alias Codebattle.Game.Play
   alias Codebattle.Languages
   alias Codebattle.User
   alias Codebattle.Bot.Playbook
@@ -24,29 +24,29 @@ defmodule CodebattleWeb.GameController do
         conn =
           put_gon(conn,
             game_id: id,
-            tournament_id: FsmHelpers.get_tournament_id(fsm),
-            players: present_users_for_gon(FsmHelpers.get_players(fsm))
+            tournament_id: GameHelpers.get_tournament_id(fsm),
+            players: present_users_for_gon(GameHelpers.get_players(fsm))
           )
 
         is_participant = ActiveGames.participant?(id, user.id)
 
         case {fsm.state, is_participant} do
           {:waiting_opponent, false} ->
-            player = FsmHelpers.get_first_player(fsm)
+            player = GameHelpers.get_first_player(fsm)
 
             conn
             |> put_meta_tags(%{
               title: "Hexlet Codebattle • Join game",
               description: "Game against #{player_info(player, fsm)}",
-              url: Routes.game_url(conn, :show, id, level: FsmHelpers.get_level(fsm)),
+              url: Routes.game_url(conn, :show, id, level: GameHelpers.get_level(fsm)),
               image: Routes.game_image_url(conn, :show, id),
               twitter: get_twitter_labels_meta([player])
             })
             |> render("join.html", %{fsm: fsm})
 
           _ ->
-            first = FsmHelpers.get_first_player(fsm)
-            second = FsmHelpers.get_second_player(fsm)
+            first = GameHelpers.get_first_player(fsm)
+            second = GameHelpers.get_second_player(fsm)
 
             conn
             |> put_meta_tags(%{
@@ -124,7 +124,7 @@ defmodule CodebattleWeb.GameController do
   defp player_info(nil, _fsm), do: ""
 
   defp player_info(player, fsm) do
-    "@#{player.name}(#{player.lang})-#{player.rating} level:#{FsmHelpers.get_level(fsm)}"
+    "@#{player.name}(#{player.lang})-#{player.rating} level:#{GameHelpers.get_level(fsm)}"
   end
 
   defp get_twitter_labels_meta(players) do

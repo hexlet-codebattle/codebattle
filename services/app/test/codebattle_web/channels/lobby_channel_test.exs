@@ -3,7 +3,7 @@ defmodule CodebattleWeb.LobbyChannelTest do
 
   alias CodebattleWeb.LobbyChannel
   alias CodebattleWeb.UserSocket
-  alias Codebattle.GameProcess.Player
+  alias Codebattle.Game.Player
 
   test "sends game info when user join" do
     task = insert(:task)

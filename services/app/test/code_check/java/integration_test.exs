@@ -2,7 +2,7 @@ defmodule Codebattle.CodeCheck.Java.IntegrationTest do
   use Codebattle.IntegrationCase
 
   alias CodebattleWeb.GameChannel
-  alias Codebattle.GameProcess.{Server, Player}
+  alias Codebattle.Game.{Server, Player}
   alias CodebattleWeb.UserSocket
 
   setup do

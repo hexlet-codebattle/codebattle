@@ -1,6 +1,6 @@
 defmodule CodebattleWeb.GameView do
   use CodebattleWeb, :view
-  import Codebattle.GameProcess.FsmHelpers
+  import Codebattle.Game.GameHelpers
 
   def user_name(%Codebattle.User{name: name, rating: rating}) do
     case {name, rating} do
@@ -9,7 +9,7 @@ defmodule CodebattleWeb.GameView do
     end
   end
 
-  def player_name(%Codebattle.GameProcess.Player{name: name, rating: rating}) do
+  def player_name(%Codebattle.Game.Player{name: name, rating: rating}) do
     case {name, rating} do
       {nil, nil} -> ""
       _ -> "#{name}(#{rating})"

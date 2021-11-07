@@ -1,8 +1,8 @@
-defmodule Codebattle.GameProcess.TimeoutServerTest do
+defmodule Codebattle.Game.TimeoutServerTest do
   use ExUnit.Case
 
   import Mock
-  alias Codebattle.GameProcess.{Play, TimeoutServer}
+  alias Codebattle.Game.{Play, TimeoutServer}
 
   @game_id 100
   @game2_id 101

@@ -4,7 +4,7 @@ defmodule CodebattleWeb.ChatChannel do
 
   require Logger
 
-  alias Codebattle.{Chat, UsersActivityServer, GameProcess}
+  alias Codebattle.{Chat, UsersActivityServer, Game}
 
   def join(topic, _payload, socket) do
     type = get_chat_type(topic)
@@ -101,6 +101,6 @@ defmodule CodebattleWeb.ChatChannel do
       })
     end
 
-    GameProcess.Server.update_playbook(chat_id, event_name, payload)
+    Game.Server.update_playbook(chat_id, event_name, payload)
   end
 end

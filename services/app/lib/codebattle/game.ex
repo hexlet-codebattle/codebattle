@@ -5,7 +5,7 @@ defmodule Codebattle.Game do
   import Ecto.Changeset
 
   alias Codebattle.Game
-  alias Codebattle.GameProcess.Player
+  alias Codebattle.Game.Player
 
   @type t :: %__MODULE__{}
 

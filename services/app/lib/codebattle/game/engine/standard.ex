@@ -1,10 +1,10 @@
-defmodule Codebattle.GameProcess.Engine.Standard do
-  alias Codebattle.GameProcess.{
+defmodule Codebattle.Game.Engine.Standard do
+  alias Codebattle.Game.{
     Server,
     Engine,
     GlobalSupervisor,
     Player,
-    FsmHelpers,
+    GameHelpers,
     ActiveGames
   }
 
@@ -96,11 +96,11 @@ defmodule Codebattle.GameProcess.Engine.Standard do
   end
 
   def join_game(fsm, second_user) do
-    with type <- FsmHelpers.get_type(fsm),
+    with type <- GameHelpers.get_type(fsm),
          :ok <- player_can_join_game?(second_user, type),
-         game_id <- FsmHelpers.get_game_id(fsm),
-         level <- FsmHelpers.get_level(fsm),
-         first_player <- FsmHelpers.get_first_player(fsm),
+         game_id <- GameHelpers.get_game_id(fsm),
+         level <- GameHelpers.get_level(fsm),
+         first_player <- GameHelpers.get_first_player(fsm),
          task <- get_task(level),
          langs <- Languages.get_langs_with_solutions(task),
          {:ok, fsm} <-
@@ -131,31 +131,27 @@ defmodule Codebattle.GameProcess.Engine.Standard do
   def rematch_send_offer(game_id, user_id) do
     {:ok, fsm} = Server.call_transition(game_id, :rematch_send_offer, %{player_id: user_id})
 
-    case FsmHelpers.get_rematch_state(fsm) do
+    case GameHelpers.get_rematch_state(fsm) do
       :accepted ->
-        {:ok, new_game_id} = create_rematch_game(fsm)
+        {:ok, game} = create_rematch_game(game)
         GlobalSupervisor.terminate_game(game_id)
 
         {:rematch_new_game, %{game_id: new_game_id}}
 
       _ ->
-        {:rematch_update_status,
-         %{
-           rematch_initiator_id: FsmHelpers.get_rematch_initiator_id(fsm),
-           rematch_state: FsmHelpers.get_rematch_state(fsm)
-         }}
+        {:rematch_update_status, Game}
     end
   end
 
   defp create_rematch_game(fsm) do
-    level = FsmHelpers.get_level(fsm)
-    type = FsmHelpers.get_type(fsm)
-    timeout_seconds = FsmHelpers.get_timeout_seconds(fsm)
+    level = GameHelpers.get_level(fsm)
+    type = GameHelpers.get_type(fsm)
+    timeout_seconds = GameHelpers.get_timeout_seconds(fsm)
     task = get_task(level)
 
     players =
       fsm
-      |> FsmHelpers.get_players()
+      |> GameHelpers.get_players()
       |> Enum.map(fn player -> Player.setup_editor_params(player, %{task: task}) end)
 
     {:ok, game} =

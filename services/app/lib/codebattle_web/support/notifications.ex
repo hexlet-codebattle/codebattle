@@ -1,10 +1,10 @@
 defmodule CodebattleWeb.Notifications do
-  alias Codebattle.GameProcess.Play
-  alias Codebattle.GameProcess.Fsm
+  alias Codebattle.Game.Play
+  alias Codebattle.Game.Fsm
   alias CodebattleWeb.Api.GameView
 
   import CodebattleWeb.Gettext
-  import Codebattle.GameProcess.FsmHelpers
+  import Codebattle.Game.GameHelpers
 
   def game_timeout(game_id) do
     Task.start(fn ->

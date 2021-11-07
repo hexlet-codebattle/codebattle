@@ -1,4 +1,4 @@
-defmodule Codebattle.GameProcess.Player do
+defmodule Codebattle.Game.Player do
   @moduledoc "Struct for player"
 
   use Ecto.Schema

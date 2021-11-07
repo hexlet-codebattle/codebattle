@@ -1,4 +1,4 @@
-defmodule Codebattle.GameProcess.Elo do
+defmodule Codebattle.Game.Elo do
   @moduledoc """
     Elo
   """
@@ -15,7 +15,7 @@ defmodule Codebattle.GameProcess.Elo do
 
   ## Examples
 
-    iex(1)> Codebattle.GameProcess.Elo.calc_elo(1000, 1000, 32)
+    iex(1)> Codebattle.Game.Elo.calc_elo(1000, 1000, 32)
     {1016, 984}
 
   """

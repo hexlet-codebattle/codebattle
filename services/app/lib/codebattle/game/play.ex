@@ -1,19 +1,19 @@
-defmodule Codebattle.GameProcess.Play do
+defmodule Codebattle.Game.Play do
   @moduledoc """
-  The GameProcess context.
+  The Game context.
   Public interface to interacting with games.
   """
 
   import Ecto.Query, warn: false
-  import Codebattle.GameProcess.Auth
+  import Codebattle.Game.Auth
 
   alias Codebattle.{Repo, Game, UsersActivityServer}
 
-  alias Codebattle.GameProcess.{
+  alias Codebattle.Game.{
     Server,
     Engine,
     Fsm,
-    FsmHelpers,
+    GameHelpers,
     ActiveGames,
     GlobalSupervisor
   }
@@ -80,14 +80,14 @@ defmodule Codebattle.GameProcess.Play do
 
   def join_game(id, user) do
     case get_fsm(id) do
-      {:ok, fsm} -> FsmHelpers.get_module(fsm).join_game(fsm, user)
+      {:ok, fsm} -> GameHelpers.get_module(fsm).join_game(fsm, user)
       {:error, reason} -> {:error, reason}
     end
   end
 
   def cancel_game(id, user) do
     case get_fsm(id) do
-      {:ok, fsm} -> FsmHelpers.get_module(fsm).cancel_game(fsm, user)
+      {:ok, fsm} -> GameHelpers.get_module(fsm).cancel_game(fsm, user)
       {:error, reason} -> {:error, reason}
     end
   end
@@ -95,7 +95,7 @@ defmodule Codebattle.GameProcess.Play do
   def update_editor_data(id, user, editor_text, editor_lang) do
     case get_fsm(id) do
       {:ok, fsm} ->
-        FsmHelpers.get_module(fsm).update_editor_data(fsm, %{
+        GameHelpers.get_module(fsm).update_editor_data(fsm, %{
           id: user.id,
           editor_text: editor_text,
           editor_lang: editor_lang
@@ -117,7 +117,7 @@ defmodule Codebattle.GameProcess.Play do
       {:ok, fsm} ->
         check_result =
           checker_adapter().call(
-            FsmHelpers.get_task(fsm),
+            GameHelpers.get_task(fsm),
             editor_text,
             editor_lang
           )
@@ -130,13 +130,13 @@ defmodule Codebattle.GameProcess.Play do
             editor_lang: editor_lang
           })
 
-        winner = FsmHelpers.get_winner(new_fsm) || %{id: nil}
+        winner = GameHelpers.get_winner(new_fsm) || %{id: nil}
 
         if {fsm.state, new_fsm.state, winner.id} == {:playing, :game_over, user.id} do
           Server.update_playbook(id, :game_over, %{id: user.id, lang: editor_lang})
 
-          player = FsmHelpers.get_player(new_fsm, user.id)
-          FsmHelpers.get_module(fsm).handle_won_game(id, player, new_fsm)
+          player = GameHelpers.get_player(new_fsm, user.id)
+          GameHelpers.get_module(fsm).handle_won_game(id, player, new_fsm)
           {:ok, fsm, new_fsm, %{solution_status: true, check_result: check_result}}
         else
           {:ok, fsm, new_fsm, %{solution_status: false, check_result: check_result}}
@@ -150,7 +150,7 @@ defmodule Codebattle.GameProcess.Play do
   def give_up(id, user) do
     case Server.call_transition(id, :give_up, %{id: user.id}) do
       {:ok, fsm} ->
-        FsmHelpers.get_module(fsm).handle_give_up(id, user.id, fsm)
+        GameHelpers.get_module(fsm).handle_give_up(id, user.id, fsm)
 
         {:ok, fsm}
 
@@ -162,7 +162,7 @@ defmodule Codebattle.GameProcess.Play do
   def rematch_send_offer(game_id, user_id) do
     with {:ok, fsm} <- get_fsm(game_id),
          :ok <- player_can_rematch?(fsm, user_id) do
-      FsmHelpers.get_module(fsm).rematch_send_offer(game_id, user_id)
+      GameHelpers.get_module(fsm).rematch_send_offer(game_id, user_id)
     else
       {:error, reason} ->
         {:error, reason}
@@ -174,8 +174,8 @@ defmodule Codebattle.GameProcess.Play do
       {:ok, fsm} ->
         {:rematch_update_status,
          %{
-           rematch_initiator_id: FsmHelpers.get_rematch_initiator_id(fsm),
-           rematch_state: FsmHelpers.get_rematch_state(fsm)
+           rematch_initiator_id: GameHelpers.get_rematch_initiator_id(fsm),
+           rematch_state: GameHelpers.get_rematch_state(fsm)
          }}
 
       {:error, reason} ->
@@ -186,7 +186,7 @@ defmodule Codebattle.GameProcess.Play do
   def timeout_game(id) do
     {:ok, fsm} = get_fsm(id)
 
-    case {FsmHelpers.get_state(fsm), FsmHelpers.get_tournament_id(fsm)} do
+    case {GameHelpers.get_state(fsm), GameHelpers.get_tournament_id(fsm)} do
       {:game_over, nil} ->
         {:terminate_after, 15}
 
@@ -208,7 +208,7 @@ defmodule Codebattle.GameProcess.Play do
   def terminate_game(id) do
     {:ok, fsm} = get_fsm(id)
 
-    case FsmHelpers.get_state(fsm) do
+    case GameHelpers.get_state(fsm) do
       :game_over ->
         GlobalSupervisor.terminate_game(id)
 
@@ -217,7 +217,7 @@ defmodule Codebattle.GameProcess.Play do
         ActiveGames.terminate_game(id)
         Notifications.game_timeout(id)
         Notifications.remove_active_game(id)
-        FsmHelpers.get_module(fsm).store_playbook(fsm)
+        GameHelpers.get_module(fsm).store_playbook(fsm)
         GlobalSupervisor.terminate_game(id)
 
         store_terminate_event(fsm)
@@ -238,20 +238,20 @@ defmodule Codebattle.GameProcess.Play do
 
   defp get_module(%{tournament: _}), do: Engine.Tournament
   defp get_module(%{type: type}) when type in ["training", "bot"], do: Engine.Bot
-  defp get_module(%Fsm{} = fsm), do: FsmHelpers.get_module(fsm)
+  defp get_module(%Fsm{} = fsm), do: GameHelpers.get_module(fsm)
   defp get_module(_), do: Engine.Standard
 
   defp checker_adapter, do: Application.get_env(:codebattle, :checker_adapter)
 
   defp store_terminate_event(fsm) do
     data = %{
-      game_id: FsmHelpers.get_game_id(fsm),
-      type: FsmHelpers.get_type(fsm),
-      level: FsmHelpers.get_level(fsm),
-      task_id: FsmHelpers.get_task(fsm).id
+      game_id: GameHelpers.get_game_id(fsm),
+      type: GameHelpers.get_type(fsm),
+      level: GameHelpers.get_level(fsm),
+      task_id: GameHelpers.get_task(fsm).id
     }
 
-    players = FsmHelpers.get_players(fsm)
+    players = GameHelpers.get_players(fsm)
 
     Enum.each(players, fn player ->
       UsersActivityServer.add_event(%{

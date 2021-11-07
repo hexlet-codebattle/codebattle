@@ -2,8 +2,8 @@ defmodule CodebattleWeb.LobbyChannel do
   @moduledoc false
   use CodebattleWeb, :channel
 
-  alias Codebattle.GameProcess.FsmHelpers
-  alias Codebattle.GameProcess.Play
+  alias Codebattle.Game.GameHelpers
+  alias Codebattle.Game.Play
   alias Codebattle.Tournament
   alias CodebattleWeb.Api.GameView
 
@@ -50,7 +50,7 @@ defmodule CodebattleWeb.LobbyChannel do
 
     case Play.start_game(game_params) do
       {:ok, fsm} ->
-        game_id = FsmHelpers.get_game_id(fsm)
+        game_id = GameHelpers.get_game_id(fsm)
         {:reply, {:ok, %{game_id: game_id}}, socket}
 
       {:error, reason} ->

@@ -1,6 +1,6 @@
-defmodule Codebattle.GameProcess.Auth do
-  alias Codebattle.GameProcess.ActiveGames
-  alias Codebattle.GameProcess.FsmHelpers
+defmodule Codebattle.Game.Auth do
+  alias Codebattle.Game.ActiveGames
+  alias Codebattle.Game.GameHelpers
 
   def player_can_create_game?(%{guest: true}, "training"), do: :ok
 
@@ -45,7 +45,7 @@ defmodule Codebattle.GameProcess.Auth do
   end
 
   def player_can_rematch?(fsm, player_id) do
-    case FsmHelpers.is_player?(fsm, player_id) do
+    case GameHelpers.is_player?(fsm, player_id) do
       true ->
         :ok
 

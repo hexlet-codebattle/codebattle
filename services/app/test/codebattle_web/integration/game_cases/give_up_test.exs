@@ -1,7 +1,7 @@
 defmodule Codebattle.GameCases.GiveUpTest do
   use Codebattle.IntegrationCase
 
-  alias Codebattle.GameProcess.{ActiveGames, Server}
+  alias Codebattle.Game.{ActiveGames, Server}
   alias CodebattleWeb.UserSocket
 
   setup %{conn: conn} do
@@ -48,8 +48,8 @@ defmodule Codebattle.GameCases.GiveUpTest do
     {:ok, fsm} = Server.get_fsm(game_id)
 
     assert fsm.state == :game_over
-    assert FsmHelpers.gave_up?(fsm, user1.id) == true
-    assert FsmHelpers.winner?(fsm, user2.id) == true
+    assert GameHelpers.gave_up?(fsm, user1.id) == true
+    assert GameHelpers.winner?(fsm, user2.id) == true
     assert ActiveGames.game_exists?(game_id) == false
   end
 
@@ -83,8 +83,8 @@ defmodule Codebattle.GameCases.GiveUpTest do
     {:ok, fsm} = Server.get_fsm(game_id)
 
     assert fsm.state == :game_over
-    assert FsmHelpers.winner?(fsm, user1.id) == true
-    assert FsmHelpers.lost?(fsm, user2.id) == true
+    assert GameHelpers.winner?(fsm, user1.id) == true
+    assert GameHelpers.lost?(fsm, user2.id) == true
   end
 
   test "After give_up user can create games", %{conn1: conn1, conn2: conn2, socket1: socket1} do

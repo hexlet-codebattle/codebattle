@@ -1,16 +1,16 @@
-defmodule Codebattle.GameProcess.Server do
+defmodule Codebattle.Game.Server do
   @moduledoc "Gen server for main game state"
 
   use GenServer
 
   require Logger
 
-  alias Codebattle.GameProcess.Fsm
+  alias Codebattle.Game.Game
   alias Codebattle.Bot.Playbook
 
   # API
-  def start_link({game_id, fsm}) do
-    GenServer.start_link(__MODULE__, fsm, name: server_name(game_id))
+  def start_link({game_id, game}) do
+    GenServer.start_link(__MODULE__, game, name: server_name(game_id))
   end
 
   def update_playbook(game_id, event, params) do
@@ -25,14 +25,14 @@ defmodule Codebattle.GameProcess.Server do
     GenServer.call(server_name(game_id), {:transition, event, params})
   end
 
-  def get_fsm(game_id) do
+  def get_game(game_id) do
     case game_pid(game_id) do
       :undefined ->
         {:error, :game_terminated}
 
       _pid ->
-        fsm = GenServer.call(server_name(game_id), :get_fsm)
-        {:ok, fsm}
+        game = GenServer.call(server_name(game_id), :get_game)
+        {:ok, game}
     end
   end
 
@@ -50,29 +50,29 @@ defmodule Codebattle.GameProcess.Server do
   def game_pid(game_id), do: :gproc.where(game_key(game_id))
 
   # SERVER
-  def init(fsm) do
-    Logger.info("Start game server for game_id: #{fsm.data.game_id}")
+  def init(game) do
+    Logger.info("Start game server for game_id: #{game.data.game_id}")
 
     state = %{
-      fsm: fsm,
-      playbook: Playbook.init(fsm)
+      game: game,
+      playbook: Playbook.init(game)
     }
 
     {:ok, state}
   end
 
-  def handle_cast({:update_playbook, event, params}, %{fsm: fsm, playbook: playbook}) do
+  def handle_cast({:update_playbook, event, params}, %{game: game, playbook: playbook}) do
     new_state = %{
-      fsm: fsm,
+      game: game,
       playbook: Playbook.add_event(playbook, event, params)
     }
 
     {:noreply, new_state}
   end
 
-  def handle_cast({:transition, event, params}, %{fsm: fsm, playbook: playbook}) do
+  def handle_cast({:transition, event, params}, %{game: game, playbook: playbook}) do
     new_state = %{
-      fsm: Fsm.transition(fsm, event, [params]),
+      game: Game.transition(game, event, [params]),
       playbook: Playbook.add_event(playbook, event, params)
     }
 
@@ -83,22 +83,22 @@ defmodule Codebattle.GameProcess.Server do
     {:reply, playbook, state}
   end
 
-  def handle_call(:get_fsm, _from, %{fsm: fsm} = state) do
-    {:reply, fsm, state}
+  def handle_call(:get_game, _from, %{game: game} = state) do
+    {:reply, game, state}
   end
 
-  def handle_call({:transition, event, params}, _from, %{fsm: fsm, playbook: playbook} = state) do
-    case Fsm.transition(fsm, event, [params]) do
+  def handle_call({:transition, event, params}, _from, %{game: game, playbook: playbook} = state) do
+    case Game.transition(game, event, [params]) do
       {{:error, reason}, _} ->
         {:reply, {:error, reason}, state}
 
-      new_fsm ->
+      new_game ->
         new_state = %{
-          fsm: new_fsm,
+          game: new_game,
           playbook: Playbook.add_event(playbook, event, params)
         }
 
-        {:reply, {:ok, new_fsm}, new_state}
+        {:reply, {:ok, new_game}, new_state}
     end
   end
 

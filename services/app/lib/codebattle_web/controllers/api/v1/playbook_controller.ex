@@ -2,7 +2,7 @@ defmodule CodebattleWeb.Api.V1.PlaybookController do
   use CodebattleWeb, :controller
 
   alias Codebattle.{Game, Repo, User, Task}
-  alias Codebattle.GameProcess.{FsmHelpers, Play, Server}
+  alias Codebattle.Game.{GameHelpers, Play, Server}
   alias Codebattle.Bot.Playbook
   import Ecto.Query, warn: false
 
@@ -62,17 +62,17 @@ defmodule CodebattleWeb.Api.V1.PlaybookController do
       {:ok, fsm} ->
         {:ok, records} = Server.get_playbook(game_id)
 
-        winner = FsmHelpers.get_winner(fsm)
+        winner = GameHelpers.get_winner(fsm)
         winner_id = if is_nil(winner), do: nil, else: winner.id
         winner_lang = if is_nil(winner), do: nil, else: winner.editor_lang
 
         json(conn, %{
-          players: FsmHelpers.get_players(fsm),
+          players: GameHelpers.get_players(fsm),
           records: Enum.reverse(records),
-          task: FsmHelpers.get_task(fsm),
-          type: FsmHelpers.get_type(fsm),
+          task: GameHelpers.get_task(fsm),
+          type: GameHelpers.get_type(fsm),
           solution_type: "incomplete",
-          tournament_id: FsmHelpers.get_tournament_id(fsm),
+          tournament_id: GameHelpers.get_tournament_id(fsm),
           winner_id: winner_id,
           winner_lang: winner_lang
         })

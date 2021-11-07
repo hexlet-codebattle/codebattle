@@ -1,9 +1,9 @@
-defmodule Codebattle.GameProcess.ActiveGames do
+defmodule Codebattle.Game.ActiveGames do
   @moduledoc """
     ActiveGames for game list
   """
 
-  alias Codebattle.GameProcess.FsmHelpers
+  alias Codebattle.Game.GameHelpers
 
   @table_name :active_games
 
@@ -45,13 +45,13 @@ defmodule Codebattle.GameProcess.ActiveGames do
   end
 
   def create_game(fsm) do
-    game_id = FsmHelpers.get_game_id(fsm)
+    game_id = GameHelpers.get_game_id(fsm)
     :ets.insert_new(@table_name, {game_key(game_id), build_players(fsm), build_game_params(fsm)})
     :ok
   end
 
   def update_game(fsm) do
-    game_id = FsmHelpers.get_game_id(fsm)
+    game_id = GameHelpers.get_game_id(fsm)
 
     :ets.insert(@table_name, {game_key(game_id), build_players(fsm), build_game_params(fsm)})
     :ok
@@ -69,7 +69,7 @@ defmodule Codebattle.GameProcess.ActiveGames do
   end
 
   def setup_game(fsm) do
-    game_id = FsmHelpers.get_game_id(fsm)
+    game_id = GameHelpers.get_game_id(fsm)
 
     :ets.insert(@table_name, {game_key(game_id), build_players(fsm), build_game_params(fsm)})
     :ok
@@ -81,19 +81,19 @@ defmodule Codebattle.GameProcess.ActiveGames do
 
   defp build_game_params(fsm) do
     %{
-      id: FsmHelpers.get_game_id(fsm),
-      state: FsmHelpers.get_state(fsm),
-      is_bot: FsmHelpers.bot_game?(fsm),
-      level: FsmHelpers.get_level(fsm),
-      inserted_at: FsmHelpers.get_inserted_at(fsm),
-      type: FsmHelpers.get_type(fsm),
-      timeout_seconds: FsmHelpers.get_timeout_seconds(fsm)
+      id: GameHelpers.get_game_id(fsm),
+      state: GameHelpers.get_state(fsm),
+      is_bot: GameHelpers.bot_game?(fsm),
+      level: GameHelpers.get_level(fsm),
+      inserted_at: GameHelpers.get_inserted_at(fsm),
+      type: GameHelpers.get_type(fsm),
+      timeout_seconds: GameHelpers.get_timeout_seconds(fsm)
     }
   end
 
   defp build_players(fsm) do
     fsm
-    |> FsmHelpers.get_players()
+    |> GameHelpers.get_players()
     |> Enum.reduce(%{}, fn player, acc -> Map.put(acc, player.id, player) end)
   end
 end

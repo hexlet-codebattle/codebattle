@@ -3,7 +3,7 @@ defmodule Codebattleweb.GameControllerTest do
 
   import Ecto.Query, warn: false
   alias Codebattle.{Repo, Game}
-  alias Codebattle.GameProcess.{ActiveGames, Server}
+  alias Codebattle.Game.{ActiveGames, Server}
 
   test "return 404 when game over does not exists", %{conn: conn} do
     user = insert(:user)

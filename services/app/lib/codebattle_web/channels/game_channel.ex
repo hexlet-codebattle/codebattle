@@ -2,7 +2,7 @@ defmodule CodebattleWeb.GameChannel do
   @moduledoc false
   use CodebattleWeb, :channel
 
-  alias Codebattle.GameProcess.{Play, FsmHelpers}
+  alias Codebattle.Game.{Play, GameHelpers}
   alias CodebattleWeb.Api.GameView
 
   def join("game:" <> game_id, _payload, socket) do
@@ -20,11 +20,11 @@ defmodule CodebattleWeb.GameChannel do
     game_id = get_game_id(socket)
     user_id = socket.assigns.current_user.id
 
-    case Play.get_fsm(game_id) do
-      {:ok, %{state: :playing} = fsm} ->
-      _ ->
-        :ok
-    end
+    # case Play.get_fsm(game_id) do
+    #   {:ok, %{state: :playing} = fsm} ->
+    #   _ ->
+    #     :ok
+    # end
 
     {:noreply, socket}
   end
@@ -59,8 +59,8 @@ defmodule CodebattleWeb.GameChannel do
     case Play.give_up(game_id, user) do
       {:ok, fsm} ->
         broadcast!(socket, "user:give_up", %{
-          players: FsmHelpers.get_players(fsm),
-          status: FsmHelpers.get_state(fsm),
+          players: GameHelpers.get_players(fsm),
+          status: GameHelpers.get_state(fsm),
           msg: "#{user.name} gave up!"
         })
 
@@ -81,19 +81,17 @@ defmodule CodebattleWeb.GameChannel do
 
     case Play.check_game(game_id, user, editor_text, lang_slug) do
       {:ok, old_fsm, fsm, %{solution_status: solution_status, check_result: check_result}} ->
-
         broadcast!(socket, "user:check_complete", %{
           solution_status: solution_status,
           user_id: user.id,
-          status: FsmHelpers.get_state(fsm),
-          players: FsmHelpers.get_players(fsm),
+          status: GameHelpers.get_state(fsm),
+          players: GameHelpers.get_players(fsm),
           check_result: check_result
         })
 
         {:noreply, socket}
 
       {:error, reason} ->
-
         {:reply, {:error, %{reason: reason}}, socket}
     end
   end
@@ -136,17 +134,21 @@ defmodule CodebattleWeb.GameChannel do
   end
 
   defp is_current_tournament?(tournament, fsm) do
-    FsmHelpers.get_tournament_id(fsm) == tournament.id
+    GameHelpers.get_tournament_id(fsm) == tournament.id
   end
 
   defp handle_rematch_result(result, socket) do
     case result do
-      {:rematch_update_status, data} ->
-        broadcast!(socket, "rematch:update_status", data)
+      {:ok, {:rematch_status_updated, game}} ->
+        broadcast!(socket, "rematch:status_updated", %{
+          rematch_state: game.rematch_state,
+          rematch_initiator_id: game.rematch_initiator_id
+        })
+
         {:noreply, socket}
 
-      {:rematch_new_game, data} ->
-        broadcast!(socket, "rematch:redirect_to_new_game", data)
+      {:ok, {:rematch_accepted, game}} ->
+        broadcast!(socket, "rematch:game_created", %{game_id: game.id})
         {:noreply, socket}
 
       {:error, reason} ->

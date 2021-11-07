@@ -1,11 +1,11 @@
-defmodule Codebattle.GameProcess.TimeoutServer do
+defmodule Codebattle.Game.TimeoutServer do
   @moduledoc false
 
   use GenServer
 
   require Logger
 
-  alias Codebattle.GameProcess.{Play}
+  alias Codebattle.Game.{Play}
 
   # API
   def start_timer(game_id, timeout_seconds) do

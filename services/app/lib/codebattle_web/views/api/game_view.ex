@@ -1,9 +1,9 @@
 defmodule CodebattleWeb.Api.GameView do
   use CodebattleWeb, :view
 
-  alias Codebattle.GameProcess.Player
+  alias Codebattle.Game.Player
 
-  import Codebattle.GameProcess.FsmHelpers
+  import Codebattle.Game.GameHelpers
 
   def render_fsm(fsm) do
     %{

@@ -1,6 +1,6 @@
 defmodule Codebattle.Tournament.Team do
-  alias Codebattle.GameProcess.FsmHelpers
-  alias Codebattle.GameProcess.Play
+  alias Codebattle.Game.GameHelpers
+  alias Codebattle.Game.Play
   alias Codebattle.Tournament
 
   use Tournament.Base
@@ -109,7 +109,7 @@ defmodule Codebattle.Tournament.Team do
         players: match.players
       })
 
-    FsmHelpers.get_game_id(fsm)
+    GameHelpers.get_game_id(fsm)
   end
 
   defp shift_pairs(teams, tournament) do

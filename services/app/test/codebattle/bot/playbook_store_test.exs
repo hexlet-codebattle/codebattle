@@ -110,7 +110,7 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
     #         %{type: :init, editor_text: ..., editor_lang: "js", id: 2, time: ....},
     #       ]
 
-    # sleep, because GameProcess need time to write Playbook with Ecto.connection
+    # sleep, because Game need time to write Playbook with Ecto.connection
     :timer.sleep(4000)
 
     playbook = Repo.get_by(Playbook, winner_id: user1.id)
