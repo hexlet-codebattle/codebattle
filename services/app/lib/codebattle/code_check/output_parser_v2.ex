@@ -47,7 +47,7 @@ defmodule Codebattle.CodeCheck.OutputParserV2 do
     cond do
       String.contains?(container_output, @memory_overflow) ->
         %CheckResultV2{
-          output: "Your solution ran out of memory, please, rewrite it",
+          output_error: "Your solution ran out of memory, please, rewrite it",
           status: :error
         }
 
@@ -56,7 +56,7 @@ defmodule Codebattle.CodeCheck.OutputParserV2 do
           outputs["results"]
           |> Enum.with_index()
           |> Enum.reduce(
-            CheckResultV2.new(),
+            %CheckResultV2{},
             # TODO: calculate result on a single pass through list
             fn {item, index}, acc ->
               assert = Enum.at(asserts, index)
@@ -101,7 +101,7 @@ defmodule Codebattle.CodeCheck.OutputParserV2 do
 
       true ->
         %CheckResultV2{
-          output: container_output,
+          output_error: container_output,
           status: :error
         }
     end

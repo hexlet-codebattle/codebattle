@@ -16,9 +16,9 @@ defmodule Codebattle.GameProcess.Fsm do
     initial_state: :initial,
     initial_data: %{
       # Atom, module with game functions; OOP for poor
-      module: Standard,
+      # module: Standard,
       # Integer
-      game_id: nil,
+      # game_id: nil,
       # Integer
       tournament_id: nil,
       # NaiveDateTime

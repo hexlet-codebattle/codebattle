@@ -2,14 +2,16 @@ defmodule Codebattle.CodeCheck.CheckResult do
   @moduledoc false
 
   # statuses: :initial, :ok, :failure, :error
+
+  use TypedStruct
   @derive Jason.Encoder
 
-  defstruct success_count: 0,
-            asserts_count: 0,
-            status: :initial,
-            result: ~s({"status": "info"}),
-            asserts: [],
-            output: ""
-
-  def new, do: %__MODULE__{}
+  typedstruct do
+    field(:success_count, integer, default: 0)
+    field(:asserts_count, integer, default: 0)
+    field(:status, String.t(), default: "initial")
+    field(:output, String.t(), default: "")
+    field(:result, String.t(), default: ~s({"status": "info"}))
+    field(:asserts, [any()], default: [])
+  end
 end

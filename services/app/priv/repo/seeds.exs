@@ -161,7 +161,7 @@ six_hours_ago = Timex.shift(now, hours: -6)
     level: "easy",
     type: "public",
     starts_at: t |> Timex.to_naive_datetime() |> NaiveDateTime.truncate(:second),
-    finishs_at: t |> Timex.to_naive_datetime() |> NaiveDateTime.truncate(:second),
+    finishes_at: t |> Timex.to_naive_datetime() |> NaiveDateTime.truncate(:second),
     inserted_at: TimeHelper.utc_now(),
     updated_at: TimeHelper.utc_now()
   }

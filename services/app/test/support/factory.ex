@@ -39,7 +39,7 @@ defmodule CodebattleWeb.Factory do
       level: "elementary",
       type: "public",
       starts_at: TimeHelper.utc_now(),
-      finishs_at: TimeHelper.utc_now(),
+      finishes_at: TimeHelper.utc_now(),
       task: insert(:task)
     }
   end

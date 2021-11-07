@@ -26,7 +26,7 @@ defmodule Codebattle.GameProcess.Play do
     query =
       from(
         games in Game,
-        order_by: [desc_nulls_last: games.finishs_at],
+        order_by: [desc_nulls_last: games.finishes_at],
         where: [state: "game_over"],
         limit: 30,
         preload: [:users, :user_games]

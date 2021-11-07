@@ -81,6 +81,7 @@ defmodule Codebattle.Mixfile do
       {:ueberauth_discord, "~> 0.5.2"},
       {:sentry, "~> 8.0"},
       {:earmark, "~> 1.4"},
+      {:typed_struct, "~> 0.2.1"},
 
       # dev_and_test
       {:credo, "~> 1.4", only: [:dev, :test], runtime: false},

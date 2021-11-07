@@ -31,7 +31,7 @@ defmodule Codebattle.User.Stats do
     query =
       from(
         g in Game,
-        order_by: [desc_nulls_last: g.finishs_at],
+        order_by: [desc_nulls_last: g.finishes_at],
         inner_join: ug in assoc(g, :user_games),
         inner_join: u in assoc(ug, :user),
         where: g.state == "game_over" and ug.user_id == ^user_id,

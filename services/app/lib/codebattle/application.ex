@@ -23,10 +23,12 @@ defmodule Codebattle.Application do
         {Codebattle.Repo, []},
         CodebattleWeb.Telemetry,
         %{
+          # PubSub for internal messages
           id: Codebattle.PubSub,
           start: {Phoenix.PubSub.Supervisor, :start_link, [[name: Codebattle.PubSub]]}
         },
         %{
+          # PubSub for web phoenix channels
           id: CodebattleWeb.PubSub,
           start: {Phoenix.PubSub.Supervisor, :start_link, [[name: CodebattleWeb.PubSub]]}
         },

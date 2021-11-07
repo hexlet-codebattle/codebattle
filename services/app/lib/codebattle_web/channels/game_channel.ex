@@ -3,7 +3,6 @@ defmodule CodebattleWeb.GameChannel do
   use CodebattleWeb, :channel
 
   alias Codebattle.GameProcess.{Play, FsmHelpers}
-  alias Codebattle.UsersActivityServer
   alias CodebattleWeb.Api.GameView
 
   def join("game:" <> game_id, _payload, socket) do
@@ -18,20 +17,11 @@ defmodule CodebattleWeb.GameChannel do
   end
 
   def terminate(_reason, socket) do
-    game_id = socket.assigns.game_id
+    game_id = get_game_id(socket)
     user_id = socket.assigns.current_user.id
 
     case Play.get_fsm(game_id) do
       {:ok, %{state: :playing} = fsm} ->
-        UsersActivityServer.add_event(%{
-          event: "leave_playing_game_room",
-          user_id: user_id,
-          data: %{
-            game_id: game_id,
-            is_player: FsmHelpers.is_player?(fsm, user_id)
-          }
-        })
-
       _ ->
         :ok
     end
@@ -49,15 +39,6 @@ defmodule CodebattleWeb.GameChannel do
 
     case Play.update_editor_data(game_id, user, editor_text, lang_slug) do
       {:ok, _fsm} ->
-        UsersActivityServer.add_event(%{
-          event: "change_solution_game",
-          user_id: user.id,
-          data: %{
-            game_id: game_id,
-            lang: lang_slug
-          }
-        })
-
         broadcast_from!(socket, "editor:data", %{
           user_id: user.id,
           lang_slug: lang_slug,
@@ -77,14 +58,6 @@ defmodule CodebattleWeb.GameChannel do
 
     case Play.give_up(game_id, user) do
       {:ok, fsm} ->
-        UsersActivityServer.add_event(%{
-          event: "give_up_game",
-          user_id: user.id,
-          data: %{
-            game_id: game_id
-          }
-        })
-
         broadcast!(socket, "user:give_up", %{
           players: FsmHelpers.get_players(fsm),
           status: FsmHelpers.get_state(fsm),
@@ -108,17 +81,6 @@ defmodule CodebattleWeb.GameChannel do
 
     case Play.check_game(game_id, user, editor_text, lang_slug) do
       {:ok, old_fsm, fsm, %{solution_status: solution_status, check_result: check_result}} ->
-        UsersActivityServer.add_event(%{
-          event: "check_solution",
-          user_id: user.id,
-          data: %{
-            game_id: game_id,
-            lang: lang_slug,
-            solution_status: check_result.status,
-            prev_game_state: FsmHelpers.get_state(old_fsm),
-            next_game_state: FsmHelpers.get_state(fsm)
-          }
-        })
 
         broadcast!(socket, "user:check_complete", %{
           solution_status: solution_status,
@@ -131,15 +93,6 @@ defmodule CodebattleWeb.GameChannel do
         {:noreply, socket}
 
       {:error, reason} ->
-        UsersActivityServer.add_event(%{
-          event: "check_solution_error",
-          user_id: user.id,
-          data: %{
-            game_id: game_id,
-            lang: lang_slug,
-            reason: reason
-          }
-        })
 
         {:reply, {:error, %{reason: reason}}, socket}
     end
@@ -149,29 +102,13 @@ defmodule CodebattleWeb.GameChannel do
     game_id = socket.assigns.game_id
     user = socket.assigns.current_user
 
-    UsersActivityServer.add_event(%{
-      event: "rematch_send_offer_game",
-      user_id: user.id,
-      data: %{
-        game_id: Integer.parse(game_id)
-      }
-    })
-
     game_id
-    |> Play.rematch_send_offer(user.id)
+    |> Game.Context.rematch_send_offer(game_id, user)
     |> handle_rematch_result(socket)
   end
 
   def handle_in("rematch:reject_offer", _, socket) do
     game_id = socket.assigns.game_id
-
-    UsersActivityServer.add_event(%{
-      event: "rematch_reject_offer_game",
-      user_id: socket.assigns.current_user.id,
-      data: %{
-        game_id: Integer.parse(game_id)
-      }
-    })
 
     game_id
     |> Play.rematch_reject()
@@ -181,14 +118,6 @@ defmodule CodebattleWeb.GameChannel do
   def handle_in("rematch:accept_offer", _, socket) do
     game_id = socket.assigns.game_id
     user = socket.assigns.current_user
-
-    UsersActivityServer.add_event(%{
-      event: "rematch_accept_offer_game",
-      user_id: user.id,
-      data: %{
-        game_id: Integer.parse(game_id)
-      }
-    })
 
     game_id
     |> Play.rematch_send_offer(user.id)
@@ -226,5 +155,10 @@ defmodule CodebattleWeb.GameChannel do
       _ ->
         {:reply, {:error, %{reason: "sww"}}, socket}
     end
+  end
+
+  defp get_game_id(socket) do
+    "game:" <> game_id = socket.topic
+    game_id
   end
 end

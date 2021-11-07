@@ -5,6 +5,8 @@ defmodule Codebattle.User do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @type t :: %__MODULE__{}
+
   @admins Application.compile_env(:codebattle, :admins)
   @guest_id 0
 

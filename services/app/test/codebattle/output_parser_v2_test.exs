@@ -27,7 +27,7 @@ defmodule Codebattle.CodeCheck.OutputParserV2Test do
     version: 2,
     asserts_count: 3,
     status: :failure,
-    output: "pre_output",
+    output_error: "pre_output",
     asserts: [
       %CheckResultV2.AssertResult{
         arguments: [1, 3],
@@ -126,7 +126,7 @@ defmodule Codebattle.CodeCheck.OutputParserV2Test do
     assert result == %Codebattle.CodeCheck.CheckResultV2{
              asserts: [],
              asserts_count: 0,
-             output: "SOME ERROR",
+             output_error: "SOME ERROR",
              status: :error,
              success_count: 0
            }
@@ -140,7 +140,7 @@ defmodule Codebattle.CodeCheck.OutputParserV2Test do
     assert result == %Codebattle.CodeCheck.CheckResultV2{
              asserts: [],
              asserts_count: 0,
-             output: "Your solution ran out of memory, please, rewrite it",
+             output_error: "Your solution ran out of memory, please, rewrite it",
              status: :error,
              success_count: 0
            }

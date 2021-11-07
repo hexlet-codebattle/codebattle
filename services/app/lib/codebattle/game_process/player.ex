@@ -1,18 +1,23 @@
 defmodule Codebattle.GameProcess.Player do
   @moduledoc "Struct for player"
 
+  use Ecto.Schema
+  import Ecto.Changeset
+
+  @primary_key false
+  @derive Jason.Encoder
+
   alias Codebattle.CodeCheck.CheckResult
+  alias Codebattle.CodeCheck.CheckResultV2
   alias Codebattle.Languages
   alias Codebattle.Tournament
   alias Codebattle.UserGame
 
-  # @game_result [:undefined, :gave_up, :won, :lost]
   @derive {Jason.Encoder,
            only: [
              :id,
              :name,
              :is_bot,
-             :github_id,
              :lang,
              :editor_text,
              :editor_lang,
@@ -25,23 +30,24 @@ defmodule Codebattle.GameProcess.Player do
              :rank
            ]}
 
-  defstruct id: nil,
-            editor_text: "module.exports = () => {\n\n};",
-            editor_lang: "js",
-            lang: "",
-            game_result: "undefined",
-            check_result: CheckResult.new(),
-            creator: false,
-            is_bot: false,
-            github_id: "",
-            public_id: "",
-            name: "",
-            rating: 0,
-            rating_diff: 0,
-            rank: -1,
-            achievements: []
+  embedded_schema do
+    field(:id, :integer)
+    field(:editor_text, :string, default: "module.exports = () => {\n\n};")
+    field(:editor_lang, :string, default: "js")
+    field(:lang, :string, default: "js")
+    field(:game_result, :string, default: "undefined")
+    # CheckResult.t() | CheckResultV2.t()
+    field(:check_result, :map, default: %CheckResult{})
+    field(:creator, :boolean, default: false)
+    field(:is_bot, :boolean, default: false)
+    field(:name, :string, default: "Ada Lovelace")
+    field(:rating, :integer, default: 0)
+    field(:rating_diff, :integer, default: 0)
+    field(:rank, :integer, default: -1)
+    field(:achievements, {:array, :string}, default: [])
+  end
 
-  def build(userable, params \\ %{})
+  def build(struct, params \\ %{})
 
   def build(%UserGame{} = user_game, params) do
     new_player =
@@ -52,9 +58,7 @@ defmodule Codebattle.GameProcess.Player do
         user ->
           %__MODULE__{
             id: user.id,
-            public_id: user.public_id,
             is_bot: user.is_bot,
-            github_id: user.github_id,
             rank: user.rank,
             name: user.name,
             achievements: user.achievements,
@@ -73,9 +77,7 @@ defmodule Codebattle.GameProcess.Player do
   def build(%Tournament.Types.Player{} = player, params) do
     init_player = %__MODULE__{
       id: player.id,
-      public_id: player.public_id,
       is_bot: player.is_bot,
-      github_id: player.github_id,
       name: player.name,
       rating: player.rating,
       rank: player.rank,
@@ -101,9 +103,7 @@ defmodule Codebattle.GameProcess.Player do
         _ ->
           %__MODULE__{
             id: user.id,
-            public_id: user.public_id,
             is_bot: user.is_bot,
-            github_id: user.github_id,
             name: user.name,
             rating: user.rating,
             rank: user.rank,
@@ -130,7 +130,7 @@ defmodule Codebattle.GameProcess.Player do
       editor_lang: editor_lang,
       editor_text: editor_text,
       game_result: :undefined,
-      check_result: CheckResult.new()
+      check_result: %CheckResult{}
     }
 
     Map.merge(player, params)

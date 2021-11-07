@@ -30,7 +30,7 @@ defmodule CodebattleWeb.Api.GameView do
     %{
       id: game.id,
       players: render_players(game),
-      finishs_at: game.finishs_at,
+      finishes_at: game.finishes_at,
       duration: get_duration(game),
       level: game.level
     }
@@ -60,10 +60,10 @@ defmodule CodebattleWeb.Api.GameView do
   end
 
   defp get_duration(%{starts_at: nil}), do: 100
-  defp get_duration(%{finishs_at: nil}), do: 100
+  defp get_duration(%{finishes_at: nil}), do: 100
 
-  defp get_duration(%{starts_at: starts_at, finishs_at: finishs_at}) do
-    NaiveDateTime.diff(finishs_at, starts_at)
+  defp get_duration(%{starts_at: starts_at, finishes_at: finishes_at}) do
+    NaiveDateTime.diff(finishes_at, starts_at)
   end
 
   defp render_players(game) do
