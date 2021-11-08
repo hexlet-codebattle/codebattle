@@ -334,14 +334,14 @@ export const activeGameReady = machine => dispatch => {
     machine.send('user:give_up', { payload: camelizeKeys(data) });
   });
 
-  channel.on('rematch:update_status', payload => {
+  channel.on('rematch:status_updated', payload => {
     const data = camelizeKeys(payload);
-    dispatch(actions.updateGameStatus(data));
-    machine.send('rematch:update_status', { payload: data });
+    dispatch(actions.updateMatchStatus(data));
+    machine.send('rematch:status_updated', { payload: data });
   });
 
-  channel.on('rematch:redirect_to_new_game', ({ game_id: newGameId }) => {
-    machine.send('rematch:redirect_to_new_game', { newGameId });
+  channel.on('rematch:game_created', ({ game_id: newGameId }) => {
+    machine.send('rematch:game_created', { newGameId });
     redirectToNewGame(newGameId);
   });
 

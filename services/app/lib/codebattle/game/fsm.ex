@@ -18,99 +18,65 @@ defmodule Codebattle.Game.Fsm do
     %{game | players: new_players}
   end
 
+  def update_editor_data(%{state: "game_over"} = game, params) do
+    new_players = update_player_params(game.players, params)
+    %{game | players: new_players}
+  end
+
   def timeout(%{state: "waiting_opponent"} = game), do: %{game | state: "timeout"}
 
-  def check_success(%{state: "playing"} = game, params) do
-          opponent = get_opponent(%{data: data}, params.id)
-         new_players =
-            game
-            |> Map.get(:players)
-            |> update_player_params(%{
-              game_result: :won,
-              check_result: params.check_result,
-              editor_text: params.editor_text,
-              editor_lang: params.editor_lang,
-              id: params.id
-            })
-            |> update_player_params(%{game_result: :lost, id: opponent.id})
+  def check_success(%{state: "playing", players: players} = game, params) do
+    new_players =
+      players
+      |> update_player_params(%{
+        game_result: :won,
+        editor_text: params.editor_text,
+        editor_lang: params.editor_lang,
+        check_result: params.check_result,
+        id: params.id
+      })
+      |> update_players_except(params.id, %{
+        game_result: :lost,
+      })
 
     %{game | state: "game_over", players: new_players}
   end
+  def check_success(%{state: "game_over"} = game, params) do
+    update_check_result(game, params)
+  end
 
   def check_failure(%{state: "playing"} = game, params) do
-        players =
-          game
-          |> Map.get(:players)
-          |> update_player_params(%{check_result: params.check_result, id: params.id})
-
-        %{game | players: new_players}
+    update_check_result(game, params)
+  end
+  def check_failure(%{state: "game_over"} = game, params) do
+    update_check_result(game, params)
   end
 
-    defevent give_up(params), data: data do
+  def give_up(%{state: "playing", players: players} = game, params) do
       opponent = get_opponent(%{data: data}, params.id)
-      players = update_player_params(data.players, %{game_result: :gave_up, id: params.id})
-      players = update_player_params(players, %{game_result: :won, id: opponent.id})
-      next_state(:game_over, %{data | players: players})
-    end
-
-    defevent timeout(_params), data: data do
-      players =
-        update_player_params(data.players, %{
-          game_result: :timeout,
-          id: get_first_player(%{data: data}).id
-        })
-
-      players =
-        update_player_params(players, %{
-          game_result: :timeout,
-          id: get_second_player(%{data: data}).id
-        })
-
-      next_state(:timeout, %{data | players: players})
-    end
-
-    defevent join(_) do
-      respond({:error, dgettext("errors", "Game is already playing")})
-    end
-
-    # For tests
-    defevent setup(state, new_data), data: data do
-      next_state(state, Map.merge(data, new_data))
-    end
+      new_players =
+        players
+        |> update_player_params(%{game_result: :gave_up, id: params.id})
+        |> update_player_params(%{game_result: :won, id: opponent.id})
+      
+      ${game | state: "game_over", players: new_players}
   end
 
-  defstate game_over do
-    defevent check_complete(params), data: data do
-      players =
-        data
-        |> Map.get(:players)
-        |> update_player_params(%{
-          id: params.id,
-          check_result: params.check_result,
-          editor_text: params.editor_text,
-          editor_lang: params.editor_lang
-        })
+  def timeout(%{state: "playing", players: players} = game, params) do
+      new_players = Enum.map(players, fn player ->
+        %{player | game_result: :timeout}
+      end)
 
-      next_state(:game_over, %{data | players: players})
-    end
+      ${game | state: "timeout", players: new_players}
+  end
 
-    defevent update_editor_data(params), data: data do
-      players = update_player_params(data.players, params)
-      next_state(:game_over, %{data | players: players})
-    end
+  def rematch_send_offer(%{state: "game_over"} = game, params) do
+      new_rematch_data = handle_rematch_offer(game, params)
+      Map.merge(game, new_rematch_data)
+  end
 
-    defevent rematch_send_offer(params), data: data do
-      new_data = handle_rematch_offer(data, params)
-      next_state(:game_over, Map.merge(data, new_data))
-    end
-
-    defevent rematch_reject(_params), data: data do
-      next_state(:game_over, %{data | rematch_state: :rejected})
-    end
-
-    defevent _ do
-      next_state(:game_over)
-    end
+  def rematch_reject(%{state: "game_over"} = game, params) do
+    %{game | rematch_state: "rejected"}
   end
 
   def rematch_send_offer(%Game{state: "game_over"} = game) do
@@ -130,25 +96,28 @@ defmodule Codebattle.Game.Fsm do
 
   def rematch_send_offer(game), do: game
 
-  defstate timeout do
-    defevent _ do
-      next_state(:timeout)
-    end
+  defp handle_rematch_offer(%Game{rematch_state: "none"}, params) do
+    %{rematch_state: "in_approval", rematch_initiator_id: params.player_id}
   end
 
-  defp handle_rematch_offer(data, params) do
-    case data.rematch_state do
-      :none ->
-        %{rematch_state: :in_approval, rematch_initiator_id: params.player_id}
+  defp handle_rematch_offer(%Game{rematch_state: "in_approval"} = game, params), do:
+    if params.player_id == data.rematch_initiator_id,
+      do: %{},
+      else: %{rematch_state: :accepted}
 
-      :in_approval ->
-        if params.player_id == data.rematch_initiator_id,
-          do: %{},
-          else: %{rematch_state: :accepted}
+  defp handle_rematch_offer(_game, _params), do: %{}
+  
+  defp update_check_result(%{players: players} = game, params) do
+    new_players = update_player_params(players,
+      %{
+        check_result: params.check_result,
+        editor_text: params.editor_text,
+        editor_lang: params.editor_lang,
+        id: params.id
+      }
+    )
 
-      _ ->
-        %{}
-    end
+    %{game | players: new_players}
   end
 
   defp update_player_params(players, params) do

@@ -145,7 +145,7 @@ const machine = {
         },
         game_over: {
           on: {
-            'rematch:update_status': {
+            'rematch:status_updated': {
               target: 'game_over',
               actions: ['soundRematchUpdateStatus'],
             },
