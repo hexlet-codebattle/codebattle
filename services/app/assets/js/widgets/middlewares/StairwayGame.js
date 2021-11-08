@@ -53,18 +53,17 @@ export const connectToStairwayTournament = () => dispatch => {
   });
 };
 
-export const connectToActiveMatch = (activeMatch) => (dispatch) => {
-  const nextMatch = _.find(activeMatch.gameId)
+export const connectToActiveMatch = activeMatch => dispatch => {
+  const nextMatch = _.find(activeMatch.gameId);
   initActiveMatchChannel(dispatch, state);
 };
 
-
-const initActiveMatchChannel = (dispatch, state, matchId)  => {
+const initActiveMatchChannel = (dispatch, state, matchId) => {
   if (state.tournament.activeMatchChannel) {
-    state.tournament.activeMatchChannel.leave()
+    state.tournament.activeMatchChannel.leave();
   }
 
-  const gameId = state.tournament.activeMatch.gameId
+  const { gameId } = state.tournament.activeMatch;
   const activeMatchChannelName = `game:${gameId}`;
   const activeMatchChannel = socket.channel(activeMatchChannelName);
 
@@ -81,5 +80,5 @@ const initActiveMatchChannel = (dispatch, state, matchId)  => {
   };
 
   activeMatchChannel.join().receive('ok', onJoinSuccess).receive('error', onJoinFailure);
-}
+};
 export default {};

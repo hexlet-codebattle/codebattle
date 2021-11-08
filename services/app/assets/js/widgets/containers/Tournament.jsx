@@ -19,7 +19,6 @@ import TournamentHeader from '../components/TournamentHeader';
 import TeamTournamentInfoPanel from '../components/TeamTournamentInfoPanel';
 import TeamMatches from '../components/TeamMatches';
 
-
 const Tournament = () => {
   const dispatch = useDispatch();
 
@@ -38,6 +37,63 @@ const Tournament = () => {
 
   if (tournament.state === TournamentStates.loading) {
     return <></>;
+  }
+
+  if (tournament.type === 'stairways') {
+    return (
+      <>
+        <TournamentHeader
+          state={tournament.state}
+          startsAt={tournament.startsAt}
+          creatorId={tournament.creatorId}
+          currentUserId={currentUserId}
+          difficulty={tournament.difficulty}
+          handleStartTournament={startTournament}
+          handleCancelTournament={cancelTournament}
+        />
+        Tournament stairways
+        {/* Chat  */}
+        {/* <StairwayTournamentInfoPanel
+          state={tournament.state}
+          currentUserId={currentUserId}
+          rounds={tournament.rounds}
+          players={tournament.players}
+        /> */}
+        {/* StairwayInfoTable
+        tournament state: active, game_over
+
+        views: on approved list, participants list, action
+          stairway:
+            list round with progress (selected, begin, over, not started),
+            round list: buttons
+            stairway match panel: (default) players list with info about match progress (won, lost, give_up), task info
+            players list (table):
+              - player1 (current_user, opponent), state match, action (show)
+              - player2, state match, action (show)
+        */}
+        {/* <StairwayTournamentApprovedListPanel
+          state={tournament.state}
+          creatorId={tournament.creatorId}
+          currentUserId={currentUserId}
+          players={tournament.players}
+          notApprovedList={tournament.notApprovedList}
+        /> */}
+        {/* StairwayPanelApprovedList
+        tournament state: waiting_participants
+
+        view: list "on approved", list "participants"
+
+        actions:
+          player:
+            assign to list "on approved" (current_user)
+            owner tournament assign me list "participants"
+
+          owner:
+            players actions
+            kick players
+        */}
+      </>
+);
   }
 
   if (tournament.type === 'team') {
