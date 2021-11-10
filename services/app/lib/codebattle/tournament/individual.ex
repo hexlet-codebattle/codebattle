@@ -1,5 +1,5 @@
 defmodule Codebattle.Tournament.Individual do
-  alias Codebattle.Game.GameHelpers
+  alias Codebattle.Game.Helpers
   alias Codebattle.Game.Play
   alias Codebattle.Tournament
 
@@ -112,7 +112,7 @@ defmodule Codebattle.Tournament.Individual do
         players: match.players
       })
 
-    GameHelpers.get_game_id(fsm)
+    Helpers.get_game_id(fsm)
   end
 
   defp pair_players_to_matches(players, step) do

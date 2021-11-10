@@ -2,14 +2,15 @@ defmodule CodebattleWeb.GameChannel do
   @moduledoc false
   use CodebattleWeb, :channel
 
-  alias Codebattle.Game.{Play, GameHelpers}
+  alias Codebattle.Game.Context
+  alias Codebattle.Game.Helpers
   alias CodebattleWeb.Api.GameView
 
   def join("game:" <> game_id, _payload, socket) do
-    case Play.get_fsm(game_id) do
-      {:ok, fsm} ->
+    case Context.get_game(game_id) do
+      {:ok, game} ->
         Codebattle.PubSub.subscribe("tournaments")
-        {:ok, GameView.render_fsm(fsm), assign(socket, :game_id, game_id)}
+        {:ok, GameView.render_game(game), assign(socket, :game_id, game_id)}
 
       {:error, reason} ->
         {:error, reason}
@@ -20,8 +21,8 @@ defmodule CodebattleWeb.GameChannel do
     game_id = get_game_id(socket)
     user_id = socket.assigns.current_user.id
 
-    # case Play.get_fsm(game_id) do
-    #   {:ok, %{state: :playing} = fsm} ->
+    # case Context.get_game(game_id) do
+    #   {:ok, %{state: :playing} = game} ->
     #   _ ->
     #     :ok
     # end
@@ -29,16 +30,14 @@ defmodule CodebattleWeb.GameChannel do
     {:noreply, socket}
   end
 
-  def handle_in("ping", payload, socket), do: {:reply, {:ok, payload}, socket}
-
   def handle_in("editor:data", payload, socket) do
     game_id = socket.assigns.game_id
     user = socket.assigns.current_user
 
     %{"editor_text" => editor_text, "lang_slug" => lang_slug} = payload
 
-    case Play.update_editor_data(game_id, user, editor_text, lang_slug) do
-      {:ok, _fsm} ->
+    case Context.update_editor_data(game_id, user, editor_text, lang_slug) do
+      {:ok, _game} ->
         broadcast_from!(socket, "editor:data", %{
           user_id: user.id,
           lang_slug: lang_slug,
@@ -56,11 +55,11 @@ defmodule CodebattleWeb.GameChannel do
     game_id = socket.assigns.game_id
     user = socket.assigns.current_user
 
-    case Play.give_up(game_id, user) do
-      {:ok, fsm} ->
+    case Context.give_up(game_id, user) do
+      {:ok, game} ->
         broadcast!(socket, "user:give_up", %{
-          players: GameHelpers.get_players(fsm),
-          status: GameHelpers.get_state(fsm),
+          players: Helpers.get_players(game),
+          status: Helpers.get_state(game),
           msg: "#{user.name} gave up!"
         })
 
@@ -79,13 +78,13 @@ defmodule CodebattleWeb.GameChannel do
 
     %{"editor_text" => editor_text, "lang_slug" => lang_slug} = payload
 
-    case Play.check_game(game_id, user, editor_text, lang_slug) do
-      {:ok, old_fsm, fsm, %{solution_status: solution_status, check_result: check_result}} ->
+    case Context.check_game(game_id, user, editor_text, lang_slug) do
+      {:ok, old_game, game, %{solution_status: solution_status, check_result: check_result}} ->
         broadcast!(socket, "user:check_complete", %{
           solution_status: solution_status,
           user_id: user.id,
-          status: GameHelpers.get_state(fsm),
-          players: GameHelpers.get_players(fsm),
+          status: Helpers.get_state(game),
+          players: Helpers.get_players(game),
           check_result: check_result
         })
 
@@ -109,7 +108,7 @@ defmodule CodebattleWeb.GameChannel do
     game_id = socket.assigns.game_id
 
     game_id
-    |> Play.rematch_reject()
+    |> Context.rematch_reject()
     |> handle_rematch_result(socket)
   end
 
@@ -118,23 +117,23 @@ defmodule CodebattleWeb.GameChannel do
     user = socket.assigns.current_user
 
     game_id
-    |> Play.rematch_send_offer(user.id)
+    |> Context.rematch_send_offer(user.id)
     |> handle_rematch_result(socket)
   end
 
   def handle_info(%{topic: "tournaments", event: "round:created", payload: payload}, socket) do
     game_id = socket.assigns.game_id
-    {:ok, fsm} = Play.get_fsm(game_id)
+    {:ok, game} = Context.get_game(game_id)
 
-    if is_current_tournament?(payload.tournament, fsm) do
+    if is_current_tournament?(payload.tournament, game) do
       push(socket, "tournament:round_created", payload.tournament)
     end
 
     {:noreply, socket}
   end
 
-  defp is_current_tournament?(tournament, fsm) do
-    GameHelpers.get_tournament_id(fsm) == tournament.id
+  defp is_current_tournament?(tournament, game) do
+    Helpers.get_tournament_id(game) == tournament.id
   end
 
   defp handle_rematch_result(result, socket) do

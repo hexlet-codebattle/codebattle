@@ -2,10 +2,8 @@ defmodule Codebattle.Game.Fsm do
   @moduledoc """
   Finite state machine for game
   """
-  alias Codebattle.Game.Engine.Standard
-
-  import CodebattleWeb.Gettext
-  import Codebattle.Game.GameHelpers
+  alias Codebattle.Game
+  import Codebattle.Game.Helpers
 
   def join(%{state: "waiting_opponent"} = game, params) do
     %{game | state: "playing"} |> Map.merge(params)
@@ -35,44 +33,54 @@ defmodule Codebattle.Game.Fsm do
         check_result: params.check_result,
         id: params.id
       })
-      |> update_players_except(params.id, %{
-        game_result: :lost,
-      })
+      |> update_players_except(params.id, %{ game_result: :lost })
 
     %{game | state: "game_over", players: new_players}
   end
+
   def check_success(%{state: "game_over"} = game, params) do
     update_check_result(game, params)
   end
 
+  def check_success(game, _params), do: game
+
   def check_failure(%{state: "playing"} = game, params) do
     update_check_result(game, params)
   end
+
   def check_failure(%{state: "game_over"} = game, params) do
     update_check_result(game, params)
   end
 
+  def check_failure(game, _params), do: game
+
   def give_up(%{state: "playing", players: players} = game, params) do
-      opponent = get_opponent(%{data: data}, params.id)
-      new_players =
-        players
-        |> update_player_params(%{game_result: :gave_up, id: params.id})
-        |> update_player_params(%{game_result: :won, id: opponent.id})
-      
-      ${game | state: "game_over", players: new_players}
+    opponent = get_opponent(%{data: data}, params.id)
+
+    new_players =
+      players
+      |> update_player_params(%{game_result: :gave_up, id: params.id})
+      |> update_player_params(%{game_result: :won, id: opponent.id})
+
+    %{game | state: "game_over", players: new_players}
   end
 
+  def give_up(game, _params), do: game
+
   def timeout(%{state: "playing", players: players} = game, params) do
-      new_players = Enum.map(players, fn player ->
+    new_players =
+      Enum.map(players, fn player ->
         %{player | game_result: :timeout}
       end)
 
-      ${game | state: "timeout", players: new_players}
+    %{game | state: "timeout", players: new_players}
   end
 
+  def timeout(game, _params), do: game
+
   def rematch_send_offer(%{state: "game_over"} = game, params) do
-      new_rematch_data = handle_rematch_offer(game, params)
-      Map.merge(game, new_rematch_data)
+    new_rematch_data = handle_rematch_offer(game, params)
+    Map.merge(game, new_rematch_data)
   end
 
   def rematch_reject(%{state: "game_over"} = game, params) do
@@ -100,22 +108,26 @@ defmodule Codebattle.Game.Fsm do
     %{rematch_state: "in_approval", rematch_initiator_id: params.player_id}
   end
 
-  defp handle_rematch_offer(%Game{rematch_state: "in_approval"} = game, params), do:
-    if params.player_id == data.rematch_initiator_id,
-      do: %{},
-      else: %{rematch_state: :accepted}
+  defp handle_rematch_offer(%Game{rematch_state: "in_approval"} = game, params),
+    do:
+      if(params.player_id == data.rematch_initiator_id,
+        do: %{},
+        else: %{rematch_state: :accepted}
+      )
 
   defp handle_rematch_offer(_game, _params), do: %{}
-  
+
   defp update_check_result(%{players: players} = game, params) do
-    new_players = update_player_params(players,
-      %{
-        check_result: params.check_result,
-        editor_text: params.editor_text,
-        editor_lang: params.editor_lang,
-        id: params.id
-      }
-    )
+    new_players =
+      update_player_params(
+        players,
+        %{
+          check_result: params.check_result,
+          editor_text: params.editor_text,
+          editor_lang: params.editor_lang,
+          id: params.id
+        }
+      )
 
     %{game | players: new_players}
   end

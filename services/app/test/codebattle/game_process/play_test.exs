@@ -1,7 +1,7 @@
 defmodule Codebattle.Game.PlayTest do
   use Codebattle.IntegrationCase
 
-  alias Codebattle.Game.{Play, GameHelpers}
+  alias Codebattle.Game.{Play, Helpers}
   alias Codebattle.{Game}
 
   setup _ do
@@ -17,7 +17,7 @@ defmodule Codebattle.Game.PlayTest do
         type: "public"
       })
 
-    game_id = GameHelpers.get_game_id(fsm)
+    game_id = Helpers.get_game_id(fsm)
 
     %{user1: user1, user2: user2, game_id: game_id}
   end

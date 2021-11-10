@@ -51,7 +51,7 @@ defmodule Codebattle.GameCases.TimeoutTest do
 
     Codebattle.Game.Play.timeout_game(game_id)
 
-    assert {:error, :game_terminated} = Server.get_fsm(game_id)
+    assert {:error, :game_terminated} = Server.get_game(game_id)
     assert %{state: "timeout"} = Codebattle.Game.Play.get_game(game_id)
 
     assert ActiveGames.game_exists?(game_id) == false
@@ -79,7 +79,7 @@ defmodule Codebattle.GameCases.TimeoutTest do
 
     Codebattle.Game.Play.timeout_game(game_id)
 
-    assert {:error, :game_terminated} = Server.get_fsm(game_id)
+    assert {:error, :game_terminated} = Server.get_game(game_id)
     assert %{state: "timeout"} = Codebattle.Game.Play.get_game(game_id)
 
     conn =
@@ -89,7 +89,7 @@ defmodule Codebattle.GameCases.TimeoutTest do
 
     game_id = game_id_from_conn(conn)
 
-    {:ok, fsm} = Server.get_fsm(game_id)
+    {:ok, fsm} = Server.get_game(game_id)
 
     assert fsm.state == :waiting_opponent
   end

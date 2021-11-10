@@ -1,4 +1,4 @@
-defmodule Codebattle.Game.GameHelpers do
+defmodule Codebattle.Game.Helpers do
   @moduledoc false
 
   def get_state(game), do: game.state

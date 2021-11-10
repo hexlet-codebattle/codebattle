@@ -45,10 +45,10 @@ defmodule Codebattle.GameCases.RematchTest do
     editor_text_init =
       "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n\treturn 0;\n};\n\nmodule.exports = solution;"
 
-    {:ok, fsm} = Server.get_fsm(game_id)
+    {:ok, fsm} = Server.get_game(game_id)
     assert fsm.state == :playing
-    assert GameHelpers.get_first_player(fsm).editor_text == editor_text_init
-    assert GameHelpers.get_second_player(fsm).editor_text == editor_text_init
+    assert Helpers.get_first_player(fsm).editor_text == editor_text_init
+    assert Helpers.get_second_player(fsm).editor_text == editor_text_init
 
     editor_text1 = "Hello world1!"
     editor_text2 = "Hello world2!"
@@ -59,37 +59,37 @@ defmodule Codebattle.GameCases.RematchTest do
     Phoenix.ChannelTest.push(socket2, "editor:data", %{editor_text: editor_text2, lang_slug: "js"})
 
     :timer.sleep(70)
-    {:ok, fsm} = Server.get_fsm(game_id)
+    {:ok, fsm} = Server.get_game(game_id)
 
-    assert GameHelpers.get_first_player(fsm).editor_text == editor_text1
-    assert GameHelpers.get_second_player(fsm).editor_text == editor_text2
+    assert Helpers.get_first_player(fsm).editor_text == editor_text1
+    assert Helpers.get_second_player(fsm).editor_text == editor_text2
 
     # First player give_up
     Phoenix.ChannelTest.push(socket1, "give_up", %{})
     :timer.sleep(70)
-    {:ok, fsm} = Server.get_fsm(game_id)
+    {:ok, fsm} = Server.get_game(game_id)
     assert fsm.state == :game_over
 
     # First player send rematch offer
     Phoenix.ChannelTest.push(socket1, "rematch:send_offer", %{})
     :timer.sleep(70)
-    {:ok, fsm} = Server.get_fsm(game_id)
+    {:ok, fsm} = Server.get_game(game_id)
     assert fsm.state == :game_over
-    assert GameHelpers.get_rematch_state(fsm) == :in_approval
+    assert Helpers.get_rematch_state(fsm) == :in_approval
 
     # Second player accept rematch offer
     Phoenix.ChannelTest.push(socket2, "rematch:accept_offer", %{})
     :timer.sleep(70)
-    {:ok, fsm} = Server.get_fsm(game_id + 1)
+    {:ok, fsm} = Server.get_game(game_id + 1)
 
     assert fsm.state == :playing
-    assert GameHelpers.get_level(fsm) == "elementary"
-    assert GameHelpers.get_first_player(fsm).id == user1.id
-    assert GameHelpers.get_second_player(fsm).id == user2.id
+    assert Helpers.get_level(fsm) == "elementary"
+    assert Helpers.get_first_player(fsm).id == user1.id
+    assert Helpers.get_second_player(fsm).id == user2.id
 
     # Text editor go to init state, after start new game after rematch
-    assert GameHelpers.get_first_player(fsm).editor_text == editor_text_init
-    assert GameHelpers.get_second_player(fsm).editor_text == editor_text_init
+    assert Helpers.get_first_player(fsm).editor_text == editor_text_init
+    assert Helpers.get_second_player(fsm).editor_text == editor_text_init
   end
 
   test "first user gave up and send rematch offer to the bot", %{
@@ -110,13 +110,13 @@ defmodule Codebattle.GameCases.RematchTest do
     # Create game
     level = "elementary"
     {:ok, fsm} = Codebattle.Bot.GameCreator.call(level)
-    game_id = GameHelpers.get_game_id(fsm)
+    game_id = Helpers.get_game_id(fsm)
     game_topic = "game:" <> to_string(game_id)
 
     # User join to the game
     post(conn1, game_path(conn1, :join, game_id))
 
-    {:ok, fsm} = Server.get_fsm(game_id)
+    {:ok, fsm} = Server.get_game(game_id)
     assert fsm.state == :playing
 
     {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
@@ -125,12 +125,12 @@ defmodule Codebattle.GameCases.RematchTest do
     # User give_up
     Phoenix.ChannelTest.push(socket1, "give_up", %{})
     :timer.sleep(70)
-    {:ok, fsm} = Server.get_fsm(game_id)
+    {:ok, fsm} = Server.get_game(game_id)
     assert fsm.state == :game_over
 
     Phoenix.ChannelTest.push(socket1, "rematch:send_offer", %{})
     :timer.sleep(150)
-    {:ok, fsm} = Server.get_fsm(game_id + 1)
+    {:ok, fsm} = Server.get_game(game_id + 1)
     assert fsm.state == :playing
   end
 
@@ -160,25 +160,25 @@ defmodule Codebattle.GameCases.RematchTest do
     # First player give_up
     Phoenix.ChannelTest.push(socket1, "give_up", %{})
     :timer.sleep(70)
-    {:ok, fsm} = Server.get_fsm(game_id)
+    {:ok, fsm} = Server.get_game(game_id)
     assert fsm.state == :game_over
 
     Phoenix.ChannelTest.push(socket1, "rematch:send_offer", %{})
     :timer.sleep(70)
-    {:ok, fsm} = Server.get_fsm(game_id)
+    {:ok, fsm} = Server.get_game(game_id)
     assert fsm.state == :game_over
-    assert GameHelpers.get_rematch_state(fsm) == :in_approval
+    assert Helpers.get_rematch_state(fsm) == :in_approval
 
     Phoenix.ChannelTest.push(socket2, "rematch:send_offer", %{})
     :timer.sleep(70)
     # Check game server is killed
-    {:error, _} = Server.get_fsm(game_id)
+    {:error, _} = Server.get_game(game_id)
 
-    {:ok, fsm} = Server.get_fsm(game_id + 1)
+    {:ok, fsm} = Server.get_game(game_id + 1)
     assert fsm.state == :playing
-    assert GameHelpers.get_level(fsm) == "elementary"
-    assert GameHelpers.get_first_player(fsm).id == user1.id
-    assert GameHelpers.get_second_player(fsm).id == user2.id
+    assert Helpers.get_level(fsm) == "elementary"
+    assert Helpers.get_first_player(fsm).id == user1.id
+    assert Helpers.get_second_player(fsm).id == user2.id
   end
 
   test "reject offer", %{
@@ -205,21 +205,21 @@ defmodule Codebattle.GameCases.RematchTest do
     # First player give_up
     Phoenix.ChannelTest.push(socket1, "give_up", %{})
     :timer.sleep(70)
-    {:ok, fsm} = Server.get_fsm(game_id)
+    {:ok, fsm} = Server.get_game(game_id)
     assert fsm.state == :game_over
 
     Phoenix.ChannelTest.push(socket1, "rematch:send_offer", %{})
     :timer.sleep(70)
-    {:ok, fsm} = Server.get_fsm(game_id)
+    {:ok, fsm} = Server.get_game(game_id)
     assert fsm.state == :game_over
-    assert GameHelpers.get_rematch_state(fsm) == :in_approval
+    assert Helpers.get_rematch_state(fsm) == :in_approval
 
     Phoenix.ChannelTest.push(socket2, "rematch:reject_offer", %{})
     :timer.sleep(70)
-    {:ok, fsm} = Server.get_fsm(game_id)
-    assert GameHelpers.get_rematch_state(fsm) == :rejected
+    {:ok, fsm} = Server.get_game(game_id)
+    assert Helpers.get_rematch_state(fsm) == :rejected
 
-    {:error, :game_terminated} = Server.get_fsm(game_id + 1)
+    {:error, :game_terminated} = Server.get_game(game_id + 1)
   end
 
   test "first player leave game", %{
@@ -243,14 +243,14 @@ defmodule Codebattle.GameCases.RematchTest do
 
     Phoenix.ChannelTest.push(socket1, "give_up", %{})
     :timer.sleep(70)
-    {:ok, fsm} = Server.get_fsm(game_id)
+    {:ok, fsm} = Server.get_game(game_id)
     assert fsm.state == :game_over
 
     Phoenix.ChannelTest.push(socket2, "rematch:reject_offer", %{})
     :timer.sleep(70)
-    {:ok, fsm} = Server.get_fsm(game_id)
-    assert GameHelpers.get_rematch_state(fsm) == :rejected
+    {:ok, fsm} = Server.get_game(game_id)
+    assert Helpers.get_rematch_state(fsm) == :rejected
 
-    {:error, :game_terminated} = Server.get_fsm(game_id + 1)
+    {:error, :game_terminated} = Server.get_game(game_id + 1)
   end
 end

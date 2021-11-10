@@ -51,33 +51,33 @@ defmodule Codebattle.PlayGameTest do
     game_topic = "game:" <> to_string(game_id)
     {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
 
-    {:ok, fsm} = Server.get_fsm(game_id)
+    {:ok, fsm} = Server.get_game(game_id)
 
     assert fsm.state == :waiting_opponent
-    assert GameHelpers.get_first_player(fsm).name == "first"
-    assert GameHelpers.get_second_player(fsm) == nil
+    assert Helpers.get_first_player(fsm).name == "first"
+    assert Helpers.get_second_player(fsm) == nil
 
     # First player cannot join to game as second player
     post(conn1, game_path(conn1, :join, game_id))
-    {:ok, fsm} = Server.get_fsm(game_id)
+    {:ok, fsm} = Server.get_game(game_id)
 
     assert fsm.state == :waiting_opponent
-    assert GameHelpers.get_first_player(fsm).name == "first"
-    assert GameHelpers.get_second_player(fsm) == nil
+    assert Helpers.get_first_player(fsm).name == "first"
+    assert Helpers.get_second_player(fsm) == nil
 
     # Second player join game
     post(conn2, game_path(conn2, :join, game_id))
     {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
-    {:ok, fsm} = Server.get_fsm(game_id)
+    {:ok, fsm} = Server.get_game(game_id)
 
     assert fsm.state == :playing
-    assert GameHelpers.get_first_player(fsm).name == "first"
-    assert GameHelpers.get_second_player(fsm).name == "second"
+    assert Helpers.get_first_player(fsm).name == "first"
+    assert Helpers.get_second_player(fsm).name == "second"
 
-    assert GameHelpers.get_first_player(fsm).editor_text ==
+    assert Helpers.get_first_player(fsm).editor_text ==
              "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n\treturn 0;\n};\n\nmodule.exports = solution;"
 
-    assert GameHelpers.get_second_player(fsm).editor_text ==
+    assert Helpers.get_second_player(fsm).editor_text ==
              "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n\treturn 0;\n};\n\nmodule.exports = solution;"
 
     # First player won
@@ -91,14 +91,14 @@ defmodule Codebattle.PlayGameTest do
     })
 
     :timer.sleep(100)
-    {:ok, fsm} = Server.get_fsm(game_id)
+    {:ok, fsm} = Server.get_game(game_id)
     assert fsm.state == :game_over
-    assert GameHelpers.get_first_player(fsm).name == "first"
-    assert GameHelpers.get_second_player(fsm).name == "second"
-    assert GameHelpers.get_winner(fsm).name == "first"
-    assert GameHelpers.get_first_player(fsm).editor_text == "Hello world1!"
+    assert Helpers.get_first_player(fsm).name == "first"
+    assert Helpers.get_second_player(fsm).name == "second"
+    assert Helpers.get_winner(fsm).name == "first"
+    assert Helpers.get_first_player(fsm).editor_text == "Hello world1!"
 
-    assert GameHelpers.get_second_player(fsm).editor_text ==
+    assert Helpers.get_second_player(fsm).editor_text ==
              "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n\treturn 0;\n};\n\nmodule.exports = solution;"
 
     # Winner cannot check results again
@@ -108,15 +108,15 @@ defmodule Codebattle.PlayGameTest do
     })
 
     :timer.sleep(100)
-    {:ok, fsm} = Server.get_fsm(game_id)
+    {:ok, fsm} = Server.get_game(game_id)
 
     assert fsm.state == :game_over
-    assert GameHelpers.get_first_player(fsm).name == "first"
-    assert GameHelpers.get_second_player(fsm).name == "second"
-    assert GameHelpers.get_winner(fsm).name == "first"
-    assert GameHelpers.get_first_player(fsm).editor_text == "Hello world2!"
+    assert Helpers.get_first_player(fsm).name == "first"
+    assert Helpers.get_second_player(fsm).name == "second"
+    assert Helpers.get_winner(fsm).name == "first"
+    assert Helpers.get_first_player(fsm).editor_text == "Hello world2!"
 
-    assert GameHelpers.get_second_player(fsm).editor_text ==
+    assert Helpers.get_second_player(fsm).editor_text ==
              "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n\treturn 0;\n};\n\nmodule.exports = solution;"
 
     # Second player complete game
@@ -161,11 +161,11 @@ defmodule Codebattle.PlayGameTest do
 
     # Other player cannot join game
     post(conn3, game_path(conn3, :join, game_id))
-    {:ok, fsm} = Server.get_fsm(game_id)
+    {:ok, fsm} = Server.get_game(game_id)
 
     assert fsm.state == :playing
-    assert GameHelpers.get_first_player(fsm).name == "first"
-    assert GameHelpers.get_second_player(fsm).name == "second"
+    assert Helpers.get_first_player(fsm).name == "first"
+    assert Helpers.get_second_player(fsm).name == "second"
 
     # Other player cannot win game
     {:ok, _response, socket3} = subscribe_and_join(socket3, GameChannel, game_topic)
@@ -175,10 +175,10 @@ defmodule Codebattle.PlayGameTest do
       lang_slug: "js"
     })
 
-    {:ok, fsm} = Server.get_fsm(game_id)
+    {:ok, fsm} = Server.get_game(game_id)
 
     assert fsm.state == :playing
-    assert GameHelpers.get_first_player(fsm).name == "first"
-    assert GameHelpers.get_second_player(fsm).name == "second"
+    assert Helpers.get_first_player(fsm).name == "first"
+    assert Helpers.get_second_player(fsm).name == "second"
   end
 end

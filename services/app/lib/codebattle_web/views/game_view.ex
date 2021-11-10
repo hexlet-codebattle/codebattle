@@ -1,6 +1,6 @@
 defmodule CodebattleWeb.GameView do
   use CodebattleWeb, :view
-  import Codebattle.Game.GameHelpers
+  import Codebattle.Game.Helpers
 
   def user_name(%Codebattle.User{name: name, rating: rating}) do
     case {name, rating} do

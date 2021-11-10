@@ -5,9 +5,8 @@ defmodule CodebattleWeb.GameController do
   require Logger
 
   alias Codebattle.Game.ActiveGames
-  alias Codebattle.Game.CreateGame
-  alias Codebattle.Game.GameHelpers
-  alias Codebattle.Game.Play
+  alias Codebattle.Game.Helpers
+  alias Codebattle.Game.Context
   alias Codebattle.Languages
   alias Codebattle.User
   alias Codebattle.Bot.Playbook
@@ -19,48 +18,48 @@ defmodule CodebattleWeb.GameController do
   def show(conn, %{"id" => id}) do
     user = conn.assigns.current_user
 
-    case Play.get_fsm(id) do
-      {:ok, fsm} ->
+    case Context.get_game(id) do
+      {:ok, game} ->
         conn =
           put_gon(conn,
             game_id: id,
-            tournament_id: GameHelpers.get_tournament_id(fsm),
-            players: present_users_for_gon(GameHelpers.get_players(fsm))
+            tournament_id: Helpers.get_tournament_id(game),
+            players: present_users_for_gon(Helpers.get_players(game))
           )
 
         is_participant = ActiveGames.participant?(id, user.id)
 
-        case {fsm.state, is_participant} do
+        case {game.state, is_participant} do
           {:waiting_opponent, false} ->
-            player = GameHelpers.get_first_player(fsm)
+            player = Helpers.get_first_player(game)
 
             conn
             |> put_meta_tags(%{
               title: "Hexlet Codebattle • Join game",
-              description: "Game against #{player_info(player, fsm)}",
-              url: Routes.game_url(conn, :show, id, level: GameHelpers.get_level(fsm)),
+              description: "Game against #{player_info(player, game)}",
+              url: Routes.game_url(conn, :show, id, level: Helpers.get_level(game)),
               image: Routes.game_image_url(conn, :show, id),
               twitter: get_twitter_labels_meta([player])
             })
-            |> render("join.html", %{fsm: fsm})
+            |> render("join.html", %{game: game})
 
           _ ->
-            first = GameHelpers.get_first_player(fsm)
-            second = GameHelpers.get_second_player(fsm)
+            first = Helpers.get_first_player(game)
+            second = Helpers.get_second_player(game)
 
             conn
             |> put_meta_tags(%{
               title: "Hexlet Codebattle • Cool game",
-              description: "#{player_info(first, fsm)} vs #{player_info(second, fsm)}",
+              description: "#{player_info(first, game)} vs #{player_info(second, game)}",
               url: Routes.game_url(conn, :show, id),
               image: Routes.game_image_url(conn, :show, id),
               twitter: get_twitter_labels_meta([first, second])
             })
-            |> render("show.html", %{fsm: fsm, layout_template: "full_width.html"})
+            |> render("show.html", %{game: game, layout_template: "full_width.html"})
         end
 
       {:error, _reason} ->
-        case Play.get_game(id) do
+        case Context.get_game(id) do
           nil ->
             conn
             |> put_status(:not_found)
@@ -104,7 +103,7 @@ defmodule CodebattleWeb.GameController do
   end
 
   def join(conn, %{"id" => id}) do
-    case Play.join_game(id, conn.assigns.current_user) do
+    case Context.join_game(id, conn.assigns.current_user) do
       {:ok, _game} -> redirect(conn, to: Routes.game_path(conn, :show, id))
       {:error, reason} -> {:error, reason}
     end
@@ -112,9 +111,9 @@ defmodule CodebattleWeb.GameController do
 
   def delete(conn, %{"id" => id}) do
     user = conn.assigns.current_user
-    {:ok, fsm} = Play.get_fsm(id)
+    {:ok, game} = Context.get_game(id)
 
-    with :ok <- Play.cancel_game(id, user) do
+    with :ok <- Context.cancel_game(id, user) do
       redirect(conn, to: Routes.page_path(conn, :index))
     end
   end
@@ -123,8 +122,8 @@ defmodule CodebattleWeb.GameController do
 
   defp player_info(nil, _fsm), do: ""
 
-  defp player_info(player, fsm) do
-    "@#{player.name}(#{player.lang})-#{player.rating} level:#{GameHelpers.get_level(fsm)}"
+  defp player_info(player, game) do
+    "@#{player.name}(#{player.lang})-#{player.rating} level:#{Helpers.get_level(game)}"
   end
 
   defp get_twitter_labels_meta(players) do

@@ -3,7 +3,7 @@ defmodule Codebattle.Game.Supervisor do
 
   use Supervisor
 
-  alias Codebattle.Game.GameHelpers
+  alias Codebattle.Game.Helpers
 
   def start_link({game_id, fsm}) do
     Supervisor.start_link(__MODULE__, [game_id, fsm], name: supervisor_name(game_id))
@@ -17,7 +17,7 @@ defmodule Codebattle.Game.Supervisor do
     ]
 
     chat =
-      case GameHelpers.get_tournament_id(fsm) do
+      case Helpers.get_tournament_id(fsm) do
         nil -> [{Codebattle.Chat.Server, {:game, game_id}}]
         _ -> []
       end

@@ -1,7 +1,7 @@
 defmodule CodebattleWeb.Game.ImageController do
   use CodebattleWeb, :controller
 
-  alias Codebattle.Game.{Play, GameHelpers}
+  alias Codebattle.Game.{Play, Helpers}
 
   def show(conn, %{"id" => id}) do
     case get_game_data(id) do
@@ -21,12 +21,12 @@ defmodule CodebattleWeb.Game.ImageController do
   end
 
   defp get_game_data(id) do
-    case Play.get_fsm(id) do
+    case Play.get_game(id) do
       {:ok, fsm} ->
-        {:ok, GameHelpers.get_players(fsm),
+        {:ok, Helpers.get_players(fsm),
          %{
-           state: GameHelpers.get_state(fsm),
-           level: GameHelpers.get_level(fsm)
+           state: Helpers.get_state(fsm),
+           level: Helpers.get_level(fsm)
          }}
 
       {:error, _reason} ->

@@ -57,7 +57,7 @@ defmodule Codebattle.CodeCheck.Golang.IntegrationTest do
 
     assert %Codebattle.CodeCheck.CheckResult{status: :error, success_count: 0} = check_result
 
-    {:ok, fsm} = Server.get_fsm(game.id)
+    {:ok, fsm} = Server.get_game(game.id)
     assert fsm.state == :playing
   end
 
@@ -97,7 +97,7 @@ defmodule Codebattle.CodeCheck.Golang.IntegrationTest do
 
     assert %Codebattle.CodeCheck.CheckResult{status: :failure, success_count: 0} = check_result
 
-    {:ok, fsm} = Server.get_fsm(game.id)
+    {:ok, fsm} = Server.get_game(game.id)
     assert fsm.state == :playing
   end
 
@@ -137,7 +137,7 @@ defmodule Codebattle.CodeCheck.Golang.IntegrationTest do
       payload: %{status: :game_over}
     }
 
-    {:ok, fsm} = Server.get_fsm(game.id)
+    {:ok, fsm} = Server.get_game(game.id)
     assert fsm.state == :game_over
   end
 end

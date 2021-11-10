@@ -1,5 +1,5 @@
 defmodule Codebattle.Tournament.Stairway do
-  alias Codebattle.Game.GameHelpers
+  alias Codebattle.Game.Helpers
   alias Codebattle.Game.Play
   alias Codebattle.Tournament
 
@@ -72,7 +72,7 @@ defmodule Codebattle.Tournament.Stairway do
         players: match.players
       })
 
-    GameHelpers.get_game_id(fsm)
+    Helpers.get_game_id(fsm)
   end
 
   @impl Tournament.Base

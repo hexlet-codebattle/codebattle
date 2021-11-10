@@ -2,7 +2,7 @@ defmodule CodebattleWeb.GameChannelTest do
   use CodebattleWeb.ChannelCase
 
   alias CodebattleWeb.GameChannel
-  alias Codebattle.Game.{Player, Server, GameHelpers}
+  alias Codebattle.Game.{Player, Server, Helpers}
   alias CodebattleWeb.UserSocket
 
   setup do
@@ -140,8 +140,8 @@ defmodule CodebattleWeb.GameChannelTest do
 
     message = "#{user1.name} gave up!"
     :timer.sleep(100)
-    {:ok, fsm} = Server.get_fsm(game.id)
-    players = GameHelpers.get_players(fsm)
+    {:ok, fsm} = Server.get_game(game.id)
+    players = Helpers.get_players(fsm)
 
     payload = %{
       players: players,
@@ -155,11 +155,11 @@ defmodule CodebattleWeb.GameChannelTest do
       payload: ^payload
     }
 
-    {:ok, fsm} = Server.get_fsm(game.id)
+    {:ok, fsm} = Server.get_game(game.id)
 
     assert fsm.state == :game_over
-    assert GameHelpers.gave_up?(fsm, user1.id) == true
-    assert GameHelpers.winner?(fsm, user2.id) == true
+    assert Helpers.gave_up?(fsm, user1.id) == true
+    assert Helpers.winner?(fsm, user2.id) == true
     :timer.sleep(100)
 
     game = Repo.get(Game, game.id)

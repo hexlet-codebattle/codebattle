@@ -7,7 +7,7 @@ defmodule Codebattle.Bot.PlayerServer do
   require Logger
 
   alias Codebattle.Bot.{ChatClient, PlaybookPlayer}
-  alias Codebattle.Game.GameHelpers
+  alias Codebattle.Game.Helpers
   alias Codebattle.Game.Play
   alias PhoenixClient.Message
 
@@ -53,10 +53,10 @@ defmodule Codebattle.Bot.PlayerServer do
 
     game_topic = "game:#{state.game_id}"
 
-    {:ok, fsm} = Play.get_fsm(state.game_id)
+    {:ok, fsm} = Play.get_game(state.game_id)
 
     chat_topic =
-      case GameHelpers.get_tournament_id(fsm) do
+      case Helpers.get_tournament_id(fsm) do
         nil -> "chat:g_#{state.game_id}"
         tournament_id -> "chat:t_#{tournament_id}"
       end

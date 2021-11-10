@@ -14,7 +14,7 @@ defmodule Codebattle.Game.Context do
   alias Codebattle.Game.{
     Server,
     Engine,
-    GameHelpers,
+    Helpers,
     ActiveGames,
     GlobalSupervisor
   }
@@ -24,7 +24,9 @@ defmodule Codebattle.Game.Context do
   @type game_params :: %{
           level: String.t(),
           type: String.t(),
-          visibility_type: String.t()
+          visibility_type: String.t(),
+          timeout_seconds: integer,
+          users: [User.t()]
         }
 
   defdelegate get_active_games(params), to: ActiveGames
@@ -43,17 +45,17 @@ defmodule Codebattle.Game.Context do
     Repo.all(query)
   end
 
-  @spec get(game_id) :: Game.t() | nil
-  def get(id) do
+  @spec get_game(game_id) :: Game.t() | nil
+  def get_game(id) do
     case Server.get_game(id) do
       nil -> get_from_db(id)
       game -> game
     end
   end
 
-  @spec get!(game_id) :: Game.t()
-  def get!(id) do
-    case get(id) do
+  @spec get_game!(game_id) :: Game.t()
+  def get_game!(id) do
+    case get_game(id) do
       nil -> raise Ecto.NoResultsError
       game -> game
     end
@@ -67,14 +69,14 @@ defmodule Codebattle.Game.Context do
   @spec join_game(game_id, User.t()) :: {:ok, Game.t()} | {:error, atom}
   def join_game(id, user) do
     id
-    |> get()
+    |> get_game()
     |> Engine.join_game(user)
   end
 
   @spec cancel_game(game_id, User.t()) :: {:ok, Game.t()} | {:error, atom}
   def cancel_game(id, user) do
-    case get(id) do
-      {:ok, game} -> GameHelpers.get_module(game).cancel_game(game, user)
+    case get_game(id) do
+      {:ok, game} -> Helpers.get_module(game).cancel_game(game, user)
       {:error, reason} -> {:error, reason}
     end
   end
@@ -82,9 +84,9 @@ defmodule Codebattle.Game.Context do
   @spec update_editor_data(game_id, User.t(), String.t(), String.t()) ::
           {:ok, Game.t()} | {:error, atom}
   def update_editor_data(id, user, editor_text, editor_lang) do
-    case get(id) do
+    case get_game(id) do
       {:ok, game} ->
-        GameHelpers.get_module(game).update_editor_data(game, %{
+        Helpers.get_module(game).update_editor_data(game, %{
           id: user.id,
           editor_text: editor_text,
           editor_lang: editor_lang
@@ -103,11 +105,11 @@ defmodule Codebattle.Game.Context do
       editor_lang: editor_lang
     })
 
-    case get_fsm(id) do
+    case get_game(id) do
       {:ok, game} ->
         check_result =
           checker_adapter().call(
-            GameHelpers.get_task(game),
+            Helpers.get_task(game),
             editor_text,
             editor_lang
           )
@@ -120,13 +122,13 @@ defmodule Codebattle.Game.Context do
             editor_lang: editor_lang
           })
 
-        winner = GameHelpers.get_winner(new_fsm) || %{id: nil}
+        winner = Helpers.get_winner(new_fsm) || %{id: nil}
 
         if {game.state, new_fsm.state, winner.id} == {:playing, :game_over, user.id} do
           Server.update_playbook(id, :game_over, %{id: user.id, lang: editor_lang})
 
-          player = GameHelpers.get_player(new_fsm, user.id)
-          GameHelpers.get_module(game).handle_won_game(id, player, new_fsm)
+          player = Helpers.get_player(new_fsm, user.id)
+          Helpers.get_module(game).handle_won_game(id, player, new_fsm)
           {:ok, game, new_fsm, %{solution_status: true, check_result: check_result}}
         else
           {:ok, game, new_fsm, %{solution_status: false, check_result: check_result}}
@@ -141,7 +143,7 @@ defmodule Codebattle.Game.Context do
   def give_up(id, user) do
     case Server.call_transition(id, :give_up, %{id: user.id}) do
       {:ok, game} ->
-        GameHelpers.get_module(game).handle_give_up(id, user.id, game)
+        Helpers.get_module(game).handle_give_up(id, user.id, game)
 
         {:ok, game}
 
@@ -155,7 +157,7 @@ defmodule Codebattle.Game.Context do
           | {:ok, {:rematch_accepted, Game.t()}}
           | {:error, atom}
   def rematch_send_offer(game_id, user) do
-    with game <- get(game_id),
+    with game <- get_game(game_id),
          :ok <- player_can_rematch?(game, user.id) do
       Engine.rematch_send_offer(game, user.id)
     else
@@ -170,8 +172,8 @@ defmodule Codebattle.Game.Context do
       {:ok, game} ->
         {:rematch_update_status,
          %{
-           rematch_initiator_id: GameHelpers.get_rematch_initiator_id(game),
-           rematch_state: GameHelpers.get_rematch_state(game)
+           rematch_initiator_id: Helpers.get_rematch_initiator_id(game),
+           rematch_state: Helpers.get_rematch_state(game)
          }}
 
       {:error, reason} ->
@@ -180,9 +182,9 @@ defmodule Codebattle.Game.Context do
   end
 
   def timeout_game(id) do
-    {:ok, game} = get_fsm(id)
+    {:ok, game} = get_game(id)
 
-    case {GameHelpers.get_state(game), GameHelpers.get_tournament_id(game)} do
+    case {Helpers.get_state(game), Helpers.get_tournament_id(game)} do
       {:game_over, nil} ->
         {:terminate_after, 15}
 
@@ -200,16 +202,16 @@ defmodule Codebattle.Game.Context do
   end
 
   def terminate_game(id) do
-    {:ok, game} = get_fsm(id)
+    {:ok, game} = get_game(id)
 
-    case GameHelpers.get_state(game) do
+    case Helpers.get_state(game) do
       :game_over ->
         GlobalSupervisor.terminate_game(id)
 
       _ ->
         Server.call_transition(id, :timeout, %{})
         ActiveGames.terminate_game(id)
-        GameHelpers.get_module(game).store_playbook(game)
+        Helpers.get_module(game).store_playbook(game)
         GlobalSupervisor.terminate_game(id)
 
         id

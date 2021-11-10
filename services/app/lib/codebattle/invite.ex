@@ -4,7 +4,7 @@ defmodule Codebattle.Invite do
   import Ecto.Query, warn: false
   alias Codebattle.Repo
   alias __MODULE__
-  alias Codebattle.Game.{Play, GameHelpers}
+  alias Codebattle.Game.{Play, Helpers}
 
   defmodule GameParams do
     use Ecto.Schema
@@ -118,7 +118,7 @@ defmodule Codebattle.Invite do
 
     case Play.start_game(game_params) do
       {:ok, fsm} ->
-        game_id = GameHelpers.get_game_id(fsm)
+        game_id = Helpers.get_game_id(fsm)
 
         {:ok, invite} = Invite.update_invite(invite, %{state: "accepted", game_id: game_id})
 

@@ -3,7 +3,7 @@ defmodule CodebattleWeb.Api.GameView do
 
   alias Codebattle.Game.Player
 
-  import Codebattle.Game.GameHelpers
+  import Codebattle.Game.Helpers
 
   def render_fsm(fsm) do
     %{
