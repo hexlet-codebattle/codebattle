@@ -20,12 +20,8 @@ defmodule Codebattle.Tournament.Server do
       GenServer.call(server_name(tournament_id), {event_type, params})
     catch
       :exit, _reason ->
-        {:error, :no_proc}
+        {:error, :not_found}
     end
-  end
-
-  def get_pid(id) do
-    :gproc.where(tournament_key(id))
   end
 
   # SERVER
@@ -51,7 +47,6 @@ defmodule Codebattle.Tournament.Server do
   # HELPERS
 
   defp broadcast_tournament(tournament) do
-    IO.inspect(tournament)
     CodebattleWeb.Endpoint.broadcast!(
       tournament_topic_name(tournament.id),
       "tournament:update",
@@ -59,11 +54,6 @@ defmodule Codebattle.Tournament.Server do
     )
   end
 
-  defp server_name(id) do
-    {:via, :gproc, tournament_key(id)}
-  end
-
-  defp tournament_key(id) do
-    {:n, :l, {:tournament, "#{id}"}}
-  end
+  defp server_name(id), do: {:via, :gproc, tournament_key(id)}
+  defp tournament_key(id), do: {:n, :l, {:tournament_srv, to_string(id)}}
 end

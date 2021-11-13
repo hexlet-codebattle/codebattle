@@ -1,14 +1,14 @@
 defmodule CodebattleWeb.GameChannelTest do
   use CodebattleWeb.ChannelCase
 
+  alias Codebattle.Game
   alias CodebattleWeb.GameChannel
-  alias Codebattle.Game.{Player, Server, Helpers}
   alias CodebattleWeb.UserSocket
 
   setup do
-    user1 = insert(:user, rating: 1000)
-    user2 = insert(:user, rating: 1000)
-    game = insert(:game)
+    user1 = insert(:user, rating: 1001)
+    user2 = insert(:user, rating: 1002)
+    insert(:task, level: "easy")
 
     user_token1 = Phoenix.Token.sign(socket(UserSocket), "user_token", user1.id)
     {:ok, socket1} = connect(UserSocket, %{"token" => user_token1})
@@ -16,121 +16,88 @@ defmodule CodebattleWeb.GameChannelTest do
     user_token2 = Phoenix.Token.sign(socket(UserSocket), "user_token", user2.id)
     {:ok, socket2} = connect(UserSocket, %{"token" => user_token2})
 
-    {:ok, %{user1: user1, user2: user2, socket1: socket1, socket2: socket2, game: game}}
+    {:ok, %{user1: user1, user2: user2, socket1: socket1, socket2: socket2}}
   end
 
-  test "sends game info when user join", %{user1: user1, socket1: socket1} do
-    # setup
-    state = :waiting_opponent
-    data = %{players: [Player.build(user1), %Player{}]}
-    game = setup_game(state, data)
-    game_topic = "game:" <> to_string(game.id)
+  describe "join/3" do
+    test "sends game info", %{user1: user1, socket1: socket1} do
+      {:ok, game} =
+        Game.Context.create_game(%{state: "waiting_opponent", users: [user1], level: "easy"})
 
-    {:ok, response, _socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
+      {:ok, created, _socket1} = subscribe_and_join(socket1, GameChannel, game_topic(game))
 
-    assert response.level == game.task.level
+      assert created.task.level == "easy"
+      assert created.type == "standard"
+    end
   end
 
-  test "broadcasts editor:data, after editor:data", %{
-    user1: user1,
-    user2: user2,
-    socket1: socket1,
-    socket2: socket2
-  } do
-    # setup
-    state = :playing
-    data = %{players: [Player.build(user1), Player.build(user2)]}
-    game = setup_game(state, data)
-    game_topic = "game:" <> to_string(game.id)
-    editor_text1 = "test1"
-    editor_text2 = "test2"
+  describe "handle_in(editor:data)" do
+    test "broadcasts editor:data", %{
+      user1: user1,
+      user2: user2,
+      socket1: socket1,
+      socket2: socket2
+    } do
+      {:ok, game} =
+        Game.Context.create_game(%{state: "waiting_opponent", users: [user1], level: "easy"})
 
-    {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
-    {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
-    Mix.Shell.Process.flush()
+      game_topic = game_topic(game)
+      editor_text1 = "test1"
+      editor_text2 = "test2"
+      editor_lang1 = "js"
+      editor_lang2 = "ruby"
 
-    push(socket1, "editor:data", %{editor_text: editor_text1, lang_slug: "js"})
-    push(socket2, "editor:data", %{editor_text: editor_text2, lang_slug: "js"})
+      {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
+      {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
+      Mix.Shell.Process.flush()
 
-    payload1 = %{user_id: user1.id, editor_text: editor_text1, lang_slug: "js"}
-    payload2 = %{user_id: user2.id, editor_text: editor_text2, lang_slug: "js"}
+      push(socket1, "editor:data", %{editor_text: editor_text1, lang_slug: "js"})
+      push(socket2, "editor:data", %{editor_text: editor_text2, lang_slug: "js"})
 
-    assert_receive %Phoenix.Socket.Broadcast{
-      topic: ^game_topic,
-      event: "editor:data",
-      payload: ^payload1
-    }
+      push(socket1, "editor:data", %{editor_text: editor_text1, lang_slug: editor_lang1})
+      push(socket2, "editor:data", %{editor_text: editor_text2, lang_slug: editor_lang2})
 
-    assert_receive %Phoenix.Socket.Broadcast{
-      topic: ^game_topic,
-      event: "editor:data",
-      payload: ^payload2
-    }
-  end
+      payload1 = %{user_id: user1.id, editor_text: editor_text1, lang_slug: "js"}
+      payload2 = %{user_id: user2.id, editor_text: editor_text2, lang_slug: "js"}
+      payload3 = %{user_id: user1.id, editor_text: editor_text1, lang_slug: editor_lang1}
+      payload4 = %{user_id: user2.id, editor_text: editor_text2, lang_slug: editor_lang2}
 
-  test "chahge lang after change lang", %{
-    user1: user1,
-    user2: user2,
-    socket1: socket1,
-    socket2: socket2
-  } do
-    # setup
-    state = :playing
-    data = %{players: [Player.build(user1), Player.build(user2)]}
-    game = setup_game(state, data)
-    game_topic = "game:" <> to_string(game.id)
-    editor_lang1 = "js"
-    editor_lang2 = "ruby"
+      assert_receive %Phoenix.Socket.Broadcast{
+        topic: ^game_topic,
+        event: "editor:data",
+        payload: ^payload1
+      }
 
-    {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
-    {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
-    Mix.Shell.Process.flush()
+      assert_receive %Phoenix.Socket.Broadcast{
+        topic: ^game_topic,
+        event: "editor:data",
+        payload: ^payload2
+      }
 
-    push(socket1, "editor:data", %{lang_slug: editor_lang1, editor_text: 'text1'})
-    push(socket2, "editor:data", %{lang_slug: editor_lang2, editor_text: 'text2'})
+      assert_receive %Phoenix.Socket.Broadcast{
+        topic: ^game_topic,
+        event: "editor:data",
+        payload: ^payload3
+      }
 
-    payload1 = %{
-      user_id: user1.id,
-      lang_slug: editor_lang1,
-      editor_text: 'text1'
-    }
-
-    payload2 = %{
-      user_id: user2.id,
-      lang_slug: editor_lang2,
-      editor_text: 'text2'
-    }
-
-    assert_receive %Phoenix.Socket.Broadcast{
-      topic: ^game_topic,
-      event: "editor:data",
-      payload: ^payload1
-    }
-
-    assert_receive %Phoenix.Socket.Broadcast{
-      topic: ^game_topic,
-      event: "editor:data",
-      payload: ^payload2
-    }
+      assert_receive %Phoenix.Socket.Broadcast{
+        topic: ^game_topic,
+        event: "editor:data",
+        payload: ^payload4
+      }
+    end
   end
 
   test "on give up opponents win when state playing", %{
     user1: user1,
     user2: user2,
     socket1: socket1,
-    socket2: socket2,
-    game: game
+    socket2: socket2
   } do
-    # setup
-    state = :playing
+    {:ok, game} =
+      Game.Context.create_game(%{state: "playing", users: [user1, user2], level: "easy"})
 
-    data = %{
-      task: game.task,
-      players: [Player.build(user1), Player.build(user2)]
-    }
-
-    game = setup_game(state, data)
-    game_topic = "game:" <> to_string(game.id)
+    game_topic = game_topic(game)
 
     {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
     {:ok, _response, _socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
@@ -140,8 +107,8 @@ defmodule CodebattleWeb.GameChannelTest do
 
     message = "#{user1.name} gave up!"
     :timer.sleep(100)
-    {:ok, fsm} = Server.get_game(game.id)
-    players = Helpers.get_players(fsm)
+    game = Game.Context.get_game(game.id)
+    players = game.players
 
     payload = %{
       players: players,
@@ -155,18 +122,13 @@ defmodule CodebattleWeb.GameChannelTest do
       payload: ^payload
     }
 
-    {:ok, fsm} = Server.get_game(game.id)
-
-    assert fsm.state == :game_over
-    assert Helpers.gave_up?(fsm, user1.id) == true
-    assert Helpers.winner?(fsm, user2.id) == true
+    assert game.state == "game_over"
+    assert Game.Helpers.gave_up?(game, user1.id) == true
+    assert Game.Helpers.winner?(game, user2.id) == true
     :timer.sleep(100)
 
-    game = Repo.get(Game, game.id)
-    user1 = Repo.get(User, user1.id)
-    user2 = Repo.get(User, user2.id)
     assert game.state == "game_over"
-    assert user1.rating == 988
-    assert user2.rating == 1012
   end
+
+  defp game_topic(game), do: "game:" <> to_string(game.id)
 end

@@ -34,7 +34,7 @@ h1.d-none Codebattle
             h1.text-uppercase.text-light
               | A place where your fingers become arms
         hr.w-25.mx-0.hr-gray
-        button.btn.btn-outline-red.text-uppercase.mt-3.p-3[data-method="post" data-csrf="<%= csrf_token() %>" data-to="/games?level=elementary&amp;type=training&amp;timeout_seconds=3600"]
+        button.btn.btn-outline-red.text-uppercase.mt-3.p-3[data-method="post" data-csrf="<%= csrf_token() %>" data-to="/games/training"]
           | Try simple battle
         span.d-block.mt-2.text-muted No registration required
 .bg-light.py-5

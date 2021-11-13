@@ -51,7 +51,7 @@ test('test rendering GameList', async () => {
 
   const preloadedState = {
     lobby: {
-      activeGames: [],
+      liveGames: [],
       completedGames: [
         {
           id: -1,

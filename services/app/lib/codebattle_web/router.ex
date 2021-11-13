@@ -64,9 +64,6 @@ defmodule CodebattleWeb.Router do
 
     get("/", PageController, :index)
 
-    ## TODO (add-stairways) remove route after template is done
-    get("/stairway", GameController, :stairway)
-
     resources("/session", SessionController, singleton: true, only: [:delete, :new])
     get("/remind_password", SessionController, :remind_password)
     resources("/users", UserController, only: [:index, :show, :new])
@@ -95,12 +92,14 @@ defmodule CodebattleWeb.Router do
 
     get("/settings", UserController, :edit, as: :user_setting)
     put("/settings", UserController, :update, as: :user_setting)
-    resources("/games", GameController, only: [:create, :show, :delete])
+
+    resources("/games", GameController, only: [:show, :delete]) do
+      get("/image", Game.ImageController, :show, as: :image)
+    end
 
     scope "/games" do
       post("/:id/join", GameController, :join)
-      post("/:id/check", GameController, :check)
-      get("/:id/image", Game.ImageController, :show, as: :game_image)
+      post("/training", GameController, :create_training)
     end
   end
 

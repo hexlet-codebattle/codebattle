@@ -1,65 +1,77 @@
 defmodule Codebattle.Game.Engine do
   alias Codebattle.Game.{
-    Play,
     Player,
-    Engine,
     Server,
     Helpers,
-    ActiveGames,
-    Fsm,
+    LiveGames,
     Elo,
     GlobalSupervisor
   }
 
-  alias Codebattle.{Repo, User, Game, UserGame}
+  alias Codebattle.Languages
+  alias Codebattle.Repo
+  alias Codebattle.User
+  alias Codebattle.Game
+  alias Codebattle.UserGame
   alias Codebattle.User.Achievements
   alias CodebattleWeb.Api.GameView
   alias Codebattle.Bot.Playbook
 
-  alias CodebattleWeb.Notifications
-
   import Codebattle.Game.Auth
 
-  @default_timeout 3600
-  @max_timeout 7200
+  @default_timeout 30 * 60
+  @max_timeout 2 * 60 * 60
 
   def create_game(params) do
-    %{users: [creator, recipient], level: level, type: type} = params
-    task = get_task(level)
-    creator_player = Player.build(creator, %{creator: true, task: task})
-    recipient_player = Player.build(recipient, %{task: task})
+    level = params[:level] || get_random_level()
+    task = params[:task] || get_task(level)
+    state = params[:state] || "playing"
+    type = params[:type] || "standard"
+    visibility_type = params[:visibility_type] || "public"
+    timeout_seconds = params[:timeout_seconds] || @default_timeout
+    [creator | _] = params.users
 
-    timeout_seconds = params.timeout_seconds
+    players =
+      Enum.map(params.users, fn user ->
+        Player.build(user, %{creator: user.id == creator.id, task: task})
+      end)
 
-    with :ok <- player_can_create_game?(recipient_player),
+    with :ok <- can_play_game?(players),
          langs <- Languages.get_langs_with_solutions(task),
          {:ok, game} <-
            insert_game(%{
-             state: "playing",
+             state: state,
              level: level,
              type: type,
-             task_id: task.id
+             visibility_type: visibility_type,
+             timeout_seconds: min(timeout_seconds, @max_timeout),
+             task: task,
+             players: players
            }),
-         fsm <-
-           build_fsm(%{
-             module: __MODULE__,
-             players: [creator_player, recipient_player],
-             game_id: game.id,
-             level: level,
-             type: type,
-             state: :playing,
-             langs: langs,
-             starts_at: TimeHelper.utc_now(),
-             inserted_at: game.inserted_at,
-             timeout_seconds: timeout_seconds,
-             task: task
-           }),
-         :ok <- ActiveGames.create_game(fsm),
-         {:ok, _} <- GlobalSupervisor.start_game(fsm),
-         :ok <- start_timeout_timer(game.id, fsm) do
-      broadcast_active_game(fsm)
+         game <- Map.merge(game, %{langs: langs}),
+         {:ok, _} <- GlobalSupervisor.start_game(game),
+         :ok <- LiveGames.create_game(game),
+         :ok <- start_timeout_timer(game),
+         :ok <- broadcast_live_game(game) do
+      {:ok, game}
+    else
+      {:error, reason} ->
+        {:error, reason}
+    end
+  end
 
-      {:ok, fsm}
+  def join_game(game, user) do
+    with :ok <- can_play_game?(user),
+         {:ok, game} <-
+           Server.call_transition(game.id, :join, %{
+             players: game.players ++ [Player.build(user, %{task: game.task})],
+             starts_at: TimeHelper.utc_now()
+           }),
+         :ok <- LiveGames.update_game(game),
+         game <- update_game!(game, %{state: "playing"}),
+         :ok <- broadcast_live_game(game),
+         :ok <- start_timeout_timer(game) do
+      {:ok, game}
     else
       {:error, reason} ->
         {:error, reason}
@@ -68,20 +80,25 @@ defmodule Codebattle.Game.Engine do
 
   def cancel_game(game, user) do
     with %Player{} = player <- Helpers.get_player(game, user.id),
-         id <- Helpers.get_game_id(game),
-         :ok <- player_can_cancel_game?(id, player) do
-      ActiveGames.terminate_game(id)
-      GlobalSupervisor.terminate_game(id)
-      Notifications.remove_active_game(id)
-
-      id
-      |> Play.get_game()
-      |> Game.changeset(%{state: "canceled"})
-      |> Repo.update!()
-
+         :ok <- player_can_cancel_game?(game.id, player),
+         :ok <- terminate_game(game),
+         %Game{} = _game <- update_game!(game, %{state: "canceled"}) do
       :ok
     else
       {:error, reason} -> {:error, reason}
+    end
+  end
+
+  def terminate_game(%Game{} = game) do
+    case game.is_live do
+      true ->
+        # Engine.store_playbook(game)
+        LiveGames.terminate_game(game.id)
+        GlobalSupervisor.terminate_game(game.id)
+        :ok
+
+      _ ->
+        :ok
     end
   end
 
@@ -116,7 +133,7 @@ defmodule Codebattle.Game.Engine do
     loser = Helpers.get_opponent(game, winner.id)
     store_game_result!(game, {winner, "won"}, {loser, "lost"})
     store_playbook(game)
-    ActiveGames.terminate_game(game_id)
+    LiveGames.terminate_game(game_id)
     # Codebattle.PubSub.broadcast("game:finished", %{game: game, winner: winner, loser: loser})
     :ok
   end
@@ -126,7 +143,7 @@ defmodule Codebattle.Game.Engine do
     winner = Helpers.get_opponent(game, loser.id)
     store_game_result!(game, {winner, "won"}, {loser, "gave_up"})
     store_playbook(game)
-    ActiveGames.terminate_game(game_id)
+    LiveGames.terminate_game(game_id)
     # Codebattle.PubSub.broadcast("game:finished", %{game: game, winner: winner, loser: loser})
   end
 
@@ -162,7 +179,7 @@ defmodule Codebattle.Game.Engine do
         lang: loser.editor_lang
       })
 
-      update_game!(game_id, %{
+      update_game!(game, %{
         state: to_string(game.state),
         starts_at: Helpers.get_starts_at(game),
         finishes_at: TimeHelper.utc_now()
@@ -193,8 +210,8 @@ defmodule Codebattle.Game.Engine do
     |> Repo.update!()
   end
 
-  def update_game!(game_id, params) do
-    Play.get_game(game_id)
+  def update_game!(%Game{} = game, params) do
+    game
     |> Game.changeset(params)
     |> Repo.update!()
   end
@@ -203,18 +220,18 @@ defmodule Codebattle.Game.Engine do
     Repo.insert!(UserGame.changeset(%UserGame{}, params))
   end
 
-  def start_timeout_timer(id, game) do
-    Codebattle.Game.TimeoutServer.start_timer(id, game.data.timeout_seconds)
+  def start_timeout_timer(game) do
+    Codebattle.Game.TimeoutServer.start_timer(game.id, game.timeout_seconds)
     :ok
   end
 
-  def broadcast_active_game(game) do
+  def broadcast_live_game(game) do
     CodebattleWeb.Endpoint.broadcast!("lobby", "game:upsert", %{
       game: GameView.render_active_game(game)
     })
-  end
 
-  def build_fsm(params), do: Fsm.new() |> Fsm.create(params)
+    :ok
+  end
 
   def insert_game(params) do
     %Game{}
@@ -229,4 +246,6 @@ defmodule Codebattle.Game.Engine do
   defp tasks_provider do
     Application.get_env(:codebattle, :tasks_provider)
   end
+
+  defp get_random_level, do: Enum.random(Codebattle.Task.levels())
 end

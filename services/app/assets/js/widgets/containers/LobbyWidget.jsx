@@ -239,10 +239,14 @@ const CompletedTournaments = ({ tournaments }) => {
   );
 };
 
-const ActiveGames = ({ games }) => {
+const LiveGames = ({ games }) => {
+  if (!games) {
+    return null;
+  }
+
   const currentUser = Gon.getAsset('current_user');
   const filterGames = game => {
-    if (game.type === 'private') {
+    if (game.visibilityType === 'hidden') {
       return !!_.find(game.players, { id: currentUser.id });
     }
     return true;
@@ -317,7 +321,7 @@ const ActiveGames = ({ games }) => {
 };
 
 const GameContainers = ({
- activeGames, completedGames, liveTournaments, completedTournaments,
+ liveGames, completedGames, liveTournaments, completedTournaments,
 }) => (
   <div className="p-0">
     <nav>
@@ -364,7 +368,7 @@ const GameContainers = ({
         role="tabpanel"
         aria-labelledby="lobby-tab"
       >
-        <ActiveGames games={activeGames} />
+        <LiveGames games={liveGames} />
       </div>
       <div
         className="tab-pane fade"
@@ -423,7 +427,7 @@ const LobbyWidget = () => {
 
   const {
     loaded,
-    activeGames,
+    liveGames,
     completedGames,
     liveTournaments,
     completedTournaments,
@@ -439,7 +443,7 @@ const LobbyWidget = () => {
       <div className="row">
         <div className="col-lg-8 col-md-12 p-0 mb-2 pr-lg-2 pb-3">
           <GameContainers
-            activeGames={activeGames}
+            liveGames={liveGames}
             completedGames={completedGames}
             liveTournaments={liveTournaments}
             completedTournaments={completedTournaments}

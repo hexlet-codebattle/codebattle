@@ -6,7 +6,7 @@
 #   alias Codebattle.Game.{
 #     GlobalSupervisor,
 #     Engine,
-#     ActiveGames,
+#     LiveGames,
 #     Player,
 #     Server
 #   }
@@ -45,7 +45,7 @@
 #         starts_at: TimeHelper.utc_now()
 #       })
 
-#     ActiveGames.create_game(fsm)
+#     LiveGames.create_game(fsm)
 #     {:ok, _} = GlobalSupervisor.start_game(fsm)
 
 #     Server.update_playbook(game.id, :join, %{players: new_players})

@@ -5,7 +5,7 @@
 #     GlobalSupervisor,
 #     Player,
 #     GameHelpers,
-#     ActiveGames
+#     LiveGames
 #   }
 
 #   alias Codebattle.Languages
@@ -25,7 +25,7 @@
 
 #     timeout_seconds = get_timeout_seconds(params.timeout_seconds)
 
-#     with :ok <- player_can_create_game?(recipient_player),
+#     with :ok <- can_play_game?(recipient_player),
 #          langs <- Languages.get_langs_with_solutions(task),
 #          {:ok, game} <-
 #            insert_game(%{
@@ -48,10 +48,10 @@
 #              timeout_seconds: timeout_seconds,
 #              task: task
 #            }),
-#          :ok <- ActiveGames.create_game(fsm),
+#          :ok <- LiveGames.create_game(fsm),
 #          {:ok, _} <- GlobalSupervisor.start_game(fsm),
 #          :ok <- start_timeout_timer(game.id, fsm) do
-#       broadcast_active_game(fsm)
+#       broadcast_live_game(fsm)
 
 #       {:ok, fsm}
 #     else
@@ -65,7 +65,7 @@
 
 #     timeout_seconds = get_timeout_seconds(params[:timeout_seconds])
 
-#     with :ok <- player_can_create_game?(player),
+#     with :ok <- can_play_game?(player),
 #          {:ok, game} <-
 #            insert_game(%{
 #              state: "waiting_opponent",
@@ -82,10 +82,10 @@
 #              inserted_at: game.inserted_at,
 #              timeout_seconds: timeout_seconds
 #            }),
-#          :ok <- ActiveGames.create_game(fsm),
+#          :ok <- LiveGames.create_game(fsm),
 #          {:ok, _} <- GlobalSupervisor.start_game(fsm),
 #          :ok <- start_timeout_timer(game.id, fsm) do
-#       broadcast_active_game(fsm)
+#       broadcast_live_game(fsm)
 
 #       {:ok, fsm}
 #     else
@@ -112,11 +112,11 @@
 #              task: task,
 #              langs: langs
 #            }) do
-#       ActiveGames.update_game(fsm)
+#       LiveGames.update_game(fsm)
 #       update_game!(game_id, %{state: "playing", task_id: task.id})
 #       Notifications.broadcast_join_game(fsm)
 
-#       broadcast_active_game(fsm)
+#       broadcast_live_game(fsm)
 #       start_timeout_timer(game_id, fsm)
 
 #       {:ok, fsm}
@@ -175,12 +175,12 @@
 #         timeout_seconds: timeout_seconds
 #       })
 
-#     ActiveGames.create_game(fsm)
+#     LiveGames.create_game(fsm)
 #     {:ok, _} = GlobalSupervisor.start_game(fsm)
 #     Server.update_playbook(game.id, :join, %{players: players})
 
 #     start_timeout_timer(game.id, fsm)
-#     broadcast_active_game(fsm)
+#     broadcast_live_game(fsm)
 #     {:ok, game.id}
 #   end
 

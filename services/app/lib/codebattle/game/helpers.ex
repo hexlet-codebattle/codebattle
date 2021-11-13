@@ -2,19 +2,18 @@ defmodule Codebattle.Game.Helpers do
   @moduledoc false
 
   def get_state(game), do: game.state
-  def get_module(game), do: game.data.module
-  def get_game_id(game), do: game.data.game_id
-  def get_tournament_id(game), do: game.data.tournament_id
-  def get_inserted_at(game), do: game.data.inserted_at
-  def get_starts_at(game), do: game.data.starts_at
-  def get_timeout_seconds(game), do: game.data.timeout_seconds
-  def get_type(game), do: game.data.type
-  def get_level(game), do: game.data.level
-  def get_rematch_state(game), do: game.data.rematch_state
-  def get_rematch_initiator_id(game), do: game.data.rematch_initiator_id
-  def get_players(game), do: game.data.players
-  def get_task(game), do: game.data.task
-  def get_langs(game), do: game.data.langs
+  def get_game_id(game), do: game.id
+  def get_tournament_id(game), do: game.tournament_id
+  def get_inserted_at(game), do: game.inserted_at
+  def get_starts_at(game), do: game.starts_at
+  def get_timeout_seconds(game), do: game.timeout_seconds
+  def get_type(game), do: game.type
+  def get_level(game), do: game.level
+  def get_rematch_state(game), do: game.rematch_state
+  def get_rematch_initiator_id(game), do: game.rematch_initiator_id
+  def get_players(game), do: game.players
+  def get_task(game), do: game.task
+  def get_langs(game), do: game.langs
   def get_first_player(game), do: game |> get_players |> Enum.at(0)
   def get_second_player(game), do: game |> get_players |> Enum.at(1)
   def bot_game?(game), do: game |> get_players |> Enum.any?(fn p -> p.is_bot end)

@@ -38,7 +38,6 @@ defmodule Codebattle.Task do
     field(:asserts, :string)
     field(:disabled, :boolean)
     field(:count, :integer, virtual: true)
-    field(:task_id, :integer, virtual: true)
     field(:tags, {:array, :string}, default: [])
     field(:state, :string)
     field(:visibility, :string, default: "public")

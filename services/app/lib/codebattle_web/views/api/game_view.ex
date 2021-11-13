@@ -5,20 +5,21 @@ defmodule CodebattleWeb.Api.GameView do
 
   import Codebattle.Game.Helpers
 
-  def render_fsm(fsm) do
+  def render_game(game) do
     %{
-      status: fsm.state,
-      players: get_players(fsm),
-      task: get_task(fsm),
-      level: get_level(fsm),
-      type: get_type(fsm),
-      timeout_seconds: get_timeout_seconds(fsm),
-      rematch_state: get_rematch_state(fsm),
-      rematch_initiator_id: get_rematch_initiator_id(fsm),
-      tournament_id: get_tournament_id(fsm),
-      inserted_at: get_inserted_at(fsm),
-      starts_at: get_starts_at(fsm),
-      langs: get_langs(fsm)
+      state: game.state,
+      players: game.players,
+      task: game.task,
+      level: game.level,
+      type: game.type,
+      visibility_type: game.visibility_type,
+      timeout_seconds: game.timeout_seconds,
+      rematch_state: game.rematch_state,
+      rematch_initiator_id: game.rematch_initiator_id,
+      tournament_id: game.tournament_id,
+      inserted_at: game.inserted_at,
+      starts_at: game.starts_at,
+      langs: game.langs
     }
   end
 
@@ -36,26 +37,25 @@ defmodule CodebattleWeb.Api.GameView do
     }
   end
 
-  def render_active_games(active_games, user_id) do
-    active_games
-    |> Enum.filter(&can_player_receive_game?(&1, user_id))
+  def render_live_games(live_games, user_id) do
+    Enum.filter(live_games, &can_player_receive_game?(&1, user_id))
   end
 
   def can_player_receive_game?(game, user_id) do
     Enum.any?(game.players, fn player -> player.id === user_id end) or
-      game.type not in ["private", "training"]
+      game.visibility_type in ["public"]
   end
 
-  def render_active_game(fsm) do
+  def render_active_game(game) do
     %{
-      id: get_game_id(fsm),
-      state: get_state(fsm),
-      is_bot: bot_game?(fsm),
-      level: get_level(fsm),
-      inserted_at: get_inserted_at(fsm),
-      type: get_type(fsm),
-      timeout_seconds: get_timeout_seconds(fsm),
-      players: get_players(fsm)
+      id: get_game_id(game),
+      state: get_state(game),
+      is_bot: bot_game?(game),
+      level: get_level(game),
+      inserted_at: get_inserted_at(game),
+      type: get_type(game),
+      timeout_seconds: get_timeout_seconds(game),
+      players: get_players(game)
     }
   end
 

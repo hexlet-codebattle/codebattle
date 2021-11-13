@@ -1,36 +1,36 @@
 defmodule Codebattle.Game.GlobalSupervisor do
-  @moduledoc false
+  use Supervisor
+
+  alias Codebattle.Game
 
   require Logger
 
-  use DynamicSupervisor
-
-  alias Codebattle.Game.ActiveGames
-  alias Codebattle.Game.Helpers
-
   def start_link(_) do
-    DynamicSupervisor.start_link(__MODULE__, [], name: __MODULE__)
-  end
-
-  def start_game(fsm) do
-    game_id = Helpers.get_game_id(fsm)
-    spec = {Codebattle.Game.Supervisor, {game_id, fsm}}
-    DynamicSupervisor.start_child(__MODULE__, spec)
+    Supervisor.start_link(__MODULE__, [], name: __MODULE__)
   end
 
   @impl true
   def init(_) do
-    ActiveGames.init()
-    DynamicSupervisor.init(strategy: :one_for_one)
+    Game.LiveGames.init()
+    Supervisor.init([], strategy: :one_for_one)
+  end
+
+  def start_game(game) do
+    Supervisor.start_child(
+      __MODULE__,
+      %{
+        id: to_string(game.id),
+        restart: :transient,
+        start: {Game.Supervisor, :start_link, [game]}
+      }
+    ) |> IO.inspect
   end
 
   def terminate_game(game_id) do
-    pid = Codebattle.Game.Supervisor.get_pid(game_id)
-
     try do
-      DynamicSupervisor.terminate_child(__MODULE__, pid)
+      Supervisor.terminate_child(__MODULE__, to_string(game_id))
     rescue
-      _ -> Logger.info("game not found")
+      _ -> Logger.error("cannot  terminate game #{game_id}")
     end
   end
 end

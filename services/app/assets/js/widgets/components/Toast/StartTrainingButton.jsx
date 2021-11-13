@@ -3,14 +3,11 @@ import { useSelector } from 'react-redux';
 import _ from 'lodash';
 import i18n from '../../../i18n';
 import * as selectors from '../../selectors';
-import { makeCreateGameUrlDefault } from '../../utils/urlBuilders';
+import { getCreateTrainingGameUrl } from '../../utils/urlBuilders';
 
 const StartTrainingButton = () => {
-  const timeoutSeconds = useSelector(state => selectors.gameStatusSelector(state).timeoutSeconds);
   const currentUserId = useSelector(selectors.currentUserIdSelector);
   const players = useSelector(selectors.gamePlayersSelector);
-
-  const gameUrl = makeCreateGameUrlDefault('elementary', 'training', timeoutSeconds);
 
   const winner = _.find(players, ['gameResult', 'won']);
   const title = currentUserId === winner.id ? i18n.t('Start simple battle') : i18n.t('Try again');
@@ -21,7 +18,7 @@ const StartTrainingButton = () => {
       className="btn btn-primary btn-block"
       data-method="post"
       data-csrf={window.csrf_token}
-      data-to={gameUrl}
+      data-to={getCreateTrainingGameUrl}
     >
       {title}
     </button>

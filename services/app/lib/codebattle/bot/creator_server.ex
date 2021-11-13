@@ -15,10 +15,7 @@ defmodule Codebattle.Bot.CreatorServer do
   end
 
   def handle_info(:create_bot_if_needed, state) do
-    levels = ["elementary", "easy", "medium", "hard"]
-
-    for level <- levels do
-      # create fsm for every level, if no waiting opponent games
+    for level <- Codebattle.Task.levels() do
       Codebattle.Bot.GameCreator.call(level)
     end
 

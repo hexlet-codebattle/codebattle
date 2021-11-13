@@ -7,26 +7,18 @@ defmodule CodebattleWeb.GameChannel do
   alias CodebattleWeb.Api.GameView
 
   def join("game:" <> game_id, _payload, socket) do
-    case Context.get_game(game_id) do
-      {:ok, game} ->
-        Codebattle.PubSub.subscribe("tournaments")
-        {:ok, GameView.render_game(game), assign(socket, :game_id, game_id)}
-
-      {:error, reason} ->
-        {:error, reason}
+    try do
+      game = Context.get_game(game_id)
+      {:ok, GameView.render_game(game), assign(socket, :game_id, game_id)}
+    rescue
+      Ecto.NoResultsError ->
+        {:ok, %{error: "Game not found"}, socket}
     end
   end
 
   def terminate(_reason, socket) do
     game_id = get_game_id(socket)
     user_id = socket.assigns.current_user.id
-
-    # case Context.get_game(game_id) do
-    #   {:ok, %{state: :playing} = game} ->
-    #   _ ->
-    #     :ok
-    # end
-
     {:noreply, socket}
   end
 

@@ -79,16 +79,17 @@ const OpponentSelect = ({ setOpponent }) => {
 const CreateGameDialog = ({ hideModal }) => {
   const dispatch = useDispatch();
   const gameLevels = Object.keys(levelRatio);
-  const currentGameTypeCodes = [gameTypeCodes.public, gameTypeCodes.private, gameTypeCodes.bot];
+  const currentGameTypeCodes = [gameTypeCodes.public, gameTypeCodes.hidden, gameTypeCodes.bot];
   const [opponent, setOpponent] = useState();
 
   const [game, setGame] = useState({
     level: gameLevels[0],
     type: gameTypeCodes.public,
+    visibilityType: gameTypeCodes.public,
     timeoutSeconds: TIMEOUTS[3],
   });
 
-  const isPrivateGame = game.type === gameTypeCodes.private;
+  const isPrivateGame = game.visibilityType === gameTypeCodes.hidden;
 
   const createBtnClassname = cn('btn btn-success mb-2 mt-4 d-flex ml-auto text-white font-weight-bold', {
     disabled: isPrivateGame && !opponent,
@@ -109,6 +110,7 @@ const CreateGameDialog = ({ hideModal }) => {
       lobbyMiddlewares.createGame({
         level: game.level,
         type: game.type,
+        visibilityType: game.visibilityType,
         timeout_seconds: game.timeoutSeconds,
       });
     }

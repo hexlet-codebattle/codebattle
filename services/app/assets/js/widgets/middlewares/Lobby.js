@@ -10,14 +10,14 @@ const isRecord = Gon.getAsset('is_record');
 const channel = !isRecord ? socket.channel(channelName) : null;
 
 export const fetchState = () => (dispatch, getState) => {
-  const camelizeKeysAndDispatch = actionCreator => data => (
-    dispatch(actionCreator(camelizeKeys(data)))
-  );
+  const camelizeKeysAndDispatch = actionCreator => data => dispatch(actionCreator(camelizeKeys(data)));
 
   channel.join().receive('ok', camelizeKeysAndDispatch(actions.initGameList));
 
   channel.on('game:upsert', data => {
-    const { game: { players, id, state: gameStatus } } = data;
+    const {
+      game: { players, id, state: gameStatus },
+    } = data;
     const currentPlayerId = getState().user.currentUserId;
     const isGameStarted = gameStatus === 'playing';
     const isCurrentUserInGame = _.some(players, ({ id: playerId }) => playerId === currentPlayerId);

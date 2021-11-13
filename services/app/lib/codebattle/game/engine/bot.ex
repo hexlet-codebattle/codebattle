@@ -5,7 +5,7 @@
 #     GlobalSupervisor,
 #     Player,
 #     Helpers,
-#     ActiveGames
+#     LiveGames
 #   }
 
 #   alias Codebattle.Languages
@@ -29,7 +29,7 @@
 #   end
 
 #   defp create_game_and_join(%{user: user, type: type} = params) do
-#     case create_game(params, player_can_create_game?(user, type)) do
+#     case create_game(params, can_play_game?(user, type)) do
 #       {:ok, fsm} ->
 #         join_game(fsm, user)
 
@@ -56,7 +56,7 @@
 #         rematch_state: init_rematch_state(type)
 #       })
 
-#     ActiveGames.create_game(fsm)
+#     LiveGames.create_game(fsm)
 
 #     {:ok, _} = GlobalSupervisor.start_game(fsm)
 
@@ -83,14 +83,14 @@
 #              task: task,
 #              langs: langs
 #            }) do
-#       ActiveGames.update_game(fsm)
+#       LiveGames.update_game(fsm)
 
 #       update_game!(game_id, %{state: "playing", task_id: task.id})
 #       Notifications.broadcast_join_game(fsm)
 #       run_bot!(fsm)
 
 #       if type == "bot" do
-#         broadcast_active_game(fsm)
+#         broadcast_live_game(fsm)
 #       end
 
 #       start_timeout_timer(game_id, fsm)
@@ -193,13 +193,13 @@
 #         timeout_seconds: timeout_seconds
 #       })
 
-#     ActiveGames.create_game(fsm)
+#     LiveGames.create_game(fsm)
 #     {:ok, _} = GlobalSupervisor.start_game(fsm)
 #     Server.update_playbook(game.id, :join, %{players: players})
 
 #     run_bot!(fsm)
 #     start_timeout_timer(game.id, fsm)
-#     broadcast_active_game(fsm)
+#     broadcast_live_game(fsm)
 #     {:ok, game.id}
 #   end
 

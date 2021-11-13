@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import _ from 'lodash';
 
 const initialState = {
-  activeGames: [],
+  liveGames: [],
   completedGames: null,
   presenceList: [],
   loaded: false,
@@ -13,9 +13,9 @@ const lobby = createSlice({
   name: 'lobby',
   initialState,
   reducers: {
-    initGameList: (state, { payload: { activeGames, completedGames, tournaments } }) => ({
+    initGameList: (state, { payload: { liveGames, completedGames, tournaments } }) => ({
       ...state,
-      activeGames,
+      liveGames,
       completedGames,
       liveTournaments: tournaments.filter(x => (x.isLive)),
       completedTournaments: tournaments.filter(x => (!x.isLive)),
@@ -25,21 +25,21 @@ const lobby = createSlice({
       state.presenceList = payload;
     },
     removeGameLobby: (state, { payload: { id } }) => {
-      state.activeGames = _.reject(state.activeGames, { id });
+      state.liveGames = _.reject(state.liveGames, { id });
     },
     upsertGameLobby: (state, { payload: { game } }) => {
-      const gameToUpdate = _.find(state.activeGames, { id: game.id });
+      const gameToUpdate = _.find(state.liveGames, { id: game.id });
       if (gameToUpdate) {
         Object.assign(gameToUpdate, game);
       } else {
-        state.activeGames.push(game);
+        state.liveGames.push(game);
       }
     },
     selectNewGameTimeout: (state, { payload: { timeoutSeconds } }) => {
       state.newGame.timeoutSeconds = timeoutSeconds;
     },
     finishGame: (state, { payload: { game } }) => {
-      state.activeGames = _.reject(state.activeGames, { id: game.id });
+      state.liveGames = _.reject(state.liveGames, { id: game.id });
       state.completedGames = [game, ...state.completedGames];
     },
   },

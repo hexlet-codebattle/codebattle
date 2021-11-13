@@ -16,16 +16,8 @@ defmodule Codebattle.Tournament.Supervisor do
     Supervisor.init(children, strategy: :one_for_one)
   end
 
-  def get_pid(id) do
-    :gproc.where(supervisor_key(id))
-  end
-
   # HELPERS
-  defp supervisor_name(tournament_id) do
-    {:via, :gproc, supervisor_key(tournament_id)}
-  end
 
-  defp supervisor_key(tournament_id) do
-    {:n, :l, {:tournament_sup, "#{tournament_id}"}}
-  end
+  defp supervisor_name(id), do: {:via, :gproc, supervisor_key(id)}
+  defp supervisor_key(id), do: {:n, :l, {:tournament_sup, to_string(id)}}
 end

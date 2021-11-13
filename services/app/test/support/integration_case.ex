@@ -14,8 +14,6 @@ defmodule Codebattle.IntegrationCase do
       use CodebattleWeb.ConnCase
       use PhoenixIntegration
 
-      import Helpers.Game
-
       alias Codebattle.{Repo, User, Game, UserGame}
       alias Codebattle.Game.Helpers
       alias CodebattleWeb.GameChannel
@@ -32,6 +30,18 @@ defmodule Codebattle.IntegrationCase do
           timeout ->
             flunk("Code checks is too long, more than #{timeout} ms")
         end
+      end
+
+      def game_id_from_conn(conn) do
+        location =
+          conn.resp_headers
+          |> Enum.find(&match?({"location", _}, &1))
+          |> elem(1)
+
+        ~r/\d+/
+        |> Regex.run(location)
+        |> List.first()
+        |> String.to_integer()
       end
     end
   end

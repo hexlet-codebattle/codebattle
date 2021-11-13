@@ -5,12 +5,12 @@ defmodule Codebattle.Game.Server do
 
   require Logger
 
-  alias Codebattle.Game.Game
+  alias Codebattle.Game.Fsm
   alias Codebattle.Bot.Playbook
 
   # API
-  def start_link({game_id, game}) do
-    GenServer.start_link(__MODULE__, game, name: server_name(game_id))
+  def start_link(game) do
+    GenServer.start_link(__MODULE__, game, name: server_name(game.id))
   end
 
   def update_playbook(game_id, event, params) do
@@ -26,32 +26,26 @@ defmodule Codebattle.Game.Server do
   end
 
   def get_game(game_id) do
-    case game_pid(game_id) do
-      :undefined ->
-        {:error, :game_terminated}
-
-      _pid ->
-        game = GenServer.call(server_name(game_id), :get_game)
-        {:ok, game}
+    try do
+      game = GenServer.call(server_name(game_id), :get_game)
+      {:ok, game}
+    catch
+      :exit, _reason -> {:error, :not_found}
     end
   end
 
   def get_playbook(game_id) do
-    case game_pid(game_id) do
-      :undefined ->
-        {:error, :game_terminated}
-
-      _pid ->
-        playbook = GenServer.call(server_name(game_id), :get_playbook)
-        {:ok, playbook}
+    try do
+      palybook = GenServer.call(server_name(game_id), :get_playbook)
+      {:ok, palybook}
+    catch
+      :exit, _reason -> {:error, :not_found}
     end
   end
 
-  def game_pid(game_id), do: :gproc.where(game_key(game_id))
-
   # SERVER
   def init(game) do
-    Logger.info("Start game server for game_id: #{game.data.game_id}")
+    Logger.info("Start game server for game_id: #{game.id}")
 
     state = %{
       game: game,
@@ -72,7 +66,7 @@ defmodule Codebattle.Game.Server do
 
   def handle_cast({:transition, event, params}, %{game: game, playbook: playbook}) do
     new_state = %{
-      game: Game.transition(game, event, [params]),
+      game: apply(Fsm, event, [game, params]),
       playbook: Playbook.add_event(playbook, event, params)
     }
 
@@ -88,7 +82,7 @@ defmodule Codebattle.Game.Server do
   end
 
   def handle_call({:transition, event, params}, _from, %{game: game, playbook: playbook} = state) do
-    case Game.transition(game, event, [params]) do
+    case apply(Fsm, event, [game, params]) do
       {{:error, reason}, _} ->
         {:reply, {:error, reason}, state}
 
@@ -104,5 +98,5 @@ defmodule Codebattle.Game.Server do
 
   # HELPERS
   defp server_name(game_id), do: {:via, :gproc, game_key(game_id)}
-  defp game_key(game_id), do: {:n, :l, {:game, "#{game_id}"}}
+  defp game_key(game_id), do: {:n, :l, {:game_srv, to_string(game_id)}}
 end

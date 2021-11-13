@@ -3,38 +3,30 @@ defmodule Codebattle.Game.Supervisor do
 
   use Supervisor
 
-  alias Codebattle.Game.Helpers
+  alias Codebattle.Game
 
-  def start_link({game_id, fsm}) do
-    Supervisor.start_link(__MODULE__, [game_id, fsm], name: supervisor_name(game_id))
+  def start_link(game) do
+    Supervisor.start_link(__MODULE__, game, name: supervisor_name(game.id))
   end
 
-  def init([game_id, fsm]) do
+  def init(game) do
     children = [
-      {Codebattle.Game.Server, {game_id, fsm}},
-      {Codebattle.Game.TimeoutServer, game_id},
-      {Codebattle.Bot.PlayersSupervisor, game_id}
+      {Game.Server, game},
+      {Game.TimeoutServer, game.id},
+      {Codebattle.Bot.PlayersSupervisor, game.id}
     ]
 
     chat =
-      case Helpers.get_tournament_id(fsm) do
-        nil -> [{Codebattle.Chat.Server, {:game, game_id}}]
+      case Game.Helpers.get_tournament_id(game) do
+        nil -> [{Codebattle.Chat.Server, {:game, game.id}}]
         _ -> []
       end
 
-    Supervisor.init(children ++ chat, strategy: :one_for_one)
-  end
-
-  def get_pid(game_id) do
-    :gproc.where(supervisor_key(game_id))
+    Supervisor.init(children ++ chat, strategy: :one_for_one) |> IO.inspect
   end
 
   # HELPERS
-  defp supervisor_name(game_id) do
-    {:via, :gproc, supervisor_key(game_id)}
-  end
 
-  defp supervisor_key(game_id) do
-    {:n, :l, {:game_supervisor, "#{game_id}"}}
-  end
+  defp supervisor_name(game_id), do: {:via, :gproc, supervisor_key(game_id)}
+  defp supervisor_key(game_id), do: {:n, :l, {:game_sup, to_string(game_id)}}
 end

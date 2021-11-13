@@ -2,152 +2,108 @@ defmodule Codebattleweb.GameControllerTest do
   use CodebattleWeb.ConnCase, async: false
 
   import Ecto.Query, warn: false
-  alias Codebattle.{Repo, Game}
-  alias Codebattle.Game.{ActiveGames, Server}
+  alias Codebattle.Game
 
-  test "return 404 when game over does not exists", %{conn: conn} do
-    user = insert(:user)
+  describe "GET games/:id" do
+    test "shows live waiting_opponent game", %{conn: conn} do
+      users = build_list(1, :user)
+      task = build(:task)
 
-    conn =
+      {:ok, game} =
+        Game.Context.create_game(%{state: "waiting_opponent", users: users, task: task})
+
       conn
-      |> put_session(:user_id, user.id)
-      |> get(Routes.game_path(conn, :show, 1_231_223))
-
-    assert conn.status == 404
-  end
-
-  test "return 200 when game is not active", %{conn: conn} do
-    user = insert(:user)
-    game = insert(:game, state: "game_over")
-
-    conn =
-      conn
-      |> put_session(:user_id, user.id)
       |> get(Routes.game_path(conn, :show, game.id))
+      |> html_response(200)
+    end
 
-    assert conn.status == 200
+    test "shows live playing game", %{conn: conn} do
+      users = build_list(2, :user)
+      task = build(:task)
+      {:ok, game} = Game.Context.create_game(%{state: "playing", users: users, task: task})
+
+      conn
+      |> get(Routes.game_path(conn, :show, game.id))
+      |> html_response(200)
+    end
+
+    test "shows live game_over game", %{conn: conn} do
+      users = build_list(2, :user)
+      task = build(:task)
+      {:ok, game} = Game.Context.create_game(%{state: "game_over", users: users, task: task})
+
+      conn
+      |> get(Routes.game_path(conn, :show, game.id))
+      |> html_response(200)
+    end
+
+    test "return 200 when game is not live", %{conn: conn} do
+      users = build_list(2, :user)
+      task = build(:task)
+      {:ok, game} = Game.Context.create_game(%{state: "game_over", users: users, task: task})
+      Game.Context.terminate_game(game)
+
+      conn
+      |> get(Routes.game_path(conn, :show, game.id))
+      |> html_response(200)
+    end
+
+    test "return 404 when game over does not exists", %{conn: conn} do
+      assert_error_sent(:not_found, fn ->
+        get(conn, Routes.game_path(conn, :show, 1_231_223))
+      end)
+    end
   end
 
-  test "show game_over html", %{conn: conn} do
-    user1 = build(:user)
-    user2 = build(:user)
-    state = :game_over
+  describe "DELETE /games/:id" do
+    test "cancels game", %{conn: conn} do
+      [user1 | _] = users = insert_list(1, :user)
+      task = build(:task)
 
-    data = %{
-      players: [
-        Player.build(user1, %{game_result: :won}),
-        Player.build(user2, %{game_result: :lost})
-      ]
-    }
+      {:ok, game} =
+        Game.Context.create_game(%{state: "waiting_opponent", users: users, task: task})
 
-    game = setup_game(state, data)
-
-    conn =
       conn
       |> put_session(:user_id, user1.id)
-      |> get(Routes.game_path(conn, :show, game.id))
+      |> delete(Routes.game_path(conn, :delete, game.id))
+      |> html_response(302)
 
-    assert conn.status == 200
+      updated = Game.Context.get_game(game.id)
+      assert updated.is_live == false
+      assert updated.state == "canceled"
+    end
   end
 
-  test "cancel game", %{conn: conn} do
-    user1 = insert(:user)
+  describe "POST /games/:id/join" do
+    test "joins game", %{conn: conn} do
+      task = insert(:task, level: "elementary")
 
-    conn1 =
-      create_game(
-        conn,
-        user1,
-        %{"type" => "withRandomPlayer", "level" => "elementary"}
-      )
+      [user1, user2] = insert_list(2, :user)
 
-    %{id: created_game_id} = redirected_params(conn1)
+      {:ok, game} =
+        Game.Context.create_game(%{state: "waiting_opponent", users: [user1], task: task})
 
-    game_id = String.to_integer(created_game_id)
-
-    assert ActiveGames.game_exists?(game_id) == true
-
-    conn =
       conn
-      |> put_session(:user_id, user1.id)
-      |> delete(Routes.game_path(conn, :delete, game_id))
+      |> put_session(:user_id, user2.id)
+      |> post(Routes.game_path(conn, :join, game.id))
+      |> html_response(302)
 
-    assert conn.status == 302
-
-    game = from(g in Game) |> Repo.get(game_id)
-
-    assert game.state == "canceled"
-    assert ActiveGames.game_exists?(game.id) == false
-    assert Server.game_pid(game.id) == :undefined
+      updated = Game.Context.get_game(game.id)
+      user1_id = user1.id
+      user2_id = user2.id
+      assert updated.is_live == true
+      assert updated.state == "playing"
+      assert [%{id: ^user1_id}, %{id: ^user2_id}] = updated.players
+    end
   end
 
-  test "create game", %{conn: conn} do
-    user = insert(:user)
+  describe "POST /games/training" do
+    test "creates training game", %{conn: conn} do
+      insert(:task, level: "elementary")
 
-    conn =
-      create_game(
-        conn,
-        user,
-        %{"type" => "withRandomPlayer", "level" => "elementary"}
-      )
-
-    assert conn.status == 302
-    assert %{id: created_game_id} = redirected_params(conn)
-
-    id = String.to_integer(created_game_id)
-
-    game = active_game(id)
-
-    assert game.players |> Enum.count() == 1
-    assert game.timeout_seconds == 3600
-    assert game.type == "public"
-    assert game.level == "elementary"
-  end
-
-  test "create private game with timeout", %{conn: conn} do
-    user = insert(:user)
-
-    conn =
-      create_game(
-        conn,
-        user,
-        %{"type" => "withFriend", "level" => "medium", "timeout_seconds" => "60"}
-      )
-
-    assert conn.status == 302
-    assert %{id: created_game_id} = redirected_params(conn)
-    id = String.to_integer(created_game_id)
-
-    game = active_game(id)
-
-    assert game.players |> Enum.count() == 1
-    assert game.timeout_seconds == 60
-    assert game.type == "private"
-    assert game.level == "medium"
-  end
-
-  test "create game and normalizes incorrect timeout and type values", %{conn: conn} do
-    user = insert(:user)
-
-    conn =
-      create_game(
-        conn,
-        user,
-        %{"type" => "a", "level" => "medium", "timeout_seconds" => "8"}
-      )
-
-    assert conn.status == 302
-    assert get_flash(conn, :danger) != nil
-    assert ActiveGames.get_games() == []
-  end
-
-  defp create_game(conn, user, params) do
-    conn
-    |> put_session(:user_id, user.id)
-    |> post(Routes.game_path(conn, :create, params))
-  end
-
-  defp active_game(id) do
-    ActiveGames.get_games()
-    |> Enum.find(fn %{id: game_id} -> game_id == id end)
+      conn
+      |> post(Routes.game_path(conn, :create_training))
+      |> html_response(302)
+    end
   end
 end

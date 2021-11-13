@@ -3,7 +3,7 @@ defmodule CodebattleWeb.Game.ImageController do
 
   alias Codebattle.Game.{Play, Helpers}
 
-  def show(conn, %{"id" => id}) do
+  def show(conn, %{"game_id" => id}) do
     case get_game_data(id) do
       {:ok, users, game} ->
         {:ok, image} =

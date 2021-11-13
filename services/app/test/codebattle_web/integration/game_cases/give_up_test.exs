@@ -1,7 +1,7 @@
 defmodule Codebattle.GameCases.GiveUpTest do
   use Codebattle.IntegrationCase
 
-  alias Codebattle.Game.{ActiveGames, Server}
+  alias Codebattle.Game.{LiveGames, Server}
   alias CodebattleWeb.UserSocket
 
   setup %{conn: conn} do
@@ -50,7 +50,7 @@ defmodule Codebattle.GameCases.GiveUpTest do
     assert fsm.state == :game_over
     assert Helpers.gave_up?(fsm, user1.id) == true
     assert Helpers.winner?(fsm, user2.id) == true
-    assert ActiveGames.game_exists?(game_id) == false
+    assert LiveGames.game_exists?(game_id) == false
   end
 
   test "first user won, second gave up", %{

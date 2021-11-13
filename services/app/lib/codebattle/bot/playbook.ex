@@ -6,7 +6,7 @@ defmodule Codebattle.Bot.Playbook do
   import Ecto.Query
   alias Codebattle.Bot.Playbook
   alias Codebattle.Repo
-  alias Codebattle.Game.{Play, Helpers}
+  alias Codebattle.Game
 
   defmodule Data do
     use Ecto.Schema
@@ -123,9 +123,9 @@ defmodule Codebattle.Bot.Playbook do
   end
 
   def store_playbook(playbook, game_id, task_id) do
-    {:ok, fsm} = Play.get_game(game_id)
+    game = Game.Context.get_game(game_id)
     data = create_final_game_playbook(playbook)
-    winner = Helpers.get_winner(fsm)
+    winner = Game.Helpers.get_winner(game)
 
     %Playbook{
       data: data,
@@ -133,7 +133,7 @@ defmodule Codebattle.Bot.Playbook do
       game_id: String.to_integer(to_string(game_id)),
       winner_id: winner && winner.id,
       winner_lang: winner && winner.id && winner.editor_lang,
-      solution_type: get_solution_type(winner, fsm)
+      solution_type: get_solution_type(winner, game)
     }
     |> Repo.insert()
   end
@@ -244,8 +244,8 @@ defmodule Codebattle.Bot.Playbook do
 
   defp increase_count(data), do: Map.update!(data, :count, &(&1 + 1))
 
-  defp get_solution_type(winner, fsm) do
-    case !!winner && Helpers.winner?(fsm, winner.id) do
+  defp get_solution_type(winner, game) do
+    case !!winner && Game.Helpers.winner?(game, winner.id) do
       true -> "complete"
       false -> "incomplete"
     end

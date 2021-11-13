@@ -29,7 +29,7 @@ defmodule CodebattleWeb.ConnCase do
       import Phoenix.ConnTest
       import Phoenix.LiveViewTest
       import CodebattleWeb.Factory
-      import Helpers.Game
+
       alias Codebattle.{Repo, User, Game, UserGame}
       alias Codebattle.Game.{Player}
       alias CodebattleWeb.Router.Helpers, as: Routes
@@ -42,7 +42,7 @@ defmodule CodebattleWeb.ConnCase do
   setup tags do
     :ok = Ecto.Adapters.SQL.Sandbox.checkout(Codebattle.Repo)
     # Clean ETS storage between tests
-    :ets.delete_all_objects(:active_games)
+    :ets.delete_all_objects(:live_games)
 
     unless tags[:async] do
       Ecto.Adapters.SQL.Sandbox.mode(Codebattle.Repo, {:shared, self()})

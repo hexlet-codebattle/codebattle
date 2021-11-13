@@ -5,7 +5,7 @@
 #     Engine,
 #     Server,
 #     Helpers,
-#     ActiveGames,
+#     LiveGames,
 #     Fsm,
 #     Elo,
 #     GlobalSupervisor
@@ -35,7 +35,7 @@
 #         with %Player{} = player <- Helpers.get_player(fsm, user.id),
 #              id <- Helpers.get_game_id(fsm),
 #              :ok <- player_can_cancel_game?(id, player) do
-#           ActiveGames.terminate_game(id)
+#           LiveGames.terminate_game(id)
 #           GlobalSupervisor.terminate_game(id)
 #           Notifications.remove_active_game(id)
 
@@ -66,7 +66,7 @@
 #         loser = Helpers.get_opponent(fsm, winner.id)
 #         store_game_result!(fsm, {winner, "won"}, {loser, "lost"})
 #         store_playbook(fsm)
-#         ActiveGames.terminate_game(game_id)
+#         LiveGames.terminate_game(game_id)
 #         Codebattle.PubSub.broadcast("game:finished", %{game: game, winner: winner, loser: loser})
 #         :ok
 #       end
@@ -76,7 +76,7 @@
 #         winner = Helpers.get_opponent(fsm, loser.id)
 #         store_game_result!(fsm, {winner, "won"}, {loser, "gave_up"})
 #         store_playbook(fsm)
-#         ActiveGames.terminate_game(game_id)
+#         LiveGames.terminate_game(game_id)
 #         Codebattle.PubSub.broadcast("game:finished", %{game: game, winner: winner, loser: loser})
 #       end
 
@@ -158,7 +158,7 @@
 #         :ok
 #       end
 
-#       def broadcast_active_game(fsm) do
+#       def broadcast_live_game(fsm) do
 #         CodebattleWeb.Endpoint.broadcast!("lobby", "game:upsert", %{
 #           game: GameView.render_active_game(fsm)
 #         })

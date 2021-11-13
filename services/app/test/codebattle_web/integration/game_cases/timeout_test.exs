@@ -1,7 +1,7 @@
 defmodule Codebattle.GameCases.TimeoutTest do
   use Codebattle.IntegrationCase
 
-  alias Codebattle.Game.{ActiveGames, Server}
+  alias Codebattle.Game.{LiveGames, Server}
   alias CodebattleWeb.UserSocket
 
   setup %{conn: conn} do
@@ -54,7 +54,7 @@ defmodule Codebattle.GameCases.TimeoutTest do
     assert {:error, :game_terminated} = Server.get_game(game_id)
     assert %{state: "timeout"} = Codebattle.Game.Play.get_game(game_id)
 
-    assert ActiveGames.game_exists?(game_id) == false
+    assert LiveGames.game_exists?(game_id) == false
   end
 
   test "After timeout user can create games", %{conn1: conn1, conn2: conn2, socket1: socket1} do

@@ -15,21 +15,23 @@ defmodule Codebattle.Game.Context do
     Server,
     Engine,
     Helpers,
-    ActiveGames,
+    LiveGames,
     GlobalSupervisor
   }
 
-  @type game_id :: integer
+  @type game_id :: non_neg_integer
 
   @type game_params :: %{
-          level: String.t(),
-          type: String.t(),
-          visibility_type: String.t(),
-          timeout_seconds: integer,
-          users: [User.t()]
+          task: Codebattle.Task.t() | nil,
+          state: String.t() | nil,
+          level: String.t() | nil,
+          type: String.t() | nil,
+          visibility_type: String.t() | nil,
+          timeout_seconds: non_neg_integer | nil,
+          users: nonempty_list(User.t())
         }
 
-  defdelegate get_active_games(params), to: ActiveGames
+  def get_live_games(params \\ %{}), do: LiveGames.get_games(params)
 
   @spec get_completed_games() :: [Game.t()]
   def get_completed_games do
@@ -45,25 +47,20 @@ defmodule Codebattle.Game.Context do
     Repo.all(query)
   end
 
-  @spec get_game(game_id) :: Game.t() | nil
+  @spec get_game(game_id) :: Game.t() | no_return
   def get_game(id) do
     case Server.get_game(id) do
-      nil -> get_from_db(id)
-      game -> game
+      {:ok, game} -> mark_as_live(game)
+      {:error, :not_found} -> get_from_db!(id)
     end
   end
 
-  @spec get_game!(game_id) :: Game.t()
-  def get_game!(id) do
-    case get_game(id) do
-      nil -> raise Ecto.NoResultsError
-      game -> game
+  @spec create_game(game_params) :: {:ok, Game.t()} | {:error, atom}
+  def create_game(game_params) do
+    case Engine.create_game(game_params) do
+      {:ok, game} -> {:ok, mark_as_live(game)}
+      {:error, reason} -> {:error, reason}
     end
-  end
-
-  @spec create_game(User.t(), game_params) :: {:ok, Game.t()} | {:error, atom}
-  def create_game(user, params) do
-    Engine.create_game(user, params)
   end
 
   @spec join_game(game_id, User.t()) :: {:ok, Game.t()} | {:error, atom}
@@ -73,27 +70,23 @@ defmodule Codebattle.Game.Context do
     |> Engine.join_game(user)
   end
 
-  @spec cancel_game(game_id, User.t()) :: {:ok, Game.t()} | {:error, atom}
+  @spec cancel_game(game_id, User.t()) :: :ok | {:error, atom}
   def cancel_game(id, user) do
-    case get_game(id) do
-      {:ok, game} -> Helpers.get_module(game).cancel_game(game, user)
-      {:error, reason} -> {:error, reason}
-    end
+    Engine.cancel_game(get_game(id), user)
   end
 
   @spec update_editor_data(game_id, User.t(), String.t(), String.t()) ::
           {:ok, Game.t()} | {:error, atom}
   def update_editor_data(id, user, editor_text, editor_lang) do
-    case get_game(id) do
-      {:ok, game} ->
-        Helpers.get_module(game).update_editor_data(game, %{
-          id: user.id,
-          editor_text: editor_text,
-          editor_lang: editor_lang
-        })
+    game = get_game(id)
 
-      {:error, reason} ->
-        {:error, reason}
+    case Engine.update_editor_data(game, %{
+           id: user.id,
+           editor_text: editor_text,
+           editor_lang: editor_lang
+         }) do
+      {:ok, game} -> {:ok, game}
+      {:error, reason} -> {:error, reason}
     end
   end
 
@@ -128,7 +121,7 @@ defmodule Codebattle.Game.Context do
           Server.update_playbook(id, :game_over, %{id: user.id, lang: editor_lang})
 
           player = Helpers.get_player(new_fsm, user.id)
-          Helpers.get_module(game).handle_won_game(id, player, new_fsm)
+          Engine.handle_won_game(id, player, new_fsm)
           {:ok, game, new_fsm, %{solution_status: true, check_result: check_result}}
         else
           {:ok, game, new_fsm, %{solution_status: false, check_result: check_result}}
@@ -143,7 +136,7 @@ defmodule Codebattle.Game.Context do
   def give_up(id, user) do
     case Server.call_transition(id, :give_up, %{id: user.id}) do
       {:ok, game} ->
-        Helpers.get_module(game).handle_give_up(id, user.id, game)
+        Engine.handle_give_up(id, user.id, game)
 
         {:ok, game}
 
@@ -195,33 +188,17 @@ defmodule Codebattle.Game.Context do
         terminate_game(id)
 
       {_, _tournament_id} ->
-        # TODO: terminate now after auto redirect to next tournament game
-        ActiveGames.terminate_game(id)
+        LiveGames.terminate_game(id)
         {:terminate_after, 20}
     end
   end
 
-  def terminate_game(id) do
-    {:ok, game} = get_game(id)
-
-    case Helpers.get_state(game) do
-      :game_over ->
-        GlobalSupervisor.terminate_game(id)
-
-      _ ->
-        Server.call_transition(id, :timeout, %{})
-        ActiveGames.terminate_game(id)
-        Helpers.get_module(game).store_playbook(game)
-        GlobalSupervisor.terminate_game(id)
-
-        id
-        |> get_game
-        |> Game.changeset(%{state: "timeout"})
-        |> Repo.update!()
-
-        :ok
-    end
+  @spec terminate_game(game_id | Game.t()) :: :ok
+  def terminate_game(%Game{} = game) do
+    Engine.terminate_game(game)
   end
+
+  def terminate_game(id), do: get_game(id) |> terminate_game()
 
   defp set_random_level(params) do
     level = Enum.random(["elementary", "easy", "medium", "hard"])
@@ -230,8 +207,10 @@ defmodule Codebattle.Game.Context do
 
   defp checker_adapter, do: Application.get_env(:codebattle, :checker_adapter)
 
-  defp get_from_db(id) do
-    query = from(g in Game, where: g.id == ^id, preload: [:users, :user_games])
-    Repo.one(query)
+  defp get_from_db!(id) do
+    query = from(g in Game, where: g.id == ^id, preload: [:task, :users, :user_games])
+    Repo.one!(query)
   end
+
+  defp mark_as_live(game), do: Map.put(game, :is_live, true)
 end

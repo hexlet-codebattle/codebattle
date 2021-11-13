@@ -9,6 +9,7 @@ defmodule Codebattle.Game.Player do
 
   alias Codebattle.CodeCheck.CheckResult
   alias Codebattle.CodeCheck.CheckResultV2
+  alias Codebattle.Game.Player
   alias Codebattle.Languages
   alias Codebattle.Tournament
   alias Codebattle.UserGame
@@ -45,6 +46,25 @@ defmodule Codebattle.Game.Player do
     field(:rating_diff, :integer, default: 0)
     field(:rank, :integer, default: -1)
     field(:achievements, {:array, :string}, default: [])
+  end
+
+  def changeset(%Player{} = player, attrs) do
+    player
+    |> cast(attrs, [
+      :id,
+      :name,
+      :is_bot,
+      :lang,
+      :editor_text,
+      :editor_lang,
+      :creator,
+      :game_result,
+      :check_result,
+      :achievements,
+      :rating,
+      :rating_diff,
+      :rank
+    ])
   end
 
   def build(struct, params \\ %{})
@@ -94,7 +114,7 @@ defmodule Codebattle.Game.Player do
     Map.merge(player, params)
   end
 
-  def build(user, params) do
+  def build(%Codebattle.User{} = user, params) do
     init_player =
       case user.id do
         nil ->

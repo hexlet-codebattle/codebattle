@@ -24,6 +24,8 @@ defmodule Codebattle.Game.Fsm do
   def timeout(%{state: "waiting_opponent"} = game), do: %{game | state: "timeout"}
 
   def check_success(%{state: "playing", players: players} = game, params) do
+    opponent = get_opponent(game, params.id)
+
     new_players =
       players
       |> update_player_params(%{
@@ -33,7 +35,7 @@ defmodule Codebattle.Game.Fsm do
         check_result: params.check_result,
         id: params.id
       })
-      |> update_players_except(params.id, %{ game_result: :lost })
+      |> update_player_params(%{game_result: "lost", id: opponent.id})
 
     %{game | state: "game_over", players: new_players}
   end
@@ -55,12 +57,12 @@ defmodule Codebattle.Game.Fsm do
   def check_failure(game, _params), do: game
 
   def give_up(%{state: "playing", players: players} = game, params) do
-    opponent = get_opponent(%{data: data}, params.id)
+    opponent = get_opponent(game, params.id)
 
     new_players =
       players
-      |> update_player_params(%{game_result: :gave_up, id: params.id})
-      |> update_player_params(%{game_result: :won, id: opponent.id})
+      |> update_player_params(%{game_result: "gave_up", id: params.id})
+      |> update_player_params(%{game_result: "won", id: opponent.id})
 
     %{game | state: "game_over", players: new_players}
   end
@@ -78,31 +80,31 @@ defmodule Codebattle.Game.Fsm do
 
   def timeout(game, _params), do: game
 
+  def rematch_reject(%{state: "game_over"} = game, params) do
+    %{game | rematch_state: "rejected"}
+  end
+
   def rematch_send_offer(%{state: "game_over"} = game, params) do
     new_rematch_data = handle_rematch_offer(game, params)
     Map.merge(game, new_rematch_data)
   end
 
-  def rematch_reject(%{state: "game_over"} = game, params) do
-    %{game | rematch_state: "rejected"}
-  end
+  # def rematch_send_offer(%Game{state: "game_over"} = game, params) do
+  #   case game.rematch_state do
+  #     "none" ->
+  #       %{rematch_state: "in_approval", rematch_initiator_id: params.player_id}
 
-  def rematch_send_offer(%Game{state: "game_over"} = game) do
-    case game.rematch_state do
-      "none" ->
-        %{rematch_state: "in_approval", rematch_initiator_id: params.player_id}
+  #     "in_approval" ->
+  #       if params.player_id == data.rematch_initiator_id,
+  #         do: %{},
+  #         else: %{rematch_state: "accepted"}
 
-      "in_approval" ->
-        if params.player_id == data.rematch_initiator_id,
-          do: %{},
-          else: %{rematch_state: "accepted"}
+  #     _ ->
+  #       %{}
+  #   end
+  # end
 
-      _ ->
-        %{}
-    end
-  end
-
-  def rematch_send_offer(game), do: game
+  def rematch_send_offer(game, _params), do: game
 
   defp handle_rematch_offer(%Game{rematch_state: "none"}, params) do
     %{rematch_state: "in_approval", rematch_initiator_id: params.player_id}
@@ -110,7 +112,7 @@ defmodule Codebattle.Game.Fsm do
 
   defp handle_rematch_offer(%Game{rematch_state: "in_approval"} = game, params),
     do:
-      if(params.player_id == data.rematch_initiator_id,
+      if(params.player_id == game.rematch_initiator_id,
         do: %{},
         else: %{rematch_state: :accepted}
       )

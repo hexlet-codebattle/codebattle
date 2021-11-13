@@ -1,11 +1,12 @@
-defmodule Codebattle.Game.ActiveGames do
+defmodule Codebattle.Game.LiveGames do
   @moduledoc """
-    ActiveGames for game list
+    ets with all active game
+    easy to search
   """
 
   alias Codebattle.Game.Helpers
 
-  @table_name :active_games
+  @table_name :live_games
 
   # {game_id, active, %{player_id => Player, player_id => Player}, %{level: "easy", state: :playing, timeout_seconds: 0, starts_at: Time, type: "private"}}
 
@@ -20,9 +21,7 @@ defmodule Codebattle.Game.ActiveGames do
 
   def get_games(params \\ %{}) do
     list_games(params)
-    |> Enum.filter(fn {_game_id, _players, %{type: type}} ->
-      type in ["public", "bot", "private"]
-    end)
+    |> Enum.filter(fn {_game_id, _players, %{type: type}} -> type in ["standard", "bot"] end)
     |> Enum.map(fn {_game_id, players, game_params} ->
       Map.merge(game_params, %{players: Map.values(players)})
     end)
@@ -44,16 +43,21 @@ defmodule Codebattle.Game.ActiveGames do
     :ok
   end
 
-  def create_game(fsm) do
-    game_id = Helpers.get_game_id(fsm)
-    :ets.insert_new(@table_name, {game_key(game_id), build_players(fsm), build_game_params(fsm)})
+  def create_game(game) do
+    game_id = Helpers.get_game_id(game)
+
+    :ets.insert_new(
+      @table_name,
+      {game_key(game_id), build_players(game), build_game_params(game)}
+    )
+
     :ok
   end
 
-  def update_game(fsm) do
-    game_id = Helpers.get_game_id(fsm)
+  def update_game(game) do
+    game_id = Helpers.get_game_id(game)
 
-    :ets.insert(@table_name, {game_key(game_id), build_players(fsm), build_game_params(fsm)})
+    :ets.insert(@table_name, {game_key(game_id), build_players(game), build_game_params(game)})
     :ok
   end
 
@@ -68,10 +72,10 @@ defmodule Codebattle.Game.ActiveGames do
     |> Kernel.!()
   end
 
-  def setup_game(fsm) do
-    game_id = Helpers.get_game_id(fsm)
+  def setup_game(game) do
+    game_id = Helpers.get_game_id(game)
 
-    :ets.insert(@table_name, {game_key(game_id), build_players(fsm), build_game_params(fsm)})
+    :ets.insert(@table_name, {game_key(game_id), build_players(game), build_game_params(game)})
     :ok
   end
 
@@ -79,20 +83,21 @@ defmodule Codebattle.Game.ActiveGames do
 
   defp game_key(game_id), do: "#{game_id}"
 
-  defp build_game_params(fsm) do
+  defp build_game_params(game) do
     %{
-      id: Helpers.get_game_id(fsm),
-      state: Helpers.get_state(fsm),
-      is_bot: Helpers.bot_game?(fsm),
-      level: Helpers.get_level(fsm),
-      inserted_at: Helpers.get_inserted_at(fsm),
-      type: Helpers.get_type(fsm),
-      timeout_seconds: Helpers.get_timeout_seconds(fsm)
+      id: game.id,
+      state: game.state,
+      level: game.level,
+      inserted_at: game.inserted_at,
+      type: game.type,
+      visibility_type: game.visibility_type,
+      timeout_seconds: game.timeout_seconds,
+      is_bot: Helpers.bot_game?(game)
     }
   end
 
-  defp build_players(fsm) do
-    fsm
+  defp build_players(game) do
+    game
     |> Helpers.get_players()
     |> Enum.reduce(%{}, fn player, acc -> Map.put(acc, player.id, player) end)
   end

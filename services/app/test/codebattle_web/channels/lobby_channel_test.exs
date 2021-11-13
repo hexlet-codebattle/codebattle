@@ -28,12 +28,12 @@ defmodule CodebattleWeb.LobbyChannelTest do
 
     {:ok,
      %{
-       active_games: active_games,
+       live_games: live_games,
        tournaments: tournaments,
        completed_games: completed_games
      }, _socket} = subscribe_and_join(socket, LobbyChannel, "lobby")
 
-    assert active_games
+    assert live_games
     assert tournaments
     assert completed_games
   end

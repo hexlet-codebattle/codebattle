@@ -1,17 +1,16 @@
 defmodule CodebattleWeb.GameController do
   use CodebattleWeb, :controller
-  import CodebattleWeb.Gettext
   import PhoenixGon.Controller
   require Logger
 
-  alias Codebattle.Game.ActiveGames
+  alias Codebattle.Game
   alias Codebattle.Game.Helpers
   alias Codebattle.Game.Context
   alias Codebattle.Languages
   alias Codebattle.User
   alias Codebattle.Bot.Playbook
 
-  plug(CodebattleWeb.Plugs.RequireAuth when action in [:join])
+  plug(CodebattleWeb.Plugs.RequireAuth when action in [:join, :delete])
 
   action_fallback(CodebattleWeb.FallbackController)
 
@@ -19,7 +18,7 @@ defmodule CodebattleWeb.GameController do
     user = conn.assigns.current_user
 
     case Context.get_game(id) do
-      {:ok, game} ->
+      %Game{is_live: true} = game ->
         conn =
           put_gon(conn,
             game_id: id,
@@ -27,10 +26,10 @@ defmodule CodebattleWeb.GameController do
             players: present_users_for_gon(Helpers.get_players(game))
           )
 
-        is_participant = ActiveGames.participant?(id, user.id)
+        is_player = Helpers.is_player?(game, user.id)
 
-        case {game.state, is_participant} do
-          {:waiting_opponent, false} ->
+        case {game.state, is_player} do
+          {"waiting_opponent", false} ->
             player = Helpers.get_first_player(game)
 
             conn
@@ -58,46 +57,37 @@ defmodule CodebattleWeb.GameController do
             |> render("show.html", %{game: game, layout_template: "full_width.html"})
         end
 
-      {:error, _reason} ->
-        case Context.get_game(id) do
-          nil ->
-            conn
-            |> put_status(:not_found)
-            |> put_view(CodebattleWeb.ErrorView)
-            |> render("404.html", %{msg: gettext("Game not found")})
+      game ->
+        if Playbook.exists?(game.id) do
+          langs = Languages.meta() |> Map.values()
 
-          game ->
-            if Playbook.exists?(id) do
-              langs = Languages.meta() |> Map.values()
+          [first, second] = get_users(game)
 
-              [first, second] = get_users(game)
-
-              conn
-              |> put_gon(
-                is_record: true,
-                game_id: id,
-                tournament_id: game.tournament_id,
-                langs: langs,
-                players: present_users_for_gon(game.users)
-              )
-              |> put_meta_tags(%{
-                title: "Hexlet Codebattle • Cool archived game",
-                description: "#{user_info(first)} vs #{user_info(second)}",
-                url: Routes.game_url(conn, :show, id),
-                image: Routes.game_image_url(conn, :show, id),
-                twitter: get_twitter_labels_meta(game.users)
-              })
-              |> render("show.html", %{layout_template: "full_width.html"})
-            else
-              conn
-              |> put_meta_tags(%{
-                title: "Hexlet Codebattle • Game Result",
-                description: "Game is over",
-                image: Routes.game_image_url(conn, :show, id),
-                url: Routes.game_url(conn, :show, id)
-              })
-              |> render("game_result.html", %{game: game})
-            end
+          conn
+          |> put_gon(
+            is_record: true,
+            game_id: id,
+            tournament_id: game.tournament_id,
+            langs: langs,
+            players: present_users_for_gon(game.users)
+          )
+          |> put_meta_tags(%{
+            title: "Hexlet Codebattle • Cool archived game",
+            description: "#{user_info(first)} vs #{user_info(second)}",
+            url: Routes.game_url(conn, :show, id),
+            image: Routes.game_image_url(conn, :show, id),
+            twitter: get_twitter_labels_meta(game.users)
+          })
+          |> render("show.html", %{layout_template: "full_width.html"})
+        else
+          conn
+          |> put_meta_tags(%{
+            title: "Hexlet Codebattle • Game Result",
+            description: "Game is over",
+            image: Routes.game_image_url(conn, :show, id),
+            url: Routes.game_url(conn, :show, id)
+          })
+          |> render("game_result.html", %{game: game})
         end
     end
   end
@@ -111,16 +101,30 @@ defmodule CodebattleWeb.GameController do
 
   def delete(conn, %{"id" => id}) do
     user = conn.assigns.current_user
-    {:ok, game} = Context.get_game(id)
 
-    with :ok <- Context.cancel_game(id, user) do
-      redirect(conn, to: Routes.page_path(conn, :index))
+    case Context.cancel_game(id, user) do
+      :ok -> redirect(conn, to: Routes.page_path(conn, :index))
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
+  def create_training(conn, _params) do
+    game_params = %{
+      level: "elementary",
+      type: "bot",
+      visibility_type: "hidden",
+      users: [conn.assigns.current_user, Codebattle.Bot.Builder.build()]
+    }
+
+    case Context.create_game(game_params) do
+      {:ok, game} -> redirect(conn, to: Routes.game_path(conn, :show, game.id))
+      {:error, reason} -> {:error, reason}
     end
   end
 
   defp user_info(user), do: "@#{user.name}(#{user.lang})-#{user.rating}"
 
-  defp player_info(nil, _fsm), do: ""
+  defp player_info(nil, _game), do: ""
 
   defp player_info(player, game) do
     "@#{player.name}(#{player.lang})-#{player.rating} level:#{Helpers.get_level(game)}"

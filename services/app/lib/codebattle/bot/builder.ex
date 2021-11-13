@@ -6,7 +6,7 @@ defmodule Codebattle.Bot.Builder do
 
   alias Codebattle.User
   alias Codebattle.Repo
-  alias Codebattle.Game.ActiveGames
+  alias Codebattle.Game.LiveGames
 
   def build(params \\ %{}) do
     query =
@@ -37,7 +37,7 @@ defmodule Codebattle.Bot.Builder do
 
   def build_free_bot do
     playing_bots_id =
-      ActiveGames.get_playing_bots()
+      LiveGames.get_playing_bots()
       |> Enum.map(fn bot -> bot.id end)
 
     query =
