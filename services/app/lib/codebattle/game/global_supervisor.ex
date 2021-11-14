@@ -23,7 +23,7 @@ defmodule Codebattle.Game.GlobalSupervisor do
         restart: :transient,
         start: {Game.Supervisor, :start_link, [game]}
       }
-    ) |> IO.inspect
+    )
   end
 
   def terminate_game(game_id) do

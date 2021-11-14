@@ -22,7 +22,7 @@ defmodule Codebattle.Game.Supervisor do
         _ -> []
       end
 
-    Supervisor.init(children ++ chat, strategy: :one_for_one) |> IO.inspect
+    Supervisor.init(children ++ chat, strategy: :one_for_one)
   end
 
   # HELPERS
