@@ -1,7 +1,7 @@
 defmodule Codebattle.CodeCheck.CheckResult do
   @moduledoc false
 
-  # statuses: :initial, :ok, :failure, :error
+  # statuses: "initial", "ok", "failure", "error"
 
   use TypedStruct
   @derive Jason.Encoder

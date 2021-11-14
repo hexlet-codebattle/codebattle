@@ -92,22 +92,19 @@ defmodule Codebattle.Game.Context do
 
   @spec check_game(game_id, User.t(), String.t(), String.t()) :: {:ok, Game.t()} | {:error, atom}
   def check_game(id, user, editor_text, editor_lang) do
+
     Server.update_playbook(id, :start_check, %{
       id: user.id,
       editor_text: editor_text,
       editor_lang: editor_lang
     })
 
-    case get_game(id) do
-      {:ok, game} ->
-        check_result =
-          checker_adapter().call(
-            Helpers.get_task(game),
-            editor_text,
-            editor_lang
-          )
+    game = get_game(id)
+    check_result = checker_adapter().call(game.task, editor_text, editor_lang)
 
-        {:ok, new_fsm} =
+    case check_result.status do
+      "ok" ->
+        {:ok, new_game} =
           Server.call_transition(id, :check_complete, %{
             id: user.id,
             check_result: check_result,
@@ -115,20 +112,28 @@ defmodule Codebattle.Game.Context do
             editor_lang: editor_lang
           })
 
-        winner = Helpers.get_winner(new_fsm) || %{id: nil}
+        case {game.state, new_game.state} do
+          {"playing", "game_over"} ->
+            Server.update_playbook(id, :game_over, %{id: user.id, lang: editor_lang})
 
-        if {game.state, new_fsm.state, winner.id} == {:playing, :game_over, user.id} do
-          Server.update_playbook(id, :game_over, %{id: user.id, lang: editor_lang})
+            player = Helpers.get_player(new_game, user.id)
+            Engine.handle_won_game(id, player, new_game)
+            {:ok, new_game, %{check_result: check_result}}
 
-          player = Helpers.get_player(new_fsm, user.id)
-          Engine.handle_won_game(id, player, new_fsm)
-          {:ok, game, new_fsm, %{solution_status: true, check_result: check_result}}
-        else
-          {:ok, game, new_fsm, %{solution_status: false, check_result: check_result}}
+          _ ->
+            nil
         end
 
-      {:error, reason} ->
-        {:error, reason}
+      _ ->
+        {:ok, new_game} =
+          Server.call_transition(id, :check_failure, %{
+            id: user.id,
+            check_result: check_result,
+            editor_text: editor_text,
+            editor_lang: editor_lang
+          })
+
+        {:ok, new_game, %{check_result: check_result}}
     end
   end
 

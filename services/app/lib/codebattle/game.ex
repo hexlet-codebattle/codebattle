@@ -14,7 +14,7 @@ defmodule Codebattle.Game do
   @states ~w(initial waiting_opponent playing game_over timeout canceled)
   @rematch_states ~w(none in_approval rejected accepted)
 
-  @types ~w(standard bot training)
+  @types ~w(standard bot training solo)
   @visibility_types ~w(hidden public)
 
   schema "games" do
@@ -29,6 +29,7 @@ defmodule Codebattle.Game do
     field(:rematch_initiator_id, :integer)
     field(:langs, {:array, :map}, default: [], virtual: true)
     field(:is_live, :boolean, default: false, virtual: true)
+    field(:timer_started, :boolean, default: false, virtual: true)
 
     timestamps()
 

@@ -25,7 +25,7 @@ defmodule Codebattle.Game.Engine do
   def create_game(params) do
     level = params[:level] || get_random_level()
     task = params[:task] || get_task(level)
-    state = params[:state] || "playing"
+    state = params[:state] || get_state_from_params(params)
     type = params[:type] || "standard"
     visibility_type = params[:visibility_type] || "public"
     timeout_seconds = params[:timeout_seconds] || @default_timeout
@@ -239,9 +239,14 @@ defmodule Codebattle.Game.Engine do
     |> Repo.insert()
   end
 
+  # deprecated
   defp create_rematch_game(game) do
     create_game(game)
   end
+
+  def get_state_from_params(%{type: "solo", users: [_user]}), do: "playing"
+  def get_state_from_params(%{users: [_user1, _user2]}), do: "playing"
+  def get_state_from_params(%{users: [_user]}), do: "waiting_opponent"
 
   defp tasks_provider do
     Application.get_env(:codebattle, :tasks_provider)

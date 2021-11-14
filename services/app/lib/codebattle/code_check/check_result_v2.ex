@@ -4,7 +4,7 @@ defmodule Codebattle.CodeCheck.CheckResultV2 do
   @moduledoc """
   statuses:
   initial ->  no check runs
-  ok -> successfully all tests
+  ok -> all tests were successful
   failure -> some tests fails
   error -> compile error, or out of memory
   """

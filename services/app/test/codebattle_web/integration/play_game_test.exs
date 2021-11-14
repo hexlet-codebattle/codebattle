@@ -1,11 +1,8 @@
 defmodule Codebattle.PlayGameTest do
   use Codebattle.IntegrationCase
 
-  alias Codebattle.Game.Server
-  alias CodebattleWeb.UserSocket
-
   setup %{conn: conn} do
-    insert(:task)
+    insert(:task, level: "easy")
     user1 = insert(:user, %{name: "first", email: "test1@test.test", github_id: 1, rating: 1000})
     user2 = insert(:user, %{name: "second", email: "test2@test.test", github_id: 2, rating: 1000})
     user3 = insert(:user, %{name: "other", email: "test3@test.test", github_id: 3, rating: 1000})
@@ -41,43 +38,41 @@ defmodule Codebattle.PlayGameTest do
     user2: user2
   } do
     # Create game
-    conn =
-      conn1
-      |> get(Routes.page_path(conn1, :index))
-      |> post(game_path(conn1, :create, level: "easy", type: "withRandomPlayer"))
 
-    game_id = game_id_from_conn(conn)
+    {:ok, _response, socket1} = subscribe_and_join(socket1, LobbyChannel, "lobby")
+
+    ref = Phoenix.ChannelTest.push(socket1, "game:create", %{level: "easy"})
+    Phoenix.ChannelTest.assert_reply(ref, :ok, %{game_id: game_id})
 
     game_topic = "game:" <> to_string(game_id)
     {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
 
-    {:ok, fsm} = Server.get_game(game_id)
+    game = Game.Context.get_game(game_id)
 
-    assert fsm.state == :waiting_opponent
-    assert Helpers.get_first_player(fsm).name == "first"
-    assert Helpers.get_second_player(fsm) == nil
+    assert game.state == "waiting_opponent"
+    assert Game.Helpers.get_first_player(game).name == "first"
+    assert Game.Helpers.get_second_player(game) == nil
 
     # First player cannot join to game as second player
     post(conn1, game_path(conn1, :join, game_id))
-    {:ok, fsm} = Server.get_game(game_id)
+    game = Game.Context.get_game(game_id)
 
-    assert fsm.state == :waiting_opponent
-    assert Helpers.get_first_player(fsm).name == "first"
-    assert Helpers.get_second_player(fsm) == nil
+    assert game.state == "waiting_opponent"
+    assert [_player] = game.players
 
     # Second player join game
     post(conn2, game_path(conn2, :join, game_id))
     {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
-    {:ok, fsm} = Server.get_game(game_id)
+    game = Game.Context.get_game(game_id)
 
-    assert fsm.state == :playing
-    assert Helpers.get_first_player(fsm).name == "first"
-    assert Helpers.get_second_player(fsm).name == "second"
+    assert game.state == "playing"
+    assert Helpers.get_first_player(game).name == "first"
+    assert Helpers.get_second_player(game).name == "second"
 
-    assert Helpers.get_first_player(fsm).editor_text ==
+    assert Helpers.get_first_player(game).editor_text ==
              "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n\treturn 0;\n};\n\nmodule.exports = solution;"
 
-    assert Helpers.get_second_player(fsm).editor_text ==
+    assert Helpers.get_second_player(game).editor_text ==
              "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n\treturn 0;\n};\n\nmodule.exports = solution;"
 
     # First player won
@@ -91,14 +86,14 @@ defmodule Codebattle.PlayGameTest do
     })
 
     :timer.sleep(100)
-    {:ok, fsm} = Server.get_game(game_id)
-    assert fsm.state == :game_over
-    assert Helpers.get_first_player(fsm).name == "first"
-    assert Helpers.get_second_player(fsm).name == "second"
-    assert Helpers.get_winner(fsm).name == "first"
-    assert Helpers.get_first_player(fsm).editor_text == "Hello world1!"
+    game = Game.Context.get_game(game_id)
+    assert game.state == :game_over
+    assert Helpers.get_first_player(game).name == "first"
+    assert Helpers.get_second_player(game).name == "second"
+    assert Helpers.get_winner(game).name == "first"
+    assert Helpers.get_first_player(game).editor_text == "Hello world1!"
 
-    assert Helpers.get_second_player(fsm).editor_text ==
+    assert Helpers.get_second_player(game).editor_text ==
              "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n\treturn 0;\n};\n\nmodule.exports = solution;"
 
     # Winner cannot check results again
@@ -108,15 +103,15 @@ defmodule Codebattle.PlayGameTest do
     })
 
     :timer.sleep(100)
-    {:ok, fsm} = Server.get_game(game_id)
+    game = Game.Context.get_game(game_id)
 
-    assert fsm.state == :game_over
-    assert Helpers.get_first_player(fsm).name == "first"
-    assert Helpers.get_second_player(fsm).name == "second"
-    assert Helpers.get_winner(fsm).name == "first"
-    assert Helpers.get_first_player(fsm).editor_text == "Hello world2!"
+    assert game.state == :game_over
+    assert Helpers.get_first_player(game).name == "first"
+    assert Helpers.get_second_player(game).name == "second"
+    assert Helpers.get_winner(game).name == "first"
+    assert Helpers.get_first_player(game).editor_text == "Hello world2!"
 
-    assert Helpers.get_second_player(fsm).editor_text ==
+    assert Helpers.get_second_player(game).editor_text ==
              "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n\treturn 0;\n};\n\nmodule.exports = solution;"
 
     # Second player complete game
@@ -161,11 +156,11 @@ defmodule Codebattle.PlayGameTest do
 
     # Other player cannot join game
     post(conn3, game_path(conn3, :join, game_id))
-    {:ok, fsm} = Server.get_game(game_id)
+    {:ok, game} = Game.Context.get_game(game_id)
 
-    assert fsm.state == :playing
-    assert Helpers.get_first_player(fsm).name == "first"
-    assert Helpers.get_second_player(fsm).name == "second"
+    assert game.state == :playing
+    assert Helpers.get_first_player(game).name == "first"
+    assert Helpers.get_second_player(game).name == "second"
 
     # Other player cannot win game
     {:ok, _response, socket3} = subscribe_and_join(socket3, GameChannel, game_topic)
@@ -175,10 +170,10 @@ defmodule Codebattle.PlayGameTest do
       lang_slug: "js"
     })
 
-    {:ok, fsm} = Server.get_game(game_id)
+    {:ok, game} = Game.Context.get_game(game_id)
 
-    assert fsm.state == :playing
-    assert Helpers.get_first_player(fsm).name == "first"
-    assert Helpers.get_second_player(fsm).name == "second"
+    assert game.state == :playing
+    assert Helpers.get_first_player(game).name == "first"
+    assert Helpers.get_second_player(game).name == "second"
   end
 end

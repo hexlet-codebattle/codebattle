@@ -17,6 +17,8 @@ defmodule Codebattle.IntegrationCase do
       alias Codebattle.{Repo, User, Game, UserGame}
       alias Codebattle.Game.Helpers
       alias CodebattleWeb.GameChannel
+      alias CodebattleWeb.LobbyChannel
+      alias CodebattleWeb.UserSocket
 
       @endpoint CodebattleWeb.Endpoint
 
