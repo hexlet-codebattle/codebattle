@@ -8,6 +8,7 @@ defmodule CodebattleWeb.ChatChannelTest do
   setup do
     user1 = insert(:user, name: "alice")
     user2 = insert(:user, name: "bob")
+    admin = insert(:admin)
 
     user_token1 = Phoenix.Token.sign(socket(UserSocket), "user_token", user1.id)
     {:ok, socket1} = connect(UserSocket, %{"token" => user_token1})
@@ -15,7 +16,11 @@ defmodule CodebattleWeb.ChatChannelTest do
     user_token2 = Phoenix.Token.sign(socket(UserSocket), "user_token", user2.id)
     {:ok, socket2} = connect(UserSocket, %{"token" => user_token2})
 
-    {:ok, %{user1: user1, user2: user2, socket1: socket1, socket2: socket2}}
+    admin_token = Phoenix.Token.sign(socket(UserSocket), "user_token", admin.id)
+    {:ok, admin_socket} = connect(UserSocket, %{"token" => admin_token})
+
+    {:ok,
+     %{user1: user1, user2: user2, socket1: socket1, socket2: socket2, admin_socket: admin_socket}}
   end
 
   test "sends chat info when user join", %{user1: user1, socket1: socket1} do
@@ -95,11 +100,12 @@ defmodule CodebattleWeb.ChatChannelTest do
     assert length(users) == 1
   end
 
-  test "bans_user ", %{socket1: socket1, socket2: socket2} do
+  test "bans user", %{socket1: socket1, socket2: socket2, admin_socket: admin_socket} do
     assert Server.get_messages(:lobby) == []
 
     {:ok, _response, socket1} = subscribe_and_join(socket1, ChatChannel, "chat:lobby")
     {:ok, _response, socket2} = subscribe_and_join(socket2, ChatChannel, "chat:lobby")
+    {:ok, _response, admin_socket} = subscribe_and_join(admin_socket, ChatChannel, "chat:lobby")
 
     push(socket1, "chat:new_msg", %{"text" => "oi"})
     :timer.sleep(50)
@@ -123,7 +129,7 @@ defmodule CodebattleWeb.ChatChannelTest do
              %{name: "alice", text: "invalid_content", time: _}
            ] = Server.get_messages(:lobby)
 
-    push(socket2, "chat:command", %{
+    push(admin_socket, "chat:command", %{
       "command" => %{"type" => "ban", "name" => "alice", "duration" => "3h"}
     })
 
@@ -131,7 +137,7 @@ defmodule CodebattleWeb.ChatChannelTest do
 
     assert [
              %{name: "bob", text: "blz", time: _},
-             %{name: "CB", text: "alice has been banned by bob", type: "info", time: _}
+             %{name: "CB", text: "alice has been banned by admin", type: "info", time: _}
            ] = Server.get_messages(:lobby)
   end
 

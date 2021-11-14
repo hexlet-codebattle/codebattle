@@ -21,7 +21,7 @@ defmodule CodebattleWeb.Factory do
 
   def admin_factory do
     %User{
-      name: "bob",
+      name: "admin",
       email: sequence(:username, &"test#{&1}@test.io"),
       rating: 123,
       github_id: :rand.uniform(9_999_999),
