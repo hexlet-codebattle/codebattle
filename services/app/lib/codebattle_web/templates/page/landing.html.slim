@@ -5,7 +5,7 @@ h1.d-none Codebattle
       a.navbar-brand.d-flex.align-items-end href="/"
         img alt="Logo" src="/assets/images/logo.svg"
         .d-flex.flex-column.text-gray.ml-1.pb-1
-          span.font-weight-bold.header-txt Codebattle
+          span.header-txt Codebattle
           span.header-txt by Hexlet’s community
       button.navbar-toggler aria-controls="navbarResponsive" aria-expanded="false" aria-label=("Toggle navigation") data-target="#navbarResponsive" data-toggle="collapse" type="button"
         span.navbar-toggler-icon
@@ -25,18 +25,19 @@ h1.d-none Codebattle
         button type="button" class="close" data-dismiss="alert" aria-label="Close"
           span aria-hidden="true" &times;
     .bg-codebattle
-      .text-white.py-6
-        p.mb-0 Have fun and improve your skills
-        p.mb-0
-          | Beat the challenge faster than your opponent using your ❤ language
-        .row.mt-5
-          .col-md-8
-            h1.text-uppercase.text-light
-              | A place where your fingers become arms
-        hr.w-25.mx-0.hr-gray
-        button.btn.btn-outline-red.text-uppercase.mt-3.p-3[data-method="post" data-csrf="<%= csrf_token() %>" data-to="/games?level=elementary&amp;type=training&amp;timeout_seconds=3600"]
-          | Try simple battle
-        span.d-block.mt-2.text-muted No registration required
+      .text-white.py-6.d-flex.flex-column
+        div
+          p.mb-0 Have fun and improve your skills
+          p.mb-0
+            | Beat the challenge faster than your opponent using your ❤ language
+        .col-md-8.pl-0.mt-4
+          h1.text-uppercase.text-light
+            | A place where your fingers become arms
+        hr.w-25.mx-0.hr-gray.my-4
+        div
+          button.btn.btn-outline-red.text-uppercase.mt-3.p-3[data-method="post" data-csrf="<%= csrf_token() %>" data-to="/games?level=elementary&amp;type=training&amp;timeout_seconds=3600"]
+            | Try simple battle
+          span.d-block.mt-2.text-muted No registration required
 .bg-light.py-5
   .container-lg.pb-xl-6
     .d-flex.flex-lg-row.flex-column.justify-content-between
@@ -46,29 +47,31 @@ h1.d-none Codebattle
         .pr-lg-5
           p
             | It's a game for developers. It's very simple: solve the coding challenge faster than your opponent using your ❤ language.
-          p.mt-4
+          p.mt-3
             | We help beginner and experienced developers spend time with fun, gain new knowledge and grow professionally.
-          p.mt-4
-            | Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-      .d-flex.flex-column.justify-content-center.justify-content-lg-end.w-100
+          p.mt-3
+            |  You can battle in single player mode with bots or against your friends.
+          p.mt-3
+            | Participate in monthly individual or team tournaments with prizes or create your own to find the best developer in your team.
+      .d-flex.flex-column.w-100
         h2.order-lg-2.mt-3.text-uppercase.text-center.text-lg-right.text-orange.text-nowrap
           | {{Languages}}
-        .order-lg-1.d-flex.justify-content-center.justify-content-lg-end.flex-wrap
-          img.mx-2.my-1 alt="python" src="/assets/images/landing/languages/python.svg"
-          img.mx-2.my-1 alt="php" src="/assets/images/landing/languages/php.svg"
-          img.mx-2.my-1 alt="typescript" src="/assets/images/landing/languages/ts.svg"
-          img.mx-2.my-1 alt="java" src="/assets/images/landing/languages/java.svg"
-          img.mx-2.my-1 alt="cpp" src="/assets/images/landing/languages/cpp.svg"
-          img.mx-2.my-1 alt="ruby" src="/assets/images/landing/languages/ruby.svg"
-          img.mx-2.my-1 alt="haskell" src="/assets/images/landing/languages/haskell.svg"
-          img.mx-2.my-1 alt="kotlin" src="/assets/images/landing/languages/kotlin.svg"
-          img.mx-2.my-1 alt="javascript" src="/assets/images/landing/languages/js.svg"
-          img.mx-2.my-1 alt="go" src="/assets/images/landing/languages/go.svg"
-          img.mx-2.my-1 alt="elixir" src="/assets/images/landing/languages/elixir.svg"
-          img.mx-2.my-1 alt="csharp" src="/assets/images/landing/languages/c-sharp.svg"
-          img.mx-2.my-1 alt="clojure" src="/assets/images/landing/languages/clojure.svg"
-          img.mx-2.my-1 alt="dart" src="/assets/images/landing/languages/dart.svg"
-          img.mx-2.my-1 alt="dart" src="/assets/images/landing/languages/erlang.svg"
+        .order-lg-1.lang-icons
+          img alt="python" src="/assets/images/landing/languages/python.svg"
+          img alt="php" src="/assets/images/landing/languages/php.svg"
+          img alt="java" src="/assets/images/landing/languages/java.svg"
+          img alt="cpp" src="/assets/images/landing/languages/cpp.svg"
+          img alt="ruby" src="/assets/images/landing/languages/ruby.svg"
+          img alt="haskell" src="/assets/images/landing/languages/haskell.svg"
+          img alt="kotlin" src="/assets/images/landing/languages/kotlin.svg"
+          img alt="javascript" src="/assets/images/landing/languages/js.svg"
+          img alt="go" src="/assets/images/landing/languages/go.svg"
+          img alt="elixir" src="/assets/images/landing/languages/elixir.svg"
+          img alt="csharp" src="/assets/images/landing/languages/c-sharp.svg"
+          img alt="clojure" src="/assets/images/landing/languages/clojure.svg"
+          img alt="typescript" src="/assets/images/landing/languages/ts.svg"
+          img alt="dart" src="/assets/images/landing/languages/dart.svg"
+          img alt="erlang" src="/assets/images/landing/languages/erlang.svg"
 .dark-bg.text-white
   .container-lg
     .d-flex.flex-wrap.flex-column.flex-lg-row.justify-content-md-around.text-black.text-center.x-tranform-none.x-translate-xl-y-50.x-top-0.py-5.py-xl-0
@@ -76,19 +79,19 @@ h1.d-none Codebattle
         .my-auto
           h2
             span.text-orange ≥
-            | 196
+            | 256
           span.my-3.lead Task.all.count()
       .d-flex.flex-column.p-5.factoid.bg-light.shadow-lg.my-3.my-lg-0.mx-auto
         .my-auto
           h2
             span.text-orange >
-            | 3617
+            | 5400
           span.my-3.lead User.all.count()
       .d-flex.flex-column.p-5.factoid.bg-light.shadow-lg.mx-auto
         .my-auto
           h2
-            span.text-orange ~
-            | 17000
+            span.text-orange >
+            | 56_000
           span.my-3.lead Game.all.count()
     .d-flex.mt-2
       hr.w-100.my-auto.ml-0.hr-red.mr-sm-3.d-none.d-md-block
@@ -103,7 +106,7 @@ h1.d-none Codebattle
         p.mt-3 For experienced who want to break records
       .col-sm-3.text-center
         img alt="friend" src="/assets/images/landing/friends.svg"
-        p.mt-3 For friends who want to arrange a hack
+        p.mt-3 For friends who want to battle each ohter
       .col-sm-3.text-center
         img alt="enthusiast" src="/assets/images/landing/enthusiast.svg"
         p.mt-3 For those who are in love with programming
@@ -116,9 +119,9 @@ h1.d-none Codebattle
     img.w-100.my-5.pr-md-5 alt="algorithm" src="/assets/images/landing/flowchart.svg"
 .bg-light.py-5
   .container-lg
-    h2.text-uppercase.text-center.mb-5  ="{{Comments}}"
-    .d-flex.justify-content-around.flex-wrap
-      .comment.border.border-dark.mt-3.d-flex.flex-column
+    h2.text-uppercase.text-center.mb-0.pt-5  = "{{Comments}}"
+    .comments.mt-5
+      .comment.border.border-dark.d-flex.flex-column
         .d-flex.flex-wrap.align-items-center
           img alt="Journalist" src="/assets/images/landing/photo1.png"
           .mx-3
@@ -126,7 +129,7 @@ h1.d-none Codebattle
             p Middle frontend engineer
         .h-100.d-flex
           img.w-100.my-auto alt="comment" src="/assets/images/landing/comment.png"
-      .comment.border.border-dark.mt-3.d-flex.flex-column
+      .comment.border.border-dark.d-flex.flex-column
         .d-flex.flex-wrap.align-items-center.justify-content-end
           .text-right.mx-3
             p.font-weight-bold.mb-0.text-uppercase Rosa Robot
@@ -134,7 +137,7 @@ h1.d-none Codebattle
           img alt="rosa" src="/assets/images/landing/photo2.png"
         .h-100.d-flex
           img.w-100.my-auto alt="comment" src="/assets/images/landing/html.png"
-      .comment.border.border-dark.mt-3.mt-xl-5.d-flex.flex-column.justify-content-end
+      .comment.border.border-dark.d-flex.flex-column.justify-content-end
         .h-100.d-flex
           img.w-100.my-auto alt="comment" src="/assets/images/landing/comment2.png"
         .d-flex.flex-wrap.align-items-center
@@ -142,7 +145,7 @@ h1.d-none Codebattle
           .mx-3
             p.font-weight-bold.mb-0 SHERSHNYAGA
             p.mb-0 Senior frontend dev
-      .comment.border.border-dark.mt-3.mt-xl-5.d-flex.flex-column.justify-content-end
+      .comment.border.border-dark.d-flex.flex-column.justify-content-end
         .h-100.d-flex.pt-1.mt-3
           img.w-100.my-auto alt="comment" src="/assets/images/landing/comment3.png"
         .d-flex.flex-wrap.align-items-center.justify-content-end
@@ -152,7 +155,7 @@ h1.d-none Codebattle
           img alt="Engineer" src="/assets/images/landing/photo3.png"
 .bg-light.py-5
   .container-lg
-    h2.text-uppercase.text-center thanks to all contributors
+    h2.text-uppercase.text-center.mb-0  = "{{Contributors}}"
     .mt-5
       .d-flex
         a.text-uppercase.text-black.fw-500 href="https://github.com/hexlet-codebattle/codebattle"
