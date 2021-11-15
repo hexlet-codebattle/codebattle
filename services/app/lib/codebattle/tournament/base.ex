@@ -38,6 +38,7 @@ defmodule Codebattle.Tournament.Base do
           |> get_players
           |> Enum.concat([player])
           |> Enum.uniq_by(fn x -> x.id end)
+          |> Enum.take(16)
 
         new_data =
           tournament |> Map.get(:data) |> Map.merge(%{players: players}) |> Map.from_struct()
