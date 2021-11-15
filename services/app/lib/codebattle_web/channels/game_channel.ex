@@ -73,10 +73,8 @@ defmodule CodebattleWeb.GameChannel do
     case Context.check_game(game_id, user, editor_text, lang_slug) do
       {:ok, game, %{solution_status: solution_status, check_result: check_result}} ->
         broadcast!(socket, "user:check_complete", %{
-          # TODO: drop solution_status, check result in check_result
-          solution_status: check_result.status == "ok",
+          solution_status: check_result.solution_status,
           user_id: user.id,
-          # TODO: rename status to state on frontend
           status: game.state,
           players: Helpers.get_players(game),
           check_result: check_result

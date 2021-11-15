@@ -30,32 +30,27 @@ defmodule Codebattle.User do
 
   defimpl Jason.Encoder, for: Codebattle.User do
     def encode(user, opts) do
-      Jason.Encode.map(
-        user
-        |> Map.take([
-          :id,
-          :name,
-          :rating,
-          :is_bot,
-          :guest,
-          :github_id,
-          :github_name,
-          :lang,
-          :editor_mode,
-          :editor_theme,
-          :achievements,
-          :rank,
-          :games_played,
-          :performance,
-          :inserted_at,
-          :sound_settings,
-          :discord_name,
-          :discord_id,
-          :discord_avatar
-        ])
-        |> Map.put(:is_admin, Codebattle.User.is_admin?(user)),
-        opts
-      )
+      user
+      |> Map.take([
+        :id,
+        :name,
+        :rating,
+        :is_bot,
+        :guest,
+        :github_id,
+        :lang,
+        :editor_mode,
+        :editor_theme,
+        :achievements,
+        :rank,
+        :games_played,
+        :performance,
+        :inserted_at,
+        :sound_settings
+      ])
+      |> Map.put(:is_admin, Codebattle.User.is_admin?(user))
+      |> Map.put(:avatar_url, Codebattle.User.avatar_url(user))
+      |> Jason.Encode.map(opts)
     end
   end
 
@@ -71,15 +66,18 @@ defmodule Codebattle.User do
     field(:public_id, :binary_id)
     field(:is_bot, :boolean, default: false)
     field(:rank, :integer, default: 5432)
-    field(:guest, :boolean, virtual: true, default: false)
-    field(:games_played, :integer, virtual: true)
-    field(:performance, :integer, virtual: true)
     field(:achievements, {:array, :string}, default: [], null: false)
     field(:discord_name, :string)
     field(:discord_id, :integer)
     field(:discord_avatar, :string)
     field(:firebase_uid, :string)
     # level range: 0..10, types: ["standard", "silent"]
+
+    field(:games_played, :integer, virtual: true)
+    field(:performance, :integer, virtual: true)
+    field(:guest, :boolean, virtual: true, default: false)
+    field(:avatar_url, :string, virtual: true)
+
     embeds_one(:sound_settings, SoundSettings, on_replace: :update)
 
     has_many(:user_games, Codebattle.UserGame)
@@ -130,7 +128,6 @@ defmodule Codebattle.User do
     }
   end
 
-  # TODO: add avatar_url field to user
   def avatar_url(user) do
     cond do
       user.github_id ->

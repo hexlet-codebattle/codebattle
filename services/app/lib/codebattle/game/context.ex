@@ -19,6 +19,32 @@ defmodule Codebattle.Game.Context do
     GlobalSupervisor
   }
 
+     # with_bot =
+     # create_game
+     #   {
+     #     level: level,
+     #     type: bot,
+     #     timeout_seconds: timeout_seconds,
+     #     visibility_type: public,
+     #   }
+     # with_friend =
+     # create_invite
+     #   {
+     #     level: level,
+     #     type: standard,
+     #     timeout_seconds: timeout_seconds,
+     #     visibility_type: hidden,
+     #   }
+
+     # with_other_users =
+     # create_game
+     #   {
+     #     level: level,
+     #     type: standard,
+     #     timeout_seconds: timeout_seconds,
+     #     visibility_type: public,
+     #   }
+
   @type game_id :: non_neg_integer
 
   @type game_params :: %{

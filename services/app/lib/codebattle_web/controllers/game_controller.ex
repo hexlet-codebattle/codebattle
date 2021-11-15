@@ -111,7 +111,7 @@ defmodule CodebattleWeb.GameController do
   def create_training(conn, _params) do
     game_params = %{
       level: "elementary",
-      type: "bot",
+      type: "training",
       visibility_type: "hidden",
       users: [conn.assigns.current_user, Codebattle.Bot.Builder.build()]
     }

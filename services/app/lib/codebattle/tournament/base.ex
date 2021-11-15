@@ -39,6 +39,7 @@ defmodule Codebattle.Tournament.Base do
           |> get_players
           |> Enum.concat([player])
           |> Enum.uniq_by(fn x -> x.id end)
+          |> Enum.take(16)
 
         new_data =
           tournament |> Map.get(:data) |> Map.merge(%{players: players}) |> Map.from_struct()
@@ -244,7 +245,7 @@ defmodule Codebattle.Tournament.Base do
       end
 
       def update!(tournament, params) do
-        tournament |> Tournament.changeset(params) |> Repo.update!()
+        t |> Codebattle.Tournament.changeset(%{difficulty: "easy"}) |> Codebattle.Repo.update!()
       end
 
       def finish_all_active_matches(tournament) do

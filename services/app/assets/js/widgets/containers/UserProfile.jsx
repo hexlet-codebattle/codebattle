@@ -9,18 +9,6 @@ import CompletedGames from '../components/Game/CompletedGames';
 import Heatmap from './Heatmap';
 import Loading from '../components/Loading';
 
-const getUserAvatarUrl = ({ githubId, discordId, discordAvatar }) => {
-  if (githubId) {
-    return `https://avatars0.githubusercontent.com/u/${githubId}`;
-  }
-
-  if (discordId) {
-    return `https://cdn.discordapp.com/avatars/${discordId}/${discordAvatar}`;
-  }
-
-  return 'https://avatars0.githubusercontent.com/u/35539033';
-};
-
 const UserProfile = () => {
   const [stats, setStats] = useState(null);
   const completedGames = useSelector(state => state.completedGames.completedGames);
@@ -200,7 +188,7 @@ const UserProfile = () => {
           <div className="mb-4">
             <img
               className="attachment user avatar img-fluid rounded"
-              src={getUserAvatarUrl(stats.user)}
+              src={stats.user.avatarUrl}
               alt={stats.user.name}
             />
           </div>

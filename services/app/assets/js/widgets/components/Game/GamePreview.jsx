@@ -1,6 +1,7 @@
 import React from 'react';
 import LanguageIcon from '../LanguageIcon';
 
+// TODO : user user.avatarUrl
 const GamePreview = ({ player1, player2 }) => (
   <div className="preview container-fluid slideInLeft">
     <div className="preview__container w-100 d-flex align-items-center">

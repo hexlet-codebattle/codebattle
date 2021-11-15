@@ -1,8 +1,7 @@
 export default {
   public: 'public',
-  hidden: 'hidden',
+  private: 'private',
   bot: 'bot',
   training: 'training',
-  standard: 'standard',
   tournament: 'tournament',
 };
