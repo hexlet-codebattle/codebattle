@@ -13,9 +13,7 @@ defmodule CodebattleWeb.Game.CreateGame do
         _ -> params["level"]
       end
 
-    user = conn.assigns.current_user
-
-    game_params = %{
+    %{
       level: level,
       type: type,
       timeout_seconds: params["timeout_seconds"],
