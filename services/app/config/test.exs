@@ -49,4 +49,4 @@ config :codebattle, :firebase,
 
 config :codebattle, ws_port: 4001
 
-config :codebattle, admins: ["bob"]
+config :codebattle, admins: ["admin"]

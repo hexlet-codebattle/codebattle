@@ -1,6 +1,6 @@
-@import "fonts";
-@import "variables";
-@import "~bootstrap/scss/bootstrap";
+@import 'fonts';
+@import 'variables';
+@import '~bootstrap/scss/bootstrap';
 
 .btn:hover {
   color: red;
@@ -48,7 +48,7 @@ h2 {
 }
 
 .bg-codebattle {
-  background-image: url("/assets/images/landing/bg-codebattle.svg");
+  background-image: url('/assets/images/landing/bg-codebattle.svg');
   background-repeat: no-repeat;
   background-size: 70%;
   background-position: right;
@@ -82,18 +82,6 @@ h2 {
   background-color: rgba($color: $dark, $alpha: 0.91);
 }
 
-.comment {
-  max-width: 350px;
-  @media (min-width: $sm) {
-    min-width: 492px;
-    min-height: 492px;
-  }
-}
-
-.comment-img {
-  width: 100%;
-}
-
 .fw-500 {
   font-weight: 500;
 }
@@ -118,6 +106,40 @@ h2 {
   max-width: 308px;
   max-height: 215px;
 }
- p {
+
+p {
   font-family: 'Montserrat', sans-serif;
- }
+}
+
+.lang-icons {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-row-gap: 10px;
+  grid-column-gap: 30px;
+  place-items: center;
+  @media (max-width: $sm) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.comments {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-row-gap: 55px;
+  place-items: center;
+  @media (max-width: $xl) {
+    grid-row-gap: 24px;
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
+
+.comment {
+  width: 530px;
+  height: 580px;
+  @media (max-width: $md) {
+    width: auto;
+    height: auto;
+    min-width: 200px;
+    max-width: 530px;
+  }
+}

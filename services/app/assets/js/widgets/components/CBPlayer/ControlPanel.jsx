@@ -2,9 +2,13 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import { PlayerIcon } from 'react-player-controls';
 import cn from 'classnames';
+import Gon from 'gon';
+import copy from 'copy-to-clipboard';
 import { actions } from '../../slices';
 import speedModes from '../../config/speedModes';
 import { replayerMachineStates } from '../../machines/game';
+
+const gameId = Gon.getAsset('game_id');
 
 const ControlPanel = ({
   gameCurrent,
@@ -12,6 +16,7 @@ const ControlPanel = ({
   onPlayClick,
   onChangeSpeed,
   children,
+  nextRecordId,
 }) => {
   const dispatch = useDispatch();
 
@@ -64,6 +69,17 @@ const ControlPanel = ({
         </button>
         <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
           <button type="button" className={speedControlClassNames} onClick={onChangeSpeed}>x2</button>
+          <button
+            type="button"
+            className={speedControlClassNames}
+            title="Copy history game url at current record id"
+            onClick={() => {
+              const url = `https://codebattle.hexlet.io/games/${gameId}?t=${nextRecordId}`;
+              copy(url);
+            }}
+          >
+            <i className="fas fa-link" />
+          </button>
         </div>
       </div>
     </>

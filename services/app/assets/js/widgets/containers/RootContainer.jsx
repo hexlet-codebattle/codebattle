@@ -6,6 +6,7 @@ import ReactJoyride, { STATUS } from 'react-joyride';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
 import { useMachine } from '@xstate/react';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import GameWidget from './GameWidget';
 import GameContext from './GameContext';
 import InfoWidget from './InfoWidget';
@@ -21,6 +22,7 @@ import GamePreview from '../components/Game/GamePreview';
 import { replayerMachineStates } from '../machines/game';
 import AnimationModal from '../components/AnimationModal';
 import NetworkAlert from './NetworkAlert';
+import sound from '../lib/sound';
 
 const steps = [
   {
@@ -182,8 +184,10 @@ const RootContainer = ({
   setCurrentUser,
   gameMachine,
   editorMachine,
+  toggleMuteSound,
 }) => {
   const [modalShowing, setModalShowing] = useState(false);
+  const mute = useSelector(state => state.userSettings.mute);
   const [current, send, service] = useMachine(gameMachine, {
     devTools: true,
     actions: {
@@ -200,6 +204,23 @@ const RootContainer = ({
     connectToChat();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+const muteSound = e => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'm') {
+        e.preventDefault();
+        // eslint-disable-next-line no-unused-expressions
+        mute ? sound.toggle() : sound.toggle(0);
+        toggleMuteSound();
+      }
+    };
+
+    window.addEventListener('keydown', muteSound);
+
+    return () => {
+      window.removeEventListener('keydown', muteSound);
+    };
+  }, [mute, toggleMuteSound]);
 
   if (current.matches({ game: 'waiting' })) {
     const gameUrl = window.location.href;
@@ -242,6 +263,12 @@ const RootContainer = ({
                   <AnimationModal setModalShowing={setModalShowing} modalShowing={modalShowing} />
                   <InfoWidget />
                   <GameWidget editorMachine={editorMachine} />
+                  {mute
+                  && (
+                  <div className="rounded p-2 bg-dark cb-mute-icon">
+                    <FontAwesomeIcon size="lg" color="white" icon={['fas', 'volume-mute']} />
+                  </div>
+)}
                   <FeedBackWidget />
                 </div>
               </div>
@@ -265,6 +292,7 @@ const mapDispatchToProps = {
   setCurrentUser: actions.setCurrentUser,
   connectToGame: GameActions.connectToGame,
   connectToChat: ChatActions.connectToChat,
+  toggleMuteSound: actions.toggleMuteSound,
 };
 
 export default connect(null, mapDispatchToProps)(RootContainer);

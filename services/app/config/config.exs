@@ -99,12 +99,8 @@ config :codebattle, :firebase,
   api_key: System.get_env("FIREBASE_API_KEY"),
   firebase_autn_url: "https://identitytoolkit.googleapis.com/v1/accounts"
 
+config :codebattle, admins: ["vtm", "ReDBrother"]
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"
-
-config :codebattle,
-  admins: [
-    "vtm",
-    "ReDBrother"
-  ]

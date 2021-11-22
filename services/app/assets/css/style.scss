@@ -320,6 +320,13 @@ a {
   }
 }
 
+.cb-mute-icon {
+  position: fixed;
+  bottom: 32px;
+  right: 190px;
+  z-index: 5000;
+}
+
 .cursor-pointer {
   cursor: pointer;
 }
