@@ -245,7 +245,7 @@ defmodule Codebattle.Tournament.Base do
       end
 
       def update!(tournament, params) do
-        t |> Codebattle.Tournament.changeset(%{difficulty: "easy"}) |> Codebattle.Repo.update!()
+        tournament |> Tournament.changeset(params) |> Repo.update!()
       end
 
       def finish_all_active_matches(tournament) do

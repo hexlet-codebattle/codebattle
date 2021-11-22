@@ -7,6 +7,8 @@ defmodule Codebattle.Game.Context do
   import Ecto.Query
   import Codebattle.Game.Auth
 
+  alias Codebattle.CodeCheck.CheckResult
+  alias Codebattle.CodeCheck.CheckResultV2
   alias Codebattle.Game
   alias Codebattle.Repo
   alias Codebattle.User
@@ -19,31 +21,31 @@ defmodule Codebattle.Game.Context do
     GlobalSupervisor
   }
 
-     # with_bot =
-     # create_game
-     #   {
-     #     level: level,
-     #     type: bot,
-     #     timeout_seconds: timeout_seconds,
-     #     visibility_type: public,
-     #   }
-     # with_friend =
-     # create_invite
-     #   {
-     #     level: level,
-     #     type: standard,
-     #     timeout_seconds: timeout_seconds,
-     #     visibility_type: hidden,
-     #   }
+  # with_bot =
+  # create_game
+  #   {
+  #     level: level,
+  #     type: bot,
+  #     timeout_seconds: timeout_seconds,
+  #     visibility_type: public,
+  #   }
+  # with_friend =
+  # create_invite
+  #   {
+  #     level: level,
+  #     type: standard,
+  #     timeout_seconds: timeout_seconds,
+  #     visibility_type: hidden,
+  #   }
 
-     # with_other_users =
-     # create_game
-     #   {
-     #     level: level,
-     #     type: standard,
-     #     timeout_seconds: timeout_seconds,
-     #     visibility_type: public,
-     #   }
+  # with_other_users =
+  # create_game
+  #   {
+  #     level: level,
+  #     type: standard,
+  #     timeout_seconds: timeout_seconds,
+  #     visibility_type: public,
+  #   }
 
   @type game_id :: non_neg_integer
 
@@ -116,64 +118,24 @@ defmodule Codebattle.Game.Context do
     end
   end
 
-  @spec check_game(game_id, User.t(), String.t(), String.t()) :: {:ok, Game.t()} | {:error, atom}
-  def check_game(id, user, editor_text, editor_lang) do
-
-    Server.update_playbook(id, :start_check, %{
-      id: user.id,
-      editor_text: editor_text,
-      editor_lang: editor_lang
-    })
-
-    game = get_game(id)
-    check_result = checker_adapter().call(game.task, editor_text, editor_lang)
-
-    case check_result.status do
-      "ok" ->
-        {:ok, new_game} =
-          Server.call_transition(id, :check_complete, %{
-            id: user.id,
-            check_result: check_result,
-            editor_text: editor_text,
-            editor_lang: editor_lang
-          })
-
-        case {game.state, new_game.state} do
-          {"playing", "game_over"} ->
-            Server.update_playbook(id, :game_over, %{id: user.id, lang: editor_lang})
-
-            player = Helpers.get_player(new_game, user.id)
-            Engine.handle_won_game(id, player, new_game)
-            {:ok, new_game, %{check_result: check_result}}
-
-          _ ->
-            nil
-        end
-
-      _ ->
-        {:ok, new_game} =
-          Server.call_transition(id, :check_failure, %{
-            id: user.id,
-            check_result: check_result,
-            editor_text: editor_text,
-            editor_lang: editor_lang
-          })
-
-        {:ok, new_game, %{check_result: check_result}}
-    end
+  @spec check_result(game_id, %{
+          user: User.t(),
+          editor_text: String.t(),
+          editor_lang: String.t()
+        }) ::
+          {
+            :ok,
+            Game.t(),
+            %{check_result: CheckResult.t() | CheckResultV2.t(), solution_status: boolean}
+          }
+          | {:error, atom}
+  def check_result(id, params) do
+    id |> get_game() |> Engine.check_result(params)
   end
 
   @spec give_up(game_id, User.t()) :: {:ok, Game.t()} | {:error, atom}
   def give_up(id, user) do
-    case Server.call_transition(id, :give_up, %{id: user.id}) do
-      {:ok, game} ->
-        Engine.handle_give_up(id, user.id, game)
-
-        {:ok, game}
-
-      {:error, reason} ->
-        {:error, reason}
-    end
+    id |> get_game() |> Engine.give_up(user)
   end
 
   @spec rematch_send_offer(game_id, User.t()) ::
@@ -183,10 +145,9 @@ defmodule Codebattle.Game.Context do
   def rematch_send_offer(game_id, user) do
     with game <- get_game(game_id),
          :ok <- player_can_rematch?(game, user.id) do
-      Engine.rematch_send_offer(game, user.id)
+      Engine.rematch_send_offer(game, user)
     else
-      {:error, reason} ->
-        {:error, reason}
+      {:error, reason} -> {:error, reason}
     end
   end
 
@@ -235,8 +196,6 @@ defmodule Codebattle.Game.Context do
     level = Enum.random(["elementary", "easy", "medium", "hard"])
     Map.put(params, :level, level)
   end
-
-  defp checker_adapter, do: Application.get_env(:codebattle, :checker_adapter)
 
   defp get_from_db!(id) do
     query = from(g in Game, where: g.id == ^id, preload: [:task, :users, :user_games])

@@ -62,7 +62,7 @@ defmodule Codebattle.Game.Engine do
 
   def join_game(game, user) do
     with :ok <- can_play_game?(user),
-         {:ok, game} <-
+         {:ok, {_old_game, game}} <-
            Server.call_transition(game.id, :join, %{
              players: game.players ++ [Player.build(user, %{task: game.task})],
              starts_at: TimeHelper.utc_now()
@@ -73,6 +73,64 @@ defmodule Codebattle.Game.Engine do
          :ok <- start_timeout_timer(game) do
       {:ok, game}
     else
+      {:error, reason} ->
+        {:error, reason}
+    end
+  end
+
+  def check_result(game, params) do
+    %{user: user, editor_text: editor_text, editor_lang: editor_lang} = params
+
+    Server.update_playbook(game.id, :start_check, %{
+      id: user.id,
+      editor_text: editor_text,
+      editor_lang: editor_lang
+    })
+
+    check_result = checker_adapter().call(game.task, editor_text, editor_lang)
+
+    case check_result.status do
+      "ok" ->
+        {:ok, {old_game, new_game}} =
+          Server.call_transition(game.id, :check_success, %{
+            id: user.id,
+            check_result: check_result,
+            editor_text: editor_text,
+            editor_lang: editor_lang
+          })
+
+        case {old_game.state, new_game.state} do
+          {"playing", "game_over"} ->
+            Server.update_playbook(game.id, :game_over, %{id: user.id, lang: editor_lang})
+
+            player = Helpers.get_player(new_game, user.id)
+            handle_won_game(game.id, player, new_game)
+            {:ok, new_game, %{check_result: check_result, solution_status: true}}
+
+          _ ->
+            {:ok, new_game, %{check_result: check_result, solution_status: false}}
+        end
+
+      _ ->
+        {:ok, {_old_game, new_game}} =
+          Server.call_transition(game.id, :check_failure, %{
+            id: user.id,
+            check_result: check_result,
+            editor_text: editor_text,
+            editor_lang: editor_lang
+          })
+
+        {:ok, new_game, %{check_result: check_result, solution_status: false}}
+    end
+  end
+
+  def give_up(game, user) do
+    case Server.call_transition(game.id, :give_up, %{id: user.id}) do
+      {:ok, {_old_game, game}} ->
+        handle_give_up(game, user.id)
+
+        {:ok, game}
+
       {:error, reason} ->
         {:error, reason}
     end
@@ -103,7 +161,8 @@ defmodule Codebattle.Game.Engine do
   end
 
   def rematch_send_offer(game, user) do
-    {:ok, game} = Server.call_transition(game.id, :rematch_send_offer, %{player_id: user.id})
+    {:ok, {_old_game, game}} =
+      Server.call_transition(game.id, :rematch_send_offer, %{player_id: user.id})
 
     case Helpers.get_rematch_state(game) do
       :accepted ->
@@ -118,15 +177,15 @@ defmodule Codebattle.Game.Engine do
   end
 
   def update_editor_data(game, params) do
-    Server.call_transition(Helpers.get_game_id(game), :update_editor_data, params)
+    case Server.call_transition(game.id, :update_editor_data, params) do
+      {:ok, {_old_game, game}} -> {:ok, game}
+      {:error, reason} -> {:error, reason}
+    end
   end
 
   def store_playbook(game) do
-    game_id = Helpers.get_game_id(game)
-    task_id = Helpers.get_task(game).id
-    {:ok, playbook} = Server.get_playbook(game_id)
-
-    Task.start(fn -> Playbook.store_playbook(playbook, game_id, task_id) end)
+    {:ok, playbook} = Server.get_playbook(game.id)
+    Task.start(fn -> Playbook.store_playbook(playbook, game.id, game.task.id) end)
   end
 
   def handle_won_game(game_id, winner, game) do
@@ -138,12 +197,12 @@ defmodule Codebattle.Game.Engine do
     :ok
   end
 
-  def handle_give_up(game_id, loser_id, game) do
+  def handle_give_up(game, loser_id) do
     loser = Helpers.get_player(game, loser_id)
     winner = Helpers.get_opponent(game, loser.id)
     store_game_result!(game, {winner, "won"}, {loser, "gave_up"})
     store_playbook(game)
-    LiveGames.terminate_game(game_id)
+    LiveGames.terminate_game(game.id)
     # Codebattle.PubSub.broadcast("game:finished", %{game: game, winner: winner, loser: loser})
   end
 
@@ -251,6 +310,8 @@ defmodule Codebattle.Game.Engine do
   defp tasks_provider do
     Application.get_env(:codebattle, :tasks_provider)
   end
+
+  defp checker_adapter, do: Application.get_env(:codebattle, :checker_adapter)
 
   defp get_random_level, do: Enum.random(Codebattle.Task.levels())
 end

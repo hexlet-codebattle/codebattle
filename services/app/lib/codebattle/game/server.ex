@@ -92,7 +92,7 @@ defmodule Codebattle.Game.Server do
           playbook: Playbook.add_event(playbook, event, params)
         }
 
-        {:reply, {:ok, new_game}, new_state}
+        {:reply, {:ok, {game, new_game}}, new_state}
     end
   end
 

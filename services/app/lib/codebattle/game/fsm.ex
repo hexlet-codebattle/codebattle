@@ -29,7 +29,7 @@ defmodule Codebattle.Game.Fsm do
     new_players =
       players
       |> update_player_params(%{
-        game_result: :won,
+        game_result: "won",
         editor_text: params.editor_text,
         editor_lang: params.editor_lang,
         check_result: params.check_result,

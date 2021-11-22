@@ -70,7 +70,7 @@ defmodule CodebattleWeb.GameChannel do
 
     %{"editor_text" => editor_text, "lang_slug" => lang_slug} = payload
 
-    case Context.check_game(game_id, user, editor_text, lang_slug) do
+    case Context.check_result(game_id, user, editor_text, lang_slug) do
       {:ok, game, %{solution_status: solution_status, check_result: check_result}} ->
         broadcast!(socket, "user:check_complete", %{
           solution_status: check_result.solution_status,
