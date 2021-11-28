@@ -21,7 +21,7 @@ defmodule Codebattle.Game.Helpers do
   def get_winner(game) do
     game
     |> get_players
-    |> Enum.find(fn player -> player.game_result == :won end)
+    |> Enum.find(fn player -> player.game_result == "won" end)
   end
 
   def get_player(game, id) do

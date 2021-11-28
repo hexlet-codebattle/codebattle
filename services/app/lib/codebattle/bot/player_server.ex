@@ -8,7 +8,7 @@ defmodule Codebattle.Bot.PlayerServer do
 
   alias Codebattle.Bot.{ChatClient, PlaybookPlayer}
   alias Codebattle.Game.Helpers
-  alias Codebattle.Game.Play
+  alias Codebattle.Game.Context
   alias PhoenixClient.Message
 
   @timeout_start_playbook Application.compile_env(:codebattle, Codebattle.Bot)[
@@ -53,10 +53,10 @@ defmodule Codebattle.Bot.PlayerServer do
 
     game_topic = "game:#{state.game_id}"
 
-    {:ok, fsm} = Play.get_game(state.game_id)
+    game = Game.Context.get_game(state.game_id)
 
     chat_topic =
-      case Helpers.get_tournament_id(fsm) do
+      case Helpers.get_tournament_id(game) do
         nil -> "chat:g_#{state.game_id}"
         tournament_id -> "chat:t_#{tournament_id}"
       end

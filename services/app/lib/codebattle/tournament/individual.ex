@@ -1,6 +1,6 @@
 defmodule Codebattle.Tournament.Individual do
   alias Codebattle.Game.Helpers
-  alias Codebattle.Game.Play
+  alias Codebattle.Game.Context
   alias Codebattle.Tournament
 
   use Tournament.Base
@@ -106,7 +106,7 @@ defmodule Codebattle.Tournament.Individual do
   @impl Tournament.Base
   def create_game(tournament, match) do
     {:ok, fsm} =
-      Play.create_game(%{
+      Context.create_game(%{
         level: tournament.difficulty,
         tournament: tournament,
         players: match.players

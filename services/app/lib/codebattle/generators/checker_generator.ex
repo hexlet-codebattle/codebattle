@@ -122,14 +122,11 @@ defmodule Codebattle.Generators.CheckerGenerator do
   """
 
   def inflect(task, meta) do
-    asserts = task.asserts |> String.split("\n") |> filter_empty_items()
-
-    Logger.debug(inspect(asserts))
+    Logger.debug(inspect(task.asserts))
 
     [
       checks:
-        asserts
-        |> Enum.map(&Jason.decode!/1)
+        task.asserts
         |> Enum.with_index(1)
         |> Enum.map(fn {_assert, index} = item ->
           %{
@@ -296,8 +293,6 @@ defmodule Codebattle.Generators.CheckerGenerator do
   end
 
   defp extract_type(%{"type" => type}), do: type
-
-  defp filter_empty_items(items), do: items |> Enum.filter(&(&1 != ""))
 
   defp double_backslashes(string, %{slug: "dart"}) do
     string

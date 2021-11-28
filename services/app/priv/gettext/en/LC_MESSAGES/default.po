@@ -18,9 +18,10 @@ msgstr "Welcome to %{name}!"
 msgid "%{name}: game for programmers."
 msgstr "%{name}: game for programmers."
 
+#, fuzzy
 #: lib/codebattle_web/templates/page/index.html.slim:6
 #: lib/codebattle_web/templates/game/index.html.slim:11
-msgid "Create game"
+msgid "Create a game"
 msgstr "Create game"
 
 #: lib/codebattle_web/templates/user/index.html.slim:1
@@ -328,15 +329,6 @@ msgstr "Start simple battle"
 msgid "Start battle"
 msgstr "Start battle"
 
-msgid "Lobby Main Intro"
-msgstr "Press \"Start battle\" and fight with other players or join to created game in list down below."
-
-msgid "Game With Players Title"
-msgstr "Start game with players"
-
-msgid "Game With Bots Title"
-msgstr "Start game with bot"
-
 msgid "Try again"
 msgstr "Try again"
 
@@ -372,38 +364,8 @@ msgstr "5 min"
 msgid "Timeout 600 seconds"
 msgstr "10 min"
 
-msgid "Timeout 900 seconds"
-msgstr "15 min"
-
-msgid "Timeout 1800 seconds"
-msgstr "30 min"
-
 msgid "Timeout 1200 seconds"
 msgstr "20 min"
 
 msgid "Timeout 3600 seconds"
 msgstr "60 min"
-
-msgid "private game"
-msgstr "With a friend"
-
-msgid "public game"
-msgstr "With other users"
-
-msgid "bot game"
-msgstr "With a bot"
-
-msgid "Time control"
-msgstr "Time control"
-
-msgid "Level"
-msgstr "Level"
-
-msgid "Successfully updated authentication settings."
-msgstr "Successfully updated authentication settings."
-
-msgid "Bind Discord"
-msgstr "Bind Discord"
-
-msgid "Failed to update authentication settings."
-msgstr "Failed to update authentication settings."

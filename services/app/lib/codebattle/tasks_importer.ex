@@ -60,28 +60,9 @@ defmodule Codebattle.TasksImporter do
       |> Enum.filter(fn x -> String.length(x) > 0 end)
 
     Enum.each(issue_names, fn issue_name ->
-      params = get_task_params(path, issue_name)
-
-      Codebattle.Repo.insert!(
-        struct(Codebattle.Task, params),
-        on_conflict: [
-          set: [
-            creator_id: params.creator_id,
-            origin: params.origin,
-            state: params.state,
-            visibility: params.visibility,
-            examples: params.examples,
-            description_en: params.description_en,
-            description_ru: params.description_ru,
-            level: params.level,
-            input_signature: params.input_signature,
-            output_signature: params.output_signature,
-            asserts: params.asserts,
-            tags: params.tags
-          ]
-        ],
-        conflict_target: :name
-      )
+      path
+      |> get_task_params(issue_name)
+      |> Codebattle.Task.upsert!()
     end)
   end
 

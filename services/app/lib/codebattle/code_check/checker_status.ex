@@ -25,7 +25,7 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
         %Codebattle.CodeCheck.CheckResult{
           asserts_count: 0,
           success_count: 0,
-          status: :ok,
+          status: "ok",
           output: ~s({"status": "ok", "result": "__code-1__"}),
           result: ~s({"status": "ok", "result": "__code-1__"})
         }
@@ -39,7 +39,7 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
           asserts: [~s({"status": "failure", "result": "0", "arguments": [0]}), ~s({"status": "success", "result": "1"})],
           asserts_count: 2,
           success_count: 1,
-          status: :failure,
+          status: "failure",
           output: ~s({"status": "failure", "result": "0", "arguments": [0]}),
           result: ~s({"status": "failure", "result": "0", "arguments": [0]})
         }
@@ -66,7 +66,7 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
             result: error_msg[:result]
           })
 
-        %CheckResult{status: :error, result: result, output: container_output}
+        %CheckResult{status: "error", result: result, output: container_output}
 
       json_result ->
         [last_message] = List.last(json_result)
@@ -75,7 +75,7 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
         case output_code do
           ^check_code ->
             %CheckResult{
-              status: :ok,
+              status: "ok",
               result: last_message,
               output: reset_statuses(container_output, List.flatten(json_result))
             }
@@ -136,7 +136,7 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
           |> reset_statuses(success_list)
 
         %CheckResult{
-          status: :failure,
+          status: "failure",
           result: first_failure_json,
           output: new_container_output,
           asserts: asserts,
@@ -145,7 +145,7 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
         }
 
       [_] ->
-        %CheckResult{status: :error, result: error_message, output: container_output}
+        %CheckResult{status: "error", result: error_message, output: container_output}
     end
   end
 

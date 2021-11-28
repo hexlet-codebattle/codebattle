@@ -18,9 +18,10 @@ msgstr "Добро пожаловать в %{name}"
 msgid "%{name}: game for programmers."
 msgstr "%{name}: игра для программистов."
 
+#, fuzzy
 #: lib/codebattle_web/templates/page/index.html.slim:6
 #: lib/codebattle_web/templates/game/index.html.slim:11
-msgid "Create game"
+msgid "Create a game"
 msgstr "Создать игру"
 
 #: lib/codebattle_web/templates/user/index.html.slim:1
@@ -298,7 +299,8 @@ msgstr "Ожидалось:"
 msgid "Arguments:"
 msgstr "Аргументы:"
 
-msgid "Oops!"
+#, fuzzy
+msgid "Oops"
 msgstr "Упс!"
 
 msgid "Sort by:"
@@ -327,15 +329,6 @@ msgstr "Начать простое сражение"
 
 msgid "Start battle"
 msgstr "Начать битву"
-
-msgid "Lobby Main Intro"
-msgstr "Нажми \"Начать битву\" и сражайся с другими игроками или присоединись к созданным играм из списка внизу"
-
-msgid "Game With Players Title"
-msgstr "Игра с другими пользователями"
-
-msgid "Game With Bots Title"
-msgstr "Игра с ботами"
 
 msgid "Try again"
 msgstr "Начать заново"

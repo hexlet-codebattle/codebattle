@@ -35,7 +35,7 @@ defmodule Codebattle.Task do
     field(:level, :string)
     field(:input_signature, {:array, :map}, default: [])
     field(:output_signature, :map, default: %{})
-    field(:asserts, :string)
+    field(:asserts, {:array, :map}, default: [])
     field(:disabled, :boolean)
     field(:count, :integer, virtual: true)
     field(:tags, {:array, :string}, default: [])
@@ -51,13 +51,13 @@ defmodule Codebattle.Task do
     struct
     |> cast(params, [
       :examples,
+      :asserts,
       :description_ru,
       :description_en,
       :name,
       :level,
       :input_signature,
       :output_signature,
-      :asserts,
       :disabled,
       :tags,
       :state,
@@ -71,6 +71,30 @@ defmodule Codebattle.Task do
     |> validate_inclusion(:origin, @origin_types)
     |> validate_inclusion(:visibility, @visibility_types)
     |> unique_constraint(:name)
+  end
+
+  def upsert!(params) do
+    %__MODULE__{}
+    |> changeset(params)
+    |> Codebattle.Repo.insert!(
+      on_conflict: [
+        set: [
+          creator_id: params[:creator_id],
+          origin: params.origin,
+          state: params.state,
+          visibility: params.visibility,
+          examples: params.examples,
+          description_en: params.description_en,
+          description_ru: params.description_ru,
+          level: params.level,
+          input_signature: params.input_signature,
+          output_signature: params.output_signature,
+          asserts: params.asserts,
+          tags: params.tags
+        ]
+      ],
+      conflict_target: :name
+    )
   end
 
   def public(query) do
@@ -112,14 +136,6 @@ defmodule Codebattle.Task do
     |> List.flatten()
   end
 
-  def get_asserts(task) do
-    task
-    |> Map.get(:asserts)
-    |> String.split("\n")
-    |> filter_empty_items()
-    |> Enum.map(&Jason.decode!/1)
-  end
-
   def get!(id), do: Repo.get!(__MODULE__, id)
   def get(id), do: Repo.get(__MODULE__, id)
 
@@ -154,6 +170,4 @@ defmodule Codebattle.Task do
   def visibility_types, do: @visibility_types
   def origin_types, do: @origin_types
   def states, do: @states
-
-  defp filter_empty_items(items), do: items |> Enum.filter(&(&1 != ""))
 end

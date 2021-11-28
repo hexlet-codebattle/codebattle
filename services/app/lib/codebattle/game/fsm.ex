@@ -9,6 +9,8 @@ defmodule Codebattle.Game.Fsm do
     %{game | state: "playing"} |> Map.merge(params)
   end
 
+  def join(game, params), do: game
+
   def update_editor_data(%{state: "waiting_opponent"} = game, _), do: game
 
   def update_editor_data(%{state: "playing"} = game, params) do

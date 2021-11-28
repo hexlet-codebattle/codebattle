@@ -85,7 +85,7 @@ defmodule Codebattle.CodeCheck.Checker do
         CheckerStatus.get_check_result(container_output, meta)
 
       {:error, result, output} ->
-        %CheckResult{status: :error, result: result, output: output}
+        %CheckResult{status: "error", result: result, output: output}
     end
   end
 

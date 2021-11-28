@@ -3,13 +3,10 @@ defmodule Codebattle.CodeCheck.OutputParserV2 do
 
   require Logger
   alias Codebattle.CodeCheck.CheckResultV2
-  alias Codebattle.Task
 
   @memory_overflow "Error 137"
 
   def call(container_output, task) do
-    asserts = Task.get_asserts(task)
-
     outputs =
       container_output
       |> String.split("\n")
@@ -48,18 +45,17 @@ defmodule Codebattle.CodeCheck.OutputParserV2 do
       String.contains?(container_output, @memory_overflow) ->
         %CheckResultV2{
           output_error: "Your solution ran out of memory, please, rewrite it",
-          status: :error
+          status: "error"
         }
 
-      valid_assert_results(outputs["results"], asserts) ->
+      valid_assert_results(outputs["results"], task.asserts) ->
         assert_result =
           outputs["results"]
           |> Enum.with_index()
           |> Enum.reduce(
             %CheckResultV2{},
-            # TODO: calculate result on a single pass through list
             fn {item, index}, acc ->
-              assert = Enum.at(asserts, index)
+              assert = Enum.at(task.asserts, index)
 
               new_item = %CheckResultV2.AssertResult{
                 output: item["output"],
@@ -83,7 +79,7 @@ defmodule Codebattle.CodeCheck.OutputParserV2 do
         failure_asserts = Enum.filter(assert_result.asserts, fn x -> x.status == "failure" end)
 
         success_count = Enum.count(success_asserts)
-        asserts_count = Enum.count(asserts)
+        asserts_count = Enum.count(task.asserts)
 
         status =
           if asserts_count == success_count do
@@ -102,7 +98,7 @@ defmodule Codebattle.CodeCheck.OutputParserV2 do
       true ->
         %CheckResultV2{
           output_error: container_output,
-          status: :error
+          status: "error"
         }
     end
   end

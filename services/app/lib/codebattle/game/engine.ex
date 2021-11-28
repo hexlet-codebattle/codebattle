@@ -1,4 +1,6 @@
 defmodule Codebattle.Game.Engine do
+  alias Codebattle.Game
+
   alias Codebattle.Game.{
     Player,
     Server,
@@ -104,7 +106,7 @@ defmodule Codebattle.Game.Engine do
             Server.update_playbook(game.id, :game_over, %{id: user.id, lang: editor_lang})
 
             player = Helpers.get_player(new_game, user.id)
-            handle_won_game(game.id, player, new_game)
+            handle_won_game(new_game, player)
             {:ok, new_game, %{check_result: check_result, solution_status: true}}
 
           _ ->
@@ -188,11 +190,11 @@ defmodule Codebattle.Game.Engine do
     Task.start(fn -> Playbook.store_playbook(playbook, game.id, game.task.id) end)
   end
 
-  def handle_won_game(game_id, winner, game) do
+  def handle_won_game(game, winner) do
     loser = Helpers.get_opponent(game, winner.id)
     store_game_result!(game, {winner, "won"}, {loser, "lost"})
     store_playbook(game)
-    LiveGames.terminate_game(game_id)
+    LiveGames.terminate_game(game.id)
     # Codebattle.PubSub.broadcast("game:finished", %{game: game, winner: winner, loser: loser})
     :ok
   end
@@ -210,7 +212,6 @@ defmodule Codebattle.Game.Engine do
 
   def store_game_result!(game, {winner, winner_result}, {loser, loser_result}) do
     level = Helpers.get_level(game)
-    game_id = Helpers.get_game_id(game)
     type = Helpers.get_type(game)
     {new_winner_rating, new_loser_rating} = Elo.calc_elo(winner.rating, loser.rating, level)
 
@@ -219,7 +220,7 @@ defmodule Codebattle.Game.Engine do
 
     Repo.transaction(fn ->
       create_user_game!(%{
-        game_id: game_id,
+        game_id: game.id,
         user_id: winner.id,
         result: winner_result,
         creator: winner.creator,
@@ -229,7 +230,7 @@ defmodule Codebattle.Game.Engine do
       })
 
       create_user_game!(%{
-        game_id: game_id,
+        game_id: game.id,
         user_id: loser.id,
         result: loser_result,
         creator: loser.creator,
@@ -238,8 +239,10 @@ defmodule Codebattle.Game.Engine do
         lang: loser.editor_lang
       })
 
-      update_game!(game, %{
-        state: to_string(game.state),
+      db_game = Repo.get!(Game, game.id)
+
+      update_game!(db_game, %{
+        state: game.state,
         starts_at: Helpers.get_starts_at(game),
         finishes_at: TimeHelper.utc_now()
       })
