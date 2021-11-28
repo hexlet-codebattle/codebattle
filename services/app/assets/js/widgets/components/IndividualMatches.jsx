@@ -31,10 +31,10 @@ const IndividualMatches = ({
       return [];
   }, [roundsCount]);
 
-  if (state === TournamentStates.waitingParticipants) {
+  if (state === TournamentStates.waitingParticipants || state === TournamentStates.upcoming) {
     return (
       <h1>
-        {TournamentStates.waitingParticipants}
+        {state}
         ...
       </h1>
     );

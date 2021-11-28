@@ -75,6 +75,14 @@ export const cancelTournament = () => {
   channel.push('tournament:cancel', {}).receive('error', error => console.error(error));
 };
 
+export const backTournament = () => {
+  channel.push('tournament:back', {}).receive('error', error => console.error(error));
+};
+
+export const openUpTournament = () => {
+  channel.push('tournament:open_up', {}).receive('error', error => console.error(error));
+};
+
 export const kickFromTournament = userId => {
   channel.push('tournament:kick', { user_id: userId }).receive('error', error => console.error(error));
 };

@@ -2,7 +2,9 @@ import React from 'react';
 
 import { leaveTournament, joinTournament } from '../middlewares/Tournament';
 
-const JoinButton = ({ isShow, isParticipant, matchId }) => {
+const JoinButton = ({
+ isShow, isParticipant, title, matchId,
+}) => {
   if (!isShow) {
     return null;
   }
@@ -11,17 +13,20 @@ const JoinButton = ({ isShow, isParticipant, matchId }) => {
   const text = isParticipant ? 'Leave' : 'Join';
 
   return (
-    <button
-      type="button"
-      onClick={() => {
+    <>
+      {title && <p>{title}</p>}
+      <button
+        type="button"
+        onClick={() => {
         onClick(matchId);
       }}
-      className={`btn ${
+        className={`btn ${
         isParticipant ? 'btn-outline-danger' : 'btn-outline-secondary'
       }`}
-    >
-      {text}
-    </button>
+      >
+        {text}
+      </button>
+    </>
   );
 };
 
