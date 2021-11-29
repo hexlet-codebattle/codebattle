@@ -2,7 +2,7 @@ defmodule Codebattle.Game.TimeoutServerTest do
   use ExUnit.Case
 
   import Mock
-  alias Codebattle.Game.{Play, TimeoutServer}
+  alias Codebattle.Game.{Context, TimeoutServer}
 
   @game_id 100
   @game2_id 101
@@ -11,18 +11,18 @@ defmodule Codebattle.Game.TimeoutServerTest do
     assert TimeoutServer.start_link(@game_id)
   end
 
-  test "calls Play.timeout when it's time" do
+  test "calls Context.timeout when it's time" do
     TimeoutServer.start_link(@game_id)
     TimeoutServer.start_link(@game2_id)
 
-    with_mock(Play,
+    with_mock(Context,
       timeout_game: fn game_id -> game_id end
     ) do
       TimeoutServer.start_timer(@game_id, 0)
       TimeoutServer.start_timer(@game2_id, 100)
 
-      assert called(Play.timeout_game(@game_id))
-      assert !called(Play.timeout_game(@game2_id))
+      assert called(Context.timeout_game(@game_id))
+      assert !called(Context.timeout_game(@game2_id))
     end
   end
 end

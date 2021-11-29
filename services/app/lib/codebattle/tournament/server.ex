@@ -38,20 +38,16 @@ defmodule Codebattle.Tournament.Server do
     %{module: module} = tournament
     new_tournament = apply(module, event_type, [tournament, params])
 
-    broadcast_tournament(new_tournament)
+    broadcast_tournament_update(new_tournament)
     {:reply, tournament, Map.merge(state, %{tournament: new_tournament})}
   end
 
-  def tournament_topic_name(tournament_id), do: "tournament_#{tournament_id}"
+  def tournament_topic_name(tournament_id), do: "tournament:#{tournament_id}"
 
   # HELPERS
 
-  defp broadcast_tournament(tournament) do
-    CodebattleWeb.Endpoint.broadcast!(
-      tournament_topic_name(tournament.id),
-      "tournament:update",
-      %{tournament: tournament}
-    )
+  defp broadcast_tournament_update(tournament) do
+    Codebattle.PubSub.broadcast("tournament:updated", %{tournament: tournament})
   end
 
   defp server_name(id), do: {:via, :gproc, tournament_key(id)}

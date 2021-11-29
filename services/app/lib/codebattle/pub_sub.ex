@@ -2,6 +2,8 @@ defmodule Codebattle.PubSub do
   alias Codebattle.PubSub.Events
   alias Codebattle.PubSub.Message
 
+  require Logger
+
   defmodule Message do
     @moduledoc """
     Defines a message sent from pubsub to channels and vice-versa.
@@ -23,14 +25,18 @@ defmodule Codebattle.PubSub do
   end
 
   def broadcast(event_name, params) do
+    Logger.debug("Event Broadcast: #{event_name}")
+
     event_name
     |> Events.get_messages(params)
     |> Enum.map(fn %{topic: topic} = message ->
-      Phoenix.PubSub.broadcast(Codebattle.PubSub, topic, message)
+      Phoenix.PubSub.broadcast!(Codebattle.PubSub, topic, message)
     end)
   end
 
   def broadcast_from(from, event_name, params) do
+    Logger.debug("Event BroadcastFrom: #{from}, #{event_name}")
+
     event_name
     |> Events.get_messages(params)
     |> Enum.map(fn %{topic: topic} = message ->

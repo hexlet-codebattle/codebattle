@@ -105,14 +105,14 @@ defmodule Codebattle.Tournament.Individual do
 
   @impl Tournament.Base
   def create_game(tournament, match) do
-    {:ok, fsm} =
+    {:ok, game} =
       Context.create_game(%{
         level: tournament.difficulty,
         tournament: tournament,
-        players: match.players
+        users: match.players
       })
 
-    Helpers.get_game_id(fsm)
+    Helpers.get_game_id(game)
   end
 
   defp pair_players_to_matches(players, step) do

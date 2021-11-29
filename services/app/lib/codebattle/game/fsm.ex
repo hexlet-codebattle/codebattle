@@ -71,12 +71,12 @@ defmodule Codebattle.Game.Fsm do
 
   def give_up(game, _params), do: game
 
-  def timeout(%{state: "playing", players: players} = game, params) do
-    new_players =
-      Enum.map(players, fn player ->
-        %{player | game_result: :timeout}
-      end)
+  def timeout(%{state: "waiting_opponent"} = game, _params) do
+    %{game | state: "timeout"}
+  end
 
+  def timeout(%{state: "playing", players: players} = game, _params) do
+    new_players = Enum.map(players, fn player -> %{player | game_result: "timeout"} end)
     %{game | state: "timeout", players: new_players}
   end
 

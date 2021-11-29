@@ -12,6 +12,7 @@ defmodule Codebattle.Game.Context do
   alias Codebattle.Game
   alias Codebattle.Repo
   alias Codebattle.User
+  alias Codebattle.Tournament
 
   alias Codebattle.Game.{
     Server,
@@ -56,7 +57,8 @@ defmodule Codebattle.Game.Context do
           type: String.t() | nil,
           visibility_type: String.t() | nil,
           timeout_seconds: non_neg_integer | nil,
-          users: nonempty_list(User.t())
+          # TODO: use only users/players or create Game.Player
+          users: nonempty_list(User.t()) | nonempty_list(Tournament.Types.Player.t())
         }
 
   def get_live_games(params \\ %{}), do: LiveGames.get_games(params)
@@ -93,9 +95,7 @@ defmodule Codebattle.Game.Context do
 
   @spec join_game(game_id, User.t()) :: {:ok, Game.t()} | {:error, atom}
   def join_game(id, user) do
-    id
-    |> get_game()
-    |> Engine.join_game(user)
+    Engine.join_game(get_game(id), user)
   end
 
   @spec cancel_game(game_id, User.t()) :: :ok | {:error, atom}
@@ -166,23 +166,10 @@ defmodule Codebattle.Game.Context do
     end
   end
 
-  def timeout_game(id) do
-    {:ok, game} = get_game(id)
-
-    case {Helpers.get_state(game), Helpers.get_tournament_id(game)} do
-      {:game_over, nil} ->
-        {:terminate_after, 15}
-
-      {:game_over, _tournament_id} ->
-        {:terminate_after, 20}
-
-      {_, nil} ->
-        terminate_game(id)
-
-      {_, _tournament_id} ->
-        LiveGames.terminate_game(id)
-        {:terminate_after, 20}
-    end
+  @spec trigger_timeout(game_id) :: :ok
+  def trigger_timeout(game_id) do
+    Engine.trigger_timeout(get_game(game_id))
+    :ok
   end
 
   @spec terminate_game(game_id | Game.t()) :: :ok

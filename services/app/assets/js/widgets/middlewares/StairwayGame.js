@@ -23,7 +23,7 @@ const initTournamentChannel = dispatch => {
     console.log(data);
 
     dispatch(actions.setTournamentData(data));
-    dispatch(actions.connectToStairwayGame(data));
+    // dispatch(actions.connectToStairwayGame(data));
   };
 
   tournamentChannel.join().receive('ok', onJoinSuccess).receive('error', onJoinFailure);
@@ -76,7 +76,7 @@ const initActiveMatchChannel = (dispatch, state, matchId) => {
     console.log(data);
 
     dispatch(actions.setNextRoj(data));
-    dispatch(actions.connectToStairwayGame(data));
+    // dispatch(actions.connectToStairwayGame(data));
   };
 
   activeMatchChannel.join().receive('ok', onJoinSuccess).receive('error', onJoinFailure);

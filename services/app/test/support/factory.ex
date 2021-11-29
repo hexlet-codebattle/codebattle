@@ -58,8 +58,11 @@ defmodule CodebattleWeb.Factory do
       description_en: "test sum",
       description_ru: "проверка суммы",
       level: "easy",
-      asserts:
-        "{\"arguments\":[1,1],\"expected\":2}\n{\"arguments\":[2,2],\"expected\":4}\n{\"arguments\":[1,3],\"expected\":4}\n",
+      asserts: [
+        %{arguments: [1, 1], expected: 2},
+        %{arguments: [2, 1], expected: 3},
+        %{arguments: [3, 2], expected: 5}
+      ],
       input_signature: [
         %{"argument-name" => "a", "type" => %{"name" => "integer"}},
         %{"argument-name" => "b", "type" => %{"name" => "integer"}}

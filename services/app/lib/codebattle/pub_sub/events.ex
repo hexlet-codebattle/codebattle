@@ -36,20 +36,12 @@ defmodule Codebattle.PubSub.Events do
       %Message{
         topic: "game:#{params.game.id}",
         event: "game:finished",
-        payload: %{
-          game: params.game,
-          winner: params.winner,
-          loser: params.loser
-        }
+        payload: %{game: params.game}
       },
       %Message{
-        topic: "main",
+        topic: "games",
         event: "game:finished",
-        payload: %{
-          game: params.game,
-          winner: params.winner,
-          loser: params.loser
-        }
+        payload: %{game: params.game}
       }
     ]
   end

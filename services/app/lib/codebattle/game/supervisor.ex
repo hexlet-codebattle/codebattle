@@ -17,7 +17,7 @@ defmodule Codebattle.Game.Supervisor do
     ]
 
     chat =
-      case Game.Helpers.get_tournament_id(game) do
+      case game.tournament_id do
         nil -> [{Codebattle.Chat.Server, {:game, game.id}}]
         _ -> []
       end

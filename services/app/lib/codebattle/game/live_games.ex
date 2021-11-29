@@ -38,7 +38,7 @@ defmodule Codebattle.Game.LiveGames do
     :ets.match_object(@table_name, {game_key(game_id), :_, :_}) |> Enum.empty?() |> Kernel.!()
   end
 
-  def terminate_game(game_id) do
+  def delete_game(game_id) do
     :ets.delete(@table_name, game_key(game_id))
     :ok
   end

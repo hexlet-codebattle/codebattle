@@ -3,6 +3,8 @@ defmodule Codebattle.Tournament.Types do
     use Ecto.Schema
     import Ecto.Changeset
 
+    @type t :: %__MODULE__{}
+
     @primary_key false
     @derive Jason.Encoder
 

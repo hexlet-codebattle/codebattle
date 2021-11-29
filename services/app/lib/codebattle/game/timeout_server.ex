@@ -5,13 +5,15 @@ defmodule Codebattle.Game.TimeoutServer do
 
   require Logger
 
-  alias Codebattle.Game.{Play}
+  alias Codebattle.Game
 
   # API
   def start_timer(game_id, timeout_seconds) do
-    Logger.info("Start timer for game_id: #{game_id},  timeout: #{timeout_seconds} seconds")
+    :ok = GenServer.cast(server_name(game_id), {:start, timeout_seconds})
+  end
 
-    GenServer.cast(server_name(game_id), {:start, timeout_seconds})
+  def terminate_after(game_id, timeout_minutes) do
+    :ok = GenServer.cast(server_name(game_id), {:terminate, timeout_minutes})
   end
 
   def start_link(game_id) do
@@ -30,23 +32,21 @@ defmodule Codebattle.Game.TimeoutServer do
     {:noreply, %{game_id: game_id}}
   end
 
-  def handle_info(:trigger_timeout, %{game_id: game_id} = state) do
-    case Play.timeout_game(game_id) do
-      {:terminate_after, minutes} ->
-        Process.send_after(self(), :terminate, :timer.minutes(minutes))
-        {:noreply, state}
-
-      _ ->
-        {:noreply, state}
-    end
-  end
-
-  def handle_info(:terminate, %{game_id: game_id}) do
-    Play.terminate_game(game_id)
+  def handle_cast({:terminate, timeout_minutes}, %{game_id: game_id}) do
+    Process.send_after(self(), :trigger_terminate, :timer.minutes(timeout_minutes))
     {:noreply, %{game_id: game_id}}
   end
 
-  # TODO: FIXME without these prints error in tests
+  def handle_info(:trigger_timeout, %{game_id: game_id}) do
+    Game.Context.trigger_timeout(game_id)
+    {:noreply, %{game_id: game_id}}
+  end
+
+  def handle_info(:trigger_terminate, %{game_id: game_id}) do
+    Game.Context.terminate_game(game_id)
+    {:noreply, %{game_id: game_id}}
+  end
+
   def handle_info({_, :ok}, state) do
     {:noreply, state}
   end

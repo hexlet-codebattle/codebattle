@@ -153,7 +153,7 @@ defmodule Codebattle.Game.Engine do
     case game.is_live do
       true ->
         # Engine.store_playbook(game)
-        LiveGames.terminate_game(game.id)
+        LiveGames.delete_game(game.id)
         GlobalSupervisor.terminate_game(game.id)
         :ok
 
@@ -194,8 +194,8 @@ defmodule Codebattle.Game.Engine do
     loser = Helpers.get_opponent(game, winner.id)
     store_game_result!(game, {winner, "won"}, {loser, "lost"})
     store_playbook(game)
-    LiveGames.terminate_game(game.id)
-    # Codebattle.PubSub.broadcast("game:finished", %{game: game, winner: winner, loser: loser})
+    LiveGames.delete_game(game.id)
+    Codebattle.PubSub.broadcast("game:finished", %{game: game})
     :ok
   end
 
@@ -204,8 +204,9 @@ defmodule Codebattle.Game.Engine do
     winner = Helpers.get_opponent(game, loser.id)
     store_game_result!(game, {winner, "won"}, {loser, "gave_up"})
     store_playbook(game)
-    LiveGames.terminate_game(game.id)
-    # Codebattle.PubSub.broadcast("game:finished", %{game: game, winner: winner, loser: loser})
+    LiveGames.delete_game(game.id)
+    Codebattle.PubSub.broadcast("game:finished", %{game: game})
+    :ok
   end
 
   def get_task(level), do: tasks_provider().get_task(level)
@@ -250,6 +251,7 @@ defmodule Codebattle.Game.Engine do
       winner_achievements = Achievements.recalculate_achievements(winner)
       loser_achievements = Achievements.recalculate_achievements(loser)
 
+      # TODO: FIXME
       unless type == "training" do
         update_user!(winner.id, %{
           rating: new_winner_rating,
@@ -273,7 +275,8 @@ defmodule Codebattle.Game.Engine do
   end
 
   def update_game!(%Game{} = game, params) do
-    game
+    Game
+    |> Repo.get!(game.id)
     |> Game.changeset(params)
     |> Repo.update!()
   end
@@ -282,9 +285,28 @@ defmodule Codebattle.Game.Engine do
     Repo.insert!(UserGame.changeset(%UserGame{}, params))
   end
 
-  def start_timeout_timer(game) do
-    Codebattle.Game.TimeoutServer.start_timer(game.id, game.timeout_seconds)
-    :ok
+  def trigger_timeout(%Game{} = game) do
+    {:ok, {old_game, new_game}} = Server.call_transition(game.id, :timeout, %{})
+
+    case {old_game.state, new_game.state} do
+      {s, "timeout"} when s in ["waiting_opponent", "playing"] ->
+        Codebattle.PubSub.broadcast("game:finished", %{game: new_game})
+        LiveGames.delete_game(game.id)
+        update_game!(new_game, %{state: "timeout"})
+        terminate_game_after(game, 15)
+        :ok
+
+      _ ->
+        :ok
+    end
+  end
+
+  defp terminate_game_after(game, minutes) do
+    Game.TimeoutServer.terminate_after(game.id, minutes)
+  end
+
+  defp start_timeout_timer(game) do
+    Game.TimeoutServer.start_timer(game.id, game.timeout_seconds)
   end
 
   def broadcast_live_game(game) do
