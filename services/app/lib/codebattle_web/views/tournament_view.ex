@@ -28,8 +28,8 @@ defmodule CodebattleWeb.TournamentView do
     is_participant = Enum.map(match.players, & &1.id) |> Enum.any?(&(&1 == id))
 
     case {match.state, is_participant} do
-      {"waiting", true} -> {"Wait", "bg-warning"}
-      {"active", true} -> {"Join", "bg-warning"}
+      {"pending", true} -> {"Pending", "bg-warning"}
+      {"playing", true} -> {"Join", "bg-warning"}
       {_, true} -> {"Show", "x-bg-gray"}
       _ -> {"Show", ""}
     end

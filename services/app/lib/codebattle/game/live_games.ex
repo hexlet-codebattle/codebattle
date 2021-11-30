@@ -43,21 +43,17 @@ defmodule Codebattle.Game.LiveGames do
     :ok
   end
 
-  def create_game(game) do
-    game_id = Helpers.get_game_id(game)
-
+  def insert_new(game) do
     :ets.insert_new(
       @table_name,
-      {game_key(game_id), build_players(game), build_game_params(game)}
+      {game_key(game.id), build_players(game), build_game_params(game)}
     )
 
     :ok
   end
 
   def update_game(game) do
-    game_id = Helpers.get_game_id(game)
-
-    :ets.insert(@table_name, {game_key(game_id), build_players(game), build_game_params(game)})
+    :ets.insert(@table_name, {game_key(game.id), build_players(game), build_game_params(game)})
     :ok
   end
 
@@ -73,9 +69,7 @@ defmodule Codebattle.Game.LiveGames do
   end
 
   def setup_game(game) do
-    game_id = Helpers.get_game_id(game)
-
-    :ets.insert(@table_name, {game_key(game_id), build_players(game), build_game_params(game)})
+    :ets.insert(@table_name, {game_key(game.id), build_players(game), build_game_params(game)})
     :ok
   end
 

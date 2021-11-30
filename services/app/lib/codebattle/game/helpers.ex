@@ -44,9 +44,18 @@ defmodule Codebattle.Game.Helpers do
     |> Enum.find(fn player -> player.id != player_id end)
   end
 
-  def winner?(game, player_id), do: is_player_result?(game, player_id, :won)
-  def lost?(game, player_id), do: is_player_result?(game, player_id, :lost)
-  def gave_up?(game, player_id), do: is_player_result?(game, player_id, :gave_up)
+  def get_player_results(game) do
+    game
+    |> get_players
+    |> Enum.map(fn player ->
+      {player.id, player.game_result}
+    end)
+    |> Enum.into(%{})
+  end
+
+  def winner?(game, player_id), do: is_player_result?(game, player_id, "won")
+  def lost?(game, player_id), do: is_player_result?(game, player_id, "lost")
+  def gave_up?(game, player_id), do: is_player_result?(game, player_id, "gave_up")
 
   defp is_player_result?(game, player_id, result) do
     game

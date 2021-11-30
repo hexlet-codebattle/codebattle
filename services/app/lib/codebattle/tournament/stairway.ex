@@ -41,7 +41,7 @@ defmodule Codebattle.Tournament.Stairway do
       tournament
       |> get_players
       |> Enum.map(fn p ->
-        %{state: "waiting", players: [p], round_id: tournament.step}
+        %{state: "pending", players: [p], round_id: tournament.step}
       end)
 
     prev_matches =

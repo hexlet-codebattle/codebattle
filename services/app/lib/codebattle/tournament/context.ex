@@ -20,7 +20,7 @@ defmodule Codebattle.Tournament.Context do
     end
   end
 
-  defp get_from_db!(id) do
+  def get_from_db!(id) do
     id
     |> tournament_query()
     |> Codebattle.Repo.one!()

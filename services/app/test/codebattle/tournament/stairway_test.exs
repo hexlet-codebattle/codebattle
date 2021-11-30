@@ -44,7 +44,7 @@ defmodule Codebattle.Tournament.StairwayTest do
 
     new_tournament =
       new_tournament
-      |> @module.finish_all_active_matches()
+      |> @module.finish_all_playing_matches()
       |> @module.maybe_start_new_step()
 
     assert new_tournament.step == 1
@@ -58,7 +58,7 @@ defmodule Codebattle.Tournament.StairwayTest do
 
     new_tournament =
       new_tournament
-      |> @module.finish_all_active_matches()
+      |> @module.finish_all_playing_matches()
       |> @module.maybe_start_new_step()
 
     assert new_tournament.step == 2
@@ -78,7 +78,7 @@ defmodule Codebattle.Tournament.StairwayTest do
 
     new_tournament =
       new_tournament
-      |> @module.finish_all_active_matches()
+      |> @module.finish_all_playing_matches()
       |> @module.maybe_start_new_step()
 
     assert new_tournament.step == 3

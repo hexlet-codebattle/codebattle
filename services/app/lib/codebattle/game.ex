@@ -51,6 +51,7 @@ defmodule Codebattle.Game do
       :rematch_initiator_id,
       :task_id,
       :tournament_id,
+      :timeout_seconds,
       :level,
       :starts_at,
       :finishes_at

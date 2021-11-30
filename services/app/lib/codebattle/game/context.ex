@@ -18,37 +18,11 @@ defmodule Codebattle.Game.Context do
     Server,
     Engine,
     Helpers,
-    LiveGames,
-    GlobalSupervisor
+    LiveGames
   }
 
-  # with_bot =
-  # create_game
-  #   {
-  #     level: level,
-  #     type: bot,
-  #     timeout_seconds: timeout_seconds,
-  #     visibility_type: public,
-  #   }
-  # with_friend =
-  # create_invite
-  #   {
-  #     level: level,
-  #     type: standard,
-  #     timeout_seconds: timeout_seconds,
-  #     visibility_type: hidden,
-  #   }
-
-  # with_other_users =
-  # create_game
-  #   {
-  #     level: level,
-  #     type: standard,
-  #     timeout_seconds: timeout_seconds,
-  #     visibility_type: public,
-  #   }
-
   @type game_id :: non_neg_integer
+  @type tournament_id :: non_neg_integer
 
   @type game_params :: %{
           task: Codebattle.Task.t() | nil,
@@ -56,9 +30,10 @@ defmodule Codebattle.Game.Context do
           level: String.t() | nil,
           type: String.t() | nil,
           visibility_type: String.t() | nil,
+          tournament_id: tournament_id | nil,
           timeout_seconds: non_neg_integer | nil,
           # TODO: use only users/players or create Game.Player
-          users: nonempty_list(User.t()) | nonempty_list(Tournament.Types.Player.t())
+          players: nonempty_list(User.t()) | nonempty_list(Tournament.Types.Player.t())
         }
 
   def get_live_games(params \\ %{}), do: LiveGames.get_games(params)

@@ -1,5 +1,6 @@
 defmodule Codebattle.PubSub.Events do
   alias Codebattle.PubSub.Message
+  alias Codebattle.Game
 
   def get_messages("tournament:created", params) do
     [
@@ -32,7 +33,7 @@ defmodule Codebattle.PubSub.Events do
   end
 
   def get_messages("game:finished", params) do
-    [
+    game_events = [
       %Message{
         topic: "game:#{params.game.id}",
         event: "game:finished",
@@ -44,5 +45,24 @@ defmodule Codebattle.PubSub.Events do
         payload: %{game: params.game}
       }
     ]
+
+    tournament_events =
+      if params.game.tournament_id do
+        [
+          %Message{
+            topic: "game:tournament:#{params.game.tournament_id}",
+            event: "game:tournament:finished",
+            payload: %{
+              game_id: params.game.id,
+              game_state: params.game.state,
+              player_results: Game.Helpers.get_player_results(params.game)
+            }
+          }
+        ]
+      else
+        []
+      end
+
+    game_events ++ tournament_events
   end
 end

@@ -1,6 +1,5 @@
 defmodule Codebattle.Tournament.Team do
-  alias Codebattle.Game.Helpers
-  alias Codebattle.Game.Context
+  alias Codebattle.Game
   alias Codebattle.Tournament
 
   use Tournament.Base
@@ -67,7 +66,7 @@ defmodule Codebattle.Tournament.Team do
       |> shift_pairs(tournament)
       |> Enum.zip()
       |> Enum.map(fn {p1, p2} ->
-        %{state: "waiting", players: [p1, p2], round_id: tournament.step}
+        %{state: "pending", players: [p1, p2], round_id: tournament.step}
       end)
 
     prev_matches =
@@ -102,14 +101,16 @@ defmodule Codebattle.Tournament.Team do
 
   @impl Tournament.Base
   def create_game(tournament, match) do
-    {:ok, fsm} =
-      Context.create_game(%{
+    {:ok, game} =
+      Game.Context.create_game(%{
+        state: "playing",
         level: tournament.difficulty,
-        tournament: tournament,
+        tournament_id: tournament.id,
+        timeout_seconds: tournament.match_timeout_seconds,
         players: match.players
       })
 
-    Helpers.get_game_id(fsm)
+    game.id
   end
 
   defp shift_pairs(teams, tournament) do

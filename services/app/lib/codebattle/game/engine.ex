@@ -21,6 +21,8 @@ defmodule Codebattle.Game.Engine do
 
   import Codebattle.Game.Auth
 
+  require Logger
+
   @default_timeout 30 * 60
   @max_timeout 2 * 60 * 60
 
@@ -31,11 +33,11 @@ defmodule Codebattle.Game.Engine do
     type = params[:type] || "standard"
     visibility_type = params[:visibility_type] || "public"
     timeout_seconds = params[:timeout_seconds] || @default_timeout
-    [creator | _] = params.users
+    [creator | _] = params.players
 
     players =
-      Enum.map(params.users, fn user ->
-        Player.build(user, %{creator: user.id == creator.id, task: task})
+      Enum.map(params.players, fn player ->
+        Player.build(player, %{creator: player.id == creator.id, task: task})
       end)
 
     with :ok <- can_play_game?(players),
@@ -46,13 +48,14 @@ defmodule Codebattle.Game.Engine do
              level: level,
              type: type,
              visibility_type: visibility_type,
-             timeout_seconds: min(timeout_seconds, @max_timeout),
+             timeout_seconds: min(timeout_seconds, @max_timeout) |> IO.inspect(),
+             tournament_id: params[:tournament_id],
              task: task,
              players: players
            }),
          game <- Map.merge(game, %{langs: langs}),
          {:ok, _} <- GlobalSupervisor.start_game(game),
-         :ok <- LiveGames.create_game(game),
+         :ok <- insert_live_game(game),
          :ok <- start_timeout_timer(game),
          :ok <- broadcast_live_game(game) do
       {:ok, game}
@@ -286,6 +289,7 @@ defmodule Codebattle.Game.Engine do
   end
 
   def trigger_timeout(%Game{} = game) do
+    Logger.debug("Trigger timeout for game: #{game.id}")
     {:ok, {old_game, new_game}} = Server.call_transition(game.id, :timeout, %{})
 
     case {old_game.state, new_game.state} do
@@ -306,7 +310,7 @@ defmodule Codebattle.Game.Engine do
   end
 
   defp start_timeout_timer(game) do
-    Game.TimeoutServer.start_timer(game.id, game.timeout_seconds)
+    Game.TimeoutServer.start_timer(game.id, game.timeout_seconds) |> IO.inspect()
   end
 
   def broadcast_live_game(game) do
@@ -322,6 +326,9 @@ defmodule Codebattle.Game.Engine do
     |> Game.changeset(params)
     |> Repo.insert()
   end
+
+  defp insert_live_game(%{tournament_id: nil} = game), do: LiveGames.insert_new(game)
+  defp insert_live_game(_game), do: :ok
 
   # deprecated
   defp create_rematch_game(game) do

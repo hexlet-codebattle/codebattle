@@ -1,19 +1,18 @@
 defmodule Codebattle.Bot.GameCreator do
-  alias Codebattle.Game.Context
+  alias Codebattle.Game
 
   def call(level) do
-    games = Context.get_live_games(%{type: "bot", state: "waiting_opponent", level: level})
+    games = Game.Context.get_live_games(%{type: "bot", state: "waiting_opponent", level: level})
 
     if Enum.count(games) < 1 do
       bot = Codebattle.Bot.Builder.build()
 
-      Context.create_game(%{
-        creator: bot,
+      Game.Context.create_game(%{
         state: "waiting_opponent",
         type: "bot",
         visibility_type: "public",
         level: level,
-        users: [bot]
+        players: [bot]
       })
     else
       {:error, :game_limit}
