@@ -45,9 +45,9 @@ defmodule Codebattle.GameCases.GiveUpTest do
     # First player give_up
     Phoenix.ChannelTest.push(socket1, "give_up", %{})
     :timer.sleep(70)
-    {:ok, fsm} = Server.get_game(game_id)
+    game = Game.Context.get_game(game.id)
 
-    assert fsm.state == :game_over
+    assert game.state == "game_over"
     assert Helpers.gave_up?(fsm, user1.id) == true
     assert Helpers.winner?(fsm, user2.id) == true
     assert LiveGames.game_exists?(game_id) == false
@@ -80,9 +80,9 @@ defmodule Codebattle.GameCases.GiveUpTest do
     Phoenix.ChannelTest.push(socket1, "check_result", %{editor_text: "won", lang_slug: "js"})
     Phoenix.ChannelTest.push(socket1, "give_up", %{})
     :timer.sleep(70)
-    {:ok, fsm} = Server.get_game(game_id)
+    game = Game.Context.get_game(game.id)
 
-    assert fsm.state == :game_over
+    assert game.state == "game_over"
     assert Helpers.winner?(fsm, user1.id) == true
     assert Helpers.lost?(fsm, user2.id) == true
   end
@@ -106,9 +106,9 @@ defmodule Codebattle.GameCases.GiveUpTest do
 
     :timer.sleep(100)
 
-    {:ok, fsm} = Server.get_game(game_id)
+    game = Game.Context.get_game(game.id)
 
-    assert fsm.state == :game_over
+    assert game.state == "game_over"
 
     conn =
       conn1
@@ -117,7 +117,7 @@ defmodule Codebattle.GameCases.GiveUpTest do
 
     game_id = game_id_from_conn(conn)
 
-    {:ok, fsm} = Server.get_game(game_id)
+    game = Game.Context.get_game(game.id)
 
     assert fsm.state == :waiting_opponent
   end

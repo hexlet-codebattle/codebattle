@@ -158,7 +158,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
        ) do
     info =
       input_signature
-      |> Enum.zip(assert["arguments"])
+      |> Enum.zip(assert.arguments)
       |> Enum.map(fn {input, value} ->
         %{
           name: get_variable_name(input, index, meta),
@@ -181,7 +181,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
     types = Enum.map(input_signature, &extract_type/1)
 
     types
-    |> Enum.zip(assert["arguments"])
+    |> Enum.zip(assert.arguments)
     |> Enum.map_join(checker_meta.arguments_delimeter, &get_value(&1, meta))
   end
 
@@ -192,12 +192,12 @@ defmodule Codebattle.Generators.CheckerGenerator do
        ) do
     %{
       defining: get_defining(signature, index, meta),
-      value: get_value_expression(signature, assert["expected"], meta)
+      value: get_value_expression(signature, assert.expected, meta)
     }
   end
 
   defp get_expected({assert, _index}, %{output_signature: signature}, meta) do
-    get_value({extract_type(signature), assert["expected"]}, meta)
+    get_value({extract_type(signature), assert.expected}, meta)
   end
 
   defp get_error_message({assert, _}, %{input_signature: input_signature}, meta) do
@@ -205,7 +205,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
 
     result =
       types
-      |> Enum.zip(assert["arguments"])
+      |> Enum.zip(assert.arguments)
       |> Enum.map_join(", ", &get_value(&1, meta))
 
     ~s(#{String.replace(result, "\"", "\\\"")})

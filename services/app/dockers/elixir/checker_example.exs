@@ -17,7 +17,7 @@ try do
         success
       rescue
         _e in ExUnit.AssertionError ->
-          message = json_map(status: :failure, result: result, arguments: error_message)
+          message = json_map(status: "failure", result: result, arguments: error_message)
           IO.puts(Jason.encode!(message))
           false
       end
@@ -42,6 +42,6 @@ try do
 rescue
   e in CompileError ->
     require Jason.Helpers
-    message = Jason.Helpers.json_map(status: :error, result: e.description)
+    message = Jason.Helpers.json_map(status: "error", result: e.description)
     IO.puts(Jason.encode!(message))
 end

@@ -48,7 +48,7 @@ defmodule Codebattle.Game.Engine do
              level: level,
              type: type,
              visibility_type: visibility_type,
-             timeout_seconds: min(timeout_seconds, @max_timeout) |> IO.inspect(),
+             timeout_seconds: min(timeout_seconds, @max_timeout),
              tournament_id: params[:tournament_id],
              task: task,
              players: players
@@ -310,7 +310,7 @@ defmodule Codebattle.Game.Engine do
   end
 
   defp start_timeout_timer(game) do
-    Game.TimeoutServer.start_timer(game.id, game.timeout_seconds) |> IO.inspect()
+    Game.TimeoutServer.start_timer(game.id, game.timeout_seconds)
   end
 
   def broadcast_live_game(game) do

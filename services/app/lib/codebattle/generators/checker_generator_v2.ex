@@ -8,7 +8,7 @@ defmodule Codebattle.Generators.CheckerGeneratorV2 do
 
     arguments =
       task.asserts
-      |> Enum.map(& &1["arguments"])
+      |> Enum.map(& &1.arguments)
       |> Jason.encode!()
 
     EEx.eval_file(Path.join(source_dir, "#{slug}.eex"), arguments: arguments)

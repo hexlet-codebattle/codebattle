@@ -36,7 +36,7 @@ begin
   rescue Test::Unit::AssertionFailedError
     @execution_result <<
       JSON.dump(
-        status: :failure,
+        status: "failure",
         result: result,
         output: $stdout.string,
         expected: expected,
@@ -58,10 +58,7 @@ begin
   end
 rescue Exception => e
   @execution_result <<
-    JSON.dump(
-      status: :error,
-      result: e.message
-    )
+    JSON.dump( status: "error", result: e.message)
 end
 
 $stdout = original_stdout

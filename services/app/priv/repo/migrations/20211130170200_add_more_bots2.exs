@@ -134,6 +134,30 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots2 do
         achievements: ["bot"],
         inserted_at: TimeHelper.utc_now(),
         updated_at: TimeHelper.utc_now()
+      },
+      %{
+        id: -39,
+        name: "StuffyDilshod",
+        is_bot: true,
+        rating: 1200,
+        email: "Stuffy@Dilshod.bot_codebattle",
+        lang: "haskell",
+        github_id: 35_539_033,
+        achievements: ["bot"],
+        inserted_at: TimeHelper.utc_now(),
+        updated_at: TimeHelper.utc_now()
+      },
+      %{
+        id: -40,
+        name: "IvanNebot",
+        is_bot: true,
+        rating: 1200,
+        email: "ivan@nebot.bot_codebattle",
+        lang: "php",
+        github_id: 35_539_033,
+        achievements: ["bot"],
+        inserted_at: TimeHelper.utc_now(),
+        updated_at: TimeHelper.utc_now()
       }
     ]
 

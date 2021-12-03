@@ -81,8 +81,7 @@ defmodule CodebattleWeb.Factory do
       name: Base.encode16(:crypto.strong_rand_bytes(2)),
       description_en: "test sum",
       level: "easy",
-      asserts:
-        "{\"arguments\":[[\"a\", \"b\", \"c\"], [\"d\", \"e\", \"f\"]],\"expected\":[\"abcdef\"]}\n",
+      asserts: [%{arguments: [["a", "b", "c"], ["d", "e", "f"]], expected: ["abcdef"]}],
       input_signature: [
         %{
           "argument-name" => "a",
@@ -105,8 +104,12 @@ defmodule CodebattleWeb.Factory do
       name: Base.encode16(:crypto.strong_rand_bytes(2)),
       description_en: "test sum",
       level: "easy",
-      asserts:
-        "{\"arguments\":[1, \"a\", true, {\"a\":\"b\",\"c\":\"d\"}, [\"d\", \"e\"], [[\"Jack\",\"Alice\"]]],\"expected\":[\"asdf\"]}\n",
+      asserts: [
+        %{
+          arguments: [1, "a", true, %{a: "b", c: "d"}, ["d", "e"], [["Jack", "Alice"]]],
+          expected: ["asdf"]
+        }
+      ],
       input_signature: [
         %{
           "argument-name" => "int",

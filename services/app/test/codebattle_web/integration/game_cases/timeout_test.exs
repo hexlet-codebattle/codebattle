@@ -89,7 +89,7 @@ defmodule Codebattle.GameCases.TimeoutTest do
 
     game_id = game_id_from_conn(conn)
 
-    {:ok, fsm} = Server.get_game(game_id)
+    game = Game.Context.get_game(game.id)
 
     assert fsm.state == :waiting_opponent
   end

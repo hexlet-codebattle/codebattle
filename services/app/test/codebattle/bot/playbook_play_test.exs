@@ -71,12 +71,12 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
     Phoenix.ChannelTest.push(socket, "editor:data", %{editor_text: "test", lang_slug: "js"})
     :timer.sleep(100)
 
-    {:ok, fsm} = Server.get_game(game_id)
-    assert fsm.state == :playing
+    game = Game.Context.get_game(game.id)
+    assert game.state == "playing"
 
     :timer.sleep(3_000)
     # bot write_some_text
-    {:ok, fsm} = Server.get_game(game_id)
+    game = Game.Context.get_game(game.id)
 
     assert Helpers.get_first_player(fsm).editor_text == "tes"
     assert Helpers.get_winner(fsm).name == bot.name

@@ -13,7 +13,7 @@ defmodule Codebattle.CodeCheck.CheckerStatus do
         %Codebattle.CodeCheck.CheckResult{
           asserts_count: 0,
           success_count: 0,
-          status: :error,
+          status: "error",
           output: ~s({"status": "error", "result": "sdf"}),
           result: ~s({"status": "error", "result": "sdf"})
         }
