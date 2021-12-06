@@ -10,7 +10,7 @@ defmodule Codebattle.UserEvent do
     game controller events -> [
       "create_game", "show_waiting_game_page",
       "show_playing_game_page", "show_waiting_game_page",
-      "show_game_result_page", "show_archived_game_page",
+      "show_result_page", "show_archived_game_page",
       "join_created_game", "failure_join_game",
       "cancel_created_game"
     ]

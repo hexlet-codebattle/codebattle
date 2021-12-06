@@ -21,6 +21,7 @@ defmodule Codebattle.Game.Context do
     LiveGames
   }
 
+  @type raw_game_id :: String.t() | non_neg_integer
   @type game_id :: non_neg_integer
   @type tournament_id :: non_neg_integer
 
@@ -32,7 +33,6 @@ defmodule Codebattle.Game.Context do
           visibility_type: String.t() | nil,
           tournament_id: tournament_id | nil,
           timeout_seconds: non_neg_integer | nil,
-          # TODO: use only users/players or create Game.Player
           players: nonempty_list(User.t()) | nonempty_list(Tournament.Types.Player.t())
         }
 
@@ -52,7 +52,11 @@ defmodule Codebattle.Game.Context do
     Repo.all(query)
   end
 
-  @spec get_game(game_id) :: Game.t() | no_return
+  @spec get_game(raw_game_id) :: Game.t() | no_return
+  def get_game(id) when is_binary(id) do
+    id |> String.to_integer() |> get_game
+  end
+
   def get_game(id) do
     case Server.get_game(id) do
       {:ok, game} -> mark_as_live(game)
@@ -113,7 +117,7 @@ defmodule Codebattle.Game.Context do
     id |> get_game() |> Engine.give_up(user)
   end
 
-  @spec rematch_send_offer(game_id, User.t()) ::
+  @spec rematch_send_offer(raw_game_id, User.t()) ::
           {:ok, {:rematch_status_updated, Game.t()}}
           | {:ok, {:rematch_accepted, Game.t()}}
           | {:error, atom}

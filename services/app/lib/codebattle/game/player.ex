@@ -4,16 +4,13 @@ defmodule Codebattle.Game.Player do
   use Ecto.Schema
   import Ecto.Changeset
 
-  @primary_key false
-  @derive Jason.Encoder
-
   alias Codebattle.CodeCheck.CheckResult
-  alias Codebattle.CodeCheck.CheckResultV2
   alias Codebattle.Game.Player
   alias Codebattle.Languages
   alias Codebattle.Tournament
   alias Codebattle.UserGame
 
+  @primary_key false
   @derive {Jason.Encoder,
            only: [
              :id,
@@ -23,7 +20,7 @@ defmodule Codebattle.Game.Player do
              :editor_text,
              :editor_lang,
              :creator,
-             :game_result,
+             :result,
              :check_result,
              :achievements,
              :rating,
@@ -31,12 +28,14 @@ defmodule Codebattle.Game.Player do
              :rank
            ]}
 
+  @results ~w(undefined won lost gave_up timeout)
+
   embedded_schema do
     field(:id, :integer)
     field(:editor_text, :string, default: "module.exports = () => {\n\n};")
     field(:editor_lang, :string, default: "js")
     field(:lang, :string, default: "js")
-    field(:game_result, :string, default: "undefined")
+    field(:result, :string, default: "undefined")
     # CheckResult.t() | CheckResultV2.t()
     field(:check_result, :map, default: %CheckResult{})
     field(:creator, :boolean, default: false)
@@ -58,13 +57,14 @@ defmodule Codebattle.Game.Player do
       :editor_text,
       :editor_lang,
       :creator,
-      :game_result,
+      :result,
       :check_result,
       :achievements,
       :rating,
       :rating_diff,
       :rank
     ])
+    |> validate_inclusion(:result, @results)
   end
 
   def build(struct, params \\ %{})
@@ -87,7 +87,7 @@ defmodule Codebattle.Game.Player do
             editor_lang: user_game.lang,
             lang: user_game.lang,
             creator: user_game.creator,
-            game_result: user_game.result
+            result: user_game.result
           }
       end
 
@@ -95,6 +95,26 @@ defmodule Codebattle.Game.Player do
   end
 
   def build(%Tournament.Types.Player{} = player, params) do
+    init_player = %__MODULE__{
+      id: player.id,
+      is_bot: player.is_bot,
+      name: player.name,
+      rating: player.rating,
+      rank: player.rank,
+      editor_lang: player.lang || "js",
+      lang: player.lang || "js"
+    }
+
+    player =
+      case params[:task] do
+        nil -> init_player
+        task -> setup_editor_params(init_player, %{task: task})
+      end
+
+    Map.merge(player, params)
+  end
+
+  def build(%Player{} = player, params) do
     init_player = %__MODULE__{
       id: player.id,
       is_bot: player.is_bot,
@@ -149,7 +169,7 @@ defmodule Codebattle.Game.Player do
     params = %{
       editor_lang: editor_lang,
       editor_text: editor_text,
-      game_result: :undefined,
+      result: :undefined,
       check_result: %CheckResult{}
     }
 

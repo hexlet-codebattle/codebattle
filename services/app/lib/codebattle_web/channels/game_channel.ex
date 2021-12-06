@@ -96,7 +96,7 @@ defmodule CodebattleWeb.GameChannel do
     user = socket.assigns.current_user
 
     game_id
-    |> Game.Context.rematch_send_offer(game_id, user)
+    |> Context.rematch_send_offer(user)
     |> handle_rematch_result(socket)
   end
 
@@ -113,7 +113,7 @@ defmodule CodebattleWeb.GameChannel do
     user = socket.assigns.current_user
 
     game_id
-    |> Context.rematch_send_offer(user.id)
+    |> Context.rematch_send_offer(user)
     |> handle_rematch_result(socket)
   end
 

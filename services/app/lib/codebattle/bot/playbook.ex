@@ -93,6 +93,7 @@ defmodule Codebattle.Bot.Playbook do
 
   def add_event(playbook, event, params)
       when event in @events do
+
     time = System.system_time(:millisecond)
     count = Enum.count(playbook)
 

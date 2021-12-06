@@ -163,7 +163,7 @@ defmodule Codebattle.Tournament.IndividualTest do
     assert new_tournament.data.matches
            |> List.first()
            |> Map.get(:players)
-           |> Enum.map(fn x -> {x.id, x.game_result} end) ==
+           |> Enum.map(fn x -> {x.id, x.result} end) ==
              [{user1.id, "won"}, {user2.id, "gave_up"}]
   end
 
@@ -202,7 +202,7 @@ defmodule Codebattle.Tournament.IndividualTest do
     assert new_tournament.data.matches
            |> List.first()
            |> Map.get(:players)
-           |> Enum.map(fn x -> {x.id, x.game_result} end) ==
+           |> Enum.map(fn x -> {x.id, x.result} end) ==
              [{user1.id, "lost"}, {user2.id, "won"}]
   end
 

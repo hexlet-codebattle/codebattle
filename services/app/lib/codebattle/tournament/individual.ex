@@ -120,7 +120,7 @@ defmodule Codebattle.Tournament.Individual do
 
   defp pair_players_to_matches(players, step) do
     Enum.reduce(players, [%{}], fn player, acc ->
-      player = Map.merge(player, %{game_result: "waiting"})
+      player = Map.merge(player, %{result: "waiting"})
 
       case List.first(acc) do
         map when map == %{} ->

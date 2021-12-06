@@ -34,7 +34,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
 
         iex> Codebattle.Generators.CheckerGenerator.inflect(
         ...>    %{
-        ...>      asserts: "{\"arguments\": [1, 2], \"expected\": [2, 1]}\n{\"arguments\": [3, 5], \"expected\": [5, 3]}",
+        ...>      asserts: [%{arguments: [1, 2], expected: [2, 1]}, %{arguments: [3, 5], expected: [5, 3]}],
         ...>      input_signature: [
         ...>        %{"type" => %{"name" => "integer"}},
         ...>        %{"type" => %{"name" => "integer"}}
@@ -52,7 +52,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
 
         iex> Codebattle.Generators.CheckerGenerator.inflect(
         ...>    %{
-        ...>      asserts: "{\"arguments\": [\"str1\", \"str2\"], \"expected\": {\"str1\": 3, \"str2\": 3}}",
+        ...>      asserts: [%{arguments: ["str1", "str2"], expected: %{str1: 3, str2: 3}}],
         ...>      input_signature: [
         ...>        %{"type" => %{"name" => "string"}},
         ...>        %{"type" => %{"name" => "string"}}
@@ -74,7 +74,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
 
         iex> Codebattle.Generators.CheckerGenerator.inflect(
         ...>    %{
-        ...>      asserts: "{\"arguments\": [[\"str1\", \"str2\"]], \"expected\": {\"str1\": 1, \"str2\": 1}}",
+        ...>      asserts: [%{arguments: [["str1", "str2"]], expected: %{str1: 1, str2: 1}}],
         ...>      input_signature: [
         ...>        %{"argument-name" => "arr", "type" => %{"name" => "array", "nested" => %{"name" => "string"}}},
         ...>      ],
@@ -98,7 +98,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
 
         iex> Codebattle.Generators.CheckerGenerator.inflect(
         ...>    %{
-        ...>      asserts: "{\"arguments\": [[\"str1\", \"str2\"]], \"expected\": {\"str1\": 1, \"str2\": 1}}",
+        ...>      asserts: [%{arguments: [["str1", "str2"]], expected: %{str1: 1, str2: 1}}],
         ...>      input_signature: [
         ...>        %{"argument-name" => "arr", "type" => %{"name" => "array", "nested" => %{"name" => "string"}}},
         ...>      ],

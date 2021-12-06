@@ -105,12 +105,13 @@ defmodule Codebattle.CodeCheck.Dart.IntegrationTest do
   end
 
   @tag :code_check
-  test "good code, player won with vectors", %{
+  test "test all data cases", %{
     game_params: game_params,
     socket1: socket1,
     socket2: socket2
   } do
-    {:ok, game} = Game.Context.create_game(game_params)
+    task = insert(:task_with_all_data_types)
+    {:ok, game} = Game.Context.create_game(%{game_params | task: task})
     game_topic = "game:" <> to_string(game.id)
 
     {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
@@ -121,7 +122,7 @@ defmodule Codebattle.CodeCheck.Dart.IntegrationTest do
 
     Phoenix.ChannelTest.push(socket1, "check_result", %{
       editor_text:
-        "List<String> solution(List<String> a, List<String> b) { return [\"abcdef\"];}",
+      "List<String> solution(int a, String b, double c, bool d Map<String, String> e, List<String> f, List<List<String>> g) { return [\"asdf\"];}",
       lang_slug: "dart"
     })
 

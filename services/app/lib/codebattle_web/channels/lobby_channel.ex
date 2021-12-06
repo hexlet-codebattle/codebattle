@@ -11,8 +11,7 @@ defmodule CodebattleWeb.LobbyChannel do
 
     {:ok,
      %{
-       live_games:
-         GameView.render_live_games(Game.Context.get_live_games(), current_user.id),
+       live_games: GameView.render_live_games(Game.Context.get_live_games(), current_user.id),
        tournaments: Tournament.Context.list_live_and_finished(socket.assigns.current_user),
        completed_games: GameView.render_completed_games(Game.Context.get_completed_games())
      }, socket}
@@ -37,7 +36,7 @@ defmodule CodebattleWeb.LobbyChannel do
       type: payload["type"],
       visibility_type: payload["visibility_type"],
       timeout_seconds: payload["timeout_seconds"],
-      users: [socket.assigns.current_user]
+      players: [socket.assigns.current_user]
     }
 
     case Game.Context.create_game(game_params) do

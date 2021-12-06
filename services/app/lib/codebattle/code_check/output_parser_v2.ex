@@ -7,9 +7,6 @@ defmodule Codebattle.CodeCheck.OutputParserV2 do
   @memory_overflow "Error 137"
 
   def call(container_output, task) do
-    IO.inspect(11_111_111)
-    IO.inspect(container_output)
-
     outputs =
       container_output
       |> String.split("\n")
@@ -35,7 +32,7 @@ defmodule Codebattle.CodeCheck.OutputParserV2 do
         end
       end)
 
-    output =
+    output_error =
       if is_nil(outputs["messages"]) do
         nil
       else
@@ -91,12 +88,14 @@ defmodule Codebattle.CodeCheck.OutputParserV2 do
             "failure"
           end
 
-        assert_result
-        |> Map.put(:asserts, failure_asserts ++ success_asserts)
-        |> Map.put(:success_count, success_count)
-        |> Map.put(:asserts_count, asserts_count)
-        |> Map.put(:status, status)
-        |> Map.put(:output, output)
+        %{
+          assert_result
+          | asserts: failure_asserts ++ success_asserts,
+            success_count: success_count,
+            asserts_count: asserts_count,
+            status: status,
+            output_error: output_error
+        }
 
       true ->
         %CheckResultV2{

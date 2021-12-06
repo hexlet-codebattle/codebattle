@@ -1,12 +1,10 @@
 defmodule Codebattle.Game.Engine do
-  alias Codebattle.Game
-
   alias Codebattle.Game.{
     Player,
     Server,
     Helpers,
     LiveGames,
-    Elo,
+    RatingCalculator,
     GlobalSupervisor
   }
 
@@ -107,9 +105,13 @@ defmodule Codebattle.Game.Engine do
         case {old_game.state, new_game.state} do
           {"playing", "game_over"} ->
             Server.update_playbook(game.id, :game_over, %{id: user.id, lang: editor_lang})
+            LiveGames.delete_game(game.id)
 
-            player = Helpers.get_player(new_game, user.id)
-            handle_won_game(new_game, player)
+            new_game = RatingCalculator.call(new_game)
+            {:ok, _game} = store_result!(new_game)
+            store_playbook(new_game)
+
+            Codebattle.PubSub.broadcast("game:finished", %{game: new_game})
             {:ok, new_game, %{check_result: check_result, solution_status: true}}
 
           _ ->
@@ -132,9 +134,14 @@ defmodule Codebattle.Game.Engine do
   def give_up(game, user) do
     case Server.call_transition(game.id, :give_up, %{id: user.id}) do
       {:ok, {_old_game, game}} ->
-        handle_give_up(game, user.id)
+        LiveGames.delete_game(game.id)
 
-        {:ok, game}
+        new_game = RatingCalculator.call(game)
+        {:ok, _game} = store_result!(new_game)
+        store_playbook(new_game)
+
+        Codebattle.PubSub.broadcast("game:finished", %{game: new_game})
+        {:ok, new_game}
 
       {:error, reason} ->
         {:error, reason}
@@ -170,7 +177,7 @@ defmodule Codebattle.Game.Engine do
       Server.call_transition(game.id, :rematch_send_offer, %{player_id: user.id})
 
     case Helpers.get_rematch_state(game) do
-      :accepted ->
+      "accepted" ->
         {:ok, new_game} = create_rematch_game(game)
         GlobalSupervisor.terminate_game(game.id)
 
@@ -193,87 +200,49 @@ defmodule Codebattle.Game.Engine do
     Task.start(fn -> Playbook.store_playbook(playbook, game.id, game.task.id) end)
   end
 
-  def handle_won_game(game, winner) do
-    loser = Helpers.get_opponent(game, winner.id)
-    store_game_result!(game, {winner, "won"}, {loser, "lost"})
-    store_playbook(game)
-    LiveGames.delete_game(game.id)
-    Codebattle.PubSub.broadcast("game:finished", %{game: game})
-    :ok
-  end
-
-  def handle_give_up(game, loser_id) do
-    loser = Helpers.get_player(game, loser_id)
-    winner = Helpers.get_opponent(game, loser.id)
-    store_game_result!(game, {winner, "won"}, {loser, "gave_up"})
-    store_playbook(game)
-    LiveGames.delete_game(game.id)
-    Codebattle.PubSub.broadcast("game:finished", %{game: game})
-    :ok
-  end
-
   def get_task(level), do: tasks_provider().get_task(level)
 
-  def store_game_result!(game, {winner, winner_result}, {loser, loser_result}) do
-    level = Helpers.get_level(game)
-    type = Helpers.get_type(game)
-    {new_winner_rating, new_loser_rating} = Elo.calc_elo(winner.rating, loser.rating, level)
-
-    winner_rating_diff = new_winner_rating - winner.rating
-    loser_rating_diff = new_loser_rating - loser.rating
-
+  def store_result!(game) do
     Repo.transaction(fn ->
-      create_user_game!(%{
-        game_id: game.id,
-        user_id: winner.id,
-        result: winner_result,
-        creator: winner.creator,
-        rating: new_winner_rating,
-        rating_diff: winner_rating_diff,
-        lang: winner.editor_lang
-      })
+      Enum.each(game.players, fn player ->
+        create_user_game!(%{
+          game_id: game.id,
+          user_id: player.id,
+          result: player.result,
+          creator: player.creator,
+          rating: player.rating,
+          rating_diff: player.rating_diff,
+          lang: player.editor_lang
+        })
 
-      create_user_game!(%{
-        game_id: game.id,
-        user_id: loser.id,
-        result: loser_result,
-        creator: loser.creator,
-        rating: new_loser_rating,
-        rating_diff: loser_rating_diff,
-        lang: loser.editor_lang
-      })
+        achievements = Achievements.recalculate_achievements(player)
 
-      db_game = Repo.get!(Game, game.id)
+        update_user!(player.id, %{
+          rating: player.rating,
+          achievements: achievements,
+          lang: player.editor_lang
+        })
+      end)
 
-      update_game!(db_game, %{
+      update_game!(game, %{
         state: game.state,
+        players: game.players,
         starts_at: Helpers.get_starts_at(game),
         finishes_at: TimeHelper.utc_now()
       })
-
-      winner_achievements = Achievements.recalculate_achievements(winner)
-      loser_achievements = Achievements.recalculate_achievements(loser)
-
-      # TODO: FIXME
-      unless type == "training" do
-        update_user!(winner.id, %{
-          rating: new_winner_rating,
-          achievements: winner_achievements,
-          lang: winner.editor_lang
-        })
-
-        update_user!(loser.id, %{
-          rating: new_loser_rating,
-          achievements: loser_achievements,
-          lang: loser.editor_lang
-        })
-      end
     end)
   end
 
   def update_user!(user_id, params) do
     Repo.get!(User, user_id)
     |> User.changeset(params)
+    |> Repo.update!()
+  end
+
+  def update_game!(%Game{} = game) do
+    Game
+    |> Repo.get!(game.id)
+    |> Game.changeset(Map.from_struct(game))
     |> Repo.update!()
   end
 
@@ -285,7 +254,7 @@ defmodule Codebattle.Game.Engine do
   end
 
   def create_user_game!(params) do
-    Repo.insert!(UserGame.changeset(%UserGame{}, params))
+    %UserGame{} |> UserGame.changeset(params) |> Repo.insert!()
   end
 
   def trigger_timeout(%Game{} = game) do
@@ -330,14 +299,20 @@ defmodule Codebattle.Game.Engine do
   defp insert_live_game(%{tournament_id: nil} = game), do: LiveGames.insert_new(game)
   defp insert_live_game(_game), do: :ok
 
-  # deprecated
   defp create_rematch_game(game) do
-    create_game(game)
+    create_game(%{
+      level: game.level,
+      type: game.type,
+      visibility_type: game.visibility_type,
+      timeout_seconds: game.timeout_seconds,
+      players: game.players,
+      state: "playing"
+    })
   end
 
-  def get_state_from_params(%{type: "solo", users: [_user]}), do: "playing"
-  def get_state_from_params(%{users: [_user1, _user2]}), do: "playing"
-  def get_state_from_params(%{users: [_user]}), do: "waiting_opponent"
+  def get_state_from_params(%{type: "solo", players: [_user]}), do: "playing"
+  def get_state_from_params(%{players: [_user1, _user2]}), do: "playing"
+  def get_state_from_params(%{players: [_user]}), do: "waiting_opponent"
 
   defp tasks_provider do
     Application.get_env(:codebattle, :tasks_provider)

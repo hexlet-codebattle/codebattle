@@ -85,17 +85,17 @@ defmodule Codebattle.Tournament.TeamTest do
       %{
         round_id: 0,
         state: "finished",
-        players: [Map.merge(player1, %{game_result: "won"}), player2]
+        players: [Map.merge(player1, %{result: "won"}), player2]
       },
       %{
         round_id: 1,
         state: "finished",
-        players: [Map.merge(player1, %{game_result: "won"}), player2]
+        players: [Map.merge(player1, %{result: "won"}), player2]
       },
       %{
         round_id: 2,
         state: "finished",
-        players: [Map.merge(player1, %{game_result: "won"}), player2]
+        players: [Map.merge(player1, %{result: "won"}), player2]
       }
     ]
 
@@ -159,7 +159,7 @@ defmodule Codebattle.Tournament.TeamTest do
         round_id: 5,
         duration: 1,
         state: "finished",
-        players: [Map.merge(player1, %{game_result: "won"}), player2]
+        players: [Map.merge(player1, %{result: "won"}), player2]
       }
     ]
 

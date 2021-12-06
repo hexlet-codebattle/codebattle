@@ -9,37 +9,27 @@ defmodule Codebattle.Game.Fsm do
     %{game | state: "playing"} |> Map.merge(params)
   end
 
-  def join(game, params), do: game
+  def join(game, _params), do: game
 
   def update_editor_data(%{state: "waiting_opponent"} = game, _), do: game
 
-  def update_editor_data(%{state: "playing"} = game, params) do
-    new_players = update_player_params(game.players, params)
-    %{game | players: new_players}
-  end
-
-  def update_editor_data(%{state: "game_over"} = game, params) do
-    new_players = update_player_params(game.players, params)
-    %{game | players: new_players}
+  def update_editor_data(%{state: s} = game, params) when s in ["playing", "game_over"] do
+    params_to_update = Map.take(params, [:editor_text, :editor_lang])
+    update_player(game, params.id, params_to_update)
   end
 
   def timeout(%{state: "waiting_opponent"} = game), do: %{game | state: "timeout"}
 
-  def check_success(%{state: "playing", players: players} = game, params) do
-    opponent = get_opponent(game, params.id)
-
-    new_players =
-      players
-      |> update_player_params(%{
-        game_result: "won",
-        editor_text: params.editor_text,
-        editor_lang: params.editor_lang,
-        check_result: params.check_result,
-        id: params.id
-      })
-      |> update_player_params(%{game_result: "lost", id: opponent.id})
-
-    %{game | state: "game_over", players: new_players}
+  def check_success(%{state: "playing"} = game, params) do
+    game
+    |> update_player(params.id, %{
+      result: "won",
+      editor_text: params.editor_text,
+      editor_lang: params.editor_lang,
+      check_result: params.check_result
+    })
+    |> update_other_players(params.id, %{result: "lost"})
+    |> Map.put(:state, "game_over")
   end
 
   def check_success(%{state: "game_over"} = game, params) do
@@ -58,15 +48,11 @@ defmodule Codebattle.Game.Fsm do
 
   def check_failure(game, _params), do: game
 
-  def give_up(%{state: "playing", players: players} = game, params) do
-    opponent = get_opponent(game, params.id)
-
-    new_players =
-      players
-      |> update_player_params(%{game_result: "gave_up", id: params.id})
-      |> update_player_params(%{game_result: "won", id: opponent.id})
-
-    %{game | state: "game_over", players: new_players}
+  def give_up(%{state: "playing"} = game, params) do
+    game
+    |> update_player(params.id, %{result: "gave_up"})
+    |> update_other_players(params.id, %{result: "won"})
+    |> Map.put(:state, "game_over")
   end
 
   def give_up(game, _params), do: game
@@ -76,13 +62,13 @@ defmodule Codebattle.Game.Fsm do
   end
 
   def timeout(%{state: "playing", players: players} = game, _params) do
-    new_players = Enum.map(players, fn player -> %{player | game_result: "timeout"} end)
+    new_players = Enum.map(players, fn player -> %{player | result: "timeout"} end)
     %{game | state: "timeout", players: new_players}
   end
 
   def timeout(game, _params), do: game
 
-  def rematch_reject(%{state: "game_over"} = game, params) do
+  def rematch_reject(%{state: "game_over"} = game, _params) do
     %{game | rematch_state: "rejected"}
   end
 
@@ -116,32 +102,20 @@ defmodule Codebattle.Game.Fsm do
     do:
       if(params.player_id == game.rematch_initiator_id,
         do: %{},
-        else: %{rematch_state: :accepted}
+        else: %{rematch_state: "accepted"}
       )
 
   defp handle_rematch_offer(_game, _params), do: %{}
 
-  defp update_check_result(%{players: players} = game, params) do
-    new_players =
-      update_player_params(
-        players,
-        %{
-          check_result: params.check_result,
-          editor_text: params.editor_text,
-          editor_lang: params.editor_lang,
-          id: params.id
-        }
-      )
-
-    %{game | players: new_players}
-  end
-
-  defp update_player_params(players, params) do
-    Enum.map(players, fn player ->
-      case player.id == params.id do
-        true -> Map.merge(player, params)
-        _ -> player
-      end
-    end)
+  defp update_check_result(game, params) do
+    update_player(
+      game,
+      params.id,
+      %{
+        check_result: params.check_result,
+        editor_text: params.editor_text,
+        editor_lang: params.editor_lang
+      }
+    )
   end
 end

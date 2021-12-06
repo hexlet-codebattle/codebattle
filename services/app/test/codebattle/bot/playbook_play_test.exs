@@ -71,7 +71,7 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
     Phoenix.ChannelTest.push(socket, "editor:data", %{editor_text: "test", lang_slug: "js"})
     :timer.sleep(100)
 
-    game = Game.Context.get_game(game.id)
+    game = Game.Context.get_game(game_id)
     assert game.state == "playing"
 
     :timer.sleep(3_000)

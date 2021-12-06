@@ -58,8 +58,8 @@ defmodule Codebattle.CodeCheck.OutputParserV2Test do
 
   @success_expected %CheckResultV2{
     asserts_count: 1,
-    output: nil,
-    status: :ok,
+    output_error: nil,
+    status: "ok",
     success_count: 1,
     asserts: [
       %CheckResultV2.AssertResult{
@@ -75,8 +75,8 @@ defmodule Codebattle.CodeCheck.OutputParserV2Test do
 
   @success_with_warning_expected %CheckResultV2{
     asserts_count: 1,
-    output: "Warning: something warning about ;)",
-    status: :ok,
+    output_error: "Warning: something warning about ;)",
+    status: "ok",
     success_count: 1,
     asserts: [
       %CheckResultV2.AssertResult{
@@ -91,7 +91,7 @@ defmodule Codebattle.CodeCheck.OutputParserV2Test do
   }
 
   test "parses success output" do
-    task = insert(:task, asserts: "{\"arguments\":[1,1],\"expected\":1}\n")
+    task = insert(:task, asserts: [%{arguments: [1, 1], expected: 1}])
 
     result = OutputParserV2.call(@success_output, task)
 
@@ -99,7 +99,7 @@ defmodule Codebattle.CodeCheck.OutputParserV2Test do
   end
 
   test "parses success with warning output" do
-    task = insert(:task, asserts: "{\"arguments\":[1,1],\"expected\":1}\n")
+    task = insert(:task, asserts: [%{arguments: [1, 1], expected: 1}])
 
     result = OutputParserV2.call(@success_with_warning, task)
 
@@ -109,8 +109,11 @@ defmodule Codebattle.CodeCheck.OutputParserV2Test do
   test "parses failure output" do
     task =
       insert(:task,
-        asserts:
-          "{\"arguments\":[1,1],\"expected\":1}\n{\"arguments\":[2,2],\"expected\":2}\n{\"arguments\":[1,3],\"expected\":4}\n"
+        asserts: [
+          %{arguments: [1, 1], expected: 1},
+          %{arguments: [2, 2], expected: 2},
+          %{arguments: [1, 3], expected: 4}
+        ]
       )
 
     result = OutputParserV2.call(@failure_output, task)

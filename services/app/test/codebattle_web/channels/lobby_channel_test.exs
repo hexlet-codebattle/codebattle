@@ -3,7 +3,7 @@ defmodule CodebattleWeb.LobbyChannelTest do
 
   alias CodebattleWeb.LobbyChannel
   alias CodebattleWeb.UserSocket
-  alias Codebattle.Game.Player
+  alias Codebattle.Game
 
   test "sends game info when user join" do
     task = insert(:task)
@@ -17,14 +17,10 @@ defmodule CodebattleWeb.LobbyChannelTest do
     {:ok, socket} = connect(UserSocket, %{"token" => user_token})
 
     {:ok, %{winner: user, socket: socket, task: task}}
-    state = :waiting_opponent
 
-    data = %{
-      players: [%Player{id: user.id}],
-      task: task
-    }
-
-    setup_game(state, data)
+    game_params = %{state: "waiting_opponent", players: [%Game.Player{id: user.id}], task: task}
+    {:ok, game} = Game.Context.create_game(game_params)
+    game_topic = "game:" <> to_string(game.id)
 
     {:ok,
      %{

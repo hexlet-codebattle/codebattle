@@ -191,10 +191,10 @@ defmodule Codebattle.Tournament.Helpers do
   # 3. picks human loser instead of bot
   # 4. picks random bot
 
-  def pick_winner(%{players: [%{game_result: "won", is_bot: false} = winner, _]}), do: winner
-  def pick_winner(%{players: [_, %{game_result: "won", is_bot: false} = winner]}), do: winner
-  def pick_winner(%{players: [winner, %{game_result: "gave_up"}]}), do: winner
-  def pick_winner(%{players: [%{game_result: "gave_up"}, winner]}), do: winner
+  def pick_winner(%{players: [%{result: "won", is_bot: false} = winner, _]}), do: winner
+  def pick_winner(%{players: [_, %{result: "won", is_bot: false} = winner]}), do: winner
+  def pick_winner(%{players: [winner, %{result: "gave_up"}]}), do: winner
+  def pick_winner(%{players: [%{result: "gave_up"}, winner]}), do: winner
   def pick_winner(%{players: [%{is_bot: false} = winner, %{is_bot: true}]}), do: winner
   def pick_winner(%{players: [%{is_bot: true}, %{is_bot: false} = winner]}), do: winner
   def pick_winner(match), do: Enum.random(match.players)
@@ -216,10 +216,10 @@ defmodule Codebattle.Tournament.Helpers do
     end)
   end
 
-  defp calc_match_result(%{players: [%{game_result: "won"}, _]}), do: {1, 0}
-  defp calc_match_result(%{players: [_, %{game_result: "won"}]}), do: {0, 1}
-  defp calc_match_result(%{players: [_, %{game_result: "gave_up"}]}), do: {1, 0}
-  defp calc_match_result(%{players: [%{game_result: "gave_up"}, _]}), do: {0, 1}
+  defp calc_match_result(%{players: [%{result: "won"}, _]}), do: {1, 0}
+  defp calc_match_result(%{players: [_, %{result: "won"}]}), do: {0, 1}
+  defp calc_match_result(%{players: [_, %{result: "gave_up"}]}), do: {1, 0}
+  defp calc_match_result(%{players: [%{result: "gave_up"}, _]}), do: {0, 1}
   defp calc_match_result(_), do: {0, 0}
 
   defp match_is_active?(%{state: "active"}), do: true
@@ -227,12 +227,12 @@ defmodule Codebattle.Tournament.Helpers do
   defp match_is_finished?(%{state: "finished"}), do: true
   defp match_is_finished?(_match), do: false
 
-  defp is_anyone_gave_up?(%{players: [%{game_result: "gave_up"}, _]}), do: true
-  defp is_anyone_gave_up?(%{players: [_, %{game_result: "gave_up"}]}), do: true
+  defp is_anyone_gave_up?(%{players: [%{result: "gave_up"}, _]}), do: true
+  defp is_anyone_gave_up?(%{players: [_, %{result: "gave_up"}]}), do: true
   defp is_anyone_gave_up?(_), do: false
 
   defp is_winner?(%{players: players}, player) do
-    Enum.any?(players, fn x -> x.id == player.id and x.game_result == "won" end)
+    Enum.any?(players, fn x -> x.id == player.id and x.result == "won" end)
   end
 
   defp get_average_time([]), do: 0

@@ -29,7 +29,8 @@ console:
 	iex -S mix
 
 test:
-	mix coveralls.json --exclude code_check --max-failures 1 --slowest 7
+	mix test --exclude code_check --max-failures 1
+	# mix coveralls.json --exclude code_check --max-failures 1 --slowest 7
 
 test-code-checkers: export CODEBATTLE_RUN_CODE_CHECK = true
 test-code-checkers:

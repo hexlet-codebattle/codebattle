@@ -235,7 +235,7 @@ defmodule Codebattle.Tournament.Base do
 
         new_players =
           Enum.map(match.players, fn player ->
-            Map.put(player, :game_result, player_results[player.id])
+            Map.put(player, :result, player_results[player.id])
           end)
 
         Map.merge(match, %{players: new_players, duration: new_duration, state: state})

@@ -106,7 +106,7 @@ defmodule CodebattleWeb.Factory do
       level: "easy",
       asserts: [
         %{
-          arguments: [1, "a", true, %{a: "b", c: "d"}, ["d", "e"], [["Jack", "Alice"]]],
+          arguments: [1, "a", 1.3, true, %{a: "b", c: "d"}, ["d", "e"], [["Jack", "Alice"]]],
           expected: ["asdf"]
         }
       ],
@@ -118,6 +118,10 @@ defmodule CodebattleWeb.Factory do
         %{
           "argument-name" => "str",
           "type" => %{"name" => "string"}
+        },
+        %{
+          "argument-name" => "number",
+          "type" => %{"name" => "float"}
         },
         %{
           "argument-name" => "bool",

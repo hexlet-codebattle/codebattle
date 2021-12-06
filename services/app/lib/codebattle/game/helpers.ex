@@ -21,7 +21,7 @@ defmodule Codebattle.Game.Helpers do
   def get_winner(game) do
     game
     |> get_players
-    |> Enum.find(fn player -> player.game_result == "won" end)
+    |> Enum.find(fn player -> player.result == "won" end)
   end
 
   def get_player(game, id) do
@@ -48,7 +48,7 @@ defmodule Codebattle.Game.Helpers do
     game
     |> get_players
     |> Enum.map(fn player ->
-      {player.id, player.game_result}
+      {player.id, player.result}
     end)
     |> Enum.into(%{})
   end
@@ -57,10 +57,34 @@ defmodule Codebattle.Game.Helpers do
   def lost?(game, player_id), do: is_player_result?(game, player_id, "lost")
   def gave_up?(game, player_id), do: is_player_result?(game, player_id, "gave_up")
 
+  def update_player(game, player_id, params) do
+    new_players =
+      Enum.map(game.players, fn player ->
+        case player.id == player_id do
+          true -> Map.merge(player, params)
+          _ -> player
+        end
+      end)
+
+    %{game | players: new_players}
+  end
+
+  def update_other_players(game, player_id, params) do
+    new_players =
+      Enum.map(game.players, fn player ->
+        case player.id != player_id do
+          true -> Map.merge(player, params)
+          _ -> player
+        end
+      end)
+
+    %{game | players: new_players}
+  end
+
   defp is_player_result?(game, player_id, result) do
     game
     |> get_players
-    |> Enum.find_value(fn p -> p.id == player_id && p.game_result == result end)
+    |> Enum.find_value(fn p -> p.id == player_id && p.result == result end)
     |> Kernel.!()
     |> Kernel.!()
   end

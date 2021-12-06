@@ -5,7 +5,7 @@ defmodule Codebattle.Tournament.Types.Player do
   @type t :: %__MODULE__{}
 
   @primary_key false
-  @game_results ~w(waiting won lost gave_up timeout)
+  @results ~w(waiting won lost gave_up timeout)
   @derive Jason.Encoder
 
   embedded_schema do
@@ -21,7 +21,7 @@ defmodule Codebattle.Tournament.Types.Player do
     field(:rank, :integer, default: 5432)
     field(:guest, :boolean)
     field(:is_bot, :boolean)
-    field(:game_result, :string, default: "pending")
+    field(:result, :string, default: "waiting")
   end
 
   def changeset(struct, params) do
@@ -36,8 +36,8 @@ defmodule Codebattle.Tournament.Types.Player do
       :rank,
       :guest,
       :is_bot,
-      :game_result
+      :result
     ])
-    |> validate_inclusion(:game_result, @game_results)
+    |> validate_inclusion(:result, @results)
   end
 end

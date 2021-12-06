@@ -106,12 +106,13 @@ defmodule Codebattle.CodeCheck.Kotlin.IntegrationTest do
   end
 
   @tag :code_check
-  test "good code, player won with vectors", %{
+  test "test all data cases", %{
     game_params: game_params,
     socket1: socket1,
     socket2: socket2
   } do
-    {:ok, game} = Game.Context.create_game(game_params)
+    task = insert(:task_with_all_data_types)
+    {:ok, game} = Game.Context.create_game(%{game_params | task: task})
     game_topic = "game:" <> to_string(game.id)
 
     {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
@@ -122,7 +123,7 @@ defmodule Codebattle.CodeCheck.Kotlin.IntegrationTest do
 
     Phoenix.ChannelTest.push(socket1, "check_result", %{
       editor_text: "package solution\nimport kotlin.collections.* \n
-      fun solution(a: List<String>, b: List<String>): List<String> { return listOf(\"abcdef\") }",
+      fun solution(a: Int, b: String, c: Double, d: Boolean, e: Map<String, String>, f: List<String>, g: List<List<String>>): List<String> { return listOf(\"asdf\") }",
       lang_slug: "kotlin"
     })
 

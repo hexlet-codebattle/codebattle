@@ -118,7 +118,7 @@ defmodule Codebattle.CodeCheck.Ruby.IntegrationTest do
     Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: "test", lang_slug: "js"})
 
     Phoenix.ChannelTest.push(socket1, "check_result", %{
-      editor_text: "def solution(a,b,c,d,e,f); ['asdf']; end",
+      editor_text: "def solution(a,b,c,d,e,f,g); ['asdf']; end",
       lang_slug: "ruby"
     })
 
