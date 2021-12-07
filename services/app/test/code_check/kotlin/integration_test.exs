@@ -122,7 +122,8 @@ defmodule Codebattle.CodeCheck.Kotlin.IntegrationTest do
     Phoenix.ChannelTest.push(socket1, "editor:data", %{editor_text: "test", lang_slug: "js"})
 
     Phoenix.ChannelTest.push(socket1, "check_result", %{
-      editor_text: "package solution\nimport kotlin.collections.* \n
+      editor_text:
+        "package solution\nimport kotlin.collections.* \n
       fun solution(a: Int, b: String, c: Double, d: Boolean, e: Map<String, String>, f: List<String>, g: List<List<String>>): List<String> { return listOf(\"asdf\") }",
       lang_slug: "kotlin"
     })

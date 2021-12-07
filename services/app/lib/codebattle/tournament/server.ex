@@ -64,7 +64,6 @@ defmodule Codebattle.Tournament.Server do
         },
         %{tournament: tournament} = state
       ) do
-
     new_tournament = tournament.module.finish_match(tournament, payload)
 
     broadcast_tournament_update(new_tournament)

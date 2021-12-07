@@ -122,7 +122,7 @@ defmodule Codebattle.CodeCheck.Dart.IntegrationTest do
 
     Phoenix.ChannelTest.push(socket1, "check_result", %{
       editor_text:
-      "List<String> solution(int a, String b, double c, bool d Map<String, String> e, List<String> f, List<List<String>> g) { return [\"asdf\"];}",
+        "List<String> solution(int a, String b, double c, bool d Map<String, String> e, List<String> f, List<List<String>> g) { return [\"asdf\"];}",
       lang_slug: "dart"
     })
 

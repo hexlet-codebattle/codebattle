@@ -112,12 +112,6 @@ defmodule Codebattle.GameCases.RematchTest do
     game_id = Helpers.get_game_id(game)
     game_topic = "game:" <> to_string(game_id)
 
-    {:ok, _response, socket1} = subscribe_and_join(socket1, LobbyChannel, "lobby")
-
-    ref = Phoenix.ChannelTest.push(socket1, "game:create", %{level: "easy"})
-    Phoenix.ChannelTest.assert_reply(ref, :ok, %{game_id: game_id})
-
-
     # User join to the game
     post(conn1, game_path(conn1, :join, game_id))
 
@@ -148,12 +142,11 @@ defmodule Codebattle.GameCases.RematchTest do
     user2: user2
   } do
     # Create game
-    conn =
-      conn1
-      |> get(user_path(conn1, :index))
-      |> post(game_path(conn1, :create, level: "elementary", type: "withRandomPlayer"))
 
-    game_id = game_id_from_conn(conn)
+    {:ok, _response, socket1} = subscribe_and_join(socket1, LobbyChannel, "lobby")
+
+    ref = Phoenix.ChannelTest.push(socket1, "game:create", %{level: "easy"})
+    Phoenix.ChannelTest.assert_reply(ref, :ok, %{game_id: game_id})
 
     game_topic = "game:" <> to_string(game_id)
     {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
@@ -181,7 +174,7 @@ defmodule Codebattle.GameCases.RematchTest do
 
     {:ok, game} = Server.get_game(game_id + 1)
     assert game.state == "playing"
-    assert Helpers.get_level(game) == "elementary"
+    assert Helpers.get_level(game) == "easy"
     assert Helpers.get_first_player(game).id == user1.id
     assert Helpers.get_second_player(game).id == user2.id
   end
@@ -193,12 +186,10 @@ defmodule Codebattle.GameCases.RematchTest do
     socket2: socket2
   } do
     # Create game
-    conn =
-      conn1
-      |> get(user_path(conn1, :index))
-      |> post(game_path(conn1, :create, level: "elementary", type: "withRandomPlayer"))
+    {:ok, _response, socket1} = subscribe_and_join(socket1, LobbyChannel, "lobby")
 
-    game_id = game_id_from_conn(conn)
+    ref = Phoenix.ChannelTest.push(socket1, "game:create", %{level: "easy"})
+    Phoenix.ChannelTest.assert_reply(ref, :ok, %{game_id: game_id})
 
     game_topic = "game:" <> to_string(game_id)
     {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
@@ -222,9 +213,9 @@ defmodule Codebattle.GameCases.RematchTest do
     Phoenix.ChannelTest.push(socket2, "rematch:reject_offer", %{})
     :timer.sleep(70)
     game = Game.Context.get_game(game.id)
-    assert Helpers.get_rematch_state(game) == :rejected
+    assert Helpers.get_rematch_state(game) == "rejected"
 
-    {:error, :game_terminated} = Server.get_game(game_id + 1)
+    {:error, :not_found} = Server.get_game(game_id + 1)
   end
 
   test "first player leave game", %{
@@ -233,12 +224,10 @@ defmodule Codebattle.GameCases.RematchTest do
     socket1: socket1,
     socket2: socket2
   } do
-    conn =
-      conn1
-      |> get(user_path(conn1, :index))
-      |> post(game_path(conn1, :create, level: "elementary", type: "withRandomPlayer"))
+    {:ok, _response, socket1} = subscribe_and_join(socket1, LobbyChannel, "lobby")
 
-    game_id = game_id_from_conn(conn)
+    ref = Phoenix.ChannelTest.push(socket1, "game:create", %{level: "easy"})
+    Phoenix.ChannelTest.assert_reply(ref, :ok, %{game_id: game_id})
 
     game_topic = "game:" <> to_string(game_id)
     {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
@@ -256,6 +245,6 @@ defmodule Codebattle.GameCases.RematchTest do
     game = Game.Context.get_game(game.id)
     assert Helpers.get_rematch_state(game) == "rejected"
 
-    {:error, :game_terminated} = Server.get_game(game_id + 1)
+    {:error, :not_found} = Server.get_game(game_id + 1)
   end
 end

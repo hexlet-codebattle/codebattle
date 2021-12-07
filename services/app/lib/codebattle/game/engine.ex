@@ -172,6 +172,13 @@ defmodule Codebattle.Game.Engine do
     end
   end
 
+  def rematch_send_offer(%{type: "bot"} = game, _user) do
+    {:ok, new_game} = create_rematch_game(game)
+    GlobalSupervisor.terminate_game(game.id)
+
+    {:rematch_, %{game_id: new_game.id}}
+  end
+
   def rematch_send_offer(game, user) do
     {:ok, {_old_game, game}} =
       Server.call_transition(game.id, :rematch_send_offer, %{player_id: user.id})
@@ -184,7 +191,7 @@ defmodule Codebattle.Game.Engine do
         {:rematch_, %{game_id: new_game.id}}
 
       _ ->
-        {:rematch_update_status, Game}
+        {:rematch_update_status, game}
     end
   end
 

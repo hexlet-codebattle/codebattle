@@ -133,11 +133,11 @@ defmodule Codebattle.Game.Context do
   @spec rematch_reject(game_id) :: {:ok, Game.t()} | {:error, atom}
   def rematch_reject(game_id) do
     case Server.call_transition(game_id, :rematch_reject, %{}) do
-      {:ok, game} ->
+      {:ok, {_old_game, new_game}} ->
         {:rematch_update_status,
          %{
-           rematch_initiator_id: Helpers.get_rematch_initiator_id(game),
-           rematch_state: Helpers.get_rematch_state(game)
+           rematch_initiator_id: new_game.rematch_initiator_id,
+           rematch_state: new_game.rematch_state
          }}
 
       {:error, reason} ->
