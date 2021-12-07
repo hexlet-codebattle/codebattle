@@ -2,12 +2,14 @@ defmodule CodebattleWeb.Api.GameView do
   use CodebattleWeb, :view
 
   alias Codebattle.Game.Player
+  alias Codebattle.Languages
 
   import Codebattle.Game.Helpers
 
   def render_game(game) do
     %{
       state: game.state,
+      status: game.state,
       players: game.players,
       task: game.task,
       level: game.level,
@@ -19,7 +21,7 @@ defmodule CodebattleWeb.Api.GameView do
       tournament_id: game.tournament_id,
       inserted_at: game.inserted_at,
       starts_at: game.starts_at,
-      langs: game.langs
+      langs: Languages.get_langs_with_solutions(game.task)
     }
   end
 

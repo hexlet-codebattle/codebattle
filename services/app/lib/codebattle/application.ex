@@ -45,7 +45,12 @@ defmodule Codebattle.Application do
         {Codebattle.UsersRankUpdateServer, []}
       ] ++ prod_workers
 
-    Supervisor.start_link(children, strategy: :one_for_one, name: Codebattle.Supervisor)
+    Supervisor.start_link(children,
+      strategy: :one_for_one,
+      name: Codebattle.Supervisor,
+      max_restarts: 13579,
+      max_seconds: 10
+    )
   end
 
   def config_change(changed, _new, removed) do

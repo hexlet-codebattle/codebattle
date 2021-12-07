@@ -7,7 +7,6 @@ defmodule Codebattle.Game.Engine do
     GlobalSupervisor
   }
 
-  alias Codebattle.Languages
   alias Codebattle.Repo
   alias Codebattle.User
   alias Codebattle.Game
@@ -39,7 +38,6 @@ defmodule Codebattle.Game.Engine do
       end)
 
     with :ok <- check_auth(players, tournament_id),
-         langs <- Languages.get_langs_with_solutions(task),
          {:ok, game} <-
            insert_game(%{
              state: state,
@@ -51,10 +49,10 @@ defmodule Codebattle.Game.Engine do
              task: task,
              players: players
            }),
-         game <- Map.merge(game, %{langs: langs}),
          {:ok, _} <- GlobalSupervisor.start_game(game),
          :ok <- insert_live_game(game),
-         :ok <- start_timeout_timer(game),
+         :ok <- maybe_run_bot(game),
+         :ok <- maybe_start_timeout_timer(game),
          :ok <- broadcast_live_game(game) do
       {:ok, game}
     else
@@ -71,9 +69,10 @@ defmodule Codebattle.Game.Engine do
              starts_at: TimeHelper.utc_now()
            }),
          :ok <- LiveGames.update_game(game),
-         game <- update_game!(game, %{state: "playing"}),
+         _game <- update_game!(game, %{state: "playing"}),
          :ok <- broadcast_live_game(game),
-         :ok <- start_timeout_timer(game) do
+         :ok <- maybe_run_bot(game),
+         :ok <- maybe_start_timeout_timer(game) do
       {:ok, game}
     else
       {:error, reason} ->
@@ -281,9 +280,19 @@ defmodule Codebattle.Game.Engine do
     Game.TimeoutServer.terminate_after(game.id, minutes)
   end
 
-  defp start_timeout_timer(game) do
+  defp maybe_start_timeout_timer(%{state: "playing"} = game) do
     Game.TimeoutServer.start_timer(game.id, game.timeout_seconds)
+    :ok
   end
+
+  defp maybe_start_timeout_timer(_game), do: :ok
+
+  defp maybe_run_bot(%{state: "playing", type: "bot"} = game) do
+    Game.BotRunner.call(game)
+    :ok
+  end
+
+  defp maybe_run_bot(_game), do: :ok
 
   def broadcast_live_game(game) do
     # TODO: move it to pubSub

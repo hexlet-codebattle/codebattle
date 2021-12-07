@@ -27,7 +27,6 @@ defmodule Codebattle.Game do
     field(:finishes_at, :naive_datetime)
     field(:rematch_state, :string, default: "none")
     field(:rematch_initiator_id, :integer)
-    field(:langs, {:array, :map}, default: [], virtual: true)
     field(:is_live, :boolean, default: false, virtual: true)
     field(:timer_started, :boolean, default: false, virtual: true)
 

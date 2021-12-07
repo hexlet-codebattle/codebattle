@@ -336,7 +336,7 @@ export const activeGameReady = machine => dispatch => {
 
   channel.on('rematch:status_updated', payload => {
     const data = camelizeKeys(payload);
-    dispatch(actions.updateMatchStatus(data));
+    dispatch(actions.updateRematchStatus(data));
     machine.send('rematch:status_updated', { payload: data });
   });
 

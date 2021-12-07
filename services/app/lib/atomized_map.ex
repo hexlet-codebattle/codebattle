@@ -8,11 +8,17 @@ defmodule AtomizedMap do
     {:ok, Utils.atomize_keys(data)}
   end
 
-  def load(data) do
+  def load(data) when is_binary(data) do
     loaded_data =
       data
       |> Jason.decode!()
       |> Utils.atomize_keys()
+
+    {:ok, loaded_data}
+  end
+
+  def load(data) when is_map(data) do
+    loaded_data = data |> Utils.atomize_keys()
 
     {:ok, loaded_data}
   end

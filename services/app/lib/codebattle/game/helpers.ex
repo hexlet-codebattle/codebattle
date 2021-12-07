@@ -13,7 +13,7 @@ defmodule Codebattle.Game.Helpers do
   def get_rematch_initiator_id(game), do: game.rematch_initiator_id
   def get_players(game), do: game.players
   def get_task(game), do: game.task
-  def get_langs(game), do: game.langs
+  def get_bot(game), do: game |> get_players |> Enum.find(fn player -> player.is_bot end)
   def get_first_player(game), do: game |> get_players |> Enum.at(0)
   def get_second_player(game), do: game |> get_players |> Enum.at(1)
   def bot_game?(game), do: game |> get_players |> Enum.any?(fn p -> p.is_bot end)
