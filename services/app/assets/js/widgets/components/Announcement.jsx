@@ -1,5 +1,5 @@
-import React from 'react';
-import { Table } from 'react-bootstrap';
+// import React from 'react';
+// import { Table } from 'react-bootstrap';
 
 const Announcement = () => null;
   // <Table striped borderless className="border border-dark m-0">
@@ -23,6 +23,5 @@ const Announcement = () => null;
   //     </tr>
   //   </tbody>
   // </Table>
-
 
 export default Announcement;

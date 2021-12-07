@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useState } from 'react';
 
 // TODO: get active round algoritm

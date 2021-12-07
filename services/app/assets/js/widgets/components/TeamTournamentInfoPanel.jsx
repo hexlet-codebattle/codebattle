@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { memo, useState } from 'react';
 
 import TournamentStates from '../config/tournament';

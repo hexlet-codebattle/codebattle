@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, {
  useEffect, useState, memo, useMemo,
 } from 'react';

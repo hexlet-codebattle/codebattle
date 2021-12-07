@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { memo, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
