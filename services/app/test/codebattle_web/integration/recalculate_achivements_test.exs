@@ -32,8 +32,7 @@ defmodule RecalculateAchivementsTest do
     socket1 = socket(UserSocket, "user_id", %{user_id: user1.id, current_user: user1})
     socket2 = socket(UserSocket, "user_id", %{user_id: user2.id, current_user: user2})
 
-    {:ok,
-     %{conn2: conn2, socket1: socket1, socket2: socket2, user1: user1, user2: user2}}
+    {:ok, %{conn2: conn2, socket1: socket1, socket2: socket2, user1: user1, user2: user2}}
   end
 
   test "calculate new achievement", %{

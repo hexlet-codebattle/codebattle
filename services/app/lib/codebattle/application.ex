@@ -48,7 +48,7 @@ defmodule Codebattle.Application do
     Supervisor.start_link(children,
       strategy: :one_for_one,
       name: Codebattle.Supervisor,
-      max_restarts: 13579,
+      max_restarts: 13_579,
       max_seconds: 10
     )
   end

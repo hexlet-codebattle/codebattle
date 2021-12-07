@@ -13,7 +13,7 @@ defmodule Codebattle.Game.BotRunner do
   end
 
   defp get_bot_time(game) do
-    bot =  Helpers.get_bot(game)
+    bot = Helpers.get_bot(game)
     player = Helpers.get_opponent(game, bot.id)
     game_level = game.level
 
