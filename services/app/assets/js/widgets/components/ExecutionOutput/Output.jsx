@@ -10,7 +10,7 @@ const Output = ({ sideOutput }) => {
 } = sideOutput;
   const uniqIndex = _.uniqueId('heading');
   const normalizedAsserts = version === 2 ? asserts : asserts.map(elem => camelizeKeys(JSON.parse(elem)));
-  const normalizedOutput =  version === 2 ? outputError : output;
+  const normalizedOutput = version === 2 ? outputError : output;
   return (
     <>
       {['error', 'memory_leak', 'timeout'].includes(status) ? (

@@ -7,7 +7,7 @@ import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
 import Gon from 'gon';
 import * as lobbyMiddlewares from '../middlewares/Lobby';
-import gameStatusCodes from '../config/gameStatusCodes';
+import gameStateCodes from '../config/gameStateCodes';
 import { actions } from '../slices';
 import * as selectors from '../selectors';
 import Loading from '../components/Loading';
@@ -82,12 +82,12 @@ const GameActionButton = ({ game }) => {
   const gameState = game.state;
   const signInUrl = getSignInGithubUrl();
 
-  if (gameState === gameStatusCodes.playing) {
+  if (gameState === gameStateCodes.playing) {
     const type = isPlayer(currentUser, game) ? 'continue' : 'show';
     return renderButton(gameUrl, type);
   }
 
-  if (gameState === gameStatusCodes.waitingOpponent) {
+  if (gameState === gameStateCodes.waitingOpponent) {
     if (isPlayer(currentUser, game)) {
       return (
         <div className="d-flex justify-content-center">

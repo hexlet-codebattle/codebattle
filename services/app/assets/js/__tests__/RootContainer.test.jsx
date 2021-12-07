@@ -10,7 +10,7 @@ import RootContainer from '../widgets/containers/RootContainer';
 
 import reducers from '../widgets/slices';
 import userTypes from '../widgets/config/userTypes';
-import GameStatusCodes from '../widgets/config/gameStatusCodes';
+import GameStateCodes from '../widgets/config/gameStateCodes';
 
 import game from '../widgets/machines/game';
 import editor from '../widgets/machines/editor';
@@ -82,7 +82,7 @@ test('test rendering preview game component', async () => {
     game: {
       user: { currentUserId: 1, users: players },
       gameStatus: {
-        status: GameStatusCodes.playing,
+        state: GameStateCodes.playing,
         checking: {},
         startsAt: '0',
       },

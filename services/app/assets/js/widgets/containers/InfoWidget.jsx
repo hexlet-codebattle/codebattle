@@ -10,15 +10,16 @@ import OutputTab from '../components/ExecutionOutput/OutputTab';
 import CountdownTimer from '../components/CountdownTimer';
 import Timer from '../components/Timer';
 import GameContext from './GameContext';
+import { gameMachineStates } from '../machines/game';
 
-const TimerContainer = ({ time, timeoutSeconds, gameStatusName }) => {
+const TimerContainer = ({ time, timeoutSeconds, gameStateName }) => {
   const { current } = useContext(GameContext);
 
   if (
-    current.matches({ game: 'game_over' })
-    || current.matches({ game: 'stored' })
+    current.matches({ game: gameMachineStates.gameOver })
+    || current.matches({ game: gameMachineStates.stored })
   ) {
-    return gameStatusName;
+    return gameStateName;
   }
 
   if (timeoutSeconds) {
@@ -34,7 +35,7 @@ const InfoWidget = () => {
   const taskText = useSelector(gameTaskSelector);
   const startsAt = useSelector(state => gameStatusSelector(state).startsAt);
   const timeoutSeconds = useSelector(state => gameStatusSelector(state).timeoutSeconds);
-  const gameStatusName = useSelector(state => gameStatusSelector(state).status);
+  const gameStateName = useSelector(state => gameStatusSelector(state).state);
   const leftOutput = useSelector(leftExecutionOutputSelector(gameCurrent));
   const isShowOutput = leftOutput && leftOutput.status;
   const idOutput = 'leftOutput';
@@ -76,7 +77,7 @@ const InfoWidget = () => {
                 <TimerContainer
                   time={startsAt}
                   timeoutSeconds={timeoutSeconds}
-                  gameStatusName={gameStatusName}
+                  gameStateName={gameStateName}
                 />
               </div>
             </div>

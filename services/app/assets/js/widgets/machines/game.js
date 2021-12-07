@@ -1,7 +1,7 @@
 import { assign, actions } from 'xstate';
 import speedModes from '../config/speedModes';
 import sound from '../lib/sound';
-import GameStatusCodes from '../config/gameStatusCodes';
+import GameStateCodes from '../config/gameStateCodes';
 
 const { send } = actions;
 
@@ -135,7 +135,7 @@ const machine = {
           on: {
             'user:check_complete': {
               target: 'game_over',
-              cond: (_ctx, { payload }) => payload.status === 'game_over',
+              cond: (_ctx, { payload }) => payload.state === 'game_over',
               // TODO: figureOut why soundWin doesn't work
               actions: ['soundWin', 'showGameResultModal'],
             },
@@ -213,9 +213,9 @@ const machine = {
 
 export const config = {
   guards: {
-    isWaitingGame: (_ctx, { payload }) => payload.status === GameStatusCodes.waitingOpponent,
-    isActiveGame: (_ctx, { payload }) => payload.status === GameStatusCodes.playing,
-    isGameOver: (_ctx, { payload }) => payload.status === GameStatusCodes.gameOver,
+    isWaitingGame: (_ctx, { payload }) => payload.state === GameStateCodes.waitingOpponent,
+    isActiveGame: (_ctx, { payload }) => payload.state === GameStateCodes.playing,
+    isGameOver: (_ctx, { payload }) => payload.state === GameStateCodes.gameOver,
   },
   actions: {
     // common actions
@@ -267,7 +267,7 @@ const states = {
     failure: 'failure',
     waiting: 'waiting',
     active: 'active',
-    game_over: 'game_over',
+    gameOver: 'game_over',
     stored: 'stored',
   },
   replayer: {

@@ -11,7 +11,7 @@ import {
 } from '../lib/player';
 
 import PlaybookStatusCodes from '../config/playbookStatusCodes';
-import GameStatusCodes from '../config/gameStatusCodes';
+import GameStateCodes from '../config/gameStateCodes';
 
 import notification from '../utils/notification';
 
@@ -78,7 +78,7 @@ const initStore = dispatch => ({
 
 const initStoredGame = dispatch => data => {
   const gameStatus = {
-    status: GameStatusCodes.stored,
+    state: GameStateCodes.stored,
     type: data.type,
     tournamentId: data.tournamentId,
   };
@@ -116,7 +116,7 @@ const initGameChannel = (dispatch, machine) => {
     machine.send('JOIN', { payload: response });
 
     const {
-      status,
+      state,
       startsAt,
       type,
       timeoutSeconds,
@@ -129,7 +129,7 @@ const initGameChannel = (dispatch, machine) => {
     } = camelizeKeys(response);
 
     const gameStatus = {
-      status,
+      state,
       type,
       startsAt,
       timeoutSeconds,
@@ -148,7 +148,7 @@ const initGameChannel = (dispatch, machine) => {
     });
 
     setTimeout(() => {
-      const payload = { status };
+      const payload = { state };
       machine.send('LOAD_GAME', { payload });
     }, 2000);
   };
@@ -240,10 +240,8 @@ export const activeGameReady = machine => dispatch => {
 
   channel.on('user:check_complete', responseData => {
     const {
-      status, solutionStatus, checkResult, players, userId,
+      state, solutionStatus, checkResult, players, userId,
     } = camelizeKeys(responseData);
-    const newGameStatus = solutionStatus ? { status } : {};
-
     dispatch(actions.updateGamePlayers({ players }));
 
     dispatch(
@@ -252,16 +250,16 @@ export const activeGameReady = machine => dispatch => {
         userId,
       }),
     );
-    dispatch(actions.updateGameStatus({ ...newGameStatus, solutionStatus }));
+    dispatch(actions.updateGameStatus({ state, solutionStatus }));
     dispatch(actions.updateCheckStatus({ [userId]: false }));
 
-    const payload = { status };
+    const payload = { state };
     machine.send('user:check_complete', { payload });
   });
 
   channel.on('game:user_joined', responseData => {
     const {
-      status,
+      state,
       startsAt,
       timeoutSeconds,
       langs,
@@ -312,7 +310,7 @@ export const activeGameReady = machine => dispatch => {
 
     dispatch(
       actions.updateGameStatus({
-        status,
+        state,
         startsAt,
         timeoutSeconds,
       }),
@@ -321,16 +319,16 @@ export const activeGameReady = machine => dispatch => {
   });
 
   channel.on('user:won', data => {
-    const { players, status, msg } = camelizeKeys(data);
+    const { players, state, msg } = camelizeKeys(data);
     dispatch(actions.updateGamePlayers({ players }));
-    dispatch(actions.updateGameStatus({ status, msg }));
+    dispatch(actions.updateGameStatus({ state, msg }));
     machine.send('user:won', { payload: camelizeKeys(data) });
   });
 
   channel.on('user:give_up', data => {
-    const { players, status, msg } = camelizeKeys(data);
+    const { players, state, msg } = camelizeKeys(data);
     dispatch(actions.updateGamePlayers({ players }));
-    dispatch(actions.updateGameStatus({ status, msg }));
+    dispatch(actions.updateGameStatus({ state, msg }));
     machine.send('user:give_up', { payload: camelizeKeys(data) });
   });
 
@@ -345,8 +343,8 @@ export const activeGameReady = machine => dispatch => {
     redirectToNewGame(newGameId);
   });
 
-  channel.on('game:timeout', ({ status, msg }) => {
-    const data = { status, msg };
+  channel.on('game:timeout', ({ state, msg }) => {
+    const data = { state, msg };
     dispatch(actions.updateGameStatus(data));
     machine.send('game:timeout', { payload: data });
   });
