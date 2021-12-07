@@ -22,7 +22,7 @@ const GameResult = () => {
       });
     }
 
-    const winner = _.find(players, ['gameResult', 'won']);
+    const winner = _.find(players, ['result', 'won']);
 
     if (!winner) {
       return null;

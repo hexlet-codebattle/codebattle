@@ -9,7 +9,7 @@ const StartTrainingButton = () => {
   const currentUserId = useSelector(selectors.currentUserIdSelector);
   const players = useSelector(selectors.gamePlayersSelector);
 
-  const winner = _.find(players, ['gameResult', 'won']);
+  const winner = _.find(players, ['result', 'won']);
   const title = currentUserId === winner.id ? i18n.t('Start simple battle') : i18n.t('Try again');
 
   return (

@@ -4,7 +4,7 @@ import _ from 'lodash';
 import UserInfo from '../containers/UserInfo';
 
 const calcRoundResult = matches => matches.reduce((acc, match) => {
-    const [gameResultPlayer1, gameResultPlayer2] = match.players.map(p => p.gameResult);
+    const [gameResultPlayer1, gameResultPlayer2] = match.players.map(p => p.result);
 
     if (gameResultPlayer1 === 'won' || gameResultPlayer2 === 'gave_up') {
         return { ...acc, first: acc.first + 1 };

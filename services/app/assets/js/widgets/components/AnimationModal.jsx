@@ -14,16 +14,16 @@ const AnimationModal = ({ setModalShowing, modalShowing }) => {
   if (!players[currentUserId]) {
     return null;
   }
-  const { gameResult } = players[currentUserId];
-  const titleModal = gameResult === 'won'
+  const { result } = players[currentUserId];
+  const titleModal = result === 'won'
       ? "Woohoo, you're Champion!!!!!"
       : "If you read this you've lost the game";
-  const buttonText = gameResult === 'won' ? 'Thanks' : "I'll be back";
+  const buttonText = result === 'won' ? 'Thanks' : "I'll be back";
   const handleCloseModal = () => {
     setModalShowing(false);
   };
   return (
-    gameResult !== 'undefined' && (
+    result !== 'undefined' && (
       <Modal show={modalShowing} onHide={handleCloseModal}>
         <Modal.Header closeButton>
           <Modal.Title>{titleModal}</Modal.Title>
@@ -31,7 +31,7 @@ const AnimationModal = ({ setModalShowing, modalShowing }) => {
         <Modal.Body>
           <img
             style={{ width: '400px', marginLeft: '30px', height: '300px' }}
-            src={gifs[gameResult]}
+            src={gifs[result]}
             alt="animation"
           />
         </Modal.Body>

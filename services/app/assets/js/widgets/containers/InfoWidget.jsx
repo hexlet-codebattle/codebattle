@@ -15,6 +15,10 @@ import { gameMachineStates } from '../machines/game';
 const TimerContainer = ({ time, timeoutSeconds, gameStateName }) => {
   const { current } = useContext(GameContext);
 
+  if (timeoutSeconds === null) {
+    return 'Loading...';
+  }
+
   if (
     current.matches({ game: gameMachineStates.gameOver })
     || current.matches({ game: gameMachineStates.stored })
@@ -22,7 +26,7 @@ const TimerContainer = ({ time, timeoutSeconds, gameStateName }) => {
     return gameStateName;
   }
 
-  if (timeoutSeconds) {
+  if (timeoutSeconds && time) {
     return <CountdownTimer time={time} timeoutSeconds={timeoutSeconds} />;
   }
 

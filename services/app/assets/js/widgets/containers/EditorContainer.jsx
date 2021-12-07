@@ -136,7 +136,7 @@ const EditorContainer = ({
       && userSettings.editable,
   };
 
-  const isWon = players[id].gameResult === 'won';
+  const isWon = players[id].result === 'won';
 
   const pannelBackground = cn('col-12 col-lg-6 p-1', {
     'bg-warning': editorCurrent.matches('checking'),

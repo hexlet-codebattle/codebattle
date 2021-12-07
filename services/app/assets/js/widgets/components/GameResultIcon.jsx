@@ -9,8 +9,8 @@ const GameResultIcon = ({ editor: { userId } }) => {
 
   const { id: opponentId } = _.find(players, ({ id }) => id !== userId);
 
-  const resultUser1 = _.get(players, [userId, 'gameResult']);
-  const resultUser2 = _.get(players, [opponentId, 'gameResult']);
+  const resultUser1 = _.get(players, [userId, 'result']);
+  const resultUser2 = _.get(players, [opponentId, 'result']);
 
   const tooltipId = `tooltip-${resultUser1}`;
 
