@@ -113,7 +113,7 @@ defmodule CodebattleWeb.GameController do
       level: "elementary",
       type: "training",
       visibility_type: "hidden",
-      users: [conn.assigns.current_user, Codebattle.Bot.Builder.build()]
+      players: [conn.assigns.current_user, Codebattle.Bot.Builder.build()]
     }
 
     case Context.create_game(game_params) do

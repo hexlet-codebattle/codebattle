@@ -90,8 +90,8 @@ defmodule CodebattleWeb.TaskControllerTest do
 
     assert %{
              asserts: [
-               %{"arguments" => [1, 1], "expected" => 2},
-               %{"arguments" => [1, 1], "expected" => 2}
+               %{arguments: [1, 1], expected: 2},
+               %{arguments: [1, 1], expected: 2}
              ],
              creator_id: ^user_id,
              description_en: "test sum: for ruby",
@@ -140,8 +140,8 @@ defmodule CodebattleWeb.TaskControllerTest do
 
     assert %{
              asserts: [
-               %{"arguments" => [1, 1], "expected" => 2},
-               %{"arguments" => [1, 1], "expected" => 2}
+               %{arguments: [1, 1], expected: 2},
+               %{arguments: [1, 1], expected: 2}
              ],
              description_en: "test sum: for ruby",
              description_ru: "проверка суммирования: для руби",

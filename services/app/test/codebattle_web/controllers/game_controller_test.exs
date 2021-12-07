@@ -10,7 +10,7 @@ defmodule Codebattleweb.GameControllerTest do
       task = build(:task)
 
       {:ok, game} =
-        Game.Context.create_game(%{state: "waiting_opponent", users: users, task: task})
+        Game.Context.create_game(%{state: "waiting_opponent", players: users, task: task})
 
       conn
       |> get(Routes.game_path(conn, :show, game.id))
@@ -20,7 +20,7 @@ defmodule Codebattleweb.GameControllerTest do
     test "shows live playing game", %{conn: conn} do
       users = build_list(2, :user)
       task = build(:task)
-      {:ok, game} = Game.Context.create_game(%{state: "playing", users: users, task: task})
+      {:ok, game} = Game.Context.create_game(%{state: "playing", players: users, task: task})
 
       conn
       |> get(Routes.game_path(conn, :show, game.id))
@@ -30,7 +30,7 @@ defmodule Codebattleweb.GameControllerTest do
     test "shows live game_over game", %{conn: conn} do
       users = build_list(2, :user)
       task = build(:task)
-      {:ok, game} = Game.Context.create_game(%{state: "game_over", users: users, task: task})
+      {:ok, game} = Game.Context.create_game(%{state: "game_over", players: users, task: task})
 
       conn
       |> get(Routes.game_path(conn, :show, game.id))
@@ -40,7 +40,7 @@ defmodule Codebattleweb.GameControllerTest do
     test "return 200 when game is not live", %{conn: conn} do
       users = build_list(2, :user)
       task = build(:task)
-      {:ok, game} = Game.Context.create_game(%{state: "game_over", users: users, task: task})
+      {:ok, game} = Game.Context.create_game(%{state: "game_over", players: users, task: task})
       Game.Context.terminate_game(game)
 
       conn
@@ -61,7 +61,7 @@ defmodule Codebattleweb.GameControllerTest do
       task = build(:task)
 
       {:ok, game} =
-        Game.Context.create_game(%{state: "waiting_opponent", users: users, task: task})
+        Game.Context.create_game(%{state: "waiting_opponent", players: users, task: task})
 
       conn
       |> put_session(:user_id, user1.id)
@@ -81,7 +81,7 @@ defmodule Codebattleweb.GameControllerTest do
       [user1, user2] = insert_list(2, :user)
 
       {:ok, game} =
-        Game.Context.create_game(%{state: "waiting_opponent", users: [user1], task: task})
+        Game.Context.create_game(%{state: "waiting_opponent", players: [user1], task: task})
 
       conn
       |> put_session(:user_id, user2.id)

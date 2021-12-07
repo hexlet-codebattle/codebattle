@@ -92,7 +92,7 @@ const CreateGameDialog = ({ hideModal }) => {
         mainMiddlewares.createInvite({
           level: game.level,
           timeout_seconds: game.timeoutSeconds,
-          recepient_id: opponent.id,
+          recipient_id: opponent.id,
         }),
       );
     } else if (!isInvite) {

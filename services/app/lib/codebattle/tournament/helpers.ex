@@ -205,7 +205,9 @@ defmodule Codebattle.Tournament.Helpers do
   def calc_team_score(tournament) do
     tournament
     |> get_rounds()
-    |> Enum.filter(fn round -> Enum.all?(round, &(&1.state in ["canceled", "finished"])) end)
+    |> Enum.filter(fn round ->
+      Enum.all?(round, &(&1.state in ["canceled", "game_over", "timeout"]))
+    end)
     |> Enum.map(&calc_round_result/1)
     |> Enum.reduce({0, 0}, fn {x1, x2}, {a1, a2} ->
       cond do
@@ -224,7 +226,9 @@ defmodule Codebattle.Tournament.Helpers do
 
   defp match_is_active?(%{state: "active"}), do: true
   defp match_is_active?(_match), do: false
-  defp match_is_finished?(%{state: "finished"}), do: true
+  defp match_is_finished?(%{state: "game_over"}), do: true
+  defp match_is_finished?(%{state: "canceled"}), do: true
+  defp match_is_finished?(%{state: "timeout"}), do: true
   defp match_is_finished?(_match), do: false
 
   defp is_anyone_gave_up?(%{players: [%{result: "gave_up"}, _]}), do: true

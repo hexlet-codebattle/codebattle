@@ -29,6 +29,7 @@ defmodule Codebattle.Game.Fsm do
       check_result: params.check_result
     })
     |> update_other_players(params.id, %{result: "lost"})
+    |> Game.RatingCalculator.call()
     |> Map.put(:state, "game_over")
   end
 
@@ -52,6 +53,7 @@ defmodule Codebattle.Game.Fsm do
     game
     |> update_player(params.id, %{result: "gave_up"})
     |> update_other_players(params.id, %{result: "won"})
+    |> Game.RatingCalculator.call()
     |> Map.put(:state, "game_over")
   end
 

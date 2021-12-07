@@ -64,10 +64,10 @@ defmodule CodebattleWeb.MainChannel do
 
   def handle_in("invites:create", payload, socket) do
     creator_id = socket.assigns.current_user.id
-    recepient_id = payload["recepient_id"] || raise "Recepient is absent!"
+    recipient_id = payload["recipient_id"] || raise "recipient is absent!"
 
-    if creator_id == recepient_id do
-      raise "Creator can't be recepient!"
+    if creator_id == recipient_id do
+      raise "Creator can't be recipient!"
     end
 
     level = payload["level"] || "elementary"
@@ -80,7 +80,7 @@ defmodule CodebattleWeb.MainChannel do
       timeout_seconds: timeout_seconds
     }
 
-    params = %{creator_id: creator_id, recepient_id: recepient_id, game_params: game_params}
+    params = %{creator_id: creator_id, recipient_id: recipient_id, game_params: game_params}
 
     case Invite.create_invite(params) do
       {:ok, invite} ->
@@ -89,13 +89,13 @@ defmodule CodebattleWeb.MainChannel do
           id: invite.id,
           creator_id: invite.creator_id,
           game_params: game_params,
-          recepient_id: invite.recepient_id,
+          recipient_id: invite.recipient_id,
           creator: invite.creator,
-          recepient: invite.recepient
+          recipient: invite.recipient
         }
 
         CodebattleWeb.Endpoint.broadcast!(
-          "main:#{recepient_id}",
+          "main",
           "invites:created",
           %{invite: data}
         )
@@ -119,12 +119,12 @@ defmodule CodebattleWeb.MainChannel do
           state: invite.state,
           id: invite.id,
           creator_id: invite.creator_id,
-          recepient_id: invite.recepient_id
+          recipient_id: invite.recipient_id
         }
 
         topic =
           if user_id == invite.creator_id,
-            do: "main:#{invite.recepient_id}",
+            do: "main:#{invite.recipient_id}",
             else: "main:#{invite.creator_id}"
 
         CodebattleWeb.Endpoint.broadcast!(
@@ -143,14 +143,14 @@ defmodule CodebattleWeb.MainChannel do
   def handle_in("invites:accept", payload, socket) do
     case Invite.accept_invite(%{
            id: payload["id"],
-           recepient_id: socket.assigns.current_user.id
+           recipient_id: socket.assigns.current_user.id
          }) do
       {:ok, %{invite: invite, dropped_invites: dropped_invites}} ->
         data = %{
           state: invite.state,
           id: invite.id,
           creator_id: invite.creator_id,
-          recepient_id: invite.recepient_id,
+          recipient_id: invite.recipient_id,
           game_id: invite.game_id
         }
 
@@ -167,7 +167,7 @@ defmodule CodebattleWeb.MainChannel do
           }
 
           CodebattleWeb.Endpoint.broadcast!(
-            "main:#{invite.recepient_id}",
+            "main:#{invite.recipient_id}",
             "invites:dropped",
             %{invite: data}
           )

@@ -50,8 +50,8 @@ defmodule CodebattleWeb.GameChannel do
     case Context.give_up(game_id, user) do
       {:ok, game} ->
         broadcast!(socket, "user:give_up", %{
-          players: Helpers.get_players(game),
-          status: Helpers.get_state(game),
+          players: game.players,
+          status: game.state,
           msg: "#{user.name} gave up!"
         })
 

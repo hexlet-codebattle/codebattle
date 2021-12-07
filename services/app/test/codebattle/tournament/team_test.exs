@@ -17,7 +17,7 @@ defmodule Codebattle.Tournament.TeamTest do
     player1 = build_team_player(user1, %{team_id: 0})
     player2 = build_team_player(user2, %{team_id: 1})
 
-    matches = [%{state: "finished", game_id: 2, players: [player1, player2]}]
+    matches = [%{state: "game_over", game_id: 2, players: [player1, player2]}]
 
     tournament =
       insert(:team_tournament,
@@ -37,7 +37,7 @@ defmodule Codebattle.Tournament.TeamTest do
 
     states = new_tournament.data.matches |> Enum.map(fn x -> x.state end)
 
-    assert states == ["finished", "playing"]
+    assert states == ["game_over", "playing"]
   end
 
   test ".maybe_start_new_step calls next step" do
@@ -49,7 +49,7 @@ defmodule Codebattle.Tournament.TeamTest do
     player1 = build_team_player(user1, %{team_id: 0})
     player2 = build_team_player(user2, %{team_id: 1})
 
-    matches = [%{state: "finished", game_id: 2, players: [player1, player2]}]
+    matches = [%{state: "game_over", game_id: 2, players: [player1, player2]}]
 
     tournament =
       insert(:team_tournament,
@@ -69,7 +69,7 @@ defmodule Codebattle.Tournament.TeamTest do
 
     states = get_matches_states(new_tournament)
 
-    assert states == ["finished", "playing"]
+    assert states == ["game_over", "playing"]
   end
 
   test ".maybe_start_new_step finishes tournament after 3 scores" do
@@ -84,23 +84,24 @@ defmodule Codebattle.Tournament.TeamTest do
     matches = [
       %{
         round_id: 0,
-        state: "finished",
+        state: "game_over",
         players: [Map.merge(player1, %{result: "won"}), player2]
       },
       %{
         round_id: 1,
-        state: "finished",
+        state: "canceled",
         players: [Map.merge(player1, %{result: "won"}), player2]
       },
       %{
         round_id: 2,
-        state: "finished",
+        state: "timeout",
         players: [Map.merge(player1, %{result: "won"}), player2]
       }
     ]
 
     tournament =
       insert(:team_tournament,
+        state: "active",
         step: 3,
         creator_id: user1.id,
         data: %{
@@ -117,7 +118,7 @@ defmodule Codebattle.Tournament.TeamTest do
 
     states = get_matches_states(new_tournament)
 
-    assert states == ["finished", "finished", "finished"]
+    assert states == ["game_over", "canceled", "timeout"]
   end
 
   test ".maybe_start_new_step finishes tournament after 3 scores with draws" do
@@ -132,33 +133,33 @@ defmodule Codebattle.Tournament.TeamTest do
     matches = [
       %{
         round_id: 0,
-        state: "finished",
+        state: "game_over",
         players: [player1, player2]
       },
       %{
         round_id: 1,
-        state: "finished",
+        state: "game_over",
         players: [player1, player2]
       },
       %{
         round_id: 2,
-        state: "finished",
+        state: "game_over",
         players: [player1, player2]
       },
       %{
         round_id: 3,
-        state: "finished",
+        state: "game_over",
         players: [player1, player2]
       },
       %{
         round_id: 4,
-        state: "finished",
+        state: "game_over",
         players: [player1, player2]
       },
       %{
         round_id: 5,
         duration: 1,
-        state: "finished",
+        state: "game_over",
         players: [Map.merge(player1, %{result: "won"}), player2]
       }
     ]
@@ -180,7 +181,14 @@ defmodule Codebattle.Tournament.TeamTest do
 
     states = get_matches_states(new_tournament)
 
-    assert states == ["finished", "finished", "finished", "finished", "finished", "finished"]
+    assert states == [
+             "game_over",
+             "game_over",
+             "game_over",
+             "game_over",
+             "game_over",
+             "game_over"
+           ]
 
     winner_stats = new_tournament |> Helpers.get_players_statistics() |> List.first()
 

@@ -41,7 +41,7 @@ defmodule CodebattleWeb.LobbyChannelTest do
 
     {:ok, _payload, socket} = subscribe_and_join(socket, LobbyChannel, "lobby")
 
-    push(socket, "game:create", %{type: "withRandomPlayer", level: "elementary"})
+    push(socket, "game:create", %{type: "standard", level: "elementary"})
 
     assert_receive %Phoenix.Socket.Broadcast{
       event: "game:upsert"

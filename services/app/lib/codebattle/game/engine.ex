@@ -4,7 +4,6 @@ defmodule Codebattle.Game.Engine do
     Server,
     Helpers,
     LiveGames,
-    RatingCalculator,
     GlobalSupervisor
   }
 
@@ -32,13 +31,14 @@ defmodule Codebattle.Game.Engine do
     visibility_type = params[:visibility_type] || "public"
     timeout_seconds = params[:timeout_seconds] || @default_timeout
     [creator | _] = params.players
+    tournament_id = params[:tournament_id]
 
     players =
       Enum.map(params.players, fn player ->
         Player.build(player, %{creator: player.id == creator.id, task: task})
       end)
 
-    with :ok <- can_play_game?(players),
+    with :ok <- check_auth(players, tournament_id),
          langs <- Languages.get_langs_with_solutions(task),
          {:ok, game} <-
            insert_game(%{
@@ -47,7 +47,7 @@ defmodule Codebattle.Game.Engine do
              type: type,
              visibility_type: visibility_type,
              timeout_seconds: min(timeout_seconds, @max_timeout),
-             tournament_id: params[:tournament_id],
+             tournament_id: tournament_id,
              task: task,
              players: players
            }),
@@ -107,7 +107,6 @@ defmodule Codebattle.Game.Engine do
             Server.update_playbook(game.id, :game_over, %{id: user.id, lang: editor_lang})
             LiveGames.delete_game(game.id)
 
-            new_game = RatingCalculator.call(new_game)
             {:ok, _game} = store_result!(new_game)
             store_playbook(new_game)
 
@@ -133,13 +132,10 @@ defmodule Codebattle.Game.Engine do
 
   def give_up(game, user) do
     case Server.call_transition(game.id, :give_up, %{id: user.id}) do
-      {:ok, {_old_game, game}} ->
-        LiveGames.delete_game(game.id)
-
-        new_game = RatingCalculator.call(game)
+      {:ok, {_old_game, new_game}} ->
+        LiveGames.delete_game(new_game.id)
         {:ok, _game} = store_result!(new_game)
         store_playbook(new_game)
-
         Codebattle.PubSub.broadcast("game:finished", %{game: new_game})
         {:ok, new_game}
 
@@ -290,6 +286,7 @@ defmodule Codebattle.Game.Engine do
   end
 
   def broadcast_live_game(game) do
+    # TODO: move it to pubSub
     CodebattleWeb.Endpoint.broadcast!("lobby", "game:upsert", %{
       game: GameView.render_active_game(game)
     })
@@ -328,4 +325,7 @@ defmodule Codebattle.Game.Engine do
   defp checker_adapter, do: Application.get_env(:codebattle, :checker_adapter)
 
   defp get_random_level, do: Enum.random(Codebattle.Task.levels())
+
+  defp check_auth(players, nil), do: can_play_game?(players)
+  defp check_auth(_, _), do: :ok
 end

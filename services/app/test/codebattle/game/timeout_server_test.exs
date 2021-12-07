@@ -16,13 +16,13 @@ defmodule Codebattle.Game.TimeoutServerTest do
     TimeoutServer.start_link(@game2_id)
 
     with_mock(Context,
-      timeout_game: fn game_id -> game_id end
+      trigger_timeout: fn game_id -> game_id end
     ) do
       TimeoutServer.start_timer(@game_id, 0)
       TimeoutServer.start_timer(@game2_id, 100)
 
-      assert called(Context.timeout_game(@game_id))
-      assert !called(Context.timeout_game(@game2_id))
+      assert called(Context.trigger_timeout(@game_id))
+      assert !called(Context.trigger_timeout(@game2_id))
     end
   end
 end

@@ -22,7 +22,6 @@ defmodule CodebattleWeb.LobbyChannel do
 
     case Game.Context.cancel_game(game_id, socket.assigns.current_user) do
       :ok ->
-        CodebattleWeb.Notifications.remove_active_game(game_id)
         {:noreply, socket}
 
       {:error, reason} ->

@@ -169,7 +169,7 @@ defmodule Codebattle.Game.Player do
     params = %{
       editor_lang: editor_lang,
       editor_text: editor_text,
-      result: :undefined,
+      result: "undefined",
       check_result: %CheckResult{}
     }
 

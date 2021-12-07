@@ -69,7 +69,7 @@ defmodule Codebattle.TasksImporter do
   defp get_task_params(path, issue_name) do
     issue_info = YamlElixir.read_from_file!(Path.join(path, "#{issue_name}.yml"))
 
-    asserts = File.read!(Path.join(path, "#{issue_name}.jsons"))
+    asserts = path |> Path.join("#{issue_name}.json") |> File.read!() |> Jason.decode!()
     signature = Map.get(issue_info, "signature")
     description = Map.get(issue_info, "description")
 

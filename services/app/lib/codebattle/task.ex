@@ -35,7 +35,7 @@ defmodule Codebattle.Task do
     field(:level, :string)
     field(:input_signature, {:array, :map}, default: [])
     field(:output_signature, :map, default: %{})
-    field(:asserts, {:array, :map}, default: [])
+    field(:asserts, {:array, AtomizedMap}, default: [])
     field(:disabled, :boolean)
     field(:count, :integer, virtual: true)
     field(:tags, {:array, :string}, default: [])

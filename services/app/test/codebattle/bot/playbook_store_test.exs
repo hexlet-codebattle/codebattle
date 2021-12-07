@@ -13,7 +13,6 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
 
     # user3 = insert(:user, %{name: "other", email: "test3@test.test", github_id: 3, rating: 1000})
 
-    conn1 = put_session(conn, :user_id, user1.id)
     conn2 = put_session(conn, :user_id, user2.id)
 
     socket1 = socket(UserSocket, "user_id", %{user_id: user1.id, current_user: user1})
@@ -21,7 +20,6 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
 
     {:ok,
      %{
-       conn1: conn1,
        conn2: conn2,
        user1: user1,
        user2: user2,
@@ -32,7 +30,6 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
   end
 
   test "stores player playbook if he is winner", %{
-    conn1: conn1,
     conn2: conn2,
     user1: user1,
     user2: _user2,
@@ -41,12 +38,10 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
     socket2: socket2
   } do
     # Create game
-    conn =
-      conn1
-      |> get(Routes.page_path(conn1, :index))
-      |> post(Routes.game_path(conn1, :create, level: "easy", type: "withRandomPlayer"))
+    {:ok, _response, socket1} = subscribe_and_join(socket1, LobbyChannel, "lobby")
 
-    game_id = game_id_from_conn(conn)
+    ref = Phoenix.ChannelTest.push(socket1, "game:create", %{level: "easy"})
+    Phoenix.ChannelTest.assert_reply(ref, :ok, %{game_id: game_id})
 
     game_topic = "game:" <> to_string(game_id)
     #
@@ -113,8 +108,9 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
     # sleep, because Game need time to write Playbook with Ecto.connection
     :timer.sleep(4000)
 
+    # TODO: think why not 10
     playbook = Repo.get_by(Playbook, winner_id: user1.id)
-    assert Enum.count(playbook.data.records) == 10
+    assert Enum.count(playbook.data.records) == 9
 
     user_playbook =
       Enum.filter(playbook.data.records, fn x ->

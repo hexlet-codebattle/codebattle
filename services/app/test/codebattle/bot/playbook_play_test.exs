@@ -2,7 +2,7 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
   use Codebattle.IntegrationCase
 
   alias CodebattleWeb.{GameChannel, UserSocket}
-  alias Codebattle.Game.{Server, Helpers}
+  alias Codebattle.Game.Helpers
   alias CodebattleWeb.UserSocket
 
   test "Bot playing with user", %{conn: conn} do
@@ -54,9 +54,9 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
 
     # Create game
     level = "easy"
-    {:ok, fsm} = Codebattle.Bot.GameCreator.call(level)
-    bot = Helpers.get_first_player(fsm)
-    game_id = Helpers.get_game_id(fsm)
+    {:ok, game} = Codebattle.Bot.GameCreator.call(level)
+    bot = Helpers.get_first_player(game)
+    game_id = game.id
     game_topic = "game:#{game_id}"
 
     :timer.sleep(100)
@@ -78,7 +78,7 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
     # bot write_some_text
     game = Game.Context.get_game(game.id)
 
-    assert Helpers.get_first_player(fsm).editor_text == "tes"
-    assert Helpers.get_winner(fsm).name == bot.name
+    assert Helpers.get_first_player(game).editor_text == "tes"
+    assert Helpers.get_second_player(game).editor_text == "test"
   end
 end

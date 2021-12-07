@@ -22,7 +22,7 @@ defmodule CodebattleWeb.GameChannelTest do
   describe "join/3" do
     test "sends game info", %{user1: user1, socket1: socket1} do
       {:ok, game} =
-        Game.Context.create_game(%{state: "waiting_opponent", users: [user1], level: "easy"})
+        Game.Context.create_game(%{state: "waiting_opponent", players: [user1], level: "easy"})
 
       {:ok, created, _socket1} = subscribe_and_join(socket1, GameChannel, game_topic(game))
 
@@ -39,7 +39,7 @@ defmodule CodebattleWeb.GameChannelTest do
       socket2: socket2
     } do
       {:ok, game} =
-        Game.Context.create_game(%{state: "waiting_opponent", users: [user1], level: "easy"})
+        Game.Context.create_game(%{state: "waiting_opponent", players: [user1], level: "easy"})
 
       game_topic = game_topic(game)
       editor_text1 = "test1"
@@ -95,7 +95,7 @@ defmodule CodebattleWeb.GameChannelTest do
     socket2: socket2
   } do
     {:ok, game} =
-      Game.Context.create_game(%{state: "playing", users: [user1, user2], level: "easy"})
+      Game.Context.create_game(%{state: "playing", players: [user1, user2], level: "easy"})
 
     game_topic = game_topic(game)
 
@@ -116,18 +116,17 @@ defmodule CodebattleWeb.GameChannelTest do
       msg: message
     }
 
-    assert_receive %Phoenix.Socket.Broadcast{
-      topic: ^game_topic,
-      event: "user:give_up",
-      payload: ^payload
-    }
-
     assert game.state == "game_over"
     assert Game.Helpers.gave_up?(game, user1.id) == true
     assert Game.Helpers.winner?(game, user2.id) == true
-    :timer.sleep(100)
 
-    assert game.state == "game_over"
+    assert_receive %Phoenix.Socket.Broadcast{
+      topic: ^game_topic,
+      event: "user:give_up",
+      payload: payload1
+    }
+
+    assert payload1.players == game.players
   end
 
   defp game_topic(game), do: "game:" <> to_string(game.id)

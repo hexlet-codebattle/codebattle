@@ -13,7 +13,7 @@ defmodule Codebattle.Game.ContextTest do
   describe "trigger_timeout/1" do
     test "changes state and broadcasts events", %{user1: user1, user2: user2} do
       {:ok, %{id: game_id}} =
-        Game.Context.create_game(%{state: "playing", users: [user1, user2], level: "easy"})
+        Game.Context.create_game(%{state: "playing", players: [user1, user2], level: "easy"})
 
       game_topic = "game:#{game_id}"
       Codebattle.PubSub.subscribe(game_topic)
