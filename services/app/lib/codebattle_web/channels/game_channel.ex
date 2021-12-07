@@ -51,7 +51,7 @@ defmodule CodebattleWeb.GameChannel do
       {:ok, game} ->
         broadcast!(socket, "user:give_up", %{
           players: game.players,
-          status: game.state,
+          state: game.state,
           msg: "#{user.name} gave up!"
         })
 
@@ -79,7 +79,7 @@ defmodule CodebattleWeb.GameChannel do
         broadcast!(socket, "user:check_complete", %{
           solution_status: solution_status,
           user_id: user.id,
-          status: game.state,
+          state: game.state,
           players: Helpers.get_players(game),
           check_result: check_result
         })
