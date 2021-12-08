@@ -168,10 +168,18 @@ defmodule Codebattle.Tournament.Helpers do
     }
   end
 
-  def pick_winner(%{players: [%{game_result: "won"} = winner, _]}), do: winner
-  def pick_winner(%{players: [_, %{game_result: "won"} = winner]}), do: winner
+  # def pick_winner(%{players: [%{game_result: "won"} = winner, _]}), do: winner
+  # def pick_winner(%{players: [_, %{game_result: "won"} = winner]}), do: winner
+  # def pick_winner(%{players: [winner, %{game_result: "gave_up"}]}), do: winner
+  # def pick_winner(%{players: [%{game_result: "gave_up"}, winner]}), do: winner
+  # def pick_winner(match), do: Enum.random(match.players)
+
+  def pick_winner(%{players: [%{game_result: "won", is_bot: false} = winner, _]}), do: winner
+  def pick_winner(%{players: [_, %{game_result: "won", is_bot: false} = winner]}), do: winner
   def pick_winner(%{players: [winner, %{game_result: "gave_up"}]}), do: winner
   def pick_winner(%{players: [%{game_result: "gave_up"}, winner]}), do: winner
+  def pick_winner(%{players: [%{is_bot: false} = winner, %{is_bot: true}]}), do: winner
+  def pick_winner(%{players: [%{is_bot: true}, %{is_bot: false} = winner]}), do: winner
   def pick_winner(match), do: Enum.random(match.players)
 
   def filter_statistics(statistics, "show"), do: statistics

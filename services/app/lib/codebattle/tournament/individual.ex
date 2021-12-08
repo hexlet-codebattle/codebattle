@@ -3,6 +3,7 @@ defmodule Codebattle.Tournament.Individual do
 
   use Tournament.Base
 
+  @max_players_count 32
   @impl Tournament.Base
   def join(%{state: "upcoming"} = tournament, %{user: user}) do
     add_intended_player_id(tournament, user.id)
@@ -19,27 +20,28 @@ defmodule Codebattle.Tournament.Individual do
 
   @impl Tournament.Base
   def complete_players(tournament) do
+    players_limit =
+      if tournament.players_count do
+        tournament.players_count
+      else
+        @max_players_count
+      end
+
+    players = tournament |> get_players |> Enum.take(players_limit)
+
     bots_count =
       if tournament.players_count do
-        tournament.players_count - players_count(tournament)
+        tournament.players_count - Enum.count(players)
       else
-        if players_count(tournament) > 1 do
-          power =
-            tournament
-            |> players_count()
-            |> :math.log2()
-            |> ceil()
-
-          round(:math.pow(2, power)) - players_count(tournament)
+        if Enum.count(players) > 1 do
+          power = players |> Enum.count() |> :math.log2() |> ceil()
+          round(:math.pow(2, power)) - Enum.count(players)
         else
           1
         end
       end
 
-    new_players =
-      tournament
-      |> get_players
-      |> Enum.concat(Codebattle.Bot.Builder.build_list(bots_count))
+    new_players = Enum.concat(players, Codebattle.Bot.Builder.build_list(bots_count))
 
     new_data =
       tournament

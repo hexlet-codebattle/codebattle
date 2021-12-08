@@ -1,0 +1,38 @@
+- matches = get_matches(@tournament)
+- first_round_left_range = 0..15
+- second_round_left_range = 16..23
+- qf_range = 24..27
+- sf_range = 28..29
+- final = 30
+
+.d-flex.justify-content-around
+  h4 1/16
+  h4 1/8
+  h4 1/4
+  h4 1/2
+  h4 Final
+.bracket
+  .round
+    = Enum.map first_round_left_range,  fn index ->
+      .match
+        .match__content.bg-light
+          = render "_match.html", match:  Enum.at(matches, index), current_user: @current_user
+  .round
+    = Enum.map second_round_left_range,  fn index ->
+      .match
+        .match__content
+          = render "_match.html", match:  Enum.at(matches, index), current_user: @current_user
+  .round
+    = Enum.map qf_range,  fn index ->
+      .match
+        .match__content
+          = render "_match.html", match:  Enum.at(matches, index), current_user: @current_user
+  .round
+    = Enum.map sf_range, fn index ->
+      .match
+        .match__content
+          = render "_match.html", match:  Enum.at(matches, index), current_user: @current_user
+  .round
+    .match
+      .match__content
+        = render "_match.html", match:  Enum.at(matches, final), current_user: @current_user
