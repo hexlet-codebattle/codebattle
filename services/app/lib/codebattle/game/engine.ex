@@ -134,8 +134,8 @@ defmodule Codebattle.Game.Engine do
       {:ok, {_old_game, new_game}} ->
         LiveGames.delete_game(new_game.id)
         {:ok, _game} = store_result!(new_game)
-        store_playbook(new_game)
         Codebattle.PubSub.broadcast("game:finished", %{game: new_game})
+        store_playbook(new_game)
         {:ok, new_game}
 
       {:error, reason} ->

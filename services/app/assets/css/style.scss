@@ -473,6 +473,13 @@ a {
   margin-right: 3px;
 }
 
-p, td {
+p,
+td {
   font-family: 'Montserrat', sans-serif;
- }
+}
+
+@media screen and (min-width: 676px) {
+  .modal-dialog {
+    max-width: 600px; /* New width for default modal */
+  }
+}

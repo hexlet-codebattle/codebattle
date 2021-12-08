@@ -75,7 +75,7 @@ defmodule Codebattle.Game.LiveGames do
 
   defp list_games(params \\ %{}), do: :ets.match_object(@table_name, {:_, :_, params})
 
-  defp game_key(game_id), do: "#{game_id}"
+  defp game_key(game_id), do: to_string(game_id)
 
   defp build_game_params(game) do
     %{

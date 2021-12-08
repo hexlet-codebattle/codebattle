@@ -14,7 +14,7 @@ import i18n from '../../../i18n';
 import levelRatio from '../../config/levelRatio';
 import gameTypeCodes from '../../config/gameTypeCodes';
 
-const TIMEOUTS = [3600, 1800, 1200, 900, 600, 300, 120, 60];
+const TIMEOUTS = [3300, 2040, 1260, 780, 480, 300, 180, 120, 60]
 
 const UserLabel = ({ user }) => {
   const { presenceList } = useSelector(selectors.lobbyDataSelector);
@@ -75,8 +75,8 @@ const CreateGameDialog = ({ hideModal }) => {
 
   const [game, setGame] = useState({
     level: gameLevels[0],
-    type: gameTypeCodes.public,
-    timeoutSeconds: TIMEOUTS[3],
+    type: gameTypeCodes.standard,
+    timeoutSeconds: TIMEOUTS[4],
   });
 
   const isInvite = game.type === 'invite';

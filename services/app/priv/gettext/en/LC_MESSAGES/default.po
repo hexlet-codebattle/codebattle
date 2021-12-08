@@ -358,14 +358,23 @@ msgstr "1 min"
 msgid "Timeout 120 seconds"
 msgstr "2 min"
 
+msgid "Timeout 180 seconds"
+msgstr "3 min"
+
 msgid "Timeout 300 seconds"
 msgstr "5 min"
 
-msgid "Timeout 600 seconds"
-msgstr "10 min"
+msgid "Timeout 480 seconds"
+msgstr "8 min"
 
-msgid "Timeout 1200 seconds"
-msgstr "20 min"
+msgid "Timeout 780 seconds"
+msgstr "13 min"
 
-msgid "Timeout 3600 seconds"
-msgstr "60 min"
+msgid "Timeout 1260 seconds"
+msgstr "21 min"
+
+msgid "Timeout 2040 seconds"
+msgstr "34 min"
+
+msgid "Timeout 3300 seconds"
+msgstr "55 min"

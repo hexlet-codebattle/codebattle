@@ -126,7 +126,7 @@ defmodule Codebattle.CodeCheck.Csharp.IntegrationTest do
     Phoenix.ChannelTest.push(socket1, "check_result", %{
       editor_text:
         "using System;using System.Collections.Generic; \n
-      namespace app{ public class Solution { public List<string> solution(int a, string b, bool c, Dictionary<string, string> d, List<string> e, List<List<string>> f) { return new List<string>(){\"asdf\"}; } } }",
+      namespace app{ public class Solution { public List<string> solution(int a, string b, double c, bool d, Dictionary<string, string> e, List<string> f, List<List<string>> g) { return new List<string>(){\"asdf\"}; } } }",
       lang_slug: "csharp"
     })
 
