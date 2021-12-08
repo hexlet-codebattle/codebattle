@@ -266,12 +266,7 @@ defmodule Codebattle.Tournament.Base do
       end
 
       defp broadcast_new_step(tournament) do
-        CodebattleWeb.Endpoint.broadcast!(
-          "tournaments",
-          "round:created",
-          %{tournament: tournament}
-        )
-
+        Codebattle.PubSub.broadcast("tournament:round_created", %{tournament: tournament})
         tournament
       end
 

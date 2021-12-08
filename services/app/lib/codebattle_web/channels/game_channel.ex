@@ -3,12 +3,16 @@ defmodule CodebattleWeb.GameChannel do
   use CodebattleWeb, :channel
 
   alias Codebattle.Game.Context
-  alias Codebattle.Game.Helpers
   alias CodebattleWeb.Api.GameView
 
   def join("game:" <> game_id, _payload, socket) do
     try do
       game = Context.get_game(game_id)
+
+      if game.tournament_id do
+        Codebattle.PubSub.subscribe("tournament:#{game.tournament_id}")
+      end
+
       {:ok, GameView.render_game(game), assign(socket, :game_id, game_id)}
     rescue
       Ecto.NoResultsError ->
@@ -80,7 +84,7 @@ defmodule CodebattleWeb.GameChannel do
           solution_status: solution_status,
           user_id: user.id,
           state: game.state,
-          players: Helpers.get_players(game),
+          players: game.players,
           check_result: check_result
         })
 
@@ -117,20 +121,13 @@ defmodule CodebattleWeb.GameChannel do
     |> handle_rematch_result(socket)
   end
 
-  def handle_info(%{topic: "tournaments", event: "round:created", payload: payload}, socket) do
-    game_id = socket.assigns.game_id
-    {:ok, game} = Context.get_game(game_id)
-
-    if is_current_tournament?(payload.tournament, game) do
-      push(socket, "tournament:round_created", payload.tournament)
-    end
+  def handle_info(%{event: "tournament:round_created", payload: payload}, socket) do
+    push(socket, "tournament:round_created", payload.tournament)
 
     {:noreply, socket}
   end
 
-  defp is_current_tournament?(tournament, game) do
-    Helpers.get_tournament_id(game) == tournament.id
-  end
+  def handle_info(_, state), do: {:noreply, state}
 
   defp handle_rematch_result(result, socket) do
     case result do

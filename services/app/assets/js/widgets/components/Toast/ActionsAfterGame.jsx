@@ -8,6 +8,7 @@ import SignUpButton from './SignUpButton';
 import RematchButton from './RematchButton';
 
 const ActionsAfterGame = () => {
+  const { tournamentId } = useSelector(selectors.gameStatusSelector);
   const gameType = useSelector(selectors.gameTypeSelector);
   const isOpponentInGame = useSelector(selectors.isOpponentInGameSelector);
 
@@ -21,15 +22,15 @@ const ActionsAfterGame = () => {
       </>
     );
   }
+  if (tournamentId) {
+    return <></>;
+  }
   if (gameType === GameTypeCodes.bot) {
     return (
       <>
         <RematchButton disabled={isRematchDisabled} />
       </>
     );
-  }
-  if (gameType === GameTypeCodes.tournament) {
-    return <></>;
   }
   return (
     <>

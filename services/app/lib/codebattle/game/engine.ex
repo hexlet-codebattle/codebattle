@@ -157,6 +157,8 @@ defmodule Codebattle.Game.Engine do
   def terminate_game(%Game{} = game) do
     case game.is_live do
       true ->
+        # TODO: move to PUbSub
+        CodebattleWeb.Endpoint.broadcast("lobby", "game:remove", %{id: game.id})
         # Engine.store_playbook(game)
         LiveGames.delete_game(game.id)
         GlobalSupervisor.terminate_game(game.id)
