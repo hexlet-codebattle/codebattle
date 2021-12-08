@@ -23,5 +23,5 @@ config :codebattle,
     "solar05",
     "mokevnin",
     "Melodyn",
-    "NatMusina",
+    "NatMusina"
   ]
