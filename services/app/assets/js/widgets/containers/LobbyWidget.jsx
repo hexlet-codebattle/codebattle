@@ -297,6 +297,7 @@ const ActiveGames = ({ games }) => {
               <td className="p-3 align-middle text-center text-nowrap">
                 <img
                   alt={game.state}
+                  title={game.state}
                   src={
                     game.state === 'playing'
                       ? '/assets/images/playing.svg'

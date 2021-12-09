@@ -201,7 +201,7 @@ const UserProfile = () => {
             <img
               className="attachment user avatar img-fluid rounded"
               src={getUserAvatarUrl(stats.user)}
-              alt={stats.user.name}
+              alt="User avatar"
             />
           </div>
           <h2 className="my-2">{stats.user.name}</h2>
@@ -214,6 +214,7 @@ const UserProfile = () => {
           <h1 className="my-2">
             {stats.user.githubName && (
             <a
+              title="Github account"
               className="text-muted"
               href={`https://github.com/${stats.user.githubName}`}
             >
