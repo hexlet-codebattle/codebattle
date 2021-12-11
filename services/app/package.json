@@ -29,7 +29,7 @@
     "@xstate/inspect": "^0.4.1",
     "@xstate/react": "^1.2.2",
     "@xstate/test": "^0.4.1",
-    "axios": "^0.21.1",
+    "axios": "^0.21.2",
     "bootstrap": "^4.5.3",
     "calcite-react": "^0.56.2",
     "classnames": "^2.2.6",
