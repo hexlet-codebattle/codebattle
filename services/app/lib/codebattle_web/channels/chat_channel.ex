@@ -8,6 +8,9 @@ defmodule CodebattleWeb.ChatChannel do
 
   def join(topic, _payload, socket) do
     type = get_chat_type(topic)
+
+    subscribe_to_updates(type)
+
     {:ok, users} = Chat.Server.join_chat(type, socket.assigns.current_user)
     msgs = Chat.Server.get_messages(type)
     send(self(), :after_join)
@@ -75,6 +78,16 @@ defmodule CodebattleWeb.ChatChannel do
     {:noreply, socket}
   end
 
+  def handle_info(%{topic: _topic, event: "chat:new_msg", payload: payload}, socket) do
+    push(socket, "chat:new_msg", %{
+      name: payload.name,
+      text: payload.text,
+      time: payload.time
+    })
+
+    {:noreply, socket}
+  end
+
   defp get_user_name(%{is_bot: true, name: name}), do: "#{name}(bot)"
   defp get_user_name(%{name: name}), do: name
 
@@ -102,5 +115,12 @@ defmodule CodebattleWeb.ChatChannel do
     end
 
     Game.Server.update_playbook(chat_id, event_name, payload)
+  end
+
+  defp subscribe_to_updates(:lobby), do: Codebattle.PubSub.subscribe("chat:lobby")
+  defp subscribe_to_updates({:game, id}), do: Codebattle.PubSub.subscribe("chat:game:#{id}")
+
+  defp subscribe_to_updates({:tournament, id}) do
+    Codebattle.PubSub.subscribe("chat:tournament:#{id}")
   end
 end

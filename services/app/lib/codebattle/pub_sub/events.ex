@@ -42,6 +42,37 @@ defmodule Codebattle.PubSub.Events do
     ]
   end
 
+  def get_messages("chat:new_msg", params) do
+    case params.type do
+      :lobby ->
+        [
+          %Message{
+            topic: "chat:lobby",
+            event: "chat:new_msg",
+            payload: params
+          }
+        ]
+
+      {:tournament, id} ->
+        [
+          %Message{
+            topic: "chat:tournament:#{id}",
+            event: "chat:new_msg",
+            payload: params
+          }
+        ]
+
+      {:game, id} ->
+        [
+          %Message{
+            topic: "chat:game:#{id}",
+            event: "chat:new_msg",
+            payload: params
+          }
+        ]
+    end
+  end
+
   def get_messages("game:finished", params) do
     game_events = [
       %Message{

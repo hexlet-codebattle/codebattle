@@ -91,6 +91,12 @@ defmodule Codebattle.Game.Engine do
 
     check_result = checker_adapter().call(game.task, editor_text, editor_lang)
 
+    Server.update_playbook(game.id, :check_complete, %{
+      id: user.id,
+      editor_text: editor_text,
+      editor_lang: editor_lang
+    })
+
     case check_result.status do
       "ok" ->
         {:ok, {old_game, new_game}} =

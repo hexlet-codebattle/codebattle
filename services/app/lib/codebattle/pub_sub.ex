@@ -30,7 +30,7 @@ defmodule Codebattle.PubSub do
     event_name
     |> Events.get_messages(params)
     |> Enum.map(fn %{topic: topic} = message ->
-      Phoenix.PubSub.broadcast!(Codebattle.PubSub, topic, message)
+      Phoenix.PubSub.broadcast(Codebattle.PubSub, topic, message)
     end)
   end
 

@@ -41,8 +41,15 @@ defmodule Codebattle.Chat.Server do
 
   def add_message(type, message) do
     GenServer.cast(chat_key(type), {:add_message, message})
-    # TODO: use PubSup instead of direct broadcast
-    broadcast_message(type, "chat:new_msg", message)
+
+    Codebattle.PubSub.broadcast("chat:new_msg", %{
+      # types: :lobby | {:tournament, 1} | {:game, 1}
+      type: type,
+      name: message.name,
+      text: message.text,
+      time: message.time
+    })
+
     :ok
   end
 
@@ -51,6 +58,7 @@ defmodule Codebattle.Chat.Server do
       GenServer.call(chat_key(type), :get_messages)
     catch
       :exit, _reason ->
+        # TODO: add dead message
         []
     end
   end
@@ -66,8 +74,8 @@ defmodule Codebattle.Chat.Server do
         }
 
         GenServer.call(chat_key(chat_type), {:ban, %{name: banned_name, message: ban_message}})
-        broadcast_message(chat_type, "chat:ban", %{name: banned_name})
-        broadcast_message(chat_type, "chat:new_msg", ban_message)
+        # broadcast_message(chat_type, "chat:ban", %{name: banned_name})
+        # broadcast_message(chat_type, "chat:new_msg", ban_message)
 
       _ ->
         :ok
@@ -135,37 +143,37 @@ defmodule Codebattle.Chat.Server do
   defp chat_key(:lobby), do: :LOBBY_CHAT
   defp chat_key({type, id}), do: {:via, :gproc, {:n, :l, {:chat, "#{type}_#{id}"}}}
 
-  defp broadcast_message(type, topic, message) do
-    case type do
-      :lobby ->
-        CodebattleWeb.Endpoint.broadcast!(
-          "chat:lobby",
-          topic,
-          message
-        )
+  # defp broadcast_message(type, topic, message) do
+  #   case type do
+  #     :lobby ->
+  #       CodebattleWeb.Endpoint.broadcast!(
+  #         "chat:lobby",
+  #         topic,
+  #         message
+  #       )
 
-      {:tournament, id} ->
-        CodebattleWeb.Endpoint.broadcast!(
-          Tournament.Server.tournament_topic_name(id),
-          topic,
-          message
-        )
+  #     {:tournament, id} ->
+  #       CodebattleWeb.Endpoint.broadcast!(
+  #         Tournament.Server.tournament_topic_name(id),
+  #         topic,
+  #         message
+  #       )
 
-        CodebattleWeb.Endpoint.broadcast!(
-          "chat:t_#{id}",
-          topic,
-          message
-        )
+  #       CodebattleWeb.Endpoint.broadcast!(
+  #         "chat:t_#{id}",
+  #         topic,
+  #         message
+  #       )
 
-      {:game, id} ->
-        CodebattleWeb.Endpoint.broadcast!(
-          "chat:g_#{id}",
-          topic,
-          message
-        )
+  #     {:game, id} ->
+  #       CodebattleWeb.Endpoint.broadcast!(
+  #         "chat:g_#{id}",
+  #         topic,
+  #         message
+  #       )
 
-      _ ->
-        :ok
-    end
-  end
+  #     _ ->
+  #       :ok
+  #   end
+  # end
 end

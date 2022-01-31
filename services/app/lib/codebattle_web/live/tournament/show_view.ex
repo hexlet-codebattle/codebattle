@@ -24,6 +24,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     tournament = session["tournament"]
 
     Codebattle.PubSub.subscribe(topic_name(tournament))
+    Codebattle.PubSub.subscribe(chat_topic_name(tournament))
 
     {:ok,
      assign(socket,
@@ -61,10 +62,8 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     {:noreply, assign(socket, messages: payload.messages)}
   end
 
-  def handle_info(%{topic: topic, event: "chat:new_msg", payload: _payload}, socket) do
-    tournament = socket.assigns.tournament
-
-    {:noreply, assign(socket, messages: get_chat_messages(tournament.id))}
+  def handle_info(%{topic: topic, event: "chat:new_msg", payload: payload}, socket) do
+    {:noreply, assign(socket, messages: Enum.concat(socket.assigns.messages, [payload]))}
   end
 
   def handle_info(%{topic: topic, event: "chat:ban", payload: _payload}, socket) do
@@ -239,16 +238,17 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
       )
     end
 
-    messages = get_chat_messages(tournament.id)
+    # CodebattleWeb.Endpoint.broadcast_from(
+    #   self(),
+    #   topic_name(tournament),
+    #   "chat:#{tournament.id}",
+    #   %{messages: messages}
+    # )
+    # IO.inspect messages
 
-    CodebattleWeb.Endpoint.broadcast_from(
-      self(),
-      topic_name(tournament),
-      "chat:#{tournament.id}",
-      %{messages: messages}
-    )
+    # messages = get_chat_messages(tournament.id)
 
-    {:noreply, assign(socket, messages: messages)}
+    {:noreply, socket}
   end
 
   def handle_event("toggle", params, socket) do
@@ -296,6 +296,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
   end
 
   defp topic_name(tournament), do: "tournament:#{tournament.id}"
+  defp chat_topic_name(tournament), do: "chat:tournament:#{tournament.id}"
 
   defp get_chat_messages(id) do
     try do

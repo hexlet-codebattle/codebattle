@@ -210,6 +210,7 @@ const CompletedTournaments = ({ tournaments }) => {
         <thead className="">
           <tr>
             <th className="p-3 border-0">Title</th>
+            <th className="p-3 border-0">Type</th>
             <th className="p-3 border-0">Starts_at</th>
             <th className="p-3 border-0">Creator</th>
             <th className="p-3 border-0">Actions</th>
@@ -219,6 +220,7 @@ const CompletedTournaments = ({ tournaments }) => {
           {_.orderBy(tournaments, 'startsAt', 'desc').map(tournament => (
             <tr key={tournament.id}>
               <td className="p-3 align-middle">{tournament.name}</td>
+              <td className="p-3 align-middle">{tournament.type}</td>
               <td className="p-3 align-middle text-nowrap">
                 {moment
                   .utc(tournament.startsAt)
