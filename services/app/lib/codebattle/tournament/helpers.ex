@@ -188,15 +188,12 @@ defmodule Codebattle.Tournament.Helpers do
 
   # 1. picks human winner
   # 2. picks human loser instead of bot
-  # 3. picks human loser instead of bot
+  # 3. picks human winner if gave_up
   # 4. picks random bot
-
   def pick_winner(%{players: [%{result: "won", is_bot: false} = winner, _]}), do: winner
   def pick_winner(%{players: [_, %{result: "won", is_bot: false} = winner]}), do: winner
   def pick_winner(%{players: [winner, %{result: "gave_up"}]}), do: winner
   def pick_winner(%{players: [%{result: "gave_up"}, winner]}), do: winner
-  def pick_winner(%{players: [%{is_bot: false} = winner, %{is_bot: true}]}), do: winner
-  def pick_winner(%{players: [%{is_bot: true}, %{is_bot: false} = winner]}), do: winner
   def pick_winner(match), do: Enum.random(match.players)
 
   def filter_statistics(statistics, "show"), do: statistics

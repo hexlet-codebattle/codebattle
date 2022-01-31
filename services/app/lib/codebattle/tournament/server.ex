@@ -16,6 +16,10 @@ defmodule Codebattle.Tournament.Server do
     end
   end
 
+  def reload_from_db(id) do
+    GenServer.cast(server_name(id), :reload_from_db)
+  end
+
   def update_tournament(tournament_id, event_type, params) do
     try do
       GenServer.call(server_name(tournament_id), {event_type, params})
@@ -54,8 +58,6 @@ defmodule Codebattle.Tournament.Server do
     {:reply, tournament, Map.merge(state, %{tournament: new_tournament})}
   end
 
-  def tournament_topic_name(tournament_id), do: "tournament:#{tournament_id}"
-
   def handle_info(
         %{
           topic: "game:tournament:" <> _t_id,
@@ -75,7 +77,15 @@ defmodule Codebattle.Tournament.Server do
     {:noreply, state}
   end
 
+  def handle_cast(:reload_from_db, state) do
+    %{tournament: tournament} = state
+    new_tournament = Codebattle.Tournament.Context.get_from_db!(tournament.id)
+    {:noreply, %{state | tournament: new_tournament}}
+  end
+
   # HELPERS
+
+  def tournament_topic_name(tournament_id), do: "tournament:#{tournament_id}"
 
   defp broadcast_tournament_update(tournament) do
     Codebattle.PubSub.broadcast("tournament:updated", %{tournament: tournament})

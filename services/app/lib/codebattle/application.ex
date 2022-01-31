@@ -49,7 +49,7 @@ defmodule Codebattle.Application do
       strategy: :one_for_one,
       name: Codebattle.Supervisor,
       max_restarts: 13_579,
-      max_seconds: 10
+      max_seconds: 11
     )
   end
 

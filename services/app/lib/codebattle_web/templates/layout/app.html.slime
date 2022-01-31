@@ -53,14 +53,14 @@ html lang="en"
                         = @current_user.name
                       .d-flex.justify-content-between.align-items-baseline
                         .d-flex.align-items-baseline
-                          img[alt="#{@current_user.rank}" src="/assets/images/cup.svg"]
+                          img[alt="rank" title="rank" src="/assets/images/cup.svg"]
                           span.ml-1
                             = @current_user.rank
                         .d-flex.align-items-baseline
-                          img[alt="#{@current_user.rating}" src="/assets/images/rating.svg"]
+                          img[alt="rating" title="rating" src="/assets/images/rating.svg"]
                           span.ml-1
                             = @current_user.rating
-                    img.attachment.ml-1[alt="#{@current_user.name}" src="#{get_user_avatar_url(@current_user)}" style="width:46px; height:46px"]
+                    img.attachment.ml-1[alt="avatar" src="#{get_user_avatar_url(@current_user)}" style="width:46px; height:46px"]
                     .dropdown-menu.dropdown-menu-right
                       = link gettext("My Profile"), to: Routes.user_path(@conn, :show, @current_user.id), class: "dropdown-item"
                       = link gettext("Settings"), to: Routes.user_setting_path(@conn, :edit), class: "dropdown-item"

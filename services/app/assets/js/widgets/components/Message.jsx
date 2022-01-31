@@ -54,7 +54,7 @@ const Message = ({
       {currentUserIsAdmin ? (
         <button
           type="button"
-          className="btn btn-sm btn-outline-danger"
+          className="btn btn-sm btn-link text-danger"
           onClick={() => {
             handleBanClick(name);
           }}

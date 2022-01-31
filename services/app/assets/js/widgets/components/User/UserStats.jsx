@@ -18,7 +18,7 @@ const UserStats = ({ data }) => {
               className="img-fluid"
               style={{ maxHeight: '40px', width: '40px' }}
               src={user.avatarUrl}
-              alt={user.name}
+              alt="User avatar"
             />
             <div className="d-flex flex-column ml-2">
               <div className="d-flex align-items-center">

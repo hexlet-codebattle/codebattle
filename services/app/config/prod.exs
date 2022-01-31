@@ -21,10 +21,7 @@ config :codebattle,
     "vtm",
     "ReDBrother",
     "solar05",
-    "krivtsov",
     "mokevnin",
     "Melodyn",
-    "NatMusina",
-    "enmalafeev",
-    "fey"
+    "NatMusina"
   ]
