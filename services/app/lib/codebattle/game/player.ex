@@ -14,6 +14,9 @@ defmodule Codebattle.Game.Player do
   @derive {Jason.Encoder,
            only: [
              :id,
+             :github_id,
+             :discord_id,
+             :discord_avatar,
              :name,
              :is_bot,
              :lang,
@@ -45,12 +48,18 @@ defmodule Codebattle.Game.Player do
     field(:rating_diff, :integer, default: 0)
     field(:rank, :integer, default: -1)
     field(:achievements, {:array, :string}, default: [])
+    field(:github_id, :integer)
+    field(:discord_id, :integer)
+    field(:discord_avatar, :string)
   end
 
   def changeset(%Player{} = player, attrs) do
     player
     |> cast(attrs, [
       :id,
+      :github_id,
+      :discord_id,
+      :discord_avatar,
       :name,
       :is_bot,
       :lang,
@@ -82,12 +91,15 @@ defmodule Codebattle.Game.Player do
             rank: user.rank,
             name: user.name,
             achievements: user.achievements,
+            github_id: user.github_id,
+            discord_id: user.discord_id,
+            discord_avatar: user.discord_avatar,
             rating: user_game.rating,
             rating_diff: user_game.rating_diff,
             editor_lang: user_game.lang,
             lang: user_game.lang,
             creator: user_game.creator,
-            result: user_game.result
+            result: user_game.result,
           }
       end
 
@@ -149,7 +161,10 @@ defmodule Codebattle.Game.Player do
             rank: user.rank,
             editor_lang: user.lang || "js",
             lang: user.lang || "js",
-            achievements: user.achievements
+            achievements: user.achievements,
+            github_id: user.github_id,
+            discord_id: user.discord_id,
+            discord_avatar: user.discord_avatar,
           }
       end
 

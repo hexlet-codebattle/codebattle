@@ -154,8 +154,20 @@ defmodule CodebattleWeb.GameController do
   end
 
   defp present_users_for_gon(users) do
-    Enum.map(users, fn u ->
-      Map.take(u, [:github_id, :id, :is_bot, :rating, :rank, :lang, :name, :guest, :achievements])
+    Enum.map(users, fn user ->
+      user
+      |> Map.take([
+        :id,
+        :is_bot,
+        :rating,
+        :rank,
+        :lang,
+        :name,
+        :guest,
+        :achievements,
+        :avatar_url
+      ])
+      |> Map.put(:avatar_url, Codebattle.User.avatar_url(user))
     end)
   end
 end
