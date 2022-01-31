@@ -118,8 +118,8 @@ defmodule Codebattle.Game.Context do
   end
 
   @spec rematch_send_offer(raw_game_id, User.t()) ::
-          {:ok, {:rematch_status_updated, Game.t()}}
-          | {:ok, {:rematch_accepted, Game.t()}}
+          {:rematch_status_updated, Game.t()}
+          | {:rematch_accepted, Game.t()}
           | {:error, atom}
   def rematch_send_offer(game_id, user) do
     with game <- get_game(game_id),
@@ -130,11 +130,11 @@ defmodule Codebattle.Game.Context do
     end
   end
 
-  @spec rematch_reject(game_id) :: {:ok, Game.t()} | {:error, atom}
+  @spec rematch_reject(game_id) :: {:rematch_status_updated, map()} | {:error, atom}
   def rematch_reject(game_id) do
     case Server.call_transition(game_id, :rematch_reject, %{}) do
       {:ok, {_old_game, new_game}} ->
-        {:rematch_update_status,
+        {:rematch_status_updated,
          %{
            rematch_initiator_id: new_game.rematch_initiator_id,
            rematch_state: new_game.rematch_state

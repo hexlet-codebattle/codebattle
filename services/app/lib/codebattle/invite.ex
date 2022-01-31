@@ -78,6 +78,10 @@ defmodule Codebattle.Invite do
     %Invite{}
     |> Invite.changeset(attrs)
     |> Repo.insert()
+    |> case do
+      {:ok, invite} -> {:ok, Repo.preload(invite, [:creator, :recipient])}
+      error -> error
+    end
   end
 
   def update_invite(%Invite{} = invite, attrs) do

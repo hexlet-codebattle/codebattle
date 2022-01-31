@@ -173,7 +173,7 @@ defmodule Codebattle.Game.Engine do
     {:ok, new_game} = create_rematch_game(game)
     GlobalSupervisor.terminate_game(game.id)
 
-    {:rematch_, %{game_id: new_game.id}}
+    {:rematch_accepted, new_game}
   end
 
   def rematch_send_offer(game, user) do
@@ -185,10 +185,10 @@ defmodule Codebattle.Game.Engine do
         {:ok, new_game} = create_rematch_game(game)
         GlobalSupervisor.terminate_game(game.id)
 
-        {:rematch_, %{game_id: new_game.id}}
+        {:rematch_accepted, new_game}
 
       _ ->
-        {:rematch_update_status, game}
+        {:rematch_status_updated, game}
     end
   end
 

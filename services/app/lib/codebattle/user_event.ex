@@ -10,7 +10,7 @@ defmodule Codebattle.UserEvent do
     game controller events -> [
       "create_game", "show_waiting_game_page",
       "show_playing_game_page", "show_waiting_game_page",
-      "show_result_page", "show_archived_game_page",
+      "show_game_result_page", "show_archived_game_page",
       "join_created_game", "failure_join_game",
       "cancel_created_game"
     ]
@@ -38,7 +38,7 @@ defmodule Codebattle.UserEvent do
   use Ecto.Schema
   import Ecto.Changeset
 
-  @derive {Jason.Encoder, only: [:id, :event, :user_id, :data, :timestamp]}
+  @derive {Jason.Encoder, only: [:id, :event, :user_id, :data, :date]}
 
   schema "user_events" do
     field(:event, :string)
@@ -54,8 +54,8 @@ defmodule Codebattle.UserEvent do
       :event,
       :user_id,
       :data,
-      :timestamp
+      :date
     ])
-    |> validate_required([:event, :user_id, :timestamp])
+    |> validate_required([:event, :user_id, :date])
   end
 end
