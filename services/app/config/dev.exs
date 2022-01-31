@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 root_dir = File.cwd!()
 

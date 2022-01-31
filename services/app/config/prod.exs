@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 config :codebattle, CodebattleWeb.Endpoint,
   http: [port: System.get_env("CODEBATTLE_PORT", "4000")],
