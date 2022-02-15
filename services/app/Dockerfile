@@ -1,4 +1,4 @@
-FROM elixir:1.12.3 AS compile-image
+FROM elixir:1.13.2 AS compile-image
 ENV MIX_ENV=prod
 
 WORKDIR /opt/app
@@ -27,7 +27,9 @@ RUN yarn build && mix phx.digest
 RUN mix release \
   && mv _build/prod/rel/codebattle /opt/release
 
-FROM debian:buster AS runtime-image
+FROM ubuntu:latest AS runtime-image
+
+ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install --no-install-recommends -y ca-certificates wkhtmltopdf git make curl \
   && rm -rf /var/lib/apt/lists/*
