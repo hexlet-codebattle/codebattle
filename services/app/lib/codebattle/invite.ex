@@ -47,6 +47,7 @@ defmodule Codebattle.Invite do
 
   def list_invites do
     Repo.all(Invite)
+    |> Repo.preload([:creator, :recipient])
   end
 
   def list_active_invites(user_id) do
@@ -65,7 +66,7 @@ defmodule Codebattle.Invite do
         where: i.state == "pending"
       )
 
-    Repo.all(query)
+    Repo.all(query) |> Repo.preload([:creator, :recipient])
   end
 
   def expire_invite(invite) do

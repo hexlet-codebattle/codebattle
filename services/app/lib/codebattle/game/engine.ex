@@ -93,6 +93,7 @@ defmodule Codebattle.Game.Engine do
 
     Server.update_playbook(game.id, :check_complete, %{
       id: user.id,
+      check_result: check_result,
       editor_text: editor_text,
       editor_lang: editor_lang
     })

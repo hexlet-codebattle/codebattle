@@ -11,8 +11,6 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
     user1 = insert(:user, %{name: "first", email: "test1@test.test", github_id: 1, rating: 1000})
     user2 = insert(:user, %{name: "second", email: "test2@test.test", github_id: 2, rating: 1000})
 
-    # user3 = insert(:user, %{name: "other", email: "test3@test.test", github_id: 3, rating: 1000})
-
     conn2 = put_session(conn, :user_id, user2.id)
 
     socket1 = socket(UserSocket, "user_id", %{user_id: user1.id, current_user: user1})
@@ -32,8 +30,8 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
   test "stores player playbook if he is winner", %{
     conn2: conn2,
     user1: user1,
-    user2: _user2,
-    task: _task,
+    user2: user2,
+    task: task,
     socket1: socket1,
     socket2: socket2
   } do
@@ -110,7 +108,128 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
 
     # TODO: think why not 10
     playbook = Repo.get_by(Playbook, winner_id: user1.id)
-    assert Enum.count(playbook.data.records) == 9
+    task_id = task.id
+    user1_id = user1.id
+    user2_id = user2.id
+
+    assert %Codebattle.Bot.Playbook{
+             data: %Codebattle.Bot.Playbook.Data{
+               count: 10,
+               players: [
+                 %{
+                   "check_result" => %{"output" => "", "result" => ""},
+                   "editor_lang" => "js",
+                   "editor_text" =>
+                     "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n\treturn 0;\n};\n\nmodule.exports = solution;",
+                   "id" => ^user2_id,
+                   "name" => "second",
+                   "record_id" => 1,
+                   "total_time_ms" => 0,
+                   "type" => "player_state"
+                 },
+                 %{
+                   "check_result" => %{"output" => "", "result" => ""},
+                   "editor_lang" => "elixir",
+                   "editor_text" => "testf",
+                   "id" => ^user1_id,
+                   "name" => "first",
+                   "record_id" => 0,
+                   "type" => "player_state"
+                 }
+               ],
+               records: [
+                 %{
+                   "check_result" => %{"output" => "", "result" => ""},
+                   "editor_lang" => "js",
+                   "editor_text" =>
+                     "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n\treturn 0;\n};\n\nmodule.exports = solution;",
+                   "id" => ^user1_id,
+                   "name" => "first",
+                   "record_id" => 0,
+                   "type" => "init"
+                 },
+                 %{
+                   "check_result" => %{"output" => "", "result" => ""},
+                   "editor_lang" => "js",
+                   "editor_text" =>
+                     "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n\treturn 0;\n};\n\nmodule.exports = solution;",
+                   "id" => ^user2_id,
+                   "name" => "second",
+                   "record_id" => 1,
+                   "type" => "init"
+                 },
+                 %{
+                   "diff" => %{
+                     "delta" => [%{"delete" => 4}, %{"retain" => 1}, %{"delete" => 124}]
+                   },
+                   "id" => ^user1_id,
+                   "record_id" => 2,
+                   "type" => "update_editor_data"
+                 },
+                 %{
+                   "diff" => %{
+                     "delta" => [%{"retain" => 1}, %{"insert" => "e"}]
+                   },
+                   "id" => ^user1_id,
+                   "record_id" => 3,
+                   "type" => "update_editor_data"
+                 },
+                 %{
+                   "diff" => %{"delta" => [], "next_lang" => "elixir"},
+                   "id" => ^user1_id,
+                   "record_id" => 4,
+                   "type" => "update_editor_data"
+                 },
+                 %{
+                   "diff" => %{
+                     "delta" => [%{"retain" => 2}, %{"insert" => "s"}]
+                   },
+                   "id" => ^user1_id,
+                   "record_id" => 5,
+                   "type" => "update_editor_data"
+                 },
+                 %{
+                   "diff" => %{
+                     "delta" => [%{"retain" => 3}, %{"insert" => "tf"}]
+                   },
+                   "id" => ^user1_id,
+                   "record_id" => 6,
+                   "type" => "update_editor_data"
+                 },
+                 %{
+                   "editor_lang" => "elixir",
+                   "editor_text" => "testf",
+                   "id" => ^user1_id,
+                   "record_id" => 7,
+                   "type" => "start_check"
+                 },
+                 %{
+                   "check_result" => %{
+                     "asserts" => [],
+                     "asserts_count" => 0,
+                     "output" => "asdf",
+                     "result" => "asdf",
+                     "status" => "ok",
+                     "success_count" => 0
+                   },
+                   "editor_lang" => "elixir",
+                   "editor_text" => "testf",
+                   "record_id" => 8,
+                   "type" => "check_complete"
+                 },
+                 %{
+                   "lang" => "elixir",
+                   "record_id" => 9,
+                   "type" => "game_over"
+                 }
+               ]
+             },
+             game_id: ^game_id,
+             solution_type: "complete",
+             task_id: ^task_id,
+             winner_id: ^user1_id,
+             winner_lang: "elixir"
+           } = playbook
 
     user_playbook =
       Enum.filter(playbook.data.records, fn x ->

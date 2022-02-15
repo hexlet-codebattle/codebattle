@@ -58,7 +58,7 @@ defmodule CodebattleWeb.ChatChannelTest do
 
     push(socket1, "chat:new_msg", %{text: message})
 
-    assert_receive %Phoenix.Socket.Broadcast{
+    assert_receive %Phoenix.Socket.Message{
       topic: ^chat_topic,
       event: "chat:new_msg",
       payload: response
