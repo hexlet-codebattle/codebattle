@@ -6,6 +6,10 @@ defmodule Codebattle.Oauth.User do
   alias Ueberauth.Auth
   alias Codebattle.{Repo, User}
 
+  def find_by_token(token) do
+    Codebattle.Oauth.User.TokenUser.find(token)
+  end
+
   def update(user, %Auth{provider: :discord} = auth) do
     Codebattle.Oauth.User.DiscordUser.update(user, auth)
   end
