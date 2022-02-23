@@ -371,11 +371,11 @@ defmodule Codebattle.Languages do
       "python" => %{
         name: "python",
         slug: "python",
-        version: "3.8.2",
+        version: "3.11.0",
         base_image: :ubuntu,
         check_dir: "check",
         extension: "py",
-        docker_image: "codebattle/python:3.8.2",
+        docker_image: "codebattle/python:3.11.0",
         solution_version: :typed,
         solution_template:
           "from typing import List, Dict\n\ndef solution(<%= arguments %>)<%= expected %>:",
