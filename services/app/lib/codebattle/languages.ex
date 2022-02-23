@@ -305,11 +305,11 @@ defmodule Codebattle.Languages do
       "golang" => %{
         name: "golang",
         slug: "golang",
-        version: "1.12.6",
+        version: "1.17.0",
         base_image: :ubuntu,
         check_dir: "check",
         extension: "go",
-        docker_image: "codebattle/golang:1.12.6",
+        docker_image: "codebattle/golang:1.17.0",
         solution_version: :typed,
         solution_template:
           "package main;\n\nfunc solution(<%= arguments %>)<%= expected %> {\n\n}",
