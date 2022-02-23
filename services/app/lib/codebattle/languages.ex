@@ -404,11 +404,11 @@ defmodule Codebattle.Languages do
       "php" => %{
         name: "php",
         slug: "php",
-        version: "8.0.0",
+        version: "8.1.1",
         base_image: :ubuntu,
         check_dir: "check",
         extension: "php",
-        docker_image: "codebattle/php:8.0.0",
+        docker_image: "codebattle/php:8.1.1",
         solution_version: :typed,
         solution_template:
           "<?php\n\nfunction solution(<%= arguments %>)\n{<%= return_statement %>\n}",
