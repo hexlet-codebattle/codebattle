@@ -72,11 +72,11 @@ defmodule Codebattle.Languages do
         checker_version: 2,
         name: "Node.js",
         slug: "js",
-        version: "15.5.1",
+        version: "17.5",
         base_image: :ubuntu,
         check_dir: "check",
         extension: "js",
-        docker_image: "codebattle/js:15.5.1",
+        docker_image: "codebattle/js:17.5",
         solution_version: :default,
         solution_template:
           "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (<%= arguments %>) => {\n<%= return_statement %>\n};\n\nmodule.exports = solution;",

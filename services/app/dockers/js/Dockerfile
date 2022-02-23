@@ -1,4 +1,4 @@
-FROM node:15.5.1
+FROM node:17.5
 
 RUN apt-get update && apt-get install -y make --no-install-recommends && apt-get clean && rm -rf /var/lib/apt/lists/*
 
