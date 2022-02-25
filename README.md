@@ -5,7 +5,7 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/a99a88d28ad37a79dbf6/maintainability)](https://codeclimate.com/github/hexlet-codebattle/codebattle/maintainability)
 [![codebeat badge](https://codebeat.co/badges/7557979e-74a7-45a6-b9ab-dcd44bab7e5b)](https://codebeat.co/projects/github-com-hexlet-codebattle-codebattle-master)
 
-Сodebattle - is an open source game being developed by the Hexlet community.
+Codebattle - is an open source game being developed by the Hexlet community.
 The current version of the application is available at [codebattle.hexlet.io](https://codebattle.hexlet.io).
 We also have [chrome extension](https://chrome.google.com/webstore/detail/codebattle-web-extension/embfhnfkfobkdohleknckodkmhgmpdli). Which allow subscribe on last game updates.
 ### Requirements
