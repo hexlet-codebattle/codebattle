@@ -1,13 +1,12 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
-import { camelizeKeys } from 'humps';
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
+import { camelizeKeys } from "humps";
 
 export const fetchCompletedGames = createAsyncThunk(
   'completedGames/fetchCompletedGames',
   async () => {
     const userId = window.location.pathname.split('/').pop();
-
-    const response = await axios.get(`/api/v1/user/${userId}/completed_games?page_size=7`);
+    const response = await axios.get(`/api/v1/user/${userId}/completed_games?page_size=20`);
 
     return camelizeKeys(response.data);
   },
@@ -18,7 +17,7 @@ export const loadNextPage = createAsyncThunk(
   async page => {
     const userId = window.location.pathname.split('/').pop();
 
-    const response = await axios.get(`/api/v1/user/${userId}/completed_games?page_size=7&page=${page}`);
+    const response = await axios.get(`/api/v1/user/${userId}/completed_games?page_size=20&page=${page}`);
 
     return camelizeKeys(response.data);
   },
