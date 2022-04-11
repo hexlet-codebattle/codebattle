@@ -1,6 +1,6 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
-import { camelizeKeys } from "humps";
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import axios from 'axios';
+import { camelizeKeys } from 'humps';
 
 export const fetchCompletedGames = createAsyncThunk(
   'completedGames/fetchCompletedGames',
