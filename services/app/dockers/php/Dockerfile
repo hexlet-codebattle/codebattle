@@ -1,4 +1,4 @@
-FROM php:8.0-cli
+FROM php:8.1.1-cli
 
 RUN apt-get update && apt-get install -y build-essential --no-install-recommends && apt-get clean && rm -rf /var/lib/apt/lists/*
 

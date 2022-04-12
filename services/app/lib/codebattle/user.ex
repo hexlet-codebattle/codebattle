@@ -71,6 +71,7 @@ defmodule Codebattle.User do
     field(:discord_id, :integer)
     field(:discord_avatar, :string)
     field(:firebase_uid, :string)
+    field(:auth_token, :string)
     # level range: 0..10, types: ["standard", "silent"]
 
     field(:games_played, :integer, virtual: true)
@@ -104,7 +105,8 @@ defmodule Codebattle.User do
       :achievements,
       :discord_name,
       :discord_id,
-      :discord_avatar
+      :discord_avatar,
+      :auth_token
     ])
     |> validate_required([:name, :email])
   end

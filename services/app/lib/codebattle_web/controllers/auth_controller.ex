@@ -5,6 +5,21 @@ defmodule CodebattleWeb.AuthController do
   require Logger
   alias Codebattle.UsersActivityServer
 
+  def token(conn, params) do
+    case Codebattle.Oauth.User.find_by_token(params["t"]) do
+      {:ok, user} ->
+        conn
+        |> put_flash(:info, gettext("Successfully authenticated"))
+        |> put_session(:user_id, user.id)
+        |> redirect(to: "/")
+
+      {:error, reason} ->
+        conn
+        |> put_flash(:danger, reason)
+        |> redirect(to: "/")
+    end
+  end
+
   def request(conn, params) do
     provider_name = params["provider"]
 
@@ -63,7 +78,7 @@ defmodule CodebattleWeb.AuthController do
     case Codebattle.Oauth.User.find_or_create(auth) do
       {:ok, user} ->
         conn
-        |> put_flash(:info, gettext("Successfully authenticated."))
+        |> put_flash(:info, gettext("Successfully authenticated"))
         |> put_session(:user_id, user.id)
         |> redirect(to: next_path)
 

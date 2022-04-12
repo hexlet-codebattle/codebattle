@@ -1,4 +1,4 @@
-FROM golang:1.12.6-alpine
+FROM golang:1.17-alpine
 
 RUN apk add --update make
 
