@@ -1,5 +1,6 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE NegativeLiterals #-}
 module Check.Checker where
 
 import qualified Data.Aeson as A
