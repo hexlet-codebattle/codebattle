@@ -7,13 +7,13 @@ defmodule Codebattle.Chat.Server do
   @timeout :timer.minutes(1)
 
   # API
-  def start_link(type) do
-    GenServer.start_link(__MODULE__, [], name: chat_key(type))
+  def start_link(chat_type) do
+    GenServer.start_link(__MODULE__, [], name: chat_key(chat_type))
   end
 
-  def join_chat(type, user) do
+  def join_chat(chat_type, user) do
     try do
-      GenServer.call(chat_key(type), {:join, user})
+      GenServer.call(chat_key(chat_type), {:join, user})
     catch
       :exit, _reason ->
         # TODO: add error handler
@@ -21,30 +21,30 @@ defmodule Codebattle.Chat.Server do
     end
   end
 
-  def leave_chat(type, user) do
+  def leave_chat(chat_type, user) do
     try do
-      GenServer.call(chat_key(type), {:leave, user})
+      GenServer.call(chat_key(chat_type), {:leave, user})
     catch
       :exit, _reason ->
         {:ok, []}
     end
   end
 
-  def get_users(type) do
+  def get_users(chat_type) do
     try do
-      GenServer.call(chat_key(type), :get_users)
+      GenServer.call(chat_key(chat_type), :get_users)
     catch
       :exit, _reason ->
         []
     end
   end
 
-  def add_message(type, message) do
-    GenServer.cast(chat_key(type), {:add_message, message})
+  def add_message(chat_type, message) do
+    GenServer.call(chat_key(chat_type), {:add_message, message})
 
     Codebattle.PubSub.broadcast("chat:new_msg", %{
       # types: :lobby | {:tournament, 1} | {:game, 1}
-      type: type,
+      type: chat_type,
       name: message.name,
       text: message.text,
       time: message.time
@@ -53,9 +53,9 @@ defmodule Codebattle.Chat.Server do
     :ok
   end
 
-  def get_messages(type) do
+  def get_messages(chat_type) do
     try do
-      GenServer.call(chat_key(type), :get_messages)
+      GenServer.call(chat_key(chat_type), :get_messages)
     catch
       :exit, _reason ->
         # TODO: add dead message
@@ -63,23 +63,29 @@ defmodule Codebattle.Chat.Server do
     end
   end
 
-  def command(chat_type, user, %{type: command_type} = payload) do
-    case {command_type, payload} do
-      {"ban", %{name: banned_name}} ->
-        ban_message = %{
-          type: "info",
-          name: "CB",
-          time: payload.time,
-          text: "#{banned_name} has been banned by #{user.name}"
-        }
+  def command(chat_type, user, %{type: "ban"} = payload) do
+    ban_message = %{
+      type: "info",
+      name: "CB",
+      time: payload.time,
+      text: "#{payload.name} has been banned by #{user.name}"
+    }
 
-        GenServer.call(chat_key(chat_type), {:ban, %{name: banned_name, message: ban_message}})
-        # broadcast_message(chat_type, "chat:ban", %{name: banned_name})
-        # broadcast_message(chat_type, "chat:new_msg", ban_message)
+    GenServer.call(chat_key(chat_type), {:ban, %{name: banned_name, message: ban_message}})
 
-      _ ->
-        :ok
-    end
+    Codebattle.PubSub.broadcast("chat:command:ban", %{
+      type: chat_type,
+      name: message.name,
+      text: message.text,
+      time: message.time
+    })
+
+    Codebattle.PubSub.broadcast("chat:new_msg", %{
+      type: chat_type,
+      name: ban_message.name,
+      text: ban_message.text,
+      time: ban_message.time
+    })
   end
 
   # SERVER
@@ -118,12 +124,12 @@ defmodule Codebattle.Chat.Server do
   def handle_call({:ban, %{name: name, message: message}}, _from, %{messages: messages} = state) do
     new_messages = Enum.filter(messages, fn message -> message.name != name end)
 
-    {:reply, :ok, %{state | messages: [message | new_messages]}}
+    {:reply, :ok, %{state | messages: new_messages}}
   end
 
-  def handle_cast({:add_message, message}, state) do
+  def handle_call({:add_message, message}, _from, state) do
     %{messages: messages} = state
-    {:noreply, %{state | messages: [message | messages]}}
+    {:noreply, :ok, %{state | messages: [message | messages]}}
   end
 
   def handle_info(:clean_messages, %{messages: messages} = state) do

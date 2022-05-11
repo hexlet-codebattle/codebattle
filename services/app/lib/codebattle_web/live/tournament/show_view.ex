@@ -68,6 +68,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
 
   def handle_info(%{topic: topic, event: "chat:ban", payload: _payload}, socket) do
     tournament = socket.assigns.tournament
+    IO.inspect(111_111_111_111_111_111)
     {:noreply, assign(socket, messages: get_chat_messages(tournament.id))}
   end
 
@@ -180,6 +181,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
   def handle_event("chat_ban", params, socket) do
     tournament = socket.assigns.tournament
     current_user = socket.assigns.current_user
+    IO.inspect(111_111_111)
 
     if Tournament.Helpers.can_moderate?(tournament, current_user) do
       Chat.Server.command(
@@ -187,6 +189,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
         current_user,
         %{type: "ban", name: params["name"], time: :os.system_time(:seconds)}
       )
+    IO.inspect(22222)
 
       {:noreply, socket}
     else
