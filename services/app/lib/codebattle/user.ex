@@ -70,7 +70,7 @@ defmodule Codebattle.User do
     field(:guest, :boolean, virtual: true, default: false)
     field(:games_played, :integer, virtual: true)
     field(:performance, :integer, virtual: true)
-    field(:achievements, {:array, :string}, default: [], null: false)
+    field(:achievements, {:array, :string}, default: [])
     field(:discord_name, :string)
     field(:discord_id, :integer)
     field(:discord_avatar, :string)
