@@ -1,4 +1,4 @@
-data "digitalocean_kubernetes_cluster" "codebattle_cluster_data_2" {
+data "digitalocean_kubernetes_cluster" "codebattle_cluster_data" {
   name = var.cluster_name
 
   depends_on = [

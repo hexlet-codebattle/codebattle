@@ -1,15 +1,19 @@
-apiVersion: cert-manager.io/v1alpha2
+apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
-  name: letsencrypt-issuer
+  name: letsencrypt-staging
 spec:
   acme:
-    server: https://acme-v02.api.letsencrypt.org/directory
+    # You must replace this email address with your own.
+    # Let's Encrypt will use this to contact you about expiring
+    # certificates, and issues related to your account.
     email: codebattle@hexlet.io
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
     privateKeySecretRef:
+      # Secret resource that will be used to store the account's private key.
       name: certificate-frontend
+    # Add a single challenge solver, HTTP01 using nginx
     solvers:
-      - http01:
-          ingress:
-            class:  nginx
-
+    - http01:
+        ingress:
+          class: nginx

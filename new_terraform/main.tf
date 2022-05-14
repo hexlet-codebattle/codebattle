@@ -66,36 +66,36 @@ resource "digitalocean_database_cluster" "postgres_db_cluster" {
   # }
 }
 
- resource "digitalocean_database_firewall" "postgres_db_firewall" {
-   cluster_id = digitalocean_database_cluster.postgres_db_cluster.id
+#  resource "digitalocean_database_firewall" "postgres_db_firewall" {
+#    cluster_id = digitalocean_database_cluster.postgres_db_cluster.id
 
-   rule {
-     type  = "k8s"
-     value = digitalocean_kubernetes_cluster.codebattle_cluster.id
-   }
- }
+#    rule {
+#      type  = "k8s"
+#      value = digitalocean_kubernetes_cluster.codebattle_cluster.id
+#    }
+#  }
 
 resource "digitalocean_database_db" "postgres_db" {
   cluster_id = digitalocean_database_cluster.postgres_db_cluster.id
-  name       = var.postgres_db_name
+  name       = var.codebattle_db_name
 }
 
-resource "digitalocean_database_user" "postgres_db_user" {
-  cluster_id = digitalocean_database_cluster.postgres_db_cluster.id
-  name       = var.postgres_db_user
-}
+# resource "digitalocean_database_user" "postgres_db_user" {
+#   cluster_id = digitalocean_database_cluster.postgres_db_cluster.id
+#   name       = var.codebattle_db_username
+# }
 
 # --------------------------------------
 # PROJECT
 # --------------------------------------
 
-resource "digitalocean_project" "codebattle_project" {
-  name        = "Codebattle"
-  description = "A project to represent Codebattle resources."
-  purpose     = "Web Application"
-  environment = "Production"
-  resources   = [
-    digitalocean_kubernetes_cluster.codebattle_cluster.urn,
-    digitalocean_database_cluster.postgres_db_cluster.urn,
-  ]
-}
+# resource "digitalocean_project" "codebattle_project" {
+#   name        = "Codebattle"
+#   description = "A project to represent Codebattle resources."
+#   purpose     = "Web Application"
+#   environment = "Production"
+#   resources   = [
+#     digitalocean_kubernetes_cluster.codebattle_cluster.urn,
+#     digitalocean_database_cluster.postgres_db_cluster.urn,
+#   ]
+# }

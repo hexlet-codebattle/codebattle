@@ -52,6 +52,7 @@ secrets.auto.tfvars
 google.key.json
 .iml
 
-kubeconfig.yml
+kube/config.yml
 
 stats.json
+*.hcl

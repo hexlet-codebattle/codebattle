@@ -1,4 +1,4 @@
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: nginx-ingress
@@ -12,9 +12,26 @@ spec:
     - codebattle.hexlet.io
     secretName: certificate-frontend
   rules:
-  - host: codebattle.hexlet.io
+  - host: "codebattle.hexlet.io"
     http:
       paths:
-      - backend:
-          serviceName: "{{ .Release.Name }}-frontend"
-          servicePort: 8080
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: "{{ .Release.Name }}-frontend"
+            port:
+              number: 8080
+# spec:
+  # tls:
+  # - hosts:
+  #   - codebattle.hexlet.io
+  #   secretName: certificate-frontend
+  # rules:
+  # - host: codebattle.hexlet.io
+  #   http:
+  #     paths:
+  #     - backend:
+  #         service:
+  #           name: "{{ .Release.Name }}-frontend"
+  #           port: 8080

@@ -19,12 +19,12 @@ resources: {}
 nodeSelector: {}
 tolerations: []
 affinity: {}
-keel:
-  policy: all
-  trigger: poll
-  pollSchedule: "@every 1m"
-  images:
-    - repository: nginx.image.repository
-      tag: nginx.image.tag
-    - repository: app.image.repository
-      tag: app.image.tag
+# keel:
+#   policy: all
+#   trigger: poll
+#   pollSchedule: "@every 1m"
+#   images:
+#     - repository: nginx.image.repository
+#       tag: nginx.image.tag
+#     - repository: app.image.repository
+#       tag: app.image.tag
