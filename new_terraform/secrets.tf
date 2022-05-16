@@ -11,11 +11,11 @@ resource "kubernetes_secret" "codebattle_secrets" {
     CODEBATTLE_PORT            = "${var.codebattle_port}"
     CODEBATTLE_SECRET_KEY_BASE = "${var.codebattle_secret_key_base}"
     CODEBATTLE_LIVE_VIEW_SALT  = "${var.codebattle_live_view_salt}"
-    CODEBATTLE_DB_HOSTNAME     = "codebattle-postgres-db-cluster-do-user-10745212-0.b.db.ondigitalocean.com"
-    CODEBATTLE_DB_USERNAME     = "doadmin"
-    CODEBATTLE_DB_PASSWORD     = "pumInbwWyl7fEtoX"
-    CODEBATTLE_DB_NAME         = "codebattle"
-    CODEBATTLE_DB_PORT         = "25060"
+    CODEBATTLE_DB_HOSTNAME     = data.digitalocean_database_cluster.postgres_db_data.host
+    CODEBATTLE_DB_USERNAME     = var.codebattle_db_username
+    CODEBATTLE_DB_NAME         = var.codebattle_db_name
+    CODEBATTLE_DB_PASSWORD     = data.digitalocean_database_cluster.postgres_db_data.password
+    CODEBATTLE_DB_PORT         = data.digitalocean_database_cluster.postgres_db_data.port
     GITHUB_CLIENT_SECRET       = "${var.github_client_secret}"
     GITHUB_CLIENT_ID           = "${var.github_client_id}"
     DISCORD_CLIENT_SECRET      = "${var.discord_client_secret}"
