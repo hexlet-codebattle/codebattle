@@ -30,7 +30,17 @@ helm-history:
 	helm history app
 
 helm-install-cert-manager:
-	helm install cert-manager jetstack/cert-manager --namespace cert-manager --version v1.7.1 --set installCRDs=true
+	helm repo add jetstack https://charts.jetstack.io
+	helm repo update
+	# helm install --kubeconfig=../.kube/config cert-manager jetstack/cert-manager --namespace cert-manager --version v1.7.1 --set installCRDs=true
+	helm install \
+		cert-manager jetstack/cert-manager \
+		--kubeconfig=../.kube/config \
+		--namespace cert-manager \
+		--create-namespace \
+		--version v1.8.0 \
+		--set installCRDs=true
+
 
 helm-install-ingress:
 	helm install nginx-ingress ingress-nginx/ingress-nginx
