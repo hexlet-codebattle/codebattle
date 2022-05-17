@@ -21,6 +21,7 @@ config :codebattle, Codebattle.Repo,
   password: System.get_env("CODEBATTLE_DB_PASSWORD", "postgres"),
   database: "codebattle_test",
   hostname: System.get_env("CODEBATTLE_DB_HOSTNAME", "localhost"),
+  port: System.get_env("CODEBATTLE_DB_PORT", "5432"),
   pool: Ecto.Adapters.SQL.Sandbox,
   ownership_timeout: 99_999_999
 
@@ -28,6 +29,10 @@ config :codebattle, Codebattle.Bot,
   timeout: 60_000,
   timeout_start_playbook: 0,
   min_bot_player_speed: 0
+
+config :codebattle, Codebattle.GameProcess,
+  default_timeout: 3600,
+  timeout_seconds_whitelist: [1, 60, 120, 300, 600, 900, 1200, 1800, 3600, 7200]
 
 adapter =
   case System.get_env("CODEBATTLE_RUN_CODE_CHECK") do

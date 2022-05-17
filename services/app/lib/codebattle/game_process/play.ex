@@ -196,7 +196,17 @@ defmodule Codebattle.GameProcess.Play do
         {:terminate_after, 20}
 
       {_, nil} ->
-        terminate_game(id)
+        Server.call_transition(id, :timeout, %{})
+        ActiveGames.terminate_game(id)
+        Notifications.game_timeout(id)
+        Notifications.remove_active_game(id)
+
+        id
+        |> get_game
+        |> Game.changeset(%{state: "timeout"})
+        |> Repo.update!()
+
+        {:terminate_after, 15}
 
       {_, _tournament_id} ->
         # TODO: terminate now after auto redirect to next tournament game
@@ -213,6 +223,12 @@ defmodule Codebattle.GameProcess.Play do
     case FsmHelpers.get_state(fsm) do
       :game_over ->
         GlobalSupervisor.terminate_game(id)
+
+      :timeout ->
+        FsmHelpers.get_module(fsm).store_playbook(fsm)
+        GlobalSupervisor.terminate_game(id)
+        store_terminate_event(fsm)
+        :ok
 
       _ ->
         Server.call_transition(id, :timeout, %{})

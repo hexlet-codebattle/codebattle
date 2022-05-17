@@ -185,6 +185,15 @@ defmodule Codebattle.GameProcess.Fsm do
   end
 
   defstate timeout do
+    defevent rematch_send_offer(params), data: data do
+      new_data = handle_rematch_offer(data, params)
+      next_state(:timeout, Map.merge(data, new_data))
+    end
+
+    defevent rematch_reject(_params), data: data do
+      next_state(:timeout, %{data | rematch_state: :rejected})
+    end
+
     defevent _ do
       next_state(:timeout)
     end

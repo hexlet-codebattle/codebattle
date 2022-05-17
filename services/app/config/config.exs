@@ -101,6 +101,11 @@ config :codebattle, :firebase,
 
 config :codebattle, admins: ["vtm", "ReDBrother"]
 
+config :codebattle, Codebattle.GameProcess,
+  # 1 hour
+  default_timeout: 3600,
+  timeout_seconds_whitelist: [60, 120, 300, 600, 900, 1200, 1800, 3600, 7200]
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"

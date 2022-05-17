@@ -13,9 +13,10 @@ defmodule Codebattle.GameProcess.Engine.Standard do
 
   use Engine.Base
 
-  # 1 hour
-  @default_timeout 3600
-  @timeout_seconds_whitelist [60, 120, 300, 600, 900, 1200, 1800, 3600, 7200]
+  @default_timeout Application.compile_env(:codebattle, Codebattle.GameProcess)[:default_timeout]
+  @timeout_seconds_whitelist Application.compile_env(:codebattle, Codebattle.GameProcess)[
+                               :timeout_seconds_whitelist
+                             ]
 
   @impl Engine.Base
 
