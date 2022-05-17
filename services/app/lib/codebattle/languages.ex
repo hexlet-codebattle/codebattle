@@ -40,11 +40,11 @@ defmodule Codebattle.Languages do
         name: "ruby",
         slug: "ruby",
         checker_version: 2,
-        version: "3.0.2",
+        version: "3.1.1",
         base_image: :ubuntu,
         check_dir: "check",
         extension: "rb",
-        docker_image: "codebattle/ruby:3.0.2",
+        docker_image: "codebattle/ruby:3.1.1",
         solution_version: :default,
         solution_template: "def solution(<%= arguments %>)\n<%= return_statement %>\nend",
         arguments_template: %{
@@ -72,11 +72,11 @@ defmodule Codebattle.Languages do
         checker_version: 2,
         name: "Node.js",
         slug: "js",
-        version: "15.5.1",
+        version: "17.5",
         base_image: :ubuntu,
         check_dir: "check",
         extension: "js",
-        docker_image: "codebattle/js:15.5.1",
+        docker_image: "codebattle/js:17.5",
         solution_version: :default,
         solution_template:
           "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (<%= arguments %>) => {\n<%= return_statement %>\n};\n\nmodule.exports = solution;",
@@ -305,11 +305,11 @@ defmodule Codebattle.Languages do
       "golang" => %{
         name: "golang",
         slug: "golang",
-        version: "1.12.6",
+        version: "1.17.0",
         base_image: :ubuntu,
         check_dir: "check",
         extension: "go",
-        docker_image: "codebattle/golang:1.12.6",
+        docker_image: "codebattle/golang:1.17.0",
         solution_version: :typed,
         solution_template:
           "package main;\n\nfunc solution(<%= arguments %>)<%= expected %> {\n\n}",
@@ -338,11 +338,11 @@ defmodule Codebattle.Languages do
       "elixir" => %{
         name: "elixir",
         slug: "elixir",
-        version: "1.12.2",
+        version: "1.13",
         base_image: :ubuntu,
         check_dir: "check",
         extension: "exs",
-        docker_image: "codebattle/elixir:1.12.2",
+        docker_image: "codebattle/elixir:1.13",
         solution_version: :default,
         solution_template:
           "defmodule Solution do\n\tdef solution(<%= arguments %>) do\n<%= return_statement %>\n\tend\nend",
@@ -371,11 +371,11 @@ defmodule Codebattle.Languages do
       "python" => %{
         name: "python",
         slug: "python",
-        version: "3.8.2",
+        version: "3.11.0",
         base_image: :ubuntu,
         check_dir: "check",
         extension: "py",
-        docker_image: "codebattle/python:3.8.2",
+        docker_image: "codebattle/python:3.11.0",
         solution_version: :typed,
         solution_template:
           "from typing import List, Dict\n\ndef solution(<%= arguments %>)<%= expected %>:",
@@ -404,11 +404,11 @@ defmodule Codebattle.Languages do
       "php" => %{
         name: "php",
         slug: "php",
-        version: "8.0.0",
+        version: "8.1.1",
         base_image: :ubuntu,
         check_dir: "check",
         extension: "php",
-        docker_image: "codebattle/php:8.0.0",
+        docker_image: "codebattle/php:8.1.1",
         solution_version: :typed,
         solution_template:
           "<?php\n\nfunction solution(<%= arguments %>)\n{<%= return_statement %>\n}",
@@ -451,7 +451,7 @@ defmodule Codebattle.Languages do
         base_image: :ubuntu,
         check_dir: "check",
         extension: "clj",
-        docker_image: "codebattle/clojure:1.10.3",
+        docker_image: "codebattle/clojure:1.10.3.1075",
         solution_version: :default,
         solution_template: "(defn solution [<%= arguments %>] <%= return_statement %>)",
         arguments_template: %{

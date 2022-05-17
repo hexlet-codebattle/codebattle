@@ -70,11 +70,12 @@ defmodule Codebattle.User do
     field(:guest, :boolean, virtual: true, default: false)
     field(:games_played, :integer, virtual: true)
     field(:performance, :integer, virtual: true)
-    field(:achievements, {:array, :string}, default: [], null: false)
+    field(:achievements, {:array, :string}, default: [])
     field(:discord_name, :string)
     field(:discord_id, :integer)
     field(:discord_avatar, :string)
     field(:firebase_uid, :string)
+    field(:auth_token, :string)
     # level range: 0..10, types: ["standard", "silent"]
     embeds_one(:sound_settings, SoundSettings, on_replace: :update)
 
@@ -102,7 +103,8 @@ defmodule Codebattle.User do
       :achievements,
       :discord_name,
       :discord_id,
-      :discord_avatar
+      :discord_avatar,
+      :auth_token
     ])
     |> validate_required([:name, :email])
   end

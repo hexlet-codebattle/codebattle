@@ -11,7 +11,8 @@
     "profile:build": "webpack --config ./webpack/webpack.build.config.js --profile --json > stats.json",
     "profile:visualize": "npx webpack-bundle-analyzer stats.json",
     "build": "webpack --config ./webpack/webpack.build.config.js",
-    "lint": "eslint --ext js,jsx ./assets/js"
+    "lint": "eslint --ext js,jsx ./assets/js",
+    "lint-fix": "eslint --fix --ext js,jsx ./assets/js"
   },
   "jest": {
     "verbose": true,

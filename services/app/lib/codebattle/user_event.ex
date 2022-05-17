@@ -38,7 +38,7 @@ defmodule Codebattle.UserEvent do
   use Ecto.Schema
   import Ecto.Changeset
 
-  @derive {Jason.Encoder, only: [:id, :event, :user_id, :data, :timestamp]}
+  @derive {Jason.Encoder, only: [:id, :event, :user_id, :data]}
 
   schema "user_events" do
     field(:event, :string)

@@ -18,6 +18,7 @@ $fa-font-path: '/fonts';
 @import '~font-mfizz/dist/font-mfizz.css';
 @import 'tournaments';
 @import 'taskComponent';
+@import 'scrollTable';
 
 .xstate {
   height: 1000px;
@@ -27,9 +28,11 @@ $fa-font-path: '/fonts';
   from {
     opacity: 1;
   }
+
   50% {
     opacity: 0.6;
   }
+
   to {
     opacity: 1;
   }
@@ -39,9 +42,11 @@ $fa-font-path: '/fonts';
   from {
     opacity: 1;
   }
+
   50% {
     opacity: 0.6;
   }
+
   to {
     opacity: 1;
   }
@@ -136,24 +141,31 @@ a {
   .color-huge {
     fill: #1e6823;
   }
+
   .color-huge:hover {
     fill: #0e5813;
   }
+
   .color-large {
     fill: #44a340;
   }
+
   .color-large:hover {
     fill: #349330;
   }
+
   .color-small {
     fill: #d6e685;
   }
+
   .color-small:hover {
     fill: #c6d675;
   }
+
   .color-empty {
     fill: #eee;
   }
+
   .color-empty:hover {
     fill: #ccc;
   }
@@ -163,6 +175,7 @@ a {
   stroke: #555;
   stroke-width: 1px;
 }
+
 .react-calendar-heatmap {
   font-size: 8px;
 }
@@ -177,6 +190,7 @@ a {
   border-color: var(--gray);
   border-radius: 0.5rem;
 }
+
 .cb-timer-progress {
   position: absolute;
   top: 0;
@@ -194,6 +208,7 @@ a {
     .cb-slider-timeline {
       transform: translateY(-50%) scale(1, 1.095);
     }
+
     .cb-slider-handle {
       opacity: 1;
     }
@@ -262,6 +277,7 @@ a {
   background-size: cover;
   padding: 5px;
 }
+
 .cb-profile .cb-polyglot {
   width: 50px;
   height: 50px;
@@ -306,11 +322,13 @@ a {
 
 .cb-height-info {
   height: 300px;
+
   .nav-link.active {
     color: black;
     border-bottom: 1px;
     background-color: white;
   }
+
   .nav-link:hover {
     color: #b60314;
   }
@@ -406,18 +424,22 @@ a {
   opacity: 0;
   transform: translateX(-100%);
 }
+
 .preview-enter-active {
   opacity: 1;
   transform: translateX(0%);
 }
+
 .preview-exit {
   opacity: 1;
   transform: translateX(0%);
 }
+
 .preview-exit-active {
   opacity: 0;
   transform: translateX(100%);
 }
+
 .preview-enter-active,
 .preview-exit-active {
   transition: opacity 200ms, transform 200ms;
@@ -427,6 +449,7 @@ a {
   0% {
     transform: scale(0.5);
   }
+
   100% {
     transform: scale(1);
   }
@@ -439,6 +462,7 @@ a {
 
 .nav-tabs {
   border-bottom: 1px solid black;
+
   .nav-item.active,
   .nav-item:hover {
     border-top: 1px solid black;
@@ -448,7 +472,8 @@ a {
 }
 
 .popover {
-  max-width: 100%; /* Max Width of the popover (depending on the container!) */
+  max-width: 100%;
+  /* Max Width of the popover (depending on the container!) */
 }
 
 .cb-row-avatars {
@@ -473,6 +498,7 @@ a {
   margin-right: 3px;
 }
 
-p, td {
+p,
+td {
   font-family: 'Montserrat', sans-serif;
- }
+}
