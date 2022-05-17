@@ -41,7 +41,7 @@ defmodule Codebattle.GameProcess.PlayTest do
 
   test "timeouts the game", %{user1: _, user2: user2, game_id: game_id} do
     assert {:ok, _fsm} = Play.join_game(game_id, user2)
-    assert :ok = Play.timeout_game(game_id)
+    assert {:terminate_after, 15} = Play.timeout_game(game_id)
     game = Repo.get(Game, game_id)
 
     assert game.state == "timeout"
