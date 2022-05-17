@@ -118,9 +118,11 @@
         #
         {Credo.Check.Refactor.CondStatements, []},
         {Credo.Check.Refactor.CyclomaticComplexity, false},
+        {Credo.Check.Refactor.FilterFilter, false},
         {Credo.Check.Refactor.FunctionArity, []},
         {Credo.Check.Refactor.LongQuoteBlocks, false},
         {Credo.Check.Refactor.MapInto, []},
+        {Credo.Check.Refactor.MapJoin, false},
         {Credo.Check.Refactor.MatchInCondition, []},
         {Credo.Check.Refactor.NegatedConditionsInUnless, []},
         {Credo.Check.Refactor.NegatedConditionsWithElse, []},
