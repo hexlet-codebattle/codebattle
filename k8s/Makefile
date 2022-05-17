@@ -12,11 +12,13 @@ kb-get-nodes:
 
 helm-init: helm-add-repos helm-install-ingress helm-install-app helm-install-keel helm-install-cert-manager
 
-# helm-add-repos:
+helm-add-repos:
 # 	helm repo add stable https://kubernetes-charts.storage.googleapis.com
 # 	helm repo add stable https://kubernetes-charts.storage.googleapis.com
 # 	helm repo add keel https://charts.keel.sh
 # 	helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+	helm repo add jetstack https://charts.jetstack.io
+	helm repo update
 
 helm-upgrade-app:
 	helm upgrade --install app $(PWD)/app-chart
@@ -30,9 +32,9 @@ helm-history:
 	helm history app
 
 helm-install-cert-manager:
-	helm repo add jetstack https://charts.jetstack.io
-	helm repo update
-	# helm install --kubeconfig=../.kube/config cert-manager jetstack/cert-manager --namespace cert-manager --version v1.7.1 --set installCRDs=true
+# helm repo add jetstack https://charts.jetstack.io
+
+# helm install --kubeconfig=../.kube/config cert-manager jetstack/cert-manager --namespace cert-manager --version v1.7.1 --set installCRDs=true
 	helm install \
 		cert-manager jetstack/cert-manager \
 		--kubeconfig=../.kube/config \
