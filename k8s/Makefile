@@ -21,7 +21,7 @@ helm-add-repos:
 	helm repo update
 
 helm-upgrade-app:
-	helm upgrade --install app $(PWD)/app-chart
+	helm upgrade --install --kubeconfig=../.kube/config app $(PWD)/app-chart
 
 helm-rollback-app:
 	helm rollback app 108
@@ -45,7 +45,7 @@ helm-install-cert-manager:
 
 
 helm-install-ingress:
-	helm install nginx-ingress ingress-nginx/ingress-nginx
+	helm install --kubeconfig=../.kube/config nginx-ingress ingress-nginx/ingress-nginx
 
 helm-install-keel:
 	helm repo update
