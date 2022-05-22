@@ -18,23 +18,23 @@ creator = Repo.get!(Codebattle.User, -15)
       description_ru: "проверка суммирования: для руби",
       examples: "```\n2 == solution(1,1)\n10 == solution(9,1)\n```",
       asserts: [
-        %{arguments: [1,1], expected: 2},
-        %{arguments: [2,2], expected: 4},
-        %{arguments: [1,2], expected: 3},
-        %{arguments: [3,2],expected: 5},
-        %{arguments: [5,1],expected: 6},
-        %{arguments: [1,1],expected: 2},
-        %{arguments: [2,2],expected: 4},
-        %{arguments: [1,2],expected: 3},
-        %{arguments: [3,2],expected: 5},
-        %{arguments: [5,1],expected: 6},
+        %{arguments: [1, 1], expected: 2},
+        %{arguments: [2, 2], expected: 4},
+        %{arguments: [1, 2], expected: 3},
+        %{arguments: [3, 2], expected: 5},
+        %{arguments: [5, 1], expected: 6},
+        %{arguments: [1, 1], expected: 2},
+        %{arguments: [2, 2], expected: 4},
+        %{arguments: [1, 2], expected: 3},
+        %{arguments: [3, 2], expected: 5},
+        %{arguments: [5, 1], expected: 6}
       ],
       disabled: false,
       input_signature: [
         %{"argument-name" => "a", "type" => %{"name" => "integer"}},
         %{"argument-name" => "b", "type" => %{"name" => "integer"}}
       ],
-      output_signature: %{"type" => %{"name" => "integer"}},
+      output_signature: %{"type" => %{"name" => "integer"}}
     }
 
     task = Codebattle.Task.upsert!(task_params)
@@ -147,7 +147,6 @@ creator = Repo.get!(Codebattle.User, -15)
   end
 end)
 
-
 %Codebattle.Tournament{}
 |> Codebattle.Tournament.changeset(%{
   name: "Codebattle Hexlet summer tournament 2019",
@@ -211,7 +210,6 @@ six_hours_ago = Timex.shift(now, hours: -6)
     updated_at: TimeHelper.utc_now()
   }
 
-
   {:ok, user_2} =
     %User{}
     |> User.changeset(user_2_params)
@@ -249,11 +247,14 @@ six_hours_ago = Timex.shift(now, hours: -6)
 end)
 
 task_ids =
-Codebattle.Task
-|> Repo.all()
-|> Enum.map( &(&1.id))
+  Codebattle.Task
+  |> Repo.all()
+  |> Enum.map(& &1.id)
 
-
-%Codebattle.TaskPack{name: "All_tasks_at#{now}", visibility: "public", state: "active", task_ids: task_ids}
-|> Repo.insert!
-
+%Codebattle.TaskPack{
+  name: "All_tasks_at#{now}",
+  visibility: "public",
+  state: "active",
+  task_ids: task_ids
+}
+|> Repo.insert!()

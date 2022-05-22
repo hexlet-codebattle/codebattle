@@ -1,0 +1,3 @@
+.container-xl.bg-white.shadow-sm.rounded.py-4.mb-3
+h1.text-center Edit task
+= render "_form.html", Map.put(assigns, :action, Routes.task_path(@conn, :update, @task))

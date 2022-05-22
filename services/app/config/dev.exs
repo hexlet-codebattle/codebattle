@@ -24,8 +24,8 @@ config :codebattle, CodebattleWeb.Endpoint,
       ~r{priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$},
       ~r{priv/gettext/.*(po)$},
       ~r{lib/codebattle_web/views/.*(ex)$},
-      ~r{lib/codebattle_web/templates/.*(eex|slim|slime|slimleex)$},
-      ~r{lib/codebattle_web/live/.*(eex|slim|slime|slimleex)$}
+      ~r{lib/codebattle_web/templates/.*(eex)$},
+      ~r{lib/codebattle_web/live/.*(eex)$}
     ]
   ]
 

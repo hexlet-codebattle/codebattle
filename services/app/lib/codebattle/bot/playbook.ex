@@ -81,15 +81,15 @@ defmodule Codebattle.Bot.Playbook do
 
   # TODO: add events
   @events [
-    :join_chat,#+
-    :leave_chat,#+
-    :chat_message,#+
-    :init, #+ check after rematch
-    :give_up, #+
-    :update_editor_data,#+
-    :start_check,#+
-    :check_complete,#- add_payload
-    :game_over#+
+    :join_chat,
+    :leave_chat,
+    :chat_message,
+    :init,
+    :give_up,
+    :update_editor_data,
+    :start_check,
+    :check_complete,
+    :game_over
   ]
 
   def add_event(playbook, event, params)

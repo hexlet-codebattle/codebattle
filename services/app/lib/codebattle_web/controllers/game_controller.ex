@@ -54,7 +54,7 @@ defmodule CodebattleWeb.GameController do
               image: Routes.game_image_url(conn, :show, id),
               twitter: get_twitter_labels_meta([first, second])
             })
-            |> render("show.html", %{game: game, layout_template: "full_width.html"})
+            |> render("show.html", %{game: game})
         end
 
       game ->
@@ -78,7 +78,7 @@ defmodule CodebattleWeb.GameController do
             image: Routes.game_image_url(conn, :show, id),
             twitter: get_twitter_labels_meta(game.users)
           })
-          |> render("show.html", %{layout_template: "full_width.html"})
+          |> render("show.html")
         else
           conn
           |> put_meta_tags(%{

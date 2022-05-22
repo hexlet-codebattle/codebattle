@@ -1,0 +1,14 @@
+<div class="jumbotron container text-center bg-white shadow-sm">
+  <h2 class="h2 font-weight-normal mb-4"><%= gettext("Join the game") %></h2>
+  <p class="lead mb-4">
+    <%= "Player #{player_name(get_first_player(@game))} is waiting for an opponent" %>
+  </p>
+  <button
+    class="btn btn-outline-secondary btn-md px-5"
+    data-csrf={csrf_token()}
+    data-method="post"
+    data-to={Routes.game_path(@conn, :join, @game.id)}
+  >
+    Join
+  </button>
+</div>

@@ -189,7 +189,8 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
         current_user,
         %{type: "ban", name: params["name"], time: :os.system_time(:seconds)}
       )
-    IO.inspect(22222)
+
+      IO.inspect(22222)
 
       {:noreply, socket}
     else

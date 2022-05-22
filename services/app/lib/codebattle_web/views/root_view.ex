@@ -1,4 +1,4 @@
-defmodule CodebattleWeb.PageView do
+defmodule CodebattleWeb.RootView do
   use CodebattleWeb, :view
 
   alias Codebattle.FeedBack

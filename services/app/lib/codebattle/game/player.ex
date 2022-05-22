@@ -99,7 +99,7 @@ defmodule Codebattle.Game.Player do
             editor_lang: user_game.lang,
             lang: user_game.lang,
             creator: user_game.creator,
-            result: user_game.result,
+            result: user_game.result
           }
       end
 
@@ -164,7 +164,7 @@ defmodule Codebattle.Game.Player do
             achievements: user.achievements,
             github_id: user.github_id,
             discord_id: user.discord_id,
-            discord_avatar: user.discord_avatar,
+            discord_avatar: user.discord_avatar
           }
       end
 

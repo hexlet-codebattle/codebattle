@@ -71,21 +71,21 @@ defmodule Codebattle.Chat.Server do
       text: "#{payload.name} has been banned by #{user.name}"
     }
 
-    GenServer.call(chat_key(chat_type), {:ban, %{name: banned_name, message: ban_message}})
+    GenServer.call(chat_key(chat_type), {:ban, %{name: payload.name, message: ban_message}})
 
-    Codebattle.PubSub.broadcast("chat:command:ban", %{
-      type: chat_type,
-      name: message.name,
-      text: message.text,
-      time: message.time
-    })
+    # Codebattle.PubSub.broadcast("chat:command:ban", %{
+    #   type: chat_type,
+    #   name: message.name,
+    #   text: message.text,
+    #   time: message.time
+    # })
 
-    Codebattle.PubSub.broadcast("chat:new_msg", %{
-      type: chat_type,
-      name: ban_message.name,
-      text: ban_message.text,
-      time: ban_message.time
-    })
+    # Codebattle.PubSub.broadcast("chat:new_msg", %{
+    #   type: chat_type,
+    #   name: ban_message.name,
+    #   text: ban_message.text,
+    #   time: ban_message.time
+    # })
   end
 
   # SERVER

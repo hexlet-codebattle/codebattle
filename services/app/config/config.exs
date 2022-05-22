@@ -33,13 +33,6 @@ config :logger, :console,
 
 config :phoenix, :json_library, Jason
 
-config :phoenix, :template_engines,
-  slim: PhoenixSlime.Engine,
-  slime: PhoenixSlime.Engine,
-  slimleex: PhoenixSlime.LiveViewEngine
-
-config :phoenix_slime, :use_slim_extension, true
-
 config :ueberauth, Ueberauth,
   providers: [
     github: {Ueberauth.Strategy.Github, [default_scope: "user:email", send_redirect_uri: false]},

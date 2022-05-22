@@ -1,15 +1,8 @@
-defmodule CodebattleWeb.PageController do
+defmodule CodebattleWeb.RootController do
   use CodebattleWeb, :controller
-
-  alias Codebattle.UsersActivityServer
 
   def index(conn, _params) do
     current_user = conn.assigns.current_user
-
-    UsersActivityServer.add_event(%{
-      event: "show_lobby_page",
-      user_id: current_user.id
-    })
 
     case current_user.guest do
       true ->

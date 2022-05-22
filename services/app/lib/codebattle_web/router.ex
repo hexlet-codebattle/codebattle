@@ -7,10 +7,11 @@ defmodule CodebattleWeb.Router do
   pipeline :browser do
     plug(:accepts, ["html"])
     plug(:fetch_session)
-    plug(CodebattleWeb.Plugs.AssignCurrentUser)
     plug(:fetch_live_flash)
+    plug(CodebattleWeb.Plugs.AssignCurrentUser)
     plug(:protect_from_forgery)
     plug(:put_secure_browser_headers)
+    plug(PhoenixGon.Pipeline)
     plug(CodebattleWeb.Plugs.AssignGon)
     plug(CodebattleWeb.Plugs.Locale)
   end
@@ -59,11 +60,11 @@ defmodule CodebattleWeb.Router do
   scope "/", CodebattleWeb do
     # Use the default browser stack
     pipe_through(:browser)
-    get("/robots.txt", PageController, :robots)
-    get("/sitemap.xml", PageController, :sitemap)
-    get("/feedback/rss.xml", PageController, :feedback)
+    get("/robots.txt", RootController, :robots)
+    get("/sitemap.xml", RootController, :sitemap)
+    get("/feedback/rss.xml", RootController, :feedback)
 
-    get("/", PageController, :index)
+    get("/", RootController, :index)
 
     resources("/session", SessionController, singleton: true, only: [:delete, :new])
     get("/remind_password", SessionController, :remind_password)

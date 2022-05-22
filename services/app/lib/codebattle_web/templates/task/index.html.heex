@@ -1,0 +1,43 @@
+<div class="container-xl bg-white shadow-sm rounded py-4 mb-3">
+  <h1 class="text-center">Tasks</h1>
+  <%= link "Create new task", to: CodebattleWeb.Router.Helpers.task_path(@conn, :new), class: "btn btn-success mt-2" %>
+  <%= link "Task packs", to: CodebattleWeb.Router.Helpers.task_pack_path(@conn, :index), class: "btn btn-info mt-2 ml-2" %>
+  <div class="table-responsive mt-4">
+    <table class="table table-sm">
+      <thead>
+        <tr>
+          <th>name</th>
+          <th>level</th>
+          <th>tags</th>
+          <th>origin</th>
+          <th>state</th>
+          <th>visibility</th>
+          <th>actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= for task <- @tasks do %>
+<tr>
+  <td class="align-middle text"><%= task.name %>
+  </td>
+  <td class="align-middle text-nowrap"> <img alt={task.level} src={"/assets/images/levels/#{task.level}.svg"} /> </td>
+    <td class="align-middle text"><%= Enum.join(task.tags, ", ") %> </td>
+    <td class="align-middle text"><%= task.origin %> </td>
+    <td class="align-middle text"><%= task.state %> </td>
+    <td class="align-middle text"><%= task.visibility %> </td>
+    <td class="align-middle text-nowrap">
+     <div class="d-flex">
+        <%= link "Show", to: CodebattleWeb.Router.Helpers.task_path(@conn, :show, task.id), class: "btn btn-sm btn-info" %>
+        <%= if Codebattle.User.is_admin?(@current_user) do %>
+          <%= button "Activate", to: CodebattleWeb.Router.Helpers.task_activate_path(@conn, :activate, task.id), method: "patch", class: "btn btn-sm btn-success" %>
+          <%= button "Disable", to: CodebattleWeb.Router.Helpers.task_disable_path(@conn, :disable, task.id), method: "patch", class: "btn btn-sm btn-danger" %>
+        <% end %>
+    </div>
+    </td>
+  </tr>
+        <%= end %>
+
+      </tbody>
+    </table>
+  </div>
+</div>
