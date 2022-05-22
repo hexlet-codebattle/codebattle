@@ -13,8 +13,9 @@ spec:
   selector:
     app.kubernetes.io/name: "{{ .Release.Name }}-web-pod"
     app.kubernetes.io/instance: "{{ .Release.Name }}"
-  type: NodePort
   ports:
-    - protocol: TCP
-      port: 8080
+    - name: app-listener
+      protocol: TCP
+      port: 80
       targetPort: 8080
+  type: LoadBalancer

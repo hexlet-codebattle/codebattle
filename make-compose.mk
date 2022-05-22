@@ -82,4 +82,3 @@ compose-pull-dockers:
 
 compose-push-dockers:
 	docker-compose run app mix dockers.push ${lang}
-

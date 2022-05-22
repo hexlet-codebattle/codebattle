@@ -1,4 +1,4 @@
-FROM elixir:1.13.2 AS compile-image
+FROM elixir:1.13.4 AS compile-image
 ENV MIX_ENV=prod
 
 WORKDIR /opt/app
@@ -27,7 +27,7 @@ RUN yarn build && mix phx.digest
 RUN mix release \
   && mv _build/prod/rel/codebattle /opt/release
 
-FROM ubuntu:latest AS runtime-image
+FROM elixir:1.13.4 AS runtime-image
 
 ARG DEBIAN_FRONTEND=noninteractive
 

@@ -66,7 +66,7 @@ defmodule Codebattle.User do
     field(:public_id, :binary_id)
     field(:is_bot, :boolean, default: false)
     field(:rank, :integer, default: 5432)
-    field(:achievements, {:array, :string}, default: [], null: false)
+    field(:achievements, {:array, :string}, default: [])
     field(:discord_name, :string)
     field(:discord_id, :integer)
     field(:discord_avatar, :string)
