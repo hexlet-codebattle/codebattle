@@ -241,6 +241,7 @@ const CompletedTournaments = ({ tournaments }) => {
 
 const ActiveGames = ({ games }) => {
   const currentUser = Gon.getAsset('current_user');
+
   const filterGames = game => {
     if (game.type === 'private') {
       return !!_.find(game.players, { id: currentUser.id });
@@ -248,9 +249,11 @@ const ActiveGames = ({ games }) => {
     return true;
   };
   const filtetedGames = games.filter(filterGames);
+
   if (_.isEmpty(filtetedGames)) {
     return <p className="text-center">There are no active games right now.</p>;
   }
+
   const gamesSortByLevel = _.sortBy(filtetedGames, [
     game => levelRatio[game.level],
   ]);
@@ -270,11 +273,13 @@ const ActiveGames = ({ games }) => {
     }
     return 'gamesWithBots';
   });
+
   const sortedGames = [
     ...gamesWithCurrentUser,
     ...gamesWithActiveUsers,
     ...gamesWithBots,
   ];
+
   return (
     <div className="table-responsive">
       <table className="table table-striped border-gray border-top-0 mb-0">
@@ -289,6 +294,18 @@ const ActiveGames = ({ games }) => {
           </tr>
         </thead>
         <tbody>
+          {/*
+            TODO: handle game.checkResults
+
+            checkResults[0].status = "ok" | "failure" | "started" | "error"
+            checkResults[0].userId
+
+            checkResults <-> players Порядок элементов друг-другу соответствуют
+
+            checkResults[0].status = "failure"
+            checkResults[0].assertsCount
+            checkResults[0].successCount
+          */}
           {sortedGames.map(game => (
             <tr key={game.id} className="text-dark game-item">
               <td className="p-3 align-middle text-nowrap">
