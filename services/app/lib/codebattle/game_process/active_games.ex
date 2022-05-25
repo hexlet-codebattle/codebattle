@@ -87,6 +87,7 @@ defmodule Codebattle.GameProcess.ActiveGames do
       level: FsmHelpers.get_level(fsm),
       inserted_at: FsmHelpers.get_inserted_at(fsm),
       type: FsmHelpers.get_type(fsm),
+      check_results: FsmHelpers.get_check_results(fsm),
       timeout_seconds: FsmHelpers.get_timeout_seconds(fsm)
     }
   end

@@ -19,6 +19,12 @@ defmodule Codebattle.GameProcess.FsmHelpers do
   def get_second_player(fsm), do: fsm |> get_players |> Enum.at(1)
   def bot_game?(fsm), do: fsm |> get_players |> Enum.any?(fn p -> p.is_bot end)
 
+  def get_check_results(fsm) do
+    fsm
+    |> get_players
+    |> Enum.map(fn player -> player.check_result end)
+  end
+
   def get_winner(fsm) do
     fsm
     |> get_players
