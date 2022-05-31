@@ -2,6 +2,7 @@ $body-bg: #e5e5e5;
 $success: #82b792;
 $secondary: #477591;
 $link-color: black;
+$error: #DC3545;
 $orange: rgba(238, 55, 55, 0.76);
 $link-hover-color: $orange;
 $border-radius-sm: 0%;
@@ -268,6 +269,40 @@ a {
 
 .cb-username-td {
   max-width: 350px;
+}
+
+.checkresult-bar {
+  width: 144px;
+  height: 9px;
+  background: white;
+  position: relative;
+  border-radius: 10px;
+
+  & > .asserts-progress {
+    position: absolute;
+    height: 100%;
+    border-radius: 10px;
+    background: #809b88;
+  }
+  &.failure {
+    & > .asserts-progress {
+      background: $success;
+    }
+  }
+  &.error {
+    & > .asserts-progress {
+      background: $error;
+      width: 100% !important;
+    }
+  }
+  &.started {
+    background: #bebebe;
+  }
+}
+
+.cb-players-loading {
+  position: absolute;
+  left: 55px;
 }
 
 .cb-polyglot {

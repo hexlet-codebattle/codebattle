@@ -29,7 +29,9 @@ const UserPopoverContent = ({ user }) => {
   return <UserStats user={user} data={stats} />;
 };
 
-const UserInfo = ({ user, truncate = false, hideOnlineIndicator = false }) => {
+const UserInfo = ({
+ user, truncate = false, hideOnlineIndicator = false, loading = false,
+}) => {
   const { presenceList } = useSelector(selectors.lobbyDataSelector);
   if (!user?.id) {
     return <span className="text-secondary">No-User</span>;
@@ -47,7 +49,7 @@ const UserInfo = ({ user, truncate = false, hideOnlineIndicator = false }) => {
       placement="bottom-start"
       component={<UserPopoverContent user={user} />}
     >
-      <div>
+      <div style={{ opacity: `${loading ? '0.5' : 1}` }}>
         <UserName
           user={user}
           truncate={truncate}

@@ -24,8 +24,9 @@ import Announcement from '../components/Announcement';
 import GameLevelBadge from '../components/GameLevelBadge';
 import LobbyChat from './LobbyChat';
 import levelRatio from '../config/levelRatio';
+import PlayerLoading from '../components/PlayerLoading';
 
-const Players = ({ players }) => {
+const Players = ({ players, checkResults }) => {
   if (players.length === 1) {
     return (
       <td className="p-3 align-middle text-nowrap" colSpan={2}>
@@ -35,16 +36,35 @@ const Players = ({ players }) => {
       </td>
     );
   }
+
+  const getBarLength = (assertsCount, successCount) => (successCount / assertsCount) * 100;
   return (
     <>
       <td className="p-3 align-middle text-nowrap cb-username-td text-truncate">
-        <div className="d-flex align-items-center">
-          <UserInfo user={players[0]} hideOnlineIndicator />
+        <div className="d-flex flex-column position-relative">
+          <UserInfo user={players[0]} hideOnlineIndicator loading={checkResults[0].status === 'started'} />
+          <div className={`checkresult-bar ${checkResults[0].status}`}>
+            <div
+              className="asserts-progress"
+              style={{ width: `${getBarLength(checkResults[0]?.assertsCount, checkResults[0]?.successCount)}%` }}
+            />
+          </div>
+          {checkResults[0].status === 'started' && <PlayerLoading small />}
         </div>
       </td>
       <td className="p-3 align-middle text-nowrap cb-username-td text-truncate">
-        <div className="d-flex align-items-center">
-          <UserInfo user={players[1]} hideOnlineIndicator />
+        <div className="d-flex flex-column position-relative">
+          <UserInfo user={players[1]} hideOnlineIndicator loading={checkResults[1].status === 'started'} />
+          <div className={`checkresult-bar ${checkResults[1].status}`}>
+            <div
+              className="asserts-progress"
+              style={{
+                width: `${getBarLength(checkResults[1]?.assertsCount, checkResults[1]?.successCount)}%`,
+                right: 0,
+              }}
+            />
+          </div>
+          {checkResults[1].status === 'started' && <PlayerLoading small />}
         </div>
       </td>
     </>
@@ -322,7 +342,7 @@ const ActiveGames = ({ games }) => {
                   }
                 />
               </td>
-              <Players gameId={game.id} players={game.players} />
+              <Players gameId={game.id} players={game.players} checkResults={game.checkResults} />
               <td className="p-3 align-middle text-center">
                 <GameActionButton game={game} />
               </td>

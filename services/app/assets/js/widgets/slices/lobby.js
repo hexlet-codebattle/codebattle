@@ -26,7 +26,7 @@ const lobby = createSlice({
         if (game.id === payload.id) {
           const playerIndex = game.players.findIndex(player => player.id === payload.userId);
           const newCheckResults = game.checkResults.map(
-            (result, index) => (index === playerIndex ? payload.checkResult : result),
+            (result, index) => (index === playerIndex ? { ...result, ...payload.checkResult } : result),
           );
 
           return { ...game, checkResults: newCheckResults };
