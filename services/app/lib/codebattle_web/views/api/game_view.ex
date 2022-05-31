@@ -18,7 +18,8 @@ defmodule CodebattleWeb.Api.GameView do
       tournament_id: get_tournament_id(fsm),
       inserted_at: get_inserted_at(fsm),
       starts_at: get_starts_at(fsm),
-      langs: get_langs(fsm)
+      langs: get_langs(fsm),
+      check_results: get_check_results(fsm)
     }
   end
 
@@ -55,7 +56,8 @@ defmodule CodebattleWeb.Api.GameView do
       inserted_at: get_inserted_at(fsm),
       type: get_type(fsm),
       timeout_seconds: get_timeout_seconds(fsm),
-      players: get_players(fsm)
+      players: get_players(fsm),
+      check_results: get_check_results(fsm)
     }
   end
 
