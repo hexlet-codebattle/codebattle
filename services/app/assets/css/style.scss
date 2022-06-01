@@ -271,26 +271,26 @@ a {
   max-width: 350px;
 }
 
-.checkresult-bar {
+.cb-check-result-bar {
   width: 144px;
   height: 9px;
   background: white;
   position: relative;
   border-radius: 10px;
 
-  & > .asserts-progress {
+  & > .cb-asserts-progress {
     position: absolute;
     height: 100%;
     border-radius: 10px;
     background: #809b88;
   }
   &.failure {
-    & > .asserts-progress {
+    & > .cb-asserts-progress {
       background: $success;
     }
   }
   &.error {
-    & > .asserts-progress {
+    & > .cb-asserts-progress {
       background: $error;
       width: 100% !important;
     }
@@ -300,7 +300,7 @@ a {
   }
 }
 
-.cb-players-loading {
+.cb-player-loading {
   position: absolute;
   left: 55px;
 }
@@ -419,6 +419,10 @@ a {
 
 .x-opacity-0 {
   opacity: 0;
+}
+
+.cb-opacity-50 {
+  opacity: 0.5;
 }
 
 .x-bg-gray {

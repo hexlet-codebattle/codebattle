@@ -1,6 +1,7 @@
-import { camelizeKeys } from 'humps';
-import { useDispatch, useSelector } from 'react-redux';
 import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { camelizeKeys } from 'humps';
+import cn from 'classnames';
 import axios from 'axios';
 
 import * as selectors from '../selectors';
@@ -42,6 +43,7 @@ const UserInfo = ({
   }
 
   const isOnline = presenceList.some(({ id }) => id === user?.id);
+  const userClassName = cn({ 'cb-opacity-50': loading });
 
   return (
     <PopoverStickOnHover
@@ -49,7 +51,7 @@ const UserInfo = ({
       placement="bottom-start"
       component={<UserPopoverContent user={user} />}
     >
-      <div style={{ opacity: `${loading ? '0.5' : 1}` }}>
+      <div className={userClassName}>
         <UserName
           user={user}
           truncate={truncate}

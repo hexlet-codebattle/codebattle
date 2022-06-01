@@ -43,28 +43,28 @@ const Players = ({ players, checkResults }) => {
       <td className="p-3 align-middle text-nowrap cb-username-td text-truncate">
         <div className="d-flex flex-column position-relative">
           <UserInfo user={players[0]} hideOnlineIndicator loading={checkResults[0].status === 'started'} />
-          <div className={`checkresult-bar ${checkResults[0].status}`}>
+          <div className={`cb-check-result-bar ${checkResults[0].status}`}>
             <div
-              className="asserts-progress"
+              className="cb-asserts-progress"
               style={{ width: `${getBarLength(checkResults[0]?.assertsCount, checkResults[0]?.successCount)}%` }}
             />
           </div>
-          {checkResults[0].status === 'started' && <PlayerLoading small />}
+          <PlayerLoading show={checkResults[0].status === 'started'} small />
         </div>
       </td>
       <td className="p-3 align-middle text-nowrap cb-username-td text-truncate">
         <div className="d-flex flex-column position-relative">
           <UserInfo user={players[1]} hideOnlineIndicator loading={checkResults[1].status === 'started'} />
-          <div className={`checkresult-bar ${checkResults[1].status}`}>
+          <div className={`cb-check-result-bar ${checkResults[1].status}`}>
             <div
-              className="asserts-progress"
+              className="cb-asserts-progress"
               style={{
                 width: `${getBarLength(checkResults[1]?.assertsCount, checkResults[1]?.successCount)}%`,
                 right: 0,
               }}
             />
           </div>
-          {checkResults[1].status === 'started' && <PlayerLoading small />}
+          <PlayerLoading show={checkResults[1].status === 'started'} small />
         </div>
       </td>
     </>
