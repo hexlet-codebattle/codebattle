@@ -3,6 +3,7 @@ defmodule CodebattleWeb.GameChannel do
   use CodebattleWeb, :channel
 
   alias Codebattle.GameProcess.{Play, FsmHelpers}
+  alias Codebattle.CodeCheck.CheckResultV2
   alias Codebattle.UsersActivityServer
   alias CodebattleWeb.Api.GameView
 
@@ -106,6 +107,11 @@ defmodule CodebattleWeb.GameChannel do
 
     broadcast_from!(socket, "user:start_check", %{user_id: user.id})
 
+    CodebattleWeb.Endpoint.broadcast!("lobby", "user:start_check", %{
+      id: String.to_integer(game_id),
+      userId: user.id
+    })
+
     %{"editor_text" => editor_text, "lang_slug" => lang_slug} = payload
 
     case Play.check_game(game_id, user, editor_text, lang_slug) do
@@ -130,6 +136,12 @@ defmodule CodebattleWeb.GameChannel do
           check_result: check_result
         })
 
+        CodebattleWeb.Endpoint.broadcast!("lobby", "user:check_complete", %{
+          id: String.to_integer(game_id),
+          userId: user.id,
+          check_result: check_result
+        })
+
         {:noreply, socket}
 
       {:error, reason} ->
@@ -141,6 +153,12 @@ defmodule CodebattleWeb.GameChannel do
             lang: lang_slug,
             reason: reason
           }
+        })
+
+        CodebattleWeb.Endpoint.broadcast!("lobby", "user:check_complete", %{
+          id: String.to_integer(game_id),
+          userId: user.id,
+          check_result: %CheckResultV2{status: :error, output: reason}
         })
 
         {:reply, {:error, %{reason: reason}}, socket}

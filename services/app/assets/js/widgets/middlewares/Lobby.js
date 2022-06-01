@@ -29,6 +29,15 @@ export const fetchState = () => (dispatch, getState) => {
     }
   });
 
+  channel.on('user:start_check', data => {
+    const { id, userId } = camelizeKeys(data);
+    const payload = { id, userId, checkResult: { status: 'started' } };
+
+    dispatch(actions.updateCheckResult(payload));
+  });
+
+  channel.on('user:check_complete', camelizeKeysAndDispatch(actions.updateCheckResult));
+
   channel.on('game:remove', camelizeKeysAndDispatch(actions.removeGameLobby));
   channel.on('game:finish', camelizeKeysAndDispatch(actions.finishGame));
 };

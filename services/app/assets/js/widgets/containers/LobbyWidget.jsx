@@ -24,8 +24,9 @@ import Announcement from '../components/Announcement';
 import GameLevelBadge from '../components/GameLevelBadge';
 import LobbyChat from './LobbyChat';
 import levelRatio from '../config/levelRatio';
+import PlayerLoading from '../components/PlayerLoading';
 
-const Players = ({ players }) => {
+const Players = ({ players, checkResults }) => {
   if (players.length === 1) {
     return (
       <td className="p-3 align-middle text-nowrap" colSpan={2}>
@@ -35,16 +36,35 @@ const Players = ({ players }) => {
       </td>
     );
   }
+
+  const getBarLength = (assertsCount, successCount) => (successCount / assertsCount) * 100;
   return (
     <>
       <td className="p-3 align-middle text-nowrap cb-username-td text-truncate">
-        <div className="d-flex align-items-center">
-          <UserInfo user={players[0]} hideOnlineIndicator />
+        <div className="d-flex flex-column position-relative">
+          <UserInfo user={players[0]} hideOnlineIndicator loading={checkResults[0].status === 'started'} />
+          <div className={`cb-check-result-bar ${checkResults[0].status}`}>
+            <div
+              className="cb-asserts-progress"
+              style={{ width: `${getBarLength(checkResults[0]?.assertsCount, checkResults[0]?.successCount)}%` }}
+            />
+          </div>
+          <PlayerLoading show={checkResults[0].status === 'started'} small />
         </div>
       </td>
       <td className="p-3 align-middle text-nowrap cb-username-td text-truncate">
-        <div className="d-flex align-items-center">
-          <UserInfo user={players[1]} hideOnlineIndicator />
+        <div className="d-flex flex-column position-relative">
+          <UserInfo user={players[1]} hideOnlineIndicator loading={checkResults[1].status === 'started'} />
+          <div className={`cb-check-result-bar ${checkResults[1].status}`}>
+            <div
+              className="cb-asserts-progress"
+              style={{
+                width: `${getBarLength(checkResults[1]?.assertsCount, checkResults[1]?.successCount)}%`,
+                right: 0,
+              }}
+            />
+          </div>
+          <PlayerLoading show={checkResults[1].status === 'started'} small />
         </div>
       </td>
     </>
@@ -241,6 +261,7 @@ const CompletedTournaments = ({ tournaments }) => {
 
 const ActiveGames = ({ games }) => {
   const currentUser = Gon.getAsset('current_user');
+
   const filterGames = game => {
     if (game.type === 'private') {
       return !!_.find(game.players, { id: currentUser.id });
@@ -248,9 +269,11 @@ const ActiveGames = ({ games }) => {
     return true;
   };
   const filtetedGames = games.filter(filterGames);
+
   if (_.isEmpty(filtetedGames)) {
     return <p className="text-center">There are no active games right now.</p>;
   }
+
   const gamesSortByLevel = _.sortBy(filtetedGames, [
     game => levelRatio[game.level],
   ]);
@@ -270,11 +293,13 @@ const ActiveGames = ({ games }) => {
     }
     return 'gamesWithBots';
   });
+
   const sortedGames = [
     ...gamesWithCurrentUser,
     ...gamesWithActiveUsers,
     ...gamesWithBots,
   ];
+
   return (
     <div className="table-responsive">
       <table className="table table-striped border-gray border-top-0 mb-0">
@@ -289,6 +314,18 @@ const ActiveGames = ({ games }) => {
           </tr>
         </thead>
         <tbody>
+          {/*
+            TODO: handle game.checkResults
+
+            checkResults[0].status = "ok" | "failure" | "started" | "error"
+            checkResults[0].userId
+
+            checkResults <-> players Порядок элементов друг-другу соответствуют
+
+            checkResults[0].status = "failure"
+            checkResults[0].assertsCount
+            checkResults[0].successCount
+          */}
           {sortedGames.map(game => (
             <tr key={game.id} className="text-dark game-item">
               <td className="p-3 align-middle text-nowrap">
@@ -305,7 +342,7 @@ const ActiveGames = ({ games }) => {
                   }
                 />
               </td>
-              <Players gameId={game.id} players={game.players} />
+              <Players gameId={game.id} players={game.players} checkResults={game.checkResults} />
               <td className="p-3 align-middle text-center">
                 <GameActionButton game={game} />
               </td>

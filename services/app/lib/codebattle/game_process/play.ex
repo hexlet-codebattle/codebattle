@@ -130,6 +130,8 @@ defmodule Codebattle.GameProcess.Play do
             editor_lang: editor_lang
           })
 
+        ActiveGames.update_game(new_fsm)
+
         winner = FsmHelpers.get_winner(new_fsm) || %{id: nil}
 
         if {fsm.state, new_fsm.state, winner.id} == {:playing, :game_over, user.id} do
