@@ -60,6 +60,8 @@ defmodule Codebattle.GameProcess.Engine.Bot do
 
     {:ok, _} = GlobalSupervisor.start_game(fsm)
 
+    broadcast_active_game(fsm)
+
     {:ok, fsm}
   end
 
