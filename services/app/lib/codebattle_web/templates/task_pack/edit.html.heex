@@ -1,0 +1,4 @@
+<div class="container-xl bg-white shadow-sm rounded py-4 mb-3">
+  <h1 class="text-center">Edit task pack</h1>
+  <%= render "_form.html", Map.put(assigns, :action, Routes.task_pack_path(@conn, :update, @task_pack)) %>
+</div>
