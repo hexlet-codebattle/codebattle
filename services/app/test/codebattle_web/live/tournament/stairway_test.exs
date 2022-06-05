@@ -47,7 +47,7 @@ defmodule CodebattleWeb.Live.Tournament.StairwayTest do
     tournament = Codebattle.Tournament.Context.get!(tournament.id)
     assert Helpers.players_count(tournament) == 2
 
-    {:ok, view3, _html} = live(conn3, Routes.tournament_path(conn, :show, tournament.id))
+    {:ok, _view3, _html} = live(conn3, Routes.tournament_path(conn, :show, tournament.id))
 
     # render_click(view3, :join, %{"team_id" => "0"})
 

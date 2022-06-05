@@ -10,7 +10,7 @@ defmodule CodebattleWeb.FallbackController do
   def call(conn, {:error, %Ecto.Changeset{} = changeset}) do
     conn
     |> put_flash(:danger, changeset_error_to_string(changeset))
-    |> redirect(to: Routes.page_path(conn, :index))
+    |> redirect(to: Routes.root_path(conn, :index))
   end
 
   def call(conn, {:error, reason}) do
@@ -24,7 +24,7 @@ defmodule CodebattleWeb.FallbackController do
 
     conn
     |> put_flash(:danger, reason)
-    |> redirect(to: Routes.page_path(conn, :index))
+    |> redirect(to: Routes.root_path(conn, :index))
   end
 
   def changeset_error_to_string(changeset) do

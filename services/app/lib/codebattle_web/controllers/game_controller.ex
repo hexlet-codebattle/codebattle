@@ -103,7 +103,7 @@ defmodule CodebattleWeb.GameController do
     user = conn.assigns.current_user
 
     case Context.cancel_game(id, user) do
-      :ok -> redirect(conn, to: Routes.page_path(conn, :index))
+      :ok -> redirect(conn, to: Routes.root_path(conn, :index))
       {:error, reason} -> {:error, reason}
     end
   end

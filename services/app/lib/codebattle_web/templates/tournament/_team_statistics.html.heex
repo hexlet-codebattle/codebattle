@@ -1,0 +1,18 @@
+<div class="card">
+  <div class="card-body">
+    <div class="table-responsive mt-1">
+      <table class="table table-sm">
+        <tbody>
+          <tr>
+            <td class="align-middle"><%= "Best Language" %></td>
+            <td class="align-middle text-nowrap"><%= @statistics.best_lang %></td>
+          </tr>
+          <tr>
+            <td class="align-middle"><%= "Best Match Time" %></td>
+            <td class="align-middle text-nowrap"><%= render_time(@statistics.best_time) %></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

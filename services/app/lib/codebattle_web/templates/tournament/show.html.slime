@@ -1,3 +1,0 @@
-#tournament-root
-javascript:
-  window.csrf_token = "<%= csrf_token() %>"

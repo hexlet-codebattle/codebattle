@@ -1,0 +1,22 @@
+<% players = Enum.sort_by(@players, fn p -> p.rank end) |> Enum.with_index() %>
+<%= if !Enum.empty?(@players) do %>
+  <%= for {player, i} <- players do %>
+    <div class="d-flex align-items-center my-3">
+      <span><%= i %></span>
+      <div class="ml-4">
+        <%= render("_player.html", player: player) %>
+      </div>
+      <%= if can_moderate?(@tournament, @current_user) do %>
+        <button
+          class="ml-1 btn btn-link btn-sm text-danger"
+          phx-click="kick"
+          phx-value-user_id="player.id"
+        >
+          Kick
+        </button>
+      <% end %>
+    </div>
+  <% end %>
+<% else %>
+  <p>NO_INTENDED_PLAYERS</p>
+<% end %>

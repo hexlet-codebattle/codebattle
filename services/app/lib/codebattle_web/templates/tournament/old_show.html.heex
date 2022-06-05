@@ -1,0 +1,10 @@
+<%= if @current_user.guest do %>
+  <h1 class="text-center"><%= @tournament.name %></h1>
+  <p class="text-center">
+    <span>Please&nbsp</span>
+    <a href={Routes.session_path(@socket, :new, locale: :en)}>sign in</a>
+    <span>&nbspto see the tournament details</span>
+  </p>
+<% else %>
+  <%= render("#{@tournament.type}.html", assigns) %>
+<% end %>

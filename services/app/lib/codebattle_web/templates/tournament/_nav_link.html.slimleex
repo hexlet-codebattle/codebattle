@@ -1,7 +1,0 @@
-= cond do
-  - @active_tab == @id ->
-    a.nav-link.border-0.bg-white.text-dark.active[id="#{@id}-tab" href="##{@id}" data-toggle="tab" role="tab" aria-controls=@id aria-selected="true"] = @title
-  - @disabled ->
-    a.nav-link.border-0.bg-light.text-muted.disabled[id="#{@id}-tab" href="##{@id}" data-toggle="tab" role="tab" aria-controls=@id aria-selected="false"] = @title
-  - true ->
-    a.nav-link.border-0.bg-light.text-dark[id="#{@id}-tab" href="##{@id}" data-toggle="tab" role="tab" aria-controls=@id aria-selected="false" phx-click="select_tab" phx-value-target="team_tournament_tab" phx-value-tab=@id] = @title

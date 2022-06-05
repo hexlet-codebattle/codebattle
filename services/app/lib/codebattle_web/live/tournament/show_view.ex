@@ -54,15 +54,15 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     end
   end
 
-  def handle_info(%{topic: topic, event: "tournament:updated", payload: payload}, socket) do
+  def handle_info(%{topic: _topic, event: "tournament:updated", payload: payload}, socket) do
     {:noreply, assign(socket, tournament: payload.tournament)}
   end
 
-  def handle_info(%{topic: topic, event: "chat:updated", payload: payload}, socket) do
+  def handle_info(%{topic: _topic, event: "chat:updated", payload: payload}, socket) do
     {:noreply, assign(socket, messages: payload.messages)}
   end
 
-  def handle_info(%{topic: topic, event: "chat:new_msg", payload: payload}, socket) do
+  def handle_info(%{topic: _topic, event: "chat:new_msg", payload: payload}, socket) do
     {:noreply, assign(socket, messages: Enum.concat(socket.assigns.messages, [payload]))}
   end
 
