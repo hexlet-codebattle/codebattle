@@ -25,10 +25,13 @@ const fetchState = () => dispatch => {
 
   channel.join().receive('ok', camelizeKeysAndDispatch(actions.updateChatData));
 
-  channel.on('chat:user_joined', camelizeKeysAndDispatch(actions.userJoinedChat));
+  channel.on(
+    'chat:user_joined',
+    camelizeKeysAndDispatch(actions.userJoinedChat),
+  );
   channel.on('chat:user_left', camelizeKeysAndDispatch(actions.userLeftChat));
   channel.on('chat:new_msg', camelizeKeysAndDispatch(actions.newMessageChat));
-  channel.on('chat:ban', camelizeKeysAndDispatch(actions.banUserChat));
+  channel.on('chat:user_banned', camelizeKeysAndDispatch(actions.banUserChat));
 };
 
 export const connectToChat = () => dispatch => {
@@ -40,9 +43,13 @@ export const connectToChat = () => dispatch => {
 export const addMessage = message => {
   const payload = { text: message };
 
-  channel.push('chat:new_msg', payload).receive('error', error => console.error(error));
+  channel
+    .push('chat:add_msg', payload)
+    .receive('error', error => console.error(error));
 };
 
 export const pushCommand = command => {
-  channel.push('chat:command', { command }).receive('error', error => console.error(error));
+  channel
+    .push('chat:command', command)
+    .receive('error', error => console.error(error));
 };

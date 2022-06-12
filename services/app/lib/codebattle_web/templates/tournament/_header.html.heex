@@ -99,8 +99,7 @@
     <% end %>
     <%= if is_visible_by_token?(@tournament) && can_moderate?(@tournament, @current_user) do %>
       <span class="ml-3">
-        Private url:
-        <%= Routes.tournament_url(@socket, :show, @tournament.id,
+        Private url: <%= Routes.tournament_url(@socket, :show, @tournament.id,
           access_token: @tournament.access_token
         ) %>
       </span>

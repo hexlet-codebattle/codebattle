@@ -42,35 +42,24 @@ defmodule Codebattle.PubSub.Events do
     ]
   end
 
-  def get_messages("chat:new_msg", params) do
-    case params.type do
-      :lobby ->
-        [
-          %Message{
-            topic: "chat:lobby",
-            event: "chat:new_msg",
-            payload: params
-          }
-        ]
+  def get_messages(event = "chat:new_msg", params) do
+    [
+      %Message{
+        topic: chat_topic(params.chat_type),
+        event: event,
+        payload: params.message
+      }
+    ]
+  end
 
-      {:tournament, id} ->
-        [
-          %Message{
-            topic: "chat:tournament:#{id}",
-            event: "chat:new_msg",
-            payload: params
-          }
-        ]
-
-      {:game, id} ->
-        [
-          %Message{
-            topic: "chat:game:#{id}",
-            event: "chat:new_msg",
-            payload: params
-          }
-        ]
-    end
+  def get_messages(event = "chat:user_banned", params) do
+    [
+      %Message{
+        topic: chat_topic(params.chat_type),
+        event: event,
+        payload: params.payload
+      }
+    ]
   end
 
   def get_messages("game:finished", params) do
@@ -106,4 +95,8 @@ defmodule Codebattle.PubSub.Events do
 
     game_events ++ tournament_events
   end
+
+  defp chat_topic(:lobby), do: "chat:lobby"
+  defp chat_topic({:tournament, id}), do: "chat:tournament:#{id}"
+  defp chat_topic({:game, id}), do: "chat:game:#{id}"
 end

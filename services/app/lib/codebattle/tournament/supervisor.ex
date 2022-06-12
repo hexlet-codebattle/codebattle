@@ -10,7 +10,10 @@ defmodule Codebattle.Tournament.Supervisor do
   def init(tournament) do
     children = [
       {Codebattle.Tournament.Server, tournament},
-      {Codebattle.Chat.Server, {:tournament, tournament.id}}
+      %{
+        id: "Codebattle.Chat.Tournament.#{tournament.id}",
+        start: {Codebattle.Chat, :start_link, [{:tournament, tournament.id}, %{}]}
+      }
     ]
 
     Supervisor.init(children, strategy: :one_for_one)

@@ -5,12 +5,18 @@
       id="new-chat-message"
       phx-hook="NewChatMessage"
     >
+      <%= if can_moderate?(@tournament, @current_user) do %>
+        <button class="btn btn-sm btn-link text-danger" phx-click="chat_clean_banned">
+          Clean banned
+        </button>
+      <% end %>
       <div>
         <small class="text-muted">Please, be nice in chat</small>
       </div>
+
       <%= for message <- @messages do %>
         <div class="pb-1">
-          <%= if message[:type] == :info || message[:type] == "info" do %>
+          <%= if message.type == :info do %>
             <small class="text-muted"><%= message.text %></small>
           <% else %>
             <span class="font-weight-bold"><%= "#{message.name}:" %></span>
@@ -19,8 +25,9 @@
             <%= if can_moderate?(@tournament, @current_user) do %>
               <button
                 class="btn btn-sm btn-link text-danger"
-                phx-click="chat_ban"
+                phx-click="chat_ban_user"
                 phx-value-name={message.name}
+                phx-value-user_id={message.user_id}
               >
                 Ban
               </button>
@@ -33,7 +40,7 @@
 
   <%= form_for :message, "#", [phx_submit: :chat_message],  fn f -> %>
     <div class="d-flex shadow-sm rounded-bottom">
-      <%= text_input(f, :content,
+      <%= text_input(f, :text,
         autocomplete: "off",
         placeholder: "write your message here...",
         class: "form-control rounded-0 border-0 border-top x-rounded-bottom-left"

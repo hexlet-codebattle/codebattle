@@ -18,8 +18,16 @@ defmodule Codebattle.Game.Supervisor do
 
     chat =
       case game.tournament_id do
-        nil -> [{Codebattle.Chat.Server, {:game, game.id}}]
-        _ -> []
+        nil ->
+          [
+            %{
+              id: "Codebattle.Chat.Game.#{game.id}",
+              start: {Codebattle.Chat, :start_link, [{:game, game.id}, %{}]}
+            }
+          ]
+
+        _ ->
+          []
       end
 
     Supervisor.init(children ++ chat, strategy: :one_for_one)

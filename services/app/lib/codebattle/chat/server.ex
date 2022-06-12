@@ -1,185 +1,190 @@
 defmodule Codebattle.Chat.Server do
   use GenServer
 
-  alias Codebattle.Tournament
+  alias Codebattle.Chat
+  alias Codebattle.User
 
-  @message_ttl 60 * 60
-  @timeout :timer.minutes(1)
+  @default_message_ttl :timer.hours(1)
+  @default_clean_timeout :timer.minutes(1)
+  @initial_state %{
+    message_ttl: @default_message_ttl,
+    clean_timeout: @default_clean_timeout,
+    banned_user_ids: [],
+    messages_id_sec: 1,
+    users: [],
+    messages: []
+  }
 
   # API
-  def start_link(chat_type) do
-    GenServer.start_link(__MODULE__, [], name: chat_key(chat_type))
+
+  @spec start_link(Chat.chat_type(), Chat.start_params()) :: GenServer.on_start()
+  def start_link(chat_type, params) do
+    GenServer.start_link(__MODULE__, params, name: chat_key(chat_type))
   end
 
+  @spec join_chat(Chat.chat_type(), User.t()) ::
+          %{
+            users: list(User.t()),
+            messages: list(Chat.message())
+          }
   def join_chat(chat_type, user) do
-    try do
-      GenServer.call(chat_key(chat_type), {:join, user})
-    catch
-      :exit, _reason ->
-        # TODO: add error handler
-        {:ok, []}
-    end
+    GenServer.call(chat_key(chat_type), {:join, user})
+  catch
+    :exit, _reason -> %{users: [], messages: []}
   end
 
+  @spec leave_chat(Chat.chat_type(), User.t()) :: list(User.t())
   def leave_chat(chat_type, user) do
-    try do
-      GenServer.call(chat_key(chat_type), {:leave, user})
-    catch
-      :exit, _reason ->
-        {:ok, []}
-    end
+    GenServer.call(chat_key(chat_type), {:leave, user.id})
+  catch
+    :exit, _reason -> []
   end
 
+  @spec get_users(Chat.chat_type()) :: list(User.t())
   def get_users(chat_type) do
-    try do
-      GenServer.call(chat_key(chat_type), :get_users)
-    catch
-      :exit, _reason ->
-        []
-    end
+    GenServer.call(chat_key(chat_type), :get_users)
+  catch
+    :exit, _reason -> []
   end
 
+  @spec get_messages(Chat.chat_type()) :: list(Chat.message())
+  def get_messages(chat_type) do
+    GenServer.call(chat_key(chat_type), :get_messages)
+  catch
+    :exit, _reason -> []
+  end
+
+  @spec add_message(Chat.chat_type(), Chat.message()) ::
+          {:ok, Chat.message()}
+          | {:error, atom()}
   def add_message(chat_type, message) do
     GenServer.call(chat_key(chat_type), {:add_message, message})
-
-    Codebattle.PubSub.broadcast("chat:new_msg", %{
-      # types: :lobby | {:tournament, 1} | {:game, 1}
-      type: chat_type,
-      name: message.name,
-      text: message.text,
-      time: message.time
-    })
-
-    :ok
+  catch
+    :exit, _reason -> {:error, :no_chat}
   end
 
-  def get_messages(chat_type) do
-    try do
-      GenServer.call(chat_key(chat_type), :get_messages)
-    catch
-      :exit, _reason ->
-        # TODO: add dead message
-        []
-    end
+  @spec delete_user_messages(Chat.chat_type(), Chat.user_id()) :: :ok
+  def delete_user_messages(chat_type, user_id) do
+    GenServer.cast(chat_key(chat_type), {:delete_user_messages, user_id})
+  catch
+    :exit, _reason -> :ok
   end
 
-  def command(chat_type, user, %{type: "ban"} = payload) do
-    ban_message = %{
-      type: "info",
-      name: "CB",
-      time: payload.time,
-      text: "#{payload.name} has been banned by #{user.name}"
-    }
+  @spec add_to_banned(Chat.chat_type(), Chat.user_id()) :: :ok
+  def add_to_banned(chat_type, user_id) do
+    GenServer.cast(chat_key(chat_type), {:add_to_banned, user_id})
+  catch
+    :exit, _reason -> :ok
+  end
 
-    GenServer.call(chat_key(chat_type), {:ban, %{name: payload.name, message: ban_message}})
-
-    # Codebattle.PubSub.broadcast("chat:command:ban", %{
-    #   type: chat_type,
-    #   name: message.name,
-    #   text: message.text,
-    #   time: message.time
-    # })
-
-    # Codebattle.PubSub.broadcast("chat:new_msg", %{
-    #   type: chat_type,
-    #   name: ban_message.name,
-    #   text: ban_message.text,
-    #   time: ban_message.time
-    # })
+  @spec clean_banned(Chat.chat_type()) :: :ok
+  def clean_banned(chat_type) do
+    GenServer.cast(chat_key(chat_type), :clean_banned)
+  catch
+    :exit, _reason -> :ok
   end
 
   # SERVER
-  def init(_) do
-    Process.send_after(self(), :clean_messages, @timeout)
-    {:ok, %{users: [], messages: []}}
+  @impl GenServer
+  def init(params) do
+    message_ttl =
+      params
+      |> Map.get(:message_ttl, @default_message_ttl)
+      |> div(1000)
+
+    clean_timeout = Map.get(params, :clean_timeout, @default_clean_timeout)
+    Process.send_after(self(), :clean_messages, clean_timeout)
+
+    {:ok, %{@initial_state | message_ttl: message_ttl, clean_timeout: clean_timeout}}
   end
 
+  @impl GenServer
   def handle_call({:join, user}, _from, state) do
-    %{users: users} = state
+    new_users = [user | state.users]
 
-    new_users = [user | users]
-
-    {:reply, {:ok, new_users}, %{state | users: new_users}}
+    {:reply, %{users: new_users, messages: state.messages}, %{state | users: new_users}}
   end
 
-  def handle_call({:leave, user}, _from, state) do
-    %{users: users} = state
+  @impl GenServer
+  def handle_call({:leave, user_id}, _from, state) do
+    new_users =
+      Enum.reject(
+        state.users,
+        fn user -> user.id == user_id end
+      )
 
-    {rest_users, found_users} = Enum.split_with(users, fn u -> u != user end)
-    new_users = found_users |> Enum.drop(1) |> Enum.concat(rest_users)
-
-    {:reply, {:ok, new_users}, %{state | users: new_users}}
+    {:reply, new_users, %{state | users: new_users}}
   end
 
+  @impl GenServer
   def handle_call(:get_users, _from, state) do
     %{users: users} = state
     {:reply, users, state}
   end
 
+  @impl GenServer
   def handle_call(:get_messages, _from, state) do
     %{messages: messages} = state
     {:reply, Enum.reverse(messages), state}
   end
 
-  def handle_call({:ban, %{name: name, message: message}}, _from, %{messages: messages} = state) do
-    new_messages = Enum.filter(messages, fn message -> message.name != name end)
-
-    {:reply, :ok, %{state | messages: new_messages}}
-  end
-
+  @impl GenServer
   def handle_call({:add_message, message}, _from, state) do
-    %{messages: messages} = state
-    {:noreply, :ok, %{state | messages: [message | messages]}}
+    if can_send_message?(message.user_id, state) do
+      new_message = %{message | id: state.messages_id_sec}
+      new_id = state.messages_id_sec + 1
+
+      {:reply, {:ok, new_message},
+       %{
+         state
+         | messages_id_sec: new_id,
+           messages: [new_message | state.messages]
+       }}
+    else
+      {:reply, {:error, :unauthorized}, state}
+    end
   end
 
+  @impl GenServer
+  def handle_cast({:delete_user_messages, user_id}, state) do
+    new_messages = Enum.reject(state.messages, fn msg -> msg.user_id == user_id end)
+
+    {:noreply, %{state | messages: new_messages}}
+  end
+
+  @impl GenServer
+  def handle_cast({:add_to_banned, user_id}, state) do
+    {:noreply, %{state | banned_user_ids: [user_id | state.banned_user_ids]}}
+  end
+
+  @impl GenServer
+  def handle_cast(:clean_banned, state) do
+    {:noreply, %{state | banned_user_ids: []}}
+  end
+
+  @impl GenServer
   def handle_info(:clean_messages, %{messages: messages} = state) do
     new_messages =
-      Enum.filter(
+      Enum.reject(
         messages,
         fn message ->
-          message.time > :os.system_time(:seconds) - @message_ttl
+          Chat.now() - message.time >= state.message_ttl
         end
       )
 
-    Process.send_after(self(), :clean_messages, @timeout)
+    Process.send_after(self(), :clean_messages, state.clean_timeout)
     {:noreply, %{state | messages: new_messages}}
   end
 
   # Helpers
+
+  # for system messages
+  defp can_send_message?(nil, _), do: true
+
+  defp can_send_message?(user_id, state) do
+    !Enum.member?(state.banned_user_ids, user_id)
+  end
+
   defp chat_key(:lobby), do: :LOBBY_CHAT
   defp chat_key({type, id}), do: {:via, :gproc, {:n, :l, {:chat, "#{type}_#{id}"}}}
-
-  # defp broadcast_message(type, topic, message) do
-  #   case type do
-  #     :lobby ->
-  #       CodebattleWeb.Endpoint.broadcast!(
-  #         "chat:lobby",
-  #         topic,
-  #         message
-  #       )
-
-  #     {:tournament, id} ->
-  #       CodebattleWeb.Endpoint.broadcast!(
-  #         Tournament.Server.tournament_topic_name(id),
-  #         topic,
-  #         message
-  #       )
-
-  #       CodebattleWeb.Endpoint.broadcast!(
-  #         "chat:t_#{id}",
-  #         topic,
-  #         message
-  #       )
-
-  #     {:game, id} ->
-  #       CodebattleWeb.Endpoint.broadcast!(
-  #         "chat:g_#{id}",
-  #         topic,
-  #         message
-  #       )
-
-  #     _ ->
-  #       :ok
-  #   end
-  # end
 end

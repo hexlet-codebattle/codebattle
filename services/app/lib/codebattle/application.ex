@@ -38,7 +38,10 @@ defmodule Codebattle.Application do
         {Codebattle.Game.GlobalSupervisor, []},
         {Codebattle.Tournament.GlobalSupervisor, []},
         {Codebattle.InvitesKillerServer, []},
-        {Codebattle.Chat.Server, :lobby},
+        %{
+          id: Codebattle.Chat.Lobby,
+          start: {Codebattle.Chat, :start_link, [:lobby, %{message_ttl: :timer.hours(8)}]}
+        },
         {Codebattle.Bot.CreatorServer, []},
         {Codebattle.Utils.ContainerGameKiller, []},
         {Codebattle.UsersActivityServer, []},

@@ -22,6 +22,7 @@ defmodule CodebattleWeb.Factory do
 
   def admin_factory do
     %User{
+      id: 1_984_198_419,
       name: "admin",
       email: sequence(:username, &"test#{&1}@test.io"),
       rating: 123,

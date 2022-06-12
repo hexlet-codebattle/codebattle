@@ -66,9 +66,8 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     {:noreply, assign(socket, messages: Enum.concat(socket.assigns.messages, [payload]))}
   end
 
-  def handle_info(%{topic: topic, event: "chat:ban", payload: _payload}, socket) do
+  def handle_info(%{topic: _topic, event: "chat:user_banned", payload: _payload}, socket) do
     tournament = socket.assigns.tournament
-    IO.inspect(111_111_111_111_111_111)
     {:noreply, assign(socket, messages: get_chat_messages(tournament.id))}
   end
 
@@ -178,79 +177,48 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     {:noreply, socket}
   end
 
-  def handle_event("chat_ban", params, socket) do
+  def handle_event("chat_ban_user", params, socket) do
     tournament = socket.assigns.tournament
     current_user = socket.assigns.current_user
-    IO.inspect(111_111_111)
 
     if Tournament.Helpers.can_moderate?(tournament, current_user) do
-      Chat.Server.command(
-        {:tournament, tournament.id},
-        current_user,
-        %{type: "ban", name: params["name"], time: :os.system_time(:seconds)}
-      )
-
-      IO.inspect(22222)
-
-      {:noreply, socket}
-    else
-      {:noreply, socket}
-    end
-  end
-
-  def handle_event("chat_message", %{"message" => %{"content" => ""}}, socket),
-    do: {:noreply, socket}
-
-  def handle_event("chat_message", params, socket) do
-    tournament = socket.assigns.tournament
-    current_user = socket.assigns.current_user
-
-    text = params["message"]["content"]
-
-    if String.starts_with?(text, "/") do
-      case Regex.scan(~r/\/(\w+)/, text) do
-        [[_, type]] ->
-          params =
-            text
-            |> String.slice(1..-1)
-            |> String.split()
-            |> Enum.slice(1..-1)
-            |> Enum.reduce(%{}, fn x, acc ->
-              case String.split(x, ":") do
-                [k, v] -> Map.put(acc, String.to_atom(k), v)
-                _ -> acc
-              end
-            end)
-
-          Chat.Server.command(
-            {:tournament, tournament.id},
-            current_user,
-            Map.merge(params, %{type: type})
-          )
-
-        _ ->
-          :ok
-      end
-    else
-      Chat.Server.add_message(
+      Chat.ban_user(
         {:tournament, tournament.id},
         %{
-          name: current_user.name,
-          text: text,
-          time: :os.system_time(:seconds)
+          admin_name: current_user.name,
+          name: params["name"],
+          user_id: String.to_integer(params["user_id"])
         }
       )
     end
 
-    # CodebattleWeb.Endpoint.broadcast_from(
-    #   self(),
-    #   topic_name(tournament),
-    #   "chat:#{tournament.id}",
-    #   %{messages: messages}
-    # )
-    # IO.inspect messages
+    {:noreply, socket}
+  end
 
-    # messages = get_chat_messages(tournament.id)
+  def handle_event("chat_clean_banned", params, socket) do
+    tournament = socket.assigns.tournament
+    current_user = socket.assigns.current_user
+
+    if Tournament.Helpers.can_moderate?(tournament, current_user) do
+      Chat.clean_banned({:tournament, tournament.id})
+    end
+
+    {:noreply, socket}
+  end
+
+  def handle_event("chat_message", %{"message" => %{"text" => ""}}, socket),
+    do: {:noreply, socket}
+
+  def handle_event("chat_message", %{"message" => %{"text" => text}}, socket) do
+    tournament = socket.assigns.tournament
+    current_user = socket.assigns.current_user
+
+    Chat.add_message({:tournament, tournament.id}, %{
+      type: :text,
+      user_id: current_user.id,
+      name: current_user.name,
+      text: text
+    })
 
     {:noreply, socket}
   end
@@ -303,10 +271,6 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
   defp chat_topic_name(tournament), do: "chat:tournament:#{tournament.id}"
 
   defp get_chat_messages(id) do
-    try do
-      Chat.Server.get_messages({:tournament, id})
-    catch
-      :exit, _reason -> [%{type: "info", name: "Bot", text: "Tournament over, create a new one!"}]
-    end
+    Chat.get_messages({:tournament, id})
   end
 end
