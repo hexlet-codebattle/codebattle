@@ -40,8 +40,7 @@ defmodule Codebattle.CodeCheck.OutputParserV2 do
         nil
       else
         outputs["messages"]
-        |> Enum.map(& &1["value"])
-        |> Enum.join("/n")
+        |> Enum.map_join("/n", & &1["value"])
       end
 
     cond do
