@@ -71,7 +71,8 @@ defmodule Codebattle.Bot.ChatClient do
     [
       "Sorry, can't wait much longer. I'll start now.",
       "I'm done with waiting",
-      "Come on, time is running out"
+      "Come on, time is running out",
+      "Tic-toc, time is up! "
     ]
     |> Enum.random()
   end
@@ -79,7 +80,7 @@ defmodule Codebattle.Bot.ChatClient do
   defp some_excuse() do
     [
       "You lucky. I don't have a clue, how solve it",
-      "Perhaps, you can solve this better than i can",
+      "Perhaps, you can solve this better than I can",
       "Dame it!!!! It's hard task...",
       "It's X0xl0ma, Argh!!! I knew she would do something",
       "Irkin, fix me",
@@ -87,13 +88,17 @@ defmodule Codebattle.Bot.ChatClient do
       "Huge Lebowski, where are you man?!",
       "Lera-Valera Help!!!111",
       "RedBrother, HELP me, please!!!!",
-      "I seem to remember how to solve this task in Clojure..."
+      "I seem to remember how to solve this task in Clojure...",
+      "Ruby or not to Ruby?..."
     ]
     |> Enum.random()
   end
 
   defp some_congrats("training") do
-    "Congratulations! You win training game. Now you can register and fight for a place in the ranking."
+    [
+      "Congratulations! You win training game. Now you can register and fight for a place in the ranking."
+    ]
+    |> Enum.random()
   end
 
   defp some_congrats(_) do
@@ -101,7 +106,9 @@ defmodule Codebattle.Bot.ChatClient do
       "GG WP",
       "Vtm, you are a bad teacher.",
       "I'll be back next time!",
-      "I lost the battle, but I will win the war!"
+      "I lost the battle, but I will win the war!",
+      "I will return!!111",
+      "I'll get my revenge next time!"
     ]
     |> Enum.random()
   end
@@ -139,7 +146,10 @@ defmodule Codebattle.Bot.ChatClient do
   defp say_about_code(_chat_state) do
     [
       "Your code looks very strange...",
-      "What did you just type? Looks strange..."
+      "What did you just type? Looks strange...",
+      "What is this?...",
+      "Hmmmm...",
+      "Whaaaaat?..."
     ]
     |> Enum.random()
   end
