@@ -26,6 +26,10 @@ import LobbyChat from './LobbyChat';
 import levelRatio from '../config/levelRatio';
 import PlayerLoading from '../components/PlayerLoading';
 
+const isActiveGame = game => [
+    gameStatusCodes.playing, gameStatusCodes.waitingOpponent,
+  ].includes(game.state);
+
 const Players = ({ players, checkResults }) => {
   if (players.length === 1) {
     return (
@@ -326,7 +330,8 @@ const ActiveGames = ({ games }) => {
             checkResults[0].assertsCount
             checkResults[0].successCount
           */}
-          {sortedGames.map(game => (
+          {sortedGames.map(game => (isActiveGame(game)
+            && (
             <tr key={game.id} className="text-dark game-item">
               <td className="p-3 align-middle text-nowrap">
                 <GameLevelBadge level={game.level} />
@@ -347,6 +352,7 @@ const ActiveGames = ({ games }) => {
                 <GameActionButton game={game} />
               </td>
             </tr>
+            )
           ))}
         </tbody>
       </table>
