@@ -6,16 +6,12 @@ defmodule Mix.Tasks.Dockers.Push do
   @shortdoc "Push dockers to docker hub"
 
   def run([slug]) do
-    {:ok, _started} = Application.ensure_all_started(:codebattle)
-
     langs = Codebattle.Languages.meta()
     lang = Enum.find(langs, fn {lang, _map} -> lang == slug end) |> elem(1)
     push([lang])
   end
 
   def run(_) do
-    {:ok, _started} = Application.ensure_all_started(:codebattle)
-
     langs = Codebattle.Languages.meta() |> Map.values()
     push(langs)
   end
