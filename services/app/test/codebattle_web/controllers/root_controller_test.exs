@@ -3,7 +3,7 @@ defmodule Codebattle.RootControllerTest do
 
   test "index", %{conn: conn} do
     conn = get(conn, "/")
-    assert html_response(conn, 200) =~ "Welcome to Codebattle!"
+    assert html_response(conn, 200)
   end
 
   test "index for signed_user", %{conn: conn} do

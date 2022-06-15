@@ -44,11 +44,15 @@ defmodule Codebattle.Bot.PlayerServer do
   def initial(:info, :after_init, state) do
     port = Application.get_env(:codebattle, :ws_port, 4000)
 
-    socket_opts = [
-      url: "ws://localhost:#{port}/ws/websocket?vsn=2.0.0&token=#{bot_token(state.bot_id)}"
-    ]
+    socket_opts =
+      [
+        url: "ws://localhost:#{port}/ws/websocket?vsn=2.0.0&token=#{bot_token(state.bot_id)}"
+      ]
+      |> IO.inspect()
 
-    {:ok, socket} = PhoenixClient.Socket.start_link(socket_opts)
+    IO.inspect 1111111111
+    {:ok, socket} = PhoenixClient.Socket.start_link(socket_opts) |> IO.inspect()
+    IO.inspect 222222222
 
     game_topic = "game:#{state.game_id}"
 
@@ -60,11 +64,14 @@ defmodule Codebattle.Bot.PlayerServer do
         tournament_id -> "chat:t_#{tournament_id}"
       end
 
-    :timer.sleep(1_500)
-    game_channel_data = PhoenixClient.Channel.join(socket, game_topic)
-    chat_channel_data = PhoenixClient.Channel.join(socket, chat_topic)
+    :timer.sleep(:timer.seconds(3))
+    IO.inspect 4444444444
+    game_channel_data = PhoenixClient.Channel.join(socket, game_topic) |> IO.inspect()
+    chat_channel_data = PhoenixClient.Channel.join(socket, chat_topic) |> IO.inspect()
 
     case {game_channel_data, chat_channel_data} do
+      IO.inspect  game_channel_data
+      IO.inspect  chat_channel_data
       {{:ok, game_state, game_channel}, {:ok, chat_state, chat_channel}} ->
         new_state =
           Map.merge(state, %{
@@ -73,6 +80,11 @@ defmodule Codebattle.Bot.PlayerServer do
             game_state: game_state,
             chat_state: chat_state
           })
+
+        PhoenixClient.Channel.push_async(chat_channel, "chat:new_msg", %{
+          "message" => "asdfasfd",
+          "user" => "test_bot"
+        })
 
         Process.send_after(self(), :send_hello_message, 100)
         Process.send_after(self(), :init_playbook, @timeout_start_playbook)

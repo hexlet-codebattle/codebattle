@@ -59,8 +59,11 @@ defmodule Codebattle.Game.Context do
 
   def get_game(id) do
     case Server.get_game(id) do
-      {:ok, game} -> mark_as_live(game)
-      {:error, :not_found} -> get_from_db!(id)
+      {:ok, game} ->
+        mark_as_live(game)
+
+      {:error, :not_found} ->
+        get_from_db!(id)
     end
   end
 

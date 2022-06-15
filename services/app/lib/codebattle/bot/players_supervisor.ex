@@ -18,7 +18,7 @@ defmodule Codebattle.Bot.PlayersSupervisor do
 
   @impl true
   def init(%{game_id: game_id}) do
-    Logger.info("Create PlayersSupervisor for game_id #{game_id}")
+    Logger.info("Create #{__MODULE__} for game_id #{game_id}")
     DynamicSupervisor.init(strategy: :one_for_one)
   end
 
