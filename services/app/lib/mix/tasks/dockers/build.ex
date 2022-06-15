@@ -6,16 +6,12 @@ defmodule Mix.Tasks.Dockers.Build do
   @shortdoc "Push dockers to cloud"
 
   def run([slug]) do
-    {:ok, _started} = Application.ensure_all_started(:codebattle)
-
     langs = Codebattle.Languages.meta()
     lang = Enum.find(langs, fn {lang, _map} -> lang == slug end) |> elem(1)
     build([lang])
   end
 
   def run(_) do
-    {:ok, _started} = Application.ensure_all_started(:codebattle)
-
     langs = Codebattle.Languages.meta() |> Map.values()
     build(langs)
   end
