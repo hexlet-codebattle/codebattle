@@ -130,7 +130,7 @@ defmodule Codebattle.GameProcess.Play do
             editor_lang: editor_lang
           })
 
-        ActiveGames.update_game(new_fsm)
+        # ActiveGames.update_game(new_fsm)
 
         winner = FsmHelpers.get_winner(new_fsm) || %{id: nil}
 
