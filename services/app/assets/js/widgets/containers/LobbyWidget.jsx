@@ -6,6 +6,7 @@ import moment from 'moment';
 
 import { useDispatch, useSelector } from 'react-redux';
 import Gon from 'gon';
+import classnames from 'classnames';
 import * as lobbyMiddlewares from '../middlewares/Lobby';
 import gameStatusCodes from '../config/gameStatusCodes';
 import { actions } from '../slices';
@@ -27,8 +28,8 @@ import levelRatio from '../config/levelRatio';
 import PlayerLoading from '../components/PlayerLoading';
 
 const isActiveGame = game => [
-    gameStatusCodes.playing, gameStatusCodes.waitingOpponent,
-  ].includes(game.state);
+  gameStatusCodes.playing, gameStatusCodes.waitingOpponent,
+].includes(game.state);
 
 const Players = ({ players, checkResults }) => {
   if (players.length === 1) {
@@ -332,26 +333,26 @@ const ActiveGames = ({ games }) => {
           */}
           {sortedGames.map(game => (isActiveGame(game)
             && (
-            <tr key={game.id} className="text-dark game-item">
-              <td className="p-3 align-middle text-nowrap">
-                <GameLevelBadge level={game.level} />
-              </td>
-              <td className="p-3 align-middle text-center text-nowrap">
-                <img
-                  alt={game.state}
-                  title={game.state}
-                  src={
-                    game.state === 'playing'
-                      ? '/assets/images/playing.svg'
-                      : '/assets/images/waitingOpponent.svg'
-                  }
-                />
-              </td>
-              <Players gameId={game.id} players={game.players} checkResults={game.checkResults} />
-              <td className="p-3 align-middle text-center">
-                <GameActionButton game={game} />
-              </td>
-            </tr>
+              <tr key={game.id} className="text-dark game-item">
+                <td className="p-3 align-middle text-nowrap">
+                  <GameLevelBadge level={game.level} />
+                </td>
+                <td className="p-3 align-middle text-center text-nowrap">
+                  <img
+                    alt={game.state}
+                    title={game.state}
+                    src={
+                      game.state === 'playing'
+                        ? '/assets/images/playing.svg'
+                        : '/assets/images/waitingOpponent.svg'
+                    }
+                  />
+                </td>
+                <Players gameId={game.id} players={game.players} checkResults={game.checkResults} />
+                <td className="p-3 align-middle text-center">
+                  <GameActionButton game={game} />
+                </td>
+              </tr>
             )
           ))}
         </tbody>
@@ -360,42 +361,64 @@ const ActiveGames = ({ games }) => {
   );
 };
 
+const tabLinkClassName = (...hash) => {
+  const url = new URL(window.location);
+  return classnames('nav-item nav-link text-uppercase rounded-0 text-black font-weight-bold p-3', { active: hash.includes(url.hash) });
+};
+
+const tabContentClassName = hash => {
+  const url = new URL(window.location);
+  return classnames({
+    'tab-pane': true,
+    fade: true,
+    active: hash.includes(url.hash),
+    show: hash.includes(url.hash),
+  });
+};
+
+const tabLinkHandler = hash => () => {
+  window.location.hash = hash;
+};
+
 const GameContainers = ({
- activeGames, completedGames, liveTournaments, completedTournaments,
+  activeGames, completedGames, liveTournaments, completedTournaments,
 }) => (
   <div className="p-0">
     <nav>
       <div className="nav nav-tabs bg-gray" id="nav-tab" role="tablist">
         <a
-          className="nav-item nav-link active text-uppercase rounded-0 text-black font-weight-bold p-3"
+          className={tabLinkClassName('#lobby', '')}
           id="lobby-tab"
           data-toggle="tab"
           href="#lobby"
           role="tab"
           aria-controls="lobby"
           aria-selected="true"
+          onClick={tabLinkHandler('#lobby')}
         >
           Lobby
         </a>
         <a
-          className="nav-item nav-link text-uppercase rounded-0 text-black font-weight-bold p-3"
+          className={tabLinkClassName('#tournaments')}
           id="tournaments-tab"
           data-toggle="tab"
           href="#tournaments"
           role="tab"
           aria-controls="tournaments"
           aria-selected="false"
+          onClick={tabLinkHandler('#tournaments')}
         >
           Tournaments
         </a>
         <a
-          className="nav-item nav-link text-uppercase rounded-0 text-black font-weight-bold p-3"
+          className={tabLinkClassName('#completedGames')}
           id="completedGames-tab"
           data-toggle="tab"
           href="#completedGames"
           role="tab"
           aria-controls="completedGames"
           aria-selected="false"
+          onClick={tabLinkHandler('#completedGames')}
         >
           Completed Games
         </a>
@@ -403,7 +426,7 @@ const GameContainers = ({
     </nav>
     <div className="tab-content" id="nav-tabContent">
       <div
-        className="tab-pane fade show active"
+        className={tabContentClassName('#lobby', '')}
         id="lobby"
         role="tabpanel"
         aria-labelledby="lobby-tab"
@@ -411,7 +434,7 @@ const GameContainers = ({
         <ActiveGames games={activeGames} />
       </div>
       <div
-        className="tab-pane fade"
+        className={tabContentClassName('#tournaments')}
         id="tournaments"
         role="tabpanel"
         aria-labelledby="tournaments-tab"
@@ -420,7 +443,7 @@ const GameContainers = ({
         <CompletedTournaments tournaments={completedTournaments} />
       </div>
       <div
-        className="tab-pane fade"
+        className={tabContentClassName('#completedGames')}
         id="completedGames"
         role="tabpanel"
         aria-labelledby="completedGames-tab"
