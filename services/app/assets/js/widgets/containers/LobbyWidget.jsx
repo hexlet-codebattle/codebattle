@@ -26,6 +26,7 @@ import GameLevelBadge from '../components/GameLevelBadge';
 import LobbyChat from './LobbyChat';
 import levelRatio from '../config/levelRatio';
 import PlayerLoading from '../components/PlayerLoading';
+import hashLinkNames from '../config/hashLinkNames';
 
 const isActiveGame = game => [
   gameStatusCodes.playing, gameStatusCodes.waitingOpponent,
@@ -387,38 +388,38 @@ const GameContainers = ({
     <nav>
       <div className="nav nav-tabs bg-gray" id="nav-tab" role="tablist">
         <a
-          className={tabLinkClassName('#lobby', '')}
+          className={tabLinkClassName(hashLinkNames.lobby, hashLinkNames.default)}
           id="lobby-tab"
           data-toggle="tab"
           href="#lobby"
           role="tab"
           aria-controls="lobby"
           aria-selected="true"
-          onClick={tabLinkHandler('#lobby')}
+          onClick={tabLinkHandler(hashLinkNames.lobby)}
         >
           Lobby
         </a>
         <a
-          className={tabLinkClassName('#tournaments')}
+          className={tabLinkClassName(hashLinkNames.tournaments)}
           id="tournaments-tab"
           data-toggle="tab"
           href="#tournaments"
           role="tab"
           aria-controls="tournaments"
           aria-selected="false"
-          onClick={tabLinkHandler('#tournaments')}
+          onClick={tabLinkHandler(hashLinkNames.tournaments)}
         >
           Tournaments
         </a>
         <a
-          className={tabLinkClassName('#completedGames')}
+          className={tabLinkClassName(hashLinkNames.completedGames)}
           id="completedGames-tab"
           data-toggle="tab"
           href="#completedGames"
           role="tab"
           aria-controls="completedGames"
           aria-selected="false"
-          onClick={tabLinkHandler('#completedGames')}
+          onClick={tabLinkHandler(hashLinkNames.completedGames)}
         >
           Completed Games
         </a>
@@ -426,7 +427,7 @@ const GameContainers = ({
     </nav>
     <div className="tab-content" id="nav-tabContent">
       <div
-        className={tabContentClassName('#lobby', '')}
+        className={tabContentClassName(hashLinkNames.lobby, hashLinkNames.default)}
         id="lobby"
         role="tabpanel"
         aria-labelledby="lobby-tab"
@@ -434,7 +435,7 @@ const GameContainers = ({
         <ActiveGames games={activeGames} />
       </div>
       <div
-        className={tabContentClassName('#tournaments')}
+        className={tabContentClassName(hashLinkNames.tournaments)}
         id="tournaments"
         role="tabpanel"
         aria-labelledby="tournaments-tab"
@@ -443,7 +444,7 @@ const GameContainers = ({
         <CompletedTournaments tournaments={completedTournaments} />
       </div>
       <div
-        className={tabContentClassName('#completedGames')}
+        className={tabContentClassName(hashLinkNames.completedGames)}
         id="completedGames"
         role="tabpanel"
         aria-labelledby="completedGames-tab"
