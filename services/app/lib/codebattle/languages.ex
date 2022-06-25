@@ -447,11 +447,11 @@ defmodule Codebattle.Languages do
       "clojure" => %{
         name: "clojure",
         slug: "clojure",
-        version: "1.10.3",
+        version: "1.11.1",
         base_image: :ubuntu,
         check_dir: "check",
         extension: "clj",
-        docker_image: "codebattle/clojure:1.10.3.1075",
+        docker_image: "codebattle/clojure:1.11.1.1149",
         solution_version: :default,
         solution_template: "(defn solution [<%= arguments %>] <%= return_statement %>)",
         arguments_template: %{

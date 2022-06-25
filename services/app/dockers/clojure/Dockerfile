@@ -1,4 +1,4 @@
-FROM clojure:openjdk-11-tools-deps-1.10.3.1075
+FROM clojure:openjdk-11-tools-deps-1.11.1.1149
 
 RUN rm -rf /var/lib/apt/lists/* && apt-get update && apt-get install -y build-essential
 
