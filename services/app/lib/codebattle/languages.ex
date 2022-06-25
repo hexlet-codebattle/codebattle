@@ -371,11 +371,11 @@ defmodule Codebattle.Languages do
       "python" => %{
         name: "python",
         slug: "python",
-        version: "3.11.0",
+        version: "3.11.1",
         base_image: :ubuntu,
         check_dir: "check",
         extension: "py",
-        docker_image: "codebattle/python:3.11.0",
+        docker_image: "codebattle/python:3.11.1",
         solution_version: :typed,
         solution_template:
           "from typing import List, Dict\n\ndef solution(<%= arguments %>)<%= expected %>:",
@@ -447,11 +447,11 @@ defmodule Codebattle.Languages do
       "clojure" => %{
         name: "clojure",
         slug: "clojure",
-        version: "1.10.3",
+        version: "1.11.1",
         base_image: :ubuntu,
         check_dir: "check",
         extension: "clj",
-        docker_image: "codebattle/clojure:1.10.3.1075",
+        docker_image: "codebattle/clojure:1.11.1.1149",
         solution_version: :default,
         solution_template: "(defn solution [<%= arguments %>] <%= return_statement %>)",
         arguments_template: %{

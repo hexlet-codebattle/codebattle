@@ -104,6 +104,7 @@ defmodule Codebattle.Bot.ChatClient do
   defp some_congrats(_) do
     [
       "GG WP",
+      "Well played!",
       "Vtm, you are a bad teacher.",
       "I'll be back next time!",
       "I lost the battle, but I will win the war!",
@@ -118,7 +119,8 @@ defmodule Codebattle.Bot.ChatClient do
       "Did the task seems complicated? Here, at hexlet.io we will teach you how to solve such tasks!",
       "Hey, there! Learn JS and be happy!",
       "Maybe you should pick Ruby for this task?",
-      "You now that PHP has levenshtein distance calculation function?"
+      "You know that PHP has levenshtein distance calculation function?",
+      "You know that Ruby has functions for calculating complex numbers?"
     ]
     |> Enum.random()
   end
