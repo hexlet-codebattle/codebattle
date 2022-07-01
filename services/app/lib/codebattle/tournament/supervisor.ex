@@ -19,8 +19,5 @@ defmodule Codebattle.Tournament.Supervisor do
     Supervisor.init(children, strategy: :one_for_one)
   end
 
-  # HELPERS
-
-  defp supervisor_name(id), do: {:via, :gproc, supervisor_key(id)}
-  defp supervisor_key(id), do: {:n, :l, {:tournament_sup, to_string(id)}}
+  defp supervisor_name(id), do: {:via, Registry, {Codebattle.Registry, "tournament_sup:#{id}"}}
 end

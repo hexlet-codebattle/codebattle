@@ -40,7 +40,7 @@ defmodule Codebattle.Game.Player do
     field(:lang, :string, default: "js")
     field(:result, :string, default: "undefined")
     # CheckResult.t() | CheckResultV2.t()
-    field(:check_result, :map, default: %CheckResult{})
+    field(:check_result, AtomizedMap, default: %CheckResult{})
     field(:creator, :boolean, default: false)
     field(:is_bot, :boolean, default: false)
     field(:name, :string, default: "Ada Lovelace")

@@ -1,138 +1,167 @@
 defmodule Codebattle.Bot.PlaybookPlayer do
   @moduledoc """
-  Process for playing playbooks of tasks
+  Module for playing playbooks
   """
 
   require Logger
-  alias Codebattle.Bot.Playbook
 
-  @min_bot_player_speed Application.compile_env(:codebattle, Codebattle.Bot)[
-                          :min_bot_player_speed
-                        ]
-  def call(params) do
-    playbook = Playbook.random(params.task_id)
+  alias Codebattle.Bot
+  alias Codebattle.Game
 
-    if playbook do
-      %Playbook{id: id, winner_id: winner_id, data: playbook_data} = playbook
-      [init_state | actions] = create_user_playbook(playbook_data.records, winner_id)
-      player_meta = Enum.find(playbook_data.players, &(&1["id"] == winner_id))
-      step_coefficient = params.bot_time_ms / Map.get(player_meta, "total_time_ms")
-
-      Logger.info("#{__MODULE__} BOT START with playbook_id: #{id};
-        bot_time_ms: #{params.bot_time_ms},
-        k: #{step_coefficient},
-        total_time_ms: #{player_meta["total_time_ms"]}
-        ")
-
-      start_playbook_seq(init_state, actions, params.game_channel, step_coefficient)
-    else
-      :no_playbook
-    end
-  end
-
-  defp start_playbook_seq(
-         %{"editor_text" => editor_text, "editor_lang" => init_lang},
-         actions,
-         channel_pid,
-         step_coefficient
-       ) do
+  defmodule Params do
+    @moduledoc false
     # Action is one the maps
     #
     # 1 Main map with action to update text or lang
-    # %{"type" => "editor_text", "diff" => %{time" => 10, "delta" => [], next_lang: "js"}}
+    # %{type: "editor_text", diff: %{time: 10, delta: [], next_lang: "js"}}
     #
-    # 2 Map with action to send solution
-    # %{"type" => "game_over"}
+    # 2 Map with action to send check_solution
+    # %{type: "game_over"}
 
-    init_document = TextDelta.new() |> TextDelta.insert(editor_text)
-    state = {init_document, init_lang}
-    send_editor_state(channel_pid, state)
-
-    %{
-      editor_state: state,
-      actions: actions,
-      step_coefficient: step_coefficient
-    }
+    defstruct ~w(
+      actions
+      bot_time_ms
+      step_command
+      step_timeout_ms
+      editor_state
+      playbook_id
+      step_coefficient
+      total_playbook_time_ms
+    )a
   end
 
-  def update_solution(%{
-        playbook_params:
-          %{
-            editor_state: {document, editor_lang},
-            actions: [%{"type" => "update_editor_data", "diff" => diff} = event | rest],
-            step_coefficient: step_coefficient
-          } = playbook_params,
-        game_channel: channel_pid
-      }) do
-    next_document = create_next_document(document, diff)
-    next_lang = diff |> Map.get("next_lang", editor_lang)
-    next_editor_state = {next_document, next_lang}
-    send_editor_state(channel_pid, next_editor_state)
+  alias Bot.PlaybookPlayer.Params
 
-    new_playbook_params =
-      Map.merge(playbook_params, %{
-        editor_state: next_editor_state,
-        actions: rest
-      })
+  @min_bot_step_timeout Application.compile_env(:codebattle, Codebattle.Bot)[
+                          :min_bot_step_timeout
+                        ]
 
-    timeout = get_timer_value(event, step_coefficient)
+  @pro_rating 1777
+  @junior_rating 1111
 
-    {new_playbook_params, Kernel.trunc(timeout)}
-  end
+  @pro_time_ms %{
+    "elementary" => :timer.minutes(3),
+    "easy" => :timer.minutes(5),
+    "medium" => :timer.minutes(7),
+    "hard" => :timer.minutes(11)
+  }
 
-  def update_solution(%{
-        playbook_params: %{
-          editor_state: editor_state,
-          actions: [%{"type" => "game_over"} | _rest]
-        },
-        game_channel: channel_pid
-      }) do
-    send_check_request(channel_pid, editor_state)
+  @junior_time_ms %{
+    "elementary" => :timer.minutes(13),
+    "easy" => :timer.minutes(17),
+    "medium" => :timer.minutes(19),
+    "hard" => :timer.minutes(23)
+  }
 
-    :stop
-  end
+  def init(game) do
+    case Bot.Playbook.get_random(game.task_id) do
+      %Bot.Playbook{id: id, winner_id: winner_id, data: playbook_data} ->
+        playbook_actions = prepare_user_playbook(playbook_data.records, winner_id)
+        playbook_winner_meta = Enum.find(playbook_data.players, &(&1.id == winner_id))
+        bot_time_ms = Float.round(get_bot_time_ms(game), 3)
 
-  defp create_user_playbook(records, user_id) do
-    Enum.filter(
-      records,
-      &(&1["id"] == user_id &&
-          &1["type"] in ["init", "update_editor_data", "game_over"])
-    )
-  end
+        step_coefficient = Float.round(bot_time_ms / (playbook_winner_meta.total_time_ms + 1), 3)
 
-  defp create_next_document(document, diff) do
-    delta = diff |> Map.get("delta")
-    text_delta = delta |> AtomicMap.convert(safe: true) |> TextDelta.new()
-    TextDelta.apply!(document, text_delta)
-  end
+        {:ok,
+         %Params{
+           playbook_id: id,
+           actions: playbook_actions,
+           step_coefficient: step_coefficient,
+           total_playbook_time_ms: playbook_winner_meta.total_time_ms,
+           bot_time_ms: bot_time_ms
+         }}
 
-  defp get_timer_value(%{"type" => "game_over"}, _step_coefficient), do: 0
-
-  defp get_timer_value(%{"diff" => diff}, step_coefficient) do
-    time = Map.get(diff, "time") * step_coefficient
-
-    if time < 700 do
-      @min_bot_player_speed
-    else
-      time
+      _ ->
+        {:error, :no_playbook}
     end
   end
 
-  defp send_editor_state(_channel_pid, {%{ops: []}, _lang}) do
-    :ok
+  # init
+  def next_step(params = %Params{editor_state: nil}) do
+    %{actions: [%{editor_text: editor_text, editor_lang: editor_lang} | rest_actions]} = params
+
+    document = TextDelta.new() |> TextDelta.insert(editor_text)
+
+    %{
+      params
+      | actions: rest_actions,
+        step_command: :update_editor,
+        editor_state: {document, editor_lang},
+        step_timeout_ms: :timer.seconds(1)
+    }
   end
 
-  defp send_editor_state(channel_pid, {document, lang}) do
-    PhoenixClient.Channel.push_async(channel_pid, "editor:data", %{
-      "lang_slug" => lang,
-      "editor_text" => document.ops |> hd |> Map.get(:insert)
-    })
+  def next_step(
+        params = %Params{
+          actions: [action = %{type: "update_editor_data", diff: diff} | rest_actions]
+        }
+      ) do
+    {document, lang} = params.editor_state
+    document = TextDelta.apply!(document, TextDelta.new(diff.delta))
+    lang = Map.get(diff, :next_lang, lang)
+
+    %{
+      params
+      | actions: rest_actions,
+        step_command: :update_editor,
+        editor_state: {document, lang},
+        step_timeout_ms: get_bot_step_timeout(action, params.step_coefficient)
+    }
   end
 
-  defp send_check_request(channel_pid, {document, lang}) do
-    PhoenixClient.Channel.push_async(channel_pid, "check_result", %{
-      "lang_slug" => lang,
-      "editor_text" => document.ops |> hd |> Map.get(:insert)
-    })
+  def next_step(params = %Params{actions: [action = %{type: "game_over"} | _rest]}) do
+    {document, lang} = params.editor_state
+
+    %{
+      params
+      | actions: [],
+        step_command: :check_result,
+        editor_state: {document, lang},
+        step_timeout_ms: get_bot_step_timeout(action, params.step_coefficient)
+    }
+  end
+
+  def get_editor_text(%{ops: []}), do: nil
+  def get_editor_text(document), do: document.ops |> hd |> Map.get(:insert)
+
+  defp prepare_user_playbook(records, user_id) do
+    Enum.filter(
+      records,
+      &(&1.id == user_id && &1.type in ["init", "update_editor_data", "game_over"])
+    )
+  end
+
+  defp get_bot_step_timeout(%{type: "game_over"}, _step_coefficient), do: 0
+
+  defp get_bot_step_timeout(%{diff: diff}, step_coefficient) do
+    @min_bot_step_timeout
+    |> max(diff.time * step_coefficient)
+    |> Kernel.*(1.0)
+    |> Float.round(3)
+  end
+
+  @doc """
+  Calculates the total operating time of the bot
+  based on the hyperbolic dependence of time on the rating
+  y = k/(x + b);
+  y: time, x: rating;
+  """
+  defp get_bot_time_ms(game) do
+    player_rating =
+      case Game.Helpers.get_first_non_bot(game) do
+        nil -> 1200
+        player -> player.rating
+      end
+
+    x1 = @pro_rating
+    x2 = @junior_rating
+
+    y1 = @pro_time_ms[game.level]
+    y2 = @junior_time_ms[game.level]
+
+    k = y1 * (x1 * y2 - x2 * y2) / (y2 - y1)
+    b = (x1 * y1 - x2 * y2) / (y2 - y1)
+
+    k / (player_rating + b)
   end
 end

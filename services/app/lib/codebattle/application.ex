@@ -18,9 +18,20 @@ defmodule Codebattle.Application do
         []
       end
 
+    non_test_workers =
+      if Mix.env() == :test do
+        []
+      else
+        [
+          {Codebattle.Bot.GameCreator, []},
+          {Codebattle.UsersRankUpdateServer, []}
+        ]
+      end
+
     children =
       [
         {Codebattle.Repo, []},
+        {Registry, keys: :unique, name: Codebattle.Registry},
         CodebattleWeb.Telemetry,
         %{
           # PubSub for internal messages
@@ -42,11 +53,8 @@ defmodule Codebattle.Application do
           id: Codebattle.Chat.Lobby,
           start: {Codebattle.Chat, :start_link, [:lobby, %{message_ttl: :timer.hours(8)}]}
         },
-        {Codebattle.Bot.CreatorServer, []},
-        {Codebattle.Utils.ContainerGameKiller, []},
-        {Codebattle.UsersActivityServer, []},
-        {Codebattle.UsersRankUpdateServer, []}
-      ] ++ prod_workers
+        {Codebattle.Utils.ContainerGameKiller, []}
+      ] ++ prod_workers ++ non_test_workers
 
     Supervisor.start_link(children,
       strategy: :one_for_one,

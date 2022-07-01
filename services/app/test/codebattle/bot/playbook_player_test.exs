@@ -1,8 +1,10 @@
-defmodule Codebattle.Bot.PlaybookPlayTest do
+defmodule Codebattle.Bot.PlaybookPlayerTest do
   use Codebattle.IntegrationCase
 
   alias CodebattleWeb.{GameChannel, UserSocket}
   alias Codebattle.Game.Helpers
+  alias Codebattle.Game
+  alias Codebattle.Bot
   alias CodebattleWeb.UserSocket
 
   test "Bot playing with user", %{conn: conn} do
@@ -54,8 +56,19 @@ defmodule Codebattle.Bot.PlaybookPlayTest do
 
     # Create game
     level = "easy"
-    {:ok, game} = Codebattle.Bot.GameCreator.call(level)
-    bot = Helpers.get_first_player(game)
+
+    bot = Bot.Factory.build()
+
+    {:ok, game} =
+      Game.Context.create_game(%{
+        state: "waiting_opponent",
+        type: "duo",
+        mode: "standard",
+        visibility_type: "public",
+        level: level,
+        players: [bot]
+      })
+
     game_id = game.id
     game_topic = "game:#{game_id}"
 

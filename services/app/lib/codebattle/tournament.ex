@@ -40,7 +40,7 @@ defmodule Codebattle.Tournament do
     field(:match_timeout_seconds, :integer, default: @default_match_timeout)
     field(:step, :integer, default: 0)
     field(:starts_at, :utc_datetime)
-    field(:meta, :map, default: %{})
+    field(:meta, AtomizedMap, default: %{})
     field(:last_round_started_at, :naive_datetime)
     field(:access_type, :string, default: "public")
     field(:access_token, :string)

@@ -1,6 +1,8 @@
 defmodule Codebattle.Chat.Server do
   use GenServer
 
+  require Logger
+
   alias Codebattle.Chat
   alias Codebattle.User
 
@@ -19,7 +21,7 @@ defmodule Codebattle.Chat.Server do
 
   @spec start_link(Chat.chat_type(), Chat.start_params()) :: GenServer.on_start()
   def start_link(chat_type, params) do
-    GenServer.start_link(__MODULE__, params, name: chat_key(chat_type))
+    GenServer.start_link(__MODULE__, [chat_type, params], name: chat_key(chat_type))
   end
 
   @spec join_chat(Chat.chat_type(), User.t()) ::
@@ -86,7 +88,7 @@ defmodule Codebattle.Chat.Server do
 
   # SERVER
   @impl GenServer
-  def init(params) do
+  def init([chat_type, params]) do
     message_ttl =
       params
       |> Map.get(:message_ttl, @default_message_ttl)
@@ -95,6 +97,7 @@ defmodule Codebattle.Chat.Server do
     clean_timeout = Map.get(params, :clean_timeout, @default_clean_timeout)
     Process.send_after(self(), :clean_messages, clean_timeout)
 
+    Logger.info("Start chat server for #{inspect(chat_type)}")
     {:ok, %{@initial_state | message_ttl: message_ttl, clean_timeout: clean_timeout}}
   end
 
@@ -176,9 +179,6 @@ defmodule Codebattle.Chat.Server do
     {:noreply, %{state | messages: new_messages}}
   end
 
-  # Helpers
-
-  # for system messages
   defp can_send_message?(nil, _), do: true
 
   defp can_send_message?(user_id, state) do
@@ -186,5 +186,5 @@ defmodule Codebattle.Chat.Server do
   end
 
   defp chat_key(:lobby), do: :LOBBY_CHAT
-  defp chat_key({type, id}), do: {:via, :gproc, {:n, :l, {:chat, "#{type}_#{id}"}}}
+  defp chat_key({type, id}), do: {:via, Registry, {Codebattle.Registry, "chat:#{type}:#{id}"}}
 end

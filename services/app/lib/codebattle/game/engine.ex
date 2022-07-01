@@ -2,31 +2,31 @@ defmodule Codebattle.Game.Engine do
   alias Codebattle.Game.{
     Player,
     Server,
-    Helpers,
-    LiveGames,
     GlobalSupervisor
   }
 
+  alias Codebattle.Bot
+  alias Codebattle.Bot.Playbook
+  alias Codebattle.Game
   alias Codebattle.Repo
   alias Codebattle.User
-  alias Codebattle.Game
-  alias Codebattle.UserGame
   alias Codebattle.User.Achievements
+  alias Codebattle.UserGame
   alias CodebattleWeb.Api.GameView
-  alias Codebattle.Bot.Playbook
 
   import Codebattle.Game.Auth
 
   require Logger
 
-  @default_timeout 30 * 60
-  @max_timeout 2 * 60 * 60
+  @default_timeout div(:timer.minutes(30), 1000)
+  @max_timeout div(:timer.hours(1), 1000)
 
   def create_game(params) do
     level = params[:level] || get_random_level()
     task = params[:task] || get_task(level)
     state = params[:state] || get_state_from_params(params)
-    type = params[:type] || "standard"
+    type = params[:type] || "duo"
+    mode = params[:mode] || "standard"
     visibility_type = params[:visibility_type] || "public"
     timeout_seconds = params[:timeout_seconds] || @default_timeout
     [creator | _] = params.players
@@ -42,6 +42,7 @@ defmodule Codebattle.Game.Engine do
            insert_game(%{
              state: state,
              level: level,
+             mode: mode,
              type: type,
              visibility_type: visibility_type,
              timeout_seconds: min(timeout_seconds, @max_timeout),
@@ -49,8 +50,9 @@ defmodule Codebattle.Game.Engine do
              task: task,
              players: players
            }),
+         game = fill_virtual_fields(game),
+         game = mark_as_live(game),
          {:ok, _} <- GlobalSupervisor.start_game(game),
-         :ok <- insert_live_game(game),
          :ok <- maybe_run_bot(game),
          :ok <- maybe_start_timeout_timer(game),
          :ok <- broadcast_live_game(game) do
@@ -68,7 +70,6 @@ defmodule Codebattle.Game.Engine do
              players: game.players ++ [Player.build(user, %{task: game.task})],
              starts_at: TimeHelper.utc_now()
            }),
-         :ok <- LiveGames.update_game(game),
          _game <- update_game!(game, %{state: "playing"}),
          :ok <- broadcast_live_game(game),
          :ok <- maybe_run_bot(game),
@@ -111,7 +112,6 @@ defmodule Codebattle.Game.Engine do
         case {old_game.state, new_game.state} do
           {"playing", "game_over"} ->
             Server.update_playbook(game.id, :game_over, %{id: user.id, lang: editor_lang})
-            LiveGames.delete_game(game.id)
 
             {:ok, _game} = store_result!(new_game)
             store_playbook(new_game)
@@ -139,7 +139,6 @@ defmodule Codebattle.Game.Engine do
   def give_up(game, user) do
     case Server.call_transition(game.id, :give_up, %{id: user.id}) do
       {:ok, {_old_game, new_game}} ->
-        LiveGames.delete_game(new_game.id)
         {:ok, _game} = store_result!(new_game)
         Codebattle.PubSub.broadcast("game:finished", %{game: new_game})
         store_playbook(new_game)
@@ -151,8 +150,8 @@ defmodule Codebattle.Game.Engine do
   end
 
   def cancel_game(game, user) do
-    with %Player{} = player <- Helpers.get_player(game, user.id),
-         :ok <- player_can_cancel_game?(game.id, player),
+    with %Player{} = player <- Game.Helpers.get_player(game, user.id),
+         :ok <- player_can_cancel_game?(game, player),
          :ok <- terminate_game(game),
          %Game{} = _game <- update_game!(game, %{state: "canceled"}) do
       :ok
@@ -167,7 +166,6 @@ defmodule Codebattle.Game.Engine do
         # TODO: move to PUbSub
         CodebattleWeb.Endpoint.broadcast("lobby", "game:remove", %{id: game.id})
         # Engine.store_playbook(game)
-        LiveGames.delete_game(game.id)
         GlobalSupervisor.terminate_game(game.id)
         :ok
 
@@ -187,7 +185,7 @@ defmodule Codebattle.Game.Engine do
     {:ok, {_old_game, game}} =
       Server.call_transition(game.id, :rematch_send_offer, %{player_id: user.id})
 
-    case Helpers.get_rematch_state(game) do
+    case Game.Helpers.get_rematch_state(game) do
       "accepted" ->
         {:ok, new_game} = create_rematch_game(game)
         GlobalSupervisor.terminate_game(game.id)
@@ -238,7 +236,7 @@ defmodule Codebattle.Game.Engine do
       update_game!(game, %{
         state: game.state,
         players: game.players,
-        starts_at: Helpers.get_starts_at(game),
+        starts_at: Game.Helpers.get_starts_at(game),
         finishes_at: TimeHelper.utc_now()
       })
     end)
@@ -275,7 +273,6 @@ defmodule Codebattle.Game.Engine do
     case {old_game.state, new_game.state} do
       {s, "timeout"} when s in ["waiting_opponent", "playing"] ->
         Codebattle.PubSub.broadcast("game:finished", %{game: new_game})
-        LiveGames.delete_game(game.id)
         update_game!(new_game, %{state: "timeout"})
         terminate_game_after(game, 15)
         :ok
@@ -296,11 +293,7 @@ defmodule Codebattle.Game.Engine do
 
   defp maybe_start_timeout_timer(_game), do: :ok
 
-  defp maybe_run_bot(%{state: "playing", type: "bot"} = game) do
-    Game.BotRunner.call(game)
-    :ok
-  end
-
+  defp maybe_run_bot(%{state: "playing", is_bot: true} = game), do: Bot.start_bots(game)
   defp maybe_run_bot(_game), do: :ok
 
   def broadcast_live_game(game) do
@@ -317,9 +310,6 @@ defmodule Codebattle.Game.Engine do
     |> Game.changeset(params)
     |> Repo.insert()
   end
-
-  defp insert_live_game(%{tournament_id: nil} = game), do: LiveGames.insert_new(game)
-  defp insert_live_game(_game), do: :ok
 
   defp create_rematch_game(game) do
     create_game(%{
@@ -346,4 +336,14 @@ defmodule Codebattle.Game.Engine do
 
   defp check_auth(players, nil), do: can_play_game?(players)
   defp check_auth(_, _), do: :ok
+
+  defp mark_as_live(game), do: Map.put(game, :is_live, true)
+
+  defp fill_virtual_fields(game) do
+    %{
+      game
+      | is_bot: Game.Helpers.bot_game?(game),
+        is_tournament: Game.Helpers.tournament_game?(game)
+    }
+  end
 end

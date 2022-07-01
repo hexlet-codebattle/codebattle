@@ -4,6 +4,7 @@ defmodule Codebattle.Game.Supervisor do
   use Supervisor
 
   alias Codebattle.Game
+  alias Codebattle.Bot
 
   def start_link(game) do
     Supervisor.start_link(__MODULE__, game, name: supervisor_name(game.id))
@@ -13,7 +14,7 @@ defmodule Codebattle.Game.Supervisor do
     children = [
       {Game.Server, game},
       {Game.TimeoutServer, game.id},
-      {Codebattle.Bot.PlayersSupervisor, game.id}
+      {Bot.Supervisor, game.id}
     ]
 
     chat =
@@ -33,8 +34,6 @@ defmodule Codebattle.Game.Supervisor do
     Supervisor.init(children ++ chat, strategy: :one_for_one)
   end
 
-  # HELPERS
-
-  defp supervisor_name(game_id), do: {:via, :gproc, supervisor_key(game_id)}
-  defp supervisor_key(game_id), do: {:n, :l, {:game_sup, to_string(game_id)}}
+  defp supervisor_name(game_id),
+    do: {:via, Registry, {Codebattle.Registry, "game_sup:#{game_id}"}}
 end

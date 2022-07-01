@@ -55,13 +55,6 @@ defmodule Codebattle.Game.TimeoutServer do
     {:noreply, state}
   end
 
-  # HELPERS
-
-  defp server_name(game_id) do
-    {:via, :gproc, game_key(game_id)}
-  end
-
-  defp game_key(game_id) do
-    {:n, :l, {:timeout_server, "#{game_id}"}}
-  end
+  defp server_name(game_id),
+    do: {:via, Registry, {Codebattle.Registry, "game_timeout_server:#{game_id}"}}
 end

@@ -9,26 +9,44 @@ defmodule Codebattle.Game do
 
   @type t :: %__MODULE__{}
 
-  @derive {Jason.Encoder, only: [:id, :users, :state, :starts_at, :finishes_at]}
+  @derive {Jason.Encoder,
+           only: [
+             :id,
+             :players,
+             :level,
+             :state,
+             :starts_at,
+             :finishes_at,
+             :type,
+             :mode,
+             :visibility_type,
+             :is_live,
+             :is_bot,
+             :is_tournament
+           ]}
 
+  @default_timeout_seconds div(:timer.minutes(30), 1000)
   @states ~w(initial waiting_opponent playing game_over timeout canceled)
   @rematch_states ~w(none in_approval rejected accepted)
 
-  @types ~w(standard bot training solo)
+  @types ~w(solo duo multi)
+  @modes ~w(standard training)
   @visibility_types ~w(hidden public)
 
   schema "games" do
     field(:state, :string)
     field(:level, :string)
-    field(:type, :string)
+    field(:type, :string, default: "duo")
+    field(:mode, :string, default: "standard")
     field(:visibility_type, :string, default: "public")
-    field(:timeout_seconds, :integer, default: 30 * 60)
+    field(:timeout_seconds, :integer, default: @default_timeout_seconds)
     field(:starts_at, :naive_datetime)
     field(:finishes_at, :naive_datetime)
     field(:rematch_state, :string, default: "none")
     field(:rematch_initiator_id, :integer)
     field(:is_live, :boolean, default: false, virtual: true)
-    field(:timer_started, :boolean, default: false, virtual: true)
+    field(:is_bot, :boolean, default: false, virtual: true)
+    field(:is_tournament, :boolean, default: false, virtual: true)
 
     timestamps()
 
@@ -45,6 +63,7 @@ defmodule Codebattle.Game do
     |> cast(attrs, [
       :state,
       :type,
+      :mode,
       :visibility_type,
       :rematch_state,
       :rematch_initiator_id,
@@ -55,9 +74,10 @@ defmodule Codebattle.Game do
       :starts_at,
       :finishes_at
     ])
-    |> validate_required([:state, :level, :type])
+    |> validate_required([:state, :level, :type, :mode])
     |> validate_inclusion(:type, @types)
     |> validate_inclusion(:state, @states)
+    |> validate_inclusion(:mode, @modes)
     |> validate_inclusion(:visibility_type, @visibility_types)
     |> validate_inclusion(:rematch_state, @rematch_states)
     |> put_players(attrs)

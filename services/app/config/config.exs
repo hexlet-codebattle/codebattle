@@ -74,10 +74,7 @@ config :phoenix_meta_tags,
     card: "summary_large_image"
   }
 
-config :codebattle, Codebattle.Bot,
-  timeout_start_playbook: 10_000,
-  prep_time: 120_000,
-  min_bot_player_speed: 1_000
+config :codebattle, Codebattle.Bot, min_bot_step_timeout: :timer.seconds(1)
 
 config :codebattle, Codebattle.DockerLangsPuller, timeout: :timer.hours(7)
 

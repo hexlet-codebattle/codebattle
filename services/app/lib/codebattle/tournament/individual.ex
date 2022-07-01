@@ -1,6 +1,7 @@
 defmodule Codebattle.Tournament.Individual do
   alias Codebattle.Game
   alias Codebattle.Tournament
+  alias Codebattle.Bot
 
   use Tournament.Base
 
@@ -42,7 +43,7 @@ defmodule Codebattle.Tournament.Individual do
         end
       end
 
-    new_players = Enum.concat(players, Codebattle.Bot.Builder.build_list(bots_count))
+    new_players = Enum.concat(players, Bot.Factory.build_list(bots_count))
 
     new_data =
       tournament

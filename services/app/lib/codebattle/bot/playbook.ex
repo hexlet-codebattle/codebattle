@@ -14,8 +14,8 @@ defmodule Codebattle.Bot.Playbook do
     @primary_key false
 
     embedded_schema do
-      field(:players, {:array, :map}, default: [])
-      field(:records, {:array, :map}, default: [])
+      field(:players, {:array, AtomizedMap}, default: [])
+      field(:records, {:array, AtomizedMap}, default: [])
       field(:count, :integer)
     end
 
@@ -55,7 +55,7 @@ defmodule Codebattle.Bot.Playbook do
     |> validate_inclusion(:solution_type, @types)
   end
 
-  def random(task_id) do
+  def get_random(task_id) do
     from(
       p in Playbook,
       where:

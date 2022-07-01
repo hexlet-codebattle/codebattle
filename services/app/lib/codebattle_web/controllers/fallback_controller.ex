@@ -5,7 +5,6 @@ defmodule CodebattleWeb.FallbackController do
   See `Phoenix.Controller.action_fallback/1` for more details.
   """
   use CodebattleWeb, :controller
-  alias Codebattle.UsersActivityServer
 
   def call(conn, {:error, %Ecto.Changeset{} = changeset}) do
     conn
@@ -14,14 +13,6 @@ defmodule CodebattleWeb.FallbackController do
   end
 
   def call(conn, {:error, reason}) do
-    UsersActivityServer.add_event(%{
-      event: "controller_unexpected_error",
-      user_id: conn.assigns.current_user.id,
-      data: %{
-        reason: reason
-      }
-    })
-
     conn
     |> put_flash(:danger, reason)
     |> redirect(to: Routes.root_path(conn, :index))

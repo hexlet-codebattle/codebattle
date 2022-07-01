@@ -1,4 +1,5 @@
 defmodule Codebattle.Tournament.Team do
+  alias Codebattle.Bot
   alias Codebattle.Game
   alias Codebattle.Tournament
 
@@ -38,7 +39,7 @@ defmodule Codebattle.Tournament.Team do
       |> Enum.filter(fn {_, count} -> count < max_players_count end)
       |> Enum.reduce([], fn {team_id, count}, acc ->
         (max_players_count - count)
-        |> Codebattle.Bot.Builder.build_list(%{team_id: team_id})
+        |> Bot.Factory.build_list(%{team_id: team_id})
         |> Enum.concat(acc)
       end)
 

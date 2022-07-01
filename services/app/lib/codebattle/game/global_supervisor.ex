@@ -11,7 +11,6 @@ defmodule Codebattle.Game.GlobalSupervisor do
 
   @impl true
   def init(_) do
-    Game.LiveGames.init()
     Supervisor.init([], strategy: :one_for_one)
   end
 

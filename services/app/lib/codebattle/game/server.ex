@@ -44,6 +44,7 @@ defmodule Codebattle.Game.Server do
   end
 
   # SERVER
+  @impl GenServer
   def init(game) do
     Logger.info("Start game server for game_id: #{game.id}")
 
@@ -96,7 +97,5 @@ defmodule Codebattle.Game.Server do
     end
   end
 
-  # HELPERS
-  defp server_name(game_id), do: {:via, :gproc, game_key(game_id)}
-  defp game_key(game_id), do: {:n, :l, {:game_srv, to_string(game_id)}}
+  defp server_name(game_id), do: {:via, Registry, {Codebattle.Registry, "game_srv:#{game_id}"}}
 end

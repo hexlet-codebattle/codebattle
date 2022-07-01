@@ -14,7 +14,7 @@ import Loading from '../components/Loading';
 // import GamesHeatmap from '../components/GamesHeatmap';
 // import Card from '../components/Card';
 import UserInfo from './UserInfo';
-import { makeCreateGameBotUrl, getSignInGithubUrl } from '../utils/urlBuilders';
+import { makeGameUrl, getSignInGithubUrl } from '../utils/urlBuilders';
 import i18n from '../../i18n';
 // import StartGamePanel from '../components/StartGamePanel';
 import CompletedGames from '../components/Game/CompletedGames';
@@ -51,7 +51,8 @@ const Players = ({ players }) => {
   );
 };
 
-const isPlayer = (user, game) => !_.isEmpty(_.find(game.players, { id: user.id }));
+const isPlayer = (user, game) =>
+  !_.isEmpty(_.find(game.players, { id: user.id }));
 
 const ShowButton = ({ url }) => (
   <a type="button" className="btn btn-outline-orange btn-sm" href={url}>
@@ -76,8 +77,8 @@ const renderButton = (url, type) => {
 };
 
 const GameActionButton = ({ game }) => {
-  const gameUrl = makeCreateGameBotUrl(game.id);
-  const gameUrlJoin = makeCreateGameBotUrl(game.id, 'join');
+  const gameUrl = makeGameUrl(game.id);
+  const gameUrlJoin = makeGameUrl(game.id, 'join');
   const currentUser = Gon.getAsset('current_user');
   const gameState = game.state;
   const signInUrl = getSignInGithubUrl();
@@ -86,6 +87,11 @@ const GameActionButton = ({ game }) => {
     const type = isPlayer(currentUser, game) ? 'continue' : 'show';
     return renderButton(gameUrl, type);
   }
+
+  console.log(111111);
+  console.log(isPlayer(currentUser, game));
+  console.log(game);
+  console.log(currentUser);
 
   if (gameState === gameStateCodes.waitingOpponent) {
     if (isPlayer(currentUser, game)) {
@@ -171,7 +177,7 @@ const LiveTournaments = ({ tournaments }) => {
           </tr>
         </thead>
         <tbody className="">
-          {_.orderBy(tournaments, 'startsAt', 'desc').map(tournament => (
+          {_.orderBy(tournaments, 'startsAt', 'desc').map((tournament) => (
             <tr key={tournament.id}>
               <td className="p-3 align-middle">{tournament.name}</td>
               <td className="p-3 align-middle text-nowrap">
@@ -217,7 +223,7 @@ const CompletedTournaments = ({ tournaments }) => {
           </tr>
         </thead>
         <tbody className="">
-          {_.orderBy(tournaments, 'startsAt', 'desc').map(tournament => (
+          {_.orderBy(tournaments, 'startsAt', 'desc').map((tournament) => (
             <tr key={tournament.id}>
               <td className="p-3 align-middle">{tournament.name}</td>
               <td className="p-3 align-middle">{tournament.type}</td>
@@ -247,7 +253,7 @@ const LiveGames = ({ games }) => {
   }
 
   const currentUser = Gon.getAsset('current_user');
-  const filterGames = game => {
+  const filterGames = (game) => {
     if (game.visibilityType === 'hidden') {
       return !!_.find(game.players, { id: currentUser.id });
     }
@@ -258,15 +264,15 @@ const LiveGames = ({ games }) => {
     return <p className="text-center">There are no active games right now.</p>;
   }
   const gamesSortByLevel = _.sortBy(filtetedGames, [
-    game => levelRatio[game.level],
+    (game) => levelRatio[game.level],
   ]);
   const {
     gamesWithCurrentUser = [],
     gamesWithActiveUsers = [],
     gamesWithBots = [],
-  } = _.groupBy(gamesSortByLevel, game => {
+  } = _.groupBy(gamesSortByLevel, (game) => {
     const isCurrentUserPlay = game.players.some(
-      ({ id }) => id === currentUser.id,
+      ({ id }) => id === currentUser.id
     );
     if (isCurrentUserPlay) {
       return 'gamesWithCurrentUser';
@@ -295,7 +301,7 @@ const LiveGames = ({ games }) => {
           </tr>
         </thead>
         <tbody>
-          {sortedGames.map(game => (
+          {sortedGames.map((game) => (
             <tr key={game.id} className="text-dark game-item">
               <td className="p-3 align-middle text-nowrap">
                 <GameLevelBadge level={game.level} />
@@ -324,7 +330,10 @@ const LiveGames = ({ games }) => {
 };
 
 const GameContainers = ({
- liveGames, completedGames, liveTournaments, completedTournaments,
+  liveGames,
+  completedGames,
+  liveTournaments,
+  completedTournaments,
 }) => (
   <div className="p-0">
     <nav>

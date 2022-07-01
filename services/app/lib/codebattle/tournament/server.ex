@@ -83,14 +83,11 @@ defmodule Codebattle.Tournament.Server do
     {:noreply, %{state | tournament: new_tournament}}
   end
 
-  # HELPERS
-
   def tournament_topic_name(tournament_id), do: "tournament:#{tournament_id}"
 
   defp broadcast_tournament_update(tournament) do
     Codebattle.PubSub.broadcast("tournament:updated", %{tournament: tournament})
   end
 
-  defp server_name(id), do: {:via, :gproc, tournament_key(id)}
-  defp tournament_key(id), do: {:n, :l, {:tournament_srv, to_string(id)}}
+  defp server_name(id), do: {:via, Registry, {Codebattle.Registry, "tournament_srv::#{id}"}}
 end

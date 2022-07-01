@@ -98,7 +98,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
   end
 
   def handle_info(event, socket) do
-    Logger.error(event)
+    Logger.error("CodebattleWeb.Live.Tournament.ShowView unexpected_error #{inspect(event)}")
     {:noreply, socket}
   end
 

@@ -108,7 +108,7 @@ defmodule Codebattle.GameCases.RematchTest do
 
     # Create game
     level = "elementary"
-    {:ok, game} = Codebattle.Bot.GameCreator.call(level)
+    # {:ok, game} = Codebattle.Bot.GameCreator.call(level)
     game_id = Helpers.get_game_id(game)
     game_topic = "game:" <> to_string(game_id)
 

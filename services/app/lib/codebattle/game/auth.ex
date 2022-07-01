@@ -1,6 +1,5 @@
 defmodule Codebattle.Game.Auth do
-  alias Codebattle.Game.LiveGames
-  alias Codebattle.Game.Helpers
+  alias Codebattle.Game
 
   def can_play_game?(players) when is_list(players) do
     Enum.reduce_while(players, :ok, fn player, _acc ->
@@ -15,23 +14,29 @@ defmodule Codebattle.Game.Auth do
   def can_play_game?(%{guest: true}), do: {:error, :not_authorized}
 
   def can_play_game?(player) do
-    case LiveGames.playing?(player.id) do
+    is_player =
+      Enum.any?(Game.Context.get_live_games(), fn game ->
+        Game.Helpers.is_player?(game, player.id)
+      end)
+
+    case is_player do
       false -> :ok
-      _ -> {:error, :already_in_a_game}
+      true -> {:error, :already_in_a_game}
     end
   end
 
-  def player_can_cancel_game?(id, player) do
-    case LiveGames.participant?(id, player.id, "waiting_opponent") do
-      true -> :ok
-      _ -> {:error, "Not authorized"}
+  def player_can_cancel_game?(game, player) do
+    case {Game.Helpers.is_player?(game, player.id), game.state} do
+      {true, "waiting_opponent"} -> :ok
+      {false, _} -> {:error, :not_authorized}
+      {_, _} -> {:error, :only_waiting_opponent}
     end
   end
 
   def player_can_rematch?(game, player_id) do
-    case Helpers.is_player?(game, player_id) do
+    case Game.Helpers.is_player?(game, player_id) do
       true -> :ok
-      _ -> {:error, "Not authorized"}
+      false -> {:error, :not_authorized}
     end
   end
 end

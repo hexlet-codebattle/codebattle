@@ -26,8 +26,7 @@ config :codebattle, Codebattle.Repo,
 
 config :codebattle, Codebattle.Bot,
   timeout: 60_000,
-  timeout_start_playbook: 0,
-  min_bot_player_speed: 0
+  min_bot_step_timeout: 0
 
 adapter =
   case System.get_env("CODEBATTLE_RUN_CODE_CHECK") do
@@ -38,8 +37,11 @@ adapter =
 config :codebattle, code_check_timeout: 35_000
 config :codebattle, checker_adapter: adapter
 config :codebattle, tournament_match_timeout: 1
-config :codebattle, Codebattle.Invite, timeout: :timer.seconds(1000)
-config :codebattle, Codebattle.Invite, lifetime: :timer.seconds(0)
+
+config :codebattle, Codebattle.Invite,
+  timeout: :timer.seconds(1000),
+  lifetime: :timer.seconds(0)
+
 config :codebattle, tasks_provider: Codebattle.Game.FakeTasksQueuesServer
 
 config :codebattle, :firebase,

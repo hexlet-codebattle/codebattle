@@ -13,10 +13,15 @@ defmodule Codebattle.Game.Helpers do
   def get_rematch_initiator_id(game), do: game.rematch_initiator_id
   def get_players(game), do: game.players
   def get_task(game), do: game.task
-  def get_bot(game), do: game |> get_players |> Enum.find(fn player -> player.is_bot end)
+  def get_bots(game), do: game |> get_players |> Enum.filter(fn player -> player.is_bot end)
   def get_first_player(game), do: game |> get_players |> Enum.at(0)
   def get_second_player(game), do: game |> get_players |> Enum.at(1)
+
+  def get_first_non_bot(game),
+    do: game |> get_players |> Enum.find(fn player -> !player.is_bot end)
+
   def bot_game?(game), do: game |> get_players |> Enum.any?(fn p -> p.is_bot end)
+  def tournament_game?(game), do: get_tournament_id(game) != nil
 
   def get_winner(game) do
     game
@@ -30,12 +35,10 @@ defmodule Codebattle.Game.Helpers do
     |> Enum.find(fn player -> player.id == id end)
   end
 
-  def is_player?(game, id) do
+  def is_player?(game, player_id) do
     game
     |> get_players
-    |> Enum.find(fn player -> player.id == id end)
-    |> Kernel.!()
-    |> Kernel.!()
+    |> Enum.any?(fn player -> player.id == player_id end)
   end
 
   def get_opponent(game, player_id) do
