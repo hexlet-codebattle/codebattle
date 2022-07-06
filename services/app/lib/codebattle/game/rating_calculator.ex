@@ -3,8 +3,8 @@ defmodule Codebattle.Game.RatingCalculator do
   alias Codebattle.Game.Helpers
 
   # skip rating changes for training, bot, solo
-  def call(%{type: "training"} = game), do: game
-  def call(%{type: "bot"} = game), do: game
+  def call(%{mode: "training"} = game), do: game
+  def call(%{is_bot: true} = game), do: game
   def call(%{type: "solo"} = game), do: game
 
   # skip rating changes gave_up games

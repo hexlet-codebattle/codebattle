@@ -65,10 +65,10 @@ defmodule CodebattleWeb.Factory do
         %{arguments: [3, 2], expected: 5}
       ],
       input_signature: [
-        %{"argument-name" => "a", "type" => %{"name" => "integer"}},
-        %{"argument-name" => "b", "type" => %{"name" => "integer"}}
+        %{argument_name: "a", type: %{name: "integer"}},
+        %{argument_name: "b", type: %{name: "integer"}}
       ],
-      output_signature: %{"type" => %{"name" => "integer"}},
+      output_signature: %{type: %{name: "integer"}},
       state: "active",
       visibility: "public",
       origin: "user",
@@ -85,16 +85,16 @@ defmodule CodebattleWeb.Factory do
       asserts: [%{arguments: [["a", "b", "c"], ["d", "e", "f"]], expected: ["abcdef"]}],
       input_signature: [
         %{
-          "argument-name" => "a",
-          "type" => %{"name" => "array", "nested" => %{"name" => "string"}}
+          argument_name: "a",
+          type: %{name: "array", nested: %{name: "string"}}
         },
         %{
-          "argument-name" => "b",
-          "type" => %{"name" => "array", "nested" => %{"name" => "string"}}
+          argument_name: "b",
+          type: %{name: "array", nested: %{name: "string"}}
         }
       ],
       output_signature: %{
-        "type" => %{"name" => "array", "nested" => %{"name" => "string"}}
+        type: %{name: "array", nested: %{name: "string"}}
       },
       disabled: false
     }
@@ -113,39 +113,39 @@ defmodule CodebattleWeb.Factory do
       ],
       input_signature: [
         %{
-          "argument-name" => "int",
-          "type" => %{"name" => "integer"}
+          argument_name: "int",
+          type: %{name: "integer"}
         },
         %{
-          "argument-name" => "str",
-          "type" => %{"name" => "string"}
+          argument_name: "str",
+          type: %{name: "string"}
         },
         %{
-          "argument-name" => "number",
-          "type" => %{"name" => "float"}
+          argument_name: "number",
+          type: %{name: "float"}
         },
         %{
-          "argument-name" => "bool",
-          "type" => %{"name" => "boolean"}
+          argument_name: "bool",
+          type: %{name: "boolean"}
         },
         %{
-          "argument-name" => "nested_hash_of_string",
-          "type" => %{"name" => "hash", "nested" => %{"name" => "string"}}
+          argument_name: "nested_hash_of_string",
+          type: %{name: "hash", nested: %{name: "string"}}
         },
         %{
-          "argument-name" => "nested_array_of_string",
-          "type" => %{"name" => "array", "nested" => %{"name" => "string"}}
+          argument_name: "nested_array_of_string",
+          type: %{name: "array", nested: %{name: "string"}}
         },
         %{
-          "argument-name" => "nested_array_of_array_of_strings",
-          "type" => %{
-            "name" => "array",
-            "nested" => %{"name" => "array", "nested" => %{"name" => "string"}}
+          argument_name: "nested_array_of_array_of_strings",
+          type: %{
+            name: "array",
+            nested: %{name: "array", nested: %{name: "string"}}
           }
         }
       ],
       output_signature: %{
-        "type" => %{"name" => "array", "nested" => %{"name" => "string"}}
+        type: %{name: "array", nested: %{name: "string"}}
       },
       disabled: false
     }
@@ -160,7 +160,27 @@ defmodule CodebattleWeb.Factory do
   end
 
   def playbook_factory do
-    %Playbook{}
+    %Playbook{
+      winner_id: 0,
+      winner_lang: "ruby",
+      solution_type: "complete",
+      data: %{
+        players: [%{id: 0, total_time_ms: 5_000, editor_lang: "ruby", editor_text: ""}],
+        records: [
+          %{"type" => "init", "id" => 0, "editor_text" => "", "editor_lang" => "ruby"},
+          %{
+            "diff" => %{
+              "delta" => [%{"insert" => "def solution()\n\nend"}],
+              "next_lang" => "ruby",
+              "time" => 0
+            },
+            "type" => "update_editor_data",
+            "id" => 0
+          },
+          %{"type" => "game_over", "id" => 0, "lang" => "ruby"}
+        ]
+      }
+    }
   end
 
   def tournament_factory do

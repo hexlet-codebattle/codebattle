@@ -16,10 +16,10 @@ defmodule Codebattle.Game.FakeTasksQueuesServer do
           %{arguments: [3, 2], expected: 5}
         ],
         input_signature: [
-          %{"argument-name" => "a", "type" => %{"name" => "integer"}},
-          %{"argument-name" => "b", "type" => %{"name" => "integer"}}
+          %{argument_name: "a", type: %{name: "integer"}},
+          %{argument_name: "b", type: %{name: "integer"}}
         ],
-        output_signature: %{"type" => %{"name" => "integer"}},
+        output_signature: %{type: %{name: "integer"}},
         state: "active",
         visibility: "public",
         origin: "user",

@@ -1,7 +1,8 @@
 defmodule Codebattle.GameCases.RematchTest do
   use Codebattle.IntegrationCase, async: false
 
-  alias Codebattle.Game.Server
+  alias Codebattle.Bot
+  alias Codebattle.Game
   alias CodebattleWeb.UserSocket
 
   setup %{conn: conn} do
@@ -20,7 +21,6 @@ defmodule Codebattle.GameCases.RematchTest do
   end
 
   test "first user gave up and send rematch offer, second user accept rematch", %{
-    conn1: conn1,
     conn2: conn2,
     socket1: socket1,
     socket2: socket2,
@@ -79,7 +79,7 @@ defmodule Codebattle.GameCases.RematchTest do
     # Second player accept rematch offer
     Phoenix.ChannelTest.push(socket2, "rematch:accept_offer", %{})
     :timer.sleep(70)
-    {:ok, game} = Server.get_game(game_id + 1)
+    game = Game.Context.get_game(game_id + 1)
 
     assert game.state == "playing"
     assert Helpers.get_level(game) == "easy"
@@ -96,19 +96,18 @@ defmodule Codebattle.GameCases.RematchTest do
     socket1: socket1
   } do
     task = insert(:task, level: "elementary")
+    bot = Bot.Factory.build()
 
-    playbook_data = %{
-      records: [
-        %{"delta" => [%{"insert" => "t"}], "time" => 20},
-        %{"lang" => "ruby", "time" => 100}
-      ]
-    }
-
-    insert(:playbook, %{data: playbook_data, task: task, winner_lang: "ruby"})
+    insert(:playbook, %{task: task})
 
     # Create game
-    level = "elementary"
-    # {:ok, game} = Codebattle.Bot.GameCreator.call(level)
+    {:ok, game} =
+      Game.Context.create_game(%{
+        task: task,
+        state: "waiting_opponent",
+        players: [bot]
+      })
+
     game_id = Helpers.get_game_id(game)
     game_topic = "game:" <> to_string(game_id)
 
@@ -129,12 +128,11 @@ defmodule Codebattle.GameCases.RematchTest do
 
     Phoenix.ChannelTest.push(socket1, "rematch:send_offer", %{})
     :timer.sleep(150)
-    {:ok, game} = Server.get_game(game_id + 1)
+    game = Game.Context.get_game(game_id + 1)
     assert game.state == "playing"
   end
 
   test "first user gave up and both users send rematch offer at same time", %{
-    conn1: conn1,
     conn2: conn2,
     socket1: socket1,
     socket2: socket2,
@@ -169,22 +167,15 @@ defmodule Codebattle.GameCases.RematchTest do
 
     Phoenix.ChannelTest.push(socket2, "rematch:send_offer", %{})
     :timer.sleep(70)
-    # Check game server is killed
-    {:error, _} = Server.get_game(game_id)
 
-    {:ok, game} = Server.get_game(game_id + 1)
+    game = Game.Context.get_game(game_id + 1)
     assert game.state == "playing"
     assert Helpers.get_level(game) == "easy"
     assert Helpers.get_first_player(game).id == user1.id
     assert Helpers.get_second_player(game).id == user2.id
   end
 
-  test "reject offer", %{
-    conn1: conn1,
-    conn2: conn2,
-    socket1: socket1,
-    socket2: socket2
-  } do
+  test "reject offer", %{conn2: conn2, socket1: socket1, socket2: socket2} do
     # Create game
     {:ok, _response, socket1} = subscribe_and_join(socket1, LobbyChannel, "lobby")
 
@@ -215,15 +206,12 @@ defmodule Codebattle.GameCases.RematchTest do
     game = Game.Context.get_game(game.id)
     assert Helpers.get_rematch_state(game) == "rejected"
 
-    {:error, :not_found} = Server.get_game(game_id + 1)
+    assert_raise Ecto.NoResultsError, fn ->
+      Game.Context.get_game(game_id + 1)
+    end
   end
 
-  test "first player leave game", %{
-    conn1: conn1,
-    conn2: conn2,
-    socket1: socket1,
-    socket2: socket2
-  } do
+  test "first player leave game", %{conn2: conn2, socket1: socket1, socket2: socket2} do
     {:ok, _response, socket1} = subscribe_and_join(socket1, LobbyChannel, "lobby")
 
     ref = Phoenix.ChannelTest.push(socket1, "game:create", %{level: "easy"})
@@ -245,6 +233,6 @@ defmodule Codebattle.GameCases.RematchTest do
     game = Game.Context.get_game(game.id)
     assert Helpers.get_rematch_state(game) == "rejected"
 
-    {:error, :not_found} = Server.get_game(game_id + 1)
+    {:error, :not_found} = Game.Context.get_game(game_id + 1)
   end
 end

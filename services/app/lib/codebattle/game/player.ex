@@ -79,7 +79,7 @@ defmodule Codebattle.Game.Player do
   def build(struct, params \\ %{})
 
   def build(%UserGame{} = user_game, params) do
-    new_player =
+    player =
       case user_game.user do
         nil ->
           %__MODULE__{}
@@ -103,7 +103,7 @@ defmodule Codebattle.Game.Player do
           }
       end
 
-    Map.merge(new_player, params)
+    Map.merge(player, Map.drop(params, [:task]))
   end
 
   def build(%Tournament.Types.Player{} = player, params) do
@@ -120,10 +120,10 @@ defmodule Codebattle.Game.Player do
     player =
       case params[:task] do
         nil -> init_player
-        task -> setup_editor_params(init_player, %{task: task})
+        task -> setup_editor_params(init_player, task)
       end
 
-    Map.merge(player, params)
+    Map.merge(player, Map.drop(params, [:task]))
   end
 
   def build(%Player{} = player, params) do
@@ -140,10 +140,10 @@ defmodule Codebattle.Game.Player do
     player =
       case params[:task] do
         nil -> init_player
-        task -> setup_editor_params(init_player, %{task: task})
+        task -> setup_editor_params(init_player, task)
       end
 
-    Map.merge(player, params)
+    Map.merge(player, Map.drop(params, [:task]))
   end
 
   def build(%Codebattle.User{} = user, params) do
@@ -171,13 +171,13 @@ defmodule Codebattle.Game.Player do
     player =
       case params[:task] do
         nil -> init_player
-        task -> setup_editor_params(init_player, %{task: task})
+        task -> setup_editor_params(init_player, task)
       end
 
-    Map.merge(player, params)
+    Map.merge(player, Map.drop(params, [:task]))
   end
 
-  def setup_editor_params(%__MODULE__{} = player, %{task: task}) do
+  def setup_editor_params(%__MODULE__{} = player, task) do
     editor_lang = player.editor_lang
     editor_text = Languages.get_solution(editor_lang, task)
 

@@ -8,10 +8,10 @@ defmodule Codebattle.Generators.SolutionTemplateGenerator do
       ...>    Codebattle.Languages.meta() |> Map.get("ruby"),
       ...>    %{
       ...>      input_signature: [
-      ...>        %{"argument-name" => "a", "type" => %{"name" => "integer"}},
-      ...>        %{"argument-name" => "b", "type" => %{"name" => "integer"}}
+      ...>        %{argument_name: "a", type: %{name: "integer"}},
+      ...>        %{argument_name: "b", type: %{name: "integer"}}
       ...>      ],
-      ...>      output_signature: %{"type" => %{"name" => "integer"}}
+      ...>      output_signature: %{type: %{name: "integer"}}
       ...>    }
       ...> )
       "def solution(a, b)\n\t0\nend"
@@ -20,10 +20,10 @@ defmodule Codebattle.Generators.SolutionTemplateGenerator do
       ...>    Codebattle.Languages.meta() |> Map.get("python"),
       ...>    %{
       ...>      input_signature: [
-      ...>        %{"argument-name" => "str1", "type" => %{"name" => "string"}},
-      ...>        %{"argument-name" => "str2", "type" => %{"name" => "string"}}
+      ...>        %{argument_name: "str1", type: %{name: "string"}},
+      ...>        %{argument_name: "str2", type: %{name: "string"}}
       ...>      ],
-      ...>      output_signature: %{"type" => %{"name" => "string"}}
+      ...>      output_signature: %{type: %{name: "string"}}
       ...>    }
       ...> )
       "from typing import List, Dict\n\ndef solution(str1: str, str2: str) -> str:"
@@ -32,10 +32,10 @@ defmodule Codebattle.Generators.SolutionTemplateGenerator do
       ...>    Codebattle.Languages.meta() |> Map.get("clojure"),
       ...>    %{
       ...>      input_signature: [
-      ...>        %{"argument-name" => "a", "type" => %{"name" => "float"}},
-      ...>        %{"argument-name" => "b", "type" => %{"name" => "float"}}
+      ...>        %{argument_name: "a", type: %{name: "float"}},
+      ...>        %{argument_name: "b", type: %{name: "float"}}
       ...>      ],
-      ...>      output_signature: %{"type" => %{"name" => "hash", "nested" => %{"name" => "float"}}}
+      ...>      output_signature: %{type: %{name: "hash", nested: %{name: "float"}}}
       ...>    }
       ...> )
       "(defn solution [a b] {:key 0.1})"
@@ -44,10 +44,10 @@ defmodule Codebattle.Generators.SolutionTemplateGenerator do
       ...>    Codebattle.Languages.meta() |> Map.get("ts"),
       ...>    %{
       ...>      input_signature: [
-      ...>        %{"argument-name" => "a", "type" => %{"name" => "float"}},
-      ...>        %{"argument-name" => "b", "type" => %{"name" => "float"}}
+      ...>        %{argument_name: "a", type: %{name: "float"}},
+      ...>        %{argument_name: "b", type: %{name: "float"}}
       ...>      ],
-      ...>      output_signature: %{"type" => %{"name" => "hash", "nested" => %{"name" => "float"}}}
+      ...>      output_signature: %{type: %{name: "hash", nested: %{name: "float"}}}
       ...>    }
       ...> )
       "import * as _ from \"lodash\";\nimport {IHash} from \"./types\";\n\nfunction solution(a: number, b: number): IHash {\n\n};\n\nexport default solution;"
@@ -56,10 +56,10 @@ defmodule Codebattle.Generators.SolutionTemplateGenerator do
       ...>    Codebattle.Languages.meta() |> Map.get("golang"),
       ...>    %{
       ...>      input_signature: [
-      ...>        %{"argument-name" => "a", "type" => %{"name" => "float"}},
-      ...>        %{"argument-name" => "b", "type" => %{"name" => "float"}}
+      ...>        %{argument_name: "a", type: %{name: "float"}},
+      ...>        %{argument_name: "b", type: %{name: "float"}}
       ...>      ],
-      ...>      output_signature: %{"type" => %{"name" => "hash", "nested" => %{"name" => "float"}}}
+      ...>      output_signature: %{type: %{name: "hash", nested: %{name: "float"}}}
       ...>    }
       ...> )
       "package main;\n\nfunc solution(a float64, b float64) map[string]float64 {\n\n}"
@@ -88,15 +88,15 @@ defmodule Codebattle.Generators.SolutionTemplateGenerator do
        when version !== :empty do
     %{
       argument: template,
-      delimeter: delimeter
+      delimiter: delimiter
     } = meta.arguments_template
 
     arguments =
       Enum.map_join(
         input,
-        delimeter,
+        delimiter,
         &EEx.eval_string(template,
-          name: &1["argument-name"],
+          name: &1.argument_name,
           type: TypesGenerator.get_type(&1, meta)
         )
       )
@@ -129,7 +129,7 @@ defmodule Codebattle.Generators.SolutionTemplateGenerator do
            return_template: return_template,
            default_values: default_values
          },
-         %{"type" => type}
+         %{type: type}
        )
        when version !== :empty do
     value = get_default_value(default_values, type)
@@ -146,12 +146,12 @@ defmodule Codebattle.Generators.SolutionTemplateGenerator do
     Keyword.put(bindings, :import, types_import)
   end
 
-  defp get_default_value(default_values, %{"name" => name, "nested" => nested}) do
+  defp get_default_value(default_values, %{name: name, nested: nested}) do
     default = Map.get(default_values, name)
     EEx.eval_string(default, value: get_default_value(default_values, nested))
   end
 
-  defp get_default_value(default_values, %{"name" => name}), do: Map.get(default_values, name)
+  defp get_default_value(default_values, %{name: name}), do: Map.get(default_values, name)
 
   defp add_empty_input(bindings), do: Keyword.put(bindings, :arguments, "")
 

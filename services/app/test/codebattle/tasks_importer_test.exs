@@ -94,8 +94,8 @@ defmodule Codebattle.TasksImporterTest do
     assert task.visibility == "public"
     assert task.origin == "github"
     assert task.creator_id == nil
-    assert task.input_signature == [%{"argument-name" => "num", "type" => %{"name" => "integer"}}]
-    assert task.output_signature == %{"type" => %{"name" => "integer"}}
+    assert task.input_signature == [%{argument_name: "num", type: %{name: "integer"}}]
+    assert task.output_signature == %{type: %{name: "integer"}}
     assert task.asserts |> Enum.count() == 20
 
     Codebattle.TasksImporter.upsert([new_path])
@@ -111,10 +111,10 @@ defmodule Codebattle.TasksImporterTest do
     assert updated.level == "easy"
 
     assert updated.input_signature == [
-             %{"argument-name" => "str", "type" => %{"name" => "string"}}
+             %{argument_name: "str", type: %{name: "string"}}
            ]
 
-    assert updated.output_signature == %{"type" => %{"name" => "string"}}
+    assert updated.output_signature == %{type: %{name: "string"}}
     assert updated.asserts |> Enum.count() == 1
     assert updated.id == task.id
   end

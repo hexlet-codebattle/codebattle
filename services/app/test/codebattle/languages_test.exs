@@ -6,23 +6,23 @@ defmodule Codebattle.LanguagesTest do
   setup _ do
     valid_signature = %{
       input_signature: [
-        %{"argument-name" => "a", "type" => %{"name" => "integer"}},
-        %{"argument-name" => "b", "type" => %{"name" => "float"}},
-        %{"argument-name" => "text", "type" => %{"name" => "string"}},
+        %{argument_name: "a", type: %{name: "integer"}},
+        %{argument_name: "b", type: %{name: "float"}},
+        %{argument_name: "text", type: %{name: "string"}},
         %{
-          "argument-name" => "arr",
-          "type" => %{
-            "name" => "array",
-            "nested" => %{"name" => "array", "nested" => %{"name" => "integer"}}
+          argument_name: "arr",
+          type: %{
+            name: "array",
+            nested: %{name: "array", nested: %{name: "integer"}}
           }
         },
-        %{"argument-name" => "condition", "type" => %{"name" => "boolean"}},
+        %{argument_name: "condition", type: %{name: "boolean"}},
         %{
-          "argument-name" => "hashtable",
-          "type" => %{"name" => "hash", "nested" => %{"name" => "integer"}}
+          argument_name: "hashtable",
+          type: %{name: "hash", nested: %{name: "integer"}}
         }
       ],
-      output_signature: %{"type" => %{"name" => "array", "nested" => %{"name" => "string"}}}
+      output_signature: %{type: %{name: "array", nested: %{name: "string"}}}
     }
 
     empty_signature = %{input_signature: [], output_signature: %{}}

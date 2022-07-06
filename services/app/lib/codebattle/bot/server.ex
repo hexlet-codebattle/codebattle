@@ -8,7 +8,6 @@ defmodule Codebattle.Bot.Server do
 
   alias Codebattle.Bot
   alias Codebattle.Game
-  alias PhoenixClient.Message
 
   @port Application.compile_env(:codebattle, :ws_port, 4000)
 
@@ -25,7 +24,7 @@ defmodule Codebattle.Bot.Server do
 
     {:ok,
      %{
-       # :initial | :playing | :stop
+       # :initial | :playing | :finished
        state: :initial,
        game: params.game,
        bot_id: params.bot_id,
@@ -35,50 +34,66 @@ defmodule Codebattle.Bot.Server do
      }}
   end
 
+  @impl GenServer
   def handle_info(:after_init, state) do
     state = init_socket(state)
     state = init_playbook_player(state)
     send_init_chat_message(state)
     # TODO: add gracefully terminate if there is no playbook
+    case state.playbook_params do
+      nil ->
+        Logger.error("There are no playbook for game: #{state.game.id}")
+        {:noreply, %{state | state: :finished}}
 
-    Logger.error("""
-    Start bot playbook player for game_id: #{inspect(state.game.id)},
-    with playbook_params: #{inspect(Map.drop(state.playbook_params, [:actions]))}
-    """)
+      params ->
+        Logger.error("""
+        Start bot playbook player for game_id: #{inspect(state.game.id)},
+        with playbook_params: #{inspect(Map.drop(params, [:actions]))}
+        """)
 
+        {:noreply, state}
+    end
+  end
+
+  def handle_info(%{event: "editor:data"}, state = %{state: :finished}) do
     {:noreply, state}
   end
 
-  def handle_info(event = %{event: "editor:data"}, state = %{playbook_params: {}}) do
-    {:noreply, state}
+  def handle_info(%{event: "editor:data"}, state = %{state: :initial}) do
+    send_start_chat_message(state)
+    do_playbook_step(state)
   end
-
-  def handle_info(%{event: "editor:data"}, state = %{state: :initial}),
-    do: do_playbook_step(state)
 
   def handle_info(:next_bot_step, state), do: do_playbook_step(state)
 
-  defp do_playbook_step(state) do
-    playbook_params = Bot.PlaybookPlayer.next_step(state.playbook_params)
-    {document, lang} = playbook_params.editor_state
-    editor_text = Bot.PlaybookPlayer.get_editor_text(document)
-    send_game_message(state.game_channel, playbook_params.step_command, {editor_text, lang})
-    Process.send_after(self(), :next_bot_step, playbook_params.step_timeout_ms)
-    {:noreply, %{state | state: :playing, playbook_params: playbook_params}}
+  def handle_info(%{event: "user:give_up"}, state) do
+    send_chat_message(state, :advice_on_give_up)
+
+    {:noreply, %{state | state: :finished}}
   end
 
-  # def playing(:info, :update_solution, state) do
-  #   case PlaybookPlayer.update_solution(state) do
-  #     {new_playbook_params, timeout} ->
-  #       Process.send_after(self(), :update_solution, timeout)
-  #       new_state = Map.put(state, :playbook_params, new_playbook_params)
+  def handle_info(event, state) do
+    Logger.debug("#{__MODULE__}, unexpected bot server handle_info event: #{inspect(event)}")
+    {:noreply, state}
+  end
 
-  #       {:keep_state, new_state}
+  defp do_playbook_step(state = %{state: :finished}), do: {:noreply, state}
 
-  #     :stop ->
-  #       {:next_state, :stop, state}
-  #   end
-  # end
+  defp do_playbook_step(state) do
+    playbook_params = Bot.PlaybookPlayer.next_step(state.playbook_params)
+
+    case playbook_params do
+      %{state: :playing} ->
+        {document, lang} = playbook_params.editor_state
+        editor_text = Bot.PlaybookPlayer.get_editor_text(document)
+        send_game_message(state.game_channel, playbook_params.step_command, {editor_text, lang})
+        Process.send_after(self(), :next_bot_step, playbook_params.step_timeout_ms)
+        {:noreply, %{state | state: :playing, playbook_params: playbook_params}}
+
+      %{state: :finished} ->
+        {:noreply, %{state | state: :finished, playbook_params: playbook_params}}
+    end
+  end
 
   # def playing(:info, %Message{event: "user:check_complete", payload: payload}, state) do
   #   case payload do
@@ -89,11 +104,6 @@ defmodule Codebattle.Bot.Server do
   #     _ ->
   #       {:keep_state, state}
   #   end
-  # end
-
-  # def handle_info(:info, %Message{event: "user:give_up"}, state) do
-  #   send_chat_message(state, :send_advice)
-  #   {:keep_state, state}
   # end
 
   defp init_socket(state) do
@@ -127,19 +137,9 @@ defmodule Codebattle.Bot.Server do
 
   defp init_playbook_player(state) do
     case Bot.PlaybookPlayer.init(state.game) do
-      {:ok, playbook_params} -> new_state = Map.put(state, :playbook_params, playbook_params)
+      {:ok, playbook_params} -> Map.put(state, :playbook_params, playbook_params)
       {:error, :no_playbook} -> state
     end
-  end
-
-  def handle_info(event = %{event: "chat:new_msg", payload: payload}, state) do
-    Logger.error("#{inspect(payload)} payload")
-    {:noreply, state}
-  end
-
-  def handle_info(event, state) do
-    Logger.error("#{__MODULE__}, unexpected event: #{inspect(event)}")
-    {:noreply, state}
   end
 
   defp send_game_message(nil, _type, _editor_params), do: :noop
@@ -151,20 +151,30 @@ defmodule Codebattle.Bot.Server do
   defp send_game_message(game_channel, :check_result, editor_params),
     do: Bot.GameClient.send(game_channel, :check_result, editor_params)
 
-  defp send_init_chat_message(state = %{playbook_params: %{}}),
-    do: send_chat_message(state, :excuse)
+  defp send_init_chat_message(state = %{playbook_params: nil}) do
+    send_chat_message(state, :excuse)
+  end
 
-  defp send_init_chat_message(state),
-    do: send_chat_message(state, :greet_opponent)
+  defp send_init_chat_message(state) do
+    send_chat_message(state, :greet_opponent)
+  end
 
-  defp send_chat_message(%{chat_channel: nil}, _type), do: :noop
-  defp send_chat_message(%{game: %Game{is_tournament: true}}, _type), do: :noop
+  defp send_start_chat_message(state) do
+    total_time_min = div(state.playbook_params.bot_time_ms, 60_000)
+    send_chat_message(state, :start_code, %{total_time_min: total_time_min})
+  end
 
-  defp send_chat_message(%{chat_channel: chat_channel}, type),
-    do: Bot.ChatClient.send(chat_channel, type)
+  defp send_chat_message(state, type, params \\ %{})
+  defp send_chat_message(%{chat_channel: nil}, _type, _params), do: :noop
+  defp send_chat_message(%{game: %Game{is_tournament: true}}, _type, _params), do: :noop
 
-  defp server_name(game_id, bot_id),
-    do: {:via, Registry, {Codebattle.Registry, "bot:#{game_id}:#{bot_id}"}}
+  defp send_chat_message(%{chat_channel: chat_channel}, type, params) do
+    Bot.ChatClient.send(chat_channel, type, params)
+  end
+
+  defp server_name(game_id, bot_id) do
+    {:via, Registry, {Codebattle.Registry, "bot:#{game_id}:#{bot_id}"}}
+  end
 
   defp bot_token(bot_id) do
     Phoenix.Token.sign(%Phoenix.Socket{endpoint: CodebattleWeb.Endpoint}, "user_token", bot_id)

@@ -1,4 +1,4 @@
-defmodule Codebattle.CheateCheck do
+defmodule Codebattle.CheatCheck do
   require Logger
   alias Codebattle.Bot.Playbook
 

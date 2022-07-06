@@ -31,10 +31,10 @@ creator = Repo.get!(Codebattle.User, -15)
       ],
       disabled: false,
       input_signature: [
-        %{"argument-name" => "a", "type" => %{"name" => "integer"}},
-        %{"argument-name" => "b", "type" => %{"name" => "integer"}}
+        %{argument_name: "a", type: %{name: "integer"}},
+        %{argument_name: "b", type: %{name: "integer"}}
       ],
-      output_signature: %{"type" => %{"name" => "integer"}}
+      output_signature: %{type: %{name: "integer"}}
     }
 
     task = Codebattle.Task.upsert!(task_params)
@@ -170,7 +170,8 @@ six_hours_ago = Timex.shift(now, hours: -6)
   game_params = %{
     state: "game_over",
     level: "easy",
-    type: "standard",
+    type: "duo",
+    mode: "standard",
     visibility_type: "public",
     starts_at: t |> Timex.to_naive_datetime() |> NaiveDateTime.truncate(:second),
     finishes_at: t |> Timex.to_naive_datetime() |> NaiveDateTime.truncate(:second),

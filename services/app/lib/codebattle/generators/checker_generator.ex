@@ -36,10 +36,10 @@ defmodule Codebattle.Generators.CheckerGenerator do
         ...>    %{
         ...>      asserts: [%{arguments: [1, 2], expected: [2, 1]}, %{arguments: [3, 5], expected: [5, 3]}],
         ...>      input_signature: [
-        ...>        %{"type" => %{"name" => "integer"}},
-        ...>        %{"type" => %{"name" => "integer"}}
+        ...>        %{type: %{name: "integer"}},
+        ...>        %{type: %{name: "integer"}}
         ...>      ],
-        ...>      output_signature: %{"type" => %{"name" => "array", "nested" => %{"name" => "integer"}}}
+        ...>      output_signature: %{type: %{name: "array", nested: %{name: "integer"}}}
         ...>    },
         ...>    Codebattle.Languages.meta() |> Map.get("js")
         ...> )
@@ -54,10 +54,10 @@ defmodule Codebattle.Generators.CheckerGenerator do
         ...>    %{
         ...>      asserts: [%{arguments: ["str1", "str2"], expected: %{str1: 3, str2: 3}}],
         ...>      input_signature: [
-        ...>        %{"type" => %{"name" => "string"}},
-        ...>        %{"type" => %{"name" => "string"}}
+        ...>        %{type: %{name: "string"}},
+        ...>        %{type: %{name: "string"}}
         ...>      ],
-        ...>      output_signature: %{"type" => %{"name" => "hash", "nested" => %{"name" => "integer"}}}
+        ...>      output_signature: %{type: %{name: "hash", nested: %{name: "integer"}}}
         ...>    },
         ...>    Codebattle.Languages.meta() |> Map.get("js")
         ...> )
@@ -76,9 +76,9 @@ defmodule Codebattle.Generators.CheckerGenerator do
         ...>    %{
         ...>      asserts: [%{arguments: [["str1", "str2"]], expected: %{str1: 1, str2: 1}}],
         ...>      input_signature: [
-        ...>        %{"argument-name" => "arr", "type" => %{"name" => "array", "nested" => %{"name" => "string"}}},
+        ...>        %{argument_name: "arr", type: %{name: "array", nested: %{name: "string"}}},
         ...>      ],
-        ...>      output_signature: %{"type" => %{"name" => "hash", "nested" => %{"name" => "integer"}}}
+        ...>      output_signature: %{type: %{name: "hash", nested: %{name: "integer"}}}
         ...>    },
         ...>    Codebattle.Languages.meta() |> Map.get("ts")
         ...> )
@@ -100,9 +100,9 @@ defmodule Codebattle.Generators.CheckerGenerator do
         ...>    %{
         ...>      asserts: [%{arguments: [["str1", "str2"]], expected: %{str1: 1, str2: 1}}],
         ...>      input_signature: [
-        ...>        %{"argument-name" => "arr", "type" => %{"name" => "array", "nested" => %{"name" => "string"}}},
+        ...>        %{argument_name: "arr", type: %{name: "array", nested: %{name: "string"}}},
         ...>      ],
-        ...>      output_signature: %{"type" => %{"name" => "hash", "nested" => %{"name" => "integer"}}}
+        ...>      output_signature: %{type: %{name: "hash", nested: %{name: "integer"}}}
         ...>    },
         ...>    Codebattle.Languages.meta() |> Map.get("golang")
         ...> )
@@ -182,7 +182,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
 
     types
     |> Enum.zip(assert.arguments)
-    |> Enum.map_join(checker_meta.arguments_delimeter, &get_value(&1, meta))
+    |> Enum.map_join(checker_meta.arguments_delimiter, &get_value(&1, meta))
   end
 
   defp get_expected(
@@ -211,7 +211,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
     ~s(#{String.replace(result, "\"", "\\\"")})
   end
 
-  defp get_variable_name(%{"argument-name" => name}, index, _meta), do: "#{name}#{index}"
+  defp get_variable_name(%{argument_name: name}, index, _meta), do: "#{name}#{index}"
   defp get_variable_name(_signature, index, _meta), do: ~s(expected#{index})
 
   defp get_defining(signature, index, %{checker_meta: checker_meta} = meta) do
@@ -226,7 +226,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
   end
 
   defp get_value_expression(
-         %{"type" => %{"nested" => _nested}} = signature,
+         %{type: %{nested: _nested}} = signature,
          value,
          %{checker_meta: checker_meta} = meta
        ) do
@@ -245,14 +245,14 @@ defmodule Codebattle.Generators.CheckerGenerator do
     get_value({type, value}, meta)
   end
 
-  defp get_value({%{"name" => "string"}, value}, meta),
+  defp get_value({%{name: "string"}, value}, meta),
     do: ~s("#{double_backslashes(value, meta)}")
 
-  defp get_value({%{"name" => "boolean"}, value}, %{checker_meta: checker_meta}),
+  defp get_value({%{name: "boolean"}, value}, %{checker_meta: checker_meta}),
     do: get_boolean_value(checker_meta.type_templates, value)
 
   defp get_value(
-         {%{"name" => "array", "nested" => nested}, value},
+         {%{name: "array", nested: nested}, value},
          %{checker_meta: checker_meta} = meta
        ) do
     inner_type = TypesGenerator.get_type(nested, meta)
@@ -264,7 +264,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
     )
   end
 
-  defp get_value({%{"name" => "hash"} = signature, value}, %{checker_meta: checker_meta} = meta) do
+  defp get_value({%{name: "hash"} = signature, value}, %{checker_meta: checker_meta} = meta) do
     list = Map.to_list(value)
 
     if Enum.empty?(list) do
@@ -283,7 +283,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
 
   defp get_boolean_value(type_templates, false), do: type_templates.boolean_false
 
-  defp get_hash_inners({k, v}, %{"nested" => nested}, %{checker_meta: checker_meta} = meta) do
+  defp get_hash_inners({k, v}, %{nested: nested}, %{checker_meta: checker_meta} = meta) do
     binding = [
       key: k,
       value: get_value({nested, v}, meta)
@@ -292,7 +292,7 @@ defmodule Codebattle.Generators.CheckerGenerator do
     EEx.eval_string(checker_meta.type_templates.hash_inners, binding)
   end
 
-  defp extract_type(%{"type" => type}), do: type
+  defp extract_type(%{type: type}), do: type
 
   defp double_backslashes(string, %{slug: "dart"}) do
     string

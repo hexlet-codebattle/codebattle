@@ -67,7 +67,7 @@ defmodule CodebattleWeb.TaskControllerTest do
       "description_ru" => "проверка суммирования: для руби",
       "examples" => "```\n2 == solution(1,1)\n10 == solution(9,1)\n```",
       "input_signature" =>
-        ~s([{"argument-name":"a","type":{"name":"integer"}},{"argument-name":"b","type":{"name":"integer"}}]),
+        ~s([{"argument_name":"a","type":{"name":"integer"}},{"argument_name":"b","type":{"name":"integer"}}]),
       "level" => "easy",
       "name" => "asdfasdf",
       "output_signature" => ~s({"type":{"name":"integer"}}),
@@ -98,13 +98,13 @@ defmodule CodebattleWeb.TaskControllerTest do
              description_ru: "проверка суммирования: для руби",
              examples: "```\n2 == solution(1,1)\n10 == solution(9,1)\n```",
              input_signature: [
-               %{"argument-name" => "a", "type" => %{"name" => "integer"}},
-               %{"argument-name" => "b", "type" => %{"name" => "integer"}}
+               %{argument_name: "a", type: %{name: "integer"}},
+               %{argument_name: "b", type: %{name: "integer"}}
              ],
              level: "easy",
              name: "asdfasdf",
              origin: "user",
-             output_signature: %{"type" => %{"name" => "integer"}},
+             output_signature: %{type: %{name: "integer"}},
              state: "draft",
              tags: ["kek", "lol", "asdf"],
              visibility: "public"
@@ -121,7 +121,7 @@ defmodule CodebattleWeb.TaskControllerTest do
       "description_ru" => "проверка суммирования: для руби",
       "examples" => "```\n2 == solution(1,1)\n10 == solution(9,1)\n```",
       "input_signature" =>
-        "[{\"argument-name\":\"a\",\"type\":{\"name\":\"integer\"}},{\"argument-name\":\"b\",\"type\":{\"name\":\"integer\"}}]",
+        "[{\"argument_name\":\"a\",\"type\":{\"name\":\"integer\"}},{\"argument_name\":\"b\",\"type\":{\"name\":\"integer\"}}]",
       "level" => "hard",
       "name" => "mega_task",
       "output_signature" => "{\"type\":{\"name\":\"string\"}}",
@@ -147,13 +147,13 @@ defmodule CodebattleWeb.TaskControllerTest do
              description_ru: "проверка суммирования: для руби",
              examples: "```\n2 == solution(1,1)\n10 == solution(9,1)\n```",
              input_signature: [
-               %{"argument-name" => "a", "type" => %{"name" => "integer"}},
-               %{"argument-name" => "b", "type" => %{"name" => "integer"}}
+               %{argument_name: "a", type: %{name: "integer"}},
+               %{argument_name: "b", type: %{name: "integer"}}
              ],
              level: "hard",
              name: "mega_task",
              origin: "user",
-             output_signature: %{"type" => %{"name" => "string"}},
+             output_signature: %{type: %{name: "string"}},
              tags: ["kek", "lol"]
            } = task
   end

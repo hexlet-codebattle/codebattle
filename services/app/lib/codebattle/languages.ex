@@ -26,7 +26,7 @@ defmodule Codebattle.Languages do
       solution_template: "def solution(<%= arguments %>)\n<%= return_statement %>\nend",
       arguments_template: %{
         argument: "<%= name %>",
-        delimeter: ", "
+        delimiter: ", "
       },
       return_template: "\t<%= default_value %>",
       default_values: %{
@@ -39,7 +39,7 @@ defmodule Codebattle.Languages do
       },
       checker_meta: %{
         version: :dynamic,
-        arguments_delimeter: ", ",
+        arguments_delimiter: ", ",
         type_templates: %{@type_templates | hash_inners: "\"<%= key %>\" => <%= value %>"}
       }
     },
@@ -57,7 +57,7 @@ defmodule Codebattle.Languages do
         "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (<%= arguments %>) => {\n<%= return_statement %>\n};\n\nmodule.exports = solution;",
       arguments_template: %{
         argument: "<%= name %>",
-        delimeter: ", "
+        delimiter: ", "
       },
       return_template: "\treturn <%= default_value %>;",
       default_values: %{
@@ -70,7 +70,7 @@ defmodule Codebattle.Languages do
       },
       checker_meta: %{
         version: :dynamic,
-        arguments_delimeter: ", ",
+        arguments_delimiter: ", ",
         type_templates: @type_templates
       }
     },
@@ -88,7 +88,7 @@ defmodule Codebattle.Languages do
         "<%= import %>function solution(<%= arguments %>)<%= expected %>{\n\n};\n\nexport default solution;",
       arguments_template: %{
         argument: "<%= name %>: <%= type %>",
-        delimeter: ", "
+        delimiter: ", "
       },
       expected_template: ": <%= type %> ",
       types: %{
@@ -118,7 +118,7 @@ defmodule Codebattle.Languages do
       solution_template: "<%= expected %>solution(<%= arguments %>) {\n\n}",
       arguments_template: %{
         argument: "<%= type %> <%= name %>",
-        delimeter: ", "
+        delimiter: ", "
       },
       expected_template: "<%= type %> ",
       types: %{
@@ -131,7 +131,7 @@ defmodule Codebattle.Languages do
       },
       checker_meta: %{
         version: :dynamic,
-        arguments_delimeter: ", ",
+        arguments_delimiter: ", ",
         type_templates: @type_templates
       }
     },
@@ -148,7 +148,7 @@ defmodule Codebattle.Languages do
         "#include <iostream>\n#include <map>\n#include <vector>\n\nusing namespace std;\n\n<%= expected %> solution(<%= arguments %>) {\n\n}",
       arguments_template: %{
         argument: "<%= type %> <%= name %>",
-        delimeter: ", "
+        delimiter: ", "
       },
       expected_template: "<%= type %>",
       types: %{
@@ -183,7 +183,7 @@ defmodule Codebattle.Languages do
         "package solution;\n\nimport java.util.*;import java.util.stream.*;\n\npublic class Solution {\n\tpublic <%= expected %>solution(<%= arguments %>) {\n\n\t}\n}",
       arguments_template: %{
         argument: "<%= type %> <%= name %>",
-        delimeter: ", "
+        delimiter: ", "
       },
       expected_template: "<%= type %> ",
       types: %{
@@ -220,7 +220,7 @@ defmodule Codebattle.Languages do
         "package solution\n\nimport kotlin.collections.*\n\nfun solution(<%= arguments %>):<%= expected %> {\n\n}",
       arguments_template: %{
         argument: "<%= name %>: <%= type %>",
-        delimeter: ", "
+        delimiter: ", "
       },
       expected_template: " <%= type %>",
       types: %{
@@ -257,7 +257,7 @@ defmodule Codebattle.Languages do
         "using System;using System.Collections.Generic;\n\nnamespace app\n{\n\tpublic class Solution\n\t{\n\t\tpublic<%= expected %> solution(<%= arguments %>)\n\t\t{\n\n\t\t}\n\t}\n}",
       arguments_template: %{
         argument: "<%= type %> <%= name %>",
-        delimeter: ", "
+        delimiter: ", "
       },
       expected_template: " <%= type %>",
       types: %{
@@ -293,7 +293,7 @@ defmodule Codebattle.Languages do
       solution_template: "package main;\n\nfunc solution(<%= arguments %>)<%= expected %> {\n\n}",
       arguments_template: %{
         argument: "<%= name %> <%= type %>",
-        delimeter: ", "
+        delimiter: ", "
       },
       expected_template: " <%= type %>",
       types: %{
@@ -324,7 +324,7 @@ defmodule Codebattle.Languages do
         "defmodule Solution do\n\tdef solution(<%= arguments %>) do\n<%= return_statement %>\n\tend\nend",
       arguments_template: %{
         argument: "<%= name %>",
-        delimeter: ", "
+        delimiter: ", "
       },
       return_template: "\t\t<%= default_value %>",
       default_values: %{
@@ -337,7 +337,7 @@ defmodule Codebattle.Languages do
       },
       checker_meta: %{
         version: :dynamic,
-        arguments_delimeter: ", ",
+        arguments_delimiter: ", ",
         type_templates: %{@type_templates | hash_empty: "%{}", hash_value: "%{<%= entries %>}"}
       }
     },
@@ -354,7 +354,7 @@ defmodule Codebattle.Languages do
         "from typing import List, Dict\n\ndef solution(<%= arguments %>)<%= expected %>:",
       arguments_template: %{
         argument: "<%= name %>: <%= type %>",
-        delimeter: ", "
+        delimiter: ", "
       },
       expected_template: " -> <%= type %>",
       types: %{
@@ -367,7 +367,7 @@ defmodule Codebattle.Languages do
       },
       checker_meta: %{
         version: :dynamic,
-        arguments_delimeter: ", ",
+        arguments_delimiter: ", ",
         type_templates: %{@type_templates | boolean_true: "True", boolean_false: "False"}
       }
     },
@@ -385,7 +385,7 @@ defmodule Codebattle.Languages do
       return_template: "\n    return <%= default_value %>;",
       arguments_template: %{
         argument: "<%= type %> $<%= name %>",
-        delimeter: ", "
+        delimiter: ", "
       },
       default_values: %{
         "integer" => "0",
@@ -397,7 +397,7 @@ defmodule Codebattle.Languages do
       },
       checker_meta: %{
         version: :dynamic,
-        arguments_delimeter: ", ",
+        arguments_delimiter: ", ",
         type_templates: %{
           @type_templates
           | array: "array(<%= entries %>)",
@@ -427,7 +427,7 @@ defmodule Codebattle.Languages do
       solution_template: "(defn solution [<%= arguments %>] <%= return_statement %>)",
       arguments_template: %{
         argument: "<%= name %>",
-        delimeter: " "
+        delimiter: " "
       },
       return_template: "<%= default_value %>",
       default_values: %{
@@ -440,7 +440,7 @@ defmodule Codebattle.Languages do
       },
       checker_meta: %{
         version: :dynamic,
-        arguments_delimeter: ", ",
+        arguments_delimiter: ", ",
         type_templates: %{@type_templates | hash_inners: ":<%= key %> <%= value %>"}
       }
     },
@@ -457,7 +457,7 @@ defmodule Codebattle.Languages do
         "module Check.Solution where\n\nimport qualified Data.HashMap.Lazy as HM\n\nsolution :: <%= arguments %><%= expected %>\nsolution =\n\n{- Included packages:\naeson\nbytestring\ncase-insensitive\ncontainers\ndeepseq\nfgl\ninteger-logarithms\nmegaparsec\nmtl\nparser-combinators\npretty\nrandom\nregex-base\nregex-compat\nregex-posix\nscientific\nsplit\ntemplate-haskell\ntext\ntime\ntransformers\nunordered-containers\nvector\nvector-algorithms -}",
       arguments_template: %{
         argument: "<%= type %>",
-        delimeter: " -> "
+        delimiter: " -> "
       },
       expected_template: " -> <%= type %>",
       types: %{
@@ -470,7 +470,7 @@ defmodule Codebattle.Languages do
       },
       checker_meta: %{
         version: :dynamic,
-        arguments_delimeter: " ",
+        arguments_delimiter: " ",
         type_templates: %{
           @type_templates
           | boolean_true: "True",

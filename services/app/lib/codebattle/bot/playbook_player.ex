@@ -20,6 +20,7 @@ defmodule Codebattle.Bot.PlaybookPlayer do
 
     defstruct ~w(
       actions
+      state
       bot_time_ms
       step_command
       step_timeout_ms
@@ -37,20 +38,20 @@ defmodule Codebattle.Bot.PlaybookPlayer do
                         ]
 
   @pro_rating 1777
-  @junior_rating 1111
+  @junior_rating 1212
 
   @pro_time_ms %{
-    "elementary" => :timer.minutes(3),
-    "easy" => :timer.minutes(5),
-    "medium" => :timer.minutes(7),
-    "hard" => :timer.minutes(11)
+    "elementary" => :timer.minutes(2),
+    "easy" => :timer.minutes(3),
+    "medium" => :timer.minutes(5),
+    "hard" => :timer.minutes(7)
   }
 
   @junior_time_ms %{
-    "elementary" => :timer.minutes(13),
-    "easy" => :timer.minutes(17),
-    "medium" => :timer.minutes(19),
-    "hard" => :timer.minutes(23)
+    "elementary" => :timer.minutes(7),
+    "easy" => :timer.minutes(11),
+    "medium" => :timer.minutes(13),
+    "hard" => :timer.minutes(17)
   }
 
   def init(game) do
@@ -58,12 +59,13 @@ defmodule Codebattle.Bot.PlaybookPlayer do
       %Bot.Playbook{id: id, winner_id: winner_id, data: playbook_data} ->
         playbook_actions = prepare_user_playbook(playbook_data.records, winner_id)
         playbook_winner_meta = Enum.find(playbook_data.players, &(&1.id == winner_id))
-        bot_time_ms = Float.round(get_bot_time_ms(game), 3)
+        bot_time_ms = get_bot_time_ms(game)
 
-        step_coefficient = Float.round(bot_time_ms / (playbook_winner_meta.total_time_ms + 1), 3)
+        step_coefficient = round(bot_time_ms / (playbook_winner_meta.total_time_ms + 1))
 
         {:ok,
          %Params{
+           state: :playing,
            playbook_id: id,
            actions: playbook_actions,
            step_coefficient: step_coefficient,
@@ -121,6 +123,10 @@ defmodule Codebattle.Bot.PlaybookPlayer do
     }
   end
 
+  def next_step(params = %Params{actions: []}) do
+    %{params | state: :finished}
+  end
+
   def get_editor_text(%{ops: []}), do: nil
   def get_editor_text(document), do: document.ops |> hd |> Map.get(:insert)
 
@@ -138,14 +144,13 @@ defmodule Codebattle.Bot.PlaybookPlayer do
     |> max(diff.time * step_coefficient)
     |> Kernel.*(1.0)
     |> Float.round(3)
+    |> round
   end
 
-  @doc """
-  Calculates the total operating time of the bot
-  based on the hyperbolic dependence of time on the rating
-  y = k/(x + b);
-  y: time, x: rating;
-  """
+  # Calculates the total operating time of the bot
+  # based on the hyperbolic dependence of time on the rating
+  # y = k/(x + b);
+  # y: time, x: rating;
   defp get_bot_time_ms(game) do
     player_rating =
       case Game.Helpers.get_first_non_bot(game) do
@@ -162,6 +167,6 @@ defmodule Codebattle.Bot.PlaybookPlayer do
     k = y1 * (x1 * y2 - x2 * y2) / (y2 - y1)
     b = (x1 * y1 - x2 * y2) / (y2 - y1)
 
-    k / (player_rating + b)
+    round(k / (player_rating + b))
   end
 end
