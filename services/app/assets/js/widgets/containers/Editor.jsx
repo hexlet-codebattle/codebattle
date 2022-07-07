@@ -127,11 +127,16 @@ class Editor extends PureComponent {
       };
       this.editor.updateOptions(this.options);
     }
+
+    const model = this.editor.getModel();
+
     if (prevProps.syntax !== syntax) {
+      model.updateOptions({ tabSize: getLanguageTabSize(syntax) });
+
       await this.updateHightLightForNotIncludeSyntax(syntax);
     }
+
     // fix flickering in editor
-    const model = this.editor.getModel();
     model.forceTokenization(model.getLineCount());
   }
 
