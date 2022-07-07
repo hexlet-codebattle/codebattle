@@ -11,6 +11,7 @@ import languages from '../config/languages';
 import GameTypeCodes from '../config/gameTypeCodes';
 import sound from '../lib/sound';
 import { actions } from '../slices';
+import getLanguageTabSize from '../utils/editor';
 
 class Editor extends PureComponent {
   static propTypes = {
@@ -42,6 +43,7 @@ class Editor extends PureComponent {
     // statusBarHeight = lineHeight = current fontSize * 1.5
     this.statusBarHeight = convertRemToPixels(1) * 1.5;
     this.options = {
+      tabSize: getLanguageTabSize(props.syntax),
       lineNumbersMinChars: 3,
       fontSize: 16,
       scrollBeyondLastLine: false,
@@ -125,11 +127,16 @@ class Editor extends PureComponent {
       };
       this.editor.updateOptions(this.options);
     }
+
+    const model = this.editor.getModel();
+
     if (prevProps.syntax !== syntax) {
+      model.updateOptions({ tabSize: getLanguageTabSize(syntax) });
+
       await this.updateHightLightForNotIncludeSyntax(syntax);
     }
+
     // fix flickering in editor
-    const model = this.editor.getModel();
     model.forceTokenization(model.getLineCount());
   }
 
