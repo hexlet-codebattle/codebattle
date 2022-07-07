@@ -1,0 +1,16 @@
+export default {
+  js: 2,
+  ts: 2,
+  dart: 2,
+  golang: 4,
+  cpp: 2,
+  csharp: 4,
+  java: 4,
+  kotlin: 4,
+  haskell: 2,
+  ruby: 2,
+  elixir: 2,
+  php: 2,
+  python: 4,
+  clojure: 2,
+};
