@@ -11,7 +11,7 @@ import languages from '../config/languages';
 import GameTypeCodes from '../config/gameTypeCodes';
 import sound from '../lib/sound';
 import { actions } from '../slices';
-import { getLanguageTabSize } from '../utils/editor';
+import getLanguageTabSize from '../utils/editor';
 
 class Editor extends PureComponent {
   static propTypes = {
