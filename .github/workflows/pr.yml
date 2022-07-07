@@ -10,7 +10,7 @@ jobs:
 
     services:
       db:
-        image: postgres:10.11
+        image: postgres:10.11-alpine
         ports: ['5432:5432']
         options: >-
           --health-cmd pg_isready
