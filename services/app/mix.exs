@@ -68,7 +68,6 @@ defmodule Codebattle.Mixfile do
       {:timex, "~> 3.6"},
       {:httpoison, "~> 1.8"},
       {:phoenix_meta_tags, "~> 0.1.8"},
-      {:gen_state_machine, "~> 2.1"},
       {:html_to_image, github: "koss-lebedev/html_to_image"},
       {:sentry, "~> 8.0"},
       {:earmark, "~> 1.4"},
