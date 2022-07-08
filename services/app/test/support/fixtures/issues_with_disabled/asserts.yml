@@ -2,13 +2,13 @@ level: medium
 disabled: false
 signature:
   input:
-    - argument_name: num
+    - argument-name: num
       type:
         name: integer
   output:
     type:
       name: integer
-description: 
+description:
   en: Return the sum of all prime numbers from 2 up to a given number.
 examples: |-
   Example: `4227 == solution(200)`

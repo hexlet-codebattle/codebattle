@@ -16,11 +16,11 @@ defmodule Codebattle.Game.RatingCalculator do
     calculate_gave_up(game, player)
   end
 
-  def call(%{type: "standard", players: [%{result: "won"} = winner, loser]} = game) do
+  def call(%{mode: "standard", players: [%{result: "won"} = winner, loser]} = game) do
     calculate(game, winner, loser)
   end
 
-  def call(%{type: "standard", players: [loser, %{result: "won"} = winner]} = game) do
+  def call(%{mode: "standard", players: [loser, %{result: "won"} = winner]} = game) do
     calculate(game, winner, loser)
   end
 

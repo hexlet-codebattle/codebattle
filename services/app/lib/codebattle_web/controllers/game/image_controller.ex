@@ -21,7 +21,7 @@ defmodule CodebattleWeb.Game.ImageController do
   end
 
   defp get_game_data(id) do
-    case Context.get_game(id) do
+    case Context.get_game!(id) do
       {:ok, fsm} ->
         {:ok, Helpers.get_players(fsm),
          %{
@@ -30,7 +30,7 @@ defmodule CodebattleWeb.Game.ImageController do
          }}
 
       {:error, _reason} ->
-        case Context.get_game(id) do
+        case Context.get_game!(id) do
           nil ->
             {:error, :not_found}
 

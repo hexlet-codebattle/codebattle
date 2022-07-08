@@ -1,19 +1,17 @@
-defmodule Codebattle.UsersRankUpdateServerTest do
+defmodule Codebattle.User.RankUpdateTest do
   use CodebattleWeb.ConnCase, async: false
 
-  alias Codebattle.UsersRankUpdateServer
-  alias Codebattle.{Repo, User}
+  alias Codebattle.Repo
+  alias Codebattle.User
 
   test "updates all rank for users" do
     user1 = insert(:user, rating: 10_005)
     user2 = insert(:user, rating: 10_004)
     user3 = insert(:user, rating: 10_003)
-    user4 = insert(:user, rating: 10_002)
-    user5 = insert(:user, rating: 10_001)
+    user4 = insert(:user, rating: 10_003)
+    user5 = insert(:user, rating: 10_002)
 
-    :ok = UsersRankUpdateServer.update()
-
-    :timer.sleep(300)
+    User.RankUpdate.call()
 
     ranks =
       User
@@ -28,8 +26,8 @@ defmodule Codebattle.UsersRankUpdateServerTest do
                {user1.id, 1},
                {user2.id, 2},
                {user3.id, 3},
-               {user4.id, 4},
-               {user5.id, 5}
+               {user4.id, 3},
+               {user5.id, 4}
              ]
              |> MapSet.new()
            )
@@ -38,9 +36,7 @@ defmodule Codebattle.UsersRankUpdateServerTest do
 
     user6 = insert(:user, rating: 10_003)
 
-    :ok = UsersRankUpdateServer.update()
-
-    :timer.sleep(300)
+    User.RankUpdate.call()
 
     ranks =
       User
@@ -56,8 +52,8 @@ defmodule Codebattle.UsersRankUpdateServerTest do
                {user2.id, 2},
                {user6.id, 3},
                {user3.id, 3},
-               {user4.id, 4},
-               {user5.id, 5}
+               {user4.id, 3},
+               {user5.id, 4}
              ]
              |> MapSet.new()
            )
@@ -76,9 +72,7 @@ defmodule Codebattle.UsersRankUpdateServerTest do
     |> User.changeset(%{rating: 100_200})
     |> Repo.update!()
 
-    :ok = UsersRankUpdateServer.update()
-
-    :timer.sleep(300)
+    User.RankUpdate.call()
 
     ranks =
       User
@@ -95,8 +89,8 @@ defmodule Codebattle.UsersRankUpdateServerTest do
                {user5.id, 2},
                {user2.id, 3},
                {user3.id, 4},
-               {user4.id, 5},
-               {user1.id, 6}
+               {user4.id, 4},
+               {user1.id, 5}
              ]
              |> MapSet.new()
            )

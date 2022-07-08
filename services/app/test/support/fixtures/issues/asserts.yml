@@ -2,7 +2,7 @@ level: medium
 disabled: false
 signature:
   input:
-    - argument_name: num
+    - argument-name: num
       type:
         name: integer
   output:

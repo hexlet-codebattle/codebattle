@@ -80,13 +80,15 @@ defmodule Codebattle.TasksImporter do
         "active"
       end
 
+    input_signature = Enum.map(Map.get(signature, "input"), &format_input_signature/1)
+
     %{
       name: issue_name,
       examples: Map.get(issue_info, "examples"),
       description_ru: Map.get(description, "ru"),
       description_en: Map.get(description, "en"),
       level: Map.get(issue_info, "level"),
-      input_signature: Map.get(signature, "input"),
+      input_signature: input_signature,
       output_signature: Map.get(signature, "output"),
       asserts: asserts,
       tags: Map.get(issue_info, "tags"),
@@ -96,4 +98,10 @@ defmodule Codebattle.TasksImporter do
       creator_id: nil
     }
   end
+
+  defp format_input_signature(input = %{"argument-name" => arg}) do
+    input |> Map.delete("argument-name") |> Map.put("argument_name", arg)
+  end
+
+  defp format_input_signature(map), do: map
 end

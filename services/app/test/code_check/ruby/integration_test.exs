@@ -42,7 +42,7 @@ defmodule Codebattle.CodeCheck.Ruby.IntegrationTest do
 
     assert %Codebattle.CodeCheck.CheckResultV2{status: "failure", success_count: 0} = check_result
 
-    game = Game.Context.get_game(game.id)
+    game = Game.Context.get_game!(game.id)
 
     assert game.state == "playing"
   end
@@ -66,7 +66,7 @@ defmodule Codebattle.CodeCheck.Ruby.IntegrationTest do
 
     assert %Codebattle.CodeCheck.CheckResultV2{status: "error", success_count: 0} = check_result
 
-    game = Game.Context.get_game(game.id)
+    game = Game.Context.get_game!(game.id)
 
     assert game.state == "playing"
   end
@@ -97,7 +97,7 @@ defmodule Codebattle.CodeCheck.Ruby.IntegrationTest do
       payload: %{status: "game_over"}
     }
 
-    game = Game.Context.get_game(game.id)
+    game = Game.Context.get_game!(game.id)
     assert game.state == "game_over"
   end
 
@@ -126,7 +126,7 @@ defmodule Codebattle.CodeCheck.Ruby.IntegrationTest do
 
     assert_receive %Phoenix.Socket.Broadcast{payload: %{status: "game_over"}}
 
-    game = Game.Context.get_game(game.id)
+    game = Game.Context.get_game!(game.id)
     assert game.state == "game_over"
   end
 end

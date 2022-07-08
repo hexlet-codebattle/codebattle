@@ -27,7 +27,8 @@ defmodule CodebattleWeb.GameChannelTest do
       {:ok, created, _socket1} = subscribe_and_join(socket1, GameChannel, game_topic(game))
 
       assert created.task.level == "easy"
-      assert created.type == "standard"
+      assert created.mode == "standard"
+      assert created.type == "duo"
     end
   end
 
@@ -107,7 +108,7 @@ defmodule CodebattleWeb.GameChannelTest do
 
     message = "#{user1.name} gave up!"
     :timer.sleep(100)
-    game = Game.Context.get_game(game.id)
+    game = Game.Context.get_game!(game.id)
     players = game.players
 
     payload = %{

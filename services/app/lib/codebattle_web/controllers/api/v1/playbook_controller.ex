@@ -59,7 +59,7 @@ defmodule CodebattleWeb.Api.V1.PlaybookController do
         limit: 1
       )
 
-    case Game.Context.get_game(game_id) do
+    case Game.Context.get_game!(game_id) do
       game = %Game{is_live: true} ->
         {:ok, records} = Server.get_playbook(game_id)
 

@@ -47,7 +47,7 @@ defmodule Codebattle.PlayGameTest do
     game_topic = "game:" <> to_string(game_id)
     {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
 
-    game = Game.Context.get_game(game_id)
+    game = Game.Context.get_game!(game_id)
 
     assert game.state == "waiting_opponent"
     assert Game.Helpers.get_first_player(game).name == "first"
@@ -55,7 +55,7 @@ defmodule Codebattle.PlayGameTest do
 
     # First player cannot join to game as second player
     post(conn1, game_path(conn1, :join, game_id))
-    game = Game.Context.get_game(game_id)
+    game = Game.Context.get_game!(game_id)
 
     assert game.state == "waiting_opponent"
     assert [_player] = game.players
@@ -63,7 +63,7 @@ defmodule Codebattle.PlayGameTest do
     # Second player join game
     post(conn2, game_path(conn2, :join, game_id))
     {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
-    game = Game.Context.get_game(game_id)
+    game = Game.Context.get_game!(game_id)
 
     assert game.state == "playing"
     assert Helpers.get_first_player(game).name == "first"
@@ -86,7 +86,7 @@ defmodule Codebattle.PlayGameTest do
     })
 
     :timer.sleep(100)
-    game = Game.Context.get_game(game_id)
+    game = Game.Context.get_game!(game_id)
     assert game.state == "game_over"
     assert Helpers.get_first_player(game).name == "first"
     assert Helpers.get_second_player(game).name == "second"
@@ -103,7 +103,7 @@ defmodule Codebattle.PlayGameTest do
     })
 
     :timer.sleep(50)
-    game = Game.Context.get_game(game_id)
+    game = Game.Context.get_game!(game_id)
 
     assert game.state == "game_over"
     assert Helpers.get_first_player(game).name == "first"
@@ -120,7 +120,7 @@ defmodule Codebattle.PlayGameTest do
       lang_slug: "js"
     })
 
-    :timer.sleep(50)
+    :timer.sleep(100)
 
     game = Repo.get(Game, game_id)
     user1 = Repo.get(User, user1.id)
@@ -158,7 +158,7 @@ defmodule Codebattle.PlayGameTest do
 
     # Other player cannot join game
     post(conn3, game_path(conn3, :join, game_id))
-    game = Game.Context.get_game(game_id)
+    game = Game.Context.get_game!(game_id)
 
     assert game.state == "playing"
     assert Helpers.get_first_player(game).name == "first"
@@ -172,7 +172,7 @@ defmodule Codebattle.PlayGameTest do
       lang_slug: "js"
     })
 
-    game = Game.Context.get_game(game_id)
+    game = Game.Context.get_game!(game_id)
 
     assert game.state == "playing"
     assert Helpers.get_first_player(game).name == "first"

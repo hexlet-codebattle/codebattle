@@ -39,7 +39,7 @@ defmodule Codebattle.CodeCheck.Golang.IntegrationTest do
 
     assert %Codebattle.CodeCheck.CheckResult{status: "error", success_count: 0} = check_result
 
-    game = Game.Context.get_game(game.id)
+    game = Game.Context.get_game!(game.id)
     assert game.state == "playing"
   end
 
@@ -69,7 +69,7 @@ defmodule Codebattle.CodeCheck.Golang.IntegrationTest do
 
     assert %Codebattle.CodeCheck.CheckResult{status: "failure", success_count: 0} = check_result
 
-    game = Game.Context.get_game(game.id)
+    game = Game.Context.get_game!(game.id)
     assert game.state == "playing"
   end
 
@@ -99,7 +99,7 @@ defmodule Codebattle.CodeCheck.Golang.IntegrationTest do
       payload: %{status: "game_over"}
     }
 
-    game = Game.Context.get_game(game.id)
+    game = Game.Context.get_game!(game.id)
     assert game.state == "game_over"
   end
 end

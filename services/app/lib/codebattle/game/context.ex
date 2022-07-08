@@ -47,7 +47,11 @@ defmodule Codebattle.Game.Context do
     Game.GlobalSupervisor
     |> Supervisor.which_children()
     |> Enum.map(fn {id, _, _, _} -> Game.Context.get_game(id) end)
-    |> Enum.filter(& &1.is_live)
+    |> Enum.map(fn
+      {:ok, game = %{is_live: true}} -> game
+      _ -> nil
+    end)
+    |> Enum.filter(&Function.identity/1)
     |> Enum.filter(fn game -> Enum.member?(["waiting_opponent", "playing"], game.state) end)
     |> Enum.filter(fn game ->
       Enum.map(params, fn {key, value} -> Map.get(game, key) == value end) |> Enum.all?()
@@ -68,12 +72,20 @@ defmodule Codebattle.Game.Context do
     Repo.all(query)
   end
 
-  @spec get_game(raw_game_id) :: Game.t() | no_return
-  def get_game(id) when is_binary(id) do
-    id |> String.to_integer() |> get_game
+  @spec get_game(raw_game_id) :: {:ok, Game.t()} | {:error, atom()}
+  def get_game(id) do
+    {:ok, get_game!(id)}
+  rescue
+    _e in Ecto.NoResultsError ->
+      {:error, :not_found}
   end
 
-  def get_game(id) do
+  @spec get_game!(raw_game_id) :: Game.t() | no_return
+  def get_game!(id) when is_binary(id) do
+    id |> String.to_integer() |> get_game!()
+  end
+
+  def get_game!(id) do
     case Game.Server.get_game(id) do
       {:ok, game} ->
         game
@@ -101,18 +113,18 @@ defmodule Codebattle.Game.Context do
 
   @spec join_game(game_id, User.t()) :: {:ok, Game.t()} | {:error, atom}
   def join_game(id, user) do
-    Engine.join_game(get_game(id), user)
+    Engine.join_game(get_game!(id), user)
   end
 
   @spec cancel_game(game_id, User.t()) :: :ok | {:error, atom}
   def cancel_game(id, user) do
-    Engine.cancel_game(get_game(id), user)
+    Engine.cancel_game(get_game!(id), user)
   end
 
   @spec update_editor_data(game_id, User.t(), String.t(), String.t()) ::
           {:ok, Game.t()} | {:error, atom}
   def update_editor_data(id, user, editor_text, editor_lang) do
-    game = get_game(id)
+    game = get_game!(id)
 
     case Engine.update_editor_data(game, %{
            id: user.id,
@@ -136,12 +148,12 @@ defmodule Codebattle.Game.Context do
           }
           | {:error, atom}
   def check_result(id, params) do
-    id |> get_game() |> Engine.check_result(params)
+    id |> get_game!() |> Engine.check_result(params)
   end
 
   @spec give_up(game_id, User.t()) :: {:ok, Game.t()} | {:error, atom}
   def give_up(id, user) do
-    id |> get_game() |> Engine.give_up(user)
+    id |> get_game!() |> Engine.give_up(user)
   end
 
   @spec rematch_send_offer(raw_game_id, User.t()) ::
@@ -149,7 +161,7 @@ defmodule Codebattle.Game.Context do
           | {:rematch_accepted, Game.t()}
           | {:error, atom}
   def rematch_send_offer(game_id, user) do
-    with game <- get_game(game_id),
+    with game <- get_game!(game_id),
          :ok <- player_can_rematch?(game, user.id) do
       Engine.rematch_send_offer(game, user)
     else
@@ -174,7 +186,11 @@ defmodule Codebattle.Game.Context do
 
   @spec trigger_timeout(game_id) :: :ok
   def trigger_timeout(game_id) do
-    Engine.trigger_timeout(get_game(game_id))
+    case get_game(game_id) do
+      {:ok, game} -> Engine.trigger_timeout(game)
+      _ -> :noop
+    end
+
     :ok
   end
 
@@ -183,12 +199,7 @@ defmodule Codebattle.Game.Context do
     Engine.terminate_game(game)
   end
 
-  def terminate_game(id), do: get_game(id) |> terminate_game()
-
-  defp set_random_level(params) do
-    level = Enum.random(["elementary", "easy", "medium", "hard"])
-    Map.put(params, :level, level)
-  end
+  def terminate_game(id), do: get_game!(id) |> terminate_game()
 
   defp get_from_db!(id) do
     query = from(g in Game, where: g.id == ^id, preload: [:task, :users, :user_games])

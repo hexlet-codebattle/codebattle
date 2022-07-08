@@ -7,7 +7,7 @@ defmodule CodebattleWeb.GameChannel do
 
   def join("game:" <> game_id, _payload, socket) do
     try do
-      game = Context.get_game(game_id)
+      game = Context.get_game!(game_id)
 
       if game.tournament_id do
         Codebattle.PubSub.subscribe("tournament:#{game.tournament_id}")

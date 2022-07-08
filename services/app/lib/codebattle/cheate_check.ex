@@ -57,7 +57,5 @@ defmodule Codebattle.CheatCheck do
   defp copy_paste_check(result, _param), do: result
 
   defp editor_update?(record, id, lang),
-    do:
-      record["type"] == "update_editor_data" && record["id"] == id &&
-        record["diff"]["next_lang"] == lang
+    do: record.type == "update_editor_data" && record.id == id && record.diff.next_lang == lang
 end

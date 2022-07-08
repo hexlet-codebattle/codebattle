@@ -22,7 +22,7 @@ defmodule Codebattle.UsersRankUpdateServer do
   end
 
   def handle_cast(:update, state) do
-    Codebattle.RankUpdate.call()
+    Codebattle.User.RankUpdate.call()
     Logger.info("Rank has been recalculated")
 
     {:noreply, state}

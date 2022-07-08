@@ -17,7 +17,7 @@ defmodule CodebattleWeb.GameController do
   def show(conn, %{"id" => id}) do
     user = conn.assigns.current_user
 
-    case Context.get_game(id) do
+    case Context.get_game!(id) do
       %Game{is_live: true} = game ->
         conn =
           put_gon(conn,
@@ -111,9 +111,10 @@ defmodule CodebattleWeb.GameController do
   def create_training(conn, _params) do
     game_params = %{
       level: "elementary",
-      type: "training",
+      type: "duo",
+      mode: "training",
       visibility_type: "hidden",
-      players: [conn.assigns.current_user, Codebattle.Bot.Builder.build()]
+      players: [conn.assigns.current_user, Codebattle.Bot.Factory.build()]
     }
 
     case Context.create_game(game_params) do

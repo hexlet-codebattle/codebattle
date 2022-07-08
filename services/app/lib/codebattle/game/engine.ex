@@ -62,7 +62,7 @@ defmodule Codebattle.Game.Engine do
              players: game.players ++ [Game.Player.build(user, %{task: game.task})],
              starts_at: TimeHelper.utc_now()
            }),
-         _game <- update_game!(game, %{state: "playing"}),
+         update_game!(game, %{state: "playing"}),
          :ok <- broadcast_live_game(game),
          :ok <- maybe_run_bot(game),
          :ok <- maybe_start_timeout_timer(game) do
@@ -144,8 +144,8 @@ defmodule Codebattle.Game.Engine do
   def cancel_game(game, user) do
     with %Game.Player{} = player <- Game.Helpers.get_player(game, user.id),
          :ok <- player_can_cancel_game?(game, player),
-         :ok <- terminate_game(game),
-         %Game{} = _game <- update_game!(game, %{state: "canceled"}) do
+         :ok <- terminate_game(game) do
+      update_game!(game, %{state: "canceled"})
       :ok
     else
       {:error, reason} -> {:error, reason}
@@ -241,17 +241,27 @@ defmodule Codebattle.Game.Engine do
   end
 
   def update_game!(%Game{} = game) do
-    Game
-    |> Repo.get!(game.id)
-    |> Game.changeset(Map.from_struct(game))
-    |> Repo.update!()
+    case Repo.get(Game, game.id) do
+      nil ->
+        :ok
+
+      game ->
+        game
+        |> Game.changeset(Map.from_struct(game))
+        |> Repo.update!()
+    end
   end
 
   def update_game!(%Game{} = game, params) do
-    Game
-    |> Repo.get!(game.id)
-    |> Game.changeset(params)
-    |> Repo.update!()
+    case Repo.get(Game, game.id) do
+      nil ->
+        :ok
+
+      game ->
+        game
+        |> Game.changeset(params)
+        |> Repo.update!()
+    end
   end
 
   def create_user_game!(params) do
@@ -307,6 +317,7 @@ defmodule Codebattle.Game.Engine do
     create_game(%{
       level: game.level,
       type: game.type,
+      mode: game.mode,
       visibility_type: game.visibility_type,
       timeout_seconds: game.timeout_seconds,
       players: game.players,

@@ -8,25 +8,26 @@ defmodule CodebattleWeb.Api.GameView do
 
   def render_game(game) do
     %{
+      inserted_at: game.inserted_at,
+      langs: Languages.get_langs_with_solutions(game.task),
+      level: game.level,
+      mode: game.mode,
+      players: game.players,
+      rematch_initiator_id: game.rematch_initiator_id,
+      rematch_state: game.rematch_state,
+      starts_at: game.starts_at,
       state: game.state,
       status: game.state,
-      players: game.players,
       task: game.task,
-      level: game.level,
-      type: game.type,
-      visibility_type: game.visibility_type,
       timeout_seconds: game.timeout_seconds,
-      rematch_state: game.rematch_state,
-      rematch_initiator_id: game.rematch_initiator_id,
       tournament_id: game.tournament_id,
-      inserted_at: game.inserted_at,
-      starts_at: game.starts_at,
-      langs: Languages.get_langs_with_solutions(game.task)
+      type: game.type,
+      visibility_type: game.visibility_type
     }
   end
 
   def render_completed_games(games) do
-    games |> Enum.filter(&(&1.type != "training")) |> Enum.map(&render_completed_game/1)
+    games |> Enum.filter(&(&1.mode != "training")) |> Enum.map(&render_completed_game/1)
   end
 
   def render_completed_game(game) do

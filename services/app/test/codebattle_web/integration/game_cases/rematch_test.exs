@@ -44,7 +44,7 @@ defmodule Codebattle.GameCases.RematchTest do
     editor_text_init =
       "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n\treturn 0;\n};\n\nmodule.exports = solution;"
 
-    game = Game.Context.get_game(game_id)
+    game = Game.Context.get_game!(game_id)
     assert game.state == "playing"
     assert Helpers.get_first_player(game).editor_text == editor_text_init
     assert Helpers.get_second_player(game).editor_text == editor_text_init
@@ -58,7 +58,7 @@ defmodule Codebattle.GameCases.RematchTest do
     Phoenix.ChannelTest.push(socket2, "editor:data", %{editor_text: editor_text2, lang_slug: "js"})
 
     :timer.sleep(70)
-    game = Game.Context.get_game(game.id)
+    game = Game.Context.get_game!(game.id)
 
     assert Helpers.get_first_player(game).editor_text == editor_text1
     assert Helpers.get_second_player(game).editor_text == editor_text2
@@ -66,20 +66,20 @@ defmodule Codebattle.GameCases.RematchTest do
     # First player give_up
     Phoenix.ChannelTest.push(socket1, "give_up", %{})
     :timer.sleep(70)
-    game = Game.Context.get_game(game.id)
+    game = Game.Context.get_game!(game.id)
     assert game.state == "game_over"
 
     # First player send rematch offer
     Phoenix.ChannelTest.push(socket1, "rematch:send_offer", %{})
     :timer.sleep(70)
-    game = Game.Context.get_game(game.id)
+    game = Game.Context.get_game!(game.id)
     assert game.state == "game_over"
     assert Helpers.get_rematch_state(game) == "in_approval"
 
     # Second player accept rematch offer
     Phoenix.ChannelTest.push(socket2, "rematch:accept_offer", %{})
     :timer.sleep(70)
-    game = Game.Context.get_game(game_id + 1)
+    game = Game.Context.get_game!(game_id + 1)
 
     assert game.state == "playing"
     assert Helpers.get_level(game) == "easy"
@@ -114,7 +114,7 @@ defmodule Codebattle.GameCases.RematchTest do
     # User join to the game
     post(conn1, game_path(conn1, :join, game_id))
 
-    game = Game.Context.get_game(game.id)
+    game = Game.Context.get_game!(game.id)
     assert game.state == "playing"
 
     {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
@@ -123,12 +123,12 @@ defmodule Codebattle.GameCases.RematchTest do
     # User give_up
     Phoenix.ChannelTest.push(socket1, "give_up", %{})
     :timer.sleep(70)
-    game = Game.Context.get_game(game.id)
+    game = Game.Context.get_game!(game.id)
     assert game.state == "game_over"
 
     Phoenix.ChannelTest.push(socket1, "rematch:send_offer", %{})
     :timer.sleep(150)
-    game = Game.Context.get_game(game_id + 1)
+    game = Game.Context.get_game!(game_id + 1)
     assert game.state == "playing"
   end
 
@@ -156,19 +156,19 @@ defmodule Codebattle.GameCases.RematchTest do
     # First player give_up
     Phoenix.ChannelTest.push(socket1, "give_up", %{})
     :timer.sleep(70)
-    game = Game.Context.get_game(game_id)
+    game = Game.Context.get_game!(game_id)
     assert game.state == "game_over"
 
     Phoenix.ChannelTest.push(socket1, "rematch:send_offer", %{})
     :timer.sleep(70)
-    game = Game.Context.get_game(game.id)
+    game = Game.Context.get_game!(game.id)
     assert game.state == "game_over"
     assert Helpers.get_rematch_state(game) == "in_approval"
 
     Phoenix.ChannelTest.push(socket2, "rematch:send_offer", %{})
     :timer.sleep(70)
 
-    game = Game.Context.get_game(game_id + 1)
+    game = Game.Context.get_game!(game_id + 1)
     assert game.state == "playing"
     assert Helpers.get_level(game) == "easy"
     assert Helpers.get_first_player(game).id == user1.id
@@ -192,22 +192,22 @@ defmodule Codebattle.GameCases.RematchTest do
     # First player give_up
     Phoenix.ChannelTest.push(socket1, "give_up", %{})
     :timer.sleep(70)
-    game = Game.Context.get_game(game_id)
+    game = Game.Context.get_game!(game_id)
     assert game.state == "game_over"
 
     Phoenix.ChannelTest.push(socket1, "rematch:send_offer", %{})
     :timer.sleep(70)
-    game = Game.Context.get_game(game.id)
+    game = Game.Context.get_game!(game.id)
     assert game.state == "game_over"
     assert Helpers.get_rematch_state(game) == "in_approval"
 
     Phoenix.ChannelTest.push(socket2, "rematch:reject_offer", %{})
     :timer.sleep(70)
-    game = Game.Context.get_game(game.id)
+    game = Game.Context.get_game!(game.id)
     assert Helpers.get_rematch_state(game) == "rejected"
 
     assert_raise Ecto.NoResultsError, fn ->
-      Game.Context.get_game(game_id + 1)
+      Game.Context.get_game!(game_id + 1)
     end
   end
 
@@ -225,14 +225,16 @@ defmodule Codebattle.GameCases.RematchTest do
 
     Phoenix.ChannelTest.push(socket1, "give_up", %{})
     :timer.sleep(70)
-    game = Game.Context.get_game(game_id)
+    game = Game.Context.get_game!(game_id)
     assert game.state == "game_over"
 
     Phoenix.ChannelTest.push(socket2, "rematch:reject_offer", %{})
     :timer.sleep(70)
-    game = Game.Context.get_game(game.id)
+    game = Game.Context.get_game!(game.id)
     assert Helpers.get_rematch_state(game) == "rejected"
 
-    {:error, :not_found} = Game.Context.get_game(game_id + 1)
+    assert_raise Ecto.NoResultsError, fn ->
+      Game.Context.get_game!(game_id + 1)
+    end
   end
 end

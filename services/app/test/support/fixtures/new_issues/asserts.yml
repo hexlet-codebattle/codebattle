@@ -2,7 +2,7 @@ level: easy
 disabled: true
 signature:
   input:
-    - argument_name: str
+    - argument-name: str
       type:
         name: string
   output:

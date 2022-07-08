@@ -1,4 +1,4 @@
-defmodule Codebattle.RankUpdate do
+defmodule Codebattle.User.RankUpdate do
   @moduledoc "Module for recalculation and update in db users rank for all users"
 
   alias Codebattle.Repo

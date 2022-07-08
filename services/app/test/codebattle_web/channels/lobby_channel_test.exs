@@ -20,7 +20,6 @@ defmodule CodebattleWeb.LobbyChannelTest do
 
     game_params = %{state: "waiting_opponent", players: [%Game.Player{id: user.id}], task: task}
     {:ok, game} = Game.Context.create_game(game_params)
-    game_topic = "game:" <> to_string(game.id)
 
     {:ok,
      %{
@@ -41,7 +40,7 @@ defmodule CodebattleWeb.LobbyChannelTest do
 
     {:ok, _payload, socket} = subscribe_and_join(socket, LobbyChannel, "lobby")
 
-    push(socket, "game:create", %{type: "standard", level: "elementary"})
+    push(socket, "game:create", %{mode: "standard", level: "elementary"})
 
     assert_receive %Phoenix.Socket.Broadcast{
       event: "game:upsert"

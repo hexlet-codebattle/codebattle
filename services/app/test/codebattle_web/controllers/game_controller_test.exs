@@ -68,7 +68,7 @@ defmodule Codebattleweb.GameControllerTest do
       |> delete(Routes.game_path(conn, :delete, game.id))
       |> html_response(302)
 
-      updated = Game.Context.get_game(game.id)
+      updated = Game.Context.get_game!(game.id)
       assert updated.is_live == false
       assert updated.state == "canceled"
     end
@@ -88,7 +88,7 @@ defmodule Codebattleweb.GameControllerTest do
       |> post(Routes.game_path(conn, :join, game.id))
       |> html_response(302)
 
-      updated = Game.Context.get_game(game.id)
+      updated = Game.Context.get_game!(game.id)
       user1_id = user1.id
       user2_id = user2.id
       assert updated.is_live == true

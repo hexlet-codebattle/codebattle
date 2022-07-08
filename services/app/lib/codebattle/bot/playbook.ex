@@ -124,7 +124,7 @@ defmodule Codebattle.Bot.Playbook do
   end
 
   def store_playbook(playbook, game_id, task_id) do
-    game = Game.Context.get_game(game_id)
+    game = Game.Context.get_game!(game_id)
     data = create_final_game_playbook(playbook)
     winner = Game.Helpers.get_winner(game)
 

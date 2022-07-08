@@ -125,7 +125,8 @@ defmodule Codebattle.Invite do
       players: users,
       state: "playing",
       level: invite.game_params.level,
-      type: "standard",
+      type: "duo",
+      mode: "standard",
       visibility_type: invite.game_params.type,
       timeout_seconds: invite.game_params.timeout_seconds
     }
