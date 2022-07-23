@@ -56,7 +56,6 @@ defmodule Codebattle.Mixfile do
       {:ueberauth, "~> 0.7"},
       {:ueberauth_github, "~> 0.8.1"},
       {:ueberauth_discord, "~> 0.7"},
-      {:fsm, "~> 0.3"},
       {:phoenix_gon, "~> 0.4", github: "bonfire-networks/phoenix_gon"},
       {:text_delta, "~> 1.4.0"},
       {:yaml_elixir, "~> 2.4"},
