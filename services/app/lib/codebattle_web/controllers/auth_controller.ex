@@ -49,6 +49,7 @@ defmodule CodebattleWeb.AuthController do
       "Failed to authenticate on github" <>
         inspect(reason) <> "\nParams: " <> inspect(params)
     )
+
     conn
     |> put_flash(:danger, gettext("Failed to authenticate."))
     |> redirect(to: "/")
@@ -72,7 +73,6 @@ defmodule CodebattleWeb.AuthController do
         |> redirect(to: next_path)
 
       {:error, reason} ->
-
         conn
         |> put_flash(:danger, reason)
         |> redirect(to: "/")

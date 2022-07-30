@@ -36,7 +36,7 @@ defmodule Codebattle.User do
         :name,
         :rating,
         :is_bot,
-        :guest,
+        :is_guest,
         :github_id,
         :lang,
         :editor_mode,
@@ -76,7 +76,7 @@ defmodule Codebattle.User do
 
     field(:games_played, :integer, virtual: true)
     field(:performance, :integer, virtual: true)
-    field(:guest, :boolean, virtual: true, default: false)
+    field(:is_guest, :boolean, virtual: true, default: false)
     field(:avatar_url, :string, virtual: true)
 
     embeds_one(:sound_settings, SoundSettings, on_replace: :update)
@@ -121,7 +121,7 @@ defmodule Codebattle.User do
 
   def create_guest() do
     %__MODULE__{
-      guest: true,
+      is_guest: true,
       id: @guest_id,
       name: "Jon Dou",
       rating: 0,

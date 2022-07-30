@@ -4,7 +4,7 @@ defmodule CodebattleWeb.RootController do
   def index(conn, _params) do
     current_user = conn.assigns.current_user
 
-    case current_user.guest do
+    case current_user.is_guest do
       true ->
         conn
         |> put_layout("landing.html")

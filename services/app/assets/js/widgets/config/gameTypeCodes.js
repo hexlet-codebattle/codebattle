@@ -1,9 +1,11 @@
 export default {
-  standard: 'standard',
   solo: 'solo',
+  duo: 'duo',
+  multi: 'multi',
+  // deprecated
   bot: 'bot',
   training: 'training',
-  // deprecated
+  standard: 'standard',
   public: 'public',
   private: 'private',
   tournament: 'tournament',

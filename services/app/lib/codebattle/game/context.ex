@@ -6,8 +6,9 @@ defmodule Codebattle.Game.Context do
 
   require Logger
 
-  import Ecto.Query
   import Codebattle.Game.Auth
+  import Codebattle.Game.Helpers
+  import Ecto.Query
 
   alias Codebattle.CodeCheck.CheckResult
   alias Codebattle.CodeCheck.CheckResultV2
@@ -22,15 +23,15 @@ defmodule Codebattle.Game.Context do
   @type tournament_id :: non_neg_integer
 
   @type game_params :: %{
-          :state => String.t() | nil,
           :players => nonempty_list(User.t()) | nonempty_list(Tournament.Types.Player.t()),
-          :level => String.t() | nil,
+          :level => String.t(),
+          optional(:state) => String.t(),
           optional(:tournament_id) => tournament_id,
           optional(:timeout_seconds) => non_neg_integer,
           optional(:type) => String.t(),
           optional(:mode) => String.t(),
           optional(:visibility_type) => String.t(),
-          optional(:task) => Codebattle.Task.t() | nil
+          optional(:task) => Codebattle.Task.t()
         }
 
   @type live_games_params :: %{
@@ -103,7 +104,7 @@ defmodule Codebattle.Game.Context do
   def create_game(game_params) do
     case Engine.create_game(game_params) do
       {:ok, game} ->
-        {:ok, mark_as_live(game)}
+        {:ok, game}
 
       {:error, reason} ->
         Logger.error("#{__MODULE__} Cannot create a game reason: #{inspect(reason)}")
@@ -204,15 +205,5 @@ defmodule Codebattle.Game.Context do
   defp get_from_db!(id) do
     query = from(g in Game, where: g.id == ^id, preload: [:task, :users, :user_games])
     Repo.one!(query)
-  end
-
-  defp mark_as_live(game), do: Map.put(game, :is_live, true)
-
-  defp fill_virtual_fields(game) do
-    %{
-      game
-      | is_bot: Game.Helpers.bot_game?(game),
-        is_tournament: Game.Helpers.tournament_game?(game)
-    }
   end
 end

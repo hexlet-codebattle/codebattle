@@ -123,7 +123,7 @@ const GameActionButton = ({ game }) => {
         </div>
       );
     }
-    if (currentUser.guest) {
+    if (currentUser.isGuest) {
       return (
         <button
           type="button"

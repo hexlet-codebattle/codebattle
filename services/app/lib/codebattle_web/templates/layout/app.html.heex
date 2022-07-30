@@ -96,7 +96,7 @@
           </button>
           <div class="collapse navbar-collapse" id="navbarResponsive">
             <ul class="navbar-nav ml-auto">
-              <%= unless @current_user.guest do %>
+              <%= unless @current_user.is_guest do %>
                 <li class="nav-item align-self-center dropdown" id="invites-root"></li>
                 <li class="nav-item dropdown">
                   <a

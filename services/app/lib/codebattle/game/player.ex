@@ -13,22 +13,23 @@ defmodule Codebattle.Game.Player do
   @primary_key false
   @derive {Jason.Encoder,
            only: [
-             :id,
-             :github_id,
-             :discord_id,
-             :discord_avatar,
-             :name,
-             :is_bot,
-             :lang,
-             :editor_text,
-             :editor_lang,
-             :creator,
-             :result,
-             :check_result,
              :achievements,
+             :check_result,
+             :creator,
+             :discord_avatar,
+             :discord_id,
+             :editor_lang,
+             :editor_text,
+             :github_id,
+             :id,
+             :is_bot,
+             :is_guest,
+             :lang,
+             :name,
+             :rank,
              :rating,
              :rating_diff,
-             :rank
+             :result
            ]}
 
   @results ~w(undefined won lost gave_up timeout)
@@ -43,6 +44,7 @@ defmodule Codebattle.Game.Player do
     field(:check_result, AtomizedMap, default: %CheckResult{})
     field(:creator, :boolean, default: false)
     field(:is_bot, :boolean, default: false)
+    field(:is_guest, :boolean, default: false)
     field(:name, :string, default: "Ada Lovelace")
     field(:rating, :integer, default: 0)
     field(:rating_diff, :integer, default: 0)
@@ -62,6 +64,7 @@ defmodule Codebattle.Game.Player do
       :discord_avatar,
       :name,
       :is_bot,
+      :is_guest,
       :lang,
       :editor_text,
       :editor_lang,
@@ -88,6 +91,7 @@ defmodule Codebattle.Game.Player do
           %__MODULE__{
             id: user.id,
             is_bot: user.is_bot,
+            is_guest: user.is_guest,
             rank: user.rank,
             name: user.name,
             achievements: user.achievements,
@@ -110,6 +114,7 @@ defmodule Codebattle.Game.Player do
     init_player = %__MODULE__{
       id: player.id,
       is_bot: player.is_bot,
+      is_guest: player.is_guest,
       name: player.name,
       rating: player.rating,
       rank: player.rank,
@@ -130,6 +135,7 @@ defmodule Codebattle.Game.Player do
     init_player = %__MODULE__{
       id: player.id,
       is_bot: player.is_bot,
+      is_guest: player.is_guest,
       name: player.name,
       rating: player.rating,
       rank: player.rank,
@@ -156,6 +162,7 @@ defmodule Codebattle.Game.Player do
           %__MODULE__{
             id: user.id,
             is_bot: user.is_bot,
+            is_guest: user.is_guest,
             name: user.name,
             rating: user.rating,
             rank: user.rank,

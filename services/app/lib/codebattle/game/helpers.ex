@@ -22,6 +22,7 @@ defmodule Codebattle.Game.Helpers do
 
   def bot_game?(game), do: game |> get_players |> Enum.any?(fn p -> p.is_bot end)
   def tournament_game?(game), do: get_tournament_id(game) != nil
+  def training_game?(game), do: game.mode == "training"
 
   def get_winner(game) do
     game
@@ -90,5 +91,15 @@ defmodule Codebattle.Game.Helpers do
     |> Enum.find_value(fn p -> p.id == player_id && p.result == result end)
     |> Kernel.!()
     |> Kernel.!()
+  end
+
+  def mark_as_live(game), do: Map.put(game, :is_live, true)
+
+  def fill_virtual_fields(game) do
+    %{
+      game
+      | is_bot: bot_game?(game),
+        is_tournament: tournament_game?(game)
+    }
   end
 end

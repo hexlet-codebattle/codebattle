@@ -21,8 +21,8 @@ defmodule CodebattleWeb.GameChannel do
   end
 
   def terminate(_reason, socket) do
-    game_id = get_game_id(socket)
-    user_id = socket.assigns.current_user.id
+    # game_id = get_game_id(socket)
+    # user_id = socket.assigns.current_user.id
     {:noreply, socket}
   end
 

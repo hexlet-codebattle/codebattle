@@ -148,7 +148,6 @@ defmodule Codebattle.Oauth.User.FirebaseUser do
 
     case Repo.insert(changeset) do
       {:ok, user} ->
-
         {:ok, user}
 
       {:error, changeset} ->

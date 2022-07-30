@@ -79,8 +79,7 @@ defmodule Codebattle.Bot.Playbook do
 
   def init(_), do: []
 
-  # TODO: add events
-  @events [
+  @simple_events [
     :join_chat,
     :leave_chat,
     :chat_message,
@@ -92,8 +91,7 @@ defmodule Codebattle.Bot.Playbook do
     :game_over
   ]
 
-  def add_event(playbook, event, params)
-      when event in @events do
+  def add_event(playbook, event, params) when event in @simple_events do
     time = System.system_time(:millisecond)
     count = Enum.count(playbook)
 
@@ -157,6 +155,8 @@ defmodule Codebattle.Bot.Playbook do
   defp merge(record, _event, params), do: Map.merge(record, params)
 
   defp create_final_game_playbook(playbook) do
+    IO.inspect(1_111_111)
+    IO.inspect(playbook)
     init_data = %{records: [], players: [], count: 0}
 
     playbook

@@ -12,7 +12,6 @@ import * as lobbyMiddlewares from '../../middlewares/Lobby';
 import * as mainMiddlewares from '../../middlewares/Main';
 import i18n from '../../../i18n';
 import levelRatio from '../../config/levelRatio';
-import gameTypeCodes from '../../config/gameTypeCodes';
 
 const TIMEOUTS = [3300, 2040, 1260, 780, 480, 300, 180, 120, 60];
 
@@ -65,9 +64,9 @@ const OpponentSelect = ({ setOpponent }) => {
 const CreateGameDialog = ({ hideModal }) => {
   const dispatch = useDispatch();
   const gameLevels = Object.keys(levelRatio);
-  const currentGameTypeCodes = ['standard', 'invite', 'bot'];
+  const currentGameTypeCodes = ['other_user', 'invite', 'bot'];
   const gameTypeName = {
-    standard: i18n.t('With other users'),
+    other_user: i18n.t('With other users'),
     invite: i18n.t('With a friend'),
     bot: i18n.t('With a bot'),
   };
@@ -75,7 +74,7 @@ const CreateGameDialog = ({ hideModal }) => {
 
   const [game, setGame] = useState({
     level: gameLevels[0],
-    type: gameTypeCodes.standard,
+    type: 'other_user',
     timeoutSeconds: TIMEOUTS[4],
   });
 
@@ -86,7 +85,7 @@ const CreateGameDialog = ({ hideModal }) => {
   });
   const createBtnTitle = isInvite ? i18n.t('Create Invite') : i18n.t('Create Battle');
 
-  const create = () => {
+  const createGame = () => {
     if (isInvite && opponent) {
       dispatch(
         mainMiddlewares.createInvite({
@@ -98,7 +97,7 @@ const CreateGameDialog = ({ hideModal }) => {
     } else if (!isInvite) {
       lobbyMiddlewares.createGame({
         level: game.level,
-        type: game.type,
+        opponent_type: game.type,
         timeout_seconds: game.timeoutSeconds,
       });
     }
@@ -167,7 +166,7 @@ const CreateGameDialog = ({ hideModal }) => {
           </div>
         </>
       )}
-      <button type="button" className={createBtnClassname} onClick={create}>
+      <button type="button" className={createBtnClassname} onClick={createGame}>
         {createBtnTitle}
       </button>
     </div>

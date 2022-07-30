@@ -26,7 +26,7 @@ defmodule CodebattleWeb.Plugs.AssignGon do
       :name,
       :rating,
       :is_bot,
-      :guest,
+      :is_guest,
       :github_id,
       :github_name,
       :discord_name,

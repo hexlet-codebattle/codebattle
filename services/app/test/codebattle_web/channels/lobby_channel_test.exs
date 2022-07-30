@@ -33,14 +33,28 @@ defmodule CodebattleWeb.LobbyChannelTest do
     assert completed_games
   end
 
-  test "creates game" do
+  test "creates game with other users" do
     user = insert(:user)
     user_token = Phoenix.Token.sign(socket(UserSocket), "user_token", user.id)
     {:ok, socket} = connect(UserSocket, %{"token" => user_token})
 
     {:ok, _payload, socket} = subscribe_and_join(socket, LobbyChannel, "lobby")
 
-    push(socket, "game:create", %{mode: "standard", level: "elementary"})
+    push(socket, "game:create", %{opponent_type: "other_user", level: "elementary"})
+
+    assert_receive %Phoenix.Socket.Broadcast{
+      event: "game:upsert"
+    }
+  end
+
+  test "creates game with bot" do
+    user = insert(:user)
+    user_token = Phoenix.Token.sign(socket(UserSocket), "user_token", user.id)
+    {:ok, socket} = connect(UserSocket, %{"token" => user_token})
+
+    {:ok, _payload, socket} = subscribe_and_join(socket, LobbyChannel, "lobby")
+
+    push(socket, "game:create", %{opponent_type: "bot", level: "elementary"})
 
     assert_receive %Phoenix.Socket.Broadcast{
       event: "game:upsert"

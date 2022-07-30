@@ -1,21 +1,22 @@
 defmodule Codebattle.Game.Auth do
   alias Codebattle.Game
 
-  def can_play_game?(players) when is_list(players) do
+  def player_can_play_game?(players) when is_list(players) do
     Enum.reduce_while(players, :ok, fn player, _acc ->
-      case can_play_game?(player) do
+      case player_can_play_game?(player) do
         :ok -> {:cont, :ok}
         {:error, reason} -> {:halt, {:error, reason}}
       end
     end)
   end
 
-  def can_play_game?(%{is_bot: true}), do: :ok
-  def can_play_game?(%{guest: true}), do: {:error, :not_authorized}
+  def player_can_play_game?(%{is_bot: true}), do: :ok
+  def player_can_play_game?(%{is_guest: true}), do: {:error, :not_authorized}
 
-  def can_play_game?(player) do
+  def player_can_play_game?(player) do
     is_player =
-      Enum.any?(Game.Context.get_live_games(), fn game ->
+      Game.Context.get_live_games()
+      |> Enum.any?(fn game ->
         Game.Helpers.is_player?(game, player.id)
       end)
 

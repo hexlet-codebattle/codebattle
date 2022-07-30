@@ -111,7 +111,6 @@ defmodule CodebattleWeb.GameController do
   def create_training(conn, _params) do
     game_params = %{
       level: "elementary",
-      type: "duo",
       mode: "training",
       visibility_type: "hidden",
       players: [conn.assigns.current_user, Codebattle.Bot.Factory.build()]
@@ -159,12 +158,12 @@ defmodule CodebattleWeb.GameController do
       user
       |> Map.take([
         :id,
+        :is_guest,
         :is_bot,
         :rating,
         :rank,
         :lang,
         :name,
-        :guest,
         :achievements,
         :avatar_url
       ])

@@ -10,33 +10,33 @@ defmodule Codebattle.Tournament.Types.Player do
 
   embedded_schema do
     field(:id, :integer)
-    field(:team_id, :integer)
-    field(:public_id, :string)
-    field(:github_id, :integer)
-    field(:discord_id, :integer)
     field(:discord_avatar, :string)
+    field(:discord_id, :integer)
+    field(:github_id, :integer)
+    field(:is_bot, :boolean)
+    field(:is_guest, :boolean)
     field(:lang, :string)
     field(:name, :string)
-    field(:rating, :integer)
+    field(:public_id, :string)
     field(:rank, :integer, default: 5432)
-    field(:guest, :boolean)
-    field(:is_bot, :boolean)
+    field(:rating, :integer)
     field(:result, :string, default: "waiting")
+    field(:team_id, :integer)
   end
 
   def changeset(struct, params) do
     struct
     |> cast(Map.from_struct(params), [
+      :github_id,
       :id,
-      :team_id,
+      :is_bot,
+      :is_guest,
       :lang,
       :name,
-      :github_id,
-      :rating,
       :rank,
-      :guest,
-      :is_bot,
-      :result
+      :rating,
+      :result,
+      :team_id
     ])
     |> validate_inclusion(:result, @results)
   end

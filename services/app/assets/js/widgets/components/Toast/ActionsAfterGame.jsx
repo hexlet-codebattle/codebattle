@@ -34,7 +34,7 @@ const ActionsAfterGame = () => {
   }
   return (
     <>
-      <NewGameButton type={gameType} />
+      {/* <NewGameButton type={gameType} /> */}
       <RematchButton disabled={isRematchDisabled} />
     </>
   );

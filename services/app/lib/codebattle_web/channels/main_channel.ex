@@ -8,7 +8,7 @@ defmodule CodebattleWeb.MainChannel do
   def join("main", _payload, socket) do
     current_user = socket.assigns.current_user
 
-    if !current_user.guest do
+    if !current_user.is_guest do
       topic = "main:#{current_user.id}"
       Codebattle.PubSub.subscribe(topic)
       send(self(), :after_join)

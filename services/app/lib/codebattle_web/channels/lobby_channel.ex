@@ -2,6 +2,7 @@ defmodule CodebattleWeb.LobbyChannel do
   @moduledoc false
   use CodebattleWeb, :channel
 
+  alias Codebattle.Bot
   alias Codebattle.Game
   alias Codebattle.Tournament
   alias CodebattleWeb.Api.GameView
@@ -11,7 +12,11 @@ defmodule CodebattleWeb.LobbyChannel do
 
     {:ok,
      %{
-       live_games: GameView.render_live_games(Game.Context.get_live_games(%{is_tournament: false}), current_user.id),
+       live_games:
+         GameView.render_live_games(
+           Game.Context.get_live_games(%{is_tournament: false}),
+           current_user.id
+         ),
        tournaments: Tournament.Context.list_live_and_finished(socket.assigns.current_user),
        completed_games: GameView.render_completed_games(Game.Context.get_completed_games())
      }, socket}
@@ -31,12 +36,22 @@ defmodule CodebattleWeb.LobbyChannel do
   end
 
   def handle_in("game:create", payload, socket) do
+    players =
+      case payload["opponent_type"] do
+        "bot" ->
+          [socket.assigns.current_user, Bot.Factory.build()]
+
+        "other_user" ->
+          [socket.assigns.current_user]
+
+        _ ->
+          [socket.assigns.current_user]
+      end
+
     game_params = %{
       level: payload["level"],
-      type: payload["type"],
-      visibility_type: payload["visibility_type"],
       timeout_seconds: payload["timeout_seconds"],
-      players: [socket.assigns.current_user]
+      players: players
     }
 
     case Game.Context.create_game(game_params) do

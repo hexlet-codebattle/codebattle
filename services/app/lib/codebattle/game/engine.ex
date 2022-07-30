@@ -1,4 +1,9 @@
 defmodule Codebattle.Game.Engine do
+  require Logger
+
+  import Codebattle.Game.Auth
+  import Codebattle.Game.Helpers
+
   alias Codebattle.Bot
   alias Codebattle.Game
   alias Codebattle.Repo
@@ -7,15 +12,12 @@ defmodule Codebattle.Game.Engine do
   alias Codebattle.UserGame
   alias CodebattleWeb.Api.GameView
 
-  import Codebattle.Game.Auth
-  require Logger
-
   @default_timeout div(:timer.minutes(30), 1000)
   @max_timeout div(:timer.hours(1), 1000)
 
   def create_game(params) do
     level = params[:level] || get_random_level()
-    task = params[:task] || get_task(level)
+    task = params[:task] || get_task_by_level(level)
     state = params[:state] || get_state_from_params(params)
     type = params[:type] || "duo"
     mode = params[:mode] || "standard"
@@ -29,7 +31,7 @@ defmodule Codebattle.Game.Engine do
         Game.Player.build(player, %{creator: player.id == creator.id, task: task})
       end)
 
-    with :ok <- check_auth(players, tournament_id),
+    with :ok <- check_auth(players, mode, tournament_id),
          {:ok, game} <-
            insert_game(%{
              state: state,
@@ -56,7 +58,7 @@ defmodule Codebattle.Game.Engine do
   end
 
   def join_game(game, user) do
-    with :ok <- can_play_game?(user),
+    with :ok <- check_auth(user, game.mode, game.tournament_id),
          {:ok, {_old_game, game}} <-
            Game.Server.call_transition(game.id, :join, %{
              players: game.players ++ [Game.Player.build(user, %{task: game.task})],
@@ -142,7 +144,7 @@ defmodule Codebattle.Game.Engine do
   end
 
   def cancel_game(game, user) do
-    with %Game.Player{} = player <- Game.Helpers.get_player(game, user.id),
+    with %Game.Player{} = player <- get_player(game, user.id),
          :ok <- player_can_cancel_game?(game, player),
          :ok <- terminate_game(game) do
       update_game!(game, %{state: "canceled"})
@@ -177,7 +179,7 @@ defmodule Codebattle.Game.Engine do
     {:ok, {_old_game, game}} =
       Game.Server.call_transition(game.id, :rematch_send_offer, %{player_id: user.id})
 
-    case Game.Helpers.get_rematch_state(game) do
+    case get_rematch_state(game) do
       "accepted" ->
         {:ok, new_game} = create_rematch_game(game)
         Game.GlobalSupervisor.terminate_game(game.id)
@@ -201,7 +203,7 @@ defmodule Codebattle.Game.Engine do
     Task.start(fn -> Bot.Playbook.store_playbook(playbook, game.id, game.task.id) end)
   end
 
-  def get_task(level), do: tasks_provider().get_task(level)
+  def get_task_by_level(level), do: tasks_provider().get_task(level)
 
   def store_result!(game) do
     Repo.transaction(fn ->
@@ -226,9 +228,9 @@ defmodule Codebattle.Game.Engine do
       end)
 
       update_game!(game, %{
-        state: game.state,
-        players: game.players,
-        starts_at: Game.Helpers.get_starts_at(game),
+        state: get_state(game),
+        players: get_players(game),
+        starts_at: get_starts_at(game),
         finishes_at: TimeHelper.utc_now()
       })
     end)
@@ -337,16 +339,7 @@ defmodule Codebattle.Game.Engine do
 
   defp get_random_level, do: Enum.random(Codebattle.Task.levels())
 
-  defp check_auth(players, nil), do: can_play_game?(players)
-  defp check_auth(_, _), do: :ok
-
-  defp mark_as_live(game), do: Map.put(game, :is_live, true)
-
-  defp fill_virtual_fields(game) do
-    %{
-      game
-      | is_bot: Game.Helpers.bot_game?(game),
-        is_tournament: Game.Helpers.tournament_game?(game)
-    }
-  end
+  defp check_auth(_, "training", _), do: :ok
+  defp check_auth(_, _, tournament_id) when not is_nil(tournament_id), do: :ok
+  defp check_auth(players, "standard", _), do: player_can_play_game?(players)
 end
