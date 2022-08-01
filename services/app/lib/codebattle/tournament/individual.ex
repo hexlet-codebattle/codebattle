@@ -43,7 +43,7 @@ defmodule Codebattle.Tournament.Individual do
         end
       end
 
-    new_players = Enum.concat(players, Bot.Factory.build_list(bots_count))
+    new_players = Enum.concat(players, Bot.Context.build_list(bots_count))
 
     new_data =
       tournament

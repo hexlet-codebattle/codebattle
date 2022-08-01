@@ -1,6 +1,6 @@
 defmodule Codebattle.CheatCheck do
   require Logger
-  alias Codebattle.Bot.Playbook
+  alias Codebattle.Playbook
 
   def call(%Playbook{solution_type: "incomplete"}, _solution) do
     {:error, "incomplete solution"}

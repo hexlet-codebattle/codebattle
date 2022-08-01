@@ -137,7 +137,7 @@ creator = Repo.get!(Codebattle.User, -15)
       ]
     }
 
-    Repo.insert!(%Codebattle.Bot.Playbook{
+    Repo.insert!(%Codebattle.Playbook{
       data: playbook_data,
       task: task,
       winner_lang: "ruby",

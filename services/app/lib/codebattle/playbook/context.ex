@@ -1,61 +1,23 @@
-defmodule Codebattle.Bot.Playbook do
-  @moduledoc false
-
-  use Ecto.Schema
-  import Ecto.Changeset
+defmodule Codebattle.Playbook.Context do
   import Ecto.Query
-  alias Codebattle.Bot.Playbook
+
+  alias Codebattle.Playbook
   alias Codebattle.Repo
   alias Codebattle.Game
 
-  defmodule Data do
-    use Ecto.Schema
-    import Ecto.Changeset
-    @primary_key false
+  @record_types [
+    :join_chat,
+    :leave_chat,
+    :chat_message,
+    :init,
+    :give_up,
+    :update_editor_data,
+    :start_check,
+    :check_complete,
+    :game_over
+  ]
 
-    embedded_schema do
-      field(:players, {:array, AtomizedMap}, default: [])
-      field(:records, {:array, AtomizedMap}, default: [])
-      field(:count, :integer)
-    end
-
-    def changeset(struct, params) do
-      struct
-      |> cast(params, [:players, :records, :count])
-    end
-  end
-
-  @types ~w(complete incomplete waiting_moderator baned)
-
-  schema "playbooks" do
-    embeds_one(:data, Data, on_replace: :delete)
-    field(:game_id, :integer)
-    field(:winner_id, :integer)
-    field(:winner_lang, :string)
-    field(:solution_type, :string)
-
-    belongs_to(:task, Codebattle.Task)
-
-    timestamps()
-  end
-
-  @doc false
-  def changeset(%Playbook{} = playbook, attrs) do
-    playbook
-    |> cast(attrs, [:game_id, :winner_id, :winner_lang, :solution_type, :task_id])
-    |> cast_embed(:data)
-    |> validate_required([
-      :data,
-      :game_id,
-      :winner_id,
-      :winner_lang,
-      :solution_type,
-      :task_id
-    ])
-    |> validate_inclusion(:solution_type, @types)
-  end
-
-  def get_random(task_id) do
+  def get_random_completed(task_id) do
     from(
       p in Playbook,
       where:
@@ -77,101 +39,96 @@ defmodule Codebattle.Bot.Playbook do
     |> Repo.one()
   end
 
-  def init(_), do: []
-
-  @simple_events [
-    :join_chat,
-    :leave_chat,
-    :chat_message,
-    :init,
-    :give_up,
-    :update_editor_data,
-    :start_check,
-    :check_complete,
-    :game_over
-  ]
-
-  def add_event(playbook, event, params) when event in @simple_events do
-    time = System.system_time(:millisecond)
-    count = Enum.count(playbook)
-
-    record =
-      %{type: event}
-      |> merge(event, params)
-      |> Map.merge(%{time: time, record_id: count})
-
-    [record | playbook]
-  end
-
-  def add_event(playbook, :join, %{players: players}) do
-    Enum.reduce(players, playbook, fn player, acc ->
+  def init_records(%{players: players}) do
+    players
+    |> Enum.with_index()
+    |> Enum.map(fn {player, index} ->
       data = %{
+        record_id: index,
+        type: :init,
+        time: System.system_time(:millisecond),
         id: player.id,
         name: player.name,
         editor_text: player.editor_text,
         editor_lang: player.editor_lang,
         check_result: %{result: "", output: ""}
       }
-
-      add_event(acc, :init, data)
     end)
   end
 
-  def add_event(playbook, _event, _params) do
-    playbook
+  def add_record(records, index, type, params) when type in @record_types do
+    record =
+      %{
+        type: type,
+        record_id: index,
+        time: System.system_time(:millisecond)
+      }
+      |> Map.merge(params)
+
+    [record | records]
   end
 
-  def store_playbook(playbook, game_id, task_id) do
+  def add_record(records, _index, type, _params) do
+    Logger.warn("Unknown playbook record type: #{type}")
+    records
+  end
+
+  def store_playbook(playbook_records, game_id) do
     game = Game.Context.get_game!(game_id)
-    data = create_final_game_playbook(playbook)
     winner = Game.Helpers.get_winner(game)
+    task_id = Game.Helpers.get_task(game).id
+    data = build_playbook_data(playbook_records)
 
     %Playbook{
       data: data,
       task_id: task_id,
       game_id: String.to_integer(to_string(game_id)),
       winner_id: winner && winner.id,
-      winner_lang: winner && winner.id && winner.editor_lang,
+      winner_lang: winner && winner.editor_lang,
       solution_type: get_solution_type(winner, game)
     }
     |> Repo.insert()
   end
 
-  def update_stored_playbook(playbook, game) do
-    params = %{
-      data: create_final_game_playbook(playbook)
-    }
-
-    Playbook
-    |> Repo.get_by!(game_id: game.id)
-    |> Playbook.changeset(params)
-  end
-
-  defp merge(record, :check_complete, params) do
-    new_params = Map.update!(params, :check_result, &Map.from_struct/1)
-    Map.merge(record, new_params)
-  end
-
-  defp merge(record, _event, params), do: Map.merge(record, params)
-
-  defp create_final_game_playbook(playbook) do
-    IO.inspect(1_111_111)
-    IO.inspect(playbook)
+  defp build_playbook_data(playbook_records) do
     init_data = %{records: [], players: [], count: 0}
 
-    playbook
+    playbook_records
     |> Enum.reverse()
-    |> Enum.reduce(init_data, &add_final_record/2)
+    |> Enum.reduce(init_data, &add_record_to_playbook_data/2)
     |> Map.update!(:records, &Enum.reverse/1)
   end
 
-  defp add_final_record(%{type: :init} = record, data) do
-    player_state = create_init_state(record)
+  defp add_record_to_playbook_data(%{type: :init} = record, data) do
+    player
 
-    data |> add_player_state(player_state) |> update_history(record)
+                   id: ^user1_id,
+
+      "id": 0,
+      "name": "Jon Dou",
+      "time": 1659289657174,
+      "type": "player_state",
+      "record_id": 1,
+      "editor_lang": "js",
+      "editor_text": "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (number) => {\n\treturn number.toString().split(' ').ma;\n};\n\nmodule.exports = solution;",
+      "check_result": { "output": "", "result": "" },
+      "total_time_ms": 320541
+
+                   check_result: %{output: "", result: ""},
+                   editor_lang: "elixir",
+                   editor_text: "testf",
+                   name: "first",
+                   record_id: 0,
+                   total_time_ms: 0
+
+    Map.merge(record, %{type: :player_state, total_time_ms: 0})
+
+    data
+    |> Map.update!(data, :players, &[player | &1])
+    |> update_history(record)
   end
 
-  defp add_final_record(
+  defp add_record_to_playbook_data(
          %{type: :update_editor_data, record_id: record_id, id: id, time: time} = record,
          data
        ) do
@@ -190,7 +147,7 @@ defmodule Codebattle.Bot.Playbook do
     data |> update_players_state(new_player_state) |> update_history(new_record)
   end
 
-  defp add_final_record(record, data), do: update_history(data, record)
+  defp add_record_to_playbook_data(record, data), do: update_history(data, record)
 
   defp create_diff(player_state, %{time: time, editor_text: text, editor_lang: editor_lang}) do
     player_state_delta = create_delta(player_state.editor_text)
@@ -209,12 +166,6 @@ defmodule Codebattle.Bot.Playbook do
     }
     |> Map.merge(lang_delta)
   end
-
-  defp create_init_state(record),
-    do: Map.merge(record, %{type: :player_state, total_time_ms: 0})
-
-  defp add_player_state(data, player_state),
-    do: Map.update!(data, :players, &[player_state | &1])
 
   defp update_players_state(data, player_state),
     do: Map.update!(data, :players, &update_player(&1, player_state))

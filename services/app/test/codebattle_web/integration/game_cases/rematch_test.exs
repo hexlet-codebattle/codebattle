@@ -96,7 +96,7 @@ defmodule Codebattle.GameCases.RematchTest do
     socket1: socket1
   } do
     task = insert(:task, level: "elementary")
-    bot = Bot.Factory.build()
+    bot = Bot.Context.build()
 
     insert(:playbook, %{task: task})
 

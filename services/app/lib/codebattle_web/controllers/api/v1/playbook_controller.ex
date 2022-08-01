@@ -4,7 +4,7 @@ defmodule CodebattleWeb.Api.V1.PlaybookController do
   alias Codebattle.{Game, Repo, User, Task}
   alias Codebattle.Game.{Helpers, Server}
 
-  alias Codebattle.Bot.Playbook
+  alias Codebattle.Playbook
   import Ecto.Query, warn: false
 
   def approve(conn, %{"game_id" => game_id}) do

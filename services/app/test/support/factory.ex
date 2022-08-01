@@ -2,7 +2,7 @@ defmodule CodebattleWeb.Factory do
   use ExMachina.Ecto, repo: Codebattle.Repo
 
   alias Codebattle.{User, Game, Task, TaskPack, UserGame}
-  alias Codebattle.Bot.Playbook
+  alias Codebattle.Playbook
   alias Ueberauth.Auth
 
   def user_factory do

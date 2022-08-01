@@ -8,7 +8,7 @@ defmodule CodebattleWeb.GameController do
   alias Codebattle.Game.Context
   alias Codebattle.Languages
   alias Codebattle.User
-  alias Codebattle.Bot.Playbook
+  alias Codebattle.Playbook
 
   plug(CodebattleWeb.Plugs.RequireAuth when action in [:join, :delete])
 
@@ -113,7 +113,7 @@ defmodule CodebattleWeb.GameController do
       level: "elementary",
       mode: "training",
       visibility_type: "hidden",
-      players: [conn.assigns.current_user, Codebattle.Bot.Factory.build()]
+      players: [conn.assigns.current_user, Codebattle.Bot.Context.build()]
     }
 
     case Context.create_game(game_params) do

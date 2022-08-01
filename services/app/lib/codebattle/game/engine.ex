@@ -6,9 +6,9 @@ defmodule Codebattle.Game.Engine do
 
   alias Codebattle.Bot
   alias Codebattle.Game
+  alias Codebattle.Playbook
   alias Codebattle.Repo
   alias Codebattle.User
-  alias Codebattle.User.Achievements
   alias Codebattle.UserGame
   alias CodebattleWeb.Api.GameView
 
@@ -42,13 +42,13 @@ defmodule Codebattle.Game.Engine do
              timeout_seconds: min(timeout_seconds, @max_timeout),
              tournament_id: tournament_id,
              task: task,
-             players: players
+             players: players,
+             starts_at: TimeHelper.utc_now()
            }),
          game = fill_virtual_fields(game),
          game = mark_as_live(game),
          {:ok, _} <- Game.GlobalSupervisor.start_game(game),
-         :ok <- maybe_run_bot(game),
-         :ok <- maybe_start_timeout_timer(game),
+         :ok <- maybe_fire_playing_game_side_effects(game),
          :ok <- broadcast_live_game(game) do
       {:ok, game}
     else
@@ -59,15 +59,14 @@ defmodule Codebattle.Game.Engine do
 
   def join_game(game, user) do
     with :ok <- check_auth(user, game.mode, game.tournament_id),
-         {:ok, {_old_game, game}} <-
-           Game.Server.call_transition(game.id, :join, %{
+         {:ok, {_old_game_state, game}} <-
+           fire_transition(game.id, :join, %{
              players: game.players ++ [Game.Player.build(user, %{task: game.task})],
              starts_at: TimeHelper.utc_now()
            }),
          update_game!(game, %{state: "playing"}),
-         :ok <- broadcast_live_game(game),
-         :ok <- maybe_run_bot(game),
-         :ok <- maybe_start_timeout_timer(game) do
+         :ok <- maybe_fire_playing_game_side_effects(game),
+         :ok <- broadcast_live_game(game) do
       {:ok, game}
     else
       {:error, reason} ->
@@ -95,20 +94,20 @@ defmodule Codebattle.Game.Engine do
 
     case check_result.status do
       "ok" ->
-        {:ok, {old_game, new_game}} =
-          Game.Server.call_transition(game.id, :check_success, %{
+        {:ok, {old_game_state, new_game}} =
+          fire_transition(game.id, :check_success, %{
             id: user.id,
             check_result: check_result,
             editor_text: editor_text,
             editor_lang: editor_lang
           })
 
-        case {old_game.state, new_game.state} do
+        case {old_game_state, new_game.state} do
           {"playing", "game_over"} ->
             Game.Server.update_playbook(game.id, :game_over, %{id: user.id, lang: editor_lang})
 
             {:ok, _game} = store_result!(new_game)
-            store_playbook(new_game)
+            store_playbook_async(new_game)
 
             Codebattle.PubSub.broadcast("game:finished", %{game: new_game})
             {:ok, new_game, %{check_result: check_result, solution_status: true}}
@@ -118,8 +117,8 @@ defmodule Codebattle.Game.Engine do
         end
 
       _ ->
-        {:ok, {_old_game, new_game}} =
-          Game.Server.call_transition(game.id, :check_failure, %{
+        {:ok, {_old_game_state, new_game}} =
+          fire_transition(game.id, :check_failure, %{
             id: user.id,
             check_result: check_result,
             editor_text: editor_text,
@@ -131,11 +130,11 @@ defmodule Codebattle.Game.Engine do
   end
 
   def give_up(game, user) do
-    case Game.Server.call_transition(game.id, :give_up, %{id: user.id}) do
-      {:ok, {_old_game, new_game}} ->
+    case fire_transition(game.id, :give_up, %{id: user.id}) do
+      {:ok, {_old_game_state, new_game}} ->
         {:ok, _game} = store_result!(new_game)
         Codebattle.PubSub.broadcast("game:finished", %{game: new_game})
-        store_playbook(new_game)
+        store_playbook_async(new_game)
         {:ok, new_game}
 
       {:error, reason} ->
@@ -157,9 +156,9 @@ defmodule Codebattle.Game.Engine do
   def terminate_game(%Game{} = game) do
     case game.is_live do
       true ->
-        # TODO: move to PUbSub
+        store_playbook_async(game)
+        # TODO: move to PubSup
         CodebattleWeb.Endpoint.broadcast("lobby", "game:remove", %{id: game.id})
-        # Engine.store_playbook(game)
         Game.GlobalSupervisor.terminate_game(game.id)
         :ok
 
@@ -176,8 +175,8 @@ defmodule Codebattle.Game.Engine do
   end
 
   def rematch_send_offer(game, user) do
-    {:ok, {_old_game, game}} =
-      Game.Server.call_transition(game.id, :rematch_send_offer, %{player_id: user.id})
+    {:ok, {_old_game_state, game}} =
+      fire_transition(game.id, :rematch_send_offer, %{player_id: user.id})
 
     case get_rematch_state(game) do
       "accepted" ->
@@ -192,15 +191,15 @@ defmodule Codebattle.Game.Engine do
   end
 
   def update_editor_data(game, params) do
-    case Game.Server.call_transition(game.id, :update_editor_data, params) do
-      {:ok, {_old_game, game}} -> {:ok, game}
+    case fire_transition(game.id, :update_editor_data, params) do
+      {:ok, {_old_game_state, game}} -> {:ok, game}
       {:error, reason} -> {:error, reason}
     end
   end
 
-  def store_playbook(game) do
-    {:ok, playbook} = Game.Server.get_playbook(game.id)
-    Task.start(fn -> Bot.Playbook.store_playbook(playbook, game.id, game.task.id) end)
+  def store_playbook_async(game) do
+    playbook_records = Game.Server.get_playbook_records(game.id)
+    Task.start(fn -> Playbook.Context.store_playbook(playbook_records, game.id) end)
   end
 
   def get_task_by_level(level), do: tasks_provider().get_task(level)
@@ -218,7 +217,7 @@ defmodule Codebattle.Game.Engine do
           lang: player.editor_lang
         })
 
-        achievements = Achievements.recalculate_achievements(player)
+        achievements = User.Achievements.recalculate_achievements(player)
 
         update_user!(player.id, %{
           rating: player.rating,
@@ -272,10 +271,10 @@ defmodule Codebattle.Game.Engine do
 
   def trigger_timeout(%Game{} = game) do
     Logger.debug("Trigger timeout for game: #{game.id}")
-    {:ok, {old_game, new_game}} = Game.Server.call_transition(game.id, :timeout, %{})
+    {:ok, {old_game_state, new_game}} = fire_transition(game.id, :timeout, %{})
 
-    case {old_game.state, new_game.state} do
-      {s, "timeout"} when s in ["waiting_opponent", "playing"] ->
+    case {old_game_state, new_game.state} do
+      {old_state, "timeout"} when old_state in ["waiting_opponent", "playing"] ->
         Codebattle.PubSub.broadcast("game:finished", %{game: new_game})
         update_game!(new_game, %{state: "timeout"})
         terminate_game_after(game, 15)
@@ -286,21 +285,26 @@ defmodule Codebattle.Game.Engine do
     end
   end
 
-  defp terminate_game_after(game, minutes) do
-    Game.TimeoutServer.terminate_after(game.id, minutes)
-  end
-
-  defp maybe_start_timeout_timer(%{state: "playing"} = game) do
-    Game.TimeoutServer.start_timer(game.id, game.timeout_seconds)
+  defp maybe_fire_playing_game_side_effects(%{state: "playing"} = game) do
+    maybe_init_playbook(game)
+    maybe_run_bots(game)
+    maybe_start_timeout_timer(game)
     :ok
   end
 
-  defp maybe_start_timeout_timer(_game), do: :ok
+  defp maybe_fire_playing_game_side_effects(_game), do: :ok
 
-  defp maybe_run_bot(%{state: "playing", is_bot: true} = game), do: Bot.start_bots(game)
-  defp maybe_run_bot(_game), do: :ok
+  defp maybe_init_playbook(game) do
+    Game.Server.init_playbook(game.id)
+  end
 
-  def broadcast_live_game(game) do
+  defp maybe_run_bots(game), do: Bot.Context.start_bots(game)
+
+  defp maybe_start_timeout_timer(game) do
+    Game.TimeoutServer.start_timer(game.id, game.timeout_seconds)
+  end
+
+  defp broadcast_live_game(game) do
     # TODO: move it to pubSub
     CodebattleWeb.Endpoint.broadcast!("lobby", "game:upsert", %{
       game: GameView.render_active_game(game)
@@ -309,7 +313,11 @@ defmodule Codebattle.Game.Engine do
     :ok
   end
 
-  def insert_game(params) do
+  defp terminate_game_after(game, minutes) do
+    Game.TimeoutServer.terminate_after(game.id, minutes)
+  end
+
+  defp insert_game(params) do
     %Game{}
     |> Game.changeset(params)
     |> Repo.insert()
@@ -327,9 +335,9 @@ defmodule Codebattle.Game.Engine do
     })
   end
 
-  def get_state_from_params(%{type: "solo", players: [_user]}), do: "playing"
-  def get_state_from_params(%{players: [_user1, _user2]}), do: "playing"
-  def get_state_from_params(%{players: [_user]}), do: "waiting_opponent"
+  defp get_state_from_params(%{type: "solo", players: [_user]}), do: "playing"
+  defp get_state_from_params(%{players: [_user1, _user2]}), do: "playing"
+  defp get_state_from_params(%{players: [_user]}), do: "waiting_opponent"
 
   defp tasks_provider do
     Application.get_env(:codebattle, :tasks_provider)
@@ -342,4 +350,8 @@ defmodule Codebattle.Game.Engine do
   defp check_auth(_, "training", _), do: :ok
   defp check_auth(_, _, tournament_id) when not is_nil(tournament_id), do: :ok
   defp check_auth(players, "standard", _), do: player_can_play_game?(players)
+
+  defp fire_transition(game_id, transition, params) do
+    Game.Server.fire_transition(game_id, transition, params)
+  end
 end

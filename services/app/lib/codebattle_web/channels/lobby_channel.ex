@@ -39,7 +39,7 @@ defmodule CodebattleWeb.LobbyChannel do
     players =
       case payload["opponent_type"] do
         "bot" ->
-          [socket.assigns.current_user, Bot.Factory.build()]
+          [socket.assigns.current_user, Bot.Context.build()]
 
         "other_user" ->
           [socket.assigns.current_user]

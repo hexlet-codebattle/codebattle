@@ -5,42 +5,37 @@ defmodule Codebattle.Game.Server do
 
   require Logger
 
-  alias Codebattle.Game.Fsm
-  alias Codebattle.Bot.Playbook
+  alias Codebattle.Game
+  alias Codebattle.Playbook
 
   # API
   def start_link(game) do
     GenServer.start_link(__MODULE__, game, name: server_name(game.id))
   end
 
-  def update_playbook(game_id, event, params) do
-    GenServer.cast(server_name(game_id), {:update_playbook, event, params})
+  def get_game(game_id) do
+    game = GenServer.call(server_name(game_id), :get_game)
+    {:ok, game}
+  catch
+    :exit, _reason -> {:error, :not_found}
   end
 
-  def cast_transition(game_id, event, params) do
-    GenServer.cast(server_name(game_id), {:transition, event, params})
+  def get_playbook_records(game_id) do
+    GenServer.call(server_name(game_id), :get_playbook_records)
+  catch
+    :exit, _reason -> {:error, :not_found}
   end
 
-  def call_transition(game_id, event, params) do
+  def fire_transition(game_id, event, params) do
     GenServer.call(server_name(game_id), {:transition, event, params})
   end
 
-  def get_game(game_id) do
-    try do
-      game = GenServer.call(server_name(game_id), :get_game)
-      {:ok, game}
-    catch
-      :exit, _reason -> {:error, :not_found}
-    end
+  def init_playbook(game_id) do
+    GenServer.cast(server_name(game_id), :init_playbook)
   end
 
-  def get_playbook(game_id) do
-    try do
-      palybook = GenServer.call(server_name(game_id), :get_playbook)
-      {:ok, palybook}
-    catch
-      :exit, _reason -> {:error, :not_found}
-    end
+  def update_playbook(game_id, type, params) do
+    GenServer.cast(server_name(game_id), {:update_playbook, type, params})
   end
 
   # SERVER
@@ -50,50 +45,56 @@ defmodule Codebattle.Game.Server do
 
     state = %{
       game: game,
-      playbook: Playbook.init(game)
+      playbook_records: [],
+      playbook_records_count: 0
     }
 
     {:ok, state}
   end
 
-  def handle_cast({:update_playbook, event, params}, %{game: game, playbook: playbook}) do
-    new_state = %{
-      game: game,
-      playbook: Playbook.add_event(playbook, event, params)
-    }
+  def handle_cast(:init_playbook, state) do
+    playbook_records = Playbook.Context.init_records(%{players: state.game.players})
 
-    {:noreply, new_state}
+    {:noreply,
+     %{
+       state
+       | playbook_records: playbook_records,
+         playbook_records_id: Enum.count(playbook_records)
+     }}
   end
 
-  def handle_cast({:transition, event, params}, %{game: game, playbook: playbook}) do
-    new_state = %{
-      game: apply(Fsm, event, [game, params]),
-      playbook: Playbook.add_event(playbook, event, params)
-    }
+  def handle_cast({:update_playbook, type, params}, state) do
+    %{playbook_records_id: playbook_records_id, playbook_records: playbook_records} = state
 
-    {:noreply, new_state}
+    {:noreply,
+     %{
+       state
+       | playbook_records:
+           Playbook.Context.add_record(playbook_records, playbook_records_id, type, params),
+         playbook_records_count: playbook_records_count + 1
+     }}
   end
 
-  def handle_call(:get_playbook, _from, %{playbook: playbook} = state) do
-    {:reply, playbook, state}
+  def handle_call(:get_playbook_records, _from, state) do
+    {:reply, state.playbook_records, state}
   end
 
-  def handle_call(:get_game, _from, %{game: game} = state) do
-    {:reply, game, state}
+  def handle_call(:get_game, _from, state) do
+    {:reply, state.game, state}
   end
 
   def handle_call({:transition, event, params}, _from, %{game: game, playbook: playbook} = state) do
-    case apply(Fsm, event, [game, params]) do
+    case Game.Fsm.transition(event, game, params) do
       {{:error, reason}, _} ->
         {:reply, {:error, reason}, state}
 
-      new_game ->
+      {:ok, new_game = %Game{}} ->
         new_state = %{
           game: new_game,
           playbook: Playbook.add_event(playbook, event, params)
         }
 
-        {:reply, {:ok, {game, new_game}}, new_state}
+        {:reply, {:ok, {game.state, new_game}}, new_state}
     end
   end
 

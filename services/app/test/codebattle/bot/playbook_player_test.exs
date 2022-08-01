@@ -57,7 +57,7 @@ defmodule Codebattle.Bot.PlaybookPlayerTest do
     # Create game
     level = "easy"
 
-    bot = Bot.Factory.build()
+    bot = Bot.Context.build()
 
     {:ok, game} =
       Game.Context.create_game(%{

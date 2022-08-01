@@ -1,8 +1,8 @@
-defmodule Codebattle.Bot.PlaybookStoreTest do
+defmodule Codebattle.PlaybookStoreTest do
   use Codebattle.IntegrationCase
 
   alias CodebattleWeb.{GameChannel, UserSocket}
-  alias Codebattle.Bot.Playbook
+  alias Codebattle.Playbook
   # alias Codebattle.Repo
   alias CodebattleWeb.UserSocket
 
@@ -111,8 +111,8 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
     user1_id = user1.id
     user2_id = user2.id
 
-    assert %Codebattle.Bot.Playbook{
-             data: %Codebattle.Bot.Playbook.Data{
+    assert %Codebattle.Playbook{
+             data: %Codebattle.Playbook.Data{
                count: 10,
                players: [
                  %{
@@ -123,8 +123,7 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
                    id: ^user2_id,
                    name: "second",
                    record_id: 1,
-                   total_time_ms: 0,
-                   type: "player_state"
+                   total_time_ms: 0
                  },
                  %{
                    check_result: %{output: "", result: ""},
@@ -133,7 +132,7 @@ defmodule Codebattle.Bot.PlaybookStoreTest do
                    id: ^user1_id,
                    name: "first",
                    record_id: 0,
-                   type: "player_state"
+                   total_time_ms: 0
                  }
                ],
                records: [

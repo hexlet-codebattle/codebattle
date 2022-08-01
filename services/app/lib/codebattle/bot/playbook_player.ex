@@ -55,7 +55,7 @@ defmodule Codebattle.Bot.PlaybookPlayer do
   }
 
   def init(game) do
-    case Bot.Playbook.get_random(game.task_id) do
+    case Bot.Playbook.get_random_completed(game.task_id) do
       %Bot.Playbook{id: id, winner_id: winner_id, data: playbook_data} ->
         playbook_actions = prepare_user_playbook(playbook_data.records, winner_id)
         playbook_winner_meta = Enum.find(playbook_data.players, &(&1.id == winner_id))
