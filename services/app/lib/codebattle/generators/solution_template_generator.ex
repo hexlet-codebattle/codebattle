@@ -84,12 +84,8 @@ defmodule Codebattle.Generators.SolutionTemplateGenerator do
   defp add_input_spec(bindings, _meta, nil), do: add_empty_input(bindings)
   defp add_input_spec(bindings, _meta, input) when input == [], do: add_empty_input(bindings)
 
-  defp add_input_spec(bindings, %{solution_version: version} = meta, input)
-       when version !== :empty do
-    %{
-      argument: template,
-      delimiter: delimiter
-    } = meta.arguments_template
+  defp add_input_spec(bindings, meta, input) do
+    %{argument: template, delimiter: delimiter} = meta.arguments_template
 
     arguments =
       Enum.map_join(
@@ -125,13 +121,11 @@ defmodule Codebattle.Generators.SolutionTemplateGenerator do
   defp add_output_spec(
          bindings,
          %{
-           solution_version: version,
            return_template: return_template,
            default_values: default_values
          },
          %{type: type}
-       )
-       when version !== :empty do
+       ) do
     value = get_default_value(default_values, type)
     return_statement = EEx.eval_string(return_template, default_value: value)
     Keyword.put(bindings, :return_statement, return_statement)

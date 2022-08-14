@@ -21,8 +21,6 @@ defmodule CodebattleWeb.GameChannel do
   end
 
   def terminate(_reason, socket) do
-    # game_id = get_game_id(socket)
-    # user_id = socket.assigns.current_user.id
     {:noreply, socket}
   end
 
@@ -132,6 +130,7 @@ defmodule CodebattleWeb.GameChannel do
   defp handle_rematch_result(result, socket) do
     case result do
       {:rematch_status_updated, game} ->
+
         broadcast!(socket, "rematch:status_updated", %{
           rematch_state: game.rematch_state,
           rematch_initiator_id: game.rematch_initiator_id
@@ -140,7 +139,7 @@ defmodule CodebattleWeb.GameChannel do
         {:noreply, socket}
 
       {:rematch_accepted, game} ->
-        broadcast!(socket, "rematch:game_created", %{game_id: game.id})
+        broadcast!(socket, "rematch:accepted", %{game_id: game.id})
         {:noreply, socket}
 
       {:error, reason} ->
@@ -149,10 +148,5 @@ defmodule CodebattleWeb.GameChannel do
       _ ->
         {:reply, {:error, %{reason: "sww"}}, socket}
     end
-  end
-
-  defp get_game_id(socket) do
-    "game:" <> game_id = socket.topic
-    game_id
   end
 end

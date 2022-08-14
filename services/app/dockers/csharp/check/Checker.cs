@@ -50,7 +50,7 @@ namespace app
 
         Console.SetOut(oldOut);
         if (success) {
-          Console.WriteLine(new StatusMessage{ status = "ok", result = <%= hash_sum %> });
+          Console.WriteLine(new StatusMessage{ status = "ok", result = "123" });
         } else {
           foreach(AssertResult message in executionResults)
           {

@@ -5,7 +5,7 @@
 #include "json.hpp"
 #include "fifo_map.hpp"
 
-#include "solution_example.cpp"
+#include "solution.cpp"
 
 using namespace std;
 

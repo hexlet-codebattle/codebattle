@@ -23,7 +23,7 @@ defmodule Codebattle.Playbook do
   end
 
   @doc false
-  def changeset(%Playbook{} = playbook, attrs) do
+  def changeset(%__MODULE__{} = playbook, attrs) do
     playbook
     |> cast(attrs, [:game_id, :winner_id, :winner_lang, :solution_type, :task_id])
     |> validate_required([

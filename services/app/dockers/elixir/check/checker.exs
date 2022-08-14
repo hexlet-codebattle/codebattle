@@ -27,7 +27,7 @@ try do
       success = assert_result(apply(Solution, :solution, [1, 2]), 3, [1, 2], success)
       success = assert_result(apply(Solution, :solution, [3, 5]), 8, [3, 5], success)
       if success do
-        message = json_map(status: :ok, result: <%= hash_sum %>)
+        message = json_map(status: :ok, result: "lolKek")
         IO.puts(Jason.encode!(message))
       end
       :ok

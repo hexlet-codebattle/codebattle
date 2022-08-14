@@ -7,33 +7,20 @@ defmodule Codebattle.CodeCheck.Checker do
   alias Codebattle.CodeCheck.CheckerStatus
   alias Codebattle.CodeCheck.CheckResult
 
-  @langs_needs_compiling ["golang", "cpp", "java", "kotlin", "csharp"]
+  @docker_test_cmd_template "docker run --rm -m 400m --cpus=1 --net none -l codebattle_game ~s ~s timeout -s 9 10s make --silent test"
+  @docker_compile_and_test_cmd_template "docker run -m 400m --cpus=1 --net none -l codebattle_game ~s ~s timeout -s 9 10s make --silent compile-and-test"
 
   def call(task, editor_text, lang) do
     # TODO: add hash to data.jsons or forbid read data.jsons
     {docker_command_template, docker_command_compile_template} =
-      case lang.base_image do
-        :ubuntu ->
-          {
-            Application.fetch_env!(:codebattle, :ubuntu_docker_command_template),
-            Application.fetch_env!(:codebattle, :ubuntu_docker_command_compile_template)
-          }
+      {dir_path, check_code} = prepare_tmp_dir!(task, editor_text, lang)
 
-        :alpine ->
-          {
-            Application.fetch_env!(:codebattle, :alpine_docker_command_template),
-            Application.fetch_env!(:codebattle, :alpine_docker_command_compile_template)
-          }
-      end
-
-    {dir_path, check_code} = prepare_tmp_dir!(task, editor_text, lang)
     volume = "-v #{dir_path}:/usr/src/app/#{lang.check_dir}"
-    checker_name = CheckerGenerator.get_checker_name(check_code, lang.slug)
-    label_name = "-l codebattle_game"
+    label_name = ""
 
     check_command =
       docker_command_template
-      |> :io_lib.format([label_name, volume, lang.docker_image, checker_name])
+      |> :io_lib.format([label_name, volume, lang.docker_image])
       |> to_string
 
     compile_check_command =
@@ -77,31 +64,18 @@ defmodule Codebattle.CodeCheck.Checker do
   end
 
   defp start_check_solution({check_command, compile_check_command}, meta) do
-    case compile_check_solution(compile_check_command, meta) do
-      :ok ->
-        container_output = run_checker(check_command, meta, "Execution")
+    container_output = run_checker(check_command, meta, "Execution")
 
-        # for json returned langs need fix after all langs support json
-        CheckerStatus.get_check_result(container_output, meta)
-
-      {:error, result, output} ->
-        %CheckResult{status: "error", result: result, output: output}
-    end
+    # for json returned langs need fix after all langs support json
+    CheckerStatus.get_check_result(container_output, meta)
   end
-
-  defp compile_check_solution(command, %{lang: %{slug: slug} = lang} = meta)
-       when slug in @langs_needs_compiling do
-    container_output = run_checker(command, meta, "Compile check")
-    CheckerStatus.get_compile_check_result(container_output, lang)
-  end
-
-  defp compile_check_solution(_, _), do: :ok
 
   defp run_checker(command, %{task: _task, lang: lang}, description) do
     [cmd | cmd_opts] = command |> String.split()
     t = :os.system_time(:millisecond)
     {container_output, _status} = System.cmd(cmd, cmd_opts, stderr_to_stdout: true)
     Logger.error("#{description} time: #{:os.system_time(:millisecond) - t}, lang: #{lang.slug}")
+    Logger.error(container_output)
 
     container_output
   end

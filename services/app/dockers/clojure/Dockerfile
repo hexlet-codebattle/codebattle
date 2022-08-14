@@ -1,13 +1,12 @@
-FROM clojure:openjdk-11-tools-deps-1.10.3.1075
+FROM clojure:openjdk-19-tools-deps-1.11.1.1105-alpine
 
-RUN rm -rf /var/lib/apt/lists/* && apt-get update && apt-get install -y build-essential
+RUN apk add --update make rlwrap
 
 WORKDIR /usr/src/app
 
 ADD deps.edn .
 RUN clojure -e "(prn :install)"
 
-ADD checker_example.clj .
-ADD solution_example.clj .
-ADD test_clojure.clj .
+ADD check check
+ADD runner.clj .
 ADD Makefile .

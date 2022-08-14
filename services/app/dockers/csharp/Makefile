@@ -1,7 +1,7 @@
 test:
 	dotnet run
 
-test-compile:
-	dotnet build --nologo
+# test-compile:
+# 	dotnet build --nologo
 
 .PHONY: test

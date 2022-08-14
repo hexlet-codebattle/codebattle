@@ -165,24 +165,12 @@ defmodule Codebattle.Game.Context do
     with game <- get_game!(game_id),
          :ok <- player_can_rematch?(game, user.id) do
       Engine.rematch_send_offer(game, user)
-    else
-      {:error, reason} -> {:error, reason}
     end
   end
 
   @spec rematch_reject(game_id) :: {:rematch_status_updated, map()} | {:error, atom}
   def rematch_reject(game_id) do
-    case Game.Server.call_transition(game_id, :rematch_reject, %{}) do
-      {:ok, {_old_game, new_game}} ->
-        {:rematch_status_updated,
-         %{
-           rematch_initiator_id: new_game.rematch_initiator_id,
-           rematch_state: new_game.rematch_state
-         }}
-
-      {:error, reason} ->
-        {:error, reason}
-    end
+    game_id |> get_game!() |> Engine.rematch_reject()
   end
 
   @spec trigger_timeout(game_id) :: :ok

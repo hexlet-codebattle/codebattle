@@ -1,4 +1,4 @@
-(ns test_clojure
+(ns runner
   (:require
     [clojure.test :refer :all]
     [clojure.data.json :as json]))

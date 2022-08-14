@@ -1,7 +1,8 @@
-FROM python:3.11.0a5
+FROM python:3.10.6-alpine3.16
 
-RUN apt-get update && apt-get install -y build-essential --no-install-recommends && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apk add --update make
 
 WORKDIR /usr/src/app
 
+ADD check check
 ADD Makefile .

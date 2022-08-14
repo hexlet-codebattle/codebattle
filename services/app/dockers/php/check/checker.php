@@ -1,7 +1,7 @@
 <?php
 
 error_reporting(E_ERROR | E_PARSE);
-ini_set('assert.exception', '0');
+ini_set('assert.exception', '1');
 ini_set('assert.warning', '0');
 ini_set('assert.active', '1');
 
@@ -26,7 +26,9 @@ register_shutdown_function(function () {
 });
 
 $stdout = STDERR;
+
 $success = true;
+$final_result = array();
 
 function equals($a, $b)
 {
@@ -45,41 +47,57 @@ function equals($a, $b)
   return $a == $b;
 }
 
-function assert_result($result, $expected, $args, $execution_time, &$final_result, $success)
+function assert_result($result, $expected, $args, $execution_time, &$final_result, $output, $success)
 {
   try {
-    assert($result != $expected);
+    assert(equals($result, $expected));
 
     array_push($final_result, json_encode(array(
       'status' => 'success',
       'result' => $result,
       'expected' => $expected,
       'arguments' => $args,
-      'execution_time' => $execution_time
+      'execution_time' => $execution_time,
+      'output' => $output
     )) . "\n");
     return $success;
-  } catch (Exception $e) {
+  } catch (AssertionError $e) {
     array_push($final_result, json_encode(array(
       'status' => 'failure',
       'result' => $result,
       'expected' => $expected,
       'arguments' => $args,
-      'execution_time' => $execution_time
+      'execution_time' => $execution_time,
+      'output' => $output
     )) . "\n");
     return false;
   }
 }
 
-include 'solution_example.php';
+include './check/solution.php';
 
-$stdout = STDERR;
 
-$success = assert_result(solution(1, 2), 3, array(1, 2), $success);
-$success = assert_result(solution(5, 3), 8, array(5, 3), $success);
+$start = microtime(true);
+ob_start();
+$result = solution(1, 2);
+$output = ob_get_clean();
+$execution_time = microtime(true) - $start;
+$success = assert_result($result, 3, array(1, 2), $execution_time, $final_result, $output, $success);
+
+$start = microtime(true);
+ob_start();
+$result = solution(3, 4);
+$output = ob_get_clean();
+$execution_time = microtime(true) - $start;
+$success = assert_result($result, 7, array(3, 4), $execution_time, $final_result, $output, $success);
 
 if ($success) {
-  fwrite($stdout, json_encode(array(
+  array_push($final_result, json_encode(array(
     'status' => 'ok',
-    'result' => '__code-0__'
+    'result' => "lolkek"
   )) . "\n");
+}
+
+foreach ($final_result as &$message) {
+  fwrite($stdout, $message);
 }

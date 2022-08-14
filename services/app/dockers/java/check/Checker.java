@@ -6,13 +6,13 @@ import java.util.*;
 import javax.json.JsonObject;
 import javax.json.Json;
 
-public class CheckerExample {
+public class Checker {
     public static void main(String... args) {
         PrintStream oldOut = System.out;
         List<JsonObject> executionResults = new ArrayList<JsonObject>();
 
         try {
-            SolutionExample instance = new SolutionExample();
+            Solution instance = new Solution();
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             PrintStream newOut = new PrintStream(baos);

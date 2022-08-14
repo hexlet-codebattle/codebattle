@@ -1,6 +1,7 @@
 defmodule Codebattle.Languages do
   @moduledoc false
 
+  alias Codebattle.Language
   alias Codebattle.Generators.SolutionTemplateGenerator
 
   @type_templates %{
@@ -13,15 +14,14 @@ defmodule Codebattle.Languages do
   }
 
   @meta %{
-    "ruby" => %{
+    "ruby" => %Language{
       name: "ruby",
       slug: "ruby",
       checker_version: 2,
-      version: "3.1.1",
-      base_image: :ubuntu,
+      version: "3.1.2",
       check_dir: "check",
       extension: "rb",
-      docker_image: "codebattle/ruby:3.1.1",
+      docker_image: "codebattle/ruby:3.1.2",
       solution_version: :default,
       solution_template: "def solution(<%= arguments %>)\n<%= return_statement %>\nend",
       arguments_template: %{
@@ -43,12 +43,11 @@ defmodule Codebattle.Languages do
         type_templates: %{@type_templates | hash_inners: "\"<%= key %>\" => <%= value %>"}
       }
     },
-    "js" => %{
+    "js" => %Language{
       checker_version: 2,
       name: "Node.js",
       slug: "js",
       version: "17.5",
-      base_image: :ubuntu,
       check_dir: "check",
       extension: "js",
       docker_image: "codebattle/js:17.5",
@@ -74,12 +73,11 @@ defmodule Codebattle.Languages do
         type_templates: @type_templates
       }
     },
-    "ts" => %{
+    "ts" => %Language{
       checker_version: 2,
       name: "typescript",
       slug: "ts",
       version: "4.1.3",
-      base_image: :ubuntu,
       check_dir: "check",
       extension: "js",
       docker_image: "codebattle/js:15.5.1",
@@ -106,14 +104,13 @@ defmodule Codebattle.Languages do
         nested_value_expression_template: "<%= value %>"
       }
     },
-    "dart" => %{
+    "dart" => %Language{
       name: "Dart",
       slug: "dart",
-      version: "2.7.1",
-      base_image: :ubuntu,
+      version: "2.17.6",
       check_dir: "lib",
       extension: "dart",
-      docker_image: "codebattle/dart:2.7.1",
+      docker_image: "codebattle/dart:2.17.6",
       solution_version: :typed,
       solution_template: "<%= expected %>solution(<%= arguments %>) {\n\n}",
       arguments_template: %{
@@ -135,14 +132,13 @@ defmodule Codebattle.Languages do
         type_templates: @type_templates
       }
     },
-    "cpp" => %{
+    "cpp" => %Language{
       name: "C++",
       slug: "cpp",
-      version: "17",
-      base_image: :alpine,
+      version: "20",
       check_dir: "check",
       extension: "cpp",
-      docker_image: "codebattle/cpp:17",
+      docker_image: "codebattle/cpp:20",
       solution_version: :typed,
       solution_template:
         "#include <iostream>\n#include <map>\n#include <vector>\n\nusing namespace std;\n\n<%= expected %> solution(<%= arguments %>) {\n\n}",
@@ -170,14 +166,13 @@ defmodule Codebattle.Languages do
         nested_value_expression_template: "<%= type_name %><%= value %>"
       }
     },
-    "java" => %{
+    "java" => %Language{
       name: "Java",
       slug: "java",
-      version: "12",
-      base_image: :alpine,
+      version: "18",
       check_dir: "check",
       extension: "java",
-      docker_image: "codebattle/java:12",
+      docker_image: "codebattle/java:18",
       solution_version: :typed,
       solution_template:
         "package solution;\n\nimport java.util.*;import java.util.stream.*;\n\npublic class Solution {\n\tpublic <%= expected %>solution(<%= arguments %>) {\n\n\t}\n}",
@@ -207,14 +202,13 @@ defmodule Codebattle.Languages do
         nested_value_expression_template: "<%= value %>"
       }
     },
-    "kotlin" => %{
+    "kotlin" => %Language{
       name: "Kotlin",
       slug: "kotlin",
-      version: "1.2.71",
-      base_image: :alpine,
+      version: "1.6.21",
       check_dir: "check",
       extension: "kt",
-      docker_image: "codebattle/kotlin:1.2.71",
+      docker_image: "codebattle/kotlin:1.6.21",
       solution_version: :typed,
       solution_template:
         "package solution\n\nimport kotlin.collections.*\n\nfun solution(<%= arguments %>):<%= expected %> {\n\n}",
@@ -244,14 +238,13 @@ defmodule Codebattle.Languages do
         nested_value_expression_template: "<%= value %>"
       }
     },
-    "csharp" => %{
+    "csharp" => %Language{
       name: "C#",
       slug: "csharp",
-      version: "3.1.201",
-      base_image: :ubuntu,
+      version: "6.0.100",
       check_dir: "check",
       extension: "cs",
-      docker_image: "codebattle/csharp:3.1.201",
+      docker_image: "codebattle/csharp:6.0.100",
       solution_version: :typed,
       solution_template:
         "using System;using System.Collections.Generic;\n\nnamespace app\n{\n\tpublic class Solution\n\t{\n\t\tpublic<%= expected %> solution(<%= arguments %>)\n\t\t{\n\n\t\t}\n\t}\n}",
@@ -281,14 +274,13 @@ defmodule Codebattle.Languages do
         nested_value_expression_template: "new <%= type_name %>()<%= value %>"
       }
     },
-    "golang" => %{
+    "golang" => %Language{
       name: "golang",
       slug: "golang",
-      version: "1.17.0",
-      base_image: :ubuntu,
+      version: "1.19.0",
       check_dir: "check",
       extension: "go",
-      docker_image: "codebattle/golang:1.17.0",
+      docker_image: "codebattle/golang:1.19.0",
       solution_version: :typed,
       solution_template: "package main;\n\nfunc solution(<%= arguments %>)<%= expected %> {\n\n}",
       arguments_template: %{
@@ -311,14 +303,13 @@ defmodule Codebattle.Languages do
         nested_value_expression_template: "<%= type_name %><%= value %>"
       }
     },
-    "elixir" => %{
+    "elixir" => %Language{
       name: "elixir",
       slug: "elixir",
-      version: "1.13",
-      base_image: :ubuntu,
+      version: "1.13.4",
       check_dir: "check",
       extension: "exs",
-      docker_image: "codebattle/elixir:1.13",
+      docker_image: "codebattle/elixir:1.13.4",
       solution_version: :default,
       solution_template:
         "defmodule Solution do\n\tdef solution(<%= arguments %>) do\n<%= return_statement %>\n\tend\nend",
@@ -341,14 +332,13 @@ defmodule Codebattle.Languages do
         type_templates: %{@type_templates | hash_empty: "%{}", hash_value: "%{<%= entries %>}"}
       }
     },
-    "python" => %{
+    "python" => %Language{
       name: "python",
       slug: "python",
-      version: "3.11.0",
-      base_image: :ubuntu,
+      version: "3.10.6",
       check_dir: "check",
       extension: "py",
-      docker_image: "codebattle/python:3.11.0",
+      docker_image: "codebattle/python:3.10.6",
       solution_version: :typed,
       solution_template:
         "from typing import List, Dict\n\ndef solution(<%= arguments %>)<%= expected %>:",
@@ -371,14 +361,13 @@ defmodule Codebattle.Languages do
         type_templates: %{@type_templates | boolean_true: "True", boolean_false: "False"}
       }
     },
-    "php" => %{
+    "php" => %Language{
       name: "php",
       slug: "php",
-      version: "8.1.1",
-      base_image: :ubuntu,
+      version: "8.1.8",
       check_dir: "check",
       extension: "php",
-      docker_image: "codebattle/php:8.1.1",
+      docker_image: "codebattle/php:8.1.8",
       solution_version: :typed,
       solution_template:
         "<?php\n\nfunction solution(<%= arguments %>)\n{<%= return_statement %>\n}",
@@ -415,14 +404,13 @@ defmodule Codebattle.Languages do
         "hash" => "array"
       }
     },
-    "clojure" => %{
+    "clojure" => %Language{
       name: "clojure",
       slug: "clojure",
-      version: "1.10.3",
-      base_image: :ubuntu,
+      version: "1.11.1",
       check_dir: "check",
       extension: "clj",
-      docker_image: "codebattle/clojure:1.10.3.1075",
+      docker_image: "codebattle/clojure:1.11.1.1105",
       solution_version: :default,
       solution_template: "(defn solution [<%= arguments %>] <%= return_statement %>)",
       arguments_template: %{
@@ -444,11 +432,10 @@ defmodule Codebattle.Languages do
         type_templates: %{@type_templates | hash_inners: ":<%= key %> <%= value %>"}
       }
     },
-    "haskell" => %{
+    "haskell" => %Language{
       name: "haskell",
       slug: "haskell",
       version: "8.4.3",
-      base_image: :ubuntu,
       extension: "hs",
       check_dir: "Check",
       docker_image: "codebattle/haskell:8.4.3",

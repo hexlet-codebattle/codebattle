@@ -61,7 +61,7 @@ defmodule CodebattleWeb.Api.V1.PlaybookController do
 
     case Game.Context.get_game!(game_id) do
       game = %Game{is_live: true} ->
-        {:ok, records} = Server.get_playbook(game_id)
+        {:ok, records} = Server.get_playbook_records(game_id)
 
         winner = Helpers.get_winner(game)
         winner_id = if is_nil(winner), do: nil, else: winner.id

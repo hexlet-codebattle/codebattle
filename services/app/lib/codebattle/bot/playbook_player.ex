@@ -7,6 +7,7 @@ defmodule Codebattle.Bot.PlaybookPlayer do
 
   alias Codebattle.Bot
   alias Codebattle.Game
+  alias Codebattle.Playbook
 
   defmodule Params do
     @moduledoc false
@@ -55,8 +56,8 @@ defmodule Codebattle.Bot.PlaybookPlayer do
   }
 
   def init(game) do
-    case Bot.Playbook.get_random_completed(game.task_id) do
-      %Bot.Playbook{id: id, winner_id: winner_id, data: playbook_data} ->
+    case Playbook.Context.get_random_completed(game.task_id) do
+      %Playbook{id: id, winner_id: winner_id, data: playbook_data} ->
         playbook_actions = prepare_user_playbook(playbook_data.records, winner_id)
         playbook_winner_meta = Enum.find(playbook_data.players, &(&1.id == winner_id))
         bot_time_ms = get_bot_time_ms(game)

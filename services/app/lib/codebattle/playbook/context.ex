@@ -1,5 +1,6 @@
 defmodule Codebattle.Playbook.Context do
   import Ecto.Query
+  require Logger
 
   alias Codebattle.Playbook
   alias Codebattle.Repo
@@ -39,38 +40,46 @@ defmodule Codebattle.Playbook.Context do
     |> Repo.one()
   end
 
-  def init_records(%{players: players}) do
-    players
-    |> Enum.with_index()
-    |> Enum.map(fn {player, index} ->
-      data = %{
-        record_id: index,
-        type: :init,
-        time: System.system_time(:millisecond),
-        id: player.id,
-        name: player.name,
-        editor_text: player.editor_text,
-        editor_lang: player.editor_lang,
-        check_result: %{result: "", output: ""}
-      }
-    end)
+  def init_records(players) do
+    records =
+      players
+      |> Enum.with_index()
+      |> Enum.map(fn {player, index} ->
+        data = %{
+          record_id: index,
+          type: :init,
+          time: System.system_time(:millisecond),
+          id: player.id,
+          name: player.name,
+          editor_text: player.editor_text,
+          editor_lang: player.editor_lang,
+          check_result: %{result: "", output: ""}
+        }
+      end)
+
+    %{records: records, id: Enum.count(records)}
   end
 
-  def add_record(records, index, type, params) when type in @record_types do
+  def add_record(playbook_state, type, params) when type in @record_types do
     record =
       %{
         type: type,
-        record_id: index,
+        record_id: playbook_state.id,
         time: System.system_time(:millisecond)
       }
       |> Map.merge(params)
 
-    [record | records]
+    playbook_state
+    |> Map.update!(:records, &[record | &1])
+    |> Map.update!(:id, &(&1 + 1))
   end
 
-  def add_record(records, _index, type, _params) do
-    Logger.warn("Unknown playbook record type: #{type}")
-    records
+  def add_record(playbook_state, :check_success, _params), do: playbook_state
+  def add_record(playbook_state, :check_failure, _params), do: playbook_state
+
+  def add_record(playbook_state, type, params) do
+    Logger.error("Unknown playbook record type: #{type}, params: #{inspect(params)}")
+    playbook_state
   end
 
   def store_playbook(playbook_records, game_id) do
@@ -100,31 +109,10 @@ defmodule Codebattle.Playbook.Context do
   end
 
   defp add_record_to_playbook_data(%{type: :init} = record, data) do
-    player
-
-                   id: ^user1_id,
-
-      "id": 0,
-      "name": "Jon Dou",
-      "time": 1659289657174,
-      "type": "player_state",
-      "record_id": 1,
-      "editor_lang": "js",
-      "editor_text": "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (number) => {\n\treturn number.toString().split(' ').ma;\n};\n\nmodule.exports = solution;",
-      "check_result": { "output": "", "result": "" },
-      "total_time_ms": 320541
-
-                   check_result: %{output: "", result: ""},
-                   editor_lang: "elixir",
-                   editor_text: "testf",
-                   name: "first",
-                   record_id: 0,
-                   total_time_ms: 0
-
-    Map.merge(record, %{type: :player_state, total_time_ms: 0})
+    player = Map.merge(record, %{type: :player_state, total_time_ms: 0})
 
     data
-    |> Map.update!(data, :players, &[player | &1])
+    |> Map.update!(:players, &[player | &1])
     |> update_history(record)
   end
 

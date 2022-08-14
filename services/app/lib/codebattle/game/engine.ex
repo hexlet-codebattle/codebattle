@@ -5,6 +5,7 @@ defmodule Codebattle.Game.Engine do
   import Codebattle.Game.Helpers
 
   alias Codebattle.Bot
+  alias Codebattle.CodeCheck
   alias Codebattle.Game
   alias Codebattle.Playbook
   alias Codebattle.Repo
@@ -83,7 +84,7 @@ defmodule Codebattle.Game.Engine do
       editor_lang: editor_lang
     })
 
-    check_result = checker_adapter().call(game.task, editor_text, editor_lang)
+    check_result = CodeCheck.Context.run_check(game.task, editor_text, editor_lang)
 
     Game.Server.update_playbook(game.id, :check_complete, %{
       id: user.id,
@@ -190,6 +191,13 @@ defmodule Codebattle.Game.Engine do
     end
   end
 
+  def rematch_reject(game) do
+    case fire_transition(game.id, :rematch_reject) do
+      {:ok, {_old_game_state, new_game}} -> {:rematch_status_updated, new_game}
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
   def update_editor_data(game, params) do
     case fire_transition(game.id, :update_editor_data, params) do
       {:ok, {_old_game_state, game}} -> {:ok, game}
@@ -198,7 +206,7 @@ defmodule Codebattle.Game.Engine do
   end
 
   def store_playbook_async(game) do
-    playbook_records = Game.Server.get_playbook_records(game.id)
+    {:ok, playbook_records} = Game.Server.get_playbook_records(game.id)
     Task.start(fn -> Playbook.Context.store_playbook(playbook_records, game.id) end)
   end
 
@@ -343,13 +351,13 @@ defmodule Codebattle.Game.Engine do
     Application.get_env(:codebattle, :tasks_provider)
   end
 
-  defp checker_adapter, do: Application.get_env(:codebattle, :checker_adapter)
-
   defp get_random_level, do: Enum.random(Codebattle.Task.levels())
 
   defp check_auth(_, "training", _), do: :ok
   defp check_auth(_, _, tournament_id) when not is_nil(tournament_id), do: :ok
   defp check_auth(players, "standard", _), do: player_can_play_game?(players)
+
+  defp fire_transition(game_id, transition, params \\ %{})
 
   defp fire_transition(game_id, transition, params) do
     Game.Server.fire_transition(game_id, transition, params)

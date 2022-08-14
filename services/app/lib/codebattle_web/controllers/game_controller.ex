@@ -58,7 +58,7 @@ defmodule CodebattleWeb.GameController do
         end
 
       game ->
-        if Playbook.exists?(game.id) do
+        if Playbook.Context.exists?(game.id) do
           langs = Languages.meta() |> Map.values()
 
           [first, second] = get_users(game)

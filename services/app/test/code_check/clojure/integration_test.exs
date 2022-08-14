@@ -100,7 +100,7 @@ defmodule Codebattle.CodeCheck.Clojure.IntegrationTest do
     assert_code_check()
 
     assert_receive %Phoenix.Socket.Broadcast{
-      payload: %{status: "game_over"}
+      payload: %{solution_status: true, state: "game_over"}
     }
 
     game = Game.Context.get_game!(game.id)

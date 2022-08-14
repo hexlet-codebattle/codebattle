@@ -74,7 +74,7 @@ config :phoenix_meta_tags,
     card: "summary_large_image"
   }
 
-config :codebattle, Codebattle.Bot, min_bot_step_timeout: :timer.seconds(1)
+config :codebattle, Codebattle.Bot, min_bot_step_timeout: 1_000
 
 config :codebattle, Codebattle.DockerLangsPuller, timeout: :timer.hours(7)
 

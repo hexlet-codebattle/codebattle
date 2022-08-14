@@ -1,9 +1,8 @@
-FROM php:8.1.1-cli
+FROM php:8.1.8-cli-alpine3.16
 
-RUN apt-get update && apt-get install -y build-essential --no-install-recommends && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apk add --update make
 
 WORKDIR /usr/src/app
 
-ADD checker_example.php .
-ADD solution_example.php .
+ADD check check
 ADD Makefile .

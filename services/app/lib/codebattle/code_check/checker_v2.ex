@@ -6,10 +6,10 @@ defmodule Codebattle.CodeCheck.CheckerV2 do
   alias Codebattle.CodeCheck.OutputParserV2
   alias Codebattle.Generators.CheckerGeneratorV2
 
-  @docker_lable "-l codebattle_game"
   @tmp_basedir "/tmp/codebattle-check"
+  @docker_run_cmd_template "docker run --rm -m 400m --cpus=1 --net none -l codebattle_game ~s timeout -s 9 10 make --silent test checker_name=~s"
 
-  def call(task, editor_text, lang) do
+  def(call(task, editor_text, lang)) do
     dir_path = prepare_tmp_dir!(task, editor_text, lang)
     [cmd | cmd_opts] = get_check_command(dir_path, lang)
     now = :os.system_time(:millisecond)
@@ -36,17 +36,9 @@ defmodule Codebattle.CodeCheck.CheckerV2 do
   defp get_check_command(dir_path, lang) do
     volume = "-v #{dir_path}:/usr/src/app/#{lang.check_dir}"
 
-    lang
-    |> get_docker_command_template()
-    |> :io_lib.format([@docker_lable, volume, lang.docker_image, ""])
+    @docker_run_cmd_template
+    |> :io_lib.format([volume, lang.docker_image])
     |> to_string
     |> String.split()
-  end
-
-  defp get_docker_command_template(lang) do
-    case lang.base_image do
-      :ubuntu -> Application.fetch_env!(:codebattle, :ubuntu_docker_command_template)
-      :alpine -> Application.fetch_env!(:codebattle, :alpine_docker_command_template)
-    end
   end
 end

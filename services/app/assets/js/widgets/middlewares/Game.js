@@ -338,8 +338,8 @@ export const activeGameReady = machine => dispatch => {
     machine.send('rematch:status_updated', { payload: data });
   });
 
-  channel.on('rematch:game_created', ({ game_id: newGameId }) => {
-    machine.send('rematch:game_created', { newGameId });
+  channel.on('rematch:accepted', ({ game_id: newGameId }) => {
+    machine.send('rematch:accepted', { newGameId });
     redirectToNewGame(newGameId);
   });
 

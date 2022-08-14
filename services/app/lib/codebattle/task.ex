@@ -7,6 +7,8 @@ defmodule Codebattle.Task do
 
   alias Codebattle.Repo
 
+  @type t :: %__MODULE__{}
+
   @derive {Jason.Encoder,
            only: [
              :id,

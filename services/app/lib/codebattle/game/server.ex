@@ -21,10 +21,13 @@ defmodule Codebattle.Game.Server do
   end
 
   def get_playbook_records(game_id) do
-    GenServer.call(server_name(game_id), :get_playbook_records)
+    records = GenServer.call(server_name(game_id), :get_playbook_records)
+    {:ok, records}
   catch
     :exit, _reason -> {:error, :not_found}
   end
+
+  def fire_transition(game_id, event, params \\ %{})
 
   def fire_transition(game_id, event, params) do
     GenServer.call(server_name(game_id), {:transition, event, params})
@@ -45,45 +48,50 @@ defmodule Codebattle.Game.Server do
 
     state = %{
       game: game,
-      playbook_records: [],
-      playbook_records_count: 0
+      playbook_state: %{records: [], id: 0}
     }
 
     {:ok, state}
   end
 
+  @impl GenServer
   def handle_cast(:init_playbook, state) do
-    playbook_records = Playbook.Context.init_records(%{players: state.game.players})
+    %{game: game} = state
 
     {:noreply,
-     %{
-       state
-       | playbook_records: playbook_records,
-         playbook_records_id: Enum.count(playbook_records)
-     }}
+     Map.put(
+       state,
+       :playbook_state,
+       Playbook.Context.init_records(game.players)
+     )}
   end
 
+  @impl GenServer
   def handle_cast({:update_playbook, type, params}, state) do
-    %{playbook_records_id: playbook_records_id, playbook_records: playbook_records} = state
+    %{playbook_state: playbook_state} = state
 
     {:noreply,
-     %{
-       state
-       | playbook_records:
-           Playbook.Context.add_record(playbook_records, playbook_records_id, type, params),
-         playbook_records_count: playbook_records_count + 1
-     }}
+     Map.put(
+       state,
+       :playbook_state,
+       Playbook.Context.add_record(playbook_state, type, params)
+     )}
   end
 
+  @impl GenServer
   def handle_call(:get_playbook_records, _from, state) do
-    {:reply, state.playbook_records, state}
+    {:reply, state.playbook_state.records, state}
   end
 
+  @impl GenServer
   def handle_call(:get_game, _from, state) do
     {:reply, state.game, state}
   end
 
-  def handle_call({:transition, event, params}, _from, %{game: game, playbook: playbook} = state) do
+  @impl GenServer
+  def handle_call({:transition, event, params}, _from, state) do
+    %{game: game, playbook_state: playbook_state} = state
+
     case Game.Fsm.transition(event, game, params) do
       {{:error, reason}, _} ->
         {:reply, {:error, reason}, state}
@@ -91,7 +99,7 @@ defmodule Codebattle.Game.Server do
       {:ok, new_game = %Game{}} ->
         new_state = %{
           game: new_game,
-          playbook: Playbook.add_event(playbook, event, params)
+          playbook_state: Playbook.Context.add_record(playbook_state, event, params)
         }
 
         {:reply, {:ok, {game.state, new_game}}, new_state}

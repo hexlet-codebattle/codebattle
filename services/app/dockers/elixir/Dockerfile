@@ -1,19 +1,18 @@
-FROM elixir:1.13-slim
+FROM elixir:1.13.4-alpine
 
-RUN apt-get update && apt-get install --no-install-recommends -y make
-
-WORKDIR /usr/src/app
-
-ENV MIX_ENV test
+RUN apk add --update make
 
 RUN mix local.hex --force
 RUN mix local.rebar --force
+
+ENV MIX_ENV test
+
+WORKDIR /usr/src/app
 
 ADD mix.exs .
 
 RUN mix deps.get
 RUN mix deps.compile
 
-ADD checker_example.exs .
-ADD solution_example.exs .
+ADD check check
 ADD Makefile .

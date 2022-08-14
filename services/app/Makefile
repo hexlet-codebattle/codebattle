@@ -34,4 +34,4 @@ test:
 
 test-code-checkers: export CODEBATTLE_RUN_CODE_CHECK = true
 test-code-checkers:
-	mix test test/code_check/ruby/integration_test.exs:75 --max-failures 1
+	mix test test/code_check --max-failures 1

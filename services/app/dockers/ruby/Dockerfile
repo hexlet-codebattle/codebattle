@@ -1,8 +1,9 @@
-FROM ruby:3.1.1
+FROM ruby:3.1.2-alpine3.16
 
-RUN apt-get update && apt-get install -y build-essential --no-install-recommends && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apk add --update make
 
 WORKDIR /usr/src/app
 
+ADD check check
 ADD runner.rb .
 ADD Makefile .

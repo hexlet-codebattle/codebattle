@@ -7,7 +7,7 @@ defmodule Codebattle.Game.Fsm do
 
   alias Codebattle.Game
 
-  @type transition ::
+  @type event ::
           :join
           | :update_editor_data
           | :timeout
@@ -17,11 +17,11 @@ defmodule Codebattle.Game.Fsm do
           | :rematch_reject
           | :rematch_send_offer
 
-  @spec transition(transition, Game.t(), map()) :: {:ok, Game.t()} | {:error, String.t()}
+  @spec transition(event, Game.t(), map()) :: {:ok, Game.t()} | {:error, String.t()}
   def transition(:join, %{state: "waiting_opponent"} = game, params) do
     game =
       game
-      |> Map.put(state: "playing")
+      |> Map.put(:state, "playing")
       |> Map.merge(params)
 
     {:ok, game}
