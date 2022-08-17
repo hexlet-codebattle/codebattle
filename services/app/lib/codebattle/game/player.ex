@@ -4,9 +4,8 @@ defmodule Codebattle.Game.Player do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Codebattle.CodeCheck.CheckResult
+  alias Codebattle.CodeCheck
   alias Codebattle.Game.Player
-  alias Codebattle.Languages
   alias Codebattle.Tournament
   alias Codebattle.UserGame
 
@@ -40,8 +39,8 @@ defmodule Codebattle.Game.Player do
     field(:editor_lang, :string, default: "js")
     field(:lang, :string, default: "js")
     field(:result, :string, default: "undefined")
-    # CheckResult.t() | CheckResultV2.t()
-    field(:check_result, AtomizedMap, default: %CheckResult{})
+    # CodeCheck.Result.t() | CodeCheck.Result.V2.t()
+    field(:check_result, AtomizedMap, default: %CodeCheck.Result{})
     field(:creator, :boolean, default: false)
     field(:is_bot, :boolean, default: false)
     field(:is_guest, :boolean, default: false)
@@ -186,13 +185,13 @@ defmodule Codebattle.Game.Player do
 
   def setup_editor_params(%__MODULE__{} = player, task) do
     editor_lang = player.editor_lang
-    editor_text = Languages.get_solution(editor_lang, task)
+    editor_text = CodeCheck.generate_solution_text(editor_lang, task)
 
     params = %{
       editor_lang: editor_lang,
       editor_text: editor_text,
       result: "undefined",
-      check_result: %CheckResult{}
+      check_result: %CodeCheck.Result{}
     }
 
     Map.merge(player, params)

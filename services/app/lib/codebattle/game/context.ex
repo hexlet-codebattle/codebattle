@@ -10,8 +10,7 @@ defmodule Codebattle.Game.Context do
   import Codebattle.Game.Helpers
   import Ecto.Query
 
-  alias Codebattle.CodeCheck.CheckResult
-  alias Codebattle.CodeCheck.CheckResultV2
+  alias Codebattle.CodeCheck.Result
   alias Codebattle.Game
   alias Codebattle.Game.Engine
   alias Codebattle.Repo
@@ -145,7 +144,7 @@ defmodule Codebattle.Game.Context do
           {
             :ok,
             Game.t(),
-            %{check_result: CheckResult.t() | CheckResultV2.t(), solution_status: boolean}
+            %{check_result: Result.t() | Result.V2.t(), solution_status: boolean}
           }
           | {:error, atom}
   def check_result(id, params) do

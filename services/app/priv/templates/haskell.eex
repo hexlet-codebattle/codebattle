@@ -10,7 +10,7 @@ import Check.Solution
 import System.Exit
 
 output = BS.putStrLn . A.encode . A.object
-handleOk = output ["status" A..= ("ok" :: String), "result" A..= (<%= hash_sum %> :: String)]
+handleOk = output ["status" A..= ("ok" :: String), "result" A..= (<%= check_code %> :: String)]
 handleSuccess res exp args = output ["status" A..= ("success" :: String), "result" A..= res, "expected" A..= exp, "arguments" A..= args]
 handleFailure res exp args = output ["status" A..= ("failure" :: String), "result" A..= res, "expected" A..= exp, "arguments" A..= args]
 handleRuntimeError e = output ["status" A..= ("error" :: String), "result" A..= show e]

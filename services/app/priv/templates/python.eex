@@ -50,7 +50,7 @@ try:
     if success:
         execution_result.append(json.dumps({
             'status': 'ok',
-            'result': <%= hash_sum %>,
+            'result': <%= check_code %>,
         }))
 except Exception as exc:
     execution_result.append(json.dumps({

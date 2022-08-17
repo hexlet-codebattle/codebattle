@@ -6,8 +6,7 @@ try do
 
   defmodule TheTest do
     use ExUnit.Case
-    alias Jason.Helpers
-    import Helpers
+    import Jason.Helpers
 
     defp assert_result(result, expected, args, execution_time, success) do
       try do
@@ -31,7 +30,7 @@ try do
           success_ = assert_result(result_, <%= expected %>, [<%= arguments %>], execution_time_, success_)
       <% end %>
       if success_ do
-        message = json_map(status: :ok, result_: <%= hash_sum %>)
+        message = json_map(status: :ok, result_: <%= check_code %>)
         IO.puts(Jason.encode!(message))
       end
       :ok

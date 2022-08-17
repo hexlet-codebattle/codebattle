@@ -79,7 +79,7 @@ int main() {
     <% end %>
 
     if (success_) {
-      json message = BuildMessage("ok", <%= hash_sum %>);
+      json message = BuildMessage("ok", <%= check_code %>);
       finalResults_.push_back(message);
     }
   } catch (const std::exception& e) {

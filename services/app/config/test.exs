@@ -28,14 +28,14 @@ config :codebattle, Codebattle.Bot,
   timeout: 60_000,
   min_bot_step_timeout: 0
 
-adapter =
-  case System.get_env("CODEBATTLE_RUN_CODE_CHECK") do
-    "true" -> Codebattle.CodeCheck.DockerChecker
-    _ -> Codebattle.CodeCheck.FakeChecker
+executor =
+  case System.get_env("CODEBATTLE_USE_DOCKER_EXECUTOR") do
+    "true" -> Codebattle.CodeCheck.DockerExecutor
+    _ -> Codebattle.CodeCheck.FakeExecutor
   end
 
 config :codebattle, code_check_timeout: 35_000
-config :codebattle, checker_adapter: adapter
+config :codebattle, checker_executor: executor
 config :codebattle, tournament_match_timeout: 1
 
 config :codebattle, Codebattle.Invite,

@@ -1,14 +1,16 @@
-defmodule Codebattle.CodeCheck.OutputParserV2 do
+defmodule Codebattle.CodeCheck.OutputParser.V2 do
   @moduledoc "Parse container output for representing check status of solution"
 
   require Logger
-  alias Codebattle.CodeCheck.CheckResultV2
+  alias Codebattle.CodeCheck.Result
 
   @memory_overflow "Error 137"
 
-  def call(container_output, task) do
+  def call(token) do
+    %{raw_docker_output: raw_docker_output, task: task} = token
+
     outputs =
-      container_output
+      raw_docker_output
       |> String.split("\n")
       |> filter_empty_items()
       |> Enum.map(fn str ->
@@ -42,8 +44,8 @@ defmodule Codebattle.CodeCheck.OutputParserV2 do
       end
 
     cond do
-      String.contains?(container_output, @memory_overflow) ->
-        %CheckResultV2{
+      String.contains?(raw_docker_output, @memory_overflow) ->
+        %Result.V2{
           output_error: "Your solution ran out of memory, please, rewrite it",
           status: "error"
         }
@@ -53,11 +55,11 @@ defmodule Codebattle.CodeCheck.OutputParserV2 do
           outputs["results"]
           |> Enum.with_index()
           |> Enum.reduce(
-            %CheckResultV2{},
+            %Result.V2{},
             fn {item, index}, acc ->
               assert = Enum.at(task.asserts, index)
 
-              new_item = %CheckResultV2.AssertResult{
+              new_item = %Result.V2.AssertResult{
                 output: item["output"],
                 execution_time: item["time"],
                 result: item["value"],
@@ -98,8 +100,8 @@ defmodule Codebattle.CodeCheck.OutputParserV2 do
         }
 
       true ->
-        %CheckResultV2{
-          output_error: container_output,
+        %Result.V2{
+          output_error: raw_docker_output,
           status: "error"
         }
     end

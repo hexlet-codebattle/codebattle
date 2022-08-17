@@ -42,7 +42,7 @@ namespace app
 
         Console.SetOut(oldOut);
         if (success) {
-          Console.WriteLine(new StatusMessage{ status = "ok", result = <%= hash_sum %> });
+          Console.WriteLine(new StatusMessage{ status = "ok", result = <%= check_code %> });
         } else {
           foreach(AssertResult message in executionResults)
           {

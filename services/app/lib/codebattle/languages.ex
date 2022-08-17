@@ -1,8 +1,8 @@
 defmodule Codebattle.Languages do
   @moduledoc false
 
-  alias Codebattle.Language
-  alias Codebattle.Generators.SolutionTemplateGenerator
+  alias Codebattle.LanguageMeta
+  alias Codebattle.CodeCheck.SolutionTemplateGenerator
 
   @type_templates %{
     boolean_true: "true",
@@ -14,15 +14,15 @@ defmodule Codebattle.Languages do
   }
 
   @meta %{
-    "ruby" => %Language{
+    "ruby" => %LanguageMeta{
       name: "ruby",
       slug: "ruby",
       checker_version: 2,
       version: "3.1.2",
       check_dir: "check",
-      extension: "rb",
+      solution_file_name: "solution.rb",
       docker_image: "codebattle/ruby:3.1.2",
-      solution_version: :default,
+      solution_version: :untyped,
       solution_template: "def solution(<%= arguments %>)\n<%= return_statement %>\nend",
       arguments_template: %{
         argument: "<%= name %>",
@@ -43,15 +43,15 @@ defmodule Codebattle.Languages do
         type_templates: %{@type_templates | hash_inners: "\"<%= key %>\" => <%= value %>"}
       }
     },
-    "js" => %Language{
+    "js" => %LanguageMeta{
       checker_version: 2,
       name: "Node.js",
       slug: "js",
       version: "17.5",
       check_dir: "check",
-      extension: "js",
+      solution_file_name: "solution.js",
       docker_image: "codebattle/js:17.5",
-      solution_version: :default,
+      solution_version: :untyped,
       solution_template:
         "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (<%= arguments %>) => {\n<%= return_statement %>\n};\n\nmodule.exports = solution;",
       arguments_template: %{
@@ -73,13 +73,13 @@ defmodule Codebattle.Languages do
         type_templates: @type_templates
       }
     },
-    "ts" => %Language{
+    "ts" => %LanguageMeta{
       checker_version: 2,
       name: "typescript",
       slug: "ts",
       version: "4.1.3",
       check_dir: "check",
-      extension: "js",
+      solution_file_name: "solution.js",
       docker_image: "codebattle/js:15.5.1",
       solution_version: :typed,
       solution_template:
@@ -104,12 +104,12 @@ defmodule Codebattle.Languages do
         nested_value_expression_template: "<%= value %>"
       }
     },
-    "dart" => %Language{
+    "dart" => %LanguageMeta{
       name: "Dart",
       slug: "dart",
       version: "2.17.6",
       check_dir: "lib",
-      extension: "dart",
+      solution_file_name: "solution.dart",
       docker_image: "codebattle/dart:2.17.6",
       solution_version: :typed,
       solution_template: "<%= expected %>solution(<%= arguments %>) {\n\n}",
@@ -132,12 +132,12 @@ defmodule Codebattle.Languages do
         type_templates: @type_templates
       }
     },
-    "cpp" => %Language{
+    "cpp" => %LanguageMeta{
       name: "C++",
       slug: "cpp",
       version: "20",
       check_dir: "check",
-      extension: "cpp",
+      solution_file_name: "solution.cpp",
       docker_image: "codebattle/cpp:20",
       solution_version: :typed,
       solution_template:
@@ -166,12 +166,12 @@ defmodule Codebattle.Languages do
         nested_value_expression_template: "<%= type_name %><%= value %>"
       }
     },
-    "java" => %Language{
+    "java" => %LanguageMeta{
       name: "Java",
       slug: "java",
       version: "18",
       check_dir: "check",
-      extension: "java",
+      solution_file_name: "Solution.java",
       docker_image: "codebattle/java:18",
       solution_version: :typed,
       solution_template:
@@ -202,12 +202,12 @@ defmodule Codebattle.Languages do
         nested_value_expression_template: "<%= value %>"
       }
     },
-    "kotlin" => %Language{
+    "kotlin" => %LanguageMeta{
       name: "Kotlin",
       slug: "kotlin",
       version: "1.6.21",
       check_dir: "check",
-      extension: "kt",
+      solution_file_name: "solution.kt",
       docker_image: "codebattle/kotlin:1.6.21",
       solution_version: :typed,
       solution_template:
@@ -238,12 +238,12 @@ defmodule Codebattle.Languages do
         nested_value_expression_template: "<%= value %>"
       }
     },
-    "csharp" => %Language{
+    "csharp" => %LanguageMeta{
       name: "C#",
       slug: "csharp",
       version: "6.0.100",
       check_dir: "check",
-      extension: "cs",
+      solution_file_name: "solution.cs",
       docker_image: "codebattle/csharp:6.0.100",
       solution_version: :typed,
       solution_template:
@@ -274,12 +274,12 @@ defmodule Codebattle.Languages do
         nested_value_expression_template: "new <%= type_name %>()<%= value %>"
       }
     },
-    "golang" => %Language{
+    "golang" => %LanguageMeta{
       name: "golang",
       slug: "golang",
       version: "1.19.0",
       check_dir: "check",
-      extension: "go",
+      solution_file_name: "solution.go",
       docker_image: "codebattle/golang:1.19.0",
       solution_version: :typed,
       solution_template: "package main;\n\nfunc solution(<%= arguments %>)<%= expected %> {\n\n}",
@@ -303,14 +303,14 @@ defmodule Codebattle.Languages do
         nested_value_expression_template: "<%= type_name %><%= value %>"
       }
     },
-    "elixir" => %Language{
+    "elixir" => %LanguageMeta{
       name: "elixir",
       slug: "elixir",
       version: "1.13.4",
       check_dir: "check",
-      extension: "exs",
+      solution_file_name: "solution.exs",
       docker_image: "codebattle/elixir:1.13.4",
-      solution_version: :default,
+      solution_version: :untyped,
       solution_template:
         "defmodule Solution do\n\tdef solution(<%= arguments %>) do\n<%= return_statement %>\n\tend\nend",
       arguments_template: %{
@@ -332,12 +332,12 @@ defmodule Codebattle.Languages do
         type_templates: %{@type_templates | hash_empty: "%{}", hash_value: "%{<%= entries %>}"}
       }
     },
-    "python" => %Language{
+    "python" => %LanguageMeta{
       name: "python",
       slug: "python",
       version: "3.10.6",
       check_dir: "check",
-      extension: "py",
+      solution_file_name: "solution.py",
       docker_image: "codebattle/python:3.10.6",
       solution_version: :typed,
       solution_template:
@@ -361,12 +361,12 @@ defmodule Codebattle.Languages do
         type_templates: %{@type_templates | boolean_true: "True", boolean_false: "False"}
       }
     },
-    "php" => %Language{
+    "php" => %LanguageMeta{
       name: "php",
       slug: "php",
       version: "8.1.8",
       check_dir: "check",
-      extension: "php",
+      solution_file_name: "solution.php",
       docker_image: "codebattle/php:8.1.8",
       solution_version: :typed,
       solution_template:
@@ -404,14 +404,14 @@ defmodule Codebattle.Languages do
         "hash" => "array"
       }
     },
-    "clojure" => %Language{
+    "clojure" => %LanguageMeta{
       name: "clojure",
       slug: "clojure",
       version: "1.11.1",
       check_dir: "check",
-      extension: "clj",
+      solution_file_name: "solution.clj",
       docker_image: "codebattle/clojure:1.11.1.1105",
-      solution_version: :default,
+      solution_version: :untyped,
       solution_template: "(defn solution [<%= arguments %>] <%= return_statement %>)",
       arguments_template: %{
         argument: "<%= name %>",
@@ -432,11 +432,11 @@ defmodule Codebattle.Languages do
         type_templates: %{@type_templates | hash_inners: ":<%= key %> <%= value %>"}
       }
     },
-    "haskell" => %Language{
+    "haskell" => %LanguageMeta{
       name: "haskell",
       slug: "haskell",
       version: "8.4.3",
-      extension: "hs",
+      solution_file_name: "Solution.hs",
       check_dir: "Check",
       docker_image: "codebattle/haskell:8.4.3",
       solution_version: :typed,
@@ -468,26 +468,15 @@ defmodule Codebattle.Languages do
     }
   }
 
-  def get_solution(lang, task) do
-    @meta
-    |> Map.get(lang)
-    |> SolutionTemplateGenerator.get_solution(task)
-  end
 
   def get_langs, do: Map.keys(@meta)
 
-  def get_langs_with_solutions(task) do
-    @meta
-    |> Map.values()
-    |> Enum.map(fn el ->
-      Map.put(
-        el,
-        :solution_template,
-        el
-        |> SolutionTemplateGenerator.get_solution(task)
-      )
-    end)
-  end
-
   def meta, do: @meta
+
+  def meta(slug) do
+    case Map.get(@meta, slug) do
+      nil -> raise "Unknown language #{slug}"
+      meta -> meta
+    end
+  end
 end

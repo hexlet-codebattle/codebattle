@@ -3,13 +3,14 @@ defmodule CodebattleWeb.Api.GameView do
 
   alias Codebattle.Game.Player
   alias Codebattle.Languages
+  alias Codebattle.CodeCheck
 
   import Codebattle.Game.Helpers
 
   def render_game(game) do
     %{
       inserted_at: game.inserted_at,
-      langs: Languages.get_langs_with_solutions(game.task),
+      langs: get_langs_with_solution_templates(game.task),
       level: game.level,
       mode: game.mode,
       players: game.players,
@@ -74,5 +75,15 @@ defmodule CodebattleWeb.Api.GameView do
     |> Map.get(:user_games, [])
     |> Enum.map(fn user_game -> Player.build(user_game) end)
     |> Enum.sort(&(&1.creator > &2.creator))
+  end
+
+  def get_langs_with_solution_templates(task) do
+    Languages.meta()
+    |> Map.values()
+    |> Enum.map(fn meta ->
+      meta
+      |> Map.fromStruct()
+      |> Map.put(:solution_template, CodeCheck.generate_solution_template(meta, task))
+    end)
   end
 end

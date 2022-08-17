@@ -78,11 +78,9 @@ config :codebattle, Codebattle.Bot, min_bot_step_timeout: 1_000
 
 config :codebattle, Codebattle.DockerLangsPuller, timeout: :timer.hours(7)
 
-config :codebattle, checker_adapter: Codebattle.CodeCheck.DockerChecker
+config :codebattle, checker_executor: Codebattle.CodeCheck.DockerExecutor
 config :codebattle, tournament_match_timeout: 3 * 60
 config :codebattle, tasks_provider: Codebattle.Game.TasksQueuesServer
-
-config :codebattle, Codebattle.Analitics, max_size_activity_server: 10_000
 
 config :codebattle, :firebase,
   sender_id: System.get_env("FIREBASE_SENDER_ID"),

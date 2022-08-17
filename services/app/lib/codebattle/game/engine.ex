@@ -84,7 +84,7 @@ defmodule Codebattle.Game.Engine do
       editor_lang: editor_lang
     })
 
-    check_result = CodeCheck.Context.run_check(game.task, editor_text, editor_lang)
+    check_result = CodeCheck.run_check(game.task, editor_text, editor_lang)
 
     Game.Server.update_playbook(game.id, :check_complete, %{
       id: user.id,
