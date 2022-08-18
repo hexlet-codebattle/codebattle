@@ -6,6 +6,7 @@ defmodule Codebattle.Game.Player do
 
   alias Codebattle.CodeCheck
   alias Codebattle.Game.Player
+  alias Codebattle.Languages
   alias Codebattle.Tournament
   alias Codebattle.UserGame
 
@@ -185,7 +186,11 @@ defmodule Codebattle.Game.Player do
 
   def setup_editor_params(%__MODULE__{} = player, task) do
     editor_lang = player.editor_lang
-    editor_text = CodeCheck.generate_solution_text(editor_lang, task)
+
+    editor_text =
+      editor_lang
+      |> Languages.meta()
+      |> CodeCheck.generate_solution_template(task)
 
     params = %{
       editor_lang: editor_lang,

@@ -3,7 +3,7 @@ defmodule Codebattle.CodeCheck.CheckerGenerator.V2 do
 
   require Logger
 
-  def call(slug, task) do
+  def call(%{task: task, lang_meta: %{checker_version: 2, slug: slug}} = token) do
     source_dir = Application.app_dir(:codebattle, "priv/templates/")
 
     bindings = [

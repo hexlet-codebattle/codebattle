@@ -5,6 +5,10 @@ defmodule Codebattle.CodeCheck.OutputParser do
   alias Codebattle.CodeCheck.Result
   @memory_overflow "Error 137"
 
+  def call(%{lang_meta: %{checker_version: 2}} = token) do
+    Codebattle.CodeCheck.OutputParser.V2.call(token)
+  end
+
   def call(token) do
     %{raw_docker_output: raw_docker_output, lang_meta: lang_meta, seed: seed} = token
 

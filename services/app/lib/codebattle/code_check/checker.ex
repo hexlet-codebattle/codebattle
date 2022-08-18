@@ -1,7 +1,9 @@
 defmodule Codebattle.CodeCheck.Checker do
-  alias Codebattle.Languages
   alias Codebattle.CodeCheck
-  alias Codebattle.Task
+  alias Codebattle.CodeCheck.Checker
+  alias Codebattle.CodeCheck.CheckerGenerator
+  alias Codebattle.CodeCheck.OutputParser
+  alias Codebattle.Languages
 
   @tmp_basedir "/tmp/codebattle-check"
   @docker_cmd_template "docker run --rm -m 400m --cpus=1 --net none -l codebattle_game ~s ~s timeout -s 9 10 make --silent test"
@@ -29,8 +31,8 @@ defmodule Codebattle.CodeCheck.Checker do
     lang_meta = Languages.meta(lang_slug)
 
     token =
-      CodeCheck.Token
-      |> struct!(%{
+      Checker.Token
+      |> struct(%{
         task: task,
         solution_text: solution_text,
         lang_meta: lang_meta,
@@ -46,10 +48,6 @@ defmodule Codebattle.CodeCheck.Checker do
     Task.start(File, :rm_rf, [token.tmp_dir_path])
 
     token.result
-  end
-
-  defp generate_checker_text(%{lang_meta: %{checker_version: 2}} = token) do
-    %{token | checker_text: CheckerGenerator.V2.call(token)}
   end
 
   defp generate_checker_text(token) do
@@ -80,10 +78,6 @@ defmodule Codebattle.CodeCheck.Checker do
 
   defp run_docker_command(token) do
     %{token | raw_docker_output: token.executor.call(token)}
-  end
-
-  defp parse_output(%{lang_meta: %{checker_version: 2}} = token) do
-    %{token | result: OutputParser.V2.call(token)}
   end
 
   defp parse_output(token) do

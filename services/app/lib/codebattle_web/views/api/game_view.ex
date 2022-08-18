@@ -82,7 +82,7 @@ defmodule CodebattleWeb.Api.GameView do
     |> Map.values()
     |> Enum.map(fn meta ->
       meta
-      |> Map.fromStruct()
+      |> Map.from_struct()
       |> Map.put(:solution_template, CodeCheck.generate_solution_template(meta, task))
     end)
   end

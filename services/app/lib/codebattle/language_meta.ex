@@ -11,7 +11,6 @@ defmodule Codebattle.LanguageMeta do
     field(:solution_file_name, String.t())
     field(:checker_file_name, String.t())
     field(:docker_image, String.t())
-    field(:solution_version, :typed | :untyped)
     field(:solution_template, String.t())
     field(:return_template, String.t())
     field(:expected_template, String.t())

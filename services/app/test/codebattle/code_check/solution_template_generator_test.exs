@@ -1,13 +1,13 @@
-defmodule Codebattle.CodeCheck.SolutionTemplateGeneratorTest do
+defmodule Codebattle.CodeCheck.SolutionGeneratorTest do
   use ExUnit.Case, async: true
 
-  alias Codebattle.CodeCheck.SolutionTemplateGenerator
+  alias Codebattle.CodeCheck.SolutionGenerator
   alias Codebattle.Languages
 
   test "generates for clojure" do
-    assert SolutionTemplateGenerator.call(
+    assert SolutionGenerator.call(
              Languages.meta("ruby"),
-             %{
+             %Codebattle.Task{
                input_signature: [
                  %{argument_name: "a", type: %{name: "integer"}},
                  %{argument_name: "b", type: %{name: "integer"}}
@@ -18,9 +18,9 @@ defmodule Codebattle.CodeCheck.SolutionTemplateGeneratorTest do
   end
 
   test "generates for python" do
-    assert SolutionTemplateGenerator.call(
+    assert SolutionGenerator.call(
              Languages.meta("python"),
-             %{
+             %Codebattle.Task{
                input_signature: [
                  %{argument_name: "str1", type: %{name: "string"}},
                  %{argument_name: "str2", type: %{name: "string"}}
@@ -31,9 +31,9 @@ defmodule Codebattle.CodeCheck.SolutionTemplateGeneratorTest do
   end
 
   test "generates for clojure floats" do
-    assert SolutionTemplateGenerator.call(
+    assert SolutionGenerator.call(
              Languages.meta("clojure"),
-             %{
+             %Codebattle.Task{
                input_signature: [
                  %{argument_name: "a", type: %{name: "float"}},
                  %{argument_name: "b", type: %{name: "float"}}
@@ -44,9 +44,9 @@ defmodule Codebattle.CodeCheck.SolutionTemplateGeneratorTest do
   end
 
   test "generates for ts floats" do
-    assert SolutionTemplateGenerator.call(
+    assert SolutionGenerator.call(
              Languages.meta("ts"),
-             %{
+             %Codebattle.Task{
                input_signature: [
                  %{argument_name: "a", type: %{name: "float"}},
                  %{argument_name: "b", type: %{name: "float"}}
@@ -54,13 +54,13 @@ defmodule Codebattle.CodeCheck.SolutionTemplateGeneratorTest do
                output_signature: %{type: %{name: "hash", nested: %{name: "float"}}}
              }
            ) ==
-             "import * as _ from \"lodash\";\nimport {IHash} from \"./types\";\n\nfunction solution(a: number, b: number): IHash {\n\n};\n\nexport default solution;"
+             "import * as _ from \"lodash\";\nimport * as R from \"rambda\";\n\nfunction solution(a: number, b: number): any {\n\n};\n\nexport default solution;"
   end
 
   test "generates for golang floats" do
-    assert SolutionTemplateGenerator.call(
+    assert SolutionGenerator.call(
              Languages.meta("golang"),
-             %{
+             %Codebattle.Task{
                input_signature: [
                  %{argument_name: "a", type: %{name: "float"}},
                  %{argument_name: "b", type: %{name: "float"}}

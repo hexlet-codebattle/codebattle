@@ -1,8 +1,9 @@
-FROM node:17.5
+FROM node:16.17.0-alpine3.16
 
-RUN apt-get update && apt-get install -y make --no-install-recommends && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apk add --update make
 
 ADD package.json .
+ADD package-lock.json .
 
 RUN npm install
 

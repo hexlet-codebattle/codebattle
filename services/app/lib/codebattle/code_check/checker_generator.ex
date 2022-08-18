@@ -3,6 +3,10 @@ defmodule Codebattle.CodeCheck.CheckerGenerator do
 
   alias Codebattle.CodeCheck.TypesGenerator
 
+  def call(%{lang_meta: %{checker_version: 2}} = token) do
+    Codebattle.CodeCheck.CheckerGenerator.V2.call(token)
+  end
+
   def call(%{lang_meta: meta, task: task, seed: seed}) do
     binding =
       [check_code: "\"__seed:#{seed}__\""]
@@ -80,7 +84,7 @@ defmodule Codebattle.CodeCheck.CheckerGenerator do
 
   defp get_defining(signature, index, %{checker_meta: checker_meta} = meta) do
     name = get_variable_name(signature, index, meta)
-    type = TypesGenerator.get_type(signature, meta)
+    type = TypesGenerator.call(signature.type, meta)
 
     EEx.eval_string(
       checker_meta.defining_variable_template,
@@ -94,7 +98,7 @@ defmodule Codebattle.CodeCheck.CheckerGenerator do
          value,
          %{checker_meta: checker_meta} = meta
        ) do
-    type_name = TypesGenerator.get_type(signature, meta)
+    type_name = TypesGenerator.call(signature.type, meta)
     type = extract_type(signature)
     value = get_value({type, value}, meta)
 
@@ -119,7 +123,7 @@ defmodule Codebattle.CodeCheck.CheckerGenerator do
          {%{name: "array", nested: nested}, value},
          %{checker_meta: checker_meta} = meta
        ) do
-    inner_type = TypesGenerator.get_type(nested, meta)
+    inner_type = TypesGenerator.call(nested, meta)
     array_values = Enum.map_join(value, ", ", &get_value({nested, &1}, meta))
 
     EEx.eval_string(checker_meta.type_templates.array,
