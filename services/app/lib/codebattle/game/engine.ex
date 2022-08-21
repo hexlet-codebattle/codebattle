@@ -277,6 +277,10 @@ defmodule Codebattle.Game.Engine do
     %UserGame{} |> UserGame.changeset(params) |> Repo.insert!()
   end
 
+  def trigger_timeout(%Game{state: "game_over"} = game) do
+    terminate_game_after(game, 1)
+  end
+
   def trigger_timeout(%Game{} = game) do
     Logger.debug("Trigger timeout for game: #{game.id}")
     {:ok, {old_game_state, new_game}} = fire_transition(game.id, :timeout, %{})

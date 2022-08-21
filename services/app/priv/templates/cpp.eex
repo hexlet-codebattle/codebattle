@@ -64,7 +64,7 @@ int main() {
   vector<json> finalResults_ = {};
 
   try {
-    <%= for %{arguments: arguments, expected: expected, index: i, error_message: message } <- checks do %>
+    <%= for %{arguments: arguments, expected: expected, index: i, args_string: args_string } <- checks do %>
       <%= for %{defining: defining, value: value} <- arguments.info do %>
         <%= defining %> = <%= value %>;
       <% end %>
@@ -75,7 +75,7 @@ int main() {
       auto executionTime<%= i %>_ = (std::chrono::system_clock::now() - start<%= i %>_).count();
       output_ = buffer_.str();
       buffer_.str("");
-      success_ = AssertSolution(result<%= i %>_, expected<%= i %>, output_, "[<%= message %>]", executionTime<%= i %>_, finalResults_, success_);
+      success_ = AssertSolution(result<%= i %>_, expected<%= i %>, output_, "<%= args_string %>", executionTime<%= i %>_, finalResults_, success_);
     <% end %>
 
     if (success_) {

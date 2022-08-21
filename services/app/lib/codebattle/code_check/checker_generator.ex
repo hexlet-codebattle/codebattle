@@ -21,13 +21,18 @@ defmodule Codebattle.CodeCheck.CheckerGenerator do
   def get_task_binding(task, meta) do
     task.asserts
     |> Enum.with_index(1)
-    |> Enum.map(fn {_assert, index} = item ->
+    |> Enum.map(fn {assert, index} = item ->
       %{
         arguments: get_arguments(item, task, meta),
         expected: get_expected(item, task, meta),
-        index: index
+        index: index,
+        args_string: get_arguments_string(assert)
       }
     end)
+  end
+
+  defp get_arguments_string(assert) do
+    Enum.map_join(assert.arguments, ", ", &inspect/1)
   end
 
   defp get_arguments(

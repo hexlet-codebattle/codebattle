@@ -16,13 +16,13 @@ module Runner
         to_output(
           type: 'result',
           value: solution(*arguments),
-          time: (Process.clock_gettime(Process::CLOCK_MONOTONIC) - starts_at).round(7)
+          time: print_time(starts_at)
         )
       rescue StandardError => e
         to_output(
           type: 'error',
           value: e.message,
-          time: (Process.clock_gettime(Process::CLOCK_MONOTONIC) - starts_at).round(7)
+          time: print_time(starts_at)
         )
       end
     end
@@ -42,5 +42,9 @@ module Runner
     )
 
     $stdout.reopen
+  end
+
+  def self.print_time(time)
+    format('%05.7f', (Process.clock_gettime(Process::CLOCK_MONOTONIC) - time))
   end
 end

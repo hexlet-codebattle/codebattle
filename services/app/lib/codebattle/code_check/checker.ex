@@ -77,6 +77,8 @@ defmodule Codebattle.CodeCheck.Checker do
   end
 
   defp run_docker_command(token) do
+    IO.puts(token.solution_text)
+    IO.puts(token.checker_text)
     %{token | raw_docker_output: token.executor.call(token)}
   end
 

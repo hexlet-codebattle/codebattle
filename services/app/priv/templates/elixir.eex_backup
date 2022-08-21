@@ -1,0 +1,50 @@
+try do
+  Code.eval_file("./check/solution.exs")
+
+  ExUnit.start()
+  # ExUnit.configure(capture_log: true)
+
+  defmodule TheTest do
+    use ExUnit.Case
+    import Jason.Helpers
+
+    defp assert_result(result, expected, args, execution_time, success) do
+      try do
+        assert result == expected
+        message = json_map(status: :success, result: result, expected: expected, arguments: args, execution_time: execution_time)
+        IO.puts(Jason.encode!(message))
+        success
+      rescue
+        _e in ExUnit.AssertionError ->
+          message = json_map(status: "failure", result: result, expected: expected, arguments: args, execution_time: execution_time)
+          IO.puts(Jason.encode!(message))
+          false
+      end
+    end
+
+    defp test_solution(success_) do
+      <%= for %{arguments: arguments, expected: expected} <- checks do %>
+          start_ = System.system_time(:millisecond)
+          result_ = apply(Solution, :solution, [<%= arguments %>])
+          execution_time_ = System.system_time(:millisecond) - start_
+          success_ = assert_result(result_, <%= expected %>, [<%= arguments %>], execution_time_, success_)
+      <% end %>
+      if success_ do
+        message = json_map(status: :ok, result_: <%= check_code %>)
+        IO.puts(Jason.encode!(message))
+      end
+      :ok
+    end
+
+    test "solution" do
+      test_solution(true)
+    end
+  end
+
+  exit(:normal)
+rescue
+  e in CompileError ->
+    require Jason.Helpers
+    message = Jason.Helpers.json_map(status: "error", result: e.description)
+    IO.puts(Jason.encode!(message))
+end

@@ -83,6 +83,8 @@ defmodule Codebattle.Game.Fsm do
     {:ok, %{game | state: "timeout", players: new_players}}
   end
 
+  def transition(:timeout, %{state: "game_over"} = game, _params), do: {:ok, game}
+
   def transition(:rematch_reject, %{state: "game_over"} = game, _params) do
     {:ok, %{game | rematch_state: "rejected"}}
   end

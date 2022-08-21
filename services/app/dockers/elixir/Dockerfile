@@ -14,5 +14,6 @@ ADD mix.exs .
 RUN mix deps.get
 RUN mix deps.compile
 
+ADD runner.exs .
 ADD check check
 ADD Makefile .

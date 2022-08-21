@@ -305,6 +305,7 @@ defmodule Codebattle.Languages do
     "elixir" => %LanguageMeta{
       name: "elixir",
       slug: "elixir",
+      checker_version: 2,
       version: "1.13.4",
       check_dir: "check",
       solution_file_name: "solution.exs",

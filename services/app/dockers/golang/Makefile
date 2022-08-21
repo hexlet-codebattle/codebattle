@@ -4,6 +4,7 @@ test-runtime:
 format:
 	gofmt -w -e ./check/solution.go
 
-test: format test-runtime
+test: test-runtime
+# test: format test-runtime
 
 .PHONY: test

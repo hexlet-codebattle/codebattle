@@ -52,11 +52,30 @@
   (try (let [success
               (reduce get_test_status
                 [
+
+                  (assert_result 2 solution [1, 1])
+
+                  (assert_result 4 solution [2, 2])
+
                   (assert_result 3 solution [1, 2])
-                  (assert_result 8 solution [5, 3])
+
+                  (assert_result 5 solution [3, 2])
+
+                  (assert_result 6 solution [5, 1])
+
+                  (assert_result 2 solution [1, 1])
+
+                  (assert_result 4 solution [2, 2])
+
+                  (assert_result 3 solution [1, 2])
+
+                  (assert_result 5 solution [3, 2])
+
+                  (assert_result 6 solution [5, 1])
+
                 ])]
         (if success
-          (println (json/write-str {:status "ok" :result "lolKek"}))))
+          (println (json/write-str {:status "ok" :result "__seed:124949491112958542__"}))))
     (catch Exception ex
       (do
         (println (json/write-str {:status "error" :result (.getMessage ex)}))
