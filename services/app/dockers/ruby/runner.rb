@@ -2,14 +2,14 @@ require 'json'
 require 'stringio'
 
 module Runner
-  def self.call(args)
+  def self.call(args_list)
     original_stdout = $stdout
     $stdout = StringIO.new
     @execution_result = []
 
     require_relative './check/solution'
 
-    args.each do |arguments|
+    args_list.each do |arguments|
       starts_at = Process.clock_gettime(Process::CLOCK_MONOTONIC)
 
       begin

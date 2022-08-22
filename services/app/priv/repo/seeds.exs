@@ -14,25 +14,73 @@ creator = Repo.get!(Codebattle.User, -15)
       origin: "github",
       state: "active",
       visibility: "public",
-      description_en: "test sum: for ruby",
-      description_ru: "проверка суммирования: для руби",
+      description_en: "test sum",
+      description_ru: "проверка суммирования",
       examples: "```\n2 == solution(1,1)\n10 == solution(9,1)\n```",
       asserts: [
-        %{arguments: [1, 1], expected: 2},
-        %{arguments: [2, 2], expected: 4},
-        %{arguments: [1, 2], expected: 3},
-        %{arguments: [3, 2], expected: 5},
-        %{arguments: [5, 1], expected: 6},
-        %{arguments: [1, 1], expected: 2},
-        %{arguments: [2, 2], expected: 4},
-        %{arguments: [1, 2], expected: 3},
-        %{arguments: [3, 2], expected: 5},
-        %{arguments: [5, 1], expected: 6}
+        %{
+          arguments: [1, 1, "a", 1.3, true, %{a: "b", c: "d"}, ["d", "e"], [["Jack", "Alice"]]],
+          expected: 2
+        },
+        %{
+          arguments: [2, 2, "a", 1.3, true, %{a: "b", c: "d"}, ["d", "e"], [["Jack", "Alice"]]],
+          expected: 4
+        },
+        %{
+          arguments: [1, 2, "a", 1.3, true, %{a: "b", c: "d"}, ["d", "e"], [["Jack", "Alice"]]],
+          expected: 3
+        },
+        %{
+          arguments: [3, 2, "a", 1.3, true, %{a: "b", c: "d"}, ["d", "e"], [["Jack", "Alice"]]],
+          expected: 5
+        },
+        %{
+          arguments: [5, 1, "a", 1.3, true, %{a: "b", c: "d"}, ["d", "e"], [["Jack", "Alice"]]],
+          expected: 6
+        },
+        %{
+          arguments: [1, 1, "a", 1.3, true, %{a: "b", c: "d"}, ["d", "e"], [["Jack", "Alice"]]],
+          expected: 2
+        },
+        %{
+          arguments: [2, 2, "a", 1.3, true, %{a: "b", c: "d"}, ["d", "e"], [["Jack", "Alice"]]],
+          expected: 4
+        },
+        %{
+          arguments: [1, 2, "a", 1.3, true, %{a: "b", c: "d"}, ["d", "e"], [["Jack", "Alice"]]],
+          expected: 3
+        },
+        %{
+          arguments: [3, 2, "a", 1.3, true, %{a: "b", c: "d"}, ["d", "e"], [["Jack", "Alice"]]],
+          expected: 5
+        },
+        %{
+          arguments: [5, 1, "a", 1.3, true, %{a: "b", c: "d"}, ["d", "e"], [["Jack", "Alice"]]],
+          expected: 6
+        }
       ],
       disabled: false,
       input_signature: [
         %{argument_name: "a", type: %{name: "integer"}},
-        %{argument_name: "b", type: %{name: "integer"}}
+        %{argument_name: "b", type: %{name: "integer"}},
+        %{argument_name: "c", type: %{name: "string"}},
+        %{argument_name: "d", type: %{name: "float"}},
+        %{argument_name: "e", type: %{name: "boolean"}},
+        %{
+          argument_name: "f",
+          type: %{name: "hash", nested: %{name: "string"}}
+        },
+        %{
+          argument_name: "g",
+          type: %{name: "array", nested: %{name: "string"}}
+        },
+        %{
+          argument_name: "h",
+          type: %{
+            name: "array",
+            nested: %{name: "array", nested: %{name: "string"}}
+          }
+        }
       ],
       output_signature: %{type: %{name: "integer"}}
     }

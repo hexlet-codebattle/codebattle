@@ -2,12 +2,8 @@ defmodule Runner do
   try do
     Code.eval_file("./check/solution.exs")
   rescue
-    e in CompileError ->
-      IO.inspect(Jason.encode!(%{type: "error", value: e.description, time: 0}))
-      System.halt(0)
-
     e ->
-      IO.inspect(Jason.encode!(%{type: "error", value: e.message, time: 0}))
+      IO.puts(Jason.encode!(%{type: "error", value: e.description, time: 0}))
       System.halt(0)
   end
 

@@ -81,13 +81,13 @@ exports.run = function run(args = []) {
         toOut({
           type: 'result',
           value: runner(...a),
-          time: performance.now() - now,
+          time: (performance.now() - now).toFixed(5),
         });
       } catch (e) {
         toOut({
           type: 'error',
           value: e.toString(),
-          time: performance.now() - now,
+          time: (performance.now() - now).toFixed(5),
         });
       }
     }
