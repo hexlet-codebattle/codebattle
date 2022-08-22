@@ -41,16 +41,7 @@ defmodule CodebattleWeb.Api.GameView do
     }
   end
 
-  def render_live_games(live_games, user_id) do
-    Enum.filter(live_games, &can_player_receive_game?(&1, user_id))
-  end
-
-  def can_player_receive_game?(game, user_id) do
-    Enum.any?(game.players, fn player -> player.id === user_id end) or
-      game.visibility_type in ["public"]
-  end
-
-  def render_active_game(game) do
+  def render_live_game(game) do
     %{
       id: get_game_id(game),
       state: get_state(game),

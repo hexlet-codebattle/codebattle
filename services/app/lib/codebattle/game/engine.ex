@@ -319,7 +319,7 @@ defmodule Codebattle.Game.Engine do
   defp broadcast_live_game(game) do
     # TODO: move it to pubSub
     CodebattleWeb.Endpoint.broadcast!("lobby", "game:upsert", %{
-      game: GameView.render_active_game(game)
+      game: GameView.render_live_game(game)
     })
 
     :ok

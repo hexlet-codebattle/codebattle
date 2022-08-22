@@ -10,13 +10,16 @@ defmodule CodebattleWeb.LobbyChannel do
   def join("lobby", _payload, socket) do
     current_user = socket.assigns.current_user
 
+    user_live_games =
+      %{is_tournament: false}
+      |> Game.Context.get_live_games()
+      |> Enum.filter(fn game ->
+        game.visibility_type == "public" || Game.Helpers.is_player?(game, current_user.id)
+      end)
+
     {:ok,
      %{
-       live_games:
-         GameView.render_live_games(
-           Game.Context.get_live_games(%{is_tournament: false}),
-           current_user.id
-         ),
+       live_games: user_live_games,
        tournaments: Tournament.Context.list_live_and_finished(socket.assigns.current_user),
        completed_games: GameView.render_completed_games(Game.Context.get_completed_games())
      }, socket}
