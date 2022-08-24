@@ -462,7 +462,10 @@ defmodule Codebattle.Languages do
           @type_templates
           | boolean_true: "True",
             boolean_false: "False",
-            hash_empty: "empty"
+            hash_empty: "empty",
+            hash_value: "fromList([<%= entries %>])",
+            hash_inners: "(\"<%= key %>\" :: String, <%= value %>)"
+            # fromList [(1 :: Int, 'a'), (2, 'b'), (3, 'c')]
         }
       }
     }

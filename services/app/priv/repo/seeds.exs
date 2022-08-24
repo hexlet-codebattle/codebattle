@@ -19,43 +19,133 @@ creator = Repo.get!(Codebattle.User, -15)
       examples: "```\n2 == solution(1,1)\n10 == solution(9,1)\n```",
       asserts: [
         %{
-          arguments: [1, 1, "a", 1.3, true, %{a: "b", c: "d"}, ["d", "e"], [["Jack", "Alice"]]],
+          arguments: [
+            1,
+            1,
+            "a",
+            1.3,
+            true,
+            %{key1: "val1", key2: "val2"},
+            ["asdf", "fdsa"],
+            [["Jack", "Alice"]]
+          ],
           expected: 2
         },
         %{
-          arguments: [2, 2, "a", 1.3, true, %{a: "b", c: "d"}, ["d", "e"], [["Jack", "Alice"]]],
+          arguments: [
+            2,
+            2,
+            "a",
+            1.3,
+            true,
+            %{key1: "val1", key2: "val2"},
+            ["asdf", "fdsa"],
+            [["Jack", "Alice"]]
+          ],
           expected: 4
         },
         %{
-          arguments: [1, 2, "a", 1.3, true, %{a: "b", c: "d"}, ["d", "e"], [["Jack", "Alice"]]],
+          arguments: [
+            1,
+            2,
+            "a",
+            1.3,
+            true,
+            %{key1: "val1", key2: "val2"},
+            ["asdf", "fdsa"],
+            [["Jack", "Alice"]]
+          ],
           expected: 3
         },
         %{
-          arguments: [3, 2, "a", 1.3, true, %{a: "b", c: "d"}, ["d", "e"], [["Jack", "Alice"]]],
+          arguments: [
+            3,
+            2,
+            "a",
+            1.3,
+            true,
+            %{key1: "val1", key2: "val2"},
+            ["asdf", "fdsa"],
+            [["Jack", "Alice"]]
+          ],
           expected: 5
         },
         %{
-          arguments: [5, 1, "a", 1.3, true, %{a: "b", c: "d"}, ["d", "e"], [["Jack", "Alice"]]],
+          arguments: [
+            5,
+            1,
+            "a",
+            1.3,
+            true,
+            %{key1: "val1", key2: "val2"},
+            ["asdf", "fdsa"],
+            [["Jack", "Alice"]]
+          ],
           expected: 6
         },
         %{
-          arguments: [1, 1, "a", 1.3, true, %{a: "b", c: "d"}, ["d", "e"], [["Jack", "Alice"]]],
+          arguments: [
+            1,
+            1,
+            "a",
+            1.3,
+            true,
+            %{key1: "val1", key2: "val2"},
+            ["asdf", "fdsa"],
+            [["Jack", "Alice"]]
+          ],
           expected: 2
         },
         %{
-          arguments: [2, 2, "a", 1.3, true, %{a: "b", c: "d"}, ["d", "e"], [["Jack", "Alice"]]],
+          arguments: [
+            2,
+            2,
+            "a",
+            1.3,
+            true,
+            %{key1: "val1", key2: "val2"},
+            ["asdf", "fdsa"],
+            [["Jack", "Alice"]]
+          ],
           expected: 4
         },
         %{
-          arguments: [1, 2, "a", 1.3, true, %{a: "b", c: "d"}, ["d", "e"], [["Jack", "Alice"]]],
+          arguments: [
+            1,
+            2,
+            "a",
+            1.3,
+            true,
+            %{key1: "val1", key2: "val2"},
+            ["asdf", "fdsa"],
+            [["Jack", "Alice"]]
+          ],
           expected: 3
         },
         %{
-          arguments: [3, 2, "a", 1.3, true, %{a: "b", c: "d"}, ["d", "e"], [["Jack", "Alice"]]],
+          arguments: [
+            3,
+            2,
+            "a",
+            1.3,
+            true,
+            %{key1: "val1", key2: "val2"},
+            ["asdf", "fdsa"],
+            [["Jack", "Alice"]]
+          ],
           expected: 5
         },
         %{
-          arguments: [5, 1, "a", 1.3, true, %{a: "b", c: "d"}, ["d", "e"], [["Jack", "Alice"]]],
+          arguments: [
+            5,
+            1,
+            "a",
+            1.3,
+            true,
+            %{key1: "val1", key2: "val2"},
+            ["asdf", "fdsa"],
+            [["Jack", "Alice"]]
+          ],
           expected: 6
         }
       ],

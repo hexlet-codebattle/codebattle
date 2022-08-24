@@ -31,8 +31,10 @@ defmodule Codebattle.CodeCheck.CheckerGenerator do
     end)
   end
 
-  defp get_arguments_string(assert) do
-    Enum.map_join(assert.arguments, ", ", &inspect/1)
+  defp get_arguments_string(assert_item) do
+    assert_item.arguments
+    |> Enum.map_join(", ", &Jason.encode!/1)
+    |> Jason.encode!()
   end
 
   defp get_arguments(

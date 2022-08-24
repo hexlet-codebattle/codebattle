@@ -1,4 +1,4 @@
-defmodule Codebattle.CodeCheck.Csharp.IntegrationTest do
+defmodule Codebattle.DockerExecution.CsharpTest do
   use Codebattle.IntegrationCase
 
   alias CodebattleWeb.GameChannel

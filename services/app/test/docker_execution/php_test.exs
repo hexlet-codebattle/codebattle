@@ -1,4 +1,4 @@
-defmodule Codebattle.CodeCheck.Php.IntegrationTest do
+defmodule Codebattle.DockerExecution.PhpTest do
   use Codebattle.IntegrationCase
 
   alias CodebattleWeb.GameChannel

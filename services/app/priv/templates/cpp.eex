@@ -75,7 +75,7 @@ int main() {
       auto executionTime<%= i %>_ = (std::chrono::system_clock::now() - start<%= i %>_).count();
       output_ = buffer_.str();
       buffer_.str("");
-      success_ = AssertSolution(result<%= i %>_, expected<%= i %>, output_, "<%= args_string %>", executionTime<%= i %>_, finalResults_, success_);
+      success_ = AssertSolution(result<%= i %>_, expected<%= i %>, output_, <%= args_string %>, executionTime<%= i %>_, finalResults_, success_);
     <% end %>
 
     if (success_) {

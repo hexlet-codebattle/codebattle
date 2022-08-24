@@ -1,4 +1,4 @@
-defmodule Codebattle.CodeCheck.Kotlin.IntegrationTest do
+defmodule Codebattle.DockerExecution.KotlinTest do
   use Codebattle.IntegrationCase
 
   alias CodebattleWeb.GameChannel

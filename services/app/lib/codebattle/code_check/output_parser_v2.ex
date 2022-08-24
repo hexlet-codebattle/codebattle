@@ -8,8 +8,6 @@ defmodule Codebattle.CodeCheck.OutputParser.V2 do
 
   def call(token) do
     %{raw_docker_output: raw_docker_output, task: task} = token
-    IO.puts(111_111_111)
-    IO.puts(raw_docker_output)
 
     outputs =
       raw_docker_output

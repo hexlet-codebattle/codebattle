@@ -1,4 +1,4 @@
-defmodule Codebattle.CodeCheck.Golang.IntegrationTest do
+defmodule Codebattle.DockerExecution.GolangTest do
   use Codebattle.IntegrationCase
 
   alias CodebattleWeb.GameChannel
