@@ -72,6 +72,30 @@ defmodule Codebattle.Bot.Server do
     {:noreply, %{state | state: :finished}}
   end
 
+  def handle_info(%{event: "user:check_complete", payload: %{"solution_status" => true}}, state) do
+    send_chat_message(state, :advice_on_win)
+
+    {:noreply, state}
+  end
+
+  def handle_info(
+        %{event: "user:check_complete", payload: %{"check_result" => %{"status" => "ok"}}},
+        state
+      ) do
+    send_chat_message(state, :advice_on_check_complete_success)
+
+    {:noreply, state}
+  end
+
+  def handle_info(
+        %{event: "user:check_complete"},
+        state
+      ) do
+    send_chat_message(state, :advice_on_check_complete_failure)
+
+    {:noreply, state}
+  end
+
   def handle_info(event, state) do
     Logger.debug("#{__MODULE__}, unexpected bot server handle_info event: #{inspect(event)}")
     {:noreply, state}

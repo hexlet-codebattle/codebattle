@@ -16,6 +16,18 @@ defmodule Codebattle.Bot.ChatClient do
     send_text(chat_channel, advice_on_give_up_text())
   end
 
+  def send(chat_channel, :advice_on_win, _params) do
+    send_text(chat_channel, advice_on_win())
+  end
+
+  def send(chat_channel, :advice_on_check_complete_success, _params) do
+    send_text(chat_channel, advice_on_check_complete_success())
+  end
+
+  def send(chat_channel, :advice_on_check_complete_failure, _params) do
+    send_text(chat_channel, advice_on_check_complete_failure())
+  end
+
   def send(chat_channel, :excuse, _params) do
     send_text(chat_channel, excuse_text())
   end
@@ -61,6 +73,21 @@ defmodule Codebattle.Bot.ChatClient do
       "Maybe you should pick Ruby for this task?",
       "You now that PHP has levenshtein distance calculation function?"
     ]
+    |> Enum.random()
+  end
+
+  defp advice_on_win() do
+    ["Nice shot!", "GG WP!"]
+    |> Enum.random()
+  end
+
+  defp advice_on_check_complete_success() do
+    ["Nice try", "Wow", "Easy"]
+    |> Enum.random()
+  end
+
+  defp advice_on_check_complete_failure() do
+    ["Oh snap", "Take it easy"]
     |> Enum.random()
   end
 

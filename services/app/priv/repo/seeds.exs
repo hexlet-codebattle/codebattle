@@ -278,6 +278,7 @@ creator = Repo.get!(Codebattle.User, -15)
     Repo.insert!(%Codebattle.Playbook{
       data: playbook_data,
       task: task,
+      game_id: 1,
       winner_lang: "ruby",
       winner_id: 2,
       solution_type: "complete"
@@ -397,3 +398,13 @@ task_ids =
   task_ids: task_ids
 }
 |> Repo.insert!()
+
+# data = File.cwd!() |> Path.join("priv/repo/test_playbook.json") |> File.read!() |> Jason.decode!()
+
+# Codebattle.Playbook
+# |> Repo.all()
+# |> Enum.map(fn playbook ->
+#   playbook
+#   |> Codebattle.Playbook.changeset(%{data: data, winner_id: 1})
+#   |> Repo.update!()
+# end)
