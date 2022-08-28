@@ -157,7 +157,7 @@ defmodule Codebattle.CodeCheck.OutputParser.V2Test do
              exit_code: 143,
              asserts_count: 0,
              output_error:
-               "Your solution was executed for longer than 10 seconds, try to write more optimally",
+               "Your solution was executed for longer than 15 seconds, try to write more optimally",
              status: "error",
              success_count: 0
            }
