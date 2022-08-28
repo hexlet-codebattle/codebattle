@@ -269,6 +269,12 @@ defmodule Codebattle.Languages do
             hash_value: "{<%= entries %>}",
             hash_inners: "{\"<%= key %>\", <%= value %>}"
         },
+        # TODO: FIX nested lists for CSHARP
+        # now it generates:
+        # List<List<string>> nested_variable = new List<List<string>>(){{"Jack", "Alice"}};
+        # should generate:
+        # List<List<string>> nested_variable = new List<List<string>>(){new List<string>(){"Jack", "Alice"}};
+        # perhaps we should add new type key and improve generator for nested key support
         defining_variable_template: "<%= type %> <%= name %>",
         nested_value_expression_template: "new <%= type_name %>()<%= value %>"
       }

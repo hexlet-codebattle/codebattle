@@ -19,7 +19,7 @@ defmodule Codebattle.CodeCheck.OutputParser do
               "Your solution ran out of memory, please, rewrite it"
 
             token.exit_code == 143 and String.contains?(raw_docker_output, "SIGTERM") ->
-              "Your solution was executed for longer than 10 seconds, try to write more optimally"
+              "Your solution was executed for longer than 15 seconds, try to write more optimally"
 
             token.exit_code == 2 ->
               raw_docker_output

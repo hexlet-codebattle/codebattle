@@ -50,7 +50,7 @@ defmodule Codebattle.CodeCheck.OutputParser.V2 do
           "Your solution ran out of memory, please, rewrite it"
 
         exit_code == 143 and String.contains?(raw_docker_output, "SIGTERM") ->
-          "Your solution was executed for longer than 10 seconds, try to write more optimally"
+          "Your solution was executed for longer than 15 seconds, try to write more optimally"
 
         true ->
           "Something went wrong! Please, write to dev team in our Slack \n UNKNOWN_ERROR: #{raw_docker_output}}"
@@ -67,6 +67,17 @@ defmodule Codebattle.CodeCheck.OutputParser.V2 do
   end
 
   defp compare_results_with_asserts(%{check_result: %{status: "error"}} = token), do: token
+
+  defp compare_results_with_asserts(%{solution_results: [%{"type" => "error"} = item]} = token) do
+    # {"time":0,"type":"error","value":"undefined function sdf/0 (there is no such import)"}
+    check_result = %Result.V2{
+      output_error: item["value"],
+      exit_code: token.exit_code,
+      status: "error"
+    }
+
+    %{token | check_result: check_result}
+  end
 
   defp compare_results_with_asserts(token) do
     output_error =

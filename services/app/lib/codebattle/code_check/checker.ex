@@ -6,7 +6,7 @@ defmodule Codebattle.CodeCheck.Checker do
   alias Codebattle.Languages
 
   @tmp_basedir "/tmp/codebattle-check"
-  @docker_cmd_template "docker run --rm --init --memory 500m --cpus=1 --net none -l codebattle_game ~s ~s timeout -s 15 10s make --silent test"
+  @docker_cmd_template "docker run --rm --init --memory 500m --cpus=1 --net none -l codebattle_game ~s ~s timeout -s 15 15s make --silent test"
 
   defmodule Token do
     use TypedStruct
