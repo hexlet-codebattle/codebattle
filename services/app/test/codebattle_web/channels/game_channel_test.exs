@@ -40,7 +40,7 @@ defmodule CodebattleWeb.GameChannelTest do
       socket2: socket2
     } do
       {:ok, game} =
-        Game.Context.create_game(%{state: "waiting_opponent", players: [user1], level: "easy"})
+        Game.Context.create_game(%{state: "playing", players: [user1, user2], level: "easy"})
 
       game_topic = game_topic(game)
       editor_text1 = "test1"
@@ -106,16 +106,8 @@ defmodule CodebattleWeb.GameChannelTest do
 
     push(socket1, "give_up")
 
-    message = "#{user1.name} gave up!"
     :timer.sleep(100)
     game = Game.Context.get_game!(game.id)
-    players = game.players
-
-    payload = %{
-      players: players,
-      status: "game_over",
-      msg: message
-    }
 
     assert game.state == "game_over"
     assert Game.Helpers.gave_up?(game, user1.id) == true
@@ -124,10 +116,10 @@ defmodule CodebattleWeb.GameChannelTest do
     assert_receive %Phoenix.Socket.Broadcast{
       topic: ^game_topic,
       event: "user:give_up",
-      payload: payload1
+      payload: payload
     }
 
-    assert payload1.players == game.players
+    assert payload.players == game.players
   end
 
   defp game_topic(game), do: "game:" <> to_string(game.id)

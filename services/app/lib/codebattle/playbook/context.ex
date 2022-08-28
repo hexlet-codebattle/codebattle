@@ -45,7 +45,7 @@ defmodule Codebattle.Playbook.Context do
       players
       |> Enum.with_index()
       |> Enum.map(fn {player, index} ->
-        data = %{
+        %{
           record_id: index,
           type: :init,
           time: System.system_time(:millisecond),
@@ -56,6 +56,7 @@ defmodule Codebattle.Playbook.Context do
           check_result: %{result: "", output: ""}
         }
       end)
+      |> Enum.reverse()
 
     %{records: records, id: Enum.count(records)}
   end
@@ -76,6 +77,10 @@ defmodule Codebattle.Playbook.Context do
 
   def add_record(playbook_state, :check_success, _params), do: playbook_state
   def add_record(playbook_state, :check_failure, _params), do: playbook_state
+  def add_record(playbook_state, :timeout, _params), do: playbook_state
+  def add_record(playbook_state, :rematch_send_offer, _params), do: playbook_state
+  def add_record(playbook_state, :rematch_reject, _params), do: playbook_state
+  def add_record(playbook_state, :join, _params), do: playbook_state
 
   def add_record(playbook_state, type, params) do
     Logger.error("Unknown playbook record type: #{type}, params: #{inspect(params)}")
@@ -106,6 +111,7 @@ defmodule Codebattle.Playbook.Context do
     |> Enum.reverse()
     |> Enum.reduce(init_data, &add_record_to_playbook_data/2)
     |> Map.update!(:records, &Enum.reverse/1)
+    |> Map.update!(:players, &Enum.reverse/1)
   end
 
   defp add_record_to_playbook_data(%{type: :init} = record, data) do

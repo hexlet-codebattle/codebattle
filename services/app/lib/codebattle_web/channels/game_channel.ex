@@ -130,7 +130,6 @@ defmodule CodebattleWeb.GameChannel do
   defp handle_rematch_result(result, socket) do
     case result do
       {:rematch_status_updated, game} ->
-
         broadcast!(socket, "rematch:status_updated", %{
           rematch_state: game.rematch_state,
           rematch_initiator_id: game.rematch_initiator_id

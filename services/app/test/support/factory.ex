@@ -77,29 +77,6 @@ defmodule CodebattleWeb.Factory do
     }
   end
 
-  def task_vectors_factory do
-    %Task{
-      name: Base.encode16(:crypto.strong_rand_bytes(2)),
-      description_en: "test sum",
-      level: "easy",
-      asserts: [%{arguments: [["a", "b", "c"], ["d", "e", "f"]], expected: ["abcdef"]}],
-      input_signature: [
-        %{
-          argument_name: "a",
-          type: %{name: "array", nested: %{name: "string"}}
-        },
-        %{
-          argument_name: "b",
-          type: %{name: "array", nested: %{name: "string"}}
-        }
-      ],
-      output_signature: %{
-        type: %{name: "array", nested: %{name: "string"}}
-      },
-      disabled: false
-    }
-  end
-
   def task_with_all_data_types_factory do
     %Task{
       name: Base.encode16(:crypto.strong_rand_bytes(2)),
@@ -113,19 +90,19 @@ defmodule CodebattleWeb.Factory do
       ],
       input_signature: [
         %{
-          argument_name: "int",
+          argument_name: "a",
           type: %{name: "integer"}
         },
         %{
-          argument_name: "str",
+          argument_name: "text",
           type: %{name: "string"}
         },
         %{
-          argument_name: "number",
+          argument_name: "b",
           type: %{name: "float"}
         },
         %{
-          argument_name: "bool",
+          argument_name: "c",
           type: %{name: "boolean"}
         },
         %{

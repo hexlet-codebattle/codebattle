@@ -19,7 +19,7 @@ defmodule CodebattleWeb.LobbyChannelTest do
     {:ok, %{winner: user, socket: socket, task: task}}
 
     game_params = %{state: "waiting_opponent", players: [%Game.Player{id: user.id}], task: task}
-    {:ok, game} = Game.Context.create_game(game_params)
+    {:ok, _game} = Game.Context.create_game(game_params)
 
     {:ok,
      %{

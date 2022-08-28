@@ -248,8 +248,8 @@ msgstr "Нашли ошибку? Вам есть что добавить к оп
 msgid "Run your code!"
 msgstr "Запустите Ваш код!"
 
-msgid "You have some syntax errors"
-msgstr "Есть синтаксические ошибки: %{errors}"
+msgid "solution cannot be executed"
+msgstr "Решение не может быть выполнено"
 
 msgid "Tests failed"
 msgstr "Тесты не пройдены"

@@ -6,7 +6,7 @@ defmodule Codebattle.CodeCheck.Checker do
   alias Codebattle.Languages
 
   @tmp_basedir "/tmp/codebattle-check"
-  @docker_cmd_template "docker run --rm -m 400m --cpus=1 --net none -l codebattle_game ~s ~s timeout -s 9 10 make --silent test"
+  @docker_cmd_template "docker run --rm --init --memory 500m --cpus=1 --net none -l codebattle_game ~s ~s timeout -s 15 10s make --silent test"
 
   defmodule Token do
     use TypedStruct
@@ -20,6 +20,7 @@ defmodule Codebattle.CodeCheck.Checker do
       field(:docker_command, String.t())
       field(:raw_docker_output, String.t())
       field(:tmp_dir_path, String.t())
+      field(:exit_code, non_neg_integer())
       field(:executor, CodeCheck.DockerExecutor | CodeCheck.FakeExecutor)
       field(:result, CodeCheck.Result.t() | CodeCheck.Result.V2.t() | nil)
     end
@@ -42,7 +43,7 @@ defmodule Codebattle.CodeCheck.Checker do
       |> generate_checker_text()
       |> prepare_tmp_dir!()
       |> put_docker_command()
-      |> run_docker_command()
+      |> execute_docker_command()
       |> parse_output()
 
     Task.start(File, :rm_rf, [token.tmp_dir_path])
@@ -76,8 +77,9 @@ defmodule Codebattle.CodeCheck.Checker do
     %{token | docker_command: command}
   end
 
-  defp run_docker_command(token) do
-    %{token | raw_docker_output: token.executor.call(token)}
+  defp execute_docker_command(token) do
+    {raw_docker_output, exit_code} = token.executor.call(token)
+    %{token | raw_docker_output: raw_docker_output, exit_code: exit_code}
   end
 
   defp parse_output(token) do

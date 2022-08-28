@@ -247,7 +247,7 @@ msgstr ""
 msgid "Run your code!"
 msgstr ""
 
-msgid "You have some syntax errors"
+msgid "solution cannot be executed"
 msgstr ""
 
 msgid "Tests failed"

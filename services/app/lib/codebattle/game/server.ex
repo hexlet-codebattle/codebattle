@@ -93,7 +93,7 @@ defmodule Codebattle.Game.Server do
     %{game: game, playbook_state: playbook_state} = state
 
     case Game.Fsm.transition(event, game, params) do
-      {{:error, reason}, _} ->
+      {:error, reason} ->
         {:reply, {:error, reason}, state}
 
       {:ok, new_game = %Game{}} ->

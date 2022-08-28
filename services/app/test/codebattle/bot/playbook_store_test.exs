@@ -117,22 +117,22 @@ defmodule Codebattle.PlaybookStoreTest do
                players: [
                  %{
                    check_result: %{output: "", result: ""},
+                   editor_lang: "elixir",
+                   editor_text: "testf",
+                   id: ^user1_id,
+                   name: "first",
+                   record_id: 0,
+                   type: "player_state"
+                 },
+                 %{
+                   check_result: %{output: "", result: ""},
                    editor_lang: "js",
                    editor_text:
                      "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n\treturn 0;\n};\n\nmodule.exports = solution;",
                    id: ^user2_id,
                    name: "second",
                    record_id: 1,
-                   total_time_ms: 0
-                 },
-                 %{
-                   check_result: %{output: "", result: ""},
-                   editor_lang: "elixir",
-                   editor_text: "testf",
-                   id: ^user1_id,
-                   name: "first",
-                   record_id: 0,
-                   total_time_ms: 0
+                   type: "player_state"
                  }
                ],
                records: [
@@ -195,12 +195,38 @@ defmodule Codebattle.PlaybookStoreTest do
                  },
                  %{
                    check_result: %{
-                     asserts: [],
-                     asserts_count: 0,
-                     output: "asdf",
-                     result: "asdf",
+                     asserts: [
+                       %{
+                         arguments: [1, 1],
+                         execution_time: 6.2e-6,
+                         expected: 2,
+                         output: "",
+                         result: 2,
+                         status: "success"
+                       },
+                       %{
+                         arguments: [2, 1],
+                         execution_time: "8.5e-06",
+                         expected: 3,
+                         output: "lol",
+                         result: 3,
+                         status: "success"
+                       },
+                       %{
+                         arguments: [3, 2],
+                         execution_time: 2.8e-6,
+                         expected: 5,
+                         output: "kek",
+                         result: 5,
+                         status: "success"
+                       }
+                     ],
+                     asserts_count: 3,
                      status: "ok",
-                     success_count: 0
+                     success_count: 3,
+                     exit_code: 0,
+                     output_error: "",
+                     version: 2
                    },
                    editor_lang: "elixir",
                    editor_text: "testf",

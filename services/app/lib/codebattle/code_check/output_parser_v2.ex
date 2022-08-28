@@ -4,112 +4,131 @@ defmodule Codebattle.CodeCheck.OutputParser.V2 do
   require Logger
   alias Codebattle.CodeCheck.Result
 
-  @memory_overflow "Error 137"
+  def call(checker_token) do
+    %{raw_docker_output: raw_docker_output, exit_code: exit_code, task: task} = checker_token
 
-  def call(token) do
-    %{raw_docker_output: raw_docker_output, task: task} = token
+    result_token = %{
+      check_result: nil,
+      solution_results: [],
+      raw_docker_output: raw_docker_output,
+      exit_code: exit_code,
+      task: task
+    }
 
-    outputs =
+    result_token
+    |> parse_output()
+    |> compare_results_with_asserts()
+    |> calculate_result_metrics()
+    |> Map.get(:check_result)
+  end
+
+  defp parse_output(%{exit_code: 0} = token) do
+    %{raw_docker_output: raw_docker_output} = token
+
+    solution_results =
       raw_docker_output
       |> String.split("\n")
-      |> filter_empty_items()
       |> Enum.map(fn str ->
         try do
-          Jason.decode!(str)
+          Jason.decode!(String.trim(str))
         rescue
           _ ->
-            %{
-              "type" => "output",
-              "time" => 0,
-              "value" => str,
-              "output" => str
-            }
+            nil
         end
       end)
-      |> Enum.group_by(fn x ->
-        if x["type"] in ["result", "error"] do
-          "results"
-        else
-          "messages"
-        end
-      end)
+      |> Enum.filter(&Function.identity/1)
+
+    %{token | solution_results: solution_results}
+  end
+
+  defp parse_output(token) do
+    %{raw_docker_output: raw_docker_output, exit_code: exit_code} = token
 
     output_error =
-      if is_nil(outputs["messages"]) do
-        nil
-      else
-        outputs["messages"]
-        |> Enum.map(& &1["value"])
-        |> Enum.join("/n")
+      cond do
+        exit_code == 2 and String.contains?(raw_docker_output, "Killed") ->
+          "Your solution ran out of memory, please, rewrite it"
+
+        exit_code == 143 and String.contains?(raw_docker_output, "SIGTERM") ->
+          "Your solution was executed for longer than 10 seconds, try to write more optimally"
+
+        true ->
+          "Something went wrong! Please, write to dev team in our Slack \n UNKNOWN_ERROR: #{raw_docker_output}}"
       end
 
-    cond do
-      String.contains?(raw_docker_output, @memory_overflow) ->
-        %Result.V2{
-          output_error: "Your solution ran out of memory, please, rewrite it",
+    %{
+      token
+      | check_result: %Result.V2{
+          exit_code: exit_code,
+          output_error: output_error,
           status: "error"
         }
+    }
+  end
 
-      valid_assert_results(outputs["results"], task.asserts) ->
-        assert_result =
-          outputs["results"]
-          |> Enum.with_index()
-          |> Enum.reduce(
-            %Result.V2{},
-            fn {item, index}, acc ->
-              assert = Enum.at(task.asserts, index)
+  defp compare_results_with_asserts(%{check_result: %{status: "error"}} = token), do: token
 
-              new_item = %Result.V2.AssertResult{
-                output: item["output"],
-                execution_time: item["time"],
-                result: item["value"],
-                status:
-                  if item["type"] == "result" and item["value"] == assert.expected do
-                    "success"
-                  else
-                    "failure"
-                  end,
-                expected: assert.expected,
-                arguments: assert.arguments
-              }
+  defp compare_results_with_asserts(token) do
+    output_error =
+      token.solution_results
+      |> Enum.find(fn item -> item["type"] == "output" end)
+      |> case do
+        nil -> ""
+        output_item -> Map.get(output_item, "output")
+      end
 
-              Map.put(acc, :asserts, acc.asserts ++ [new_item])
-            end
-          )
+    check_result =
+      token.solution_results
+      |> Enum.filter(fn item -> item["type"] != "output" end)
+      |> Enum.zip(token.task.asserts)
+      |> Enum.reduce(
+        %Result.V2{output_error: output_error},
+        fn {solution_result, assert_item}, acc ->
+          assert_result = %Result.V2.AssertResult{
+            output: solution_result["output"],
+            execution_time: solution_result["time"],
+            result: solution_result["value"],
+            status:
+              if solution_result["type"] == "result" and
+                   solution_result["value"] == assert_item.expected do
+                "success"
+              else
+                "failure"
+              end,
+            expected: assert_item.expected,
+            arguments: assert_item.arguments
+          }
 
-        success_asserts = Enum.filter(assert_result.asserts, fn x -> x.status == "success" end)
-        failure_asserts = Enum.filter(assert_result.asserts, fn x -> x.status == "failure" end)
+          Map.put(acc, :asserts, acc.asserts ++ [assert_result])
+        end
+      )
 
-        success_count = Enum.count(success_asserts)
-        asserts_count = Enum.count(task.asserts)
+    %{token | check_result: check_result}
+  end
 
-        status =
-          if asserts_count == success_count do
-            "ok"
-          else
-            "failure"
-          end
+  defp calculate_result_metrics(%{check_result: %{status: "error"}} = token), do: token
 
-        %{
-          assert_result
+  defp calculate_result_metrics(token) do
+    success_asserts = Enum.filter(token.check_result.asserts, fn x -> x.status == "success" end)
+    failure_asserts = Enum.filter(token.check_result.asserts, fn x -> x.status == "failure" end)
+
+    success_count = Enum.count(success_asserts)
+    asserts_count = Enum.count(token.task.asserts)
+
+    status =
+      if asserts_count == success_count,
+        do: "ok",
+        else: "failure"
+
+    %{
+      token
+      | check_result: %Result.V2{
+          token.check_result
           | asserts: failure_asserts ++ success_asserts,
             success_count: success_count,
             asserts_count: asserts_count,
-            status: status,
-            output_error: output_error
+            status: status
         }
-
-      true ->
-        %Result.V2{
-          output_error: raw_docker_output,
-          status: "error"
-        }
-    end
+    }
   end
-
-  defp filter_empty_items(items), do: items |> Enum.filter(&(&1 != ""))
-
-  defp valid_assert_results(nil, _), do: false
-
-  defp valid_assert_results(results, asserts), do: Enum.count(results) == Enum.count(asserts)
 end

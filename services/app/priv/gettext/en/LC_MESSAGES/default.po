@@ -248,8 +248,8 @@ msgstr "Found a mistake? Have something to add? Pull Requests are welcome: "
 msgid "Run your code!"
 msgstr "Run your code!"
 
-msgid "You have some syntax errors"
-msgstr "Have some syntax errors%{errors}"
+msgid "solution cannot be executed"
+msgstr "The solution cannot be executed"
 
 msgid "Tests failed"
 msgstr "Tests failed"

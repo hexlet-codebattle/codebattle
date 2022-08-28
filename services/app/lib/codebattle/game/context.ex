@@ -174,12 +174,7 @@ defmodule Codebattle.Game.Context do
 
   @spec trigger_timeout(game_id) :: :ok
   def trigger_timeout(game_id) do
-    case get_game(game_id) do
-      {:ok, game} -> Engine.trigger_timeout(game)
-      _ -> :noop
-    end
-
-    :ok
+    game_id |> get_game!() |> Engine.trigger_timeout()
   end
 
   @spec terminate_game(game_id | Game.t()) :: :ok

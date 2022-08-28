@@ -58,7 +58,7 @@ defmodule Codebattle.CodeCheck.OutputParser.V2Test do
 
   @success_expected %Result.V2{
     asserts_count: 1,
-    output_error: nil,
+    output_error: "",
     status: "ok",
     success_count: 1,
     asserts: [
@@ -75,7 +75,7 @@ defmodule Codebattle.CodeCheck.OutputParser.V2Test do
 
   @success_with_warning_expected %Result.V2{
     asserts_count: 1,
-    output_error: "Warning: something warning about ;)",
+    output_error: "",
     status: "ok",
     success_count: 1,
     asserts: [
@@ -93,7 +93,7 @@ defmodule Codebattle.CodeCheck.OutputParser.V2Test do
   test "parses success output" do
     task = insert(:task, asserts: [%{arguments: [1, 1], expected: 1}])
 
-    result = OutputParser.V2.call(%{task: task, raw_docker_output: @success_output})
+    result = OutputParser.V2.call(%{task: task, raw_docker_output: @success_output, exit_code: 0})
 
     assert result == @success_expected
   end
@@ -101,7 +101,8 @@ defmodule Codebattle.CodeCheck.OutputParser.V2Test do
   test "parses success with warning output" do
     task = insert(:task, asserts: [%{arguments: [1, 1], expected: 1}])
 
-    result = OutputParser.V2.call(%{task: task, raw_docker_output: @success_with_warning})
+    result =
+      OutputParser.V2.call(%{task: task, raw_docker_output: @success_with_warning, exit_code: 0})
 
     assert result == @success_with_warning_expected
   end
@@ -116,34 +117,63 @@ defmodule Codebattle.CodeCheck.OutputParser.V2Test do
         ]
       )
 
-    result = OutputParser.V2.call(%{task: task, raw_docker_output: @failure_output})
+    result = OutputParser.V2.call(%{task: task, raw_docker_output: @failure_output, exit_code: 0})
 
     assert result == @failure_expected
-  end
-
-  test "parses error output" do
-    task = insert(:task)
-
-    result = OutputParser.V2.call(%{task: task, raw_docker_output: "SOME ERROR"})
-
-    assert result == %Codebattle.CodeCheck.Result.V2{
-             asserts: [],
-             asserts_count: 0,
-             output_error: "SOME ERROR",
-             status: "error",
-             success_count: 0
-           }
   end
 
   test "parses out of memory error output" do
     task = insert(:task)
 
-    result = OutputParser.V2.call(%{task: task, raw_docker_output: "SOME ERROR Error 137 asdf"})
+    result =
+      OutputParser.V2.call(%{
+        task: task,
+        raw_docker_output: "make *** failed: Killed\n",
+        exit_code: 2
+      })
 
     assert result == %Codebattle.CodeCheck.Result.V2{
              asserts: [],
+             exit_code: 2,
              asserts_count: 0,
              output_error: "Your solution ran out of memory, please, rewrite it",
+             status: "error",
+             success_count: 0
+           }
+  end
+
+  test "parses out timeout termination" do
+    task = insert(:task)
+
+    result =
+      OutputParser.V2.call(%{
+        task: task,
+        raw_docker_output: "SIGTERM\n",
+        exit_code: 143
+      })
+
+    assert result == %Codebattle.CodeCheck.Result.V2{
+             asserts: [],
+             exit_code: 143,
+             asserts_count: 0,
+             output_error:
+               "Your solution was executed for longer than 10 seconds, try to write more optimally",
+             status: "error",
+             success_count: 0
+           }
+  end
+
+  test "parses unexpected termination" do
+    task = insert(:task)
+
+    result = OutputParser.V2.call(%{task: task, raw_docker_output: "asdf", exit_code: 37})
+
+    assert result == %Codebattle.CodeCheck.Result.V2{
+             asserts: [],
+             exit_code: 37,
+             asserts_count: 0,
+             output_error:
+               "Something went wrong! Please, write to dev team in our Slack \n UNKNOWN_ERROR: asdf}",
              status: "error",
              success_count: 0
            }

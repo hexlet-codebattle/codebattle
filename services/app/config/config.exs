@@ -4,17 +4,6 @@
 # This configuration file is loaded before any dependency and
 # is restricted to this project.
 import Config
-
-config :codebattle,
-  alpine_docker_command_template:
-    "docker run --rm -m 400m --cpus=1 --net none ~s ~s ~s timeout -s 9 -t 10 make --silent test checker_name=~s",
-  ubuntu_docker_command_template:
-    "docker run --rm -m 400m --cpus=1 --net none ~s ~s ~s timeout -s 9 10s make --silent test checker_name=~s",
-  alpine_docker_command_compile_template:
-    "docker run -m 400m --cpus=1 --net none ~s ~s ~s timeout -s 9 -t 10 make --silent test-compile",
-  ubuntu_docker_command_compile_template:
-    "docker run -m 400m --cpus=1 --net none ~s ~s ~s timeout -s 9 10s make --silent test-compile"
-
 # General application configuration
 config :codebattle, ecto_repos: [Codebattle.Repo]
 

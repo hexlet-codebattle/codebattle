@@ -27,7 +27,7 @@ module Runner
       end
     end
   rescue Exception => e
-    @execution_result << e.backtrace.join("\n")
+    @execution_result << e && e.backtrace && e.backtrace.join("\n")
   ensure
     $stdout = original_stdout
     puts @execution_result

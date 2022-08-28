@@ -371,7 +371,7 @@ defmodule Codebattle.Languages do
       docker_image: "codebattle/php:8.1.8",
       solution_template:
         "<?php\n\nfunction solution(<%= arguments %>)\n{<%= return_statement %>\n}",
-      return_template: "\n    return <%= default_value %>;",
+      return_template: "\n\treturn <%= default_value %>;",
       arguments_template: %{
         argument: "<%= type %> $<%= name %>",
         delimiter: ", "

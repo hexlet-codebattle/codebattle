@@ -1,6 +1,8 @@
 defmodule Codebattle.CodeCheck.Result.V2 do
   use TypedStruct
 
+  alias Codebattle.CodeCheck.Result
+
   @moduledoc """
   statuses:
   initial ->  no check runs
@@ -12,12 +14,13 @@ defmodule Codebattle.CodeCheck.Result.V2 do
   @derive Jason.Encoder
 
   typedstruct do
+    field(:exit_code, integer, default: 0)
     field(:success_count, integer, default: 0)
     field(:asserts_count, integer, default: 0)
     field(:status, String.t(), default: "initial")
     field(:output_error, String.t(), default: "")
     field(:version, integer, default: 2)
-    field(:asserts, [Codebattle.CodeCheck.CheckResult.V2.AssertResult.t()], default: [])
+    field(:asserts, [Result.V2.AssertResult.t()], default: [])
   end
 
   def new, do: %__MODULE__{}

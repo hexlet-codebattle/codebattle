@@ -3,35 +3,34 @@ defmodule Codebattle.CodeCheck.OutputParser do
 
   require Logger
   alias Codebattle.CodeCheck.Result
-  @memory_overflow "Error 137"
 
   def call(%{lang_meta: %{checker_version: 2}} = token) do
     Codebattle.CodeCheck.OutputParser.V2.call(token)
   end
 
   def call(token) do
-    %{raw_docker_output: raw_docker_output, lang_meta: lang_meta, seed: seed} = token
+    %{raw_docker_output: raw_docker_output, seed: seed} = token
 
     case Regex.scan(~r/{\"status\":.+}/, raw_docker_output) do
       [] ->
         error_msg =
-          if String.contains?(raw_docker_output, @memory_overflow),
-            do: %{
-              status: "memory_leak",
-              result: "Your solution ran out of memory, please, rewrite it."
-            },
-            else: %{
-              status: "error",
-              result: "Something went wrong! Please, write to dev team in our Slack"
-            }
+          cond do
+            token.exit_code == 2 and String.contains?(raw_docker_output, "Killed") ->
+              "Your solution ran out of memory, please, rewrite it"
 
-        result =
-          Jason.encode!(%{
-            status: error_msg[:status],
-            result: error_msg[:result]
-          })
+            token.exit_code == 143 and String.contains?(raw_docker_output, "SIGTERM") ->
+              "Your solution was executed for longer than 10 seconds, try to write more optimally"
 
-        %Result{status: "error", result: result, output: raw_docker_output}
+            token.exit_code == 2 ->
+              raw_docker_output
+
+            true ->
+              "Something went wrong! Please, write to dev team in our Slack \n UNKNOWN_ERROR: #{raw_docker_output}}"
+          end
+
+        result = Jason.encode!(%{status: "error", result: error_msg})
+
+        %Result{status: "error", result: result, output: error_msg}
 
       json_result ->
         [last_message] = List.last(json_result)
@@ -44,12 +43,12 @@ defmodule Codebattle.CodeCheck.OutputParser do
             output: reset_statuses(raw_docker_output, List.flatten(json_result))
           }
         else
-          get_error_status(last_message, raw_docker_output, lang_meta)
+          get_error_status(last_message, raw_docker_output)
         end
     end
   end
 
-  defp get_error_status(error_message, raw_docker_output, _meta) do
+  defp get_error_status(error_message, raw_docker_output) do
     case Regex.scan(~r/{"status":.{0,3}"error".+}/, raw_docker_output) do
       [] ->
         failure_list = Regex.scan(~r/{"status":.{0,3}"failure".+}/, raw_docker_output)
