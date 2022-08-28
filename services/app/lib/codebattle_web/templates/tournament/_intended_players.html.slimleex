@@ -2,7 +2,7 @@
 = if !Enum.empty?(@players) do
   = for {player, i} <- players do
     .d-flex.align-items-center.my-3
-      span=i
+      span=i+1
       .ml-4
         = render "_player.html", player: player
       = if can_moderate?(@tournament, @current_user) do
