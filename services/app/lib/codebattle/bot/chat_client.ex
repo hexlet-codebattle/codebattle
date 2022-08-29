@@ -39,7 +39,7 @@ defmodule Codebattle.Bot.ChatClient do
   defp excuse_text() do
     [
       "You lucky. I don't have a clue, how solve it",
-      "Perhaps, you can solve this better than i can",
+      "Perhaps, you can solve this better than I can",
       "Dame it!!!! It's hard task...",
       "It's X0xl0ma, Argh!!! I knew she would do something",
       "Irkin, fix me",
@@ -47,7 +47,8 @@ defmodule Codebattle.Bot.ChatClient do
       "Huge Lebowski, where are you man?!",
       "Lera-Valera Help!!!111",
       "RedBrother, HELP me, please!!!!",
-      "I seem to remember how to solve this task in Clojure..."
+      "I seem to remember how to solve this task in Clojure...",
+      "Ruby or not to Ruby?..."
     ]
     |> Enum.random()
   end
@@ -59,9 +60,12 @@ defmodule Codebattle.Bot.ChatClient do
   defp congratulate_opponent_text(_) do
     [
       "GG WP",
+      "Well played!",
       "Vtm, you are a bad teacher.",
       "I'll be back next time!",
-      "I lost the battle, but I will win the war!"
+      "I lost the battle, but I will win the war!",
+      "I will return!!111",
+      "I'll get my revenge next time!"
     ]
     |> Enum.random()
   end
@@ -71,7 +75,8 @@ defmodule Codebattle.Bot.ChatClient do
       "Did the task seems complicated? Here, at hexlet.io we will teach you how to solve such tasks!",
       "Hey, there! Learn JS and be happy!",
       "Maybe you should pick Ruby for this task?",
-      "You now that PHP has levenshtein distance calculation function?"
+      "You know that PHP has levenshtein distance calculation function?",
+      "You know that Ruby has functions for calculating complex numbers?"
     ]
     |> Enum.random()
   end
@@ -103,6 +108,28 @@ defmodule Codebattle.Bot.ChatClient do
   defp start_code_text(total_time_min) do
     "I'll solve this task in about #{total_time_min} minutes. Good luck!"
   end
+
+  # TODO: add this events
+  # defp say_about_code(_chat_state) do
+  #   [
+  #     "Your code looks very strange...",
+  #     "What did you just type? Looks strange...",
+  #     "What is this?...",
+  #     "Hmmmm...",
+  #     "Whaaaaat?..."
+  #   ]
+  #   |> Enum.random()
+  # end
+
+  # defp time_is_up_message() do
+  #   [
+  #     "Sorry, can't wait much longer. I'll start now.",
+  #     "I'm done with waiting",
+  #     "Come on, time is running out",
+  #     "Tic-toc, time is up! "
+  #   ]
+  #   |> Enum.random()
+  # end
 
   defp send_text(chat_channel, text) do
     PhoenixClient.Channel.push_async(chat_channel, "chat:add_msg", %{"text" => text})

@@ -60,9 +60,9 @@ defmodule Codebattle.Tournament.Context do
     |> Supervisor.which_children()
     |> Enum.map(fn {id, _, _, _} -> id end)
     |> Enum.map(fn id -> Tournament.Server.get_tournament(id) end)
-    |> Enum.filter(&Function.identity/1)
     |> Enum.filter(fn tournament ->
-      tournament.state in ["upcoming", "waiting_participants", "active"]
+      identified = tournament |> Function.identity()
+      identified.state in ["upcoming", "waiting_participants", "active"]
     end)
   end
 

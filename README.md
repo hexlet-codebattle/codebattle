@@ -7,7 +7,7 @@
 
 Codebattle - is an open source game being developed by the Hexlet community.
 The current version of the application is available at [codebattle.hexlet.io](https://codebattle.hexlet.io).
-We also have [chrome extension](https://chrome.google.com/webstore/detail/codebattle-web-extension/embfhnfkfobkdohleknckodkmhgmpdli). Which allow subscribe on last game updates.
+We also have [chrome extension](https://chrome.google.com/webstore/detail/codebattle-web-extension/embfhnfkfobkdohleknckodkmhgmpdli). Which allow to subscribe on last game updates.
 ### Requirements
 
 - Mac / Linux
@@ -117,3 +117,10 @@ Add your user to the docker group.
 sudo usermod -aG docker $USER
 ```
 
+---
+
+[![Hexlet Ltd. logo](https://raw.githubusercontent.com/Hexlet/assets/master/images/hexlet_logo128.png)](https://hexlet.io?utm_source=github&utm_medium=link&utm_campaign=codebattle)
+
+This repository is created and maintained by the team and the community of Hexlet, an educational project. [Read more about Hexlet](https://hexlet.io?utm_source=github&utm_medium=link&utm_campaign=codebattle).
+
+See most active contributors on [hexlet-friends](https://friends.hexlet.io/).

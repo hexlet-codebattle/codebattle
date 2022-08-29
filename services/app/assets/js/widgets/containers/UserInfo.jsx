@@ -1,6 +1,7 @@
-import { camelizeKeys } from 'humps';
-import { useDispatch, useSelector } from 'react-redux';
 import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { camelizeKeys } from 'humps';
+import cn from 'classnames';
 import axios from 'axios';
 
 import * as selectors from '../selectors';
@@ -29,7 +30,9 @@ const UserPopoverContent = ({ user }) => {
   return <UserStats user={user} data={stats} />;
 };
 
-const UserInfo = ({ user, truncate = false, hideOnlineIndicator = false }) => {
+const UserInfo = ({
+ user, truncate = false, hideOnlineIndicator = false, loading = false,
+}) => {
   const { presenceList } = useSelector(selectors.lobbyDataSelector);
   if (!user?.id) {
     return <span className="text-secondary">John Doe</span>;
@@ -40,6 +43,7 @@ const UserInfo = ({ user, truncate = false, hideOnlineIndicator = false }) => {
   }
 
   const isOnline = presenceList.some(({ id }) => id === user?.id);
+  const userClassName = cn({ 'cb-opacity-50': loading });
 
   return (
     <PopoverStickOnHover
@@ -47,7 +51,7 @@ const UserInfo = ({ user, truncate = false, hideOnlineIndicator = false }) => {
       placement="bottom-start"
       component={<UserPopoverContent user={user} />}
     >
-      <div>
+      <div className={userClassName}>
         <UserName
           user={user}
           truncate={truncate}

@@ -23,10 +23,7 @@ defmodule Codebattle.Languages do
       checker_file_name: "checker.rb",
       docker_image: "codebattle/ruby:3.1.2",
       solution_template: "def solution(<%= arguments %>)\n<%= return_statement %>\nend",
-      arguments_template: %{
-        argument: "<%= name %>",
-        delimiter: ", "
-      },
+      arguments_template: %{argument: "<%= name %>", delimiter: ", "},
       return_template: "\t<%= default_value %>",
       default_values: %{
         "integer" => "0",
@@ -53,10 +50,7 @@ defmodule Codebattle.Languages do
       docker_image: "codebattle/js:16.17.0",
       solution_template:
         "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (<%= arguments %>) => {\n<%= return_statement %>\n};\n\nmodule.exports = solution;",
-      arguments_template: %{
-        argument: "<%= name %>",
-        delimiter: ", "
-      },
+      arguments_template: %{argument: "<%= name %>", delimiter: ", "},
       return_template: "\treturn <%= default_value %>;",
       default_values: %{
         "integer" => "0",
@@ -83,10 +77,7 @@ defmodule Codebattle.Languages do
       docker_image: "codebattle/js:16.17.0",
       solution_template:
         "import * as _ from \"lodash\";\nimport * as R from \"rambda\";\n\nfunction solution(<%= arguments %>)<%= expected %>{\n\n};\n\nexport default solution;",
-      arguments_template: %{
-        argument: "<%= name %>: <%= type %>",
-        delimiter: ", "
-      },
+      arguments_template: %{argument: "<%= name %>: <%= type %>", delimiter: ", "},
       expected_template: ": <%= type %> ",
       types: %{
         "integer" => "number",
@@ -112,10 +103,7 @@ defmodule Codebattle.Languages do
       checker_file_name: "checker.dart",
       docker_image: "codebattle/dart:2.17.6",
       solution_template: "<%= expected %>solution(<%= arguments %>) {\n\n}",
-      arguments_template: %{
-        argument: "<%= type %> <%= name %>",
-        delimiter: ", "
-      },
+      arguments_template: %{argument: "<%= type %> <%= name %>", delimiter: ", "},
       expected_template: "<%= type %> ",
       types: %{
         "integer" => "int",
@@ -141,10 +129,7 @@ defmodule Codebattle.Languages do
       docker_image: "codebattle/cpp:20",
       solution_template:
         "#include <iostream>\n#include <map>\n#include <vector>\n\nusing namespace std;\n\n<%= expected %> solution(<%= arguments %>) {\n\n}",
-      arguments_template: %{
-        argument: "<%= type %> <%= name %>",
-        delimiter: ", "
-      },
+      arguments_template: %{argument: "<%= type %> <%= name %>", delimiter: ", "},
       expected_template: "<%= type %>",
       types: %{
         "integer" => "int",
@@ -175,10 +160,7 @@ defmodule Codebattle.Languages do
       docker_image: "codebattle/java:18",
       solution_template:
         "package solution;\n\nimport java.util.*;import java.util.stream.*;\n\npublic class Solution {\n\tpublic <%= expected %>solution(<%= arguments %>) {\n\n\t}\n}",
-      arguments_template: %{
-        argument: "<%= type %> <%= name %>",
-        delimiter: ", "
-      },
+      arguments_template: %{argument: "<%= type %> <%= name %>", delimiter: ", "},
       expected_template: "<%= type %> ",
       types: %{
         "integer" => "Integer",
@@ -211,10 +193,7 @@ defmodule Codebattle.Languages do
       docker_image: "codebattle/kotlin:1.6.21",
       solution_template:
         "package solution\n\nimport kotlin.collections.*\n\nfun solution(<%= arguments %>):<%= expected %> {\n\n}",
-      arguments_template: %{
-        argument: "<%= name %>: <%= type %>",
-        delimiter: ", "
-      },
+      arguments_template: %{argument: "<%= name %>: <%= type %>", delimiter: ", "},
       expected_template: " <%= type %>",
       types: %{
         "integer" => "Int",
@@ -247,10 +226,7 @@ defmodule Codebattle.Languages do
       docker_image: "codebattle/csharp:6.0.100",
       solution_template:
         "using System;using System.Collections.Generic;\n\nnamespace app\n{\n\tpublic class Solution\n\t{\n\t\tpublic<%= expected %> solution(<%= arguments %>)\n\t\t{\n\n\t\t}\n\t}\n}",
-      arguments_template: %{
-        argument: "<%= type %> <%= name %>",
-        delimiter: ", "
-      },
+      arguments_template: %{argument: "<%= type %> <%= name %>", delimiter: ", "},
       expected_template: " <%= type %>",
       types: %{
         "integer" => "int",
@@ -288,10 +264,7 @@ defmodule Codebattle.Languages do
       checker_file_name: "checker.go",
       docker_image: "codebattle/golang:1.19.0",
       solution_template: "package main;\n\nfunc solution(<%= arguments %>)<%= expected %> {\n\n}",
-      arguments_template: %{
-        argument: "<%= name %> <%= type %>",
-        delimiter: ", "
-      },
+      arguments_template: %{argument: "<%= name %> <%= type %>", delimiter: ", "},
       expected_template: " <%= type %>",
       types: %{
         "integer" => "int64",
@@ -319,10 +292,7 @@ defmodule Codebattle.Languages do
       docker_image: "codebattle/elixir:1.13.4",
       solution_template:
         "defmodule Solution do\n\tdef solution(<%= arguments %>) do\n<%= return_statement %>\n\tend\nend",
-      arguments_template: %{
-        argument: "<%= name %>",
-        delimiter: ", "
-      },
+      arguments_template: %{argument: "<%= name %>", delimiter: ", "},
       return_template: "\t\t<%= default_value %>",
       default_values: %{
         "integer" => "0",
@@ -348,10 +318,7 @@ defmodule Codebattle.Languages do
       docker_image: "codebattle/python:3.10.6",
       solution_template:
         "from typing import List, Dict\n\ndef solution(<%= arguments %>)<%= expected %>:",
-      arguments_template: %{
-        argument: "<%= name %>: <%= type %>",
-        delimiter: ", "
-      },
+      arguments_template: %{argument: "<%= name %>: <%= type %>", delimiter: ", "},
       expected_template: " -> <%= type %>",
       types: %{
         "integer" => "int",
@@ -378,10 +345,7 @@ defmodule Codebattle.Languages do
       solution_template:
         "<?php\n\nfunction solution(<%= arguments %>)\n{<%= return_statement %>\n}",
       return_template: "\n\treturn <%= default_value %>;",
-      arguments_template: %{
-        argument: "<%= type %> $<%= name %>",
-        delimiter: ", "
-      },
+      arguments_template: %{argument: "<%= type %> $<%= name %>", delimiter: ", "},
       default_values: %{
         "integer" => "0",
         "float" => "0.1",
@@ -417,12 +381,9 @@ defmodule Codebattle.Languages do
       check_dir: "check",
       solution_file_name: "solution.clj",
       checker_file_name: "checker.clj",
-      docker_image: "codebattle/clojure:1.11.1.1105",
+      docker_image: "codebattle/clojure:1.11.1.1149",
       solution_template: "(defn solution [<%= arguments %>] <%= return_statement %>)",
-      arguments_template: %{
-        argument: "<%= name %>",
-        delimiter: " "
-      },
+      arguments_template: %{argument: "<%= name %>", delimiter: " "},
       return_template: "<%= default_value %>",
       default_values: %{
         "integer" => "0",
@@ -448,10 +409,7 @@ defmodule Codebattle.Languages do
       docker_image: "codebattle/haskell:8.4.3",
       solution_template:
         "module Check.Solution where\n\nimport qualified Data.HashMap.Lazy as HM\n\nsolution :: <%= arguments %><%= expected %>\nsolution =\n\n{- Included packages:\naeson\nbytestring\ncase-insensitive\ncontainers\ndeepseq\nfgl\ninteger-logarithms\nmegaparsec\nmtl\nparser-combinators\npretty\nrandom\nregex-base\nregex-compat\nregex-posix\nscientific\nsplit\ntemplate-haskell\ntext\ntime\ntransformers\nunordered-containers\nvector\nvector-algorithms -}",
-      arguments_template: %{
-        argument: "<%= type %>",
-        delimiter: " -> "
-      },
+      arguments_template: %{argument: "<%= type %>", delimiter: " -> "},
       expected_template: " -> <%= type %>",
       types: %{
         "integer" => "Int",

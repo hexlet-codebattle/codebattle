@@ -18,10 +18,9 @@ defmodule CodebattleWeb.GameView do
 
   def result(%Codebattle.Game{users: users, user_games: user_games}) do
     users
-    |> Enum.map(fn u ->
+    |> Enum.map_join(", ", fn u ->
       "#{user_name(u)} #{Enum.find(user_games, fn ug -> ug.user_id == u.id end).result}"
     end)
-    |> Enum.join(", ")
   end
 
   def csrf_token do

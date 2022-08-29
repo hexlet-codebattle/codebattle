@@ -1,7 +1,7 @@
 PWD:=$(shell pwd)
 
-kb-%: export KUBECONFIG=$(PWD)/kubeconfig.yml
-helm-%: export KUBECONFIG=$(PWD)/kubeconfig.yml
+kb-%: export KUBECONFIG=$(PWD)/../.kube/config
+helm-%: export KUBECONFIG=$(PWD)/../.kube/config
 kb-app-%: POD_NAME = $(shell kubectl get pod -l "app.kubernetes.io/instance=app" -o name --kubeconfig=$(KUBECONFIG))
 
 kb-get-pods:
@@ -13,7 +13,7 @@ kb-get-nodes:
 helm-init: helm-install-app
 
 helm-upgrade-app:
-	helm upgrade --install --kubeconfig=../.kube/config app $(PWD)/app-chart
+	helm upgrade --install app $(PWD)/app-chart
 
 helm-rollback-app:
 	helm rollback app 108

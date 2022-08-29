@@ -1,4 +1,4 @@
-FROM clojure:openjdk-19-tools-deps-1.11.1.1105-alpine
+FROM clojure:openjdk-19-tools-deps-1.11.1.1149-alpine
 
 RUN apk add --update make rlwrap
 

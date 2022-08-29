@@ -1,5 +1,4 @@
 const { readFileSync, readdirSync } = require('fs');
-const { join } = require('path');
 const { createContext, runInContext } = require('vm');
 const { Writable } = require('stream');
 const { Console } = require('console');
@@ -21,7 +20,7 @@ exports.run = function run(args = []) {
     if (typeof chank == 'string') output += chank;
 
     if (output.length > limitLength + limitCode.length)
-      output = output.substr(0, limitLength) + limitCode;
+      output = output.slice(0, limitLength - 1) + limitCode;
   };
 
   const toOut = ({ type = '', value = '', time = 0 }) => {
@@ -67,7 +66,7 @@ exports.run = function run(args = []) {
   });
 
   try {
-    let run = transpile(scriptTest);
+    const run = transpile(scriptTest, { target: 'ESNext', module: 'CommonJs' });
     runInContext(run, context);
 
     if (output) toOut({ type: 'output', value: output });

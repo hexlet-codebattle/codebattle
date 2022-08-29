@@ -54,15 +54,7 @@ variable "codebattle_db_username" {
   type = string
 }
 
-variable "codebattle_db_password" {
-  type = string
-}
-
 variable "codebattle_db_name" {
-  type = string
-}
-
-variable "codebattle_db_port" {
   type = string
 }
 
