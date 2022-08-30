@@ -1,4 +1,4 @@
-version: "3.3"
+version: '3.3'
 
 services:
   app:
@@ -8,17 +8,17 @@ services:
     env_file: .env
     command: mix phx.server
     environment:
-      - "USER=${USER}"
+      - 'USER=${USER}'
     ports:
-      - "${CODEBATTLE_PORT}:${CODEBATTLE_PORT}"
-      - "8080:8080"
+      - '${CODEBATTLE_PORT}:${CODEBATTLE_PORT}'
+      - '8080:8080'
     volumes:
-      - "./services/app:/app:delegated"
-      - "~/.bash_history:/root/.bash_history:delegated"
-      - ".bashrc:/root/.bashrc:delegated"
-      - "/var/run/docker.sock:/var/run/docker.sock:cached"
-      - "/var/tmp:/var/tmp:delegated"
-      - "/tmp:/tmp:delegated"
+      - './services/app:/app:delegated'
+      - '~/.bash_history:/root/.bash_history:delegated'
+      - '.bashrc:/root/.bashrc:delegated'
+      - '/var/run/docker.sock:/var/run/docker.sock:cached'
+      - '/var/tmp:/var/tmp:delegated'
+      - '/tmp:/tmp:delegated'
     depends_on:
       - db
 
@@ -26,6 +26,7 @@ services:
     image: postgres:12-alpine
     environment:
       POSTGRES_USER: ${CODEBATTLE_DB_USERNAME}
+      POSTGRES_PASSWORD: ${CODEBATTLE_DB_PASSWORD}
     volumes:
       - pg_data:/var/lib/postgresql/data
 
@@ -33,9 +34,10 @@ services:
   db-local:
     image: postgres:12-alpine
     ports:
-      - "5432:${CODEBATTLE_DB_PORT}"
+      - '5432:${CODEBATTLE_DB_PORT}'
     environment:
       POSTGRES_USER: ${CODEBATTLE_DB_USERNAME}
+      POSTGRES_PASSWORD: ${CODEBATTLE_DB_PASSWORD}
     volumes:
       - pg_data:/var/lib/postgresql/data
 
