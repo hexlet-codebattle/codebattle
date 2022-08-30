@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import _ from 'lodash';
 
 const initialState = {
-  liveGames: [],
+  activeGames: [],
   completedGames: null,
   presenceList: [],
   loaded: false,
@@ -13,23 +13,25 @@ const lobby = createSlice({
   name: 'lobby',
   initialState,
   reducers: {
-    initGameList: (state, { payload: { liveGames, completedGames, tournaments } }) => ({
+    initGameList: (
+      state,
+      { payload: { activeGames, completedGames, tournaments } },
+    ) => ({
       ...state,
-      liveGames,
+      activeGames,
       completedGames,
-      liveTournaments: tournaments.filter(x => (x.isLive)),
-      completedTournaments: tournaments.filter(x => (!x.isLive)),
+      liveTournaments: tournaments.filter(x => x.isLive),
+      completedTournaments: tournaments.filter(x => !x.isLive),
       loaded: true,
     }),
     updateCheckResult: (state, { payload }) => {
       state.activeGames = state.activeGames.map(game => {
         if (game.id === payload.id) {
-          const playerIndex = game.players.findIndex(player => player.id === payload.userId);
-          const newCheckResults = game.checkResults.map(
-            (result, index) => (index === playerIndex ? { ...result, ...payload.checkResult } : result),
-          );
+          const newPlayers = game.players.map(player => (player.id === payload.userId
+              ? { ...player, checkResult: payload.checkResult }
+              : player));
 
-          return { ...game, checkResults: newCheckResults };
+          return { ...game, players: newPlayers };
         }
 
         return game;
@@ -39,21 +41,21 @@ const lobby = createSlice({
       state.presenceList = payload;
     },
     removeGameLobby: (state, { payload: { id } }) => {
-      state.liveGames = _.reject(state.liveGames, { id });
+      state.activeGames = _.reject(state.activeGames, { id });
     },
     upsertGameLobby: (state, { payload: { game } }) => {
-      const gameToUpdate = _.find(state.liveGames, { id: game.id });
+      const gameToUpdate = _.find(state.activeGames, { id: game.id });
       if (gameToUpdate) {
         Object.assign(gameToUpdate, game);
       } else {
-        state.liveGames.push(game);
+        state.activeGames.push(game);
       }
     },
     selectNewGameTimeout: (state, { payload: { timeoutSeconds } }) => {
       state.newGame.timeoutSeconds = timeoutSeconds;
     },
     finishGame: (state, { payload: { game } }) => {
-      state.liveGames = _.reject(state.liveGames, { id: game.id });
+      state.activeGames = _.reject(state.activeGames, { id: game.id });
       state.completedGames = [game, ...state.completedGames];
     },
   },

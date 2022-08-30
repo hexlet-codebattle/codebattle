@@ -28,10 +28,9 @@ import levelRatio from '../config/levelRatio';
 import PlayerLoading from '../components/PlayerLoading';
 import hashLinkNames from '../config/hashLinkNames';
 
-const isLiveGame = (game) =>
-  [gameStateCodes.playing, gameStateCodes.waitingOpponent].includes(game.state);
+const isActiveGame = game => [gameStateCodes.playing, gameStateCodes.waitingOpponent].includes(game.state);
 
-const Players = ({ players, checkResults }) => {
+const Players = ({ players }) => {
   if (players.length === 1) {
     return (
       <td className="p-3 align-middle text-nowrap" colSpan={2}>
@@ -42,8 +41,7 @@ const Players = ({ players, checkResults }) => {
     );
   }
 
-  const getBarLength = (assertsCount, successCount) =>
-    (successCount / assertsCount) * 100;
+  const getBarLength = (assertsCount, successCount) => (successCount / assertsCount) * 100;
   return (
     <>
       <td className="p-3 align-middle text-nowrap cb-username-td text-truncate">
@@ -51,20 +49,20 @@ const Players = ({ players, checkResults }) => {
           <UserInfo
             user={players[0]}
             hideOnlineIndicator
-            loading={checkResults[0].status === 'started'}
+            loading={players[0].checkResult.status === 'started'}
           />
-          <div className={`cb-check-result-bar ${checkResults[0].status}`}>
+          <div className={`cb-check-result-bar ${players[0].checkResult.status}`}>
             <div
               className="cb-asserts-progress"
               style={{
                 width: `${getBarLength(
-                  checkResults[0]?.assertsCount,
-                  checkResults[0]?.successCount
+                  players[0].checkResult?.assertsCount,
+                  players[0].checkResult?.successCount,
                 )}%`,
               }}
             />
           </div>
-          <PlayerLoading show={checkResults[0].status === 'started'} small />
+          <PlayerLoading show={players[0].checkResult.status === 'started'} small />
         </div>
       </td>
       <td className="p-3 align-middle text-nowrap cb-username-td text-truncate">
@@ -72,29 +70,28 @@ const Players = ({ players, checkResults }) => {
           <UserInfo
             user={players[1]}
             hideOnlineIndicator
-            loading={checkResults[1].status === 'started'}
+            loading={players[1].checkResult.status === 'started'}
           />
-          <div className={`cb-check-result-bar ${checkResults[1].status}`}>
+          <div className={`cb-check-result-bar ${players[1].checkResult.status}`}>
             <div
               className="cb-asserts-progress"
               style={{
                 width: `${getBarLength(
-                  checkResults[1]?.assertsCount,
-                  checkResults[1]?.successCount
+                  players[1].checkResult?.assertsCount,
+                  players[1].checkResult?.successCount,
                 )}%`,
                 right: 0,
               }}
             />
           </div>
-          <PlayerLoading show={checkResults[1].status === 'started'} small />
+          <PlayerLoading show={players[1].checkResult.status === 'started'} small />
         </div>
       </td>
     </>
   );
 };
 
-const isPlayer = (user, game) =>
-  !_.isEmpty(_.find(game.players, { id: user.id }));
+const isPlayer = (user, game) => !_.isEmpty(_.find(game.players, { id: user.id }));
 
 const ShowButton = ({ url }) => (
   <a type="button" className="btn btn-outline-orange btn-sm" href={url}>
@@ -129,11 +126,6 @@ const GameActionButton = ({ game }) => {
     const type = isPlayer(currentUser, game) ? 'continue' : 'show';
     return renderButton(gameUrl, type);
   }
-
-  console.log(111111);
-  console.log(isPlayer(currentUser, game));
-  console.log(game);
-  console.log(currentUser);
 
   if (gameState === gameStateCodes.waitingOpponent) {
     if (isPlayer(currentUser, game)) {
@@ -219,7 +211,7 @@ const LiveTournaments = ({ tournaments }) => {
           </tr>
         </thead>
         <tbody className="">
-          {_.orderBy(tournaments, 'startsAt', 'desc').map((tournament) => (
+          {_.orderBy(tournaments, 'startsAt', 'desc').map(tournament => (
             <tr key={tournament.id}>
               <td className="p-3 align-middle">{tournament.name}</td>
               <td className="p-3 align-middle text-nowrap">
@@ -265,7 +257,7 @@ const CompletedTournaments = ({ tournaments }) => {
           </tr>
         </thead>
         <tbody className="">
-          {_.orderBy(tournaments, 'startsAt', 'desc').map((tournament) => (
+          {_.orderBy(tournaments, 'startsAt', 'desc').map(tournament => (
             <tr key={tournament.id}>
               <td className="p-3 align-middle">{tournament.name}</td>
               <td className="p-3 align-middle">{tournament.type}</td>
@@ -289,13 +281,13 @@ const CompletedTournaments = ({ tournaments }) => {
   );
 };
 
-const LiveGames = ({ games }) => {
+const ActiveGames = ({ games }) => {
   if (!games) {
     return null;
   }
 
   const currentUser = Gon.getAsset('current_user');
-  const filterGames = (game) => {
+  const filterGames = game => {
     if (game.visibilityType === 'hidden') {
       return !!_.find(game.players, { id: currentUser.id });
     }
@@ -308,15 +300,15 @@ const LiveGames = ({ games }) => {
   }
 
   const gamesSortByLevel = _.sortBy(filtetedGames, [
-    (game) => levelRatio[game.level],
+    game => levelRatio[game.level],
   ]);
   const {
     gamesWithCurrentUser = [],
     gamesWithActiveUsers = [],
     gamesWithBots = [],
-  } = _.groupBy(gamesSortByLevel, (game) => {
+  } = _.groupBy(gamesSortByLevel, game => {
     const isCurrentUserPlay = game.players.some(
-      ({ id }) => id === currentUser.id
+      ({ id }) => id === currentUser.id,
     );
     if (isCurrentUserPlay) {
       return 'gamesWithCurrentUser';
@@ -347,46 +339,29 @@ const LiveGames = ({ games }) => {
           </tr>
         </thead>
         <tbody>
-          {/*
-            TODO: handle game.checkResults
-
-            checkResults[0].status = "ok" | "failure" | "started" | "error"
-            checkResults[0].userId
-
-            checkResults <-> players Порядок элементов друг-другу соответствуют
-
-            checkResults[0].status = "failure"
-            checkResults[0].assertsCount
-            checkResults[0].successCount
-          */}
           {sortedGames.map(
-            (game) =>
-              isLiveGame(game) && (
-                <tr key={game.id} className="text-dark game-item">
-                  <td className="p-3 align-middle text-nowrap">
-                    <GameLevelBadge level={game.level} />
-                  </td>
-                  <td className="p-3 align-middle text-center text-nowrap">
-                    <img
-                      alt={game.state}
-                      title={game.state}
-                      src={
+            game => isActiveGame(game) && (
+            <tr key={game.id} className="text-dark game-item">
+              <td className="p-3 align-middle text-nowrap">
+                <GameLevelBadge level={game.level} />
+              </td>
+              <td className="p-3 align-middle text-center text-nowrap">
+                <img
+                  alt={game.state}
+                  title={game.state}
+                  src={
                         game.state === 'playing'
                           ? '/assets/images/playing.svg'
                           : '/assets/images/waitingOpponent.svg'
                       }
-                    />
-                  </td>
-                  <Players
-                    gameId={game.id}
-                    players={game.players}
-                    checkResults={game.checkResults}
-                  />
-                  <td className="p-3 align-middle text-center">
-                    <GameActionButton game={game} />
-                  </td>
-                </tr>
-              )
+                />
+              </td>
+              <Players gameId={game.id} players={game.players} />
+              <td className="p-3 align-middle text-center">
+                <GameActionButton game={game} />
+              </td>
+            </tr>
+              ),
           )}
         </tbody>
       </table>
@@ -398,11 +373,11 @@ const tabLinkClassName = (...hash) => {
   const url = new URL(window.location);
   return classnames(
     'nav-item nav-link text-uppercase rounded-0 text-black font-weight-bold p-3',
-    { active: hash.includes(url.hash) }
+    { active: hash.includes(url.hash) },
   );
 };
 
-const tabContentClassName = (hash) => {
+const tabContentClassName = hash => {
   const url = new URL(window.location);
   return classnames({
     'tab-pane': true,
@@ -412,12 +387,12 @@ const tabContentClassName = (hash) => {
   });
 };
 
-const tabLinkHandler = (hash) => () => {
+const tabLinkHandler = hash => () => {
   window.location.hash = hash;
 };
 
 const GameContainers = ({
-  liveGames,
+  activeGames,
   completedGames,
   liveTournaments,
   completedTournaments,
@@ -428,7 +403,7 @@ const GameContainers = ({
         <a
           className={tabLinkClassName(
             hashLinkNames.lobby,
-            hashLinkNames.default
+            hashLinkNames.default,
           )}
           id="lobby-tab"
           data-toggle="tab"
@@ -470,13 +445,13 @@ const GameContainers = ({
       <div
         className={tabContentClassName(
           hashLinkNames.lobby,
-          hashLinkNames.default
+          hashLinkNames.default,
         )}
         id="lobby"
         role="tabpanel"
         aria-labelledby="lobby-tab"
       >
-        <LiveGames games={liveGames} />
+        <ActiveGames games={activeGames} />
       </div>
       <div
         className={tabContentClassName(hashLinkNames.tournaments)}
@@ -535,7 +510,7 @@ const LobbyWidget = () => {
 
   const {
     loaded,
-    liveGames,
+    activeGames,
     completedGames,
     liveTournaments,
     completedTournaments,
@@ -551,7 +526,7 @@ const LobbyWidget = () => {
       <div className="row">
         <div className="col-lg-8 col-md-12 p-0 mb-2 pr-lg-2 pb-3">
           <GameContainers
-            liveGames={liveGames}
+            activeGames={activeGames}
             completedGames={completedGames}
             liveTournaments={liveTournaments}
             completedTournaments={completedTournaments}

@@ -11,7 +11,7 @@ defmodule Codebattle.CodeCheck.FakeExecutor do
     {"status": "success", "result": 5, "output": "", "expected": 5, "arguments": "[3, 2]", "execution_time": 1.4}
   """
 
-  def call(%{lang_meta: %{checker_version: 2}} = token), do: {@fake_output_v2, 0}
+  def call(%{lang_meta: %{checker_version: 2}}), do: {@fake_output_v2, 0}
 
   def call(token) do
     {@fake_output <> ~s({"status": "ok", "result": "__seed:#{token.seed}__"}), 0}

@@ -83,9 +83,11 @@ defmodule Codebattle.Game.Engine do
       editor_text: editor_text,
       editor_lang: editor_lang
     })
+    # Codebattle.PubSub.broadcast("game:start_check", %{game: new_game})
 
     check_result = CodeCheck.check_solution(game.task, editor_text, editor_lang)
 
+    # Codebattle.PubSub.broadcast("game:check_complete", %{game: new_game})
     Game.Server.update_playbook(game.id, :check_complete, %{
       id: user.id,
       check_result: check_result,
@@ -320,6 +322,7 @@ defmodule Codebattle.Game.Engine do
     Game.TimeoutServer.start_timer(game.id, game.timeout_seconds)
   end
 
+  # TODO: rename live to active
   defp broadcast_live_game(game) do
     # TODO: move it to pubSub
     CodebattleWeb.Endpoint.broadcast!("lobby", "game:upsert", %{

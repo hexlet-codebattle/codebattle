@@ -15,7 +15,7 @@ defmodule Codebattle.Game.Auth do
 
   def player_can_play_game?(player) do
     is_player =
-      Game.Context.get_live_games()
+      Game.Context.get_active_games()
       |> Enum.any?(fn game ->
         Game.Helpers.is_player?(game, player.id)
       end)

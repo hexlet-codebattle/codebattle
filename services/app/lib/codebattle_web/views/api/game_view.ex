@@ -10,7 +10,6 @@ defmodule CodebattleWeb.Api.GameView do
   def render_game(game) do
     %{
       id: get_game_id(game),
-      check_results: get_check_results(game),
       inserted_at: game.inserted_at,
       langs: get_langs_with_solution_templates(game.task),
       level: game.level,
@@ -43,10 +42,10 @@ defmodule CodebattleWeb.Api.GameView do
     }
   end
 
+  # TODO: rename live to active
   def render_live_game(game) do
     %{
       id: get_game_id(game),
-      check_results: get_check_results(game),
       inserted_at: get_inserted_at(game),
       is_bot: bot_game?(game),
       level: get_level(game),

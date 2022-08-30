@@ -25,11 +25,11 @@ defmodule Codebattle.Game.Helpers do
   def tournament_game?(game), do: get_tournament_id(game) != nil
   def training_game?(game), do: game.mode == "training"
 
-  def get_check_results(fsm) do
-    fsm
-    |> get_players
-    |> Enum.map(fn player -> player.check_result end)
-  end
+  # def get_check_results(game) do
+  #   game
+  #   |> get_players
+  #   |> Enum.map(fn player -> player.check_result end)
+  # end
 
   def get_winner(game) do
     game

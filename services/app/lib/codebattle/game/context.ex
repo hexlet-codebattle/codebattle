@@ -40,10 +40,10 @@ defmodule Codebattle.Game.Context do
           optional(:level) => String.t()
         }
 
-  @spec get_live_games(live_games_params) :: [Game.t()]
-  def get_live_games(params \\ %{})
+  @spec get_active_games(live_games_params) :: [Game.t()]
+  def get_active_games(params \\ %{})
 
-  def get_live_games(params) do
+  def get_active_games(params) do
     Game.GlobalSupervisor
     |> Supervisor.which_children()
     |> Enum.map(fn {id, _, _, _} -> Game.Context.get_game(id) end)
