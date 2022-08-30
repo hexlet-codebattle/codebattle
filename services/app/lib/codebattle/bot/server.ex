@@ -55,29 +55,33 @@ defmodule Codebattle.Bot.Server do
     end
   end
 
-  def handle_info(%{event: "editor:data"}, state = %{state: :finished}) do
-    {:noreply, state}
-  end
+  @impl GenServer
+  def handle_info(:next_bot_step, state), do: do_playbook_step(state)
 
+  @impl GenServer
   def handle_info(%{event: "editor:data"}, state = %{state: :initial}) do
     send_start_chat_message(state)
     do_playbook_step(state)
   end
 
-  def handle_info(:next_bot_step, state), do: do_playbook_step(state)
+  @impl GenServer
+  def handle_info(%{event: "editor:data"}, state), do: {:noreply, state}
 
+  @impl GenServer
   def handle_info(%{event: "user:give_up"}, state) do
     send_chat_message(state, :advice_on_give_up)
 
     {:noreply, %{state | state: :finished}}
   end
 
+  @impl GenServer
   def handle_info(%{event: "user:check_complete", payload: %{"solution_status" => true}}, state) do
     send_chat_message(state, :advice_on_win)
 
     {:noreply, state}
   end
 
+  @impl GenServer
   def handle_info(
         %{event: "user:check_complete", payload: %{"check_result" => %{"status" => "ok"}}},
         state
@@ -87,15 +91,14 @@ defmodule Codebattle.Bot.Server do
     {:noreply, state}
   end
 
-  def handle_info(
-        %{event: "user:check_complete"},
-        state
-      ) do
+  @impl GenServer
+  def handle_info(%{event: "user:check_complete"}, state) do
     send_chat_message(state, :advice_on_check_complete_failure)
 
     {:noreply, state}
   end
 
+  @impl GenServer
   def handle_info(event, state) do
     Logger.debug("#{__MODULE__}, unexpected bot server handle_info event: #{inspect(event)}")
     {:noreply, state}
@@ -118,17 +121,6 @@ defmodule Codebattle.Bot.Server do
         {:noreply, %{state | state: :finished, playbook_params: playbook_params}}
     end
   end
-
-  # def playing(:info, %Message{event: "user:check_complete", payload: payload}, state) do
-  #   case payload do
-  #     %{"solution_status" => true} ->
-  #       send_chat_message(state, :send_congrats)
-  #       {:next_state, :stop, state}
-
-  #     _ ->
-  #       {:keep_state, state}
-  #   end
-  # end
 
   defp init_socket(state) do
     socket_opts = [

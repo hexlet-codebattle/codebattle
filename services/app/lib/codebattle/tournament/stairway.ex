@@ -1,6 +1,5 @@
 defmodule Codebattle.Tournament.Stairway do
-  alias Codebattle.Game.Helpers
-  alias Codebattle.Game.Context
+  alias Codebattle.Game
   alias Codebattle.Tournament
 
   use Tournament.Base
@@ -64,15 +63,15 @@ defmodule Codebattle.Tournament.Stairway do
   def create_game(tournament, match) do
     task = get_current_task(tournament)
 
-    {:ok, fsm} =
-      Context.create_game(%{
+    {:ok, game} =
+      Game.Context.create_game(%{
         task: task,
         level: task.level,
-        tournament: tournament,
+        tournament_id: tournament.id,
         players: match.players
       })
 
-    Helpers.get_game_id(fsm)
+    Game.Helpers.get_game_id(game)
   end
 
   @impl Tournament.Base

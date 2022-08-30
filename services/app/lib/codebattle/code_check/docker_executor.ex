@@ -8,10 +8,8 @@ defmodule Codebattle.CodeCheck.DockerExecutor do
 
     {task_time, result} = :timer.tc(fn -> System.cmd(cmd, cmd_opts, stderr_to_stdout: true) end)
 
-    {_days, {_, _, sec}} = :calendar.seconds_to_daystime(div(task_time, 1_000_000))
-
     Logger.error(
-      "Finished execution for lang: #{lang_meta.slug}, task: #{task.name}, time: #{sec} secs"
+      "Finished execution for lang: #{lang_meta.slug}, task: #{task.name}, time: #{div(task_time, 1_000)} msecs"
     )
 
     result

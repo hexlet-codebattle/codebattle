@@ -20,9 +20,16 @@ defmodule Codebattle.Game.Helpers do
   def get_first_non_bot(game),
     do: game |> get_players |> Enum.find(fn player -> !player.is_bot end)
 
+
   def bot_game?(game), do: game |> get_players |> Enum.any?(fn p -> p.is_bot end)
   def tournament_game?(game), do: get_tournament_id(game) != nil
   def training_game?(game), do: game.mode == "training"
+
+  def get_check_results(fsm) do
+    fsm
+    |> get_players
+    |> Enum.map(fn player -> player.check_result end)
+  end
 
   def get_winner(game) do
     game

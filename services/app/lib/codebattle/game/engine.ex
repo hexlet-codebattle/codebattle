@@ -225,13 +225,7 @@ defmodule Codebattle.Game.Engine do
           lang: player.editor_lang
         })
 
-        achievements = User.Achievements.recalculate_achievements(player)
-
-        update_user!(player.id, %{
-          rating: player.rating,
-          achievements: achievements,
-          lang: player.editor_lang
-        })
+        update_user!(player)
       end)
 
       update_game!(game, %{
@@ -243,9 +237,19 @@ defmodule Codebattle.Game.Engine do
     end)
   end
 
-  def update_user!(user_id, params) do
-    Repo.get!(User, user_id)
-    |> User.changeset(params)
+  def update_user!(%{is_guest: true}), do: :noop
+  def update_user!(%{is_bot: true}), do: :noop
+
+  def update_user!(player) do
+    achievements = User.Achievements.recalculate_achievements(player)
+
+    User
+    |> Repo.get!(player.id)
+    |> User.changeset(%{
+      rating: player.rating,
+      achievements: achievements,
+      lang: player.editor_lang
+    })
     |> Repo.update!()
   end
 

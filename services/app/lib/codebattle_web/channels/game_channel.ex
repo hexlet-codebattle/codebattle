@@ -3,7 +3,7 @@ defmodule CodebattleWeb.GameChannel do
   use CodebattleWeb, :channel
 
   alias Codebattle.Game.Context
-  alias Codebattle.CodeCheck.CheckResultV2
+  alias Codebattle.CodeCheck.Result
   alias CodebattleWeb.Api.GameView
 
   def join("game:" <> game_id, _payload, socket) do
@@ -71,6 +71,7 @@ defmodule CodebattleWeb.GameChannel do
 
     broadcast_from!(socket, "user:start_check", %{user_id: user.id})
 
+    # TODO: move to pubSub
     CodebattleWeb.Endpoint.broadcast!("lobby", "user:start_check", %{
       id: String.to_integer(game_id),
       userId: user.id
@@ -107,7 +108,7 @@ defmodule CodebattleWeb.GameChannel do
         CodebattleWeb.Endpoint.broadcast!("lobby", "user:check_complete", %{
           id: String.to_integer(game_id),
           userId: user.id,
-          check_result: %CheckResultV2{status: :error, output: reason}
+          check_result: %Result.V2{status: :error, output_error: reason}
         })
 
         {:reply, {:error, %{reason: reason}}, socket}
