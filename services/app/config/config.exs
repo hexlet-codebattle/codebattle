@@ -29,12 +29,12 @@ config :ueberauth, Ueberauth,
   ]
 
 config :ueberauth, Ueberauth.Strategy.Github.OAuth,
-  client_id: System.get_env("GITHUB_CLIENT_ID"),
-  client_secret: System.get_env("GITHUB_CLIENT_SECRET")
+  client_id: System.get_env("GITHUB_CLIENT_ID", "ASFD"),
+  client_secret: System.get_env("GITHUB_CLIENT_SECRET", "ASFD")
 
 config :ueberauth, Ueberauth.Strategy.Discord.OAuth,
-  client_id: System.get_env("DISCORD_CLIENT_ID"),
-  client_secret: System.get_env("DISCORD_CLIENT_SECRET")
+  client_id: System.get_env("DISCORD_CLIENT_ID", "ASFD"),
+  client_secret: System.get_env("DISCORD_CLIENT_SECRET", "ASFD")
 
 config :phoenix_gon, :json_library, Jason
 
