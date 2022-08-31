@@ -29,8 +29,7 @@ console:
 	iex -S mix
 
 test:
-	mix test --exclude docker_executor --max-failures 1
-	# mix coveralls.json --exclude code_check --max-failures 1 --slowest 7
+	mix coveralls.json --exclude docker_executor --max-failures 1 --slowest 7
 
 test-code-checkers: export CODEBATTLE_USE_DOCKER_EXECUTOR = true
 test-code-checkers:
