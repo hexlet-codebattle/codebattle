@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import GameTypeCodes from '../../config/gameTypeCodes';
 import * as selectors from '../../selectors';
-import NewGameButton from './NewGameButton';
+// import NewGameButton from './NewGameButton';
 import StartTrainingButton from './StartTrainingButton';
 import SignUpButton from './SignUpButton';
 import RematchButton from './RematchButton';

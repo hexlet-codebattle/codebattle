@@ -42,7 +42,7 @@ defmodule CodebattleWeb.LobbyChannelTest do
 
     push(socket, "game:create", %{opponent_type: "other_user", level: "elementary"})
 
-    assert_receive %Phoenix.Socket.Broadcast{
+    assert_receive %Phoenix.Socket.Message{
       event: "game:upsert"
     }
   end
@@ -56,7 +56,7 @@ defmodule CodebattleWeb.LobbyChannelTest do
 
     push(socket, "game:create", %{opponent_type: "bot", level: "elementary"})
 
-    assert_receive %Phoenix.Socket.Broadcast{
+    assert_receive %Phoenix.Socket.Message{
       event: "game:upsert"
     }
   end

@@ -47,14 +47,9 @@ defmodule Codebattle.Game.Context do
     Game.GlobalSupervisor
     |> Supervisor.which_children()
     |> Enum.map(fn {id, _, _, _} -> Game.Context.get_game(id) end)
-    |> Enum.map(fn
-      {:ok, game = %{is_live: true}} -> game
-      _ -> nil
-    end)
-    |> Enum.filter(&Function.identity/1)
-    |> Enum.filter(fn game -> Enum.member?(["waiting_opponent", "playing"], game.state) end)
     |> Enum.filter(fn game ->
-      Enum.map(params, fn {key, value} -> Map.get(game, key) == value end) |> Enum.all?()
+      active_game?(game) &&
+        Enum.all?(Enum.map(params, fn {key, value} -> Map.get(game, key) == value end))
     end)
   end
 

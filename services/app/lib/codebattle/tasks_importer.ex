@@ -99,7 +99,7 @@ defmodule Codebattle.TasksImporter do
     }
   end
 
-  defp format_input_signature(input = %{"argument-name" => arg}) do
+  defp format_input_signature(%{"argument-name" => arg} = input) do
     input |> Map.delete("argument-name") |> Map.put("argument_name", arg)
   end
 

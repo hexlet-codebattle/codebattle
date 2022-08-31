@@ -15,6 +15,12 @@ defmodule Codebattle.Game.ContextTest do
       {:ok, %{id: game_id}} =
         Game.Context.create_game(%{state: "playing", players: [user1, user2], level: "easy"})
 
+      assert_received %Codebattle.PubSub.Message{
+        event: "game:updated",
+        topic: "games",
+        payload: _
+      }
+
       game_topic = "game:#{game_id}"
       Codebattle.PubSub.subscribe(game_topic)
 
@@ -23,16 +29,14 @@ defmodule Codebattle.Game.ContextTest do
       assert_received %Codebattle.PubSub.Message{
         event: "game:finished",
         topic: "games",
-        payload: %{game_id: ^game_id}
+        payload: %{game_id: ^game_id, game_state: "timeout"}
       }
 
       assert_received %Codebattle.PubSub.Message{
         event: "game:finished",
         topic: ^game_topic,
-        payload: %{game_id: ^game.id}
+        payload: %{game_id: ^game_id, game_state: "timeout"}
       }
-
-      assert game.state == "timeout"
 
       :ok = Game.Context.trigger_timeout(game_id)
 

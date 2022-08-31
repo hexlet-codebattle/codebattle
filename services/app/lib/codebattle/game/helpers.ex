@@ -24,6 +24,7 @@ defmodule Codebattle.Game.Helpers do
   def bot_game?(game), do: game |> get_players |> Enum.any?(fn p -> p.is_bot end)
   def tournament_game?(game), do: get_tournament_id(game) != nil
   def training_game?(game), do: game.mode == "training"
+  def active_game?(game), do: game.is_live && game.state in ["waiting_opponent", "playing"]
 
   def get_winner(game) do
     game

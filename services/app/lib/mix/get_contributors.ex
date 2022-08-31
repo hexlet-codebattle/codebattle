@@ -28,8 +28,7 @@ defmodule Mix.Tasks.GetContributors do
         |> Enum.sort_by(fn params -> params["contributions"] end)
         |> Enum.reverse()
         |> Enum.map(&Map.take(&1, ["html_url", "login", "contributions", "avatar_url"]))
-        |> Enum.map(fn params -> template(params) end)
-        |> Enum.join("")
+        |> Enum.map_join("", fn params -> template(params) end)
 
       File.cwd!()
       |> Path.join("lib/codebattle_web/templates/root/_contributors_#{repo_name}.html.heex")

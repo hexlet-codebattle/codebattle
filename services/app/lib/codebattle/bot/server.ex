@@ -59,7 +59,7 @@ defmodule Codebattle.Bot.Server do
   def handle_info(:next_bot_step, state), do: do_playbook_step(state)
 
   @impl GenServer
-  def handle_info(%{event: "editor:data"}, state = %{state: :initial}) do
+  def handle_info(%{event: "editor:data"}, %{state: :initial} = state) do
     send_start_chat_message(state)
     do_playbook_step(state)
   end
@@ -104,7 +104,7 @@ defmodule Codebattle.Bot.Server do
     {:noreply, state}
   end
 
-  defp do_playbook_step(state = %{state: :finished}), do: {:noreply, state}
+  defp do_playbook_step(%{state: :finished} = state), do: {:noreply, state}
 
   defp do_playbook_step(state) do
     playbook_params = Bot.PlaybookPlayer.next_step(state.playbook_params)
@@ -167,7 +167,7 @@ defmodule Codebattle.Bot.Server do
   defp send_game_message(game_channel, :check_result, editor_params),
     do: Bot.GameClient.send(game_channel, :check_result, editor_params)
 
-  defp send_init_chat_message(state = %{playbook_params: nil}) do
+  defp send_init_chat_message(%{playbook_params: nil} = state) do
     send_chat_message(state, :excuse)
   end
 
