@@ -40,7 +40,7 @@ defmodule Codebattle.DockerExecution.PythonTest do
       payload: %{check_result: check_result}
     }
 
-    assert %Codebattle.CodeCheck.Result{status: "failure", success_count: 0} = check_result
+    assert %Codebattle.CodeCheck.Result.V2{status: "failure", success_count: 0} = check_result
 
     game = Game.Context.get_game!(game.id)
 
@@ -68,7 +68,7 @@ defmodule Codebattle.DockerExecution.PythonTest do
       payload: %{check_result: check_result}
     }
 
-    assert %Codebattle.CodeCheck.Result{status: "error", success_count: 0} = check_result
+    assert %Codebattle.CodeCheck.Result.V2{status: "error", success_count: 0} = check_result
 
     game = Game.Context.get_game!(game.id)
 

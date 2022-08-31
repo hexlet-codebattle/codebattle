@@ -311,6 +311,7 @@ defmodule Codebattle.Languages do
     "python" => %LanguageMeta{
       name: "python",
       slug: "python",
+      checker_version: 2,
       version: "3.10.6",
       check_dir: "check",
       solution_file_name: "solution.py",
