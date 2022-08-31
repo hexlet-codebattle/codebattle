@@ -36,7 +36,7 @@ fun main(args: Array<String>) {
     <% end %>
 
     if (success_) {
-      var okMessage: LinkedHashMap<String, Any> = getOkMessage(<%= hash_sum %>)
+      var okMessage: LinkedHashMap<String, Any> = getOkMessage(<%= check_code %>)
       executionResults_.add(okMessage)
     }
 

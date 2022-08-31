@@ -27,18 +27,15 @@ defmodule RecalculateAchivementsTest do
         achievements: []
       })
 
-    conn1 = put_session(conn, :user_id, user1.id)
     conn2 = put_session(conn, :user_id, user2.id)
 
     socket1 = socket(UserSocket, "user_id", %{user_id: user1.id, current_user: user1})
     socket2 = socket(UserSocket, "user_id", %{user_id: user2.id, current_user: user2})
 
-    {:ok,
-     %{conn1: conn1, conn2: conn2, socket1: socket1, socket2: socket2, user1: user1, user2: user2}}
+    {:ok, %{conn2: conn2, socket1: socket1, socket2: socket2, user1: user1, user2: user2}}
   end
 
   test "calculate new achievement", %{
-    conn1: conn1,
     conn2: conn2,
     socket1: socket1,
     socket2: socket2,
@@ -47,12 +44,10 @@ defmodule RecalculateAchivementsTest do
   } do
     insert_list(9, :user_game, %{user: user1})
 
-    conn =
-      conn1
-      |> get(Routes.page_path(conn1, :index))
-      |> post(game_path(conn1, :create, level: "easy", lang: "js", type: "withRandomPlayer"))
+    {:ok, _response, socket1} = subscribe_and_join(socket1, LobbyChannel, "lobby")
 
-    game_id = game_id_from_conn(conn)
+    ref = Phoenix.ChannelTest.push(socket1, "game:create", %{level: "easy"})
+    Phoenix.ChannelTest.assert_reply(ref, :ok, %{game_id: game_id})
 
     game_topic = "game:" <> to_string(game_id)
     {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
@@ -75,7 +70,6 @@ defmodule RecalculateAchivementsTest do
   end
 
   test "calculate polyglot achievement", %{
-    conn1: conn1,
     conn2: conn2,
     socket1: socket1,
     socket2: socket2,
@@ -88,12 +82,10 @@ defmodule RecalculateAchivementsTest do
     end)
 
     # Create game
-    conn =
-      conn1
-      |> get(Routes.page_path(conn1, :index))
-      |> post(game_path(conn1, :create, level: "easy", lang: "js", type: "withRandomPlayer"))
+    {:ok, _response, socket1} = subscribe_and_join(socket1, LobbyChannel, "lobby")
 
-    game_id = game_id_from_conn(conn)
+    ref = Phoenix.ChannelTest.push(socket1, "game:create", %{level: "easy"})
+    Phoenix.ChannelTest.assert_reply(ref, :ok, %{game_id: game_id})
 
     game_topic = "game:" <> to_string(game_id)
     {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)

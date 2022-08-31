@@ -3,18 +3,6 @@ import Loading from '../Loading';
 import UserAchievements from './UserAchievements';
 import LanguageIcon from '../LanguageIcon';
 
-const getUserAvatarUrl = ({ githubId, discordId, discordAvatar }) => {
-  if (githubId) {
-    return `https://avatars0.githubusercontent.com/u/${githubId}`;
-  }
-
-  if (discordId) {
-    return `https://cdn.discordapp.com/avatars/${discordId}/${discordAvatar}`;
-  }
-
-  return 'https://avatars0.githubusercontent.com/u/35539033';
-};
-
 const UserStats = ({ data }) => {
   if (!data) {
     return <Loading small />;
@@ -29,7 +17,7 @@ const UserStats = ({ data }) => {
             <img
               className="img-fluid"
               style={{ maxHeight: '40px', width: '40px' }}
-              src={getUserAvatarUrl(user)}
+              src={user.avatarUrl}
               alt="User avatar"
             />
             <div className="d-flex flex-column ml-2">

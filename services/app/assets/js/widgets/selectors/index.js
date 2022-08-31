@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import userTypes from '../config/userTypes';
-import GameStatusCodes from '../config/gameStatusCodes';
+import GameStateCodes from '../config/gameStateCodes';
 import editorModes from '../config/editorModes';
 import editorThemes from '../config/editorThemes';
 import i18n from '../../i18n';
@@ -117,12 +117,12 @@ export const userLangSelector = state => userId => _.get(editorsMetaSelector(sta
 
 export const gameStatusTitleSelector = state => {
   const gameStatus = gameStatusSelector(state);
-  switch (gameStatus.status) {
-    case GameStatusCodes.waitingOpponent:
+  switch (gameStatus.state) {
+    case GameStateCodes.waitingOpponent:
       return i18n.t('%{state}', { state: i18n.t('Waiting for an opponent') });
-    case GameStatusCodes.playing:
+    case GameStateCodes.playing:
       return i18n.t('%{state}', { state: i18n.t('Playing') });
-    case GameStatusCodes.gameOver:
+    case GameStateCodes.gameOver:
       return i18n.t('%{state}', { state: gameStatus.msg });
     default:
       return '';
@@ -173,6 +173,8 @@ export const rightExecutionOutputSelector = gameCurrent => state => {
   return outputSelector(gameCurrent)(state);
 };
 
+export const tournamentSelector = state => state.tournament;
+
 export const usersInfoSelector = state => state.usersInfo;
 
 export const chatUsersSelector = state => state.chat.users;
@@ -201,7 +203,7 @@ export const editorsThemeSelector = currentUserId => state => {
 
 export const taskDescriptionLanguageselector = state => state.gameUI.taskDescriptionLanguage;
 
-export const playbookStatusSelector = state => state.playbook.status;
+export const playbookStatusSelector = state => state.playbook.state;
 
 export const playbookInitRecordsSelector = state => state.playbook.initRecords;
 

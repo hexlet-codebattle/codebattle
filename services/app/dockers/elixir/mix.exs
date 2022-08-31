@@ -6,7 +6,7 @@ defmodule Checker.Mixfile do
       app: :checker,
       version: "0.1.0",
       elixir: "~> 1.5",
-      start_permanent: Mix.env == :prod,
+      start_permanent: Mix.env() == :prod,
       deps: deps()
     ]
   end
@@ -18,9 +18,6 @@ defmodule Checker.Mixfile do
 
   # Run "mix help deps" to learn about dependencies.
   defp deps do
-    [
-      {:poison, "~> 3.1"},
-      {:jason, "~> 1.2"}
-    ]
+    [ {:jason, "1.3.0"} ]
   end
 end

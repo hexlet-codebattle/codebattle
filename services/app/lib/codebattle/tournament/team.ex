@@ -1,4 +1,6 @@
 defmodule Codebattle.Tournament.Team do
+  alias Codebattle.Bot
+  alias Codebattle.Game
   alias Codebattle.Tournament
 
   use Tournament.Base
@@ -37,7 +39,7 @@ defmodule Codebattle.Tournament.Team do
       |> Enum.filter(fn {_, count} -> count < max_players_count end)
       |> Enum.reduce([], fn {team_id, count}, acc ->
         (max_players_count - count)
-        |> Codebattle.Bot.Builder.build_list(%{team_id: team_id})
+        |> Bot.Context.build_list(%{team_id: team_id})
         |> Enum.concat(acc)
       end)
 
@@ -65,7 +67,7 @@ defmodule Codebattle.Tournament.Team do
       |> shift_pairs(tournament)
       |> Enum.zip()
       |> Enum.map(fn {p1, p2} ->
-        %{state: "waiting", players: [p1, p2], round_id: tournament.step}
+        %{state: "pending", players: [p1, p2], round_id: tournament.step}
       end)
 
     prev_matches =
@@ -96,6 +98,20 @@ defmodule Codebattle.Tournament.Team do
     else
       tournament
     end
+  end
+
+  @impl Tournament.Base
+  def create_game(tournament, match) do
+    {:ok, game} =
+      Game.Context.create_game(%{
+        state: "playing",
+        level: tournament.difficulty,
+        tournament_id: tournament.id,
+        timeout_seconds: tournament.match_timeout_seconds,
+        players: match.players
+      })
+
+    game.id
   end
 
   defp shift_pairs(teams, tournament) do

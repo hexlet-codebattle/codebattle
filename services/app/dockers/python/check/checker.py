@@ -1,61 +1,10 @@
+import os
 import sys
-import json
-import time
-from io import StringIO
 
-original_stdout = sys.stdout
-sys.stdout = StringIO()
+script_dir = os.path.dirname(__file__)
+runner_dir = os.path.join(script_dir, '..')
+sys.path.append(runner_dir)
 
-execution_result = []
+import runner
 
-def assert_result(solution, expected, arguments, success):
-    try:
-        start = time.perf_counter()
-        result = solution(arguments)
-        finish = time.perf_counter()
-        assert result == expected
-        execution_result.append(json.dumps({
-            'status': 'success',
-            'result': result,
-            'output': sys.stdout.getvalue(),
-            'expected': expected,
-            'arguments': arguments,
-            'execution_time': finish - start
-        }))
-        sys.stdout.truncate(0)
-        sys.stdout.seek(0)
-        return success
-    except AssertionError as exc:
-        execution_result.append(json.dumps({
-            'status': 'failure',
-            'result': result,
-            'output': sys.stdout.getvalue(),
-            'expected': expected,
-            'arguments': arguments,
-            'execution_time': finish - start
-        }))
-        sys.stdout.truncate(0)
-        sys.stdout.seek(0)
-        return False
-
-try:
-    from solution import solution
-    success = True
-
-    solution_lambda = lambda arguments: solution(*arguments)
-    success = assert_result(solution_lambda, 3, [1, 2], success)
-    success = assert_result(solution_lambda, 7, [5, 3], success)
-
-    if success:
-        execution_result.append(json.dumps({
-            'status': 'ok',
-            'result': '__code-0__',
-        }))
-except Exception as exc:
-    execution_result.append(json.dumps({
-        'status': 'error',
-        'result': exc.args,
-    }))
-
-sys.stdout = original_stdout
-print(execution_result)
+runner.Runner([[0, 1], [1, 1], [1, 0]]).call()

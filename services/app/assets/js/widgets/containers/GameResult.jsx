@@ -4,7 +4,7 @@ import _ from 'lodash';
 import { Alert } from 'react-bootstrap';
 import * as selectors from '../selectors';
 import GameTypeCodes from '../config/gameTypeCodes';
-import GameStatusCodes from '../config/gameStatusCodes';
+import GameStateCodes from '../config/gameStateCodes';
 import i18n from '../../i18n';
 
 const GameResult = () => {
@@ -15,14 +15,14 @@ const GameResult = () => {
   const gameType = useSelector(state => selectors.gameTypeSelector(state));
 
   const getResultMessage = () => {
-    if (gameStatus.status === GameStatusCodes.timeout) {
+    if (gameStatus.state === GameStateCodes.timeout) {
       return ({
         alertStyle: 'danger',
         msg: gameStatus.msg,
       });
     }
 
-    const winner = _.find(players, ['gameResult', 'won']);
+    const winner = _.find(players, ['result', 'won']);
 
     if (!winner) {
       return null;

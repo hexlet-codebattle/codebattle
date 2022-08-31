@@ -34,7 +34,7 @@ void main() {
     );
 
     if (success_) {
-      print_message({'status': 'ok', 'result': <%= hash_sum %>});
+      print_message({'status': 'ok', 'result': <%= check_code %>});
     }
 
     } catch (e) {

@@ -8,14 +8,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import Gon from 'gon';
 import classnames from 'classnames';
 import * as lobbyMiddlewares from '../middlewares/Lobby';
-import gameStatusCodes from '../config/gameStatusCodes';
+import gameStateCodes from '../config/gameStateCodes';
 import { actions } from '../slices';
 import * as selectors from '../selectors';
 import Loading from '../components/Loading';
 // import GamesHeatmap from '../components/GamesHeatmap';
 // import Card from '../components/Card';
 import UserInfo from './UserInfo';
-import { makeCreateGameBotUrl, getSignInGithubUrl } from '../utils/urlBuilders';
+import { makeGameUrl, getSignInGithubUrl } from '../utils/urlBuilders';
 import i18n from '../../i18n';
 // import StartGamePanel from '../components/StartGamePanel';
 import CompletedGames from '../components/Game/CompletedGames';
@@ -28,11 +28,9 @@ import levelRatio from '../config/levelRatio';
 import PlayerLoading from '../components/PlayerLoading';
 import hashLinkNames from '../config/hashLinkNames';
 
-const isActiveGame = game => [
-  gameStatusCodes.playing, gameStatusCodes.waitingOpponent,
-].includes(game.state);
+const isActiveGame = game => [gameStateCodes.playing, gameStateCodes.waitingOpponent].includes(game.state);
 
-const Players = ({ players, checkResults }) => {
+const Players = ({ players }) => {
   if (players.length === 1) {
     return (
       <td className="p-3 align-middle text-nowrap" colSpan={2}>
@@ -48,29 +46,45 @@ const Players = ({ players, checkResults }) => {
     <>
       <td className="p-3 align-middle text-nowrap cb-username-td text-truncate">
         <div className="d-flex flex-column position-relative">
-          <UserInfo user={players[0]} hideOnlineIndicator loading={checkResults[0].status === 'started'} />
-          <div className={`cb-check-result-bar ${checkResults[0].status}`}>
+          <UserInfo
+            user={players[0]}
+            hideOnlineIndicator
+            loading={players[0].checkResult.status === 'started'}
+          />
+          <div className={`cb-check-result-bar ${players[0].checkResult.status}`}>
             <div
               className="cb-asserts-progress"
-              style={{ width: `${getBarLength(checkResults[0]?.assertsCount, checkResults[0]?.successCount)}%` }}
+              style={{
+                width: `${getBarLength(
+                  players[0].checkResult?.assertsCount,
+                  players[0].checkResult?.successCount,
+                )}%`,
+              }}
             />
           </div>
-          <PlayerLoading show={checkResults[0].status === 'started'} small />
+          <PlayerLoading show={players[0].checkResult.status === 'started'} small />
         </div>
       </td>
       <td className="p-3 align-middle text-nowrap cb-username-td text-truncate">
         <div className="d-flex flex-column position-relative">
-          <UserInfo user={players[1]} hideOnlineIndicator loading={checkResults[1].status === 'started'} />
-          <div className={`cb-check-result-bar ${checkResults[1].status}`}>
+          <UserInfo
+            user={players[1]}
+            hideOnlineIndicator
+            loading={players[1].checkResult.status === 'started'}
+          />
+          <div className={`cb-check-result-bar ${players[1].checkResult.status}`}>
             <div
               className="cb-asserts-progress"
               style={{
-                width: `${getBarLength(checkResults[1]?.assertsCount, checkResults[1]?.successCount)}%`,
+                width: `${getBarLength(
+                  players[1].checkResult?.assertsCount,
+                  players[1].checkResult?.successCount,
+                )}%`,
                 right: 0,
               }}
             />
           </div>
-          <PlayerLoading show={checkResults[1].status === 'started'} small />
+          <PlayerLoading show={players[1].checkResult.status === 'started'} small />
         </div>
       </td>
     </>
@@ -102,18 +116,18 @@ const renderButton = (url, type) => {
 };
 
 const GameActionButton = ({ game }) => {
-  const gameUrl = makeCreateGameBotUrl(game.id);
-  const gameUrlJoin = makeCreateGameBotUrl(game.id, 'join');
+  const gameUrl = makeGameUrl(game.id);
+  const gameUrlJoin = makeGameUrl(game.id, 'join');
   const currentUser = Gon.getAsset('current_user');
   const gameState = game.state;
   const signInUrl = getSignInGithubUrl();
 
-  if (gameState === gameStatusCodes.playing) {
+  if (gameState === gameStateCodes.playing) {
     const type = isPlayer(currentUser, game) ? 'continue' : 'show';
     return renderButton(gameUrl, type);
   }
 
-  if (gameState === gameStatusCodes.waitingOpponent) {
+  if (gameState === gameStateCodes.waitingOpponent) {
     if (isPlayer(currentUser, game)) {
       return (
         <div className="d-flex justify-content-center">
@@ -143,7 +157,7 @@ const GameActionButton = ({ game }) => {
         </div>
       );
     }
-    if (currentUser.guest) {
+    if (currentUser.isGuest) {
       return (
         <button
           type="button"
@@ -236,6 +250,7 @@ const CompletedTournaments = ({ tournaments }) => {
         <thead className="">
           <tr>
             <th className="p-3 border-0">Title</th>
+            <th className="p-3 border-0">Type</th>
             <th className="p-3 border-0">Starts_at</th>
             <th className="p-3 border-0">Creator</th>
             <th className="p-3 border-0">Actions</th>
@@ -245,6 +260,7 @@ const CompletedTournaments = ({ tournaments }) => {
           {_.orderBy(tournaments, 'startsAt', 'desc').map(tournament => (
             <tr key={tournament.id}>
               <td className="p-3 align-middle">{tournament.name}</td>
+              <td className="p-3 align-middle">{tournament.type}</td>
               <td className="p-3 align-middle text-nowrap">
                 {moment
                   .utc(tournament.startsAt)
@@ -266,10 +282,14 @@ const CompletedTournaments = ({ tournaments }) => {
 };
 
 const ActiveGames = ({ games }) => {
+  if (!games) {
+    return null;
+  }
+
   const currentUser = Gon.getAsset('current_user');
 
   const filterGames = game => {
-    if (game.type === 'private') {
+    if (game.visibilityType === 'hidden') {
       return !!_.find(game.players, { id: currentUser.id });
     }
     return true;
@@ -320,42 +340,30 @@ const ActiveGames = ({ games }) => {
           </tr>
         </thead>
         <tbody>
-          {/*
-            TODO: handle game.checkResults
-
-            checkResults[0].status = "ok" | "failure" | "started" | "error"
-            checkResults[0].userId
-
-            checkResults <-> players Порядок элементов друг-другу соответствуют
-
-            checkResults[0].status = "failure"
-            checkResults[0].assertsCount
-            checkResults[0].successCount
-          */}
-          {sortedGames.map(game => (isActiveGame(game)
-            && (
-              <tr key={game.id} className="text-dark game-item">
-                <td className="p-3 align-middle text-nowrap">
-                  <GameLevelBadge level={game.level} />
-                </td>
-                <td className="p-3 align-middle text-center text-nowrap">
-                  <img
-                    alt={game.state}
-                    title={game.state}
-                    src={
-                      game.state === 'playing'
-                        ? '/assets/images/playing.svg'
-                        : '/assets/images/waitingOpponent.svg'
-                    }
-                  />
-                </td>
-                <Players gameId={game.id} players={game.players} checkResults={game.checkResults} />
-                <td className="p-3 align-middle text-center">
-                  <GameActionButton game={game} />
-                </td>
-              </tr>
-            )
-          ))}
+          {sortedGames.map(
+            game => isActiveGame(game) && (
+            <tr key={game.id} className="text-dark game-item">
+              <td className="p-3 align-middle text-nowrap">
+                <GameLevelBadge level={game.level} />
+              </td>
+              <td className="p-3 align-middle text-center text-nowrap">
+                <img
+                  alt={game.state}
+                  title={game.state}
+                  src={
+                        game.state === 'playing'
+                          ? '/assets/images/playing.svg'
+                          : '/assets/images/waitingOpponent.svg'
+                      }
+                />
+              </td>
+              <Players players={game.players} />
+              <td className="p-3 align-middle text-center">
+                <GameActionButton game={game} />
+              </td>
+            </tr>
+              ),
+          )}
         </tbody>
       </table>
     </div>
@@ -364,7 +372,10 @@ const ActiveGames = ({ games }) => {
 
 const tabLinkClassName = (...hash) => {
   const url = new URL(window.location);
-  return classnames('nav-item nav-link text-uppercase rounded-0 text-black font-weight-bold p-3', { active: hash.includes(url.hash) });
+  return classnames(
+    'nav-item nav-link text-uppercase rounded-0 text-black font-weight-bold p-3',
+    { active: hash.includes(url.hash) },
+  );
 };
 
 const tabContentClassName = hash => {
@@ -382,13 +393,19 @@ const tabLinkHandler = hash => () => {
 };
 
 const GameContainers = ({
-  activeGames, completedGames, liveTournaments, completedTournaments,
+  activeGames,
+  completedGames,
+  liveTournaments,
+  completedTournaments,
 }) => (
   <div className="p-0">
     <nav>
       <div className="nav nav-tabs bg-gray" id="nav-tab" role="tablist">
         <a
-          className={tabLinkClassName(hashLinkNames.lobby, hashLinkNames.default)}
+          className={tabLinkClassName(
+            hashLinkNames.lobby,
+            hashLinkNames.default,
+          )}
           id="lobby-tab"
           data-toggle="tab"
           href="#lobby"
@@ -427,7 +444,10 @@ const GameContainers = ({
     </nav>
     <div className="tab-content" id="nav-tabContent">
       <div
-        className={tabContentClassName(hashLinkNames.lobby, hashLinkNames.default)}
+        className={tabContentClassName(
+          hashLinkNames.lobby,
+          hashLinkNames.default,
+        )}
         id="lobby"
         role="tabpanel"
         aria-labelledby="lobby-tab"

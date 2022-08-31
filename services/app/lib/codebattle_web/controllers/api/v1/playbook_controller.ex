@@ -2,8 +2,9 @@ defmodule CodebattleWeb.Api.V1.PlaybookController do
   use CodebattleWeb, :controller
 
   alias Codebattle.{Game, Repo, User, Task}
-  alias Codebattle.GameProcess.{FsmHelpers, Play, Server}
-  alias Codebattle.Bot.Playbook
+  alias Codebattle.Game.{Helpers, Server}
+
+  alias Codebattle.Playbook
   import Ecto.Query, warn: false
 
   def approve(conn, %{"game_id" => game_id}) do
@@ -58,28 +59,27 @@ defmodule CodebattleWeb.Api.V1.PlaybookController do
         limit: 1
       )
 
-    case Play.get_fsm(game_id) do
-      {:ok, fsm} ->
-        {:ok, records} = Server.get_playbook(game_id)
+    case Game.Context.get_game!(game_id) do
+      game = %Game{is_live: true} ->
+        {:ok, records} = Server.get_playbook_records(game_id)
 
-        winner = FsmHelpers.get_winner(fsm)
+        winner = Helpers.get_winner(game)
         winner_id = if is_nil(winner), do: nil, else: winner.id
         winner_lang = if is_nil(winner), do: nil, else: winner.editor_lang
 
         json(conn, %{
-          players: FsmHelpers.get_players(fsm),
+          players: Helpers.get_players(game),
           records: Enum.reverse(records),
-          task: FsmHelpers.get_task(fsm),
-          type: FsmHelpers.get_type(fsm),
+          task: Helpers.get_task(game),
+          type: Helpers.get_type(game),
           solution_type: "incomplete",
-          tournament_id: FsmHelpers.get_tournament_id(fsm),
+          tournament_id: Helpers.get_tournament_id(game),
           winner_id: winner_id,
           winner_lang: winner_lang
         })
 
-      _ ->
+      game ->
         playbook = Repo.one(query)
-        game = Repo.get(Game, game_id)
         task = Repo.get(Task, playbook.task_id)
 
         json(conn, %{

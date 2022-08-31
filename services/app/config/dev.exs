@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 root_dir = File.cwd!()
 
@@ -24,8 +24,8 @@ config :codebattle, CodebattleWeb.Endpoint,
       ~r{priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$},
       ~r{priv/gettext/.*(po)$},
       ~r{lib/codebattle_web/views/.*(ex)$},
-      ~r{lib/codebattle_web/templates/.*(eex|slim|slime|slimleex)$},
-      ~r{lib/codebattle_web/live/.*(eex|slim|slime|slimleex)$}
+      ~r{lib/codebattle_web/templates/.*(eex)$},
+      ~r{lib/codebattle_web/live/.*(eex)$}
     ]
   ]
 
@@ -45,7 +45,7 @@ config :codebattle, Codebattle.Repo,
   pool_size: 7
 
 config :codebattle, Codebattle.Plugs, rollbar_api_key: System.get_env("ROLLBAR_API_KEY")
-config :codebattle, Codebattle.Invite, timeout: :timer.minutes(15)
-config :codebattle, Codebattle.Invite, lifetime: :timer.minutes(15)
 
-config :codebattle, Codebattle.Bot, timeout: 2_000
+config :codebattle, Codebattle.Invite,
+  timeout: :timer.minutes(15),
+  lifetime: :timer.minutes(15)

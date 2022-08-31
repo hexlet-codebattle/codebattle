@@ -1,0 +1,710 @@
+{
+  "count": 81,
+  "players": [
+    {
+      "id": 1,
+      "name": "Acemore",
+      "time": 1661688472575,
+      "type": "player_state",
+      "record_id": 1,
+      "editor_lang": "python",
+      "editor_text": "from typing import List, Dict\n\ndef solution(number: int) -> bool:\n    return len(set(str(number))) == 1#r)",
+      "check_result": { "output": "", "result": "" },
+      "total_time_ms": 53471
+    },
+    {
+      "id": -7,
+      "name": "VadimFront",
+      "time": 1661688473561,
+      "type": "player_state",
+      "record_id": 0,
+      "editor_lang": "js",
+      "editor_text": "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (number) => {\n\treturn new Set([...numb])\n};\n\nmodule.exports = solution;",
+      "check_result": { "output": "", "result": "" },
+      "total_time_ms": 54457
+    }
+  ],
+  "records": [
+    {
+      "id": -7,
+      "name": "VadimFront",
+      "time": 1661688419104,
+      "type": "init",
+      "record_id": 0,
+      "editor_lang": "python",
+      "editor_text": "from typing import List, Dict\n\ndef solution(number: int) -> bool:",
+      "check_result": { "output": "", "result": "" }
+    },
+    {
+      "id": 1,
+      "name": "Acemore",
+      "time": 1661688419104,
+      "type": "init",
+      "record_id": 1,
+      "editor_lang": "python",
+      "editor_text": "from typing import List, Dict\n\ndef solution(number: int) -> bool:",
+      "check_result": { "output": "", "result": "" }
+    },
+    {
+      "id": 1,
+      "name": "Acemore",
+      "time": 1661688420107,
+      "type": "join_chat",
+      "record_id": 2
+    },
+    {
+      "id": -7,
+      "name": "VadimFront",
+      "time": 1661688420636,
+      "type": "join_chat",
+      "record_id": 3
+    },
+    {
+      "id": -7,
+      "name": "VadimFront(bot)",
+      "time": 1661688420738,
+      "type": "chat_message",
+      "message": null,
+      "record_id": 4
+    },
+    {
+      "id": -7,
+      "diff": {
+        "time": 11554,
+        "delta": [
+          { "insert": "c" },
+          { "delete": 2 },
+          { "retain": 1 },
+          { "delete": 6 },
+          { "retain": 1 },
+          { "insert": "s" },
+          { "delete": 7 },
+          { "retain": 2 },
+          { "insert": "_ = requ" },
+          { "delete": 1 },
+          { "retain": 1 },
+          { "insert": "re(\"loda" },
+          { "retain": 1 },
+          { "insert": "h\");\ncons" },
+          { "retain": 1 },
+          { "delete": 1 },
+          { "retain": 1 },
+          { "insert": "R = requ" },
+          { "delete": 1 },
+          { "retain": 1 },
+          { "insert": "re(\"rambda\");" },
+          { "delete": 2 },
+          { "retain": 2 },
+          { "insert": "const" },
+          { "delete": 3 },
+          { "retain": 9 },
+          { "insert": " = " },
+          { "retain": 7 },
+          { "delete": 5 },
+          { "retain": 2 },
+          { "insert": "=" },
+          { "delete": 1 },
+          { "retain": 2 },
+          { "insert": "{\n\treturn true;\n};\n\nm" },
+          { "delete": 1 },
+          { "retain": 1 },
+          { "insert": "dule.exp" },
+          { "retain": 1 },
+          { "insert": "rts = so" },
+          { "retain": 1 },
+          { "insert": "ution;" },
+          { "delete": 1 }
+        ],
+        "next_lang": "js"
+      },
+      "time": 1661688430658,
+      "type": "update_editor_data",
+      "record_id": 5
+    },
+    {
+      "id": 1,
+      "diff": {
+        "time": 12161,
+        "delta": [{ "retain": 65 }, { "insert": "\n    " }]
+      },
+      "time": 1661688431265,
+      "type": "update_editor_data",
+      "record_id": 6
+    },
+    {
+      "id": -7,
+      "diff": { "time": 903, "delta": [{ "retain": 91 }, { "delete": 12 }] },
+      "time": 1661688431561,
+      "type": "update_editor_data",
+      "record_id": 7
+    },
+    {
+      "id": 1,
+      "diff": { "time": 487, "delta": [{ "retain": 70 }, { "insert": "r" }] },
+      "time": 1661688431752,
+      "type": "update_editor_data",
+      "record_id": 8
+    },
+    {
+      "id": 1,
+      "diff": { "time": 144, "delta": [{ "retain": 71 }, { "insert": "e" }] },
+      "time": 1661688431896,
+      "type": "update_editor_data",
+      "record_id": 9
+    },
+    {
+      "id": 1,
+      "diff": { "time": 265, "delta": [{ "retain": 72 }, { "insert": "t" }] },
+      "time": 1661688432161,
+      "type": "update_editor_data",
+      "record_id": 10
+    },
+    {
+      "id": 1,
+      "diff": { "time": 289, "delta": [{ "retain": 73 }, { "insert": "u" }] },
+      "time": 1661688432450,
+      "type": "update_editor_data",
+      "record_id": 11
+    },
+    {
+      "id": 1,
+      "diff": { "time": 235, "delta": [{ "retain": 74 }, { "insert": "r" }] },
+      "time": 1661688432685,
+      "type": "update_editor_data",
+      "record_id": 12
+    },
+    {
+      "id": 1,
+      "diff": { "time": 470, "delta": [{ "retain": 75 }, { "insert": "n" }] },
+      "time": 1661688433155,
+      "type": "update_editor_data",
+      "record_id": 13
+    },
+    {
+      "id": 1,
+      "diff": { "time": 212, "delta": [{ "retain": 76 }, { "insert": " " }] },
+      "time": 1661688433367,
+      "type": "update_editor_data",
+      "record_id": 14
+    },
+    {
+      "id": 1,
+      "diff": { "time": 1510, "delta": [{ "retain": 77 }, { "insert": "l" }] },
+      "time": 1661688434877,
+      "type": "update_editor_data",
+      "record_id": 15
+    },
+    {
+      "id": 1,
+      "diff": { "time": 331, "delta": [{ "retain": 78 }, { "insert": "e" }] },
+      "time": 1661688435208,
+      "type": "update_editor_data",
+      "record_id": 16
+    },
+    {
+      "id": 1,
+      "diff": { "time": 542, "delta": [{ "retain": 79 }, { "insert": "n" }] },
+      "time": 1661688435750,
+      "type": "update_editor_data",
+      "record_id": 17
+    },
+    {
+      "id": 1,
+      "diff": { "time": 756, "delta": [{ "retain": 80 }, { "insert": "()" }] },
+      "time": 1661688436506,
+      "type": "update_editor_data",
+      "record_id": 18
+    },
+    {
+      "id": 1,
+      "diff": { "time": 810, "delta": [{ "retain": 81 }, { "insert": "s" }] },
+      "time": 1661688437316,
+      "type": "update_editor_data",
+      "record_id": 19
+    },
+    {
+      "id": 1,
+      "diff": { "time": 190, "delta": [{ "retain": 82 }, { "insert": "e" }] },
+      "time": 1661688437506,
+      "type": "update_editor_data",
+      "record_id": 20
+    },
+    {
+      "id": 1,
+      "diff": { "time": 174, "delta": [{ "retain": 83 }, { "insert": "r" }] },
+      "time": 1661688437680,
+      "type": "update_editor_data",
+      "record_id": 21
+    },
+    {
+      "id": 1,
+      "diff": { "time": 1879, "delta": [{ "retain": 83 }, { "insert": "t" }] },
+      "time": 1661688439559,
+      "type": "update_editor_data",
+      "record_id": 22
+    },
+    {
+      "id": 1,
+      "diff": { "time": 988, "delta": [{ "retain": 84 }, { "insert": "(" }] },
+      "time": 1661688440547,
+      "type": "update_editor_data",
+      "record_id": 23
+    },
+    {
+      "id": 1,
+      "diff": { "time": 849, "delta": [{ "retain": 85 }, { "insert": "s" }] },
+      "time": 1661688441396,
+      "type": "update_editor_data",
+      "record_id": 24
+    },
+    {
+      "id": 1,
+      "diff": { "time": 330, "delta": [{ "retain": 86 }, { "insert": "t" }] },
+      "time": 1661688441726,
+      "type": "update_editor_data",
+      "record_id": 25
+    },
+    {
+      "id": -7,
+      "diff": { "time": 10286, "delta": [{ "retain": 91 }, { "insert": "к" }] },
+      "time": 1661688441847,
+      "type": "update_editor_data",
+      "record_id": 26
+    },
+    {
+      "id": 1,
+      "diff": { "time": 157, "delta": [{ "retain": 88 }, { "insert": "r" }] },
+      "time": 1661688441883,
+      "type": "update_editor_data",
+      "record_id": 27
+    },
+    {
+      "id": -7,
+      "diff": { "time": 1001, "delta": [{ "retain": 92 }, { "insert": "у" }] },
+      "time": 1661688442848,
+      "type": "update_editor_data",
+      "record_id": 28
+    },
+    {
+      "id": 1,
+      "diff": { "time": 1044, "delta": [{ "retain": 88 }, { "insert": "(" }] },
+      "time": 1661688442927,
+      "type": "update_editor_data",
+      "record_id": 29
+    },
+    {
+      "id": -7,
+      "diff": { "time": 1001, "delta": [{ "retain": 93 }, { "insert": "е" }] },
+      "time": 1661688443849,
+      "type": "update_editor_data",
+      "record_id": 30
+    },
+    {
+      "id": 1,
+      "diff": { "time": 976, "delta": [{ "retain": 89 }, { "insert": "n" }] },
+      "time": 1661688443903,
+      "type": "update_editor_data",
+      "record_id": 31
+    },
+    {
+      "id": 1,
+      "diff": { "time": 232, "delta": [{ "retain": 90 }, { "insert": "u" }] },
+      "time": 1661688444135,
+      "type": "update_editor_data",
+      "record_id": 32
+    },
+    {
+      "id": 1,
+      "diff": { "time": 340, "delta": [{ "retain": 91 }, { "insert": "m" }] },
+      "time": 1661688444475,
+      "type": "update_editor_data",
+      "record_id": 33
+    },
+    {
+      "id": 1,
+      "diff": { "time": 362, "delta": [{ "retain": 92 }, { "insert": "b" }] },
+      "time": 1661688444837,
+      "type": "update_editor_data",
+      "record_id": 34
+    },
+    {
+      "id": -7,
+      "diff": { "time": 1001, "delta": [{ "retain": 94 }, { "insert": "г" }] },
+      "time": 1661688444850,
+      "type": "update_editor_data",
+      "record_id": 35
+    },
+    {
+      "id": 1,
+      "diff": { "time": 360, "delta": [{ "retain": 93 }, { "insert": "e" }] },
+      "time": 1661688445197,
+      "type": "update_editor_data",
+      "record_id": 36
+    },
+    {
+      "id": 1,
+      "diff": { "time": 157, "delta": [{ "retain": 95 }, { "insert": "r" }] },
+      "time": 1661688445354,
+      "type": "update_editor_data",
+      "record_id": 37
+    },
+    {
+      "id": -7,
+      "diff": { "time": 1001, "delta": [{ "retain": 95 }, { "insert": "к" }] },
+      "time": 1661688445851,
+      "type": "update_editor_data",
+      "record_id": 38
+    },
+    {
+      "id": -7,
+      "diff": { "time": 1001, "delta": [{ "retain": 95 }, { "delete": 1 }] },
+      "time": 1661688446852,
+      "type": "update_editor_data",
+      "record_id": 39
+    },
+    {
+      "id": 1,
+      "diff": { "time": 1791, "delta": [{ "retain": 95 }, { "insert": ")" }] },
+      "time": 1661688447145,
+      "type": "update_editor_data",
+      "record_id": 40
+    },
+    {
+      "id": -7,
+      "diff": { "time": 1001, "delta": [{ "retain": 94 }, { "delete": 1 }] },
+      "time": 1661688447853,
+      "type": "update_editor_data",
+      "record_id": 41
+    },
+    {
+      "id": 1,
+      "diff": { "time": 1431, "delta": [{ "retain": 96 }, { "insert": ")" }] },
+      "time": 1661688448576,
+      "type": "update_editor_data",
+      "record_id": 42
+    },
+    {
+      "id": 1,
+      "diff": { "time": 181, "delta": [{ "retain": 97 }, { "insert": ")" }] },
+      "time": 1661688448757,
+      "type": "update_editor_data",
+      "record_id": 43
+    },
+    {
+      "id": -7,
+      "diff": { "time": 1001, "delta": [{ "retain": 93 }, { "delete": 1 }] },
+      "time": 1661688448854,
+      "type": "update_editor_data",
+      "record_id": 44
+    },
+    {
+      "id": 1,
+      "diff": { "time": 864, "delta": [{ "retain": 98 }, { "insert": "#" }] },
+      "time": 1661688449621,
+      "type": "update_editor_data",
+      "record_id": 45
+    },
+    {
+      "id": -7,
+      "diff": { "time": 1001, "delta": [{ "retain": 92 }, { "delete": 1 }] },
+      "time": 1661688449855,
+      "type": "update_editor_data",
+      "record_id": 46
+    },
+    {
+      "id": -7,
+      "diff": { "time": 1001, "delta": [{ "retain": 91 }, { "delete": 1 }] },
+      "time": 1661688450856,
+      "type": "update_editor_data",
+      "record_id": 47
+    },
+    {
+      "id": 1,
+      "time": 1661688450990,
+      "type": "start_check",
+      "record_id": 48,
+      "editor_lang": "python",
+      "editor_text": "from typing import List, Dict\n\ndef solution(number: int) -> bool:\n    return len(set(str(number)))#r)"
+    },
+    {
+      "id": 1,
+      "time": 1661688451644,
+      "type": "check_complete",
+      "record_id": 49,
+      "editor_lang": "python",
+      "editor_text": "from typing import List, Dict\n\ndef solution(number: int) -> bool:\n    return len(set(str(number)))#r)",
+      "check_result": {
+        "output": "{\"status\": \"failure\", \"result\": 2, \"output\": \"\", \"expected\": false, \"arguments\": [10], \"execution_time\": 3.875233232975006e-06}",
+        "result": "{\"status\": \"failure\", \"result\": 2, \"output\": \"\", \"expected\": false, \"arguments\": [10], \"execution_time\": 3.875233232975006e-06}",
+        "status": "failure",
+        "asserts": [
+          "{\"status\": \"failure\", \"result\": 2, \"output\": \"\", \"expected\": false, \"arguments\": [10], \"execution_time\": 3.875233232975006e-06}",
+          "{\"status\": \"failure\", \"result\": 2, \"output\": \"\", \"expected\": false, \"arguments\": [112], \"execution_time\": 1.6670674085617065e-06}",
+          "{\"status\": \"failure\", \"result\": 3, \"output\": \"\", \"expected\": false, \"arguments\": [782], \"execution_time\": 9.6810981631279e-07}",
+          "{\"status\": \"failure\", \"result\": 3, \"output\": \"\", \"expected\": false, \"arguments\": [513], \"execution_time\": 9.41101461648941e-07}",
+          "{\"status\": \"failure\", \"result\": 3, \"output\": \"\", \"expected\": false, \"arguments\": [901], \"execution_time\": 8.698552846908569e-07}",
+          "{\"status\": \"failure\", \"result\": 2, \"output\": \"\", \"expected\": false, \"arguments\": [322], \"execution_time\": 7.69738107919693e-07}",
+          "{\"status\": \"failure\", \"result\": 3, \"output\": \"\", \"expected\": false, \"arguments\": [763], \"execution_time\": 7.310882210731506e-07}",
+          "{\"status\": \"failure\", \"result\": 2, \"output\": \"\", \"expected\": false, \"arguments\": [484], \"execution_time\": 7.380731403827667e-07}",
+          "{\"status\": \"failure\", \"result\": 3, \"output\": \"\", \"expected\": false, \"arguments\": [570], \"execution_time\": 7.404014468193054e-07}",
+          "{\"status\": \"failure\", \"result\": 2, \"output\": \"\", \"expected\": false, \"arguments\": [771], \"execution_time\": 6.51925802230835e-07}",
+          "{\"status\": \"success\", \"result\": 1, \"output\": \"\", \"expected\": true, \"arguments\": [111], \"execution_time\": 1.026783138513565e-06}",
+          "{\"status\": \"success\", \"result\": 1, \"output\": \"\", \"expected\": true, \"arguments\": [66], \"execution_time\": 1.0998919606208801e-06}",
+          "{\"status\": \"success\", \"result\": 1, \"output\": \"\", \"expected\": true, \"arguments\": [33], \"execution_time\": 8.880160748958588e-07}",
+          "{\"status\": \"success\", \"result\": 1, \"output\": \"\", \"expected\": true, \"arguments\": [444], \"execution_time\": 2.2640451788902283e-06}",
+          "{\"status\": \"success\", \"result\": 1, \"output\": \"\", \"expected\": true, \"arguments\": [1111], \"execution_time\": 1.0938383638858795e-06}",
+          "{\"status\": \"success\", \"result\": 1, \"output\": \"\", \"expected\": true, \"arguments\": [333], \"execution_time\": 6.887130439281464e-07}",
+          "{\"status\": \"success\", \"result\": 1, \"output\": \"\", \"expected\": true, \"arguments\": [444], \"execution_time\": 6.356276571750641e-07}",
+          "{\"status\": \"success\", \"result\": 1, \"output\": \"\", \"expected\": true, \"arguments\": [44], \"execution_time\": 6.551854312419891e-07}",
+          "{\"status\": \"success\", \"result\": 1, \"output\": \"\", \"expected\": true, \"arguments\": [444], \"execution_time\": 6.421469151973724e-07}",
+          "{\"status\": \"success\", \"result\": 1, \"output\": \"\", \"expected\": true, \"arguments\": [33], \"execution_time\": 6.658956408500671e-07}",
+          "{\"status\": \"success\", \"result\": 1, \"output\": \"\", \"expected\": true, \"arguments\": [3333], \"execution_time\": 6.998889148235321e-07}",
+          "{\"status\": \"success\", \"result\": 1, \"output\": \"\", \"expected\": true, \"arguments\": [4444], \"execution_time\": 6.742775440216064e-07}",
+          "{\"status\": \"success\", \"result\": 1, \"output\": \"\", \"expected\": true, \"arguments\": [22], \"execution_time\": 6.742775440216064e-07}",
+          "{\"status\": \"success\", \"result\": 1, \"output\": \"\", \"expected\": true, \"arguments\": [444], \"execution_time\": 6.128102540969849e-07}",
+          "{\"status\": \"success\", \"result\": 1, \"output\": \"\", \"expected\": true, \"arguments\": [2222], \"execution_time\": 6.901100277900696e-07}",
+          "{\"status\": \"success\", \"result\": 1, \"output\": \"\", \"expected\": true, \"arguments\": [3333], \"execution_time\": 6.84056431055069e-07}",
+          "{\"status\": \"success\", \"result\": 1, \"output\": \"\", \"expected\": true, \"arguments\": [2222], \"execution_time\": 6.882473826408386e-07}",
+          "{\"status\": \"success\", \"result\": 1, \"output\": \"\", \"expected\": true, \"arguments\": [333], \"execution_time\": 6.50063157081604e-07}",
+          "{\"status\": \"success\", \"result\": 1, \"output\": \"\", \"expected\": true, \"arguments\": [44], \"execution_time\": 6.640329957008362e-07}",
+          "{\"status\": \"success\", \"result\": 1, \"output\": \"\", \"expected\": true, \"arguments\": [2222], \"execution_time\": 6.51925802230835e-07}"
+        ],
+        "asserts_count": 30,
+        "success_count": 20
+      }
+    },
+    {
+      "id": -7,
+      "diff": { "time": 1002, "delta": [{ "retain": 91 }, { "insert": "r" }] },
+      "time": 1661688451858,
+      "type": "update_editor_data",
+      "record_id": 50
+    },
+    {
+      "id": -7,
+      "diff": { "time": 858, "delta": [{ "retain": 92 }, { "insert": "e" }] },
+      "time": 1661688452716,
+      "type": "update_editor_data",
+      "record_id": 51
+    },
+    {
+      "id": -7,
+      "diff": { "time": 1001, "delta": [{ "retain": 93 }, { "insert": "t" }] },
+      "time": 1661688453717,
+      "type": "update_editor_data",
+      "record_id": 52
+    },
+    {
+      "id": -7,
+      "diff": { "time": 1002, "delta": [{ "retain": 94 }, { "insert": "u" }] },
+      "time": 1661688454719,
+      "type": "update_editor_data",
+      "record_id": 53
+    },
+    {
+      "id": -7,
+      "diff": { "time": 1000, "delta": [{ "retain": 95 }, { "insert": "r" }] },
+      "time": 1661688455719,
+      "type": "update_editor_data",
+      "record_id": 54
+    },
+    {
+      "id": -7,
+      "diff": { "time": 1001, "delta": [{ "retain": 96 }, { "insert": "n" }] },
+      "time": 1661688456720,
+      "type": "update_editor_data",
+      "record_id": 55
+    },
+    {
+      "id": -7,
+      "diff": { "time": 1001, "delta": [{ "retain": 97 }, { "insert": " " }] },
+      "time": 1661688457721,
+      "type": "update_editor_data",
+      "record_id": 56
+    },
+    {
+      "id": -7,
+      "diff": { "time": 1001, "delta": [{ "retain": 98 }, { "insert": "n" }] },
+      "time": 1661688458722,
+      "type": "update_editor_data",
+      "record_id": 57
+    },
+    {
+      "id": -7,
+      "diff": { "time": 825, "delta": [{ "retain": 99 }, { "insert": "e" }] },
+      "time": 1661688459547,
+      "type": "update_editor_data",
+      "record_id": 58
+    },
+    {
+      "id": -7,
+      "diff": { "time": 1001, "delta": [{ "retain": 100 }, { "insert": "w" }] },
+      "time": 1661688460548,
+      "type": "update_editor_data",
+      "record_id": 59
+    },
+    {
+      "id": -7,
+      "diff": { "time": 1001, "delta": [{ "retain": 101 }, { "insert": " " }] },
+      "time": 1661688461549,
+      "type": "update_editor_data",
+      "record_id": 60
+    },
+    {
+      "id": -7,
+      "diff": { "time": 1001, "delta": [{ "retain": 102 }, { "insert": "S" }] },
+      "time": 1661688462550,
+      "type": "update_editor_data",
+      "record_id": 61
+    },
+    {
+      "id": -7,
+      "diff": { "time": 1001, "delta": [{ "retain": 103 }, { "insert": "e" }] },
+      "time": 1661688463551,
+      "type": "update_editor_data",
+      "record_id": 62
+    },
+    {
+      "id": -7,
+      "diff": { "time": 1001, "delta": [{ "retain": 104 }, { "insert": "t" }] },
+      "time": 1661688464552,
+      "type": "update_editor_data",
+      "record_id": 63
+    },
+    {
+      "id": -7,
+      "diff": {
+        "time": 1001,
+        "delta": [{ "retain": 105 }, { "insert": "()" }]
+      },
+      "time": 1661688465553,
+      "type": "update_editor_data",
+      "record_id": 64
+    },
+    {
+      "id": -7,
+      "diff": {
+        "time": 1001,
+        "delta": [{ "retain": 106 }, { "insert": "[]" }]
+      },
+      "time": 1661688466554,
+      "type": "update_editor_data",
+      "record_id": 65
+    },
+    {
+      "id": -7,
+      "diff": { "time": 1001, "delta": [{ "retain": 107 }, { "insert": "." }] },
+      "time": 1661688467555,
+      "type": "update_editor_data",
+      "record_id": 66
+    },
+    {
+      "id": -7,
+      "diff": { "time": 1001, "delta": [{ "retain": 108 }, { "insert": "." }] },
+      "time": 1661688468556,
+      "type": "update_editor_data",
+      "record_id": 67
+    },
+    {
+      "id": -7,
+      "diff": { "time": 1001, "delta": [{ "retain": 109 }, { "insert": "." }] },
+      "time": 1661688469557,
+      "type": "update_editor_data",
+      "record_id": 68
+    },
+    {
+      "id": 1,
+      "diff": { "time": 20841, "delta": [{ "retain": 98 }, { "insert": " " }] },
+      "time": 1661688470462,
+      "type": "update_editor_data",
+      "record_id": 69
+    },
+    {
+      "id": -7,
+      "diff": { "time": 1001, "delta": [{ "retain": 110 }, { "insert": "n" }] },
+      "time": 1661688470558,
+      "type": "update_editor_data",
+      "record_id": 70
+    },
+    {
+      "id": -7,
+      "diff": { "time": 1001, "delta": [{ "retain": 111 }, { "insert": "u" }] },
+      "time": 1661688471559,
+      "type": "update_editor_data",
+      "record_id": 71
+    },
+    {
+      "id": 1,
+      "diff": { "time": 1274, "delta": [{ "retain": 99 }, { "insert": "=" }] },
+      "time": 1661688471736,
+      "type": "update_editor_data",
+      "record_id": 72
+    },
+    {
+      "id": 1,
+      "diff": { "time": 147, "delta": [{ "retain": 100 }, { "insert": "=" }] },
+      "time": 1661688471883,
+      "type": "update_editor_data",
+      "record_id": 73
+    },
+    {
+      "id": 1,
+      "diff": { "time": 282, "delta": [{ "retain": 101 }, { "insert": " " }] },
+      "time": 1661688472165,
+      "type": "update_editor_data",
+      "record_id": 74
+    },
+    {
+      "id": -7,
+      "diff": { "time": 1001, "delta": [{ "retain": 112 }, { "insert": "m" }] },
+      "time": 1661688472560,
+      "type": "update_editor_data",
+      "record_id": 75
+    },
+    {
+      "id": 1,
+      "diff": { "time": 410, "delta": [{ "retain": 102 }, { "insert": "1" }] },
+      "time": 1661688472575,
+      "type": "update_editor_data",
+      "record_id": 76
+    },
+    {
+      "id": 1,
+      "time": 1661688473467,
+      "type": "start_check",
+      "record_id": 77,
+      "editor_lang": "python",
+      "editor_text": "from typing import List, Dict\n\ndef solution(number: int) -> bool:\n    return len(set(str(number))) == 1#r)"
+    },
+    {
+      "id": -7,
+      "diff": { "time": 1001, "delta": [{ "retain": 113 }, { "insert": "b" }] },
+      "time": 1661688473561,
+      "type": "update_editor_data",
+      "record_id": 78
+    },
+    {
+      "id": 1,
+      "time": 1661688474128,
+      "type": "check_complete",
+      "record_id": 79,
+      "editor_lang": "python",
+      "editor_text": "from typing import List, Dict\n\ndef solution(number: int) -> bool:\n    return len(set(str(number))) == 1#r)",
+      "check_result": {
+        "output": "",
+        "result": "{\"status\": \"ok\", \"result\": \"__code0.23009867171184267__\"}",
+        "status": "ok",
+        "asserts": [],
+        "asserts_count": 0,
+        "success_count": 0
+      }
+    },
+    {
+      "id": 1,
+      "lang": "python",
+      "time": 1661688474128,
+      "type": "game_over",
+      "record_id": 80
+    }
+  ]
+}

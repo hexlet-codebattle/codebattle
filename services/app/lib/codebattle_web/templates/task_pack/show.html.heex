@@ -1,0 +1,29 @@
+<div class="container-xl bg-white shadow-sm rounded py-4 mb-3">
+  <h1 class="text-center">
+    <span><%= @task_pack.name %></span>
+  </h1>
+  <h3 class="text-center mt-4">Params</h3>
+  <div class="d-flex flex-wrap align-items-center justify-content-around text-muted">
+    <span>Visibility: <%= @task_pack.visibility %></span>
+    <span>State: <%= @task_pack.state %></span>
+    <%= if @task_pack.creator_id do %>
+      <span>Creator_id: <%= @task_pack.creator_id %></span>
+    <% end %>
+  </div>
+
+  <h3 class="text-center mt-4">Task_ids</h3>
+  <div class="text-center">
+    <span><%= render_task_ids(@task_pack) %></span>
+  </div>
+
+  <div class="d-flex">
+    <%= if Codebattle.TaskPack.can_access_task_pack?(@task_pack, @current_user) do %>
+      <%= link("Edit",
+        to: Routes.task_pack_path(@conn, :edit, @task_pack),
+        class: "btn btn-success mt-2"
+      ) %>
+    <% end %>
+
+    <%= link("Back", to: Routes.task_pack_path(@conn, :index), class: "ml-auto") %>
+  </div>
+</div>

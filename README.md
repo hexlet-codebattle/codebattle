@@ -12,7 +12,6 @@ We also have [chrome extension](https://chrome.google.com/webstore/detail/codeba
 
 - Mac / Linux
 - docker
-- docker-compose
 
 ### Install
 
@@ -82,11 +81,9 @@ yarn profile:visualize
 
 - Install and run docker
 
-Make sure you have installed `docker` and `docker-compose` for your OS.
+Make sure you have installed `docker` for your OS.
 
 https://docs.docker.com/install/
-
-https://docs.docker.com/compose/install/
 
 Make sure your docker daemon is running. You can run it manually by typing:
 

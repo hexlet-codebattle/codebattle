@@ -2,11 +2,12 @@ defmodule CodebattleWeb.Factory do
   use ExMachina.Ecto, repo: Codebattle.Repo
 
   alias Codebattle.{User, Game, Task, TaskPack, UserGame}
-  alias Codebattle.Bot.Playbook
+  alias Codebattle.Playbook
   alias Ueberauth.Auth
 
   def user_factory do
     %User{
+      id: :rand.uniform(9_999_999),
       name: sequence(:username, &"User #{&1}"),
       email: sequence(:username, &"test#{&1}@test.io"),
       rating: 123,
@@ -21,6 +22,7 @@ defmodule CodebattleWeb.Factory do
 
   def admin_factory do
     %User{
+      id: 1_984_198_419,
       name: "admin",
       email: sequence(:username, &"test#{&1}@test.io"),
       rating: 123,
@@ -39,7 +41,7 @@ defmodule CodebattleWeb.Factory do
       level: "elementary",
       type: "public",
       starts_at: TimeHelper.utc_now(),
-      finishs_at: TimeHelper.utc_now(),
+      finishes_at: TimeHelper.utc_now(),
       task: insert(:task)
     }
   end
@@ -57,13 +59,16 @@ defmodule CodebattleWeb.Factory do
       description_en: "test sum",
       description_ru: "проверка суммы",
       level: "easy",
-      asserts:
-        "{\"arguments\":[1,1],\"expected\":2}\n{\"arguments\":[2,2],\"expected\":4}\n{\"arguments\":[1,3],\"expected\":4}\n",
-      input_signature: [
-        %{"argument-name" => "a", "type" => %{"name" => "integer"}},
-        %{"argument-name" => "b", "type" => %{"name" => "integer"}}
+      asserts: [
+        %{arguments: [1, 1], expected: 2},
+        %{arguments: [2, 1], expected: 3},
+        %{arguments: [3, 2], expected: 5}
       ],
-      output_signature: %{"type" => %{"name" => "integer"}},
+      input_signature: [
+        %{argument_name: "a", type: %{name: "integer"}},
+        %{argument_name: "b", type: %{name: "integer"}}
+      ],
+      output_signature: %{type: %{name: "integer"}},
       state: "active",
       visibility: "public",
       origin: "user",
@@ -72,68 +77,52 @@ defmodule CodebattleWeb.Factory do
     }
   end
 
-  def task_vectors_factory do
-    %Task{
-      name: Base.encode16(:crypto.strong_rand_bytes(2)),
-      description_en: "test sum",
-      level: "easy",
-      asserts:
-        "{\"arguments\":[[\"a\", \"b\", \"c\"], [\"d\", \"e\", \"f\"]],\"expected\":[\"abcdef\"]}\n",
-      input_signature: [
-        %{
-          "argument-name" => "a",
-          "type" => %{"name" => "array", "nested" => %{"name" => "string"}}
-        },
-        %{
-          "argument-name" => "b",
-          "type" => %{"name" => "array", "nested" => %{"name" => "string"}}
-        }
-      ],
-      output_signature: %{
-        "type" => %{"name" => "array", "nested" => %{"name" => "string"}}
-      },
-      disabled: false
-    }
-  end
-
   def task_with_all_data_types_factory do
     %Task{
       name: Base.encode16(:crypto.strong_rand_bytes(2)),
       description_en: "test sum",
       level: "easy",
-      asserts:
-        "{\"arguments\":[1, \"a\", true, {\"a\":\"b\",\"c\":\"d\"}, [\"d\", \"e\"], [[\"Jack\",\"Alice\"]]],\"expected\":[\"asdf\"]}\n",
+      asserts: [
+        %{
+          arguments: [1, "a", 1.3, true, %{a: "b", c: "d"}, ["d", "e"], [["Jack", "Alice"]]],
+          expected: ["asdf"]
+        }
+      ],
       input_signature: [
         %{
-          "argument-name" => "int",
-          "type" => %{"name" => "integer"}
+          argument_name: "a",
+          type: %{name: "integer"}
         },
         %{
-          "argument-name" => "str",
-          "type" => %{"name" => "string"}
+          argument_name: "text",
+          type: %{name: "string"}
         },
         %{
-          "argument-name" => "bool",
-          "type" => %{"name" => "boolean"}
+          argument_name: "b",
+          type: %{name: "float"}
         },
         %{
-          "argument-name" => "nested_hash_of_string",
-          "type" => %{"name" => "hash", "nested" => %{"name" => "string"}}
+          argument_name: "c",
+          type: %{name: "boolean"}
         },
         %{
-          "argument-name" => "nested_array_of_string",
-          "type" => %{"name" => "array", "nested" => %{"name" => "string"}}
+          argument_name: "nested_hash_of_string",
+          type: %{name: "hash", nested: %{name: "string"}}
         },
         %{
-          "argument-name" => "nested_array_of_array_of_strings",
-          "type" => %{
-            "name" => "array",
-            "nested" => %{"name" => "array", "nested" => %{"name" => "string"}}
+          argument_name: "nested_array_of_string",
+          type: %{name: "array", nested: %{name: "string"}}
+        },
+        %{
+          argument_name: "nested_array_of_array_of_strings",
+          type: %{
+            name: "array",
+            nested: %{name: "array", nested: %{name: "string"}}
           }
         }
       ],
       output_signature: %{
-        "type" => %{"name" => "array", "nested" => %{"name" => "string"}}
+        type: %{name: "array", nested: %{name: "string"}}
       },
       disabled: false
     }
@@ -148,7 +137,27 @@ defmodule CodebattleWeb.Factory do
   end
 
   def playbook_factory do
-    %Playbook{}
+    %Playbook{
+      winner_id: 0,
+      winner_lang: "ruby",
+      solution_type: "complete",
+      data: %{
+        players: [%{id: 0, total_time_ms: 5_000, editor_lang: "ruby", editor_text: ""}],
+        records: [
+          %{"type" => "init", "id" => 0, "editor_text" => "", "editor_lang" => "ruby"},
+          %{
+            "diff" => %{
+              "delta" => [%{"insert" => "def solution()\n\nend"}],
+              "next_lang" => "ruby",
+              "time" => 0
+            },
+            "type" => "update_editor_data",
+            "id" => 0
+          },
+          %{"type" => "game_over", "id" => 0, "lang" => "ruby"}
+        ]
+      }
+    }
   end
 
   def tournament_factory do
@@ -178,6 +187,19 @@ defmodule CodebattleWeb.Factory do
           %{id: 1, title: "backend"}
         ]
       }
+    }
+  end
+
+  def stairway_tournament_factory do
+    %Codebattle.Tournament{
+      type: "stairway",
+      name: "Stairway tournament",
+      step: 0,
+      players_count: 16,
+      starts_at: NaiveDateTime.utc_now(),
+      creator_id: 1,
+      data: %{players: [], matches: []},
+      meta: %{}
     }
   end
 

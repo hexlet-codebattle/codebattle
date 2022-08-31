@@ -1,0 +1,387 @@
+<h1 class="d-none">Codebattle</h1>
+<div class="dark-bg pb-md-6 pb-3">
+  <div class="container-lg">
+    <nav class="navbar navbar-dark navbar-expand-md px-0 pt-4">
+      <a class="navbar-brand d-flex align-items-end" href="/">
+        <img alt="Logo" src="/assets/images/logo.svg" />
+        <div class="d-flex flex-column text-gray ml-1 pb-1">
+          <span class="header-txt">Codebattle</span>
+          <span class="header-txt">by Hexlet’s community</span>
+        </div>
+      </a>
+      <button
+        aria-controls="navbarResponsive"
+        aria-expanded="false"
+        area-label="Toggle navigation"
+        class="navbar-toggler"
+        data-target="#navbarResponsive"
+        data-toggle="collapse"
+        type="button"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item mx-1">
+            <a
+              class="mr-2"
+              href={session_path(@conn, :new, locale: :en, next: get_next_path(@conn))}
+            >
+              <button class="btn btn-outline-grey"><%= gettext("Sign in") %></button>
+            </a>
+            <a href={user_path(@conn, :new, locale: :en, next: get_next_path(@conn))}>
+              <button class="btn btn-outline-grey"><%= gettext("Sign up") %></button>
+            </a>
+          </li>
+
+          <%= if Mix.env() == :dev do %>
+            <li class="nav-item mx-1">
+              <%= button("Dev sign_in",
+                to: "/auth/dev_login?locale=en",
+                class: "btn btn-outline-grey"
+              ) %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="bg-codebattle">
+      <div class="text-white py-6 d-flex flex-column">
+        <div>
+          <p class="mb-0">Have fun and improve your skills</p>
+          <p class="mb-0">Beat the challenge faster than your opponent using your ❤ language</p>
+        </div>
+        <div class="col-md-8 pl-0 mt-4">
+          <h1 class="text-uppercase text-light">A place where your fingers become arms</h1>
+        </div>
+        <hr class="w-25 mx-0 hr-gray my-4" />
+        <div>
+          <button
+            class="btn btn-outline-red text-uppercase mt-3 p-3"
+            data-csrf={csrf_token()}
+            data-method="post"
+            data-to="/games/training"
+          >
+            Try simple battle
+          </button>
+          <span class="d-block mt-2 text-muted">No registration required</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="bg-light py-5">
+  <div class="container-lg pb-xl-6">
+    <div class="d-flex flex-lg-row flex-column justify-content-between">
+      <div>
+        <h2 class="text-uppercase text-center text-lg-left text-orange mb-4 text-nowrap">
+          {{Description}}
+        </h2>
+        <div class="pr-lg-5">
+          <p>
+            It's a game for developers. It's very simple: solve the coding challenge faster than your opponent using your ❤ language.
+          </p>
+          <p class="mt-3">
+            We help beginner and experienced developers spend time with fun, gain new knowledge and grow professionally.
+          </p>
+          <p class="mt-3">
+            You can battle in single player mode with bots or against your friends.
+          </p>
+          <p class="mt-3">
+            Participate in monthly individual or team tournaments with prizes or create your own to find the best developer in your team.
+          </p>
+        </div>
+      </div>
+      <div class="d-flex flex-column w-100">
+        <h2 class="order-lg-2 mt-3 text-uppercase text-center text-lg-right text-orange text-nowrap">
+          {{Languages}}
+        </h2>
+        <div class="order-lg-1 lang-icons">
+          <img alt="python" src="/assets/images/landing/languages/python.svg" title="python" />
+          <img alt="php" src="/assets/images/landing/languages/php.svg" title="php" />
+          <img alt="java" src="/assets/images/landing/languages/java.svg" title="java" />
+          <img alt="cpp" src="/assets/images/landing/languages/cpp.svg" title="cpp" />
+          <img alt="ruby" src="/assets/images/landing/languages/ruby.svg" title="ruby" />
+          <img alt="haskell" src="/assets/images/landing/languages/haskell.svg" title="haskell" />
+          <img alt="kotlin" src="/assets/images/landing/languages/kotlin.svg" title="kotlin" />
+          <img alt="javascript" src="/assets/images/landing/languages/js.svg" title="javascript" />
+          <img alt="go" src="/assets/images/landing/languages/go.svg" title="go" />
+          <img alt="elixir" src="/assets/images/landing/languages/elixir.svg" title="elixir" />
+          <img alt="csharp" src="/assets/images/landing/languages/c-sharp.svg" title="csharp" />
+          <img alt="clojure" src="/assets/images/landing/languages/clojure.svg" title="clojure" />
+          <img alt="typescript" src="/assets/images/landing/languages/ts.svg" title="typescript" />
+          <img alt="dart" src="/assets/images/landing/languages/dart.svg" title="dart" />
+          <img alt="erlang" src="/assets/images/landing/languages/erlang.svg" title="erlang" />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="dark-bg text-white">
+  <div class="container-lg">
+    <div class="d-flex flex-wrap flex-column flex-lg-row justify-content-md-around text-black text-center x-tranform-none x-translate-xl-y-50 x-top-0 py-5 py-xl-0">
+      <div class="d-flex flex-column p-5 factoid bg-light shadow-lg mx-auto">
+        <div class="my-auto">
+          <h2>
+            <span class="text-orange">≥</span>256
+          </h2>
+          <span class="my-3 lead">Task.all.count()</span>
+        </div>
+      </div>
+      <div class="d-flex flex-column p-5 factoid bg-light shadow-lg my-3 my-lg-0 mx-auto">
+        <div class="my-auto">
+          <h2>
+            <span class="text-orange">></span>5400
+          </h2>
+          <span class="my-3 lead">User.all.count()</span>
+        </div>
+      </div>
+      <div class="d-flex flex-column p-5 factoid bg-light shadow-lg mx-auto">
+        <div class="my-auto">
+          <h2>
+            <span class="text-orange">></span>56_000
+          </h2>
+          <span class="my-3 lead">Game.all.count()</span>
+        </div>
+      </div>
+    </div>
+    <div class="d-flex mt-2">
+      <hr class="w-100 my-auto ml-0 hr-red mr-sm-3 d-none d-md-block" />
+      <h2 class="text-uppercase text-light mx-auto">{{USER::TYPES}}</h2>
+      <hr class="w-100 my-auto mr-0 hr-red ml-sm-3 d-none d-md-block" />
+    </div>
+    <div class="mt-5 row flex-wrap">
+      <div class="col-sm-3 text-center">
+        <img alt="beginner" src="/assets/images/landing/beginner.svg" />
+        <p class="mt-3">For beginners who want to pump their skills</p>
+      </div>
+      <div class="col-sm-3 text-center">
+        <img alt="experienced" src="/assets/images/landing/experienced.svg" />
+        <p class="mt-3">For experienced who want to break records</p>
+      </div>
+      <div class="col-sm-3 text-center">
+        <img alt="friend" src="/assets/images/landing/friends.svg" />
+        <p class="mt-3">For friends who want to battle each ohter</p>
+      </div>
+      <div class="col-sm-3 text-center">
+        <img alt="enthusiast" src="/assets/images/landing/enthusiast.svg" />
+        <p class="mt-3">For those who are in love with programming</p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="dark-bg text-white py-5">
+  <div class="container-lg text-center pt-4">
+    <div class="d-flex align-items-center">
+      <hr class="w-100 my-auto ml-0 hr-red mr-sm-3 d-none d-md-block" />
+      <h2 class="text-uppercase text-light mx-auto">{{Algorithm}}</h2>
+      <hr class="w-100 my-auto mr-0 hr-red ml-sm-3 d-none d-md-block" />
+    </div>
+    <img alt="algorithm" class="w-100 my-5 pr-md-5" src="/assets/images/landing/flowchart.svg" />
+  </div>
+</div>
+<div class="bg-light py-5">
+  <div class="container-lg">
+    <h2 class="text-uppercase text-center mb-0 pt-5">{{Comments}}</h2>
+    <div class="comments mt-5">
+      <div class="comment border border-dark d-flex flex-column">
+        <div class="d-flex flex-wrap align-items-center">
+          <img alt="Journalist" src="/assets/images/landing/photo1.png" />
+          <div class="mx-3">
+            <p class="font-weight-bold mb-0 text-uppercase">Journalist</p>
+            <p>Middle frontend engineer</p>
+          </div>
+        </div>
+        <div class="h-100 d-flex">
+          <img alt="comment" class="w-100 my-auto" src="/assets/images/landing/comment.png" />
+        </div>
+      </div>
+      <div class="comment border border-dark d-flex flex-column">
+        <div class="d-flex flex-wrap align-items-center justify-content-end">
+          <div class="text-right mx-3">
+            <p class="font-weight-bold mb-0 text-uppercase">Rosa Robot</p>
+            <p>UI/UX Senior</p>
+          </div>
+          <img alt="rosa" src="/assets/images/landing/photo2.png" />
+        </div>
+        <div class="h-100 d-flex">
+          <img alt="comment" class="w-100 my-auto" src="/assets/images/landing/html.png" />
+        </div>
+      </div>
+      <div class="comment border border-dark d-flex flex-column justify-content-end">
+        <div class="h-100 d-flex">
+          <img alt="comment" class="w-100 my-auto" src="/assets/images/landing/comment2.png" />
+        </div>
+        <div class="d-flex flex-wrap align-items-center">
+          <img alt="SHERSHNYAGA" src="/assets/images/landing/photo4.png" />
+          <div class="mx-3">
+            <p class="font-weight-bold mb-0">SHERSHNYAGA</p>
+            <p class="mb-0">Senior frontend dev</p>
+          </div>
+        </div>
+      </div>
+      <div class="comment border border-dark d-flex flex-column justify-content-end">
+        <div class="h-100 d-flex pt-1 mt-3">
+          <img alt="comment" class="w-100 my-auto" src="/assets/images/landing/comment3.png" />
+        </div>
+        <div class="d-flex flex-wrap align-items-center justify-content-end">
+          <div class="text-right mx-3">
+            <p class="font-weight-bold text-uppercase mb-0">Engineer</p>
+            <p class="mb-0">Beginner</p>
+          </div>
+          <img alt="Engineer" src="/assets/images/landing/photo3.png" />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="bg-light py-5">
+  <div class="container-lg">
+    <h2 class="text-uppercase text-center mb-0">{{Contributors}}</h2>
+    <div class="mt-5">
+      <div class="d-flex">
+        <a
+          class="text-uppercase text-black fw-500"
+          href="https://github.com/hexlet-codebattle/codebattle"
+        >
+          <img class="mr-sm-2" src="/assets/images/landing/github.svg" /> Codebattle
+        </a>
+        <div class="float-right mt-2 ml-auto">
+          <a
+            aria-label="Star hexlet-codebattle/codebattle on GitHub"
+            class="github-button"
+            data-icon="octicon-star"
+            data-show-count="true"
+            data-size="large"
+            href="https://github.com/hexlet-codebattle/codebattle"
+          >
+            Star
+          </a>
+        </div>
+      </div>
+
+      <div class="d-flex flex-wrap my-3">
+        <%= render("_contributors_codebattle.html") %>
+      </div>
+      <div class="d-flex flex-wrap">
+        <span class="mr-1">#elixir</span>
+        <span class="mr-1">#phoenix</span>
+        <span class="mr-1">#live_view</span>
+        <span class="mr-1">#es6</span>
+        <span class="mr-1">#react</span>
+        <span class="mr-1">#redux</span>
+        <span class="mr-1">#bootstrap</span>
+        <span class="mr-1">#k8s</span>
+        <span class="mr-1">#docker</span>
+      </div>
+    </div>
+
+    <div class="mt-5">
+      <div class="d-flex">
+        <a
+          class="text-uppercase text-nowrap text-black fw-500"
+          href="https://github.com/hexlet-codebattle/battle_asserts"
+        >
+          <img class="mr-sm-2" src="/assets/images/landing/github.svg" /> Battle asserts
+        </a>
+        <div class="float-right mt-2 ml-auto">
+          <a
+            aria-label="Star hexlet-codebattle/battle_asserts on GitHub"
+            class="github-button"
+            data-icon="octicon-star"
+            data-show-count="true"
+            data-size="large"
+            href="https://github.com/hexlet-codebattle/battle_asserts"
+          >
+            Star
+          </a>
+        </div>
+      </div>
+      <div class="d-flex flex-wrap my-3">
+        <%= render("_contributors_asserts.html") %>
+      </div>
+      <div class="d-flex flex-wrap my-3">
+        <span class="mr-1">#clojure</span>
+      </div>
+    </div>
+
+    <div class="mt-5">
+      <div class="d-flex">
+        <a
+          class="text-uppercase text-nowrap text-black fw-500"
+          href="https://github.com/hexlet-codebattle/chrome_extension"
+        >
+          <img class="mr-sm-2" src="/assets/images/landing/github.svg" /> Chrome extension
+        </a>
+        <div class="float-right mt-2 ml-auto">
+          <a
+            aria-label="Star hexlet-codebattle/chrome_extension on GitHub"
+            class="github-button"
+            data-icon="octicon-star"
+            data-show-count="true"
+            data-size="large"
+            href="https://github.com/hexlet-codebattle/chrome_extension"
+          >
+            Star
+          </a>
+        </div>
+      </div>
+      <div class="d-flex flex-wrap my-3">
+        <%= render("_contributors_extension.html") %>
+      </div>
+      <span class="mr-1">#es6</span>
+      <span class="mr-1">#react</span>
+    </div>
+  </div>
+</div>
+
+<div class="bg-dark py-1 py-md-6 text-white what-now-bg-img">
+  <div class="container-lg">
+    <div class="row">
+      <div class="col-3 d-none d-md-block border-top border-left border-bottom border-secondary">
+      </div>
+      <div class="col-6 py-5 mx-auto">
+        <h2 class="text-uppercase text-center text-light mt-3">
+          What now?
+        </h2>
+        <p class="text-center mt-3">
+          Start to code on your ❤ language
+        </p>
+        <div class="d-block text-center mt-3">
+          <button
+            class="btn btn-outline-red text-uppercase mt-3 p-3"
+            data-csrf="&lt;%= csrf_token() %&gt;"
+            data-method="post"
+            data-to="/games/training"
+          >
+            Try simple battle
+          </button>
+        </div>
+      </div>
+      <div class="col-3 d-none d-md-block border-top border-bottom border-right border-secondary">
+      </div>
+    </div>
+  </div>
+</div>
+<div class="footer text-white">
+  <div class="container-lg py-3 d-flex justify-content-between text-gray flex-column flex-sm-row">
+    <div>
+      <p class="mb-0">
+        Support:
+        <a class="text-muted ml-1" href="https://slack-ru.hexlet.io" target="_blank">
+          Slack#codebattle
+        </a>
+      </p>
+    </div>
+    <div class="mt-3 mt-sm-0">
+      <p class="mb-0">
+        Design by:
+        <a class="text-muted ml-2" href="https://www.behance.net/caspermosh" target="_blank">
+          CasperMosh
+        </a>
+      </p>
+    </div>
+  </div>
+</div>

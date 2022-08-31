@@ -3,7 +3,6 @@ defmodule CodebattleWeb.AuthBindController do
   import CodebattleWeb.Gettext
 
   require Logger
-  alias Codebattle.UsersActivityServer
 
   def request(conn, params) do
     provider_name = params["provider"]
@@ -37,15 +36,6 @@ defmodule CodebattleWeb.AuthBindController do
         inspect(reason) <> "\nParams: " <> inspect(params)
     )
 
-    UsersActivityServer.add_event(%{
-      event: "failure_update_auth",
-      user_id: nil,
-      data: %{
-        params: params,
-        reason: reason
-      }
-    })
-
     conn
     |> put_flash(:danger, gettext("Failed to update authentication settings."))
     |> redirect(to: "/")
@@ -69,15 +59,6 @@ defmodule CodebattleWeb.AuthBindController do
         |> redirect(to: next_path)
 
       {:error, reason} ->
-        UsersActivityServer.add_event(%{
-          event: "failure_update_auth",
-          user_id: nil,
-          data: %{
-            params: params,
-            reason: reason
-          }
-        })
-
         conn
         |> put_flash(:danger, reason)
         |> redirect(to: "/")

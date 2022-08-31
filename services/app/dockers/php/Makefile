@@ -1,7 +1,4 @@
 test:
-	php ./check/${checker_name}.php
-
-test-example:
-	php ./checker_example.php
+	php ./check/checker.php
 
 .PHONY: test

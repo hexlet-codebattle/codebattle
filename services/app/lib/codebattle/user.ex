@@ -5,10 +5,14 @@ defmodule Codebattle.User do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @type t :: %__MODULE__{}
+
   @admins Application.compile_env(:codebattle, :admins)
+  @guest_id 0
 
   defmodule SoundSettings do
     use Ecto.Schema
+
     import Ecto.Changeset
     @primary_key false
 
@@ -26,32 +30,27 @@ defmodule Codebattle.User do
 
   defimpl Jason.Encoder, for: Codebattle.User do
     def encode(user, opts) do
-      Jason.Encode.map(
-        user
-        |> Map.take([
-          :id,
-          :name,
-          :rating,
-          :is_bot,
-          :guest,
-          :github_id,
-          :github_name,
-          :lang,
-          :editor_mode,
-          :editor_theme,
-          :achievements,
-          :rank,
-          :games_played,
-          :performance,
-          :inserted_at,
-          :sound_settings,
-          :discord_name,
-          :discord_id,
-          :discord_avatar
-        ])
-        |> Map.put(:is_admin, Codebattle.User.is_admin?(user)),
-        opts
-      )
+      user
+      |> Map.take([
+        :id,
+        :name,
+        :rating,
+        :is_bot,
+        :is_guest,
+        :github_id,
+        :lang,
+        :editor_mode,
+        :editor_theme,
+        :achievements,
+        :rank,
+        :games_played,
+        :performance,
+        :inserted_at,
+        :sound_settings
+      ])
+      |> Map.put(:is_admin, Codebattle.User.is_admin?(user))
+      |> Map.put(:avatar_url, Codebattle.User.avatar_url(user))
+      |> Jason.Encode.map(opts)
     end
   end
 
@@ -67,9 +66,6 @@ defmodule Codebattle.User do
     field(:public_id, :binary_id)
     field(:is_bot, :boolean, default: false)
     field(:rank, :integer, default: 5432)
-    field(:guest, :boolean, virtual: true, default: false)
-    field(:games_played, :integer, virtual: true)
-    field(:performance, :integer, virtual: true)
     field(:achievements, {:array, :string}, default: [])
     field(:discord_name, :string)
     field(:discord_id, :integer)
@@ -77,6 +73,12 @@ defmodule Codebattle.User do
     field(:firebase_uid, :string)
     field(:auth_token, :string)
     # level range: 0..10, types: ["standard", "silent"]
+
+    field(:games_played, :integer, virtual: true)
+    field(:performance, :integer, virtual: true)
+    field(:is_guest, :boolean, virtual: true, default: false)
+    field(:avatar_url, :string, virtual: true)
+
     embeds_one(:sound_settings, SoundSettings, on_replace: :update)
 
     has_many(:user_games, Codebattle.UserGame)
@@ -119,16 +121,15 @@ defmodule Codebattle.User do
 
   def create_guest() do
     %__MODULE__{
-      guest: true,
-      id: 0,
+      is_guest: true,
+      id: @guest_id,
       name: "Jon Dou",
-      rating: -1,
-      rank: -1,
+      rating: 0,
+      rank: 0,
       sound_settings: %SoundSettings{}
     }
   end
 
-  # TODO: add avatar_url field to user
   def avatar_url(user) do
     cond do
       user.github_id ->
@@ -145,4 +146,6 @@ defmodule Codebattle.User do
   def is_admin?(user) do
     user.name in @admins
   end
+
+  def guest_id(), do: @guest_id
 end

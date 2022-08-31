@@ -62,15 +62,15 @@ defmodule CodebattleWeb.TaskControllerTest do
     user = insert(:user)
 
     params = %{
-      "asserts" => "{\"arguments\":[1,1],\"expected\":2}\r\n{\"arguments\":[1,1],\"expected\":2}",
+      "asserts" => ~s([{"arguments":[1,1],"expected":2}, {"arguments":[1,1],"expected":2}]),
       "description_en" => "test sum: for ruby",
       "description_ru" => "проверка суммирования: для руби",
       "examples" => "```\n2 == solution(1,1)\n10 == solution(9,1)\n```",
       "input_signature" =>
-        "[{\"argument-name\":\"a\",\"type\":{\"name\":\"integer\"}},{\"argument-name\":\"b\",\"type\":{\"name\":\"integer\"}}]",
+        ~s([{"argument_name":"a","type":{"name":"integer"}},{"argument_name":"b","type":{"name":"integer"}}]),
       "level" => "easy",
       "name" => "asdfasdf",
-      "output_signature" => "{\"type\":{\"name\":\"integer\"}}",
+      "output_signature" => ~s({"type":{"name":"integer"}}),
       "tags" => " kek,lol, asdf    "
     }
 
@@ -89,20 +89,22 @@ defmodule CodebattleWeb.TaskControllerTest do
     user_id = user.id
 
     assert %{
-             asserts:
-               "{\"arguments\":[1,1],\"expected\":2}\n{\"arguments\":[1,1],\"expected\":2}",
+             asserts: [
+               %{arguments: [1, 1], expected: 2},
+               %{arguments: [1, 1], expected: 2}
+             ],
              creator_id: ^user_id,
              description_en: "test sum: for ruby",
              description_ru: "проверка суммирования: для руби",
              examples: "```\n2 == solution(1,1)\n10 == solution(9,1)\n```",
              input_signature: [
-               %{"argument-name" => "a", "type" => %{"name" => "integer"}},
-               %{"argument-name" => "b", "type" => %{"name" => "integer"}}
+               %{argument_name: "a", type: %{name: "integer"}},
+               %{argument_name: "b", type: %{name: "integer"}}
              ],
              level: "easy",
              name: "asdfasdf",
              origin: "user",
-             output_signature: %{"type" => %{"name" => "integer"}},
+             output_signature: %{type: %{name: "integer"}},
              state: "draft",
              tags: ["kek", "lol", "asdf"],
              visibility: "public"
@@ -114,12 +116,12 @@ defmodule CodebattleWeb.TaskControllerTest do
     task = insert(:task, creator_id: user.id)
 
     params = %{
-      "asserts" => "{\"arguments\":[1,1],\"expected\":2}\r\n{\"arguments\":[1,1],\"expected\":2}",
+      "asserts" => ~s([{"arguments":[1,1],"expected":2}, {"arguments":[1,1],"expected":2}]),
       "description_en" => "test sum: for ruby",
       "description_ru" => "проверка суммирования: для руби",
       "examples" => "```\n2 == solution(1,1)\n10 == solution(9,1)\n```",
       "input_signature" =>
-        "[{\"argument-name\":\"a\",\"type\":{\"name\":\"integer\"}},{\"argument-name\":\"b\",\"type\":{\"name\":\"integer\"}}]",
+        "[{\"argument_name\":\"a\",\"type\":{\"name\":\"integer\"}},{\"argument_name\":\"b\",\"type\":{\"name\":\"integer\"}}]",
       "level" => "hard",
       "name" => "mega_task",
       "output_signature" => "{\"type\":{\"name\":\"string\"}}",
@@ -137,19 +139,21 @@ defmodule CodebattleWeb.TaskControllerTest do
     task = Codebattle.Task.get!(id)
 
     assert %{
-             asserts:
-               "{\"arguments\":[1,1],\"expected\":2}\n{\"arguments\":[1,1],\"expected\":2}",
+             asserts: [
+               %{arguments: [1, 1], expected: 2},
+               %{arguments: [1, 1], expected: 2}
+             ],
              description_en: "test sum: for ruby",
              description_ru: "проверка суммирования: для руби",
              examples: "```\n2 == solution(1,1)\n10 == solution(9,1)\n```",
              input_signature: [
-               %{"argument-name" => "a", "type" => %{"name" => "integer"}},
-               %{"argument-name" => "b", "type" => %{"name" => "integer"}}
+               %{argument_name: "a", type: %{name: "integer"}},
+               %{argument_name: "b", type: %{name: "integer"}}
              ],
              level: "hard",
              name: "mega_task",
              origin: "user",
-             output_signature: %{"type" => %{"name" => "string"}},
+             output_signature: %{type: %{name: "string"}},
              tags: ["kek", "lol"]
            } = task
   end

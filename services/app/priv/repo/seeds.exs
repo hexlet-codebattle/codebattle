@@ -2,29 +2,180 @@ alias Codebattle.Repo
 alias Codebattle.{Game, User, UserGame}
 
 levels = ["elementary", "easy", "medium", "hard"]
+creator = Repo.get!(Codebattle.User, -15)
 
 1..3
 |> Enum.each(fn x ->
   for level <- levels do
-    task_data = %Codebattle.Task{
+    task_params = %{
+      level: level,
       name: "task_#{level}_#{x}",
       tags: Enum.take_random(["math", "lol", "kek", "asdf"], 3),
       origin: "github",
       state: "active",
       visibility: "public",
-      description_en: "test sum: for ruby",
-      description_ru: "проверка суммирования: для руби",
+      description_en: "test sum",
+      description_ru: "проверка суммирования",
       examples: "```\n2 == solution(1,1)\n10 == solution(9,1)\n```",
-      asserts: "{\"arguments\":[1,1],\"expected\":2}\n{\"arguments\":[2,2],\"expected\":4}\n{\"arguments\":[1,2],\"expected\":3}\n{\"arguments\":[3,2],\"expected\":5}\n{\"arguments\":[5,1],\"expected\":6}\n{\"arguments\":[1,1],\"expected\":2}\n{\"arguments\":[2,2],\"expected\":4}\n{\"arguments\":[1,2],\"expected\":3}\n{\"arguments\":[3,2],\"expected\":5}\n{\"arguments\":[5,1],\"expected\":6}\n",
+      asserts: [
+        %{
+          arguments: [
+            1,
+            1,
+            "a",
+            1.3,
+            true,
+            %{key1: "val1", key2: "val2"},
+            ["asdf", "fdsa"],
+            [["Jack", "Alice"]]
+          ],
+          expected: 2
+        },
+        %{
+          arguments: [
+            2,
+            2,
+            "a",
+            1.3,
+            true,
+            %{key1: "val1", key2: "val2"},
+            ["asdf", "fdsa"],
+            [["Jack", "Alice"]]
+          ],
+          expected: 4
+        },
+        %{
+          arguments: [
+            1,
+            2,
+            "a",
+            1.3,
+            true,
+            %{key1: "val1", key2: "val2"},
+            ["asdf", "fdsa"],
+            [["Jack", "Alice"]]
+          ],
+          expected: 3
+        },
+        %{
+          arguments: [
+            3,
+            2,
+            "a",
+            1.3,
+            true,
+            %{key1: "val1", key2: "val2"},
+            ["asdf", "fdsa"],
+            [["Jack", "Alice"]]
+          ],
+          expected: 5
+        },
+        %{
+          arguments: [
+            5,
+            1,
+            "a",
+            1.3,
+            true,
+            %{key1: "val1", key2: "val2"},
+            ["asdf", "fdsa"],
+            [["Jack", "Alice"]]
+          ],
+          expected: 6
+        },
+        %{
+          arguments: [
+            1,
+            1,
+            "a",
+            1.3,
+            true,
+            %{key1: "val1", key2: "val2"},
+            ["asdf", "fdsa"],
+            [["Jack", "Alice"]]
+          ],
+          expected: 2
+        },
+        %{
+          arguments: [
+            2,
+            2,
+            "a",
+            1.3,
+            true,
+            %{key1: "val1", key2: "val2"},
+            ["asdf", "fdsa"],
+            [["Jack", "Alice"]]
+          ],
+          expected: 4
+        },
+        %{
+          arguments: [
+            1,
+            2,
+            "a",
+            1.3,
+            true,
+            %{key1: "val1", key2: "val2"},
+            ["asdf", "fdsa"],
+            [["Jack", "Alice"]]
+          ],
+          expected: 3
+        },
+        %{
+          arguments: [
+            3,
+            2,
+            "a",
+            1.3,
+            true,
+            %{key1: "val1", key2: "val2"},
+            ["asdf", "fdsa"],
+            [["Jack", "Alice"]]
+          ],
+          expected: 5
+        },
+        %{
+          arguments: [
+            5,
+            1,
+            "a",
+            1.3,
+            true,
+            %{key1: "val1", key2: "val2"},
+            ["asdf", "fdsa"],
+            [["Jack", "Alice"]]
+          ],
+          expected: 6
+        }
+      ],
       disabled: false,
       input_signature: [
-        %{"argument-name" => "a", "type" => %{"name" => "integer"}},
-        %{"argument-name" => "b", "type" => %{"name" => "integer"}}
+        %{argument_name: "a", type: %{name: "integer"}},
+        %{argument_name: "b", type: %{name: "integer"}},
+        %{argument_name: "c", type: %{name: "string"}},
+        %{argument_name: "d", type: %{name: "float"}},
+        %{argument_name: "e", type: %{name: "boolean"}},
+        %{
+          argument_name: "f",
+          type: %{name: "hash", nested: %{name: "string"}}
+        },
+        %{
+          argument_name: "g",
+          type: %{name: "array", nested: %{name: "string"}}
+        },
+        %{
+          argument_name: "h",
+          type: %{
+            name: "array",
+            nested: %{name: "array", nested: %{name: "string"}}
+          }
+        }
       ],
-      output_signature: %{"type" => %{"name" => "integer"}}
+      output_signature: %{type: %{name: "integer"}}
     }
 
-    task = Codebattle.Task.changeset(Map.merge(task_data, %{level: level})) |> Repo.insert!()
+    task = Codebattle.Task.upsert!(task_params)
 
     playbook_data = %{
       players: [%{id: 2, total_time_ms: 5_000, editor_lang: "ruby", editor_text: ""}],
@@ -124,17 +275,16 @@ levels = ["elementary", "easy", "medium", "hard"]
       ]
     }
 
-    Repo.insert!(%Codebattle.Bot.Playbook{
+    Repo.insert!(%Codebattle.Playbook{
       data: playbook_data,
       task: task,
+      game_id: 1,
       winner_lang: "ruby",
       winner_id: 2,
       solution_type: "complete"
     })
   end
 end)
-
-creator = Repo.get!(Codebattle.User, -15)
 
 %Codebattle.Tournament{}
 |> Codebattle.Tournament.changeset(%{
@@ -143,7 +293,7 @@ creator = Repo.get!(Codebattle.User, -15)
   creator: creator,
   default_language: "clojure",
   players_count: 16,
-  diffculty: "elementary",
+  difficulty: "elementary",
   starts_at: ~N[2019-08-22 19:33:08.910767]
 })
 |> Repo.insert!()
@@ -159,9 +309,11 @@ six_hours_ago = Timex.shift(now, hours: -6)
   game_params = %{
     state: "game_over",
     level: "easy",
-    type: "public",
+    type: "duo",
+    mode: "standard",
+    visibility_type: "public",
     starts_at: t |> Timex.to_naive_datetime() |> NaiveDateTime.truncate(:second),
-    finishs_at: t |> Timex.to_naive_datetime() |> NaiveDateTime.truncate(:second),
+    finishes_at: t |> Timex.to_naive_datetime() |> NaiveDateTime.truncate(:second),
     inserted_at: TimeHelper.utc_now(),
     updated_at: TimeHelper.utc_now()
   }
@@ -233,3 +385,26 @@ six_hours_ago = Timex.shift(now, hours: -6)
     |> UserGame.changeset(user_game_2_params)
     |> Repo.insert()
 end)
+
+task_ids =
+  Codebattle.Task
+  |> Repo.all()
+  |> Enum.map(& &1.id)
+
+%Codebattle.TaskPack{
+  name: "All_tasks_at#{now}",
+  visibility: "public",
+  state: "active",
+  task_ids: task_ids
+}
+|> Repo.insert!()
+
+# data = File.cwd!() |> Path.join("priv/repo/test_playbook.json") |> File.read!() |> Jason.decode!()
+
+# Codebattle.Playbook
+# |> Repo.all()
+# |> Enum.map(fn playbook ->
+#   playbook
+#   |> Codebattle.Playbook.changeset(%{data: data, winner_id: 1})
+#   |> Repo.update!()
+# end)

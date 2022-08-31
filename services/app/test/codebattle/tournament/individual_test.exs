@@ -5,9 +5,8 @@ defmodule Codebattle.Tournament.IndividualTest do
   import Codebattle.Tournament.Helpers
 
   describe "starts a tournament with completed players_count" do
-    test "when 1" do
+    test "scales to 2 when 1 player" do
       user = insert(:user)
-      insert(:task, level: "elementary")
 
       player = struct(Codebattle.Tournament.Types.Player, Map.from_struct(user))
 
@@ -24,9 +23,8 @@ defmodule Codebattle.Tournament.IndividualTest do
       assert players_count(new_tournament) == 2
     end
 
-    test "when 7" do
+    test "scales to 8 when 7 players" do
       user = insert(:user)
-      insert(:task, level: "elementary")
 
       player = struct(Codebattle.Tournament.Types.Player, Map.from_struct(user))
 
@@ -43,9 +41,8 @@ defmodule Codebattle.Tournament.IndividualTest do
       assert players_count(new_tournament) == 8
     end
 
-    test "when players_count" do
+    test "scales to 32 when 18 players" do
       user = insert(:user)
-      insert(:task, level: "elementary")
 
       player = struct(Codebattle.Tournament.Types.Player, Map.from_struct(user))
 
@@ -53,17 +50,53 @@ defmodule Codebattle.Tournament.IndividualTest do
         insert(:tournament,
           creator_id: user.id,
           state: "waiting_participants",
-          data: %{players: List.duplicate(player, 3)},
-          players_count: 16
+          data: %{players: List.duplicate(player, 18)},
+          players_count: nil
         )
 
       new_tournament = @module.start(tournament, %{user: user})
-      assert new_tournament.players_count == 16
-      assert players_count(new_tournament) == 16
+      assert new_tournament.players_count == 32
+      assert players_count(new_tournament) == 32
+    end
+
+    test "takes 32 when 33 players" do
+      user = insert(:user)
+
+      player = struct(Codebattle.Tournament.Types.Player, Map.from_struct(user))
+
+      tournament =
+        insert(:tournament,
+          creator_id: user.id,
+          state: "waiting_participants",
+          data: %{players: List.duplicate(player, 33)},
+          players_count: nil
+        )
+
+      new_tournament = @module.start(tournament, %{user: user})
+      assert new_tournament.players_count == 32
+      assert players_count(new_tournament) == 32
+    end
+
+    test "when players_count fixed" do
+      user = insert(:user)
+
+      player = struct(Codebattle.Tournament.Types.Player, Map.from_struct(user))
+
+      tournament =
+        insert(:tournament,
+          creator_id: user.id,
+          state: "waiting_participants",
+          data: %{players: [player]},
+          players_count: 32
+        )
+
+      new_tournament = @module.start(tournament, %{user: user})
+      assert new_tournament.players_count == 32
+      assert players_count(new_tournament) == 32
     end
   end
 
-  test "#update_match, state canceled" do
+  test "#update_match, state timeout" do
     user1 = insert(:user)
     user2 = insert(:user)
 
@@ -77,18 +110,22 @@ defmodule Codebattle.Tournament.IndividualTest do
         data: %{
           players: [player1, player2],
           matches: [
-            %{state: "active", game_id: game_id, players: [player1, player2]},
-            %{state: "active", game_id: 2, players: []}
+            %{state: "playing", game_id: game_id, players: [player1, player2]},
+            %{state: "playing", game_id: 2, players: []}
           ]
         },
         players_count: 16
       )
 
-    new_tournament = @module.update_match(tournament, game_id, %{state: "canceled"})
+    new_tournament =
+      @module.update_match(tournament, game_id, %{
+        state: "timeout",
+        player_results: %{user1.id => "timeout", user2.id => "timeout"}
+      })
 
     states = new_tournament.data.matches |> Enum.map(fn x -> x.state end)
 
-    assert states == ["canceled", "active"]
+    assert states == ["timeout", "playing"]
   end
 
   test "#update_match, user gave_up" do
@@ -105,8 +142,8 @@ defmodule Codebattle.Tournament.IndividualTest do
         data: %{
           players: [player1, player2],
           matches: [
-            %{state: "active", game_id: game_id, players: [player1, player2]},
-            %{state: "active", game_id: 2, players: []}
+            %{state: "playing", game_id: game_id, players: [player1, player2]},
+            %{state: "playing", game_id: 2, players: []}
           ]
         },
         players_count: 16
@@ -114,17 +151,19 @@ defmodule Codebattle.Tournament.IndividualTest do
 
     new_tournament =
       @module.update_match(tournament, game_id, %{
-        state: "finished",
-        winner: {user1.id, "won"},
-        loser: {user2.id, "gave_up"}
+        state: "game_over",
+        player_results: %{user1.id => "won", user2.id => "gave_up"}
       })
 
-    assert new_tournament.data.matches |> Enum.map(fn x -> x.state end) == ["finished", "active"]
+    assert new_tournament.data.matches |> Enum.map(fn x -> x.state end) == [
+             "game_over",
+             "playing"
+           ]
 
     assert new_tournament.data.matches
            |> List.first()
            |> Map.get(:players)
-           |> Enum.map(fn x -> {x.id, x.game_result} end) ==
+           |> Enum.map(fn x -> {x.id, x.result} end) ==
              [{user1.id, "won"}, {user2.id, "gave_up"}]
   end
 
@@ -142,8 +181,8 @@ defmodule Codebattle.Tournament.IndividualTest do
         data: %{
           players: [player1, player2],
           matches: [
-            %{state: "active", game_id: game_id, players: [player1, player2]},
-            %{state: "active", game_id: 2, players: []}
+            %{state: "playing", game_id: game_id, players: [player1, player2]},
+            %{state: "playing", game_id: 2, players: []}
           ]
         },
         players_count: 16
@@ -151,17 +190,19 @@ defmodule Codebattle.Tournament.IndividualTest do
 
     new_tournament =
       @module.update_match(tournament, game_id, %{
-        state: "finished",
-        winner: {user1.id, "lost"},
-        loser: {user2.id, "won"}
+        state: "game_over",
+        player_results: %{user1.id => "lost", user2.id => "won"}
       })
 
-    assert new_tournament.data.matches |> Enum.map(fn x -> x.state end) == ["finished", "active"]
+    assert new_tournament.data.matches |> Enum.map(fn x -> x.state end) == [
+             "game_over",
+             "playing"
+           ]
 
     assert new_tournament.data.matches
            |> List.first()
            |> Map.get(:players)
-           |> Enum.map(fn x -> {x.id, x.game_result} end) ==
+           |> Enum.map(fn x -> {x.id, x.result} end) ==
              [{user1.id, "lost"}, {user2.id, "won"}]
   end
 
@@ -172,7 +213,7 @@ defmodule Codebattle.Tournament.IndividualTest do
     player1 = struct(Codebattle.Tournament.Types.Player, Map.from_struct(user1))
     player2 = struct(Codebattle.Tournament.Types.Player, Map.from_struct(user2))
 
-    matches = %{state: "finished", game_id: 2, players: [player1, player2]} |> List.duplicate(7)
+    matches = %{state: "game_over", game_id: 2, players: [player1, player2]} |> List.duplicate(7)
 
     tournament =
       insert(:tournament,
@@ -180,7 +221,7 @@ defmodule Codebattle.Tournament.IndividualTest do
         creator_id: user1.id,
         data: %{
           players: [player1, player2],
-          matches: matches ++ [%{state: "active", game_id: 3, players: [player1, player2]}]
+          matches: matches ++ [%{state: "playing", game_id: 3, players: [player1, player2]}]
         },
         players_count: 16
       )
@@ -194,14 +235,14 @@ defmodule Codebattle.Tournament.IndividualTest do
     states = new_tournament.data.matches |> Enum.map(fn x -> x.state end)
 
     assert states == [
-             "finished",
-             "finished",
-             "finished",
-             "finished",
-             "finished",
-             "finished",
-             "finished",
-             "active"
+             "game_over",
+             "game_over",
+             "game_over",
+             "game_over",
+             "game_over",
+             "game_over",
+             "game_over",
+             "playing"
            ]
   end
 
@@ -246,7 +287,7 @@ defmodule Codebattle.Tournament.IndividualTest do
     player1 = struct(Codebattle.Tournament.Types.Player, Map.from_struct(user1))
     player2 = struct(Codebattle.Tournament.Types.Player, Map.from_struct(user2))
 
-    matches = %{state: "finished", game_id: 2, players: [player1, player2]} |> List.duplicate(8)
+    matches = %{state: "game_over", game_id: 2, players: [player1, player2]} |> List.duplicate(8)
 
     tournament =
       insert(:tournament,
@@ -268,29 +309,29 @@ defmodule Codebattle.Tournament.IndividualTest do
     states = new_tournament.data.matches |> Enum.map(fn x -> x.state end)
 
     assert states == [
-             "finished",
-             "finished",
-             "finished",
-             "finished",
-             "finished",
-             "finished",
-             "finished",
-             "finished",
-             "active",
-             "active",
-             "active",
-             "active"
+             "game_over",
+             "game_over",
+             "game_over",
+             "game_over",
+             "game_over",
+             "game_over",
+             "game_over",
+             "game_over",
+             "playing",
+             "playing",
+             "playing",
+             "playing"
            ]
   end
 
-  test "#maybe_start_new_step finishs tournament" do
+  test "#maybe_start_new_step finishes tournament" do
     user1 = insert(:user)
     user2 = insert(:user)
 
     player1 = struct(Codebattle.Tournament.Types.Player, Map.from_struct(user1))
     player2 = struct(Codebattle.Tournament.Types.Player, Map.from_struct(user2))
 
-    matches = %{state: "finished", game_id: 2, players: [player1, player2]} |> List.duplicate(12)
+    matches = %{state: "game_over", game_id: 2, players: [player1, player2]} |> List.duplicate(12)
 
     tournament =
       insert(:tournament,

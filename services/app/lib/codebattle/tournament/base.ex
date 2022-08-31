@@ -1,7 +1,6 @@
 defmodule Codebattle.Tournament.Base do
   alias Codebattle.Repo
   alias Codebattle.Tournament
-  alias Codebattle.GameProcess.{Play, FsmHelpers}
 
   @moduledoc """
   Defines interface for tournament type
@@ -10,6 +9,8 @@ defmodule Codebattle.Tournament.Base do
   @callback complete_players(%Codebattle.Tournament{}) :: %Codebattle.Tournament{}
   @callback build_matches(%Codebattle.Tournament{}) :: %Codebattle.Tournament{}
   @callback maybe_finish(%Codebattle.Tournament{}) :: %Codebattle.Tournament{}
+  @callback create_game(%Codebattle.Tournament{}, %Codebattle.Tournament.Types.Match{}) ::
+              %Codebattle.Tournament.Types.Match{}
 
   defmacro __using__(_opts) do
     quote do
@@ -38,7 +39,6 @@ defmodule Codebattle.Tournament.Base do
           |> get_players
           |> Enum.concat([player])
           |> Enum.uniq_by(fn x -> x.id end)
-          |> Enum.take(16)
 
         new_data =
           tournament |> Map.get(:data) |> Map.merge(%{players: players}) |> Map.from_struct()
@@ -125,7 +125,7 @@ defmodule Codebattle.Tournament.Base do
       def maybe_start_new_step(tournament) do
         matches = get_matches(tournament)
 
-        if Enum.any?(matches, fn match -> match.state == "active" end) do
+        if Enum.any?(matches, fn match -> match.state == "playing" end) do
           tournament
         else
           tournament
@@ -138,9 +138,12 @@ defmodule Codebattle.Tournament.Base do
         end
       end
 
-      def game_over(tournament, params) do
+      def finish_match(tournament, payload) do
+        %{game_id: game_id, game_state: game_state, player_results: player_results} = payload
+        params = %{state: game_state, player_results: player_results}
+
         tournament
-        |> update_match(params.game_id, params)
+        |> update_match(game_id, params)
         |> maybe_start_new_step()
       end
 
@@ -154,8 +157,8 @@ defmodule Codebattle.Tournament.Base do
           tournament
           |> get_matches
           |> Enum.map(fn match ->
-            case match.game_id do
-              ^game_id ->
+            case {match.game_id, match.state} do
+              {^game_id, s} when s in ~w(pending playing) ->
                 new_params = Map.put(params, :started_at, tournament.last_round_started_at)
                 update_match_params(match, new_params)
 
@@ -171,7 +174,7 @@ defmodule Codebattle.Tournament.Base do
         update!(tournament, %{data: new_data})
       end
 
-      def finish_all_matches(tournament) do
+      def cancel_all_matches(tournament) do
         new_matches =
           tournament
           |> get_matches
@@ -190,12 +193,13 @@ defmodule Codebattle.Tournament.Base do
 
       defp start_step!(tournament) do
         tournament
-        |> build_matches
-        |> start_games()
+        |> build_matches()
+        |> start_matches()
         |> broadcast_new_step()
+        |> maybe_start_new_step()
       end
 
-      defp start_games(tournament) do
+      defp start_matches(tournament) do
         new_matches =
           tournament
           |> get_matches
@@ -204,15 +208,9 @@ defmodule Codebattle.Tournament.Base do
               %{players: [%{is_bot: true}, %{is_bot: true}]} ->
                 %{match | state: "canceled"}
 
-              %{state: "waiting"} ->
-                {:ok, fsm} =
-                  Play.create_game(%{
-                    level: tournament.difficulty,
-                    tournament: tournament,
-                    players: match.players
-                  })
-
-                %{match | game_id: FsmHelpers.get_game_id(fsm), state: "active"}
+              %{state: "pending"} ->
+                game_id = create_game(tournament, match)
+                %{match | game_id: game_id, state: "playing"}
 
               _ ->
                 match
@@ -226,12 +224,10 @@ defmodule Codebattle.Tournament.Base do
         update!(tournament, %{data: new_data})
       end
 
-      defp update_match_params(match, %{state: "canceled"} = params), do: Map.merge(match, params)
-
-      defp update_match_params(match, %{state: "finished"} = params) do
+      defp update_match_params(match, %{state: state} = params)
+           when state in ~w(timeout game_over) do
         %{
-          winner: {winner_id, winner_result},
-          loser: {loser_id, loser_result},
+          player_results: player_results,
           started_at: started_at
         } = params
 
@@ -239,28 +235,39 @@ defmodule Codebattle.Tournament.Base do
 
         new_players =
           Enum.map(match.players, fn player ->
-            case player.id do
-              ^winner_id -> Map.merge(player, %{game_result: winner_result})
-              ^loser_id -> Map.merge(player, %{game_result: loser_result})
-              _ -> player
-            end
+            Map.put(player, :result, player_results[player.id])
           end)
 
-        Map.merge(match, %{players: new_players, duration: new_duration, state: "finished"})
+        Map.merge(match, %{players: new_players, duration: new_duration, state: state})
       end
 
-      defp broadcast_new_step(tournament) do
-        CodebattleWeb.Endpoint.broadcast!(
-          "tournaments",
-          "round:created",
-          %{tournament: tournament}
-        )
-
-        tournament
-      end
+      defp update_match_params(match, _params), do: match
 
       def update!(tournament, params) do
         tournament |> Tournament.changeset(params) |> Repo.update!()
+      end
+
+      def finish_all_playing_matches(tournament) do
+        new_matches =
+          tournament
+          |> get_matches
+          |> Enum.map(fn match ->
+            case match.state do
+              "playing" -> %{match | state: "game_over"}
+              _ -> match
+            end
+            |> Map.from_struct()
+          end)
+
+        new_data =
+          tournament |> Map.get(:data) |> Map.merge(%{matches: new_matches}) |> Map.from_struct()
+
+        update!(tournament, %{data: new_data})
+      end
+
+      defp broadcast_new_step(tournament) do
+        Codebattle.PubSub.broadcast("tournament:round_created", %{tournament: tournament})
+        tournament
       end
 
       # for individual game

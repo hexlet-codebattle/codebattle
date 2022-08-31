@@ -10,7 +10,7 @@ import Check.Solution
 import System.Exit
 
 output = BS.putStrLn . A.encode . A.object
-handleOk = output ["status" A..= ("ok" :: String), "result" A..= (<%= hash_sum %> :: String)]
+handleOk = output ["status" A..= ("ok" :: String), "result" A..= (<%= check_code %> :: String)]
 handleSuccess res exp args = output ["status" A..= ("success" :: String), "result" A..= res, "expected" A..= exp, "arguments" A..= args]
 handleFailure res exp args = output ["status" A..= ("failure" :: String), "result" A..= res, "expected" A..= exp, "arguments" A..= args]
 handleRuntimeError e = output ["status" A..= ("error" :: String), "result" A..= show e]
@@ -18,14 +18,14 @@ handleRuntimeError e = output ["status" A..= ("error" :: String), "result" A..= 
 test :: IO ()
 test = do
 
-    <%= for %{arguments: arguments, expected: expected, index: i, error_message: message} <- checks do %>
+    <%= for %{arguments: arguments, expected: expected, index: i, args_string: args_string} <- checks do %>
     let expected<%= i %> = <%= expected %>
     let res<%= i %> = solution <%= arguments %>
     let resAssert<%= i %> = res<%= i %> == expected<%= i %>
 
     (if resAssert<%= i %>
-    then handleSuccess res<%= i %> expected<%= i %> ("[<%= message %>]" :: String)
-      else handleFailure res<%= i %> expected<%= i %> ("[<%= message %>]" :: String))
+    then handleSuccess res<%= i %> expected<%= i %> (<%= args_string %> :: String)
+      else handleFailure res<%= i %> expected<%= i %> (<%= args_string %> :: String))
         `catch` \(e ::ErrorCall) -> handleRuntimeError e
     <% end %>
 

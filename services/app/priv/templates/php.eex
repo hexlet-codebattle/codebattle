@@ -89,7 +89,7 @@ include './check/solution.php';
 if ($success) {
   array_push($final_result, json_encode(array(
       'status' => 'ok',
-      'result' => <%= hash_sum %>
+      'result' => <%= check_code %>
   )) . "\n");
 }
 

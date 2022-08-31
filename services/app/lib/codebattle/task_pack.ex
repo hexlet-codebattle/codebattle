@@ -6,10 +6,20 @@ defmodule Codebattle.TaskPack do
   import Ecto.Query
 
   alias Codebattle.Repo
+  alias Codebattle.Task
 
   @states ~w(draft on_moderation active disabled)
   @visibility_types ~w(hidden public)
 
+  @derive {Jason.Encoder,
+           only: [
+             :id,
+             :name,
+             :state,
+             :visibility,
+             :task_ids,
+             :creator_id
+           ]}
   schema "task_packs" do
     field(:name, :string)
     field(:state, :string)
@@ -37,6 +47,11 @@ defmodule Codebattle.TaskPack do
 
   def get!(id), do: Repo.get!(__MODULE__, id)
   def get(id), do: Repo.get(__MODULE__, id)
+
+  def get_tasks(%__MODULE__{} = task_pack) do
+    query = from(t in Task, where: t.id in ^task_pack.task_ids)
+    Repo.all(query)
+  end
 
   def can_see_task_pack?(%{visibility: "public"}, _user), do: true
 

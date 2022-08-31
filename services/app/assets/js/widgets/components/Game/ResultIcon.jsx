@@ -4,7 +4,7 @@ import { Tooltip, OverlayTrigger } from 'react-bootstrap';
 const ResultIcon = ({ gameId, player1, player2 }) => {
   const tooltipId = `tooltip-${gameId}-${player1.id}`;
 
-  if (player1.gameResult === 'gave_up') {
+  if (player1.result === 'gave_up') {
     return (
       <OverlayTrigger
         overlay={<Tooltip id={tooltipId}>Player gave up</Tooltip>}
@@ -17,7 +17,7 @@ const ResultIcon = ({ gameId, player1, player2 }) => {
     );
   }
 
-  if (player1.gameResult === 'won' && player2.gameResult !== 'gave_up') {
+  if (player1.result === 'won' && player2.result !== 'gave_up') {
     return (
       <OverlayTrigger
         overlay={<Tooltip id={tooltipId}>Player won</Tooltip>}

@@ -1,0 +1,149 @@
+<div class="container-xl bg-white shadow-sm rounded py-4 mb-3">
+  <h1 class="text-center">Tournaments</h1>
+  <div class="table-responsive mt-4">
+    <table class="table table-sm">
+      <thead>
+        <tr>
+          <th>name</th>
+          <th>type</th>
+          <th>level</th>
+          <th>state</th>
+          <th>starts_at</th>
+          <th>players</th>
+          <th>actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= for tournament <- @tournaments do %>
+          <tr>
+            <td class="align-middle"><%= tournament.name %></td>
+            <td class="align-middle text-nowrap"><%= tournament.type %></td>
+            <td class="align-middle text-nowrap">
+              <img
+                alt={tournament.difficulty}
+                src={"/assets/images/levels/#{tournament.difficulty}.svg"}
+              />
+            </td>
+            <td class="align-middle text-nowrap"><%= tournament.state %></td>
+            <td class="align-middle text-nowrap"><%= render_datetime(tournament.starts_at) %></td>
+            <td class="align-middle text-nowrap">
+              <%= render("_players_row.html",
+                players: Codebattle.Tournament.Helpers.get_players(tournament),
+                current_user: @current_user,
+                tournament: tournament
+              ) %>
+            </td>
+            <td class="align-middle text-nowrap">
+              <%= link("Show",
+                to: Routes.tournament_path(@socket, :show, tournament.id),
+                class: "btn btn-success mt-2"
+              ) %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="container-xl bg-white shadow-sm rounded py-4">
+  <h2 class="text-center">Create a new tournament</h2>
+
+  <%= f =
+    form_for(@changeset, "#", phx_change: :validate, phx_submit: :create, class: "col-8  offset-2") %>
+  <div class="form-group">
+    <%= render_base_errors(@changeset.errors[:base]) %>
+  </div>
+  <div class="form-group">
+    <%= label(f, :name) %>
+    <%= text_input(f, :name,
+      class: "form-control form-control-lg",
+      maxlength: "37",
+      required: true
+    ) %>
+    <%= error_tag(f, :name) %>
+  </div>
+  <div class="form-row justify-content-between">
+    <div class="form-group">
+      <p class="mb-1">Type</p>
+      <%= select(f, :type, Codebattle.Tournament.types(), class: "form-control form-control-lg") %>
+      <%= error_tag(f, :type) %>
+    </div>
+    <div class="form-group">
+      <p class="mb-1">Access Type</p>
+      <%= select(f, :access_type, Codebattle.Tournament.access_types(),
+        class: "form-control form-control-lg"
+      ) %>
+      <%= error_tag(f, :access_type) %>
+    </div>
+    <div class="form-group">
+      <p class="mb-1">Starts at (UTC)</p>
+      <%= datetime_local_input(f, :starts_at,
+        class: "form-control form-control-lg",
+        required: true,
+        value: f.params["starts_at"]
+      ) %>
+      <%= error_tag(f, :starts_at) %>
+    </div>
+  </div>
+
+  <%= if f.params["type"] == "team" do %>
+    <%= label(f, "Team names") %>
+    <div class="form-row justify-content-between">
+      <div class="from-group">
+        <%= text_input(f, :team_1_name,
+          maxlength: "17",
+          class: "form-control form-control-lg",
+          value: f.params["team_1_name"] || "Backend"
+        ) %>
+      </div>
+      <div class="from-group">
+        <%= text_input(f, :team_2_name,
+          maxlength: "17",
+          class: "form-control form-control-lg",
+          value: f.params["team_2_name"] || "Frontend"
+        ) %>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="form-row justify-content-between">
+    <%= if f.params["type"] == "stairway" do %>
+      <div class="form-group">
+        <%= label(f, :task_pack_id) %>
+        <%= number_input(f, :task_pack_id,
+          class: "form-control form-control-lg",
+          value: f.params["task_pack_id"],
+          required: true
+        ) %>
+        <%= error_tag(f, :task_pack_id) %>
+      </div>
+    <% end %>
+
+    <%= if f.params["type"] != "stairway" do %>
+      <div class="form-group">
+        <%= label(f, :level) %>
+        <%= select(f, :difficulty, Codebattle.Tournament.difficulties(),
+          class: "form-control form-control-lg"
+        ) %>
+        <%= error_tag(f, :difficulty) %>
+      </div>
+    <% end %>
+
+    <div class="form-group">
+      <%= label(f, :default_language) %>
+      <%= select(f, :default_language, @langs, class: "form-control form-control-lg") %>
+      <%= error_tag(f, :default_language) %>
+    </div>
+    <div class="form-group">
+      <%= label(f, :match_timeout_in_seconds) %>
+      <%= number_input(f, :match_timeout_seconds,
+        class: "form-control form-control-lg",
+        value: f.params["match_timeout_seconds"] || "177",
+        min: "1",
+        max: "1000"
+      ) %>
+    </div>
+  </div>
+  <%= submit("Create", phx_disable_with: "Creating...", class: "btn btn-primary mb-2") %>
+</div>

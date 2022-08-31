@@ -13,19 +13,21 @@ defmodule Codebattle.Tournament do
              :type,
              :name,
              :state,
+             :difficulty,
              :starts_at,
              :players_count,
              :data,
              :creator,
              :creator_id,
+             :task_pack_id,
              :is_live
            ]}
 
-  @types ~w(individual team)
+  @types ~w(individual team stairway)
   @access_types ~w(public token)
   @states ~w(upcoming waiting_participants canceled active finished)
   @difficulties ~w(elementary easy medium hard)
-  @max_alive_tournaments 5
+  @max_alive_tournaments 7
   @default_match_timeout Application.compile_env(:codebattle, :tournament_match_timeout)
 
   schema "tournaments" do
@@ -38,7 +40,7 @@ defmodule Codebattle.Tournament do
     field(:match_timeout_seconds, :integer, default: @default_match_timeout)
     field(:step, :integer, default: 0)
     field(:starts_at, :utc_datetime)
-    field(:meta, :map, default: %{})
+    field(:meta, AtomizedMap, default: %{})
     field(:last_round_started_at, :naive_datetime)
     field(:access_type, :string, default: "public")
     field(:access_token, :string)
@@ -47,6 +49,7 @@ defmodule Codebattle.Tournament do
     embeds_one(:data, Types.Data, on_replace: :delete)
 
     belongs_to(:creator, Codebattle.User)
+    belongs_to(:task_pack, Codebattle.TaskPack)
 
     timestamps()
   end
@@ -59,6 +62,7 @@ defmodule Codebattle.Tournament do
       :type,
       :access_type,
       :access_token,
+      :task_pack_id,
       :step,
       :state,
       :starts_at,
@@ -75,7 +79,14 @@ defmodule Codebattle.Tournament do
     |> validate_inclusion(:difficulty, @difficulties)
     |> validate_required([:name, :starts_at])
     |> validate_alive_maximum(params)
+    |> add_task_pack(params["task_pack"] || params[:task_pack])
     |> add_creator(params["creator"] || params[:creator])
+  end
+
+  def add_task_pack(changeset, nil), do: changeset
+
+  def add_task_pack(changeset, task_pack) do
+    change(changeset, %{task_pack: task_pack})
   end
 
   def add_creator(changeset, nil), do: changeset

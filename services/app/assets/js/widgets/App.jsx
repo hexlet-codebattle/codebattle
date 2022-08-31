@@ -18,6 +18,8 @@ import RatingList from './containers/RatingList';
 import UserProfile from './containers/UserProfile';
 import UserSettings from './containers/UserSettings';
 import Registration from './containers/Registration';
+import StairwayGameContainer from './containers/StairwayGameContainer';
+import Tournament from './containers/Tournament';
 
 import machines from './machines';
 
@@ -110,6 +112,22 @@ export const RegistrationPage = () => (
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
       <Registration />
+    </PersistGate>
+  </Provider>
+);
+
+export const StairwayGamePage = () => (
+  <Provider store={store}>
+    <PersistGate loading={null} persistor={persistor}>
+      <StairwayGameContainer />
+    </PersistGate>
+  </Provider>
+);
+
+export const TournamentPage = () => (
+  <Provider store={store}>
+    <PersistGate loading={null} persistor={persistor}>
+      <Tournament />
     </PersistGate>
   </Provider>
 );

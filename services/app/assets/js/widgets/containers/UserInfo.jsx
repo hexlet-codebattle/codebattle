@@ -35,7 +35,7 @@ const UserInfo = ({
 }) => {
   const { presenceList } = useSelector(selectors.lobbyDataSelector);
   if (!user?.id) {
-    return <span className="text-secondary">No-User</span>;
+    return <span className="text-secondary">John Doe</span>;
   }
 
   if (user?.id === 0) {

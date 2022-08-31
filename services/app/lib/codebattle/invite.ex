@@ -2,9 +2,10 @@ defmodule Codebattle.Invite do
   use Ecto.Schema
   import Ecto.Changeset
   import Ecto.Query, warn: false
+
   alias Codebattle.Repo
+  alias Codebattle.Game.Context
   alias __MODULE__
-  alias Codebattle.GameProcess.{Play, FsmHelpers}
 
   defmodule GameParams do
     use Ecto.Schema
@@ -26,36 +27,37 @@ defmodule Codebattle.Invite do
   end
 
   @derive {Jason.Encoder,
-           only: [:id, :state, :creator, :recepient, :game_params, :creator_id, :recepient_id]}
+           only: [:id, :state, :creator, :recipient, :game_params, :creator_id, :recipient_id]}
 
   schema "invites" do
     field(:state, :string, default: "pending")
     embeds_one(:game_params, GameParams, on_replace: :update)
     belongs_to(:creator, Codebattle.User)
-    belongs_to(:recepient, Codebattle.User)
+    belongs_to(:recipient, Codebattle.User)
     belongs_to(:game, Codebattle.Game)
     timestamps()
   end
 
   def changeset(invite, attrs) do
     invite
-    |> cast(attrs, [:state, :creator_id, :recepient_id, :game_id])
+    |> cast(attrs, [:state, :creator_id, :recipient_id, :game_id])
     |> cast_embed(:game_params)
     |> validate_required([:state])
   end
 
   def list_invites do
     Repo.all(Invite)
+    |> Repo.preload([:creator, :recipient])
   end
 
   def list_active_invites(user_id) do
     query =
       from(i in Invite,
-        where: i.state == "pending" and (i.creator_id == ^user_id or i.recepient_id == ^user_id)
+        where: i.state == "pending" and (i.creator_id == ^user_id or i.recipient_id == ^user_id)
       )
 
     Repo.all(query)
-    |> Repo.preload([:creator, :recepient])
+    |> Repo.preload([:creator, :recipient])
   end
 
   def list_all_active_invites() do
@@ -64,19 +66,23 @@ defmodule Codebattle.Invite do
         where: i.state == "pending"
       )
 
-    Repo.all(query)
+    Repo.all(query) |> Repo.preload([:creator, :recipient])
   end
 
   def expire_invite(invite) do
     Invite.update_invite(invite, %{state: "expired"})
   end
 
-  def get_invite!(id), do: Repo.get!(Invite, id) |> Repo.preload([:creator, :recepient])
+  def get_invite!(id), do: Repo.get!(Invite, id) |> Repo.preload([:creator, :recipient])
 
   def create_invite(attrs \\ %{}) do
     %Invite{}
     |> Invite.changeset(attrs)
     |> Repo.insert()
+    |> case do
+      {:ok, invite} -> {:ok, Repo.preload(invite, [:creator, :recipient])}
+      error -> error
+    end
   end
 
   def update_invite(%Invite{} = invite, attrs) do
@@ -93,11 +99,11 @@ defmodule Codebattle.Invite do
     Invite.changeset(invite, attrs)
   end
 
-  def drop_invites_by_users(creator_id, recepient_id) do
+  def drop_invites_by_users(creator_id, recipient_id) do
     query =
       from(i in Invite,
         where:
-          i.state == "pending" and (i.creator_id == ^creator_id or i.creator_id == ^recepient_id),
+          i.state == "pending" and (i.creator_id == ^creator_id or i.creator_id == ^recipient_id),
         select: i
       )
 
@@ -105,25 +111,32 @@ defmodule Codebattle.Invite do
   end
 
   def accept_invite(params) do
-    recepient_id = params.recepient_id
+    recipient_id = params.recipient_id
     invite_id = params.id || raise "Not found!"
     invite = get_invite!(invite_id)
 
-    if invite.recepient_id != recepient_id do
+    if invite.recipient_id != recipient_id do
       raise "Not authorized!"
     end
 
-    users = [invite.creator, invite.recepient]
-    game_params = Map.merge(invite.game_params, %{users: users})
+    users = [invite.creator, invite.recipient]
 
-    case Play.start_game(game_params) do
-      {:ok, fsm} ->
-        game_id = FsmHelpers.get_game_id(fsm)
+    game_params = %{
+      players: users,
+      state: "playing",
+      level: invite.game_params.level,
+      type: "duo",
+      mode: "standard",
+      visibility_type: invite.game_params.type,
+      timeout_seconds: invite.game_params.timeout_seconds
+    }
 
-        {:ok, invite} = Invite.update_invite(invite, %{state: "accepted", game_id: game_id})
+    case Context.create_game(game_params) do
+      {:ok, game} ->
+        {:ok, invite} = Invite.update_invite(invite, %{state: "accepted", game_id: game.id})
 
         {_, dropped_invites} =
-          Invite.drop_invites_by_users(invite.creator_id, invite.recepient_id)
+          Invite.drop_invites_by_users(invite.creator_id, invite.recipient_id)
 
         {:ok, %{invite: invite, dropped_invites: dropped_invites}}
 
@@ -137,7 +150,7 @@ defmodule Codebattle.Invite do
     invite_id = params.id || raise "Not found!"
     invite = get_invite!(invite_id)
 
-    if invite.recepient_id != user_id and invite.creator_id != user_id do
+    if invite.recipient_id != user_id and invite.creator_id != user_id do
       raise "Not authorized!"
     end
 

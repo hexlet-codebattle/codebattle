@@ -1,0 +1,71 @@
+<div class="container-xl bg-white shadow-sm rounded py-4 mb-3">
+  <h1 class="text-center">
+    <span><%= @task.name %></span>
+  </h1>
+  <h3 class="text-center mt-4">Params</h3>
+  <div class="d-flex flex-wrap align-items-center justify-content-around text-muted">
+    <span>Played count: <%= @played_count %></span>
+    <%= if @task.origin == "github" do %>
+      <a
+        href="https://github.com/hexlet-codebattle/battle_asserts/tree/master/src/battle_asserts/issues/"
+        <a
+        href={
+          "https://github.com/hexlet-codebattle/battle_asserts/tree/master/src/battle_asserts/issues/#{@task.name}.clj"
+        }
+      >
+        <%= "Origin: #{@task.origin}" %>
+      </a>
+    <% else %>
+      <span>Origin: <%= @task.origin %></span>
+    <% end %>
+    <span>Visibility: <%= @task.visibility %></span>
+    <span>State: <%= @task.state %></span>
+    <%= if @task.creator_id do %>
+      <span>
+        Creator:
+        <a href={Routes.user_path(@conn, :show, @task.creator_id)}>
+          <span>User</span>
+        </a>
+      </span>
+    <% end %>
+
+    <div>
+      <span>Level:</span>
+      <img
+        alt={@task.level}
+        class="ml-3"
+        src={"/assets/images/levels/#{@task.level}.svg"}
+        title={@task.level}
+      />
+    </div>
+  </div>
+  <h3 class="text-center mt-4">Tags</h3>
+  <div class="text-center">
+    <span><%= render_tags(@task) %></span>
+  </div>
+  <h3 class="text-center mt-4">Description</h3>
+  <div class="text-center">
+    <%= raw(render_markdown(@task.description_en)) %>
+    <%= raw(render_markdown(@task.description_ru)) %>
+  </div>
+  <h3 class="text-center mt-4">Examples</h3>
+  <div class="text-center">
+    <%= raw(render_markdown(@task.examples)) %>
+  </div>
+  <h3 class="text-center mt-4">Input Signature</h3>
+  <div class="text-center"><%= Jason.encode!(@task.input_signature) %></div>
+  <h3 class="text-center mt-4">Ouptut Signature</h3>
+  <div class="text-center"><%= Jason.encode!(@task.output_signature) %></div>
+
+  <%= if Codebattle.Task.can_access_task?(@task, @current_user) do %>
+    <h3 class="text-center mt-4">Asserts</h3>
+    <p class="text-center"><%= render_asserts(@task) %></p>
+  <% end %>
+
+  <div class="d-flex">
+    <%= if Codebattle.Task.can_access_task?(@task, @current_user) do %>
+      <%= link("Edit", to: Routes.task_path(@conn, :edit, @task), class: "btn btn-success mt-2") %>
+    <% end %>
+    <%= link("Back", to: Routes.task_path(@conn, :index), class: "ml-auto") %>
+  </div>
+</div>

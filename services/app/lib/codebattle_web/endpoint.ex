@@ -43,9 +43,13 @@ defmodule CodebattleWeb.Endpoint do
     plug(Phoenix.Ecto.CheckRepoStatus, otp_app: :codebattle)
   end
 
+  plug(Phoenix.LiveDashboard.RequestLogger,
+    param_key: "request_logger",
+    cookie_key: "request_logger"
+  )
+
   plug(Plug.RequestId)
   plug(Plug.Telemetry, event_prefix: [:phoenix, :endpoint])
-  plug(Plug.Logger)
 
   plug(
     Plug.Parsers,
@@ -59,18 +63,7 @@ defmodule CodebattleWeb.Endpoint do
   plug(Plug.MethodOverride)
   plug(Plug.Head)
 
-  # The session will be stored in the cookie and signed,
-  # this means its contents can be read but not tampered with.
-  # Set :encryption_salt if you would also like to encrypt it.
-  plug(
-    Plug.Session,
-    @session_options
-  )
+  plug(Plug.Session, @session_options)
 
-  plug(PhoenixGon.Pipeline)
   plug(CodebattleWeb.Router)
-
-  def init(_key, config) do
-    {:ok, config}
-  end
 end

@@ -18,15 +18,7 @@ defmodule Codebattle.TasksImporterTest do
       end)
       |> MapSet.new()
 
-    signatures =
-      issue_names
-      |> Enum.map(fn issue_name ->
-        YamlElixir.read_from_file!(Path.join(path, "#{issue_name}.yml"))
-        |> Map.get("signature")
-      end)
-      |> MapSet.new()
-
-    {:ok, %{path: path, issue_names: issue_names, signatures: signatures}}
+    {:ok, %{path: path, issue_names: issue_names}}
   end
 
   test "uploads fixtures to database", %{
@@ -44,7 +36,7 @@ defmodule Codebattle.TasksImporterTest do
     assert MapSet.equal?(task_names, issue_names)
   end
 
-  test "is idempotent", %{path: path, issue_names: issue_names, signatures: _signatures} do
+  test "is idempotent", %{path: path, issue_names: issue_names} do
     Codebattle.TasksImporter.upsert([path])
     Codebattle.TasksImporter.upsert([path])
 
@@ -57,7 +49,7 @@ defmodule Codebattle.TasksImporterTest do
     assert MapSet.equal?(task_names, issue_names)
   end
 
-  test "is correct signature", %{path: path, issue_names: _issue_names, signatures: signatures} do
+  test "is correct signature", %{path: path, issue_names: _issue_names} do
     Codebattle.TasksImporter.upsert([path])
 
     task_signatures =
@@ -66,9 +58,14 @@ defmodule Codebattle.TasksImporterTest do
       |> Enum.map(fn task ->
         %{"input" => task.input_signature, "output" => task.output_signature}
       end)
-      |> MapSet.new()
 
-    assert MapSet.equal?(task_signatures, signatures)
+    assert task_signatures ==
+             [
+               %{
+                 "input" => [%{argument_name: "num", type: %{name: "integer"}}],
+                 "output" => %{type: %{name: "integer"}}
+               }
+             ]
   end
 
   test "respects disabled" do
@@ -94,9 +91,9 @@ defmodule Codebattle.TasksImporterTest do
     assert task.visibility == "public"
     assert task.origin == "github"
     assert task.creator_id == nil
-    assert task.input_signature == [%{"argument-name" => "num", "type" => %{"name" => "integer"}}]
-    assert task.output_signature == %{"type" => %{"name" => "integer"}}
-    assert task.asserts |> String.split("\n") |> Enum.count() == 21
+    assert task.input_signature == [%{argument_name: "num", type: %{name: "integer"}}]
+    assert task.output_signature == %{type: %{name: "integer"}}
+    assert task.asserts |> Enum.count() == 20
 
     Codebattle.TasksImporter.upsert([new_path])
 
@@ -111,11 +108,11 @@ defmodule Codebattle.TasksImporterTest do
     assert updated.level == "easy"
 
     assert updated.input_signature == [
-             %{"argument-name" => "str", "type" => %{"name" => "string"}}
+             %{argument_name: "str", type: %{name: "string"}}
            ]
 
-    assert updated.output_signature == %{"type" => %{"name" => "string"}}
-    assert updated.asserts |> String.split("\n") |> Enum.count() == 2
+    assert updated.output_signature == %{type: %{name: "string"}}
+    assert updated.asserts |> Enum.count() == 1
     assert updated.id == task.id
   end
 end

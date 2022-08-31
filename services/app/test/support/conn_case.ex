@@ -29,9 +29,9 @@ defmodule CodebattleWeb.ConnCase do
       import Phoenix.ConnTest
       import Phoenix.LiveViewTest
       import CodebattleWeb.Factory
-      import Helpers.GameProcess
+
       alias Codebattle.{Repo, User, Game, UserGame}
-      alias Codebattle.GameProcess.{Player}
+      alias Codebattle.Game.{Player}
       alias CodebattleWeb.Router.Helpers, as: Routes
 
       # The default endpoint for testing
@@ -41,8 +41,6 @@ defmodule CodebattleWeb.ConnCase do
 
   setup tags do
     :ok = Ecto.Adapters.SQL.Sandbox.checkout(Codebattle.Repo)
-    # Clean ETS storage between tests
-    :ets.delete_all_objects(:active_games)
 
     unless tags[:async] do
       Ecto.Adapters.SQL.Sandbox.mode(Codebattle.Repo, {:shared, self()})

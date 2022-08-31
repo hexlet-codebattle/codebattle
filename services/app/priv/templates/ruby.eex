@@ -1,2 +1,4 @@
+require 'json'
+
 require_relative '../runner'
-Runner.call(<%= asserts %>)
+Runner.call(JSON.parse(<%= Jason.encode!(arguments) %>))

@@ -5,10 +5,12 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
   alias Codebattle.Chat
   alias Codebattle.Tournament
 
+  require Logger
+
   @update_frequency 1_000
 
   def render(assigns) do
-    CodebattleWeb.TournamentView.render("show.html", assigns)
+    CodebattleWeb.TournamentView.render("old_show.html", assigns)
   end
 
   def mount(_params, session, socket) do
@@ -21,8 +23,8 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
 
     tournament = session["tournament"]
 
-    Phoenix.PubSub.subscribe(:cb_pubsub, topic_name(tournament))
-    Phoenix.PubSub.subscribe(:cb_pubsub, "tournaments")
+    Codebattle.PubSub.subscribe(topic_name(tournament))
+    Codebattle.PubSub.subscribe(chat_topic_name(tournament))
 
     {:ok,
      assign(socket,
@@ -52,42 +54,21 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     end
   end
 
-  def handle_info(%{topic: topic, event: "update_tournament", payload: payload}, socket) do
-    if is_current_topic?(topic, socket.assigns.tournament) do
-      {:noreply, assign(socket, tournament: payload.tournament)}
-    else
-      {:noreply, socket}
-    end
+  def handle_info(%{topic: _topic, event: "tournament:updated", payload: payload}, socket) do
+    {:noreply, assign(socket, tournament: payload.tournament)}
   end
 
-  def handle_info(%{topic: topic, event: "update_chat", payload: payload}, socket) do
-    if is_current_topic?(topic, socket.assigns.tournament) do
-      {:noreply, assign(socket, messages: payload.messages)}
-    else
-      {:noreply, socket}
-    end
+  def handle_info(%{topic: _topic, event: "chat:updated", payload: payload}, socket) do
+    {:noreply, assign(socket, messages: payload.messages)}
   end
 
-  def handle_info(%{topic: topic, event: "chat:new_msg", payload: _payload}, socket) do
-    # TODO: add only one message without refetching
+  def handle_info(%{topic: _topic, event: "chat:new_msg", payload: payload}, socket) do
+    {:noreply, assign(socket, messages: Enum.concat(socket.assigns.messages, [payload]))}
+  end
+
+  def handle_info(%{topic: _topic, event: "chat:user_banned", payload: _payload}, socket) do
     tournament = socket.assigns.tournament
-
-    if is_current_topic?(topic, tournament) do
-      {:noreply, assign(socket, messages: get_chat_messages(tournament.id))}
-    else
-      {:noreply, socket}
-    end
-  end
-
-  def handle_info(%{topic: topic, event: "chat:ban", payload: _payload}, socket) do
-    # TODO: add only one message without refetching
-    tournament = socket.assigns.tournament
-
-    if is_current_topic?(topic, tournament) do
-      {:noreply, assign(socket, messages: get_chat_messages(tournament.id))}
-    else
-      {:noreply, socket}
-    end
+    {:noreply, assign(socket, messages: get_chat_messages(tournament.id))}
   end
 
   def handle_info(%{topic: "tournaments", event: "round:created", payload: payload}, socket) do
@@ -116,7 +97,12 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     end
   end
 
-  def handle_event(_event, _params, %{assigns: %{current_user: %{guest: true}} = socket}) do
+  def handle_info(event, socket) do
+    Logger.debug("CodebattleWeb.Live.Tournament.ShowView unexpected event #{inspect(event)}")
+    {:noreply, socket}
+  end
+
+  def handle_event(_event, _params, %{assigns: %{current_user: %{is_guest: true}} = socket}) do
     {:noreply, socket}
   end
 
@@ -159,6 +145,8 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     Tournament.Server.update_tournament(socket.assigns.tournament.id, :back, %{
       user: socket.assigns.current_user
     })
+
+    {:noreply, socket}
   end
 
   def handle_event("open_up", _params, socket) do
@@ -189,77 +177,50 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     {:noreply, socket}
   end
 
-  def handle_event("chat_ban", params, socket) do
+  def handle_event("chat_ban_user", params, socket) do
     tournament = socket.assigns.tournament
     current_user = socket.assigns.current_user
 
     if Tournament.Helpers.can_moderate?(tournament, current_user) do
-      Chat.Server.command(
-        {:tournament, tournament.id},
-        current_user,
-        %{type: "ban", name: params["name"], time: :os.system_time(:seconds)}
-      )
-
-      {:noreply, socket}
-    else
-      {:noreply, socket}
-    end
-  end
-
-  def handle_event("chat_message", %{"message" => %{"content" => ""}}, socket),
-    do: {:noreply, socket}
-
-  def handle_event("chat_message", params, socket) do
-    tournament = socket.assigns.tournament
-    current_user = socket.assigns.current_user
-
-    text = params["message"]["content"]
-
-    if String.starts_with?(text, "/") do
-      case Regex.scan(~r/\/(\w+)/, text) do
-        [[_, type]] ->
-          params =
-            text
-            |> String.slice(1..-1)
-            |> String.split()
-            |> Enum.slice(1..-1)
-            |> Enum.reduce(%{}, fn x, acc ->
-              case String.split(x, ":") do
-                [k, v] -> Map.put(acc, String.to_atom(k), v)
-                _ -> acc
-              end
-            end)
-
-          Chat.Server.command(
-            {:tournament, tournament.id},
-            current_user,
-            Map.merge(params, %{type: type})
-          )
-
-        _ ->
-          :ok
-      end
-    else
-      Chat.Server.add_message(
+      Chat.ban_user(
         {:tournament, tournament.id},
         %{
-          name: current_user.name,
-          text: text,
-          time: :os.system_time(:seconds)
+          admin_name: current_user.name,
+          name: params["name"],
+          user_id: String.to_integer(params["user_id"])
         }
       )
     end
 
-    messages = get_chat_messages(tournament.id)
+    {:noreply, socket}
+  end
 
-    CodebattleWeb.Endpoint.broadcast_from(
-      self(),
-      topic_name(tournament),
-      "update_chat",
-      %{messages: messages}
-    )
+  def handle_event("chat_clean_banned", params, socket) do
+    tournament = socket.assigns.tournament
+    current_user = socket.assigns.current_user
 
-    {:noreply, assign(socket, messages: messages)}
+    if Tournament.Helpers.can_moderate?(tournament, current_user) do
+      Chat.clean_banned({:tournament, tournament.id})
+    end
+
+    {:noreply, socket}
+  end
+
+  def handle_event("chat_message", %{"message" => %{"text" => ""}}, socket),
+    do: {:noreply, socket}
+
+  def handle_event("chat_message", %{"message" => %{"text" => text}}, socket) do
+    tournament = socket.assigns.tournament
+    current_user = socket.assigns.current_user
+
+    Chat.add_message({:tournament, tournament.id}, %{
+      type: :text,
+      user_id: current_user.id,
+      name: current_user.name,
+      text: text
+    })
+
+    {:noreply, socket}
   end
 
   def handle_event("toggle", params, socket) do
@@ -306,19 +267,10 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     }
   end
 
-  defp topic_name(tournament) do
-    "tournament_#{tournament.id}"
-  end
-
-  defp is_current_topic?(topic, tournament) do
-    topic == topic_name(tournament)
-  end
+  defp topic_name(tournament), do: "tournament:#{tournament.id}"
+  defp chat_topic_name(tournament), do: "chat:tournament:#{tournament.id}"
 
   defp get_chat_messages(id) do
-    try do
-      Chat.Server.get_messages({:tournament, id})
-    catch
-      :exit, _reason -> [%{type: "info", name: "Bot", text: "Tournament over, create a new one!"}]
-    end
+    Chat.get_messages({:tournament, id})
   end
 end

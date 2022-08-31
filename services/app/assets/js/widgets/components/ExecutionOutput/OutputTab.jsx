@@ -5,9 +5,9 @@ import i18n from '../../../i18n';
 const getMessage = status => {
   switch (status) {
     case 'timeout':
-      return i18n.t('We couldn\'t retrieve check results. Check your network connection or your solution for bugs. =)');
+      return i18n.t('We couldn\'t retrieve check results. Check your network connection or your solution for bugs or :prod_is_down:');
     case 'error':
-      return i18n.t('You have some syntax errors');
+      return i18n.t('solution cannot be executed');
     case 'failure':
       return i18n.t('Test failed');
     case 'ok':

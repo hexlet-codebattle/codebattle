@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
@@ -26,21 +26,23 @@ config :codebattle, Codebattle.Repo,
 
 config :codebattle, Codebattle.Bot,
   timeout: 60_000,
-  timeout_start_playbook: 0,
-  min_bot_player_speed: 0
+  min_bot_step_timeout: 0
 
-adapter =
-  case System.get_env("CODEBATTLE_RUN_CODE_CHECK") do
-    "true" -> Codebattle.CodeCheck.DockerChecker
-    _ -> Codebattle.CodeCheck.FakeChecker
+executor =
+  case System.get_env("CODEBATTLE_USE_DOCKER_EXECUTOR") do
+    "true" -> Codebattle.CodeCheck.DockerExecutor
+    _ -> Codebattle.CodeCheck.FakeExecutor
   end
 
-config :codebattle, code_check_timeout: 25_000
-config :codebattle, checker_adapter: adapter
+config :codebattle, code_check_timeout: 35_000
+config :codebattle, checker_executor: executor
 config :codebattle, tournament_match_timeout: 1
-config :codebattle, Codebattle.Invite, timeout: :timer.seconds(1000)
-config :codebattle, Codebattle.Invite, lifetime: :timer.seconds(0)
-config :codebattle, tasks_provider: Codebattle.GameProcess.FakeTasksQueuesServer
+
+config :codebattle, Codebattle.Invite,
+  timeout: :timer.seconds(1000),
+  lifetime: :timer.seconds(0)
+
+config :codebattle, tasks_provider: Codebattle.Game.FakeTasksQueuesServer
 
 config :codebattle, :firebase,
   sender_id: "ASDF",

@@ -24,13 +24,13 @@ const InvitesList = ({ list, currentUserId }) => {
   return list
     .sort(({ creatorId }) => creatorId === currentUserId)
     .map(({
-      id, creatorId, recepientId, creator, recepient, gameParams,
+      id, creatorId, recipientId, creator, recipient, gameParams,
     }) => (
       <div key={id} className="d-flex align-items-center p-2">
         <div className="mx-1">
           <GameLevelBadge level={gameParams.level} />
         </div>
-        {currentUserId === recepientId && (
+        {currentUserId === recipientId && (
           <>
             <span className="text-truncate small mx-2 mr-auto">
               <span className="font-weight-bold">{creator.name}</span>
@@ -56,7 +56,7 @@ const InvitesList = ({ list, currentUserId }) => {
           <>
             <span className="text-truncate small ml-2 mr-auto">
               {'You invited '}
-              <span className="font-weight-bold mr-2">{recepient.name}</span>
+              <span className="font-weight-bold mr-2">{recipient.name}</span>
             </span>
             <button
               type="submit"
@@ -73,7 +73,7 @@ const InvitesList = ({ list, currentUserId }) => {
 
 const InvitesContainer = () => {
   const currentUserId = useSelector(selectors.currentUserIdSelector);
-  const checkInvitePlayers = ({ creatorId, recepientId }) => (creatorId === currentUserId || recepientId === currentUserId);
+  const checkInvitePlayers = ({ creatorId, recipientId }) => (creatorId === currentUserId || recipientId === currentUserId);
   const filterInvites = invite => invite.state === 'pending' && checkInvitePlayers(invite);
   const invites = useSelector(state => state.invites.list).filter(filterInvites);
 

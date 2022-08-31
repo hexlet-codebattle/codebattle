@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 config :codebattle, CodebattleWeb.Endpoint,
   http: [port: System.get_env("CODEBATTLE_PORT", "4000")],
@@ -11,7 +11,6 @@ config :codebattle, CodebattleWeb.Endpoint,
 
 config :logger, level: :error, backends: [:console, Sentry.LoggerBackend]
 
-config :codebattle, Codebattle.Bot, timeout: 1000
 config :codebattle, Codebattle.Invite, timeout: :timer.minutes(15)
 config :codebattle, Codebattle.Invite, lifetime: :timer.minutes(15)
 config :codebattle, ws_port: 8080

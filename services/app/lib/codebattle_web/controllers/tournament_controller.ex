@@ -1,6 +1,7 @@
 defmodule CodebattleWeb.TournamentController do
   use CodebattleWeb, :controller
 
+  import PhoenixGon.Controller
   alias Codebattle.Tournament
 
   def index(conn, _params) do
@@ -19,6 +20,17 @@ defmodule CodebattleWeb.TournamentController do
         "tournaments" => Tournament.Context.list_live_and_finished(current_user)
       }
     )
+  end
+
+  def live(conn, params) do
+    tournament_id = params["tournament_id"]
+    current_user = conn.assigns[:current_user]
+    tournament = Tournament.Context.get!(tournament_id)
+    langs = Codebattle.Languages.meta() |> Map.values()
+
+    conn
+    |> put_gon(langs: langs, tournament_id: tournament_id)
+    |> render("live.html")
   end
 
   def show(conn, params) do

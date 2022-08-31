@@ -42,7 +42,7 @@ namespace app
 
         Console.SetOut(oldOut);
         if (success) {
-          Console.WriteLine(new StatusMessage{ status = "ok", result = <%= hash_sum %> });
+          Console.WriteLine(new StatusMessage{ status = "ok", result = <%= check_code %> });
         } else {
           foreach(AssertResult message in executionResults)
           {
@@ -96,12 +96,12 @@ namespace app
 
     class AssertResult
     {
-      public string status { get; set; }
-      public object result { get; set; }
-      public object expected { get; set; }
-      public IList<object> arguments { get; set; }
-      public string output { get; set; }
-      public double executionTime { get; set; }
+      public string? status { get; set; }
+      public object? result { get; set; }
+      public object? expected { get; set; }
+      public IList<object>? arguments { get; set; }
+      public string? output { get; set; }
+      public double? executionTime { get; set; }
 
       public override string ToString()
       {
@@ -111,8 +111,8 @@ namespace app
 
     class StatusMessage
     {
-      public string status { get; set; }
-      public string result { get; set; }
+      public string? status { get; set; }
+      public string? result { get; set; }
 
       public override string ToString()
       {
