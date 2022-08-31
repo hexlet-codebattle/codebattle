@@ -15,53 +15,71 @@ export const fetchState = () => (dispatch, getState) => {
   channel.join().receive('ok', camelizeKeysAndDispatch(actions.initGameList));
 
   channel.on('game:upsert', data => {
+    const newData = camelizeKeys(data);
     const {
       game: { players, id, state: gameState },
-    } = data;
+    } = newData;
     const currentPlayerId = getState().user.currentUserId;
     const isGameStarted = gameState === 'playing';
-    const isCurrentUserInGame = _.some(players, ({ id: playerId }) => playerId === currentPlayerId);
+    const isCurrentUserInGame = _.some(
+      players,
+      ({ id: playerId }) => playerId === currentPlayerId,
+    );
 
     if (isGameStarted && isCurrentUserInGame) {
       window.location.href = `/games/${id}`;
     } else {
-      dispatch(actions.upsertGameLobby(camelizeKeys(data)));
+      dispatch(actions.upsertGameLobby(newData));
     }
   });
 
-  channel.on('user:start_check', data => {
-    const { id, userId } = camelizeKeys(data);
-    const payload = { id, userId, checkResult: { status: 'started' } };
+  channel.on('game:check_started', data => {
+    const { gameId, userId } = camelizeKeys(data);
+    const payload = { gameId, userId, checkResult: { status: 'started' } };
 
     dispatch(actions.updateCheckResult(payload));
   });
 
-  channel.on('user:check_complete', camelizeKeysAndDispatch(actions.updateCheckResult));
-
+  channel.on(
+    'game:check_completed',
+    camelizeKeysAndDispatch(actions.updateCheckResult),
+  );
   channel.on('game:remove', camelizeKeysAndDispatch(actions.removeGameLobby));
   channel.on('game:finish', camelizeKeysAndDispatch(actions.finishGame));
 };
 
 export const cancelGame = gameId => () => {
-  channel.push('game:cancel', { gameId }).receive('error', error => console.error(error));
+  channel
+    .push('game:cancel', { game_id: gameId })
+    .receive('error', error => console.error(error));
 };
 
 export const createGame = params => {
-  channel.push('game:create', params).receive('error', error => console.error(error));
+  channel
+    .push('game:create', params)
+    .receive('error', error => console.error(error));
 };
 
 export const createInvite = invite => {
-  channel.push('game:create_invite', invite).receive('error', error => console.error(error));
+  channel
+    .push('game:create_invite', invite)
+    .receive('error', error => console.error(error));
 };
 
 export const acceptInvite = invite => () => {
-  channel.push('game:accept_invite', invite).receive('error', error => console.error(error));
+  channel
+    .push('game:accept_invite', invite)
+    .receive('error', error => console.error(error));
 };
 
 export const declineInvite = invite => () => {
-  channel.push('game:decline_invite', invite).receive('error', error => console.error(error));
+  channel
+    .push('game:decline_invite', invite)
+    .receive('error', error => console.error(error));
 };
 
 export const cancelInvite = invite => () => {
-  channel.push('game:cancel_invite', invite).receive('error', error => console.error(error));
+  channel
+    .push('game:cancel_invite', invite)
+    .receive('error', error => console.error(error));
 };

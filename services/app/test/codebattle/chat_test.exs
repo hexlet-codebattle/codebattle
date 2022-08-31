@@ -46,7 +46,7 @@ defmodule Codebattle.ChatTest do
 
     assert length(Chat.get_messages(@chat_type)) == 2
     :timer.sleep(100)
-    assert length(Chat.get_messages(@chat_type)) == 0
+    assert Enum.empty?(Chat.get_messages(@chat_type))
   end
 
   test "deletes messages and bans user", %{user1: user1, user2: user2, admin: admin} do

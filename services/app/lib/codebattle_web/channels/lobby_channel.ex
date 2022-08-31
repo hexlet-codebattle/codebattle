@@ -13,9 +13,9 @@ defmodule CodebattleWeb.LobbyChannel do
     user_active_games =
       %{is_tournament: false}
       |> Game.Context.get_active_games()
-      |> Enum.filter(fn game ->
-        game.visibility_type == "public" || Game.Helpers.is_player?(game, current_user.id)
-      end)
+      |> Enum.filter(&can_user_see_game?(&1, current_user))
+
+    Codebattle.PubSub.subscribe("games")
 
     {:ok,
      %{
@@ -26,16 +26,10 @@ defmodule CodebattleWeb.LobbyChannel do
   end
 
   def handle_in("game:cancel", payload, socket) do
-    game_id = Map.get(payload, "gameId")
+    game_id = Map.get(payload, "game_id")
 
-    case Game.Context.cancel_game(game_id, socket.assigns.current_user) do
-      :ok ->
-        CodebattleWeb.Endpoint.broadcast("lobby", "game:remove", %{id: game_id})
-        {:noreply, socket}
-
-      {:error, reason} ->
-        {:error, %{reason: reason}, socket}
-    end
+    Game.Context.cancel_game(game_id, socket.assigns.current_user)
+    {:noreply, socket}
   end
 
   def handle_in("game:create", payload, socket) do
@@ -64,5 +58,41 @@ defmodule CodebattleWeb.LobbyChannel do
       {:error, reason} ->
         {:reply, {:error, %{reason: reason}}, socket}
     end
+  end
+
+  def handle_info(%{event: "game:finished", payload: payload}, socket) do
+    push(socket, "game:remove", payload)
+    {:noreply, socket}
+  end
+
+  def handle_info(%{event: "game:terminated", payload: payload}, socket) do
+    push(socket, "game:remove", payload)
+    {:noreply, socket}
+  end
+
+  def handle_info(%{event: "game:check_started", payload: payload}, socket) do
+    push(socket, "game:check_started", payload)
+    {:noreply, socket}
+  end
+
+  def handle_info(%{event: "game:check_completed", payload: payload}, socket) do
+    push(socket, "game:check_completed", payload)
+    {:noreply, socket}
+  end
+
+  def handle_info(%{event: "game:updated", payload: payload}, socket) do
+    current_user = socket.assigns.current_user
+
+    if can_user_see_game?(payload.game, current_user) do
+      push(socket, "game:upsert", payload)
+    end
+
+    {:noreply, socket}
+  end
+
+  def handle_info(_, socket), do: {:noreply, socket}
+
+  defp can_user_see_game?(game, user) do
+    game.visibility_type == "public" || Game.Helpers.is_player?(game, user)
   end
 end

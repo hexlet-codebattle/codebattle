@@ -26,7 +26,7 @@ const lobby = createSlice({
     }),
     updateCheckResult: (state, { payload }) => {
       state.activeGames = state.activeGames.map(game => {
-        if (game.id === payload.id) {
+        if (game.id === payload.gameId) {
           const newPlayers = game.players.map(player => (player.id === payload.userId
               ? { ...player, checkResult: payload.checkResult }
               : player));
@@ -40,8 +40,8 @@ const lobby = createSlice({
     syncPresenceList: (state, { payload }) => {
       state.presenceList = payload;
     },
-    removeGameLobby: (state, { payload: { id } }) => {
-      state.activeGames = _.reject(state.activeGames, { id });
+    removeGameLobby: (state, { payload: { gameId } }) => {
+      state.activeGames = _.reject(state.activeGames, { id: gameId });
     },
     upsertGameLobby: (state, { payload: { game } }) => {
       const gameToUpdate = _.find(state.activeGames, { id: game.id });

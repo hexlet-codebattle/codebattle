@@ -22,7 +22,6 @@ const initTournamentChannel = dispatch => {
     const data = camelizeKeys(response);
     const matches = _.groupBy(data.tournament.data.matches, 'roundId');
     _.set(data, 'tournament.data.matches', matches);
-    console.log(data);
 
     dispatch(actions.setTournamentData(data));
   };

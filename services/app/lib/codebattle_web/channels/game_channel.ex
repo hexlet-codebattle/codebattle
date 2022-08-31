@@ -71,12 +71,6 @@ defmodule CodebattleWeb.GameChannel do
 
     broadcast_from!(socket, "user:start_check", %{user_id: user.id})
 
-    # TODO: move to pubSub
-    CodebattleWeb.Endpoint.broadcast!("lobby", "user:start_check", %{
-      id: String.to_integer(game_id),
-      user_id: user.id
-    })
-
     %{"editor_text" => editor_text, "lang_slug" => lang_slug} = payload
 
     case Context.check_result(game_id, %{
@@ -93,28 +87,9 @@ defmodule CodebattleWeb.GameChannel do
           check_result: check_result
         })
 
-        # TODO: move to PubSub
-        CodebattleWeb.Endpoint.broadcast!("lobby", "user:check_complete", %{
-          # TODO: should be already integer
-          id: game.id,
-          user_id: user.id,
-          check_result: %{
-            asserts_count: check_result.asserts_count,
-            success_count: check_result.success_count,
-            status: check_result.status
-          }
-        })
-
         {:noreply, socket}
 
       {:error, reason} ->
-        # TODO: move to PubSub
-        CodebattleWeb.Endpoint.broadcast!("lobby", "user:check_complete", %{
-          id: String.to_integer(game_id),
-          user_id: user.id,
-          check_result: %{status: "error", output_error: reason}
-        })
-
         {:reply, {:error, %{reason: reason}}, socket}
     end
   end

@@ -62,17 +62,46 @@ defmodule Codebattle.PubSub.Events do
     ]
   end
 
+  def get_messages("game:updated", %{game: game}) do
+    payload = %{
+      game: %{
+        id: Game.Helpers.get_game_id(game),
+        inserted_at: Game.Helpers.get_inserted_at(game),
+        is_bot: Game.Helpers.bot_game?(game),
+        level: Game.Helpers.get_level(game),
+        players: Game.Helpers.get_players(game),
+        state: Game.Helpers.get_state(game),
+        timeout_seconds: Game.Helpers.get_timeout_seconds(game),
+        type: Game.Helpers.get_type(game),
+        visibility_type: Game.Helpers.get_visibility_type(game)
+      }
+    }
+
+    [
+      %Message{
+        topic: "game:#{game.id}",
+        event: "game:updated",
+        payload: payload
+      },
+      %Message{
+        topic: "games",
+        event: "game:updated",
+        payload: payload
+      }
+    ]
+  end
+
   def get_messages("game:finished", params) do
     game_events = [
       %Message{
         topic: "game:#{params.game.id}",
         event: "game:finished",
-        payload: %{game: params.game}
+        payload: %{game_id: params.game.id}
       },
       %Message{
         topic: "games",
         event: "game:finished",
-        payload: %{game: params.game}
+        payload: %{game_id: params.game.id}
       }
     ]
 
@@ -94,6 +123,63 @@ defmodule Codebattle.PubSub.Events do
       end
 
     game_events ++ tournament_events
+  end
+
+  def get_messages("game:terminated", params) do
+    [
+      %Message{
+        topic: "game:#{params.game.id}",
+        event: "game:terminated",
+        payload: %{game_id: params.game.id}
+      },
+      %Message{
+        topic: "games",
+        event: "game:terminated",
+        payload: %{game_id: params.game.id}
+      }
+    ]
+  end
+
+  def get_messages("game:check_started", params) do
+    payload = %{game_id: params.game.id, user_id: params.user_id}
+
+    [
+      %Message{
+        topic: "game:#{params.game.id}",
+        event: "game:check_started",
+        payload: payload
+      },
+      %Message{
+        topic: "games",
+        event: "game:check_started",
+        payload: payload
+      }
+    ]
+  end
+
+  def get_messages("game:check_completed", params) do
+    payload = %{
+      game_id: params.game.id,
+      user_id: params.user_id,
+      check_result: %{
+        asserts_count: params.check_result.asserts_count,
+        success_count: params.check_result.success_count,
+        status: params.check_result.status
+      }
+    }
+
+    [
+      %Message{
+        topic: "game:#{params.game.id}",
+        event: "game:check_completed",
+        payload: payload
+      },
+      %Message{
+        topic: "games",
+        event: "game:check_completed",
+        payload: payload
+      }
+    ]
   end
 
   defp chat_topic(:lobby), do: "chat:lobby"

@@ -23,7 +23,7 @@ defmodule Codebattle.Application do
         []
       else
         [
-          {Codebattle.Bot.GameCreator, []},
+          # {Codebattle.Bot.GameCreator, []},
           {Codebattle.UsersRankUpdateServer, []}
         ]
       end

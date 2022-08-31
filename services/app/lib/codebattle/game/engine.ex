@@ -11,7 +11,6 @@ defmodule Codebattle.Game.Engine do
   alias Codebattle.Repo
   alias Codebattle.User
   alias Codebattle.UserGame
-  alias CodebattleWeb.Api.GameView
 
   @default_timeout div(:timer.minutes(30), 1000)
   @max_timeout div(:timer.hours(1), 1000)
@@ -50,7 +49,7 @@ defmodule Codebattle.Game.Engine do
          game = mark_as_live(game),
          {:ok, _} <- Game.GlobalSupervisor.start_game(game),
          :ok <- maybe_fire_playing_game_side_effects(game),
-         :ok <- broadcast_live_game(game) do
+         :ok <- broadcast_active_game(game) do
       {:ok, game}
     else
       {:error, reason} ->
@@ -67,7 +66,7 @@ defmodule Codebattle.Game.Engine do
            }),
          update_game!(game, %{state: "playing"}),
          :ok <- maybe_fire_playing_game_side_effects(game),
-         :ok <- broadcast_live_game(game) do
+         :ok <- broadcast_active_game(game) do
       {:ok, game}
     else
       {:error, reason} ->
@@ -83,11 +82,17 @@ defmodule Codebattle.Game.Engine do
       editor_text: editor_text,
       editor_lang: editor_lang
     })
-    # Codebattle.PubSub.broadcast("game:start_check", %{game: new_game})
+
+    Codebattle.PubSub.broadcast("game:check_started", %{game: game, user_id: user.id})
 
     check_result = CodeCheck.check_solution(game.task, editor_text, editor_lang)
 
-    # Codebattle.PubSub.broadcast("game:check_complete", %{game: new_game})
+    Codebattle.PubSub.broadcast("game:check_completed", %{
+      game: game,
+      user_id: user.id,
+      check_result: check_result
+    })
+
     Game.Server.update_playbook(game.id, :check_complete, %{
       id: user.id,
       check_result: check_result,
@@ -160,9 +165,8 @@ defmodule Codebattle.Game.Engine do
     case game.is_live do
       true ->
         store_playbook_async(game)
-        # TODO: move to PubSup
-        CodebattleWeb.Endpoint.broadcast("lobby", "game:remove", %{id: game.id})
         Game.GlobalSupervisor.terminate_game(game.id)
+        Codebattle.PubSub.broadcast("game:terminated", %{game: game})
         :ok
 
       _ ->
@@ -322,13 +326,8 @@ defmodule Codebattle.Game.Engine do
     Game.TimeoutServer.start_timer(game.id, game.timeout_seconds)
   end
 
-  # TODO: rename live to active
-  defp broadcast_live_game(game) do
-    # TODO: move it to pubSub
-    CodebattleWeb.Endpoint.broadcast!("lobby", "game:upsert", %{
-      game: GameView.render_live_game(game)
-    })
-
+  defp broadcast_active_game(game) do
+    Codebattle.PubSub.broadcast("game:updated", %{game: game})
     :ok
   end
 

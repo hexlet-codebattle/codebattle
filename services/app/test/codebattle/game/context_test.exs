@@ -23,13 +23,13 @@ defmodule Codebattle.Game.ContextTest do
       assert_received %Codebattle.PubSub.Message{
         event: "game:finished",
         topic: "games",
-        payload: %{game: %{id: ^game_id}}
+        payload: %{game_id: ^game_id}
       }
 
       assert_received %Codebattle.PubSub.Message{
         event: "game:finished",
         topic: ^game_topic,
-        payload: %{game: game}
+        payload: %{game_id: ^game.id}
       }
 
       assert game.state == "timeout"

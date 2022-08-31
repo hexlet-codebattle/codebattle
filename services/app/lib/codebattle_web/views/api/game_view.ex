@@ -42,20 +42,6 @@ defmodule CodebattleWeb.Api.GameView do
     }
   end
 
-  # TODO: rename live to active
-  def render_live_game(game) do
-    %{
-      id: get_game_id(game),
-      inserted_at: get_inserted_at(game),
-      is_bot: bot_game?(game),
-      level: get_level(game),
-      players: get_players(game),
-      state: get_state(game),
-      timeout_seconds: get_timeout_seconds(game),
-      type: get_type(game)
-    }
-  end
-
   defp get_duration(%{starts_at: nil}), do: 100
   defp get_duration(%{finishes_at: nil}), do: 100
 

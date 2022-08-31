@@ -31,7 +31,8 @@ defmodule Codebattle.Bot.GameCreator do
   def handle_info(_, state), do: {:noreply, state}
 
   defp create_game(level) do
-    games = Game.Context.get_active_games(%{is_bot: true, state: "waiting_opponent", level: level})
+    games =
+      Game.Context.get_active_games(%{is_bot: true, state: "waiting_opponent", level: level})
 
     if Enum.count(games) < 1 do
       bot = Bot.Context.build()

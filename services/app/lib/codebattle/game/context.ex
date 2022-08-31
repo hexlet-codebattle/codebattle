@@ -33,14 +33,14 @@ defmodule Codebattle.Game.Context do
           optional(:task) => Codebattle.Task.t()
         }
 
-  @type live_games_params :: %{
+  @type active_games_params :: %{
           optional(:is_bot) => boolean,
           optional(:is_tournament) => boolean,
           optional(:state) => String.t(),
           optional(:level) => String.t()
         }
 
-  @spec get_active_games(live_games_params) :: [Game.t()]
+  @spec get_active_games(active_games_params) :: [Game.t()]
   def get_active_games(params \\ %{})
 
   def get_active_games(params) do

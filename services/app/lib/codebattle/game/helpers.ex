@@ -8,6 +8,7 @@ defmodule Codebattle.Game.Helpers do
   def get_starts_at(game), do: game.starts_at
   def get_timeout_seconds(game), do: game.timeout_seconds
   def get_type(game), do: game.type
+  def get_visibility_type(game), do: game.visibility_type
   def get_level(game), do: game.level
   def get_rematch_state(game), do: game.rematch_state
   def get_rematch_initiator_id(game), do: game.rematch_initiator_id
@@ -20,16 +21,9 @@ defmodule Codebattle.Game.Helpers do
   def get_first_non_bot(game),
     do: game |> get_players |> Enum.find(fn player -> !player.is_bot end)
 
-
   def bot_game?(game), do: game |> get_players |> Enum.any?(fn p -> p.is_bot end)
   def tournament_game?(game), do: get_tournament_id(game) != nil
   def training_game?(game), do: game.mode == "training"
-
-  # def get_check_results(game) do
-  #   game
-  #   |> get_players
-  #   |> Enum.map(fn player -> player.check_result end)
-  # end
 
   def get_winner(game) do
     game
