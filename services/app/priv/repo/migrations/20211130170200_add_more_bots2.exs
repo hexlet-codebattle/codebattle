@@ -2,6 +2,8 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots2 do
   use Ecto.Migration
 
   def change do
+    utc_now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+
     bots = [
       %{
         id: -28,
@@ -12,8 +14,8 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots2 do
         lang: "ruby",
         github_id: 35_539_033,
         achievements: ["bot"],
-        inserted_at: TimeHelper.utc_now(),
-        updated_at: TimeHelper.utc_now()
+        inserted_at: utc_now,
+        updated_at: utc_now
       },
       %{
         id: -29,
@@ -24,8 +26,8 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots2 do
         lang: "js",
         github_id: 35_539_033,
         achievements: ["bot"],
-        inserted_at: TimeHelper.utc_now(),
-        updated_at: TimeHelper.utc_now()
+        inserted_at: utc_now,
+        updated_at: utc_now
       },
       %{
         id: -30,
@@ -36,8 +38,8 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots2 do
         lang: "php",
         github_id: 35_539_033,
         achievements: ["bot"],
-        inserted_at: TimeHelper.utc_now(),
-        updated_at: TimeHelper.utc_now()
+        inserted_at: utc_now,
+        updated_at: utc_now
       },
       %{
         id: -31,
@@ -48,8 +50,8 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots2 do
         lang: "clojure",
         github_id: 35_539_033,
         achievements: ["bot"],
-        inserted_at: TimeHelper.utc_now(),
-        updated_at: TimeHelper.utc_now()
+        inserted_at: utc_now,
+        updated_at: utc_now
       },
       %{
         id: -32,
@@ -60,8 +62,8 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots2 do
         lang: "js",
         github_id: 35_539_033,
         achievements: ["bot"],
-        inserted_at: TimeHelper.utc_now(),
-        updated_at: TimeHelper.utc_now()
+        inserted_at: utc_now,
+        updated_at: utc_now
       },
       %{
         id: -33,
@@ -72,8 +74,8 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots2 do
         lang: "elixir",
         github_id: 35_539_033,
         achievements: ["bot"],
-        inserted_at: TimeHelper.utc_now(),
-        updated_at: TimeHelper.utc_now()
+        inserted_at: utc_now,
+        updated_at: utc_now
       },
       %{
         id: -34,
@@ -84,8 +86,8 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots2 do
         lang: "js",
         github_id: 35_539_033,
         achievements: ["bot"],
-        inserted_at: TimeHelper.utc_now(),
-        updated_at: TimeHelper.utc_now()
+        inserted_at: utc_now,
+        updated_at: utc_now
       },
       %{
         id: -35,
@@ -96,8 +98,8 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots2 do
         lang: "js",
         github_id: 35_539_033,
         achievements: ["bot"],
-        inserted_at: TimeHelper.utc_now(),
-        updated_at: TimeHelper.utc_now()
+        inserted_at: utc_now,
+        updated_at: utc_now
       },
       %{
         id: -36,
@@ -108,8 +110,8 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots2 do
         lang: "ruby",
         github_id: 35_539_033,
         achievements: ["bot"],
-        inserted_at: TimeHelper.utc_now(),
-        updated_at: TimeHelper.utc_now()
+        inserted_at: utc_now,
+        updated_at: utc_now
       },
       %{
         id: -37,
@@ -120,8 +122,8 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots2 do
         lang: "ruby",
         github_id: 35_539_033,
         achievements: ["bot"],
-        inserted_at: TimeHelper.utc_now(),
-        updated_at: TimeHelper.utc_now()
+        inserted_at: utc_now,
+        updated_at: utc_now
       },
       %{
         id: -38,
@@ -132,8 +134,8 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots2 do
         lang: "php",
         github_id: 35_539_033,
         achievements: ["bot"],
-        inserted_at: TimeHelper.utc_now(),
-        updated_at: TimeHelper.utc_now()
+        inserted_at: utc_now,
+        updated_at: utc_now
       },
       %{
         id: -39,
@@ -144,8 +146,8 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots2 do
         lang: "haskell",
         github_id: 35_539_033,
         achievements: ["bot"],
-        inserted_at: TimeHelper.utc_now(),
-        updated_at: TimeHelper.utc_now()
+        inserted_at: utc_now,
+        updated_at: utc_now
       },
       %{
         id: -40,
@@ -156,8 +158,20 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots2 do
         lang: "php",
         github_id: 35_539_033,
         achievements: ["bot"],
-        inserted_at: TimeHelper.utc_now(),
-        updated_at: TimeHelper.utc_now()
+        inserted_at: utc_now,
+        updated_at: utc_now
+      },
+      %{
+        id: -41,
+        name: "UncleLesha",
+        is_bot: true,
+        rating: 1200,
+        email: "uncle_lesha@nebot.bot_codebattle",
+        lang: "elixir",
+        github_id: 35_539_033,
+        achievements: ["bot"],
+        inserted_at: utc_now,
+        updated_at: utc_now
       }
     ]
 

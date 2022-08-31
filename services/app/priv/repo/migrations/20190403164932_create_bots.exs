@@ -5,6 +5,8 @@ defmodule Codebattle.Repo.Migrations.CreateBots do
   alias Codebattle.User
 
   def change do
+    utc_now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+
     bots = [
       %{
         id: -1,
@@ -15,8 +17,8 @@ defmodule Codebattle.Repo.Migrations.CreateBots do
         lang: "ruby",
         github_id: 35539033,
         achievements: ["bot"],
-        inserted_at: TimeHelper.utc_now(),
-        updated_at: TimeHelper.utc_now()
+        inserted_at: utc_now,
+        updated_at: utc_now
       },
       %{
         id: -2,
@@ -27,8 +29,8 @@ defmodule Codebattle.Repo.Migrations.CreateBots do
         lang: "js",
         github_id: 35539033,
         achievements: ["bot"],
-        inserted_at: TimeHelper.utc_now(),
-        updated_at: TimeHelper.utc_now()
+        inserted_at: utc_now,
+        updated_at: utc_now
       },
       %{
         id: -3,
@@ -39,8 +41,8 @@ defmodule Codebattle.Repo.Migrations.CreateBots do
         lang: "js",
         github_id: 35539033,
         achievements: ["bot"],
-        inserted_at: TimeHelper.utc_now(),
-        updated_at: TimeHelper.utc_now()
+        inserted_at: utc_now,
+        updated_at: utc_now
       },
       %{
         id: -4,
@@ -51,8 +53,8 @@ defmodule Codebattle.Repo.Migrations.CreateBots do
         lang: "js",
         github_id: 35539033,
         achievements: ["bot"],
-        inserted_at: TimeHelper.utc_now(),
-        updated_at: TimeHelper.utc_now()
+        inserted_at: utc_now,
+        updated_at: utc_now
       },
     ]
 

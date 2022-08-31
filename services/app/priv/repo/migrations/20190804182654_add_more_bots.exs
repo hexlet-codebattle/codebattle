@@ -2,6 +2,8 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots do
   use Ecto.Migration
 
   def change do
+    utc_now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+
     bots = [
       %{
         id: -15,
@@ -12,8 +14,8 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots do
         lang: "haskell",
         github_id: 35_539_033,
         achievements: ["bot"],
-        inserted_at: TimeHelper.utc_now(),
-        updated_at: TimeHelper.utc_now()
+        inserted_at: utc_now,
+        updated_at: utc_now
       },
       %{
         id: -16,
@@ -24,8 +26,8 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots do
         lang: "php",
         github_id: 35_539_033,
         achievements: ["bot"],
-        inserted_at: TimeHelper.utc_now(),
-        updated_at: TimeHelper.utc_now()
+        inserted_at: utc_now,
+        updated_at: utc_now
       },
       %{
         id: -17,
@@ -36,8 +38,8 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots do
         lang: "php",
         github_id: 35_539_033,
         achievements: ["bot"],
-        inserted_at: TimeHelper.utc_now(),
-        updated_at: TimeHelper.utc_now()
+        inserted_at: utc_now,
+        updated_at: utc_now
       },
       %{
         id: -18,
@@ -48,8 +50,8 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots do
         lang: "python",
         github_id: 35_539_033,
         achievements: ["bot"],
-        inserted_at: TimeHelper.utc_now(),
-        updated_at: TimeHelper.utc_now()
+        inserted_at: utc_now,
+        updated_at: utc_now
       },
       %{
         id: -19,
@@ -60,8 +62,8 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots do
         lang: "python",
         github_id: 35_539_033,
         achievements: ["bot"],
-        inserted_at: TimeHelper.utc_now(),
-        updated_at: TimeHelper.utc_now()
+        inserted_at: utc_now,
+        updated_at: utc_now
       },
       %{
         id: -20,
@@ -72,8 +74,8 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots do
         lang: "ruby",
         github_id: 35_539_033,
         achievements: ["bot"],
-        inserted_at: TimeHelper.utc_now(),
-        updated_at: TimeHelper.utc_now()
+        inserted_at: utc_now,
+        updated_at: utc_now
       },
       %{
         id: -21,
@@ -84,8 +86,8 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots do
         lang: "ruby",
         github_id: 35_539_033,
         achievements: ["bot"],
-        inserted_at: TimeHelper.utc_now(),
-        updated_at: TimeHelper.utc_now()
+        inserted_at: utc_now,
+        updated_at: utc_now
       },
       %{
         id: -22,
@@ -96,8 +98,8 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots do
         lang: "ruby",
         github_id: 35_539_033,
         achievements: ["bot"],
-        inserted_at: TimeHelper.utc_now(),
-        updated_at: TimeHelper.utc_now()
+        inserted_at: utc_now,
+        updated_at: utc_now
       },
       %{
         id: -23,
@@ -108,8 +110,8 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots do
         lang: "ruby",
         github_id: 35_539_033,
         achievements: ["bot"],
-        inserted_at: TimeHelper.utc_now(),
-        updated_at: TimeHelper.utc_now()
+        inserted_at: utc_now,
+        updated_at: utc_now
       },
       %{
         id: -24,
@@ -120,8 +122,8 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots do
         lang: "ruby",
         github_id: 35_539_033,
         achievements: ["bot"],
-        inserted_at: TimeHelper.utc_now(),
-        updated_at: TimeHelper.utc_now()
+        inserted_at: utc_now,
+        updated_at: utc_now
       },
       %{
         id: -25,
@@ -132,8 +134,8 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots do
         lang: "php",
         github_id: 35_539_033,
         achievements: ["bot"],
-        inserted_at: TimeHelper.utc_now(),
-        updated_at: TimeHelper.utc_now()
+        inserted_at: utc_now,
+        updated_at: utc_now
       },
       %{
         id: -26,
@@ -144,8 +146,8 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots do
         lang: "ruby",
         github_id: 35_539_033,
         achievements: ["bot"],
-        inserted_at: TimeHelper.utc_now(),
-        updated_at: TimeHelper.utc_now()
+        inserted_at: utc_now,
+        updated_at: utc_now
       },
       %{
         id: -27,
@@ -156,8 +158,8 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots do
         lang: "ruby",
         github_id: 35_539_033,
         achievements: ["bot"],
-        inserted_at: TimeHelper.utc_now(),
-        updated_at: TimeHelper.utc_now()
+        inserted_at: utc_now,
+        updated_at: utc_now
       }
     ]
 
