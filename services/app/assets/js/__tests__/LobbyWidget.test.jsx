@@ -71,11 +71,12 @@ test('test rendering GameList', async () => {
       completedTournaments: [],
     },
     user: {
+      currentUserId: 1,
       users: { 1: { id: 1, is_admin: false } },
-      usersInfo: {
-        1: {},
-        2: {},
-      },
+    },
+    usersInfo: {
+      1: {},
+      2: {},
     },
   };
   const store = configureStore({
