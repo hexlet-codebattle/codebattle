@@ -65,6 +65,12 @@ jobs:
         run: mix deps.get
         working-directory: ./services/app
 
+      - name: Mix deps.compile
+        run: mix compile
+        working-directory: ./services/app
+        env:
+          MIX_ENV: test
+
       - name: Mix format
         run: mix format --check-formatted
         working-directory: ./services/app

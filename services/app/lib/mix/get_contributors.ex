@@ -15,10 +15,10 @@ defmodule Mix.Tasks.GetContributors do
   }
 
   def run(_) do
-    {:ok, _started} = Application.ensure_all_started(:codebattle)
+    {:ok, _started} = Application.ensure_all_started(:httpoison)
 
     @repos
-    |> Map.map(fn {repo_name, url} ->
+    |> Enum.each(fn {repo_name, url} ->
       content =
         url
         |> HTTPoison.get!()
