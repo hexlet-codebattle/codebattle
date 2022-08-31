@@ -52,3 +52,7 @@ config :codebattle, :firebase,
 config :codebattle, ws_port: 4001
 
 config :codebattle, admins: ["admin"]
+
+config :codebattle, freeze_time: true
+
+config :codebattle, use_non_test_workers: false

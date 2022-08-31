@@ -24,3 +24,10 @@ config :codebattle,
     "Melodyn",
     "NatMusina"
   ]
+
+config :codebattle, restore_tournaments: true
+config :codebattle, load_dot_env_file: false
+config :codebattle, use_prod_workers: true
+config :codebattle, html_env: :prod
+config :codebattle, html_include_prod_scripts: true
+config :codebattle, html_debug_mode: false

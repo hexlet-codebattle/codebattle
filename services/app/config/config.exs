@@ -78,6 +78,14 @@ config :codebattle, :firebase,
 
 config :codebattle, admins: ["vtm", "ReDBrother"]
 
+config :codebattle, restore_tournaments: false
+config :codebattle, freeze_time: false
+config :codebattle, load_dot_env_file: true
+config :codebattle, use_prod_workers: false
+config :codebattle, use_non_test_workers: true
+config :codebattle, html_include_prod_scripts: false
+config :codebattle, html_debug_mode: true
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env()}.exs"

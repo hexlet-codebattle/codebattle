@@ -3,13 +3,13 @@ defmodule Codebattle.Application do
   use Application
 
   def start(_type, _args) do
-    unless Mix.env() == :prod do
+    if Application.get_env(:codebattle, :load_dot_env_file) do
       Envy.load(["../../.env"])
       Envy.reload_config()
     end
 
     prod_workers =
-      if Mix.env() == :prod do
+      if Application.get_env(:codebattle, :use_prod_workers) do
         [
           {Codebattle.DockerLangsPuller, []},
           {Codebattle.TasksImporter, []}
@@ -19,13 +19,13 @@ defmodule Codebattle.Application do
       end
 
     non_test_workers =
-      if Mix.env() == :test do
-        []
-      else
+      if Application.get_env(:codebattle, :use_non_test_workers) do
         [
           {Codebattle.Bot.GameCreator, []},
           {Codebattle.UsersRankUpdateServer, []}
         ]
+      else
+        []
       end
 
     children =

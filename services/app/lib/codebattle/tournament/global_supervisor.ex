@@ -12,18 +12,16 @@ defmodule Codebattle.Tournament.GlobalSupervisor do
   @impl true
   def init(_) do
     children =
-      case Mix.env() do
-        :test ->
-          []
-
-        _ ->
-          Tournament.Context.get_tournament_for_restore()
-          |> Enum.map(fn tournament ->
-            %{
-              id: tournament.id,
-              start: {Tournament.Supervisor, :start_link, [tournament]}
-            }
-          end)
+      if Application.get_env(:codebattle, :restore_tournaments) do
+        Tournament.Context.get_tournament_for_restore()
+        |> Enum.map(fn tournament ->
+          %{
+            id: tournament.id,
+            start: {Tournament.Supervisor, :start_link, [tournament]}
+          }
+        end)
+      else
+        []
       end
 
     Supervisor.init(children, strategy: :one_for_one)
