@@ -30,23 +30,23 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: services/app/deps
-          key: v2-${{ runner.os }}-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/services/app/mix.lock')) }}
+          key: v3-${{ runner.os }}-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/services/app/mix.lock')) }}
           restore-keys: |
-            v2-${{ runner.os }}-deps-
+            v3-${{ runner.os }}-deps-
 
       - uses: actions/cache@v2
         with:
           path: services/app/_build
-          key: v2-${{ runner.os }}-build-${{ hashFiles(format('{0}{1}', github.workspace, '/services/app/mix.lock')) }}
+          key: v3-${{ runner.os }}-build-${{ hashFiles(format('{0}{1}', github.workspace, '/services/app/mix.lock')) }}
           restore-keys: |
-            v2-${{ runner.os }}-build-
+            v3-${{ runner.os }}-build-
 
       - uses: actions/cache@v2
         with:
           path: ~/.mix
-          key: v2-${{ runner.os }}-mix-${{ hashFiles(format('{0}{1}', github.workspace, '/services/app/mix.lock')) }}
+          key: v3-${{ runner.os }}-mix-${{ hashFiles(format('{0}{1}', github.workspace, '/services/app/mix.lock')) }}
           restore-keys: |
-            v2-${{ runner.os }}-mix-
+            v3-${{ runner.os }}-mix-
 
       - name: Get deps
         run: mix deps.get
