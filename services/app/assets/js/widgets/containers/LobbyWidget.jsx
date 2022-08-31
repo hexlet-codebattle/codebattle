@@ -287,6 +287,7 @@ const ActiveGames = ({ games }) => {
   }
 
   const currentUser = Gon.getAsset('current_user');
+
   const filterGames = game => {
     if (game.visibilityType === 'hidden') {
       return !!_.find(game.players, { id: currentUser.id });
@@ -356,7 +357,7 @@ const ActiveGames = ({ games }) => {
                       }
                 />
               </td>
-              <Players gameId={game.id} players={game.players} />
+              <Players players={game.players} />
               <td className="p-3 align-middle text-center">
                 <GameActionButton game={game} />
               </td>
