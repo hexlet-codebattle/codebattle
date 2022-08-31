@@ -37,7 +37,7 @@ defmodule Codebattle.CodeCheck.Checker do
         task: task,
         solution_text: solution_text,
         lang_meta: lang_meta,
-        seed: to_string(:rand.mwc59_seed()),
+        seed: to_string(:rand.uniform(10_000_000)),
         executor: get_executor()
       })
       |> generate_checker_text()

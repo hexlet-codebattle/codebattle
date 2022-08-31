@@ -69,7 +69,7 @@ defmodule Codebattle.TasksImporter do
   defp get_task_params(path, issue_name) do
     issue_info = YamlElixir.read_from_file!(Path.join(path, "#{issue_name}.yml"))
 
-    asserts = path |> Path.join("#{issue_name}.json") |> File.read!() |> Jason.decode!()
+    asserts = path |> Path.join("#{issue_name}.jsons") |> File.read!() |> Jason.decode!()
     signature = Map.get(issue_info, "signature")
     description = Map.get(issue_info, "description")
 
@@ -80,7 +80,7 @@ defmodule Codebattle.TasksImporter do
         "active"
       end
 
-    input_signature = Enum.map(Map.get(signature, "input"), &format_input_signature/1)
+    input_signature = Enum.map(Map.get(signature, "input", []), &format_input_signature/1)
 
     %{
       name: issue_name,
