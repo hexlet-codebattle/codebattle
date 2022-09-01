@@ -39,7 +39,7 @@ public class Checker {
             <% end %>
 
             if (success_) {
-                JsonObject okMessage = getOkMessage(<%= hash_sum %>);
+                JsonObject okMessage = getOkMessage(<%= check_code %>);
                 executionResults_.add(okMessage);
             }
         } catch (Exception e) {

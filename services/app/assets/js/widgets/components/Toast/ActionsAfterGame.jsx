@@ -2,12 +2,13 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import GameTypeCodes from '../../config/gameTypeCodes';
 import * as selectors from '../../selectors';
-import NewGameButton from './NewGameButton';
+// import NewGameButton from './NewGameButton';
 import StartTrainingButton from './StartTrainingButton';
 import SignUpButton from './SignUpButton';
 import RematchButton from './RematchButton';
 
 const ActionsAfterGame = () => {
+  const { tournamentId } = useSelector(selectors.gameStatusSelector);
   const gameType = useSelector(selectors.gameTypeSelector);
   const isOpponentInGame = useSelector(selectors.isOpponentInGameSelector);
 
@@ -21,6 +22,9 @@ const ActionsAfterGame = () => {
       </>
     );
   }
+  if (tournamentId) {
+    return <></>;
+  }
   if (gameType === GameTypeCodes.bot) {
     return (
       <>
@@ -28,12 +32,9 @@ const ActionsAfterGame = () => {
       </>
     );
   }
-  if (gameType === GameTypeCodes.tournament) {
-    return <></>;
-  }
   return (
     <>
-      <NewGameButton type={gameType} />
+      {/* <NewGameButton type={gameType} /> */}
       <RematchButton disabled={isRematchDisabled} />
     </>
   );

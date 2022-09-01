@@ -1,7 +1,7 @@
-defmodule Codebattle.CheateCheckTest do
-  use CodebattleWeb.ConnCase, async: true
+defmodule Codebattle.CheatCheckTest do
+  use Codebattle.DataCase
 
-  alias Codebattle.CheateCheck
+  alias Codebattle.CheatCheck
 
   @copy_paste_solution "copy/paste"
 
@@ -89,7 +89,7 @@ defmodule Codebattle.CheateCheckTest do
         solution_type: "complete"
       )
 
-    assert {:failure, "copy/paste"} == CheateCheck.call(playbook, @copy_paste_solution)
+    assert {:failure, "copy/paste"} == CheatCheck.call(playbook, @copy_paste_solution)
   end
 
   test "test checking valid solution" do
@@ -101,12 +101,12 @@ defmodule Codebattle.CheateCheckTest do
         solution_type: "complete"
       )
 
-    assert :ok == CheateCheck.call(playbook, @success_solution)
+    assert :ok == CheatCheck.call(playbook, @success_solution)
   end
 
   test "test checking incomplete solution" do
     playbook = insert(:playbook, solution_type: "incomplete")
 
-    assert {:error, "incomplete solution"} == CheateCheck.call(playbook, "")
+    assert {:error, "incomplete solution"} == CheatCheck.call(playbook, "")
   end
 end

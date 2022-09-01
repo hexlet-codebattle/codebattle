@@ -4,24 +4,20 @@ defmodule Codebattle.ForbidMultipleGamesTest do
   test "User cannot create second game", %{conn: conn} do
     insert(:task)
     user = insert(:user)
-
-    conn =
-      conn
-      |> put_session(:user_id, user.id)
-      |> get(user_path(conn, :index))
+    socket = socket(UserSocket, "user_id", %{current_user: user})
 
     conn
-    |> get(Routes.page_path(conn, :index))
-    |> post(Routes.game_path(conn, :create, level: "easy", type: "withRandomPlayer"))
+    |> put_session(:user_id, user.id)
+    |> get(user_path(conn, :index))
 
-    conn =
-      conn
-      |> get(Routes.page_path(conn, :index))
-      |> post(Routes.game_path(conn, :create, level: "easy", type: "withRandomPlayer"))
+    {:ok, _response, socket} = subscribe_and_join(socket, LobbyChannel, "lobby")
+    ref = Phoenix.ChannelTest.push(socket, "game:create", %{level: "easy"})
+    Phoenix.ChannelTest.assert_reply(ref, :ok, %{game_id: _game_id})
 
-    assert conn.status == 302
-    assert get_flash(conn, :danger) != nil
+    {:ok, _response, socket} = subscribe_and_join(socket, LobbyChannel, "lobby")
+    ref = Phoenix.ChannelTest.push(socket, "game:create", %{level: "easy"})
+    Phoenix.ChannelTest.assert_reply(ref, :error, %{reason: :already_in_a_game})
 
-    assert Game |> Repo.all() |> Enum.count() == 1
+    assert Repo.count(Game) == 1
   end
 end

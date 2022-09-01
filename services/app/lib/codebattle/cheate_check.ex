@@ -1,6 +1,6 @@
-defmodule Codebattle.CheateCheck do
+defmodule Codebattle.CheatCheck do
   require Logger
-  alias Codebattle.Bot.Playbook
+  alias Codebattle.Playbook
 
   def call(%Playbook{solution_type: "incomplete"}, _solution) do
     {:error, "incomplete solution"}
@@ -57,7 +57,5 @@ defmodule Codebattle.CheateCheck do
   defp copy_paste_check(result, _param), do: result
 
   defp editor_update?(record, id, lang),
-    do:
-      record["type"] == "update_editor_data" && record["id"] == id &&
-        record["diff"]["next_lang"] == lang
+    do: record.type == "update_editor_data" && record.id == id && record.diff.next_lang == lang
 end

@@ -16,12 +16,13 @@ defmodule Codebattle.UsersRankUpdateServer do
 
   # SERVER
   def init(_) do
+    Codebattle.PubSub.subscribe("main")
     Logger.info("Start UsersRankServer")
     {:ok, true}
   end
 
   def handle_cast(:update, state) do
-    Codebattle.RankUpdate.call()
+    Codebattle.User.RankUpdate.call()
     Logger.info("Rank has been recalculated")
 
     {:noreply, state}

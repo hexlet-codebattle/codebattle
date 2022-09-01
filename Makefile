@@ -1,7 +1,7 @@
 include make-compose.mk
 
 pg:
-	docker-compose up -d db-local
+	docker compose up -d db-local
 
 clean:
 	rm -rf services/app/_build

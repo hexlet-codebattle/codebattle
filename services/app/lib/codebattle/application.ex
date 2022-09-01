@@ -3,13 +3,13 @@ defmodule Codebattle.Application do
   use Application
 
   def start(_type, _args) do
-    unless Mix.env() == :prod do
+    if Application.get_env(:codebattle, :load_dot_env_file) do
       Envy.load(["../../.env"])
       Envy.reload_config()
     end
 
     prod_workers =
-      if Mix.env() == :prod do
+      if Application.get_env(:codebattle, :use_prod_workers) do
         [
           {Codebattle.DockerLangsPuller, []},
           {Codebattle.TasksImporter, []}
@@ -18,27 +18,47 @@ defmodule Codebattle.Application do
         []
       end
 
+    non_test_workers =
+      if Application.get_env(:codebattle, :use_non_test_workers) do
+        [
+          {Codebattle.Bot.GameCreator, []},
+          {Codebattle.UsersRankUpdateServer, []}
+        ]
+      else
+        []
+      end
+
     children =
       [
         {Codebattle.Repo, []},
+        {Registry, keys: :unique, name: Codebattle.Registry},
         CodebattleWeb.Telemetry,
-        {Phoenix.PubSub, [name: :cb_pubsub, adapter: Phoenix.PubSub.PG2]},
+        %{
+          # PubSub for internal messages
+          id: Codebattle.PubSub,
+          start: {Phoenix.PubSub.Supervisor, :start_link, [[name: Codebattle.PubSub]]}
+        },
+        %{
+          # PubSub for web phoenix channels
+          id: CodebattleWeb.PubSub,
+          start: {Phoenix.PubSub.Supervisor, :start_link, [[name: CodebattleWeb.PubSub]]}
+        },
         {CodebattleWeb.Presence, []},
         {CodebattleWeb.Endpoint, []},
-        {Codebattle.GameProcess.TasksQueuesServer, []},
-        {Codebattle.GameProcess.GlobalSupervisor, []},
+        {Codebattle.Game.TasksQueuesServer, []},
+        {Codebattle.Game.GlobalSupervisor, []},
         {Codebattle.Tournament.GlobalSupervisor, []},
         {Codebattle.InvitesKillerServer, []},
-        {Codebattle.Chat.Server, :lobby},
-        {Codebattle.Bot.CreatorServer, []},
-        {Codebattle.Utils.ContainerGameKiller, []},
-        {Codebattle.UsersActivityServer, []},
-        {Codebattle.UsersRankUpdateServer, []}
-      ] ++ prod_workers
+        %{
+          id: Codebattle.Chat.Lobby,
+          start: {Codebattle.Chat, :start_link, [:lobby, %{message_ttl: :timer.hours(8)}]}
+        },
+        {Codebattle.Utils.ContainerGameKiller, []}
+      ] ++ prod_workers ++ non_test_workers
 
     Supervisor.start_link(children,
       strategy: :one_for_one,
-      name: __MODULE__,
+      name: Codebattle.Supervisor,
       max_restarts: 13_579,
       max_seconds: 11
     )

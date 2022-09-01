@@ -2,7 +2,7 @@ defmodule CodebattleWeb.DevLoginController do
   use CodebattleWeb, :controller
 
   def create(conn, _params) do
-    if Mix.env() == :dev do
+    if Application.get_env(:codebattle, :html_debug_mode) do
       auth = %{
         provider: :dev_local,
         name: "Diman-#{:rand.uniform(10000)}",

@@ -57,7 +57,7 @@
                   <% end %>
                 ])]
         (if success
-          (println (json/write-str {:status "ok" :result <%= hash_sum %>}))))
+          (println (json/write-str {:status "ok" :result <%= check_code %>}))))
     (catch Exception ex
       (do
         (println (json/write-str {:status "error" :result (.getMessage ex)}))

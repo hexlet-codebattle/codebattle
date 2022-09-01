@@ -31,7 +31,7 @@ func main() {
   <% end %>
 
   if success_ {
-    successMessage := buildMessage("ok", <%= hash_sum %>)
+    successMessage := buildMessage("ok", <%= check_code %>)
     sendMessage(successMessage)
   } else {
     for _, m_ := range executionResults_ {

@@ -1,4 +1,4 @@
-defmodule CodebattleWeb.Live.Tournament.IndividialTest do
+defmodule CodebattleWeb.Live.Tournament.IndividualTest do
   use CodebattleWeb.ConnCase
 
   alias Codebattle.Tournament.Helpers

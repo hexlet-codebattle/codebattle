@@ -1,4 +1,5 @@
 defmodule Codebattle.Tournament.Context do
+  alias Codebattle.TaskPack
   alias Codebattle.Tournament
 
   import Ecto.Query
@@ -24,17 +25,11 @@ defmodule Codebattle.Tournament.Context do
       Tournament
       |> Codebattle.Repo.get!(id)
       |> Codebattle.Repo.preload(:creator)
-
-    add_module(tournament)
+      |> add_module()
   end
 
-  def get_from_db(id) do
-    q =
-      from(
-        t in Tournament,
-        where: t.id == ^id,
-        preload: :creator
-      )
+  defp get_from_db(id) do
+    q = tournament_query(id)
 
     case Codebattle.Repo.one(q) do
       nil -> {:error, :not_found}
@@ -55,7 +50,7 @@ defmodule Codebattle.Tournament.Context do
       order_by: [desc: t.id],
       where: t.state in ^states,
       limit: 7,
-      preload: :creator
+      preload: [:creator, :task_pack]
     )
     |> Codebattle.Repo.all()
   end
@@ -106,10 +101,18 @@ defmodule Codebattle.Tournament.Context do
         _ -> nil
       end
 
+    task_pack =
+      case params["task_pack_id"] do
+        x when x in [nil, ""] -> nil
+        task_pack_id -> TaskPack.get!(task_pack_id)
+      end
+
     result =
       %Tournament{}
       |> Tournament.changeset(
         Map.merge(params, %{
+          "task_pack_id" => params["task_pack_id"],
+          "task_pack" => task_pack,
           "access_token" => access_token,
           "alive_count" => get_live_tournaments_count(),
           "match_timeout_seconds" => match_timeout_seconds,
@@ -129,6 +132,8 @@ defmodule Codebattle.Tournament.Context do
           |> mark_as_live
           |> Tournament.GlobalSupervisor.start_tournament()
 
+        Codebattle.PubSub.broadcast("tournament:created", %{tournament: tournament})
+
         {:ok, tournament}
 
       {:error, changeset} ->
@@ -146,8 +151,18 @@ defmodule Codebattle.Tournament.Context do
     end)
   end
 
+  defp tournament_query(id) do
+    from(
+      t in Tournament,
+      where: t.id == ^id,
+      preload: [:creator, :task_pack]
+    )
+  end
+
   defp get_module(%{type: "team"}), do: Tournament.Team
   defp get_module(%{"type" => "team"}), do: Tournament.Team
+  defp get_module(%{type: "stairway"}), do: Tournament.Stairway
+  defp get_module(%{"type" => "stairway"}), do: Tournament.Stairway
   defp get_module(_), do: Tournament.Individual
 
   defp add_module(tournament), do: Map.put(tournament, :module, get_module(tournament))

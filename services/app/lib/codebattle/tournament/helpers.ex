@@ -53,8 +53,10 @@ defmodule Codebattle.Tournament.Helpers do
   def is_active?(tournament), do: tournament.state == "active"
   def is_waiting_participants?(tournament), do: tournament.state == "waiting_participants"
   def is_upcoming?(tournament), do: tournament.state == "upcoming"
-  def is_individual?(tournament), do: tournament.type == "individual"
+  def is_canceled?(tournament), do: tournament.state == "canceled"
   def is_finished?(tournament), do: tournament.state == "finished"
+  def is_individual?(tournament), do: tournament.type == "individual"
+  def is_stairway?(tournament), do: tournament.type == "stairway"
   def is_team?(tournament), do: tournament.type == "team"
   def is_public?(tournament), do: tournament.access_type == "public"
   def is_visible_by_token?(tournament), do: tournament.access_type == "token"
@@ -140,6 +142,20 @@ defmodule Codebattle.Tournament.Helpers do
     end
   end
 
+  def get_active_match(tournament, current_user) do
+    match =
+      tournament
+      |> get_matches
+      |> Enum.find(fn match ->
+        match_is_active?(match) && Enum.any?(match.players, fn p -> p.id == current_user.id end)
+      end)
+
+    case match do
+      nil -> tournament |> get_matches |> Enum.find(&match_is_active?/1)
+      match -> match
+    end
+  end
+
   def get_tournament_statistics(%{type: "team"} = tournament) do
     all_win_matches =
       tournament
@@ -168,18 +184,16 @@ defmodule Codebattle.Tournament.Helpers do
     }
   end
 
-  # def pick_winner(%{players: [%{game_result: "won"} = winner, _]}), do: winner
-  # def pick_winner(%{players: [_, %{game_result: "won"} = winner]}), do: winner
-  # def pick_winner(%{players: [winner, %{game_result: "gave_up"}]}), do: winner
-  # def pick_winner(%{players: [%{game_result: "gave_up"}, winner]}), do: winner
-  # def pick_winner(match), do: Enum.random(match.players)
+  def get_tournament_statistics(_), do: %{}
 
-  def pick_winner(%{players: [%{game_result: "won", is_bot: false} = winner, _]}), do: winner
-  def pick_winner(%{players: [_, %{game_result: "won", is_bot: false} = winner]}), do: winner
-  def pick_winner(%{players: [winner, %{game_result: "gave_up"}]}), do: winner
-  def pick_winner(%{players: [%{game_result: "gave_up"}, winner]}), do: winner
-  def pick_winner(%{players: [%{is_bot: false} = winner, %{is_bot: true}]}), do: winner
-  def pick_winner(%{players: [%{is_bot: true}, %{is_bot: false} = winner]}), do: winner
+  # 1. picks human winner
+  # 2. picks human loser instead of bot
+  # 3. picks human winner if gave_up
+  # 4. picks random bot
+  def pick_winner(%{players: [%{result: "won", is_bot: false} = winner, _]}), do: winner
+  def pick_winner(%{players: [_, %{result: "won", is_bot: false} = winner]}), do: winner
+  def pick_winner(%{players: [winner, %{result: "gave_up"}]}), do: winner
+  def pick_winner(%{players: [%{result: "gave_up"}, winner]}), do: winner
   def pick_winner(match), do: Enum.random(match.players)
 
   def filter_statistics(statistics, "show"), do: statistics
@@ -188,7 +202,9 @@ defmodule Codebattle.Tournament.Helpers do
   def calc_team_score(tournament) do
     tournament
     |> get_rounds()
-    |> Enum.filter(fn round -> Enum.all?(round, &(&1.state in ["canceled", "finished"])) end)
+    |> Enum.filter(fn round ->
+      Enum.all?(round, &(&1.state in ["canceled", "game_over", "timeout"]))
+    end)
     |> Enum.map(&calc_round_result/1)
     |> Enum.reduce({0, 0}, fn {x1, x2}, {a1, a2} ->
       cond do
@@ -199,21 +215,25 @@ defmodule Codebattle.Tournament.Helpers do
     end)
   end
 
-  defp calc_match_result(%{players: [%{game_result: "won"}, _]}), do: {1, 0}
-  defp calc_match_result(%{players: [_, %{game_result: "won"}]}), do: {0, 1}
-  defp calc_match_result(%{players: [_, %{game_result: "gave_up"}]}), do: {1, 0}
-  defp calc_match_result(%{players: [%{game_result: "gave_up"}, _]}), do: {0, 1}
+  defp calc_match_result(%{players: [%{result: "won"}, _]}), do: {1, 0}
+  defp calc_match_result(%{players: [_, %{result: "won"}]}), do: {0, 1}
+  defp calc_match_result(%{players: [_, %{result: "gave_up"}]}), do: {1, 0}
+  defp calc_match_result(%{players: [%{result: "gave_up"}, _]}), do: {0, 1}
   defp calc_match_result(_), do: {0, 0}
 
-  defp match_is_finished?(%{state: "finished"}), do: true
+  defp match_is_active?(%{state: "active"}), do: true
+  defp match_is_active?(_match), do: false
+  defp match_is_finished?(%{state: "game_over"}), do: true
+  defp match_is_finished?(%{state: "canceled"}), do: true
+  defp match_is_finished?(%{state: "timeout"}), do: true
   defp match_is_finished?(_match), do: false
 
-  defp is_anyone_gave_up?(%{players: [%{game_result: "gave_up"}, _]}), do: true
-  defp is_anyone_gave_up?(%{players: [_, %{game_result: "gave_up"}]}), do: true
+  defp is_anyone_gave_up?(%{players: [%{result: "gave_up"}, _]}), do: true
+  defp is_anyone_gave_up?(%{players: [_, %{result: "gave_up"}]}), do: true
   defp is_anyone_gave_up?(_), do: false
 
   defp is_winner?(%{players: players}, player) do
-    Enum.any?(players, fn x -> x.id == player.id and x.game_result == "won" end)
+    Enum.any?(players, fn x -> x.id == player.id and x.result == "won" end)
   end
 
   defp get_average_time([]), do: 0
@@ -223,4 +243,6 @@ defmodule Codebattle.Tournament.Helpers do
   end
 
   defp get_team_by_id(teams, team_id), do: Enum.find(teams, fn x -> x.id == team_id end)
+
+  def get_current_task(tournament), do: tournament.meta["current_task"]
 end

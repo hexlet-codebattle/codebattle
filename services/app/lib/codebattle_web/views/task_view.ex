@@ -7,7 +7,7 @@ defmodule CodebattleWeb.TaskView do
   def render_tags(task), do: Enum.join(task.tags, ", ")
 
   def render_asserts(task) do
-    task.asserts |> String.split("\n", trim: false) |> Enum.intersperse(Phoenix.HTML.Tag.tag(:br))
+    task.asserts |> Jason.encode!()
   end
 
   def render_markdown(nil), do: ""

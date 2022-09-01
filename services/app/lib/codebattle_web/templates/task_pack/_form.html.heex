@@ -1,0 +1,38 @@
+<%= f = form_for(@changeset, @action, class: 'col-8  offset-2') %>
+<div class="form-group">
+  <%= render_base_errors(@changeset.errors[:base]) %>
+</div>
+<div class="form-group">
+  <div>
+    <span>Name</span>
+    <span class="ml-3 text-muted">Name for task pack, sould be uniq</span>
+  </div>
+  <%= text_input(f, :name, class: "form-control form-control-lg", maxlength: "37", required: false) %>
+  <%= error_tag(f, :name) %>
+</div>
+<div class="form-group">
+  <%= label(f, :visibility) %>
+  <%= select(f, :visibility, Codebattle.TaskPack.visibility_types(),
+    class: "form-control form-control-lg"
+  ) %>
+  <%= error_tag(f, :visibility) %>
+</div>
+<div class="form-group">
+  <div>
+    <span>Task_ids</span>
+  </div>
+  <div>
+    <span class="text-muted">Example: 1,37,42</span>
+  </div>
+  <%= text_input(f, :task_ids,
+    value: render_task_ids(f.data),
+    class: "form-control form-control-lg",
+    maxlength: "37",
+    required: true
+  ) %>
+  <%= error_tag(f, :task_ids) %>
+</div>
+<div class="d-flex">
+  <%= submit("Save", phx_disable_with: "Saving...", class: "btn btn-success mb-2") %>
+  <%= link("Back", to: Routes.task_pack_path(@conn, :index), class: "ml-auto") %>
+</div>

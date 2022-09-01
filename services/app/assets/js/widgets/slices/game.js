@@ -1,9 +1,15 @@
 import { createSlice } from '@reduxjs/toolkit';
-import GameStatusCodes from '../config/gameStatusCodes';
+import GameStateCodes from '../config/gameStateCodes';
 
 const initialState = {
   gameStatus: {
-    status: GameStatusCodes.initial,
+    state: GameStateCodes.initial,
+    msg: '',
+    type: null,
+    startsAt: null,
+    timeoutSeconds: null,
+    rematchState: null,
+    rematchInitiatorId: null,
     checking: {},
     solutionStatus: null,
   },
@@ -17,6 +23,9 @@ const game = createSlice({
   initialState,
   reducers: {
     updateGameStatus: (state, { payload }) => {
+      Object.assign(state.gameStatus, payload);
+    },
+    updateRematchStatus: (state, { payload }) => {
       Object.assign(state.gameStatus, payload);
     },
     updateGamePlayers: (state, { payload: { players: playersList } }) => {

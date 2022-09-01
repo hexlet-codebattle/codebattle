@@ -4,20 +4,12 @@ defmodule Codebattle.Oauth.User.FirebaseUser do
   """
   require Logger
 
-  alias Codebattle.{Repo, User, UsersActivityServer}
+  alias Codebattle.{Repo, User}
 
   def find(user_attrs) do
     case find_in_firebase(user_attrs) do
       {:ok, firebase_uri} ->
         user = Repo.get_by!(User, firebase_uid: firebase_uri)
-
-        UsersActivityServer.add_event(%{
-          event: "user_is_authenticated",
-          user_id: user.id,
-          data: %{
-            provider: "firebase"
-          }
-        })
 
         {:ok, user}
 
@@ -156,14 +148,6 @@ defmodule Codebattle.Oauth.User.FirebaseUser do
 
     case Repo.insert(changeset) do
       {:ok, user} ->
-        UsersActivityServer.add_event(%{
-          event: "user_is_authorized",
-          user_id: user.id,
-          data: %{
-            provider: "firebase"
-          }
-        })
-
         {:ok, user}
 
       {:error, changeset} ->

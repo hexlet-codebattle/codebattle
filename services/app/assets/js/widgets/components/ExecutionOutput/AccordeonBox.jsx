@@ -9,7 +9,7 @@ import color from '../../config/statusColor';
 const getMessage = status => {
   switch (status) {
     case 'error':
-      return i18n.t('You have some syntax errors');
+      return i18n.t('solution cannot be executed');
     case 'failure':
       return i18n.t('Test failed');
     case 'ok':

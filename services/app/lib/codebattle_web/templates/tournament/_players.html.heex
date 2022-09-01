@@ -1,0 +1,20 @@
+<div class="my-2">
+  <%= if !Enum.empty?(@players) do %>
+    <%= for player <- Enum.sort_by(@players, fn p -> p.rank end) do %>
+      <div class="my-3 d-flex">
+        <%= render("_player.html", player: player) %>
+        <%= if can_moderate?(@tournament, @current_user)  and is_waiting_participants?(@tournament) do %>
+          <button
+            class="btn btn-link btn-sm text-danger"
+            phx-click="kick"
+            phx-value-user_id="player.id"
+          >
+            Kick
+          </button>
+        <% end %>
+      </div>
+    <% end %>
+  <% else %>
+    <p>NO_PARTICIPANTS_YET</p>
+  <% end %>
+</div>

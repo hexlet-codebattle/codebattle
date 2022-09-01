@@ -4,7 +4,7 @@ defmodule Codebattle.Oauth.User.DiscordUser do
   """
 
   alias Ueberauth.Auth
-  alias Codebattle.{Repo, User, UsersActivityServer}
+  alias Codebattle.{Repo, User}
 
   def find_or_create(%Auth{provider: :discord} = auth) do
     user = User |> Repo.get_by(discord_id: auth.uid)
@@ -27,27 +27,11 @@ defmodule Codebattle.Oauth.User.DiscordUser do
           changeset = User.changeset(%User{}, user_data)
           {:ok, user} = Repo.insert(changeset)
 
-          UsersActivityServer.add_event(%{
-            event: "user_is_authorized",
-            user_id: user.id,
-            data: %{
-              provider: "discord"
-            }
-          })
-
           user
 
         _ ->
           changeset = User.changeset(user, user_data)
           {:ok, user} = Repo.update(changeset)
-
-          UsersActivityServer.add_event(%{
-            event: "user_is_authenticated",
-            user_id: user.id,
-            data: %{
-              provider: "discord"
-            }
-          })
 
           user
       end

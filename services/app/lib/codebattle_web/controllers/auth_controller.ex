@@ -3,7 +3,6 @@ defmodule CodebattleWeb.AuthController do
   import CodebattleWeb.Gettext
 
   require Logger
-  alias Codebattle.UsersActivityServer
 
   def token(conn, params) do
     case Codebattle.Oauth.User.find_by_token(params["t"]) do
@@ -51,15 +50,6 @@ defmodule CodebattleWeb.AuthController do
         inspect(reason) <> "\nParams: " <> inspect(params)
     )
 
-    UsersActivityServer.add_event(%{
-      event: "failure_auth",
-      user_id: nil,
-      data: %{
-        params: params,
-        reason: reason
-      }
-    })
-
     conn
     |> put_flash(:danger, gettext("Failed to authenticate."))
     |> redirect(to: "/")
@@ -83,15 +73,6 @@ defmodule CodebattleWeb.AuthController do
         |> redirect(to: next_path)
 
       {:error, reason} ->
-        UsersActivityServer.add_event(%{
-          event: "failure_auth",
-          user_id: nil,
-          data: %{
-            params: params,
-            reason: reason
-          }
-        })
-
         conn
         |> put_flash(:danger, reason)
         |> redirect(to: "/")

@@ -9,31 +9,37 @@ import { Provider } from 'react-redux';
 import reducers from '../widgets/slices';
 import LobbyWidget from '../widgets/containers/LobbyWidget';
 
-jest.mock('../widgets/containers/UserInfo', () => function UserInfo() {
-  return (
-    <div>
-      <ul className="list-inline">
-        <li className="list-inline-item">
-          Won:&nbsp;
-          <b className="text-success">1</b>
-        </li>
-        <li className="list-inline-item">
-          Lost:&nbsp;
-          <b className="text-danger">10</b>
-        </li>
-        <li className="list-inline-item">
-          Gave up:&nbsp;
-          <b className="text-warning">5</b>
-        </li>
-      </ul>
-    </div>
-  );
-});
+jest.mock(
+  '../widgets/containers/UserInfo',
+  () => function UserInfo() {
+      return (
+        <div>
+          <ul className="list-inline">
+            <li className="list-inline-item">
+              Won:&nbsp;
+              <b className="text-success">1</b>
+            </li>
+            <li className="list-inline-item">
+              Lost:&nbsp;
+              <b className="text-danger">10</b>
+            </li>
+            <li className="list-inline-item">
+              Gave up:&nbsp;
+              <b className="text-warning">5</b>
+            </li>
+          </ul>
+        </div>
+      );
+    },
+);
 
 jest.mock(
   'gon',
   () => {
-    const gonParams = { local: 'en', current_user: { sound_settings: {} } };
+    const gonParams = {
+      local: 'en',
+      current_user: { id: 1, sound_settings: {} },
+    };
     return { getAsset: type => gonParams[type] };
   },
   { virtual: true },
@@ -64,13 +70,14 @@ test('test rendering GameList', async () => {
       liveTournaments: [],
       completedTournaments: [],
     },
-     user: {
-
-      usersInfo: {
-        1: { },
-        2: { },
-      },
-     },
+    user: {
+      currentUserId: 1,
+      users: { 1: { id: 1, is_admin: false } },
+    },
+    usersInfo: {
+      1: {},
+      2: {},
+    },
   };
   const store = configureStore({
     reducer,

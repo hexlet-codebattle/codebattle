@@ -84,8 +84,8 @@ defmodule Codebattle.TaskForm do
   defp cast_asserts(changeset, params) do
     asserts =
       params
-      |> Map.get("asserts", "")
-      |> String.replace("\r", "")
+      |> Map.get("asserts", "[]")
+      |> Jason.decode!()
 
     put_change(changeset, :asserts, asserts)
   end

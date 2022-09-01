@@ -20,7 +20,6 @@ defmodule CodebattleWeb.ChannelCase do
       # Import conveniences for testing with channels
       import Phoenix.ChannelTest
       import CodebattleWeb.Factory
-      import Helpers.GameProcess
       alias CodebattleWeb.Router.Helpers, as: Routes
       alias Codebattle.{Repo, User, Game, UserGame}
 
@@ -31,8 +30,6 @@ defmodule CodebattleWeb.ChannelCase do
 
   setup tags do
     :ok = Ecto.Adapters.SQL.Sandbox.checkout(Codebattle.Repo)
-    # Clean ETS storage between tests
-    :ets.delete_all_objects(:active_games)
 
     unless tags[:async] do
       Ecto.Adapters.SQL.Sandbox.mode(Codebattle.Repo, {:shared, self()})

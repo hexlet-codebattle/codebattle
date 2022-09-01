@@ -2,7 +2,7 @@ $body-bg: #e5e5e5;
 $success: #82b792;
 $secondary: #477591;
 $link-color: black;
-$error: #DC3545;
+$error: #dc3545;
 $orange: rgba(238, 55, 55, 0.76);
 $link-hover-color: $orange;
 $border-radius-sm: 0%;
@@ -540,4 +540,10 @@ a {
 p,
 td {
   font-family: 'Montserrat', sans-serif;
+}
+
+@media screen and (min-width: 676px) {
+  .modal-dialog {
+    max-width: 600px; /* New width for default modal */
+  }
 }

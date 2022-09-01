@@ -1,5 +1,7 @@
 defmodule Codebattle.Tournament.Individual do
+  alias Codebattle.Game
   alias Codebattle.Tournament
+  alias Codebattle.Bot
 
   use Tournament.Base
 
@@ -41,7 +43,7 @@ defmodule Codebattle.Tournament.Individual do
         end
       end
 
-    new_players = Enum.concat(players, Codebattle.Bot.Builder.build_list(bots_count))
+    new_players = Enum.concat(players, Bot.Context.build_list(bots_count))
 
     new_data =
       tournament
@@ -103,14 +105,28 @@ defmodule Codebattle.Tournament.Individual do
     end
   end
 
+  @impl Tournament.Base
+  def create_game(tournament, match) do
+    {:ok, game} =
+      Game.Context.create_game(%{
+        state: "playing",
+        level: tournament.difficulty,
+        tournament_id: tournament.id,
+        timeout_seconds: tournament.match_timeout_seconds,
+        players: match.players
+      })
+
+    game.id
+  end
+
   defp pair_players_to_matches(players, step) do
     Enum.reduce(players, [%{}], fn player, acc ->
-      player = Map.merge(player, %{game_result: "waiting"})
+      player = Map.merge(player, %{result: "waiting"})
 
       case List.first(acc) do
         map when map == %{} ->
           [_h | t] = acc
-          [%{state: "waiting", round_id: step, players: [player]} | t]
+          [%{state: "pending", round_id: step, players: [player]} | t]
 
         match ->
           case(Enum.count(match.players)) do
@@ -119,7 +135,7 @@ defmodule Codebattle.Tournament.Individual do
               [Map.merge(match, %{players: match.players ++ [player]}) | t]
 
             _ ->
-              [%{state: "waiting", round_id: step, players: [player]} | acc]
+              [%{state: "pending", round_id: step, players: [player]} | acc]
           end
       end
     end)

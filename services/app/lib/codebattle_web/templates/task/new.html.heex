@@ -1,0 +1,5 @@
+<div class="container-xl bg-white shadow-sm rounded py-4 mb-3">
+  <h1 class="text-center">Create your own task</h1>
+  <p class="text-center">Play with your friends or make it public for all players</p>
+  <%= render("_form.html", Map.put(assigns, :action, Routes.task_path(@conn, :create))) %>
+</div>

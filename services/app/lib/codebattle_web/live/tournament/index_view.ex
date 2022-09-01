@@ -2,8 +2,6 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
   use Phoenix.LiveView
   use Timex
 
-  @topic "tournaments"
-
   alias Codebattle.Tournament
 
   def render(assigns) do
@@ -11,7 +9,7 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
   end
 
   def mount(_params, session, socket) do
-    Phoenix.PubSub.subscribe(:cb_pubsub, @topic)
+    Codebattle.PubSub.subscribe("tournaments")
 
     {:ok,
      assign(socket,
@@ -22,7 +20,7 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
      )}
   end
 
-  def handle_event(_event, _params, %{assigns: %{current_user: %{guest: true}} = socket}) do
+  def handle_event(_event, _params, %{assigns: %{current_user: %{is_guest: true}} = socket}) do
     {:noreply, socket}
   end
 
@@ -47,4 +45,11 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
         {:noreply, assign(socket, changeset: changeset)}
     end
   end
+
+  def handle_info(%{topic: "tournaments"}, socket) do
+    user = socket.assigns.current_user
+    {:noreply, assign(socket, tournaments: Tournament.Context.list_live_and_finished(user))}
+  end
+
+  def handle_info(_, socket), do: {:noreply, socket}
 end

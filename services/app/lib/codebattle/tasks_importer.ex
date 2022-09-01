@@ -60,35 +60,16 @@ defmodule Codebattle.TasksImporter do
       |> Enum.filter(fn x -> String.length(x) > 0 end)
 
     Enum.each(issue_names, fn issue_name ->
-      params = get_task_params(path, issue_name)
-
-      Codebattle.Repo.insert!(
-        struct(Codebattle.Task, params),
-        on_conflict: [
-          set: [
-            creator_id: params.creator_id,
-            origin: params.origin,
-            state: params.state,
-            visibility: params.visibility,
-            examples: params.examples,
-            description_en: params.description_en,
-            description_ru: params.description_ru,
-            level: params.level,
-            input_signature: params.input_signature,
-            output_signature: params.output_signature,
-            asserts: params.asserts,
-            tags: params.tags
-          ]
-        ],
-        conflict_target: :name
-      )
+      path
+      |> get_task_params(issue_name)
+      |> Codebattle.Task.upsert!()
     end)
   end
 
   defp get_task_params(path, issue_name) do
     issue_info = YamlElixir.read_from_file!(Path.join(path, "#{issue_name}.yml"))
 
-    asserts = File.read!(Path.join(path, "#{issue_name}.jsons"))
+    asserts = path |> Path.join("#{issue_name}.jsons") |> File.read!() |> Jason.decode!()
     signature = Map.get(issue_info, "signature")
     description = Map.get(issue_info, "description")
 
@@ -99,13 +80,15 @@ defmodule Codebattle.TasksImporter do
         "active"
       end
 
+    input_signature = Enum.map(Map.get(signature, "input", []), &format_input_signature/1)
+
     %{
       name: issue_name,
       examples: Map.get(issue_info, "examples"),
       description_ru: Map.get(description, "ru"),
       description_en: Map.get(description, "en"),
       level: Map.get(issue_info, "level"),
-      input_signature: Map.get(signature, "input"),
+      input_signature: input_signature,
       output_signature: Map.get(signature, "output"),
       asserts: asserts,
       tags: Map.get(issue_info, "tags"),
@@ -115,4 +98,10 @@ defmodule Codebattle.TasksImporter do
       creator_id: nil
     }
   end
+
+  defp format_input_signature(%{"argument-name" => arg} = input) do
+    input |> Map.delete("argument-name") |> Map.put("argument_name", arg)
+  end
+
+  defp format_input_signature(map), do: map
 end

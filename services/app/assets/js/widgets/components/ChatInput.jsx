@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import * as _ from 'lodash';
 import { Emoji, emojiIndex } from 'emoji-mart';
 import useClickAway from '../utils/useClickAway';
-import { addMessage, pushCommand } from '../middlewares/Chat';
+import { addMessage } from '../middlewares/Chat';
 import EmojiPicker from './EmojiPicker';
 import EmojiToolTip from './EmojiTooltip';
 
@@ -34,24 +34,7 @@ export default function ChatInput() {
       return;
     }
     if (message) {
-      // TODO: think about command parser with autocomplete
-      if (message.startsWith('/')) {
-        const cmdType = message.split(' ')[0].match(/\/([\w-=:.@]+)/gi)[0]?.slice(1);
-
-        const commandList = message.slice(1).split(' ');
-        const params = _.fromPairs(
-          commandList.slice(1).map(x => x.split(':')),
-        );
-
-        const command = {
-          ...params,
-          type: cmdType,
-        };
-        pushCommand(command);
-      } else {
-        addMessage(message);
-      }
-
+      addMessage(message);
       setMessage('');
     }
   };

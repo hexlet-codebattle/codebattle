@@ -1,0 +1,1091 @@
+{
+  "count": 122,
+  "players": [
+    {
+      "id": 0,
+      "name": "Jon Dou",
+      "time": 1659289657174,
+      "type": "player_state",
+      "record_id": 1,
+      "editor_lang": "js",
+      "editor_text": "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (number) => {\n\treturn number.toString().split(' ').ma;\n};\n\nmodule.exports = solution;",
+      "check_result": { "output": "", "result": "" },
+      "total_time_ms": 320541
+    },
+    {
+      "id": -25,
+      "name": "Point215",
+      "time": 1659289415790,
+      "type": "player_state",
+      "record_id": 0,
+      "editor_lang": "js",
+      "editor_text": "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (number) => {\n\treturn number.toS;\n};\n\nmodule.exports = solution;",
+      "check_result": { "output": "", "result": "" },
+      "total_time_ms": 79157
+    }
+  ],
+  "records": [
+    {
+      "id": -25,
+      "name": "Point215",
+      "time": 1659289336633,
+      "type": "init",
+      "record_id": 0,
+      "editor_lang": "php",
+      "editor_text": "<?php\n\nfunction solution(int $number)\n{\n    return false;\n}",
+      "check_result": { "output": "", "result": "" }
+    },
+    {
+      "id": 0,
+      "name": "Jon Dou",
+      "time": 1659289336633,
+      "type": "init",
+      "record_id": 1,
+      "editor_lang": "js",
+      "editor_text": "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (number) => {\n\treturn true;\n};\n\nmodule.exports = solution;",
+      "check_result": { "output": "", "result": "" }
+    },
+    {
+      "id": 0,
+      "name": "Anonymous",
+      "time": 1659289337103,
+      "type": "join_chat",
+      "record_id": 2
+    },
+    {
+      "id": -25,
+      "name": "Point215",
+      "time": 1659289338169,
+      "type": "join_chat",
+      "record_id": 3
+    },
+    {
+      "id": -25,
+      "name": "Point215(bot)",
+      "time": 1659289338270,
+      "type": "chat_message",
+      "message": null,
+      "record_id": 4
+    },
+    {
+      "id": -25,
+      "diff": {
+        "time": 11555,
+        "delta": [
+          { "insert": "from ty" },
+          { "delete": 2 },
+          { "retain": 1 },
+          { "insert": "ing im" },
+          { "delete": 1 },
+          { "retain": 1 },
+          { "insert": "ort List, Dict" },
+          { "retain": 2 },
+          { "insert": "de" },
+          { "retain": 1 },
+          { "delete": 7 },
+          { "retain": 10 },
+          { "delete": 1 },
+          { "retain": 1 },
+          { "delete": 4 },
+          { "retain": 5 },
+          { "insert": ":" },
+          { "delete": 4 },
+          { "retain": 1 },
+          { "insert": "i" },
+          { "delete": 8 },
+          { "retain": 1 },
+          { "insert": "t)" },
+          { "retain": 1 },
+          { "insert": "-> boo" },
+          { "delete": 2 },
+          { "retain": 1 },
+          { "insert": ":" },
+          { "delete": 5 }
+        ],
+        "next_lang": "python"
+      },
+      "time": 1659289348188,
+      "type": "update_editor_data",
+      "record_id": 5
+    },
+    {
+      "id": 0,
+      "diff": { "time": 67854, "delta": [{ "retain": 101 }, { "delete": 1 }] },
+      "time": 1659289404487,
+      "type": "update_editor_data",
+      "record_id": 6
+    },
+    {
+      "id": -25,
+      "diff": {
+        "time": 56591,
+        "delta": [
+          { "insert": "<?" },
+          { "delete": 7 },
+          { "retain": 1 },
+          { "insert": "h" },
+          { "delete": 6 },
+          { "retain": 1 },
+          { "delete": 14 },
+          { "retain": 2 },
+          { "delete": 2 },
+          { "retain": 1 },
+          { "insert": "unction" },
+          { "retain": 10 },
+          { "insert": "i" },
+          { "retain": 1 },
+          { "insert": "t $n" },
+          { "retain": 5 },
+          { "delete": 5 },
+          { "retain": 1 },
+          { "insert": "\n{\n" },
+          { "retain": 1 },
+          { "delete": 2 },
+          { "retain": 1 },
+          { "insert": "  return fa" },
+          { "delete": 3 },
+          { "retain": 1 },
+          { "insert": "se;\n}" },
+          { "delete": 1 }
+        ],
+        "next_lang": "php"
+      },
+      "time": 1659289404779,
+      "type": "update_editor_data",
+      "record_id": 7
+    },
+    {
+      "id": 0,
+      "diff": { "time": 1108, "delta": [{ "retain": 100 }, { "delete": 1 }] },
+      "time": 1659289405595,
+      "type": "update_editor_data",
+      "record_id": 8
+    },
+    {
+      "id": -25,
+      "diff": {
+        "time": 1001,
+        "delta": [
+          {
+            "insert": "using System;using System.Collections.Generic;\n\nnames"
+          },
+          { "delete": 2 },
+          { "retain": 1 },
+          { "insert": "ace ap" },
+          { "delete": 1 },
+          { "retain": 2 },
+          { "insert": "{" },
+          { "retain": 1 },
+          { "insert": "\tp" },
+          { "delete": 1 },
+          { "retain": 1 },
+          { "insert": "bli" },
+          { "delete": 1 },
+          { "retain": 1 },
+          { "insert": " class Solu" },
+          { "retain": 4 },
+          { "insert": "\n\t{\n\t\tpublic" },
+          { "retain": 1 },
+          { "insert": "bool " },
+          { "retain": 13 },
+          { "delete": 1 },
+          { "retain": 8 },
+          { "insert": "\t\t" },
+          { "retain": 2 },
+          { "delete": 17 },
+          { "retain": 1 },
+          { "insert": "\t\t" },
+          { "retain": 1 },
+          { "insert": "\n\t}\n}" }
+        ],
+        "next_lang": "csharp"
+      },
+      "time": 1659289405780,
+      "type": "update_editor_data",
+      "record_id": 9
+    },
+    {
+      "id": 0,
+      "diff": { "time": 196, "delta": [{ "retain": 99 }, { "delete": 1 }] },
+      "time": 1659289405791,
+      "type": "update_editor_data",
+      "record_id": 10
+    },
+    {
+      "id": 0,
+      "diff": { "time": 140, "delta": [{ "retain": 98 }, { "delete": 1 }] },
+      "time": 1659289405931,
+      "type": "update_editor_data",
+      "record_id": 11
+    },
+    {
+      "id": -25,
+      "diff": {
+        "time": 1002,
+        "delta": [
+          { "insert": "co" },
+          { "delete": 3 },
+          { "retain": 1 },
+          { "delete": 4 },
+          { "retain": 2 },
+          { "insert": " _ = r" },
+          { "retain": 1 },
+          { "insert": "q" },
+          { "delete": 2 },
+          { "retain": 1 },
+          { "delete": 1 },
+          { "retain": 1 },
+          { "insert": "r" },
+          { "delete": 7 },
+          { "retain": 1 },
+          { "insert": "(\"" },
+          { "delete": 4 },
+          { "retain": 1 },
+          { "insert": "odash\");\n" },
+          { "delete": 2 },
+          { "retain": 1 },
+          { "delete": 2 },
+          { "retain": 3 },
+          { "insert": "t R = r" },
+          { "delete": 2 },
+          { "retain": 1 },
+          { "insert": "quir" },
+          { "delete": 1 },
+          { "retain": 1 },
+          { "insert": "(\"" },
+          { "retain": 1 },
+          { "delete": 6 },
+          { "retain": 2 },
+          { "insert": "bd" },
+          { "delete": 3 },
+          { "retain": 1 },
+          { "insert": "\");" },
+          { "delete": 6 },
+          { "retain": 1 },
+          { "delete": 1 },
+          { "retain": 1 },
+          { "delete": 6 },
+          { "retain": 1 },
+          { "delete": 8 },
+          { "retain": 1 },
+          { "delete": 5 },
+          { "retain": 1 },
+          { "insert": "st" },
+          { "delete": 12 },
+          { "retain": 1 },
+          { "delete": 5 },
+          { "retain": 8 },
+          { "insert": " = " },
+          { "retain": 1 },
+          { "delete": 1 },
+          { "retain": 1 },
+          { "delete": 3 },
+          { "retain": 6 },
+          { "insert": " => " },
+          { "delete": 3 },
+          { "retain": 2 },
+          { "delete": 1 },
+          { "retain": 1 },
+          { "insert": "return true;" },
+          { "delete": 2 },
+          { "retain": 1 },
+          { "delete": 1 },
+          { "retain": 1 },
+          { "insert": ";" },
+          { "retain": 1 },
+          { "insert": "\nmodule.exports = solution;" },
+          { "delete": 1 }
+        ],
+        "next_lang": "js"
+      },
+      "time": 1659289406782,
+      "type": "update_editor_data",
+      "record_id": 12
+    },
+    {
+      "id": -25,
+      "diff": { "time": 1000, "delta": [{ "retain": 98 }, { "delete": 4 }] },
+      "time": 1659289407782,
+      "type": "update_editor_data",
+      "record_id": 13
+    },
+    {
+      "id": -25,
+      "diff": { "time": 1001, "delta": [{ "retain": 98 }, { "insert": "n" }] },
+      "time": 1659289408783,
+      "type": "update_editor_data",
+      "record_id": 14
+    },
+    {
+      "id": -25,
+      "diff": {
+        "time": 1001,
+        "delta": [{ "retain": 99 }, { "insert": "umber" }]
+      },
+      "time": 1659289409784,
+      "type": "update_editor_data",
+      "record_id": 15
+    },
+    {
+      "id": -25,
+      "diff": { "time": 1002, "delta": [{ "retain": 104 }, { "insert": "." }] },
+      "time": 1659289410786,
+      "type": "update_editor_data",
+      "record_id": 16
+    },
+    {
+      "id": -25,
+      "diff": { "time": 1000, "delta": [{ "retain": 105 }, { "insert": "t" }] },
+      "time": 1659289411786,
+      "type": "update_editor_data",
+      "record_id": 17
+    },
+    {
+      "id": -25,
+      "diff": { "time": 1001, "delta": [{ "retain": 106 }, { "insert": "p" }] },
+      "time": 1659289412787,
+      "type": "update_editor_data",
+      "record_id": 18
+    },
+    {
+      "id": -25,
+      "diff": { "time": 1001, "delta": [{ "retain": 106 }, { "delete": 1 }] },
+      "time": 1659289413788,
+      "type": "update_editor_data",
+      "record_id": 19
+    },
+    {
+      "id": -25,
+      "diff": { "time": 1001, "delta": [{ "retain": 106 }, { "insert": "o" }] },
+      "time": 1659289414789,
+      "type": "update_editor_data",
+      "record_id": 20
+    },
+    {
+      "id": -25,
+      "diff": { "time": 1001, "delta": [{ "retain": 107 }, { "insert": "S" }] },
+      "time": 1659289415790,
+      "type": "update_editor_data",
+      "record_id": 21
+    },
+    {
+      "id": -25,
+      "name": "Point215",
+      "time": 1659289416797,
+      "type": "leave_chat",
+      "record_id": 22
+    },
+    {
+      "id": 0,
+      "diff": { "time": 41930, "delta": [{ "retain": 98 }, { "insert": " " }] },
+      "time": 1659289447861,
+      "type": "update_editor_data",
+      "record_id": 23
+    },
+    {
+      "id": 0,
+      "diff": {
+        "time": 207,
+        "delta": [{ "retain": 99 }, { "insert": "\n\t" }]
+      },
+      "time": 1659289448068,
+      "type": "update_editor_data",
+      "record_id": 24
+    },
+    {
+      "id": 0,
+      "diff": { "time": 865, "delta": [{ "retain": 100 }, { "delete": 1 }] },
+      "time": 1659289448933,
+      "type": "update_editor_data",
+      "record_id": 25
+    },
+    {
+      "id": 0,
+      "diff": { "time": 338, "delta": [{ "retain": 99 }, { "delete": 1 }] },
+      "time": 1659289449271,
+      "type": "update_editor_data",
+      "record_id": 26
+    },
+    {
+      "id": 0,
+      "diff": { "time": 877, "delta": [{ "retain": 98 }, { "delete": 1 }] },
+      "time": 1659289450148,
+      "type": "update_editor_data",
+      "record_id": 27
+    },
+    {
+      "id": 0,
+      "diff": { "time": 19597, "delta": [{ "retain": 98 }, { "insert": "n" }] },
+      "time": 1659289469745,
+      "type": "update_editor_data",
+      "record_id": 28
+    },
+    {
+      "id": 0,
+      "diff": { "time": 71, "delta": [{ "retain": 99 }, { "insert": "u" }] },
+      "time": 1659289469816,
+      "type": "update_editor_data",
+      "record_id": 29
+    },
+    {
+      "id": 0,
+      "diff": {
+        "time": 753,
+        "delta": [{ "retain": 100 }, { "insert": "mber" }]
+      },
+      "time": 1659289470569,
+      "type": "update_editor_data",
+      "record_id": 30
+    },
+    {
+      "id": 0,
+      "diff": { "time": 312, "delta": [{ "retain": 104 }, { "insert": "," }] },
+      "time": 1659289470881,
+      "type": "update_editor_data",
+      "record_id": 31
+    },
+    {
+      "id": 0,
+      "diff": { "time": 103, "delta": [{ "retain": 105 }, { "insert": "," }] },
+      "time": 1659289470984,
+      "type": "update_editor_data",
+      "record_id": 32
+    },
+    {
+      "id": 0,
+      "diff": { "time": 333, "delta": [{ "retain": 105 }, { "delete": 1 }] },
+      "time": 1659289471317,
+      "type": "update_editor_data",
+      "record_id": 33
+    },
+    {
+      "id": 0,
+      "diff": { "time": 134, "delta": [{ "retain": 104 }, { "delete": 1 }] },
+      "time": 1659289471451,
+      "type": "update_editor_data",
+      "record_id": 34
+    },
+    {
+      "id": 0,
+      "diff": { "time": 140, "delta": [{ "retain": 104 }, { "insert": "." }] },
+      "time": 1659289471591,
+      "type": "update_editor_data",
+      "record_id": 35
+    },
+    {
+      "id": 0,
+      "diff": { "time": 877, "delta": [{ "retain": 105 }, { "insert": "t" }] },
+      "time": 1659289472468,
+      "type": "update_editor_data",
+      "record_id": 36
+    },
+    {
+      "id": 0,
+      "diff": { "time": 658, "delta": [{ "retain": 106 }, { "insert": "o" }] },
+      "time": 1659289473126,
+      "type": "update_editor_data",
+      "record_id": 37
+    },
+    {
+      "id": 0,
+      "diff": { "time": 734, "delta": [{ "retain": 107 }, { "insert": "S" }] },
+      "time": 1659289473860,
+      "type": "update_editor_data",
+      "record_id": 38
+    },
+    {
+      "id": 0,
+      "diff": { "time": 1432, "delta": [{ "retain": 108 }, { "insert": "t" }] },
+      "time": 1659289475292,
+      "type": "update_editor_data",
+      "record_id": 39
+    },
+    {
+      "id": 0,
+      "diff": { "time": 827, "delta": [{ "retain": 109 }, { "insert": "r" }] },
+      "time": 1659289476119,
+      "type": "update_editor_data",
+      "record_id": 40
+    },
+    {
+      "id": 0,
+      "diff": { "time": 100, "delta": [{ "retain": 110 }, { "insert": "i" }] },
+      "time": 1659289476219,
+      "type": "update_editor_data",
+      "record_id": 41
+    },
+    {
+      "id": 0,
+      "diff": { "time": 551, "delta": [{ "retain": 111 }, { "insert": "n" }] },
+      "time": 1659289476770,
+      "type": "update_editor_data",
+      "record_id": 42
+    },
+    {
+      "id": 0,
+      "diff": { "time": 84, "delta": [{ "retain": 112 }, { "insert": "g" }] },
+      "time": 1659289476854,
+      "type": "update_editor_data",
+      "record_id": 43
+    },
+    {
+      "id": 0,
+      "diff": { "time": 497, "delta": [{ "retain": 113 }, { "insert": "()" }] },
+      "time": 1659289477351,
+      "type": "update_editor_data",
+      "record_id": 44
+    },
+    {
+      "id": 0,
+      "diff": { "time": 3788, "delta": [{ "retain": 115 }, { "insert": "." }] },
+      "time": 1659289481139,
+      "type": "update_editor_data",
+      "record_id": 45
+    },
+    {
+      "id": 0,
+      "diff": { "time": 8069, "delta": [{ "retain": 116 }, { "insert": "p" }] },
+      "time": 1659289489208,
+      "type": "update_editor_data",
+      "record_id": 46
+    },
+    {
+      "id": 0,
+      "diff": { "time": 191, "delta": [{ "retain": 117 }, { "insert": "l" }] },
+      "time": 1659289489399,
+      "type": "update_editor_data",
+      "record_id": 47
+    },
+    {
+      "id": 0,
+      "diff": { "time": 207, "delta": [{ "retain": 118 }, { "insert": "i" }] },
+      "time": 1659289489606,
+      "type": "update_editor_data",
+      "record_id": 48
+    },
+    {
+      "id": 0,
+      "diff": { "time": 223, "delta": [{ "retain": 119 }, { "insert": "t" }] },
+      "time": 1659289489829,
+      "type": "update_editor_data",
+      "record_id": 49
+    },
+    {
+      "id": 0,
+      "diff": { "time": 419, "delta": [{ "retain": 120 }, { "insert": "()" }] },
+      "time": 1659289490248,
+      "type": "update_editor_data",
+      "record_id": 50
+    },
+    {
+      "id": 0,
+      "diff": { "time": 521, "delta": [{ "retain": 120 }, { "delete": 2 }] },
+      "time": 1659289490769,
+      "type": "update_editor_data",
+      "record_id": 51
+    },
+    {
+      "id": 0,
+      "diff": { "time": 171, "delta": [{ "retain": 119 }, { "delete": 1 }] },
+      "time": 1659289490940,
+      "type": "update_editor_data",
+      "record_id": 52
+    },
+    {
+      "id": 0,
+      "diff": { "time": 125, "delta": [{ "retain": 118 }, { "delete": 1 }] },
+      "time": 1659289491065,
+      "type": "update_editor_data",
+      "record_id": 53
+    },
+    {
+      "id": 0,
+      "diff": { "time": 139, "delta": [{ "retain": 117 }, { "delete": 1 }] },
+      "time": 1659289491204,
+      "type": "update_editor_data",
+      "record_id": 54
+    },
+    {
+      "id": 0,
+      "diff": { "time": 133, "delta": [{ "retain": 116 }, { "delete": 1 }] },
+      "time": 1659289491337,
+      "type": "update_editor_data",
+      "record_id": 55
+    },
+    {
+      "id": 0,
+      "diff": { "time": 250, "delta": [{ "retain": 116 }, { "insert": "s" }] },
+      "time": 1659289491587,
+      "type": "update_editor_data",
+      "record_id": 56
+    },
+    {
+      "id": 0,
+      "diff": { "time": 923, "delta": [{ "retain": 117 }, { "insert": "p" }] },
+      "time": 1659289492510,
+      "type": "update_editor_data",
+      "record_id": 57
+    },
+    {
+      "id": 0,
+      "diff": { "time": 193, "delta": [{ "retain": 118 }, { "insert": "l" }] },
+      "time": 1659289492703,
+      "type": "update_editor_data",
+      "record_id": 58
+    },
+    {
+      "id": 0,
+      "diff": { "time": 178, "delta": [{ "retain": 119 }, { "insert": "i" }] },
+      "time": 1659289492881,
+      "type": "update_editor_data",
+      "record_id": 59
+    },
+    {
+      "id": 0,
+      "diff": { "time": 226, "delta": [{ "retain": 120 }, { "insert": "t" }] },
+      "time": 1659289493107,
+      "type": "update_editor_data",
+      "record_id": 60
+    },
+    {
+      "id": 0,
+      "diff": { "time": 555, "delta": [{ "retain": 121 }, { "insert": "()" }] },
+      "time": 1659289493662,
+      "type": "update_editor_data",
+      "record_id": 61
+    },
+    {
+      "id": 0,
+      "diff": { "time": 892, "delta": [{ "retain": 122 }, { "insert": "''" }] },
+      "time": 1659289494554,
+      "type": "update_editor_data",
+      "record_id": 62
+    },
+    {
+      "id": 0,
+      "diff": { "time": 142, "delta": [{ "retain": 123 }, { "insert": " " }] },
+      "time": 1659289494696,
+      "type": "update_editor_data",
+      "record_id": 63
+    },
+    {
+      "id": 0,
+      "diff": { "time": 2766, "delta": [{ "retain": 126 }, { "insert": "." }] },
+      "time": 1659289497462,
+      "type": "update_editor_data",
+      "record_id": 64
+    },
+    {
+      "id": 0,
+      "diff": { "time": 387, "delta": [{ "retain": 127 }, { "insert": " " }] },
+      "time": 1659289497849,
+      "type": "update_editor_data",
+      "record_id": 65
+    },
+    {
+      "id": 0,
+      "diff": { "time": 1414, "delta": [{ "retain": 127 }, { "delete": 1 }] },
+      "time": 1659289499263,
+      "type": "update_editor_data",
+      "record_id": 66
+    },
+    {
+      "id": 0,
+      "time": 1659289533551,
+      "type": "start_check",
+      "record_id": 67,
+      "editor_lang": "js",
+      "editor_text": "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (number) => {\n\treturn number.toString().split(' ').;\n};\n\nmodule.exports = solution;"
+    },
+    {
+      "id": 0,
+      "time": 1659289534485,
+      "type": "check_complete",
+      "record_id": 68,
+      "editor_lang": "js",
+      "editor_text": "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (number) => {\n\treturn number.toString().split(' ').;\n};\n\nmodule.exports = solution;",
+      "check_result": {
+        "output": "evalmachine.<anonymous>:4\n    return number.toString().split(' ').;\n                                        ^\n\nSyntaxError: Unexpected token ';'\n    at new Script (node:vm:100:7)\n    at createScript (node:vm:257:10)\n    at runInContext (node:vm:288:10)\n    at run (/usr/src/app/runner.js:70:5)\n    at Object.<anonymous> (/usr/src/app/check/checker.js:3:1)\n    at Module._compile (node:internal/modules/cjs/loader:1105:14)\n    at Object.Module._extensions..js (node:internal/modules/cjs/loader:1159:10)\n    at Module.load (node:internal/modules/cjs/loader:981:32)\n    at Function.Module._load (node:internal/modules/cjs/loader:822:12)\n    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)\nmake: *** [Makefile:2: test] Error 1\n",
+        "status": "error",
+        "asserts": [],
+        "version": 2,
+        "asserts_count": 0,
+        "success_count": 0
+      }
+    },
+    {
+      "id": 0,
+      "name": "Anonymous",
+      "time": 1659289568888,
+      "type": "leave_chat",
+      "record_id": 69
+    },
+    {
+      "id": 0,
+      "name": "Anonymous",
+      "time": 1659289569278,
+      "type": "join_chat",
+      "record_id": 70
+    },
+    {
+      "id": 0,
+      "diff": {
+        "time": 76481,
+        "delta": [{ "retain": 127 }, { "insert": " " }]
+      },
+      "time": 1659289575744,
+      "type": "update_editor_data",
+      "record_id": 71
+    },
+    {
+      "id": 0,
+      "diff": { "time": 319, "delta": [{ "retain": 127 }, { "delete": 1 }] },
+      "time": 1659289576063,
+      "type": "update_editor_data",
+      "record_id": 72
+    },
+    {
+      "id": 0,
+      "diff": {
+        "time": 38515,
+        "delta": [{ "retain": 127 }, { "insert": "," }]
+      },
+      "time": 1659289614578,
+      "type": "update_editor_data",
+      "record_id": 73
+    },
+    {
+      "id": 0,
+      "diff": { "time": 405, "delta": [{ "retain": 128 }, { "insert": "q" }] },
+      "time": 1659289614983,
+      "type": "update_editor_data",
+      "record_id": 74
+    },
+    {
+      "id": 0,
+      "diff": { "time": 148, "delta": [{ "retain": 129 }, { "insert": "p" }] },
+      "time": 1659289615131,
+      "type": "update_editor_data",
+      "record_id": 75
+    },
+    {
+      "id": 0,
+      "diff": { "time": 308, "delta": [{ "retain": 129 }, { "delete": 1 }] },
+      "time": 1659289615439,
+      "type": "update_editor_data",
+      "record_id": 76
+    },
+    {
+      "id": 0,
+      "diff": { "time": 151, "delta": [{ "retain": 128 }, { "delete": 1 }] },
+      "time": 1659289615590,
+      "type": "update_editor_data",
+      "record_id": 77
+    },
+    {
+      "id": 0,
+      "diff": { "time": 136, "delta": [{ "retain": 127 }, { "delete": 1 }] },
+      "time": 1659289615726,
+      "type": "update_editor_data",
+      "record_id": 78
+    },
+    {
+      "id": 0,
+      "diff": {
+        "time": 15008,
+        "delta": [{ "retain": 127 }, { "insert": "m" }]
+      },
+      "time": 1659289630734,
+      "type": "update_editor_data",
+      "record_id": 79
+    },
+    {
+      "id": 0,
+      "diff": { "time": 437, "delta": [{ "retain": 128 }, { "insert": "q" }] },
+      "time": 1659289631171,
+      "type": "update_editor_data",
+      "record_id": 80
+    },
+    {
+      "id": 0,
+      "diff": { "time": 75, "delta": [{ "retain": 129 }, { "insert": "p" }] },
+      "time": 1659289631246,
+      "type": "update_editor_data",
+      "record_id": 81
+    },
+    {
+      "id": 0,
+      "diff": { "time": 684, "delta": [{ "retain": 129 }, { "delete": 1 }] },
+      "time": 1659289631930,
+      "type": "update_editor_data",
+      "record_id": 82
+    },
+    {
+      "id": 0,
+      "diff": { "time": 166, "delta": [{ "retain": 128 }, { "delete": 1 }] },
+      "time": 1659289632096,
+      "type": "update_editor_data",
+      "record_id": 83
+    },
+    {
+      "id": 0,
+      "diff": { "time": 818, "delta": [{ "retain": 128 }, { "insert": "a" }] },
+      "time": 1659289632914,
+      "type": "update_editor_data",
+      "record_id": 84
+    },
+    {
+      "id": 0,
+      "diff": { "time": 71, "delta": [{ "retain": 129 }, { "insert": "p" }] },
+      "time": 1659289632985,
+      "type": "update_editor_data",
+      "record_id": 85
+    },
+    {
+      "id": 0,
+      "diff": { "time": 348, "delta": [{ "retain": 130 }, { "insert": "()" }] },
+      "time": 1659289633333,
+      "type": "update_editor_data",
+      "record_id": 86
+    },
+    {
+      "id": 0,
+      "diff": { "time": 4117, "delta": [{ "retain": 131 }, { "insert": "w" }] },
+      "time": 1659289637450,
+      "type": "update_editor_data",
+      "record_id": 87
+    },
+    {
+      "id": 0,
+      "diff": { "time": 336, "delta": [{ "retain": 132 }, { "insert": "o" }] },
+      "time": 1659289637786,
+      "type": "update_editor_data",
+      "record_id": 88
+    },
+    {
+      "id": 0,
+      "diff": { "time": 530, "delta": [{ "retain": 133 }, { "insert": "d" }] },
+      "time": 1659289638316,
+      "type": "update_editor_data",
+      "record_id": 89
+    },
+    {
+      "id": 0,
+      "diff": { "time": 1264, "delta": [{ "retain": 133 }, { "delete": 1 }] },
+      "time": 1659289639580,
+      "type": "update_editor_data",
+      "record_id": 90
+    },
+    {
+      "id": 0,
+      "diff": { "time": 344, "delta": [{ "retain": 133 }, { "insert": "r" }] },
+      "time": 1659289639924,
+      "type": "update_editor_data",
+      "record_id": 91
+    },
+    {
+      "id": 0,
+      "diff": { "time": 100, "delta": [{ "retain": 134 }, { "insert": "d" }] },
+      "time": 1659289640024,
+      "type": "update_editor_data",
+      "record_id": 92
+    },
+    {
+      "id": 0,
+      "diff": { "time": 79, "delta": [{ "retain": 135 }, { "insert": " " }] },
+      "time": 1659289640103,
+      "type": "update_editor_data",
+      "record_id": 93
+    },
+    {
+      "id": 0,
+      "diff": { "time": 838, "delta": [{ "retain": 136 }, { "insert": "=" }] },
+      "time": 1659289640941,
+      "type": "update_editor_data",
+      "record_id": 94
+    },
+    {
+      "id": 0,
+      "diff": { "time": 424, "delta": [{ "retain": 137 }, { "insert": ">" }] },
+      "time": 1659289641365,
+      "type": "update_editor_data",
+      "record_id": 95
+    },
+    {
+      "id": 0,
+      "diff": { "time": 130, "delta": [{ "retain": 138 }, { "insert": " " }] },
+      "time": 1659289641495,
+      "type": "update_editor_data",
+      "record_id": 96
+    },
+    {
+      "id": 0,
+      "diff": { "time": 735, "delta": [{ "retain": 139 }, { "insert": "w" }] },
+      "time": 1659289642230,
+      "type": "update_editor_data",
+      "record_id": 97
+    },
+    {
+      "id": 0,
+      "diff": { "time": 201, "delta": [{ "retain": 140 }, { "insert": "o" }] },
+      "time": 1659289642431,
+      "type": "update_editor_data",
+      "record_id": 98
+    },
+    {
+      "id": 0,
+      "diff": { "time": 502, "delta": [{ "retain": 141 }, { "insert": "r" }] },
+      "time": 1659289642933,
+      "type": "update_editor_data",
+      "record_id": 99
+    },
+    {
+      "id": 0,
+      "diff": { "time": 620, "delta": [{ "retain": 142 }, { "insert": "l" }] },
+      "time": 1659289643553,
+      "type": "update_editor_data",
+      "record_id": 100
+    },
+    {
+      "id": 0,
+      "diff": { "time": 440, "delta": [{ "retain": 142 }, { "delete": 1 }] },
+      "time": 1659289643993,
+      "type": "update_editor_data",
+      "record_id": 101
+    },
+    {
+      "id": 0,
+      "diff": { "time": 119, "delta": [{ "retain": 142 }, { "insert": "d" }] },
+      "time": 1659289644112,
+      "type": "update_editor_data",
+      "record_id": 102
+    },
+    {
+      "id": 0,
+      "diff": { "time": 267, "delta": [{ "retain": 143 }, { "insert": "r" }] },
+      "time": 1659289644379,
+      "type": "update_editor_data",
+      "record_id": 103
+    },
+    {
+      "id": 0,
+      "diff": { "time": 789, "delta": [{ "retain": 143 }, { "delete": 1 }] },
+      "time": 1659289645168,
+      "type": "update_editor_data",
+      "record_id": 104
+    },
+    {
+      "id": 0,
+      "diff": { "time": 2237, "delta": [{ "retain": 143 }, { "insert": " " }] },
+      "time": 1659289647405,
+      "type": "update_editor_data",
+      "record_id": 105
+    },
+    {
+      "id": 0,
+      "diff": { "time": 6727, "delta": [{ "retain": 143 }, { "delete": 1 }] },
+      "time": 1659289654132,
+      "type": "update_editor_data",
+      "record_id": 106
+    },
+    {
+      "id": 0,
+      "diff": { "time": 2138, "delta": [{ "retain": 142 }, { "delete": 1 }] },
+      "time": 1659289656270,
+      "type": "update_editor_data",
+      "record_id": 107
+    },
+    {
+      "id": 0,
+      "diff": { "time": 519, "delta": [{ "retain": 141 }, { "delete": 1 }] },
+      "time": 1659289656789,
+      "type": "update_editor_data",
+      "record_id": 108
+    },
+    {
+      "id": 0,
+      "diff": { "time": 26, "delta": [{ "retain": 140 }, { "delete": 1 }] },
+      "time": 1659289656815,
+      "type": "update_editor_data",
+      "record_id": 109
+    },
+    {
+      "id": 0,
+      "diff": { "time": 29, "delta": [{ "retain": 139 }, { "delete": 1 }] },
+      "time": 1659289656844,
+      "type": "update_editor_data",
+      "record_id": 110
+    },
+    {
+      "id": 0,
+      "diff": { "time": 32, "delta": [{ "retain": 138 }, { "delete": 1 }] },
+      "time": 1659289656876,
+      "type": "update_editor_data",
+      "record_id": 111
+    },
+    {
+      "id": 0,
+      "diff": { "time": 31, "delta": [{ "retain": 137 }, { "delete": 1 }] },
+      "time": 1659289656907,
+      "type": "update_editor_data",
+      "record_id": 112
+    },
+    {
+      "id": 0,
+      "diff": { "time": 30, "delta": [{ "retain": 136 }, { "delete": 1 }] },
+      "time": 1659289656937,
+      "type": "update_editor_data",
+      "record_id": 113
+    },
+    {
+      "id": 0,
+      "diff": { "time": 32, "delta": [{ "retain": 135 }, { "delete": 1 }] },
+      "time": 1659289656969,
+      "type": "update_editor_data",
+      "record_id": 114
+    },
+    {
+      "id": 0,
+      "diff": { "time": 34, "delta": [{ "retain": 134 }, { "delete": 1 }] },
+      "time": 1659289657003,
+      "type": "update_editor_data",
+      "record_id": 115
+    },
+    {
+      "id": 0,
+      "diff": { "time": 46, "delta": [{ "retain": 133 }, { "delete": 1 }] },
+      "time": 1659289657049,
+      "type": "update_editor_data",
+      "record_id": 116
+    },
+    {
+      "id": 0,
+      "diff": { "time": 30, "delta": [{ "retain": 132 }, { "delete": 1 }] },
+      "time": 1659289657079,
+      "type": "update_editor_data",
+      "record_id": 117
+    },
+    {
+      "id": 0,
+      "diff": { "time": 32, "delta": [{ "retain": 131 }, { "delete": 1 }] },
+      "time": 1659289657111,
+      "type": "update_editor_data",
+      "record_id": 118
+    },
+    {
+      "id": 0,
+      "diff": { "time": 33, "delta": [{ "retain": 130 }, { "delete": 2 }] },
+      "time": 1659289657144,
+      "type": "update_editor_data",
+      "record_id": 119
+    },
+    {
+      "id": 0,
+      "diff": { "time": 30, "delta": [{ "retain": 129 }, { "delete": 1 }] },
+      "time": 1659289657174,
+      "type": "update_editor_data",
+      "record_id": 120
+    },
+    { "id": 0, "time": 1659289659825, "type": "give_up", "record_id": 121 }
+  ]
+}

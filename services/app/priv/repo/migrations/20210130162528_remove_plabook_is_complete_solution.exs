@@ -1,7 +1,7 @@
 defmodule Codebattle.Repo.Migrations.RemovePlabookIsCompleteSolution do
   use Ecto.Migration
   import Ecto.Query
-  alias Codebattle.Bot.Playbook
+  alias Codebattle.Playbook
   alias Codebattle.Repo
 
   def change do
