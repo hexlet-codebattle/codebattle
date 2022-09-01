@@ -1,5 +1,5 @@
 export default {
-    default: '',
+    default: '#lobby',
     lobby: '#lobby',
     tournaments: '#tournaments',
     completedGames: '#completedGames',
