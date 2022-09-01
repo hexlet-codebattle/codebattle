@@ -8,11 +8,7 @@ const initialState = {
     2: { userId: 2, currentLangSlug: 'js' },
   },
   // TODO (add-stairways): reset stub data
-  text: {
-    '1:ts': { userId: 1, editorText: 'text ts', currentLangSlug: 'ts' },
-    '1:js': { userId: 1, editorText: 'text js', currentLangSlug: 'js' },
-    '2:js': { userId: 2, editorText: 'text', currentLangSlug: 'js' },
-  },
+  text: {},
   textHistory: {},
   langs: {},
   langsHistory: {},
