@@ -494,16 +494,6 @@ const LobbyWidget = () => {
   const handleCloseModal = () => setShow(false);
   const handleShowModal = () => setShow(true);
 
-  // const DEFAULT_TAB = '#lobby';
-  //
-  // useEffect(() => {
-  //   if (window.location.hash === '') {
-  //     console.log('window.location.hash', window.location.hash, window.location.hash === '');
-  //     // window.location.hash = DEFAULT_TAB;
-  //     tabLinkHandler('#lobby')();
-  //   }
-  // }, []);
-
   useEffect(() => {
     dispatch(actions.setCurrentUser({ user: { ...currentUser } }));
     dispatch(lobbyMiddlewares.fetchState());
