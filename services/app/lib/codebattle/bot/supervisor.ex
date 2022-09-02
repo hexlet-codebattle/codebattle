@@ -1,4 +1,3 @@
-
 defmodule Codebattle.Bot.Supervisor do
   @moduledoc false
 
