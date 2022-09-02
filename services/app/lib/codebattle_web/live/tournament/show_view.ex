@@ -195,7 +195,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     {:noreply, socket}
   end
 
-  def handle_event("chat_clean_banned", params, socket) do
+  def handle_event("chat_clean_banned", _, socket) do
     tournament = socket.assigns.tournament
     current_user = socket.assigns.current_user
 

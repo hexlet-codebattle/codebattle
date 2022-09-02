@@ -1,11 +1,10 @@
+
 defmodule Codebattle.Bot.Supervisor do
   @moduledoc false
 
   use Supervisor
 
   require Logger
-
-  alias Codebattle.Bot
 
   def start_link(game_id) do
     Supervisor.start_link(__MODULE__, game_id, name: supervisor_name(game_id))

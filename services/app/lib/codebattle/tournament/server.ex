@@ -29,10 +29,6 @@ defmodule Codebattle.Tournament.Server do
     end
   end
 
-  def reload_from_db(id) do
-    GenServer.cast(server_name(id), :reload_from_db)
-  end
-
   # SERVER
   def init(tournament) do
     Codebattle.PubSub.subscribe("game:tournament:#{tournament.id}")
@@ -75,12 +71,6 @@ defmodule Codebattle.Tournament.Server do
   def handle_info(message, state) do
     Logger.debug(message)
     {:noreply, state}
-  end
-
-  def handle_cast(:reload_from_db, state) do
-    %{tournament: tournament} = state
-    new_tournament = Codebattle.Tournament.Context.get_from_db!(tournament.id)
-    {:noreply, %{state | tournament: new_tournament}}
   end
 
   def tournament_topic_name(tournament_id), do: "tournament:#{tournament_id}"
