@@ -21,11 +21,10 @@ defmodule Codebattle.Tournament.Context do
   end
 
   def get_from_db!(id) do
-    tournament =
-      Tournament
-      |> Codebattle.Repo.get!(id)
-      |> Codebattle.Repo.preload(:creator)
-      |> add_module()
+    Tournament
+    |> Codebattle.Repo.get!(id)
+    |> Codebattle.Repo.preload(:creator)
+    |> add_module()
   end
 
   defp get_from_db(id) do

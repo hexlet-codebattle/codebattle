@@ -24,8 +24,6 @@ defmodule CodebattleWeb.TournamentController do
 
   def live(conn, params) do
     tournament_id = params["tournament_id"]
-    current_user = conn.assigns[:current_user]
-    tournament = Tournament.Context.get!(tournament_id)
     langs = Codebattle.Languages.meta() |> Map.values()
 
     conn
