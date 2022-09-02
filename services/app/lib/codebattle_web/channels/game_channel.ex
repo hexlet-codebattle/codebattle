@@ -3,7 +3,6 @@ defmodule CodebattleWeb.GameChannel do
   use CodebattleWeb, :channel
 
   alias Codebattle.Game.Context
-  alias Codebattle.CodeCheck.Result
   alias CodebattleWeb.Api.GameView
 
   def join("game:" <> game_id, _payload, socket) do

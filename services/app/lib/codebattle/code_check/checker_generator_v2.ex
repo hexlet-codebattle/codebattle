@@ -3,9 +3,7 @@ defmodule Codebattle.CodeCheck.CheckerGenerator.V2 do
 
   require Logger
 
-  def call(%{task: task, lang_meta: %{checker_version: 2, slug: slug}} = token) do
-    source_dir = Application.app_dir(:codebattle, "priv/templates/")
-
+  def call(%{task: task, lang_meta: %{checker_version: 2, slug: slug}}) do
     binding = [
       arguments: task.asserts |> Enum.map(& &1.arguments) |> Jason.encode!()
     ]

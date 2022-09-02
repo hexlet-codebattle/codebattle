@@ -23,7 +23,6 @@ defmodule CodebattleWeb.ReactTournamentController do
   end
 
   def show(conn, params) do
-    current_user = conn.assigns[:current_user]
     tournament = Tournament.Context.get!(params["id"])
 
     conn
