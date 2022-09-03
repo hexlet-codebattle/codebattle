@@ -5,7 +5,7 @@ codebattle_discord_id: "810202610597888012"
 codebattle_discord_secret: "t1vNZXXsw8kueHXWr3RgUTmjsBjjAoBl"
 codebattle_db_hostname: "db"
 codebattle_db_username: "postgres"
-codebattle_db_password: ""
+codebattle_db_password: "postgres"
 codebattle_db_name: "codebattle_dev"
 codebattle_db_port: 5432
 codebattle_secret_key_base: "asdlskdjalskdjfalksdjfalksjdfalsdjfqwerty"
