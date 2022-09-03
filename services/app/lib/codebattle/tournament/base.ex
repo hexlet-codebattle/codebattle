@@ -37,6 +37,7 @@ defmodule Codebattle.Tournament.Base do
         players =
           tournament
           |> get_players
+          |> Enum.filter(fn x -> x.id != player.id end)
           |> Enum.concat([player])
           |> Enum.uniq_by(fn x -> x.id end)
 
