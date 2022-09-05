@@ -46,6 +46,10 @@ defmodule Codebattle.Game.Context do
   def get_active_games(params) do
     Game.GlobalSupervisor
     |> Supervisor.which_children()
+    |> Enum.filter(fn
+      {_, :undefined, _, _} -> false
+      {_, _pid, _, _} -> true
+    end)
     |> Enum.map(fn {id, _, _, _} -> Game.Context.get_game(id) end)
     |> Enum.filter(fn
       {:ok, game} ->
