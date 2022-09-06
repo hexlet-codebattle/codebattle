@@ -401,6 +401,7 @@ const GameContainers = ({
   useEffect(() => {
     if (!window.location.hash) {
       tabLinkHandler(hashLinkNames.default)();
+      window.scrollTo({ top: 0 });
     }
   }, []);
 
