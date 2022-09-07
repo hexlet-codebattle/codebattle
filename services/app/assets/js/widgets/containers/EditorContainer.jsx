@@ -33,7 +33,7 @@ const EditorContainer = ({
 
   const { current: gameCurrent } = useContext(GameContext);
 
-  const context = { userId: id };
+  const context = { userId: id, type };
 
   const config = {
     actions: {
