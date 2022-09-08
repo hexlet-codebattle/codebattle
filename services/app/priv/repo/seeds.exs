@@ -390,9 +390,10 @@ task_ids =
   Codebattle.Task
   |> Repo.all()
   |> Enum.map(& &1.id)
+  |> Enum.take(4)
 
 %Codebattle.TaskPack{
-  name: "All_tasks_at#{now}",
+  name: "First four",
   visibility: "public",
   state: "active",
   task_ids: task_ids

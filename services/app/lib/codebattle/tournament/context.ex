@@ -23,7 +23,7 @@ defmodule Codebattle.Tournament.Context do
   def get_from_db!(id) do
     Tournament
     |> Codebattle.Repo.get!(id)
-    |> Codebattle.Repo.preload(:creator)
+    |> Codebattle.Repo.preload([:creator, :task_pack])
     |> add_module()
   end
 
@@ -57,12 +57,19 @@ defmodule Codebattle.Tournament.Context do
   def get_live_tournaments do
     Tournament.GlobalSupervisor
     |> Supervisor.which_children()
-    |> Enum.map(fn {id, _, _, _} -> id end)
-    |> Enum.map(fn id -> Tournament.Server.get_tournament(id) end)
-    |> Enum.filter(fn tournament ->
-      identified = tournament |> Function.identity()
-      identified.state in ["upcoming", "waiting_participants", "active"]
+    |> Enum.filter(fn
+      {_, :undefined, _, _} -> false
+      {_, _pid, _, _} -> true
     end)
+    |> Enum.map(fn {id, _, _, _} -> Tournament.Context.get(id) end)
+    |> Enum.filter(fn
+      {:ok, tournament} ->
+        tournament.state in ["upcoming", "waiting_participants", "active"]
+
+      _ ->
+        false
+    end)
+    |> Enum.map(fn {:ok, tournament} -> tournament end)
   end
 
   def get_live_tournaments_count, do: get_live_tournaments() |> Enum.count()
@@ -101,16 +108,16 @@ defmodule Codebattle.Tournament.Context do
       end
 
     task_pack =
-      case params["task_pack_id"] do
+      case params["task_pack_name"] do
         x when x in [nil, ""] -> nil
-        task_pack_id -> TaskPack.get!(task_pack_id)
+        task_pack_name -> TaskPack.get_by!(name: task_pack_name)
       end
 
     result =
       %Tournament{}
       |> Tournament.changeset(
         Map.merge(params, %{
-          "task_pack_id" => params["task_pack_id"],
+          "task_pack_id" => task_pack && task_pack.id,
           "task_pack" => task_pack,
           "access_token" => access_token,
           "alive_count" => get_live_tournaments_count(),

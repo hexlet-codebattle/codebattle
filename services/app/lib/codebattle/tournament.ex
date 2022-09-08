@@ -19,6 +19,7 @@ defmodule Codebattle.Tournament do
              :data,
              :creator,
              :creator_id,
+             :task_pack,
              :task_pack_id,
              :is_live
            ]}

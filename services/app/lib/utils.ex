@@ -33,20 +33,4 @@ defmodule Utils do
   end
 
   def right_rotate(l, n), do: left_rotate(l, -n)
-
-  @doc """
-  Takes map with keys as strings and returns map with keys as atoms
-  """
-  @spec atomize_keys(map) :: map
-  def atomize_keys(map) when is_map(map) do
-    map
-    |> Enum.map(fn {k, v} -> {key_to_atom(k), atomize_keys(v)} end)
-    |> Enum.into(%{})
-  end
-
-  def atomize_keys([head | rest]), do: [atomize_keys(head) | atomize_keys(rest)]
-  def atomize_keys(not_a_map), do: not_a_map
-
-  def key_to_atom(k) when is_binary(k), do: String.to_atom(k)
-  def key_to_atom(k), do: k
 end

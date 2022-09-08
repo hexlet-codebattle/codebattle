@@ -28,11 +28,9 @@ defmodule Codebattle.Tournament.Stairway do
   def build_matches(tournament) do
     current_task_id = Enum.at(tournament.task_pack.task_ids, tournament.step)
     tasks = Codebattle.TaskPack.get_tasks(tournament.task_pack)
-    task = Codebattle.Task.get!(current_task_id)
 
     new_meta = %{
-      "current_task_id" => task.id,
-      "current_task" => task,
+      "current_task_id" => current_task_id,
       "tasks" => tasks
     }
 
@@ -65,7 +63,7 @@ defmodule Codebattle.Tournament.Stairway do
 
     {:ok, game} =
       Game.Context.create_game(%{
-        task: task,
+        task_id: task,
         level: task.level,
         tournament_id: tournament.id,
         players: match.players

@@ -104,9 +104,6 @@ defmodule Codebattle.Tournament.Helpers do
   def get_teams(%{meta: %{teams: teams}}),
     do: Enum.map(teams, fn x -> %{id: x.id, title: x.title} end)
 
-  def get_teams(%{meta: %{"teams" => teams}}),
-    do: Enum.map(teams, fn x -> %{id: x["id"], title: x["title"]} end)
-
   def get_teams(_), do: []
 
   def get_team_players(%{type: "team"} = tournament, team_id) do
@@ -244,5 +241,10 @@ defmodule Codebattle.Tournament.Helpers do
 
   defp get_team_by_id(teams, team_id), do: Enum.find(teams, fn x -> x.id == team_id end)
 
-  def get_current_task(tournament), do: tournament.meta["current_task"]
+  def get_current_task(tournament) do
+    case Map.get(tournament.meta, :tasks) do
+      nil -> nil
+      tasks -> Enum.find(tasks, fn task -> task.id == tournament.meta.current_task_id end)
+    end
+  end
 end

@@ -19,10 +19,10 @@ defmodule CodebattleWeb.Live.Tournament.StairwayTest do
 
     {:error, {:redirect, %{to: "/tournaments/" <> tournament_id}}} =
       render_submit(view, :create, %{
-        "tournament" => %{
+        tournament: %{
           type: "stairway",
           starts_at: "2021-09-01 08:30",
-          task_pack_id: to_string(task_pack.id),
+          task_pack_name: task_pack.name,
           match_timeout_seconds: "140",
           name: "Stairway arena"
         }
@@ -49,16 +49,11 @@ defmodule CodebattleWeb.Live.Tournament.StairwayTest do
 
     {:ok, _view3, _html} = live(conn3, Routes.tournament_path(conn, :show, tournament.id))
 
-    # render_click(view3, :join, %{"team_id" => "0"})
+    render_click(view1, :start)
 
-    # tournament = Codebattle.Tournament.Context.get!(tournament.id)
-    # assert Helpers.players_count(tournament) == 3
-
-    # render_click(view1, :start)
-
-    # tournament = Codebattle.Tournament.Context.get!(tournament.id)
-    # assert tournament.state == "active"
-    # assert Helpers.players_count(tournament) == 4
-    # assert Enum.count(tournament.data.matches) == 2
+    tournament = Codebattle.Tournament.Context.get!(tournament.id)
+    assert tournament.state == "active"
+    assert Helpers.players_count(tournament) == 2
+    assert Enum.count(tournament.data.matches) == 2
   end
 end

@@ -11,11 +11,14 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
   def mount(_params, session, socket) do
     Codebattle.PubSub.subscribe("tournaments")
 
+    current_user = session["current_user"]
+
     {:ok,
      assign(socket,
-       current_user: session["current_user"],
+       current_user: current_user,
        tournaments: session["tournaments"],
        langs: Codebattle.Languages.get_langs(),
+       task_pack_names: Codebattle.TaskPack.list_visible(current_user) |> Enum.map(& &1.name),
        changeset: Codebattle.Tournament.changeset(%Codebattle.Tournament{})
      )}
   end
