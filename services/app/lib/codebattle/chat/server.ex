@@ -24,6 +24,8 @@ defmodule Codebattle.Chat.Server do
     GenServer.start_link(__MODULE__, [chat_type, params], name: chat_key(chat_type))
   end
 
+  # IDEA store only small projection of users in chats.
+  # Do not pollute memory
   @spec join_chat(Chat.chat_type(), User.t()) ::
           %{
             users: list(User.t()),
@@ -105,7 +107,8 @@ defmodule Codebattle.Chat.Server do
   def handle_call({:join, user}, _from, state) do
     new_users = [user | state.users]
 
-    {:reply, %{users: new_users, messages: state.messages}, %{state | users: new_users}}
+    {:reply, %{users: new_users, messages: Enum.reverse(state.messages)},
+     %{state | users: new_users}}
   end
 
   @impl GenServer

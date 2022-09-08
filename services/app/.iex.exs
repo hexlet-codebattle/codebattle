@@ -1,5 +1,6 @@
 alias Codebattle.Bot
 alias Codebattle.Bot.Playbook
+alias Codebattle.Chat
 alias Codebattle.Game
 alias Codebattle.Repo
 alias Codebattle.TaskPack
