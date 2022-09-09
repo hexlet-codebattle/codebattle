@@ -138,6 +138,9 @@ defmodule Codebattle.User do
       user.discord_id ->
         "https://cdn.discordapp.com/avatars/#{user.discord_id}/#{user.discord_avatar}.png"
 
+      user.email ->
+        gravatar_url(user.email)
+
       true ->
         "https://avatars0.githubusercontent.com/u/35539033"
     end
@@ -148,4 +151,10 @@ defmodule Codebattle.User do
   end
 
   def guest_id(), do: @guest_id
+
+  defp gravatar_url(email) do
+    hash = :erlang.md5(email) |> Base.encode16(case: :lower)
+
+    "https://gravatar.com/avatar/#{hash}?d=identicon"
+  end
 end
