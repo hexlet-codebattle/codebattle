@@ -1,6 +1,7 @@
 import { assign } from 'xstate';
 import sound from '../lib/sound';
 import editorUserTypes from '../config/editorUserTypes';
+import editorSettingsByUserType from '../config/editorSettingsByUserType';
 
 // settings
 // type - user type for viewers current_user/opponent/player (request features) teammate, clanmate, friend
@@ -41,7 +42,12 @@ const settingsByState = {
   },
 };
 
-const initContextByState = state => assign(({ userId }) => ({ ...settingsByState[state], userId }));
+// const initContextByState = state => assign(({ userId }) => ({ ...settingsByState[state], userId }));
+const initContextByState = state => assign(({ userId, type }) => ({
+  ...editorSettingsByUserType[type],
+  ...settingsByState[state],
+  userId,
+}));
 
 const editor = {
   initial: 'loading',
