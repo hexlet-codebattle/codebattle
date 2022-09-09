@@ -34,20 +34,20 @@ const UserProfile = () => {
 
   const dateParse = date => new Date(date).toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
-  const renderAchievemnt = achievement => {
+  const renderAchivement = achievement => {
     if (achievement.includes('win_games_with')) {
       const langs = achievement.split('?').pop().split('_');
 
       return (
         <div className="cb-polyglot mr-1 mb-1" title={achievement}>
-          <div className="d-flex h-75 flex-wrap align-items-center justify-content-around">
+          <div className="d-flex h-75 flex-wrap align-items-center justify-content-around cb-polyglot-icons">
             {langs.map(lang => (
               <img
                 src={`/assets/images/achievements/${lang}.png`}
                 alt={lang}
                 title={lang}
-                width="10"
-                height="10"
+                width="14"
+                height="14"
                 key={lang}
               />
             ))}
@@ -61,8 +61,8 @@ const UserProfile = () => {
         src={`/assets/images/achievements/${achievement}.png`}
         alt={achievement}
         title={achievement}
-        width="50"
-        height="50"
+        width="65"
+        height="65"
       />
     );
   };
@@ -217,7 +217,7 @@ const UserProfile = () => {
                 <h5 className="text-break">Achievements</h5>
                 <div className="col d-flex flex-wrap justify-content-start cb-profile mt-3 pl-0">
                   {stats.user.achievements.map(achievement => (
-                    <div key={achievement}>{renderAchievemnt(achievement)}</div>
+                    <div key={achievement}>{renderAchivement(achievement)}</div>
                   ))}
                 </div>
               </>
