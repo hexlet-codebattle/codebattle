@@ -16,8 +16,10 @@ const Leaderboard = () => {
   const anchorMonthRef = useRef(null);
   const anchorAllRef = useRef(null);
 
-  const handlePeriodClick = ({ target: { textContent } }) => {
+  const handlePeriodClick = e => {
+    const { target: { textContent } } = e;
     const periodValue = textContent && textContent.trim();
+    e.preventDefault();
 
     switch (periodValue) {
       case periodTypes.ALL:
