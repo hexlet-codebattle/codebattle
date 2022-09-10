@@ -16,6 +16,7 @@ defmodule CodebattleWeb.LobbyChannel do
       |> Enum.filter(&can_user_see_game?(&1, current_user))
 
     Codebattle.PubSub.subscribe("games")
+    Codebattle.PubSub.subscribe("tournaments")
 
     {:ok,
      %{
@@ -87,6 +88,16 @@ defmodule CodebattleWeb.LobbyChannel do
       push(socket, "game:upsert", payload)
     end
 
+    {:noreply, socket}
+  end
+
+  def hande_info(%{event: "tournament:created", payload: payload}, socket) do
+    push(socket, "tournament:created", payload)
+    {:noreply, socket}
+  end
+
+  def hande_info(%{event: "tournament:finished", payload: payload}, socket) do
+    push(socket, "tournament:finished", payload)
     {:noreply, socket}
   end
 
