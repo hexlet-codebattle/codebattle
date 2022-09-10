@@ -5,6 +5,9 @@ default: format lint-js-fix credo test
 format:
 	mix format
 
+lint:
+	mix format --check-formatted
+
 credo:
 	mix credo
 
