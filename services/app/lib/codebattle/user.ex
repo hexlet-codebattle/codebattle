@@ -38,6 +38,7 @@ defmodule Codebattle.User do
         :is_bot,
         :is_guest,
         :github_id,
+        :github_name,
         :lang,
         :editor_mode,
         :editor_theme,
@@ -60,7 +61,7 @@ defmodule Codebattle.User do
     field(:email, :string)
     field(:github_id, :integer)
     field(:rating, :integer)
-    field(:lang, :string)
+    field(:lang, :string, default: "ruby")
     field(:editor_mode, :string)
     field(:editor_theme, :string)
     field(:public_id, :binary_id)
