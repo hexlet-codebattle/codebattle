@@ -28,7 +28,7 @@ defmodule CodebattleWeb.GameController do
 
         is_player = Helpers.is_player?(game, user.id)
 
-        case {game.state, game.type, is_player} do
+        case {game.state, is_player} do
           {"waiting_opponent", false} ->
             player = Helpers.get_first_player(game)
 
@@ -42,16 +42,19 @@ defmodule CodebattleWeb.GameController do
             })
             |> render("join.html", %{game: game})
 
-          {_, "solo", _} ->
+          _ ->
+            first = Helpers.get_first_player(game)
+            second = Helpers.get_second_player(game)
+
             conn
-            # TODO: fix meta tags, pls
             |> put_meta_tags(%{
-              title: "Hexlet Codebattle • Solo game",
-              description: "Solo game",
+              title: "Hexlet Codebattle • Cool game",
+              description: "#{player_info(first, game)} vs #{player_info(second, game)}",
               url: Routes.game_url(conn, :show, id),
-              image: Routes.game_image_url(conn, :show, id)
+              image: Routes.game_image_url(conn, :show, id),
+              twitter: get_twitter_labels_meta([first, second])
             })
-            |> render("solo_show.html", %{game: game})
+            |> render("show.html", %{game: game})
         end
 
       game ->

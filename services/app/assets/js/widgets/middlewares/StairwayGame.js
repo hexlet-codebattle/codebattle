@@ -10,7 +10,7 @@ import { actions } from '../slices';
 
 // import notification from '../utils/notification';
 
-const tournamentId = Gon.getAsset('tournament_id');
+const tournamentId = window.location.pathname.split('/').pop();
 const tournamentChannelName = `tournament:${tournamentId}`;
 const tournamentChannel = socket.channel(tournamentChannelName);
 
@@ -89,8 +89,6 @@ const initActiveMatchChannel = (dispatch, state, matchId) => {
 
     const onJoinSuccess = (response) => {
       const data = camelizeKeys(response);
-      console.log(data);
-
       dispatch(actions.setNextRound(data));
     };
 

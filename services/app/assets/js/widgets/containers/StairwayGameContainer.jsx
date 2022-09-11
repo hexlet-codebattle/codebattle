@@ -17,6 +17,7 @@ import StairwayEditorToolbar from '../components/StairwayEditorToolbar';
 import Loading from '../components/Loading';
 import StairwayRounds from './StairwayRounds';
 
+
 const StairwayGameContainer = ({}) => {
   const dispatch = useDispatch();
 
@@ -24,7 +25,8 @@ const StairwayGameContainer = ({}) => {
   const activeMatch = useSelector(state => state.tournament?.activeMatch);
   const matches = useSelector(state => state.tournament?.tournament?.data?.matches);
   const players = useSelector(state => state.tournament?.tournament?.data?.players);
-  const activePlayerId = activeMatch?.players[0]?.id
+  const activePlayer = activeMatch?.players[0]
+  const activePlayerId = activePlayer?.id
   const activeRoundId = activeMatch?.roundId
 
   useEffect(() => {
@@ -58,15 +60,15 @@ const StairwayGameContainer = ({}) => {
         <div className="row no-gutter cb-game">
           <div className="col-12 col-lg-6 p-1 vh-100">
     {/*
-TODO: fixme, pls
+              TODO: fixme, pls
             <StairwayRounds
               players={players}
               activePlayerId={activePlayerId}
               activeRoundId={activeRoundId}
               setActiveRoundId={setActiveRoundId}
             />
-            <StairwayEditorToolbar players={players} setActivePlayerId={setActivePlayerId} activePlayer={activePlayer} />
       */}
+            <StairwayEditorToolbar players={players} setActivePlayerId={() => {}} activePlayer={activePlayer} />
             <StairwayEditorContainer playerId={activePlayerId} />
           </div>
           <div className="col-12 col-lg-6 p-1 vh-100">

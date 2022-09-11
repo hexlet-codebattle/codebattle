@@ -7,9 +7,10 @@ import { currentUserIdSelector } from '../selectors';
 
 const StairwayEditorContainer = ({ playerId }) => {
   const editable = useSelector(currentUserIdSelector) === playerId;
-  const playerData = useSelector((state) => {
-    return _.find(state.stairwayGame.game?.players, { id: playerId });
-  });
+  // TODO: create selector
+  const playerData = useSelector((state) =>
+    _.find(state.stairwayGame.game?.players, { id: playerId })
+  );
 
   if (!playerData) {
     return null;

@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Gon from 'gon';
@@ -11,9 +12,11 @@ import { currentUserIdSelector, getSolution } from '../selectors';
 import PlayerPicker from './PlayerPicker';
 
 const type = 'stairway';
-const toolbarClassNames = 'btn-toolbar justify-content-between align-items-center m-1';
+const toolbarClassNames =
+  'btn-toolbar justify-content-between align-items-center m-1';
 const editorSettingClassNames = 'btn-group align-items-center m-1';
-const userInfoClassNames = 'btn-group align-items-center justify-content-end m-1';
+const userInfoClassNames =
+  'btn-group align-items-center justify-content-end m-1';
 
 const currentUser = Gon.getAsset('current_user');
 
@@ -29,20 +32,32 @@ const ModeButtons = ({ player }) => (
 );
 
 const StairwayEditorToolbar = ({
-    activePlayer,
-    setActivePlayerId,
-    players,
- }) => {
+  activePlayer,
+  setActivePlayerId,
+  players,
+}) => {
   const dispatch = useDispatch();
 
-  const solution = useSelector(getSolution(activePlayer.id));
+  const playerData = useSelector((state) =>
+    _.find(state.stairwayGame.game?.players, { id: activePlayer.id })
+  );
   const currentUserId = useSelector(currentUserIdSelector);
-  const changeLang = useCallback(({ label: { props } }) => dispatch(actions.changeEditorLang({ editorLang: props.slug })), [dispatch]);
-  const changePlayer = useCallback(({ label: { props } }) => setActivePlayerId(props.user.id), [setActivePlayerId]);
+  const changeLang = useCallback(
+    ({ label: { props } }) =>
+      dispatch(actions.changeEditorLang({ editorLang: props.slug })),
+    [dispatch]
+  );
+  const changePlayer = useCallback(
+    ({ label: { props } }) => setActivePlayerId(props.user.id),
+    [setActivePlayerId]
+  );
   const isDisabledLanguagePicker = activePlayer.id !== currentUser.id;
-  const isDisabledPlayerPicker = useMemo(() => players.some(player => player.id === currentUserId), [players, currentUserId]);
+  const isDisabledPlayerPicker = useMemo(
+    () => players.some((player) => player.id === currentUserId),
+    [players, currentUserId]
+  );
   const actionBtnsProps = {
-    currentEditorLangSlug: solution.text.currentLangSlug,
+    currentEditorLangSlug: playerData?.editorLang,
     checkResult: () => {},
     checkBtnStatus: 'disabled',
     resetBtnStatus: 'disabled',
@@ -60,7 +75,7 @@ const StairwayEditorToolbar = ({
           >
             <LanguagePickerView
               isDisabled={isDisabledLanguagePicker}
-              currentLangSlug={solution.text.currentLangSlug}
+              currentLangSlug={playerData?.editorLang}
               changeLang={changeLang}
             />
           </div>
@@ -70,7 +85,11 @@ const StairwayEditorToolbar = ({
             <GameActionButtons {...actionBtnsProps} />
           </>
 
-          <div className={userInfoClassNames} role="group" aria-label="User info">
+          <div
+            className={userInfoClassNames}
+            role="group"
+            aria-label="User info"
+          >
             <PlayerPicker
               isDisabled={isDisabledPlayerPicker}
               players={players}

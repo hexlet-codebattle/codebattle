@@ -60,9 +60,12 @@ defmodule CodebattleWeb.Api.GameView do
     Languages.meta()
     |> Map.values()
     |> Enum.map(fn meta ->
-      meta
-      |> Map.from_struct()
-      |> Map.put(:solution_template, CodeCheck.generate_solution_template(meta, task))
+      %{
+        slug: meta.slug,
+        name: meta.name,
+        version: meta.version,
+        solution_template: CodeCheck.generate_solution_template(meta, task)
+      }
     end)
   end
 end
