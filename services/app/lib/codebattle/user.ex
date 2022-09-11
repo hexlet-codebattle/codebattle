@@ -139,7 +139,7 @@ defmodule Codebattle.User do
       user.discord_id ->
         "https://cdn.discordapp.com/avatars/#{user.discord_id}/#{user.discord_avatar}.png"
 
-      user.email ->
+      Map.get(user, :email) ->
         gravatar_url(user.email)
 
       true ->
