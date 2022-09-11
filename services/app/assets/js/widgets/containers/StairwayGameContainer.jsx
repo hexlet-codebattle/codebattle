@@ -41,7 +41,7 @@ const StairwayGameContainer = ({}) => {
   useEffect(() => {
     if (activeMatch) {
       const newActiveMatch = _.find(matches, match => match.roundId === activeRoundId && match.players[0].id === activePlayerId);
-      dispatch(setActiveMatch(newActiveMatch));
+      dispatch(actions.setActiveMatch(newActiveMatch));
     }
   }, [activePlayerId, activeRoundId]);
 

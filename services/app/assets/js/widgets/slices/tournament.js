@@ -35,6 +35,9 @@ const tournament = createSlice({
     setNextRound: (state, { payload }) => {
       state.tournament = payload;
     },
+    setActiveMatch: (state, { payload }) => {
+      state.activeMatch = payload;
+    },
   },
 });
 
