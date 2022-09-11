@@ -219,6 +219,7 @@ defmodule Codebattle.Tournament.Helpers do
   defp calc_match_result(_), do: {0, 0}
 
   defp match_is_active?(%{state: "active"}), do: true
+  defp match_is_active?(%{state: "playing"}), do: true
   defp match_is_active?(_match), do: false
   defp match_is_finished?(%{state: "game_over"}), do: true
   defp match_is_finished?(%{state: "canceled"}), do: true
