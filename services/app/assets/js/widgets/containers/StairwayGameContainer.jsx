@@ -1,5 +1,5 @@
 /* eslint-disable */
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Gon from 'gon';
 import _ from 'lodash';
@@ -7,7 +7,8 @@ import _ from 'lodash';
 import userTypes from '../config/userTypes';
 import { actions } from '../slices';
 
-import { connectToStairwayTournament } from '../middlewares/StairwayGame';
+import { connectToActiveMatch, connectToStairwayTournament } from '../middlewares/StairwayGame';
+
 import ChatWidget from './ChatWidget';
 import StairwayGameInfo from '../components/StairwayGameInfo';
 import StairwayOutputTab from './StairwayOutputTab';
@@ -23,12 +24,8 @@ const StairwayGameContainer = ({}) => {
   const activeMatch = useSelector(state => state.tournament?.activeMatch);
   const matches = useSelector(state => state.tournament?.tournament?.data?.matches);
   const players = useSelector(state => state.tournament?.tournament?.data?.players);
-
-  const defaultPlayerId = activeMatch && activeMatch.players[0]?.id;
-  const defaultRoundId = activeMatch?.roundId;
-
-  const [activePlayerId, setActivePlayerId] = useState(defaultPlayerId);
-  const [activeRoundId, setActiveRoundId] = useState(defaultRoundId);
+  const activePlayerId = activeMatch?.players[0]?.id
+  const activeRoundId = activeMatch?.roundId
 
   useEffect(() => {
     const currentUser = Gon.getAsset('current_user');
@@ -54,13 +51,14 @@ const StairwayGameContainer = ({}) => {
   if (!activeMatch) {
     return <Loading />;
   }
-  const activePlayer = _.find(players, { id: activePlayerId });
 
   return (
     <>
       <div className="container-fluid">
         <div className="row no-gutter cb-game">
           <div className="col-12 col-lg-6 p-1 vh-100">
+    {/*
+TODO: fixme, pls
             <StairwayRounds
               players={players}
               activePlayerId={activePlayerId}
@@ -68,6 +66,7 @@ const StairwayGameContainer = ({}) => {
               setActiveRoundId={setActiveRoundId}
             />
             <StairwayEditorToolbar players={players} setActivePlayerId={setActivePlayerId} activePlayer={activePlayer} />
+      */}
             <StairwayEditorContainer playerId={activePlayerId} />
           </div>
           <div className="col-12 col-lg-6 p-1 vh-100">
@@ -108,8 +107,10 @@ const StairwayGameContainer = ({}) => {
               </nav>
               <div className="tab-content flex-grow-1 overflow-auto " id="nav-tabContent">
                 <div className="tab-pane fade show active h-100" id="task" role="tabpanel" aria-labelledby="task-tab">
+{/*
+TODO: fixme
                   <StairwayGameInfo rounds={rounds} roundId={activeRoundId} />
-                  {/* <ChatWidget /> */}
+                   <ChatWidget /> */}
                 </div>
                 <div className="tab-pane h-100" id="output" role="tabpanel" aria-labelledby="output-tab">
                   <StairwayOutputTab playerId={activePlayerId} />

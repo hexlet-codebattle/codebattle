@@ -1,27 +1,30 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+import _ from 'lodash';
 
 import Editor from './Editor';
-import { currentUserIdSelector, getSolution } from '../selectors';
+import { currentUserIdSelector } from '../selectors';
 
 const StairwayEditorContainer = ({ playerId }) => {
   const editable = useSelector(currentUserIdSelector) === playerId;
-  const solution = useSelector(getSolution(playerId));
-  // const toolbarParams = {};
+  const playerData = useSelector((state) => {
+    return _.find(state.stairwayGame.game?.players, { id: playerId });
+  });
 
+  if (!playerData) {
+    return null;
+  }
   return (
-    <>
-      <Editor
-        value={solution.text.editorText}
-        editable={editable}
-        syntax={solution.text.activeLangSlug}
-        onChange={() => {}}
-        checkResult={() => {}}
-        mode="default"
-        theme="vs-dark"
-      />
-    </>
-);
+    <Editor
+      value={playerData.editorText}
+      editable={editable}
+      syntax={playerData.editorLang}
+      onChange={() => {}}
+      checkResult={() => {}}
+      mode="default"
+      theme="vs-dark"
+    />
+  );
 };
 
 export default StairwayEditorContainer;
