@@ -55,6 +55,7 @@
       </div>
       <%= if is_active?(@tournament) || is_finished?(@tournament) do %>
         <h2>Active stairway</h2>
+        <code> <%= inspect(@tournament)%> </code>
       <% end %>
     </div>
   </div>

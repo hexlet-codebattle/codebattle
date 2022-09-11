@@ -82,7 +82,7 @@ const ratingList = document.getElementById('rating-list');
 const userPageRoot = document.getElementById('user-page-root');
 const settingsRoot = document.getElementById('settings');
 const registrationRoot = document.getElementById('registration');
-const stairwayGameRoot = document.getElementById('stairway-game');
+const stairwayGameRoot = document.getElementById('stairway-game-root');
 const tournamentRoot = document.getElementById('tournament-root');
 
 if (invitesRoot) {

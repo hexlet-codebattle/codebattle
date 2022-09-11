@@ -124,3 +124,16 @@ defmodule CodebattleWeb.Router do
     send_resp(conn, conn.status, "SOMETHING_WENT_WRONG")
   end
 end
+
+
+# TODO: FIXIME
+# app 13:10:55.289 request_id=FxPQbUuoi-9L8S4AF8DB [error]
+# %KeyError{key: :email, message: nil,
+#   term: %Codebattle.Tournament.Types.Player{
+#     discord_avatar: nil, discord_id: nil,
+#     github_id: nil, id: 6608, is_bot: false,
+#     is_guest: nil, lang: "js", name: "EGOR ULITIN",
+#     public_id: nil, rank: 199, rating: 1182,
+#     result: "waiting", team_id: 1
+#   }
+# }
