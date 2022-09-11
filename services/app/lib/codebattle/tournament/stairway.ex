@@ -63,6 +63,8 @@ defmodule Codebattle.Tournament.Stairway do
 
     {:ok, game} =
       Game.Context.create_game(%{
+        type: "solo",
+        state: "playing",
         task_id: task,
         level: task.level,
         tournament_id: tournament.id,
