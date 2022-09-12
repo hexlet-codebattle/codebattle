@@ -21,7 +21,6 @@ const initTournamentChannel = (dispatch) => {
 
   const onJoinSuccess = (response) => {
     const data = camelizeKeys(response);
-
     dispatch(actions.setTournamentData(data));
     const { gameId } = data.activeMatch;
     dispatch(connectToStairwayGame(gameId));
@@ -40,6 +39,9 @@ const connectToStairwayGame = (gameId) => (dispatch) => {
   const onJoinSuccess = (response) => {
     const data = camelizeKeys(response);
     dispatch(actions.setGameData(data));
+    dispatch(actions.setLangs(data));
+    dispatch(actions.updateGamePlayers(data));
+    dispatch(actions.setGameTask(data));
   };
 
   activeMatchChannel.join().receive('ok', onJoinSuccess);

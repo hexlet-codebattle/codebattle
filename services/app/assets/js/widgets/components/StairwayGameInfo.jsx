@@ -3,18 +3,18 @@ import React, { memo } from 'react';
 import _ from 'lodash';
 import Task from './Task';
 
-const StairwayGameInfo = ({ rounds, roundId }) => {
-    const task = _.find(rounds, { id: roundId }, null);
+const StairwayGameInfo = ({ tasks, currentTaskId }) => {
+  if (!tasks) {
+    return null;
+  }
 
-    if (task === null) {
-        throw new Error('invalid roundId');
-    }
+  const task = _.find(tasks, { id: currentTaskId }, null);
 
-    return (
-      <Task
-        task={task}
-      />
-    );
+  if (!task) {
+    return null;
+  }
+
+  return <Task task={task} />;
 };
 
 export default memo(StairwayGameInfo);

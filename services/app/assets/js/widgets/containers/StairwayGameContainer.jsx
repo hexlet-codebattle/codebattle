@@ -21,7 +21,7 @@ import StairwayRounds from './StairwayRounds';
 const StairwayGameContainer = ({}) => {
   const dispatch = useDispatch();
 
-  const { gameStatus, rounds } = useSelector(state => state.stairwayGame);
+  const meta = useSelector(state => state.tournament?.tournament?.meta);
   const activeMatch = useSelector(state => state.tournament?.activeMatch);
   const matches = useSelector(state => state.tournament?.tournament?.data?.matches);
   const players = useSelector(state => state.tournament?.tournament?.data?.players);
@@ -109,10 +109,7 @@ const StairwayGameContainer = ({}) => {
               </nav>
               <div className="tab-content flex-grow-1 overflow-auto " id="nav-tabContent">
                 <div className="tab-pane fade show active h-100" id="task" role="tabpanel" aria-labelledby="task-tab">
-{/*
-TODO: fixme
-                  <StairwayGameInfo rounds={rounds} roundId={activeRoundId} />
-                   <ChatWidget /> */}
+                  <StairwayGameInfo tasks={meta?.tasks} currentTaskId={meta?.currentTaskId} />
                 </div>
                 <div className="tab-pane h-100" id="output" role="tabpanel" aria-labelledby="output-tab">
                   <StairwayOutputTab playerId={activePlayerId} />

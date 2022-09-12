@@ -27,6 +27,7 @@ defmodule Codebattle.Tournament.Stairway do
   @impl Tournament.Base
   def build_matches(tournament) do
     current_task_id = Enum.at(tournament.task_pack.task_ids, tournament.step)
+    # TODO: take tasks from meta
     tasks = Codebattle.TaskPack.get_tasks(tournament.task_pack)
 
     new_meta = %{

@@ -1,6 +1,6 @@
 <div class="container-fluid">
   <div class="row">
-    <div class="col-3">
+    <div class="col-2">
       <%= render("_chat.html",
         messages: @messages,
         current_user: @current_user,
@@ -19,7 +19,7 @@
         </div>
       <% end %>
     </div>
-    <div class="col-9 bg-white shadow-sm p-4">
+    <div class="col-10 bg-white shadow-sm p-4">
       <%= render("_header.html",
         tournament: @tournament,
         time: @time,
@@ -54,7 +54,6 @@
         <% end %>
       </div>
       <%= if is_active?(@tournament) || is_finished?(@tournament) do %>
-        <h2>Active stairway</h2>
         <div phx-update="ignore" id="stairway-game-root"></div>
         <%= if Application.get_env(:codebattle, :html_debug_mode) do %>
           <iframe class="xstate w-100"></iframe>
