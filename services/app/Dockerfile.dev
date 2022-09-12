@@ -1,4 +1,4 @@
-FROM elixir:1.13.4
+FROM elixir:1.14.0
 
 RUN mix local.hex --force \
   && mix local.rebar --force
@@ -6,7 +6,7 @@ RUN mix local.hex --force \
 RUN apt-get update \
   && apt-get install -y inotify-tools vim wkhtmltopdf
 
-RUN curl -sL https://deb.nodesource.com/setup_14.x | bash - \
+RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - \
   && apt-get update \
   && apt-get install -y nodejs \
   && npm install --global yarn@1.22.10

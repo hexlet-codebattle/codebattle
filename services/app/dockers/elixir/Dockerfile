@@ -1,4 +1,4 @@
-FROM elixir:1.13.4-alpine
+FROM elixir:1.14.0-alpine
 
 RUN apk add --update make
 

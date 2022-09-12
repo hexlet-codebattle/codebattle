@@ -285,11 +285,11 @@ defmodule Codebattle.Languages do
       name: "elixir",
       slug: "elixir",
       checker_version: 2,
-      version: "1.13.4",
+      version: "1.14.0",
       check_dir: "check",
       solution_file_name: "solution.exs",
       checker_file_name: "checker.exs",
-      docker_image: "codebattle/elixir:1.13.4",
+      docker_image: "codebattle/elixir:1.14.0",
       solution_template:
         "defmodule Solution do\n\tdef solution(<%= arguments %>) do\n<%= return_statement %>\n\tend\nend",
       arguments_template: %{argument: "<%= name %>", delimiter: ", "},
