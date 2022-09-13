@@ -8,22 +8,22 @@ defmodule Codebattle.Tournament do
   alias Tournament.Types
 
   @derive {Jason.Encoder,
-           only: [
-             :id,
-             :type,
-             :name,
-             :meta,
-             :state,
-             :difficulty,
-             :starts_at,
-             :players_count,
-             :data,
-             :creator,
-             :creator_id,
-             # :task_pack,
-             :task_pack_id,
-             :is_live
-           ]}
+   only: [
+     :id,
+     :type,
+     :name,
+     :meta,
+     :state,
+     :difficulty,
+     :starts_at,
+     :players_count,
+     :data,
+     :creator,
+     :creator_id,
+     # :task_pack,
+     :task_pack_id,
+     :is_live
+   ]}
 
   @types ~w(individual team stairway)
   @access_types ~w(public token)
