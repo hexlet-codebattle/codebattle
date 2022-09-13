@@ -9,7 +9,9 @@
           </tr>
           <tr>
             <td class="align-middle"><%= "Best Match Time" %></td>
-            <td class="align-middle text-nowrap"><%= render_time(@statistics.best_time) %></td>
+            <td class="align-middle text-nowrap">
+              <%= render_time(@statistics.best_time || 0) %>
+            </td>
           </tr>
         </tbody>
       </table>

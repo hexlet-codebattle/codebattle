@@ -18,7 +18,9 @@
               </td>
               <td class="align-middle text-nowrap"><%= player.team %></td>
               <td class="align-middle text-nowrap"><%= player.score %></td>
-              <td class="align-middle text-nowrap"><%= render_time(player.average_time) %></td>
+              <td class="align-middle text-nowrap">
+                <%= render_time(player.average_time || 0) %>
+              </td>
             </tr>
           <% end %>
         </tbody>
