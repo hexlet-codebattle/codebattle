@@ -8,15 +8,13 @@ import LanguagePickerView from './LanguagePickerView';
 import GameActionButtons from './GameActionButtons';
 import VimModeButton from '../containers/EditorsToolbars/VimModeButton';
 import DarkModeButton from '../containers/EditorsToolbars/DarkModeButton';
-import { currentUserIdSelector, getSolution } from '../selectors';
+import { currentUserIdSelector } from '../selectors';
 import PlayerPicker from './PlayerPicker';
 
 const type = 'stairway';
-const toolbarClassNames =
-  'btn-toolbar justify-content-between align-items-center m-1';
+const toolbarClassNames = 'btn-toolbar justify-content-between align-items-center m-1';
 const editorSettingClassNames = 'btn-group align-items-center m-1';
-const userInfoClassNames =
-  'btn-group align-items-center justify-content-end m-1';
+const userInfoClassNames = 'btn-group align-items-center justify-content-end m-1';
 
 const currentUser = Gon.getAsset('current_user');
 
@@ -38,23 +36,20 @@ const StairwayEditorToolbar = ({
 }) => {
   const dispatch = useDispatch();
 
-  const playerData = useSelector((state) =>
-    _.find(state.stairwayGame.game?.players, { id: activePlayer.id })
-  );
+  const playerData = useSelector(state => _.find(state.stairwayGame.game?.players, { id: activePlayer.id }));
   const currentUserId = useSelector(currentUserIdSelector);
   const changeLang = useCallback(
-    ({ label: { props } }) =>
-      dispatch(actions.changeEditorLang({ editorLang: props.slug })),
-    [dispatch]
+    ({ label: { props } }) => dispatch(actions.changeEditorLang({ editorLang: props.slug })),
+    [dispatch],
   );
   const changePlayer = useCallback(
     ({ label: { props } }) => setActivePlayerId(props.user.id),
-    [setActivePlayerId]
+    [setActivePlayerId],
   );
   const isDisabledLanguagePicker = activePlayer.id !== currentUser.id;
   const isDisabledPlayerPicker = useMemo(
-    () => players.some((player) => player.id === currentUserId),
-    [players, currentUserId]
+    () => players.some(player => player.id === currentUserId),
+    [players, currentUserId],
   );
   const actionBtnsProps = {
     currentEditorLangSlug: playerData?.editorLang,
