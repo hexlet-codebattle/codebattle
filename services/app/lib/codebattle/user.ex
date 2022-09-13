@@ -61,7 +61,7 @@ defmodule Codebattle.User do
     field(:email, :string)
     field(:github_id, :integer)
     field(:rating, :integer)
-    field(:lang, :string, default: "ruby")
+    field(:lang, :string, default: "js")
     field(:editor_mode, :string)
     field(:editor_theme, :string)
     field(:public_id, :binary_id)
