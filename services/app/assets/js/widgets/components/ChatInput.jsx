@@ -91,7 +91,7 @@ export default function ChatInput() {
       {isPickerVisible && (
         <EmojiPicker handleSelect={handleSelectEmodji} hide={hidePicker} />
       )}
-      <div className="input-group-append">
+      <div className="input-group-append bg-white">
         <button
           type="button"
           className="btn btn-outline-secondary py-0 px-1"
