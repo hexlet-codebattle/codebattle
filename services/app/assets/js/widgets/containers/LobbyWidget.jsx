@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Modal } from 'react-bootstrap';
 import _ from 'lodash';
 import copy from 'copy-to-clipboard';
@@ -51,7 +51,9 @@ const Players = ({ players }) => {
             hideOnlineIndicator
             loading={players[0].checkResult.status === 'started'}
           />
-          <div className={`cb-check-result-bar ${players[0].checkResult.status}`}>
+          <div
+            className={`cb-check-result-bar ${players[0].checkResult.status}`}
+          >
             <div
               className="cb-asserts-progress"
               style={{
@@ -62,7 +64,10 @@ const Players = ({ players }) => {
               }}
             />
           </div>
-          <PlayerLoading show={players[0].checkResult.status === 'started'} small />
+          <PlayerLoading
+            show={players[0].checkResult.status === 'started'}
+            small
+          />
         </div>
       </td>
       <td className="p-3 align-middle text-nowrap cb-username-td text-truncate">
@@ -72,7 +77,9 @@ const Players = ({ players }) => {
             hideOnlineIndicator
             loading={players[1].checkResult.status === 'started'}
           />
-          <div className={`cb-check-result-bar ${players[1].checkResult.status}`}>
+          <div
+            className={`cb-check-result-bar ${players[1].checkResult.status}`}
+          >
             <div
               className="cb-asserts-progress"
               style={{
@@ -84,7 +91,10 @@ const Players = ({ players }) => {
               }}
             />
           </div>
-          <PlayerLoading show={players[1].checkResult.status === 'started'} small />
+          <PlayerLoading
+            show={players[1].checkResult.status === 'started'}
+            small
+          />
         </div>
       </td>
     </>
@@ -507,11 +517,11 @@ const CreateGameButton = ({ handleClick }) => (
 
 const LobbyWidget = () => {
   const currentUser = Gon.getAsset('current_user');
+  const isModalShow = useSelector(selectors.isModalShow);
   const dispatch = useDispatch();
 
-  const [show, setShow] = useState(false);
-  const handleCloseModal = () => setShow(false);
-  const handleShowModal = () => setShow(true);
+  const handleShowModal = () => dispatch(actions.showCreateGameModal());
+  const handleCloseModal = () => dispatch(actions.closeCreateGameModal());
 
   useEffect(() => {
     dispatch(actions.setCurrentUser({ user: { ...currentUser } }));
@@ -532,7 +542,7 @@ const LobbyWidget = () => {
 
   return (
     <div className="container-lg">
-      {renderModal(show, handleCloseModal)}
+      {renderModal(isModalShow, handleCloseModal)}
       <div className="row">
         <div className="col-lg-8 col-md-12 p-0 mb-2 pr-lg-2 pb-3">
           <GameContainers
