@@ -5,6 +5,7 @@ import moment from 'moment';
 import {
   currentUserIsAdminSelector,
   currentUserIdSelector,
+  lobbyDataSelector,
 } from '../selectors';
 import { pushCommand } from '../middlewares/Chat';
 
@@ -20,8 +21,12 @@ const Message = ({
 
   const currentUserId = useSelector(currentUserIdSelector);
 
+  const { activeGames } = useSelector(lobbyDataSelector);
+  const isCurrentUserHasActiveGames = activeGames.some(({ players }) => players.some(({ id }) => id === currentUserId));
+  const isCurrentUserMessage = currentUserId === userId;
+
   const inviteBtnClassname = cn('btn btn-sm btn-link create-game-btn', {
-    disabled: currentUserId === userId,
+    disabled: isCurrentUserMessage || isCurrentUserHasActiveGames,
   });
 
   const handleBanClick = bannedName => {

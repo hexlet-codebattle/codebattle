@@ -66,10 +66,12 @@ const OpponentSelect = ({ setOpponent, opponent }) => {
   return (
     <AsyncSelect
       className="w-100"
-      value={{
-        label: <UserLabel user={opponent} />,
-        value: opponent,
-      }}
+      value={
+        opponent && {
+          label: <UserLabel user={opponent} />,
+          value: opponent,
+        }
+      }
       defaultOptions
       onChange={({ value }) => setOpponent(value)}
       loadOptions={loadOptions}

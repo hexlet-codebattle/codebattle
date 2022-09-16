@@ -69,6 +69,11 @@ test('test rendering GameList', async () => {
       presenceList: players,
       liveTournaments: [],
       completedTournaments: [],
+      createGameModal: {
+        show: false,
+        gameOptions: {},
+        opponentInfo: null,
+      },
     },
     user: {
       currentUserId: 1,
