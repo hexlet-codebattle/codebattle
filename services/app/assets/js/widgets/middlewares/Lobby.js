@@ -9,12 +9,14 @@ const channelName = 'lobby';
 const isRecord = Gon.getAsset('is_record');
 const channel = !isRecord ? socket.channel(channelName) : null;
 
-export const fetchState = () => (dispatch, getState) => {
+export const fetchState = () => (dispatch, getState) => { // запрос на скачивание первых данных
   const camelizeKeysAndDispatch = actionCreator => data => dispatch(actionCreator(camelizeKeys(data)));
 
   channel.join().receive('ok', camelizeKeysAndDispatch(actions.initGameList));
 
   channel.on('game:upsert', data => {
+    // настройка коллбеков на конкретные игры
+    // есть отдельные ивенты на обновление комплитед геймз - надо их найти
     const newData = camelizeKeys(data);
     const {
       game: { players, id, state: gameState },
@@ -23,17 +25,17 @@ export const fetchState = () => (dispatch, getState) => {
     const isGameStarted = gameState === 'playing';
     const isCurrentUserInGame = _.some(
       players,
-      ({ id: playerId }) => playerId === currentPlayerId,
+      ({ id: playerId }) => playerId === currentPlayerId, // игра началась
     );
 
-    if (isGameStarted && isCurrentUserInGame) {
+    if (isGameStarted && isCurrentUserInGame) { // добавление игры в active games - неинтересно нам
       window.location.href = `/games/${id}`;
     } else {
       dispatch(actions.upsertGameLobby(newData));
     }
   });
 
-  channel.on('game:check_started', data => {
+  channel.on('game:check_started', data => { // ивент на старт проверки решения - человек запустил проверку
     const { gameId, userId } = camelizeKeys(data);
     const payload = { gameId, userId, checkResult: { status: 'started' } };
 
@@ -41,11 +43,20 @@ export const fetchState = () => (dispatch, getState) => {
   });
 
   channel.on(
-    'game:check_completed',
+    'game:check_completed', // это проверка была завершена с каким-то результатом
     camelizeKeysAndDispatch(actions.updateCheckResult),
   );
   channel.on('game:remove', camelizeKeysAndDispatch(actions.removeGameLobby));
-  channel.on('game:finish', camelizeKeysAndDispatch(actions.finishGame));
+  channel.on('game:finish', data => {
+    console.log('DATA BACK FINISH CHANNEL ON', data);
+    camelizeKeysAndDispatch(actions.finishGame)(data);
+  }); // потенциально подходит нам
+
+  // CМ services/app/lib/codebattle_web/channelscamelizeKeysAndDispatch
+  // переделать функцию "camelizeKeysAndDispatch"
+  // повторить то что она делает, но добавляет эту игру уже в colpleted Games, который в слайсе completedGames
+  // нужно два диспатча - один в лобби
+  // один в комплтиед геймс - слайс имеется в виду
 };
 
 export const cancelGame = gameId => () => {

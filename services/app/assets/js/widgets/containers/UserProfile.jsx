@@ -8,10 +8,11 @@ import { fetchCompletedGames, loadNextPage } from '../slices/completedGames';
 import CompletedGames from '../components/Game/CompletedGames';
 import Heatmap from './Heatmap';
 import Loading from '../components/Loading';
+import * as selectors from '../selectors';
 
 const UserProfile = () => {
   const [stats, setStats] = useState(null);
-  const completedGames = useSelector(state => state.completedGames.completedGames);
+  const completedGames = useSelector(selectors.getCompletedGames);
 
   const dispatch = useDispatch();
 

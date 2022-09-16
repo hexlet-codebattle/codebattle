@@ -181,6 +181,9 @@ export const chatUsersSelector = state => state.chat.users;
 
 export const chatMessagesSelector = state => state.chat.messages;
 
+export const getCompletedGames = state => state.completedGames.completedGames;
+
+
 export const currentChatUserSelector = state => {
   const currentUserId = currentUserIdSelector(state);
 

@@ -29,6 +29,11 @@ import PlayerLoading from '../components/PlayerLoading';
 import hashLinkNames from '../config/hashLinkNames';
 
 const isActiveGame = game => [gameStateCodes.playing, gameStateCodes.waitingOpponent].includes(game.state);
+// const completedGames = useSelector(state => state.completedGames.completedGames);
+
+// расширение таблички завершенных игр 
+// все комплитед геймз сортированы по дате
+// должен быть отдельный слайс к бекенду, который запрашивает все комплитед геймзс
 
 const Players = ({ players }) => {
   if (players.length === 1) {
@@ -521,11 +526,19 @@ const LobbyWidget = () => {
   const {
     loaded,
     activeGames,
-    completedGames,
     liveTournaments,
     completedTournaments,
   } = useSelector(selectors.lobbyDataSelector);
 
+  const completedGames = useSelector(selectors.getCompletedGames);
+  // РЕАЛИЗОВАТЬ ПРАВИЛЬНОЕ ОБНОВЛЕНИЕ ЭТОГО СЕЛЕКТОРА;
+
+  // написать селектор , который будет брать данные из слайса completedGames;
+  // селектор будет
+// реализовать по экшенам completedGames nextLoadPage
+// первые комплитед геймз придут из вебсокета
+// потому нам не нужно будет делать первый запрос - как костыль
+// вытаскиивать данные из правильного куска стора
   if (!loaded) {
     return <Loading />;
   }
