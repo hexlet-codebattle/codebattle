@@ -5,6 +5,5 @@ test-compile:
 	g++ -std=c++20 -c ./check/solution.cpp
 
 test: test-runtime
-# test: test-compile test-runtime
 
 .PHONY: test
