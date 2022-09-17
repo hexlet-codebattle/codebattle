@@ -30,7 +30,7 @@ const UserLabel = ({ user }) => {
           icon={['fa', 'circle']}
           className={onlineIndicatorClassName}
         />
-        <span>{`${user.name}`}</span>
+        <span>{user.name}</span>
       </span>
     </>
   );

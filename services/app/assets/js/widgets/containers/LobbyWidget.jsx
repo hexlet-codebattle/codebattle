@@ -41,7 +41,9 @@ const Players = ({ players }) => {
     );
   }
 
-  const getBarLength = (assertsCount, successCount) => (successCount / assertsCount) * 100;
+  const getPregressbarWidth = player => `${(player.checkResult?.successCount / player.checkResult?.assertsCount) * 100}%`;
+  const getPregressbarClass = player => classnames('cb-check-result-bar', player.checkResult.status);
+
   return (
     <>
       <td className="p-3 align-middle text-nowrap cb-username-td text-truncate">
@@ -51,17 +53,10 @@ const Players = ({ players }) => {
             hideOnlineIndicator
             loading={players[0].checkResult.status === 'started'}
           />
-          <div
-            className={`cb-check-result-bar ${players[0].checkResult.status}`}
-          >
+          <div className={getPregressbarClass(players[0])}>
             <div
               className="cb-asserts-progress"
-              style={{
-                width: `${getBarLength(
-                  players[0].checkResult?.assertsCount,
-                  players[0].checkResult?.successCount,
-                )}%`,
-              }}
+              style={{ width: getPregressbarWidth(players[0]) }}
             />
           </div>
           <PlayerLoading
@@ -77,18 +72,10 @@ const Players = ({ players }) => {
             hideOnlineIndicator
             loading={players[1].checkResult.status === 'started'}
           />
-          <div
-            className={`cb-check-result-bar ${players[1].checkResult.status}`}
-          >
+          <div className={getPregressbarClass(players[1])}>
             <div
               className="cb-asserts-progress"
-              style={{
-                width: `${getBarLength(
-                  players[1].checkResult?.assertsCount,
-                  players[1].checkResult?.successCount,
-                )}%`,
-                right: 0,
-              }}
+              style={{ width: getPregressbarWidth(players[1]), right: 0 }}
             />
           </div>
           <PlayerLoading
