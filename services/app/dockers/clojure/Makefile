@@ -1,4 +1,4 @@
 test:
-	clj -m runner
+	clojure  -M:run-solution
 
 .PHONY: test
