@@ -26,14 +26,17 @@ const UserLabel = ({ user }) => {
   return (
     <>
       <span className="text-truncate">
-        <FontAwesomeIcon icon={['fa', 'circle']} className={onlineIndicatorClassName} />
-        <span>{`${user.name} (${user.rating})`}</span>
+        <FontAwesomeIcon
+          icon={['fa', 'circle']}
+          className={onlineIndicatorClassName}
+        />
+        <span>{user.name}</span>
       </span>
     </>
   );
 };
 
-const OpponentSelect = ({ setOpponent }) => {
+const OpponentSelect = ({ setOpponent, opponent }) => {
   const currentUserId = useSelector(selectors.currentUserIdSelector);
   const dispatch = useDispatch();
 
@@ -49,7 +52,9 @@ const OpponentSelect = ({ setOpponent }) => {
       .then(({ data }) => {
         const { users } = camelizeKeys(data);
 
-        const options = users.filter(({ id }) => currentUserId !== id).map(user => ({ label: <UserLabel user={user} />, value: user }));
+        const options = users
+          .filter(({ id }) => currentUserId !== id)
+          .map(user => ({ label: <UserLabel user={user} />, value: user }));
 
         callback(options);
       })
@@ -58,11 +63,26 @@ const OpponentSelect = ({ setOpponent }) => {
       });
   };
 
-  return <AsyncSelect className="w-100" defaultOptions onChange={({ value }) => setOpponent(value)} loadOptions={loadOptions} />;
+  return (
+    <AsyncSelect
+      className="w-100"
+      value={
+        opponent && {
+          label: <UserLabel user={opponent} />,
+          value: opponent,
+        }
+      }
+      defaultOptions
+      onChange={({ value }) => setOpponent(value)}
+      loadOptions={loadOptions}
+    />
+  );
 };
 
 const CreateGameDialog = ({ hideModal }) => {
   const dispatch = useDispatch();
+
+  const { gameOptions, opponentInfo } = useSelector(selectors.modalSelector);
   const gameLevels = Object.keys(levelRatio);
   const currentGameTypeCodes = ['other_user', 'invite', 'bot'];
   const gameTypeName = {
@@ -70,20 +90,27 @@ const CreateGameDialog = ({ hideModal }) => {
     invite: i18n.t('With a friend'),
     bot: i18n.t('With a bot'),
   };
-  const [opponent, setOpponent] = useState();
+
+  const [opponent, setOpponent] = useState(opponentInfo);
 
   const [game, setGame] = useState({
     level: gameLevels[0],
     type: 'other_user',
     timeoutSeconds: TIMEOUTS[4],
+    ...gameOptions,
   });
 
   const isInvite = game.type === 'invite';
 
-  const createBtnClassname = cn('btn btn-success mb-2 mt-4 d-flex ml-auto text-white font-weight-bold', {
-    disabled: isInvite && !opponent,
-  });
-  const createBtnTitle = isInvite ? i18n.t('Create Invite') : i18n.t('Create Battle');
+  const createBtnClassname = cn(
+    'btn btn-success mb-2 mt-4 d-flex ml-auto text-white font-weight-bold',
+    {
+      disabled: isInvite && !opponent,
+    },
+  );
+  const createBtnTitle = isInvite
+    ? i18n.t('Create Invite')
+    : i18n.t('Create Battle');
 
   const createGame = () => {
     if (isInvite && opponent) {
@@ -155,14 +182,18 @@ const CreateGameDialog = ({ hideModal }) => {
       </div>
 
       <h5>{i18n.t('Game Type')}</h5>
-      <div className="d-flex justify-content-around px-5 mt-3 mb-2">{renderPickGameType()}</div>
+      <div className="d-flex justify-content-around px-5 mt-3 mb-2">
+        {renderPickGameType()}
+      </div>
       <h5>{i18n.t('Time control')}</h5>
-      <div className="d-flex justify-content-around px-5 mt-3 mb-2">{renderPickTimeouts()}</div>
+      <div className="d-flex justify-content-around px-5 mt-3 mb-2">
+        {renderPickTimeouts()}
+      </div>
       {isInvite && (
         <>
           <h5>{i18n.t('Choose opponent')}</h5>
           <div className="d-flex justify-content-around px-5 mt-3 mb-2">
-            <OpponentSelect setOpponent={setOpponent} />
+            <OpponentSelect setOpponent={setOpponent} opponent={opponent} />
           </div>
         </>
       )}

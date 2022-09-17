@@ -1,14 +1,18 @@
 import React, { useRef, useLayoutEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import useStayScrolled from 'react-stay-scrolled';
 import { currentUserIsAdminSelector } from '../selectors';
 import { pushCommand } from '../middlewares/Chat';
+import { actions } from '../slices';
 
 import Message from './Message';
 
 const Messages = ({ messages = [] }) => {
   const currentUserIsAdmin = useSelector(state => currentUserIsAdminSelector(state));
   const listRef = useRef();
+  const dispatch = useDispatch();
+  const handleShowModal = (id, name) => () => dispatch(actions.showCreateGameInviteModal({ opponentInfo: { id, name } }));
+
   const { stayScrolled /* , scrollBottom */ } = useStayScrolled(listRef);
 
   const handleCleanBanned = () => {
@@ -48,6 +52,7 @@ const Messages = ({ messages = [] }) => {
     key={id || `${time}-${name}`}
     type={type}
     time={time}
+    handleShowModal={handleShowModal(userId, name)}
   />
         ))}
       </ul>
