@@ -551,6 +551,10 @@ td {
   text-shadow: 0 1px 0 #fff;
 }
 
+.react-monaco-editor-container {
+  flex-grow: 1;
+}
+
 @media screen and (min-width: 676px) {
   .modal-dialog {
     max-width: 600px; /* New width for default modal */
