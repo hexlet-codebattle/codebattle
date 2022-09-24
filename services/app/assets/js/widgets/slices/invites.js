@@ -12,10 +12,14 @@ const invitesSlice = createSlice({
       ...state,
       list: invites,
     }),
-    addInvite: (state, { payload: { invite } }) => ({
-      ...state,
-      list: [...state.list, invite],
-    }),
+    addInvite: (state, { payload: { invite } }) => {
+      const list = state.list.filter(({ id }) => id !== invite.id);
+
+      return {
+        ...state,
+        list: [...list, invite],
+      };
+    },
     updateInvite: (state, { payload: { invite } }) => ({
       ...state,
       list: state.list.map(value => {
