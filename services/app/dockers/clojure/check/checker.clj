@@ -52,27 +52,16 @@
   (try (let [success
               (reduce get-test-status
                 [
-
                   (assert-result 2 solution [1, 1])
-
                   (assert-result 4 solution [2, 2])
-
                   (assert-result 3 solution [1, 2])
-
                   (assert-result 5 solution [3, 2])
-
                   (assert-result 6 solution [5, 1])
-
                   (assert-result 2 solution [1, 1])
-
                   (assert-result 4 solution [2, 2])
-
                   (assert-result 3 solution [1, 2])
-
                   (assert-result 5 solution [3, 2])
-
                   (assert-result 6 solution [5, 1])
-
                 ])]
         (if success
           (println (json/write-str {:status "ok" :result "__seed:124949491112958542__"}))))
