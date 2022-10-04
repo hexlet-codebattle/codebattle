@@ -1,7 +1,12 @@
 defmodule CodebattleWeb.RootController do
   use CodebattleWeb, :controller
 
-  def index(conn, _params) do
+  import PhoenixGon.Controller
+
+  alias Codebattle.Repo
+  alias Codebattle.User
+
+  def index(conn, params) do
     current_user = conn.assigns.current_user
 
     case current_user.is_guest do
@@ -11,7 +16,9 @@ defmodule CodebattleWeb.RootController do
         |> render("landing.html")
 
       _ ->
-        render(conn, "index.html", current_user: current_user)
+        conn
+        |> maybe_put_opponent(params)
+        |> render("index.html", current_user: current_user)
     end
   end
 
@@ -26,4 +33,13 @@ defmodule CodebattleWeb.RootController do
   def sitemap(conn, _) do
     render(conn, "sitemap.xml")
   end
+
+  defp maybe_put_opponent(conn, %{"opponent_id" => id}) do
+    case Repo.get(User, id) do
+      nil -> conn
+      user -> put_gon(conn, opponent: Map.take(user, [:id, :name, :rating, :rank]))
+    end
+  end
+
+  defp maybe_put_opponent(conn, _params), do: conn
 end
