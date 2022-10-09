@@ -31,7 +31,7 @@ import hashLinkNames from '../config/hashLinkNames';
 const isActiveGame = game => [gameStateCodes.playing, gameStateCodes.waitingOpponent].includes(game.state);
 // const completedGames = useSelector(state => state.completedGames.completedGames);
 
-// расширение таблички завершенных игр 
+// расширение таблички завершенных игр
 // все комплитед геймз сортированы по дате
 // должен быть отдельный слайс к бекенду, который запрашивает все комплитед геймзс
 
@@ -56,7 +56,9 @@ const Players = ({ players }) => {
             hideOnlineIndicator
             loading={players[0].checkResult.status === 'started'}
           />
-          <div className={`cb-check-result-bar ${players[0].checkResult.status}`}>
+          <div
+            className={`cb-check-result-bar ${players[0].checkResult.status}`}
+          >
             <div
               className="cb-asserts-progress"
               style={{
@@ -67,7 +69,10 @@ const Players = ({ players }) => {
               }}
             />
           </div>
-          <PlayerLoading show={players[0].checkResult.status === 'started'} small />
+          <PlayerLoading
+            show={players[0].checkResult.status === 'started'}
+            small
+          />
         </div>
       </td>
       <td className="p-3 align-middle text-nowrap cb-username-td text-truncate">
@@ -77,7 +82,9 @@ const Players = ({ players }) => {
             hideOnlineIndicator
             loading={players[1].checkResult.status === 'started'}
           />
-          <div className={`cb-check-result-bar ${players[1].checkResult.status}`}>
+          <div
+            className={`cb-check-result-bar ${players[1].checkResult.status}`}
+          >
             <div
               className="cb-asserts-progress"
               style={{
@@ -89,7 +96,10 @@ const Players = ({ players }) => {
               }}
             />
           </div>
-          <PlayerLoading show={players[1].checkResult.status === 'started'} small />
+          <PlayerLoading
+            show={players[1].checkResult.status === 'started'}
+            small
+          />
         </div>
       </td>
     </>
@@ -524,21 +534,18 @@ const LobbyWidget = () => {
   }, [currentUser, dispatch]);
 
   const {
-    loaded,
-    activeGames,
-    liveTournaments,
-    completedTournaments,
-  } = useSelector(selectors.lobbyDataSelector);
+ loaded, activeGames, liveTournaments, completedTournaments,
+} = useSelector(selectors.lobbyDataSelector);
 
   const completedGames = useSelector(selectors.getCompletedGames);
   // РЕАЛИЗОВАТЬ ПРАВИЛЬНОЕ ОБНОВЛЕНИЕ ЭТОГО СЕЛЕКТОРА;
 
   // написать селектор , который будет брать данные из слайса completedGames;
   // селектор будет
-// реализовать по экшенам completedGames nextLoadPage
-// первые комплитед геймз придут из вебсокета
-// потому нам не нужно будет делать первый запрос - как костыль
-// вытаскиивать данные из правильного куска стора
+  // реализовать по экшенам completedGames nextLoadPage
+  // первые комплитед геймз придут из вебсокета
+  // потому нам не нужно будет делать первый запрос - как костыль
+  // вытаскиивать данные из правильного куска стора
   if (!loaded) {
     return <Loading />;
   }

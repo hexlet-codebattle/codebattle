@@ -9,6 +9,8 @@ const initialState = {
   newGame: { timeoutSeconds: null },
 };
 
+// реализовать loadNextPage, loadNextPage.pending
+
 const lobby = createSlice({
   name: 'lobby',
   initialState,
@@ -55,7 +57,7 @@ const lobby = createSlice({
       state.newGame.timeoutSeconds = timeoutSeconds;
     },
     finishGame: (state, { payload: { game } }) => {
-      state.activeGames = _.reject(state.activeGames, { id: game.id });
+      state.activeGames = _.reject(state.activeGames, { id: game.id }); // из списка активных игрых изымает элемент (конкретную игру)
       state.completedGames = [game, ...state.completedGames];
     },
   },

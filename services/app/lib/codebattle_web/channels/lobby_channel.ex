@@ -7,7 +7,7 @@ defmodule CodebattleWeb.LobbyChannel do
   alias Codebattle.Tournament
   alias CodebattleWeb.Api.GameView
 
-  def join("lobby", _payload, socket) do
+  def join("lobby", _payload, socket) do  
     current_user = socket.assigns.current_user
 
     user_active_games =
@@ -54,10 +54,10 @@ defmodule CodebattleWeb.LobbyChannel do
 
     case Game.Context.create_game(game_params) do
       {:ok, game} ->
-        {:reply, {:ok, %{game_id: game.id}}, socket}
+        {:reply, {:ok, %{game_id: game.id}, socket}
 
       {:error, reason} ->
-        {:reply, {:error, %{reason: reason}}, socket}
+        {:reply, {:error, %{reason: reason}, socket}
     end
   end
 
