@@ -7,6 +7,11 @@ const initialState = {
   presenceList: [],
   loaded: false,
   newGame: { timeoutSeconds: null },
+  createGameModal: {
+    show: false,
+    gameOptions: {},
+    opponentInfo: null,
+  },
 };
 
 // реализовать loadNextPage, loadNextPage.pending
@@ -59,6 +64,21 @@ const lobby = createSlice({
     finishGame: (state, { payload: { game } }) => {
       state.activeGames = _.reject(state.activeGames, { id: game.id }); // из списка активных игрых изымает элемент (конкретную игру)
       state.completedGames = [game, ...state.completedGames];
+    },
+    showCreateGameModal: state => {
+      state.createGameModal.show = true;
+      state.createGameModal.gameOptions = {};
+      state.createGameModal.opponentInfo = null;
+    },
+    closeCreateGameModal: state => {
+      state.createGameModal.show = false;
+      state.createGameModal.gameOptions = {};
+      state.createGameModal.opponentInfo = null;
+    },
+    showCreateGameInviteModal: (state, { payload: { opponentInfo } }) => {
+      state.createGameModal.show = true;
+      state.createGameModal.gameOptions = { type: 'invite' };
+      state.createGameModal.opponentInfo = opponentInfo;
     },
   },
 });

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Modal } from 'react-bootstrap';
 import _ from 'lodash';
 import copy from 'copy-to-clipboard';
@@ -46,7 +46,9 @@ const Players = ({ players }) => {
     );
   }
 
-  const getBarLength = (assertsCount, successCount) => (successCount / assertsCount) * 100;
+  const getPregressbarWidth = player => `${(player.checkResult?.successCount / player.checkResult?.assertsCount) * 100}%`;
+  const getPregressbarClass = player => classnames('cb-check-result-bar', player.checkResult.status);
+
   return (
     <>
       <td className="p-3 align-middle text-nowrap cb-username-td text-truncate">
@@ -57,16 +59,11 @@ const Players = ({ players }) => {
             loading={players[0].checkResult.status === 'started'}
           />
           <div
-            className={`cb-check-result-bar ${players[0].checkResult.status}`}
+            className={getPregressbarClass(players[0])}
           >
             <div
               className="cb-asserts-progress"
-              style={{
-                width: `${getBarLength(
-                  players[0].checkResult?.assertsCount,
-                  players[0].checkResult?.successCount,
-                )}%`,
-              }}
+              style={{ width: getPregressbarWidth(players[0]) }}
             />
           </div>
           <PlayerLoading
@@ -82,18 +79,10 @@ const Players = ({ players }) => {
             hideOnlineIndicator
             loading={players[1].checkResult.status === 'started'}
           />
-          <div
-            className={`cb-check-result-bar ${players[1].checkResult.status}`}
-          >
+          <div className={getPregressbarClass(players[1])}>
             <div
               className="cb-asserts-progress"
-              style={{
-                width: `${getBarLength(
-                  players[1].checkResult?.assertsCount,
-                  players[1].checkResult?.successCount,
-                )}%`,
-                right: 0,
-              }}
+              style={{ width: getPregressbarWidth(players[1]), right: 0 }}
             />
           </div>
           <PlayerLoading
@@ -522,11 +511,11 @@ const CreateGameButton = ({ handleClick }) => (
 
 const LobbyWidget = () => {
   const currentUser = Gon.getAsset('current_user');
+  const isModalShow = useSelector(selectors.isModalShow);
   const dispatch = useDispatch();
 
-  const [show, setShow] = useState(false);
-  const handleCloseModal = () => setShow(false);
-  const handleShowModal = () => setShow(true);
+  const handleShowModal = () => dispatch(actions.showCreateGameModal());
+  const handleCloseModal = () => dispatch(actions.closeCreateGameModal());
 
   useEffect(() => {
     dispatch(actions.setCurrentUser({ user: { ...currentUser } }));
@@ -552,7 +541,7 @@ const LobbyWidget = () => {
 
   return (
     <div className="container-lg">
-      {renderModal(show, handleCloseModal)}
+      {renderModal(isModalShow, handleCloseModal)}
       <div className="row">
         <div className="col-lg-8 col-md-12 p-0 mb-2 pr-lg-2 pb-3">
           <GameContainers

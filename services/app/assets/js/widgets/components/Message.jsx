@@ -1,13 +1,33 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+import cn from 'classnames';
 import moment from 'moment';
-import { currentUserIsAdminSelector } from '../selectors';
+import {
+  currentUserIsAdminSelector,
+  currentUserIdSelector,
+  lobbyDataSelector,
+} from '../selectors';
 import { pushCommand } from '../middlewares/Chat';
 
 const Message = ({
- text = '', name = '', type, time, userId,
+  text = '',
+  name = '',
+  type,
+  time,
+  userId,
+  handleShowModal,
 }) => {
   const currentUserIsAdmin = useSelector(state => currentUserIsAdminSelector(state));
+
+  const currentUserId = useSelector(currentUserIdSelector);
+
+  const { activeGames } = useSelector(lobbyDataSelector);
+  const isCurrentUserHasActiveGames = activeGames.some(({ players }) => players.some(({ id }) => id === currentUserId));
+  const isCurrentUserMessage = currentUserId === userId;
+
+  const inviteBtnClassname = cn('btn btn-sm btn-link create-game-btn', {
+    disabled: isCurrentUserMessage || isCurrentUserHasActiveGames,
+  });
 
   const handleBanClick = bannedName => {
     pushCommand({ type: 'ban', name: bannedName, user_id: userId });
@@ -71,6 +91,20 @@ const Message = ({
           Ban
         </button>
       ) : null}
+      <button
+        type="button"
+        className={inviteBtnClassname}
+        data-toggle="tooltip"
+        data-placement="bottom"
+        title="Challenge to a game."
+        onClick={handleShowModal}
+      >
+        <img
+          alt="invites"
+          src="/assets/images/fight-black.png"
+          style={{ width: '1em', height: '1em' }}
+        />
+      </button>
     </div>
   );
 };

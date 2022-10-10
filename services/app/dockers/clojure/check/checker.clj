@@ -14,65 +14,54 @@
          {:result r#
           :output    (str s#)}))))
 
-(defn get_solution_result
+(defn get-solution-result
   [solution args]
   (let [start (System/currentTimeMillis)
-    run_info (with-out-str-data-map (apply solution args))
-    execution_time (- (System/currentTimeMillis) start)
+    run-info (with-out-str-data-map (apply solution args))
+    execution-time (- (System/currentTimeMillis) start)
   ]
-  {:result (get run_info :result) :output (get run_info :output) :execution_time execution_time}))
+  {:result (get run-info :result) :output (get run-info :output) :execution_time execution-time}))
 
-(defn assert_result
+(defn assert-result
   [expected solution args]
-  (let [info (get_solution_result solution args)
+  (let [info (get-solution-result solution args)
     result (get info :result)
-    execution_time (get info :execution_time)
+    execution-time (get info :execution_time)
     output (get info :output)]
 
     (try (assert (= expected result))
-      (println (json/write-str {:status "success" :result result :expected expected :output output :arguments args :execution_time execution_time}))
+      (println (json/write-str {:status "success" :result result :expected expected :output output :arguments args :execution_time execution-time}))
       true
     (catch java.lang.AssertionError e
       (do
-        (println (json/write-str {:status "failure" :result result :expected expected :output output :arguments args :execution_time execution_time}))
+        (println (json/write-str {:status "failure" :result result :expected expected :output output :arguments args :execution_time execution-time}))
         false
         )))))
 
-(defn get_test_status [status_test status_assert]
-  (if status_test
-    (if status_assert
-      status_test
-      status_assert
+(defn get-test-status [status-test status-assert]
+  (if status-test
+    (if status-assert
+      status-test
+      status-assert
       )
-    status_test))
+    status-test))
 
 (defn generate-tests
   [solution]
   (println "\n")
   (try (let [success
-              (reduce get_test_status
+              (reduce get-test-status
                 [
-
-                  (assert_result 2 solution [1, 1])
-
-                  (assert_result 4 solution [2, 2])
-
-                  (assert_result 3 solution [1, 2])
-
-                  (assert_result 5 solution [3, 2])
-
-                  (assert_result 6 solution [5, 1])
-
-                  (assert_result 2 solution [1, 1])
-
-                  (assert_result 4 solution [2, 2])
-
-                  (assert_result 3 solution [1, 2])
-
-                  (assert_result 5 solution [3, 2])
-
-                  (assert_result 6 solution [5, 1])
-
+                  (assert-result 2 solution [1, 1])
+                  (assert-result 4 solution [2, 2])
+                  (assert-result 3 solution [1, 2])
+                  (assert-result 5 solution [3, 2])
+                  (assert-result 6 solution [5, 1])
+                  (assert-result 2 solution [1, 1])
+                  (assert-result 4 solution [2, 2])
+                  (assert-result 3 solution [1, 2])
+                  (assert-result 5 solution [3, 2])
+                  (assert-result 6 solution [5, 1])
                 ])]
         (if success
           (println (json/write-str {:status "ok" :result "__seed:124949491112958542__"}))))

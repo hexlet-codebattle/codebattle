@@ -60,10 +60,10 @@ defmodule Codebattle.Bot.ChatClient do
   defp congratulate_opponent_text(_) do
     [
       "GG WP",
+      "Good job!",
       "Well played!",
       "Vtm, you are a bad teacher.",
       "I'll be back next time!",
-      "I lost the battle, but I will win the war!",
       "I will return!!111",
       "I'll get my revenge next time!"
     ]
@@ -82,12 +82,12 @@ defmodule Codebattle.Bot.ChatClient do
   end
 
   defp advice_on_win() do
-    ["Nice shot!", "GG WP!"]
+    ["Nice shot!", "GG WP!", "Good job!"]
     |> Enum.random()
   end
 
   defp advice_on_check_complete_success() do
-    ["Nice try", "Wow", "Easy"]
+    ["Nice try", "Wow", "Easy", "Ez"]
     |> Enum.random()
   end
 
