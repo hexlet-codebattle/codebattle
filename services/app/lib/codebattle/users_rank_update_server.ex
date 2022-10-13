@@ -17,6 +17,7 @@ defmodule Codebattle.UsersRankUpdateServer do
   # SERVER
   def init(_) do
     Codebattle.PubSub.subscribe("main")
+    Codebattle.PubSub.subscribe("games")
     Logger.info("Start UsersRankServer")
     {:ok, true}
   end
@@ -25,6 +26,11 @@ defmodule Codebattle.UsersRankUpdateServer do
     Codebattle.User.RankUpdate.call()
     Logger.info("Rank has been recalculated")
 
+    {:noreply, state}
+  end
+
+  def handle_info(%{event: "game:finished"}, state) do
+    Codebattle.User.RankUpdate.call()
     {:noreply, state}
   end
 end

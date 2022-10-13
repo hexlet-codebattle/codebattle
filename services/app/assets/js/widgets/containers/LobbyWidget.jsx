@@ -15,7 +15,11 @@ import Loading from '../components/Loading';
 // import GamesHeatmap from '../components/GamesHeatmap';
 // import Card from '../components/Card';
 import UserInfo from './UserInfo';
-import { makeGameUrl, getSignInGithubUrl } from '../utils/urlBuilders';
+import {
+  makeGameUrl,
+  getSignInGithubUrl,
+  getLobbyUrl,
+} from '../utils/urlBuilders';
 import i18n from '../../i18n';
 // import StartGamePanel from '../components/StartGamePanel';
 import CompletedGames from '../components/Game/CompletedGames';
@@ -41,7 +45,10 @@ const Players = ({ players }) => {
     );
   }
 
-  const getPregressbarWidth = player => `${(player.checkResult?.successCount / player.checkResult?.assertsCount) * 100}%`;
+  const getPregressbarWidth = player => `${
+      (player.checkResult?.successCount / player.checkResult?.assertsCount)
+      * 100
+    }%`;
   const getPregressbarClass = player => classnames('cb-check-result-bar', player.checkResult.status);
 
   return (
@@ -504,6 +511,7 @@ const CreateGameButton = ({ handleClick }) => (
 
 const LobbyWidget = () => {
   const currentUser = Gon.getAsset('current_user');
+  const currentOpponent = Gon.getAsset('opponent');
   const isModalShow = useSelector(selectors.isModalShow);
   const dispatch = useDispatch();
 
@@ -513,6 +521,14 @@ const LobbyWidget = () => {
   useEffect(() => {
     dispatch(actions.setCurrentUser({ user: { ...currentUser } }));
     dispatch(lobbyMiddlewares.fetchState());
+    if (currentOpponent) {
+      window.history.replaceState({}, document.title, getLobbyUrl());
+      dispatch(
+        actions.showCreateGameInviteModal({
+          opponentInfo: { id: currentOpponent.id, name: currentOpponent.name },
+        }),
+      );
+    }
   }, [currentUser, dispatch]);
 
   const {

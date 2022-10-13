@@ -323,6 +323,14 @@ a {
   height: auto;
 }
 
+.cb-username {
+  font-size: 27px;
+}
+
+.cb-heading {
+  font-size: 27px;
+}
+
 .cb-user-avatar {
   width: 25px;
 }
@@ -555,8 +563,56 @@ td {
   flex-grow: 1;
 }
 
+@media (max-width: 1199px) {
+  .cb-heading {
+    font-size: 21px;
+  }
+}
+
+@media (max-width: 991px) {
+  .cb-heading {
+    font-size: 18px;
+  }
+  .cb-user-data {
+    flex: 1 1 30%;
+    max-width: 30%;
+  }
+  .cb-user-stats {
+    max-width: 70%;
+  }
+  .cb-stats-number {
+    font-size: 22px;
+  }
+  .lead {
+    font-size: 14px;
+  }
+  .cb-heatmap {
+    max-width: 95%;
+    flex-basis: 95%;
+  }
+}
+
 @media screen and (min-width: 676px) {
   .modal-dialog {
     max-width: 600px; /* New width for default modal */
+  }
+}
+
+@media (max-width: 575px) {
+  .cb-user-data {
+    max-width: 100%;
+    display: flex;
+  }
+  .cb-user-stats {
+    max-width: 100%;
+  }
+  .cb-heading {
+    font-size: 20px;
+  }
+  .cb-stats-number {
+    font-size: 30px;
+  }
+  .lead {
+    font-size: 16px;
   }
 }
