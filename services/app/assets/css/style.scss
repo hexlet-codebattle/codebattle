@@ -559,6 +559,10 @@ td {
   text-shadow: 0 1px 0 #fff;
 }
 
+.react-monaco-editor-container {
+  flex-grow: 1;
+}
+
 @media (max-width: 1199px) {
   .cb-heading {
     font-size: 21px;
