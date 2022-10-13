@@ -6,6 +6,7 @@ import Gon from 'gon';
 import GameLevelBadge from '../components/GameLevelBadge';
 import * as selectors from '../selectors';
 import { actions } from '../slices';
+import { selectors as invitesSelectors } from '../slices/invites';
 import {
   init, acceptInvite, declineInvite, cancelInvite,
 } from '../middlewares/Main';
@@ -75,7 +76,7 @@ const InvitesContainer = () => {
   const currentUserId = useSelector(selectors.currentUserIdSelector);
   const checkInvitePlayers = ({ creatorId, recipientId }) => (creatorId === currentUserId || recipientId === currentUserId);
   const filterInvites = invite => invite.state === 'pending' && checkInvitePlayers(invite);
-  const invites = useSelector(state => state.invites.list).filter(filterInvites);
+  const invites = useSelector(invitesSelectors.selectAll).filter(filterInvites);
 
   const dispatch = useDispatch();
 
