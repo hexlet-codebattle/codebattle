@@ -27,16 +27,16 @@ const CompletedGamesRows = memo(({ games }) => (
             <UserInfo user={game.players[1]} truncate="true" />
           </div>
         </td>
-        <td className="px-1 py-3 align-middle text-nowrap">{moment.utc(game.finishsAt).local().format('MM.DD HH:mm')}</td>
+        <td className="px-1 py-3 align-middle text-nowrap">{moment.utc(game.finishesAt).local().format('MM.DD HH:mm')}</td>
         <td className="px-1 py-3 align-middle">
           <a type="button" className="btn btn-outline-orange btn-sm" href={`/games/${game.id}`}>
             Show
           </a>
         </td>
       </tr>
-        ))}
+      ))}
   </>
-  ));
+));
 
 const CompletedGames = ({ games, loadNextPage = null }) => {
   const { nextPage, totalPages } = useSelector(state => state.completedGames);

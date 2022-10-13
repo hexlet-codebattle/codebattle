@@ -1,36 +1,19 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createEntityAdapter } from '@reduxjs/toolkit';
 
-const initialState = {
-  list: [],
-};
+const invitesAdapter = createEntityAdapter();
+
+const initialState = invitesAdapter.getInitialState();
 
 const invitesSlice = createSlice({
   name: 'invites',
   initialState,
   reducers: {
-    setInvites: (state, { payload: { invites } }) => ({
-      ...state,
-      list: invites,
-    }),
-    addInvite: (state, { payload: { invite } }) => ({
-      ...state,
-      list: [...state.list, invite],
-    }),
-    updateInvite: (state, { payload: { invite } }) => ({
-      ...state,
-      list: state.list.map(value => {
-        if (invite.id === value.id) {
-          return invite;
-        }
-
-        return value;
-      }),
-    }),
+    setInvites: (state, action) => invitesAdapter.setAll(state, action.payload.invites),
+    addInvite: (state, action) => invitesAdapter.upsertOne(state, action.payload.invite),
+    updateInvite: (state, action) => invitesAdapter.upsertOne(state, action.payload.invite),
   },
 });
 
-const { actions, reducer } = invitesSlice;
-
-export { actions };
-
-export default reducer;
+export default invitesSlice.reducer;
+export const { actions } = invitesSlice;
+export const selectors = invitesAdapter.getSelectors(state => state.invites);

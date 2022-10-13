@@ -1,17 +1,30 @@
 import React, { useRef, useLayoutEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import useStayScrolled from 'react-stay-scrolled';
+import qs from 'qs';
 import { currentUserIsAdminSelector } from '../selectors';
 import { pushCommand } from '../middlewares/Chat';
 import { actions } from '../slices';
 
 import Message from './Message';
+import { getLobbyUrl } from '../utils/urlBuilders';
 
 const Messages = ({ messages = [] }) => {
   const currentUserIsAdmin = useSelector(state => currentUserIsAdminSelector(state));
   const listRef = useRef();
   const dispatch = useDispatch();
-  const handleShowModal = (id, name) => () => dispatch(actions.showCreateGameInviteModal({ opponentInfo: { id, name } }));
+  const handleShowModal = (id, name) => () => {
+    const queryParamsString = qs.stringify({
+      opponent_id: id,
+    });
+    if (`/${window.location.hash}` !== getLobbyUrl()) {
+      window.location.href = getLobbyUrl(queryParamsString);
+    } else {
+      dispatch(
+        actions.showCreateGameInviteModal({ opponentInfo: { id, name } }),
+      );
+    }
+  };
 
   const { stayScrolled /* , scrollBottom */ } = useStayScrolled(listRef);
 

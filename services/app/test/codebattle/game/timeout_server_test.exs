@@ -19,10 +19,10 @@ defmodule Codebattle.Game.TimeoutServerTest do
       trigger_timeout: fn game_id -> game_id end
     ) do
       TimeoutServer.start_timer(@game_id, 0)
-      TimeoutServer.start_timer(@game2_id, 100)
+      TimeoutServer.start_timer(@game2_id, 300)
 
-      assert called(Context.trigger_timeout(@game_id))
-      assert !called(Context.trigger_timeout(@game2_id))
+      assert_called(Context.trigger_timeout(@game_id))
+      assert_not_called(Context.trigger_timeout(@game2_id))
     end
   end
 end
