@@ -38,7 +38,10 @@ defmodule Codebattle.Bot.Server do
   def handle_info(:after_init, state) do
     state = init_socket(state)
     state = init_playbook_player(state)
+
     send_init_chat_message(state)
+    prepare_to_commenting_code()
+
     # TODO: add gracefully terminate if there is no playbook
     case state.playbook_params do
       nil ->
@@ -94,6 +97,14 @@ defmodule Codebattle.Bot.Server do
   @impl GenServer
   def handle_info(%{event: "user:check_complete"}, state) do
     send_chat_message(state, :advice_on_check_complete_failure)
+
+    {:noreply, state}
+  end
+
+  @impl GenServer
+  def handle_info(:say_about_code, state) do
+    send_message_about_code(state)
+    Process.send_after(self(), :say_about_code, :timer.minutes(Enum.random(1..3)))
 
     {:noreply, state}
   end
@@ -180,6 +191,10 @@ defmodule Codebattle.Bot.Server do
     send_chat_message(state, :start_code, %{total_time_min: total_time_min})
   end
 
+  defp send_message_about_code(state) do
+    send_chat_message(state, :say_about_code)
+  end
+
   defp send_chat_message(state, type, params \\ %{})
   defp send_chat_message(%{chat_channel: nil}, _type, _params), do: :noop
   defp send_chat_message(%{game: %Game{is_tournament: true}}, _type, _params), do: :noop
@@ -199,6 +214,10 @@ defmodule Codebattle.Bot.Server do
   defp join_channel(socket, topic), do: do_join_channel(socket, topic, 0)
 
   defp do_join_channel(_socket, _topic, 7), do: {:error, :to_many_attempts}
+
+  defp prepare_to_commenting_code() do
+    Process.send_after(self(), :say_about_code, :timer.minutes(1))
+  end
 
   defp do_join_channel(socket, topic, n) do
     case PhoenixClient.Channel.join(socket, topic) do
