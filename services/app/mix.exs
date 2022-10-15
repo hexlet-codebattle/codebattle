@@ -72,7 +72,7 @@ defmodule Codebattle.Mixfile do
       {:typed_struct, "~> 0.3"},
 
       # dev_and_test
-      {:credo, "~> 1.4", only: [:dev, :test], runtime: false},
+      {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
 
       # dev
       {:phoenix_live_reload, "~> 1.2", only: :dev},
