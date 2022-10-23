@@ -1,6 +1,8 @@
 defmodule CodebattleWeb.LobbyChannelTest do
   use CodebattleWeb.ChannelCase
 
+  import ExUnit.CaptureIO
+
   alias CodebattleWeb.LobbyChannel
   alias CodebattleWeb.UserSocket
   alias Codebattle.Game
@@ -18,7 +20,7 @@ defmodule CodebattleWeb.LobbyChannelTest do
 
     {:ok, %{winner: user, socket: socket, task: task}}
 
-    game_params = %{state: "waiting_opponent", players: [%Game.Player{id: user.id}], task: task}
+    game_params = %{players: [%Game.Player{id: user.id}], task: task}
     {:ok, _game} = Game.Context.create_game(game_params)
 
     {:ok,
@@ -59,5 +61,59 @@ defmodule CodebattleWeb.LobbyChannelTest do
     assert_receive %Phoenix.Socket.Message{
       event: "game:upsert"
     }
+  end
+
+  test "creates game with task" do
+    user1 = insert(:user)
+    user2 = insert(:user)
+
+    task1 =
+      insert(:task,
+        level: "elementary",
+        creator_id: user1.id,
+        visibility: "hidden",
+        state: "disabled",
+        name: "1"
+      )
+
+    insert(:task, level: "elementary", name: "2")
+
+    user_token = Phoenix.Token.sign(socket(UserSocket), "user_token", user1.id)
+    {:ok, socket} = connect(UserSocket, %{"token" => user_token})
+    {:ok, _payload, socket} = subscribe_and_join(socket, LobbyChannel, "lobby")
+
+    push(socket, "game:create", %{
+      opponent_type: "whatever",
+      level: "elementary",
+      task_id: task1.id
+    })
+
+    assert_receive %Phoenix.Socket.Message{
+      event: "game:upsert",
+      payload: %{game: %{id: game_id}}
+    }
+
+    {:ok, game} = Game.Context.get_game(game_id)
+    assert game.task.name == "1"
+
+    user_token = Phoenix.Token.sign(socket(UserSocket), "user_token", user2.id)
+    {:ok, socket} = connect(UserSocket, %{"token" => user_token})
+    {:ok, _payload, socket} = subscribe_and_join(socket, LobbyChannel, "lobby")
+
+    capture_io(&:c.flush/0)
+
+    push(socket, "game:create", %{
+      level: "elementary",
+      opponent_type: "whatever",
+      task_id: task1.id
+    })
+
+    assert_receive %Phoenix.Socket.Message{
+      event: "game:upsert",
+      payload: %{game: %{id: game_id}}
+    }
+
+    {:ok, game} = Game.Context.get_game(game_id)
+    assert game.task.name == "2"
   end
 end
