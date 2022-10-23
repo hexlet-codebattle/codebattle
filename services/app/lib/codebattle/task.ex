@@ -138,6 +138,12 @@ defmodule Codebattle.Task do
     |> List.flatten()
   end
 
+  def list_by_level(level) do
+    from(task in Codebattle.Task, where: task.level == ^level)
+    |> visible()
+    |> Repo.all()
+  end
+
   def get!(id), do: Repo.get!(__MODULE__, id)
   def get(id), do: Repo.get(__MODULE__, id)
 
