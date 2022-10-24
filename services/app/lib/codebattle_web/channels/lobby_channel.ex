@@ -107,10 +107,9 @@ defmodule CodebattleWeb.LobbyChannel do
   defp maybe_add_task(acc, %{"task_id" => nil}, _user), do: acc
 
   defp maybe_add_task(acc, %{"task_id" => task_id}, user) do
-    if Codebattle.Task.user_can_play_task?(user, task_id) do
-      Map.put(acc, :task, Codebattle.Task.get!(task_id))
-    else
-      acc
+    case Codebattle.Task.get_task_by_id_for_user(user, task_id) do
+      nil -> acc
+      task -> Map.put(acc, :task, task)
     end
   end
 

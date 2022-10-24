@@ -57,4 +57,49 @@ defmodule CodebattleWeb.Api.V1.TaskControllerTest do
                tasks
     end
   end
+
+  describe ".show" do
+    test "shows visible task", %{conn: conn} do
+      task = insert(:task, visibility: "public", level: "easy")
+
+      conn =
+        conn
+        |> get(Routes.api_v1_task_path(conn, :show, task.id))
+
+      resp_body = json_response(conn, 200)
+
+      assert resp_body == %{
+               "id" => task.id,
+               "name" => task.name,
+               "creator_id" => nil,
+               "origin" => "user",
+               "level" => task.level,
+               "tags" => task.tags
+             }
+    end
+
+    test "shows hidden task only for creator", %{conn: conn} do
+      user = insert(:user)
+      creator_id = user.id
+      hidden_task = insert(:task, name: "1", visibility: "hidden", creator_id: creator_id)
+
+      conn
+      |> get(Routes.api_v1_task_path(conn, :show, hidden_task.id))
+      |> json_response(404)
+
+      response =
+        conn
+        |> put_session(:user_id, user.id)
+        |> get(Routes.api_v1_task_path(conn, :show, hidden_task.id))
+        |> json_response(200)
+
+      assert %{
+               "creator_id" => ^creator_id,
+               "level" => "easy",
+               "name" => "1",
+               "origin" => "user",
+               "tags" => []
+             } = response
+    end
+  end
 end

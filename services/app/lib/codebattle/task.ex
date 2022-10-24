@@ -125,11 +125,11 @@ defmodule Codebattle.Task do
     end
   end
 
-  def user_can_play_task?(user, task_id) do
+  def get_task_by_id_for_user(user, task_id) do
     __MODULE__
     |> filter_visibility(user)
     |> where([t], t.id == ^task_id)
-    |> Repo.exists?()
+    |> Repo.one()
   end
 
   def list_all_tags do

@@ -1,4 +1,5 @@
 import React from 'react';
+import { OverlayTrigger, Popover, Button } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
 import cn from 'classnames';
 import moment from 'moment';
@@ -8,6 +9,7 @@ import {
   lobbyDataSelector,
 } from '../selectors';
 import { pushCommand } from '../middlewares/Chat';
+import { getLobbyUrl } from '../utils/urlBuilders';
 
 const Message = ({
   text = '',
@@ -91,20 +93,62 @@ const Message = ({
           Ban
         </button>
       ) : null}
-      <button
-        type="button"
-        className={inviteBtnClassname}
-        data-toggle="tooltip"
-        data-placement="bottom"
-        title="Challenge to a game."
-        onClick={handleShowModal}
-      >
-        <img
-          alt="invites"
-          src="/assets/images/fight-black.png"
-          style={{ width: '1em', height: '1em' }}
-        />
-      </button>
+      {`/${window.location.hash}` === getLobbyUrl() ? (
+        <button
+          type="button"
+          data-toggle="tooltip"
+          data-placement="bottom"
+          className={inviteBtnClassname}
+          title="Challenge to a game."
+          onClick={handleShowModal}
+        >
+          <img
+            alt="invites"
+            src="/assets/images/fight-black.png"
+            style={{ width: '1em', height: '1em' }}
+          />
+        </button>
+      ) : (
+        <OverlayTrigger
+          trigger="focus"
+          placement="bottom"
+          overlay={(
+            <Popover id="popover-confirm ">
+              <span className="d-block p-1 text-center">Do you want to</span>
+              <span className="d-block p-1 text-center">challenge them?</span>
+              <div className="p-1">
+                <Button
+                  type="button"
+                  variant="success"
+                  className={inviteBtnClassname}
+                  style={{ width: '100%' }}
+                  onClick={handleShowModal}
+                >
+                  <img
+                    alt="invites"
+                    src="/assets/images/check.svg"
+                    style={{ width: '1em', height: '1em' }}
+                  />
+                </Button>
+              </div>
+            </Popover>
+          )}
+        >
+          <button
+            type="button"
+            data-toggle="tooltip"
+            data-placement="bottom"
+            className={inviteBtnClassname}
+            title="Challenge to a game."
+          >
+            <img
+              alt="invites"
+              src="/assets/images/fight-black.png"
+              style={{ width: '1em', height: '1em' }}
+            />
+          </button>
+        </OverlayTrigger>
+      )}
     </div>
   );
 };
