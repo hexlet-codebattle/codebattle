@@ -125,6 +125,13 @@ defmodule Codebattle.Task do
     end
   end
 
+  def get_task_by_id_for_user(user, task_id) do
+    __MODULE__
+    |> filter_visibility(user)
+    |> where([t], t.id == ^task_id)
+    |> Repo.one()
+  end
+
   def list_all_tags do
     query = """
     SELECT distinct unnest(tags) from tasks
@@ -136,12 +143,6 @@ defmodule Codebattle.Task do
     |> Ecto.Adapters.SQL.query!(query)
     |> Map.get(:rows)
     |> List.flatten()
-  end
-
-  def list_by_level(level) do
-    from(task in Codebattle.Task, where: task.level == ^level)
-    |> visible()
-    |> Repo.all()
   end
 
   def get!(id), do: Repo.get!(__MODULE__, id)

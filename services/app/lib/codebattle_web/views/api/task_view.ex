@@ -6,16 +6,13 @@ defmodule CodebattleWeb.Api.TaskView do
       id: task.id,
       name: task.name,
       level: task.level,
-      descriptions: render_descriptions(task),
+      origin: task.origin,
+      creator_id: task.creator_id,
       tags: task.tags
     }
   end
 
   def render_tasks(tasks) do
-    tasks |> Enum.map(&render_task/1)
-  end
-
-  defp render_descriptions(task) do
-    %{ru: task.description_ru, en: task.description_en}
+    Enum.map(tasks, &render_task/1)
   end
 end
