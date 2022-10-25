@@ -5,7 +5,7 @@ while True:
 Для выхода введите 0.""")
     first = int (input ('Введите число 1: '))
     if first == int('0'):
-	break
+        break
     second = int (input ('Введите число 2: '))
     if second == int('0'):
         break
