@@ -88,14 +88,14 @@ const TaskLabel = ({ task }) => (
   </span>
 );
 
-const TaskSelect = ({ setChosenTask, randomTask }) => {
+const TaskSelect = ({ setChosenTask, randomTask, level }) => {
   const dispatch = useDispatch();
   const defaultOption = { label: <TaskLabel task={randomTask} />, value: randomTask.name };
   const [options, setOptions] = useState([]);
 
   useEffect(() => {
     axios
-      .get('/api/v1/tasks')
+      .get(`/api/v1/tasks?level=${level}`)
       .then(({ data }) => {
         const { tasks } = camelizeKeys(data);
         const opts = [randomTask, ...tasks]
@@ -105,7 +105,7 @@ const TaskSelect = ({ setChosenTask, randomTask }) => {
       .catch(error => {
         dispatch(actions.setError(error));
       });
-  }, []);
+  }, [level]);
 
   const onChange = ({ value }) => setChosenTask(value);
 
@@ -247,7 +247,7 @@ const CreateGameDialog = ({ hideModal }) => {
       )}
       <h5>{i18n.t('Choose task')}</h5>
       <div className="d-flex justify-content-around px-5 mt-3 mb-2">
-        <TaskSelect setChosenTask={setChosenTask} randomTask={randomTask} />
+        <TaskSelect setChosenTask={setChosenTask} randomTask={randomTask} level={game.level} />
       </div>
       <button type="button" className={createBtnClassname} onClick={createGame}>
         {createBtnTitle}
