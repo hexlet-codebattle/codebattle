@@ -52,13 +52,15 @@ jest.mock('axios');
 const tasks = [
   { name: 'task1 name', id: 1 },
   { name: 'task2 name', id: 2 },
+  { name: 'task3 filtered', id: 3 },
 ];
 const users = [{ name: 'user1', id: -4 }, { name: 'user2', id: -2 }];
 axios.get.mockResolvedValue({ data: { tasks, users } });
 
+jest.mock('react-select');
 jest.mock('react-select/async');
 /*
-  AsyncSelect component mock is made by means of the series of buttons.
+  AsyncSelect and Select component mock is made by means of the series of buttons.
   Each button represents one option.
   Clicking the buttons you simulate a choice of the options in the AsyncSelect component.
 */
@@ -235,4 +237,17 @@ test('test task choice', async () => {
     task_id: 1,
   };
   expect(mainMiddlewares.createInvite).toHaveBeenCalledWith(paramsWithOpponentAndChosenTask);
-});
+
+  fireEvent.click(await findByRole('button', { name: 'Create a Game' }));
+
+  const firstTaskOpt = await findByRole('button', { name: 'task1 name' });
+  const secondTaskOpt = getByRole('button', { name: 'task2 name' });
+  const thirdTaskOpt = getByRole('button', { name: 'task3 filtered' });
+
+  fireEvent.click(getByRole('button', { name: 'filter tasks by name' }));
+
+  expect(firstTaskOpt).toBeInTheDocument();
+  expect(secondTaskOpt).toBeInTheDocument();
+  expect(thirdTaskOpt).not.toBeInTheDocument();
+},
+8000);
