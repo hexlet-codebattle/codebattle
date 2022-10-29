@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import cn from 'classnames';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import AsyncSelect from 'react-select/async';
+import Select from 'react-select';
 import axios from 'axios';
 import qs from 'qs';
 import { camelizeKeys } from 'humps';
@@ -87,36 +88,36 @@ const TaskLabel = ({ task }) => (
   </span>
 );
 
-const TaskSelect = ({ chosenTask, setChosenTask, randomTask }) => {
+const TaskSelect = ({ setChosenTask, randomTask }) => {
   const dispatch = useDispatch();
+  const defaultOption = { label: <TaskLabel task={randomTask} />, value: randomTask.name };
+  const [options, setOptions] = useState([]);
 
-  const loadOptions = (inputValue, callback) => {
+  useEffect(() => {
     axios
       .get('/api/v1/tasks')
       .then(({ data }) => {
         const { tasks } = camelizeKeys(data);
-        const options = [randomTask, ...tasks]
+        const opts = [randomTask, ...tasks]
           .map(task => ({ label: <TaskLabel task={task} />, value: task }));
-
-        callback(options);
+        setOptions(opts);
       })
       .catch(error => {
         dispatch(actions.setError(error));
       });
-  };
+  }, []);
+
+  const onChange = ({ value }) => setChosenTask(value);
 
   return (
-    <AsyncSelect
+    <Select
       className="w-100"
-      value={
-        {
-          label: <TaskLabel task={chosenTask} />,
-          value: chosenTask,
-        }
-      }
-      defaultOptions
-      onChange={({ value }) => setChosenTask(value)}
-      loadOptions={loadOptions}
+      defaultValue={defaultOption}
+      onChange={onChange}
+      filterOption={({ value: { name } }, inputValue) => (
+        name.toLowerCase().includes(inputValue.toLowerCase())
+      )}
+      options={options}
     />
   );
 };
@@ -246,7 +247,7 @@ const CreateGameDialog = ({ hideModal }) => {
       )}
       <h5>{i18n.t('Choose task')}</h5>
       <div className="d-flex justify-content-around px-5 mt-3 mb-2">
-        <TaskSelect setChosenTask={setChosenTask} chosenTask={chosenTask} randomTask={randomTask} />
+        <TaskSelect setChosenTask={setChosenTask} randomTask={randomTask} />
       </div>
       <button type="button" className={createBtnClassname} onClick={createGame}>
         {createBtnTitle}
