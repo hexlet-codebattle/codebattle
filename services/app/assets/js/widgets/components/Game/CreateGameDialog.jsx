@@ -8,6 +8,7 @@ import axios from 'axios';
 import qs from 'qs';
 import { camelizeKeys } from 'humps';
 import _ from 'lodash';
+import { faShuffle, faUser } from '@fortawesome/free-solid-svg-icons';
 
 import * as selectors from '../../selectors';
 import { actions } from '../../slices';
@@ -82,11 +83,68 @@ const OpponentSelect = ({ setOpponent, opponent }) => {
   );
 };
 
-const TaskLabel = ({ task }) => (
-  <span className="text-truncate">
-    <span>{task.name}</span>
-  </span>
-);
+const CurrentUserTaskLabel = ({ task, userStats = { user: { avatarUrl: '' } } }) => {
+  const { user: { avatarUrl } } = userStats;
+
+  return (
+    <div className="d-flex align-items-center">
+      <div className="mr-1">
+        <img
+          className="img-fluid"
+          style={{ maxHeight: '16px', width: '16px' }}
+          src={avatarUrl}
+          alt="User avatar"
+        />
+      </div>
+      <div>
+        <span className="text-truncate">
+          {task.name}
+        </span>
+      </div>
+    </div>
+  );
+};
+
+const renderIcon = type => {
+  switch (type) {
+    case 'user':
+      return (
+        <FontAwesomeIcon
+          icon={faUser}
+          className="mr-1"
+        />
+      );
+    case 'github':
+      return (
+        <FontAwesomeIcon
+          icon={['fab', 'github']}
+          className="mr-1"
+        />
+      );
+    default:
+      return (
+        <FontAwesomeIcon
+          icon={faShuffle}
+          className="mr-1"
+        />
+      );
+  }
+};
+
+const isCreatedByCurrentUser = (taskCreatorId, userId) => taskCreatorId && taskCreatorId === userId;
+
+const TaskLabel = ({ task, userStats, currentUserId }) => {
+  if (isCreatedByCurrentUser(task.creatorId, currentUserId)) {
+    return <CurrentUserTaskLabel task={task} userStats={userStats} />;
+  }
+
+  return (
+    <span className="text-truncate">
+      {renderIcon(task.origin)}
+      <span>{task.name}</span>
+    </span>
+  );
+};
 
 const TaskSelect = ({ setChosenTask, randomTask, level }) => {
   const dispatch = useDispatch();
@@ -98,14 +156,26 @@ const TaskSelect = ({ setChosenTask, randomTask, level }) => {
       .get(`/api/v1/tasks?level=${level}`)
       .then(({ data }) => {
         const { tasks } = camelizeKeys(data);
-        const opts = [randomTask, ...tasks]
-          .map(task => ({ label: <TaskLabel task={task} />, value: task }));
-        setOptions(opts);
+        setOptions([randomTask, ...tasks]);
       })
       .catch(error => {
         dispatch(actions.setError(error));
       });
   }, [level]);
+
+  const currentUserId = useSelector(selectors.currentUserIdSelector);
+  const [userStats, setUserStats] = useState({});
+
+  useEffect(() => {
+    axios
+      .get(`/api/v1/user/${currentUserId}/stats`)
+      .then(response => {
+        setUserStats(camelizeKeys(response.data));
+      })
+      .catch(error => {
+        dispatch(actions.setError(error));
+      });
+  }, [currentUserId]);
 
   const onChange = ({ value }) => setChosenTask(value);
 
@@ -117,7 +187,7 @@ const TaskSelect = ({ setChosenTask, randomTask, level }) => {
       filterOption={({ value: { name } }, inputValue) => (
         name.toLowerCase().includes(inputValue.toLowerCase())
       )}
-      options={options}
+      options={options.map(task => ({ label: <TaskLabel task={task} userStats={userStats} currentUserId={currentUserId} />, value: task }))}
     />
   );
 };
