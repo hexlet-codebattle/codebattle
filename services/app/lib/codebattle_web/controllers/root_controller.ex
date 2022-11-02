@@ -18,6 +18,7 @@ defmodule CodebattleWeb.RootController do
       _ ->
         conn
         |> maybe_put_opponent(params)
+        |> put_gon(task_tags: ["strings", "math", "hash-maps", "collections", "rest"])
         |> render("index.html", current_user: current_user)
     end
   end
