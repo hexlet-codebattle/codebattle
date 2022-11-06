@@ -42,6 +42,7 @@ jest.mock(
     const gonParams = {
       local: 'en',
       current_user: { id: 1, sound_settings: {} },
+      task_tags: ['math', 'string', 'rest'],
     };
     return { getAsset: type => gonParams[type] };
   },
@@ -50,9 +51,9 @@ jest.mock(
 
 jest.mock('axios');
 const tasks = [
-  { name: 'task1 name', id: 1 },
-  { name: 'task2 name', id: 2 },
-  { name: 'task3 filtered', id: 3 },
+  { name: 'task1 name', id: 1, tags: [''] },
+  { name: 'task2 name', id: 2, tags: [''] },
+  { name: 'task3 filtered', id: 3, tags: [''] },
 ];
 const users = [{ name: 'user1', id: -4 }, { name: 'user2', id: -2 }];
 axios.get.mockResolvedValue({ data: { tasks, users } });
@@ -201,6 +202,7 @@ test('test task choice', async () => {
     opponent_type: 'other_user',
     timeout_seconds: 480,
     task_id: null,
+    tags: [],
   };
 
   expect(lobbyMiddlewares.createGame).toHaveBeenCalledWith(params);
