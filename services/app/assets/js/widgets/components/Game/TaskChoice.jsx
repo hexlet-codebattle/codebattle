@@ -15,7 +15,7 @@ import i18n from '../../../i18n';
 
 const isRandomTask = task => !_.has(task, 'id');
 
-const createTagsTaskIdsDictionary = (tasks, tags) => {
+const mapTagsToTaskIds = (tasks, tags) => {
   const otherTag = tags.at(-1);
   const popularTags = tags.slice(0, -1);
 
@@ -193,22 +193,22 @@ export default ({
       });
   }, [level]);
 
-  const tagsTaskIdsDictionary = createTagsTaskIdsDictionary(allTasks, taskTags);
+  const tagsToTaskIdsDictionary = mapTagsToTaskIds(allTasks, taskTags);
 
-  const filteredTasks = filterTasksByTags(allTasks, chosenTags, tagsTaskIdsDictionary);
+  const filteredTasks = filterTasksByTags(allTasks, chosenTags, tagsToTaskIdsDictionary);
 
   const isTagButtonDisabled = tag => {
     if (!isRandomTask(chosenTask)) {
       return true;
     }
-    const availableTaskIds = getTaskIdsByTags(tagsTaskIdsDictionary, [...chosenTags, tag]);
+    const availableTaskIds = getTaskIdsByTags(tagsToTaskIdsDictionary, [...chosenTags, tag]);
     return availableTaskIds.length === 0;
   };
 
   const isTagChosen = tag => (
     isRandomTask(chosenTask)
       ? chosenTags.includes(tag)
-      : tagsTaskIdsDictionary[tag].includes(chosenTask.id)
+      : tagsToTaskIdsDictionary[tag].includes(chosenTask.id)
   );
 
   const toggleTagButton = tag => {
