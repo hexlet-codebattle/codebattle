@@ -1,6 +1,4 @@
 defmodule Codebattle.Game.FakeTasksQueuesServer do
-  import Ecto.Query
-
   alias Codebattle.Repo
 
   def get_task(level) do
