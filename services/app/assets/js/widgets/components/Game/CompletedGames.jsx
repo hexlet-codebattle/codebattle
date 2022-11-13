@@ -38,7 +38,7 @@ const CompletedGamesRows = memo(({ games }) => (
   </>
 ));
 
-const CompletedGames = ({ games, loadNextPage = null }) => {
+const CompletedGames = ({ games, loadNextPage = null, widgetName }) => {
   const { nextPage, totalPages } = useSelector(state => state.completedGames);
   const object = useMemo(() => ({ loading: false }), [nextPage]);
   const dispatch = useDispatch();
@@ -51,7 +51,7 @@ const CompletedGames = ({ games, loadNextPage = null }) => {
       if (object.loading) return;
       object.loading = true;
 
-      if (nextPage <= totalPages) dispatch(loadNextPage(nextPage));
+      if (nextPage <= totalPages) dispatch(loadNextPage({ page: nextPage, widgetName }));
     };
 
     const onScroll = () => {

@@ -1,6 +1,30 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { camelizeKeys } from 'humps';
+import _ from 'lodash';
+
+import { actions as lobbyActions } from './lobby';
+
+const routes = {
+  lobby: {
+    buildFetchRoute: () => 'api/v1/games/get?page_size=20',
+    buildLoadRoute: ({ page }) => `api/v1/games/get?page_size=20&page=${page}`,
+    // buildFetchRoute: () => `/api/v1/user/10/completed_games?page_size=20`,
+    // buildLoadRoute: ({ page }) => `/api/v1/user/10/completed_games?page_size=20&page=${page}`,
+
+  },
+  user: {
+    buildFetchRoute: ({ userId }) => `/api/v1/user/${userId}/completed_games?page_size=20`,
+    buildLoadRoute: ({ userId, page }) => `/api/v1/user/${userId}/completed_games?page_size=20&page=${page}`,
+  },
+};
+
+const paramsMapping = {
+  user: {
+    userId: window.location.pathname.split('/').pop(),
+  },
+  lobby: {},
+};
 
 export const fetchCompletedGames = createAsyncThunk(
   'completedGames/fetchCompletedGames',
@@ -14,10 +38,12 @@ export const fetchCompletedGames = createAsyncThunk(
 
 export const loadNextPage = createAsyncThunk(
   'completedGames/loadNextPage',
-  async page => {
-    const userId = window.location.pathname.split('/').pop();
+  async ({ page, widgetName }) => {
+    const routeBuilder = routes[widgetName];
+    const params = paramsMapping[widgetName];
 
     const response = await axios.get(`/api/v1/games/completed?user_id=${userId}&page_size=20&page=${page}`);
+
 
     return camelizeKeys(response.data);
   },
@@ -55,11 +81,14 @@ const completedGames = createSlice({
     [loadNextPage.fulfilled]: (state, { payload }) => {
       state.status = 'loaded';
       state.nextPage += 1;
-      state.completedGames = state.completedGames.concat(payload.games);
+      state.completedGames = _.unionBy(state.completedGames, payload.games, 'id');
     },
     [loadNextPage.rejected]: (state, action) => {
       state.status = 'rejected';
       state.error = action.error;
+    },
+    [lobbyActions.finishGame]: (state, { payload: { game } }) => {
+      state.completedGames = [game, ...state.completedGames];
     },
   },
 });
