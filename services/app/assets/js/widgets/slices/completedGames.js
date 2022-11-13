@@ -5,30 +5,15 @@ import _ from 'lodash';
 
 import { actions as lobbyActions } from './lobby';
 
-const routes = {
-  lobby: {
-    buildFetchRoute: () => 'api/v1/games/get?page_size=20',
-    buildLoadRoute: ({ page }) => `api/v1/games/get?page_size=20&page=${page}`,
-
-  },
-  user: {
-    buildFetchRoute: ({ userId }) => `/api/v1/user/${userId}/completed_games?page_size=20`,
-    buildLoadRoute: ({ userId, page }) => `/api/v1/user/${userId}/completed_games?page_size=20&page=${page}`,
-  },
-};
-
-const paramsMapping = {
-  user: {
-    userId: window.location.pathname.split('/').pop(),
-  },
-  lobby: {},
-};
-
 export const fetchCompletedGames = createAsyncThunk(
   'completedGames/fetchCompletedGames',
   async () => {
-    const userId = window.location.pathname.split('/').pop();
-    const response = await axios.get(`/api/v1/games/completed?user_id=${userId}&page_size=20`);
+    const userId = window.location.pathname.split('/').pop() || null;
+    const route = userId
+      ? `/api/v1/games/completed?user_id=${userId}&page_size=20`
+      : '/api/v1/games/completed?page_size=20';
+
+    const response = await axios.get(route);
 
     return camelizeKeys(response.data);
   },
@@ -36,11 +21,13 @@ export const fetchCompletedGames = createAsyncThunk(
 
 export const loadNextPage = createAsyncThunk(
   'completedGames/loadNextPage',
-  async ({ page, widgetName }) => {
-    const routeBuilder = routes[widgetName];
-    const params = paramsMapping[widgetName];
+  async page => {
+    const userId = window.location.pathname.split('/').pop() || null;
+    const route = userId
+      ? `/api/v1/games/completed?user_id=${userId}&page_size=20&page=${page}`
+      : `/api/v1/games/completed?page_size=20&page=${page}`;
 
-    const response = await axios.get(`/api/v1/games/completed?user_id=${userId}&page_size=20&page=${page}`);
+    const response = await axios.get(route);
 
     return camelizeKeys(response.data);
   },

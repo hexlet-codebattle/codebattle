@@ -402,7 +402,6 @@ const GameContainers = ({
   completedGames,
   liveTournaments,
   completedTournaments,
-  widgetName,
 }) => {
   useEffect(() => {
     if (!window.location.hash) {
@@ -483,7 +482,7 @@ const GameContainers = ({
           role="tabpanel"
           aria-labelledby="completedGames-tab"
         >
-          <CompletedGames games={completedGames} loadNextPage={loadNextPage} widgetName={widgetName} />
+          <CompletedGames games={completedGames} loadNextPage={loadNextPage} />
         </div>
       </div>
     </div>
@@ -533,10 +532,8 @@ const LobbyWidget = () => {
     }
   }, [currentUser, dispatch]);
 
-  const widgetName = 'lobby';
-
   useEffect(() => {
-    dispatch(fetchCompletedGames(widgetName));
+    dispatch(fetchCompletedGames());
   }, [dispatch]);
 
   const {
@@ -562,7 +559,6 @@ const LobbyWidget = () => {
             completedGames={completedGames}
             liveTournaments={liveTournaments}
             completedTournaments={completedTournaments}
-            widgetName={widgetName}
           />
           <LobbyChat />
         </div>
