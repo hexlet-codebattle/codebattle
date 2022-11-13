@@ -3,7 +3,7 @@ import _ from 'lodash';
 
 const initialState = {
   activeGames: [],
-  completedGames: null,
+  // completedGames: null,
   presenceList: [],
   loaded: false,
   newGame: { timeoutSeconds: null },
@@ -20,11 +20,12 @@ const lobby = createSlice({
   reducers: {
     initGameList: (
       state,
-      { payload: { activeGames, completedGames, tournaments } },
+      // { payload: { activeGames, completedGames, tournaments } },
+      { payload: { activeGames, tournaments } },
     ) => ({
       ...state,
       activeGames,
-      completedGames,
+      // completedGames,
       liveTournaments: tournaments.filter(x => x.isLive),
       completedTournaments: tournaments.filter(x => !x.isLive),
       loaded: true,
@@ -61,7 +62,7 @@ const lobby = createSlice({
     },
     finishGame: (state, { payload: { game } }) => {
       state.activeGames = _.reject(state.activeGames, { id: game.id });
-      state.completedGames = [game, ...state.completedGames];
+      // state.completedGames = [game, ...state.completedGames];
     },
     showCreateGameModal: state => {
       state.createGameModal.show = true;
