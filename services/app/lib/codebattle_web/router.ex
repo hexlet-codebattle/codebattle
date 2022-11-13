@@ -41,10 +41,10 @@ defmodule CodebattleWeb.Router do
     pipe_through(:api)
 
     scope "/v1", V1, as: :v1 do
+      get("/games/completed", GameController, :completed)
       get("/:user_id/activity", ActivityController, :show)
       get("/game_activity", GameActivityController, :show)
       get("/playbook/:id", PlaybookController, :show)
-      get("/user/:id/completed_games", UserController, :completed_games)
       get("/user/:id/stats", UserController, :stats)
       get("/user/current", UserController, :current)
       resources("/reset_password", ResetPasswordController, only: [:create], singleton: true)

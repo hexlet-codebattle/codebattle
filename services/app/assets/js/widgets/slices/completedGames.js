@@ -26,11 +26,9 @@ const paramsMapping = {
 
 export const fetchCompletedGames = createAsyncThunk(
   'completedGames/fetchCompletedGames',
-  async widgetName => {
-    const routeBuilder = routes[widgetName];
-    const params = paramsMapping[widgetName];
-
-    const response = await axios.get(routeBuilder.buildFetchRoute(params));
+  async () => {
+    const userId = window.location.pathname.split('/').pop();
+    const response = await axios.get(`/api/v1/games/completed?user_id=${userId}&page_size=20`);
 
     return camelizeKeys(response.data);
   },
@@ -42,7 +40,7 @@ export const loadNextPage = createAsyncThunk(
     const routeBuilder = routes[widgetName];
     const params = paramsMapping[widgetName];
 
-    const response = await axios.get(routeBuilder.buildLoadRoute({ ...params, page }));
+    const response = await axios.get(`/api/v1/games/completed?user_id=${userId}&page_size=20&page=${page}`);
 
     return camelizeKeys(response.data);
   },

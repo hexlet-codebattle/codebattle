@@ -157,45 +157,6 @@ defmodule CodebattleWeb.Api.V1.UserControllerTest do
     end
   end
 
-  describe ".completed_games" do
-    test "shows user stats", %{conn: conn} do
-      user1 =
-        insert(:user, %{
-          name: "first",
-          email: "test1@test.test",
-          github_id: 1,
-          rating: 2400
-        })
-
-      user2 =
-        insert(:user, %{name: "second", email: "test2@test.test", github_id: 2, rating: 2310})
-
-      game1 = insert(:game, state: "game_over")
-      game2 = insert(:game, state: "game_over")
-
-      insert(:user_game, user: user1, creator: false, game: game1, result: "won")
-      insert(:user_game, user: user2, creator: false, game: game1, result: "lost")
-      insert(:user_game, user: user1, creator: false, game: game2, result: "lost")
-      insert(:user_game, user: user2, creator: false, game: game2, result: "won")
-
-      conn =
-        conn
-        |> get(Routes.api_v1_user_path(conn, :completed_games, user1.id))
-
-      resp_body = json_response(conn, 200)
-
-      %{"games" => games, "page_info" => page_info} = resp_body
-      assert Enum.count(games) == 2
-
-      assert page_info == %{
-               "page_number" => 1,
-               "page_size" => 9,
-               "total_entries" => 2,
-               "total_pages" => 1
-             }
-    end
-  end
-
   describe "#current" do
     test "shows current_user when logged in", %{conn: conn} do
       user = insert(:user)
