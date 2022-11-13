@@ -542,7 +542,6 @@ const LobbyWidget = () => {
   const {
     loaded,
     activeGames,
-    // completedGames,
     liveTournaments,
     completedTournaments,
   } = useSelector(selectors.lobbyDataSelector);

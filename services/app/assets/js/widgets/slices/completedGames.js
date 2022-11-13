@@ -9,8 +9,6 @@ const routes = {
   lobby: {
     buildFetchRoute: () => 'api/v1/games/get?page_size=20',
     buildLoadRoute: ({ page }) => `api/v1/games/get?page_size=20&page=${page}`,
-    // buildFetchRoute: () => `/api/v1/user/10/completed_games?page_size=20`,
-    // buildLoadRoute: ({ page }) => `/api/v1/user/10/completed_games?page_size=20&page=${page}`,
 
   },
   user: {
