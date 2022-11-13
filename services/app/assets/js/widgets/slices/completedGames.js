@@ -6,7 +6,7 @@ export const fetchCompletedGames = createAsyncThunk(
   'completedGames/fetchCompletedGames',
   async () => {
     const userId = window.location.pathname.split('/').pop();
-    const response = await axios.get(`/api/v1/user/${userId}/completed_games?page_size=20`);
+    const response = await axios.get(`/api/v1/games/completed?user_id=${userId}&page_size=20`);
 
     return camelizeKeys(response.data);
   },
@@ -17,7 +17,7 @@ export const loadNextPage = createAsyncThunk(
   async page => {
     const userId = window.location.pathname.split('/').pop();
 
-    const response = await axios.get(`/api/v1/user/${userId}/completed_games?page_size=20&page=${page}`);
+    const response = await axios.get(`/api/v1/games/completed?user_id=${userId}&page_size=20&page=${page}`);
 
     return camelizeKeys(response.data);
   },
