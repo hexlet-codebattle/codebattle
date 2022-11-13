@@ -29,10 +29,8 @@ const UserProfile = () => {
       });
   }, [dispatch]);
 
-  const widgetName = 'user';
-
   useEffect(() => {
-    dispatch(fetchCompletedGames(widgetName));
+    dispatch(fetchCompletedGames());
   }, [dispatch]);
 
   const dateParse = date => new Date(date).toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
@@ -122,7 +120,6 @@ const UserProfile = () => {
             <CompletedGames
               games={completedGames}
               loadNextPage={loadNextPage}
-              widgetName={widgetName}
             />
           </>
               )}
