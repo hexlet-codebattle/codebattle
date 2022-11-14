@@ -16,6 +16,7 @@ defmodule CodebattleWeb.Api.V1.GameControllerTest do
 
       game1 = insert(:game, state: "game_over")
       game2 = insert(:game, state: "game_over")
+      insert(:game, state: "timeout")
 
       insert(:user_game, user: user1, creator: false, game: game1, result: "won")
       insert(:user_game, user: user2, creator: false, game: game1, result: "lost")
@@ -28,12 +29,12 @@ defmodule CodebattleWeb.Api.V1.GameControllerTest do
         |> json_response(200)
 
       %{"games" => games, "page_info" => page_info} = resp_body
-      assert Enum.count(games) == 4
+      assert Enum.count(games) == 2
 
       assert page_info == %{
                "page_number" => 1,
                "page_size" => 15,
-               "total_entries" => 4,
+               "total_entries" => 2,
                "total_pages" => 1
              }
 
