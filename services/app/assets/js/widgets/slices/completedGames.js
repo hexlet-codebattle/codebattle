@@ -39,6 +39,7 @@ const completedGames = createSlice({
     completedGames: [],
     nextPage: null,
     totalPages: null,
+    totalGames: 0,
     status: 'empty',
     error: null,
   },
@@ -53,6 +54,7 @@ const completedGames = createSlice({
       state.completedGames = payload.games;
       state.totalPages = payload.pageInfo.totalPages;
       state.nextPage = payload.pageInfo.pageNumber + 1;
+      state.totalGames = payload.pageInfo.totalEntries;
     },
     [fetchCompletedGames.rejected]: (state, action) => {
       state.status = 'rejected';
@@ -73,6 +75,7 @@ const completedGames = createSlice({
     },
     [lobbyActions.removeGameLobby]: (state, { payload: { game } }) => {
       state.completedGames = [game, ...state.completedGames];
+      state.totalGames += 1;
     },
   },
 });

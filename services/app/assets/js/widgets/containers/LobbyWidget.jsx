@@ -402,6 +402,7 @@ const GameContainers = ({
   completedGames,
   liveTournaments,
   completedTournaments,
+  totalGames,
 }) => {
   useEffect(() => {
     if (!window.location.hash) {
@@ -482,7 +483,7 @@ const GameContainers = ({
           role="tabpanel"
           aria-labelledby="completedGames-tab"
         >
-          <CompletedGames games={completedGames} loadNextPage={loadNextPage} />
+          <CompletedGames games={completedGames} loadNextPage={loadNextPage} totalGames={totalGames} />
         </div>
       </div>
     </div>
@@ -543,7 +544,7 @@ const LobbyWidget = () => {
     completedTournaments,
   } = useSelector(selectors.lobbyDataSelector);
 
-  const completedGames = useSelector(state => state.completedGames.completedGames);
+  const { completedGames, totalGames } = useSelector(selectors.completedGamesData);
 
   if (!loaded) {
     return <Loading />;
@@ -559,6 +560,7 @@ const LobbyWidget = () => {
             completedGames={completedGames}
             liveTournaments={liveTournaments}
             completedTournaments={completedTournaments}
+            totalGames={totalGames}
           />
           <LobbyChat />
         </div>
