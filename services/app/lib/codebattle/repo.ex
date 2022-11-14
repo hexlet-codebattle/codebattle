@@ -10,7 +10,12 @@ defmodule Codebattle.Repo do
 
   def paginate(query, params) do
     params = Map.merge(@default_pagination, params)
-    total_entries = Repo.count(query)
+
+    total_entries =
+      query
+      |> exclude(:order_by)
+      |> exclude(:select)
+      |> Repo.count()
 
     offset = (params.page - 1) * params.page_size
 
