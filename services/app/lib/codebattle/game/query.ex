@@ -26,6 +26,7 @@ defmodule Codebattle.Game.Query do
   defp completed_games_base_query() do
     from(
       g in Game,
+      distinct: g.id,
       order_by: [desc_nulls_last: g.finishes_at],
       inner_join: ug in assoc(g, :user_games),
       inner_join: u in assoc(ug, :user),
