@@ -238,3 +238,5 @@ export const currentUserNameSelector = state => {
 export const isModalShow = state => state.lobby.createGameModal.show;
 
 export const modalSelector = state => state.lobby.createGameModal;
+
+export const completedGamesData = state => state.completedGames;
