@@ -1,12 +1,19 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { camelizeKeys } from 'humps';
+import _ from 'lodash';
+
+import { actions as lobbyActions } from './lobby';
 
 export const fetchCompletedGames = createAsyncThunk(
   'completedGames/fetchCompletedGames',
   async () => {
-    const userId = window.location.pathname.split('/').pop();
-    const response = await axios.get(`/api/v1/user/${userId}/completed_games?page_size=20`);
+    const userId = window.location.pathname.split('/').pop() || null;
+    const route = userId
+      ? `/api/v1/games/completed?user_id=${userId}&page_size=20`
+      : '/api/v1/games/completed?page_size=20';
+
+    const response = await axios.get(route);
 
     return camelizeKeys(response.data);
   },
@@ -15,9 +22,12 @@ export const fetchCompletedGames = createAsyncThunk(
 export const loadNextPage = createAsyncThunk(
   'completedGames/loadNextPage',
   async page => {
-    const userId = window.location.pathname.split('/').pop();
+    const userId = window.location.pathname.split('/').pop() || null;
+    const route = userId
+      ? `/api/v1/games/completed?user_id=${userId}&page_size=20&page=${page}`
+      : `/api/v1/games/completed?page_size=20&page=${page}`;
 
-    const response = await axios.get(`/api/v1/user/${userId}/completed_games?page_size=20&page=${page}`);
+    const response = await axios.get(route);
 
     return camelizeKeys(response.data);
   },
@@ -29,6 +39,7 @@ const completedGames = createSlice({
     completedGames: [],
     nextPage: null,
     totalPages: null,
+    totalGames: 0,
     status: 'empty',
     error: null,
   },
@@ -43,6 +54,7 @@ const completedGames = createSlice({
       state.completedGames = payload.games;
       state.totalPages = payload.pageInfo.totalPages;
       state.nextPage = payload.pageInfo.pageNumber + 1;
+      state.totalGames = payload.pageInfo.totalEntries;
     },
     [fetchCompletedGames.rejected]: (state, action) => {
       state.status = 'rejected';
@@ -55,11 +67,15 @@ const completedGames = createSlice({
     [loadNextPage.fulfilled]: (state, { payload }) => {
       state.status = 'loaded';
       state.nextPage += 1;
-      state.completedGames = state.completedGames.concat(payload.games);
+      state.completedGames = _.unionBy(state.completedGames, payload.games, 'id');
     },
     [loadNextPage.rejected]: (state, action) => {
       state.status = 'rejected';
       state.error = action.error;
+    },
+    [lobbyActions.removeGameLobby]: (state, { payload: { game } }) => {
+      state.completedGames = [game, ...state.completedGames];
+      state.totalGames += 1;
     },
   },
 });

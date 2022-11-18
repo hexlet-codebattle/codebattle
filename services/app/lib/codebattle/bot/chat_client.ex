@@ -28,6 +28,10 @@ defmodule Codebattle.Bot.ChatClient do
     send_text(chat_channel, advice_on_check_complete_failure())
   end
 
+  def send(chat_channel, :say_about_code, _params) do
+    send_text(chat_channel, say_about_code())
+  end
+
   def send(chat_channel, :excuse, _params) do
     send_text(chat_channel, excuse_text())
   end
@@ -60,10 +64,10 @@ defmodule Codebattle.Bot.ChatClient do
   defp congratulate_opponent_text(_) do
     [
       "GG WP",
+      "Good job!",
       "Well played!",
       "Vtm, you are a bad teacher.",
       "I'll be back next time!",
-      "I lost the battle, but I will win the war!",
       "I will return!!111",
       "I'll get my revenge next time!"
     ]
@@ -82,12 +86,12 @@ defmodule Codebattle.Bot.ChatClient do
   end
 
   defp advice_on_win() do
-    ["Nice shot!", "GG WP!"]
+    ["Nice shot!", "GG WP!", "Good job!"]
     |> Enum.random()
   end
 
   defp advice_on_check_complete_success() do
-    ["Nice try", "Wow", "Easy"]
+    ["Nice try", "Wow", "Easy", "Ez"]
     |> Enum.random()
   end
 
@@ -109,18 +113,18 @@ defmodule Codebattle.Bot.ChatClient do
     "I'll solve this task in about #{total_time_min} minutes. Good luck!"
   end
 
-  # TODO: add this events
-  # defp say_about_code(_chat_state) do
-  #   [
-  #     "Your code looks very strange...",
-  #     "What did you just type? Looks strange...",
-  #     "What is this?...",
-  #     "Hmmmm...",
-  #     "Whaaaaat?..."
-  #   ]
-  #   |> Enum.random()
-  # end
+  defp say_about_code() do
+    [
+      "Your code looks very strange...",
+      "What did you just type? Looks strange...",
+      "What is this?...",
+      "Hmmmm...",
+      "Whaaaaat?..."
+    ]
+    |> Enum.random()
+  end
 
+  # TODO: add this event
   # defp time_is_up_message() do
   #   [
   #     "Sorry, can't wait much longer. I'll start now.",

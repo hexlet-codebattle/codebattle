@@ -91,30 +91,44 @@ defmodule Codebattle.PubSub.Events do
     ]
   end
 
-  def get_messages("game:finished", params) do
+  def get_messages("game:finished", %{game: game}) do
     game_events = [
       %Message{
-        topic: "game:#{params.game.id}",
+        topic: "game:#{game.id}",
         event: "game:finished",
-        payload: %{game_id: params.game.id, game_state: params.game.state}
+        payload: %{game_id: game.id, game_state: game.state}
       },
       %Message{
         topic: "games",
         event: "game:finished",
-        payload: %{game_id: params.game.id, game_state: params.game.state}
+        payload: %{
+          game_id: game.id,
+          game_state: game.state,
+          game: %{
+            id: Game.Helpers.get_game_id(game),
+            inserted_at: Game.Helpers.get_inserted_at(game),
+            is_bot: Game.Helpers.bot_game?(game),
+            level: Game.Helpers.get_level(game),
+            players: Game.Helpers.get_players(game),
+            state: Game.Helpers.get_state(game),
+            timeout_seconds: Game.Helpers.get_timeout_seconds(game),
+            type: Game.Helpers.get_type(game),
+            visibility_type: Game.Helpers.get_visibility_type(game)
+          }
+        }
       }
     ]
 
     tournament_events =
-      if params.game.tournament_id do
+      if game.tournament_id do
         [
           %Message{
-            topic: "game:tournament:#{params.game.tournament_id}",
+            topic: "game:tournament:#{game.tournament_id}",
             event: "game:tournament:finished",
             payload: %{
-              game_id: params.game.id,
-              game_state: params.game.state,
-              player_results: Game.Helpers.get_player_results(params.game)
+              game_id: game.id,
+              game_state: game.state,
+              player_results: Game.Helpers.get_player_results(game)
             }
           }
         ]

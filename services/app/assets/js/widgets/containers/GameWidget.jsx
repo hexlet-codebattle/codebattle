@@ -14,19 +14,22 @@ import editorUserTypes from '../config/editorUserTypes';
 
 const RightSide = ({ output, children }) => {
   const [showTab, setShowTab] = useState('editor');
-  const over = showTab === 'editor' ? '' : 'overflow-auto';
   const isShowOutput = output && output.status;
+  const content = showTab === 'editor' ? (
+    <div id="editor" className="d-flex flex-column flex-grow-1">
+      {children}
+    </div>
+  ) : (
+    <div className="d-flex flex-column flex-grow-1 overflow-auto">
+      <div className="h-auto">
+        {isShowOutput && <Output sideOutput={output} />}
+      </div>
+    </div>
+  );
+
   return (
     <>
-      <div className={`h-100 ${over}`} id="editor">
-        {showTab === 'editor' ? <div className="h-100">{children}</div>
-        : (
-          <div className="h-auto">
-            {isShowOutput && <Output sideOutput={output} />}
-          </div>
-        )}
-
-      </div>
+      {content}
       <nav>
         <div className="nav nav-tabs bg-gray text-uppercase text-center font-weight-bold" id="nav-tab" role="tablist">
           <a

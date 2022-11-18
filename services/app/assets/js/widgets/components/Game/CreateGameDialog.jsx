@@ -6,6 +6,8 @@ import AsyncSelect from 'react-select/async';
 import axios from 'axios';
 import qs from 'qs';
 import { camelizeKeys } from 'humps';
+import _ from 'lodash';
+
 import * as selectors from '../../selectors';
 import { actions } from '../../slices';
 import * as lobbyMiddlewares from '../../middlewares/Lobby';
@@ -79,6 +81,46 @@ const OpponentSelect = ({ setOpponent, opponent }) => {
   );
 };
 
+const TaskLabel = ({ task }) => (
+  <span className="text-truncate">
+    <span>{task.name}</span>
+  </span>
+);
+
+const TaskSelect = ({ chosenTask, setChosenTask, randomTask }) => {
+  const dispatch = useDispatch();
+
+  const loadOptions = (inputValue, callback) => {
+    axios
+      .get('/api/v1/tasks')
+      .then(({ data }) => {
+        const { tasks } = camelizeKeys(data);
+        const options = [randomTask, ...tasks]
+          .map(task => ({ label: <TaskLabel task={task} />, value: task }));
+
+        callback(options);
+      })
+      .catch(error => {
+        dispatch(actions.setError(error));
+      });
+  };
+
+  return (
+    <AsyncSelect
+      className="w-100"
+      value={
+        {
+          label: <TaskLabel task={chosenTask} />,
+          value: chosenTask,
+        }
+      }
+      defaultOptions
+      onChange={({ value }) => setChosenTask(value)}
+      loadOptions={loadOptions}
+    />
+  );
+};
+
 const CreateGameDialog = ({ hideModal }) => {
   const dispatch = useDispatch();
 
@@ -92,6 +134,9 @@ const CreateGameDialog = ({ hideModal }) => {
   };
 
   const [opponent, setOpponent] = useState(opponentInfo);
+
+  const randomTask = { name: i18n.t('random task'), value: {} };
+  const [chosenTask, setChosenTask] = useState(randomTask);
 
   const [game, setGame] = useState({
     level: gameLevels[0],
@@ -119,6 +164,7 @@ const CreateGameDialog = ({ hideModal }) => {
           level: game.level,
           timeout_seconds: game.timeoutSeconds,
           recipient_id: opponent.id,
+          task_id: _.get(chosenTask, 'id', null),
         }),
       );
     } else if (!isInvite) {
@@ -126,6 +172,7 @@ const CreateGameDialog = ({ hideModal }) => {
         level: game.level,
         opponent_type: game.type,
         timeout_seconds: game.timeoutSeconds,
+        task_id: _.get(chosenTask, 'id', null),
       });
     }
     hideModal();
@@ -197,6 +244,10 @@ const CreateGameDialog = ({ hideModal }) => {
           </div>
         </>
       )}
+      <h5>{i18n.t('Choose task')}</h5>
+      <div className="d-flex justify-content-around px-5 mt-3 mb-2">
+        <TaskSelect setChosenTask={setChosenTask} chosenTask={chosenTask} randomTask={randomTask} />
+      </div>
       <button type="button" className={createBtnClassname} onClick={createGame}>
         {createBtnTitle}
       </button>

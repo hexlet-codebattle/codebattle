@@ -15,30 +15,30 @@ const CompletedGamesRows = memo(({ games }) => (
         <td className="p-3 align-middle text-nowrap">
           <GameLevelBadge level={game.level} />
         </td>
-        <td className="p-3 align-middle text-nowrap cb-username-td text-truncate">
+        <td className="px-1 py-3 align-middle text-nowrap cb-username-td text-truncate">
           <div className="d-flex align-items-center">
             <ResultIcon gameId={game.id} player1={game.players[0]} player2={game.players[1]} />
-            <UserInfo user={game.players[0]} />
+            <UserInfo user={game.players[0]} truncate="true" />
           </div>
         </td>
-        <td className="p-3 align-middle text-nowrap cb-username-td text-truncate">
+        <td className="px-1 py-3 align-middle text-nowrap cb-username-td text-truncate">
           <div className="d-flex align-items-center">
             <ResultIcon gameId={game.id} player1={game.players[1]} player2={game.players[0]} />
-            <UserInfo user={game.players[1]} />
+            <UserInfo user={game.players[1]} truncate="true" />
           </div>
         </td>
-        <td className="p-3 align-middle text-nowrap">{moment.utc(game.finishsAt).local().format('MM.DD HH:mm')}</td>
-        <td className="p-3 align-middle">
+        <td className="px-1 py-3 align-middle text-nowrap">{moment.utc(game.finishesAt).local().format('MM.DD HH:mm')}</td>
+        <td className="px-1 py-3 align-middle">
           <a type="button" className="btn btn-outline-orange btn-sm" href={`/games/${game.id}`}>
             Show
           </a>
         </td>
       </tr>
-        ))}
+      ))}
   </>
-  ));
+));
 
-const CompletedGames = ({ games, loadNextPage = null }) => {
+const CompletedGames = ({ games, loadNextPage = null, totalGames }) => {
   const { nextPage, totalPages } = useSelector(state => state.completedGames);
   const object = useMemo(() => ({ loading: false }), [nextPage]);
   const dispatch = useDispatch();
@@ -70,23 +70,28 @@ const CompletedGames = ({ games, loadNextPage = null }) => {
   }, [object]);
 
   return (
-    <div ref={ref} className="table-responsive scroll" style={{ maxHeight: '600px' }}>
-      <table className="table table-sm table-striped border-gray border mb-0">
-        <thead>
-          <tr>
-            <th className="p-3 border-0">Level</th>
-            <th className="p-3 border-0 text-center" colSpan={2}>
-              Players
-            </th>
-            <th className="p-3 border-0">Date</th>
-            <th className="p-3 border-0">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <CompletedGamesRows {...{ games }} />
-        </tbody>
-      </table>
-    </div>
+    <>
+      <div ref={ref} className="table-responsive scroll" style={{ maxHeight: '600px' }}>
+        <table className="table table-sm table-striped border-gray border mb-0">
+          <thead>
+            <tr>
+              <th className="p-3 border-0">Level</th>
+              <th className="px-1 py-3 border-0 text-center" colSpan={2}>
+                Players
+              </th>
+              <th className="px-1 py-3 border-0">Date</th>
+              <th className="px-1 py-3 border-0">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <CompletedGamesRows {...{ games }} />
+          </tbody>
+        </table>
+      </div>
+      <div className="bg-white py-2 px-5 font-weight-bold border-gray border">
+        {`Total games: ${totalGames}`}
+      </div>
+    </>
   );
 };
 

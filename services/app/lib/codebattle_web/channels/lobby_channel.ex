@@ -34,23 +34,15 @@ defmodule CodebattleWeb.LobbyChannel do
   end
 
   def handle_in("game:create", payload, socket) do
-    players =
-      case payload["opponent_type"] do
-        "bot" ->
-          [socket.assigns.current_user, Bot.Context.build()]
+    user = socket.assigns.current_user
 
-        "other_user" ->
-          [socket.assigns.current_user]
-
-        _ ->
-          [socket.assigns.current_user]
-      end
-
-    game_params = %{
-      level: payload["level"],
-      timeout_seconds: payload["timeout_seconds"],
-      players: players
-    }
+    game_params =
+      %{
+        level: payload["level"],
+        timeout_seconds: payload["timeout_seconds"]
+      }
+      |> add_players(payload, user)
+      |> maybe_add_task(payload, user)
 
     case Game.Context.create_game(game_params) do
       {:ok, game} ->
@@ -91,12 +83,12 @@ defmodule CodebattleWeb.LobbyChannel do
     {:noreply, socket}
   end
 
-  def hande_info(%{event: "tournament:created", payload: payload}, socket) do
+  def handle_info(%{event: "tournament:created", payload: payload}, socket) do
     push(socket, "tournament:created", payload)
     {:noreply, socket}
   end
 
-  def hande_info(%{event: "tournament:finished", payload: payload}, socket) do
+  def handle_info(%{event: "tournament:finished", payload: payload}, socket) do
     push(socket, "tournament:finished", payload)
     {:noreply, socket}
   end
@@ -106,4 +98,20 @@ defmodule CodebattleWeb.LobbyChannel do
   defp can_user_see_game?(game, user) do
     game.visibility_type == "public" || Game.Helpers.is_player?(game, user)
   end
+
+  defp add_players(acc, %{"opponent_type" => "bot"}, user),
+    do: Map.put(acc, :players, [user, Bot.Context.build()])
+
+  defp add_players(acc, _payload, user), do: Map.put(acc, :players, [user])
+
+  defp maybe_add_task(acc, %{"task_id" => nil}, _user), do: acc
+
+  defp maybe_add_task(acc, %{"task_id" => task_id}, user) do
+    case Codebattle.Task.get_task_by_id_for_user(user, task_id) do
+      nil -> acc
+      task -> Map.put(acc, :task, task)
+    end
+  end
+
+  defp maybe_add_task(acc, _payload, _user), do: acc
 end

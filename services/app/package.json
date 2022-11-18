@@ -21,7 +21,7 @@
     "verbose": true,
     "moduleNameMapper": {
       "monaco-editor": "<rootDir>/node_modules/react-monaco-editor",
-      "^.+.(css|styl|less|sass|scss|po|png|jpg|ttf|woff|woff2)$": "jest-transform-stub"
+      "^.+\\.(css|styl|less|sass|scss|po|png|jpg|ttf|woff|woff2)$": "jest-transform-stub"
     }
   },
   "dependencies": {

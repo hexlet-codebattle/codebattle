@@ -54,11 +54,12 @@ defmodule Codebattle.Game.Fsm do
     {:ok, game}
   end
 
-  def transition(:check_success, %{state: "game_over"} = game, params) do
+  def transition(:check_success, %{state: s} = game, params) when s in ["game_over", "timeout"] do
     {:ok, update_check_result(game, params)}
   end
 
-  def transition(:check_failure, %{state: s} = game, params) when s in ["playing", "game_over"] do
+  def transition(:check_failure, %{state: s} = game, params)
+      when s in ["playing", "game_over", "timeout"] do
     {:ok, update_check_result(game, params)}
   end
 
