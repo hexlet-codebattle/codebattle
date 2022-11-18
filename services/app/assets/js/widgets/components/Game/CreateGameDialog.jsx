@@ -15,7 +15,7 @@ import * as mainMiddlewares from '../../middlewares/Main';
 import i18n from '../../../i18n';
 import levelRatio from '../../config/levelRatio';
 
-const TIMEOUTS = [3300, 2040, 1260, 780, 480, 300, 180, 120, 60];
+const TIMEOUT = 480;
 
 const UserLabel = ({ user }) => {
   const { presenceList } = useSelector(selectors.lobbyDataSelector);
@@ -141,7 +141,7 @@ const CreateGameDialog = ({ hideModal }) => {
   const [game, setGame] = useState({
     level: gameLevels[0],
     type: 'other_user',
-    timeoutSeconds: TIMEOUTS[4],
+    timeoutSeconds: TIMEOUT,
     ...gameOptions,
   });
 
@@ -177,20 +177,6 @@ const CreateGameDialog = ({ hideModal }) => {
     }
     hideModal();
   };
-
-  const renderPickTimeouts = () => TIMEOUTS.map(timeout => (
-    <button
-      key={timeout}
-      type="button"
-      className={cn('btn mr-1', {
-          'bg-orange text-white': game.timeoutSeconds === timeout,
-          'btn-outline-orange': game.timeoutSeconds !== timeout,
-        })}
-      onClick={() => setGame({ ...game, timeoutSeconds: timeout })}
-    >
-      {i18n.t(`Timeout ${timeout} seconds`)}
-    </button>
-    ));
 
   const renderPickGameType = () => currentGameTypeCodes.map(gameType => (
     <button
@@ -233,8 +219,20 @@ const CreateGameDialog = ({ hideModal }) => {
         {renderPickGameType()}
       </div>
       <h5>{i18n.t('Time control')}</h5>
-      <div className="d-flex justify-content-around px-5 mt-3 mb-2">
-        {renderPickTimeouts()}
+      <div className="d-flex flex-column px-5 mt-3 mb-2">
+        <input
+          type="range"
+          className="form-range w-100"
+          value={game.timeoutSeconds / 60}
+          onChange={e => setGame({ ...game, timeoutSeconds: e.target.value * 60 })}
+          min="3"
+          max="60"
+          step="1"
+          id="customRange3"
+        />
+        <span className="text-center text-orange">
+          {i18n.t(`${game.timeoutSeconds / 60} min`)}
+        </span>
       </div>
       {isInvite && (
         <>
