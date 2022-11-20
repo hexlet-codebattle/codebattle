@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 
 import { currentUserNameSelector } from '../selectors/index';
 
-const FeedBackWidget = () => {
+const FeedbackWidget = () => {
   const currentUserName = useSelector(currentUserNameSelector);
 
   const sendToServer = (payload, success, error) => fetch('/api/v1/feedback', {
@@ -29,4 +29,4 @@ const FeedBackWidget = () => {
   );
 };
 
-export default FeedBackWidget;
+export default FeedbackWidget;

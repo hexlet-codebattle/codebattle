@@ -1,4 +1,4 @@
-defmodule Codebattle.FeedBack do
+defmodule Codebattle.Feedback do
   @moduledoc """
     Represents codebattle users feedback about service
   """
@@ -8,9 +8,9 @@ defmodule Codebattle.FeedBack do
   import Ecto.Query
 
   alias Codebattle.Repo
-  alias Codebattle.FeedBack
+  alias Codebattle.Feedback
 
-  @derive {Jason.Encoder, only: [:id, :author_name, :status, :text, :title_link]}
+  @derive {Jason.Encoder, only: [:id, :author_name, :status, :text, :title_link, :inserted_at]}
 
   schema "feedback" do
     field(:author_name, :string)
@@ -22,7 +22,7 @@ defmodule Codebattle.FeedBack do
   end
 
   @doc false
-  def changeset(%FeedBack{} = feedback, attrs) do
+  def changeset(%Feedback{} = feedback, attrs) do
     feedback
     |> cast(attrs, [:author_name, :status, :text, :title_link])
     |> validate_required([:author_name, :status, :text, :title_link])
@@ -30,14 +30,14 @@ defmodule Codebattle.FeedBack do
 
   def get_all() do
     from(
-      f in FeedBack,
+      f in Feedback,
       order_by: [desc: f.inserted_at]
     )
     |> Repo.all()
     |> Enum.map(&format_feedback/1)
   end
 
-  def format_feedback(%FeedBack{
+  def format_feedback(%Feedback{
         id: id,
         author_name: name,
         status: status,

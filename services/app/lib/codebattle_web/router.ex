@@ -52,7 +52,7 @@ defmodule CodebattleWeb.Router do
       resources("/settings", SettingsController, only: [:show, :update], singleton: true)
       resources("/tasks", TaskController, only: [:index, :show])
       resources("/users", UserController, only: [:index, :show, :create])
-      post("/feedback", FeedBackController, :index)
+      resources("/feedback", FeedbackController, only: [:index, :create])
       post("/playbooks/approve", PlaybookController, :approve)
       post("/playbooks/reject", PlaybookController, :reject)
     end
@@ -95,6 +95,8 @@ defmodule CodebattleWeb.Router do
 
     get("/settings", UserController, :edit, as: :user_setting)
     put("/settings", UserController, :update, as: :user_setting)
+
+    resources("/feedback", FeedbackController, only: [:index])
 
     resources("/games", GameController, only: [:show, :delete]) do
       get("/image", Game.ImageController, :show, as: :image)
