@@ -132,6 +132,15 @@ defmodule Codebattle.Task do
     |> Repo.one()
   end
 
+  def get_task_by_tags_for_user(user, tags) do
+    __MODULE__
+    |> filter_visibility(user)
+    |> where([t], fragment("? @> ?", t.tags, ^tags))
+    |> order_by(fragment("RANDOM()"))
+    |> limit(1)
+    |> Repo.one()
+  end
+
   def list_all_tags do
     query = """
     SELECT distinct unnest(tags) from tasks

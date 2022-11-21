@@ -127,7 +127,7 @@ const CreateGameDialog = ({ hideModal }) => {
           timeout_seconds: game.timeoutSeconds,
           recipient_id: opponent.id,
           task_id: _.get(chosenTask, 'id', null),
-          tags: chosenTags,
+          task_tags: chosenTags,
         }),
       );
     } else if (!isInvite) {
@@ -136,7 +136,7 @@ const CreateGameDialog = ({ hideModal }) => {
         opponent_type: game.type,
         timeout_seconds: game.timeoutSeconds,
         task_id: _.get(chosenTask, 'id', null),
-        tags: chosenTags,
+        task_tags: chosenTags,
       });
     }
     hideModal();
