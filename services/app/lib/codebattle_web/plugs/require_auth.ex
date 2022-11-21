@@ -9,7 +9,7 @@ defmodule CodebattleWeb.Plugs.RequireAuth do
   def call(conn, _) do
     next_path = String.replace(conn.request_path, "join", "")
 
-    if conn.assigns.current_user.is_guest do
+    if conn.assigns.current_user.guest do
       conn
       |> put_flash(:danger, gettext("You must be logged in to access that page"))
       |> redirect(to: Routes.session_path(conn, :new, next: next_path))

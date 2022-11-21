@@ -2,6 +2,7 @@ defmodule CodebattleWeb.Factory do
   use ExMachina.Ecto, repo: Codebattle.Repo
 
   alias Codebattle.{User, Game, Task, TaskPack, UserGame}
+  alias Codebattle.Feedback
   alias Codebattle.Playbook
   alias Ueberauth.Auth
 
@@ -231,5 +232,9 @@ defmodule CodebattleWeb.Factory do
 
   def invite_factory do
     %Codebattle.Invite{}
+  end
+
+  def feedback_factory do
+    %Feedback{author_name: "name", status: "proposal", text: "text", title_link: "title_link"}
   end
 end

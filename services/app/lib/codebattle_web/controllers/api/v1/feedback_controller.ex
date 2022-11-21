@@ -1,9 +1,27 @@
-defmodule CodebattleWeb.Api.V1.FeedBackController do
+defmodule CodebattleWeb.Api.V1.FeedbackController do
   use CodebattleWeb, :controller
 
-  alias Codebattle.FeedBack
+  alias Codebattle.Feedback
 
-  def index(conn, %{
+  import Ecto.Query
+
+  plug CodebattleWeb.Plugs.ApiRequireAuth
+
+  def index(conn, params) do
+    page_number = params |> Map.get("page", "1") |> String.to_integer()
+    page_size = params |> Map.get("page_size", "50") |> String.to_integer()
+
+    query = from(f in Feedback, order_by: {:desc, f.id})
+    page = Repo.paginate(query, %{page: page_number, page_size: page_size})
+    page_info = Map.take(page, [:page_number, :page_size, :total_entries, :total_pages])
+
+    json(conn, %{
+      feedback: page.entries,
+      page_info: page_info
+    })
+  end
+
+  def create(conn, %{
         "attachments" => attachments
       }) do
     %{
@@ -13,15 +31,16 @@ defmodule CodebattleWeb.Api.V1.FeedBackController do
       "title_link" => title_link
     } = List.first(attachments)
 
-    Repo.insert!(
-      FeedBack.changeset(%FeedBack{}, %{
-        author_name: author_name,
-        status: status,
-        text: text,
-        title_link: title_link
-      })
-    )
+    feedback =
+      Repo.insert!(
+        Feedback.changeset(%Feedback{}, %{
+          author_name: author_name,
+          status: status,
+          text: text,
+          title_link: title_link
+        })
+      )
 
-    json(conn, %{})
+    conn |> put_status(:created) |> json(%{feedback: feedback})
   end
 end

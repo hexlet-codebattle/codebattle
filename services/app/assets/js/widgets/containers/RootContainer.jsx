@@ -17,7 +17,7 @@ import * as ChatActions from '../middlewares/Chat';
 import { isShowGuideSelector } from '../selectors';
 import WaitingOpponentInfo from '../components/WaitingOpponentInfo';
 import CodebattlePlayer from './CodebattlePlayer';
-import FeedBackWidget from '../components/FeedBackWidget';
+import FeedbackWidget from '../components/FeedbackWidget';
 import GamePreview from '../components/Game/GamePreview';
 import { replayerMachineStates } from '../machines/game';
 import AnimationModal from '../components/AnimationModal';
@@ -269,7 +269,7 @@ const muteSound = e => {
                     <FontAwesomeIcon size="lg" color="white" icon={['fas', 'volume-mute']} />
                   </div>
 )}
-                  <FeedBackWidget />
+                  <FeedbackWidget />
                 </div>
               </div>
               {current.matches({ replayer: replayerMachineStates.on }) && (

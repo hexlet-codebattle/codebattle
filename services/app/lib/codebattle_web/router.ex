@@ -41,10 +41,10 @@ defmodule CodebattleWeb.Router do
     pipe_through(:api)
 
     scope "/v1", V1, as: :v1 do
+      get("/games/completed", GameController, :completed)
       get("/:user_id/activity", ActivityController, :show)
       get("/game_activity", GameActivityController, :show)
       get("/playbook/:id", PlaybookController, :show)
-      get("/user/:id/completed_games", UserController, :completed_games)
       get("/user/:id/stats", UserController, :stats)
       get("/user/current", UserController, :current)
       resources("/reset_password", ResetPasswordController, only: [:create], singleton: true)
@@ -52,7 +52,7 @@ defmodule CodebattleWeb.Router do
       resources("/settings", SettingsController, only: [:show, :update], singleton: true)
       resources("/tasks", TaskController, only: [:index, :show])
       resources("/users", UserController, only: [:index, :show, :create])
-      post("/feedback", FeedBackController, :index)
+      resources("/feedback", FeedbackController, only: [:index, :create])
       post("/playbooks/approve", PlaybookController, :approve)
       post("/playbooks/reject", PlaybookController, :reject)
     end
@@ -95,6 +95,8 @@ defmodule CodebattleWeb.Router do
 
     get("/settings", UserController, :edit, as: :user_setting)
     put("/settings", UserController, :update, as: :user_setting)
+
+    resources("/feedback", FeedbackController, only: [:index])
 
     resources("/games", GameController, only: [:show, :delete]) do
       get("/image", Game.ImageController, :show, as: :image)
