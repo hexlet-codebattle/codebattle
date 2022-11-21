@@ -101,7 +101,7 @@ defmodule Codebattle.CodeCheck.OutputParser.V2 do
             result: solution_result["value"],
             status:
               if solution_result["type"] == "result" and
-                   result_equal_expected(solution_result["value"], assert_item.expected) do
+                   AtomizedMap.atomize(solution_result["value"]) == assert_item.expected do
                 "success"
               else
                 "failure"
@@ -142,10 +142,4 @@ defmodule Codebattle.CodeCheck.OutputParser.V2 do
         }
     }
   end
-
-  defp result_equal_expected(result, expected) when is_map(result) do
-    AtomizedMap.atomize(result) == expected
-  end
-
-  defp result_equal_expected(result, expected), do: result == expected
 end
