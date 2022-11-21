@@ -202,7 +202,7 @@ test('test task choice', async () => {
     opponent_type: 'other_user',
     timeout_seconds: 480,
     task_id: null,
-    tags: [],
+    task_tags: [],
   };
 
   expect(lobbyMiddlewares.createGame).toHaveBeenCalledWith(params);
