@@ -104,14 +104,22 @@ defmodule CodebattleWeb.LobbyChannel do
 
   defp add_players(acc, _payload, user), do: Map.put(acc, :players, [user])
 
-  defp maybe_add_task(acc, %{"task_id" => nil}, _user), do: acc
+  defp maybe_add_task(params, %{"task_id" => nil, "task_tags" => []}, _user), do: params
+  defp maybe_add_task(params, %{"task_id" => nil, "task_tags" => nil}, _user), do: params
 
-  defp maybe_add_task(acc, %{"task_id" => task_id}, user) do
+  defp maybe_add_task(params, %{"task_id" => task_id}, user) when not is_nil(task_id) do
     case Codebattle.Task.get_task_by_id_for_user(user, task_id) do
-      nil -> acc
-      task -> Map.put(acc, :task, task)
+      nil -> params
+      task -> Map.put(params, :task, task)
     end
   end
 
-  defp maybe_add_task(acc, _payload, _user), do: acc
+  defp maybe_add_task(params, %{"task_tags" => task_tags}, user) when length(task_tags) > 0 do
+    case Codebattle.Task.get_task_by_tags_for_user(user, task_tags) do
+      nil -> params
+      task -> Map.put(params, :task, task)
+    end
+  end
+
+  defp maybe_add_task(params, _payload, _user), do: params
 end
