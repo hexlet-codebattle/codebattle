@@ -29,7 +29,6 @@ export const loadNextPage = createAsyncThunk(
 
     const response = await axios.get(route);
 
-
     return camelizeKeys(response.data);
   },
 );
