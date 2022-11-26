@@ -1,6 +1,7 @@
 import { camelizeKeys } from 'humps';
 import { useDispatch, useSelector } from 'react-redux';
 import React, { useState, useEffect } from 'react';
+import { Doughnut } from 'react-chartjs-2';
 import axios from 'axios';
 // import classnames from 'classnames';
 
@@ -85,21 +86,21 @@ const UserProfile = () => {
           <p className="lead">elo_rating</p>
         </div>
         <div className="col-md-3 col-5 text-center">
-          <div className="h1 cb-stats-number">{stats.stats.won + stats.stats.lost + stats.stats.gaveUp}</div>
+          <div className="h1 cb-stats-number">{Object.values(stats.stats.games).reduce((a, b) => a + b, 0)}</div>
           <p className="lead">games_played</p>
         </div>
       </div>
       <div className="row my-4 justify-content-center">
         <div className="col-3 col-lg-2 text-center">
-          <div className="h1 cb-stats-number">{stats.stats.won}</div>
+          <div className="h1 cb-stats-number">{stats.stats.games.won}</div>
           <p className="lead">won</p>
         </div>
         <div className="col-3 col-lg-2 text-center border-left border-right">
-          <div className="h1 cb-stats-number">{stats.stats.lost}</div>
+          <div className="h1 cb-stats-number">{stats.stats.games.lost}</div>
           <p className="lead">lost</p>
         </div>
         <div className="col-3 col-lg-2 text-center">
-          <div className="h1 cb-stats-number">{stats.stats.gaveUp}</div>
+          <div className="h1 cb-stats-number">{stats.stats.games.gaveUp}</div>
           <p className="lead">gave up</p>
         </div>
       </div>
@@ -240,6 +241,9 @@ const UserProfile = () => {
         </div>
         <div className="col-12 col-md-9 my-4 cb-user-stats">
           {statContainers()}
+        </div>
+        <div className="col-12 col-md-9 my-4 cb-user-stats">
+          <Doughnut data={{}} />
         </div>
       </div>
     </div>

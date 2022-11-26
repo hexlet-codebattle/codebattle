@@ -3300,6 +3300,11 @@ character-reference-invalid@^1.0.0:
   resolved "https://registry.yarnpkg.com/character-reference-invalid/-/character-reference-invalid-1.1.4.tgz#083329cda0eae272ab3dbbf37e9a382c13af1560"
   integrity sha512-mKKUkUbhPpQlCOfIuZkvSEgktjPFIsZKRRbC6KWVEMvlzblj3i3asQv5ODsrwt0N3pHAEvjP8KTQPHkp0+6jOg==
 
+chart.js@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/chart.js/-/chart.js-4.0.1.tgz#93d5d50ac222a5b3b6ac7488e82e1553ac031592"
+  integrity sha512-5/8/9eBivwBZK81mKvmIwTb2Pmw4D/5h1RK9fBWZLLZ8mCJ+kfYNmV9rMrGoa5Hgy2/wVDBMLSUDudul2/9ihA==
+
 "chokidar@>=3.0.0 <4.0.0":
   version "3.5.2"
   resolved "https://registry.yarnpkg.com/chokidar/-/chokidar-3.5.2.tgz#dba3976fcadb016f66fd365021d91600d01c1e75"
@@ -9921,6 +9926,11 @@ react-calendar-heatmap@^1.8.1:
   dependencies:
     memoize-one "^5.0.0"
     prop-types "^15.6.2"
+
+react-chartjs-2@^5.0.1:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/react-chartjs-2/-/react-chartjs-2-5.0.1.tgz#7ef7dd57441903e8d34e1d06a1aead1095d0bca8"
+  integrity sha512-u38C9OxynlNCBp+79grgXRs7DSJ9w8FuQ5/HO5FbYBbri8HSZW+9SWgjVshLkbXBfXnMGWakbHEtvN0nL2UG7Q==
 
 react-dates@^21.8.0:
   version "21.8.0"
