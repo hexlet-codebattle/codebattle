@@ -123,7 +123,7 @@ const EditorContainer = ({
       }
     : _.noop();
   const editorParams = {
-    syntax: editorState.currentLangSlug || 'javascript',
+    syntax: editorState.currentLangSlug || 'js',
     onChange,
     checkResult,
     value: editorState.text,
