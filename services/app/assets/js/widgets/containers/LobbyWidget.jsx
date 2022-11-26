@@ -31,6 +31,7 @@ import LobbyChat from './LobbyChat';
 import levelRatio from '../config/levelRatio';
 import PlayerLoading from '../components/PlayerLoading';
 import hashLinkNames from '../config/hashLinkNames';
+import { fetchCompletedGames, loadNextPage } from '../slices/completedGames';
 
 const isActiveGame = game => [gameStateCodes.playing, gameStateCodes.waitingOpponent].includes(game.state);
 
@@ -401,6 +402,7 @@ const GameContainers = ({
   completedGames,
   liveTournaments,
   completedTournaments,
+  totalGames,
 }) => {
   useEffect(() => {
     if (!window.location.hash) {
@@ -481,7 +483,7 @@ const GameContainers = ({
           role="tabpanel"
           aria-labelledby="completedGames-tab"
         >
-          <CompletedGames games={completedGames} />
+          <CompletedGames games={completedGames} loadNextPage={loadNextPage} totalGames={totalGames} />
         </div>
       </div>
     </div>
@@ -531,13 +533,18 @@ const LobbyWidget = () => {
     }
   }, [currentUser, dispatch]);
 
+  useEffect(() => {
+    dispatch(fetchCompletedGames());
+  }, [dispatch]);
+
   const {
     loaded,
     activeGames,
-    completedGames,
     liveTournaments,
     completedTournaments,
   } = useSelector(selectors.lobbyDataSelector);
+
+  const { completedGames, totalGames } = useSelector(selectors.completedGamesData);
 
   if (!loaded) {
     return <Loading />;
@@ -553,6 +560,7 @@ const LobbyWidget = () => {
             completedGames={completedGames}
             liveTournaments={liveTournaments}
             completedTournaments={completedTournaments}
+            totalGames={totalGames}
           />
           <LobbyChat />
         </div>
