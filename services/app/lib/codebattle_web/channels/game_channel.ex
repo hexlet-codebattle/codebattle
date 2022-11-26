@@ -15,7 +15,7 @@ defmodule CodebattleWeb.GameChannel do
 
       {:ok, GameView.render_game(game), assign(socket, :game_id, game_id)}
     rescue
-      Ecto.NoResultsError ->
+      _ ->
         {:ok, %{error: "Game not found"}, socket}
     end
   end

@@ -122,5 +122,22 @@ defmodule CodebattleWeb.GameChannelTest do
     assert payload.players == game.players
   end
 
+  describe "handle_in" do
+    test "do not erros if there is no game in registry", %{user1: user1, socket1: socket1} do
+      {:ok, game} = Game.Context.create_game(%{players: [user1], level: "easy"})
+      :ok = Game.Context.terminate_game(game)
+      game_topic = game_topic(game)
+      {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
+      Mix.Shell.Process.flush()
+
+      push(socket1, "editor:data", %{editor_text: "oi", lang_slug: "js"})
+
+      assert_receive %Phoenix.Socket.Reply{
+        topic: ^game_topic,
+        payload: %{reason: :game_is_dead}
+      }
+    end
+  end
+
   defp game_topic(game), do: "game:" <> to_string(game.id)
 end

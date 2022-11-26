@@ -1,4 +1,4 @@
-defmodule CodebattleWeb.UserControllerTest do
+defmodule CodebattleWeb.FeedbackControllerTest do
   use CodebattleWeb.ConnCase, async: true
 
   test "index user", %{conn: conn} do
