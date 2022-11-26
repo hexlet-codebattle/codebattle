@@ -56,7 +56,19 @@ const tasks = [
   { name: 'task3 filtered', id: 3, tags: [''] },
 ];
 const users = [{ name: 'user1', id: -4 }, { name: 'user2', id: -2 }];
-axios.get.mockResolvedValue({ data: { tasks, users } });
+const games = [];
+const pageInfo = {
+  totalPages: 2,
+  nextPage: 1,
+};
+axios.get.mockResolvedValue({
+  data: {
+    tasks,
+    users,
+    games,
+    pageInfo,
+  },
+});
 
 jest.mock('react-select');
 jest.mock('react-select/async');
@@ -124,13 +136,6 @@ const players = [{ id: -4 }, { id: -2 }];
 const preloadedState = {
   lobby: {
     activeGames: [],
-    completedGames: [
-      {
-        id: -1,
-        level: 'elementary',
-        players,
-      },
-    ],
     loaded: true,
     presenceList: players,
     liveTournaments: [],
@@ -140,6 +145,17 @@ const preloadedState = {
       gameOptions: {},
       opponentInfo: null,
     },
+  },
+  completedGames: {
+    completedGames: [
+      {
+        id: -1,
+        level: 'elementary',
+        players,
+      },
+    ],
+    nextPage: null,
+    totalPages: null,
   },
   user: {
     currentUserId: 1,
