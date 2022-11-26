@@ -3,46 +3,29 @@ defmodule Codebattle.User.Stats do
     Find user game statistic
   """
 
-  alias Codebattle.{Repo, UserGame, Game}
+  alias Codebattle.Repo
+  alias Codebattle.UserGame
 
-  import Ecto.Query, warn: false
+  import Ecto.Query
+
+  @default_game_stats %{"won" => 0, "lost" => 0, "gave_up" => 0}
 
   def get_game_stats(user_id) do
-    query =
+    user_games_stats =
       from(ug in UserGame,
-        select: {
-          ug.result,
-          count(ug.id)
-        },
+        select: %{result: ug.result, lang: ug.lang, count: count(ug.id)},
         where: ug.user_id == ^user_id,
         where: ug.result in ["won", "lost", "gave_up"],
-        group_by: ug.result
+        group_by: [ug.result, ug.lang]
       )
+      |> Repo.all()
 
-    stats = Repo.all(query)
+    games_stats =
+      user_games_stats
+      |> Enum.group_by(& &1.result, & &1.count)
+      |> Map.new(fn {k, v} -> {k, Enum.sum(v)} end)
+      |> Map.merge(@default_game_stats, fn _k, v1, _v2 -> v1 end)
 
-    Map.merge(%{"won" => 0, "lost" => 0, "gave_up" => 0}, Enum.into(stats, %{}))
-  end
-
-  def get_completed_games(user_id, params) do
-    page_number = params |> Map.get("page", "1") |> String.to_integer()
-    page_size = params |> Map.get("page_size", "9") |> String.to_integer()
-
-    query =
-      from(
-        g in Game,
-        order_by: [desc_nulls_last: g.finishes_at],
-        inner_join: ug in assoc(g, :user_games),
-        inner_join: u in assoc(ug, :user),
-        where: g.state == "game_over" and ug.user_id == ^user_id,
-        preload: [:users, :user_games]
-      )
-
-    page = Repo.paginate(query, %{page: page_number, page_size: page_size})
-
-    %{
-      games: page.entries,
-      page_info: Map.take(page, [:page_number, :page_size, :total_entries, :total_pages])
-    }
+    %{games: games_stats, all: user_games_stats}
   end
 end

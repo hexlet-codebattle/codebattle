@@ -122,27 +122,19 @@ defmodule CodebattleWeb.Api.V1.UserControllerTest do
     end
   end
 
-  describe ".stats" do
+  describe "stats" do
     test "shows user stats", %{conn: conn} do
-      user1 =
-        insert(:user, %{
-          name: "first",
-          email: "test1@test.test",
-          github_id: 1,
-          rating: 2400,
-          achievements: ["played_ten_games", "win_games_with?js_php_ruby"]
-        })
-
-      user2 =
-        insert(:user, %{name: "second", email: "test2@test.test", github_id: 2, rating: 2310})
-
+      user1 = insert(:user, %{name: "1", github_id: 1, rating: 2400})
+      user2 = insert(:user, %{name: "2", github_id: 2, rating: 2310})
       game1 = insert(:game, state: "game_over")
       game2 = insert(:game, state: "game_over")
-
-      insert(:user_game, user: user1, creator: false, game: game1, result: "won")
-      insert(:user_game, user: user2, creator: false, game: game1, result: "lost")
-      insert(:user_game, user: user1, creator: false, game: game2, result: "lost")
-      insert(:user_game, user: user2, creator: false, game: game2, result: "won")
+      game3 = insert(:game, state: "game_over")
+      insert(:user_game, user: user1, creator: false, game: game1, result: "won", lang: "js")
+      insert(:user_game, user: user2, creator: false, game: game1, result: "lost", lang: "js")
+      insert(:user_game, user: user1, creator: false, game: game2, result: "lost", lang: "ruby")
+      insert(:user_game, user: user2, creator: false, game: game2, result: "won", lang: "ruby")
+      insert(:user_game, user: user1, creator: false, game: game3, result: "lost", lang: "golang")
+      insert(:user_game, user: user2, creator: false, game: game3, result: "won", lang: "golang")
 
       conn =
         conn
@@ -150,8 +142,14 @@ defmodule CodebattleWeb.Api.V1.UserControllerTest do
 
       resp_body = json_response(conn, 200)
 
+      assert [
+               %{"count" => 1, "lang" => "golang", "result" => "lost"},
+               %{"count" => 1, "lang" => "js", "result" => "won"},
+               %{"count" => 1, "lang" => "ruby", "result" => "lost"}
+             ] = resp_body["stats"]["all"] |> Enum.sort_by(& &1["lang"])
+
       assert %{
-               "stats" => %{"gave_up" => 0, "lost" => 1, "won" => 1},
+               "stats" => %{"games" => %{"gave_up" => 0, "lost" => 2, "won" => 1}},
                "user" => _user
              } = resp_body
     end
