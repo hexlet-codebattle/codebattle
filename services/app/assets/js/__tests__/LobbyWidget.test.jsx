@@ -319,6 +319,10 @@ describe('test task choice', () => {
 
     fireEvent.click(await findByRole('button', { name: 'Create a Game' }));
 
+    /*
+    jest doesn't process properly async/await inside array.forEach()
+    (see https://gist.github.com/joeytwiddle/37d2085425c049629b80956d3c618971)
+  */
     for (let i = 0; i < elementaryTasksFromBackend.length; i += 1) {
       expect(await findByRole('button', { name: elementaryTasksFromBackend[i].name })).toBeInTheDocument(); // eslint-disable-line
     }
@@ -476,10 +480,7 @@ test('test lobby completed games infinite scroll', async () => {
 
   expect(await findAllByText(toLocalTime(gameRepeatedOnPages.finishesAt))).toHaveLength(1);
   expect(axiosSpy).toHaveBeenCalledWith('/api/v1/games/completed?page_size=20&page=2');
-  /*
-    jest doesn't process properly async/await inside array.forEach()
-    (see https://gist.github.com/joeytwiddle/37d2085425c049629b80956d3c618971)
-  */
+
   for (let i = 0; i < allGames.length; i += 1) {
     expect(await findByText(toLocalTime(allGames[i].finishesAt))).toBeInTheDocument(); // eslint-disable-line
   }
