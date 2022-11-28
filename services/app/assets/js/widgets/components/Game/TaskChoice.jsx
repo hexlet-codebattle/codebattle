@@ -54,15 +54,13 @@ const getTaskIdsByTags = (dictionary, tags) => {
   return _.intersection(...taskIds);
 };
 
-const filterTasksByTagsAndLevel = (tasks, tags, dictionary, level) => {
-  const tasksFilteredByLevel = tasks.filter(task => task.level === level);
-
+const filterTasksByTagsAndLevel = (tasks, tags, dictionary) => {
   if (tags.length === 0) {
-    return tasksFilteredByLevel;
+    return tasks;
   }
 
   const availableTaskIds = getTaskIdsByTags(dictionary, tags);
-  return tasksFilteredByLevel.filter(task => availableTaskIds.includes(task.id));
+  return tasks.filter(task => availableTaskIds.includes(task.id));
 };
 
 const CurrentUserTaskLabel = ({ task, userStats = { user: { avatarUrl: '' } } }) => {
@@ -208,7 +206,9 @@ export default ({
 
   const tagsToTaskIdsDictionary = mapTagsToTaskIds(allTasks, taskTags);
 
-  const filteredTasks = filterTasksByTagsAndLevel(allTasks, chosenTags, tagsToTaskIdsDictionary, level);
+  const tasksFilteredByLevel = allTasks.filter(task => task.level === level);
+
+  const filteredTasks = filterTasksByTagsAndLevel(tasksFilteredByLevel, chosenTags, tagsToTaskIdsDictionary, level);
 
   const isTagButtonDisabled = tag => {
     if (!isRandomTask(chosenTask)) {
