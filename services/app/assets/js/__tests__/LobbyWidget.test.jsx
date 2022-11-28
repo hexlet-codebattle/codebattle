@@ -51,9 +51,24 @@ jest.mock(
 
 jest.mock('axios');
 const tasks = [
-  { name: 'task1 name', id: 1, tags: [''] },
-  { name: 'task2 name', id: 2, tags: [''] },
-  { name: 'task3 filtered', id: 3, tags: [''] },
+  {
+    name: 'task1 name',
+    id: 1,
+    level: 'elementary',
+    tags: [''],
+  },
+  {
+    name: 'task2 name',
+    id: 2,
+    level: 'elementary',
+    tags: [''],
+  },
+  {
+    name: 'task3 filtered',
+    level: 'elementary',
+    id: 3,
+    tags: [''],
+  },
 ];
 const users = [{ name: 'user1', id: -4 }, { name: 'user2', id: -2 }];
 const games = [];
