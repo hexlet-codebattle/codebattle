@@ -11,6 +11,7 @@ import * as lobbyMiddlewares from '../widgets/middlewares/Lobby';
 import * as mainMiddlewares from '../widgets/middlewares/Main';
 import reducers from '../widgets/slices';
 import LobbyWidget from '../widgets/containers/LobbyWidget';
+import { getTestData, toLocalTime } from './helpers';
 
 jest.mock(
   '../widgets/containers/UserInfo',
@@ -42,7 +43,7 @@ jest.mock(
     const gonParams = {
       local: 'en',
       current_user: { id: 1, sound_settings: {} },
-      task_tags: ['math', 'string', 'rest'],
+      task_tags: ['math', 'string', 'asd', 'rest'],
     };
     return { getAsset: type => gonParams[type] };
   },
@@ -50,38 +51,37 @@ jest.mock(
 );
 
 jest.mock('axios');
-const tasks = [
-  {
-    name: 'task1 name',
-    id: 1,
-    level: 'elementary',
-    tags: [''],
-  },
-  {
-    name: 'task2 name',
-    id: 2,
-    level: 'elementary',
-    tags: [''],
-  },
-  {
-    name: 'task3 filtered',
-    level: 'elementary',
-    id: 3,
-    tags: [''],
-  },
-];
+
+const {
+  allTasks,
+  tasksMatchingRestTags,
+  tasksUnsuitableForRestTags,
+  tasksMatchingMathTag,
+  tasksUnsuitableForMathTag,
+  tasksMatchingMathAndStringTags,
+  tasksUnsuitableForMathAndStringTags,
+  tasksFilteredByName,
+  tasksEliminatedByName,
+  tasksFilteredByNameAndTag,
+  tasksEliminatedByNameAndTag,
+  tasksFromBackend,
+  gamesPage1,
+  pageInfo1,
+  gamesPage2,
+  pageInfo2,
+  gameRepeatedOnPages,
+  uniqueGamesOnPage2,
+  allGames,
+} = getTestData();
+
 const users = [{ name: 'user1', id: -4 }, { name: 'user2', id: -2 }];
-const games = [];
-const pageInfo = {
-  totalPages: 2,
-  nextPage: 1,
-};
+
 axios.get.mockResolvedValue({
   data: {
-    tasks,
+    tasks: tasksFromBackend,
     users,
-    games,
-    pageInfo,
+    games: gamesPage1,
+    pageInfo: pageInfo1,
   },
 });
 
@@ -91,6 +91,7 @@ jest.mock('react-select/async');
   AsyncSelect and Select component mock is made by means of the series of buttons.
   Each button represents one option.
   Clicking the buttons you simulate a choice of the options in the AsyncSelect component.
+  Button "filter tasks by name" simulates a user to type 'name' into the Select
 */
 
 jest.mock(
@@ -205,82 +206,229 @@ test('test rendering GameList', async () => {
   expect(getByText(/Create a Game/)).toBeInTheDocument();
 });
 
-test('test task choice', async () => {
+describe('test task choice', () => {
+  beforeEach(() => {
+    store = configureStore({
+      reducer,
+      preloadedState,
+    });
+  });
+
+  test('choose a task', async () => {
+    const {
+      getByText,
+      getByRole,
+      findByText,
+      findByRole,
+    } = render(
+      <Provider store={store}>
+        <LobbyWidget />
+      </Provider>,
+    );
+
+    const createGameButton = getByRole('button', { name: 'Create a Game' });
+
+    fireEvent.click(createGameButton);
+
+    expect(getByText(/Choose task/)).toBeInTheDocument();
+    expect(await findByText(/random task/)).toBeInTheDocument();
+    expect(getByText(/task1 name/)).toBeInTheDocument();
+    expect(getByText(/task2 name/)).toBeInTheDocument();
+
+    fireEvent.click(getByRole('button', { name: 'Create Battle' }));
+
+    const params = {
+      level: 'elementary',
+      opponent_type: 'other_user',
+      timeout_seconds: 480,
+      task_id: null,
+      task_tags: [],
+    };
+
+    expect(lobbyMiddlewares.createGame).toHaveBeenCalledWith(params);
+
+    fireEvent.click(await findByRole('button', { name: 'Create a Game' }));
+    fireEvent.click(await findByRole('button', { name: 'task1 name' }));
+    fireEvent.click(getByRole('button', { name: 'Create Battle' }));
+
+    const paramsWithChosenTask = {
+      ...params,
+      task_id: 1,
+    };
+    expect(lobbyMiddlewares.createGame).toHaveBeenCalledWith(paramsWithChosenTask);
+
+    fireEvent.click(await findByRole('button', { name: 'Create a Game' }));
+    fireEvent.click(getByRole('button', { name: 'With a friend' }));
+    fireEvent.click(await findByRole('button', { name: 'user1' }));
+    fireEvent.click(getByRole('button', { name: 'Create Invite' }));
+
+    const paramsWithOpponent = {
+      ..._.omit(params, ['opponent_type']),
+      recipient_id: -4,
+    };
+    expect(mainMiddlewares.createInvite).toHaveBeenCalledWith(paramsWithOpponent);
+
+    fireEvent.click(await findByRole('button', { name: 'Create a Game' }));
+    fireEvent.click(getByRole('button', { name: 'With a friend' }));
+    fireEvent.click(await findByRole('button', { name: 'user1' }));
+    fireEvent.click(getByRole('button', { name: 'task1 name' }));
+    fireEvent.click(getByRole('button', { name: 'Create Invite' }));
+
+    const paramsWithOpponentAndChosenTask = {
+      ...paramsWithOpponent,
+      task_id: 1,
+    };
+    expect(mainMiddlewares.createInvite).toHaveBeenCalledWith(paramsWithOpponentAndChosenTask);
+  });
+
+  test('filter tasks by tags', async () => {
+    const {
+      getByRole,
+      findByRole,
+      queryByRole,
+    } = render(
+      <Provider store={store}>
+        <LobbyWidget />
+      </Provider>,
+    );
+
+    fireEvent.click(await findByRole('button', { name: 'Create a Game' }));
+
+    const mathTag = await findByRole('button', { name: 'math' });
+    const stringTag = getByRole('button', { name: 'string' });
+    const asdTag = getByRole('button', { name: 'asd' });
+    const restTag = getByRole('button', { name: 'rest' });
+
+    allTasks.forEach(task => expect(getByRole('button', { name: task.name })).toBeInTheDocument());
+
+    fireEvent.click(restTag);
+
+    expect(mathTag).toBeDisabled();
+    expect(stringTag).toBeDisabled();
+    expect(asdTag).toBeDisabled();
+
+    tasksMatchingRestTags.forEach(task => expect(getByRole('button', { name: task.name })).toBeInTheDocument());
+
+    tasksUnsuitableForRestTags.forEach(task => (
+      expect(queryByRole('button', { name: task.name })).not.toBeInTheDocument()
+    ));
+
+    fireEvent.click(restTag);
+
+    expect(mathTag).toBeEnabled();
+    expect(stringTag).toBeEnabled();
+    expect(asdTag).toBeEnabled();
+
+    allTasks.forEach(task => expect(getByRole('button', { name: task.name })).toBeInTheDocument());
+
+    fireEvent.click(mathTag);
+
+    expect(asdTag).toBeDisabled();
+    expect(restTag).toBeDisabled();
+    tasksMatchingMathTag.forEach(task => expect(getByRole('button', { name: task.name })).toBeInTheDocument());
+    tasksUnsuitableForMathTag.forEach(task => (
+      expect(queryByRole('button', { name: task.name })).not.toBeInTheDocument()
+    ));
+
+    fireEvent.click(stringTag);
+
+    tasksMatchingMathAndStringTags.forEach(task => expect(getByRole('button', { name: task.name })).toBeInTheDocument());
+    tasksUnsuitableForMathAndStringTags.forEach(task => (
+      expect(queryByRole('button', { name: task.name })).not.toBeInTheDocument()
+    ));
+
+    fireEvent.click(mathTag);
+    fireEvent.click(stringTag);
+
+    expect(asdTag).toBeEnabled();
+    expect(restTag).toBeEnabled();
+    allTasks.forEach(task => expect(getByRole('button', { name: task.name })).toBeInTheDocument());
+  });
+
+  test('filter tasks by name', async () => {
+    const {
+      getByRole,
+      findByRole,
+      queryByRole,
+    } = render(
+      <Provider store={store}>
+        <LobbyWidget />
+      </Provider>,
+    );
+
+    fireEvent.click(await findByRole('button', { name: 'Create a Game' }));
+
+    fireEvent.click(await findByRole('button', { name: 'filter tasks by name' }));
+
+    tasksFilteredByName.forEach(task => expect(getByRole('button', { name: task.name })).toBeInTheDocument());
+    tasksEliminatedByName.forEach(task => expect(queryByRole('button', { name: task.name })).not.toBeInTheDocument());
+  });
+
+  test('filter tasks by name and tags', async () => {
+    const {
+      getByRole,
+      findByRole,
+      queryByRole,
+    } = render(
+      <Provider store={store}>
+        <LobbyWidget />
+      </Provider>,
+    );
+
+    fireEvent.click(await findByRole('button', { name: 'Create a Game' }));
+    fireEvent.click(await findByRole('button', { name: 'filter tasks by name' }));
+    fireEvent.click(getByRole('button', { name: 'math' }));
+
+    tasksFilteredByNameAndTag.forEach(task => expect(queryByRole('button', { name: task.name })).toBeInTheDocument());
+    tasksEliminatedByNameAndTag.forEach(task => (
+      expect(queryByRole('button', { name: task.name })).not.toBeInTheDocument()
+    ));
+  });
+});
+
+test('test lobby completed games infinite scroll', async () => {
   const {
-    getByText,
-    getByRole,
     findByText,
     findByRole,
+    queryByText,
+    findByTestId,
+    findAllByText,
+    getByText,
   } = render(
     <Provider store={store}>
       <LobbyWidget />
     </Provider>,
   );
 
-  const createGameButton = getByRole('button', { name: 'Create a Game' });
+  const axiosSpy = jest.spyOn(axios, 'get');
 
-  fireEvent.click(createGameButton);
+  fireEvent.click(await findByRole('tab', { name: 'Completed Games' }));
 
-  expect(getByText(/Choose task/)).toBeInTheDocument();
-  expect(await findByText(/random task/)).toBeInTheDocument();
-  expect(getByText(/task1 name/)).toBeInTheDocument();
-  expect(getByText(/task2 name/)).toBeInTheDocument();
+  expect(await findByText(`Total games: ${pageInfo1.totalEntries}`)).toBeInTheDocument();
+  expect(axiosSpy).toHaveBeenCalledWith('/api/v1/games/completed?page_size=20');
+  gamesPage1.forEach(game => expect(getByText(toLocalTime(game.finishesAt))).toBeInTheDocument());
+  uniqueGamesOnPage2.forEach(game => (
+    expect(queryByText(toLocalTime(game.finishesAt))).not.toBeInTheDocument()
+  ));
 
-  fireEvent.click(getByRole('button', { name: 'Create Battle' }));
+  axiosSpy.mockResolvedValueOnce({
+    data: {
+      games: gamesPage2,
+      pageInfo: pageInfo2,
+    },
+  });
 
-  const params = {
-    level: 'elementary',
-    opponent_type: 'other_user',
-    timeout_seconds: 480,
-    task_id: null,
-    task_tags: [],
-  };
+  const scrollContainer = await findByTestId('scroll');
 
-  expect(lobbyMiddlewares.createGame).toHaveBeenCalledWith(params);
+  fireEvent.scroll(scrollContainer, { target: { scrollY: 500 } });
 
-  fireEvent.click(await findByRole('button', { name: 'Create a Game' }));
-  fireEvent.click(await findByRole('button', { name: 'task1 name' }));
-  fireEvent.click(getByRole('button', { name: 'Create Battle' }));
-
-  const paramsWithChosenTask = {
-    ...params,
-    task_id: 1,
-  };
-  expect(lobbyMiddlewares.createGame).toHaveBeenCalledWith(paramsWithChosenTask);
-
-  fireEvent.click(await findByRole('button', { name: 'Create a Game' }));
-  fireEvent.click(getByRole('button', { name: 'With a friend' }));
-  fireEvent.click(await findByRole('button', { name: 'user1' }));
-  fireEvent.click(getByRole('button', { name: 'Create Invite' }));
-
-  const paramsWithOpponent = {
-    ..._.omit(params, ['opponent_type']),
-    recipient_id: -4,
-  };
-  expect(mainMiddlewares.createInvite).toHaveBeenCalledWith(paramsWithOpponent);
-
-  fireEvent.click(await findByRole('button', { name: 'Create a Game' }));
-  fireEvent.click(getByRole('button', { name: 'With a friend' }));
-  fireEvent.click(await findByRole('button', { name: 'user1' }));
-  fireEvent.click(getByRole('button', { name: 'task1 name' }));
-  fireEvent.click(getByRole('button', { name: 'Create Invite' }));
-
-  const paramsWithOpponentAndChosenTask = {
-    ...paramsWithOpponent,
-    task_id: 1,
-  };
-  expect(mainMiddlewares.createInvite).toHaveBeenCalledWith(paramsWithOpponentAndChosenTask);
-
-  fireEvent.click(await findByRole('button', { name: 'Create a Game' }));
-
-  const firstTaskOpt = await findByRole('button', { name: 'task1 name' });
-  const secondTaskOpt = getByRole('button', { name: 'task2 name' });
-  const thirdTaskOpt = getByRole('button', { name: 'task3 filtered' });
-
-  fireEvent.click(getByRole('button', { name: 'filter tasks by name' }));
-
-  expect(firstTaskOpt).toBeInTheDocument();
-  expect(secondTaskOpt).toBeInTheDocument();
-  expect(thirdTaskOpt).not.toBeInTheDocument();
-},
-8000);
+  expect(await findAllByText(toLocalTime(gameRepeatedOnPages.finishesAt))).toHaveLength(1);
+  expect(axiosSpy).toHaveBeenCalledWith('/api/v1/games/completed?page_size=20&page=2');
+  /*
+    jest doesn't process properly async/await inside array.forEach()
+    (see https://gist.github.com/joeytwiddle/37d2085425c049629b80956d3c618971)
+  */
+  for (let i = 0; i < allGames.length; i += 1) {
+    expect(await findByText(toLocalTime(allGames[i].finishesAt))).toBeInTheDocument(); // eslint-disable-line
+  }
+});
