@@ -53,7 +53,8 @@ jest.mock(
 jest.mock('axios');
 
 const {
-  allTasks,
+  elementaryTasksFromBackend,
+  easyTasksFromBackend,
   tasksMatchingRestTags,
   tasksUnsuitableForRestTags,
   tasksMatchingMathTag,
@@ -64,7 +65,6 @@ const {
   tasksEliminatedByName,
   tasksFilteredByNameAndTag,
   tasksEliminatedByNameAndTag,
-  tasksFromBackend,
   gamesPage1,
   pageInfo1,
   gamesPage2,
@@ -78,7 +78,7 @@ const users = [{ name: 'user1', id: -4 }, { name: 'user2', id: -2 }];
 
 axios.get.mockResolvedValue({
   data: {
-    tasks: tasksFromBackend,
+    tasks: [...elementaryTasksFromBackend, ...easyTasksFromBackend],
     users,
     games: gamesPage1,
     pageInfo: pageInfo1,
@@ -218,8 +218,8 @@ describe('test task choice', () => {
     const {
       getByText,
       getByRole,
-      findByText,
       findByRole,
+      getByTitle,
     } = render(
       <Provider store={store}>
         <LobbyWidget />
@@ -231,9 +231,6 @@ describe('test task choice', () => {
     fireEvent.click(createGameButton);
 
     expect(getByText(/Choose task/)).toBeInTheDocument();
-    expect(await findByText(/random task/)).toBeInTheDocument();
-    expect(getByText(/task1 name/)).toBeInTheDocument();
-    expect(getByText(/task2 name/)).toBeInTheDocument();
 
     fireEvent.click(getByRole('button', { name: 'Create Battle' }));
 
@@ -258,6 +255,29 @@ describe('test task choice', () => {
     expect(lobbyMiddlewares.createGame).toHaveBeenCalledWith(paramsWithChosenTask);
 
     fireEvent.click(await findByRole('button', { name: 'Create a Game' }));
+    fireEvent.click(await findByRole('button', { name: 'math' }));
+    fireEvent.click(getByRole('button', { name: 'string' }));
+    fireEvent.click(getByRole('button', { name: 'Create Battle' }));
+
+    const paramsWithChosenTags = {
+      ...params,
+      task_tags: ['math', 'string'],
+    };
+    expect(lobbyMiddlewares.createGame).toHaveBeenCalledWith(paramsWithChosenTags);
+
+    fireEvent.click(await findByRole('button', { name: 'Create a Game' }));
+    fireEvent.click(getByTitle('easy'));
+    fireEvent.click(await findByRole('button', { name: 'task7 name' }));
+    fireEvent.click(getByRole('button', { name: 'Create Battle' }));
+
+    const paramsWithChosenTaskAndChangedLevel = {
+      ...params,
+      level: 'easy',
+      task_id: 7,
+    };
+    expect(lobbyMiddlewares.createGame).toHaveBeenCalledWith(paramsWithChosenTaskAndChangedLevel);
+
+    fireEvent.click(await findByRole('button', { name: 'Create a Game' }));
     fireEvent.click(getByRole('button', { name: 'With a friend' }));
     fireEvent.click(await findByRole('button', { name: 'user1' }));
     fireEvent.click(getByRole('button', { name: 'Create Invite' }));
@@ -279,6 +299,32 @@ describe('test task choice', () => {
       task_id: 1,
     };
     expect(mainMiddlewares.createInvite).toHaveBeenCalledWith(paramsWithOpponentAndChosenTask);
+  }, 6000);
+
+  test('filter tasks by level', async () => {
+    const {
+      findByRole,
+      getByTitle,
+      queryByRole,
+    } = render(
+      <Provider store={store}>
+        <LobbyWidget />
+      </Provider>,
+    );
+
+    fireEvent.click(await findByRole('button', { name: 'Create a Game' }));
+
+    for (let i = 0; i < elementaryTasksFromBackend.length; i += 1) {
+      expect(await findByRole('button', { name: elementaryTasksFromBackend[i].name })).toBeInTheDocument(); // eslint-disable-line
+    }
+    easyTasksFromBackend.forEach(task => expect(queryByRole('button', { name: task.name })).not.toBeInTheDocument());
+
+    fireEvent.click(getByTitle('easy'));
+
+    for (let i = 0; i < easyTasksFromBackend.length; i += 1) {
+      expect(await findByRole('button', { name: easyTasksFromBackend[i].name })).toBeInTheDocument(); // eslint-disable-line
+    }
+    elementaryTasksFromBackend.forEach(task => expect(queryByRole('button', { name: task.name })).not.toBeInTheDocument());
   });
 
   test('filter tasks by tags', async () => {
@@ -299,11 +345,9 @@ describe('test task choice', () => {
     const asdTag = getByRole('button', { name: 'asd' });
     const restTag = getByRole('button', { name: 'rest' });
 
-    allTasks.forEach(task => expect(getByRole('button', { name: task.name })).toBeInTheDocument());
-
     fireEvent.click(restTag);
 
-    expect(mathTag).toBeDisabled();
+    expect(mathTag).toBeEnabled();
     expect(stringTag).toBeDisabled();
     expect(asdTag).toBeDisabled();
 
@@ -319,12 +363,13 @@ describe('test task choice', () => {
     expect(stringTag).toBeEnabled();
     expect(asdTag).toBeEnabled();
 
-    allTasks.forEach(task => expect(getByRole('button', { name: task.name })).toBeInTheDocument());
+    elementaryTasksFromBackend.forEach(task => expect(getByRole('button', { name: task.name })).toBeInTheDocument());
 
     fireEvent.click(mathTag);
 
+    expect(stringTag).toBeEnabled();
     expect(asdTag).toBeDisabled();
-    expect(restTag).toBeDisabled();
+    expect(restTag).toBeEnabled();
     tasksMatchingMathTag.forEach(task => expect(getByRole('button', { name: task.name })).toBeInTheDocument());
     tasksUnsuitableForMathTag.forEach(task => (
       expect(queryByRole('button', { name: task.name })).not.toBeInTheDocument()
@@ -332,6 +377,8 @@ describe('test task choice', () => {
 
     fireEvent.click(stringTag);
 
+    expect(restTag).toBeDisabled();
+    expect(asdTag).toBeDisabled();
     tasksMatchingMathAndStringTags.forEach(task => expect(getByRole('button', { name: task.name })).toBeInTheDocument());
     tasksUnsuitableForMathAndStringTags.forEach(task => (
       expect(queryByRole('button', { name: task.name })).not.toBeInTheDocument()
@@ -342,7 +389,7 @@ describe('test task choice', () => {
 
     expect(asdTag).toBeEnabled();
     expect(restTag).toBeEnabled();
-    allTasks.forEach(task => expect(getByRole('button', { name: task.name })).toBeInTheDocument());
+    elementaryTasksFromBackend.forEach(task => expect(getByRole('button', { name: task.name })).toBeInTheDocument());
   });
 
   test('filter tasks by name', async () => {

@@ -22,10 +22,11 @@
       "name": "task6 name"
     }
   ],
-  "tasksFromBackend": [
+  "elementaryTasksFromBackend": [
     {
       "name": "task1 name",
       "id": 1,
+      "level": "elementary",
       "tags": [
         "math",
         "string"
@@ -34,6 +35,7 @@
     {
       "name": "task2 name",
       "id": 2,
+      "level": "elementary",
       "tags": [
         "math"
       ]
@@ -41,6 +43,7 @@
     {
       "name": "task3 filtered",
       "id": 3,
+      "level": "elementary",
       "tags": [
         "math"
       ]
@@ -48,6 +51,7 @@
     {
       "name": "task4 name",
       "id": 4,
+      "level": "elementary",
       "tags": [
         ""
       ]
@@ -55,16 +59,39 @@
     {
       "name": "task5 name",
       "id": 5,
+      "level": "elementary",
       "tags": [
+        "math",
         "unpopularTag"
       ]
     },
     {
       "name": "task6 name",
       "id": 6,
+      "level": "elementary",
       "tags": [
         "asd"
       ]
+    }
+  ],
+  "easyTasksFromBackend": [
+    {
+      "name": "task7 name",
+      "id": 7,
+      "level": "easy",
+      "tags": []
+    },
+    {
+      "name": "task8 name",
+      "id": 8,
+      "level": "easy",
+      "tags": []
+    },
+    {
+      "name": "task9 name",
+      "id": 9,
+      "level": "easy",
+      "tags": []
     }
   ],
   "tasksMatchingRestTags": [
@@ -104,14 +131,14 @@
     },
     {
       "name": "task3 filtered"
+    },
+    {
+      "name": "task5 name"
     }
   ],
   "tasksUnsuitableForMathTag": [
     {
       "name": "task4 name"
-    },
-    {
-      "name": "task5 name"
     },
     {
       "name": "task6 name"
@@ -173,6 +200,9 @@
     },
     {
       "name": "task2 name"
+    },
+    {
+      "name": "task5 name"
     }
   ],
   "tasksEliminatedByNameAndTag": [
@@ -184,9 +214,6 @@
     },
     { 
       "name": "task4 name"
-    },
-    {
-      "name": "task5 name"
     },
     {
       "name": "task6 name"
