@@ -13,6 +13,11 @@ import reducers from '../widgets/slices';
 import LobbyWidget from '../widgets/containers/LobbyWidget';
 import { getTestData, toLocalTime } from './helpers';
 
+Object.defineProperty(window, 'scrollTo', {
+  writable: true,
+  value: jest.fn(),
+});
+
 jest.mock(
   '../widgets/containers/UserInfo',
   () => function UserInfo() {
