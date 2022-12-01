@@ -128,7 +128,7 @@ const EditorContainer = ({
     checkResult,
     value: editorState.text,
     editorHeight,
-    mode: editorCurrent.context.editable ? editorMode : editorModes.default,
+    mode: editorMode || editorModes.default,
     theme,
     ...userSettings,
     editable:
