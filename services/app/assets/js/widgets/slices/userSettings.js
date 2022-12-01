@@ -5,12 +5,12 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 const userSettings = Gon.getAsset('current_user');
 let csrfToken;
 
-if (process.browser) {
+/* if (process.browser) {
   // for testing purposes
   csrfToken = document
     .querySelector("meta[name='csrf-token']")
     .getAttribute('content');
-}
+} */
 export const updateUserSettings = createAsyncThunk(
   'userSettings/update',
   async (userData, { rejectWithValue }) => {

@@ -1,7 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const env = process.env.NODE_ENV || 'development';
@@ -34,8 +33,16 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /\.m?js/,
+        resolve: {
+          fullySpecified: false,
+        },
+      },
+      {
         test: /\.po$/,
-        loaders: ['i18next-po-loader'],
+        use: {
+          loader: 'i18next-po-loader'
+        },
       },
       {
         test: /\.jsx?$/,
@@ -45,31 +52,21 @@ module.exports = {
         },
       },
       {
+        test: /\.(eot|svg|ttf|woff|woff2)$/,
+        type: 'asset/inline',
+      },
+      {
+        test: /\.(png|jpg|gif|svg)$/,
+        type: 'asset/resource'
+      },
+      {
         test: /\.(sa|sc|c)ss$/,
         use: [
           {
             loader: MiniCssExtractPlugin.loader,
-            options: {
-              hmr: !isProd,
-            },
           },
           { loader: 'css-loader' },
           { loader: 'sass-loader' },
-        ],
-      },
-      {
-        test: /\.(eot|svg|ttf|woff|woff2)$/,
-        use: 'url-loader',
-      },
-      {
-        test: /\.(png|jpg|gif|svg)$/,
-        use: [
-          {
-            loader: 'file-loader',
-            options: {
-              name: '[name].[ext]',
-            },
-          },
         ],
       },
     ],
@@ -96,24 +93,14 @@ module.exports = {
   },
   plugins: [
     new CopyWebpackPlugin({
-      patterns: [{ from: 'assets/static' }],
+      // patterns: [{ from: 'assets/static', to: 'assets' }],
+      patterns: [{ from: 'assets/static', to: '../assets' }],
     }),
     new webpack.ProvidePlugin({
       $: 'jquery',
       jQuery: 'jquery',
       'window.jQuery': 'jquery',
       Popper: ['popper.js', 'default'],
-    }),
-    new MonacoWebpackPlugin({
-      languages: [
-        'ruby',
-        'javascript',
-        'typescript',
-        'python',
-        'clojure',
-        'php',
-        'go',
-      ],
     }),
     new MiniCssExtractPlugin({
       filename: '[name].css',

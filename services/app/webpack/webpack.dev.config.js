@@ -6,11 +6,9 @@ const devWebpackConfig = merge(baseWebpackConfig, {
   mode: 'development',
   devtool: 'eval-cheap-module-source-map',
   devServer: {
-    writeToDisk: true,
-    publicPath: '/assets',
-    overlay: {
-      // warnings: true,
-      errors: true,
+    devMiddleware: {
+      writeToDisk: true,
+      publicPath: '/assets',
     },
   },
   plugins: [
