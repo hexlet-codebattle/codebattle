@@ -2,6 +2,7 @@ defmodule CodebattleWeb.GameChannelTest do
   use CodebattleWeb.ChannelCase
 
   alias Codebattle.Game
+  alias Codebattle.Game.Player
   alias CodebattleWeb.GameChannel
   alias CodebattleWeb.UserSocket
 
@@ -135,6 +136,27 @@ defmodule CodebattleWeb.GameChannelTest do
       assert_receive %Phoenix.Socket.Reply{
         topic: ^game_topic,
         payload: %{reason: :game_is_dead}
+      }
+    end
+
+    test "show score", %{user1: user1, user2: user2, socket1: socket1} do
+      players = [Player.build(user1), Player.build(user2)]
+      game1 = insert(:game, state: "game_over", players: players)
+      insert(:user_game, user: user1, creator: false, game: game1, result: "won")
+      insert(:user_game, user: user2, creator: true, game: game1, result: "gave_up")
+
+      {:ok, game} = Game.Context.create_game(%{players: [user1, user2], level: "easy"})
+      :ok = Game.Context.terminate_game(game)
+      game_topic = game_topic(game)
+      {:ok, _response, socket1} = subscribe_and_join(socket1, GameChannel, game_topic)
+      Mix.Shell.Process.flush()
+
+      user1_id = user1.id
+      push(socket1, "game:score", %{})
+
+      assert_receive %Phoenix.Socket.Reply{
+        topic: ^game_topic,
+        payload: %{score: %{game_results: [%{}], player_results: %{}, winner_id: ^user1_id}}
       }
     end
   end

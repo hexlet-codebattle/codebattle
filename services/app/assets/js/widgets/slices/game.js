@@ -26,6 +26,9 @@ const game = createSlice({
     updateGameStatus: (state, { payload }) => {
       Object.assign(state.gameStatus, payload);
     },
+    setGameScore: (state, { payload }) => {
+      state.gameStatus.score = payload.score;
+    },
     updateRematchStatus: (state, { payload }) => {
       Object.assign(state.gameStatus, payload);
     },

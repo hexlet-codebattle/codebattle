@@ -94,6 +94,13 @@ defmodule CodebattleWeb.GameChannel do
     end
   end
 
+  def handle_in("game:score", _, socket) do
+    game_id = socket.assigns.game_id
+    score = Context.fetch_score_by_game_id(game_id)
+
+    {:reply, {:ok, %{score: score}}, socket}
+  end
+
   def handle_in("rematch:send_offer", _, socket) do
     game_id = socket.assigns.game_id
     user = socket.assigns.current_user
