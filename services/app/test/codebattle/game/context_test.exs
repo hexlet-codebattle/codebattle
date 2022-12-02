@@ -52,28 +52,32 @@ defmodule Codebattle.Game.ContextTest do
 
   describe "fetch_score_by_game_id/1" do
     test "works" do
-      user1 = %{id: user1_id} = insert(:user)
-      user2 = %{id: user2_id} = insert(:user)
+      user1 = insert(:user)
+      user2 = insert(:user)
       players = [Player.build(user1), Player.build(user2)]
 
-      game = %{id: game1_id} = insert(:game, state: "game_over", players: players)
-      insert(:user_game, user: user1, creator: false, game: game, result: "won")
-      insert(:user_game, user: user2, creator: true, game: game, result: "gave_up")
-      game = %{id: game2_id} = insert(:game, state: "game_over", players: players)
-      insert(:user_game, user: user2, creator: true, game: game, result: "won")
-      insert(:user_game, user: user1, creator: false, game: game, result: "lost")
-      game = %{id: game3_id} = insert(:game, state: "playing", players: players)
-      insert(:user_game, user: user1, creator: false, game: game, result: nil)
-      insert(:user_game, user: user2, creator: true, game: game, result: nil)
+      game1 = insert(:game, state: "game_over", players: players)
+      insert(:user_game, user: user1, creator: false, game: game1, result: "won")
+      insert(:user_game, user: user2, creator: true, game: game1, result: "gave_up")
+      game2 = insert(:game, state: "game_over", players: players)
+      insert(:user_game, user: user2, creator: true, game: game2, result: "won")
+      insert(:user_game, user: user1, creator: false, game: game2, result: "lost")
+      game3 = insert(:game, state: "playing", players: players)
+      insert(:user_game, user: user1, creator: false, game: game3, result: nil)
+      insert(:user_game, user: user2, creator: true, game: game3, result: nil)
+      game4 = insert(:game, state: "game_over", players: players)
+      insert(:user_game, user: user1, creator: false, game: game4, result: "won")
+      insert(:user_game, user: user2, creator: true, game: game4, result: "lost")
 
       assert %{
-               opponent_one_id: ^user1_id,
-               opponent_two_id: ^user2_id,
                game_results: [
-                 %{game_id: ^game1_id, winner_id: ^user1_id, inserted_at: _},
-                 %{game_id: ^game2_id, winner_id: ^user2_id, inserted_at: _}
-               ]
-             } = Game.Context.fetch_score_by_game_id(game3_id)
+                 %{game_id: game1.id, inserted_at: game1.inserted_at, winner_id: user1.id},
+                 %{game_id: game2.id, inserted_at: game2.inserted_at, winner_id: user2.id},
+                 %{game_id: game4.id, inserted_at: game4.inserted_at, winner_id: user1.id}
+               ],
+               player_results: %{to_string(user2.id) => 1, to_string(user1.id) => 2},
+               winner_id: user1.id
+             } == Game.Context.fetch_score_by_game_id(game3.id)
     end
   end
 end

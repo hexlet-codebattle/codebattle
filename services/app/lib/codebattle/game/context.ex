@@ -227,38 +227,51 @@ defmodule Codebattle.Game.Context do
             }
           )
           |> Repo.all()
-          |> Enum.reduce([], fn elem, acc ->
+          |> Enum.reduce({0, 0, []}, fn elem, {score_one, score_two, acc} ->
             case {elem.result_one, elem.result_two} do
               {"won", _} ->
-                [
-                  %{
-                    game_id: elem.id,
-                    inserted_at: elem.inserted_at,
-                    winner_id: opponent_one_id
-                  }
-                  | acc
-                ]
+                {score_one + 1, score_two,
+                 [
+                   %{
+                     game_id: elem.id,
+                     inserted_at: elem.inserted_at,
+                     winner_id: opponent_one_id
+                   }
+                   | acc
+                 ]}
 
               {_, "won"} ->
-                [
-                  %{
-                    game_id: elem.id,
-                    inserted_at: elem.inserted_at,
-                    winner_id: opponent_two_id
-                  }
-                  | acc
-                ]
+                {score_one, score_two + 1,
+                 [
+                   %{
+                     game_id: elem.id,
+                     inserted_at: elem.inserted_at,
+                     winner_id: opponent_two_id
+                   }
+                   | acc
+                 ]}
 
               _ ->
-                acc
+                {score_one, score_two, acc}
             end
           end)
-          |> Enum.reverse()
+
+        {score_one, score_two, results} = game_results
+
+        winner_id =
+          cond do
+            score_one > score_two -> opponent_one_id
+            score_one < score_two -> opponent_two_id
+            true -> nil
+          end
 
         %{
-          opponent_one_id: opponent_one_id,
-          opponent_two_id: opponent_two_id,
-          game_results: game_results
+          winner_id: winner_id,
+          player_results: %{
+            to_string(opponent_one_id) => score_one,
+            to_string(opponent_two_id) => score_two
+          },
+          game_results: Enum.reverse(results)
         }
 
       _ ->

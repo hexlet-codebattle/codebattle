@@ -1,5 +1,5 @@
 import React from 'react';
-
+import cn from 'classnames';
 import DarkModeButton from './DarkModeButton';
 import GameResultIcon from '../../components/GameResultIcon';
 import LanguagePicker from '../../components/LanguagePicker';
@@ -21,6 +21,7 @@ const ModeButtons = ({ player }) => (
 const EditorToolbar = ({
   type,
   player,
+  score,
   editor,
   toolbarClassNames,
   editorSettingClassNames,
@@ -28,40 +29,51 @@ const EditorToolbar = ({
   langPickerStatus,
   actionBtnsProps,
   showControlBtns,
-}) => (
-  <>
-    <div data-player-type={type}>
-      <div className={toolbarClassNames} role="toolbar">
-        <div
-          className={editorSettingClassNames}
-          role="group"
-          aria-label="Editor settings"
-        >
-          <LanguagePicker editor={editor} status={langPickerStatus} />
-        </div>
+}) => {
+  const scoreResultClass = cn('ml-2', {
+    'cb-game-score-won': score.winnerId === player.id,
+    'cb-game-score-lost': (score.winnerId !== null) && (score.winnerId !== player.id),
+    'cb-game-score-draw': score.winnerId === null,
+  });
+  return (
+    <>
+      <div data-player-type={type}>
+        <div className={toolbarClassNames} role="toolbar">
+          <div
+            className={editorSettingClassNames}
+            role="group"
+            aria-label="Editor settings"
+          >
+            <LanguagePicker editor={editor} status={langPickerStatus} />
+          </div>
 
-        {showControlBtns && (
-          <>
-            <ModeButtons player={player} />
-            <GameActionButtons {...actionBtnsProps} />
-          </>
-        )}
+          {showControlBtns && (
+            <>
+              <ModeButtons player={player} />
+              <GameActionButtons {...actionBtnsProps} />
+            </>
+          )}
 
-        <div className={userInfoClassNames} role="group" aria-label="User info">
-          <UserInfo user={player} />
+          <div className={userInfoClassNames} role="group" aria-label="User info">
+            <UserInfo user={player} />
+            <div className={scoreResultClass}>
+              Score:
+              {score.score}
+            </div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div
-      className="position-absolute"
-      style={{
- bottom: '5%', right: '5%', opacity: '0.5', zIndex: '100',
-}}
-    >
-      <GameResultIcon editor={editor} />
-    </div>
-  </>
+      <div
+        className="position-absolute"
+        style={{
+          bottom: '5%', right: '5%', opacity: '0.5', zIndex: '100',
+        }}
+      >
+        <GameResultIcon editor={editor} />
+      </div>
+    </>
 );
+};
 
 export default EditorToolbar;
