@@ -101,7 +101,6 @@ class Editor extends Component {
   }
 
   setInitialValue(value) {
-    console.log({ value })
     this.setState({ initialValue: value })
     this.forceUpdate()
   }
@@ -109,7 +108,6 @@ class Editor extends Component {
   async componentDidUpdate(prevProps) {
     const { syntax, mode, editable, value } = this.props;
 
-    console.log(value, "value-editor")
     if (prevProps.syntax !== syntax || !editable) {
       this.setState({ initialValue: value })
     }
@@ -217,11 +215,12 @@ class Editor extends Component {
     const {
       value, syntax, onChange, theme,
     } = this.props;
+
+    // const model = this.editor.getModel().setValue(value);
     // FIXME: move here and apply mapping object
     //
     //
     const mappedSyntax = languages[syntax];
-    console.log({state: this.state.initialValue}, 'asdfasfdasdfasfd')
     return (
       <>
         <MonacoEditor

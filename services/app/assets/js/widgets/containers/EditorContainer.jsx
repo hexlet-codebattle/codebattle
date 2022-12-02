@@ -108,7 +108,6 @@ const EditorContainer = ({
   };
 
   const onReset = (value) => {
-    console.log({ editorRef })
     editorRef.current.setInitialValue(value)
   };
 
