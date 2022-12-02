@@ -28,8 +28,8 @@ defmodule CodebattleWeb.GameController do
 
         is_player = Helpers.is_player?(game, user.id)
 
-        case {game.state, game.type, is_player} do
-          {"waiting_opponent", _, false} ->
+        case {game.state, is_player} do
+          {"waiting_opponent", false} ->
             player = Helpers.get_first_player(game)
 
             conn

@@ -12,7 +12,6 @@ defmodule Codebattle.Game.Context do
 
   alias Codebattle.CodeCheck.Result
   alias Codebattle.Game
-  alias Codebattle.Game.Player
   alias Codebattle.Game.Engine
   alias Codebattle.Repo
   alias Codebattle.Tournament
@@ -204,31 +203,66 @@ defmodule Codebattle.Game.Context do
     Repo.one!(query)
   end
 
+  @spec fetch_score_by_game_id(game_id) :: map() | nil
   def fetch_score_by_game_id(id) do
     game = get_game!(id)
 
-    [opponent_one_id, opponent_two_id] = Enum.map(game.players, fn %Player{id: id} -> id end)
+    case game.players do
+      [%{id: opponent_one_id}, %{id: opponent_two_id}] ->
+        game_results =
+          from(
+            g in Game,
+            distinct: true,
+            order_by: g.id,
+            inner_join: ug1 in assoc(g, :user_games),
+            inner_join: ug2 in assoc(g, :user_games),
+            where: g.state == "game_over",
+            where: ug1.user_id == ^opponent_one_id,
+            where: ug2.user_id == ^opponent_two_id,
+            select: %{
+              id: g.id,
+              inserted_at: g.inserted_at,
+              result_one: ug1.result,
+              result_two: ug2.result
+            }
+          )
+          |> Repo.all()
+          |> Enum.reduce([], fn elem, acc ->
+            case {elem.result_one, elem.result_two} do
+              {"won", _} ->
+                [
+                  %{
+                    game_id: elem.id,
+                    inserted_at: elem.inserted_at,
+                    winner_id: opponent_one_id
+                  }
+                  | acc
+                ]
 
-    Map.put_new(result, opponent_one_id, 0)
-    Map.put_new(result, opponent_two_id, 0)
+              {_, "won"} ->
+                [
+                  %{
+                    game_id: elem.id,
+                    inserted_at: elem.inserted_at,
+                    winner_id: opponent_two_id
+                  }
+                  | acc
+                ]
 
-    query =
-      from(
-        g in Game,
-        order_by: [desc_nulls_last: g.finishes_at],
-        inner_join: ug1 in assoc(g, :user_games),
-        inner_join: ug2 in assoc(g, :user_games),
-        where: g.state == "game_over" and ug1.user_id == ^opponent_one_id and ug2.user_id == ^opponent_two_id,
-        select: %{id: g.id, inserted_at: g.inserted_at, user_one: ug1.user_id, user_two: ug2.user_id, result_one: ug1.result, result_two: ug2.result}
-      )
+              _ ->
+                acc
+            end
+          end)
+          |> Enum.reverse()
 
-    result = Repo.all(query)
+        %{
+          opponent_one_id: opponent_one_id,
+          opponent_two_id: opponent_two_id,
+          game_results: game_results
+        }
 
-    Logger.info("------------------------------------")
-    Logger.info(inspect(game.players))
-    Logger.info(opponent_one_id)
-    Logger.info(games)
-    Logger.info(result)
-    Logger.info("------------------------------------")
+      _ ->
+        nil
+    end
   end
 end
