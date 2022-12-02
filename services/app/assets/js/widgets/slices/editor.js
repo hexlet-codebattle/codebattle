@@ -9,6 +9,7 @@ const initialState = {
   },
   // TODO (add-stairways): reset stub data
   text: {},
+  codeVersion: {version: 0},
   textHistory: {},
   langs: {},
   langsHistory: {},
@@ -79,6 +80,16 @@ const text = createSlice({
   },
 });
 
+const codeVersion = createSlice({
+  name: 'codeVersion',
+  initialState: initialState.codeVersion,
+  reducers: {
+    updateEditorCodeVersion: (state) => {
+      state.version = state.version + 1
+    },
+  },
+});
+
 const textHistory = createSlice({
   name: 'textHistory',
   initialState: initialState.textHistory,
@@ -111,6 +122,7 @@ const langsHistory = createSlice({
 
 export const actions = {
   ...text.actions,
+  ...codeVersion.actions,
   ...textHistory.actions,
   ...langs.actions,
   ...meta.actions,
@@ -121,6 +133,7 @@ export default combineReducers({
   meta: meta.reducer,
   text: text.reducer,
   textHistory: textHistory.reducer,
+  codeVersion: codeVersion.reducer,
   langs: langs.reducer,
   langsHistory: langsHistory.reducer,
 });

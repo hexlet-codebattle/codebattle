@@ -28,6 +28,7 @@ export const opponentPlayerSelector = state => {
 const editorsMetaSelector = state => state.editor.meta;
 export const editorTextsSelector = state => state.editor.text;
 export const editorTextsHistorySelector = state => state.editor.textHistory;
+export const codeVersionSelector = state => state.editor.codeVersion.version;
 
 export const gameStatusSelector = state => state.game.gameStatus;
 
@@ -47,6 +48,7 @@ export const getSolution = playerId => state => {
 export const editorDataSelector = (gameCurrent, playerId) => state => {
   const meta = editorsMetaSelector(state)[playerId];
   const editorTexts = editorTextsSelector(state);
+  const codeVersion = codeVersionSelector(state);
   const editorTextsHistory = editorTextsHistorySelector(state);
 
   if (!meta) {
@@ -64,6 +66,7 @@ export const editorDataSelector = (gameCurrent, playerId) => state => {
 
   return {
     ...meta,
+    codeVersion,
     text,
     currentLangSlug,
   };

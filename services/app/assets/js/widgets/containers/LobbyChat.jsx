@@ -8,13 +8,13 @@ import 'emoji-mart/css/emoji-mart.css';
 import * as chatMiddlewares from '../middlewares/Chat';
 
 const LobbyChat = ({ connectToChat }) => {
-  const { presenceList } = useSelector(selectors.lobbyDataSelector);
-  const messages = useSelector(state => selectors.chatMessagesSelector(state));
-
   useEffect(() => {
     connectToChat();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const { presenceList } = useSelector(selectors.lobbyDataSelector);
+  const messages = useSelector(state => selectors.chatMessagesSelector(state));
 
   return (
     <div className="d-flex shadow-sm h-100 mt-2" style={{ maxHeight: '500px' }}>

@@ -1,17 +1,17 @@
 import React from 'react';
-import { render } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import {
  Game, Lobby, UsersRating, UserPage, SettingsPage, RegistrationPage, Invites, StairwayGamePage, TournamentPage,
 } from './App';
 import Heatmap from './containers/Heatmap';
 
-export const renderInvitesWidget = domElement => render(<Invites />, domElement);
-export const renderGameWidget = domElement => render(<Game />, domElement);
-export const renderLobby = domElement => render(<Lobby />, domElement);
-export const renderHeatmapWidget = domElement => render(<Heatmap />, domElement);
-export const renderUsersRating = domElement => render(<UsersRating />, domElement);
-export const renderUserPage = domElement => render(<UserPage />, domElement);
-export const renderSettingPage = domElement => render(<SettingsPage />, domElement);
-export const renderRegistrationPage = domElement => render(<RegistrationPage />, domElement);
-export const renderStairwayGamePage = domElement => render(<StairwayGamePage />, domElement);
-export const renderTournamentPage = domElement => render(<TournamentPage />, domElement);
+export const renderInvitesWidget = domElement =>  createRoot(domElement).render(<Invites />);
+export const renderGameWidget = domElement => createRoot(domElement).render(<Game />);
+export const renderLobby = domElement => createRoot(domElement).render(<Lobby />);
+export const renderHeatmapWidget = domElement => createRoot(domElement).render(<Heatmap />);
+export const renderUsersRating = domElement => createRoot(domElement).render(<UsersRating />);
+export const renderUserPage = domElement => createRoot(domElement).render(<UserPage />);
+export const renderSettingPage = domElement => createRoot(domElement).render(<SettingsPage />);
+export const renderRegistrationPage = domElement => createRoot(domElement).render(<RegistrationPage />);
+export const renderStairwayGamePage = domElement => createRoot(domElement).render(<StairwayGamePage />);
+export const renderTournamentPage = domElement => createRoot(domElement).render(<TournamentPage />);

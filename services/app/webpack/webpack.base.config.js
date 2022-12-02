@@ -2,6 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 
 const env = process.env.NODE_ENV || 'development';
 const isProd = env === 'production';
@@ -92,6 +93,7 @@ module.exports = {
     },
   },
   plugins: [
+    new MonacoWebpackPlugin(),
     new CopyWebpackPlugin({
       // patterns: [{ from: 'assets/static', to: 'assets' }],
       patterns: [{ from: 'assets/static', to: '../assets' }],

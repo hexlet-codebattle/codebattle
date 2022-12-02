@@ -1,5 +1,5 @@
 /* eslint-disable no-bitwise */
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import MonacoEditor from 'react-monaco-editor';
 import { registerRulesForLanguage } from 'monaco-ace-tokenizer';
@@ -13,7 +13,7 @@ import sound from '../lib/sound';
 import { actions } from '../slices';
 import getLanguageTabSize from '../utils/editor';
 
-class Editor extends PureComponent {
+class Editor extends Component {
   static propTypes = {
     value: PropTypes.string,
     editable: PropTypes.bool,
@@ -38,6 +38,7 @@ class Editor extends PureComponent {
 
   constructor(props) {
     super(props);
+    this.state = { initialValue: props.value }
     this.statusBarRef = React.createRef();
     const convertRemToPixels = rem => rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
     // statusBarHeight = lineHeight = current fontSize * 1.5
@@ -74,7 +75,6 @@ class Editor extends PureComponent {
     };
     await this.updateHightLightForNotIncludeSyntax(syntax);
     this.currentMode = this.modes[mode]();
-
     this.editor.addAction({
       id: 'codebattle-check-keys',
       label: 'Codebattle check start',
@@ -100,8 +100,20 @@ class Editor extends PureComponent {
     window.addEventListener('keydown', this.ctrPlusS);
   }
 
+  setInitialValue(value) {
+    console.log({ value })
+    this.setState({ initialValue: value })
+    this.forceUpdate()
+  }
+
   async componentDidUpdate(prevProps) {
-    const { syntax, mode, editable } = this.props;
+    const { syntax, mode, editable, value } = this.props;
+
+    console.log(value, "value-editor")
+    if (prevProps.syntax !== syntax || !editable) {
+      this.setState({ initialValue: value })
+    }
+
     if (mode !== prevProps.mode) {
       if (this.currentMode) {
         this.currentMode.dispose();
@@ -137,7 +149,7 @@ class Editor extends PureComponent {
     }
 
     // fix flickering in editor
-    model.forceTokenization(model.getLineCount());
+    // model.forceTokenization(model.getLineCount());
   }
 
   componentWillUnmount() {
@@ -206,7 +218,10 @@ class Editor extends PureComponent {
       value, syntax, onChange, theme,
     } = this.props;
     // FIXME: move here and apply mapping object
+    //
+    //
     const mappedSyntax = languages[syntax];
+    console.log({state: this.state.initialValue}, 'asdfasfdasdfasfd')
     return (
       <>
         <MonacoEditor
@@ -216,7 +231,7 @@ class Editor extends PureComponent {
           height="100%"
           language={mappedSyntax}
           editorDidMount={this.editorDidMount}
-          value={value}
+          value={this.state.initialValue}
           onChange={onChange}
           data-guide-id="Editor"
         />
@@ -240,4 +255,5 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = { toggleMuteSound: actions.toggleMuteSound };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Editor);
+// const ConnectedComponent =  connect(mapStateToProps, mapDispatchToProps)(Editor);
+export default React.forwardRef((props, ref) => <Editor ref={ref} {...props} />)

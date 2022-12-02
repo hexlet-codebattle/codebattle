@@ -140,6 +140,7 @@ const ResetButton = ({ onClick, status }) => {
 
 const GameActionButtons = ({
   currentEditorLangSlug,
+  onReset,
   checkResult,
   checkBtnStatus,
   resetBtnStatus,
@@ -162,7 +163,8 @@ const GameActionButtons = ({
   };
 
   const handleReset = () => {
-    dispatch(resetTextToTemplate(currentEditorLangSlug));
+    const temaplate = dispatch(resetTextToTemplate(currentEditorLangSlug));
+    onReset(temaplate)
   };
 
   const renderModal = () => (

@@ -206,6 +206,7 @@ export const resetTextToTemplate = langSlug => (dispatch, getState) => {
   const langs = selectors.editorLangsSelector(state) || defaultLanguages;
   const { solutionTemplate: template } = _.find(langs, { slug: langSlug });
   dispatch(sendEditorText(template, langSlug));
+  return template;
 };
 
 export const soundNotification = notification();

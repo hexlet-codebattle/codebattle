@@ -88,10 +88,13 @@ const UsersRating = () => {
     attribute: 'rank',
     direction: 'asc',
   });
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(getUsersRatingPage(null, true, 1));
+  }, [dispatch]);
 
   const usersRatingPage = useSelector(usersListSelector);
   const storeLoaded = useSelector(state => state.storeLoaded);
-  const dispatch = useDispatch();
 
   const {
     pageInfo: { totalEntries },
@@ -100,9 +103,6 @@ const UsersRating = () => {
     withBots,
   } = usersRatingPage;
 
-  useEffect(() => {
-    dispatch(getUsersRatingPage(null, true, 1));
-  }, [dispatch]);
 
   let filterNode;
 

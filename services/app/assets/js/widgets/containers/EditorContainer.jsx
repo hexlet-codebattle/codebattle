@@ -1,10 +1,11 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import _ from 'lodash';
 import cn from 'classnames';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMachine } from '@xstate/react';
 import editorModes from '../config/editorModes';
 import EditorToolbar from './EditorsToolbars/EditorToolbar';
+import Editor from './Editor';
 import * as GameActions from '../middlewares/Game';
 import { actions } from '../slices';
 import * as selectors from '../selectors';
@@ -12,26 +13,31 @@ import GameContext from './GameContext';
 import { replayerMachineStates } from '../machines/game';
 import editorSettingsByUserType from '../config/editorSettingsByUserType';
 import editorUserTypes from '../config/editorUserTypes';
+import OutputTab from '../components/ExecutionOutput/OutputTab';
+import Output from '../components/ExecutionOutput/Output';
 
 const EditorContainer = ({
   id,
   editorMachine,
+  renderOutput,
   type,
   cardClassName,
   theme,
   editorState,
   editorHeight,
   editorMode,
-  children,
 }) => {
   const dispatch = useDispatch();
+  const editorRef = useRef(null);
   const updateEditorValue = data => dispatch(GameActions.sendEditorText(data));
   const players = useSelector(selectors.gamePlayersSelector);
 
-  const currentUserId = useSelector(state => selectors.currentUserIdSelector(state));
+  const currentUserId = useSelector(selectors.currentUserIdSelector);
+  const gameType = useSelector(selectors.gameTaskSelector);
   const currentEditorLangSlug = useSelector(state => selectors.userLangSelector(state)(currentUserId));
 
   const { current: gameCurrent } = useContext(GameContext);
+  const rightOutput = useSelector(selectors.rightExecutionOutputSelector(gameCurrent));
 
   const context = { userId: id, type };
 
@@ -91,7 +97,7 @@ const EditorContainer = ({
       };
     }
 
-    return () => {};
+    return () => { };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -101,13 +107,19 @@ const EditorContainer = ({
     ...editorSettingsByUserType[type],
   };
 
+  const onReset = (value) => {
+    console.log({ editorRef })
+    editorRef.current.setInitialValue(value)
+  };
+
   const actionBtnsProps = {
     checkResult,
+    onReset: onReset,
     ...userSettings,
     currentEditorLangSlug,
   };
 
-  const toolbarParams = {
+  const toolbarProps = {
     player: players[id],
     editor: editorState,
     status: editorCurrent.value,
@@ -119,14 +131,17 @@ const EditorContainer = ({
     && !gameCurrent.matches({ replayer: replayerMachineStates.on });
   const onChange = canChange
     ? value => {
-        updateEditorValue(value);
-      }
+      updateEditorValue(value);
+    }
     : _.noop();
-  const editorParams = {
+  const editorProps = {
     syntax: editorState.currentLangSlug || 'js',
+    gameType: gameType,
     onChange,
+    ref: editorRef,
     checkResult,
     value: editorState.text,
+    codeVersion: editorState.codeVersion,
     editorHeight,
     mode: editorCurrent.context.editable ? editorMode : editorModes.default,
     theme,
@@ -146,6 +161,59 @@ const EditorContainer = ({
       && isWon,
   });
 
+  const RightSide = ({ output, children }) => {
+    const [showTab, setShowTab] = useState('editor');
+    const isShowOutput = output && output.status;
+    const content = showTab === 'editor' ? (
+      <div id="editor" className="d-flex flex-column flex-grow-1">
+        {children}
+      </div>
+    ) : (
+      <div className="d-flex flex-column flex-grow-1 overflow-auto">
+        <div className="h-auto">
+          {isShowOutput && <Output sideOutput={output} />}
+        </div>
+      </div>
+    );
+
+    return (
+      <>
+        {content}
+        <nav>
+          <div className="nav nav-tabs bg-gray text-uppercase text-center font-weight-bold" id="nav-tab" role="tablist">
+            <a
+              className={cn(
+                'nav-item nav-link flex-grow-1 text-black rounded-0 px-5',
+                { active: showTab === 'editor' },
+              )}
+              href="#Editor"
+              onClick={e => {
+                e.preventDefault();
+                setShowTab('editor');
+              }}
+            >
+              Editor
+            </a>
+            <a
+              className={cn(
+                'nav-item nav-link flex-grow-1 text-black rounded-0 p-2 block',
+                { active: showTab === 'output' },
+              )}
+              href="#Output"
+              onClick={e => {
+                e.preventDefault();
+                setShowTab('output');
+              }}
+            >
+              {isShowOutput && <OutputTab sideOutput={output} side="right" />}
+            </a>
+          </div>
+        </nav>
+      </>
+    );
+  };
+
+
   return (
     <div data-editor-state={editorCurrent.value} className={pannelBackground}>
       <div
@@ -154,14 +222,19 @@ const EditorContainer = ({
         data-guide-id="LeftEditor"
       >
         <EditorToolbar
-          {...toolbarParams}
+          {...toolbarProps}
           toolbarClassNames="btn-toolbar justify-content-between align-items-center m-1"
           editorSettingClassNames="btn-group align-items-center m-1"
           userInfoClassNames="btn-group align-items-center justify-content-end m-1"
         />
-        {children({
-          ...editorParams,
-        })}
+        {
+          renderOutput ?
+            (<RightSide output={rightOutput}>
+              <Editor {...editorProps} />
+            </RightSide>)
+            :
+            (<Editor {...editorProps} />)
+        }
       </div>
     </div>
   );
