@@ -12,6 +12,7 @@ defmodule Codebattle.Game.Context do
 
   alias Codebattle.CodeCheck.Result
   alias Codebattle.Game
+  alias Codebattle.Game.Player
   alias Codebattle.Game.Engine
   alias Codebattle.Repo
   alias Codebattle.Tournament
@@ -201,5 +202,33 @@ defmodule Codebattle.Game.Context do
   defp get_from_db!(id) do
     query = from(g in Game, where: g.id == ^id, preload: [:task, :users, :user_games])
     Repo.one!(query)
+  end
+
+  def fetch_score_by_game_id(id) do
+    game = get_game!(id)
+
+    [opponent_one_id, opponent_two_id] = Enum.map(game.players, fn %Player{id: id} -> id end)
+
+    Map.put_new(result, opponent_one_id, 0)
+    Map.put_new(result, opponent_two_id, 0)
+
+    query =
+      from(
+        g in Game,
+        order_by: [desc_nulls_last: g.finishes_at],
+        inner_join: ug1 in assoc(g, :user_games),
+        inner_join: ug2 in assoc(g, :user_games),
+        where: g.state == "game_over" and ug1.user_id == ^opponent_one_id and ug2.user_id == ^opponent_two_id,
+        select: %{id: g.id, inserted_at: g.inserted_at, user_one: ug1.user_id, user_two: ug2.user_id, result_one: ug1.result, result_two: ug2.result}
+      )
+
+    result = Repo.all(query)
+
+    Logger.info("------------------------------------")
+    Logger.info(inspect(game.players))
+    Logger.info(opponent_one_id)
+    Logger.info(games)
+    Logger.info(result)
+    Logger.info("------------------------------------")
   end
 end

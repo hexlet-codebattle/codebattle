@@ -7,6 +7,7 @@ const initialState = {
     msg: '',
     type: null,
     startsAt: null,
+    score: null, // { [id1]: number, [id2]: number }
     timeoutSeconds: null,
     rematchState: null,
     rematchInitiatorId: null,

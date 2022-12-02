@@ -126,12 +126,14 @@ const initGameChannel = (dispatch, machine) => {
       rematchState,
       tournamentId,
       rematchInitiatorId,
+      score,
     } = camelizeKeys(response);
 
     const gameStatus = {
       state,
       type,
       startsAt,
+      score,
       timeoutSeconds,
       rematchState,
       rematchInitiatorId,
