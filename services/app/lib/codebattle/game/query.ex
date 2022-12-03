@@ -7,7 +7,7 @@ defmodule Codebattle.Game.Query do
   @spec get_completed_games(
           %{optional(:user_id) => integer()},
           %{
-            page: integer(),
+            page_number: integer(),
             page_size: integer()
           }
         ) :: %{games: [map()], page_info: map()}
