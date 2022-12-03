@@ -104,7 +104,7 @@ defmodule Codebattle.Bot.Server do
   @impl GenServer
   def handle_info(:say_about_code, state) do
     send_message_about_code(state)
-    Process.send_after(self(), :say_about_code, :timer.minutes(Enum.random(1..3)))
+    Process.send_after(self(), :say_about_code, :timer.minutes(Enum.random(7..10)))
 
     {:noreply, state}
   end

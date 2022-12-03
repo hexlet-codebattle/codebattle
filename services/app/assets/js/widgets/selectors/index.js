@@ -87,8 +87,8 @@ export const leftEditorSelector = gameCurrent => state => {
   const currentUserId = currentUserIdSelector(state);
   const player = _.get(gamePlayersSelector(state), currentUserId, false);
   const editorSelector = !!player && player.type === userTypes.secondPlayer
-      ? secondEditorSelector
-      : firstEditorSelector;
+    ? secondEditorSelector
+    : firstEditorSelector;
   return editorSelector(state, gameCurrent);
 };
 
@@ -96,8 +96,8 @@ export const rightEditorSelector = gameCurrent => state => {
   const currentUserId = currentUserIdSelector(state);
   const player = _.get(gamePlayersSelector(state), currentUserId, false);
   const editorSelector = !!player && player.type === userTypes.secondPlayer
-      ? firstEditorSelector
-      : secondEditorSelector;
+    ? firstEditorSelector
+    : secondEditorSelector;
   return editorSelector(state, gameCurrent);
 };
 
@@ -116,6 +116,10 @@ export const currentPlayerTextByLangSelector = lang => state => {
 };
 
 export const userLangSelector = state => userId => _.get(editorsMetaSelector(state)[userId], 'currentLangSlug', null);
+export const userGameScoreByPlayerId = state => userId => ({
+  winnerId: state.game.gameStatus.score?.winnerId,
+  score: state.game.gameStatus.score?.playerResults[String(userId)],
+});
 
 export const gameStatusTitleSelector = state => {
   const gameStatus = gameStatusSelector(state);
@@ -143,8 +147,8 @@ export const editorHeightSelector = (gameCurrent, userId) => state => {
 };
 
 export const executionOutputSelector = (gameCurrent, userId) => state => (gameCurrent.matches({ replayer: replayerMachineStates.on })
-    ? state.executionOutput.historyResults[userId]
-    : state.executionOutput.results[userId]);
+  ? state.executionOutput.historyResults[userId]
+  : state.executionOutput.results[userId]);
 
 export const firstExecutionOutputSelector = gameCurrent => state => {
   const playerId = firstPlayerSelector(state).id;
@@ -160,8 +164,8 @@ export const leftExecutionOutputSelector = gameCurrent => state => {
   const currentUserId = currentUserIdSelector(state);
   const player = _.get(gamePlayersSelector(state), currentUserId, false);
   const outputSelector = !!player && player.type === userTypes.secondPlayer
-      ? secondExecutionOutputSelector
-      : firstExecutionOutputSelector;
+    ? secondExecutionOutputSelector
+    : firstExecutionOutputSelector;
   return outputSelector(gameCurrent)(state);
 };
 
@@ -169,8 +173,8 @@ export const rightExecutionOutputSelector = gameCurrent => state => {
   const currentUserId = currentUserIdSelector(state);
   const player = _.get(gamePlayersSelector(state), currentUserId, false);
   const outputSelector = !!player && player.type === userTypes.secondPlayer
-      ? firstExecutionOutputSelector
-      : secondExecutionOutputSelector;
+    ? firstExecutionOutputSelector
+    : secondExecutionOutputSelector;
   return outputSelector(gameCurrent)(state);
 };
 
@@ -238,3 +242,5 @@ export const currentUserNameSelector = state => {
 export const isModalShow = state => state.lobby.createGameModal.show;
 
 export const modalSelector = state => state.lobby.createGameModal;
+
+export const completedGamesData = state => state.completedGames;

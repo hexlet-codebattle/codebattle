@@ -93,7 +93,7 @@ defmodule CodebattleWeb.LobbyChannelTest do
       payload: %{game: %{id: game_id}}
     }
 
-    {:ok, game} = Game.Context.get_game(game_id)
+    {:ok, game} = Game.Context.fetch_game(game_id)
     assert game.task.name == "1"
 
     user_token = Phoenix.Token.sign(socket(UserSocket), "user_token", user2.id)
@@ -113,7 +113,7 @@ defmodule CodebattleWeb.LobbyChannelTest do
       payload: %{game: %{id: game_id}}
     }
 
-    {:ok, game} = Game.Context.get_game(game_id)
+    {:ok, game} = Game.Context.fetch_game(game_id)
     assert game.task.name == "2"
   end
 
@@ -149,7 +149,7 @@ defmodule CodebattleWeb.LobbyChannelTest do
       payload: %{game: %{id: game_id}}
     }
 
-    {:ok, game} = Game.Context.get_game(game_id)
+    {:ok, game} = Game.Context.fetch_game(game_id)
     assert game.task.name == "1"
 
     user_token = Phoenix.Token.sign(socket(UserSocket), "user_token", user2.id)
@@ -169,7 +169,7 @@ defmodule CodebattleWeb.LobbyChannelTest do
       payload: %{game: %{id: game_id}}
     }
 
-    {:ok, game} = Game.Context.get_game(game_id)
+    {:ok, game} = Game.Context.fetch_game(game_id)
     assert game.task.name == "2"
 
     user_token = Phoenix.Token.sign(socket(UserSocket), "user_token", user3.id)
@@ -189,7 +189,7 @@ defmodule CodebattleWeb.LobbyChannelTest do
       payload: %{game: %{id: game_id}}
     }
 
-    {:ok, game} = Game.Context.get_game(game_id)
+    {:ok, game} = Game.Context.fetch_game(game_id)
     assert game.task.name == "2"
   end
 end

@@ -7,13 +7,14 @@ defmodule CodebattleWeb.Api.GameView do
 
   import Codebattle.Game.Helpers
 
-  def render_game(game) do
+  def render_game(game, score) do
     %{
       id: get_game_id(game),
       inserted_at: game.inserted_at,
       langs: get_langs_with_solution_templates(game.task),
       level: game.level,
       mode: game.mode,
+      score: score,
       players: game.players,
       rematch_initiator_id: game.rematch_initiator_id,
       rematch_state: game.rematch_state,

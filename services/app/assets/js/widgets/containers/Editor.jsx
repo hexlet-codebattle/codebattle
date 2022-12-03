@@ -27,7 +27,7 @@ class Editor extends PureComponent {
     value: '',
     editable: false,
     onChange: null,
-    syntax: 'javascript',
+    syntax: 'js',
     mute: false,
   };
 

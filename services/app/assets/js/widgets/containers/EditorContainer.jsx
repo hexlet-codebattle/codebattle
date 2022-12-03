@@ -30,6 +30,7 @@ const EditorContainer = ({
 
   const currentUserId = useSelector(state => selectors.currentUserIdSelector(state));
   const currentEditorLangSlug = useSelector(state => selectors.userLangSelector(state)(currentUserId));
+  const score = useSelector(state => selectors.userGameScoreByPlayerId(state)(id));
 
   const { current: gameCurrent } = useContext(GameContext);
 
@@ -91,7 +92,7 @@ const EditorContainer = ({
       };
     }
 
-    return () => {};
+    return () => { };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -108,6 +109,7 @@ const EditorContainer = ({
   };
 
   const toolbarParams = {
+    score,
     player: players[id],
     editor: editorState,
     status: editorCurrent.value,
@@ -119,16 +121,16 @@ const EditorContainer = ({
     && !gameCurrent.matches({ replayer: replayerMachineStates.on });
   const onChange = canChange
     ? value => {
-        updateEditorValue(value);
-      }
+      updateEditorValue(value);
+    }
     : _.noop();
   const editorParams = {
-    syntax: editorState.currentLangSlug || 'javascript',
+    syntax: editorState.currentLangSlug || 'js',
     onChange,
     checkResult,
     value: editorState.text,
     editorHeight,
-    mode: editorCurrent.context.editable ? editorMode : editorModes.default,
+    mode: editorMode || editorModes.default,
     theme,
     ...userSettings,
     editable:

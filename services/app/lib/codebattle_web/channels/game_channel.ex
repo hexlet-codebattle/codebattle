@@ -8,14 +8,15 @@ defmodule CodebattleWeb.GameChannel do
   def join("game:" <> game_id, _payload, socket) do
     try do
       game = Context.get_game!(game_id)
+      score = Context.fetch_score_by_game_id(game_id)
 
       if game.tournament_id do
         Codebattle.PubSub.subscribe("tournament:#{game.tournament_id}")
       end
 
-      {:ok, GameView.render_game(game), assign(socket, :game_id, game_id)}
+      {:ok, GameView.render_game(game, score), assign(socket, :game_id, game_id)}
     rescue
-      Ecto.NoResultsError ->
+      _ ->
         {:ok, %{error: "Game not found"}, socket}
     end
   end
@@ -91,6 +92,13 @@ defmodule CodebattleWeb.GameChannel do
       {:error, reason} ->
         {:reply, {:error, %{reason: reason}}, socket}
     end
+  end
+
+  def handle_in("game:score", _, socket) do
+    game_id = socket.assigns.game_id
+    score = Context.fetch_score_by_game_id(game_id)
+
+    {:reply, {:ok, %{score: score}}, socket}
   end
 
   def handle_in("rematch:send_offer", _, socket) do

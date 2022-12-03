@@ -17,13 +17,12 @@ import { fetchCompletedGames, loadNextPage } from '../slices/completedGames';
 import CompletedGames from '../components/Game/CompletedGames';
 import Heatmap from './Heatmap';
 import Loading from '../components/Loading';
+import * as selectors from '../selectors';
 
 const UserProfile = () => {
   const [stats, setStats] = useState(null);
   const [chartFilter, setChartFilter] = useState('getAllGames');
-  const completedGames = useSelector(
-    state => state.completedGames.completedGames,
-  );
+  const { completedGames, totalGames } = useSelector(selectors.completedGamesData);
 
   const dispatch = useDispatch();
 
@@ -263,13 +262,14 @@ const UserProfile = () => {
       <div className="col-12">
         <div className="text-left">
           {completedGames && completedGames.length > 0 && (
-            <>
-              <CompletedGames
-                games={completedGames}
-                loadNextPage={loadNextPage}
-              />
-            </>
-          )}
+          <>
+            <CompletedGames
+              games={completedGames}
+              loadNextPage={loadNextPage}
+              totalGames={totalGames}
+            />
+          </>
+              )}
           {completedGames && completedGames.length === 0 && (
             <>
               <div

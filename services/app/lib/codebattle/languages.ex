@@ -440,6 +440,8 @@ defmodule Codebattle.Languages do
 
   def meta, do: @meta
 
+  def meta("javascript"), do: meta("js")
+
   def meta(slug) do
     case Map.get(@meta, slug) do
       nil -> raise "Unknown language #{slug}"

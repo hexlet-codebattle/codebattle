@@ -181,6 +181,18 @@ a {
   font-size: 8px;
 }
 
+.cb-game-score-won {
+  color: var(--green) !important;
+}
+
+.cb-game-score-lost {
+  color: var(--red) !important;
+}
+
+.cb-game-score-draw {
+  color: var(--black) !important;
+}
+
 .cb-user-online {
   color: var(--green) !important;
 }

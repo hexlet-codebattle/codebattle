@@ -50,7 +50,7 @@ defmodule Codebattle.Game.Context do
       {_, :undefined, _, _} -> false
       {_, _pid, _, _} -> true
     end)
-    |> Enum.map(fn {id, _, _, _} -> Game.Context.get_game(id) end)
+    |> Enum.map(fn {id, _, _, _} -> Game.Context.fetch_game(id) end)
     |> Enum.filter(fn
       {:ok, game} ->
         active_game?(game) &&
@@ -76,11 +76,11 @@ defmodule Codebattle.Game.Context do
     Repo.all(query)
   end
 
-  @spec get_game(raw_game_id) :: {:ok, Game.t()} | {:error, atom()}
-  def get_game(id) do
+  @spec fetch_game(raw_game_id) :: {:ok, Game.t()} | {:error, atom()}
+  def fetch_game(id) do
     {:ok, get_game!(id)}
   rescue
-    _e in Ecto.NoResultsError ->
+    _e in _ ->
       {:error, :not_found}
   end
 
@@ -127,16 +127,17 @@ defmodule Codebattle.Game.Context do
 
   @spec update_editor_data(game_id, User.t(), String.t(), String.t()) ::
           {:ok, Game.t()} | {:error, atom}
-  def update_editor_data(id, user, editor_text, editor_lang) do
-    game = get_game!(id)
+  def update_editor_data(game_id, user, editor_text, editor_lang) do
+    case get_game!(game_id) do
+      game = %{is_live: true} ->
+        Engine.update_editor_data(game, %{
+          id: user.id,
+          editor_text: editor_text,
+          editor_lang: editor_lang
+        })
 
-    case Engine.update_editor_data(game, %{
-           id: user.id,
-           editor_text: editor_text,
-           editor_lang: editor_lang
-         }) do
-      {:ok, game} -> {:ok, game}
-      {:error, reason} -> {:error, reason}
+      _ ->
+        {:error, :game_is_dead}
     end
   end
 
@@ -152,12 +153,18 @@ defmodule Codebattle.Game.Context do
           }
           | {:error, atom}
   def check_result(id, params) do
-    id |> get_game!() |> Engine.check_result(params)
+    case get_game!(id) do
+      game = %{is_live: true} -> Engine.check_result(game, params)
+      _ -> {:error, :game_is_dead}
+    end
   end
 
   @spec give_up(game_id, User.t()) :: {:ok, Game.t()} | {:error, atom}
   def give_up(id, user) do
-    id |> get_game!() |> Engine.give_up(user)
+    case get_game!(id) do
+      game = %{is_live: true} -> Engine.give_up(game, user)
+      _ -> {:error, :game_is_dead}
+    end
   end
 
   @spec rematch_send_offer(raw_game_id, User.t()) ::
@@ -165,7 +172,7 @@ defmodule Codebattle.Game.Context do
           | {:rematch_accepted, Game.t()}
           | {:error, atom}
   def rematch_send_offer(game_id, user) do
-    with game <- get_game!(game_id),
+    with game = %{is_live: true} <- get_game!(game_id),
          :ok <- player_can_rematch?(game, user.id) do
       Engine.rematch_send_offer(game, user)
     end
@@ -173,7 +180,10 @@ defmodule Codebattle.Game.Context do
 
   @spec rematch_reject(game_id) :: {:rematch_status_updated, map()} | {:error, atom}
   def rematch_reject(game_id) do
-    game_id |> get_game!() |> Engine.rematch_reject()
+    case get_game!(game_id) do
+      game = %{is_live: true} -> Engine.rematch_reject(game)
+      _ -> {:error, :game_is_dead}
+    end
   end
 
   @spec trigger_timeout(game_id) :: :ok
@@ -191,5 +201,81 @@ defmodule Codebattle.Game.Context do
   defp get_from_db!(id) do
     query = from(g in Game, where: g.id == ^id, preload: [:task, :users, :user_games])
     Repo.one!(query)
+  end
+
+  @spec fetch_score_by_game_id(game_id) :: map() | nil
+  def fetch_score_by_game_id(id) do
+    game = get_game!(id)
+
+    case game.players do
+      [%{id: opponent_one_id}, %{id: opponent_two_id}] ->
+        game_results =
+          from(
+            g in Game,
+            distinct: true,
+            order_by: g.id,
+            inner_join: ug1 in assoc(g, :user_games),
+            inner_join: ug2 in assoc(g, :user_games),
+            where: g.state == "game_over",
+            where: ug1.user_id == ^opponent_one_id,
+            where: ug2.user_id == ^opponent_two_id,
+            select: %{
+              id: g.id,
+              inserted_at: g.inserted_at,
+              result_one: ug1.result,
+              result_two: ug2.result
+            }
+          )
+          |> Repo.all()
+          |> Enum.reduce({0, 0, []}, fn elem, {score_one, score_two, acc} ->
+            case {elem.result_one, elem.result_two} do
+              {"won", _} ->
+                {score_one + 1, score_two,
+                 [
+                   %{
+                     game_id: elem.id,
+                     inserted_at: elem.inserted_at,
+                     winner_id: opponent_one_id
+                   }
+                   | acc
+                 ]}
+
+              {_, "won"} ->
+                {score_one, score_two + 1,
+                 [
+                   %{
+                     game_id: elem.id,
+                     inserted_at: elem.inserted_at,
+                     winner_id: opponent_two_id
+                   }
+                   | acc
+                 ]}
+
+              _ ->
+                {score_one, score_two, acc}
+            end
+          end)
+
+        {score_one, score_two, results} = game_results
+
+        winner_id =
+          cond do
+            score_one > score_two -> opponent_one_id
+            score_one < score_two -> opponent_two_id
+            true -> nil
+          end
+
+        %{
+          winner_id: winner_id,
+          player_results: %{
+            to_string(opponent_one_id) => score_one,
+            to_string(opponent_two_id) => score_two
+          },
+          game_results: Enum.reverse(results)
+        }
+
+      _ ->
+        nil
+    end
   end
 end

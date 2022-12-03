@@ -38,7 +38,7 @@ const CompletedGamesRows = memo(({ games }) => (
   </>
 ));
 
-const CompletedGames = ({ games, loadNextPage = null }) => {
+const CompletedGames = ({ games, loadNextPage = null, totalGames }) => {
   const { nextPage, totalPages } = useSelector(state => state.completedGames);
   const object = useMemo(() => ({ loading: false }), [nextPage]);
   const dispatch = useDispatch();
@@ -70,23 +70,28 @@ const CompletedGames = ({ games, loadNextPage = null }) => {
   }, [object]);
 
   return (
-    <div ref={ref} className="table-responsive scroll" style={{ maxHeight: '600px' }}>
-      <table className="table table-sm table-striped border-gray border mb-0">
-        <thead>
-          <tr>
-            <th className="p-3 border-0">Level</th>
-            <th className="px-1 py-3 border-0 text-center" colSpan={2}>
-              Players
-            </th>
-            <th className="px-1 py-3 border-0">Date</th>
-            <th className="px-1 py-3 border-0">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <CompletedGamesRows {...{ games }} />
-        </tbody>
-      </table>
-    </div>
+    <>
+      <div ref={ref} data-testid="scroll" className="table-responsive scroll" style={{ maxHeight: '600px' }}>
+        <table className="table table-sm table-striped border-gray border mb-0">
+          <thead>
+            <tr>
+              <th className="p-3 border-0">Level</th>
+              <th className="px-1 py-3 border-0 text-center" colSpan={2}>
+                Players
+              </th>
+              <th className="px-1 py-3 border-0">Date</th>
+              <th className="px-1 py-3 border-0">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <CompletedGamesRows {...{ games }} />
+          </tbody>
+        </table>
+      </div>
+      <div className="bg-white py-2 px-5 font-weight-bold border-gray border">
+        {`Total games: ${totalGames}`}
+      </div>
+    </>
   );
 };
 

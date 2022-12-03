@@ -54,10 +54,11 @@ const getTaskIdsByTags = (dictionary, tags) => {
   return _.intersection(...taskIds);
 };
 
-const filterTasksByTags = (tasks, tags, dictionary) => {
+const filterTasksByTagsAndLevel = (tasks, tags, dictionary) => {
   if (tags.length === 0) {
     return tasks;
   }
+
   const availableTaskIds = getTaskIdsByTags(dictionary, tags);
   return tasks.filter(task => availableTaskIds.includes(task.id));
 };
@@ -125,7 +126,12 @@ const TaskLabel = ({ task, userStats, currentUserId }) => {
   );
 };
 
-const TaskSelect = ({ setChosenTask, randomTask, tasks }) => {
+const TaskSelect = ({
+  setChosenTask,
+  randomTask,
+  tasks,
+  level,
+}) => {
   const dispatch = useDispatch();
   const defaultOption = { label: <TaskLabel task={randomTask} />, value: randomTask.name };
   const currentUserId = useSelector(selectors.currentUserIdSelector);
@@ -143,10 +149,15 @@ const TaskSelect = ({ setChosenTask, randomTask, tasks }) => {
       });
   }, [currentUserId]);
 
+  useEffect(() => {
+    setChosenTask(defaultOption.value);
+  }, [level]);
+
   const onChange = ({ value }) => setChosenTask(value);
 
   return (
     <Select
+      key={`task-choise-${level}`}
       className="w-100"
       defaultValue={defaultOption}
       onChange={onChange}
@@ -183,7 +194,7 @@ export default ({
 
   useEffect(() => {
     axios
-      .get(`/api/v1/tasks?level=${level}`)
+      .get('/api/v1/tasks')
       .then(({ data }) => {
         const { tasks } = camelizeKeys(data);
         setAllTasks(tasks);
@@ -191,11 +202,13 @@ export default ({
       .catch(error => {
         dispatch(actions.setError(error));
       });
-  }, [level]);
+  }, []);
 
   const tagsToTaskIdsDictionary = mapTagsToTaskIds(allTasks, taskTags);
 
-  const filteredTasks = filterTasksByTags(allTasks, chosenTags, tagsToTaskIdsDictionary);
+  const tasksFilteredByLevel = allTasks.filter(task => task.level === level);
+
+  const filteredTasks = filterTasksByTagsAndLevel(tasksFilteredByLevel, chosenTags, tagsToTaskIdsDictionary, level);
 
   const isTagButtonDisabled = tag => {
     if (!isRandomTask(chosenTask)) {
@@ -224,7 +237,12 @@ export default ({
     <>
       <h5>{i18n.t('Choose task by name or tags')}</h5>
       <div className="d-flex justify-content-around px-5 mt-3 mb-2">
-        <TaskSelect setChosenTask={setChosenTask} randomTask={randomTask} tasks={filteredTasks} />
+        <TaskSelect
+          setChosenTask={setChosenTask}
+          randomTask={randomTask}
+          tasks={filteredTasks}
+          level={level}
+        />
       </div>
       <div className="d-flex flex-column justify-content-around px-5 mt-3 mb-2">
         <h6>{i18n.t('Tags')}</h6>
