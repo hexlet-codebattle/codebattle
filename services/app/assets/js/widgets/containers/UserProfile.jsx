@@ -1,7 +1,14 @@
 import { camelizeKeys } from 'humps';
 import { useDispatch, useSelector } from 'react-redux';
 import React, { useState, useEffect } from 'react';
-import { Doughnut } from 'react-chartjs-2';
+import {
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  Legend,
+} from 'recharts';
 import axios from 'axios';
 // import classnames from 'classnames';
 
@@ -13,7 +20,10 @@ import Loading from '../components/Loading';
 
 const UserProfile = () => {
   const [stats, setStats] = useState(null);
-  const completedGames = useSelector(state => state.completedGames.completedGames);
+  const [chartFilter, setChartFilter] = useState('getAllGames');
+  const completedGames = useSelector(
+    state => state.completedGames.completedGames,
+  );
 
   const dispatch = useDispatch();
 
@@ -34,7 +44,11 @@ const UserProfile = () => {
     dispatch(fetchCompletedGames());
   }, [dispatch]);
 
-  const dateParse = date => new Date(date).toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  const dateParse = date => new Date(date).toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
 
   const renderAchivement = achievement => {
     if (achievement.includes('win_games_with')) {
@@ -68,9 +82,136 @@ const UserProfile = () => {
       />
     );
   };
+
   if (!stats) {
     return <Loading />;
   }
+
+  const CustomPieChart = () => {
+    if (!stats.stats) {
+      return <Loading />;
+    }
+    if (stats.stats.all.length <= 1) {
+      return <></>;
+    }
+
+    const handlerOnChangeChart = id => () => {
+      setChartFilter(id);
+    };
+
+    const colors = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+    const gamesByLang = stats.stats.all.reduce(
+      (acc, { lang }) => ({
+        ...acc,
+        [lang]: {
+          won: 0,
+          lost: 0,
+          gave_up: 0,
+          getWonGames() {
+            return this.won;
+          },
+          getLostGames() {
+            return this.lost;
+          },
+          getGaveUpGames() {
+            return this.gave_up;
+          },
+          getAllGames() {
+            return this.won + this.lost + this.gave_up;
+          },
+        },
+      }),
+      {},
+    );
+
+    stats.stats.all.forEach(
+      ({ count, lang, result }) => (gamesByLang[lang] = { ...gamesByLang[lang], [result]: count }),
+    );
+
+    const dataForPie = Object.entries(gamesByLang).map(([key, value]) => ({
+      name: key,
+      value: value[chartFilter](),
+    }));
+
+    return (
+      <div style={{ width: '100%', height: 400 }}>
+        <div className="d-flex justify-content-center">
+          {stats.stats.games.won !== 0 && (
+            <div className="px-2">
+              <input
+                id="won"
+                type="radio"
+                name="gameResults"
+                onChange={handlerOnChangeChart('getWonGames')}
+                value="getWonGames"
+                checked={chartFilter === 'getWonGames'}
+              />
+              <label htmlFor="won">won</label>
+            </div>
+          )}
+          {stats.stats.games.lost !== 0 && (
+            <div className="px-2">
+              <input
+                id="lost"
+                type="radio"
+                onChange={handlerOnChangeChart('getLostGames')}
+                name="gameResults"
+                value="getLostGames"
+                checked={chartFilter === 'getLostGames'}
+              />
+              <label htmlFor="lost">lost</label>
+            </div>
+          )}
+          {stats.stats.games.gaveUp !== 0 && (
+            <div className="px-2">
+              <input
+                id="gaveup"
+                type="radio"
+                onChange={handlerOnChangeChart('getGaveUpGames')}
+                name="gameResults"
+                value="getGaveUpGames"
+                checked={chartFilter === 'getGaveUpGames'}
+              />
+              <label htmlFor="gaveup">gave up</label>
+            </div>
+          )}
+          <div className="px-2">
+            <input
+              id="all"
+              type="radio"
+              onChange={handlerOnChangeChart('getAllGames')}
+              name="gameResults"
+              value="getAllGames"
+              checked={chartFilter === 'getAllGames'}
+            />
+            <label htmlFor="all">all</label>
+          </div>
+        </div>
+        <div style={{ width: '100%', height: 300 }}>
+          <ResponsiveContainer>
+            <PieChart>
+              <Pie
+                dataKey="value"
+                data={dataForPie}
+                labelLine={false}
+                label
+                position="inside"
+              >
+                {dataForPie.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={colors[index % colors.length]}
+                  />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+    );
+  };
 
   const renderStatistics = () => (
     <>
@@ -86,7 +227,9 @@ const UserProfile = () => {
           <p className="lead">elo_rating</p>
         </div>
         <div className="col-md-3 col-5 text-center">
-          <div className="h1 cb-stats-number">{Object.values(stats.stats.games).reduce((a, b) => a + b, 0)}</div>
+          <div className="h1 cb-stats-number">
+            {Object.values(stats.stats.games).reduce((a, b) => a + b, 0)}
+          </div>
           <p className="lead">games_played</p>
         </div>
       </div>
@@ -109,6 +252,9 @@ const UserProfile = () => {
           <Heatmap />
         </div>
       </div>
+      <div className="row my-4 justify-content-center">
+        <CustomPieChart />
+      </div>
     </>
   );
 
@@ -117,25 +263,27 @@ const UserProfile = () => {
       <div className="col-12">
         <div className="text-left">
           {completedGames && completedGames.length > 0 && (
-          <>
-            <CompletedGames
-              games={completedGames}
-              loadNextPage={loadNextPage}
-            />
-          </>
-              )}
+            <>
+              <CompletedGames
+                games={completedGames}
+                loadNextPage={loadNextPage}
+              />
+            </>
+          )}
           {completedGames && completedGames.length === 0 && (
-          <>
-            <div style={{ height: 498 }} className="d-flex align-items-center justify-content-center border text-muted">
-              No completed games
-            </div>
-          </>
+            <>
+              <div
+                style={{ height: 498 }}
+                className="d-flex align-items-center justify-content-center border text-muted"
+              >
+                No completed games
+              </div>
+            </>
           )}
         </div>
       </div>
     </div>
   );
-
   const statContainers = () => (
     <div>
       <nav>
@@ -215,14 +363,14 @@ const UserProfile = () => {
             </p>
             <h1 className="my-2">
               {stats.user.githubName && (
-              <a
-                title="Github account"
-                className="text-muted"
-                href={`https://github.com/${stats.user.githubName}`}
-              >
-                <span className="fab fa-github pr-3" />
-              </a>
-                )}
+                <a
+                  title="Github account"
+                  className="text-muted"
+                  href={`https://github.com/${stats.user.githubName}`}
+                >
+                  <span className="fab fa-github pr-3" />
+                </a>
+              )}
             </h1>
             <div className="my-2">
               {stats.user.achievements.length > 0 && (
@@ -231,7 +379,9 @@ const UserProfile = () => {
                   <h5 className="text-break cb-heading">Achievements</h5>
                   <div className="col d-flex flex-wrap justify-content-start cb-profile mt-3 pl-0">
                     {stats.user.achievements.map(achievement => (
-                      <div key={achievement}>{renderAchivement(achievement)}</div>
+                      <div key={achievement}>
+                        {renderAchivement(achievement)}
+                      </div>
                     ))}
                   </div>
                 </>
@@ -241,9 +391,6 @@ const UserProfile = () => {
         </div>
         <div className="col-12 col-md-9 my-4 cb-user-stats">
           {statContainers()}
-        </div>
-        <div className="col-12 col-md-9 my-4 cb-user-stats">
-          <Doughnut data={{}} />
         </div>
       </div>
     </div>
