@@ -4,8 +4,10 @@ import _ from 'lodash';
 import React, { useState, useEffect } from 'react';
 
 import {
-  Radar, RadarChart,
-  PolarGrid, PolarAngleAxis,
+  Radar,
+  RadarChart,
+  PolarGrid,
+  PolarAngleAxis,
   PolarRadiusAxis,
   ResponsiveContainer,
   PieChart,
@@ -26,7 +28,9 @@ import * as selectors from '../selectors';
 
 const UserProfile = () => {
   const [stats, setStats] = useState(null);
-  const { completedGames, totalGames } = useSelector(selectors.completedGamesData);
+  const { completedGames, totalGames } = useSelector(
+    selectors.completedGamesData,
+  );
 
   const dispatch = useDispatch();
 
@@ -48,10 +52,10 @@ const UserProfile = () => {
   }, [dispatch]);
 
   const dateParse = date => new Date(date).toLocaleString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
 
   const renderAchivement = achievement => {
     if (achievement.includes('win_games_with')) {
@@ -95,18 +99,29 @@ const UserProfile = () => {
       return <Loading />;
     }
 
-    const colors = ['#E40303', '#008026', '#732982', '#FF8C00', '#24408E', '#FFED00'];
+    const colors = [
+      '#E40303',
+      '#008026',
+      '#732982',
+      '#FF8C00',
+      '#24408E',
+      '#FFED00',
+    ];
 
     const groups = _.groupBy(stats.stats.all, 'lang');
     const reducedByLangStats = _.mapValues(groups, group => group.reduce((total, item) => total + item.count, 0));
-    const dataForPie = Object.entries(reducedByLangStats).map(([lang, count]) => ({ name: lang, value: count }));
+    const dataForPie = Object.entries(reducedByLangStats).map(
+      ([lang, count]) => ({ name: lang, value: count }),
+    );
 
     const fullMark = Math.max(...Object.values(stats.stats.games));
-    const resultDataForRadar = Object.keys(stats.stats.games).map(subject => ({
-      subject,
-      A: stats.stats.games[subject],
-      fullMark,
-    }));
+    const resultDataForRadar = Object.keys(stats.stats.games).map(
+      subject => ({
+        subject,
+        A: stats.stats.games[subject],
+        fullMark,
+      }),
+    );
     const sortedDataForRadar = resultDataForRadar.sort((a, b) => {
       if (a.subject === 'won') return -1;
       if (b.subject === 'won') return 1;
@@ -119,11 +134,22 @@ const UserProfile = () => {
       <>
         <div className="col-6">
           <ResponsiveContainer width="100%" height="100%">
-            <RadarChart cx="50%" cy="50%" outerRadius="80%" data={sortedDataForRadar}>
+            <RadarChart
+              cx="50%"
+              cy="50%"
+              outerRadius="80%"
+              data={sortedDataForRadar}
+            >
               <PolarGrid />
               <PolarAngleAxis dataKey="subject" />
               <PolarRadiusAxis />
-              <Radar name="Nikita" dataKey="A" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
+              <Radar
+                name="Nikita"
+                dataKey="A"
+                stroke="#8884d8"
+                fill="#8884d8"
+                fillOpacity={0.6}
+              />
             </RadarChart>
           </ResponsiveContainer>
         </div>
@@ -137,9 +163,9 @@ const UserProfile = () => {
                 label
                 position="inside"
               >
-                {dataForPie.map((entry, index) => (
+                {dataForPie.map(({ name }, index) => (
                   <Cell
-                    key={`cell-${index}`}
+                    key={`cell-${name}`}
                     fill={colors[index % colors.length]}
                   />
                 ))}
@@ -173,7 +199,10 @@ const UserProfile = () => {
           <p className="lead">games_played</p>
         </div>
       </div>
-      <div className="row my-4 justify-content-center" style={{ width: '100%', height: 400 }}>
+      <div
+        className="row my-4 justify-content-center"
+        style={{ width: '100%', height: 400 }}
+      >
         {renderCustomPieChart()}
       </div>
       <div className="row my-4 justify-content-center">
