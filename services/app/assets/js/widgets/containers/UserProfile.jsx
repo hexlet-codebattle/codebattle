@@ -29,7 +29,7 @@ import * as selectors from '../selectors';
 const UserProfile = () => {
   const [stats, setStats] = useState(null);
   const { completedGames, totalGames } = useSelector(
-    selectors.completedGamesData,
+    selectors.completedGamesData
   );
 
   const dispatch = useDispatch();
@@ -39,10 +39,10 @@ const UserProfile = () => {
 
     axios
       .get(`/api/v1/user/${userId}/stats`)
-      .then(response => {
+      .then((response) => {
         setStats(camelizeKeys(response.data));
       })
-      .catch(error => {
+      .catch((error) => {
         dispatch(actions.setError(error));
       });
   }, [dispatch]);
@@ -51,20 +51,21 @@ const UserProfile = () => {
     dispatch(fetchCompletedGames());
   }, [dispatch]);
 
-  const dateParse = date => new Date(date).toLocaleString('en-US', {
+  const dateParse = (date) =>
+    new Date(date).toLocaleString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
     });
 
-  const renderAchivement = achievement => {
+  const renderAchivement = (achievement) => {
     if (achievement.includes('win_games_with')) {
       const langs = achievement.split('?').pop().split('_');
 
       return (
         <div className="cb-polyglot mr-1 mb-1" title={achievement}>
           <div className="d-flex h-75 flex-wrap align-items-center justify-content-around cb-polyglot-icons">
-            {langs.map(lang => (
+            {langs.map((lang) => (
               <img
                 src={`/assets/images/achievements/${lang}.png`}
                 alt={lang}
@@ -120,28 +121,28 @@ const UserProfile = () => {
     ];
 
     const groups = _.groupBy(stats.stats.all, 'lang');
-    const reducedByLangStats = _.mapValues(groups, group => group.reduce((total, item) => total + item.count, 0));
+    const reducedByLangStats = _.mapValues(groups, (group) =>
+      group.reduce((total, item) => total + item.count, 0)
+    );
     const resultDataForPie = Object.entries(reducedByLangStats).map(
-      ([lang, count]) => ({ name: lang, value: count }),
+      ([lang, count]) => ({ name: lang, value: count })
     );
 
     const fullMark = Math.max(...Object.values(stats.stats.games));
     const resultDataForRadar = Object.keys(stats.stats.games).map(
-      subject => ({
+      (subject) => ({
         subject,
         A: stats.stats.games[subject],
         fullMark,
-      }),
+      })
     );
     const sortedDataForPie = resultDataForPie.sort(
       ({ value: a }, { value: b }) => {
         if (a < b) return 1;
         if (a > b) return -1;
         return 0;
-      },
+      }
     );
-    console.log(resultDataForPie);
-    console.log(sortedDataForPie);
     const sortedDataForRadar = resultDataForRadar.sort((a, b) => {
       if (a.subject === 'won') return -1;
       if (b.subject === 'won') return 1;
@@ -354,7 +355,7 @@ const UserProfile = () => {
                   <hr className="mt-2" />
                   <h5 className="text-break cb-heading">Achievements</h5>
                   <div className="col d-flex flex-wrap justify-content-start cb-profile mt-3 pl-0">
-                    {stats.user.achievements.map(achievement => (
+                    {stats.user.achievements.map((achievement) => (
                       <div key={achievement}>
                         {renderAchivement(achievement)}
                       </div>
