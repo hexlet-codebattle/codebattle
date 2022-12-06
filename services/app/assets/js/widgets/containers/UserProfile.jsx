@@ -1,7 +1,12 @@
 import { camelizeKeys } from 'humps';
 import { useDispatch, useSelector } from 'react-redux';
+import _ from 'lodash';
 import React, { useState, useEffect } from 'react';
+
 import {
+  Radar, RadarChart,
+  PolarGrid, PolarAngleAxis,
+  PolarRadiusAxis,
   ResponsiveContainer,
   PieChart,
   Pie,
@@ -21,7 +26,6 @@ import * as selectors from '../selectors';
 
 const UserProfile = () => {
   const [stats, setStats] = useState(null);
-  const [chartFilter, setChartFilter] = useState('getAllGames');
   const { completedGames, totalGames } = useSelector(selectors.completedGamesData);
 
   const dispatch = useDispatch();
@@ -44,10 +48,10 @@ const UserProfile = () => {
   }, [dispatch]);
 
   const dateParse = date => new Date(date).toLocaleString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
 
   const renderAchivement = achievement => {
     if (achievement.includes('win_games_with')) {
@@ -86,108 +90,45 @@ const UserProfile = () => {
     return <Loading />;
   }
 
-  const CustomPieChart = () => {
+  const renderCustomPieChart = () => {
     if (!stats.stats) {
       return <Loading />;
     }
-    if (stats.stats.all.length <= 1) {
-      return <></>;
-    }
 
-    const handlerOnChangeChart = id => () => {
-      setChartFilter(id);
-    };
+    const colors = ['#E40303', '#008026', '#732982', '#FF8C00', '#24408E', '#FFED00'];
 
-    const colors = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
-    const gamesByLang = stats.stats.all.reduce(
-      (acc, { lang }) => ({
-        ...acc,
-        [lang]: {
-          won: 0,
-          lost: 0,
-          gave_up: 0,
-          getWonGames() {
-            return this.won;
-          },
-          getLostGames() {
-            return this.lost;
-          },
-          getGaveUpGames() {
-            return this.gave_up;
-          },
-          getAllGames() {
-            return this.won + this.lost + this.gave_up;
-          },
-        },
-      }),
-      {},
-    );
+    const groups = _.groupBy(stats.stats.all, 'lang');
+    const reducedByLangStats = _.mapValues(groups, group => group.reduce((total, item) => total + item.count, 0));
+    const dataForPie = Object.entries(reducedByLangStats).map(([lang, count]) => ({ name: lang, value: count }));
 
-    stats.stats.all.forEach(
-      ({ count, lang, result }) => (gamesByLang[lang] = { ...gamesByLang[lang], [result]: count }),
-    );
-
-    const dataForPie = Object.entries(gamesByLang).map(([key, value]) => ({
-      name: key,
-      value: value[chartFilter](),
+    const fullMark = Math.max(...Object.values(stats.stats.games));
+    const resultDataForRadar = Object.keys(stats.stats.games).map(subject => ({
+      subject,
+      A: stats.stats.games[subject],
+      fullMark,
     }));
+    const sortedDataForRadar = resultDataForRadar.sort((a, b) => {
+      if (a.subject === 'won') return -1;
+      if (b.subject === 'won') return 1;
+      if (a.subject < b.subject) return -1;
+      if (a.subject > b.subject) return 1;
+      return 0;
+    });
 
     return (
-      <div style={{ width: '100%', height: 400 }}>
-        <div className="d-flex justify-content-center">
-          {stats.stats.games.won !== 0 && (
-            <div className="px-2">
-              <input
-                id="won"
-                type="radio"
-                name="gameResults"
-                onChange={handlerOnChangeChart('getWonGames')}
-                value="getWonGames"
-                checked={chartFilter === 'getWonGames'}
-              />
-              <label htmlFor="won">won</label>
-            </div>
-          )}
-          {stats.stats.games.lost !== 0 && (
-            <div className="px-2">
-              <input
-                id="lost"
-                type="radio"
-                onChange={handlerOnChangeChart('getLostGames')}
-                name="gameResults"
-                value="getLostGames"
-                checked={chartFilter === 'getLostGames'}
-              />
-              <label htmlFor="lost">lost</label>
-            </div>
-          )}
-          {stats.stats.games.gaveUp !== 0 && (
-            <div className="px-2">
-              <input
-                id="gaveup"
-                type="radio"
-                onChange={handlerOnChangeChart('getGaveUpGames')}
-                name="gameResults"
-                value="getGaveUpGames"
-                checked={chartFilter === 'getGaveUpGames'}
-              />
-              <label htmlFor="gaveup">gave up</label>
-            </div>
-          )}
-          <div className="px-2">
-            <input
-              id="all"
-              type="radio"
-              onChange={handlerOnChangeChart('getAllGames')}
-              name="gameResults"
-              value="getAllGames"
-              checked={chartFilter === 'getAllGames'}
-            />
-            <label htmlFor="all">all</label>
-          </div>
+      <>
+        <div className="col-6">
+          <ResponsiveContainer width="100%" height="100%">
+            <RadarChart cx="50%" cy="50%" outerRadius="80%" data={sortedDataForRadar}>
+              <PolarGrid />
+              <PolarAngleAxis dataKey="subject" />
+              <PolarRadiusAxis />
+              <Radar name="Nikita" dataKey="A" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
+            </RadarChart>
+          </ResponsiveContainer>
         </div>
-        <div style={{ width: '100%', height: 300 }}>
-          <ResponsiveContainer>
+        <div className="col-6">
+          <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
                 dataKey="value"
@@ -208,7 +149,7 @@ const UserProfile = () => {
             </PieChart>
           </ResponsiveContainer>
         </div>
-      </div>
+      </>
     );
   };
 
@@ -232,27 +173,13 @@ const UserProfile = () => {
           <p className="lead">games_played</p>
         </div>
       </div>
-      <div className="row my-4 justify-content-center">
-        <div className="col-3 col-lg-2 text-center">
-          <div className="h1 cb-stats-number">{stats.stats.games.won}</div>
-          <p className="lead">won</p>
-        </div>
-        <div className="col-3 col-lg-2 text-center border-left border-right">
-          <div className="h1 cb-stats-number">{stats.stats.games.lost}</div>
-          <p className="lead">lost</p>
-        </div>
-        <div className="col-3 col-lg-2 text-center">
-          <div className="h1 cb-stats-number">{stats.stats.games.gaveUp}</div>
-          <p className="lead">gave up</p>
-        </div>
+      <div className="row my-4 justify-content-center" style={{ width: '100%', height: 400 }}>
+        {renderCustomPieChart()}
       </div>
       <div className="row my-4 justify-content-center">
         <div className="col-10 col-lg-8 cb-heatmap">
           <Heatmap />
         </div>
-      </div>
-      <div className="row my-4 justify-content-center">
-        <CustomPieChart />
       </div>
     </>
   );
@@ -262,14 +189,14 @@ const UserProfile = () => {
       <div className="col-12">
         <div className="text-left">
           {completedGames && completedGames.length > 0 && (
-          <>
-            <CompletedGames
-              games={completedGames}
-              loadNextPage={loadNextPage}
-              totalGames={totalGames}
-            />
-          </>
-              )}
+            <>
+              <CompletedGames
+                games={completedGames}
+                loadNextPage={loadNextPage}
+                totalGames={totalGames}
+              />
+            </>
+          )}
           {completedGames && completedGames.length === 0 && (
             <>
               <div
