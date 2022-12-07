@@ -58,7 +58,7 @@
     "phoenix_live_view": "file:deps/phoenix_live_view",
     "popper.js": "^1.16.1",
     "prop-types": "^15.5.10",
-    "qs": "^6.9.4",
+    "qs": "^6.9.7",
     "quill-delta": "^4.2.2",
     "react": "^16.13.1",
     "react-bootstrap": "^1.4.0",
