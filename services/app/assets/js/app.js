@@ -37,6 +37,7 @@ import {
   renderHeatmapWidget,
   renderUsersRating,
   renderUserPage,
+  renderChartPage,
   renderSettingPage,
   renderRegistrationPage,
   renderStairwayGamePage,
@@ -80,6 +81,7 @@ const heatmapRoot = document.getElementById('heatmap-root');
 const lobbyRoot = document.getElementById('lobby-root');
 const ratingList = document.getElementById('rating-list');
 const userPageRoot = document.getElementById('user-page-root');
+const chartPageRoot = document.getElementById('chart-page-root');
 const settingsRoot = document.getElementById('settings');
 const registrationRoot = document.getElementById('registration');
 const stairwayGameRoot = document.getElementById('stairway-game-root');
@@ -111,6 +113,10 @@ if (ratingList) {
 
 if (userPageRoot) {
   renderUserPage(userPageRoot);
+}
+
+if (chartPageRoot) {
+  renderChartPage(chartPageRoot);
 }
 
 if (settingsRoot) {

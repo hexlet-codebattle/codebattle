@@ -145,6 +145,10 @@
                         to: user_path(@conn, :index),
                         class: "dropdown-item"
                       ) %>
+                      <%= link(gettext("Charts"),
+                        to: Routes.chart_path(@conn, :show),
+                        class: "dropdown-item"
+                      ) %>
                       <%= link(gettext("Tasks"),
                         to: task_path(@conn, :index),
                         class: "dropdown-item"

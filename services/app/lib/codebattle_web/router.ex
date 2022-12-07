@@ -96,6 +96,8 @@ defmodule CodebattleWeb.Router do
     get("/settings", UserController, :edit, as: :user_setting)
     put("/settings", UserController, :update, as: :user_setting)
 
+    get("/charts", ChartController, :show)
+
     resources("/feedback", FeedbackController, only: [:index])
 
     resources("/games", GameController, only: [:show, :delete]) do

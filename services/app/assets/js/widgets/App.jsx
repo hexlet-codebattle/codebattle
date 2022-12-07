@@ -16,6 +16,7 @@ import reducers from './slices';
 import LobbyWidget from './containers/LobbyWidget';
 import RatingList from './containers/RatingList';
 import UserProfile from './containers/UserProfile';
+import ChartContainer from './containers/ChartContainer';
 import UserSettings from './containers/UserSettings';
 import Registration from './containers/Registration';
 import StairwayGameContainer from './containers/StairwayGameContainer';
@@ -96,6 +97,14 @@ export const UserPage = () => (
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
       <UserProfile />
+    </PersistGate>
+  </Provider>
+);
+
+export const ChartPage = () => (
+  <Provider store={store}>
+    <PersistGate loading={null} persistor={persistor}>
+      <ChartContainer />
     </PersistGate>
   </Provider>
 );
