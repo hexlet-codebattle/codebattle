@@ -100,17 +100,28 @@ const UserProfile = () => {
     }
 
     const colors = [
-      '#E40303',
-      '#008026',
-      '#732982',
-      '#FF8C00',
-      '#24408E',
-      '#FFED00',
+      '#EDBB99',
+      '#C0C0C0',
+      '#808080',
+      '#000000',
+      '#FF0000',
+      '#800000',
+      '#FFFF00',
+      '#808000',
+      '#00FF00',
+      '#008000',
+      '#00FFFF',
+      '#0000FF',
+      '#000080',
+      '#FF00FF',
+      '#800080',
+      '#CCCCFF',
+      '#DE3163',
     ];
 
     const groups = _.groupBy(stats.stats.all, 'lang');
     const reducedByLangStats = _.mapValues(groups, group => group.reduce((total, item) => total + item.count, 0));
-    const dataForPie = Object.entries(reducedByLangStats).map(
+    const resultDataForPie = Object.entries(reducedByLangStats).map(
       ([lang, count]) => ({ name: lang, value: count }),
     );
 
@@ -121,6 +132,13 @@ const UserProfile = () => {
         A: stats.stats.games[subject],
         fullMark,
       }),
+    );
+    const sortedDataForPie = resultDataForPie.sort(
+      ({ value: a }, { value: b }) => {
+        if (a < b) return 1;
+        if (a > b) return -1;
+        return 0;
+      },
     );
     const sortedDataForRadar = resultDataForRadar.sort((a, b) => {
       if (a.subject === 'won') return -1;
@@ -158,12 +176,12 @@ const UserProfile = () => {
             <PieChart>
               <Pie
                 dataKey="value"
-                data={dataForPie}
+                data={sortedDataForPie}
                 labelLine={false}
                 label
                 position="inside"
               >
-                {dataForPie.map(({ name }, index) => (
+                {sortedDataForPie.map(({ name }, index) => (
                   <Cell
                     key={`cell-${name}`}
                     fill={colors[index % colors.length]}
