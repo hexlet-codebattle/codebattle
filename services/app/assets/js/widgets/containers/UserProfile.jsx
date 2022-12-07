@@ -52,10 +52,10 @@ const UserProfile = () => {
   }, [dispatch]);
 
   const dateParse = date => new Date(date).toLocaleString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
 
   const renderAchivement = achievement => {
     if (achievement.includes('win_games_with')) {
@@ -100,23 +100,20 @@ const UserProfile = () => {
     }
 
     const colors = [
-      '#EDBB99',
-      '#C0C0C0',
-      '#808080',
-      '#000000',
-      '#FF0000',
-      '#800000',
-      '#FFFF00',
-      '#808000',
-      '#00FF00',
-      '#008000',
-      '#00FFFF',
+      '#8884d8',
       '#0000FF',
-      '#000080',
-      '#FF00FF',
+      '#008000',
+      '#FF0000',
       '#800080',
-      '#CCCCFF',
-      '#DE3163',
+      '#FFA500',
+      '#FFC0CB',
+      '#A52A2A',
+      '#808080',
+      '#ADD8E6',
+      '#90EE90',
+      '#FFB6C1',
+      '#E6E6FA',
+      '#FFA07A',
     ];
 
     const groups = _.groupBy(stats.stats.all, 'lang');
@@ -124,7 +121,6 @@ const UserProfile = () => {
     const resultDataForPie = Object.entries(reducedByLangStats).map(
       ([lang, count]) => ({ name: lang, value: count }),
     );
-
     const fullMark = Math.max(...Object.values(stats.stats.games));
     const resultDataForRadar = Object.keys(stats.stats.games).map(
       subject => ({
@@ -133,6 +129,7 @@ const UserProfile = () => {
         fullMark,
       }),
     );
+
     const sortedDataForPie = resultDataForPie.sort(
       ({ value: a }, { value: b }) => {
         if (a < b) return 1;
