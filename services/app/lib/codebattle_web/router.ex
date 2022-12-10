@@ -124,6 +124,6 @@ defmodule CodebattleWeb.Router do
 
   def handle_errors(conn, %{kind: _kind, reason: reason}) do
     Logger.error(inspect(reason))
-    send_resp(conn, conn.status, "SOMETHING_WENT_WRONG")
+    send_resp(conn, conn.status, "SOMETHING_WENT_WRONG, reason: #{inspect(reason)}")
   end
 end
