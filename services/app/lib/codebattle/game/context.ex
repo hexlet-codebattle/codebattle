@@ -40,6 +40,14 @@ defmodule Codebattle.Game.Context do
           optional(:level) => String.t()
         }
 
+  defdelegate fetch_score_by_game_id(game_id), to: Game.Query
+
+  defdelegate get_completed_games(
+                filters,
+                pagingation_params \\ %{page_number: 1, page_size: 20}
+              ),
+              to: Game.Query
+
   @spec get_active_games(active_games_params) :: [Game.t()]
   def get_active_games(params \\ %{})
 
@@ -60,20 +68,6 @@ defmodule Codebattle.Game.Context do
         false
     end)
     |> Enum.map(fn {:ok, game} -> game end)
-  end
-
-  @spec get_completed_games() :: [Game.t()]
-  def get_completed_games do
-    query =
-      from(
-        games in Game,
-        order_by: [desc_nulls_last: games.finishes_at],
-        where: [state: "game_over"],
-        limit: 30,
-        preload: [:users, :user_games]
-      )
-
-    Repo.all(query)
   end
 
   @spec fetch_game(raw_game_id) :: {:ok, Game.t()} | {:error, atom()}
@@ -201,81 +195,5 @@ defmodule Codebattle.Game.Context do
   defp get_from_db!(id) do
     query = from(g in Game, where: g.id == ^id, preload: [:task, :users, :user_games])
     Repo.one!(query)
-  end
-
-  @spec fetch_score_by_game_id(game_id) :: map() | nil
-  def fetch_score_by_game_id(id) do
-    game = get_game!(id)
-
-    case game.players do
-      [%{id: opponent_one_id}, %{id: opponent_two_id}] ->
-        game_results =
-          from(
-            g in Game,
-            distinct: true,
-            order_by: g.id,
-            inner_join: ug1 in assoc(g, :user_games),
-            inner_join: ug2 in assoc(g, :user_games),
-            where: g.state == "game_over",
-            where: ug1.user_id == ^opponent_one_id,
-            where: ug2.user_id == ^opponent_two_id,
-            select: %{
-              id: g.id,
-              inserted_at: g.inserted_at,
-              result_one: ug1.result,
-              result_two: ug2.result
-            }
-          )
-          |> Repo.all()
-          |> Enum.reduce({0, 0, []}, fn elem, {score_one, score_two, acc} ->
-            case {elem.result_one, elem.result_two} do
-              {"won", _} ->
-                {score_one + 1, score_two,
-                 [
-                   %{
-                     game_id: elem.id,
-                     inserted_at: elem.inserted_at,
-                     winner_id: opponent_one_id
-                   }
-                   | acc
-                 ]}
-
-              {_, "won"} ->
-                {score_one, score_two + 1,
-                 [
-                   %{
-                     game_id: elem.id,
-                     inserted_at: elem.inserted_at,
-                     winner_id: opponent_two_id
-                   }
-                   | acc
-                 ]}
-
-              _ ->
-                {score_one, score_two, acc}
-            end
-          end)
-
-        {score_one, score_two, results} = game_results
-
-        winner_id =
-          cond do
-            score_one > score_two -> opponent_one_id
-            score_one < score_two -> opponent_two_id
-            true -> nil
-          end
-
-        %{
-          winner_id: winner_id,
-          player_results: %{
-            to_string(opponent_one_id) => score_one,
-            to_string(opponent_two_id) => score_two
-          },
-          game_results: Enum.reverse(results)
-        }
-
-      _ ->
-        nil
-    end
   end
 end
