@@ -1,15 +1,22 @@
 /* eslint-disable */
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Gon from 'gon';
 import _ from 'lodash';
+import { Machine } from 'xstate';
+import { useMachine } from '@xstate/react';
+
+import GameContext from './GameContext';
+import * as GameActions from '../middlewares/Game';
+import editor from '../machines/editor';
+import game from '../machines/game';
 
 import userTypes from '../config/userTypes';
 import { actions } from '../slices';
 
 import { connectToActiveMatch, connectToStairwayTournament } from '../middlewares/StairwayGame';
 
-import ChatWidget from './ChatWidget';
+// import ChatWidget from './ChatWidget';
 import StairwayGameInfo from '../components/StairwayGameInfo';
 import StairwayOutputTab from './StairwayOutputTab';
 import StairwayEditorContainer from './StairwayEditorContainer';
@@ -18,7 +25,7 @@ import Loading from '../components/Loading';
 import StairwayRounds from './StairwayRounds';
 
 
-const StairwayGameContainer = ({}) => {
+const StairwayGameContainer = ({ }) => {
   const dispatch = useDispatch();
 
   const meta = useSelector(state => state.tournament?.tournament?.meta);
@@ -50,16 +57,34 @@ const StairwayGameContainer = ({}) => {
     }
   }, [activeMatch]);
 
+  const gameMachine = Machine(game)
+
+  const [current, send, service] = useMachine(gameMachine, {
+    devTools: true,
+    actions: {
+      showGameResultModal: () => {
+        setModalShowing(true);
+      },
+    },
+  });
+  useEffect(() => {
+    GameActions.connectToGame(service);
+    // FIXME: maybe take from gon?
+    // setCurrentUser({ user: { ...currentUser, type: userTypes.spectator } });
+    // connectToChat();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   if (!activeMatch) {
     return <Loading />;
   }
 
   return (
-    <>
+    <GameContext.Provider value={{ current, send, service }}>
       <div className="container-fluid">
         <div className="row no-gutter cb-game">
           <div className="col-12 col-lg-6 p-1 vh-100">
-    {/*
+            {/*
               TODO: fixme, pls
             <StairwayRounds
               players={players}
@@ -68,8 +93,9 @@ const StairwayGameContainer = ({}) => {
               setActiveRoundId={setActiveRoundId}
             />
       */}
-            <StairwayEditorToolbar players={players} setActivePlayerId={() => {}} activePlayer={activePlayer} />
-            <StairwayEditorContainer playerId={activePlayerId} />
+
+            <StairwayEditorToolbar players={players} setActivePlayerId={() => { }} activePlayer={activePlayer} />
+            <StairwayEditorContainer editorMachine={Machine(editor)} playerId={activePlayerId} type={'current_user'} />
           </div>
           <div className="col-12 col-lg-6 p-1 vh-100">
             <div className="d-flex flex-column h-100">
@@ -119,7 +145,7 @@ const StairwayGameContainer = ({}) => {
           </div>
         </div>
       </div>
-    </>
+    </GameContext.Provider>
   );
 };
 

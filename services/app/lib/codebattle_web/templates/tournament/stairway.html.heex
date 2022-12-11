@@ -54,11 +54,16 @@
         <% end %>
       </div>
       <%= if is_active?(@tournament) || is_finished?(@tournament) do %>
+        <h4>Tasks</h4>
+        <code><%= inspect(Enum.map(@tournament.meta.tasks, &Map.take(&1, [:name, :id]))) %></code>
+        <h4>CurrentTaskId</h4>
+        <code><%= @tournament.meta.current_task_id %></code>
+        <h4>Players</h4>
+        <code><%= inspect(@tournament.data.players) %></code>
         <div phx-update="ignore" id="stairway-game-root"></div>
         <%= if Application.get_env(:codebattle, :html_debug_mode) do %>
           <iframe class="xstate w-100"></iframe>
         <% end %>
-        <code><%= inspect(@tournament) %></code>
       <% end %>
     </div>
   </div>

@@ -54,9 +54,9 @@ const StairwayEditorToolbar = ({
   const actionBtnsProps = {
     currentEditorLangSlug: playerData?.editorLang,
     checkResult: () => {},
-    checkBtnStatus: 'disabled',
-    resetBtnStatus: 'disabled',
-    giveUpBtnStatus: 'disabled',
+    checkBtnStatus: 'enabled',
+    resetBtnStatus: 'enabled',
+    giveUpBtnStatus: 'enabled',
   };
 
   return (

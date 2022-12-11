@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
@@ -16,13 +17,11 @@ const stairwayGame = createSlice({
   name: 'stairwayGame',
   initialState,
   reducers: {
-    handleNextRound: () => {},
+    handleNextRound: () => { },
     setGameData: (state, { payload }) => {
       state.game = payload;
     },
-    // changeEditorLang: (state, { payload: { editorLang } }) =>
-      // _.update(state, 'editorValue.editorLang', editorLang),
-    // reducerName: () => {},
+    changeEditorLang: (state, { payload: { editorLang } }) => _.update(state, 'editorValue.editorLang', editorLang),
   },
 });
 
