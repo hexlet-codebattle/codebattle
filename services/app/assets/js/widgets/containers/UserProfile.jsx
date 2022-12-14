@@ -52,10 +52,10 @@ const UserProfile = () => {
   }, [dispatch]);
 
   const dateParse = date => new Date(date).toLocaleString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
 
   const renderAchivement = achievement => {
     if (achievement.includes('win_games_with')) {
@@ -159,12 +159,13 @@ const UserProfile = () => {
               <PolarAngleAxis dataKey="subject" />
               <PolarRadiusAxis />
               <Radar
-                name="Nikita"
+                name="count"
                 dataKey="A"
                 stroke="#8884d8"
                 fill="#8884d8"
                 fillOpacity={0.6}
               />
+              <Tooltip />
             </RadarChart>
           </ResponsiveContainer>
         </div>
