@@ -86,7 +86,7 @@ defmodule Codebattle.Bot.ChatClient do
   end
 
   defp advice_on_win() do
-    ["Nice shot!", "GG WP!", "Good job!"]
+    ["Nice shot!", "GG WP!", "Good job!", "Good one!", "Nice one!"]
     |> Enum.random()
   end
 
@@ -119,7 +119,8 @@ defmodule Codebattle.Bot.ChatClient do
       "What did you just type? Looks strange...",
       "What is this?...",
       "Hmmmm...",
-      "Whaaaaat?..."
+      "Whaaaaat?...",
+      "¯\_(ツ)_/¯"
     ]
     |> Enum.random()
   end
