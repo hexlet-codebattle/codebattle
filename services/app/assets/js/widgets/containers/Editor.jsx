@@ -148,7 +148,7 @@ class Editor extends PureComponent {
   updateHightLightForNotIncludeSyntax = async syntax => {
     if (this.notIncludedSyntaxHightlight.has(syntax)) {
       const { default: HighlightRules } = await import(
-        `monaco-ace-tokenizer/lib/ace/definitions/${syntax}`
+        `../../../../node_modules/monaco-ace-tokenizer/lib/ace/definitions/${syntax}.js`
       );
       this.notIncludedSyntaxHightlight.delete(syntax);
       this.monaco.languages.register({

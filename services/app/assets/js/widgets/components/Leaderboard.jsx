@@ -6,6 +6,7 @@ import UserInfo from '../containers/UserInfo';
 import { actions } from '../slices';
 import { leaderboardSelector } from '../slices/leaderboard';
 import periodTypes from '../config/periodTypes';
+import getImageUrl from '../utils/assetsUrl';
 
 const Leaderboard = () => {
   const dispatch = useDispatch();
@@ -57,7 +58,7 @@ const Leaderboard = () => {
             <div className="d-flex align-items-center flex-nowrap">
               <img
                 alt="rating"
-                src="/assets/images/topPlayers.svg"
+                src={getImageUrl('topPlayers.svg')}
                 className="m-2"
               />
               <p className="d-inline-flex align-items-baseline flex-nowrap m-0 p-0">

@@ -1,5 +1,6 @@
 import React from 'react';
 import LanguageIcon from '../LanguageIcon';
+import getImageUrl from '../../utils/assetsUrl';
 
 // TODO : user user.avatarUrl
 const GamePreview = ({ player1, player2 }) => (
@@ -11,13 +12,13 @@ const GamePreview = ({ player1, player2 }) => (
         <div className="player1__status">
           <LanguageIcon className="preview__icon" lang={player1.lang} />
           <span className="preview__info">{player1.lang}</span>
-          <img className="preview__icon" src="/assets/images/rating.svg" alt="rating" />
+          <img className="preview__icon" src={getImageUrl('rating.svg')} alt="rating" />
           <span className="preview__info">{player1.rating}</span>
         </div>
       </div>
 
       <div className="preview__middle">
-        <img src="/assets/images/fight.svg" alt="fight" className="preview__fight" />
+        <img src={getImageUrl('fight.svg')} alt="fight" className="preview__fight" />
       </div>
 
       <div className="player2">
@@ -26,7 +27,7 @@ const GamePreview = ({ player1, player2 }) => (
         <div className="player2__status">
           <LanguageIcon className="preview__icon" lang={player2.lang} />
           <span className="preview__info">{player2.lang}</span>
-          <img className="preview__icon" src="/assets/images/rating.svg" alt="rating" />
+          <img className="preview__icon" src={getImageUrl('rating.svg')} alt="rating" />
           <span className="preview__info">{player2.rating}</span>
         </div>
       </div>

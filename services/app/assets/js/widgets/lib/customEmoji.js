@@ -1,3 +1,5 @@
+import getImageUrl from '../utils/assetsUrl';
+
 export default [
   {
     name: 'Octocat',
@@ -13,7 +15,7 @@ export default [
     text: '',
     emoticons: [],
     keywords: ['troll'],
-    imageUrl: '/assets/images/emoji/troll.png',
+    imageUrl: getImageUrl('emoji/troll.png'),
   },
   {
     name: 'Ah_year',
@@ -21,6 +23,6 @@ export default [
     text: '',
     emoticons: [],
     keywords: ['ah_yeah'],
-    imageUrl: '/assets/images/emoji/aw_yeah.gif',
+    imageUrl: getImageUrl('emoji/aw_yeah.gif'),
   },
 ];

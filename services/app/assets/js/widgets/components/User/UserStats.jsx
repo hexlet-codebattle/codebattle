@@ -2,6 +2,7 @@ import React from 'react';
 import Loading from '../Loading';
 import UserAchievements from './UserAchievements';
 import LanguageIcon from '../LanguageIcon';
+import getImageUrl from '../../utils/assetsUrl';
 
 const UserStats = ({ data }) => {
   if (!data) {
@@ -29,11 +30,11 @@ const UserStats = ({ data }) => {
               </div>
               <div className="d-flex justify-content-between align-items-baseline">
                 <div className="d-flex align-items-baseline">
-                  <img src="/assets/images/cup.svg" alt="rating" />
+                  <img src={getImageUrl('cup.svg')} alt="rating" />
                   <span className="ml-1">{user.rank}</span>
                 </div>
                 <div className="d-flex align-items-baseline ml-2">
-                  <img src="/assets/images/rating.svg" alt="rating" />
+                  <img src={getImageUrl('rating.svg')} alt="rating" />
                   <span className="ml-1">{user.rating}</span>
                 </div>
               </div>

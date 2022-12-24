@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Gon from 'gon';
+// import Gon from 'gon';
 import { actions } from '../slices';
 
 import LanguagePickerView from './LanguagePickerView';
@@ -16,7 +16,7 @@ const toolbarClassNames = 'btn-toolbar justify-content-between align-items-cente
 const editorSettingClassNames = 'btn-group align-items-center m-1';
 const userInfoClassNames = 'btn-group align-items-center justify-content-end m-1';
 
-const currentUser = Gon.getAsset('current_user');
+const currentUser = window.Gon.getAsset('current_user');
 
 const ModeButtons = ({ player }) => (
   <div

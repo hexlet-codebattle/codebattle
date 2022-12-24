@@ -5,7 +5,7 @@ import copy from 'copy-to-clipboard';
 import moment from 'moment';
 
 import { useDispatch, useSelector } from 'react-redux';
-import Gon from 'gon';
+// import Gon from 'gon';
 import classnames from 'classnames';
 import * as lobbyMiddlewares from '../middlewares/Lobby';
 import gameStateCodes from '../config/gameStateCodes';
@@ -32,6 +32,7 @@ import levelRatio from '../config/levelRatio';
 import PlayerLoading from '../components/PlayerLoading';
 import hashLinkNames from '../config/hashLinkNames';
 import { fetchCompletedGames, loadNextPage } from '../slices/completedGames';
+import getImageUrl from '../utils/assetsUrl';
 
 const isActiveGame = game => [gameStateCodes.playing, gameStateCodes.waitingOpponent].includes(game.state);
 
@@ -123,7 +124,7 @@ const renderButton = (url, type) => {
 const GameActionButton = ({ game }) => {
   const gameUrl = makeGameUrl(game.id);
   const gameUrlJoin = makeGameUrl(game.id, 'join');
-  const currentUser = Gon.getAsset('current_user');
+  const currentUser = window.Gon.getAsset('current_user');
   const gameState = game.state;
   const signInUrl = getSignInGithubUrl();
 
@@ -291,7 +292,7 @@ const ActiveGames = ({ games }) => {
     return null;
   }
 
-  const currentUser = Gon.getAsset('current_user');
+  const currentUser = window.Gon.getAsset('current_user');
 
   const filterGames = game => {
     if (game.visibilityType === 'hidden') {
@@ -357,8 +358,8 @@ const ActiveGames = ({ games }) => {
                   title={game.state}
                   src={
                         game.state === 'playing'
-                          ? '/assets/images/playing.svg'
-                          : '/assets/images/waitingOpponent.svg'
+                          ? getImageUrl('playing.svg')
+                          : getImageUrl('waitingOpponent.svg')
                       }
                 />
               </td>
@@ -512,8 +513,8 @@ const CreateGameButton = ({ handleClick }) => (
 );
 
 const LobbyWidget = () => {
-  const currentUser = Gon.getAsset('current_user');
-  const currentOpponent = Gon.getAsset('opponent');
+  const currentUser = window.Gon.getAsset('current_user');
+  const currentOpponent = window.Gon.getAsset('opponent');
   const isModalShow = useSelector(selectors.isModalShow);
   const dispatch = useDispatch();
 

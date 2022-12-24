@@ -10,6 +10,7 @@ import CompletedGames from '../components/Game/CompletedGames';
 import Heatmap from './Heatmap';
 import Loading from '../components/Loading';
 import * as selectors from '../selectors';
+import getImageUrl from '../utils/assetsUrl';
 
 const UserProfile = () => {
   const [stats, setStats] = useState(null);
@@ -45,7 +46,7 @@ const UserProfile = () => {
           <div className="d-flex h-75 flex-wrap align-items-center justify-content-around cb-polyglot-icons">
             {langs.map(lang => (
               <img
-                src={`/assets/images/achievements/${lang}.png`}
+                src={getImageUrl(`achievements/${lang}.png`)}
                 alt={lang}
                 title={lang}
                 width="14"
@@ -60,7 +61,7 @@ const UserProfile = () => {
     return (
       <img
         className="mr-1 mb-1"
-        src={`/assets/images/achievements/${achievement}.png`}
+        src={getImageUrl(`achievements/${achievement}.png`)}
         alt={achievement}
         title={achievement}
         width="65"
@@ -202,7 +203,7 @@ const UserProfile = () => {
             <h3 className="my-2 cb-heading">
               Lang:
               <img
-                src={`/assets/images/achievements/${stats.user.lang}.png`}
+                src={getImageUrl(`achievements/${stats.user.lang}.png`)}
                 alt={stats.user.lang}
                 title={stats.user.lang}
                 width="30"

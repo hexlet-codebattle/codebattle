@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import axios from 'axios';
-import Gon from 'gon';
+// import Gon from 'gon';
 import { camelizeKeys } from 'humps';
 import socket from '../../socket';
 import * as selectors from '../selectors';
@@ -15,9 +15,9 @@ import GameStateCodes from '../config/gameStateCodes';
 
 import notification from '../utils/notification';
 
-const defaultLanguages = Gon.getAsset('langs');
-const gameId = Gon.getAsset('game_id');
-const isRecord = Gon.getAsset('is_record');
+const defaultLanguages = window.Gon.getAsset('langs');
+const gameId = window.Gon.getAsset('game_id');
+const isRecord = window.Gon.getAsset('is_record');
 const channelName = `game:${gameId}`;
 const channel = !isRecord ? socket.channel(channelName) : null;
 

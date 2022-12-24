@@ -1,8 +1,9 @@
 /* eslint-disable global-require */
 import i18next from 'i18next';
-import Gon from 'gon';
+// import Gon from 'gon';
+import { en } from 'virtual:i18next-loader';
 
-const lng = (Gon.getAsset('locale') || navigator.language || navigator.userLanguage).slice(0, 2);
+const lng = (window.Gon.getAsset('locale') || navigator.language || navigator.userLanguage).slice(0, 2);
 
 export const getLocale = () => lng;
 
@@ -16,7 +17,7 @@ i18next.init({
   },
   resources: {
     en: {
-      translation: require('../../../priv/gettext/en/LC_MESSAGES/default.po'),
+      translation: en,
     },
   },
 });

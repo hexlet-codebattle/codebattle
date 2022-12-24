@@ -26,10 +26,12 @@ const initTournamentChannel = (dispatch) => {
     dispatch(connectToStairwayGame(gameId));
   };
 
-  tournamentChannel
-    .join()
-    .receive('ok', onJoinSuccess)
-    .receive('error', onJoinFailure);
+  if (tournamentChannel.state !== 'joined') {
+    tournamentChannel
+      .join()
+      .receive('ok', onJoinSuccess)
+      .receive('error', onJoinFailure);
+  } 
 };
 
 // export const soundNotification = notification();

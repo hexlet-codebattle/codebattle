@@ -1,10 +1,10 @@
 import Rollbar from 'rollbar';
-import Gon from 'gon';
+// import Gon from 'gon';
 
 const isProd = process.env.NODE_ENV === 'production';
 
 const rollbar = new Rollbar({
-  accessToken: Gon.getAsset('rollbar_api_key'),
+  accessToken: window.Gon.getAsset('rollbar_api_key'),
   captureUncaught: true,
   captureUnhandledRejections: true,
   enabled: isProd,

@@ -1,11 +1,11 @@
-import Gon from 'gon';
+// import Gon from 'gon';
 import { camelizeKeys } from 'humps';
 import socket from '../../socket';
 import { actions } from '../slices';
 
-const chatId = Gon.getAsset('game_id');
-const isRecord = Gon.getAsset('is_record');
-const tournamentId = Gon.getAsset('tournament_id');
+const chatId = window.Gon.getAsset('game_id');
+const isRecord = window.Gon.getAsset('is_record');
+const tournamentId = window.Gon.getAsset('tournament_id');
 
 const getChannelName = () => {
   if (tournamentId) {
@@ -23,7 +23,9 @@ const channel = isRecord ? null : socket.channel(getChannelName());
 const fetchState = () => dispatch => {
   const camelizeKeysAndDispatch = actionCreator => data => dispatch(actionCreator(camelizeKeys(data)));
 
-  channel.join().receive('ok', camelizeKeysAndDispatch(actions.updateChatData));
+  if (channel.state !== 'joined') {
+    channel.join().receive('ok', camelizeKeysAndDispatch(actions.updateChatData));
+  }
 
   channel.on(
     'chat:user_joined',

@@ -1,6 +1,10 @@
-const path = require('path');
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import inject from '@rollup/plugin-inject';
+import i18nextLoader from 'vite-plugin-i18next-loader';
+import path from 'path';
 
-export default {
+export default defineConfig({
   root: path.resolve(__dirname, 'assets'),
   resolve: {
     alias: {
@@ -9,14 +13,18 @@ export default {
       '~font-mfizz': path.resolve(__dirname, 'node_modules/font-mfizz'),
     },
   },
-  publicDir: './static',
   build: {
     target: 'es2018',
     minify: true,
     outDir: '../priv2/static',
     emptyOutDir: true,
     rollupOptions: {
-      input: ['./assets/js/app.js', './assets/css/style.scss'],
+      input: [
+        './assets/js/app.js',
+        './assets/css/style.scss',
+        './assets/js/landing.js',
+        './assets/css/landing.scss',
+      ],
       output: {
         entryFileNames: 'js/[name].js',
         chunkFileNames: 'js/[name].js',
@@ -25,4 +33,16 @@ export default {
     },
     assetsInlineLimit: 0,
   },
-};
+  plugins: [
+    inject({
+      process: ['process', '*'],
+    }),
+    react(),
+    i18nextLoader({ paths: ['./priv/locales'] }),
+  ],
+  server: {
+    port: 8080,
+    host: '0.0.0.0',
+    origin: 'http://localhost:8080',
+  },
+});

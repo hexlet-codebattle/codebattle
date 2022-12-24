@@ -1,8 +1,8 @@
-import Gon from 'gon';
+// import Gon from 'gon';
 import axios from 'axios';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-const userSettings = Gon.getAsset('current_user');
+const userSettings = window.Gon.getAsset('current_user');
 let csrfToken;
 
 if (process.browser) {

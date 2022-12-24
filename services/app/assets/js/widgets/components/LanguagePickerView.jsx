@@ -1,13 +1,13 @@
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import Select from 'react-select';
-import Gon from 'gon';
+// import Gon from 'gon';
 
 import _ from 'lodash';
 import * as selectors from '../selectors';
 import LanguageIcon from './LanguageIcon';
 
-const defaultLanguages = Gon.getAsset('langs');
+const defaultLanguages = window.Gon.getAsset('langs');
 
   const customStyle = {
     control: provided => ({

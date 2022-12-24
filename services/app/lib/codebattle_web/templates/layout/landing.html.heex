@@ -41,15 +41,8 @@
     <link
       phx-track-static
       rel="stylesheet"
-      href={Routes.static_path(@conn, "/assets/landing.css")}
+      href="http://localhost:8080/css/landing.scss"
     />
-    <script
-      defer
-      phx-track-static
-      type="text/javascript"
-      src={Routes.static_path(@conn, "/assets/landing.js")}
-    >
-    </script>
     <title>Codebattle</title>
     <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport" />
     <script async="" defer="" src="https://buttons.github.io/buttons.js">
@@ -76,4 +69,20 @@
     <% end %>
     <%= @inner_content %>
   </body>
+  <script type="module">
+      import RefreshRuntime from 'http://localhost:8080/@react-refresh'
+      RefreshRuntime.injectIntoGlobalHook(window)
+      window.$RefreshReg$ = () => {}
+      window.$RefreshSig$ = () => (type) => type
+      window.__vite_plugin_react_preamble_installed__ = true
+    </script>
+    <script type="module" src="http://localhost:8080/@vite/client"></script>
+    <script
+      defer
+      type="module"
+      phx-track-static
+      type="text/javascript"
+      src="http://localhost:8080/js/landing.js"
+    >
+    </script>
 </html>

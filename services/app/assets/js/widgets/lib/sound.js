@@ -1,6 +1,6 @@
 import { Howl, Howler } from 'howler';
 import _ from 'lodash';
-import Gon from 'gon';
+// import Gon from 'gon';
 import standart from '../config/sound/standart';
 import cs from '../config/sound/cs';
 import dendy from '../config/sound/dendy';
@@ -19,7 +19,7 @@ const audioConfigs = {
   silent: {},
 };
 
-const soundSettings = Gon.getAsset('current_user').sound_settings;
+const soundSettings = window.Gon.getAsset('current_user').sound_settings;
 const soundType = soundSettings.type;
 const defaultSoundLevel = soundSettings.level * 0.1;
 

@@ -9,6 +9,7 @@ import ContributorsList from './ContributorsList';
 import { actions } from '../slices';
 import * as selectors from '../selectors';
 import taskDescriptionLanguages from '../config/taskDescriptionLanguages';
+import getImageUrl from '../utils/assetsUrl';
 
 const renderTaskLink = name => {
   const link = `https://github.com/hexlet-codebattle/battle_asserts/tree/master/src/battle_asserts/issues/${name}.clj`;
@@ -46,7 +47,7 @@ const renderGameLevelBadge = level => (
     data-placement="right"
     title={level}
   >
-    <img alt={level} src={`/assets/images/levels/${level}.svg`} />
+    <img alt={level} src={getImageUrl(`levels/${level}.svg`)} />
   </div>
 );
 

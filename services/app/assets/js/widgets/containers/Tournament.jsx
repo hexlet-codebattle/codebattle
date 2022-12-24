@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Gon from 'gon';
+// import Gon from 'gon';
 import {
   connectToTournament,
 } from '../middlewares/Tournament';
@@ -26,7 +26,7 @@ const Tournament = () => {
   const messages = useSelector(selectors.chatMessagesSelector);
 
   useEffect(() => {
-    const currentUser = Gon.getAsset('current_user');
+    const currentUser = window.Gon.getAsset('current_user');
 
     dispatch(actions.setCurrentUser({ user: { ...currentUser } }));
     dispatch(connectToTournament());

@@ -1,4 +1,5 @@
 import React from 'react';
+import getImageUrl from '../utils/assetsUrl';
 
 const GameLevelBadge = ({ level }) => (
   <div
@@ -7,7 +8,7 @@ const GameLevelBadge = ({ level }) => (
     data-placement="right"
     title={level}
   >
-    <img alt={level} src={`/assets/images/levels/${level}.svg`} />
+    <img alt={level} src={getImageUrl(`levels/${level}.svg`)} />
   </div>
 );
 

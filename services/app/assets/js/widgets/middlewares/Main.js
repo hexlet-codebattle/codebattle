@@ -36,9 +36,11 @@ export const init = () => dispatch => {
     channel.on('invites:dropped', camelizeKeysAndDispatch(dispatch, actions.updateInvite));
   };
 
-  channel
-    .join()
-    .receive('ok', onJoinSuccess);
+  if (channel.state !== 'joined') {
+    channel
+      .join()
+      .receive('ok', onJoinSuccess);
+  }
 };
 
 export const createInvite = params => dispatch => channel

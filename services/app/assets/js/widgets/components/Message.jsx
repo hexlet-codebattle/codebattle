@@ -10,6 +10,7 @@ import {
 } from '../selectors';
 import { pushCommand } from '../middlewares/Chat';
 import { getLobbyUrl } from '../utils/urlBuilders';
+import getImageUrl from '../utils/assetsUrl';
 
 const Message = ({
   text = '',
@@ -104,7 +105,7 @@ const Message = ({
         >
           <img
             alt="invites"
-            src="/assets/images/fight-black.png"
+            src={getImageUrl('fight-black.png')}
             style={{ width: '1em', height: '1em' }}
           />
         </button>
@@ -126,7 +127,7 @@ const Message = ({
                 >
                   <img
                     alt="invites"
-                    src="/assets/images/check.svg"
+                    src={getImageUrl('check.svg')}
                     style={{ width: '1em', height: '1em' }}
                   />
                 </Button>
@@ -143,7 +144,7 @@ const Message = ({
           >
             <img
               alt="invites"
-              src="/assets/images/fight-black.png"
+              src={getImageUrl('fight-black.png')}
               style={{ width: '1em', height: '1em' }}
             />
           </button>

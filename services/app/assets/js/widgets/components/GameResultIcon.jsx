@@ -3,6 +3,7 @@ import { Tooltip, OverlayTrigger } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
 import _ from 'lodash';
 import * as selectors from '../selectors';
+import getImageUrl from '../utils/assetsUrl';
 
 const GameResultIcon = ({ editor: { userId } }) => {
   const players = useSelector(selectors.gamePlayersSelector);
@@ -21,7 +22,7 @@ const GameResultIcon = ({ editor: { userId } }) => {
         placement="left"
       >
         <img
-          src="/assets/images/big-flag.png"
+          src={getImageUrl('big-flag.png')}
           alt="white-flag"
           style={{ width: '200px' }}
         />
@@ -35,7 +36,7 @@ const GameResultIcon = ({ editor: { userId } }) => {
         overlay={<Tooltip id={tooltipId}>Player won</Tooltip>}
         placement="left"
       >
-        <img src="/assets/images/big-gold-cup.png" alt="gold-cup" />
+        <img src={getImageUrl('big-gold-cup.png')} alt="gold-cup" />
       </OverlayTrigger>
     );
   }

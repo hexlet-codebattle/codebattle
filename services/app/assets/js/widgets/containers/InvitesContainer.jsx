@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Popover, OverlayTrigger, Button } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import Gon from 'gon';
+// import Gon from 'gon';
 
 import GameLevelBadge from '../components/GameLevelBadge';
 import * as selectors from '../selectors';
@@ -10,6 +10,7 @@ import { selectors as invitesSelectors } from '../slices/invites';
 import {
   init, acceptInvite, declineInvite, cancelInvite,
 } from '../middlewares/Main';
+import getImageUrl from '../utils/assetsUrl';
 
 const NoInvites = () => (
   <div
@@ -81,7 +82,7 @@ const InvitesContainer = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const user = Gon.getAsset('current_user');
+    const user = window.Gon.getAsset('current_user');
     dispatch(actions.setCurrentUser({ user }));
     dispatch(init());
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -107,7 +108,7 @@ const InvitesContainer = () => {
           <img
             ref={ref}
             alt="invites"
-            src="/assets/images/fight.svg"
+            src={getImageUrl('fight.svg')}
             style={{ width: '46px', height: '46px' }}
           />
           {

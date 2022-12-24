@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect, useSelector, useDispatch } from 'react-redux';
-import Gon from 'gon';
+// import Gon from 'gon';
 import ReactJoyride, { STATUS } from 'react-joyride';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
 import { useMachine } from '@xstate/react';
@@ -175,8 +175,8 @@ const GameWidgetGuide = () => {
   );
 };
 
-const currentUser = Gon.getAsset('current_user');
-const players = Gon.getAsset('players');
+const currentUser = window.Gon.getAsset('current_user');
+const players = window.Gon.getAsset('players');
 
 const RootContainer = ({
   connectToGame,

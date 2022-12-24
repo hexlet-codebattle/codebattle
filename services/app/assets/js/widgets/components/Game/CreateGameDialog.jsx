@@ -14,6 +14,7 @@ import * as lobbyMiddlewares from '../../middlewares/Lobby';
 import * as mainMiddlewares from '../../middlewares/Main';
 import i18n from '../../../i18n';
 import levelRatio from '../../config/levelRatio';
+import getImageUrl from '../../utils/assetsUrl';
 
 const TIMEOUTS = [3300, 2040, 1260, 780, 480, 300, 180, 120, 60];
 
@@ -223,7 +224,7 @@ const CreateGameDialog = ({ hideModal }) => {
             data-placement="right"
             title={level}
           >
-            <img alt={level} src={`/assets/images/levels/${level}.svg`} />
+            <img alt={level} src={getImageUrl(`levels/${level}.svg`)} />
           </button>
         ))}
       </div>

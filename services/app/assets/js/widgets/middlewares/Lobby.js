@@ -1,18 +1,20 @@
 import { camelizeKeys } from 'humps';
-import Gon from 'gon';
+// import Gon from 'gon';
 import _ from 'lodash';
 
 import socket from '../../socket';
 import { actions } from '../slices';
 
 const channelName = 'lobby';
-const isRecord = Gon.getAsset('is_record');
+const isRecord = window.Gon.getAsset('is_record');
 const channel = !isRecord ? socket.channel(channelName) : null;
 
 export const fetchState = () => (dispatch, getState) => {
   const camelizeKeysAndDispatch = actionCreator => data => dispatch(actionCreator(camelizeKeys(data)));
 
-  channel.join().receive('ok', camelizeKeysAndDispatch(actions.initGameList));
+  if (channel.state !== 'joined') {
+    channel.join().receive('ok', camelizeKeysAndDispatch(actions.initGameList));
+  }
 
   channel.on('game:upsert', data => {
     const newData = camelizeKeys(data);

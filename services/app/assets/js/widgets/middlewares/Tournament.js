@@ -1,6 +1,6 @@
 // import _ from 'lodash';
 // import axios from 'axios';
-import Gon from 'gon';
+// import Gon from 'gon';
 import { camelizeKeys } from 'humps';
 import _ from 'lodash';
 
@@ -9,7 +9,7 @@ import { actions } from '../slices';
 
 // import notification from '../utils/notification';
 
-const tournamentId = Gon.getAsset('tournament_id');
+const tournamentId = window.Gon.getAsset('tournament_id');
 const channelName = `tournament:${tournamentId}`;
 const channel = socket.channel(channelName);
 
@@ -26,10 +26,12 @@ const initTournamentChannel = dispatch => {
     dispatch(actions.setTournamentData(data));
   };
 
-  channel
-    .join()
-    .receive('ok', onJoinSuccess)
-    .receive('error', onJoinFailure);
+  if (channel.state !== 'joined') {
+    channel
+      .join()
+      .receive('ok', onJoinSuccess)
+      .receive('error', onJoinFailure);
+  }
 };
 
 // export const soundNotification = notification();

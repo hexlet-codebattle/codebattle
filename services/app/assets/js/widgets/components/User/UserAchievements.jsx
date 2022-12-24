@@ -1,6 +1,8 @@
 import React from 'react';
 import _ from 'lodash';
 
+import getImageUrl from '../../utils/assetsUrl';
+
 const LangIcon = ({ size = 'md', lang }) => {
   const [width, height] = size === 'sm' ? [14, 14] : [65, 65];
   const margin = size === 'sm' ? 'm-0' : 'mr-1 mb-1';
@@ -11,7 +13,7 @@ const LangIcon = ({ size = 'md', lang }) => {
       width={width}
       height={height}
       className={margin}
-      src={`/assets/images/achievements/${lang}.png`}
+      src={getImageUrl(`achievements/${lang}.png`)}
     />
   );
 };
