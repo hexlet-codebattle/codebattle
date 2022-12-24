@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Select from 'react-select';
-import Gon from 'gon';
+// import Gon from 'gon';
 import cn from 'classnames';
 import { camelizeKeys } from 'humps';
 import axios from 'axios';
@@ -188,7 +188,7 @@ export default ({
   randomTask,
 }) => {
   const dispatch = useDispatch();
-  const taskTags = Gon.getAsset('task_tags');
+  const taskTags = window.Gon.getAsset('task_tags');
 
   const [allTasks, setAllTasks] = useState([]);
 
