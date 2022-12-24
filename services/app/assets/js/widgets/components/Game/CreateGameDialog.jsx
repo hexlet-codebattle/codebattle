@@ -15,8 +15,9 @@ import * as mainMiddlewares from '../../middlewares/Main';
 import i18n from '../../../i18n';
 import levelRatio from '../../config/levelRatio';
 import getImageUrl from '../../utils/assetsUrl';
+import TaskChoice from './TaskChoice';
 
-const TIMEOUTS = [3300, 2040, 1260, 780, 480, 300, 180, 120, 60];
+const TIMEOUT = 480;
 
 const UserLabel = ({ user }) => {
   const { presenceList } = useSelector(selectors.lobbyDataSelector);
@@ -82,46 +83,6 @@ const OpponentSelect = ({ setOpponent, opponent }) => {
   );
 };
 
-const TaskLabel = ({ task }) => (
-  <span className="text-truncate">
-    <span>{task.name}</span>
-  </span>
-);
-
-const TaskSelect = ({ chosenTask, setChosenTask, randomTask }) => {
-  const dispatch = useDispatch();
-
-  const loadOptions = (inputValue, callback) => {
-    axios
-      .get('/api/v1/tasks')
-      .then(({ data }) => {
-        const { tasks } = camelizeKeys(data);
-        const options = [randomTask, ...tasks]
-          .map(task => ({ label: <TaskLabel task={task} />, value: task }));
-
-        callback(options);
-      })
-      .catch(error => {
-        dispatch(actions.setError(error));
-      });
-  };
-
-  return (
-    <AsyncSelect
-      className="w-100"
-      value={
-        {
-          label: <TaskLabel task={chosenTask} />,
-          value: chosenTask,
-        }
-      }
-      defaultOptions
-      onChange={({ value }) => setChosenTask(value)}
-      loadOptions={loadOptions}
-    />
-  );
-};
-
 const CreateGameDialog = ({ hideModal }) => {
   const dispatch = useDispatch();
 
@@ -138,11 +99,12 @@ const CreateGameDialog = ({ hideModal }) => {
 
   const randomTask = { name: i18n.t('random task'), value: {} };
   const [chosenTask, setChosenTask] = useState(randomTask);
+  const [chosenTags, setChosenTags] = useState([]);
 
   const [game, setGame] = useState({
     level: gameLevels[0],
     type: 'other_user',
-    timeoutSeconds: TIMEOUTS[4],
+    timeoutSeconds: TIMEOUT,
     ...gameOptions,
   });
 
@@ -166,6 +128,7 @@ const CreateGameDialog = ({ hideModal }) => {
           timeout_seconds: game.timeoutSeconds,
           recipient_id: opponent.id,
           task_id: _.get(chosenTask, 'id', null),
+          task_tags: chosenTags,
         }),
       );
     } else if (!isInvite) {
@@ -174,24 +137,11 @@ const CreateGameDialog = ({ hideModal }) => {
         opponent_type: game.type,
         timeout_seconds: game.timeoutSeconds,
         task_id: _.get(chosenTask, 'id', null),
+        task_tags: chosenTags,
       });
     }
     hideModal();
   };
-
-  const renderPickTimeouts = () => TIMEOUTS.map(timeout => (
-    <button
-      key={timeout}
-      type="button"
-      className={cn('btn mr-1', {
-          'bg-orange text-white': game.timeoutSeconds === timeout,
-          'btn-outline-orange': game.timeoutSeconds !== timeout,
-        })}
-      onClick={() => setGame({ ...game, timeoutSeconds: timeout })}
-    >
-      {i18n.t(`Timeout ${timeout} seconds`)}
-    </button>
-    ));
 
   const renderPickGameType = () => currentGameTypeCodes.map(gameType => (
     <button
@@ -234,8 +184,20 @@ const CreateGameDialog = ({ hideModal }) => {
         {renderPickGameType()}
       </div>
       <h5>{i18n.t('Time control')}</h5>
-      <div className="d-flex justify-content-around px-5 mt-3 mb-2">
-        {renderPickTimeouts()}
+      <div className="d-flex flex-column px-5 mt-3 mb-2">
+        <input
+          type="range"
+          className="form-range w-100"
+          value={game.timeoutSeconds / 60}
+          onChange={e => setGame({ ...game, timeoutSeconds: e.target.value * 60 })}
+          min="3"
+          max="60"
+          step="1"
+          id="customRange3"
+        />
+        <span className="text-center text-orange">
+          {i18n.t(`${game.timeoutSeconds / 60} min`)}
+        </span>
       </div>
       {isInvite && (
         <>
@@ -245,10 +207,14 @@ const CreateGameDialog = ({ hideModal }) => {
           </div>
         </>
       )}
-      <h5>{i18n.t('Choose task')}</h5>
-      <div className="d-flex justify-content-around px-5 mt-3 mb-2">
-        <TaskSelect setChosenTask={setChosenTask} chosenTask={chosenTask} randomTask={randomTask} />
-      </div>
+      <TaskChoice
+        chosenTask={chosenTask}
+        setChosenTask={setChosenTask}
+        chosenTags={chosenTags}
+        setChosenTags={setChosenTags}
+        level={game.level}
+        randomTask={randomTask}
+      />
       <button type="button" className={createBtnClassname} onClick={createGame}>
         {createBtnTitle}
       </button>

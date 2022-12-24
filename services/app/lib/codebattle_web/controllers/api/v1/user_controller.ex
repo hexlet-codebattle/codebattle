@@ -55,7 +55,7 @@ defmodule CodebattleWeb.Api.V1.UserController do
     user_attrs = %{
       name: params["name"],
       email: params["email"],
-      passowrd: params["password"]
+      password: params["password"]
     }
 
     case Codebattle.Oauth.User.create_in_firebase(user_attrs) do

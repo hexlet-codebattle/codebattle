@@ -40,6 +40,14 @@ defmodule Codebattle.Game.Context do
           optional(:level) => String.t()
         }
 
+  defdelegate fetch_score_by_game_id(game_id), to: Game.Query
+
+  defdelegate get_completed_games(
+                filters,
+                pagingation_params \\ %{page_number: 1, page_size: 20}
+              ),
+              to: Game.Query
+
   @spec get_active_games(active_games_params) :: [Game.t()]
   def get_active_games(params \\ %{})
 
@@ -50,7 +58,7 @@ defmodule Codebattle.Game.Context do
       {_, :undefined, _, _} -> false
       {_, _pid, _, _} -> true
     end)
-    |> Enum.map(fn {id, _, _, _} -> Game.Context.get_game(id) end)
+    |> Enum.map(fn {id, _, _, _} -> Game.Context.fetch_game(id) end)
     |> Enum.filter(fn
       {:ok, game} ->
         active_game?(game) &&
@@ -62,25 +70,11 @@ defmodule Codebattle.Game.Context do
     |> Enum.map(fn {:ok, game} -> game end)
   end
 
-  @spec get_completed_games() :: [Game.t()]
-  def get_completed_games do
-    query =
-      from(
-        games in Game,
-        order_by: [desc_nulls_last: games.finishes_at],
-        where: [state: "game_over"],
-        limit: 30,
-        preload: [:users, :user_games]
-      )
-
-    Repo.all(query)
-  end
-
-  @spec get_game(raw_game_id) :: {:ok, Game.t()} | {:error, atom()}
-  def get_game(id) do
+  @spec fetch_game(raw_game_id) :: {:ok, Game.t()} | {:error, atom()}
+  def fetch_game(id) do
     {:ok, get_game!(id)}
   rescue
-    _e in Ecto.NoResultsError ->
+    _e in _ ->
       {:error, :not_found}
   end
 
@@ -127,16 +121,17 @@ defmodule Codebattle.Game.Context do
 
   @spec update_editor_data(game_id, User.t(), String.t(), String.t()) ::
           {:ok, Game.t()} | {:error, atom}
-  def update_editor_data(id, user, editor_text, editor_lang) do
-    game = get_game!(id)
+  def update_editor_data(game_id, user, editor_text, editor_lang) do
+    case get_game!(game_id) do
+      game = %{is_live: true} ->
+        Engine.update_editor_data(game, %{
+          id: user.id,
+          editor_text: editor_text,
+          editor_lang: editor_lang
+        })
 
-    case Engine.update_editor_data(game, %{
-           id: user.id,
-           editor_text: editor_text,
-           editor_lang: editor_lang
-         }) do
-      {:ok, game} -> {:ok, game}
-      {:error, reason} -> {:error, reason}
+      _ ->
+        {:error, :game_is_dead}
     end
   end
 
@@ -152,12 +147,18 @@ defmodule Codebattle.Game.Context do
           }
           | {:error, atom}
   def check_result(id, params) do
-    id |> get_game!() |> Engine.check_result(params)
+    case get_game!(id) do
+      game = %{is_live: true} -> Engine.check_result(game, params)
+      _ -> {:error, :game_is_dead}
+    end
   end
 
   @spec give_up(game_id, User.t()) :: {:ok, Game.t()} | {:error, atom}
   def give_up(id, user) do
-    id |> get_game!() |> Engine.give_up(user)
+    case get_game!(id) do
+      game = %{is_live: true} -> Engine.give_up(game, user)
+      _ -> {:error, :game_is_dead}
+    end
   end
 
   @spec rematch_send_offer(raw_game_id, User.t()) ::
@@ -165,7 +166,7 @@ defmodule Codebattle.Game.Context do
           | {:rematch_accepted, Game.t()}
           | {:error, atom}
   def rematch_send_offer(game_id, user) do
-    with game <- get_game!(game_id),
+    with game = %{is_live: true} <- get_game!(game_id),
          :ok <- player_can_rematch?(game, user.id) do
       Engine.rematch_send_offer(game, user)
     end
@@ -173,7 +174,10 @@ defmodule Codebattle.Game.Context do
 
   @spec rematch_reject(game_id) :: {:rematch_status_updated, map()} | {:error, atom}
   def rematch_reject(game_id) do
-    game_id |> get_game!() |> Engine.rematch_reject()
+    case get_game!(game_id) do
+      game = %{is_live: true} -> Engine.rematch_reject(game)
+      _ -> {:error, :game_is_dead}
+    end
   end
 
   @spec trigger_timeout(game_id) :: :ok

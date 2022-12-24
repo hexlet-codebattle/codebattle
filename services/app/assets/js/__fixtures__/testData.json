@@ -1,0 +1,420 @@
+{
+  "allTasks": [
+    { 
+      "name": "random task"
+    },
+    { 
+      "name": "task1 name"
+    },
+    {
+      "name": "task2 name"
+    },
+    {
+      "name": "task3 filtered"
+    },
+    { 
+      "name": "task4 name"
+    },
+    {
+      "name": "task5 name"
+    },
+    {
+      "name": "task6 name"
+    }
+  ],
+  "elementaryTasksFromBackend": [
+    {
+      "name": "task1 name",
+      "id": 1,
+      "level": "elementary",
+      "tags": [
+        "math",
+        "string"
+      ]
+    },
+    {
+      "name": "task2 name",
+      "id": 2,
+      "level": "elementary",
+      "tags": [
+        "math"
+      ]
+    },
+    {
+      "name": "task3 filtered",
+      "id": 3,
+      "level": "elementary",
+      "tags": [
+        "math"
+      ]
+    },
+    {
+      "name": "task4 name",
+      "id": 4,
+      "level": "elementary",
+      "tags": [
+        ""
+      ]
+    },
+    {
+      "name": "task5 name",
+      "id": 5,
+      "level": "elementary",
+      "tags": [
+        "math",
+        "unpopularTag"
+      ]
+    },
+    {
+      "name": "task6 name",
+      "id": 6,
+      "level": "elementary",
+      "tags": [
+        "asd"
+      ]
+    }
+  ],
+  "easyTasksFromBackend": [
+    {
+      "name": "task7 name",
+      "id": 7,
+      "level": "easy",
+      "tags": []
+    },
+    {
+      "name": "task8 name",
+      "id": 8,
+      "level": "easy",
+      "tags": []
+    },
+    {
+      "name": "task9 name",
+      "id": 9,
+      "level": "easy",
+      "tags": []
+    }
+  ],
+  "tasksMatchingRestTags": [
+    { 
+      "name": "random task"
+    },
+    {
+      "name": "task5 name"
+    }
+  ],
+  "tasksUnsuitableForRestTags": [
+    {
+      "name": "task1 name"
+    },
+    {
+      "name": "task2 name"
+    },
+    {
+      "name": "task3 filtered"
+    },
+    {
+      "name": "task4 name"
+    },
+    {
+      "name": "task6 name"
+    }
+  ],
+  "tasksMatchingMathTag": [
+    { 
+      "name": "random task"
+    },
+    {
+      "name": "task1 name"
+    },
+    {
+      "name": "task2 name"
+    },
+    {
+      "name": "task3 filtered"
+    },
+    {
+      "name": "task5 name"
+    }
+  ],
+  "tasksUnsuitableForMathTag": [
+    {
+      "name": "task4 name"
+    },
+    {
+      "name": "task6 name"
+    }
+  ],
+  "tasksMatchingMathAndStringTags": [
+    { 
+      "name": "random task"
+    },
+    {
+      "name": "task1 name"
+    }
+  ],
+  "tasksUnsuitableForMathAndStringTags": [
+    {
+      "name": "task2 name"
+    },
+    {
+      "name": "task3 filtered"
+    },
+    {
+      "name": "task4 name"
+    },
+    {
+      "name": "task5 name"
+    },
+    {
+      "name": "task6 name"
+    }
+  ],
+  "tasksFilteredByName": [
+    { 
+      "name": "task1 name"
+    },
+    {
+      "name": "task2 name"
+    },
+    { 
+      "name": "task4 name"
+    },
+    {
+      "name": "task5 name"
+    },
+    {
+      "name": "task6 name"
+    }
+  ],
+  "tasksEliminatedByName": [
+    { 
+      "name": "random task"
+    },
+    {
+      "name": "task3 filtered"
+    }
+  ],
+  "tasksFilteredByNameAndTag": [
+    { 
+      "name": "task1 name"
+    },
+    {
+      "name": "task2 name"
+    },
+    {
+      "name": "task5 name"
+    }
+  ],
+  "tasksEliminatedByNameAndTag": [
+    { 
+      "name": "random task"
+    },
+    { 
+      "name": "task3 filtered"
+    },
+    { 
+      "name": "task4 name"
+    },
+    {
+      "name": "task6 name"
+    }
+  ],
+  "gamesPage1": [
+    {
+      "lavel": "easy",
+      "id": 4,
+      "finishesAt": "2022-11-23T12:18:25",
+      "players": [
+        {
+          "id": 1,
+          "name": "user1 name"
+        },
+        {
+          "id": 2,
+          "name": "user2 name"
+        }
+      ]
+    },
+    {
+      "lavel": "easy",
+      "id": 3,
+      "finishesAt": "2022-11-18T18:18:25",
+      "players": [
+        {
+          "id": 1,
+          "name": "user1 name"
+        },
+        {
+          "id": 2,
+          "name": "user2 name"
+        }
+      ]
+    }
+  ],
+  "gamesPage2": [
+    {
+      "lavel": "easy",
+      "id": 3,
+      "finishesAt": "2022-11-18T18:18:25",
+      "players": [
+        {
+          "id": 1,
+          "name": "user1 name"
+        },
+        {
+          "id": 2,
+          "name": "user2 name"
+        }
+      ]
+    },
+    {
+      "lavel": "easy",
+      "id": 2,
+      "finishesAt": "2022-11-09T18:18:25",
+      "players": [
+        {
+          "id": 1,
+          "name": "user1 name"
+        },
+        {
+          "id": 2,
+          "name": "user2 name"
+        }
+      ]
+    },
+    {
+      "lavel": "easy",
+      "id": 1,
+      "finishesAt": "2022-10-23T18:18:25",
+      "players": [
+        {
+          "id": 1,
+          "name": "user1 name"
+        },
+        {
+          "id": 2,
+          "name": "user2 name"
+        }
+      ]
+    }
+  ],
+  "gameRepeatedOnPages": {
+    "lavel": "easy",
+    "id": 3,
+    "finishesAt": "2022-11-18T18:18:25",
+    "players": [
+      {
+        "id": 1,
+        "name": "user1 name"
+      },
+      {
+        "id": 2,
+        "name": "user2 name"
+      }
+    ]
+  },
+  "uniqueGamesOnPage2": [
+    {
+      "lavel": "easy",
+      "id": 2,
+      "finishesAt": "2022-11-09T18:18:25",
+      "players": [
+        {
+          "id": 1,
+          "name": "user1 name"
+        },
+        {
+          "id": 2,
+          "name": "user2 name"
+        }
+      ]
+    },
+    {
+      "lavel": "easy",
+      "id": 1,
+      "finishesAt": "2022-10-23T18:18:25",
+      "players": [
+        {
+          "id": 1,
+          "name": "user1 name"
+        },
+        {
+          "id": 2,
+          "name": "user2 name"
+        }
+      ]
+    }
+  ],
+  "allGames": [
+    {
+      "lavel": "easy",
+      "id": 4,
+      "finishesAt": "2022-11-23T12:18:25",
+      "players": [
+        {
+          "id": 1,
+          "name": "user1 name"
+        },
+        {
+          "id": 2,
+          "name": "user2 name"
+        }
+      ]
+    },
+    {
+      "lavel": "easy",
+      "id": 3,
+      "finishesAt": "2022-11-18T18:18:25",
+      "players": [
+        {
+          "id": 1,
+          "name": "user1 name"
+        },
+        {
+          "id": 2,
+          "name": "user2 name"
+        }
+      ]
+    },
+    {
+      "lavel": "easy",
+      "id": 2,
+      "finishesAt": "2022-11-09T18:18:25",
+      "players": [
+        {
+          "id": 1,
+          "name": "user1 name"
+        },
+        {
+          "id": 2,
+          "name": "user2 name"
+        }
+      ]
+    },
+    {
+      "lavel": "easy",
+      "id": 1,
+      "finishesAt": "2022-10-23T18:18:25",
+      "players": [
+        {
+          "id": 1,
+          "name": "user1 name"
+        },
+        {
+          "id": 2,
+          "name": "user2 name"
+        }
+      ]
+    }
+  ],
+  "pageInfo1": {
+    "totalPages": 2,
+    "pageNumber": 1,
+    "totalEntries": 4
+  },
+  "pageInfo2": {
+    "totalPages": 2,
+    "pageNumber": 2,
+    "totalEntries": 4
+  }
+}

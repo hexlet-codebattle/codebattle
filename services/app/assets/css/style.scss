@@ -183,6 +183,18 @@ a {
   font-size: 8px;
 }
 
+.cb-game-score-won {
+  color: var(--green) !important;
+}
+
+.cb-game-score-lost {
+  color: var(--red) !important;
+}
+
+.cb-game-score-draw {
+  color: var(--black) !important;
+}
+
 .cb-user-online {
   color: var(--green) !important;
 }
@@ -617,4 +629,14 @@ td {
   .lead {
     font-size: 16px;
   }
+}
+
+.tag-btn-outline-orange {
+  border-color: $orange;
+  color: $orange;
+}
+
+.tag-btn-outline-orange:hover {
+  border-color: $orange;
+  color: $orange;
 }

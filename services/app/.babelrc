@@ -11,6 +11,7 @@
   "plugins": [
     "@babel/plugin-proposal-class-properties",
     "@babel/plugin-proposal-optional-chaining",
-    "lodash"
+    "lodash",
+    "babel-plugin-transform-import-meta"
   ]
 }

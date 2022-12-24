@@ -1,6 +1,8 @@
 defmodule CodebattleWeb.Api.V1.GameControllerTest do
   use CodebattleWeb.ConnCase, async: true
 
+  alias Codebattle.Game.Player
+
   describe ".completed_games" do
     test "shows user stats", %{conn: conn} do
       user1 =
@@ -14,9 +16,15 @@ defmodule CodebattleWeb.Api.V1.GameControllerTest do
       user2 =
         insert(:user, %{name: "second", email: "test2@test.test", github_id: 2, rating: 2310})
 
-      game1 = insert(:game, state: "game_over", finishes_at: ~N[2001-01-01 23:00:07])
-      game2 = insert(:game, state: "game_over", finishes_at: ~N[2002-02-02 23:00:07])
-      insert(:game, state: "timeout")
+      players = [Player.build(user1), Player.build(user2)]
+
+      game1 =
+        insert(:game, state: "game_over", finishes_at: ~N[2001-01-01 23:00:07], players: players)
+
+      game2 =
+        insert(:game, state: "game_over", finishes_at: ~N[2002-02-02 23:00:07], players: players)
+
+      insert(:game, state: "timeout", players: players)
 
       insert(:user_game, user: user1, creator: false, game: game1, result: "won")
       insert(:user_game, user: user2, creator: false, game: game1, result: "lost")
@@ -36,7 +44,7 @@ defmodule CodebattleWeb.Api.V1.GameControllerTest do
 
       assert page_info == %{
                "page_number" => 1,
-               "page_size" => 15,
+               "page_size" => 20,
                "total_entries" => 2,
                "total_pages" => 1
              }
@@ -51,7 +59,7 @@ defmodule CodebattleWeb.Api.V1.GameControllerTest do
 
       assert page_info == %{
                "page_number" => 1,
-               "page_size" => 15,
+               "page_size" => 20,
                "total_entries" => 2,
                "total_pages" => 1
              }

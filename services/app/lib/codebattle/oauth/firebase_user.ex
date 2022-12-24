@@ -51,7 +51,7 @@ defmodule Codebattle.Oauth.User.FirebaseUser do
     end
   end
 
-  defp create_in_firebase(%{email: email, passowrd: password}) do
+  defp create_in_firebase(%{email: email, password: password}) do
     case HTTPoison.post(
            "#{firebase_url()}:signUp?key=#{api_key()}",
            Jason.encode!(%{email: email, password: password})

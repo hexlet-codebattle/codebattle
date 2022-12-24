@@ -12,7 +12,7 @@ defmodule CodebattleWeb.Api.V1.GameController do
       end
 
     page_number = params |> Map.get("page", "1") |> String.to_integer()
-    page_size = params |> Map.get("page_size", "15") |> String.to_integer()
+    page_size = params |> Map.get("page_size", "20") |> String.to_integer()
 
     %{games: games, page_info: page_info} =
       Game.Query.get_completed_games(

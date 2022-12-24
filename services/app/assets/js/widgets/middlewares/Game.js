@@ -7,7 +7,7 @@ import * as selectors from '../selectors';
 import userTypes from '../config/userTypes';
 import { actions, redirectToNewGame } from '../slices';
 import {
- parse, getFinalState, getText, resolveDiffs,
+  parse, getFinalState, getText, resolveDiffs,
 } from '../lib/player';
 
 import PlaybookStatusCodes from '../config/playbookStatusCodes';
@@ -20,6 +20,10 @@ const gameId = window.Gon.getAsset('game_id');
 const isRecord = window.Gon.getAsset('is_record');
 const channelName = `game:${gameId}`;
 const channel = !isRecord ? socket.channel(channelName) : null;
+
+const camelizeKeysAndDispatch = (dispatch, actionCreator) => data => (
+  dispatch(actionCreator(camelizeKeys(data)))
+);
 
 const initEditors = dispatch => (playbookStatusCode, players) => {
   const isHistory = playbookStatusCode === PlaybookStatusCodes.stored;
@@ -126,12 +130,14 @@ const initGameChannel = (dispatch, machine) => {
       rematchState,
       tournamentId,
       rematchInitiatorId,
+      score,
     } = camelizeKeys(response);
 
     const gameStatus = {
       state,
       type,
       startsAt,
+      score,
       timeoutSeconds,
       rematchState,
       rematchInitiatorId,
@@ -242,6 +248,10 @@ export const activeGameReady = machine => dispatch => {
     const {
       state, solutionStatus, checkResult, players, userId,
     } = camelizeKeys(responseData);
+    if (solutionStatus) {
+      channel.push('game:score', {})
+        .receive('ok', camelizeKeysAndDispatch(dispatch, actions.setGameScore));
+    }
     dispatch(actions.updateGamePlayers({ players }));
 
     dispatch(
@@ -329,6 +339,8 @@ export const activeGameReady = machine => dispatch => {
     const { players, state, msg } = camelizeKeys(data);
     dispatch(actions.updateGamePlayers({ players }));
     dispatch(actions.updateGameStatus({ state, msg }));
+    channel.push('game:score', {})
+      .receive('ok', camelizeKeysAndDispatch(dispatch, actions.setGameScore));
     machine.send('user:give_up', { payload: camelizeKeys(data) });
   });
 

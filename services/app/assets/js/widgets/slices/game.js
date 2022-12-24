@@ -7,6 +7,7 @@ const initialState = {
     msg: '',
     type: null,
     startsAt: null,
+    score: null, // { gameResults: [{ gameId: 482, insertedAt: "2022-12-02T19:12:40", winnerId: 1 }], opponentOneId: 1, opponentTwoId: 2}
     timeoutSeconds: null,
     rematchState: null,
     rematchInitiatorId: null,
@@ -24,6 +25,9 @@ const game = createSlice({
   reducers: {
     updateGameStatus: (state, { payload }) => {
       Object.assign(state.gameStatus, payload);
+    },
+    setGameScore: (state, { payload }) => {
+      state.gameStatus.score = payload.score;
     },
     updateRematchStatus: (state, { payload }) => {
       Object.assign(state.gameStatus, payload);

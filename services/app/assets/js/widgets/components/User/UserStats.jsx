@@ -46,15 +46,15 @@ const UserStats = ({ data }) => {
         <div className="col d-flex justify-content-between">
           <div>
             <span>Won:</span>
-            <b className="text-success">{stats.won}</b>
+            <b className="text-success">{stats.games.won}</b>
           </div>
           <div className="ml-1">
             <span>Lost:</span>
-            <b className="text-danger">{stats.lost}</b>
+            <b className="text-danger">{stats.games.lost}</b>
           </div>
           <div className="ml-1">
             <span>GaveUp:</span>
-            <b className="text-warning">{stats.gaveUp}</b>
+            <b className="text-warning">{stats.games.gaveUp}</b>
           </div>
         </div>
       </div>

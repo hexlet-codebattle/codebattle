@@ -1,19 +1,19 @@
 defmodule CodebattleWeb.Api.GameView do
   use CodebattleWeb, :view
 
-  alias Codebattle.Game.Player
   alias Codebattle.Languages
   alias Codebattle.CodeCheck
 
   import Codebattle.Game.Helpers
 
-  def render_game(game) do
+  def render_game(game, score) do
     %{
       id: get_game_id(game),
       inserted_at: game.inserted_at,
       langs: get_langs_with_solution_templates(game.task),
       level: game.level,
       mode: game.mode,
+      score: score,
       players: game.players,
       rematch_initiator_id: game.rematch_initiator_id,
       rematch_state: game.rematch_state,
@@ -29,7 +29,7 @@ defmodule CodebattleWeb.Api.GameView do
   end
 
   def render_completed_games(games) do
-    games |> Enum.filter(&(&1.mode != "training")) |> Enum.map(&render_completed_game/1)
+    Enum.map(games, &render_completed_game/1)
   end
 
   def render_completed_game(game) do
@@ -51,9 +51,23 @@ defmodule CodebattleWeb.Api.GameView do
 
   defp render_players(game) do
     game
-    |> Map.get(:user_games, [])
-    |> Enum.map(fn user_game -> Player.build(user_game) end)
+    |> Map.get(:players, [])
     |> Enum.sort(&(&1.creator > &2.creator))
+    |> Enum.map(fn player ->
+      player
+      |> Map.take([
+        :id,
+        :is_bot,
+        :is_guest,
+        :name,
+        :rank,
+        :rating,
+        :rating_diff,
+        :result,
+        :creator
+      ])
+      |> Map.put(:lang, player.editor_lang)
+    end)
   end
 
   def get_langs_with_solution_templates(task) do

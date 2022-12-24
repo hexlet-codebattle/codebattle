@@ -1,7 +1,7 @@
 defmodule CodebattleWeb.RootView do
   use CodebattleWeb, :view
 
-  alias Codebattle.FeedBack
+  alias Codebattle.Feedback
   import CodebattleWeb.Router.Helpers
 
   def csrf_token() do
@@ -16,7 +16,7 @@ defmodule CodebattleWeb.RootView do
   end
 
   def feedback() do
-    FeedBack.get_all() |> Enum.map(&item/1)
+    Feedback.get_all() |> Enum.map(&item/1)
   end
 
   defp item(%{
