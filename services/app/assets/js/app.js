@@ -13,6 +13,7 @@
 //
 // If you no longer want to use a dependency, remember
 // to also remove its path from "config.paths.watched".
+import 'vite/modulepreload-polyfill';
 import 'core-js/stable';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import 'regenerator-runtime/runtime';

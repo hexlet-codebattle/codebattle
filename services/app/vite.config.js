@@ -3,8 +3,9 @@ import react from '@vitejs/plugin-react';
 import inject from '@rollup/plugin-inject';
 import i18nextLoader from 'vite-plugin-i18next-loader';
 import path from 'path';
+import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill';
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   root: path.resolve(__dirname, 'assets'),
   resolve: {
     alias: {
@@ -13,10 +14,26 @@ export default defineConfig({
       '~font-mfizz': path.resolve(__dirname, 'node_modules/font-mfizz'),
     },
   },
+  optimizeDeps: {
+    esbuildOptions: {
+      define: {
+        global: 'globalThis',
+      },
+      plugins: [
+        NodeGlobalsPolyfillPlugin({
+          process: true,
+        }),
+      ],
+    },
+  },
+  define: {
+    'process.env.NODE_ENV': JSON.stringify(`${mode}`),
+  },
   build: {
     target: 'es2018',
     minify: true,
-    outDir: '../priv2/static',
+    outDir: '../priv/static/assets',
+    manifest: true,
     emptyOutDir: true,
     rollupOptions: {
       input: [
@@ -27,16 +44,18 @@ export default defineConfig({
       ],
       output: {
         entryFileNames: 'js/[name].js',
-        chunkFileNames: 'js/[name].js',
+        chunkFileNames: 'js/[name].[hash].js',
         assetFileNames: '[ext]/[name][extname]',
       },
+      plugins: [
+        inject({
+          process: ['process', '*'],
+        }),
+      ],
     },
     assetsInlineLimit: 0,
   },
   plugins: [
-    inject({
-      process: ['process', '*'],
-    }),
     react(),
     i18nextLoader({ paths: ['./priv/locales'] }),
   ],
@@ -45,4 +64,4 @@ export default defineConfig({
     host: '0.0.0.0',
     origin: 'http://localhost:8080',
   },
-});
+}));

@@ -21,6 +21,7 @@ config :codebattle, CodebattleWeb.Endpoint,
 config :codebattle, CodebattleWeb.Endpoint,
   live_reload: [
     patterns: [
+      ~r{assets/js/widgets/App.jsx},
       ~r{priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$},
       ~r{priv/gettext/.*(po)$},
       ~r{lib/codebattle_web/views/.*(ex)$},

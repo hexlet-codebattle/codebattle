@@ -14,7 +14,8 @@
     "lint-fix": "eslint --fix --ext js,jsx ./assets/js",
     "gen:i18n": "i18next-conv -l en -s ./priv/gettext/en/LC_MESSAGES/default.po -t ./priv/locales/en/en.json",
     "watch": "vite",
-    "build": "vite build"
+    "build": "NODE_OPTIONS=--max-old-space-size=8192 vite build",
+    "preview": "vite preview --port 8080"
   },
   "jest": {
     "verbose": true,
@@ -22,7 +23,9 @@
       "monaco-editor": "<rootDir>/node_modules/react-monaco-editor",
       "^.+\\.(css|styl|less|sass|scss|po|png|jpg|ttf|woff|woff2)$": "jest-transform-stub"
     },
-    "testPathIgnorePatterns": ["/helpers/"]
+    "testPathIgnorePatterns": [
+      "/helpers/"
+    ]
   },
   "dependencies": {
     "@babel/runtime": "^7.12.5",
@@ -40,7 +43,7 @@
     "chart.js": "^4.0.1",
     "classnames": "^2.2.6",
     "copy-to-clipboard": "^3.3.1",
-    "core-js": "3.8.0",
+    "core-js": "^3.26.1",
     "emoji-mart": "^3.0.0",
     "font-mfizz": "^2.4.1",
     "formik": "^2.2.5",
@@ -103,6 +106,7 @@
     "@babel/plugin-transform-runtime": "^7.12.1",
     "@babel/preset-env": "^7.12.7",
     "@babel/preset-react": "^7.12.7",
+    "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
     "@rollup/plugin-inject": "^5.0.2",
     "@testing-library/jest-dom": "^5.11.6",
     "@testing-library/react": "^10.2.1",
