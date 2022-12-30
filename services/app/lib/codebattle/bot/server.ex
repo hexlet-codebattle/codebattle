@@ -215,10 +215,6 @@ defmodule Codebattle.Bot.Server do
 
   defp do_join_channel(_socket, _topic, 7), do: {:error, :to_many_attempts}
 
-  defp prepare_to_commenting_code() do
-    Process.send_after(self(), :say_about_code, :timer.minutes(1))
-  end
-
   defp do_join_channel(socket, topic, n) do
     case PhoenixClient.Channel.join(socket, topic) do
       {:ok, _response, pid} ->
@@ -229,5 +225,9 @@ defmodule Codebattle.Bot.Server do
         Logger.warn("#{__MODULE__} cannot connect to #{topic}, #{n} attempt")
         do_join_channel(socket, topic, n + 1)
     end
+  end
+
+  defp prepare_to_commenting_code() do
+    Process.send_after(self(), :say_about_code, :timer.minutes(1))
   end
 end
