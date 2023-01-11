@@ -17,7 +17,7 @@ const LobbyChat = ({ connectToChat }) => {
   }, []);
 
   return (
-    <div className="d-flex shadow-sm h-100 mt-2" style={{ maxHeight: '500px' }}>
+    <div className="d-flex shadow-sm mt-2" style={{ height: '500px' }}>
       <div className="col-12 col-sm-8 p-0 bg-light rounded-left h-100 position-relative">
         <Messages messages={messages} />
         <ChatInput />
