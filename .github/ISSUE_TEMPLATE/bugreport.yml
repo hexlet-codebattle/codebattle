@@ -1,0 +1,75 @@
+name: "Bug Report"
+description: Create a new ticket for a bug.
+title: "Bug: "
+labels:
+  - bug
+
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: "Summary"
+      description: Please enter an explicit description of your issue
+      placeholder: Short and explicit description of your incident...
+    validations:
+      required: true
+
+  - type: textarea
+    id: reprod
+    attributes:
+      label: "Reproduction steps"
+      description: Please enter an explicit description of your issue
+      placeholder: |
+        1. Go to '...'
+        2. Click on '....'
+        3. Scroll down to '....'
+        4. See error
+      render: bash
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-result
+    attributes:
+      label: "Expected result"
+      description: What the result should have been
+      placeholder: Expected result
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual-result
+    attributes:
+      label: "Actual result"
+      description: What the result really was
+      placeholder: Actual result
+    validations:
+      required: true
+
+  - type: dropdown
+    id: browsers
+    attributes:
+      label: "Browsers"
+      description: What browsers are you seeing the problem on ?
+      multiple: true
+      options:
+        - Firefox
+        - Chrome
+        - Safari
+        - Microsoft Edge
+        - Opera
+
+    validations:
+      required: false
+  - type: dropdown
+    id: os
+    attributes:
+      label: "OS"
+      description: What is the impacted environment ?
+      multiple: true
+      options:
+        - Windows
+        - Linux
+        - Mac
+    validations:
+      required: false
