@@ -74,7 +74,7 @@ yarn profile:visualize
 
 ### Support
 
-- <https://hexlet-ru.slack.com> channel: codebattle
+- <https://slack-ru.hexlet.io/> channel: codebattle
 
 
 ### Troubleshooting
