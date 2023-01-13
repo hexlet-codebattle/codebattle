@@ -4,6 +4,7 @@ import inject from '@rollup/plugin-inject';
 import i18nextLoader from 'vite-plugin-i18next-loader';
 import path from 'path';
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill';
+import monacoEditorPlugin from 'vite-plugin-monaco-editor';
 
 export default defineConfig(({ mode }) => ({
   root: path.resolve(__dirname, 'assets'),
@@ -58,6 +59,9 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
     i18nextLoader({ paths: ['./priv/locales'] }),
+    monacoEditorPlugin.default({
+      languageWorkers: ['editorWorkerService', 'typescript'],
+    }),
   ],
   server: {
     port: 8080,

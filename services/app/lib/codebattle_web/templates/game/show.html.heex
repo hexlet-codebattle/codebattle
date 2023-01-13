@@ -6,3 +6,18 @@
 <script>
   window.csrf_token = "<%= csrf_token() %>"
 </script>
+<script>
+  self.MonacoEnvironment = ((paths) => ({
+    getWorkerUrl(moduleId, label) {
+      const workerBundlePath = paths[label];
+      const origin = 'http://localhost:8080';
+      const js = `importScripts("${origin}${workerBundlePath}");`;
+      const blob = new Blob([js], { type: 'application/javascript' });
+      return URL.createObjectURL(blob);
+    }
+  }))({
+    editorWorkerService: "/monacoeditorwork/editor.worker.bundle.js",
+    typescript: "/monacoeditorwork/ts.worker.bundle.js",
+    javascript: "/monacoeditorwork/ts.worker.bundle.js",
+  });
+</script>

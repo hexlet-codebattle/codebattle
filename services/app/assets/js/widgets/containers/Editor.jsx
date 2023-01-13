@@ -5,6 +5,8 @@ import MonacoEditor from 'react-monaco-editor';
 import { registerRulesForLanguage } from 'monaco-ace-tokenizer';
 import { initVimMode } from 'monaco-vim';
 import { connect } from 'react-redux';
+import ElixirHightLight from 'monaco-ace-tokenizer/lib/ace/definitions/elixir';
+import HaskellHightLight from 'monaco-ace-tokenizer/lib/ace/definitions/haskell';
 
 import { gameTypeSelector } from '../selectors/index';
 import languages from '../config/languages';
@@ -31,8 +33,10 @@ class Editor extends PureComponent {
     mute: false,
   };
 
-  // eslint-disable-next-line react/sort-comp
-  notIncludedSyntaxHightlight = new Set(['haskell', 'elixir']);
+  notIncludedSyntaxHightlight = {
+    elixir: ElixirHightLight,
+    haskell: HaskellHightLight,
+  };
 
   ctrPlusS = null
 
@@ -146,11 +150,8 @@ class Editor extends PureComponent {
   }
 
   updateHightLightForNotIncludeSyntax = async syntax => {
-    if (this.notIncludedSyntaxHightlight.has(syntax)) {
-      const { default: HighlightRules } = await import(
-        `../../../../node_modules/monaco-ace-tokenizer/lib/ace/definitions/${syntax}.js`
-      );
-      this.notIncludedSyntaxHightlight.delete(syntax);
+    if (this.notIncludedSyntaxHightlight[syntax]) {
+      const HighlightRules = this.notIncludedSyntaxHightlight[syntax];
       this.monaco.languages.register({
         id: syntax,
       });
