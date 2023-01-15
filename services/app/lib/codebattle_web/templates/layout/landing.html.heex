@@ -38,11 +38,23 @@
     <meta content="#ffffff" name="theme-color" />
     <%= render_tags_all(assigns[:meta_tags] || %{}) %>
     <meta name="csrf-token" content={csrf_token_value()} />
+
+    <!--vite watch-->
     <link
-      phx-track-static
       rel="stylesheet"
-      href="http://localhost:8080/css/landing.scss"
+      href="http://localhost:8080/assets/css/landing.scss"
     />
+    <!-- ---- -->
+
+    <!--vite preview-->
+    <!--
+    <link
+      rel="stylesheet"
+      href="http://localhost:8080/assets/css/landing.css"
+    />
+    -->
+    <!-- ---- -->
+
     <title>Codebattle</title>
     <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport" />
     <script async="" defer="" src="https://buttons.github.io/buttons.js">
@@ -82,7 +94,7 @@
       type="module"
       phx-track-static
       type="text/javascript"
-      src="http://localhost:8080/js/landing.js"
+      src="http://localhost:8080/assets/js/landing.js"
     >
     </script>
 </html>

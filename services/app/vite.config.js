@@ -15,6 +15,7 @@ export default defineConfig(({ mode }) => ({
       '~font-mfizz': path.resolve(__dirname, 'node_modules/font-mfizz'),
     },
   },
+  base: '/assets/',
   optimizeDeps: {
     esbuildOptions: {
       define: {
@@ -39,9 +40,7 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       input: [
         './assets/js/app.js',
-        './assets/css/style.scss',
         './assets/js/landing.js',
-        './assets/css/landing.scss',
       ],
       output: {
         entryFileNames: 'js/[name].js',

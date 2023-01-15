@@ -9,15 +9,23 @@
 <script>
   self.MonacoEnvironment = ((paths) => ({
     getWorkerUrl(moduleId, label) {
+      // ------- dev mode -------
       const workerBundlePath = paths[label];
       const origin = 'http://localhost:8080';
+      // -------------------------
+
+      // ------- prod mode -------
+      // const workerBundlePath = `/assets${paths[label]}`;
+      // const origin = window.location.origin;
+      // -------------------------
+
       const js = `importScripts("${origin}${workerBundlePath}");`;
       const blob = new Blob([js], { type: 'application/javascript' });
       return URL.createObjectURL(blob);
     }
   }))({
-    editorWorkerService: "/monacoeditorwork/editor.worker.bundle.js",
-    typescript: "/monacoeditorwork/ts.worker.bundle.js",
-    javascript: "/monacoeditorwork/ts.worker.bundle.js",
+    editorWorkerService: "/assets/monacoeditorwork/editor.worker.bundle.js",
+    typescript: "/assets/monacoeditorwork/ts.worker.bundle.js",
+    javascript: "/assets/monacoeditorwork/ts.worker.bundle.js",
   });
 </script>

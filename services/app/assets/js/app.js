@@ -31,6 +31,7 @@ import { inspect } from '@xstate/inspect';
 // Local files can be imported directly using relative
 // paths "./socket" or full ones "web/static/js/socket".
 
+import '../css/style.scss';
 import {
   renderInvitesWidget,
   renderGameWidget,
