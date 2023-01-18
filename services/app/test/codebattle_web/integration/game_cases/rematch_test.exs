@@ -42,7 +42,7 @@ defmodule Codebattle.GameCases.RematchTest do
     {:ok, _response, socket2} = subscribe_and_join(socket2, GameChannel, game_topic)
 
     editor_text_init =
-      "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n\treturn 0;\n};\n\nmodule.exports = solution;"
+      "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n  return 0;\n};\n\nmodule.exports = solution;"
 
     game = Game.Context.get_game!(game_id)
     assert game.state == "playing"
