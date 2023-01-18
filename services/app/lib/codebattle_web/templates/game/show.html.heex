@@ -10,13 +10,13 @@
   self.MonacoEnvironment = ((paths) => ({
     getWorkerUrl(moduleId, label) {
       // ------- dev mode -------
-      // const workerBundlePath = paths[label];
-      // const origin = 'http://localhost:8080';
+      const workerBundlePath = paths[label];
+      const origin = 'http://localhost:8080';
       // -------------------------
 
       // ------- prod mode -------
-      const workerBundlePath = `/assets/assets${paths[label]}`;
-      const origin = window.location.origin;
+      // const workerBundlePath = `/assets/assets${paths[label]}`;
+      // const origin = window.location.origin;
       // -------------------------
 
       const js = `importScripts("${origin}${workerBundlePath}");`;
