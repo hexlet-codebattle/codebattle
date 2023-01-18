@@ -157,7 +157,7 @@ defmodule Codebattle.PlaybookStoreTest do
                    type: "init"
                  },
                  %{
-                   diff: %{delta: [%{delete: 4}, %{retain: 1}, %{delete: 124}]},
+                   diff: %{delta: [%{delete: 4}, %{retain: 1}, %{delete: 125}]},
                    id: ^user1_id,
                    record_id: 2,
                    type: "update_editor_data"
