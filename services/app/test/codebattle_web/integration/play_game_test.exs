@@ -70,10 +70,10 @@ defmodule Codebattle.PlayGameTest do
     assert Helpers.get_second_player(game).name == "second"
 
     assert Helpers.get_first_player(game).editor_text ==
-             "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n\treturn 0;\n};\n\nmodule.exports = solution;"
+             "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n  return 0;\n};\n\nmodule.exports = solution;"
 
     assert Helpers.get_second_player(game).editor_text ==
-             "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n\treturn 0;\n};\n\nmodule.exports = solution;"
+             "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n  return 0;\n};\n\nmodule.exports = solution;"
 
     # First player won
     editor_text1 = "Hello world1!"
@@ -94,7 +94,7 @@ defmodule Codebattle.PlayGameTest do
     assert Helpers.get_first_player(game).editor_text == "Hello world1!"
 
     assert Helpers.get_second_player(game).editor_text ==
-             "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n\treturn 0;\n};\n\nmodule.exports = solution;"
+             "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n  return 0;\n};\n\nmodule.exports = solution;"
 
     # Winner cannot check results again
     Phoenix.ChannelTest.push(socket1, "check_result", %{
@@ -112,7 +112,7 @@ defmodule Codebattle.PlayGameTest do
     assert Helpers.get_first_player(game).editor_text == "Hello world2!"
 
     assert Helpers.get_second_player(game).editor_text ==
-             "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n\treturn 0;\n};\n\nmodule.exports = solution;"
+             "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n  return 0;\n};\n\nmodule.exports = solution;"
 
     # Second player complete game
     Phoenix.ChannelTest.push(socket2, "check_result", %{
@@ -179,10 +179,10 @@ defmodule Codebattle.PlayGameTest do
     assert Helpers.get_second_player(game).name == "second"
 
     assert Helpers.get_first_player(game).editor_text ==
-             "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n\treturn 0;\n};\n\nmodule.exports = solution;"
+             "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n  return 0;\n};\n\nmodule.exports = solution;"
 
     assert Helpers.get_second_player(game).editor_text ==
-             "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n\treturn 0;\n};\n\nmodule.exports = solution;"
+             "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n  return 0;\n};\n\nmodule.exports = solution;"
 
     # First player won
     editor_text1 = "Hello world1!"
@@ -203,7 +203,7 @@ defmodule Codebattle.PlayGameTest do
     assert Helpers.get_first_player(game).editor_text == "Hello world1!"
 
     assert Helpers.get_second_player(game).editor_text ==
-             "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n\treturn 0;\n};\n\nmodule.exports = solution;"
+             "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n  return 0;\n};\n\nmodule.exports = solution;"
 
     # Winner cannot check results again
     Phoenix.ChannelTest.push(socket1, "check_result", %{
@@ -221,7 +221,7 @@ defmodule Codebattle.PlayGameTest do
     assert Helpers.get_first_player(game).editor_text == "Hello world2!"
 
     assert Helpers.get_second_player(game).editor_text ==
-             "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n\treturn 0;\n};\n\nmodule.exports = solution;"
+             "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (a, b) => {\n  return 0;\n};\n\nmodule.exports = solution;"
 
     # Second player complete game
     Phoenix.ChannelTest.push(socket2, "check_result", %{

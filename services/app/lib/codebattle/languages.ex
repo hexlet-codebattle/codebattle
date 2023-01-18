@@ -24,7 +24,7 @@ defmodule Codebattle.Languages do
       docker_image: "codebattle/ruby:3.1.2",
       solution_template: "def solution(<%= arguments %>)\n<%= return_statement %>\nend",
       arguments_template: %{argument: "<%= name %>", delimiter: ", "},
-      return_template: "\t<%= default_value %>",
+      return_template: "  <%= default_value %>",
       default_values: %{
         "integer" => "0",
         "float" => "0.1",
@@ -51,7 +51,7 @@ defmodule Codebattle.Languages do
       solution_template:
         "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = (<%= arguments %>) => {\n<%= return_statement %>\n};\n\nmodule.exports = solution;",
       arguments_template: %{argument: "<%= name %>", delimiter: ", "},
-      return_template: "\treturn <%= default_value %>;",
+      return_template: "  return <%= default_value %>;",
       default_values: %{
         "integer" => "0",
         "float" => "0.1",
@@ -159,7 +159,7 @@ defmodule Codebattle.Languages do
       checker_file_name: "Checker.java",
       docker_image: "codebattle/java:18",
       solution_template:
-        "package solution;\n\nimport java.util.*;import java.util.stream.*;\n\npublic class Solution {\n\tpublic <%= expected %>solution(<%= arguments %>) {\n\n\t}\n}",
+        "package solution;\n\nimport java.util.*;import java.util.stream.*;\n\npublic class Solution {\n    public <%= expected %>solution(<%= arguments %>) {\n\n    }\n}",
       arguments_template: %{argument: "<%= type %> <%= name %>", delimiter: ", "},
       expected_template: "<%= type %> ",
       types: %{
@@ -225,7 +225,7 @@ defmodule Codebattle.Languages do
       checker_file_name: "checker.cs",
       docker_image: "codebattle/csharp:6.0.100",
       solution_template:
-        "using System;using System.Collections.Generic;\n\nnamespace app\n{\n\tpublic class Solution\n\t{\n\t\tpublic<%= expected %> solution(<%= arguments %>)\n\t\t{\n\n\t\t}\n\t}\n}",
+        "using System;using System.Collections.Generic;\n\nnamespace app\n{\n    public class Solution\n    {\n        public<%= expected %> solution(<%= arguments %>)\n        {\n\n        }\n    }\n}",
       arguments_template: %{argument: "<%= type %> <%= name %>", delimiter: ", "},
       expected_template: " <%= type %>",
       types: %{
@@ -291,9 +291,9 @@ defmodule Codebattle.Languages do
       checker_file_name: "checker.exs",
       docker_image: "codebattle/elixir:1.14.0",
       solution_template:
-        "defmodule Solution do\n\tdef solution(<%= arguments %>) do\n<%= return_statement %>\n\tend\nend",
+        "defmodule Solution do\n  def solution(<%= arguments %>) do\n<%= return_statement %>\n  end\nend",
       arguments_template: %{argument: "<%= name %>", delimiter: ", "},
-      return_template: "\t\t<%= default_value %>",
+      return_template: "    <%= default_value %>",
       default_values: %{
         "integer" => "0",
         "float" => "0.1",
@@ -345,7 +345,7 @@ defmodule Codebattle.Languages do
       docker_image: "codebattle/php:8.1.8",
       solution_template:
         "<?php\n\nfunction solution(<%= arguments %>)\n{<%= return_statement %>\n}",
-      return_template: "\n\treturn <%= default_value %>;",
+      return_template: "\n    return <%= default_value %>;",
       arguments_template: %{argument: "<%= type %> $<%= name %>", delimiter: ", "},
       default_values: %{
         "integer" => "0",

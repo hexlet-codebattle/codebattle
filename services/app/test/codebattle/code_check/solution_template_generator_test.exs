@@ -23,22 +23,22 @@ defmodule Codebattle.CodeCheck.SolutionGeneratorTest do
 
                    namespace app
                    {
-                   \tpublic class Solution
-                   \t{
-                   \t\tpublic List<string> solution(int a, string text, double b, bool c, Dictionary<string, string> nested_hash_of_string, List<string> nested_array_of_string, List<List<string>> nested_array_of_array_of_strings)
-                   \t\t{
+                       public class Solution
+                       {
+                           public List<string> solution(int a, string text, double b, bool c, Dictionary<string, string> nested_hash_of_string, List<string> nested_array_of_string, List<List<string>> nested_array_of_array_of_strings)
+                           {
 
-                   \t\t}
-                   \t}
+                           }
+                       }
                    }
                    """)
 
   @dart_expected "List<String> solution(int a, String text, double b, bool c, Map<String, String> nested_hash_of_string, List<String> nested_array_of_string, List<List<String>> nested_array_of_array_of_strings) {\n\n}"
   @elixir_expected String.trim("""
                    defmodule Solution do
-                   \tdef solution(a, text, b, c, nested_hash_of_string, nested_array_of_string, nested_array_of_array_of_strings) do
-                   \t\t[\"value\"]
-                   \tend
+                     def solution(a, text, b, c, nested_hash_of_string, nested_array_of_string, nested_array_of_array_of_strings) do
+                       [\"value\"]
+                     end
                    end
                    """)
 
@@ -91,9 +91,9 @@ defmodule Codebattle.CodeCheck.SolutionGeneratorTest do
                  import java.util.*;import java.util.stream.*;
 
                  public class Solution {
-                 \tpublic List<String> solution(Integer a, String text, Double b, Boolean c, Map<String, String> nested_hash_of_string, List<String> nested_array_of_string, List<List<String>> nested_array_of_array_of_strings) {
+                     public List<String> solution(Integer a, String text, Double b, Boolean c, Map<String, String> nested_hash_of_string, List<String> nested_array_of_string, List<List<String>> nested_array_of_array_of_strings) {
 
-                 \t}
+                     }
                  }
                  """)
 
@@ -102,7 +102,7 @@ defmodule Codebattle.CodeCheck.SolutionGeneratorTest do
                const R = require(\"rambda\");
 
                const solution = (a, text, b, c, nested_hash_of_string, nested_array_of_string, nested_array_of_array_of_strings) => {
-               \treturn [\"value\"];
+                 return [\"value\"];
                };
 
                module.exports = solution;
@@ -123,7 +123,7 @@ defmodule Codebattle.CodeCheck.SolutionGeneratorTest do
 
                 function solution(int $a, string $text, float $b, bool $c, array $nested_hash_of_string, array $nested_array_of_string, array $nested_array_of_array_of_strings)
                 {
-                \treturn [\"value\"];
+                    return [\"value\"];
                 }
                 """)
 
@@ -133,7 +133,7 @@ defmodule Codebattle.CodeCheck.SolutionGeneratorTest do
                    def solution(a: int, text: str, b: float, c: bool, nested_hash_of_string: Dict[str, str], nested_array_of_string: List[str], nested_array_of_array_of_strings: List[List[str]]) -> List[str]:
                    """)
 
-  @ruby_expected "def solution(a, text, b, c, nested_hash_of_string, nested_array_of_string, nested_array_of_array_of_strings)\n\t[\"value\"]\nend"
+  @ruby_expected "def solution(a, text, b, c, nested_hash_of_string, nested_array_of_string, nested_array_of_array_of_strings)\n  [\"value\"]\nend"
   @ts_expected String.trim("""
                import * as _ from \"lodash\";
                import * as R from \"rambda\";
