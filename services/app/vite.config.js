@@ -15,7 +15,6 @@ export default defineConfig(({ mode }) => ({
       '~font-mfizz': path.resolve(__dirname, 'node_modules/font-mfizz'),
     },
   },
-  base: '/assets/',
   optimizeDeps: {
     esbuildOptions: {
       define: {

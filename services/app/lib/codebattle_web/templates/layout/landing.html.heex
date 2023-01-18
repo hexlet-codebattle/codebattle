@@ -40,10 +40,12 @@
     <meta name="csrf-token" content={csrf_token_value()} />
 
     <!--vite watch-->
+
     <link
       rel="stylesheet"
-      href="http://localhost:8080/assets/css/landing.scss"
+      href="http://localhost:8080/css/landing.scss"
     />
+
     <!-- ---- -->
 
     <!--vite preview-->
@@ -80,8 +82,9 @@
       </noscript>
     <% end %>
     <%= @inner_content %>
-  </body>
-  <script type="module">
+    <!--vite watch-->
+
+    <script type="module">
       import RefreshRuntime from 'http://localhost:8080/@react-refresh'
       RefreshRuntime.injectIntoGlobalHook(window)
       window.$RefreshReg$ = () => {}
@@ -94,7 +97,20 @@
       type="module"
       phx-track-static
       type="text/javascript"
-      src="http://localhost:8080/assets/js/landing.js"
+      src="http://localhost:8080/js/landing.js"
     >
     </script>
+
+    <!-- ---- -->
+
+    <!--vite preview-->
+    <!--
+    <script
+      type="module"
+      src="http://localhost:8080/assets/js/app.js"
+    >
+    </script>
+    -->
+    <!-- ---- -->
+  </body>
 </html>

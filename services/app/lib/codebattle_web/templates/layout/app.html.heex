@@ -39,11 +39,13 @@
     <meta name="csrf-token" content={csrf_token_value()} />
 
     <!--vite watch-->
-    <link rel="stylesheet" href="http://localhost:8080/assets/css/style.scss" />
+    <link rel="stylesheet" href="http://localhost:8080/css/style.scss" />
     <!-- ---- -->
 
     <!--vite preview-->
-    <!--<link rel="stylesheet" href="http://localhost:8080/assets/css/app.css" />-->
+    <!--
+    <link rel="stylesheet" href="http://localhost:8080/assets/css/app.css" />
+    -->
     <!-- ---- -->
 
     <title>Codebattle</title>
@@ -234,6 +236,7 @@
     <div class="content my-1"></div>
     <%= @inner_content %>
     <%= render_gon_script(@conn) %>
+    <!--vite watch-->
     <script type="module">
       import RefreshRuntime from 'http://localhost:8080/@react-refresh'
       RefreshRuntime.injectIntoGlobalHook(window)
@@ -244,8 +247,19 @@
     <script type="module" src="http://localhost:8080/@vite/client"></script>
     <script
       type="module"
+      src="http://localhost:8080/js/app.js"
+    >
+    </script>
+    <!-- ---- -->
+
+    <!--vite preview-->
+    <!--
+    <script
+      type="module"
       src="http://localhost:8080/assets/js/app.js"
     >
     </script>
+    -->
+    <!-- ---- -->
   </body>
 </html>

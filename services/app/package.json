@@ -14,8 +14,8 @@
     "lint-fix": "eslint --fix --ext js,jsx ./assets/js",
     "gen:i18n": "i18next-conv -l en -s ./priv/gettext/en/LC_MESSAGES/default.po -t ./priv/locales/en/en.json",
     "watch": "vite",
-    "build": "NODE_OPTIONS=--max-old-space-size=8192 vite build",
-    "preview": "vite preview --port 8080"
+    "build": "NODE_OPTIONS=--max-old-space-size=8192 vite build --base=/assets/",
+    "preview": "vite preview --port 8080 --base=/assets/"
   },
   "jest": {
     "verbose": true,
