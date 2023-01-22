@@ -2,7 +2,6 @@ defmodule CodebattleWeb.Api.V1.UserController do
   use CodebattleWeb, :controller
 
   alias Codebattle.{Repo, User, User.Stats}
-  alias CodebattleWeb.Api.GameView
 
   import Ecto.Query, warn: false
 
