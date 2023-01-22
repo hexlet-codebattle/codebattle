@@ -1,8 +1,6 @@
 defmodule CodebattleWeb.FeedbackController do
   use CodebattleWeb, :controller
 
-  import PhoenixGon.Controller
-
   def index(conn, _params) do
     conn
     |> put_meta_tags(%{
