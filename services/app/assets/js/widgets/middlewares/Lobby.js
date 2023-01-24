@@ -45,7 +45,7 @@ export const fetchState = () => (dispatch, getState) => {
     camelizeKeysAndDispatch(actions.updateCheckResult),
   );
   channel.on('game:remove', camelizeKeysAndDispatch(actions.removeGameLobby));
-  channel.on('game:finish', camelizeKeysAndDispatch(actions.finishGame));
+  channel.on('game:finished', camelizeKeysAndDispatch(actions.finishGame));
 };
 
 export const cancelGame = gameId => () => {
