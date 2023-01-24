@@ -55,7 +55,7 @@ defmodule CodebattleWeb.LobbyChannel do
   end
 
   def handle_info(%{event: "game:finished", payload: payload}, socket) do
-    push(socket, "game:remove", payload)
+    push(socket, "game:finished", payload)
     {:noreply, socket}
   end
 
