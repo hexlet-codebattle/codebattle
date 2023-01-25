@@ -73,7 +73,7 @@ const completedGames = createSlice({
       state.status = 'rejected';
       state.error = action.error;
     },
-    [lobbyActions.removeGameLobby]: (state, { payload: { game } }) => {
+    [lobbyActions.finishGame]: (state, { payload: { game } }) => {
       state.completedGames = [game, ...state.completedGames];
       state.totalGames += 1;
     },
