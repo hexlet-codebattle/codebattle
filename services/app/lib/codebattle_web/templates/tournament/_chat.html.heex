@@ -43,7 +43,8 @@
       <%= text_input(f, :text,
         autocomplete: "off",
         placeholder: "write your message here...",
-        class: "form-control rounded-0 border-0 border-top x-rounded-bottom-left"
+        class: "form-control rounded-0 border-0 border-top x-rounded-bottom-left",
+        phx_hook: "TournamentChatInput"
       ) %>
       <%= submit("Send", class: "btn btn-outline-secondary x-rounded-bottom-right rounded-0") %>
     </div>
