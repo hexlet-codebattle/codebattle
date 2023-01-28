@@ -3,7 +3,7 @@
   "players": [
     {
       "id": 0,
-      "name": "Jon Dou",
+      "name": "John Dou",
       "time": 1659289657174,
       "type": "player_state",
       "record_id": 1,
@@ -37,7 +37,7 @@
     },
     {
       "id": 0,
-      "name": "Jon Dou",
+      "name": "John Dou",
       "time": 1659289336633,
       "type": "init",
       "record_id": 1,

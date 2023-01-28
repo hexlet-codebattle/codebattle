@@ -124,7 +124,7 @@ defmodule Codebattle.User do
     %__MODULE__{
       is_guest: true,
       id: @guest_id,
-      name: "Jon Dou",
+      name: "John Dou",
       rating: 0,
       rank: 0,
       sound_settings: %SoundSettings{}
