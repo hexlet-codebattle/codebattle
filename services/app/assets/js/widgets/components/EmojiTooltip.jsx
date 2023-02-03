@@ -1,8 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { SearchIndex } from 'emoji-mart';
+import * as _ from 'lodash';
+
 import useKey from '../utils/useKey';
 
-export default function EmojiTooltip({ emojis, handleSelect, hide }) {
+export default function EmojiTooltip({ colons, handleSelect, hide }) {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [emojis, setEmojis] = useState([]);
 
   const increaseIndex = () => {
     setActiveIndex(prevIndex => {
@@ -10,6 +14,20 @@ export default function EmojiTooltip({ emojis, handleSelect, hide }) {
       return prevIndex + increment;
     });
   };
+
+  useEffect(() => {
+    const fetchEmojis = async () => {
+      const rawEmojis = await SearchIndex.search(colons);
+      const preparedEmojis = rawEmojis.map(emoji => ({
+        ...emoji,
+        native: emoji.skins[0].native,
+        colons: emoji.skins[0].shortcodes,
+      }));
+      setEmojis(preparedEmojis);
+    };
+
+    fetchEmojis();
+  }, [colons]);
 
   const decreaseIndex = () => {
     setActiveIndex(prevIndex => {
@@ -36,7 +54,7 @@ export default function EmojiTooltip({ emojis, handleSelect, hide }) {
       onClick={() => { handleSelect(emojis[activeIndex]); }}
       size="4"
     >
-      {emojis?.map((emoji, i) => (
+      {!_.isEmpty(emojis) && emojis.map((emoji, i) => (
         <option
           key={emoji.id}
           value={+i}

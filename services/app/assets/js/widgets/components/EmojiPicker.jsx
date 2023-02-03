@@ -1,27 +1,23 @@
-import React, { useRef } from 'react';
-import { Picker } from 'emoji-mart';
+import React from 'react';
+import Picker from '@emoji-mart/react';
+import data from '@emoji-mart/data';
 import useKey from '../utils/useKey';
-import useClickAway from '../utils/useClickAway';
-import 'emoji-mart/css/emoji-mart.css';
 
 export default function EmojiPicker({ handleSelect, hide }) {
-  const wrapperRef = useRef(null);
-  useKey('Escape', () => hide());
+  useKey('Escape', () => hide(), { event: 'keyup' });
 
-  useClickAway(wrapperRef, () => {
-    hide();
-  }, ['click']);
+  const handleOnClickOutside = () => hide();
 
   return (
-    <div ref={wrapperRef}>
-      <Picker
-        showPreview={false}
-        showSkinTones={false}
-        perLine={10}
-        onClick={handleSelect}
-        autoFocus
-        style={{ position: 'absolute', right: '88px', bottom: '10px' }}
-      />
-    </div>
+    <Picker
+      data={data}
+      previewPosition="none"
+      skinTonePosition="none"
+      perLine={8}
+      emojiSize={20}
+      onEmojiSelect={handleSelect}
+      onClickOutside={handleOnClickOutside}
+      autoFocus
+    />
   );
 }
