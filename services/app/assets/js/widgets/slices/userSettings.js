@@ -1,9 +1,20 @@
 import Gon from 'gon';
 import axios from 'axios';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import _ from 'lodash';
 
 const userSettings = Gon.getAsset('current_user');
 let csrfToken;
+
+const createValidationErrors = response => {
+  const [fieldName] = Object.keys(response.data.errors);
+  const [errorMessage] = response.data.errors[fieldName];
+  const normalizedErrorMessage = _.capitalize(errorMessage);
+  return {
+    errorMessage: normalizedErrorMessage,
+    field_errors: { [fieldName]: normalizedErrorMessage },
+  };
+};
 
 if (process.browser) {
   // for testing purposes
@@ -27,7 +38,8 @@ export const updateUserSettings = createAsyncThunk(
       if (!error.response) {
         throw err;
       }
-      return rejectWithValue(error.response.data);
+      const validationErrors = createValidationErrors(error.response);
+      return rejectWithValue(validationErrors);
     }
   },
 );
