@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import ReactDOM from 'react-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Pagination from 'react-js-pagination';
@@ -72,13 +71,19 @@ const getDateFromByNavItem = navItem => {
   return null;
 };
 
-const renderRatingModeNavItem = (navItem, activeMode, withBots, dispatch) => {
+const renderRatingModeNavItem = (navItem, activeMode, withBots, dispatch, filter) => {
   const dateFrom = getDateFromByNavItem(navItem);
   const classes = activeMode === navItem ? 'btn nav-link active' : 'btn btn-link nav-link';
 
   return (
     <li key={navItem} className="nav-item">
-      <button type="button" className={classes} onClick={() => dispatch(getUsersRatingPage(dateFrom, withBots))}>{navItem}</button>
+      <button
+        type="button"
+        className={classes}
+        onClick={() => dispatch(getUsersRatingPage(dateFrom, withBots, 1, filter))}
+      >
+        {navItem}
+      </button>
     </li>
   );
 };
@@ -88,6 +93,8 @@ const UsersRating = () => {
     attribute: 'rank',
     direction: 'asc',
   });
+
+  const [usernameValue, setUsernameValue] = useState('');
 
   const usersRatingPage = useSelector(usersListSelector);
   const storeLoaded = useSelector(state => state.storeLoaded);
@@ -104,8 +111,6 @@ const UsersRating = () => {
     dispatch(getUsersRatingPage(null, true, 1));
   }, [dispatch]);
 
-  let filterNode;
-
   const triggerSort = attribute => {
     const direction = sort.direction === 'desc' ? 'asc' : 'desc';
 
@@ -114,7 +119,7 @@ const UsersRating = () => {
       direction,
     });
 
-    dispatch(getUsersRatingPage(dateFrom, withBots, 1, filterNode.value, `${attribute}+${direction}`));
+    dispatch(getUsersRatingPage(dateFrom, withBots, 1, usernameValue, `${attribute}+${direction}`));
   };
 
   if (!storeLoaded) {
@@ -129,7 +134,7 @@ const UsersRating = () => {
       <p>{`Total entries: ${totalEntries}`}</p>
 
       <ul className="nav nav-pills justify-content-center">
-        {ratingModes.map(item => renderRatingModeNavItem(item, getActiveModeByDateFrom(dateFrom), withBots, dispatch))}
+        {ratingModes.map(item => renderRatingModeNavItem(item, getActiveModeByDateFrom(dateFrom), withBots, dispatch, usernameValue))}
       </ul>
 
       <div className="form-inline justify-content-between">
@@ -145,9 +150,11 @@ const UsersRating = () => {
             placeholder="Username"
             aria-label="Username"
             aria-describedby="basic-addon1"
-            onChange={() => dispatch(getUsersRatingPage(dateFrom, withBots, 1, filterNode.value))}
-            // eslint-disable-next-line react/no-find-dom-node
-            ref={c => { filterNode = ReactDOM.findDOMNode(c); }}
+            value={usernameValue}
+            onChange={e => {
+              setUsernameValue(e.target.value);
+              dispatch(getUsersRatingPage(dateFrom, withBots, 1, e.target.value));
+            }}
           />
         </div>
         <div className="form-check">
@@ -157,7 +164,7 @@ const UsersRating = () => {
               className="form-check-input"
               type="checkbox"
               name="with_bots"
-              onChange={() => dispatch(getUsersRatingPage(dateFrom, !withBots, 1, filterNode.value))}
+              onChange={() => dispatch(getUsersRatingPage(dateFrom, !withBots, 1, usernameValue))}
               defaultChecked={withBots}
             />
             With bots
