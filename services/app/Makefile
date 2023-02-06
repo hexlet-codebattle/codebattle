@@ -37,6 +37,6 @@ console:
 test:
 	mix coveralls.json --exclude docker_executor --max-failures 1 --slowest 7
 
-test-code-checkers: export CODEBATTLE_USE_DOCKER_EXECUTOR = true
+test-code-checkers: export CODEBATTLE_EXECUTOR = local
 test-code-checkers:
 	mix test test/docker_execution --max-failures 1

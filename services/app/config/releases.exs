@@ -36,6 +36,8 @@ config :ueberauth, Ueberauth.Strategy.Discord.OAuth,
 
 config :codebattle, Codebattle.Plugs, rollbar_api_key: System.get_env("ROLLBAR_API_KEY")
 
+config :codebattle, checker_executor: Codebattle.CodeCheck.Executor.Remote
+
 config :codebattle, :firebase,
   sender_id: System.get_env("FIREBASE_SENDER_ID"),
   api_key: System.get_env("FIREBASE_API_KEY"),

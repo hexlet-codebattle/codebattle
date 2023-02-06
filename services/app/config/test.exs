@@ -29,9 +29,10 @@ config :codebattle, Codebattle.Bot,
   min_bot_step_timeout: 0
 
 executor =
-  case System.get_env("CODEBATTLE_USE_DOCKER_EXECUTOR") do
-    "true" -> Codebattle.CodeCheck.DockerExecutor
-    _ -> Codebattle.CodeCheck.FakeExecutor
+  case System.get_env("CODEBATTLE_EXECUTOR") do
+    "local" -> Codebattle.CodeCheck.Executor.Local
+    "remote" -> Codebattle.CodeCheck.Executor.Remote
+    _ -> Codebattle.CodeCheck.Executor.Fake
   end
 
 config :codebattle, code_check_timeout: 35_000

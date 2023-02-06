@@ -1,0 +1,18 @@
+FROM elixir:1.14.3
+ENV DOCKER_CHANNEL stable
+ENV DOCKER_VERSION 20.10.9
+
+RUN mix local.hex --force \
+  && mix local.rebar --force
+
+RUN apt-get update \
+  && apt-get install -y inotify-tools vim wkhtmltopdf
+
+RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - \
+  && apt-get update \
+  && apt-get install -y nodejs \
+  && npm install --global yarn@1.22.10
+
+RUN curl -fsSL "https://download.docker.com/linux/static/${DOCKER_CHANNEL}/x86_64/docker-${DOCKER_VERSION}.tgz" \
+  | tar -xzC /usr/local/bin --strip=1 docker/docker
+
