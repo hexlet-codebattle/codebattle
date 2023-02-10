@@ -221,12 +221,13 @@
         </nav>
       </div>
     </div>
-    <div>
-      <%= for {_, message} <- get_flash(@conn) do %>
-        <div class="m-0 rounded-0 alert alert-#{type} alert-dismissible fade show" role="alert">
+    <div class="container-lg">
+      <%= for {type, message} <- get_flash(@conn) do %>
+        <div class={"row mb-0 rounded-0 alert alert-#{type} alert-dismissible fade show"} role="alert">
           <%= message %>
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close"></button>
-          <span aria-hidden="true">&times;</span>
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
         </div>
       <% end %>
     </div>
