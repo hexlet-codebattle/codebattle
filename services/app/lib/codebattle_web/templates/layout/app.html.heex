@@ -223,7 +223,10 @@
     </div>
     <div class="container-lg">
       <%= for {type, message} <- get_flash(@conn) do %>
-        <div class={"row mb-0 rounded-0 alert alert-#{type} alert-dismissible fade show"} role="alert">
+        <div
+          class={"row mb-0 rounded-0 alert alert-#{type} alert-dismissible fade show"}
+          role="alert"
+        >
           <%= message %>
           <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
