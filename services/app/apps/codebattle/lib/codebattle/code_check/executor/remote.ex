@@ -8,7 +8,7 @@ defmodule Codebattle.CodeCheck.Executor.Remote do
     %{
       lang_slug: token.lang_meta.slug,
       solution_text: token.solution_text,
-      task: token.task
+      task: Runner.Task.new!(token.task)
     }
     |> execute()
     |> case do
@@ -26,12 +26,15 @@ defmodule Codebattle.CodeCheck.Executor.Remote do
   end
 
   defp execute(params) do
-    case HTTPoison.post("#{executor_url()}/execute?key=#{api_key()}", Jason.encode!(params),
+    headers = [{"content-type", "application/json"}, {"x-auth-key", api_key()}]
+    body = Jason.encode!(params)
+
+    case HTTPoison.post("#{executor_url()}/api/v1/execute", body, headers,
            timeout: 16_000,
            recv_timeout: 16_000
          ) do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-        {:ok, AtomizedMap.load(body)}
+        AtomizedMap.load(body)
 
       {:ok, %HTTPoison.Response{body: body}} ->
         Logger.error("RemoteExecutor failure: #{inspect(body)}")

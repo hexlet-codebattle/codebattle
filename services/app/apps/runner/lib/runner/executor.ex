@@ -2,22 +2,22 @@ defmodule Runner.Executor do
   @moduledoc false
 
   alias Runner.CheckerGenerator
-  alias Runner.Languages
-
-  require Logger
 
   @tmp_basedir "/tmp/codebattle-runner"
   @docker_cmd_template "docker run --rm --init --memory 500m --cpus=1 --net none -l codebattle_game ~s ~s timeout -s 15 15s make --silent test"
+  @fake_docker_run Application.compile_env(:runner, :fake_docker_run)
 
-  @spec call(Runner.Task, Languages.meta(), String.t()) :: Runner.execution_result()
+  @spec call(Runner.Task.t(), Runner.LanguageMeta.t(), String.t()) :: Runner.execution_result()
   def call(task, lang_meta, solution_text) do
-    seed = to_string(:rand.uniform(10_000_000))
+    seed = get_seed()
     checker_text = CheckerGenerator.call(task, lang_meta, seed)
 
     tmp_dir_path = prepare_tmp_dir!(lang_meta, solution_text, checker_text)
-    [cmd | cmd_opts] = get_docker_command(lang_meta, tmp_dir_path)
 
-    {output, exit_code} = System.cmd(cmd, cmd_opts, stderr_to_stdout: true)
+    {output, exit_code} =
+      lang_meta
+      |> get_docker_command(tmp_dir_path)
+      |> run_command()
 
     Task.start(File, :rm_rf, [tmp_dir_path])
 
@@ -41,5 +41,21 @@ defmodule Runner.Executor do
     |> :io_lib.format([volume, lang_meta.docker_image])
     |> to_string
     |> String.split()
+  end
+
+  defp run_command([cmd | cmd_opts]) do
+    if @fake_docker_run do
+      {"oi", 0}
+    else
+      System.cmd(cmd, cmd_opts, stderr_to_stdout: true)
+    end
+  end
+
+  defp get_seed() do
+    if @fake_docker_run do
+      "blz"
+    else
+      to_string(:rand.uniform(10_000_000))
+    end
   end
 end

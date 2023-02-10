@@ -16,6 +16,8 @@ defmodule Runner.Task do
   end
 
   @spec new!(params :: map()) :: t()
+  def new!(params = %_{}), do: params |> Map.from_struct() |> new!()
+
   def new!(params = %{}) do
     %__MODULE__{}
     |> cast(params, @fields)

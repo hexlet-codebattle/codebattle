@@ -440,6 +440,7 @@ defmodule Runner.Languages do
 
   def meta, do: @meta
 
+  @spec meta(String.t()) :: LanguageMeta.t()
   def meta("javascript"), do: meta("js")
 
   def meta(slug) do

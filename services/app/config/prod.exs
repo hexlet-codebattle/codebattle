@@ -31,3 +31,4 @@ config :codebattle, use_prod_workers: true
 config :codebattle, html_env: :prod
 config :codebattle, html_include_prod_scripts: true
 config :codebattle, html_debug_mode: false
+config :codebattle, checker_executor: Codebattle.CodeCheck.Executor.Remote

@@ -24,7 +24,6 @@ defmodule Codebattle.CodeCheck.Checker do
     token.result
   end
 
-
   defp execute(token) do
     {execution_time, new_token} = :timer.tc(fn -> token.executor.call(token) end)
     execution_time_msec = div(execution_time, 1_000)

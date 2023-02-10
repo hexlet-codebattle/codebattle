@@ -42,7 +42,6 @@ defmodule Codebattle.MixProject do
   defp deps do
     [
       {:runner, in_umbrella: true},
-
       {:cowboy, "~> 2.8"},
       {:earmark, "~> 1.4"},
       {:ecto, "~> 3.7"},
@@ -85,7 +84,7 @@ defmodule Codebattle.MixProject do
       {:faker, "~> 0.15", only: :test},
       {:floki, "~> 0.29", only: :test},
       {:mock, "~> 0.3.5", only: :test},
-      {:phoenix_integration, "~> 0.8", only: :test},
+      {:phoenix_integration, "~> 0.8", only: :test}
     ]
   end
 

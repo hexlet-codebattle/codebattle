@@ -2,8 +2,15 @@ defmodule RunnerWeb.Api.V1.ExecutorControllerTest do
   use RunnerWeb.ConnCase, async: true
 
   describe ".execute" do
+    test "without api_key", %{conn: conn} do
+      conn
+      |> post(Routes.api_v1_executor_path(conn, :execute, %{}))
+      |> json_response(401)
+    end
+
     test "invalid params 422", %{conn: conn} do
       conn
+      |> put_req_header("x-auth-key", "x-key")
       |> post(Routes.api_v1_executor_path(conn, :execute, %{}))
       |> json_response(422)
     end
@@ -33,10 +40,11 @@ defmodule RunnerWeb.Api.V1.ExecutorControllerTest do
 
       resp =
         conn
+        |> put_req_header("x-auth-key", "x-key")
         |> post(Routes.api_v1_executor_path(conn, :execute), params)
         |> json_response(200)
 
-      assert resp == %{"container_output" => "asdf", "exit_code" => 0, "seed" => "123"}
+      assert resp == %{"container_output" => "oi", "exit_code" => 0, "seed" => "blz"}
     end
   end
 end

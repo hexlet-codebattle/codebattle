@@ -8,12 +8,6 @@ defmodule Runner do
           exit_code: non_neg_integer()
         }
 
-  @spec execute_solution(Task.t(), Runner.LanguageMeta.t(), String.t()) :: execution_result
-  def execute_solution(taks, lang_meta, solution_text) do
-    %{
-      container_output: "asdf",
-      seed: "123",
-      exit_code: 0
-    }
-  end
+  @spec execute_solution(Runner.Task.t(), Runner.LanguageMeta.t(), String.t()) :: execution_result
+  defdelegate execute_solution(taks, lang_meta, solution_text), to: Runner.Executor, as: :call
 end
