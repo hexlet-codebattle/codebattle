@@ -18,7 +18,7 @@ defmodule Codebattle.MixProject do
       ],
       test_coverage: [tool: ExCoveralls],
       deps: deps(),
-      elixirc_options: [warnings_as_errors: false],
+      elixirc_options: [warnings_as_errors: false]
     ]
   end
 
@@ -41,7 +41,7 @@ defmodule Codebattle.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      # {:runner, in_umbrella: true},
+      {:runner, in_umbrella: true},
       {:cowboy, "~> 2.8"},
       {:earmark, "~> 1.4"},
       {:ecto, "~> 3.7"},
