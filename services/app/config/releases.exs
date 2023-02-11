@@ -17,13 +17,12 @@ config :codebattle, host: host
 
 config :codebattle, Codebattle.Repo,
   adapter: Ecto.Adapters.Postgres,
-  database: System.get_env("CODEBATTLE_DB_NAME"),
   ssl: true,
   port: System.get_env("CODEBATTLE_DB_PORT", "5432"),
   username: System.get_env("CODEBATTLE_DB_USERNAME"),
   password: System.get_env("CODEBATTLE_DB_PASSWORD"),
-  database: System.get_env("CODEBATTLE_DB_NAME"),
   hostname: System.get_env("CODEBATTLE_DB_HOSTNAME"),
+  database: System.get_env("CODEBATTLE_DB_NAME"),
   pool_size: 7
 
 config :ueberauth, Ueberauth.Strategy.Github.OAuth,
