@@ -8,51 +8,33 @@ defmodule Codebattle.User.Achievements do
 
   def recalculate_achievements(user) do
     {user.achievements, user}
-    |> count_played_games
-    |> count_wins
+    |> count_played_games()
+    |> count_wins()
     |> elem(0)
   end
 
   def count_played_games({achievements, user}) do
-    query =
-      from(ug in UserGame,
-        select: ug.result,
-        where: ug.user_id == ^user.id
-      )
+    user_games_count =
+      from(ug in UserGame, select: ug.result, where: ug.user_id == ^user.id)
+      |> Repo.aggregate(:count, :id)
 
-    user_games = Repo.aggregate(query, :count, :id)
+    filtered_achievements = Enum.filter(achievements, &(!Regex.match?(~r/played_.+_games/, &1)))
 
     cond do
-      user_games >= 10 && user_games < 50 ->
-        if Enum.member?(achievements, "played_ten_games") do
-          {achievements, user}
-        else
-          {achievements ++ ["played_ten_games"], user}
-        end
+      user_games_count >= 500 ->
+        {filtered_achievements ++ ["played_five_hundred_games"], user}
 
-      user_games >= 50 && user_games < 100 ->
-        if Enum.member?(achievements, "played_fifty_games") do
-          {achievements, user}
-        else
-          {achievements ++ ["played_fifty_games"], user}
-        end
+      user_games_count >= 100 ->
+        {filtered_achievements ++ ["played_hundred_games"], user}
 
-      user_games >= 100 && user_games < 500 ->
-        if Enum.member?(achievements, "played_hundred_games") do
-          {achievements, user}
-        else
-          {achievements ++ ["played_hundred_games"], user}
-        end
+      user_games_count >= 50 ->
+        {filtered_achievements ++ ["played_fifty_games"], user}
 
-      user_games >= 500 ->
-        if Enum.member?(achievements, "played_five_hundred_games") do
-          {achievements, user}
-        else
-          {achievements ++ ["played_five_hundred_games"], user}
-        end
+      user_games_count >= 10 ->
+        {filtered_achievements ++ ["played_ten_games"], user}
 
       true ->
-        {achievements, user}
+        {filtered_achievements, user}
     end
   end
 

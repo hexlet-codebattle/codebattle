@@ -6,31 +6,33 @@ defmodule Codebattle.Game.Player do
 
   alias Codebattle.CodeCheck
   alias Codebattle.Game.Player
-  alias Runner.Languages
   alias Codebattle.Tournament
+  alias Codebattle.User
   alias Codebattle.UserGame
+  alias Runner.Languages
 
   @primary_key false
   @derive {Jason.Encoder,
-           only: [
-             :achievements,
-             :check_result,
-             :creator,
-             :discord_avatar,
-             :discord_id,
-             :editor_lang,
-             :editor_text,
-             :github_id,
-             :id,
-             :is_bot,
-             :is_guest,
-             :lang,
-             :name,
-             :rank,
-             :rating,
-             :rating_diff,
-             :result
-           ]}
+   only: [
+     :achievements,
+     :check_result,
+     :creator,
+     :avatar_url,
+     # :github_id,
+     # :discord_avatar,
+     # :discord_id,
+     :editor_lang,
+     :editor_text,
+     :id,
+     :is_bot,
+     :is_guest,
+     :lang,
+     :name,
+     :rank,
+     :rating,
+     :rating_diff,
+     :result
+   ]}
 
   @results ~w(undefined won lost gave_up timeout)
 
@@ -50,18 +52,20 @@ defmodule Codebattle.Game.Player do
     field(:rating_diff, :integer, default: 0)
     field(:rank, :integer, default: -1)
     field(:achievements, {:array, :string}, default: [])
-    field(:github_id, :integer)
-    field(:discord_id, :integer)
-    field(:discord_avatar, :string)
+    # field(:github_id, :integer)
+    # field(:discord_id, :integer)
+    # field(:discord_avatar, :string)
+    field(:avatar_url, :string)
   end
 
-  def changeset(%Player{} = player, attrs) do
+  def changeset(player = %Player{}, attrs) do
     player
     |> cast(attrs, [
       :id,
-      :github_id,
-      :discord_id,
-      :discord_avatar,
+      # :github_id,
+      # :discord_id,
+      # :discord_avatar,
+      :avatar_url,
       :name,
       :is_bot,
       :is_guest,
@@ -81,7 +85,7 @@ defmodule Codebattle.Game.Player do
 
   def build(struct, params \\ %{})
 
-  def build(%UserGame{} = user_game, params) do
+  def build(user_game = %UserGame{}, params) do
     player =
       case user_game.user do
         nil ->
@@ -95,9 +99,10 @@ defmodule Codebattle.Game.Player do
             rank: user.rank,
             name: user.name,
             achievements: user.achievements,
-            github_id: user.github_id,
-            discord_id: user.discord_id,
-            discord_avatar: user.discord_avatar,
+            # github_id: user.github_id,
+            # discord_id: user.discord_id,
+            # discord_avatar: user.discord_avatar,
+            avatar_url: User.avatar_url(user),
             rating: user_game.rating,
             rating_diff: user_game.rating_diff,
             editor_lang: user_game.lang,
@@ -110,7 +115,29 @@ defmodule Codebattle.Game.Player do
     Map.merge(player, Map.drop(params, [:task]))
   end
 
-  def build(%Tournament.Types.Player{} = player, params) do
+  def build(player = %Tournament.Types.Player{}, params) do
+    init_player = %__MODULE__{
+      id: player.id,
+      is_bot: player.is_bot,
+      is_guest: player.is_guest,
+      name: player.name,
+      rating: player.rating,
+      rank: player.rank,
+      avatar_url: player.avatar_url,
+      editor_lang: player.lang || "js",
+      lang: player.lang || "js"
+    }
+
+    player =
+      case params[:task] do
+        nil -> init_player
+        task -> setup_editor_params(init_player, task)
+      end
+
+    Map.merge(player, Map.drop(params, [:task]))
+  end
+
+  def build(player = %Player{}, params) do
     init_player = %__MODULE__{
       id: player.id,
       is_bot: player.is_bot,
@@ -131,28 +158,7 @@ defmodule Codebattle.Game.Player do
     Map.merge(player, Map.drop(params, [:task]))
   end
 
-  def build(%Player{} = player, params) do
-    init_player = %__MODULE__{
-      id: player.id,
-      is_bot: player.is_bot,
-      is_guest: player.is_guest,
-      name: player.name,
-      rating: player.rating,
-      rank: player.rank,
-      editor_lang: player.lang || "js",
-      lang: player.lang || "js"
-    }
-
-    player =
-      case params[:task] do
-        nil -> init_player
-        task -> setup_editor_params(init_player, task)
-      end
-
-    Map.merge(player, Map.drop(params, [:task]))
-  end
-
-  def build(%Codebattle.User{} = user, params) do
+  def build(user = %Codebattle.User{}, params) do
     init_player =
       case user.id do
         nil ->
@@ -169,9 +175,10 @@ defmodule Codebattle.Game.Player do
             editor_lang: user.lang || "js",
             lang: user.lang || "js",
             achievements: user.achievements,
-            github_id: user.github_id,
-            discord_id: user.discord_id,
-            discord_avatar: user.discord_avatar
+            avatar_url: user.avatar_url
+            # github_id: user.github_id,
+            # discord_id: user.discord_id,
+            # discord_avatar: user.discord_avatar
           }
       end
 
@@ -184,7 +191,7 @@ defmodule Codebattle.Game.Player do
     Map.merge(player, Map.drop(params, [:task]))
   end
 
-  def setup_editor_params(%__MODULE__{} = player, task) do
+  def setup_editor_params(player = %__MODULE__{}, task) do
     editor_lang = player.editor_lang
 
     editor_text =

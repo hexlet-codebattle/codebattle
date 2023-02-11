@@ -151,9 +151,6 @@ defmodule CodebattleWeb.GameChannel do
 
       {:error, reason} ->
         {:reply, {:error, %{reason: reason}}, socket}
-
-      _ ->
-        {:reply, {:error, %{reason: "sww"}}, socket}
     end
   end
 end

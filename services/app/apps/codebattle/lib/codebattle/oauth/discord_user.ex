@@ -6,7 +6,7 @@ defmodule Codebattle.Oauth.User.DiscordUser do
   alias Ueberauth.Auth
   alias Codebattle.{Repo, User}
 
-  def find_or_create(%Auth{provider: :discord} = auth) do
+  def find_or_create(auth = %Auth{provider: :discord}) do
     user = User |> Repo.get_by(discord_id: auth.uid)
 
     discord_name = auth.extra.raw_info.user["username"]

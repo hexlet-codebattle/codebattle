@@ -5,7 +5,7 @@ defmodule Runner.Executor do
 
   @tmp_basedir "/tmp/codebattle-runner"
   @docker_cmd_template "docker run --rm --init --memory 500m --cpus=1 --net none -l codebattle_game ~s ~s timeout -s 15 15s make --silent test"
-  @fake_docker_run Application.compile_env(:runner, :fake_docker_run)
+  @fake_docker_run Application.compile_env(:runner, :fake_docker_run, false)
 
   @spec call(Runner.Task.t(), Runner.LanguageMeta.t(), String.t()) :: Runner.execution_result()
   def call(task, lang_meta, solution_text) do
@@ -51,7 +51,7 @@ defmodule Runner.Executor do
     end
   end
 
-  defp get_seed() do
+  defp get_seed do
     if @fake_docker_run do
       "blz"
     else

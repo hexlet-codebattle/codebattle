@@ -169,7 +169,7 @@ defmodule Codebattle.Chat.Server do
   end
 
   @impl GenServer
-  def handle_info(:clean_messages, %{messages: messages} = state) do
+  def handle_info(:clean_messages, state = %{messages: messages}) do
     new_messages =
       Enum.reject(
         messages,

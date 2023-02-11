@@ -10,9 +10,10 @@ defmodule Codebattle.Tournament.Types.Player do
 
   embedded_schema do
     field(:id, :integer)
-    field(:discord_avatar, :string)
-    field(:discord_id, :integer)
-    field(:github_id, :integer)
+    field(:avatar_url, :string)
+    # field(:discord_avatar, :string)
+    # field(:discord_id, :integer)
+    # field(:github_id, :integer)
     field(:is_bot, :boolean)
     field(:is_guest, :boolean)
     field(:lang, :string)
@@ -27,10 +28,11 @@ defmodule Codebattle.Tournament.Types.Player do
   def changeset(struct, params) do
     struct
     |> cast(Map.from_struct(params), [
-      :github_id,
+      # :github_id,
       :id,
       :is_bot,
       :is_guest,
+      :avatar_url,
       :lang,
       :name,
       :rank,

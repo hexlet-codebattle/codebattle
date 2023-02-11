@@ -4,12 +4,12 @@ defmodule Codebattle.Game.Query do
 
   import Ecto.Query
 
-  @spec fetch_score_by_game_id(non_neg_integer) :: map() | nil
+  @spec fetch_score_by_game_id(Game.Context.raw_game_id()) :: map() | nil
   def fetch_score_by_game_id(id) do
     game = Game.Context.get_game!(id)
 
     case game.players do
-      [%{id: opponent_one_id}, %{id: opponent_two_id}] ->
+      [%{id: first_player_id}, %{id: second_player_id}] ->
         game_results =
           from(
             g in Game,
@@ -18,8 +18,8 @@ defmodule Codebattle.Game.Query do
             inner_join: ug1 in assoc(g, :user_games),
             inner_join: ug2 in assoc(g, :user_games),
             where: g.state == "game_over",
-            where: ug1.user_id == ^opponent_one_id,
-            where: ug2.user_id == ^opponent_two_id,
+            where: ug1.user_id == ^first_player_id,
+            where: ug2.user_id == ^second_player_id,
             select: %{
               id: g.id,
               inserted_at: g.inserted_at,
@@ -28,49 +28,22 @@ defmodule Codebattle.Game.Query do
             }
           )
           |> Repo.all()
-          |> Enum.reduce({0, 0, []}, fn elem, {score_one, score_two, acc} ->
-            case {elem.result_one, elem.result_two} do
-              {"won", _} ->
-                {score_one + 1, score_two,
-                 [
-                   %{
-                     game_id: elem.id,
-                     inserted_at: elem.inserted_at,
-                     winner_id: opponent_one_id
-                   }
-                   | acc
-                 ]}
+          |> reduce_players_score(first_player_id, second_player_id)
 
-              {_, "won"} ->
-                {score_one, score_two + 1,
-                 [
-                   %{
-                     game_id: elem.id,
-                     inserted_at: elem.inserted_at,
-                     winner_id: opponent_two_id
-                   }
-                   | acc
-                 ]}
-
-              _ ->
-                {score_one, score_two, acc}
-            end
-          end)
-
-        {score_one, score_two, results} = game_results
+        {first_score, second_score, results} = game_results
 
         winner_id =
           cond do
-            score_one > score_two -> opponent_one_id
-            score_one < score_two -> opponent_two_id
+            first_score > second_score -> first_player_id
+            first_score < second_score -> second_player_id
             true -> nil
           end
 
         %{
           winner_id: winner_id,
           player_results: %{
-            to_string(opponent_one_id) => score_one,
-            to_string(opponent_two_id) => score_two
+            to_string(first_player_id) => first_score,
+            to_string(second_player_id) => second_score
           },
           game_results: Enum.reverse(results)
         }
@@ -117,4 +90,35 @@ defmodule Codebattle.Game.Query do
   end
 
   defp filter_completed_games(query, %{}), do: query
+
+  defp reduce_players_score(games, first_player_id, second_player_id) do
+    Enum.reduce(games, {0, 0, []}, fn elem, {first_score, second_score, acc} ->
+      case {elem.result_one, elem.result_two} do
+        {"won", _} ->
+          {first_score + 1, second_score,
+           [
+             %{
+               game_id: elem.id,
+               inserted_at: elem.inserted_at,
+               winner_id: first_player_id
+             }
+             | acc
+           ]}
+
+        {_, "won"} ->
+          {first_score, second_score + 1,
+           [
+             %{
+               game_id: elem.id,
+               inserted_at: elem.inserted_at,
+               winner_id: second_player_id
+             }
+             | acc
+           ]}
+
+        _ ->
+          {first_score, second_score, acc}
+      end
+    end)
+  end
 end

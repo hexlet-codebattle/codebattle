@@ -1,6 +1,8 @@
 defmodule Codebattle.CodeCheck.Executor.Fake do
   @moduledoc false
 
+  alias Codebattle.CodeCheck.Checker.Token
+
   @fake_output_v2 """
     {"type":"result","time":6.2e-06,"value":2,"output":""}
     {"type":"result","time":"8.5e-06","value":3,"output":"lol"}

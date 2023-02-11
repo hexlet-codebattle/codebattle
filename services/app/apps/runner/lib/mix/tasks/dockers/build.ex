@@ -3,7 +3,7 @@ defmodule Mix.Tasks.Dockers.Build do
 
   use Mix.Task
 
-  @shortdoc "Push dockers to cloud"
+  @shortdoc "Build docker runner image"
 
   def run([slug]) do
     langs = Runner.Languages.meta()
@@ -19,7 +19,7 @@ defmodule Mix.Tasks.Dockers.Build do
   defp build(langs) do
     for lang <- langs do
       command =
-        "docker build -t #{lang.docker_image} --file #{root()}/dockers/#{lang.slug}/Dockerfile #{root()}/dockers/#{lang.slug}/"
+        "docker build -t #{lang.docker_image} --file #{root()}/apps/runner/dockers/#{lang.slug}/Dockerfile #{root()}/apps/runner/dockers/#{lang.slug}/"
 
       [cmd | opts] = command |> String.split()
       IO.puts("Start building image for #{lang.slug}")

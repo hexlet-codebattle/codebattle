@@ -161,7 +161,7 @@ defmodule Codebattle.Game.Engine do
     end
   end
 
-  def terminate_game(%Game{} = game) do
+  def terminate_game(game = %Game{}) do
     case game.is_live do
       true ->
         store_playbook_async(game)
@@ -174,7 +174,7 @@ defmodule Codebattle.Game.Engine do
     end
   end
 
-  def rematch_send_offer(%{is_bot: true} = game, _user) do
+  def rematch_send_offer(game = %{is_bot: true}, _user) do
     {:ok, new_game} = create_rematch_game(game)
     Game.GlobalSupervisor.terminate_game(game.id)
 
@@ -259,7 +259,7 @@ defmodule Codebattle.Game.Engine do
     |> Repo.update!()
   end
 
-  def update_game!(%Game{} = game) do
+  def update_game!(game = %Game{}) do
     case Repo.get(Game, game.id) do
       nil ->
         :ok
@@ -271,7 +271,7 @@ defmodule Codebattle.Game.Engine do
     end
   end
 
-  def update_game!(%Game{} = game, params) do
+  def update_game!(game = %Game{}, params) do
     case Repo.get(Game, game.id) do
       nil ->
         :ok
@@ -287,11 +287,11 @@ defmodule Codebattle.Game.Engine do
     %UserGame{} |> UserGame.changeset(params) |> Repo.insert!()
   end
 
-  def trigger_timeout(%Game{state: "game_over"} = game) do
+  def trigger_timeout(game = %Game{state: "game_over"}) do
     terminate_game_after(game, 1)
   end
 
-  def trigger_timeout(%Game{} = game) do
+  def trigger_timeout(game = %Game{}) do
     Logger.debug("Trigger timeout for game: #{game.id}")
     {:ok, {old_game_state, new_game}} = fire_transition(game.id, :timeout, %{})
 
@@ -307,7 +307,7 @@ defmodule Codebattle.Game.Engine do
     end
   end
 
-  defp maybe_fire_playing_game_side_effects(%{state: "playing"} = game) do
+  defp maybe_fire_playing_game_side_effects(game = %{state: "playing"}) do
     maybe_init_playbook(game)
     maybe_run_bots(game)
     maybe_start_timeout_timer(game)

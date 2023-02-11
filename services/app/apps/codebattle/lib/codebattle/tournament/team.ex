@@ -8,12 +8,12 @@ defmodule Codebattle.Tournament.Team do
   @team_rounds_need_to_win_num 3
 
   @impl Tournament.Base
-  def join(%{state: "upcoming"} = tournament, %{user: user}) do
+  def join(tournament = %{state: "upcoming"}, %{user: user}) do
     add_intended_player_id(tournament, user.id)
   end
 
   @impl Tournament.Base
-  def join(%{state: "waiting_participants"} = tournament, %{user: user, team_id: team_id}) do
+  def join(tournament = %{state: "waiting_participants"}, %{user: user, team_id: team_id}) do
     player =
       user
       |> Map.put(:team_id, team_id)
@@ -26,7 +26,7 @@ defmodule Codebattle.Tournament.Team do
   def join(tournament, _user), do: tournament
 
   @impl Tournament.Base
-  def complete_players(%{meta: meta} = tournament) do
+  def complete_players(tournament = %{meta: meta}) do
     team_players_count =
       meta
       |> Map.get(:teams)

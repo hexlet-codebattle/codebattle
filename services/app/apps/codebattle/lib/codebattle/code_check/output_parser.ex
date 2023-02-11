@@ -4,7 +4,7 @@ defmodule Codebattle.CodeCheck.OutputParser do
   require Logger
   alias Codebattle.CodeCheck.Result
 
-  def call(%{lang_meta: %{checker_version: 2}} = token) do
+  def call(token = %{lang_meta: %{checker_version: 2}}) do
     Codebattle.CodeCheck.OutputParser.V2.call(token)
   end
 
@@ -13,24 +13,7 @@ defmodule Codebattle.CodeCheck.OutputParser do
 
     case Regex.scan(~r/{\"status\":.+}/, container_output) do
       [] ->
-        error_msg =
-          cond do
-            token.exit_code == 2 and String.contains?(container_output, "Killed") ->
-              "Your solution ran out of memory, please, rewrite it"
-
-            token.exit_code == 143 and String.contains?(container_output, "SIGTERM") ->
-              "Your solution was executed for longer than 15 seconds, try to write more optimally"
-
-            token.exit_code == 2 ->
-              container_output
-
-            true ->
-              "Something went wrong! Please, write to dev team in our Slack \n UNKNOWN_ERROR: #{container_output}}"
-          end
-
-        result = Jason.encode!(%{status: "error", result: error_msg})
-
-        %Result{status: "error", result: result, output: error_msg}
+        handle_output_without_status(token, container_output)
 
       json_result ->
         [last_message] = List.last(json_result)
@@ -46,6 +29,27 @@ defmodule Codebattle.CodeCheck.OutputParser do
           get_error_status(last_message, container_output)
         end
     end
+  end
+
+  defp handle_output_without_status(token, container_output) do
+    error_msg =
+      cond do
+        token.exit_code == 2 and String.contains?(container_output, "Killed") ->
+          "Your solution ran out of memory, please, rewrite it"
+
+        token.exit_code == 143 and String.contains?(container_output, "SIGTERM") ->
+          "Your solution was executed for longer than 15 seconds, try to write more optimally"
+
+        token.exit_code == 2 ->
+          container_output
+
+        true ->
+          "Something went wrong! Please, write to dev team in our Slack \n UNKNOWN_ERROR: #{container_output}}"
+      end
+
+    result = Jason.encode!(%{status: "error", result: error_msg})
+
+    %Result{status: "error", result: result, output: error_msg}
   end
 
   defp get_error_status(error_message, container_output) do

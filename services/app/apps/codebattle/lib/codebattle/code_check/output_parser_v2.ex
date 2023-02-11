@@ -22,7 +22,7 @@ defmodule Codebattle.CodeCheck.OutputParser.V2 do
     |> Map.get(:check_result)
   end
 
-  defp parse_output(%{exit_code: 0} = token) do
+  defp parse_output(token = %{exit_code: 0}) do
     %{container_output: container_output} = token
 
     solution_results =
@@ -66,9 +66,9 @@ defmodule Codebattle.CodeCheck.OutputParser.V2 do
     }
   end
 
-  defp compare_results_with_asserts(%{check_result: %{status: "error"}} = token), do: token
+  defp compare_results_with_asserts(token = %{check_result: %{status: "error"}}), do: token
 
-  defp compare_results_with_asserts(%{solution_results: [%{"type" => "error"} = item]} = token) do
+  defp compare_results_with_asserts(token = %{solution_results: [item = %{"type" => "error"}]}) do
     # {"time":0,"type":"error","value":"undefined function sdf/0 (there is no such import)"}
     check_result = %Result.V2{
       output_error: item["value"],
@@ -117,7 +117,7 @@ defmodule Codebattle.CodeCheck.OutputParser.V2 do
     %{token | check_result: check_result}
   end
 
-  defp calculate_result_metrics(%{check_result: %{status: "error"}} = token), do: token
+  defp calculate_result_metrics(token = %{check_result: %{status: "error"}}), do: token
 
   defp calculate_result_metrics(token) do
     success_asserts = Enum.filter(token.check_result.asserts, fn x -> x.status == "success" end)

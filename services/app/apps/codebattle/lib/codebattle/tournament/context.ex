@@ -81,53 +81,9 @@ defmodule Codebattle.Tournament.Context do
   end
 
   def create(params) do
-    starts_at = NaiveDateTime.from_iso8601!(params["starts_at"] <> ":00")
-    match_timeout_seconds = params["match_timeout_seconds"] || "180"
-
-    meta =
-      case params["type"] do
-        "team" ->
-          team_1_name = Utils.presence(params["team_1_name"]) || "Backend"
-          team_2_name = Utils.presence(params["team_2_name"]) || "Frontend"
-
-          %{
-            teams: [
-              %{id: 0, title: team_1_name},
-              %{id: 1, title: team_2_name}
-            ]
-          }
-
-        _ ->
-          %{}
-      end
-
-    access_token =
-      case params["access_type"] do
-        "token" -> generate_access_token()
-        _ -> nil
-      end
-
-    task_pack =
-      case params["task_pack_name"] do
-        x when x in [nil, ""] -> nil
-        task_pack_name -> TaskPack.get_by!(name: task_pack_name)
-      end
-
     result =
       %Tournament{}
-      |> Tournament.changeset(
-        Map.merge(params, %{
-          "task_pack_id" => task_pack && task_pack.id,
-          "task_pack" => task_pack,
-          "access_token" => access_token,
-          "alive_count" => get_live_tournaments_count(),
-          "match_timeout_seconds" => match_timeout_seconds,
-          "starts_at" => starts_at,
-          "step" => 0,
-          "meta" => meta,
-          "data" => %{}
-        })
-      )
+      |> Tournament.changeset(prepare_tournament_params(params))
       |> Codebattle.Repo.insert()
 
     case result do
@@ -144,6 +100,55 @@ defmodule Codebattle.Tournament.Context do
 
       {:error, changeset} ->
         {:error, changeset}
+    end
+  end
+
+  defp prepare_tournament_params(params) do
+    starts_at = NaiveDateTime.from_iso8601!(params["starts_at"] <> ":00")
+    match_timeout_seconds = params["match_timeout_seconds"] || "180"
+
+    meta = get_meta_from_params(params)
+
+    access_token =
+      case params["access_type"] do
+        "token" -> generate_access_token()
+        _ -> nil
+      end
+
+    task_pack =
+      case params["task_pack_name"] do
+        x when x in [nil, ""] -> nil
+        task_pack_name -> TaskPack.get_by!(name: task_pack_name)
+      end
+
+    Map.merge(params, %{
+      "task_pack_id" => task_pack && task_pack.id,
+      "task_pack" => task_pack,
+      "access_token" => access_token,
+      "alive_count" => get_live_tournaments_count(),
+      "match_timeout_seconds" => match_timeout_seconds,
+      "starts_at" => starts_at,
+      "step" => 0,
+      "meta" => meta,
+      "data" => %{}
+    })
+  end
+
+  defp get_meta_from_params(params) do
+    case params["type"] do
+      "team" ->
+        team_1_name = Utils.presence(params["team_1_name"]) || "Backend"
+        team_2_name = Utils.presence(params["team_2_name"]) || "Frontend"
+
+        %{
+          teams: [
+            %{id: 0, title: team_1_name},
+            %{id: 1, title: team_2_name}
+          ]
+        }
+
+      _ ->
+        %{}
     end
   end
 

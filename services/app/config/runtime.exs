@@ -36,8 +36,6 @@ config :ueberauth, Ueberauth.Strategy.Discord.OAuth,
 
 config :codebattle, Codebattle.Plugs, rollbar_api_key: System.get_env("ROLLBAR_API_KEY")
 
-config :codebattle, checker_executor: Codebattle.CodeCheck.Executor.Remote
-
 config :codebattle, :firebase,
   sender_id: System.get_env("FIREBASE_SENDER_ID"),
   api_key: System.get_env("FIREBASE_API_KEY"),
@@ -50,3 +48,13 @@ config :sentry,
   root_source_code_path: File.cwd!(),
   tags: %{env: "prod"},
   included_environments: [:prod]
+
+port = System.get_env("CODEBATTLE_RUNNER_PORT", "4001")
+host = System.get_env("CODEBATTLE_RUNNER_HOSTNAME", "codebattle.hexlet.io")
+secret_key_base = System.get_env("CODEBATTLE_SECRET_KEY_BASE")
+
+config :runner, RunnerWeb.Endpoint,
+  http: [:inet6, port: port],
+  url: [host: host, port: 81],
+  secret_key_base: secret_key_base,
+  server: true

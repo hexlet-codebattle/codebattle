@@ -38,7 +38,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
      )}
   end
 
-  def handle_info(:update_time, %{assigns: %{timer_fer: nil}} = socket) do
+  def handle_info(:update_time, socket = %{assigns: %{timer_fer: nil}}) do
     {:noreply, socket}
   end
 

@@ -6,7 +6,7 @@ defmodule Codebattle.Oauth.User.GithubUser do
   alias Ueberauth.Auth
   alias Codebattle.{Repo, User}
 
-  def find_or_create(%Auth{provider: :github} = auth) do
+  def find_or_create(auth = %Auth{provider: :github}) do
     user = User |> Repo.get_by(github_id: auth.uid)
 
     github_name = auth.extra.raw_info.user["login"]

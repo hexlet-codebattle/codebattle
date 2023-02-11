@@ -50,7 +50,7 @@ defmodule Codebattle.TaskPack do
   def get_by!(params), do: Repo.get_by!(__MODULE__, params)
   def get_by(params), do: Repo.get_by(__MODULE__, params)
 
-  def get_tasks(%__MODULE__{} = task_pack) do
+  def get_tasks(task_pack = %__MODULE__{}) do
     query = from(t in Task, where: t.id in ^task_pack.task_ids)
     Repo.all(query)
   end

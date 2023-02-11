@@ -30,7 +30,7 @@ defmodule CodebattleWeb.AuthBindController do
     |> Ueberauth.run_request(provider_name, provider_config)
   end
 
-  def callback(%{assigns: %{ueberauth_failure: reason}} = conn, params) do
+  def callback(conn = %{assigns: %{ueberauth_failure: reason}}, params) do
     Logger.error(
       "Failed to authenticate on github" <>
         inspect(reason) <> "\nParams: " <> inspect(params)
@@ -41,7 +41,7 @@ defmodule CodebattleWeb.AuthBindController do
     |> redirect(to: "/")
   end
 
-  def callback(%{assigns: %{ueberauth_auth: auth}} = conn, params) do
+  def callback(conn = %{assigns: %{ueberauth_auth: auth}}, params) do
     next = params["next"]
     user = conn.assigns.current_user
 

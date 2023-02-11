@@ -37,19 +37,43 @@ ansible-vault-edit-production:
 release:
 	make -C services/app release
 
-docker-build-app:
-	docker pull codebattle/app:compile-stage || true
-	docker pull codebattle/app:latest        || true
+docker-build-codebattle:
+	docker pull codebattle/codebattle:compile-stage || true
+	docker pull codebattle/codebattle:latest        || true
 	docker build --target compile-image \
-				--cache-from=codebattle/app:compile-stage \
-				--file services/app/Dockerfile \
-				--tag codebattle/app:compile-stage services/app
+				--cache-from=codebattle/codebattle:compile-stage \
+				--file services/app/Dockerfile.codebattle \
+				--tag codebattle/codebattle:compile-stage services/app
 	docker build --target runtime-image \
-				--cache-from=codebattle/app:compile-stage \
-				--cache-from=codebattle/app:latest \
-				--file services/app/Dockerfile \
-				--tag codebattle/app:latest services/app
+				--cache-from=codebattle/codebattle:compile-stage \
+				--cache-from=codebattle/codebattle:latest \
+				--file services/app/Dockerfile.codebattle \
+				--tag codebattle/codebattle:latest services/app
 
-docker-push-app:
-	docker push codebattle/app:compile-stage
-	docker push codebattle/app:latest
+docker-push-codebattle:
+	docker push codebattle/codebattle:compile-stage
+	docker push codebattle/codebattle:latest
+
+docker-build-runner:
+	docker pull codebattle/runner:compile-stage || true
+	docker pull codebattle/runner:latest        || true
+	docker build --target compile-image \
+				--cache-from=codebattle/runner:compile-stage \
+				--file services/app/Dockerfile.runner \
+				--tag codebattle/runner:compile-stage services/app
+	docker build --target runtime-image \
+				--cache-from=codebattle/runner:compile-stage \
+				--cache-from=codebattle/runner:latest \
+				--file services/app/Dockerfile.runner \
+				--tag codebattle/runner:latest services/app
+
+docker-push-runner:
+	docker push codebattle/runner:compile-stage
+	docker push codebattle/runner:latest
+
+docker-build-nginx:
+	docker build --file services/nginx/Dockerfile --tag codebattle/nginx services/nginx
+
+docker-push-nginx:
+	docker push codebattle/nginx:latest
+

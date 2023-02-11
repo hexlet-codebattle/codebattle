@@ -58,7 +58,7 @@ defmodule Codebattle.Game do
   end
 
   @doc false
-  def changeset(%Game{} = game, attrs) do
+  def changeset(game = %Game{}, attrs) do
     game
     |> cast(attrs, [
       :state,

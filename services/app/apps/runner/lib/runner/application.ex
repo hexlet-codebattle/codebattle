@@ -8,7 +8,7 @@ defmodule Runner.Application do
   @impl true
   def start(_type, _args) do
     if Application.get_env(:runner, :load_dot_env_file) do
-      Envy.load(["../../.env"])
+      _ = Envy.load(["../../.env"])
       Envy.reload_config()
     end
 

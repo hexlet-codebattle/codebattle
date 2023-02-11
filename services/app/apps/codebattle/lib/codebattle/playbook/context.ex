@@ -114,7 +114,7 @@ defmodule Codebattle.Playbook.Context do
     |> Map.update!(:players, &Enum.reverse/1)
   end
 
-  defp add_record_to_playbook_data(%{type: :init} = record, data) do
+  defp add_record_to_playbook_data(record = %{type: :init}, data) do
     player = Map.merge(record, %{type: :player_state, total_time_ms: 0})
 
     data
@@ -123,7 +123,7 @@ defmodule Codebattle.Playbook.Context do
   end
 
   defp add_record_to_playbook_data(
-         %{type: :update_editor_data, record_id: record_id, id: id, time: time} = record,
+         record = %{type: :update_editor_data, record_id: record_id, id: id, time: time},
          data
        ) do
     player_state = Enum.find(data.players, &(&1.id == id))
@@ -164,7 +164,7 @@ defmodule Codebattle.Playbook.Context do
   defp update_players_state(data, player_state),
     do: Map.update!(data, :players, &update_player(&1, player_state))
 
-  defp update_player(players, %{id: id} = player_state),
+  defp update_player(players, player_state = %{id: id}),
     do:
       Enum.map(players, fn
         %{id: ^id} -> player_state

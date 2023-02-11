@@ -85,17 +85,17 @@ defmodule Codebattle.Invite do
     end
   end
 
-  def update_invite(%Invite{} = invite, attrs) do
+  def update_invite(invite = %Invite{}, attrs) do
     invite
     |> Invite.changeset(attrs)
     |> Repo.update()
   end
 
-  def delete_invite(%Invite{} = invite) do
+  def delete_invite(invite = %Invite{}) do
     Repo.delete(invite)
   end
 
-  def change_invite(%Invite{} = invite, attrs \\ %{}) do
+  def change_invite(invite = %Invite{}, attrs \\ %{}) do
     Invite.changeset(invite, attrs)
   end
 

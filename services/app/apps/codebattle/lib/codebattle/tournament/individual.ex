@@ -7,12 +7,12 @@ defmodule Codebattle.Tournament.Individual do
 
   @max_players_count 32
   @impl Tournament.Base
-  def join(%{state: "upcoming"} = tournament, %{user: user}) do
+  def join(tournament = %{state: "upcoming"}, %{user: user}) do
     add_intended_player_id(tournament, user.id)
   end
 
   @impl Tournament.Base
-  def join(%{state: "waiting_participants"} = tournament, %{user: user}) do
+  def join(tournament = %{state: "waiting_participants"}, %{user: user}) do
     player = Map.put(user, :lang, user.lang || tournament.default_language)
     add_player(tournament, player)
   end
@@ -55,7 +55,7 @@ defmodule Codebattle.Tournament.Individual do
   end
 
   @impl Tournament.Base
-  def build_matches(%{step: 0} = tournament) do
+  def build_matches(tournament = %{step: 0}) do
     players = tournament |> get_players |> Enum.shuffle()
 
     matches = pair_players_to_matches(players, tournament.step)
@@ -120,9 +120,15 @@ defmodule Codebattle.Tournament.Individual do
   end
 
   defp pair_players_to_matches(players, step) do
-    Enum.reduce(players, [%{}], fn player, acc ->
-      player = Map.merge(player, %{result: "waiting"})
+    players
+    |> Enum.reduce({step, [%{}]}, &pair_players_to_matches_reducer/2)
+    |> Enum.reverse()
+  end
 
+  defp pair_players_to_matches_reducer(player, {step, acc}) do
+    player = Map.merge(player, %{result: "waiting"})
+
+    new_acc =
       case List.first(acc) do
         map when map == %{} ->
           [_h | t] = acc
@@ -138,8 +144,8 @@ defmodule Codebattle.Tournament.Individual do
               [%{state: "pending", round_id: step, players: [player]} | acc]
           end
       end
-    end)
-    |> Enum.reverse()
+
+    {step, new_acc}
   end
 
   defp final_step?(tournament) do

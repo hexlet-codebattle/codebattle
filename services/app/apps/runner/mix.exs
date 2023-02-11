@@ -39,7 +39,7 @@ defmodule Runner.MixProject do
     [
       {:ecto, "~> 3.7"},
       {:envy, "~> 1.1.1"},
-      {:jason, "~> 1.2"},
+      {:hackney, "~> 1.18"},
       {:jason, "~> 1.2"},
       {:phoenix, "~> 1.6.15"},
       {:plug_cowboy, "~> 2.5"},

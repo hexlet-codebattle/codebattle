@@ -5,12 +5,12 @@ defmodule Codebattle.Tournament.Stairway do
   use Tournament.Base
 
   @impl Tournament.Base
-  def join(%{state: "upcoming"} = tournament, %{user: user}) do
+  def join(tournament = %{state: "upcoming"}, %{user: user}) do
     add_intended_player_id(tournament, user.id)
   end
 
   @impl Tournament.Base
-  def join(%{state: "waiting_participants"} = tournament, %{user: user}) do
+  def join(tournament = %{state: "waiting_participants"}, %{user: user}) do
     player = Map.put(user, :lang, user.lang || tournament.default_language)
     add_player(tournament, player)
   end

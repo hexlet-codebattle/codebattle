@@ -1,4 +1,5 @@
 defmodule Codebattle.Tournament.Base do
+  # credo:disable-for-this-file Credo.Check.Refactor.LongQuoteBlocks
   alias Codebattle.Repo
   alias Codebattle.Tournament
 
@@ -73,7 +74,7 @@ defmodule Codebattle.Tournament.Base do
 
       def leave(tournament, _user_id), do: tournament
 
-      def back(%{state: "waiting_participants"} = tournament, %{user: user}) do
+      def back(tournament = %{state: "waiting_participants"}, %{user: user}) do
         update!(tournament, %{state: "upcoming"})
       end
 
@@ -99,7 +100,7 @@ defmodule Codebattle.Tournament.Base do
         end
       end
 
-      def start(%{state: "upcoming"} = tournament, %{user: user}) do
+      def start(tournament = %{state: "upcoming"}, %{user: user}) do
         if can_moderate?(tournament, user) do
           update!(tournament, %{state: "waiting_participants"})
         else
@@ -107,7 +108,7 @@ defmodule Codebattle.Tournament.Base do
         end
       end
 
-      def start(%{state: "waiting_participants"} = tournament, %{user: user}) do
+      def start(tournament = %{state: "waiting_participants"}, %{user: user}) do
         if can_moderate?(tournament, user) do
           tournament
           |> complete_players
@@ -190,7 +191,7 @@ defmodule Codebattle.Tournament.Base do
         update!(tournament, %{data: new_data})
       end
 
-      defp start_step!(%{state: "finished"} = tournament), do: tournament
+      defp start_step!(tournament = %{state: "finished"}), do: tournament
 
       defp start_step!(tournament) do
         tournament
@@ -225,7 +226,7 @@ defmodule Codebattle.Tournament.Base do
         update!(tournament, %{data: new_data})
       end
 
-      defp update_match_params(match, %{state: state} = params)
+      defp update_match_params(match, params = %{state: state})
            when state in ~w(timeout game_over) do
         %{
           player_results: player_results,

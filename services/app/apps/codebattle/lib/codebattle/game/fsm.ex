@@ -18,7 +18,7 @@ defmodule Codebattle.Game.Fsm do
           | :rematch_send_offer
 
   @spec transition(event, Game.t(), map()) :: {:ok, Game.t()} | {:error, String.t()}
-  def transition(:join, %{state: "waiting_opponent"} = game, params) do
+  def transition(:join, game = %{state: "waiting_opponent"}, params) do
     game =
       game
       |> Map.put(:state, "playing")
@@ -31,14 +31,14 @@ defmodule Codebattle.Game.Fsm do
     {:error, "Can't join to a game in state: '#{game.state}'"}
   end
 
-  def transition(:update_editor_data, %{state: s} = game, params)
+  def transition(:update_editor_data, game = %{state: s}, params)
       when s in ["playing", "game_over"] do
     params_to_update = Map.take(params, [:editor_text, :editor_lang])
     game = update_player(game, params.id, params_to_update)
     {:ok, game}
   end
 
-  def transition(:check_success, %{state: "playing"} = game, params) do
+  def transition(:check_success, game = %{state: "playing"}, params) do
     game =
       game
       |> update_player(params.id, %{
@@ -54,16 +54,16 @@ defmodule Codebattle.Game.Fsm do
     {:ok, game}
   end
 
-  def transition(:check_success, %{state: s} = game, params) when s in ["game_over", "timeout"] do
+  def transition(:check_success, game = %{state: s}, params) when s in ["game_over", "timeout"] do
     {:ok, update_check_result(game, params)}
   end
 
-  def transition(:check_failure, %{state: s} = game, params)
+  def transition(:check_failure, game = %{state: s}, params)
       when s in ["playing", "game_over", "timeout"] do
     {:ok, update_check_result(game, params)}
   end
 
-  def transition(:give_up, %{state: "playing"} = game, params) do
+  def transition(:give_up, game = %{state: "playing"}, params) do
     game =
       game
       |> update_player(params.id, %{result: "gave_up"})
@@ -78,20 +78,20 @@ defmodule Codebattle.Game.Fsm do
     {:error, "Can't give_up in a game in state: '#{game.state}'"}
   end
 
-  def transition(:timeout, %{state: s, players: players} = game, _params)
+  def transition(:timeout, game = %{state: s, players: players}, _params)
       when s in ["waiting_opponent", "playing"] do
     new_players = Enum.map(players, fn player -> %{player | result: "timeout"} end)
     {:ok, %{game | state: "timeout", players: new_players}}
   end
 
-  def transition(:timeout, %{state: "game_over"} = game, _params), do: {:ok, game}
-  def transition(:timeout, %{state: "timeout"} = game, _params), do: {:ok, game}
+  def transition(:timeout, game = %{state: "game_over"}, _params), do: {:ok, game}
+  def transition(:timeout, game = %{state: "timeout"}, _params), do: {:ok, game}
 
-  def transition(:rematch_reject, %{state: "game_over"} = game, _params) do
+  def transition(:rematch_reject, game = %{state: "game_over"}, _params) do
     {:ok, %{game | rematch_state: "rejected"}}
   end
 
-  def transition(:rematch_send_offer, %{state: "game_over"} = game, params) do
+  def transition(:rematch_send_offer, game = %{state: "game_over"}, params) do
     new_rematch_data = handle_rematch_offer(game, params)
     {:ok, Map.merge(game, new_rematch_data)}
   end
@@ -108,7 +108,7 @@ defmodule Codebattle.Game.Fsm do
     %{rematch_state: "in_approval", rematch_initiator_id: params.player_id}
   end
 
-  defp handle_rematch_offer(%Game{rematch_state: "in_approval"} = game, params) do
+  defp handle_rematch_offer(game = %Game{rematch_state: "in_approval"}, params) do
     if params.player_id == game.rematch_initiator_id, do: %{}, else: %{rematch_state: "accepted"}
   end
 

@@ -37,8 +37,8 @@ jobs:
 
       - uses: erlef/setup-beam@v1
         with:
-          otp-version: '25.0.3'
-          elixir-version: '1.13.4'
+          otp-version: '25.2'
+          elixir-version: '1.14.3'
 
       - uses: actions/cache@v2
         with:
@@ -127,8 +127,10 @@ jobs:
       - name: Login to Docker Hub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
-      - run: make docker-build-app
-      - run: make docker-push-app
+      - run: make docker-build-codebattle
+      - run: make docker-push-codebattle
+      - run: make docker-build-runner
+      - run: make docker-push-runner
 
       - name: Notify Rollbar of deploy finish
         uses: rollbar/github-deploy-action@1.1.0

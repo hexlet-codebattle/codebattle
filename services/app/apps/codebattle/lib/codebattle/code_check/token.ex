@@ -1,6 +1,8 @@
 defmodule Codebattle.CodeCheck.Checker.Token do
   use TypedStruct
 
+  alias Codebattle.CodeCheck
+
   typedstruct enforce: true do
     field(:container_output, String.t())
     field(:execution_error, String.t() | nil)

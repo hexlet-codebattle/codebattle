@@ -3,7 +3,7 @@ defmodule Runner.SolutionGenerator do
 
   alias Runner.TypesGenerator
 
-  @spec call(Runner.LanguageMeta.t(), Codebattle.Task.t()) :: String.t()
+  @spec call(Runner.LanguageMeta.t(), Runner.Task.t()) :: String.t()
   def call(lang_meta, task) do
     binding =
       %{arguments: [], expected_type: "", return_statement: ""}

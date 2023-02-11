@@ -16,7 +16,21 @@ defmodule CodebattleUmbrella.MixProject do
       ],
       test_coverage: [tool: ExCoveralls],
       deps: [
+        {:mix_audit, "~> 2.0", only: [:dev, :test], runtime: false},
+        {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},
         {:excoveralls, "~> 0.13", only: :test}
+      ],
+      dialyzer: [
+        plt_file: {:no_warn, "priv/plts/dialyzer.plt"},
+        plt_add_apps: [:mix, :ex_unit]
+      ],
+      releases: [
+        codebattle: [
+          applications: [codebattle: :permanent]
+        ],
+        runner: [
+          applications: [runner: :permanent]
+        ]
       ]
     ]
   end

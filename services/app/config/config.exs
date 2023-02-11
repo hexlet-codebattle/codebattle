@@ -15,7 +15,7 @@ config :codebattle, CodebattleWeb.Endpoint,
   pubsub_server: CodebattleWeb.PubSub,
   live_view: [signing_salt: "asdfasdf"]
 
-# Configures the endpoint
+# Configures the runner endpoint
 config :runner, RunnerWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "zQ3/vT3oIVM94qXO7IgWeAqbLSAyGA9em6fdBw7OdbDnbeotEkWYANrjJWYNWpd/",
@@ -95,8 +95,10 @@ config :codebattle, use_prod_workers: false
 config :codebattle, use_non_test_workers: true
 config :codebattle, html_include_prod_scripts: false
 config :codebattle, html_debug_mode: true
+config :codebattle, fake_html_to_image: false
 
 config :runner, Runner.DockerImagesPuller, timeout: :timer.hours(7)
+config :runner, fake_docker_run: false
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

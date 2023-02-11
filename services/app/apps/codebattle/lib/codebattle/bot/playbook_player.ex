@@ -80,7 +80,7 @@ defmodule Codebattle.Bot.PlaybookPlayer do
   end
 
   # init
-  def next_step(%Params{editor_state: nil} = params) do
+  def next_step(params = %Params{editor_state: nil}) do
     %{actions: [%{editor_text: editor_text, editor_lang: editor_lang} | rest_actions]} = params
 
     document = TextDelta.new() |> TextDelta.insert(editor_text)
@@ -95,9 +95,9 @@ defmodule Codebattle.Bot.PlaybookPlayer do
   end
 
   def next_step(
-        %Params{
+        params = %Params{
           actions: [action = %{type: "update_editor_data", diff: diff} | rest_actions]
-        } = params
+        }
       ) do
     {document, lang} = params.editor_state
     document = TextDelta.apply!(document, TextDelta.new(diff.delta))
@@ -112,7 +112,7 @@ defmodule Codebattle.Bot.PlaybookPlayer do
     }
   end
 
-  def next_step(%Params{actions: [%{type: "game_over"} = action | _rest]} = params) do
+  def next_step(params = %Params{actions: [action = %{type: "game_over"} | _rest]}) do
     {document, lang} = params.editor_state
 
     %{
@@ -124,7 +124,7 @@ defmodule Codebattle.Bot.PlaybookPlayer do
     }
   end
 
-  def next_step(%Params{actions: []} = params) do
+  def next_step(params = %Params{actions: []}) do
     %{params | state: :finished}
   end
 

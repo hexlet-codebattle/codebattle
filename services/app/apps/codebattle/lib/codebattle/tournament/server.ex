@@ -46,7 +46,7 @@ defmodule Codebattle.Tournament.Server do
     {:reply, tournament, state}
   end
 
-  def handle_call({event_type, params}, _from, %{tournament: tournament} = state) do
+  def handle_call({event_type, params}, _from, state = %{tournament: tournament}) do
     %{module: module} = tournament
     new_tournament = apply(module, event_type, [tournament, params])
 
@@ -60,7 +60,7 @@ defmodule Codebattle.Tournament.Server do
           event: "game:tournament:finished",
           payload: payload
         },
-        %{tournament: tournament} = state
+        state = %{tournament: tournament}
       ) do
     new_tournament = tournament.module.finish_match(tournament, payload)
 

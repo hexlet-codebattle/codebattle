@@ -22,7 +22,7 @@ defmodule Codebattle.Feedback do
   end
 
   @doc false
-  def changeset(%Feedback{} = feedback, attrs) do
+  def changeset(feedback = %Feedback{}, attrs) do
     feedback
     |> cast(attrs, [:author_name, :status, :text, :title_link])
     |> validate_required([:author_name, :status, :text, :title_link])

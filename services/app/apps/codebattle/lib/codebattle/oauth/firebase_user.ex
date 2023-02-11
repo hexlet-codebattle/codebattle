@@ -33,7 +33,7 @@ defmodule Codebattle.Oauth.User.FirebaseUser do
     reset_in_firebase(user_attrs)
   end
 
-  defp check_existed_user(%{name: name, email: email} = user_attrs) do
+  defp check_existed_user(user_attrs = %{name: name, email: email}) do
     existed_users =
       User
       |> User.Scope.by_email_or_name(user_attrs)

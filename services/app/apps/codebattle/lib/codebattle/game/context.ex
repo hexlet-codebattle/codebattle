@@ -182,7 +182,7 @@ defmodule Codebattle.Game.Context do
   end
 
   @spec terminate_game(game_id | Game.t()) :: :ok
-  def terminate_game(%Game{} = game) do
+  def terminate_game(game = %Game{}) do
     Engine.terminate_game(game)
   end
 

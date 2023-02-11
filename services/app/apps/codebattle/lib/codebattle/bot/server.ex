@@ -12,7 +12,7 @@ defmodule Codebattle.Bot.Server do
   @port Application.compile_env(:codebattle, :ws_port, 4000)
 
   @spec start_link(%{game: Game.t(), bot_id: integer()}) :: GenServer.on_start()
-  def start_link(%{game: game, bot_id: bot_id} = params) do
+  def start_link(params = %{game: game, bot_id: bot_id}) do
     GenServer.start_link(__MODULE__, params, name: server_name(game.id, bot_id))
   end
 
@@ -62,7 +62,7 @@ defmodule Codebattle.Bot.Server do
   def handle_info(:next_bot_step, state), do: do_playbook_step(state)
 
   @impl GenServer
-  def handle_info(%{event: "editor:data"}, %{state: :initial} = state) do
+  def handle_info(%{event: "editor:data"}, state = %{state: :initial}) do
     send_start_chat_message(state)
     do_playbook_step(state)
   end
@@ -115,7 +115,7 @@ defmodule Codebattle.Bot.Server do
     {:noreply, state}
   end
 
-  defp do_playbook_step(%{state: :finished} = state), do: {:noreply, state}
+  defp do_playbook_step(state = %{state: :finished}), do: {:noreply, state}
 
   defp do_playbook_step(state) do
     playbook_params = Bot.PlaybookPlayer.next_step(state.playbook_params)
@@ -178,7 +178,7 @@ defmodule Codebattle.Bot.Server do
   defp send_game_message(game_channel, :check_result, editor_params),
     do: Bot.GameClient.send(game_channel, :check_result, editor_params)
 
-  defp send_init_chat_message(%{playbook_params: nil} = state) do
+  defp send_init_chat_message(state = %{playbook_params: nil}) do
     send_chat_message(state, :excuse)
   end
 

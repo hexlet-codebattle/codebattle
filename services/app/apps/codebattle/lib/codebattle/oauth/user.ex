@@ -10,11 +10,11 @@ defmodule Codebattle.Oauth.User do
     Codebattle.Oauth.User.TokenUser.find(token)
   end
 
-  def update(user, %Auth{provider: :discord} = auth) do
+  def update(user, auth = %Auth{provider: :discord}) do
     Codebattle.Oauth.User.DiscordUser.update(user, auth)
   end
 
-  def update(user, %Auth{provider: :github} = auth) do
+  def update(user, auth = %Auth{provider: :github}) do
     Codebattle.Oauth.User.GithubUser.update(user, auth)
   end
 
@@ -26,15 +26,15 @@ defmodule Codebattle.Oauth.User do
     Codebattle.Oauth.User.GithubUser.unbind(user)
   end
 
-  def find_or_create(%Auth{provider: :discord} = auth) do
+  def find_or_create(auth = %Auth{provider: :discord}) do
     Codebattle.Oauth.User.DiscordUser.find_or_create(auth)
   end
 
-  def find_or_create(%Auth{provider: :github} = auth) do
+  def find_or_create(auth = %Auth{provider: :github}) do
     Codebattle.Oauth.User.GithubUser.find_or_create(auth)
   end
 
-  def find_or_create(%{provider: :dev_local} = auth) do
+  def find_or_create(auth = %{provider: :dev_local}) do
     user_data = %{
       github_id: "35539033",
       name: auth.name,

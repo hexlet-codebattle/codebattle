@@ -26,11 +26,11 @@ defmodule Codebattle.Tournament.Helpers do
     tournament |> get_team_players(team_id) |> Enum.count()
   end
 
-  def can_be_started?(%{state: "upcoming"} = tournament) do
+  def can_be_started?(tournament = %{state: "upcoming"}) do
     get_intended_player_ids(tournament) != []
   end
 
-  def can_be_started?(%{state: "waiting_participants"} = tournament) do
+  def can_be_started?(tournament = %{state: "waiting_participants"}) do
     players_count(tournament) > 0
   end
 
@@ -40,7 +40,7 @@ defmodule Codebattle.Tournament.Helpers do
     is_creator?(tournament, user) || User.is_admin?(user)
   end
 
-  def can_access?(%{access_type: "token"} = tournament, user, params) do
+  def can_access?(tournament = %{access_type: "token"}, user, params) do
     can_moderate?(tournament, user) ||
       is_intended_player?(tournament, user) ||
       is_player?(tournament, user.id) ||
@@ -106,11 +106,11 @@ defmodule Codebattle.Tournament.Helpers do
 
   def get_teams(_), do: []
 
-  def get_team_players(%{type: "team"} = tournament, team_id) do
+  def get_team_players(tournament = %{type: "team"}, team_id) do
     tournament |> get_players |> Enum.filter(&(&1.team_id == team_id))
   end
 
-  def get_players_statistics(%{type: "team"} = tournament) do
+  def get_players_statistics(tournament = %{type: "team"}) do
     all_win_matches =
       tournament
       |> get_matches()
@@ -153,7 +153,7 @@ defmodule Codebattle.Tournament.Helpers do
     end
   end
 
-  def get_tournament_statistics(%{type: "team"} = tournament) do
+  def get_tournament_statistics(tournament = %{type: "team"}) do
     all_win_matches =
       tournament
       |> get_matches()
@@ -187,8 +187,8 @@ defmodule Codebattle.Tournament.Helpers do
   # 2. picks human loser instead of bot
   # 3. picks human winner if gave_up
   # 4. picks random bot
-  def pick_winner(%{players: [%{result: "won", is_bot: false} = winner, _]}), do: winner
-  def pick_winner(%{players: [_, %{result: "won", is_bot: false} = winner]}), do: winner
+  def pick_winner(%{players: [winner = %{result: "won", is_bot: false}, _]}), do: winner
+  def pick_winner(%{players: [_, winner = %{result: "won", is_bot: false}]}), do: winner
   def pick_winner(%{players: [winner, %{result: "gave_up"}]}), do: winner
   def pick_winner(%{players: [%{result: "gave_up"}, winner]}), do: winner
   def pick_winner(match), do: Enum.random(match.players)

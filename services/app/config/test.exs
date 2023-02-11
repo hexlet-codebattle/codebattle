@@ -57,5 +57,6 @@ config :codebattle, admins: ["admin"]
 config :codebattle, freeze_time: true
 
 config :codebattle, use_non_test_workers: false
+config :codebattle, fake_html_to_image: true
 
 config :runner, fake_docker_run: true

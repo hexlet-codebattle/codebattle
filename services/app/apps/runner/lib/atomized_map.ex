@@ -25,7 +25,7 @@ defmodule AtomizedMap do
   def equal?(a, b), do: a == b
   def embed_as(_), do: :self
 
-  def atomize(%NaiveDateTime{} = map), do: map
+  def atomize(map = %NaiveDateTime{}), do: map
 
   def atomize(map) when is_struct(map),
     do: map |> Map.from_struct() |> atomize

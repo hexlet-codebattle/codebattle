@@ -23,7 +23,7 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
      )}
   end
 
-  def handle_event(_event, _params, %{assigns: %{current_user: %{is_guest: true}} = socket}) do
+  def handle_event(_event, _params, socket = %{assigns: %{current_user: %{is_guest: true}}}) do
     {:noreply, socket}
   end
 

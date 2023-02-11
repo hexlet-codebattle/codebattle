@@ -3,24 +3,24 @@ defmodule Codebattle.Game.RatingCalculator do
   alias Codebattle.Game.Helpers
 
   # skip rating changes for training, bot, solo
-  def call(%{mode: "training"} = game), do: game
-  def call(%{is_bot: true} = game), do: game
-  def call(%{type: "solo"} = game), do: game
+  def call(game = %{mode: "training"}), do: game
+  def call(game = %{is_bot: true}), do: game
+  def call(game = %{type: "solo"}), do: game
 
   # skip rating changes gave_up games
-  def call(%{players: [%{result: "gave_up"} = player, _]} = game) do
+  def call(game = %{players: [player = %{result: "gave_up"}, _]}) do
     calculate_gave_up(game, player)
   end
 
-  def call(%{players: [_, %{result: "gave_up"} = player]} = game) do
+  def call(game = %{players: [_, player = %{result: "gave_up"}]}) do
     calculate_gave_up(game, player)
   end
 
-  def call(%{mode: "standard", players: [%{result: "won"} = winner, loser]} = game) do
+  def call(game = %{mode: "standard", players: [winner = %{result: "won"}, loser]}) do
     calculate(game, winner, loser)
   end
 
-  def call(%{mode: "standard", players: [loser, %{result: "won"} = winner]} = game) do
+  def call(game = %{mode: "standard", players: [loser, winner = %{result: "won"}]}) do
     calculate(game, winner, loser)
   end
 

@@ -5,8 +5,9 @@ defmodule Codebattle.TasksImporter do
 
   require Logger
 
-  @timeout :timer.hours(24)
+  @timeout :timer.hours(12)
   @issues_link "https://github.com/hexlet-codebattle/battle_asserts/releases/latest/download/issues.tar.gz"
+  @tmp_basedir "/tmp/codebattle-issues"
 
   # API
   def start_link(_) do
@@ -36,10 +37,10 @@ defmodule Codebattle.TasksImporter do
   end
 
   def fetch_issues do
-    File.rm_rf("/tmp/codebattle-issues")
-    File.mkdir_p!("/tmp/codebattle-issues")
-    dir_path = Temp.mkdir!(basedir: "/tmp/codebattle-issues")
-    response = HTTPoison.get!(@issues_link, %{}, follow_redirect: true, timeout: 10_000)
+    File.rm_rf(@tmp_basedir)
+    File.mkdir_p!(@tmp_basedir)
+    dir_path = Temp.mkdir!(basedir: @tmp_basedir, prefix: to_string(:rand.uniform(10_000_000)))
+    response = HTTPoison.get!(@issues_link, %{}, follow_redirect: true, timeout: 15_000)
     file_name = Path.join(dir_path, "issues.tar.gz")
     File.write!(file_name, response.body)
 
@@ -99,7 +100,7 @@ defmodule Codebattle.TasksImporter do
     }
   end
 
-  defp format_input_signature(%{"argument-name" => arg} = input) do
+  defp format_input_signature(input = %{"argument-name" => arg}) do
     input |> Map.delete("argument-name") |> Map.put("argument_name", arg)
   end
 
