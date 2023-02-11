@@ -21,32 +21,21 @@ jobs:
           --health-retries 5
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: erlef/setup-beam@v1
+      - uses: actions/checkout@v3
+      - name: Setup Elixir
+        uses: erlef/setup-beam@v1
         with:
           otp-version: '25.0.3'
           elixir-version: '1.13.4'
-
-      - uses: actions/cache@v2
+      - name: Restore mix build cache
+        uses: actions/cache@v3
         with:
-          path: services/app/deps
-          key: v3-${{ runner.os }}-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/services/app/mix.lock')) }}
-          restore-keys: |
-            v3-${{ runner.os }}-deps-
-
-      - uses: actions/cache@v2
-        with:
-          path: services/app/_build
-          key: v3-${{ runner.os }}-build-${{ hashFiles(format('{0}{1}', github.workspace, '/services/app/mix.lock')) }}
-          restore-keys: |
-            v3-${{ runner.os }}-build-
-
-      - uses: actions/cache@v2
-        with:
-          path: ~/.mix
-          key: v3-${{ runner.os }}-mix-${{ hashFiles(format('{0}{1}', github.workspace, '/services/app/mix.lock')) }}
-          restore-keys: |
-            v3-${{ runner.os }}-mix-
+          path: |
+            deps
+            _build
+            ~/.mix
+          key: mix:1-${{ hashFiles('**/mix.lock') }}
+          restore-keys: mix:1-
 
       - name: Get deps
         run: mix deps.get
@@ -74,7 +63,7 @@ jobs:
         id: yarn-cache
         run: echo "::set-output name=dir::$(yarn cache dir)"
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: ${{ steps.yarn-cache.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}

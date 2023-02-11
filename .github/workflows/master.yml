@@ -22,44 +22,21 @@ jobs:
           --health-retries 5
 
     steps:
-      - name: Notify Rollbar of deploy start
-        uses: rollbar/github-deploy-action@2.0.0
-        id: rollbar_pre_deploy
-        with:
-          environment: 'production'
-          version: ${{ github.sha }}
-          status: 'started'
-        env:
-          ROLLBAR_ACCESS_TOKEN: ${{ secrets.ROLLBAR_ACCESS_TOKEN }}
-          ROLLBAR_USERNAME: ${{ secrets.ROLLBAR_USERNAME }}
-
-      - uses: actions/checkout@v2
-
-      - uses: erlef/setup-beam@v1
+      - uses: actions/checkout@v3
+      - name: Setup Elixir
+        uses: erlef/setup-beam@v1
         with:
           otp-version: '25.2'
           elixir-version: '1.14.3'
-
-      - uses: actions/cache@v2
+      - name: Restore mix build cache
+        uses: actions/cache@v3
         with:
-          path: services/app/deps
-          key: v3-${{ runner.os }}-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/services/app/mix.lock')) }}
-          restore-keys: |
-            v3-${{ runner.os }}-deps-
-
-      - uses: actions/cache@v2
-        with:
-          path: services/app/_build
-          key: v3-${{ runner.os }}-build-${{ hashFiles(format('{0}{1}', github.workspace, '/services/app/mix.lock')) }}
-          restore-keys: |
-            v3-${{ runner.os }}-build-
-
-      - uses: actions/cache@v2
-        with:
-          path: ~/.mix
-          key: v3-${{ runner.os }}-mix-${{ hashFiles(format('{0}{1}', github.workspace, '/services/app/mix.lock')) }}
-          restore-keys: |
-            v3-${{ runner.os }}-mix-
+          path: |
+            deps
+            _build
+            ~/.mix
+          key: mix:1-${{ hashFiles('**/mix.lock') }}
+          restore-keys: mix:1-
 
       - name: Get deps
         run: mix deps.get
@@ -87,7 +64,7 @@ jobs:
         id: yarn-cache
         run: echo "::set-output name=dir::$(yarn cache dir)"
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: ${{ steps.yarn-cache.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
@@ -133,21 +110,14 @@ jobs:
       - name: Login to Docker Hub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
-      - run: make docker-build-codebattle
-      - run: make docker-push-codebattle
-      - run: make docker-build-runner
-      - run: make docker-push-runner
-
-      - name: Notify Rollbar of deploy finish
-        uses: rollbar/github-deploy-action@1.1.0
-        id: rollbar_post_deploy
-        with:
-          environment: 'production'
-          version: ${{ github.sha }}
-          status: 'succeeded'
-        env:
-          ROLLBAR_ACCESS_TOKEN: ${{ secrets.ROLLBAR_ACCESS_TOKEN }}
-          ROLLBAR_USERNAME: ${{ secrets.ROLLBAR_USERNAME }}
+      - name: Build docker image for codebattle
+        run: make docker-build-codebattle
+      - name: Push docker image for codebattle
+        run: make docker-push-codebattle
+      - name: Build docker image for runner
+        run: make docker-build-runner
+      - name: Push docker image for runner
+        run: make docker-push-runner
 
       # stop integratoin tests on CI becaues of https://github.com/hexlet-codebattle/codebattle/runs/580337561?check_suite_focus=true
       # - name: Pull dockers
