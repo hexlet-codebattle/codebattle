@@ -1,6 +1,8 @@
 import axios from 'axios';
 import { camelizeKeys } from 'humps';
 import qs from 'qs';
+import moment from 'moment';
+
 import { actions } from '../slices';
 
 export const loadUser = dispatch => async user => {
@@ -23,14 +25,26 @@ export const loadUserStats = dispatch => async user => {
   }
 };
 
-export const getUsersRatingPage = (dateFrom = null, withBots = true, page = 1, filter = '', sort = '') => dispatch => {
+const periodToTimeUnit = {
+  weekly: 'week',
+  monthly: 'month',
+};
+
+const getDateByPeriod = period => {
+  if (period === 'total') {
+    return null;
+  }
+  return moment().startOf(periodToTimeUnit[period]).utc().format('YYYY-MM-DD');
+};
+
+export const getUsersRatingPage = ({ name, period, withBots }, { attribute, direction }, page) => dispatch => {
   const queryParamsString = qs.stringify({
     page,
-    s: sort,
+    s: `${attribute}+${direction}`,
     q: {
-      name_ilike: filter,
+      name_ilike: name,
     },
-    date_from: dateFrom,
+    date_from: getDateByPeriod(period),
     with_bots: withBots,
   });
 

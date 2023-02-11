@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import ReactDOM from 'react-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Pagination from 'react-js-pagination';
@@ -11,8 +10,8 @@ import Loading from '../components/Loading';
 
 const decorateJoinedDate = str => (moment.utc(str).format('LL'));
 
-const renderSortArrow = (attribute, sort) => {
-  const { attribute: currentAttribute, direction } = sort;
+const renderSortArrow = (attribute, sortParams) => {
+  const { attribute: currentAttribute, direction } = sortParams;
   const classes = attribute === currentAttribute ? `cb-sort-arrow ${direction}` : 'sort-arrows';
 
   return (<span className={`d-inline-block ${classes}`} />);
@@ -40,55 +39,46 @@ const renderUser = user => (
 
 const renderPagination = ({
   pageInfo: {
-    pageNumber: activePage,
-    pageSize: itemsCountPerPage,
-    totalEntries: totalItemsCount,
+    pageNumber,
+    pageSize,
+    totalEntries,
   },
-  dateFrom,
-  withBots,
-}, dispatch) => (
+}, setPage) => (
   <Pagination
-    activePage={activePage}
-    itemsCountPerPage={itemsCountPerPage}
-    totalItemsCount={totalItemsCount}
+    activePage={pageNumber}
+    itemsCountPerPage={pageSize}
+    totalItemsCount={totalEntries}
     pageRangeDisplayed={5}
-    onChange={page => dispatch(getUsersRatingPage(dateFrom, withBots, page))}
+    onChange={page => setPage(page)}
     itemClass="page-item"
     linkClass="page-link"
   />
 );
 
-const getActiveModeByDateFrom = dateFrom => {
-  if (!dateFrom) return 'total';
-  if (moment.utc(dateFrom) <= moment().startOf('month')) return 'monthly';
-
-  return 'weekly';
-};
-
-const getDateFromByNavItem = navItem => {
-  if (navItem === 'weekly') return moment().startOf('week').utc().format('YYYY-MM-DD');
-  if (navItem === 'monthly') return moment().startOf('month').utc().format('YYYY-MM-DD');
-
-  return null;
-};
-
-const renderRatingModeNavItem = (navItem, activeMode, withBots, dispatch) => {
-  const dateFrom = getDateFromByNavItem(navItem);
-  const classes = activeMode === navItem ? 'btn nav-link active' : 'btn btn-link nav-link';
+const renderFilterPeriodButtons = (period, filterParams, setFilterParams, setPage) => {
+  const classes = filterParams.period === period
+    ? 'btn nav-link active'
+    : 'btn btn-link nav-link';
 
   return (
-    <li key={navItem} className="nav-item">
-      <button type="button" className={classes} onClick={() => dispatch(getUsersRatingPage(dateFrom, withBots))}>{navItem}</button>
+    <li key={period} className="nav-item">
+      <button
+        type="button"
+        className={classes}
+        onClick={() => {
+          setFilterParams({ ...filterParams, period });
+          setPage(1);
+        }}
+      >
+        {period}
+      </button>
     </li>
   );
 };
 
-const UsersRating = () => {
-  const [sort, setSort] = useState({
-    attribute: 'rank',
-    direction: 'asc',
-  });
+const periods = ['weekly', 'monthly', 'total'];
 
+const UsersRating = () => {
   const usersRatingPage = useSelector(usersListSelector);
   const storeLoaded = useSelector(state => state.storeLoaded);
   const dispatch = useDispatch();
@@ -96,32 +86,39 @@ const UsersRating = () => {
   const {
     pageInfo: { totalEntries },
     users,
-    dateFrom,
     withBots,
   } = usersRatingPage;
 
-  useEffect(() => {
-    dispatch(getUsersRatingPage(null, true, 1));
-  }, [dispatch]);
+  const [sortParams, setSortParams] = useState({
+    attribute: 'rank',
+    direction: 'asc',
+  });
 
-  let filterNode;
+  const [filterParams, setFilterParams] = useState({
+    name: '',
+    period: 'total',
+    withBots: true,
+  });
+
+  const [page, setPage] = useState(1);
+
+  useEffect(() => {
+    dispatch(getUsersRatingPage(filterParams, sortParams, page));
+  }, [filterParams, sortParams, page]);
 
   const triggerSort = attribute => {
-    const direction = sort.direction === 'desc' ? 'asc' : 'desc';
+    const direction = sortParams.direction === 'desc' ? 'asc' : 'desc';
 
-    setSort({
+    setSortParams({
       attribute,
       direction,
     });
-
-    dispatch(getUsersRatingPage(dateFrom, withBots, 1, filterNode.value, `${attribute}+${direction}`));
+    setPage(1);
   };
 
   if (!storeLoaded) {
     return <Loading />;
   }
-
-  const ratingModes = ['weekly', 'monthly', 'total'];
 
   return (
     <div className="text-center">
@@ -129,7 +126,7 @@ const UsersRating = () => {
       <p>{`Total entries: ${totalEntries}`}</p>
 
       <ul className="nav nav-pills justify-content-center">
-        {ratingModes.map(item => renderRatingModeNavItem(item, getActiveModeByDateFrom(dateFrom), withBots, dispatch))}
+        {periods.map(period => renderFilterPeriodButtons(period, filterParams, setFilterParams, setPage))}
       </ul>
 
       <div className="form-inline justify-content-between">
@@ -145,9 +142,11 @@ const UsersRating = () => {
             placeholder="Username"
             aria-label="Username"
             aria-describedby="basic-addon1"
-            onChange={() => dispatch(getUsersRatingPage(dateFrom, withBots, 1, filterNode.value))}
-            // eslint-disable-next-line react/no-find-dom-node
-            ref={c => { filterNode = ReactDOM.findDOMNode(c); }}
+            value={filterParams.name}
+            onChange={e => {
+              setFilterParams({ ...filterParams, name: e.target.value });
+              setPage(1);
+            }}
           />
         </div>
         <div className="form-check">
@@ -157,7 +156,10 @@ const UsersRating = () => {
               className="form-check-input"
               type="checkbox"
               name="with_bots"
-              onChange={() => dispatch(getUsersRatingPage(dateFrom, !withBots, 1, filterNode.value))}
+              onChange={() => {
+                setFilterParams({ ...filterParams, withBots: !filterParams.withBots });
+                setPage(1);
+              }}
               defaultChecked={withBots}
             />
             With bots
@@ -173,7 +175,7 @@ const UsersRating = () => {
             >
               Rank
               &nbsp;
-              {renderSortArrow('rank', sort)}
+              {renderSortArrow('rank', sortParams)}
             </th>
             <th className="p-3 border-0">User</th>
             <th
@@ -182,7 +184,7 @@ const UsersRating = () => {
             >
               Rating
               &nbsp;
-              {renderSortArrow('rating', sort)}
+              {renderSortArrow('rating', sortParams)}
             </th>
             <th
               className="p-3 border-0 cursor-pointer"
@@ -190,7 +192,7 @@ const UsersRating = () => {
             >
               Games played
               &nbsp;
-              {renderSortArrow('games_played', sort)}
+              {renderSortArrow('games_played', sortParams)}
             </th>
             <th className="p-3 border-0">
               Performance
@@ -201,7 +203,7 @@ const UsersRating = () => {
             >
               Joined
               &nbsp;
-              {renderSortArrow('id', sort)}
+              {renderSortArrow('id', sortParams)}
             </th>
             <th className="p-3 border-0">Github</th>
           </tr>
@@ -211,7 +213,7 @@ const UsersRating = () => {
         </tbody>
       </table>
       <div>
-        {renderPagination(usersRatingPage, dispatch)}
+        {renderPagination(usersRatingPage, setPage)}
       </div>
     </div>
   );
