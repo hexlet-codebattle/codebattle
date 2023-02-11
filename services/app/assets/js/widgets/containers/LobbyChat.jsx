@@ -4,7 +4,6 @@ import * as selectors from '../selectors';
 import Messages from '../components/Messages';
 import UserInfo from './UserInfo';
 import ChatInput from '../components/ChatInput';
-import 'emoji-mart/css/emoji-mart.css';
 import * as chatMiddlewares from '../middlewares/Chat';
 
 const LobbyChat = ({ connectToChat }) => {

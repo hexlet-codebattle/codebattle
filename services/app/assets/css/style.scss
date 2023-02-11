@@ -21,6 +21,16 @@ $fa-font-path: '/fonts';
 @import 'taskComponent';
 @import 'scrollTable';
 
+em-emoji-picker {
+  position: absolute;
+  bottom: 45px;
+  right: 96px;
+  height: 254px;
+
+  border-radius: 6px;
+  --shadow: 0px 0px 15px var(--gray);
+}
+
 .xstate {
   height: 1000px;
 }

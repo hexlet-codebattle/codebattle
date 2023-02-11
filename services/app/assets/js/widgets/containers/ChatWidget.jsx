@@ -6,7 +6,6 @@ import Messages from '../components/Messages';
 import UserInfo from './UserInfo';
 import ChatInput from '../components/ChatInput';
 import GameTypeCodes from '../config/gameTypeCodes';
-import 'emoji-mart/css/emoji-mart.css';
 import Notifications from './Notifications';
 import GameContext from './GameContext';
 import { replayerMachineStates } from '../machines/game';
