@@ -76,7 +76,7 @@ const Message = ({
       <a href={`/users/${userId}`}>
         <span className="font-weight-bold">{`${name}: `}</span>
       </a>
-      <span className="ml-1">
+      <span className="ml-1 text-break">
         {parts.map((part, i) => renderMessagePart(part, i))}
       </span>
       <small className="text-muted text-small ml-auto">

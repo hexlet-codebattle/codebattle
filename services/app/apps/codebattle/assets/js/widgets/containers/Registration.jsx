@@ -199,7 +199,7 @@ const SignUp = () => {
       passwordConfirmation: '',
     },
     validationSchema: Yup.object().shape({
-      name: Yup.string().required('Nickname required'),
+      name: Yup.string().min(3, 'Should be at least 3 characters').required('Nickname required'),
       email: Yup.string().email('Invalid email').required('Email required'),
       password: Yup.string().required('Password required'),
       passwordConfirmation: Yup.string().oneOf(

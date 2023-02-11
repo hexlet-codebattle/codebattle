@@ -220,7 +220,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
       text: text
     })
 
-    {:noreply, socket}
+    {:noreply, push_event(socket, "clear", %{value: ""})}
   end
 
   def handle_event("toggle", params, socket) do

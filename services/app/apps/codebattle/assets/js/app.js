@@ -59,6 +59,13 @@ const Hooks = {
       this.el.scrollTop = this.el.scrollHeight;
     },
   },
+  TournamentChatInput: {
+    mounted() {
+      this.handleEvent('clear', ({ value }) => {
+        this.el.value = value;
+      });
+    },
+  },
 };
 const csrfToken = document
   .querySelector("meta[name='csrf-token']")

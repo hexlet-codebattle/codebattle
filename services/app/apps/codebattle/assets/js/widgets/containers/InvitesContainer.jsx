@@ -89,7 +89,7 @@ const InvitesContainer = () => {
 
   return (
     <OverlayTrigger
-      trigger="click"
+      trigger="focus"
       key="codebattle-invites"
       placement={invites.length === 0 ? 'bottom-end' : 'bottom'}
       overlay={(

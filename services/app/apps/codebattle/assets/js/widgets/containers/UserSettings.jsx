@@ -66,7 +66,7 @@ const UserSettings = () => {
 
   const notificationStyles = cn({
     'alert-success': notification === 'editSuccess',
-    'alert-error': notification === 'editError',
+    'alert-danger': notification === 'editError',
     alert: true,
     fade: animation === 'done',
   });
@@ -78,7 +78,8 @@ const UserSettings = () => {
       setAnimation('progress');
       setNotification('editSuccess');
     } else if (resultAction.payload) {
-      setNotification(resultAction.payload.field_errors);
+      setAnimation('progress');
+      setNotification('editError');
       formikHelpers.setErrors(resultAction.payload.field_errors);
     } else {
       setNotification('editError');
