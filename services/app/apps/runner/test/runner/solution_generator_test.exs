@@ -211,6 +211,6 @@ defmodule Runner.SolutionGeneratorTest do
   end
 
   def get_solution(lang, task) do
-    SolutionGenerator.call(Languages.meta(lang), task)
+    SolutionGenerator.call(task, Languages.meta(lang))
   end
 end

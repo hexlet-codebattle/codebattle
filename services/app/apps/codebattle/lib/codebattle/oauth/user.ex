@@ -43,9 +43,7 @@ defmodule Codebattle.Oauth.User do
     }
 
     changeset = User.changeset(%User{}, user_data)
-    {:ok, user} = Repo.insert(changeset)
-
-    {:ok, user}
+    Repo.insert(changeset)
   end
 
   def find_by_firebase(user_attrs) do

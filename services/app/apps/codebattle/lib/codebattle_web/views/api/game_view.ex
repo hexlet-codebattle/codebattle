@@ -78,7 +78,7 @@ defmodule CodebattleWeb.Api.GameView do
         slug: meta.slug,
         name: meta.name,
         version: meta.version,
-        solution_template: CodeCheck.generate_solution_template(meta, task)
+        solution_template: CodeCheck.generate_solution_template(task, meta)
       }
     end)
   end

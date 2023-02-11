@@ -18,7 +18,7 @@ defmodule CodebattleWeb.DevLoginController do
 
         {:error, reason} ->
           conn
-          |> put_flash(:danger, reason)
+          |> put_flash(:danger, inspect(reason))
           |> redirect(to: "/")
       end
     else

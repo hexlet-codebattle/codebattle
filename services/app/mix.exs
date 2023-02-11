@@ -21,6 +21,10 @@ defmodule CodebattleUmbrella.MixProject do
         {:excoveralls, "~> 0.13", only: :test}
       ],
       dialyzer: [
+        paths: [
+          Path.join(File.cwd!(), "_build/dev/lib/runner/ebin"),
+          Path.join(File.cwd!(), "_build/dev/lib/codebattle/ebin")
+        ],
         plt_file: {:no_warn, "priv/plts/dialyzer.plt"},
         plt_add_apps: [:mix, :ex_unit]
       ],

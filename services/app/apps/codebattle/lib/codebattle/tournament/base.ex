@@ -11,7 +11,7 @@ defmodule Codebattle.Tournament.Base do
   @callback build_matches(%Codebattle.Tournament{}) :: %Codebattle.Tournament{}
   @callback maybe_finish(%Codebattle.Tournament{}) :: %Codebattle.Tournament{}
   @callback create_game(%Codebattle.Tournament{}, %Codebattle.Tournament.Types.Match{}) ::
-              %Codebattle.Tournament.Types.Match{}
+              pos_integer()
 
   defmacro __using__(_opts) do
     quote do

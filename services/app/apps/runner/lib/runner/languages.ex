@@ -436,7 +436,8 @@ defmodule Runner.Languages do
     }
   }
 
-  def get_langs, do: Map.keys(@meta)
+  def get_lang_slugs, do: Map.keys(@meta)
+  def get_langs, do: Map.values(@meta)
 
   def meta, do: @meta
 

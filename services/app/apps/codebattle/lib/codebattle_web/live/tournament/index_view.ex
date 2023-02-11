@@ -17,7 +17,7 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
      assign(socket,
        current_user: current_user,
        tournaments: session["tournaments"],
-       langs: Runner.Languages.get_langs(),
+       langs: Runner.Languages.get_lang_slugs(),
        task_pack_names: Codebattle.TaskPack.list_visible(current_user) |> Enum.map(& &1.name),
        changeset: Codebattle.Tournament.changeset(%Codebattle.Tournament{})
      )}

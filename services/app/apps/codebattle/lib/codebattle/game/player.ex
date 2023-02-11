@@ -194,10 +194,7 @@ defmodule Codebattle.Game.Player do
   def setup_editor_params(player = %__MODULE__{}, task) do
     editor_lang = player.editor_lang
 
-    editor_text =
-      editor_lang
-      |> Languages.meta()
-      |> CodeCheck.generate_solution_template(task)
+    editor_text = CodeCheck.generate_solution_template(task, Languages.meta(editor_lang))
 
     params = %{
       editor_lang: editor_lang,

@@ -3,6 +3,8 @@ defmodule Codebattle.CodeCheck.Executor.Remote do
 
   require Logger
 
+  alias Codebattle.CodeCheck.Checker.Token
+
   @spec call(Token.t()) :: Token.t()
   def call(token) do
     %{

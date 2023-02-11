@@ -26,11 +26,12 @@ defmodule Codebattle.Game.Context do
           optional(:level) => String.t(),
           optional(:state) => String.t(),
           optional(:tournament_id) => tournament_id,
-          optional(:timeout_seconds) => non_neg_integer,
+          optional(:timeout_seconds) => non_neg_integer(),
           optional(:type) => String.t(),
           optional(:mode) => String.t(),
           optional(:visibility_type) => String.t(),
-          optional(:task) => Codebattle.Task.t()
+          # fix nil task in stairway tournament
+          optional(:task) => Codebattle.Task.t() | nil
         }
 
   @type active_games_params :: %{

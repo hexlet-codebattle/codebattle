@@ -9336,14 +9336,14 @@ performance-now@^2.1.0:
   resolved "https://registry.npmjs.org/performance-now/-/performance-now-2.1.0.tgz"
   integrity sha1-Ywn04OX6kT7BxpMHrjZLSzd8nns=
 
-"phoenix@file:deps/phoenix":
-  version "1.6.14"
+"phoenix@file:../../deps/phoenix":
+  version "1.6.15"
 
-"phoenix_html@file:deps/phoenix_html":
+"phoenix_html@file:../../deps/phoenix_html":
   version "3.2.0"
 
-"phoenix_live_view@file:deps/phoenix_live_view":
-  version "0.18.2"
+"phoenix_live_view@file:../../deps/phoenix_live_view":
+  version "0.18.11"
 
 picomatch@^2.0.4, picomatch@^2.0.5, picomatch@^2.2.1:
   version "2.2.2"

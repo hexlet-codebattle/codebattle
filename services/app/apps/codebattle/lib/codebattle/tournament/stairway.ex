@@ -66,13 +66,13 @@ defmodule Codebattle.Tournament.Stairway do
       Game.Context.create_game(%{
         type: "solo",
         state: "playing",
-        task_id: task,
+        task: task,
         level: task.level,
         tournament_id: tournament.id,
         players: match.players
       })
 
-    Game.Helpers.get_game_id(game)
+    game.id
   end
 
   @impl Tournament.Base

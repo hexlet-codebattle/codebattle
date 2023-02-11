@@ -59,8 +59,6 @@ defmodule CodebattleWeb.GameController do
 
       game ->
         if Playbook.Context.exists?(game.id) do
-          langs = Languages.meta() |> Map.values()
-
           [first, second] = get_users(game)
 
           conn
@@ -68,7 +66,7 @@ defmodule CodebattleWeb.GameController do
             is_record: true,
             game_id: id,
             tournament_id: game.tournament_id,
-            langs: langs,
+            langs: Languages.get_langs(),
             players: present_users_for_gon(game.users)
           )
           |> put_meta_tags(%{
