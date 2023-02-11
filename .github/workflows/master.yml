@@ -96,15 +96,15 @@ jobs:
 
       - name: Install yarn dependencies
         run: yarn install --froze-lockfile
-        working-directory: ./services/app
+        working-directory:  ./services/app/apps/codebattle
 
       - name: Eslint
         run: yarn lint
-        working-directory: ./services/app
+        working-directory: ./services/app/apps/codebattle
 
       - name: Run jest
         run: yarn test
-        working-directory: ./services/app
+        working-directory:  ./services/app/apps/codebattle
 
       - name: Compile
         run: mix compile
