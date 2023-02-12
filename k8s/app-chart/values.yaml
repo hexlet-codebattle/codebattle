@@ -8,7 +8,7 @@ codebattle:
     imagePullPolicy: Always
 
 runner:
-  replicaCount: 3
+  replicaCount: 2
   image:
     repository: codebattle/runner
     imagePullPolicy: Always

@@ -41,7 +41,7 @@ executor =
 config :codebattle, checker_executor: executor
 
 config :codebattle, :executor,
-  runner_url: "http://localhost:4001",
+  runner_url: "http://runner.default.svc",
   api_key: "x-key"
 
 config :runner, load_dot_env_file: false
