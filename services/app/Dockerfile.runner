@@ -8,13 +8,10 @@ RUN mix local.hex --force \
 
 COPY mix.exs .
 COPY mix.lock .
+COPY config ./config
 COPY apps/runner/mix.exs apps/runner/mix.exs
 
-RUN mix deps.get --only prod
-
-COPY config ./config
-
-RUN mix compile
+RUN mix do deps.get --only prod, compile
 
 COPY ./apps/runner/ ./apps/runner/
 
