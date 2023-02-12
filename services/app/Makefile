@@ -28,6 +28,9 @@ start:
 	bin/codebattle eval "Codebattle.Utils.Release.migrate"
 	bin/codebattle start
 
+runner-start:
+	bin/runner start
+
 server:
 	iex -S mix phx.server
 

@@ -42,7 +42,7 @@ spec:
             periodSeconds: 5
             successThreshold: 1
           command:
-            - make
+            - bin/runner
             - start
           ports:
             - containerPort: 4001

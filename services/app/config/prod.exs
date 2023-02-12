@@ -44,6 +44,9 @@ config :codebattle, :executor,
   runner_url: "http://localhost:4001",
   api_key: "x-key"
 
+config :runner, load_dot_env_file: false
+config :runner, use_prod_workers: true
+
 config :runner, RunnerWeb.Endpoint,
   http: [port: System.get_env("4001")],
   url: [scheme: "http", host: "codebattle.hexlet.io", port: 80],
