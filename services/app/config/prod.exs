@@ -34,8 +34,8 @@ config :codebattle, html_debug_mode: false
 
 executor =
   case System.get_env("CODEBATTLE_EXECUTOR") do
-    "remote" -> Codebattle.CodeCheck.Executor.Remote
-    _ -> Codebattle.CodeCheck.Executor.Local
+    "local" -> Codebattle.CodeCheck.Executor.Local
+    _ -> Codebattle.CodeCheck.Executor.Remote
   end
 
 config :codebattle, checker_executor: executor
