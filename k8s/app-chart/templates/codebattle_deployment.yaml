@@ -24,7 +24,7 @@ spec:
       containers:
         - name: nginx
           imagePullPolicy: "{{ .Values.nginx.image.imagePullPolicy }}"
-          image: "{{ .Values.nginx.image.repository }}":{{ .Values.version }}"
+          image: "{{ .Values.nginx.image.repository }}:{{ .Values.version }}"
           readinessProbe:
             httpGet:
               path: /
