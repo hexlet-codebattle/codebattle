@@ -32,7 +32,8 @@ defmodule Codebattle.MixProject do
   def application do
     [
       mod: {Codebattle.Application, []},
-      extra_applications: [:runtime_tools, :logger, :os_mon]
+      extra_applications: [:runtime_tools, :logger, :os_mon],
+      included_applications: [:runner]
     ]
   end
 
