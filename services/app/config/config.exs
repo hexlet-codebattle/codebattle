@@ -97,7 +97,6 @@ config :codebattle, html_include_prod_scripts: false
 config :codebattle, html_debug_mode: true
 config :codebattle, fake_html_to_image: false
 
-
 config :runner, load_dot_env_file: true
 config :runner, use_prod_workers: false
 config :runner, Runner.DockerImagesPuller, timeout: :timer.hours(7)

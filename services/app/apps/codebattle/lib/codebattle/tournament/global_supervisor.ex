@@ -11,20 +11,28 @@ defmodule Codebattle.Tournament.GlobalSupervisor do
 
   @impl true
   def init(_) do
-    children =
-      if Application.get_env(:codebattle, :restore_tournaments) do
-        Tournament.Context.get_tournament_for_restore()
-        |> Enum.map(fn tournament ->
+    Process.send_after(self(), :after_init, :timer.seconds(25))
+
+    Supervisor.init([], strategy: :one_for_one)
+  end
+
+  @impl true
+  def handle_info(:after_init, state) do
+    if Application.get_env(:codebattle, :restore_tournaments) do
+      Tournament.Context.get_tournament_for_restore()
+      |> Enum.each(fn tournament ->
+        Supervisor.start_child(
+          __MODULE__,
           %{
-            id: tournament.id,
+            id: to_string(tournament.id),
+            restart: :transient,
             start: {Tournament.Supervisor, :start_link, [tournament]}
           }
-        end)
-      else
-        []
-      end
+        )
+      end)
+    end
 
-    Supervisor.init(children, strategy: :one_for_one)
+    {:noreply, state}
   end
 
   def start_tournament(tournament) do
