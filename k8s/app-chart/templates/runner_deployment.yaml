@@ -36,7 +36,7 @@ spec:
           image: "{{ .Values.runner.image.repository }}:{{ .Values.version }}"
           readinessProbe:
             httpGet:
-              path: /
+              path: /health
               port: 4001
             initialDelaySeconds: 5
             periodSeconds: 5

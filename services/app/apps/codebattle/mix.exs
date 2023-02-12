@@ -41,7 +41,7 @@ defmodule Codebattle.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:runner, in_umbrella: true},
+      {:runner, in_umbrella: true, runtime: false},
       {:cowboy, "~> 2.8"},
       {:earmark, "~> 1.4"},
       {:ecto, "~> 3.7"},

@@ -24,6 +24,10 @@ defmodule CodebattleWeb.Router do
     plug(:put_secure_browser_headers)
   end
 
+  scope "/", CodebattleWeb do
+    get("/health", HealthController, :index)
+  end
+
   scope "/auth", CodebattleWeb do
     pipe_through(:browser)
     get("/token", AuthController, :token)

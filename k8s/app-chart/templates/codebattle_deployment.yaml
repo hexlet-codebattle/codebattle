@@ -27,7 +27,7 @@ spec:
           image: "{{ .Values.nginx.image.repository }}:{{ .Values.version }}"
           readinessProbe:
             httpGet:
-              path: /
+              path: /health
               port: 8080
             initialDelaySeconds: 5
             periodSeconds: 5

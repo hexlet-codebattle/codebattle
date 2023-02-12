@@ -1,4 +1,4 @@
-defmodule Codebattleweb.GameControllerTest do
+defmodule CodebattleWeb.GameControllerTest do
   use CodebattleWeb.ConnCase, async: false
 
   import Ecto.Query, warn: false
