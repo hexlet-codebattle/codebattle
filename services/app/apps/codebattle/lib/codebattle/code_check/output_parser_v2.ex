@@ -1,7 +1,7 @@
 defmodule Codebattle.CodeCheck.OutputParser.V2 do
   @moduledoc "Parse container output for representing check status of solution"
 
-  require Logger
+  alias Codebattle.AtomizedMap
   alias Codebattle.CodeCheck.Result
 
   def call(checker_token) do

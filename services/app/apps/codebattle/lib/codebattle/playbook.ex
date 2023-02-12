@@ -3,6 +3,8 @@ defmodule Codebattle.Playbook do
 
   import Ecto.Changeset
 
+  alias Codebattle.AtomizedMap
+
   @solution_types ~w(complete incomplete waiting_moderator baned)
 
   schema "playbooks" do

@@ -1,4 +1,4 @@
-defmodule AtomizedMap do
+defmodule Codebattle.AtomizedMap do
   @moduledoc false
   @behaviour Ecto.Type
 

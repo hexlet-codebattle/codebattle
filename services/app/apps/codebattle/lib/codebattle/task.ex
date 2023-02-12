@@ -5,6 +5,7 @@ defmodule Codebattle.Task do
   import Ecto.Changeset
   import Ecto.Query
 
+  alias Codebattle.AtomizedMap
   alias Codebattle.Repo
 
   @type t :: %__MODULE__{}

@@ -3,6 +3,8 @@ defmodule Runner.Task do
 
   import Ecto.Changeset
 
+  alias Runner.AtomizedMap
+
   @derive Jason.Encoder
 
   @type t :: %__MODULE__{}

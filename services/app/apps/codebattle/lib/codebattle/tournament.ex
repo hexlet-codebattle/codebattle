@@ -4,8 +4,9 @@ defmodule Codebattle.Tournament do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias __MODULE__
-  alias Tournament.Types
+  alias Codebattle.AtomizedMap
+  alias Codebattle.Tournament.Individual
+  alias Codebattle.Tournament.Types
 
   @derive {Jason.Encoder,
    only: [
@@ -46,7 +47,7 @@ defmodule Codebattle.Tournament do
     field(:last_round_started_at, :naive_datetime)
     field(:access_type, :string, default: "public")
     field(:access_token, :string)
-    field(:module, :any, virtual: true, default: Tournament.Individual)
+    field(:module, :any, virtual: true, default: Individual)
     field(:is_live, :boolean, virtual: true, default: false)
     embeds_one(:data, Types.Data, on_replace: :delete)
 
