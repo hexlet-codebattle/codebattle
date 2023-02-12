@@ -122,6 +122,7 @@ defmodule Codebattle.Tournament.Individual do
   defp pair_players_to_matches(players, step) do
     players
     |> Enum.reduce({step, [%{}]}, &pair_players_to_matches_reducer/2)
+    |> elem(1)
     |> Enum.reverse()
   end
 

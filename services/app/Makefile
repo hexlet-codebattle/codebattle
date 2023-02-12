@@ -39,4 +39,4 @@ test:
 
 test-code-checkers: export CODEBATTLE_EXECUTOR = local
 test-code-checkers:
-	mix test test/docker_execution --max-failures 1
+	mix test test/docker_execution --max-failures 10

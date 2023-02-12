@@ -75,7 +75,7 @@ config :codebattle, Codebattle.Bot, min_bot_step_timeout: 1_000
 config :codebattle, checker_executor: Codebattle.CodeCheck.Executor.Local
 
 config :codebattle, :executor,
-  remote_url: "http://localhost:4001",
+  runner_url: "http://localhost:4001",
   api_key: "x-key"
 
 config :codebattle, tournament_match_timeout: 3 * 60

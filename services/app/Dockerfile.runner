@@ -6,11 +6,14 @@ WORKDIR /opt/app
 RUN mix local.hex --force \
   && mix local.rebar --force
 
-COPY mix.lock .
 COPY mix.exs .
-RUN mix do deps.get, compile
+COPY mix.lock .
+COPY config ./config
+COPY apps/runner/mix.exs apps/runner/mix.exs
 
-COPY . .
+RUN mix do deps.get --only prod, compile
+
+COPY ./apps/runner/ ./apps/runner/
 
 RUN mix release runner \
   && mv _build/prod/rel/runner /opt/release

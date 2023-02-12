@@ -35,8 +35,8 @@ executor =
     _ -> Codebattle.CodeCheck.Executor.Fake
   end
 
-config :codebattle, code_check_timeout: 35_000
 config :codebattle, checker_executor: executor
+config :codebattle, code_check_timeout: 35_000
 config :codebattle, tournament_match_timeout: 1
 
 config :codebattle, Codebattle.Invite,

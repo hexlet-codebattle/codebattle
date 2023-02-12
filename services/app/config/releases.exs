@@ -57,3 +57,7 @@ config :runner, RunnerWeb.Endpoint,
   url: [host: host, port: 81],
   secret_key_base: secret_key_base,
   server: true
+
+config :codebattle, :executor,
+  runner_url: "http://localhost:4001",
+  api_key: System.get_env("CODEBATTLE_EXECUTOR_API_KEY", "x-key")

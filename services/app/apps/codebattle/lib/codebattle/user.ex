@@ -3,9 +3,14 @@ defmodule Codebattle.User do
     Represents authenticatable user
   """
   use Ecto.Schema
+
   import Ecto.Changeset
+  import Ecto.Query
+
+  alias Codebattle.Repo
 
   @type t :: %__MODULE__{}
+  @type raw_id :: String.t() | integer()
 
   @admins Application.compile_env(:codebattle, :admins)
   @guest_id 0
@@ -47,10 +52,10 @@ defmodule Codebattle.User do
         :games_played,
         :performance,
         :inserted_at,
-        :sound_settings
+        :sound_settings,
+        :avatar_url,
+        :is_admin
       ])
-      |> Map.put(:is_admin, Codebattle.User.is_admin?(user))
-      |> Map.put(:avatar_url, Codebattle.User.avatar_url(user))
       |> Jason.Encode.map(opts)
     end
   end
@@ -86,6 +91,12 @@ defmodule Codebattle.User do
     has_many(:games, through: [:user_games, :game])
 
     timestamps()
+  end
+
+  def fill_virtual_fields(user) do
+    user
+    |> Map.put(:is_admin, Codebattle.User.is_admin?(user))
+    |> Map.put(:avatar_url, Codebattle.User.avatar_url(user))
   end
 
   @doc """
@@ -157,5 +168,19 @@ defmodule Codebattle.User do
     hash = :erlang.md5(email) |> Base.encode16(case: :lower)
 
     "https://gravatar.com/avatar/#{hash}?d=identicon"
+  end
+
+  @spec get_user!(raw_id()) :: t() | no_return
+  def get_user!(user_id) do
+    __MODULE__ |> Codebattle.Repo.get!(user_id) |> fill_virtual_fields()
+  end
+
+  @spec get_users_by_ids(list(raw_id())) :: list(t())
+  def get_users_by_ids(ids) do
+    __MODULE__
+    |> where([u], u.id in ^ids)
+    |> order_by([u], {:desc, :rating})
+    |> Repo.all()
+    |> Enum.map(&fill_virtual_fields/1)
   end
 end

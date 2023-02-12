@@ -111,8 +111,8 @@ defmodule Codebattle.Tournament.Base do
       def start(tournament = %{state: "waiting_participants"}, %{user: user}) do
         if can_moderate?(tournament, user) do
           tournament
-          |> complete_players
-          |> start_step!
+          |> complete_players()
+          |> start_step!()
           |> update!(%{
             last_round_started_at: NaiveDateTime.utc_now(),
             state: "active"

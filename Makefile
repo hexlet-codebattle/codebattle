@@ -38,37 +38,45 @@ release:
 	make -C services/app release
 
 docker-build-codebattle:
-	docker pull codebattle/codebattle:compile-stage || true
+	docker pull codebattle/codebattle:assets-image  || true
+	docker pull codebattle/codebattle:compile-image || true
 	docker pull codebattle/codebattle:latest        || true
-	docker build --target compile-image \
-				--cache-from=codebattle/codebattle:compile-stage \
+	docker build --target assets-image \
+				--cache-from=codebattle/codebattle:assets-image \
 				--file services/app/Dockerfile.codebattle \
-				--tag codebattle/codebattle:compile-stage services/app
+				--tag codebattle/codebattle:assets-image services/app
+	docker build --target compile-image \
+				--cache-from=codebattle/codebattle:assets-image \
+				--cache-from=codebattle/codebattle:compile-image \
+				--file services/app/Dockerfile.codebattle \
+				--tag codebattle/codebattle:compile-image services/app
 	docker build --target runtime-image \
-				--cache-from=codebattle/codebattle:compile-stage \
+				--cache-from=codebattle/codebattle:assets-image \
+				--cache-from=codebattle/codebattle:compile-image \
 				--cache-from=codebattle/codebattle:latest \
 				--file services/app/Dockerfile.codebattle \
 				--tag codebattle/codebattle:latest services/app
 
 docker-push-codebattle:
-	docker push codebattle/codebattle:compile-stage
+	docker push codebattle/codebattle:assets-image
+	docker push codebattle/codebattle:compile-image
 	docker push codebattle/codebattle:latest
 
 docker-build-runner:
-	docker pull codebattle/runner:compile-stage || true
+	docker pull codebattle/runner:compile-image || true
 	docker pull codebattle/runner:latest        || true
 	docker build --target compile-image \
-				--cache-from=codebattle/runner:compile-stage \
+				--cache-from=codebattle/runner:compile-image \
 				--file services/app/Dockerfile.runner \
-				--tag codebattle/runner:compile-stage services/app
+				--tag codebattle/runner:compile-image services/app
 	docker build --target runtime-image \
-				--cache-from=codebattle/runner:compile-stage \
+				--cache-from=codebattle/runner:compile-image \
 				--cache-from=codebattle/runner:latest \
 				--file services/app/Dockerfile.runner \
 				--tag codebattle/runner:latest services/app
 
 docker-push-runner:
-	docker push codebattle/runner:compile-stage
+	docker push codebattle/runner:compile-image
 	docker push codebattle/runner:latest
 
 docker-build-nginx:

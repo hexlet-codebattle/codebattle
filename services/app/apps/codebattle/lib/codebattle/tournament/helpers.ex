@@ -1,8 +1,5 @@
 defmodule Codebattle.Tournament.Helpers do
-  alias Codebattle.Repo
   alias Codebattle.User
-
-  import Ecto.Query
 
   def get_players(tournament), do: tournament.data.players
   def get_matches(tournament), do: tournament.data.matches
@@ -10,12 +7,9 @@ defmodule Codebattle.Tournament.Helpers do
   def get_player_ids(tournament), do: tournament.data.players |> Enum.map(& &1.id)
 
   def get_intended_players(tournament) do
-    Repo.all(
-      from(u in User,
-        where: u.id in ^get_intended_player_ids(tournament),
-        order_by: {:desc, :rating}
-      )
-    )
+    tournament
+    |> get_intended_player_ids()
+    |> User.get_users_by_ids()
   end
 
   def players_count(tournament) do
