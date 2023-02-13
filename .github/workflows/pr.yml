@@ -94,5 +94,5 @@ jobs:
         uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./services/app/cover/excoveralls.json
-          fail_ci_if_error: true
+          file: ./services/app/assp/codebattle/cover/excoveralls.json
+          fail_ci_if_error: false
