@@ -60,4 +60,4 @@ spec:
             - name: CODEBATTLE_RUNNER_PORT
               value: "4001"
             - name: DEPLOYED_VERSION
-              value: "3"
+              value: "4"
