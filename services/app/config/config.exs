@@ -29,8 +29,6 @@ config :logger, :console,
 
 config :phoenix, :json_library, Jason
 
-config :codebattle, :oauth, mock_clinet: false
-
 config :phoenix_gon, :json_library, Jason
 
 config :codebattle, CodebattleWeb.Gettext,
