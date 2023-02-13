@@ -40,10 +40,6 @@ executor =
 
 config :codebattle, checker_executor: executor
 
-config :codebattle, :executor,
-  runner_url: "http://runner.default.svc",
-  api_key: "x-key"
-
 config :runner, load_dot_env_file: false
 config :runner, use_prod_workers: true
 

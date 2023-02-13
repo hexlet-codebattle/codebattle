@@ -72,7 +72,7 @@ config :phoenix_meta_tags,
 
 config :codebattle, Codebattle.Bot, min_bot_step_timeout: 1_000
 
-config :codebattle, checker_executor: Codebattle.CodeCheck.Executor.Local
+config :codebattle, checker_executor: Codebattle.CodeCheck.Executor.Remote
 
 config :codebattle, :executor,
   runner_url: "http://localhost:4001",

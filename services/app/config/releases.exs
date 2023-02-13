@@ -59,5 +59,5 @@ config :runner, RunnerWeb.Endpoint,
   server: true
 
 config :codebattle, :executor,
-  runner_url: "http://localhost:4001",
+  runner_url: "http://runner.default.svc",
   api_key: System.get_env("CODEBATTLE_EXECUTOR_API_KEY", "x-key")
