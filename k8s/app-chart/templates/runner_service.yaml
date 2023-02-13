@@ -1,0 +1,14 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: "runner"
+spec:
+  selector:
+    app: "runner"
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 4001
+  type: ClusterIP

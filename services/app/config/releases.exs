@@ -17,22 +17,20 @@ config :codebattle, host: host
 
 config :codebattle, Codebattle.Repo,
   adapter: Ecto.Adapters.Postgres,
-  database: System.get_env("CODEBATTLE_DB_NAME"),
   ssl: true,
   port: System.get_env("CODEBATTLE_DB_PORT", "5432"),
   username: System.get_env("CODEBATTLE_DB_USERNAME"),
   password: System.get_env("CODEBATTLE_DB_PASSWORD"),
-  database: System.get_env("CODEBATTLE_DB_NAME"),
   hostname: System.get_env("CODEBATTLE_DB_HOSTNAME"),
+  database: System.get_env("CODEBATTLE_DB_NAME"),
   pool_size: 7
 
-config :ueberauth, Ueberauth.Strategy.Github.OAuth,
-  client_id: System.get_env("GITHUB_CLIENT_ID"),
-  client_secret: System.get_env("GITHUB_CLIENT_SECRET")
-
-config :ueberauth, Ueberauth.Strategy.Discord.OAuth,
-  client_id: System.get_env("DISCORD_CLIENT_ID"),
-  client_secret: System.get_env("DISCORD_CLIENT_SECRET")
+config :codebattle, :oauth,
+  mock_clinet: false,
+  github_client_id: System.get_env("GITHUB_CLIENT_ID", "ASFD"),
+  github_client_secret: System.get_env("GITHUB_CLIENT_SECRET", "ASFD"),
+  discord_client_id: System.get_env("DISCORD_CLIENT_ID", "ASFD"),
+  discord_client_secret: System.get_env("DISCORD_CLIENT_SECRET", "ASFD")
 
 config :codebattle, Codebattle.Plugs, rollbar_api_key: System.get_env("ROLLBAR_API_KEY")
 
@@ -48,3 +46,17 @@ config :sentry,
   root_source_code_path: File.cwd!(),
   tags: %{env: "prod"},
   included_environments: [:prod]
+
+port = System.get_env("CODEBATTLE_RUNNER_PORT", "4001")
+host = System.get_env("CODEBATTLE_RUNNER_HOSTNAME", "codebattle.hexlet.io")
+secret_key_base = System.get_env("CODEBATTLE_SECRET_KEY_BASE")
+
+config :runner, RunnerWeb.Endpoint,
+  http: [:inet6, port: port],
+  url: [host: host, port: 81],
+  secret_key_base: secret_key_base,
+  server: true
+
+config :codebattle, :executor,
+  runner_url: "http://runner.default.svc",
+  api_key: System.get_env("CODEBATTLE_EXECUTOR_API_KEY", "x-key")

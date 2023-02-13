@@ -1,18 +1,21 @@
 ---
 version: latest
 
-replicaCount: 1
-
-app:
+codebattle:
+  replicaCount: 1
   image:
-    repository: codebattle/app
-    tag: latest
+    repository: codebattle/codebattle
+    imagePullPolicy: Always
+
+runner:
+  replicaCount: 2
+  image:
+    repository: codebattle/runner
     imagePullPolicy: Always
 
 nginx:
   image:
     repository: codebattle/nginx
-    tag: latest
     imagePullPolicy: Always
 
 resources: {}

@@ -1,0 +1,61 @@
+FROM node:16.13.2 AS assets-image
+ENV MIX_ENV=prod
+
+WORKDIR /tmp
+
+RUN mkdir -p codebattle/assets
+
+WORKDIR /tmp/codebattle/assets
+
+COPY apps/codebattle/package.json .
+COPY apps/codebattle/yarn.lock .
+
+RUN yarn install --froze-lockfile
+
+COPY apps/codebattle/postcss.config.js .
+COPY apps/codebattle/.babelrc .
+COPY apps/codebattle/webpack ./webpack
+COPY apps/codebattle/assets ./assets
+COPY apps/codebattle/priv/gettext ./priv/gettext
+
+RUN yarn build
+
+FROM elixir:1.14.3 AS compile-image
+ENV MIX_ENV=prod
+
+WORKDIR /opt/app
+
+RUN mix local.hex --force \
+  && mix local.rebar --force
+
+COPY mix.exs .
+COPY mix.lock .
+COPY config ./config
+COPY apps/runner/mix.exs apps/runner/mix.exs
+COPY apps/codebattle/mix.exs apps/codebattle/mix.exs
+
+RUN mix do deps.get --only prod, compile
+
+COPY ./apps/codebattle/ ./apps/codebattle/
+COPY ./apps/runner/ ./apps/runner/
+
+COPY --from=assets-image /tmp/codebattle/assets/priv/static ./apps/codebattle/priv/static
+
+RUN mix phx.digest
+
+RUN mix release codebattle \
+  && mv _build/prod/rel/codebattle /opt/release
+
+FROM elixir:1.14.3 AS runtime-image
+
+RUN apt-get update && apt-get install --no-install-recommends -y ca-certificates wkhtmltopdf git make curl vim \
+  && rm -rf /var/lib/apt/lists/*
+
+ENV PORT=4000
+ENV MIX_ENV=prod
+EXPOSE ${PORT}
+WORKDIR /opt/app
+COPY --from=compile-image /opt/release .
+COPY Makefile Makefile
+CMD exec /opt/app/bin/codebattle start
+

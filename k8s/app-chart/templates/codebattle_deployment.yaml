@@ -1,0 +1,66 @@
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: "codebattle-deployment"
+spec:
+  replicas: {{ .Values.codebattle.replicaCount }}
+  selector:
+    matchLabels:
+      app: "codebattle"
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: "codebattle"
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      containers:
+        - name: nginx
+          imagePullPolicy: "{{ .Values.nginx.image.imagePullPolicy }}"
+          image: "{{ .Values.nginx.image.repository }}:{{ .Values.version }}"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            successThreshold: 1
+          ports:
+            - containerPort: 8080
+          env:
+            - name: NGINX_SERVER_ADDRESS
+              value: 127.0.0.1
+        - name: codebattle
+          securityContext:
+            privileged: true
+          imagePullPolicy: "{{ .Values.codebattle.image.imagePullPolicy }}"
+          image: "{{ .Values.codebattle.image.repository }}:{{ .Values.version }}"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 4000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            successThreshold: 1
+          command:
+            - make
+            - start
+          ports:
+            - containerPort: 4000
+          envFrom:
+            - secretRef:
+                name: codebattle-secrets
+          env:
+            - name: CODEBATTLE_VERSION
+              value: {{ .Values.version }}
+            - name: CODEBATTLE_PORT
+              value: "4000"
+            - name: DEPLOYED_VERSION
+              value: "9"

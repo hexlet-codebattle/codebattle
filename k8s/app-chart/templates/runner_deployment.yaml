@@ -1,0 +1,63 @@
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: "runner-deployment"
+spec:
+  replicas: {{ .Values.runner.replicaCount }}
+  selector:
+    matchLabels:
+      app: "runner"
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: "runner"
+    spec:
+      volumes:
+        - name: users-code-path
+          hostPath:
+            path: /tmp/codebattle-runner
+        - name: docker-sock
+          hostPath:
+            path: /var/run/docker.sock
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      containers:
+        - name: runner
+          securityContext:
+            privileged: true
+          imagePullPolicy: "{{ .Values.runner.image.imagePullPolicy }}"
+          image: "{{ .Values.runner.image.repository }}:{{ .Values.version }}"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 4001
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            successThreshold: 1
+          command:
+            - bin/runner
+            - start
+          ports:
+            - containerPort: 4001
+          volumeMounts:
+            - mountPath: /tmp/codebattle-runner
+              name: users-code-path
+            - mountPath: /var/run/docker.sock
+              name: docker-sock
+          envFrom:
+            - secretRef:
+                name: codebattle-secrets
+          env:
+            - name: CODEBATTLE_VERSION
+              value: {{ .Values.version }}
+            - name: CODEBATTLE_RUNNER_PORT
+              value: "4001"
+            - name: DEPLOYED_VERSION
+              value: "4"

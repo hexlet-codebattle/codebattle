@@ -57,3 +57,5 @@ kubeconfig.yml
 
 stats.json
 *.hcl
+services/app/priv/plts/*.plt
+services/app/priv/plts/*.plt.hash

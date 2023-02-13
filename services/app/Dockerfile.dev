@@ -1,4 +1,6 @@
-FROM elixir:1.14.0
+FROM elixir:1.14.3
+ENV DOCKER_CHANNEL stable
+ENV DOCKER_VERSION 20.10.9
 
 RUN mix local.hex --force \
   && mix local.rebar --force
@@ -11,9 +13,6 @@ RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - \
   && apt-get install -y nodejs \
   && npm install --global yarn@1.22.10
 
-ENV DOCKER_CHANNEL edge
-ENV DOCKER_VERSION 18.09.3
 RUN curl -fsSL "https://download.docker.com/linux/static/${DOCKER_CHANNEL}/x86_64/docker-${DOCKER_VERSION}.tgz" \
   | tar -xzC /usr/local/bin --strip=1 docker/docker
 
-WORKDIR /app

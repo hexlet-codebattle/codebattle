@@ -1,0 +1,12 @@
+{
+  "skip_files": [
+    "lib/codebattle/application.ex",
+    "lib/codebattle_web.ex",
+    "lib/codebattle_web/router.ex",
+    "lib/codebattle_web/views/error_helpers.ex",
+    "test/support"
+  ],
+  "coverage_options": {
+    "minimum_coverage": 60
+  }
+}

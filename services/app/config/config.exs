@@ -15,26 +15,19 @@ config :codebattle, CodebattleWeb.Endpoint,
   pubsub_server: CodebattleWeb.PubSub,
   live_view: [signing_salt: "asdfasdf"]
 
+# Configures the runner endpoint
+config :runner, RunnerWeb.Endpoint,
+  url: [host: "localhost"],
+  secret_key_base: "zQ3/vT3oIVM94qXO7IgWeAqbLSAyGA9em6fdBw7OdbDnbeotEkWYANrjJWYNWpd/",
+  render_errors: [view: RunnerWeb.ErrorView, accepts: ~w(json), layout: false],
+  pubsub_server: Runner.PubSub
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
 config :phoenix, :json_library, Jason
-
-config :ueberauth, Ueberauth,
-  providers: [
-    github: {Ueberauth.Strategy.Github, [default_scope: "user:email", send_redirect_uri: false]},
-    discord: {Ueberauth.Strategy.Discord, []}
-  ]
-
-config :ueberauth, Ueberauth.Strategy.Github.OAuth,
-  client_id: System.get_env("GITHUB_CLIENT_ID", "ASFD"),
-  client_secret: System.get_env("GITHUB_CLIENT_SECRET", "ASFD")
-
-config :ueberauth, Ueberauth.Strategy.Discord.OAuth,
-  client_id: System.get_env("DISCORD_CLIENT_ID", "ASFD"),
-  client_secret: System.get_env("DISCORD_CLIENT_SECRET", "ASFD")
 
 config :phoenix_gon, :json_library, Jason
 
@@ -65,9 +58,12 @@ config :phoenix_meta_tags,
 
 config :codebattle, Codebattle.Bot, min_bot_step_timeout: 1_000
 
-config :codebattle, Codebattle.DockerLangsPuller, timeout: :timer.hours(7)
+config :codebattle, checker_executor: Codebattle.CodeCheck.Executor.Remote
 
-config :codebattle, checker_executor: Codebattle.CodeCheck.DockerExecutor
+config :codebattle, :executor,
+  runner_url: "http://localhost:4001",
+  api_key: "x-key"
+
 config :codebattle, tournament_match_timeout: 3 * 60
 config :codebattle, tasks_provider: Codebattle.Game.TasksQueuesServer
 
@@ -85,6 +81,12 @@ config :codebattle, use_prod_workers: false
 config :codebattle, use_non_test_workers: true
 config :codebattle, html_include_prod_scripts: false
 config :codebattle, html_debug_mode: true
+config :codebattle, fake_html_to_image: false
+
+config :runner, load_dot_env_file: true
+config :runner, use_prod_workers: false
+config :runner, Runner.DockerImagesPuller, timeout: :timer.hours(7)
+config :runner, fake_docker_run: false
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

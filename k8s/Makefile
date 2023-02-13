@@ -10,6 +10,9 @@ kb-get-pods:
 kb-get-nodes:
 	kubectl get nodes
 
+kb-get-services:
+	kubectl get services
+
 helm-init: helm-install-app
 
 helm-upgrade-app:

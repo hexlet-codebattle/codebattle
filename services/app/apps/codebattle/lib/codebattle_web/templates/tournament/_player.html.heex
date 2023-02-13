@@ -1,0 +1,14 @@
+<% fa_class = get_icon_class(@player) %>
+<div class="d-flex align-items-center">
+  <a class="d-inline-flex align-items-center" href={"/users/#{@player.id}"}>
+    <img
+      class="attachment rounded border mr-1 cb-user-avatar"
+      src={@player.avatar_url}
+    />
+    <span class="mr-1 text-truncate" style="max-width: 130px;"><%= @player.name %></span>
+  </a>
+  <small class="mr-1"><%= @player.rating %></small>
+  <%= if fa_class do %>
+    <span class={fa_class}></span>
+  <% end %>
+</div>

@@ -28,6 +28,9 @@ start:
 	bin/codebattle eval "Codebattle.Utils.Release.migrate"
 	bin/codebattle start
 
+runner-start:
+	bin/runner start
+
 server:
 	iex -S mix phx.server
 
@@ -35,8 +38,8 @@ console:
 	iex -S mix
 
 test:
-	mix coveralls.json --exclude docker_executor --max-failures 1 --slowest 7
+	mix coveralls.json --exclude docker_executor --max-failures 1
 
-test-code-checkers: export CODEBATTLE_USE_DOCKER_EXECUTOR = true
+test-code-checkers: export CODEBATTLE_EXECUTOR = local
 test-code-checkers:
-	mix test test/docker_execution --max-failures 1
+	mix test test/docker_execution --max-failures 10

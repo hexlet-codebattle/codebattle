@@ -1,0 +1,13 @@
+<div class="cb-row-avatars">
+  <% players = Enum.filter(@players, fn p -> !p.is_bot end) |> Enum.reverse() %>
+  <%= for player <- players do %>
+    <div class="cb-row-avatar">
+      <a href={"/users/#{player.id}"}>
+        <img
+          class="attachment cb-user-avatar rounded border"
+          src={player.avatar_url}
+        />
+      </a>
+    </div>
+  <% end %>
+</div>

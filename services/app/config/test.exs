@@ -29,14 +29,17 @@ config :codebattle, Codebattle.Bot,
   min_bot_step_timeout: 0
 
 executor =
-  case System.get_env("CODEBATTLE_USE_DOCKER_EXECUTOR") do
-    "true" -> Codebattle.CodeCheck.DockerExecutor
-    _ -> Codebattle.CodeCheck.FakeExecutor
+  case System.get_env("CODEBATTLE_EXECUTOR") do
+    "local" -> Codebattle.CodeCheck.Executor.Local
+    "remote" -> Codebattle.CodeCheck.Executor.Remote
+    _ -> Codebattle.CodeCheck.Executor.Fake
   end
 
-config :codebattle, code_check_timeout: 35_000
 config :codebattle, checker_executor: executor
+config :codebattle, code_check_timeout: 35_000
 config :codebattle, tournament_match_timeout: 1
+
+config :codebattle, :oauth, mock_clinet: true
 
 config :codebattle, Codebattle.Invite,
   timeout: :timer.seconds(1000),
@@ -56,3 +59,6 @@ config :codebattle, admins: ["admin"]
 config :codebattle, freeze_time: true
 
 config :codebattle, use_non_test_workers: false
+config :codebattle, fake_html_to_image: true
+
+config :runner, fake_docker_run: true

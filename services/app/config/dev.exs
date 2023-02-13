@@ -15,7 +15,13 @@ config :codebattle, CodebattleWeb.Endpoint,
   code_reloader: true,
   check_origin: false,
   cache_static_lookup: false,
-  watchers: [yarn: ["watch", cd: Path.expand("..", __DIR__)]]
+  watchers: [yarn: ["watch", cd: ".." |> Path.expand(__DIR__) |> Path.join("apps/codebattle")]]
+
+config :runner, RunnerWeb.Endpoint,
+  http: [port: System.get_env("CODEBATTLE_RUNNER_PORT", "4001")],
+  debug_errors: true,
+  code_reloader: true,
+  check_origin: false
 
 # Watch static and templates for browser reloading.
 config :codebattle, CodebattleWeb.Endpoint,
