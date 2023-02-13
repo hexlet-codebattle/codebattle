@@ -4,7 +4,7 @@ defmodule Runner.CheckerGeneratorTest do
   alias Runner.CheckerGenerator
   alias Runner.Languages
 
-  test "work for all langs", context do
+  test "work for all langs" do
     task = %Runner.Task{
       asserts: [
         %{

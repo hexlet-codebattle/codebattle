@@ -159,7 +159,7 @@ defmodule Codebattle.Game.Player do
     Map.merge(player, Map.drop(params, [:task]))
   end
 
-  def build(user = %Codebattle.User{}, params) do
+  def build(user = %User{}, params) do
     init_player =
       case user.id do
         nil ->

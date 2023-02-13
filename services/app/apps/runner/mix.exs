@@ -12,6 +12,7 @@ defmodule Runner.MixProject do
       elixir: "~> 1.14",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: Mix.compilers(),
+      test_coverage: [tool: ExCoveralls, threshold: 60],
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps()

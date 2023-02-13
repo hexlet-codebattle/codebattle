@@ -13,15 +13,8 @@ defmodule Codebattle.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      preferred_cli_env: [
-        coveralls: :test,
-        "coveralls.detail": :test,
-        "coveralls.post": :test,
-        "coveralls.json": :test,
-        "coveralls.html": :test
-      ],
-      test_coverage: [tool: ExCoveralls],
       deps: deps(),
+      test_coverage: [tool: ExCoveralls, threshold: 60],
       elixirc_options: [warnings_as_errors: false]
     ]
   end

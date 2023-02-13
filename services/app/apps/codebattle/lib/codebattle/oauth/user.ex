@@ -3,26 +3,11 @@ defmodule Codebattle.Oauth.User do
     dispatcher for oauth
   """
 
-  alias Codebattle.{Repo, User}
+  alias Codebattle.Repo
+  alias Codebattle.User
 
   def find_by_token(token) do
     Codebattle.Oauth.User.TokenUser.find(token)
-  end
-
-  def update(user, auth = %{provider: :discord}) do
-    Codebattle.Oauth.User.DiscordUser.update(user, auth)
-  end
-
-  def update(user, auth = %{provider: :github}) do
-    Codebattle.Oauth.User.GithubUser.update(user, auth)
-  end
-
-  def unbind(user, :discord) do
-    Codebattle.Oauth.User.DiscordUser.unbind(user)
-  end
-
-  def unbind(user, :github) do
-    Codebattle.Oauth.User.GithubUser.unbind(user)
   end
 
   def find_or_create_dev_user(params) do

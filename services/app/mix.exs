@@ -14,7 +14,7 @@ defmodule CodebattleUmbrella.MixProject do
         "coveralls.json": :test,
         "coveralls.html": :test
       ],
-      test_coverage: [tool: ExCoveralls],
+      test_coverage: [tool: ExCoveralls, threshold: 60],
       deps: [
         {:mix_audit, "~> 2.0", only: [:dev, :test], runtime: false},
         {:dialyxir, "~> 1.0", only: [:dev, :test], runtime: false},

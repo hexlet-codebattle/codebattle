@@ -4,7 +4,6 @@
     "lib/codebattle_web.ex",
     "lib/codebattle_web/router.ex",
     "lib/codebattle_web/views/error_helpers.ex",
-    "lib/codebattle/docker_langs_puller.ex",
     "test/support"
   ],
   "coverage_options": {
