@@ -52,13 +52,7 @@ defmodule Codebattle.InvitesKillerServer do
         }
 
         CodebattleWeb.Endpoint.broadcast!(
-          "main:#{invite.recipient_id}",
-          "invites:expired",
-          %{invite: data}
-        )
-
-        CodebattleWeb.Endpoint.broadcast!(
-          "main:#{invite.creator_id}",
+          "main",
           "invites:expired",
           %{invite: data}
         )
