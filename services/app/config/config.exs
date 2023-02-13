@@ -29,6 +29,13 @@ config :logger, :console,
 
 config :phoenix, :json_library, Jason
 
+config :codebattle, :oauth,
+  mock_clinet: false,
+  github_client_id: System.get_env("GITHUB_CLIENT_ID", "ASFD"),
+  github_client_secret: System.get_env("GITHUB_CLIENT_SECRET", "ASFD"),
+  discord_client_id: System.get_env("DISCORD_CLIENT_ID", "ASFD"),
+  discord_client_secret: System.get_env("DISCORD_CLIENT_SECRET", "ASFD")
+
 config :phoenix_gon, :json_library, Jason
 
 config :codebattle, CodebattleWeb.Gettext,
