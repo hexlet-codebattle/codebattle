@@ -1,6 +1,8 @@
 defmodule Runner.Executor do
   @moduledoc false
 
+  require Logger
+
   alias Runner.CheckerGenerator
 
   @tmp_basedir "/tmp/codebattle-runner"
@@ -28,6 +30,12 @@ defmodule Runner.Executor do
     File.mkdir_p!(@tmp_basedir)
     tmp_dir_path = Temp.mkdir!(%{prefix: lang_meta.slug, basedir: @tmp_basedir})
 
+    Logger.info("Solution text: #{inspect(solution_text)}")
+    Logger.info("Checker text: #{inspect(checker_text)}")
+    Logger.info("solution_file_name: #{inspect(lang_meta.solution_file_name)}")
+    Logger.info("checker_file_name: #{inspect(lang_meta.checker_file_name)}")
+    Logger.info("tmp_dir_path: #{inspect(tmp_dir_path)}")
+
     File.write!(Path.join(tmp_dir_path, lang_meta.solution_file_name), solution_text)
     File.write!(Path.join(tmp_dir_path, lang_meta.checker_file_name), checker_text)
 
@@ -36,6 +44,8 @@ defmodule Runner.Executor do
 
   defp get_docker_command(lang_meta, tmp_dir_path) do
     volume = "-v #{tmp_dir_path}:/usr/src/app/#{lang_meta.check_dir}"
+
+    Logger.info("Docker volume: #{inspect(volume)}")
 
     @docker_cmd_template
     |> :io_lib.format([volume, lang_meta.docker_image])
@@ -47,6 +57,7 @@ defmodule Runner.Executor do
     if @fake_docker_run do
       {"oi", 0}
     else
+      Logger.info("Start docker execution: #{inspect(cmd_opts)}")
       System.cmd(cmd, cmd_opts, stderr_to_stdout: true)
     end
   end

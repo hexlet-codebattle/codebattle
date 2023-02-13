@@ -20,7 +20,7 @@ spec:
       volumes:
         - name: users-code-path
           hostPath:
-            path: /tmp/codebattle-check
+            path: /tmp/codebattle-runner
         - name: docker-sock
           hostPath:
             path: /var/run/docker.sock
@@ -47,7 +47,7 @@ spec:
           ports:
             - containerPort: 4001
           volumeMounts:
-            - mountPath: /tmp/codebattle-check
+            - mountPath: /tmp/codebattle-runner
               name: users-code-path
             - mountPath: /var/run/docker.sock
               name: docker-sock
@@ -60,4 +60,4 @@ spec:
             - name: CODEBATTLE_RUNNER_PORT
               value: "4001"
             - name: DEPLOYED_VERSION
-              value: "2"
+              value: "3"
