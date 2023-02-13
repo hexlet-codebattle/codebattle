@@ -30,10 +30,12 @@ defmodule CodebattleUmbrella.MixProject do
       ],
       releases: [
         codebattle: [
-          applications: [codebattle: :permanent]
+          applications: [codebattle: :permanent],
+          validate_compile_env: false
         ],
         runner: [
-          applications: [runner: :permanent]
+          applications: [runner: :permanent],
+          validate_compile_env: false
         ]
       ]
     ]

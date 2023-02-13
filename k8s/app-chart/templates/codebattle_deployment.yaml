@@ -63,4 +63,4 @@ spec:
             - name: CODEBATTLE_PORT
               value: "4000"
             - name: DEPLOYED_VERSION
-              value: "10"
+              value: "11"
