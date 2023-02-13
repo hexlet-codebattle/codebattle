@@ -99,7 +99,7 @@ defmodule Codebattle.Oauth.Github do
 
   defp set_user_email(user, email, _access_token), do: Map.put(user, "email", email)
 
-  defp set_user_details(%{"login" => _name, "email" => email} = user, access_token) do
+  defp set_user_details(user = %{"login" => _name, "email" => email}, access_token) do
     user =
       user
       |> Map.put("access_token", access_token)
