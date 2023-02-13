@@ -3,94 +3,93 @@ defmodule Codebattle.Oauth.User.DiscordUser do
     Retrieve user information from discord oauth request
   """
 
-  alias Ueberauth.Auth
-  alias Codebattle.{Repo, User}
+  alias Codebattle.Repo
+  alias Codebattle.User
 
-  def find_or_create(auth = %Auth{provider: :discord}) do
-    user = User |> Repo.get_by(discord_id: auth.uid)
+  @spec find_or_create(map()) :: {:ok, User.t()} | {:error, term()}
+  def find_or_create(profile) do
+    User
+    |> Repo.get_by(discord_id: profile.id)
+    |> case do
+      nil ->
+        discord_name = profile.username
 
-    discord_name = auth.extra.raw_info.user["username"]
-    email = auth.extra.raw_info.user["email"]
-    avatar = auth.extra.raw_info.user["avatar"]
+        params = %{
+          discord_id: profile.id,
+          discord_avatar: profile.avatar,
+          name: unique_name(discord_name),
+          discord_name: discord_name,
+          email: profile.email,
+          avatar_url: get_avatar_url(profile)
+        }
 
-    user_data = %{
-      discord_id: auth.uid,
-      name: name(user, discord_name),
-      discord_name: discord_name,
-      email: email,
-      discord_avatar: avatar
-    }
+        %User{}
+        |> User.changeset(params)
+        |> Repo.insert()
 
-    user =
-      case user do
-        nil ->
-          changeset = User.changeset(%User{}, user_data)
-          {:ok, user} = Repo.insert(changeset)
-
-          user
-
-        _ ->
-          changeset = User.changeset(user, user_data)
-          {:ok, user} = Repo.update(changeset)
-
-          user
-      end
-
-    {:ok, user}
+      user ->
+        {:ok, user}
+    end
   end
 
-  def update(user, auth) do
-    discord_user = User |> Repo.get_by(discord_id: auth.uid)
+  @spec bind(User.t(), map()) :: {:ok, User.t()} | {:error, :term}
+  def bind(user, profile) do
+    discord_user = User |> Repo.get_by(discord_id: profile.id)
 
     if discord_user != nil && discord_user.id != user.id do
       {:error, "discord_id has been taken"}
     else
-      discord_name = auth.extra.raw_info.user["username"]
-      avatar = auth.extra.raw_info.user["avatar"]
+      discord_name = profile.username
 
-      user_data = %{
-        discord_id: auth.uid,
-        name: name(user, discord_name),
+      params = %{
+        discord_id: profile.id,
         discord_name: discord_name,
-        discord_avatar: avatar
+        discord_avatar: profile.avatar,
+        email: profile.email,
+        avatar_url: get_avatar_url(profile)
       }
 
-      changeset = User.changeset(user, user_data)
-      Repo.update(changeset)
+      user
+      |> Repo.reload()
+      |> User.changeset(params)
+      |> Repo.update()
     end
   end
 
+  @spec unbind(User.t()) :: {:ok, User.t()} | {:error, :term}
   def unbind(user) do
     user
     |> User.changeset(%{discord_id: nil, discord_name: nil, discord_avatar: nil})
     |> Repo.update()
   end
 
-  defp name(user, discord_name) do
-    case user do
-      nil ->
-        case Repo.get_by(User, name: discord_name) do
-          %User{} ->
-            generate_name(discord_name)
-
-          _ ->
-            discord_name
-        end
+  defp unique_name(discord_name) do
+    case Repo.get_by(User, name: discord_name) do
+      %User{} ->
+        generate_unique_name(discord_name)
 
       _ ->
-        user.name
+        discord_name
     end
   end
 
-  defp generate_name(name) do
+  defp generate_unique_name(name) do
     new_name = "#{name}_#{:crypto.strong_rand_bytes(2) |> Base.encode16()}"
 
     case Repo.get_by(User, name: new_name) do
       %User{} ->
-        generate_name(name)
+        generate_unique_name(name)
 
       _ ->
         new_name
+    end
+  end
+
+  defp get_avatar_url(profile) do
+    if profile.avatar do
+      "https://cdn.discordapp.com/avatars/#{profile.id}/#{profile.avatar}.jpg"
+    else
+      "https://cdn.discordapp.com/embed/avatars/#{Integer.mod(String.to_integer(profile.discriminator), 5)}.png"
     end
   end
 end

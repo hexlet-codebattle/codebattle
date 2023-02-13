@@ -7,95 +7,67 @@ defmodule CodebattleWeb.AuthBindController do
   def request(conn, params) do
     provider_name = params["provider"]
 
-    provider_config =
-      case provider_name do
-        "github" ->
-          {Ueberauth.Strategy.Github,
-           [
-             default_scope: "user:email",
-             request_path: conn.request_path,
-             callback_path: Routes.auth_bind_path(conn, :callback, provider_name)
-           ]}
+    redirect_uri = Routes.auth_bind_url(conn, :callback, provider_name)
 
-        "discord" ->
-          {Ueberauth.Strategy.Discord,
-           [
-             default_scope: "identify email",
-             request_path: conn.request_path,
-             callback_path: Routes.auth_bind_path(conn, :callback, provider_name)
-           ]}
-      end
+    case provider_name do
+      "github" ->
+        oauth_github_url = Codebattle.Oauth.Github.login_url(%{redirect_uri: redirect_uri})
 
-    conn
-    |> Ueberauth.run_request(provider_name, provider_config)
-  end
-
-  def callback(conn = %{assigns: %{ueberauth_failure: reason}}, params) do
-    Logger.error(
-      "Failed to authenticate on github" <>
-        inspect(reason) <> "\nParams: " <> inspect(params)
-    )
-
-    conn
-    |> put_flash(:danger, gettext("Failed to update authentication settings."))
-    |> redirect(to: "/")
-  end
-
-  def callback(conn = %{assigns: %{ueberauth_auth: auth}}, params) do
-    next = params["next"]
-    user = conn.assigns.current_user
-
-    next_path =
-      case next do
-        "" -> "/"
-        nil -> "/"
-        _ -> next
-      end
-
-    case Codebattle.Oauth.User.update(user, auth) do
-      {:ok, _user} ->
         conn
-        |> put_flash(:info, gettext("Successfully updated authentication settings."))
-        |> redirect(to: next_path)
+        |> redirect(external: oauth_github_url)
+        |> halt()
 
-      {:error, reason} ->
+      "discord" ->
+        oauth_discord_url = Codebattle.Oauth.Discord.login_url(%{redirect_uri: redirect_uri})
+
         conn
-        |> put_flash(:danger, reason)
+        |> redirect(external: oauth_discord_url)
+        |> halt()
+
+      _ ->
+        conn
         |> redirect(to: "/")
+        |> halt()
     end
   end
 
-  def callback(conn, params) do
-    provider_name = String.to_atom(params["provider"])
+  def callback(conn, params = %{"code" => code}) do
+    current_user = conn.assigns.current_user
 
-    provider_config =
-      case provider_name do
-        :github ->
-          {Ueberauth.Strategy.Github,
-           [
-             default_scope: "user:email",
-             request_path: conn.request_path,
-             callback_path: Routes.auth_bind_path(conn, :callback, provider_name)
-           ]}
+    case params["provider"] do
+      "github" ->
+        {:ok, profile} = Codebattle.Oauth.Github.github_auth(code)
+        Codebattle.Oauth.User.GithubUser.bind(current_user, profile)
 
-        :discord ->
-          {Ueberauth.Strategy.Discord,
-           [
-             default_scope: "identify email",
-             request_path: conn.request_path,
-             callback_path: Routes.auth_bind_path(conn, :callback, provider_name)
-           ]}
-      end
+      "discord" ->
+        redirect_uri = Routes.auth_bind_url(conn, :callback, "discord")
+        {:ok, profile} = Codebattle.Oauth.Discord.discord_auth(code, redirect_uri)
+        Codebattle.Oauth.User.DiscordUser.bind(current_user, profile)
+    end
+    |> case do
+      {:ok, _user} ->
+        conn
+        |> put_flash(:info, gettext("Successfully updated authentication settings"))
+        |> redirect(to: "/settings")
 
-    conn
-    |> Ueberauth.run_callback(provider_name, provider_config)
-    |> callback(params)
+      {:error, reason} ->
+        conn
+        |> put_flash(:danger, inspect(reason))
+        |> redirect(to: "/settings")
+    end
   end
 
   def unbind(conn, params) do
-    provider_name = String.to_existing_atom(params["provider"])
+    current_user = conn.assigns.current_user
 
-    case Codebattle.Oauth.User.unbind(conn.assigns.current_user, provider_name) do
+    case params["provider"] do
+      "github" ->
+        Codebattle.Oauth.User.GithubUser.unbind(current_user)
+
+      "discord" ->
+        Codebattle.Oauth.User.DiscordUser.unbind(current_user)
+    end
+    |> case do
       {:ok, _user} ->
         conn
         |> put_flash(:info, gettext("Successfully unbinded authentication settings."))

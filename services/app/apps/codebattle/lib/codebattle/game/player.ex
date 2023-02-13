@@ -103,7 +103,7 @@ defmodule Codebattle.Game.Player do
             # github_id: user.github_id,
             # discord_id: user.discord_id,
             # discord_avatar: user.discord_avatar,
-            avatar_url: User.avatar_url(user),
+            avatar_url: user.avatar_url,
             rating: user_game.rating,
             rating_diff: user_game.rating_diff,
             editor_lang: user_game.lang,

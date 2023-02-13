@@ -39,6 +39,8 @@ config :codebattle, checker_executor: executor
 config :codebattle, code_check_timeout: 35_000
 config :codebattle, tournament_match_timeout: 1
 
+config :codebattle, :oauth, mock_clinet: true
+
 config :codebattle, Codebattle.Invite,
   timeout: :timer.seconds(1000),
   lifetime: :timer.seconds(0)

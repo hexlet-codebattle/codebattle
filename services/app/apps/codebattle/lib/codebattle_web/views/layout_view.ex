@@ -12,8 +12,4 @@ defmodule CodebattleWeb.LayoutView do
       _ -> next
     end
   end
-
-  def get_user_avatar_url(user) do
-    Codebattle.User.avatar_url(user)
-  end
 end

@@ -4,7 +4,6 @@ defmodule CodebattleWeb.Factory do
   alias Codebattle.{User, Game, Task, TaskPack, UserGame}
   alias Codebattle.Feedback
   alias Codebattle.Playbook
-  alias Ueberauth.Auth
 
   def user_factory do
     %User{
@@ -215,18 +214,6 @@ defmodule CodebattleWeb.Factory do
       starts_at: NaiveDateTime.utc_now(),
       creator_id: 1,
       data: %{players: [], matches: []}
-    }
-  end
-
-  def auth_factory do
-    %Auth{
-      provider: :github,
-      uid: :rand.uniform(100_000),
-      extra: %{
-        raw_info: %{
-          user: :user
-        }
-      }
     }
   end
 

@@ -3,18 +3,17 @@ defmodule Codebattle.Oauth.User do
     dispatcher for oauth
   """
 
-  alias Ueberauth.Auth
   alias Codebattle.{Repo, User}
 
   def find_by_token(token) do
     Codebattle.Oauth.User.TokenUser.find(token)
   end
 
-  def update(user, auth = %Auth{provider: :discord}) do
+  def update(user, auth = %{provider: :discord}) do
     Codebattle.Oauth.User.DiscordUser.update(user, auth)
   end
 
-  def update(user, auth = %Auth{provider: :github}) do
+  def update(user, auth = %{provider: :github}) do
     Codebattle.Oauth.User.GithubUser.update(user, auth)
   end
 
@@ -26,21 +25,8 @@ defmodule Codebattle.Oauth.User do
     Codebattle.Oauth.User.GithubUser.unbind(user)
   end
 
-  def find_or_create(auth = %Auth{provider: :discord}) do
-    Codebattle.Oauth.User.DiscordUser.find_or_create(auth)
-  end
-
-  def find_or_create(auth = %Auth{provider: :github}) do
-    Codebattle.Oauth.User.GithubUser.find_or_create(auth)
-  end
-
-  def find_or_create(auth = %{provider: :dev_local}) do
-    user_data = %{
-      github_id: "35539033",
-      name: auth.name,
-      github_name: auth.name,
-      email: auth.email
-    }
+  def find_or_create_dev_user(params) do
+    user_data = %{name: params.name, email: params.email}
 
     changeset = User.changeset(%User{}, user_data)
     Repo.insert(changeset)

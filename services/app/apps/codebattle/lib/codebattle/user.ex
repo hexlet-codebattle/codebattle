@@ -37,24 +37,24 @@ defmodule Codebattle.User do
     def encode(user, opts) do
       user
       |> Map.take([
-        :id,
-        :name,
-        :rating,
-        :is_bot,
-        :is_guest,
-        :github_id,
-        :github_name,
-        :lang,
+        :achievements,
+        :avatar_url,
         :editor_mode,
         :editor_theme,
-        :achievements,
-        :rank,
         :games_played,
-        :performance,
+        :github_id,
+        :github_name,
+        :id,
         :inserted_at,
-        :sound_settings,
-        :avatar_url,
-        :is_admin
+        :is_admin,
+        :is_bot,
+        :is_guest,
+        :lang,
+        :name,
+        :performance,
+        :rank,
+        :rating,
+        :sound_settings
       ])
       |> Jason.Encode.map(opts)
     end
@@ -65,7 +65,7 @@ defmodule Codebattle.User do
     field(:github_name, :string)
     field(:email, :string)
     field(:github_id, :integer)
-    field(:rating, :integer)
+    field(:rating, :integer, default: 1200)
     field(:lang, :string, default: "js")
     field(:editor_mode, :string)
     field(:editor_theme, :string)
@@ -83,7 +83,7 @@ defmodule Codebattle.User do
     field(:games_played, :integer, virtual: true)
     field(:performance, :integer, virtual: true)
     field(:is_guest, :boolean, virtual: true, default: false)
-    field(:avatar_url, :string, virtual: true)
+    field(:avatar_url, :string)
 
     embeds_one(:sound_settings, SoundSettings, on_replace: :update)
 
@@ -93,39 +93,34 @@ defmodule Codebattle.User do
     timestamps()
   end
 
-  def fill_virtual_fields(user) do
-    user
-    |> Map.put(:is_admin, Codebattle.User.is_admin?(user))
-    |> Map.put(:avatar_url, Codebattle.User.avatar_url(user))
-  end
-
   @doc """
   Builds a changeset based on the `struct` and `params`.
   """
   def changeset(struct, params \\ %{}) do
     struct
     |> cast(params, [
-      :firebase_uid,
-      :name,
-      :github_name,
-      :email,
-      :github_id,
-      :rating,
-      :lang,
+      :achievements,
+      :auth_token,
+      :avatar_url,
+      :discord_avatar,
+      :discord_id,
+      :discord_name,
       :editor_mode,
       :editor_theme,
-      :achievements,
-      :discord_name,
-      :discord_id,
-      :discord_avatar,
-      :auth_token
+      :email,
+      :firebase_uid,
+      :github_id,
+      :github_name,
+      :lang,
+      :name,
+      :rating
     ])
-    |> validate_required([:name, :email])
+    |> validate_required([:name])
   end
 
   def settings_changeset(model, params \\ %{}) do
     model
-    |> cast(params, [:name, :lang])
+    |> cast(params, [:name, :lang, :avatar_url])
     |> cast_embed(:sound_settings)
     |> unique_constraint(:name)
     |> validate_length(:name, min: 3, max: 16)
@@ -142,6 +137,7 @@ defmodule Codebattle.User do
     }
   end
 
+  # deprecated need to add it into settings
   def avatar_url(user) do
     cond do
       user.github_id ->
@@ -172,7 +168,7 @@ defmodule Codebattle.User do
 
   @spec get_user!(raw_id()) :: t() | no_return
   def get_user!(user_id) do
-    __MODULE__ |> Codebattle.Repo.get!(user_id) |> fill_virtual_fields()
+    __MODULE__ |> Codebattle.Repo.get!(user_id)
   end
 
   @spec get_users_by_ids(list(raw_id())) :: list(t())
@@ -181,6 +177,5 @@ defmodule Codebattle.User do
     |> where([u], u.id in ^ids)
     |> order_by([u], {:desc, :rating})
     |> Repo.all()
-    |> Enum.map(&fill_virtual_fields/1)
   end
 end

@@ -29,19 +29,12 @@ config :logger, :console,
 
 config :phoenix, :json_library, Jason
 
-config :ueberauth, Ueberauth,
-  providers: [
-    github: {Ueberauth.Strategy.Github, [default_scope: "user:email", send_redirect_uri: false]},
-    discord: {Ueberauth.Strategy.Discord, []}
-  ]
-
-config :ueberauth, Ueberauth.Strategy.Github.OAuth,
-  client_id: System.get_env("GITHUB_CLIENT_ID", "ASFD"),
-  client_secret: System.get_env("GITHUB_CLIENT_SECRET", "ASFD")
-
-config :ueberauth, Ueberauth.Strategy.Discord.OAuth,
-  client_id: System.get_env("DISCORD_CLIENT_ID", "ASFD"),
-  client_secret: System.get_env("DISCORD_CLIENT_SECRET", "ASFD")
+config :codebattle, :oauth,
+  mock_clinet: false,
+  github_client_id: System.get_env("GITHUB_CLIENT_ID", "ASFD"),
+  github_client_secret: System.get_env("GITHUB_CLIENT_SECRET", "ASFD"),
+  discord_client_id: System.get_env("DISCORD_CLIENT_ID", "ASFD"),
+  discord_client_secret: System.get_env("DISCORD_CLIENT_SECRET", "ASFD")
 
 config :phoenix_gon, :json_library, Jason
 

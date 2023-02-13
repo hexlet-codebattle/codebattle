@@ -2,34 +2,78 @@ defmodule CodebattleWeb.AuthBindControllerTest do
   use CodebattleWeb.ConnCase, async: true
 
   alias Codebattle.Repo
+  alias Codebattle.User
 
-  @valid_data %{
-    "username" => Faker.Internet.user_name(),
-    "email" => Faker.Internet.email()
-  }
+  describe "request" do
+    test "GET /auth/github/bind", %{conn: conn} do
+      conn = get(conn, "/auth/github/bind")
+      assert conn.state == :sent
+      assert conn.status == 302
+      assert redirected_to(conn) =~ "https://github.com/login/oauth/authorize?"
+    end
 
-  test "GET /auth/:provider and ueberauth auth", %{conn: conn} do
-    auth = build(:auth, provider: :discord)
-    successful_conn = Map.put(conn, :assigns, %{ueberauth_auth: auth})
+    test "GET /auth/discord/bind", %{conn: conn} do
+      conn = get(conn, "/auth/discord/bind")
+      assert conn.state == :sent
+      assert conn.status == 302
+      assert redirected_to(conn) =~ "https://discord.com/oauth2/authorize?"
+    end
 
-    conn = get(successful_conn, "/auth/discord/bind/")
-    assert conn.state == :sent
-    assert conn.status == 302
-    assert redirected_to(conn) !== "/"
+    test "GET /auth/lol/bind", %{conn: conn} do
+      conn = get(conn, "/auth/lol/bind")
+      assert conn.state == :sent
+      assert conn.status == 302
+      assert redirected_to(conn) == "/"
+    end
   end
 
-  test "GET /auth/:provide/callback successfully updated user", %{conn: conn} do
-    user = insert(:user)
-    auth = build(:auth, extra: %{raw_info: %{user: @valid_data}}, provider: :discord)
+  describe "callback" do
+    test "GET /auth/github/callback/bind", %{conn: conn} do
+      user = insert(:user, github_id: 1, discord_id: 1, name: "lol-kek")
 
-    conn = conn |> put_session(:user_id, user.id)
-    successful_conn = Map.put(conn, :assigns, %{ueberauth_auth: auth})
-    conn = get(successful_conn, "/auth/discord/callback/bind")
+      conn =
+        conn
+        |> put_session(:user_id, user.id)
+        |> get("/auth/github/callback/bind", %{"code" => "asfd"})
 
-    user = Repo.reload!(user)
+      user = Repo.reload(user)
 
-    assert redirected_to(conn) == "/"
-    assert user.discord_id == auth.uid
+      assert %User{
+               discord_id: 1,
+               name: "lol-kek",
+               email: "test@gmail.com",
+               github_name: "test_user",
+               github_id: 19,
+               avatar_url: "https://avatars3.githubusercontent.com/u/10835816"
+             } = user
+
+      assert conn.state == :sent
+      assert redirected_to(conn) == "/settings"
+    end
+
+    test "GET /auth/discord/callback/bind", %{conn: conn} do
+      user = insert(:user, github_id: 1, discord_id: 1, name: "lol-kek")
+
+      conn =
+        conn
+        |> put_session(:user_id, user.id)
+        |> get("/auth/discord/callback/bind", %{"code" => "asfd"})
+
+      user = Repo.reload(user)
+
+      assert %User{
+               avatar_url: "https://cdn.discordapp.com/avatars/1234567/12345.jpg",
+               discord_avatar: "12345",
+               discord_id: 1_234_567,
+               discord_name: "test_name",
+               email: "lol@kek.com",
+               github_id: 1,
+               name: "lol-kek"
+             } = user
+
+      assert conn.state == :sent
+      assert redirected_to(conn) == "/settings"
+    end
   end
 
   describe "DELETE /auth/:provider/" do

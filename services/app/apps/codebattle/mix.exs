@@ -72,9 +72,6 @@ defmodule Codebattle.MixProject do
       {:text_delta, "~> 1.4.0"},
       {:timex, "~> 3.6"},
       {:typed_struct, "~> 0.3"},
-      {:ueberauth, "~> 0.7"},
-      {:ueberauth_discord, "~> 0.7"},
-      {:ueberauth_github, "~> 0.8.1"},
       {:yaml_elixir, "~> 2.4"},
 
       # dev_and_test
@@ -86,7 +83,6 @@ defmodule Codebattle.MixProject do
       # test
       {:ex_machina, "~> 2.4", only: :test},
       {:excoveralls, "~> 0.13", only: :test},
-      {:faker, "~> 0.15", only: :test},
       {:floki, "~> 0.29", only: :test},
       {:mock, "~> 0.3.5", only: :test},
       {:phoenix_integration, "~> 0.8", only: :test}

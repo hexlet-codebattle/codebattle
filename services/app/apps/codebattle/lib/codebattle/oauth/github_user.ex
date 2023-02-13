@@ -3,95 +3,83 @@ defmodule Codebattle.Oauth.User.GithubUser do
     Retrieve user information from github oauth request
   """
 
-  alias Ueberauth.Auth
-  alias Codebattle.{Repo, User}
+  alias Codebattle.Repo
+  alias Codebattle.User
 
-  def find_or_create(auth = %Auth{provider: :github}) do
-    user = User |> Repo.get_by(github_id: auth.uid)
+  @spec find_or_create(map()) :: {:ok, User.t()} | {:error, term()}
+  def find_or_create(profile) do
+    User
+    |> Repo.get_by(github_id: profile.id)
+    |> case do
+      nil ->
+        github_name = profile.login
 
-    github_name = auth.extra.raw_info.user["login"]
+        params = %{
+          github_id: profile.id,
+          name: unique_name(github_name),
+          github_name: github_name,
+          email: profile.email,
+          avatar_url: profile.avatar_url
+        }
 
-    user_data = %{
-      github_id: auth.uid,
-      name: name(user, github_name),
-      github_name: github_name,
-      email: email_from_auth(auth)
-    }
+        %User{}
+        |> User.changeset(params)
+        |> Repo.insert()
 
-    user =
-      case user do
-        nil ->
-          changeset = User.changeset(%User{}, user_data)
-          {:ok, user} = Repo.insert(changeset)
-          user
-
-        _ ->
-          changeset = User.changeset(user, user_data)
-          {:ok, user} = Repo.update(changeset)
-
-          user
-      end
-
-    {:ok, user}
+      user ->
+        {:ok, user}
+    end
   end
 
-  def update(user, auth) do
-    github_user = User |> Repo.get_by(github_id: auth.uid)
+  @spec bind(User.t(), map()) :: {:ok, User.t()} | {:error, :term}
+  def bind(user, profile) do
+    github_user = User |> Repo.get_by(github_id: profile.id)
 
     if github_user != nil && github_user.id != user.id do
       {:error, "github_id has been taken"}
     else
-      github_name = auth.extra.raw_info.user["login"]
+      github_name = profile.login
 
-      user_data = %{
-        github_id: auth.uid,
-        name: name(user, github_name),
+      params = %{
+        github_id: profile.id,
         github_name: github_name,
-        email: email_from_auth(auth)
+        email: profile.email,
+        avatar_url: profile.avatar_url
       }
 
-      changeset = User.changeset(user, user_data)
-      Repo.update(changeset)
+      user
+      |> Repo.reload()
+      |> User.changeset(params)
+      |> Repo.update()
     end
   end
 
+  @spec unbind(User.t()) :: {:ok, User.t()} | {:error, :term}
   def unbind(user) do
     user
     |> User.changeset(%{github_id: nil, github_name: nil})
     |> Repo.update()
   end
 
-  defp name(user, github_name) do
-    case user do
-      nil ->
-        case Repo.get_by(User, name: github_name) do
-          %User{} ->
-            generate_name(github_name)
-
-          _ ->
-            github_name
-        end
+  defp unique_name(github_name) do
+    case Repo.get_by(User, name: github_name) do
+      %User{} ->
+        generate_unique_name(github_name)
 
       _ ->
-        user.name
+        github_name
     end
   end
 
-  defp generate_name(name) do
+  defp generate_unique_name(name) do
     new_name = "#{name}_#{:crypto.strong_rand_bytes(2) |> Base.encode16()}"
 
     case Repo.get_by(User, name: new_name) do
       %User{} ->
-        generate_name(name)
+        generate_unique_name(name)
 
       _ ->
         new_name
     end
-  end
-
-  defp email_from_auth(auth) do
-    auth.extra.raw_info.user["emails"]
-    |> Enum.find(fn item -> item["primary"] end)
-    |> Map.get("email")
   end
 end
