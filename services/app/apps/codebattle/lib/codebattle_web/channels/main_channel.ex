@@ -122,11 +122,6 @@ defmodule CodebattleWeb.MainChannel do
           recipient_id: invite.recipient_id
         }
 
-        # topic =
-        #   if user_id == invite.creator_id,
-        #     do: "main:#{invite.recipient_id}",
-        #     else: "main:#{invite.creator_id}"
-
         CodebattleWeb.Endpoint.broadcast!(
           "main",
           "invites:canceled",
