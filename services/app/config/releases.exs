@@ -7,7 +7,7 @@ live_view_salt = System.get_env("CODEBATTLE_LIVE_VIEW_SALT")
 
 config :codebattle, CodebattleWeb.Endpoint,
   http: [:inet6, port: port],
-  url: [host: host, scheme: "https"],
+  url: [host: host, scheme: "https", port: 443],
   cache_static_manifest: "priv/static/cache_manifest.json",
   secret_key_base: secret_key_base,
   live_view: [signing_salt: live_view_salt],

@@ -2,7 +2,7 @@ import Config
 
 config :codebattle, CodebattleWeb.Endpoint,
   http: [port: System.get_env("CODEBATTLE_PORT", "4000")],
-  url: [scheme: "http", host: "codebattle.hexlet.io", port: 80],
+  url: [scheme: "https", host: "codebattle.hexlet.io", port: 443],
   cache_static_manifest: "priv/static/cache_manifest.json",
   server: true,
   root: ".",
