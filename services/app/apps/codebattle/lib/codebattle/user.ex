@@ -150,7 +150,7 @@ defmodule Codebattle.User do
         gravatar_url(user.email)
 
       true ->
-        "https://avatars0.githubusercontent.com/u/35539033"
+        "/assets/images/logo.svg"
     end
   end
 

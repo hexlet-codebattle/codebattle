@@ -5,11 +5,12 @@ defmodule CodebattleWeb.DevLoginController do
     # TODO: add new flag for dev-sign-in
     if Application.get_env(:codebattle, :html_debug_mode) do
       params = %{
-        name: "Diman-#{:rand.uniform(100_000)}",
-        email: "Diman@#{:rand.uniform(100_000)}.cb"
+        name: "Dev-#{:rand.uniform(100_0000)}",
+        email: "Dev@#{:rand.uniform(100_0000)}.cb",
+        avatar_url: "/assets/images/logo.svg"
       }
 
-      case Codebattle.Oauth.User.find_or_create_dev_user(params) do
+      case Codebattle.Oauth.User.create_dev_user(params) do
         {:ok, user} ->
           conn
           |> put_flash(:info, gettext("Successfully authenticated."))

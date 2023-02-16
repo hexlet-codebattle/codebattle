@@ -15,7 +15,6 @@ defmodule Codebattle.Repo.Migrations.CreateBots do
         rating: 1100,
         email: "diman@lol.bot_codebattle",
         lang: "ruby",
-        github_id: 35539033,
         achievements: ["bot"],
         inserted_at: utc_now,
         updated_at: utc_now
@@ -27,7 +26,6 @@ defmodule Codebattle.Repo.Migrations.CreateBots do
         rating: 1100,
         email: "diman@kek.bot_codebattle",
         lang: "js",
-        github_id: 35539033,
         achievements: ["bot"],
         inserted_at: utc_now,
         updated_at: utc_now
@@ -39,7 +37,6 @@ defmodule Codebattle.Repo.Migrations.CreateBots do
         rating: 1300,
         email: "andrey@dev.bot_codebattle",
         lang: "js",
-        github_id: 35539033,
         achievements: ["bot"],
         inserted_at: utc_now,
         updated_at: utc_now
@@ -51,13 +48,11 @@ defmodule Codebattle.Repo.Migrations.CreateBots do
         rating: 1300,
         email: "andrey@front.bot_codebattle",
         lang: "js",
-        github_id: 35539033,
         achievements: ["bot"],
         inserted_at: utc_now,
         updated_at: utc_now
-      },
+      }
     ]
-
 
     Repo.insert_all(User, bots)
   end

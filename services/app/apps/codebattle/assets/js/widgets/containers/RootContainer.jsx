@@ -231,7 +231,7 @@ const muteSound = e => {
 
   const defaultPlayer = {
     name: 'John Doe',
-    github_id: 35539033,
+    avatar_url: '/assets/images/logo.svg',
     lang: 'js',
     rating: '0',
   };

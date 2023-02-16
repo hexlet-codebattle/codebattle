@@ -1,7 +1,7 @@
 import React from 'react';
 import '@testing-library/jest-dom/extend-expect';
 import {
- screen, render, fireEvent, waitFor,
+  screen, render, fireEvent, waitFor,
 } from '@testing-library/react';
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
@@ -26,8 +26,7 @@ const preloadedState = {
     id: 11,
     name: 'Diman',
     lang: 'typescript',
-    github_name: 'Diman-1018',
-    github_id: '35539033',
+    avatar_url: '/assets/images/logo.svg',
     discord_name: null,
     discord_id: null,
     error: '',
@@ -54,22 +53,22 @@ const vdom = () => render(
   <Provider store={store}>
     <UserSettings />
   </Provider>,
-  );
+);
 describe('UserSettings test cases', () => {
   it('render main component', () => {
     const { getByText } = vdom();
     expect(getByText(/settings/i)).toBeInTheDocument();
   });
-    it('show success notification', async () => {
-      const {
-    getByRole,
-  } = vdom();
-      const save = getByRole('button', { name: /save/i });
-      const alert = getByRole('alert');
-      fireEvent.click(save);
+  it('show success notification', async () => {
+    const {
+      getByRole,
+    } = vdom();
+    const save = getByRole('button', { name: /save/i });
+    const alert = getByRole('alert');
+    fireEvent.click(save);
 
-        setTimeout(() => expect(alert).toHaveClass('editSuccess'), 300);
-    });
+    setTimeout(() => expect(alert).toHaveClass('editSuccess'), 300);
+  });
   it('editing profile test', async () => {
     const handleSubmit = jest.fn();
     render(

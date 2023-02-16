@@ -12,7 +12,6 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots do
         rating: 1200,
         email: "mitya@cprywriter.bot_codebattle",
         lang: "haskell",
-        github_id: 35_539_033,
         achievements: ["bot"],
         inserted_at: utc_now,
         updated_at: utc_now
@@ -24,7 +23,6 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots do
         rating: 1200,
         email: "maldony@kek.bot_codebattle",
         lang: "php",
-        github_id: 35_539_033,
         achievements: ["bot"],
         inserted_at: utc_now,
         updated_at: utc_now
@@ -36,7 +34,6 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots do
         rating: 1200,
         email: "melodin@dev.bot_codebattle",
         lang: "php",
-        github_id: 35_539_033,
         achievements: ["bot"],
         inserted_at: utc_now,
         updated_at: utc_now
@@ -48,7 +45,6 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots do
         rating: 1300,
         email: "Denis@python.bot_codebattle",
         lang: "python",
-        github_id: 35_539_033,
         achievements: ["bot"],
         inserted_at: utc_now,
         updated_at: utc_now
@@ -60,7 +56,6 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots do
         rating: 1300,
         email: "Nikita@os.bot_codebattle",
         lang: "python",
-        github_id: 35_539_033,
         achievements: ["bot"],
         inserted_at: utc_now,
         updated_at: utc_now
@@ -72,7 +67,6 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots do
         rating: 1200,
         email: "KalashnikovsMe@ruby.bot_codebattle",
         lang: "ruby",
-        github_id: 35_539_033,
         achievements: ["bot"],
         inserted_at: utc_now,
         updated_at: utc_now
@@ -84,7 +78,6 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots do
         rating: 1300,
         email: "KolesnikovisMe@ruby.bot_codebattle",
         lang: "ruby",
-        github_id: 35_539_033,
         achievements: ["bot"],
         inserted_at: utc_now,
         updated_at: utc_now
@@ -96,7 +89,6 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots do
         rating: 1200,
         email: "Plugin@ruby.bot_codebattle",
         lang: "ruby",
-        github_id: 35_539_033,
         achievements: ["bot"],
         inserted_at: utc_now,
         updated_at: utc_now
@@ -108,7 +100,6 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots do
         rating: 1200,
         email: "Point213@ruby.bot_codebattle",
         lang: "ruby",
-        github_id: 35_539_033,
         achievements: ["bot"],
         inserted_at: utc_now,
         updated_at: utc_now
@@ -120,7 +111,6 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots do
         rating: 1300,
         email: "Point214@ruby.bot_codebattle",
         lang: "ruby",
-        github_id: 35_539_033,
         achievements: ["bot"],
         inserted_at: utc_now,
         updated_at: utc_now
@@ -132,7 +122,6 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots do
         rating: 1200,
         email: "Point215@php.bot_codebattle",
         lang: "php",
-        github_id: 35_539_033,
         achievements: ["bot"],
         inserted_at: utc_now,
         updated_at: utc_now
@@ -144,7 +133,6 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots do
         rating: 1200,
         email: "Zamorozzzko@ruby.bot_codebattle",
         lang: "ruby",
-        github_id: 35_539_033,
         achievements: ["bot"],
         inserted_at: utc_now,
         updated_at: utc_now
@@ -156,7 +144,6 @@ defmodule Codebattle.Repo.Migrations.AddMoreBots do
         rating: 1200,
         email: "HappyQleaner@ruby.bot_codebattle",
         lang: "ruby",
-        github_id: 35_539_033,
         achievements: ["bot"],
         inserted_at: utc_now,
         updated_at: utc_now

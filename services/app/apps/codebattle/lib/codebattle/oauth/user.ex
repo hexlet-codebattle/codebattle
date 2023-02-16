@@ -10,10 +10,8 @@ defmodule Codebattle.Oauth.User do
     Codebattle.Oauth.User.TokenUser.find(token)
   end
 
-  def find_or_create_dev_user(params) do
-    user_data = %{name: params.name, email: params.email}
-
-    changeset = User.changeset(%User{}, user_data)
+  def create_dev_user(params) do
+    changeset = User.changeset(%User{}, params)
     Repo.insert(changeset)
   end
 

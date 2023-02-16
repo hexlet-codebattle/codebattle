@@ -15,7 +15,6 @@ defmodule Codebattle.Repo.Migrations.CreateBots2 do
         rating: 1100,
         email: "valya@valya.bot_codebattle",
         lang: "ruby",
-        github_id: 35_539_033,
         achievements: ["bot"],
         inserted_at: utc_now,
         updated_at: utc_now
@@ -27,7 +26,6 @@ defmodule Codebattle.Repo.Migrations.CreateBots2 do
         rating: 1100,
         email: "igor@igor.bot_codebattle",
         lang: "js",
-        github_id: 35_539_033,
         achievements: ["bot"],
         inserted_at: utc_now,
         updated_at: utc_now
@@ -39,7 +37,6 @@ defmodule Codebattle.Repo.Migrations.CreateBots2 do
         rating: 1300,
         email: "VadimFront@VadimFront.bot_codebattle",
         lang: "js",
-        github_id: 35_539_033,
         achievements: ["bot"],
         inserted_at: utc_now,
         updated_at: utc_now
@@ -51,7 +48,6 @@ defmodule Codebattle.Repo.Migrations.CreateBots2 do
         rating: 1300,
         email: "Vitalik@Vitalik.bot_codebattle",
         lang: "js",
-        github_id: 35_539_033,
         achievements: ["bot"],
         inserted_at: utc_now,
         updated_at: utc_now
@@ -63,7 +59,6 @@ defmodule Codebattle.Repo.Migrations.CreateBots2 do
         rating: 1300,
         email: "UlaBack@UlaBack.bot_codebattle",
         lang: "js",
-        github_id: 35_539_033,
         achievements: ["bot"],
         inserted_at: utc_now,
         updated_at: utc_now
@@ -75,7 +70,6 @@ defmodule Codebattle.Repo.Migrations.CreateBots2 do
         rating: 1300,
         email: "ShuhratOnRails@ShuhratOnRails.bot_codebattle",
         lang: "js",
-        github_id: 35_539_033,
         achievements: ["bot"],
         inserted_at: utc_now,
         updated_at: utc_now
@@ -87,7 +81,6 @@ defmodule Codebattle.Repo.Migrations.CreateBots2 do
         rating: 1300,
         email: "EvgenyKoa@EvgenyKoa.bot_codebattle",
         lang: "js",
-        github_id: 35_539_033,
         achievements: ["bot"],
         inserted_at: utc_now,
         updated_at: utc_now
@@ -99,7 +92,6 @@ defmodule Codebattle.Repo.Migrations.CreateBots2 do
         rating: 1300,
         email: "EvgenyThePry@EvgenyThePry.bot_codebattle",
         lang: "js",
-        github_id: 35_539_033,
         achievements: ["bot"],
         inserted_at: utc_now,
         updated_at: utc_now
@@ -111,7 +103,6 @@ defmodule Codebattle.Repo.Migrations.CreateBots2 do
         rating: 1300,
         email: "KolyaKot@KolyaKot.bot_codebattle",
         lang: "js",
-        github_id: 35_539_033,
         achievements: ["bot"],
         inserted_at: utc_now,
         updated_at: utc_now
@@ -123,7 +114,6 @@ defmodule Codebattle.Repo.Migrations.CreateBots2 do
         rating: 1300,
         email: "SergeyStartCode@SergeyStartCode.bot_codebattle",
         lang: "js",
-        github_id: 35_539_033,
         achievements: ["bot"],
         inserted_at: utc_now,
         updated_at: utc_now

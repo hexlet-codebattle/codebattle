@@ -9336,14 +9336,20 @@ performance-now@^2.1.0:
   resolved "https://registry.npmjs.org/performance-now/-/performance-now-2.1.0.tgz"
   integrity sha1-Ywn04OX6kT7BxpMHrjZLSzd8nns=
 
-"phoenix@file:../../deps/phoenix":
+phoenix@^1.6.6:
   version "1.6.15"
+  resolved "https://registry.yarnpkg.com/phoenix/-/phoenix-1.6.15.tgz#efb2088a310cde333b3762002831b79dedf76002"
+  integrity sha512-O6AG5jTkZOOkdd/GOSCsM4v3bzBoyRnC5bEi57KhX/Daba6FvnBRzt0nhEeRRiVQGLSxDlyb0dUe9CkYWMZd8g==
 
-"phoenix_html@file:../../deps/phoenix_html":
-  version "3.2.0"
+phoenix_html@^3.2.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/phoenix_html/-/phoenix_html-3.3.0.tgz#75862f2270b8e6da3b5e528512a1a64de92f7874"
+  integrity sha512-Q/X9UhxQLMYOuA8cXrDSH7PWTK/+vCpX+rtSheoNaPb/qDVoi+R3GPYKgL9CJ06+VWhcC3kkZ05O/RVsby7m6A==
 
-"phoenix_live_view@file:../../deps/phoenix_live_view":
-  version "0.18.11"
+phoenix_live_view@^0.17.7:
+  version "0.17.12"
+  resolved "https://registry.yarnpkg.com/phoenix_live_view/-/phoenix_live_view-0.17.12.tgz#933a9fef84051496eaeecfc90cddabe9b6b6a294"
+  integrity sha512-hHK43hPNd8vnY1+arUp2b0e//uP6bGMsCEKw556vG8Nth1EUqnJ8Vi0Shu1ykG2VId5HtBJTSjiwnx+wERSGHw==
 
 picomatch@^2.0.4, picomatch@^2.0.5, picomatch@^2.2.1:
   version "2.2.2"

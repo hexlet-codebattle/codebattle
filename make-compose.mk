@@ -16,7 +16,7 @@ compose-test-code-checkers:
 	docker compose run --rm --name codebattle_app app mix test test/code_check
 
 compose-test-yarn:
-	docker compose run --rm --name codebattle_app app yarn test
+	docker compose run --rm --name codebattle_app app /bin/sh -c 'cd /app/apps/codebattle && yarn test'
 
 compose-test:
 	docker compose run --rm --name codebattle_app app mix test --exclude code_check
@@ -31,7 +31,7 @@ compose-install-mix:
 	docker compose run --rm --name codebattle_app app mix deps.get
 
 compose-install-yarn:
-	docker compose run --rm --name codebattle_app app yarn
+	docker compose run --rm --name codebattle_app app /bin/sh -c 'cd /app/apps/codebattle && yarn'
 
 compose-install: compose-install-mix compose-install-yarn
 
@@ -54,7 +54,7 @@ compose-mix-credo:
 	docker compose run app mix credo
 
 compose-lint-js-fix:
-	docker compose run --rm --name codebattle_app app yarn lint --fix
+	docker compose run --rm --name codebattle_app app /bin/sh -c 'cd /app/apps/codebattle && yarn lint --fix'
 
 compose-console:
 	docker compose run --rm --name codebattle_app app iex -S mix

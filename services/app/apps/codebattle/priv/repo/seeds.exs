@@ -328,8 +328,8 @@ six_hours_ago = Timex.shift(now, hours: -6)
     is_bot: false,
     rating: 1300,
     email: "#{Timex.format!(t, "%FT%T%:z", :strftime)}@user1",
+    avatar_url: "/assets/images/logo.svg",
     lang: "ruby",
-    github_id: 35_539_033,
     inserted_at: TimeHelper.utc_now(),
     updated_at: TimeHelper.utc_now()
   }
@@ -345,7 +345,7 @@ six_hours_ago = Timex.shift(now, hours: -6)
     rating: -500,
     email: "#{Timex.format!(t, "%FT%T%:z", :strftime)}@user2",
     lang: "java",
-    github_id: 35_539_033,
+    avatar_url: "/assets/images/logo.svg",
     inserted_at: TimeHelper.utc_now(),
     updated_at: TimeHelper.utc_now()
   }
