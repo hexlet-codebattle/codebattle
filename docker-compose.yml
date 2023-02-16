@@ -5,6 +5,7 @@ services:
     build:
       context: services/app
       dockerfile: Dockerfile.dev
+    working_dir: /app
     env_file: .env
     command: mix phx.server
     environment:
