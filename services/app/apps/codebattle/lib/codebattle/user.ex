@@ -141,10 +141,10 @@ defmodule Codebattle.User do
   def avatar_url(user) do
     cond do
       user.github_id ->
-        "https://avatars0.githubusercontent.com/u/#{user.github_id}"
+        "https://avatars.githubusercontent.com/u/#{user.github_id}?v=4"
 
       user.discord_id ->
-        "https://cdn.discordapp.com/avatars/#{user.discord_id}/#{user.discord_avatar}.png"
+        "https://cdn.discordapp.com/avatars/#{user.discord_id}/#{user.discord_avatar}.jpg"
 
       Map.get(user, :email) ->
         gravatar_url(user.email)
