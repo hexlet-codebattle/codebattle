@@ -9,11 +9,9 @@ defmodule CodebattleWeb.Api.V1.SettingsController do
 
     json(conn, %{
       name: current_user.name,
+      avatar_url: current_user.avatar_url,
       github_id: current_user.github_id,
       github_name: current_user.github_name,
-      discord_id: current_user.discord_id,
-      discord_name: current_user.discord_name,
-      discord_avatar: current_user.discord_avatar,
       sound_settings: current_user.sound_settings,
       lang: current_user.lang
     })
@@ -27,7 +25,12 @@ defmodule CodebattleWeb.Api.V1.SettingsController do
     |> Repo.update()
     |> case do
       {:ok, user} ->
-        json(conn, %{name: user.name, sound_settings: user.sound_settings, lang: user.lang})
+        json(conn, %{
+          name: user.name,
+          sound_settings: user.sound_settings,
+          lang: user.lang,
+          avatar_url: user.avatar_url
+        })
 
       {:error, %Ecto.Changeset{} = changeset} ->
         conn

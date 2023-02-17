@@ -11,9 +11,7 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
           email: "test1@test.test",
           github_id: 1,
           github_name: "g_name",
-          discord_id: 2,
-          discord_name: "d_name",
-          discord_avatar: "d_avatar",
+          avatar_url: "/image.png",
           rating: 2400,
           lang: "dart"
         })
@@ -27,9 +25,7 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
                "name" => "first",
                "lang" => "dart",
                "sound_settings" => %{"level" => 7, "type" => "dendy"},
-               "discord_avatar" => "d_avatar",
-               "discord_id" => 2,
-               "discord_name" => "d_name",
+               "avatar_url" => "/image.png",
                "github_id" => 1,
                "github_name" => "g_name"
              }
@@ -40,6 +36,7 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
     test "updates current user settings", %{conn: conn} do
       new_settings = %{
         "name" => "evgen",
+        "avatar_url" => "a",
         "sound_settings" => %{"level" => 3, "type" => "cs"},
         "lang" => "ruby"
       }
@@ -58,6 +55,7 @@ defmodule CodebattleWeb.Api.V1.SettingsControllerTest do
       assert updated.sound_settings.level == 3
       assert updated.sound_settings.type == "cs"
       assert updated.name == "evgen"
+      assert updated.avatar_url == "a"
       assert updated.lang == "ruby"
     end
 
