@@ -120,7 +120,7 @@ defmodule Codebattle.User do
 
   def settings_changeset(model, params \\ %{}) do
     model
-    |> cast(params, [:name, :lang, :avatar_url])
+    |> cast(params, [:name, :lang])
     |> cast_embed(:sound_settings)
     |> unique_constraint(:name)
     |> validate_length(:name, min: 3, max: 16)
@@ -137,34 +137,11 @@ defmodule Codebattle.User do
     }
   end
 
-  # deprecated need to add it into settings
-  def avatar_url(user) do
-    cond do
-      user.github_id ->
-        "https://avatars.githubusercontent.com/u/#{user.github_id}?v=4"
-
-      user.discord_id ->
-        "https://cdn.discordapp.com/avatars/#{user.discord_id}/#{user.discord_avatar}.jpg"
-
-      Map.get(user, :email) ->
-        gravatar_url(user.email)
-
-      true ->
-        "/assets/images/logo.svg"
-    end
-  end
-
   def is_admin?(user) do
     user.name in @admins
   end
 
   def guest_id(), do: @guest_id
-
-  defp gravatar_url(email) do
-    hash = :erlang.md5(email) |> Base.encode16(case: :lower)
-
-    "https://gravatar.com/avatar/#{hash}?d=identicon"
-  end
 
   @spec get_user!(raw_id()) :: t() | no_return
   def get_user!(user_id) do

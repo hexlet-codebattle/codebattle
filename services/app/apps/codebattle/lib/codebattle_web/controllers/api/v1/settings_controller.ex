@@ -9,7 +9,6 @@ defmodule CodebattleWeb.Api.V1.SettingsController do
 
     json(conn, %{
       name: current_user.name,
-      avatar_url: current_user.avatar_url,
       github_id: current_user.github_id,
       github_name: current_user.github_name,
       sound_settings: current_user.sound_settings,
@@ -29,7 +28,6 @@ defmodule CodebattleWeb.Api.V1.SettingsController do
           name: user.name,
           sound_settings: user.sound_settings,
           lang: user.lang,
-          avatar_url: user.avatar_url
         })
 
       {:error, %Ecto.Changeset{} = changeset} ->

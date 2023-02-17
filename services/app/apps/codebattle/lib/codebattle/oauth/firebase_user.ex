@@ -141,6 +141,7 @@ defmodule Codebattle.Oauth.User.FirebaseUser do
   defp create_in_db(%{name: name, email: email}, firebase_uid) do
     changeset =
       User.changeset(%User{}, %{
+        avatar_url: gravatar_url(email),
         name: name,
         email: email,
         firebase_uid: firebase_uid
@@ -161,5 +162,11 @@ defmodule Codebattle.Oauth.User.FirebaseUser do
 
   defp api_key do
     Application.get_env(:codebattle, :firebase)[:api_key]
+  end
+
+  defp gravatar_url(email) do
+    hash = :erlang.md5(email) |> Base.encode16(case: :lower)
+
+    "https://gravatar.com/avatar/#{hash}?d=identicon"
   end
 end
