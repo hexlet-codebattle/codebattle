@@ -25,6 +25,7 @@ import CompletedGames from '../components/Game/CompletedGames';
 import Heatmap from './Heatmap';
 import Loading from '../components/Loading';
 import * as selectors from '../selectors';
+import langIconNames from '../config/langIconNames';
 
 const UserProfile = () => {
   const [stats, setStats] = useState(null);
@@ -321,7 +322,7 @@ const UserProfile = () => {
             <h3 className="my-2 cb-heading">
               Lang:
               <img
-                src={`/assets/images/achievements/${stats.user.lang}.png`}
+                src={`/assets/images/achievements/${langIconNames[stats.user.lang]}.png`}
                 alt={stats.user.lang}
                 title={stats.user.lang}
                 width="30"
