@@ -6,12 +6,11 @@ defmodule Codebattle.Tournament.Base do
   @moduledoc """
   Defines interface for tournament type
   """
-  @callback join(%Codebattle.Tournament{}, map()) :: %Codebattle.Tournament{}
-  @callback complete_players(%Codebattle.Tournament{}) :: %Codebattle.Tournament{}
-  @callback build_matches(%Codebattle.Tournament{}) :: %Codebattle.Tournament{}
-  @callback maybe_finish(%Codebattle.Tournament{}) :: %Codebattle.Tournament{}
-  @callback create_game(%Codebattle.Tournament{}, %Codebattle.Tournament.Types.Match{}) ::
-              pos_integer()
+  @callback join(%Tournament{}, map()) :: %Tournament{}
+  @callback complete_players(%Tournament{}) :: %Tournament{}
+  @callback build_matches(%Tournament{}) :: %Tournament{}
+  @callback maybe_finish(%Tournament{}) :: %Tournament{}
+  @callback create_game(%Tournament{}, %Tournament.Match{}) :: pos_integer()
 
   defmacro __using__(_opts) do
     quote do

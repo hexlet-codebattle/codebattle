@@ -5,54 +5,58 @@ defmodule Codebattle.Tournament do
   import Ecto.Changeset
 
   alias Codebattle.AtomizedMap
+  alias Codebattle.Tournament
   alias Codebattle.Tournament.Individual
-  alias Codebattle.Tournament.Types
 
   @derive {Jason.Encoder,
-   only: [
-     :id,
-     :type,
-     :name,
-     :meta,
-     :state,
-     :difficulty,
-     :starts_at,
-     :players_count,
-     :data,
-     :creator,
-     :creator_id,
-     # :task_pack,
-     :task_pack_id,
-     :is_live
-   ]}
+           only: [
+             :creator,
+             :creator_id,
+             :level,
+             :id,
+             :intended_player_ids,
+             :is_live,
+             :matches,
+             :meta,
+             :name,
+             :players,
+             :players_limit,
+             :starts_at,
+             :state,
+             :type
+           ]}
 
-  @types ~w(individual team stairway)
   @access_types ~w(public token)
-  @states ~w(upcoming waiting_participants canceled active finished)
   @difficulties ~w(elementary easy medium hard)
+  @states ~w(upcoming waiting_participants canceled active finished)
+  @types ~w(individual team ladder)
+
   @max_alive_tournaments 7
   @default_match_timeout Application.compile_env(:codebattle, :tournament_match_timeout)
 
   schema "tournaments" do
-    field(:name, :string)
-    field(:type, :string, default: "individual")
-    field(:difficulty, :string, default: "elementary")
-    field(:state, :string, default: "upcoming")
-    field(:default_language, :string, default: "js")
-    field(:players_count, :integer)
-    field(:match_timeout_seconds, :integer, default: @default_match_timeout)
-    field(:step, :integer, default: 0)
-    field(:starts_at, :utc_datetime)
-    field(:meta, AtomizedMap, default: %{})
-    field(:last_round_started_at, :naive_datetime)
-    field(:access_type, :string, default: "public")
     field(:access_token, :string)
-    field(:module, :any, virtual: true, default: Individual)
+    field(:access_type, :string, default: "public")
+    field(:current_round, :integer, default: 0)
+    field(:default_language, :string, default: "js")
+    field(:intended_player_ids, {:array, :integer}, default: [])
     field(:is_live, :boolean, virtual: true, default: false)
-    embeds_one(:data, Types.Data, on_replace: :delete)
+    field(:last_round_started_at, :naive_datetime)
+    field(:level, :string, default: "elementary")
+    field(:match_timeout_seconds, :integer, default: @default_match_timeout)
+    field(:meta, AtomizedMap, default: %{})
+    field(:module, :any, virtual: true, default: Individual)
+    field(:name, :string)
+    field(:players_limit, :integer)
+    field(:starts_at, :utc_datetime)
+    field(:state, :string, default: "upcoming")
+    field(:task_strategy, :string, default: "random")
+    field(:type, :string, default: "individual")
+
+    embeds_many(:players, Tournament.Player, on_replace: :delete)
+    embeds_many(:matches, Tournament.Match, on_replace: :delete)
 
     belongs_to(:creator, Codebattle.User)
-    belongs_to(:task_pack, Codebattle.TaskPack)
 
     timestamps()
   end
@@ -61,35 +65,30 @@ defmodule Codebattle.Tournament do
     struct
     |> cast(params, [
       :name,
-      :difficulty,
+      :level,
       :type,
       :access_type,
       :access_token,
-      :task_pack_id,
-      :step,
+      :current_round,
+      :task_strategy,
       :state,
       :starts_at,
       :match_timeout_seconds,
       :last_round_started_at,
-      :players_count,
+      :players_limit,
       :default_language,
-      :meta
+      :meta,
+      :intended_player_ids
     ])
-    |> cast_embed(:data)
+    |> cast_embed(:matches)
+    |> cast_embed(:players)
     |> validate_inclusion(:state, @states)
     |> validate_inclusion(:type, @types)
     |> validate_inclusion(:access_type, @access_types)
-    |> validate_inclusion(:difficulty, @difficulties)
+    |> validate_inclusion(:level, @difficulties)
     |> validate_required([:name, :starts_at])
     |> validate_alive_maximum(params)
-    |> add_task_pack(params["task_pack"] || params[:task_pack])
     |> add_creator(params["creator"] || params[:creator])
-  end
-
-  def add_task_pack(changeset, nil), do: changeset
-
-  def add_task_pack(changeset, task_pack) do
-    change(changeset, %{task_pack: task_pack})
   end
 
   def add_creator(changeset, nil), do: changeset

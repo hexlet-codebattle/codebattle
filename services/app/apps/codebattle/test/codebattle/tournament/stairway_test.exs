@@ -5,10 +5,10 @@
 #   @module Codebattle.Tournament.Stairway
 
 #   def build_player(user, params \\ %{}) do
-#     struct(Codebattle.Tournament.Types.Player, Map.from_struct(user)) |> Map.merge(params)
+#     struct(Codebattle.Tournament.Player, Map.from_struct(user)) |> Map.merge(params)
 #   end
 
-#   def get_matches_states(tournament), do: tournament.data.matches |> Enum.map(fn x -> x.state end)
+#   def get_matches_states(tournament), do: tournament.matches |> Enum.map(fn x -> x.state end)
 
 #   test ".start_step! for round 0 picks task from task_pack and starts games" do
 #     user1 = insert(:user)

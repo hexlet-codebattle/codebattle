@@ -124,7 +124,7 @@ const Tournament = () => {
               </div>
               <div className="col-12 mt-4">
                 <TeamMatches
-                  matches={tournament.data.matches}
+                  matches={tournament.matches}
                   currentUserId={currentUserId}
                 />
               </div>
@@ -143,7 +143,7 @@ const Tournament = () => {
             <TournamentChat messages={messages} />
             {tournament.state === TournamentStates.active && (
             <Participants
-              players={tournament.data.players}
+              players={tournament.players}
               state={tournament.state}
               creatorId={tournament.creatorId}
               currentUserId={currentUserId}
@@ -166,8 +166,8 @@ const Tournament = () => {
             />
             <IndividualMatches
               state={tournament.state}
-              matches={tournament.data.matches}
-              playersCount={tournament.data.players.length}
+              matches={tournament.matches}
+              playersCount={tournament.players.length}
               currentUserId={currentUserId}
             />
           </div>

@@ -5,10 +5,10 @@ defmodule Codebattle.Tournament.TeamTest do
   @module Codebattle.Tournament.Team
 
   def build_team_player(user, params \\ %{}) do
-    struct(Codebattle.Tournament.Types.Player, Map.from_struct(user)) |> Map.merge(params)
+    struct(Codebattle.Tournament.Player, Map.from_struct(user)) |> Map.merge(params)
   end
 
-  def get_matches_states(tournament), do: tournament.data.matches |> Enum.map(fn x -> x.state end)
+  def get_matches_states(tournament), do: tournament.matches |> Enum.map(fn x -> x.state end)
 
   test ".maybe_start_new_step do not calls next step" do
     user1 = insert(:user)
@@ -35,7 +35,7 @@ defmodule Codebattle.Tournament.TeamTest do
 
     assert new_tournament.step == 0
 
-    states = new_tournament.data.matches |> Enum.map(fn x -> x.state end)
+    states = new_tournament.matches |> Enum.map(fn x -> x.state end)
 
     assert states == ["game_over", "playing"]
   end

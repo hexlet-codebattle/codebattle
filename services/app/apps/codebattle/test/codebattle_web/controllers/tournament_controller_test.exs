@@ -23,7 +23,7 @@ defmodule CodebattleWeb.TournamentControllerTest do
         creator_id: creator.id,
         data: %{
           intended_player_ids: [intended_player.id],
-          players: [struct(Codebattle.Tournament.Types.Player, Map.from_struct(player))]
+          players: [struct(Codebattle.Tournament.Player, Map.from_struct(player))]
         }
       )
 

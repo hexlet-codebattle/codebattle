@@ -1,10 +1,10 @@
 defmodule Codebattle.Tournament.Helpers do
   alias Codebattle.User
 
-  def get_players(tournament), do: tournament.data.players
-  def get_matches(tournament), do: tournament.data.matches
-  def get_intended_player_ids(tournament), do: Map.get(tournament.data, :intended_player_ids, [])
-  def get_player_ids(tournament), do: tournament.data.players |> Enum.map(& &1.id)
+  def get_players(tournament), do: tournament.players
+  def get_matches(tournament), do: tournament.matches
+  def get_intended_player_ids(tournament), do: Map.get(tournament, :intended_player_ids, [])
+  def get_player_ids(tournament), do: tournament.players |> Enum.map(& &1.id)
 
   def get_intended_players(tournament) do
     tournament
@@ -70,7 +70,7 @@ defmodule Codebattle.Tournament.Helpers do
   end
 
   def is_player?(tournament, player_id, team_id) do
-    tournament.data.players
+    tournament.players
     |> Enum.find_value(fn p -> p.id == player_id and p.team_id == team_id end)
     |> Kernel.!()
     |> Kernel.!()

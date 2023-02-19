@@ -33,7 +33,8 @@ defmodule Codebattle.Oauth.Github do
   `login_url/1` returns a `String` URL to be used as the initial OAuth redirect.
   """
   def login_url(%{redirect_uri: redirect_uri}) do
-      query = URI.encode_query(%{
+    query =
+      URI.encode_query(%{
         client_id: client_id(),
         redirect_uri: redirect_uri,
         scope: "user:email"

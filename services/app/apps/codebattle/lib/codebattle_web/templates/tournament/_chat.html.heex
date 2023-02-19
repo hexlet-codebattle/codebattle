@@ -1,4 +1,4 @@
-<div class="sticky-top bg-white">
+<%!-- <div class="sticky-top bg-white">
   <div class="rounded-top shadow-sm" style="height: 350px;">
     <div
       class="overflow-auto px-3 pt-3 h-100 text-break"
@@ -36,9 +36,9 @@
         </div>
       <% end %>
     </div>
-  </div>
+  </div> --%>
 
-  <%= form_for :message, "#", [phx_submit: :chat_message],  fn f -> %>
+  <%!-- <%= form_for :message, "#", [phx_submit: :chat_message],  fn f -> %>
     <div class="d-flex shadow-sm rounded-bottom">
       <%= text_input(f, :text,
         autocomplete: "off",
@@ -49,4 +49,4 @@
       <%= submit("Send", class: "btn btn-outline-secondary x-rounded-bottom-right rounded-0") %>
     </div>
   <% end %>
-</div>
+</div> --%>

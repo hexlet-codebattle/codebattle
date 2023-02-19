@@ -3,10 +3,7 @@
   <%= for player <- players do %>
     <div class="cb-row-avatar">
       <a href={"/users/#{player.id}"}>
-        <img
-          class="attachment cb-user-avatar rounded border"
-          src={player.avatar_url}
-        />
+        <img class="attachment cb-user-avatar rounded border" src={player.avatar_url} />
       </a>
     </div>
   <% end %>

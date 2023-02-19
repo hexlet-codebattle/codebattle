@@ -27,7 +27,7 @@ defmodule CodebattleWeb.Api.V1.SettingsController do
         json(conn, %{
           name: user.name,
           sound_settings: user.sound_settings,
-          lang: user.lang,
+          lang: user.lang
         })
 
       {:error, %Ecto.Changeset{} = changeset} ->

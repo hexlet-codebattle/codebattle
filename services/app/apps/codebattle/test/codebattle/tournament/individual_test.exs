@@ -8,7 +8,7 @@ defmodule Codebattle.Tournament.IndividualTest do
     test "scales to 2 when 1 player" do
       user = insert(:user)
 
-      player = struct(Codebattle.Tournament.Types.Player, Map.from_struct(user))
+      player = struct(Codebattle.Tournament.Player, Map.from_struct(user))
 
       tournament =
         insert(:tournament,
@@ -26,7 +26,7 @@ defmodule Codebattle.Tournament.IndividualTest do
     test "scales to 8 when 7 players" do
       user = insert(:user)
 
-      player = struct(Codebattle.Tournament.Types.Player, Map.from_struct(user))
+      player = struct(Codebattle.Tournament.Player, Map.from_struct(user))
 
       tournament =
         insert(:tournament,
@@ -44,7 +44,7 @@ defmodule Codebattle.Tournament.IndividualTest do
     test "scales to 32 when 18 players" do
       user = insert(:user)
 
-      player = struct(Codebattle.Tournament.Types.Player, Map.from_struct(user))
+      player = struct(Codebattle.Tournament.Player, Map.from_struct(user))
 
       tournament =
         insert(:tournament,
@@ -62,7 +62,7 @@ defmodule Codebattle.Tournament.IndividualTest do
     test "takes 32 when 33 players" do
       user = insert(:user)
 
-      player = struct(Codebattle.Tournament.Types.Player, Map.from_struct(user))
+      player = struct(Codebattle.Tournament.Player, Map.from_struct(user))
 
       tournament =
         insert(:tournament,
@@ -80,7 +80,7 @@ defmodule Codebattle.Tournament.IndividualTest do
     test "when players_count fixed" do
       user = insert(:user)
 
-      player = struct(Codebattle.Tournament.Types.Player, Map.from_struct(user))
+      player = struct(Codebattle.Tournament.Player, Map.from_struct(user))
 
       tournament =
         insert(:tournament,
@@ -100,8 +100,8 @@ defmodule Codebattle.Tournament.IndividualTest do
     user1 = insert(:user)
     user2 = insert(:user)
 
-    player1 = struct(Codebattle.Tournament.Types.Player, Map.from_struct(user1))
-    player2 = struct(Codebattle.Tournament.Types.Player, Map.from_struct(user2))
+    player1 = struct(Codebattle.Tournament.Player, Map.from_struct(user1))
+    player2 = struct(Codebattle.Tournament.Player, Map.from_struct(user2))
     game_id = 1
 
     tournament =
@@ -123,7 +123,7 @@ defmodule Codebattle.Tournament.IndividualTest do
         player_results: %{user1.id => "timeout", user2.id => "timeout"}
       })
 
-    states = new_tournament.data.matches |> Enum.map(fn x -> x.state end)
+    states = new_tournament.matches |> Enum.map(fn x -> x.state end)
 
     assert states == ["timeout", "playing"]
   end
@@ -132,8 +132,8 @@ defmodule Codebattle.Tournament.IndividualTest do
     user1 = insert(:user)
     user2 = insert(:user)
 
-    player1 = struct(Codebattle.Tournament.Types.Player, Map.from_struct(user1))
-    player2 = struct(Codebattle.Tournament.Types.Player, Map.from_struct(user2))
+    player1 = struct(Codebattle.Tournament.Player, Map.from_struct(user1))
+    player2 = struct(Codebattle.Tournament.Player, Map.from_struct(user2))
     game_id = 1
 
     tournament =
@@ -155,12 +155,12 @@ defmodule Codebattle.Tournament.IndividualTest do
         player_results: %{user1.id => "won", user2.id => "gave_up"}
       })
 
-    assert new_tournament.data.matches |> Enum.map(fn x -> x.state end) == [
+    assert new_tournament.matches |> Enum.map(fn x -> x.state end) == [
              "game_over",
              "playing"
            ]
 
-    assert new_tournament.data.matches
+    assert new_tournament.matches
            |> List.first()
            |> Map.get(:players)
            |> Enum.map(fn x -> {x.id, x.result} end) ==
@@ -171,8 +171,8 @@ defmodule Codebattle.Tournament.IndividualTest do
     user1 = insert(:user)
     user2 = insert(:user)
 
-    player1 = struct(Codebattle.Tournament.Types.Player, Map.from_struct(user1))
-    player2 = struct(Codebattle.Tournament.Types.Player, Map.from_struct(user2))
+    player1 = struct(Codebattle.Tournament.Player, Map.from_struct(user1))
+    player2 = struct(Codebattle.Tournament.Player, Map.from_struct(user2))
     game_id = 1
 
     tournament =
@@ -194,12 +194,12 @@ defmodule Codebattle.Tournament.IndividualTest do
         player_results: %{user1.id => "lost", user2.id => "won"}
       })
 
-    assert new_tournament.data.matches |> Enum.map(fn x -> x.state end) == [
+    assert new_tournament.matches |> Enum.map(fn x -> x.state end) == [
              "game_over",
              "playing"
            ]
 
-    assert new_tournament.data.matches
+    assert new_tournament.matches
            |> List.first()
            |> Map.get(:players)
            |> Enum.map(fn x -> {x.id, x.result} end) ==
@@ -210,8 +210,8 @@ defmodule Codebattle.Tournament.IndividualTest do
     user1 = insert(:user)
     user2 = insert(:user)
 
-    player1 = struct(Codebattle.Tournament.Types.Player, Map.from_struct(user1))
-    player2 = struct(Codebattle.Tournament.Types.Player, Map.from_struct(user2))
+    player1 = struct(Codebattle.Tournament.Player, Map.from_struct(user1))
+    player2 = struct(Codebattle.Tournament.Player, Map.from_struct(user2))
 
     matches = %{state: "game_over", game_id: 2, players: [player1, player2]} |> List.duplicate(7)
 
@@ -232,7 +232,7 @@ defmodule Codebattle.Tournament.IndividualTest do
 
     assert new_tournament.step == 0
 
-    states = new_tournament.data.matches |> Enum.map(fn x -> x.state end)
+    states = new_tournament.matches |> Enum.map(fn x -> x.state end)
 
     assert states == [
              "game_over",
@@ -284,8 +284,8 @@ defmodule Codebattle.Tournament.IndividualTest do
     }
 
     insert(:playbook, %{data: playbook_data, task: task, winner_lang: "ruby"})
-    player1 = struct(Codebattle.Tournament.Types.Player, Map.from_struct(user1))
-    player2 = struct(Codebattle.Tournament.Types.Player, Map.from_struct(user2))
+    player1 = struct(Codebattle.Tournament.Player, Map.from_struct(user1))
+    player2 = struct(Codebattle.Tournament.Player, Map.from_struct(user2))
 
     matches = %{state: "game_over", game_id: 2, players: [player1, player2]} |> List.duplicate(8)
 
@@ -306,7 +306,7 @@ defmodule Codebattle.Tournament.IndividualTest do
 
     assert new_tournament.step == 1
 
-    states = new_tournament.data.matches |> Enum.map(fn x -> x.state end)
+    states = new_tournament.matches |> Enum.map(fn x -> x.state end)
 
     assert states == [
              "game_over",
@@ -328,8 +328,8 @@ defmodule Codebattle.Tournament.IndividualTest do
     user1 = insert(:user)
     user2 = insert(:user)
 
-    player1 = struct(Codebattle.Tournament.Types.Player, Map.from_struct(user1))
-    player2 = struct(Codebattle.Tournament.Types.Player, Map.from_struct(user2))
+    player1 = struct(Codebattle.Tournament.Player, Map.from_struct(user1))
+    player2 = struct(Codebattle.Tournament.Player, Map.from_struct(user2))
 
     matches = %{state: "game_over", game_id: 2, players: [player1, player2]} |> List.duplicate(12)
 
