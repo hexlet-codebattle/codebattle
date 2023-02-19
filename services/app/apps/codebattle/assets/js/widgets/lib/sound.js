@@ -23,11 +23,10 @@ const soundSettings = Gon.getAsset('current_user').sound_settings;
 const soundType = soundSettings.type;
 const defaultSoundLevel = soundSettings.level * 0.1;
 
-const sprite = audioConfigs[soundType]?.sprite;
-const audio = () => new Howl({
-  src: [audioPaths[soundType]],
-  sprite,
-  volume: defaultSoundLevel,
+const audio = (type = soundType, volume = defaultSoundLevel) => new Howl({
+  src: audioPaths[type],
+  sprite: audioConfigs[type]?.sprite,
+  volume,
 });
 
 const sound = {
@@ -44,26 +43,20 @@ const sound = {
   },
 };
 
-  function createSound(slug) {
-    if (slug?.sprite?.win) {
-      return new Howl({
-        usingWebAudio: false,
-        src: [slug.src],
-        sprite: {
-          win: slug.sprite.win,
-        },
-      });
-    }
-    return new Howl({ src: [slug.src] });
-  }
+const createSound = slug => ({
+  play: (type, soundLevel) => {
+    const soundEffect = audio(slug, soundLevel);
+    soundEffect.play(type);
+  },
+});
 
-  function soundFactory() {
-    return {
-      dendy: createSound(dendy),
-      cs: createSound(cs),
-      standart: createSound(standart),
-      silent: null,
-    };
-  }
-  export const sounds = () => soundFactory();
-  export default sound;
+const createPlayer = () => ({
+  dendy: createSound('dendy'),
+  cs: createSound('cs'),
+  standart: createSound('standart'),
+  silent: null,
+  stop: () => Howler.stop(),
+});
+
+export { createPlayer };
+export default sound;

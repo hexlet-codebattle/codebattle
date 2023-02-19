@@ -7,7 +7,7 @@ import * as Yup from 'yup';
 import Slider from 'calcite-react/Slider';
 import * as Icon from 'react-feather';
 import languages from '../../config/languages';
-import sound, { sounds } from '../../lib/sound';
+import { createPlayer } from '../../lib/sound';
 
 const playingLanguages = Object.entries(languages);
 
@@ -38,6 +38,13 @@ export default ({ onSubmit, settings }) => {
       {_.capitalize(lang)}
     </option>
   ));
+
+  const player = createPlayer();
+
+  const playSound = (type, volume) => {
+    player.stop();
+    player[type].play('win', volume);
+  };
 
   const validationSchema = Yup.object({
     name: Yup.string()
@@ -106,7 +113,7 @@ export default ({ onSubmit, settings }) => {
                     name="sound_settings.type"
                     value="dendy"
                     className="mr-2"
-                    onClick={() => sounds().dendy.play('win')}
+                    onClick={() => playSound('dendy', values.sound_settings.level * 0.1)}
                   />
                   Dendy
                 </div>
@@ -116,7 +123,7 @@ export default ({ onSubmit, settings }) => {
                     name="sound_settings.type"
                     value="cs"
                     className="mr-2"
-                    onClick={() => sounds().cs.play('win')}
+                    onClick={() => playSound('cs', values.sound_settings.level * 0.1)}
                   />
                   CS
                 </div>
@@ -126,7 +133,7 @@ export default ({ onSubmit, settings }) => {
                     name="sound_settings.type"
                     value="standart"
                     className="mr-2"
-                    onClick={() => sounds().standart.play('win')}
+                    onClick={() => playSound('standart', values.sound_settings.level * 0.1)}
                   />
                   Standart
                 </div>
@@ -153,7 +160,7 @@ export default ({ onSubmit, settings }) => {
                   disabled={values.sound_settings.type === 'silent'}
                   onInput={e => {
                     handleChange(e);
-                    sound.play('win', e.target.value * 0.1);
+                    playSound(values.sound_settings.type, e.target.value * 0.1);
                   }}
                   className="ml-3 mr-3 form-control"
                 />
