@@ -16,17 +16,17 @@ const LobbyChat = ({ connectToChat }) => {
   }, []);
 
   return (
-    <div className="d-flex shadow-sm mt-2" style={{ height: '500px' }}>
-      <div className="col-12 col-sm-8 p-0 bg-light rounded-left h-100 position-relative">
+    <div className="d-flex flex-wrap shadow-sm mt-2 cb-chat-container">
+      <div className="col-12 col-sm-8 p-0 bg-light rounded-left h-sm-100 position-relative">
         <Messages messages={messages} />
         <ChatInput />
       </div>
-      <div className="col-4 d-none d-sm-block p-0 border-left bg-light rounded-right">
-        <div className="d-flex flex-column justify-content-start overflow-auto h-100">
-          <div className="px-3 py-3 w-100 border-top">
-            <p className="mb-1">{`Online players: ${presenceList.length}`}</p>
+      <div className="col-12 col-sm-4 p-0 pb-3 pb-sm-5 border-left bg-light rounded-right cb-players-container">
+        <div className="d-flex flex-column h-100">
+          <p className="px-3 pt-3 border-top mb-3">{`Online players: ${presenceList.length}`}</p>
+          <div className="d-flex flex-column align-items-start overflow-auto px-3">
             {presenceList.map(presenceUser => (
-              <div key={presenceUser.id} className="my-1">
+              <div key={presenceUser.id} className="mb-1">
                 <UserInfo user={presenceUser.user} hideOnlineIndicator />
               </div>
             ))}
