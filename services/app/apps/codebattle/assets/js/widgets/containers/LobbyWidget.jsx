@@ -237,7 +237,7 @@ const LiveTournaments = ({ tournaments }) => {
       </table>
       <div className="text-center mt-5">
         <a href="/tournaments">
-          <u>Tournamets Info</u>
+          <u>Tournaments Info</u>
         </a>
       </div>
     </div>
