@@ -5,6 +5,8 @@ import {
 } from '@testing-library/react';
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
+import axios from 'axios';
+
 import reducers from '../widgets/slices';
 import UserSettings from '../widgets/containers/UserSettings';
 import UserSettingsForm from '../widgets/components/User/UserSettingsForm';
@@ -16,6 +18,8 @@ jest.mock('@fortawesome/react-fontawesome', () => ({
 
 jest.mock('axios');
 
+jest.useFakeTimers();
+
 const reducer = combineReducers(reducers);
 
 const preloadedState = {
@@ -26,7 +30,7 @@ const preloadedState = {
     },
     id: 11,
     name: 'Diman',
-    lang: 'typescript',
+    lang: 'ts',
     avatar_url: '/assets/images/logo.svg',
     discord_name: null,
     discord_id: null,
@@ -63,15 +67,24 @@ describe('UserSettings test cases', () => {
     expect(getByText(/settings/i)).toBeInTheDocument();
   });
   it('show success notification', async () => {
+    const settingUpdaterSpy = jest.spyOn(axios, 'patch').mockResolvedValueOnce({ data: {} });
     const {
       getByRole,
     } = vdom();
     const save = getByRole('button', { name: /save/i });
     const alert = getByRole('alert');
+
+    fireEvent.change(screen.getByLabelText(/your name/i), {
+      target: { value: 'Dmitry' },
+    });
     fireEvent.click(save);
 
-    setTimeout(() => expect(alert).toHaveClass('editSuccess'), 300);
+    await waitFor(() => {
+      expect(settingUpdaterSpy).toHaveBeenCalled();
+      expect(alert).toHaveClass('alert-success');
+    });
   });
+
   test.each(settings)('editing profile test with lang %s', async lang => {
     const handleSubmit = jest.fn();
     render(
