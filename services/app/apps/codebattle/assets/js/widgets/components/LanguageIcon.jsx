@@ -3,7 +3,9 @@ import cn from 'classnames';
 
 const iconsToClass = {
   js: 'icon-nodejs',
+  javascript: 'icon-nodejs',
   ts: 'icon-nodejs',
+  typescript: 'icon-nodejs',
   dart: 'icon-ghost',
   golang: 'icon-go',
   cpp: 'icon-cplusplus',
