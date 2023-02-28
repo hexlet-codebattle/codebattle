@@ -141,7 +141,7 @@ const GameActionButton = ({ game }) => {
             <button
               type="button"
               className="btn btn-sm"
-              onClick={() => copy(`${window.location}${gameUrl}`)}
+              onClick={() => copy(`${window.location.host}${gameUrl}`)}
               data-toggle="tooltip"
               data-placement="right"
               title="Copy link"
