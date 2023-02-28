@@ -2,6 +2,7 @@ export default {
   js: 'js',
   javascript: 'js',
   ts: 'ts',
+  typescript: 'ts',
   cpp: 'cpp',
   csharp: 'csharp',
   dart: 'dart',
