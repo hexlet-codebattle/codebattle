@@ -190,6 +190,10 @@ const SignIn = () => {
   );
 };
 
+const braillePatternBlank = '\u2800';
+const space = ' ';
+const invalidSymbols = [braillePatternBlank, space];
+
 const SignUp = () => {
   const formik = useFormik({
     initialValues: {
@@ -199,8 +203,37 @@ const SignUp = () => {
       passwordConfirmation: '',
     },
     validationSchema: Yup.object().shape({
-      name: Yup.string().min(3, 'Should be at least 3 characters').required('Nickname required'),
-      email: Yup.string().email('Invalid email').required('Email required'),
+      name: Yup
+        .string()
+        .test(
+          'start-or-end-with-empty-symbols',
+          'Can\'t start or end with empty symbols',
+          value => {
+            if (!value) {
+              return true;
+            }
+            const invalidSymbolIndex = invalidSymbols.findIndex(invalidSymbol => (
+              value.startsWith(invalidSymbol) || value.endsWith(invalidSymbol)
+            ));
+
+            return invalidSymbolIndex === -1;
+          },
+        )
+        .min(3, 'Should be at least 3 characters')
+        .required('Nickname required'),
+      email: Yup
+        .string()
+        .email('Invalid email')
+        .test(
+          'exclude-braille-pattern-blank',
+          'Invalid email',
+          value => (
+            value
+              ? !value.includes(braillePatternBlank)
+              : true
+          ),
+        )
+        .required('Email required'),
       password: Yup.string().required('Password required'),
       passwordConfirmation: Yup.string().oneOf(
         [Yup.ref('password'), null],
