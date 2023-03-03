@@ -4,7 +4,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import cn from 'classnames';
 
-const csrfToken = document
+const getCsrfToken = () => document
   .querySelector("meta[name='csrf-token']")
   .getAttribute('content'); // validation token
 
@@ -144,7 +144,7 @@ const SignIn = () => {
         .post('/api/v1/session', data, {
           headers: {
             'Content-Type': 'application/json',
-            'x-csrf-token': csrfToken,
+            'x-csrf-token': getCsrfToken(),
           },
         })
         .then(() => {
@@ -212,7 +212,7 @@ const SignUp = () => {
         .post('/api/v1/users', formData, {
           headers: {
             'Content-Type': 'application/json',
-            'x-csrf-token': csrfToken,
+            'x-csrf-token': getCsrfToken(),
           },
         })
         .then(() => {
@@ -275,7 +275,7 @@ const ResetPassword = () => {
         .post('/api/v1/reset_password', { email }, {
           headers: {
             'Content-Type': 'application/json',
-            'x-csrf-token': csrfToken,
+            'x-csrf-token': getCsrfToken(),
           },
         })
         .then(() => {
