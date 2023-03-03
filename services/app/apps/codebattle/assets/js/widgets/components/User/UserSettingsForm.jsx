@@ -34,7 +34,7 @@ const TextInput = ({ label, ...props }) => {
 
 export default ({ onSubmit, settings }) => {
   const renderLanguages = langs => langs.map(([slug, lang]) => (
-    <option key={slug} value={lang}>
+    <option key={slug} value={slug}>
       {_.capitalize(lang)}
     </option>
   ));
