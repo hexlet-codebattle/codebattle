@@ -389,6 +389,19 @@ a {
   }
 }
 
+.cb-chat-container {
+  height: 500px;
+
+  @media (max-width: $sm) {
+    height: auto;
+    max-height: 1000px;
+  }
+}
+
+.cb-players-container {
+  max-height: 500px;
+}
+
 .cb-height-info {
   height: 300px;
 
@@ -585,13 +598,13 @@ td {
   flex-grow: 1;
 }
 
-@media (max-width: 1199px) {
+@media (max-width: $xl) {
   .cb-heading {
     font-size: 21px;
   }
 }
 
-@media (max-width: 991px) {
+@media (max-width: $lg) {
   .cb-heading {
     font-size: 18px;
   }
@@ -614,13 +627,13 @@ td {
   }
 }
 
-@media screen and (min-width: 676px) {
+@media screen and (min-width: $md) {
   .modal-dialog {
     max-width: 600px; /* New width for default modal */
   }
 }
 
-@media (max-width: 575px) {
+@media (max-width: $sm) {
   .cb-user-data {
     max-width: 100%;
     display: flex;
