@@ -77,7 +77,7 @@ const {
   gameRepeatedOnPages,
   uniqueGamesOnPage2,
   allGames,
-} = getTestData();
+} = getTestData('testData.json');
 
 const users = [{ name: 'user1', id: -4 }, { name: 'user2', id: -2 }];
 

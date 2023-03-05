@@ -1,0 +1,97 @@
+{
+  "invalidData": [
+    [
+      "nickname validation: empty name",
+      "",
+      "Nickname required",
+      "name"
+    ],
+    [
+      "nickname validation: consists entirely of spaces",
+      " ",
+      "Can't start or end with empty symbols",
+      "name"
+    ],
+    [
+      "nickname validation: starts with spaces",
+      " name",
+      "Can't start or end with empty symbols",
+      "name"
+    ],
+    [
+      "nickname validation: ends with spaces",
+      "name ",
+      "Can't start or end with empty symbols",
+      "name"
+    ],
+    [
+      "nickname validation: starts and ends with spaces",
+      " name ",
+      "Can't start or end with empty symbols",
+      "name"
+    ],
+    [
+      "nickname validation: short name",
+      "na",
+      "Should be at least 3 characters",
+      "name"
+    ],
+    [
+      "nickname validation: consists entirely of braille pattern blank",
+      "\u2800",
+      "Can't start or end with empty symbols",
+      "name"
+    ],
+    [
+      "nickname validation: starts with braille pattern blank",
+      "\u2800name",
+      "Can't start or end with empty symbols",
+      "name"
+    ],
+    [
+      "nickname validation: ends with braille pattern blank",
+      "name\u2800",
+      "Can't start or end with empty symbols",
+      "name"
+    ],
+    [
+      "nickname validation: starts and ends with braille pattern blank",
+      "\u2800name\u2800",
+      "Can't start or end with empty symbols",
+      "name"
+    ],
+    [
+      "email validation: consists entirely of braille pattern blank",
+      "\u2800\u2800\u2800\u2800@\u2800\u2800\u2800.\u2800\u2800",
+      "Invalid email",
+      "email"
+    ],
+    [
+      "email validation: consists of braille pattern blank and symbols",
+      "\u2800\u2800test\u2800\u2800@\u2800\u2800test\u2800.\u2800test\u2800",
+      "Invalid email",
+      "email"
+    ],
+    [
+      "email validation: consists of braille pattern blank and symbols on the ends",
+      "test\u2800\u2800@\u2800\u2800test\u2800\u2800.\u2800test",
+      "Invalid email",
+      "email"
+    ]
+  ],
+  "validData": {
+    "data": {
+      "name": "testName",
+      "email": "valid@email.com",
+      "password": "testpassword",
+      "passwordConfirmation": "testpassword"
+    },
+    "route": "/api/v1/users",
+    "headers": {
+      "headers": {
+        "Content-Type": "application/json",
+        "x-csrf-token": "test-csrf-token"
+      }
+    }
+  }
+}
