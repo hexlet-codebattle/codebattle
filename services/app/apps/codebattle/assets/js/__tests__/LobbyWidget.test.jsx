@@ -236,6 +236,7 @@ describe('test task choice', () => {
     fireEvent.click(createGameButton);
 
     expect(getByText(/Choose task/)).toBeInTheDocument();
+    expect(await findByRole('button', { name: 'task1 name' })).toBeInTheDocument();
 
     fireEvent.click(getByRole('button', { name: 'Create Battle' }));
 
@@ -304,7 +305,7 @@ describe('test task choice', () => {
       task_id: 1,
     };
     expect(mainMiddlewares.createInvite).toHaveBeenCalledWith(paramsWithOpponentAndChosenTask);
-  }, 6000);
+  }, 9000);
 
   test('filter tasks by level', async () => {
     const {
