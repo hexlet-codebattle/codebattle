@@ -1,83 +1,53 @@
 defmodule Codebattle.Tournament.Base do
   # credo:disable-for-this-file Credo.Check.Refactor.LongQuoteBlocks
-  alias Codebattle.Repo
   alias Codebattle.Tournament
 
   @moduledoc """
   Defines interface for tournament type
   """
-  @callback join(%Tournament{}, map()) :: %Tournament{}
-  @callback complete_players(%Tournament{}) :: %Tournament{}
-  @callback build_matches(%Tournament{}) :: %Tournament{}
-  @callback maybe_finish(%Tournament{}) :: %Tournament{}
-  @callback create_game(%Tournament{}, %Tournament.Match{}) :: pos_integer()
+  @callback complete_players(Tournament.t()) :: Tournament.t()
+  @callback build_matches(Tournament.t()) :: Tournament.t()
+  @callback maybe_finish(Tournament.t()) :: Tournament.t()
+  @callback calculate_round_results(Tournament.t()) :: Tournament.t()
 
   defmacro __using__(_opts) do
     quote do
       @behaviour Tournament.Base
       import Tournament.Helpers
 
-      def add_intended_player_id(tournament, player_id) do
-        new_ids =
-          tournament
-          |> get_intended_player_ids
-          |> Enum.concat([player_id])
-          |> Enum.uniq()
-
-        new_data =
-          tournament
-          |> Map.get(:data)
-          |> Map.merge(%{intended_player_ids: new_ids})
-          |> Map.from_struct()
-
-        update!(tournament, %{data: new_data})
-      end
-
       def add_player(tournament, player) do
-        players =
+        if players_count(tournament) < tournament.players_limit do
+          new_players =
+            Map.put(tournament.players, to_id(player.id), Tournament.Player.new!(player))
+
+          update!(tournament, %{players: new_players})
+        else
           tournament
-          |> get_players
-          |> Enum.filter(fn x -> x.id != player.id end)
-          |> Enum.concat([player])
-          |> Enum.uniq_by(fn x -> x.id end)
-
-        new_data =
-          tournament |> Map.get(:data) |> Map.merge(%{players: players}) |> Map.from_struct()
-
-        update!(tournament, %{data: new_data})
+        end
       end
+
+      def join(tournament = %{state: "waiting_participants"}, params) do
+        player =
+          params.user
+          |> Map.put(:lang, params.user.lang || tournament.default_language)
+          |> Map.put(:team_id, Map.get(params, :team_id))
+
+        add_player(tournament, player)
+      end
+
+      def join(tournament, _), do: tournament
 
       def leave(tournament, %{user: user}) do
         leave(tournament, %{user_id: user.id})
       end
 
       def leave(tournament, %{user_id: user_id}) do
-        new_ids =
-          tournament
-          |> get_intended_player_ids
-          |> Enum.filter(fn id -> id != user_id end)
+        new_players = Map.drop(tournament.players, [to_id(user_id)])
 
-        new_players =
-          tournament
-          |> get_players
-          |> Enum.filter(fn player -> player.id != user_id end)
-
-        new_data =
-          tournament
-          |> Map.get(:data)
-          |> Map.merge(%{players: new_players, intended_player_ids: new_ids})
-          |> Map.from_struct()
-
-        update!(tournament, %{data: new_data})
+        update!(tournament, %{players: new_players})
       end
 
       def leave(tournament, _user_id), do: tournament
-
-      def back(tournament = %{state: "waiting_participants"}, %{user: user}) do
-        update!(tournament, %{state: "upcoming"})
-      end
-
-      def back(tournament, _user), do: tournament
 
       def open_up(tournament, %{user: user}) do
         if can_moderate?(tournament, user) do
@@ -99,20 +69,16 @@ defmodule Codebattle.Tournament.Base do
         end
       end
 
-      def start(tournament = %{state: "upcoming"}, %{user: user}) do
-        if can_moderate?(tournament, user) do
-          update!(tournament, %{state: "waiting_participants"})
-        else
-          tournament
-        end
-      end
-
       def start(tournament = %{state: "waiting_participants"}, %{user: user}) do
         if can_moderate?(tournament, user) do
+          tournament =
+            tournament
+            |> complete_players()
+            |> start_round()
+
           tournament
-          |> complete_players()
-          |> start_step!()
           |> update!(%{
+            players_count: players_count(tournament),
             last_round_started_at: NaiveDateTime.utc_now(),
             state: "active"
           })
@@ -123,56 +89,63 @@ defmodule Codebattle.Tournament.Base do
 
       def start(tournament, _params), do: tournament
 
-      def maybe_start_new_step(tournament) do
+      def restart(tournament, %{user: user}) do
+        if can_moderate?(tournament, user) do
+          tournament
+          |> update!(%{
+            players: %{},
+            matches: %{},
+            players_count: 0,
+            current_round: 0,
+            last_round_started_at: nil,
+            state: "waiting_participants"
+          })
+        else
+          tournament
+        end
+      end
+
+      def restart(tournament, _user), do: tournament
+
+      def finish_match(tournament, payload) do
+        tournament
+        |> update_match(payload)
+        |> maybe_start_new_round()
+      end
+
+      def update_match(tournament, params) do
+        new_tournament =
+          update_in(tournament.matches[to_id(params.ref)], fn match ->
+            case params.game_state do
+              "timeout" ->
+                %{match | state: "timeout"}
+
+              "game_over" ->
+                winner_id = pick_game_winner_id(match.player_ids, params.player_results)
+                %{match | state: "game_over", winner_id: winner_id}
+            end
+          end)
+      end
+
+      def maybe_start_new_round(tournament) do
         matches = get_matches(tournament)
 
         if Enum.any?(matches, fn match -> match.state == "playing" end) do
           tournament
         else
           tournament
+          |> calculate_round_results()
           |> update!(%{
-            step: tournament.step + 1,
+            current_round: tournament.current_round + 1,
             last_round_started_at: NaiveDateTime.utc_now()
           })
-          |> maybe_finish
-          |> start_step!
+          |> maybe_finish()
+          |> start_round()
         end
       end
 
-      def finish_match(tournament, payload) do
-        %{game_id: game_id, game_state: game_state, player_results: player_results} = payload
-        params = %{state: game_state, player_results: player_results}
-
-        tournament
-        |> update_match(game_id, params)
-        |> maybe_start_new_step()
-      end
-
-      def update_match(tournament, game_id, params) when is_bitstring(game_id) do
-        {game_id_int, _} = Integer.parse(game_id)
-        update_match(tournament, game_id_int, params)
-      end
-
-      def update_match(tournament, game_id, params) do
-        new_matches =
-          tournament
-          |> get_matches
-          |> Enum.map(fn match ->
-            case {match.game_id, match.state} do
-              {^game_id, s} when s in ~w(pending playing) ->
-                new_params = Map.put(params, :started_at, tournament.last_round_started_at)
-                update_match_params(match, new_params)
-
-              _ ->
-                match
-            end
-            |> Map.from_struct()
-          end)
-
-        new_data =
-          tournament |> Map.get(:data) |> Map.merge(%{matches: new_matches}) |> Map.from_struct()
-
-        update!(tournament, %{data: new_data})
+      defp pick_game_winner_id(player_ids, player_results) do
+        Enum.find(player_ids, &(player_results[&1] == "won"))
       end
 
       def cancel_all_matches(tournament) do
@@ -190,62 +163,43 @@ defmodule Codebattle.Tournament.Base do
         update!(tournament, %{data: new_data})
       end
 
-      defp start_step!(tournament = %{state: "finished"}), do: tournament
+      defp start_round(tournament = %{state: "finished"}), do: tournament
 
-      defp start_step!(tournament) do
+      defp start_round(tournament) do
         tournament
         |> build_matches()
-        |> start_matches()
-        |> broadcast_new_step()
-        |> maybe_start_new_step()
+        # |> create_games_for_matches()
+        |> broadcast_new_round()
       end
 
-      defp start_matches(tournament) do
-        new_matches =
-          tournament
-          |> get_matches
-          |> Enum.map(fn match ->
-            case match do
-              %{players: [%{is_bot: true}, %{is_bot: true}]} ->
-                %{match | state: "canceled"}
+      # defp create_games_for_matches(tournament) do
+      #   new_round_matches =
+      #     tournament
+      #     # |> get_current_round_matches()
+      #     |> Enum.map(fn match ->
+      #       case match do
+      #         %{state: "pending", player_ids: [id1, id2]} when id1 < 0 and id2 < 0 ->
+      #           # cancel for bots
+      #           %{match | state: "canceled"}
 
-              %{state: "pending"} ->
-                game_id = create_game(tournament, match)
-                %{match | game_id: game_id, state: "playing"}
+      #         %{state: "pending", game_id: nil} ->
+      #           game_id = create_game(tournament, match)
+      #           %{match | game_id: game_id, state: "playing"}
 
-              _ ->
-                match
-            end
-            |> Map.from_struct()
-          end)
+      #         _ ->
+      #           match
+      #       end
+      #     end)
 
-        new_data =
-          tournament |> Map.get(:data) |> Map.merge(%{matches: new_matches}) |> Map.from_struct()
+      #   new_matches =
+      #     tournament.matches
+      #     |> Map.put(tournament.current_round, new_round_matches)
 
-        update!(tournament, %{data: new_data})
-      end
-
-      defp update_match_params(match, params = %{state: state})
-           when state in ~w(timeout game_over) do
-        %{
-          player_results: player_results,
-          started_at: started_at
-        } = params
-
-        new_duration = get_new_duration(started_at)
-
-        new_players =
-          Enum.map(match.players, fn player ->
-            Map.put(player, :result, player_results[player.id])
-          end)
-
-        Map.merge(match, %{players: new_players, duration: new_duration, state: state})
-      end
-
-      defp update_match_params(match, _params), do: match
+      #   update!(tournament, %{matches: new_matches})
+      # end
 
       def update!(tournament, params) do
-        tournament |> Tournament.changeset(params) |> Repo.update!()
+        tournament |> Tournament.changeset(params) |> Ecto.Changeset.apply_action!(:update)
       end
 
       def finish_all_playing_matches(tournament) do
@@ -266,7 +220,7 @@ defmodule Codebattle.Tournament.Base do
         update!(tournament, %{data: new_data})
       end
 
-      defp broadcast_new_step(tournament) do
+      defp broadcast_new_round(tournament) do
         Codebattle.PubSub.broadcast("tournament:round_created", %{tournament: tournament})
         tournament
       end
@@ -279,3 +233,22 @@ defmodule Codebattle.Tournament.Base do
     end
   end
 end
+
+# list =
+#   Enum.reduce(1..100000, [], fn _, acc ->
+#     map = %{
+#       a: :rand.uniform(100000),
+#       b: :rand.uniform(100000),
+#       c: :rand.uniform(100000),
+#       d: :rand.uniform(100000),
+#       e: :rand.uniform(100000),
+#       f: :rand.uniform(100000),
+#       g: :rand.uniform(100000),
+#       h: :rand.uniform(100000),
+#       hd: :rand.uniform(100000),
+#     }
+
+#     [map | acc]
+#   end)
+
+# :timer.tc(fn -> Enum.any?(list, fn x -> x.a == 2000000 end) end)

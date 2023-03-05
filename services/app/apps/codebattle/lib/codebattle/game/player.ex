@@ -120,7 +120,7 @@ defmodule Codebattle.Game.Player do
     init_player = %__MODULE__{
       id: player.id,
       is_bot: player.is_bot,
-      is_guest: player.is_guest,
+      is_guest: false,
       name: player.name,
       rating: player.rating,
       rank: player.rank,

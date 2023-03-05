@@ -164,8 +164,8 @@ defmodule CodebattleWeb.Factory do
     %Codebattle.Tournament{
       type: "individual",
       name: "name",
-      step: 0,
-      players_count: 16,
+      current_round: 0,
+      players_limit: 16,
       starts_at: NaiveDateTime.utc_now(),
       creator_id: 1,
       data: %{players: [], matches: []}
@@ -176,8 +176,8 @@ defmodule CodebattleWeb.Factory do
     %Codebattle.Tournament{
       type: "team",
       name: "name",
-      step: 0,
-      players_count: 16,
+      current_round: 0,
+      players_limit: 16,
       starts_at: NaiveDateTime.utc_now(),
       creator_id: 1,
       data: %{players: [], matches: []},
@@ -194,8 +194,8 @@ defmodule CodebattleWeb.Factory do
     %Codebattle.Tournament{
       type: "stairway",
       name: "Stairway tournament",
-      step: 0,
-      players_count: 16,
+      current_round: 0,
+      players_limit: 16,
       starts_at: NaiveDateTime.utc_now(),
       creator_id: 1,
       data: %{players: [], matches: []},
@@ -209,8 +209,8 @@ defmodule CodebattleWeb.Factory do
       access_type: "token",
       access_token: "asdfasdfasdf",
       name: "name",
-      step: 0,
-      players_count: 16,
+      current_round: 0,
+      players_limit: 16,
       starts_at: NaiveDateTime.utc_now(),
       creator_id: 1,
       data: %{players: [], matches: []}

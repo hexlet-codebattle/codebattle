@@ -42,20 +42,21 @@ defmodule Codebattle.MixProject do
       {:runner, in_umbrella: true, runtime: false},
       {:cowboy, "~> 2.8"},
       {:earmark, "~> 1.4"},
-      {:ecto, "~> 3.7"},
+      {:ecto_sql, "~> 3.6"},
       {:ecto_psql_extras, "~> 0.2"},
       {:envy, "~> 1.1.1"},
       {:gettext, "~> 0.18"},
       {:html_to_image, github: "koss-lebedev/html_to_image"},
       {:httpoison, "~> 1.8"},
       {:jason, "~> 1.2"},
-      {:phoenix, "~> 1.6.15"},
+      {:phoenix, "~> 1.7"},
       {:phoenix_client, github: "vtm9/phoenix_client"},
       {:phoenix_ecto, "~> 4.4"},
       {:phoenix_gon, "~> 0.4", github: "bonfire-networks/phoenix_gon"},
       {:phoenix_html, "~> 3.2"},
+      {:phoenix_view, "~> 2.0"},
       {:phoenix_live_dashboard, "~> 0.7.1"},
-      {:phoenix_live_view, "~> 0.17"},
+      {:phoenix_live_view, "~> 0.18"},
       {:phoenix_meta_tags, "~> 0.1.8"},
       {:plug_cowboy, "~> 2.5"},
       {:postgrex, ">= 0.0.0"},
@@ -71,7 +72,7 @@ defmodule Codebattle.MixProject do
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
 
       # dev
-      {:phoenix_live_reload, "~> 1.2", only: :dev},
+      {:phoenix_live_reload, "~> 1.3", only: :dev},
 
       # test
       {:ex_machina, "~> 2.4", only: :test},

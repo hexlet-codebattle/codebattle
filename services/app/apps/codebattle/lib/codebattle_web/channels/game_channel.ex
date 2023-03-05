@@ -128,7 +128,7 @@ defmodule CodebattleWeb.GameChannel do
   end
 
   def handle_info(%{event: "tournament:round_created", payload: payload}, socket) do
-    push(socket, "tournament:round_created", payload.tournament)
+    push(socket, "tournament:round_created", payload)
 
     {:noreply, socket}
   end

@@ -7,6 +7,8 @@ defmodule Codebattle.Tournament.Player do
   @primary_key false
   @derive Jason.Encoder
 
+  @fields [:avatar_url, :id, :is_bot, :lang, :name, :rank, :rating, :team_id]
+
   embedded_schema do
     field(:avatar_url, :string)
     field(:id, :integer)
@@ -18,17 +20,13 @@ defmodule Codebattle.Tournament.Player do
     field(:team_id, :integer)
   end
 
-  def changeset(struct, params) do
-    struct
-    |> cast(Map.from_struct(params), [
-      :avatar_url,
-      :id,
-      :is_bot,
-      :lang,
-      :name,
-      :rank,
-      :rating,
-      :team_id
-    ])
+  @spec new!(params :: map()) :: t()
+  def new!(params = %_{}), do: params |> Map.from_struct() |> new!()
+
+  def new!(params = %{}) do
+    %__MODULE__{}
+    |> cast(params, @fields)
+    |> validate_required([:id, :name])
+    |> apply_action!(:validate)
   end
 end

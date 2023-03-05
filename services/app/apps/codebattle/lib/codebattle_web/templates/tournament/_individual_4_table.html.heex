@@ -1,25 +1,27 @@
-<% matches = get_matches(@tournament) %>
+<%!-- <% matches = get_matches(@tournament) %>
 <% sm_final_range = 0..1 %>
 <% final = 2 %>
-<div class="d-flex justify-content-around">
-  <h4>SemiFinal</h4>
-  <h4>Final</h4>
-</div>
-<div class="bracket">
-  <div class="round">
-    <%= Enum.map sm_final_range, fn index -> %>
+<div>
+  <div class="d-flex justify-content-around">
+    <h4>SemiFinal</h4>
+    <h4>Final</h4>
+  </div>
+  <div class="bracket">
+    <div class="round">
+      <%= Enum.map sm_final_range, fn index -> %>
+        <div class="match">
+          <div class="match__content">
+            <%= render("_match.html", match: Enum.at(matches, index), current_user: @current_user) %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+    <div class="round">
       <div class="match">
         <div class="match__content">
-          <%= render("_match.html", match: Enum.at(matches, index), current_user: @current_user) %>
+          <%= render("_match.html", match: Enum.at(matches, final), current_user: @current_user) %>
         </div>
-      </div>
-    <% end %>
-  </div>
-  <div class="round">
-    <div class="match">
-      <div class="match__content">
-        <%= render("_match.html", match: Enum.at(matches, final), current_user: @current_user) %>
       </div>
     </div>
   </div>
-</div>
+</div> --%>

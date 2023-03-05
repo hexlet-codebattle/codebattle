@@ -56,10 +56,61 @@ defmodule CodebattleWeb do
 
       # Use all HTML functionality (forms, tags, etc)
       use Phoenix.HTML
+      import Phoenix.HTML.Form
 
       import CodebattleWeb.ErrorHelpers
       import CodebattleWeb.Gettext
-      import Phoenix.LiveView.Helpers
+      import CodebattleWeb.FormHelpers
+
+      unquote(view_helpers())
+    end
+  end
+
+  def live_view do
+    quote do
+      use Phoenix.LiveView,
+        root: "lib/codebattle_web/templates",
+        namespace: CodebattleWeb
+
+      use PhoenixMetaTags.TagView
+
+      # Import convenience functions from controllers
+      import Phoenix.Controller, only: [get_flash: 1, view_module: 1]
+
+      # Use all HTML functionality (forms, tags, etc)
+      use Phoenix.HTML
+      import Phoenix.HTML.{Form, Tag, Link, Format}
+
+      import CodebattleWeb.ErrorHelpers
+      import CodebattleWeb.Gettext
+
+      unquote(view_helpers())
+    end
+  end
+
+  def component do
+    quote do
+      use Phoenix.Component
+
+      unquote(view_helpers())
+    end
+  end
+
+  def live_component do
+    quote do
+      use Phoenix.LiveComponent
+
+      unquote(view_helpers())
+    end
+  end
+
+  defp view_helpers do
+    quote do
+      use Phoenix.HTML
+
+      alias CodebattleWeb.Router.Helpers, as: Routes
+      # Import basic rendering functionality (render, render_layout, etc)
+      # import Phoenix.View
     end
   end
 

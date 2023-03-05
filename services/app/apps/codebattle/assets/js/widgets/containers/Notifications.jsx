@@ -40,7 +40,7 @@ const Notifications = () => {
         </>
       )}
       { isTournamentGame && isActiveTournament
-        && <GoToNextGame info={tournamentsInfo} currentUserId={currentUserId} /> }
+        && <GoToNextGame tournamentsInfo={tournamentsInfo} currentUserId={currentUserId} /> }
       { isTournamentGame && <BackToTournamentButton /> }
       { !isTournamentGame && <BackToHomeButton />}
     </>

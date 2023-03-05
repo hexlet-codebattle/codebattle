@@ -24,6 +24,7 @@ defmodule Codebattle.Game.Context do
   @type game_params :: %{
           :players => nonempty_list(User.t()) | nonempty_list(Tournament.Player.t()),
           optional(:level) => String.t(),
+          optional(:ref) => non_neg_integer(),
           optional(:state) => String.t(),
           optional(:tournament_id) => tournament_id,
           optional(:timeout_seconds) => non_neg_integer(),

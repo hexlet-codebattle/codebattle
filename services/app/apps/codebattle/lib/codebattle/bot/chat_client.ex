@@ -116,6 +116,7 @@ defmodule Codebattle.Bot.ChatClient do
   defp say_about_code() do
     [
       "Your code looks very strange...",
+      "I'll be nice, once, then I won't",
       "What did you just type? Looks strange...",
       "What is this?...",
       "Hmmmm...",

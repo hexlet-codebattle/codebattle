@@ -5,7 +5,6 @@ defmodule Codebattle.Tournament do
   import Ecto.Changeset
 
   alias Codebattle.AtomizedMap
-  alias Codebattle.Tournament
   alias Codebattle.Tournament.Individual
 
   @derive {Jason.Encoder,
@@ -14,7 +13,6 @@ defmodule Codebattle.Tournament do
              :creator_id,
              :level,
              :id,
-             :intended_player_ids,
              :is_live,
              :matches,
              :meta,
@@ -27,8 +25,8 @@ defmodule Codebattle.Tournament do
            ]}
 
   @access_types ~w(public token)
-  @difficulties ~w(elementary easy medium hard)
-  @states ~w(upcoming waiting_participants canceled active finished)
+  @levels ~w(elementary easy medium hard)
+  @states ~w(waiting_participants canceled active finished)
   @types ~w(individual team ladder)
 
   @max_alive_tournaments 7
@@ -39,22 +37,21 @@ defmodule Codebattle.Tournament do
     field(:access_type, :string, default: "public")
     field(:current_round, :integer, default: 0)
     field(:default_language, :string, default: "js")
-    field(:intended_player_ids, {:array, :integer}, default: [])
     field(:is_live, :boolean, virtual: true, default: false)
     field(:last_round_started_at, :naive_datetime)
     field(:level, :string, default: "elementary")
     field(:match_timeout_seconds, :integer, default: @default_match_timeout)
+    field(:matches, AtomizedMap, default: %{})
+    field(:players, AtomizedMap, default: %{})
     field(:meta, AtomizedMap, default: %{})
     field(:module, :any, virtual: true, default: Individual)
     field(:name, :string)
     field(:players_limit, :integer)
+    field(:players_count, :integer, virtual: true, default: 0)
     field(:starts_at, :utc_datetime)
-    field(:state, :string, default: "upcoming")
+    field(:state, :string, default: "waiting_participants")
     field(:task_strategy, :string, default: "random")
     field(:type, :string, default: "individual")
-
-    embeds_many(:players, Tournament.Player, on_replace: :delete)
-    embeds_many(:matches, Tournament.Match, on_replace: :delete)
 
     belongs_to(:creator, Codebattle.User)
 
@@ -76,16 +73,16 @@ defmodule Codebattle.Tournament do
       :match_timeout_seconds,
       :last_round_started_at,
       :players_limit,
+      :players_count,
       :default_language,
       :meta,
-      :intended_player_ids
+      :players,
+      :matches
     ])
-    |> cast_embed(:matches)
-    |> cast_embed(:players)
     |> validate_inclusion(:state, @states)
     |> validate_inclusion(:type, @types)
     |> validate_inclusion(:access_type, @access_types)
-    |> validate_inclusion(:level, @difficulties)
+    |> validate_inclusion(:level, @levels)
     |> validate_required([:name, :starts_at])
     |> validate_alive_maximum(params)
     |> add_creator(params["creator"] || params[:creator])
@@ -113,5 +110,5 @@ defmodule Codebattle.Tournament do
 
   def types, do: @types
   def access_types, do: @access_types
-  def difficulties, do: @difficulties
+  def levels, do: @levels
 end

@@ -22,7 +22,7 @@ defmodule Codebattle.Tournament.GlobalSupervisor do
       %{
         id: to_string(tournament.id),
         restart: :transient,
-        start: {Tournament.Supervisor, :start_link, [tournament]}
+        start: {Tournament.Supervisor, :start_link, [tournament.id]}
       }
     )
   end
@@ -30,6 +30,7 @@ defmodule Codebattle.Tournament.GlobalSupervisor do
   def terminate_tournament(tournament_id) do
     try do
       Supervisor.terminate_child(__MODULE__, to_string(tournament_id))
+      Supervisor.delete_child(__MODULE__, to_string(tournament_id))
     rescue
       _ -> Logger.error("tournament not found while terminating #{tournament_id}")
     end

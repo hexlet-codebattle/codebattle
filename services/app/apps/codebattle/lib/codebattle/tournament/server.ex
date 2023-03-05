@@ -4,15 +4,17 @@ defmodule Codebattle.Tournament.Server do
   alias Codebattle.Tournament
 
   # API
-  def start_link(tournament) do
-    GenServer.start(__MODULE__, tournament, name: server_name(tournament.id))
+  def start_link(tournament_id) do
+    GenServer.start(__MODULE__, tournament_id, name: server_name(tournament_id))
   end
 
   def get_tournament(id) do
     try do
       GenServer.call(server_name(id), :get_tournament)
     catch
-      :exit, _reason -> nil
+      :exit, reason ->
+        Logger.error("Error to get tournament: #{inspect(reason)}")
+        nil
     end
   end
 
@@ -24,14 +26,21 @@ defmodule Codebattle.Tournament.Server do
     try do
       GenServer.call(server_name(tournament_id), {event_type, params})
     catch
-      :exit, _reason ->
+      :exit, reason ->
+        Logger.error("Error to send tournament update: #{inspect(reason)}")
         {:error, :not_found}
     end
   end
 
   # SERVER
-  def init(tournament) do
-    Codebattle.PubSub.subscribe("game:tournament:#{tournament.id}")
+  def init(tournament_id) do
+    Codebattle.PubSub.subscribe("game:tournament:#{tournament_id}")
+
+    tournament =
+      tournament_id
+      |> Tournament.Context.get_from_db!()
+      |> Tournament.Context.mark_as_live()
+
     {:ok, %{tournament: tournament}}
   end
 
@@ -48,6 +57,7 @@ defmodule Codebattle.Tournament.Server do
 
   def handle_call({event_type, params}, _from, state = %{tournament: tournament}) do
     %{module: module} = tournament
+
     new_tournament = apply(module, event_type, [tournament, params])
 
     broadcast_tournament_update(new_tournament)

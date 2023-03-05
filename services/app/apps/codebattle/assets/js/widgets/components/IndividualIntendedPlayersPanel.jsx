@@ -30,12 +30,6 @@ const IndividualIntentedPlayersPanel = ({
     />
     <h3>Players</h3>
     <Players players={participantPlayers} />
-    {state === TournamentStates.upcoming && (
-    <>
-      <h4>Intended Players</h4>
-      <Players players={intentedPlayers} />
-    </>
-    )}
   </div>
     );
 

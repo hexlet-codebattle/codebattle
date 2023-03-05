@@ -36,7 +36,7 @@
 
 #     assert new_tournament.step == 0
 #     assert new_tournament.state == "active"
-#     assert new_tournament.players_count == 2
+#     assert new_tournament.players_limit == 2
 #     assert new_tournament.meta["current_task"].id == Enum.at(task_ids, 0)
 #     matches = get_matches(new_tournament)
 #     assert length(matches) == 2
@@ -45,7 +45,7 @@
 #     new_tournament =
 #       new_tournament
 #       |> @module.finish_all_playing_matches()
-#       |> @module.maybe_start_new_step()
+#       |> @module.maybe_start_new_round()
 
 #     assert new_tournament.step == 1
 #     assert new_tournament.state == "active"
@@ -59,7 +59,7 @@
 #     new_tournament =
 #       new_tournament
 #       |> @module.finish_all_playing_matches()
-#       |> @module.maybe_start_new_step()
+#       |> @module.maybe_start_new_round()
 
 #     assert new_tournament.step == 2
 #     assert new_tournament.state == "active"
@@ -79,7 +79,7 @@
 #     new_tournament =
 #       new_tournament
 #       |> @module.finish_all_playing_matches()
-#       |> @module.maybe_start_new_step()
+#       |> @module.maybe_start_new_round()
 
 #     assert new_tournament.step == 3
 #     assert new_tournament.state == "finished"

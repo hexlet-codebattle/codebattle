@@ -1,32 +1,22 @@
 defmodule Codebattle.Tournament.Stairway do
-  alias Codebattle.Game
+  # alias Codebattle.Game
   alias Codebattle.Tournament
 
   use Tournament.Base
 
   @impl Tournament.Base
-  def join(tournament = %{state: "upcoming"}, %{user: user}) do
-    add_intended_player_id(tournament, user.id)
-  end
-
-  @impl Tournament.Base
-  def join(tournament = %{state: "waiting_participants"}, %{user: user}) do
-    player = Map.put(user, :lang, user.lang || tournament.default_language)
-    add_player(tournament, player)
-  end
-
-  @impl Tournament.Base
-  def join(tournament, _user), do: tournament
-
-  @impl Tournament.Base
   def complete_players(tournament) do
-    players_count = tournament |> get_players |> Enum.count()
-    update!(tournament, %{players_count: players_count})
+    tournament
+    # players_count = tournament |> get_players |> Enum.count()
+    # update!(tournament, %{players_count: players_count})
   end
+
+  @impl Tournament.Base
+  def calculate_round_results(t), do: t
 
   @impl Tournament.Base
   def build_matches(tournament) do
-    current_task_id = Enum.at(tournament.task_pack.task_ids, tournament.step)
+    current_task_id = Enum.at(tournament.task_pack.task_ids, tournament.current_round)
     # TODO: take tasks from meta
     tasks = Codebattle.TaskPack.get_tasks(tournament.task_pack)
 
@@ -39,7 +29,7 @@ defmodule Codebattle.Tournament.Stairway do
       tournament
       |> get_players
       |> Enum.map(fn p ->
-        %{state: "pending", players: [p], round_id: tournament.step}
+        %{state: "pending", players: [p], round_id: tournament.current_round}
       end)
 
     prev_matches =
@@ -58,26 +48,26 @@ defmodule Codebattle.Tournament.Stairway do
     update!(tournament, %{data: new_data, meta: new_meta})
   end
 
-  @impl Tournament.Base
-  def create_game(tournament, match) do
-    task = get_current_task(tournament)
+  # @impl Tournament.Base
+  # def create_game(tournament, match) do
+  #   task = get_current_task(tournament)
 
-    {:ok, game} =
-      Game.Context.create_game(%{
-        type: "solo",
-        state: "playing",
-        task: task,
-        level: task.level,
-        tournament_id: tournament.id,
-        players: match.players
-      })
+  #   {:ok, game} =
+  #     Game.Context.create_game(%{
+  #       type: "solo",
+  #       state: "playing",
+  #       task: task,
+  #       level: task.level,
+  #       tournament_id: tournament.id,
+  #       players: match.players
+  #     })
 
-    game.id
-  end
+  #   game.id
+  # end
 
   @impl Tournament.Base
   def maybe_finish(tournament) do
-    if final_step?(tournament) do
+    if final_round?(tournament) do
       new_tournament = update!(tournament, %{state: "finished"})
 
       # Tournament.GlobalSupervisor.terminate_tournament(tournament.id)
@@ -87,7 +77,7 @@ defmodule Codebattle.Tournament.Stairway do
     end
   end
 
-  defp final_step?(tournament) do
-    length(tournament.task_pack.task_ids) == tournament.step
+  defp final_round?(tournament) do
+    length(tournament.task_pack.task_ids) == tournament.current_round
   end
 end
