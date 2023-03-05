@@ -1,10 +1,11 @@
 defmodule Codebattle.Tournament.Context do
-  alias Codebattle.TaskPack
+  # alias Codebattle.TaskPack
+
   alias Codebattle.Tournament
 
   import Ecto.Query
 
-  @states_from_restore ["upcoming", "waiting_participants"]
+  @states_from_restore ["waiting_participants"]
 
   def get(id) do
     case Tournament.Server.get_tournament(id) do
@@ -23,7 +24,7 @@ defmodule Codebattle.Tournament.Context do
   def get_from_db!(id) do
     Tournament
     |> Codebattle.Repo.get!(id)
-    |> Codebattle.Repo.preload([:creator, :task_pack])
+    |> Codebattle.Repo.preload([:creator])
     |> add_module()
   end
 
@@ -49,7 +50,7 @@ defmodule Codebattle.Tournament.Context do
       order_by: [desc: t.id],
       where: t.state in ^states,
       limit: 7,
-      preload: [:creator, :task_pack]
+      preload: [:creator]
     )
     |> Codebattle.Repo.all()
   end
@@ -64,7 +65,7 @@ defmodule Codebattle.Tournament.Context do
     |> Enum.map(fn {id, _, _, _} -> Tournament.Context.get(id) end)
     |> Enum.filter(fn
       {:ok, tournament} ->
-        tournament.state in ["upcoming", "waiting_participants", "active"]
+        tournament.state in ["waiting_participants", "active"]
 
       _ ->
         false
@@ -81,12 +82,10 @@ defmodule Codebattle.Tournament.Context do
   end
 
   def create(params) do
-    result =
-      %Tournament{}
-      |> Tournament.changeset(prepare_tournament_params(params))
-      |> Codebattle.Repo.insert()
-
-    case result do
+    %Tournament{}
+    |> Tournament.changeset(prepare_tournament_params(params))
+    |> Codebattle.Repo.insert()
+    |> case do
       {:ok, tournament} ->
         {:ok, _pid} =
           tournament
@@ -103,6 +102,11 @@ defmodule Codebattle.Tournament.Context do
     end
   end
 
+  def restart(tournament) do
+    Tournament.GlobalSupervisor.terminate_tournament(tournament.id)
+    Tournament.GlobalSupervisor.start_tournament(tournament)
+  end
+
   defp prepare_tournament_params(params) do
     starts_at = NaiveDateTime.from_iso8601!(params["starts_at"] <> ":00")
     match_timeout_seconds = params["match_timeout_seconds"] || "180"
@@ -115,22 +119,23 @@ defmodule Codebattle.Tournament.Context do
         _ -> nil
       end
 
-    task_pack =
-      case params["task_pack_name"] do
-        x when x in [nil, ""] -> nil
-        task_pack_name -> TaskPack.get_by!(name: task_pack_name)
-      end
+    # task_pack =
+    #   case params["task_pack_name"] do
+    #     x when x in [nil, ""] -> nil
+    #     task_pack_name -> TaskPack.get_by!(name: task_pack_name)
+    #   end
 
     Map.merge(params, %{
-      "task_pack_id" => task_pack && task_pack.id,
-      "task_pack" => task_pack,
+      # "task_pack_id" => task_pack && task_pack.id,
+      # "task_pack" => task_pack,
       "access_token" => access_token,
       "alive_count" => get_live_tournaments_count(),
       "match_timeout_seconds" => match_timeout_seconds,
       "starts_at" => starts_at,
-      "step" => 0,
+      "current_round" => 0,
       "meta" => meta,
-      "data" => %{}
+      "players" => %{},
+      "matches" => %{}
     })
   end
 
@@ -139,12 +144,15 @@ defmodule Codebattle.Tournament.Context do
       "team" ->
         team_1_name = Utils.presence(params["team_1_name"]) || "Backend"
         team_2_name = Utils.presence(params["team_2_name"]) || "Frontend"
+        rounds_to_win = params |> Map.get("rounds_to_win", "3") |> String.to_integer()
 
         %{
-          teams: [
-            %{id: 0, title: team_1_name},
-            %{id: 1, title: team_2_name}
-          ]
+          rounds_to_win: rounds_to_win,
+          round_results: %{},
+          teams: %{
+            Tournament.Helpers.to_id(0) => %{id: 0, title: team_1_name, score: 0.0},
+            Tournament.Helpers.to_id(1) => %{id: 1, title: team_2_name, score: 0.0}
+          }
         }
 
       _ ->
@@ -162,11 +170,13 @@ defmodule Codebattle.Tournament.Context do
     end)
   end
 
+  def mark_as_live(tournament), do: Map.put(tournament, :is_live, true)
+
   defp tournament_query(id) do
     from(
       t in Tournament,
       where: t.id == ^id,
-      preload: [:creator, :task_pack]
+      preload: [:creator]
     )
   end
 
@@ -177,8 +187,6 @@ defmodule Codebattle.Tournament.Context do
   defp get_module(_), do: Tournament.Individual
 
   defp add_module(tournament), do: Map.put(tournament, :module, get_module(tournament))
-
-  defp mark_as_live(tournament), do: Map.put(tournament, :is_live, true)
 
   defp generate_access_token() do
     :crypto.strong_rand_bytes(17) |> Base.url_encode64() |> binary_part(0, 17)

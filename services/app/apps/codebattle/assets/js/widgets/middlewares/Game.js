@@ -362,6 +362,7 @@ export const activeGameReady = machine => dispatch => {
   });
 
   channel.on('tournament:round_created', payload => {
+    payload = camelizeKeys(payload);
     dispatch(actions.setTournamentsInfo(payload));
     machine.send('tournament:round_created', { payload });
   });

@@ -116,11 +116,11 @@ defmodule Codebattle.Game.Player do
     Map.merge(player, Map.drop(params, [:task]))
   end
 
-  def build(player = %Tournament.Types.Player{}, params) do
+  def build(player = %Tournament.Player{}, params) do
     init_player = %__MODULE__{
       id: player.id,
       is_bot: player.is_bot,
-      is_guest: player.is_guest,
+      is_guest: false,
       name: player.name,
       rating: player.rating,
       rank: player.rank,

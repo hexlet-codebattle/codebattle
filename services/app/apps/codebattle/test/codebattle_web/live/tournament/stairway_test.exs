@@ -54,6 +54,6 @@ defmodule CodebattleWeb.Live.Tournament.StairwayTest do
   #   tournament = Codebattle.Tournament.Context.get!(tournament.id)
   #   assert tournament.state == "active"
   #   assert Helpers.players_count(tournament) == 2
-  #   assert Enum.count(tournament.data.matches) == 2
+  #   assert Enum.count(tournament.matches) == 2
   # end
 end

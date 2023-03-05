@@ -53,8 +53,8 @@ export const connectToStairwayTournament = () => (dispatch) => {
 
   tournamentChannel.on('tournament:update', (response) => {
     const data = camelizeKeys(response);
-    const matches = _.groupBy(data.tournament.data.matches, 'roundId');
-    _.set(data, 'tournament.data.matches', matches);
+    const matches = _.groupBy(data.tournament.matches, 'roundId');
+    _.set(data, 'tournament.matches', matches);
 
     dispatch(actions.setTournamentData(data));
   });

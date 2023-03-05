@@ -5,12 +5,12 @@ defmodule Codebattle.Tournament.TeamTest do
   @module Codebattle.Tournament.Team
 
   def build_team_player(user, params \\ %{}) do
-    struct(Codebattle.Tournament.Types.Player, Map.from_struct(user)) |> Map.merge(params)
+    struct(Codebattle.Tournament.Player, Map.from_struct(user)) |> Map.merge(params)
   end
 
-  def get_matches_states(tournament), do: tournament.data.matches |> Enum.map(fn x -> x.state end)
+  def get_matches_states(tournament), do: tournament.matches |> Enum.map(fn x -> x.state end)
 
-  test ".maybe_start_new_step do not calls next step" do
+  test ".maybe_start_new_round do not calls next current_round" do
     user1 = insert(:user)
     user2 = insert(:user)
 
@@ -21,7 +21,7 @@ defmodule Codebattle.Tournament.TeamTest do
 
     tournament =
       insert(:team_tournament,
-        step: 0,
+        current_round: 0,
         creator_id: user1.id,
         data: %{
           players: [player1, player2],
@@ -31,16 +31,16 @@ defmodule Codebattle.Tournament.TeamTest do
 
     new_tournament =
       tournament
-      |> @module.maybe_start_new_step()
+      |> @module.maybe_start_new_round()
 
-    assert new_tournament.step == 0
+    assert new_tournament.current_round == 0
 
-    states = new_tournament.data.matches |> Enum.map(fn x -> x.state end)
+    states = new_tournament.matches |> Enum.map(fn x -> x.state end)
 
     assert states == ["game_over", "playing"]
   end
 
-  test ".maybe_start_new_step calls next step" do
+  test ".maybe_start_new_round calls next current_round" do
     user1 = insert(:user)
     user2 = insert(:user)
 
@@ -53,7 +53,7 @@ defmodule Codebattle.Tournament.TeamTest do
 
     tournament =
       insert(:team_tournament,
-        step: 0,
+        current_round: 0,
         creator_id: user1.id,
         data: %{
           players: [player1, player2],
@@ -63,16 +63,16 @@ defmodule Codebattle.Tournament.TeamTest do
 
     new_tournament =
       tournament
-      |> @module.maybe_start_new_step()
+      |> @module.maybe_start_new_round()
 
-    assert new_tournament.step == 1
+    assert new_tournament.current_round == 1
 
     states = get_matches_states(new_tournament)
 
     assert states == ["game_over", "playing"]
   end
 
-  test ".maybe_start_new_step finishes tournament after 3 scores" do
+  test ".maybe_start_new_round finishes tournament after 3 scores" do
     user1 = insert(:user)
     user2 = insert(:user)
 
@@ -102,7 +102,7 @@ defmodule Codebattle.Tournament.TeamTest do
     tournament =
       insert(:team_tournament,
         state: "active",
-        step: 3,
+        current_round: 3,
         creator_id: user1.id,
         data: %{
           players: [player1, player2],
@@ -112,7 +112,7 @@ defmodule Codebattle.Tournament.TeamTest do
 
     new_tournament =
       tournament
-      |> @module.maybe_start_new_step()
+      |> @module.maybe_start_new_round()
 
     assert new_tournament.state == "finished"
 
@@ -121,7 +121,7 @@ defmodule Codebattle.Tournament.TeamTest do
     assert states == ["game_over", "canceled", "timeout"]
   end
 
-  test ".maybe_start_new_step finishes tournament after 3 scores with draws" do
+  test ".maybe_start_new_round finishes tournament after 3 scores with draws" do
     user1 = insert(:user)
     user2 = insert(:user)
 
@@ -175,7 +175,7 @@ defmodule Codebattle.Tournament.TeamTest do
 
     new_tournament =
       tournament
-      |> @module.maybe_start_new_step()
+      |> @module.maybe_start_new_round()
 
     assert new_tournament.state == "finished"
 
@@ -196,7 +196,7 @@ defmodule Codebattle.Tournament.TeamTest do
     assert winner_stats.score == 1
   end
 
-  test ".maybe_start_new_step builds matches using a consistent strategy" do
+  test ".maybe_start_new_round builds matches using a consistent strategy" do
     user1 = insert(:user)
     user2 = insert(:user)
     user3 = insert(:user)
@@ -220,7 +220,7 @@ defmodule Codebattle.Tournament.TeamTest do
         data: %{players: [player1, player2, player3, player4, player5, player6]}
       )
 
-    new_tournament = @module.maybe_start_new_step(tournament)
+    new_tournament = @module.maybe_start_new_round(tournament)
 
     player_ids =
       new_tournament
@@ -230,7 +230,7 @@ defmodule Codebattle.Tournament.TeamTest do
     assert player_ids == [[user1.id, user4.id], [user2.id, user5.id], [user3.id, user6.id]]
 
     new_tournament = @module.cancel_all_matches(new_tournament)
-    new_tournament = @module.maybe_start_new_step(new_tournament)
+    new_tournament = @module.maybe_start_new_round(new_tournament)
 
     player_ids =
       new_tournament
@@ -247,7 +247,7 @@ defmodule Codebattle.Tournament.TeamTest do
            ]
 
     new_tournament = @module.cancel_all_matches(new_tournament)
-    new_tournament = @module.maybe_start_new_step(new_tournament)
+    new_tournament = @module.maybe_start_new_round(new_tournament)
 
     player_ids =
       new_tournament

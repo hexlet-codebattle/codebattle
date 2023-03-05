@@ -292,7 +292,7 @@ end)
   state: "finished",
   creator: creator,
   default_language: "clojure",
-  players_count: 16,
+  players_limit: 16,
   difficulty: "elementary",
   starts_at: ~N[2019-08-22 19:33:08.910767]
 })

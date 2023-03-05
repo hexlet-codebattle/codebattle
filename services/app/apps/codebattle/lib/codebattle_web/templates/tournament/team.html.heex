@@ -1,7 +1,7 @@
-<% statistics = get_players_statistics(@tournament) %>
-<% tournament_stats = get_tournament_statistics(@tournament) %>
+<%!-- <% statistics = get_players_statistics(@tournament) %> --%>
+<%!-- <% tournament_stats = get_tournament_statistics(@tournament) %> --%>
 
-<div class="container-fluid mt-4">
+<%!-- <div class="container-fluid mt-4">
   <div class="row">
     <div class="col-3">
       <%= render("_chat.html",
@@ -20,14 +20,6 @@
               current_user: @current_user,
               socket: @socket
             ) %>
-            <%= if is_upcoming?(@tournament) || is_waiting_participants?(@tournament) do %>
-              <h3 class="mt-3">Intended players</h3>
-              <%= render("_intended_players.html",
-                players: get_intended_players(@tournament),
-                tournament: @tournament,
-                current_user: @current_user
-              ) %>
-            <% end %>
           </div>
         </div>
         <div class="col-12 mt-3">
@@ -144,4 +136,4 @@
       </div>
     </div>
   </div>
-</div>
+</div> --%>

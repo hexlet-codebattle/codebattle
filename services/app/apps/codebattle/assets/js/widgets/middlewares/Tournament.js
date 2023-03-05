@@ -20,8 +20,8 @@ const initTournamentChannel = dispatch => {
 
   const onJoinSuccess = response => {
     const data = camelizeKeys(response);
-    const matches = _.groupBy(data.tournament.data.matches, 'roundId');
-    _.set(data, 'tournament.data.matches', matches);
+    const matches = _.groupBy(data.tournament.matches, 'roundId');
+    _.set(data, 'tournament.matches', matches);
 
     dispatch(actions.setTournamentData(data));
   };
@@ -39,8 +39,8 @@ export const connectToTournament = () => dispatch => {
 
   channel.on('tournament:update', response => {
     const data = camelizeKeys(response);
-    const matches = _.groupBy(data.tournament.data.matches, 'roundId');
-    _.set(data, 'tournament.data.matches', matches);
+    const matches = _.groupBy(data.tournament.matches, 'roundId');
+    _.set(data, 'tournament.matches', matches);
 
     dispatch(actions.setTournamentData(data));
   });
@@ -49,7 +49,7 @@ export const connectToTournament = () => dispatch => {
   // round:update_match(round, newMatch)
   // round:update_participants(players)
   // round:update_statistics(statistics)
-  channel.on('round:created', response => {
+  channel.on('tournament:round_created', response => {
     const { tournament } = camelizeKeys(response);
 
     dispatch(actions.setNextRound(tournament));

@@ -5,7 +5,7 @@ defmodule CodebattleWeb.Api.V1.FeedbackController do
 
   import Ecto.Query
 
-  plug CodebattleWeb.Plugs.ApiRequireAuth
+  plug(CodebattleWeb.Plugs.ApiRequireAuth)
 
   def index(conn, params) do
     page_number = params |> Map.get("page", "1") |> String.to_integer()

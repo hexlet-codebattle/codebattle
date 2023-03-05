@@ -11,18 +11,19 @@ defmodule Codebattle.Game do
 
   @derive {Jason.Encoder,
            only: [
-             :id,
-             :players,
-             :level,
-             :state,
-             :starts_at,
              :finishes_at,
-             :type,
-             :mode,
-             :visibility_type,
-             :is_live,
+             :id,
              :is_bot,
-             :is_tournament
+             :is_live,
+             :is_tournament,
+             :level,
+             :mode,
+             :players,
+             :ref,
+             :starts_at,
+             :state,
+             :type,
+             :visibility_type
            ]}
 
   @default_timeout_seconds div(:timer.minutes(30), 1000)
@@ -44,6 +45,7 @@ defmodule Codebattle.Game do
     field(:finishes_at, :naive_datetime)
     field(:rematch_state, :string, default: "none")
     field(:rematch_initiator_id, :integer)
+    field(:ref, :integer)
     field(:is_live, :boolean, default: false, virtual: true)
     field(:is_bot, :boolean, default: false, virtual: true)
     field(:is_tournament, :boolean, default: false, virtual: true)
@@ -61,18 +63,19 @@ defmodule Codebattle.Game do
   def changeset(game = %Game{}, attrs) do
     game
     |> cast(attrs, [
-      :state,
-      :type,
-      :mode,
-      :visibility_type,
-      :rematch_state,
-      :rematch_initiator_id,
-      :task_id,
-      :tournament_id,
-      :timeout_seconds,
+      :finishes_at,
       :level,
+      :mode,
+      :ref,
+      :rematch_initiator_id,
+      :rematch_state,
       :starts_at,
-      :finishes_at
+      :state,
+      :task_id,
+      :timeout_seconds,
+      :tournament_id,
+      :type,
+      :visibility_type
     ])
     |> validate_required([:state, :level, :type, :mode])
     |> validate_inclusion(:type, @types)

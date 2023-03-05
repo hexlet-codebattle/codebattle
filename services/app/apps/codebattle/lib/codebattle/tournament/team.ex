@@ -1,38 +1,18 @@
 defmodule Codebattle.Tournament.Team do
+  use Codebattle.Tournament.Base
+
   alias Codebattle.Bot
   alias Codebattle.Game
   alias Codebattle.Tournament
 
-  use Tournament.Base
-
-  @team_rounds_need_to_win_num 3
-
   @impl Tournament.Base
-  def join(tournament = %{state: "upcoming"}, %{user: user}) do
-    add_intended_player_id(tournament, user.id)
-  end
-
-  @impl Tournament.Base
-  def join(tournament = %{state: "waiting_participants"}, %{user: user, team_id: team_id}) do
-    player =
-      user
-      |> Map.put(:team_id, team_id)
-      |> Map.put(:lang, user.lang || tournament.default_language)
-
-    add_player(tournament, player)
-  end
-
-  @impl Tournament.Base
-  def join(tournament, _user), do: tournament
-
-  @impl Tournament.Base
-  def complete_players(tournament = %{meta: meta}) do
+  def complete_players(tournament) do
     team_players_count =
-      meta
-      |> Map.get(:teams)
+      tournament
+      |> get_teams()
       |> Enum.map(fn t -> {t[:id], players_count(tournament, t[:id])} end)
 
-    {_, max_players_count} = team_players_count |> Enum.max_by(&elem(&1, 1))
+    {_, max_players_count} = Enum.max_by(team_players_count, &elem(&1, 1))
 
     bots =
       team_players_count
@@ -43,84 +23,102 @@ defmodule Codebattle.Tournament.Team do
         |> Enum.concat(acc)
       end)
 
-    new_players =
-      tournament
-      |> get_players
-      |> Enum.concat(bots)
-      |> Enum.sort_by(fn p -> p.team_id end)
+    Enum.reduce(
+      bots,
+      tournament,
+      fn bot, tournament -> add_player(tournament, bot) end
+    )
+  end
 
-    new_data =
-      tournament
-      |> Map.get(:data)
-      |> Map.merge(%{players: new_players})
-      |> Map.from_struct()
+  @impl Tournament.Base
+  def calculate_round_results(tournament) do
+    current_round = tournament.current_round
 
-    update!(tournament, %{data: new_data})
+    round_result =
+      tournament
+      |> get_round_matches(current_round)
+      |> Enum.map(fn
+        %{state: "game_over", player_ids: player_ids, winner_id: winner_id} ->
+          team_id = Enum.find_index(player_ids, &(&1 == winner_id))
+          List.insert_at([0], team_id, 1)
+
+        _ ->
+          [0, 0]
+      end)
+      |> Enum.reduce([0, 0], fn [x1, x2], [a1, a2] -> [x1 + a1, x2 + a2] end)
+      |> case do
+        [a, b] when a > b -> [1, 0]
+        [a, b] when a < b -> [0, 1]
+        _ -> [0.5, 0.5]
+      end
+
+    [team_0_score, team_1_score] = round_result
+
+    new_tournament =
+      update_in(tournament.meta.round_results, &Map.put(&1, to_id(current_round), round_result))
+
+    new_tournament = update_in(new_tournament.meta.teams[to_id(0)].score, &(&1 + team_0_score))
+    update_in(new_tournament.meta.teams[to_id(1)].score, &(&1 + team_1_score))
   end
 
   @impl Tournament.Base
   def build_matches(tournament) do
-    matches_for_round =
+    new_matches =
       tournament
       |> get_players()
       |> Enum.chunk_by(&Map.get(&1, :team_id))
       |> shift_pairs(tournament)
       |> Enum.zip()
-      |> Enum.map(fn {p1, p2} ->
-        %{state: "pending", players: [p1, p2], round_id: tournament.step}
+      |> Enum.with_index(tournament.current_round * players_count(tournament, 0))
+      |> Enum.map(fn {{p1, p2}, index} ->
+        game_id =
+          create_game(tournament, index, [Tournament.Player.new!(p1), Tournament.Player.new!(p2)])
+
+        %Tournament.Match{
+          id: index,
+          game_id: game_id,
+          state: "playing",
+          player_ids: [p1.id, p2.id],
+          round: tournament.current_round
+        }
+      end)
+      |> Enum.reduce(tournament.matches, fn match, acc ->
+        Map.put(acc, to_id(match.id), match)
       end)
 
-    prev_matches =
-      tournament
-      |> get_matches()
-      |> Enum.map(&Map.from_struct/1)
-
-    new_matches = prev_matches ++ matches_for_round
-
-    new_data =
-      tournament
-      |> Map.get(:data)
-      |> Map.merge(%{matches: new_matches})
-      |> Map.from_struct()
-
-    update!(tournament, %{data: new_data})
+    update!(tournament, %{matches: new_matches})
   end
 
   @impl Tournament.Base
   def maybe_finish(tournament) do
-    {score1, score2} = calc_team_score(tournament)
+    scores = tournament |> get_teams() |> Enum.map(& &1.score)
 
-    if max(score1, score2) >= @team_rounds_need_to_win_num do
-      new_tournament = update!(tournament, %{state: "finished"})
-
-      # Tournament.GlobalSupervisor.terminate_tournament(tournament.id)
-      new_tournament
+    if Enum.max(scores) >= Map.get(tournament.meta, :rounds_to_win, 3) do
+      update!(tournament, %{state: "finished"})
     else
       tournament
     end
   end
 
-  @impl Tournament.Base
-  def create_game(tournament, match) do
+  def create_game(tournament, index, players) do
     {:ok, game} =
       Game.Context.create_game(%{
         state: "playing",
-        level: tournament.difficulty,
+        ref: index,
+        level: tournament.level,
         tournament_id: tournament.id,
         timeout_seconds: tournament.match_timeout_seconds,
-        players: match.players
+        players: players
       })
 
     game.id
   end
 
   defp shift_pairs(teams, tournament) do
-    %{step: step} = tournament
-
     teams
     |> Enum.with_index()
     |> Enum.map(fn {players, index} ->
-      Utils.right_rotate(players, index * (step - 1))
+      Utils.right_rotate(players, index * (tournament.current_round - 1))
     end)
   end
 end

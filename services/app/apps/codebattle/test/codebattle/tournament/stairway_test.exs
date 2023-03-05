@@ -5,10 +5,10 @@
 #   @module Codebattle.Tournament.Stairway
 
 #   def build_player(user, params \\ %{}) do
-#     struct(Codebattle.Tournament.Types.Player, Map.from_struct(user)) |> Map.merge(params)
+#     struct(Codebattle.Tournament.Player, Map.from_struct(user)) |> Map.merge(params)
 #   end
 
-#   def get_matches_states(tournament), do: tournament.data.matches |> Enum.map(fn x -> x.state end)
+#   def get_matches_states(tournament), do: tournament.matches |> Enum.map(fn x -> x.state end)
 
 #   test ".start_step! for round 0 picks task from task_pack and starts games" do
 #     user1 = insert(:user)
@@ -36,7 +36,7 @@
 
 #     assert new_tournament.step == 0
 #     assert new_tournament.state == "active"
-#     assert new_tournament.players_count == 2
+#     assert new_tournament.players_limit == 2
 #     assert new_tournament.meta["current_task"].id == Enum.at(task_ids, 0)
 #     matches = get_matches(new_tournament)
 #     assert length(matches) == 2
@@ -45,7 +45,7 @@
 #     new_tournament =
 #       new_tournament
 #       |> @module.finish_all_playing_matches()
-#       |> @module.maybe_start_new_step()
+#       |> @module.maybe_start_new_round()
 
 #     assert new_tournament.step == 1
 #     assert new_tournament.state == "active"
@@ -59,7 +59,7 @@
 #     new_tournament =
 #       new_tournament
 #       |> @module.finish_all_playing_matches()
-#       |> @module.maybe_start_new_step()
+#       |> @module.maybe_start_new_round()
 
 #     assert new_tournament.step == 2
 #     assert new_tournament.state == "active"
@@ -79,7 +79,7 @@
 #     new_tournament =
 #       new_tournament
 #       |> @module.finish_all_playing_matches()
-#       |> @module.maybe_start_new_step()
+#       |> @module.maybe_start_new_round()
 
 #     assert new_tournament.step == 3
 #     assert new_tournament.state == "finished"

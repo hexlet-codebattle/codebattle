@@ -3,16 +3,21 @@ defmodule Codebattle.Tournament.Supervisor do
 
   require Logger
 
-  def start_link(tournament) do
-    Supervisor.start_link(__MODULE__, tournament, name: supervisor_name(tournament.id))
+  def start_link(tournament_id) do
+    Supervisor.start_link(__MODULE__, tournament_id, name: supervisor_name(tournament_id))
   end
 
-  def init(tournament) do
+  def init(tournament_id) do
     children = [
-      {Codebattle.Tournament.Server, tournament},
       %{
-        id: "Codebattle.Chat.Tournament.#{tournament.id}",
-        start: {Codebattle.Chat, :start_link, [{:tournament, tournament.id}, %{}]}
+        id: "Codebattle.Tournament.Server.#{tournament_id}",
+        restart: :transient,
+        start: {Codebattle.Tournament.Server, :start_link, [tournament_id]}
+      },
+      %{
+        id: "Codebattle.Chat.Tournament.#{tournament_id}",
+        restart: :transient,
+        start: {Codebattle.Chat, :start_link, [{:tournament, tournament_id}, %{}]}
       }
     ]
 

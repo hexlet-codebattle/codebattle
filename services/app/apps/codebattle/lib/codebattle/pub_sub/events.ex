@@ -1,6 +1,7 @@
 defmodule Codebattle.PubSub.Events do
-  alias Codebattle.PubSub.Message
   alias Codebattle.Game
+  alias Codebattle.PubSub.Message
+  alias Codebattle.Tournament
 
   def get_messages("tournament:created", params) do
     [
@@ -33,11 +34,18 @@ defmodule Codebattle.PubSub.Events do
   end
 
   def get_messages("tournament:round_created", params) do
+    player_games =
+      params.tournament
+      |> Tournament.Helpers.get_current_round_playing_matches()
+      |> Enum.reduce([], fn match, acc ->
+        Enum.reduce(match.player_ids, acc, &[%{id: &1, game_id: match.game_id} | &2])
+      end)
+
     [
       %Message{
         topic: "tournament:#{params.tournament.id}",
         event: "tournament:round_created",
-        payload: %{tournament: params.tournament}
+        payload: %{state: params.tournament.state, player_games: player_games}
       }
     ]
   end
@@ -127,6 +135,7 @@ defmodule Codebattle.PubSub.Events do
             event: "game:tournament:finished",
             payload: %{
               game_id: game.id,
+              ref: game.ref,
               game_state: game.state,
               player_results: Game.Helpers.get_player_results(game)
             }

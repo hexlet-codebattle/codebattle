@@ -36,6 +36,7 @@ defmodule Codebattle.Game.Engine do
            insert_game(%{
              state: state,
              level: level,
+             ref: params[:ref],
              mode: mode,
              type: type,
              visibility_type: visibility_type,

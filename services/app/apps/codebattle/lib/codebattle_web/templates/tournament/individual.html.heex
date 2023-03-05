@@ -1,5 +1,4 @@
-<% players = get_players(@tournament) %>
-<div class="container-fluid">
+<%!-- <div class="container-fluid">
   <div class="row">
     <div class="col-3">
       <%= render("_chat.html",
@@ -30,10 +29,6 @@
       ) %>
       <div class="mt-3">
         <%= if is_waiting_participants?(@tournament) do %>
-          <%= if is_intended_player?(@tournament, @current_user) && !is_player?(@tournament, @current_user.id) do %>
-            <p>Click join to confirm that you want to participate in this tournament</p>
-          <% end %>
-
           <%= if is_player?(@tournament, @current_user.id) do %>
             <button class="btn btn-outline-danger" phx-click="leave">Leave</button>
           <% else %>
@@ -47,19 +42,10 @@
             current_user: @current_user
           ) %>
         <% end %>
-
-        <%= if is_upcoming?(@tournament) or is_waiting_participants?(@tournament) do %>
-          <h4>Intended players</h4>
-          <%= render("_intended_players.html",
-            players: get_intended_players(@tournament),
-            tournament: @tournament,
-            current_user: @current_user
-          ) %>
-        <% end %>
       </div>
 
       <%= if is_active?(@tournament) || is_finished?(@tournament) do %>
-        <%= render("_individual_#{@tournament.players_count}_table.html",
+        <%= render("_individual_#{@tournament.players_limit}_table.html",
           tournament: @tournament,
           time: @time,
           current_user: @current_user,
@@ -68,4 +54,4 @@
       <% end %>
     </div>
   </div>
-</div>
+</div> --%>

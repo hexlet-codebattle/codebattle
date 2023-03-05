@@ -1,27 +1,53 @@
 defmodule Codebattle.Tournament.Helpers do
   alias Codebattle.User
+  alias Codebattle.Tournament
 
-  def get_players(tournament), do: tournament.data.players
-  def get_matches(tournament), do: tournament.data.matches
-  def get_intended_player_ids(tournament), do: Map.get(tournament.data, :intended_player_ids, [])
-  def get_player_ids(tournament), do: tournament.data.players |> Enum.map(& &1.id)
+  def get_players(tournament), do: tournament.players |> Map.values()
+  def get_players(tournament, ids), do: Enum.map(ids, &get_player(tournament, &1))
+  def get_matches(tournament), do: tournament.matches |> Map.values()
+  def get_matches(tournament, range), do: Enum.map(range, &get_match(tournament, &1))
 
-  def get_intended_players(tournament) do
+  def get_round_matches(tournament) do
     tournament
-    |> get_intended_player_ids()
-    |> User.get_users_by_ids()
+    |> get_matches()
+    |> Enum.sort_by(& &1.round)
+    |> Enum.chunk_by(& &1.round)
+  end
+
+  def get_round_matches(tournament, round) do
+    tournament |> get_matches |> Enum.filter(&(&1.round == round))
+  end
+
+  def get_current_round_playing_matches(tournament) do
+    tournament
+    |> get_matches
+    |> Enum.filter(&(&1.round == tournament.current_round and &1.state == "playing"))
+  end
+
+  def get_player(tournament, id), do: Map.get(tournament.players, to_id(id))
+  def get_match(tournament, id), do: Map.get(tournament.matches, to_id(id))
+
+  def get_first_match(tournament),
+    do: tournament.matches |> Map.get(to_id(0))
+
+  def is_match_player?(match, player_id), do: Enum.any?(match.player_ids, &(&1 == player_id))
+
+  def get_player_ids(tournament), do: tournament |> get_players |> Enum.map(& &1.id)
+
+  def get_match_players(_tournament, nil), do: []
+
+  def get_match_players(tournament, match) do
+    match.player_ids
+    |> Enum.map(&Map.get(tournament.players, to_id(&1)))
+    |> Enum.map(&Tournament.Player.new!(&1))
   end
 
   def players_count(tournament) do
-    tournament |> get_players |> Enum.count()
+    tournament |> get_players() |> Enum.count()
   end
 
   def players_count(tournament, team_id) do
     tournament |> get_team_players(team_id) |> Enum.count()
-  end
-
-  def can_be_started?(tournament = %{state: "upcoming"}) do
-    get_intended_player_ids(tournament) != []
   end
 
   def can_be_started?(tournament = %{state: "waiting_participants"}) do
@@ -36,7 +62,6 @@ defmodule Codebattle.Tournament.Helpers do
 
   def can_access?(tournament = %{access_type: "token"}, user, params) do
     can_moderate?(tournament, user) ||
-      is_intended_player?(tournament, user) ||
       is_player?(tournament, user.id) ||
       params["access_token"] == tournament.access_token
   end
@@ -46,7 +71,6 @@ defmodule Codebattle.Tournament.Helpers do
 
   def is_active?(tournament), do: tournament.state == "active"
   def is_waiting_participants?(tournament), do: tournament.state == "waiting_participants"
-  def is_upcoming?(tournament), do: tournament.state == "upcoming"
   def is_canceled?(tournament), do: tournament.state == "canceled"
   def is_finished?(tournament), do: tournament.state == "finished"
   def is_individual?(tournament), do: tournament.type == "individual"
@@ -55,25 +79,20 @@ defmodule Codebattle.Tournament.Helpers do
   def is_public?(tournament), do: tournament.access_type == "public"
   def is_visible_by_token?(tournament), do: tournament.access_type == "token"
 
-  def is_intended_player?(tournament, player) do
-    tournament
-    |> get_intended_player_ids()
-    |> Enum.any?(fn id -> id == player.id end)
-  end
-
   def is_player?(tournament, player_id) do
-    tournament
-    |> get_players()
-    |> Enum.find_value(fn player -> player.id == player_id end)
+    tournament.players
+    |> Map.get(to_id(player_id))
     |> Kernel.!()
     |> Kernel.!()
   end
 
   def is_player?(tournament, player_id, team_id) do
-    tournament.data.players
-    |> Enum.find_value(fn p -> p.id == player_id and p.team_id == team_id end)
-    |> Kernel.!()
-    |> Kernel.!()
+    tournament.players
+    |> Map.get(to_id(player_id))
+    |> case do
+      %{team_id: ^team_id} -> true
+      _ -> false
+    end
   end
 
   def is_creator?(tournament, user) do
@@ -83,21 +102,10 @@ defmodule Codebattle.Tournament.Helpers do
   def calc_round_result(round) do
     round
     |> Enum.map(&calc_match_result/1)
-    |> Enum.reduce(fn {x1, x2}, {a1, a2} -> {x1 + a1, x2 + a2} end)
+    |> Enum.reduce([0, 0], fn [x1, x2], [a1, a2] -> [x1 + a1, x2 + a2] end)
   end
 
-  def get_round_id([%{round_id: round_id} | _]), do: round_id
-
-  def get_rounds(tournament) do
-    tournament
-    |> get_matches()
-    |> Enum.chunk_by(& &1.round_id)
-    |> Enum.sort_by(&get_round_id/1)
-  end
-
-  def get_teams(%{meta: %{teams: teams}}),
-    do: Enum.map(teams, fn x -> %{id: x.id, title: x.title} end)
-
+  def get_teams(%{meta: %{teams: teams}}), do: Map.values(teams)
   def get_teams(_), do: []
 
   def get_team_players(tournament = %{type: "team"}, team_id) do
@@ -147,70 +155,78 @@ defmodule Codebattle.Tournament.Helpers do
     end
   end
 
-  def get_tournament_statistics(tournament = %{type: "team"}) do
-    all_win_matches =
-      tournament
-      |> get_matches()
-      |> Enum.filter(fn match ->
-        match_is_finished?(match) and !is_anyone_gave_up?(match)
-      end)
+  def get_tournament_statistics(_tournament = %{type: "team"}) do
+    %{}
+    # all_win_matches =
+    #   tournament
+    #   |> get_matches()
+    #   |> Enum.filter(fn match ->
+    #     match_is_finished?(match) and !is_anyone_gave_up?(match)
+    #   end)
 
-    best_lang =
-      all_win_matches
-      |> Enum.map(fn match ->
-        pick_winner(match).lang
-      end)
-      |> Enum.chunk_by(fn x -> x end)
-      |> Enum.max_by(fn x -> Enum.count(x) end, fn -> [] end)
-      |> Enum.at(0, "None")
+    # best_lang =
+    #   all_win_matches
+    #   |> Enum.map(fn match ->
+    #     pick_winner(match).lang
+    #   end)
+    #   |> Enum.chunk_by(fn x -> x end)
+    #   |> Enum.max_by(fn x -> Enum.count(x) end, fn -> [] end)
+    #   |> Enum.at(0, "None")
 
-    best_time =
-      all_win_matches
-      |> Enum.map(fn match -> match.duration end)
-      |> Enum.min(fn -> [] end)
+    # best_time =
+    #   all_win_matches
+    #   |> Enum.map(fn match -> match.duration end)
+    #   |> Enum.min(fn -> [] end)
 
-    %{
-      best_lang: best_lang,
-      best_time: best_time
-    }
+    # %{
+    #   best_lang: best_lang,
+    #   best_time: best_time
+    # }
   end
 
   def get_tournament_statistics(_), do: %{}
 
-  # 1. picks human winner
-  # 2. picks human loser instead of bot
-  # 3. picks human winner if gave_up
-  # 4. picks random bot
-  def pick_winner(%{players: [winner = %{result: "won", is_bot: false}, _]}), do: winner
-  def pick_winner(%{players: [_, winner = %{result: "won", is_bot: false}]}), do: winner
-  def pick_winner(%{players: [winner, %{result: "gave_up"}]}), do: winner
-  def pick_winner(%{players: [%{result: "gave_up"}, winner]}), do: winner
-  def pick_winner(match), do: Enum.random(match.players)
+  # 1. picks human winner for game_over
+  # 2. picks random human if timeout
+  # 2. picks random from canceled
+  # 3. picks random from timeout
+  # 4. picks random
+  def pick_winner_id(%{state: "game_over", winner_id: id}) when not is_nil(id) and id > 0, do: id
+
+  def pick_winner_id(%{player_ids: ids}) do
+    case Enum.sort(ids) do
+      [id1, _id2] when id1 > 0 -> Enum.random(ids)
+      [_id1, id2] -> id2
+    end
+  end
+
+  def pick_winner_id(%{player_ids: ids}), do: Enum.random(ids)
 
   def filter_statistics(statistics, "show"), do: statistics
   def filter_statistics(statistics, "hide"), do: [List.first(statistics)]
 
   def calc_team_score(tournament) do
-    tournament
-    |> get_rounds()
-    |> Enum.filter(fn round ->
-      Enum.all?(round, &(&1.state in ["canceled", "game_over", "timeout"]))
-    end)
-    |> Enum.map(&calc_round_result/1)
-    |> Enum.reduce({0, 0}, fn {x1, x2}, {a1, a2} ->
-      cond do
-        x1 > x2 -> {a1 + 1, a2}
-        x1 < x2 -> {a1, a2 + 1}
-        true -> {a1 + 0.5, a2 + 0.5}
-      end
-    end)
+    nil
   end
 
-  defp calc_match_result(%{players: [%{result: "won"}, _]}), do: {1, 0}
-  defp calc_match_result(%{players: [_, %{result: "won"}]}), do: {0, 1}
-  defp calc_match_result(%{players: [_, %{result: "gave_up"}]}), do: {1, 0}
-  defp calc_match_result(%{players: [%{result: "gave_up"}, _]}), do: {0, 1}
-  defp calc_match_result(_), do: {0, 0}
+  #   tournament
+  #   |> get_rounds()
+  #   |> Enum.filter(fn round ->
+  #     Enum.all?(round, &(&1.state in ["canceled", "game_over", "timeout"]))
+  #   end)
+  #   |> Enum.map(&calc_round_result/1)
+  #   |> Enum.reduce({0, 0}, fn {x1, x2}, {a1, a2} ->
+  #     cond do
+  #       x1 > x2 -> {a1 + 1, a2}
+  #       x1 < x2 -> {a1, a2 + 1}
+  #       true -> {a1 + 0.5, a2 + 0.5}
+  #     end
+  #   end)
+  # end
+
+  defp calc_match_result(%{state: "game_over", player_ids: [id, _], winner_id: id}), do: [1, 0]
+  defp calc_match_result(%{state: "game_over", player_ids: [_, id], winner_id: id}), do: [0, 1]
+  defp calc_match_result(_), do: [0, 0]
 
   defp match_is_active?(%{state: "active"}), do: true
   defp match_is_active?(%{state: "playing"}), do: true
@@ -242,4 +258,8 @@ defmodule Codebattle.Tournament.Helpers do
       tasks -> Enum.find(tasks, fn task -> task.id == tournament.meta.current_task_id end)
     end
   end
+
+  def to_id(id) when is_integer(id), do: id |> to_string() |> to_id()
+  def to_id(id) when is_binary(id), do: String.to_atom(id)
+  def to_id(id) when is_atom(id), do: id
 end

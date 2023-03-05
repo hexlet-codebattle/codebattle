@@ -91,8 +91,8 @@ defmodule CodebattleWeb.Live.Tournament.IndividualTest do
     tournament = Codebattle.Tournament.Context.get!(tournament.id)
     assert tournament.state == "active"
 
-    assert Enum.count(tournament.data.players) == 2
-    assert Enum.count(tournament.data.matches) == 1
+    assert Enum.count(tournament.players) == 2
+    assert Enum.count(tournament.matches) == 1
 
     {:ok, view3, _html} = live(conn3, Routes.tournament_path(conn, :show, tournament.id))
     render_click(view3, :join)

@@ -12,7 +12,7 @@
 #     participant = insert(:user, name: "bob")
 #     insert(:task, level: "elementary")
 
-#     player = struct(Codebattle.Tournament.Types.Player, Map.from_struct(creator))
+#     player = struct(Codebattle.Tournament.Player, Map.from_struct(creator))
 
 #     tournament =
 #       insert(:tournament,
