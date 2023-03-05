@@ -41,21 +41,19 @@ defmodule Codebattle.Game.Helpers do
   def is_player?(game, player_id) do
     game
     |> get_players
-    |> Enum.any?(fn player -> player.id == player_id end)
+    |> Enum.any?(&(&1.id == player_id))
   end
 
   def get_opponent(game, player_id) do
     game
     |> get_players
-    |> Enum.find(fn player -> player.id != player_id end)
+    |> Enum.find(&(&1.id != player_id))
   end
 
   def get_player_results(game) do
     game
     |> get_players
-    |> Enum.map(fn player ->
-      {player.id, player.result}
-    end)
+    |> Enum.map(&{&1.id, &1.result})
     |> Enum.into(%{})
   end
 

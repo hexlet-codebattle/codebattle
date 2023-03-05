@@ -1,6 +1,8 @@
 defmodule CodebattleWeb.TournamentControllerTest do
   use CodebattleWeb.ConnCase, async: true
 
+  alias Codebattle.Tournament
+
   test "renders index for signed_user", %{conn: conn} do
     user = insert(:user)
 
@@ -15,12 +17,15 @@ defmodule CodebattleWeb.TournamentControllerTest do
   test "authorizes to tournaments", %{conn: conn} do
     creator = insert(:user)
     admin = insert(:admin)
-    player = insert(:user)
+    user = insert(:user)
 
     tournament =
       insert(:token_tournament,
         creator_id: creator.id,
-        players: [struct(Codebattle.Tournament.Player, Map.from_struct(player))]
+        players: %{
+          Tournament.Helpers.to_id(user.id) =>
+            struct(Codebattle.Tournament.Player, Map.from_struct(user))
+        }
       )
 
     new_conn =
@@ -39,7 +44,7 @@ defmodule CodebattleWeb.TournamentControllerTest do
 
     new_conn =
       conn
-      |> put_session(:user_id, player.id)
+      |> put_session(:user_id, user.id)
       |> get(Routes.tournament_path(conn, :show, tournament.id))
 
     assert new_conn.status == 200

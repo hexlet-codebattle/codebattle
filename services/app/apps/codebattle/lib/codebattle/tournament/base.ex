@@ -16,14 +16,18 @@ defmodule Codebattle.Tournament.Base do
       import Tournament.Helpers
 
       def add_player(tournament, player) do
-        if players_count(tournament) < tournament.players_limit do
-          new_players =
-            Map.put(tournament.players, to_id(player.id), Tournament.Player.new!(player))
+        update_in(tournament.players, fn players ->
+          Map.put(players, to_id(player.id), Tournament.Player.new!(player))
+        end)
+      end
 
-          update!(tournament, %{players: new_players})
-        else
-          tournament
-        end
+      def add_players(tournament, %{users: users}) do
+        Enum.reduce(users, tournament, &add_player(&2, &1))
+      end
+
+      def join(tournament = %{state: "waiting_participants"}, params = %{users: users}) do
+        player_params = Map.drop(params, [:users])
+        Enum.reduce(users, tournament, &join(&2, Map.put(player_params, :user, &1)))
       end
 
       def join(tournament = %{state: "waiting_participants"}, params) do
@@ -32,7 +36,11 @@ defmodule Codebattle.Tournament.Base do
           |> Map.put(:lang, params.user.lang || tournament.default_language)
           |> Map.put(:team_id, Map.get(params, :team_id))
 
-        add_player(tournament, player)
+        if players_count(tournament) < tournament.players_limit do
+          add_player(tournament, player)
+        else
+          tournament
+        end
       end
 
       def join(tournament, _), do: tournament

@@ -7,39 +7,7 @@ defmodule CodebattleWeb.Live.Tournament.TeamTest do
     user1 = insert(:user)
     user2 = insert(:user)
     user3 = insert(:user)
-    task = insert(:task, level: "elementary")
-
-    playbook_data = %{
-      records: [
-        %{"type" => "init", "id" => 2, "editor_text" => "", "editor_lang" => "ruby"},
-        %{
-          "diff" => %{"delta" => [%{"insert" => "t"}], "next_lang" => "ruby", "time" => 20},
-          "type" => "update_editor_date",
-          "id" => 2
-        },
-        %{
-          "diff" => %{
-            "delta" => [%{"retain" => 1}, %{"insert" => "e"}],
-            "next_lang" => "ruby",
-            "time" => 20
-          },
-          "type" => "update_editor_date",
-          "id" => 2
-        },
-        %{
-          "diff" => %{
-            "delta" => [%{"retain" => 2}, %{"insert" => "s"}],
-            "next_lang" => "ruby",
-            "time" => 20
-          },
-          "type" => "update_editor_date",
-          "id" => 2
-        },
-        %{"type" => "game_over", "id" => 2, "lang" => "ruby"}
-      ]
-    }
-
-    insert(:playbook, %{data: playbook_data, task: task, winner_lang: "ruby"})
+    insert(:task, level: "elementary")
 
     conn1 = put_session(conn, :user_id, user1.id)
     conn2 = put_session(conn, :user_id, user2.id)
@@ -60,18 +28,19 @@ defmodule CodebattleWeb.Live.Tournament.TeamTest do
       })
 
     tournament = Codebattle.Tournament.Context.get!(tournament_id)
-    assert tournament.meta == %{teams: [%{id: 0, title: "Elixir"}, %{id: 1, title: "Frontend"}]}
+
+    assert tournament.meta == %{
+             teams: %{
+               "0": %{id: 0, title: "Elixir", score: 0.0},
+               "1": %{id: 1, title: "Frontend", score: 0.0}
+             },
+             round_results: %{},
+             rounds_to_win: 3
+           }
+
     assert tournament.match_timeout_seconds == 140
 
     {:ok, view1, _html} = live(conn1, Routes.tournament_path(conn, :show, tournament.id))
-
-    render_click(view1, :join, %{"team_id" => "0"})
-    render_click(view1, :join, %{"team_id" => "1"})
-
-    tournament = Codebattle.Tournament.Context.get!(tournament.id)
-    assert Helpers.players_count(tournament) == 0
-
-    render_click(view1, :start)
 
     render_click(view1, :join, %{"team_id" => "0"})
     render_click(view1, :join, %{"team_id" => "1"})
@@ -98,6 +67,7 @@ defmodule CodebattleWeb.Live.Tournament.TeamTest do
     render_click(view1, :start)
 
     tournament = Codebattle.Tournament.Context.get!(tournament.id)
+
     assert tournament.state == "active"
     assert Helpers.players_count(tournament) == 4
     assert Enum.count(tournament.matches) == 2

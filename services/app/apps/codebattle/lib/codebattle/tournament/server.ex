@@ -12,6 +12,9 @@ defmodule Codebattle.Tournament.Server do
     try do
       GenServer.call(server_name(id), :get_tournament)
     catch
+      :exit, {:noproc, _} ->
+        nil
+
       :exit, reason ->
         Logger.error("Error to get tournament: #{inspect(reason)}")
         nil

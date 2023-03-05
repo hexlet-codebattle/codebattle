@@ -166,9 +166,11 @@ defmodule CodebattleWeb.Factory do
       name: "name",
       current_round: 0,
       players_limit: 16,
+      players_count: 16,
       starts_at: NaiveDateTime.utc_now(),
       creator_id: 1,
-      data: %{players: [], matches: []}
+      players: %{},
+      matches: %{}
     }
   end
 
@@ -178,15 +180,12 @@ defmodule CodebattleWeb.Factory do
       name: "name",
       current_round: 0,
       players_limit: 16,
+      players_count: 16,
       starts_at: NaiveDateTime.utc_now(),
       creator_id: 1,
-      data: %{players: [], matches: []},
-      meta: %{
-        teams: [
-          %{id: 0, title: "frontend"},
-          %{id: 1, title: "backend"}
-        ]
-      }
+      players: %{},
+      matches: %{},
+      meta: %{teams: %{"0": %{id: 0, title: "fe"}, "1": %{id: 1, title: "be"}}}
     }
   end
 
@@ -198,7 +197,8 @@ defmodule CodebattleWeb.Factory do
       players_limit: 16,
       starts_at: NaiveDateTime.utc_now(),
       creator_id: 1,
-      data: %{players: [], matches: []},
+      players: %{},
+      matches: %{},
       meta: %{}
     }
   end
@@ -212,8 +212,7 @@ defmodule CodebattleWeb.Factory do
       current_round: 0,
       players_limit: 16,
       starts_at: NaiveDateTime.utc_now(),
-      creator_id: 1,
-      data: %{players: [], matches: []}
+      creator_id: 1
     }
   end
 

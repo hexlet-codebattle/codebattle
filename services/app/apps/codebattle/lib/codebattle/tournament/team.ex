@@ -66,7 +66,8 @@ defmodule Codebattle.Tournament.Team do
     new_matches =
       tournament
       |> get_players()
-      |> Enum.chunk_by(&Map.get(&1, :team_id))
+      |> Enum.group_by(&Map.get(&1, :team_id))
+      |> Map.values()
       |> shift_pairs(tournament)
       |> Enum.zip()
       |> Enum.with_index(tournament.current_round * players_count(tournament, 0))

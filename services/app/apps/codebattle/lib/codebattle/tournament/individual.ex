@@ -15,13 +15,8 @@ defmodule Codebattle.Tournament.Individual do
         1
       end
 
-    bots = Bot.Context.build_list(bots_count + 126)
-
-    Enum.reduce(
-      bots,
-      tournament,
-      fn bot, tournament -> add_player(tournament, bot) end
-    )
+    bots = Bot.Context.build_list(bots_count)
+    add_players(tournament, %{users: bots})
   end
 
   @impl Tournament.Base

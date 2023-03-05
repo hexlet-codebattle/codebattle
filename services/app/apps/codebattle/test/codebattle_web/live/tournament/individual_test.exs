@@ -7,36 +7,7 @@ defmodule CodebattleWeb.Live.Tournament.IndividualTest do
     user1 = insert(:user)
     user2 = insert(:user)
     user3 = insert(:user)
-    task = insert(:task, level: "elementary")
-
-    playbook_data = %{
-      records: [
-        %{"type" => "init", "id" => 2, "editor_text" => "", "editor_lang" => "ruby"},
-        %{
-          "diff" => %{"delta" => [%{"insert" => "t"}], "time" => 20},
-          "type" => "update_editor_data",
-          "id" => 2
-        },
-        %{
-          "diff" => %{"delta" => [%{"retain" => 1}, %{"insert" => "e"}], "time" => 20},
-          "type" => "update_editor_data",
-          "id" => 2
-        },
-        %{
-          "diff" => %{"delta" => [%{"retain" => 2}, %{"insert" => "s"}], "time" => 20},
-          "type" => "update_editor_data",
-          "id" => 2
-        },
-        %{
-          "diff" => %{"prev_lang" => "ruby", "next_lang" => "ruby", "time" => 100},
-          "type" => "editor_lang",
-          "id" => 2
-        },
-        %{"type" => "game_over", "id" => 2, "lang" => "ruby"}
-      ]
-    }
-
-    insert(:playbook, %{data: playbook_data, task: task, winner_lang: "ruby"})
+    insert(:task, level: "elementary")
 
     conn1 = put_session(conn, :user_id, user1.id)
     conn2 = put_session(conn, :user_id, user2.id)
@@ -53,14 +24,6 @@ defmodule CodebattleWeb.Live.Tournament.IndividualTest do
 
     {:ok, view1, _html} = live(conn1, Routes.tournament_path(conn, :show, tournament.id))
 
-    render_click(view1, :join)
-
-    tournament = Codebattle.Tournament.Context.get!(tournament.id)
-    assert Helpers.players_count(tournament) == 0
-
-    render_click(view1, :start)
-
-    render_click(view1, :join)
     render_click(view1, :join)
 
     tournament = Codebattle.Tournament.Context.get!(tournament.id)
