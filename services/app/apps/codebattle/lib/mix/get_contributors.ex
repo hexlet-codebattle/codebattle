@@ -31,7 +31,9 @@ defmodule Mix.Tasks.GetContributors do
         |> Enum.map_join("", fn params -> template(params) end)
 
       File.cwd!()
-      |> Path.join("lib/codebattle_web/templates/root/_contributors_#{repo_name}.html.heex")
+      |> Path.join(
+        "apps/codebattle/lib/codebattle_web/templates/root/_contributors_#{repo_name}.html.heex"
+      )
       |> File.write!(content)
     end)
   end
