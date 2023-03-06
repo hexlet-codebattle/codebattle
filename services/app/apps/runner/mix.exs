@@ -42,6 +42,7 @@ defmodule Runner.MixProject do
       {:hackney, "~> 1.18"},
       {:jason, "~> 1.2"},
       {:phoenix, "~> 1.7"},
+      {:phoenix_view, "~> 2.0"},
       {:plug_cowboy, "~> 2.5"},
       {:sentry, "~> 8.0"},
       {:temp, "~> 0.4"},
