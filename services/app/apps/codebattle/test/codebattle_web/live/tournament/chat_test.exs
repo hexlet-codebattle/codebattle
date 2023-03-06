@@ -20,9 +20,6 @@ defmodule CodebattleWeb.Live.Tournament.ChatTest do
     tournament = Codebattle.Tournament.Context.get!(tournament_id)
 
     {:ok, view1, _html} = live(conn1, Routes.tournament_path(conn, :show, tournament.id))
-
-    render_click(view1, :join)
-    render_click(view1, :start)
     render_click(view1, :join)
 
     {:ok, view2, _html} = live(conn2, Routes.tournament_path(conn, :show, tournament.id))
@@ -35,6 +32,7 @@ defmodule CodebattleWeb.Live.Tournament.ChatTest do
     tournament = Codebattle.Tournament.Context.get!(tournament.id)
     assert tournament.state == "active"
 
+    {:ok, view1, _html} = live(conn1, Routes.tournament_path(conn, :show, tournament.id))
     render_click(view1, :chat_message, %{"message" => %{"text" => "asdf"}})
   end
 end

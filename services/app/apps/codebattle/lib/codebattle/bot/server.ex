@@ -45,11 +45,11 @@ defmodule Codebattle.Bot.Server do
     # TODO: add gracefully terminate if there is no playbook
     case state.playbook_params do
       nil ->
-        Logger.info("There are no playbook for game: #{state.game.id}")
+        Logger.warn("There are no playbook for game: #{state.game.id}")
         {:noreply, %{state | state: :finished}}
 
       params ->
-        Logger.info("""
+        Logger.debug("""
         Start bot playbook player for game_id: #{inspect(state.game.id)},
         with playbook_params: #{inspect(Map.drop(params, [:actions]))}
         """)

@@ -43,7 +43,7 @@ defmodule Codebattle.CheatCheck do
     check_result = Enum.count(editor_updates) > 5
     checking_time = :os.system_time(:millisecond) - t
 
-    Logger.info(
+    Logger.debug(
       "Finish checking solution on copy/paste, result: #{check_result}, time: #{checking_time}"
     )
 

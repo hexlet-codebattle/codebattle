@@ -22,7 +22,7 @@ defmodule Codebattle.UsersRankUpdateServer do
 
     Codebattle.PubSub.subscribe("main")
     Codebattle.PubSub.subscribe("games")
-    Logger.info("Start UsersRankServer")
+    Logger.debug("Start UsersRankServer")
     {:ok, true}
   end
 
@@ -46,6 +46,6 @@ defmodule Codebattle.UsersRankUpdateServer do
 
   defp do_work do
     Codebattle.User.RankUpdate.call()
-    Logger.info("Rank has been recalculated")
+    Logger.debug("Rank has been recalculated")
   end
 end

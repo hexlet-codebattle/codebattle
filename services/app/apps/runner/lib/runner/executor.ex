@@ -30,11 +30,11 @@ defmodule Runner.Executor do
     File.mkdir_p!(@tmp_basedir)
     tmp_dir_path = Temp.mkdir!(%{prefix: lang_meta.slug, basedir: @tmp_basedir})
 
-    Logger.info("Solution text: #{inspect(solution_text)}")
-    Logger.info("Checker text: #{inspect(checker_text)}")
-    Logger.info("solution_file_name: #{inspect(lang_meta.solution_file_name)}")
-    Logger.info("checker_file_name: #{inspect(lang_meta.checker_file_name)}")
-    Logger.info("tmp_dir_path: #{inspect(tmp_dir_path)}")
+    Logger.debug("Solution text: #{inspect(solution_text)}")
+    Logger.debug("Checker text: #{inspect(checker_text)}")
+    Logger.debug("solution_file_name: #{inspect(lang_meta.solution_file_name)}")
+    Logger.debug("checker_file_name: #{inspect(lang_meta.checker_file_name)}")
+    Logger.debug("tmp_dir_path: #{inspect(tmp_dir_path)}")
 
     File.write!(Path.join(tmp_dir_path, lang_meta.solution_file_name), solution_text)
     File.write!(Path.join(tmp_dir_path, lang_meta.checker_file_name), checker_text)

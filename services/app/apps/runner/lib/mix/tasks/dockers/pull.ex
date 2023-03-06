@@ -19,12 +19,12 @@ defmodule Mix.Tasks.Dockers.Pull do
 
   defp pull(langs) do
     for lang <- langs do
-      Logger.info("Start pulling image for #{lang.slug}")
+      Logger.debug("Start pulling image for #{lang.slug}")
 
       {output, _status} =
         System.cmd("docker", ["pull", lang.docker_image], stderr_to_stdout: true)
 
-      Logger.info("End pulling image for #{lang.slug}: #{output}")
+      Logger.debug("End pulling image for #{lang.slug}: #{output}")
     end
   end
 end

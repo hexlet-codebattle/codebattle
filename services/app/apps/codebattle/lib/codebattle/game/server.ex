@@ -44,7 +44,7 @@ defmodule Codebattle.Game.Server do
   # SERVER
   @impl GenServer
   def init(game) do
-    Logger.info("Start game server for game_id: #{game.id}")
+    Logger.debug("Start game server for game_id: #{game.id}")
 
     state = %{
       game: game,

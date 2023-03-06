@@ -200,29 +200,8 @@ defmodule Codebattle.Tournament.Helpers do
     end
   end
 
-  def pick_winner_id(%{player_ids: ids}), do: Enum.random(ids)
-
   def filter_statistics(statistics, "show"), do: statistics
   def filter_statistics(statistics, "hide"), do: [List.first(statistics)]
-
-  def calc_team_score(tournament) do
-    nil
-  end
-
-  #   tournament
-  #   |> get_rounds()
-  #   |> Enum.filter(fn round ->
-  #     Enum.all?(round, &(&1.state in ["canceled", "game_over", "timeout"]))
-  #   end)
-  #   |> Enum.map(&calc_round_result/1)
-  #   |> Enum.reduce({0, 0}, fn {x1, x2}, {a1, a2} ->
-  #     cond do
-  #       x1 > x2 -> {a1 + 1, a2}
-  #       x1 < x2 -> {a1, a2 + 1}
-  #       true -> {a1 + 0.5, a2 + 0.5}
-  #     end
-  #   end)
-  # end
 
   defp calc_match_result(%{state: "game_over", player_ids: [id, _], winner_id: id}), do: [1, 0]
   defp calc_match_result(%{state: "game_over", player_ids: [_, id], winner_id: id}), do: [0, 1]

@@ -20,7 +20,7 @@ defmodule Codebattle.TasksImporter do
 
   # SERVER
   def init(state) do
-    Logger.info("Start Tasks Importer")
+    Logger.debug("Start Tasks Importer")
     Process.send_after(self(), :run, :timer.seconds(17))
     {:ok, state}
   end

@@ -23,7 +23,7 @@ defmodule Codebattle.Game.TimeoutServer do
   # SERVER
 
   def init(game_id) do
-    Logger.info("Start timeout server for game_id: #{game_id}")
+    Logger.debug("Start timeout server for game_id: #{game_id}")
     {:ok, %{game_id: game_id}}
   end
 

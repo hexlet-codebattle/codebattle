@@ -22,6 +22,7 @@ config :codebattle, Codebattle.Repo,
   database: "codebattle_test",
   hostname: System.get_env("CODEBATTLE_DB_HOSTNAME", "localhost"),
   pool: Ecto.Adapters.SQL.Sandbox,
+  pool_size: 50,
   ownership_timeout: 99_999_999
 
 config :codebattle, Codebattle.Bot,

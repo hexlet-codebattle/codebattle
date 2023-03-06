@@ -11,7 +11,7 @@ defmodule Codebattle.Bot.Supervisor do
 
   @impl Supervisor
   def init(game_id) do
-    Logger.info("Start bot supervisor for game_id: #{game_id}")
+    Logger.debug("Start bot supervisor for game_id: #{game_id}")
     Supervisor.init([], strategy: :one_for_one)
   end
 

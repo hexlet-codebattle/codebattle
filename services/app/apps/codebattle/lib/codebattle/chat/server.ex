@@ -99,7 +99,7 @@ defmodule Codebattle.Chat.Server do
     clean_timeout = Map.get(params, :clean_timeout, @default_clean_timeout)
     Process.send_after(self(), :clean_messages, clean_timeout)
 
-    Logger.info("Start chat server for #{inspect(chat_type)}")
+    Logger.debug("Start chat server for #{inspect(chat_type)}")
     {:ok, %{@initial_state | message_ttl: message_ttl, clean_timeout: clean_timeout}}
   end
 

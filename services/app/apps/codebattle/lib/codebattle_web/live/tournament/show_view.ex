@@ -81,6 +81,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
   #   CodebattleWeb.TournamentView.render("old_show.html", assigns)
   # end
 
+  @impl true
   def handle_info(:update_time, socket = %{assigns: %{timer_fer: nil}}) do
     {:noreply, socket}
   end
@@ -119,8 +120,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     |> Enum.find(&(&1.id == socket.assigns.current_user.id))
     |> case do
       %{game_id: game_id} ->
-        # {:noreply, redirect(socket, to: "/games/#{game_id}")}
-        {:noreply, socket}
+        {:noreply, redirect(socket, to: "/games/#{game_id}")}
 
       _ ->
         {:noreply, socket}
@@ -132,6 +132,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     {:noreply, socket}
   end
 
+  @impl true
   def handle_event(_event, _params, %{assigns: %{current_user: %{is_guest: true}} = socket}) do
     {:noreply, socket}
   end

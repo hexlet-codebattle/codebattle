@@ -28,7 +28,7 @@ defmodule Codebattle.CodeCheck.Checker do
     {execution_time, new_token} = :timer.tc(fn -> token.executor.call(token) end)
     execution_time_msec = div(execution_time, 1_000)
 
-    Logger.error(
+    Logger.info(
       "Finished execution for lang: #{token.lang_meta.slug}, task: #{token.task.name}, time: #{execution_time_msec} msecs"
     )
 

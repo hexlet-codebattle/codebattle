@@ -23,7 +23,8 @@ config :codebattle, Codebattle.Repo,
   password: System.get_env("CODEBATTLE_DB_PASSWORD"),
   hostname: System.get_env("CODEBATTLE_DB_HOSTNAME"),
   database: System.get_env("CODEBATTLE_DB_NAME"),
-  pool_size: 7
+  pool_size: 25,
+  log_level: :error
 
 config :codebattle, :oauth,
   mock_clinet: false,
