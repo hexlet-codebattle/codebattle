@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import axios from 'axios';
 import { Machine } from 'xstate';
@@ -67,54 +67,80 @@ jest.mock('react-select', () => ({ options, value, onChange }) => {
   );
 });
 
-test('test rendering preview game component', async () => {
-  const reducer = combineReducers(reducers);
+jest.mock(
+  'phoenix',
+  () => {
+    const originalModule = jest.requireActual('phoenix');
 
-  const players = {
-    1: createPlayer({
-      name: 'John Kramer',
-      type: userTypes.firstPlayer,
-      id: 1,
-    }),
-    2: createPlayer({ name: 'Tim Urban', type: userTypes.secondPlayer, id: 2 }),
-  };
+    return {
+      __esModule: true,
+      ...originalModule,
+      Socket: jest.fn().mockImplementation(() => ({
+        channel: jest.fn(() => {
+          const channel = {
+            join: jest.fn(() => channel),
+            receive: jest.fn(() => channel),
+            on: jest.fn(),
+            push: jest.fn(),
+            onError: jest.fn(),
+          };
 
-  const preloadedState = {
-    user: { currentUserId: 1, users: players },
-    game: {
-      gameStatus: {
-        state: GameStateCodes.playing,
-        checking: {},
-        startsAt: '0',
-      },
-      task: {
-        id: 0,
-        name: '',
-        description: '',
-        examples: '',
-        level: 'medium',
-      },
-      players,
+          return channel;
+        }),
+        connect: jest.fn(() => {}),
+      })),
+    };
+  },
+);
+
+const reducer = combineReducers(reducers);
+
+const players = {
+  1: createPlayer({
+    name: 'John Kramer',
+    type: userTypes.firstPlayer,
+    id: 1,
+  }),
+  2: createPlayer({ name: 'Tim Urban', type: userTypes.secondPlayer, id: 2 }),
+};
+
+const preloadedState = {
+  user: { currentUserId: 1, users: players },
+  game: {
+    gameStatus: {
+      state: GameStateCodes.playing,
+      checking: {},
+      startsAt: '0',
     },
-    editor: {
-      meta: {
-        1: { userId: 1, currentLangSlug: 'js' },
-        2: { userId: 2, currentLangSlug: 'js' },
-      },
-      text: {
-        '1:js': '',
-        '2:js': '',
-      },
+    task: {
+      id: 0,
+      name: '',
+      description: '',
+      examples: '',
+      level: 'medium',
     },
-    usersInfo: {
-      1: { },
-      2: { },
+    players,
+  },
+  editor: {
+    meta: {
+      1: { userId: 1, currentLangSlug: 'js' },
+      2: { userId: 2, currentLangSlug: 'js' },
     },
-  };
+    text: {
+      '1:js': '',
+      '2:js': '',
+    },
+  },
+  usersInfo: {
+    1: { },
+    2: { },
+  },
+};
 
-  game.states.game.initial = 'active';
-  editor.initial = 'idle';
+game.states.game.initial = 'active';
+editor.initial = 'idle';
 
+test('test rendering preview game component', () => {
   const store = configureStore({
     reducer,
     preloadedState,
@@ -130,4 +156,27 @@ test('test rendering preview game component', async () => {
     expect(screen.getByText(/Examples:/)).toBeInTheDocument();
     expect(screen.getByTitle('Reset Editor')).toBeInTheDocument();
   });
+
+test('test game guide', async () => {
+  const store = configureStore({
+    reducer,
+    preloadedState,
+  });
+
+  const { getByRole } = render(
+    <Provider store={store}>
+      <RootContainer gameMachine={Machine(game)} editorMachine={Machine(editor)} />
+    </Provider>,
+  );
+
+  const showGuideButton = getByRole('button', { name: 'Show guide' });
+
+  fireEvent.click(showGuideButton);
+
+  const closeGuideButton = getByRole('button', { name: 'Close' });
+  expect(closeGuideButton).toBeInTheDocument();
+
+  fireEvent.click(closeGuideButton);
+
+  expect(closeGuideButton).not.toBeInTheDocument();
 });
