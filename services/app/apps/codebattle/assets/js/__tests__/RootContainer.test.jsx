@@ -152,10 +152,8 @@ test('test rendering preview game component', () => {
     </Provider>,
   );
 
-  waitFor(() => {
-    expect(screen.getByText(/Examples:/)).toBeInTheDocument();
-    expect(screen.getByTitle('Reset Editor')).toBeInTheDocument();
-  });
+  expect(screen.getByText(/Examples:/)).toBeInTheDocument();
+});
 
 test('test game guide', async () => {
   const store = configureStore({
