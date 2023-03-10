@@ -598,6 +598,11 @@ td {
   flex-grow: 1;
 }
 
+.game-control-container {
+  width: 250px;
+  min-width: 250px;
+}
+
 @media (max-width: $xl) {
   .cb-heading {
     font-size: 21px;
@@ -650,6 +655,9 @@ td {
   .lead {
     font-size: 16px;
   }
+  .game-control-container {
+    width: 100%;
+  }
 }
 
 .tag-btn-outline-orange {
@@ -660,4 +668,8 @@ td {
 .tag-btn-outline-orange:hover {
   border-color: $orange;
   color: $orange;
+}
+
+.game-chat-container {
+  min-width: 250px;
 }
