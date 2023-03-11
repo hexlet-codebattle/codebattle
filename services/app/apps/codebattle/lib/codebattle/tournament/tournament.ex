@@ -27,7 +27,7 @@ defmodule Codebattle.Tournament do
   @access_types ~w(public token)
   @levels ~w(elementary easy medium hard)
   @states ~w(waiting_participants canceled active finished)
-  @types ~w(individual team ladder)
+  @types ~w(individual team stairway)
 
   @max_alive_tournaments 7
   @default_match_timeout Application.compile_env(:codebattle, :tournament_match_timeout)

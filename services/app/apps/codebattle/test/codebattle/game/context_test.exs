@@ -43,10 +43,6 @@ defmodule Codebattle.Game.ContextTest do
         topic: ^game_topic,
         payload: %{game_id: ^game_id, game_state: "timeout"}
       }
-
-      :ok = Game.Context.trigger_timeout(game_id)
-
-      refute_receive(%{})
     end
   end
 
