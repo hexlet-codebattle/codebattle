@@ -71,7 +71,7 @@ const ControlPanel = ({
           <button type="button" className={speedControlClassNames} onClick={onChangeSpeed}>x2</button>
           <button
             type="button"
-            className={speedControlClassNames}
+            className="btn btn-sm rounded ml-2 border btn-light"
             title="Copy history game url at current record id"
             onClick={() => {
               const url = `https://codebattle.hexlet.io/games/${gameId}?t=${nextRecordId}`;
