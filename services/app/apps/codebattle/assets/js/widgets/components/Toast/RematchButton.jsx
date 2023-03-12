@@ -1,6 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import cn from 'classnames';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheck, faXmark } from '@fortawesome/free-solid-svg-icons';
+
 import * as selectors from '../../selectors';
 import i18n from '../../../i18n';
 import {
@@ -50,22 +53,28 @@ const RematchButton = ({
   };
 
   const renderBtnAfterRecieveOffer = () => (
-    <div className="input-group mt-2 mb-2">
-      <input type="text" className="form-control" placeholder="Accept Rematch?" />
-      <div className="input-group-append">
+    <div className="d-flex flex-nowrap mb-3 w-100">
+      <div className="flex-grow-1 border py-1 px-2 text-center">Rematch?</div>
+      <div className="d-flex">
         <button
-          className="btn btn-outline-secondary"
+          className="btn btn-outline-secondary mr-1"
           type="button"
           onClick={sendAcceptToRematch}
+          title="Accept"
         >
-          {i18n.t('Yes')}
+          <FontAwesomeIcon
+            icon={faCheck}
+          />
         </button>
         <button
           className="btn btn-outline-secondary"
           type="button"
           onClick={sendRejectToRematch}
+          title="Decline"
         >
-          {i18n.t('No')}
+          <FontAwesomeIcon
+            icon={faXmark}
+          />
         </button>
       </div>
     </div>

@@ -21,13 +21,13 @@ const ChatWidget = () => {
   const listOfUsers = isTournamentGame ? _.filter(uniqUsers, { isBot: false }) : uniqUsers;
   return (
     <div className="d-flex flex-wrap flex-sm-nowrap shadow-sm h-100">
-      <div className="col-12 col-sm-8 p-0 bg-white rounded-left mh-100 position-relative">
+      <div className="flex-grow-1 p-0 bg-white rounded-left mh-100 position-relative game-chat-container">
         <Messages messages={messages} />
         {!gameCurrent.matches({ replayer: replayerMachineStates.on }) && <ChatInput />}
       </div>
-      <div className="col-12 col-sm-4 d-block p-0 border-left bg-white rounded-right">
+      <div className="flex-shrink-1 p-0 border-left bg-white rounded-right game-control-container">
         <div className="d-flex flex-column justify-content-start overflow-auto h-100">
-          <div className="px-3 py-3 w-100">
+          <div className="px-3 py-3 w-100 d-flex flex-column">
             <Notifications />
           </div>
           <div className="px-3 py-3 w-100 border-top">
