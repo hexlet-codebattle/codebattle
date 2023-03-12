@@ -50,7 +50,6 @@ const steps = [
     target: 'body',
   },
   {
-    disableBeacon: true,
     disableOverlayClose: true,
     target: '[data-guide-id="Task"]',
     title: 'Task',

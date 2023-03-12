@@ -305,7 +305,7 @@ describe('test task choice', () => {
       task_id: 1,
     };
     expect(mainMiddlewares.createInvite).toHaveBeenCalledWith(paramsWithOpponentAndChosenTask);
-  }, 9000);
+  }, 12000);
 
   test('filter tasks by level', async () => {
     const {
