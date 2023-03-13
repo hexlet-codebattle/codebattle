@@ -2,9 +2,7 @@
   "repository": {},
   "license": "MIT",
   "browserslist": [
-    "> 0.25%",
-    "not dead",
-    "current node"
+    "> 0.25%"
   ],
   "scripts": {
     "test": "jest",
