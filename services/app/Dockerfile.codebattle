@@ -1,4 +1,4 @@
-FROM node:16.13.2 AS assets-image
+FROM node:18.15.0 AS assets-image
 ENV MIX_ENV=prod
 
 WORKDIR /tmp

@@ -18,6 +18,7 @@ function recursiveIssuer(m) {
 }
 
 module.exports = {
+  target: 'browserslist',
   entry: {
     app: ['./assets/js/app.js', './assets/css/style.scss'],
     landing: ['./assets/js/landing.js', './assets/css/landing.scss'],
@@ -35,24 +36,19 @@ module.exports = {
     rules: [
       {
         test: /\.po$/,
-        loaders: ['i18next-po-loader'],
+        loader: 'i18next-po-loader',
       },
       {
-        test: /\.jsx?$/,
+        test: /\.(js|jsx)$/,
         exclude: /node_modules/,
         use: {
-          loader: 'babel-loader',
-        },
+          loader: "babel-loader"
+        }
       },
       {
         test: /\.(sa|sc|c)ss$/,
         use: [
-          {
-            loader: MiniCssExtractPlugin.loader,
-            options: {
-              hmr: !isProd,
-            },
-          },
+          { loader: MiniCssExtractPlugin.loader },
           { loader: 'css-loader' },
           { loader: 'sass-loader' },
         ],
@@ -95,6 +91,9 @@ module.exports = {
     },
   },
   plugins: [
+    new webpack.ProvidePlugin({
+      process: 'process/browser',
+    }),
     new CopyWebpackPlugin({
       patterns: [{ from: 'assets/static' }],
     }),
@@ -125,6 +124,12 @@ module.exports = {
     poll: 1000,
   },
   resolve: {
+    alias: {
+      './defineProperty': '@babel/runtime/helpers/esm/defineProperty'
+    },
+    fallback: {
+      "path": require.resolve("path-browserify")
+    },
     extensions: ['.js', '.jsx'],
   },
 };

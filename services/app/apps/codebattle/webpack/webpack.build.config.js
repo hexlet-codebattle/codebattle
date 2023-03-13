@@ -1,18 +1,19 @@
 const { merge } = require('webpack-merge');
-const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const baseWebpackConfig = require('./webpack.base.config');
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+const TerserPlugin = require('terser-webpack-plugin');
 
 const buildWebpackConfig = merge(baseWebpackConfig, {
   mode: 'production',
-  plugins: [
-    new OptimizeCssAssetsPlugin({
-      assetNameRegExp: /\.css$/g,
-      cssProcessorPluginOptions: {
-        preset: ['default', { discardComments: { removeAll: true } }],
-      },
-      canPrint: true,
-    }),
-  ],
+  optimization: {
+    minimize: true,
+    minimizer: [
+      new TerserPlugin(), // minimize JS code
+      new CssMinimizerPlugin({
+        test: /\.css$/i, // specify which files to minimize
+      }),
+    ],
+  }
 });
 
 module.exports = new Promise(resolve => {

@@ -8,7 +8,7 @@ RUN mix local.hex --force \
 RUN apt-get update \
   && apt-get install -y inotify-tools vim wkhtmltopdf
 
-RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - \
+RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - \
   && apt-get update \
   && apt-get install -y nodejs \
   && npm install --global yarn@1.22.10

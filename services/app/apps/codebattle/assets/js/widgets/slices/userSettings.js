@@ -4,7 +4,6 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import _ from 'lodash';
 
 const userSettings = Gon.getAsset('current_user');
-let csrfToken;
 
 const createValidationErrors = response => {
   const [fieldName] = Object.keys(response.data.errors);
@@ -16,12 +15,7 @@ const createValidationErrors = response => {
   };
 };
 
-if (process.browser) {
-  // for testing purposes
-  csrfToken = document
-    .querySelector("meta[name='csrf-token']")
-    .getAttribute('content');
-}
+const csrfToken = document?.querySelector("meta[name='csrf-token']")?.getAttribute('content');
 export const updateUserSettings = createAsyncThunk(
   'userSettings/update',
   async (userData, { rejectWithValue }) => {
