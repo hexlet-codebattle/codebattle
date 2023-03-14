@@ -60,7 +60,7 @@ defmodule Codebattle.TaskPack do
   def can_see_task_pack?(task_pack, user), do: can_access_task_pack?(task_pack, user)
 
   def can_access_task_pack?(task_pack, user) do
-    task_pack.creator_id == user.id || Codebattle.User.is_admin?(user)
+    task_pack.creator_id == user.id || Codebattle.User.admin?(user)
   end
 
   def list_visible(user) do
@@ -71,7 +71,7 @@ defmodule Codebattle.TaskPack do
   end
 
   def filter_visibility(query, user) do
-    if Codebattle.User.is_admin?(user) do
+    if Codebattle.User.admin?(user) do
       Function.identity(query)
     else
       from(t in query,

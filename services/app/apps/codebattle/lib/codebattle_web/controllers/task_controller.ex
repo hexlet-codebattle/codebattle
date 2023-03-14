@@ -103,7 +103,7 @@ defmodule CodebattleWeb.TaskController do
   def activate(conn, %{"task_id" => id}) do
     task = Task.get!(id)
 
-    if Codebattle.User.is_admin?(conn.assigns.current_user) do
+    if Codebattle.User.admin?(conn.assigns.current_user) do
       Codebattle.Task.change_state(task, "active")
 
       conn
@@ -120,7 +120,7 @@ defmodule CodebattleWeb.TaskController do
   def disable(conn, %{"task_id" => id}) do
     task = Task.get!(id)
 
-    if Codebattle.User.is_admin?(conn.assigns.current_user) do
+    if Codebattle.User.admin?(conn.assigns.current_user) do
       Codebattle.Task.change_state(task, "disabled")
 
       conn

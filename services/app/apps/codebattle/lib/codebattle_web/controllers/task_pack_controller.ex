@@ -100,7 +100,7 @@ defmodule CodebattleWeb.TaskPackController do
   def activate(conn, %{"task_pack_id" => id}) do
     task_pack = TaskPack.get!(id)
 
-    if Codebattle.User.is_admin?(conn.assigns.current_user) do
+    if Codebattle.User.admin?(conn.assigns.current_user) do
       Codebattle.TaskPack.change_state(task_pack, "active")
 
       conn
@@ -117,7 +117,7 @@ defmodule CodebattleWeb.TaskPackController do
   def disable(conn, %{"task_pack_id" => id}) do
     task_pack = TaskPack.get!(id)
 
-    if Codebattle.User.is_admin?(conn.assigns.current_user) do
+    if Codebattle.User.admin?(conn.assigns.current_user) do
       Codebattle.TaskPack.change_state(task_pack, "disabled")
 
       conn

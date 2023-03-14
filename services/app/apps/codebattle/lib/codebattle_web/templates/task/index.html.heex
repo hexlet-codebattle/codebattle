@@ -38,7 +38,7 @@
                   to: CodebattleWeb.Router.Helpers.task_path(@conn, :show, task.id),
                   class: "btn btn-sm btn-info"
                 ) %>
-                <%= if Codebattle.User.is_admin?(@current_user) do %>
+                <%= if Codebattle.User.admin?(@current_user) do %>
                   <%= button("Activate",
                     to:
                       CodebattleWeb.Router.Helpers.task_activate_path(@conn, :activate, task.id),

@@ -15,7 +15,7 @@ defmodule CodebattleWeb.Api.V1.PlaybookController do
         limit: 1
       )
 
-    if User.is_admin?(conn.assigns.current_user) do
+    if User.admin?(conn.assigns.current_user) do
       {:ok, playbook} =
         Repo.one(query) |> Playbook.changeset(%{solution_type: "complete"}) |> Repo.update()
 
@@ -37,7 +37,7 @@ defmodule CodebattleWeb.Api.V1.PlaybookController do
         limit: 1
       )
 
-    if User.is_admin?(conn.assigns.current_user) do
+    if User.admin?(conn.assigns.current_user) do
       {:ok, playbook} =
         Repo.one(query) |> Playbook.changeset(%{solution_type: "baned"}) |> Repo.update()
 
