@@ -230,8 +230,8 @@ msgstr "Settings"
 
 #, elixir-format
 #: lib/codebattle_web/templates/layout/app.html.slim:13
-msgid "Slack#codebattle"
-msgstr "Slack#codebattle"
+msgid "Tg#codebattle"
+msgstr "Tg#codebattle"
 
 #, elixir-format
 #: lib/codebattle_web/templates/layout/app.html.slim:13

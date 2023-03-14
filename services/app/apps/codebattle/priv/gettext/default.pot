@@ -229,8 +229,8 @@ msgstr ""
 
 #, elixir-format
 #: lib/codebattle_web/templates/layout/app.html.slim:13
-msgid "Slack#codebattle"
-msgstr ""
+msgid "Tg#codebattle"
+msgstr "Tg#codebattle"
 
 #, elixir-format
 #: lib/codebattle_web/templates/layout/app.html.slim:13
@@ -369,4 +369,3 @@ msgstr ""
 
 msgid "Timeout 3600 seconds"
 msgstr ""
-
