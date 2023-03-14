@@ -28,11 +28,19 @@ const renderUser = user => (
     <td className="p-3 align-middle">{user.performance}</td>
     <td className="p-3 align-middle">{decorateJoinedDate(user.insertedAt)}</td>
     <td className="p-3 align-middle">
-      <a className="text-muted" href={`https://github.com/${user.name}`}>
-        <span className="h3">
-          <i className="fab fa-github" />
-        </span>
-      </a>
+      { user.githubName
+        ? (
+          <a className="text-muted" href={`https://github.com/${user.githubName}`}>
+            <span className="h3">
+              <i className="fab fa-github" />
+            </span>
+          </a>
+          )
+        : (
+          <span className="h3">
+            <i className="far fa-times-circle" />
+          </span>
+        )}
     </td>
   </tr>
 );
