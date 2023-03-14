@@ -128,7 +128,7 @@ defmodule CodebattleWeb.GameChannel do
   end
 
   def handle_info(%{event: "game:terminated", payload: payload}, socket) do
-    push(socket, "game:terminated", payload)
+    push(socket, "game:timeout", payload)
     {:noreply, socket}
   end
 
