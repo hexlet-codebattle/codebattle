@@ -141,6 +141,9 @@ defmodule Codebattle.User do
     user.name in @admins
   end
 
+  def bot?(user_id) when is_integer(user_id), do: user_id < 0
+  def bot?(user = %__MODULE__{}), do: user.is_bot
+
   def guest_id(), do: @guest_id
 
   @spec get_user!(raw_id()) :: t() | no_return
