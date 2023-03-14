@@ -126,6 +126,7 @@ defmodule Codebattle.User do
     |> validate_length(:name, min: 3, max: 16)
   end
 
+  @spec create_guest :: t()
   def create_guest() do
     %__MODULE__{
       is_guest: true,
@@ -137,10 +138,12 @@ defmodule Codebattle.User do
     }
   end
 
-  def is_admin?(user) do
+  @spec admin?(t()) :: boolean()
+  def admin?(user) do
     user.name in @admins
   end
 
+  @spec bot?(integer() | t()) :: boolean()
   def bot?(user_id) when is_integer(user_id), do: user_id < 0
   def bot?(user = %__MODULE__{}), do: user.is_bot
 

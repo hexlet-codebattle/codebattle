@@ -40,7 +40,7 @@ defmodule CodebattleWeb.ChatChannel do
 
     case payload["type"] do
       "ban" ->
-        if Codebattle.User.is_admin?(user) do
+        if Codebattle.User.admin?(user) do
           Chat.ban_user(chat_type, %{
             admin_name: user.name,
             name: payload["name"],
@@ -49,7 +49,7 @@ defmodule CodebattleWeb.ChatChannel do
         end
 
       "clean_banned" ->
-        if Codebattle.User.is_admin?(user) do
+        if Codebattle.User.admin?(user) do
           Chat.clean_banned(chat_type)
         end
 

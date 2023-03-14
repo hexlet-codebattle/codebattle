@@ -42,6 +42,6 @@ defmodule CodebattleWeb.Plugs.AssignGon do
       :inserted_at,
       :sound_settings
     ])
-    |> Map.put(:is_admin, Codebattle.User.is_admin?(user))
+    |> Map.put(:is_admin, Codebattle.User.admin?(user))
   end
 end

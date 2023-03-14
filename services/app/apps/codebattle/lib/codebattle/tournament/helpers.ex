@@ -57,7 +57,7 @@ defmodule Codebattle.Tournament.Helpers do
   def can_be_started?(_t), do: false
 
   def can_moderate?(tournament, user) do
-    is_creator?(tournament, user) || User.is_admin?(user)
+    is_creator?(tournament, user) || User.admin?(user)
   end
 
   def can_access?(tournament = %{access_type: "token"}, user, params) do

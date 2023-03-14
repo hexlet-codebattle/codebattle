@@ -116,7 +116,7 @@ defmodule Codebattle.Task do
   end
 
   def filter_visibility(query, user) do
-    if Codebattle.User.is_admin?(user) do
+    if Codebattle.User.admin?(user) do
       Function.identity(query)
     else
       from(t in query,
@@ -176,7 +176,7 @@ defmodule Codebattle.Task do
   def can_see_task?(task, user), do: can_access_task?(task, user)
 
   def can_access_task?(task, user) do
-    task.creator_id == user.id || Codebattle.User.is_admin?(user)
+    task.creator_id == user.id || Codebattle.User.admin?(user)
   end
 
   def change_state(task, state) do
