@@ -127,6 +127,11 @@ defmodule CodebattleWeb.GameChannel do
     |> handle_rematch_result(socket)
   end
 
+  def handle_info(%{event: "game:terminated", payload: payload}, socket) do
+    push(socket, "game:terminated", payload)
+    {:noreply, socket}
+  end
+
   def handle_info(%{event: "tournament:round_created", payload: payload}, socket) do
     push(socket, "tournament:round_created", payload)
 
