@@ -35,12 +35,12 @@ const renderUser = user => (
               <i className="fab fa-github" />
             </span>
           </a>
-)
+          )
         : (
           <span className="h3">
             <i className="far fa-times-circle" />
           </span>
-)}
+        )}
     </td>
   </tr>
 );
