@@ -10,7 +10,7 @@ defmodule Codebattle.InvitesKillerServerTest do
     assert invite_first.state == "pending"
     assert invite_second.state == "pending"
 
-    :ok = InvitesKillerServer.work()
+    :ok = InvitesKillerServer.call()
 
     :timer.sleep(300)
 

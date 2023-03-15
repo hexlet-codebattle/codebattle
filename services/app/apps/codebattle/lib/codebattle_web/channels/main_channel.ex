@@ -45,7 +45,6 @@ defmodule CodebattleWeb.MainChannel do
 
     push(socket, "presence_state", Presence.list(socket))
 
-    # TODO: Create Invite model
     invites = Invite.list_active_invites(socket.assigns.current_user.id)
     push(socket, "invites:init", %{invites: invites})
     {:noreply, socket}
