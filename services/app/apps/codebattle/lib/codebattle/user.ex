@@ -147,6 +147,7 @@ defmodule Codebattle.User do
   def bot?(user_id) when is_integer(user_id), do: user_id < 0
   def bot?(user = %__MODULE__{}), do: user.is_bot
 
+  @spec guest_id() :: integer()
   def guest_id(), do: @guest_id
 
   @spec get_user!(raw_id()) :: t() | no_return
