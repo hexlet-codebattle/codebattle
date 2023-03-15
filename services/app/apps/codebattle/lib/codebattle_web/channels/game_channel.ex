@@ -14,6 +14,8 @@ defmodule CodebattleWeb.GameChannel do
         Codebattle.PubSub.subscribe("tournament:#{game.tournament_id}")
       end
 
+      Codebattle.PubSub.subscribe("game:#{game.id}")
+
       {:ok, GameView.render_game(game, score), assign(socket, :game_id, game_id)}
     rescue
       _ ->
@@ -134,6 +136,14 @@ defmodule CodebattleWeb.GameChannel do
 
   def handle_info(%{event: "tournament:round_created", payload: payload}, socket) do
     push(socket, "tournament:round_created", payload)
+
+    {:noreply, socket}
+  end
+
+  def handle_info(%{event: "game:finished", payload: payload}, socket) do
+    if payload.game_state = "timeout" do
+      push(socket, "game:timeout", payload)
+    end
 
     {:noreply, socket}
   end
