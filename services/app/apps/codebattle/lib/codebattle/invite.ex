@@ -7,6 +7,8 @@ defmodule Codebattle.Invite do
   alias Codebattle.Game.Context
   alias __MODULE__
 
+  @type t :: %__MODULE__{}
+
   defmodule GameParams do
     use Ecto.Schema
     import Ecto.Changeset
@@ -45,11 +47,13 @@ defmodule Codebattle.Invite do
     |> validate_required([:state])
   end
 
+  @spec list_invites() :: [] | [t()]
   def list_invites do
     Repo.all(Invite)
     |> Repo.preload([:creator, :recipient])
   end
 
+  @spec list_active_invites(integer) :: [] | [t()]
   def list_active_invites(user_id) do
     query =
       from(i in Invite,
@@ -60,6 +64,7 @@ defmodule Codebattle.Invite do
     |> Repo.preload([:creator, :recipient])
   end
 
+  @spec list_all_active_invites() :: [] | [t()]
   def list_all_active_invites() do
     query =
       from(i in Invite,
@@ -69,6 +74,7 @@ defmodule Codebattle.Invite do
     Repo.all(query) |> Repo.preload([:creator, :recipient])
   end
 
+  @spec expire_invite(t()) :: t()
   def expire_invite(invite) do
     Invite.update_invite(invite, %{state: "expired"})
   end

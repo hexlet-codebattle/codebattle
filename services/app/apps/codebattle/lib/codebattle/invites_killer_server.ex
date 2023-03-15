@@ -17,26 +17,26 @@ defmodule Codebattle.InvitesKillerServer do
   ## Server callbacks
 
   def init(_) do
-    Process.send_after(self(), :work, @timeout)
+    Process.send_after(self(), :check_invites, @timeout)
     {:ok, %{}}
   end
 
-  def work do
-    GenServer.cast(__MODULE__, :work)
+  def call() do
+    GenServer.cast(__MODULE__, :check_invites)
   end
 
-  def handle_cast(:work, _) do
-    do_work()
+  def handle_cast(:check_invites, _) do
+    expire_outdated_invites()
     {:noreply, %{}}
   end
 
-  def handle_info(:work, _) do
-    do_work()
-    Process.send_after(self(), :work, @timeout)
+  def handle_info(:check_invites, _) do
+    expire_outdated_invites()
+    Process.send_after(self(), :check_invites, @timeout)
     {:noreply, %{}}
   end
 
-  def do_work do
+  defp expire_outdated_invites() do
     invites = Invite.list_all_active_invites()
     current_time = NaiveDateTime.utc_now()
 
