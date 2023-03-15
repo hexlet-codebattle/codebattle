@@ -141,7 +141,7 @@ defmodule CodebattleWeb.GameChannel do
   end
 
   def handle_info(%{event: "game:finished", payload: payload}, socket) do
-    if payload.game_state = "timeout" do
+    if payload.game_state == "timeout" do
       push(socket, "game:timeout", payload)
     end
 
