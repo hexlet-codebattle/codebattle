@@ -18,7 +18,7 @@ const GameResult = () => {
     if (gameStatus.state === GameStateCodes.timeout) {
       return ({
         alertStyle: 'danger',
-        msg: gameStatus.msg,
+        msg: 'Time is up. There are no winners in the game',
       });
     }
 

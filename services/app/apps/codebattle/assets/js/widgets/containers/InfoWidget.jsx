@@ -12,6 +12,12 @@ import Timer from '../components/Timer';
 import GameContext from './GameContext';
 import { gameMachineStates } from '../machines/game';
 
+const gameStatuses = {
+  stored: 'stored',
+  game_over: 'game_over',
+  timeout: 'game_over',
+};
+
 const TimerContainer = ({ time, timeoutSeconds, gameStateName }) => {
   const { current } = useContext(GameContext);
 
@@ -23,7 +29,7 @@ const TimerContainer = ({ time, timeoutSeconds, gameStateName }) => {
     current.matches({ game: gameMachineStates.gameOver })
     || current.matches({ game: gameMachineStates.stored })
   ) {
-    return gameStateName;
+    return gameStatuses[gameStateName];
   }
 
   if (timeoutSeconds && time) {

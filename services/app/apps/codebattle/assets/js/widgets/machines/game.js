@@ -116,6 +116,7 @@ const machine = {
               { target: 'waiting', cond: 'isWaitingGame' },
               { target: 'active', cond: 'isActiveGame' },
               { target: 'game_over', cond: 'isGameOver' },
+              { target: 'game_over', cond: 'isTimeout' },
               { target: 'failure', action: 'throwError' },
             ],
 
@@ -216,6 +217,7 @@ export const config = {
     isWaitingGame: (_ctx, { payload }) => payload.state === GameStateCodes.waitingOpponent,
     isActiveGame: (_ctx, { payload }) => payload.state === GameStateCodes.playing,
     isGameOver: (_ctx, { payload }) => payload.state === GameStateCodes.gameOver,
+    isTimeout: (_ctx, { payload }) => payload.state === GameStateCodes.timeout,
   },
   actions: {
     // common actions
