@@ -1,6 +1,7 @@
 import React from 'react';
 import SlackFeedback, { themes } from 'react-slack-feedback';
 import { useSelector } from 'react-redux';
+import '../../../css/feedbackWidget.scss';
 
 import { currentUserNameSelector } from '../selectors/index';
 
