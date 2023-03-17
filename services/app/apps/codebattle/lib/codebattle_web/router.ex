@@ -7,6 +7,7 @@ defmodule CodebattleWeb.Router do
   pipeline :browser do
     plug(:accepts, ["html"])
     plug(:fetch_session)
+    plug(:fetch_flash)
     plug(:fetch_live_flash)
     plug(CodebattleWeb.Plugs.AssignCurrentUser)
     plug(:protect_from_forgery)

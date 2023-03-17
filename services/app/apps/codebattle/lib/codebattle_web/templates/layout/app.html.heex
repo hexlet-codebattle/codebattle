@@ -222,7 +222,7 @@
       </div>
     </div>
     <div class="container-lg">
-      <%= for {type, message} <- get_flash(@conn) do %>
+      <%= for {type, message} <- @flash || [] do %>
         <div
           class={"row mb-0 rounded-0 alert alert-#{type} alert-dismissible fade show"}
           role="alert"
