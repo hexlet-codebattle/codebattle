@@ -355,8 +355,9 @@ export const activeGameReady = machine => dispatch => {
     redirectToNewGame(newGameId);
   });
 
-  channel.on('game:timeout', ({ state, msg }) => {
-    const data = { state, msg };
+  channel.on('game:timeout', payload => {
+    const { gameState } = camelizeKeys(payload);
+    const data = { state: gameState };
     dispatch(actions.updateGameStatus(data));
     machine.send('game:timeout', { payload: data });
   });
