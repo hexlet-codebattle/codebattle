@@ -51,6 +51,10 @@ defmodule CodebattleWeb.InviteChannel do
       raise "Incorrect user for invite!"
     end
 
+    if Invite.has_pending_invites?(creator_id, recipient_id) do
+      raise "Invite already created!"
+    end
+
     level = payload["level"] || "elementary"
     type = "public"
     timeout_seconds = payload["timeout_seconds"] || 3600
