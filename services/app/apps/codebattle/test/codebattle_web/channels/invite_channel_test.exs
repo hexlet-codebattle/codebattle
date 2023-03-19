@@ -25,7 +25,7 @@ defmodule CodebattleWeb.InviteChannelTest do
   end
 
   test "on connect pushes initial invites", %{creator_socket: creator_socket} do
-    {:ok, response, socket} = subscribe_and_join(creator_socket, InviteChannel, "invites")
+    {:ok, response, _} = subscribe_and_join(creator_socket, InviteChannel, "invites")
 
     assert response == %{}
 
@@ -121,7 +121,7 @@ defmodule CodebattleWeb.InviteChannelTest do
     assert response.invite.creator_id == creator.id
     assert response.invite.recipient_id == recipient.id
 
-    assert_receive %Phoenix.Socket.Broadcast{
+    assert_receive %Phoenix.Socket.Message{
       topic: "invites",
       payload: _response
     }
