@@ -109,12 +109,6 @@ const CreateGameDialog = ({ hideModal }) => {
 
   const isInvite = game.type === 'invite';
 
-  const createBtnClassname = cn(
-    'btn btn-success mb-2 mt-4 d-flex ml-auto text-white font-weight-bold',
-    {
-      disabled: isInvite && !opponent,
-    },
-  );
   const createBtnTitle = isInvite
     ? i18n.t('Create Invite')
     : i18n.t('Create Battle');
@@ -214,7 +208,12 @@ const CreateGameDialog = ({ hideModal }) => {
         level={game.level}
         randomTask={randomTask}
       />
-      <button type="button" className={createBtnClassname} onClick={createGame}>
+      <button
+        type="button"
+        className="btn btn-success mb-2 mt-4 d-flex ml-auto text-white font-weight-bold"
+        onClick={createGame}
+        disabled={isInvite && !opponent}
+      >
         {createBtnTitle}
       </button>
     </div>

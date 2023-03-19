@@ -285,7 +285,13 @@ describe('test task choice', () => {
 
     fireEvent.click(await findByRole('button', { name: 'Create a Game' }));
     fireEvent.click(getByRole('button', { name: 'With a friend' }));
+
+    expect(getByRole('button', { name: 'Create Invite' })).toBeDisabled();
+
     fireEvent.click(await findByRole('button', { name: 'user1' }));
+
+    expect(getByRole('button', { name: 'Create Invite' })).toBeEnabled();
+
     fireEvent.click(getByRole('button', { name: 'Create Invite' }));
 
     const paramsWithOpponent = {
