@@ -8,8 +8,9 @@ import * as selectors from '../selectors';
 import { actions } from '../slices';
 import { selectors as invitesSelectors } from '../slices/invites';
 import {
-  init, acceptInvite, declineInvite, cancelInvite,
-} from '../middlewares/Main';
+  initInvites, acceptInvite, declineInvite, cancelInvite,
+} from '../middlewares/Invite';
+import initPresence from '../middlewares/Main';
 
 const NoInvites = () => (
   <div
@@ -83,7 +84,8 @@ const InvitesContainer = () => {
   useEffect(() => {
     const user = Gon.getAsset('current_user');
     dispatch(actions.setCurrentUser({ user }));
-    dispatch(init());
+    dispatch(initInvites());
+    dispatch(initPresence());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

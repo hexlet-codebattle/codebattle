@@ -8,7 +8,7 @@ import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 
 import * as lobbyMiddlewares from '../widgets/middlewares/Lobby';
-import * as mainMiddlewares from '../widgets/middlewares/Main';
+import * as invitesMiddleware from '../widgets/middlewares/Invite';
 import reducers from '../widgets/slices';
 import LobbyWidget from '../widgets/containers/LobbyWidget';
 import { getTestData, toLocalTime } from './helpers';
@@ -113,9 +113,9 @@ jest.mock(
 );
 
 jest.mock(
-  '../widgets/middlewares/Main',
+  '../widgets/middlewares/Invite',
   () => {
-    const originalModule = jest.requireActual('../widgets/middlewares/Main');
+    const originalModule = jest.requireActual('../widgets/middlewares/Invite');
 
     return {
       __esModule: true,
@@ -292,7 +292,7 @@ describe('test task choice', () => {
       ..._.omit(params, ['opponent_type']),
       recipient_id: -4,
     };
-    expect(mainMiddlewares.createInvite).toHaveBeenCalledWith(paramsWithOpponent);
+    expect(invitesMiddleware.createInvite).toHaveBeenCalledWith(paramsWithOpponent);
 
     fireEvent.click(await findByRole('button', { name: 'Create a Game' }));
     fireEvent.click(getByRole('button', { name: 'With a friend' }));
@@ -304,7 +304,7 @@ describe('test task choice', () => {
       ...paramsWithOpponent,
       task_id: 1,
     };
-    expect(mainMiddlewares.createInvite).toHaveBeenCalledWith(paramsWithOpponentAndChosenTask);
+    expect(invitesMiddleware.createInvite).toHaveBeenCalledWith(paramsWithOpponentAndChosenTask);
   }, 12000);
 
   test('filter tasks by level', async () => {

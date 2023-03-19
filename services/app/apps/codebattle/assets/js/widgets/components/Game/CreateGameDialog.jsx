@@ -11,7 +11,7 @@ import _ from 'lodash';
 import * as selectors from '../../selectors';
 import { actions } from '../../slices';
 import * as lobbyMiddlewares from '../../middlewares/Lobby';
-import * as mainMiddlewares from '../../middlewares/Main';
+import * as invitesMiddleware from '../../middlewares/Invite';
 import i18n from '../../../i18n';
 import levelRatio from '../../config/levelRatio';
 import TaskChoice from './TaskChoice';
@@ -122,7 +122,7 @@ const CreateGameDialog = ({ hideModal }) => {
   const createGame = () => {
     if (isInvite && opponent) {
       dispatch(
-        mainMiddlewares.createInvite({
+        invitesMiddleware.createInvite({
           level: game.level,
           timeout_seconds: game.timeoutSeconds,
           recipient_id: opponent.id,

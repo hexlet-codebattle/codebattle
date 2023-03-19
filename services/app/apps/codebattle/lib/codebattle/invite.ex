@@ -79,6 +79,18 @@ defmodule Codebattle.Invite do
     Invite.update_invite(invite, %{state: "expired"})
   end
 
+  @spec has_pending_invites?(integer(), integer()) :: boolean()
+  def has_pending_invites?(creator_id, recipient_id) do
+    users = [creator_id, recipient_id]
+
+    query =
+      from(i in Invite,
+        where: i.creator_id in ^users and i.recipient_id in ^users and i.state == "pending"
+      )
+
+    Repo.exists?(query)
+  end
+
   def get_invite!(id), do: Repo.get!(Invite, id) |> Repo.preload([:creator, :recipient])
 
   def create_invite(attrs \\ %{}) do

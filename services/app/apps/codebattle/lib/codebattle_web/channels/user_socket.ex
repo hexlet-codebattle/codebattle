@@ -9,6 +9,7 @@ defmodule CodebattleWeb.UserSocket do
   channel("game:*", CodebattleWeb.GameChannel)
   channel("chat:*", CodebattleWeb.ChatChannel)
   channel("main", CodebattleWeb.MainChannel)
+  channel("invites", CodebattleWeb.InviteChannel)
 
   def connect(%{"token" => user_token}, socket) do
     guest_id = User.guest_id()
