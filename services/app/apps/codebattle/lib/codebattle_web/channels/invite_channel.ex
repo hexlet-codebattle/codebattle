@@ -67,7 +67,6 @@ defmodule CodebattleWeb.InviteChannel do
 
     params = %{creator_id: creator_id, recipient_id: recipient_id, game_params: game_params}
 
-
     case Invite.create_invite(params) do
       {:ok, invite} ->
         data = %{

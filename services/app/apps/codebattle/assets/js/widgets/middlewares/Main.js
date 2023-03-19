@@ -17,13 +17,15 @@ const camelizeKeysAndDispatch = (dispatch, actionCreator) => data => (
   dispatch(actionCreator(camelizeKeys(data)))
 );
 
-export const initPresence = () => dispatch => {
+const initPresence = () => dispatch => {
   presence.onSync(() => {
     const list = presence.list(listBy);
     camelizeKeysAndDispatch(dispatch, actions.syncPresenceList)(list);
   });
-  
+
   channel
   .join()
-  .receive('ok', () => { camelizeKeysAndDispatch(dispatch, actions.syncPresenceList) });
+  .receive('ok', () => { camelizeKeysAndDispatch(dispatch, actions.syncPresenceList); });
 };
+
+export default initPresence;

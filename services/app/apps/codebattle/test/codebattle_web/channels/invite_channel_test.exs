@@ -25,7 +25,7 @@ defmodule CodebattleWeb.InviteChannelTest do
   end
 
   test "on connect pushes initial invites", %{creator_socket: creator_socket} do
-    {:ok, response, socket} = subscribe_and_join(creator_socket, InviteChannel, "main")
+    {:ok, response, socket} = subscribe_and_join(creator_socket, InviteChannel, "invites")
 
     assert response == %{}
 
@@ -65,7 +65,8 @@ defmodule CodebattleWeb.InviteChannelTest do
     recipient: recipient,
     recipient_socket: recipient_socket
   } do
-    {:ok, _response, creator_socket} = subscribe_and_join(creator_socket, InviteChannel, "main")
+    {:ok, _response, creator_socket} =
+      subscribe_and_join(creator_socket, InviteChannel, "invites")
 
     {:ok, _response, _recipient_socket} =
       subscribe_and_join(recipient_socket, InviteChannel, "invites")
@@ -99,9 +100,11 @@ defmodule CodebattleWeb.InviteChannelTest do
     recipient: recipient,
     recipient_socket: recipient_socket
   } do
-    {:ok, _response, _creator_socket} = subscribe_and_join(creator_socket, InviteChannel, "main")
+    {:ok, _response, _creator_socket} =
+      subscribe_and_join(creator_socket, InviteChannel, "invites")
 
-    {:ok, _response, recipient_socket} = subscribe_and_join(recipient_socket, InviteChannel, "main")
+    {:ok, _response, recipient_socket} =
+      subscribe_and_join(recipient_socket, InviteChannel, "invites")
 
     invite = insert(:invite, creator: creator, recipient: recipient, game_params: %{})
 
@@ -130,9 +133,11 @@ defmodule CodebattleWeb.InviteChannelTest do
     recipient: recipient,
     recipient_socket: recipient_socket
   } do
-    {:ok, _response, creator_socket} = subscribe_and_join(creator_socket, InviteChannel, "main")
+    {:ok, _response, creator_socket} =
+      subscribe_and_join(creator_socket, InviteChannel, "invites")
 
-    {:ok, _response, recipient_socket} = subscribe_and_join(recipient_socket, InviteChannel, "main")
+    {:ok, _response, recipient_socket} =
+      subscribe_and_join(recipient_socket, InviteChannel, "invites")
 
     creator_invite = insert(:invite, creator: creator, recipient: recipient, game_params: %{})
     recipient_invite = insert(:invite, creator: creator, recipient: recipient, game_params: %{})

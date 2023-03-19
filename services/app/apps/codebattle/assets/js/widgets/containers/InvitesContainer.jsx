@@ -10,7 +10,7 @@ import { selectors as invitesSelectors } from '../slices/invites';
 import {
   initInvites, acceptInvite, declineInvite, cancelInvite,
 } from '../middlewares/Invite';
-import { initPresence } from '../middlewares/Main';
+import initPresence from '../middlewares/Main';
 
 const NoInvites = () => (
   <div
