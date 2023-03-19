@@ -101,7 +101,12 @@ const players = {
     type: userTypes.firstPlayer,
     id: 1,
   }),
-  2: createPlayer({ name: 'Tim Urban', type: userTypes.secondPlayer, id: 2 }),
+  2: createPlayer({
+    name: 'Tim Urban',
+    type: userTypes.secondPlayer,
+    id: 2,
+    isBot: true,
+  }),
 };
 
 const preloadedState = {
@@ -134,6 +139,18 @@ const preloadedState = {
   usersInfo: {
     1: { },
     2: { },
+  },
+  chat: {
+    messages: [
+      {
+        id: 1,
+        name: 'Tim Urban',
+        text: 'bot message',
+        type: 'text',
+        time: 1679056894,
+        userId: 2,
+      },
+    ],
   },
 };
 
@@ -177,4 +194,19 @@ test('test game guide', async () => {
   fireEvent.click(closeGuideButton);
 
   expect(closeGuideButton).not.toBeInTheDocument();
+});
+
+test('test a bot invite button', () => {
+  const store = configureStore({
+    reducer,
+    preloadedState,
+  });
+
+  const { getByRole } = render(
+    <Provider store={store}>
+      <RootContainer gameMachine={Machine(game)} editorMachine={Machine(editor)} />
+    </Provider>,
+  );
+
+  expect(getByRole('button', { name: 'Challenge to a game.' })).toBeDisabled();
 });

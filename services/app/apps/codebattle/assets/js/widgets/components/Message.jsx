@@ -7,6 +7,7 @@ import {
   currentUserIsAdminSelector,
   currentUserIdSelector,
   lobbyDataSelector,
+  secondPlayerSelector,
 } from '../selectors';
 import { pushCommand } from '../middlewares/Chat';
 import { getLobbyUrl } from '../utils/urlBuilders';
@@ -26,6 +27,8 @@ const Message = ({
   const { activeGames } = useSelector(lobbyDataSelector);
   const isCurrentUserHasActiveGames = activeGames.some(({ players }) => players.some(({ id }) => id === currentUserId));
   const isCurrentUserMessage = currentUserId === userId;
+  const opponent = useSelector(secondPlayerSelector);
+  const isBot = opponent?.isBot && userId === opponent?.id;
 
   const inviteBtnClassname = cn('btn btn-sm btn-link create-game-btn', {
     disabled: isCurrentUserMessage || isCurrentUserHasActiveGames,
@@ -140,6 +143,7 @@ const Message = ({
             data-placement="bottom"
             className={inviteBtnClassname}
             title="Challenge to a game."
+            disabled={isBot}
           >
             <img
               alt="invites"
