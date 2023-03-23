@@ -105,7 +105,7 @@ const UsersRating = () => {
   const [filterParams, setFilterParams] = useState({
     name: '',
     period: 'total',
-    withBots: true,
+    withBots: false,
   });
 
   const [page, setPage] = useState(1);
