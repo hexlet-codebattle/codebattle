@@ -28,9 +28,9 @@ const renderUser = user => (
     <td className="p-3 align-middle">{user.performance}</td>
     <td className="p-3 align-middle">{decorateJoinedDate(user.insertedAt)}</td>
     <td className="p-3 align-middle">
-      { user.githubName
+      { user.githubId
         ? (
-          <a className="text-muted" href={`https://github.com/${user.githubName}`}>
+          <a className="text-muted" href={`https://github.com/${user.githubName || user.name}`}>
             <span className="h3">
               <i className="fab fa-github" />
             </span>
