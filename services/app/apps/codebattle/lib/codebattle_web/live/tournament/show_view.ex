@@ -132,10 +132,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     |> Enum.find(&(&1.id == socket.assigns.current_user.id))
     |> case do
       %{game_id: game_id} ->
-        {:noreply, socket}
-
-      # TODO: uncomment after fix test
-      # {:noreply, redirect(socket, to: "/games/#{game_id}")}
+        {:noreply, redirect(socket, to: "/games/#{game_id}")}
 
       _ ->
         {:noreply, socket}
