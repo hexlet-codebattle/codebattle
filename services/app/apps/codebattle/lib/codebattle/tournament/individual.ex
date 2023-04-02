@@ -2,7 +2,6 @@ defmodule Codebattle.Tournament.Individual do
   use Codebattle.Tournament.Base
 
   alias Codebattle.Bot
-  alias Codebattle.Game
   alias Codebattle.Tournament
 
   @impl Tournament.Base
@@ -68,20 +67,6 @@ defmodule Codebattle.Tournament.Individual do
     else
       tournament
     end
-  end
-
-  def create_game(tournament, index, players) do
-    {:ok, game} =
-      Game.Context.create_game(%{
-        state: "playing",
-        ref: index,
-        level: tournament.level,
-        tournament_id: tournament.id,
-        timeout_seconds: tournament.match_timeout_seconds,
-        players: players
-      })
-
-    game.id
   end
 
   defp pair_players_to_matches(players, tournament, init_ref) do

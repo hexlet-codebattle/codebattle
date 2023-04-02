@@ -110,6 +110,18 @@ defmodule Codebattle.Bot.Server do
   end
 
   @impl GenServer
+  def handle_info(%{event: "chat:user_joined"}, state) do
+    # just to skip logs
+    {:noreply, state}
+  end
+
+  @impl GenServer
+  def handle_info(%{event: "chat:user_left"}, state) do
+    # just to skip logs
+    {:noreply, state}
+  end
+
+  @impl GenServer
   def handle_info(event, state) do
     Logger.debug("#{__MODULE__}, unexpected bot server handle_info event: #{inspect(event)}")
     {:noreply, state}

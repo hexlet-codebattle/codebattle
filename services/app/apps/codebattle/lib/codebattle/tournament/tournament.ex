@@ -28,6 +28,8 @@ defmodule Codebattle.Tournament do
   @levels ~w(elementary easy medium hard)
   @states ~w(waiting_participants canceled active finished)
   @types ~w(individual team stairway)
+  @task_strategies ~w(game round)
+  @task_providers ~w(level task_pack tags)
 
   @max_alive_tournaments 7
   @default_match_timeout Application.compile_env(:codebattle, :tournament_match_timeout)
@@ -50,8 +52,11 @@ defmodule Codebattle.Tournament do
     field(:players_count, :integer, virtual: true, default: 0)
     field(:starts_at, :utc_datetime)
     field(:state, :string, default: "waiting_participants")
-    field(:task_strategy, :string, default: "random")
+    field(:task_strategy, :string, default: "game")
+    field(:task_provider, :string, default: "level")
     field(:type, :string, default: "individual")
+    field(:played_pairs, EctoMapSet, of: {:array, :integer}, virtual: true, default: [])
+    field(:round_tasks, :map, virtual: true, default: %{})
 
     belongs_to(:creator, Codebattle.User)
 
@@ -61,28 +66,31 @@ defmodule Codebattle.Tournament do
   def changeset(struct, params \\ %{}) do
     struct
     |> cast(params, [
-      :name,
-      :level,
-      :type,
-      :access_type,
       :access_token,
+      :access_type,
       :current_round,
-      :task_strategy,
-      :state,
-      :starts_at,
-      :match_timeout_seconds,
-      :last_round_started_at,
-      :players_limit,
-      :players_count,
       :default_language,
+      :last_round_started_at,
+      :level,
+      :match_timeout_seconds,
+      :matches,
       :meta,
+      :name,
+      :played_pairs,
       :players,
-      :matches
+      :players_count,
+      :players_limit,
+      :starts_at,
+      :state,
+      :task_strategy,
+      :type
     ])
-    |> validate_inclusion(:state, @states)
-    |> validate_inclusion(:type, @types)
     |> validate_inclusion(:access_type, @access_types)
     |> validate_inclusion(:level, @levels)
+    |> validate_inclusion(:state, @states)
+    |> validate_inclusion(:task_provider, @task_providers)
+    |> validate_inclusion(:task_strategy, @task_strategies)
+    |> validate_inclusion(:type, @types)
     |> validate_required([:name, :starts_at])
     |> validate_alive_maximum(params)
     |> add_creator(params["creator"] || params[:creator])
@@ -111,4 +119,6 @@ defmodule Codebattle.Tournament do
   def types, do: @types
   def access_types, do: @access_types
   def levels, do: @levels
+  def task_providers, do: @task_providers
+  def task_strategies, do: @task_strategies
 end

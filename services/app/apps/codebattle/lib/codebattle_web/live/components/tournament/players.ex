@@ -13,7 +13,7 @@ defmodule CodebattleWeb.Live.Tournament.PlayersComponent do
       </div>
       <div class="my-2">
         <%= if !Enum.empty?(@players) do %>
-          <%= for {player, i} <- Enum.with_index(Enum.take(@players, 32)) do %>
+          <%= for {player, i} <- Enum.with_index(Enum.take(@players, 42)) do %>
             <div class="my-3 d-flex">
               <span><%= i %></span>
               <div class="ml-4">

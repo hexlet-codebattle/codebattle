@@ -119,15 +119,7 @@ defmodule Codebattle.Tournament.Context do
         _ -> nil
       end
 
-    # task_pack =
-    #   case params["task_pack_name"] do
-    #     x when x in [nil, ""] -> nil
-    #     task_pack_name -> TaskPack.get_by!(name: task_pack_name)
-    #   end
-
     Map.merge(params, %{
-      # "task_pack_id" => task_pack && task_pack.id,
-      # "task_pack" => task_pack,
       "access_token" => access_token,
       "alive_count" => get_live_tournaments_count(),
       "match_timeout_seconds" => match_timeout_seconds,
@@ -154,6 +146,10 @@ defmodule Codebattle.Tournament.Context do
             Tournament.Helpers.to_id(1) => %{id: 1, title: team_2_name, score: 0.0}
           }
         }
+
+      "stairway" ->
+        rounds = params |> Map.get("rounds_limit", "3") |> String.to_integer()
+        %{rounds_limit: rounds}
 
       _ ->
         %{}

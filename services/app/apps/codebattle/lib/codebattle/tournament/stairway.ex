@@ -1,14 +1,19 @@
 defmodule Codebattle.Tournament.Stairway do
-  # alias Codebattle.Game
-  alias Codebattle.Tournament
+  use Codebattle.Tournament.Base
 
-  use Tournament.Base
+  alias Codebattle.Bot
+  alias Codebattle.Tournament
 
   @impl Tournament.Base
   def complete_players(tournament) do
-    tournament
-    # players_count = tournament |> get_players |> Enum.count()
-    # update!(tournament, %{players_count: players_count})
+    if rem(players_count(tournament), 2) == 0 do
+      tournament
+    else
+      bots = Bot.Context.build_list(41)
+      add_players(tournament, %{users: bots})
+      # bot = Bot.Context.build()
+      # add_players(tournament, %{users: [bot]})
+    end
   end
 
   @impl Tournament.Base
@@ -16,54 +21,29 @@ defmodule Codebattle.Tournament.Stairway do
 
   @impl Tournament.Base
   def build_matches(tournament) do
-    current_task_id = Enum.at(tournament.task_pack.task_ids, tournament.current_round)
-    # TODO: take tasks from meta
-    tasks = Codebattle.TaskPack.get_tasks(tournament.task_pack)
-
-    new_meta = %{
-      "current_task_id" => current_task_id,
-      "tasks" => tasks
-    }
-
-    matches_for_round =
+    new_matches =
       tournament
-      |> get_players
-      |> Enum.map(fn p ->
-        %{state: "pending", players: [p], round_id: tournament.current_round}
+      |> get_players()
+      |> Enum.chunk_every(2)
+      |> Enum.with_index(tournament.current_round * players_count(tournament))
+      |> Enum.map(fn {[p1, p2], index} ->
+        game_id =
+          create_game(tournament, index, [Tournament.Player.new!(p1), Tournament.Player.new!(p2)])
+
+        %Tournament.Match{
+          id: index,
+          game_id: game_id,
+          state: "playing",
+          player_ids: [p1.id, p2.id],
+          round: tournament.current_round
+        }
+      end)
+      |> Enum.reduce(tournament.matches, fn match, acc ->
+        Map.put(acc, to_id(match.id), match)
       end)
 
-    prev_matches =
-      tournament
-      |> get_matches()
-      |> Enum.map(&Map.from_struct/1)
-
-    new_matches = prev_matches ++ matches_for_round
-
-    new_data =
-      tournament
-      |> Map.get(:data)
-      |> Map.merge(%{matches: new_matches})
-      |> Map.from_struct()
-
-    update!(tournament, %{data: new_data, meta: new_meta})
+    update!(tournament, %{matches: new_matches})
   end
-
-  # @impl Tournament.Base
-  # def create_game(tournament, match) do
-  #   task = get_current_task(tournament)
-
-  #   {:ok, game} =
-  #     Game.Context.create_game(%{
-  #       type: "solo",
-  #       state: "playing",
-  #       task: task,
-  #       level: task.level,
-  #       tournament_id: tournament.id,
-  #       players: match.players
-  #     })
-
-  #   game.id
-  # end
 
   @impl Tournament.Base
   def maybe_finish(tournament) do
@@ -78,6 +58,6 @@ defmodule Codebattle.Tournament.Stairway do
   end
 
   defp final_round?(tournament) do
-    length(tournament.task_pack.task_ids) == tournament.current_round
+    tournament.meta.rounds_limit == tournament.current_round
   end
 end
