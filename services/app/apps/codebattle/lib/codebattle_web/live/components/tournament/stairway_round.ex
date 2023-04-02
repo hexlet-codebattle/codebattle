@@ -70,9 +70,9 @@ defmodule CodebattleWeb.Live.Tournament.StairwayRoundComponent do
 
   def get_match_bg_class(match, player_id) do
     if is_match_player?(match, player_id) do
-      "p-1 border border-success bg-winner"
+      "p-1 border bg-winner"
     else
-      "p-1 border border-success"
+      "p-1 border"
     end
   end
 

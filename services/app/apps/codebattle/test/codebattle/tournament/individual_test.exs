@@ -181,11 +181,14 @@ defmodule Codebattle.Tournament.IndividualTest do
 
       [match1, match2] = get_matches(tournament)
 
+      [id1, id2] = match1.player_ids
+      [id3, id4] = match2.player_ids
+
       tournament =
         @module.finish_match(tournament, %{
           ref: match1.id,
           game_state: "game_over",
-          player_results: %{user1.id => "won", user2.id => "lost"}
+          player_results: %{id1 => "won", id2 => "lost"}
         })
 
       assert tournament.current_round == 0
@@ -194,7 +197,7 @@ defmodule Codebattle.Tournament.IndividualTest do
         @module.finish_match(tournament, %{
           ref: match2.id,
           game_state: "game_over",
-          player_results: %{user3.id => "won", user4.id => "lost"}
+          player_results: %{id3 => "won", id4 => "lost"}
         })
 
       assert tournament.current_round == 1

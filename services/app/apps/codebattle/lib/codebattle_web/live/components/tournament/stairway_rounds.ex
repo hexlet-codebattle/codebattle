@@ -34,7 +34,7 @@ defmodule CodebattleWeb.Live.Tournament.StairwayRoundsComponent do
           >
             <StairwayRoundComponent.render
               tournament={@tournament}
-              round_task={get_current_round_task(@tournament) || %{}}
+              round_task={get_round_task(@tournament, round) || %{}}
               current_user_id={@current_user_id}
               current_round={@tournament.current_round}
               round={round}

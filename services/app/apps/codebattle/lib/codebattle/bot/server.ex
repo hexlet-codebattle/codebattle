@@ -36,6 +36,7 @@ defmodule Codebattle.Bot.Server do
 
   @impl GenServer
   def handle_info(:after_init, state) do
+    :timer.sleep(1000)
     state = init_socket(state)
     state = init_playbook_player(state)
 
@@ -233,7 +234,7 @@ defmodule Codebattle.Bot.Server do
         {:ok, pid}
 
       _ ->
-        :timer.sleep(237)
+        :timer.sleep(1000)
         Logger.warn("#{__MODULE__} cannot connect to #{topic}, #{n} attempt")
         do_join_channel(socket, topic, n + 1)
     end

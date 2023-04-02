@@ -126,19 +126,6 @@ defmodule Codebattle.Tournament.Base do
       def update_match(tournament, params) do
         case params.game_state do
           "timeout" ->
-            # TODO: just for bot experiments, do not update score on timeout
-            match = tournament.matches[to_id(params.ref)]
-            winner_id = Enum.random(match.player_ids)
-
-            new_player =
-              Map.update!(
-                tournament.players[to_id(winner_id)],
-                :score,
-                &(&1 + Enum.random([1, 2, 3, 4, 5, 6, 7]))
-              )
-
-            tournament = put_in(tournament.players[to_id(winner_id)], new_player)
-
             update_in(tournament.matches[to_id(params.ref)], &%{&1 | state: "timeout"})
 
           "game_over" ->
@@ -166,17 +153,23 @@ defmodule Codebattle.Tournament.Base do
         else
           tournament
           |> calculate_round_results()
-          |> update!(%{
-            current_round: tournament.current_round + 1,
-            last_round_started_at: NaiveDateTime.utc_now()
-          })
           |> maybe_finish()
+          |> set_next_round_params()
           |> start_round()
         end
       end
 
       defp pick_game_winner_id(player_ids, player_results) do
         Enum.find(player_ids, &(player_results[&1] == "won"))
+      end
+
+      defp set_next_round_params(tournament = %{state: "finished"}), do: tournament
+
+      defp set_next_round_params(tournament) do
+        update!(tournament, %{
+          current_round: tournament.current_round + 1,
+          last_round_started_at: NaiveDateTime.utc_now()
+        })
       end
 
       defp start_round(tournament = %{state: "finished"}), do: tournament

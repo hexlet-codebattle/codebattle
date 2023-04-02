@@ -9,10 +9,10 @@ defmodule Codebattle.Tournament.Stairway do
     if rem(players_count(tournament), 2) == 0 do
       tournament
     else
-      bots = Bot.Context.build_list(41)
-      add_players(tournament, %{users: bots})
-      # bot = Bot.Context.build()
-      # add_players(tournament, %{users: [bot]})
+      # bots = Bot.Context.build_list(41)
+      # add_players(tournament, %{users: bots})
+      bot = Bot.Context.build()
+      add_players(tournament, %{users: [bot]})
     end
   end
 
@@ -58,6 +58,6 @@ defmodule Codebattle.Tournament.Stairway do
   end
 
   defp final_round?(tournament) do
-    tournament.meta.rounds_limit == tournament.current_round
+    tournament.meta.rounds_limit - 1 == tournament.current_round
   end
 end
