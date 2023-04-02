@@ -185,6 +185,12 @@ defmodule Codebattle.Task do
     |> Repo.update!()
   end
 
+  def get_task_by_level(level), do: tasks_provider().get_task(level)
+
+  defp tasks_provider do
+    Application.get_env(:codebattle, :tasks_provider)
+  end
+
   def levels, do: @levels
   def visibility_types, do: @visibility_types
   def origin_types, do: @origin_types

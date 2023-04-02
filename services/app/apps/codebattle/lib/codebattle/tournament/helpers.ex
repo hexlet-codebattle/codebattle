@@ -231,11 +231,8 @@ defmodule Codebattle.Tournament.Helpers do
 
   defp get_team_by_id(teams, team_id), do: Enum.find(teams, fn x -> x.id == team_id end)
 
-  def get_current_task(tournament) do
-    case Map.get(tournament.meta, :tasks) do
-      nil -> nil
-      tasks -> Enum.find(tasks, fn task -> task.id == tournament.meta.current_task_id end)
-    end
+  def get_current_round_task(tournament) do
+    Map.get(tournament.round_tasks, to_id(tournament.current_round))
   end
 
   def to_id(id) when is_integer(id), do: id |> to_string() |> to_id()
