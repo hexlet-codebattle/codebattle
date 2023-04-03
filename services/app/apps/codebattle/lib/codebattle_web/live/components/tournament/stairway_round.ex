@@ -10,11 +10,11 @@ defmodule CodebattleWeb.Live.Tournament.StairwayRoundComponent do
     <%= if @round <= @current_round do %>
       <div class="col-12 mt-3">
         <h3 class="text-center">Round <%= @round %></h3>
-        <h3 class="text-center">Task: <%= Map.get(@round_task, :name) %></h3>
-        <h3 class="text-center">
+        <h4 class="text-center">Task: <%= Map.get(@round_task, :name) %></h4>
+        <p>
           Description: <%= Map.get(@round_task, :description_en) ||
             Map.get(@round_task, :description_ru) %>
-        </h3>
+        </p>
         <h3 class="text-center">Pairing</h3>
         <%= for match <- @matches do %>
           <div class={get_match_bg_class(match, @current_user_id)}>

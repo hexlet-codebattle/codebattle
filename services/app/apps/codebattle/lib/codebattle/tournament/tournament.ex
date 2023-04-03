@@ -55,7 +55,7 @@ defmodule Codebattle.Tournament do
     field(:task_strategy, :string, default: "game")
     field(:task_provider, :string, default: "level")
     field(:type, :string, default: "individual")
-    field(:played_pairs, EctoMapSet, of: {:array, :integer}, virtual: true, default: [])
+    field(:played_pair_ids, EctoMapSet, of: {:array, :integer}, virtual: true, default: [])
     field(:round_tasks, :map, virtual: true, default: %{})
 
     belongs_to(:creator, Codebattle.User)
@@ -76,7 +76,7 @@ defmodule Codebattle.Tournament do
       :matches,
       :meta,
       :name,
-      :played_pairs,
+      :played_pair_ids,
       :players,
       :players_count,
       :players_limit,

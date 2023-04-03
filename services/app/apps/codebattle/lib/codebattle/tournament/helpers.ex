@@ -50,6 +50,10 @@ defmodule Codebattle.Tournament.Helpers do
     tournament |> get_team_players(team_id) |> Enum.count()
   end
 
+  def matches_count(tournament) do
+    tournament |> get_matches() |> Enum.count()
+  end
+
   def can_be_started?(tournament = %{state: "waiting_participants"}) do
     players_count(tournament) > 0
   end
