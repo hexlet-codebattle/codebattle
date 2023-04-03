@@ -71,7 +71,9 @@ defmodule Codebattle.Tournament.Stairway do
       |> get_players()
       |> Enum.sort_by(& &1.score, :desc)
 
-    build_new_pairs(sorted_players, [], played_pair_ids)
+    {player_pairs, played_pair_ids} = build_new_pairs(sorted_players, [], played_pair_ids)
+
+    {Enum.reverse(player_pairs), played_pair_ids}
   end
 
   def build_new_pairs([], player_pairs, played_pair_ids) do
