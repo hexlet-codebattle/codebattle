@@ -1,4 +1,4 @@
-defmodule Codebattle.Tournament.TeamTest do
+defmodule Codebattle.Tournament.StairwayTest do
   use Codebattle.IntegrationCase, async: false
 
   import Codebattle.Tournament.Helpers
