@@ -94,7 +94,7 @@ defmodule Codebattle.Tournament.Stairway do
         fn candidate, _acc ->
           pair_ids = Enum.sort([player.id, candidate.id])
 
-          if(MapSet.member?(played_pair_ids, pair_ids)) do
+          if MapSet.member?(played_pair_ids, pair_ids) do
             {:cont, {player, remain_players, played_pair_ids}}
           else
             {:halt,
