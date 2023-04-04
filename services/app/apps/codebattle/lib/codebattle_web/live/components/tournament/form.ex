@@ -41,20 +41,7 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
           </div>
         </div>
         <div class="form-row justify-content-between mt-3">
-          <div class="col-4">
-            <%= label(f, :access_type) %>
-            <%= select(f, :access_type, Codebattle.Tournament.access_types(), class: "form-control") %>
-            <%= error_tag(f, :access_type) %>
-          </div>
-          <div class="col-4">
-            <%= label(f, :players_limit) %>
-            <%= select(f, :players_limit, [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048],
-              value: f.params["players_limit"] || 32,
-              class: "form-control"
-            ) %>
-            <%= error_tag(f, :players_limit) %>
-          </div>
-          <div class="col-4">
+          <div class="col-8">
             <label>Starts at (UTC)</label>
             <%= datetime_local_input(f, :starts_at,
               class: "form-control",
@@ -63,8 +50,12 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
             ) %>
             <%= error_tag(f, :starts_at) %>
           </div>
+          <div class="col-4">
+            <%= label(f, :access_type) %>
+            <%= select(f, :access_type, Codebattle.Tournament.access_types(), class: "form-control") %>
+            <%= error_tag(f, :access_type) %>
+          </div>
         </div>
-
         <div class="form-row justify-content-between mt-3">
           <div class="col-4">
             <%= label(f, :task_strategy) %>
@@ -116,6 +107,14 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
         </div>
 
         <div class="form-row justify-content-between mt-3">
+          <div class="col-4">
+            <%= label(f, :players_limit) %>
+            <%= select(f, :players_limit, [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048],
+              value: f.params["players_limit"] || 64,
+              class: "form-control"
+            ) %>
+            <%= error_tag(f, :players_limit) %>
+          </div>
           <div class="col-4">
             <%= label(f, :default_language) %>
             <%= select(f, :default_language, @langs, class: "form-control") %>
