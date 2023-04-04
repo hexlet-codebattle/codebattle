@@ -117,14 +117,6 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
 
         <div class="form-row justify-content-between mt-3">
           <div class="col-4">
-            <%= label(f, :players_limit) %>
-            <%= select(f, :players_limit, [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048],
-              value: f.params["players_limit"] || 64,
-              class: "form-control"
-            ) %>
-            <%= error_tag(f, :players_limit) %>
-          </div>
-          <div class="col-4">
             <%= label(f, :default_language) %>
             <%= select(f, :default_language, @langs, class: "form-control") %>
             <%= error_tag(f, :default_language) %>
