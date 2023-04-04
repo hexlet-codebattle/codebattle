@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Popover, OverlayTrigger, Button } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import Gon from 'gon';
+import cn from 'classnames';
 
 import GameLevelBadge from '../components/GameLevelBadge';
 import * as selectors from '../selectors';
@@ -88,6 +89,17 @@ const InvitesContainer = () => {
     dispatch(initPresence());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    const inviteClasses = cn('position-absolute invites-counter badge badge-danger', {
+      'd-none': invites.length === 0,
+    });
+    const invitesCountElement = document.getElementById('invites-counter-id');
+    invitesCountElement.classList.add(...inviteClasses.split(' '));
+    invitesCountElement.textContent = invites.length;
+
+    return () => invitesCountElement.classList.remove(...inviteClasses.split(' '));
+  }, [invites.length]);
 
   return (
     <OverlayTrigger
