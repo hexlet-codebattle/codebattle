@@ -1,8 +1,11 @@
 import React from 'react';
-import { OverlayTrigger, Popover, Button } from 'react-bootstrap';
-import { useSelector } from 'react-redux';
-import cn from 'classnames';
+import { OverlayTrigger, Popover } from 'react-bootstrap';
+import { useSelector, useDispatch } from 'react-redux';
 import moment from 'moment';
+import Gon from 'gon';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCircleChevronRight } from '@fortawesome/free-solid-svg-icons';
+
 import {
   currentUserIsAdminSelector,
   currentUserIdSelector,
@@ -10,7 +13,11 @@ import {
   secondPlayerSelector,
 } from '../selectors';
 import { pushCommand } from '../middlewares/Chat';
-import { getLobbyUrl } from '../utils/urlBuilders';
+// import { getLobbyUrl } from '../utils/urlBuilders';
+import { actions } from '../slices';
+import messageTypes from '../config/messageTypes';
+
+const currentUser = Gon.getAsset('current_user');
 
 const Message = ({
   text = '',
@@ -19,7 +26,11 @@ const Message = ({
   time,
   userId,
   handleShowModal,
+  meta,
+  room,
 }) => {
+  const dispatch = useDispatch();
+
   const currentUserIsAdmin = useSelector(state => currentUserIsAdminSelector(state));
 
   const currentUserId = useSelector(currentUserIdSelector);
@@ -29,10 +40,6 @@ const Message = ({
   const isCurrentUserMessage = currentUserId === userId;
   const opponent = useSelector(secondPlayerSelector);
   const isBot = opponent?.isBot && userId === opponent?.id;
-
-  const inviteBtnClassname = cn('btn btn-sm btn-link create-game-btn', {
-    disabled: isCurrentUserMessage || isCurrentUserHasActiveGames,
-  });
 
   const handleBanClick = bannedName => {
     pushCommand({ type: 'ban', name: bannedName, user_id: userId });
@@ -75,84 +82,78 @@ const Message = ({
 
   return (
     <div className="d-flex align-items-baseline flex-wrap">
-      {/* eslint-disable-next-line react/no-array-index-key */}
-      <a href={`/users/${userId}`}>
-        <span className="font-weight-bold">{`${name}: `}</span>
-      </a>
-      <span className="ml-1 text-break">
-        {parts.map((part, i) => renderMessagePart(part, i))}
-      </span>
-      <small className="text-muted text-small ml-auto">
-        {time ? moment.unix(time).format('HH:mm:ss') : ''}
-      </small>
-      {currentUserIsAdmin ? (
-        <button
-          type="button"
-          className="btn btn-sm btn-link text-danger"
-          onClick={() => {
-            handleBanClick(name);
-          }}
-        >
-          Ban
-        </button>
-      ) : null}
-      {`/${window.location.hash}` === getLobbyUrl() ? (
+      <span className="font-weight-bold">{`[${room.name}] ${name}`}</span>
+      <OverlayTrigger
+        trigger="focus"
+        placement="right"
+        overlay={(
+          <Popover id="popover-confirm ">
+            <div className="d-flex flex-column p-1">
+              <button
+                type="button"
+                className="btn btn-sm btn-link text-danger"
+                style={{ width: '100%' }}
+                onClick={handleShowModal}
+                disabled={isBot || isCurrentUserMessage || isCurrentUserHasActiveGames}
+              >
+                Send an invite
+              </button>
+              <button
+                type="button"
+                className="btn btn-sm btn-link text-danger"
+                onClick={() => {
+                  const roomId = meta === messageTypes.private
+                    ? room.id
+                    : window.crypto.randomUUID();
+                  const roomData = {
+                    id: roomId,
+                    name,
+                    meta: 'private',
+                    members: [
+                      { userId: currentUserId, name: currentUser.name },
+                      { userId, name },
+                    ],
+                  };
+
+                  dispatch(actions.createPrivateRoom(roomData));
+                }}
+                disabled={isBot || isCurrentUserMessage}
+              >
+                Direct message
+              </button>
+              {currentUserIsAdmin ? (
+                <button
+                  type="button"
+                  className="btn btn-sm btn-link text-danger"
+                  onClick={() => {
+                    handleBanClick(name);
+                  }}
+                >
+                  Ban
+                </button>
+              ) : null}
+            </div>
+          </Popover>
+        )}
+      >
         <button
           type="button"
           data-toggle="tooltip"
           data-placement="bottom"
-          className={inviteBtnClassname}
-          title="Challenge to a game."
-          onClick={handleShowModal}
+          className="btn btn-sm"
+          title="Actions"
         >
-          <img
-            alt="invites"
-            src="/assets/images/fight-black.png"
-            style={{ width: '1em', height: '1em' }}
+          <FontAwesomeIcon
+            icon={faCircleChevronRight}
           />
         </button>
-      ) : (
-        <OverlayTrigger
-          trigger="focus"
-          placement="bottom"
-          overlay={(
-            <Popover id="popover-confirm ">
-              <span className="d-block p-1 text-center">Do you want to</span>
-              <span className="d-block p-1 text-center">challenge them?</span>
-              <div className="p-1">
-                <Button
-                  type="button"
-                  variant="success"
-                  className={inviteBtnClassname}
-                  style={{ width: '100%' }}
-                  onClick={handleShowModal}
-                >
-                  <img
-                    alt="invites"
-                    src="/assets/images/check.svg"
-                    style={{ width: '1em', height: '1em' }}
-                  />
-                </Button>
-              </div>
-            </Popover>
-          )}
-        >
-          <button
-            type="button"
-            data-toggle="tooltip"
-            data-placement="bottom"
-            className={inviteBtnClassname}
-            title="Challenge to a game."
-            disabled={isBot}
-          >
-            <img
-              alt="invites"
-              src="/assets/images/fight-black.png"
-              style={{ width: '1em', height: '1em' }}
-            />
-          </button>
-        </OverlayTrigger>
-      )}
+      </OverlayTrigger>
+      <span className="ml-1 text-break">
+        :
+      </span>
+      <span className="ml-1 text-break">
+        {parts.map((part, i) => renderMessagePart(part, i))}
+      </span>
     </div>
   );
 };

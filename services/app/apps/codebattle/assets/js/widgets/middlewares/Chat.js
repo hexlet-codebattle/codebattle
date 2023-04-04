@@ -40,9 +40,7 @@ export const connectToChat = () => dispatch => {
   }
 };
 
-export const addMessage = message => {
-  const payload = { text: message };
-
+export const addMessage = payload => {
   channel
     .push('chat:add_msg', payload)
     .receive('error', error => console.error(error));

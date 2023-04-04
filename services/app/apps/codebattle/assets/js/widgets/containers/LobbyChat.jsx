@@ -5,10 +5,10 @@ import Messages from '../components/Messages';
 import UserInfo from './UserInfo';
 import ChatInput from '../components/ChatInput';
 import * as chatMiddlewares from '../middlewares/Chat';
+import ChatHeader from '../components/ChatHeader';
 
 const LobbyChat = ({ connectToChat }) => {
   const { presenceList } = useSelector(selectors.lobbyDataSelector);
-  const messages = useSelector(state => selectors.chatMessagesSelector(state));
 
   useEffect(() => {
     connectToChat();
@@ -17,8 +17,9 @@ const LobbyChat = ({ connectToChat }) => {
 
   return (
     <div className="d-flex flex-wrap shadow-sm mt-2 cb-chat-container">
-      <div className="col-12 col-sm-8 p-0 bg-light rounded-left h-sm-100 position-relative">
-        <Messages messages={messages} />
+      <div className="col-12 col-sm-8 p-0 bg-light rounded-left h-sm-100 position-relative d-flex flex-column cb-messages-container">
+        <ChatHeader />
+        <Messages />
         <ChatInput />
       </div>
       <div className="col-12 col-sm-4 p-0 pb-3 pb-sm-5 border-left bg-light rounded-right cb-players-container">

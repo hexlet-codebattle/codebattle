@@ -1,19 +1,80 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, current } from '@reduxjs/toolkit';
+import Gon from 'gon';
+
+import messageTypes from '../config/messageTypes';
+
+const currentUser = Gon.getAsset('current_user');
+
+const getPrivateRooms = () => {
+  const storedPrivateRooms = JSON.parse(localStorage.getItem('private_rooms'));
+
+  return storedPrivateRooms || [];
+};
+
+const generalRoom = { name: 'General', id: null, meta: 'general' };
+
+const isMessageForCurrentUser = message => (
+  message.meta === messageTypes.private
+  && (message.room.members.find(u => u.userId === currentUser.id))
+);
+
+const isMessageForEveryone = message => message.meta === messageTypes.general;
+
+const addMessageRoomName = message => {
+  console.log(message);
+  if (message.meta === messageTypes.private) {
+    const oppositeParticipant = message.room.members.find(user => user.userId !== currentUser.id);
+    const updatedPrivateRoom = { ...message.room, name: oppositeParticipant.name };
+    return { ...message, room: updatedPrivateRoom };
+  }
+  return { ...message, room: generalRoom };
+};
+
+const shouldShowMessage = (message, room) => {
+  switch (message.meta) {
+    case messageTypes.private:
+      return room.id === message.room.id || room.meta === 'general';
+    case messageTypes.general:
+      return room.id === message.room.id;
+    default:
+      return false;
+  }
+};
 
 const initialState = {
   users: [],
   messages: [],
+  allMessages: [],
+  activeRoom: generalRoom,
+  rooms: [generalRoom, ...getPrivateRooms()],
   history: {
     users: [],
     messages: [],
   },
 };
 
+// meta general private tournament
+
 const chat = createSlice({
   name: 'chat',
   initialState,
   reducers: {
-    updateChatData: (state, { payload }) => ({ ...state, ...payload }),
+    updateChatData: (state, { payload }) => {
+      const messages = payload.messages.filter(message => {
+        if (isMessageForCurrentUser(message) || isMessageForEveryone(message)) {
+          return true;
+        }
+        return false;
+      })
+      .map(message => addMessageRoomName(message));
+
+      return {
+        ...state,
+        ...payload,
+        messages,
+        allMessages: messages,
+      };
+    },
     updateChatDataHistory: (state, { payload }) => ({
       ...state,
       history: payload,
@@ -25,12 +86,40 @@ const chat = createSlice({
       state.users = users;
     },
     newMessageChat: (state, { payload }) => {
-      state.messages = [...state.messages, payload];
+      const updatedMessage = addMessageRoomName(payload);
+      if (isMessageForCurrentUser(payload) || isMessageForEveryone(payload)) {
+        if (shouldShowMessage(updatedMessage, state.activeRoom)) {
+          state.messages = [...state.messages, updatedMessage];
+        }
+        state.allMessages = [...state.allMessages, updatedMessage];
+      }
     },
     banUserChat: (state, { payload }) => {
       state.messages = [
         ...state.messages.filter(message => message.name !== payload.name),
       ];
+    },
+    setActiveRoom: (state, { payload }) => {
+      state.activeRoom = payload;
+      state.messages = payload.meta === 'general'
+        ? state.allMessages
+        : state.allMessages.filter(m => m.room.id === payload.id);
+    },
+    createPrivateRoom: (state, { payload }) => {
+      const privateRooms = current(state.rooms).slice(1);
+      const existingPrivateRoom = privateRooms.find(room => (
+        room.id === payload.id
+      ));
+      if (existingPrivateRoom) {
+        state.activeRoom = existingPrivateRoom;
+        state.messages = state.allMessages.filter(m => m.room.id === existingPrivateRoom.id);
+        return;
+      }
+      state.rooms = [...state.rooms, payload];
+      state.activeRoom = payload;
+      state.messages = state.allMessages.filter(m => m.room.id === payload.id);
+
+      localStorage.setItem('private_rooms', JSON.stringify([...privateRooms, payload]));
     },
   },
 });
