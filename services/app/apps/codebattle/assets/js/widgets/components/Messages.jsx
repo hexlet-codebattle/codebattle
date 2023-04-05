@@ -5,16 +5,14 @@ import qs from 'qs';
 import { currentUserIsAdminSelector } from '../selectors';
 import { pushCommand } from '../middlewares/Chat';
 import { actions } from '../slices';
-import * as selectors from '../selectors';
 
 import Message from './Message';
 import { getLobbyUrl } from '../utils/urlBuilders';
 
-const Messages = () => {
+const Messages = ({ messages }) => {
   const currentUserIsAdmin = useSelector(state => currentUserIsAdminSelector(state));
   const listRef = useRef();
   const dispatch = useDispatch();
-  const messages = useSelector(selectors.chatMessagesSelector);
 
   const handleShowModal = (id, name) => () => {
     const queryParamsString = qs.stringify({

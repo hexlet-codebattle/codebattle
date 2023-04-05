@@ -7,21 +7,34 @@ const chatId = Gon.getAsset('game_id');
 const isRecord = Gon.getAsset('is_record');
 const tournamentId = Gon.getAsset('tournament_id');
 
-const getChannelName = () => {
-  if (tournamentId) {
-    return `chat:t_${tournamentId}`;
-  }
-  if (chatId) {
-    return `chat:g_${chatId}`;
-  }
-
-  return 'chat:lobby';
+const prefixes = {
+  page: {
+    lobby: 'lobby',
+    tournament: 'tournament',
+    game: 'game',
+  },
+  channel: {
+    lobby: 'chat:lobby',
+    tournament: 'chat:t',
+    game: 'chat:g',
+  },
 };
 
-const channel = isRecord ? null : socket.channel(getChannelName());
+const getName = entityName => {
+  if (tournamentId) {
+    return `${prefixes[entityName].tournament}_${tournamentId}`;
+  }
+  if (chatId) {
+    return `${prefixes[entityName].game}_${chatId}`;
+  }
+
+  return prefixes[entityName].lobby;
+};
+
+const channel = isRecord ? null : socket.channel(getName('channel'));
 
 const fetchState = () => dispatch => {
-  const camelizeKeysAndDispatch = actionCreator => data => dispatch(actionCreator(camelizeKeys(data)));
+  const camelizeKeysAndDispatch = actionCreator => data => dispatch(actionCreator(camelizeKeys({ ...data, page: getName('page') })));
 
   channel.join().receive('ok', camelizeKeysAndDispatch(actions.updateChatData));
 

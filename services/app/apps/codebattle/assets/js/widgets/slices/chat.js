@@ -5,8 +5,8 @@ import messageTypes from '../config/messageTypes';
 
 const currentUser = Gon.getAsset('current_user');
 
-const getPrivateRooms = () => {
-  const storedPrivateRooms = JSON.parse(localStorage.getItem('private_rooms'));
+const getPrivateRooms = page => {
+  const storedPrivateRooms = JSON.parse(localStorage.getItem(`${page}_private_rooms`));
 
   return storedPrivateRooms || [];
 };
@@ -18,10 +18,9 @@ const isMessageForCurrentUser = message => (
   && (message.room.members.find(u => u.userId === currentUser.id))
 );
 
-const isMessageForEveryone = message => message.meta === messageTypes.general;
+const isMessageForEveryone = message => !message.meta || message.meta === messageTypes.general;
 
 const addMessageRoomName = message => {
-  console.log(message);
   if (message.meta === messageTypes.private) {
     const oppositeParticipant = message.room.members.find(user => user.userId !== currentUser.id);
     const updatedPrivateRoom = { ...message.room, name: oppositeParticipant.name };
@@ -44,9 +43,10 @@ const shouldShowMessage = (message, room) => {
 const initialState = {
   users: [],
   messages: [],
+  page: 'lobby',
   allMessages: [],
   activeRoom: generalRoom,
-  rooms: [generalRoom, ...getPrivateRooms()],
+  rooms: [generalRoom],
   history: {
     users: [],
     messages: [],
@@ -71,14 +71,22 @@ const chat = createSlice({
       return {
         ...state,
         ...payload,
+        rooms: [...state.rooms, ...getPrivateRooms(payload.page)],
         messages,
         allMessages: messages,
       };
     },
-    updateChatDataHistory: (state, { payload }) => ({
-      ...state,
-      history: payload,
-    }),
+    updateChatDataHistory: (state, { payload }) => {
+      const messages = payload.messages.map(message => addMessageRoomName(message));
+
+      return {
+        ...state,
+        history: {
+          ...payload,
+          messages,
+        },
+      };
+    },
     userJoinedChat: (state, { payload: { users } }) => {
       state.users = users;
     },
@@ -119,7 +127,7 @@ const chat = createSlice({
       state.activeRoom = payload;
       state.messages = state.allMessages.filter(m => m.room.id === payload.id);
 
-      localStorage.setItem('private_rooms', JSON.stringify([...privateRooms, payload]));
+      localStorage.setItem(`${state.page}_private_rooms`, JSON.stringify([...privateRooms, payload]));
     },
   },
 });

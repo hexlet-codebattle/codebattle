@@ -9,6 +9,7 @@ import ChatHeader from '../components/ChatHeader';
 
 const LobbyChat = ({ connectToChat }) => {
   const { presenceList } = useSelector(selectors.lobbyDataSelector);
+  const messages = useSelector(selectors.chatMessagesSelector);
 
   useEffect(() => {
     connectToChat();
@@ -19,7 +20,7 @@ const LobbyChat = ({ connectToChat }) => {
     <div className="d-flex flex-wrap shadow-sm mt-2 cb-chat-container">
       <div className="col-12 col-sm-8 p-0 bg-light rounded-left h-sm-100 position-relative d-flex flex-column cb-messages-container">
         <ChatHeader />
-        <Messages />
+        <Messages messages={messages} />
         <ChatInput />
       </div>
       <div className="col-12 col-sm-4 p-0 pb-3 pb-sm-5 border-left bg-light rounded-right cb-players-container">

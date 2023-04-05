@@ -5,6 +5,7 @@ import * as selectors from '../selectors';
 import Messages from '../components/Messages';
 import UserInfo from './UserInfo';
 import ChatInput from '../components/ChatInput';
+import ChatHeader from '../components/ChatHeader';
 import GameTypeCodes from '../config/gameTypeCodes';
 import Notifications from './Notifications';
 import GameContext from './GameContext';
@@ -13,6 +14,7 @@ import { replayerMachineStates } from '../machines/game';
 const ChatWidget = () => {
   const users = useSelector(state => selectors.chatUsersSelector(state));
   const messages = useSelector(state => selectors.chatMessagesSelector(state));
+  const historyMessages = useSelector(selectors.chatHistoryMessagesSelector);
   const gameType = useSelector(selectors.gameTypeSelector);
   const { current: gameCurrent } = useContext(GameContext);
   const isTournamentGame = (gameType === GameTypeCodes.tournament);
@@ -21,8 +23,12 @@ const ChatWidget = () => {
   const listOfUsers = isTournamentGame ? _.filter(uniqUsers, { isBot: false }) : uniqUsers;
   return (
     <div className="d-flex flex-wrap flex-sm-nowrap shadow-sm h-100">
-      <div className="flex-grow-1 p-0 bg-white rounded-left mh-100 position-relative game-chat-container">
-        <Messages messages={messages} />
+      {/* eslint-disable-next-line max-len */}
+      <div className="flex-grow-1 p-0 bg-white rounded-left mh-100 position-relative game-chat-container d-flex flex-column cb-messages-container">
+        <ChatHeader />
+        {gameCurrent.matches({ replayer: replayerMachineStates.on })
+          ? <Messages messages={historyMessages} />
+          : <Messages messages={messages} />}
         {!gameCurrent.matches({ replayer: replayerMachineStates.on }) && <ChatInput />}
       </div>
       <div className="flex-shrink-1 p-0 border-left bg-white rounded-right game-control-container">

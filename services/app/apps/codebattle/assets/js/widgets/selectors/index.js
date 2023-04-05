@@ -186,6 +186,8 @@ export const chatUsersSelector = state => state.chat.users;
 
 export const chatMessagesSelector = state => state.chat.messages;
 
+export const chatHistoryMessagesSelector = state => state.chat.history.messages;
+
 export const currentChatUserSelector = state => {
   const currentUserId = currentUserIdSelector(state);
 
