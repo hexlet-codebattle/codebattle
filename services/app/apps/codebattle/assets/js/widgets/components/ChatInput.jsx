@@ -9,6 +9,7 @@ import useClickAway from '../utils/useClickAway';
 import { addMessage } from '../middlewares/Chat';
 import EmojiPicker from './EmojiPicker';
 import EmojiToolTip from './EmojiTooltip';
+import messageTypes from '../config/messageTypes';
 
 const trimColons = message => message.slice(0, message.lastIndexOf(':'));
 
@@ -37,8 +38,10 @@ export default function ChatInput() {
     e.preventDefault();
     const message = {
       text,
-      meta: activeRoom.meta,
-      room: _.omit(activeRoom, ['name']),
+      meta: {
+        type: activeRoom.id ? messageTypes.private : messageTypes.general,
+        userId: activeRoom.id,
+      },
     };
     if (isTooltipVisible) {
       return;

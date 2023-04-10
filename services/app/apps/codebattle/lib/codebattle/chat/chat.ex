@@ -52,7 +52,6 @@ defmodule Codebattle.Chat do
       text: params.text,
       time: now(),
       meta: params.meta,
-      room: params.room
     }
 
     case Chat.Server.add_message(chat_type, message) do

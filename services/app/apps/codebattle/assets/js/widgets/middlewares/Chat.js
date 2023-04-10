@@ -1,7 +1,14 @@
 import Gon from 'gon';
 import { camelizeKeys } from 'humps';
+
 import socket from '../../socket';
 import { actions } from '../slices';
+import {
+  normalizeDataForActiveChat,
+  addMessageRoomNameForActiveChat,
+  isMessageForCurrentUser,
+  isMessageForEveryone,
+} from '../utils/chat';
 
 const chatId = Gon.getAsset('game_id');
 const isRecord = Gon.getAsset('is_record');
@@ -34,16 +41,25 @@ const getName = entityName => {
 const channel = isRecord ? null : socket.channel(getName('channel'));
 
 const fetchState = () => dispatch => {
-  const camelizeKeysAndDispatch = actionCreator => data => dispatch(actionCreator(camelizeKeys({ ...data, page: getName('page') })));
+  const camelizeKeysAndDispatch = actionCreator => data => dispatch(actionCreator(camelizeKeys(data)));
 
-  channel.join().receive('ok', camelizeKeysAndDispatch(actions.updateChatData));
+  channel.join().receive('ok', async data => {
+    const normalizedData = await normalizeDataForActiveChat(data);
+    dispatch(actions.updateChatData({ ...normalizedData, page: getName('page') }));
+  });
 
   channel.on(
     'chat:user_joined',
     camelizeKeysAndDispatch(actions.userJoinedChat),
   );
   channel.on('chat:user_left', camelizeKeysAndDispatch(actions.userLeftChat));
-  channel.on('chat:new_msg', camelizeKeysAndDispatch(actions.newMessageChat));
+  channel.on('chat:new_msg', async data => {
+    const message = camelizeKeys(data);
+    if (isMessageForCurrentUser(message) || isMessageForEveryone(message)) {
+      const updatedMessage = await addMessageRoomNameForActiveChat(message, []);
+      dispatch(actions.newMessageChat(updatedMessage));
+    }
+  });
   channel.on('chat:user_banned', camelizeKeysAndDispatch(actions.banUserChat));
 };
 

@@ -2,7 +2,6 @@ import React from 'react';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import moment from 'moment';
-import Gon from 'gon';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleChevronRight } from '@fortawesome/free-solid-svg-icons';
 
@@ -15,9 +14,6 @@ import {
 import { pushCommand } from '../middlewares/Chat';
 // import { getLobbyUrl } from '../utils/urlBuilders';
 import { actions } from '../slices';
-import messageTypes from '../config/messageTypes';
-
-const currentUser = Gon.getAsset('current_user');
 
 const Message = ({
   text = '',
@@ -26,8 +22,7 @@ const Message = ({
   time,
   userId,
   handleShowModal,
-  meta,
-  room,
+  roomName,
 }) => {
   const dispatch = useDispatch();
 
@@ -82,7 +77,7 @@ const Message = ({
 
   return (
     <div className="d-flex align-items-baseline flex-wrap">
-      <span className="font-weight-bold">{`[${room.name}] ${name}`}</span>
+      <span className="font-weight-bold">{`[${roomName}] ${name}`}</span>
       <OverlayTrigger
         trigger="focus"
         placement="right"
@@ -102,17 +97,9 @@ const Message = ({
                 type="button"
                 className="btn btn-sm btn-link text-danger"
                 onClick={() => {
-                  const roomId = meta === messageTypes.private
-                    ? room.id
-                    : window.crypto.randomUUID();
                   const roomData = {
-                    id: roomId,
+                    id: userId,
                     name,
-                    meta: 'private',
-                    members: [
-                      { userId: currentUserId, name: currentUser.name },
-                      { userId, name },
-                    ],
                   };
 
                   dispatch(actions.createPrivateRoom(roomData));

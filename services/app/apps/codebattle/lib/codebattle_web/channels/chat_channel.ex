@@ -20,7 +20,6 @@ defmodule CodebattleWeb.ChatChannel do
   def handle_in("chat:add_msg", payload, socket) do
     text = payload["text"]
     meta = payload["meta"]
-    room = payload["room"]
     user = socket.assigns.current_user
     chat_type = get_chat_type(socket)
 
@@ -30,7 +29,6 @@ defmodule CodebattleWeb.ChatChannel do
       type: :text,
       text: text,
       meta: meta,
-      room: room
     })
 
     update_playbook(chat_type, :chat_message, %{id: user.id, name: user.name, message: text})
