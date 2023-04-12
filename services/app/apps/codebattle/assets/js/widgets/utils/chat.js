@@ -8,6 +8,10 @@ import rooms from '../config/rooms';
 
 const currentUser = Gon.getAsset('current_user');
 
+export const isGeneralRoomActive = room => room.id === null;
+
+export const isPrivateMessage = messageType => messageType === messageTypes.private;
+
 export const isMessageForCurrentUser = message => (
   message.meta?.type === messageTypes.private
   && (message.userId === currentUser.id || message.meta.userId === currentUser.id)

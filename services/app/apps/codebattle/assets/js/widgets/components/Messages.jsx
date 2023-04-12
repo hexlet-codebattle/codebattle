@@ -58,7 +58,7 @@ const Messages = ({ messages }) => {
       >
         {messages.map(message => {
   const {
-    id, name, text, type, time, userId, roomName,
+    id, name, text, type, time, userId, meta,
    } = message;
 
   return (
@@ -70,7 +70,7 @@ const Messages = ({ messages }) => {
       type={type}
       time={time}
       handleShowModal={handleShowModal(userId, name)}
-      roomName={roomName}
+      meta={meta}
     />
   );
 })}

@@ -10,10 +10,20 @@ import {
   currentUserIdSelector,
   lobbyDataSelector,
   secondPlayerSelector,
+  activeRoomSelector,
 } from '../selectors';
 import { pushCommand } from '../middlewares/Chat';
 // import { getLobbyUrl } from '../utils/urlBuilders';
 import { actions } from '../slices';
+import messageTypes from '../config/messageTypes';
+import { isGeneralRoomActive, isPrivateMessage } from '../utils/chat';
+
+const getMessagePrefix = (messageType = messageTypes.general, name, room) => {
+  if (isGeneralRoomActive(room) && isPrivateMessage(messageType)) {
+      return <span className="font-weight-bold">{`[${messageType}] ${name}`}</span>;
+  }
+  return <span className="font-weight-bold">{`${name}`}</span>;
+};
 
 const Message = ({
   text = '',
@@ -22,13 +32,14 @@ const Message = ({
   time,
   userId,
   handleShowModal,
-  roomName,
+  meta,
 }) => {
   const dispatch = useDispatch();
 
   const currentUserIsAdmin = useSelector(state => currentUserIsAdminSelector(state));
 
   const currentUserId = useSelector(currentUserIdSelector);
+  const activeRoom = useSelector(activeRoomSelector);
 
   const { activeGames } = useSelector(lobbyDataSelector);
   const isCurrentUserHasActiveGames = activeGames.some(({ players }) => players.some(({ id }) => id === currentUserId));
@@ -77,7 +88,7 @@ const Message = ({
 
   return (
     <div className="d-flex align-items-baseline flex-wrap">
-      <span className="font-weight-bold">{`[${roomName}] ${name}`}</span>
+      {getMessagePrefix(meta?.type, name, activeRoom)}
       <OverlayTrigger
         trigger="focus"
         placement="right"
