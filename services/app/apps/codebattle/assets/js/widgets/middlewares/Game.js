@@ -12,11 +12,6 @@ import {
 
 import PlaybookStatusCodes from '../config/playbookStatusCodes';
 import GameStateCodes from '../config/gameStateCodes';
-
-import {
-  normalizeDataForPlaybookChat,
-} from '../utils/chat';
-
 import notification from '../utils/notification';
 
 const defaultLanguages = Gon.getAsset('langs');
@@ -483,9 +478,7 @@ export const setGameHistoryState = recordId => (dispatch, getState) => {
     }));
   });
 
-  const normalizedChatState = normalizeDataForPlaybookChat(chatState);
-
-  dispatch(actions.updateChatDataHistory(normalizedChatState));
+  dispatch(actions.updateChatDataHistory(chatState));
 };
 
 export const updateGameHistoryState = nextRecordId => (dispatch, getState) => {
@@ -514,11 +507,9 @@ export const updateGameHistoryState = nextRecordId => (dispatch, getState) => {
       break;
     case 'chat_message':
     case 'join_chat':
-    case 'leave_chat': {
-      const normalizedChatState = normalizeDataForPlaybookChat(nextRecord.chat);
-      dispatch(actions.updateChatDataHistory(normalizedChatState));
+    case 'leave_chat':
+      dispatch(actions.updateChatDataHistory(nextRecord.chat));
       break;
-    }
     default:
       break;
   }

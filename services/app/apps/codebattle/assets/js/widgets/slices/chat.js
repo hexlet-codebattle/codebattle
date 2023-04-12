@@ -1,33 +1,17 @@
 import { createSlice, current } from '@reduxjs/toolkit';
-import Gon from 'gon';
 
-import messageTypes from '../config/messageTypes';
 import rooms from '../config/rooms';
-
-const currentUser = Gon.getAsset('current_user');
+import {
+  getMessagesForCurrentUser,
+  isMessageForCurrentUser,
+  isMessageForEveryone,
+  shouldShowMessage,
+} from '../utils/chat';
 
 const getPrivateRooms = page => {
   const storedPrivateRooms = JSON.parse(localStorage.getItem(`${page}_private_rooms`));
 
   return storedPrivateRooms || [];
-};
-
-const isProperPrivateRoomActive = (message, room) => (
-  (room.id === message.meta.userId && message.userId === currentUser.id)
-  || (room.id === message.userId && message.meta.userId === currentUser.id)
-);
-
-const isGeneralRoomActive = room => room.id === null;
-
-const shouldShowMessage = (message, room) => {
-  switch (message.meta?.type) {
-    case messageTypes.private:
-      return isProperPrivateRoomActive(message, room) || isGeneralRoomActive(room);
-    case messageTypes.general:
-      return isGeneralRoomActive(room);
-    default:
-      return true;
-  }
 };
 
 const initialState = {
@@ -47,18 +31,28 @@ const chat = createSlice({
   name: 'chat',
   initialState,
   reducers: {
-    updateChatData: (state, { payload }) => ({
-      ...state,
-      ...payload,
-      rooms: [...state.rooms, ...getPrivateRooms(payload.page)],
-      allMessages: payload.messages,
-    }),
-    updateChatDataHistory: (state, { payload }) => ({
-      ...state,
-      history: {
+    updateChatData: (state, { payload }) => {
+      const messages = getMessagesForCurrentUser(payload.messages);
+
+      return {
+        ...state,
         ...payload,
-      },
-    }),
+        rooms: [...state.rooms, ...getPrivateRooms(payload.page)],
+        allMessages: messages,
+        messages,
+      };
+    },
+    updateChatDataHistory: (state, { payload }) => {
+      const messages = getMessagesForCurrentUser(payload.messages);
+
+      return {
+        ...state,
+        history: {
+          ...payload,
+          messages,
+        },
+      };
+    },
     userJoinedChat: (state, { payload: { users } }) => {
       state.users = users;
     },
@@ -66,10 +60,12 @@ const chat = createSlice({
       state.users = users;
     },
     newMessageChat: (state, { payload }) => {
-      if (shouldShowMessage(payload, state.activeRoom)) {
-        state.messages = [...state.messages, payload];
+      if (isMessageForCurrentUser(payload) || isMessageForEveryone(payload)) {
+        if (shouldShowMessage(payload, state.activeRoom)) {
+          state.messages = [...state.messages, payload];
+        }
+        state.allMessages = [...state.allMessages, payload];
       }
-      state.allMessages = [...state.allMessages, payload];
     },
     banUserChat: (state, { payload }) => {
       state.messages = [
