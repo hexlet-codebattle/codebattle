@@ -71,6 +71,7 @@ const Messages = ({ messages }) => {
       time={time}
       handleShowModal={handleShowModal(userId, name)}
       meta={meta}
+      messageId={id}
     />
   );
 })}
