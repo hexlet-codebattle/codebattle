@@ -1,20 +1,37 @@
 import React, { useEffect } from 'react';
-import { connect, useSelector } from 'react-redux';
+import { connect, useSelector, useDispatch } from 'react-redux';
 import * as selectors from '../selectors';
 import Messages from '../components/Messages';
 import UserInfo from './UserInfo';
 import ChatInput from '../components/ChatInput';
 import * as chatMiddlewares from '../middlewares/Chat';
 import ChatHeader from '../components/ChatHeader';
+import { getPrivateRooms, clearExpiredPrivateRooms, updatePrivateRooms } from '../middlewares/Room';
+import { actions } from '../slices';
+import getName from '../utils/names';
 
 const LobbyChat = ({ connectToChat }) => {
+  const pageName = getName('page');
+  const dispatch = useDispatch();
   const { presenceList } = useSelector(selectors.lobbyDataSelector);
   const messages = useSelector(selectors.chatMessagesSelector);
+  const rooms = useSelector(selectors.roomsSelector);
 
   useEffect(() => {
     connectToChat();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    clearExpiredPrivateRooms();
+    const existingPrivateRooms = getPrivateRooms(pageName);
+    dispatch(actions.setPrivateRooms(existingPrivateRooms));
+  }, []);
+
+  useEffect(() => {
+    const privateRooms = rooms.slice(1);
+    updatePrivateRooms(privateRooms, pageName);
+  }, [rooms]);
 
   return (
     <div className="d-flex flex-wrap shadow-sm mt-2 cb-chat-container">

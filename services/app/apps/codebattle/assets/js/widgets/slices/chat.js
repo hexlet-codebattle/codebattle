@@ -6,13 +6,9 @@ import {
   isMessageForCurrentUser,
   isMessageForEveryone,
   shouldShowMessage,
+  isMessageForExistingPrivateRoom,
 } from '../utils/chat';
-
-const getPrivateRooms = page => {
-  const storedPrivateRooms = JSON.parse(localStorage.getItem(`${page}_private_rooms`));
-
-  return storedPrivateRooms || [];
-};
+import { ttl } from '../middlewares/Room';
 
 const initialState = {
   users: [],
@@ -37,7 +33,6 @@ const chat = createSlice({
       return {
         ...state,
         ...payload,
-        rooms: [...state.rooms, ...getPrivateRooms(payload.page)],
         allMessages: messages,
         messages,
       };
@@ -66,6 +61,13 @@ const chat = createSlice({
         }
         state.allMessages = [...state.allMessages, payload];
       }
+      if (isMessageForCurrentUser(payload)) {
+        state.rooms = state.rooms.map(room => (
+          isMessageForExistingPrivateRoom(room, payload)
+            ? { ...room, expiry: room.expiry + ttl }
+            : room
+        ));
+      }
     },
     banUserChat: (state, { payload }) => {
       state.messages = [
@@ -91,8 +93,9 @@ const chat = createSlice({
       state.rooms = [...state.rooms, payload];
       state.activeRoom = payload;
       state.messages = state.allMessages.filter(message => shouldShowMessage(message, payload));
-
-      localStorage.setItem(`${state.page}_private_rooms`, JSON.stringify([...privateRooms, payload]));
+    },
+    setPrivateRooms: (state, { payload }) => {
+      state.rooms = [...state.rooms, ...payload];
     },
   },
 });

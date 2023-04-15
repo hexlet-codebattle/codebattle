@@ -15,6 +15,7 @@ import {
 } from '../selectors';
 import { pushCommand } from '../middlewares/Chat';
 import { actions } from '../slices';
+import { calculateExpireDate } from '../middlewares/Room';
 
 const Sender = ({
   messageId,
@@ -58,6 +59,7 @@ const Sender = ({
             const roomData = {
               id: userId,
               name,
+              expiry: calculateExpireDate(),
             };
 
             dispatch(actions.createPrivateRoom(roomData));
