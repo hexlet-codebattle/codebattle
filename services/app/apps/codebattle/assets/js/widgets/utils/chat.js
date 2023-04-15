@@ -27,10 +27,8 @@ export const shouldShowMessage = (message, room) => {
   switch (message.meta?.type) {
     case messageTypes.private:
       return isProperPrivateRoomActive(message, room) || isGeneralRoomActive(room);
-    case messageTypes.general:
-      return isGeneralRoomActive(room);
     default:
-      return true;
+      return isGeneralRoomActive(room);
   }
 };
 
