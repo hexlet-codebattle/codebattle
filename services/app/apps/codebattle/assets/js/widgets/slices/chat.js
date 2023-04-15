@@ -6,7 +6,7 @@ import {
   isMessageForCurrentUser,
   isMessageForEveryone,
   shouldShowMessage,
-  isMessageForExistingPrivateRoom,
+  isMessageForCurrentRoom,
 } from '../utils/chat';
 import { ttl } from '../middlewares/Room';
 
@@ -63,7 +63,7 @@ const chat = createSlice({
       }
       if (isMessageForCurrentUser(payload)) {
         state.rooms = state.rooms.map(room => (
-          isMessageForExistingPrivateRoom(room, payload)
+          isMessageForCurrentRoom(room, payload)
             ? { ...room, expiry: room.expiry + ttl }
             : room
         ));

@@ -9,7 +9,7 @@ export const isGeneralRoomActive = room => room.id === null;
 
 export const isPrivateMessage = messageType => messageType === messageTypes.private;
 
-export const isMessageForExistingPrivateRoom = (room, message) => room.id === message.meta?.userId || room.id === message.userId;
+export const isMessageForCurrentRoom = (room, message) => room.id === message.meta?.userId || room.id === message.userId;
 
 export const isMessageForCurrentUser = message => (
   message.meta?.type === messageTypes.private
