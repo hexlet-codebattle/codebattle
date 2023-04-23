@@ -45,6 +45,9 @@ defmodule CodebattleWeb.Live.Tournament.HeaderComponent do
               >
                 Start
               </button>
+              <button class="btn btn-warning ml-2">
+                <a href={Routes.tournament_path(@socket, :edit, @tournament.id)}>Edit</a>
+              </button>
               <button class="btn btn-info ml-2" phx-click="restart">Restart</button>
               <button class="btn btn-danger ml-2" phx-click="cancel">Cancel</button>
               <%= if !is_public?(@tournament) do %>

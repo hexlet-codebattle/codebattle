@@ -5,7 +5,10 @@ defmodule CodebattleWeb.Tournament.ImageController do
 
   def show(conn, %{"id" => id}) do
     case Tournament.Context.get(id) do
-      {:ok, tournament} ->
+      nil ->
+        send_resp(conn, :ok, "")
+
+      tournament ->
         {:ok, image} =
           tournament
           |> render_image
@@ -14,9 +17,6 @@ defmodule CodebattleWeb.Tournament.ImageController do
         conn
         |> put_resp_content_type("image/jpeg")
         |> send_resp(200, image)
-
-      _ ->
-        send_resp(conn, :ok, "")
     end
   end
 
