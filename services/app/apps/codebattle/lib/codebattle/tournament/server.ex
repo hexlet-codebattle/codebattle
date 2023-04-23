@@ -21,11 +21,17 @@ defmodule Codebattle.Tournament.Server do
     end
   end
 
-  def reload_from_db(id) do
-    GenServer.cast(server_name(id), :reload_from_db)
+  def update_tournament(tournament) do
+    try do
+      GenServer.call(server_name(tournament.id), {:update, tournament})
+    catch
+      :exit, reason ->
+        Logger.error("Error to send tournament update: #{inspect(reason)}")
+        {:error, :not_found}
+    end
   end
 
-  def update_tournament(tournament_id, event_type, params) do
+  def handle_event(tournament_id, event_type, params) do
     try do
       GenServer.call(server_name(tournament_id), {event_type, params})
     catch
@@ -47,10 +53,9 @@ defmodule Codebattle.Tournament.Server do
     {:ok, %{tournament: tournament}}
   end
 
-  def handle_cast(:reload_from_db, state) do
-    %{tournament: tournament} = state
-    new_tournament = Tournament.Context.get_from_db!(tournament.id)
-    {:noreply, %{state | tournament: new_tournament}}
+  def handle_call({:update, new_tournament}, _from, state) do
+    broadcast_tournament_update(new_tournament)
+    {:reply, :ok, %{state | tournament: new_tournament}}
   end
 
   def handle_call(:get_tournament, _from, state) do
@@ -81,8 +86,7 @@ defmodule Codebattle.Tournament.Server do
     {:noreply, %{state | tournament: new_tournament}}
   end
 
-  def handle_info(message, state) do
-    Logger.debug(message)
+  def handle_info(_message, state) do
     {:noreply, state}
   end
 

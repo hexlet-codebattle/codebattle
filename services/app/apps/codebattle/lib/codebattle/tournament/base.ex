@@ -84,7 +84,7 @@ defmodule Codebattle.Tournament.Base do
           tournament =
             tournament
             |> complete_players()
-            |> start_round()
+            |> start_round_or_finish()
 
           tournament
           |> update!(%{
@@ -155,7 +155,7 @@ defmodule Codebattle.Tournament.Base do
           |> calculate_round_results()
           |> maybe_finish()
           |> set_next_round_params()
-          |> start_round()
+          |> start_round_or_finish()
         end
       end
 
@@ -172,9 +172,12 @@ defmodule Codebattle.Tournament.Base do
         })
       end
 
-      defp start_round(tournament = %{state: "finished"}), do: tournament
+      defp start_round_or_finish(tournament = %{state: "finished"}) do
+        # TODO: calculate statistics and set winners
+        tournament
+      end
 
-      defp start_round(tournament) do
+      defp start_round_or_finish(tournament) do
         tournament
         |> maybe_set_task_for_round()
         |> build_matches()
