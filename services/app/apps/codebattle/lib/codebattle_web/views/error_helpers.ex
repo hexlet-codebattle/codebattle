@@ -15,7 +15,6 @@ defmodule CodebattleWeb.ErrorHelpers do
         class: "invalid-feedback",
         phx_feedback_for: input_name(form, field)
       )
-      |> IO.inspect()
     end)
   end
 
