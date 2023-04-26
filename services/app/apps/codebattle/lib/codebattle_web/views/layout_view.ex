@@ -3,6 +3,8 @@ defmodule CodebattleWeb.LayoutView do
   import PhoenixGon.View
   import CodebattleWeb.Router.Helpers
 
+  @app_version Application.compile_env(:codebattle, :app_version)
+
   def get_next_path(conn) do
     next = conn.params["next"]
 
@@ -13,17 +15,17 @@ defmodule CodebattleWeb.LayoutView do
     end
   end
 
-  def app_short_version(app_version) do
-    case app_version do
+  def app_short_version() do
+    case @app_version do
       nil -> "undefined"
-      _ -> String.slice(app_version, 0, 7)
+      _ -> String.slice(@app_version, 0, 7)
     end
   end
 
-  def github_commit_link(app_version) do
-    case app_version do
+  def github_commit_link() do
+    case @app_version do
       nil -> "/"
-      _ -> "https://github.com/hexlet-codebattle/codebattle/commit/#{app_version}"
+      _ -> "https://github.com/hexlet-codebattle/codebattle/commit/#{@app_version}"
     end
   end
 end
