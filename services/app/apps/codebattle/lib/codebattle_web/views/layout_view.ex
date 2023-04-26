@@ -12,4 +12,18 @@ defmodule CodebattleWeb.LayoutView do
       _ -> next
     end
   end
+
+  def app_short_version(app_version) do
+    case app_version do
+      nil -> "undefined"
+      _ -> String.slice(app_version, 0, 7)
+    end
+  end
+
+  def github_commit_link(app_version) do
+    case app_version do
+      nil -> "/"
+      _ -> "https://github.com/hexlet-codebattle/codebattle/commit/#{app_version}"
+    end
+  end
 end

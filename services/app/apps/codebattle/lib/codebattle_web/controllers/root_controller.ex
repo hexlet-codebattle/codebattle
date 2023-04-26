@@ -8,6 +8,7 @@ defmodule CodebattleWeb.RootController do
 
   def index(conn, params) do
     current_user = conn.assigns.current_user
+    app_version = Application.get_env(:codebattle, :app_version)
 
     case current_user.is_guest do
       true ->
@@ -19,7 +20,7 @@ defmodule CodebattleWeb.RootController do
         conn
         |> maybe_put_opponent(params)
         |> put_gon(task_tags: ["strings", "math", "hash-maps", "collections", "rest"])
-        |> render("index.html", current_user: current_user)
+        |> render("index.html", current_user: current_user, app_version: app_version)
     end
   end
 

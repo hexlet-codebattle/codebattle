@@ -15,6 +15,7 @@ defmodule CodebattleWeb.Plugs.AssignGon do
     put_gon(conn,
       user_token: user_token,
       current_user: prepare_user(current_user),
+      app_version: Application.get_env(:codebattle, :app_version),
       rollbar_api_key: Application.get_env(:codebattle, Codebattle.Plugs)[:rollbar_api_key]
     )
   end
