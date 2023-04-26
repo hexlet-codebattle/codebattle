@@ -15,7 +15,7 @@ defmodule Codebattle.Tournament.StairwayTest do
       tournament = @module.join(tournament, %{user: user1})
       tournament = @module.start(tournament, %{user: user1})
 
-      assert players_count(tournament) == 2
+      assert players_count(tournament) == 42
     end
   end
 

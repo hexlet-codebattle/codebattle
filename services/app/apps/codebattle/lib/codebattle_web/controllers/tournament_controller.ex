@@ -57,7 +57,7 @@ defmodule CodebattleWeb.TournamentController do
 
   def edit(conn, params) do
     current_user = conn.assigns[:current_user]
-    tournament = Tournament.Context.get!(params["id"]) |> IO.inspect()
+    tournament = Tournament.Context.get!(params["id"])
 
     if Tournament.Helpers.can_moderate?(tournament, current_user) do
       conn
