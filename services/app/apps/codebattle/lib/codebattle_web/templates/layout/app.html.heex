@@ -249,7 +249,10 @@
   </body>
   <footer>
     <div class="footer-container">
-      <%= link("Current version: #{app_short_version(@app_version)}", to: github_commit_link(@app_version), class: "footer-link") %>
+      <%= link("Current version: #{app_short_version(@app_version)}",
+        to: github_commit_link(@app_version),
+        class: "footer-link"
+      ) %>
     </div>
   </footer>
 </html>
