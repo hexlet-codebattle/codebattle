@@ -31,7 +31,6 @@ defmodule Codebattle.Tournament do
   @task_strategies ~w(game round)
   @task_providers ~w(level task_pack tags)
 
-  @max_alive_tournaments 7
   @default_match_timeout Application.compile_env(:codebattle, :tournament_match_timeout)
 
   schema "tournaments" do
@@ -50,6 +49,7 @@ defmodule Codebattle.Tournament do
     field(:name, :string)
     field(:players_limit, :integer)
     field(:players_count, :integer, virtual: true, default: 0)
+    field(:task_pack_name, :string, virtual: true)
     field(:starts_at, :utc_datetime)
     field(:state, :string, default: "waiting_participants")
     field(:task_strategy, :string, default: "game")
@@ -92,7 +92,6 @@ defmodule Codebattle.Tournament do
     |> validate_inclusion(:task_strategy, @task_strategies)
     |> validate_inclusion(:type, @types)
     |> validate_required([:name, :starts_at])
-    |> validate_alive_maximum(params)
     |> add_creator(params["creator"] || params[:creator])
   end
 
@@ -100,20 +99,6 @@ defmodule Codebattle.Tournament do
 
   def add_creator(changeset, creator) do
     change(changeset, %{creator: creator})
-  end
-
-  def validate_alive_maximum(changeset, params) do
-    alive_count = params["alive_count"] || 0
-
-    if alive_count < @max_alive_tournaments do
-      changeset
-    else
-      add_error(
-        changeset,
-        :base,
-        "Too many live tournaments: #{alive_count}, maximum allowed: #{@max_alive_tournaments}"
-      )
-    end
   end
 
   def types, do: @types
