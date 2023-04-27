@@ -151,6 +151,11 @@ const preloadedState = {
         userId: 2,
       },
     ],
+    activeRoom: { name: 'General', id: null },
+    rooms: [{ name: 'General', id: null }],
+    history: {
+      messages: [],
+    },
   },
 };
 
@@ -202,11 +207,14 @@ test('test a bot invite button', () => {
     preloadedState,
   });
 
-  const { getByRole } = render(
+  const { getByRole, getByText } = render(
     <Provider store={store}>
       <RootContainer gameMachine={Machine(game)} editorMachine={Machine(editor)} />
     </Provider>,
   );
 
-  expect(getByRole('button', { name: 'Challenge to a game.' })).toBeDisabled();
+  const senderName = getByText('Tim Urban:');
+  fireEvent.contextMenu(senderName, { button: 2 });
+
+  expect(getByRole('menuitem', { name: 'Send an invite' })).toHaveAttribute('aria-disabled', 'true');
 });
