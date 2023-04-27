@@ -16,8 +16,10 @@ defmodule Codebattle.Game.Engine do
   @max_timeout div(:timer.hours(1), 1000)
 
   def create_game(params) do
-    level = params[:level] || get_random_level()
-    task = params[:task] || get_task_by_level(level)
+    # TODO: add support for tags
+    task =
+      params[:task] || Codebattle.Task.get_task_by_level(params[:level] || get_random_level())
+
     state = params[:state] || get_state_from_params(params)
     type = params[:type] || "duo"
     mode = params[:mode] || "standard"
@@ -35,7 +37,7 @@ defmodule Codebattle.Game.Engine do
          {:ok, game} <-
            insert_game(%{
              state: state,
-             level: level,
+             level: task.level,
              ref: params[:ref],
              mode: mode,
              type: type,
@@ -217,8 +219,6 @@ defmodule Codebattle.Game.Engine do
     Task.start(fn -> Playbook.Context.store_playbook(playbook_records, game.id) end)
   end
 
-  def get_task_by_level(level), do: tasks_provider().get_task(level)
-
   def store_result!(game) do
     Repo.transaction(fn ->
       Enum.each(game.players, fn player ->
@@ -357,10 +357,6 @@ defmodule Codebattle.Game.Engine do
   defp get_state_from_params(%{type: "solo", players: [_user]}), do: "playing"
   defp get_state_from_params(%{players: [_user1, _user2]}), do: "playing"
   defp get_state_from_params(%{players: [_user]}), do: "waiting_opponent"
-
-  defp tasks_provider do
-    Application.get_env(:codebattle, :tasks_provider)
-  end
 
   defp get_random_level, do: Enum.random(Codebattle.Task.levels())
 

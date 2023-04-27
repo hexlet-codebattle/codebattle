@@ -89,6 +89,11 @@ defmodule CodebattleWeb.LobbyChannel do
     {:noreply, socket}
   end
 
+  def handle_info(%{event: "tournament:updated", payload: payload}, socket) do
+    push(socket, "tournament:updated", payload)
+    {:noreply, socket}
+  end
+
   def handle_info(%{event: "tournament:finished", payload: payload}, socket) do
     push(socket, "tournament:finished", payload)
     {:noreply, socket}

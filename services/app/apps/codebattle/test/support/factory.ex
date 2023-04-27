@@ -199,7 +199,7 @@ defmodule CodebattleWeb.Factory do
       creator_id: 1,
       players: %{},
       matches: %{},
-      meta: %{}
+      meta: %{rounds_limit: 3}
     }
   end
 

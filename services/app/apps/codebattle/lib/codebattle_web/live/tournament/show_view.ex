@@ -6,6 +6,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
   alias Codebattle.Tournament
   alias CodebattleWeb.Live.Tournament.IndividualComponent
   alias CodebattleWeb.Live.Tournament.TeamComponent
+  alias CodebattleWeb.Live.Tournament.StairwayComponent
 
   require Logger
 
@@ -65,6 +66,17 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
           <.live_component
             id="main-tournament"
             module={TeamComponent}
+            messages={@messages}
+            tournament={@tournament}
+            players={@tournament.players}
+            current_user={@current_user}
+            time={@time}
+          />
+        <% end %>
+        <%= if @tournament.type == "stairway" do %>
+          <.live_component
+            id="main-tournament"
+            module={StairwayComponent}
             messages={@messages}
             tournament={@tournament}
             players={@tournament.players}
@@ -138,7 +150,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
   end
 
   def handle_event("join", %{"team_id" => team_id}, socket) do
-    Tournament.Server.update_tournament(socket.assigns.tournament.id, :join, %{
+    Tournament.Context.send_event(socket.assigns.tournament.id, :join, %{
       user: socket.assigns.current_user,
       team_id: String.to_integer(team_id)
     })
@@ -147,7 +159,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
   end
 
   def handle_event("join", _params, socket) do
-    Tournament.Server.update_tournament(socket.assigns.tournament.id, :join, %{
+    Tournament.Context.send_event(socket.assigns.tournament.id, :join, %{
       user: socket.assigns.current_user
     })
 
@@ -155,7 +167,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
   end
 
   def handle_event("leave", _params, socket) do
-    Tournament.Server.update_tournament(socket.assigns.tournament.id, :leave, %{
+    Tournament.Context.send_event(socket.assigns.tournament.id, :leave, %{
       user: socket.assigns.current_user
     })
 
@@ -164,7 +176,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
 
   def handle_event("kick", %{"user_id" => user_id}, socket) do
     if Tournament.Helpers.can_moderate?(socket.assigns.tournament, socket.assigns.current_user) do
-      Tournament.Server.update_tournament(socket.assigns.tournament.id, :leave, %{
+      Tournament.Context.send_event(socket.assigns.tournament.id, :leave, %{
         user_id: String.to_integer(user_id)
       })
     end
@@ -175,7 +187,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
   def handle_event("restart", _params, socket) do
     Tournament.Context.restart(socket.assigns.tournament)
 
-    Tournament.Server.update_tournament(socket.assigns.tournament.id, :restart, %{
+    Tournament.Context.send_event(socket.assigns.tournament.id, :restart, %{
       user: socket.assigns.current_user
     })
 
@@ -183,7 +195,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
   end
 
   def handle_event("open_up", _params, socket) do
-    Tournament.Server.update_tournament(socket.assigns.tournament.id, :open_up, %{
+    Tournament.Context.send_event(socket.assigns.tournament.id, :open_up, %{
       user: socket.assigns.current_user
     })
 
@@ -192,7 +204,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
 
   def handle_event("cancel", _params, socket) do
     if Tournament.Helpers.can_moderate?(socket.assigns.tournament, socket.assigns.current_user) do
-      Tournament.Server.update_tournament(socket.assigns.tournament.id, :cancel, %{
+      Tournament.Context.send_event(socket.assigns.tournament.id, :cancel, %{
         user: socket.assigns.current_user
       })
     end
@@ -202,7 +214,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
 
   def handle_event("start", _params, socket) do
     if Tournament.Helpers.can_moderate?(socket.assigns.tournament, socket.assigns.current_user) do
-      Tournament.Server.update_tournament(socket.assigns.tournament.id, :start, %{
+      Tournament.Context.send_event(socket.assigns.tournament.id, :start, %{
         user: socket.assigns.current_user
       })
     end

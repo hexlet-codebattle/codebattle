@@ -659,6 +659,15 @@ td {
   .game-control-container {
     width: 100%;
   }
+  .main-nav {
+    margin-right: -15px;
+    margin-left: -15px;
+  }
+}
+
+.invites-counter {
+  top: 0px;
+  left: 0px;
 }
 
 .tag-btn-outline-orange {
@@ -673,4 +682,12 @@ td {
 
 .game-chat-container {
   min-width: 250px;
+}
+
+.hidden {
+  display: none;
+}
+
+.invalid-feedback {
+    display: block;
 }

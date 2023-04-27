@@ -76,7 +76,7 @@ defmodule CodebattleWeb.Router do
     get("/remind_password", SessionController, :remind_password)
     resources("/users", UserController, only: [:index, :show, :new])
 
-    resources("/tournaments", TournamentController, only: [:index, :show]) do
+    resources("/tournaments", TournamentController, only: [:index, :show, :edit]) do
       get("/live", TournamentController, :live, as: :live)
     end
 

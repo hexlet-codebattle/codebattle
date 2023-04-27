@@ -8,10 +8,14 @@ defmodule CodebattleWeb.ErrorHelpers do
   @doc """
   Generates tag for inlined form input errors.
   """
+
   def error_tag(form, field) do
-    if error = form.errors[field] do
-      content_tag(:span, translate_error(error), class: "help-block")
-    end
+    Enum.map(Keyword.get_values(form.errors, field), fn error ->
+      content_tag(:span, translate_error(error),
+        class: "invalid-feedback",
+        phx_feedback_for: input_name(form, field)
+      )
+    end)
   end
 
   @doc """
@@ -31,10 +35,11 @@ defmodule CodebattleWeb.ErrorHelpers do
     #     dngettext "errors", "1 file", "%{count} files", count
     #     dgettext "errors", "is invalid"
     #
-    if count = opts[:count] do
-      Gettext.dngettext(CodebattleWeb.Gettext, "errors", msg, msg, count, opts)
-    else
-      Gettext.dgettext(CodebattleWeb.Gettext, "errors", msg, opts)
-    end
+    # if count = opts[:count] do
+    #   Gettext.dngettext(CodebattleWeb.Gettext, "errors", msg, msg, count, opts)
+    # else
+    #   Gettext.dgettext(CodebattleWeb.Gettext, "errors", msg, opts)
+    # end
+    msg
   end
 end

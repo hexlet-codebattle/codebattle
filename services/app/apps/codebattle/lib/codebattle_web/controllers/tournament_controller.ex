@@ -54,4 +54,21 @@ defmodule CodebattleWeb.TournamentController do
       |> render("404.html", %{msg: gettext("Tournament not found")})
     end
   end
+
+  def edit(conn, params) do
+    current_user = conn.assigns[:current_user]
+    tournament = Tournament.Context.get!(params["id"])
+
+    if Tournament.Helpers.can_moderate?(tournament, current_user) do
+      conn
+      |> live_render(CodebattleWeb.Live.Tournament.EditView,
+        session: %{"current_user" => current_user, "tournament" => tournament}
+      )
+    else
+      conn
+      |> put_status(:not_found)
+      |> put_view(CodebattleWeb.ErrorView)
+      |> render("404.html", %{msg: gettext("Tournament not found")})
+    end
+  end
 end

@@ -1,49 +1,36 @@
 <h1 class="d-none">Codebattle</h1>
 <div class="dark-bg pb-md-6 pb-3">
   <div class="container-lg">
-    <nav class="navbar navbar-dark navbar-expand-md px-0 pt-4">
+    <nav class="navbar navbar-dark px-0 pt-4">
       <a class="navbar-brand d-flex align-items-end" href="/">
         <img alt="Logo" src="/assets/images/logo.svg" />
-        <div class="d-flex flex-column text-gray ml-1 pb-1">
+        <div class="d-sm-flex d-none flex-column text-gray ml-1 pb-1">
           <span class="header-txt">Codebattle</span>
           <span class="header-txt">by Hexlet’s community</span>
         </div>
       </a>
-      <button
-        aria-controls="navbarResponsive"
-        aria-expanded="false"
-        area-label="Toggle navigation"
-        class="navbar-toggler"
-        data-target="#navbarResponsive"
-        data-toggle="collapse"
-        type="button"
-      >
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarResponsive">
-        <ul class="navbar-nav ml-auto">
-          <li class="nav-item mx-1">
-            <a
-              class="mr-2"
-              href={session_path(@conn, :new, locale: :en, next: get_next_path(@conn))}
-            >
-              <button class="btn btn-outline-grey"><%= gettext("Sign in") %></button>
-            </a>
-            <a href={user_path(@conn, :new, locale: :en, next: get_next_path(@conn))}>
-              <button class="btn btn-outline-grey"><%= gettext("Sign up") %></button>
-            </a>
-          </li>
+      <ul class="navbar-nav ml-auto flex-row">
+        <li class="nav-item mx-1">
+          <a
+            class="mr-2"
+            href={session_path(@conn, :new, locale: :en, next: get_next_path(@conn))}
+          >
+            <button class="btn btn-outline-grey"><%= gettext("Sign in") %></button>
+          </a>
+          <a href={user_path(@conn, :new, locale: :en, next: get_next_path(@conn))}>
+            <button class="btn btn-outline-grey"><%= gettext("Sign up") %></button>
+          </a>
+        </li>
 
-          <%= if Application.get_env(:codebattle, :html_debug_mode) do %>
-            <li class="nav-item mx-1">
-              <%= button("Dev sign_in",
-                to: "/auth/dev_login?locale=en",
-                class: "btn btn-outline-grey"
-              ) %>
-            </li>
-          <% end %>
-        </ul>
-      </div>
+        <%= if Application.get_env(:codebattle, :html_debug_mode) do %>
+          <li class="nav-item mx-1">
+            <%= button("Dev sign_in",
+              to: "/auth/dev_login?locale=en",
+              class: "btn btn-outline-grey"
+            ) %>
+          </li>
+        <% end %>
+      </ul>
     </nav>
 
     <div class="bg-codebattle">

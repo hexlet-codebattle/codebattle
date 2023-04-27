@@ -109,6 +109,7 @@ defmodule CodebattleWeb do
       use Phoenix.HTML
 
       alias CodebattleWeb.Router.Helpers, as: Routes
+      alias Phoenix.LiveView.JS
       # Import basic rendering functionality (render, render_layout, etc)
       # import Phoenix.View
     end

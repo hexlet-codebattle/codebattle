@@ -18,7 +18,6 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
        current_user: current_user,
        tournaments: session["tournaments"],
        langs: Runner.Languages.get_lang_slugs(),
-       task_pack_names: Codebattle.TaskPack.list_visible(current_user) |> Enum.map(& &1.name),
        changeset: Codebattle.Tournament.changeset(%Codebattle.Tournament{})
      )}
   end
@@ -73,6 +72,7 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
         module={CreateFormComponent}
         changeset={@changeset}
         langs={@langs}
+        task_pack_names={@current_user |> Codebattle.TaskPack.list_visible() |> Enum.map(& &1.name)}
       />
     </div>
     """

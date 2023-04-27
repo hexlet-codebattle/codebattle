@@ -4,16 +4,20 @@ defmodule Codebattle.Tournament.Context do
   alias Codebattle.Tournament
 
   import Ecto.Query
+  import Ecto.Changeset
 
   @states_from_restore ["waiting_participants"]
+  @max_alive_tournaments 7
 
+  @spec get(pos_integer()) :: Tournament.t() | nil
   def get(id) do
     case Tournament.Server.get_tournament(id) do
       nil -> get_from_db(id)
-      tournament -> {:ok, tournament}
+      tournament -> tournament
     end
   end
 
+  @spec get!(pos_integer()) :: Tournament.t() | no_return()
   def get!(id) do
     case Tournament.Server.get_tournament(id) do
       nil -> get_from_db!(id)
@@ -21,19 +25,22 @@ defmodule Codebattle.Tournament.Context do
     end
   end
 
-  def get_from_db!(id) do
+  @spec get_from_db(pos_integer()) :: Tournament.t() | nil
+  defp get_from_db(id) do
     Tournament
-    |> Codebattle.Repo.get!(id)
+    |> Codebattle.Repo.get(id)
     |> Codebattle.Repo.preload([:creator])
-    |> add_module()
+    |> case do
+      nil -> nil
+      t -> add_module(t)
+    end
   end
 
-  defp get_from_db(id) do
-    q = tournament_query(id)
-
-    case Codebattle.Repo.one(q) do
-      nil -> {:error, :not_found}
-      t -> {:ok, add_module(t)}
+  @spec get_from_db!(pos_integer()) :: Tournament.t() | no_return()
+  def get_from_db!(id) do
+    case get_from_db(id) do
+      nil -> raise Ecto.NoResultsError
+      tournament -> tournament
     end
   end
 
@@ -64,37 +71,67 @@ defmodule Codebattle.Tournament.Context do
     end)
     |> Enum.map(fn {id, _, _, _} -> Tournament.Context.get(id) end)
     |> Enum.filter(fn
-      {:ok, tournament} ->
-        tournament.state in ["waiting_participants", "active"]
-
-      _ ->
-        false
+      nil -> false
+      tournament -> tournament.state in ["waiting_participants", "active"]
     end)
-    |> Enum.map(fn {:ok, tournament} -> tournament end)
   end
 
   def get_live_tournaments_count, do: get_live_tournaments() |> Enum.count()
 
-  def validate(params) do
-    %Tournament{}
+  def validate(params, tournament \\ %Tournament{}) do
+    tournament
     |> Tournament.changeset(params)
-    |> Map.put(:action, :insert)
+    |> Map.put(:action, :validate)
   end
 
   def create(params) do
-    %Tournament{}
+    changeset = %Tournament{} |> Tournament.changeset(prepare_tournament_params(params))
+    alive_count = get_live_tournaments_count()
+
+    if alive_count < @max_alive_tournaments do
+      changeset
+      |> Codebattle.Repo.insert()
+      |> case do
+        {:ok, tournament} ->
+          {:ok, _pid} =
+            tournament
+            |> add_module
+            |> mark_as_live
+            |> Tournament.GlobalSupervisor.start_tournament()
+
+          Codebattle.PubSub.broadcast("tournament:created", %{tournament: tournament})
+
+          {:ok, tournament}
+
+        {:error, changeset} ->
+          {:error, changeset}
+      end
+    else
+      add_error(
+        changeset,
+        :base,
+        "Too many live tournaments: #{alive_count}, maximum allowed: #{@max_alive_tournaments}"
+      )
+    end
+  end
+
+  @spec send_event(Tournament.t() | pos_integer(), atom(), map()) :: :ok
+  def send_event(%Tournament{id: id}, event_type, params) do
+    send_event(id, event_type, params)
+  end
+
+  def send_event(tournament_id, event_type, params) do
+    Tournament.Server.handle_event(tournament_id, event_type, params)
+  end
+
+  @spec update(Tournament.t(), map()) :: {:ok, Tournament.t()} | {:error, Ecto.Changeset.t()}
+  def update(tournament, params) do
+    tournament
     |> Tournament.changeset(prepare_tournament_params(params))
-    |> Codebattle.Repo.insert()
+    |> Codebattle.Repo.update()
     |> case do
       {:ok, tournament} ->
-        {:ok, _pid} =
-          tournament
-          |> add_module
-          |> mark_as_live
-          |> Tournament.GlobalSupervisor.start_tournament()
-
-        Codebattle.PubSub.broadcast("tournament:created", %{tournament: tournament})
-
+        Tournament.Server.update_tournament(tournament)
         {:ok, tournament}
 
       {:error, changeset} ->
@@ -108,7 +145,7 @@ defmodule Codebattle.Tournament.Context do
   end
 
   defp prepare_tournament_params(params) do
-    starts_at = NaiveDateTime.from_iso8601!(params["starts_at"] <> ":00")
+    starts_at = params["starts_at"] && NaiveDateTime.from_iso8601!(params["starts_at"] <> ":00")
     match_timeout_seconds = params["match_timeout_seconds"] || "180"
 
     meta = get_meta_from_params(params)
@@ -119,23 +156,11 @@ defmodule Codebattle.Tournament.Context do
         _ -> nil
       end
 
-    # task_pack =
-    #   case params["task_pack_name"] do
-    #     x when x in [nil, ""] -> nil
-    #     task_pack_name -> TaskPack.get_by!(name: task_pack_name)
-    #   end
-
     Map.merge(params, %{
-      # "task_pack_id" => task_pack && task_pack.id,
-      # "task_pack" => task_pack,
       "access_token" => access_token,
-      "alive_count" => get_live_tournaments_count(),
       "match_timeout_seconds" => match_timeout_seconds,
       "starts_at" => starts_at,
-      "current_round" => 0,
-      "meta" => meta,
-      "players" => %{},
-      "matches" => %{}
+      "meta" => meta
     })
   end
 
@@ -155,6 +180,10 @@ defmodule Codebattle.Tournament.Context do
           }
         }
 
+      "stairway" ->
+        rounds = params |> Map.get("rounds_limit", "3") |> String.to_integer()
+        %{rounds_limit: rounds}
+
       _ ->
         %{}
     end
@@ -171,14 +200,6 @@ defmodule Codebattle.Tournament.Context do
   end
 
   def mark_as_live(tournament), do: Map.put(tournament, :is_live, true)
-
-  defp tournament_query(id) do
-    from(
-      t in Tournament,
-      where: t.id == ^id,
-      preload: [:creator]
-    )
-  end
 
   defp get_module(%{type: "team"}), do: Tournament.Team
   defp get_module(%{"type" => "team"}), do: Tournament.Team
