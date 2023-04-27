@@ -28,7 +28,7 @@ defmodule CodebattleWeb.ChatChannel do
       name: user.name,
       type: :text,
       text: text,
-      meta: meta,
+      meta: meta
     })
 
     update_playbook(chat_type, :chat_message, %{id: user.id, name: user.name, message: text})
