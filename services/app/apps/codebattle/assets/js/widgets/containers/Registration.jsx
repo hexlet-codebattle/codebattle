@@ -219,7 +219,8 @@ const SignUp = () => {
             return invalidSymbolIndex === -1;
           },
         )
-        .min(3, 'Should be at least 3 characters')
+        .min(3, 'Should be from 3 to 16 characters')
+        .max(16, 'Should be from 3 to 16 characters')
         .required('Nickname required'),
       email: Yup
         .string()
@@ -234,7 +235,11 @@ const SignUp = () => {
           ),
         )
         .required('Email required'),
-      password: Yup.string().required('Password required'),
+      password: Yup
+        .string()
+        .min(6, 'Should be from 6 to 16 characters')
+        .max(16, 'Should be from 6 to 16 characters')
+        .required('Password required'),
       passwordConfirmation: Yup.string().oneOf(
         [Yup.ref('password'), null],
         'Passwords must match',
