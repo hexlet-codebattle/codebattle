@@ -1,8 +1,6 @@
 defmodule CodebattleWeb.Live.Tournament.ScorePlayersComponent do
   use CodebattleWeb, :component
 
-  import Codebattle.Tournament.Helpers
-
   alias CodebattleWeb.Live.Tournament.PlayerComponent
 
   def render(assigns) do
