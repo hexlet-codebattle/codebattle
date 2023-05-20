@@ -10,7 +10,7 @@ defmodule Codebattle.Tournament.Base do
   @callback build_matches(Tournament.t()) :: Tournament.t()
   @callback calculate_round_results(Tournament.t()) :: Tournament.t()
   @callback complete_players(Tournament.t()) :: Tournament.t()
-  @callback maybe_finish(Tournament.t()) :: Tournament.t()
+  @callback finish_tournament?(Tournament.t()) :: Tournament.t()
 
   defmacro __using__(_opts) do
     quote do
@@ -54,14 +54,14 @@ defmodule Codebattle.Tournament.Base do
       def leave(tournament, %{user_id: user_id}) do
         new_players = Map.drop(tournament.players, [to_id(user_id)])
 
-        update!(tournament, %{players: new_players})
+        update_struct(tournament, %{players: new_players})
       end
 
       def leave(tournament, _user_id), do: tournament
 
       def open_up(tournament, %{user: user}) do
         if can_moderate?(tournament, user) do
-          update!(tournament, %{access_type: "public"})
+          update_struct(tournament, %{access_type: "public"})
         else
           tournament
         end
@@ -69,7 +69,7 @@ defmodule Codebattle.Tournament.Base do
 
       def cancel(tournament, %{user: user}) do
         if can_moderate?(tournament, user) do
-          new_tournament = update!(tournament, %{state: "canceled"})
+          new_tournament = tournament |> update_struct(%{state: "canceled"}) |> db_save!()
 
           Tournament.GlobalSupervisor.terminate_tournament(tournament.id)
 
@@ -87,7 +87,7 @@ defmodule Codebattle.Tournament.Base do
             |> start_round_or_finish()
 
           tournament
-          |> update!(%{
+          |> update_struct(%{
             players_count: players_count(tournament),
             last_round_started_at: NaiveDateTime.utc_now(),
             state: "active"
@@ -102,7 +102,7 @@ defmodule Codebattle.Tournament.Base do
       def restart(tournament, %{user: user}) do
         if can_moderate?(tournament, user) do
           tournament
-          |> update!(%{
+          |> update_struct(%{
             players: %{},
             matches: %{},
             players_count: 0,
@@ -166,7 +166,7 @@ defmodule Codebattle.Tournament.Base do
       defp set_next_round_params(tournament = %{state: "finished"}), do: tournament
 
       defp set_next_round_params(tournament) do
-        update!(tournament, %{
+        update_struct(tournament, %{
           current_round: tournament.current_round + 1,
           last_round_started_at: NaiveDateTime.utc_now()
         })
@@ -174,6 +174,10 @@ defmodule Codebattle.Tournament.Base do
 
       defp start_round_or_finish(tournament = %{state: "finished"}) do
         # TODO: calculate statistics and set winners
+
+        # TODO: implement tournament termination in 15 mins
+        # Tournament.GlobalSupervisor.terminate_tournament(tournament.id, 15 mins)
+
         tournament
       end
 
@@ -199,8 +203,18 @@ defmodule Codebattle.Tournament.Base do
         game.id
       end
 
-      def update!(tournament, params) do
+      def update_struct(tournament, params) do
         tournament |> Tournament.changeset(params) |> Ecto.Changeset.apply_action!(:update)
+      end
+
+      def db_save!(tournament), do: Tournament.Context.upsert!(tournament)
+
+      defp maybe_finish(tournament) do
+        if finish_tournament?(tournament) do
+          tournament |> update_struct(%{state: "finished"}) |> db_save!()
+        else
+          tournament
+        end
       end
 
       defp maybe_set_task_for_round(tournament = %{task_strategy: "round"}) do
