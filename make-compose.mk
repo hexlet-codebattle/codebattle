@@ -7,7 +7,7 @@ compose-d:
 	docker compose up -d app
 
 compose-build:
-	docker compose build
+	docker compose build --build-arg GIT_HASH=$(shell git rev-parse HEAD) app
 
 compose-down:
 	docker compose down -v || true

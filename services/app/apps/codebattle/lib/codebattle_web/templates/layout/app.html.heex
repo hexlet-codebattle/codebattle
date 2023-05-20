@@ -247,4 +247,12 @@
     <%= @inner_content %>
     <%= render_gon_script(@conn) %>
   </body>
+  <footer>
+    <div class="footer-container">
+      <%= link("Current version: #{app_short_version()}",
+        to: github_commit_link(),
+        class: "footer-link"
+      ) %>
+    </div>
+  </footer>
 </html>

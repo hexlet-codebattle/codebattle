@@ -51,6 +51,9 @@ FROM elixir:1.14.4 AS runtime-image
 RUN apt-get update && apt-get install --no-install-recommends -y ca-certificates wkhtmltopdf git make curl vim \
   && rm -rf /var/lib/apt/lists/*
 
+ARG GIT_HASH
+
+ENV APP_VERSION=$GIT_HASH
 ENV PORT=4000
 ENV MIX_ENV=prod
 EXPOSE ${PORT}
@@ -58,4 +61,3 @@ WORKDIR /opt/app
 COPY --from=compile-image /opt/release .
 COPY Makefile Makefile
 CMD exec /opt/app/bin/codebattle start
-

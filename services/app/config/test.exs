@@ -61,5 +61,6 @@ config :codebattle, freeze_time: true
 
 config :codebattle, use_non_test_workers: false
 config :codebattle, fake_html_to_image: true
+config :codebattle, app_version: "fc426ea537962d8e5af5e31e515f7000deeedc68"
 
 config :runner, fake_docker_run: true
