@@ -381,7 +381,6 @@ a {
 
 .cb-messages-list {
   top: 5px;
-  height: 80%;
 
   @media (max-width: $sm) {
     height: 240px;
@@ -389,7 +388,8 @@ a {
   }
 }
 
-.cb-chat-container {
+.cb-chat-container
+.cb-messages-container {
   height: 500px;
 
   @media (max-width: $sm) {

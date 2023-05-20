@@ -43,7 +43,7 @@ const Messages = ({ messages = [] }) => {
       {currentUserIsAdmin ? (
         <button
           type="button"
-          className="btn btn-sm btn-link text-danger"
+          className="btn btn-sm btn-link text-danger align-self-start"
           onClick={() => {
             handleCleanBanned();
           }}
@@ -53,7 +53,7 @@ const Messages = ({ messages = [] }) => {
       ) : null}
       <ul
         ref={listRef}
-        className="overflow-auto pt-0 pl-3 pr-2 position-relative cb-messages-list"
+        className="overflow-auto pt-0 pl-3 pr-2 position-relative cb-messages-list flex-grow-1"
       >
         {messages.map(({
  id, name, text, type, time, userId,
