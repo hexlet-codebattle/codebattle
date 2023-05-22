@@ -40,10 +40,10 @@ const LobbyChat = ({ connectToChat }) => {
         <Messages messages={messages} />
         <ChatInput />
       </div>
-      <div className="col-12 col-sm-4 p-0 pb-3 pb-sm-5 border-left bg-light rounded-right cb-players-container">
+      <div className="col-12 col-sm-4 p-0 pb-3 pb-sm-4 border-left bg-light rounded-right cb-players-container">
         <div className="d-flex flex-column h-100">
           <p className="px-3 pt-3 border-top mb-3">{`Online players: ${presenceList.length}`}</p>
-          <div className="d-flex flex-column align-items-start overflow-auto px-3">
+          <div className="d-flex flex-column align-items-start overflow-auto">
             {presenceList.map(presenceUser => (
               <div key={presenceUser.id} className="mb-1">
                 <UserInfo user={presenceUser.user} hideOnlineIndicator />

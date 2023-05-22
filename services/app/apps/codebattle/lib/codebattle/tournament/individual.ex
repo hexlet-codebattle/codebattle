@@ -32,7 +32,7 @@ defmodule Codebattle.Tournament.Individual do
         Map.put(acc, to_id(match.id), match)
       end)
 
-    update!(tournament, %{matches: new_matches})
+    update_struct(tournament, %{matches: new_matches})
   end
 
   @impl Tournament.Base
@@ -56,18 +56,12 @@ defmodule Codebattle.Tournament.Individual do
           Map.put(acc, to_id(match.id), match)
         end)
 
-      update!(tournament, %{matches: new_matches})
+      update_struct(tournament, %{matches: new_matches})
     end
   end
 
   @impl Tournament.Base
-  def maybe_finish(tournament) do
-    if final_round?(tournament) do
-      update!(tournament, %{state: "finished"})
-    else
-      tournament
-    end
-  end
+  def finish_tournament?(tournament), do: final_round?(tournament)
 
   defp pair_players_to_matches(players, tournament, init_ref) do
     players

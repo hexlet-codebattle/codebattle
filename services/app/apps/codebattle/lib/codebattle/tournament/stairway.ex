@@ -44,20 +44,11 @@ defmodule Codebattle.Tournament.Stairway do
         Map.put(acc, to_id(match.id), match)
       end)
 
-    update!(tournament, %{matches: matches, played_pair_ids: played_pair_ids})
+    update_struct(tournament, %{matches: matches, played_pair_ids: played_pair_ids})
   end
 
   @impl Tournament.Base
-  def maybe_finish(tournament) do
-    if final_round?(tournament) do
-      new_tournament = update!(tournament, %{state: "finished"})
-
-      # Tournament.GlobalSupervisor.terminate_tournament(tournament.id)
-      new_tournament
-    else
-      tournament
-    end
-  end
+  def finish_tournament?(tournament), do: final_round?(tournament)
 
   defp final_round?(tournament) do
     tournament.meta.rounds_limit - 1 == tournament.current_round

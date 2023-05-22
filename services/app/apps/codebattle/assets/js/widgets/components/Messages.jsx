@@ -44,7 +44,7 @@ const Messages = ({ messages }) => {
       {currentUserIsAdmin ? (
         <button
           type="button"
-          className="btn btn-sm btn-link text-danger"
+          className="btn btn-sm btn-link text-danger align-self-start"
           onClick={() => {
             handleCleanBanned();
           }}

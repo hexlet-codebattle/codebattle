@@ -86,18 +86,14 @@ defmodule Codebattle.Tournament.Team do
         Map.put(acc, to_id(match.id), match)
       end)
 
-    update!(tournament, %{matches: new_matches})
+    update_struct(tournament, %{matches: new_matches})
   end
 
   @impl Tournament.Base
-  def maybe_finish(tournament) do
+  def finish_tournament?(tournament) do
     scores = tournament |> get_teams() |> Enum.map(& &1.score)
 
-    if Enum.max(scores) >= Map.get(tournament.meta, :rounds_to_win, 3) do
-      update!(tournament, %{state: "finished"})
-    else
-      tournament
-    end
+    Enum.max(scores) >= Map.get(tournament.meta, :rounds_to_win, 3)
   end
 
   defp shift_pairs(teams, tournament) do

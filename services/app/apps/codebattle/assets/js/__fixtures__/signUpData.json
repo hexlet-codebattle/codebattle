@@ -33,7 +33,13 @@
     [
       "nickname validation: short name",
       "na",
-      "Should be at least 3 characters",
+      "Should be from 3 to 16 characters",
+      "name"
+    ],
+    [
+      "nickname validation: long name",
+      "11111111111111111",
+      "Should be from 3 to 16 characters",
       "name"
     ],
     [
@@ -77,6 +83,24 @@
       "test\u2800\u2800@\u2800\u2800test\u2800\u2800.\u2800test",
       "Invalid email",
       "email"
+    ],
+    [
+      "password validation: short password",
+      "11111",
+      "Should be from 6 to 16 characters",
+      "password"
+    ],
+    [
+      "password validation: long password",
+      "11111111111111111",
+      "Should be from 6 to 16 characters",
+      "password"
+    ],
+    [
+      "password validation: empty",
+      "",
+      "Password required",
+      "password"
     ]
   ],
   "validData": {

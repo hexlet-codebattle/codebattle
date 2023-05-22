@@ -21,7 +21,7 @@ defmodule CodebattleWeb.ErrorHelpers do
   @doc """
   Translates an error message using gettext.
   """
-  def translate_error({msg, opts}) do
+  def translate_error({msg, _opts}) do
     # Because error messages were defined within Ecto, we must
     # call the Gettext module passing our Gettext backend. We
     # also use the "errors" domain as translations are placed

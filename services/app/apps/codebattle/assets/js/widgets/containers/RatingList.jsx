@@ -3,6 +3,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Pagination from 'react-js-pagination';
 import moment from 'moment';
+import cn from 'classnames';
+
 import UserInfo from './UserInfo';
 import { usersListSelector } from '../selectors';
 import { getUsersRatingPage } from '../middlewares/Users';
@@ -64,9 +66,10 @@ const renderPagination = ({
 );
 
 const renderFilterPeriodButtons = (period, filterParams, setFilterParams, setPage) => {
-  const classes = filterParams.period === period
-    ? 'btn nav-link active'
-    : 'btn btn-link nav-link';
+  const classes = cn(
+    'mr-1 btn nav-link',
+    filterParams.period === period ? 'nav-link active' : 'btn-link',
+  );
 
   return (
     <li key={period} className="nav-item">

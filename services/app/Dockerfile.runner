@@ -1,4 +1,4 @@
-FROM elixir:1.14.3 AS compile-image
+FROM elixir:1.14.4 AS compile-image
 ENV MIX_ENV=prod
 
 WORKDIR /opt/app

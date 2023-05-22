@@ -88,7 +88,7 @@ export default function ChatInput() {
 
   return (
     <form
-      className="p-2 input-group input-group-sm"
+      className="p-2 input-group input-group-sm mb-0"
       onSubmit={handleSubmit}
     >
       <input

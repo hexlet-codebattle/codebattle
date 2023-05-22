@@ -1,7 +1,9 @@
 defmodule Codebattle.Tournament.Context do
   # alias Codebattle.TaskPack
 
+  alias Codebattle.Repo
   alias Codebattle.Tournament
+  alias Codebattle.User
 
   import Ecto.Query
   import Ecto.Changeset
@@ -28,8 +30,8 @@ defmodule Codebattle.Tournament.Context do
   @spec get_from_db(pos_integer()) :: Tournament.t() | nil
   defp get_from_db(id) do
     Tournament
-    |> Codebattle.Repo.get(id)
-    |> Codebattle.Repo.preload([:creator])
+    |> Repo.get(id)
+    |> Repo.preload([:creator])
     |> case do
       nil -> nil
       t -> add_module(t)
@@ -44,6 +46,7 @@ defmodule Codebattle.Tournament.Context do
     end
   end
 
+  @spec list_live_and_finished(User.t()) :: list(Tournament.t())
   def list_live_and_finished(user) do
     (get_live_tournaments() ++ get_db_tournaments(["finished"]))
     |> Enum.filter(fn tournament ->
@@ -51,6 +54,7 @@ defmodule Codebattle.Tournament.Context do
     end)
   end
 
+  @spec get_db_tournaments(nonempty_list(String.t())) :: list(Tournament.t())
   def get_db_tournaments(states) do
     from(
       t in Tournament,
@@ -59,9 +63,10 @@ defmodule Codebattle.Tournament.Context do
       limit: 7,
       preload: [:creator]
     )
-    |> Codebattle.Repo.all()
+    |> Repo.all()
   end
 
+  @spec get_live_tournaments() :: list(Tournament.t())
   def get_live_tournaments do
     Tournament.GlobalSupervisor
     |> Supervisor.which_children()
@@ -76,21 +81,24 @@ defmodule Codebattle.Tournament.Context do
     end)
   end
 
+  @spec get_live_tournaments_count() :: non_neg_integer()
   def get_live_tournaments_count, do: get_live_tournaments() |> Enum.count()
 
+  @spec validate(map(), Tournament.t()) :: Ecto.Changeset.t()
   def validate(params, tournament \\ %Tournament{}) do
     tournament
     |> Tournament.changeset(params)
     |> Map.put(:action, :validate)
   end
 
+  @spec create(map()) :: {:ok, Tournament.t()} | {:error, Ecto.Changeset.t()}
   def create(params) do
     changeset = %Tournament{} |> Tournament.changeset(prepare_tournament_params(params))
     alive_count = get_live_tournaments_count()
 
     if alive_count < @max_alive_tournaments do
       changeset
-      |> Codebattle.Repo.insert()
+      |> Repo.insert()
       |> case do
         {:ok, tournament} ->
           {:ok, _pid} =
@@ -128,7 +136,7 @@ defmodule Codebattle.Tournament.Context do
   def update(tournament, params) do
     tournament
     |> Tournament.changeset(prepare_tournament_params(params))
-    |> Codebattle.Repo.update()
+    |> Repo.update()
     |> case do
       {:ok, tournament} ->
         Tournament.Server.update_tournament(tournament)
@@ -139,9 +147,21 @@ defmodule Codebattle.Tournament.Context do
     end
   end
 
+  @spec upsert!(Tournament.t()) :: Tournament.t()
+  def upsert!(tournament) do
+    tournament
+    |> Map.put(:updated_at, TimeHelper.utc_now())
+    |> Repo.insert!(
+      conflict_target: :id,
+      on_conflict: {:replace_all_except, [:id, :inserted_at]}
+    )
+  end
+
+  @spec restart(Tournament.t()) :: :ok
   def restart(tournament) do
     Tournament.GlobalSupervisor.terminate_tournament(tournament.id)
     Tournament.GlobalSupervisor.start_tournament(tournament)
+    :ok
   end
 
   defp prepare_tournament_params(params) do

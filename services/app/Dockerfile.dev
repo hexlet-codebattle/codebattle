@@ -1,4 +1,4 @@
-FROM elixir:1.14.3
+FROM elixir:1.14.4
 ENV DOCKER_CHANNEL stable
 ENV DOCKER_VERSION 20.10.9
 
@@ -16,3 +16,6 @@ RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - \
 RUN curl -fsSL "https://download.docker.com/linux/static/${DOCKER_CHANNEL}/x86_64/docker-${DOCKER_VERSION}.tgz" \
   | tar -xzC /usr/local/bin --strip=1 docker/docker
 
+ARG GIT_HASH
+
+ENV APP_VERSION=$GIT_HASH
