@@ -31,6 +31,7 @@ config :codebattle, use_prod_workers: true
 config :codebattle, html_env: :prod
 config :codebattle, html_include_prod_scripts: true
 config :codebattle, html_debug_mode: false
+config :codebattle, app_version: System.get_env("APP_VERSION")
 
 executor =
   case System.get_env("CODEBATTLE_EXECUTOR") do
