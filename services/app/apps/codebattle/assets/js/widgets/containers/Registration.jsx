@@ -225,10 +225,8 @@ const SignUp = () => {
       email: Yup
         .string()
         .email('Invalid email')
-        // .matches(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+)/, 'Can\'t contain special symbols')
         .matches(/^[a-z0-9]{1}[^,;]*$/i, 'Should begin with a Latin letter or number')
         .matches(/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/i, 'Can\'t contain special symbols')
-
         .test(
           'exclude-braille-pattern-blank',
           'Invalid email',
