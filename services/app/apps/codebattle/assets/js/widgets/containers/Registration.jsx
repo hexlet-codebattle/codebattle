@@ -234,6 +234,8 @@ const SignUp = () => {
               : true
           ),
         )
+        .matches(/^[a-z0-9]{1}[^;]*[a-z0-9]{1}@[^;]*$/i, 'Should begin and end with a Latin letter or number')
+        .matches(/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/i, 'Can\'t contain special symbols')
         .required('Email required'),
       password: Yup
         .string()
