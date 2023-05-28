@@ -91,6 +91,7 @@ defmodule Codebattle.Tournament do
     |> validate_inclusion(:task_provider, @task_providers)
     |> validate_inclusion(:task_strategy, @task_strategies)
     |> validate_inclusion(:type, @types)
+    |> validate_number(:match_timeout_seconds, greater_than_or_equal_to: 1)
     |> validate_required([:name, :starts_at])
     |> add_creator(params["creator"] || params[:creator])
   end
