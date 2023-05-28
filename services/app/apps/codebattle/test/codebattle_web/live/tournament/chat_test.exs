@@ -14,7 +14,14 @@ defmodule CodebattleWeb.Live.Tournament.ChatTest do
 
     {:error, {:redirect, %{to: "/tournaments/" <> tournament_id}}} =
       render_submit(view, :create, %{
-        "tournament" => %{type: "individual", starts_at: "2021-09-01 08:30", name: "test"}
+        "tournament" => %{
+          type: "individual",
+          starts_at:
+            DateTime.utc_now()
+            |> Timex.shift(minutes: 30)
+            |> Timex.format!("%Y-%m-%d %H:%M", :strftime),
+          name: "test"
+        }
       })
 
     tournament = Codebattle.Tournament.Context.get!(tournament_id)

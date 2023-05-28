@@ -32,6 +32,7 @@ defmodule Codebattle.Tournament do
   @task_providers ~w(level task_pack tags)
 
   @default_match_timeout Application.compile_env(:codebattle, :tournament_match_timeout)
+  @default_timezone "Europe/Moscow"
 
   schema "tournaments" do
     field(:access_token, :string)
@@ -93,13 +94,26 @@ defmodule Codebattle.Tournament do
     |> validate_inclusion(:type, @types)
     |> validate_number(:match_timeout_seconds, greater_than_or_equal_to: 1)
     |> validate_required([:name, :starts_at])
+    |> validate_start_date()
     |> add_creator(params["creator"] || params[:creator])
   end
 
-  def add_creator(changeset, nil), do: changeset
+  defp add_creator(changeset, nil), do: changeset
 
-  def add_creator(changeset, creator) do
+  defp add_creator(changeset, creator) do
     change(changeset, %{creator: creator})
+  end
+
+  defp validate_start_date(changeset) do
+    starts_at = get_field(changeset, :starts_at) |> Timex.Timezone.convert(@default_timezone)
+
+    time_diff = Timex.diff(starts_at, Timex.now(@default_timezone), :seconds)
+
+    if time_diff < 0 do
+      add_error(changeset, :starts_at, "Tournaments can`t start in the past!")
+    else
+      changeset
+    end
   end
 
   def types, do: @types

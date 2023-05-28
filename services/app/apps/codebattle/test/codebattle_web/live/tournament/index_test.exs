@@ -14,7 +14,7 @@ defmodule CodebattleWeb.Live.Tournament.IndexTest do
     {:ok, view, _html} = live(conn, Routes.tournament_path(conn, :index))
 
     render_submit(view, :create, %{
-      "tournament" => %{type: "individual", starts_at: "2021-09-01 08:30", name: "test"}
+      "tournament" => %{type: "individual", starts_at: start_date_time(), name: "test"}
     })
 
     assert Codebattle.Repo.count(Tournament) == 1
@@ -31,7 +31,7 @@ defmodule CodebattleWeb.Live.Tournament.IndexTest do
     {:ok, view, _html} = live(conn, Routes.tournament_path(conn, :index))
 
     render_submit(view, :create, %{
-      "tournament" => %{type: "team", starts_at: "2021-09-01 08:30", name: "test"}
+      "tournament" => %{type: "team", starts_at: start_date_time(), name: "test"}
     })
 
     assert Codebattle.Repo.count(Tournament) == 1
@@ -48,7 +48,7 @@ defmodule CodebattleWeb.Live.Tournament.IndexTest do
     render_change(view, :validate, %{"tournament" => %{name: "a"}})
 
     render_submit(view, :create, %{
-      "tournament" => %{type: "asdf", starts_at: "2021-09-01 08:30", name: "test"}
+      "tournament" => %{type: "asdf", starts_at: start_date_time(), name: "test"}
     })
 
     assert Codebattle.Repo.count(Codebattle.Tournament) == 0
@@ -62,12 +62,16 @@ defmodule CodebattleWeb.Live.Tournament.IndexTest do
     {:ok, view, _html} = live(conn, Routes.tournament_path(conn, :index))
 
     render_submit(view, :create, %{
-      "tournament" => %{access_type: "token", starts_at: "2021-09-01 08:30", name: "test"}
+      "tournament" => %{access_type: "token", starts_at: start_date_time(), name: "test"}
     })
 
     created = Codebattle.Repo.one(Codebattle.Tournament)
     assert created.access_type == "token"
     assert is_binary(created.access_token)
     assert String.length(created.access_token) > 7
+  end
+
+  defp start_date_time() do
+    DateTime.utc_now() |> Timex.shift(minutes: 30) |> Timex.format!("%Y-%m-%d %H:%M", :strftime)
   end
 end
