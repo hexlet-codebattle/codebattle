@@ -3,8 +3,6 @@ defmodule CodebattleWeb.TournamentView do
 
   @default_timezone "Europe/Moscow"
 
-  # import Codebattle.Tournament.Helpers
-
   def csrf_token() do
     Plug.CSRFProtection.get_csrf_token()
   end

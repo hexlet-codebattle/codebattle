@@ -19,7 +19,10 @@ defmodule CodebattleWeb.Live.Tournament.TeamTest do
       render_submit(view, :create, %{
         "tournament" => %{
           type: "team",
-          starts_at: "2021-09-01 08:30",
+          starts_at:
+            DateTime.utc_now()
+            |> Timex.shift(minutes: 30)
+            |> Timex.format!("%Y-%m-%d %H:%M", :strftime),
           team_1_name: "Elixir",
           team_2_name: "",
           match_timeout_seconds: "140",
