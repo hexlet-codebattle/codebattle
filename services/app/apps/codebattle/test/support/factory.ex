@@ -167,7 +167,10 @@ defmodule CodebattleWeb.Factory do
       current_round: 0,
       players_limit: 16,
       players_count: 16,
-      starts_at: NaiveDateTime.utc_now(),
+      starts_at:
+        DateTime.utc_now()
+        |> Timex.shift(minutes: 30)
+        |> Timex.format!("%Y-%m-%d %H:%M", :strftime),
       creator_id: 1,
       players: %{},
       matches: %{}
@@ -181,7 +184,10 @@ defmodule CodebattleWeb.Factory do
       current_round: 0,
       players_limit: 16,
       players_count: 16,
-      starts_at: NaiveDateTime.utc_now(),
+      starts_at:
+        DateTime.utc_now()
+        |> Timex.shift(minutes: 30)
+        |> Timex.format!("%Y-%m-%d %H:%M", :strftime),
       creator_id: 1,
       players: %{},
       matches: %{},
@@ -195,7 +201,10 @@ defmodule CodebattleWeb.Factory do
       name: "Stairway tournament",
       current_round: 0,
       players_limit: 16,
-      starts_at: NaiveDateTime.utc_now(),
+      starts_at:
+        DateTime.utc_now()
+        |> Timex.shift(minutes: 30)
+        |> Timex.format!("%Y-%m-%d %H:%M", :strftime),
       creator_id: 1,
       players: %{},
       matches: %{},
@@ -211,7 +220,10 @@ defmodule CodebattleWeb.Factory do
       name: "name",
       current_round: 0,
       players_limit: 16,
-      starts_at: NaiveDateTime.utc_now(),
+      starts_at:
+        DateTime.utc_now()
+        |> Timex.shift(minutes: 30)
+        |> Timex.format!("%Y-%m-%d %H:%M", :strftime),
       creator_id: 1
     }
   end
