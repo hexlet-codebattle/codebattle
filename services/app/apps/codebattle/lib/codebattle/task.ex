@@ -142,6 +142,7 @@ defmodule Codebattle.Task do
     |> Repo.one()
   end
 
+  @spec list_all_tags() :: list(String.t())
   def list_all_tags do
     query = """
     SELECT distinct unnest(tags) from tasks
@@ -155,9 +156,18 @@ defmodule Codebattle.Task do
     |> List.flatten()
   end
 
+  @spec list_task_ids() :: list(integer())
+  def list_task_ids() do
+    from(task in Codebattle.Task)
+    |> visible()
+    |> select([x], x.id)
+    |> Repo.all()
+  end
+
   def get!(id), do: Repo.get!(__MODULE__, id)
   def get(id), do: Repo.get(__MODULE__, id)
 
+  @spec get_shuffled_task_ids(String.t()) :: list(integer())
   def get_shuffled_task_ids(level) do
     from(task in Codebattle.Task, where: task.level == ^level)
     |> visible()
@@ -166,6 +176,7 @@ defmodule Codebattle.Task do
     |> Enum.shuffle()
   end
 
+  @spec get_played_count(integer()) :: integer()
   def get_played_count(task_id) do
     from(game in Codebattle.Game, where: game.task_id == ^task_id)
     |> Repo.count()
