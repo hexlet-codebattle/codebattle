@@ -5,8 +5,7 @@ defmodule Codebattle.Task do
   import Ecto.Changeset
   import Ecto.Query
 
-  alias Codebattle.AtomizedMap
-  alias Codebattle.Repo
+  alias Codebattle.{Repo, AtomizedMap, User}
 
   @type t :: %__MODULE__{}
 
@@ -100,14 +99,15 @@ defmodule Codebattle.Task do
     )
   end
 
-  def public(query) do
+  defp public(query) do
     from(t in query, where: t.visibility == "public")
   end
 
-  def visible(query) do
+  defp visible(query) do
     from(t in query, where: t.visibility == "public" and t.state == "active")
   end
 
+  @spec list_visible(User.t()) :: list() | list(t())
   def list_visible(user) do
     __MODULE__
     |> filter_visibility(user)
@@ -115,7 +115,7 @@ defmodule Codebattle.Task do
     |> Repo.all()
   end
 
-  def filter_visibility(query, user) do
+  defp filter_visibility(query, user) do
     if Codebattle.User.admin?(user) do
       Function.identity(query)
     else
@@ -126,6 +126,7 @@ defmodule Codebattle.Task do
     end
   end
 
+  @spec get_task_by_id_for_user(User.t(), term()) :: t() | nil
   def get_task_by_id_for_user(user, task_id) do
     __MODULE__
     |> filter_visibility(user)
@@ -133,6 +134,7 @@ defmodule Codebattle.Task do
     |> Repo.one()
   end
 
+  @spec get_task_by_tags_for_user(User.t(), list(String.t())) :: t()
   def get_task_by_tags_for_user(user, tags) do
     __MODULE__
     |> filter_visibility(user)
@@ -182,10 +184,11 @@ defmodule Codebattle.Task do
     |> Repo.count()
   end
 
+  @spec can_see_task(t(), User.t()) :: boolean()
   def can_see_task?(%{visibility: "public"}, _user), do: true
-
   def can_see_task?(task, user), do: can_access_task?(task, user)
 
+  @spec can_access_task(Task.t(), User.t()) :: boolean()
   def can_access_task?(task, user) do
     task.creator_id == user.id || Codebattle.User.admin?(user)
   end
@@ -196,6 +199,7 @@ defmodule Codebattle.Task do
     |> Repo.update!()
   end
 
+  @spec get_task_by_level(String.t()) :: t()
   def get_task_by_level(level), do: tasks_provider().get_task(level)
 
   defp tasks_provider do
