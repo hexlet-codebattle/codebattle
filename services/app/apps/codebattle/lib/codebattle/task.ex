@@ -99,11 +99,11 @@ defmodule Codebattle.Task do
     )
   end
 
-  defp public(query) do
+  def public(query) do
     from(t in query, where: t.visibility == "public")
   end
 
-  defp visible(query) do
+  def visible(query) do
     from(t in query, where: t.visibility == "public" and t.state == "active")
   end
 
