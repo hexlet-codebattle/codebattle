@@ -184,11 +184,11 @@ defmodule Codebattle.Task do
     |> Repo.count()
   end
 
-  @spec can_see_task(t(), User.t()) :: boolean()
+  @spec can_see_task?(t(), User.t()) :: boolean()
   def can_see_task?(%{visibility: "public"}, _user), do: true
   def can_see_task?(task, user), do: can_access_task?(task, user)
 
-  @spec can_access_task(Task.t(), User.t()) :: boolean()
+  @spec can_access_task?(Task.t(), User.t()) :: boolean()
   def can_access_task?(task, user) do
     task.creator_id == user.id || Codebattle.User.admin?(user)
   end
