@@ -33,8 +33,8 @@ defmodule Codebattle.CodeCheck.Executor.Remote do
     body = Jason.encode!(params)
 
     case HTTPoison.post("#{executor_url()}/api/v1/execute", body, headers,
-           timeout: 16_000,
-           recv_timeout: 16_000
+           timeout: 30_000,
+           recv_timeout: 30_000
          ) do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
         AtomizedMap.load(body)

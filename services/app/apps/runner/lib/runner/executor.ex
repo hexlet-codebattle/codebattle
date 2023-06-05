@@ -6,7 +6,7 @@ defmodule Runner.Executor do
   alias Runner.CheckerGenerator
 
   @tmp_basedir "/tmp/codebattle-runner"
-  @docker_cmd_template "docker run --rm --init --memory 500m --cpus=1 --net none -l codebattle_game ~s ~s timeout -s 15 15s make --silent test"
+  @docker_cmd_template "docker run --rm --init --memory 500m --cpus=1 --net none -l codebattle_game ~s ~s timeout -s KILL 30s make --silent test"
   @fake_docker_run Application.compile_env(:runner, :fake_docker_run, false)
 
   @spec call(Runner.Task.t(), Runner.LanguageMeta.t(), String.t()) :: Runner.execution_result()
