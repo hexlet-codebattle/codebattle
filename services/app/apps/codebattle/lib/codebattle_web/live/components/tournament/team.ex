@@ -39,23 +39,9 @@ defmodule CodebattleWeb.Live.Tournament.TeamComponent do
             module={HeaderComponent}
             tournament={@tournament}
             current_user={@current_user}
-            time={@time}
+            next_round_time={@next_round_time}
+            user_timezone={@user_timezone}
           />
-          <%= if is_waiting_participants?(@tournament) do %>
-            <%= if @time.days == 0 and @time.hours == 0 and @time.minutes >= 0 and @time.seconds >= 0 do %>
-              <h3 class="ml-3">
-                The tournament will start in <%= @time.minutes %> min(s), <%= @time.seconds %> sec(s)
-              </h3>
-            <% else %>
-              <%= if (@time.days >= 0 and @time.hours > 0) do %>
-                <h3 class="ml-3">
-                  The tournament will start ~ in <%= @time.days * 24 + @time.hours %> hour(s)
-                </h3>
-              <% else %>
-                <h3 class="ml-3">The tournament will start soon</h3>
-              <% end %>
-            <% end %>
-          <% end %>
           <TeamTabComponent.render
             teams={get_teams(@tournament)}
             tournament={@tournament}

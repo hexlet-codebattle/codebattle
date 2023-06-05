@@ -116,34 +116,34 @@ defmodule Codebattle.Tournament.Helpers do
     tournament |> get_players |> Enum.filter(&(&1.team_id == team_id))
   end
 
-  def get_players_statistics(tournament = %{type: "team"}) do
-    all_win_matches =
-      tournament
-      |> get_matches()
-      |> Enum.filter(fn match ->
-        match_is_finished?(match) and !is_anyone_gave_up?(match)
-      end)
+  # def get_players_statistics(tournament = %{type: "team"}) do
+  #   all_win_matches =
+  #     tournament
+  #     |> get_matches()
+  #     |> Enum.filter(fn match ->
+  #       match_is_finished?(match) and !is_anyone_gave_up?(match)
+  #     end)
 
-    unless Enum.empty?(all_win_matches) do
-      tournament
-      |> get_players()
-      |> Enum.map(fn player ->
-        team = tournament |> get_teams() |> get_team_by_id(player.team_id)
-        win_matches = Enum.filter(all_win_matches, &is_winner?(&1, player))
+  #   unless Enum.empty?(all_win_matches) do
+  #     tournament
+  #     |> get_players()
+  #     |> Enum.map(fn player ->
+  #       team = tournament |> get_teams() |> get_team_by_id(player.team_id)
+  #       win_matches = Enum.filter(all_win_matches, &is_winner?(&1, player))
 
-        params = %{
-          team: team.title,
-          score: Enum.count(win_matches),
-          average_time: get_average_time(win_matches)
-        }
+  #       params = %{
+  #         team: team.title,
+  #         score: Enum.count(win_matches),
+  #         average_time: get_average_time(win_matches)
+  #       }
 
-        player
-        |> Map.from_struct()
-        |> Map.merge(params)
-      end)
-      |> Enum.sort_by(&{-&1.score, &1.average_time})
-    end
-  end
+  #       player
+  #       |> Map.from_struct()
+  #       |> Map.merge(params)
+  #     end)
+  #     |> Enum.sort_by(&{-&1.score, &1.average_time})
+  #   end
+  # end
 
   def get_active_match(tournament, current_user) do
     match =
@@ -159,36 +159,20 @@ defmodule Codebattle.Tournament.Helpers do
     end
   end
 
-  def get_tournament_statistics(_tournament = %{type: "team"}) do
+  def get_stats(tournament) do
+    Enum.reduce(tournament.matches, %{}, fn match, acc ->
+      Map.put(acc, to_id(match.id), match)
+    end)
+
     %{}
-    # all_win_matches =
-    #   tournament
-    #   |> get_matches()
-    #   |> Enum.filter(fn match ->
-    #     match_is_finished?(match) and !is_anyone_gave_up?(match)
-    #   end)
-
-    # best_lang =
-    #   all_win_matches
-    #   |> Enum.map(fn match ->
-    #     pick_winner(match).lang
-    #   end)
-    #   |> Enum.chunk_by(fn x -> x end)
-    #   |> Enum.max_by(fn x -> Enum.count(x) end, fn -> [] end)
-    #   |> Enum.at(0, "None")
-
-    # best_time =
-    #   all_win_matches
-    #   |> Enum.map(fn match -> match.duration end)
-    #   |> Enum.min(fn -> [] end)
-
-    # %{
-    #   best_lang: best_lang,
-    #   best_time: best_time
-    # }
   end
 
-  def get_tournament_statistics(_), do: %{}
+  def get_winner_ids(tournament = %{state: "finished"}) do
+    tournament
+    []
+  end
+
+  def get_winner_ids(_tournament), do: []
 
   # 1. picks human winner for game_over
   # 2. picks random human if timeout
@@ -204,9 +188,6 @@ defmodule Codebattle.Tournament.Helpers do
     end
   end
 
-  def filter_statistics(statistics, "show"), do: statistics
-  def filter_statistics(statistics, "hide"), do: [List.first(statistics)]
-
   defp calc_match_result(%{state: "game_over", player_ids: [id, _], winner_id: id}), do: [1, 0]
   defp calc_match_result(%{state: "game_over", player_ids: [_, id], winner_id: id}), do: [0, 1]
   defp calc_match_result(_), do: [0, 0]
@@ -218,10 +199,6 @@ defmodule Codebattle.Tournament.Helpers do
   defp match_is_finished?(%{state: "canceled"}), do: true
   defp match_is_finished?(%{state: "timeout"}), do: true
   defp match_is_finished?(_match), do: false
-
-  defp is_anyone_gave_up?(%{players: [%{result: "gave_up"}, _]}), do: true
-  defp is_anyone_gave_up?(%{players: [_, %{result: "gave_up"}]}), do: true
-  defp is_anyone_gave_up?(_), do: false
 
   defp is_winner?(%{players: players}, player) do
     Enum.any?(players, fn x -> x.id == player.id and x.result == "won" end)

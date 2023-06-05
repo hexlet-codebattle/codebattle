@@ -4,9 +4,9 @@ defmodule CodebattleWeb.Live.Tournament.IndividualComponent do
   import Codebattle.Tournament.Helpers
 
   alias CodebattleWeb.Live.Tournament.BracketsComponent
+  alias CodebattleWeb.Live.Tournament.ChatComponent
   alias CodebattleWeb.Live.Tournament.HeaderComponent
   alias CodebattleWeb.Live.Tournament.PlayersComponent
-  alias CodebattleWeb.Live.Tournament.ChatComponent
 
   @impl true
   def mount(socket) do
@@ -39,26 +39,13 @@ defmodule CodebattleWeb.Live.Tournament.IndividualComponent do
             module={HeaderComponent}
             tournament={@tournament}
             current_user={@current_user}
-            time={@time}
+            next_round_time={@next_round_time}
+            user_timezone={@user_timezone}
           />
           <%= if is_active?(@tournament) || is_finished?(@tournament) do %>
             <BracketsComponent.render tournament={@tournament} current_user_id={@current_user.id} />
           <% end %>
           <%= if is_waiting_participants?(@tournament) do %>
-            <%= if @time.days == 0 and @time.hours == 0 and @time.minutes >= 0 and @time.seconds >= 0 do %>
-              <h3 class="ml-3">
-                The tournament will start in <%= @time.minutes %> min(s), <%= @time.seconds %> sec(s)
-              </h3>
-            <% else %>
-              <%= if (@time.days >= 0 and @time.hours > 0) do %>
-                <h3 class="ml-3">
-                  The tournament will start ~ in <%= @time.days * 24 + @time.hours %> hour(s)
-                </h3>
-              <% else %>
-                <h3 class="ml-3">The tournament will start soon</h3>
-              <% end %>
-            <% end %>
-
             <%= if is_player?(@tournament, @current_user.id) do %>
               <button class="btn btn-outline-danger" phx-click="leave">
                 Leave

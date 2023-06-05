@@ -19,6 +19,7 @@ defmodule Codebattle.Tournament.Player do
     field(:rating, :integer)
     field(:team_id, :integer)
     field(:score, :integer, default: 0)
+    field(:wins_count, :integer, default: 0)
   end
 
   @spec new!(params :: map()) :: t()

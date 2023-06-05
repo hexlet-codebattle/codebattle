@@ -11,9 +11,9 @@ defmodule Codebattle.Tournament do
            only: [
              :creator,
              :creator_id,
-             :level,
              :id,
              :is_live,
+             :level,
              :matches,
              :meta,
              :name,
@@ -21,45 +21,55 @@ defmodule Codebattle.Tournament do
              :players_limit,
              :starts_at,
              :state,
+             :stats,
              :type
            ]}
 
   @access_types ~w(public token)
+  @break_states ~w(break off)
   @levels ~w(elementary easy medium hard)
   @states ~w(waiting_participants canceled active finished)
-  @types ~w(individual team stairway)
-  @task_strategies ~w(game round)
   @task_providers ~w(level task_pack tags)
+  @task_strategies ~w(game round)
+  @types ~w(individual team stairway)
 
   @default_match_timeout Application.compile_env(:codebattle, :tournament_match_timeout)
   @default_timezone "Europe/Moscow"
 
   schema "tournaments" do
+    belongs_to(:creator, Codebattle.User)
+
     field(:access_token, :string)
     field(:access_type, :string, default: "public")
+    field(:break_duration_seconds, :integer, default: 0)
+    field(:break_state, :string, default: "off")
     field(:current_round, :integer, default: 0)
     field(:default_language, :string, default: "js")
-    field(:is_live, :boolean, virtual: true, default: false)
+    field(:finished_at, :utc_datetime)
+    field(:labels, {:array, :string})
+    field(:last_round_ended_at, :naive_datetime)
     field(:last_round_started_at, :naive_datetime)
     field(:level, :string, default: "elementary")
     field(:match_timeout_seconds, :integer, default: @default_match_timeout)
     field(:matches, AtomizedMap, default: %{})
-    field(:players, AtomizedMap, default: %{})
     field(:meta, AtomizedMap, default: %{})
-    field(:module, :any, virtual: true, default: Individual)
     field(:name, :string)
+    field(:players, AtomizedMap, default: %{})
     field(:players_limit, :integer)
-    field(:players_count, :integer, virtual: true, default: 0)
-    field(:task_pack_name, :string, virtual: true)
     field(:starts_at, :utc_datetime)
     field(:state, :string, default: "waiting_participants")
-    field(:task_strategy, :string, default: "game")
+    field(:stats, AtomizedMap, default: %{})
     field(:task_provider, :string, default: "level")
+    field(:task_strategy, :string, default: "game")
     field(:type, :string, default: "individual")
-    field(:played_pair_ids, EctoMapSet, of: {:array, :integer}, virtual: true, default: [])
-    field(:round_tasks, :map, virtual: true, default: %{})
+    field(:winner_ids, {:array, :integer})
 
-    belongs_to(:creator, Codebattle.User)
+    field(:is_live, :boolean, virtual: true, default: false)
+    field(:module, :any, virtual: true, default: Individual)
+    field(:played_pair_ids, EctoMapSet, of: {:array, :integer}, virtual: true, default: [])
+    field(:players_count, :integer, virtual: true, default: 0)
+    field(:round_tasks, :map, virtual: true, default: %{})
+    field(:task_pack_name, :string, virtual: true)
 
     timestamps()
   end
@@ -69,8 +79,11 @@ defmodule Codebattle.Tournament do
     |> cast(params, [
       :access_token,
       :access_type,
+      :break_duration_seconds,
+      :break_state,
       :current_round,
       :default_language,
+      :last_round_ended_at,
       :last_round_started_at,
       :level,
       :match_timeout_seconds,
@@ -87,6 +100,7 @@ defmodule Codebattle.Tournament do
       :type
     ])
     |> validate_inclusion(:access_type, @access_types)
+    |> validate_inclusion(:break_state, @break_states)
     |> validate_inclusion(:level, @levels)
     |> validate_inclusion(:state, @states)
     |> validate_inclusion(:task_provider, @task_providers)

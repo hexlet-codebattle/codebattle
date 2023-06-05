@@ -10,15 +10,13 @@ defmodule CodebattleWeb.TournamentChannel do
 
     with tournament when not is_nil(tournament) <- Tournament.Context.get(tournament_id),
          true <- Tournament.Helpers.can_access?(tournament, current_user, payload) do
-      statistics = Helpers.get_tournament_statistics(tournament)
       active_match = Helpers.get_active_match(tournament, current_user)
       Codebattle.PubSub.subscribe(topic_name(tournament))
 
       {:ok,
        %{
          active_match: active_match,
-         tournament: tournament,
-         statistics: statistics
+         tournament: tournament
        }, assign(socket, :tournament_id, tournament_id)}
     else
       _ ->

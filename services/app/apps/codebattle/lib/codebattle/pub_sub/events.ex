@@ -137,6 +137,7 @@ defmodule Codebattle.PubSub.Events do
               game_id: game.id,
               ref: game.ref,
               game_state: game.state,
+              game_level: game.level,
               player_results: Game.Helpers.get_player_results(game)
             }
           }

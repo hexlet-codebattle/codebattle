@@ -14,26 +14,25 @@ defmodule Codebattle.Game.Player do
 
   @primary_key false
   @derive {Jason.Encoder,
-   only: [
-     :achievements,
-     :check_result,
-     :creator,
-     :avatar_url,
-     # :github_id,
-     # :discord_avatar,
-     # :discord_id,
-     :editor_lang,
-     :editor_text,
-     :id,
-     :is_bot,
-     :is_guest,
-     :lang,
-     :name,
-     :rank,
-     :rating,
-     :rating_diff,
-     :result
-   ]}
+           only: [
+             :achievements,
+             :avatar_url,
+             :check_result,
+             :creator,
+             :duration_sec,
+             :editor_lang,
+             :editor_text,
+             :id,
+             :is_bot,
+             :is_guest,
+             :lang,
+             :name,
+             :rank,
+             :rating,
+             :rating_diff,
+             :result,
+             :result_percent
+           ]}
 
   @results ~w(undefined won lost gave_up timeout)
 
@@ -48,29 +47,30 @@ defmodule Codebattle.Game.Player do
     field(:editor_lang, :string, default: "js")
     field(:lang, :string, default: "js")
     field(:result, :string, default: "undefined")
+    field(:achievements, {:array, :string}, default: [])
+    field(:avatar_url, :string)
     # CodeCheck.Result.t() | CodeCheck.Result.V2.t()
     field(:check_result, AtomizedMap, default: %CodeCheck.Result{})
     field(:creator, :boolean, default: false)
+    field(:duration_sec, :integer)
+    field(:editor_lang, :string, default: "js")
+    field(:editor_text, :string, default: "module.exports = () => {\n\n};")
+    field(:id, :integer)
     field(:is_bot, :boolean, default: false)
     field(:is_guest, :boolean, default: false)
+    field(:lang, :string, default: "js")
     field(:name, :string, default: "Ada Lovelace")
+    field(:rank, :integer, default: -1)
     field(:rating, :integer, default: 0)
     field(:rating_diff, :integer, default: 0)
-    field(:rank, :integer, default: -1)
-    field(:achievements, {:array, :string}, default: [])
-    # field(:github_id, :integer)
-    # field(:discord_id, :integer)
-    # field(:discord_avatar, :string)
-    field(:avatar_url, :string)
+    field(:result, :string, default: "undefined")
+    field(:result_percent, :float, default: 0.0)
   end
 
   def changeset(player = %Player{}, attrs) do
     player
     |> cast(attrs, [
       :id,
-      # :github_id,
-      # :discord_id,
-      # :discord_avatar,
       :avatar_url,
       :name,
       :is_bot,
@@ -105,9 +105,6 @@ defmodule Codebattle.Game.Player do
             rank: user.rank,
             name: user.name,
             achievements: user.achievements,
-            # github_id: user.github_id,
-            # discord_id: user.discord_id,
-            # discord_avatar: user.discord_avatar,
             avatar_url: user.avatar_url,
             rating: user_game.rating,
             rating_diff: user_game.rating_diff,
@@ -182,9 +179,6 @@ defmodule Codebattle.Game.Player do
             lang: user.lang || "js",
             achievements: user.achievements,
             avatar_url: user.avatar_url
-            # github_id: user.github_id,
-            # discord_id: user.discord_id,
-            # discord_avatar: user.discord_avatar
           }
       end
 

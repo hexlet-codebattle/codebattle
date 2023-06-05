@@ -41,12 +41,8 @@ defmodule Codebattle.Game.Fsm do
   def transition(:check_success, game = %{state: "playing"}, params) do
     game =
       game
-      |> update_player(params.id, %{
-        result: "won",
-        editor_text: params.editor_text,
-        editor_lang: params.editor_lang,
-        check_result: params.check_result
-      })
+      |> update_check_result(params)
+      |> update_player(params.id, %{result: "won"})
       |> update_other_players(params.id, %{result: "lost"})
       |> Game.RatingCalculator.call()
       |> Map.put(:state, "game_over")
@@ -54,14 +50,25 @@ defmodule Codebattle.Game.Fsm do
     {:ok, game}
   end
 
-  def transition(:check_success, game = %{state: s}, params) when s in ["game_over", "timeout"] do
+  def transition(:check_success, game = %{state: "game_over"}, params) do
     {:ok, update_check_result(game, params)}
   end
 
-  def transition(:check_failure, game = %{state: s}, params)
-      when s in ["playing", "game_over", "timeout"] do
+  def transition(:check_success, game = %{state: "timeout"}, _params) do
+    {:ok, game}
+  end
+
+  def transition(:check_failure, game = %{state: s}, params) when s in ["playing", "game_over"] do
     {:ok, update_check_result(game, params)}
   end
+
+  def transition(:check_failure, game = %{state: "timeout"}, _params) do
+    {:ok, game}
+  end
+
+  def transition(:give_up, game = %{state: "playing", tournament_id: t_id}, _params)
+      when not is_nil(t_id),
+      do: {:ok, game}
 
   def transition(:give_up, game = %{state: "playing"}, params) do
     game =
@@ -115,13 +122,24 @@ defmodule Codebattle.Game.Fsm do
   defp handle_rematch_offer(_game, _params), do: %{}
 
   defp update_check_result(game, params) do
-    update_player(
-      game,
+    game
+    |> update_player(
       params.id,
       %{
         check_result: params.check_result,
         editor_text: params.editor_text,
         editor_lang: params.editor_lang
+      }
+    )
+    |> maybe_set_best_results(
+      params.id,
+      %{
+        duration_sec: NaiveDateTime.diff(TimeHelper.utc_now(), game.starts_at),
+        result_percent:
+          Float.round(
+            100 * params.check_result.success_count / params.check_result.asserts_count,
+            2
+          )
       }
     )
   end

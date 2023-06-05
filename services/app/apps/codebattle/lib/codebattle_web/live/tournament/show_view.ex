@@ -13,13 +13,8 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
   @update_frequency 1_000
 
   @impl true
-  def mount(_params, session, socket) do
-    {:ok, timer_ref} =
-      if connected?(socket) do
-        :timer.send_interval(@update_frequency, self(), :update_time)
-      else
-        {:ok, nil}
-      end
+  def mount(params, session, socket) do
+    user_timezone = get_in(socket.private, [:connect_params, "timezone"]) || "UTC"
 
     tournament = session["tournament"]
 
@@ -28,13 +23,13 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
 
     {:ok,
      assign(socket,
-       timer_ref: timer_ref,
        current_user: session["current_user"],
-       tournament: tournament,
        messages: get_chat_messages(tournament.id),
-       time: get_next_round_time(tournament),
+       next_round_time: get_next_round_time(tournament),
        rating_toggle: "hide",
-       team_tournament_tab: "scores"
+       team_tournament_tab: "scores",
+       tournament: tournament,
+       user_timezone: user_timezone
      )}
   end
 
@@ -59,7 +54,8 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
             tournament={@tournament}
             players={@tournament.players}
             current_user={@current_user}
-            time={@time}
+            next_round_time={@next_round_time}
+            user_timezone={@user_timezone}
           />
         <% end %>
         <%= if @tournament.type == "team" do %>
@@ -70,7 +66,8 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
             tournament={@tournament}
             players={@tournament.players}
             current_user={@current_user}
-            time={@time}
+            next_round_time={@next_round_time}
+            user_timezone={@user_timezone}
           />
         <% end %>
         <%= if @tournament.type == "stairway" do %>
@@ -81,7 +78,8 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
             tournament={@tournament}
             players={@tournament.players}
             current_user={@current_user}
-            time={@time}
+            next_round_time={@next_round_time}
+            user_timezone={@user_timezone}
           />
         <% end %>
       </div>
@@ -94,20 +92,25 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
   # end
 
   @impl true
-  def handle_info(:update_time, socket = %{assigns: %{timer_fer: nil}}) do
+  def handle_info(:update_time, socket = %{assigns: %{next_round_timer_ref: nil}}) do
     {:noreply, socket}
   end
 
   def handle_info(:update_time, socket) do
     tournament = socket.assigns.tournament
-    time = get_next_round_time(tournament)
+    next_round_time = get_next_round_time(tournament)
 
-    if tournament.state in ["waiting_participants"] and time.seconds >= 0 do
-      {:noreply, assign(socket, time: time)}
+    if next_round_time do
+      {:noreply, assign(socket, next_round_time: next_round_time)}
     else
-      :timer.cancel(socket.assigns.timer_ref)
-      {:noreply, socket}
+      :timer.cancel(socket.assigns.next_round_timer_ref)
+      {:noreply, assign(socket, next_round_time: nil, next_round_timer_ref: nil)}
     end
+  end
+
+  def handle_info(:set_time_interval, socket) do
+    {:ok, next_round_timer_ref} = :timer.send_interval(@update_frequency, self(), :update_time)
+    {:noreply, assign(socket, next_round_timer_ref: next_round_timer_ref)}
   end
 
   def handle_info(%{topic: _topic, event: "tournament:updated", payload: payload}, socket) do
@@ -283,35 +286,16 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
   end
 
   defp get_next_round_time(tournament) do
-    time =
-      case tournament.state do
-        "active" ->
-          NaiveDateTime.add(tournament.last_round_started_at, tournament.match_timeout_seconds)
+    case tournament do
+      %{state: "active", break_state: "break"} ->
+        NaiveDateTime.add(tournament.last_round_ended_at, tournament.break_duration_seconds)
 
-        _ ->
-          tournament.starts_at
-      end
+      %{state: "waiting_participants"} ->
+        tournament.starts_at
 
-    minutes_and_seconds(time)
-  end
-
-  defp minutes_and_seconds(time) do
-    days = round(Timex.diff(time, Timex.now(), :days))
-    hours = round(Timex.diff(time, Timex.now(), :hours) - days * 24)
-    minutes = round(Timex.diff(time, Timex.now(), :minutes) - days * 24 * 60 - hours * 60)
-
-    seconds =
-      round(
-        Timex.diff(time, Timex.now(), :seconds) - days * 24 * 60 * 60 - hours * 60 * 60 -
-          minutes * 60
-      )
-
-    %{
-      days: days,
-      hours: hours,
-      minutes: minutes,
-      seconds: seconds
-    }
+      _ ->
+        nil
+    end
   end
 
   defp topic_name(tournament), do: "tournament:#{tournament.id}"
