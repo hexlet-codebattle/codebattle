@@ -1,4 +1,4 @@
 test:
-	bb check-solition
+	bb check-solution
 
 .PHONY: test
