@@ -378,11 +378,11 @@ defmodule Runner.Languages do
     "clojure" => %LanguageMeta{
       name: "clojure",
       slug: "clojure",
-      version: "1.11.2",
+      version: "1.11.2.1",
       check_dir: "check",
       solution_file_name: "solution.clj",
       checker_file_name: "checker.clj",
-      docker_image: "codebattle/clojure:1.11.2",
+      docker_image: "codebattle/clojure:1.11.2.1",
       solution_template: "(defn solution [<%= arguments %>] <%= return_statement %>)",
       arguments_template: %{argument: "<%= name %>", delimiter: " "},
       return_template: "<%= default_value %>",
