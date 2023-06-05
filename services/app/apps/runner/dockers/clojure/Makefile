@@ -1,4 +1,4 @@
 test:
-	clojure  -M:run-solution
+	bb check-solition
 
 .PHONY: test

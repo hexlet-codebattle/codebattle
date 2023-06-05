@@ -2,7 +2,7 @@
   (load-file "check/solution.clj")
   (catch Exception ex
     (do
-     (println (json/write-str {:status "error" :result (.getMessage ex)}))
+     (println (json/generate-string {:status "error" :result (.getMessage ex)}))
      (System/exit 0)
      )))
 
@@ -30,11 +30,11 @@
     output (get info :output)]
 
     (try (assert (= expected result))
-      (println (json/write-str {:status "success" :result result :expected expected :output output :arguments args :execution_time execution-time}))
+      (println (json/generate-string {:status "success" :result result :expected expected :output output :arguments args :execution_time execution-time}))
       true
     (catch java.lang.AssertionError e
       (do
-        (println (json/write-str {:status "failure" :result result :expected expected :output output :arguments args :execution_time execution-time}))
+        (println (json/generate-string {:status "failure" :result result :expected expected :output output :arguments args :execution_time execution-time}))
         false
         )))))
 
@@ -64,9 +64,9 @@
                   (assert-result 6 solution [5, 1])
                 ])]
         (if success
-          (println (json/write-str {:status "ok" :result "__seed:124949491112958542__"}))))
+          (println (json/generate-string {:status "ok" :result "__seed:124949491112958542__"}))))
     (catch Exception ex
       (do
-        (println (json/write-str {:status "error" :result (.getMessage ex)}))
+        (println (json/generate-string {:status "error" :result (.getMessage ex)}))
         (System/exit 0)
       ))))
