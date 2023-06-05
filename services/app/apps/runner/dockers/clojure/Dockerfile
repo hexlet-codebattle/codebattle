@@ -1,12 +1,10 @@
-FROM clojure:openjdk-19-tools-deps-1.11.1.1149-alpine
+FROM babashka/babashka:1.3.181-SNAPSHOT
 
-RUN apk add --update make rlwrap
+RUN apt update && apt install make
 
 WORKDIR /usr/src/app
 
-ADD deps.edn .
-RUN clojure -e "(prn :install)"
-
 ADD check check
 ADD runner.clj .
+ADD bb.edn .
 ADD Makefile .

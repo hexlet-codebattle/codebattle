@@ -1,9 +1,8 @@
 (ns runner
   (:require
     [clojure.test :refer :all]
-    [clojure.data.json :as json]))
+    [cheshire.core :as json]))
 
 (load-file "check/checker.clj")
 
-(defn -main []
-  (generate-tests solution))
+(generate-tests solution)

@@ -1,0 +1,1 @@
+{:tasks {check-solution (load-file "runner.clj")}}
