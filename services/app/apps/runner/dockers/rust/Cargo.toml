@@ -1,0 +1,16 @@
+[package]
+name = "codebattle_checker"
+version = "0.1.0"
+authors = ["Evgeny Malafeev", "Vitaly Milyakov"]
+categories = ["fun"]
+description = "A codebattle runner"
+edition = "2021"
+keywords = ["codebattle"]
+rust-version = "1.70"
+
+[dependencies]
+serde_json = "1.0"
+
+[[bin]]
+name="checker"
+path = "check/checker.rs"
