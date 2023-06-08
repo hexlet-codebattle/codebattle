@@ -491,6 +491,10 @@ a {
   text-overflow: ellipsis;
 }
 
+.text-truncate {
+  max-width: 180px;
+}
+
 .bind-social {
   padding: 0;
   border: 0;
