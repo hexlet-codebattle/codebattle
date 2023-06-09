@@ -243,10 +243,10 @@ const SignUp = () => {
         .min(6, 'Should be from 6 to 16 characters')
         .max(16, 'Should be from 6 to 16 characters')
         .required('Password required'),
-      passwordConfirmation: Yup.string().oneOf(
-        [Yup.ref('password'), null],
-        'Passwords must match',
-      ),
+      passwordConfirmation: Yup
+        .string()
+        .required('Confirmation required')
+        .oneOf([Yup.ref('password')], 'Passwords must match'),
     }),
     onSubmit: formData => {
       axios
