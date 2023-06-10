@@ -20,14 +20,12 @@ defmodule Runner.Executor do
         nil
       end
 
-    asserts_text = Jason.encode!(%{
+    asserts_text =
+      Jason.encode!(%{
         arguments: Enum.map(task.asserts, & &1.arguments),
         input_signature: Enum.map(task.input_signature, & &1.type),
         output_signature: task.output_signature.type
       })
-
-      IO.puts asserts_text
-
 
     tmp_dir_path = prepare_tmp_dir!(lang_meta, solution_text, checker_text, asserts_text)
 
