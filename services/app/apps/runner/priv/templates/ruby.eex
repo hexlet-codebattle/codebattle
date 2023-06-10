@@ -1,4 +1,0 @@
-require 'json'
-
-require_relative '../runner'
-Runner.call(JSON.parse(<%= Jason.encode!(arguments) %>))

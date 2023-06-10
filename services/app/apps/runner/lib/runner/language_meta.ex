@@ -4,6 +4,7 @@ defmodule Runner.LanguageMeta do
 
   typedstruct do
     field(:name, String.t())
+    field(:generate_checker?, boolean(), default: true)
     field(:slug, String.t())
     field(:checker_version, pos_integer(), default: 1)
     field(:version, String.t())

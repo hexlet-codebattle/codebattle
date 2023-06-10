@@ -12,9 +12,24 @@ defmodule Runner.Executor do
   @spec call(Runner.Task.t(), Runner.LanguageMeta.t(), String.t()) :: Runner.execution_result()
   def call(task, lang_meta, solution_text) do
     seed = get_seed()
-    checker_text = CheckerGenerator.call(task, lang_meta, seed)
 
-    tmp_dir_path = prepare_tmp_dir!(lang_meta, solution_text, checker_text)
+    checker_text =
+      if lang_meta.generate_checker? do
+        CheckerGenerator.call(task, lang_meta, seed)
+      else
+        nil
+      end
+
+    asserts_text = Jason.encode!(%{
+        arguments: Enum.map(task.asserts, & &1.arguments),
+        input_signature: Enum.map(task.input_signature, & &1.type),
+        output_signature: task.output_signature.type
+      })
+
+      IO.puts asserts_text
+
+
+    tmp_dir_path = prepare_tmp_dir!(lang_meta, solution_text, checker_text, asserts_text)
 
     {output, exit_code} =
       lang_meta
@@ -26,7 +41,7 @@ defmodule Runner.Executor do
     %{container_output: output, exit_code: exit_code, seed: seed}
   end
 
-  defp prepare_tmp_dir!(lang_meta, solution_text, checker_text) do
+  defp prepare_tmp_dir!(lang_meta, solution_text, checker_text, asserts_text) do
     File.mkdir_p!(@tmp_basedir)
     tmp_dir_path = Temp.mkdir!(%{prefix: lang_meta.slug, basedir: @tmp_basedir})
 
@@ -37,7 +52,12 @@ defmodule Runner.Executor do
     Logger.debug("tmp_dir_path: #{inspect(tmp_dir_path)}")
 
     File.write!(Path.join(tmp_dir_path, lang_meta.solution_file_name), solution_text)
-    File.write!(Path.join(tmp_dir_path, lang_meta.checker_file_name), checker_text)
+
+    if checker_text do
+      File.write!(Path.join(tmp_dir_path, lang_meta.checker_file_name), checker_text)
+    end
+
+    File.write!(Path.join(tmp_dir_path, "asserts.json"), asserts_text)
 
     tmp_dir_path
   end

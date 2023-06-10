@@ -1,4 +1,4 @@
-def solution(numerator, denominator)
+def solution(numerator, denominator, _string, _float, _bool, _hash, _list_str, _list_list_str)
   res = numerator / denominator
 
   puts 'output-test'

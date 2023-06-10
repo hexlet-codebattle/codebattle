@@ -1,4 +1,4 @@
 test:
-	ruby ./check/checker.rb
+	ruby ./checker.rb
 
 .PHONY: test
