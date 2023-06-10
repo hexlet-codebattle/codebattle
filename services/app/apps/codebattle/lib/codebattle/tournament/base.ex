@@ -204,7 +204,7 @@ defmodule Codebattle.Tournament.Base do
       end
 
       def update_struct(tournament, params) do
-        tournament |> Tournament.changeset(params) |> Ecto.Changeset.apply_action!(:update)
+        tournament |> Ecto.Changeset.change(params) |> Ecto.Changeset.apply_action!(:update)
       end
 
       def db_save!(tournament), do: Tournament.Context.upsert!(tournament)
