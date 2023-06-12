@@ -120,6 +120,6 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
   def render_datetime(utc_datetime) do
     utc_datetime
     |> Timex.Timezone.convert(@default_timezone)
-    |> Timex.format!("%d.%m.%Y %H:%M", :strftime)
+    |> Timex.format!("%Y-%m-%d %H:%M", :strftime)
   end
 end
