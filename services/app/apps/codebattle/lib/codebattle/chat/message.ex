@@ -4,6 +4,10 @@ defmodule Codebattle.Chat.Message do
 
   @type type() :: :text | :info
   @type timestamp() :: pos_integer()
+  @type meta_type() :: %{
+          type: String.t(),
+          userId: integer() | nil
+        }
 
   typedstruct do
     field(:id, pos_integer())
@@ -12,5 +16,6 @@ defmodule Codebattle.Chat.Message do
     field(:name, String.t())
     field(:text, String.t())
     field(:time, timestamp())
+    field(:meta, meta_type())
   end
 end

@@ -12,7 +12,6 @@ import {
 
 import PlaybookStatusCodes from '../config/playbookStatusCodes';
 import GameStateCodes from '../config/gameStateCodes';
-
 import notification from '../utils/notification';
 
 const defaultLanguages = Gon.getAsset('langs');

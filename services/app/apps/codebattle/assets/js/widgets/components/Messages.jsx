@@ -9,10 +9,11 @@ import { actions } from '../slices';
 import Message from './Message';
 import { getLobbyUrl } from '../utils/urlBuilders';
 
-const Messages = ({ messages = [] }) => {
+const Messages = ({ messages }) => {
   const currentUserIsAdmin = useSelector(state => currentUserIsAdminSelector(state));
   const listRef = useRef();
   const dispatch = useDispatch();
+
   const handleShowModal = (id, name) => () => {
     const queryParamsString = qs.stringify({
       opponent_id: id,
@@ -55,19 +56,25 @@ const Messages = ({ messages = [] }) => {
         ref={listRef}
         className="overflow-auto pt-0 pl-3 pr-2 position-relative cb-messages-list flex-grow-1"
       >
-        {messages.map(({
- id, name, text, type, time, userId,
-}) => (
-  <Message
-    userId={userId}
-    name={name}
-    text={text}
-    key={id || `${time}-${name}`}
-    type={type}
-    time={time}
-    handleShowModal={handleShowModal(userId, name)}
-  />
-        ))}
+        {messages.map(message => {
+  const {
+    id, name, text, type, time, userId, meta,
+   } = message;
+
+  return (
+    <Message
+      userId={userId}
+      name={name}
+      text={text}
+      key={id || `${time}-${name}`}
+      type={type}
+      time={time}
+      handleShowModal={handleShowModal(userId, name)}
+      meta={meta}
+      messageId={id}
+    />
+  );
+})}
       </ul>
     </>
   );

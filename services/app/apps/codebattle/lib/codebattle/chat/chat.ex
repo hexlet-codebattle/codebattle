@@ -50,7 +50,8 @@ defmodule Codebattle.Chat do
       user_id: Map.get(params, :user_id),
       name: Map.get(params, :name),
       text: params.text,
-      time: now()
+      time: now(),
+      meta: params.meta
     }
 
     case Chat.Server.add_message(chat_type, message) do

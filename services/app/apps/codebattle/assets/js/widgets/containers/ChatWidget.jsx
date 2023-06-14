@@ -1,21 +1,40 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import _ from 'lodash';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import * as selectors from '../selectors';
 import Messages from '../components/Messages';
 import UserInfo from './UserInfo';
 import ChatInput from '../components/ChatInput';
+import ChatHeader from '../components/ChatHeader';
 import GameTypeCodes from '../config/gameTypeCodes';
 import Notifications from './Notifications';
 import GameContext from './GameContext';
 import { replayerMachineStates } from '../machines/game';
+import { getPrivateRooms, clearExpiredPrivateRooms, updatePrivateRooms } from '../middlewares/Room';
+import { actions } from '../slices';
+import getName from '../utils/names';
 
 const ChatWidget = () => {
+  const dispatch = useDispatch();
   const users = useSelector(state => selectors.chatUsersSelector(state));
   const messages = useSelector(state => selectors.chatMessagesSelector(state));
+  const historyMessages = useSelector(selectors.chatHistoryMessagesSelector);
   const gameType = useSelector(selectors.gameTypeSelector);
   const { current: gameCurrent } = useContext(GameContext);
   const isTournamentGame = (gameType === GameTypeCodes.tournament);
+  const pageName = getName('page');
+  const rooms = useSelector(selectors.roomsSelector);
+
+  useEffect(() => {
+    clearExpiredPrivateRooms();
+    const existingPrivateRooms = getPrivateRooms(pageName);
+    dispatch(actions.setPrivateRooms(existingPrivateRooms));
+  }, []);
+
+  useEffect(() => {
+    const privateRooms = rooms.slice(1);
+    updatePrivateRooms(privateRooms, pageName);
+  }, [rooms]);
 
   const uniqUsers = _.uniqBy(users, 'id');
   const listOfUsers = isTournamentGame ? _.filter(uniqUsers, { isBot: false }) : uniqUsers;
@@ -23,7 +42,10 @@ const ChatWidget = () => {
     <div className="d-flex flex-wrap flex-sm-nowrap shadow-sm h-100">
       {/* eslint-disable-next-line max-len */}
       <div className="flex-grow-1 p-0 bg-white rounded-left mh-100 position-relative game-chat-container d-flex flex-column cb-messages-container">
-        <Messages messages={messages} />
+        <ChatHeader />
+        {gameCurrent.matches({ replayer: replayerMachineStates.on })
+          ? <Messages messages={historyMessages} />
+          : <Messages messages={messages} />}
         {!gameCurrent.matches({ replayer: replayerMachineStates.on }) && <ChatInput />}
       </div>
       <div className="flex-shrink-1 p-0 border-left bg-white rounded-right game-control-container">
