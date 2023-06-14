@@ -17,7 +17,7 @@ defmodule CodebattleWeb.ChatChannel do
     filtered_messages = messages
       |> Enum.filter(fn message ->
         if message.meta && message.meta.type == "private" do
-          message.user_id == user_id && message.meta.target_user_id == user_id
+          user_id in [message.user_id, message.meta.target_user_id]
         else
           true
         end
@@ -30,7 +30,7 @@ defmodule CodebattleWeb.ChatChannel do
 
   def handle_in("chat:add_msg", payload, socket) do
     text = payload["text"]
-    meta = payload["meta"]
+    meta = build_meta(payload)
     user = socket.assigns.current_user
     chat_type = get_chat_type(socket)
 
@@ -42,7 +42,9 @@ defmodule CodebattleWeb.ChatChannel do
       meta: meta
     })
 
-    update_playbook(chat_type, :chat_message, %{id: user.id, name: user.name, message: text})
+    unless meta.type == "private" do
+      update_playbook(chat_type, :chat_message, %{id: user.id, name: user.name, message: text})
+    end
 
     {:noreply, socket}
   end
@@ -144,4 +146,10 @@ defmodule CodebattleWeb.ChatChannel do
   defp subscribe_to_updates({:tournament, id}) do
     Codebattle.PubSub.subscribe("chat:tournament:#{id}")
   end
+
+  defp build_meta(payload = %{"meta" => meta}) when is_map(meta) do
+    %{type: meta["type"], target_user_id: meta["target_user_id"]}
+  end
+
+  defp build_meta(_payload), do: nil
 end
