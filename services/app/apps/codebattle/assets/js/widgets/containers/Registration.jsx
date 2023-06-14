@@ -219,9 +219,9 @@ const SignUp = () => {
             return invalidSymbolIndex === -1;
           },
         )
-        .matches(/^[a-z]+[a-z0-9_-\s{1}][a-z0-9_]+$/i, 'Can contain letters, numbers and underscores and should begin with a Latin letter')
         .min(3, 'Should be from 3 to 16 characters')
         .max(16, 'Should be from 3 to 16 characters')
+        .matches(/^[a-z]+[a-z0-9_-\s{1}][a-z0-9_]+$/i, 'Can contain letters, numbers and underscores and should begin with a Latin letter')
         .required('Nickname required'),
       email: Yup
         .string()
