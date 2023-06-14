@@ -6,7 +6,7 @@ defmodule Codebattle.Chat.Message do
   @type timestamp() :: pos_integer()
   @type meta_type() :: %{
           type: String.t(),
-          userId: integer() | nil
+          target_user_id: integer() | nil
         }
 
   typedstruct do

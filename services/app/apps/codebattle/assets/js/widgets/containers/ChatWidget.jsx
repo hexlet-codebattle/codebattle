@@ -12,18 +12,22 @@ import GameContext from './GameContext';
 import { replayerMachineStates } from '../machines/game';
 import { getPrivateRooms, clearExpiredPrivateRooms, updatePrivateRooms } from '../middlewares/Room';
 import { actions } from '../slices';
-import getName from '../utils/names';
+import getChatName from '../utils/names';
+import { shouldShowMessage } from "../utils/chat";
 
 const ChatWidget = () => {
   const dispatch = useDispatch();
   const users = useSelector(state => selectors.chatUsersSelector(state));
   const messages = useSelector(state => selectors.chatMessagesSelector(state));
+  const activeRoom = useSelector(selectors.activeRoomSelector)
   const historyMessages = useSelector(selectors.chatHistoryMessagesSelector);
   const gameType = useSelector(selectors.gameTypeSelector);
   const { current: gameCurrent } = useContext(GameContext);
   const isTournamentGame = (gameType === GameTypeCodes.tournament);
-  const pageName = getName('page');
+  const pageName = getChatName('page');
   const rooms = useSelector(selectors.roomsSelector);
+
+  const filteredMessages = messages.filter(message => shouldShowMessage(message, activeRoom));
 
   useEffect(() => {
     clearExpiredPrivateRooms();
@@ -45,7 +49,7 @@ const ChatWidget = () => {
         <ChatHeader />
         {gameCurrent.matches({ replayer: replayerMachineStates.on })
           ? <Messages messages={historyMessages} />
-          : <Messages messages={messages} />}
+          : <Messages messages={filteredMessages} />}
         {!gameCurrent.matches({ replayer: replayerMachineStates.on }) && <ChatInput />}
       </div>
       <div className="flex-shrink-1 p-0 border-left bg-white rounded-right game-control-container">

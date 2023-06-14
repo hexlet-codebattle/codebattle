@@ -9,13 +9,17 @@ import ChatHeader from '../components/ChatHeader';
 import { getPrivateRooms, clearExpiredPrivateRooms, updatePrivateRooms } from '../middlewares/Room';
 import { actions } from '../slices';
 import getName from '../utils/names';
+import { shouldShowMessage } from "../utils/chat";
 
 const LobbyChat = ({ connectToChat }) => {
   const pageName = getName('page');
   const dispatch = useDispatch();
   const { presenceList } = useSelector(selectors.lobbyDataSelector);
   const messages = useSelector(selectors.chatMessagesSelector);
+  const activeRoom = useSelector(selectors.activeRoomSelector)
   const rooms = useSelector(selectors.roomsSelector);
+
+  const filteredMessages = messages.filter(message => shouldShowMessage(message, activeRoom));
 
   useEffect(() => {
     connectToChat();
@@ -37,7 +41,7 @@ const LobbyChat = ({ connectToChat }) => {
     <div className="d-flex flex-wrap shadow-sm mt-2 cb-chat-container">
       <div className="col-12 col-sm-8 p-0 bg-light rounded-left h-sm-100 position-relative d-flex flex-column cb-messages-container">
         <ChatHeader />
-        <Messages messages={messages} />
+        <Messages messages={filteredMessages} />
         <ChatInput />
       </div>
       <div className="col-12 col-sm-4 p-0 pb-3 pb-sm-4 border-left bg-light rounded-right cb-players-container">

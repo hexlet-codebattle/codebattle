@@ -59,7 +59,7 @@ const Sender = ({
             const roomData = {
               id: userId,
               name,
-              expiry: calculateExpireDate(),
+              ttl: calculateExpireDate(),
             };
 
             dispatch(actions.createPrivateRoom(roomData));

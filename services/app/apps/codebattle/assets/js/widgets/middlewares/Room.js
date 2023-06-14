@@ -26,7 +26,7 @@ export const clearExpiredPrivateRooms = () => {
   const allActualPrivateRooms = Object.entries(allPrivateRooms)
     .map(([pageName, pagePrivateRooms]) => {
       const actualPrivateRooms = pagePrivateRooms.filter(room => (
-        room.expiry > now.getTime()
+        room.ttl > now.getTime()
       ));
       return [pageName, actualPrivateRooms];
     })

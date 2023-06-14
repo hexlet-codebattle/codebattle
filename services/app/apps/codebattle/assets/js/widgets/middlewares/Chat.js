@@ -3,17 +3,17 @@ import { camelizeKeys } from 'humps';
 
 import socket from '../../socket';
 import { actions } from '../slices';
-import getName from '../utils/names';
+import getChatName from '../utils/names';
 
 const isRecord = Gon.getAsset('is_record');
 
-const channel = isRecord ? null : socket.channel(getName('channel'));
+const channel = isRecord ? null : socket.channel(getChatName('channel'));
 
 const fetchState = () => dispatch => {
   const camelizeKeysAndDispatch = actionCreator => data => dispatch(actionCreator(camelizeKeys(data)));
 
   channel.join().receive('ok', data => {
-    const updatedData = { ...data, page: getName('page') };
+    const updatedData = { ...data, page: getChatName('page') };
     camelizeKeysAndDispatch(actions.updateChatData)(updatedData);
   });
 
@@ -22,7 +22,7 @@ const fetchState = () => dispatch => {
     camelizeKeysAndDispatch(actions.userJoinedChat),
   );
   channel.on('chat:user_left', camelizeKeysAndDispatch(actions.userLeftChat));
-  channel.on('chat:new_msg', camelizeKeysAndDispatch(actions.newMessageChat));
+  channel.on('chat:new_msg', camelizeKeysAndDispatch(actions.newChatMessage));
   channel.on('chat:user_banned', camelizeKeysAndDispatch(actions.banUserChat));
 };
 

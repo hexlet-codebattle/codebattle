@@ -4,8 +4,6 @@ import rooms from '../config/rooms';
 import {
   getMessagesForCurrentUser,
   isMessageForCurrentUser,
-  isMessageForEveryone,
-  shouldShowMessage,
   isMessageForCurrentRoom,
 } from '../utils/chat';
 import { ttl } from '../middlewares/Room';
@@ -14,7 +12,6 @@ const initialState = {
   users: [],
   messages: [],
   page: 'lobby',
-  allMessages: [],
   activeRoom: rooms.general,
   rooms: [rooms.general],
   history: {
@@ -33,7 +30,6 @@ const chat = createSlice({
       return {
         ...state,
         ...payload,
-        allMessages: messages,
         messages,
       };
     },
@@ -54,20 +50,16 @@ const chat = createSlice({
     userLeftChat: (state, { payload: { users } }) => {
       state.users = users;
     },
-    newMessageChat: (state, { payload }) => {
-      if (isMessageForCurrentUser(payload) || isMessageForEveryone(payload)) {
-        if (shouldShowMessage(payload, state.activeRoom)) {
-          state.messages = [...state.messages, payload];
-        }
-        state.allMessages = [...state.allMessages, payload];
-      }
+    newChatMessage: (state, { payload }) => {
       if (isMessageForCurrentUser(payload)) {
         state.rooms = state.rooms.map(room => (
           isMessageForCurrentRoom(room, payload)
-            ? { ...room, expiry: room.expiry + ttl }
+            ? { ...room, ttl: room.ttl + ttl }
             : room
         ));
       }
+
+      state.messages = [...state.messages, payload];
     },
     banUserChat: (state, { payload }) => {
       state.messages = [
@@ -76,9 +68,9 @@ const chat = createSlice({
     },
     setActiveRoom: (state, { payload }) => {
       state.activeRoom = payload;
-      state.messages = payload.id === null
-        ? state.allMessages
-        : state.allMessages.filter(message => shouldShowMessage(message, payload));
+      // state.messages = payload.id === null
+      //   ? [...state.messages]
+      //   : state.messages.filter(message => shouldShowMessage(message, payload));
     },
     createPrivateRoom: (state, { payload }) => {
       const privateRooms = current(state.rooms).slice(1);
@@ -87,12 +79,12 @@ const chat = createSlice({
       ));
       if (existingPrivateRoom) {
         state.activeRoom = existingPrivateRoom;
-        state.messages = state.allMessages.filter(message => shouldShowMessage(message, existingPrivateRoom));
+        // state.messages = state.messages.filter(message => shouldShowMessage(message, existingPrivateRoom));
         return;
       }
       state.rooms = [...state.rooms, payload];
       state.activeRoom = payload;
-      state.messages = state.allMessages.filter(message => shouldShowMessage(message, payload));
+      // state.messages = state.messages.filter(message => shouldShowMessage(message, payload));
     },
     setPrivateRooms: (state, { payload }) => {
       state.rooms = [...state.rooms, ...payload];

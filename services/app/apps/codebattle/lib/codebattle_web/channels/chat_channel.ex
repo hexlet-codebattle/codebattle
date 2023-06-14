@@ -9,12 +9,23 @@ defmodule CodebattleWeb.ChatChannel do
 
   def join(topic, _payload, socket) do
     type = get_chat_type(topic)
+    user_id = socket.assigns.current_user.id
 
     subscribe_to_updates(type)
     %{users: users, messages: messages} = Chat.join_chat(type, socket.assigns.current_user)
 
+    filtered_messages = messages
+      |> Enum.filter(fn message ->
+        if message.meta && message.meta.type == "private" do
+          message.user_id == user_id && message.meta.target_user_id == user_id
+        else
+          true
+        end
+      end)
+
+
     send(self(), :after_join)
-    {:ok, %{users: users, messages: messages}, socket}
+    {:ok, %{users: users, messages: filtered_messages}, socket}
   end
 
   def handle_in("chat:add_msg", payload, socket) do
@@ -81,7 +92,10 @@ defmodule CodebattleWeb.ChatChannel do
   end
 
   def handle_info(%{topic: _topic, event: "chat:new_msg", payload: payload}, socket) do
-    push(socket, "chat:new_msg", payload)
+    user_id = socket.assigns.current_user.id
+    if (payload.meta || (payload.user_id == user_id && payload.meta.target_user_id == user_id)) do
+      push(socket, "chat:new_msg", payload)
+    end
 
     {:noreply, socket}
   end

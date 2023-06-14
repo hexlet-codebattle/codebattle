@@ -1,5 +1,5 @@
 import React from 'react';
-import { DropdownButton, Dropdown } from 'react-bootstrap';
+import { ButtonGroup, Dropdown, Button } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 
 import * as selectors from '../selectors';
@@ -13,20 +13,24 @@ export default () => {
 
   return (
     <>
-      <DropdownButton id="dropdown-basic-button" title="" variant="secondary" className="mr-2">
-        {
-          rooms.map(room => (
-            <Dropdown.Item
-              href="#"
-              key={room.id}
-              onSelect={() => dispatch(actions.setActiveRoom(room))}
-            >
-              {room.name}
-            </Dropdown.Item>
-          ))
-        }
-      </DropdownButton>
-      <div className="flex-grow-1">{activeRoom.name}</div>
+      <Dropdown as={ButtonGroup} title="" className="mr-2">
+        <Dropdown.Toggle split variant="secondary" id="dropdown-split-basic" />
+        <Button variant="secondary">{activeRoom.name}</Button>
+
+        <Dropdown.Menu>
+          {
+            rooms.map(room => (
+              <Dropdown.Item
+                href="#"
+                key={room.id}
+                onSelect={() => dispatch(actions.setActiveRoom(room))}
+              >
+                {room.name}
+              </Dropdown.Item>
+            ))
+          }
+        </Dropdown.Menu>
+      </Dropdown>
     </>
   );
 };
