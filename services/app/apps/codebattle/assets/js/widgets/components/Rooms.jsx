@@ -1,5 +1,5 @@
 import React from 'react';
-import { ButtonGroup, Dropdown, Button } from 'react-bootstrap';
+import { ButtonGroup, Dropdown } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 
 import * as selectors from '../selectors';
@@ -13,16 +13,17 @@ export default () => {
 
   return (
     <>
-      <Dropdown as={ButtonGroup} title="" className="mr-2">
-        <Dropdown.Toggle split variant="secondary" id="dropdown-split-basic" />
-        <Button variant="secondary">{activeRoom.name}</Button>
+      <Dropdown as={ButtonGroup} title="">
+        <Dropdown.Toggle split variant="secondary" id="dropdown-rooms">
+          <span className="mr-2">{activeRoom.name}</span>
+        </Dropdown.Toggle>
 
         <Dropdown.Menu>
           {
             rooms.map(room => (
               <Dropdown.Item
                 href="#"
-                key={room.id}
+                key={room.targetUserId}
                 onSelect={() => dispatch(actions.setActiveRoom(room))}
               >
                 {room.name}

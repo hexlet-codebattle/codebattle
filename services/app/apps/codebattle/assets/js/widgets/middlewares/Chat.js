@@ -1,5 +1,5 @@
 import Gon from 'gon';
-import { camelizeKeys } from 'humps';
+import { camelizeKeys, decamelizeKeys } from 'humps';
 
 import socket from '../../socket';
 import { actions } from '../slices';
@@ -34,7 +34,7 @@ export const connectToChat = () => dispatch => {
 
 export const addMessage = payload => {
   channel
-    .push('chat:add_msg', payload)
+    .push('chat:add_msg', decamelizeKeys(payload, { separator: '_' }))
     .receive('error', error => console.error(error));
 };
 

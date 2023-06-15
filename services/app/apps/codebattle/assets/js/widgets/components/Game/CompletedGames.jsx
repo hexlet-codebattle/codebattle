@@ -40,13 +40,19 @@ const CompletedGamesRows = memo(({ games }) => (
 
 const CompletedGames = ({ games, loadNextPage = null, totalGames }) => {
   const { nextPage, totalPages } = useSelector(state => state.completedGames);
-  const object = useMemo(() => ({ loading: false }), [nextPage]);
+  const object = useMemo(
+    () => ({ loading: false }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [nextPage],
+  );
   const dispatch = useDispatch();
 
   /** @type {import("react").RefObject<HTMLDivElement>} */
   const ref = useRef(null);
 
   useEffect(() => {
+    const observerRef = ref;
+
     const load = () => {
       if (object.loading) return;
       object.loading = true;
@@ -62,11 +68,14 @@ const CompletedGames = ({ games, loadNextPage = null, totalGames }) => {
       if (delta < 500) { load(); }
     };
 
-    ref.current?.addEventListener('scroll', onScroll);
+    observerRef.current?.addEventListener('scroll', onScroll);
 
     return () => {
-      ref.current?.removeEventListener('scroll', onScroll);
+      if (observerRef) {
+        observerRef.current?.removeEventListener('scroll', onScroll);
+      }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [object]);
 
   return (

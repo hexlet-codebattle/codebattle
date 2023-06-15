@@ -87,7 +87,7 @@ const machine = {
           entry: send(
             { type: 'SHOW_ERROR_MESSAGE' },
             {
-              delay: 5000,
+              delay: 3000,
             },
           ),
           on: {

@@ -1,7 +1,8 @@
 import React from 'react';
 import moment from 'moment';
+import cn from 'classnames';
 
-import Sender from './Sender';
+import UserContextMenu from './UserContextMenu';
 import MessageTag from './MessageTag';
 
 const Message = ({
@@ -10,7 +11,6 @@ const Message = ({
   type,
   time,
   userId,
-  handleShowModal,
   meta,
   messageId,
 }) => {
@@ -52,13 +52,20 @@ const Message = ({
   return (
     <div className="d-flex align-items-baseline flex-wrap">
       <MessageTag messageType={meta?.type} />
-      <Sender
-        messageId={messageId}
+      <UserContextMenu
+        menuId={`menu-${messageId}`}
         name={name}
         userId={userId}
-        handleShowModal={handleShowModal}
-      />
-      <span className="ml-1 text-break">
+        isBot={userId < 0}
+      >
+        <span className="font-weight-bold">{`${name}: `}</span>
+      </UserContextMenu>
+      <span className={cn(
+        'ml-1 text-break', {
+          'cb-private-text': meta?.type === 'private',
+        },
+      )}
+      >
         {parts.map((part, i) => renderMessagePart(part, i))}
       </span>
     </div>

@@ -1,31 +1,19 @@
 import React, { useRef, useLayoutEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import useStayScrolled from 'react-stay-scrolled';
-import qs from 'qs';
-import { currentUserIsAdminSelector } from '../selectors';
+import { currentUserIsAdminSelector, activeRoomSelector } from '../selectors';
 import { pushCommand } from '../middlewares/Chat';
-import { actions } from '../slices';
 
 import Message from './Message';
-import { getLobbyUrl } from '../utils/urlBuilders';
+import { shouldShowMessage } from '../utils/chat';
 
 const Messages = ({ messages }) => {
   const currentUserIsAdmin = useSelector(state => currentUserIsAdminSelector(state));
-  const listRef = useRef();
-  const dispatch = useDispatch();
+  const activeRoom = useSelector(state => activeRoomSelector(state));
 
-  const handleShowModal = (id, name) => () => {
-    const queryParamsString = qs.stringify({
-      opponent_id: id,
-    });
-    if (`/${window.location.hash}` !== getLobbyUrl()) {
-      window.location.href = getLobbyUrl(queryParamsString);
-    } else {
-      dispatch(
-        actions.showCreateGameInviteModal({ opponentInfo: { id, name } }),
-      );
-    }
-  };
+  const filteredMessages = messages.filter(message => shouldShowMessage(message, activeRoom));
+
+  const listRef = useRef();
 
   const { stayScrolled /* , scrollBottom */ } = useStayScrolled(listRef);
 
@@ -37,7 +25,7 @@ const Messages = ({ messages }) => {
   // useLayoutEffect, because it measures and changes DOM attributes (scrollTop) directly
   useLayoutEffect(() => {
     stayScrolled();
-  }, [messages.length, stayScrolled]);
+  }, [filteredMessages.length, stayScrolled]);
 
   return (
     <>
@@ -56,25 +44,24 @@ const Messages = ({ messages }) => {
         ref={listRef}
         className="overflow-auto pt-0 pl-3 pr-2 position-relative cb-messages-list flex-grow-1"
       >
-        {messages.map(message => {
-  const {
-    id, name, text, type, time, userId, meta,
-   } = message;
+        {filteredMessages.map(message => {
+          const {
+            id, name, text, type, time, userId, meta,
+          } = message;
 
-  return (
-    <Message
-      userId={userId}
-      name={name}
-      text={text}
-      key={id || `${time}-${name}`}
-      type={type}
-      time={time}
-      handleShowModal={handleShowModal(userId, name)}
-      meta={meta}
-      messageId={id}
-    />
-  );
-})}
+          return (
+            <Message
+              userId={userId}
+              name={name}
+              text={text}
+              key={id || `${time}-${name}`}
+              type={type}
+              time={time}
+              meta={meta}
+              messageId={id}
+            />
+          );
+        })}
       </ul>
     </>
   );

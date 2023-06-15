@@ -1,3 +1,3 @@
 export default {
-  general: { name: 'General', id: null },
+  general: { name: 'General', targetUserId: null },
 };

@@ -2,9 +2,8 @@ import { createSlice, current } from '@reduxjs/toolkit';
 
 import rooms from '../config/rooms';
 import {
-  getMessagesForCurrentUser,
   isMessageForCurrentUser,
-  isMessageForCurrentRoom,
+  isMessageForCurrentPrivateRoom,
 } from '../utils/chat';
 import { ttl } from '../middlewares/Room';
 
@@ -25,7 +24,7 @@ const chat = createSlice({
   initialState,
   reducers: {
     updateChatData: (state, { payload }) => {
-      const messages = getMessagesForCurrentUser(payload.messages);
+      const { messages } = payload;
 
       return {
         ...state,
@@ -34,7 +33,7 @@ const chat = createSlice({
       };
     },
     updateChatDataHistory: (state, { payload }) => {
-      const messages = getMessagesForCurrentUser(payload.messages);
+      const { messages } = payload;
 
       return {
         ...state,
@@ -53,8 +52,8 @@ const chat = createSlice({
     newChatMessage: (state, { payload }) => {
       if (isMessageForCurrentUser(payload)) {
         state.rooms = state.rooms.map(room => (
-          isMessageForCurrentRoom(room, payload)
-            ? { ...room, ttl: room.ttl + ttl }
+          isMessageForCurrentPrivateRoom(room, payload)
+            ? { ...room, expireTo: room.expireTo + ttl }
             : room
         ));
       }
@@ -68,9 +67,6 @@ const chat = createSlice({
     },
     setActiveRoom: (state, { payload }) => {
       state.activeRoom = payload;
-      // state.messages = payload.id === null
-      //   ? [...state.messages]
-      //   : state.messages.filter(message => shouldShowMessage(message, payload));
     },
     createPrivateRoom: (state, { payload }) => {
       const privateRooms = current(state.rooms).slice(1);
@@ -79,12 +75,10 @@ const chat = createSlice({
       ));
       if (existingPrivateRoom) {
         state.activeRoom = existingPrivateRoom;
-        // state.messages = state.messages.filter(message => shouldShowMessage(message, existingPrivateRoom));
         return;
       }
       state.rooms = [...state.rooms, payload];
       state.activeRoom = payload;
-      // state.messages = state.messages.filter(message => shouldShowMessage(message, payload));
     },
     setPrivateRooms: (state, { payload }) => {
       state.rooms = [...state.rooms, ...payload];

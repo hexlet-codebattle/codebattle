@@ -9,6 +9,7 @@ const AsyncSelect = ({ loadOptions, onChange }) => {
     };
 
     loadOptions('test', callback);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

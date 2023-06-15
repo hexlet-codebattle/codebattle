@@ -39,8 +39,8 @@ export default function ChatInput() {
     const message = {
       text,
       meta: {
-        type: activeRoom.id ? messageTypes.private : messageTypes.general,
-        userId: activeRoom.id,
+        type: activeRoom.targetUserId ? messageTypes.private : messageTypes.general,
+        targetUserId: activeRoom.targetUserId,
       },
     };
     if (isTooltipVisible) {

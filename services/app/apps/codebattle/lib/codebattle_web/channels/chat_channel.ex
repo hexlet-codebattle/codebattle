@@ -9,20 +9,20 @@ defmodule CodebattleWeb.ChatChannel do
 
   def join(topic, _payload, socket) do
     type = get_chat_type(topic)
-    user_id = socket.assigns.current_user.id
+    user = socket.assigns.current_user
 
     subscribe_to_updates(type)
-    %{users: users, messages: messages} = Chat.join_chat(type, socket.assigns.current_user)
+    %{users: users, messages: messages} = Chat.join_chat(type, user)
 
-    filtered_messages = messages
+    filtered_messages =
+      messages
       |> Enum.filter(fn message ->
-        if message.meta && message.meta.type == "private" do
-          user_id in [message.user_id, message.meta.target_user_id]
+        if message.meta && message.meta["type"] == "private" do
+          users_private_message?(message, user.id)
         else
           true
         end
       end)
-
 
     send(self(), :after_join)
     {:ok, %{users: users, messages: filtered_messages}, socket}
@@ -30,7 +30,6 @@ defmodule CodebattleWeb.ChatChannel do
 
   def handle_in("chat:add_msg", payload, socket) do
     text = payload["text"]
-    meta = build_meta(payload)
     user = socket.assigns.current_user
     chat_type = get_chat_type(socket)
 
@@ -39,10 +38,10 @@ defmodule CodebattleWeb.ChatChannel do
       name: user.name,
       type: :text,
       text: text,
-      meta: meta
+      meta: payload["meta"]
     })
 
-    unless meta.type == "private" do
+    unless get_in(payload, ["meta", "type"]) == "private" do
       update_playbook(chat_type, :chat_message, %{id: user.id, name: user.name, message: text})
     end
 
@@ -94,9 +93,14 @@ defmodule CodebattleWeb.ChatChannel do
   end
 
   def handle_info(%{topic: _topic, event: "chat:new_msg", payload: payload}, socket) do
-    user_id = socket.assigns.current_user.id
-    if (payload.meta || (payload.user_id == user_id && payload.meta.target_user_id == user_id)) do
+    current_user_id = socket.assigns.current_user.id
+
+    if payload.meta == nil do
       push(socket, "chat:new_msg", payload)
+    else
+      if payload.meta["type"] == "general" || users_private_message?(payload, current_user_id) do
+        push(socket, "chat:new_msg", payload)
+      end
     end
 
     {:noreply, socket}
@@ -147,9 +151,6 @@ defmodule CodebattleWeb.ChatChannel do
     Codebattle.PubSub.subscribe("chat:tournament:#{id}")
   end
 
-  defp build_meta(payload = %{"meta" => meta}) when is_map(meta) do
-    %{type: meta["type"], target_user_id: meta["target_user_id"]}
-  end
-
-  defp build_meta(_payload), do: nil
+  defp users_private_message?(message, user_id),
+    do: user_id in [message.user_id, message.meta["target_user_id"]]
 end

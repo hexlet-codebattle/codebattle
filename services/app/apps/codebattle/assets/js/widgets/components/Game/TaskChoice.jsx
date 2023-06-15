@@ -147,10 +147,12 @@ const TaskSelect = ({
       .catch(error => {
         dispatch(actions.setError(error));
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUserId]);
 
   useEffect(() => {
     setChosenTask(defaultOption.value);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [level]);
 
   const onChange = ({ value }) => setChosenTask(value);
@@ -202,6 +204,7 @@ export default ({
       .catch(error => {
         dispatch(actions.setError(error));
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const tagsToTaskIdsDictionary = mapTagsToTaskIds(allTasks, taskTags);
