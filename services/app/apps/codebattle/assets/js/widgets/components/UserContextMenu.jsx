@@ -80,10 +80,11 @@ const UserContextMenu = ({
 
   return (
     <div>
-      <div onContextMenu={displayMenu}>{children}</div>
+      <div title={name} onContextMenu={displayMenu}>{children}</div>
       <Menu role="menu" id={menuId}>
         <Item
           role="menuitem"
+          aria-label="Copy Name"
           onClick={handleCopy}
         >
           <FontAwesomeIcon
@@ -94,6 +95,7 @@ const UserContextMenu = ({
         </Item>
         <Item
           role="menuitem"
+          aria-label="Info"
           onClick={handleShowInfo}
         >
           <FontAwesomeIcon
@@ -105,6 +107,7 @@ const UserContextMenu = ({
         {canInvite && (
           <Item
             role="menuitem"
+            aria-label="Send an invite"
             onClick={handleCreateInviteModal}
             disabled={inviteSendDisabled}
           >
@@ -121,6 +124,8 @@ const UserContextMenu = ({
         )}
         {canCreatePrivateRoom ? (
           <Item
+            role="menuitem"
+            aria-label="Direct message"
             onClick={() => {
               const roomData = {
                 targetUserId: userId,
@@ -142,6 +147,7 @@ const UserContextMenu = ({
           <>
             <Separator />
             <Item
+              aria-label="Ban"
               onClick={() => handleBanClick(name)}
               disabled={isBot}
             >
