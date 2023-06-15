@@ -6,9 +6,9 @@ import { registerRulesForLanguage } from 'monaco-ace-tokenizer';
 import { initVimMode } from 'monaco-vim';
 import { connect } from 'react-redux';
 
-import { gameTypeSelector } from '../selectors/index';
+import { gameModeSelector } from '../selectors/index';
 import languages from '../config/languages';
-import GameTypeCodes from '../config/gameTypeCodes';
+import GameModes from '../config/gameModes';
 import sound from '../lib/sound';
 import { actions } from '../slices';
 import getLanguageTabSize, { shouldReplaceTabsWithSpaces } from '../utils/editor';
@@ -164,8 +164,8 @@ class Editor extends PureComponent {
   editorDidMount = (editor, monaco) => {
     this.editor = editor;
     this.monaco = monaco;
-    const { editable, gameType } = this.props;
-    const isTournament = gameType === GameTypeCodes.tournament;
+    const { editable, gameMode } = this.props;
+    const isTournament = gameMode === GameModes.tournament;
 
     if (editable && !isTournament) {
       this.editor.focus();
@@ -232,9 +232,9 @@ class Editor extends PureComponent {
 }
 
 const mapStateToProps = state => {
-  const gameType = gameTypeSelector(state);
+  const gameMode = gameModeSelector(state);
   return {
-    gameType,
+    gameMode,
     mute: state.userSettings.mute,
   };
 };

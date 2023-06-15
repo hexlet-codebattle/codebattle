@@ -198,7 +198,7 @@ class CodebattlePlayer extends Component {
       isEnabled, direction, handlerPosition, lastIntent, nextRecordId,
     } = this.state;
 
-    if (!gameCurrent.matches({ replayer: replayerMachineStates.on })) {
+    if (!gameCurrent.matches({ replayer: replayerMachineStates.on }) || recordsCount === 0) {
       return null;
     }
 

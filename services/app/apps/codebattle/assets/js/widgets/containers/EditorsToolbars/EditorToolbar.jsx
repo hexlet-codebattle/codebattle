@@ -6,6 +6,7 @@ import LanguagePicker from '../../components/LanguagePicker';
 import UserInfo from '../UserInfo';
 import VimModeButton from './VimModeButton';
 import GameActionButtons from '../../components/GameActionButtons';
+import GameModes from '../../config/gameModes';
 
 const ModeButtons = ({ player }) => (
   <div
@@ -20,6 +21,7 @@ const ModeButtons = ({ player }) => (
 
 const EditorToolbar = ({
   type,
+  mode,
   player,
   score,
   editor,
@@ -56,10 +58,13 @@ const EditorToolbar = ({
 
           <div className={userInfoClassNames} role="group" aria-label="User info">
             <UserInfo user={player} />
-            <div className={scoreResultClass}>
-              Score:
-              {score.score}
-            </div>
+            {mode === GameModes.standard
+              && (
+                <div className={scoreResultClass}>
+                  Score:
+                  {score.score}
+                </div>
+              )}
           </div>
         </div>
       </div>
@@ -73,7 +78,7 @@ const EditorToolbar = ({
         <GameResultIcon editor={editor} />
       </div>
     </>
-);
+  );
 };
 
 export default EditorToolbar;

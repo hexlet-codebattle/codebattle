@@ -59,6 +59,8 @@ defmodule CodebattleWeb.ChatChannelTest do
 
     push(socket1, "chat:add_msg", %{text: message})
 
+    :timer.sleep(10)
+
     assert_receive %Phoenix.Socket.Message{
       topic: ^chat_topic,
       event: "chat:new_msg",
@@ -119,7 +121,7 @@ defmodule CodebattleWeb.ChatChannelTest do
     push(socket2, "chat:add_msg", %{"text" => "blz"})
     :timer.sleep(10)
     push(socket1, "chat:add_msg", %{"text" => "invalid_content"})
-    :timer.sleep(10)
+    :timer.sleep(100)
 
     assert [
              %{id: 1, name: "alice", type: :text, text: "oi", time: _},

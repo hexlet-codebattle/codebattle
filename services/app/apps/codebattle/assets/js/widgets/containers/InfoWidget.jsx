@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import ChatWidget from './ChatWidget';
 import Task from '../components/Task';
 import {
-  gameTaskSelector, gameStatusSelector, leftExecutionOutputSelector, currentUserIdSelector,
+  gameTaskSelector, gameModeSelector, gameStatusSelector, leftExecutionOutputSelector, currentUserIdSelector,
 } from '../selectors';
 import Output from '../components/ExecutionOutput/Output';
 import OutputTab from '../components/ExecutionOutput/OutputTab';
@@ -11,6 +11,7 @@ import CountdownTimer from '../components/CountdownTimer';
 import Timer from '../components/Timer';
 import GameContext from './GameContext';
 import { gameMachineStates } from '../machines/game';
+import GameModes from '../config/gameModes';
 
 const gameStatuses = {
   stored: 'stored',
@@ -18,8 +19,14 @@ const gameStatuses = {
   timeout: 'game_over',
 };
 
-const TimerContainer = ({ time, timeoutSeconds, gameStateName }) => {
+const TimerContainer = ({
+ time, mode, timeoutSeconds, gameStateName,
+}) => {
   const { current } = useContext(GameContext);
+
+  if (mode === GameModes.history) {
+    return 'History';
+  }
 
   if (timeoutSeconds === null) {
     return 'Loading...';
@@ -46,6 +53,7 @@ const InfoWidget = () => {
   const startsAt = useSelector(state => gameStatusSelector(state).startsAt);
   const timeoutSeconds = useSelector(state => gameStatusSelector(state).timeoutSeconds);
   const gameStateName = useSelector(state => gameStatusSelector(state).state);
+  const gameMode = useSelector(gameModeSelector);
   const leftOutput = useSelector(leftExecutionOutputSelector(gameCurrent));
   const isShowOutput = leftOutput && leftOutput.status;
   const idOutput = 'leftOutput';
@@ -86,6 +94,7 @@ const InfoWidget = () => {
               >
                 <TimerContainer
                   time={startsAt}
+                  mode={gameMode}
                   timeoutSeconds={timeoutSeconds}
                   gameStateName={gameStateName}
                 />

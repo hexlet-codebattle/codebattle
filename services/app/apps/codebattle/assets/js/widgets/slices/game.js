@@ -1,11 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit';
 import GameStateCodes from '../config/gameStateCodes';
+import GameModes from '../config/gameModes';
 
 const initialState = {
   gameStatus: {
     state: GameStateCodes.initial,
     msg: '',
     type: null,
+    mode: GameModes.none,
     startsAt: null,
     score: null, // { gameResults: [{ gameId: 482, insertedAt: "2022-12-02T19:12:40", winnerId: 1 }], opponentOneId: 1, opponentTwoId: 2}
     timeoutSeconds: null,

@@ -12,6 +12,7 @@ $gold: #daa520;
 @import '~bootstrap/scss/bootstrap';
 @import '~nprogress/nprogress.css';
 @import 'gamePreview';
+@import '~react-contexify/dist/ReactContexify.css';
 
 $fa-font-path: '/fonts';
 
@@ -372,6 +373,10 @@ a {
     border-top: 5px solid #666;
     padding-bottom: 2px;
   }
+}
+
+.cb-private-text {
+  color: var(--indigo);
 }
 
 .cb-toast-close {

@@ -531,7 +531,8 @@ const LobbyWidget = () => {
         }),
       );
     }
-  }, [currentUser, dispatch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser]);
 
   useEffect(() => {
     dispatch(fetchCompletedGames());

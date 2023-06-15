@@ -152,7 +152,10 @@ jest.mock(
 
 const reducer = combineReducers(reducers);
 
-const players = [{ id: -4 }, { id: -2 }];
+const players = [
+  { user: { id: -4, name: 'Bot_1' } },
+  { user: { id: -2, name: 'Bot_2' } },
+];
 
 const preloadedState = {
   lobby: {

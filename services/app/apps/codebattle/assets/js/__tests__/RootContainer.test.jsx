@@ -11,6 +11,7 @@ import RootContainer from '../widgets/containers/RootContainer';
 import reducers from '../widgets/slices';
 import userTypes from '../widgets/config/userTypes';
 import GameStateCodes from '../widgets/config/gameStateCodes';
+import GameModes from '../widgets/config/gameModes';
 
 import game from '../widgets/machines/game';
 import editor from '../widgets/machines/editor';
@@ -104,7 +105,7 @@ const players = {
   2: createPlayer({
     name: 'Tim Urban',
     type: userTypes.secondPlayer,
-    id: 2,
+    id: -1,
     isBot: true,
   }),
 };
@@ -114,6 +115,7 @@ const preloadedState = {
   game: {
     gameStatus: {
       state: GameStateCodes.playing,
+      mode: GameModes.standard,
       checking: {},
       startsAt: '0',
     },
@@ -148,9 +150,14 @@ const preloadedState = {
         text: 'bot message',
         type: 'text',
         time: 1679056894,
-        userId: 2,
+        userId: -1,
       },
     ],
+    activeRoom: { name: 'General', targetUserId: null },
+    rooms: [{ name: 'General', targetUserId: null }],
+    history: {
+      messages: [],
+    },
   },
 };
 
@@ -202,11 +209,14 @@ test('test a bot invite button', () => {
     preloadedState,
   });
 
-  const { getByRole } = render(
+  const { getByRole, getByTitle } = render(
     <Provider store={store}>
       <RootContainer gameMachine={Machine(game)} editorMachine={Machine(editor)} />
     </Provider>,
   );
 
-  expect(getByRole('button', { name: 'Challenge to a game.' })).toBeDisabled();
+  const contextMenuButton = getByTitle('Tim Urban');
+  fireEvent.contextMenu(contextMenuButton, { button: 2 });
+
+  expect(getByRole('menuitem', { name: 'Send an invite' })).toHaveAttribute('aria-disabled', 'true');
 });

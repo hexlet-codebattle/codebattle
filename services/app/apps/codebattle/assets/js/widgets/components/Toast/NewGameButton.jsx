@@ -6,8 +6,8 @@ import GameTypeCodes from '../../config/gameTypeCodes';
 import * as selectors from '../../selectors';
 
 const NewGameButton = props => {
-  const { gameTask: { level }, gameType, timeoutSeconds } = props;
-  const type = gameType === GameTypeCodes.public ? 'withRandomPlayer' : 'withFriend';
+  const { gameTask: { level }, gameMode, timeoutSeconds } = props;
+  const type = gameMode === GameTypeCodes.regular ? 'withRandomPlayer' : 'withFriend';
   const queryParamsString = qs.stringify({ level, type, timeout_seconds: timeoutSeconds });
   const gameUrl = `/games?${queryParamsString}`;
 

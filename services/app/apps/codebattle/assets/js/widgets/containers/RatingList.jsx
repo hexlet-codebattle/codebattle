@@ -115,6 +115,7 @@ const UsersRating = () => {
 
   useEffect(() => {
     dispatch(getUsersRatingPage(filterParams, sortParams, page));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterParams, sortParams, page]);
 
   const triggerSort = attribute => {
