@@ -36,7 +36,7 @@ defmodule CodebattleWeb.Tournament.ImageController do
   defp render_content(tournament) do
     ~s(
       <h3>#{tournament.name}</h3>
-      <h4>Type: #{tournament.type}/#{tournament.difficulty}</h4>
+      <h4>Type: #{tournament.type}/#{tournament.level}</h4>
       <h4></h4>
       <h4>State: #{tournament.state}</h4>
       <h4>StartsAt: #{tournament.starts_at} UTC</h4>
