@@ -67,6 +67,7 @@ const LobbyChat = ({ connectToChat }) => {
                   role="button"
                   tabIndex={0}
                   className="mb-1"
+                  title={presenceUser.user.name}
                   key={presenceUser.id}
                   data-user-id={presenceUser.id}
                   onContextMenu={displayMenu}

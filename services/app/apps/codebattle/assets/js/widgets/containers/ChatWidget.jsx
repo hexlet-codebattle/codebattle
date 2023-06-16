@@ -88,6 +88,7 @@ const ChatWidget = () => {
                   role="button"
                   tabIndex={0}
                   className="my-1"
+                  title={user.name}
                   key={user.id}
                   data-user-id={user.id}
                   onContextMenu={displayMenu}

@@ -50,22 +50,24 @@ const Message = ({
 
   return (
     <div className="d-flex align-items-baseline flex-wrap">
-      <MessageTag messageType={meta?.type} />
       <span
         role="button"
         tabIndex={0}
-        className="font-weight-bold"
+        title={`Message (${name})`}
         data-user-id={userId}
         onContextMenu={displayMenu}
         onClick={displayMenu}
         onKeyPress={displayMenu}
       >
-        {`${name}: `}
+        <MessageTag messageType={meta?.type} />
+        <span className="font-weight-bold">
+          {`${name}: `}
+        </span>
       </span>
       <span className={cn(
         'ml-1 text-break', {
-          'cb-private-text': meta?.type === 'private',
-        },
+        'cb-private-text': meta?.type === 'private',
+      },
       )}
       >
         {parts.map((part, i) => renderMessagePart(part, i))}

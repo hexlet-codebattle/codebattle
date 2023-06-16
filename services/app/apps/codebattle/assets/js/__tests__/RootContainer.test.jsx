@@ -143,6 +143,7 @@ const preloadedState = {
     2: { },
   },
   chat: {
+    users: Object.values(players),
     messages: [
       {
         id: 1,
@@ -209,14 +210,14 @@ test('test a bot invite button', () => {
     preloadedState,
   });
 
-  const { getByRole, getByTitle } = render(
+  const { getByLabelText, getByTitle } = render(
     <Provider store={store}>
       <RootContainer gameMachine={Machine(game)} editorMachine={Machine(editor)} />
     </Provider>,
   );
 
-  const contextMenuButton = getByTitle('Tim Urban');
-  fireEvent.contextMenu(contextMenuButton, { button: 2 });
+  const target = getByTitle('Message (Tim Urban)');
+  fireEvent.contextMenu(target, { button: 2 });
 
-  expect(getByRole('menuitem', { name: 'Send an invite' })).toHaveAttribute('aria-disabled', 'true');
+  expect(getByLabelText('Send an invite')).toHaveAttribute('aria-disabled', 'true');
 });
