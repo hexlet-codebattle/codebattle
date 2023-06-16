@@ -168,7 +168,7 @@ defmodule Codebattle.Tournament.Base do
       defp set_next_round_params(tournament) do
         update_struct(tournament, %{
           current_round: tournament.current_round + 1,
-          last_round_started_at: NaiveDateTime.truncate(NaiveDateTime.utc_now(), :second),
+          last_round_started_at: NaiveDateTime.truncate(NaiveDateTime.utc_now(), :second)
         })
       end
 
