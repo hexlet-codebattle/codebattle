@@ -39,7 +39,7 @@ const EditorToolbar = ({
   });
   return (
     <>
-      <div data-player-type={type}>
+      <div className="rounded-top" data-player-type={type}>
         <div className={toolbarClassNames} role="toolbar">
           <div
             className={editorSettingClassNames}

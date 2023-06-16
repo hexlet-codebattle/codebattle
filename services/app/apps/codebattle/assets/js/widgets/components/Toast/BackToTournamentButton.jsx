@@ -7,7 +7,7 @@ const BackToTournamentButton = () => {
   const tournamentUrl = `/tournaments/${tournamentId}`;
 
   return (
-    <a className="btn btn-secondary btn-block" href={tournamentUrl}>
+    <a className="btn btn-secondary btn-block rounded-lg" href={tournamentUrl}>
       Back to tournament
     </a>
   );

@@ -20,6 +20,6 @@ const iconsToClass = {
   php: 'icon-php-alt',
 };
 
-const LanguageIcon = ({ lang }) => <span className={cn('d-flex', iconsToClass[lang])} />;
+const LanguageIcon = ({ lang }) => <span className={cn('d-flex pt-2', iconsToClass[lang])} />;
 
 export default LanguageIcon;

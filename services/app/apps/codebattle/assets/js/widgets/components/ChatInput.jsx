@@ -88,11 +88,11 @@ export default function ChatInput() {
 
   return (
     <form
-      className="p-2 input-group input-group-sm mb-0"
+      className="border-top input-group input-group-sm mb-0 p-2"
       onSubmit={handleSubmit}
     >
       <input
-        className="h-auto form-control border-secondary"
+        className="form-control h-auto border-gray border-right-0 rounded-left"
         placeholder="Please be nice in the chat!"
         value={text}
         onChange={handleChange}
@@ -108,16 +108,16 @@ export default function ChatInput() {
       {isPickerVisible && (
         <EmojiPicker handleSelect={handleSelectEmodji} hide={hidePicker} />
       )}
-      <div className="input-group-append bg-white">
+      <div className="input-group-append border-left rounded-right">
         <button
           type="button"
-          className="btn btn-outline-secondary py-0 px-1"
+          className="btn bg-white border-gray border-left-0 border-right-0 px-1 py-0"
           onClick={togglePickerVisibility}
         >
           <em-emoji id="grinning" size={20} />
         </button>
         <button
-          className="btn btn-outline-secondary"
+          className="btn btn-light bg-white border-gray border-left rounded-right"
           type="button"
           onClick={handleSubmit}
         >

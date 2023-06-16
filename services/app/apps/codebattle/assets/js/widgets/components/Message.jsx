@@ -2,17 +2,16 @@ import React from 'react';
 import moment from 'moment';
 import cn from 'classnames';
 
-import UserContextMenu from './UserContextMenu';
 import MessageTag from './MessageTag';
 
 const Message = ({
   text = '',
   name = '',
+  userId,
   type,
   time,
-  userId,
   meta,
-  messageId,
+  displayMenu,
 }) => {
   if (!text) {
     return null;
@@ -52,14 +51,17 @@ const Message = ({
   return (
     <div className="d-flex align-items-baseline flex-wrap">
       <MessageTag messageType={meta?.type} />
-      <UserContextMenu
-        menuId={`menu-${messageId}`}
-        name={name}
-        userId={userId}
-        isBot={userId < 0}
+      <span
+        role="button"
+        tabIndex={0}
+        className="font-weight-bold"
+        data-user-id={userId}
+        onContextMenu={displayMenu}
+        onClick={displayMenu}
+        onKeyPress={displayMenu}
       >
-        <span className="font-weight-bold">{`${name}: `}</span>
-      </UserContextMenu>
+        {`${name}: `}
+      </span>
       <span className={cn(
         'ml-1 text-break', {
           'cb-private-text': meta?.type === 'private',

@@ -14,7 +14,7 @@ export default () => {
   return (
     <>
       <Dropdown as={ButtonGroup} title="">
-        <Dropdown.Toggle split variant="secondary" id="dropdown-rooms">
+        <Dropdown.Toggle className="rounded-top" split variant="secondary" id="dropdown-rooms">
           <span className="mr-2">{activeRoom.name}</span>
         </Dropdown.Toggle>
 

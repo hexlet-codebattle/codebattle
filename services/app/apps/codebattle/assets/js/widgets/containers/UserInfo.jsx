@@ -31,7 +31,7 @@ const UserPopoverContent = ({ user }) => {
 };
 
 const UserInfo = ({
- user, truncate = false, hideOnlineIndicator = false, loading = false,
+  user, hideInfo = false, truncate = false, hideOnlineIndicator = false, loading = false,
 }) => {
   const { presenceList } = useSelector(selectors.lobbyDataSelector);
   if (!user?.id) {
@@ -44,6 +44,19 @@ const UserInfo = ({
 
   const isOnline = presenceList.some(({ id }) => id === user?.id);
   const userClassName = cn({ 'cb-opacity-50': loading });
+
+  if (hideInfo) {
+    return (
+      <div className={userClassName}>
+        <UserName
+          user={user}
+          truncate={truncate}
+          isOnline={isOnline}
+          hideOnlineIndicator={hideOnlineIndicator}
+        />
+      </div>
+    );
+  }
 
   return (
     <PopoverStickOnHover
