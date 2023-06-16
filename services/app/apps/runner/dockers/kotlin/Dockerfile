@@ -1,4 +1,4 @@
-FROM openjdk:18-alpine3.15
+FROM amazoncorretto:20-alpine3.15-full
 
 ENV KOTLIN_VERSION=1.6.21 \
   KOTLIN_HOME=/usr/share/kotlin

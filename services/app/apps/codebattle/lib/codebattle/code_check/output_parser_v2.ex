@@ -23,23 +23,20 @@ defmodule Codebattle.CodeCheck.OutputParser.V2 do
   end
 
   defp parse_output(token = %{exit_code: 0}) do
-    %{token | solution_results: Jason.decode!(token.container_output)}
-  rescue
-    _e ->
-      solution_results =
-        token.container_output
-        |> String.split("\n")
-        |> Enum.map(fn str ->
-          try do
-            Jason.decode!(String.trim(str))
-          rescue
-            _ ->
-              nil
-          end
-        end)
-        |> Enum.filter(&Function.identity/1)
+    solution_results =
+      token.container_output
+      |> String.split("\n")
+      |> Enum.map(fn str ->
+        try do
+          Jason.decode!(String.trim(str))
+        rescue
+          _ ->
+            nil
+        end
+      end)
+      |> Enum.filter(&Function.identity/1)
 
-      %{token | solution_results: solution_results}
+    %{token | solution_results: solution_results}
   end
 
   defp parse_output(token) do
