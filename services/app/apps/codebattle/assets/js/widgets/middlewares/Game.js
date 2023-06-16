@@ -427,6 +427,10 @@ export const downloadPlaybook = machine => dispatch => {
   dispatch(fetchPlaybook(machine, initPlaybook));
 };
 
+export const openPlaybook = machine => () => {
+  machine.send('OPEN_REPLAYER');
+};
+
 export const connectToGame = machine => dispatch => {
   dispatch(isRecord ? fetchPlaybook(machine, initStoredGame) : activeGameReady(machine));
 };
