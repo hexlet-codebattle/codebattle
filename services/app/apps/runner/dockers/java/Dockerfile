@@ -1,4 +1,4 @@
-FROM openjdk:18-alpine3.15
+FROM amazoncorretto:20-alpine3.17-full
 
 WORKDIR /usr/src/app
 

@@ -13,13 +13,13 @@ compose-down:
 	docker compose down -v || true
 
 compose-test-code-checkers:
-	docker compose run --rm --name codebattle_app app mix test test/code_check
+	docker compose run --rm --name codebattle_app app mix test docker_executor
 
 compose-test-yarn:
 	docker compose run --rm --name codebattle_app app /bin/sh -c 'cd /app/apps/codebattle && yarn test'
 
 compose-test:
-	docker compose run --rm --name codebattle_app app mix test --exclude code_check
+	docker compose run --rm --name codebattle_app app mix test --exclude docker_executor
 
 compose-kill:
 	docker compose kill

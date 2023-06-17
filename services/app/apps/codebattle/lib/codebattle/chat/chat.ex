@@ -15,7 +15,8 @@ defmodule Codebattle.Chat do
           required(:type) => Chat.Message.type(),
           required(:text) => String.t(),
           optional(:user_id) => user_id(),
-          optional(:name) => String.t()
+          optional(:name) => String.t(),
+          optional(:meta) => Chat.Message.meta()
         }
 
   @type ban_user_params() :: %{
@@ -46,11 +47,12 @@ defmodule Codebattle.Chat do
   @spec add_message(chat_type(), add_message_params) :: :ok
   def add_message(chat_type, params) do
     message = %Chat.Message{
-      type: params.type,
+      type: Map.get(params, :type),
       user_id: Map.get(params, :user_id),
       name: Map.get(params, :name),
-      text: params.text,
-      time: now()
+      text: Map.get(params, :text),
+      time: now(),
+      meta: Map.get(params, :meta)
     }
 
     case Chat.Server.add_message(chat_type, message) do
@@ -76,7 +78,8 @@ defmodule Codebattle.Chat do
       chat_type,
       %{
         type: :info,
-        text: "#{params.name} has been banned by #{params.admin_name}"
+        text: "#{params.name} has been banned by #{params.admin_name}",
+        meta: %{"type" => "system", "target_user_id" => params.user_id}
       }
     )
 

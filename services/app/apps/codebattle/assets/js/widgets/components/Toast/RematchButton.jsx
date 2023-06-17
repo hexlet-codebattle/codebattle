@@ -83,7 +83,7 @@ const RematchButton = ({
   const renderBtnByDefault = () => (
     <button
       type="button"
-      className="btn btn-secondary btn-block"
+      className="btn btn-secondary btn-block rounded-lg"
       onClick={sendOfferToRematch}
       disabled={disabled}
     >

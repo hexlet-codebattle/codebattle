@@ -8,6 +8,12 @@ defmodule Codebattle.CodeCheck.OutputParser.V2Test do
 
   @success_output """
   {"type":"result","time":0.0076,"value":1,"output":"asdf"}
+  {"type":"result","time":0.0076,"value":2,"output":"asdf"}
+  """
+
+  @success_json_output """
+  [{"type":"result","time":0.0076,"value":1,"output":"asdf"},
+  {"type":"result","time":0.0076,"value":2,"output":"asdf"}]
   """
 
   @success_with_warning """
@@ -57,18 +63,26 @@ defmodule Codebattle.CodeCheck.OutputParser.V2Test do
   }
 
   @success_expected %Result.V2{
-    asserts_count: 1,
+    asserts_count: 2,
     output_error: "",
     status: "ok",
-    success_count: 1,
+    success_count: 2,
     asserts: [
       %Result.V2.AssertResult{
-        status: "success",
-        execution_time: 0.0076,
-        result: 1,
-        expected: 1,
         arguments: [1, 1],
-        output: "asdf"
+        execution_time: 0.0076,
+        expected: 1,
+        output: "asdf",
+        result: 1,
+        status: "success"
+      },
+      %Result.V2.AssertResult{
+        arguments: [2, 1],
+        expected: 2,
+        result: 2,
+        output: "asdf",
+        execution_time: 0.0076,
+        status: "success"
       }
     ]
   }
@@ -91,9 +105,24 @@ defmodule Codebattle.CodeCheck.OutputParser.V2Test do
   }
 
   test "parses success output" do
-    task = insert(:task, asserts: [%{arguments: [1, 1], expected: 1}])
+    task =
+      insert(:task,
+        asserts: [%{arguments: [1, 1], expected: 1}, %{arguments: [2, 1], expected: 2}]
+      )
 
     result = OutputParser.V2.call(%{task: task, container_output: @success_output, exit_code: 0})
+
+    assert result == @success_expected
+  end
+
+  test "parses success json output" do
+    task =
+      insert(:task,
+        asserts: [%{arguments: [1, 1], expected: 1}, %{arguments: [2, 1], expected: 2}]
+      )
+
+    result =
+      OutputParser.V2.call(%{task: task, container_output: @success_json_output, exit_code: 0})
 
     assert result == @success_expected
   end

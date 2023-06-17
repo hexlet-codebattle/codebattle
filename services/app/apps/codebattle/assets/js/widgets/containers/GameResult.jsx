@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import _ from 'lodash';
 import { Alert } from 'react-bootstrap';
 import * as selectors from '../selectors';
-import GameTypeCodes from '../config/gameTypeCodes';
+import GameModes from '../config/gameModes';
 import GameStateCodes from '../config/gameStateCodes';
 import i18n from '../../i18n';
 
@@ -12,7 +12,7 @@ const GameResult = () => {
   const players = useSelector(state => selectors.gamePlayersSelector(state));
   const isCurrentUserPlayer = _.hasIn(players, currentUserId);
   const gameStatus = useSelector(state => selectors.gameStatusSelector(state));
-  const gameType = useSelector(state => selectors.gameTypeSelector(state));
+  const gameMode = useSelector(state => selectors.gameModeSelector(state));
 
   const getResultMessage = () => {
     if (gameStatus.state === GameStateCodes.timeout) {
@@ -29,7 +29,7 @@ const GameResult = () => {
     }
 
     if (currentUserId === winner.id) {
-      const msg = gameType === GameTypeCodes.training
+      const msg = gameMode === GameModes.training
         ? i18n.t('Win Training Message')
         : i18n.t('Win Game Message');
 

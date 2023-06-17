@@ -12,7 +12,7 @@ import {
 
 import PlaybookStatusCodes from '../config/playbookStatusCodes';
 import GameStateCodes from '../config/gameStateCodes';
-
+import GameModes from '../config/gameModes';
 import notification from '../utils/notification';
 
 const defaultLanguages = Gon.getAsset('langs');
@@ -81,9 +81,12 @@ const initStore = dispatch => ({
 };
 
 const initStoredGame = dispatch => data => {
+  const mode = GameModes.history;
+
   const gameStatus = {
     state: GameStateCodes.stored,
     type: data.type,
+    mode,
     tournamentId: data.tournamentId,
   };
 
@@ -123,6 +126,7 @@ const initGameChannel = (dispatch, machine) => {
       state,
       startsAt,
       type,
+      mode,
       timeoutSeconds,
       players: [firstPlayer, secondPlayer],
       task,
@@ -136,6 +140,7 @@ const initGameChannel = (dispatch, machine) => {
     const gameStatus = {
       state,
       type,
+      mode,
       startsAt,
       score,
       timeoutSeconds,
@@ -420,6 +425,10 @@ export const storedEditorReady = machine => () => {
 
 export const downloadPlaybook = machine => dispatch => {
   dispatch(fetchPlaybook(machine, initPlaybook));
+};
+
+export const openPlaybook = machine => () => {
+  machine.send('OPEN_REPLAYER');
 };
 
 export const connectToGame = machine => dispatch => {

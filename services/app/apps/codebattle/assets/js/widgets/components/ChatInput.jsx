@@ -2,10 +2,14 @@ import React, { useState, useRef, useEffect } from 'react';
 import * as _ from 'lodash';
 import { SearchIndex, init } from 'emoji-mart';
 import data from '@emoji-mart/data';
+import { useSelector } from 'react-redux';
+
+import * as selectors from '../selectors';
 import useClickAway from '../utils/useClickAway';
 import { addMessage } from '../middlewares/Chat';
 import EmojiPicker from './EmojiPicker';
 import EmojiToolTip from './EmojiTooltip';
+import messageTypes from '../config/messageTypes';
 
 const trimColons = message => message.slice(0, message.lastIndexOf(':'));
 
@@ -21,22 +25,30 @@ const getTooltipVisibility = async msg => {
 export default function ChatInput() {
   const [isPickerVisible, setPickerVisibility] = useState(false);
   const [isTooltipVisible, setTooltipVisibility] = useState(false);
-  const [message, setMessage] = useState('');
+  const [text, setText] = useState('');
   const inputRef = useRef(null);
+  const activeRoom = useSelector(selectors.activeRoomSelector);
 
   const handleChange = async ({ target: { value } }) => {
-    setMessage(value);
+    setText(value);
     setTooltipVisibility(await getTooltipVisibility(value));
   };
 
   const handleSubmit = e => {
     e.preventDefault();
+    const message = {
+      text,
+      meta: {
+        type: activeRoom.targetUserId ? messageTypes.private : messageTypes.general,
+        targetUserId: activeRoom.targetUserId,
+      },
+    };
     if (isTooltipVisible) {
       return;
     }
-    if (message) {
+    if (text) {
       addMessage(message);
-      setMessage('');
+      setText('');
     }
   };
 
@@ -47,14 +59,14 @@ export default function ChatInput() {
   const hideTooltip = () => setTooltipVisibility(false);
 
   const handleSelectEmodji = async ({ native }) => {
-    const processedMessage = isTooltipVisible ? trimColons(message) : message;
+    const processedMessage = isTooltipVisible ? trimColons(text) : text;
     const input = inputRef.current;
     const caretPosition = input.selectionStart || 0;
     const before = processedMessage.slice(0, caretPosition);
     const after = processedMessage.slice(caretPosition);
     hidePicker();
     hideTooltip();
-    await setMessage(`${before}${native}${after}`);
+    await setText(`${before}${native}${after}`);
     input.focus();
     input.setSelectionRange(
       caretPosition + native.length,
@@ -76,19 +88,19 @@ export default function ChatInput() {
 
   return (
     <form
-      className="p-2 input-group input-group-sm mb-0"
+      className="border-top input-group input-group-sm mb-0 p-2"
       onSubmit={handleSubmit}
     >
       <input
-        className="h-auto form-control border-secondary"
+        className="form-control h-auto border-gray border-right-0 rounded-left"
         placeholder="Please be nice in the chat!"
-        value={message}
+        value={text}
         onChange={handleChange}
         ref={inputRef}
       />
       {isTooltipVisible && (
         <EmojiToolTip
-          colons={getColons(message)}
+          colons={getColons(text)}
           handleSelect={handleSelectEmodji}
           hide={hideTooltip}
         />
@@ -96,16 +108,16 @@ export default function ChatInput() {
       {isPickerVisible && (
         <EmojiPicker handleSelect={handleSelectEmodji} hide={hidePicker} />
       )}
-      <div className="input-group-append bg-white">
+      <div className="input-group-append border-left rounded-right">
         <button
           type="button"
-          className="btn btn-outline-secondary py-0 px-1"
+          className="btn bg-white border-gray border-left-0 border-right-0 px-1 py-0"
           onClick={togglePickerVisibility}
         >
           <em-emoji id="grinning" size={20} />
         </button>
         <button
-          className="btn btn-outline-secondary"
+          className="btn btn-light bg-white border-gray border-left rounded-right"
           type="button"
           onClick={handleSubmit}
         >

@@ -46,10 +46,9 @@ const Players = ({ players }) => {
     );
   }
 
-  const getPregressbarWidth = player => `${
-      (player.checkResult?.successCount / player.checkResult?.assertsCount)
-      * 100
+  const getPregressbarWidth = player => `${(player.checkResult?.successCount / player.checkResult?.assertsCount) * 100
     }%`;
+
   const getPregressbarClass = player => classnames('cb-check-result-bar', player.checkResult.status);
 
   return (
@@ -99,13 +98,13 @@ const Players = ({ players }) => {
 const isPlayer = (user, game) => !_.isEmpty(_.find(game.players, { id: user.id }));
 
 const ShowButton = ({ url }) => (
-  <a type="button" className="btn btn-outline-orange btn-sm" href={url}>
+  <a type="button" className="btn btn-outline-orange btn-sm rounded-lg" href={url}>
     Show
   </a>
 );
 
 const ContinueButton = ({ url }) => (
-  <a type="button" className="btn btn-outline-success btn-sm" href={url}>
+  <a type="button" className="btn w-100 btn-outline-success btn-sm rounded-lg" href={url}>
     Continue
   </a>
 );
@@ -136,7 +135,7 @@ const GameActionButton = ({ game }) => {
     if (isPlayer(currentUser, game)) {
       return (
         <div className="d-flex justify-content-center">
-          <div className="btn-group ml-5">
+          <div className="btn-group w-100 ml-5">
             <ContinueButton url={gameUrl} />
             <button
               type="button"
@@ -162,11 +161,12 @@ const GameActionButton = ({ game }) => {
         </div>
       );
     }
+
     if (currentUser.isGuest) {
       return (
         <button
           type="button"
-          className="btn btn-outline-success btn-sm"
+          className="btn w-100 btn-outline-success btn-sm rounded-lg"
           data-method="get"
           data-to={signInUrl}
         >
@@ -174,11 +174,12 @@ const GameActionButton = ({ game }) => {
         </button>
       );
     }
+
     return (
-      <div className="btn-group">
+      <div className="btn-group w-100">
         <button
           type="button"
-          className="btn btn-outline-orange btn-sm"
+          className="btn btn-outline-orange btn-sm rounded-lg"
           data-method="post"
           data-csrf={window.csrf_token}
           data-to={gameUrlJoin}
@@ -332,8 +333,8 @@ const ActiveGames = ({ games }) => {
   ];
 
   return (
-    <div className="table-responsive">
-      <table className="table table-striped border-gray border-top-0 mb-0">
+    <div className="table-responsive rounded-bottom">
+      <table className="table table-striped mb-0">
         <thead className="text-center">
           <tr>
             <th className="p-3 border-0">Level</th>
@@ -347,27 +348,27 @@ const ActiveGames = ({ games }) => {
         <tbody>
           {sortedGames.map(
             game => isActiveGame(game) && (
-            <tr key={game.id} className="text-dark game-item">
-              <td className="p-3 align-middle text-nowrap">
-                <GameLevelBadge level={game.level} />
-              </td>
-              <td className="p-3 align-middle text-center text-nowrap">
-                <img
-                  alt={game.state}
-                  title={game.state}
-                  src={
-                        game.state === 'playing'
-                          ? '/assets/images/playing.svg'
-                          : '/assets/images/waitingOpponent.svg'
-                      }
-                />
-              </td>
-              <Players players={game.players} />
-              <td className="p-3 align-middle text-center">
-                <GameActionButton game={game} />
-              </td>
-            </tr>
-              ),
+              <tr key={game.id} className="text-dark game-item">
+                <td className="p-3 align-middle text-nowrap">
+                  <GameLevelBadge level={game.level} />
+                </td>
+                <td className="p-3 align-middle text-center text-nowrap">
+                  <img
+                    alt={game.state}
+                    title={game.state}
+                    src={
+                      game.state === 'playing'
+                        ? '/assets/images/playing.svg'
+                        : '/assets/images/waitingOpponent.svg'
+                    }
+                  />
+                </td>
+                <Players players={game.players} />
+                <td className="p-3 align-middle text-center">
+                  <GameActionButton game={game} />
+                </td>
+              </tr>
+            ),
           )}
         </tbody>
       </table>
@@ -378,7 +379,7 @@ const ActiveGames = ({ games }) => {
 const tabLinkClassName = (...hash) => {
   const url = new URL(window.location);
   return classnames(
-    'nav-item nav-link text-uppercase rounded-0 text-black font-weight-bold p-3',
+    'nav-item nav-link text-uppercase rounded-0 font-weight-bold p-3 border-0',
     { active: hash.includes(url.hash) },
   );
 };
@@ -412,9 +413,9 @@ const GameContainers = ({
   }, []);
 
   return (
-    <div className="p-0">
+    <div className="p-0 shadow-sm rounded-lg">
       <nav>
-        <div className="nav nav-tabs bg-gray" id="nav-tab" role="tablist">
+        <div className="nav nav-tabs bg-gray rounded-top border-dark border-bottom" id="nav-tab" role="tablist">
           <a
             className={tabLinkClassName(
               hashLinkNames.lobby,
@@ -504,7 +505,7 @@ const renderModal = (show, handleCloseModal) => (
 const CreateGameButton = ({ handleClick }) => (
   <button
     type="button"
-    className="btn btn-success text-uppercase font-weight-bold py-3 mb-3"
+    className="btn btn-success border-0 text-uppercase font-weight-bold py-3 mb-3 rounded-lg"
     onClick={handleClick}
   >
     Create a Game
@@ -531,7 +532,8 @@ const LobbyWidget = () => {
         }),
       );
     }
-  }, [currentUser, dispatch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser]);
 
   useEffect(() => {
     dispatch(fetchCompletedGames());

@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import ChatWidget from './ChatWidget';
 import Task from '../components/Task';
 import {
-  gameTaskSelector, gameStatusSelector, leftExecutionOutputSelector, currentUserIdSelector,
+  gameTaskSelector, gameModeSelector, gameStatusSelector, leftExecutionOutputSelector, currentUserIdSelector,
 } from '../selectors';
 import Output from '../components/ExecutionOutput/Output';
 import OutputTab from '../components/ExecutionOutput/OutputTab';
@@ -11,6 +11,7 @@ import CountdownTimer from '../components/CountdownTimer';
 import Timer from '../components/Timer';
 import GameContext from './GameContext';
 import { gameMachineStates } from '../machines/game';
+import GameModes from '../config/gameModes';
 
 const gameStatuses = {
   stored: 'stored',
@@ -18,8 +19,14 @@ const gameStatuses = {
   timeout: 'game_over',
 };
 
-const TimerContainer = ({ time, timeoutSeconds, gameStateName }) => {
+const TimerContainer = ({
+ time, mode, timeoutSeconds, gameStateName,
+}) => {
   const { current } = useContext(GameContext);
+
+  if (mode === GameModes.history) {
+    return 'History';
+  }
 
   if (timeoutSeconds === null) {
     return 'Loading...';
@@ -46,13 +53,14 @@ const InfoWidget = () => {
   const startsAt = useSelector(state => gameStatusSelector(state).startsAt);
   const timeoutSeconds = useSelector(state => gameStatusSelector(state).timeoutSeconds);
   const gameStateName = useSelector(state => gameStatusSelector(state).state);
+  const gameMode = useSelector(gameModeSelector);
   const leftOutput = useSelector(leftExecutionOutputSelector(gameCurrent));
   const isShowOutput = leftOutput && leftOutput.status;
   const idOutput = 'leftOutput';
   return (
     <>
       <div className="col-12 col-lg-6 p-1 cb-height-info">
-        <div className="d-flex flex-column h-100">
+        <div className="d-flex shadow-sm flex-column h-100">
           <nav>
             <div
               className="nav nav-tabs bg-gray text-uppercase font-weight-bold text-center"
@@ -60,7 +68,7 @@ const InfoWidget = () => {
               role="tablist"
             >
               <a
-                className="nav-item nav-link col-3 active rounded-0 px-1 py-2"
+                className="nav-item nav-link col-3 border-0 active rounded-0 px-1 py-2"
                 id="task-tab"
                 data-toggle="tab"
                 href="#task"
@@ -71,7 +79,7 @@ const InfoWidget = () => {
                 Task
               </a>
               <a
-                className="nav-item nav-link col-3 rounded-0 px-1 py-2"
+                className="nav-item nav-link col-3 border-0 rounded-0 px-1 py-2"
                 id={`${idOutput}-tab`}
                 data-toggle="tab"
                 href={`#${idOutput}`}
@@ -86,13 +94,14 @@ const InfoWidget = () => {
               >
                 <TimerContainer
                   time={startsAt}
+                  mode={gameMode}
                   timeoutSeconds={timeoutSeconds}
                   gameStateName={gameStateName}
                 />
               </div>
             </div>
           </nav>
-          <div className="tab-content flex-grow-1 overflow-auto " id="nav-tabContent">
+          <div className="tab-content flex-grow-1 bg-white rounded-bottom overflow-auto " id="nav-tabContent">
             <div
               className="tab-pane fade show active h-100"
               id="task"

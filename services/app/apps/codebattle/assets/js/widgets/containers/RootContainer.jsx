@@ -205,7 +205,7 @@ const RootContainer = ({
   }, []);
 
   useEffect(() => {
-const muteSound = e => {
+    const muteSound = e => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'm') {
         e.preventDefault();
         // eslint-disable-next-line no-unused-expressions
@@ -263,11 +263,11 @@ const muteSound = e => {
                   <InfoWidget />
                   <GameWidget editorMachine={editorMachine} />
                   {mute
-                  && (
-                  <div className="rounded p-2 bg-dark cb-mute-icon">
-                    <FontAwesomeIcon size="lg" color="white" icon={['fas', 'volume-mute']} />
-                  </div>
-)}
+                    && (
+                      <div className="rounded p-2 bg-dark cb-mute-icon">
+                        <FontAwesomeIcon size="lg" color="white" icon={['fas', 'volume-mute']} />
+                      </div>
+                    )}
                   <FeedbackWidget />
                 </div>
               </div>

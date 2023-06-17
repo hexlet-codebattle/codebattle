@@ -29,7 +29,7 @@ const CompletedGamesRows = memo(({ games }) => (
         </td>
         <td className="px-1 py-3 align-middle text-nowrap">{moment.utc(game.finishesAt).local().format('MM.DD HH:mm')}</td>
         <td className="px-1 py-3 align-middle">
-          <a type="button" className="btn btn-outline-orange btn-sm" href={`/games/${game.id}`}>
+          <a type="button" className="btn btn-outline-orange btn-sm rounded-lg" href={`/games/${game.id}`}>
             Show
           </a>
         </td>
@@ -40,13 +40,19 @@ const CompletedGamesRows = memo(({ games }) => (
 
 const CompletedGames = ({ games, loadNextPage = null, totalGames }) => {
   const { nextPage, totalPages } = useSelector(state => state.completedGames);
-  const object = useMemo(() => ({ loading: false }), [nextPage]);
+  const object = useMemo(
+    () => ({ loading: false }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [nextPage],
+  );
   const dispatch = useDispatch();
 
   /** @type {import("react").RefObject<HTMLDivElement>} */
   const ref = useRef(null);
 
   useEffect(() => {
+    const observerRef = ref;
+
     const load = () => {
       if (object.loading) return;
       object.loading = true;
@@ -62,17 +68,20 @@ const CompletedGames = ({ games, loadNextPage = null, totalGames }) => {
       if (delta < 500) { load(); }
     };
 
-    ref.current?.addEventListener('scroll', onScroll);
+    observerRef.current?.addEventListener('scroll', onScroll);
 
     return () => {
-      ref.current?.removeEventListener('scroll', onScroll);
+      if (observerRef) {
+        observerRef.current?.removeEventListener('scroll', onScroll);
+      }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [object]);
 
   return (
     <>
       <div ref={ref} data-testid="scroll" className="table-responsive scroll" style={{ maxHeight: '600px' }}>
-        <table className="table table-sm table-striped border-gray border mb-0">
+        <table className="table table-sm table-striped border-gray border-0 mb-0">
           <thead>
             <tr>
               <th className="p-3 border-0">Level</th>
@@ -88,7 +97,7 @@ const CompletedGames = ({ games, loadNextPage = null, totalGames }) => {
           </tbody>
         </table>
       </div>
-      <div className="bg-white py-2 px-5 font-weight-bold border-gray border">
+      <div className="bg-white py-2 px-5 font-weight-bold border-gray border rounded-bottom">
         {`Total games: ${totalGames}`}
       </div>
     </>

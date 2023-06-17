@@ -69,6 +69,7 @@
     "react-bootstrap": "^1.4.0",
     "react-calendar-heatmap": "^1.8.1",
     "react-chartjs-2": "^5.0.1",
+    "react-contexify": "^6.0.0",
     "react-dom": "^16.13.1",
     "react-feather": "^2.0.9",
     "react-hotkeys": "^2.0.0",

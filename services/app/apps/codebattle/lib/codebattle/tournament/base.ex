@@ -89,7 +89,7 @@ defmodule Codebattle.Tournament.Base do
           tournament
           |> update_struct(%{
             players_count: players_count(tournament),
-            last_round_started_at: NaiveDateTime.utc_now(),
+            last_round_started_at: NaiveDateTime.truncate(NaiveDateTime.utc_now(), :second),
             state: "active"
           })
         else
@@ -168,7 +168,7 @@ defmodule Codebattle.Tournament.Base do
       defp set_next_round_params(tournament) do
         update_struct(tournament, %{
           current_round: tournament.current_round + 1,
-          last_round_started_at: NaiveDateTime.utc_now()
+          last_round_started_at: NaiveDateTime.truncate(NaiveDateTime.utc_now(), :second)
         })
       end
 

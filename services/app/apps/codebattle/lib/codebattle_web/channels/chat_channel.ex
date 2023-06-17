@@ -9,12 +9,23 @@ defmodule CodebattleWeb.ChatChannel do
 
   def join(topic, _payload, socket) do
     type = get_chat_type(topic)
+    user = socket.assigns.current_user
 
     subscribe_to_updates(type)
-    %{users: users, messages: messages} = Chat.join_chat(type, socket.assigns.current_user)
+    %{users: users, messages: messages} = Chat.join_chat(type, user)
+
+    filtered_messages =
+      messages
+      |> Enum.filter(fn message ->
+        if message.meta && message.meta["type"] == "private" do
+          users_private_message?(message, user.id)
+        else
+          true
+        end
+      end)
 
     send(self(), :after_join)
-    {:ok, %{users: users, messages: messages}, socket}
+    {:ok, %{users: users, messages: filtered_messages}, socket}
   end
 
   def handle_in("chat:add_msg", payload, socket) do
@@ -26,10 +37,13 @@ defmodule CodebattleWeb.ChatChannel do
       user_id: user.id,
       name: user.name,
       type: :text,
-      text: text
+      text: text,
+      meta: payload["meta"]
     })
 
-    update_playbook(chat_type, :chat_message, %{id: user.id, name: user.name, message: text})
+    unless get_in(payload, ["meta", "type"]) == "private" do
+      update_playbook(chat_type, :chat_message, %{id: user.id, name: user.name, message: text})
+    end
 
     {:noreply, socket}
   end
@@ -79,7 +93,15 @@ defmodule CodebattleWeb.ChatChannel do
   end
 
   def handle_info(%{topic: _topic, event: "chat:new_msg", payload: payload}, socket) do
-    push(socket, "chat:new_msg", payload)
+    current_user_id = socket.assigns.current_user.id
+
+    if payload.meta == nil do
+      push(socket, "chat:new_msg", payload)
+    else
+      if payload.meta["type"] == "general" || users_private_message?(payload, current_user_id) do
+        push(socket, "chat:new_msg", payload)
+      end
+    end
 
     {:noreply, socket}
   end
@@ -128,4 +150,7 @@ defmodule CodebattleWeb.ChatChannel do
   defp subscribe_to_updates({:tournament, id}) do
     Codebattle.PubSub.subscribe("chat:tournament:#{id}")
   end
+
+  defp users_private_message?(message, user_id),
+    do: user_id in [message.user_id, message.meta["target_user_id"]]
 end

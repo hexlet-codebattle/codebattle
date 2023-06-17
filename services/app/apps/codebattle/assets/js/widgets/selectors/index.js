@@ -186,6 +186,8 @@ export const chatUsersSelector = state => state.chat.users;
 
 export const chatMessagesSelector = state => state.chat.messages;
 
+export const chatHistoryMessagesSelector = state => state.chat.history.messages;
+
 export const currentChatUserSelector = state => {
   const currentUserId = currentUserIdSelector(state);
 
@@ -222,11 +224,13 @@ export const usersListSelector = state => state.user.usersRatingPage;
 
 export const gameTypeSelector = state => state.game.gameStatus.type;
 
+export const gameModeSelector = state => state.game.gameStatus.mode;
+
 export const userSettingsSelector = state => state.userSettings;
 
 export const isOpponentInGameSelector = state => {
   const findedUser = _.find(chatUsersSelector(state), {
-    id: opponentPlayerSelector(state).id,
+    targetUserId: opponentPlayerSelector(state).id,
   });
   return !_.isUndefined(findedUser);
 };
@@ -244,3 +248,7 @@ export const isModalShow = state => state.lobby.createGameModal.show;
 export const modalSelector = state => state.lobby.createGameModal;
 
 export const completedGamesData = state => state.completedGames;
+
+export const activeRoomSelector = state => state.chat.activeRoom;
+
+export const roomsSelector = state => state.chat.rooms;
