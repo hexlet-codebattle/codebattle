@@ -85,7 +85,7 @@ export default ({ onSubmit, settings }) => {
                     />
                   </div>
                   <div className="col-3">
-                    <p className="h6 pt-1">Your weapon</p>
+                    <div className="h6">Your weapon</div>
                     <Field
                       as="select"
                       data-testid="langSelect"
