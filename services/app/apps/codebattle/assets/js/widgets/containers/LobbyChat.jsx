@@ -52,7 +52,7 @@ const LobbyChat = ({ connectToChat }) => {
       menuId={menuId}
       request={menuRequest}
     >
-      <div className="d-flex flex-wrap border-gray shadow-sm mt-2 cb-chat-container">
+      <div className="d-flex flex-wrap rounded shadow-sm mt-2 cb-chat-container">
         <div className="col-12 col-sm-8 p-0 bg-light rounded-left h-sm-100 position-relative d-flex flex-column cb-messages-container">
           <ChatHeader showRooms />
           <Messages displayMenu={displayMenu} messages={messages} />
@@ -60,7 +60,7 @@ const LobbyChat = ({ connectToChat }) => {
         </div>
         <div className="col-12 col-sm-4 p-0 pb-3 pb-sm-4 border-left bg-light rounded-right cb-players-container">
           <div className="d-flex flex-column h-100">
-            <p className="px-3 pt-3 mb-3">{`Online players: ${presenceList.length}`}</p>
+            <p className="px-3 pt-2 mb-3">{`Online players: ${presenceList.length}`}</p>
             <div className="d-flex px-3 flex-column align-items-start overflow-auto">
               {presenceList.map(presenceUser => (
                 <div

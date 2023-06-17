@@ -13,7 +13,7 @@ export default ({ showRooms = false }) => {
   };
 
   return (
-    <div className="d-flex border-bottom shadow-sm align-items-center">
+    <div className="d-flex border-bottom align-items-center">
       {showRooms && <Rooms />}
       {currentUserIsAdmin ? (
         <button

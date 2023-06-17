@@ -553,12 +553,20 @@ a {
 
 .nav-tabs {
   border-bottom: 1px solid black;
+  .nav-item.active {
+    color: var(--black);
+  }
 
   .nav-item.active,
   .nav-item:hover {
     border-top: 1px solid black;
     border-right: 1px solid black;
     border-left: 1px solid black;
+  }
+
+  .nav-item:not(.active):hover {
+    color: var(--gray);
+    background: var(--light);
   }
 }
 

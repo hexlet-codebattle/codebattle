@@ -81,7 +81,7 @@ const CompletedGames = ({ games, loadNextPage = null, totalGames }) => {
   return (
     <>
       <div ref={ref} data-testid="scroll" className="table-responsive scroll" style={{ maxHeight: '600px' }}>
-        <table className="table table-sm table-striped border-gray border mb-0">
+        <table className="table table-sm table-striped border-gray border-0 mb-0">
           <thead>
             <tr>
               <th className="p-3 border-0">Level</th>
