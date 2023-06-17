@@ -24,6 +24,15 @@
       ) %>
     <% end %>
 
+    <%= if Codebattle.TaskPack.can_access_task_pack?(@task_pack, @current_user) do %>
+      <%= link("Delete",
+        to: Routes.task_pack_path(@conn, :delete, @task_pack),
+        class: "btn btn-danger mt-2",
+        method: :delete,
+        data: [confirm: "Delete task pack?"]
+      ) %>
+    <% end %>
+
     <%= link("Back", to: Routes.task_pack_path(@conn, :index), class: "ml-auto") %>
   </div>
 </div>
