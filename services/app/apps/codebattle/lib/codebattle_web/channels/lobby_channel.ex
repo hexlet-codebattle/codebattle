@@ -23,7 +23,7 @@ defmodule CodebattleWeb.LobbyChannel do
        active_games: user_active_games,
        tournaments: Tournament.Context.list_live_and_finished(socket.assigns.current_user),
        completed_games:
-         GameView.render_completed_games(Game.Context.get_completed_games(%{}).games)
+         GameView.render_completed_games(Game.Context.get_completed_games(%{}, %{page_size: 20, total: false, page_number: 1}).games)
      }, socket}
   end
 

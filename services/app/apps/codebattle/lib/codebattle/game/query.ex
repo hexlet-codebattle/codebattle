@@ -57,14 +57,19 @@ defmodule Codebattle.Game.Query do
           %{optional(:user_id) => integer()},
           %{
             page_number: integer(),
-            page_size: integer()
+            page_size: integer(),
+            total: boolean()
           }
         ) :: %{games: [map()], page_info: map()}
   def get_completed_games(filters, params) do
     result =
       completed_games_base_query()
       |> filter_completed_games(filters)
-      |> Repo.paginate(%{page: params.page_number, page_size: params.page_size})
+      |> Repo.paginate(%{
+        page: params.page_number,
+        page_size: params.page_size,
+        total: params.total
+      })
 
     %{
       games: result.entries,
@@ -75,8 +80,7 @@ defmodule Codebattle.Game.Query do
   defp completed_games_base_query() do
     from(
       g in Game,
-      distinct: true,
-      order_by: [desc_nulls_last: g.finishes_at],
+      order_by: [desc: g.id],
       where: g.state == "game_over",
       where: g.mode == "standard",
       where: fragment("jsonb_array_length(?) = 2", g.players)

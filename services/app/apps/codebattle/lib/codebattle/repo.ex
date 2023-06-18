@@ -1,10 +1,11 @@
 defmodule Codebattle.Repo do
-  @default_pagination %{page: 1, page_size: 50}
-  alias Codebattle.Repo
-
   use Ecto.Repo, otp_app: :codebattle, adapter: Ecto.Adapters.Postgres
 
   import Ecto.Query
+
+  alias Codebattle.Repo
+
+  @default_pagination %{page: 1, page_size: 50, total: false}
 
   def count(q), do: Codebattle.Repo.aggregate(q, :count, :id)
 
@@ -12,10 +13,14 @@ defmodule Codebattle.Repo do
     params = Map.merge(@default_pagination, params)
 
     total_entries =
-      query
-      |> exclude(:order_by)
-      |> exclude(:select)
-      |> Repo.count()
+      if params.total do
+        query
+        |> exclude(:order_by)
+        |> exclude(:select)
+        |> Repo.count()
+      else
+        0
+      end
 
     offset = (params.page - 1) * params.page_size
 
