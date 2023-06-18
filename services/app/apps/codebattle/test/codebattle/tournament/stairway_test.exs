@@ -62,13 +62,14 @@ defmodule Codebattle.Tournament.StairwayTest do
       tournament = finish_matches(tournament)
       assert matches_count(tournament) == 70
       assert tournament.current_round == 4
-      assert Enum.count(tournament.played_pair_ids) == 69
+      assert Enum.count(tournament.played_pair_ids) == 70
 
       # only 5 rounds
 
       tournament = finish_matches(tournament)
       assert matches_count(tournament) == 70
       assert tournament.current_round == 4
+      assert Enum.count(tournament.played_pair_ids) == 70
     end
   end
 
