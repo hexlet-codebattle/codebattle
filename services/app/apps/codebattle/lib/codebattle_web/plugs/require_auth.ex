@@ -1,8 +1,9 @@
 defmodule CodebattleWeb.Plugs.RequireAuth do
-  import Plug.Conn
-  import Phoenix.Controller
-  import CodebattleWeb.Gettext
   alias CodebattleWeb.Router.Helpers, as: Routes
+
+  import CodebattleWeb.Gettext
+  import Phoenix.Controller
+  import Plug.Conn
 
   def init(options), do: options
 
@@ -13,7 +14,7 @@ defmodule CodebattleWeb.Plugs.RequireAuth do
       conn
       |> put_flash(:danger, gettext("You must be logged in to access that page"))
       |> redirect(to: Routes.session_path(conn, :new, next: next_path))
-      |> halt
+      |> halt()
     else
       conn
     end

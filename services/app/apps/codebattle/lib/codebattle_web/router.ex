@@ -2,7 +2,13 @@ defmodule CodebattleWeb.Router do
   use CodebattleWeb, :router
   use Plug.ErrorHandler
 
+  import Phoenix.LiveDashboard.Router
+
   require Logger
+
+  pipeline :admins_only do
+    plug(CodebattleWeb.Plugs.AdminOnly)
+  end
 
   pipeline :browser do
     plug(:accepts, ["html"])
@@ -27,6 +33,11 @@ defmodule CodebattleWeb.Router do
 
   scope "/", CodebattleWeb do
     get("/health", HealthController, :index)
+  end
+
+  scope "/" do
+    pipe_through [:browser, :admins_only]
+    live_dashboard "/dashboard", metrics: CodebattleWeb.Telemetry
   end
 
   scope "/auth", CodebattleWeb do
@@ -87,9 +98,7 @@ defmodule CodebattleWeb.Router do
       patch("/disable", TaskController, :disable, as: :disable)
     end
 
-    resources("/task_packs", TaskPackController,
-      only: [:index, :show, :new, :edit, :create, :update]
-    ) do
+    resources("/task_packs", TaskPackController) do
       patch("/activate", TaskPackController, :activate, as: :activate)
       patch("/disable", TaskPackController, :disable, as: :disable)
     end

@@ -12,7 +12,7 @@ defmodule CodebattleWeb.Api.V1.FeedbackController do
     page_size = params |> Map.get("page_size", "50") |> String.to_integer()
 
     query = from(f in Feedback, order_by: {:desc, f.id})
-    page = Repo.paginate(query, %{page: page_number, page_size: page_size})
+    page = Repo.paginate(query, %{page: page_number, page_size: page_size, total: true})
     page_info = Map.take(page, [:page_number, :page_size, :total_entries, :total_pages])
 
     json(conn, %{

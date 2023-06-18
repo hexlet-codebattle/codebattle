@@ -17,7 +17,7 @@ defmodule CodebattleWeb.Api.V1.GameController do
     %{games: games, page_info: page_info} =
       Game.Query.get_completed_games(
         filters,
-        %{page_number: page_number, page_size: page_size}
+        %{page_number: page_number, page_size: page_size, total: true}
       )
 
     json(conn, %{games: GameView.render_completed_games(games), page_info: page_info})

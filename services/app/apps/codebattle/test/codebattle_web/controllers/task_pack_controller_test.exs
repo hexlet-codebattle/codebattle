@@ -160,4 +160,26 @@ defmodule CodebattleWeb.TaskPackControllerTest do
 
     assert task_pack.state == "disabled"
   end
+
+  test ".delete", %{conn: conn} do
+    user = insert(:user)
+    admin = insert(:admin)
+    task_pack = insert(:task_pack, creator_id: admin.id, state: "active")
+
+    # unrelated user
+    new_conn =
+      conn
+      |> put_session(:user_id, user.id)
+      |> delete(Routes.task_pack_path(conn, :delete, task_pack))
+
+    assert new_conn.status == 404
+
+    # admin or creator
+    new_conn =
+      conn
+      |> put_session(:user_id, admin.id)
+      |> delete(Routes.task_pack_path(conn, :delete, task_pack))
+
+    assert redirected_to(new_conn) == Routes.task_pack_path(conn, :index)
+  end
 end

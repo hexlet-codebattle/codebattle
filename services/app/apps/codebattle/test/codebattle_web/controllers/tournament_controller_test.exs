@@ -61,4 +61,14 @@ defmodule CodebattleWeb.TournamentControllerTest do
 
     assert new_conn.status == 404
   end
+
+  test "renders not found", %{conn: conn} do
+    user = insert(:user)
+
+    assert_raise Ecto.NoResultsError, fn ->
+      conn
+      |> put_session(:user_id, user.id)
+      |> get(Routes.tournament_path(conn, :show, 12_313_221))
+    end
+  end
 end

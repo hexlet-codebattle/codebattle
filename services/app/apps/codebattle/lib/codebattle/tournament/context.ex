@@ -9,14 +9,6 @@ defmodule Codebattle.Tournament.Context do
   @states_from_restore ["waiting_participants"]
   @max_alive_tournaments 7
 
-  @spec get(pos_integer()) :: Tournament.t() | nil
-  def get(id) do
-    case Tournament.Server.get_tournament(id) do
-      nil -> get_from_db(id)
-      tournament -> tournament
-    end
-  end
-
   @spec get!(pos_integer()) :: Tournament.t() | no_return()
   def get!(id) do
     case Tournament.Server.get_tournament(id) do
@@ -25,23 +17,28 @@ defmodule Codebattle.Tournament.Context do
     end
   end
 
-  @spec get_from_db(pos_integer()) :: Tournament.t() | nil
-  defp get_from_db(id) do
-    Tournament
-    |> Repo.get(id)
-    |> Repo.preload([:creator])
-    |> case do
-      nil -> nil
-      t -> add_module(t)
-    end
+  @spec get(pos_integer()) :: Tournament.t() | nil
+  def get(id) do
+    get!(id)
+  rescue
+    Ecto.NoResultsError ->
+      nil
   end
 
   @spec get_from_db!(pos_integer()) :: Tournament.t() | no_return()
   def get_from_db!(id) do
-    case get_from_db(id) do
-      nil -> raise Ecto.NoResultsError
-      tournament -> tournament
-    end
+    Tournament
+    |> Repo.get!(id)
+    |> Repo.preload([:creator])
+    |> add_module()
+  end
+
+  @spec get_from_db(pos_integer()) :: Tournament.t() | nil
+  def get_from_db(id) do
+    get_from_db!(id)
+  rescue
+    Ecto.NoResultsError ->
+      nil
   end
 
   @spec list_live_and_finished(User.t()) :: list(Tournament.t())
