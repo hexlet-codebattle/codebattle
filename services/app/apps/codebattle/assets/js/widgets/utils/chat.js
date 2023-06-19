@@ -8,7 +8,11 @@ const currentUser = Gon.getAsset('current_user');
 
 export const isGeneralRoom = room => room.name === rooms.general.name;
 
+export const isPrivateRoom = room => !Object.values(rooms).some(r => r.name === room.name);
+
 export const isPrivateMessage = messageType => messageType === messageTypes.private;
+
+export const isSystemMessage = messageType => messageType === messageTypes.system;
 
 export const isMessageForCurrentPrivateRoom = (room, message) => (
   room.targetUserId === message.meta?.targetUserId || room.targetUserId === message.userId
@@ -27,6 +31,10 @@ const isProperPrivateRoomActive = (message, room) => (
 );
 
 export const shouldShowMessage = (message, room) => {
+  if (isSystemMessage(message.type)) {
+    return true;
+  }
+
   if (message.meta?.type === messageTypes.private) {
     return isProperPrivateRoomActive(message, room) || isGeneralRoom(room);
   }
@@ -39,8 +47,9 @@ export const shouldShowMessage = (message, room) => {
     case (rooms.system.name): {
       return message.type === messageTypes.system;
     }
+
     default:
-      return true;
+      return !isPrivateRoom(room);
   }
 };
 

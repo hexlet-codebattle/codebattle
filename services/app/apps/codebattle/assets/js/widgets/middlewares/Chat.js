@@ -20,7 +20,7 @@ const fetchState = () => dispatch => {
       text: `Joined channel: ${_.capitalize(page)}`,
       status: 'success',
     });
-    const messages = [greetingMessage, data.messages];
+    const messages = [greetingMessage, ...data.messages];
     const updatedData = { ...data, page, messages };
     camelizeKeysAndDispatch(actions.updateChatData)(updatedData);
   });

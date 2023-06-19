@@ -62,7 +62,7 @@ const chat = createSlice({
       const rooms = current(state.rooms);
       const privateRooms = filterPrivateRooms(rooms);
       const existingPrivateRoom = privateRooms.find(room => (
-        room.id === payload.id
+        room.targetUserId === payload.targetUserId
       ));
       if (existingPrivateRoom) {
         state.activeRoom = existingPrivateRoom;
