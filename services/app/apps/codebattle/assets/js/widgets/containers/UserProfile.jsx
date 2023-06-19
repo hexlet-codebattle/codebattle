@@ -309,7 +309,7 @@ const UserProfile = () => {
   return (
     <div className="container-lg">
       <div className="row">
-        <div className="col-12 col-md-3 my-4 cb-user-data">
+        <div className="col-12 col-md-3 my-4 cb-user-data flex-column">
           <div className="mb-4 d-flex justify-content-center">
             <img
               className="img-fluid rounded"
