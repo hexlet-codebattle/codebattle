@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as _ from 'lodash';
 import { SearchIndex, init } from 'emoji-mart';
 import data from '@emoji-mart/data';
@@ -22,11 +22,10 @@ const getTooltipVisibility = async msg => {
   return !_.isEmpty(await SearchIndex.search(colons));
 };
 
-export default function ChatInput() {
+export default function ChatInput({ inputRef }) {
   const [isPickerVisible, setPickerVisibility] = useState(false);
   const [isTooltipVisible, setTooltipVisibility] = useState(false);
   const [text, setText] = useState('');
-  const inputRef = useRef(null);
   const activeRoom = useSelector(selectors.activeRoomSelector);
 
   const handleChange = async ({ target: { value } }) => {
@@ -111,7 +110,7 @@ export default function ChatInput() {
       <div className="input-group-append border-left rounded-right">
         <button
           type="button"
-          className="btn bg-white border-gray border-left-0 border-right-0 px-1 py-0"
+          className="btn bg-white border-gray border-left-0 border-right-0 px-2 py-0"
           onClick={togglePickerVisibility}
         >
           <em-emoji id="grinning" size={20} />

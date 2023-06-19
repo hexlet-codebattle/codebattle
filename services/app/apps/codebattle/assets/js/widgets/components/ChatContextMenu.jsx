@@ -30,6 +30,7 @@ const ChatContextMenu = ({
     },
   },
   menuId,
+  inputRef,
   children,
 }) => {
   const dispatch = useDispatch();
@@ -65,6 +66,10 @@ const ChatContextMenu = ({
 
       dispatch(actions.newChatMessage(message));
       dispatch(actions.createPrivateRoom(roomData));
+
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [name, userId]);

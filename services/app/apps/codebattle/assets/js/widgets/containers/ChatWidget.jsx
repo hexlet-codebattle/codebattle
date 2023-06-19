@@ -1,6 +1,7 @@
 import React, {
   useContext,
   useMemo,
+  useRef,
 } from 'react';
 import _ from 'lodash';
 import cn from 'classnames';
@@ -28,6 +29,8 @@ const ChatWidget = () => {
   const isTournamentGame = (gameMode === GameModes.tournament);
   const isStandardGame = (gameMode === GameModes.standard);
 
+  const inputRef = useRef(null);
+
   const { menuId, menuRequest, displayMenu } = useChatContextMenu({
     type: 'game',
     users,
@@ -47,6 +50,7 @@ const ChatWidget = () => {
   return (
     <ChatContextMenu
       menuId={menuId}
+      inputRef={inputRef}
       request={menuRequest}
     >
       <div className="d-flex flex-wrap flex-sm-nowrap shadow-sm h-100 rounded-lg">
@@ -60,7 +64,7 @@ const ChatWidget = () => {
           {gameCurrent.matches({ replayer: replayerMachineStates.on })
             ? <Messages messages={historyMessages} />
             : <Messages displayMenu={displayMenu} messages={filteredMessages} />}
-          {!gameCurrent.matches({ replayer: replayerMachineStates.on }) && <ChatInput />}
+          {!gameCurrent.matches({ replayer: replayerMachineStates.on }) && <ChatInput inputRef={inputRef} />}
         </div>
         <div className="flex-shrink-1 p-0 border-left bg-white rounded-right game-control-container">
           <div className="d-flex flex-column justify-content-start overflow-auto h-100">

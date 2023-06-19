@@ -27,7 +27,6 @@ defmodule CodebattleWeb.InviteChannel do
         %{topic: "invites:" <> _user_id, event: "invites:" <> action, payload: payload},
         socket
       ) do
-
     push(socket, "invites:#{action}", payload)
     {:noreply, socket}
   end

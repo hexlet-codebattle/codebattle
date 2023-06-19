@@ -210,10 +210,14 @@
                   class="mr-2"
                   href={session_path(@conn, :new, locale: :en, next: get_next_path(@conn))}
                 >
-                  <button class="btn btn-outline-success rounded-lg"><%= gettext("Sign in") %></button>
+                  <button class="btn btn-outline-success rounded-lg">
+                    <%= gettext("Sign in") %>
+                  </button>
                 </a>
                 <a href={user_path(@conn, :new, locale: :en, next: get_next_path(@conn))}>
-                  <button class="btn btn-outline-success rounded-lg"><%= gettext("Sign up") %></button>
+                  <button class="btn btn-outline-success rounded-lg">
+                    <%= gettext("Sign up") %>
+                  </button>
                 </a>
               </li>
               <%= if Application.get_env(:codebattle, :html_debug_mode) do %>

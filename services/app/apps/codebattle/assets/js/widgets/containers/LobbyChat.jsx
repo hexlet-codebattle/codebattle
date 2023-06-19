@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { connect, useSelector } from 'react-redux';
 import * as selectors from '../selectors';
 import Messages from '../components/Messages';
@@ -17,6 +17,8 @@ const LobbyChat = ({ connectToChat }) => {
   const users = useMemo(() => (
     presenceList.map(({ user }) => user)
   ), [presenceList]);
+
+  const inputRef = useRef(null);
 
   useEffect(() => {
     connectToChat();
@@ -37,13 +39,14 @@ const LobbyChat = ({ connectToChat }) => {
   return (
     <ChatContextMenu
       menuId={menuId}
+      inputRef={inputRef}
       request={menuRequest}
     >
       <div className="d-flex flex-wrap rounded shadow-sm mt-2 cb-chat-container">
         <div className="col-12 col-sm-8 p-0 bg-light rounded-left h-sm-100 position-relative d-flex flex-column cb-messages-container">
           <ChatHeader showRooms />
           <Messages displayMenu={displayMenu} messages={filteredMessages} />
-          <ChatInput />
+          <ChatInput inputRef={inputRef} />
         </div>
         <div className="col-12 col-sm-4 p-0 pb-3 pb-sm-4 border-left bg-light rounded-right cb-players-container">
           <div className="d-flex flex-column h-100">

@@ -29,11 +29,12 @@ defmodule CodebattleWeb.UserController do
 
     current_user = conn.assigns.current_user
 
-    profile_title = if current_user.id === String.to_integer(user_id) do
-      "My Profile"
-    else
-      "#{user.name} Profile"
-    end
+    profile_title =
+      if current_user.id === String.to_integer(user_id) do
+        "My Profile"
+      else
+        "#{user.name} Profile"
+      end
 
     conn
     |> put_meta_tags(%{
@@ -48,11 +49,12 @@ defmodule CodebattleWeb.UserController do
     current_user = conn.assigns.current_user
     changeset = User.changeset(current_user)
 
-    profile_title = if current_user.is_guest do
-      "Profile Settings"
-    else
-      "My Settings"
-    end
+    profile_title =
+      if current_user.is_guest do
+        "Profile Settings"
+      else
+        "My Settings"
+      end
 
     conn
     |> put_meta_tags(%{
