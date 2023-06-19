@@ -27,14 +27,40 @@ defmodule CodebattleWeb.UserController do
     stats = User.Stats.get_game_stats(user_id)
     user = Repo.get!(User, user_id)
 
-    render(conn, "show.html", user: user, games: games, stats: stats)
+    current_user = conn.assigns.current_user
+
+    profile_title = if current_user.id === String.to_integer(user_id) do
+      "My Profile"
+    else
+      "#{user.name} Profile"
+    end
+
+    conn
+    |> put_meta_tags(%{
+      title: "Hexlet Codebattle • #{profile_title}",
+      description: "Profile codebattle player: #{user.name}",
+      url: Routes.user_path(conn, :show, user.id)
+    })
+    |> render("show.html", user: user, games: games, stats: stats)
   end
 
   def edit(conn, _params) do
     current_user = conn.assigns.current_user
-
     changeset = User.changeset(current_user)
-    render(conn, "edit.html", user: current_user, changeset: changeset)
+
+    profile_title = if current_user.is_guest do
+      "Profile Settings"
+    else
+      "My Settings"
+    end
+
+    conn
+    |> put_meta_tags(%{
+      title: "Hexlet Codebattle • #{profile_title}",
+      description: "Profile Settings",
+      url: Routes.user_setting_path(conn, :edit)
+    })
+    |> render("edit.html", user: current_user, changeset: changeset)
   end
 
   def update(conn, %{"user" => user_params}) do

@@ -98,7 +98,7 @@ const Players = ({ players }) => {
 const isPlayer = (user, game) => !_.isEmpty(_.find(game.players, { id: user.id }));
 
 const ShowButton = ({ url }) => (
-  <a type="button" className="btn btn-outline-orange btn-sm rounded-lg" href={url}>
+  <a type="button" className="btn w-100 btn-outline-orange btn-sm rounded-lg" href={url}>
     Show
   </a>
 );

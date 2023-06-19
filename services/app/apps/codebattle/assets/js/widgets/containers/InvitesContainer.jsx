@@ -12,6 +12,7 @@ import {
   initInvites, acceptInvite, declineInvite, cancelInvite,
 } from '../middlewares/Invite';
 import initPresence from '../middlewares/Main';
+import isSafari from '../utils/browser';
 
 const NoInvites = () => (
   <div
@@ -42,14 +43,14 @@ const InvitesList = ({ list, currentUserId }) => {
             <button
               type="submit"
               className="btn btn-outline-danger small px-1 mx-1"
-              onClick={() => dispatch(acceptInvite(id))}
+              onClick={() => dispatch(acceptInvite(id, creator.name))}
             >
               Accept
             </button>
             <button
               type="submit"
               className="btn btn-outline-primary small px-1 mx-1"
-              onClick={() => dispatch(declineInvite(id))}
+              onClick={() => dispatch(declineInvite(id, creator.name))}
             >
               Decline
             </button>
@@ -64,7 +65,7 @@ const InvitesList = ({ list, currentUserId }) => {
             <button
               type="submit"
               className="btn btn-outline-primary small mx-1 px-1"
-              onClick={() => dispatch(cancelInvite(id))}
+              onClick={() => dispatch(cancelInvite(id, recipient.name))}
             >
               Cancel
             </button>
@@ -85,7 +86,7 @@ const InvitesContainer = () => {
   useEffect(() => {
     const user = Gon.getAsset('current_user');
     dispatch(actions.setCurrentUser({ user }));
-    dispatch(initInvites());
+    dispatch(initInvites(user));
     dispatch(initPresence());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -103,7 +104,7 @@ const InvitesContainer = () => {
 
   return (
     <OverlayTrigger
-      trigger="focus"
+      trigger={isSafari() ? 'click' : 'focus'}
       key="codebattle-invites"
       placement={invites.length === 0 ? 'bottom-end' : 'bottom'}
       overlay={(

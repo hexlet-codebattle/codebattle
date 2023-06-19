@@ -1,9 +1,11 @@
 import Gon from 'gon';
+import _ from 'lodash';
 import { camelizeKeys, decamelizeKeys } from 'humps';
 
 import socket from '../../socket';
 import { actions } from '../slices';
 import getChatName from '../utils/names';
+import { getSystemMessage } from '../utils/chat';
 
 const isRecord = Gon.getAsset('is_record');
 
@@ -13,7 +15,13 @@ const fetchState = () => dispatch => {
   const camelizeKeysAndDispatch = actionCreator => data => dispatch(actionCreator(camelizeKeys(data)));
 
   channel.join().receive('ok', data => {
-    const updatedData = { ...data, page: getChatName('page') };
+    const page = getChatName('page');
+    const greetingMessage = getSystemMessage({
+      text: `Joined channel: ${_.capitalize(page)}`,
+      status: 'success',
+    });
+    const messages = [greetingMessage, data.messages];
+    const updatedData = { ...data, page, messages };
     camelizeKeysAndDispatch(actions.updateChatData)(updatedData);
   });
 

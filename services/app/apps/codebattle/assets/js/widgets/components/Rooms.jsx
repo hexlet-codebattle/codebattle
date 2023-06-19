@@ -23,7 +23,7 @@ export default () => {
             rooms.map(room => (
               <Dropdown.Item
                 href="#"
-                key={room.targetUserId}
+                key={room.targetUserId || room.name}
                 onSelect={() => dispatch(actions.setActiveRoom(room))}
               >
                 {room.name}

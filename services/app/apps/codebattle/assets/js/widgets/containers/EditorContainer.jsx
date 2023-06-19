@@ -98,14 +98,14 @@ const EditorContainer = ({
 
   const userSettings = {
     type,
-    ...editorCurrent.context,
     ...editorSettingsByUserType[type],
+    ...editorCurrent.context,
   };
 
   const actionBtnsProps = {
     checkResult,
-    ...userSettings,
     currentEditorLangSlug,
+    ...userSettings,
   };
 
   const toolbarParams = {

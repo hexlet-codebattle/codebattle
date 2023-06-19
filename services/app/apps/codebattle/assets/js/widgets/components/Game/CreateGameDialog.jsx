@@ -120,6 +120,7 @@ const CreateGameDialog = ({ hideModal }) => {
           level: game.level,
           timeout_seconds: game.timeoutSeconds,
           recipient_id: opponent.id,
+          recipient_name: opponent.name,
           task_id: _.get(chosenTask, 'id', null),
           task_tags: chosenTags,
         }),

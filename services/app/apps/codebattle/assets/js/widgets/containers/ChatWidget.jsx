@@ -1,11 +1,10 @@
 import React, {
   useContext,
-  useEffect,
   useMemo,
 } from 'react';
 import _ from 'lodash';
 import cn from 'classnames';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import * as selectors from '../selectors';
 import Messages from '../components/Messages';
 import UserInfo from './UserInfo';
@@ -15,15 +14,12 @@ import GameModes from '../config/gameModes';
 import Notifications from './Notifications';
 import GameContext from './GameContext';
 import { replayerMachineStates } from '../machines/game';
-import { getPrivateRooms, clearExpiredPrivateRooms, updatePrivateRooms } from '../middlewares/Room';
-import { actions } from '../slices';
-import getChatName from '../utils/names';
 import ChatContextMenu from '../components/ChatContextMenu';
 import useChatContextMenu from '../utils/useChatContextMenu';
+import useChatRooms from '../utils/useChatRooms';
+import { shouldShowMessage } from '../utils/chat';
 
 const ChatWidget = () => {
-  const dispatch = useDispatch();
-
   const users = useSelector(state => selectors.chatUsersSelector(state));
   const messages = useSelector(state => selectors.chatMessagesSelector(state));
   const historyMessages = useSelector(selectors.chatHistoryMessagesSelector);
@@ -31,8 +27,6 @@ const ChatWidget = () => {
   const { current: gameCurrent } = useContext(GameContext);
   const isTournamentGame = (gameMode === GameModes.tournament);
   const isStandardGame = (gameMode === GameModes.standard);
-  const pageName = getChatName('page');
-  const rooms = useSelector(selectors.roomsSelector);
 
   const { menuId, menuRequest, displayMenu } = useChatContextMenu({
     type: 'game',
@@ -40,23 +34,15 @@ const ChatWidget = () => {
     canInvite: isStandardGame,
   });
 
-  useEffect(() => {
-    clearExpiredPrivateRooms();
-    const existingPrivateRooms = getPrivateRooms(pageName);
-    dispatch(actions.setPrivateRooms(existingPrivateRooms));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    const privateRooms = rooms.slice(1);
-    updatePrivateRooms(privateRooms, pageName);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rooms]);
+  useChatRooms('page');
 
   const listOfUsers = useMemo(() => {
     const uniqUsers = _.uniqBy(users, 'id');
     return isTournamentGame ? _.filter(uniqUsers, { isBot: false }) : uniqUsers;
   }, [isTournamentGame, users]);
+
+  const activeRoom = useSelector(selectors.activeRoomSelector);
+  const filteredMessages = messages.filter(message => shouldShowMessage(message, activeRoom));
 
   return (
     <ChatContextMenu
@@ -73,7 +59,7 @@ const ChatWidget = () => {
           <ChatHeader showRooms={isStandardGame} />
           {gameCurrent.matches({ replayer: replayerMachineStates.on })
             ? <Messages messages={historyMessages} />
-            : <Messages displayMenu={displayMenu} messages={messages} />}
+            : <Messages displayMenu={displayMenu} messages={filteredMessages} />}
           {!gameCurrent.matches({ replayer: replayerMachineStates.on }) && <ChatInput />}
         </div>
         <div className="flex-shrink-1 p-0 border-left bg-white rounded-right game-control-container">
@@ -91,6 +77,7 @@ const ChatWidget = () => {
                   title={user.name}
                   key={user.id}
                   data-user-id={user.id}
+                  data-user-name={user.name}
                   onContextMenu={displayMenu}
                   onClick={displayMenu}
                   onKeyPress={displayMenu}

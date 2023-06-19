@@ -88,7 +88,7 @@ export default function ChatInput() {
 
   return (
     <form
-      className="border-top input-group input-group-sm mb-0 p-2"
+      className="border-top input-group mb-0 p-2"
       onSubmit={handleSubmit}
     >
       <input
@@ -117,7 +117,7 @@ export default function ChatInput() {
           <em-emoji id="grinning" size={20} />
         </button>
         <button
-          className="btn btn-light bg-white border-gray border-left rounded-right"
+          className="btn btn-secondary border-gray border-left rounded-right"
           type="button"
           onClick={handleSubmit}
         >

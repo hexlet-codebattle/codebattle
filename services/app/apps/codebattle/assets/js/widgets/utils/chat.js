@@ -6,7 +6,7 @@ import rooms from '../config/rooms';
 
 const currentUser = Gon.getAsset('current_user');
 
-export const isGeneralRoomActive = room => room.name === rooms.general.name;
+export const isGeneralRoom = room => room.name === rooms.general.name;
 
 export const isPrivateMessage = messageType => messageType === messageTypes.private;
 
@@ -27,10 +27,38 @@ const isProperPrivateRoomActive = (message, room) => (
 );
 
 export const shouldShowMessage = (message, room) => {
-  switch (message.meta?.type) {
-    case messageTypes.private:
-      return isProperPrivateRoomActive(message, room) || isGeneralRoomActive(room);
+  if (message.meta?.type === messageTypes.private) {
+    return isProperPrivateRoomActive(message, room) || isGeneralRoom(room);
+  }
+
+  switch (room.name) {
+    case (rooms.general.name): {
+      return true;
+    }
+
+    case (rooms.system.name): {
+      return message.type === messageTypes.system;
+    }
     default:
-      return isGeneralRoomActive(room);
+      return true;
   }
 };
+
+export const getSystemMessage = ({
+  type = messageTypes.system,
+  text = '',
+  status = 'event',
+  userId,
+  name,
+  time,
+}) => ({
+  id: new Date().getTime(),
+  type,
+  text,
+  userId,
+  name,
+  time,
+  meta: {
+    status,
+  },
+});

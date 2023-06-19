@@ -17,6 +17,20 @@ const Message = ({
     return null;
   }
 
+  if (type === 'system') {
+    const statusClassName = cn('text-small', {
+      'text-danger': ['error', 'failure'].includes(meta?.status),
+      'text-success': meta?.status === 'success',
+      'text-muted': meta?.status === 'event',
+    });
+
+    return (
+      <div className="d-flex align-items-baseline flex-wrap">
+        <small className={statusClassName}>{text}</small>
+      </div>
+    );
+  }
+
   if (type === 'info') {
     return (
       <div className="d-flex align-items-baseline flex-wrap">
@@ -55,6 +69,7 @@ const Message = ({
         tabIndex={0}
         title={`Message (${name})`}
         data-user-id={userId}
+        data-user-name={name}
         onContextMenu={displayMenu}
         onClick={displayMenu}
         onKeyPress={displayMenu}

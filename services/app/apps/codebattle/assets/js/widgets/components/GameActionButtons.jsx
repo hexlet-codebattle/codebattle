@@ -8,11 +8,11 @@ import { actions } from '../slices';
 const CheckResultButton = ({ onClick, status }) => {
   const dispatch = useDispatch();
   const commonProps = {
-    className: 'btn btn-outline-success btn-check btn-md rounded-right',
-    dataGuideId: 'CheckResultButton',
+    className: 'btn btn-outline-success btn-check btn-sm rounded-right',
     title: 'Check solution&#013;Ctrl + Enter',
     onClick,
     'data-toggle': 'tooltip',
+    'data-guide-id': 'CheckResultButton',
     'data-placement': 'top',
   };
 
@@ -45,12 +45,12 @@ const CheckResultButton = ({ onClick, status }) => {
 const GiveUpButton = ({ onClick, status }) => {
   const dispatch = useDispatch();
   const commonProps = {
-    className: 'btn btn-outline-danger btn-md rounded-left',
-    dataGuideId: 'GiveUpButton',
+    className: 'btn btn-outline-danger btn-sm rounded-left',
     title: 'Give Up',
     onClick,
     'data-toggle': 'tooltip',
     'data-placement': 'top',
+    'data-guide-id': 'GiveUpButton',
   };
 
   switch (status) {
@@ -76,12 +76,12 @@ const GiveUpButton = ({ onClick, status }) => {
 const ResetButton = ({ onClick, status }) => {
   const dispatch = useDispatch();
   const commonProps = {
-    className: 'btn btn-outline-secondary btn-md mx-1',
-    dataGuideId: 'ResetButton',
+    className: 'btn btn-outline-secondary btn-sm mx-1',
     title: 'Reset editor',
     onClick,
     'data-toggle': 'tooltip',
     'data-placement': 'top',
+    'data-guide-id': 'ResetButton',
   };
 
   switch (status) {

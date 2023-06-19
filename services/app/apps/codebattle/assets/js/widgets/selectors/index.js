@@ -230,7 +230,7 @@ export const userSettingsSelector = state => state.userSettings;
 
 export const isOpponentInGameSelector = state => {
   const findedUser = _.find(chatUsersSelector(state), {
-    targetUserId: opponentPlayerSelector(state).id,
+    id: opponentPlayerSelector(state).id,
   });
   return !_.isUndefined(findedUser);
 };

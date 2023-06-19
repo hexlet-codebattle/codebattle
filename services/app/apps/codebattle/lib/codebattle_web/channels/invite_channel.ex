@@ -3,6 +3,7 @@ defmodule CodebattleWeb.InviteChannel do
   use CodebattleWeb, :channel
 
   alias Codebattle.{Invite, User}
+  alias Codebattle.PubSub.Message
 
   def join("invites", _payload, socket) do
     current_user = socket.assigns.current_user
@@ -16,16 +17,6 @@ defmodule CodebattleWeb.InviteChannel do
     {:ok, %{}, socket}
   end
 
-  # TODO: add pubsub message handlers for invites:
-  #   "invites:created" (a Controller can also create a invite)
-  #   "invites:expired"
-  #
-  # TODO: add socket message handlers for invites:
-  #   "invites:create" -{ push message back }> "invites:created", "invites:already_have_one"
-  #   "invites:cancel" -> "invites:canceled", "invites:already_expired", "invites:not_exists"
-  #   "invites:apply" -> "invites:applied", "invites:already_expired", "invites:not_exists"
-  #   "invites:decline" -> "invites:canceled", "invites:already_expired", "invites:not_exists"
-
   def handle_info(:after_join, socket) do
     invites = Invite.list_active_invites(socket.assigns.current_user.id)
     push(socket, "invites:init", %{invites: invites})
@@ -33,13 +24,11 @@ defmodule CodebattleWeb.InviteChannel do
   end
 
   def handle_info(
-        %{topic: "invites:" <> user_id, event: "invites:" <> action, payload: payload},
+        %{topic: "invites:" <> _user_id, event: "invites:" <> action, payload: payload},
         socket
       ) do
-    if String.to_integer(user_id) == socket.assigns.current_user.id do
-      push(socket, "invites:#{action}", payload)
-    end
 
+    push(socket, "invites:#{action}", payload)
     {:noreply, socket}
   end
 
@@ -72,15 +61,22 @@ defmodule CodebattleWeb.InviteChannel do
         data = %{
           state: invite.state,
           id: invite.id,
-          creator_id: invite.creator_id,
           game_params: game_params,
+          creator_id: invite.creator_id,
           recipient_id: invite.recipient_id,
+          executor_id: creator_id,
           creator: invite.creator,
           recipient: invite.recipient
         }
 
-        CodebattleWeb.Endpoint.broadcast!(
-          "invites",
+        broadcast_invite(
+          "invites:#{invite.creator_id}",
+          "invites:created",
+          %{invite: data}
+        )
+
+        broadcast_invite(
+          "invites:#{invite.recipient_id}",
           "invites:created",
           %{invite: data}
         )
@@ -103,12 +99,22 @@ defmodule CodebattleWeb.InviteChannel do
         data = %{
           state: invite.state,
           id: invite.id,
+          game_params: invite.game_params,
           creator_id: invite.creator_id,
-          recipient_id: invite.recipient_id
+          recipient_id: invite.recipient_id,
+          executor_id: user_id,
+          creator: invite.creator,
+          recipient: invite.recipient
         }
 
-        CodebattleWeb.Endpoint.broadcast!(
-          "invites",
+        broadcast_invite(
+          "invites:#{invite.creator_id}",
+          "invites:canceled",
+          %{invite: data}
+        )
+
+        broadcast_invite(
+          "invites:#{invite.recipient_id}",
           "invites:canceled",
           %{invite: data}
         )
@@ -121,21 +127,33 @@ defmodule CodebattleWeb.InviteChannel do
   end
 
   def handle_in("invites:accept", payload, socket) do
+    user_id = socket.assigns.current_user.id
+
     case Invite.accept_invite(%{
            id: payload["id"],
-           recipient_id: socket.assigns.current_user.id
+           recipient_id: user_id
          }) do
       {:ok, %{invite: invite, dropped_invites: dropped_invites}} ->
         data = %{
           state: invite.state,
           id: invite.id,
+          game_id: invite.game_id,
+          game_params: invite.game_params,
           creator_id: invite.creator_id,
           recipient_id: invite.recipient_id,
-          game_id: invite.game_id
+          executor_id: user_id,
+          creator: invite.creator,
+          recipient: invite.recipient
         }
 
-        CodebattleWeb.Endpoint.broadcast!(
+        broadcast_invite(
           "invites:#{invite.creator_id}",
+          "invites:accepted",
+          %{invite: data}
+        )
+
+        broadcast_invite(
+          "invites:#{invite.recipient_id}",
           "invites:accepted",
           %{invite: data}
         )
@@ -146,7 +164,13 @@ defmodule CodebattleWeb.InviteChannel do
             id: invite.id
           }
 
-          CodebattleWeb.Endpoint.broadcast!(
+          broadcast_invite(
+            "invites:#{invite.creator_id}",
+            "invites:dropped",
+            %{invite: data}
+          )
+
+          broadcast_invite(
             "invites:#{invite.recipient_id}",
             "invites:dropped",
             %{invite: data}
@@ -158,5 +182,15 @@ defmodule CodebattleWeb.InviteChannel do
       {:error, reason} ->
         {:reply, {:error, %{reason: reason}}, socket}
     end
+  end
+
+  defp broadcast_invite(topic, event, payload) do
+    message = %Message{
+      topic: topic,
+      event: event,
+      payload: payload
+    }
+
+    Phoenix.PubSub.broadcast(Codebattle.PubSub, topic, message)
   end
 end

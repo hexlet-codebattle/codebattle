@@ -1,16 +1,9 @@
 import React, { useRef, useLayoutEffect } from 'react';
-import { useSelector } from 'react-redux';
 import useStayScrolled from 'react-stay-scrolled';
-import { activeRoomSelector } from '../selectors';
 
 import Message from './Message';
-import { shouldShowMessage } from '../utils/chat';
 
 const Messages = ({ messages, displayMenu = () => {} }) => {
-  const activeRoom = useSelector(state => activeRoomSelector(state));
-
-  const filteredMessages = messages.filter(message => shouldShowMessage(message, activeRoom));
-
   const listRef = useRef();
 
   const { stayScrolled /* , scrollBottom */ } = useStayScrolled(listRef);
@@ -18,7 +11,7 @@ const Messages = ({ messages, displayMenu = () => {} }) => {
   // useLayoutEffect, because it measures and changes DOM attributes (scrollTop) directly
   useLayoutEffect(() => {
     stayScrolled();
-  }, [filteredMessages.length, stayScrolled]);
+  }, [messages.length, stayScrolled]);
 
   return (
     <>
@@ -26,7 +19,7 @@ const Messages = ({ messages, displayMenu = () => {} }) => {
         ref={listRef}
         className="overflow-auto pt-0 pl-3 pr-2 position-relative cb-messages-list flex-grow-1"
       >
-        {filteredMessages.map(message => {
+        {messages.map(message => {
           const {
             id, userId, name, text, type, time, meta,
           } = message;

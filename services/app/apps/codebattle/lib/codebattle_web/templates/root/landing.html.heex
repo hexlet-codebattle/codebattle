@@ -11,14 +11,13 @@
       </a>
       <ul class="navbar-nav ml-auto flex-row">
         <li class="nav-item mx-1">
-          <a
-            class="mr-2"
-            href={session_path(@conn, :new, locale: :en, next: get_next_path(@conn))}
-          >
-            <button class="btn btn-outline-grey"><%= gettext("Sign in") %></button>
+          <a href={session_path(@conn, :new, locale: :en, next: get_next_path(@conn))}>
+            <button class="btn btn-outline-success rounded-lg"><%= gettext("Sign in") %></button>
           </a>
+        </li>
+        <li class="nav-item mx-1">
           <a href={user_path(@conn, :new, locale: :en, next: get_next_path(@conn))}>
-            <button class="btn btn-outline-grey"><%= gettext("Sign up") %></button>
+            <button class="btn btn-outline-success rounded-lg"><%= gettext("Sign up") %></button>
           </a>
         </li>
 
@@ -26,7 +25,7 @@
           <li class="nav-item mx-1">
             <%= button("Dev sign_in",
               to: "/auth/dev_login?locale=en",
-              class: "btn btn-outline-grey"
+              class: "btn btn-outline-danger rounded-lg"
             ) %>
           </li>
         <% end %>
@@ -45,7 +44,7 @@
         <hr class="w-25 mx-0 hr-gray my-4" />
         <div>
           <button
-            class="btn btn-outline-red text-uppercase mt-3 p-3"
+            class="btn btn-outline-red text-uppercase mt-3 p-3 rounded-lg"
             data-csrf={csrf_token()}
             data-method="post"
             data-to="/games/training"
@@ -338,7 +337,7 @@
         </p>
         <div class="d-block text-center mt-3">
           <button
-            class="btn btn-outline-red text-uppercase mt-3 p-3"
+            class="btn btn-outline-red text-uppercase mt-3 p-3 rounded-lg"
             data-csrf={csrf_token()}
             data-method="post"
             data-to="/games/training"

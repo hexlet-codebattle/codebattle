@@ -172,7 +172,7 @@ export default ({ onSubmit, settings }) => {
                   disabled={!dirty}
                   style={{ width: '120px' }}
                   type="submit"
-                  className="btn py-1 btn-primary"
+                  className="btn py-1 btn-primary rounded-lg"
                 >
                   {!isSubmitting ? (
                     'Save'

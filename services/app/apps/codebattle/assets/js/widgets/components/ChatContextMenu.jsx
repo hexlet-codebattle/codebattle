@@ -18,6 +18,7 @@ import { pushCommand } from '../middlewares/Chat';
 import { actions } from '../slices';
 import { calculateExpireDate } from '../middlewares/Room';
 import { getLobbyUrl, getUserProfileUrl } from '../utils/urlBuilders';
+import { getSystemMessage } from '../utils/chat';
 
 const ChatContextMenu = ({
   request = {
@@ -51,12 +52,18 @@ const ChatContextMenu = ({
 
   const handleOpenDirect = useCallback(() => {
     if (name && userId) {
+      const expireTo = calculateExpireDate();
       const roomData = {
         targetUserId: userId,
         name,
-        exprireTo: calculateExpireDate(),
+        expireTo,
       };
 
+      const message = getSystemMessage({
+        text: `You join private channel with ${name}. You can send personal message`,
+      });
+
+      dispatch(actions.newChatMessage(message));
       dispatch(actions.createPrivateRoom(roomData));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -96,7 +103,7 @@ const ChatContextMenu = ({
   const isCurrentUser = !!userId && currentUserId === userId;
 
   const inviteSendDisabled = isBot || isCurrentUser || isCurrentUserHasActiveGames;
-  const canCreatePrivateRoom = !(isBot || isCurrentUser);
+  const canCreatePrivateRoom = !(isBot || isCurrentUser) && !!name;
 
   const handleBanClick = () => {
     if (userId && name) {
