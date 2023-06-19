@@ -59,7 +59,10 @@ const renderPagination = ({
     itemsCountPerPage={pageSize}
     totalItemsCount={totalEntries}
     pageRangeDisplayed={5}
-    onChange={page => setPage(page)}
+    onChange={page => {
+        setPage(page);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }}
     itemClass="page-item"
     linkClass="page-link"
   />
@@ -111,12 +114,14 @@ const UsersRating = () => {
     withBots: false,
   });
 
+  const [pageSize, setPageSize] = useState('20');
+
   const [page, setPage] = useState(1);
 
   useEffect(() => {
-    dispatch(getUsersRatingPage(filterParams, sortParams, page));
+    dispatch(getUsersRatingPage(filterParams, sortParams, page, pageSize));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filterParams, sortParams, page]);
+  }, [filterParams, sortParams, page, pageSize]);
 
   const triggerSort = attribute => {
     const direction = sortParams.direction === 'desc' ? 'asc' : 'desc';
@@ -141,7 +146,7 @@ const UsersRating = () => {
         {periods.map(period => renderFilterPeriodButtons(period, filterParams, setFilterParams, setPage))}
       </ul>
 
-      <div className="form-inline justify-content-between">
+      <div className="form-inline justify-content-start">
         <div className="input-group">
           <div className="input-group-prepend">
             <span className="input-group-text" id="basic-addon1">
@@ -161,7 +166,27 @@ const UsersRating = () => {
             }}
           />
         </div>
-        <div className="form-check">
+        {/* begin select */}
+        <div className="form-group ml-auto">
+          <label htmlFor="usersPerPage">
+            <select
+              className="custom-select"
+              id="usersPerPage"
+              onChange={e => {
+                setPageSize(e.target.value);
+                setPage(1);
+              }}
+            >
+              <option>20</option>
+              <option>30</option>
+              <option>40</option>
+              <option>50</option>
+            </select>
+            <span className="ml-2">Users per page</span>
+          </label>
+        </div>
+        {/** end select */}
+        <div className="form-check ml-3">
           <label className="form-check-label" htmlFor="withBots">
             <input
               id="withBots"
