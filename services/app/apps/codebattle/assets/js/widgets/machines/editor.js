@@ -79,7 +79,7 @@ const editor = {
     checking: {
       entry: initContextByState('checking'),
       after: {
-        20000: {
+        50000: {
           target: 'idle',
           actions: ['soundFailureChecking', 'handleTimeoutFailureChecking'],
         },
