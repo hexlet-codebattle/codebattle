@@ -134,6 +134,16 @@ defmodule Codebattle.Task do
     |> Repo.one()
   end
 
+  @spec uniq?(String.t()) :: boolean()
+  def uniq?(task_name) do
+    result =
+      __MODULE__
+      |> where([t], t.name == ^task_name)
+      |> Repo.exists?()
+
+    !result
+  end
+
   @spec get_task_by_tags_for_user(User.t(), list(String.t())) :: t()
   def get_task_by_tags_for_user(user, tags) do
     __MODULE__
