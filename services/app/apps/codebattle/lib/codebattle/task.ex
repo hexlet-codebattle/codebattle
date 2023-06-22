@@ -217,7 +217,7 @@ defmodule Codebattle.Task do
   @spec get_task_by_level(String.t()) :: t()
   def get_task_by_level(level), do: tasks_provider().get_task(level)
 
-  def delete(%__MODULE__{} = task) do
+  def delete(task) do
     Repo.delete(task)
   end
 
