@@ -66,6 +66,14 @@
     <%= if Codebattle.Task.can_access_task?(@task, @current_user) do %>
       <%= link("Edit", to: Routes.task_path(@conn, :edit, @task), class: "btn btn-success mt-2") %>
     <% end %>
+    <%= if Codebattle.Task.can_delete_task?(@task, @current_user) do %>
+      <%= link("Delete",
+        to: Routes.task_path(@conn, :delete, @task),
+        class: "btn btn-danger mt-2",
+        method: :delete,
+        data: [confirm: "Delete task?"]
+      ) %>
+    <% end %>
     <%= link("Back", to: Routes.task_path(@conn, :index), class: "ml-auto") %>
   </div>
 </div>
