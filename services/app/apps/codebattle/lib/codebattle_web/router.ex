@@ -94,7 +94,7 @@ defmodule CodebattleWeb.Router do
 
     resources("/react_tournaments", ReactTournamentController, only: [:index, :show])
 
-    resources("/tasks", TaskController, only: [:index, :show, :new, :edit, :create, :update]) do
+    resources("/tasks", TaskController) do
       patch("/activate", TaskController, :activate, as: :activate)
       patch("/disable", TaskController, :disable, as: :disable)
     end

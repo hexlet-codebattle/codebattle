@@ -205,4 +205,45 @@ defmodule CodebattleWeb.TaskControllerTest do
 
     assert task.state == "disabled"
   end
+
+  test ".delete", %{conn: conn} do
+    user = insert(:user)
+    admin = insert(:admin)
+    task = insert(:task, creator_id: admin.id, state: "active", origin: "user")
+
+    # unrelated user
+    new_conn =
+      conn
+      |> put_session(:user_id, user.id)
+      |> delete(Routes.task_path(conn, :delete, task))
+
+    assert new_conn.status == 404
+
+    # admin or creator
+    new_conn =
+      conn
+      |> put_session(:user_id, admin.id)
+      |> delete(Routes.task_path(conn, :delete, task))
+
+    assert redirected_to(new_conn) == Routes.task_path(conn, :index)
+
+    # task from github
+    task = insert(:task, creator_id: admin.id, state: "active", origin: "github")
+
+    # unrelated user
+    new_conn =
+      conn
+      |> put_session(:user_id, user.id)
+      |> delete(Routes.task_path(conn, :delete, task))
+
+    assert new_conn.status == 404
+
+    # admin or creator
+    new_conn =
+      conn
+      |> put_session(:user_id, admin.id)
+      |> delete(Routes.task_path(conn, :delete, task))
+
+    assert new_conn.status == 404
+  end
 end

@@ -100,6 +100,23 @@ defmodule CodebattleWeb.TaskController do
     end
   end
 
+  def delete(conn, %{"id" => id}) do
+    task = Task.get!(id)
+
+    if Task.can_delete_task?(task, conn.assigns.current_user) do
+      Task.delete(task)
+
+      conn
+      |> put_flash(:info, gettext("Task deleted!"))
+      |> redirect(to: Routes.task_path(conn, :index))
+    else
+      conn
+      |> put_status(:not_found)
+      |> put_view(CodebattleWeb.ErrorView)
+      |> render("404.html", %{msg: gettext("Task not found")})
+    end
+  end
+
   def activate(conn, %{"task_id" => id}) do
     task = Task.get!(id)
 
