@@ -67,6 +67,7 @@ defmodule CodebattleWeb.Router do
       resources("/session", SessionController, only: [:create], singleton: true)
       resources("/settings", SettingsController, only: [:show, :update], singleton: true)
       resources("/tasks", TaskController, only: [:index, :show])
+      post("/tasks/:name/unique", TaskController, :unique)
       resources("/users", UserController, only: [:index, :show, :create])
       resources("/feedback", FeedbackController, only: [:index, :create])
       post("/playbooks/approve", PlaybookController, :approve)

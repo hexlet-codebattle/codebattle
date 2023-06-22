@@ -102,4 +102,28 @@ defmodule CodebattleWeb.Api.V1.TaskControllerTest do
              } = response
     end
   end
+
+  describe ".unique" do
+    test "returns false when task exists", %{conn: conn} do
+      task = insert(:task, visibility: "public", level: "easy", name: "task_name")
+
+      conn =
+        conn
+        |> post(Routes.api_v1_task_path(conn, :unique, task.name))
+
+      resp_body = json_response(conn, 200)
+
+      assert resp_body == %{"unique" => false}
+    end
+
+    test "returns true when task not exists", %{conn: conn} do
+      conn =
+        conn
+        |> post(Routes.api_v1_task_path(conn, :unique, "my_unqiue_task"))
+
+      resp_body = json_response(conn, 200)
+
+      assert resp_body == %{"unique" => true}
+    end
+  end
 end
