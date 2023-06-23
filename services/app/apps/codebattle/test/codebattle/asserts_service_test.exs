@@ -73,52 +73,58 @@ defmodule Codebattle.AssertsServiceTest do
     test "integers" do
       asserts = [1]
 
-      assert %{"name" => "integer"} == AssertsService.type_asserts(asserts)
+      assert [%{"name" => "integer"}] == AssertsService.type_asserts(asserts)
     end
 
     test "booleans" do
       asserts = [true]
 
-      assert %{"name" => "boolean"} == AssertsService.type_asserts(asserts)
+      assert [%{"name" => "boolean"}] == AssertsService.type_asserts(asserts)
     end
 
     test "strings" do
       asserts = ["some"]
 
-      assert %{"name" => "string"} == AssertsService.type_asserts(asserts)
+      assert [%{"name" => "string"}] == AssertsService.type_asserts(asserts)
     end
 
     test "floats" do
       asserts = [1.1]
 
-      assert %{"name" => "float"} == AssertsService.type_asserts(asserts)
+      assert [%{"name" => "float"}] == AssertsService.type_asserts(asserts)
     end
 
     test "arrays" do
       asserts = [[1, 2]]
 
-      assert %{
-               "name" => "array",
-               "nested" => %{"name" => "integer"}
-             } == AssertsService.type_asserts(asserts)
+      assert [
+               %{
+                 "name" => "array",
+                 "nested" => %{"name" => "integer"}
+               }
+             ] == AssertsService.type_asserts(asserts)
     end
 
     test "hashes" do
       asserts = [%{"some" => 1}]
 
-      assert %{
-               "name" => "hash",
-               "nested" => %{"name" => "integer"}
-             } == AssertsService.type_asserts(asserts)
+      assert [
+               %{
+                 "name" => "hash",
+                 "nested" => %{"name" => "integer"}
+               }
+             ] == AssertsService.type_asserts(asserts)
     end
 
     test "nested arrays" do
       asserts = [[[1, 2, 3]]]
 
-      assert %{
-               "name" => "array",
-               "nested" => %{"name" => "array", "nested" => %{"name" => "integer"}}
-             } == AssertsService.type_asserts(asserts)
+      assert [
+               %{
+                 "name" => "array",
+                 "nested" => %{"name" => "array", "nested" => %{"name" => "integer"}}
+               }
+             ] == AssertsService.type_asserts(asserts)
     end
   end
 end
