@@ -24,6 +24,10 @@ defmodule Codebattle.AssertsService do
     typed_asserts == prepared_dest
   end
 
+  @doc """
+  Extract types from passed asserts.
+  """
+  @spec type_asserts([any()]) :: any()
   def type_asserts(asserts) do
     asserts |> Enum.map(&get_type/1)
   end
