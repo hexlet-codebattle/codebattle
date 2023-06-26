@@ -5,7 +5,6 @@ defmodule CodebattleWeb.Live.Tournament.IndividualComponent do
 
   alias CodebattleWeb.Live.Tournament.BracketsComponent
   alias CodebattleWeb.Live.Tournament.ChatComponent
-  alias CodebattleWeb.Live.Tournament.HeaderComponent
   alias CodebattleWeb.Live.Tournament.PlayersComponent
 
   @impl true
@@ -33,27 +32,21 @@ defmodule CodebattleWeb.Live.Tournament.IndividualComponent do
           />
         </div>
 
-        <div class="col-10 bg-white shadow-sm p-4">
-          <.live_component
-            id="t-header"
-            module={HeaderComponent}
-            tournament={@tournament}
-            current_user={@current_user}
-            next_round_time={@next_round_time}
-            user_timezone={@user_timezone}
-          />
-          <%= if is_active?(@tournament) || is_finished?(@tournament) do %>
-            <BracketsComponent.render tournament={@tournament} current_user_id={@current_user.id} />
-          <% end %>
-          <%= if is_waiting_participants?(@tournament) do %>
-            <%= if is_player?(@tournament, @current_user.id) do %>
-              <button class="btn btn-outline-danger" phx-click="leave">
-                Leave
-              </button>
-            <% else %>
-              <button class="btn btn-outline-secondary" phx-click="join">Join</button>
+        <div class="col-10">
+          <div class="bg-white shadow-sm p-4">
+            <%= if is_active?(@tournament) || is_finished?(@tournament) do %>
+              <BracketsComponent.render tournament={@tournament} current_user_id={@current_user.id} />
             <% end %>
-          <% end %>
+            <%= if is_waiting_participants?(@tournament) do %>
+              <%= if is_player?(@tournament, @current_user.id) do %>
+                <button class="btn btn-outline-danger" phx-click="leave">
+                  Leave
+                </button>
+              <% else %>
+                <button class="btn btn-outline-secondary" phx-click="join">Join</button>
+              <% end %>
+            <% end %>
+          </div>
         </div>
       </div>
     </div>

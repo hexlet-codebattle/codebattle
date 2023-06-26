@@ -4,7 +4,6 @@ defmodule CodebattleWeb.Live.Tournament.TeamComponent do
   import Codebattle.Tournament.Helpers
 
   alias CodebattleWeb.Live.Tournament.ChatComponent
-  alias CodebattleWeb.Live.Tournament.HeaderComponent
   alias CodebattleWeb.Live.Tournament.PlayersComponent
   alias CodebattleWeb.Live.Tournament.TeamRoundComponent
   alias CodebattleWeb.Live.Tournament.TeamTabComponent
@@ -33,29 +32,23 @@ defmodule CodebattleWeb.Live.Tournament.TeamComponent do
             players={get_players(@tournament)}
           />
         </div>
-        <div class="col-9 bg-white shadow-sm p-4">
-          <.live_component
-            id="t-header"
-            module={HeaderComponent}
-            tournament={@tournament}
-            current_user={@current_user}
-            next_round_time={@next_round_time}
-            user_timezone={@user_timezone}
-          />
-          <TeamTabComponent.render
-            teams={get_teams(@tournament)}
-            tournament={@tournament}
-            current_user={@current_user}
-          />
-          <%= for {round_matches, round} <- Enum.reverse(Enum.with_index(get_round_matches(@tournament))) do %>
-            <TeamRoundComponent.render
+        <div class="col-9">
+          <div class="bg-white shadow-sm p-4">
+            <TeamTabComponent.render
               teams={get_teams(@tournament)}
-              round={round}
-              matches={round_matches}
               tournament={@tournament}
-              current_user_id={@current_user.id}
+              current_user={@current_user}
             />
-          <% end %>
+            <%= for {round_matches, round} <- Enum.reverse(Enum.with_index(get_round_matches(@tournament))) do %>
+              <TeamRoundComponent.render
+                teams={get_teams(@tournament)}
+                round={round}
+                matches={round_matches}
+                tournament={@tournament}
+                current_user_id={@current_user.id}
+              />
+            <% end %>
+          </div>
         </div>
       </div>
     </div>

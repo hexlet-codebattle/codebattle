@@ -10,7 +10,11 @@ defmodule Codebattle.Tournament.IndividualTest do
       user = insert(:user)
 
       tournament =
-        insert(:tournament, state: "waiting_participants", creator_id: user.id, players_limit: 100)
+        insert(:tournament,
+          state: "waiting_participants",
+          creator_id: user.id,
+          players_limit: 100
+        )
 
       tournament = @module.join(tournament, %{user: user})
       tournament = @module.start(tournament, %{user: user})
@@ -23,7 +27,11 @@ defmodule Codebattle.Tournament.IndividualTest do
       users = insert_list(2, :user)
 
       tournament =
-        insert(:tournament, state: "waiting_participants", creator_id: user.id, players_limit: 100)
+        insert(:tournament,
+          state: "waiting_participants",
+          creator_id: user.id,
+          players_limit: 100
+        )
 
       tournament = @module.join(tournament, %{user: user})
       tournament = @module.join(tournament, %{users: users})
@@ -37,7 +45,11 @@ defmodule Codebattle.Tournament.IndividualTest do
       users = insert_list(4, :user)
 
       tournament =
-        insert(:tournament, state: "waiting_participants", creator_id: user.id, players_limit: 100)
+        insert(:tournament,
+          state: "waiting_participants",
+          creator_id: user.id,
+          players_limit: 100
+        )
 
       tournament = @module.join(tournament, %{user: user})
       tournament = @module.join(tournament, %{users: users})
@@ -51,7 +63,11 @@ defmodule Codebattle.Tournament.IndividualTest do
       users = insert_list(8, :user)
 
       tournament =
-        insert(:tournament, state: "waiting_participants", creator_id: user.id, players_limit: 100)
+        insert(:tournament,
+          state: "waiting_participants",
+          creator_id: user.id,
+          players_limit: 100
+        )
 
       tournament = @module.join(tournament, %{user: user})
       tournament = @module.join(tournament, %{users: users})
@@ -65,7 +81,11 @@ defmodule Codebattle.Tournament.IndividualTest do
       users = insert_list(17, :user)
 
       tournament =
-        insert(:tournament, state: "waiting_participants", creator_id: user.id, players_limit: 100)
+        insert(:tournament,
+          state: "waiting_participants",
+          creator_id: user.id,
+          players_limit: 100
+        )
 
       tournament = @module.join(tournament, %{user: user})
       tournament = @module.join(tournament, %{users: users})
@@ -93,7 +113,11 @@ defmodule Codebattle.Tournament.IndividualTest do
       users = insert_list(64, :user)
 
       tournament =
-        insert(:tournament, state: "waiting_participants", creator_id: user.id, players_limit: 299)
+        insert(:tournament,
+          state: "waiting_participants",
+          creator_id: user.id,
+          players_limit: 299
+        )
 
       tournament = @module.join(tournament, %{user: user})
       tournament = @module.join(tournament, %{users: users})

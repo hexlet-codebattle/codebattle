@@ -41,11 +41,11 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
         </div>
         <div class="form-row justify-content-between mt-3">
           <div class="col-6 d-flex flex-column justify-content-between">
-            <label>Starts at (UTC)</label>
+            <label>Starts at (<%= @user_timezone %>)</label>
             <%= datetime_local_input(f, :starts_at,
               class: "form-control",
               required: true,
-              value: f.params["starts_at"] || NaiveDateTime.utc_now()
+              value: f.params["starts_at"] || DateTime.add(DateTime.now!(@user_timezone), 5, :minute)
             ) %>
             <%= error_tag(f, :starts_at) %>
           </div>

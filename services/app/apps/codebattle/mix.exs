@@ -46,7 +46,7 @@ defmodule Codebattle.MixProject do
       {:ecto_psql_extras, "~> 0.2"},
       {:envy, "~> 1.1.1"},
       {:gettext, "~> 0.18"},
-      {:html_to_image, github: "koss-lebedev/html_to_image"},
+      {:html_to_image, github: "vtm9/html_to_image"},
       {:httpoison, "~> 2.0"},
       {:jason, "~> 1.2"},
       {:phoenix, "~> 1.7"},

@@ -13,7 +13,7 @@ defmodule Codebattle.Tournament.Base do
   @callback finish_tournament?(Tournament.t()) :: Tournament.t()
 
   defmacro __using__(_opts) do
-    quote do
+    quote location: :keep do
       @behaviour Tournament.Base
       import Tournament.Helpers
 

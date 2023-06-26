@@ -48,9 +48,10 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
         </div>
         <div class="form-row justify-content-between mt-3">
           <div class="col-8">
-            <label>Starts at (UTC)</label>
+            <label>Starts at (<%= @user_timezone %>)</label>
             <%= datetime_local_input(f, :starts_at,
               class: "form-control",
+              value: DateTime.shift_zone!(f.data.starts_at, @user_timezone),
               required: true
             ) %>
             <%= error_tag(f, :starts_at) %>

@@ -106,7 +106,7 @@ defmodule Codebattle.Game.Context do
         {:ok, game}
 
       {:error, reason} ->
-        Logger.warn("#{__MODULE__} Cannot create a game reason: #{inspect(reason)}")
+        Logger.warning("#{__MODULE__} Cannot create a game reason: #{inspect(reason)}")
         {:error, reason}
     end
   end

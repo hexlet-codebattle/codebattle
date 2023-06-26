@@ -4,7 +4,6 @@ defmodule CodebattleWeb.Live.Tournament.StairwayComponent do
   import Codebattle.Tournament.Helpers
 
   alias CodebattleWeb.Live.Tournament.ChatComponent
-  alias CodebattleWeb.Live.Tournament.HeaderComponent
   alias CodebattleWeb.Live.Tournament.PlayersComponent
   alias CodebattleWeb.Live.Tournament.ScorePlayersComponent
   alias CodebattleWeb.Live.Tournament.StairwayRoundsComponent
@@ -35,34 +34,37 @@ defmodule CodebattleWeb.Live.Tournament.StairwayComponent do
             />
           <% end %>
         </div>
-        <div class="col-10 bg-white shadow-sm p-4">
-          <.live_component
-            id="t-header"
-            module={HeaderComponent}
-            tournament={@tournament}
-            current_user={@current_user}
-            next_round_time={@next_round_time}
-            user_timezone={@user_timezone}
-          />
-          <%= if !is_waiting_participants?(@tournament) do %>
-            <div class="row">
-              <div class="col-3">
-                <ScorePlayersComponent.render
-                  tournament={@tournament}
-                  players_count={@tournament.players_count}
-                  current_user={@current_user}
-                  players={players_ordered_by_score(@tournament)}
-                />
+        <div class="col-10">
+          <div class="bg-white shadow-sm p-4">
+            <%= if !is_waiting_participants?(@tournament) do %>
+              <div class="row">
+                <div class="col-3">
+                  <ScorePlayersComponent.render
+                    tournament={@tournament}
+                    players_count={@tournament.players_count}
+                    current_user={@current_user}
+                    players={players_ordered_by_score(@tournament)}
+                  />
+                </div>
+                <div class="col-9">
+                  <StairwayRoundsComponent.render
+                    tournament={@tournament}
+                    round_matches={get_round_matches(@tournament)}
+                    current_user_id={@current_user.id}
+                  />
+                </div>
               </div>
-              <div class="col-9">
-                <StairwayRoundsComponent.render
-                  tournament={@tournament}
-                  round_matches={get_round_matches(@tournament)}
-                  current_user_id={@current_user.id}
-                />
-              </div>
-            </div>
-          <% end %>
+            <% end %>
+            <%= if is_waiting_participants?(@tournament) do %>
+              <%= if is_player?(@tournament, @current_user.id) do %>
+                <button class="btn btn-outline-danger" phx-click="leave">
+                  Leave
+                </button>
+              <% else %>
+                <button class="btn btn-outline-secondary" phx-click="join">Join</button>
+              <% end %>
+            <% end %>
+          </div>
         </div>
       </div>
     </div>

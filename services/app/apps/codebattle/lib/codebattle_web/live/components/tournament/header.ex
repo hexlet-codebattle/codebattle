@@ -1,16 +1,10 @@
 defmodule CodebattleWeb.Live.Tournament.HeaderComponent do
-  use CodebattleWeb, :live_component
+  use CodebattleWeb, :component
 
   import Codebattle.Tournament.Helpers
 
   alias CodebattleWeb.Live.Tournament.NextRoundTimerComponent
 
-  @impl true
-  def mount(socket) do
-    {:ok, assign(socket, initialized: false)}
-  end
-
-  @impl true
   def render(assigns) do
     ~H"""
     <div>
@@ -99,11 +93,11 @@ defmodule CodebattleWeb.Live.Tournament.HeaderComponent do
           <% end %>
         </div>
       </div>
-      <.live_component
+      <NextRoundTimerComponent.render
         id="t-timer"
-        module={NextRoundTimerComponent}
         tournament={@tournament}
         next_round_time={@next_round_time}
+        time_now={@time_now}
         user_timezone={@user_timezone}
       />
     </div>

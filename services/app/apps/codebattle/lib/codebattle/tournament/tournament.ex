@@ -26,7 +26,7 @@ defmodule Codebattle.Tournament do
            ]}
 
   @access_types ~w(public token)
-  @break_states ~w(break off)
+  @break_states ~w(on off)
   @levels ~w(elementary easy medium hard)
   @states ~w(waiting_participants canceled active finished)
   @task_providers ~w(level task_pack tags)
