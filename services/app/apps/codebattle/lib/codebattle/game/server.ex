@@ -27,6 +27,13 @@ defmodule Codebattle.Game.Server do
     :exit, _reason -> {:error, :not_found}
   end
 
+  def get_playbook_state(game_id) do
+    records = GenServer.call(server_name(game_id), :get_playbook_state)
+    {:ok, records}
+  catch
+    :exit, _reason -> {:error, :not_found}
+  end
+
   def fire_transition(game_id, event, params \\ %{})
 
   def fire_transition(game_id, event, params) do
@@ -48,7 +55,7 @@ defmodule Codebattle.Game.Server do
 
     state = %{
       game: game,
-      playbook_state: %{records: [], id: 0}
+      playbook_state: %{records: [], id: 0, solution_type: "incomplete"}
     }
 
     {:ok, state}
@@ -81,6 +88,11 @@ defmodule Codebattle.Game.Server do
   @impl GenServer
   def handle_call(:get_playbook_records, _from, state) do
     {:reply, state.playbook_state.records, state}
+  end
+
+  @impl GenServer
+  def handle_call(:get_playbook_state, _from, state) do
+    {:reply, state.playbook_state, state}
   end
 
   @impl GenServer
