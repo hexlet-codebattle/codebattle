@@ -646,25 +646,12 @@ td {
 @media (max-width: $sm) {
   .cb-user-data {
     max-width: 100%;
-    display: flex;
-  }
-  .img-fluid {
-    max-height: 50px;
-  }
-  .user__description {
-    text-align: center;
   }
   .cb-user-stats {
     max-width: 100%;
   }
   .cb-heading {
     font-size: 20px;
-  }
-  .user__description h2 {
-    font-weight: bold;
-  }
-  .lang {
-    display: none;
   }
   .cb-stats-number {
     font-size: 30px;
