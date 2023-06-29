@@ -194,7 +194,7 @@ defmodule Codebattle.Playbook.Context do
 
   defp get_solution_type(winner, game) do
     has_winner = Game.Helpers.winner?(game, winner.id)
-    opponent = Game.Helpers.get_opponent(game, winner)
+    opponent = Game.Helpers.get_opponent(game, winner.id)
     has_loser = Game.Helpers.lost?(game, opponent.id)
 
     if has_winner && has_loser do
