@@ -58,7 +58,7 @@ defmodule Codebattle.Playbook.Context do
       end)
       |> Enum.reverse()
 
-    %{records: records, id: Enum.count(records), solution_type: "incomplete"}
+    %{records: records, id: Enum.count(records)}
   end
 
   def add_record(playbook_state, type, params) when type in @record_types do
@@ -70,15 +70,9 @@ defmodule Codebattle.Playbook.Context do
       }
       |> Map.merge(params)
 
-    solution_type = case type do
-      :game_over -> "complete"
-      _ -> "incomplete"
-    end
-
     playbook_state
     |> Map.update!(:records, &[record | &1])
     |> Map.update!(:id, &(&1 + 1))
-    |> Map.update!(:solution_type, fn _ -> solution_type end)
   end
 
   def add_record(playbook_state, :check_success, _params), do: playbook_state
@@ -93,11 +87,11 @@ defmodule Codebattle.Playbook.Context do
     playbook_state
   end
 
-  def store_playbook(playbook_state, game_id) do
+  def store_playbook(playbook_records, game_id) do
     game = Game.Context.get_game!(game_id)
     winner = Game.Helpers.get_winner(game)
     task_id = Game.Helpers.get_task(game).id
-    data = build_playbook_data(playbook_state.records)
+    data = build_playbook_data(playbook_records)
 
     %Playbook{
       data: data,
@@ -105,8 +99,7 @@ defmodule Codebattle.Playbook.Context do
       game_id: String.to_integer(to_string(game_id)),
       winner_id: winner && winner.id,
       winner_lang: winner && winner.editor_lang,
-      # solution_type: get_solution_type(winner, game)
-      solution_type: playbook_state.solution_type
+      solution_type: get_solution_type(winner, game)
     }
     |> Repo.insert()
   end
@@ -197,10 +190,17 @@ defmodule Codebattle.Playbook.Context do
 
   defp increase_count(data), do: Map.update!(data, :count, &(&1 + 1))
 
+  defp get_solution_type(nil, game), do: "incomplete"
+
   defp get_solution_type(winner, game) do
-    case !!winner && Game.Helpers.winner?(game, winner.id) do
-      true -> "complete"
-      false -> "incomplete"
+    has_winner = Game.Helpers.winner?(game, winner.id)
+    opponent = Game.Helpers.get_opponent(game, winner)
+    has_loser = Game.Helpers.lost?(game, opponent.id)
+
+    if has_winner && has_loser do
+      "complete"
+    else
+      "incomplete"
     end
   end
 end
