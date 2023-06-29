@@ -190,10 +190,17 @@ defmodule Codebattle.Playbook.Context do
 
   defp increase_count(data), do: Map.update!(data, :count, &(&1 + 1))
 
+  defp get_solution_type(nil, game), do: "incomplete"
+
   defp get_solution_type(winner, game) do
-    case !!winner && Game.Helpers.winner?(game, winner.id) do
-      true -> "complete"
-      false -> "incomplete"
+    has_winner = Game.Helpers.winner?(game, winner.id)
+    opponent = Game.Helpers.get_opponent(game, winner.id)
+    has_loser = Game.Helpers.lost?(game, opponent.id)
+
+    if has_winner && has_loser do
+      "complete"
+    else
+      "incomplete"
     end
   end
 end
