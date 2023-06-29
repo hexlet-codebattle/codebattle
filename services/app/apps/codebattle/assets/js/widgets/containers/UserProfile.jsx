@@ -309,18 +309,19 @@ const UserProfile = () => {
   return (
     <div className="container-lg">
       <div className="row">
-        <div className="col-12 col-md-3 my-4 cb-user-data">
-          <div className="mb-4 d-flex justify-content-center">
+        <div className="col-12 col-md-3 my-4 cb-user-data d-flex flex-column">
+          <div className=" mb-2 mb-sm-4 h-25 d-flex justify-content-center">
             <img
-              className="img-fluid rounded"
+              className="img-fluid rounded w-25"
               src={stats.user.avatarUrl}
               alt="User avatar"
             />
           </div>
-          <div>
-            <h2 className="my-2 text-break cb-heading">{stats.user.name}</h2>
+          <div className="text-center">
+            <h2 className="my-2 text-break cb-heading font-weight-bold">{stats.user.name}</h2>
+            <hr />
             <h3 className="my-2 cb-heading">
-              Lang:
+              <span className="d-none d-sm-block">Lang:</span>
               <img
                 src={`/assets/images/achievements/${langIconNames[stats.user.lang]}.png`}
                 alt={stats.user.lang}
