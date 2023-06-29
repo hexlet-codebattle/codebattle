@@ -25,7 +25,7 @@ const FeedbackWidget = () => {
         <FontAwesomeIcon
           icon={['fas', 'rss']}
           style={{
-            color: '#ee3737', width: '20', height: '20', viewBox: '0 0 60 60', marginRight: '8px',
+            color: '#ee3737', width: '20', height: '20', marginRight: '8px',
           }}
         />
       )}
