@@ -89,4 +89,8 @@ defmodule Codebattle.TaskPack do
 
   def states, do: @states
   def visibility_types, do: @visibility_types
+
+  def delete(task_pack) do
+    Repo.delete(task_pack)
+  end
 end

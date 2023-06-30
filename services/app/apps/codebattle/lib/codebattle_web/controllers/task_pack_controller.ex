@@ -97,6 +97,23 @@ defmodule CodebattleWeb.TaskPackController do
     end
   end
 
+  def delete(conn, %{"id" => id}) do
+    task_pack = TaskPack.get!(id)
+
+    if TaskPack.can_access_task_pack?(task_pack, conn.assigns.current_user) do
+      Codebattle.TaskPack.delete(task_pack)
+
+      conn
+      |> put_flash(:info, gettext("Task pack deleted!"))
+      |> redirect(to: Routes.task_pack_path(conn, :index))
+    else
+      conn
+      |> put_status(:not_found)
+      |> put_view(CodebattleWeb.ErrorView)
+      |> render("404.html", %{msg: gettext("Task pack not found")})
+    end
+  end
+
   def activate(conn, %{"task_pack_id" => id}) do
     task_pack = TaskPack.get!(id)
 

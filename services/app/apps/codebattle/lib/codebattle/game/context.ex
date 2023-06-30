@@ -46,7 +46,7 @@ defmodule Codebattle.Game.Context do
 
   defdelegate get_completed_games(
                 filters,
-                pagingation_params \\ %{page_number: 1, page_size: 20}
+                pagingation_params \\ %{page_number: 1, page_size: 20, total: false}
               ),
               to: Game.Query
 

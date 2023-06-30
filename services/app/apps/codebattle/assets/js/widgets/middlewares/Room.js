@@ -1,3 +1,5 @@
+const uniqInstanceKey = process.env.NODE_ENV;
+
 const daysAmount = 10;
 const hoursAmount = 24;
 const minutesAmount = 60;
@@ -11,18 +13,21 @@ export const calculateExpireDate = () => {
   return now.getTime() + ttl;
 };
 
-const getAllPrivateRooms = () => JSON.parse(localStorage.getItem('private_rooms')) || {};
+export const getStorageKey = userId => `${userId}-${uniqInstanceKey}-private-messages`;
 
-export const getPrivateRooms = pageName => {
-  const allPrivateRooms = getAllPrivateRooms();
+const getAllPrivateRooms = key => JSON.parse(localStorage.getItem(key)) || {};
+
+export const getPrivateRooms = (pageName, key) => {
+  const allPrivateRooms = getAllPrivateRooms(key);
   const pagePrivateRooms = allPrivateRooms[pageName];
-
   return pagePrivateRooms || [];
 };
 
-export const clearExpiredPrivateRooms = () => {
+export const filterPrivateRooms = rooms => rooms.filter(({ required }) => !required);
+
+export const clearExpiredPrivateRooms = key => {
   const now = new Date();
-  const allPrivateRooms = getAllPrivateRooms();
+  const allPrivateRooms = getAllPrivateRooms(key);
   const allActualPrivateRooms = Object.entries(allPrivateRooms)
     .map(([pageName, pagePrivateRooms]) => {
       const actualPrivateRooms = pagePrivateRooms.filter(room => (
@@ -33,17 +38,17 @@ export const clearExpiredPrivateRooms = () => {
     .filter(([, pagePrivateRooms]) => pagePrivateRooms.length > 0);
 
   if (allActualPrivateRooms.length === 0) {
-    localStorage.removeItem('private_rooms');
+    localStorage.removeItem(key);
   } else {
-    localStorage.setItem('private_rooms', JSON.stringify(Object.fromEntries(allActualPrivateRooms)));
+    localStorage.setItem(key, JSON.stringify(Object.fromEntries(allActualPrivateRooms)));
   }
 };
 
-export const updatePrivateRooms = (rooms, pageName) => {
+export const updatePrivateRooms = (rooms, pageName, key) => {
   if (rooms.length === 0) {
     return;
   }
   const allPrivateRooms = getAllPrivateRooms();
   const updatedPrivateRooms = { ...allPrivateRooms, [pageName]: rooms };
-  localStorage.setItem('private_rooms', JSON.stringify(updatedPrivateRooms));
+  localStorage.setItem(key, JSON.stringify(updatedPrivateRooms));
 };

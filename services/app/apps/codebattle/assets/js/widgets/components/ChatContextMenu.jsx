@@ -7,7 +7,6 @@ import {
   Menu,
   Item,
   Separator,
-  useContextMenu,
 } from 'react-contexify';
 
 import {
@@ -19,13 +18,19 @@ import { pushCommand } from '../middlewares/Chat';
 import { actions } from '../slices';
 import { calculateExpireDate } from '../middlewares/Room';
 import { getLobbyUrl, getUserProfileUrl } from '../utils/urlBuilders';
+import { getSystemMessage } from '../utils/chat';
 
-const UserContextMenu = ({
+const ChatContextMenu = ({
+  request = {
+    user: {
+      name: null,
+      userId: null,
+      isBot: false,
+      canInvite: false,
+    },
+  },
   menuId,
-  name,
-  userId,
-  isBot,
-  canInvite = true,
+  inputRef,
   children,
 }) => {
   const dispatch = useDispatch();
@@ -33,28 +38,64 @@ const UserContextMenu = ({
   const currentUserId = useSelector(currentUserIdSelector);
   const { activeGames } = useSelector(lobbyDataSelector);
 
+  const {
+    isBot,
+    canInvite,
+    name,
+    userId,
+  } = request.user;
+
   const handleCopy = useCallback(() => {
-    navigator.clipboard.writeText(name.valueOf());
+    if (name) {
+      navigator.clipboard.writeText(name.valueOf());
+    }
   }, [name]);
 
+  const handleOpenDirect = useCallback(() => {
+    if (name && userId) {
+      const expireTo = calculateExpireDate();
+      const roomData = {
+        targetUserId: userId,
+        name,
+        expireTo,
+      };
+
+      const message = getSystemMessage({
+        text: `You join private channel with ${name}. You can send personal message`,
+      });
+
+      dispatch(actions.newChatMessage(message));
+      dispatch(actions.createPrivateRoom(roomData));
+
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [name, userId]);
+
   const handleShowInfo = useCallback(() => {
-    window.location.href = getUserProfileUrl(userId);
+    if (userId) {
+      window.location.href = getUserProfileUrl(userId);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
   const handleCreateInviteModal = useCallback(() => {
-    const queryParamsString = qs.stringify({
-      opponent_id: userId,
-    });
-    if (`/${window.location.hash}`.startsWith(getLobbyUrl())) {
-      window.location.href = getLobbyUrl(queryParamsString);
-    } else {
-      dispatch(
-        actions.showCreateGameInviteModal({ opponentInfo: { id: userId, name } }),
-      );
+    if (userId && name) {
+      const queryParamsString = qs.stringify({
+        opponent_id: userId,
+      });
+      if (`/${window.location.hash}`.startsWith(getLobbyUrl())) {
+        window.location.href = getLobbyUrl(queryParamsString);
+      } else {
+        dispatch(
+          actions.showCreateGameInviteModal({ opponentInfo: { id: userId, name } }),
+        );
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId, name]);
+  }, [request]);
 
   const isCurrentUserHasActiveGames = useMemo(
     () => (
@@ -64,23 +105,20 @@ const UserContextMenu = ({
     ),
     [activeGames, currentUserId],
   );
+  const isCurrentUser = !!userId && currentUserId === userId;
 
-  const isCurrentUserMessage = currentUserId === userId;
+  const inviteSendDisabled = isBot || isCurrentUser || isCurrentUserHasActiveGames;
+  const canCreatePrivateRoom = !(isBot || isCurrentUser) && !!name;
 
-  const inviteSendDisabled = isBot || isCurrentUserMessage || isCurrentUserHasActiveGames;
-  const canCreatePrivateRoom = !(isBot || isCurrentUserMessage);
-
-  const { show } = useContextMenu({ id: menuId });
-
-  const handleBanClick = bannedName => {
-    pushCommand({ type: 'ban', name: bannedName, user_id: userId });
+  const handleBanClick = () => {
+    if (userId && name) {
+      pushCommand({ type: 'ban', name, user_id: userId });
+    }
   };
 
-  const displayMenu = event => show({ event });
-
   return (
-    <div>
-      <div title={name} onContextMenu={displayMenu}>{children}</div>
+    <>
+      {children}
       <Menu role="menu" id={menuId}>
         <Item
           role="menuitem"
@@ -104,6 +142,19 @@ const UserContextMenu = ({
           />
           <span>Info</span>
         </Item>
+        {canCreatePrivateRoom ? (
+          <Item
+            role="menuitem"
+            aria-label="Direct message"
+            onClick={handleOpenDirect}
+          >
+            <FontAwesomeIcon
+              className="mr-2"
+              icon="comment-alt"
+            />
+            <span>Direct message</span>
+          </Item>
+        ) : null}
         {canInvite && (
           <Item
             role="menuitem"
@@ -122,33 +173,12 @@ const UserContextMenu = ({
             <span>Send an invite</span>
           </Item>
         )}
-        {canCreatePrivateRoom ? (
-          <Item
-            role="menuitem"
-            aria-label="Direct message"
-            onClick={() => {
-              const roomData = {
-                targetUserId: userId,
-                name,
-                exprireTo: calculateExpireDate(),
-              };
-
-              dispatch(actions.createPrivateRoom(roomData));
-            }}
-          >
-            <FontAwesomeIcon
-              className="mr-2"
-              icon="comment-alt"
-            />
-            <span>Direct message</span>
-          </Item>
-        ) : null}
         {currentUserIsAdmin ? (
           <>
             <Separator />
             <Item
               aria-label="Ban"
-              onClick={() => handleBanClick(name)}
+              onClick={handleBanClick}
               disabled={isBot}
             >
               <FontAwesomeIcon
@@ -160,8 +190,8 @@ const UserContextMenu = ({
           </>
         ) : null}
       </Menu>
-    </div>
+    </>
   );
 };
 
-export default memo(UserContextMenu);
+export default memo(ChatContextMenu);

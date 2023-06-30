@@ -17,7 +17,7 @@ defmodule CodebattleWeb.Api.V1.UserController do
       |> String.to_integer()
 
     query = Codebattle.User.Scope.list_users(params)
-    page = Repo.paginate(query, %{page: page_number, page_size: page_size})
+    page = Repo.paginate(query, %{page: page_number, page_size: page_size, total: true})
 
     page_info = Map.take(page, [:page_number, :page_size, :total_entries, :total_pages])
 

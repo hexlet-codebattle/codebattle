@@ -8,12 +8,13 @@ defmodule Codebattle.Playbook do
   @solution_types ~w(complete incomplete waiting_moderator baned)
 
   schema "playbooks" do
-    field(:game_id, :integer)
+    # field(:game_id, :integer)
     field(:winner_id, :integer)
     field(:winner_lang, :string)
     field(:solution_type, :string)
 
     belongs_to(:task, Codebattle.Task)
+    belongs_to(:game, Codebattle.Game)
 
     embeds_one :data, Data, on_replace: :update, primary_key: false do
       field(:players, {:array, AtomizedMap}, default: [])

@@ -56,6 +56,7 @@ defmodule Codebattle.Game do
     belongs_to(:tournament, Codebattle.Tournament)
     has_many(:user_games, Codebattle.UserGame)
     has_many(:users, through: [:user_games, :user])
+    has_one(:playbook, Codebattle.Playbook)
     embeds_many(:players, Player, on_replace: :delete)
   end
 

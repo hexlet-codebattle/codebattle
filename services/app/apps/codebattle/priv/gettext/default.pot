@@ -186,6 +186,9 @@ msgstr ""
 msgid "Sign up"
 msgstr ""
 
+msgid "Sign in"
+msgstr ""
+
 #, elixir-format
 #: lib/codebattle_web/controllers/auth_controller.ex:23
 #: lib/codebattle_web/controllers/dev_login_controller.ex:15

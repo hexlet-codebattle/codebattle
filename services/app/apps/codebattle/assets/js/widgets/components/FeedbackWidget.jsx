@@ -1,6 +1,7 @@
 import React from 'react';
 import SlackFeedback, { themes } from 'react-slack-feedback';
 import { useSelector } from 'react-redux';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { currentUserNameSelector } from '../selectors/index';
 
@@ -20,6 +21,14 @@ const FeedbackWidget = () => {
 
   return (
     <SlackFeedback
+      icon={() => (
+        <FontAwesomeIcon
+          icon={['fas', 'rss']}
+          style={{
+            color: '#ee3737', width: '20', height: '20', marginRight: '8px',
+          }}
+        />
+      )}
       theme={themes.dark}
       user={currentUserName}
       onSubmit={(payload, success, error) => sendToServer(payload)

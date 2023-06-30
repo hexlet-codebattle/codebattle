@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as _ from 'lodash';
 import { SearchIndex, init } from 'emoji-mart';
 import data from '@emoji-mart/data';
@@ -22,11 +22,10 @@ const getTooltipVisibility = async msg => {
   return !_.isEmpty(await SearchIndex.search(colons));
 };
 
-export default function ChatInput() {
+export default function ChatInput({ inputRef }) {
   const [isPickerVisible, setPickerVisibility] = useState(false);
   const [isTooltipVisible, setTooltipVisibility] = useState(false);
   const [text, setText] = useState('');
-  const inputRef = useRef(null);
   const activeRoom = useSelector(selectors.activeRoomSelector);
 
   const handleChange = async ({ target: { value } }) => {
@@ -88,11 +87,11 @@ export default function ChatInput() {
 
   return (
     <form
-      className="p-2 input-group input-group-sm mb-0"
+      className="border-top input-group mb-0 p-2"
       onSubmit={handleSubmit}
     >
       <input
-        className="h-auto form-control border-secondary"
+        className="form-control h-auto border-gray border-right-0 rounded-left"
         placeholder="Please be nice in the chat!"
         value={text}
         onChange={handleChange}
@@ -108,16 +107,16 @@ export default function ChatInput() {
       {isPickerVisible && (
         <EmojiPicker handleSelect={handleSelectEmodji} hide={hidePicker} />
       )}
-      <div className="input-group-append bg-white">
+      <div className="input-group-append border-left rounded-right">
         <button
           type="button"
-          className="btn btn-outline-secondary py-0 px-1"
+          className="btn bg-white border-gray border-left-0 border-right-0 px-2 py-0"
           onClick={togglePickerVisibility}
         >
           <em-emoji id="grinning" size={20} />
         </button>
         <button
-          className="btn btn-outline-secondary"
+          className="btn btn-secondary border-gray border-left rounded-right"
           type="button"
           onClick={handleSubmit}
         >

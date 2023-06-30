@@ -40,11 +40,13 @@ defmodule Codebattle.GameCases.GiveUpTest do
     # First player give_up
     Phoenix.ChannelTest.push(socket1, "give_up", %{})
     :timer.sleep(70)
-    game = Game.Context.get_game!(game_id)
+    game = Game.Context.get_game!(game_id) |> Repo.preload(:playbook)
 
     assert game.state == "game_over"
     assert Helpers.gave_up?(game, user1.id) == true
     assert Helpers.winner?(game, user2.id) == true
+
+    assert game.playbook.solution_type == "incomplete"
   end
 
   test "first user won, second gave up", %{

@@ -156,7 +156,7 @@ defmodule CodebattleWeb.InviteChannelTest do
     assert response.invite.creator_id == creator.id
     assert response.invite.recipient_id == recipient.id
 
-    assert_receive %Phoenix.Socket.Broadcast{
+    assert_receive %Phoenix.Socket.Message{
       topic: "invites",
       payload: _response
     }
@@ -175,7 +175,7 @@ defmodule CodebattleWeb.InviteChannelTest do
     assert response.invite.creator_id == creator.id
     assert response.invite.recipient_id == recipient.id
 
-    assert_receive %Phoenix.Socket.Broadcast{
+    assert_receive %Phoenix.Socket.Message{
       topic: "invites",
       payload: _response
     }

@@ -37,9 +37,10 @@ const getDateByPeriod = period => {
   return moment().startOf(periodToTimeUnit[period]).utc().format('YYYY-MM-DD');
 };
 
-export const getUsersRatingPage = ({ name, period, withBots }, { attribute, direction }, page) => dispatch => {
+export const getUsersRatingPage = ({ name, period, withBots }, { attribute, direction }, page, pageSize) => dispatch => {
   const queryParamsString = qs.stringify({
     page,
+    page_size: pageSize,
     s: `${attribute}+${direction}`,
     q: {
       name_ilike: name,

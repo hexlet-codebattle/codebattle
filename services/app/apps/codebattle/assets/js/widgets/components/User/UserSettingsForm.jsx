@@ -85,7 +85,7 @@ export default ({ onSubmit, settings }) => {
                     />
                   </div>
                   <div className="col-3">
-                    <p className="h6 pt-1">Your weapon</p>
+                    <div className="h6">Your weapon</div>
                     <Field
                       as="select"
                       data-testid="langSelect"
@@ -172,7 +172,7 @@ export default ({ onSubmit, settings }) => {
                   disabled={!dirty}
                   style={{ width: '120px' }}
                   type="submit"
-                  className="btn py-1 btn-primary"
+                  className="btn py-1 btn-primary rounded-lg"
                 >
                   {!isSubmitting ? (
                     'Save'

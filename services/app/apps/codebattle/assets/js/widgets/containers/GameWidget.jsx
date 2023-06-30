@@ -93,7 +93,7 @@ const GameWidget = ({ editorMachine }) => {
         type={leftUserType}
         orientation="left"
         editorState={leftEditor}
-        cardClassName="card h-100 position-relative"
+        cardClassName="card h-100 shadow-sm position-relative"
         theme={theme}
         editorHeight={leftEditorHeight}
         editorMode={leftEditorsMode}
@@ -106,7 +106,7 @@ const GameWidget = ({ editorMachine }) => {
         type={rightUserType}
         orientation="right"
         editorState={rightEditor}
-        cardClassName="card h-100"
+        cardClassName="card h-100 shadow-sm"
         theme={theme}
         editorHeight={rightEditorHeight}
         editorMode={editorModes.default}

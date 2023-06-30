@@ -11,10 +11,9 @@ const DakModeButton = ({ player }) => {
   const currentTheme = useSelector(state => editorsThemeSelector(player.id)(state));
 
   const isDarkMode = currentTheme === editorThemes.dark;
-
   const mode = isDarkMode ? editorThemes.light : editorThemes.dark;
 
-  const classNames = cn('btn btn-sm mr-2', {
+  const classNames = cn('btn btn-sm mr-2 border-left rounded-right', {
     'btn-light': isDarkMode,
     'btn-secondary': !isDarkMode,
   });

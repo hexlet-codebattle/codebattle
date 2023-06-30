@@ -23,4 +23,8 @@ defmodule CodebattleWeb.Api.V1.TaskController do
         json(conn, TaskView.render_task(task))
     end
   end
+
+  def unique(conn, %{"name" => name}) do
+    json(conn, %{unique: Task.uniq?(name)})
+  end
 end

@@ -2,7 +2,13 @@ defmodule CodebattleWeb.Router do
   use CodebattleWeb, :router
   use Plug.ErrorHandler
 
+  import Phoenix.LiveDashboard.Router
+
   require Logger
+
+  pipeline :admins_only do
+    plug(CodebattleWeb.Plugs.AdminOnly)
+  end
 
   pipeline :browser do
     plug(:accepts, ["html"])
@@ -27,6 +33,11 @@ defmodule CodebattleWeb.Router do
 
   scope "/", CodebattleWeb do
     get("/health", HealthController, :index)
+  end
+
+  scope "/" do
+    pipe_through [:browser, :admins_only]
+    live_dashboard "/dashboard", metrics: CodebattleWeb.Telemetry
   end
 
   scope "/auth", CodebattleWeb do
@@ -56,6 +67,7 @@ defmodule CodebattleWeb.Router do
       resources("/session", SessionController, only: [:create], singleton: true)
       resources("/settings", SettingsController, only: [:show, :update], singleton: true)
       resources("/tasks", TaskController, only: [:index, :show])
+      post("/tasks/:name/unique", TaskController, :unique)
       resources("/users", UserController, only: [:index, :show, :create])
       resources("/feedback", FeedbackController, only: [:index, :create])
       post("/playbooks/approve", PlaybookController, :approve)
@@ -82,14 +94,12 @@ defmodule CodebattleWeb.Router do
 
     resources("/react_tournaments", ReactTournamentController, only: [:index, :show])
 
-    resources("/tasks", TaskController, only: [:index, :show, :new, :edit, :create, :update]) do
+    resources("/tasks", TaskController) do
       patch("/activate", TaskController, :activate, as: :activate)
       patch("/disable", TaskController, :disable, as: :disable)
     end
 
-    resources("/task_packs", TaskPackController,
-      only: [:index, :show, :new, :edit, :create, :update]
-    ) do
+    resources("/task_packs", TaskPackController) do
       patch("/activate", TaskPackController, :activate, as: :activate)
       patch("/disable", TaskPackController, :disable, as: :disable)
     end

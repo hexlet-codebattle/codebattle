@@ -300,6 +300,7 @@ describe('test task choice', () => {
     const paramsWithOpponent = {
       ..._.omit(params, ['opponent_type']),
       recipient_id: -4,
+      recipient_name: 'user1',
     };
     expect(invitesMiddleware.createInvite).toHaveBeenCalledWith(paramsWithOpponent);
 

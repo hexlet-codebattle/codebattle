@@ -25,18 +25,19 @@ const ShowGuideButton = () => {
   const guideShow = () => {
     dispatch(actions.updateGameUI({ isShowGuide: true }));
   };
-      return (
-        <button
-          type="button"
-          className="btn btn-outline-secondary btn-sm mx-2 text-nowrap"
-          onClick={guideShow}
-          data-toggle="tooltip"
-          data-placement="top"
-          title="Show guide"
-        >
-          Show guide
-        </button>
-);
+
+  return (
+    <button
+      type="button"
+      className="btn btn-outline-secondary btn-sm mx-2 text-nowrap rounded-lg"
+      onClick={guideShow}
+      data-toggle="tooltip"
+      data-placement="top"
+      title="Show guide"
+    >
+      Show guide
+    </button>
+  );
 };
 
 const renderGameLevelBadge = level => (
@@ -69,10 +70,10 @@ const TaskLanguagesSelection = ({ avaibleLanguages, displayLanguage, handleSetLa
     <Dropdown className="d-flex ml-auto">
       <Dropdown.Toggle
         id="tasklang-dropdown-toggle"
-        className="shadow-none"
+        className="shadow-none rounded-lg"
         variant="outline-secondary"
       >
-        {displayLanguage.toUpperCase() }
+        {displayLanguage.toUpperCase()}
       </Dropdown.Toggle>
       <Dropdown.Menu id="tasklang-dropdown-menu">
         {avaibleLanguages.map(renderLanguage)}

@@ -2,20 +2,33 @@ import React from 'react';
 import moment from 'moment';
 import cn from 'classnames';
 
-import UserContextMenu from './UserContextMenu';
 import MessageTag from './MessageTag';
 
 const Message = ({
   text = '',
   name = '',
+  userId,
   type,
   time,
-  userId,
   meta,
-  messageId,
+  displayMenu,
 }) => {
   if (!text) {
     return null;
+  }
+
+  if (type === 'system') {
+    const statusClassName = cn('text-small', {
+      'text-danger': ['error', 'failure'].includes(meta?.status),
+      'text-success': meta?.status === 'success',
+      'text-muted': meta?.status === 'event',
+    });
+
+    return (
+      <div className="d-flex align-items-baseline flex-wrap">
+        <small className={statusClassName}>{text}</small>
+      </div>
+    );
   }
 
   if (type === 'info') {
@@ -51,19 +64,25 @@ const Message = ({
 
   return (
     <div className="d-flex align-items-baseline flex-wrap">
-      <MessageTag messageType={meta?.type} />
-      <UserContextMenu
-        menuId={`menu-${messageId}`}
-        name={name}
-        userId={userId}
-        isBot={userId < 0}
+      <span
+        role="button"
+        tabIndex={0}
+        title={`Message (${name})`}
+        data-user-id={userId}
+        data-user-name={name}
+        onContextMenu={displayMenu}
+        onClick={displayMenu}
+        onKeyPress={displayMenu}
       >
-        <span className="font-weight-bold">{`${name}: `}</span>
-      </UserContextMenu>
+        <MessageTag messageType={meta?.type} />
+        <span className="font-weight-bold">
+          {`${name}: `}
+        </span>
+      </span>
       <span className={cn(
         'ml-1 text-break', {
-          'cb-private-text': meta?.type === 'private',
-        },
+        'cb-private-text': meta?.type === 'private',
+      },
       )}
       >
         {parts.map((part, i) => renderMessagePart(part, i))}

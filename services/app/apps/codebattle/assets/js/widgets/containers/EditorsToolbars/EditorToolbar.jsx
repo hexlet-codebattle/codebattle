@@ -31,6 +31,7 @@ const EditorToolbar = ({
   langPickerStatus,
   actionBtnsProps,
   showControlBtns,
+  isHistory = false,
 }) => {
   const scoreResultClass = cn('ml-2', {
     'cb-game-score-won': score.winnerId === player.id,
@@ -39,32 +40,35 @@ const EditorToolbar = ({
   });
   return (
     <>
-      <div data-player-type={type}>
+      <div className="rounded-top" data-player-type={type}>
         <div className={toolbarClassNames} role="toolbar">
-          <div
-            className={editorSettingClassNames}
-            role="group"
-            aria-label="Editor settings"
-          >
-            <LanguagePicker editor={editor} status={langPickerStatus} />
+          <div className="d-flex justify-content-between">
+            <div
+              className={editorSettingClassNames}
+              role="group"
+              aria-label="Editor settings"
+            >
+              <LanguagePicker editor={editor} status={langPickerStatus} />
+            </div>
+            {showControlBtns && !isHistory && (
+              <ModeButtons player={player} />
+            )}
           </div>
 
-          {showControlBtns && (
-            <>
-              <ModeButtons player={player} />
+          <div className="d-flex justify-content-between">
+            {showControlBtns && !isHistory && (
               <GameActionButtons {...actionBtnsProps} />
-            </>
-          )}
-
-          <div className={userInfoClassNames} role="group" aria-label="User info">
-            <UserInfo user={player} />
-            {mode === GameModes.standard
-              && (
-                <div className={scoreResultClass}>
-                  Score:
-                  {score.score}
-                </div>
-              )}
+            )}
+            <div className={userInfoClassNames} role="group" aria-label="User info">
+              <UserInfo user={player} />
+              {mode === GameModes.standard
+                && (
+                  <div className={scoreResultClass}>
+                    Score:
+                    {score.score}
+                  </div>
+                )}
+            </div>
           </div>
         </div>
       </div>

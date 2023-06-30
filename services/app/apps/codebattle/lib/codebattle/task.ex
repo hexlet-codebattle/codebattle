@@ -134,6 +134,16 @@ defmodule Codebattle.Task do
     |> Repo.one()
   end
 
+  @spec uniq?(String.t()) :: boolean()
+  def uniq?(task_name) do
+    result =
+      __MODULE__
+      |> where([t], t.name == ^task_name)
+      |> Repo.exists?()
+
+    !result
+  end
+
   @spec get_task_by_tags_for_user(User.t(), list(String.t())) :: t()
   def get_task_by_tags_for_user(user, tags) do
     __MODULE__
@@ -193,6 +203,11 @@ defmodule Codebattle.Task do
     task.creator_id == user.id || Codebattle.User.admin?(user)
   end
 
+  @spec can_delete_task?(Task.t(), User.t()) :: boolean()
+  def can_delete_task?(task, user) do
+    (task.creator_id == user.id || Codebattle.User.admin?(user)) && task.origin == "user"
+  end
+
   def change_state(task, state) do
     task
     |> changeset(%{state: state})
@@ -201,6 +216,10 @@ defmodule Codebattle.Task do
 
   @spec get_task_by_level(String.t()) :: t()
   def get_task_by_level(level), do: tasks_provider().get_task(level)
+
+  def delete(task) do
+    Repo.delete(task)
+  end
 
   defp tasks_provider do
     Application.get_env(:codebattle, :tasks_provider)

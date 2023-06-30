@@ -23,7 +23,7 @@ const ControlPanel = ({
   const { speedMode } = gameCurrent.context;
   const isPaused = !gameCurrent.matches({ replayer: replayerMachineStates.playing });
 
-  const speedControlClassNames = cn('btn btn-sm rounded ml-2 border', {
+  const speedControlClassNames = cn('btn btn-sm rounded ml-2 border rounded-lg', {
     'btn-light': speedMode === speedModes.normal,
     'btn-secondary': speedMode === speedModes.fast,
   });
@@ -46,7 +46,7 @@ const ControlPanel = ({
     <>
       <button
         type="button"
-        className="mr-4 btn btn-light"
+        className="mr-4 btn btn-light rounded-lg"
         onClick={onControlButtonClick}
       >
         {isPaused ? (
@@ -58,7 +58,7 @@ const ControlPanel = ({
       {children}
       <div className="dropup">
         <button
-          className="btn btn-light px-2 ml-1 shadow-none d-flex"
+          className="btn btn-light px-2 ml-1 shadow-none d-flex rounded-lg"
           type="button"
           id="dropdownMenuButton"
           data-toggle="dropdown"
@@ -71,7 +71,7 @@ const ControlPanel = ({
           <button type="button" className={speedControlClassNames} onClick={onChangeSpeed}>x2</button>
           <button
             type="button"
-            className="btn btn-sm rounded ml-2 border btn-light"
+            className="btn btn-sm rounded ml-2 border btn-light rounded-lg"
             title="Copy history game url at current record id"
             onClick={() => {
               const url = `https://codebattle.hexlet.io/games/${gameId}?t=${nextRecordId}`;

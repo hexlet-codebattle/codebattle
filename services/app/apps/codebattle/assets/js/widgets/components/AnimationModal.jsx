@@ -36,7 +36,7 @@ const AnimationModal = ({ setModalShowing, modalShowing }) => {
           />
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={handleCloseModal} className="btn btn-secondary">
+          <Button onClick={handleCloseModal} className="btn btn-secondary rounded-lg">
             {buttonText}
           </Button>
         </Modal.Footer>

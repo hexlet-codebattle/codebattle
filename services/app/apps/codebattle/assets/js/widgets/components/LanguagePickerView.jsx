@@ -15,7 +15,7 @@ const defaultLanguages = Gon.getAsset('langs');
       height: '33px',
       minHeight: '31px',
       minWidth: '210px',
-      borderRadius: 'unset',
+      borderRadius: '0.3rem',
       backgroundColor: 'hsl(0, 0%, 100%)',
     }),
     indicatorsContainer: provided => ({

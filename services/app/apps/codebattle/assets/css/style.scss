@@ -24,11 +24,11 @@ $fa-font-path: '/fonts';
 
 em-emoji-picker {
   position: absolute;
-  bottom: 45px;
+  bottom: 52px;
   right: 96px;
   height: 254px;
 
-  border-radius: 6px;
+  border-radius: 10px;
   --shadow: 0px 0px 15px var(--gray);
 }
 
@@ -553,12 +553,20 @@ a {
 
 .nav-tabs {
   border-bottom: 1px solid black;
+  .nav-item.active {
+    color: var(--black);
+  }
 
   .nav-item.active,
   .nav-item:hover {
     border-top: 1px solid black;
     border-right: 1px solid black;
     border-left: 1px solid black;
+  }
+
+  .nav-item:not(.active):hover {
+    color: var(--gray);
+    background: var(--light);
   }
 }
 

@@ -7,49 +7,31 @@ import { actions } from '../slices';
 
 const CheckResultButton = ({ onClick, status }) => {
   const dispatch = useDispatch();
+  const commonProps = {
+    className: 'btn btn-outline-success btn-check btn-sm rounded-right',
+    title: 'Check solution&#013;Ctrl + Enter',
+    onClick,
+    'data-toggle': 'tooltip',
+    'data-guide-id': 'CheckResultButton',
+    'data-placement': 'top',
+  };
 
   switch (status) {
     case 'enabled':
       return (
-        <button
-          type="button"
-          className="btn btn-outline-success btn-check btn-sm"
-          data-guide-id="CheckResultButton"
-          onClick={onClick}
-          data-toggle="tooltip"
-          data-placement="top"
-          title="Check solution&#013;Ctrl + Enter"
-        >
+        <button type="button" {...commonProps}>
           <FontAwesomeIcon icon={['fas', 'play-circle']} className="success" />
         </button>
       );
     case 'checking':
       return (
-        <button
-          type="button"
-          className="btn btn-outline-success btn-check btn-sm"
-          data-guide-id="CheckResultButton"
-          onClick={onClick}
-          data-toggle="tooltip"
-          data-placement="top"
-          title="Check solution&#013;Ctrl + Enter"
-          disabled
-        >
+        <button type="button" {...commonProps} disabled>
           <FontAwesomeIcon icon="spinner" pulse />
         </button>
       );
     case 'disabled':
       return (
-        <button
-          type="button"
-          className="btn btn-outline-success btn-check btn-sm"
-          data-guide-id="CheckResultButton"
-          onClick={onClick}
-          data-toggle="tooltip"
-          data-placement="top"
-          title="Check solution&#013;Ctrl + Enter"
-          disabled
-        >
+        <button type="button" {...commonProps} disabled>
           <FontAwesomeIcon icon={['fas', 'play-circle']} className="success" />
         </button>
       );
@@ -62,33 +44,25 @@ const CheckResultButton = ({ onClick, status }) => {
 
 const GiveUpButton = ({ onClick, status }) => {
   const dispatch = useDispatch();
+  const commonProps = {
+    className: 'btn btn-outline-danger btn-sm rounded-left',
+    title: 'Give Up',
+    onClick,
+    'data-toggle': 'tooltip',
+    'data-placement': 'top',
+    'data-guide-id': 'GiveUpButton',
+  };
 
   switch (status) {
     case 'enabled':
       return (
-        <button
-          type="button"
-          className="btn btn-outline-danger btn-sm mr-2"
-          data-guide-id="GiveUpButton"
-          onClick={onClick}
-          data-toggle="tooltip"
-          data-placement="top"
-          title="Give Up"
-        >
+        <button type="button" {...commonProps}>
           <FontAwesomeIcon icon={['far', 'flag']} />
         </button>
       );
     case 'disabled':
       return (
-        <button
-          type="button"
-          className="btn btn-outline-danger btn-sm mr-2"
-          data-guide-id="GiveUpButton"
-          data-toggle="tooltip"
-          data-placement="top"
-          title="Give Up"
-          disabled
-        >
+        <button type="button" {...commonProps} disabled>
           <FontAwesomeIcon icon={['far', 'flag']} />
         </button>
       );
@@ -101,33 +75,25 @@ const GiveUpButton = ({ onClick, status }) => {
 
 const ResetButton = ({ onClick, status }) => {
   const dispatch = useDispatch();
+  const commonProps = {
+    className: 'btn btn-outline-secondary btn-sm mx-1',
+    title: 'Reset editor',
+    onClick,
+    'data-toggle': 'tooltip',
+    'data-placement': 'top',
+    'data-guide-id': 'ResetButton',
+  };
 
   switch (status) {
     case 'enabled':
       return (
-        <button
-          type="button"
-          className="btn btn-outline-secondary btn-sm mr-2"
-          data-guide-id="ResetButton"
-          onClick={onClick}
-          data-toggle="tooltip"
-          data-placement="top"
-          title="Reset editor"
-        >
+        <button type="button" {...commonProps}>
           <FontAwesomeIcon icon={['fas', 'sync']} />
         </button>
       );
     case 'disabled':
       return (
-        <button
-          type="button"
-          className="btn btn-outline-secondary btn-sm mr-2"
-          data-guide-id="ResetButton"
-          data-toggle="tooltip"
-          data-placement="top"
-          title="Reset editor"
-          disabled
-        >
+        <button type="button" {...commonProps} disabled>
           <FontAwesomeIcon icon={['fas', 'sync']} />
         </button>
       );

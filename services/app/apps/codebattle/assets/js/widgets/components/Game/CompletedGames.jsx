@@ -29,7 +29,7 @@ const CompletedGamesRows = memo(({ games }) => (
         </td>
         <td className="px-1 py-3 align-middle text-nowrap">{moment.utc(game.finishesAt).local().format('MM.DD HH:mm')}</td>
         <td className="px-1 py-3 align-middle">
-          <a type="button" className="btn btn-outline-orange btn-sm" href={`/games/${game.id}`}>
+          <a type="button" className="btn btn-outline-orange btn-sm rounded-lg" href={`/games/${game.id}`}>
             Show
           </a>
         </td>
@@ -81,7 +81,7 @@ const CompletedGames = ({ games, loadNextPage = null, totalGames }) => {
   return (
     <>
       <div ref={ref} data-testid="scroll" className="table-responsive scroll" style={{ maxHeight: '600px' }}>
-        <table className="table table-sm table-striped border-gray border mb-0">
+        <table className="table table-sm table-striped border-gray border-0 mb-0">
           <thead>
             <tr>
               <th className="p-3 border-0">Level</th>
@@ -97,7 +97,7 @@ const CompletedGames = ({ games, loadNextPage = null, totalGames }) => {
           </tbody>
         </table>
       </div>
-      <div className="bg-white py-2 px-5 font-weight-bold border-gray border">
+      <div className="bg-white py-2 px-5 font-weight-bold border-gray border rounded-bottom">
         {`Total games: ${totalGames}`}
       </div>
     </>

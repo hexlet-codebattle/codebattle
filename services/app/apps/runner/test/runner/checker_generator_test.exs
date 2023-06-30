@@ -52,6 +52,7 @@ defmodule Runner.CheckerGeneratorTest do
 
     Languages.meta()
     |> Map.values()
+    |> Enum.filter(fn lang_meta -> lang_meta.generate_checker? end)
     |> Enum.each(fn lang_meta ->
       assert CheckerGenerator.call(task, lang_meta, "123")
     end)

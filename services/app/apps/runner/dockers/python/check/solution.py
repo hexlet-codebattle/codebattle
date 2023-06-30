@@ -1,10 +1,8 @@
-def solution(a: int, b: int) -> float:
-    asdfasfd
+def solution(numerator, denominator, _string, _float, _bool, _hash, _list_str, _list_list_str):
     try:
-        response = a / b
-        print("output-test")
-        return response
-
+        res = numerator / denominator
+        print('output-test')
+        return res
     except Exception as e:
-        print(e.args)
-        raise Exception("AAAA")
+        print("don't do it", str(e))
+        raise Exception('AAAAAAAAA')

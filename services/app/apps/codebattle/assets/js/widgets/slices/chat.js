@@ -1,18 +1,18 @@
 import { createSlice, current } from '@reduxjs/toolkit';
 
-import rooms from '../config/rooms';
+import defaultRooms from '../config/rooms';
 import {
   isMessageForCurrentUser,
   isMessageForCurrentPrivateRoom,
 } from '../utils/chat';
-import { ttl } from '../middlewares/Room';
+import { ttl, filterPrivateRooms } from '../middlewares/Room';
 
 const initialState = {
   users: [],
   messages: [],
   page: 'lobby',
-  activeRoom: rooms.general,
-  rooms: [rooms.general],
+  activeRoom: defaultRooms.general,
+  rooms: [defaultRooms.general, defaultRooms.system],
   history: {
     users: [],
     messages: [],
@@ -23,26 +23,16 @@ const chat = createSlice({
   name: 'chat',
   initialState,
   reducers: {
-    updateChatData: (state, { payload }) => {
-      const { messages } = payload;
-
-      return {
-        ...state,
+    updateChatData: (state, { payload }) => ({
+      ...state,
+      ...payload,
+    }),
+    updateChatDataHistory: (state, { payload }) => ({
+      ...state,
+      history: {
         ...payload,
-        messages,
-      };
-    },
-    updateChatDataHistory: (state, { payload }) => {
-      const { messages } = payload;
-
-      return {
-        ...state,
-        history: {
-          ...payload,
-          messages,
-        },
-      };
-    },
+      },
+    }),
     userJoinedChat: (state, { payload: { users } }) => {
       state.users = users;
     },
@@ -69,9 +59,10 @@ const chat = createSlice({
       state.activeRoom = payload;
     },
     createPrivateRoom: (state, { payload }) => {
-      const privateRooms = current(state.rooms).slice(1);
+      const rooms = current(state.rooms);
+      const privateRooms = filterPrivateRooms(rooms);
       const existingPrivateRoom = privateRooms.find(room => (
-        room.id === payload.id
+        room.targetUserId === payload.targetUserId
       ));
       if (existingPrivateRoom) {
         state.activeRoom = existingPrivateRoom;
