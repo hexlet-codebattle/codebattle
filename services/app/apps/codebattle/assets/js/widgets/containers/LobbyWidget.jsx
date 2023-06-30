@@ -414,7 +414,7 @@ const GameContainers = ({
   return (
     <div className="p-0">
       <nav>
-        <div className="nav nav-tabs bg-gray" id="nav-tab" role="tablist">
+        <div className="nav nav-tabs bg-gray d-flex flex-nowrap" id="nav-tab" role="tablist">
           <a
             className={tabLinkClassName(
               hashLinkNames.lobby,
@@ -504,7 +504,7 @@ const renderModal = (show, handleCloseModal) => (
 const CreateGameButton = ({ handleClick }) => (
   <button
     type="button"
-    className="btn btn-success text-uppercase font-weight-bold py-3 mb-3"
+    className="btn btn-success text-uppercase font-weight-bold py-3 mb-sm-3 w-100 mb-1"
     onClick={handleClick}
   >
     Create a Game
@@ -555,7 +555,11 @@ const LobbyWidget = () => {
     <div className="container-lg">
       {renderModal(isModalShow, handleCloseModal)}
       <div className="row">
+
         <div className="col-lg-8 col-md-12 p-0 mb-2 pr-lg-2 pb-3">
+          <div className="d-sm-none">
+            <CreateGameButton handleClick={handleShowModal} />
+          </div>
           <GameContainers
             activeGames={activeGames}
             completedGames={completedGames}

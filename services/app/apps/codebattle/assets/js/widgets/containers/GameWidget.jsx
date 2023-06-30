@@ -31,7 +31,7 @@ const RightSide = ({ output, children }) => {
     <>
       {content}
       <nav>
-        <div className="nav nav-tabs bg-gray text-uppercase text-center font-weight-bold" id="nav-tab" role="tablist">
+        <div className="nav nav-tabs bg-gray text-uppercase text-center font-weight-bold d-flex flex-nowrap" id="nav-tab" role="tablist">
           <a
             className={cn(
               'nav-item nav-link flex-grow-1 text-black rounded-0 px-5',
