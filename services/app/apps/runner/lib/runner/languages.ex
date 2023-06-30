@@ -286,11 +286,11 @@ defmodule Runner.Languages do
       name: "elixir",
       slug: "elixir",
       checker_version: 2,
-      version: "1.14.4",
+      version: "1.15.0",
       check_dir: "check",
       solution_file_name: "solution.exs",
       checker_file_name: "checker.exs",
-      docker_image: "codebattle/elixir:1.14.4",
+      docker_image: "codebattle/elixir:1.15.0",
       solution_template:
         "defmodule Solution do\n  def solution(<%= arguments %>) do\n<%= return_statement %>\n  end\nend",
       arguments_template: %{argument: "<%= name %>", delimiter: ", "},
