@@ -342,7 +342,7 @@ const UserProfile = () => {
                   className="text-muted"
                   href={`https://github.com/${stats.user.githubName}`}
                 >
-                  <span className="fab fa-github pr-3" />
+                  <span className="fab fa-github" />
                 </a>
               )}
             </h1>
