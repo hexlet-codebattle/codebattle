@@ -23,7 +23,7 @@ const renderUser = user => (
   <tr key={user.id}>
     <td className="p-3 align-middle">{user.rank}</td>
     <td className="tex-left p-3 align-middle">
-      <UserInfo user={user} />
+      <UserInfo user={user} truncate />
     </td>
     <td className="p-3 align-middle">{user.rating}</td>
     <td className="p-3 align-middle">{user.gamesPlayed}</td>
