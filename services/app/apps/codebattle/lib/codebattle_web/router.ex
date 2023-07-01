@@ -65,7 +65,12 @@ defmodule CodebattleWeb.Router do
     pipe_through(:api)
 
     scope "/v1", V1, as: :v1 do
-      get("/games/completed", GameController, :completed)
+      scope("/games") do
+        get("/completed", GameController, :completed)
+        resources("/:id/player_reports", PlayerReportController, only: [:index, :show, :create])
+      end
+
+      get("/:user_id/activity", ActivityController, :show)
       get("/game_activity", GameActivityController, :show)
       get("/playbook/:id", PlaybookController, :show)
       get("/user/:id/stats", UserController, :stats)

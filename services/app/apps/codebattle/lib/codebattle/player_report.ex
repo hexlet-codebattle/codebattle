@@ -31,6 +31,7 @@ defmodule Codebattle.PlayerReport do
       :reason,
       :comment
     ])
+
     # |> validate_inclusion(:state, @states)
   end
 end
