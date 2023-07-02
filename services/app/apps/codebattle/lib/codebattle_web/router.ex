@@ -48,7 +48,7 @@ defmodule CodebattleWeb.Router do
     live_dashboard("/dashboard", metrics: CodebattleWeb.Telemetry)
   end
 
-  scope "/" do
+  scope "/", CodebattleWeb do
     pipe_through([:browser, :require_auth])
 
     get("/settings", UserController, :edit, as: :user_setting)
