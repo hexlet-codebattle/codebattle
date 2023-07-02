@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import { connect, useSelector } from 'react-redux';
+import _ from 'lodash';
 import * as selectors from '../selectors';
 import Messages from '../components/Messages';
 import UserInfo from './UserInfo';
@@ -35,6 +36,17 @@ const LobbyChat = ({ connectToChat }) => {
 
   const activeRoom = useSelector(selectors.activeRoomSelector);
   const filteredMessages = messages.filter(message => shouldShowMessage(message, activeRoom));
+  if (!presenceList) {
+    return null;
+  }
+
+  const {
+    watching: watchingList = [],
+    online: onlineList = [],
+    lobby: lobbyList = [],
+    playing: playingList = [],
+    tasks: builderList = [],
+  } = _.groupBy(presenceList, 'currentState');
 
   return (
     <ChatContextMenu
@@ -50,14 +62,62 @@ const LobbyChat = ({ connectToChat }) => {
         </div>
         <div className="col-12 col-sm-4 p-0 pb-3 pb-sm-4 border-left bg-light rounded-right cb-players-container">
           <div className="d-flex flex-column h-100">
-            <p className="px-3 pt-2 mb-3">{`Online players: ${presenceList.length}`}</p>
+            <p className="px-3 pt-2 mb-2">{`Online players: ${presenceList.length}`}</p>
             <div className="d-flex px-3 flex-column align-items-start overflow-auto">
-              {presenceList.map(presenceUser => (
+              {watchingList.length !== 0 && <div>Watching: </div>}
+              {watchingList.map(presenceUser => (
                 <div
                   role="button"
                   tabIndex={0}
                   className="mb-1"
-                  title={presenceUser.user.name}
+                  key={presenceUser.id}
+                  data-user-id={presenceUser.id}
+                  data-user-name={presenceUser.user.name}
+                  onContextMenu={displayMenu}
+                  onClick={displayMenu}
+                  onKeyPress={displayMenu}
+                >
+                  <UserInfo user={presenceUser.user} hideInfo hideOnlineIndicator />
+                </div>
+              ))}
+              {playingList.length !== 0 && <div>Playing: </div>}
+              {playingList.map(presenceUser => (
+                <div
+                  role="button"
+                  tabIndex={0}
+                  className="mb-1"
+                  key={presenceUser.id}
+                  data-user-id={presenceUser.id}
+                  data-user-name={presenceUser.user.name}
+                  onContextMenu={displayMenu}
+                  onClick={displayMenu}
+                  onKeyPress={displayMenu}
+                >
+                  <UserInfo user={presenceUser.user} hideInfo hideOnlineIndicator />
+                </div>
+              ))}
+              {lobbyList.length !== 0 && <div>Lobby: </div>}
+              {lobbyList.map(presenceUser => (
+                <div
+                  role="button"
+                  tabIndex={0}
+                  className="mb-1"
+                  key={presenceUser.id}
+                  data-user-id={presenceUser.id}
+                  data-user-name={presenceUser.user.name}
+                  onContextMenu={displayMenu}
+                  onClick={displayMenu}
+                  onKeyPress={displayMenu}
+                >
+                  <UserInfo user={presenceUser.user} hideInfo hideOnlineIndicator />
+                </div>
+              ))}
+              {[...onlineList, ...builderList].length !== 0 && <div>Online: </div>}
+              {[...onlineList, ...builderList].map(presenceUser => (
+                <div
+                  role="button"
+                  tabIndex={0}
+                  className="mb-1"
                   key={presenceUser.id}
                   data-user-id={presenceUser.id}
                   data-user-name={presenceUser.user.name}
