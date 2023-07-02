@@ -48,31 +48,6 @@ defmodule CodebattleWeb.Router do
     live_dashboard("/dashboard", metrics: CodebattleWeb.Telemetry)
   end
 
-  scope "/", CodebattleWeb do
-    pipe_through([:browser, :require_auth])
-
-    get("/settings", UserController, :edit, as: :user_setting)
-    put("/settings", UserController, :update, as: :user_setting)
-
-    resources("/users", UserController, only: [:index, :show, :new])
-
-    resources("/task_packs", TaskPackController) do
-      patch("/activate", TaskPackController, :activate, as: :activate)
-      patch("/disable", TaskPackController, :disable, as: :disable)
-    end
-
-    resources("/tasks", TaskController) do
-      patch("/activate", TaskController, :activate, as: :activate)
-      patch("/disable", TaskController, :disable, as: :disable)
-    end
-
-    resources("/games", GameController, only: [:delete])
-
-    scope "/games" do
-      post("/:id/join", GameController, :join)
-    end
-  end
-
   scope "/auth", CodebattleWeb do
     pipe_through(:browser)
     get("/token", AuthController, :token)
@@ -129,6 +104,8 @@ defmodule CodebattleWeb.Router do
       get("/live", TournamentController, :live, as: :live)
     end
 
+    resources("/users", UserController, only: [:new])
+
     resources("/react_tournaments", ReactTournamentController, only: [:index, :show])
 
     scope "/tournaments" do
@@ -143,6 +120,31 @@ defmodule CodebattleWeb.Router do
 
     scope "/games" do
       post("/training", GameController, :create_training)
+    end
+  end
+
+  scope "/", CodebattleWeb do
+    pipe_through([:browser, :require_auth])
+
+    get("/settings", UserController, :edit, as: :user_setting)
+    put("/settings", UserController, :update, as: :user_setting)
+
+    resources("/users", UserController, only: [:index, :show])
+
+    resources("/task_packs", TaskPackController) do
+      patch("/activate", TaskPackController, :activate, as: :activate)
+      patch("/disable", TaskPackController, :disable, as: :disable)
+    end
+
+    resources("/tasks", TaskController) do
+      patch("/activate", TaskController, :activate, as: :activate)
+      patch("/disable", TaskController, :disable, as: :disable)
+    end
+
+    resources("/games", GameController, only: [:delete])
+
+    scope "/games" do
+      post("/:id/join", GameController, :join)
     end
   end
 
