@@ -79,7 +79,7 @@ config :codebattle, :firebase,
   api_key: System.get_env("FIREBASE_API_KEY"),
   firebase_autn_url: "https://identitytoolkit.googleapis.com/v1/accounts"
 
-config :codebattle, admins: ["vtm", "ReDBrother"]
+config :codebattle, admins: ["vtm", "ReDBrother", "solar05"]
 
 config :codebattle, restore_tournaments: false
 config :codebattle, freeze_time: false

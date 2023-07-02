@@ -10,6 +10,14 @@ defmodule CodebattleWeb.Router do
     plug(CodebattleWeb.Plugs.AdminOnly)
   end
 
+  pipeline :require_auth do
+    plug(CodebattleWeb.Plugs.RequireAuth)
+  end
+
+  pipeline :require_api_auth do
+    plug(CodebattleWeb.Plugs.ApiRequireAuth)
+  end
+
   pipeline :browser do
     plug(:accepts, ["html"])
     plug(:fetch_session)
@@ -36,8 +44,33 @@ defmodule CodebattleWeb.Router do
   end
 
   scope "/" do
-    pipe_through [:browser, :admins_only]
-    live_dashboard "/dashboard", metrics: CodebattleWeb.Telemetry
+    pipe_through([:browser, :admins_only])
+    live_dashboard("/dashboard", metrics: CodebattleWeb.Telemetry)
+  end
+
+  scope "/" do
+    pipe_through([:browser, :require_auth])
+
+    get("/settings", UserController, :edit, as: :user_setting)
+    put("/settings", UserController, :update, as: :user_setting)
+
+    resources("/users", UserController, only: [:index, :show, :new])
+
+    resources("/task_packs", TaskPackController) do
+      patch("/activate", TaskPackController, :activate, as: :activate)
+      patch("/disable", TaskPackController, :disable, as: :disable)
+    end
+
+    resources("/tasks", TaskController) do
+      patch("/activate", TaskController, :activate, as: :activate)
+      patch("/disable", TaskController, :disable, as: :disable)
+    end
+
+    resources("/games", GameController, only: [:delete])
+
+    scope "/games" do
+      post("/:id/join", GameController, :join)
+    end
   end
 
   scope "/auth", CodebattleWeb do
@@ -58,7 +91,6 @@ defmodule CodebattleWeb.Router do
 
     scope "/v1", V1, as: :v1 do
       get("/games/completed", GameController, :completed)
-      get("/:user_id/activity", ActivityController, :show)
       get("/game_activity", GameActivityController, :show)
       get("/playbook/:id", PlaybookController, :show)
       get("/user/:id/stats", UserController, :stats)
@@ -69,9 +101,15 @@ defmodule CodebattleWeb.Router do
       resources("/tasks", TaskController, only: [:index, :show])
       post("/tasks/:name/unique", TaskController, :unique)
       resources("/users", UserController, only: [:index, :show, :create])
-      resources("/feedback", FeedbackController, only: [:index, :create])
       post("/playbooks/approve", PlaybookController, :approve)
       post("/playbooks/reject", PlaybookController, :reject)
+    end
+
+    scope "/v1", V1, as: :v1 do
+      pipe_through(:require_api_auth)
+
+      resources("/feedback", FeedbackController, only: [:index, :create])
+      get("/:user_id/activity", ActivityController, :show)
     end
   end
 
@@ -86,7 +124,6 @@ defmodule CodebattleWeb.Router do
 
     resources("/session", SessionController, singleton: true, only: [:delete, :new])
     get("/remind_password", SessionController, :remind_password)
-    resources("/users", UserController, only: [:index, :show, :new])
 
     resources("/tournaments", TournamentController, only: [:index, :show, :edit]) do
       get("/live", TournamentController, :live, as: :live)
@@ -94,31 +131,17 @@ defmodule CodebattleWeb.Router do
 
     resources("/react_tournaments", ReactTournamentController, only: [:index, :show])
 
-    resources("/tasks", TaskController) do
-      patch("/activate", TaskController, :activate, as: :activate)
-      patch("/disable", TaskController, :disable, as: :disable)
-    end
-
-    resources("/task_packs", TaskPackController) do
-      patch("/activate", TaskPackController, :activate, as: :activate)
-      patch("/disable", TaskPackController, :disable, as: :disable)
-    end
-
     scope "/tournaments" do
       get("/:id/image", Tournament.ImageController, :show, as: :tournament_image)
     end
 
-    get("/settings", UserController, :edit, as: :user_setting)
-    put("/settings", UserController, :update, as: :user_setting)
-
     resources("/feedback", FeedbackController, only: [:index])
 
-    resources("/games", GameController, only: [:show, :delete]) do
+    resources("/games", GameController, only: [:show]) do
       get("/image", Game.ImageController, :show, as: :image)
     end
 
     scope "/games" do
-      post("/:id/join", GameController, :join)
       post("/training", GameController, :create_training)
     end
   end

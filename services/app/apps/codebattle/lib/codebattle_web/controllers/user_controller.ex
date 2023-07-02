@@ -1,12 +1,8 @@
 defmodule CodebattleWeb.UserController do
-  @all [:index, :show, :edit, :update]
-
   use CodebattleWeb, :controller
 
   alias Codebattle.{Repo, User, UserGame}
   import Ecto.Query
-
-  plug(CodebattleWeb.Plugs.RequireAuth when action in @all)
 
   def index(conn, _params) do
     conn
