@@ -1,6 +1,4 @@
 defmodule CodebattleWeb.Api.V1.ActivityController do
-  @all [:index, :show]
-
   use CodebattleWeb, :controller
 
   alias Codebattle.{Repo, UserGame}
@@ -11,8 +9,6 @@ defmodule CodebattleWeb.Api.V1.ActivityController do
       fragment("to_char(?, ?)", unquote(field), unquote(format))
     end
   end
-
-  plug(CodebattleWeb.Plugs.RequireAuth when action in @all)
 
   def show(conn, %{"user_id" => user_id}) do
     query =
