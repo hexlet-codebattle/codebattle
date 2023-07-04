@@ -3,8 +3,9 @@ defmodule Codebattle.PlayerReport do
 
   use Ecto.Schema
   import Ecto.Changeset
-  import Ecto.Query
+  # import Ecto.Query
 
+  alias Codebattle.Repo
   alias Codebattle.{Game, User}
 
   @type t :: %__MODULE__{}
@@ -34,4 +35,9 @@ defmodule Codebattle.PlayerReport do
 
     # |> validate_inclusion(:state, @states)
   end
+
+  def get!(id), do: Repo.get!(__MODULE__, id)
+  def get(id), do: Repo.get(__MODULE__, id)
+  def get_by!(params), do: Repo.get_by!(__MODULE__, params)
+  def get_by(params), do: Repo.get_by(__MODULE__, params)
 end

@@ -1,9 +1,6 @@
 defmodule Codebattle.GameCases.GiveUpTest do
   use Codebattle.IntegrationCase
 
-  alias Codebattle.Game
-  alias CodebattleWeb.UserSocket
-
   setup %{conn: conn} do
     insert(:task, level: "elementary")
     user1 = insert(:user)

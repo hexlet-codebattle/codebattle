@@ -1,13 +1,34 @@
 defmodule CodebattleWeb.Api.V1.PlayerReportControllerTest do
-  use CodebattleWeb.ConnCase, async: true
+  use Codebattle.IntegrationCase
+  # use CodebattleWeb.ConnCase, async: true
 
-  test "player can report opponent", %{conn: conn} do
-  end
+  # alias Codebattle.Game
+  # alias CodebattleWeb.UserSocket
 
-  test "player cannot report himself" do
-  end
+  describe ".create" do
+    setup %{conn: conn} do
+      user1 = insert(:user)
+      user2 = insert(:user)
+      task = insert(:task)
+      socket1 = socket(UserSocket, "user_id", %{user_id: user1.id, current_user: user1})
+      socket2 = socket(UserSocket, "user_id", %{user_id: user2.id, current_user: user2})
+      game_params = %{state: "playing", players: [user1, user2], task: task}
 
-  test "player cannot report when game does not exists" do
+      conn = put_session(conn, :user_id, user1.id)
+
+      {:ok, %{conn: conn, game_params: game_params, socket1: socket1, socket2: socket2}}
+    end
+
+    test "player can report opponent", %{conn: conn} do
+      IO.inspect(conn)
+      # player_report = Codebattle.PlayerReport.get!()
+    end
+
+    test "player cannot report himself" do
+    end
+
+    test "player cannot report when game does not exists" do
+    end
   end
 
   test "admin can view list of player reports" do
