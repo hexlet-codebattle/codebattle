@@ -56,6 +56,7 @@ defmodule Codebattle.Bot.PlaybookPlayer do
   }
 
   def init(game) do
+    ## Use it in create_game
     case Playbook.Context.get_random_completed(game.task_id) do
       %Playbook{id: id, winner_id: winner_id, data: playbook_data} ->
         playbook_actions = prepare_user_playbook(playbook_data.records, winner_id)

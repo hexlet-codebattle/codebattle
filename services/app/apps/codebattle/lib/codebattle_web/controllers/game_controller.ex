@@ -19,6 +19,7 @@ defmodule CodebattleWeb.GameController do
       %Game{is_live: true} = game ->
         conn =
           put_gon(conn,
+            # Add reports
             game_id: id,
             tournament_id: Helpers.get_tournament_id(game),
             players: present_users_for_gon(Helpers.get_players(game))
