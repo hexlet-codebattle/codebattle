@@ -20,7 +20,6 @@ defmodule CodebattleWeb.Api.V1.PlayerReportControllerTest do
     end
 
     test "player can report opponent", %{conn: conn} do
-      IO.inspect(conn)
       # player_report = Codebattle.PlayerReport.get!()
     end
 

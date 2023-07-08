@@ -55,9 +55,10 @@ defmodule Codebattle.Bot.PlaybookPlayer do
     "hard" => :timer.minutes(17)
   }
 
-  def init(game) do
-    ## Use it in create_game
-    case Playbook.Context.get_random_completed(game.task_id) do
+  def init(%{game: game, bot_id: bot_id}) do
+    bot = Game.Helpers.get_player(game, bot_id)
+
+    case Playbook.get(bot.playbook_id) do
       %Playbook{id: id, winner_id: winner_id, data: playbook_data} ->
         playbook_actions = prepare_user_playbook(playbook_data.records, winner_id)
         playbook_winner_meta = Enum.find(playbook_data.players, &(&1.id == winner_id))

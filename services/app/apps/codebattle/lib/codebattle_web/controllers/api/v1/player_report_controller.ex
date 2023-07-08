@@ -2,7 +2,6 @@ defmodule CodebattleWeb.Api.V1.PlayerReportController do
   use CodebattleWeb, :controller
 
   def index(conn, params) do
-
   end
 
   def show(conn, params) do
@@ -12,6 +11,5 @@ defmodule CodebattleWeb.Api.V1.PlayerReportController do
   end
 
   def create(conn, params) do
-
   end
 end

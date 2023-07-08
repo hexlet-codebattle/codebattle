@@ -3,6 +3,7 @@ defmodule Codebattle.Playbook do
 
   import Ecto.Changeset
 
+  alias Codebattle.Repo
   alias Codebattle.AtomizedMap
 
   @solution_types ~w(complete incomplete waiting_moderator baned)
@@ -43,4 +44,9 @@ defmodule Codebattle.Playbook do
   defp data_changeset(data, params) do
     cast(data, params, [:players, :records, :count])
   end
+
+  def get!(id), do: Repo.get!(__MODULE__, id)
+  def get(id), do: Repo.get(__MODULE__, id)
+  def get_by!(params), do: Repo.get_by!(__MODULE__, params)
+  def get_by(params), do: Repo.get_by(__MODULE__, params)
 end

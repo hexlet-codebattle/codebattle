@@ -20,23 +20,22 @@ defmodule Codebattle.Bot.Server do
 
   @impl GenServer
   def init(params) do
-    {:ok, state} = after_init(params)
+    send(self(), :after_init)
 
-    {:ok, state}
-     # %{
-     #   # :initial | :playing | :finished
-     #   state: :initial,
-     #   game: params.game,
-     #   bot_id: params.bot_id,
-     #   game_channel: nil,
-     #   chat_channel: nil,
-     #   playbook_params: nil
-     # }}
+    {:ok,
+     %{
+       # :initial | :playing | :finished
+       state: :initial,
+       game: params.game,
+       bot_id: params.bot_id,
+       game_channel: nil,
+       chat_channel: nil,
+       playbook_params: nil
+     }}
   end
 
-  # @impl GenServer
-  # def handle_info(:after_init, state) do
-  def after_init(state) do
+  @impl GenServer
+  def handle_info(:after_init, state) do
     :timer.sleep(1000)
     state = init_socket(state)
     state = init_playbook_player(state)
@@ -49,8 +48,7 @@ defmodule Codebattle.Bot.Server do
     case state.playbook_params do
       nil ->
         Logger.warn("There are no playbook for game: #{state.game.id}")
-        # {:noreply, %{state | state: :finished}}
-        {:ok, %{state | state: :finished}}
+        {:noreply, %{state | state: :finished}}
 
       params ->
         Logger.debug("""
@@ -58,12 +56,8 @@ defmodule Codebattle.Bot.Server do
         with playbook_params: #{inspect(Map.drop(params, [:actions]))}
         """)
 
-        # TODO Place this code where it should be
-        me = Game.Helpers.get_player(state.game, state.bot_id)
-        game = Game.Helpers.update_player(state.game, me.id, %{playbook_id: params.playbook_id})
-
-        # {:noreply, %{state | game: game}}
-        {:ok, %{state | game: game}}
+        {:noreply, state}
+        # {:ok, %{state | game: game}}
     end
   end
 
@@ -184,7 +178,7 @@ defmodule Codebattle.Bot.Server do
   end
 
   defp init_playbook_player(state) do
-    case Bot.PlaybookPlayer.init(state.game) do
+    case Bot.PlaybookPlayer.init(state) do
       {:ok, playbook_params} -> Map.put(state, :playbook_params, playbook_params)
       {:error, :no_playbook} -> state
     end

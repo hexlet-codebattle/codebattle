@@ -7,7 +7,7 @@ defmodule Codebattle.Bot.PlaybookPlayerTest do
   alias Codebattle.Bot
   alias CodebattleWeb.UserSocket
 
-  test "Bot playing with user", %{conn: conn} do
+  test "Bot playing with user and bot wins", %{conn: conn} do
     task = insert(:task, level: "easy")
     user = insert(:user, %{name: "first", email: "test1@test.test", github_id: 1, rating: 1400})
 
@@ -44,13 +44,14 @@ defmodule Codebattle.Bot.PlaybookPlayerTest do
       ]
     }
 
-    insert(:playbook, %{
-      data: playbook_data,
-      task: task,
-      winner_id: 2,
-      winner_lang: "ruby",
-      solution_type: "complete"
-    })
+    playbook_used_by_bot =
+      insert(:playbook, %{
+        data: playbook_data,
+        task: task,
+        winner_id: 2,
+        winner_lang: "ruby",
+        solution_type: "complete"
+      })
 
     socket = socket(UserSocket, "user_id", %{user_id: user.id, current_user: user})
 
@@ -90,8 +91,10 @@ defmodule Codebattle.Bot.PlaybookPlayerTest do
     :timer.sleep(3_000)
     # bot write_some_text
     game = Game.Context.get_game!(game.id) |> Repo.preload(user_games: [:playbook])
+    bot_user_game = Enum.find(game.user_games, fn user_game -> user_game.user_id == bot.id end)
 
     assert Helpers.get_first_player(game).editor_text == "tes"
     assert Helpers.get_second_player(game).editor_text == "test"
+    assert bot_user_game.playbook.id == playbook_used_by_bot.id
   end
 end

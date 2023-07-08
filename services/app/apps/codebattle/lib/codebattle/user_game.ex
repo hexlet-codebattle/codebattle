@@ -24,7 +24,16 @@ defmodule Codebattle.UserGame do
   @doc false
   def changeset(user_game = %UserGame{}, attrs) do
     user_game
-    |> cast(attrs, [:user_id, :game_id, :playbook_id, :result, :creator, :rating, :rating_diff, :lang])
+    |> cast(attrs, [
+      :user_id,
+      :game_id,
+      :playbook_id,
+      :result,
+      :creator,
+      :rating,
+      :rating_diff,
+      :lang
+    ])
     |> validate_inclusion(:result, @results)
     |> validate_required([:user_id, :game_id])
   end

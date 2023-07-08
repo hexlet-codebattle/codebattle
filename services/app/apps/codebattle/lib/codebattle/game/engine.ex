@@ -18,8 +18,7 @@ defmodule Codebattle.Game.Engine do
   def create_game(params) do
     # TODO: add support for tags
     task =
-      params[:task] ||
-        Codebattle.Task.get_task_by_level(params[:level] || get_random_level())
+      params[:task] || Codebattle.Task.get_task_by_level(params[:level] || get_random_level())
 
     state = params[:state] || get_state_from_params(params)
     type = params[:type] || "duo"
@@ -71,8 +70,7 @@ defmodule Codebattle.Game.Engine do
     with :ok <- check_auth(user, game.mode, game.tournament_id),
          {:ok, {_old_game_state, game}} <-
            fire_transition(game.id, :join, %{
-             players:
-               game.players ++ [Game.Player.build(user, %{task: game.task})],
+             players: game.players ++ [Game.Player.build(user, %{task: game.task})],
              starts_at: TimeHelper.utc_now()
            }),
          update_game!(game, %{state: "playing"}),
@@ -94,10 +92,7 @@ defmodule Codebattle.Game.Engine do
       editor_lang: editor_lang
     })
 
-    Codebattle.PubSub.broadcast("game:check_started", %{
-      game: game,
-      user_id: user.id
-    })
+    Codebattle.PubSub.broadcast("game:check_started", %{game: game, user_id: user.id})
 
     check_result = CodeCheck.check_solution(game.task, editor_text, editor_lang)
 
@@ -126,22 +121,16 @@ defmodule Codebattle.Game.Engine do
 
         case {old_game_state, new_game.state} do
           {"playing", "game_over"} ->
-            Game.Server.update_playbook(game.id, :game_over, %{
-              id: user.id,
-              lang: editor_lang
-            })
+            Game.Server.update_playbook(game.id, :game_over, %{id: user.id, lang: editor_lang})
 
             {:ok, _game} = store_result!(new_game)
             store_playbook_async(new_game)
 
             Codebattle.PubSub.broadcast("game:finished", %{game: new_game})
-
-            {:ok, new_game,
-             %{check_result: check_result, solution_status: true}}
+            {:ok, new_game, %{check_result: check_result, solution_status: true}}
 
           _ ->
-            {:ok, new_game,
-             %{check_result: check_result, solution_status: false}}
+            {:ok, new_game, %{check_result: check_result, solution_status: false}}
         end
 
       _ ->
@@ -234,15 +223,11 @@ defmodule Codebattle.Game.Engine do
   def store_playbook_async(game) do
     {:ok, playbook_records} = Game.Server.get_playbook_records(game.id)
 
-    Task.start(fn ->
-      Playbook.Context.store_playbook(playbook_records, game.id)
-    end)
+    Task.start(fn -> Playbook.Context.store_playbook(playbook_records, game.id) end)
   end
 
   def store_result!(game) do
     Repo.transaction(fn ->
-      ## Add playbook id if player is bot
-      ## Get it from game.players
       Enum.each(game.players, fn player ->
         create_user_game!(%{
           game_id: game.id,
@@ -320,8 +305,7 @@ defmodule Codebattle.Game.Engine do
     {:ok, {old_game_state, new_game}} = fire_transition(game.id, :timeout, %{})
 
     case {old_game_state, new_game.state} do
-      {old_state, "timeout"}
-      when old_state in ["waiting_opponent", "playing"] ->
+      {old_state, "timeout"} when old_state in ["waiting_opponent", "playing"] ->
         Codebattle.PubSub.broadcast("game:finished", %{game: new_game})
         update_game!(new_game, %{state: "timeout"})
         terminate_game_after(game, 15)
