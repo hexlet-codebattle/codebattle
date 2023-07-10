@@ -1,4 +1,4 @@
-defmodule Codebattle.PlayerReport do
+defmodule Codebattle.UserGameReport do
   @moduledoc false
 
   use Ecto.Schema
@@ -10,30 +10,29 @@ defmodule Codebattle.PlayerReport do
 
   @type t :: %__MODULE__{}
 
-  # @states ~w(draft on_moderation processed)
+  @states ~w(pending processed)
 
-  schema "player_report" do
+  schema "user_game_reports" do
     field(:reason, :string)
     field(:comment, :string)
-    # field(:state, :string) handled / not_handled / etc....
+    field(:state, :string, default: "pending")
 
     belongs_to(:game, Game)
-    belongs_to(:player, User, foreign_key: :user_id)
+    belongs_to(:user, User)
 
     timestamps()
   end
 
-  def changeset(player_report = %__MODULE__{}, attrs) do
+  def changeset(player_report = %__MODULE__{}, params \\ %{}) do
     player_report
-    |> cast(attrs, [])
+    |> cast(params, [])
     |> validate_required([
       :game_id,
       :user_id,
       :reason,
       :comment
     ])
-
-    # |> validate_inclusion(:state, @states)
+    |> validate_inclusion(:state, @states)
   end
 
   def get!(id), do: Repo.get!(__MODULE__, id)

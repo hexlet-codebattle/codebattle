@@ -52,6 +52,8 @@ defmodule CodebattleWeb.LobbyChannelTest do
   test "creates game with bot" do
     user = insert(:user)
     user_token = Phoenix.Token.sign(socket(UserSocket), "user_token", user.id)
+    insert(:task, level: "elementary", name: "2")
+
     {:ok, socket} = connect(UserSocket, %{"token" => user_token})
 
     {:ok, _payload, socket} = subscribe_and_join(socket, LobbyChannel, "lobby")
