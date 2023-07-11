@@ -5,6 +5,12 @@ defmodule Codebattle.Tournament.IndividualTest do
 
   @module Codebattle.Tournament.Individual
 
+  setup do
+    insert(:task, level: "elementary", name: "2")
+
+    :ok
+  end
+
   describe "complete players" do
     test "scales to 2 when 1 player" do
       user = insert(:user)
