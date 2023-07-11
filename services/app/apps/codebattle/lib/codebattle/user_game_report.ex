@@ -8,6 +8,16 @@ defmodule Codebattle.UserGameReport do
   alias Codebattle.Repo
   alias Codebattle.{Game, User}
 
+  @derive {Jason.Encoder,
+           only: [
+             :id,
+             :reported_user_id,
+             :reporter_id,
+             :reason,
+             :comment,
+             :state
+           ]}
+
   @type t :: %__MODULE__{}
 
   @states ~w(pending processed)
@@ -18,17 +28,19 @@ defmodule Codebattle.UserGameReport do
     field(:state, :string, default: "pending")
 
     belongs_to(:game, Game)
-    belongs_to(:user, User)
+    belongs_to(:reporter, User)
+    belongs_to(:reported_user, User, foreign_key: :reported_user_id)
 
     timestamps()
   end
 
-  def changeset(player_report = %__MODULE__{}, params \\ %{}) do
-    player_report
+  def changeset(struct = %__MODULE__{}, params \\ %{}) do
+    struct
     |> cast(params, [])
     |> validate_required([
       :game_id,
-      :user_id,
+      :reporter_id,
+      :reported_user_id,
       :reason,
       :comment
     ])

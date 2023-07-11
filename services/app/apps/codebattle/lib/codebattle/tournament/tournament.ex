@@ -32,7 +32,6 @@ defmodule Codebattle.Tournament do
   @task_providers ~w(level task_pack tags)
 
   @default_match_timeout Application.compile_env(:codebattle, :tournament_match_timeout)
-  @default_timezone "Europe/Moscow"
 
   schema "tournaments" do
     field(:access_token, :string)

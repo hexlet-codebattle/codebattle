@@ -3,7 +3,8 @@ defmodule Codebattle.Repo.Migrations.CreateUserGameReports do
 
   def change do
     create table(:user_game_reports) do
-      add :user_id, references(:users)
+      add :reported_user_id, references(:users)
+      add :reporter_id, references(:users)
       add :game_id, references(:games)
       add :reason, :string
       add :comment, :text

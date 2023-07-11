@@ -67,7 +67,6 @@ defmodule CodebattleWeb.Router do
     scope "/v1", V1, as: :v1 do
       scope("/games") do
         get("/completed", GameController, :completed)
-        resources("/:id/player_reports", PlayerReportController, only: [:index, :show, :create])
       end
 
       get("/:user_id/activity", ActivityController, :show)
@@ -92,6 +91,10 @@ defmodule CodebattleWeb.Router do
 
       resources("/feedback", FeedbackController, only: [:index, :create])
       get("/:user_id/activity", ActivityController, :show)
+
+      scope("/games") do
+        resources("/:id/user_game_reports", UserGameReportController, only: [:create])
+      end
     end
   end
 
