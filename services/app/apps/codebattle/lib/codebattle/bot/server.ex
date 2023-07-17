@@ -44,7 +44,6 @@ defmodule Codebattle.Bot.Server do
     prepare_to_commenting_code()
 
     # TODO: add gracefully terminate if there is no playbook
-    # Add playbook_id to game.player by bot_id ???
     case state.playbook_params do
       nil ->
         Logger.warn("There are no playbook for game: #{state.game.id}")
@@ -57,7 +56,6 @@ defmodule Codebattle.Bot.Server do
         """)
 
         {:noreply, state}
-        # {:ok, %{state | game: game}}
     end
   end
 

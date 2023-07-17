@@ -18,7 +18,7 @@ defmodule Codebattle.Playbook.Context do
     :game_over
   ]
 
-  def get_random_completed(task_id) do
+  def get_random_completed_id(task_id) do
     from(
       p in Playbook,
       where:
@@ -26,6 +26,7 @@ defmodule Codebattle.Playbook.Context do
           p.task_id == ^task_id and
           p.solution_type == "complete",
       order_by: fragment("RANDOM()"),
+      select: p.id,
       limit: 1
     )
     |> Repo.one()

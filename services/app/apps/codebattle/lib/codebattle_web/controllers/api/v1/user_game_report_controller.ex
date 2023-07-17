@@ -6,14 +6,15 @@ defmodule CodebattleWeb.Api.V1.UserGameReportController do
   alias Codebattle.Game
   alias Codebattle.UserGameReport
 
-  def create(conn, params) do
-    %{
-      "id" => game_id,
-      "user_id" => reported_user_id,
-      "reason" => reason,
-      "comment" => comment
-    } = params
-
+  def create(
+        conn,
+        %{
+          "id" => game_id,
+          "user_id" => reported_user_id,
+          "reason" => reason,
+          "comment" => comment
+        }
+      ) do
     reporter = conn.assigns.current_user
     game = Game.Context.get_game!(game_id)
 
@@ -22,25 +23,35 @@ defmodule CodebattleWeb.Api.V1.UserGameReportController do
 
     case {is_reporter_player, is_reported_user_player} do
       {false, _} ->
-        conn |> put_status(:forbidden) |> json(%{errors: ["not_a_player_of_game"]})
+        conn |> put_status(:forbidden) |> json(%{errors: [:not_a_player_of_game]})
 
       {true, false} ->
         conn
         |> put_status(:unprocessable_entity)
-        |> json(%{errors: ["reported_user_not_a_player_of_game"]})
+        |> json(%{errors: [:reported_user_not_a_player_of_game]})
 
       {true, true} ->
-        changeset = %UserGameReport{
-          game_id: game.id,
-          reporter_id: reporter.id,
-          reported_user_id: reported_user_id,
-          reason: reason,
-          comment: comment
-        }
+        case UserGameReport.create(%{
+               game_id: game.id,
+               reporter_id: reporter.id,
+               reported_user_id: reported_user_id,
+               reason: reason,
+               comment: comment
+             }) do
+          {:ok, user_game_report} ->
+            conn |> put_status(:created) |> json(%{user_game_report: user_game_report})
 
-        user_game_report = UserGameReport.changeset(changeset) |> Repo.insert!()
-
-        conn |> put_status(:created) |> json(%{user_game_report: user_game_report})
+          {:error, %Ecto.Changeset{} = changeset} ->
+            conn
+            |> put_status(:unprocessable_entity)
+            |> json(%{errors: translate_errors(changeset)})
+        end
     end
+  end
+
+  def create(conn, _params) do
+    conn
+    |> put_status(:unprocessable_entity)
+    |> json(%{errors: [:invalid_params]})
   end
 end

@@ -6,7 +6,7 @@ defmodule CodebattleWeb.Api.V1.UserGameReportControllerTest do
   alias Codebattle.Bot
   alias Codebattle.UserGameReport
 
-  describe ".create" do
+  describe "create/1" do
     test "player can report opponent", %{conn: conn} do
       user = insert(:user)
       bot = Bot.Context.build()
@@ -19,7 +19,7 @@ defmodule CodebattleWeb.Api.V1.UserGameReportControllerTest do
 
       params = %{
         "user_id" => bot.id,
-        "reason" => "cheating",
+        "reason" => "bot_cheated",
         "comment" => "Bot is cheating"
       }
 
@@ -35,7 +35,7 @@ defmodule CodebattleWeb.Api.V1.UserGameReportControllerTest do
                  "reporter_id" => reporter_id,
                  "reported_user_id" => reported_user_id,
                  "state" => "pending",
-                 "reason" => "cheating",
+                 "reason" => "bot_cheated",
                  "comment" => "Bot is cheating"
                }
              } = response
@@ -46,7 +46,7 @@ defmodule CodebattleWeb.Api.V1.UserGameReportControllerTest do
       user_game_report =
         UserGameReport.get!(user_game_report_id) |> Repo.preload([:reporter, :reported_user])
 
-      assert user_game_report.state == "pending"
+      assert user_game_report.state == :pending
       assert user_game_report.reporter.id == user.id
       assert user_game_report.reported_user.id == bot.id
     end
