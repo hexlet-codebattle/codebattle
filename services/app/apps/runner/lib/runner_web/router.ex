@@ -16,6 +16,7 @@ defmodule RunnerWeb.Router do
 
     scope "/v1", V1, as: :v1 do
       post("/execute", ExecutorController, :execute)
+      post("/generate", GeneratorController, :generate)
     end
   end
 end

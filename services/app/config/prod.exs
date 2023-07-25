@@ -33,13 +33,20 @@ config :codebattle, html_include_prod_scripts: true
 config :codebattle, html_debug_mode: false
 config :codebattle, app_version: System.get_env("APP_VERSION")
 
-executor =
+checker_executor =
   case System.get_env("CODEBATTLE_EXECUTOR") do
     "local" -> Codebattle.CodeCheck.Executor.Local
     _ -> Codebattle.CodeCheck.Executor.Remote
   end
 
-config :codebattle, checker_executor: executor
+asserts_executor =
+  case System.get_env("CODEBATTLE_EXECUTOR") do
+    "local" -> Codebattle.AssertsService.Executor.Local
+    _ -> Codebattle.AssertsService.Executor.Remote
+  end
+
+config :codebattle, checker_executor: checker_executor
+config :codebattle, asserts_executor: asserts_executor
 
 config :runner, load_dot_env_file: false
 config :runner, use_prod_workers: true

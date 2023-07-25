@@ -21,23 +21,31 @@ defmodule Codebattle.Task do
              :state,
              :origin,
              :visibility,
-             :creator_id
+             :creator_id,
+             :input_signature,
+             :output_signature,
+             :asserts,
+             :asserts_examples,
+             :solution,
+             :arguments_generator,
+             :generator_lang
            ]}
 
   @levels ~w(elementary easy medium hard)
-  @states ~w(draft on_moderation active disabled)
+  @states ~w(blank draft on_moderation active disabled)
   @origin_types ~w(github user)
   @visibility_types ~w(hidden public)
 
   schema "tasks" do
-    field(:examples, :string)
     field(:description_ru, :string)
     field(:description_en, :string)
     field(:name, :string)
     field(:level, :string)
     field(:input_signature, {:array, AtomizedMap}, default: [])
     field(:output_signature, AtomizedMap, default: %{})
+    field(:asserts_examples, {:array, AtomizedMap}, default: [])
     field(:asserts, {:array, AtomizedMap}, default: [])
+    field(:examples, :string)
     field(:disabled, :boolean)
     field(:count, :integer, virtual: true)
     field(:tags, {:array, :string}, default: [])
@@ -45,6 +53,9 @@ defmodule Codebattle.Task do
     field(:visibility, :string, default: "public")
     field(:origin, :string)
     field(:creator_id, :integer)
+    field(:solution, :string, default: "")
+    field(:arguments_generator, :string, default: "")
+    field(:generator_lang, :string, default: "js")
 
     timestamps()
   end
@@ -65,7 +76,10 @@ defmodule Codebattle.Task do
       :state,
       :origin,
       :visibility,
-      :creator_id
+      :creator_id,
+      :solution,
+      :arguments_generator,
+      :generator_lang
     ])
     |> validate_required([:examples, :description_en, :name, :level, :asserts])
     |> validate_inclusion(:state, @states)
@@ -92,6 +106,10 @@ defmodule Codebattle.Task do
           input_signature: params.input_signature,
           output_signature: params.output_signature,
           asserts: params.asserts,
+          asserts_examples: Map.get(params, :asserts_examples, []),
+          solution: Map.get(params, :solution, ""),
+          arguments_generator: Map.get(params, :arguments_generator, ""),
+          generator_lang: Map.get(params, :generator_lang, "js"),
           tags: params.tags
         ]
       ],

@@ -5,6 +5,8 @@ defmodule Codebattle.TaskForm do
 
   alias Codebattle.Repo
   alias Codebattle.Task
+  alias Codebattle.AssertsService
+  alias Codebattle.AssertsService.Result
 
   def create(params, user) do
     new_params =
@@ -18,6 +20,48 @@ defmodule Codebattle.TaskForm do
     %Task{}
     |> changeset(new_params)
     |> Repo.insert()
+  end
+
+  def build(%{
+        task: task,
+        solution_text: solution_text,
+        arguments_generator_text: arguments_generator_text,
+        editor_lang: editor_lang
+      }) do
+    case AssertsService.generate_asserts(
+           task,
+           solution_text,
+           arguments_generator_text,
+           editor_lang
+         ) do
+      %Result{status: "ok", asserts: asserts} ->
+        {:ok, asserts}
+
+      %Result{status: "failure", asserts: asserts} ->
+        {:failure, asserts}
+
+      %Result{status: "error", asserts: asserts, output_error: message} ->
+        {:error, asserts, message}
+    end
+  end
+
+  def build(
+        %{
+          "task" => task
+        },
+        user
+      ) do
+    new_task =
+      task
+      |> Map.merge(%{
+        "asserts" => task["asserts_examples"],
+        "origin" => "user",
+        "state" => "blank",
+        "creator_id" => user.id
+      })
+
+    %Task{}
+    |> changeset(new_task)
   end
 
   def update(task, params, _) do
@@ -38,6 +82,9 @@ defmodule Codebattle.TaskForm do
       :level,
       :state,
       :origin,
+      :solution,
+      :arguments_generator,
+      :generator_lang,
       :visibility,
       :creator_id
     ])

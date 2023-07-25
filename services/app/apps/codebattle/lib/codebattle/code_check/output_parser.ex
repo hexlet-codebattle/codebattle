@@ -44,7 +44,7 @@ defmodule Codebattle.CodeCheck.OutputParser do
           container_output
 
         true ->
-          "Something went wrong! Please, write to dev team in our Slack \n UNKNOWN_ERROR: #{container_output}}"
+          "Something went wrong! Please, write to dev team in our Telegram \n UNKNOWN_ERROR: #{container_output}}"
       end
 
     result = Jason.encode!(%{status: "error", result: error_msg})

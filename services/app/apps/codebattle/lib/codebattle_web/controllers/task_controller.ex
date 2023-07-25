@@ -22,7 +22,7 @@ defmodule CodebattleWeb.TaskController do
       description: "Create your own task",
       url: Routes.task_path(conn, :new)
     })
-    |> render("new.html", changeset: Codebattle.Task.changeset(%Codebattle.Task{}))
+    |> render("new.html")
   end
 
   def show(conn, %{"id" => id}) do
