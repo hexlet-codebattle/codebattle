@@ -1,4 +1,4 @@
-defmodule Runner.CheckerGeneratorTest do
+defmodule Runner.AssertsGeneratorTest do
   use Codebattle.DataCase, async: true
 
   alias Runner.AssertsGenerator
