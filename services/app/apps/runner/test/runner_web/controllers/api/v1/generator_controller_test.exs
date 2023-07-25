@@ -36,7 +36,7 @@ defmodule RunnerWeb.Api.V1.GeneratorControllerTest do
         "task" => task,
         "lang_slug" => "js",
         "solution_text" => "asdf",
-        "generator_text" => "asdf"
+        "arguments_generator_text" => "asdf"
       }
 
       resp =
