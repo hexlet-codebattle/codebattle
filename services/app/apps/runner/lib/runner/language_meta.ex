@@ -20,5 +20,11 @@ defmodule Runner.LanguageMeta do
     field(:types, map())
     field(:checker_meta, map())
     field(:default_values, map())
+
+    # asserts generator params
+    field(:generator_dir, String.t())
+    field(:arguments_generator_template, String.t())
+    field(:arguments_generator_file_name, String.t())
+    field(:asserts_generator_file_name, String.t())
   end
 end

@@ -54,7 +54,7 @@ defmodule Codebattle.CodeCheck.OutputParser.V2 do
           "Your solution was executed for longer than 15 seconds, try to write more optimally"
 
         true ->
-          "Something went wrong! Please, write to dev team in our Slack \n UNKNOWN_ERROR: #{container_output}}"
+          "Something went wrong! Please, write to dev team in our Telegram \n UNKNOWN_ERROR: #{container_output}}"
       end
 
     %{

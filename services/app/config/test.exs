@@ -29,14 +29,22 @@ config :codebattle, Codebattle.Bot,
   timeout: 60_000,
   min_bot_step_timeout: 0
 
-executor =
+checker_executor =
   case System.get_env("CODEBATTLE_EXECUTOR") do
     "local" -> Codebattle.CodeCheck.Executor.Local
     "remote" -> Codebattle.CodeCheck.Executor.Remote
     _ -> Codebattle.CodeCheck.Executor.Fake
   end
 
-config :codebattle, checker_executor: executor
+asserts_executor =
+  case System.get_env("CODEBATTLE_EXECUTOR") do
+    "local" -> Codebattle.AssertsService.Executor.Local
+    "remote" -> Codebattle.AssertsService.Executor.Remote
+    _ -> Codebattle.AssertsService.Executor.Fake
+  end
+
+config :codebattle, checker_executor: checker_executor
+config :codebattle, asserts_executor: asserts_executor
 config :codebattle, code_check_timeout: 35_000
 config :codebattle, tournament_match_timeout: 1
 

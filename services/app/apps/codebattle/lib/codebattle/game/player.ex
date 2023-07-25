@@ -39,7 +39,12 @@ defmodule Codebattle.Game.Player do
 
   embedded_schema do
     field(:id, :integer)
-    field(:editor_text, :string, default: "module.exports = () => {\n\n};")
+
+    field(:editor_text, :string,
+      default:
+        "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = () => {\n\n};\n\nmodule.exports = solution;"
+    )
+
     field(:editor_lang, :string, default: "js")
     field(:lang, :string, default: "js")
     field(:result, :string, default: "undefined")

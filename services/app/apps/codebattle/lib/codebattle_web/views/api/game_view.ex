@@ -3,6 +3,7 @@ defmodule CodebattleWeb.Api.GameView do
 
   alias Runner.Languages
   alias Codebattle.CodeCheck
+  alias Codebattle.Asserts
 
   import Codebattle.Game.Helpers
 
@@ -10,7 +11,7 @@ defmodule CodebattleWeb.Api.GameView do
     %{
       id: get_game_id(game),
       inserted_at: game.inserted_at,
-      langs: get_langs_with_solution_templates(game.task),
+      langs: get_langs_with_templates(game.task),
       level: game.level,
       mode: game.mode,
       score: score,
@@ -70,7 +71,7 @@ defmodule CodebattleWeb.Api.GameView do
     end)
   end
 
-  def get_langs_with_solution_templates(task) do
+  def get_langs_with_templates(task) do
     Languages.meta()
     |> Map.values()
     |> Enum.map(fn meta ->
@@ -78,7 +79,8 @@ defmodule CodebattleWeb.Api.GameView do
         slug: meta.slug,
         name: meta.name,
         version: meta.version,
-        solution_template: CodeCheck.generate_solution_template(task, meta)
+        solution_template: CodeCheck.generate_solution_template(task, meta),
+        arguments_generator_template: Map.get(meta, :arguments_generator_template, "")
       }
     end)
   end
