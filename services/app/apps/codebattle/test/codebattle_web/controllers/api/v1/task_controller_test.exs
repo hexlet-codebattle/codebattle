@@ -94,11 +94,13 @@ defmodule CodebattleWeb.Api.V1.TaskControllerTest do
         |> json_response(200)
 
       assert %{
-               "creator_id" => ^creator_id,
-               "level" => "easy",
-               "name" => "1",
-               "origin" => "user",
-               "tags" => []
+              "task" => %{
+                "creator_id" => ^creator_id,
+                "level" => "easy",
+                "name" => "1",
+                "origin" => "user",
+                "tags" => []
+              }
              } = response
     end
   end
