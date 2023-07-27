@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import _ from 'lodash';
 import { Alert } from 'react-bootstrap';
 import * as selectors from '../selectors';
-import GameModes from '../config/gameModes';
+import GameRoomModes from '../config/gameModes';
 import GameStateCodes from '../config/gameStateCodes';
 import i18n from '../../i18n';
 
@@ -29,7 +29,7 @@ const GameResult = () => {
     }
 
     if (currentUserId === winner.id) {
-      const msg = gameMode === GameModes.training
+      const msg = gameMode === GameRoomModes.training
         ? i18n.t('Win Training Message')
         : i18n.t('Win Game Message');
 

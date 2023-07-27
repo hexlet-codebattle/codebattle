@@ -7,4 +7,5 @@ export default {
   timeout: 'timeout',
   rematchRejected: 'rematch_rejected',
   rematchInApproval: 'rematch_in_approval',
+  builder: 'builder',
 };

@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useContext, useCallback } from 'react';
+import cn from 'classnames';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import ReactMarkdown from 'react-markdown';
@@ -9,6 +10,13 @@ import ContributorsList from './ContributorsList';
 import { actions } from '../slices';
 import * as selectors from '../selectors';
 import taskDescriptionLanguages from '../config/taskDescriptionLanguages';
+import RoomContext from '../containers/RoomContext';
+import { validateTaskName } from '../middlewares/Game';
+import { inBuilderRoomSelector } from '../machines/selectors';
+import useMachineStateSelector from '../utils/useMachineStateSelector';
+import { taskStateCodes } from '../config/task';
+
+const defaultLevels = ['elementary', 'easy', 'medium', 'hard'].map(level => ({ value: level, label: _.capitalize(level) }));
 
 const renderTaskLink = name => {
   const link = `https://github.com/hexlet-codebattle/battle_asserts/tree/master/src/battle_asserts/issues/${name}.clj`;
@@ -40,9 +48,43 @@ const ShowGuideButton = () => {
   );
 };
 
+const renderGameLevelSelectButton = (level, handleSetLevel) => (
+  <div className="dropdown mr-1">
+    <button
+      type="button"
+      title="level"
+      className={
+        cn('btn border-gray dropdown-toggle rounded-lg', {
+          'p-0': level === 'hard' || level === 'medium',
+          'p-1': level === 'elementary' || level === 'easy',
+        })
+      }
+      data-toggle="dropdown"
+      aria-expanded="false"
+      data-offset="10,20"
+    >
+      <img alt={level} src={`/assets/images/levels/${level}.svg`} />
+    </button>
+    <div className="dropdown-menu">
+      {defaultLevels.map(({ value, label }) => (
+        <button
+          key={value}
+          type="button"
+          aria-label={value}
+          className={cn('dropdown-item', { active: value === level })}
+          data-value={value}
+          onClick={handleSetLevel}
+        >
+          {label}
+        </button>
+      ))}
+    </div>
+  </div>
+);
+
 const renderGameLevelBadge = level => (
   <div
-    className="text-center mr-2"
+    className="text-center"
     data-toggle="tooltip"
     data-placement="right"
     title={level}
@@ -70,7 +112,7 @@ const TaskLanguagesSelection = ({ avaibleLanguages, displayLanguage, handleSetLa
     <Dropdown className="d-flex ml-auto">
       <Dropdown.Toggle
         id="tasklang-dropdown-toggle"
-        className="shadow-none rounded-lg"
+        className="shadow-none rounded-lg p-1 btn-sm"
         variant="outline-secondary"
       >
         {displayLanguage.toUpperCase()}
@@ -83,8 +125,13 @@ const TaskLanguagesSelection = ({ avaibleLanguages, displayLanguage, handleSetLa
 };
 
 const Task = ({ task }) => {
-  const taskLanguage = useSelector(selectors.taskDescriptionLanguageselector);
   const dispatch = useDispatch();
+
+  const { mainService } = useContext(RoomContext);
+  const inBuilderRoom = useMachineStateSelector(mainService, inBuilderRoomSelector);
+
+  const taskLanguage = useSelector(selectors.taskDescriptionLanguageselector);
+
   const handleSetLanguage = lang => () => dispatch(actions.setTaskDescriptionLanguage(lang));
 
   const avaibleLanguages = _.keys(task)
@@ -99,9 +146,43 @@ const Task = ({ task }) => {
   // TODO: remove russian text from string (create ru/en templates of basic description)
   const taskDescriptionMapping = {
     en: `${task.descriptionEn}\n\n**Examples:**\n${task.examples}`,
-    ru: `${task.descriptionRu}\n\n**Примеры:**\n${task.examples}`,
+    ru: `${task.descriptionRu}\n\n**примеры:**\n${task.examples}`,
   };
+  const descriptionTextMapping = {
+    en: task.descriptionEn,
+    ru: task.descriptionRu,
+  };
+
   const description = taskDescriptionMapping[taskLanguage];
+
+  // for builder
+  const taskDescriptionText = descriptionTextMapping[taskLanguage];
+
+  const handleSetLevel = useCallback(
+    event => {
+      const { value } = event.currentTarget.dataset;
+      dispatch(actions.setTaskLevel({ level: value }));
+    },
+    [dispatch],
+  );
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const validateName = useCallback(
+    _.debounce(name => dispatch(validateTaskName(name)), 700),
+    [],
+  );
+
+  const handleSetName = useCallback(event => {
+    dispatch(actions.setTaskName({ name: event.target.value }));
+    validateName(event.target.value);
+  }, [validateName, dispatch]);
+
+  const handleSetDescription = useCallback(
+    event => {
+      dispatch(actions.setTaskDescription({ lang: taskLanguage, value: event.target.value }));
+    },
+    [taskLanguage, dispatch],
+  );
 
   if (_.isEmpty(task)) {
     return null;
@@ -111,52 +192,94 @@ const Task = ({ task }) => {
     <div className="card h-100 border-0 shadow-sm">
       <div className="px-3 py-3 h-100 overflow-auto" data-guide-id="Task">
         <div className="d-flex align-items-begin flex-column flex-sm-row justify-content-between">
-          <h6 className="card-text d-flex align-items-center mr-2">
-            {renderGameLevelBadge(task.level)}
-            <div>
-              {i18n.t('Task: ')}
-              <span className="card-subtitle mb-2 text-muted">{task.name}</span>
+          {inBuilderRoom ? (
+            <div className="d-flex align-items-center">
+              {renderGameLevelSelectButton(task.level, handleSetLevel)}
+              <span className="h6 card-text mb-0 ml-2">{i18n.t('Task: ')}</span>
+              {
+                task.state === taskStateCodes.blank
+                  ? (
+                    <input
+                      type="text"
+                      className="form-control form-control-sm rounded-lg ml-2"
+                      placeholder="Enter name"
+                      aria-label="Task Name"
+                      aria-describedby="basic-addon1"
+                      value={task.name}
+                      onChange={handleSetName}
+                    />
+                  ) : (
+                    <span className="ml-2 text-muted">{task.name}</span>
+                  )
+              }
             </div>
-          </h6>
-          <TaskLanguagesSelection
-            handleSetLanguage={handleSetLanguage}
-            avaibleLanguages={avaibleLanguages}
-            displayLanguage={displayLanguage}
-          />
-          <ShowGuideButton />
+          ) : (
+            <h6 className="card-text d-flex align-items-center mr-2">
+              {renderGameLevelBadge(task.level)}
+              <span className="ml-2">{i18n.t('Task: ')}</span>
+              <span className="ml-2 text-muted">{task.name}</span>
+            </h6>
+          )}
+          <div className="d-flex align-items-center">
+            <TaskLanguagesSelection
+              handleSetLanguage={handleSetLanguage}
+              avaibleLanguages={avaibleLanguages}
+              displayLanguage={displayLanguage}
+            />
+            {!inBuilderRoom && (
+              <ShowGuideButton />
+            )}
+          </div>
         </div>
         <div className="d-flex align-items-stretch flex-column">
           <div className="card-text mb-0 h-100 overflow-auto">
-            <ReactMarkdown
-              source={description}
-              renderers={{
-                linkReference: reference => {
-                  if (!reference.href) {
-                    return (
-                      <>
-                        [
-                        {reference.children}
-                        ]
-                      </>
-                    );
-                  }
-                  return <a href={reference.$ref}>{reference.children}</a>;
-                },
-              }}
-            />
+            {inBuilderRoom ? (
+              <>
+                <p><strong>Description: </strong></p>
+                <textarea
+                  className="form-control form-control-sm rounded-lg"
+                  id={`description-${taskLanguage}`}
+                  rows={5}
+                  value={taskDescriptionText}
+                  onChange={handleSetDescription}
+                />
+              </>
+            ) : (
+              <ReactMarkdown
+                source={description}
+                renderers={{
+                  linkReference: reference => {
+                    if (!reference.href) {
+                      return (
+                        <>
+                          [
+                          {reference.children}
+                          ]
+                        </>
+                      );
+                    }
+                    return <a href={reference.$ref}>{reference.children}</a>;
+                  },
+                }}
+              />
+            )}
           </div>
         </div>
-        <ContributorsList name={task.name} />
-        <div className="d-flex align-items-end flex-column flex-sm-row justify-content-between">
-          <h6 className="card-text small font-italic text-black-50">
-            <span className="mr-2">
-              {i18n.t(
-                'Found a mistake? Have something to add? Pull Requests are welcome: ',
-              )}
-            </span>
-            {renderTaskLink(task.name)}
-          </h6>
-        </div>
+        {!inBuilderRoom && task.origin === 'github' && (
+          <>
+            <ContributorsList name={task.name} />
+            <div className="d-flex align-items-end flex-column flex-sm-row justify-content-between">
+              <h6 className="card-text small font-italic text-black-50">
+                <span className="mr-2">
+                  {i18n.t(
+                    'Found a mistake? Have something to add? Pull Requests are welcome: ',
+                  )}
+                </span>
+                {renderTaskLink(task.name)}
+              </h6>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
@@ -164,10 +287,9 @@ const Task = ({ task }) => {
 
 Task.propTypes = {
   task: PropTypes.shape({
-    id: PropTypes.number.isRequired,
     name: PropTypes.string.isRequired,
     level: PropTypes.string.isRequired,
-    examples: PropTypes.string.isRequired,
+    examples: PropTypes.string,
     descriptionEn: PropTypes.string,
     descriptionRu: PropTypes.string,
     tags: PropTypes.arrayOf(PropTypes.string),

@@ -11,6 +11,7 @@ import executionOutput, {
 } from './executionOutput';
 import playbook, { actions as playbookActions } from './playbook';
 import game, { actions as gameActions } from './game';
+import builder, { actions as builderActions } from './builder';
 import lobby, { actions as lobbyActions } from './lobby';
 import user, { actions as userActions } from './user';
 import userSettings, { actions as userSettingActions } from './userSettings';
@@ -27,6 +28,7 @@ const setError = error => ({
 
 export const actions = {
   setError,
+  ...builderActions,
   ...chatActions,
   ...completedGamesActions,
   ...editorActions,
@@ -51,6 +53,7 @@ export const redirectToNewGame = gameId => {
 
 export default {
   game,
+  builder,
   usersInfo,
   editor,
   gameUI,

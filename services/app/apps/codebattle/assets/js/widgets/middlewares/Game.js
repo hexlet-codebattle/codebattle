@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import axios from 'axios';
 import Gon from 'gon';
-import { camelizeKeys } from 'humps';
+import { camelizeKeys, decamelizeKeys } from 'humps';
 import socket from '../../socket';
 import * as selectors from '../selectors';
 import userTypes from '../config/userTypes';
@@ -12,11 +12,15 @@ import {
 
 import PlaybookStatusCodes from '../config/playbookStatusCodes';
 import GameStateCodes from '../config/gameStateCodes';
-import GameModes from '../config/gameModes';
+import GameRoomModes from '../config/gameModes';
+import GameTypeCodes from '../config/gameTypeCodes';
 import notification from '../utils/notification';
+import { taskTemplatesStates, labelTaskParamsWithIds } from '../utils/builder';
+import { taskStateCodes } from '../config/task';
 
 const defaultLanguages = Gon.getAsset('langs');
 const gameId = Gon.getAsset('game_id');
+const taskId = Gon.getAsset('task_id');
 const isRecord = Gon.getAsset('is_record');
 const channelName = `game:${gameId}`;
 const channel = !isRecord ? socket.channel(channelName) : null;
@@ -81,7 +85,7 @@ const initStore = dispatch => ({
 };
 
 const initStoredGame = dispatch => data => {
-  const mode = GameModes.history;
+  const mode = GameRoomModes.history;
 
   const gameStatus = {
     state: GameStateCodes.stored,
@@ -169,11 +173,17 @@ const initGameChannel = (dispatch, machine) => {
     .receive('error', onJoinFailure);
 };
 
-export const sendEditorText = (editorText, langSlug = null) => (dispatch, getState) => {
+export const updateEditorText = (editorText, langSlug = null) => (dispatch, getState) => {
   const state = getState();
   const userId = selectors.currentUserIdSelector(state);
   const currentLangSlug = langSlug || selectors.userLangSelector(state)(userId);
   dispatch(actions.updateEditorText({ userId, editorText, langSlug: currentLangSlug }));
+};
+
+export const sendEditorText = (editorText, langSlug = null) => (_dispatch, getState) => {
+  const state = getState();
+  const userId = selectors.currentUserIdSelector(state);
+  const currentLangSlug = langSlug || selectors.userLangSelector(state)(userId);
   channel.push('editor:data', {
     editor_text: editorText,
     lang_slug: currentLangSlug,
@@ -203,7 +213,16 @@ export const sendEditorLang = currentLangSlug => (dispatch, getState) => {
   dispatch(actions.updateEditorLang({ userId, currentLangSlug }));
 };
 
-export const changeCurrentLangAndSetTemplate = langSlug => (dispatch, getState) => {
+export const updateCurrentLangAndSetTemplate = langSlug => (dispatch, getState) => {
+  const state = getState();
+  const langs = selectors.editorLangsSelector(state) || defaultLanguages;
+  const currentText = selectors.currentPlayerTextByLangSelector(langSlug)(state);
+  const { solutionTemplate: template } = _.find(langs, { slug: langSlug });
+  const textToSet = currentText || template;
+  dispatch(updateEditorText(textToSet, langSlug));
+};
+
+export const sendCurrentLangAndSetTemplate = langSlug => (dispatch, getState) => {
   const state = getState();
   const langs = selectors.editorLangsSelector(state) || defaultLanguages;
   const currentText = selectors.currentPlayerTextByLangSelector(langSlug)(state);
@@ -213,6 +232,13 @@ export const changeCurrentLangAndSetTemplate = langSlug => (dispatch, getState) 
 };
 
 export const resetTextToTemplate = langSlug => (dispatch, getState) => {
+  const state = getState();
+  const langs = selectors.editorLangsSelector(state) || defaultLanguages;
+  const { solutionTemplate: template } = _.find(langs, { slug: langSlug });
+  dispatch(updateEditorText(template, langSlug));
+};
+
+export const resetTextToTemplateAndSend = langSlug => (dispatch, getState) => {
   const state = getState();
   const langs = selectors.editorLangsSelector(state) || defaultLanguages;
   const { solutionTemplate: template } = _.find(langs, { slug: langSlug });
@@ -374,6 +400,224 @@ export const activeGameReady = machine => dispatch => {
   });
 };
 
+const fetchOrCreateTask = (gameMachine, taskMachine) => dispatch => {
+  const requestPath = taskId ? `/api/v1/tasks/${taskId}` : '/api/v1/tasks/new';
+
+  axios.get(requestPath).then(({ data }) => {
+    const {
+      task,
+      langs,
+      players,
+    } = camelizeKeys(data);
+    const state = GameStateCodes.builder;
+
+    const type = GameTypeCodes.duo;
+    const mode = GameRoomModes.builder;
+    const timeoutSeconds = 0;
+
+    const gameStatus = {
+      state,
+      type,
+      mode,
+      timeoutSeconds,
+    };
+
+    initStore(dispatch)({
+      firstPlayer: players[0],
+      secondPlayer: players[1],
+      langs,
+      gameStatus,
+      playbookStatusCode: PlaybookStatusCodes.none,
+    });
+
+    const labeledTask = labelTaskParamsWithIds(task);
+
+    dispatch(actions.setTask({ task: labeledTask }));
+
+    taskMachine.send('SETUP_TASK', { payload: task });
+
+    const message = { payload: { state } };
+    gameMachine.send('LOAD_GAME', message);
+  });
+};
+
+export const fetchGeneratorAndSolutionTemplates = taskMachine => (dispatch, getState) => {
+  const state = getState();
+
+  const langs = selectors.editorLangsSelector(state);
+
+  const solution = langs.reduce(
+    (acc, lang) => (
+      lang.argumentsGeneratorTemplate
+        ? { ...acc, [lang.slug]: lang.solutionTemplate }
+        : acc
+    ),
+    {},
+  );
+  const argumentsGenerator = langs.reduce(
+    (acc, lang) => (
+      lang.argumentsGeneratorTemplate
+        ? { ...acc, [lang.slug]: lang.argumentsGeneratorTemplate }
+        : acc
+    ),
+    {},
+  );
+
+  dispatch(actions.setTaskTemplates({ solution, argumentsGenerator }));
+  taskMachine.send('CHANGES');
+};
+
+export const validateTaskName = name => dispatch => {
+  axios
+    .get(`/api/v1/tasks/${name}/unique`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'x-csrf-token': window.csrf_token,
+      },
+    })
+    .then(response => {
+      const data = camelizeKeys(response.data);
+
+      if (data.unique) {
+        dispatch(actions.setValidationStatuses({ name: [true] }));
+      } else {
+        dispatch(actions.setValidationStatuses({ name: [false, 'Name must be unique'] }));
+      }
+    })
+    .catch(error => {
+      dispatch(actions.setValidationStatuses({ name: [false, error.message] }));
+    });
+};
+
+export const saveTask = (taskMachine, onError) => (dispatch, getState) => {
+  const state = getState();
+
+  const taskParams = selectors.taskParamsSelector(state);
+  const payload = { task: decamelizeKeys(taskParams, { separator: '_' }) };
+
+  if (taskParams.state === taskStateCodes.blank) {
+    axios
+      .post('/api/v1/tasks', payload, {
+        headers: {
+          'Content-Type': 'application/json',
+          'x-csrf-token': window.csrf_token,
+        },
+      })
+      .then(response => {
+        const data = camelizeKeys(response.data);
+
+        taskMachine.send('CONFIRM');
+        window.location.href = `/tasks/${data.task.id}`;
+      })
+      .catch(err => {
+        onError(err);
+
+        dispatch(actions.setError(err));
+        console.error(err);
+      });
+  } else {
+    axios
+      .patch(`/api/v1/tasks/${taskParams.id}`, payload, {
+        headers: {
+          'Content-Type': 'application/json',
+          'x-csrf-token': window.csrf_token,
+        },
+      })
+      .then(response => {
+        const data = camelizeKeys(response.data);
+        const labledTask = labelTaskParamsWithIds(data.task);
+
+        dispatch(actions.setTask({ task: labledTask }));
+        taskMachine.send('CONFIRM');
+      })
+      .catch(err => {
+        onError(err);
+
+        dispatch(actions.setError(err));
+        console.error(err);
+      });
+  }
+};
+
+export const deleteTask = id => dispatch => {
+  axios
+    .delete(`/api/v1/tasks/${id}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'x-csrf-token': window.csrf_token,
+      },
+    })
+    .then(() => {
+      window.location.href = '/tasks';
+    })
+    .catch(err => {
+      dispatch(actions.setError(err));
+      console.error(err);
+    });
+};
+
+export const buildTaskAsserts = taskMachine => (dispatch, getState) => {
+  const state = getState();
+
+  if (state.builder.templates.state !== taskTemplatesStates.init) {
+    dispatch(actions.setTaskAsserts({
+      asserts: state.builder.task.assertsExamples.map(({ arguments: args, expected }) => ({
+        arguments: JSON.parse(args),
+        expected: JSON.parse(expected),
+      })),
+    }));
+
+    taskMachine.send('SUCCESS');
+    return;
+  }
+
+  const taskParams = selectors.taskParamsSelector(state);
+  const editorLang = selectors.taskGeneratorLangSelector(state);
+  const textSolution = selectors.taskSolutionSelector(state, editorLang);
+  const textArgumentsGenerator = selectors.taskArgumentsGeneratorSelector(state, editorLang);
+
+  axios
+    .post('/api/v1/tasks/build', {
+      task: decamelizeKeys(taskParams, { separator: '_' }),
+      arguments_generator_text: textArgumentsGenerator,
+      solution_text: textSolution,
+      editor_lang: editorLang,
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'x-csrf-token': window.csrf_token,
+      },
+    })
+    .then(response => {
+      const data = camelizeKeys(response.data);
+
+      dispatch(actions.setTaskAsserts({ asserts: data.asserts || [] }));
+
+      switch (data.status) {
+        case 'ok': {
+          taskMachine.send('SUCCESS');
+          break;
+        }
+        case 'failure':
+          taskMachine.send('FAILURE', { message: "Actual values doesn't match with expected values" });
+          break;
+        case 'error': {
+          taskMachine.send('ERROR', { message: data.message });
+          break;
+        }
+        default:
+          throw new Error(`Invalid status ${data.status} (/api/v1/tasks/build)`);
+      }
+    })
+    .catch(err => {
+      dispatch(actions.setTaskAsserts({ asserts: [] }));
+      taskMachine.send('ERROR', { message: err.message });
+
+      dispatch(actions.setError(err));
+      console.error(err);
+    });
+};
+
 const fetchPlaybook = (machine, init) => dispatch => {
   axios
     .get(`/api/v1/playbook/${gameId}`)
@@ -388,9 +632,11 @@ const fetchPlaybook = (machine, init) => dispatch => {
 
       machine.send('LOAD_PLAYBOOK', { payload: resolvedData });
     })
-    .catch(error => {
-      dispatch(actions.setError(error));
-      machine.send('REJECT_LOADING_PLAYBOOK', { payload: error });
+    .catch(err => {
+      dispatch(actions.setError(err));
+      machine.send('REJECT_LOADING_PLAYBOOK', { payload: err });
+
+      console.error(err);
     });
 };
 
@@ -431,6 +677,10 @@ export const openPlaybook = machine => () => {
   machine.send('OPEN_REPLAYER');
 };
 
+export const connectToTask = (gameMachine, taskMachine) => dispatch => {
+  dispatch(fetchOrCreateTask(gameMachine, taskMachine));
+};
+
 export const connectToGame = machine => dispatch => {
   dispatch(isRecord ? fetchPlaybook(machine, initStoredGame) : activeGameReady(machine));
 };
@@ -439,7 +689,7 @@ export const connectToEditor = machine => dispatch => {
   dispatch(isRecord ? storedEditorReady(machine) : activeEditorReady(machine));
 };
 
-export const checkGameResult = () => (dispatch, getState) => {
+export const checkGameSolution = () => (dispatch, getState) => {
   const state = getState();
   const currentUserId = selectors.currentUserIdSelector(state);
   const { text, lang } = selectors.getSolution(currentUserId)(state);
@@ -455,6 +705,54 @@ export const checkGameResult = () => (dispatch, getState) => {
   };
 
   channel.push('check_result', payload);
+};
+
+export const checkTaskSolution = editorMachine => (dispatch, getState) => {
+  const state = getState();
+  const currentUserId = selectors.currentUserIdSelector(state);
+  const { text, lang } = selectors.getSolution(currentUserId)(state);
+  const task = selectors.builderTaskSelector(state);
+
+  // FIXME: create actions for this state transitions
+  // FIXME: create statuses for solutionStatus
+  dispatch(actions.updateGameStatus({ solutionStatus: null }));
+  dispatch(actions.updateCheckStatus({ [currentUserId]: true }));
+
+  const payload = {
+    task: decamelizeKeys(task, { separator: '_' }),
+    editor_text: text,
+    lang_slug: lang,
+  };
+
+  editorMachine.send('user_check_solution');
+
+  axios.post('/api/v1/tasks/check', payload, {
+    headers: {
+      'Content-Type': 'application/json',
+      'x-csrf-token': window.csrf_token,
+    },
+  }).then(response => {
+    const { checkResult } = camelizeKeys(response.data);
+
+    dispatch(
+      actions.updateExecutionOutput({
+        ...checkResult,
+        userId: currentUserId,
+      }),
+    );
+    editorMachine.send('receive_check_result', { userId: currentUserId });
+  }).catch(error => {
+    dispatch(
+      actions.updateExecutionOutput({
+        status: 'error',
+        outputError: error.message,
+        asserts: [],
+        version: 2,
+        userId: currentUserId,
+      }),
+    );
+    editorMachine.send('receive_check_result', { userId: currentUserId });
+  });
 };
 
 export const compressEditorHeight = userId => dispatch => dispatch(actions.compressEditorHeight({ userId }));

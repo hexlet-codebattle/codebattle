@@ -7,12 +7,18 @@ import GameResult from './GameResult';
 import BackToHomeButton from '../components/Toast/BackToHomeButton';
 import GoToNextGame from '../components/Toast/GoToNextGame';
 import BackToTournamentButton from '../components/Toast/BackToTournamentButton';
+import BackToTaskBuilderButton from '../components/BackToTaskBuilderButton';
 import * as selectors from '../selectors';
-import GameContext from './GameContext';
-import { gameMachineStates, replayerMachineStates } from '../machines/game';
+import RoomContext from './RoomContext';
+import { roomMachineStates, replayerMachineStates } from '../machines/game';
 import ApprovePlaybookButtons from '../components/ApprovePlaybookButtons';
+import { roomStateSelector } from '../machines/selectors';
+import useMachineStateSelector from '../utils/useMachineStateSelector';
 
 const Notifications = () => {
+  const { mainService } = useContext(RoomContext);
+  const roomCurrent = useMachineStateSelector(mainService, roomStateSelector);
+
   const { tournamentId } = useSelector(selectors.gameStatusSelector);
   const currentUserId = useSelector(state => selectors.currentUserIdSelector(state));
   const players = useSelector(state => selectors.gamePlayersSelector(state));
@@ -20,31 +26,32 @@ const Notifications = () => {
   const tournamentsInfo = useSelector(state => state.game.tournamentsInfo);
   const isAdmin = useSelector(state => state.userSettings.is_admin);
   const isCurrentUserPlayer = _.hasIn(players, currentUserId);
-  const { current } = useContext(GameContext);
-  const isTournamentGame = tournamentId;
+  const isTournamentGame = !!tournamentId;
   const isActiveTournament = !!tournamentsInfo && tournamentsInfo.state === 'active';
 
   return (
     <>
+      {roomCurrent.matches({ room: roomMachineStates.testing }) && <BackToTaskBuilderButton />}
       <ReplayerControlButton />
-      {(isCurrentUserPlayer && current.matches({ game: gameMachineStates.gameOver }))
+      {(isCurrentUserPlayer && roomCurrent.matches({ room: roomMachineStates.gameOver }))
         && (
           <>
             <GameResult />
             <ActionsAfterGame />
           </>
-      )}
-      {(isAdmin && !current.matches({ replayer: replayerMachineStates.off })) && (
+        )}
+      {(isAdmin && !roomCurrent.matches({ replayer: replayerMachineStates.off })) && (
         <>
           <ApprovePlaybookButtons playbookSolutionType={playbookSolutionType} />
         </>
       )}
-      { isTournamentGame && isActiveTournament
-        && <GoToNextGame tournamentsInfo={tournamentsInfo} currentUserId={currentUserId} /> }
-      { isTournamentGame && <BackToTournamentButton /> }
-      { !isTournamentGame && <BackToHomeButton />}
+      {isTournamentGame && isActiveTournament
+        && <GoToNextGame tournamentsInfo={tournamentsInfo} currentUserId={currentUserId} />}
+      {isTournamentGame && <BackToTournamentButton />}
+      {!isTournamentGame && !roomCurrent.matches({ room: roomMachineStates.testing })
+        && <BackToHomeButton />}
     </>
-);
+  );
 };
 
 export default Notifications;

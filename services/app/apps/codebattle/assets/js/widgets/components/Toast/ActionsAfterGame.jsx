@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import GameModes from '../../config/gameModes';
+import GameRoomModes from '../../config/gameModes';
 import * as selectors from '../../selectors';
 import StartTrainingButton from './StartTrainingButton';
 import SignUpButton from './SignUpButton';
@@ -12,7 +12,7 @@ const ActionsAfterGame = () => {
 
   const isRematchDisabled = !isOpponentInGame;
 
-  if (gameMode === GameModes.training) {
+  if (gameMode === GameRoomModes.training) {
     return (
       <>
         <StartTrainingButton />
@@ -21,7 +21,7 @@ const ActionsAfterGame = () => {
     );
   }
 
-  if (gameMode === GameModes.tournament) {
+  if (gameMode === GameRoomModes.tournament) {
     return <></>;
   }
 

@@ -2,18 +2,19 @@ import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import axios from 'axios';
-import { Machine } from 'xstate';
+import { createMachine } from 'xstate';
 
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
-import RootContainer from '../widgets/containers/RootContainer';
+import RootContainer from '../widgets/containers/GameRoomWidget';
 
 import reducers from '../widgets/slices';
 import userTypes from '../widgets/config/userTypes';
 import GameStateCodes from '../widgets/config/gameStateCodes';
-import GameModes from '../widgets/config/gameModes';
+import GameRoomModes from '../widgets/config/gameModes';
 
 import game from '../widgets/machines/game';
+import task from '../widgets/machines/task';
 import editor from '../widgets/machines/editor';
 
 const createPlayer = params => ({
@@ -115,7 +116,7 @@ const preloadedState = {
   game: {
     gameStatus: {
       state: GameStateCodes.playing,
-      mode: GameModes.standard,
+      mode: GameRoomModes.standard,
       checking: {},
       startsAt: '0',
     },
@@ -173,7 +174,7 @@ test('test rendering preview game component', () => {
 
   render(
     <Provider store={store}>
-      <RootContainer gameMachine={Machine(game)} editorMachine={Machine(editor)} />
+      <RootContainer mainMachine={createMachine(game)} taskMachine={createMachine(task)} editorMachine={createMachine(editor)} />
     </Provider>,
   );
 
@@ -188,7 +189,7 @@ test('test game guide', async () => {
 
   const { getByRole } = render(
     <Provider store={store}>
-      <RootContainer gameMachine={Machine(game)} editorMachine={Machine(editor)} />
+      <RootContainer mainMachine={createMachine(game)} taskMachine={createMachine(task)} editorMachine={createMachine(editor)} />
     </Provider>,
   );
 
@@ -212,7 +213,7 @@ test('test a bot invite button', () => {
 
   const { getByLabelText, getByTitle } = render(
     <Provider store={store}>
-      <RootContainer gameMachine={Machine(game)} editorMachine={Machine(editor)} />
+      <RootContainer mainMachine={createMachine(game)} taskMachine={createMachine(task)} editorMachine={createMachine(editor)} />
     </Provider>,
   );
 

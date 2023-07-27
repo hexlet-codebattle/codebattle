@@ -5,6 +5,46 @@ import GameStateCodes from '../config/gameStateCodes';
 
 const { send } = actions;
 
+const states = {
+  room: {
+    preview: 'preview',
+
+    failure: 'failure',
+
+    waiting: 'waiting',
+    active: 'active',
+    gameOver: 'game_over',
+
+    stored: 'stored',
+
+    builder: 'builder.idle',
+    testing: 'builder.testing',
+  },
+  replayer: {
+    empty: 'empty',
+
+    failure: 'failure',
+
+    on: 'on',
+    paused: 'on.paused',
+    playing: 'on.playing',
+    holded: 'on.holded',
+    ended: 'on.ended',
+
+    off: 'off',
+  },
+  network: {
+    none: 'none',
+    disconnected: 'disconnected',
+    disconnectedWithMessage: 'disconnectedWithMessage',
+    connected: 'connected',
+  },
+};
+
+export const roomMachineStates = states.room;
+export const replayerMachineStates = states.replayer;
+export const networkMachineStates = states.network;
+
 const recordMachine = {
   initial: 'ended',
   states: {
@@ -87,7 +127,7 @@ const machine = {
           entry: send(
             { type: 'SHOW_ERROR_MESSAGE' },
             {
-              delay: 3000,
+              delay: 2000,
             },
           ),
           on: {
@@ -107,13 +147,14 @@ const machine = {
         },
       },
     },
-    game: {
+    room: {
       initial: 'preview',
       states: {
         preview: {
           on: {
             LOAD_GAME: [
               { target: 'waiting', cond: 'isWaitingGame' },
+              { target: 'builder', cond: 'isTaskBuilder' },
               { target: 'active', cond: 'isActiveGame' },
               { target: 'game_over', cond: 'isGameOver' },
               { target: 'game_over', cond: 'isTimeout' },
@@ -175,6 +216,21 @@ const machine = {
         failure: {
           type: 'final',
         },
+        builder: {
+          initial: 'idle',
+          states: {
+            idle: {
+              on: {
+                OPEN_TESTING: 'testing',
+              },
+            },
+            testing: {
+              on: {
+                OPEN_TASK_BUILDER: 'idle',
+              },
+            },
+          },
+        },
       },
     },
     replayer: {
@@ -214,7 +270,9 @@ const machine = {
 
 export const config = {
   guards: {
+    // game guards
     isWaitingGame: (_ctx, { payload }) => payload.state === GameStateCodes.waitingOpponent,
+    isTaskBuilder: (_ctx, { payload }) => payload.state === GameStateCodes.builder,
     isActiveGame: (_ctx, { payload }) => payload.state === GameStateCodes.playing,
     isGameOver: (_ctx, { payload }) => payload.state === GameStateCodes.gameOver,
     isTimeout: (_ctx, { payload }) => payload.state === GameStateCodes.timeout,
@@ -228,9 +286,9 @@ export const config = {
       throw new Error(`Unexpected behavior (payload: ${JSON.stringify(payload)})`);
     },
     // network actions
-    handleFailureJoin: () => {},
-    handleDisconnection: () => {},
-    handleReconnection: () => {},
+    handleFailureJoin: () => { },
+    handleDisconnection: () => { },
+    handleReconnection: () => { },
 
     // game actions
     soundWin: () => {
@@ -245,7 +303,7 @@ export const config = {
     soundTournamentRoundCreated: () => {
       sound.play('round_created');
     },
-    soundRematchUpdateStatus: () => {},
+    soundRematchUpdateStatus: () => { },
 
     // replayer actions
     toggleSpeedMode: assign({
@@ -262,36 +320,5 @@ export const config = {
     }),
   },
 };
-
-const states = {
-  game: {
-    preview: 'preview',
-    failure: 'failure',
-    waiting: 'waiting',
-    active: 'active',
-    gameOver: 'game_over',
-    stored: 'stored',
-  },
-  replayer: {
-    empty: 'empty',
-    failure: 'failure',
-    on: 'on',
-    paused: 'on.paused',
-    playing: 'on.playing',
-    holded: 'on.holded',
-    ended: 'on.ended',
-    off: 'off',
-  },
-  network: {
-    none: 'none',
-    disconnected: 'disconnected',
-    disconnectedWithMessage: 'disconnectedWithMessage',
-    connected: 'connected',
-  },
-};
-
-export const gameMachineStates = states.game;
-export const replayerMachineStates = states.replayer;
-export const networkMachineStates = states.network;
 
 export default machine;

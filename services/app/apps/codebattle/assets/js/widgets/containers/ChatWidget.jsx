@@ -11,23 +11,30 @@ import Messages from '../components/Messages';
 import UserInfo from './UserInfo';
 import ChatInput from '../components/ChatInput';
 import ChatHeader from '../components/ChatHeader';
-import GameModes from '../config/gameModes';
+import GameRoomModes from '../config/gameModes';
 import Notifications from './Notifications';
-import GameContext from './GameContext';
-import { replayerMachineStates } from '../machines/game';
+import RoomContext from './RoomContext';
 import ChatContextMenu from '../components/ChatContextMenu';
 import useChatContextMenu from '../utils/useChatContextMenu';
 import useChatRooms from '../utils/useChatRooms';
 import { shouldShowMessage } from '../utils/chat';
+import { inTestingRoomSelector, openedReplayerSelector } from '../machines/selectors';
+import useMachineStateSelector from '../utils/useMachineStateSelector';
 
 const ChatWidget = () => {
+  const { mainService } = useContext(RoomContext);
+
   const users = useSelector(state => selectors.chatUsersSelector(state));
   const messages = useSelector(state => selectors.chatMessagesSelector(state));
   const historyMessages = useSelector(selectors.chatHistoryMessagesSelector);
   const gameMode = useSelector(selectors.gameModeSelector);
-  const { current: gameCurrent } = useContext(GameContext);
-  const isTournamentGame = (gameMode === GameModes.tournament);
-  const isStandardGame = (gameMode === GameModes.standard);
+
+  const openedReplayer = useMachineStateSelector(mainService, openedReplayerSelector);
+  const isTestingRoom = useMachineStateSelector(mainService, inTestingRoomSelector);
+
+  const isTournamentGame = (gameMode === GameRoomModes.tournament);
+  const isStandardGame = (gameMode === GameRoomModes.standard);
+  const showChatInput = !openedReplayer && !isTestingRoom;
 
   const inputRef = useRef(null);
 
@@ -61,35 +68,44 @@ const ChatWidget = () => {
           )}
         >
           <ChatHeader showRooms={isStandardGame} />
-          {gameCurrent.matches({ replayer: replayerMachineStates.on })
+          {openedReplayer
             ? <Messages messages={historyMessages} />
             : <Messages displayMenu={displayMenu} messages={filteredMessages} />}
-          {!gameCurrent.matches({ replayer: replayerMachineStates.on }) && <ChatInput inputRef={inputRef} />}
+          {showChatInput && <ChatInput inputRef={inputRef} />}
+          {isTestingRoom && (
+            <div
+              className="d-flex position-absolute w-100 h-100 bg-dark cb-opacity-50 rounded-left justify-content-center text-info"
+            >
+              <span className="align-self-center">Chat is Disabled</span>
+            </div>
+          )}
         </div>
         <div className="flex-shrink-1 p-0 border-left bg-white rounded-right game-control-container">
           <div className="d-flex flex-column justify-content-start overflow-auto h-100">
             <div className="px-3 py-3 w-100 d-flex flex-column">
               <Notifications />
             </div>
-            <div className="px-3 py-3 w-100 border-top">
-              <p className="mb-1">{`Online users: ${listOfUsers.length}`}</p>
-              {listOfUsers.map(user => (
-                <div
-                  role="button"
-                  tabIndex={0}
-                  className="my-1"
-                  title={user.name}
-                  key={user.id}
-                  data-user-id={user.id}
-                  data-user-name={user.name}
-                  onContextMenu={displayMenu}
-                  onClick={displayMenu}
-                  onKeyPress={displayMenu}
-                >
-                  <UserInfo user={user} hideInfo hideOnlineIndicator />
-                </div>
-              ))}
-            </div>
+            {!isTestingRoom && (
+              <div className="px-3 py-3 w-100 border-top">
+                <p className="mb-1">{`Online users: ${listOfUsers.length}`}</p>
+                {listOfUsers.map(user => (
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    className="my-1"
+                    title={user.name}
+                    key={user.id}
+                    data-user-id={user.id}
+                    data-user-name={user.name}
+                    onContextMenu={displayMenu}
+                    onClick={displayMenu}
+                    onKeyPress={displayMenu}
+                  >
+                    <UserInfo user={user} hideInfo hideOnlineIndicator />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

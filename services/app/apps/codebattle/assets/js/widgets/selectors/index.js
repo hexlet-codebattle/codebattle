@@ -44,7 +44,7 @@ export const getSolution = playerId => state => {
   };
 };
 
-export const editorDataSelector = (gameCurrent, playerId) => state => {
+export const editorDataSelector = (romeCurrent, playerId) => state => {
   const meta = editorsMetaSelector(state)[playerId];
   const editorTexts = editorTextsSelector(state);
   const editorTextsHistory = editorTextsHistorySelector(state);
@@ -52,11 +52,11 @@ export const editorDataSelector = (gameCurrent, playerId) => state => {
   if (!meta) {
     return null;
   }
-  const text = gameCurrent.matches({ replayer: replayerMachineStates.on })
+  const text = romeCurrent.matches({ replayer: replayerMachineStates.on })
     ? editorTextsHistory[playerId]
     : editorTexts[makeEditorTextKey(playerId, meta.currentLangSlug)];
 
-  const currentLangSlug = gameCurrent.matches({
+  const currentLangSlug = romeCurrent.matches({
     replayer: replayerMachineStates.on,
   })
     ? meta.historyCurrentLangSlug
@@ -73,40 +73,40 @@ export const editorTextHistorySelector = (state, { userId }) => state.editor.tex
 
 export const editorLangHistorySelector = (state, { userId }) => state.editor.langsHistory[userId];
 
-export const firstEditorSelector = (state, gameCurrent) => {
+export const firstEditorSelector = (state, roomCurrent) => {
   const playerId = firstPlayerSelector(state).id;
-  return editorDataSelector(gameCurrent, playerId)(state);
+  return editorDataSelector(roomCurrent, playerId)(state);
 };
 
-export const secondEditorSelector = (state, gameCurrent) => {
+export const secondEditorSelector = (state, roomCurrent) => {
   const playerId = secondPlayerSelector(state).id;
-  return editorDataSelector(gameCurrent, playerId)(state);
+  return editorDataSelector(roomCurrent, playerId)(state);
 };
 
-export const leftEditorSelector = gameCurrent => state => {
+export const leftEditorSelector = roomCurrent => state => {
   const currentUserId = currentUserIdSelector(state);
   const player = _.get(gamePlayersSelector(state), currentUserId, false);
   const editorSelector = !!player && player.type === userTypes.secondPlayer
     ? secondEditorSelector
     : firstEditorSelector;
-  return editorSelector(state, gameCurrent);
+  return editorSelector(state, roomCurrent);
 };
 
-export const rightEditorSelector = gameCurrent => state => {
+export const rightEditorSelector = roomCurrent => state => {
   const currentUserId = currentUserIdSelector(state);
   const player = _.get(gamePlayersSelector(state), currentUserId, false);
   const editorSelector = !!player && player.type === userTypes.secondPlayer
     ? firstEditorSelector
     : secondEditorSelector;
-  return editorSelector(state, gameCurrent);
+  return editorSelector(state, roomCurrent);
 };
 
-export const editorSideSelector = (side, gameCurrent) => state => {
+export const editorSideSelector = (side, roomCurrent) => state => {
   const editors = {
     left: leftEditorSelector,
     right: rightEditorSelector,
   };
-  return editors[side](gameCurrent)(state);
+  return editors[side](roomCurrent)(state);
 };
 
 export const currentPlayerTextByLangSelector = lang => state => {
@@ -137,45 +137,92 @@ export const gameStatusTitleSelector = state => {
 
 export const gameTaskSelector = state => state.game.task;
 
+export const canEditTask = state => (
+  currentUserIdSelector(state) === state.builder.task.creatorId || currentUserIsAdminSelector(state)
+);
+
+export const isValidTask = state => (
+  state.builder.validationStatuses.name[0]
+    && state.builder.validationStatuses.description[0]
+    && state.builder.validationStatuses.assertsExamples[0]
+    && state.builder.validationStatuses.solution[0]
+    && state.builder.validationStatuses.argumentsGenerator[0]
+);
+
+export const builderTaskSelector = state => state.builder.task;
+
+export const taskTemplatesStateSelector = state => state.builder.templates.state;
+
+export const taskGeneratorLangSelector = state => state.builder.generatorLang;
+
+export const taskTextSolutionSelector = state => state.builder.textSolution[state.builder.generatorLang];
+
+export const taskTextArgumentsGeneratorSelector = state => state.builder.textArgumentsGenerator[state.builder.generatorLang];
+
+export const taskParamsSelector = state => ({
+  ...state.builder.task,
+  inputSignature: state.builder.task.inputSignature.map(item => _.pick(item, ['argumentName', 'type'])),
+  outputSignature: _.pick(state.builder.task.outputSignature, ['type']),
+  asserts: state.builder.task.asserts.map(item => _.pick(item, ['arguments', 'expected'])),
+  assertsExamples: state.builder.task.assertsExamples.map(item => _.pick(item, ['arguments', 'expected'])),
+  generatorLang: state.builder.generatorLang,
+  solution: state.builder.textSolution[state.builder.generatorLang],
+  argumentsGenerator: state.builder.textArgumentsGenerator[state.builder.generatorLang],
+});
+
+export const taskSolutionSelector = (state, lang) => state.builder.textSolution[lang];
+
+export const taskArgumentsGeneratorSelector = (state, lang) => state.builder.textArgumentsGenerator[lang];
+
+export const isTestingReady = state => (
+  state.builder.validationStatuses.inputSignature[0]
+  && state.builder.validationStatuses.outputSignature[0]
+  && state.builder.validationStatuses.examples[0]
+  && state.builder.validationStatuses.solution[0]
+  && state.builder.validationStatuses.argumentsGenerator[0]
+);
+
 export const editorLangsSelector = state => state.editor.langs.langs;
 
 export const langInputSelector = state => state.editor.langInput;
 
-export const editorHeightSelector = (gameCurrent, userId) => state => {
-  const editorData = editorDataSelector(gameCurrent, userId)(state);
+export const editorHeightSelector = (roomCurrent, userId) => state => {
+  const editorData = editorDataSelector(roomCurrent, userId)(state);
   return _.get(editorData, 'editorHeight', defaultEditorHeight);
 };
 
-export const executionOutputSelector = (gameCurrent, userId) => state => (gameCurrent.matches({ replayer: replayerMachineStates.on })
+export const executionOutputSelector = (roomCurrent, userId) => state => (roomCurrent.matches({ replayer: replayerMachineStates.on })
   ? state.executionOutput.historyResults[userId]
   : state.executionOutput.results[userId]);
 
-export const firstExecutionOutputSelector = gameCurrent => state => {
+export const firstExecutionOutputSelector = roomCurrent => state => {
   const playerId = firstPlayerSelector(state).id;
-  return executionOutputSelector(gameCurrent, playerId)(state);
+  return executionOutputSelector(roomCurrent, playerId)(state);
 };
 
-export const secondExecutionOutputSelector = gameCurrent => state => {
+export const secondExecutionOutputSelector = roomCurrent => state => {
   const playerId = secondPlayerSelector(state).id;
-  return executionOutputSelector(gameCurrent, playerId)(state);
+  return executionOutputSelector(roomCurrent, playerId)(state);
 };
 
-export const leftExecutionOutputSelector = gameCurrent => state => {
+export const leftExecutionOutputSelector = roomCurrent => state => {
   const currentUserId = currentUserIdSelector(state);
   const player = _.get(gamePlayersSelector(state), currentUserId, false);
-  const outputSelector = !!player && player.type === userTypes.secondPlayer
+
+  const outputSelector = player.type === userTypes.secondPlayer
     ? secondExecutionOutputSelector
     : firstExecutionOutputSelector;
-  return outputSelector(gameCurrent)(state);
+  return outputSelector(roomCurrent)(state);
 };
 
-export const rightExecutionOutputSelector = gameCurrent => state => {
+export const rightExecutionOutputSelector = roomCurrent => state => {
   const currentUserId = currentUserIdSelector(state);
   const player = _.get(gamePlayersSelector(state), currentUserId, false);
+
   const outputSelector = !!player && player.type === userTypes.secondPlayer
     ? firstExecutionOutputSelector
     : secondExecutionOutputSelector;
-  return outputSelector(gameCurrent)(state);
+  return outputSelector(roomCurrent)(state);
 };
 
 export const tournamentSelector = state => state.tournament;
@@ -201,8 +248,8 @@ export const editorsModeSelector = currentUserId => state => {
   return editorModes.default;
 };
 
-export const editorsThemeSelector = currentUserId => state => {
-  if (_.hasIn(gamePlayersSelector(state), currentUserId)) {
+export const editorsThemeSelector = userId => state => {
+  if (_.hasIn(gamePlayersSelector(state), userId)) {
     return state.gameUI.editorTheme;
   }
   return editorThemes.dark;

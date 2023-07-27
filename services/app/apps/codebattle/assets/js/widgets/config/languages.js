@@ -14,3 +14,5 @@ export default {
   python: 'python',
   clojure: 'clojure',
 };
+
+export const constructorLangauges = ['ruby'];

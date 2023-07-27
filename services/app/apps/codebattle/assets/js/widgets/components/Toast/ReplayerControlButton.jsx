@@ -1,60 +1,64 @@
 import React, { useContext, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
-import GameContext from '../../containers/GameContext';
+import RoomContext from '../../containers/RoomContext';
 import i18n from '../../../i18n';
 import { actions } from '../../slices';
 import { downloadPlaybook, openPlaybook } from '../../middlewares/Game';
-import { replayerMachineStates, gameMachineStates } from '../../machines/game';
+import { replayerMachineStates, roomMachineStates } from '../../machines/game';
+import { roomStateSelector } from '../../machines/selectors';
+import useMachineStateSelector from '../../utils/useMachineStateSelector';
 
 const ReplayerControlButton = () => {
   const dispatch = useDispatch();
-  const { current, send, service } = useContext(GameContext);
+  const { mainService } = useContext(RoomContext);
+  const roomCurrent = useMachineStateSelector(mainService, roomStateSelector);
 
   const loadReplayer = useCallback(
-    () => dispatch(downloadPlaybook(service)),
+    () => dispatch(downloadPlaybook(mainService)),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [service],
+    [mainService],
   );
   const openLoadedReplayer = useCallback(
-    () => dispatch(openPlaybook(service)),
+    () => dispatch(openPlaybook(mainService)),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [service],
+    [mainService],
   );
 
   switch (true) {
-    case current.matches({ game: gameMachineStates.stored }): {
+    case roomCurrent.matches({ room: roomMachineStates.testing }):
+    case roomCurrent.matches({ room: roomMachineStates.stored }): {
       return null;
     }
-    case current.matches({ replayer: replayerMachineStates.empty }): {
+    case roomCurrent.matches({ replayer: replayerMachineStates.empty }): {
       return (
         <button
           type="button"
           onClick={loadReplayer}
-          className="btn btn-secondary btn-block mb-3 rounded-lg"
+          className="btn btn-secondary btn-block rounded-lg"
           aria-label="Open Record Player"
         >
           {i18n.t('Open History')}
         </button>
       );
     }
-    case current.matches({ replayer: replayerMachineStates.off }): {
+    case roomCurrent.matches({ replayer: replayerMachineStates.off }): {
       return (
         <button
           type="button"
           onClick={openLoadedReplayer}
-          className="btn btn-secondary btn-block mb-3 rounded-lg"
+          className="btn btn-secondary btn-block rounded-lg"
           aria-label="Open Record Player"
         >
           {i18n.t('Open History')}
         </button>
       );
     }
-    case current.matches({ replayer: replayerMachineStates.on }): {
+    case roomCurrent.matches({ replayer: replayerMachineStates.on }): {
       return (
         <button
           type="button"
-          onClick={() => send('CLOSE_REPLAYER')}
-          className="btn btn-secondary btn-block mb-3 rounded-lg"
+          onClick={() => mainService.send('CLOSE_REPLAYER')}
+          className="btn btn-secondary btn-block rounded-lg"
           aria-label="Close Record Player"
         >
           {i18n.t('Return to game')}

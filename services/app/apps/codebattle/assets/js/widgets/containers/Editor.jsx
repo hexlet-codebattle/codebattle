@@ -8,7 +8,7 @@ import { connect } from 'react-redux';
 
 import { gameModeSelector } from '../selectors/index';
 import languages from '../config/languages';
-import GameModes from '../config/gameModes';
+import GameRoomModes from '../config/gameModes';
 import sound from '../lib/sound';
 import { actions } from '../slices';
 import getLanguageTabSize, { shouldReplaceTabsWithSpaces } from '../utils/editor';
@@ -76,16 +76,18 @@ class Editor extends PureComponent {
     await this.updateHightLightForNotIncludeSyntax(syntax);
     this.currentMode = this.modes[mode]();
 
-    this.editor.addAction({
-      id: 'codebattle-check-keys',
-      label: 'Codebattle check start',
-      keybindings: [this.monaco.KeyMod.CtrlCmd | this.monaco.KeyCode.Enter],
-      run: () => {
-        if (!this.options.readOnly) {
-          checkResult();
-        }
-      },
-    });
+    if (checkResult) {
+      this.editor.addAction({
+        id: 'codebattle-check-keys',
+        label: 'Codebattle check start',
+        keybindings: [this.monaco.KeyMod.CtrlCmd | this.monaco.KeyCode.Enter],
+        run: () => {
+          if (!this.options.readOnly) {
+            checkResult();
+          }
+        },
+      });
+    }
 
     this.editor.addAction({
       id: 'codebattle-mute-keys',
@@ -165,9 +167,10 @@ class Editor extends PureComponent {
     this.editor = editor;
     this.monaco = monaco;
     const { editable, gameMode } = this.props;
-    const isTournament = gameMode === GameModes.tournament;
+    const isTournament = gameMode === GameRoomModes.tournament;
+    const isBuilder = gameMode === GameRoomModes.builder;
 
-    if (editable && !isTournament) {
+    if (editable && !isTournament && !isBuilder) {
       this.editor.focus();
     } else if (editable && isTournament) {
       this.editor.addCommand(

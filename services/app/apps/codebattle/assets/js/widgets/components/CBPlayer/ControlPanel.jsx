@@ -11,7 +11,7 @@ import { replayerMachineStates } from '../../machines/game';
 const gameId = Gon.getAsset('game_id');
 
 const ControlPanel = ({
-  gameCurrent,
+  roomCurrent,
   onPauseClick,
   onPlayClick,
   onChangeSpeed,
@@ -20,8 +20,8 @@ const ControlPanel = ({
 }) => {
   const dispatch = useDispatch();
 
-  const { speedMode } = gameCurrent.context;
-  const isPaused = !gameCurrent.matches({ replayer: replayerMachineStates.playing });
+  const { speedMode } = roomCurrent.context;
+  const isPaused = !roomCurrent.matches({ replayer: replayerMachineStates.playing });
 
   const speedControlClassNames = cn('btn btn-sm rounded ml-2 border rounded-lg', {
     'btn-light': speedMode === speedModes.normal,
@@ -30,11 +30,11 @@ const ControlPanel = ({
 
   const onControlButtonClick = () => {
     switch (true) {
-      case gameCurrent.matches({ replayer: replayerMachineStates.ended }):
-      case gameCurrent.matches({ replayer: replayerMachineStates.paused }):
+      case roomCurrent.matches({ replayer: replayerMachineStates.ended }):
+      case roomCurrent.matches({ replayer: replayerMachineStates.paused }):
         onPlayClick();
         break;
-      case gameCurrent.matches({ replayer: replayerMachineStates.playing }):
+      case roomCurrent.matches({ replayer: replayerMachineStates.playing }):
         onPauseClick();
         break;
       default:

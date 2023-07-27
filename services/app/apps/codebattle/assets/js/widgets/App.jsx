@@ -11,7 +11,7 @@ import {
 import rollbarMiddleware from 'rollbar-redux-middleware';
 import rollbar from './lib/rollbar';
 import InvitesContainer from './containers/InvitesContainer';
-import RootContainer from './containers/RootContainer';
+import GameRoomWidget from './containers/GameRoomWidget';
 import reducers from './slices';
 import LobbyWidget from './containers/LobbyWidget';
 import RatingList from './containers/RatingList';
@@ -23,7 +23,7 @@ import Tournament from './containers/Tournament';
 
 import machines from './machines';
 
-const { game: gameMachine, editor: editorMachine } = machines;
+const { game: mainMachine, editor: editorMachine, task: taskMachine } = machines;
 const { gameUI: gameUIReducer, ...otherReducers } = reducers;
 
 const gameUIPersistWhitelist = [
@@ -68,8 +68,23 @@ export const Invites = () => (
 export const Game = () => (
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
-      <RootContainer
-        gameMachine={gameMachine}
+      <GameRoomWidget
+        pageName="game"
+        mainMachine={mainMachine}
+        taskMachine={taskMachine}
+        editorMachine={editorMachine}
+      />
+    </PersistGate>
+  </Provider>
+);
+
+export const Builder = () => (
+  <Provider store={store}>
+    <PersistGate loading={null} persistor={persistor}>
+      <GameRoomWidget
+        pageName="builder"
+        mainMachine={mainMachine}
+        taskMachine={taskMachine}
         editorMachine={editorMachine}
       />
     </PersistGate>

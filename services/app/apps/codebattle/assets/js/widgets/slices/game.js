@@ -1,15 +1,15 @@
 import { createSlice } from '@reduxjs/toolkit';
 import GameStateCodes from '../config/gameStateCodes';
-import GameModes from '../config/gameModes';
+import GameRoomModes from '../config/gameModes';
 
 const initialState = {
   gameStatus: {
     state: GameStateCodes.initial,
     msg: '',
     type: null,
-    mode: GameModes.none,
+    mode: GameRoomModes.none,
     startsAt: null,
-    score: null, // { gameResults: [{ gameId: 482, insertedAt: "2022-12-02T19:12:40", winnerId: 1 }], opponentOneId: 1, opponentTwoId: 2}
+    score: null,
     timeoutSeconds: null,
     rematchState: null,
     rematchInitiatorId: null,
@@ -44,14 +44,14 @@ const game = createSlice({
       );
       state.players = newPlayersState;
     },
-    setGameTask: (state, { payload: { task } }) => {
-      state.task = task;
-    },
     updateCheckStatus: (state, { payload }) => {
       Object.assign(state.gameStatus.checking, payload);
     },
     setTournamentsInfo: (state, { payload }) => {
       state.tournamentsInfo = payload;
+    },
+    setGameTask: (state, { payload: { task } }) => {
+      state.task = task;
     },
   },
 });
