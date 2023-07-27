@@ -163,7 +163,7 @@ const preloadedState = {
   },
 };
 
-game.states.game.initial = 'active';
+game.states.room.initial = 'active';
 editor.initial = 'idle';
 
 test('test rendering preview game component', () => {
