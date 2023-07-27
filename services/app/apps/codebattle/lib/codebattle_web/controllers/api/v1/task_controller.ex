@@ -25,13 +25,24 @@ defmodule CodebattleWeb.Api.V1.TaskController do
         |> json(%{error: "NOT_FOUND"})
 
       task ->
-        json(conn, TaskView.render_task(task))
+        current_player =
+          conn.assigns.current_user.id
+          |> User.get_user!()
+          |> Player.build()
+
+        opponent_bot = Bot.Context.build()
+
+        json(conn, %{
+          task: task,
+          players: [current_player, opponent_bot],
+          langs: GameView.get_langs_with_templates(task)
+        })
     end
   end
 
   def new(conn, _) do
     task = %Task{
-      examples: [],
+      examples: "",
       name: "",
       description_ru: "",
       description_en: "",
@@ -125,6 +136,20 @@ defmodule CodebattleWeb.Api.V1.TaskController do
           |> put_status(:failure)
           |> json(%{error: "failure", changeset: changeset})
       end
+    else
+      conn
+      |> put_status(:not_found)
+      |> json(%{error: "failure"})
+    end
+  end
+
+  def delete(conn, %{"id" => id}) do
+    task = Task.get!(id)
+
+    if Task.can_delete_task?(task, conn.assigns.current_user) do
+      Task.delete(task)
+
+      json(conn, %{})
     else
       conn
       |> put_status(:not_found)

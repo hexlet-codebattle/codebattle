@@ -1,6 +1,8 @@
 defmodule CodebattleWeb.TaskController do
   use CodebattleWeb, :controller
 
+  import PhoenixGon.Controller
+
   alias Codebattle.Task
 
   def index(conn, _params) do
@@ -30,7 +32,7 @@ defmodule CodebattleWeb.TaskController do
     task = Task.get!(id)
 
     if Task.can_see_task?(task, conn.assigns.current_user) do
-      played_count = Task.get_played_count(id)
+      # played_count = Task.get_played_count(id)
 
       conn
       |> put_meta_tags(%{
@@ -38,11 +40,8 @@ defmodule CodebattleWeb.TaskController do
         description: String.slice(task.description_en, 0..137),
         url: Routes.task_path(conn, :show, task)
       })
-      |> render("show.html", %{
-        task: task,
-        played_count: played_count,
-        current_user: conn.assigns.current_user
-      })
+      |> put_gon(task_id: task.id)
+      |> render("new.html")
     else
       conn
       |> put_status(:not_found)

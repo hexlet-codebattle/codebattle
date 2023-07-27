@@ -73,7 +73,7 @@ defmodule CodebattleWeb.Router do
       resources("/reset_password", ResetPasswordController, only: [:create], singleton: true)
       resources("/session", SessionController, only: [:create], singleton: true)
       resources("/settings", SettingsController, only: [:show, :update], singleton: true)
-      resources("/tasks", TaskController, only: [:index, :show, :new])
+      resources("/tasks", TaskController)
       post("/tasks/build", TaskController, :build)
       post("/tasks/check", TaskController, :check)
       get("/tasks/:name/unique", TaskController, :unique)
