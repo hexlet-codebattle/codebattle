@@ -12,8 +12,7 @@ credo:
 	mix credo
 
 db-recreate:
-	mix ecto.reset
-	mix run priv/repo/seeds.exs
+	mix cmd --app codebattle mix ecto.reset
 
 outdated:
 	mix hex.outdated

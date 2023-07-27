@@ -2,10 +2,16 @@ defmodule Codebattle.Application do
   @moduledoc false
   use Application
 
+  @app_dir File.cwd!()
+
   def start(_type, _args) do
     if Application.get_env(:codebattle, :load_dot_env_file) do
-      Envy.load(["../../.env"])
-      Envy.reload_config()
+      root_dir = @app_dir |> Path.join("../../../../") |> Path.expand()
+      config_path = Mix.Project.config() |> Keyword.get(:config_path)
+      env_path = Path.join(root_dir, ".env")
+
+      Envy.load([env_path])
+      Config.Reader.read!(config_path) |> Application.put_all_env()
     end
 
     prod_workers =

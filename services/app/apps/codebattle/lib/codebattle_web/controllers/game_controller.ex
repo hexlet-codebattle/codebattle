@@ -10,8 +10,6 @@ defmodule CodebattleWeb.GameController do
   alias Codebattle.User
   alias Codebattle.Playbook
 
-  plug(CodebattleWeb.Plugs.RequireAuth when action in [:join, :delete])
-
   action_fallback(CodebattleWeb.FallbackController)
 
   def show(conn, %{"id" => id}) do

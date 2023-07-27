@@ -4,22 +4,23 @@ defmodule CodebattleWeb.MainChannel do
 
   alias CodebattleWeb.Presence
 
-  def join("main", _payload, socket) do
+  def join("main", %{"state" => state}, socket) do
     current_user = socket.assigns.current_user
 
     if !current_user.is_guest do
       topic = "main:#{current_user.id}"
       Codebattle.PubSub.subscribe(topic)
-      send(self(), :after_join)
+      send(self(), {:after_join, state})
     end
 
     {:ok, %{}, socket}
   end
 
-  def handle_info(:after_join, socket) do
+  def handle_info({:after_join, state}, socket) do
     {:ok, _} =
       Presence.track(socket, socket.assigns.current_user.id, %{
         online_at: inspect(System.system_time(:second)),
+        state: state,
         user: socket.assigns.current_user,
         id: socket.assigns.current_user.id
       })

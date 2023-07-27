@@ -23,8 +23,9 @@ defmodule CodebattleWeb.MainChannelTest do
      }}
   end
 
-  test "on connect pushes presence statte", %{creator_socket: creator_socket} do
-    {:ok, response, socket} = subscribe_and_join(creator_socket, MainChannel, "main")
+  test "on connect pushes presence state", %{creator_socket: creator_socket} do
+    {:ok, response, socket} =
+      subscribe_and_join(creator_socket, MainChannel, "main", %{state: "lobby"})
 
     assert response == %{}
 

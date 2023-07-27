@@ -3,8 +3,6 @@ defmodule CodebattleWeb.TaskController do
 
   import PhoenixGon.Controller
 
-  plug(CodebattleWeb.Plugs.RequireAuth)
-
   alias Codebattle.Task
 
   def index(conn, _params) do
