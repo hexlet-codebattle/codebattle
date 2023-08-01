@@ -2,16 +2,20 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import MonacoEditor from 'react-monaco-editor';
+import cn from 'classnames';
 import { registerRulesForLanguage } from 'monaco-ace-tokenizer';
 import { initVimMode } from 'monaco-vim';
 import { connect } from 'react-redux';
 
 import { gameModeSelector } from '../selectors/index';
 import languages from '../config/languages';
-import GameModes from '../config/gameModes';
+import GameRoomModes from '../config/gameModes';
 import sound from '../lib/sound';
 import { actions } from '../slices';
 import getLanguageTabSize, { shouldReplaceTabsWithSpaces } from '../utils/editor';
+import editorThemes from '../config/editorThemes';
+import { addCursorListeners } from '../middlewares/Game';
+import editorUserTypes from '../config/editorUserTypes';
 
 class Editor extends PureComponent {
   static propTypes = {
@@ -36,6 +40,8 @@ class Editor extends PureComponent {
 
   ctrPlusS = null
 
+  remoteKeys = []
+
   constructor(props) {
     super(props);
     this.statusBarRef = React.createRef();
@@ -54,6 +60,13 @@ class Editor extends PureComponent {
       },
       readOnly: !props.editable,
       contextmenu: props.editable,
+    };
+
+    this.state = {
+      remote: {
+        cursor: {},
+        selection: {},
+      },
     };
     /** @param {KeyboardEvent} e */
     this.ctrPlusS = e => {
@@ -76,16 +89,18 @@ class Editor extends PureComponent {
     await this.updateHightLightForNotIncludeSyntax(syntax);
     this.currentMode = this.modes[mode]();
 
-    this.editor.addAction({
-      id: 'codebattle-check-keys',
-      label: 'Codebattle check start',
-      keybindings: [this.monaco.KeyMod.CtrlCmd | this.monaco.KeyCode.Enter],
-      run: () => {
-        if (!this.options.readOnly) {
-          checkResult();
-        }
-      },
-    });
+    if (checkResult) {
+      this.editor.addAction({
+        id: 'codebattle-check-keys',
+        label: 'Codebattle check start',
+        keybindings: [this.monaco.KeyMod.CtrlCmd | this.monaco.KeyCode.Enter],
+        run: () => {
+          if (!this.options.readOnly) {
+            checkResult();
+          }
+        },
+      });
+    }
 
     this.editor.addAction({
       id: 'codebattle-mute-keys',
@@ -101,8 +116,10 @@ class Editor extends PureComponent {
     window.addEventListener('keydown', this.ctrPlusS);
   }
 
-  async componentDidUpdate(prevProps) {
+  async componentDidUpdate(prevProps, prevState) {
+    const { remote } = this.state;
     const { syntax, mode, editable } = this.props;
+
     if (mode !== prevProps.mode) {
       if (this.currentMode) {
         this.currentMode.dispose();
@@ -137,6 +154,14 @@ class Editor extends PureComponent {
       await this.updateHightLightForNotIncludeSyntax(syntax);
     }
 
+    if (
+      prevState.remote !== remote
+        && remote.cursor.range
+        && remote.selection.range
+    ) {
+      this.remoteKeys = this.editor.deltaDecorations(this.remoteKeys, Object.values(remote));
+    }
+
     // fix flickering in editor
     model.forceTokenization(model.getLineCount());
   }
@@ -144,6 +169,8 @@ class Editor extends PureComponent {
   componentWillUnmount() {
     window.removeEventListener('resize', this.handleResize);
     window.removeEventListener('keydown', this.ctrPlusS);
+
+    this.clearCursorListeners();
   }
 
   updateHightLightForNotIncludeSyntax = async syntax => {
@@ -161,13 +188,111 @@ class Editor extends PureComponent {
 
   handleResize = () => this.editor.layout();
 
+  handleChangeCursorSelection = e => {
+    const { editable, gameMode, onChangeCursorSelection } = this.props;
+    const isTournament = gameMode === GameRoomModes.tournament;
+
+    if (!editable || isTournament) {
+      const { column, lineNumber } = this.editor.getPosition();
+      this.editor.setPosition({ lineNumber, column });
+    } else if (editable && onChangeCursorSelection) {
+      const startOffset = this.editor.getModel().getOffsetAt(e.selection.getStartPosition());
+      const endOffset = this.editor.getModel().getOffsetAt(e.selection.getEndPosition());
+      onChangeCursorSelection(startOffset, endOffset);
+    }
+  };
+
+  handleChangeCursorPosition = e => {
+    const { editable, onChangeCursorPosition } = this.props;
+
+    if (editable && onChangeCursorPosition) {
+      const offset = this.editor.getModel().getOffsetAt(e.position);
+      onChangeCursorPosition(offset);
+    }
+  };
+
+  updateRemoteCursorSelection = (startOffset, endOffset) => {
+    const { editable, userType } = this.props;
+    const userClassName = userType === editorUserTypes.opponent
+      ? 'cb-remote-opponent'
+      : 'cb-remote-player';
+
+    if (!editable) {
+      const startPosition = this.editor.getModel().getPositionAt(startOffset);
+      const endPosition = this.editor.getModel().getPositionAt(endOffset);
+
+      const startColumn = startPosition.column;
+      const startLineNumber = startPosition.lineNumber;
+      const endColumn = endPosition.column;
+      const endLineNumber = endPosition.lineNumber;
+
+      const selection = {
+        range: new this.monaco.Range(
+          startLineNumber,
+          startColumn,
+          endLineNumber,
+          endColumn,
+        ),
+        options: { className: `cb-editor-remote-selection ${userClassName}` },
+      };
+
+      this.setState(state => ({
+        remote: { ...state.remote, selection },
+      }));
+    }
+  }
+
+  updateRemoteCursorPosition = offset => {
+    const { editable, userType } = this.props;
+    const position = this.editor.getModel().getPositionAt(offset);
+    const userClassName = userType === editorUserTypes.opponent
+      ? 'cb-remote-opponent'
+      : 'cb-remote-player';
+
+    if (!editable) {
+      const cursor = {
+        range: new this.monaco.Range(
+          position.lineNumber,
+          position.column,
+          position.lineNumber,
+          position.column,
+        ),
+        options: { className: `cb-editor-remote-cursor ${userClassName}` },
+      };
+
+      this.setState(state => ({
+        remote: {
+          ...state.remote,
+          cursor,
+        },
+      }));
+    }
+  }
+
+  clearCursorListeners = () => {};
+
   editorDidMount = (editor, monaco) => {
     this.editor = editor;
     this.monaco = monaco;
-    const { editable, gameMode } = this.props;
-    const isTournament = gameMode === GameModes.tournament;
+    const { editable, gameMode, userId } = this.props;
+    const isTournament = gameMode === GameRoomModes.tournament;
+    const isBuilder = gameMode === GameRoomModes.builder;
+    const isHistory = gameMode === GameRoomModes.history;
 
-    if (editable && !isTournament) {
+    this.editor.onDidChangeCursorSelection(this.handleChangeCursorSelection);
+    this.editor.onDidChangeCursorPosition(this.handleChangeCursorPosition);
+
+    if (!(isBuilder || isHistory)) {
+      const clearCursorListeners = addCursorListeners(
+        userId,
+        this.updateRemoteCursorPosition,
+        this.updateRemoteCursorSelection,
+      );
+
+      this.clearCursorListeners = clearCursorListeners;
+    }
+
+    if (editable && !isTournament && !isBuilder) {
       this.editor.focus();
     } else if (editable && isTournament) {
       this.editor.addCommand(
@@ -181,10 +306,10 @@ class Editor extends PureComponent {
         monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_C,
         () => null,
       );
-      this.editor.onDidChangeCursorSelection(() => {
-        const { column, lineNumber } = this.editor.getPosition();
-        this.editor.setPosition({ lineNumber, column });
-      });
+      // this.editor.onDidChangeCursorSelection(() => {
+      //   const { column, lineNumber } = this.editor.getPosition();
+      //   this.editor.setPosition({ lineNumber, column });
+      // });
     }
 
     // this.editor.getModel().updateOptions({ tabSize: this.tabSize });
@@ -208,6 +333,10 @@ class Editor extends PureComponent {
     } = this.props;
     // FIXME: move here and apply mapping object
     const mappedSyntax = languages[syntax];
+    const statusBarClassName = cn('position-absolute px-1', {
+      'bg-dark text-white': theme === editorThemes.dark,
+      'bg-white text-dark': theme === editorThemes.light,
+    });
     return (
       <>
         <MonacoEditor
@@ -223,7 +352,7 @@ class Editor extends PureComponent {
         />
         <div
           ref={this.statusBarRef}
-          className="bg-dark text-white px-1 position-absolute"
+          className={statusBarClassName}
           style={{ bottom: '40px' }}
         />
       </>

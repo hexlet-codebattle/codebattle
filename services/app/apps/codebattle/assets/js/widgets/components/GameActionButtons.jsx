@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button, Modal } from 'react-bootstrap';
-import { sendGiveUp, resetTextToTemplate } from '../middlewares/Game';
+import RoomContext from '../containers/RoomContext';
+import { sendGiveUp, resetTextToTemplateAndSend, resetTextToTemplate } from '../middlewares/Game';
 import { actions } from '../slices';
+import useMachineStateSelector from '../utils/useMachineStateSelector';
+import { inTestingRoomSelector } from '../machines/selectors';
 
 const CheckResultButton = ({ onClick, status }) => {
   const dispatch = useDispatch();
@@ -114,6 +117,9 @@ const GameActionButtons = ({
   const [modalShowing, setModalShowing] = useState(false);
   const dispatch = useDispatch();
 
+  const { mainService } = useContext(RoomContext);
+  const isTestingRoom = useMachineStateSelector(mainService, inTestingRoomSelector);
+
   const modalHide = () => {
     setModalShowing(false);
   };
@@ -128,7 +134,11 @@ const GameActionButtons = ({
   };
 
   const handleReset = () => {
-    dispatch(resetTextToTemplate(currentEditorLangSlug));
+    if (isTestingRoom) {
+      dispatch(resetTextToTemplate(currentEditorLangSlug));
+    } else {
+      dispatch(resetTextToTemplateAndSend(currentEditorLangSlug));
+    }
   };
 
   const renderModal = () => (

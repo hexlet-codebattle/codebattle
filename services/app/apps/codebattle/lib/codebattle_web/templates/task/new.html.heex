@@ -1,5 +1,8 @@
-<div class="container-xl bg-white shadow-sm rounded py-4 mb-3">
-  <h1 class="text-center">Create your own task</h1>
-  <p class="text-center">Play with your friends or make it public for all players</p>
-  <%= render("_form.html", Map.put(assigns, :action, Routes.task_path(@conn, :create))) %>
-</div>
+<div id="builder-widget-root"></div>
+<%= if Application.get_env(:codebattle, :html_debug_mode) do %>
+  <iframe class="xstate w-100"></iframe>
+<% end %>
+<div id="modal-root" style="position: absolute; top: 0; left: 0;"></div>
+<script>
+  window.csrf_token = "<%= csrf_token() %>"
+</script>

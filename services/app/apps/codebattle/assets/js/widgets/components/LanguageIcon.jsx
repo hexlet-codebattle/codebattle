@@ -1,5 +1,6 @@
 import React from 'react';
 import cn from 'classnames';
+import isSafari, { isSafariChrome } from '../utils/browser';
 
 const iconsToClass = {
   js: 'icon-nodejs',
@@ -20,6 +21,12 @@ const iconsToClass = {
   php: 'icon-php-alt',
 };
 
-const LanguageIcon = ({ lang }) => <span className={cn('d-flex', iconsToClass[lang])} />;
+const LanguageIcon = ({ lang }) => (
+  <span
+    className={cn('d-flex', iconsToClass[lang], {
+      'mt-2': isSafariChrome() || isSafari(),
+    })}
+  />
+);
 
 export default LanguageIcon;

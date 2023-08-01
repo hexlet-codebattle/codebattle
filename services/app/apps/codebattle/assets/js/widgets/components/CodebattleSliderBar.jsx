@@ -54,12 +54,12 @@ const SliderHandle = ({ value, className }) => (
 );
 
 const CodebattleSliderBar = ({
- gameCurrent, handlerPosition, lastIntent, mainEvents, recordsCount, setGameState,
+ roomCurrent, handlerPosition, lastIntent, mainEvents, recordsCount, setGameState,
 }) => (
   <>
     <div className="cb-slider-timeline position-absolute rounded w-100 x-bg-gray">
       {
-        gameCurrent.matches({ replayer: replayerMachineStates.holded })
+        roomCurrent.matches({ replayer: replayerMachineStates.holded })
           && (
           <SliderBar
             className={`${sliderBarClassnames} x-intent-background`}

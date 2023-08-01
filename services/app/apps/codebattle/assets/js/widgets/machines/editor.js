@@ -49,12 +49,16 @@ const initContextByState = state => assign(({ userId, type }) => ({
   userId,
 }));
 
+const initActiveEditor = assign(() => ({ editorState: 'active' }));
+const initTestingEditor = assign(() => ({ editorState: 'testing' }));
+
 const editor = {
   initial: 'loading',
   states: {
     loading: {
       on: {
-        load_active_editor: 'idle',
+        load_active_editor: { target: 'idle', actions: [initActiveEditor] },
+        load_testing_editor: { target: 'idle', actions: [initTestingEditor] },
         load_stored_editor: 'history',
       },
     },
@@ -67,7 +71,7 @@ const editor = {
       on: {
         user_check_solution: {
           target: 'checking',
-          actions: ['soundStartChecking', 'userStartChecking'],
+          actions: ['soundStartChecking', 'userSendSolution'],
         },
         check_solution: {
           target: 'checking',
@@ -81,13 +85,13 @@ const editor = {
       after: {
         50000: {
           target: 'idle',
-          actions: ['soundFailureChecking', 'handleTimeoutFailureChecking'],
+          actions: ['soundFailureChecking', 'handleTimeoutFailureChecking', 'openCheckResultOutput'],
         },
       },
       on: {
         receive_check_result: {
           target: 'idle',
-          actions: ['soundFinishedChecking'],
+          actions: ['soundFinishedChecking', 'openCheckResultOutput'],
           cond: 'isUserEvent',
         },
       },
@@ -98,7 +102,13 @@ const editor = {
 
 export const config = {
   actions: {
-    userStartChecking: () => {},
+    userSendSolution: () => { },
+    handleTimeoutFailureChecking: () => { },
+    openCheckResultOutput: ctx => {
+      if (ctx.type === editorUserTypes.currentUser) {
+        document.getElementById('leftOutput-tab').click();
+      }
+    },
     soundStartChecking: () => {
       sound.play('check');
     },

@@ -33,6 +33,7 @@ import { inspect } from '@xstate/inspect';
 import {
   renderInvitesWidget,
   renderGameWidget,
+  renderBuilderWidget,
   renderLobby,
   renderHeatmapWidget,
   renderUsersRating,
@@ -83,6 +84,7 @@ liveSocket.connect();
 const invitesRoot = document.getElementById('invites-root');
 const extension = document.getElementById('extension');
 const gameWidgetRoot = document.getElementById('game-widget-root');
+const builderWidgetRoot = document.getElementById('builder-widget-root');
 const heatmapRoot = document.getElementById('heatmap-root');
 const lobbyRoot = document.getElementById('lobby-root');
 const ratingList = document.getElementById('rating-list');
@@ -102,6 +104,10 @@ if (extension) {
 
 if (gameWidgetRoot) {
   renderGameWidget(gameWidgetRoot);
+}
+
+if (builderWidgetRoot) {
+  renderBuilderWidget(builderWidgetRoot);
 }
 
 if (heatmapRoot) {

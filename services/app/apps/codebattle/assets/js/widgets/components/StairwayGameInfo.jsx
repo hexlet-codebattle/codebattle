@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 
 import _ from 'lodash';
-import Task from './Task';
+import TaskAssignment from './TaskAssignment';
 
 const StairwayGameInfo = ({ tasks, currentTaskId }) => {
   if (!tasks) {
@@ -14,7 +14,7 @@ const StairwayGameInfo = ({ tasks, currentTaskId }) => {
     return null;
   }
 
-  return <Task task={task} />;
+  return <TaskAssignment task={task} />;
 };
 
 export default memo(StairwayGameInfo);

@@ -148,7 +148,7 @@ const SubMenu = ({
 
 const Item = ({ output }) => {
   if (output === '') {
-    return <></>;
+    return null;
   }
 
   return (

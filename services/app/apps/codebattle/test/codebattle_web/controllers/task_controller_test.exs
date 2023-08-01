@@ -58,6 +58,8 @@ defmodule CodebattleWeb.TaskControllerTest do
     assert new_conn.status == 200
   end
 
+  @tag :skip
+  # move to api/v1/task_controller
   test ".create", %{conn: conn} do
     user = insert(:user)
 
@@ -111,6 +113,8 @@ defmodule CodebattleWeb.TaskControllerTest do
            } = task
   end
 
+  @tag :skip
+  # move to api/v1/task_controller
   test ".update", %{conn: conn} do
     user = insert(:user)
     task = insert(:task, creator_id: user.id)

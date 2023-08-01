@@ -1,0 +1,3 @@
+const { run } = require('../assertsRunner.js')
+
+run(<%= arguments %>, <%= count %>)

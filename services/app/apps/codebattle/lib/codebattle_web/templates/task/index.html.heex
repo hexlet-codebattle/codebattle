@@ -2,11 +2,11 @@
   <h1 class="text-center">Tasks</h1>
   <%= link("Create new task",
     to: CodebattleWeb.Router.Helpers.task_path(@conn, :new),
-    class: "btn btn-success mt-2"
+    class: "btn btn-success text-white mt-2 rounded-lg"
   ) %>
   <%= link("Task packs",
     to: CodebattleWeb.Router.Helpers.task_pack_path(@conn, :index),
-    class: "btn btn-info mt-2 ml-2"
+    class: "btn btn-info mt-2 ml-2 rounded-lg"
   ) %>
   <div class="table-responsive mt-4">
     <table class="table table-sm">
@@ -34,21 +34,27 @@
             <td class="align-middle text"><%= task.visibility %></td>
             <td class="align-middle text-nowrap">
               <div class="d-flex">
-                <%= link("Show",
-                  to: CodebattleWeb.Router.Helpers.task_path(@conn, :show, task.id),
-                  class: "btn btn-sm btn-info"
-                ) %>
+                <%= if !Codebattle.User.admin?(@current_user) do %>
+                  <%= link("Show",
+                    to: CodebattleWeb.Router.Helpers.task_path(@conn, :show, task.id),
+                    class: "btn btn-sm btn-info rounded-lg"
+                  ) %>
+                <% end %>
                 <%= if Codebattle.User.admin?(@current_user) do %>
+                  <%= link("Show",
+                    to: CodebattleWeb.Router.Helpers.task_path(@conn, :show, task.id),
+                    class: "btn btn-sm btn-info rounded-left"
+                  ) %>
                   <%= button("Activate",
                     to:
                       CodebattleWeb.Router.Helpers.task_activate_path(@conn, :activate, task.id),
                     method: "patch",
-                    class: "btn btn-sm btn-success"
+                    class: "btn btn-sm btn-success text-white"
                   ) %>
                   <%= button("Disable",
                     to: CodebattleWeb.Router.Helpers.task_disable_path(@conn, :disable, task.id),
                     method: "patch",
-                    class: "btn btn-sm btn-danger"
+                    class: "btn btn-sm btn-danger rounded-right"
                   ) %>
                 <% end %>
               </div>

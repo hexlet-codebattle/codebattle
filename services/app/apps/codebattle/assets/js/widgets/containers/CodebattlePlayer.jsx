@@ -5,7 +5,7 @@ import { Direction } from 'react-player-controls/dist/constants';
 import qs from 'qs';
 import CodebattleSliderBar from '../components/CodebattleSliderBar';
 import ControlPanel from '../components/CBPlayer/ControlPanel';
-import GameContext from './GameContext';
+import RoomContext from './RoomContext';
 import speedModes from '../config/speedModes';
 import { actions } from '../slices';
 import * as GameActions from '../middlewares/Game';
@@ -43,29 +43,30 @@ class CodebattlePlayer extends Component {
   // ControlPanel API
 
   onPlayClick = () => {
+    const { roomCurrent } = this.props;
     const { handlerPosition } = this.state;
-    const { current: gameCurrent, send } = this.context;
+    const { mainService } = this.context;
 
-    if (gameCurrent.matches({ replayer: replayerMachineStates.ended })) {
+    if (roomCurrent.matches({ replayer: replayerMachineStates.ended })) {
       this.setGameState(0.0);
-      send('PLAY');
+      mainService.send('PLAY');
       this.play(0.0);
     }
 
-    if (gameCurrent.matches({ replayer: replayerMachineStates.paused })) {
-      send('PLAY');
+    if (roomCurrent.matches({ replayer: replayerMachineStates.paused })) {
+      mainService.send('PLAY');
       this.play(handlerPosition);
     }
   }
 
   onPauseClick = () => {
-    const { send } = this.context;
-    send('PAUSE');
+    const { mainService } = this.context;
+    mainService.send('PAUSE');
   }
 
   onChangeSpeed = () => {
-    const { send } = this.context;
-    send('TOGGLE_SPEED_MODE');
+    const { mainService } = this.context;
+    mainService.send('TOGGLE_SPEED_MODE');
   }
 
   // Slider callbacks
@@ -73,31 +74,31 @@ class CodebattlePlayer extends Component {
   onSliderHandleChange = value => {
     this.setState({ handlerPosition: value });
 
+    const { roomCurrent } = this.props;
     const { setGameStateDelay } = this.state;
-    const { current: gameCurrent } = this.context;
 
-    if (gameCurrent.matches({ replayer: replayerMachineStates.holded })) {
+    if (roomCurrent.matches({ replayer: replayerMachineStates.holded })) {
       setTimeout(this.runSetGameState, setGameStateDelay, value);
     }
   }
 
   onSliderHandleChangeStart = () => {
-    const { send } = this.context;
-    send('HOLD');
+    const { mainService } = this.context;
+    mainService.send('HOLD');
   }
 
   onSliderHandleChangeEnd = handlerPosition => {
-    const { setError } = this.props;
-    const { current: gameCurrent, send } = this.context;
-    const { holding } = gameCurrent.context;
+    const { setError, roomCurrent } = this.props;
+    const { mainService } = this.context;
+    const { holding } = roomCurrent.context;
 
     switch (holding) {
       case 'play':
-        send('RELEASE_AND_PLAY');
+        mainService.send('RELEASE_AND_PLAY');
         this.play(handlerPosition);
         break;
       case 'pause':
-        send('RELEASE_AND_PAUSE');
+        mainService.send('RELEASE_AND_PAUSE');
         break;
       default:
         setError(new Error('Unexpected holding state [replayer machine]'));
@@ -116,7 +117,7 @@ class CodebattlePlayer extends Component {
 
   setGameState = handlerPosition => {
     const { setGameStateByRecordId, stepCoefficient, recordsCount } = this.props;
-    const { send } = this.context;
+    const { mainService } = this.context;
 
     // Based on handler position we can calculate next record
     const nextRecordId = Math.floor(handlerPosition / stepCoefficient);
@@ -124,7 +125,7 @@ class CodebattlePlayer extends Component {
     setGameStateByRecordId(nextRecordId);
 
     if (nextRecordId + 1 >= recordsCount) {
-      send('END');
+      mainService.send('END');
     }
 
     this.setState({ handlerPosition, nextRecordId });
@@ -133,13 +134,13 @@ class CodebattlePlayer extends Component {
   updateGameState = () => {
     const { updateGameStateByRecordId, recordsCount } = this.props;
     const { nextRecordId: recordId } = this.state;
-    const { send } = this.context;
+    const { mainService } = this.context;
     const nextRecordId = recordId + 1;
 
     updateGameStateByRecordId(recordId);
 
     if (nextRecordId >= recordsCount) {
-      send('END');
+      mainService.send('END');
       this.setState({ handlerPosition: 1.0 });
     }
 
@@ -147,18 +148,17 @@ class CodebattlePlayer extends Component {
   }
 
   play = handlerPosition => {
-    const { current: gameCurrent } = this.context;
+    const { roomCurrent } = this.props;
 
-    const { speedMode } = gameCurrent.context;
+    const { speedMode } = roomCurrent.context;
     const playDelay = playDelays[speedMode];
 
     setTimeout(this.runPlay, playDelay, handlerPosition);
   }
 
   runPlay = handlerPosition => {
-    const { stepCoefficient } = this.props;
+    const { stepCoefficient, roomCurrent } = this.props;
     const { handlerPosition: currentHandlerPosition } = this.state;
-    const { current: gameCurrent } = this.context;
 
     /*
      * User can change handler position and replayer state.
@@ -166,7 +166,7 @@ class CodebattlePlayer extends Component {
      */
     const isSync = isEqual(currentHandlerPosition, handlerPosition);
 
-    if (gameCurrent.matches({ replayer: replayerMachineStates.playing }) && isSync) {
+    if (roomCurrent.matches({ replayer: replayerMachineStates.playing }) && isSync) {
       const offset = handlerPosition + stepCoefficient;
       const newPosition = offset > 1 ? 1 : offset;
 
@@ -191,14 +191,13 @@ class CodebattlePlayer extends Component {
   };
 
   render() {
-    const { current: gameCurrent } = this.context;
-    const { recordsCount, mainEvents } = this.props;
+    const { recordsCount, mainEvents, roomCurrent } = this.props;
 
     const {
       isEnabled, direction, handlerPosition, lastIntent, nextRecordId,
     } = this.state;
 
-    if (!gameCurrent.matches({ replayer: replayerMachineStates.on }) || recordsCount === 0) {
+    if (!roomCurrent.matches({ replayer: replayerMachineStates.on }) || recordsCount === 0) {
       return null;
     }
 
@@ -208,10 +207,10 @@ class CodebattlePlayer extends Component {
         <div className="container-fluid fixed-bottom">
           <div className="px-1">
             <div className="border bg-light">
-              <div className="row align-items-center justify-content-center">
+              <div className="d-flex align-items-center justify-content-center">
                 <ControlPanel
                   nextRecordId={nextRecordId}
-                  gameCurrent={gameCurrent}
+                  roomCurrent={roomCurrent}
                   onPlayClick={this.onPlayClick}
                   onPauseClick={this.onPauseClick}
                   onChangeSpeed={this.onChangeSpeed}
@@ -229,7 +228,7 @@ class CodebattlePlayer extends Component {
                   >
                     <CodebattleSliderBar
                       mainEvents={mainEvents}
-                      gameCurrent={gameCurrent}
+                      roomCurrent={roomCurrent}
                       handlerPosition={handlerPosition}
                       lastIntent={lastIntent}
                       recordsCount={recordsCount}
@@ -246,7 +245,7 @@ class CodebattlePlayer extends Component {
   }
 }
 
-CodebattlePlayer.contextType = GameContext;
+CodebattlePlayer.contextType = RoomContext;
 
 const mapStateToProps = state => {
   const recordsCount = playbookRecordsSelector(state).length;

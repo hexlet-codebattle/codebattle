@@ -1,62 +1,42 @@
-import React, { useContext } from 'react';
-import { useSelector } from 'react-redux';
-import ChatWidget from './ChatWidget';
-import Task from '../components/Task';
+import React, { useContext, memo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import {
-  gameTaskSelector, gameModeSelector, gameStatusSelector, leftExecutionOutputSelector, currentUserIdSelector,
+  gameTaskSelector,
+  gameStatusSelector,
+  leftExecutionOutputSelector,
+  builderTaskSelector,
+  taskDescriptionLanguageselector,
 } from '../selectors';
+import { actions } from '../slices';
+import useMachineStateSelector from '../utils/useMachineStateSelector';
+import { inTestingRoomSelector, roomStateSelector } from '../machines/selectors';
+import RoomContext from './RoomContext';
+import ChatWidget from './ChatWidget';
 import Output from '../components/ExecutionOutput/Output';
 import OutputTab from '../components/ExecutionOutput/OutputTab';
-import CountdownTimer from '../components/CountdownTimer';
-import Timer from '../components/Timer';
-import GameContext from './GameContext';
-import { gameMachineStates } from '../machines/game';
-import GameModes from '../config/gameModes';
+import TaskAssignment from '../components/TaskAssignment';
+import TimerContainer from '../components/TimerContainer';
 
-const gameStatuses = {
-  stored: 'stored',
-  game_over: 'game_over',
-  timeout: 'game_over',
-};
+const InfoWidget = memo(() => {
+  const dispatch = useDispatch();
+  const { mainService } = useContext(RoomContext);
+  const roomCurrent = useMachineStateSelector(mainService, roomStateSelector);
+  const isTestingRoom = inTestingRoomSelector(roomCurrent);
 
-const TimerContainer = ({
- time, mode, timeoutSeconds, gameStateName,
-}) => {
-  const { current } = useContext(GameContext);
-
-  if (mode === GameModes.history) {
-    return 'History';
-  }
-
-  if (timeoutSeconds === null) {
-    return 'Loading...';
-  }
-
-  if (
-    current.matches({ game: gameMachineStates.gameOver })
-    || current.matches({ game: gameMachineStates.stored })
-  ) {
-    return gameStatuses[gameStateName];
-  }
-
-  if (timeoutSeconds && time) {
-    return <CountdownTimer time={time} timeoutSeconds={timeoutSeconds} />;
-  }
-
-  return <Timer time={time} />;
-};
-
-const InfoWidget = () => {
-  const { current: gameCurrent } = useContext(GameContext);
-  const currentUserId = useSelector(currentUserIdSelector);
-  const taskText = useSelector(gameTaskSelector);
-  const startsAt = useSelector(state => gameStatusSelector(state).startsAt);
-  const timeoutSeconds = useSelector(state => gameStatusSelector(state).timeoutSeconds);
-  const gameStateName = useSelector(state => gameStatusSelector(state).state);
-  const gameMode = useSelector(gameModeSelector);
-  const leftOutput = useSelector(leftExecutionOutputSelector(gameCurrent));
+  const taskLanguage = useSelector(taskDescriptionLanguageselector);
+  const task = useSelector(isTestingRoom ? builderTaskSelector : gameTaskSelector);
+  const {
+    startsAt,
+    timeoutSeconds,
+    state: gameStateName,
+    mode: gameRoomMode,
+  } = useSelector(gameStatusSelector);
+  const leftOutput = useSelector(leftExecutionOutputSelector(roomCurrent));
   const isShowOutput = leftOutput && leftOutput.status;
   const idOutput = 'leftOutput';
+
+  const handleSetLanguage = lang => () => dispatch(actions.setTaskDescriptionLanguage(lang));
+
   return (
     <>
       <div className="col-12 col-lg-6 p-1 cb-height-info">
@@ -90,11 +70,11 @@ const InfoWidget = () => {
                 Output
               </a>
               <div
-                className="rounded-0 text-center bg-white col-6 text-black px-1 py-2"
+                className="rounded-0 text-center bg-white border-left col-6 text-black px-1 py-2"
               >
                 <TimerContainer
                   time={startsAt}
-                  mode={gameMode}
+                  mode={gameRoomMode}
                   timeoutSeconds={timeoutSeconds}
                   gameStateName={gameStateName}
                 />
@@ -108,9 +88,10 @@ const InfoWidget = () => {
               role="tabpanel"
               aria-labelledby="task-tab"
             >
-              <Task
-                task={taskText}
-                currentUserId={currentUserId}
+              <TaskAssignment
+                task={task}
+                taskLanguage={taskLanguage}
+                handleSetLanguage={handleSetLanguage}
               />
             </div>
             <div
@@ -126,16 +107,14 @@ const InfoWidget = () => {
                 </>
               )}
             </div>
-
           </div>
         </div>
-
       </div>
       <div className="col-12 col-lg-6 p-1 cb-height-info">
         <ChatWidget />
       </div>
     </>
   );
-};
+});
 
 export default InfoWidget;

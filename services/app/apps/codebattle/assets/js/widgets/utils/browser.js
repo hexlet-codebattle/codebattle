@@ -1,12 +1,14 @@
-const isSafari = () => {
-  const haveChromeAgent = navigator.userAgent.indexOf('Chrome') > -1;
-  const havaSafariAgent = navigator.userAgent.indexOf('Safari') > -1;
+const haveChromeAgent = navigator.userAgent.indexOf('Chrome') > -1;
+const haveSafariAgent = navigator.userAgent.indexOf('Safari') > -1;
 
-  if (havaSafariAgent && haveChromeAgent) {
+const isSafari = () => {
+  if (haveSafariAgent && haveChromeAgent) {
     return false;
   }
 
-  return havaSafariAgent;
+  return haveSafariAgent;
 };
+
+export const isSafariChrome = () => haveSafariAgent && haveChromeAgent;
 
 export default isSafari;

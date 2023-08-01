@@ -6,11 +6,13 @@ import color from '../../config/statusColor';
 
 const Output = ({ sideOutput }) => {
   const {
- status, output, outputError, asserts, version = 0,
-} = sideOutput;
+    status, output, outputError, asserts, version = 0,
+  } = sideOutput;
+
   const uniqIndex = _.uniqueId('heading');
   const normalizedAsserts = version === 2 ? asserts : asserts.map(elem => camelizeKeys(JSON.parse(elem)));
   const normalizedOutput = version === 2 ? outputError : output;
+
   return (
     <>
       {['error', 'memory_leak', 'timeout'].includes(status) ? (

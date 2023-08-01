@@ -1,28 +1,40 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, memo } from 'react';
 import PropTypes from 'prop-types';
-import { connect, useSelector, useDispatch } from 'react-redux';
+import { connect, useDispatch, useSelector } from 'react-redux';
 import Gon from 'gon';
 import ReactJoyride, { STATUS } from 'react-joyride';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
-import { useMachine } from '@xstate/react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import GameWidget from './GameWidget';
-import GameContext from './GameContext';
+import RoomContext from './RoomContext';
 import InfoWidget from './InfoWidget';
+import BuilderEditorsWidget from '../components/BuilderEditorsWidget';
 import userTypes from '../config/userTypes';
 import { actions } from '../slices';
-import * as GameActions from '../middlewares/Game';
+import * as GameRoomActions from '../middlewares/Game';
 import * as ChatActions from '../middlewares/Chat';
 import { isShowGuideSelector } from '../selectors';
 import WaitingOpponentInfo from '../components/WaitingOpponentInfo';
 import CodebattlePlayer from './CodebattlePlayer';
 import FeedbackWidget from '../components/FeedbackWidget';
-import GamePreview from '../components/Game/GamePreview';
-import { replayerMachineStates } from '../machines/game';
+import GameRoomPreview from '../components/Game/GameRoomPreview';
+import {
+  inPreviewRoomSelector,
+  inBuilderRoomSelector,
+  inWaitingRoomSelector,
+  openedReplayerSelector,
+  gameRoomKeySelector,
+  roomStateSelector,
+} from '../machines/selectors';
+import useGameRoomMachine from '../utils/useGameRoomMachine';
+import TaskConfirmationModal from '../components/TaskConfirmationModal';
+import TaskConfigurationModal from '../components/TaskConfigurationModal';
 import AnimationModal from '../components/AnimationModal';
 import NetworkAlert from './NetworkAlert';
 import sound from '../lib/sound';
+import useMachineStateSelector from '../utils/useMachineStateSelector';
+import BuilderSettingsWidget from './BuilderSettingsWidget';
 
 const steps = [
   {
@@ -34,8 +46,7 @@ const steps = [
         <div className="text-justify">
           This is a
           <b> game page</b>
-          .
-          You need to solve the task
+          . You need to solve the task
           <b> first </b>
           and pass all tests
           <b> successfully</b>
@@ -104,8 +115,7 @@ const steps = [
     },
     target: '[data-guide-id="LeftEditor"] [data-guide-id="ResetButton"]',
     title: 'Reset button',
-    content:
-      'Click this button to reset the code to the original template',
+    content: 'Click this button to reset the code to the original template',
     locale: {
       skip: 'Skip guide',
     },
@@ -138,9 +148,11 @@ const steps = [
   },
 ];
 
-const GameWidgetGuide = () => {
+const GameWidgetGuide = memo(() => {
   const dispatch = useDispatch();
-  const [isFirstTime, setIsFirstTime] = useState(window.localStorage.getItem('guideGamePassed') === null);
+  const [isFirstTime, setIsFirstTime] = useState(
+    window.localStorage.getItem('guideGamePassed') === null,
+  );
   const isShowGuide = useSelector(state => isShowGuideSelector(state));
 
   return (
@@ -172,35 +184,58 @@ const GameWidgetGuide = () => {
       />
     )
   );
-};
+});
 
 const currentUser = Gon.getAsset('current_user');
-const players = Gon.getAsset('players');
 
-const RootContainer = ({
-  connectToGame,
-  connectToChat,
+const GameRoomWidget = ({
+  pageName,
   setCurrentUser,
-  gameMachine,
+  mainMachine,
+  taskMachine,
   editorMachine,
   toggleMuteSound,
 }) => {
-  const [modalShowing, setModalShowing] = useState(false);
+  const dispatch = useDispatch();
+
+  const [taskModalShowing, setTaskModalShowing] = useState(false);
+  const [taskConfigurationModalShowing, setTaskConfigurationModalShowing] = useState(false);
+  const [resultModalShowing, setResultModalShowing] = useState(false);
+
   const mute = useSelector(state => state.userSettings.mute);
-  const [current, send, service] = useMachine(gameMachine, {
-    devTools: true,
-    actions: {
-      showGameResultModal: () => {
-        setModalShowing(true);
-      },
-    },
+  const machines = useGameRoomMachine({
+    setTaskModalShowing,
+    setResultModalShowing,
+    mainMachine,
+    taskMachine,
   });
+
+  const roomCurrent = useMachineStateSelector(
+    machines.mainService,
+    roomStateSelector,
+  );
+  const inBuilderRoom = inBuilderRoomSelector(roomCurrent);
+  const inPreviewRoom = inPreviewRoomSelector(roomCurrent);
+  const inWaitingRoom = inWaitingRoomSelector(roomCurrent);
+  const replayerIsOpen = openedReplayerSelector(roomCurrent);
+  const gameRoomKey = gameRoomKeySelector(roomCurrent);
 
   useEffect(() => {
     // FIXME: maybe take from gon?
     setCurrentUser({ user: { ...currentUser, type: userTypes.spectator } });
-    connectToGame(service);
-    connectToChat();
+    if (pageName === 'builder') {
+      const clearTask = GameRoomActions.connectToTask(machines.mainService, machines.taskService)(dispatch);
+
+      return clearTask;
+    }
+
+    const clearGame = GameRoomActions.connectToGame(machines.mainService)(dispatch);
+    const clearChat = ChatActions.connectToChat()(dispatch);
+
+    return () => {
+      clearGame();
+      clearChat();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -208,8 +243,13 @@ const RootContainer = ({
     const muteSound = e => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'm') {
         e.preventDefault();
-        // eslint-disable-next-line no-unused-expressions
-        mute ? sound.toggle() : sound.toggle(0);
+
+        if (mute) {
+          sound.toggle();
+        } else {
+          sound.toggle(0);
+        }
+
         toggleMuteSound();
       }
     };
@@ -221,77 +261,84 @@ const RootContainer = ({
     };
   }, [mute, toggleMuteSound]);
 
-  if (current.matches({ game: 'waiting' })) {
+  if (inWaitingRoom) {
     const gameUrl = window.location.href;
     return <WaitingOpponentInfo gameUrl={gameUrl} />;
   }
 
-  const isRenderPreview = current.matches({ game: 'preview' });
-
-  const defaultPlayer = {
-    name: 'John Doe',
-    avatar_url: '/assets/images/logo.svg',
-    lang: 'js',
-    rating: '0',
-  };
-  const player1 = players[0] || defaultPlayer;
-  const player2 = players[1] || defaultPlayer;
-
   return (
     <SwitchTransition mode="out-in">
       <CSSTransition
-        key={isRenderPreview ? 'preview' : 'game'}
+        key={gameRoomKey}
         addEndListener={(node, done) => {
           node.addEventListener('transitionend', done, false);
         }}
-        classNames="preview"
+        classNames={`game-room-${gameRoomKey}`}
       >
-        {isRenderPreview ? (
-          <GamePreview
-            className="animate"
-            player1={player1}
-            player2={player2}
-          />
+        {inPreviewRoom ? (
+          <GameRoomPreview className="animate" pageName={pageName} />
         ) : (
-          <GameContext.Provider value={{ current, send, service }}>
+          <RoomContext.Provider value={machines}>
             <div className="x-outline-none">
               <GameWidgetGuide />
               <NetworkAlert />
               <div className="container-fluid">
                 <div className="row no-gutter cb-game">
-                  <AnimationModal setModalShowing={setModalShowing} modalShowing={modalShowing} />
-                  <InfoWidget />
-                  <GameWidget editorMachine={editorMachine} />
-                  {mute
-                    && (
-                      <div className="rounded p-2 bg-dark cb-mute-icon">
-                        <FontAwesomeIcon size="lg" color="white" icon={['fas', 'volume-mute']} />
-                      </div>
-                    )}
-                  <FeedbackWidget />
+                  <TaskConfirmationModal
+                    modalShowing={taskModalShowing}
+                    taskService={machines.taskService}
+                  />
+                  <TaskConfigurationModal
+                    modalShowing={taskConfigurationModalShowing}
+                    setModalShowing={setTaskConfigurationModalShowing}
+                  />
+                  <AnimationModal
+                    setModalShowing={setResultModalShowing}
+                    modalShowing={resultModalShowing}
+                  />
+                  {inBuilderRoom ? (
+                    <>
+                      <BuilderSettingsWidget
+                        setConfigurationModalShowing={
+                          setTaskConfigurationModalShowing
+                        }
+                      />
+                      <BuilderEditorsWidget />
+                    </>
+                  ) : (
+                    <>
+                      <InfoWidget />
+                      <GameWidget editorMachine={editorMachine} />
+                    </>
+                  )}
+                  {mute && (
+                    <div className="rounded p-2 bg-dark cb-mute-icon">
+                      <FontAwesomeIcon
+                        size="lg"
+                        color="white"
+                        icon={['fas', 'volume-mute']}
+                      />
+                    </div>
+                  )}
+                  {!replayerIsOpen && <FeedbackWidget />}
                 </div>
               </div>
-              {current.matches({ replayer: replayerMachineStates.on }) && (
-                <CodebattlePlayer />
-              )}
+              {replayerIsOpen && <CodebattlePlayer roomCurrent={roomCurrent} />}
             </div>
-          </GameContext.Provider>
+          </RoomContext.Provider>
         )}
       </CSSTransition>
     </SwitchTransition>
   );
 };
 
-RootContainer.propTypes = {
+GameRoomWidget.propTypes = {
   setCurrentUser: PropTypes.func.isRequired,
-  connectToGame: PropTypes.func.isRequired,
 };
 
 const mapDispatchToProps = {
   setCurrentUser: actions.setCurrentUser,
-  connectToGame: GameActions.connectToGame,
-  connectToChat: ChatActions.connectToChat,
   toggleMuteSound: actions.toggleMuteSound,
 };
 
-export default connect(null, mapDispatchToProps)(RootContainer);
+export default connect(null, mapDispatchToProps)(GameRoomWidget);

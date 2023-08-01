@@ -1,21 +1,28 @@
 import React, { useContext } from 'react';
 import { useDispatch } from 'react-redux';
-import { changeCurrentLangAndSetTemplate } from '../middlewares/Game';
-import GameContext from '../containers/GameContext';
-import { replayerMachineStates } from '../machines/game';
+import { sendCurrentLangAndSetTemplate, updateCurrentLangAndSetTemplate } from '../middlewares/Game';
+import RoomContext from '../containers/RoomContext';
 import LanguagePickerView from './LanguagePickerView';
+import { inTestingRoomSelector, openedReplayerSelector } from '../machines/selectors';
+import useMachineStateSelector from '../utils/useMachineStateSelector';
 
 const LanguagePicker = ({ status, editor: { currentLangSlug } }) => {
   const dispatch = useDispatch();
 
-  const { current: gameCurrent } = useContext(GameContext);
+  const { mainService } = useContext(RoomContext);
+  const isOpenedReplayer = useMachineStateSelector(mainService, openedReplayerSelector);
+  const isTestingRoom = useMachineStateSelector(mainService, inTestingRoomSelector);
   const changeLang = ({ label: { props } }) => {
-    dispatch(changeCurrentLangAndSetTemplate(props.slug));
+    if (isTestingRoom) {
+      dispatch(updateCurrentLangAndSetTemplate(props.slug));
+    } else {
+      dispatch(sendCurrentLangAndSetTemplate(props.slug));
+    }
   };
 
   return (
     <LanguagePickerView
-      isDisabled={gameCurrent.matches({ replayer: replayerMachineStates.on }) || status === 'disabled'}
+      isDisabled={isOpenedReplayer || status === 'disabled'}
       currentLangSlug={currentLangSlug}
       changeLang={changeLang}
     />

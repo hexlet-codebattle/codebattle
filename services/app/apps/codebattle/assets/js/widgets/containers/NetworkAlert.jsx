@@ -1,15 +1,17 @@
-import React, { useContext } from 'react';
-import { networkMachineStates } from '../machines/game';
-import GameContext from './GameContext';
+import React, { useContext, memo } from 'react';
+import RoomContext from './RoomContext';
+import { isDisconnectedWithMessageSelector } from '../machines/selectors';
+import useMachineStateSelector from '../utils/useMachineStateSelector';
 
-const NetworkAlert = () => {
-    const { current: gameCurrent } = useContext(GameContext);
+const NetworkAlert = memo(() => {
+  const { mainService } = useContext(RoomContext);
+  const isDisconnectedWithMessage = useMachineStateSelector(mainService, isDisconnectedWithMessageSelector);
 
-    if (gameCurrent.matches({ network: networkMachineStates.disconnectedWithMessage })) {
-        return <div className="col-12 bg-warning text-center">Server is temporarily unavailable ¯\_(ツ)_/¯ :prod_is_down:</div>;
-    }
+  if (isDisconnectedWithMessage) {
+    return <div className="col-12 bg-warning text-center">Server is temporarily unavailable ¯\_(ツ)_/¯ :prod_is_down:</div>;
+  }
 
-    return (<></>);
-};
+  return (<></>);
+});
 
 export default NetworkAlert;

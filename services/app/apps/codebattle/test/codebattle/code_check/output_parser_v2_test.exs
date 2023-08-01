@@ -202,7 +202,7 @@ defmodule Codebattle.CodeCheck.OutputParser.V2Test do
              exit_code: 37,
              asserts_count: 0,
              output_error:
-               "Something went wrong! Please, write to dev team in our Slack \n UNKNOWN_ERROR: asdf}",
+               "Something went wrong! Please, write to dev team in our Telegram \n UNKNOWN_ERROR: asdf}",
              status: "error",
              success_count: 0
            }

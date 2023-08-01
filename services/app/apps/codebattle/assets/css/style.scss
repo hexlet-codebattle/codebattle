@@ -192,6 +192,14 @@ a {
   font-size: 8px;
 }
 
+.cb-builder-argument-input {
+  min-width: 150px;
+}
+
+.cb-builder-type-selector {
+  min-width: 150px;
+}
+
 .cb-game-score-won {
   color: var(--green) !important;
 }
@@ -477,6 +485,10 @@ a {
   opacity: 0.5;
 }
 
+.cb-opacity-75 {
+  opacity: 0.75;
+}
+
 .x-bg-gray {
   background-color: $gray-300 !important;
 }
@@ -511,28 +523,34 @@ a {
   }
 }
 
-.preview-enter {
+.game-room-preview-enter,
+.game-room-builder-enter,
+.game-room-builder-exit-active {
   opacity: 0;
   transform: translateX(-100%);
 }
 
-.preview-enter-active {
+.game-room-preview-enter-active,
+.game-room-builder-enter-active {
   opacity: 1;
   transform: translateX(0%);
 }
 
-.preview-exit {
+.game-room-preview-exit,
+.game-room-builder-exit {
   opacity: 1;
   transform: translateX(0%);
 }
 
-.preview-exit-active {
+.game-room-preview-exit-active {
   opacity: 0;
   transform: translateX(100%);
 }
 
-.preview-enter-active,
-.preview-exit-active {
+.game-room-preview-enter-active,
+.game-room-preview-exit-active,
+.game-room-builder-enter-active,
+.game-room-builder-exit-active {
   transition: opacity 200ms, transform 200ms;
 }
 
@@ -728,4 +746,23 @@ a:hover{
   // background-color: #3b637c;
   border: 2px solid #4b809e;
   color: #fff;
+}
+
+.cb-editor-remote-selection {
+  pointer-events: auto;
+  opacity: 0.3;
+}
+
+.cb-editor-remote-cursor {
+  border: 1px solid;
+}
+
+.cb-remote-opponent {
+  background-color: $orange;
+  border-color: red;
+}
+
+.cb-remote-player {
+  background-color: var(--gray);
+  border-color: var(--secondary);
 }

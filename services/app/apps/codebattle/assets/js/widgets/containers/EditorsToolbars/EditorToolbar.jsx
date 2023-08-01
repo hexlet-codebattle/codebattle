@@ -6,7 +6,7 @@ import LanguagePicker from '../../components/LanguagePicker';
 import UserInfo from '../UserInfo';
 import VimModeButton from './VimModeButton';
 import GameActionButtons from '../../components/GameActionButtons';
-import GameModes from '../../config/gameModes';
+import GameRoomModes from '../../config/gameModes';
 
 const ModeButtons = ({ player }) => (
   <div
@@ -14,8 +14,8 @@ const ModeButtons = ({ player }) => (
     role="group"
     aria-label="Editor mode"
   >
-    <VimModeButton player={player} />
-    <DarkModeButton player={player} />
+    <VimModeButton playerId={player.id} />
+    <DarkModeButton playerId={player.id} />
   </div>
 );
 
@@ -38,6 +38,7 @@ const EditorToolbar = ({
     'cb-game-score-lost': (score.winnerId !== null) && (score.winnerId !== player.id),
     'cb-game-score-draw': score.winnerId === null,
   });
+
   return (
     <>
       <div className="rounded-top" data-player-type={type}>
@@ -61,7 +62,7 @@ const EditorToolbar = ({
             )}
             <div className={userInfoClassNames} role="group" aria-label="User info">
               <UserInfo user={player} />
-              {mode === GameModes.standard
+              {mode === GameRoomModes.standard
                 && (
                   <div className={scoreResultClass}>
                     Score:

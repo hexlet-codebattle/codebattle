@@ -2,12 +2,10 @@ import { combineReducers, createSlice } from '@reduxjs/toolkit';
 import defaultEditorHeight from '../config/editorSettings';
 
 const initialState = {
-  // TODO (add-stairways): reset stub data
   meta: {
     1: { userId: 1, currentLangSlug: 'js' },
     2: { userId: 2, currentLangSlug: 'js' },
   },
-  // TODO (add-stairways): reset stub data
   text: {},
   textHistory: {},
   langs: {},

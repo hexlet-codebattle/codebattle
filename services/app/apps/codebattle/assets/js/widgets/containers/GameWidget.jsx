@@ -1,16 +1,17 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, memo } from 'react';
 import _ from 'lodash';
 import { useSelector } from 'react-redux';
 import cn from 'classnames';
-import GameContext from './GameContext';
+import RoomContext from './RoomContext';
 import * as selectors from '../selectors';
 import Editor from './Editor';
 import EditorContainer from './EditorContainer';
-import OutputClicker from './OutputClicker';
 import editorModes from '../config/editorModes';
 import OutputTab from '../components/ExecutionOutput/OutputTab';
 import Output from '../components/ExecutionOutput/Output';
 import editorUserTypes from '../config/editorUserTypes';
+import { roomStateSelector } from '../machines/selectors';
+import useMachineStateSelector from '../utils/useMachineStateSelector';
 
 const RightSide = ({ output, children }) => {
   const [showTab, setShowTab] = useState('editor');
@@ -64,12 +65,13 @@ const RightSide = ({ output, children }) => {
   );
 };
 
-const GameWidget = ({ editorMachine }) => {
+const GameWidget = memo(({ editorMachine }) => {
   const currentUserId = useSelector(selectors.currentUserIdSelector);
-  const { current: gameCurrent } = useContext(GameContext);
+  const { mainService } = useContext(RoomContext);
+  const roomCurrent = useMachineStateSelector(mainService, roomStateSelector);
 
-  const leftEditor = useSelector(selectors.leftEditorSelector(gameCurrent));
-  const rightEditor = useSelector(selectors.rightEditorSelector(gameCurrent));
+  const leftEditor = useSelector(selectors.leftEditorSelector(roomCurrent));
+  const rightEditor = useSelector(selectors.rightEditorSelector(roomCurrent));
   const leftUserId = _.get(leftEditor, ['userId'], null);
   const rightUserId = _.get(rightEditor, ['userId'], null);
   const leftUserType = currentUserId === leftUserId
@@ -79,9 +81,9 @@ const GameWidget = ({ editorMachine }) => {
     ? editorUserTypes.opponent
     : editorUserTypes.player;
 
-  const leftEditorHeight = useSelector(selectors.editorHeightSelector(gameCurrent, leftUserId));
-  const rightEditorHeight = useSelector(selectors.editorHeightSelector(gameCurrent, rightUserId));
-  const rightOutput = useSelector(selectors.rightExecutionOutputSelector(gameCurrent));
+  const leftEditorHeight = useSelector(selectors.editorHeightSelector(roomCurrent, leftUserId));
+  const rightEditorHeight = useSelector(selectors.editorHeightSelector(roomCurrent, rightUserId));
+  const rightOutput = useSelector(selectors.rightExecutionOutputSelector(roomCurrent));
   const leftEditorsMode = useSelector(selectors.editorsModeSelector(leftUserId));
   const theme = useSelector(selectors.editorsThemeSelector(leftUserId));
 
@@ -117,9 +119,8 @@ const GameWidget = ({ editorMachine }) => {
           </RightSide>
         )}
       </EditorContainer>
-      <OutputClicker />
     </>
   );
-};
+});
 
 export default GameWidget;

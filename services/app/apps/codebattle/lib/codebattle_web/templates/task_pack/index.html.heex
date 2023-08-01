@@ -2,11 +2,11 @@
   <h1 class="text-center">Task Packs</h1>
   <%= link("Create new task pack",
     to: CodebattleWeb.Router.Helpers.task_pack_path(@conn, :new),
-    class: "btn btn-success mt-2"
+    class: "btn btn-success mt-2 text-white rounded-lg"
   ) %>
   <%= link("Tasks",
     to: CodebattleWeb.Router.Helpers.task_path(@conn, :index),
-    class: "btn btn-info mt-2 ml-2"
+    class: "btn btn-info mt-2 ml-2 rounded-lg"
   ) %>
   <div class="table-responsive mt-4">
     <table class="table table-sm">
@@ -28,11 +28,17 @@
             <td class="align-middle text"><%= render_task_ids(task_pack) %></td>
             <td class="align-middle text-nowrap">
               <div class="d-flex">
-                <%= link("Show",
-                  to: CodebattleWeb.Router.Helpers.task_pack_path(@conn, :show, task_pack.id),
-                  class: "btn btn-sm btn-info"
-                ) %>
+                <%= if !Codebattle.User.admin?(@current_user) do %>
+                  <%= link("Show",
+                    to: CodebattleWeb.Router.Helpers.task_pack_path(@conn, :show, task_pack.id),
+                    class: "btn btn-sm btn-info rounded-lg"
+                  ) %>
+                <% end %>
                 <%= if Codebattle.User.admin?(@current_user) do %>
+                  <%= link("Show",
+                    to: CodebattleWeb.Router.Helpers.task_pack_path(@conn, :show, task_pack.id),
+                    class: "btn btn-sm btn-info rounded-left"
+                  ) %>
                   <%= button("Activate",
                     to:
                       CodebattleWeb.Router.Helpers.task_pack_activate_path(
@@ -41,7 +47,7 @@
                         task_pack.id
                       ),
                     method: "patch",
-                    class: "btn btn-sm btn-success"
+                    class: "btn btn-sm btn-success text-white"
                   ) %>
                   <%= button("Disable",
                     to:
@@ -51,7 +57,7 @@
                         task_pack.id
                       ),
                     method: "patch",
-                    class: "btn btn-sm btn-danger"
+                    class: "btn btn-sm btn-danger rounded-right"
                   ) %>
                 <% end %>
               </div>

@@ -68,14 +68,21 @@ defmodule CodebattleWeb.Api.V1.TaskControllerTest do
 
       resp_body = json_response(conn, 200)
 
-      assert resp_body == %{
-               "id" => task.id,
-               "name" => task.name,
-               "creator_id" => nil,
-               "origin" => "user",
-               "level" => task.level,
-               "tags" => task.tags
-             }
+      id = task.id
+      name = task.name
+      level = task.level
+      tags = task.tags
+
+      assert %{
+               "task" => %{
+                 "id" => ^id,
+                 "name" => ^name,
+                 "creator_id" => nil,
+                 "origin" => "user",
+                 "level" => ^level,
+                 "tags" => ^tags
+               }
+             } = resp_body
     end
 
     test "shows hidden task only for creator", %{conn: conn} do
@@ -94,11 +101,13 @@ defmodule CodebattleWeb.Api.V1.TaskControllerTest do
         |> json_response(200)
 
       assert %{
-               "creator_id" => ^creator_id,
-               "level" => "easy",
-               "name" => "1",
-               "origin" => "user",
-               "tags" => []
+               "task" => %{
+                 "creator_id" => ^creator_id,
+                 "level" => "easy",
+                 "name" => "1",
+                 "origin" => "user",
+                 "tags" => []
+               }
              } = response
     end
   end
@@ -109,7 +118,7 @@ defmodule CodebattleWeb.Api.V1.TaskControllerTest do
 
       conn =
         conn
-        |> post(Routes.api_v1_task_path(conn, :unique, task.name))
+        |> get(Routes.api_v1_task_path(conn, :unique, task.name))
 
       resp_body = json_response(conn, 200)
 
@@ -119,7 +128,7 @@ defmodule CodebattleWeb.Api.V1.TaskControllerTest do
     test "returns true when task not exists", %{conn: conn} do
       conn =
         conn
-        |> post(Routes.api_v1_task_path(conn, :unique, "my_unqiue_task"))
+        |> get(Routes.api_v1_task_path(conn, :unique, "my_unqiue_task"))
 
       resp_body = json_response(conn, 200)
 
