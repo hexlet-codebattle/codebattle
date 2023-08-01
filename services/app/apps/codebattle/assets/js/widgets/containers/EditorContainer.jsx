@@ -2,7 +2,7 @@ import React, { useEffect, useContext, useCallback } from 'react';
 import _ from 'lodash';
 import cn from 'classnames';
 import { useDispatch, useSelector } from 'react-redux';
-import { useMachine } from '@xstate/react';
+import { useInterpret } from '@xstate/react';
 import editorModes from '../config/editorModes';
 import EditorToolbar from './EditorsToolbars/EditorToolbar';
 import * as GameActions from '../middlewares/Game';
@@ -12,7 +12,13 @@ import RoomContext from './RoomContext';
 import editorSettingsByUserType from '../config/editorSettingsByUserType';
 import editorUserTypes from '../config/editorUserTypes';
 import { gameRoomEditorStyles } from '../config/editorSettings';
-import { inTestingRoomSelector, isGameOverSelector, openedReplayerSelector } from '../machines/selectors';
+import {
+  editorStateSelector,
+  inBuilderRoomSelector,
+  inTestingRoomSelector,
+  isGameOverSelector,
+  openedReplayerSelector,
+} from '../machines/selectors';
 import useMachineStateSelector from '../utils/useMachineStateSelector';
 
 const EditorContainer = ({
@@ -38,55 +44,58 @@ const EditorContainer = ({
 
   const { mainService } = useContext(RoomContext);
   const inTestingRoom = useMachineStateSelector(mainService, inTestingRoomSelector);
+  const inBuilderRoom = useMachineStateSelector(mainService, inBuilderRoomSelector);
   const isGameOver = useMachineStateSelector(mainService, isGameOverSelector);
   const openedReplayer = useMachineStateSelector(mainService, openedReplayerSelector);
 
   const context = { userId: id, type };
 
-  const config = {
-    actions: {
-      userSendSolution: ctx => {
-        if (ctx.editorState === 'active') {
-          dispatch(GameActions.checkGameSolution());
-        }
-      },
-      handleTimeoutFailureChecking: ctx => {
-        dispatch(actions.updateExecutionOutput({
-          userId: ctx.userId,
-          status: 'timeout',
-          output: '',
-          result: {},
-          asserts: [],
-        }));
-
-        dispatch(actions.updateCheckStatus({ [ctx.userId]: false }));
-      },
-    },
-  };
-
-  const [editorCurrent, , service] = useMachine(
-    editorMachine.withConfig(config),
+  const editorService = useInterpret(
+    editorMachine,
     {
       context,
       devTools: true,
       id: `editor_${id}`,
+      actions: {
+        userSendSolution: ctx => {
+          if (ctx.editorState === 'active') {
+            dispatch(GameActions.checkGameSolution());
+          }
+        },
+        handleTimeoutFailureChecking: ctx => {
+          dispatch(actions.updateExecutionOutput({
+            userId: ctx.userId,
+            status: 'timeout',
+            output: '',
+            result: {},
+            asserts: [],
+          }));
+
+          dispatch(actions.updateCheckStatus({ [ctx.userId]: false }));
+        },
+      },
     },
   );
 
-  const checkResult = useCallback(() => {
-    if (inTestingRoom) {
-      dispatch(GameActions.checkTaskSolution(service));
-    } else {
-      service.send('user_check_solution');
-    }
-  }, [service, inTestingRoom, dispatch]);
+  const editorCurrent = useMachineStateSelector(editorService, editorStateSelector);
+
+  const checkActiveTaskSolution = useCallback(() => editorService.send('user_check_solution'), [editorService]);
+  const checkTestTaskSolution = useCallback(() => dispatch(GameActions.checkTaskSolution(editorService)), [dispatch, editorService]);
+
+  const checkResult = inTestingRoom
+    ? checkTestTaskSolution
+    : checkActiveTaskSolution;
 
   useEffect(() => {
     if (inTestingRoom) {
-      service.send('load_testing_editor');
-    } else {
-      dispatch(GameActions.connectToEditor(service));
+      editorService.send('load_testing_editor');
+
+      return () => {};
     }
+
+    const clearEditor = GameActions.connectToEditor(editorService)(dispatch);
+
+    return clearEditor;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -111,7 +120,7 @@ const EditorContainer = ({
 
     return () => { };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [inTestingRoom]);
 
   const userSettings = {
     type,
@@ -135,12 +144,19 @@ const EditorContainer = ({
   };
 
   const canChange = userSettings.type === editorUserTypes.currentUser && !openedReplayer;
+  const canSendCursor = canChange && !inTestingRoom && !inBuilderRoom;
   const updateEditor = editorCurrent.context.editorState === 'testing' ? updateEditorValue : sendEditorValue;
   const onChange = canChange ? updateEditor : _.noop();
+  const onChangeCursorSelection = canSendCursor ? GameActions.sendEditorCursorSelection : undefined;
+  const onChangeCursorPosition = canSendCursor ? GameActions.sendEditorCursorPosition : undefined;
 
   const editorParams = {
+    userId: id,
+    userType: type,
     syntax: editorState.currentLangSlug || 'js',
     onChange,
+    onChangeCursorSelection,
+    onChangeCursorPosition,
     checkResult,
     value: editorState.text,
     editorHeight,

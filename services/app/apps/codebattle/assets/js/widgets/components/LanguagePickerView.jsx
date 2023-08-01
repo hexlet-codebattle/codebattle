@@ -37,7 +37,7 @@ const defaultLanguages = Gon.getAsset('langs');
   };
 
 const LangTitle = ({ slug, name, version }) => (
-  <div className="d-inline-flex align-items-center">
+  <div className="d-inline-flex align-items-center text-nowrap">
     <LanguageIcon lang={slug} className="ml-1" />
     <span className="mx-1">{_.capitalize(name)}</span>
     <span>{version}</span>

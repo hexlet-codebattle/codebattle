@@ -1,14 +1,10 @@
-import React, {
-  useCallback,
-  useContext,
-  memo,
-} from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React from 'react';
+import { useSelector } from 'react-redux';
 import cn from 'classnames';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import SignatureTrack from './SignatureTrack';
 import ExamplesTrack from './ExamplesTrack';
-import RoomContext from '../containers/RoomContext';
+import BuilderActions from './BuilderActions';
 import * as selectors from '../selectors';
 
 import {
@@ -18,19 +14,8 @@ import {
   MAX_INPUT_ARGUMENTS_COUNT,
   MIN_EXAMPLES_COUNT,
 } from '../utils/builder';
-import { buildTaskAsserts, deleteTask } from '../middlewares/Game';
-import {
-  isIdleStateTaskSelector,
-  isInvalidStateTaskSelector,
-  isSavedStateTaskSelector,
-  isTaskPrepareSavingSelector,
-  isTaskPrepareTestingSelector,
-  taskStateSelector,
-} from '../machines/selectors';
-import useMachineStateSelector from '../utils/useMachineStateSelector';
-import { taskStateCodes } from '../config/task';
 
-const PreviewAssertsPanel = memo(({
+const PreviewAssertsPanel = ({
   haveInputSuggest,
   haveExampleSuggest,
 
@@ -48,56 +33,20 @@ const PreviewAssertsPanel = memo(({
   editExample,
   deleteExample,
 }) => {
-  const dispatch = useDispatch();
+  const {
+    inputSignature,
+    outputSignature,
+    assertsExamples: examples,
+  } = useSelector(state => state.builder.task);
 
-  const { taskService } = useContext(RoomContext);
-
-  const taskCurrent = useMachineStateSelector(taskService, taskStateSelector);
-  const isIdleTaskState = isIdleStateTaskSelector(taskCurrent);
-  const isSavedTask = isSavedStateTaskSelector(taskCurrent);
-  const isInvalidTaskState = isInvalidStateTaskSelector(taskCurrent);
-
-  const isSavingPrepare = isTaskPrepareSavingSelector(taskCurrent);
-  const isTestingPrepare = isTaskPrepareTestingSelector(taskCurrent);
-
-  const taskId = useSelector(state => state.builder.task.id);
-  const taskState = useSelector(state => state.builder.task.state);
-  const inputSignature = useSelector(state => state.builder.task.inputSignature);
-  const outputSignature = useSelector(state => state.builder.task.outputSignature);
-  const examples = useSelector(state => state.builder.task.assertsExamples);
-
-  const validInputSignature = useSelector(state => state.builder.validationStatuses.inputSignature[0]);
-  const validExamples = useSelector(state => state.builder.validationStatuses.assertsExamples[0]);
+  const validInputSignature = useSelector(
+    state => state.builder.validationStatuses.inputSignature[0],
+  );
+  const validExamples = useSelector(
+    state => state.builder.validationStatuses.assertsExamples[0],
+  );
 
   const editable = useSelector(selectors.canEditTask);
-  const readyTesting = validExamples;
-  const readySave = useSelector(selectors.isValidTask);
-
-  const disabledTestingBtn = !readyTesting || isInvalidTaskState || isTestingPrepare;
-  const disabledSaveBtn = !readySave || isInvalidTaskState || isSavingPrepare || isSavedTask;
-
-  const handleOpenTesting = useCallback(() => {
-    taskService.send('START_TESTING');
-    if (isIdleTaskState) {
-      dispatch(buildTaskAsserts(taskService));
-    }
-  }, [taskService, isIdleTaskState, dispatch]);
-  const handleSaveTask = useCallback(() => {
-    clearSuggests();
-
-    taskService.send('START_SAVING');
-    if (isIdleTaskState) {
-      dispatch(buildTaskAsserts(taskService));
-    } else {
-      taskService.send('SUCCESS');
-    }
-  }, [taskService, isIdleTaskState, clearSuggests, dispatch]);
-  const handleRemoveTask = useCallback(() => {
-    // eslint-disable-next-line no-alert
-    if (window.confirm('Are you sure you want to delete this task?')) {
-      dispatch(deleteTask(taskId));
-    }
-  }, [taskId, dispatch]);
 
   return (
     <div className="d-flex justify-content-between">
@@ -175,7 +124,9 @@ const PreviewAssertsPanel = memo(({
                   'ml-1': examples.length === 0,
                 })}
                 onClick={
-                  haveExampleSuggest ? openExampleEditPanel : createExampleSuggest
+                  haveExampleSuggest
+                    ? openExampleEditPanel
+                    : createExampleSuggest
                 }
                 disabled={inputSignature.length === 0}
               >
@@ -186,36 +137,13 @@ const PreviewAssertsPanel = memo(({
         </div>
       </div>
       <div className="d-flex flex-column pl-1">
-        <button
-          type="button"
-          className="btn btn-md btn-secondary rounded-lg mb-2"
-          onClick={handleOpenTesting}
-          disabled={disabledTestingBtn}
-        >
-          {isTestingPrepare && <span className="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true" />}
-          <span>Testing</span>
-        </button>
-        <button
-          type="button"
-          className="btn btn-md btn-success text-white rounded-lg mb-2"
-          onClick={handleSaveTask}
-          disabled={disabledSaveBtn}
-        >
-          {isSavingPrepare && <span className="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true" />}
-          <span>{isSavedTask ? 'Saved' : 'Save'}</span>
-        </button>
-        {taskState !== taskStateCodes.blank && (
-          <button
-            type="button"
-            className="btn btn-md btn-danger rounded-lg mb-2"
-            onClick={handleRemoveTask}
-          >
-            Remove
-          </button>
-        )}
+        <BuilderActions
+          validExamples={validExamples}
+          clearSuggests={clearSuggests}
+        />
       </div>
     </div>
   );
-});
+};
 
 export default PreviewAssertsPanel;

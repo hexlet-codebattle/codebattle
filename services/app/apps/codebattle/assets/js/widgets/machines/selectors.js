@@ -7,6 +7,8 @@ export const roomStateSelector = stateSelector;
 
 export const taskStateSelector = stateSelector;
 
+export const editorStateSelector = stateSelector;
+
 export const inPreviewRoomSelector = state => state.matches({ room: roomMachineStates.preview });
 
 export const inTestingRoomSelector = state => state.matches({ room: roomMachineStates.testing });
@@ -23,12 +25,6 @@ export const gameRoomKeySelector = state => {
   switch (true) {
     case state.matches({ room: roomMachineStates.preview }): {
       return 'preview';
-    }
-    case state.matches({ room: roomMachineStates.builder }): {
-      return 'builder';
-    }
-    case state.matches({ room: roomMachineStates.testing }): {
-      return 'testing';
     }
     default:
       return 'game';

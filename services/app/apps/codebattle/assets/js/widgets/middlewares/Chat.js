@@ -11,7 +11,7 @@ const isRecord = Gon.getAsset('is_record');
 
 const channel = isRecord ? null : socket.channel(getChatName('channel'));
 
-const fetchState = () => dispatch => {
+const establishChat = () => dispatch => {
   const camelizeKeysAndDispatch = actionCreator => data => dispatch(actionCreator(camelizeKeys(data)));
 
   channel.join().receive('ok', data => {
@@ -25,19 +25,40 @@ const fetchState = () => dispatch => {
     camelizeKeysAndDispatch(actions.updateChatData)(updatedData);
   });
 
-  channel.on(
-    'chat:user_joined',
-    camelizeKeysAndDispatch(actions.userJoinedChat),
-  );
-  channel.on('chat:user_left', camelizeKeysAndDispatch(actions.userLeftChat));
-  channel.on('chat:new_msg', camelizeKeysAndDispatch(actions.newChatMessage));
-  channel.on('chat:user_banned', camelizeKeysAndDispatch(actions.banUserChat));
+  const handleUserJoined = camelizeKeysAndDispatch(actions.userJoinedChat);
+  const handleUserLeft = camelizeKeysAndDispatch(actions.userLeftChat);
+  const handleNewMessage = camelizeKeysAndDispatch(actions.newChatMessage);
+  const handleUserBaned = camelizeKeysAndDispatch(actions.banUserChat);
+
+  const refs = [
+    channel.on('chat:user_joined', handleUserJoined),
+    channel.on('chat:user_left', handleUserLeft),
+    channel.on('chat:new_msg', handleNewMessage),
+    channel.on('chat:user_banned', handleUserBaned),
+  ];
+
+  const oldChannel = channel;
+
+  const clearChatListeners = () => {
+    if (oldChannel) {
+      oldChannel.off('chat:user_joined', refs[0]);
+      oldChannel.off('chat:user_left', refs[1]);
+      oldChannel.off('chat:new_msg', refs[2]);
+      oldChannel.off('chat:user_banned', refs[3]);
+    }
+  };
+
+  return clearChatListeners;
 };
 
 export const connectToChat = () => dispatch => {
   if (!isRecord) {
-    dispatch(fetchState());
+    const clearChatConnection = establishChat()(dispatch);
+
+    return clearChatConnection;
   }
+
+  return () => {};
 };
 
 export const addMessage = payload => {

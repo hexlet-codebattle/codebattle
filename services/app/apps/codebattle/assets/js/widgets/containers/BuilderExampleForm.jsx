@@ -8,13 +8,13 @@ import React, {
 import { useDispatch, useSelector } from 'react-redux';
 import _ from 'lodash';
 import cn from 'classnames';
+import { actions } from '../slices';
+import RoomContext from './RoomContext';
 import PreviewAssertsPanel from '../components/PreviewAssertsPanel';
 import OutputSignatureEditPanel from '../components/OutputSignatureEditPanel';
 import InputSignatureEditPanel from '../components/InputSignatureEditPanel';
 import ExamplesEditPanel from '../components/ExamplesEditPanel';
-import RoomContext from './RoomContext';
 import { MAX_INPUT_ARGUMENTS_COUNT } from '../utils/builder';
-import { actions } from '../slices';
 import useKey from '../utils/useKey';
 
 const navbarItemClassName = 'nav-item nav-link col-3 border-0 rounded-0 px-1 py-2';
@@ -143,16 +143,13 @@ const BuilderExampleForm = memo(() => {
     const existingExample = examples.find(example => (example.id === exampleSuggest.id));
 
     taskService.send('CHANGES');
+    const setExample = existingExample
+      ? actions.updateTaskExample
+      : actions.addTaskExample;
 
-    if (existingExample) {
-      dispatch(actions.updateTaskExample({
-        newExample: _.cloneDeep(exampleSuggest),
-      }));
-    } else {
-      dispatch(actions.addTaskExample({
-        newExample: _.cloneDeep(exampleSuggest),
-      }));
-    }
+    dispatch(setExample({
+      newExample: _.cloneDeep(exampleSuggest),
+    }));
 
     createExampleSuggest();
   }, [examples, exampleSuggest, createExampleSuggest, dispatch, taskService]);

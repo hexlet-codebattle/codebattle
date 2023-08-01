@@ -1,4 +1,10 @@
-import React, { useState, useCallback } from 'react';
+import React, {
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+  memo,
+} from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { taskStateCodes } from '../config/task';
@@ -8,10 +14,11 @@ import { taskParamsSelector } from '../selectors';
 import SignaturePreview from './SignaturePreview';
 import ExamplePreview from './ExamplePreview';
 
-const TaskConfirmationModal = ({ modalShowing, taskService }) => {
+const TaskConfirmationModal = memo(({ modalShowing, taskService }) => {
   const dispatch = useDispatch();
+  const confirmBtnRef = useRef(null);
 
-  const [error, setError] = useState('la-la');
+  const [error, setError] = useState(null);
 
   const taskParams = useSelector(taskParamsSelector);
   const templateState = useSelector(state => state.builder.templates.state);
@@ -23,6 +30,12 @@ const TaskConfirmationModal = ({ modalShowing, taskService }) => {
   const handleCancel = useCallback(() => {
     taskService.send('REJECT');
   }, [taskService]);
+
+  useEffect(() => {
+    if (modalShowing) {
+      confirmBtnRef.current.focus();
+    }
+  }, [modalShowing]);
 
   if (taskParams.state === taskStateCodes.none) {
     return null;
@@ -102,6 +115,7 @@ const TaskConfirmationModal = ({ modalShowing, taskService }) => {
           <div className="d-flex">
             {error && <div className="invalid-feedback">{error.message}</div>}
             <Button
+              ref={confirmBtnRef}
               onClick={handleConfirmation}
               className="btn btn-success text-white rounded-lg"
             >
@@ -112,6 +126,6 @@ const TaskConfirmationModal = ({ modalShowing, taskService }) => {
       </Modal.Footer>
     </Modal>
   );
-};
+});
 
 export default TaskConfirmationModal;

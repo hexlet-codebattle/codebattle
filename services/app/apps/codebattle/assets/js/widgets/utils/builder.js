@@ -56,9 +56,9 @@ export const getExamplesFromAsserts = asserts => (
 
 export const labelTaskParamsWithIds = task => ({
   ...task,
-  assertsExamples: task.assertsExamples.map(item => ({ ...item, id: Date.now() + Math.random() })),
-  inputSignature: task.inputSignature.map(item => ({ ...item, id: Date.now() + Math.random() })),
-  outputSignature: { ...task.outputSignature, id: Date.now() + Math.random() },
+  assertsExamples: task.assertsExamples.map((item, index) => ({ ...item, id: index })),
+  inputSignature: task.inputSignature.map((item, index) => ({ ...item, id: index })),
+  outputSignature: { ...task.outputSignature, id: Date.now() },
 });
 
 export const haveNestedType = type => !!defaultSignatureByType[type].type.nested;

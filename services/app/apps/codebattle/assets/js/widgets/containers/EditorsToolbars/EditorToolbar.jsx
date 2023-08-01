@@ -14,8 +14,8 @@ const ModeButtons = ({ player }) => (
     role="group"
     aria-label="Editor mode"
   >
-    <VimModeButton player={player} />
-    <DarkModeButton player={player} />
+    <VimModeButton playerId={player.id} />
+    <DarkModeButton playerId={player.id} />
   </div>
 );
 

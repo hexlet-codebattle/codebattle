@@ -207,7 +207,7 @@ class CodebattlePlayer extends Component {
         <div className="container-fluid fixed-bottom">
           <div className="px-1">
             <div className="border bg-light">
-              <div className="row align-items-center justify-content-center">
+              <div className="d-flex align-items-center justify-content-center">
                 <ControlPanel
                   nextRecordId={nextRecordId}
                   roomCurrent={roomCurrent}

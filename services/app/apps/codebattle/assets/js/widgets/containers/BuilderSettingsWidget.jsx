@@ -1,39 +1,27 @@
-import React, { useContext, memo } from 'react';
+import React, { memo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  gameTaskSelector,
-  gameStatusSelector,
-  leftExecutionOutputSelector,
-  builderTaskSelector,
-  taskDescriptionLanguageselector,
-} from '../selectors';
-import { actions } from '../slices';
-import useMachineStateSelector from '../utils/useMachineStateSelector';
-import { inTestingRoomSelector, roomStateSelector } from '../machines/selectors';
-import RoomContext from './RoomContext';
-import ChatWidget from './ChatWidget';
-import Output from '../components/ExecutionOutput/Output';
-import OutputTab from '../components/ExecutionOutput/OutputTab';
-import TaskAssignment from '../components/TaskAssignment';
+import BuilderTaskAssignment from '../components/BuilderTaskAssignment';
 import TimerContainer from '../components/TimerContainer';
+import BuilderStatus from '../components/BuilderStatus';
+import BuilderExampleForm from './BuilderExampleForm';
+import * as selectors from '../selectors';
+import { actions } from '../slices';
 
-const InfoWidget = memo(() => {
+const BuilderSettingsWidget = memo(({ setConfigurationModalShowing }) => {
   const dispatch = useDispatch();
-  const { mainService } = useContext(RoomContext);
-  const roomCurrent = useMachineStateSelector(mainService, roomStateSelector);
-  const isTestingRoom = inTestingRoomSelector(roomCurrent);
 
-  const taskLanguage = useSelector(taskDescriptionLanguageselector);
-  const task = useSelector(isTestingRoom ? builderTaskSelector : gameTaskSelector);
+  const task = useSelector(selectors.builderTaskSelector);
   const {
     startsAt,
     timeoutSeconds,
     state: gameStateName,
     mode: gameRoomMode,
-  } = useSelector(gameStatusSelector);
-  const leftOutput = useSelector(leftExecutionOutputSelector(roomCurrent));
-  const isShowOutput = leftOutput && leftOutput.status;
-  const idOutput = 'leftOutput';
+  } = useSelector(selectors.gameStatusSelector);
+  const taskLanguage = useSelector(selectors.taskDescriptionLanguageselector);
+
+  const openTaskConfiguration = useCallback(() => {
+    setConfigurationModalShowing(true);
+  }, [setConfigurationModalShowing]);
 
   const handleSetLanguage = lang => () => dispatch(actions.setTaskDescriptionLanguage(lang));
 
@@ -56,22 +44,20 @@ const InfoWidget = memo(() => {
                 aria-controls="task"
                 aria-selected="true"
               >
-                Task
+                Step 1
               </a>
               <a
                 className="nav-item nav-link col-3 border-0 rounded-0 px-1 py-2"
-                id={`${idOutput}-tab`}
+                id="taskStatus-tab"
                 data-toggle="tab"
-                href={`#${idOutput}`}
+                href="#taskStatus"
                 role="tab"
-                aria-controls={`${idOutput}`}
+                aria-controls="taskStatus"
                 aria-selected="false"
               >
-                Output
+                Status
               </a>
-              <div
-                className="rounded-0 text-center bg-white border-left col-6 text-black px-1 py-2"
-              >
+              <div className="rounded-0 text-center bg-white border-left col-6 text-black px-1 py-2">
                 <TimerContainer
                   time={startsAt}
                   mode={gameRoomMode}
@@ -81,40 +67,39 @@ const InfoWidget = memo(() => {
               </div>
             </div>
           </nav>
-          <div className="tab-content flex-grow-1 bg-white rounded-bottom overflow-auto " id="nav-tabContent">
+          <div
+            className="tab-content flex-grow-1 bg-white rounded-bottom overflow-auto "
+            id="nav-tabContent"
+          >
             <div
               className="tab-pane fade show active h-100"
               id="task"
               role="tabpanel"
               aria-labelledby="task-tab"
             >
-              <TaskAssignment
+              <BuilderTaskAssignment
                 task={task}
                 taskLanguage={taskLanguage}
                 handleSetLanguage={handleSetLanguage}
+                openConfiguration={openTaskConfiguration}
               />
             </div>
             <div
               className="tab-pane h-100"
-              id={idOutput}
+              id="taskStatus"
               role="tabpanel"
-              aria-labelledby={`${idOutput}-tab`}
+              aria-labelledby="taskStatus-tab"
             >
-              {isShowOutput && (
-                <>
-                  <OutputTab sideOutput={leftOutput} side="left" />
-                  <Output sideOutput={leftOutput} />
-                </>
-              )}
+              <BuilderStatus task={task} />
             </div>
           </div>
         </div>
       </div>
       <div className="col-12 col-lg-6 p-1 cb-height-info">
-        <ChatWidget />
+        <BuilderExampleForm />
       </div>
     </>
   );
 });
 
-export default InfoWidget;
+export default BuilderSettingsWidget;

@@ -50,9 +50,9 @@ const ExampleForm = ({
             value={example?.arguments}
             onChange={handleArguments}
           />
-          {/* <div className="invalid-tooltip"> */}
-          {/*   {validationStatus.arguments.reason} */}
-          {/* </div> */}
+          <div className="invalid-tooltip">
+            {validationStatus.arguments.reason}
+          </div>
         </div>
         <div className="d-flex position-relative">
           <input
@@ -65,9 +65,9 @@ const ExampleForm = ({
             value={example?.expected}
             onChange={handleExpected}
           />
-          {/* <div className="invalid-tooltip"> */}
-          {/*   {validationStatus.expected.reason} */}
-          {/* </div> */}
+          <div className="invalid-tooltip">
+            {validationStatus.expected.reason}
+          </div>
         </div>
       </div>
       <div className="d-flex">

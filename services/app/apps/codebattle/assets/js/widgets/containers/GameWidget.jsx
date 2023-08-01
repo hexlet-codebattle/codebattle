@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, memo } from 'react';
 import _ from 'lodash';
 import { useSelector } from 'react-redux';
 import cn from 'classnames';
@@ -65,7 +65,7 @@ const RightSide = ({ output, children }) => {
   );
 };
 
-const GameWidget = ({ editorMachine }) => {
+const GameWidget = memo(({ editorMachine }) => {
   const currentUserId = useSelector(selectors.currentUserIdSelector);
   const { mainService } = useContext(RoomContext);
   const roomCurrent = useMachineStateSelector(mainService, roomStateSelector);
@@ -121,6 +121,6 @@ const GameWidget = ({ editorMachine }) => {
       </EditorContainer>
     </>
   );
-};
+});
 
 export default GameWidget;

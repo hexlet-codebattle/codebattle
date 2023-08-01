@@ -7,6 +7,7 @@ import i18n from '../../i18n';
 import { makeEditorTextKey } from '../slices';
 import defaultEditorHeight from '../config/editorSettings';
 import { replayerMachineStates } from '../machines/game';
+import { taskStateCodes } from '../config/task';
 
 export const currentUserIdSelector = state => state.user.currentUserId;
 
@@ -138,7 +139,27 @@ export const gameStatusTitleSelector = state => {
 export const gameTaskSelector = state => state.game.task;
 
 export const canEditTask = state => (
-  currentUserIdSelector(state) === state.builder.task.creatorId || currentUserIsAdminSelector(state)
+  (currentUserIdSelector(state) === state.builder.task.creatorId
+    && (
+      state.builder.task.state === taskStateCodes.blank
+      || state.builder.task.state === taskStateCodes.draft
+    )
+  ) || (currentUserIsAdminSelector(state)
+    && state.builder.task.state !== taskStateCodes.moderation
+  )
+);
+
+export const isTaskOwner = state => (
+  currentUserIdSelector(state) === state.builder.task?.creatorId
+  || currentUserIdSelector(state) === state.task?.creatorId
+);
+
+export const canEditTaskGenerator = state => (
+  (currentUserIdSelector(state) === state.builder.task.creatorId
+    && state.builder.task.state !== taskStateCodes.moderation
+  ) || (currentUserIsAdminSelector(state)
+    && state.builder.task.state !== taskStateCodes.moderation
+  )
 );
 
 export const isValidTask = state => (
@@ -155,16 +176,20 @@ export const taskTemplatesStateSelector = state => state.builder.templates.state
 
 export const taskGeneratorLangSelector = state => state.builder.generatorLang;
 
+export const taskAssertsSelector = state => state.builder.task.asserts;
+
+export const taskAssertsStatusSelector = state => state.builder.assertsStatus;
+
 export const taskTextSolutionSelector = state => state.builder.textSolution[state.builder.generatorLang];
 
 export const taskTextArgumentsGeneratorSelector = state => state.builder.textArgumentsGenerator[state.builder.generatorLang];
 
-export const taskParamsSelector = state => ({
+export const taskParamsSelector = (state, params = { normalize: true }) => ({
   ...state.builder.task,
-  inputSignature: state.builder.task.inputSignature.map(item => _.pick(item, ['argumentName', 'type'])),
-  outputSignature: _.pick(state.builder.task.outputSignature, ['type']),
-  asserts: state.builder.task.asserts.map(item => _.pick(item, ['arguments', 'expected'])),
-  assertsExamples: state.builder.task.assertsExamples.map(item => _.pick(item, ['arguments', 'expected'])),
+  inputSignature: state.builder.task.inputSignature.map(item => (params.normalize ? _.pick(item, ['argumentName', 'type']) : item)),
+  outputSignature: params.normalize ? _.pick(state.builder.task.outputSignature, ['type']) : state.builder.task.outputSignature,
+  asserts: state.builder.task.asserts.map(item => (params.normalize ? _.pick(item, ['arguments', 'expected']) : item)),
+  assertsExamples: state.builder.task.assertsExamples.map(item => (params.normalize ? _.pick(item, ['arguments', 'expected']) : item)),
   generatorLang: state.builder.generatorLang,
   solution: state.builder.textSolution[state.builder.generatorLang],
   argumentsGenerator: state.builder.textArgumentsGenerator[state.builder.generatorLang],

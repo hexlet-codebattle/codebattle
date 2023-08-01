@@ -17,6 +17,10 @@ const initialState = {
     solution: {},
     argumentsGenerator: {},
   },
+  assertsStatus: {
+    status: 'none',
+    output: '',
+  },
   players: {},
   validationStatuses: {
     name: [false],
@@ -47,6 +51,11 @@ const builder = createSlice({
           : {},
       };
 
+      state.assertsStatus = {
+        status: task.asserts.length > 0 ? 'ok' : 'none',
+        output: '',
+      };
+
       state.textSolution = state.templates.solution;
       state.textArgumentsGenerator = state.templates.argumentsGenerator;
       state.generatorLang = task.generatorLang;
@@ -70,14 +79,32 @@ const builder = createSlice({
       state.validationStatuses.description = validateDescription(value);
     },
     setTaskTemplates: (state, { payload: { solution, argumentsGenerator } }) => {
-      state.templates = { solution, argumentsGenerator, state: taskTemplatesStates.init };
+      state.templates = {
+        solution,
+        argumentsGenerator,
+        state: taskTemplatesStates.init,
+      };
       state.textSolution = solution;
       state.textArgumentsGenerator = argumentsGenerator;
     },
     resetGeneratorAndSolution: state => {
-      state.textSolution = state.templates.solution[state.task.generatorLang];
-      state.textArgumentsGenerator = state.templates.argumentsGenerator[state.task.generatorLang];
-      state.generatorLang = state.task.generatorLang;
+      const prevGeneratorLang = state.task.generatorLang;
+
+      state.textSolution = {
+        ...state.templates.solution,
+        [prevGeneratorLang]: state.templates.solution[prevGeneratorLang],
+      };
+      state.textArgumentsGenerator = {
+        ...state.templates.argumentsGenerator,
+        [prevGeneratorLang]: state.templates.argumentsGenerator[prevGeneratorLang],
+      };
+      state.generatorLang = prevGeneratorLang;
+
+      if (!state.validationStatuses.solution[0] || !state.validationStatuses.argumentsGenerator[0]) {
+        state.validationStatuses.solution = [true];
+        state.validationStatuses.argumentsGenerator = [true];
+        state.validationStatuses.assertsExamples = validateExamples(state.task.assertsExamples);
+      }
     },
     rejectGeneratorAndSolution: state => {
       state.templates.state = 'none';
@@ -91,15 +118,16 @@ const builder = createSlice({
     setTaskTemplatesState: (state, { payload }) => {
       state.templates.state = payload;
     },
-    setTaskAsserts: (state, { payload: { asserts } }) => {
+    setTaskAsserts: (state, { payload: { asserts, status, output = '' } }) => {
       state.task.asserts = asserts;
       state.task.examples = getExamplesFromAsserts(state.task.assertsExamples);
+      state.assertsStatus = {
+        status,
+        output,
+      };
     },
     addTaskInputType: (state, { payload: { newType } }) => {
       state.task.inputSignature = [...state.task.inputSignature, newType];
-      if (state.templates.state === taskTemplatesStates.init) {
-        state.templates.state = taskTemplatesStates.changed;
-      }
       if (state.task.assertsExamples.length > 0) {
         state.task.assertsExamples = [];
         state.validationStatuses.assertsExamples = validateExamples(state.task.assertsExamples);
@@ -111,9 +139,6 @@ const builder = createSlice({
       state.task.inputSignature = state.task.inputSignature.map(item => (
         item.id === newType.id ? newType : item
       ));
-      if (state.templates.state === taskTemplatesStates.init) {
-        state.templates.state = taskTemplatesStates.changed;
-      }
       if (state.task.assertsExamples.length > 0) {
         state.task.assertsExamples = [];
         state.validationStatuses.assertsExamples = validateExamples(state.task.assertsExamples);
@@ -178,6 +203,12 @@ const builder = createSlice({
         state.validationStatuses.argumentsGenerator = [true];
         state.validationStatuses.assertsExamples = validateExamples(state.task.assertsExamples);
       }
+    },
+    setTaskVisibility: (state, { payload }) => {
+      state.task.visibility = payload;
+    },
+    setTaskState: (state, { payload }) => {
+      state.task.state = payload;
     },
     setValidationStatuses: (state, { payload }) => {
       state.validationStatuses = {

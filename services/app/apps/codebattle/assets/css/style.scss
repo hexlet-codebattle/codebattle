@@ -747,3 +747,22 @@ a:hover{
   border: 2px solid #4b809e;
   color: #fff;
 }
+
+.cb-editor-remote-selection {
+  pointer-events: auto;
+  opacity: 0.3;
+}
+
+.cb-editor-remote-cursor {
+  border: 1px solid;
+}
+
+.cb-remote-opponent {
+  background-color: $orange;
+  border-color: red;
+}
+
+.cb-remote-player {
+  background-color: var(--gray);
+  border-color: var(--secondary);
+}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, memo } from 'react';
 import PropTypes from 'prop-types';
 import { connect, useDispatch, useSelector } from 'react-redux';
 import Gon from 'gon';
@@ -29,10 +29,12 @@ import {
 } from '../machines/selectors';
 import useGameRoomMachine from '../utils/useGameRoomMachine';
 import TaskConfirmationModal from '../components/TaskConfirmationModal';
+import TaskConfigurationModal from '../components/TaskConfigurationModal';
 import AnimationModal from '../components/AnimationModal';
 import NetworkAlert from './NetworkAlert';
 import sound from '../lib/sound';
 import useMachineStateSelector from '../utils/useMachineStateSelector';
+import BuilderSettingsWidget from './BuilderSettingsWidget';
 
 const steps = [
   {
@@ -44,8 +46,7 @@ const steps = [
         <div className="text-justify">
           This is a
           <b> game page</b>
-          .
-          You need to solve the task
+          . You need to solve the task
           <b> first </b>
           and pass all tests
           <b> successfully</b>
@@ -114,8 +115,7 @@ const steps = [
     },
     target: '[data-guide-id="LeftEditor"] [data-guide-id="ResetButton"]',
     title: 'Reset button',
-    content:
-      'Click this button to reset the code to the original template',
+    content: 'Click this button to reset the code to the original template',
     locale: {
       skip: 'Skip guide',
     },
@@ -148,9 +148,11 @@ const steps = [
   },
 ];
 
-const GameWidgetGuide = () => {
+const GameWidgetGuide = memo(() => {
   const dispatch = useDispatch();
-  const [isFirstTime, setIsFirstTime] = useState(window.localStorage.getItem('guideGamePassed') === null);
+  const [isFirstTime, setIsFirstTime] = useState(
+    window.localStorage.getItem('guideGamePassed') === null,
+  );
   const isShowGuide = useSelector(state => isShowGuideSelector(state));
 
   return (
@@ -182,14 +184,11 @@ const GameWidgetGuide = () => {
       />
     )
   );
-};
+});
 
 const currentUser = Gon.getAsset('current_user');
 
 const GameRoomWidget = ({
-  connectToGame,
-  connectToTask,
-  connectToChat,
   pageName,
   setCurrentUser,
   mainMachine,
@@ -197,7 +196,10 @@ const GameRoomWidget = ({
   editorMachine,
   toggleMuteSound,
 }) => {
+  const dispatch = useDispatch();
+
   const [taskModalShowing, setTaskModalShowing] = useState(false);
+  const [taskConfigurationModalShowing, setTaskConfigurationModalShowing] = useState(false);
   const [resultModalShowing, setResultModalShowing] = useState(false);
 
   const mute = useSelector(state => state.userSettings.mute);
@@ -208,7 +210,10 @@ const GameRoomWidget = ({
     taskMachine,
   });
 
-  const roomCurrent = useMachineStateSelector(machines.mainService, roomStateSelector);
+  const roomCurrent = useMachineStateSelector(
+    machines.mainService,
+    roomStateSelector,
+  );
   const inBuilderRoom = inBuilderRoomSelector(roomCurrent);
   const inPreviewRoom = inPreviewRoomSelector(roomCurrent);
   const inWaitingRoom = inWaitingRoomSelector(roomCurrent);
@@ -219,11 +224,18 @@ const GameRoomWidget = ({
     // FIXME: maybe take from gon?
     setCurrentUser({ user: { ...currentUser, type: userTypes.spectator } });
     if (pageName === 'builder') {
-      connectToTask(machines.mainService, machines.taskService);
-    } else {
-      connectToGame(machines.mainService);
-      connectToChat();
+      const clearTask = GameRoomActions.connectToTask(machines.mainService, machines.taskService)(dispatch);
+
+      return clearTask;
     }
+
+    const clearGame = GameRoomActions.connectToGame(machines.mainService)(dispatch);
+    const clearChat = ChatActions.connectToChat()(dispatch);
+
+    return () => {
+      clearGame();
+      clearChat();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -264,10 +276,7 @@ const GameRoomWidget = ({
         classNames={`game-room-${gameRoomKey}`}
       >
         {inPreviewRoom ? (
-          <GameRoomPreview
-            className="animate"
-            pageName={pageName}
-          />
+          <GameRoomPreview className="animate" pageName={pageName} />
         ) : (
           <RoomContext.Provider value={machines}>
             <div className="x-outline-none">
@@ -279,25 +288,42 @@ const GameRoomWidget = ({
                     modalShowing={taskModalShowing}
                     taskService={machines.taskService}
                   />
-                  <AnimationModal setModalShowing={setResultModalShowing} modalShowing={resultModalShowing} />
-                  <InfoWidget />
+                  <TaskConfigurationModal
+                    modalShowing={taskConfigurationModalShowing}
+                    setModalShowing={setTaskConfigurationModalShowing}
+                  />
+                  <AnimationModal
+                    setModalShowing={setResultModalShowing}
+                    modalShowing={resultModalShowing}
+                  />
                   {inBuilderRoom ? (
-                    <BuilderEditorsWidget />
+                    <>
+                      <BuilderSettingsWidget
+                        setConfigurationModalShowing={
+                          setTaskConfigurationModalShowing
+                        }
+                      />
+                      <BuilderEditorsWidget />
+                    </>
                   ) : (
-                    <GameWidget editorMachine={editorMachine} />
+                    <>
+                      <InfoWidget />
+                      <GameWidget editorMachine={editorMachine} />
+                    </>
                   )}
-                  {mute
-                    && (
-                      <div className="rounded p-2 bg-dark cb-mute-icon">
-                        <FontAwesomeIcon size="lg" color="white" icon={['fas', 'volume-mute']} />
-                      </div>
-                    )}
-                  <FeedbackWidget />
+                  {mute && (
+                    <div className="rounded p-2 bg-dark cb-mute-icon">
+                      <FontAwesomeIcon
+                        size="lg"
+                        color="white"
+                        icon={['fas', 'volume-mute']}
+                      />
+                    </div>
+                  )}
+                  {!replayerIsOpen && <FeedbackWidget />}
                 </div>
               </div>
-              {replayerIsOpen && (
-                <CodebattlePlayer roomCurrent={roomCurrent} />
-              )}
+              {replayerIsOpen && <CodebattlePlayer roomCurrent={roomCurrent} />}
             </div>
           </RoomContext.Provider>
         )}
@@ -308,14 +334,10 @@ const GameRoomWidget = ({
 
 GameRoomWidget.propTypes = {
   setCurrentUser: PropTypes.func.isRequired,
-  connectToGame: PropTypes.func.isRequired,
 };
 
 const mapDispatchToProps = {
   setCurrentUser: actions.setCurrentUser,
-  connectToGame: GameRoomActions.connectToGame,
-  connectToChat: ChatActions.connectToChat,
-  connectToTask: GameRoomActions.connectToTask,
   toggleMuteSound: actions.toggleMuteSound,
 };
 

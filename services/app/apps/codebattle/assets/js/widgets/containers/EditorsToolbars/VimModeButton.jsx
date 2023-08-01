@@ -5,9 +5,9 @@ import editorModes from '../../config/editorModes';
 import { editorsModeSelector } from '../../selectors';
 import { actions } from '../../slices';
 
-const VimModeButton = ({ player }) => {
+const VimModeButton = ({ playerId }) => {
   const dispatch = useDispatch();
-  const currentMode = useSelector(state => editorsModeSelector(player.id)(state));
+  const currentMode = useSelector(state => editorsModeSelector(playerId)(state));
 
   const isVimMode = currentMode === editorModes.vim;
 

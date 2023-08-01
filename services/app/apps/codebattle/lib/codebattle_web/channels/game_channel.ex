@@ -48,6 +48,25 @@ defmodule CodebattleWeb.GameChannel do
     end
   end
 
+  def handle_in("editor:cursor_position", payload, socket) do
+    broadcast_from!(socket, "editor:cursor_position", %{
+      user_id: socket.assigns.current_user.id,
+      offset: payload["offset"]
+    })
+
+    {:noreply, socket}
+  end
+
+  def handle_in("editor:cursor_selection", payload, socket) do
+    broadcast_from!(socket, "editor:cursor_selection", %{
+      user_id: socket.assigns.current_user.id,
+      start_offset: payload["start_offset"],
+      end_offset: payload["end_offset"]
+    })
+
+    {:noreply, socket}
+  end
+
   def handle_in("give_up", _, socket) do
     game_id = socket.assigns.game_id
     user = socket.assigns.current_user

@@ -45,7 +45,7 @@ const LobbyChat = ({ connectToChat }) => {
     online: onlineList = [],
     lobby: lobbyList = [],
     playing: playingList = [],
-    tasks: builderList = [],
+    task: builderList = [],
   } = _.groupBy(presenceList, 'currentState');
 
   return (
@@ -112,8 +112,24 @@ const LobbyChat = ({ connectToChat }) => {
                   <UserInfo user={presenceUser.user} hideInfo hideOnlineIndicator />
                 </div>
               ))}
-              {[...onlineList, ...builderList].length !== 0 && <div>Online: </div>}
-              {[...onlineList, ...builderList].map(presenceUser => (
+              {onlineList.length !== 0 && <div>Online: </div>}
+              {onlineList.map(presenceUser => (
+                <div
+                  role="button"
+                  tabIndex={0}
+                  className="mb-1"
+                  key={presenceUser.id}
+                  data-user-id={presenceUser.id}
+                  data-user-name={presenceUser.user.name}
+                  onContextMenu={displayMenu}
+                  onClick={displayMenu}
+                  onKeyPress={displayMenu}
+                >
+                  <UserInfo user={presenceUser.user} hideInfo hideOnlineIndicator />
+                </div>
+              ))}
+              {builderList.length !== 0 && <div>Edit task: </div>}
+              {builderList.map(presenceUser => (
                 <div
                   role="button"
                   tabIndex={0}

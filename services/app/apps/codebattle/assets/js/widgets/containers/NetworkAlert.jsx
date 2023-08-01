@@ -1,9 +1,9 @@
-import React, { useContext } from 'react';
+import React, { useContext, memo } from 'react';
 import RoomContext from './RoomContext';
 import { isDisconnectedWithMessageSelector } from '../machines/selectors';
 import useMachineStateSelector from '../utils/useMachineStateSelector';
 
-const NetworkAlert = () => {
+const NetworkAlert = memo(() => {
   const { mainService } = useContext(RoomContext);
   const isDisconnectedWithMessage = useMachineStateSelector(mainService, isDisconnectedWithMessageSelector);
 
@@ -12,6 +12,6 @@ const NetworkAlert = () => {
   }
 
   return (<></>);
-};
+});
 
 export default NetworkAlert;

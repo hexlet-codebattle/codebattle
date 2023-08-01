@@ -14,6 +14,9 @@ const isValidValueToSignature = (value, signature) => {
     case argumentTypes.integer: {
       return _.isNumber(value) && Math.floor(value) === value;
     }
+    case argumentTypes.string: {
+      return _.isString(value);
+    }
     case argumentTypes.boolean: {
       return _.isBoolean(value);
     }

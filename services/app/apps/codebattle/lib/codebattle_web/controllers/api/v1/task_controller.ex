@@ -26,11 +26,15 @@ defmodule CodebattleWeb.Api.V1.TaskController do
 
       task ->
         current_player =
-          conn.assigns.current_user.id
-          |> User.get_user!()
-          |> Player.build()
+          if is_nil(conn.assigns.current_user.id) do
+            conn.assigns.current_user.id
+            |> User.get_user!()
+            |> Player.build()
+          else
+            Bot.Context.build() |> Player.build()
+          end
 
-        opponent_bot = Bot.Context.build()
+        opponent_bot = Bot.Context.build() |> Player.build()
 
         json(conn, %{
           task: task,
@@ -55,7 +59,7 @@ defmodule CodebattleWeb.Api.V1.TaskController do
       asserts_examples: [],
       tags: [],
       state: "blank",
-      visibility: "hidden",
+      visibility: "public",
       origin: "user",
       creator_id: conn.assigns.current_user.id,
       solution: "",

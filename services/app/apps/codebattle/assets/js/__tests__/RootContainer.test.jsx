@@ -83,6 +83,7 @@ jest.mock(
             join: jest.fn(() => channel),
             receive: jest.fn(() => channel),
             on: jest.fn(),
+            off: jest.fn(),
             push: jest.fn(),
             onError: jest.fn(),
           };

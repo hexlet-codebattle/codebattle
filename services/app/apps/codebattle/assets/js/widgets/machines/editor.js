@@ -103,6 +103,7 @@ const editor = {
 export const config = {
   actions: {
     userSendSolution: () => { },
+    handleTimeoutFailureChecking: () => { },
     openCheckResultOutput: ctx => {
       if (ctx.type === editorUserTypes.currentUser) {
         document.getElementById('leftOutput-tab').click();
