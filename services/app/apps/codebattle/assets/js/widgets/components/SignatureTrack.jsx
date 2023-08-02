@@ -13,6 +13,7 @@ const getName = (name = '') => (name || '?');
 const SignatureTrack = ({
   items = [],
   selected = {},
+  selectedRef,
   valid = true,
   editable,
   handleAdd,
@@ -30,6 +31,7 @@ const SignatureTrack = ({
         role="group"
       >
         <div
+          ref={selectedRef}
           title={`${item.argumentName} (${item.type.name})`}
           className={itemActionClassName}
         >

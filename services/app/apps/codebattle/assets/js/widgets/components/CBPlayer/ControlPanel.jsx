@@ -56,7 +56,7 @@ const ControlPanel = ({
         )}
       </button>
       {children}
-      <div className="dropup">
+      <div className="dropup ml-2">
         <button
           className="btn btn-light px-2 ml-1 shadow-none d-flex rounded-lg"
           type="button"
@@ -68,18 +68,20 @@ const ControlPanel = ({
           <i className="fas fa-cog" />
         </button>
         <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
-          <button type="button" className={speedControlClassNames} onClick={onChangeSpeed}>x2</button>
-          <button
-            type="button"
-            className="btn btn-sm rounded ml-2 border btn-light rounded-lg"
-            title="Copy history game url at current record id"
-            onClick={() => {
-              const url = `https://codebattle.hexlet.io/games/${gameId}?t=${nextRecordId}`;
-              copy(url);
-            }}
-          >
-            <i className="fas fa-link" />
-          </button>
+          <div className="d-flex">
+            <button type="button" className={speedControlClassNames} onClick={onChangeSpeed}>x2</button>
+            <button
+              type="button"
+              className="btn btn-sm rounded ml-2 border btn-light rounded-lg"
+              title="Copy history game url at current record id"
+              onClick={() => {
+                const url = `https://codebattle.hexlet.io/games/${gameId}?t=${nextRecordId}`;
+                copy(url);
+              }}
+            >
+              <i className="fas fa-link" />
+            </button>
+          </div>
         </div>
       </div>
     </>

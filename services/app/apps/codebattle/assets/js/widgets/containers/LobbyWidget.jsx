@@ -505,7 +505,7 @@ const renderModal = (show, handleCloseModal) => (
 const CreateGameButton = ({ handleClick }) => (
   <button
     type="button"
-    className="btn btn-success border-0 text-uppercase font-weight-bold py-3 mb-3 rounded-lg"
+    className="btn btn-success text-light border-0 text-uppercase font-weight-bold py-3 mb-3 rounded-lg"
     onClick={handleClick}
   >
     Create a Game

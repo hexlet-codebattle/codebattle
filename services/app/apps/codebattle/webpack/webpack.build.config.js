@@ -13,7 +13,7 @@ const buildWebpackConfig = merge(baseWebpackConfig, {
         test: /\.css$/i, // specify which files to minimize
       }),
     ],
-  }
+  },
 });
 
 module.exports = new Promise(resolve => {

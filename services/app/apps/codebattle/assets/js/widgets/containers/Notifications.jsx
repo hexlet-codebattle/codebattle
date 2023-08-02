@@ -20,11 +20,11 @@ const Notifications = () => {
   const roomCurrent = useMachineStateSelector(mainService, roomStateSelector);
 
   const { tournamentId } = useSelector(selectors.gameStatusSelector);
-  const currentUserId = useSelector(state => selectors.currentUserIdSelector(state));
-  const players = useSelector(state => selectors.gamePlayersSelector(state));
+  const currentUserId = useSelector(selectors.currentUserIdSelector);
+  const players = useSelector(selectors.gamePlayersSelector);
   const playbookSolutionType = useSelector(state => state.playbook.solutionType);
   const tournamentsInfo = useSelector(state => state.game.tournamentsInfo);
-  const isAdmin = useSelector(state => state.userSettings.is_admin);
+  const isAdmin = useSelector(selectors.currentUserIsAdminSelector);
   const isCurrentUserPlayer = _.hasIn(players, currentUserId);
   const isTournamentGame = !!tournamentId;
   const isActiveTournament = !!tournamentsInfo && tournamentsInfo.state === 'active';

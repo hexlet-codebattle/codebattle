@@ -13,6 +13,7 @@ const getValueText = (value = '') => (value || '?');
 const ExamplesTrack = ({
   items = [],
   selected = {},
+  selectedRef,
   valid = true,
   editable,
   handleAdd,
@@ -30,6 +31,7 @@ const ExamplesTrack = ({
         role="group"
       >
         <div
+          ref={selectedRef}
           title={`Example: ${item.id}`}
           className={itemActionClassName}
         >

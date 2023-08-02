@@ -28,6 +28,9 @@ const BuilderExampleForm = memo(() => {
   const outputEditTabRef = useRef(null);
   const exampleEditTabRef = useRef(null);
 
+  const inputSuggestRef = useRef(null);
+  const exampleSuggestRef = useRef(null);
+
   const inputArgumentNameInputRef = useRef(null);
   const exampleArgumentsInputRef = useRef(null);
 
@@ -63,6 +66,11 @@ const BuilderExampleForm = memo(() => {
   const editInputType = useCallback(item => {
     setInputSuggest(_.cloneDeep(item));
     setTimeout(() => inputEditTabRef.current.click(), 10);
+    setTimeout(() => inputSuggestRef.current.scrollIntoView({
+      behavior: 'smooth',
+      block: 'nearest',
+      inline: 'start',
+    }), 10);
   }, [setInputSuggest]);
   const deleteInputType = useCallback(item => {
     dispatch(actions.removeTaskInputType({
@@ -128,6 +136,11 @@ const BuilderExampleForm = memo(() => {
   const editExample = useCallback(example => {
     setExampleSuggest(_.cloneDeep(example));
     setTimeout(() => exampleEditTabRef.current.click(), 10);
+    setTimeout(() => exampleSuggestRef.current.scrollIntoView({
+      behavior: 'smooth',
+      block: 'nearest',
+      inline: 'start',
+    }), 10);
   }, [setExampleSuggest]);
   const deleteExample = useCallback(example => {
     dispatch(actions.removeTaskExample({
@@ -260,6 +273,7 @@ const BuilderExampleForm = memo(() => {
             argumentNameInputRef={inputArgumentNameInputRef}
             items={inputSignature}
             suggest={inputSuggest}
+            suggestRef={inputSuggestRef}
             handleAdd={createInputTypeSuggest}
             handleEdit={editInputType}
             handleDelete={deleteInputType}
@@ -293,6 +307,7 @@ const BuilderExampleForm = memo(() => {
             inputSignature={inputSignature}
             outputSignature={outputSignature}
             suggest={exampleSuggest}
+            suggestRef={exampleSuggestRef}
             handleAdd={createExampleSuggest}
             handleEdit={editExample}
             handleDelete={deleteExample}

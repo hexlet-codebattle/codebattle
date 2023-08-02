@@ -9,6 +9,7 @@ import { itemClassName, itemActionClassName } from '../utils/builder';
 
 const ExampleForm = ({
   example,
+  exampleRef,
   argumentsInputRef,
   validationStatus,
   handleClear,
@@ -20,19 +21,29 @@ const ExampleForm = ({
     event => {
       const data = event.target.value;
       const newExample = _.cloneDeep({ ...example, arguments: data });
+      if (exampleRef?.current) {
+        exampleRef.current.scrollIntoView({
+          behavior: 'smooth', block: 'nearest', inline: 'start',
+        });
+      }
 
       handleEdit(newExample);
     },
-    [example, handleEdit],
+    [example, exampleRef, handleEdit],
   );
   const handleExpected = useCallback(
     event => {
       const data = event.target.value;
       const newExample = _.cloneDeep({ ...example, expected: data });
+      if (exampleRef?.current) {
+        exampleRef.current.scrollIntoView({
+          behavior: 'smooth', block: 'nearest', inline: 'start',
+        });
+      }
 
       handleEdit(newExample);
     },
-    [example, handleEdit],
+    [example, exampleRef, handleEdit],
   );
 
   return (
@@ -105,6 +116,7 @@ const ExamplesEditPanel = ({
   items,
   argumentsInputRef,
   suggest,
+  suggestRef,
   valid = true,
   inputSignature,
   outputSignature,
@@ -151,6 +163,7 @@ const ExamplesEditPanel = ({
             <ExamplesTrack
               items={items}
               selected={suggest}
+              selectedRef={suggestRef}
               valid={valid}
               handleAdd={handleAdd}
               handleEdit={handleEdit}
@@ -165,6 +178,7 @@ const ExamplesEditPanel = ({
           <div className="overflow-auto d-flex">
             <ExampleForm
               example={suggest}
+              exampleRef={suggestRef}
               argumentsInputRef={argumentsInputRef}
               validationStatus={validationStatus}
               handleEdit={handleEdit}

@@ -18,7 +18,7 @@ export default ({ showRooms = false }) => {
       {currentUserIsAdmin ? (
         <button
           type="button"
-          className="btn btn-sm btn-link text-danger"
+          className="btn btn-sm btn-link text-danger rounded-lg"
           onClick={() => {
             handleCleanBanned();
           }}

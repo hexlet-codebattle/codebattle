@@ -15,6 +15,7 @@ const InputSignatureEditPanel = ({
   items = [],
   argumentNameInputRef,
   suggest,
+  suggestRef,
   valid = true,
   handleAdd,
   handleEdit,
@@ -24,7 +25,12 @@ const InputSignatureEditPanel = ({
 }) => {
   const handleChangeName = useCallback(event => {
     handleEdit({ ...suggest, argumentName: event.target.value });
-  }, [suggest, handleEdit]);
+    if (suggestRef?.current) {
+      suggestRef.current.scrollIntoView({
+        behavior: 'smooth', block: 'nearest', inline: 'start',
+      });
+    }
+  }, [suggest, suggestRef, handleEdit]);
 
   const handleReset = useCallback(() => {
     const existedInputSignature = items.find(item => item.id === suggest?.id);
@@ -72,6 +78,7 @@ const InputSignatureEditPanel = ({
               <SignatureTrack
                 items={items}
                 selected={suggest}
+                selectedRef={suggestRef}
                 valid={valid}
                 handleAdd={handleAdd}
                 handleEdit={handleEdit}
@@ -103,7 +110,10 @@ const InputSignatureEditPanel = ({
               <h6 className="pl-1">Type: </h6>
               <div className="d-flex">
                 <div className="overflow-auto d-flex pb-2">
-                  <SignatureForm signature={suggest} handleEdit={handleEdit} />
+                  <SignatureForm
+                    signature={suggest}
+                    handleEdit={handleEdit}
+                  />
                 </div>
                 <div className="d-flex btn-group pb-2 m-1">
                   <button

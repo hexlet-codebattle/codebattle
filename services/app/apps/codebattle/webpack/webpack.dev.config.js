@@ -11,7 +11,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
       directory: '/assets',
     },
     devMiddleware: {
-      writeToDisk: true
+      writeToDisk: true,
     },
     hot: true,
     compress: true,

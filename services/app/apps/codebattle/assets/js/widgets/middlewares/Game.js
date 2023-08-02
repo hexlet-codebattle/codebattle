@@ -269,14 +269,14 @@ export const addCursorListeners = (id, onChangePosition, onChangeSelection) => {
     if (id === userId) {
       onChangePosition(offset);
     }
-  }, 150);
+  }, 80);
 
   const handleNewCursorSelection = _.debounce(data => {
     const { userId, startOffset, endOffset } = camelizeKeys(data);
     if (id === userId) {
       onChangeSelection(startOffset, endOffset);
     }
-  }, 500);
+  }, 200);
 
   const refs = [
     channel.on('editor:cursor_position', handleNewCursorPosition),
@@ -921,6 +921,27 @@ export const checkTaskSolution = editorMachine => (dispatch, getState) => {
     );
     editorMachine.send('receive_check_result', { userId: currentUserId });
   });
+};
+
+export const sendReportOnUser = (userId, onSuccess, onError) => dispatch => {
+  const payload = { user_id: userId, reason: 'cheat', comment: '' };
+
+  axios
+    .post(`/api/v1/games/${gameId}/user_game_reports`, payload, {
+      headers: {
+        'Content-Type': 'application/json',
+        'x-csrf-token': window.csrf_token,
+      },
+    })
+    .then(data => {
+      onSuccess(camelizeKeys(data));
+    })
+    .catch(error => {
+      onError(error);
+
+      dispatch(actions.setError(error));
+      console.error(error);
+    });
 };
 
 export const compressEditorHeight = userId => dispatch => dispatch(actions.compressEditorHeight({ userId }));

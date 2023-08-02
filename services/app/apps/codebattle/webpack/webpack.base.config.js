@@ -42,8 +42,8 @@ module.exports = {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
         use: {
-          loader: "babel-loader"
-        }
+          loader: 'babel-loader',
+        },
       },
       {
         test: /\.(sa|sc|c)ss$/,
@@ -125,10 +125,10 @@ module.exports = {
   },
   resolve: {
     alias: {
-      './defineProperty': '@babel/runtime/helpers/esm/defineProperty'
+      './defineProperty': '@babel/runtime/helpers/esm/defineProperty',
     },
     fallback: {
-      "path": require.resolve("path-browserify")
+      path: require.resolve('path-browserify'),
     },
     extensions: ['.js', '.jsx'],
   },
