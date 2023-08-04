@@ -19,7 +19,7 @@ Object.defineProperty(window, 'scrollTo', {
 });
 
 jest.mock(
-  '../widgets/containers/UserInfo',
+  '../widgets/components/UserInfo',
   () => function UserInfo() {
       return (
         <div>

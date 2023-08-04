@@ -47,7 +47,7 @@ jest.mock(
 );
 
 jest.mock('axios');
-jest.mock('../widgets/containers/EditorContainer', () => () => <></>);
+jest.mock('../widgets/pages/game/EditorContainer', () => () => <></>);
 
 axios.get.mockResolvedValue({ data: {} });
 
