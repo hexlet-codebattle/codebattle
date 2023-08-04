@@ -1,0 +1,40 @@
+import React, { memo } from 'react';
+import _ from 'lodash';
+import AccordeonBox from '../../components/AccordeonBox';
+import color from '../../config/statusColor';
+import assertsStatuses from '../../config/executionStatuses';
+
+const AssertsOutput = memo(({ asserts, status, output }) => {
+  const uniqIndex = _.uniqueId('assertsOutput');
+
+  return (
+    <div className="overflow-auto" style={{ maxHeight: '412px' }}>
+      {(status === assertsStatuses.error && asserts.length === 0)
+      || [assertsStatuses.memoryLeak, assertsStatuses.timeout].includes(status) ? (
+        <AccordeonBox.Item output={output} />
+      ) : (
+        asserts
+        && asserts.map((assert, index) => (
+          <AccordeonBox.SubMenu
+            key={index.toString()}
+            statusColor={color[assert.status]}
+            executionTime={assert.executionTime || 0}
+            assert={{
+              ...assert,
+              id: assert.id || index,
+              value: assert.actual || assert.expected,
+            }}
+            hasOutput={assert.output || assert.message}
+            uniqIndex={uniqIndex}
+          >
+            <div className="alert alert-secondary mb-0 pb-0">
+              <pre>{assert.output}</pre>
+            </div>
+          </AccordeonBox.SubMenu>
+        ))
+      )}
+    </div>
+  );
+});
+
+export default AssertsOutput;

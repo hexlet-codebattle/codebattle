@@ -10,16 +10,15 @@ import {
 } from '@reduxjs/toolkit';
 import rollbarMiddleware from 'rollbar-redux-middleware';
 import rollbar from './lib/rollbar';
-import InvitesContainer from './containers/InvitesContainer';
-import GameRoomWidget from './containers/GameRoomWidget';
+import InvitesContainer from './components/InvitesContainer';
+import GameRoomWidget from './pages/GameRoomWidget';
 import reducers from './slices';
-import LobbyWidget from './containers/LobbyWidget';
-import RatingList from './containers/RatingList';
-import UserProfile from './containers/UserProfile';
-import UserSettings from './containers/UserSettings';
-import Registration from './containers/Registration';
-import StairwayGameContainer from './containers/StairwayGameContainer';
-import Tournament from './containers/Tournament';
+import LobbyWidget from './pages/lobby';
+import RatingList from './pages/rating';
+import UserSettings from './pages/settings';
+import UserProfile from './pages/profile';
+import Registration from './pages/registration';
+import { Tournament, Stairway } from './pages/tournament';
 
 import machines from './machines';
 
@@ -134,7 +133,7 @@ export const RegistrationPage = () => (
 export const StairwayGamePage = () => (
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
-      <StairwayGameContainer />
+      <Stairway />
     </PersistGate>
   </Provider>
 );

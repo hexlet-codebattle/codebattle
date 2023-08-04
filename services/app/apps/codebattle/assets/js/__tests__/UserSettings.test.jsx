@@ -8,8 +8,8 @@ import { Provider } from 'react-redux';
 import axios from 'axios';
 
 import reducers from '../widgets/slices';
-import UserSettings from '../widgets/containers/UserSettings';
-import UserSettingsForm from '../widgets/components/User/UserSettingsForm';
+import UserSettings from '../widgets/pages/Settings/UserSettings';
+import UserSettingsForm from '../widgets/pages/Settings/UserSettingsForm';
 import languages from '../widgets/config/languages';
 
 jest.mock('@fortawesome/react-fontawesome', () => ({

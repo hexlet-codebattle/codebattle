@@ -7,7 +7,7 @@ import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 
 import reducers from '../widgets/slices';
-import ContributorsList from '../widgets/components/ContributorsList';
+import ContributorsList from '../widgets/pages/Game/ContributorsList';
 
 jest.mock('gon', () => {
   const gonParams = { local: 'en' };

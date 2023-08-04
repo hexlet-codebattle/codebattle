@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import copy from 'copy-to-clipboard';
 
-import WaitingOpponentInfo from '../widgets/components/WaitingOpponentInfo';
+import WaitingOpponentInfo from '../widgets/pages/game/WaitingOpponentInfo';
 
 jest.mock('copy-to-clipboard', () => jest.fn());
 

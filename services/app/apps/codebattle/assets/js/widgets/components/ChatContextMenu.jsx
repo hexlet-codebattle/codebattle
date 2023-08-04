@@ -16,9 +16,8 @@ import {
 } from '../selectors';
 import { pushCommand } from '../middlewares/Chat';
 import { actions } from '../slices';
-import { calculateExpireDate } from '../middlewares/Room';
 import { getLobbyUrl, getUserProfileUrl } from '../utils/urlBuilders';
-import { getSystemMessage } from '../utils/chat';
+import { openDirect } from '../middlewares/Lobby';
 
 const ChatContextMenu = ({
   request = {
@@ -53,19 +52,7 @@ const ChatContextMenu = ({
 
   const handleOpenDirect = useCallback(() => {
     if (name && userId) {
-      const expireTo = calculateExpireDate();
-      const roomData = {
-        targetUserId: userId,
-        name,
-        expireTo,
-      };
-
-      const message = getSystemMessage({
-        text: `You join private channel with ${name}. You can send personal message`,
-      });
-
-      dispatch(actions.newChatMessage(message));
-      dispatch(actions.createPrivateRoom(roomData));
+      dispatch(openDirect(userId, name));
 
       if (inputRef.current) {
         inputRef.current.focus();
@@ -87,11 +74,11 @@ const ChatContextMenu = ({
         opponent_id: userId,
       });
       if (`/${window.location.hash}`.startsWith(getLobbyUrl())) {
-        window.location.href = getLobbyUrl(queryParamsString);
-      } else {
         dispatch(
           actions.showCreateGameInviteModal({ opponentInfo: { id: userId, name } }),
         );
+      } else {
+        window.location.href = getLobbyUrl(queryParamsString);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

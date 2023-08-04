@@ -3,7 +3,7 @@ import { render } from 'react-dom';
 import {
  Game, Builder, Lobby, UsersRating, UserPage, SettingsPage, RegistrationPage, Invites, StairwayGamePage, TournamentPage,
 } from './App';
-import Heatmap from './containers/Heatmap';
+import Heatmap from './pages/profile/Heatmap';
 
 export const renderInvitesWidget = domElement => render(<Invites />, domElement);
 export const renderGameWidget = domElement => render(<Game />, domElement);

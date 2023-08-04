@@ -4,6 +4,8 @@ import _ from 'lodash';
 
 import socket from '../../socket';
 import { actions } from '../slices';
+import { calculateExpireDate } from './Room';
+import { getSystemMessage } from '../utils/chat';
 
 const channelName = 'lobby';
 const isRecord = Gon.getAsset('is_record');
@@ -46,6 +48,22 @@ export const fetchState = () => (dispatch, getState) => {
   );
   channel.on('game:remove', camelizeKeysAndDispatch(actions.removeGameLobby));
   channel.on('game:finished', camelizeKeysAndDispatch(actions.finishGame));
+};
+
+export const openDirect = (userId, name) => dispatch => {
+  const expireTo = calculateExpireDate();
+  const roomData = {
+    targetUserId: userId,
+    name,
+    expireTo,
+  };
+
+  const message = getSystemMessage({
+    text: `You join private channel with ${name}. You can send personal message`,
+  });
+
+  dispatch(actions.newChatMessage(message));
+  dispatch(actions.createPrivateRoom(roomData));
 };
 
 export const cancelGame = gameId => () => {

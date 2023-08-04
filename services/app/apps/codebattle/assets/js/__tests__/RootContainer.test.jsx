@@ -6,7 +6,7 @@ import { createMachine } from 'xstate';
 
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
-import RootContainer from '../widgets/containers/GameRoomWidget';
+import RootContainer from '../widgets/pages/GameRoomWidget';
 
 import reducers from '../widgets/slices';
 import userTypes from '../widgets/config/userTypes';

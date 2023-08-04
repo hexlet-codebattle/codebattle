@@ -6,7 +6,7 @@ import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 
 import reducers from '../widgets/slices';
-import RatingList from '../widgets/containers/RatingList';
+import RatingList from '../widgets/pages/Rating/RatingList';
 
 jest.mock('@fortawesome/react-fontawesome', () => ({
   FontAwesomeIcon: 'img',

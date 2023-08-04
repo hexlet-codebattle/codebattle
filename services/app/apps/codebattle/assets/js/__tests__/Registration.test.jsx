@@ -3,7 +3,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import axios from 'axios';
 
-import Registration from '../widgets/containers/Registration';
+import Registration from '../widgets/pages/registration/Registration';
 import { getTestData } from './helpers';
 
 jest.mock('axios');
