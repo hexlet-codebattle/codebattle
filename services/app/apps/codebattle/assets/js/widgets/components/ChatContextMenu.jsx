@@ -1,4 +1,9 @@
-import React, { useCallback, useMemo, memo } from 'react';
+import React, {
+  useState,
+  useCallback,
+  useMemo,
+  memo,
+} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import qs from 'qs';
 import cn from 'classnames';
@@ -19,6 +24,9 @@ import { actions } from '../slices';
 import { getLobbyUrl, getUserProfileUrl } from '../utils/urlBuilders';
 import { openDirect } from '../middlewares/Lobby';
 
+const blackSwordSrc = '/assets/images/fight-black.png';
+const whiteSwordSrc = '/assets/images/fight-white.png';
+
 const ChatContextMenu = ({
   request = {
     user: {
@@ -33,6 +41,9 @@ const ChatContextMenu = ({
   children,
 }) => {
   const dispatch = useDispatch();
+
+  const [swordIconSrc, setSwordIconSrc] = useState(blackSwordSrc);
+
   const currentUserIsAdmin = useSelector(state => currentUserIsAdminSelector(state));
   const currentUserId = useSelector(currentUserIdSelector);
   const { activeGames } = useSelector(lobbyDataSelector);
@@ -43,6 +54,19 @@ const ChatContextMenu = ({
     name,
     userId,
   } = request.user;
+
+  const isCurrentUserHasActiveGames = useMemo(
+    () => (
+      activeGames || activeGames.length > 0
+        ? activeGames.some(({ players }) => players.some(({ id }) => id === currentUserId))
+        : true
+    ),
+    [activeGames, currentUserId],
+  );
+  const isCurrentUser = !!userId && currentUserId === userId;
+
+  const inviteSendDisabled = isBot || isCurrentUser || isCurrentUserHasActiveGames;
+  const canCreatePrivateRoom = !(isBot || isCurrentUser) && !!name;
 
   const handleCopy = useCallback(() => {
     if (name) {
@@ -84,18 +108,17 @@ const ChatContextMenu = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [request]);
 
-  const isCurrentUserHasActiveGames = useMemo(
-    () => (
-      activeGames || activeGames.length > 0
-        ? activeGames.some(({ players }) => players.some(({ id }) => id === currentUserId))
-        : true
-    ),
-    [activeGames, currentUserId],
-  );
-  const isCurrentUser = !!userId && currentUserId === userId;
+  const handleSelectInvateMenuItem = useCallback(() => {
+    if (!inviteSendDisabled) {
+      setSwordIconSrc(whiteSwordSrc);
+    }
+  }, [setSwordIconSrc, inviteSendDisabled]);
 
-  const inviteSendDisabled = isBot || isCurrentUser || isCurrentUserHasActiveGames;
-  const canCreatePrivateRoom = !(isBot || isCurrentUser) && !!name;
+  const handleBlurInvateMenuItem = useCallback(() => {
+    if (!inviteSendDisabled) {
+      setSwordIconSrc(blackSwordSrc);
+    }
+  }, [setSwordIconSrc, inviteSendDisabled]);
 
   const handleBanClick = () => {
     if (userId && name) {
@@ -134,6 +157,7 @@ const ChatContextMenu = ({
             role="menuitem"
             aria-label="Direct message"
             onClick={handleOpenDirect}
+            disabled={!canCreatePrivateRoom}
           >
             <FontAwesomeIcon
               className="mr-2"
@@ -147,11 +171,15 @@ const ChatContextMenu = ({
             role="menuitem"
             aria-label="Send an invite"
             onClick={handleCreateInviteModal}
+            onMouseEnter={handleSelectInvateMenuItem}
+            onMouseLeave={handleBlurInvateMenuItem}
+            onFocus={handleSelectInvateMenuItem}
+            onBlur={handleBlurInvateMenuItem}
             disabled={inviteSendDisabled}
           >
             <img
               alt="invite"
-              src="/assets/images/fight-black.png"
+              src={swordIconSrc}
               style={{ width: 14, height: 16 }}
               className={cn('mr-2', {
                 'text-muted': !inviteSendDisabled,

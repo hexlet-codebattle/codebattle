@@ -236,6 +236,7 @@ const UserProfile = () => {
           {completedGames && completedGames.length > 0 && (
             <>
               <CompletedGames
+                className="table-responsive scroll h-50"
                 games={completedGames}
                 loadNextPage={loadNextPage}
                 totalGames={totalGames}

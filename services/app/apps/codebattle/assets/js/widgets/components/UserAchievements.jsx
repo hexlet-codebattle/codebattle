@@ -26,7 +26,7 @@ const renderPolyglotAchievement = languages => (
   </div>
 );
 
-const UserAchievements = achievements => {
+const UserAchievements = ({ achievements }) => {
   if (!_.isEmpty(achievements)) {
     return (
       <div className="d-flex justify-content-start flex-wrap mt-2">

@@ -486,7 +486,12 @@ const GameContainers = ({
           role="tabpanel"
           aria-labelledby="completedGames-tab"
         >
-          <CompletedGames games={completedGames} loadNextPage={loadNextPage} totalGames={totalGames} />
+          <CompletedGames
+            className="table-responsive scroll h-25"
+            games={completedGames}
+            loadNextPage={loadNextPage}
+            totalGames={totalGames}
+          />
         </div>
       </div>
     </div>

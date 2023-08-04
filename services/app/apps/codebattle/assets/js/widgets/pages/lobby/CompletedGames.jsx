@@ -38,7 +38,12 @@ const CompletedGamesRows = memo(({ games }) => (
   </>
 ));
 
-const CompletedGames = ({ games, loadNextPage = null, totalGames }) => {
+const CompletedGames = ({
+  games,
+  loadNextPage = null,
+  totalGames,
+  className,
+}) => {
   const { nextPage, totalPages } = useSelector(state => state.completedGames);
   const object = useMemo(
     () => ({ loading: false }),
@@ -80,7 +85,7 @@ const CompletedGames = ({ games, loadNextPage = null, totalGames }) => {
 
   return (
     <>
-      <div ref={ref} data-testid="scroll" className="table-responsive scroll" style={{ maxHeight: '600px' }}>
+      <div ref={ref} data-testid="scroll" className={className}>
         <table className="table table-sm table-striped border-gray border-0 mb-0">
           <thead>
             <tr>

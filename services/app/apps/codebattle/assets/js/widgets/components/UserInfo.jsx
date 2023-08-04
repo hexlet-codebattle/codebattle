@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { camelizeKeys } from 'humps';
 import cn from 'classnames';
@@ -17,14 +17,23 @@ const UserPopoverContent = ({ user }) => {
 
   useEffect(() => {
     const userId = user.id;
+    const controller = new AbortController();
     axios
-      .get(`/api/v1/user/${userId}/stats`)
+      .get(`/api/v1/user/${userId}/stats`, {
+        signal: controller.signal,
+      })
       .then(response => {
-        setStats(camelizeKeys(response.data));
+        if (!controller.signal.aborted) {
+          setStats(camelizeKeys(response.data));
+        }
       })
       .catch(error => {
         dispatch(actions.setError(error));
       });
+
+    return () => {
+      controller.abort();
+    };
   }, [dispatch, setStats, user.id]);
 
   return <UserStats user={user} data={stats} />;
@@ -34,6 +43,8 @@ const UserInfo = ({
   user, hideInfo = false, truncate = false, hideOnlineIndicator = false, loading = false,
 }) => {
   const { presenceList } = useSelector(selectors.lobbyDataSelector);
+  const content = useMemo(() => <UserPopoverContent user={user} />, [user]);
+
   if (!user?.id) {
     return <span className="text-secondary">John Doe</span>;
   }
@@ -62,7 +73,7 @@ const UserInfo = ({
     <PopoverStickOnHover
       id={`user-info-${user?.id}`}
       placement="bottom-start"
-      component={<UserPopoverContent user={user} />}
+      component={content}
     >
       <div className={userClassName}>
         <UserName
