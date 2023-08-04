@@ -10,7 +10,7 @@ import { Provider } from 'react-redux';
 import * as lobbyMiddlewares from '../widgets/middlewares/Lobby';
 import * as invitesMiddleware from '../widgets/middlewares/Invite';
 import reducers from '../widgets/slices';
-import LobbyWidget from '../widgets/pages/Lobby/LobbyWidget';
+import LobbyWidget from '../widgets/pages/lobby';
 import { getTestData, toLocalTime } from './helpers';
 
 Object.defineProperty(window, 'scrollTo', {

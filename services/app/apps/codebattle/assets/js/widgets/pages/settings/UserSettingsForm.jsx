@@ -32,7 +32,7 @@ const TextInput = ({ label, ...props }) => {
   );
 };
 
-export default ({ onSubmit, settings }) => {
+const UserSettingsForm = ({ onSubmit, settings }) => {
   const renderLanguages = langs => langs.map(([slug, lang]) => (
     <option key={slug} value={slug}>
       {_.capitalize(lang)}
@@ -190,3 +190,5 @@ export default ({ onSubmit, settings }) => {
     </>
   );
 };
+
+export default UserSettingsForm;
