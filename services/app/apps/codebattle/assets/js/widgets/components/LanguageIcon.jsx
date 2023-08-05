@@ -1,6 +1,6 @@
 import React from 'react';
 import cn from 'classnames';
-import isSafari, { isSafariChrome } from '../utils/browser';
+import { isMacintosh } from '../utils/browser';
 
 const iconsToClass = {
   js: 'icon-nodejs',
@@ -24,7 +24,7 @@ const iconsToClass = {
 const LanguageIcon = ({ lang }) => (
   <span
     className={cn('d-flex', iconsToClass[lang], {
-      'mt-2': isSafariChrome() || isSafari(),
+      'mt-2': isMacintosh(),
     })}
   />
 );
