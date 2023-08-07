@@ -310,7 +310,10 @@ const UserProfile = () => {
     <div className="container-lg">
       <div className="row">
         <div className="col-12 col-md-3 my-4 cb-user-data d-flex flex-column">
-          <div className=" mb-2 mb-sm-4 h-25 d-flex justify-content-center">
+          <div
+            className=" mb-2 mb-sm-4 h-50 d-flex justify-content-center"
+            style={{ maxHeight: 206 }}
+          >
             <img
               className="img-fluid rounded"
               src={stats.user.avatarUrl}
