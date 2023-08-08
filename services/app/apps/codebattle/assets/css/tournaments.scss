@@ -94,3 +94,19 @@
 .tournament-bg-active {
   background-color:  #dedede !important;
 }
+
+@media (max-width: $sm) {
+  .col-6 {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: $lg) {
+  .col-4 {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+}
