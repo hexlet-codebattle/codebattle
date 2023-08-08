@@ -27,7 +27,6 @@
   <%= text_input(f, :task_ids,
     value: render_task_ids(f.data),
     class: "form-control form-control-lg",
-    maxlength: "37",
     required: true
   ) %>
   <%= error_tag(f, :task_ids) %>
