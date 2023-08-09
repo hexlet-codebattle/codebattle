@@ -131,9 +131,6 @@ em-emoji-picker {
   border-color: $orange;
   color: $orange;
   @include button-outline-variant($orange);
-  &:not(:hover) {
-    border-color: transparent;
-  }
 }
 
 .btn-check:hover {

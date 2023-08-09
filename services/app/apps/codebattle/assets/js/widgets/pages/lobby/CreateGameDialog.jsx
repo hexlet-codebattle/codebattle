@@ -163,6 +163,7 @@ const CreateGameDialog = ({ hideModal }) => {
               'bg-orange': game.level === level,
               'btn-outline-orange': game.level !== level,
             })}
+            style={{borderColor: 'transparent'}}
             onClick={() => setGame({ ...game, level })}
             data-toggle="tooltip"
             data-placement="right"
