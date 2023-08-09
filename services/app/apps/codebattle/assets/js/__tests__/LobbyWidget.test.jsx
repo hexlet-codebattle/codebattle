@@ -241,7 +241,7 @@ describe('test task choice', () => {
     expect(getByText(/Choose task/)).toBeInTheDocument();
     expect(await findByRole('button', { name: 'task1 name' })).toBeInTheDocument();
 
-    fireEvent.click(getByRole('button', { name: 'Create Battle' }));
+    fireEvent.click(getByRole('button', { name: 'Create battle' }));
 
     const params = {
       level: 'elementary',
@@ -255,7 +255,7 @@ describe('test task choice', () => {
 
     fireEvent.click(await findByRole('button', { name: 'Create a Game' }));
     fireEvent.click(await findByRole('button', { name: 'task1 name' }));
-    fireEvent.click(getByRole('button', { name: 'Create Battle' }));
+    fireEvent.click(getByRole('button', { name: 'Create battle' }));
 
     const paramsWithChosenTask = {
       ...params,
@@ -266,7 +266,7 @@ describe('test task choice', () => {
     fireEvent.click(await findByRole('button', { name: 'Create a Game' }));
     fireEvent.click(await findByRole('button', { name: 'math' }));
     fireEvent.click(getByRole('button', { name: 'string' }));
-    fireEvent.click(getByRole('button', { name: 'Create Battle' }));
+    fireEvent.click(getByRole('button', { name: 'Create battle' }));
 
     const paramsWithChosenTags = {
       ...params,
@@ -277,7 +277,7 @@ describe('test task choice', () => {
     fireEvent.click(await findByRole('button', { name: 'Create a Game' }));
     fireEvent.click(getByTitle('easy'));
     fireEvent.click(await findByRole('button', { name: 'task7 name' }));
-    fireEvent.click(getByRole('button', { name: 'Create Battle' }));
+    fireEvent.click(getByRole('button', { name: 'Create battle' }));
 
     const paramsWithChosenTaskAndChangedLevel = {
       ...params,
@@ -289,13 +289,13 @@ describe('test task choice', () => {
     fireEvent.click(await findByRole('button', { name: 'Create a Game' }));
     fireEvent.click(getByRole('button', { name: 'With a friend' }));
 
-    expect(getByRole('button', { name: 'Create Invite' })).toBeDisabled();
+    expect(getByRole('button', { name: 'Create invite' })).toBeDisabled();
 
     fireEvent.click(await findByRole('button', { name: 'user1' }));
 
-    expect(getByRole('button', { name: 'Create Invite' })).toBeEnabled();
+    expect(getByRole('button', { name: 'Create invite' })).toBeEnabled();
 
-    fireEvent.click(getByRole('button', { name: 'Create Invite' }));
+    fireEvent.click(getByRole('button', { name: 'Create invite' }));
 
     const paramsWithOpponent = {
       ..._.omit(params, ['opponent_type']),
@@ -308,7 +308,7 @@ describe('test task choice', () => {
     fireEvent.click(getByRole('button', { name: 'With a friend' }));
     fireEvent.click(await findByRole('button', { name: 'user1' }));
     fireEvent.click(getByRole('button', { name: 'task1 name' }));
-    fireEvent.click(getByRole('button', { name: 'Create Invite' }));
+    fireEvent.click(getByRole('button', { name: 'Create invite' }));
 
     const paramsWithOpponentAndChosenTask = {
       ...paramsWithOpponent,
