@@ -161,7 +161,7 @@ const CreateGameDialog = ({ hideModal }) => {
             type="button"
             className={cn('btn mb-2', {
               'bg-orange': game.level === level,
-              'btn-outline-orange border-0': game.level !== level,
+              'btn-outline-orange': game.level !== level,
             })}
             onClick={() => setGame({ ...game, level })}
             data-toggle="tooltip"
