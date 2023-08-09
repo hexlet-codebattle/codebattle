@@ -127,6 +127,17 @@ em-emoji-picker {
   border-radius: unset;
 }
 
+.btn-orange {
+  border-color: $orange;
+  background: $orange;
+  color: var(--white);
+}
+
+.btn-orange:hover {
+  background: var(--red);
+  color: var(--white);
+}
+
 .btn-outline-orange {
   border-color: $orange;
   color: $orange;

@@ -110,8 +110,8 @@ const CreateGameDialog = ({ hideModal }) => {
   const isInvite = game.type === 'invite';
 
   const createBtnTitle = isInvite
-    ? i18n.t('Create Invite')
-    : i18n.t('Create Battle');
+    ? i18n.t('Create invite')
+    : i18n.t('Create battle');
 
   const createGame = () => {
     if (isInvite && opponent) {
@@ -141,7 +141,7 @@ const CreateGameDialog = ({ hideModal }) => {
     <button
       type="button"
       key={gameType}
-      className={cn('btn', {
+      className={cn('btn rounded-lg', {
           'bg-orange text-white': game.type === gameType,
           'btn-outline-orange': game.type !== gameType,
         })}
@@ -159,7 +159,7 @@ const CreateGameDialog = ({ hideModal }) => {
           <button
             key={level}
             type="button"
-            className={cn('btn mb-2', {
+            className={cn('btn border-0 mb-2 rounded-lg', {
               'bg-orange': game.level === level,
               'btn-outline-orange': game.level !== level,
             })}
@@ -211,7 +211,7 @@ const CreateGameDialog = ({ hideModal }) => {
       />
       <button
         type="button"
-        className="btn btn-success mb-2 mt-4 d-flex ml-auto text-white font-weight-bold"
+        className="btn btn-success mb-2 mt-4 d-flex ml-auto text-white font-weight-bold rounded-lg"
         onClick={createGame}
         disabled={isInvite && !opponent}
       >

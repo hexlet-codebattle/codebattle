@@ -249,12 +249,12 @@ export default ({
       </div>
       <div className="d-flex flex-column justify-content-around px-5 mt-3 mb-2">
         <h6>{i18n.t('Tags')}</h6>
-        <div className="border p-2">
+        <div className="border p-2 rounded-lg">
           {taskTags.map(tag => (
             <button
               key={tag}
               type="button"
-              className={cn('btn btn-sm mr-1 tag', {
+              className={cn('btn btn-sm mr-1 tag rounded-lg', {
                 'bg-orange text-white': isTagChosen(tag),
                 'tag-btn-outline-orange': !isTagChosen(tag),
               })}

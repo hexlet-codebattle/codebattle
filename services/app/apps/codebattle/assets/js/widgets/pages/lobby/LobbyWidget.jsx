@@ -100,13 +100,13 @@ const Players = ({ players }) => {
 const isPlayer = (user, game) => !_.isEmpty(_.find(game.players, { id: user.id }));
 
 const ShowButton = ({ url }) => (
-  <a type="button" className="btn w-100 btn-outline-orange btn-sm rounded-lg" href={url}>
+  <a type="button" className="btn px-4 ml-1 btn-secondary btn-sm rounded-lg" href={url}>
     Show
   </a>
 );
 
 const ContinueButton = ({ url }) => (
-  <a type="button" className="btn w-100 btn-outline-success btn-sm rounded-lg" href={url}>
+  <a type="button" className="btn btn-success text-white btn-sm rounded-lg" href={url}>
     Continue
   </a>
 );
@@ -137,11 +137,11 @@ const GameActionButton = ({ game }) => {
     if (isPlayer(currentUser, game)) {
       return (
         <div className="d-flex justify-content-center">
-          <div className="btn-group w-100 ml-5">
+          <div className="btn-group ml-5">
             <ContinueButton url={gameUrl} />
             <button
               type="button"
-              className="btn btn-sm"
+              className="btn btn-sm btn-outline-secondary border-0"
               onClick={() => copy(`${window.location.host}${gameUrl}`)}
               data-toggle="tooltip"
               data-placement="right"
@@ -149,17 +149,17 @@ const GameActionButton = ({ game }) => {
             >
               <i className="far fa-copy" />
             </button>
+            <button
+              type="button"
+              className="btn btn-sm btn-hover border-0"
+              onClick={lobbyMiddlewares.cancelGame(game.id)}
+              data-toggle="tooltip"
+              data-placement="right"
+              title="Cancel game"
+            >
+              <i className="fas fa-times" />
+            </button>
           </div>
-          <button
-            type="button"
-            className="btn btn-hover btn-sm"
-            onClick={lobbyMiddlewares.cancelGame(game.id)}
-            data-toggle="tooltip"
-            data-placement="right"
-            title="Cancel game"
-          >
-            <i className="fas fa-times" />
-          </button>
         </div>
       );
     }
@@ -178,10 +178,10 @@ const GameActionButton = ({ game }) => {
     }
 
     return (
-      <div className="btn-group w-100">
+      <div className="btn-group">
         <button
           type="button"
-          className="btn btn-outline-orange btn-sm rounded-lg"
+          className="btn btn-orange btn-sm ml-1 px-4 rounded-lg"
           data-method="post"
           data-csrf={window.csrf_token}
           data-to={gameUrlJoin}
