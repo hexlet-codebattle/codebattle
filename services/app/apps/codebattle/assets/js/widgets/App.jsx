@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { Provider } from 'react-redux';
 import { persistStore, persistReducer, PERSIST } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
@@ -10,15 +10,7 @@ import {
 } from '@reduxjs/toolkit';
 import rollbarMiddleware from 'rollbar-redux-middleware';
 import rollbar from './lib/rollbar';
-import InvitesContainer from './components/InvitesContainer';
-import GameRoomWidget from './pages/GameRoomWidget';
 import reducers from './slices';
-import LobbyWidget from './pages/lobby';
-import RatingList from './pages/rating';
-import UserSettings from './pages/settings';
-import UserProfile from './pages/profile';
-import Registration from './pages/registration';
-import { Tournament, Stairway } from './pages/tournament';
 
 import machines from './machines';
 
@@ -58,6 +50,16 @@ const store = configureStore({
 
 const persistor = persistStore(store);
 
+const InvitesContainer = React.lazy(() => import('./components/InvitesContainer'));
+const GameRoomWidget = React.lazy(() => import('./pages/GameRoomWidget'));
+const LobbyWidget = React.lazy(() => import('./pages/lobby'));
+const RatingList = React.lazy(() => import('./pages/rating'));
+const UserSettings = React.lazy(() => import('./pages/settings'));
+const UserProfile = React.lazy(() => import('./pages/profile'));
+const Registration = React.lazy(() => import('./pages/registration'));
+const Tournament = React.lazy(() => import('./pages/tournament').Tournament);
+const Stairway = React.lazy(() => import('./pages/tournament').Stairway);
+
 export const Invites = () => (
   <Provider store={store}>
     <InvitesContainer />
@@ -67,12 +69,14 @@ export const Invites = () => (
 export const Game = () => (
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
-      <GameRoomWidget
-        pageName="game"
-        mainMachine={mainMachine}
-        taskMachine={taskMachine}
-        editorMachine={editorMachine}
-      />
+      <Suspense>
+        <GameRoomWidget
+          pageName="game"
+          mainMachine={mainMachine}
+          taskMachine={taskMachine}
+          editorMachine={editorMachine}
+        />
+      </Suspense>
     </PersistGate>
   </Provider>
 );
@@ -80,12 +84,14 @@ export const Game = () => (
 export const Builder = () => (
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
-      <GameRoomWidget
-        pageName="builder"
-        mainMachine={mainMachine}
-        taskMachine={taskMachine}
-        editorMachine={editorMachine}
-      />
+      <Suspense>
+        <GameRoomWidget
+          pageName="builder"
+          mainMachine={mainMachine}
+          taskMachine={taskMachine}
+          editorMachine={editorMachine}
+        />
+      </Suspense>
     </PersistGate>
   </Provider>
 );
@@ -93,7 +99,9 @@ export const Builder = () => (
 export const Lobby = () => (
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
-      <LobbyWidget />
+      <Suspense>
+        <LobbyWidget />
+      </Suspense>
     </PersistGate>
   </Provider>
 );
@@ -101,7 +109,9 @@ export const Lobby = () => (
 export const UsersRating = () => (
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
-      <RatingList />
+      <Suspense>
+        <RatingList />
+      </Suspense>
     </PersistGate>
   </Provider>
 );
@@ -109,7 +119,9 @@ export const UsersRating = () => (
 export const UserPage = () => (
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
-      <UserProfile />
+      <Suspense>
+        <UserProfile />
+      </Suspense>
     </PersistGate>
   </Provider>
 );
@@ -117,7 +129,9 @@ export const UserPage = () => (
 export const SettingsPage = () => (
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
-      <UserSettings />
+      <Suspense>
+        <UserSettings />
+      </Suspense>
     </PersistGate>
   </Provider>
 );
@@ -125,7 +139,9 @@ export const SettingsPage = () => (
 export const RegistrationPage = () => (
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
-      <Registration />
+      <Suspense>
+        <Registration />
+      </Suspense>
     </PersistGate>
   </Provider>
 );
@@ -133,7 +149,9 @@ export const RegistrationPage = () => (
 export const StairwayGamePage = () => (
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
-      <Stairway />
+      <Suspense>
+        <Stairway />
+      </Suspense>
     </PersistGate>
   </Provider>
 );
@@ -141,7 +159,9 @@ export const StairwayGamePage = () => (
 export const TournamentPage = () => (
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
-      <Tournament />
+      <Suspense>
+        <Tournament />
+      </Suspense>
     </PersistGate>
   </Provider>
 );

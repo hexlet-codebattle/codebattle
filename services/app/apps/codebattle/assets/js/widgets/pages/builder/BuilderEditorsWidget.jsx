@@ -50,15 +50,13 @@ const InfoPopup = ({ reloadGeneratorCode, editable }) => {
         <span className="text-center">
           Reload (Press
           {' '}
-          {
-            <button
-              type="button"
-              className="btn border-0 rounded-lg p-1"
-              onClick={reloadGeneratorCode}
-            >
-              <FontAwesomeIcon icon="redo" />
-            </button>
-          }
+          <button
+            type="button"
+            className="btn border-0 rounded-lg p-1"
+            onClick={reloadGeneratorCode}
+          >
+            <FontAwesomeIcon icon="redo" />
+          </button>
           ) Generator/Solution code.
         </span>
       ) : (

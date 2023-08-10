@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { render } from 'react-dom';
+import { createRoot } from 'react-dom';
 import { Button, Modal } from 'react-bootstrap';
 
 const isExtensionInstalled = info => new Promise(resolve => {
@@ -68,7 +68,7 @@ export default domElement => {
     isExtensionInstalled(extensionInfo).then(isInstall => {
       if (!isInstall) {
         window.localStorage.setItem('lastCheckExtension', nowTime);
-        render(<ExtensionPopup />, domElement);
+        createRoot(domElement).render(<ExtensionPopup />);
       }
     });
   }
