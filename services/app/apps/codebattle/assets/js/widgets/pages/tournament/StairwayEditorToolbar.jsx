@@ -29,11 +29,11 @@ const ModeButtons = ({ player }) => (
   </div>
 );
 
-const StairwayEditorToolbar = ({
+function StairwayEditorToolbar({
   activePlayer,
   setActivePlayerId,
   players,
-}) => {
+}) {
   const dispatch = useDispatch();
 
   const playerData = useSelector(state => _.find(state.stairwayGame.game?.players, { id: activePlayer.id }));
@@ -96,6 +96,6 @@ const StairwayEditorToolbar = ({
       </div>
     </>
   );
-};
+}
 
 export default StairwayEditorToolbar;

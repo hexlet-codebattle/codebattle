@@ -77,6 +77,7 @@ const UserSettingsForm = ({ onSubmit, settings }) => {
                   <div className="col-3">
                     <TextInput
                       className="col-5"
+                      data-testid="nameInput"
                       label="Your name"
                       id="name"
                       name="name"
@@ -170,6 +171,7 @@ const UserSettingsForm = ({ onSubmit, settings }) => {
               <div className="d-flex justify-content-center">
                 <button
                   disabled={!dirty}
+                  aria-label="SubmitForm"
                   style={{ width: '120px' }}
                   type="submit"
                   className="btn py-1 btn-primary rounded-lg"

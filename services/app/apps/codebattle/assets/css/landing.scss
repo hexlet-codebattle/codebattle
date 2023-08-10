@@ -3,9 +3,16 @@
 @import '~bootstrap/scss/bootstrap';
 
 .btn:hover {
+  text-decoration: if($link-hover-decoration == underline, none, null);
+}
+
+.btn-outline-red:hover {
   color: red;
   border-color: red;
-  text-decoration: if($link-hover-decoration == underline, none, null);
+}
+
+.btn-outline-success:hover {
+  color: white;
 }
 
 .dark-bg {

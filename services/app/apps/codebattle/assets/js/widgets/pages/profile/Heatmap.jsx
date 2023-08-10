@@ -19,7 +19,7 @@ const getColorScale = count => {
   return 'color-empty';
 };
 
-const Heatmap = () => {
+function Heatmap() {
   const [activities, setActivities] = useState(null);
 
   const dispatch = useDispatch();
@@ -65,6 +65,6 @@ const Heatmap = () => {
       </div>
     </div>
   );
-};
+}
 
 export default Heatmap;

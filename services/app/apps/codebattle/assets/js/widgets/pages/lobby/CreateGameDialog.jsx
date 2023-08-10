@@ -18,7 +18,7 @@ import TaskChoice from './TaskChoice';
 
 const TIMEOUT = 480;
 
-const UserLabel = ({ user }) => {
+function UserLabel({ user }) {
   const { presenceList } = useSelector(selectors.lobbyDataSelector);
   const isOnline = presenceList.some(({ id }) => id === user.id);
   const onlineIndicatorClassName = cn('mr-1', {
@@ -37,9 +37,9 @@ const UserLabel = ({ user }) => {
       </span>
     </>
   );
-};
+}
 
-const OpponentSelect = ({ setOpponent, opponent }) => {
+function OpponentSelect({ setOpponent, opponent }) {
   const currentUserId = useSelector(selectors.currentUserIdSelector);
   const dispatch = useDispatch();
 
@@ -80,9 +80,9 @@ const OpponentSelect = ({ setOpponent, opponent }) => {
       loadOptions={loadOptions}
     />
   );
-};
+}
 
-const CreateGameDialog = ({ hideModal }) => {
+function CreateGameDialog({ hideModal }) {
   const dispatch = useDispatch();
 
   const { gameOptions, opponentInfo } = useSelector(selectors.modalSelector);
@@ -219,6 +219,6 @@ const CreateGameDialog = ({ hideModal }) => {
       </button>
     </div>
   );
-};
+}
 
 export default CreateGameDialog;

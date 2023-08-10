@@ -25,7 +25,7 @@ const renderContributorsList = contributors => (
   </ul>
 );
 
-const ContributorsList = ({ name }) => {
+function ContributorsList({ name }) {
   const url = `https://api.github.com/repos/hexlet-codebattle/battle_asserts/commits?path=src/battle_asserts/issues/${name}.clj`;
 
   const dispatch = useDispatch();
@@ -58,6 +58,6 @@ const ContributorsList = ({ name }) => {
       {renderContributorsList(contributors)}
     </div>
   );
-};
+}
 
 export default ContributorsList;

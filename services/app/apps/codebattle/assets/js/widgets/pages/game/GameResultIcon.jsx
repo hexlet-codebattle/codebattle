@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import _ from 'lodash';
 import * as selectors from '../../selectors';
 
-const GameResultIcon = ({ editor: { userId } }) => {
+function GameResultIcon({ editor: { userId } }) {
   const players = useSelector(selectors.gamePlayersSelector);
 
   const { id: opponentId } = _.find(players, ({ id }) => id !== userId);
@@ -41,6 +41,6 @@ const GameResultIcon = ({ editor: { userId } }) => {
   }
 
   return null;
-};
+}
 
 export default GameResultIcon;

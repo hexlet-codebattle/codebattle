@@ -14,7 +14,7 @@ import { taskParamsSelector } from '../../selectors';
 import SignaturePreview from './SignaturePreview';
 import ExamplePreview from './ExamplePreview';
 
-const TaskConfirmationModal = memo(({ modalShowing, taskService }) => {
+function TaskConfirmationModal({ modalShowing, taskService }) {
   const dispatch = useDispatch();
   const confirmBtnRef = useRef(null);
 
@@ -126,6 +126,6 @@ const TaskConfirmationModal = memo(({ modalShowing, taskService }) => {
       </Modal.Footer>
     </Modal>
   );
-});
+}
 
-export default TaskConfirmationModal;
+export default memo(TaskConfirmationModal);

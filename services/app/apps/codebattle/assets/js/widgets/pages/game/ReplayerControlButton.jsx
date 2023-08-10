@@ -8,7 +8,7 @@ import { replayerMachineStates, roomMachineStates } from '../../machines/game';
 import { roomStateSelector } from '../../machines/selectors';
 import useMachineStateSelector from '../../utils/useMachineStateSelector';
 
-const ReplayerControlButton = () => {
+function ReplayerControlButton() {
   const dispatch = useDispatch();
   const { mainService } = useContext(RoomContext);
   const roomCurrent = useMachineStateSelector(mainService, roomStateSelector);
@@ -70,6 +70,6 @@ const ReplayerControlButton = () => {
       return null;
     }
   }
-};
+}
 
 export default ReplayerControlButton;

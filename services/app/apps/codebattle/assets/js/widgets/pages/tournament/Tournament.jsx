@@ -18,7 +18,7 @@ import TeamTournamentInfoPanel from './TeamTournamentInfoPanel';
 import TeamMatches from './TeamMatches';
 import IndividualIntendedPlayersPanel from './IndividualIntendedPlayersPanel';
 
-const Tournament = () => {
+function Tournament() {
   const dispatch = useDispatch();
 
   const { statistics, tournament } = useSelector(selectors.tournamentSelector);
@@ -175,6 +175,6 @@ const Tournament = () => {
       </div>
     </>
   );
-};
+}
 
 export default Tournament;

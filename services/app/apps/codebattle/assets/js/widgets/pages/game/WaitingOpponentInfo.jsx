@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import i18n from 'i18next';
 import copy from 'copy-to-clipboard';
 
-const WaitingOpponentInfo = ({ gameUrl }) => {
+function WaitingOpponentInfo({ gameUrl }) {
   const [copied, setCopied] = useState(false);
   const onFocus = e => e.target.select();
 
@@ -52,6 +52,6 @@ const WaitingOpponentInfo = ({ gameUrl }) => {
       </div>
     </div>
   );
-};
+}
 
 export default WaitingOpponentInfo;

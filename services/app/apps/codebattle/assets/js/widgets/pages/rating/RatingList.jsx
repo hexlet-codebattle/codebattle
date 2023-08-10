@@ -102,7 +102,7 @@ const renderFilterPeriodButtons = (
 
 const periods = ['weekly', 'monthly', 'total'];
 
-const UsersRating = () => {
+function UsersRating() {
   const usersRatingPage = useSelector(usersListSelector);
   const storeLoaded = useSelector(state => state.storeLoaded);
   const dispatch = useDispatch();
@@ -268,6 +268,6 @@ const UsersRating = () => {
       <div>{renderPagination(usersRatingPage, setPage)}</div>
     </div>
   );
-};
+}
 
 export default UsersRating;

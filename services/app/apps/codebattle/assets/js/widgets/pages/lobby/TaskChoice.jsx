@@ -126,12 +126,12 @@ const TaskLabel = ({ task, userStats, currentUserId }) => {
   );
 };
 
-const TaskSelect = ({
+function TaskSelect({
   setChosenTask,
   randomTask,
   tasks,
   level,
-}) => {
+}) {
   const dispatch = useDispatch();
   const defaultOption = { label: <TaskLabel task={randomTask} />, value: randomTask.name };
   const currentUserId = useSelector(selectors.currentUserIdSelector);
@@ -179,16 +179,16 @@ const TaskSelect = ({
         }
     />
   );
-};
+}
 
-export default ({
+export default function TaskChoice({
   chosenTask,
   setChosenTask,
   chosenTags,
   setChosenTags,
   level,
   randomTask,
-}) => {
+}) {
   const dispatch = useDispatch();
   const taskTags = Gon.getAsset('task_tags');
 
@@ -268,4 +268,4 @@ export default ({
       </div>
     </>
   );
-};
+}

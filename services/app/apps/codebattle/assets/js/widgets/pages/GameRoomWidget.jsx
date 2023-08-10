@@ -1,24 +1,33 @@
-import React, { useEffect, useState, memo } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect, useDispatch, useSelector } from 'react-redux';
 import Gon from 'gon';
 import ReactJoyride, { STATUS } from 'react-joyride';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import GameWidget from './game/GameWidget';
-import RoomContext from '../components/RoomContext';
-import InfoWidget from './game/InfoWidget';
-import BuilderEditorsWidget from './builder/BuilderEditorsWidget';
+
+import sound from '../lib/sound';
 import userTypes from '../config/userTypes';
-import { actions } from '../slices';
-import * as GameRoomActions from '../middlewares/Game';
-import * as ChatActions from '../middlewares/Chat';
-import { isShowGuideSelector } from '../selectors';
+
+import RoomContext from '../components/RoomContext';
 import WaitingOpponentInfo from './game/WaitingOpponentInfo';
 import CodebattlePlayer from './game/CodebattlePlayer';
+import * as GameRoomActions from '../middlewares/Game';
+import * as ChatActions from '../middlewares/Chat';
 import FeedbackWidget from '../components/FeedbackWidget';
 import GameRoomPreview from './lobby/GameRoomPreview';
+import TaskConfirmationModal from './builder/TaskConfirmationModal';
+import TaskConfigurationModal from './builder/TaskConfigurationModal';
+import AnimationModal from './game/AnimationModal';
+import NetworkAlert from './game/NetworkAlert';
+
+import GameWidget from './game/GameWidget';
+import InfoWidget from './game/InfoWidget';
+import BuilderSettingsWidget from './builder/BuilderSettingsWidget';
+import BuilderEditorsWidget from './builder/BuilderEditorsWidget';
+
+import useGameRoomMachine from '../utils/useGameRoomMachine';
+import useMachineStateSelector from '../utils/useMachineStateSelector';
 import {
   inPreviewRoomSelector,
   inBuilderRoomSelector,
@@ -27,14 +36,8 @@ import {
   gameRoomKeySelector,
   roomStateSelector,
 } from '../machines/selectors';
-import useGameRoomMachine from '../utils/useGameRoomMachine';
-import TaskConfirmationModal from './builder/TaskConfirmationModal';
-import TaskConfigurationModal from './builder/TaskConfigurationModal';
-import AnimationModal from './game/AnimationModal';
-import NetworkAlert from './game/NetworkAlert';
-import sound from '../lib/sound';
-import useMachineStateSelector from '../utils/useMachineStateSelector';
-import BuilderSettingsWidget from './builder/BuilderSettingsWidget';
+import { actions } from '../slices';
+import { isShowGuideSelector } from '../selectors';
 
 const steps = [
   {
@@ -148,7 +151,7 @@ const steps = [
   },
 ];
 
-const GameWidgetGuide = memo(() => {
+function GameWidgetGuide() {
   const dispatch = useDispatch();
   const [isFirstTime, setIsFirstTime] = useState(
     window.localStorage.getItem('guideGamePassed') === null,
@@ -184,18 +187,18 @@ const GameWidgetGuide = memo(() => {
       />
     )
   );
-});
+}
 
 const currentUser = Gon.getAsset('current_user');
 
-const GameRoomWidget = ({
+function GameRoomWidget({
   pageName,
   setCurrentUser,
   mainMachine,
   taskMachine,
   editorMachine,
   toggleMuteSound,
-}) => {
+}) {
   const dispatch = useDispatch();
 
   const [taskModalShowing, setTaskModalShowing] = useState(false);
@@ -330,7 +333,7 @@ const GameRoomWidget = ({
       </CSSTransition>
     </SwitchTransition>
   );
-};
+}
 
 GameRoomWidget.propTypes = {
   setCurrentUser: PropTypes.func.isRequired,

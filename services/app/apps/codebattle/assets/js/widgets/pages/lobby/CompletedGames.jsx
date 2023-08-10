@@ -38,12 +38,12 @@ const CompletedGamesRows = memo(({ games }) => (
   </>
 ));
 
-const CompletedGames = ({
+function CompletedGames({
   games,
   loadNextPage = null,
   totalGames,
   className,
-}) => {
+}) {
   const { nextPage, totalPages } = useSelector(state => state.completedGames);
   const object = useMemo(
     () => ({ loading: false }),
@@ -107,6 +107,6 @@ const CompletedGames = ({
       </div>
     </>
   );
-};
+}
 
 export default CompletedGames;

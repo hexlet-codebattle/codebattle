@@ -7,7 +7,7 @@ import { actions } from '../../slices';
 import { leaderboardSelector } from '../../slices/leaderboard';
 import periodTypes from '../../config/periodTypes';
 
-const Leaderboard = () => {
+function Leaderboard() {
   const dispatch = useDispatch();
 
   const { users: rating, period } = useSelector(leaderboardSelector);
@@ -132,6 +132,6 @@ const Leaderboard = () => {
       </tbody>
     </Table>
   );
-};
+}
 
 export default Leaderboard;

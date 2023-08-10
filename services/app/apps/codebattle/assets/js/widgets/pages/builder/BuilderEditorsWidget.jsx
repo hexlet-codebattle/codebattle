@@ -66,7 +66,7 @@ const InfoPopup = ({ reloadGeneratorCode, editable }) => {
   );
 };
 
-const BuilderEditorsWidget = memo(() => {
+function BuilderEditorsWidget() {
   const dispatch = useDispatch();
   const { taskService } = useContext(RoomContext);
 
@@ -286,6 +286,6 @@ const BuilderEditorsWidget = memo(() => {
       </div>
     </>
   );
-});
+}
 
-export default BuilderEditorsWidget;
+export default memo(BuilderEditorsWidget);

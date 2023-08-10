@@ -8,12 +8,12 @@ import { actions } from '../../slices';
 import * as selectors from '../../selectors';
 import UserInfo from '../../components/UserInfo';
 
-const ChatActionModal = ({
+function ChatActionModal({
   presenceList,
   chatInputRef,
   modalShowing,
   setModalShowing,
-}) => {
+}) {
   const dispatch = useDispatch();
 
   const currentUserId = useSelector(selectors.currentUserIdSelector);
@@ -81,6 +81,6 @@ const ChatActionModal = ({
       </Modal.Body>
     </Modal>
   );
-};
+}
 
 export default ChatActionModal;

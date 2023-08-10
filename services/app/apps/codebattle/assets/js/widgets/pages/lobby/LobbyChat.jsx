@@ -17,12 +17,12 @@ import useChatContextMenu from '../../utils/useChatContextMenu';
 import useChatRooms from '../../utils/useChatRooms';
 import { shouldShowMessage } from '../../utils/chat';
 
-const LobbyChat = ({
+function LobbyChat({
   connectToChat,
   presenceList,
   setOpenActionModalShowing,
   inputRef,
-}) => {
+}) {
   const messages = useSelector(selectors.chatMessagesSelector);
   const users = useMemo(() => (
     presenceList.map(({ user }) => user)
@@ -194,7 +194,7 @@ const LobbyChat = ({
       </div>
     </ChatContextMenu>
   );
-};
+}
 
 const mapDispatchToProps = {
   connectToChat: chatMiddlewares.connectToChat,

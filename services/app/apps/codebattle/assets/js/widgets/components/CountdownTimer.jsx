@@ -7,7 +7,7 @@ const getProgress = (a, b) => (
   100 - Math.ceil((a / b) * 100)
 );
 
-const CountdownTimer = ({ time, timeoutSeconds }) => {
+function CountdownTimer({ time, timeoutSeconds }) {
   const [duration, setDuration] = useState(timeoutSeconds * 1000);
   const seconds = duration / 1000;
   const progress = getProgress(seconds, timeoutSeconds);
@@ -46,7 +46,7 @@ const CountdownTimer = ({ time, timeoutSeconds }) => {
       />
     </>
   );
-};
+}
 
 CountdownTimer.propTypes = {
   time: PropTypes.string.isRequired,

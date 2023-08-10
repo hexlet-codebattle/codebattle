@@ -20,7 +20,7 @@ import {
 import { taskStateCodes } from '../../config/task';
 import RoomContext from '../../components/RoomContext';
 
-const BuilderActions = ({ validExamples, clearSuggests }) => {
+function BuilderActions({ validExamples, clearSuggests }) {
   const dispatch = useDispatch();
 
   const { taskService } = useContext(RoomContext);
@@ -202,6 +202,6 @@ const BuilderActions = ({ validExamples, clearSuggests }) => {
       )}
     </>
   );
-};
+}
 
 export default BuilderActions;

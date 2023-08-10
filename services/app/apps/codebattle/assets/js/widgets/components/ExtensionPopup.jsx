@@ -13,9 +13,10 @@ const isExtensionInstalled = info => new Promise(resolve => {
   };
 });
 
-const ExtensionPopup = () => {
+function ExtensionPopup() {
   const [modalShowing, setModalShowing] = useState(true);
   const handleHide = () => { setModalShowing(false); };
+
   return (
     <Modal show={modalShowing} onHide={handleHide}>
       <Modal.Header className="mx-auto">
@@ -54,8 +55,8 @@ const ExtensionPopup = () => {
         </Button>
       </Modal.Footer>
     </Modal>
-);
-};
+  );
+}
 
 export default domElement => {
   const lastCheckExtension = window.localStorage.getItem('lastCheckExtension');

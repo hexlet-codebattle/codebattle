@@ -1,9 +1,9 @@
 import React, { useRef, useLayoutEffect } from 'react';
-import useStayScrolled from 'react-stay-scrolled';
+import useStayScrolled from '../utils/useStayScrolled';
 
 import Message from './Message';
 
-const Messages = ({ messages, displayMenu = () => {} }) => {
+function Messages({ messages, displayMenu = () => {} }) {
   const listRef = useRef();
 
   const { stayScrolled /* , scrollBottom */ } = useStayScrolled(listRef);
@@ -40,6 +40,6 @@ const Messages = ({ messages, displayMenu = () => {} }) => {
       </ul>
     </>
   );
-};
+}
 
 export default Messages;

@@ -1,20 +1,20 @@
 /* eslint-disable */
 import React, { useState } from 'react';
 
-const StairwayTournamentApprovedListPanel = ({
-    state,
-    creatorId,
-    currentUserId,
-    players = [],
-    notApprovedList = [],
-}) => {
-    if (state !== 'waiting_participants') {
-        return;
-    }
+function StairwayTournamentApprovedListPanel({
+  state,
+  creatorId,
+  currentUserId,
+  players = [],
+  notApprovedList = [],
+}) {
+  if (state !== 'waiting_participants') {
+    return;
+  }
 
-    return (
-      <>
-        {/* <Panel>
+  return (
+    <>
+      {/* <Panel>
 
             <StairwayPlayerList
                 players={players}
@@ -27,8 +27,8 @@ const StairwayTournamentApprovedListPanel = ({
             />
 
         </Panel> */}
-      </>
-);
-};
+    </>
+  );
+}
 
 export default StairwayTournamentApprovedListPanel;

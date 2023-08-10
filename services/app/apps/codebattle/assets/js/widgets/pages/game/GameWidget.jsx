@@ -13,7 +13,7 @@ import editorUserTypes from '../../config/editorUserTypes';
 import { roomStateSelector } from '../../machines/selectors';
 import useMachineStateSelector from '../../utils/useMachineStateSelector';
 
-const RightSide = ({ output, children }) => {
+function RightSide({ output, children }) {
   const [showTab, setShowTab] = useState('editor');
   const isShowOutput = output && output.status;
   const content = showTab === 'editor' ? (
@@ -63,9 +63,9 @@ const RightSide = ({ output, children }) => {
       </nav>
     </>
   );
-};
+}
 
-const GameWidget = memo(({ editorMachine }) => {
+function GameWidget({ editorMachine }) {
   const currentUserId = useSelector(selectors.currentUserIdSelector);
   const { mainService } = useContext(RoomContext);
   const roomCurrent = useMachineStateSelector(mainService, roomStateSelector);
@@ -121,6 +121,6 @@ const GameWidget = memo(({ editorMachine }) => {
       </EditorContainer>
     </>
   );
-});
+}
 
-export default GameWidget;
+export default memo(GameWidget);

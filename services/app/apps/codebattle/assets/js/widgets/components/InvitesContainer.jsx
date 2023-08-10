@@ -22,7 +22,7 @@ const NoInvites = () => (
   </div>
 );
 
-const InvitesList = ({ list, currentUserId }) => {
+function InvitesList({ list, currentUserId }) {
   const dispatch = useDispatch();
 
   return list
@@ -73,9 +73,9 @@ const InvitesList = ({ list, currentUserId }) => {
         )}
       </div>
     ));
-};
+}
 
-const InvitesContainer = () => {
+function InvitesContainer() {
   const currentUserId = useSelector(selectors.currentUserIdSelector);
   const checkInvitePlayers = ({ creatorId, recipientId }) => (creatorId === currentUserId || recipientId === currentUserId);
   const filterInvites = invite => invite.state === 'pending' && checkInvitePlayers(invite);
@@ -137,6 +137,6 @@ const InvitesContainer = () => {
       )}
     </OverlayTrigger>
   );
-};
+}
 
 export default InvitesContainer;

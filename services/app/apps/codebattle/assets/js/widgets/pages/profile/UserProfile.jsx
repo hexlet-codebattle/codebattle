@@ -26,7 +26,7 @@ import Loading from '../../components/Loading';
 import * as selectors from '../../selectors';
 import langIconNames from '../../config/langIconNames';
 
-const UserProfile = () => {
+function UserProfile() {
   const [stats, setStats] = useState(null);
   const { completedGames, totalGames } = useSelector(
     selectors.completedGamesData,
@@ -369,6 +369,6 @@ const UserProfile = () => {
       </div>
     </div>
   );
-};
+}
 
 export default UserProfile;

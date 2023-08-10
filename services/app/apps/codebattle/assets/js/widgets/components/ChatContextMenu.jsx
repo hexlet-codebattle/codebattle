@@ -27,7 +27,7 @@ import { openDirect } from '../middlewares/Lobby';
 const blackSwordSrc = '/assets/images/fight-black.png';
 const whiteSwordSrc = '/assets/images/fight-white.png';
 
-const ChatContextMenu = ({
+function ChatContextMenu({
   request = {
     user: {
       name: null,
@@ -39,7 +39,7 @@ const ChatContextMenu = ({
   menuId,
   inputRef,
   children,
-}) => {
+}) {
   const dispatch = useDispatch();
 
   const [swordIconSrc, setSwordIconSrc] = useState(blackSwordSrc);
@@ -207,6 +207,6 @@ const ChatContextMenu = ({
       </Menu>
     </>
   );
-};
+}
 
 export default memo(ChatContextMenu);

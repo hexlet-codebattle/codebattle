@@ -19,9 +19,9 @@ const getLinkParams = (match, currentUserId) => {
   }
 };
 
-const IndividualMatches = ({
+function IndividualMatches({
  state, matches, playersCount = 0, currentUserId,
-}) => {
+}) {
   const roundsCount = useMemo(() => Math.log2(playersCount), [playersCount]);
   const roundsRange = useMemo(() => {
       if (roundsCount > 0) {
@@ -86,6 +86,6 @@ const IndividualMatches = ({
       </div>
     </>
   );
-};
+}
 
 export default memo(IndividualMatches);

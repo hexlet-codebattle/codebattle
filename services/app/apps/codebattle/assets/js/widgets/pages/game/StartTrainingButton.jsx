@@ -5,7 +5,7 @@ import i18n from '../../../i18n';
 import * as selectors from '../../selectors';
 import { getCreateTrainingGameUrl } from '../../utils/urlBuilders';
 
-const StartTrainingButton = () => {
+function StartTrainingButton() {
   const currentUserId = useSelector(selectors.currentUserIdSelector);
   const players = useSelector(selectors.gamePlayersSelector);
 
@@ -23,6 +23,6 @@ const StartTrainingButton = () => {
       {title}
     </button>
   );
-};
+}
 
 export default StartTrainingButton;

@@ -11,7 +11,7 @@ import {
 import SignatureTrack from './SignatureTrack';
 import SignatureForm from './SignatureForm';
 
-const InputSignatureEditPanel = ({
+function InputSignatureEditPanel({
   items = [],
   argumentNameInputRef,
   suggest,
@@ -22,7 +22,7 @@ const InputSignatureEditPanel = ({
   handleDelete,
   handleSubmit,
   handleClear,
-}) => {
+}) {
   const handleChangeName = useCallback(event => {
     handleEdit({ ...suggest, argumentName: event.target.value });
     if (suggestRef?.current) {
@@ -156,6 +156,6 @@ const InputSignatureEditPanel = ({
       </div>
     </div>
   );
-};
+}
 
 export default InputSignatureEditPanel;

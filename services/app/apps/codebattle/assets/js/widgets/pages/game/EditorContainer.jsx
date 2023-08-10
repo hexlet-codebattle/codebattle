@@ -21,7 +21,7 @@ import {
 } from '../../machines/selectors';
 import useMachineStateSelector from '../../utils/useMachineStateSelector';
 
-const EditorContainer = ({
+function EditorContainer({
   id,
   editorMachine,
   type,
@@ -31,7 +31,7 @@ const EditorContainer = ({
   editorHeight,
   editorMode,
   children,
-}) => {
+}) {
   const dispatch = useDispatch();
   const players = useSelector(selectors.gamePlayersSelector);
 
@@ -192,6 +192,6 @@ const EditorContainer = ({
       </div>
     </div>
   );
-};
+}
 
 export default EditorContainer;

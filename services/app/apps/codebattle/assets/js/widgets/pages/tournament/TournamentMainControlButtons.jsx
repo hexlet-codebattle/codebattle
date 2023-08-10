@@ -11,41 +11,26 @@ import {
   openUpTournament as handleOpenUpTournament,
 } from '../../middlewares/Tournament';
 
-const TournamentMainControlButtons = ({
-    state,
-}) => (
+const TournamentMainControlButtons = ({ state }) => (
   <>
-    {state !== TournamentStates.active
-            && (
-            <button
-              className="btn btn-success ml-2"
-              onClick={handleStartTournament}
-            >
-              Start
-            </button>
-            )}
+    {state !== TournamentStates.active && (
+      <button className="btn btn-success ml-2" onClick={handleStartTournament}>
+        Start
+      </button>
+    )}
     {state === TournamentStates.waitingParticipants && (
-    <button
-      className="btn btn-info ml-2"
-      onClick={handleBackTournament}
-    >
-      Back
-    </button>
-        )}
-    <button
-      className="btn btn-danger ml-2"
-      onClick={handleCancelTournament}
-    >
+      <button className="btn btn-info ml-2" onClick={handleBackTournament}>
+        Back
+      </button>
+    )}
+    <button className="btn btn-danger ml-2" onClick={handleCancelTournament}>
       Cancel
     </button>
     {false && (
-    <button
-      className="btn btn-danger ml-2"
-      onClick={handleOpenUpTournament}
-    >
-      Open Up
-    </button>
-        )}
+      <button className="btn btn-danger ml-2" onClick={handleOpenUpTournament}>
+        Open Up
+      </button>
+    )}
   </>
 );
 

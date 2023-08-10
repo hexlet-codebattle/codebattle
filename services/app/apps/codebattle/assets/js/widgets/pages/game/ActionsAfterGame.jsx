@@ -6,7 +6,7 @@ import StartTrainingButton from './StartTrainingButton';
 import SignUpButton from './SignUpButton';
 import RematchButton from './RematchButton';
 
-const ActionsAfterGame = () => {
+function ActionsAfterGame() {
   const gameMode = useSelector(selectors.gameModeSelector);
   const isOpponentInGame = useSelector(selectors.isOpponentInGameSelector);
 
@@ -30,6 +30,6 @@ const ActionsAfterGame = () => {
       <RematchButton disabled={isRematchDisabled} />
     </>
   );
-};
+}
 
 export default ActionsAfterGame;

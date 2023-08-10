@@ -5,7 +5,7 @@ import * as selectors from '../selectors';
 import Rooms from './Rooms';
 import { pushCommand } from '../middlewares/Chat';
 
-export default ({ showRooms = false }) => {
+export default function ChatHeader({ showRooms = false }) {
   const currentUserIsAdmin = useSelector(selectors.currentUserIsAdminSelector);
 
   const handleCleanBanned = () => {
@@ -28,4 +28,4 @@ export default ({ showRooms = false }) => {
       ) : null}
     </div>
   );
-};
+}

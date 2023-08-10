@@ -17,7 +17,7 @@ import StairwayEditorToolbar from './StairwayEditorToolbar';
 import Loading from '../../components/Loading';
 // import StairwayRounds from './StairwayRounds';
 
-const StairwayGameContainer = ({}) => {
+function StairwayGameContainer() {
   const dispatch = useDispatch();
 
   const meta = useSelector(state => state.tournament?.tournament?.meta);
@@ -120,6 +120,6 @@ const StairwayGameContainer = ({}) => {
       </div>
     </>
   );
-};
+}
 
 export default StairwayGameContainer;

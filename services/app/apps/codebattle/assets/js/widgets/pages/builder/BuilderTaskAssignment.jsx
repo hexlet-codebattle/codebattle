@@ -65,12 +65,12 @@ const renderGameLevelSelectButton = (level, handleSetLevel) => (
   </div>
 );
 
-const BuilderTaskAssignment = ({
+function BuilderTaskAssignment({
   task,
   taskLanguage,
   handleSetLanguage,
   openConfiguration,
-}) => {
+}) {
   const dispatch = useDispatch();
 
   const editable = useSelector(selectors.canEditTask);
@@ -196,7 +196,7 @@ const BuilderTaskAssignment = ({
       </div>
     </div>
   );
-};
+}
 
 BuilderTaskAssignment.propTypes = {
   task: PropTypes.shape({

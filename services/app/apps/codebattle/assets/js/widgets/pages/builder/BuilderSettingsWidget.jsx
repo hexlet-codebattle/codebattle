@@ -7,7 +7,7 @@ import BuilderExampleForm from './BuilderExampleForm';
 import * as selectors from '../../selectors';
 import { actions } from '../../slices';
 
-const BuilderSettingsWidget = memo(({ setConfigurationModalShowing }) => {
+function BuilderSettingsWidget({ setConfigurationModalShowing }) {
   const dispatch = useDispatch();
 
   const task = useSelector(selectors.builderTaskSelector);
@@ -100,6 +100,6 @@ const BuilderSettingsWidget = memo(({ setConfigurationModalShowing }) => {
       </div>
     </>
   );
-});
+}
 
-export default BuilderSettingsWidget;
+export default memo(BuilderSettingsWidget);

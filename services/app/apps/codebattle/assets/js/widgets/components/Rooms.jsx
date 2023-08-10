@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import * as selectors from '../selectors';
 import { actions } from '../slices';
 
-export default () => {
+export default function Rooms() {
   const dispatch = useDispatch();
 
   const rooms = useSelector(selectors.roomsSelector);
@@ -34,4 +34,4 @@ export default () => {
       </Dropdown>
     </>
   );
-};
+}

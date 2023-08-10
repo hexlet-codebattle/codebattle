@@ -7,7 +7,7 @@ import GameRoomModes from '../../config/gameModes';
 import GameStateCodes from '../../config/gameStateCodes';
 import i18n from '../../../i18n';
 
-const GameResult = () => {
+function GameResult() {
   const currentUserId = useSelector(state => selectors.currentUserIdSelector(state));
   const players = useSelector(state => selectors.gamePlayersSelector(state));
   const isCurrentUserPlayer = _.hasIn(players, currentUserId);
@@ -52,6 +52,6 @@ const GameResult = () => {
     return (<Alert variant={result.alertStyle}>{result.msg}</Alert>);
   }
   return null;
-};
+}
 
 export default GameResult;

@@ -19,7 +19,7 @@ import useKey from '../../utils/useKey';
 
 const navbarItemClassName = 'nav-item nav-link col-3 border-0 rounded-0 px-1 py-2';
 
-const BuilderExampleForm = memo(() => {
+function BuilderExampleForm() {
   const dispatch = useDispatch();
   const { taskService } = useContext(RoomContext);
 
@@ -318,6 +318,6 @@ const BuilderExampleForm = memo(() => {
       </div>
     </div>
   );
-});
+}
 
-export default BuilderExampleForm;
+export default memo(BuilderExampleForm);

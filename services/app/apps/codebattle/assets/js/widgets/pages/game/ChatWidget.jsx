@@ -21,7 +21,7 @@ import { shouldShowMessage } from '../../utils/chat';
 import { inTestingRoomSelector, openedReplayerSelector } from '../../machines/selectors';
 import useMachineStateSelector from '../../utils/useMachineStateSelector';
 
-const ChatWidget = () => {
+function ChatWidget() {
   const { mainService } = useContext(RoomContext);
 
   const users = useSelector(state => selectors.chatUsersSelector(state));
@@ -111,6 +111,6 @@ const ChatWidget = () => {
       </div>
     </ChatContextMenu>
   );
-};
+}
 
 export default ChatWidget;

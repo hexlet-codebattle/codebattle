@@ -3,14 +3,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { Overlay, Popover } from 'react-bootstrap';
 
-const PopoverStickOnHover = ({
+function PopoverStickOnHover({
   id,
   delay,
   onMouseEnter,
   children,
   component,
   placement,
-}) => {
+}) {
   const [showPopover, setShowPopover] = useState(false);
   const childNode = useRef(null);
   let setTimeoutConst = null;
@@ -67,7 +67,7 @@ const PopoverStickOnHover = ({
       </Overlay>
     </>
   );
-};
+}
 
 PopoverStickOnHover.propTypes = {
   id: PropTypes.string.isRequired,

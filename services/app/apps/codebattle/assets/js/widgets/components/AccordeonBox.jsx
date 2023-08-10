@@ -31,9 +31,9 @@ const renderFirstAssert = firstAssert => (
   </AccordeonBox.SubMenu>
 );
 
-const Menu = ({
+function Menu({
  children, firstAssert, resultData, assertsCount, successCount,
-}) => {
+}) {
   const [show, setShow] = useState(true);
   const isSyntaxError = resultData.status === 'error';
   const statusColor = color[resultData.status];
@@ -84,10 +84,11 @@ const Menu = ({
       </div>
     </div>
   );
-};
-const SubMenu = ({
+}
+
+function SubMenu({
  children, statusColor, assert, hasOutput, uniqIndex, executionTime,
-}) => {
+}) {
   const [isShowLog, setIsShowLog] = useState(true);
   const classCollapse = cn('collapse', {
     show: isShowLog,
@@ -144,7 +145,7 @@ const SubMenu = ({
       </div>
     </div>
   );
-};
+}
 
 const Item = ({ output }) => {
   if (output === '') {

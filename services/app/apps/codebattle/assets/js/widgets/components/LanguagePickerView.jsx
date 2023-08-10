@@ -44,7 +44,7 @@ const LangTitle = ({ slug, name, version }) => (
   </div>
 );
 
-const LanguagePickerView = ({ changeLang, currentLangSlug, isDisabled }) => {
+function LanguagePickerView({ changeLang, currentLangSlug, isDisabled }) {
   const languages = useSelector(selectors.editorLangsSelector);
 
   const langs = languages || defaultLanguages;
@@ -70,7 +70,7 @@ const LanguagePickerView = ({ changeLang, currentLangSlug, isDisabled }) => {
         options={options}
       />
     </>
-);
-};
+  );
+}
 
 export default LanguagePickerView;

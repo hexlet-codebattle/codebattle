@@ -10,7 +10,7 @@ import UserName from './UserName';
 import UserStats from './UserStats';
 import PopoverStickOnHover from './PopoverStickOnHover';
 
-const UserPopoverContent = ({ user }) => {
+function UserPopoverContent({ user }) {
   // TODO: store stats in global redux state
   const [stats, setStats] = useState(null);
   const dispatch = useDispatch();
@@ -37,11 +37,11 @@ const UserPopoverContent = ({ user }) => {
   }, [dispatch, setStats, user.id]);
 
   return <UserStats user={user} data={stats} />;
-};
+}
 
-const UserInfo = ({
+function UserInfo({
   user, hideInfo = false, truncate = false, hideOnlineIndicator = false, loading = false,
-}) => {
+}) {
   const { presenceList } = useSelector(selectors.lobbyDataSelector);
   const content = useMemo(() => <UserPopoverContent user={user} />, [user]);
 
@@ -85,6 +85,6 @@ const UserInfo = ({
       </div>
     </PopoverStickOnHover>
   );
-};
+}
 
 export default UserInfo;

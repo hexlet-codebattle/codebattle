@@ -7,7 +7,7 @@ import SignatureTrack from './SignatureTrack';
 import useValidationExample from '../../utils/useValidationExample';
 import { itemClassName, itemActionClassName } from '../../utils/builder';
 
-const ExampleForm = ({
+function ExampleForm({
   example,
   exampleRef,
   argumentsInputRef,
@@ -16,7 +16,7 @@ const ExampleForm = ({
   handleEdit,
   handleReset,
   handleSubmit,
-}) => {
+}) {
   const handleArguments = useCallback(
     event => {
       const data = event.target.value;
@@ -110,9 +110,9 @@ const ExampleForm = ({
       </div>
     </>
   );
-};
+}
 
-const ExamplesEditPanel = ({
+function ExamplesEditPanel({
   items,
   argumentsInputRef,
   suggest,
@@ -125,7 +125,7 @@ const ExamplesEditPanel = ({
   handleDelete,
   handleSubmit,
   handleClear,
-}) => {
+}) {
   const handleReset = useCallback(() => {
     const existedExample = items.find(item => item.id === suggest?.id);
 
@@ -200,6 +200,6 @@ const ExamplesEditPanel = ({
       </div>
     </div>
   );
-};
+}
 
 export default ExamplesEditPanel;
