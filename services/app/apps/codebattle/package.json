@@ -135,7 +135,6 @@
     "jest-transform-stub": "^2.0.0",
     "postcss": "^8.4.27",
     "postcss-loader": "^7.3.3",
-    "resolve-url-loader": "^5.0.0",
     "sass-loader": "^13.3.2",
     "terser-webpack-plugin": "^5.3.9",
     "url-loader": "^4.1.1",

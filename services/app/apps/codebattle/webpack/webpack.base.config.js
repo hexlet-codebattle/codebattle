@@ -50,7 +50,6 @@ module.exports = {
         use: [
           { loader: MiniCssExtractPlugin.loader },
           { loader: 'css-loader' },
-          { loader: 'resolve-url-loader'},
           { loader: 'sass-loader' },
         ],
       },
