@@ -372,3 +372,9 @@ msgstr ""
 
 msgid "Timeout 3600 seconds"
 msgstr ""
+
+msgid "Feedback sent successfully."
+msgstr "Your feedback has been delivered!"
+
+msgid "Feedback not sent."
+msgstr "Oops, Your feedback was not delivered!"
