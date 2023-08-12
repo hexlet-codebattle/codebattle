@@ -41,7 +41,7 @@ defmodule Codebattle.Tournament do
 
     field(:access_token, :string)
     field(:access_type, :string, default: "public")
-    field(:break_duration_seconds, :integer, default: 0)
+    field(:break_duration_seconds, :integer, default: 42)
     field(:break_state, :string, default: "off")
     field(:current_round, :integer, default: 0)
     field(:default_language, :string, default: "js")

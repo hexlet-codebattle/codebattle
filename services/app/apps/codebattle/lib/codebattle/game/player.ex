@@ -13,6 +13,8 @@ defmodule Codebattle.Game.Player do
   alias Runner.Languages
 
   @primary_key false
+  @default_editor_text "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = () => {\n\n};\n\nmodule.exports = solution;"
+
   @derive {Jason.Encoder,
            only: [
              :achievements,
@@ -37,16 +39,6 @@ defmodule Codebattle.Game.Player do
   @results ~w(undefined won lost gave_up timeout)
 
   embedded_schema do
-    field(:id, :integer)
-
-    field(:editor_text, :string,
-      default:
-        "const _ = require(\"lodash\");\nconst R = require(\"rambda\");\n\nconst solution = () => {\n\n};\n\nmodule.exports = solution;"
-    )
-
-    field(:editor_lang, :string, default: "js")
-    field(:lang, :string, default: "js")
-    field(:result, :string, default: "undefined")
     field(:achievements, {:array, :string}, default: [])
     field(:avatar_url, :string)
     # CodeCheck.Result.t() | CodeCheck.Result.V2.t()
@@ -54,7 +46,7 @@ defmodule Codebattle.Game.Player do
     field(:creator, :boolean, default: false)
     field(:duration_sec, :integer)
     field(:editor_lang, :string, default: "js")
-    field(:editor_text, :string, default: "module.exports = () => {\n\n};")
+    field(:editor_text, :string, default: @default_editor_text)
     field(:id, :integer)
     field(:is_bot, :boolean, default: false)
     field(:is_guest, :boolean, default: false)

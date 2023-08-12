@@ -3,7 +3,6 @@ defmodule CodebattleWeb.Api.GameView do
 
   alias Runner.Languages
   alias Codebattle.CodeCheck
-  alias Codebattle.Asserts
 
   import Codebattle.Game.Helpers
 

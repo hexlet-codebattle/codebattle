@@ -91,7 +91,6 @@ defmodule Codebattle.Tournament.Base do
           tournament =
             tournament
             |> complete_players()
-            |> start_round_or_finish()
 
           tournament
           |> update_struct(%{
@@ -99,6 +98,7 @@ defmodule Codebattle.Tournament.Base do
             last_round_started_at: NaiveDateTime.truncate(NaiveDateTime.utc_now(), :second),
             state: "active"
           })
+          |> start_round()
         else
           tournament
         end
@@ -172,7 +172,7 @@ defmodule Codebattle.Tournament.Base do
           |> calculate_round_results()
           |> maybe_finish()
           |> set_next_round_params()
-          |> start_round_or_finish()
+          |> start_round_or_break_or_finish()
         end
       end
 
@@ -189,17 +189,32 @@ defmodule Codebattle.Tournament.Base do
         })
       end
 
-      defp start_round_or_finish(tournament = %{state: "finished"}) do
+      defp start_round_or_break_or_finish(tournament = %{state: "finished"}) do
         # TODO: implement tournament termination in 15 mins
         # Tournament.GlobalSupervisor.terminate_tournament(tournament.id, 15 mins)
 
         tournament
       end
 
-      defp start_round_or_finish(tournament) do
+      defp start_round_or_break_or_finish(
+             tournament = %{
+               state: "active",
+               break_duration_seconds: break_duration_seconds
+             }
+           )
+           when not is_nil(break_duration_seconds) do
+        update_struct(tournament, %{break_state: "on"})
+      end
+
+      defp start_round_or_break_or_finish() do
+        start_round(tournament)
+      end
+
+      defp start_round(tournament) do
         tournament
         |> maybe_set_task_for_round()
         |> build_matches()
+        |> db_save!()
         |> broadcast_new_round()
       end
 

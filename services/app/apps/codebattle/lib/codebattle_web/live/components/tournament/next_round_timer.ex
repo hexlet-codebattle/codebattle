@@ -1,38 +1,44 @@
 defmodule CodebattleWeb.Live.Tournament.NextRoundTimerComponent do
-  use CodebattleWeb, :component
+  use CodebattleWeb, :live_component
 
+  @update_frequency 1_000
+
+  @impl true
+  def mount(socket) do
+    user_timezone = get_in(socket.private, [:connect_params, "timezone"]) || "UTC"
+
+    :timer.send_interval(@update_frequency, self(), :timer_tick)
+
+    {:ok,
+     assign(socket,
+       initialized: false,
+       next_round_time: nil,
+       user_timezone: user_timezone
+     )}
+  end
+
+  @impl true
   def render(assigns) do
     ~H"""
     <div>
       <h4>
-        <%= round_or_tournament(@tournament) <>
-          render_time_to_start(@tournament, @next_round_time, @user_timezone, @time_now) %>
+        <%= time_prefix({@tournament_state, @break_state}) <>
+          render_next_round_time(@next_round_time, @user_timezone) %>
       </h4>
     </div>
     """
   end
 
-  defp round_or_tournament(%{state: "waiting_participants"}), do: "The tournament will start in "
 
-  defp round_or_tournament(%{state: "active", break_state: "on"}),
-    do: "Next round will start in "
+  defp time_prefix({"active", "on"}), do: "Next round will start in "
+  defp time_prefix({"active", "off"}), do: "Last round started at "
+  defp time_prefix({"waiting_participants", _}), do: "The tournament will start in "
+  defp time_prefix(_), do: ""
 
-  defp round_or_tournament(%{state: "active", break_state: "off"}), do: "Last round started at "
-  defp round_or_tournament(_), do: ""
+  defp render_next_round_time(nil, _user_timezone), do: ""
 
-  defp render_time_to_start(
-         tournament = %{state: "active", break_state: "off"},
-         _next_round_time,
-         user_timezone,
-         _time_now
-       ) do
-    format_datetime(tournament.last_round_started_at, user_timezone)
-  end
-
-  defp render_time_to_start(_tournament, nil, _user_timezone, _time_now), do: ""
-
-  defp render_time_to_start(_tournament, next_round_time, user_timezone, time_now) do
-    time_map = get_time_units_map(next_round_time, time_now)
+  defp render_next_round_time(next_round_time, user_timezone) do
+    time_map = get_time_units_map(next_round_time)
     time_str = format_datetime(next_round_time, user_timezone)
 
     cond do
@@ -55,18 +61,14 @@ defmodule CodebattleWeb.Live.Tournament.NextRoundTimerComponent do
 
   defp render_num(num), do: String.pad_leading(to_string(num), 2, "0")
 
-  defp get_time_units_map(time, nil) do
-    get_time_units_map(time, Timex.now())
-  end
-
-  defp get_time_units_map(time, time_now) do
-    days = round(Timex.diff(time, time_now, :days))
-    hours = round(Timex.diff(time, time_now, :hours) - days * 24)
-    minutes = round(Timex.diff(time, time_now, :minutes) - days * 24 * 60 - hours * 60)
+  defp get_time_units_map(time) do
+    days = round(Timex.diff(time, :days))
+    hours = round(Timex.diff(time, :hours) - days * 24)
+    minutes = round(Timex.diff(time, :minutes) - days * 24 * 60 - hours * 60)
 
     seconds =
       round(
-        Timex.diff(time, time_now, :seconds) - days * 24 * 60 * 60 - hours * 60 * 60 -
+        Timex.diff(time, Timex.now(), :seconds) - days * 24 * 60 * 60 - hours * 60 * 60 -
           minutes * 60
       )
 
