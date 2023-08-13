@@ -7,8 +7,16 @@ const getProgress = (a, b) => (
   100 - Math.ceil((a / b) * 100)
 );
 
+const getDuration = (time, timeoutSeconds) => {
+  const diff = moment().diff(moment.utc(time));
+  const timeoutMiliseconds = timeoutSeconds * 1000;
+  const timeLeft = Math.max(timeoutMiliseconds - diff, 0);
+
+  return timeLeft;
+};
+
 function CountdownTimer({ time, timeoutSeconds }) {
-  const [duration, setDuration] = useState(timeoutSeconds * 1000);
+  const [duration, setDuration] = useState(() => getDuration(time, timeoutSeconds));
   const seconds = duration / 1000;
   const progress = getProgress(seconds, timeoutSeconds);
 
@@ -19,9 +27,7 @@ function CountdownTimer({ time, timeoutSeconds }) {
   });
 
   const updateTimer = () => {
-    const diff = moment().diff(moment.utc(time));
-    const timeoutMiliseconds = timeoutSeconds * 1000;
-    const timeLeft = Math.max(timeoutMiliseconds - diff, 0);
+    const timeLeft = getDuration(time, timeoutSeconds);
 
     setDuration(timeLeft);
   };

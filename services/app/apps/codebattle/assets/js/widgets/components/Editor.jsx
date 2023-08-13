@@ -345,7 +345,7 @@ class Editor extends PureComponent {
     });
 
     const loadingClassName = cn('position-absolute align-items-center justify-content-center w-100 h-100', {
-      'd-flex': loading,
+      'd-flex cb-loading-background': loading,
       'd-none': !loading,
     });
 
