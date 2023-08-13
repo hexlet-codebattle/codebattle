@@ -1,24 +1,30 @@
 import editorUserTypes from './editorUserTypes';
 
+export const editorBtnStatuses = {
+  enabled: 'enabled',
+  disabled: 'disabled',
+  checking: 'checking',
+};
+
 const defaultSettings = {
     editable: false,
     showControlBtns: false,
-    checkBtnStatus: 'disabled',
-    resetBtnStatus: 'disabled',
-    langPickerStatus: 'disabled',
-    giveUpBtnStatus: 'disabled',
-    modeBtnsStatus: 'disabled',
+    checkBtnStatus: editorBtnStatuses.disabled,
+    resetBtnStatus: editorBtnStatuses.disabled,
+    langPickerStatus: editorBtnStatuses.disabled,
+    giveUpBtnStatus: editorBtnStatuses.disabled,
+    modeBtnsStatus: editorBtnStatuses.disabled,
 };
 
-export default {
+export const editorSettingsByUserType = {
   [editorUserTypes.currentUser]: {
     editable: true,
     showControlBtns: true,
-    checkBtnStatus: 'enabled',
-    resetBtnStatus: 'enabled',
-    giveUpBtnStatus: 'enabled',
-    langPickerStatus: 'enabled',
-    modeBtnsStatus: 'enabled',
+    checkBtnStatus: editorBtnStatuses.enabled,
+    resetBtnStatus: editorBtnStatuses.enabled,
+    giveUpBtnStatus: editorBtnStatuses.enabled,
+    langPickerStatus: editorBtnStatuses.enabled,
+    modeBtnsStatus: editorBtnStatuses.enabled,
   },
   [editorUserTypes.player]: defaultSettings,
   [editorUserTypes.opponent]: defaultSettings,

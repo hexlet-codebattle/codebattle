@@ -4,29 +4,17 @@ defmodule CodebattleWeb.LobbyChannel do
 
   alias Codebattle.Bot
   alias Codebattle.Game
-  alias Codebattle.Tournament
-  alias CodebattleWeb.Api.GameView
+  alias CodebattleWeb.Api.LobbyView
 
   def join("lobby", _payload, socket) do
     current_user = socket.assigns.current_user
 
-    user_active_games =
-      %{is_tournament: false}
-      |> Game.Context.get_active_games()
-      |> Enum.filter(&can_user_see_game?(&1, current_user))
+    params = LobbyView.render_lobby_params(current_user)
 
     Codebattle.PubSub.subscribe("games")
     Codebattle.PubSub.subscribe("tournaments")
 
-    {:ok,
-     %{
-       active_games: user_active_games,
-       tournaments: Tournament.Context.list_live_and_finished(socket.assigns.current_user),
-       completed_games:
-         GameView.render_completed_games(
-           Game.Context.get_completed_games(%{}, %{page_size: 20, total: false, page_number: 1}).games
-         )
-     }, socket}
+    {:ok, params, socket}
   end
 
   def handle_in("game:cancel", payload, socket) do

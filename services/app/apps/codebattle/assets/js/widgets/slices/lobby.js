@@ -1,15 +1,20 @@
 import { createSlice } from '@reduxjs/toolkit';
 import _ from 'lodash';
+import initial from './initial';
 
 const initialState = {
-  activeGames: [],
+  activeGames: initial.activeGames,
+  liveTournaments: initial.liveTournaments,
+  completedTournaments: initial.completedTournaments,
   presenceList: [],
-  loaded: false,
   newGame: { timeoutSeconds: null },
   createGameModal: {
     show: false,
     gameOptions: {},
     opponentInfo: null,
+  },
+  channel: {
+    online: false,
   },
 };
 
@@ -25,7 +30,7 @@ const lobby = createSlice({
       activeGames,
       liveTournaments: tournaments.filter(x => x.isLive),
       completedTournaments: tournaments.filter(x => !x.isLive),
-      loaded: true,
+      channel: { online: true },
     }),
     updateCheckResult: (state, { payload }) => {
       state.activeGames = state.activeGames.map(game => {
@@ -74,6 +79,9 @@ const lobby = createSlice({
       state.createGameModal.show = true;
       state.createGameModal.gameOptions = { type: 'invite' };
       state.createGameModal.opponentInfo = opponentInfo;
+    },
+    updateLobbyChannelState: (state, { payload }) => {
+      state.channel.online = payload;
     },
   },
 });

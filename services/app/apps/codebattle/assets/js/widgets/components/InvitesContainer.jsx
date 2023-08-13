@@ -6,7 +6,6 @@ import cn from 'classnames';
 
 import GameLevelBadge from './GameLevelBadge';
 import * as selectors from '../selectors';
-import { actions } from '../slices';
 import { selectors as invitesSelectors } from '../slices/invites';
 import {
   initInvites, acceptInvite, declineInvite, cancelInvite,
@@ -85,7 +84,6 @@ function InvitesContainer() {
 
   useEffect(() => {
     const user = Gon.getAsset('current_user');
-    dispatch(actions.setCurrentUser({ user }));
     dispatch(initInvites(user));
     dispatch(initPresence());
     // eslint-disable-next-line react-hooks/exhaustive-deps

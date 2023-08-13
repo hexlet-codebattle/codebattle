@@ -1,7 +1,10 @@
 import { assign } from 'xstate';
 import sound from '../lib/sound';
 import editorUserTypes from '../config/editorUserTypes';
-import editorSettingsByUserType from '../config/editorSettingsByUserType';
+import {
+  editorBtnStatuses,
+  editorSettingsByUserType,
+} from '../config/editorSettingsByUserType';
 
 // settings
 // type - user type for viewers current_user/opponent/player (request features) teammate, clanmate, friend
@@ -10,35 +13,35 @@ import editorSettingsByUserType from '../config/editorSettingsByUserType';
 // checkBtnStatus - 'disabled', 'enabled', 'checking'
 // resetBtnStatus - 'disabled', 'enabled'
 // giveUpBtnStatus - 'disabled', 'enabled'
-// langPickerStatus: 'enabled', 'disabled'
+// langPickerStatus: 'disabled', 'enabled'
 // modeBtnsStatus: 'disabled', 'enabled'
 
 const settingsByState = {
   idle: {},
   checking: {
     editable: false,
-    checkBtnStatus: 'checking',
-    resetBtnStatus: 'disabled',
-    langPickerStatus: 'disabled',
-    giveUpBtnStatus: 'disabled',
+    checkBtnStatus: editorBtnStatuses.checking,
+    resetBtnStatus: editorBtnStatuses.disabled,
+    langPickerStatus: editorBtnStatuses.disabled,
+    giveUpBtnStatus: editorBtnStatuses.disabled,
   },
   banned: {
     editable: false,
-    checkBtnStatus: 'disabled',
-    resetBtnStatus: 'disabled',
-    langPickerStatus: 'disabled',
-    giveUpBtnStatus: 'disabled',
-    modeBtnsStatus: 'disabled',
+    checkBtnStatus: editorBtnStatuses.disabled,
+    resetBtnStatus: editorBtnStatuses.disabled,
+    langPickerStatus: editorBtnStatuses.disabled,
+    giveUpBtnStatus: editorBtnStatuses.disabled,
+    modeBtnsStatus: editorBtnStatuses.disabled,
   },
   history: {
     type: editorUserTypes.player,
     editable: false,
     showControlBtns: false,
-    checkBtnStatus: 'disabled',
-    resetBtnStatus: 'disabled',
-    langPickerStatus: 'disabled',
-    giveUpBtnStatus: 'disabled',
-    modeBtnsStatus: 'disabled',
+    checkBtnStatus: editorBtnStatuses.disabled,
+    resetBtnStatus: editorBtnStatuses.disabled,
+    langPickerStatus: editorBtnStatuses.disabled,
+    giveUpBtnStatus: editorBtnStatuses.disabled,
+    modeBtnsStatus: editorBtnStatuses.disabled,
   },
 };
 

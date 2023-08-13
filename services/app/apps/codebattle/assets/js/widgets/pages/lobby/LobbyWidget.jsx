@@ -15,7 +15,6 @@ import * as lobbyMiddlewares from '../../middlewares/Lobby';
 import gameStateCodes from '../../config/gameStateCodes';
 import { actions } from '../../slices';
 import * as selectors from '../../selectors';
-import Loading from '../../components/Loading';
 import UserInfo from '../../components/UserInfo';
 import {
   makeGameUrl,
@@ -97,7 +96,7 @@ const Players = ({ players }) => {
   );
 };
 
-const isPlayer = (user, game) => !_.isEmpty(_.find(game.players, { id: user.id }));
+const isPlayer = (userId, game) => !_.isEmpty(_.find(game.players, { id: userId }));
 
 const ShowButton = ({ url }) => (
   <a type="button" className="btn px-4 ml-1 btn-secondary btn-sm rounded-lg" href={url}>
@@ -121,20 +120,21 @@ const renderButton = (url, type) => {
   return <ButtonType url={url} />;
 };
 
-const GameActionButton = ({ game }) => {
+const GameActionButton = ({
+ game, currentUserId, isGuest, isOnline,
+}) => {
   const gameUrl = makeGameUrl(game.id);
   const gameUrlJoin = makeGameUrl(game.id, 'join');
-  const currentUser = Gon.getAsset('current_user');
   const gameState = game.state;
   const signInUrl = getSignInGithubUrl();
 
   if (gameState === gameStateCodes.playing) {
-    const type = isPlayer(currentUser, game) ? 'continue' : 'show';
+    const type = isPlayer(currentUserId, game) ? 'continue' : 'show';
     return renderButton(gameUrl, type);
   }
 
   if (gameState === gameStateCodes.waitingOpponent) {
-    if (isPlayer(currentUser, game)) {
+    if (isPlayer(currentUserId, game)) {
       return (
         <div className="d-flex justify-content-center">
           <div className="btn-group ml-5">
@@ -156,6 +156,7 @@ const GameActionButton = ({ game }) => {
               data-toggle="tooltip"
               data-placement="right"
               title="Cancel game"
+              disabled={!isOnline}
             >
               <i className="fas fa-times" />
             </button>
@@ -164,7 +165,7 @@ const GameActionButton = ({ game }) => {
       );
     }
 
-    if (currentUser.isGuest) {
+    if (isGuest) {
       return (
         <button
           type="button"
@@ -289,16 +290,16 @@ const CompletedTournaments = ({ tournaments }) => {
   );
 };
 
-const ActiveGames = ({ games }) => {
+const ActiveGames = ({
+ games, currentUserId, isGuest, isOnline,
+}) => {
   if (!games) {
     return null;
   }
 
-  const currentUser = Gon.getAsset('current_user');
-
   const filterGames = game => {
     if (game.visibilityType === 'hidden') {
-      return !!_.find(game.players, { id: currentUser.id });
+      return !!_.find(game.players, { id: currentUserId });
     }
     return true;
   };
@@ -317,7 +318,7 @@ const ActiveGames = ({ games }) => {
     gamesWithBots = [],
   } = _.groupBy(gamesSortByLevel, game => {
     const isCurrentUserPlay = game.players.some(
-      ({ id }) => id === currentUser.id,
+      ({ id }) => id === currentUserId,
     );
     if (isCurrentUserPlay) {
       return 'gamesWithCurrentUser';
@@ -367,7 +368,12 @@ const ActiveGames = ({ games }) => {
                 </td>
                 <Players players={game.players} />
                 <td className="p-3 align-middle text-center">
-                  <GameActionButton game={game} />
+                  <GameActionButton
+                    game={game}
+                    currentUserId={currentUserId}
+                    isGuest={isGuest}
+                    isOnline={isOnline}
+                  />
                 </td>
               </tr>
             ),
@@ -406,6 +412,9 @@ const GameContainers = ({
   liveTournaments,
   completedTournaments,
   totalGames,
+  currentUserId,
+  isGuest = true,
+  isOnline = false,
 }) => {
   useEffect(() => {
     if (!window.location.hash) {
@@ -469,7 +478,12 @@ const GameContainers = ({
           role="tabpanel"
           aria-labelledby="lobby-tab"
         >
-          <ActiveGames games={activeGames} />
+          <ActiveGames
+            games={activeGames}
+            currentUserId={currentUserId}
+            isGuest={isGuest}
+            isOnline={isOnline}
+          />
         </div>
         <div
           className={tabContentClassName(hashLinkNames.tournaments)}
@@ -487,7 +501,7 @@ const GameContainers = ({
           aria-labelledby="completedGames-tab"
         >
           <CompletedGames
-            className="table-responsive scroll h-25"
+            className="table-responsive scroll cb-lobby-widget-container"
             games={completedGames}
             loadNextPage={loadNextPage}
             totalGames={totalGames}
@@ -509,25 +523,27 @@ const renderModal = (show, handleCloseModal) => (
   </Modal>
 );
 
-const CreateGameButton = ({ handleClick }) => (
+const CreateGameButton = ({ handleClick, isOnline }) => (
   <button
     type="button"
     className="btn btn-success border-0 text-uppercase font-weight-bold py-3 rounded-lg"
     onClick={handleClick}
+    disabled={!isOnline}
   >
     Create a Game
   </button>
 );
 
 const LobbyWidget = () => {
-  const currentUser = Gon.getAsset('current_user');
   const currentOpponent = Gon.getAsset('opponent');
 
   const dispatch = useDispatch();
 
   const chatInputRef = useRef(null);
 
-  const { presenceList } = useSelector(selectors.lobbyDataSelector);
+  const currentUserId = useSelector(selectors.currentUserIdSelector);
+  const isGuest = useSelector(selectors.currentUserIsGuestSelector);
+  const { presenceList, channel: { online } } = useSelector(selectors.lobbyDataSelector);
   const isModalShow = useSelector(selectors.isModalShow);
   const [actionModalShowing, setActionModalShowing] = useState({ opened: false });
 
@@ -535,8 +551,7 @@ const LobbyWidget = () => {
   const handleCloseModal = () => dispatch(actions.closeCreateGameModal());
 
   useEffect(() => {
-    dispatch(actions.setCurrentUser({ user: { ...currentUser } }));
-    dispatch(lobbyMiddlewares.fetchState());
+    const clearLobby = lobbyMiddlewares.fetchState(currentUserId)(dispatch);
     if (currentOpponent) {
       window.history.replaceState({}, document.title, getLobbyUrl());
       dispatch(
@@ -545,25 +560,22 @@ const LobbyWidget = () => {
         }),
       );
     }
+
+    return clearLobby;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentUser]);
+  }, []);
 
   useEffect(() => {
     dispatch(fetchCompletedGames());
   }, [dispatch]);
 
   const {
-    loaded,
     activeGames,
     liveTournaments,
     completedTournaments,
   } = useSelector(selectors.lobbyDataSelector);
 
   const { completedGames, totalGames } = useSelector(selectors.completedGamesData);
-
-  if (!loaded) {
-    return <Loading />;
-  }
 
   return (
     <div className="container-lg">
@@ -582,6 +594,9 @@ const LobbyWidget = () => {
             liveTournaments={liveTournaments}
             completedTournaments={completedTournaments}
             totalGames={totalGames}
+            currentUserId={currentUserId}
+            isGuest={isGuest}
+            isOnline={online}
           />
           <LobbyChat
             setOpenActionModalShowing={setActionModalShowing}
@@ -591,7 +606,7 @@ const LobbyWidget = () => {
         </div>
 
         <div className="d-flex flex-column col-lg-4 col-md-12 p-0">
-          <CreateGameButton handleClick={handleShowModal} />
+          <CreateGameButton handleClick={handleShowModal} isOnline={online} />
           <div className="mt-2">
             <Announcement />
           </div>

@@ -29,11 +29,14 @@ function AnimationModal({ setModalShowing, modalShowing }) {
           <Modal.Title>{titleModal}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <img
-            style={{ width: '400px', marginLeft: '30px', height: '300px' }}
-            src={gifs[result]}
-            alt="animation"
-          />
+          <div className="d-flex justify-content-center">
+            <img
+              className="w-100"
+              style={{ maxWidth: '400px', height: '300px' }}
+              src={gifs[result]}
+              alt="animation"
+            />
+          </div>
         </Modal.Body>
         <Modal.Footer>
           <Button onClick={handleCloseModal} className="btn btn-secondary rounded-lg">

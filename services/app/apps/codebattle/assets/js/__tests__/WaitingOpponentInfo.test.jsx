@@ -12,7 +12,7 @@ test('test WaitingOpponentInfo url', async () => {
   const url = 'some-url-for.test';
   render(<WaitingOpponentInfo gameUrl={url} />);
 
-  expect(screen.getByDisplayValue(url)).toBeInTheDocument();
+  expect(screen.getByText(url)).toBeInTheDocument();
 });
 
 test('test WaitingOpponentInfo copy button', async () => {

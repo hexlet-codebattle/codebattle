@@ -416,13 +416,13 @@ a {
   }
 }
 
-.cb-chat-container
+.cb-lobby-widget-container,
 .cb-messages-container {
-  height: 500px;
+  height: 400px;
 
   @media (max-width: $sm) {
     height: auto;
-    max-height: 1000px;
+    max-height: 400px;
   }
 }
 

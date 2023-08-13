@@ -58,7 +58,7 @@ function ExampleForm({
                 'is-invalid': !validationStatus.arguments.valid,
               },
             )}
-            value={example?.arguments}
+            value={example?.arguments || ''}
             onChange={handleArguments}
           />
           <div className="invalid-tooltip">
@@ -73,7 +73,7 @@ function ExampleForm({
                 'is-invalid': !validationStatus.expected.valid,
               },
             )}
-            value={example?.expected}
+            value={example?.expected || ''}
             onChange={handleExpected}
           />
           <div className="invalid-tooltip">
@@ -135,7 +135,7 @@ function ExamplesEditPanel({
       handleAdd();
     }
 
-    argumentsInputRef.current.focus();
+    argumentsInputRef.current?.focus();
   }, [items, suggest, handleAdd, handleEdit, argumentsInputRef]);
 
   const validationStatus = useValidationExample({

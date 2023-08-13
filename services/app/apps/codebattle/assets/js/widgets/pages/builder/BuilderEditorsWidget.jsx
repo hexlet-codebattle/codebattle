@@ -123,6 +123,7 @@ function BuilderEditorsWidget() {
     mode: editorsMode,
     theme,
     mute: true,
+    loading: false,
   };
 
   const changeTaskServiceState = useCallback(() => taskService.send('CHANGES'), [taskService]);
@@ -168,7 +169,7 @@ function BuilderEditorsWidget() {
           style={gameRoomEditorStyles}
         >
           <div className="rounded-top" data-player-type="current_user">
-            <div className="btn-toolbar justify-content-between align-items-center m-1" role="toolbar">
+            <div className="btn-toolbar justify-content-between align-items-center m-1 mb-2" role="toolbar">
               <div className="d-flex justify-content-between">
                 <div className="d-flex align-items-center p-1">
                   <div className="py-2">

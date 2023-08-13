@@ -146,7 +146,9 @@ jest.mock(
             join: jest.fn(() => channel),
             receive: jest.fn(),
             on: jest.fn(),
+            off: jest.fn(),
             push: jest.fn(),
+            onError: jest.fn(),
           };
 
           return channel;
@@ -176,6 +178,7 @@ const preloadedState = {
       gameOptions: {},
       opponentInfo: null,
     },
+    channel: { online: true },
   },
   completedGames: {
     completedGames: [
@@ -195,6 +198,14 @@ const preloadedState = {
   usersInfo: {
     1: {},
     2: {},
+  },
+  chat: {
+    users: [],
+    messages: [],
+    channel: { online: true },
+    activeRoom: { name: 'General', targetUserId: null },
+    rooms: [{ name: 'General', targetUserId: null }],
+    history: [],
   },
 };
 

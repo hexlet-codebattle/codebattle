@@ -22,7 +22,7 @@ const getTooltipVisibility = async msg => {
   return !_.isEmpty(await SearchIndex.search(colons));
 };
 
-export default function ChatInput({ inputRef }) {
+export default function ChatInput({ inputRef, disabled = false }) {
   const [isPickerVisible, setPickerVisibility] = useState(false);
   const [isTooltipVisible, setTooltipVisibility] = useState(false);
   const [text, setText] = useState('');
@@ -96,6 +96,7 @@ export default function ChatInput({ inputRef }) {
         value={text}
         onChange={handleChange}
         ref={inputRef}
+        disabled={disabled}
       />
       {isTooltipVisible && (
         <EmojiToolTip
@@ -105,7 +106,11 @@ export default function ChatInput({ inputRef }) {
         />
       )}
       {isPickerVisible && (
-        <EmojiPicker handleSelect={handleSelectEmodji} hide={hidePicker} />
+        <EmojiPicker
+          handleSelect={handleSelectEmodji}
+          hide={hidePicker}
+          disabled={disabled}
+        />
       )}
       <div className="input-group-append border-left rounded-right">
         <button
@@ -119,6 +124,7 @@ export default function ChatInput({ inputRef }) {
           className="btn btn-secondary border-gray border-left rounded-right"
           type="button"
           onClick={handleSubmit}
+          disabled={disabled}
         >
           Send
         </button>

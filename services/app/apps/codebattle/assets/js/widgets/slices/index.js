@@ -70,5 +70,3 @@ export default {
   stairwayGame,
   tournament,
 };
-
-export { makeEditorTextKey } from './editor';

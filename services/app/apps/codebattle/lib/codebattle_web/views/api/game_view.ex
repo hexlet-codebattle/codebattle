@@ -3,27 +3,26 @@ defmodule CodebattleWeb.Api.GameView do
 
   alias Runner.Languages
   alias Codebattle.CodeCheck
-  alias Codebattle.Asserts
 
   import Codebattle.Game.Helpers
 
   def render_game(game, score) do
     %{
       id: get_game_id(game),
-      inserted_at: game.inserted_at,
+      inserted_at: Map.get(game, :inserted_at),
       langs: get_langs_with_templates(game.task),
       level: game.level,
       mode: game.mode,
       score: score,
       players: game.players,
-      rematch_initiator_id: game.rematch_initiator_id,
-      rematch_state: game.rematch_state,
-      starts_at: game.starts_at,
+      rematch_initiator_id: Map.get(game, :rematch_initiator_id),
+      rematch_state: Map.get(game, :rematch_state, "none"),
+      starts_at: Map.get(game, :starts_at),
       state: game.state,
       status: game.state,
       task: game.task,
       timeout_seconds: game.timeout_seconds,
-      tournament_id: game.tournament_id,
+      tournament_id: Map.get(game, :tournament_id),
       type: game.type,
       visibility_type: game.visibility_type
     }

@@ -13,16 +13,21 @@ import {
 import PlaybookStatusCodes from '../config/playbookStatusCodes';
 import GameStateCodes from '../config/gameStateCodes';
 import GameRoomModes from '../config/gameModes';
-import GameTypeCodes from '../config/gameTypeCodes';
 import notification from '../utils/notification';
 import {
  taskTemplatesStates, labelTaskParamsWithIds, MAX_NAME_LENGTH, MIN_NAME_LENGTH,
 } from '../utils/builder';
 import { taskStateCodes } from '../config/task';
+import {
+  getGamePlayers,
+  getGameStatus,
+  getPlayersExecutionData,
+  getPlayersText,
+} from '../utils/gameRoom';
 
 const defaultLanguages = Gon.getAsset('langs');
 const gameId = Gon.getAsset('game_id');
-const taskId = Gon.getAsset('task_id');
+const game = Gon.getAsset('game');
 const isRecord = Gon.getAsset('is_record');
 const channelName = `game:${gameId}`;
 const channel = !isRecord && gameId ? socket.channel(channelName) : null;
@@ -41,24 +46,20 @@ const initEditors = dispatch => (playbookStatusCode, players) => {
     : actions.updateExecutionOutput;
 
   players.forEach(player => {
+    const editorData = getPlayersText(player);
+    const executionOutputData = getPlayersExecutionData(player);
+
     dispatch(
-      updateEditorTextAction({
-        userId: player.id,
-        editorText: player.editorText,
-        langSlug: player.editorLang,
-      }),
+      updateEditorTextAction(editorData),
     );
 
     dispatch(
-      updateExecutionOutputAction({
-        ...player.checkResult,
-        userId: player.id,
-      }),
+      updateExecutionOutputAction(executionOutputData),
     );
   });
 };
 
-const initStore = dispatch => ({
+const updateStore = dispatch => ({
   firstPlayer,
   secondPlayer,
   task,
@@ -66,11 +67,7 @@ const initStore = dispatch => ({
   gameStatus,
   playbookStatusCode,
 }) => {
-  const players = [{ ...firstPlayer, type: userTypes.firstPlayer }];
-
-  if (secondPlayer) {
-    players.push({ ...secondPlayer, type: userTypes.secondPlayer });
-  }
+  const players = getGamePlayers([firstPlayer, secondPlayer]);
 
   dispatch(actions.setLangs({ langs }));
   dispatch(actions.updateGamePlayers({ players }));
@@ -96,7 +93,7 @@ const initStoredGame = dispatch => data => {
     tournamentId: data.tournamentId,
   };
 
-  initStore(dispatch)({
+  updateStore(dispatch)({
     firstPlayer: data.players[0],
     secondPlayer: data.players[1],
     task: data.task,
@@ -126,36 +123,17 @@ const initGameChannel = (dispatch, machine, currentChannel) => {
   });
 
   const onJoinSuccess = response => {
-    machine.send('JOIN', { payload: response });
+    const data = camelizeKeys(response);
 
     const {
-      state,
-      startsAt,
-      type,
-      mode,
-      timeoutSeconds,
       players: [firstPlayer, secondPlayer],
       task,
       langs,
-      rematchState,
-      tournamentId,
-      rematchInitiatorId,
-      score,
-    } = camelizeKeys(response);
+    } = data;
 
-    const gameStatus = {
-      state,
-      type,
-      mode,
-      startsAt,
-      score,
-      timeoutSeconds,
-      rematchState,
-      rematchInitiatorId,
-      tournamentId,
-    };
+    const gameStatus = getGameStatus(data);
 
-    initStore(dispatch)({
+    updateStore(dispatch)({
       firstPlayer,
       secondPlayer,
       task,
@@ -163,11 +141,6 @@ const initGameChannel = (dispatch, machine, currentChannel) => {
       gameStatus,
       playbookStatusCode: PlaybookStatusCodes.active,
     });
-
-    setTimeout(() => {
-      const payload = { state };
-      machine.send('LOAD_GAME', { payload });
-    }, 2000);
   };
   currentChannel
     .join()
@@ -497,45 +470,14 @@ export const activeGameReady = machine => dispatch => {
   return clearGameListeners;
 };
 
-const fetchOrCreateTask = (gameMachine, taskMachine) => dispatch => {
-  const requestPath = taskId ? `/api/v1/tasks/${taskId}` : '/api/v1/tasks/new';
+const fetchOrCreateTask = (gameMachine, taskMachine) => (dispatch, getState) => {
+  const currentTask = getState().builder.task;
 
-  axios.get(requestPath).then(({ data }) => {
-    const {
-      task,
-      langs,
-      players,
-    } = camelizeKeys(data);
-    const state = GameStateCodes.builder;
+  taskMachine.send('SETUP_TASK', { payload: currentTask });
 
-    const type = GameTypeCodes.duo;
-    const mode = GameRoomModes.builder;
-    const timeoutSeconds = 0;
-
-    const gameStatus = {
-      state,
-      type,
-      mode,
-      timeoutSeconds,
-    };
-
-    initStore(dispatch)({
-      firstPlayer: players[0],
-      secondPlayer: players[1],
-      langs,
-      gameStatus,
-      playbookStatusCode: PlaybookStatusCodes.none,
-    });
-
-    const labeledTask = labelTaskParamsWithIds(task);
-
-    dispatch(actions.setTask({ task: labeledTask }));
-
-    taskMachine.send('SETUP_TASK', { payload: task });
-
-    const message = { payload: { state } };
-    gameMachine.send('LOAD_GAME', message);
-  });
+  const state = GameStateCodes.builder;
+  const message = { payload: { state } };
+  gameMachine.send('LOAD_GAME', message);
 };
 
 export const reloadGeneratorAndSolutionTemplates = taskMachine => (dispatch, getState) => {
@@ -722,7 +664,7 @@ export const buildTaskAsserts = taskMachine => (dispatch, getState) => {
     return;
   }
 
-  const taskParams = selectors.taskParamsSelector(state, { normalize: false });
+  const taskParams = selectors.taskParamsSelector({ normalize: false })(state);
   const editorLang = selectors.taskGeneratorLangSelector(state);
   const textSolution = selectors.taskSolutionSelector(state, editorLang);
   const textArgumentsGenerator = selectors.taskArgumentsGeneratorSelector(state, editorLang);
@@ -847,9 +789,20 @@ export const connectToTask = (gameMachine, taskMachine) => dispatch => {
   return () => {};
 };
 
-export const connectToGame = machine => dispatch => (
-  isRecord ? fetchPlaybook(machine, initStoredGame)(dispatch) : activeGameReady(machine)(dispatch)
-);
+export const connectToGame = machine => dispatch => {
+  if (isRecord) {
+    return fetchPlaybook(machine, initStoredGame)(dispatch);
+  }
+
+  machine.send('JOIN', { payload: game });
+
+  setTimeout(() => {
+    const payload = { state: game.state };
+    machine.send('LOAD_GAME', { payload });
+  }, 2000);
+
+  return activeGameReady(machine)(dispatch);
+};
 
 export const connectToEditor = machine => () => (
   isRecord

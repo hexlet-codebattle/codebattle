@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import * as selectors from '../selectors';
 import { actions } from '../slices';
 
-export default function Rooms() {
+export default function Rooms({ disabled }) {
   const dispatch = useDispatch();
 
   const rooms = useSelector(selectors.roomsSelector);
@@ -13,8 +13,8 @@ export default function Rooms() {
 
   return (
     <>
-      <Dropdown as={ButtonGroup} title="">
-        <Dropdown.Toggle className="rounded-top" split variant="secondary" id="dropdown-rooms">
+      <Dropdown as={ButtonGroup} title="" disabled={disabled}>
+        <Dropdown.Toggle className="rounded-top" split variant="secondary" id="dropdown-rooms" disabled={disabled}>
           <span className="mr-2">{activeRoom.name}</span>
         </Dropdown.Toggle>
 

@@ -60,6 +60,10 @@ function TimerContainer({
     return <CountdownTimer time={time} timeoutSeconds={timeoutSeconds} />;
   }
 
+  if (!time) {
+    return <></>;
+  }
+
   return <Timer time={time} />;
 }
 

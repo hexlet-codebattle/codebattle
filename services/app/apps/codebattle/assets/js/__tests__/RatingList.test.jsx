@@ -29,13 +29,9 @@ axios.get.mockResolvedValue({
 
 test('test rendering RatingList', async () => {
   const reducer = combineReducers(reducers);
-
-  const preloadedState = {
-    storeLoaded: true,
-  };
   const store = configureStore({
     reducer,
-    preloadedState,
+    preloadedState: {},
   });
 
   const { getByText } = render(<Provider store={store}><RatingList /></Provider>);
