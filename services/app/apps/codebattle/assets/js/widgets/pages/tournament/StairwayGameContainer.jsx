@@ -1,10 +1,8 @@
 /* eslint-disable */
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Gon from 'gon';
 import _ from 'lodash';
 
-import userTypes from '../../config/userTypes';
 import { actions } from '../../slices';
 
 import { connectToActiveMatch, connectToStairwayTournament } from '../../middlewares/StairwayGame';
@@ -29,8 +27,6 @@ function StairwayGameContainer() {
   const activeRoundId = activeMatch?.roundId
 
   useEffect(() => {
-    const currentUser = Gon.getAsset('current_user');
-    dispatch(actions.setCurrentUser({ user: { ...currentUser, type: userTypes.spectator } }));
     dispatch(connectToStairwayTournament());
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

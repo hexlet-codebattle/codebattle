@@ -13,6 +13,8 @@ export const inPreviewRoomSelector = state => state.matches({ room: roomMachineS
 
 export const inTestingRoomSelector = state => state.matches({ room: roomMachineStates.testing });
 
+export const isGameActiveSelector = state => state.matches({ room: roomMachineStates.active });
+
 export const isGameOverSelector = state => state.matches({ room: roomMachineStates.gameOver });
 
 export const inBuilderRoomSelector = state => state.matches({ room: roomMachineStates.builder });
@@ -21,15 +23,7 @@ export const inWaitingRoomSelector = state => state.matches({ room: roomMachineS
 
 export const openedReplayerSelector = state => state.matches({ replayer: replayerMachineStates.on });
 
-export const gameRoomKeySelector = state => {
-  switch (true) {
-    case state.matches({ room: roomMachineStates.preview }): {
-      return 'preview';
-    }
-    default:
-      return 'game';
-  }
-};
+export const gameRoomKeySelector = () => ('game');
 
 export const isInvalidStateTaskSelector = state => state.matches(taskMachineStates.invalid);
 

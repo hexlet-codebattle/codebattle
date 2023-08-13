@@ -1,25 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
-import GameStateCodes from '../config/gameStateCodes';
-import GameRoomModes from '../config/gameModes';
+import { setPlayerToSliceState } from '../utils/gameRoom';
+import initial from './initial';
 
-const initialState = {
-  gameStatus: {
-    state: GameStateCodes.initial,
-    msg: '',
-    type: null,
-    mode: GameRoomModes.none,
-    startsAt: null,
-    score: null,
-    timeoutSeconds: null,
-    rematchState: null,
-    rematchInitiatorId: null,
-    checking: {},
-    solutionStatus: null,
-  },
-  task: null,
-  players: {},
-  tournamentsInfo: null,
-};
+const initialState = initial.game;
 
 const game = createSlice({
   name: 'game',
@@ -36,10 +19,7 @@ const game = createSlice({
     },
     updateGamePlayers: (state, { payload: { players: playersList } }) => {
       const newPlayersState = playersList.reduce(
-        (acc, player) => ({
-          ...acc,
-          [player.id]: { ...acc[player.id], ...player },
-        }),
+        setPlayerToSliceState,
         state.players,
       );
       state.players = newPlayersState;

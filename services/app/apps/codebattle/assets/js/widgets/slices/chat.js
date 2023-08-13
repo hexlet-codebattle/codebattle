@@ -17,6 +17,7 @@ const initialState = {
     users: [],
     messages: [],
   },
+  channel: { online: false },
 };
 
 const chat = createSlice({
@@ -73,6 +74,9 @@ const chat = createSlice({
     },
     setPrivateRooms: (state, { payload }) => {
       state.rooms = [...state.rooms, ...payload];
+    },
+    updateChatChannelState: (state, { payload }) => {
+      state.channel.online = payload;
     },
   },
 });

@@ -4,6 +4,8 @@ defmodule CodebattleWeb.TaskController do
   import PhoenixGon.Controller
 
   alias Codebattle.Task
+  alias Codebattle.Game
+  alias CodebattleWeb.Api.GameView
 
   def index(conn, _params) do
     tasks = Task.list_visible(conn.assigns.current_user)
@@ -18,12 +20,20 @@ defmodule CodebattleWeb.TaskController do
   end
 
   def new(conn, _params) do
+    user_id = conn.assigns.current_user.id
+    task = Task.create_empty(user_id)
+    game = Game.Context.create_empty_game(user_id, task)
+
     conn
     |> put_meta_tags(%{
       title: "Hexlet Codebattle • Task",
       description: "Create your own task",
       url: Routes.task_path(conn, :new)
     })
+    |> put_gon(
+      task: task,
+      game: GameView.render_game(game, nil)
+    )
     |> render("new.html")
   end
 
@@ -33,6 +43,11 @@ defmodule CodebattleWeb.TaskController do
 
     if Task.can_see_task?(task, conn.assigns.current_user) do
       # played_count = Task.get_played_count(id)
+      game =
+        Game.Context.create_empty_game(
+          conn.assigns.current_user.id,
+          task
+        )
 
       conn
       |> put_meta_tags(%{
@@ -40,7 +55,7 @@ defmodule CodebattleWeb.TaskController do
         description: String.slice(task.description_en, 0..137),
         url: Routes.task_path(conn, :show, task)
       })
-      |> put_gon(task_id: task.id)
+      |> put_gon(task: task, game: game)
       |> render("new.html")
     else
       conn

@@ -1,21 +1,10 @@
 import _ from 'lodash';
 import { createSlice } from '@reduxjs/toolkit';
-
-export const initialState = {
-  currentUserId: null,
-  users: {},
-  usersStats: {},
-  usersRatingPage: {
-    users: [],
-    pageInfo: { totalEntries: 0 },
-    dateFrom: null,
-    withBots: true,
-  },
-};
+import initial from './initial';
 
 const userSlice = createSlice({
   name: 'user',
-  initialState,
+  initialState: initial.user,
   reducers: {
     setCurrentUser: (state, { payload }) => {
       const { user } = payload;

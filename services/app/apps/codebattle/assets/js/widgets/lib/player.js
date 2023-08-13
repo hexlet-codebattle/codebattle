@@ -151,6 +151,7 @@ const reduceOriginalRecords = (acc, record, index) => {
   if (type === 'chat_message') {
     const message = {
       id: record.id,
+      time: record.time,
       name: record.name,
       text: record.text || record.message,
     };

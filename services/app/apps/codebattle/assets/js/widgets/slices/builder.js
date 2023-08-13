@@ -1,6 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
 import _ from 'lodash';
-import defaultTaskTemplate from '../config/task';
 import {
   validateTaskName,
   validateDescription,
@@ -8,53 +7,25 @@ import {
   validateExamples,
   taskTemplatesStates,
   getExamplesFromAsserts,
+  getTaskTemplates,
 } from '../utils/builder';
+import initial from './initial';
 
-const initialState = {
-  task: defaultTaskTemplate,
-  templates: {
-    state: taskTemplatesStates.loading,
-    solution: {},
-    argumentsGenerator: {},
-  },
-  assertsStatus: {
-    status: 'none',
-    output: '',
-  },
-  players: {},
-  validationStatuses: {
-    name: [false],
-    description: [false],
-    solution: [true],
-    argumentsGenerator: [true],
-    inputSignature: [false],
-    outputSignature: [true],
-    assertsExamples: [false],
-  },
-  textArgumentsGenerator: {},
-  textSolution: {},
-  generatorLang: null,
-};
+const getTaskAssertsStatus = task => ({
+  status: task.asserts.length > 0 ? 'ok' : 'none',
+  output: '',
+});
 
 const builder = createSlice({
   name: 'builder',
-  initialState,
+  initialState: initial.builder,
   reducers: {
     setTask: (state, { payload: { task } }) => {
       state.task = { ...state.task, ...task };
 
-      state.templates = {
-        state: !task.solution && !task.argumentsGenerator ? taskTemplatesStates.none : taskTemplatesStates.init,
-        solution: task.solution ? { [task.generatorLang]: task.solution } : {},
-        argumentsGenerator: task.argumentsGenerator
-          ? { [task.generatorLang]: task.argumentsGenerator }
-          : {},
-      };
+      state.templates = getTaskTemplates(task);
 
-      state.assertsStatus = {
-        status: task.asserts.length > 0 ? 'ok' : 'none',
-        output: '',
-      };
+      state.assertsStatus = getTaskAssertsStatus(task);
 
       state.textSolution = state.templates.solution;
       state.textArgumentsGenerator = state.templates.argumentsGenerator;

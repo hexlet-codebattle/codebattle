@@ -3,6 +3,14 @@ import useStayScrolled from '../utils/useStayScrolled';
 
 import Message from './Message';
 
+const getKey = (id, time, name) => {
+  if (!time || !name) {
+    return id;
+  }
+
+  return `${time}-${name}`;
+};
+
 function Messages({ messages, displayMenu = () => {} }) {
   const listRef = useRef();
 
@@ -24,12 +32,14 @@ function Messages({ messages, displayMenu = () => {} }) {
             id, userId, name, text, type, time, meta,
           } = message;
 
+          const key = getKey(id, time, name);
+
           return (
             <Message
               name={name}
               userId={userId}
               text={text}
-              key={id || `${time}-${name}`}
+              key={key}
               type={type}
               time={time}
               meta={meta}

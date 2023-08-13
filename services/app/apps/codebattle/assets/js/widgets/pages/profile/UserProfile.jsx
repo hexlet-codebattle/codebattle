@@ -236,7 +236,7 @@ function UserProfile() {
           {completedGames && completedGames.length > 0 && (
             <>
               <CompletedGames
-                className="table-responsive scroll h-50"
+                className="table-responsive scroll h-75"
                 games={completedGames}
                 loadNextPage={loadNextPage}
                 totalGames={totalGames}

@@ -21,7 +21,7 @@ const TaskLanguagesSelection = ({
   );
 
   return (
-    <Dropdown className="d-flex ml-auto">
+    <Dropdown className="d-flex">
       <Dropdown.Toggle
         id="tasklang-dropdown-toggle"
         className="shadow-none rounded-lg p-1 btn-sm"

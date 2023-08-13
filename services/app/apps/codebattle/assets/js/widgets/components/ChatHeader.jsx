@@ -5,7 +5,7 @@ import * as selectors from '../selectors';
 import Rooms from './Rooms';
 import { pushCommand } from '../middlewares/Chat';
 
-export default function ChatHeader({ showRooms = false }) {
+export default function ChatHeader({ showRooms = false, disabled = false }) {
   const currentUserIsAdmin = useSelector(selectors.currentUserIsAdminSelector);
 
   const handleCleanBanned = () => {
@@ -14,7 +14,7 @@ export default function ChatHeader({ showRooms = false }) {
 
   return (
     <div className="d-flex border-bottom align-items-center">
-      {showRooms && <Rooms />}
+      {showRooms && <Rooms disabled={disabled} />}
       {currentUserIsAdmin ? (
         <button
           type="button"
@@ -22,6 +22,7 @@ export default function ChatHeader({ showRooms = false }) {
           onClick={() => {
             handleCleanBanned();
           }}
+          disabled={disabled}
         >
           Clean banned
         </button>

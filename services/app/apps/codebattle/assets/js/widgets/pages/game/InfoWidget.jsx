@@ -9,7 +9,7 @@ import {
 } from '../../selectors';
 import { actions } from '../../slices';
 import useMachineStateSelector from '../../utils/useMachineStateSelector';
-import { inTestingRoomSelector, roomStateSelector } from '../../machines/selectors';
+import { inPreviewRoomSelector, inTestingRoomSelector, roomStateSelector } from '../../machines/selectors';
 import RoomContext from '../../components/RoomContext';
 import ChatWidget from './ChatWidget';
 import Output from './Output';
@@ -22,6 +22,7 @@ function InfoWidget() {
   const { mainService } = useContext(RoomContext);
   const roomCurrent = useMachineStateSelector(mainService, roomStateSelector);
   const isTestingRoom = inTestingRoomSelector(roomCurrent);
+  const isPreviewRoom = inPreviewRoomSelector(roomCurrent);
 
   const taskLanguage = useSelector(taskDescriptionLanguageselector);
   const task = useSelector(isTestingRoom ? builderTaskSelector : gameTaskSelector);
@@ -72,12 +73,16 @@ function InfoWidget() {
               <div
                 className="rounded-0 text-center bg-white border-left col-6 text-black px-1 py-2"
               >
-                <TimerContainer
-                  time={startsAt}
-                  mode={gameRoomMode}
-                  timeoutSeconds={timeoutSeconds}
-                  gameStateName={gameStateName}
-                />
+                {isPreviewRoom ? (
+                  'Loading...'
+                ) : (
+                  <TimerContainer
+                    time={startsAt}
+                    mode={gameRoomMode}
+                    timeoutSeconds={timeoutSeconds}
+                    gameStateName={gameStateName}
+                  />
+                )}
               </div>
             </div>
           </nav>

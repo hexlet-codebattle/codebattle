@@ -13,13 +13,19 @@ import editorUserTypes from '../../config/editorUserTypes';
 import { roomStateSelector } from '../../machines/selectors';
 import useMachineStateSelector from '../../utils/useMachineStateSelector';
 
+const EditorWrapper = ({ children, id, className }) => (
+  <div id={id} className={className}>
+    {children}
+  </div>
+);
+
 function RightSide({ output, children }) {
   const [showTab, setShowTab] = useState('editor');
   const isShowOutput = output && output.status;
   const content = showTab === 'editor' ? (
-    <div id="editor" className="d-flex flex-column flex-grow-1">
+    <EditorWrapper id="editor" className="d-flex flex-column flex-grow-1 position-relative">
       {children}
-    </div>
+    </EditorWrapper>
   ) : (
     <div className="d-flex flex-column flex-grow-1 overflow-auto">
       <div className="h-auto">
@@ -100,7 +106,9 @@ function GameWidget({ editorMachine }) {
         editorHeight={leftEditorHeight}
         editorMode={leftEditorsMode}
       >
-        {params => <Editor {...params} />}
+        {params => (
+          <Editor {...params} />
+        )}
       </EditorContainer>
       <EditorContainer
         id={rightUserId}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import _ from 'lodash';
 import { Alert } from 'react-bootstrap';
@@ -14,7 +14,7 @@ function GameResult() {
   const gameStatus = useSelector(state => selectors.gameStatusSelector(state));
   const gameMode = useSelector(state => selectors.gameModeSelector(state));
 
-  const getResultMessage = () => {
+  const result = useMemo(() => {
     if (gameStatus.state === GameStateCodes.timeout) {
       return ({
         alertStyle: 'danger',
@@ -45,9 +45,14 @@ function GameResult() {
     }
 
     return null;
-  };
+  }, [
+    currentUserId,
+    players,
+    isCurrentUserPlayer,
+    gameStatus.state,
+    gameMode,
+  ]);
 
-  const result = getResultMessage();
   if (result) {
     return (<Alert variant={result.alertStyle}>{result.msg}</Alert>);
   }

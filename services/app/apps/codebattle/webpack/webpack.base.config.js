@@ -27,6 +27,7 @@ module.exports = {
     path: path.resolve(__dirname, '../priv/static/assets'),
     filename: '[name].js',
     sourceMapFilename: '[name].js.map',
+    chunkFilename: '[id].[contenthash].js',
     publicPath: '/assets/',
   },
   externals: {

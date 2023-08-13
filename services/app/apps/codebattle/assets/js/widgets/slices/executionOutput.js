@@ -1,13 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
-
-const initialState = {
-  results: {},
-  historyResults: {},
-};
+import initial from './initial';
 
 const executionOutput = createSlice({
   name: 'executionOutput',
-  initialState,
+  initialState: initial.executionOutput,
   reducers: {
     updateExecutionOutput: (
       state,

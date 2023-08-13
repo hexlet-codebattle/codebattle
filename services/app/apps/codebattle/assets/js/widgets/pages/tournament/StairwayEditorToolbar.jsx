@@ -1,7 +1,6 @@
 import _ from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Gon from 'gon';
 import { actions } from '../../slices';
 
 import LanguagePickerView from '../../components/LanguagePickerView';
@@ -15,8 +14,6 @@ const type = 'stairway';
 const toolbarClassNames = 'btn-toolbar justify-content-between align-items-center m-1';
 const editorSettingClassNames = 'btn-group align-items-center m-1';
 const userInfoClassNames = 'btn-group align-items-center justify-content-end m-1';
-
-const currentUser = Gon.getAsset('current_user');
 
 const ModeButtons = ({ player }) => (
   <div
@@ -46,7 +43,7 @@ function StairwayEditorToolbar({
     ({ label: { props } }) => setActivePlayerId(props.user.id),
     [setActivePlayerId],
   );
-  const isDisabledLanguagePicker = activePlayer.id !== currentUser.id;
+  const isDisabledLanguagePicker = activePlayer.id !== currentUserId;
   const isDisabledPlayerPicker = useMemo(
     () => players.some(player => player.id === currentUserId),
     [players, currentUserId],

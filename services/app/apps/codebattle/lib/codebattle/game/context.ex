@@ -13,6 +13,8 @@ defmodule Codebattle.Game.Context do
   alias Codebattle.CodeCheck
   alias Codebattle.Game
   alias Codebattle.Game.Engine
+  alias Codebattle.Game.Player
+  alias Codebattle.Bot
   alias Codebattle.Repo
   alias Codebattle.Tournament
   alias Codebattle.User
@@ -97,6 +99,33 @@ defmodule Codebattle.Game.Context do
         |> get_from_db!()
         |> fill_virtual_fields()
     end
+  end
+
+  def create_empty_game(user_id, task) do
+    current_player =
+      user_id
+      |> User.get_user!()
+      |> Player.build()
+
+    opponent_bot =
+      Bot.Context.build()
+      |> Player.build()
+
+    players = [
+      current_player,
+      opponent_bot
+    ]
+
+    %Game{
+      state: "builder",
+      mode: "builder",
+      type: "duo",
+      task: task,
+      level: task.level,
+      timeout_seconds: 0,
+      players: players,
+      visibility_type: "hidden"
+    }
   end
 
   @spec create_game(game_params) :: {:ok, Game.t()} | {:error, atom}

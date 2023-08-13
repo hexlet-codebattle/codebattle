@@ -1,4 +1,8 @@
-import React, { useEffect, useContext, useCallback } from 'react';
+import React, {
+  useEffect,
+  useContext,
+  useCallback,
+} from 'react';
 import _ from 'lodash';
 import cn from 'classnames';
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,13 +13,18 @@ import * as GameActions from '../../middlewares/Game';
 import { actions } from '../../slices';
 import * as selectors from '../../selectors';
 import RoomContext from '../../components/RoomContext';
-import editorSettingsByUserType from '../../config/editorSettingsByUserType';
+import {
+  editorBtnStatuses as EditorBtnStatuses,
+  editorSettingsByUserType,
+} from '../../config/editorSettingsByUserType';
 import editorUserTypes from '../../config/editorUserTypes';
 import { gameRoomEditorStyles } from '../../config/editorSettings';
 import {
   editorStateSelector,
   inBuilderRoomSelector,
+  inPreviewRoomSelector,
   inTestingRoomSelector,
+  isGameActiveSelector,
   isGameOverSelector,
   openedReplayerSelector,
 } from '../../machines/selectors';
@@ -34,17 +43,19 @@ function EditorContainer({
 }) {
   const dispatch = useDispatch();
   const players = useSelector(selectors.gamePlayersSelector);
+  const gameMode = useSelector(selectors.gameModeSelector);
 
-  const currentUserId = useSelector(state => selectors.currentUserIdSelector(state));
+  const currentUserId = useSelector(selectors.currentUserIdSelector);
   const currentEditorLangSlug = useSelector(state => selectors.userLangSelector(state)(currentUserId));
-  const score = useSelector(state => selectors.userGameScoreByPlayerId(state)(id));
 
   const updateEditorValue = useCallback(data => dispatch(GameActions.updateEditorText(data)), [dispatch]);
   const sendEditorValue = useCallback(data => dispatch(GameActions.sendEditorText(data)), [dispatch]);
 
   const { mainService } = useContext(RoomContext);
+  const isPreview = useMachineStateSelector(mainService, inPreviewRoomSelector);
   const inTestingRoom = useMachineStateSelector(mainService, inTestingRoomSelector);
   const inBuilderRoom = useMachineStateSelector(mainService, inBuilderRoomSelector);
+  const isActiveGame = useMachineStateSelector(mainService, isGameActiveSelector);
   const isGameOver = useMachineStateSelector(mainService, isGameOverSelector);
   const openedReplayer = useMachineStateSelector(mainService, openedReplayerSelector);
 
@@ -132,10 +143,13 @@ function EditorContainer({
     checkResult,
     currentEditorLangSlug,
     ...userSettings,
+    giveUpBtnStatus: isActiveGame
+      ? userSettings.giveUpBtnStatus
+      : EditorBtnStatuses.disabled,
   };
 
   const toolbarParams = {
-    score,
+    mode: gameMode,
     player: players[id],
     editor: editorState,
     status: editorCurrent.value,
@@ -164,6 +178,7 @@ function EditorContainer({
     theme,
     ...userSettings,
     editable: !openedReplayer && userSettings.editable,
+    loading: isPreview || editorCurrent.value === 'loading',
   };
 
   const isWon = players[id].result === 'won';

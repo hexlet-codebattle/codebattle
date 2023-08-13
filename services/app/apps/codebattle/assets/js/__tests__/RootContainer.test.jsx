@@ -168,6 +168,7 @@ const preloadedState = {
         userId: -1,
       },
     ],
+    channel: { online: true },
     activeRoom: { name: 'General', targetUserId: null },
     rooms: [{ name: 'General', targetUserId: null }],
     history: {

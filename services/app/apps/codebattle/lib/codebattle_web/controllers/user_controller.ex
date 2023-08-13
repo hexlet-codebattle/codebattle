@@ -1,16 +1,29 @@
 defmodule CodebattleWeb.UserController do
   use CodebattleWeb, :controller
 
+  import PhoenixGon.Controller
+
   alias Codebattle.{Repo, User, UserGame}
+  alias CodebattleWeb.Api.UserView
   import Ecto.Query
 
   def index(conn, _params) do
+    %{users: users} =
+      UserView.render_rating(%{
+        "page_size" => "20",
+        "page" => "1",
+        "s" => "rank+asc",
+        "date_from" => "",
+        "with_bots" => false
+      })
+
     conn
     |> put_meta_tags(%{
       title: "Hexlet Codebattle • Users rating",
       description: "Top Codebattle players ever, compare your skills with other developers",
       url: Routes.user_path(conn, :index)
     })
+    |> put_gon(users_rating: users)
     |> render("index.html")
   end
 

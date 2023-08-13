@@ -8,7 +8,6 @@ import cn from 'classnames';
 import UserInfo from '../../components/UserInfo';
 import { usersListSelector } from '../../selectors';
 import { getUsersRatingPage } from '../../middlewares/Users';
-import Loading from '../../components/Loading';
 
 const decorateJoinedDate = str => moment.utc(str).format('LL');
 
@@ -104,7 +103,6 @@ const periods = ['weekly', 'monthly', 'total'];
 
 function UsersRating() {
   const usersRatingPage = useSelector(usersListSelector);
-  const storeLoaded = useSelector(state => state.storeLoaded);
   const dispatch = useDispatch();
 
   const {
@@ -142,10 +140,6 @@ function UsersRating() {
     });
     setPage(1);
   };
-
-  if (!storeLoaded) {
-    return <Loading />;
-  }
 
   return (
     <div className="text-center">

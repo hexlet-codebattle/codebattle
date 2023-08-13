@@ -102,7 +102,7 @@ function InputSignatureEditPanel({
                     },
                   )}
                   onChange={handleChangeName}
-                  value={suggest?.argumentName}
+                  value={suggest?.argumentName || ''}
                 />
               </div>
             </div>
