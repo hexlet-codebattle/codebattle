@@ -197,14 +197,14 @@ const initial = {
     tournamentsInfo: null,
   },
   editor: {
-    initialMeta,
-    initialText: isRecord ? {} : initialText,
-    initialTextHistory: isRecord ? initialText : {},
-    initialLangs,
-    initialLangsHistory,
+    meta: initialMeta,
+    text: initialText,
+    textHistory: isRecord ? initialText : {},
+    langs: initialLangs,
+    langsHistory: initialLangsHistory,
   },
   executionOutput: {
-    results: isRecord ? {} : initialResults,
+    results: initialResults,
     historyResults: isRecord ? initialResults : {},
   },
   builder: {

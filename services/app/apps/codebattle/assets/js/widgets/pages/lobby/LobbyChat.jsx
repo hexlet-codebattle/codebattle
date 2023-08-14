@@ -108,7 +108,7 @@ function LobbyChat({
                   type="button"
                   className="btn btn-sm p-0 rounded-lg"
                   onClick={openSendInviteModal}
-                  disabled={isOnline || presenceList.length <= 1}
+                  disabled={!isOnline || presenceList.length <= 1}
                 >
                   <img
                     title="Send fight invite"

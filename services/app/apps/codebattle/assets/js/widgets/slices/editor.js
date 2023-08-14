@@ -3,14 +3,6 @@ import defaultEditorHeight from '../config/editorSettings';
 import { makeEditorTextKey } from '../utils/gameRoom';
 import initial from './initial';
 
-const {
-  initialMeta,
-  initialText,
-  initialTextHistory,
-  initialLangs,
-  initialLangsHistory,
-} = initial.editor;
-
 const getCurrentEditorHeight = (state, userId) => {
   const {
     [userId]: { editorHeight },
@@ -20,7 +12,7 @@ const getCurrentEditorHeight = (state, userId) => {
 
 const meta = createSlice({
   name: 'meta',
-  initialState: initialMeta,
+  initialState: initial.editor.meta,
   reducers: {
     updateEditorLang: (state, { payload: { userId, currentLangSlug } }) => {
       state[userId] = {
@@ -63,7 +55,7 @@ const meta = createSlice({
 
 const text = createSlice({
   name: 'text',
-  initialState: initialText,
+  initialState: initial.editor.text,
   extraReducers: {
     [meta.actions.updateEditorText]: (
       state,
@@ -76,7 +68,7 @@ const text = createSlice({
 
 const textHistory = createSlice({
   name: 'textHistory',
-  initialState: initialTextHistory,
+  initialState: initial.editor.textHistory,
   extraReducers: {
     [meta.actions.updateEditorTextHistory]: (state, { payload: { userId, editorText } }) => {
       state[userId] = editorText;
@@ -86,7 +78,7 @@ const textHistory = createSlice({
 
 const langs = createSlice({
   name: 'langs',
-  initialState: initialLangs,
+  initialState: initial.editor.langs,
   reducers: {
     setLangs: (state, { payload: { langs: newLangs } }) => {
       state = newLangs;
@@ -96,7 +88,7 @@ const langs = createSlice({
 
 const langsHistory = createSlice({
   name: 'langsHistory',
-  initialState: initialLangsHistory,
+  initialState: initial.editor.langsHistory,
   extraReducers: {
     [meta.actions.updateEditorTextHistory]: (state, { payload: { userId, langSlug } }) => {
       state[userId] = langSlug;
