@@ -77,7 +77,7 @@ function OnlineIndicator() {
 
   return (
     <>
-      <span className="text-muted">{`${count} Online`}</span>
+      <span className="text-muted mr-2">{`${count} Online`}</span>
     </>
   );
 }
