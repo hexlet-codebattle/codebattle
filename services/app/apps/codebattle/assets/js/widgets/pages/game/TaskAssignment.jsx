@@ -69,8 +69,8 @@ function TaskAssignment({ task, taskLanguage, handleSetLanguage }) {
             <ShowGuideButton />
           </div>
         </div>
-        <div className="d-flex align-items-stretch flex-column">
-          <div className="card-text mb-0 h-100 overflow-auto">
+        <div className="d-flex align-items-stretch flex-column user-select-none">
+          <div className="card-text mb-0 h-100 overflow-auto user-select-none">
             <TaskDescriptionMarkdown description={description} />
           </div>
         </div>
