@@ -45,8 +45,6 @@ config :codebattle, :oauth,
   discord_client_id: System.get_env("DISCORD_CLIENT_ID", "ASFD"),
   discord_client_secret: System.get_env("DISCORD_CLIENT_SECRET", "ASFD")
 
-config :phoenix_gon, :json_library, Jason
-
 config :codebattle, CodebattleWeb.Gettext,
   priv: "priv/gettext",
   default_locale: "en"

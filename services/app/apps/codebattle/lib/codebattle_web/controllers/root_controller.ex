@@ -5,7 +5,6 @@ defmodule CodebattleWeb.RootController do
 
   alias Codebattle.Repo
   alias Codebattle.User
-  alias Codebattle.Game
   alias CodebattleWeb.Api.LobbyView
 
   def index(conn, params) do
@@ -56,8 +55,4 @@ defmodule CodebattleWeb.RootController do
   end
 
   defp maybe_put_opponent(conn, _params), do: conn
-
-  defp can_user_see_game?(game, user) do
-    game.visibility_type == "public" || Game.Helpers.is_player?(game, user)
-  end
 end

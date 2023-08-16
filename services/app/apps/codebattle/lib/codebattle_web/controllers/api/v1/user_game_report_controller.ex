@@ -1,8 +1,6 @@
 defmodule CodebattleWeb.Api.V1.UserGameReportController do
   use CodebattleWeb, :controller
 
-  import Ecto.Changeset
-
   alias Codebattle.Game
   alias Codebattle.UserGameReport
 

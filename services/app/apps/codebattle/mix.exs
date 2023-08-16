@@ -26,7 +26,7 @@ defmodule Codebattle.MixProject do
     [
       mod: {Codebattle.Application, []},
       extra_applications: [:runtime_tools, :logger, :os_mon],
-      included_applications: [:runner]
+      included_applications: [:runner, :phoenix_gon]
     ]
   end
 
@@ -40,6 +40,7 @@ defmodule Codebattle.MixProject do
   defp deps do
     [
       {:runner, in_umbrella: true, runtime: false},
+      {:phoenix_gon, in_umbrella: true, runtime: false},
       {:cowboy, "~> 2.8"},
       {:earmark, "~> 1.4"},
       {:ecto_sql, "~> 3.6"},
@@ -52,12 +53,12 @@ defmodule Codebattle.MixProject do
       {:phoenix, "~> 1.7"},
       {:phoenix_client, github: "vtm9/phoenix_client"},
       {:phoenix_ecto, "~> 4.4"},
-      {:phoenix_gon, "~> 0.4", github: "bonfire-networks/phoenix_gon"},
       {:phoenix_html, "~> 3.2"},
       {:phoenix_view, "~> 2.0"},
       {:phoenix_live_dashboard, "~> 0.8.0"},
       {:phoenix_live_view, "~> 0.18"},
       {:phoenix_meta_tags, "~> 0.1.8"},
+      {:plug, "~> 1.14"},
       {:plug_cowboy, "~> 2.5"},
       {:postgrex, ">= 0.0.0"},
       {:sentry, "~> 8.0"},
