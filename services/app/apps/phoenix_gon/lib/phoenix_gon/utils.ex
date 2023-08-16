@@ -18,7 +18,7 @@ defmodule PhoenixGon.Utils do
   @doc """
   Return elixir gon struct.
   """
-  @spec variables(Plug.Conn.t()) :: %PhoenixGon.Storage{}
+  @spec variables(Plug.Conn.t()) :: PhoenixGon.Storage.t()
   def variables(conn), do: conn.private[:phoenix_gon]
 
   @doc """
