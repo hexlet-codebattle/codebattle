@@ -160,9 +160,9 @@ defmodule Codebattle.Tournament.Helpers do
   end
 
   def get_stats(tournament) do
-    Enum.reduce(get_matches(tournament), %{}, fn match, acc ->
-      Map.put(acc, to_id(match.id), match)
-    end)
+    # Enum.reduce(get_matches(tournament), %{}, fn match, acc ->
+      # Map.put(acc, to_id(match.id), match)
+    # end)
 
     %{}
   end
