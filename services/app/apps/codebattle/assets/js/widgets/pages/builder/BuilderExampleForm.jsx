@@ -19,7 +19,7 @@ import useKey from '../../utils/useKey';
 
 const navbarItemClassName = 'nav-item nav-link col-3 border-0 rounded-0 px-1 py-2';
 
-const BuilderExampleForm = memo(() => {
+function BuilderExampleForm() {
   const dispatch = useDispatch();
   const { taskService } = useContext(RoomContext);
 
@@ -35,18 +35,18 @@ const BuilderExampleForm = memo(() => {
   const exampleArgumentsInputRef = useRef(null);
 
   const openInputEditPanel = useCallback(() => {
-    inputEditTabRef.current.click();
-    setTimeout(() => inputArgumentNameInputRef.current.focus(), 400);
+    inputEditTabRef.current?.click();
+    setTimeout(() => inputArgumentNameInputRef.current?.focus(), 400);
   }, [inputEditTabRef, inputArgumentNameInputRef]);
 
   const openExampleEditPanel = useCallback(() => {
-    exampleEditTabRef.current.click();
-    setTimeout(() => exampleArgumentsInputRef.current.focus(), 400);
+    exampleEditTabRef.current?.click();
+    setTimeout(() => exampleArgumentsInputRef.current?.focus(), 400);
   }, [exampleEditTabRef, exampleArgumentsInputRef]);
 
   useKey('Escape', () => {
     if (!argumentsTabRef.current.classList.contains('active')) {
-      argumentsTabRef.current.click();
+      argumentsTabRef.current?.click();
     }
   });
 
@@ -60,13 +60,13 @@ const BuilderExampleForm = memo(() => {
 
   const createInputTypeSuggest = useCallback(() => {
     setInputSuggest({ id: Date.now(), argumentName: '', type: { name: 'integer' } });
-    setTimeout(() => inputEditTabRef.current.click(), 10);
-    setTimeout(() => inputArgumentNameInputRef.current.focus(), 400);
+    setTimeout(() => inputEditTabRef.current?.click(), 10);
+    setTimeout(() => inputArgumentNameInputRef.current?.focus(), 400);
   }, [setInputSuggest]);
   const editInputType = useCallback(item => {
     setInputSuggest(_.cloneDeep(item));
-    setTimeout(() => inputEditTabRef.current.click(), 10);
-    setTimeout(() => inputSuggestRef.current.scrollIntoView({
+    setTimeout(() => inputEditTabRef.current?.click(), 10);
+    setTimeout(() => inputSuggestRef.current?.scrollIntoView({
       behavior: 'smooth',
       block: 'nearest',
       inline: 'start',
@@ -80,7 +80,7 @@ const BuilderExampleForm = memo(() => {
   }, [dispatch, taskService]);
   const clearInputSuggest = useCallback(() => {
     setInputSuggest();
-    argumentsTabRef.current.click();
+    argumentsTabRef.current?.click();
   }, [setInputSuggest]);
   const submitNewInputSignature = useCallback(() => {
     setExampleSuggest();
@@ -113,11 +113,11 @@ const BuilderExampleForm = memo(() => {
 
   const editOutputType = useCallback(newOutputSignature => {
     setOutputSuggest(_.cloneDeep(newOutputSignature));
-    setTimeout(() => outputEditTabRef.current.click(), 10);
+    setTimeout(() => outputEditTabRef.current?.click(), 10);
   }, [setOutputSuggest]);
   const clearOutputSuggest = useCallback(() => {
     setOutputSuggest();
-    argumentsTabRef.current.click();
+    argumentsTabRef.current?.click();
   }, [setOutputSuggest]);
   const submitNewOutputType = useCallback(() => {
     dispatch(actions.updateTaskOutputType({
@@ -130,13 +130,13 @@ const BuilderExampleForm = memo(() => {
 
   const createExampleSuggest = useCallback(() => {
     setExampleSuggest({ id: Date.now(), arguments: '', expected: '' });
-    setTimeout(() => exampleEditTabRef.current.click(), 10);
-    setTimeout(() => exampleArgumentsInputRef.current.focus(), 400);
+    setTimeout(() => exampleEditTabRef.current?.click(), 10);
+    setTimeout(() => exampleArgumentsInputRef.current?.focus(), 400);
   }, []);
   const editExample = useCallback(example => {
     setExampleSuggest(_.cloneDeep(example));
-    setTimeout(() => exampleEditTabRef.current.click(), 10);
-    setTimeout(() => exampleSuggestRef.current.scrollIntoView({
+    setTimeout(() => exampleEditTabRef.current?.click(), 10);
+    setTimeout(() => exampleSuggestRef.current?.scrollIntoView({
       behavior: 'smooth',
       block: 'nearest',
       inline: 'start',
@@ -150,7 +150,7 @@ const BuilderExampleForm = memo(() => {
   }, [dispatch, taskService]);
   const clearExample = useCallback(() => {
     setExampleSuggest();
-    argumentsTabRef.current.click();
+    argumentsTabRef.current?.click();
   }, [setExampleSuggest]);
   const submitNewExample = useCallback(() => {
     const existingExample = examples.find(example => (example.id === exampleSuggest.id));
@@ -318,6 +318,6 @@ const BuilderExampleForm = memo(() => {
       </div>
     </div>
   );
-});
+}
 
-export default BuilderExampleForm;
+export default memo(BuilderExampleForm);

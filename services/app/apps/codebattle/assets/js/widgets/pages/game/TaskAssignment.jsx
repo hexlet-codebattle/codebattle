@@ -21,7 +21,7 @@ const renderTaskLink = name => {
   );
 };
 
-const ShowGuideButton = () => {
+function ShowGuideButton() {
   const dispatch = useDispatch();
   const guideShow = () => {
     dispatch(actions.updateGameUI({ isShowGuide: true }));
@@ -39,9 +39,9 @@ const ShowGuideButton = () => {
       Show guide
     </button>
   );
-};
+}
 
-const TaskAssignment = ({ task, taskLanguage, handleSetLanguage }) => {
+function TaskAssignment({ task, taskLanguage, handleSetLanguage }) {
   const [avaibleLanguages, displayLanguage, description] = useTaskDescriptionParams(
     task,
     taskLanguage,
@@ -69,8 +69,8 @@ const TaskAssignment = ({ task, taskLanguage, handleSetLanguage }) => {
             <ShowGuideButton />
           </div>
         </div>
-        <div className="d-flex align-items-stretch flex-column">
-          <div className="card-text mb-0 h-100 overflow-auto">
+        <div className="d-flex align-items-stretch flex-column user-select-none">
+          <div className="card-text mb-0 h-100 overflow-auto user-select-none">
             <TaskDescriptionMarkdown description={description} />
           </div>
         </div>
@@ -92,7 +92,7 @@ const TaskAssignment = ({ task, taskLanguage, handleSetLanguage }) => {
       </div>
     </div>
   );
-};
+}
 
 TaskAssignment.propTypes = {
   task: PropTypes.shape({

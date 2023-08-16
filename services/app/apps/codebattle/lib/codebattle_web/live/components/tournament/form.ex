@@ -23,7 +23,7 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
           <%= render_base_errors(@changeset.errors[:base]) %>
         </div>
         <div class="form-row justify-content-between">
-          <div class="col-6">
+          <div class="col-6 d-flex flex-column justify-content-between">
             <%= label(f, :name) %>
             <%= text_input(f, :name,
               class: "form-control",
@@ -33,14 +33,14 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
             ) %>
             <%= error_tag(f, :name) %>
           </div>
-          <div class="col-6">
+          <div class="col-6 d-flex flex-column justify-content-between">
             <%= label(f, :Type) %>
             <%= select(f, :type, Codebattle.Tournament.types(), class: "form-control") %>
             <%= error_tag(f, :type) %>
           </div>
         </div>
         <div class="form-row justify-content-between mt-3">
-          <div class="col-6">
+          <div class="col-6 d-flex flex-column justify-content-between">
             <label>Starts at (UTC)</label>
             <%= datetime_local_input(f, :starts_at,
               class: "form-control",
@@ -49,14 +49,14 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
             ) %>
             <%= error_tag(f, :starts_at) %>
           </div>
-          <div class="col-6">
+          <div class="col-6 d-flex flex-column justify-content-between">
             <%= label(f, :access_type) %>
             <%= select(f, :access_type, Codebattle.Tournament.access_types(), class: "form-control") %>
             <%= error_tag(f, :access_type) %>
           </div>
         </div>
         <div class="form-row justify-content-between mt-3">
-          <div class="col-4">
+          <div class="col-4 d-flex flex-column justify-content-between">
             <%= label(f, :task_strategy) %>
             <%= select(f, :task_strategy, Codebattle.Tournament.task_strategies(),
               class: "form-control",
@@ -64,7 +64,7 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
             ) %>
             <%= error_tag(f, :task_strategy) %>
           </div>
-          <div class="col-4">
+          <div class="col-4 d-flex flex-column justify-content-between">
             <%= label(f, :task_provider) %>
             <%= select(f, :task_provider, Codebattle.Tournament.task_providers(),
               class: "form-control",
@@ -73,7 +73,7 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
             <%= error_tag(f, :task_provider) %>
           </div>
           <%= if (f.params["task_provider"] == "level" || is_nil(f.params["task_provider"])) do %>
-            <div class="col-4">
+            <div class="col-4 d-flex flex-column justify-content-between">
               <%= label(f, :level) %>
               <%= select(f, :level, Codebattle.Tournament.levels(),
                 class: "form-control",
@@ -164,7 +164,7 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
         </div>
 
         <div class="form-row justify-content-between mt-3">
-          <div class="col-4">
+          <div class="col-4 d-flex flex-column justify-content-between">
             <%= label(f, :players_limit) %>
             <%= select(f, :players_limit, [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048],
               value: f.params["players_limit"] || 64,
@@ -172,12 +172,12 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
             ) %>
             <%= error_tag(f, :players_limit) %>
           </div>
-          <div class="col-4">
+          <div class="col-4 d-flex flex-column justify-content-between">
             <%= label(f, :default_language) %>
             <%= select(f, :default_language, @langs, class: "form-control") %>
             <%= error_tag(f, :default_language) %>
           </div>
-          <div class="col-4">
+          <div class="col-4 d-flex flex-column justify-content-between">
             <%= label(f, :match_timeout_in_seconds) %>
             <%= number_input(
               f,

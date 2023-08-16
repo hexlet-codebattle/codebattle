@@ -35,7 +35,7 @@ const Form = ({ onSubmit, id, children }) => (
       id={`${id}-submit`}
       value="Submit"
       aria-label="SubmitForm"
-      className="btn btn-primary btn-block"
+      className="btn btn-primary btn-block rounded-lg"
       data-disable-with="Submit"
     />
   </form>
@@ -83,7 +83,7 @@ const SocialLinks = () => (
         type="button"
         aria-label="signInWithGithub"
         href={getLinkWithNext('/auth/github')}
-        className="btn w-100 px-2 btn-outline-dark"
+        className="btn w-100 px-2 btn-outline-dark rounded-lg"
       >
         Sign in with Github
       </a>
@@ -93,7 +93,7 @@ const SocialLinks = () => (
         type="button"
         aria-label="signInWithDiscord"
         href={getLinkWithNext('/auth/discord')}
-        className="btn w-100 px-2 btn-outline-dark"
+        className="btn w-100 px-2 btn-outline-dark rounded-lg"
       >
         Sign in with Discord
       </a>
@@ -127,7 +127,7 @@ const SignUpInvitation = () => (
   </div>
 );
 
-const SignIn = () => {
+function SignIn() {
   const formik = useFormik({
     initialValues: {
       email: '',
@@ -188,13 +188,13 @@ const SignIn = () => {
       </Footer>
     </Container>
   );
-};
+}
 
 const braillePatternBlank = '\u2800';
 const space = ' ';
 const invalidSymbols = [braillePatternBlank, space];
 
-const SignUp = () => {
+function SignUp() {
   const formik = useFormik({
     initialValues: {
       name: '',
@@ -289,7 +289,7 @@ const SignUp = () => {
           <Input
             id="passwordConfirmation"
             type="password"
-            title="Password"
+            title="Password Confirmation"
             formik={formik}
           />
         </Form>
@@ -300,9 +300,9 @@ const SignUp = () => {
       </Footer>
     </Container>
   );
-};
+}
 
-const ResetPassword = () => {
+function ResetPassword() {
   const [isSend, setIsSend] = useState(false);
 
   const formik = useFormik({
@@ -361,9 +361,9 @@ const ResetPassword = () => {
       </Footer>
     </Container>
   );
-};
+}
 
-const Registration = () => {
+function Registration() {
   const { pathname } = window.location;
 
   switch (pathname) {
@@ -376,6 +376,6 @@ const Registration = () => {
     default:
       throw new Error('Unexpected Registration page route');
   }
-};
+}
 
 export default Registration;

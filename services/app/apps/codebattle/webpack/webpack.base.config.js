@@ -5,7 +5,7 @@ const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const env = process.env.NODE_ENV || 'development';
-const isProd = env === 'production';
+// const isProd = env === 'production';
 
 function recursiveIssuer(m) {
   if (m.issuer) {
@@ -27,6 +27,7 @@ module.exports = {
     path: path.resolve(__dirname, '../priv/static/assets'),
     filename: '[name].js',
     sourceMapFilename: '[name].js.map',
+    chunkFilename: '[id].[contenthash].js',
     publicPath: '/assets/',
   },
   externals: {
@@ -53,20 +54,16 @@ module.exports = {
           { loader: 'sass-loader' },
         ],
       },
-      {
-        test: /\.(eot|svg|ttf|woff|woff2)$/,
-        use: 'url-loader',
-      },
+      // {
+      //   test: /\.(eot|svg|ttf|woff|woff2)$/,
+      //   type: 'asset/inline',
+      // },
       {
         test: /\.(png|jpg|gif|svg)$/,
-        use: [
-          {
-            loader: 'file-loader',
-            options: {
-              name: '[name].[ext]',
-            },
-          },
-        ],
+        type: 'asset/resource',
+        generator: {
+          filename: '[name].[ext]',
+        },
       },
     ],
   },

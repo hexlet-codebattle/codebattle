@@ -10,7 +10,7 @@ import {
 import RoomContext from '../../components/RoomContext';
 import TaskPropStatusIcon from './TaskPropStatusIcon';
 
-const BuilderStatus = memo(() => {
+function BuilderStatus() {
   const { taskService } = useContext(RoomContext);
 
   const taskCurrent = useMachineStateSelector(taskService, taskStateSelector);
@@ -111,6 +111,6 @@ const BuilderStatus = memo(() => {
       </p>
     </div>
   );
-});
+}
 
-export default BuilderStatus;
+export default memo(BuilderStatus);

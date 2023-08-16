@@ -20,7 +20,7 @@ const useEvent = (name, handler, target = defaultTarget, options) => {
         // eslint-disable-next-line consistent-return
         return () => {
             if (isListenerType1(target)) {
-                target.removeEventListener(name, handler, options);
+                target?.removeEventListener(name, handler, options);
             } else if (isListenerType2(target)) {
                 target.off(name, handler, options);
             }

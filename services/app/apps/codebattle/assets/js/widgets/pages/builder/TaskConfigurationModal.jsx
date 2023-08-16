@@ -8,7 +8,7 @@ import { taskStateCodes, taskVisibilityCodes } from '../../config/task';
 import { actions } from '../../slices';
 import { updateTaskVisibility } from '../../middlewares/Game';
 
-const TaskConfigurationModal = memo(({ modalShowing, setModalShowing }) => {
+function TaskConfigurationModal({ modalShowing, setModalShowing }) {
   const dispatch = useDispatch();
   const visibilityInputRef = useRef(null);
 
@@ -82,6 +82,6 @@ const TaskConfigurationModal = memo(({ modalShowing, setModalShowing }) => {
       </Modal.Body>
     </Modal>
   );
-});
+}
 
-export default TaskConfigurationModal;
+export default memo(TaskConfigurationModal);

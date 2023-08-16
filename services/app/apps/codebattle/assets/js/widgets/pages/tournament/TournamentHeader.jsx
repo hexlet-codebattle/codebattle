@@ -11,7 +11,7 @@ import JoinButton from './JoinButton';
 import TournamentMainControlButtons from './TournamentMainControlButtons';
 import * as selectors from '../../selectors';
 
-const TournamentTimer = ({ state, startsAt }) => {
+function TournamentTimer({ state, startsAt }) {
   const timeStart = moment.utc(startsAt);
   const diffTime = moment(timeStart).diff(moment());
 
@@ -57,9 +57,16 @@ const TournamentTimer = ({ state, startsAt }) => {
   };
 
   return titles[state](seconds);
-};
+}
 
-const TournamentHeader = props => {
+const difficultyBadgeColor = {
+  elementary: 'info',
+  easy: 'success',
+  medium: 'warning',
+  hard: 'danger',
+}
+
+function TournamentHeader(props) {
   const {
     state,
     type,
@@ -73,13 +80,6 @@ const TournamentHeader = props => {
     currentUserId,
     difficulty,
   } = props;
-  const difficultyBadgeColor = useMemo(() => ({
-    elementary: 'info',
-    easy: 'success',
-    medium: 'warning',
-    hard: 'danger',
-  }), []);
-
   const difficultyClassName = useMemo(() => (
     `badge badge-pill mr-1 badge-${difficultyBadgeColor[difficulty]}`
   ), [difficulty]);
@@ -139,6 +139,6 @@ const TournamentHeader = props => {
       </div>
     </>
   );
-};
+}
 
 export default memo(TournamentHeader);

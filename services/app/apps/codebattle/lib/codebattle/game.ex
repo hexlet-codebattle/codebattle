@@ -27,11 +27,11 @@ defmodule Codebattle.Game do
            ]}
 
   @default_timeout_seconds div(:timer.minutes(30), 1000)
-  @states ~w(initial waiting_opponent playing game_over timeout canceled)
+  @states ~w(initial builder waiting_opponent playing game_over timeout canceled)
   @rematch_states ~w(none in_approval rejected accepted)
 
   @types ~w(solo duo multi)
-  @modes ~w(standard training)
+  @modes ~w(standard builder training)
   @visibility_types ~w(hidden public)
 
   schema "games" do

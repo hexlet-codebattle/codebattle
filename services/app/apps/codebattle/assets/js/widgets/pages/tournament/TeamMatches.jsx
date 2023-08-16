@@ -31,7 +31,7 @@ const getLinkParams = (match, currentUserId) => {
   }
 };
 
-const TeamMatches = ({ matches, currentUserId }) => {
+function TeamMatches({ matches, currentUserId }) {
   const rounds = useMemo(() => _.reverse(_.values(matches)), [matches]);
 
   return (
@@ -82,6 +82,6 @@ const TeamMatches = ({ matches, currentUserId }) => {
       ))}
     </>
   );
-};
+}
 
 export default memo(TeamMatches);

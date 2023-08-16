@@ -23,7 +23,10 @@ const establishChat = () => dispatch => {
     const messages = [greetingMessage, ...data.messages];
     const updatedData = { ...data, page, messages };
     camelizeKeysAndDispatch(actions.updateChatData)(updatedData);
+    dispatch(actions.updateChatChannelState(true));
   });
+
+  channel.onError(() => dispatch(actions.updateChatChannelState(false)));
 
   const handleUserJoined = camelizeKeysAndDispatch(actions.userJoinedChat);
   const handleUserLeft = camelizeKeysAndDispatch(actions.userLeftChat);

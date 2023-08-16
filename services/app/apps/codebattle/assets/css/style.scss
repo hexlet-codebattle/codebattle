@@ -127,6 +127,17 @@ em-emoji-picker {
   border-radius: unset;
 }
 
+.btn-orange {
+  border-color: $orange;
+  background: $orange;
+  color: var(--white);
+}
+
+.btn-orange:hover {
+  background: var(--red);
+  color: var(--white);
+}
+
 .btn-outline-orange {
   border-color: $orange;
   color: $orange;
@@ -339,7 +350,7 @@ a {
 .cb-polyglot {
   width: 65px;
   height: 65px;
-  background: url('/assets/images/achievements/polyglot.png');
+  background: url('../static/images/achievements/polyglot.png');
   background-size: cover;
   padding: 5px;
 }
@@ -360,6 +371,10 @@ a {
 
 .cb-heading {
   font-size: 27px;
+}
+
+.cb-profile-avatar {
+  width: min(100%, 180px);
 }
 
 .cb-user-avatar {
@@ -401,13 +416,13 @@ a {
   }
 }
 
-.cb-chat-container
+.cb-lobby-widget-container,
 .cb-messages-container {
-  height: 500px;
+  height: 400px;
 
   @media (max-width: $sm) {
     height: auto;
-    max-height: 1000px;
+    max-height: 400px;
   }
 }
 
@@ -765,4 +780,8 @@ a:hover{
 .cb-remote-player {
   background-color: var(--gray);
   border-color: var(--secondary);
+}
+
+.cb-loading-background {
+  background: rgba(255, 255, 255, 0.3);
 }

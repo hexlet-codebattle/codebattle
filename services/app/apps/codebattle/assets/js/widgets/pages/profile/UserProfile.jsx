@@ -26,7 +26,7 @@ import Loading from '../../components/Loading';
 import * as selectors from '../../selectors';
 import langIconNames from '../../config/langIconNames';
 
-const UserProfile = () => {
+function UserProfile() {
   const [stats, setStats] = useState(null);
   const { completedGames, totalGames } = useSelector(
     selectors.completedGamesData,
@@ -236,7 +236,7 @@ const UserProfile = () => {
           {completedGames && completedGames.length > 0 && (
             <>
               <CompletedGames
-                className="table-responsive scroll h-50"
+                className="table-responsive scroll h-75"
                 games={completedGames}
                 loadNextPage={loadNextPage}
                 totalGames={totalGames}
@@ -310,9 +310,9 @@ const UserProfile = () => {
     <div className="container-lg">
       <div className="row">
         <div className="col-12 col-md-3 my-4 cb-user-data d-flex flex-column">
-          <div className=" mb-2 mb-sm-4 h-25 d-flex justify-content-center">
+          <div className="mb-2 mb-sm-4 d-flex justify-content-center">
             <img
-              className="img-fluid rounded"
+              className="cb-profile-avatar rounded"
               src={stats.user.avatarUrl}
               alt="User avatar"
             />
@@ -369,6 +369,6 @@ const UserProfile = () => {
       </div>
     </div>
   );
-};
+}
 
 export default UserProfile;

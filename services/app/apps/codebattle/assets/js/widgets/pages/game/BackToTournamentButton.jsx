@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { gameStatusSelector } from '../../selectors';
 
-const BackToTournamentButton = () => {
+function BackToTournamentButton() {
   const { tournamentId } = useSelector(gameStatusSelector);
   const tournamentUrl = `/tournaments/${tournamentId}`;
 
@@ -11,6 +11,6 @@ const BackToTournamentButton = () => {
       Back to tournament
     </a>
   );
-};
+}
 
 export default BackToTournamentButton;

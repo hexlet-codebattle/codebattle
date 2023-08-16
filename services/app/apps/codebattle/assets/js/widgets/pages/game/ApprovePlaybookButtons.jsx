@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import SolutionTypeCodes from '../../config/solutionTypes';
 import { changePlaybookSolution } from '../../middlewares/Game';
 
-const ApprovePlaybookButtons = ({ playbookSolutionType }) => {
+function ApprovePlaybookButtons({ playbookSolutionType }) {
   const dispatch = useDispatch();
   const approve = useCallback(() => {
     dispatch(changePlaybookSolution('approve'));
@@ -61,6 +61,6 @@ const ApprovePlaybookButtons = ({ playbookSolutionType }) => {
     default:
       return <></>;
   }
-};
+}
 
 export default memo(ApprovePlaybookButtons);

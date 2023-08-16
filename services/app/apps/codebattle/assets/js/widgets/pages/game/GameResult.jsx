@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import _ from 'lodash';
 import { Alert } from 'react-bootstrap';
@@ -7,14 +7,14 @@ import GameRoomModes from '../../config/gameModes';
 import GameStateCodes from '../../config/gameStateCodes';
 import i18n from '../../../i18n';
 
-const GameResult = () => {
+function GameResult() {
   const currentUserId = useSelector(state => selectors.currentUserIdSelector(state));
   const players = useSelector(state => selectors.gamePlayersSelector(state));
   const isCurrentUserPlayer = _.hasIn(players, currentUserId);
   const gameStatus = useSelector(state => selectors.gameStatusSelector(state));
   const gameMode = useSelector(state => selectors.gameModeSelector(state));
 
-  const getResultMessage = () => {
+  const result = useMemo(() => {
     if (gameStatus.state === GameStateCodes.timeout) {
       return ({
         alertStyle: 'danger',
@@ -45,13 +45,18 @@ const GameResult = () => {
     }
 
     return null;
-  };
+  }, [
+    currentUserId,
+    players,
+    isCurrentUserPlayer,
+    gameStatus.state,
+    gameMode,
+  ]);
 
-  const result = getResultMessage();
   if (result) {
     return (<Alert variant={result.alertStyle}>{result.msg}</Alert>);
   }
   return null;
-};
+}
 
 export default GameResult;

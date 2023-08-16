@@ -15,7 +15,7 @@ import {
   MIN_EXAMPLES_COUNT,
 } from '../../utils/builder';
 
-const PreviewAssertsPanel = ({
+function PreviewAssertsPanel({
   haveInputSuggest,
   haveExampleSuggest,
 
@@ -32,7 +32,7 @@ const PreviewAssertsPanel = ({
   createExampleSuggest,
   editExample,
   deleteExample,
-}) => {
+}) {
   const {
     inputSignature,
     outputSignature,
@@ -144,6 +144,6 @@ const PreviewAssertsPanel = ({
       </div>
     </div>
   );
-};
+}
 
 export default PreviewAssertsPanel;

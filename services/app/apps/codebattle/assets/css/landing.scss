@@ -6,6 +6,15 @@
   text-decoration: if($link-hover-decoration == underline, none, null);
 }
 
+.btn-outline-red:hover {
+  color: red;
+  border-color: red;
+}
+
+.btn-outline-success:hover {
+  color: white;
+}
+
 .dark-bg {
   background: $dark;
 }
@@ -46,7 +55,7 @@ h2 {
 }
 
 .bg-codebattle {
-  background-image: url('/assets/images/landing/bg-codebattle.svg');
+  background-image: url('../static/images/landing/bg-codebattle.svg');
   background-repeat: no-repeat;
   background-size: 70%;
   background-position: right;

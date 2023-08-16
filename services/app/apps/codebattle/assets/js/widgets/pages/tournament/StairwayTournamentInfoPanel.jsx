@@ -1,7 +1,7 @@
 /* eslint-disable */
 import React, { useState } from 'react';
 
-// TODO: get active round algoritm
+// TODO: get active round algorithm
 const getActiveRoundId = () => 0;
 
 /* summary
@@ -11,28 +11,30 @@ const getActiveRoundId = () => 0;
     players = [{ id, name }]
 */
 
-const StairwayTournamentInfoPanel = ({
-    state = 'waiting_participants', // "waiting_participants", "active", "game_over"
-    currentUserId,
-    rounds,
-    players,
-}) => {
-    const [selectedRoundId, setSelectedRoundId] = useState(rounds.length === 0 ? 0 : getActiveRoundId(rounds));
+function StairwayTournamentInfoPanel({
+  state = 'waiting_participants', // "waiting_participants", "active", "game_over"
+  currentUserId,
+  rounds,
+  players,
+}) {
+  const [selectedRoundId, setSelectedRoundId] = useState(
+    rounds.length === 0 ? 0 : getActiveRoundId(rounds),
+  );
 
-    if (state === 'waiting_participants') {
-        return;
-    }
+  if (state === 'waiting_participants') {
+    return;
+  }
 
-    const selectedRound = rounds.find(round => round.id === selectedRoundId);
+  const selectedRound = rounds.find((round) => round.id === selectedRoundId);
 
-    return (
-      <>
-        {/* <StairwayTournamentRoundList
+  return (
+    <>
+      {/* <StairwayTournamentRoundList
       selectedRoundId={selectedRoundId}
       setSelectedRoundId={setSelectedRoundId}
       rounds={rounds} // [{ state, id }] state: (selected, begin, over, not started)"
     /> */}
-        {/* <Panel>
+      {/* <Panel>
         <StairwayTournamentMatchTable
             currentUserId={currentUserId}
             round={selectedRound}
@@ -43,8 +45,8 @@ const StairwayTournamentInfoPanel = ({
             task={round.task}
         />
     </Panel> */}
-      </>
-    );
-};
+    </>
+  );
+}
 
 export default StairwayTournamentInfoPanel;

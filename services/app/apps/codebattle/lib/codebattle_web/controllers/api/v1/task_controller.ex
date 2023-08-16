@@ -2,12 +2,8 @@ defmodule CodebattleWeb.Api.V1.TaskController do
   use CodebattleWeb, :controller
 
   alias Codebattle.Task
-  alias Codebattle.User
-  alias Codebattle.Bot
   alias Codebattle.CodeCheck
-  alias Codebattle.Game.Player
   alias CodebattleWeb.Api.TaskView
-  alias CodebattleWeb.Api.GameView
 
   def index(conn, _) do
     tasks =
@@ -25,60 +21,14 @@ defmodule CodebattleWeb.Api.V1.TaskController do
         |> json(%{error: "NOT_FOUND"})
 
       task ->
-        current_player =
-          if is_nil(conn.assigns.current_user.id) do
-            conn.assigns.current_user.id
-            |> User.get_user!()
-            |> Player.build()
-          else
-            Bot.Context.build() |> Player.build()
-          end
-
-        opponent_bot = Bot.Context.build() |> Player.build()
-
-        json(conn, %{
-          task: task,
-          players: [current_player, opponent_bot],
-          langs: GameView.get_langs_with_templates(task)
-        })
+        json(conn, %{task: task})
     end
   end
 
   def new(conn, _) do
-    task = %Task{
-      examples: "",
-      name: "",
-      description_ru: "",
-      description_en: "",
-      level: "elementary",
-      input_signature: [],
-      output_signature: %{
-        type: %{name: "integer"}
-      },
-      asserts: [],
-      asserts_examples: [],
-      tags: [],
-      state: "blank",
-      visibility: "public",
-      origin: "user",
-      creator_id: conn.assigns.current_user.id,
-      solution: "",
-      arguments_generator: "",
-      generator_lang: "js"
-    }
+    task = Task.create_empty(conn.assigns.current_user.id)
 
-    current_player =
-      conn.assigns.current_user.id
-      |> User.get_user!()
-      |> Player.build()
-
-    opponent_bot = Bot.Context.build()
-
-    json(conn, %{
-      task: task,
-      players: [current_player, opponent_bot],
-      langs: GameView.get_langs_with_templates(task)
-    })
+    json(conn, %{task: task})
   end
 
   def build(conn, %{

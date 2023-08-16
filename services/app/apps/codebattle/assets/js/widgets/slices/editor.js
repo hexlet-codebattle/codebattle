@@ -1,18 +1,7 @@
 import { combineReducers, createSlice } from '@reduxjs/toolkit';
 import defaultEditorHeight from '../config/editorSettings';
-
-const initialState = {
-  meta: {
-    1: { userId: 1, currentLangSlug: 'js' },
-    2: { userId: 2, currentLangSlug: 'js' },
-  },
-  text: {},
-  textHistory: {},
-  langs: {},
-  langsHistory: {},
-};
-
-export const makeEditorTextKey = (userId, lang) => `${userId}:${lang}`;
+import { makeEditorTextKey } from '../utils/gameRoom';
+import initial from './initial';
 
 const getCurrentEditorHeight = (state, userId) => {
   const {
@@ -23,7 +12,7 @@ const getCurrentEditorHeight = (state, userId) => {
 
 const meta = createSlice({
   name: 'meta',
-  initialState: initialState.meta,
+  initialState: initial.editor.meta,
   reducers: {
     updateEditorLang: (state, { payload: { userId, currentLangSlug } }) => {
       state[userId] = {
@@ -66,7 +55,7 @@ const meta = createSlice({
 
 const text = createSlice({
   name: 'text',
-  initialState: initialState.text,
+  initialState: initial.editor.text,
   extraReducers: {
     [meta.actions.updateEditorText]: (
       state,
@@ -79,7 +68,7 @@ const text = createSlice({
 
 const textHistory = createSlice({
   name: 'textHistory',
-  initialState: initialState.textHistory,
+  initialState: initial.editor.textHistory,
   extraReducers: {
     [meta.actions.updateEditorTextHistory]: (state, { payload: { userId, editorText } }) => {
       state[userId] = editorText;
@@ -89,17 +78,17 @@ const textHistory = createSlice({
 
 const langs = createSlice({
   name: 'langs',
-  initialState: initialState.langs,
+  initialState: initial.editor.langs,
   reducers: {
     setLangs: (state, { payload: { langs: newLangs } }) => {
-      state.langs = newLangs;
+      state = newLangs;
     },
   },
 });
 
 const langsHistory = createSlice({
   name: 'langsHistory',
-  initialState: initialState.langsHistory,
+  initialState: initial.editor.langsHistory,
   extraReducers: {
     [meta.actions.updateEditorTextHistory]: (state, { payload: { userId, langSlug } }) => {
       state[userId] = langSlug;

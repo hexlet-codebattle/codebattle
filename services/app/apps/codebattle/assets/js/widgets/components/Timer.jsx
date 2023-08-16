@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 
-const Timer = ({ time }) => {
+function Timer({ time }) {
   const [duration, setDuration] = useState(moment().format('HH:mm:ss'));
 
   const updateTimer = () => {
@@ -15,7 +15,7 @@ const Timer = ({ time }) => {
   });
 
   return <span className="text-monospace">{duration}</span>;
-};
+}
 
 Timer.propTypes = {
   time: PropTypes.string.isRequired,

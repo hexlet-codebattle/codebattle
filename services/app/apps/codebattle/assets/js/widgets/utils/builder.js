@@ -61,6 +61,18 @@ export const labelTaskParamsWithIds = task => ({
   outputSignature: { ...task.outputSignature, id: Date.now() },
 });
 
+export const getTaskTemplates = task => ({
+  state: !task.solution && !task.argumentsGenerator
+    ? taskTemplatesStates.none
+    : taskTemplatesStates.init,
+  solution: task.solution
+    ? { [task.generatorLang]: task.solution }
+    : {},
+  argumentsGenerator: task.argumentsGenerator
+    ? { [task.generatorLang]: task.argumentsGenerator }
+    : {},
+});
+
 export const haveNestedType = type => !!defaultSignatureByType[type].type.nested;
 
 export const validateTaskName = name => {

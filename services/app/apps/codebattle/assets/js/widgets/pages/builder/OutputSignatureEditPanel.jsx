@@ -10,13 +10,13 @@ import {
 } from '../../utils/builder';
 import SignatureForm from './SignatureForm';
 
-const OutputSignatureEditPanel = ({
+function OutputSignatureEditPanel({
   item,
   suggest,
   handleEdit,
   handleSubmit,
   handleClear,
-}) => {
+}) {
   const handleReset = useCallback(() => {
     if (item) {
       handleEdit(item);
@@ -77,6 +77,6 @@ const OutputSignatureEditPanel = ({
       </div>
     </div>
   );
-};
+}
 
 export default OutputSignatureEditPanel;

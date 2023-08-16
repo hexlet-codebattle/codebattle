@@ -3,10 +3,10 @@ import { useSelector } from 'react-redux';
 import GameRoomModes from '../../config/gameModes';
 import * as selectors from '../../selectors';
 import StartTrainingButton from './StartTrainingButton';
-import SignUpButton from '../../components/SignUpButton';
+import SignUpButton from './SignUpButton';
 import RematchButton from './RematchButton';
 
-const ActionsAfterGame = () => {
+function ActionsAfterGame() {
   const gameMode = useSelector(selectors.gameModeSelector);
   const isOpponentInGame = useSelector(selectors.isOpponentInGameSelector);
 
@@ -30,6 +30,6 @@ const ActionsAfterGame = () => {
       <RematchButton disabled={isRematchDisabled} />
     </>
   );
-};
+}
 
 export default ActionsAfterGame;

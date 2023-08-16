@@ -26,7 +26,7 @@ const resolveSignatureToTypes = signature => {
   return types;
 };
 
-const SignatureForm = ({ signature, handleEdit }) => {
+function SignatureForm({ signature, handleEdit }) {
   const types = useMemo(() => resolveSignatureToTypes(signature), [signature]);
 
   const handleSelect = useCallback((newType, nestedIndex) => {
@@ -66,6 +66,6 @@ const SignatureForm = ({ signature, handleEdit }) => {
       ))}
     </select>
   ));
-};
+}
 
 export default SignatureForm;

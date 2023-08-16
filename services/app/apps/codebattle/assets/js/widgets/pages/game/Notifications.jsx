@@ -15,7 +15,7 @@ import ApprovePlaybookButtons from './ApprovePlaybookButtons';
 import { roomStateSelector } from '../../machines/selectors';
 import useMachineStateSelector from '../../utils/useMachineStateSelector';
 
-const Notifications = () => {
+function Notifications() {
   const { mainService } = useContext(RoomContext);
   const roomCurrent = useMachineStateSelector(mainService, roomStateSelector);
 
@@ -52,6 +52,6 @@ const Notifications = () => {
         && <BackToHomeButton />}
     </>
   );
-};
+}
 
 export default Notifications;

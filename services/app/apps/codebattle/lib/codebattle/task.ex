@@ -197,6 +197,29 @@ defmodule Codebattle.Task do
   def get!(id), do: Repo.get!(__MODULE__, id)
   def get(id), do: Repo.get(__MODULE__, id)
 
+  def create_empty(creator_id),
+    do: %Codebattle.Task{
+      examples: "",
+      name: "",
+      description_ru: "",
+      description_en: "",
+      level: "elementary",
+      input_signature: [],
+      output_signature: %{
+        type: %{name: "integer"}
+      },
+      asserts: [],
+      asserts_examples: [],
+      tags: [],
+      state: "blank",
+      visibility: "public",
+      origin: "user",
+      creator_id: creator_id,
+      solution: "",
+      arguments_generator: "",
+      generator_lang: "js"
+    }
+
   @spec get_shuffled_task_ids(String.t()) :: list(integer())
   def get_shuffled_task_ids(level) do
     from(task in Codebattle.Task, where: task.level == ^level)

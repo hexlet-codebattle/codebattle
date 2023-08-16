@@ -21,11 +21,12 @@ import { shouldShowMessage } from '../../utils/chat';
 import { inTestingRoomSelector, openedReplayerSelector } from '../../machines/selectors';
 import useMachineStateSelector from '../../utils/useMachineStateSelector';
 
-const ChatWidget = () => {
+function ChatWidget() {
   const { mainService } = useContext(RoomContext);
 
-  const users = useSelector(state => selectors.chatUsersSelector(state));
-  const messages = useSelector(state => selectors.chatMessagesSelector(state));
+  const users = useSelector(selectors.chatUsersSelector);
+  const messages = useSelector(selectors.chatMessagesSelector);
+  const isOnline = useSelector(selectors.chatChannelStateSelector);
   const historyMessages = useSelector(selectors.chatHistoryMessagesSelector);
   const gameMode = useSelector(selectors.gameModeSelector);
 
@@ -67,14 +68,14 @@ const ChatWidget = () => {
             'game-chat-container cb-messages-container',
           )}
         >
-          <ChatHeader showRooms={isStandardGame} />
+          <ChatHeader showRooms={isStandardGame} disabled={!isOnline} />
           {openedReplayer
             ? <Messages messages={historyMessages} />
             : <Messages displayMenu={displayMenu} messages={filteredMessages} />}
-          {showChatInput && <ChatInput inputRef={inputRef} />}
+          {showChatInput && <ChatInput inputRef={inputRef} disabled={!isOnline} />}
           {isTestingRoom && (
             <div
-              className="d-flex position-absolute w-100 h-100 bg-dark cb-opacity-50 rounded-left justify-content-center text-info"
+              className="d-flex position-absolute w-100 h-100 bg-dark cb-opacity-50 rounded-left justify-content-center text-white"
             >
               <span className="align-self-center">Chat is Disabled</span>
             </div>
@@ -87,7 +88,9 @@ const ChatWidget = () => {
             </div>
             {!isTestingRoom && (
               <div className="px-3 py-3 w-100 border-top">
-                <p className="mb-1">{`Online users: ${listOfUsers.length}`}</p>
+                <p className="mb-1 text-nowrap">
+                  {`Online players: ${listOfUsers.length}`}
+                </p>
                 {listOfUsers.map(user => (
                   <div
                     role="button"
@@ -111,6 +114,6 @@ const ChatWidget = () => {
       </div>
     </ChatContextMenu>
   );
-};
+}
 
 export default ChatWidget;

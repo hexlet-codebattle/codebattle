@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { gamePlayersSelector, currentUserIdSelector } from '../../selectors';
 import gifs from '../../config/gifs';
 
-const AnimationModal = memo(({ setModalShowing, modalShowing }) => {
+function AnimationModal({ setModalShowing, modalShowing }) {
   const players = useSelector(state => gamePlayersSelector(state));
   const currentUserId = useSelector(state => currentUserIdSelector(state));
   // TODO: Сделать анимацию для спектаторов указать кто победил а кто проиграл
@@ -29,11 +29,14 @@ const AnimationModal = memo(({ setModalShowing, modalShowing }) => {
           <Modal.Title>{titleModal}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <img
-            style={{ width: '400px', marginLeft: '30px', height: '300px' }}
-            src={gifs[result]}
-            alt="animation"
-          />
+          <div className="d-flex justify-content-center">
+            <img
+              className="w-100"
+              style={{ maxWidth: '400px', height: '300px' }}
+              src={gifs[result]}
+              alt="animation"
+            />
+          </div>
         </Modal.Body>
         <Modal.Footer>
           <Button onClick={handleCloseModal} className="btn btn-secondary rounded-lg">
@@ -43,6 +46,6 @@ const AnimationModal = memo(({ setModalShowing, modalShowing }) => {
       </Modal>
     )
   );
-});
+}
 
-export default AnimationModal;
+export default memo(AnimationModal);

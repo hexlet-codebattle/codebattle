@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { render } from 'react-dom';
+import { createRoot } from 'react-dom';
 import { Button, Modal } from 'react-bootstrap';
 
 const isExtensionInstalled = info => new Promise(resolve => {
@@ -13,9 +13,10 @@ const isExtensionInstalled = info => new Promise(resolve => {
   };
 });
 
-const ExtensionPopup = () => {
+function ExtensionPopup() {
   const [modalShowing, setModalShowing] = useState(true);
   const handleHide = () => { setModalShowing(false); };
+
   return (
     <Modal show={modalShowing} onHide={handleHide}>
       <Modal.Header className="mx-auto">
@@ -54,8 +55,8 @@ const ExtensionPopup = () => {
         </Button>
       </Modal.Footer>
     </Modal>
-);
-};
+  );
+}
 
 export default domElement => {
   const lastCheckExtension = window.localStorage.getItem('lastCheckExtension');
@@ -68,7 +69,7 @@ export default domElement => {
     isExtensionInstalled(extensionInfo).then(isInstall => {
       if (!isInstall) {
         window.localStorage.setItem('lastCheckExtension', nowTime);
-        render(<ExtensionPopup />, domElement);
+        createRoot(domElement).render(<ExtensionPopup />);
       }
     });
   }

@@ -3,6 +3,7 @@ import React, {
  memo, useEffect, useMemo, useRef,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import cn from 'classnames';
 
 import UserInfo from '../../components/UserInfo';
 import GameLevelBadge from '../../components/GameLevelBadge';
@@ -29,7 +30,7 @@ const CompletedGamesRows = memo(({ games }) => (
         </td>
         <td className="px-1 py-3 align-middle text-nowrap">{moment.utc(game.finishesAt).local().format('MM.DD HH:mm')}</td>
         <td className="px-1 py-3 align-middle">
-          <a type="button" className="btn btn-outline-orange btn-sm rounded-lg" href={`/games/${game.id}`}>
+          <a type="button" className="btn btn-secondary btn-sm rounded-lg" href={`/games/${game.id}`}>
             Show
           </a>
         </td>
@@ -38,12 +39,13 @@ const CompletedGamesRows = memo(({ games }) => (
   </>
 ));
 
-const CompletedGames = ({
+function CompletedGames({
   games,
   loadNextPage = null,
   totalGames,
   className,
-}) => {
+  tableClassName = '',
+}) {
   const { nextPage, totalPages } = useSelector(state => state.completedGames);
   const object = useMemo(
     () => ({ loading: false }),
@@ -86,7 +88,9 @@ const CompletedGames = ({
   return (
     <>
       <div ref={ref} data-testid="scroll" className={className}>
-        <table className="table table-sm table-striped border-gray border-0 mb-0">
+        <table
+          className={cn('table table-sm table-striped border-gray border-0 mb-0', tableClassName)}
+        >
           <thead>
             <tr>
               <th className="p-3 border-0">Level</th>
@@ -107,6 +111,6 @@ const CompletedGames = ({
       </div>
     </>
   );
-};
+}
 
 export default CompletedGames;

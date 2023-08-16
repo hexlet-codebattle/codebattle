@@ -1,24 +1,29 @@
-import React, { useEffect, useState, memo } from 'react';
-import PropTypes from 'prop-types';
+import React, { useEffect, useState } from 'react';
 import { connect, useDispatch, useSelector } from 'react-redux';
-import Gon from 'gon';
 import ReactJoyride, { STATUS } from 'react-joyride';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import GameWidget from './game/GameWidget';
+
+import sound from '../lib/sound';
+
 import RoomContext from '../components/RoomContext';
-import InfoWidget from './game/InfoWidget';
-import BuilderEditorsWidget from './builder/BuilderEditorsWidget';
-import userTypes from '../config/userTypes';
-import { actions } from '../slices';
-import * as GameRoomActions from '../middlewares/Game';
-import * as ChatActions from '../middlewares/Chat';
-import { isShowGuideSelector } from '../selectors';
 import WaitingOpponentInfo from './game/WaitingOpponentInfo';
 import CodebattlePlayer from './game/CodebattlePlayer';
+import * as GameRoomActions from '../middlewares/Game';
+import * as ChatActions from '../middlewares/Chat';
 import FeedbackWidget from '../components/FeedbackWidget';
-import GameRoomPreview from './lobby/GameRoomPreview';
+import TaskConfirmationModal from './builder/TaskConfirmationModal';
+import TaskConfigurationModal from './builder/TaskConfigurationModal';
+import AnimationModal from './game/AnimationModal';
+import NetworkAlert from './game/NetworkAlert';
+
+import GameWidget from './game/GameWidget';
+import InfoWidget from './game/InfoWidget';
+import BuilderSettingsWidget from './builder/BuilderSettingsWidget';
+import BuilderEditorsWidget from './builder/BuilderEditorsWidget';
+
+import useGameRoomMachine from '../utils/useGameRoomMachine';
+import useMachineStateSelector from '../utils/useMachineStateSelector';
 import {
   inPreviewRoomSelector,
   inBuilderRoomSelector,
@@ -27,14 +32,9 @@ import {
   gameRoomKeySelector,
   roomStateSelector,
 } from '../machines/selectors';
-import useGameRoomMachine from '../utils/useGameRoomMachine';
-import TaskConfirmationModal from './builder/TaskConfirmationModal';
-import TaskConfigurationModal from './builder/TaskConfigurationModal';
-import AnimationModal from './game/AnimationModal';
-import NetworkAlert from './game/NetworkAlert';
-import sound from '../lib/sound';
-import useMachineStateSelector from '../utils/useMachineStateSelector';
-import BuilderSettingsWidget from './builder/BuilderSettingsWidget';
+import { actions } from '../slices';
+import { gameStatusSelector, isShowGuideSelector } from '../selectors';
+import GameStateCodes from '../config/gameStateCodes';
 
 const steps = [
   {
@@ -148,7 +148,7 @@ const steps = [
   },
 ];
 
-const GameWidgetGuide = memo(() => {
+function GameWidgetGuide() {
   const dispatch = useDispatch();
   const [isFirstTime, setIsFirstTime] = useState(
     window.localStorage.getItem('guideGamePassed') === null,
@@ -184,18 +184,15 @@ const GameWidgetGuide = memo(() => {
       />
     )
   );
-});
+}
 
-const currentUser = Gon.getAsset('current_user');
-
-const GameRoomWidget = ({
+function GameRoomWidget({
   pageName,
-  setCurrentUser,
   mainMachine,
   taskMachine,
   editorMachine,
   toggleMuteSound,
-}) => {
+}) {
   const dispatch = useDispatch();
 
   const [taskModalShowing, setTaskModalShowing] = useState(false);
@@ -220,16 +217,22 @@ const GameRoomWidget = ({
   const replayerIsOpen = openedReplayerSelector(roomCurrent);
   const gameRoomKey = gameRoomKeySelector(roomCurrent);
 
+  const gameStatus = useSelector(gameStatusSelector);
+
   useEffect(() => {
     // FIXME: maybe take from gon?
-    setCurrentUser({ user: { ...currentUser, type: userTypes.spectator } });
     if (pageName === 'builder') {
-      const clearTask = GameRoomActions.connectToTask(machines.mainService, machines.taskService)(dispatch);
+      const clearTask = GameRoomActions.connectToTask(
+        machines.mainService,
+        machines.taskService,
+      )(dispatch);
 
       return clearTask;
     }
 
-    const clearGame = GameRoomActions.connectToGame(machines.mainService)(dispatch);
+    const clearGame = GameRoomActions.connectToGame(machines.mainService)(
+      dispatch,
+    );
     const clearChat = ChatActions.connectToChat()(dispatch);
 
     return () => {
@@ -261,7 +264,7 @@ const GameRoomWidget = ({
     };
   }, [mute, toggleMuteSound]);
 
-  if (inWaitingRoom) {
+  if (inWaitingRoom || gameStatus.state === GameStateCodes.waitingOpponent) {
     const gameUrl = window.location.href;
     return <WaitingOpponentInfo gameUrl={gameUrl} />;
   }
@@ -275,69 +278,60 @@ const GameRoomWidget = ({
         }}
         classNames={`game-room-${gameRoomKey}`}
       >
-        {inPreviewRoom ? (
-          <GameRoomPreview className="animate" pageName={pageName} />
-        ) : (
-          <RoomContext.Provider value={machines}>
-            <div className="x-outline-none">
-              <GameWidgetGuide />
-              <NetworkAlert />
-              <div className="container-fluid">
-                <div className="row no-gutter cb-game">
-                  <TaskConfirmationModal
-                    modalShowing={taskModalShowing}
-                    taskService={machines.taskService}
-                  />
-                  <TaskConfigurationModal
-                    modalShowing={taskConfigurationModalShowing}
-                    setModalShowing={setTaskConfigurationModalShowing}
-                  />
-                  <AnimationModal
-                    setModalShowing={setResultModalShowing}
-                    modalShowing={resultModalShowing}
-                  />
-                  {inBuilderRoom ? (
-                    <>
-                      <BuilderSettingsWidget
-                        setConfigurationModalShowing={
-                          setTaskConfigurationModalShowing
-                        }
-                      />
-                      <BuilderEditorsWidget />
-                    </>
-                  ) : (
-                    <>
-                      <InfoWidget />
-                      <GameWidget editorMachine={editorMachine} />
-                    </>
-                  )}
-                  {mute && (
-                    <div className="rounded p-2 bg-dark cb-mute-icon">
-                      <FontAwesomeIcon
-                        size="lg"
-                        color="white"
-                        icon={['fas', 'volume-mute']}
-                      />
-                    </div>
-                  )}
-                  {!replayerIsOpen && <FeedbackWidget />}
-                </div>
+        <RoomContext.Provider value={machines}>
+          <div className="x-outline-none">
+            <GameWidgetGuide />
+            <NetworkAlert />
+            <div className="container-fluid">
+              <div className="row no-gutter cb-game">
+                <TaskConfirmationModal
+                  modalShowing={taskModalShowing}
+                  taskService={machines.taskService}
+                />
+                <TaskConfigurationModal
+                  modalShowing={taskConfigurationModalShowing}
+                  setModalShowing={setTaskConfigurationModalShowing}
+                />
+                <AnimationModal
+                  setModalShowing={setResultModalShowing}
+                  modalShowing={resultModalShowing}
+                />
+                {inBuilderRoom || (pageName === 'builder' && inPreviewRoom) ? (
+                  <>
+                    <BuilderSettingsWidget
+                      setConfigurationModalShowing={
+                        setTaskConfigurationModalShowing
+                      }
+                    />
+                    <BuilderEditorsWidget />
+                  </>
+                ) : (
+                  <>
+                    <InfoWidget />
+                    <GameWidget editorMachine={editorMachine} />
+                  </>
+                )}
+                {mute && (
+                  <div className="rounded p-2 bg-dark cb-mute-icon">
+                    <FontAwesomeIcon
+                      size="lg"
+                      color="white"
+                      icon={['fas', 'volume-mute']}
+                    />
+                  </div>
+                )}
+                {!replayerIsOpen && <FeedbackWidget />}
               </div>
-              {replayerIsOpen && <CodebattlePlayer roomCurrent={roomCurrent} />}
             </div>
-          </RoomContext.Provider>
-        )}
+            {replayerIsOpen && <CodebattlePlayer roomCurrent={roomCurrent} />}
+          </div>
+        </RoomContext.Provider>
       </CSSTransition>
     </SwitchTransition>
   );
-};
-
-GameRoomWidget.propTypes = {
-  setCurrentUser: PropTypes.func.isRequired,
-};
+}
 
 const mapDispatchToProps = {
-  setCurrentUser: actions.setCurrentUser,
   toggleMuteSound: actions.toggleMuteSound,
 };
 

@@ -14,9 +14,9 @@ const gameStatuses = {
   timeout: 'game_over',
 };
 
-const TimerContainer = ({
+function TimerContainer({
  time, mode, timeoutSeconds, gameStateName,
-}) => {
+}) {
   const { mainService, taskService } = useContext(RoomContext);
   const roomCurrent = useMachineStateSelector(mainService, roomStateSelector);
   const taskCurrent = useMachineStateSelector(taskService, taskStateSelector);
@@ -60,7 +60,11 @@ const TimerContainer = ({
     return <CountdownTimer time={time} timeoutSeconds={timeoutSeconds} />;
   }
 
+  if (!time) {
+    return <></>;
+  }
+
   return <Timer time={time} />;
-};
+}
 
 export default TimerContainer;

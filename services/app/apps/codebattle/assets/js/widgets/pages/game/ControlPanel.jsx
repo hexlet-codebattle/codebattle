@@ -10,14 +10,14 @@ import { replayerMachineStates } from '../../machines/game';
 
 const gameId = Gon.getAsset('game_id');
 
-const ControlPanel = ({
+function ControlPanel({
   roomCurrent,
   onPauseClick,
   onPlayClick,
   onChangeSpeed,
   children,
   nextRecordId,
-}) => {
+}) {
   const dispatch = useDispatch();
 
   const { speedMode } = roomCurrent.context;
@@ -86,6 +86,6 @@ const ControlPanel = ({
       </div>
     </>
   );
-};
+}
 
 export default ControlPanel;

@@ -2,7 +2,7 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import { compressEditorHeight, expandEditorHeight } from '../../middlewares/Game';
 
-const EditorHeightButtons = ({ editor: { userId } }) => {
+function EditorHeightButtons({ editor: { userId } }) {
   const dispatch = useDispatch();
   const compressEditor = userID => () => dispatch(compressEditorHeight(userID));
   const expandEditor = userID => () => dispatch(expandEditorHeight(userID));
@@ -25,6 +25,6 @@ const EditorHeightButtons = ({ editor: { userId } }) => {
       </button>
     </div>
   );
-};
+}
 
 export default EditorHeightButtons;

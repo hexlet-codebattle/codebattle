@@ -4,6 +4,7 @@ import { camelizeKeys } from 'humps';
 import _ from 'lodash';
 
 import { actions as lobbyActions } from './lobby';
+import initial from './initial';
 
 export const fetchCompletedGames = createAsyncThunk(
   'completedGames/fetchCompletedGames',
@@ -36,7 +37,7 @@ export const loadNextPage = createAsyncThunk(
 const completedGames = createSlice({
   name: 'completedGames',
   initialState: {
-    completedGames: [],
+    completedGames: initial.completedGames,
     nextPage: null,
     totalPages: null,
     totalGames: 0,

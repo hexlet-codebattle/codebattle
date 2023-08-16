@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { currentUserNameSelector } from '../selectors/index';
 
-const FeedbackWidget = memo(() => {
+function FeedbackWidget() {
   const currentUserName = useSelector(currentUserNameSelector);
 
   const sendToServer = (payload, success, error) => fetch('/api/v1/feedback', {
@@ -36,6 +36,6 @@ const FeedbackWidget = memo(() => {
         .catch(error)}
     />
   );
-});
+}
 
-export default FeedbackWidget;
+export default memo(FeedbackWidget);

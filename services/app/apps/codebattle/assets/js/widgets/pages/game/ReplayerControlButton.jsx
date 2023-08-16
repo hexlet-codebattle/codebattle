@@ -5,13 +5,14 @@ import i18n from '../../../i18n';
 import { actions } from '../../slices';
 import { downloadPlaybook, openPlaybook } from '../../middlewares/Game';
 import { replayerMachineStates, roomMachineStates } from '../../machines/game';
-import { roomStateSelector } from '../../machines/selectors';
+import { inPreviewRoomSelector, roomStateSelector } from '../../machines/selectors';
 import useMachineStateSelector from '../../utils/useMachineStateSelector';
 
-const ReplayerControlButton = () => {
+function ReplayerControlButton() {
   const dispatch = useDispatch();
   const { mainService } = useContext(RoomContext);
   const roomCurrent = useMachineStateSelector(mainService, roomStateSelector);
+  const isPreviewRoom = inPreviewRoomSelector(roomCurrent);
 
   const loadReplayer = useCallback(
     () => dispatch(downloadPlaybook(mainService)),
@@ -36,6 +37,7 @@ const ReplayerControlButton = () => {
           onClick={loadReplayer}
           className="btn btn-secondary btn-block rounded-lg"
           aria-label="Open Record Player"
+          disabled={isPreviewRoom}
         >
           {i18n.t('Open History')}
         </button>
@@ -48,6 +50,7 @@ const ReplayerControlButton = () => {
           onClick={openLoadedReplayer}
           className="btn btn-secondary btn-block rounded-lg"
           aria-label="Open Record Player"
+          disabled={isPreviewRoom}
         >
           {i18n.t('Open History')}
         </button>
@@ -70,6 +73,6 @@ const ReplayerControlButton = () => {
       return null;
     }
   }
-};
+}
 
 export default ReplayerControlButton;

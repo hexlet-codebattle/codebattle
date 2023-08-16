@@ -6,7 +6,7 @@ import LanguagePickerView from './LanguagePickerView';
 import { inTestingRoomSelector, openedReplayerSelector } from '../machines/selectors';
 import useMachineStateSelector from '../utils/useMachineStateSelector';
 
-const LanguagePicker = ({ status, editor: { currentLangSlug } }) => {
+function LanguagePicker({ status, editor: { currentLangSlug } }) {
   const dispatch = useDispatch();
 
   const { mainService } = useContext(RoomContext);
@@ -27,6 +27,6 @@ const LanguagePicker = ({ status, editor: { currentLangSlug } }) => {
       changeLang={changeLang}
     />
   );
-};
+}
 
 export default LanguagePicker;

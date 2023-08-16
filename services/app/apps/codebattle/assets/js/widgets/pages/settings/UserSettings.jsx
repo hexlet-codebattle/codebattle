@@ -57,7 +57,7 @@ const renderSocialBtns = currentUserSettings => {
   });
 };
 
-const UserSettings = () => {
+function UserSettings() {
   const [notification, setNotification] = useState('pending');
   const [animation, setAnimation] = useState('done');
 
@@ -131,6 +131,6 @@ const UserSettings = () => {
       </div>
     </div>
   );
-};
+}
 
 export default UserSettings;

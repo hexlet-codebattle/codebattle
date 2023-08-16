@@ -11,6 +11,8 @@ defmodule CodebattleWeb.GameController do
   alias Codebattle.UserGameReport
   alias Runner.Languages
 
+  alias CodebattleWeb.Api.GameView
+
   action_fallback(CodebattleWeb.FallbackController)
 
   def show(conn, %{"id" => id}) do
@@ -18,9 +20,13 @@ defmodule CodebattleWeb.GameController do
 
     case Context.get_game!(id) do
       %Game{is_live: true} = game ->
+        score = Context.fetch_score_by_game_id(game.id)
+        game_params = GameView.render_game(game, score)
+
         conn =
           put_gon(conn,
             reports: maybe_get_reports(conn.assigns.current_user, game.id),
+            game: game_params,
             game_id: id,
             tournament_id: Helpers.get_tournament_id(game),
             players: present_users_for_gon(Helpers.get_players(game))
@@ -61,10 +67,18 @@ defmodule CodebattleWeb.GameController do
         if Playbook.Context.exists?(game.id) do
           [first, second] = get_users(game)
 
+          score = Context.fetch_score_by_game_id(game.id)
+
+          game_params =
+            game
+            |> GameView.render_game(score)
+            |> Map.put(:mode, "history")
+
           conn
           |> put_gon(
             is_record: true,
             game_id: id,
+            game: game_params,
             tournament_id: game.tournament_id,
             langs: Languages.get_langs(),
             players: present_users_for_gon(game.users)

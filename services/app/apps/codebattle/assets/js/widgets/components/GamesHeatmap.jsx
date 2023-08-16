@@ -6,7 +6,7 @@ import axios from 'axios';
 import { actions } from '../slices';
 import Loading from './Loading';
 
-const GamesHeatmap = () => {
+function GamesHeatmap() {
   const [activities, setActivities] = useState(null);
 
   const dispatch = useDispatch();
@@ -47,7 +47,8 @@ const GamesHeatmap = () => {
       </div>
     </div>
   );
-};
+}
+
 GamesHeatmap.colorScale = count => {
   if (count >= 5) {
     return 'color-huge';
@@ -60,4 +61,5 @@ GamesHeatmap.colorScale = count => {
   }
   return 'color-empty';
 };
+
 export default GamesHeatmap;

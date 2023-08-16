@@ -11,17 +11,21 @@ const channelName = 'lobby';
 const isRecord = Gon.getAsset('is_record');
 const channel = !isRecord ? socket.channel(channelName) : null;
 
-export const fetchState = () => (dispatch, getState) => {
+export const fetchState = currentUserId => dispatch => {
   const camelizeKeysAndDispatch = actionCreator => data => dispatch(actionCreator(camelizeKeys(data)));
 
   channel.join().receive('ok', camelizeKeysAndDispatch(actions.initGameList));
 
-  channel.on('game:upsert', data => {
+  channel.onError(() => {
+    dispatch(actions.updateLobbyChannelState(false));
+  });
+
+  const handleGameUpsert = data => {
     const newData = camelizeKeys(data);
     const {
       game: { players, id, state: gameState },
     } = newData;
-    const currentPlayerId = getState().user.currentUserId;
+    const currentPlayerId = currentUserId;
     const isGameStarted = gameState === 'playing';
     const isCurrentUserInGame = _.some(
       players,
@@ -33,21 +37,39 @@ export const fetchState = () => (dispatch, getState) => {
     } else {
       dispatch(actions.upsertGameLobby(newData));
     }
-  });
+  };
 
-  channel.on('game:check_started', data => {
+  const handleGameCheckStarted = data => {
     const { gameId, userId } = camelizeKeys(data);
     const payload = { gameId, userId, checkResult: { status: 'started' } };
 
     dispatch(actions.updateCheckResult(payload));
-  });
+  };
 
-  channel.on(
-    'game:check_completed',
-    camelizeKeysAndDispatch(actions.updateCheckResult),
-  );
-  channel.on('game:remove', camelizeKeysAndDispatch(actions.removeGameLobby));
-  channel.on('game:finished', camelizeKeysAndDispatch(actions.finishGame));
+  const refs = [
+    channel.on('game:upsert', handleGameUpsert),
+    channel.on('game:check_started', handleGameCheckStarted),
+    channel.on(
+      'game:check_completed',
+      camelizeKeysAndDispatch(actions.updateCheckResult),
+    ),
+    channel.on('game:remove', camelizeKeysAndDispatch(actions.removeGameLobby)),
+    channel.on('game:finished', camelizeKeysAndDispatch(actions.finishGame)),
+  ];
+
+  const oldChannel = channel;
+
+  const clearLobbyListeners = () => {
+    if (oldChannel) {
+      oldChannel.off('game:upsert', refs[0]);
+      oldChannel.off('game:check_started', refs[1]);
+      oldChannel.off('game:check_completed', refs[2]);
+      oldChannel.off('game:remove', refs[3]);
+      oldChannel.off('game:finished', refs[4]);
+    }
+  };
+
+  return clearLobbyListeners;
 };
 
 export const openDirect = (userId, name) => dispatch => {

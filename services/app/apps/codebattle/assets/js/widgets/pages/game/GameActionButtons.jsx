@@ -8,7 +8,7 @@ import { actions } from '../../slices';
 import useMachineStateSelector from '../../utils/useMachineStateSelector';
 import { inTestingRoomSelector } from '../../machines/selectors';
 
-const CheckResultButton = ({ onClick, status }) => {
+function CheckResultButton({ onClick, status }) {
   const dispatch = useDispatch();
   const commonProps = {
     className: 'btn btn-outline-success btn-check btn-sm rounded-right',
@@ -43,9 +43,9 @@ const CheckResultButton = ({ onClick, status }) => {
       return null;
     }
   }
-};
+}
 
-const GiveUpButton = ({ onClick, status }) => {
+function GiveUpButton({ onClick, status }) {
   const dispatch = useDispatch();
   const commonProps = {
     className: 'btn btn-outline-danger btn-sm rounded-left',
@@ -74,9 +74,9 @@ const GiveUpButton = ({ onClick, status }) => {
       return null;
     }
   }
-};
+}
 
-const ResetButton = ({ onClick, status }) => {
+function ResetButton({ onClick, status }) {
   const dispatch = useDispatch();
   const commonProps = {
     className: 'btn btn-outline-secondary btn-sm mx-1',
@@ -105,15 +105,15 @@ const ResetButton = ({ onClick, status }) => {
       return null;
     }
   }
-};
+}
 
-const GameActionButtons = ({
+function GameActionButtons({
   currentEditorLangSlug,
   checkResult,
   checkBtnStatus,
   resetBtnStatus,
   giveUpBtnStatus,
-}) => {
+}) {
   const [modalShowing, setModalShowing] = useState(false);
   const dispatch = useDispatch();
 
@@ -161,6 +161,6 @@ const GameActionButtons = ({
       {renderModal()}
     </div>
   );
-};
+}
 
 export default GameActionButtons;

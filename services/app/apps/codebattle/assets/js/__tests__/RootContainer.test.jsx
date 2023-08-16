@@ -1,5 +1,6 @@
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom/extend-expect';
 import axios from 'axios';
 import { createMachine } from 'xstate';
@@ -47,7 +48,18 @@ jest.mock(
 );
 
 jest.mock('axios');
-jest.mock('../widgets/pages/game/EditorContainer', () => () => <></>);
+jest.mock(
+  '../widgets/pages/game/EditorContainer',
+  () => function EditorContainer() {
+    return <></>;
+  },
+);
+
+jest.mock(
+  '../widgets/utils/useStayScrolled',
+  () => () => ({ stayScrolled: () => {} }),
+  { virtual: true },
+);
 
 axios.get.mockResolvedValue({ data: {} });
 
@@ -156,6 +168,7 @@ const preloadedState = {
         userId: -1,
       },
     ],
+    channel: { online: true },
     activeRoom: { name: 'General', targetUserId: null },
     rooms: [{ name: 'General', targetUserId: null }],
     history: {
@@ -175,7 +188,12 @@ test('test rendering preview game component', () => {
 
   render(
     <Provider store={store}>
-      <RootContainer mainMachine={createMachine(game)} taskMachine={createMachine(task)} editorMachine={createMachine(editor)} />
+      <RootContainer
+        pageName="game"
+        mainMachine={createMachine({ predictableActionArguments: true, ...game })}
+        taskMachine={createMachine({ predictableActionArguments: true, ...task })}
+        editorMachine={createMachine({ predictableActionArguments: true, ...editor })}
+      />
     </Provider>,
   );
 
@@ -183,6 +201,7 @@ test('test rendering preview game component', () => {
 });
 
 test('test game guide', async () => {
+  const user = userEvent.setup();
   const store = configureStore({
     reducer,
     preloadedState,
@@ -190,23 +209,29 @@ test('test game guide', async () => {
 
   const { getByRole } = render(
     <Provider store={store}>
-      <RootContainer mainMachine={createMachine(game)} taskMachine={createMachine(task)} editorMachine={createMachine(editor)} />
+      <RootContainer
+        pageName="game"
+        mainMachine={createMachine({ predictableActionArguments: true, ...game })}
+        taskMachine={createMachine({ predictableActionArguments: true, ...task })}
+        editorMachine={createMachine({ predictableActionArguments: true, ...editor })}
+      />
     </Provider>,
   );
 
   const showGuideButton = getByRole('button', { name: 'Show guide' });
 
-  fireEvent.click(showGuideButton);
+  await user.click(showGuideButton);
 
   const closeGuideButton = getByRole('button', { name: 'Close' });
   expect(closeGuideButton).toBeInTheDocument();
 
-  fireEvent.click(closeGuideButton);
+  await user.click(closeGuideButton);
 
   expect(closeGuideButton).not.toBeInTheDocument();
 });
 
-test('test a bot invite button', () => {
+test('test a bot invite button', async () => {
+  const user = userEvent.setup();
   const store = configureStore({
     reducer,
     preloadedState,
@@ -214,12 +239,17 @@ test('test a bot invite button', () => {
 
   const { getByLabelText, getByTitle } = render(
     <Provider store={store}>
-      <RootContainer mainMachine={createMachine(game)} taskMachine={createMachine(task)} editorMachine={createMachine(editor)} />
+      <RootContainer
+        pageName="game"
+        mainMachine={createMachine({ predictableActionArguments: true, ...game })}
+        taskMachine={createMachine({ predictableActionArguments: true, ...task })}
+        editorMachine={createMachine({ predictableActionArguments: true, ...editor })}
+      />
     </Provider>,
   );
 
   const target = getByTitle('Message (Tim Urban)');
-  fireEvent.contextMenu(target, { button: 2 });
+  await user.pointer({ keys: '[MouseLeft]', target });
 
   expect(getByLabelText('Send an invite')).toHaveAttribute('aria-disabled', 'true');
 });

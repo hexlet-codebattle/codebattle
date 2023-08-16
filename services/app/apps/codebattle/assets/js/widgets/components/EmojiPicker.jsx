@@ -3,7 +3,7 @@ import Picker from '@emoji-mart/react';
 import data from '@emoji-mart/data';
 import useKey from '../utils/useKey';
 
-export default function EmojiPicker({ handleSelect, hide }) {
+export default function EmojiPicker({ handleSelect, hide, disabled = false }) {
   useKey('Escape', () => hide(), { event: 'keyup' });
 
   const handleOnClickOutside = () => hide();
@@ -18,6 +18,7 @@ export default function EmojiPicker({ handleSelect, hide }) {
       onEmojiSelect={handleSelect}
       onClickOutside={handleOnClickOutside}
       autoFocus
+      disabled={disabled}
     />
   );
 }

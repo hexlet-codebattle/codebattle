@@ -14,13 +14,15 @@ import { taskParamsSelector } from '../../selectors';
 import SignaturePreview from './SignaturePreview';
 import ExamplePreview from './ExamplePreview';
 
-const TaskConfirmationModal = memo(({ modalShowing, taskService }) => {
+const taskSelector = taskParamsSelector();
+
+function TaskConfirmationModal({ modalShowing, taskService }) {
   const dispatch = useDispatch();
   const confirmBtnRef = useRef(null);
 
   const [error, setError] = useState(null);
 
-  const taskParams = useSelector(taskParamsSelector);
+  const taskParams = useSelector(taskSelector);
   const templateState = useSelector(state => state.builder.templates.state);
 
   const handleConfirmation = useCallback(() => {
@@ -126,6 +128,6 @@ const TaskConfirmationModal = memo(({ modalShowing, taskService }) => {
       </Modal.Footer>
     </Modal>
   );
-});
+}
 
-export default TaskConfirmationModal;
+export default memo(TaskConfirmationModal);

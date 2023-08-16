@@ -10,7 +10,7 @@ env:
   node: true
   browser: true
 
-parser: babel-eslint
+parser: "@babel/eslint-parser"
 
 extends:
   - "airbnb"

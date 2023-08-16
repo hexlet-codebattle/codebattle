@@ -6,7 +6,7 @@ import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 
 import reducers from '../widgets/slices';
-import RatingList from '../widgets/pages/rating';
+import RatingList from '../widgets/pages/rating/RatingList';
 
 jest.mock('@fortawesome/react-fontawesome', () => ({
   FontAwesomeIcon: 'img',
@@ -29,13 +29,9 @@ axios.get.mockResolvedValue({
 
 test('test rendering RatingList', async () => {
   const reducer = combineReducers(reducers);
-
-  const preloadedState = {
-    storeLoaded: true,
-  };
   const store = configureStore({
     reducer,
-    preloadedState,
+    preloadedState: {},
   });
 
   const { getByText } = render(<Provider store={store}><RatingList /></Provider>);

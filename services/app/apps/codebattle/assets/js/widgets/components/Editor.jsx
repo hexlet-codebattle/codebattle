@@ -16,6 +16,7 @@ import getLanguageTabSize, { shouldReplaceTabsWithSpaces } from '../utils/editor
 import editorThemes from '../config/editorThemes';
 import { addCursorListeners } from '../middlewares/Game';
 import editorUserTypes from '../config/editorUserTypes';
+import Loading from './Loading';
 
 class Editor extends PureComponent {
   static propTypes = {
@@ -118,7 +119,12 @@ class Editor extends PureComponent {
 
   async componentDidUpdate(prevProps, prevState) {
     const { remote } = this.state;
-    const { syntax, mode, editable } = this.props;
+    const {
+      syntax,
+      mode,
+      editable,
+      loading = false,
+    } = this.props;
 
     if (mode !== prevProps.mode) {
       if (this.currentMode) {
@@ -127,11 +133,11 @@ class Editor extends PureComponent {
       this.statusBarRef.current.innerHTML = '';
       this.currentMode = this.modes[mode]();
     }
-    if (prevProps.editable !== editable) {
+    if (prevProps.editable !== editable || prevProps.loading !== loading) {
       this.options = {
         ...this.options,
-        readOnly: !editable,
-        contextMenu: editable,
+        readOnly: !editable || loading,
+        contextMenu: editable && !loading,
         scrollbar: {
           useShadows: false,
           verticalHasArrows: true,
@@ -282,7 +288,7 @@ class Editor extends PureComponent {
     this.editor.onDidChangeCursorSelection(this.handleChangeCursorSelection);
     this.editor.onDidChangeCursorPosition(this.handleChangeCursorPosition);
 
-    if (!(isBuilder || isHistory)) {
+    if (!isBuilder && !isHistory) {
       const clearCursorListeners = addCursorListeners(
         userId,
         this.updateRemoteCursorPosition,
@@ -329,7 +335,7 @@ class Editor extends PureComponent {
 
   render() {
     const {
-      value, syntax, onChange, theme,
+      value, syntax, onChange, theme, loading = false,
     } = this.props;
     // FIXME: move here and apply mapping object
     const mappedSyntax = languages[syntax];
@@ -337,6 +343,12 @@ class Editor extends PureComponent {
       'bg-dark text-white': theme === editorThemes.dark,
       'bg-white text-dark': theme === editorThemes.light,
     });
+
+    const loadingClassName = cn('position-absolute align-items-center justify-content-center w-100 h-100', {
+      'd-flex cb-loading-background': loading,
+      'd-none': !loading,
+    });
+
     return (
       <>
         <MonacoEditor
@@ -355,6 +367,7 @@ class Editor extends PureComponent {
           className={statusBarClassName}
           style={{ bottom: '40px' }}
         />
+        <div className={loadingClassName}><Loading /></div>
       </>
     );
   }

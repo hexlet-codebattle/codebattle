@@ -50,15 +50,13 @@ const InfoPopup = ({ reloadGeneratorCode, editable }) => {
         <span className="text-center">
           Reload (Press
           {' '}
-          {
-            <button
-              type="button"
-              className="btn border-0 rounded-lg p-1"
-              onClick={reloadGeneratorCode}
-            >
-              <FontAwesomeIcon icon="redo" />
-            </button>
-          }
+          <button
+            type="button"
+            className="btn border-0 rounded-lg p-1"
+            onClick={reloadGeneratorCode}
+          >
+            <FontAwesomeIcon icon="redo" />
+          </button>
           ) Generator/Solution code.
         </span>
       ) : (
@@ -68,7 +66,7 @@ const InfoPopup = ({ reloadGeneratorCode, editable }) => {
   );
 };
 
-const BuilderEditorsWidget = memo(() => {
+function BuilderEditorsWidget() {
   const dispatch = useDispatch();
   const { taskService } = useContext(RoomContext);
 
@@ -125,6 +123,7 @@ const BuilderEditorsWidget = memo(() => {
     mode: editorsMode,
     theme,
     mute: true,
+    loading: false,
   };
 
   const changeTaskServiceState = useCallback(() => taskService.send('CHANGES'), [taskService]);
@@ -170,7 +169,7 @@ const BuilderEditorsWidget = memo(() => {
           style={gameRoomEditorStyles}
         >
           <div className="rounded-top" data-player-type="current_user">
-            <div className="btn-toolbar justify-content-between align-items-center m-1" role="toolbar">
+            <div className="btn-toolbar justify-content-between align-items-center m-1 mb-2" role="toolbar">
               <div className="d-flex justify-content-between">
                 <div className="d-flex align-items-center p-1">
                   <div className="py-2">
@@ -288,6 +287,6 @@ const BuilderEditorsWidget = memo(() => {
       </div>
     </>
   );
-});
+}
 
-export default BuilderEditorsWidget;
+export default memo(BuilderEditorsWidget);

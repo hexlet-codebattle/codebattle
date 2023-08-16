@@ -1,9 +1,17 @@
 import React, { useRef, useLayoutEffect } from 'react';
-import useStayScrolled from 'react-stay-scrolled';
+import useStayScrolled from '../utils/useStayScrolled';
 
 import Message from './Message';
 
-const Messages = ({ messages, displayMenu = () => {} }) => {
+const getKey = (id, time, name) => {
+  if (!time || !name) {
+    return id;
+  }
+
+  return `${time}-${name}`;
+};
+
+function Messages({ messages, displayMenu = () => {} }) {
   const listRef = useRef();
 
   const { stayScrolled /* , scrollBottom */ } = useStayScrolled(listRef);
@@ -24,12 +32,14 @@ const Messages = ({ messages, displayMenu = () => {} }) => {
             id, userId, name, text, type, time, meta,
           } = message;
 
+          const key = getKey(id, time, name);
+
           return (
             <Message
               name={name}
               userId={userId}
               text={text}
-              key={id || `${time}-${name}`}
+              key={key}
               type={type}
               time={time}
               meta={meta}
@@ -40,6 +50,6 @@ const Messages = ({ messages, displayMenu = () => {} }) => {
       </ul>
     </>
   );
-};
+}
 
 export default Messages;

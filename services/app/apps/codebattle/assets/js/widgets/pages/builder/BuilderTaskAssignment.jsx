@@ -65,12 +65,12 @@ const renderGameLevelSelectButton = (level, handleSetLevel) => (
   </div>
 );
 
-const BuilderTaskAssignment = ({
+function BuilderTaskAssignment({
   task,
   taskLanguage,
   handleSetLanguage,
   openConfiguration,
-}) => {
+}) {
   const dispatch = useDispatch();
 
   const editable = useSelector(selectors.canEditTask);
@@ -126,9 +126,9 @@ const BuilderTaskAssignment = ({
   return (
     <div className="card h-100 border-0 shadow-sm">
       <div className="px-3 py-3 h-100 overflow-auto">
-        <div className="d-flex align-items-begin flex-column flex-sm-row justify-content-between mb-2">
+        <div className="d-flex align-items-begin flex-column flex-sm-row justify-content-between">
           {editable ? (
-            <div className="d-flex align-items-center">
+            <div className="d-flex align-items-center mb-2">
               {renderGameLevelSelectButton(task.level, handleSetLevel)}
               <span className="h6 card-text mb-0 ml-2">{i18n.t('Task: ')}</span>
               {task.state === taskStateCodes.blank ? (
@@ -158,13 +158,13 @@ const BuilderTaskAssignment = ({
               )}
             </div>
           ) : (
-            <h6 className="card-text d-flex align-items-center">
+            <h6 className="card-text d-flex align-items-center mb-2">
               <GameLevelBadge level={task.level} />
               <span className="ml-2">{i18n.t('Task: ')}</span>
               <span className="ml-2 text-muted">{task.name}</span>
             </h6>
           )}
-          <div className="d-flex align-items-center">
+          <div className="d-flex align-items-center mb-2">
             <ConfigurationButton onClick={openConfiguration} />
             <TaskLanguagesSelection
               handleSetLanguage={handleSetLanguage}
@@ -196,7 +196,7 @@ const BuilderTaskAssignment = ({
       </div>
     </div>
   );
-};
+}
 
 BuilderTaskAssignment.propTypes = {
   task: PropTypes.shape({

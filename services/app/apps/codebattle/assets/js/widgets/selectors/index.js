@@ -1,10 +1,11 @@
+import { createDraftSafeSelector } from '@reduxjs/toolkit';
 import _ from 'lodash';
 import userTypes from '../config/userTypes';
 import GameStateCodes from '../config/gameStateCodes';
 import editorModes from '../config/editorModes';
 import editorThemes from '../config/editorThemes';
 import i18n from '../../i18n';
-import { makeEditorTextKey } from '../slices';
+import { makeEditorTextKey } from '../utils/gameRoom';
 import defaultEditorHeight from '../config/editorSettings';
 import { replayerMachineStates } from '../machines/game';
 import { taskStateCodes } from '../config/task';
@@ -12,6 +13,8 @@ import { taskStateCodes } from '../config/task';
 export const currentUserIdSelector = state => state.user.currentUserId;
 
 export const currentUserIsAdminSelector = state => state.user.users[state.user.currentUserId].is_admin;
+
+export const currentUserIsGuestSelector = state => state.user.users[state.user.currentUserId].is_guest;
 
 export const isShowGuideSelector = state => state.gameUI.isShowGuide;
 
@@ -84,23 +87,29 @@ export const secondEditorSelector = (state, roomCurrent) => {
   return editorDataSelector(roomCurrent, playerId)(state);
 };
 
-export const leftEditorSelector = roomCurrent => state => {
-  const currentUserId = currentUserIdSelector(state);
-  const player = _.get(gamePlayersSelector(state), currentUserId, false);
-  const editorSelector = !!player && player.type === userTypes.secondPlayer
-    ? secondEditorSelector
-    : firstEditorSelector;
-  return editorSelector(state, roomCurrent);
-};
+export const leftEditorSelector = roomCurrent => createDraftSafeSelector(
+  state => state,
+  state => {
+    const currentUserId = currentUserIdSelector(state);
+    const player = _.get(gamePlayersSelector(state), currentUserId, false);
+    const editorSelector = !!player && player.type === userTypes.secondPlayer
+      ? secondEditorSelector
+      : firstEditorSelector;
+    return editorSelector(state, roomCurrent);
+  },
+);
 
-export const rightEditorSelector = roomCurrent => state => {
-  const currentUserId = currentUserIdSelector(state);
-  const player = _.get(gamePlayersSelector(state), currentUserId, false);
-  const editorSelector = !!player && player.type === userTypes.secondPlayer
-    ? firstEditorSelector
-    : secondEditorSelector;
-  return editorSelector(state, roomCurrent);
-};
+export const rightEditorSelector = roomCurrent => createDraftSafeSelector(
+  state => state,
+  state => {
+    const currentUserId = currentUserIdSelector(state);
+    const player = _.get(gamePlayersSelector(state), currentUserId, false);
+    const editorSelector = !!player && player.type === userTypes.secondPlayer
+      ? firstEditorSelector
+      : secondEditorSelector;
+    return editorSelector(state, roomCurrent);
+  },
+);
 
 export const editorSideSelector = (side, roomCurrent) => state => {
   const editors = {
@@ -117,10 +126,13 @@ export const currentPlayerTextByLangSelector = lang => state => {
 };
 
 export const userLangSelector = state => userId => _.get(editorsMetaSelector(state)[userId], 'currentLangSlug', null);
-export const userGameScoreByPlayerId = state => userId => ({
-  winnerId: state.game.gameStatus.score?.winnerId,
-  score: state.game.gameStatus.score?.playerResults[String(userId)],
-});
+export const userGameScoreSelector = createDraftSafeSelector(
+  state => state.game.gameStatus.score,
+  score => ({
+    winnerId: score?.winnerId,
+    results: score?.playerResults,
+  }),
+);
 
 export const gameStatusTitleSelector = state => {
   const gameStatus = gameStatusSelector(state);
@@ -184,16 +196,35 @@ export const taskTextSolutionSelector = state => state.builder.textSolution[stat
 
 export const taskTextArgumentsGeneratorSelector = state => state.builder.textArgumentsGenerator[state.builder.generatorLang];
 
-export const taskParamsSelector = (state, params = { normalize: true }) => ({
-  ...state.builder.task,
-  inputSignature: state.builder.task.inputSignature.map(item => (params.normalize ? _.pick(item, ['argumentName', 'type']) : item)),
-  outputSignature: params.normalize ? _.pick(state.builder.task.outputSignature, ['type']) : state.builder.task.outputSignature,
-  asserts: state.builder.task.asserts.map(item => (params.normalize ? _.pick(item, ['arguments', 'expected']) : item)),
-  assertsExamples: state.builder.task.assertsExamples.map(item => (params.normalize ? _.pick(item, ['arguments', 'expected']) : item)),
-  generatorLang: state.builder.generatorLang,
-  solution: state.builder.textSolution[state.builder.generatorLang],
-  argumentsGenerator: state.builder.textArgumentsGenerator[state.builder.generatorLang],
-});
+export const taskParamsSelector = (params = { normalize: true }) => createDraftSafeSelector(
+  state => state.builder.task,
+  state => state.builder.task.inputSignature,
+  state => state.builder.task.outputSignature,
+  state => state.builder.task.asserts,
+  state => state.builder.task.assertsExamples,
+  state => state.builder.generatorLang,
+  state => state.builder.textSolution,
+  state => state.builder.textArgumentsGenerator,
+  (
+    task,
+    inputSignature,
+    outputSignature,
+    asserts,
+    assertsExamples,
+    generatorLang,
+    textSolution,
+    textArgumentsGenerator,
+  ) => ({
+    ...task,
+    inputSignature: inputSignature.map(item => (params.normalize ? _.pick(item, ['argumentName', 'type']) : item)),
+    outputSignature: params.normalize ? _.pick(outputSignature, ['type']) : outputSignature,
+    asserts: asserts.map(item => (params.normalize ? _.pick(item, ['arguments', 'expected']) : item)),
+    assertsExamples: assertsExamples.map(item => (params.normalize ? _.pick(item, ['arguments', 'expected']) : item)),
+    generatorLang,
+    solution: textSolution[generatorLang],
+    argumentsGenerator: textArgumentsGenerator[generatorLang],
+  }),
+);
 
 export const taskSolutionSelector = (state, lang) => state.builder.textSolution[lang];
 
@@ -207,7 +238,7 @@ export const isTestingReady = state => (
   && state.builder.validationStatuses.argumentsGenerator[0]
 );
 
-export const editorLangsSelector = state => state.editor.langs.langs;
+export const editorLangsSelector = state => state.editor.langs;
 
 export const langInputSelector = state => state.editor.langInput;
 
@@ -257,6 +288,8 @@ export const usersInfoSelector = state => state.usersInfo;
 export const chatUsersSelector = state => state.chat.users;
 
 export const chatMessagesSelector = state => state.chat.messages;
+
+export const chatChannelStateSelector = state => state.chat.channel.online;
 
 export const chatHistoryMessagesSelector = state => state.chat.history.messages;
 

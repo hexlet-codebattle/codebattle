@@ -1,7 +1,7 @@
 import React, { useContext, useCallback } from 'react';
 import RoomContext from '../../components/RoomContext';
 
-const BackToTaskBuilderButton = () => {
+function BackToTaskBuilderButton() {
   const { mainService } = useContext(RoomContext);
 
   const handleOpenTaskBuilder = useCallback(() => mainService.send('OPEN_TASK_BUILDER'), [mainService]);
@@ -15,6 +15,6 @@ const BackToTaskBuilderButton = () => {
       Back to task
     </button>
   );
-};
+}
 
 export default BackToTaskBuilderButton;
