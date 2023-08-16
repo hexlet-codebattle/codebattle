@@ -22,6 +22,13 @@ config :runner, RunnerWeb.Endpoint,
   render_errors: [view: RunnerWeb.ErrorView, accepts: ~w(json), layout: false],
   pubsub_server: Runner.PubSub
 
+config :fun_with_flags, :persistence,
+  adapter: FunWithFlags.Store.Persistent.Ecto,
+  repo: Codebattle.Repo,
+  ecto_table_name: "feature_flags"
+
+config :fun_with_flags, :cache_bust_notifications, enabled: false
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",

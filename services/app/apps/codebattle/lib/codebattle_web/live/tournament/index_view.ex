@@ -2,10 +2,10 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
   use CodebattleWeb, :live_view
   use Timex
 
-  @default_timezone "Europe/Moscow"
-
   alias Codebattle.Tournament
   alias CodebattleWeb.Live.Tournament.CreateFormComponent
+
+  import CodebattleWeb.TournamentView
 
   @impl true
   def mount(_params, session, socket) do
@@ -53,7 +53,7 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
                 </td>
                 <td class="align-middle text-nowrap"><%= tournament.state %></td>
                 <td class="align-middle text-nowrap">
-                  <%= render_datetime(tournament.starts_at) %>
+                  <%= format_datetime(tournament.starts_at, @user_timezone) %>
                 </td>
                 <td class="align-middle text-nowrap"></td>
                 <td class="align-middle text-nowrap">
@@ -125,12 +125,4 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
   end
 
   def handle_info(_, socket), do: {:noreply, socket}
-
-  def render_datetime(nil), do: "none"
-
-  def render_datetime(utc_datetime) do
-    utc_datetime
-    |> Timex.Timezone.convert(@default_timezone)
-    |> Timex.format!("%Y-%m-%d %H:%M", :strftime)
-  end
 end

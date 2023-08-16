@@ -1,16 +1,8 @@
 defmodule CodebattleWeb.Live.Tournament.HeaderComponent do
-  use CodebattleWeb, :live_component
+  use CodebattleWeb, :component
 
   import Codebattle.Tournament.Helpers
 
-  alias CodebattleWeb.Live.Tournament.NextRoundTimerComponent
-
-  @impl true
-  def mount(socket) do
-    {:ok, assign(socket, initialized: false)}
-  end
-
-  @impl true
   def render(assigns) do
     ~H"""
     <div>
@@ -83,13 +75,12 @@ defmodule CodebattleWeb.Live.Tournament.HeaderComponent do
       </div>
       <div class="d-flex align-items-center mt-2">
         <div class="small text-muted">
-          <span>State: <%= @tournament.state %></span>
           <span class="ml-3">Type: <%= @tournament.type %></span>
-          <span class="ml-3">PlayersLimit: <%= @tournament.players_limit %></span>
           <%= if can_moderate?(@tournament, @current_user) do %>
-            <span class="ml-3">Access: <%= @tournament.access_type %></span>
             <span class="ml-3">IsLive: <%= @tournament.is_live %></span>
+            <span class="ml-3">Access: <%= @tournament.access_type %></span>
           <% end %>
+          <span class="ml-3">PlayersLimit: <%= @tournament.players_limit %></span>
           <%= if is_visible_by_token?(@tournament) && can_moderate?(@tournament, @current_user) do %>
             <span class="ml-3">
               Private url: <%= Routes.tournament_url(@socket, :show, @tournament.id,
@@ -99,19 +90,6 @@ defmodule CodebattleWeb.Live.Tournament.HeaderComponent do
           <% end %>
         </div>
       </div>
-      <%= if @tournament.is_live and @tournament.state in ["active", "waiting_participants"] do %>
-        <.live_component
-          id="t-timer"
-          module={NextRoundTimerComponent}
-          break_duration_seconds={@tournament.break_duration_seconds}
-          break_state={@tournament.break_state}
-          last_round_ended_at={@tournament.last_round_ended_at}
-          last_round_started_at={@tournament.last_round_started_at}
-          match_timeout_seconds={@tournament.match_timeout_seconds}
-          starts_at={@tournament.starts_at}
-          tournament_state={@tournament.state}
-        />
-      <% end %>
     </div>
     """
   end

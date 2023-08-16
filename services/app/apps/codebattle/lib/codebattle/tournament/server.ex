@@ -31,10 +31,6 @@ defmodule Codebattle.Tournament.Server do
     end
   end
 
-  def start_break(id) do
-    :ok = GenServer.cast(server_name(id), :start_break)
-  end
-
   def handle_event(tournament_id, event_type, params) do
     try do
       GenServer.call(server_name(tournament_id), {event_type, params})
@@ -63,8 +59,7 @@ defmodule Codebattle.Tournament.Server do
   end
 
   def handle_call(:get_tournament, _from, state) do
-    %{tournament: tournament} = state
-    {:reply, tournament, state}
+    {:reply, state.tournament, state}
   end
 
   def handle_call({event_type, params}, _from, state = %{tournament: tournament}) do
@@ -76,9 +71,12 @@ defmodule Codebattle.Tournament.Server do
     {:reply, tournament, Map.merge(state, %{tournament: new_tournament})}
   end
 
-  def handle_cast(:start_break, state = %{tournament: tournament}) do
-    Process.send_after(self(), :stop_break, :timer.seconds(tournament.break_duration_seconds))
-    {:noreply, state}
+  def handle_info(:stop_round_break, %{tournament: tournament}) do
+    new_tournament = tournament.module.stop_round_break(tournament)
+
+    broadcast_tournament_update(new_tournament)
+
+    {:noreply, %{tournament: new_tournament}}
   end
 
   def handle_info(
@@ -90,6 +88,18 @@ defmodule Codebattle.Tournament.Server do
         state = %{tournament: tournament}
       ) do
     new_tournament = tournament.module.finish_match(tournament, payload)
+
+    case new_tournament do
+      %{break_state: "on"} ->
+        Process.send_after(
+          self(),
+          :stop_round_break,
+          :timer.seconds(tournament.break_duration_seconds)
+        )
+
+      %{break_state: "off"} ->
+        :noop
+    end
 
     broadcast_tournament_update(new_tournament)
     {:noreply, %{state | tournament: new_tournament}}

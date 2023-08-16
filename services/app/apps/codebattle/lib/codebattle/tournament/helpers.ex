@@ -167,8 +167,8 @@ defmodule Codebattle.Tournament.Helpers do
     %{}
   end
 
-  def get_winner_ids(tournament = %{state: "finished"}) do
-    tournament
+  def get_winner_ids(%{state: "finished"}) do
+    # TODO: implement tournament winner ids
     []
   end
 
@@ -195,22 +195,22 @@ defmodule Codebattle.Tournament.Helpers do
   defp match_is_active?(%{state: "active"}), do: true
   defp match_is_active?(%{state: "playing"}), do: true
   defp match_is_active?(_match), do: false
-  defp match_is_finished?(%{state: "game_over"}), do: true
-  defp match_is_finished?(%{state: "canceled"}), do: true
-  defp match_is_finished?(%{state: "timeout"}), do: true
-  defp match_is_finished?(_match), do: false
+  # defp match_is_finished?(%{state: "game_over"}), do: true
+  # defp match_is_finished?(%{state: "canceled"}), do: true
+  # defp match_is_finished?(%{state: "timeout"}), do: true
+  # defp match_is_finished?(_match), do: false
 
-  defp is_winner?(%{players: players}, player) do
-    Enum.any?(players, fn x -> x.id == player.id and x.result == "won" end)
-  end
+  # defp is_winner?(%{players: players}, player) do
+  #   Enum.any?(players, fn x -> x.id == player.id and x.result == "won" end)
+  # end
 
-  defp get_average_time([]), do: 0
+  # defp get_average_time([]), do: 0
 
-  defp get_average_time(matches) do
-    div(Enum.reduce(matches, 0, fn x, acc -> acc + x.duration end), Enum.count(matches))
-  end
+  # defp get_average_time(matches) do
+  #   div(Enum.reduce(matches, 0, fn x, acc -> acc + x.duration end), Enum.count(matches))
+  # end
 
-  defp get_team_by_id(teams, team_id), do: Enum.find(teams, fn x -> x.id == team_id end)
+  # defp get_team_by_id(teams, team_id), do: Enum.find(teams, fn x -> x.id == team_id end)
 
   def get_current_round_task(tournament) do
     Map.get(tournament.round_tasks, to_id(tournament.current_round))

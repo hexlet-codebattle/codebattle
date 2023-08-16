@@ -95,7 +95,7 @@ defmodule Codebattle.Tournament.Base do
           tournament
           |> update_struct(%{
             players_count: players_count(tournament),
-            last_round_started_at: NaiveDateTime.truncate(NaiveDateTime.utc_now(), :second),
+            last_round_started_at: NaiveDateTime.utc_now(:second),
             state: "active"
           })
           |> start_round()
@@ -128,6 +128,12 @@ defmodule Codebattle.Tournament.Base do
         tournament
         |> handle_game_result(payload)
         |> maybe_start_next_round()
+      end
+
+      def stop_round_break(tournament) do
+        tournament
+        |> update_struct(%{current_round: tournament.current_round + 1})
+        |> start_round()
       end
 
       def handle_game_result(tournament, params) do
@@ -169,24 +175,15 @@ defmodule Codebattle.Tournament.Base do
           tournament
         else
           tournament
+          |> update_struct(%{last_round_ended_at: NaiveDateTime.utc_now(:second)})
           |> calculate_round_results()
           |> maybe_finish()
-          |> set_next_round_params()
           |> start_round_or_break_or_finish()
         end
       end
 
       defp pick_game_winner_id(player_ids, player_results) do
-        Enum.find(player_ids, &(player_results[&1] == "won"))
-      end
-
-      defp set_next_round_params(tournament = %{state: "finished"}), do: tournament
-
-      defp set_next_round_params(tournament) do
-        update_struct(tournament, %{
-          current_round: tournament.current_round + 1,
-          last_round_started_at: NaiveDateTime.truncate(NaiveDateTime.utc_now(), :second)
-        })
+        Enum.find(player_ids, &(player_results[&1] && player_results[&1].result == "won"))
       end
 
       defp start_round_or_break_or_finish(tournament = %{state: "finished"}) do
@@ -202,16 +199,22 @@ defmodule Codebattle.Tournament.Base do
                break_duration_seconds: break_duration_seconds
              }
            )
-           when not is_nil(break_duration_seconds) do
+           when break_duration_seconds not in [nil, 0] do
         update_struct(tournament, %{break_state: "on"})
       end
 
-      defp start_round_or_break_or_finish() do
-        start_round(tournament)
+      defp start_round_or_break_or_finish(tournament) do
+        tournament
+        |> update_struct(%{current_round: tournament.current_round + 1})
+        |> start_round()
       end
 
       defp start_round(tournament) do
         tournament
+        |> update_struct(%{
+          break_state: "off",
+          last_round_started_at: NaiveDateTime.utc_now(:second)
+        })
         |> maybe_set_task_for_round()
         |> build_matches()
         |> db_save!()
@@ -291,12 +294,6 @@ defmodule Codebattle.Tournament.Base do
         Codebattle.PubSub.broadcast("tournament:round_created", %{tournament: tournament})
         tournament
       end
-
-      # for individual game
-      defp get_new_duration(nil), do: 0
-      # for team game
-      defp get_new_duration(started_at),
-        do: NaiveDateTime.diff(NaiveDateTime.utc_now(), started_at, :millisecond)
 
       def get_score(player_result, game_level, tournament_match_timeout_seconds) do
         # game_level_score is fibanachi based score for different task level

@@ -34,7 +34,6 @@ defmodule Codebattle.Tournament do
   @types ~w(individual team stairway)
 
   @default_match_timeout Application.compile_env(:codebattle, :tournament_match_timeout)
-  @default_timezone "Europe/Moscow"
 
   schema "tournaments" do
     belongs_to(:creator, Codebattle.User)
@@ -45,7 +44,7 @@ defmodule Codebattle.Tournament do
     field(:break_state, :string, default: "off")
     field(:current_round, :integer, default: 0)
     field(:default_language, :string, default: "js")
-    field(:finished_at, :utc_datetime)
+    field(:finished_at, :naive_datetime)
     field(:labels, {:array, :string})
     field(:last_round_ended_at, :naive_datetime)
     field(:last_round_started_at, :naive_datetime)

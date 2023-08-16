@@ -164,7 +164,7 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
         </div>
 
         <div class="form-row justify-content-between mt-3">
-          <div class="col-4 d-flex flex-column justify-content-between">
+          <div class="col-3 d-flex flex-column justify-content-between">
             <%= label(f, :players_limit) %>
             <%= select(f, :players_limit, [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048],
               value: f.params["players_limit"] || 64,
@@ -172,12 +172,12 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
             ) %>
             <%= error_tag(f, :players_limit) %>
           </div>
-          <div class="col-4 d-flex flex-column justify-content-between">
+          <div class="col-3 d-flex flex-column justify-content-between">
             <%= label(f, :default_language) %>
             <%= select(f, :default_language, @langs, class: "form-control") %>
             <%= error_tag(f, :default_language) %>
           </div>
-          <div class="col-4 d-flex flex-column justify-content-between">
+          <div class="col-3 d-flex flex-column justify-content-between">
             <%= label(f, :match_timeout_sec) %>
             <%= number_input(
               f,
@@ -188,7 +188,7 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
               max: "1000"
             ) %>
           </div>
-          <div class="col-3">
+          <div class="col-3 d-flex flex-column justify-content-between">
             <%= label(f, :break_duration_sec) %>
             <%= number_input(
               f,

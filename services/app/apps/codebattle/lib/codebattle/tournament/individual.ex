@@ -15,6 +15,7 @@ defmodule Codebattle.Tournament.Individual do
       end
 
     bots = Bot.Context.build_list(bots_count)
+
     add_players(tournament, %{users: bots})
   end
 
@@ -37,27 +38,23 @@ defmodule Codebattle.Tournament.Individual do
 
   @impl Tournament.Base
   def build_matches(tournament) do
-    if final_round?(tournament) do
+    last_round_matches =
       tournament
-    else
-      last_round_matches =
-        tournament
-        |> get_round_matches(tournament.current_round - 1)
-        |> Enum.sort_by(& &1.id)
+      |> get_round_matches(tournament.current_round - 1)
+      |> Enum.sort_by(& &1.id)
 
-      winner_ids = Enum.map(last_round_matches, &pick_winner_id(&1))
+    winner_ids = Enum.map(last_round_matches, &pick_winner_id(&1))
 
-      winners = get_players(tournament, winner_ids)
-      last_ref = List.last(last_round_matches).id
+    winners = get_players(tournament, winner_ids)
+    last_ref = List.last(last_round_matches).id
 
-      new_matches =
-        pair_players_to_matches(winners, tournament, last_ref + 1)
-        |> Enum.reduce(tournament.matches, fn match, acc ->
-          Map.put(acc, to_id(match.id), match)
-        end)
+    new_matches =
+      pair_players_to_matches(winners, tournament, last_ref + 1)
+      |> Enum.reduce(tournament.matches, fn match, acc ->
+        Map.put(acc, to_id(match.id), match)
+      end)
 
-      update_struct(tournament, %{matches: new_matches})
-    end
+    update_struct(tournament, %{matches: new_matches})
   end
 
   @impl Tournament.Base
@@ -91,6 +88,6 @@ defmodule Codebattle.Tournament.Individual do
   end
 
   defp final_round?(tournament) do
-    Enum.count(tournament.players) == :math.pow(2, tournament.current_round)
+    Enum.count(tournament.players) == :math.pow(2, tournament.current_round + 1)
   end
 end

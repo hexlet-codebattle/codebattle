@@ -8,22 +8,31 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
   alias CodebattleWeb.Live.Tournament.IndividualComponent
   alias CodebattleWeb.Live.Tournament.StairwayComponent
   alias CodebattleWeb.Live.Tournament.TeamComponent
+  alias CodebattleWeb.Live.Tournament.TimerComponent
+
+  import CodebattleWeb.TournamentView
 
   require Logger
+
+  @timer_tick_frequency :timer.seconds(1)
 
   @impl true
   def mount(_params, session, socket) do
     tournament = session["tournament"]
+    user_timezone = get_in(socket.private, [:connect_params, "timezone"]) || "UTC"
 
     Codebattle.PubSub.subscribe(topic_name(tournament))
     Codebattle.PubSub.subscribe(chat_topic_name(tournament))
 
+    :timer.send_interval(@timer_tick_frequency, self(), :timer_tick)
+
     {:ok,
      assign(socket,
        current_user: session["current_user"],
+       now: NaiveDateTime.utc_now(:second),
        messages: get_chat_messages(tournament.id),
        rating_toggle: "hide",
-       next_round_time: nil,
+       user_timezone: user_timezone,
        team_tournament_tab: "scores",
        tournament: tournament
      )}
@@ -44,14 +53,35 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
       <div>
         <div class="container-fluid">
           <div class="row">
-            <div class="col bg-white shadow-sm m-3 p-2">
-              <.live_component
-                id="header-tournament"
+            <div class="col bg-white shadow-sm mt-2 mx-3 p-2">
+              <HeaderComponent.render
                 module={HeaderComponent}
                 tournament={@tournament}
                 socket={@socket}
                 current_user={@current_user}
               />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col bg-white shadow-sm my-2 mx-3 p-2">
+              <%= if @tournament.is_live and @tournament.state in ["active", "waiting_participants"] do %>
+                <.live_component
+                  id="t-timer"
+                  module={TimerComponent}
+                  break_duration_seconds={@tournament.break_duration_seconds}
+                  break_state={@tournament.break_state}
+                  last_round_ended_at={@tournament.last_round_ended_at}
+                  last_round_started_at={@tournament.last_round_started_at}
+                  match_timeout_seconds={@tournament.match_timeout_seconds}
+                  now={@now}
+                  starts_at={@tournament.starts_at}
+                  tournament_state={@tournament.state}
+                  user_timezone={@user_timezone}
+                />
+              <% else %>
+                <%= "The Tournament finished at " <>
+                  format_datetime(@tournament.finished_at, @user_timezone) %>
+              <% end %>
             </div>
           </div>
         </div>
@@ -92,26 +122,7 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
 
   @impl true
   def handle_info(:timer_tick, socket) do
-    tournament = socket.assigns.tournament
-    socket.assigns
-
-    next_round_time =
-      case {tournament.state, tournament.break_state} do
-        {"active", "off"} ->
-          NaiveDateTime.add(tournament.last_round_started_at, tournament.match_timeout_seconds)
-
-        {"active", "on"} ->
-          NaiveDateTime.add(tournament.last_round_ended_at, tournament.break_duration_seconds)
-
-        {"waiting_participants", _} ->
-          tournament.starts_at
-
-        _ ->
-          nil
-      end
-      |> dbg
-
-    {:noreply, assign(socket, next_round_time: next_round_time)}
+    {:noreply, assign(socket, now: NaiveDateTime.utc_now(:second))}
   end
 
   def handle_info(%{topic: _topic, event: "tournament:updated", payload: payload}, socket) do

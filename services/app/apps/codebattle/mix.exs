@@ -68,6 +68,8 @@ defmodule Codebattle.MixProject do
       {:typed_struct, "~> 0.3"},
       {:yaml_elixir, "~> 2.4"},
       {:exfake, "~> 1.0.0"},
+      {:fun_with_flags, "~> 1.10.1"},
+      {:fun_with_flags_ui, "~> 0.8"},
 
       # dev_and_test
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},

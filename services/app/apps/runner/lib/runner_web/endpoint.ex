@@ -1,6 +1,6 @@
 defmodule RunnerWeb.Endpoint do
-  use Sentry.PlugCapture
   use Phoenix.Endpoint, otp_app: :runner
+  use Sentry.PlugCapture
 
   @session_options [
     store: :cookie,
