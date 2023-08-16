@@ -22,6 +22,13 @@ config :runner, RunnerWeb.Endpoint,
   render_errors: [view: RunnerWeb.ErrorView, accepts: ~w(json), layout: false],
   pubsub_server: Runner.PubSub
 
+config :fun_with_flags, :persistence,
+  adapter: FunWithFlags.Store.Persistent.Ecto,
+  repo: Codebattle.Repo,
+  ecto_table_name: "feature_flags"
+
+config :fun_with_flags, :cache_bust_notifications, enabled: false
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
@@ -29,8 +36,10 @@ config :logger, :console,
 
 config :phoenix, :json_library, Jason
 
+config :codebattle, github_oauth_client: HTTPoison
+config :codebattle, discord_oauth_client: HTTPoison
+
 config :codebattle, :oauth,
-  mock_clinet: false,
   github_client_id: System.get_env("GITHUB_CLIENT_ID", "ASFD"),
   github_client_secret: System.get_env("GITHUB_CLIENT_SECRET", "ASFD"),
   discord_client_id: System.get_env("DISCORD_CLIENT_ID", "ASFD"),

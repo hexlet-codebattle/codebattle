@@ -164,7 +164,7 @@ defmodule Codebattle.CodeCheck.OutputParser.V2Test do
     assert result == %Codebattle.CodeCheck.Result.V2{
              asserts: [],
              exit_code: 2,
-             asserts_count: 0,
+             asserts_count: 1,
              output_error: "Your solution ran out of memory, please, rewrite it",
              status: "error",
              success_count: 0
@@ -184,7 +184,7 @@ defmodule Codebattle.CodeCheck.OutputParser.V2Test do
     assert result == %Codebattle.CodeCheck.Result.V2{
              asserts: [],
              exit_code: 143,
-             asserts_count: 0,
+             asserts_count: 1,
              output_error:
                "Your solution was executed for longer than 15 seconds, try to write more optimally",
              status: "error",
@@ -200,7 +200,7 @@ defmodule Codebattle.CodeCheck.OutputParser.V2Test do
     assert result == %Codebattle.CodeCheck.Result.V2{
              asserts: [],
              exit_code: 37,
-             asserts_count: 0,
+             asserts_count: 1,
              output_error:
                "Something went wrong! Please, write to dev team in our Telegram \n UNKNOWN_ERROR: asdf}",
              status: "error",

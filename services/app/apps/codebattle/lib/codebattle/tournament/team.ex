@@ -37,7 +37,8 @@ defmodule Codebattle.Tournament.Team do
       tournament
       |> get_round_matches(current_round)
       |> Enum.map(fn
-        %{state: "game_over", player_ids: player_ids, winner_id: winner_id} ->
+        %{state: "game_over", player_ids: player_ids, winner_id: winner_id}
+        when not is_nil(winner_id) ->
           team_id = Enum.find_index(player_ids, &(&1 == winner_id))
           List.insert_at([0], team_id, 1)
 

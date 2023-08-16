@@ -15,14 +15,14 @@ defmodule Codebattle.Game.Elo do
 
   ## Examples
 
-    iex(1)> Codebattle.Game.Elo.calc_elo(1000, 1000, 32)
+    iex(1)> Codebattle.Game.Elo.calc_elo(1000, 1000, "elementary")
     {1016, 984}
 
   """
-  def calc_elo(winner_rating, loser_rating, difficulty \\ "medium") do
+  def calc_elo(winner_rating, loser_rating, level \\ "medium") do
     {
-      round(winner_rating + @kvalues[difficulty] * winner_expected(winner_rating, loser_rating)),
-      round(loser_rating + @kvalues[difficulty] * loser_expected(winner_rating, loser_rating))
+      round(winner_rating + @kvalues[level] * winner_expected(winner_rating, loser_rating)),
+      round(loser_rating + @kvalues[level] * loser_expected(winner_rating, loser_rating))
     }
   end
 

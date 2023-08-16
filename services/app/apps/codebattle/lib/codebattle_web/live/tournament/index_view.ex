@@ -2,13 +2,15 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
   use CodebattleWeb, :live_view
   use Timex
 
-  @default_timezone "Europe/Moscow"
-
   alias Codebattle.Tournament
   alias CodebattleWeb.Live.Tournament.CreateFormComponent
 
+  import CodebattleWeb.TournamentView
+
   @impl true
   def mount(_params, session, socket) do
+    user_timezone = get_in(socket.private, [:connect_params, "timezone"]) || "UTC"
+
     Codebattle.PubSub.subscribe("tournaments")
 
     current_user = session["current_user"]
@@ -16,6 +18,7 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
     {:ok,
      assign(socket,
        current_user: current_user,
+       user_timezone: user_timezone,
        tournaments: session["tournaments"],
        langs: Runner.Languages.get_lang_slugs(),
        changeset: Codebattle.Tournament.changeset(%Codebattle.Tournament{})
@@ -50,7 +53,7 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
                 </td>
                 <td class="align-middle text-nowrap"><%= tournament.state %></td>
                 <td class="align-middle text-nowrap">
-                  <%= render_datetime(tournament.starts_at) %>
+                  <%= format_datetime(tournament.starts_at, @user_timezone) %>
                 </td>
                 <td class="align-middle text-nowrap"></td>
                 <td class="align-middle text-nowrap">
@@ -71,6 +74,7 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
         id="create-form"
         module={CreateFormComponent}
         changeset={@changeset}
+        user_timezone={@user_timezone}
         langs={@langs}
         task_pack_names={@current_user |> Codebattle.TaskPack.list_visible() |> Enum.map(& &1.name)}
       />
@@ -94,9 +98,16 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
 
   @impl true
   def handle_event("create", %{"tournament" => params}, socket) do
-    creator = socket.assigns.current_user
+    params =
+      Map.merge(
+        params,
+        %{
+          "creator" => socket.assigns.current_user,
+          "user_timezone" => socket.assigns.user_timezone
+        }
+      )
 
-    case Tournament.Context.create(Map.merge(params, %{"creator" => creator})) do
+    case Tournament.Context.create(params) do
       {:ok, tournament} ->
         {:noreply,
          socket
@@ -114,12 +125,4 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
   end
 
   def handle_info(_, socket), do: {:noreply, socket}
-
-  def render_datetime(nil), do: "none"
-
-  def render_datetime(utc_datetime) do
-    utc_datetime
-    |> Timex.Timezone.convert(@default_timezone)
-    |> Timex.format!("%Y-%m-%d %H:%M", :strftime)
-  end
 end

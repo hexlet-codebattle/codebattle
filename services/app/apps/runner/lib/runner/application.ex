@@ -1,6 +1,4 @@
 defmodule Runner.Application do
-  # See https://hexdocs.pm/elixir/Application.html
-  # for more information on OTP Applications
   @moduledoc false
 
   use Application
@@ -20,22 +18,22 @@ defmodule Runner.Application do
 
     prod_workers =
       if Application.get_env(:runner, :use_prod_workers) do
-        [
-          {Runner.DockerImagesPuller, []}
-        ]
+        [{Runner.DockerImagesPuller, []}]
       else
         []
       end
 
     children =
       [
-        {Phoenix.PubSub, name: Runner.PubSub},
-        {Runner.StaleContainersKiller, []},
-        RunnerWeb.Endpoint
+        {RunnerWeb.Endpoint, []},
+        %{
+          # PubSub for internal messages
+          id: Runner.PubSub,
+          start: {Phoenix.PubSub.Supervisor, :start_link, [[name: Runner.PubSub]]}
+        },
+        {Runner.StaleContainersKiller, []}
       ] ++ prod_workers
 
-    # See https://hexdocs.pm/elixir/Supervisor.html
-    # for other strategies and supported options
     opts = [
       strategy: :one_for_one,
       name: Runner.Supervisor,

@@ -7,11 +7,11 @@ defmodule Mix.Tasks.GetContributors do
 
   @repos %{
     codebattle:
-      'https://api.github.com/repos/hexlet-codebattle/codebattle/contributors?per_page=1000',
+      ~c"https://api.github.com/repos/hexlet-codebattle/codebattle/contributors?per_page=1000",
     asserts:
-      'https://api.github.com/repos/hexlet-codebattle/battle_asserts/contributors?per_page=1000',
+      ~c"https://api.github.com/repos/hexlet-codebattle/battle_asserts/contributors?per_page=1000",
     extension:
-      'https://api.github.com/repos/hexlet-codebattle/chrome_extension/contributors?per_page=1000'
+      ~c"https://api.github.com/repos/hexlet-codebattle/chrome_extension/contributors?per_page=1000"
   }
 
   def run(_) do

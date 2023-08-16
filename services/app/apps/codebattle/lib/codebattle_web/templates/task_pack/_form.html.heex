@@ -1,4 +1,4 @@
-<%= f = form_for(@changeset, @action, class: 'col-8  offset-2') %>
+<%= f = form_for(@changeset, @action, class: ~c"col-8  offset-2") %>
 <div class="form-group">
   <%= render_base_errors(@changeset.errors[:base]) %>
 </div>
@@ -7,7 +7,11 @@
     <span>Name</span>
     <span class="ml-3 text-muted">Name for task pack, should be unique</span>
   </div>
-  <%= text_input(f, :name, class: "form-control form-control-lg", maxlength: "37", required: false) %>
+  <%= text_input(f, :name,
+    class: "form-control form-control-lg",
+    maxlength: "37",
+    required: false
+  ) %>
   <%= error_tag(f, :name) %>
 </div>
 <div class="form-group">

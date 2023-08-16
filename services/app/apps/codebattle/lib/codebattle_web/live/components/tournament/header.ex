@@ -1,14 +1,8 @@
 defmodule CodebattleWeb.Live.Tournament.HeaderComponent do
-  use CodebattleWeb, :live_component
+  use CodebattleWeb, :component
 
   import Codebattle.Tournament.Helpers
 
-  @impl true
-  def mount(socket) do
-    {:ok, assign(socket, initialized: false)}
-  end
-
-  @impl true
   def render(assigns) do
     ~H"""
     <div>
@@ -81,13 +75,12 @@ defmodule CodebattleWeb.Live.Tournament.HeaderComponent do
       </div>
       <div class="d-flex align-items-center mt-2">
         <div class="small text-muted">
-          <span>State: <%= @tournament.state %></span>
           <span class="ml-3">Type: <%= @tournament.type %></span>
-          <span class="ml-3">PlayersLimit: <%= @tournament.players_limit %></span>
           <%= if can_moderate?(@tournament, @current_user) do %>
-            <span class="ml-3">Access: <%= @tournament.access_type %></span>
             <span class="ml-3">IsLive: <%= @tournament.is_live %></span>
+            <span class="ml-3">Access: <%= @tournament.access_type %></span>
           <% end %>
+          <span class="ml-3">PlayersLimit: <%= @tournament.players_limit %></span>
           <%= if is_visible_by_token?(@tournament) && can_moderate?(@tournament, @current_user) do %>
             <span class="ml-3">
               Private url: <%= Routes.tournament_url(@socket, :show, @tournament.id,

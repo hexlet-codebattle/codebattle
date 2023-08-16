@@ -4,6 +4,7 @@ defmodule Codebattle.Application do
 
   @app_dir File.cwd!()
 
+  @impl true
   def start(_type, _args) do
     if Application.get_env(:codebattle, :load_dot_env_file) do
       root_dir = @app_dir |> Path.join("../../../../") |> Path.expand()
@@ -66,6 +67,7 @@ defmodule Codebattle.Application do
     )
   end
 
+  @impl true
   def config_change(changed, _new, removed) do
     CodebattleWeb.Endpoint.config_change(changed, removed)
     :ok

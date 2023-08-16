@@ -46,7 +46,7 @@ defmodule Codebattle.MixProject do
       {:ecto_psql_extras, "~> 0.2"},
       {:envy, "~> 1.1.1"},
       {:gettext, "~> 0.18"},
-      {:html_to_image, github: "koss-lebedev/html_to_image"},
+      {:html_to_image, github: "vtm9/html_to_image"},
       {:httpoison, "~> 2.0"},
       {:jason, "~> 1.2"},
       {:phoenix, "~> 1.7"},
@@ -68,6 +68,8 @@ defmodule Codebattle.MixProject do
       {:typed_struct, "~> 0.3"},
       {:yaml_elixir, "~> 2.4"},
       {:exfake, "~> 1.0.0"},
+      {:fun_with_flags, "~> 1.10.1"},
+      {:fun_with_flags_ui, "~> 0.8"},
 
       # dev_and_test
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},

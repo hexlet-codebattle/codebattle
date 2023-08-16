@@ -1,4 +1,6 @@
 defmodule Runner.StaleContainersKiller do
+  @moduledoc false
+
   use GenServer
 
   @game_timeout 30

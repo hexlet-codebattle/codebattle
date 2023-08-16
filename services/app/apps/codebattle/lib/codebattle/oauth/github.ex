@@ -7,8 +7,7 @@ defmodule Codebattle.Oauth.Github do
   @github_url "https://github.com/login/oauth/"
   @github_auth_url @github_url <> "access_token?"
 
-  @http_client (Application.compile_env(:codebattle, :oauth)[:mock_clinet] &&
-                  Codebattle.Oauth.GithubMock) || HTTPoison
+  @http_client Application.compile_env(:codebattle, :github_oauth_client)
 
   @doc """
   `http_client/0` injects a TestDouble of HTTPoison in Test

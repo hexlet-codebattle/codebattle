@@ -53,11 +53,12 @@ defmodule Codebattle.Game.Helpers do
   def get_player_results(game) do
     game
     |> get_players
-    |> Enum.map(&{&1.id, &1.result})
+    |> Enum.map(&{&1.id, Map.take(&1, [:id, :result, :duration_sec, :result_percent])})
     |> Enum.into(%{})
   end
 
   def winner?(game, player_id), do: is_player_result?(game, player_id, "won")
+
   def lost?(game, player_id), do: is_player_result?(game, player_id, "lost")
   def gave_up?(game, player_id), do: is_player_result?(game, player_id, "gave_up")
 
@@ -85,12 +86,16 @@ defmodule Codebattle.Game.Helpers do
     %{game | players: new_players}
   end
 
-  defp is_player_result?(game, player_id, result) do
-    game
-    |> get_players
-    |> Enum.find_value(fn p -> p.id == player_id && p.result == result end)
-    |> Kernel.!()
-    |> Kernel.!()
+  def maybe_set_best_results(game, player_id, params) do
+    new_players =
+      Enum.map(game.players, fn player ->
+        case player.id == player_id and player.result_percent < params.result_percent do
+          true -> Map.merge(player, params)
+          _ -> player
+        end
+      end)
+
+    %{game | players: new_players}
   end
 
   def mark_as_live(game), do: Map.put(game, :is_live, true)
@@ -101,5 +106,13 @@ defmodule Codebattle.Game.Helpers do
       | is_bot: bot_game?(game),
         is_tournament: tournament_game?(game)
     }
+  end
+
+  defp is_player_result?(game, player_id, result) do
+    game
+    |> get_players
+    |> Enum.find_value(fn p -> p.id == player_id && p.result == result end)
+    |> Kernel.!()
+    |> Kernel.!()
   end
 end

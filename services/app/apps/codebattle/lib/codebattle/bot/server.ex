@@ -46,7 +46,7 @@ defmodule Codebattle.Bot.Server do
     # TODO: add gracefully terminate if there is no playbook
     case state.playbook_params do
       nil ->
-        Logger.warn("There are no playbook for game: #{state.game.id}")
+        Logger.warning("There are no playbook for game: #{state.game.id}")
         {:noreply, %{state | state: :finished}}
 
       params ->
@@ -166,11 +166,11 @@ defmodule Codebattle.Bot.Server do
         Map.merge(state, %{game_channel: game_channel, chat_channel: chat_channel})
 
       {{:error, reason}, _} ->
-        Logger.warn("#{__MODULE__} cannot connect to game: #{inspect(reason)}")
+        Logger.warning("#{__MODULE__} cannot connect to game: #{inspect(reason)}")
         state
 
       {_, {:error, reason}} ->
-        Logger.warn("#{__MODULE__} cannot connect to chat: #{inspect(reason)}")
+        Logger.warning("#{__MODULE__} cannot connect to chat: #{inspect(reason)}")
         state
     end
   end
@@ -235,7 +235,7 @@ defmodule Codebattle.Bot.Server do
 
       _ ->
         :timer.sleep(1000)
-        Logger.warn("#{__MODULE__} cannot connect to #{topic}, #{n} attempt")
+        Logger.warning("#{__MODULE__} cannot connect to #{topic}, #{n} attempt")
         do_join_channel(socket, topic, n + 1)
     end
   end
