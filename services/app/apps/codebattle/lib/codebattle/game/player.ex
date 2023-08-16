@@ -58,6 +58,7 @@ defmodule Codebattle.Game.Player do
     field(:rating_diff, :integer, default: 0)
     field(:rank, :integer, default: -1)
     field(:achievements, {:array, :string}, default: [])
+    field(:playbook_id, :integer, default: nil)
     # field(:github_id, :integer)
     # field(:discord_id, :integer)
     # field(:discord_avatar, :string)
@@ -84,7 +85,8 @@ defmodule Codebattle.Game.Player do
       :achievements,
       :rating,
       :rating_diff,
-      :rank
+      :rank,
+      :playbook_id
     ])
     |> validate_inclusion(:result, @results)
   end
@@ -152,7 +154,8 @@ defmodule Codebattle.Game.Player do
       rating: player.rating,
       rank: player.rank,
       editor_lang: player.lang || "js",
-      lang: player.lang || "js"
+      lang: player.lang || "js",
+      playbook_id: player.playbook_id
     }
 
     player =

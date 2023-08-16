@@ -38,6 +38,10 @@ defmodule CodebattleWeb do
       import Ecto.Query
       import CodebattleWeb.Gettext
       import Phoenix.LiveView.Controller, only: [live_render: 3]
+
+      defp translate_errors(changeset) do
+        Ecto.Changeset.traverse_errors(changeset, fn {msg, _} -> msg end)
+      end
     end
   end
 

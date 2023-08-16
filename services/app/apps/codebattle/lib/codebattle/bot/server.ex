@@ -176,7 +176,7 @@ defmodule Codebattle.Bot.Server do
   end
 
   defp init_playbook_player(state) do
-    case Bot.PlaybookPlayer.init(state.game) do
+    case Bot.PlaybookPlayer.init(state) do
       {:ok, playbook_params} -> Map.put(state, :playbook_params, playbook_params)
       {:error, :no_playbook} -> state
     end

@@ -4,11 +4,12 @@ defmodule CodebattleWeb.GameController do
   require Logger
 
   alias Codebattle.Game
-  alias Codebattle.Game.Helpers
   alias Codebattle.Game.Context
-  alias Runner.Languages
-  alias Codebattle.User
+  alias Codebattle.Game.Helpers
   alias Codebattle.Playbook
+  alias Codebattle.User
+  alias Codebattle.UserGameReport
+  alias Runner.Languages
 
   alias CodebattleWeb.Api.GameView
 
@@ -24,6 +25,7 @@ defmodule CodebattleWeb.GameController do
 
         conn =
           put_gon(conn,
+            reports: maybe_get_reports(conn.assigns.current_user, game.id),
             game: game_params,
             game_id: id,
             tournament_id: Helpers.get_tournament_id(game),
@@ -178,5 +180,13 @@ defmodule CodebattleWeb.GameController do
         :avatar_url
       ])
     )
+  end
+
+  defp maybe_get_reports(user, game_id) do
+    if User.admin?(user) do
+      UserGameReport.list_by_game(game_id)
+    else
+      []
+    end
   end
 end

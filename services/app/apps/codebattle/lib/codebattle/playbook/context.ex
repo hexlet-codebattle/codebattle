@@ -18,7 +18,7 @@ defmodule Codebattle.Playbook.Context do
     :game_over
   ]
 
-  def get_random_completed(task_id) do
+  def get_random_completed_id(task_id) do
     from(
       p in Playbook,
       where:
@@ -26,6 +26,7 @@ defmodule Codebattle.Playbook.Context do
           p.task_id == ^task_id and
           p.solution_type == "complete",
       order_by: fragment("RANDOM()"),
+      select: p.id,
       limit: 1
     )
     |> Repo.one()
@@ -190,7 +191,7 @@ defmodule Codebattle.Playbook.Context do
 
   defp increase_count(data), do: Map.update!(data, :count, &(&1 + 1))
 
-  defp get_solution_type(nil, game), do: "incomplete"
+  defp get_solution_type(nil, _game), do: "incomplete"
 
   defp get_solution_type(winner, game) do
     has_winner = Game.Helpers.winner?(game, winner.id)

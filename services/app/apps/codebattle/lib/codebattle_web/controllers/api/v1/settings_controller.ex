@@ -36,8 +36,4 @@ defmodule CodebattleWeb.Api.V1.SettingsController do
         |> json(%{errors: translate_errors(changeset)})
     end
   end
-
-  defp translate_errors(changeset) do
-    Ecto.Changeset.traverse_errors(changeset, fn {msg, _} -> msg end)
-  end
 end
