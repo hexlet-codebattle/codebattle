@@ -25,8 +25,8 @@ jobs:
       - name: Setup Elixir
         uses: erlef/setup-beam@v1
         with:
-          otp-version: '25.0.3'
-          elixir-version: '1.13.4'
+          otp-version: '25'
+          elixir-version: '1.15.4'
       - name: Restore mix build cache
         uses: actions/cache@v3
         with:
