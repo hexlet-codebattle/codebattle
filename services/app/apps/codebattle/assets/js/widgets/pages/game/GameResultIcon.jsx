@@ -1,16 +1,18 @@
 import React from 'react';
-import { Tooltip, OverlayTrigger } from 'react-bootstrap';
+import Tooltip from 'react-bootstrap/Tooltip';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import { useSelector } from 'react-redux';
-import _ from 'lodash';
+import get from 'lodash/get';
+import find from 'lodash/find';
 import * as selectors from '../../selectors';
 
 function GameResultIcon({ editor: { userId } }) {
   const players = useSelector(selectors.gamePlayersSelector);
 
-  const { id: opponentId } = _.find(players, ({ id }) => id !== userId);
+  const { id: opponentId } = find(players, ({ id }) => id !== userId);
 
-  const resultUser1 = _.get(players, [userId, 'result']);
-  const resultUser2 = _.get(players, [opponentId, 'result']);
+  const resultUser1 = get(players, [userId, 'result']);
+  const resultUser2 = get(players, [opponentId, 'result']);
 
   const tooltipId = `tooltip-${resultUser1}`;
 

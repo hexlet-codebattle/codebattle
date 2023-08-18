@@ -1,5 +1,6 @@
 import Delta from 'quill-delta';
-import _ from 'lodash';
+import find from 'lodash/find';
+import partition from 'lodash/partition';
 import PlaybookStatusCodes from '../config/playbookStatusCodes';
 
 const snapshotStep = 400;
@@ -43,7 +44,7 @@ const collectFinalRecord = (acc, strRecord) => {
   let newPlayers;
   switch (record.type) {
     case 'update_editor_data':
-      player = _.find(players, { id: record.userId });
+      player = find(players, { id: record.userId });
       editorText = getText(player.editorText, record.diff);
       newPlayers = updatePlayers(players, {
         id: record.userId,
@@ -85,7 +86,7 @@ const reduceOriginalRecords = (acc, record, index) => {
   const { type } = record;
 
   if (type === 'update_editor_data' && playbookType === PlaybookStatusCodes.active) {
-    const { editorText: prevEditorText } = _.find(players, { id: record.id });
+    const { editorText: prevEditorText } = find(players, { id: record.id });
 
     const diff = getDiff(prevEditorText, record.editorText);
     const newPlayers = updatePlayers(
@@ -106,7 +107,7 @@ const reduceOriginalRecords = (acc, record, index) => {
   }
 
   if (type === 'update_editor_data' && playbookType === PlaybookStatusCodes.stored) {
-    const { editorText, editorLang: prevEditorLang } = _.find(players, { id: record.id });
+    const { editorText, editorLang: prevEditorLang } = find(players, { id: record.id });
     const { diff } = record;
 
     const newEditorText = getText(editorText, diff);
@@ -132,7 +133,7 @@ const reduceOriginalRecords = (acc, record, index) => {
     const { checkResult } = record;
 
     const newPlayers = updatePlayers(players, { id: record.id, checkResult });
-    const userName = _.find(players, { id: record.id }).name;
+    const userName = find(players, { id: record.id }).name;
     const data = {
       type,
       userId: record.id,
@@ -246,7 +247,7 @@ export const addRecord = ({
   switch (type) {
     case 'update_editor_data': {
       const { userId, langSlug, editorText } = payload;
-      const { editorText: prevEditorText } = _.find(players, { id: userId });
+      const { editorText: prevEditorText } = find(players, { id: userId });
 
       const diff = getDiff(prevEditorText, editorText);
 
@@ -314,7 +315,7 @@ export const getFinalState = ({ recordId, records, initRecords }) => {
 };
 
 export const resolveDiffs = (playbook, type) => {
-  const [initRecords, restRecords] = _.partition(
+  const [initRecords, restRecords] = partition(
     playbook.records,
     record => record.type === 'init',
   );

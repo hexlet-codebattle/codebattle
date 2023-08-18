@@ -69,6 +69,7 @@ defmodule CodebattleWeb.Router do
       get("/game_activity", GameActivityController, :show)
       get("/playbook/:id", PlaybookController, :show)
       get("/user/:id/stats", UserController, :stats)
+      get("/user/:id/simple_stats", UserController, :simple_stats)
       get("/user/current", UserController, :current)
       resources("/reset_password", ResetPasswordController, only: [:create], singleton: true)
       resources("/session", SessionController, only: [:create], singleton: true)

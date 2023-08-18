@@ -1,5 +1,5 @@
 import React, { useState, useContext, memo } from 'react';
-import _ from 'lodash';
+import get from 'lodash/get';
 import { useSelector } from 'react-redux';
 import cn from 'classnames';
 import RoomContext from '../../components/RoomContext';
@@ -78,8 +78,8 @@ function GameWidget({ editorMachine }) {
 
   const leftEditor = useSelector(selectors.leftEditorSelector(roomCurrent));
   const rightEditor = useSelector(selectors.rightEditorSelector(roomCurrent));
-  const leftUserId = _.get(leftEditor, ['userId'], null);
-  const rightUserId = _.get(rightEditor, ['userId'], null);
+  const leftUserId = get(leftEditor, ['userId'], null);
+  const rightUserId = get(rightEditor, ['userId'], null);
   const leftUserType = currentUserId === leftUserId
     ? editorUserTypes.currentUser
     : editorUserTypes.player;

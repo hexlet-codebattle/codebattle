@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import { useDispatch } from 'react-redux';
 import i18n from '../../../i18n';
 import { actions } from '../../slices';
@@ -47,7 +47,7 @@ function TaskAssignment({ task, taskLanguage, handleSetLanguage }) {
     taskLanguage,
   );
 
-  if (_.isEmpty(task)) {
+  if (isEmpty(task)) {
     return null;
   }
 

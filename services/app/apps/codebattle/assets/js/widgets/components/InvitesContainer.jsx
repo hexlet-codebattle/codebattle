@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
-import { Popover, OverlayTrigger, Button } from 'react-bootstrap';
+import Popover from 'react-bootstrap/Popover';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Button from 'react-bootstrap/Button';
 import { useDispatch, useSelector } from 'react-redux';
 import Gon from 'gon';
 import cn from 'classnames';

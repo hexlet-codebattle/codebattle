@@ -3,7 +3,8 @@ import React, {
   useMemo,
   useRef,
 } from 'react';
-import _ from 'lodash';
+import filter from 'lodash/filter';
+import uniqBy from 'lodash/uniqBy';
 import cn from 'classnames';
 import { useSelector } from 'react-redux';
 import * as selectors from '../../selectors';
@@ -48,8 +49,8 @@ function ChatWidget() {
   useChatRooms('page');
 
   const listOfUsers = useMemo(() => {
-    const uniqUsers = _.uniqBy(users, 'id');
-    return isTournamentGame ? _.filter(uniqUsers, { isBot: false }) : uniqUsers;
+    const uniqUsers = uniqBy(users, 'id');
+    return isTournamentGame ? filter(uniqUsers, { isBot: false }) : uniqUsers;
   }, [isTournamentGame, users]);
 
   const activeRoom = useSelector(selectors.activeRoomSelector);

@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import _ from 'lodash';
+import cloneDeep from 'lodash/cloneDeep';
 import cn from 'classnames';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ExamplesTrack from './ExamplesTrack';
@@ -20,7 +20,7 @@ function ExampleForm({
   const handleArguments = useCallback(
     event => {
       const data = event.target.value;
-      const newExample = _.cloneDeep({ ...example, arguments: data });
+      const newExample = cloneDeep({ ...example, arguments: data });
       if (exampleRef?.current) {
         exampleRef.current.scrollIntoView({
           behavior: 'smooth', block: 'nearest', inline: 'start',
@@ -34,7 +34,7 @@ function ExampleForm({
   const handleExpected = useCallback(
     event => {
       const data = event.target.value;
-      const newExample = _.cloneDeep({ ...example, expected: data });
+      const newExample = cloneDeep({ ...example, expected: data });
       if (exampleRef?.current) {
         exampleRef.current.scrollIntoView({
           behavior: 'smooth', block: 'nearest', inline: 'start',
@@ -130,7 +130,7 @@ function ExamplesEditPanel({
     const existedExample = items.find(item => item.id === suggest?.id);
 
     if (existedExample) {
-      handleEdit(_.cloneDeep(existedExample));
+      handleEdit(cloneDeep(existedExample));
     } else {
       handleAdd();
     }

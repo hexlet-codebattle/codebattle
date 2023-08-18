@@ -3,7 +3,7 @@ import { render, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom/extend-expect';
 import axios from 'axios';
-import _ from 'lodash';
+import omit from 'lodash/omit';
 
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
@@ -219,17 +219,22 @@ beforeEach(() => {
 });
 
 test('test rendering GameList', async () => {
-  const { getByText } = render(
+  const {
+    getByText,
+    findAllByText,
+  } = render(
     <Provider store={store}>
       <LobbyWidget />
     </Provider>,
   );
 
+  const [createGameButton] = await findAllByText(/Create a Game/);
+
   expect(getByText(/Lobby/)).toBeInTheDocument();
   expect(getByText(/Online players: 2/)).toBeInTheDocument();
   expect(getByText(/Tournaments/)).toBeInTheDocument();
   expect(getByText(/Completed Games/)).toBeInTheDocument();
-  expect(getByText(/Create a Game/)).toBeInTheDocument();
+  expect(createGameButton).toBeInTheDocument();
 });
 
 describe('test task choice', () => {
@@ -246,14 +251,15 @@ describe('test task choice', () => {
       getByText,
       getByRole,
       findByRole,
+      findAllByText,
       getByTitle,
     } = render(
       <Provider store={store}>
         <LobbyWidget />
       </Provider>,
     );
-
-    const createGameButton = getByRole('button', { name: 'Create a Game' });
+    const [createGameButton] = await findAllByText('Create a Game');
+    // const createGameButton = getByRole('button', { name: 'Create a Game' });
 
     await user.click(createGameButton);
 
@@ -272,7 +278,7 @@ describe('test task choice', () => {
 
     expect(lobbyMiddlewares.createGame).toHaveBeenCalledWith(params);
 
-    await user.click(await findByRole('button', { name: 'Create a Game' }));
+    await user.click(createGameButton);
     await user.click(await findByRole('button', { name: 'task1 name' }));
     await user.click(getByRole('button', { name: 'Create battle' }));
 
@@ -282,7 +288,8 @@ describe('test task choice', () => {
     };
     expect(lobbyMiddlewares.createGame).toHaveBeenCalledWith(paramsWithChosenTask);
 
-    await user.click(await findByRole('button', { name: 'Create a Game' }));
+    // await user.click(await findByRole('button', { name: 'Create a Game' }));
+    await user.click(createGameButton);
     await user.click(await findByRole('button', { name: 'math' }));
     await user.click(getByRole('button', { name: 'string' }));
     await user.click(getByRole('button', { name: 'Create battle' }));
@@ -293,7 +300,8 @@ describe('test task choice', () => {
     };
     expect(lobbyMiddlewares.createGame).toHaveBeenCalledWith(paramsWithChosenTags);
 
-    await user.click(await findByRole('button', { name: 'Create a Game' }));
+    // await user.click(await findByRole('button', { name: 'Create a Game' }));
+    await user.click(createGameButton);
     await user.click(getByTitle('easy'));
     await user.click(await findByRole('button', { name: 'task7 name' }));
     await user.click(getByRole('button', { name: 'Create battle' }));
@@ -305,7 +313,8 @@ describe('test task choice', () => {
     };
     expect(lobbyMiddlewares.createGame).toHaveBeenCalledWith(paramsWithChosenTaskAndChangedLevel);
 
-    await user.click(await findByRole('button', { name: 'Create a Game' }));
+    await user.click(createGameButton);
+    // await user.click(await findByRole('button', { name: 'Create a Game' }));
     await user.click(getByRole('button', { name: 'With a friend' }));
 
     expect(getByRole('button', { name: 'Create invite' })).toBeDisabled();
@@ -317,13 +326,14 @@ describe('test task choice', () => {
     await user.click(getByRole('button', { name: 'Create invite' }));
 
     const paramsWithOpponent = {
-      ..._.omit(params, ['opponent_type']),
+      ...omit(params, ['opponent_type']),
       recipient_id: -4,
       recipient_name: 'user1',
     };
     expect(invitesMiddleware.createInvite).toHaveBeenCalledWith(paramsWithOpponent);
 
-    await user.click(await findByRole('button', { name: 'Create a Game' }));
+    await user.click(createGameButton);
+    // await user.click(await findByRole('button', { name: 'Create a Game' }));
     await user.click(getByRole('button', { name: 'With a friend' }));
     await user.click(await findByRole('button', { name: 'user1' }));
     await user.click(getByRole('button', { name: 'task1 name' }));
@@ -342,13 +352,16 @@ describe('test task choice', () => {
       findByRole,
       getByTitle,
       queryByRole,
+      findAllByText,
     } = render(
       <Provider store={store}>
         <LobbyWidget />
       </Provider>,
     );
 
-    await user.click(await findByRole('button', { name: 'Create a Game' }));
+    const [createGameButton] = await findAllByText('Create a Game');
+    await user.click(createGameButton);
+    // await user.click(await findByRole('button', { name: 'Create a Game' }));
 
     /*
     jest doesn't process properly async/await inside array.forEach()
@@ -372,6 +385,7 @@ describe('test task choice', () => {
     const {
       getByRole,
       findByRole,
+      findAllByText,
       queryByRole,
     } = render(
       <Provider store={store}>
@@ -379,7 +393,9 @@ describe('test task choice', () => {
       </Provider>,
     );
 
-    await user.click(await findByRole('button', { name: 'Create a Game' }));
+    const [createGameButton] = await findAllByText('Create a Game');
+    await user.click(createGameButton);
+    // await user.click(await findByRole('button', { name: 'Create a Game' }));
 
     const mathTag = await findByRole('button', { name: 'math' });
     const stringTag = getByRole('button', { name: 'string' });
@@ -438,6 +454,7 @@ describe('test task choice', () => {
     const {
       getByRole,
       findByRole,
+      findAllByText,
       queryByRole,
     } = render(
       <Provider store={store}>
@@ -445,7 +462,9 @@ describe('test task choice', () => {
       </Provider>,
     );
 
-    await user.click(await findByRole('button', { name: 'Create a Game' }));
+    const [createGameButton] = await findAllByText('Create a Game');
+    await user.click(createGameButton);
+    // await user.click(await findByRole('button', { name: 'Create a Game' }));
 
     await user.click(await findByRole('button', { name: 'filter tasks by name' }));
 
@@ -458,6 +477,7 @@ describe('test task choice', () => {
     const {
       getByRole,
       findByRole,
+      findAllByText,
       queryByRole,
     } = render(
       <Provider store={store}>
@@ -465,7 +485,9 @@ describe('test task choice', () => {
       </Provider>,
     );
 
-    await user.click(await findByRole('button', { name: 'Create a Game' }));
+    const [createGameButton] = await findAllByText('Create a Game');
+    await user.click(createGameButton);
+    // await user.click(await findByRole('button', { name: 'Create a Game' }));
     await user.click(await findByRole('button', { name: 'filter tasks by name' }));
     await user.click(getByRole('button', { name: 'math' }));
 

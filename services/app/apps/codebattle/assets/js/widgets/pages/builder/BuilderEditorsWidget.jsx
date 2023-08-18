@@ -5,7 +5,7 @@ import React, {
   memo,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import _ from 'lodash';
+import noop from 'lodash/noop';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
 import { actions } from '../../slices';
@@ -129,7 +129,7 @@ function BuilderEditorsWidget() {
   const changeTaskServiceState = useCallback(() => taskService.send('CHANGES'), [taskService]);
   const handleChanges = isAssertsReady
     ? changeTaskServiceState
-    : _.noop;
+    : noop;
 
   const onChangeGenerator = useCallback(value => {
     handleChanges();

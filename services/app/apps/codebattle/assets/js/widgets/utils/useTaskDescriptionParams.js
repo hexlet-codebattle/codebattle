@@ -1,14 +1,15 @@
 import { useMemo } from 'react';
-import _ from 'lodash';
+import keys from 'lodash/keys';
+import includes from 'lodash/includes';
 import taskDescriptionLanguages from '../config/taskDescriptionLanguages';
 
 const useTaskDescriptionParams = (task, taskLanguage) => useMemo(() => {
-    const avaibleLanguages = _.keys(task)
+    const avaibleLanguages = keys(task)
       .filter(key => key.includes('description'))
       .map(key => key.split('description'))
       .map(([, language]) => language.toLowerCase());
 
-    const displayLanguage = _.includes(avaibleLanguages, taskLanguage)
+    const displayLanguage = includes(avaibleLanguages, taskLanguage)
       ? taskLanguage
       : taskDescriptionLanguages.default;
 

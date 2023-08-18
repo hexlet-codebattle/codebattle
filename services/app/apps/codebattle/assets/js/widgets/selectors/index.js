@@ -1,5 +1,9 @@
 import { createDraftSafeSelector } from '@reduxjs/toolkit';
-import _ from 'lodash';
+import isUndefined from 'lodash/isUndefined';
+import find from 'lodash/find';
+import get from 'lodash/get';
+import pick from 'lodash/pick';
+import hasIn from 'lodash/hasIn';
 import userTypes from '../config/userTypes';
 import GameStateCodes from '../config/gameStateCodes';
 import editorModes from '../config/editorModes';
@@ -20,13 +24,13 @@ export const isShowGuideSelector = state => state.gameUI.isShowGuide;
 
 export const gamePlayersSelector = state => state.game.players;
 
-export const firstPlayerSelector = state => _.find(gamePlayersSelector(state), { type: userTypes.firstPlayer });
+export const firstPlayerSelector = state => find(gamePlayersSelector(state), { type: userTypes.firstPlayer });
 
-export const secondPlayerSelector = state => _.find(gamePlayersSelector(state), { type: userTypes.secondPlayer });
+export const secondPlayerSelector = state => find(gamePlayersSelector(state), { type: userTypes.secondPlayer });
 
 export const opponentPlayerSelector = state => {
   const currentUserId = currentUserIdSelector(state);
-  return _.find(gamePlayersSelector(state), ({ id }) => id !== currentUserId);
+  return find(gamePlayersSelector(state), ({ id }) => id !== currentUserId);
 };
 
 const editorsMetaSelector = state => state.editor.meta;
@@ -91,7 +95,7 @@ export const leftEditorSelector = roomCurrent => createDraftSafeSelector(
   state => state,
   state => {
     const currentUserId = currentUserIdSelector(state);
-    const player = _.get(gamePlayersSelector(state), currentUserId, false);
+    const player = get(gamePlayersSelector(state), currentUserId, false);
     const editorSelector = !!player && player.type === userTypes.secondPlayer
       ? secondEditorSelector
       : firstEditorSelector;
@@ -103,7 +107,7 @@ export const rightEditorSelector = roomCurrent => createDraftSafeSelector(
   state => state,
   state => {
     const currentUserId = currentUserIdSelector(state);
-    const player = _.get(gamePlayersSelector(state), currentUserId, false);
+    const player = get(gamePlayersSelector(state), currentUserId, false);
     const editorSelector = !!player && player.type === userTypes.secondPlayer
       ? firstEditorSelector
       : secondEditorSelector;
@@ -125,7 +129,7 @@ export const currentPlayerTextByLangSelector = lang => state => {
   return editorTexts[makeEditorTextKey(userId, lang)];
 };
 
-export const userLangSelector = state => userId => _.get(editorsMetaSelector(state)[userId], 'currentLangSlug', null);
+export const userLangSelector = state => userId => get(editorsMetaSelector(state)[userId], 'currentLangSlug', null);
 export const userGameScoreSelector = createDraftSafeSelector(
   state => state.game.gameStatus.score,
   score => ({
@@ -216,10 +220,10 @@ export const taskParamsSelector = (params = { normalize: true }) => createDraftS
     textArgumentsGenerator,
   ) => ({
     ...task,
-    inputSignature: inputSignature.map(item => (params.normalize ? _.pick(item, ['argumentName', 'type']) : item)),
-    outputSignature: params.normalize ? _.pick(outputSignature, ['type']) : outputSignature,
-    asserts: asserts.map(item => (params.normalize ? _.pick(item, ['arguments', 'expected']) : item)),
-    assertsExamples: assertsExamples.map(item => (params.normalize ? _.pick(item, ['arguments', 'expected']) : item)),
+    inputSignature: inputSignature.map(item => (params.normalize ? pick(item, ['argumentName', 'type']) : item)),
+    outputSignature: params.normalize ? pick(outputSignature, ['type']) : outputSignature,
+    asserts: asserts.map(item => (params.normalize ? pick(item, ['arguments', 'expected']) : item)),
+    assertsExamples: assertsExamples.map(item => (params.normalize ? pick(item, ['arguments', 'expected']) : item)),
     generatorLang,
     solution: textSolution[generatorLang],
     argumentsGenerator: textArgumentsGenerator[generatorLang],
@@ -244,7 +248,7 @@ export const langInputSelector = state => state.editor.langInput;
 
 export const editorHeightSelector = (roomCurrent, userId) => state => {
   const editorData = editorDataSelector(roomCurrent, userId)(state);
-  return _.get(editorData, 'editorHeight', defaultEditorHeight);
+  return get(editorData, 'editorHeight', defaultEditorHeight);
 };
 
 export const executionOutputSelector = (roomCurrent, userId) => state => (roomCurrent.matches({ replayer: replayerMachineStates.on })
@@ -263,7 +267,7 @@ export const secondExecutionOutputSelector = roomCurrent => state => {
 
 export const leftExecutionOutputSelector = roomCurrent => state => {
   const currentUserId = currentUserIdSelector(state);
-  const player = _.get(gamePlayersSelector(state), currentUserId, false);
+  const player = get(gamePlayersSelector(state), currentUserId, false);
 
   const outputSelector = player.type === userTypes.secondPlayer
     ? secondExecutionOutputSelector
@@ -273,7 +277,7 @@ export const leftExecutionOutputSelector = roomCurrent => state => {
 
 export const rightExecutionOutputSelector = roomCurrent => state => {
   const currentUserId = currentUserIdSelector(state);
-  const player = _.get(gamePlayersSelector(state), currentUserId, false);
+  const player = get(gamePlayersSelector(state), currentUserId, false);
 
   const outputSelector = !!player && player.type === userTypes.secondPlayer
     ? firstExecutionOutputSelector
@@ -296,18 +300,18 @@ export const chatHistoryMessagesSelector = state => state.chat.history.messages;
 export const currentChatUserSelector = state => {
   const currentUserId = currentUserIdSelector(state);
 
-  return _.find(chatUsersSelector(state), { id: currentUserId });
+  return find(chatUsersSelector(state), { id: currentUserId });
 };
 
 export const editorsModeSelector = currentUserId => state => {
-  if (_.hasIn(gamePlayersSelector(state), currentUserId)) {
+  if (hasIn(gamePlayersSelector(state), currentUserId)) {
     return state.gameUI.editorMode;
   }
   return editorModes.default;
 };
 
 export const editorsThemeSelector = userId => state => {
-  if (_.hasIn(gamePlayersSelector(state), userId)) {
+  if (hasIn(gamePlayersSelector(state), userId)) {
     return state.gameUI.editorTheme;
   }
   return editorThemes.dark;
@@ -334,10 +338,10 @@ export const gameModeSelector = state => state.game.gameStatus.mode;
 export const userSettingsSelector = state => state.userSettings;
 
 export const isOpponentInGameSelector = state => {
-  const findedUser = _.find(chatUsersSelector(state), {
+  const findedUser = find(chatUsersSelector(state), {
     id: opponentPlayerSelector(state).id,
   });
-  return !_.isUndefined(findedUser);
+  return !isUndefined(findedUser);
 };
 
 export const currentUserNameSelector = state => {

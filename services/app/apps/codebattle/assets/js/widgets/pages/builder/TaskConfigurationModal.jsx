@@ -1,7 +1,7 @@
 import React, {
  useState, useCallback, useRef, useEffect, memo,
 } from 'react';
-import { Modal } from 'react-bootstrap';
+import Modal from 'react-bootstrap/Modal';
 import { useDispatch, useSelector } from 'react-redux';
 import cn from 'classnames';
 import { taskStateCodes, taskVisibilityCodes } from '../../config/task';

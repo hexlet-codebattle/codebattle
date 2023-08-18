@@ -21,7 +21,14 @@ defmodule Codebattle.Tournament do
              :players_limit,
              :starts_at,
              :state,
-             :type
+             :type,
+             :access_type,
+             :access_token,
+             :current_round,
+             :task_pack_name,
+             :task_strategy,
+             :task_provider,
+             :played_pair_ids
            ]}
 
   @access_types ~w(public token)

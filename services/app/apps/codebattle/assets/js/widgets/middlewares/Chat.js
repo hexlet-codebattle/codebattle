@@ -1,5 +1,5 @@
 import Gon from 'gon';
-import _ from 'lodash';
+import capitalize from 'lodash/capitalize';
 import { camelizeKeys, decamelizeKeys } from 'humps';
 
 import socket from '../../socket';
@@ -11,13 +11,17 @@ const isRecord = Gon.getAsset('is_record');
 
 const channel = isRecord ? null : socket.channel(getChatName('channel'));
 
+export const pushCommandTypes = {
+  cleanBanned: 'clead_banned',
+};
+
 const establishChat = () => dispatch => {
   const camelizeKeysAndDispatch = actionCreator => data => dispatch(actionCreator(camelizeKeys(data)));
 
   channel.join().receive('ok', data => {
     const page = getChatName('page');
     const greetingMessage = getSystemMessage({
-      text: `Joined channel: ${_.capitalize(page)}`,
+      text: `Joined channel: ${capitalize(page)}`,
       status: 'success',
     });
     const messages = [greetingMessage, ...data.messages];

@@ -25,6 +25,7 @@ const currentUserParams = Gon.getAsset('current_user');
 const isRecord = Gon.getAsset('is_record') || false;
 const gameData = Gon.getAsset('game');
 const taskData = Gon.getAsset('task');
+const tournamentData = Gon.getAsset('tournament');
 const completedGamesData = Gon.getAsset('completed_games');
 const activeGamesData = Gon.getAsset('active_games');
 const tournamentsData = Gon.getAsset('tournaments');
@@ -32,6 +33,7 @@ const usersRatingData = Gon.getAsset('users_rating');
 
 const gameParams = gameData ? camelizeKeys(gameData) : undefined;
 const taskParams = taskData ? camelizeKeys(taskData) : undefined;
+const tournamentParams = tournamentData ? camelizeKeys(tournamentData) : undefined;
 const completedGamesParams = completedGamesData
   ? camelizeKeys(completedGamesData)
   : [];
@@ -186,6 +188,45 @@ const initialValidationStatuses = taskParams
   ? getTaskValidationStatuses(taskParams)
   : defaultValidationStatuses;
 
+const defaultTournamentParams = {
+  id: null,
+  level: 'elementary',
+  isLive: false,
+  creator: {},
+  creatorId: null,
+  type: null,
+  state: 'loading',
+  name: '',
+  matches: {},
+  players: {},
+  playersLimit: 128,
+  playersCount: 0,
+  startsAt: null,
+  insertedAt: null,
+  meta: {},
+
+  accessType: 'token',
+  accessToken: null,
+  currentRound: null,
+  defaultLanguage: 'js',
+  lastRoundStartedAt: null,
+  matchTimeoutSeconds: 0,
+  playedPairIds: [],
+
+  taskStrategy: 'game',
+  taskProvider: 'level',
+
+  channel: { online: false },
+};
+
+const initialTournament = tournamentParams
+  ? {
+    ...defaultTournamentParams,
+    ...tournamentParams,
+    channel: { online: !tournamentParams.isLive },
+  }
+  : defaultTournamentParams;
+
 const initialLiveTournaments = tournamentsParams.filter(x => x.isLive);
 const initialCompletedTournaments = tournamentsParams.filter(x => !x.isLive);
 
@@ -196,6 +237,7 @@ const initial = {
     players: initialPlayers,
     tournamentsInfo: null,
   },
+  tournament: initialTournament,
   editor: {
     meta: initialMeta,
     text: initialText,

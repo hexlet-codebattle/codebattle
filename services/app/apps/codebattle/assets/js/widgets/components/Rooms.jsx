@@ -1,5 +1,6 @@
 import React from 'react';
-import { ButtonGroup, Dropdown } from 'react-bootstrap';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import Dropdown from 'react-bootstrap/Dropdown';
 import { useDispatch, useSelector } from 'react-redux';
 
 import * as selectors from '../selectors';

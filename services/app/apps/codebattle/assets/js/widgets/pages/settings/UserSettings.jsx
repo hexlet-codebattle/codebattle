@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import _ from 'lodash';
+import capitalize from 'lodash/capitalize';
 import cn from 'classnames';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Loading from '../../components/Loading';
@@ -11,7 +11,7 @@ import { updateUserSettings } from '../../slices/userSettings';
 const PROVIDERS = ['github', 'discord'];
 
 const BindSocialBtn = ({ provider, disabled, isBinded }) => {
-  const formatedProviderName = _.capitalize(provider);
+  const formatedProviderName = capitalize(provider);
 
   return (
     <div className="d-flex mb-2 align-items-center">

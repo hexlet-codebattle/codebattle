@@ -1,35 +1,27 @@
-import React, { useState } from 'react';
+import React from 'react';
 import i18n from 'i18next';
-import copy from 'copy-to-clipboard';
+import CopyButton from '../../components/CopyButton';
 
 function WaitingOpponentInfo({ gameUrl }) {
-  const [copied, setCopied] = useState(false);
-
-  const onClick = () => {
-    copy(gameUrl);
-    setCopied(true);
-  };
-
-  const textButtonCopy = copied ? 'Copied' : 'Copy';
-
   return (
     <div className="jumbotron container text-center bg-white shadow-sm">
       <div className="col-xl-8 col-lg-10 col-12 m-auto">
-        <h2 className="h2 font-weight-normal">{i18n.t('Waiting for an opponent')}</h2>
-        <p className="lead mb-4">{i18n.t('Please wait for someone to join or send an invite using the link below')}</p>
+        <h2 className="h2 font-weight-normal">
+          {i18n.t('Waiting for an opponent')}
+        </h2>
+        <p className="lead mb-4">
+          {i18n.t(
+            'Please wait for someone to join or send an invite using the link below',
+          )}
+        </p>
         <div>
           <div className="d-flex justify-content-center input-group mb-3">
             <div className="input-group-prepend">
-              <span className="input-group-text" id="gameUrl">{gameUrl}</span>
+              <span className="input-group-text" id="gameUrl">
+                {gameUrl}
+              </span>
             </div>
-            <button
-              className="btn btn-secondary"
-              type="button"
-              onClick={onClick}
-              data-testid="copy-button"
-            >
-              {i18n.t(textButtonCopy)}
-            </button>
+            <CopyButton className="btn btn-secondary" value={gameUrl} />
             <button
               type="button"
               className="btn btn-danger rounded-right"

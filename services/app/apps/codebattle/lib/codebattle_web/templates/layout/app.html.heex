@@ -149,65 +149,63 @@
                       style="width:46px; height:46px"
                     />
                     <div class="dropdown-menu dropdown-menu-right">
-                      <%= link(gettext("My Profile"),
-                        to: Routes.user_path(@conn, :show, @current_user.id),
-                        class: "dropdown-item"
-                      ) %>
-                      <%= link(gettext("Settings"),
-                        to: Routes.user_setting_path(@conn, :edit),
-                        class: "dropdown-item"
-                      ) %>
-                      <%= link(gettext("Users rating"),
-                        to: user_path(@conn, :index),
-                        class: "dropdown-item"
-                      ) %>
-                      <%= link(gettext("Tasks"),
-                        to: task_path(@conn, :index),
-                        class: "dropdown-item"
-                      ) %>
-                      <%= link(gettext("Tournaments"),
-                        to: tournament_path(@conn, :index),
-                        class: "dropdown-item"
-                      ) %>
+                      <a
+                        class="dropdown-item"
+                        href={Routes.user_path(@conn, :show, @current_user.id)}
+                      >
+                        <span class="fas fa-user mr-2"></span>
+                        <%= gettext("My Profile") %>
+                      </a>
+                      <a class="dropdown-item" href={Routes.user_setting_path(@conn, :edit)}>
+                        <span class="fas fa-cog mr-2"></span>
+                        <%= gettext("Settings") %>
+                      </a>
+                      <a class="dropdown-item" href={user_path(@conn, :index)}>
+                        <span class="fas fa-medal mr-2"></span>
+                        <%= gettext("Users rating") %>
+                      </a>
+                      <a class="dropdown-item" href={task_path(@conn, :index)}>
+                        <span class="fas fa-tasks mr-2"></span>
+                        <%= gettext("Tasks") %>
+                      </a>
+                      <a class="dropdown-item" href={tournament_path(@conn, :index)}>
+                        <span class="fas fa-trophy mr-2"></span>
+                        <%= gettext("Tournaments") %>
+                      </a>
                       <div class="dropdown-divider"></div>
                       <a
-                        class="dropdown-item d-flex align-items-center justify-content-between"
+                        class="dropdown-item"
                         href="https://github.com/hexlet-codebattle/codebattle"
                         target="_blank"
                       >
+                        <span class="fab fa-github mr-2"></span>
                         <%= gettext("SourceCode") %>
-                        <span class="fab fa-github ml-3"></span>
                       </a>
-                      <a
-                        class="dropdown-item d-flex align-items-center justify-content-between"
-                        href="https://hexlet.io"
-                        target="_blank"
-                      >
+                      <a class="dropdown-item" href="https://hexlet.io" target="_blank">
+                        <span class="fa fa-university mr-2"></span>
                         <%= gettext("Hexlet") %>
-                        <span class="fa fa-university ml-3"></span>
                       </a>
                       <a
-                        class="dropdown-item d-flex align-items-center justify-content-between"
+                        class="dropdown-item"
                         href="https://discord.gg/dTpFXrYU3v"
                         target="_blank"
                       >
+                        <span class="fab fa-discord mr-2"></span>
                         <%= gettext("Join Discord") %>
-                        <span class="fab fa-discord ml-3"></span>
                       </a>
                       <a
-                        class="dropdown-item d-flex align-items-center justify-content-between"
+                        class="dropdown-item"
                         href="https://t.me/hexletcommunity/5"
                         target="_blank"
                       >
+                        <span class="fab fa-telegram mr-2"></span>
                         <%= gettext("Tg#codebattle") %>
-                        <span class="fab fa-telegram ml-3"></span>
                       </a>
                       <div class="dropdown-divider"></div>
-                      <%= link(gettext("Sign Out"),
-                        to: session_path(@conn, :delete),
-                        method: "delete",
-                        class: "dropdown-item"
-                      ) %>
+                      <%= link to: session_path(@conn, :delete), method: "delete", class: "dropdown-item" do %>
+                        <span class="fas fa-sign-out-alt mr-2"></span>
+                        <%= gettext("Sign Out") %>
+                      <% end %>
                     </div>
                   </a>
                 </li>

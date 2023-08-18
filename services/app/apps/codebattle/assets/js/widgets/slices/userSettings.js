@@ -1,14 +1,14 @@
 import Gon from 'gon';
 import axios from 'axios';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import _ from 'lodash';
+import capitalize from 'lodash/capitalize';
 
 const userSettings = Gon.getAsset('current_user');
 
 const createValidationErrors = response => {
   const [fieldName] = Object.keys(response.data.errors);
   const [errorMessage] = response.data.errors[fieldName];
-  const normalizedErrorMessage = _.capitalize(errorMessage);
+  const normalizedErrorMessage = capitalize(errorMessage);
   return {
     errorMessage: normalizedErrorMessage,
     field_errors: { [fieldName]: normalizedErrorMessage },

@@ -1,4 +1,5 @@
-import _ from 'lodash';
+import find from 'lodash/find';
+import debounce from 'lodash/debounce';
 import axios from 'axios';
 import Gon from 'gon';
 import { camelizeKeys, decamelizeKeys } from 'humps';
@@ -206,7 +207,7 @@ export const updateCurrentLangAndSetTemplate = langSlug => (dispatch, getState) 
   const state = getState();
   const langs = selectors.editorLangsSelector(state) || defaultLanguages;
   const currentText = selectors.currentPlayerTextByLangSelector(langSlug)(state);
-  const { solutionTemplate: template } = _.find(langs, { slug: langSlug });
+  const { solutionTemplate: template } = find(langs, { slug: langSlug });
   const textToSet = currentText || template;
   dispatch(updateEditorText(textToSet, langSlug));
 };
@@ -215,7 +216,7 @@ export const sendCurrentLangAndSetTemplate = langSlug => (dispatch, getState) =>
   const state = getState();
   const langs = selectors.editorLangsSelector(state) || defaultLanguages;
   const currentText = selectors.currentPlayerTextByLangSelector(langSlug)(state);
-  const { solutionTemplate: template } = _.find(langs, { slug: langSlug });
+  const { solutionTemplate: template } = find(langs, { slug: langSlug });
   const textToSet = currentText || template;
   dispatch(sendEditorText(textToSet, langSlug));
 };
@@ -223,28 +224,28 @@ export const sendCurrentLangAndSetTemplate = langSlug => (dispatch, getState) =>
 export const resetTextToTemplate = langSlug => (dispatch, getState) => {
   const state = getState();
   const langs = selectors.editorLangsSelector(state) || defaultLanguages;
-  const { solutionTemplate: template } = _.find(langs, { slug: langSlug });
+  const { solutionTemplate: template } = find(langs, { slug: langSlug });
   dispatch(updateEditorText(template, langSlug));
 };
 
 export const resetTextToTemplateAndSend = langSlug => (dispatch, getState) => {
   const state = getState();
   const langs = selectors.editorLangsSelector(state) || defaultLanguages;
-  const { solutionTemplate: template } = _.find(langs, { slug: langSlug });
+  const { solutionTemplate: template } = find(langs, { slug: langSlug });
   dispatch(sendEditorText(template, langSlug));
 };
 
 export const soundNotification = notification();
 
 export const addCursorListeners = (id, onChangePosition, onChangeSelection) => {
-  const handleNewCursorPosition = _.debounce(data => {
+  const handleNewCursorPosition = debounce(data => {
     const { userId, offset } = camelizeKeys(data);
     if (id === userId) {
       onChangePosition(offset);
     }
   }, 80);
 
-  const handleNewCursorSelection = _.debounce(data => {
+  const handleNewCursorSelection = debounce(data => {
     const { userId, startOffset, endOffset } = camelizeKeys(data);
     if (id === userId) {
       onChangeSelection(startOffset, endOffset);

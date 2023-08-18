@@ -3,7 +3,7 @@ import React, {
   useContext,
   useCallback,
 } from 'react';
-import _ from 'lodash';
+import noop from 'lodash/noop';
 import cn from 'classnames';
 import { useDispatch, useSelector } from 'react-redux';
 import { useInterpret } from '@xstate/react';
@@ -160,7 +160,7 @@ function EditorContainer({
   const canChange = userSettings.type === editorUserTypes.currentUser && !openedReplayer;
   const canSendCursor = canChange && !inTestingRoom && !inBuilderRoom;
   const updateEditor = editorCurrent.context.editorState === 'testing' ? updateEditorValue : sendEditorValue;
-  const onChange = canChange ? updateEditor : _.noop();
+  const onChange = canChange ? updateEditor : noop();
   const onChangeCursorSelection = canSendCursor ? GameActions.sendEditorCursorSelection : undefined;
   const onChangeCursorPosition = canSendCursor ? GameActions.sendEditorCursorPosition : undefined;
 

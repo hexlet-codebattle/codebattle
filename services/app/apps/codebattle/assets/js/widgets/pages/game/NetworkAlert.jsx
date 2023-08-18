@@ -8,7 +8,13 @@ function NetworkAlert() {
   const isDisconnectedWithMessage = useMachineStateSelector(mainService, isDisconnectedWithMessageSelector);
 
   if (isDisconnectedWithMessage) {
-    return <div className="col-12 bg-warning text-center">Server is temporarily unavailable ¯\_(ツ)_/¯ :prod_is_down:</div>;
+    return (
+      <div className="mx-1 text-center">
+        <div className="bg-warning">
+          Server is temporarily unavailable ¯\_(ツ)_/¯ :prod_is_down:
+        </div>
+      </div>
+    );
   }
 
   return (<></>);

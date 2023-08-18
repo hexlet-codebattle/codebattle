@@ -45,6 +45,11 @@ defmodule CodebattleWeb.Api.V1.UserController do
     json(conn, %{stats: game_stats, user: user})
   end
 
+  def simple_stats(conn, %{"id" => id}) do
+    game_stats = Stats.get_game_stats(id)
+    json(conn, %{stats: game_stats})
+  end
+
   def current(conn, _) do
     current_user = conn.assigns.current_user
 

@@ -1,7 +1,8 @@
 import React, { useContext, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Button, Modal } from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
 import RoomContext from '../../components/RoomContext';
 import { sendGiveUp, resetTextToTemplateAndSend, resetTextToTemplate } from '../../middlewares/Game';
 import { actions } from '../../slices';

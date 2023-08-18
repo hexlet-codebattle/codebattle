@@ -1,6 +1,6 @@
 import { camelizeKeys } from 'humps';
 import Gon from 'gon';
-import _ from 'lodash';
+import some from 'lodash/some';
 
 import socket from '../../socket';
 import { actions } from '../slices';
@@ -27,7 +27,7 @@ export const fetchState = currentUserId => dispatch => {
     } = newData;
     const currentPlayerId = currentUserId;
     const isGameStarted = gameState === 'playing';
-    const isCurrentUserInGame = _.some(
+    const isCurrentUserInGame = some(
       players,
       ({ id: playerId }) => playerId === currentPlayerId,
     );

@@ -25,6 +25,13 @@ export const loadUserStats = dispatch => async user => {
   }
 };
 
+export const loadSimpleUserStats = (onSuccess, onFailure) => user => {
+  axios
+    .get(`/api/v1/user/${user.id}/simple_stats`)
+    .then(onSuccess)
+    .catch(onFailure);
+};
+
 const periodToTimeUnit = {
   weekly: 'week',
   monthly: 'month',

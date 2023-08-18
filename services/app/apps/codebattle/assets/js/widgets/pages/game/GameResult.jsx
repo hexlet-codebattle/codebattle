@@ -1,7 +1,8 @@
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import _ from 'lodash';
-import { Alert } from 'react-bootstrap';
+import hasIn from 'lodash/hasIn';
+import find from 'lodash/find';
+import Alert from 'react-bootstrap/Alert';
 import * as selectors from '../../selectors';
 import GameRoomModes from '../../config/gameModes';
 import GameStateCodes from '../../config/gameStateCodes';
@@ -10,7 +11,7 @@ import i18n from '../../../i18n';
 function GameResult() {
   const currentUserId = useSelector(state => selectors.currentUserIdSelector(state));
   const players = useSelector(state => selectors.gamePlayersSelector(state));
-  const isCurrentUserPlayer = _.hasIn(players, currentUserId);
+  const isCurrentUserPlayer = hasIn(players, currentUserId);
   const gameStatus = useSelector(state => selectors.gameStatusSelector(state));
   const gameMode = useSelector(state => selectors.gameModeSelector(state));
 
@@ -22,7 +23,7 @@ function GameResult() {
       });
     }
 
-    const winner = _.find(players, ['result', 'won']);
+    const winner = find(players, ['result', 'won']);
 
     if (!winner) {
       return null;

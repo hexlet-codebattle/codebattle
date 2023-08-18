@@ -12,6 +12,9 @@ compose-build:
 compose-down:
 	docker compose down -v || true
 
+compose-profile:
+	docker compose run --rm --name codebattle_app app /bin/sh -c 'cd /app/apps/codebattle && yarn profile'
+
 compose-test-code-checkers:
 	docker compose run --rm --name codebattle_app app mix test docker_executor
 

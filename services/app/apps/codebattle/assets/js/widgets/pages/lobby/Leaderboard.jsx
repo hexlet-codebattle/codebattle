@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Table } from 'react-bootstrap';
+import Table from 'react-bootstrap/Table';
 import classnames from 'classnames';
 import UserInfo from '../../components/UserInfo';
 import { actions } from '../../slices';

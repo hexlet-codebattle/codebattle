@@ -1,27 +1,27 @@
 import React, {
+  memo,
   useState,
   useRef,
   useEffect,
 } from 'react';
-import { Modal } from 'react-bootstrap';
-import _ from 'lodash';
-import copy from 'copy-to-clipboard';
+import find from 'lodash/find';
+import isEmpty from 'lodash/isEmpty';
+import sortBy from 'lodash/sortBy';
+import orderBy from 'lodash/orderBy';
+import groupBy from 'lodash/groupBy';
 import moment from 'moment';
+import Modal from 'react-bootstrap/Modal';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
 
 import { useDispatch, useSelector } from 'react-redux';
 import Gon from 'gon';
-import classnames from 'classnames';
+import cn from 'classnames';
 import * as lobbyMiddlewares from '../../middlewares/Lobby';
 import gameStateCodes from '../../config/gameStateCodes';
 import { actions } from '../../slices';
 import * as selectors from '../../selectors';
 import UserInfo from '../../components/UserInfo';
-import {
-  makeGameUrl,
-  getSignInGithubUrl,
-  getLobbyUrl,
-} from '../../utils/urlBuilders';
-import i18n from '../../../i18n';
 import CompletedGames from './CompletedGames';
 import ChatActionModal from './ChatActionModal';
 import CreateGameDialog from './CreateGameDialog';
@@ -29,28 +29,45 @@ import Leaderboard from './Leaderboard';
 import Announcement from './Announcement';
 import GameLevelBadge from '../../components/GameLevelBadge';
 import LobbyChat from './LobbyChat';
+import GameCard from './GameCard';
+import GameProgressBar from './GameProgressBar';
+import GameStateBadge from './GameStateBadge';
+import ShowButton from './ShowButton';
+import GameActionButton from './GameActionButton';
+import { getLobbyUrl } from '../../utils/urlBuilders';
 import levelRatio from '../../config/levelRatio';
-import PlayerLoading from '../../components/PlayerLoading';
 import hashLinkNames from '../../config/hashLinkNames';
 import { fetchCompletedGames, loadNextPage } from '../../slices/completedGames';
 
 const isActiveGame = game => [gameStateCodes.playing, gameStateCodes.waitingOpponent].includes(game.state);
 
-const Players = ({ players }) => {
+const Players = memo(({ players, isBot, gameId }) => {
   if (players.length === 1) {
+    const badgeClassName = cn('badge badge-pill ml-2', {
+      'badge-secondary': isBot,
+      'badge-warning': !isBot,
+    });
+    const tooltipId = `tooltip-${gameId}-${players[0].id}`;
+    const tooltipInfo = isBot
+      ? 'No points are awarded - Only for games with other players'
+      : 'Points are awarded for winning this game';
+
     return (
       <td className="p-3 align-middle text-nowrap" colSpan={2}>
         <div className="d-flex align-items-center">
           <UserInfo user={players[0]} />
+          <OverlayTrigger
+            overlay={<Tooltip id={tooltipId}>{tooltipInfo}</Tooltip>}
+            placement="right"
+          >
+            <span className={badgeClassName}>
+              {isBot ? 'No rating' : 'Rating'}
+            </span>
+          </OverlayTrigger>
         </div>
       </td>
     );
   }
-
-  const getPregressbarWidth = player => `${(player.checkResult?.successCount / player.checkResult?.assertsCount) * 100
-    }%`;
-
-  const getPregressbarClass = player => classnames('cb-check-result-bar', player.checkResult.status);
 
   return (
     <>
@@ -61,16 +78,7 @@ const Players = ({ players }) => {
             hideOnlineIndicator
             loading={players[0].checkResult.status === 'started'}
           />
-          <div className={getPregressbarClass(players[0])}>
-            <div
-              className="cb-asserts-progress"
-              style={{ width: getPregressbarWidth(players[0]) }}
-            />
-          </div>
-          <PlayerLoading
-            show={players[0].checkResult.status === 'started'}
-            small
-          />
+          <GameProgressBar player={players[0]} position="left" />
         </div>
       </td>
       <td className="p-3 align-middle text-nowrap cb-username-td text-truncate">
@@ -80,124 +88,15 @@ const Players = ({ players }) => {
             hideOnlineIndicator
             loading={players[1].checkResult.status === 'started'}
           />
-          <div className={getPregressbarClass(players[1])}>
-            <div
-              className="cb-asserts-progress"
-              style={{ width: getPregressbarWidth(players[1]), right: 0 }}
-            />
-          </div>
-          <PlayerLoading
-            show={players[1].checkResult.status === 'started'}
-            small
-          />
+          <GameProgressBar player={players[1]} position="right" />
         </div>
       </td>
     </>
   );
-};
-
-const isPlayer = (userId, game) => !_.isEmpty(_.find(game.players, { id: userId }));
-
-const ShowButton = ({ url }) => (
-  <a type="button" className="btn px-4 ml-1 btn-secondary btn-sm rounded-lg" href={url}>
-    Show
-  </a>
-);
-
-const ContinueButton = ({ url }) => (
-  <a type="button" className="btn btn-success text-white btn-sm rounded-lg" href={url}>
-    Continue
-  </a>
-);
-
-const renderButton = (url, type) => {
-  const buttons = {
-    show: ShowButton,
-    continue: ContinueButton,
-  };
-
-  const ButtonType = buttons[type];
-  return <ButtonType url={url} />;
-};
-
-const GameActionButton = ({
- game, currentUserId, isGuest, isOnline,
-}) => {
-  const gameUrl = makeGameUrl(game.id);
-  const gameUrlJoin = makeGameUrl(game.id, 'join');
-  const gameState = game.state;
-  const signInUrl = getSignInGithubUrl();
-
-  if (gameState === gameStateCodes.playing) {
-    const type = isPlayer(currentUserId, game) ? 'continue' : 'show';
-    return renderButton(gameUrl, type);
-  }
-
-  if (gameState === gameStateCodes.waitingOpponent) {
-    if (isPlayer(currentUserId, game)) {
-      return (
-        <div className="d-flex justify-content-center">
-          <div className="btn-group ml-5">
-            <ContinueButton url={gameUrl} />
-            <button
-              type="button"
-              className="btn btn-sm btn-outline-secondary border-0"
-              onClick={() => copy(`${window.location.host}${gameUrl}`)}
-              data-toggle="tooltip"
-              data-placement="right"
-              title="Copy link"
-            >
-              <i className="far fa-copy" />
-            </button>
-            <button
-              type="button"
-              className="btn btn-sm btn-hover border-0"
-              onClick={lobbyMiddlewares.cancelGame(game.id)}
-              data-toggle="tooltip"
-              data-placement="right"
-              title="Cancel game"
-              disabled={!isOnline}
-            >
-              <i className="fas fa-times" />
-            </button>
-          </div>
-        </div>
-      );
-    }
-
-    if (isGuest) {
-      return (
-        <button
-          type="button"
-          className="btn w-100 btn-outline-success btn-sm rounded-lg"
-          data-method="get"
-          data-to={signInUrl}
-        >
-          {i18n.t('Sign in with %{name}', { name: 'Github' })}
-        </button>
-      );
-    }
-
-    return (
-      <div className="btn-group">
-        <button
-          type="button"
-          className="btn btn-orange btn-sm ml-1 px-4 rounded-lg"
-          data-method="post"
-          data-csrf={window.csrf_token}
-          data-to={gameUrlJoin}
-        >
-          {i18n.t('Fight')}
-        </button>
-      </div>
-    );
-  }
-
-  return null;
-};
+});
 
 const LiveTournaments = ({ tournaments }) => {
-  if (_.isEmpty(tournaments)) {
+  if (isEmpty(tournaments)) {
     return (
       <div className="text-center">
         <h3 className="mb-0 mt-3">There are no active tournaments right now</h3>
@@ -220,7 +119,7 @@ const LiveTournaments = ({ tournaments }) => {
           </tr>
         </thead>
         <tbody className="">
-          {_.orderBy(tournaments, 'startsAt', 'desc').map(tournament => (
+          {orderBy(tournaments, 'startsAt', 'desc').map(tournament => (
             <tr key={tournament.id}>
               <td className="p-3 align-middle">{tournament.name}</td>
               <td className="p-3 align-middle text-nowrap">
@@ -249,7 +148,7 @@ const LiveTournaments = ({ tournaments }) => {
 };
 
 const CompletedTournaments = ({ tournaments }) => {
-  if (_.isEmpty(tournaments)) {
+  if (isEmpty(tournaments)) {
     return null;
   }
   return (
@@ -266,7 +165,7 @@ const CompletedTournaments = ({ tournaments }) => {
           </tr>
         </thead>
         <tbody className="">
-          {_.orderBy(tournaments, 'startsAt', 'desc').map(tournament => (
+          {orderBy(tournaments, 'startsAt', 'desc').map(tournament => (
             <tr key={tournament.id}>
               <td className="p-3 align-middle">{tournament.name}</td>
               <td className="p-3 align-middle">{tournament.type}</td>
@@ -291,7 +190,7 @@ const CompletedTournaments = ({ tournaments }) => {
 };
 
 const ActiveGames = ({
- games, currentUserId, isGuest, isOnline,
+  games, currentUserId, isGuest, isOnline,
 }) => {
   if (!games) {
     return null;
@@ -299,24 +198,24 @@ const ActiveGames = ({
 
   const filterGames = game => {
     if (game.visibilityType === 'hidden') {
-      return !!_.find(game.players, { id: currentUserId });
+      return !!find(game.players, { id: currentUserId });
     }
     return true;
   };
   const filtetedGames = games.filter(filterGames);
 
-  if (_.isEmpty(filtetedGames)) {
+  if (isEmpty(filtetedGames)) {
     return <p className="text-center">There are no active games right now.</p>;
   }
 
-  const gamesSortByLevel = _.sortBy(filtetedGames, [
+  const gamesSortByLevel = sortBy(filtetedGames, [
     game => levelRatio[game.level],
   ]);
   const {
     gamesWithCurrentUser = [],
     gamesWithActiveUsers = [],
     gamesWithBots = [],
-  } = _.groupBy(gamesSortByLevel, game => {
+  } = groupBy(gamesSortByLevel, game => {
     const isCurrentUserPlay = game.players.some(
       ({ id }) => id === currentUserId,
     );
@@ -336,65 +235,77 @@ const ActiveGames = ({
   ];
 
   return (
-    <div className="table-responsive rounded-bottom">
-      <table className="table table-striped mb-0">
-        <thead className="text-center">
-          <tr>
-            <th className="p-3 border-0">Level</th>
-            <th className="p-3 border-0">State</th>
-            <th className="p-3 border-0 text-center" colSpan={2}>
-              Players
-            </th>
-            <th className="p-3 border-0">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sortedGames.map(
-            game => isActiveGame(game) && (
-              <tr key={game.id} className="text-dark game-item">
-                <td className="p-3 align-middle text-nowrap">
-                  <GameLevelBadge level={game.level} />
-                </td>
-                <td className="p-3 align-middle text-center text-nowrap">
-                  <img
-                    alt={game.state}
-                    title={game.state}
-                    src={
-                      game.state === 'playing'
-                        ? '/assets/images/playing.svg'
-                        : '/assets/images/waitingOpponent.svg'
-                    }
+    <>
+      <div className="d-none d-sm-block d-md-none d-flex m-2 overflow-auto">
+        {sortedGames.map(
+          game => isActiveGame(game) && (
+            <GameCard
+              type="active"
+              game={game}
+              currentUserId={currentUserId}
+              isGuest={isGuest}
+              isOnline={isOnline}
+            />
+          ),
+        )}
+      </div>
+      <div className="d-none d-sm-none d-md-block table-responsive rounded-bottom">
+        <table className="table table-striped mb-0">
+          <thead className="text-center">
+            <tr>
+              <th className="p-3 border-0">Level</th>
+              <th className="p-3 border-0">State</th>
+              <th className="p-3 border-0 text-center" colSpan={2}>
+                Players
+              </th>
+              <th className="p-3 border-0">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sortedGames.map(
+              game => isActiveGame(game) && (
+                <tr key={game.id} className="text-dark game-item">
+                  <td className="p-3 align-middle text-nowrap">
+                    <GameLevelBadge level={game.level} />
+                  </td>
+                  <td className="p-3 align-middle text-center text-nowrap">
+                    <GameStateBadge state={game.state} />
+                  </td>
+                  <Players
+                    gameId={game.id}
+                    players={game.players}
+                    isBot={game.isBot}
                   />
-                </td>
-                <Players players={game.players} />
-                <td className="p-3 align-middle text-center">
-                  <GameActionButton
-                    game={game}
-                    currentUserId={currentUserId}
-                    isGuest={isGuest}
-                    isOnline={isOnline}
-                  />
-                </td>
-              </tr>
-            ),
-          )}
-        </tbody>
-      </table>
-    </div>
+                  <td className="p-3 align-middle text-center">
+                    <GameActionButton
+                      type="table"
+                      game={game}
+                      currentUserId={currentUserId}
+                      isGuest={isGuest}
+                      isOnline={isOnline}
+                    />
+                  </td>
+                </tr>
+              ),
+            )}
+          </tbody>
+        </table>
+      </div>
+    </>
   );
 };
 
 const tabLinkClassName = (...hash) => {
   const url = new URL(window.location);
-  return classnames(
-    'nav-item nav-link text-uppercase rounded-0 font-weight-bold p-3 border-0',
+  return cn(
+    'nav-item nav-link text-uppercase text-nowrap rounded-0 font-weight-bold p-3 border-0',
     { active: hash.includes(url.hash) },
   );
 };
 
 const tabContentClassName = hash => {
   const url = new URL(window.location);
-  return classnames({
+  return cn({
     'tab-pane': true,
     fade: true,
     active: hash.includes(url.hash),
@@ -426,7 +337,7 @@ const GameContainers = ({
   return (
     <div className="p-0 shadow-sm rounded-lg">
       <nav>
-        <div className="nav nav-tabs bg-gray rounded-top border-dark border-bottom" id="nav-tab" role="tablist">
+        <div className="nav nav-tabs flex-nowrap overflow-auto bg-gray rounded-top border-dark border-bottom" id="nav-tab" role="tablist">
           <a
             className={tabLinkClassName(
               hashLinkNames.lobby,
@@ -501,6 +412,7 @@ const GameContainers = ({
           aria-labelledby="completedGames-tab"
         >
           <CompletedGames
+            type="completed"
             className="table-responsive scroll cb-lobby-widget-container"
             games={completedGames}
             loadNextPage={loadNextPage}
@@ -587,7 +499,10 @@ const LobbyWidget = () => {
         setModalShowing={setActionModalShowing}
       />
       <div className="row">
-        <div className="col-lg-8 col-md-12 p-0 mb-2 pr-lg-2 pb-3">
+        <div className="d-flex flex-column col-12 col-lg-8 p-0 mb-2 pr-lg-2">
+          <div className="d-none d-sm-block d-md-none d-flex flex-column mb-2">
+            <CreateGameButton handleClick={handleShowModal} isOnline={online} />
+          </div>
           <GameContainers
             activeGames={activeGames}
             completedGames={completedGames}
@@ -605,8 +520,12 @@ const LobbyWidget = () => {
           />
         </div>
 
-        <div className="d-flex flex-column col-lg-4 col-md-12 p-0">
-          <CreateGameButton handleClick={handleShowModal} isOnline={online} />
+        <div className="d-flex flex-column col-12 col-lg-4 p-0">
+          <div className="d-none d-sm-none d-md-block">
+            <div className="d-flex flex-column">
+              <CreateGameButton handleClick={handleShowModal} isOnline={online} />
+            </div>
+          </div>
           <div className="mt-2">
             <Announcement />
           </div>

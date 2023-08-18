@@ -1,6 +1,7 @@
 const webpack = require('webpack');
 const { merge } = require('webpack-merge');
 const baseWebpackConfig = require('./webpack.base.config');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const devWebpackConfig = merge(baseWebpackConfig, {
   mode: 'development',
@@ -24,6 +25,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     new webpack.SourceMapDevToolPlugin({
       filename: '[file].map',
     }),
+    new BundleAnalyzerPlugin(),
   ],
 });
 

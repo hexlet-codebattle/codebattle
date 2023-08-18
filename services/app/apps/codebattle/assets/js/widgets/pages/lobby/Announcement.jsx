@@ -1,5 +1,5 @@
 // import React from 'react';
-// import { Table } from 'react-bootstrap';
+// import Table from 'react-bootstrap/Table';
 
 const Announcement = () => null;
   // <Table striped borderless className="border border-dark m-0">

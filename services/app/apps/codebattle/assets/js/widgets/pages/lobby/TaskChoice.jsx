@@ -7,13 +7,15 @@ import { camelizeKeys } from 'humps';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faShuffle, faUser } from '@fortawesome/free-solid-svg-icons';
-import _ from 'lodash';
+import has from 'lodash/has';
+import get from 'lodash/get';
+import intersection from 'lodash/intersection';
 
 import * as selectors from '../../selectors';
 import { actions } from '../../slices';
 import i18n from '../../../i18n';
 
-const isRandomTask = task => !_.has(task, 'id');
+const isRandomTask = task => !has(task, 'id');
 
 const mapTagsToTaskIds = (tasks, tags) => {
   const otherTag = tags.at(-1);
@@ -26,19 +28,19 @@ const mapTagsToTaskIds = (tasks, tags) => {
   return tasks.reduce((acc, task) => {
     const newAcc = task.tags.reduce((currentAcc, tag) => {
       if (tag === '') {
-        const withoutTagsTaskIds = _.get(acc, 'withoutTags', []);
+        const withoutTagsTaskIds = get(acc, 'withoutTags', []);
         return { ...currentAcc, withoutTags: [...withoutTagsTaskIds, task.id] };
       }
 
       if (!popularTags.includes(tag)) {
-        const withUnpopularTagsTasksIds = _.get(acc, otherTag, []);
+        const withUnpopularTagsTasksIds = get(acc, otherTag, []);
         return {
           ...currentAcc,
           [otherTag]: [...withUnpopularTagsTasksIds, task.id],
         };
       }
 
-      const taskIds = _.get(acc, tag, []);
+      const taskIds = get(acc, tag, []);
       return { ...currentAcc, [tag]: [...taskIds, task.id] };
     }, {});
 
@@ -51,7 +53,7 @@ const mapTagsToTaskIds = (tasks, tags) => {
 
 const getTaskIdsByTags = (dictionary, tags) => {
   const taskIds = tags.map(tag => dictionary[tag]);
-  return _.intersection(...taskIds);
+  return intersection(...taskIds);
 };
 
 const filterTasksByTagsAndLevel = (tasks, tags, dictionary) => {

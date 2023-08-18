@@ -1,9 +1,7 @@
-/* eslint-disable */
-// import _ from 'lodash';
-// import axios from 'axios';
-import Gon from 'gon';
 import { camelizeKeys } from 'humps';
-import _ from 'lodash';
+import groupBy from 'lodash/groupBy';
+import set from 'lodash/set';
+import find from 'lodash/find';
 
 import socket from '../../socket';
 import { actions } from '../slices';
@@ -14,12 +12,28 @@ const tournamentId = window.location.pathname.split('/').pop();
 const tournamentChannelName = `tournament:${tournamentId}`;
 const tournamentChannel = socket.channel(tournamentChannelName);
 
-const initTournamentChannel = (dispatch) => {
+// export const soundNotification = notification();
+const connectToStairwayGame = gameId => dispatch => {
+  const activeMatchChannelName = `game:${gameId}`;
+  const activeMatchChannel = socket.channel(activeMatchChannelName);
+  const onJoinSuccess = response => {
+    const data = camelizeKeys(response);
+    dispatch(actions.setGameData(data));
+    dispatch(actions.setLangs(data));
+    dispatch(actions.updateGamePlayers(data));
+    dispatch(actions.setGameTask(data));
+  };
+
+  activeMatchChannel.join().receive('ok', onJoinSuccess);
+  // .receive('error', onJoinFailure);
+};
+
+const initTournamentChannel = dispatch => {
   const onJoinFailure = () => {
     window.location.reload();
   };
 
-  const onJoinSuccess = (response) => {
+  const onJoinSuccess = response => {
     const data = camelizeKeys(response);
     dispatch(actions.setTournamentData(data));
     const { gameId } = data.activeMatch;
@@ -32,29 +46,13 @@ const initTournamentChannel = (dispatch) => {
     .receive('error', onJoinFailure);
 };
 
-// export const soundNotification = notification();
-const connectToStairwayGame = (gameId) => (dispatch) => {
-  const activeMatchChannelName = `game:${gameId}`;
-  const activeMatchChannel = socket.channel(activeMatchChannelName);
-  const onJoinSuccess = (response) => {
-    const data = camelizeKeys(response);
-    dispatch(actions.setGameData(data));
-    dispatch(actions.setLangs(data));
-    dispatch(actions.updateGamePlayers(data));
-    dispatch(actions.setGameTask(data));
-  };
-
-  activeMatchChannel.join().receive('ok', onJoinSuccess);
-  // .receive('error', onJoinFailure);
-};
-
-export const connectToStairwayTournament = () => (dispatch) => {
+export const connectToStairwayTournament = () => dispatch => {
   initTournamentChannel(dispatch);
 
-  tournamentChannel.on('tournament:update', (response) => {
+  tournamentChannel.on('tournament:update', response => {
     const data = camelizeKeys(response);
-    const matches = _.groupBy(data.tournament.matches, 'roundId');
-    _.set(data, 'tournament.matches', matches);
+    const matches = groupBy(data.tournament.matches, 'roundId');
+    set(data, 'tournament.matches', matches);
 
     dispatch(actions.setTournamentData(data));
   });
@@ -63,19 +61,14 @@ export const connectToStairwayTournament = () => (dispatch) => {
   // round:update_match(round, newMatch)
   // round:update_participants(players)
   // round:update_statistics(statistics)
-  tournamentChannel.on('round:created', (response) => {
+  tournamentChannel.on('round:created', response => {
     const { tournament } = camelizeKeys(response);
 
     dispatch(actions.setNextRound(tournament));
   });
 };
 
-export const connectToActiveMatch = (activeMatch) => (dispatch, state) => {
-  const nextMatchId = _.find(activeMatch.gameId);
-  initActiveMatchChannel(dispatch, state, nextMatchId);
-};
-
-const initActiveMatchChannel = (dispatch, state, matchId) => {
+const initActiveMatchChannel = (dispatch, state) => {
   if (state.tournament) {
     if (state.tournament.activeMatchChannel) {
       state.tournament.activeMatchChannel.leave();
@@ -89,7 +82,7 @@ const initActiveMatchChannel = (dispatch, state, matchId) => {
       window.location.reload();
     };
 
-    const onJoinSuccess = (response) => {
+    const onJoinSuccess = response => {
       const data = camelizeKeys(response);
       dispatch(actions.setNextRound(data));
     };
@@ -100,4 +93,8 @@ const initActiveMatchChannel = (dispatch, state, matchId) => {
       .receive('error', onJoinFailure);
   }
 };
-export default {};
+
+export const connectToActiveMatch = activeMatch => (dispatch, state) => {
+  const nextMatchId = find(activeMatch.gameId);
+  initActiveMatchChannel(dispatch, state, nextMatchId);
+};

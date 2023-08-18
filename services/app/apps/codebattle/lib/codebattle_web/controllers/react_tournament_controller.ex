@@ -33,7 +33,10 @@ defmodule CodebattleWeb.ReactTournamentController do
       image: Routes.tournament_image_url(conn, :show, tournament.id),
       url: Routes.tournament_url(conn, :show, tournament.id)
     })
-    |> put_gon(tournament_id: params["id"])
+    |> put_gon(
+      tournament_id: params["id"],
+      tournament: tournament
+    )
     |> render("show.html")
   end
 end

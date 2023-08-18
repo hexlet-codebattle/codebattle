@@ -1,6 +1,6 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import cn from 'classnames';
 import {
   itemActionClassName,
@@ -63,7 +63,7 @@ const SignatureTrack = ({
         )}
       </div>
     ))}
-    {!_.isEmpty(selected) && !items.some(item => item.id === selected.id) && (
+    {!isEmpty(selected) && !items.some(item => item.id === selected.id) && (
       <div key={selected.id} className={`${itemClassName} border-warning`} role="group">
         <div
           title="New input"
@@ -73,7 +73,7 @@ const SignatureTrack = ({
         </div>
       </div>
     )}
-    {!_.isEmpty(selected) && items.some(item => item.id === selected.id) && items.length !== 3 && (
+    {!isEmpty(selected) && items.some(item => item.id === selected.id) && items.length !== 3 && (
       <button
         type="button"
         title="Add input parameter"

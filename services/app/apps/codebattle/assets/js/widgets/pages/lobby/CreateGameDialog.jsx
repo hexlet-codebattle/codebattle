@@ -6,7 +6,7 @@ import AsyncSelect from 'react-select/async';
 import axios from 'axios';
 import qs from 'qs';
 import { camelizeKeys } from 'humps';
-import _ from 'lodash';
+import get from 'lodash/get';
 
 import * as selectors from '../../selectors';
 import { actions } from '../../slices';
@@ -121,7 +121,7 @@ function CreateGameDialog({ hideModal }) {
           timeout_seconds: game.timeoutSeconds,
           recipient_id: opponent.id,
           recipient_name: opponent.name,
-          task_id: _.get(chosenTask, 'id', null),
+          task_id: get(chosenTask, 'id', null),
           task_tags: chosenTags,
         }),
       );
@@ -130,7 +130,7 @@ function CreateGameDialog({ hideModal }) {
         level: game.level,
         opponent_type: game.type,
         timeout_seconds: game.timeoutSeconds,
-        task_id: _.get(chosenTask, 'id', null),
+        task_id: get(chosenTask, 'id', null),
         task_tags: chosenTags,
       });
     }
