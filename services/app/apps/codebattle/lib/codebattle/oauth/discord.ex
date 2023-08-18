@@ -7,8 +7,7 @@ defmodule Codebattle.Oauth.Discord do
   @discord_auth_url "https://discord.com/oauth2/authorize"
   @discord_token_url "https://discord.com/api/v10/oauth2/token"
 
-  @http_client (Application.compile_env(:codebattle, :oauth)[:mock_clinet] &&
-                  Codebattle.Oauth.DiscordMock) || HTTPoison
+  @http_client Application.compile_env(:codebattle, :discord_oauth_client)
 
   @doc """
   `http_client/0` injects a TestDouble of HTTPoison in Test

@@ -5,6 +5,12 @@ defmodule Codebattle.Tournament.StairwayTest do
 
   @module Codebattle.Tournament.Stairway
 
+  setup do
+    insert(:task, level: "elementary", name: "2")
+
+    :ok
+  end
+
   describe "complete players" do
     test "add bots to complete teams" do
       user1 = insert(:user)
@@ -15,7 +21,7 @@ defmodule Codebattle.Tournament.StairwayTest do
       tournament = @module.join(tournament, %{user: user1})
       tournament = @module.start(tournament, %{user: user1})
 
-      assert players_count(tournament) == 42
+      assert players_count(tournament) == 2
     end
   end
 
@@ -28,6 +34,7 @@ defmodule Codebattle.Tournament.StairwayTest do
         insert(:stairway_tournament,
           meta: %{rounds_limit: 5},
           match_timeout_seconds: 1000,
+          break_duration_seconds: 0,
           players_limit: 100,
           played_pair_ids: MapSet.new([]),
           state: "waiting_participants",
@@ -81,7 +88,9 @@ defmodule Codebattle.Tournament.StairwayTest do
     |> Enum.reduce(
       tournament,
       &@module.finish_match(&2, %{
+        game_id: &1.game_id,
         game_state: "game_over",
+        game_level: "elementary",
         player_results: build_palyer_results(&1),
         ref: &1.id
       })
@@ -89,6 +98,17 @@ defmodule Codebattle.Tournament.StairwayTest do
   end
 
   def build_palyer_results(match) do
-    match.player_ids |> Enum.zip(["won", "lost"]) |> Enum.into(%{})
+    match.player_ids
+    |> Enum.zip(["won", "lost"])
+    |> Enum.map(fn {player_id, result} ->
+      {player_id,
+       %{
+         id: player_id,
+         result: result,
+         duration_sec: 100,
+         result_percent: 100
+       }}
+    end)
+    |> Enum.into(%{})
   end
 end

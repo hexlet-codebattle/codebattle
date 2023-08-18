@@ -26,7 +26,7 @@ defmodule Codebattle.MixProject do
     [
       mod: {Codebattle.Application, []},
       extra_applications: [:runtime_tools, :logger, :os_mon],
-      included_applications: [:runner]
+      included_applications: [:runner, :phoenix_gon]
     ]
   end
 
@@ -40,24 +40,25 @@ defmodule Codebattle.MixProject do
   defp deps do
     [
       {:runner, in_umbrella: true, runtime: false},
+      {:phoenix_gon, in_umbrella: true, runtime: false},
       {:cowboy, "~> 2.8"},
       {:earmark, "~> 1.4"},
       {:ecto_sql, "~> 3.6"},
       {:ecto_psql_extras, "~> 0.2"},
       {:envy, "~> 1.1.1"},
       {:gettext, "~> 0.18"},
-      {:html_to_image, github: "koss-lebedev/html_to_image"},
+      {:html_to_image, github: "vtm9/html_to_image"},
       {:httpoison, "~> 2.0"},
       {:jason, "~> 1.2"},
       {:phoenix, "~> 1.7"},
       {:phoenix_client, github: "vtm9/phoenix_client"},
       {:phoenix_ecto, "~> 4.4"},
-      {:phoenix_gon, "~> 0.4", github: "bonfire-networks/phoenix_gon"},
       {:phoenix_html, "~> 3.2"},
       {:phoenix_view, "~> 2.0"},
       {:phoenix_live_dashboard, "~> 0.8.0"},
       {:phoenix_live_view, "~> 0.18"},
       {:phoenix_meta_tags, "~> 0.1.8"},
+      {:plug, "~> 1.14"},
       {:plug_cowboy, "~> 2.5"},
       {:postgrex, ">= 0.0.0"},
       {:sentry, "~> 8.0"},
@@ -68,6 +69,8 @@ defmodule Codebattle.MixProject do
       {:typed_struct, "~> 0.3"},
       {:yaml_elixir, "~> 2.4"},
       {:exfake, "~> 1.0.0"},
+      {:fun_with_flags, "~> 1.10.1"},
+      {:fun_with_flags_ui, "~> 0.8"},
 
       # dev_and_test
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},

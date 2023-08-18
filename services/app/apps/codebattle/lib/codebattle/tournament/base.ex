@@ -13,9 +13,16 @@ defmodule Codebattle.Tournament.Base do
   @callback finish_tournament?(Tournament.t()) :: Tournament.t()
 
   defmacro __using__(_opts) do
-    quote do
+    quote location: :keep do
       @behaviour Tournament.Base
       import Tournament.Helpers
+
+      @game_level_score %{
+        "elementary" => 5,
+        "easy" => 8,
+        "medium" => 13,
+        "hard" => 21
+      }
 
       def add_player(tournament, player) do
         update_in(tournament.players, fn players ->
@@ -84,14 +91,14 @@ defmodule Codebattle.Tournament.Base do
           tournament =
             tournament
             |> complete_players()
-            |> start_round_or_finish()
 
           tournament
           |> update_struct(%{
             players_count: players_count(tournament),
-            last_round_started_at: NaiveDateTime.truncate(NaiveDateTime.utc_now(), :second),
+            last_round_started_at: NaiveDateTime.utc_now(:second),
             state: "active"
           })
+          |> start_round()
         else
           tournament
         end
@@ -119,30 +126,46 @@ defmodule Codebattle.Tournament.Base do
 
       def finish_match(tournament, payload) do
         tournament
-        |> update_match(payload)
+        |> handle_game_result(payload)
         |> maybe_start_next_round()
       end
 
-      def update_match(tournament, params) do
-        case params.game_state do
-          "timeout" ->
-            update_in(tournament.matches[to_id(params.ref)], &%{&1 | state: "timeout"})
+      def stop_round_break(tournament) do
+        tournament
+        |> update_struct(%{current_round: tournament.current_round + 1})
+        |> start_round()
+      end
 
-          "game_over" ->
-            # TODO: add more params to game_result to better calc score
-            match = tournament.matches[to_id(params.ref)]
-            winner_id = pick_game_winner_id(match.player_ids, params.player_results)
+      def handle_game_result(tournament, params) do
+        match = tournament.matches[to_id(params.ref)]
+        winner_id = pick_game_winner_id(match.player_ids, params.player_results)
 
-            new_player = Map.update!(tournament.players[to_id(winner_id)], :score, &(&1 + 10))
+        tournament =
+          update_in(
+            tournament.matches[to_id(params.ref)],
+            &%{&1 | state: params.game_state, winner_id: winner_id}
+          )
 
-            tournament =
-              update_in(
-                tournament.matches[to_id(params.ref)],
-                &%{&1 | state: "game_over", winner_id: winner_id}
-              )
-
-            put_in(tournament.players[to_id(winner_id)], new_player)
-        end
+        Enum.reduce(
+          Map.values(params.player_results),
+          tournament,
+          fn player_result, tournament ->
+            update_in(
+              tournament.players[to_id(player_result.id)],
+              &%{
+                &1
+                | score:
+                    &1.score +
+                      get_score(
+                        player_result,
+                        params.game_level,
+                        tournament.match_timeout_seconds
+                      ),
+                  wins_count: &1.wins_count + if(player_result.result == "won", do: 1, else: 0)
+              }
+            )
+          end
+        )
       end
 
       def maybe_start_next_round(tournament) do
@@ -152,39 +175,49 @@ defmodule Codebattle.Tournament.Base do
           tournament
         else
           tournament
+          |> update_struct(%{last_round_ended_at: NaiveDateTime.utc_now(:second)})
           |> calculate_round_results()
           |> maybe_finish()
-          |> set_next_round_params()
-          |> start_round_or_finish()
+          |> start_round_or_break_or_finish()
         end
       end
 
       defp pick_game_winner_id(player_ids, player_results) do
-        Enum.find(player_ids, &(player_results[&1] == "won"))
+        Enum.find(player_ids, &(player_results[&1] && player_results[&1].result == "won"))
       end
 
-      defp set_next_round_params(tournament = %{state: "finished"}), do: tournament
-
-      defp set_next_round_params(tournament) do
-        update_struct(tournament, %{
-          current_round: tournament.current_round + 1,
-          last_round_started_at: NaiveDateTime.truncate(NaiveDateTime.utc_now(), :second)
-        })
-      end
-
-      defp start_round_or_finish(tournament = %{state: "finished"}) do
-        # TODO: calculate statistics and set winners
-
+      defp start_round_or_break_or_finish(tournament = %{state: "finished"}) do
         # TODO: implement tournament termination in 15 mins
         # Tournament.GlobalSupervisor.terminate_tournament(tournament.id, 15 mins)
 
         tournament
       end
 
-      defp start_round_or_finish(tournament) do
+      defp start_round_or_break_or_finish(
+             tournament = %{
+               state: "active",
+               break_duration_seconds: break_duration_seconds
+             }
+           )
+           when break_duration_seconds not in [nil, 0] do
+        update_struct(tournament, %{break_state: "on"})
+      end
+
+      defp start_round_or_break_or_finish(tournament) do
         tournament
+        |> update_struct(%{current_round: tournament.current_round + 1})
+        |> start_round()
+      end
+
+      defp start_round(tournament) do
+        tournament
+        |> update_struct(%{
+          break_state: "off",
+          last_round_started_at: NaiveDateTime.utc_now(:second)
+        })
         |> maybe_set_task_for_round()
         |> build_matches()
+        |> db_save!()
         |> broadcast_new_round()
       end
 
@@ -211,10 +244,22 @@ defmodule Codebattle.Tournament.Base do
 
       defp maybe_finish(tournament) do
         if finish_tournament?(tournament) do
-          tournament |> update_struct(%{state: "finished"}) |> db_save!()
+          tournament
+          |> update_struct(%{state: "finished", finished_at: TimeHelper.utc_now()})
+          |> set_stats()
+          |> set_winner_ids()
+          |> db_save!()
         else
           tournament
         end
+      end
+
+      defp set_stats(tournament) do
+        update_struct(tournament, %{stats: get_stats(tournament)})
+      end
+
+      defp set_winner_ids(tournament) do
+        update_struct(tournament, %{winner_ids: get_winner_ids(tournament)})
       end
 
       defp maybe_set_task_for_round(tournament = %{task_strategy: "round"}) do
@@ -250,11 +295,32 @@ defmodule Codebattle.Tournament.Base do
         tournament
       end
 
-      # for individual game
-      defp get_new_duration(nil), do: 0
-      # for team game
-      defp get_new_duration(started_at),
-        do: NaiveDateTime.diff(NaiveDateTime.utc_now(), started_at, :millisecond)
+      def get_score(player_result, game_level, tournament_match_timeout_seconds) do
+        # game_level_score is fibanachi based score for different task level
+        # %{"elementary" => 5, "easy" => 8, "medium" => 13, "hard" => 21}
+        game_level_score = @game_level_score[game_level]
+
+        # base_winner_score = game_level_score / 2 for winner and 0 if user haven't won the match
+        base_winner_score =
+          if player_result.result == "won", do: @game_level_score[game_level] / 2, else: 0
+
+        # test_count_k is a koefficient between [0, 1]
+        # which linearly grow as test results
+        test_count_k = player_result.result_percent / 100.0
+
+        # duration_k is a koefficient between [0.33, 1]
+        # duration_k = 0 if duration_sec is nil
+        # duration_k = 1 if task was solved before 1/3 of match_timeout
+        # duration_k linearly goes to 0.33 if task was solved after 1/3 of match time
+        duration_k =
+          cond do
+            is_nil(player_result.duration_sec) -> 1
+            player_result.duration_sec / tournament_match_timeout_seconds < 0.33 -> 1
+            true -> 1.32 - player_result.duration_sec / tournament_match_timeout_seconds
+          end
+
+        round(base_winner_score + game_level_score * duration_k * test_count_k)
+      end
     end
   end
 end

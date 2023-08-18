@@ -73,7 +73,11 @@ const csrfToken = document
   .getAttribute('content');
 const liveSocket = new LiveSocket('/live', Socket, {
   hooks: Hooks,
-  params: { _csrf_token: csrfToken },
+  params: {
+    _csrf_token: csrfToken,
+    locale: Intl.NumberFormat().resolvedOptions().locale,
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  },
 });
 
 window.addEventListener('phx:page-loading-start', _info => NProgress.start());

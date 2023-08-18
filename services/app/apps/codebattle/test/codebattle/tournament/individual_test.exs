@@ -5,12 +5,22 @@ defmodule Codebattle.Tournament.IndividualTest do
 
   @module Codebattle.Tournament.Individual
 
+  setup do
+    insert(:task, level: "elementary", name: "2")
+
+    :ok
+  end
+
   describe "complete players" do
     test "scales to 2 when 1 player" do
       user = insert(:user)
 
       tournament =
-        insert(:tournament, state: "waiting_participants", creator_id: user.id, players_limit: 100)
+        insert(:tournament,
+          state: "waiting_participants",
+          creator_id: user.id,
+          players_limit: 100
+        )
 
       tournament = @module.join(tournament, %{user: user})
       tournament = @module.start(tournament, %{user: user})
@@ -23,7 +33,11 @@ defmodule Codebattle.Tournament.IndividualTest do
       users = insert_list(2, :user)
 
       tournament =
-        insert(:tournament, state: "waiting_participants", creator_id: user.id, players_limit: 100)
+        insert(:tournament,
+          state: "waiting_participants",
+          creator_id: user.id,
+          players_limit: 100
+        )
 
       tournament = @module.join(tournament, %{user: user})
       tournament = @module.join(tournament, %{users: users})
@@ -37,7 +51,11 @@ defmodule Codebattle.Tournament.IndividualTest do
       users = insert_list(4, :user)
 
       tournament =
-        insert(:tournament, state: "waiting_participants", creator_id: user.id, players_limit: 100)
+        insert(:tournament,
+          state: "waiting_participants",
+          creator_id: user.id,
+          players_limit: 100
+        )
 
       tournament = @module.join(tournament, %{user: user})
       tournament = @module.join(tournament, %{users: users})
@@ -51,7 +69,11 @@ defmodule Codebattle.Tournament.IndividualTest do
       users = insert_list(8, :user)
 
       tournament =
-        insert(:tournament, state: "waiting_participants", creator_id: user.id, players_limit: 100)
+        insert(:tournament,
+          state: "waiting_participants",
+          creator_id: user.id,
+          players_limit: 100
+        )
 
       tournament = @module.join(tournament, %{user: user})
       tournament = @module.join(tournament, %{users: users})
@@ -65,7 +87,11 @@ defmodule Codebattle.Tournament.IndividualTest do
       users = insert_list(17, :user)
 
       tournament =
-        insert(:tournament, state: "waiting_participants", creator_id: user.id, players_limit: 100)
+        insert(:tournament,
+          state: "waiting_participants",
+          creator_id: user.id,
+          players_limit: 100
+        )
 
       tournament = @module.join(tournament, %{user: user})
       tournament = @module.join(tournament, %{users: users})
@@ -93,7 +119,11 @@ defmodule Codebattle.Tournament.IndividualTest do
       users = insert_list(64, :user)
 
       tournament =
-        insert(:tournament, state: "waiting_participants", creator_id: user.id, players_limit: 299)
+        insert(:tournament,
+          state: "waiting_participants",
+          creator_id: user.id,
+          players_limit: 299
+        )
 
       tournament = @module.join(tournament, %{user: user})
       tournament = @module.join(tournament, %{users: users})
@@ -117,54 +147,7 @@ defmodule Codebattle.Tournament.IndividualTest do
     end
   end
 
-  describe ".update_match" do
-    test "match with state timeout" do
-      user1 = insert(:user)
-      user2 = insert(:user)
-
-      tournament = insert(:tournament, state: "waiting_participants", creator_id: user1.id)
-
-      tournament = @module.join(tournament, %{user: user1})
-      tournament = @module.join(tournament, %{user: user2})
-      tournament = @module.start(tournament, %{user: user1})
-
-      [match] = get_matches(tournament)
-
-      tournament =
-        @module.update_match(tournament, %{
-          ref: match.id,
-          game_state: "timeout",
-          player_results: %{user1.id => "timeout", user2.id => "timeout"}
-        })
-
-      assert [%{winner_id: nil, id: 0, state: "timeout"}] = get_matches(tournament)
-    end
-
-    test "match with state win" do
-      user1 = insert(:user)
-      user2 = insert(:user)
-      user1_id = user1.id
-
-      tournament = insert(:tournament, state: "waiting_participants", creator_id: user1.id)
-
-      tournament = @module.join(tournament, %{user: user1})
-      tournament = @module.join(tournament, %{user: user2})
-      tournament = @module.start(tournament, %{user: user1})
-
-      [match] = get_matches(tournament)
-
-      tournament =
-        @module.update_match(tournament, %{
-          ref: match.id,
-          game_state: "game_over",
-          player_results: %{user1.id => "won", user2.id => "lost"}
-        })
-
-      assert [%{winner_id: ^user1_id, id: 0, state: "game_over"}] = get_matches(tournament)
-    end
-  end
-
-  describe ".finish_match" do
+  describe "finish_match/2" do
     test "creates new round after all matches finished" do
       user1 = insert(:user)
       user2 = insert(:user)
@@ -188,7 +171,11 @@ defmodule Codebattle.Tournament.IndividualTest do
         @module.finish_match(tournament, %{
           ref: match1.id,
           game_state: "game_over",
-          player_results: %{id1 => "won", id2 => "lost"}
+          game_level: "elementary",
+          player_results: %{
+            id1 => %{result: "won", id: id1, duration_sec: 10, result_percent: 100.0},
+            id2 => %{result: "lost", id: id2, duration_sec: 15, result_percent: 50.0}
+          }
         })
 
       assert tournament.current_round == 0
@@ -196,8 +183,12 @@ defmodule Codebattle.Tournament.IndividualTest do
       tournament =
         @module.finish_match(tournament, %{
           ref: match2.id,
-          game_state: "game_over",
-          player_results: %{id3 => "won", id4 => "lost"}
+          game_state: "timeout",
+          game_level: "elementary",
+          player_results: %{
+            id3 => %{result: "timeout", id: id3, duration_sec: nil, result_percent: 0.0},
+            id4 => %{result: "timeout", id: id4, duration_sec: 15, result_percent: 10.0}
+          }
         })
 
       assert tournament.current_round == 1

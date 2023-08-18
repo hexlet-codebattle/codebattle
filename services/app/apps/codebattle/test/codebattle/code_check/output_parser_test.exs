@@ -12,7 +12,7 @@ defmodule Codebattle.CodeCheck.OutputParserTest do
              | container_output: ~s({"status": "error", "result": "sdf"})
            }) ==
              %Result{
-               asserts_count: 0,
+               asserts_count: 1,
                success_count: 0,
                status: "error",
                output: ~s({"status": "error", "result": "sdf"}),
@@ -26,7 +26,7 @@ defmodule Codebattle.CodeCheck.OutputParserTest do
              | container_output: ~s({"status": "ok", "result": "__seed:123__"})
            }) ==
              %Result{
-               asserts_count: 0,
+               asserts_count: 1,
                success_count: 0,
                status: "ok",
                output: ~s({"status": "ok", "result": "__seed:123__"}),

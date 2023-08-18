@@ -1,25 +1,23 @@
 defmodule CodebattleWeb.TournamentView do
   use CodebattleWeb, :view
 
-  @default_timezone "Europe/Moscow"
-
   def csrf_token() do
     Plug.CSRFProtection.get_csrf_token()
   end
 
-  def render_time(ms) do
-    ms
-    |> Timex.Duration.from_milliseconds()
-    |> Timex.Duration.to_time!()
-    |> Timex.format!("%H:%M:%S:%L", :strftime)
+  def format_datetime(nil), do: "none"
+  def format_datetime(nil, _time_zone), do: "none"
+
+  def format_datetime(datetime = %NaiveDateTime{}, user_timezone) do
+    datetime
+    |> DateTime.from_naive!("UTC")
+    |> format_datetime(user_timezone)
   end
 
-  def render_datetime(nil), do: "none"
-
-  def render_datetime(utc_datetime) do
-    utc_datetime
-    |> Timex.Timezone.convert(@default_timezone)
-    |> Timex.format!("%d.%m.%Y %H:%M", :strftime)
+  def format_datetime(datetime = %DateTime{}, user_timezone) do
+    datetime
+    |> DateTime.shift_zone!(user_timezone)
+    |> Timex.format!("%Y-%m-%d %H:%M %Z", :strftime)
   end
 
   def get_link_params(match, %{id: id}) do

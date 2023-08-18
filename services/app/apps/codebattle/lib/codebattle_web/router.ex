@@ -7,6 +7,7 @@ defmodule CodebattleWeb.Router do
   require Logger
 
   pipeline :admins_only do
+    plug(CodebattleWeb.Plugs.AssignCurrentUser)
     plug(CodebattleWeb.Plugs.AdminOnly)
   end
 
@@ -39,6 +40,12 @@ defmodule CodebattleWeb.Router do
     plug(:put_secure_browser_headers)
   end
 
+  pipeline :mounted_apps do
+    plug(:accepts, ["html"])
+    plug(:fetch_session)
+    plug(:put_secure_browser_headers)
+  end
+
   scope "/", CodebattleWeb do
     get("/health", HealthController, :index)
   end
@@ -65,7 +72,11 @@ defmodule CodebattleWeb.Router do
     pipe_through(:api)
 
     scope "/v1", V1, as: :v1 do
-      get("/games/completed", GameController, :completed)
+      scope("/games") do
+        get("/completed", GameController, :completed)
+      end
+
+      get("/:user_id/activity", ActivityController, :show)
       get("/game_activity", GameActivityController, :show)
       get("/playbook/:id", PlaybookController, :show)
       get("/user/:id/stats", UserController, :stats)
@@ -88,6 +99,10 @@ defmodule CodebattleWeb.Router do
 
       resources("/feedback", FeedbackController, only: [:index, :create])
       get("/:user_id/activity", ActivityController, :show)
+
+      scope("/games") do
+        resources("/:id/user_game_reports", UserGameReportController, only: [:create])
+      end
     end
   end
 
@@ -149,6 +164,11 @@ defmodule CodebattleWeb.Router do
     scope "/games" do
       post("/:id/join", GameController, :join)
     end
+  end
+
+  scope "/feature-flags" do
+    pipe_through([:mounted_apps, :admins_only])
+    forward("/", FunWithFlags.UI.Router, namespace: "feature-flags")
   end
 
   def handle_errors(conn, %{reason: %Ecto.NoResultsError{}}) do

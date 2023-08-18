@@ -5,6 +5,12 @@ defmodule Codebattle.Tournament.TeamTest do
 
   @module Codebattle.Tournament.Team
 
+  setup do
+    insert(:task, level: "elementary", name: "2")
+
+    :ok
+  end
+
   describe "complete players" do
     test "add bots to complete teams" do
       user1 = insert(:user)

@@ -27,7 +27,6 @@ config :codebattle, Codebattle.Repo,
   log_level: :error
 
 config :codebattle, :oauth,
-  mock_clinet: false,
   github_client_id: System.get_env("GITHUB_CLIENT_ID", "ASFD"),
   github_client_secret: System.get_env("GITHUB_CLIENT_SECRET", "ASFD"),
   discord_client_id: System.get_env("DISCORD_CLIENT_ID", "ASFD"),

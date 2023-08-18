@@ -17,7 +17,7 @@ defmodule Codebattle.CodeCheck.Result.V2 do
   typedstruct do
     field(:exit_code, integer, default: 0)
     field(:success_count, integer, default: 0)
-    field(:asserts_count, integer, default: 0)
+    field(:asserts_count, integer, default: 1)
     field(:status, String.t(), default: "initial")
     field(:output_error, String.t(), default: "")
     field(:version, integer, default: 2)

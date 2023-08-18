@@ -24,7 +24,7 @@ defmodule Runner.MixProject do
   def application do
     [
       mod: {Runner.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :os_mon]
     ]
   end
 

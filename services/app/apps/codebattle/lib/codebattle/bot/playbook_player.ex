@@ -55,9 +55,16 @@ defmodule Codebattle.Bot.PlaybookPlayer do
     "hard" => :timer.minutes(17)
   }
 
-  def init(game) do
-    case Playbook.Context.get_random_completed(game.task_id) do
-      %Playbook{id: id, winner_id: winner_id, data: playbook_data} ->
+  def init(%{game: game, bot_id: bot_id}) do
+    bot = Game.Helpers.get_player(game, bot_id)
+
+    case bot.playbook_id do
+      nil ->
+        {:error, :no_playbook}
+
+      id ->
+        %Playbook{id: id, winner_id: winner_id, data: playbook_data} = Playbook.get(id)
+
         playbook_actions = prepare_user_playbook(playbook_data.records, winner_id)
         playbook_winner_meta = Enum.find(playbook_data.players, &(&1.id == winner_id))
         bot_time_ms = get_bot_time_ms(game)
@@ -73,9 +80,6 @@ defmodule Codebattle.Bot.PlaybookPlayer do
            total_playbook_time_ms: playbook_winner_meta.total_time_ms,
            bot_time_ms: bot_time_ms
          }}
-
-      _ ->
-        {:error, :no_playbook}
     end
   end
 

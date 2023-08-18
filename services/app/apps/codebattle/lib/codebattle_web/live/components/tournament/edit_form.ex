@@ -48,9 +48,10 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
         </div>
         <div class="form-row justify-content-between mt-3">
           <div class="col-8">
-            <label>Starts at (UTC)</label>
+            <label>Starts at (<%= @user_timezone %>)</label>
             <%= datetime_local_input(f, :starts_at,
               class: "form-control",
+              value: DateTime.shift_zone!(f.data.starts_at, @user_timezone),
               required: true
             ) %>
             <%= error_tag(f, :starts_at) %>
@@ -103,28 +104,39 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
         </div>
 
         <div class="form-row justify-content-between mt-3">
-          <div class="col-4">
+          <div class="col-3">
             <%= label(f, :players_limit) %>
             <%= select(f, :players_limit, [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048],
               class: "form-control"
             ) %>
             <%= error_tag(f, :players_limit) %>
           </div>
-          <div class="col-4">
+          <div class="col-3">
             <%= label(f, :default_language) %>
             <%= select(f, :default_language, @langs, class: "form-control") %>
             <%= error_tag(f, :default_language) %>
           </div>
-          <div class="col-4">
-            <%= label(f, :match_timeout_in_seconds) %>
+          <div class="col-3">
+            <%= label(f, :match_timeout_sec) %>
             <%= number_input(
               f,
               :match_timeout_seconds,
               class: "form-control",
-              min: "1",
+              min: "15",
               max: "1000"
             ) %>
-            <%= error_tag(f, :match_timeout_in_seconds) %>
+            <%= error_tag(f, :break_duration_seconds) %>
+          </div>
+          <div class="col-3">
+            <%= label(f, :break_duration_sec) %>
+            <%= number_input(
+              f,
+              :break_duration_seconds,
+              class: "form-control",
+              min: "0",
+              max: "357"
+            ) %>
+            <%= error_tag(f, :break_duration_seconds) %>
           </div>
         </div>
         <%= if f.params["type"] == "team" do %>

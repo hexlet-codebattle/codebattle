@@ -160,7 +160,11 @@ defmodule Codebattle.Tournament.Context do
   end
 
   defp prepare_tournament_params(params) do
-    starts_at = params["starts_at"] && NaiveDateTime.from_iso8601!(params["starts_at"] <> ":00")
+    starts_at =
+      (params["starts_at"] <> ":00")
+      |> NaiveDateTime.from_iso8601!()
+      |> DateTime.from_naive!(params["user_timezone"])
+
     match_timeout_seconds = params["match_timeout_seconds"] || "180"
 
     meta = get_meta_from_params(params)

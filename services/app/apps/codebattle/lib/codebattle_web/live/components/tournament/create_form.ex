@@ -41,11 +41,11 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
         </div>
         <div class="form-row justify-content-between mt-3">
           <div class="col-6 d-flex flex-column justify-content-between">
-            <label>Starts at (UTC)</label>
+            <label>Starts at (<%= @user_timezone %>)</label>
             <%= datetime_local_input(f, :starts_at,
               class: "form-control",
               required: true,
-              value: f.params["starts_at"] || NaiveDateTime.utc_now()
+              value: f.params["starts_at"] || DateTime.add(DateTime.now!(@user_timezone), 5, :minute)
             ) %>
             <%= error_tag(f, :starts_at) %>
           </div>
@@ -164,7 +164,7 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
         </div>
 
         <div class="form-row justify-content-between mt-3">
-          <div class="col-4 d-flex flex-column justify-content-between">
+          <div class="col-3 d-flex flex-column justify-content-between">
             <%= label(f, :players_limit) %>
             <%= select(f, :players_limit, [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048],
               value: f.params["players_limit"] || 64,
@@ -172,20 +172,31 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
             ) %>
             <%= error_tag(f, :players_limit) %>
           </div>
-          <div class="col-4 d-flex flex-column justify-content-between">
+          <div class="col-3 d-flex flex-column justify-content-between">
             <%= label(f, :default_language) %>
             <%= select(f, :default_language, @langs, class: "form-control") %>
             <%= error_tag(f, :default_language) %>
           </div>
-          <div class="col-4 d-flex flex-column justify-content-between">
-            <%= label(f, :match_timeout_in_seconds) %>
+          <div class="col-3 d-flex flex-column justify-content-between">
+            <%= label(f, :match_timeout_sec) %>
             <%= number_input(
               f,
               :match_timeout_seconds,
               class: "form-control",
               value: f.params["match_timeout_seconds"] || "177",
-              min: "1",
+              min: "15",
               max: "1000"
+            ) %>
+          </div>
+          <div class="col-3 d-flex flex-column justify-content-between">
+            <%= label(f, :break_duration_sec) %>
+            <%= number_input(
+              f,
+              :break_duration_seconds,
+              class: "form-control",
+              value: f.params["break_duration_seconds"] || "42",
+              min: "0",
+              max: "357"
             ) %>
           </div>
         </div>

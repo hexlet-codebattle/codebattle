@@ -4,37 +4,37 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
 
   alias Codebattle.Chat
   alias Codebattle.Tournament
+  alias CodebattleWeb.Live.Tournament.HeaderComponent
   alias CodebattleWeb.Live.Tournament.IndividualComponent
-  alias CodebattleWeb.Live.Tournament.TeamComponent
   alias CodebattleWeb.Live.Tournament.StairwayComponent
+  alias CodebattleWeb.Live.Tournament.TeamComponent
+  alias CodebattleWeb.Live.Tournament.TimerComponent
+
+  import CodebattleWeb.TournamentView
 
   require Logger
 
-  @update_frequency 1_000
+  @timer_tick_frequency :timer.seconds(1)
 
   @impl true
   def mount(_params, session, socket) do
-    {:ok, timer_ref} =
-      if connected?(socket) do
-        :timer.send_interval(@update_frequency, self(), :update_time)
-      else
-        {:ok, nil}
-      end
-
     tournament = session["tournament"]
+    user_timezone = get_in(socket.private, [:connect_params, "timezone"]) || "UTC"
 
     Codebattle.PubSub.subscribe(topic_name(tournament))
     Codebattle.PubSub.subscribe(chat_topic_name(tournament))
 
+    :timer.send_interval(@timer_tick_frequency, self(), :timer_tick)
+
     {:ok,
      assign(socket,
-       timer_ref: timer_ref,
        current_user: session["current_user"],
-       tournament: tournament,
+       now: NaiveDateTime.utc_now(:second),
        messages: get_chat_messages(tournament.id),
-       time: get_next_round_time(tournament),
        rating_toggle: "hide",
-       team_tournament_tab: "scores"
+       user_timezone: user_timezone,
+       team_tournament_tab: "scores",
+       tournament: tournament
      )}
   end
 
@@ -51,6 +51,40 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
       </p>
     <% else %>
       <div>
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col bg-white shadow-sm mt-2 mx-3 p-2">
+              <HeaderComponent.render
+                module={HeaderComponent}
+                tournament={@tournament}
+                socket={@socket}
+                current_user={@current_user}
+              />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col bg-white shadow-sm my-2 mx-3 p-2">
+              <%= if @tournament.is_live and @tournament.state in ["active", "waiting_participants"] do %>
+                <.live_component
+                  id="t-timer"
+                  module={TimerComponent}
+                  break_duration_seconds={@tournament.break_duration_seconds}
+                  break_state={@tournament.break_state}
+                  last_round_ended_at={@tournament.last_round_ended_at}
+                  last_round_started_at={@tournament.last_round_started_at}
+                  match_timeout_seconds={@tournament.match_timeout_seconds}
+                  now={@now}
+                  starts_at={@tournament.starts_at}
+                  tournament_state={@tournament.state}
+                  user_timezone={@user_timezone}
+                />
+              <% else %>
+                <%= "The Tournament finished at " <>
+                  format_datetime(@tournament.finished_at, @user_timezone) %>
+              <% end %>
+            </div>
+          </div>
+        </div>
         <%= if @tournament.type == "individual" do %>
           <.live_component
             id="main-tournament"
@@ -59,7 +93,6 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
             tournament={@tournament}
             players={@tournament.players}
             current_user={@current_user}
-            time={@time}
           />
         <% end %>
         <%= if @tournament.type == "team" do %>
@@ -70,7 +103,6 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
             tournament={@tournament}
             players={@tournament.players}
             current_user={@current_user}
-            time={@time}
           />
         <% end %>
         <%= if @tournament.type == "stairway" do %>
@@ -81,7 +113,6 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
             tournament={@tournament}
             players={@tournament.players}
             current_user={@current_user}
-            time={@time}
           />
         <% end %>
       </div>
@@ -89,25 +120,9 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
     """
   end
 
-  # def render(assigns) do
-  #   CodebattleWeb.TournamentView.render("old_show.html", assigns)
-  # end
-
   @impl true
-  def handle_info(:update_time, socket = %{assigns: %{timer_fer: nil}}) do
-    {:noreply, socket}
-  end
-
-  def handle_info(:update_time, socket) do
-    tournament = socket.assigns.tournament
-    time = get_next_round_time(tournament)
-
-    if tournament.state in ["waiting_participants"] and time.seconds >= 0 do
-      {:noreply, assign(socket, time: time)}
-    else
-      :timer.cancel(socket.assigns.timer_ref)
-      {:noreply, socket}
-    end
+  def handle_info(:timer_tick, socket) do
+    {:noreply, assign(socket, now: NaiveDateTime.utc_now(:second))}
   end
 
   def handle_info(%{topic: _topic, event: "tournament:updated", payload: payload}, socket) do
@@ -280,38 +295,6 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
 
   def handle_event(_event, _params, socket) do
     {:noreply, socket}
-  end
-
-  defp get_next_round_time(tournament) do
-    time =
-      case tournament.state do
-        "active" ->
-          NaiveDateTime.add(tournament.last_round_started_at, tournament.match_timeout_seconds)
-
-        _ ->
-          tournament.starts_at
-      end
-
-    minutes_and_seconds(time)
-  end
-
-  defp minutes_and_seconds(time) do
-    days = round(Timex.diff(time, Timex.now(), :days))
-    hours = round(Timex.diff(time, Timex.now(), :hours) - days * 24)
-    minutes = round(Timex.diff(time, Timex.now(), :minutes) - days * 24 * 60 - hours * 60)
-
-    seconds =
-      round(
-        Timex.diff(time, Timex.now(), :seconds) - days * 24 * 60 * 60 - hours * 60 * 60 -
-          minutes * 60
-      )
-
-    %{
-      days: days,
-      hours: hours,
-      minutes: minutes,
-      seconds: seconds
-    }
   end
 
   defp topic_name(tournament), do: "tournament:#{tournament.id}"
