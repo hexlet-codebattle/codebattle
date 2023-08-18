@@ -48,7 +48,8 @@ config :codebattle, asserts_executor: asserts_executor
 config :codebattle, code_check_timeout: 35_000
 config :codebattle, tournament_match_timeout: 1
 
-config :codebattle, :oauth, mock_clinet: true
+config :codebattle, github_oauth_client: Codebattle.Oauth.GithubMock
+config :codebattle, discord_oauth_client: Codebattle.Oauth.DiscordMock
 
 config :codebattle, Codebattle.Invite,
   timeout: :timer.seconds(1000),

@@ -5,20 +5,23 @@ defmodule PhoenixGon.Mixfile do
     [
       app: :phoenix_gon,
       version: "0.4.0",
-      elixir: "~> 1.5",
       build_path: "../../_build",
       config_path: "../../config/config.exs",
       deps_path: "../../deps",
       lockfile: "../../mix.lock",
-      build_embedded: Mix.env() == :prod,
+      elixir: "~> 1.14",
+      elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       description: description(),
       deps: deps()
     ]
   end
 
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(_), do: ["lib"]
+
   def application do
-    [applications: [:logger]]
+    [extra_applications: [:logger]]
   end
 
   defp description do

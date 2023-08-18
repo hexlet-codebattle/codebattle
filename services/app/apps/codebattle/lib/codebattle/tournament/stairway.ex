@@ -44,7 +44,7 @@ defmodule Codebattle.Tournament.Stairway do
         Map.put(acc, to_id(match.id), match)
       end)
 
-    update_struct(tournament, %{matches: matches, played_pair_ids: played_pair_ids}) |> dbg
+    update_struct(tournament, %{matches: matches, played_pair_ids: played_pair_ids})
   end
 
   @impl Tournament.Base

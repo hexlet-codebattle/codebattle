@@ -7,7 +7,7 @@ defmodule PhoenixGon.UtilsTest do
   alias Plug.Conn
 
   describe "#mix_env_dev?" do
-    test 'env' do
+    test "env" do
       conn =
         %Conn{}
         |> with_gon(env: :dev)
@@ -20,7 +20,7 @@ defmodule PhoenixGon.UtilsTest do
   end
 
   describe "#mix_env_prod?" do
-    test 'prod' do
+    test "prod" do
       conn =
         %Conn{}
         |> with_gon(env: :prod)
@@ -33,7 +33,7 @@ defmodule PhoenixGon.UtilsTest do
   end
 
   describe "#variables" do
-    test 'conn' do
+    test "conn" do
       conn =
         %Conn{}
         |> with_gon(env: nil)
@@ -46,7 +46,7 @@ defmodule PhoenixGon.UtilsTest do
   end
 
   describe "#assets" do
-    test 'conn' do
+    test "conn" do
       conn =
         %Conn{}
         |> with_gon(env: nil)
@@ -59,7 +59,7 @@ defmodule PhoenixGon.UtilsTest do
   end
 
   describe "settings" do
-    test 'conn' do
+    test "conn" do
       conn =
         %Conn{}
         |> with_gon(env: nil)
@@ -73,12 +73,12 @@ defmodule PhoenixGon.UtilsTest do
         namespace: nil
       ]
 
-      assert actual == expectation
+      assert Enum.sort(actual) == Enum.sort(expectation)
     end
   end
 
   describe "#namescpase" do
-    test 'conn' do
+    test "conn" do
       conn =
         %Conn{}
         |> with_gon(namespace: TestCase)

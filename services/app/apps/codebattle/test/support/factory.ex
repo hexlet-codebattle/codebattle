@@ -163,6 +163,7 @@ defmodule CodebattleWeb.Factory do
   def tournament_factory do
     %Codebattle.Tournament{
       type: "individual",
+      break_duration_seconds: 0,
       name: "name",
       current_round: 0,
       players_limit: 16,
@@ -180,6 +181,7 @@ defmodule CodebattleWeb.Factory do
   def team_tournament_factory do
     %Codebattle.Tournament{
       type: "team",
+      break_duration_seconds: 0,
       name: "name",
       current_round: 0,
       players_limit: 16,
@@ -198,6 +200,7 @@ defmodule CodebattleWeb.Factory do
   def stairway_tournament_factory do
     %Codebattle.Tournament{
       type: "stairway",
+      break_duration_seconds: 0,
       name: "Stairway tournament",
       current_round: 0,
       players_limit: 16,
@@ -215,6 +218,7 @@ defmodule CodebattleWeb.Factory do
   def token_tournament_factory do
     %Codebattle.Tournament{
       type: "individual",
+      break_duration_seconds: 0,
       access_type: "token",
       access_token: "asdfasdfasdf",
       name: "name",
