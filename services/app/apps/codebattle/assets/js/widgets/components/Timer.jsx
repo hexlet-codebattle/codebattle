@@ -1,18 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import moment from 'moment';
+import React from 'react';
 import PropTypes from 'prop-types';
+import useTimer from '../utils/useTimer';
 
 function Timer({ time }) {
-  const [duration, setDuration] = useState(moment().format('HH:mm:ss'));
-
-  const updateTimer = () => {
-    setDuration(moment.utc(moment().diff(moment.utc(time))).format('HH:mm:ss'));
-  };
-
-  useEffect(() => {
-    const interval = setInterval(updateTimer, 77);
-    return () => clearInterval(interval);
-  });
+  const [duration] = useTimer(time);
 
   return <span className="text-monospace">{duration}</span>;
 }

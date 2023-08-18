@@ -3,7 +3,8 @@ import { useSelector } from 'react-redux';
 import Select from 'react-select';
 import Gon from 'gon';
 
-import _ from 'lodash';
+import capitalize from 'lodash/capitalize';
+import partition from 'lodash/partition';
 import * as selectors from '../selectors';
 import LanguageIcon from './LanguageIcon';
 
@@ -39,7 +40,7 @@ const defaultLanguages = Gon.getAsset('langs');
 const LangTitle = ({ slug, name, version }) => (
   <div className="d-inline-flex align-items-center text-nowrap">
     <LanguageIcon lang={slug} className="ml-1" />
-    <span className="mx-1">{_.capitalize(name)}</span>
+    <span className="mx-1">{capitalize(name)}</span>
     <span>{version}</span>
   </div>
 );
@@ -48,7 +49,7 @@ function LanguagePickerView({ changeLang, currentLangSlug, isDisabled }) {
   const languages = useSelector(selectors.editorLangsSelector);
 
   const langs = languages || defaultLanguages;
-  const [[currentLang], otherLangs] = useMemo(() => _.partition(langs, lang => lang.slug === currentLangSlug), [langs, currentLangSlug]);
+  const [[currentLang], otherLangs] = useMemo(() => partition(langs, lang => lang.slug === currentLangSlug), [langs, currentLangSlug]);
   const options = useMemo(() => otherLangs.map(lang => ({ label: <LangTitle {...lang} />, value: lang.name })), [otherLangs]);
   const defaultLang = useMemo(() => ({ label: <LangTitle {...currentLang} /> }), [currentLang]);
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import _ from 'lodash';
+import uniqueId from 'lodash/uniqueId';
 import { camelizeKeys } from 'humps';
 import AccordeonBox from '../../components/AccordeonBox';
 import color from '../../config/statusColor';
@@ -9,7 +9,7 @@ const Output = ({ sideOutput }) => {
     status, output, outputError, asserts, version = 0,
   } = sideOutput;
 
-  const uniqIndex = _.uniqueId('heading');
+  const uniqIndex = uniqueId('heading');
   const normalizedAsserts = version === 2 ? asserts : asserts.map(elem => camelizeKeys(JSON.parse(elem)));
   const normalizedOutput = version === 2 ? outputError : output;
 

@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { useSelector } from 'react-redux';
-import _ from 'lodash';
+import hasIn from 'lodash/hasIn';
 import ReplayerControlButton from './ReplayerControlButton';
 import ActionsAfterGame from './ActionsAfterGame';
 import GameResult from './GameResult';
@@ -25,7 +25,7 @@ function Notifications() {
   const playbookSolutionType = useSelector(state => state.playbook.solutionType);
   const tournamentsInfo = useSelector(state => state.game.tournamentsInfo);
   const isAdmin = useSelector(selectors.currentUserIsAdminSelector);
-  const isCurrentUserPlayer = _.hasIn(players, currentUserId);
+  const isCurrentUserPlayer = hasIn(players, currentUserId);
   const isTournamentGame = !!tournamentId;
   const isActiveTournament = !!tournamentsInfo && tournamentsInfo.state === 'active';
 

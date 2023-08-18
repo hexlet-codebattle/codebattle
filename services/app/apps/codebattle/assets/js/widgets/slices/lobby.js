@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
-import _ from 'lodash';
+import reject from 'lodash/reject';
+import find from 'lodash/find';
 import initial from './initial';
 
 const initialState = {
@@ -49,10 +50,10 @@ const lobby = createSlice({
       state.presenceList = payload;
     },
     removeGameLobby: (state, { payload: { gameId } }) => {
-      state.activeGames = _.reject(state.activeGames, { id: gameId });
+      state.activeGames = reject(state.activeGames, { id: gameId });
     },
     upsertGameLobby: (state, { payload: { game } }) => {
-      const gameToUpdate = _.find(state.activeGames, { id: game.id });
+      const gameToUpdate = find(state.activeGames, { id: game.id });
       if (gameToUpdate) {
         Object.assign(gameToUpdate, game);
       } else {
@@ -63,7 +64,7 @@ const lobby = createSlice({
       state.newGame.timeoutSeconds = timeoutSeconds;
     },
     finishGame: (state, { payload: { game } }) => {
-      state.activeGames = _.reject(state.activeGames, { id: game.id });
+      state.activeGames = reject(state.activeGames, { id: game.id });
     },
     showCreateGameModal: state => {
       state.createGameModal.show = true;

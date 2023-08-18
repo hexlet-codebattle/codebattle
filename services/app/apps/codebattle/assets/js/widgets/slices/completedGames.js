@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { camelizeKeys } from 'humps';
-import _ from 'lodash';
+import unionBy from 'lodash/unionBy';
 
 import { actions as lobbyActions } from './lobby';
 import initial from './initial';
@@ -68,7 +68,7 @@ const completedGames = createSlice({
     [loadNextPage.fulfilled]: (state, { payload }) => {
       state.status = 'loaded';
       state.nextPage += 1;
-      state.completedGames = _.unionBy(state.completedGames, payload.games, 'id');
+      state.completedGames = unionBy(state.completedGames, payload.games, 'id');
     },
     [loadNextPage.rejected]: (state, action) => {
       state.status = 'rejected';

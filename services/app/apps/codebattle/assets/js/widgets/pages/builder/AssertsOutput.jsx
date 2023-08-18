@@ -1,11 +1,11 @@
 import React, { memo } from 'react';
-import _ from 'lodash';
+import uniqueId from 'lodash/uniqueId';
 import AccordeonBox from '../../components/AccordeonBox';
 import color from '../../config/statusColor';
 import assertsStatuses from '../../config/executionStatuses';
 
 const AssertsOutput = memo(({ asserts, status, output }) => {
-  const uniqIndex = _.uniqueId('assertsOutput');
+  const uniqIndex = uniqueId('assertsOutput');
 
   return (
     <div className="overflow-auto" style={{ maxHeight: '412px' }}>

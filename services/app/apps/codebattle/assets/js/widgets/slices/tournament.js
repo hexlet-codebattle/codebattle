@@ -1,42 +1,22 @@
 import { createSlice } from '@reduxjs/toolkit';
+import initial from './initial';
 
-const initialState = {
-  tournament: {
-    id: null,
-    creatorId: null,
-    type: null,
-    name: '',
-    state: 'loading',
-    startsAt: null,
-    data: {
-      // TODO: (server) update tournaments match data (array -> object)
-      matches: {}, // {1: [], 2: []}
-      players: [],
-      intendedPlayerIds: [],
-    },
-  },
-  statistics: null,
-  activeMatch: null,
-};
+const initialState = initial.tournament;
 
 const tournament = createSlice({
   name: 'tournament',
   initialState,
   reducers: {
-    cancelTournament: state => {
-      state.tournament.state = 'cancelled';
-      state.statistics = null;
-    },
-    setTournamentData: (state, { payload }) => {
-      state.activeMatch = payload.activeMatch;
-      state.tournament = payload.tournament;
-      state.statistics = payload.statistics;
-    },
-    setNextRound: (state, { payload }) => {
-      state.tournament = payload;
-    },
-    setActiveMatch: (state, { payload }) => {
-      state.activeMatch = payload;
+    setTournamentData: (state, { payload }) => ({
+      ...payload,
+      channel: { online: true },
+    }),
+    updateTournamentData: (state, { payload }) => ({
+      ...state,
+      ...payload,
+    }),
+    updateTournamentChannelState: (state, { payload }) => {
+      state.channel.online = payload;
     },
   },
 });

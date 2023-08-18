@@ -57,8 +57,7 @@ const RatingList = React.lazy(() => import('./pages/rating'));
 const UserSettings = React.lazy(() => import('./pages/settings'));
 const UserProfile = React.lazy(() => import('./pages/profile'));
 const Registration = React.lazy(() => import('./pages/registration'));
-const Tournament = React.lazy(() => import('./pages/tournament').Tournament);
-const Stairway = React.lazy(() => import('./pages/tournament').Stairway);
+const Tournament = React.lazy(() => import('./pages/tournament'));
 
 export const Invites = () => (
   <Provider store={store}>
@@ -150,7 +149,7 @@ export const StairwayGamePage = () => (
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
       <Suspense>
-        <Stairway />
+        {/* <Stairway /> */}
       </Suspense>
     </PersistGate>
   </Provider>

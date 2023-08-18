@@ -1,6 +1,6 @@
 import { useDispatch } from 'react-redux';
 import React, { useState, useEffect } from 'react';
-import _ from 'lodash';
+import uniqBy from 'lodash/uniqBy';
 import axios from 'axios';
 
 import { actions } from '../../slices';
@@ -45,7 +45,7 @@ function ContributorsList({ name }) {
           avatarLink: el.author.avatar_url,
           link: el.author.html_url,
         }));
-        setAvatars(_.uniqBy(contributorsList, 'avatarLink'));
+        setAvatars(uniqBy(contributorsList, 'avatarLink'));
       })
       .catch(error => {
         dispatch(actions.setError(error));

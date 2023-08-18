@@ -1,5 +1,4 @@
 import React from 'react';
-// import _ from 'lodash';
 import cn from 'classnames';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import i18n from '../../i18n';

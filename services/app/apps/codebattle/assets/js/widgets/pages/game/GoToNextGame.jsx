@@ -1,8 +1,7 @@
 import React from 'react';
-import _ from 'lodash';
 
 const GoToNextGame = ({ currentUserId, tournamentsInfo: { playerGames } }) => {
-  const nextGame = _.find(playerGames, ({ id }) => id === currentUserId);
+  const nextGame = playerGames.find(({ id }) => id === currentUserId);
 
   return (
     <>

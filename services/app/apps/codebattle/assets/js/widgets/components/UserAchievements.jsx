@@ -1,5 +1,5 @@
 import React from 'react';
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 
 const LangIcon = ({ size = 'md', lang }) => {
   const [width, height] = size === 'sm' ? [14, 14] : [65, 65];
@@ -27,7 +27,7 @@ const renderPolyglotAchievement = languages => (
 );
 
 const UserAchievements = ({ achievements }) => {
-  if (!_.isEmpty(achievements)) {
+  if (!isEmpty(achievements)) {
     return (
       <div className="d-flex justify-content-start flex-wrap mt-2">
         {achievements.map(el => {

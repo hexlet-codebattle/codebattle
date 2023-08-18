@@ -1,7 +1,7 @@
 import React, {
   useCallback,
 } from 'react';
-import { Modal } from 'react-bootstrap';
+import Modal from 'react-bootstrap/Modal';
 import { useDispatch, useSelector } from 'react-redux';
 import * as lobbyMiddlewares from '../../middlewares/Lobby';
 import { actions } from '../../slices';

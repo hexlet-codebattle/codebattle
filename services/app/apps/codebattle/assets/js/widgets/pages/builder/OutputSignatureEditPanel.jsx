@@ -1,7 +1,7 @@
 import React, {
   useCallback,
 } from 'react';
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   defaultSignatureByType,
@@ -25,7 +25,7 @@ function OutputSignatureEditPanel({
     return handleEdit({ id: suggest.id, ...defaultSignatureByType[argumentTypes.integer] });
   }, [item, suggest, handleEdit]);
 
-  if (_.isEmpty(suggest)) {
+  if (isEmpty(suggest)) {
     return null;
   }
 

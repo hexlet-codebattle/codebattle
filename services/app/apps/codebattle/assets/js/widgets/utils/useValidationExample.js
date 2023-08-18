@@ -1,5 +1,10 @@
 import { useMemo } from 'react';
-import _ from 'lodash';
+import isNumber from 'lodash/isNumber';
+import isString from 'lodash/isString';
+import isBoolean from 'lodash/isBoolean';
+import isArray from 'lodash/isArray';
+import isObject from 'lodash/isObject';
+import isEmpty from 'lodash/isEmpty';
 import { argumentTypes } from './builder';
 
 const isValidValueToSignature = (value, signature) => {
@@ -9,23 +14,23 @@ const isValidValueToSignature = (value, signature) => {
 
   switch (signature.name) {
     case argumentTypes.float: {
-      return _.isNumber(value);
+      return isNumber(value);
     }
     case argumentTypes.integer: {
-      return _.isNumber(value) && Math.floor(value) === value;
+      return isNumber(value) && Math.floor(value) === value;
     }
     case argumentTypes.string: {
-      return _.isString(value);
+      return isString(value);
     }
     case argumentTypes.boolean: {
-      return _.isBoolean(value);
+      return isBoolean(value);
     }
     case argumentTypes.array: {
-      return _.isArray(value) && !value.some(item => !isValidValueToSignature(item, signature.nested));
+      return isArray(value) && !value.some(item => !isValidValueToSignature(item, signature.nested));
     }
     case argumentTypes.hash: {
-      return !_.isArray(value)
-        && _.isObject(value)
+      return !isArray(value)
+        && isObject(value)
         && !Object.keys(value).some(item => item.length === 0)
         && !Object.values(value).some(item => !isValidValueToSignature(item, signature.nested));
     }
@@ -46,13 +51,13 @@ const useValidationExample = ({
         return [false, ''];
       }
 
-      if (_.isEmpty(suggest.arguments)) {
+      if (isEmpty(suggest.arguments)) {
         return [false, ''];
       }
 
       const data = JSON.parse(suggest.arguments);
 
-      if (!_.isArray(data)) {
+      if (!isArray(data)) {
         return [false, 'Must be array'];
       }
 
@@ -77,7 +82,7 @@ const useValidationExample = ({
         return [false, ''];
       }
 
-      if (_.isEmpty(suggest.expected)) {
+      if (isEmpty(suggest.expected)) {
         return [false, ''];
       }
 

@@ -1,7 +1,9 @@
 import React, { useCallback } from 'react';
 import cn from 'classnames';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
+import debounce from 'lodash/debounce';
+import isEmpty from 'lodash/isEmpty';
+import capitalize from 'lodash/capitalize';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useDispatch, useSelector } from 'react-redux';
 import i18n from '../../../i18n';
@@ -16,7 +18,7 @@ import useTaskDescriptionParams from '../../utils/useTaskDescriptionParams';
 
 const defaultLevels = ['elementary', 'easy', 'medium', 'hard'].map(level => ({
   value: level,
-  label: _.capitalize(level),
+  label: capitalize(level),
 }));
 
 const ConfigurationButton = ({ onClick }) => (
@@ -107,7 +109,7 @@ function BuilderTaskAssignment({
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const validateName = useCallback(
-    _.debounce(name => dispatch(validateTaskName(name)), 700),
+    debounce(name => dispatch(validateTaskName(name)), 700),
     [],
   );
 
@@ -119,7 +121,7 @@ function BuilderTaskAssignment({
     [validateName, dispatch],
   );
 
-  if (_.isEmpty(task)) {
+  if (isEmpty(task)) {
     return null;
   }
 

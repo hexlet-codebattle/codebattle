@@ -1,6 +1,7 @@
 import { camelizeKeys } from 'humps';
 import { useDispatch, useSelector } from 'react-redux';
-import _ from 'lodash';
+import mapValues from 'lodash/mapValues';
+import groupBy from 'lodash/groupBy';
 import React, { useState, useEffect } from 'react';
 
 import {
@@ -116,8 +117,8 @@ function UserProfile() {
       '#FFA07A',
     ];
 
-    const groups = _.groupBy(stats.stats.all, 'lang');
-    const reducedByLangStats = _.mapValues(groups, group => group.reduce((total, item) => total + item.count, 0));
+    const groups = groupBy(stats.stats.all, 'lang');
+    const reducedByLangStats = mapValues(groups, group => group.reduce((total, item) => total + item.count, 0));
     const resultDataForPie = Object.entries(reducedByLangStats).map(
       ([lang, count]) => ({ name: lang, value: count }),
     );

@@ -1,5 +1,5 @@
 import React from 'react';
-import _ from 'lodash';
+import capitalize from 'lodash/capitalize';
 import {
  Formik, Form, Field, useField,
 } from 'formik';
@@ -35,7 +35,7 @@ const TextInput = ({ label, ...props }) => {
 const UserSettingsForm = ({ onSubmit, settings }) => {
   const renderLanguages = langs => langs.map(([slug, lang]) => (
     <option key={slug} value={slug}>
-      {_.capitalize(lang)}
+      {capitalize(lang)}
     </option>
   ));
 

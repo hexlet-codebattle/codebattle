@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import { createSlice } from '@reduxjs/toolkit';
 import initial from './initial';
 
@@ -16,12 +16,11 @@ const userSlice = createSlice({
     },
     updateUsers: (state, { payload }) => {
       const { users: usersList } = payload;
-      const users = _.reduce(
-        usersList,
+      const users = usersList.reduce(
         (acc, user) => ({ ...acc, [user.id]: user }),
         {},
       );
-      if (!_.isEmpty(users)) {
+      if (!isEmpty(users)) {
         Object.assign(state.users, users);
       }
     },

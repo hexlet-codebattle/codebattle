@@ -1,10 +1,14 @@
 import moment from 'moment';
 import React, {
- memo, useEffect, useMemo, useRef,
+  memo,
+  useEffect,
+  useMemo,
+  useRef,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import cn from 'classnames';
 
+import GameCard from './GameCard';
 import UserInfo from '../../components/UserInfo';
 import GameLevelBadge from '../../components/GameLevelBadge';
 import ResultIcon from '../../components/ResultIcon';
@@ -39,6 +43,9 @@ const CompletedGamesRows = memo(({ games }) => (
   </>
 ));
 
+const commonTableClassName = 'table table-sm table-striped border-gray border-0 mb-0';
+const commonClassName = 'd-none d-sm-none d-md-block';
+
 function CompletedGames({
   games,
   loadNextPage = null,
@@ -46,19 +53,22 @@ function CompletedGames({
   className,
   tableClassName = '',
 }) {
+  const dispatch = useDispatch();
+
   const { nextPage, totalPages } = useSelector(state => state.completedGames);
   const object = useMemo(
     () => ({ loading: false }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [nextPage],
   );
-  const dispatch = useDispatch();
 
   /** @type {import("react").RefObject<HTMLDivElement>} */
-  const ref = useRef(null);
+  const cardListRef = useRef(null);
+  const tableRef = useRef(null);
 
   useEffect(() => {
-    const observerRef = ref;
+    const observerTableRef = tableRef;
+    const observerCardsRef = cardListRef;
 
     const load = () => {
       if (object.loading) return;
@@ -67,19 +77,32 @@ function CompletedGames({
       if (nextPage <= totalPages) dispatch(loadNextPage(nextPage));
     };
 
-    const onScroll = () => {
-      if (!ref.current) return;
-      const height = ref.current.scrollHeight - ref.current.parentElement?.offsetHeight;
-      const delta = height - ref.current.scrollTop;
+    const onCardsScroll = () => {
+      if (!cardListRef.current) return;
+      const width = cardListRef.current.scrollWidth - cardListRef.current.parentElement?.offsetWidth;
+      const delta = width - cardListRef.current.scrollLeft;
+
+      if (delta < 50) { load(); }
+    };
+
+    const onTableScroll = () => {
+      if (!tableRef.current) return;
+      const height = tableRef.current.scrollHeight - tableRef.current.parentElement?.offsetHeight;
+      const delta = height - tableRef.current.scrollTop;
 
       if (delta < 500) { load(); }
     };
 
-    observerRef.current?.addEventListener('scroll', onScroll);
+    observerTableRef.current?.addEventListener('scroll', onTableScroll);
+    observerCardsRef.current?.addEventListener('scroll', onCardsScroll);
 
     return () => {
-      if (observerRef) {
-        observerRef.current?.removeEventListener('scroll', onScroll);
+      if (observerTableRef) {
+        observerTableRef.current?.removeEventListener('scroll', onTableScroll);
+      }
+
+      if (observerCardsRef) {
+        observerCardsRef.current?.removeEventListener('scroll', onCardsScroll);
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -87,9 +110,21 @@ function CompletedGames({
 
   return (
     <>
-      <div ref={ref} data-testid="scroll" className={className}>
+      <div ref={cardListRef} className="d-none d-sm-block d-md-none d-flex m-2 overflow-auto">
+        {games.map(game => (
+          <GameCard
+            type="completed"
+            game={game}
+          />
+        ))}
+      </div>
+      <div
+        ref={tableRef}
+        className={cn(commonClassName, className)}
+        data-testid="scroll"
+      >
         <table
-          className={cn('table table-sm table-striped border-gray border-0 mb-0', tableClassName)}
+          className={cn(commonTableClassName, tableClassName)}
         >
           <thead>
             <tr>

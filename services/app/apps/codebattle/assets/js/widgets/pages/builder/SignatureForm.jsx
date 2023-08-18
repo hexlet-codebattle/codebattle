@@ -2,7 +2,8 @@ import React, {
   useMemo,
   useCallback,
 } from 'react';
-import _ from 'lodash';
+import reverse from 'lodash/reverse';
+import isEmpty from 'lodash/isEmpty';
 import {
   haveNestedType,
   argumentTypes,
@@ -31,9 +32,9 @@ function SignatureForm({ signature, handleEdit }) {
 
   const handleSelect = useCallback((newType, nestedIndex) => {
     const newTypes = types.map((type, index) => (index === nestedIndex ? newType : type));
-    const newSuggestType = _.reverse(newTypes).reduce((acc, type) => {
+    const newSuggestType = reverse(newTypes).reduce((acc, type) => {
       if (haveNestedType(type)) {
-        const nested = _.isEmpty(acc) ? { name: argumentTypes.integer } : acc;
+        const nested = isEmpty(acc) ? { name: argumentTypes.integer } : acc;
         return { name: type, nested };
       }
 
@@ -42,7 +43,7 @@ function SignatureForm({ signature, handleEdit }) {
     handleEdit({ argumentName: signature.argumentName, id: signature.id, type: newSuggestType });
   }, [handleEdit, types, signature]);
 
-  if (_.isEmpty(signature)) {
+  if (isEmpty(signature)) {
     return null;
   }
 

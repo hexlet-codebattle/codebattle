@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
-import _ from 'lodash';
+import capitalize from 'lodash/capitalize';
+import remove from 'lodash/remove';
 import {
   validateTaskName,
   validateDescription,
@@ -45,7 +46,7 @@ const builder = createSlice({
       state.task.level = level;
     },
     setTaskDescription: (state, { payload: { lang, value } }) => {
-      state.task[`description${_.capitalize(lang)}`] = value;
+      state.task[`description${capitalize(lang)}`] = value;
 
       state.validationStatuses.description = validateDescription(value);
     },
@@ -116,7 +117,7 @@ const builder = createSlice({
       }
     },
     removeTaskInputType: (state, { payload: { typeId } }) => {
-      _.remove(state.task.inputSignature, item => (
+      remove(state.task.inputSignature, item => (
         item.id === typeId
       ));
       if (state.task.assertsExamples.length > 0) {
@@ -143,7 +144,7 @@ const builder = createSlice({
       state.validationStatuses.assertsExamples = validateExamples(state.task.assertsExamples);
     },
     removeTaskExample: (state, { payload: { exampleId } }) => {
-      _.remove(state.task.assertsExamples, item => (
+      remove(state.task.assertsExamples, item => (
         item.id === exampleId
       ));
       state.validationStatuses.assertsExamples = validateExamples(state.task.assertsExamples);

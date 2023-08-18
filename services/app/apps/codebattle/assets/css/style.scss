@@ -151,6 +151,11 @@ em-emoji-picker {
 .btn-hover {
   visibility: hidden;
 }
+@media (max-width: $sm) {
+  .btn-hover {
+    visibility: visible;
+  }
+}
 
 .game-item:hover .btn-hover {
   visibility: visible;
@@ -319,6 +324,12 @@ a {
   background: white;
   position: relative;
   border-radius: 10px;
+
+  @media (max-width: $sm) {
+    & {
+      border-width: 1px;
+    }
+  }
 
   & > .cb-asserts-progress {
     position: absolute;

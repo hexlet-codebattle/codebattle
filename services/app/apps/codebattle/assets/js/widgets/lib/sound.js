@@ -1,5 +1,5 @@
 import { Howl, Howler } from 'howler';
-import _ from 'lodash';
+import isUndefined from 'lodash/isUndefined';
 import Gon from 'gon';
 import standart from '../config/sound/standart';
 import cs from '../config/sound/cs';
@@ -34,7 +34,7 @@ const sound = {
     const isMute = JSON.parse(localStorage.getItem('ui_mute_sound')) || false;
     const soundEffect = audio();
     if (soundType === 'silent' || isMute) return;
-    Howler.volume(_.isUndefined(soundLevel) ? defaultSoundLevel : soundLevel);
+    Howler.volume(isUndefined(soundLevel) ? defaultSoundLevel : soundLevel);
     soundEffect.play(type);
   },
   stop: () => Howler.stop(),

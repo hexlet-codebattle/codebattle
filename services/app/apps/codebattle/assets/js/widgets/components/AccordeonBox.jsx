@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Tooltip, OverlayTrigger } from 'react-bootstrap';
+import Tooltip from 'react-bootstrap/Tooltip';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import cn from 'classnames';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import _ from 'lodash';
+import uniqueId from 'lodash/uniqueId';
 import i18n from '../../i18n';
 import color from '../config/statusColor';
 
@@ -42,7 +43,7 @@ function Menu({
   const handleClick = () => {
     setShow(!show);
   };
-  const uniqIndex = _.uniqueId('heading');
+  const uniqIndex = uniqueId('heading');
   const percent = (100 * successCount) / assertsCount;
   const assertsStatusMessage = i18n.t('You passed %{successCount} from %{assertsCount} asserts. (%{percent}%)', {
     successCount,

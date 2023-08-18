@@ -5,7 +5,8 @@ import React, {
   useEffect,
   memo,
 } from 'react';
-import { Modal, Button } from 'react-bootstrap';
+import Modal from 'react-bootstrap/Modal';
+import Button from 'react-bootstrap/Button';
 import { useDispatch, useSelector } from 'react-redux';
 import { taskStateCodes } from '../../config/task';
 import { taskTemplatesStates } from '../../utils/builder';

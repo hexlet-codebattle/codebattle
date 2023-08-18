@@ -1,13 +1,8 @@
-// import _ from 'lodash';
-// import axios from 'axios';
 import Gon from 'gon';
 import { camelizeKeys } from 'humps';
-import _ from 'lodash';
 
 import socket from '../../socket';
 import { actions } from '../slices';
-
-// import notification from '../utils/notification';
 
 const tournamentId = Gon.getAsset('tournament_id');
 const channelName = `tournament:${tournamentId}`;
@@ -20,16 +15,19 @@ const initTournamentChannel = dispatch => {
 
   const onJoinSuccess = response => {
     const data = camelizeKeys(response);
-    const matches = _.groupBy(data.tournament.matches, 'roundId');
-    _.set(data, 'tournament.matches', matches);
 
-    dispatch(actions.setTournamentData(data));
+    console.log(data.tournament);
+    dispatch(actions.setTournamentData(data.tournament));
   };
 
   channel
     .join()
     .receive('ok', onJoinSuccess)
     .receive('error', onJoinFailure);
+
+  channel.onError(() => {
+    dispatch(actions.updateTournamentChannelState(false));
+  });
 };
 
 // export const soundNotification = notification();
@@ -37,23 +35,36 @@ const initTournamentChannel = dispatch => {
 export const connectToTournament = () => dispatch => {
   initTournamentChannel(dispatch);
 
-  channel.on('tournament:update', response => {
+  const handleUpdate = response => {
     const data = camelizeKeys(response);
-    const matches = _.groupBy(data.tournament.matches, 'roundId');
-    _.set(data, 'tournament.matches', matches);
 
-    dispatch(actions.setTournamentData(data));
-  });
+    dispatch(actions.updateTournamentData(data.tournament));
+  };
 
-  // TODO: (client/server) break update event on pieces
-  // round:update_match(round, newMatch)
-  // round:update_participants(players)
-  // round:update_statistics(statistics)
-  channel.on('tournament:round_created', response => {
-    const { tournament } = camelizeKeys(response);
+  const handleRoundCreated = response => {
+    const data = camelizeKeys(response);
 
-    dispatch(actions.setNextRound(tournament));
-  });
+    dispatch(actions.setNextRound(data.tournament));
+  };
+
+  const refs = [
+    channel.on('tournament:update', handleUpdate),
+
+    // TODO: (client/server) break update event on pieces
+    // round:update_match(round, newMatch)
+    // round:update_participants(players)
+    // round:update_statistics(statistics)
+    channel.on('tournament:round_created', handleRoundCreated),
+  ];
+
+  const oldChannel = channel;
+
+  const clearTournamentChannel = () => {
+    oldChannel.off('tournament:update', refs[0]);
+    oldChannel.off('tournament:round_created', refs[1]);
+  };
+
+  return clearTournamentChannel;
 };
 
 export const joinTournament = teamId => {
@@ -74,8 +85,8 @@ export const cancelTournament = () => {
   channel.push('tournament:cancel', {}).receive('error', error => console.error(error));
 };
 
-export const backTournament = () => {
-  channel.push('tournament:back', {}).receive('error', error => console.error(error));
+export const restartTournament = () => {
+  channel.push('tournament:restart', {}).receive('error', error => console.error(error));
 };
 
 export const openUpTournament = () => {

@@ -1,5 +1,6 @@
 import React, { memo } from 'react';
-import { Modal, Button } from 'react-bootstrap';
+import Modal from 'react-bootstrap/Modal';
+import Button from 'react-bootstrap/Button';
 import { useSelector } from 'react-redux';
 import { gamePlayersSelector, currentUserIdSelector } from '../../selectors';
 import gifs from '../../config/gifs';

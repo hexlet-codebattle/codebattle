@@ -6,7 +6,7 @@ import React, {
   useContext,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import _ from 'lodash';
+import cloneDeep from 'lodash/cloneDeep';
 import cn from 'classnames';
 import { actions } from '../../slices';
 import RoomContext from '../../components/RoomContext';
@@ -64,7 +64,7 @@ function BuilderExampleForm() {
     setTimeout(() => inputArgumentNameInputRef.current?.focus(), 400);
   }, [setInputSuggest]);
   const editInputType = useCallback(item => {
-    setInputSuggest(_.cloneDeep(item));
+    setInputSuggest(cloneDeep(item));
     setTimeout(() => inputEditTabRef.current?.click(), 10);
     setTimeout(() => inputSuggestRef.current?.scrollIntoView({
       behavior: 'smooth',
@@ -88,18 +88,17 @@ function BuilderExampleForm() {
     taskService.send('CHANGES');
 
     let inputSignatureTypeCount = inputSignature.length;
-    const existedInputType = _.find(
-      inputSignature,
+    const existedInputType = inputSignature.find(
       item => item.id === inputSuggest.id,
     );
 
     if (existedInputType) {
       dispatch(actions.updateTaskInputType({
-        newType: _.cloneDeep(inputSuggest),
+        newType: cloneDeep(inputSuggest),
       }));
     } else {
       dispatch(actions.addTaskInputType({
-        newType: _.cloneDeep(inputSuggest),
+        newType: cloneDeep(inputSuggest),
       }));
       inputSignatureTypeCount += 1;
     }
@@ -112,7 +111,7 @@ function BuilderExampleForm() {
   }, [createInputTypeSuggest, clearInputSuggest, inputSignature, inputSuggest, dispatch, taskService]);
 
   const editOutputType = useCallback(newOutputSignature => {
-    setOutputSuggest(_.cloneDeep(newOutputSignature));
+    setOutputSuggest(cloneDeep(newOutputSignature));
     setTimeout(() => outputEditTabRef.current?.click(), 10);
   }, [setOutputSuggest]);
   const clearOutputSuggest = useCallback(() => {
@@ -121,7 +120,7 @@ function BuilderExampleForm() {
   }, [setOutputSuggest]);
   const submitNewOutputType = useCallback(() => {
     dispatch(actions.updateTaskOutputType({
-      newType: _.cloneDeep(outputSuggest),
+      newType: cloneDeep(outputSuggest),
     }));
 
     taskService.send('CHANGES');
@@ -134,7 +133,7 @@ function BuilderExampleForm() {
     setTimeout(() => exampleArgumentsInputRef.current?.focus(), 400);
   }, []);
   const editExample = useCallback(example => {
-    setExampleSuggest(_.cloneDeep(example));
+    setExampleSuggest(cloneDeep(example));
     setTimeout(() => exampleEditTabRef.current?.click(), 10);
     setTimeout(() => exampleSuggestRef.current?.scrollIntoView({
       behavior: 'smooth',
@@ -161,7 +160,7 @@ function BuilderExampleForm() {
       : actions.addTaskExample;
 
     dispatch(setExample({
-      newExample: _.cloneDeep(exampleSuggest),
+      newExample: cloneDeep(exampleSuggest),
     }));
 
     createExampleSuggest();
