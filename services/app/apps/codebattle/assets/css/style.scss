@@ -433,12 +433,12 @@ a {
 
   @media (max-width: $sm) {
     height: auto;
-    max-height: 400px;
+    // max-height: 400px;
   }
 }
 
 .cb-players-container {
-  max-height: 500px;
+  max-height: 400px;
 }
 
 .cb-height-info {
