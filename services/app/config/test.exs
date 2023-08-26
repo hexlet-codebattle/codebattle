@@ -10,7 +10,7 @@ config :phoenix_integration, endpoint: CodebattleWeb.Endpoint
 
 # Print only warnings and errors during test
 if is_nil(System.get_env("DEBUG")) do
-  config :logger, level: :error
+  config :logger, level: :critical
 else
   config :logger, :console, level: :debug
 end
@@ -22,6 +22,7 @@ config :codebattle, Codebattle.Repo,
   database: "codebattle_test",
   hostname: System.get_env("CODEBATTLE_DB_HOSTNAME", "localhost"),
   pool: Ecto.Adapters.SQL.Sandbox,
+  log: false,
   pool_size: 50,
   ownership_timeout: 99_999_999
 

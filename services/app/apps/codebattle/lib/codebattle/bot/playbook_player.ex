@@ -58,13 +58,11 @@ defmodule Codebattle.Bot.PlaybookPlayer do
   def init(%{game: game, bot_id: bot_id}) do
     bot = Game.Helpers.get_player(game, bot_id)
 
-    case bot.playbook_id do
+    case bot.playbook_id && Playbook.get(bot.playbook_id) do
       nil ->
         {:error, :no_playbook}
 
-      id ->
-        %Playbook{id: id, winner_id: winner_id, data: playbook_data} = Playbook.get(id)
-
+      %Playbook{id: id, winner_id: winner_id, data: playbook_data} ->
         playbook_actions = prepare_user_playbook(playbook_data.records, winner_id)
         playbook_winner_meta = Enum.find(playbook_data.players, &(&1.id == winner_id))
         bot_time_ms = get_bot_time_ms(game)

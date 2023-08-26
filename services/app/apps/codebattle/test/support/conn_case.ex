@@ -40,11 +40,7 @@ defmodule CodebattleWeb.ConnCase do
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Codebattle.Repo)
-
-    unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(Codebattle.Repo, {:shared, self()})
-    end
+    Codebattle.DataCase.setup_sandbox(tags)
 
     conn =
       Phoenix.ConnTest.build_conn()

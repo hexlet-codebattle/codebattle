@@ -12,6 +12,14 @@ defmodule PhoenixGon.Mixfile do
       elixir: "~> 1.14",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
+      preferred_cli_env: [
+        coveralls: :test,
+        "coveralls.detail": :test,
+        "coveralls.post": :test,
+        "coveralls.json": :test,
+        "coveralls.html": :test
+      ],
+      test_coverage: [tool: ExCoveralls, threshold: 60],
       description: description(),
       deps: deps()
     ]
