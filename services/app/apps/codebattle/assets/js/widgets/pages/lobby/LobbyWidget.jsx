@@ -45,7 +45,7 @@ const Players = memo(({ players, isBot, gameId }) => {
   if (players.length === 1) {
     const badgeClassName = cn('badge badge-pill ml-2', {
       'badge-secondary': isBot,
-      'badge-warning': !isBot,
+      'badge-warning text-white': !isBot,
     });
     const tooltipId = `tooltip-${gameId}-${players[0].id}`;
     const tooltipInfo = isBot

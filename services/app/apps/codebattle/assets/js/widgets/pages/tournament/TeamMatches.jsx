@@ -1,6 +1,6 @@
 import React, { useMemo, memo } from 'react';
 
-import _ from 'lodash';
+import reverse from 'lodash/reverse';
 import UserInfo from '../../components/UserInfo';
 
 const calcRoundResult = matches => matches.reduce((acc, match) => {
@@ -17,6 +17,7 @@ const calcRoundResult = matches => matches.reduce((acc, match) => {
 }, { first: 0, second: 0 });
 
 const getLinkParams = (match, currentUserId) => {
+  const isWinner = match.winnerId === currentUserId;
   const isParticipant = match.players.some(({ id }) => id === currentUserId);
 
   switch (true) {
@@ -24,6 +25,8 @@ const getLinkParams = (match, currentUserId) => {
       return ['Wait', 'bg-warning'];
     case match.state === 'active' && isParticipant:
       return ['Join', 'bg-warning'];
+    case isWinner:
+      return ['Show', 'bg-warning'];
     case isParticipant:
       return ['Show', 'x-bg-gray'];
     default:
@@ -32,7 +35,7 @@ const getLinkParams = (match, currentUserId) => {
 };
 
 function TeamMatches({ matches, currentUserId }) {
-  const rounds = useMemo(() => _.reverse(_.values(matches)), [matches]);
+  const rounds = useMemo(() => reverse(Object.values(matches)), [matches]);
 
   return (
     <>

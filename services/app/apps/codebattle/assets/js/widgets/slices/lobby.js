@@ -14,6 +14,9 @@ const initialState = {
     gameOptions: {},
     opponentInfo: null,
   },
+  mainChannel: {
+    online: false,
+  },
   channel: {
     online: false,
   },
@@ -48,6 +51,7 @@ const lobby = createSlice({
     },
     syncPresenceList: (state, { payload }) => {
       state.presenceList = payload;
+      state.mainChannel.online = true;
     },
     removeGameLobby: (state, { payload: { gameId } }) => {
       state.activeGames = reject(state.activeGames, { id: gameId });
@@ -83,6 +87,9 @@ const lobby = createSlice({
     },
     updateLobbyChannelState: (state, { payload }) => {
       state.channel.online = payload;
+    },
+    updateMainChannelState: (state, { payload }) => {
+      state.mainChannel.online = payload;
     },
   },
 });

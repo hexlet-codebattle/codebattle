@@ -1,36 +1,42 @@
 import React, { memo } from 'react';
 
 import UserInfo from '../../components/UserInfo';
-import JoinButton from './JoinButton';
 
-import TournamentStates from '../../config/tournament';
-
-const Participants = ({
-  players, state, creatorId, currentUserId,
+const Players = ({
+  players,
+  playersCount,
+  canBan,
+  handleKick,
 }) => (
-  <div className="container mt-2 bg-white shadow-sm p-2">
+  <div className="my-2 bg-white shadow-sm p-3 rounded-lg">
     <div className="d-flex align-items-center flex-wrap justify-content-start">
-      <h5 className="mb-2 mr-5">Participants</h5>
-      <JoinButton
-        isShow={state === TournamentStates.waitingParticipants}
-        isParticipant={players.some(item => item.id === currentUserId)}
-      />
+      <h5 className="mb-2 mr-5 text-nowrap">{`Total players: ${playersCount}`}</h5>
     </div>
-    <div className="my-3">
-      {players.map(player => (
-        <div className="my-3 d-flex" key={player.id}>
-          <div className="d-flex align-items-center">
-            <UserInfo user={player} />
-            {creatorId === currentUserId && player.id !== currentUserId && (
-              <button type="button" className="btn btn-outline-danger ml-2">
+    <div className="my-2">
+      {playersCount === 0 ? (
+        <p className="test-nowrap">NO_PARTICIPANTS_YET</p>
+      ) : (
+        Object.values(players).map((player, index) => (
+          <div key={player.id} className="my-3 d-flex">
+            <span>{index}</span>
+            <div className="ml-4">
+              <UserInfo user={player} />
+            </div>
+            {canBan && (
+              <button
+                type="button"
+                className="btn btn-link btn-sm text-danger"
+                data-player-id={player.id}
+                onClick={handleKick}
+              >
                 Kick
               </button>
             )}
           </div>
-        </div>
-      ))}
+        ))
+      )}
     </div>
   </div>
 );
 
-export default memo(Participants);
+export default memo(Players);

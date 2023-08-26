@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import _ from 'lodash';
+import find from 'lodash/find';
 
 import Editor from '../../components/Editor';
 import { currentUserIdSelector } from '../../selectors';
@@ -8,7 +8,7 @@ import { currentUserIdSelector } from '../../selectors';
 function StairwayEditorContainer({ playerId }) {
   const editable = useSelector(currentUserIdSelector) === playerId;
   // TODO: create selector
-  const playerData = useSelector(state => _.find(state.stairwayGame.game?.players, { id: playerId }));
+  const playerData = useSelector(state => find(state.stairwayGame.game?.players, { id: playerId }));
 
   if (!playerData) {
     return null;

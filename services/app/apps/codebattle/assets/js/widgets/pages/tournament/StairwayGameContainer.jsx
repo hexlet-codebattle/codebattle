@@ -1,7 +1,6 @@
 /* eslint-disable */
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import _ from 'lodash';
 
 import { actions } from '../../slices';
 
@@ -34,7 +33,7 @@ function StairwayGameContainer() {
 
   useEffect(() => {
     if (activeMatch) {
-      const newActiveMatch = _.find(matches, match => match.roundId === activeRoundId && match.players[0].id === activePlayerId);
+      const newActiveMatch = matches.find(match => match.roundId === activeRoundId && match.players[0].id === activePlayerId);
       dispatch(actions.setActiveMatch(newActiveMatch));
     }
   }, [activePlayerId, activeRoundId]);

@@ -21,7 +21,7 @@ const defaultLevels = ['elementary', 'easy', 'medium', 'hard'].map(level => ({
   label: capitalize(level),
 }));
 
-const ConfigurationButton = ({ onClick }) => (
+const ConfigurationButton = ({ onClick, disabled }) => (
   <button
     type="button"
     className="btn btn-outline-secondary mr-1 btn-sm text-nowrap rounded-lg"
@@ -29,6 +29,7 @@ const ConfigurationButton = ({ onClick }) => (
     data-toggle="tooltip"
     data-placement="top"
     title="Open task details"
+    disabled={disabled}
   >
     <FontAwesomeIcon icon="cog" />
     <span className="ml-1">Details</span>
@@ -167,7 +168,7 @@ function BuilderTaskAssignment({
             </h6>
           )}
           <div className="d-flex align-items-center mb-2">
-            <ConfigurationButton onClick={openConfiguration} />
+            <ConfigurationButton onClick={openConfiguration} disabled={!editable} />
             <TaskLanguagesSelection
               handleSetLanguage={handleSetLanguage}
               avaibleLanguages={avaibleLanguages}

@@ -48,6 +48,7 @@ defmodule CodebattleWeb.TaskController do
           conn.assigns.current_user.id,
           task
         )
+        |> GameView.render_game(nil)
 
       conn
       |> put_meta_tags(%{

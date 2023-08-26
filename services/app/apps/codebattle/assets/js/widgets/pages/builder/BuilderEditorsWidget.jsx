@@ -38,11 +38,18 @@ const isGeneratorsError = status => (
     || status === assertsStatuses.timeout
 );
 
-const InfoPopup = ({ reloadGeneratorCode, editable }) => {
+const InfoPopup = ({ reloadGeneratorCode, editable, origin }) => {
   const infoClassName = cn(
     'd-flex align-items-center justify-content-around position-absolute w-100 h-100 p-3',
     'bg-gray text-black  cb-opacity-75',
   );
+  if (origin === 'github') {
+    return (
+      <div className={infoClassName}>
+        <span className="text-center">Asserts are pre-generated</span>
+      </div>
+    );
+  }
 
   return (
     <div className={infoClassName}>
@@ -78,6 +85,7 @@ function BuilderEditorsWidget() {
 
   const editable = useSelector(selectors.canEditTaskGenerator);
   const templatesState = useSelector(selectors.taskTemplatesStateSelector);
+  const origin = useSelector(selectors.taskOriginSelector);
   const asserts = useSelector(selectors.taskAssertsSelector);
   const assertsStatus = useSelector(selectors.taskAssertsStatusSelector);
   const editorsLang = useSelector(selectors.taskGeneratorLangSelector);
@@ -225,7 +233,7 @@ function BuilderEditorsWidget() {
           </div>
           <Editor {...generatorParams} />
           {disabledEditors && (
-            <InfoPopup editable={editable} reloadGeneratorCode={reloadCode} />
+            <InfoPopup editable={editable} reloadGeneratorCode={reloadCode} origin={origin} />
           )}
         </div>
       </div>
@@ -281,7 +289,7 @@ function BuilderEditorsWidget() {
             <Editor {...solutionParams} />
           </div>
           {disabledEditors && (
-            <InfoPopup editable={editable} reloadGeneratorCode={reloadCode} />
+            <InfoPopup editable={editable} reloadGeneratorCode={reloadCode} origin={origin} />
           )}
         </div>
       </div>

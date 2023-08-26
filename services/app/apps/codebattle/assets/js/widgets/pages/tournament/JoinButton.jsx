@@ -1,29 +1,32 @@
 import React from 'react';
+import cn from 'classnames';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { leaveTournament, joinTournament } from '../../middlewares/Tournament';
 
 const JoinButton = ({
- isShow, isParticipant, title, matchId,
+ isShow, isParticipant, title, matchId, disabled = true,
 }) => {
-  if (!isShow) {
-    return null;
-  }
-
   const onClick = isParticipant ? leaveTournament : joinTournament;
   const text = isParticipant ? 'Leave' : 'Join';
+  const actionIcon = isParticipant ? 'user-minus' : 'user-plus';
 
   return (
     <>
-      {title && <p>{title}</p>}
+      {title && isShow && <p>{title}</p>}
       <button
         type="button"
         onClick={() => {
-        onClick(matchId);
-      }}
-        className={`btn ${
-        isParticipant ? 'btn-outline-danger' : 'btn-outline-secondary'
-      }`}
+          onClick(matchId);
+        }}
+        className={cn('btn text-nowrap rounded-lg', {
+          'btn-outline-danger': isParticipant,
+          'btn-outline-secondary': !isParticipant,
+          'd-none': !isShow,
+        })}
+        disabled={disabled}
       >
+        <FontAwesomeIcon className="mr-2" icon={actionIcon} />
         {text}
       </button>
     </>

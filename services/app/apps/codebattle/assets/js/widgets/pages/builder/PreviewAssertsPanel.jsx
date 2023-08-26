@@ -14,6 +14,21 @@ import {
   MAX_INPUT_ARGUMENTS_COUNT,
   MIN_EXAMPLES_COUNT,
 } from '../../utils/builder';
+import { taskStateCodes } from '../../config/task';
+
+const TaskStateBadge = ({ state }) => {
+  const className = cn('badge py-2 mb-2', {
+    'badge-danger': state === taskStateCodes.disabled,
+    'badge-success': state === taskStateCodes.active,
+    'badge-secondary': state === taskStateCodes.draft || state === taskStateCodes.blank,
+  });
+
+  if (state === taskStateCodes.moderation) {
+    return null;
+  }
+
+  return <span className={className}>{state}</span>;
+};
 
 function PreviewAssertsPanel({
   haveInputSuggest,
@@ -37,6 +52,7 @@ function PreviewAssertsPanel({
     inputSignature,
     outputSignature,
     assertsExamples: examples,
+    state: taskState,
   } = useSelector(state => state.builder.task);
 
   const validInputSignature = useSelector(
@@ -137,6 +153,7 @@ function PreviewAssertsPanel({
         </div>
       </div>
       <div className="d-flex flex-column pl-1">
+        <TaskStateBadge state={taskState} />
         <BuilderActions
           validExamples={validExamples}
           clearSuggests={clearSuggests}

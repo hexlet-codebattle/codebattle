@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 
-import _ from 'lodash';
+import find from 'lodash/find';
 import TaskAssignment from '../game/TaskAssignment';
 
 const StairwayGameInfo = ({ tasks, currentTaskId }) => {
@@ -8,7 +8,7 @@ const StairwayGameInfo = ({ tasks, currentTaskId }) => {
     return null;
   }
 
-  const task = _.find(tasks, { id: currentTaskId }, null);
+  const task = find(tasks, { id: currentTaskId }, null);
 
   if (!task) {
     return null;

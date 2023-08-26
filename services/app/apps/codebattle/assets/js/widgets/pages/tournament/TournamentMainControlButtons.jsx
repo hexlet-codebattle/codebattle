@@ -1,36 +1,74 @@
-/* eslint-disable */
-import React, { memo, useMemo } from 'react';
-import { useSelector } from 'react-redux';
-
-// import * as selectors from '../../selectors';
-import TournamentStates from '../../config/tournament';
+import React, { memo } from 'react';
+import Dropdown from 'react-bootstrap/Dropdown';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   cancelTournament as handleCancelTournament,
   startTournament as handleStartTournament,
-  backTournament as handleBackTournament,
+  restartTournament as handleRestartTournament,
   openUpTournament as handleOpenUpTournament,
 } from '../../middlewares/Tournament';
 
-const TournamentMainControlButtons = ({ state }) => (
+const CustomToggle = React.forwardRef(({ onClick, disabled }, ref) => (
+  <button
+    type="button"
+    ref={ref}
+    className="btn btn-success text-white rounded-right"
+    onClick={onClick}
+    disabled={disabled}
+  >
+    <FontAwesomeIcon icon="ellipsis-v" />
+  </button>
+));
+
+const TournamentMainControlButtons = ({
+  accessType,
+  tournamentId,
+  canStart,
+  disabled = true,
+}) => (
   <>
-    {state !== TournamentStates.active && (
-      <button className="btn btn-success ml-2" onClick={handleStartTournament}>
-        Start
-      </button>
-    )}
-    {state === TournamentStates.waitingParticipants && (
-      <button className="btn btn-info ml-2" onClick={handleBackTournament}>
-        Back
-      </button>
-    )}
-    <button className="btn btn-danger ml-2" onClick={handleCancelTournament}>
-      Cancel
+    <button
+      type="button"
+      className="btn btn-success text-white text-nowrap ml-2 rounded-left"
+      onClick={handleStartTournament}
+      disabled={!canStart || disabled}
+    >
+      <FontAwesomeIcon className="mr-2" icon="play" />
+      Start
     </button>
-    {false && (
-      <button className="btn btn-danger ml-2" onClick={handleOpenUpTournament}>
-        Open Up
-      </button>
-    )}
+    <Dropdown
+      title="Task actions"
+      className="d-flex"
+    >
+      <Dropdown.Toggle
+        as={CustomToggle}
+        id="tournament-actions-dropdown-toggle"
+        disabled={disabled}
+      />
+      <Dropdown.Menu>
+        <Dropdown.Item disabled={disabled} key="edit" href={`/tournaments/${tournamentId}/edit`}>
+          <FontAwesomeIcon className="mr-2" icon="edit" />
+          Edit
+        </Dropdown.Item>
+        <Dropdown.Item disabled={disabled} key="restart" onSelect={handleRestartTournament}>
+          <FontAwesomeIcon className="mr-2" icon="sync" />
+          Restart
+        </Dropdown.Item>
+        <Dropdown.Item disabled={disabled} key="cancel" onSelect={handleCancelTournament}>
+          <FontAwesomeIcon className="mr-2" icon="trash" />
+          Cancel
+        </Dropdown.Item>
+        {accessType === 'token' && (
+          <>
+            <Dropdown.Divider />
+            <Dropdown.Item disabled={disabled} key="openUp" onSelect={handleOpenUpTournament}>
+              <FontAwesomeIcon className="mr-2" icon="unlock" />
+              Open up
+            </Dropdown.Item>
+          </>
+        )}
+      </Dropdown.Menu>
+    </Dropdown>
   </>
 );
 

@@ -1,5 +1,4 @@
 import React from 'react';
-import _ from 'lodash';
 import cn from 'classnames';
 
 const StairwayRounds = ({
@@ -8,7 +7,7 @@ const StairwayRounds = ({
   activeRoundId,
   setActiveRoundId,
 }) => {
-  const currentUser = _.find(players, player => player.id === activePlayerId);
+  const currentUser = players.find(player => player.id === activePlayerId);
 
   const renderRoundTabs = currentUser.tasks.map(({ roundId, status }) => {
     const isActiveRound = activeRoundId === roundId;

@@ -154,16 +154,12 @@ export const gameStatusTitleSelector = state => {
 
 export const gameTaskSelector = state => state.game.task;
 
-export const canEditTask = state => (
-  (currentUserIdSelector(state) === state.builder.task.creatorId
-    && (
-      state.builder.task.state === taskStateCodes.blank
-      || state.builder.task.state === taskStateCodes.draft
-    )
-  ) || (currentUserIsAdminSelector(state)
-    && state.builder.task.state !== taskStateCodes.moderation
-  )
-);
+export const canEditTask = state => state.builder.task.origin !== 'github'
+  && ((currentUserIdSelector(state) === state.builder.task.creatorId
+    && (state.builder.task.state === taskStateCodes.blank
+      || state.builder.task.state === taskStateCodes.draft))
+    || (currentUserIsAdminSelector(state)
+      && state.builder.task.state !== taskStateCodes.moderation));
 
 export const isTaskOwner = state => (
   currentUserIdSelector(state) === state.builder.task?.creatorId
@@ -191,6 +187,8 @@ export const builderTaskSelector = state => state.builder.task;
 export const taskTemplatesStateSelector = state => state.builder.templates.state;
 
 export const taskGeneratorLangSelector = state => state.builder.generatorLang;
+
+export const taskOriginSelector = state => state.builder.task.origin;
 
 export const taskAssertsSelector = state => state.builder.task.asserts;
 

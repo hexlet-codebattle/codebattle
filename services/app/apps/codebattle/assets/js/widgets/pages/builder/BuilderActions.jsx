@@ -91,6 +91,10 @@ function BuilderActions({ validExamples, clearSuggests }) {
     dispatch(updateTaskState(taskId, taskStateCodes.disabled));
   }, [taskId, dispatch]);
 
+  if (!(isAdmin || isOwner)) {
+    return null;
+  }
+
   return (
     <>
       <button

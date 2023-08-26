@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import find from 'lodash/find';
 import React, { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { actions } from '../../slices';
@@ -33,7 +33,7 @@ function StairwayEditorToolbar({
 }) {
   const dispatch = useDispatch();
 
-  const playerData = useSelector(state => _.find(state.stairwayGame.game?.players, { id: activePlayer.id }));
+  const playerData = useSelector(state => find(state.stairwayGame.game?.players, { id: activePlayer.id }));
   const currentUserId = useSelector(currentUserIdSelector);
   const changeLang = useCallback(
     ({ label: { props } }) => dispatch(actions.changeEditorLang({ editorLang: props.slug })),

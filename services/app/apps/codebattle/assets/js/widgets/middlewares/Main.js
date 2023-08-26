@@ -74,6 +74,8 @@ const initPresence = () => dispatch => {
   channel
     .join()
     .receive('ok', () => { camelizeKeysAndDispatch(dispatch, actions.syncPresenceList); });
+
+  channel.onError(() => dispatch(actions.updateMainChannelState(false)));
 };
 
 export default initPresence;

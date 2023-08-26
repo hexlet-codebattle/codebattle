@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { addMessage } from '../../middlewares/Chat';
 
-export default function TournamentChatInput() {
+export default function TournamentChatInput({ disabled }) {
   const [message, setMessage] = useState('');
   const inputRef = useRef(null);
   const handleChange = useCallback(({ target: { value } }) => {
@@ -15,22 +15,26 @@ export default function TournamentChatInput() {
   }, [message]);
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div className="d-flex shadow-sm rounded-bottom">
+    <form className="m-0" onSubmit={handleSubmit}>
+      <div className="d-flex input-group shadow-sm rounded-bottom border-top">
         <input
-          className="form-control rounded-0 border-0 border-top x-rounded-bottom-left"
-          placeholder="write your message here..."
           type="text"
+          ref={inputRef}
+          className="form-control rounded-0 border-0 border-top x-rounded-bottom-left"
           value={message}
           onChange={handleChange}
-          ref={inputRef}
+          placeholder="Write message..."
+          disabled={disabled}
         />
-        <button
-          className="btn btn-outline-secondary x-rounded-bottom-right rounded-0"
-          type="submit"
-        >
-          Send
-        </button>
+        <div className="input-group-append">
+          <button
+            type="submit"
+            className="btn btn-secondary x-rounded-bottom-right border-0 rounded-0"
+            disabled={disabled}
+          >
+            Send
+          </button>
+        </div>
       </div>
     </form>
   );

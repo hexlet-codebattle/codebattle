@@ -1,141 +1,155 @@
-/* eslint-disable */
 import React, {
- useEffect, useState, memo, useMemo,
+  memo,
+  useMemo,
 } from 'react';
-import moment from 'moment';
+import cn from 'classnames';
 
 import { useSelector } from 'react-redux';
-import Loading from '../../components/Loading';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import TournamentStates from '../../config/tournament';
 import JoinButton from './JoinButton';
 import TournamentMainControlButtons from './TournamentMainControlButtons';
+import GameLevelBadge from '../../components/GameLevelBadge';
 import * as selectors from '../../selectors';
+import Loading from '../../components/Loading';
+import CopyButton from '../../components/CopyButton';
 
-function TournamentTimer({ state, startsAt }) {
-  const timeStart = moment.utc(startsAt);
-  const diffTime = moment(timeStart).diff(moment());
+const getIconByAccessType = accessType => (
+  accessType === 'token'
+    ? 'lock'
+    : 'unlock'
+);
 
-  const [seconds, setSeconds] = useState(Math.floor(diffTime / 1000));
-
-  const minutesToStart = (seconds - (seconds % 60)) / 60;
-  const secondsToStart = Math.floor(seconds % 60) < 10
-      ? `0${seconds % 60}`
-      : Math.floor(seconds % 60);
-
-  useEffect(() => {
-    if (seconds > 0) {
-      setTimeout(() => setSeconds(seconds - 1), 1000);
-    }
-  }, [seconds]);
-
-  const titles = {
-    [TournamentStates.active]: time => (time > 0 ? (
-      <span>
-        The next round will start in&nbsp;
-        {minutesToStart}
-        :
-        {secondsToStart}
-        , or after all matches are over
-      </span>
-      ) : (
-        <span>The tournament will start soon</span>
-      )),
-    [TournamentStates.waitingParticipants]: time => (time > 0 ? (
-      <span>
-        The tournament will start in&nbsp;
-        {minutesToStart}
-        :
-        {secondsToStart}
-      </span>
-      ) : (
-        <span>The tournament will start soon</span>
-      )),
-    [TournamentStates.cancelled]: () => (
-      <span>The tournament is cancelled</span>
-    ),
-    [TournamentStates.finished]: () => <span>The tournament is finished</span>,
-  };
-
-  return titles[state](seconds);
-}
-
-const difficultyBadgeColor = {
-  elementary: 'info',
-  easy: 'success',
-  medium: 'warning',
-  hard: 'danger',
-}
-
-function TournamentHeader(props) {
-  const {
-    state,
-    type,
-    isLive,
-    name,
-    startsAt,
-    insertedAt,
-    intendedPlayers,
-    creatorId,
-    accessToken,
-    currentUserId,
-    difficulty,
-  } = props;
-  const difficultyClassName = useMemo(() => (
-    `badge badge-pill mr-1 badge-${difficultyBadgeColor[difficulty]}`
-  ), [difficulty]);
-  const isOver = useMemo(() => (
-    state === TournamentStates.finished || state === TournamentStates.cancelled
-  ), [state]);
-  const isAdmin = useSelector(selectors.currentUserIsAdminSelector);
-
-  const canModerate = useMemo(() => (
-    creatorId === currentUserId || isAdmin
-  ), [creatorId, currentUserId, isAdmin]);
-
-  if (state === TournamentStates.loading) {
-    return <Loading />;
+const getIconsByTournamentType = type => {
+  if (type === 'individual') {
+    return (<FontAwesomeIcon icon="users" />);
   }
+
+  if (type === 'team') {
+    return (
+      <>
+        <FontAwesomeIcon icon="users" />
+        vs
+        <FontAwesomeIcon icon="users" />
+      </>
+    );
+  }
+
+  // type === stairvay
+  return (
+    <>
+      <FontAwesomeIcon icon="user" />
+      <FontAwesomeIcon icon="sort-amount-up" />
+    </>
+  );
+};
+
+function TournamentHeader({
+  id: tournamentId,
+  state,
+  type,
+  accessType,
+  accessToken,
+  isLive,
+  name,
+  players,
+  playersCount,
+  creatorId,
+  currentUserId,
+  level,
+  isOnline = false,
+  isOver = false,
+}) {
+  const isAdmin = useSelector(selectors.currentUserIsAdminSelector);
+  const canModerate = useMemo(
+    () => creatorId === currentUserId || isAdmin,
+    [creatorId, currentUserId, isAdmin],
+  );
 
   return (
     <>
-      <div className="d-flex align-items-center border-bottom">
-        <h1 className="m-0 text-capitalize text-nowrap">
-          {name}
-        </h1>
-        <div className="text-center ml-3" data-toggle="tooltip" data-placement="right" title="">
-          <img src="" alt="" />
-        </div>
-        {!isOver && (
-        <div className="ml-auto">
-          <JoinButton
-            isShow={state !== TournamentStates.active}
-            isParticipant={intendedPlayers.some(item => item.id === currentUserId)}
-          />
-          {canModerate
-            && (
-            <TournamentMainControlButtons
-              state={state}
-            />
+      <div className="d-flex flex-column flex-sm-row align-items-begin justify-content-between border-bottom">
+        <div className="d-flex align-items-center pb-2">
+          <h2 title={name} className="m-0 text-capitalize text-nowrap overflow-auto">{name}</h2>
+          <div
+            className="text-center ml-3"
+            data-toggle="tooltip"
+            data-placement="right"
+            title="Tournament level"
+          >
+            <GameLevelBadge level={level} />
+          </div>
+          <div
+            title={
+              accessType === 'token'
+                ? 'Private tournament'
+                : 'Public tournament'
+            }
+            className="text-center ml-2"
+          >
+            <FontAwesomeIcon icon={getIconByAccessType(accessType)} />
+          </div>
+          {isOnline ? (
+            <div
+              title={isLive ? 'Active tournament' : 'Inactive tournament'}
+              className={cn('text-center ml-2', {
+                'text-primary': isLive,
+                'text-light': !isLive,
+              })}
+            >
+              <FontAwesomeIcon icon="wifi" />
+            </div>
+          ) : (
+            <div className="text-center ml-2">
+              <Loading adaptive />
+            </div>
           )}
         </div>
+        {!isOver && isLive && (
+          <div
+            className="d-flex justify-items-center pb-2"
+          >
+            {type !== 'team' && (
+              <JoinButton
+                isShow={isLive && state !== TournamentStates.active}
+                isParticipant={!!players[currentUserId]}
+                disabled={!isOnline || !isLive}
+              />
             )}
-
+            {canModerate && (
+              <TournamentMainControlButtons
+                accessType={accessType}
+                tournamentId={tournamentId}
+                canStart={
+                  state === TournamentStates.waitingParticipants
+                  && playersCount > 0
+                }
+                disabled={!isOnline}
+              />
+            )}
+          </div>
+        )}
       </div>
-      <div className="d-flex align-items-center mt-2">
-        <div>
-          <span>{`State: ${state}`}</span>
-          <span className="ml-3">{`Type: ${type}`}</span>
-          {canModerate && (
-          <>
-            <span className="ml-3">Access: public</span>
-            <span className="ml-3">{`is live: ${isLive}`}</span>
-          </>
-          )}
-          <span className="ml-3">{`Starts on ${startsAt}`}</span>
-          <span className="ml-3">{`Insterted at ${insertedAt}`}</span>
-          <TournamentTimer state={state} startsAt={startsAt} />
-          {canModerate && <span className="ml-3">{`Private url: ${accessToken}`}</span>}
+      <div className="d-flex small text-nowrap text-muted mt-2">
+        <div
+          title={type}
+          className="d-flex align-items-center"
+        >
+          Mode:
+          <span className="ml-2">{getIconsByTournamentType(type)}</span>
         </div>
+        {canModerate && accessType === 'token' && (
+          <div className="d-flex input-group ml-2">
+            <div title="Access token" className="input-group-prepend">
+              <span className="input-group-text"><FontAwesomeIcon icon="key" /></span>
+            </div>
+            <CopyButton
+              className="btn btn-secondary rounded-right"
+              value={accessToken}
+              disabled={!isLive}
+            />
+          </div>
+        )}
       </div>
     </>
   );

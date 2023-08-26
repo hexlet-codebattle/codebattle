@@ -586,7 +586,7 @@ export const updateTaskVisibility = (id, visibility, onError) => dispatch => {
 export const saveTask = (taskMachine, onError) => (dispatch, getState) => {
   const state = getState();
 
-  const taskParams = selectors.taskParamsSelector(state);
+  const taskParams = selectors.taskParamsSelector()(state);
   const payload = { task: decamelizeKeys(taskParams, { separator: '_' }) };
 
   if (taskParams.state === taskStateCodes.blank) {
