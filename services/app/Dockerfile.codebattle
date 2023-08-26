@@ -35,12 +35,14 @@ COPY mix.exs .
 COPY mix.lock .
 COPY config ./config
 COPY apps/runner/mix.exs apps/runner/mix.exs
+COPY apps/phoenix_gon/mix.exs apps/phoenix_gon/mix.exs
 COPY apps/codebattle/mix.exs apps/codebattle/mix.exs
 
 RUN mix do deps.get --only prod, compile
 
 COPY ./apps/codebattle/ ./apps/codebattle/
 COPY ./apps/runner/ ./apps/runner/
+COPY ./apps/phoenix_gon/ ./apps/phoenix_gon/
 
 COPY --from=assets-image /tmp/codebattle/assets/priv/static ./apps/codebattle/priv/static
 
