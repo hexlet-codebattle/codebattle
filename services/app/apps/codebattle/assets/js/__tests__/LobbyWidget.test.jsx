@@ -398,9 +398,9 @@ describe('test task choice', () => {
     // await user.click(await findByRole('button', { name: 'Create a Game' }));
 
     const mathTag = await findByRole('button', { name: 'math' });
-    const stringTag = getByRole('button', { name: 'string' });
-    const asdTag = getByRole('button', { name: 'asd' });
-    const restTag = getByRole('button', { name: 'rest' });
+    const stringTag = await findByRole('button', { name: 'string' });
+    const asdTag = await findByRole('button', { name: 'asd' });
+    const restTag = await findByRole('button', { name: 'rest' });
 
     await user.click(restTag);
 
