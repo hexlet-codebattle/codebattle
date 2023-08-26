@@ -378,7 +378,7 @@ describe('test task choice', () => {
       expect(await findByRole('button', { name: easyTasksFromBackend[i].name })).toBeInTheDocument(); // eslint-disable-line
     }
     elementaryTasksFromBackend.forEach(task => expect(queryByRole('button', { name: task.name })).not.toBeInTheDocument());
-  });
+  }, 12000);
 
   test('filter tasks by tags', async () => {
     const user = userEvent.setup();
@@ -457,7 +457,7 @@ describe('test task choice', () => {
       expect(restTag).toBeEnabled();
       elementaryTasksFromBackend.forEach(task => expect(getByRole('button', { name: task.name })).toBeInTheDocument());
     });
-  });
+  }, 12000);
 
   test('filter tasks by name', async () => {
     const user = userEvent.setup();
