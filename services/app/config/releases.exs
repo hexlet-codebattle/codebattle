@@ -18,6 +18,9 @@ config :codebattle, host: host
 config :codebattle, Codebattle.Repo,
   adapter: Ecto.Adapters.Postgres,
   ssl: true,
+  ssl_opts: [
+    verify: :verify_none
+  ],
   port: System.get_env("CODEBATTLE_DB_PORT", "5432"),
   username: System.get_env("CODEBATTLE_DB_USERNAME"),
   password: System.get_env("CODEBATTLE_DB_PASSWORD"),
