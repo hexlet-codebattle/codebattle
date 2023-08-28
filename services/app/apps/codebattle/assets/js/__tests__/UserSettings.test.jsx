@@ -128,4 +128,32 @@ describe('UserSettings test cases', () => {
       }, expect.anything());
     });
   });
+
+  test('show error when username is not trimmed string or it is empty', async () => {
+    const {
+      getByText, getByTestId, getByLabelText,
+    } = setup(
+      <Provider store={store}>
+        <UserSettings />
+      </Provider>,
+    );
+
+    const submitButton = getByLabelText('SubmitForm');
+
+    userEvent.clear(getByTestId('nameInput'));
+
+    expect(submitButton).toBeEnabled();
+
+    userEvent.click(submitButton);
+
+    await waitFor(() => {
+      expect(getByText(/Field can't be empty/i)).toBeInTheDocument();
+    });
+
+    userEvent.type(getByTestId('nameInput'), '   ');
+
+    await waitFor(() => {
+      expect(getByText(/name must be a trimmed string/i)).toBeInTheDocument();
+    });
+  });
 });
