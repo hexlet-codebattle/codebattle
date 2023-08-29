@@ -176,10 +176,10 @@ export const canEditTaskGenerator = state => (
 
 export const isValidTask = state => (
   state.builder.validationStatuses.name[0]
-    && state.builder.validationStatuses.description[0]
-    && state.builder.validationStatuses.assertsExamples[0]
-    && state.builder.validationStatuses.solution[0]
-    && state.builder.validationStatuses.argumentsGenerator[0]
+  && state.builder.validationStatuses.description[0]
+  && state.builder.validationStatuses.assertsExamples[0]
+  && state.builder.validationStatuses.solution[0]
+  && state.builder.validationStatuses.argumentsGenerator[0]
 );
 
 export const builderTaskSelector = state => state.builder.task;
@@ -334,6 +334,8 @@ export const gameTypeSelector = state => state.game.gameStatus.type;
 export const gameModeSelector = state => state.game.gameStatus.mode;
 
 export const userSettingsSelector = state => state.userSettings;
+
+export const gameAlertsSelector = state => state.game.alerts;
 
 export const isOpponentInGameSelector = state => {
   const findedUser = find(chatUsersSelector(state), {

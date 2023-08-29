@@ -33,6 +33,12 @@ const game = createSlice({
     setGameTask: (state, { payload: { task } }) => {
       state.task = task;
     },
+    deleteAlert: (state, { payload }) => {
+      delete state.alerts[payload];
+    },
+    addAlert: (state, { payload }) => {
+      Object.assign(state.alerts, payload);
+    },
   },
 });
 

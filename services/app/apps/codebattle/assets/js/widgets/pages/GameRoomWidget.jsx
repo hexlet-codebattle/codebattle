@@ -35,6 +35,7 @@ import {
 import { actions } from '../slices';
 import { gameStatusSelector, isShowGuideSelector } from '../selectors';
 import GameStateCodes from '../config/gameStateCodes';
+import FeedbackAlertNotification from '../components/FeedbackAlertNotification';
 
 const steps = [
   {
@@ -282,6 +283,7 @@ function GameRoomWidget({
           <div className="x-outline-none">
             <GameWidgetGuide />
             <NetworkAlert />
+            <FeedbackAlertNotification />
             <div className="container-fluid">
               <div className="row no-gutter cb-game">
                 <TaskConfirmationModal

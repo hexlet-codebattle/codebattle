@@ -78,7 +78,7 @@ const initialGameTask = gameParams
 
 const initialPlayers = gameParams
   ? getGamePlayers(gameParams.players)
-      .reduce(setPlayerToSliceState, {})
+    .reduce(setPlayerToSliceState, {})
   : {};
 
 const initialLangs = gameParams
@@ -102,20 +102,20 @@ const setPlayersLangToSliseState = (state, { userId, langSlug }) => ({
 
 const initialMeta = gameParams
   ? gameParams.players
-      .map(getPlayersText)
-      .reduce(setPlayersMetaToSliseState, {})
+    .map(getPlayersText)
+    .reduce(setPlayersMetaToSliseState, {})
   : {};
 
 const initialText = gameParams
   ? gameParams.players
-      .map(getPlayersText)
-      .reduce(setPlayersTextToSliseState, {})
+    .map(getPlayersText)
+    .reduce(setPlayersTextToSliseState, {})
   : {};
 
 const initialLangsHistory = gameParams && isRecord
   ? gameParams.players
-      .map(getPlayersText)
-      .reduce(setPlayersLangToSliseState, {})
+    .map(getPlayersText)
+    .reduce(setPlayersLangToSliseState, {})
   : {};
 
 const setPlayersResultsToSliceState = (state, { userId, ...rest }) => ({
@@ -125,8 +125,8 @@ const setPlayersResultsToSliceState = (state, { userId, ...rest }) => ({
 
 const initialResults = gameParams
   ? gameParams.players
-      .map(getPlayersExecutionData)
-      .reduce(setPlayersResultsToSliceState, {})
+    .map(getPlayersExecutionData)
+    .reduce(setPlayersResultsToSliceState, {})
   : {};
 
 const defaultTaskParams = ({
@@ -236,6 +236,7 @@ const initial = {
     task: initialGameTask,
     players: initialPlayers,
     tournamentsInfo: null,
+    alerts: {},
   },
   tournament: initialTournament,
   editor: {
