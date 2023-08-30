@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { useCallback, memo } from 'react';
 import SlackFeedback, { themes } from 'react-slack-feedback';
 import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -21,9 +21,10 @@ function FeedbackWidget() {
   const currentUserName = useSelector(currentUserNameSelector);
   const dispatch = useDispatch();
 
-  const addAlert = status => {
+  const addAlert = useCallback(status => {
     dispatch(actions.addAlert({ [Date.now()]: status }));
-  };
+  }, [dispatch]);
+
   return (
     <SlackFeedback
       icon={() => (
