@@ -28,20 +28,25 @@ const FeedbackAlertNotification = () => {
   const handleClose = id => {
     dispatch(actions.deleteAlert(id));
   };
-  return Object.entries(alerts).map(([key, value]) => {
-    const result = getNotification(value);
-    return (
-      <Alert
-        dismissible
-        onClose={() => handleClose(key)}
-        key={key}
-        variant={result.status}
-        className="row mb-0 rounded-0 alert alert-info alert-dismissible fade show"
-      >
-        {result.message}
-      </Alert>
-    );
-  });
+  if (alerts) {
+    return Object.entries(alerts).map(([key, value]) => {
+      const result = getNotification(value);
+      return (
+        <Alert
+          dismissible
+          onClose={() => handleClose(key)}
+          key={key}
+          variant={result.status}
+          className="row mb-0 rounded-0 alert alert-info alert-dismissible fade show"
+        >
+          {result.message}
+        </Alert>
+      );
+    });
+  }
+
+  return (<></>);
+
 };
 
 export default FeedbackAlertNotification;
