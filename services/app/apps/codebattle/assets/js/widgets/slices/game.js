@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import omit from 'lodash/omit';
 import { setPlayerToSliceState } from '../utils/gameRoom';
 import initial from './initial';
 
@@ -32,6 +33,12 @@ const game = createSlice({
     },
     setGameTask: (state, { payload: { task } }) => {
       state.task = task;
+    },
+    deleteAlert: (state, { payload }) => {
+      state.alerts = omit(state.alerts, [payload]);
+    },
+    addAlert: (state, { payload }) => {
+      state.alerts = { ...state.alerts, ...payload };
     },
   },
 });
