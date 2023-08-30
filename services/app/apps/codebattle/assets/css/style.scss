@@ -796,3 +796,15 @@ a:hover{
 .cb-loading-background {
   background: rgba(255, 255, 255, 0.3);
 }
+
+.cb-vw-75 {
+  width: 75vw;
+}
+
+.cb-right-scroll-control {
+  background: linear-gradient(to right, transparent 0, var(--light) 12px ,var(--light) 100%);
+}
+
+.cb-left-scroll-control {
+  background: linear-gradient(to left, transparent 0, var(--light) 12px ,var(--light) 100%);
+}

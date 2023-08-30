@@ -13,36 +13,13 @@ import GameLevelBadge from '../../components/GameLevelBadge';
 import * as selectors from '../../selectors';
 import Loading from '../../components/Loading';
 import CopyButton from '../../components/CopyButton';
+import TournamentType from '../../components/TournamentType';
 
 const getIconByAccessType = accessType => (
   accessType === 'token'
     ? 'lock'
     : 'unlock'
 );
-
-const getIconsByTournamentType = type => {
-  if (type === 'individual') {
-    return (<FontAwesomeIcon icon="users" />);
-  }
-
-  if (type === 'team') {
-    return (
-      <>
-        <FontAwesomeIcon icon="users" />
-        vs
-        <FontAwesomeIcon icon="users" />
-      </>
-    );
-  }
-
-  // type === stairvay
-  return (
-    <>
-      <FontAwesomeIcon icon="user" />
-      <FontAwesomeIcon icon="sort-amount-up" />
-    </>
-  );
-};
 
 function TournamentHeader({
   id: tournamentId,
@@ -136,7 +113,9 @@ function TournamentHeader({
           className="d-flex align-items-center"
         >
           Mode:
-          <span className="ml-2">{getIconsByTournamentType(type)}</span>
+          <span className="ml-2">
+            <TournamentType type={type} />
+          </span>
         </div>
         {canModerate && accessType === 'token' && (
           <div className="d-flex input-group ml-2">

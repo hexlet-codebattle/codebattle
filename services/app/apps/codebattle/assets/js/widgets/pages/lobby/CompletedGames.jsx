@@ -12,6 +12,7 @@ import GameCard from './GameCard';
 import UserInfo from '../../components/UserInfo';
 import GameLevelBadge from '../../components/GameLevelBadge';
 import ResultIcon from '../../components/ResultIcon';
+import HorizontalScrollControls from '../../components/SideScrollControls';
 
 const CompletedGamesRows = memo(({ games }) => (
   <>
@@ -110,14 +111,6 @@ function CompletedGames({
 
   return (
     <>
-      <div ref={cardListRef} className="d-none d-sm-block d-md-none d-flex m-2 overflow-auto">
-        {games.map(game => (
-          <GameCard
-            type="completed"
-            game={game}
-          />
-        ))}
-      </div>
       <div
         ref={tableRef}
         className={cn(commonClassName, className)}
@@ -140,6 +133,17 @@ function CompletedGames({
             <CompletedGamesRows {...{ games }} />
           </tbody>
         </table>
+      </div>
+      <div ref={cardListRef} className="d-none d-sm-block d-md-none d-flex m-2 overflow-auto position-relative">
+        <HorizontalScrollControls>
+          {games.map(game => (
+            <GameCard
+              key={`card-${game.id}`}
+              type="completed"
+              game={game}
+            />
+          ))}
+        </HorizontalScrollControls>
       </div>
       <div className="bg-white py-2 px-5 font-weight-bold border-gray border rounded-bottom">
         {`Total games: ${totalGames}`}

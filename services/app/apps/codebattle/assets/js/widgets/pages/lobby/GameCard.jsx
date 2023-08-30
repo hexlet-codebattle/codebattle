@@ -92,7 +92,7 @@ function GameCard({
   return (
     <div
       key={`card-${game.id}`}
-      className="d-flex flex-column game-item shadow-sm p-2 mb-2 mx-2 bg-white border rounded-lg"
+      className="d-flex flex-column game-item shadow-sm p-2 mx-2 bg-white border rounded-lg"
     >
       <div className="d-flex mb-2 h-100">
         <div className="d-flex flex-column justify-content-around mr-2">
@@ -116,7 +116,7 @@ function GameCard({
               <div className="d-flex flex-column align-items-center position-relative">
                 <div className="d-flex">
                   <ResultIcon gameId={game.id} player1={game.players[0]} player2={game.players[1]} />
-                  <UserInfo user={game.players[0]} hideOnlineIndicator />
+                  <UserInfo user={game.players[0]} />
                 </div>
                 {
                     type === 'active'
@@ -127,7 +127,7 @@ function GameCard({
               <div className="d-flex flex-column align-items-center position-relative">
                 <div className="d-flex">
                   <ResultIcon gameId={game.id} player1={game.players[1]} player2={game.players[0]} />
-                  <UserInfo user={game.players[1]} hideOnlineIndicator />
+                  <UserInfo user={game.players[1]} />
                 </div>
                 {
                     type === 'active'

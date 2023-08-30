@@ -30,10 +30,12 @@ import Announcement from './Announcement';
 import GameLevelBadge from '../../components/GameLevelBadge';
 import LobbyChat from './LobbyChat';
 import GameCard from './GameCard';
+import TournamentCard from './TournamentCard';
 import GameProgressBar from './GameProgressBar';
 import GameStateBadge from './GameStateBadge';
 import ShowButton from './ShowButton';
 import GameActionButton from './GameActionButton';
+import HorizontalScrollControls from '../../components/SideScrollControls';
 import { getLobbyUrl } from '../../utils/urlBuilders';
 import levelRatio from '../../config/levelRatio';
 import hashLinkNames from '../../config/hashLinkNames';
@@ -106,39 +108,57 @@ const LiveTournaments = ({ tournaments }) => {
       </div>
     );
   }
+
+  const sortedTournaments = orderBy(tournaments, 'startsAt', 'desc');
+
   return (
     <div className="table-responsive">
       <h2 className="text-center mt-3">Live tournaments</h2>
-      <table className="table table-striped">
-        <thead className="">
-          <tr>
-            <th className="p-3 border-0">Title</th>
-            <th className="p-3 border-0">Starts_at</th>
-            <th className="p-3 border-0">Creator</th>
-            <th className="p-3 border-0">Actions</th>
-          </tr>
-        </thead>
-        <tbody className="">
-          {orderBy(tournaments, 'startsAt', 'desc').map(tournament => (
-            <tr key={tournament.id}>
-              <td className="p-3 align-middle">{tournament.name}</td>
-              <td className="p-3 align-middle text-nowrap">
-                {moment
-                  .utc(tournament.startsAt)
-                  .local()
-                  .format('YYYY-MM-DD HH:mm')}
-              </td>
-              <td className="p-3 align-middle text-nowrap">
-                <UserInfo user={tournament.creator} />
-              </td>
-              <td className="p-3 align-middle">
-                <ShowButton url={`/tournaments/${tournament.id}/`} />
-              </td>
+      <div className="d-none d-sm-none d-md-block table-responsive rounded-bottom">
+        <table className="table table-striped">
+          <thead className="">
+            <tr>
+              <th className="p-3 border-0">Title</th>
+              <th className="p-3 border-0">Starts_at</th>
+              <th className="p-3 border-0">Creator</th>
+              <th className="p-3 border-0">Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-      <div className="text-center mt-5">
+          </thead>
+          <tbody className="">
+            {sortedTournaments.map(tournament => (
+              <tr key={tournament.id}>
+                <td className="p-3 align-middle">{tournament.name}</td>
+                <td className="p-3 align-middle text-nowrap">
+                  {moment
+                    .utc(tournament.startsAt)
+                    .local()
+                    .format('YYYY-MM-DD HH:mm')}
+                </td>
+                <td className="p-3 align-middle text-nowrap">
+                  <UserInfo user={tournament.creator} />
+                </td>
+                <td className="p-3 align-middle">
+                  <ShowButton url={`/tournaments/${tournament.id}/`} />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div className="d-none d-sm-block d-md-none d-flex m-2 overflow-auto position-relative">
+        <HorizontalScrollControls>
+          {sortedTournaments.map(
+            tournament => (
+              <TournamentCard
+                key={`card-${tournament.id}`}
+                type="active"
+                tournament={tournament}
+              />
+            ),
+          )}
+        </HorizontalScrollControls>
+      </div>
+      <div className="text-center mt-3">
         <a href="/tournaments">
           <u>Tournaments Info</u>
         </a>
@@ -151,40 +171,58 @@ const CompletedTournaments = ({ tournaments }) => {
   if (isEmpty(tournaments)) {
     return null;
   }
+
+  const sortedTournaments = orderBy(tournaments, 'startsAt', 'desc');
+
   return (
     <div className="table-responsive">
       <h2 className="text-center mt-3">Completed tournaments</h2>
-      <table className="table table-striped">
-        <thead className="">
-          <tr>
-            <th className="p-3 border-0">Title</th>
-            <th className="p-3 border-0">Type</th>
-            <th className="p-3 border-0">Starts_at</th>
-            <th className="p-3 border-0">Creator</th>
-            <th className="p-3 border-0">Actions</th>
-          </tr>
-        </thead>
-        <tbody className="">
-          {orderBy(tournaments, 'startsAt', 'desc').map(tournament => (
-            <tr key={tournament.id}>
-              <td className="p-3 align-middle">{tournament.name}</td>
-              <td className="p-3 align-middle">{tournament.type}</td>
-              <td className="p-3 align-middle text-nowrap">
-                {moment
-                  .utc(tournament.startsAt)
-                  .local()
-                  .format('YYYY-MM-DD HH:mm')}
-              </td>
-              <td className="p-3 align-middle text-nowrap">
-                <UserInfo user={tournament.creator} />
-              </td>
-              <td className="p-3 align-middle">
-                <ShowButton url={`/tournaments/${tournament.id}/`} />
-              </td>
+      <div className="d-none d-sm-none d-md-block table-responsive rounded-bottom">
+        <table className="table table-striped">
+          <thead className="">
+            <tr>
+              <th className="p-3 border-0">Title</th>
+              <th className="p-3 border-0">Type</th>
+              <th className="p-3 border-0">Starts_at</th>
+              <th className="p-3 border-0">Creator</th>
+              <th className="p-3 border-0">Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="">
+            {sortedTournaments.map(tournament => (
+              <tr key={tournament.id}>
+                <td className="p-3 align-middle">{tournament.name}</td>
+                <td className="p-3 align-middle">{tournament.type}</td>
+                <td className="p-3 align-middle text-nowrap">
+                  {moment
+                    .utc(tournament.startsAt)
+                    .local()
+                    .format('YYYY-MM-DD HH:mm')}
+                </td>
+                <td className="p-3 align-middle text-nowrap">
+                  <UserInfo user={tournament.creator} />
+                </td>
+                <td className="p-3 align-middle">
+                  <ShowButton url={`/tournaments/${tournament.id}/`} />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div className="d-none d-sm-block d-md-none d-flex m-2 overflow-auto position-relative">
+        <HorizontalScrollControls>
+          {sortedTournaments.map(
+            tournament => (
+              <TournamentCard
+                key={`card-${tournament.id}`}
+                type="completed"
+                tournament={tournament}
+              />
+            ),
+          )}
+        </HorizontalScrollControls>
+      </div>
     </div>
   );
 };
@@ -211,6 +249,7 @@ const ActiveGames = ({
   const gamesSortByLevel = sortBy(filtetedGames, [
     game => levelRatio[game.level],
   ]);
+
   const {
     gamesWithCurrentUser = [],
     gamesWithActiveUsers = [],
@@ -236,19 +275,6 @@ const ActiveGames = ({
 
   return (
     <>
-      <div className="d-none d-sm-block d-md-none d-flex m-2 overflow-auto">
-        {sortedGames.map(
-          game => isActiveGame(game) && (
-            <GameCard
-              type="active"
-              game={game}
-              currentUserId={currentUserId}
-              isGuest={isGuest}
-              isOnline={isOnline}
-            />
-          ),
-        )}
-      </div>
       <div className="d-none d-sm-none d-md-block table-responsive rounded-bottom">
         <table className="table table-striped mb-0">
           <thead className="text-center">
@@ -290,6 +316,24 @@ const ActiveGames = ({
             )}
           </tbody>
         </table>
+      </div>
+      <div
+        className="d-none d-sm-block d-md-none d-flex m-2 position-relative"
+      >
+        <HorizontalScrollControls>
+          {sortedGames.map(
+            game => isActiveGame(game) && (
+              <GameCard
+                key={`card-${game.id}`}
+                type="active"
+                game={game}
+                currentUserId={currentUserId}
+                isGuest={isGuest}
+                isOnline={isOnline}
+              />
+            ),
+          )}
+        </HorizontalScrollControls>
       </div>
     </>
   );
