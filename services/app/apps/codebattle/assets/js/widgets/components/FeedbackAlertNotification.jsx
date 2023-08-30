@@ -46,7 +46,6 @@ const FeedbackAlertNotification = () => {
   }
 
   return (<></>);
-
 };
 
 export default FeedbackAlertNotification;

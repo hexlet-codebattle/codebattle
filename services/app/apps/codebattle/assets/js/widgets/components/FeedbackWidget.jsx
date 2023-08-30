@@ -21,7 +21,7 @@ function FeedbackWidget() {
     .then(success)
     .catch(error);
 
-  const renderAlert = status => {
+  const addAlert = status => {
     dispatch(actions.addAlert({ [Date.now()]: status }));
   };
   return (
@@ -38,11 +38,11 @@ function FeedbackWidget() {
       user={currentUserName}
       onSubmit={(payload, success, error) => sendToServer(payload)
         .then(() => {
-          renderAlert('editSuccess');
+          addAlert('editSuccess');
           success();
         })
         .catch(() => {
-          renderAlert('editError');
+          addAlert('editError');
           error();
         })}
     />
