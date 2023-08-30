@@ -1,7 +1,7 @@
-import React, { useContext, memo } from 'react';
-import { useDispatch, useSelector } from "react-redux";
-import i18n from '../../i18n';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import Alert from 'react-bootstrap/Alert';
+import i18n from '../../i18n';
 
 import { actions } from '../slices';
 import { gameAlertsSelector } from '../selectors/index';
@@ -25,9 +25,9 @@ const FeedbackAlertNotification = () => {
     }
     return notification;
   };
-  const handleClose = (id) => {
+  const handleClose = id => {
     dispatch(actions.deleteAlert(id));
-  }
+  };
   return Object.entries(alerts).map(([key, value]) => {
     const result = getNotification(value);
     return (
@@ -36,11 +36,12 @@ const FeedbackAlertNotification = () => {
         onClose={() => handleClose(key)}
         key={key}
         variant={result.status}
-        className='row mb-0 rounded-0 alert alert-info alert-dismissible fade show'
+        className="row mb-0 rounded-0 alert alert-info alert-dismissible fade show"
       >
         {result.message}
-      </Alert >)
-  });
-}
+      </Alert>
+    );
+  })
+};
 
 export default FeedbackAlertNotification;

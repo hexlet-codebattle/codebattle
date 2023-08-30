@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState } from 'react';
+import React, { memo } from 'react';
 import SlackFeedback, { themes } from 'react-slack-feedback';
 import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -21,7 +21,7 @@ function FeedbackWidget() {
     .then(success)
     .catch(error);
 
-  const renderAlert = (status) => {
+  const renderAlert = status => {
     dispatch(actions.addAlert({ [Date.now()]: status }));
   };
   return (
