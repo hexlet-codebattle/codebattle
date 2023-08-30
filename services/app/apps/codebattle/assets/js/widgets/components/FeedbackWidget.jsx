@@ -6,20 +6,20 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { actions } from '../slices';
 import { currentUserNameSelector } from '../selectors/index';
 
+const sendToServer = (payload, success, error) => fetch('/api/v1/feedback', {
+  method: 'POST',
+  headers: {
+    'Content-type': 'application/json',
+    'x-csrf-token': window.csrf_token,
+  },
+  body: JSON.stringify(payload),
+})
+  .then(success)
+  .catch(error);
+
 function FeedbackWidget() {
   const currentUserName = useSelector(currentUserNameSelector);
   const dispatch = useDispatch();
-
-  const sendToServer = (payload, success, error) => fetch('/api/v1/feedback', {
-    method: 'POST',
-    headers: {
-      'Content-type': 'application/json',
-      'x-csrf-token': window.csrf_token,
-    },
-    body: JSON.stringify(payload),
-  })
-    .then(success)
-    .catch(error);
 
   const addAlert = status => {
     dispatch(actions.addAlert({ [Date.now()]: status }));

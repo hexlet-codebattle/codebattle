@@ -6,25 +6,25 @@ import i18n from '../../i18n';
 import { actions } from '../slices';
 import { gameAlertsSelector } from '../selectors/index';
 
+const getNotification = status => {
+  const notification = {};
+  switch (status) {
+    case 'editSuccess': {
+      notification.status = 'success';
+      notification.message = i18n.t('Feedback sent successfully.');
+      break;
+    }
+    default: {
+      notification.status = 'danger';
+      notification.message = i18n.t('Feedback not sent.');
+      break;
+    }
+  }
+  return notification;
+};
 const FeedbackAlertNotification = () => {
   const alerts = useSelector(gameAlertsSelector);
   const dispatch = useDispatch();
-  const getNotification = status => {
-    const notification = {};
-    switch (status) {
-      case 'editSuccess': {
-        notification.status = 'success';
-        notification.message = i18n.t('Feedback sent successfully.');
-        break;
-      }
-      default: {
-        notification.status = 'danger';
-        notification.message = i18n.t('Feedback not sent.');
-        break;
-      }
-    }
-    return notification;
-  };
   const handleClose = id => {
     dispatch(actions.deleteAlert(id));
   };
@@ -44,7 +44,6 @@ const FeedbackAlertNotification = () => {
       );
     });
   }
-
   return (<></>);
 };
 
