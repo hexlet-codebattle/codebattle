@@ -48,9 +48,11 @@ const UserSettingsForm = ({ onSubmit, settings }) => {
 
   const validationSchema = Yup.object({
     name: Yup.string()
+            .strict()
             .required("Field can't be empty")
             .min(3, 'Should be at least 3 characters')
-            .max(16, 'Should be 16 character(s) or less'),
+            .max(16, 'Should be 16 character(s) or less')
+            .trim(),
   });
 
   return (
