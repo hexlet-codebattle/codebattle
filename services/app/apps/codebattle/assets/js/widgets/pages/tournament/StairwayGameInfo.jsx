@@ -1,6 +1,7 @@
 import React, { memo } from 'react';
 
 import find from 'lodash/find';
+
 import TaskAssignment from '../game/TaskAssignment';
 
 const StairwayGameInfo = ({ tasks, currentTaskId }) => {

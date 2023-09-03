@@ -1,5 +1,7 @@
 import React from 'react';
+
 import cn from 'classnames';
+
 import PlayerLoading from '../../components/PlayerLoading';
 
 const getPregressbarClass = player => cn('cb-check-result-bar shadow-sm', player.checkResult.status);

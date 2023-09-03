@@ -20,6 +20,29 @@ rules:
   no-console: 0
   react/prop-types: 0
   import/no-unresolved: 0
+  import/no-extraneous-dependencies:
+    - 2
+    - devDependencies: true
+  import/order:
+  - 2
+  - newlines-between: always
+    alphabetize:
+      order: asc
+      caseInsensitive: true
+    groups:
+      - builtin
+      - external
+      - internal
+      - parent
+      - sibling
+      - index
+    pathGroups:
+      - pattern: react
+        group: builtin
+      - pattern: '@/**'
+        group: internal
+    pathGroupsExcludedImportTypes:
+      - internal
   no-param-reassign: 0
   arrow-parens:
     - 2

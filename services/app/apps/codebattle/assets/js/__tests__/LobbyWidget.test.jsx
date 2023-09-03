@@ -1,17 +1,18 @@
 import React from 'react';
+
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { render, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom/extend-expect';
 import axios from 'axios';
 import omit from 'lodash/omit';
-
-import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 
-import * as lobbyMiddlewares from '../widgets/middlewares/Lobby';
 import * as invitesMiddleware from '../widgets/middlewares/Invite';
-import reducers from '../widgets/slices';
+import * as lobbyMiddlewares from '../widgets/middlewares/Lobby';
 import LobbyWidget from '../widgets/pages/lobby';
+import reducers from '../widgets/slices';
+
 import { getTestData, toLocalTime } from './helpers';
 
 Object.defineProperty(window, 'scrollTo', {

@@ -1,5 +1,9 @@
 import React, { useContext, memo } from 'react';
+
 import { useDispatch, useSelector } from 'react-redux';
+
+import RoomContext from '../../components/RoomContext';
+import { inPreviewRoomSelector, inTestingRoomSelector, roomStateSelector } from '../../machines/selectors';
 import {
   gameTaskSelector,
   gameStatusSelector,
@@ -9,8 +13,7 @@ import {
 } from '../../selectors';
 import { actions } from '../../slices';
 import useMachineStateSelector from '../../utils/useMachineStateSelector';
-import { inPreviewRoomSelector, inTestingRoomSelector, roomStateSelector } from '../../machines/selectors';
-import RoomContext from '../../components/RoomContext';
+
 import ChatWidget from './ChatWidget';
 import Output from './Output';
 import OutputTab from './OutputTab';

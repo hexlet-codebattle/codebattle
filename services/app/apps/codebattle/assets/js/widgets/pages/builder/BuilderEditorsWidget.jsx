@@ -4,33 +4,36 @@ import React, {
   useCallback,
   memo,
 } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import noop from 'lodash/noop';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
-import { actions } from '../../slices';
-import * as selectors from '../../selectors';
-import { reloadGeneratorAndSolutionTemplates } from '../../middlewares/Game';
-import useMachineStateSelector from '../../utils/useMachineStateSelector';
-import {
-  getGeneratorStatus,
-  validationStatuses,
-} from '../../machines/task';
+import noop from 'lodash/noop';
+import { useDispatch, useSelector } from 'react-redux';
+
+import Editor from '../../components/Editor';
+import LanguagePickerView from '../../components/LanguagePickerView';
+import RoomContext from '../../components/RoomContext';
+import { gameRoomEditorStyles } from '../../config/editorSettings';
+import assertsStatuses from '../../config/executionStatuses';
 import {
   isTaskAssertsFormingSelector,
   isTaskAssertsReadySelector,
   taskStateSelector,
 } from '../../machines/selectors';
-import RoomContext from '../../components/RoomContext';
-import Editor from '../../components/Editor';
-import TaskPropStatusIcon from './TaskPropStatusIcon';
+import {
+  getGeneratorStatus,
+  validationStatuses,
+} from '../../machines/task';
+import { reloadGeneratorAndSolutionTemplates } from '../../middlewares/Game';
+import * as selectors from '../../selectors';
+import { actions } from '../../slices';
+import { taskTemplatesStates } from '../../utils/builder';
+import useMachineStateSelector from '../../utils/useMachineStateSelector';
 import DakModeButton from '../game/DarkModeButton';
 import VimModeButton from '../game/VimModeButton';
-import { gameRoomEditorStyles } from '../../config/editorSettings';
-import { taskTemplatesStates } from '../../utils/builder';
+
 import AssertsOutput from './AssertsOutput';
-import assertsStatuses from '../../config/executionStatuses';
-import LanguagePickerView from '../../components/LanguagePickerView';
+import TaskPropStatusIcon from './TaskPropStatusIcon';
 
 const isGeneratorsError = status => (
   status === assertsStatuses.error

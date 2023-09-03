@@ -19,7 +19,15 @@
     "verbose": true,
     "moduleNameMapper": {
       "monaco-editor": "<rootDir>/node_modules/react-monaco-editor",
-      "^.+\\.(css|styl|less|sass|scss|po|png|jpg|ttf|woff|woff2)$": "jest-transform-stub"
+      "^.+\\.(css|styl|less|sass|scss|po|png|jpg|ttf|woff|woff2)$": "jest-transform-stub",
+      "^@/components(.*)$": "<rootDir>/assets/js/widgets/components$1",
+      "^@/lib(.*)$": "<rootDir>/assets/js/widgets/lib$1",
+      "^@/machines(.*)$": "<rootDir>/assets/js/widgets/machines$1",
+      "^@/middlewares(.*)$": "<rootDir>/assets/js/widgets/middlewares$1",
+      "^@/pages(.*)$": "<rootDir>/assets/js/widgets/pages$1",
+      "^@/selectors(.*)$": "<rootDir>/assets/js/widgets/selectors$1",
+      "^@/slices(.*)$": "<rootDir>/assets/js/widgets/slices$1",
+      "^@/utils(.*)$": "<rootDir>/assets/js/widgets/utils$1"
     },
     "testPathIgnorePatterns": [
       "/helpers/"

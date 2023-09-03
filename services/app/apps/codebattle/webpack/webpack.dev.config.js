@@ -1,7 +1,8 @@
 const webpack = require('webpack');
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const { merge } = require('webpack-merge');
+
 const baseWebpackConfig = require('./webpack.base.config');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const devWebpackConfig = merge(baseWebpackConfig, {
   mode: 'development',

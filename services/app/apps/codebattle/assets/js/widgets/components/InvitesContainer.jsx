@@ -1,14 +1,12 @@
 import React, { useEffect } from 'react';
-import Popover from 'react-bootstrap/Popover';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Button from 'react-bootstrap/Button';
-import { useDispatch, useSelector } from 'react-redux';
-import Gon from 'gon';
-import cn from 'classnames';
 
-import GameLevelBadge from './GameLevelBadge';
-import * as selectors from '../selectors';
-import { selectors as invitesSelectors } from '../slices/invites';
+import cn from 'classnames';
+import Gon from 'gon';
+import Button from 'react-bootstrap/Button';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Popover from 'react-bootstrap/Popover';
+import { useDispatch, useSelector } from 'react-redux';
+
 import {
   initInvites,
   acceptInvite,
@@ -16,7 +14,11 @@ import {
   cancelInvite,
 } from '../middlewares/Invite';
 import initPresence from '../middlewares/Main';
+import * as selectors from '../selectors';
+import { selectors as invitesSelectors } from '../slices/invites';
 import isSafari from '../utils/browser';
+
+import GameLevelBadge from './GameLevelBadge';
 
 const NoInvites = () => <div className="p-2">No Invites</div>;
 

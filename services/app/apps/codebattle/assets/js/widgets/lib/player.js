@@ -1,6 +1,7 @@
-import Delta from 'quill-delta';
 import find from 'lodash/find';
 import partition from 'lodash/partition';
+import Delta from 'quill-delta';
+
 import PlaybookStatusCodes from '../config/playbookStatusCodes';
 
 const snapshotStep = 400;

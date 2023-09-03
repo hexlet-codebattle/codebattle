@@ -1,29 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { connect, useDispatch, useSelector } from 'react-redux';
-import ReactJoyride, { STATUS } from 'react-joyride';
-import { CSSTransition, SwitchTransition } from 'react-transition-group';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import ReactJoyride, { STATUS } from 'react-joyride';
+import { connect, useDispatch, useSelector } from 'react-redux';
+import { CSSTransition, SwitchTransition } from 'react-transition-group';
 
-import sound from '../lib/sound';
-
-import RoomContext from '../components/RoomContext';
-import WaitingOpponentInfo from './game/WaitingOpponentInfo';
-import CodebattlePlayer from './game/CodebattlePlayer';
-import * as GameRoomActions from '../middlewares/Game';
-import * as ChatActions from '../middlewares/Chat';
+import FeedbackAlertNotification from '../components/FeedbackAlertNotification';
 import FeedbackWidget from '../components/FeedbackWidget';
-import TaskConfirmationModal from './builder/TaskConfirmationModal';
-import TaskConfigurationModal from './builder/TaskConfigurationModal';
-import AnimationModal from './game/AnimationModal';
-import NetworkAlert from './game/NetworkAlert';
-
-import GameWidget from './game/GameWidget';
-import InfoWidget from './game/InfoWidget';
-import BuilderSettingsWidget from './builder/BuilderSettingsWidget';
-import BuilderEditorsWidget from './builder/BuilderEditorsWidget';
-
-import useGameRoomMachine from '../utils/useGameRoomMachine';
-import useMachineStateSelector from '../utils/useMachineStateSelector';
+import RoomContext from '../components/RoomContext';
+import GameStateCodes from '../config/gameStateCodes';
+import sound from '../lib/sound';
 import {
   inPreviewRoomSelector,
   inBuilderRoomSelector,
@@ -32,10 +18,23 @@ import {
   gameRoomKeySelector,
   roomStateSelector,
 } from '../machines/selectors';
-import { actions } from '../slices';
+import * as ChatActions from '../middlewares/Chat';
+import * as GameRoomActions from '../middlewares/Game';
 import { gameStatusSelector, isShowGuideSelector } from '../selectors';
-import GameStateCodes from '../config/gameStateCodes';
-import FeedbackAlertNotification from '../components/FeedbackAlertNotification';
+import { actions } from '../slices';
+import useGameRoomMachine from '../utils/useGameRoomMachine';
+import useMachineStateSelector from '../utils/useMachineStateSelector';
+
+import BuilderEditorsWidget from './builder/BuilderEditorsWidget';
+import BuilderSettingsWidget from './builder/BuilderSettingsWidget';
+import TaskConfigurationModal from './builder/TaskConfigurationModal';
+import TaskConfirmationModal from './builder/TaskConfirmationModal';
+import AnimationModal from './game/AnimationModal';
+import CodebattlePlayer from './game/CodebattlePlayer';
+import GameWidget from './game/GameWidget';
+import InfoWidget from './game/InfoWidget';
+import NetworkAlert from './game/NetworkAlert';
+import WaitingOpponentInfo from './game/WaitingOpponentInfo';
 
 const steps = [
   {

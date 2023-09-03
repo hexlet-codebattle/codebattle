@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import moment from 'moment';
+
 import cn from 'classnames';
+import moment from 'moment';
 import PropTypes from 'prop-types';
 
 const getProgress = (a, b) => (

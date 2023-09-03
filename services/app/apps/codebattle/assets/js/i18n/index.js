@@ -1,6 +1,6 @@
 /* eslint-disable global-require */
-import i18next from 'i18next';
 import Gon from 'gon';
+import i18next from 'i18next';
 
 const lng = (Gon.getAsset('locale') || navigator.language || navigator.userLanguage).slice(0, 2);
 

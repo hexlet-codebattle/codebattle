@@ -1,15 +1,16 @@
 import React from 'react';
+
 import '@testing-library/jest-dom/extend-expect';
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { configureStore, combineReducers } from '@reduxjs/toolkit';
-import { Provider } from 'react-redux';
 import axios from 'axios';
+import { Provider } from 'react-redux';
 
-import reducers from '../widgets/slices';
+import languages from '../widgets/config/languages';
 import UserSettings from '../widgets/pages/settings';
 import UserSettingsForm from '../widgets/pages/settings/UserSettingsForm';
-import languages from '../widgets/config/languages';
+import reducers from '../widgets/slices';
 
 jest.mock('@fortawesome/react-fontawesome', () => ({
   FontAwesomeIcon: 'img',

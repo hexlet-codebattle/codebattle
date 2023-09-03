@@ -1,6 +1,7 @@
 import React from 'react';
-import moment from 'moment';
+
 import cn from 'classnames';
+import moment from 'moment';
 
 import MessageTag from './MessageTag';
 

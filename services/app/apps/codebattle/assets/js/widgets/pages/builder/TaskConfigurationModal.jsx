@@ -1,12 +1,14 @@
 import React, {
  useState, useCallback, useRef, useEffect, memo,
 } from 'react';
+
+import cn from 'classnames';
 import Modal from 'react-bootstrap/Modal';
 import { useDispatch, useSelector } from 'react-redux';
-import cn from 'classnames';
+
 import { taskStateCodes, taskVisibilityCodes } from '../../config/task';
-import { actions } from '../../slices';
 import { updateTaskVisibility } from '../../middlewares/Game';
+import { actions } from '../../slices';
 
 function TaskConfigurationModal({ modalShowing, setModalShowing }) {
   const dispatch = useDispatch();

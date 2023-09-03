@@ -3,22 +3,20 @@ import React, {
   useContext,
   useCallback,
 } from 'react';
-import noop from 'lodash/noop';
-import cn from 'classnames';
-import { useDispatch, useSelector } from 'react-redux';
+
 import { useInterpret } from '@xstate/react';
-import editorModes from '../../config/editorModes';
-import EditorToolbar from './EditorToolbar';
-import * as GameActions from '../../middlewares/Game';
-import { actions } from '../../slices';
-import * as selectors from '../../selectors';
+import cn from 'classnames';
+import noop from 'lodash/noop';
+import { useDispatch, useSelector } from 'react-redux';
+
 import RoomContext from '../../components/RoomContext';
+import editorModes from '../../config/editorModes';
+import { gameRoomEditorStyles } from '../../config/editorSettings';
 import {
   editorBtnStatuses as EditorBtnStatuses,
   editorSettingsByUserType,
 } from '../../config/editorSettingsByUserType';
 import editorUserTypes from '../../config/editorUserTypes';
-import { gameRoomEditorStyles } from '../../config/editorSettings';
 import {
   editorStateSelector,
   inBuilderRoomSelector,
@@ -28,7 +26,12 @@ import {
   isGameOverSelector,
   openedReplayerSelector,
 } from '../../machines/selectors';
+import * as GameActions from '../../middlewares/Game';
+import * as selectors from '../../selectors';
+import { actions } from '../../slices';
 import useMachineStateSelector from '../../utils/useMachineStateSelector';
+
+import EditorToolbar from './EditorToolbar';
 
 function EditorContainer({
   id,

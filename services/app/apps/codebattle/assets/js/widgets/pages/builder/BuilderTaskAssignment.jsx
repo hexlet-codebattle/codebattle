@@ -1,20 +1,22 @@
 import React, { useCallback } from 'react';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
-import PropTypes from 'prop-types';
+import capitalize from 'lodash/capitalize';
 import debounce from 'lodash/debounce';
 import isEmpty from 'lodash/isEmpty';
-import capitalize from 'lodash/capitalize';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
+
 import i18n from '../../../i18n';
-import { actions } from '../../slices';
-import * as selectors from '../../selectors';
 import GameLevelBadge from '../../components/GameLevelBadge';
-import TaskLanguagesSelection from '../game/TaskLanguageSelection';
-import TaskDescriptionMarkdown from '../game/TaskDescriptionMarkdown';
-import { validateTaskName } from '../../middlewares/Game';
 import { taskStateCodes } from '../../config/task';
+import { validateTaskName } from '../../middlewares/Game';
+import * as selectors from '../../selectors';
+import { actions } from '../../slices';
 import useTaskDescriptionParams from '../../utils/useTaskDescriptionParams';
+import TaskDescriptionMarkdown from '../game/TaskDescriptionMarkdown';
+import TaskLanguagesSelection from '../game/TaskLanguageSelection';
 
 const defaultLevels = ['elementary', 'easy', 'medium', 'hard'].map(level => ({
   value: level,

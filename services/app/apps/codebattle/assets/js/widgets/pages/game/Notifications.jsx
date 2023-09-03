@@ -1,19 +1,22 @@
 import React, { useContext } from 'react';
-import { useSelector } from 'react-redux';
+
 import hasIn from 'lodash/hasIn';
-import ReplayerControlButton from './ReplayerControlButton';
-import ActionsAfterGame from './ActionsAfterGame';
-import GameResult from './GameResult';
-import BackToHomeButton from './BackToHomeButton';
-import GoToNextGame from './GoToNextGame';
-import BackToTournamentButton from './BackToTournamentButton';
-import BackToTaskBuilderButton from '../builder/BackToTaskBuilderButton';
-import * as selectors from '../../selectors';
+import { useSelector } from 'react-redux';
+
 import RoomContext from '../../components/RoomContext';
 import { roomMachineStates, replayerMachineStates } from '../../machines/game';
-import ApprovePlaybookButtons from './ApprovePlaybookButtons';
 import { roomStateSelector } from '../../machines/selectors';
+import * as selectors from '../../selectors';
 import useMachineStateSelector from '../../utils/useMachineStateSelector';
+import BackToTaskBuilderButton from '../builder/BackToTaskBuilderButton';
+
+import ActionsAfterGame from './ActionsAfterGame';
+import ApprovePlaybookButtons from './ApprovePlaybookButtons';
+import BackToHomeButton from './BackToHomeButton';
+import BackToTournamentButton from './BackToTournamentButton';
+import GameResult from './GameResult';
+import GoToNextGame from './GoToNextGame';
+import ReplayerControlButton from './ReplayerControlButton';
 
 function Notifications() {
   const { mainService } = useContext(RoomContext);

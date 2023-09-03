@@ -20,10 +20,10 @@ import 'phoenix_html';
 import '@fortawesome/fontawesome-free/js/all';
 import 'bootstrap';
 
+import { inspect } from '@xstate/inspect';
 import NProgress from 'nprogress';
 import { Socket } from 'phoenix';
 import { LiveSocket } from 'phoenix_live_view';
-import { inspect } from '@xstate/inspect';
 
 // Import local files
 //

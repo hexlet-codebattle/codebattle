@@ -1,11 +1,14 @@
 import React, { useCallback } from 'react';
-import cloneDeep from 'lodash/cloneDeep';
-import cn from 'classnames';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import cn from 'classnames';
+import cloneDeep from 'lodash/cloneDeep';
+
+import { itemClassName, itemActionClassName } from '../../utils/builder';
+import useValidationExample from '../../utils/useValidationExample';
+
 import ExamplesTrack from './ExamplesTrack';
 import SignatureTrack from './SignatureTrack';
-import useValidationExample from '../../utils/useValidationExample';
-import { itemClassName, itemActionClassName } from '../../utils/builder';
 
 function ExampleForm({
   example,

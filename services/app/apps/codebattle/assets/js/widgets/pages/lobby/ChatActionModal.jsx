@@ -1,12 +1,14 @@
 import React, {
   useCallback,
 } from 'react';
+
 import Modal from 'react-bootstrap/Modal';
 import { useDispatch, useSelector } from 'react-redux';
-import * as lobbyMiddlewares from '../../middlewares/Lobby';
-import { actions } from '../../slices';
-import * as selectors from '../../selectors';
+
 import UserInfo from '../../components/UserInfo';
+import * as lobbyMiddlewares from '../../middlewares/Lobby';
+import * as selectors from '../../selectors';
+import { actions } from '../../slices';
 
 function ChatActionModal({
   presenceList,

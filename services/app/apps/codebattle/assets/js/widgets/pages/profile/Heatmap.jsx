@@ -1,10 +1,11 @@
-import { useDispatch } from 'react-redux';
-import CalendarHeatmap from 'react-calendar-heatmap';
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 
-import { actions } from '../../slices';
+import axios from 'axios';
+import CalendarHeatmap from 'react-calendar-heatmap';
+import { useDispatch } from 'react-redux';
+
 import Loading from '../../components/Loading';
+import { actions } from '../../slices';
 
 const getColorScale = count => {
   if (count >= 5) {

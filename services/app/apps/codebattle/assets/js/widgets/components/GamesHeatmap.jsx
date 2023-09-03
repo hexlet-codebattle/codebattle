@@ -1,9 +1,11 @@
-import { useDispatch } from 'react-redux';
-import CalendarHeatmap from 'react-calendar-heatmap';
 import React, { useState, useEffect } from 'react';
+
 import axios from 'axios';
+import CalendarHeatmap from 'react-calendar-heatmap';
+import { useDispatch } from 'react-redux';
 
 import { actions } from '../slices';
+
 import Loading from './Loading';
 
 function GamesHeatmap() {

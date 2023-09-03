@@ -1,7 +1,8 @@
 import { assign, actions } from 'xstate';
+
+import GameStateCodes from '../config/gameStateCodes';
 import speedModes from '../config/speedModes';
 import sound from '../lib/sound';
-import GameStateCodes from '../config/gameStateCodes';
 
 const { send } = actions;
 

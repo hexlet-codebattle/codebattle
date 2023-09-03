@@ -1,8 +1,9 @@
 import React from 'react';
+
 import { useSelector } from 'react-redux';
 
-import { activeRoomSelector } from '../selectors';
 import messageTypes from '../config/messageTypes';
+import { activeRoomSelector } from '../selectors';
 import { isGeneralRoom, isPrivateMessage } from '../utils/chat';
 
 function MessageTag({ messageType = messageTypes.general }) {

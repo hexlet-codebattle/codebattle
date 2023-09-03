@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import UserInfo from '../../components/UserInfo';
+
 import GameLevelBadge from '../../components/GameLevelBadge';
-import GameStateBadge from './GameStateBadge';
-import GameProgressBar from './GameProgressBar';
-import GameActionButton from './GameActionButton';
 import ResultIcon from '../../components/ResultIcon';
+import UserInfo from '../../components/UserInfo';
 import { loadSimpleUserStats } from '../../middlewares/Users';
+
+import GameActionButton from './GameActionButton';
+import GameProgressBar from './GameProgressBar';
+import GameStateBadge from './GameStateBadge';
 
 const getPerfomance = (won, lost) => {
   if (lost === 0) {

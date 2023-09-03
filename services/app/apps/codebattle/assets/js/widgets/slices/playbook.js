@@ -1,6 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
+
 import SolutionTypeCodes from '../config/solutionTypes';
 import { addRecord, parse } from '../lib/player';
+
 import { actions as editorActions } from './editor';
 import { actions as executionOutputActions } from './executionOutput';
 

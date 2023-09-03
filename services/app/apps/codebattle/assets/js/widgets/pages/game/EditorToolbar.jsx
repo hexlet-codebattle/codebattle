@@ -1,12 +1,14 @@
 import React from 'react';
-import DarkModeButton from './DarkModeButton';
-import GameResultIcon from './GameResultIcon';
+
 import LanguagePicker from '../../components/LanguagePicker';
 import UserInfo from '../../components/UserInfo';
-import VimModeButton from './VimModeButton';
-import GameActionButtons from './GameActionButtons';
 import GameRoomModes from '../../config/gameModes';
+
+import DarkModeButton from './DarkModeButton';
+import GameActionButtons from './GameActionButtons';
+import GameResultIcon from './GameResultIcon';
 import UserGameScore from './UserGameScore';
+import VimModeButton from './VimModeButton';
 
 const ModeButtons = ({ player }) => (
   <div

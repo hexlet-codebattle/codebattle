@@ -1,6 +1,6 @@
-import { Presence } from 'phoenix';
 import Gon from 'gon';
 import { camelizeKeys } from 'humps';
+import { Presence } from 'phoenix';
 
 import socket from '../../socket';
 import { actions } from '../slices';

@@ -1,7 +1,7 @@
 import { Machine } from 'xstate';
 
-import game, { config as gameConfig } from './game';
 import editor, { config as editorConfig } from './editor';
+import game, { config as gameConfig } from './game';
 import task, { config as taskConfig } from './task';
 
 export default {

@@ -1,12 +1,13 @@
 import React from 'react';
+
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { render } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import axios from 'axios';
-import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 
-import reducers from '../widgets/slices';
 import RatingList from '../widgets/pages/rating/RatingList';
+import reducers from '../widgets/slices';
 
 jest.mock('@fortawesome/react-fontawesome', () => ({
   FontAwesomeIcon: 'img',

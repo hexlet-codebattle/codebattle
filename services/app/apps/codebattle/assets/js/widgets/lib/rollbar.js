@@ -1,5 +1,5 @@
-import Rollbar from 'rollbar';
 import Gon from 'gon';
+import Rollbar from 'rollbar';
 
 const isProd = process.env.NODE_ENV === 'production';
 

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { createRoot } from 'react-dom';
+
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
+import { createRoot } from 'react-dom';
 
 const isExtensionInstalled = info => new Promise(resolve => {
   const img = new Image();

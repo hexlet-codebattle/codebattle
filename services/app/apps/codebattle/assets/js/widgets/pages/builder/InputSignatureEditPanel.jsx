@@ -2,14 +2,17 @@ import React, {
   useMemo,
   useCallback,
 } from 'react';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
+
 import {
   argumentTypes,
   defaultSignatureByType,
 } from '../../utils/builder';
-import SignatureTrack from './SignatureTrack';
+
 import SignatureForm from './SignatureForm';
+import SignatureTrack from './SignatureTrack';
 
 function InputSignatureEditPanel({
   items = [],

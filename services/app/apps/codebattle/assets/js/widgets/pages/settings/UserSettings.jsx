@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import capitalize from 'lodash/capitalize';
-import cn from 'classnames';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import cn from 'classnames';
+import capitalize from 'lodash/capitalize';
+import { useDispatch, useSelector } from 'react-redux';
+
 import Loading from '../../components/Loading';
-import UserSettingsForm from './UserSettingsForm';
 import { userSettingsSelector } from '../../selectors';
 import { updateUserSettings } from '../../slices/userSettings';
+
+import UserSettingsForm from './UserSettingsForm';
 
 const PROVIDERS = ['github', 'discord'];
 

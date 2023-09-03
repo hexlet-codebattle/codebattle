@@ -1,5 +1,7 @@
 import React from 'react';
+
 import { createRoot } from 'react-dom/client';
+
 import {
  Game, Builder, Lobby, UsersRating, UserPage, SettingsPage, RegistrationPage, Invites, StairwayGamePage, TournamentPage,
 } from './App';

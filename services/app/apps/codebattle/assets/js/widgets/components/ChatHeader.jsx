@@ -1,10 +1,11 @@
 import React from 'react';
+
 import { useSelector } from 'react-redux';
 
-import Rooms from './Rooms';
-
-import * as selectors from '../selectors';
 import { pushCommand, pushCommandTypes } from '../middlewares/Chat';
+import * as selectors from '../selectors';
+
+import Rooms from './Rooms';
 
 export default function ChatHeader({ showRooms = false, disabled = false }) {
   const currentUserIsAdmin = useSelector(selectors.currentUserIsAdminSelector);

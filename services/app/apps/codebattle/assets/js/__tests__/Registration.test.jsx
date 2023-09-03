@@ -1,10 +1,12 @@
 import React from 'react';
+
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom/extend-expect';
 import axios from 'axios';
 
 import Registration from '../widgets/pages/registration';
+
 import { getTestData } from './helpers';
 
 jest.mock('axios');

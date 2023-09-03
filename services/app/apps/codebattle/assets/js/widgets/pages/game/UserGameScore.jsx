@@ -1,6 +1,8 @@
 import React, { memo } from 'react';
+
 import cn from 'classnames';
 import { useSelector } from 'react-redux';
+
 import { userGameScoreSelector } from '../../selectors';
 
 function UserGameScore({ userId }) {

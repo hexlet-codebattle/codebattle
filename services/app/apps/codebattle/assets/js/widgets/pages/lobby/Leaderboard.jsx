@@ -1,11 +1,13 @@
 import React, { useEffect, useRef } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import Table from 'react-bootstrap/Table';
+
 import classnames from 'classnames';
+import Table from 'react-bootstrap/Table';
+import { useSelector, useDispatch } from 'react-redux';
+
 import UserInfo from '../../components/UserInfo';
+import periodTypes from '../../config/periodTypes';
 import { actions } from '../../slices';
 import { leaderboardSelector } from '../../slices/leaderboard';
-import periodTypes from '../../config/periodTypes';
 
 function Leaderboard() {
   const dispatch = useDispatch();

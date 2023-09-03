@@ -1,11 +1,14 @@
 import React from 'react';
+
+import copy from 'copy-to-clipboard';
 import find from 'lodash/find';
 import isEmpty from 'lodash/isEmpty';
-import copy from 'copy-to-clipboard';
-import { getSignInGithubUrl, makeGameUrl } from '../../utils/urlBuilders';
+
 import i18n from '../../../i18n';
 import gameStateCodes from '../../config/gameStateCodes';
 import * as lobbyMiddlewares from '../../middlewares/Lobby';
+import { getSignInGithubUrl, makeGameUrl } from '../../utils/urlBuilders';
+
 import ShowButton from './ShowButton';
 
 const havePlayer = (userId, game) => !isEmpty(find(game.players, { id: userId }));

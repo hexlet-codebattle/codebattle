@@ -1,10 +1,12 @@
 import { useMemo } from 'react';
-import isNumber from 'lodash/isNumber';
-import isString from 'lodash/isString';
-import isBoolean from 'lodash/isBoolean';
+
 import isArray from 'lodash/isArray';
-import isObject from 'lodash/isObject';
+import isBoolean from 'lodash/isBoolean';
 import isEmpty from 'lodash/isEmpty';
+import isNumber from 'lodash/isNumber';
+import isObject from 'lodash/isObject';
+import isString from 'lodash/isString';
+
 import { argumentTypes } from './builder';
 
 const isValidValueToSignature = (value, signature) => {

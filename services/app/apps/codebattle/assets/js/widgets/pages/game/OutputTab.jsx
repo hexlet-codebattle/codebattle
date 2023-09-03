@@ -1,6 +1,7 @@
 import React from 'react';
-import color from '../../config/statusColor';
+
 import i18n from '../../../i18n';
+import color from '../../config/statusColor';
 
 const getMessage = status => {
   switch (status) {

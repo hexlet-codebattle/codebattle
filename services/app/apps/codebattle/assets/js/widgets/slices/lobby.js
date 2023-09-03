@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
-import reject from 'lodash/reject';
 import find from 'lodash/find';
+import reject from 'lodash/reject';
+
 import initial from './initial';
 
 const initialState = {

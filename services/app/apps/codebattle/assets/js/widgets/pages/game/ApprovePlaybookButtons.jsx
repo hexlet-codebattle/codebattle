@@ -1,5 +1,7 @@
 import React, { useCallback, memo } from 'react';
+
 import { useDispatch } from 'react-redux';
+
 import SolutionTypeCodes from '../../config/solutionTypes';
 import { changePlaybookSolution } from '../../middlewares/Game';
 

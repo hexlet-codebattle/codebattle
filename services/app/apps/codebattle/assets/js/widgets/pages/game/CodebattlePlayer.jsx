@@ -1,16 +1,19 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
+
+import qs from 'qs';
 import { Slider } from 'react-player-controls';
 import { Direction } from 'react-player-controls/dist/constants';
-import qs from 'qs';
-import CodebattleSliderBar from './CodebattleSliderBar';
-import ControlPanel from './ControlPanel';
+import { connect } from 'react-redux';
+
 import RoomContext from '../../components/RoomContext';
 import speedModes from '../../config/speedModes';
-import { actions } from '../../slices';
-import * as GameActions from '../../middlewares/Game';
 import { replayerMachineStates } from '../../machines/game';
+import * as GameActions from '../../middlewares/Game';
 import { playbookRecordsSelector } from '../../selectors';
+import { actions } from '../../slices';
+
+import CodebattleSliderBar from './CodebattleSliderBar';
+import ControlPanel from './ControlPanel';
 
 const playDelays = {
   [speedModes.normal]: 100,

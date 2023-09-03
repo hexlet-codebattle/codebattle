@@ -1,10 +1,11 @@
 import { assign } from 'xstate';
-import sound from '../lib/sound';
-import editorUserTypes from '../config/editorUserTypes';
+
 import {
   editorBtnStatuses,
   editorSettingsByUserType,
 } from '../config/editorSettingsByUserType';
+import editorUserTypes from '../config/editorUserTypes';
+import sound from '../lib/sound';
 
 // settings
 // type - user type for viewers current_user/opponent/player (request features) teammate, clanmate, friend

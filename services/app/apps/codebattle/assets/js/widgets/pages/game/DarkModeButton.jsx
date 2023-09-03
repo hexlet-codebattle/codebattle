@@ -1,6 +1,8 @@
-import cn from 'classnames';
 import React from 'react';
+
+import cn from 'classnames';
 import { useDispatch, useSelector } from 'react-redux';
+
 import editorThemes from '../../config/editorThemes';
 import { editorsThemeSelector } from '../../selectors';
 import { actions } from '../../slices';

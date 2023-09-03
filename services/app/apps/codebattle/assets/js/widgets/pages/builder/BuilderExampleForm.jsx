@@ -5,17 +5,20 @@ import React, {
   memo,
   useContext,
 } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import cloneDeep from 'lodash/cloneDeep';
+
 import cn from 'classnames';
-import { actions } from '../../slices';
+import cloneDeep from 'lodash/cloneDeep';
+import { useDispatch, useSelector } from 'react-redux';
+
 import RoomContext from '../../components/RoomContext';
-import PreviewAssertsPanel from './PreviewAssertsPanel';
-import OutputSignatureEditPanel from './OutputSignatureEditPanel';
-import InputSignatureEditPanel from './InputSignatureEditPanel';
-import ExamplesEditPanel from './ExamplesEditPanel';
+import { actions } from '../../slices';
 import { MAX_INPUT_ARGUMENTS_COUNT } from '../../utils/builder';
 import useKey from '../../utils/useKey';
+
+import ExamplesEditPanel from './ExamplesEditPanel';
+import InputSignatureEditPanel from './InputSignatureEditPanel';
+import OutputSignatureEditPanel from './OutputSignatureEditPanel';
+import PreviewAssertsPanel from './PreviewAssertsPanel';
 
 const navbarItemClassName = 'nav-item nav-link col-3 border-0 rounded-0 px-1 py-2';
 

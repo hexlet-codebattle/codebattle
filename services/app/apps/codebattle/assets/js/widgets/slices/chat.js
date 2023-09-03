@@ -1,11 +1,11 @@
 import { createSlice, current } from '@reduxjs/toolkit';
 
 import defaultRooms from '../config/rooms';
+import { ttl, filterPrivateRooms } from '../middlewares/Room';
 import {
   isMessageForCurrentUser,
   isMessageForCurrentPrivateRoom,
 } from '../utils/chat';
-import { ttl, filterPrivateRooms } from '../middlewares/Room';
 
 const initialState = {
   users: [],

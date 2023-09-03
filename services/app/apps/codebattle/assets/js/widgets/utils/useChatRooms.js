@@ -1,5 +1,7 @@
-import { useSelector, useDispatch } from 'react-redux';
 import { useEffect, useMemo } from 'react';
+
+import { useSelector, useDispatch } from 'react-redux';
+
 import {
   getPrivateRooms,
   filterPrivateRooms,
@@ -7,8 +9,9 @@ import {
   clearExpiredPrivateRooms,
   updatePrivateRooms,
 } from '../middlewares/Room';
-import { actions } from '../slices';
 import * as selectors from '../selectors';
+import { actions } from '../slices';
+
 import getChatName from './names';
 
 const useChatRooms = key => {

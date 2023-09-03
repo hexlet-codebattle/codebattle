@@ -1,9 +1,10 @@
+import Gon from 'gon';
 import { Howl, Howler } from 'howler';
 import isUndefined from 'lodash/isUndefined';
-import Gon from 'gon';
-import standart from '../config/sound/standart';
+
 import cs from '../config/sound/cs';
 import dendy from '../config/sound/dendy';
+import standart from '../config/sound/standart';
 
 const audioPaths = {
   standart: '/assets/audio/audioSprites/standartSpritesAudio.wav',

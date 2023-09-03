@@ -1,18 +1,20 @@
-import moment from 'moment';
 import React, {
   memo,
   useEffect,
   useMemo,
   useRef,
 } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import cn from 'classnames';
 
-import GameCard from './GameCard';
-import UserInfo from '../../components/UserInfo';
+import cn from 'classnames';
+import moment from 'moment';
+import { useDispatch, useSelector } from 'react-redux';
+
 import GameLevelBadge from '../../components/GameLevelBadge';
 import ResultIcon from '../../components/ResultIcon';
 import HorizontalScrollControls from '../../components/SideScrollControls';
+import UserInfo from '../../components/UserInfo';
+
+import GameCard from './GameCard';
 
 const CompletedGamesRows = memo(({ games }) => (
   <>

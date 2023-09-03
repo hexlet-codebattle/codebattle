@@ -1,8 +1,9 @@
 import React, { memo } from 'react';
-import JoinButton from './JoinButton';
 
-import TournamentStates from '../../config/tournament';
 import UserInfo from '../../components/UserInfo';
+import TournamentStates from '../../config/tournament';
+
+import JoinButton from './JoinButton';
 
 const Players = ({ players }) => (
   <div className="my-3">

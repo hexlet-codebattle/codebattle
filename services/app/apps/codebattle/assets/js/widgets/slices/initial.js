@@ -1,6 +1,10 @@
-import { camelizeKeys } from 'humps';
 import Gon from 'gon';
+import { camelizeKeys } from 'humps';
+
+import GameRoomModes from '../config/gameModes';
+import GameStateCodes from '../config/gameStateCodes';
 import { taskStateCodes, taskVisibilityCodes } from '../config/task';
+import userTypes from '../config/userTypes';
 import {
   validateTaskName,
   validateInputSignatures,
@@ -17,9 +21,6 @@ import {
   makeEditorTextKey,
   setPlayerToSliceState,
 } from '../utils/gameRoom';
-import GameStateCodes from '../config/gameStateCodes';
-import GameRoomModes from '../config/gameModes';
-import userTypes from '../config/userTypes';
 
 const currentUserParams = Gon.getAsset('current_user');
 const isRecord = Gon.getAsset('is_record') || false;

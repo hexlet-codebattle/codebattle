@@ -1,6 +1,8 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+
 import find from 'lodash/find';
+import { useSelector } from 'react-redux';
+
 import i18n from '../../../i18n';
 import * as selectors from '../../selectors';
 import { getCreateTrainingGameUrl } from '../../utils/urlBuilders';

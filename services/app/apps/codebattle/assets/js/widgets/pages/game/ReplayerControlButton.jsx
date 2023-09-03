@@ -1,11 +1,13 @@
 import React, { useContext, useCallback } from 'react';
+
 import { useDispatch } from 'react-redux';
-import RoomContext from '../../components/RoomContext';
+
 import i18n from '../../../i18n';
-import { actions } from '../../slices';
-import { downloadPlaybook, openPlaybook } from '../../middlewares/Game';
+import RoomContext from '../../components/RoomContext';
 import { replayerMachineStates, roomMachineStates } from '../../machines/game';
 import { inPreviewRoomSelector, roomStateSelector } from '../../machines/selectors';
+import { downloadPlaybook, openPlaybook } from '../../middlewares/Game';
+import { actions } from '../../slices';
 import useMachineStateSelector from '../../utils/useMachineStateSelector';
 
 function ReplayerControlButton() {

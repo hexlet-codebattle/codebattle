@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 import moment from 'moment';
+
 import periodTypes from '../config/periodTypes';
 
 const periodMapping = {

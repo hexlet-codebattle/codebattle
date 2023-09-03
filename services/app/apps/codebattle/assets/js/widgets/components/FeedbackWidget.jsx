@@ -1,10 +1,11 @@
 import React, { useCallback, memo } from 'react';
-import SlackFeedback, { themes } from 'react-slack-feedback';
-import { useDispatch, useSelector } from 'react-redux';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { actions } from '../slices';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useDispatch, useSelector } from 'react-redux';
+import SlackFeedback, { themes } from 'react-slack-feedback';
+
 import { currentUserNameSelector } from '../selectors/index';
+import { actions } from '../slices';
 
 const sendToServer = (payload, success, error) => fetch('/api/v1/feedback', {
   method: 'POST',

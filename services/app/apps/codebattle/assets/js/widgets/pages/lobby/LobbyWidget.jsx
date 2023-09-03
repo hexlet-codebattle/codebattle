@@ -4,42 +4,44 @@ import React, {
   useRef,
   useEffect,
 } from 'react';
+
+import cn from 'classnames';
+import Gon from 'gon';
 import find from 'lodash/find';
-import isEmpty from 'lodash/isEmpty';
-import sortBy from 'lodash/sortBy';
-import orderBy from 'lodash/orderBy';
 import groupBy from 'lodash/groupBy';
+import isEmpty from 'lodash/isEmpty';
+import orderBy from 'lodash/orderBy';
+import sortBy from 'lodash/sortBy';
 import moment from 'moment';
 import Modal from 'react-bootstrap/Modal';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
-
 import { useDispatch, useSelector } from 'react-redux';
-import Gon from 'gon';
-import cn from 'classnames';
-import * as lobbyMiddlewares from '../../middlewares/Lobby';
-import gameStateCodes from '../../config/gameStateCodes';
-import { actions } from '../../slices';
-import * as selectors from '../../selectors';
-import UserInfo from '../../components/UserInfo';
-import CompletedGames from './CompletedGames';
-import ChatActionModal from './ChatActionModal';
-import CreateGameDialog from './CreateGameDialog';
-import Leaderboard from './Leaderboard';
-import Announcement from './Announcement';
+
 import GameLevelBadge from '../../components/GameLevelBadge';
-import LobbyChat from './LobbyChat';
+import HorizontalScrollControls from '../../components/SideScrollControls';
+import UserInfo from '../../components/UserInfo';
+import gameStateCodes from '../../config/gameStateCodes';
+import hashLinkNames from '../../config/hashLinkNames';
+import levelRatio from '../../config/levelRatio';
+import * as lobbyMiddlewares from '../../middlewares/Lobby';
+import * as selectors from '../../selectors';
+import { actions } from '../../slices';
+import { fetchCompletedGames, loadNextPage } from '../../slices/completedGames';
+import { getLobbyUrl } from '../../utils/urlBuilders';
+
+import Announcement from './Announcement';
+import ChatActionModal from './ChatActionModal';
+import CompletedGames from './CompletedGames';
+import CreateGameDialog from './CreateGameDialog';
+import GameActionButton from './GameActionButton';
 import GameCard from './GameCard';
-import TournamentCard from './TournamentCard';
 import GameProgressBar from './GameProgressBar';
 import GameStateBadge from './GameStateBadge';
+import Leaderboard from './Leaderboard';
+import LobbyChat from './LobbyChat';
 import ShowButton from './ShowButton';
-import GameActionButton from './GameActionButton';
-import HorizontalScrollControls from '../../components/SideScrollControls';
-import { getLobbyUrl } from '../../utils/urlBuilders';
-import levelRatio from '../../config/levelRatio';
-import hashLinkNames from '../../config/hashLinkNames';
-import { fetchCompletedGames, loadNextPage } from '../../slices/completedGames';
+import TournamentCard from './TournamentCard';
 
 const isActiveGame = game => [gameStateCodes.playing, gameStateCodes.waitingOpponent].includes(game.state);
 

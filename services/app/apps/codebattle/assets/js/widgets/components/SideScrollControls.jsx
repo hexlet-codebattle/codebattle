@@ -4,8 +4,9 @@ import React, {
   useEffect,
   useCallback,
 } from 'react';
-import cn from 'classnames';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import cn from 'classnames';
 
 const delta = 10;
 

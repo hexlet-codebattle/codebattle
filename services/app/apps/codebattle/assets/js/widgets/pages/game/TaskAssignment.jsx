@@ -1,14 +1,17 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+
 import isEmpty from 'lodash/isEmpty';
+import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
+
 import i18n from '../../../i18n';
-import { actions } from '../../slices';
-import ContributorsList from './ContributorsList';
 import GameLevelBadge from '../../components/GameLevelBadge';
-import TaskLanguagesSelection from './TaskLanguageSelection';
-import TaskDescriptionMarkdown from './TaskDescriptionMarkdown';
+import { actions } from '../../slices';
 import useTaskDescriptionParams from '../../utils/useTaskDescriptionParams';
+
+import ContributorsList from './ContributorsList';
+import TaskDescriptionMarkdown from './TaskDescriptionMarkdown';
+import TaskLanguagesSelection from './TaskLanguageSelection';
 
 const renderTaskLink = name => {
   const link = `https://github.com/hexlet-codebattle/battle_asserts/tree/master/src/battle_asserts/issues/${name}.clj`;

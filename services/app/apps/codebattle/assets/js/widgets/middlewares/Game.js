@@ -1,30 +1,30 @@
-import find from 'lodash/find';
-import debounce from 'lodash/debounce';
 import axios from 'axios';
 import Gon from 'gon';
 import { camelizeKeys, decamelizeKeys } from 'humps';
+import debounce from 'lodash/debounce';
+import find from 'lodash/find';
+
 import socket from '../../socket';
-import * as selectors from '../selectors';
+import GameRoomModes from '../config/gameModes';
+import GameStateCodes from '../config/gameStateCodes';
+import PlaybookStatusCodes from '../config/playbookStatusCodes';
+import { taskStateCodes } from '../config/task';
 import userTypes from '../config/userTypes';
-import { actions, redirectToNewGame } from '../slices';
 import {
   parse, getFinalState, getText, resolveDiffs,
 } from '../lib/player';
-
-import PlaybookStatusCodes from '../config/playbookStatusCodes';
-import GameStateCodes from '../config/gameStateCodes';
-import GameRoomModes from '../config/gameModes';
-import notification from '../utils/notification';
+import * as selectors from '../selectors';
+import { actions, redirectToNewGame } from '../slices';
 import {
  taskTemplatesStates, labelTaskParamsWithIds, MAX_NAME_LENGTH, MIN_NAME_LENGTH,
 } from '../utils/builder';
-import { taskStateCodes } from '../config/task';
 import {
   getGamePlayers,
   getGameStatus,
   getPlayersExecutionData,
   getPlayersText,
 } from '../utils/gameRoom';
+import notification from '../utils/notification';
 
 const defaultLanguages = Gon.getAsset('langs');
 const gameId = Gon.getAsset('game_id');

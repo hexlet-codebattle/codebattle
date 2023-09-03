@@ -1,4 +1,5 @@
 import React from 'react';
+
 import ReactLoading from 'react-loading';
 
 const PlayerLoading = ({ small = false, show = false }) => {

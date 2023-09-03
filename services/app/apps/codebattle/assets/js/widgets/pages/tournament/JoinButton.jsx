@@ -1,7 +1,8 @@
 import React from 'react';
-import cn from 'classnames';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import cn from 'classnames';
+
 import { leaveTournament, joinTournament } from '../../middlewares/Tournament';
 
 const JoinButton = ({
