@@ -3,6 +3,7 @@ import React, {
   useState,
   useRef,
   useEffect,
+  useCallback,
 } from 'react';
 import find from 'lodash/find';
 import isEmpty from 'lodash/isEmpty';
@@ -36,7 +37,7 @@ import GameStateBadge from './GameStateBadge';
 import ShowButton from './ShowButton';
 import GameActionButton from './GameActionButton';
 import HorizontalScrollControls from '../../components/SideScrollControls';
-import { getLobbyUrl } from '../../utils/urlBuilders';
+import { getLobbyUrl, makeGameUrl } from '../../utils/urlBuilders';
 import levelRatio from '../../config/levelRatio';
 import hashLinkNames from '../../config/hashLinkNames';
 import { fetchCompletedGames, loadNextPage } from '../../slices/completedGames';
@@ -479,14 +480,14 @@ const renderModal = (show, handleCloseModal) => (
   </Modal>
 );
 
-const CreateGameButton = ({ handleClick, isOnline }) => (
+const CreateGameButton = ({ onClick, isOnline, isContinue }) => (
   <button
     type="button"
     className="btn btn-success border-0 text-uppercase font-weight-bold py-3 rounded-lg"
-    onClick={handleClick}
+    onClick={onClick}
     disabled={!isOnline}
   >
-    Create a Game
+    {isContinue ? 'Continue' : 'Create a Game'}
   </button>
 );
 
@@ -499,12 +500,29 @@ const LobbyWidget = () => {
 
   const currentUserId = useSelector(selectors.currentUserIdSelector);
   const isGuest = useSelector(selectors.currentUserIsGuestSelector);
-  const { presenceList, channel: { online } } = useSelector(selectors.lobbyDataSelector);
   const isModalShow = useSelector(selectors.isModalShow);
+  const { completedGames, totalGames } = useSelector(selectors.completedGamesData);
+  const activeGame = useSelector(selectors.activeGameSelector);
+  const {
+    activeGames,
+    liveTournaments,
+    completedTournaments,
+    presenceList,
+    channel: { online },
+  } = useSelector(selectors.lobbyDataSelector);
+
   const [actionModalShowing, setActionModalShowing] = useState({ opened: false });
 
-  const handleShowModal = () => dispatch(actions.showCreateGameModal());
+  const handleShowModal = useCallback(() => dispatch(actions.showCreateGameModal()), [dispatch]);
   const handleCloseModal = () => dispatch(actions.closeCreateGameModal());
+
+  const handleCreateGameBtnClick = useCallback(() => {
+    if (activeGame) {
+      window.location.href = makeGameUrl(activeGame.id);
+    } else {
+      handleShowModal();
+    }
+  }, [activeGame, handleShowModal]);
 
   useEffect(() => {
     const clearLobby = lobbyMiddlewares.fetchState(currentUserId)(dispatch);
@@ -525,14 +543,6 @@ const LobbyWidget = () => {
     dispatch(fetchCompletedGames());
   }, [dispatch]);
 
-  const {
-    activeGames,
-    liveTournaments,
-    completedTournaments,
-  } = useSelector(selectors.lobbyDataSelector);
-
-  const { completedGames, totalGames } = useSelector(selectors.completedGamesData);
-
   return (
     <div className="container-lg">
       {renderModal(isModalShow, handleCloseModal)}
@@ -545,7 +555,7 @@ const LobbyWidget = () => {
       <div className="row">
         <div className="d-flex flex-column col-12 col-lg-8 p-0 mb-2 pr-lg-2">
           <div className="d-none d-sm-block d-md-none d-flex flex-column mb-2">
-            <CreateGameButton handleClick={handleShowModal} isOnline={online} />
+            <CreateGameButton onClick={handleCreateGameBtnClick} isOnline={online} isContinue={!!activeGame} />
           </div>
           <GameContainers
             activeGames={activeGames}
@@ -567,7 +577,7 @@ const LobbyWidget = () => {
         <div className="d-flex flex-column col-12 col-lg-4 p-0">
           <div className="d-none d-sm-none d-md-block">
             <div className="d-flex flex-column">
-              <CreateGameButton handleClick={handleShowModal} isOnline={online} />
+              <CreateGameButton onClick={handleCreateGameBtnClick} isOnline={online} isContinue={!!activeGame} />
             </div>
           </div>
           <div className="mt-2">
