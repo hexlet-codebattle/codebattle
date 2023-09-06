@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useDispatch, useSelector } from 'react-redux';
 import SlackFeedback, { themes } from 'react-slack-feedback';
 
+import AlertCodes from '../config/alertCodes';
 import { currentUserNameSelector } from '../selectors/index';
 import { actions } from '../slices';
 
@@ -19,8 +20,9 @@ const sendToServer = (payload, success, error) => fetch('/api/v1/feedback', {
   .catch(error);
 
 function FeedbackWidget() {
-  const currentUserName = useSelector(currentUserNameSelector);
   const dispatch = useDispatch();
+
+  const currentUserName = useSelector(currentUserNameSelector);
 
   const addAlert = useCallback(status => {
     dispatch(actions.addAlert({ [Date.now()]: status }));
@@ -40,11 +42,11 @@ function FeedbackWidget() {
       user={currentUserName}
       onSubmit={(payload, success, error) => sendToServer(payload)
         .then(() => {
-          addAlert('editSuccess');
+          addAlert(AlertCodes.feedbackSendSuccessful);
           success();
         })
         .catch(() => {
-          addAlert('editError');
+          addAlert(AlertCodes.feedbackSendError);
           error();
         })}
     />

@@ -5,18 +5,19 @@ import Alert from 'react-bootstrap/Alert';
 import { useDispatch, useSelector } from 'react-redux';
 
 import i18n from '../../i18n';
+import AlertCodes from '../config/alertCodes';
 import { gameAlertsSelector } from '../selectors/index';
 import { actions } from '../slices';
 
 const getNotification = status => {
   switch (status) {
-    case 'editSuccess': {
+    case AlertCodes.feedbackSendSuccessful: {
       return {
         status: 'success',
         message: i18n.t('Feedback sent successfully.'),
       };
     }
-    case 'editError': {
+    case AlertCodes.feedbackSendError: {
       return {
         status: 'danger',
         message: i18n.t('Feedback not sent.'),
