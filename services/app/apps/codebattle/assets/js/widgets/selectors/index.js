@@ -353,6 +353,16 @@ export const currentUserNameSelector = state => {
   return state.user.users[currentUserId].name;
 };
 
+export const activeGameSelector = state => {
+  const currentUserId = currentUserIdSelector(state);
+
+  const getMyGame = game => game.players.some(
+    ({ id }) => id === currentUserId,
+  );
+
+  return state.lobby.activeGames.find(getMyGame);
+};
+
 export const isModalShow = state => state.lobby.createGameModal.show;
 
 export const modalSelector = state => state.lobby.createGameModal;
