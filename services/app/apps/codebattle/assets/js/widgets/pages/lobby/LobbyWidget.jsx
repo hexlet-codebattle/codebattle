@@ -29,7 +29,7 @@ import * as lobbyMiddlewares from '../../middlewares/Lobby';
 import * as selectors from '../../selectors';
 import { actions } from '../../slices';
 import { fetchCompletedGames, loadNextPage } from '../../slices/completedGames';
-import { getLobbyUrl } from '../../utils/urlBuilders';
+import { getLobbyUrl, makeGameUrl } from '../../utils/urlBuilders';
 
 import Announcement from './Announcement';
 import ChatActionModal from './ChatActionModal';
@@ -42,13 +42,7 @@ import GameStateBadge from './GameStateBadge';
 import Leaderboard from './Leaderboard';
 import LobbyChat from './LobbyChat';
 import ShowButton from './ShowButton';
-import TournamentCard from './';
-import GameActionButton from './GameActionButton';
-import HorizontalScrollControls from '../../components/SideScrollControls';
-import { getLobbyUrl, makeGameUrl } from '../../utils/urlBuilders';
-import levelRatio from '../../config/levelRatio';
-import hashLinkNames from '../../config/hashLinkNames';
-import { fetchCompletedGames, loadNextPage } from '../../slices/completedGames';
+import TournamentCard from './TournamentCard';
 
 const isActiveGame = game => [gameStateCodes.playing, gameStateCodes.waitingOpponent].includes(game.state);
 
