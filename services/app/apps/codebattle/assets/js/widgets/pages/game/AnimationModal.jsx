@@ -34,7 +34,7 @@ function AnimationModal({ setModalShowing, modalShowing }) {
         <Modal.Body>
           <div className="d-flex justify-content-center">
             <img
-              className="w-100"
+              className="w-100 rounded-lg"
               style={{ maxWidth: '400px', height: '300px' }}
               src={gifs[result]}
               alt="animation"

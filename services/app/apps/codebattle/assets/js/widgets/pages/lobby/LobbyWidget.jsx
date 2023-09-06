@@ -384,7 +384,11 @@ const GameContainers = ({
   return (
     <div className="p-0 shadow-sm rounded-lg">
       <nav>
-        <div className="nav nav-tabs flex-nowrap overflow-auto bg-gray rounded-top border-dark border-bottom" id="nav-tab" role="tablist">
+        <div
+          id="nav-tab"
+          className="nav nav-tabs flex-nowrap cb-overflow-x-auto bg-gray rounded-top border-dark border-bottom"
+          role="tablist"
+        >
           <a
             className={tabLinkClassName(
               hashLinkNames.lobby,

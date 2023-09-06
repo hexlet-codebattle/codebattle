@@ -117,11 +117,12 @@ function GameActionButtons({
   resetBtnStatus,
   giveUpBtnStatus,
 }) {
-  const [modalShowing, setModalShowing] = useState(false);
   const dispatch = useDispatch();
 
   const { mainService } = useContext(RoomContext);
   const isTestingRoom = useMachineStateSelector(mainService, inTestingRoomSelector);
+
+  const [modalShowing, setModalShowing] = useState(false);
 
   const modalHide = () => {
     setModalShowing(false);
@@ -150,8 +151,8 @@ function GameActionButtons({
         Are you sure you want to give up?
       </Modal.Body>
       <Modal.Footer className="mx-auto">
-        <Button onClick={handleGiveUp} className="btn-danger">Give up</Button>
-        <Button onClick={modalHide} className="btn-secondary">Cancel</Button>
+        <Button onClick={handleGiveUp} className="btn-danger rounded-lg">Give up</Button>
+        <Button onClick={modalHide} className="btn-secondary rounded-lg">Cancel</Button>
       </Modal.Footer>
     </Modal>
   );

@@ -31,7 +31,7 @@ function ChatActionModal({
 
     dispatch(
       actions.showCreateGameInviteModal({
-        opponentInfo: { id: userId, name: userName },
+        opponentInfo: { id: Number(userId), name: userName },
       }),
     );
   }, [dispatch, setModalShowing]);
@@ -41,7 +41,7 @@ function ChatActionModal({
     const { userId, userName } = event.currentTarget.dataset;
     setModalShowing({ opened: false });
 
-    dispatch(lobbyMiddlewares.openDirect(userId, userName));
+    dispatch(lobbyMiddlewares.openDirect(Number(userId), userName));
     if (chatInputRef.current) {
       chatInputRef.current.focus();
     }

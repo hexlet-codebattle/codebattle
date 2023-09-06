@@ -427,7 +427,11 @@ a {
   }
 }
 
-.cb-lobby-widget-container,
+.cb-lobby-widget-container {
+  min-height: 400px;
+  max-height: 500px;
+}
+
 .cb-messages-container {
   height: 400px;
 
@@ -807,4 +811,36 @@ a:hover{
 
 .cb-left-scroll-control {
   background: linear-gradient(to left, transparent 0, var(--light) 12px ,var(--light) 100%);
+}
+
+// adapted styles from bootstrap 5.3
+
+.cb-overflow-x-auto {
+  overflow-x: auto;
+}
+
+.cb-overflow-x-hidden {
+  overflow-x: hidden;
+}
+.cb-overflow-x-visible {
+  overflow-x: visible;
+}
+
+.cb-overflow-x-scroll {
+  overflow-x: scroll;
+}
+
+.cb-overflow-y-auto {
+  overflow-y: auto;
+}
+
+.cb-overflow-y-hidden {
+  overflow-y: hidden;
+}
+.cb-overflow-y-visible {
+  overflow-y: visible;
+}
+
+.cb-overflow-y-scroll {
+  overflow-y: scroll;
 }

@@ -46,7 +46,9 @@ const UserName = ({
       <a
         href={`/users/${user.id}`}
         key={user.id}
-        className="d-flex align-items-center"
+        className={cn('d-flex align-items-center', {
+          'text-danger': user.isAdmin,
+        })}
       >
         <p
           className={`text-truncate m-0 ${
