@@ -1,12 +1,14 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
-import { PlayerIcon } from 'react-player-controls';
+
 import cn from 'classnames';
-import Gon from 'gon';
 import copy from 'copy-to-clipboard';
-import { actions } from '../../slices';
+import Gon from 'gon';
+import { PlayerIcon } from 'react-player-controls';
+import { useDispatch } from 'react-redux';
+
 import speedModes from '../../config/speedModes';
 import { replayerMachineStates } from '../../machines/game';
+import { actions } from '../../slices';
 
 const gameId = Gon.getAsset('game_id');
 

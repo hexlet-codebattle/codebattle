@@ -1,13 +1,15 @@
 import React, { useContext, useState } from 'react';
-import { useDispatch } from 'react-redux';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
+import { useDispatch } from 'react-redux';
+
 import RoomContext from '../../components/RoomContext';
+import { inTestingRoomSelector } from '../../machines/selectors';
 import { sendGiveUp, resetTextToTemplateAndSend, resetTextToTemplate } from '../../middlewares/Game';
 import { actions } from '../../slices';
 import useMachineStateSelector from '../../utils/useMachineStateSelector';
-import { inTestingRoomSelector } from '../../machines/selectors';
 
 function CheckResultButton({ onClick, status }) {
   const dispatch = useDispatch();

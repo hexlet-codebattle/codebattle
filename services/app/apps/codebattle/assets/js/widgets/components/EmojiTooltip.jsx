@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+
 import { SearchIndex } from 'emoji-mart';
-import * as _ from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 
 import useKey from '../utils/useKey';
 
@@ -54,7 +55,7 @@ export default function EmojiTooltip({ colons, handleSelect, hide }) {
       onClick={() => { handleSelect(emojis[activeIndex]); }}
       size="4"
     >
-      {!_.isEmpty(emojis) && emojis.map((emoji, i) => (
+      {!isEmpty(emojis) && emojis.map((emoji, i) => (
         <option
           key={emoji.id}
           value={+i}

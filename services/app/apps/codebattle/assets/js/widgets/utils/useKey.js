@@ -1,5 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import { useMemo } from 'react';
+
 import useEvent from './useEvent';
 
 const noop = () => { };

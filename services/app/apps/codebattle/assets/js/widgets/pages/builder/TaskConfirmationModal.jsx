@@ -5,15 +5,18 @@ import React, {
   useEffect,
   memo,
 } from 'react';
-import Modal from 'react-bootstrap/Modal';
+
 import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
 import { useDispatch, useSelector } from 'react-redux';
+
 import { taskStateCodes } from '../../config/task';
-import { taskTemplatesStates } from '../../utils/builder';
 import { saveTask } from '../../middlewares/Game';
 import { taskParamsSelector } from '../../selectors';
-import SignaturePreview from './SignaturePreview';
+import { taskTemplatesStates } from '../../utils/builder';
+
 import ExamplePreview from './ExamplePreview';
+import SignaturePreview from './SignaturePreview';
 
 const taskSelector = taskParamsSelector();
 

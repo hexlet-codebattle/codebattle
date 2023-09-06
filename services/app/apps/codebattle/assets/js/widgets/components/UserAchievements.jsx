@@ -1,4 +1,5 @@
 import React from 'react';
+
 import isEmpty from 'lodash/isEmpty';
 
 const LangIcon = ({ size = 'md', lang }) => {

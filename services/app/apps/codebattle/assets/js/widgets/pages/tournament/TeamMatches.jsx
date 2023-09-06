@@ -1,6 +1,7 @@
 import React, { useMemo, memo } from 'react';
 
 import reverse from 'lodash/reverse';
+
 import UserInfo from '../../components/UserInfo';
 
 const calcRoundResult = matches => matches.reduce((acc, match) => {

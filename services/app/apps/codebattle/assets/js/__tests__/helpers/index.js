@@ -1,6 +1,7 @@
-import { URL } from 'url';
 import fs from 'fs';
 import path from 'path';
+import { URL } from 'url';
+
 import moment from 'moment';
 
 const getFixturePath = filename => path.join('..', '..', '__fixtures__', filename);

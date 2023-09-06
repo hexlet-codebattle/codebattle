@@ -1,7 +1,9 @@
 import React from 'react';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import isEmpty from 'lodash/isEmpty';
 import cn from 'classnames';
+import isEmpty from 'lodash/isEmpty';
+
 import {
   itemActionClassName,
   itemAddClassName,

@@ -1,20 +1,21 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
+
 import { useDispatch, useSelector } from 'react-redux';
+
+import TournamentStates from '../../config/tournament';
+import { connectToChat } from '../../middlewares/Chat';
 import {
   connectToTournament,
   kickFromTournament,
 } from '../../middlewares/Tournament';
-import { connectToChat } from '../../middlewares/Chat';
-
 import * as selectors from '../../selectors';
-import TournamentStates from '../../config/tournament';
 
-import TournamentChat from './TournamentChat';
-import Players from './Participants';
 import IndividualMatches from './IndividualMatches';
+import Players from './Participants';
+import TeamMatches from './TeamMatches';
+import TournamentChat from './TournamentChat';
 import TournamentHeader from './TournamentHeader';
 // import TeamTournamentInfoPanel from './TeamTournamentInfoPanel';
-import TeamMatches from './TeamMatches';
 
 function Tournament() {
   const dispatch = useDispatch();

@@ -4,25 +4,26 @@ import React, {
   useMemo,
   memo,
 } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import qs from 'qs';
-import cn from 'classnames';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import cn from 'classnames';
+import qs from 'qs';
 import {
   Menu,
   Item,
   Separator,
 } from 'react-contexify';
+import { useSelector, useDispatch } from 'react-redux';
 
+import { pushCommand } from '@/middlewares/Chat';
+import { openDirect } from '@/middlewares/Lobby';
 import {
   currentUserIsAdminSelector,
   currentUserIdSelector,
   lobbyDataSelector,
-} from '../selectors';
-import { pushCommand } from '../middlewares/Chat';
-import { actions } from '../slices';
-import { getLobbyUrl, getUserProfileUrl } from '../utils/urlBuilders';
-import { openDirect } from '../middlewares/Lobby';
+} from '@/selectors';
+import { actions } from '@/slices';
+import { getLobbyUrl, getUserProfileUrl } from '@/utils/urlBuilders';
 
 const blackSwordSrc = '/assets/images/fight-black.png';
 const whiteSwordSrc = '/assets/images/fight-white.png';

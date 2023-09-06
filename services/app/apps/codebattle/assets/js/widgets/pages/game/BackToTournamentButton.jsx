@@ -1,5 +1,7 @@
 import React from 'react';
+
 import { useSelector } from 'react-redux';
+
 import { gameStatusSelector } from '../../selectors';
 
 function BackToTournamentButton() {

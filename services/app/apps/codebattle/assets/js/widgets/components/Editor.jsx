@@ -1,21 +1,23 @@
 /* eslint-disable no-bitwise */
 import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
-import MonacoEditor from 'react-monaco-editor';
+
 import cn from 'classnames';
 import { registerRulesForLanguage } from 'monaco-ace-tokenizer';
 import { initVimMode } from 'monaco-vim';
+import PropTypes from 'prop-types';
+import MonacoEditor from 'react-monaco-editor';
 import { connect } from 'react-redux';
 
-import { gameModeSelector } from '../selectors/index';
-import languages from '../config/languages';
+import editorThemes from '../config/editorThemes';
+import editorUserTypes from '../config/editorUserTypes';
 import GameRoomModes from '../config/gameModes';
+import languages from '../config/languages';
 import sound from '../lib/sound';
+import { addCursorListeners } from '../middlewares/Game';
+import { gameModeSelector } from '../selectors/index';
 import { actions } from '../slices';
 import getLanguageTabSize, { shouldReplaceTabsWithSpaces } from '../utils/editor';
-import editorThemes from '../config/editorThemes';
-import { addCursorListeners } from '../middlewares/Game';
-import editorUserTypes from '../config/editorUserTypes';
+
 import Loading from './Loading';
 
 class Editor extends PureComponent {

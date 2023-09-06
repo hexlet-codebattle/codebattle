@@ -1,6 +1,7 @@
 import React from 'react';
-import Tooltip from 'react-bootstrap/Tooltip';
+
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
 
 const ResultIcon = ({ gameId, player1, player2 }) => {
   const tooltipId = `tooltip-${gameId}-${player1.id}`;

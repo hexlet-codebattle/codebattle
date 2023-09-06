@@ -1,6 +1,6 @@
-import Gon from 'gon';
-import axios from 'axios';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import axios from 'axios';
+import Gon from 'gon';
 import capitalize from 'lodash/capitalize';
 
 const userSettings = Gon.getAsset('current_user');

@@ -1,12 +1,14 @@
 import React, { useMemo } from 'react';
-import { useSelector } from 'react-redux';
-import hasIn from 'lodash/hasIn';
+
 import find from 'lodash/find';
+import hasIn from 'lodash/hasIn';
 import Alert from 'react-bootstrap/Alert';
-import * as selectors from '../../selectors';
+import { useSelector } from 'react-redux';
+
+import i18n from '../../../i18n';
 import GameRoomModes from '../../config/gameModes';
 import GameStateCodes from '../../config/gameStateCodes';
-import i18n from '../../../i18n';
+import * as selectors from '../../selectors';
 
 function GameResult() {
   const currentUserId = useSelector(state => selectors.currentUserIdSelector(state));

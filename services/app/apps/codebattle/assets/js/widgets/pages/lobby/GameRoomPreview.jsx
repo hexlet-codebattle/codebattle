@@ -1,5 +1,7 @@
 import React from 'react';
+
 import Gon from 'gon';
+
 import LanguageIcon from '../../components/LanguageIcon';
 
 const defaultAvatarUrl = 'https://avatars.githubusercontent.com/u/35539033?v=4';

@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
-import keys from 'lodash/keys';
+
 import includes from 'lodash/includes';
+import keys from 'lodash/keys';
+
 import taskDescriptionLanguages from '../config/taskDescriptionLanguages';
 
 const useTaskDescriptionParams = (task, taskLanguage) => useMemo(() => {

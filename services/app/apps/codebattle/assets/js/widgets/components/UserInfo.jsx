@@ -1,14 +1,16 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { camelizeKeys } from 'humps';
-import cn from 'classnames';
+
 import axios from 'axios';
+import cn from 'classnames';
+import { camelizeKeys } from 'humps';
+import { useDispatch, useSelector } from 'react-redux';
 
 import * as selectors from '../selectors';
 import { actions } from '../slices';
+
+import PopoverStickOnHover from './PopoverStickOnHover';
 import UserName from './UserName';
 import UserStats from './UserStats';
-import PopoverStickOnHover from './PopoverStickOnHover';
 
 function UserPopoverContent({ user }) {
   // TODO: store stats in global redux state

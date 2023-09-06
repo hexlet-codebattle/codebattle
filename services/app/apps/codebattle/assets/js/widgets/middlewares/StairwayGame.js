@@ -1,7 +1,7 @@
 import { camelizeKeys } from 'humps';
+import find from 'lodash/find';
 import groupBy from 'lodash/groupBy';
 import set from 'lodash/set';
-import find from 'lodash/find';
 
 import socket from '../../socket';
 import { actions } from '../slices';

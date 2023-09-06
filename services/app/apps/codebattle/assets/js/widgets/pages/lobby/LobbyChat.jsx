@@ -1,20 +1,22 @@
 import React, { useEffect, useMemo, useCallback } from 'react';
-import { connect, useSelector } from 'react-redux';
-import groupBy from 'lodash/groupBy';
-import cn from 'classnames';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
-import * as selectors from '../../selectors';
-import * as chatMiddlewares from '../../middlewares/Chat';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import cn from 'classnames';
+import groupBy from 'lodash/groupBy';
+import { connect, useSelector } from 'react-redux';
+
+import ChatContextMenu from '../../components/ChatContextMenu';
+import ChatHeader from '../../components/ChatHeader';
+import ChatInput from '../../components/ChatInput';
+import Loading from '../../components/Loading';
 import Messages from '../../components/Messages';
 import UserInfo from '../../components/UserInfo';
-import ChatInput from '../../components/ChatInput';
-import ChatHeader from '../../components/ChatHeader';
-import ChatContextMenu from '../../components/ChatContextMenu';
-import Loading from '../../components/Loading';
+import * as chatMiddlewares from '../../middlewares/Chat';
+import * as selectors from '../../selectors';
+import { shouldShowMessage } from '../../utils/chat';
 import useChatContextMenu from '../../utils/useChatContextMenu';
 import useChatRooms from '../../utils/useChatRooms';
-import { shouldShowMessage } from '../../utils/chat';
 
 function ChatGroupedPlayersList({ players, displayMenu }) {
   const {

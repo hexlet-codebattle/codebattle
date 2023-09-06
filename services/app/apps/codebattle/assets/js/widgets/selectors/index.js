@@ -1,18 +1,19 @@
 import { createDraftSafeSelector } from '@reduxjs/toolkit';
-import isUndefined from 'lodash/isUndefined';
 import find from 'lodash/find';
 import get from 'lodash/get';
-import pick from 'lodash/pick';
 import hasIn from 'lodash/hasIn';
-import userTypes from '../config/userTypes';
-import GameStateCodes from '../config/gameStateCodes';
-import editorModes from '../config/editorModes';
-import editorThemes from '../config/editorThemes';
+import isUndefined from 'lodash/isUndefined';
+import pick from 'lodash/pick';
+
 import i18n from '../../i18n';
-import { makeEditorTextKey } from '../utils/gameRoom';
+import editorModes from '../config/editorModes';
 import defaultEditorHeight from '../config/editorSettings';
-import { replayerMachineStates } from '../machines/game';
+import editorThemes from '../config/editorThemes';
+import GameStateCodes from '../config/gameStateCodes';
 import { taskStateCodes } from '../config/task';
+import userTypes from '../config/userTypes';
+import { replayerMachineStates } from '../machines/game';
+import { makeEditorTextKey } from '../utils/gameRoom';
 
 export const currentUserIdSelector = state => state.user.currentUserId;
 

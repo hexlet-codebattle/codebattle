@@ -1,20 +1,23 @@
 const path = require('path');
-const webpack = require('webpack');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
-const env = process.env.NODE_ENV || 'development';
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
+const webpack = require('webpack');
+
+// const env = process.env.NODE_ENV || 'development';
 // const isProd = env === 'production';
 
 function recursiveIssuer(m) {
   if (m.issuer) {
     return recursiveIssuer(m.issuer);
-  } else if (m.name) {
-    return m.name;
-  } else {
-    return false;
   }
+
+  if (m.name) {
+    return m.name;
+  }
+
+  return false;
 }
 
 module.exports = {
@@ -29,6 +32,7 @@ module.exports = {
     sourceMapFilename: '[name].js.map',
     chunkFilename: '[id].[contenthash].js',
     publicPath: '/assets/',
+    clean: true,
   },
   externals: {
     gon: 'Gon',
@@ -72,15 +76,13 @@ module.exports = {
       cacheGroups: {
         appStyles: {
           name: 'app',
-          test: (m, c, entry = 'app') =>
-            m.constructor.name === 'CssModule' && recursiveIssuer(m) === entry,
+          test: (m, _, entry = 'app') => m.constructor.name === 'CssModule' && recursiveIssuer(m) === entry,
           chunks: 'all',
           enforce: true,
         },
         landingStyles: {
           name: 'landing',
-          test: (m, c, entry = 'landing') =>
-            m.constructor.name === 'CssModule' && recursiveIssuer(m) === entry,
+          test: (m, _, entry = 'landing') => m.constructor.name === 'CssModule' && recursiveIssuer(m) === entry,
           chunks: 'all',
           enforce: true,
         },
@@ -123,6 +125,15 @@ module.exports = {
   resolve: {
     alias: {
       './defineProperty': '@babel/runtime/helpers/esm/defineProperty',
+      '@/': path.resolve(__dirname, '../assets/js/widgets'),
+      '@/components': path.resolve(__dirname, '../assets/js/widgets/components'),
+      '@/lib': path.resolve(__dirname, '../assets/js/widgets/lib'),
+      '@/machines': path.resolve(__dirname, '../assets/js/widgets/machines'),
+      '@/middlewares': path.resolve(__dirname, '../assets/js/widgets/middlewares'),
+      '@/pages': path.resolve(__dirname, '../assets/js/widgets/pages'),
+      '@/selectors': path.resolve(__dirname, '../assets/js/widgets/selectors'),
+      '@/slices': path.resolve(__dirname, '../assets/js/widgets/slices'),
+      '@/utils': path.resolve(__dirname, '../assets/js/widgets/utils'),
     },
     fallback: {
       path: require.resolve('path-browserify'),

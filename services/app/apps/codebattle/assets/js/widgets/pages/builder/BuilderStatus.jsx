@@ -1,13 +1,16 @@
 import React, { useContext, memo } from 'react';
+
 import { useSelector } from 'react-redux';
+
+import RoomContext from '../../components/RoomContext';
 import { taskStateSelector } from '../../machines/selectors';
-import useMachineStateSelector from '../../utils/useMachineStateSelector';
 import {
   validationStatuses,
   mapStateToValidationStatus,
   getGeneratorStatus,
 } from '../../machines/task';
-import RoomContext from '../../components/RoomContext';
+import useMachineStateSelector from '../../utils/useMachineStateSelector';
+
 import TaskPropStatusIcon from './TaskPropStatusIcon';
 
 function BuilderStatus() {

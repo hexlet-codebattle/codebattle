@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+
 import editorModes from '../config/editorModes';
 import editorThemes from '../config/editorThemes';
 import taskDescriptionLanguages from '../config/taskDescriptionLanguages';

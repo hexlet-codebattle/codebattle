@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import * as _ from 'lodash';
-import { SearchIndex, init } from 'emoji-mart';
+
 import data from '@emoji-mart/data';
+import { SearchIndex, init } from 'emoji-mart';
+import isEmpty from 'lodash/isEmpty';
 import { useSelector } from 'react-redux';
 
+import messageTypes from '../config/messageTypes';
+import { addMessage } from '../middlewares/Chat';
 import * as selectors from '../selectors';
 import useClickAway from '../utils/useClickAway';
-import { addMessage } from '../middlewares/Chat';
+
 import EmojiPicker from './EmojiPicker';
 import EmojiToolTip from './EmojiTooltip';
-import messageTypes from '../config/messageTypes';
 
 const trimColons = message => message.slice(0, message.lastIndexOf(':'));
 
@@ -19,7 +21,7 @@ const getTooltipVisibility = async msg => {
   const endsWithEmojiCodeRegex = /.*:[a-zA-Z]{0,}([^ ])+$/;
   if (!endsWithEmojiCodeRegex.test(msg)) return Promise.resolve(false);
   const colons = getColons(msg);
-  return !_.isEmpty(await SearchIndex.search(colons));
+  return !isEmpty(await SearchIndex.search(colons));
 };
 
 export default function ChatInput({ inputRef, disabled = false }) {

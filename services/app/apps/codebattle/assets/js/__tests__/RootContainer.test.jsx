@@ -1,22 +1,21 @@
 import React from 'react';
+
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom/extend-expect';
 import axios from 'axios';
+import { Provider } from 'react-redux';
 import { createMachine } from 'xstate';
 
-import { configureStore, combineReducers } from '@reduxjs/toolkit';
-import { Provider } from 'react-redux';
-import RootContainer from '../widgets/pages/GameRoomWidget';
-
-import reducers from '../widgets/slices';
-import userTypes from '../widgets/config/userTypes';
-import GameStateCodes from '../widgets/config/gameStateCodes';
 import GameRoomModes from '../widgets/config/gameModes';
-
+import GameStateCodes from '../widgets/config/gameStateCodes';
+import userTypes from '../widgets/config/userTypes';
+import editor from '../widgets/machines/editor';
 import game from '../widgets/machines/game';
 import task from '../widgets/machines/task';
-import editor from '../widgets/machines/editor';
+import RootContainer from '../widgets/pages/GameRoomWidget';
+import reducers from '../widgets/slices';
 
 const createPlayer = params => ({
   is_admin: false,

@@ -1,11 +1,14 @@
 import React, { memo, useCallback } from 'react';
+
 import { useDispatch, useSelector } from 'react-redux';
-import BuilderTaskAssignment from './BuilderTaskAssignment';
-import TimerContainer from '../game/TimerContainer';
-import BuilderStatus from './BuilderStatus';
-import BuilderExampleForm from './BuilderExampleForm';
+
 import * as selectors from '../../selectors';
 import { actions } from '../../slices';
+import TimerContainer from '../game/TimerContainer';
+
+import BuilderExampleForm from './BuilderExampleForm';
+import BuilderStatus from './BuilderStatus';
+import BuilderTaskAssignment from './BuilderTaskAssignment';
 
 function BuilderSettingsWidget({ setConfigurationModalShowing }) {
   const dispatch = useDispatch();

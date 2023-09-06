@@ -1,12 +1,11 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
-import cn from 'classnames';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import SignatureTrack from './SignatureTrack';
-import ExamplesTrack from './ExamplesTrack';
-import BuilderActions from './BuilderActions';
-import * as selectors from '../../selectors';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import cn from 'classnames';
+import { useSelector } from 'react-redux';
+
+import { taskStateCodes } from '../../config/task';
+import * as selectors from '../../selectors';
 import {
   itemActionClassName,
   itemClassName,
@@ -14,7 +13,10 @@ import {
   MAX_INPUT_ARGUMENTS_COUNT,
   MIN_EXAMPLES_COUNT,
 } from '../../utils/builder';
-import { taskStateCodes } from '../../config/task';
+
+import BuilderActions from './BuilderActions';
+import ExamplesTrack from './ExamplesTrack';
+import SignatureTrack from './SignatureTrack';
 
 const TaskStateBadge = ({ state }) => {
   const className = cn('badge py-2 mb-2', {

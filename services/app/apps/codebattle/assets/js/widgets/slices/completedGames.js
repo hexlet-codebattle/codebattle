@@ -3,8 +3,8 @@ import axios from 'axios';
 import { camelizeKeys } from 'humps';
 import unionBy from 'lodash/unionBy';
 
-import { actions as lobbyActions } from './lobby';
 import initial from './initial';
+import { actions as lobbyActions } from './lobby';
 
 export const fetchCompletedGames = createAsyncThunk(
   'completedGames/fetchCompletedGames',

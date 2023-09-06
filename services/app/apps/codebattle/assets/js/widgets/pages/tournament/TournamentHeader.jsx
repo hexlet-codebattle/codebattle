@@ -2,18 +2,20 @@ import React, {
   memo,
   useMemo,
 } from 'react';
-import cn from 'classnames';
 
-import { useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import cn from 'classnames';
+import { useSelector } from 'react-redux';
+
+import CopyButton from '../../components/CopyButton';
+import GameLevelBadge from '../../components/GameLevelBadge';
+import Loading from '../../components/Loading';
+import TournamentType from '../../components/TournamentType';
 import TournamentStates from '../../config/tournament';
+import * as selectors from '../../selectors';
+
 import JoinButton from './JoinButton';
 import TournamentMainControlButtons from './TournamentMainControlButtons';
-import GameLevelBadge from '../../components/GameLevelBadge';
-import * as selectors from '../../selectors';
-import Loading from '../../components/Loading';
-import CopyButton from '../../components/CopyButton';
-import TournamentType from '../../components/TournamentType';
 
 const getIconByAccessType = accessType => (
   accessType === 'token'

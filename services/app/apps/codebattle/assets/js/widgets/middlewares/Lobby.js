@@ -1,11 +1,12 @@
-import { camelizeKeys } from 'humps';
 import Gon from 'gon';
+import { camelizeKeys } from 'humps';
 import some from 'lodash/some';
 
 import socket from '../../socket';
 import { actions } from '../slices';
-import { calculateExpireDate } from './Room';
 import { getSystemMessage } from '../utils/chat';
+
+import { calculateExpireDate } from './Room';
 
 const channelName = 'lobby';
 const isRecord = Gon.getAsset('is_record');

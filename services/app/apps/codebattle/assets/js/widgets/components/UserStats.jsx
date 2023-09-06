@@ -1,7 +1,8 @@
 import React from 'react';
+
+import LanguageIcon from './LanguageIcon';
 import Loading from './Loading';
 import UserAchievements from './UserAchievements';
-import LanguageIcon from './LanguageIcon';
 
 const UserStats = ({ data, user: userInfo }) => {
   const avatarUrl = userInfo.avatarUrl || data?.user?.avatarUrl || '/assets/images/logo.svg';

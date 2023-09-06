@@ -1,12 +1,13 @@
 import React, { useContext } from 'react';
+
 import CountdownTimer from '../../components/CountdownTimer';
-import Timer from '../../components/Timer';
 import RoomContext from '../../components/RoomContext';
+import Timer from '../../components/Timer';
 import GameRoomModes from '../../config/gameModes';
-import useMachineStateSelector from '../../utils/useMachineStateSelector';
-import { roomStateSelector, taskStateSelector } from '../../machines/selectors';
 import { roomMachineStates } from '../../machines/game';
+import { roomStateSelector, taskStateSelector } from '../../machines/selectors';
 import { taskMachineStates } from '../../machines/task';
+import useMachineStateSelector from '../../utils/useMachineStateSelector';
 
 const gameStatuses = {
   stored: 'stored',

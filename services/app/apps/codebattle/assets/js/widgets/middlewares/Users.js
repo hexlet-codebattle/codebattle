@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { camelizeKeys } from 'humps';
-import qs from 'qs';
 import moment from 'moment';
+import qs from 'qs';
 
 import { actions } from '../slices';
 

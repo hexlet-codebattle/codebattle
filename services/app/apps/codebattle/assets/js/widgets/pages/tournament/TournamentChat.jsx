@@ -3,18 +3,18 @@ import React, {
   useCallback,
   useRef,
 } from 'react';
+
 import { useSelector } from 'react-redux';
 
+import ChatContextMenu from '../../components/ChatContextMenu';
+import Messages from '../../components/Messages';
+import Rooms from '../../components/Rooms';
+import { pushCommand, pushCommandTypes } from '../../middlewares/Chat';
+import * as selectors from '../../selectors';
 import useChatContextMenu from '../../utils/useChatContextMenu';
 import useChatRooms from '../../utils/useChatRooms';
 
-import ChatContextMenu from '../../components/ChatContextMenu';
-import Rooms from '../../components/Rooms';
 import TournamentChatInput from './TournamentChatInput';
-import Messages from '../../components/Messages';
-
-import { pushCommand, pushCommandTypes } from '../../middlewares/Chat';
-import * as selectors from '../../selectors';
 
 function TournamentChat() {
   const currentUserIsAdmin = useSelector(selectors.currentUserIsAdminSelector);

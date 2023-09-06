@@ -1,6 +1,8 @@
 import { combineReducers, createSlice } from '@reduxjs/toolkit';
+
 import defaultEditorHeight from '../config/editorSettings';
 import { makeEditorTextKey } from '../utils/gameRoom';
+
 import initial from './initial';
 
 const getCurrentEditorHeight = (state, userId) => {

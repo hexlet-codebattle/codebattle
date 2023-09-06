@@ -1,5 +1,7 @@
 import React from 'react';
+
 import i18n from 'i18next';
+
 import CopyButton from '../../components/CopyButton';
 
 function WaitingOpponentInfo({ gameUrl }) {

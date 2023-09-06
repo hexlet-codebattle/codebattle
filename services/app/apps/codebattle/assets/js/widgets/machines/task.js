@@ -1,4 +1,5 @@
 import { assign } from 'xstate';
+
 import { taskStateCodes } from '../config/task';
 import { taskTemplatesStates } from '../utils/builder';
 

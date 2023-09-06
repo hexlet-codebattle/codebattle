@@ -2,8 +2,10 @@ import React, {
   useMemo,
   useCallback,
 } from 'react';
-import reverse from 'lodash/reverse';
+
 import isEmpty from 'lodash/isEmpty';
+import reverse from 'lodash/reverse';
+
 import {
   haveNestedType,
   argumentTypes,

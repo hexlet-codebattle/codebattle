@@ -1,9 +1,10 @@
-import { camelizeKeys } from 'humps';
-import { useDispatch, useSelector } from 'react-redux';
-import mapValues from 'lodash/mapValues';
-import groupBy from 'lodash/groupBy';
 import React, { useState, useEffect } from 'react';
 
+import axios from 'axios';
+import { camelizeKeys } from 'humps';
+import groupBy from 'lodash/groupBy';
+import mapValues from 'lodash/mapValues';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   Radar,
   RadarChart,
@@ -17,15 +18,15 @@ import {
   Tooltip,
   Legend,
 } from 'recharts';
-import axios from 'axios';
 
+import Loading from '../../components/Loading';
+import langIconNames from '../../config/langIconNames';
+import * as selectors from '../../selectors';
 import { actions } from '../../slices';
 import { fetchCompletedGames, loadNextPage } from '../../slices/completedGames';
 import CompletedGames from '../lobby/CompletedGames';
+
 import Heatmap from './Heatmap';
-import Loading from '../../components/Loading';
-import * as selectors from '../../selectors';
-import langIconNames from '../../config/langIconNames';
 
 function UserProfile() {
   const [stats, setStats] = useState(null);

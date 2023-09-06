@@ -1,8 +1,10 @@
 import React, { memo } from 'react';
+
 import uniqueId from 'lodash/uniqueId';
+
 import AccordeonBox from '../../components/AccordeonBox';
-import color from '../../config/statusColor';
 import assertsStatuses from '../../config/executionStatuses';
+import color from '../../config/statusColor';
 
 const AssertsOutput = memo(({ asserts, status, output }) => {
   const uniqIndex = uniqueId('assertsOutput');

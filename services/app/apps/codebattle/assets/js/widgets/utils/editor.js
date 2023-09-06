@@ -1,5 +1,5 @@
-import languageTabSizes from '../config/languageTabSizes';
 import langToSpacesMapping from '../config/langToSpacesMapping';
+import languageTabSizes from '../config/languageTabSizes';
 
 const getLanguageTabSize = language => {
   const defaultTabSize = 2;

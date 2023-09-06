@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import Pagination from 'react-js-pagination';
-import moment from 'moment';
 import cn from 'classnames';
+import moment from 'moment';
+import Pagination from 'react-js-pagination';
+import { useSelector, useDispatch } from 'react-redux';
 
 import UserInfo from '../../components/UserInfo';
-import { usersListSelector } from '../../selectors';
 import { getUsersRatingPage } from '../../middlewares/Users';
+import { usersListSelector } from '../../selectors';
 
 const decorateJoinedDate = str => moment.utc(str).format('LL');
 

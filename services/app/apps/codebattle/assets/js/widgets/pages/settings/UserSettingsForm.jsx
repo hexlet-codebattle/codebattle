@@ -1,11 +1,13 @@
 import React from 'react';
-import capitalize from 'lodash/capitalize';
+
+import Slider from 'calcite-react/Slider';
 import {
  Formik, Form, Field, useField,
 } from 'formik';
-import * as Yup from 'yup';
-import Slider from 'calcite-react/Slider';
+import capitalize from 'lodash/capitalize';
 import * as Icon from 'react-feather';
+import * as Yup from 'yup';
+
 import languages from '../../config/languages';
 import { createPlayer } from '../../lib/sound';
 

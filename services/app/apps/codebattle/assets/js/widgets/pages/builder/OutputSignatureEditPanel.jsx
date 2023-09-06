@@ -1,13 +1,16 @@
 import React, {
   useCallback,
 } from 'react';
-import isEmpty from 'lodash/isEmpty';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import isEmpty from 'lodash/isEmpty';
+
 import {
   defaultSignatureByType,
   argumentTypes,
   itemActionClassName,
 } from '../../utils/builder';
+
 import SignatureForm from './SignatureForm';
 
 function OutputSignatureEditPanel({

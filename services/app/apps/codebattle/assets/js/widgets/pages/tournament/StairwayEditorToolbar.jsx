@@ -1,13 +1,15 @@
-import find from 'lodash/find';
 import React, { useCallback, useMemo } from 'react';
+
+import find from 'lodash/find';
 import { useDispatch, useSelector } from 'react-redux';
-import { actions } from '../../slices';
 
 import LanguagePickerView from '../../components/LanguagePickerView';
+import { currentUserIdSelector } from '../../selectors';
+import { actions } from '../../slices';
+import DarkModeButton from '../game/DarkModeButton';
 import GameActionButtons from '../game/GameActionButtons';
 import VimModeButton from '../game/VimModeButton';
-import DarkModeButton from '../game/DarkModeButton';
-import { currentUserIdSelector } from '../../selectors';
+
 import PlayerPicker from './PlayerPicker';
 
 const type = 'stairway';

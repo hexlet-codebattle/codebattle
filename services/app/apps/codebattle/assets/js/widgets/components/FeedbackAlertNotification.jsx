@@ -1,11 +1,12 @@
 import React, { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+
 import isEmpty from 'lodash/isEmpty';
 import Alert from 'react-bootstrap/Alert';
-import i18n from '../../i18n';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { actions } from '../slices';
+import i18n from '../../i18n';
 import { gameAlertsSelector } from '../selectors/index';
+import { actions } from '../slices';
 
 const getNotification = status => {
   switch (status) {

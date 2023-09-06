@@ -1,7 +1,8 @@
-import { useDispatch } from 'react-redux';
 import React, { useState, useEffect } from 'react';
-import uniqBy from 'lodash/uniqBy';
+
 import axios from 'axios';
+import uniqBy from 'lodash/uniqBy';
+import { useDispatch } from 'react-redux';
 
 import { actions } from '../../slices';
 

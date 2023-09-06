@@ -1,18 +1,18 @@
 import React, { Suspense } from 'react';
-import { Provider } from 'react-redux';
-import { persistStore, persistReducer, PERSIST } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
-import { PersistGate } from 'redux-persist/integration/react';
+
 import {
   configureStore,
   combineReducers,
-  getDefaultMiddleware,
 } from '@reduxjs/toolkit';
+import { Provider } from 'react-redux';
+import { persistStore, persistReducer, PERSIST } from 'redux-persist';
+import { PersistGate } from 'redux-persist/integration/react';
+import storage from 'redux-persist/lib/storage';
 import rollbarMiddleware from 'rollbar-redux-middleware';
-import rollbar from './lib/rollbar';
-import reducers from './slices';
 
-import machines from './machines';
+import rollbar from '@/lib/rollbar';
+import machines from '@/machines';
+import reducers from '@/slices';
 
 const { game: mainMachine, editor: editorMachine, task: taskMachine } = machines;
 const { gameUI: gameUIReducer, ...otherReducers } = reducers;
@@ -38,14 +38,9 @@ const rollbarRedux = rollbarMiddleware(rollbar);
 // TODO: put initial state from gon
 const store = configureStore({
   reducer: rootReducer,
-  middleware: [
-    rollbarRedux,
-    ...getDefaultMiddleware({
-      serializableCheck: {
-        ignoredActions: ['ERROR', PERSIST],
-      },
-    }),
-  ],
+  middleware: getDefaultMiddleware => getDefaultMiddleware({
+    serializableCheck: { ignoredActions: ['ERROR', PERSIST] },
+  }).concat(rollbarRedux),
 });
 
 const persistor = persistStore(store);

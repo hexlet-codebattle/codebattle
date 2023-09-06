@@ -1,6 +1,7 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+
 import find from 'lodash/find';
+import { useSelector } from 'react-redux';
 
 import Editor from '../../components/Editor';
 import { currentUserIdSelector } from '../../selectors';

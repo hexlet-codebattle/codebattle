@@ -1,10 +1,13 @@
 import React, { useContext } from 'react';
+
 import { useDispatch } from 'react-redux';
-import { sendCurrentLangAndSetTemplate, updateCurrentLangAndSetTemplate } from '../middlewares/Game';
-import RoomContext from './RoomContext';
-import LanguagePickerView from './LanguagePickerView';
+
 import { inTestingRoomSelector, openedReplayerSelector } from '../machines/selectors';
+import { sendCurrentLangAndSetTemplate, updateCurrentLangAndSetTemplate } from '../middlewares/Game';
 import useMachineStateSelector from '../utils/useMachineStateSelector';
+
+import LanguagePickerView from './LanguagePickerView';
+import RoomContext from './RoomContext';
 
 function LanguagePicker({ status, editor: { currentLangSlug } }) {
   const dispatch = useDispatch();

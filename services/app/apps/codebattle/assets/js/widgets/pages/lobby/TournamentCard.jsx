@@ -1,7 +1,10 @@
 import React from 'react';
+
 import moment from 'moment';
-import UserInfo from '../../components/UserInfo';
+
 import TournamentType from '../../components/TournamentType';
+import UserInfo from '../../components/UserInfo';
+
 import ShowButton from './ShowButton';
 
 function TournamentCard({

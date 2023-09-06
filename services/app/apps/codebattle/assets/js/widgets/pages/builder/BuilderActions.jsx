@@ -1,14 +1,10 @@
 import React, { useCallback, useContext } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import * as selectors from '../../selectors';
-import useMachineStateSelector from '../../utils/useMachineStateSelector';
-import {
-  buildTaskAsserts,
-  deleteTask,
-  publishTask,
-  updateTaskState,
-} from '../../middlewares/Game';
+import { useDispatch, useSelector } from 'react-redux';
+
+import RoomContext from '../../components/RoomContext';
+import { taskStateCodes } from '../../config/task';
 import {
   isIdleStateTaskSelector,
   isInvalidStateTaskSelector,
@@ -17,8 +13,14 @@ import {
   isTaskPrepareTestingSelector,
   taskStateSelector,
 } from '../../machines/selectors';
-import { taskStateCodes } from '../../config/task';
-import RoomContext from '../../components/RoomContext';
+import {
+  buildTaskAsserts,
+  deleteTask,
+  publishTask,
+  updateTaskState,
+} from '../../middlewares/Game';
+import * as selectors from '../../selectors';
+import useMachineStateSelector from '../../utils/useMachineStateSelector';
 
 function BuilderActions({ validExamples, clearSuggests }) {
   const dispatch = useDispatch();

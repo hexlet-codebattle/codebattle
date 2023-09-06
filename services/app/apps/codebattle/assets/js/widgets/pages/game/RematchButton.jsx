@@ -1,16 +1,17 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import cn from 'classnames';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faXmark } from '@fortawesome/free-solid-svg-icons';
 
-import * as selectors from '../../selectors';
+import { faCheck, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import cn from 'classnames';
+import { connect } from 'react-redux';
+
 import i18n from '../../../i18n';
 import {
   sendOfferToRematch,
   sendRejectToRematch,
   sendAcceptToRematch,
 } from '../../middlewares/Game';
+import * as selectors from '../../selectors';
 
 const getPlayerStatus = (rematchInitiatorId, currentUserId) => {
   if (rematchInitiatorId === null) {

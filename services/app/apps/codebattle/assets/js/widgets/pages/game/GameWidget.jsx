@@ -1,17 +1,20 @@
 import React, { useState, useContext, memo } from 'react';
+
+import cn from 'classnames';
 import get from 'lodash/get';
 import { useSelector } from 'react-redux';
-import cn from 'classnames';
-import RoomContext from '../../components/RoomContext';
-import * as selectors from '../../selectors';
+
 import Editor from '../../components/Editor';
-import EditorContainer from './EditorContainer';
+import RoomContext from '../../components/RoomContext';
 import editorModes from '../../config/editorModes';
-import OutputTab from './OutputTab';
-import Output from './Output';
 import editorUserTypes from '../../config/editorUserTypes';
 import { roomStateSelector } from '../../machines/selectors';
+import * as selectors from '../../selectors';
 import useMachineStateSelector from '../../utils/useMachineStateSelector';
+
+import EditorContainer from './EditorContainer';
+import Output from './Output';
+import OutputTab from './OutputTab';
 
 const EditorWrapper = ({ children, id, className }) => (
   <div id={id} className={className}>

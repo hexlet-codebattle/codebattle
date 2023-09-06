@@ -3,24 +3,27 @@ import React, {
   useMemo,
   useRef,
 } from 'react';
+
+import cn from 'classnames';
 import filter from 'lodash/filter';
 import uniqBy from 'lodash/uniqBy';
-import cn from 'classnames';
 import { useSelector } from 'react-redux';
-import * as selectors from '../../selectors';
-import Messages from '../../components/Messages';
-import UserInfo from '../../components/UserInfo';
-import ChatInput from '../../components/ChatInput';
-import ChatHeader from '../../components/ChatHeader';
-import GameRoomModes from '../../config/gameModes';
-import Notifications from './Notifications';
-import RoomContext from '../../components/RoomContext';
+
 import ChatContextMenu from '../../components/ChatContextMenu';
+import ChatHeader from '../../components/ChatHeader';
+import ChatInput from '../../components/ChatInput';
+import Messages from '../../components/Messages';
+import RoomContext from '../../components/RoomContext';
+import UserInfo from '../../components/UserInfo';
+import GameRoomModes from '../../config/gameModes';
+import { inTestingRoomSelector, openedReplayerSelector } from '../../machines/selectors';
+import * as selectors from '../../selectors';
+import { shouldShowMessage } from '../../utils/chat';
 import useChatContextMenu from '../../utils/useChatContextMenu';
 import useChatRooms from '../../utils/useChatRooms';
-import { shouldShowMessage } from '../../utils/chat';
-import { inTestingRoomSelector, openedReplayerSelector } from '../../machines/selectors';
 import useMachineStateSelector from '../../utils/useMachineStateSelector';
+
+import Notifications from './Notifications';
 
 function ChatWidget() {
   const { mainService } = useContext(RoomContext);

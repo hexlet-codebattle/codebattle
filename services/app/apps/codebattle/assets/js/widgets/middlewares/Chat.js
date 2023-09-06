@@ -1,11 +1,11 @@
 import Gon from 'gon';
-import capitalize from 'lodash/capitalize';
 import { camelizeKeys, decamelizeKeys } from 'humps';
+import capitalize from 'lodash/capitalize';
 
 import socket from '../../socket';
 import { actions } from '../slices';
-import getChatName from '../utils/names';
 import { getSystemMessage } from '../utils/chat';
+import getChatName from '../utils/names';
 
 const isRecord = Gon.getAsset('is_record');
 

@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+
 import initial from './initial';
 
 const executionOutput = createSlice({

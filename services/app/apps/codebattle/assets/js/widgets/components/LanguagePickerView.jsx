@@ -1,11 +1,13 @@
 import React, { useMemo } from 'react';
-import { useSelector } from 'react-redux';
-import Select from 'react-select';
-import Gon from 'gon';
 
+import Gon from 'gon';
 import capitalize from 'lodash/capitalize';
 import partition from 'lodash/partition';
+import { useSelector } from 'react-redux';
+import Select from 'react-select';
+
 import * as selectors from '../selectors';
+
 import LanguageIcon from './LanguageIcon';
 
 const defaultLanguages = Gon.getAsset('langs');

@@ -1,6 +1,8 @@
 import React, { memo } from 'react';
-import Dropdown from 'react-bootstrap/Dropdown';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Dropdown from 'react-bootstrap/Dropdown';
+
 import {
   cancelTournament as handleCancelTournament,
   startTournament as handleStartTournament,

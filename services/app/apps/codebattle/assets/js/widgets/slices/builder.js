@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import capitalize from 'lodash/capitalize';
 import remove from 'lodash/remove';
+
 import {
   validateTaskName,
   validateDescription,
@@ -10,6 +11,7 @@ import {
   getExamplesFromAsserts,
   getTaskTemplates,
 } from '../utils/builder';
+
 import initial from './initial';
 
 const getTaskAssertsStatus = task => ({

@@ -1,6 +1,8 @@
 import React from 'react';
+
 import qs from 'qs';
 import { connect } from 'react-redux';
+
 import i18n from '../../../i18n';
 import GameTypeCodes from '../../config/gameTypeCodes';
 import * as selectors from '../../selectors';

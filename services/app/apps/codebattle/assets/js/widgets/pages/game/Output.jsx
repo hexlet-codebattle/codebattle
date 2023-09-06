@@ -1,6 +1,8 @@
 import React from 'react';
-import uniqueId from 'lodash/uniqueId';
+
 import { camelizeKeys } from 'humps';
+import uniqueId from 'lodash/uniqueId';
+
 import AccordeonBox from '../../components/AccordeonBox';
 import color from '../../config/statusColor';
 

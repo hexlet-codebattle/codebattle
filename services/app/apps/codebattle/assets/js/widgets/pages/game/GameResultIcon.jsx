@@ -1,9 +1,11 @@
 import React from 'react';
-import Tooltip from 'react-bootstrap/Tooltip';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import { useSelector } from 'react-redux';
-import get from 'lodash/get';
+
 import find from 'lodash/find';
+import get from 'lodash/get';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
+import { useSelector } from 'react-redux';
+
 import * as selectors from '../../selectors';
 
 function GameResultIcon({ editor: { userId } }) {

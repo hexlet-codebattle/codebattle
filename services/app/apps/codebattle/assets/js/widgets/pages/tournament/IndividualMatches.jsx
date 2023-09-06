@@ -1,11 +1,12 @@
 import React, {
  memo, useMemo,
 } from 'react';
-import capitalize from 'lodash/capitalize';
-import cn from 'classnames';
 
-import TournamentStates from '../../config/tournament';
+import cn from 'classnames';
+import capitalize from 'lodash/capitalize';
+
 import UserInfo from '../../components/UserInfo';
+import TournamentStates from '../../config/tournament';
 import useTimer from '../../utils/useTimer';
 
 const RoundTypes = {

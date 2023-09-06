@@ -1,6 +1,8 @@
 import React from 'react';
-import Picker from '@emoji-mart/react';
+
 import data from '@emoji-mart/data';
+import Picker from '@emoji-mart/react';
+
 import useKey from '../utils/useKey';
 
 export default function EmojiPicker({ handleSelect, hide, disabled = false }) {

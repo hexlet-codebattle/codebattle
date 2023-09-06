@@ -1,5 +1,6 @@
-import isEmpty from 'lodash/isEmpty';
 import { createSlice } from '@reduxjs/toolkit';
+import isEmpty from 'lodash/isEmpty';
+
 import initial from './initial';
 
 const userSlice = createSlice({

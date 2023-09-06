@@ -1,6 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 import omit from 'lodash/omit';
+
 import { setPlayerToSliceState } from '../utils/gameRoom';
+
 import initial from './initial';
 
 const initialState = initial.game;

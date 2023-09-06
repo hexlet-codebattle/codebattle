@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from 'react';
+
+import { faShuffle, faUser } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import axios from 'axios';
+import cn from 'classnames';
+import Gon from 'gon';
+import { camelizeKeys } from 'humps';
+import get from 'lodash/get';
+import has from 'lodash/has';
+import intersection from 'lodash/intersection';
 import { useDispatch, useSelector } from 'react-redux';
 import Select from 'react-select';
-import Gon from 'gon';
-import cn from 'classnames';
-import { camelizeKeys } from 'humps';
-import axios from 'axios';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faShuffle, faUser } from '@fortawesome/free-solid-svg-icons';
-import has from 'lodash/has';
-import get from 'lodash/get';
-import intersection from 'lodash/intersection';
 
+import i18n from '../../../i18n';
 import * as selectors from '../../selectors';
 import { actions } from '../../slices';
-import i18n from '../../../i18n';
 
 const isRandomTask = task => !has(task, 'id');
 

@@ -1,19 +1,21 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import cn from 'classnames';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import AsyncSelect from 'react-select/async';
 import axios from 'axios';
-import qs from 'qs';
+import cn from 'classnames';
 import { camelizeKeys } from 'humps';
 import get from 'lodash/get';
+import qs from 'qs';
+import { useDispatch, useSelector } from 'react-redux';
+import AsyncSelect from 'react-select/async';
 
-import * as selectors from '../../selectors';
-import { actions } from '../../slices';
-import * as lobbyMiddlewares from '../../middlewares/Lobby';
-import * as invitesMiddleware from '../../middlewares/Invite';
 import i18n from '../../../i18n';
 import levelRatio from '../../config/levelRatio';
+import * as invitesMiddleware from '../../middlewares/Invite';
+import * as lobbyMiddlewares from '../../middlewares/Lobby';
+import * as selectors from '../../selectors';
+import { actions } from '../../slices';
+
 import TaskChoice from './TaskChoice';
 
 const TIMEOUT = 480;

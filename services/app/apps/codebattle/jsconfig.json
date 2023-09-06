@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",                                     /* Specify the base directory to resolve non-relative module names. */
+    "paths": {
+      "@/*": ["./assets/js/widgets/*"]
+    },                                         /* Specify a set of entries that re-map imports to additional lookup locations. */
+  },
+  "exclude": [
+    "node_modules", "webpack", "lib", "test", "priv"
+  ],
+}
