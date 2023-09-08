@@ -69,6 +69,7 @@ const UserSettingsForm = ({ onSubmit, settings }) => {
             },
             lang: settings.lang || '',
           }}
+          enableReinitialize
           validationSchema={validationSchema}
           onSubmit={onSubmit}
         >
