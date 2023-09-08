@@ -29,19 +29,14 @@ function UserLabel({ user }) {
   });
 
   return (
-    <>
-      <span className="text-truncate">
-        <FontAwesomeIcon
-          icon={['fa', 'circle']}
-          className={onlineIndicatorClassName}
-        />
-        <span>{user.name}</span>
-      </span>
-    </>
+    <span className="text-truncate">
+      <FontAwesomeIcon className={onlineIndicatorClassName} icon={['fa', 'circle']} />
+      <span>{user.name}</span>
+    </span>
   );
 }
 
-function OpponentSelect({ setOpponent, opponent }) {
+function OpponentSelect({ opponent, setOpponent }) {
   const currentUserId = useSelector(selectors.currentUserIdSelector);
   const dispatch = useDispatch();
 
@@ -59,27 +54,27 @@ function OpponentSelect({ setOpponent, opponent }) {
 
         const options = users
           .filter(({ id }) => currentUserId !== id)
-          .map(user => ({ label: <UserLabel user={user} />, value: user }));
+          .map((user) => ({ label: <UserLabel user={user} />, value: user }));
 
         callback(options);
       })
-      .catch(error => {
+      .catch((error) => {
         dispatch(actions.setError(error));
       });
   };
 
   return (
     <AsyncSelect
+      defaultOptions
       className="w-100"
+      loadOptions={loadOptions}
       value={
         opponent && {
           label: <UserLabel user={opponent} />,
           value: opponent,
         }
       }
-      defaultOptions
       onChange={({ value }) => setOpponent(value)}
-      loadOptions={loadOptions}
     />
   );
 }
@@ -111,9 +106,7 @@ function CreateGameDialog({ hideModal }) {
 
   const isInvite = game.type === 'invite';
 
-  const createBtnTitle = isInvite
-    ? i18n.t('Create invite')
-    : i18n.t('Create battle');
+  const createBtnTitle = isInvite ? i18n.t('Create invite') : i18n.t('Create battle');
 
   const createGame = () => {
     if (isInvite && opponent) {
@@ -139,36 +132,37 @@ function CreateGameDialog({ hideModal }) {
     hideModal();
   };
 
-  const renderPickGameType = () => currentGameTypeCodes.map(gameType => (
-    <button
-      type="button"
-      key={gameType}
-      className={cn('btn rounded-lg', {
+  const renderPickGameType = () =>
+    currentGameTypeCodes.map((gameType) => (
+      <button
+        key={gameType}
+        type="button"
+        className={cn('btn rounded-lg', {
           'bg-orange text-white': game.type === gameType,
           'btn-outline-orange': game.type !== gameType,
         })}
-      onClick={() => setGame({ ...game, type: gameType })}
-    >
-      {gameTypeName[gameType]}
-    </button>
+        onClick={() => setGame({ ...game, type: gameType })}
+      >
+        {gameTypeName[gameType]}
+      </button>
     ));
 
   return (
     <div>
       <h5>{i18n.t('Level')}</h5>
       <div className="d-flex justify-content-around px-5 mt-3">
-        {gameLevels.map(level => (
+        {gameLevels.map((level) => (
           <button
             key={level}
+            data-placement="right"
+            data-toggle="tooltip"
+            title={level}
             type="button"
             className={cn('btn border-0 mb-2 rounded-lg', {
               'bg-orange': game.level === level,
               'btn-outline-orange': game.level !== level,
             })}
             onClick={() => setGame({ ...game, level })}
-            data-toggle="tooltip"
-            data-placement="right"
-            title={level}
           >
             <img alt={level} src={`/assets/images/levels/${level}.svg`} />
           </button>
@@ -176,46 +170,42 @@ function CreateGameDialog({ hideModal }) {
       </div>
 
       <h5>{i18n.t('Game Type')}</h5>
-      <div className="d-flex justify-content-around px-5 mt-3 mb-2">
-        {renderPickGameType()}
-      </div>
+      <div className="d-flex justify-content-around px-5 mt-3 mb-2">{renderPickGameType()}</div>
       <h5>{i18n.t('Time control')}</h5>
       <div className="d-flex flex-column px-5 mt-3 mb-2">
         <input
-          type="range"
           className="form-range w-100"
-          value={game.timeoutSeconds / 60}
-          onChange={e => setGame({ ...game, timeoutSeconds: e.target.value * 60 })}
-          min="3"
-          max="60"
-          step="1"
           id="customRange3"
+          max="60"
+          min="3"
+          step="1"
+          type="range"
+          value={game.timeoutSeconds / 60}
+          onChange={(e) => setGame({ ...game, timeoutSeconds: e.target.value * 60 })}
         />
-        <span className="text-center text-orange">
-          {i18n.t(`${game.timeoutSeconds / 60} min`)}
-        </span>
+        <span className="text-center text-orange">{i18n.t(`${game.timeoutSeconds / 60} min`)}</span>
       </div>
       {isInvite && (
         <>
           <h5>{i18n.t('Choose opponent')}</h5>
           <div className="d-flex justify-content-around px-5 mt-3 mb-2">
-            <OpponentSelect setOpponent={setOpponent} opponent={opponent} />
+            <OpponentSelect opponent={opponent} setOpponent={setOpponent} />
           </div>
         </>
       )}
       <TaskChoice
-        chosenTask={chosenTask}
-        setChosenTask={setChosenTask}
         chosenTags={chosenTags}
-        setChosenTags={setChosenTags}
+        chosenTask={chosenTask}
         level={game.level}
         randomTask={randomTask}
+        setChosenTags={setChosenTags}
+        setChosenTask={setChosenTask}
       />
       <button
-        type="button"
         className="btn btn-success mb-2 mt-4 d-flex ml-auto text-white font-weight-bold rounded-lg"
-        onClick={createGame}
         disabled={isInvite && !opponent}
+        type="button"
+        onClick={createGame}
       >
         {createBtnTitle}
       </button>

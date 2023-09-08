@@ -60,21 +60,21 @@ class CodebattlePlayer extends Component {
       mainService.send('PLAY');
       this.play(handlerPosition);
     }
-  }
+  };
 
   onPauseClick = () => {
     const { mainService } = this.context;
     mainService.send('PAUSE');
-  }
+  };
 
   onChangeSpeed = () => {
     const { mainService } = this.context;
     mainService.send('TOGGLE_SPEED_MODE');
-  }
+  };
 
   // Slider callbacks
 
-  onSliderHandleChange = value => {
+  onSliderHandleChange = (value) => {
     this.setState({ handlerPosition: value });
 
     const { roomCurrent } = this.props;
@@ -83,15 +83,15 @@ class CodebattlePlayer extends Component {
     if (roomCurrent.matches({ replayer: replayerMachineStates.holded })) {
       setTimeout(this.runSetGameState, setGameStateDelay, value);
     }
-  }
+  };
 
   onSliderHandleChangeStart = () => {
     const { mainService } = this.context;
     mainService.send('HOLD');
-  }
+  };
 
-  onSliderHandleChangeEnd = handlerPosition => {
-    const { setError, roomCurrent } = this.props;
+  onSliderHandleChangeEnd = (handlerPosition) => {
+    const { roomCurrent, setError } = this.props;
     const { mainService } = this.context;
     const { holding } = roomCurrent.context;
 
@@ -106,20 +106,20 @@ class CodebattlePlayer extends Component {
       default:
         setError(new Error('Unexpected holding state [replayer machine]'));
     }
-  }
+  };
 
-  onSliderHandleChangeIntent = intent => {
+  onSliderHandleChangeIntent = (intent) => {
     this.setState(() => ({ lastIntent: intent }));
-  }
+  };
 
   onSliderHandleChangeIntentEnd = () => {
     this.setState(() => ({ lastIntent: 0 }));
-  }
+  };
 
   // Helpers
 
-  setGameState = handlerPosition => {
-    const { setGameStateByRecordId, stepCoefficient, recordsCount } = this.props;
+  setGameState = (handlerPosition) => {
+    const { recordsCount, setGameStateByRecordId, stepCoefficient } = this.props;
     const { mainService } = this.context;
 
     // Based on handler position we can calculate next record
@@ -132,10 +132,10 @@ class CodebattlePlayer extends Component {
     }
 
     this.setState({ handlerPosition, nextRecordId });
-  }
+  };
 
   updateGameState = () => {
-    const { updateGameStateByRecordId, recordsCount } = this.props;
+    const { recordsCount, updateGameStateByRecordId } = this.props;
     const { nextRecordId: recordId } = this.state;
     const { mainService } = this.context;
     const nextRecordId = recordId + 1;
@@ -148,19 +148,19 @@ class CodebattlePlayer extends Component {
     }
 
     this.setState({ nextRecordId });
-  }
+  };
 
-  play = handlerPosition => {
+  play = (handlerPosition) => {
     const { roomCurrent } = this.props;
 
     const { speedMode } = roomCurrent.context;
     const playDelay = playDelays[speedMode];
 
     setTimeout(this.runPlay, playDelay, handlerPosition);
-  }
+  };
 
-  runPlay = handlerPosition => {
-    const { stepCoefficient, roomCurrent } = this.props;
+  runPlay = (handlerPosition) => {
+    const { roomCurrent, stepCoefficient } = this.props;
     const { handlerPosition: currentHandlerPosition } = this.state;
 
     /*
@@ -180,7 +180,7 @@ class CodebattlePlayer extends Component {
     }
   };
 
-  runSetGameState = handlerPosition => {
+  runSetGameState = (handlerPosition) => {
     const { handlerPosition: currentHandlerPosition } = this.state;
 
     /*
@@ -194,11 +194,9 @@ class CodebattlePlayer extends Component {
   };
 
   render() {
-    const { recordsCount, mainEvents, roomCurrent } = this.props;
+    const { mainEvents, recordsCount, roomCurrent } = this.props;
 
-    const {
-      isEnabled, direction, handlerPosition, lastIntent, nextRecordId,
-    } = this.state;
+    const { direction, handlerPosition, isEnabled, lastIntent, nextRecordId } = this.state;
 
     if (!roomCurrent.matches({ replayer: replayerMachineStates.on }) || recordsCount === 0) {
       return null;
@@ -214,27 +212,27 @@ class CodebattlePlayer extends Component {
                 <ControlPanel
                   nextRecordId={nextRecordId}
                   roomCurrent={roomCurrent}
-                  onPlayClick={this.onPlayClick}
-                  onPauseClick={this.onPauseClick}
                   onChangeSpeed={this.onChangeSpeed}
+                  onPauseClick={this.onPauseClick}
+                  onPlayClick={this.onPlayClick}
                 >
                   <Slider
                     className="cb-slider col-md-7 ml-1"
-                    value={handlerPosition}
-                    isEnabled={isEnabled}
                     direction={direction}
+                    isEnabled={isEnabled}
+                    value={handlerPosition}
                     onChange={this.onSliderHandleChange}
-                    onChangeStart={this.onSliderHandleChangeStart}
                     onChangeEnd={this.onSliderHandleChangeEnd}
+                    onChangeStart={this.onSliderHandleChangeStart}
                     onIntent={this.onSliderHandleChangeIntent}
                     onIntentEnd={this.onSliderHandleChangeIntentEnd}
                   >
                     <CodebattleSliderBar
-                      mainEvents={mainEvents}
-                      roomCurrent={roomCurrent}
                       handlerPosition={handlerPosition}
                       lastIntent={lastIntent}
+                      mainEvents={mainEvents}
                       recordsCount={recordsCount}
+                      roomCurrent={roomCurrent}
                       setGameState={this.setGameState}
                     />
                   </Slider>
@@ -250,7 +248,7 @@ class CodebattlePlayer extends Component {
 
 CodebattlePlayer.contextType = RoomContext;
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   const recordsCount = playbookRecordsSelector(state).length;
   const { mainEvents } = state.playbook;
 

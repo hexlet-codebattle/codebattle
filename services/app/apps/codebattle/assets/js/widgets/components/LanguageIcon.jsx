@@ -23,12 +23,14 @@ const iconsToClass = {
   php: 'icon-php-alt',
 };
 
-const LanguageIcon = ({ lang }) => (
-  <span
-    className={cn('d-flex', iconsToClass[lang], {
-      'mt-2': isMacintosh(),
-    })}
-  />
-);
+function LanguageIcon({ lang }) {
+  return (
+    <span
+      className={cn('d-flex', iconsToClass[lang], {
+        'mt-2': isMacintosh(),
+      })}
+    />
+  );
+}
 
 export default LanguageIcon;

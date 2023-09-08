@@ -15,10 +15,10 @@ function BuilderSettingsWidget({ setConfigurationModalShowing }) {
 
   const task = useSelector(selectors.builderTaskSelector);
   const {
-    startsAt,
-    timeoutSeconds,
-    state: gameStateName,
     mode: gameRoomMode,
+    startsAt,
+    state: gameStateName,
+    timeoutSeconds,
   } = useSelector(selectors.gameStatusSelector);
   const taskLanguage = useSelector(selectors.taskDescriptionLanguageselector);
 
@@ -26,7 +26,7 @@ function BuilderSettingsWidget({ setConfigurationModalShowing }) {
     setConfigurationModalShowing(true);
   }, [setConfigurationModalShowing]);
 
-  const handleSetLanguage = lang => () => dispatch(actions.setTaskDescriptionLanguage(lang));
+  const handleSetLanguage = (lang) => () => dispatch(actions.setTaskDescriptionLanguage(lang));
 
   return (
     <>
@@ -39,33 +39,33 @@ function BuilderSettingsWidget({ setConfigurationModalShowing }) {
               role="tablist"
             >
               <a
-                className="nav-item nav-link col-3 border-0 active rounded-0 px-1 py-2"
-                id="task-tab"
-                data-toggle="tab"
-                href="#task"
-                role="tab"
                 aria-controls="task"
                 aria-selected="true"
+                className="nav-item nav-link col-3 border-0 active rounded-0 px-1 py-2"
+                data-toggle="tab"
+                href="#task"
+                id="task-tab"
+                role="tab"
               >
                 Step 1
               </a>
               <a
-                className="nav-item nav-link col-3 border-0 rounded-0 px-1 py-2"
-                id="taskStatus-tab"
-                data-toggle="tab"
-                href="#taskStatus"
-                role="tab"
                 aria-controls="taskStatus"
                 aria-selected="false"
+                className="nav-item nav-link col-3 border-0 rounded-0 px-1 py-2"
+                data-toggle="tab"
+                href="#taskStatus"
+                id="taskStatus-tab"
+                role="tab"
               >
                 Status
               </a>
               <div className="rounded-0 text-center bg-white border-left col-6 text-black px-1 py-2">
                 <TimerContainer
-                  time={startsAt}
-                  mode={gameRoomMode}
-                  timeoutSeconds={timeoutSeconds}
                   gameStateName={gameStateName}
+                  mode={gameRoomMode}
+                  time={startsAt}
+                  timeoutSeconds={timeoutSeconds}
                 />
               </div>
             </div>
@@ -75,23 +75,23 @@ function BuilderSettingsWidget({ setConfigurationModalShowing }) {
             id="nav-tabContent"
           >
             <div
+              aria-labelledby="task-tab"
               className="tab-pane fade show active h-100"
               id="task"
               role="tabpanel"
-              aria-labelledby="task-tab"
             >
               <BuilderTaskAssignment
-                task={task}
-                taskLanguage={taskLanguage}
                 handleSetLanguage={handleSetLanguage}
                 openConfiguration={openTaskConfiguration}
+                task={task}
+                taskLanguage={taskLanguage}
               />
             </div>
             <div
+              aria-labelledby="taskStatus-tab"
               className="tab-pane h-100"
               id="taskStatus"
               role="tabpanel"
-              aria-labelledby="taskStatus-tab"
             >
               <BuilderStatus task={task} />
             </div>

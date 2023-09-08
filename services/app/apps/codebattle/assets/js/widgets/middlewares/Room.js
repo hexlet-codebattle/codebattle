@@ -13,9 +13,9 @@ export const calculateExpireDate = () => {
   return now.getTime() + ttl;
 };
 
-export const getStorageKey = userId => `${userId}-${uniqInstanceKey}-private-messages`;
+export const getStorageKey = (userId) => `${userId}-${uniqInstanceKey}-private-messages`;
 
-const getAllPrivateRooms = key => JSON.parse(localStorage.getItem(key)) || {};
+const getAllPrivateRooms = (key) => JSON.parse(localStorage.getItem(key)) || {};
 
 export const getPrivateRooms = (pageName, key) => {
   const allPrivateRooms = getAllPrivateRooms(key);
@@ -23,16 +23,14 @@ export const getPrivateRooms = (pageName, key) => {
   return pagePrivateRooms || [];
 };
 
-export const filterPrivateRooms = rooms => rooms.filter(({ required }) => !required);
+export const filterPrivateRooms = (rooms) => rooms.filter(({ required }) => !required);
 
-export const clearExpiredPrivateRooms = key => {
+export const clearExpiredPrivateRooms = (key) => {
   const now = new Date();
   const allPrivateRooms = getAllPrivateRooms(key);
   const allActualPrivateRooms = Object.entries(allPrivateRooms)
     .map(([pageName, pagePrivateRooms]) => {
-      const actualPrivateRooms = pagePrivateRooms.filter(room => (
-        room.expireTo > now.getTime()
-      ));
+      const actualPrivateRooms = pagePrivateRooms.filter((room) => room.expireTo > now.getTime());
       return [pageName, actualPrivateRooms];
     })
     .filter(([, pagePrivateRooms]) => pagePrivateRooms.length > 0);

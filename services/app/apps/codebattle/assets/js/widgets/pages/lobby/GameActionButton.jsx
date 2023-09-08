@@ -13,24 +13,30 @@ import ShowButton from './ShowButton';
 
 const havePlayer = (userId, game) => !isEmpty(find(game.players, { id: userId }));
 
-const ContinueButton = ({ url, type = 'table' }) => (
-  <a type="button" className={`btn btn-success ${type === 'table' ? '' : 'w-100'} text-white btn-sm rounded-lg`} href={url}>
-    Continue
-  </a>
-);
+function ContinueButton({ type = 'table', url }) {
+  return (
+    <a
+      className={`btn btn-success ${type === 'table' ? '' : 'w-100'} text-white btn-sm rounded-lg`}
+      href={url}
+      type="button"
+    >
+      Continue
+    </a>
+  );
+}
 
-function GameActionButton({
-  type = 'table', game, currentUserId, isGuest, isOnline,
-}) {
+function GameActionButton({ currentUserId, game, isGuest, isOnline, type = 'table' }) {
   const gameUrl = makeGameUrl(game.id);
   const gameUrlJoin = makeGameUrl(game.id, 'join');
   const gameState = game.state;
   const signInUrl = getSignInGithubUrl();
 
   if (gameState === gameStateCodes.playing) {
-    return havePlayer(currentUserId, game)
-      ? <ContinueButton url={gameUrl} />
-      : <ShowButton url={gameUrl} type={type} />;
+    return havePlayer(currentUserId, game) ? (
+      <ContinueButton url={gameUrl} />
+    ) : (
+      <ShowButton type={type} url={gameUrl} />
+    );
   }
 
   if (gameState === gameStateCodes.waitingOpponent) {
@@ -42,23 +48,23 @@ function GameActionButton({
           <div className="btn-group ml-5">
             <ContinueButton url={gameUrl} />
             <button
-              type="button"
               className="btn btn-sm btn-outline-secondary border-0"
-              onClick={() => copy(`${window.location.host}${gameUrl}`)}
-              data-toggle="tooltip"
               data-placement="right"
+              data-toggle="tooltip"
               title="Copy link"
+              type="button"
+              onClick={() => copy(`${window.location.host}${gameUrl}`)}
             >
               <i className="far fa-copy" />
             </button>
             <button
-              type="button"
               className="btn btn-sm btn-hover border-0"
-              onClick={lobbyMiddlewares.cancelGame(game.id)}
-              data-toggle="tooltip"
               data-placement="right"
-              title="Cancel game"
+              data-toggle="tooltip"
               disabled={!isOnline}
+              title="Cancel game"
+              type="button"
+              onClick={lobbyMiddlewares.cancelGame(game.id)}
             >
               <i className="fas fa-times" />
             </button>
@@ -70,25 +76,25 @@ function GameActionButton({
     if (playing) {
       return (
         <div className="btn-group">
-          <ContinueButton url={gameUrl} type={type} />
+          <ContinueButton type={type} url={gameUrl} />
           <button
-            type="button"
             className="btn btn-sm btn-outline-secondary border-0"
-            onClick={() => copy(`${window.location.host}${gameUrl}`)}
-            data-toggle="tooltip"
             data-placement="right"
+            data-toggle="tooltip"
             title="Copy link"
+            type="button"
+            onClick={() => copy(`${window.location.host}${gameUrl}`)}
           >
             <i className="far fa-copy" />
           </button>
           <button
-            type="button"
             className="btn btn-sm btn-hover border-0"
-            onClick={lobbyMiddlewares.cancelGame(game.id)}
-            data-toggle="tooltip"
             data-placement="right"
-            title="Cancel game"
+            data-toggle="tooltip"
             disabled={!isOnline}
+            title="Cancel game"
+            type="button"
+            onClick={lobbyMiddlewares.cancelGame(game.id)}
           >
             <i className="fas fa-times" />
           </button>
@@ -99,10 +105,10 @@ function GameActionButton({
     if (isGuest) {
       return (
         <button
-          type="button"
           className={`btn ${type === 'table' ? 'w-100' : ''} btn-outline-success btn-sm rounded-lg`}
           data-method="get"
           data-to={signInUrl}
+          type="button"
         >
           {i18n.t('Sign in with %{name}', { name: 'Github' })}
         </button>
@@ -111,11 +117,11 @@ function GameActionButton({
 
     return (
       <button
-        type="button"
         className={`btn btn-orange btn-sm ${type === 'table' ? 'ml-1 px-4' : ''} rounded-lg`}
-        data-method="post"
         data-csrf={window.csrf_token}
+        data-method="post"
         data-to={gameUrlJoin}
+        type="button"
       >
         {i18n.t('Fight')}
       </button>

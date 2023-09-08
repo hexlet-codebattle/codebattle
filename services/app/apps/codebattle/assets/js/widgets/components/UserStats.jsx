@@ -4,7 +4,7 @@ import LanguageIcon from './LanguageIcon';
 import Loading from './Loading';
 import UserAchievements from './UserAchievements';
 
-const UserStats = ({ data, user: userInfo }) => {
+function UserStats({ data, user: userInfo }) {
   const avatarUrl = userInfo.avatarUrl || data?.user?.avatarUrl || '/assets/images/logo.svg';
   const name = userInfo.name || data?.user?.name || 'Jon Doe';
   const lang = userInfo.lang || data?.user?.lang || 'js';
@@ -14,10 +14,10 @@ const UserStats = ({ data, user: userInfo }) => {
         <div className="col d-flex align-items-center justify-content-between">
           <div className="d-flex align-items-center">
             <img
-              className="img-fluid rounded-lg"
-              style={{ maxHeight: '40px', width: '40px' }}
-              src={avatarUrl}
               alt="User avatar"
+              className="img-fluid rounded-lg"
+              src={avatarUrl}
+              style={{ maxHeight: '40px', width: '40px' }}
             />
             <div className="d-flex flex-column ml-2">
               <div className="d-flex align-items-center">
@@ -28,11 +28,11 @@ const UserStats = ({ data, user: userInfo }) => {
               </div>
               <div className="d-flex justify-content-between align-items-baseline">
                 <div className="d-flex align-items-baseline">
-                  <img src="/assets/images/cup.svg" alt="rating" />
+                  <img alt="rating" src="/assets/images/cup.svg" />
                   <span className="ml-1">{data?.user?.rank || userInfo.rank || '####'}</span>
                 </div>
                 <div className="d-flex align-items-baseline ml-2">
-                  <img src="/assets/images/rating.svg" alt="rating" />
+                  <img alt="rating" src="/assets/images/rating.svg" />
                   <span className="ml-1">{data?.user?.rating || userInfo.rating || '####'}</span>
                 </div>
               </div>
@@ -56,13 +56,9 @@ const UserStats = ({ data, user: userInfo }) => {
           </div>
         </div>
       </div>
-      {!data ? (
-        <Loading small />
-      ) : (
-        <UserAchievements achievements={data.user.achievements} />
-      )}
+      {!data ? <Loading small /> : <UserAchievements achievements={data.user.achievements} />}
     </div>
   );
-};
+}
 
 export default UserStats;

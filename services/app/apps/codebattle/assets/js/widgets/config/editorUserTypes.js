@@ -3,7 +3,7 @@ export default {
   player: 'player',
   opponent: 'opponent',
 
-// TODO: (feature) add teammates and clanmates to components
+  // TODO: (feature) add teammates and clanmates to components
   // teammate: 'teammate',
   // clanmate: 'clanmate',
 };

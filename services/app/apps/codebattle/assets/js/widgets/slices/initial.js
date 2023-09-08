@@ -35,18 +35,10 @@ const usersRatingData = Gon.getAsset('users_rating');
 const gameParams = gameData ? camelizeKeys(gameData) : undefined;
 const taskParams = taskData ? camelizeKeys(taskData) : undefined;
 const tournamentParams = tournamentData ? camelizeKeys(tournamentData) : undefined;
-const completedGamesParams = completedGamesData
-  ? camelizeKeys(completedGamesData)
-  : [];
-const activeGamesParams = activeGamesData
-  ? camelizeKeys(activeGamesData)
-  : [];
-const tournamentsParams = tournamentsData
-  ? camelizeKeys(tournamentsData)
-  : [];
-const usersRatingParams = usersRatingData
-  ? camelizeKeys(usersRatingData)
-  : [];
+const completedGamesParams = completedGamesData ? camelizeKeys(completedGamesData) : [];
+const activeGamesParams = activeGamesData ? camelizeKeys(activeGamesData) : [];
+const tournamentsParams = tournamentsData ? camelizeKeys(tournamentsData) : [];
+const usersRatingParams = usersRatingData ? camelizeKeys(usersRatingData) : [];
 const currentUserId = currentUserParams ? currentUserParams.id : null;
 const initialUsers = currentUserParams
   ? { [currentUserParams.id]: { ...currentUserParams, type: userTypes.spectator } }
@@ -68,56 +60,46 @@ const defaultGameStatusState = {
 
 const initialGameStatus = gameParams
   ? {
-    ...defaultGameStatusState,
-    ...getGameStatus(gameParams),
-  }
+      ...defaultGameStatusState,
+      ...getGameStatus(gameParams),
+    }
   : defaultGameStatusState;
 
-const initialGameTask = gameParams
-  ? gameParams.task
-  : null;
+const initialGameTask = gameParams ? gameParams.task : null;
 
 const initialPlayers = gameParams
-  ? getGamePlayers(gameParams.players)
-    .reduce(setPlayerToSliceState, {})
+  ? getGamePlayers(gameParams.players).reduce(setPlayerToSliceState, {})
   : {};
 
-const initialLangs = gameParams
-  ? gameParams.langs
-  : [];
+const initialLangs = gameParams ? gameParams.langs : [];
 
-const setPlayersMetaToSliseState = (state, { userId, langSlug }) => ({
+const setPlayersMetaToSliseState = (state, { langSlug, userId }) => ({
   ...state,
   [userId]: { userId, currentLangSlug: langSlug, historyCurrentLangSlug: langSlug },
 });
 
-const setPlayersTextToSliseState = (state, { userId, editorText, langSlug }) => ({
+const setPlayersTextToSliseState = (state, { editorText, langSlug, userId }) => ({
   ...state,
   [makeEditorTextKey(userId, langSlug)]: editorText,
 });
 
-const setPlayersLangToSliseState = (state, { userId, langSlug }) => ({
+const setPlayersLangToSliseState = (state, { langSlug, userId }) => ({
   ...state,
   [userId]: langSlug,
 });
 
 const initialMeta = gameParams
-  ? gameParams.players
-    .map(getPlayersText)
-    .reduce(setPlayersMetaToSliseState, {})
+  ? gameParams.players.map(getPlayersText).reduce(setPlayersMetaToSliseState, {})
   : {};
 
 const initialText = gameParams
-  ? gameParams.players
-    .map(getPlayersText)
-    .reduce(setPlayersTextToSliseState, {})
+  ? gameParams.players.map(getPlayersText).reduce(setPlayersTextToSliseState, {})
   : {};
 
-const initialLangsHistory = gameParams && isRecord
-  ? gameParams.players
-    .map(getPlayersText)
-    .reduce(setPlayersLangToSliseState, {})
-  : {};
+const initialLangsHistory =
+  gameParams && isRecord
+    ? gameParams.players.map(getPlayersText).reduce(setPlayersLangToSliseState, {})
+    : {};
 
 const setPlayersResultsToSliceState = (state, { userId, ...rest }) => ({
   ...state,
@@ -125,12 +107,10 @@ const setPlayersResultsToSliceState = (state, { userId, ...rest }) => ({
 });
 
 const initialResults = gameParams
-  ? gameParams.players
-    .map(getPlayersExecutionData)
-    .reduce(setPlayersResultsToSliceState, {})
+  ? gameParams.players.map(getPlayersExecutionData).reduce(setPlayersResultsToSliceState, {})
   : {};
 
-const defaultTaskParams = ({
+const defaultTaskParams = {
   name: '',
   level: 'elementary',
   state: taskStateCodes.none,
@@ -145,7 +125,7 @@ const defaultTaskParams = ({
   argumentsGenerator: '',
   generatorLang: 'js',
   visibility: taskVisibilityCodes.hidden,
-});
+};
 
 const defaultTaskTemplates = {
   state: taskTemplatesStates.loading,
@@ -158,7 +138,7 @@ const defaultTaskAssertsStatus = {
   output: '',
 };
 
-const defaultValidationStatuses = ({
+const defaultValidationStatuses = {
   name: [false],
   description: [false],
   solution: [true],
@@ -166,9 +146,9 @@ const defaultValidationStatuses = ({
   inputSignature: [false],
   outputSignature: [true],
   assertsExamples: [false],
-});
+};
 
-const getTaskValidationStatuses = task => ({
+const getTaskValidationStatuses = (task) => ({
   ...defaultValidationStatuses,
   name: validateTaskName(task.name),
   description: validateTaskName(task.descriptionEn),
@@ -176,15 +156,9 @@ const getTaskValidationStatuses = task => ({
   assertsExamples: validateExamples(task.assertsExamples),
 });
 
-const initialTask = taskParams
-  ? labelTaskParamsWithIds(taskParams)
-  : defaultTaskParams;
-const initialTemplates = taskParams
-  ? getTaskTemplates(taskData)
-  : defaultTaskTemplates;
-const initialAssertsStatus = taskParams
-  ? taskData
-  : defaultTaskAssertsStatus;
+const initialTask = taskParams ? labelTaskParamsWithIds(taskParams) : defaultTaskParams;
+const initialTemplates = taskParams ? getTaskTemplates(taskData) : defaultTaskTemplates;
+const initialAssertsStatus = taskParams ? taskData : defaultTaskAssertsStatus;
 const initialValidationStatuses = taskParams
   ? getTaskValidationStatuses(taskParams)
   : defaultValidationStatuses;
@@ -222,14 +196,14 @@ const defaultTournamentParams = {
 
 const initialTournament = tournamentParams
   ? {
-    ...defaultTournamentParams,
-    ...tournamentParams,
-    channel: { online: !tournamentParams.isLive },
-  }
+      ...defaultTournamentParams,
+      ...tournamentParams,
+      channel: { online: !tournamentParams.isLive },
+    }
   : defaultTournamentParams;
 
-const initialLiveTournaments = tournamentsParams.filter(x => x.isLive);
-const initialCompletedTournaments = tournamentsParams.filter(x => !x.isLive);
+const initialLiveTournaments = tournamentsParams.filter((x) => x.isLive);
+const initialCompletedTournaments = tournamentsParams.filter((x) => !x.isLive);
 
 const initial = {
   game: {

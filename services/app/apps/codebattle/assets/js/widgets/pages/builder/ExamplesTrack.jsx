@@ -4,92 +4,77 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
 import isEmpty from 'lodash/isEmpty';
 
-import {
-  itemClassName,
-  itemActionClassName,
-  itemAddClassName,
-} from '../../utils/builder';
+import { itemClassName, itemActionClassName, itemAddClassName } from '../../utils/builder';
 
-const getValueText = (value = '') => (value || '?');
+const getValueText = (value = '') => value || '?';
 
-const ExamplesTrack = ({
+function ExamplesTrack({
+  editable,
+  handleAdd,
+  handleDelete,
+  handleEdit,
   items = [],
   selected = {},
   selectedRef,
   valid = true,
-  editable,
-  handleAdd,
-  handleEdit,
-  handleDelete,
-}) => (
-  <>
-    {items.map(item => (
-      <div
-        key={item.id}
-        className={cn(itemClassName, {
-          'border-warning': selected?.id === item.id,
-          'border-danger': selected?.id !== item.id && !valid,
-        })}
-        role="group"
-      >
+}) {
+  return (
+    <>
+      {items.map((item) => (
         <div
-          ref={selectedRef}
-          title={`Example: ${item.id}`}
-          className={itemActionClassName}
+          key={item.id}
+          role="group"
+          className={cn(itemClassName, {
+            'border-warning': selected?.id === item.id,
+            'border-danger': selected?.id !== item.id && !valid,
+          })}
         >
-          {
-            selected?.id === item.id
+          <div ref={selectedRef} className={itemActionClassName} title={`Example: ${item.id}`}>
+            {selected?.id === item.id
               ? `${getValueText(selected?.arguments)} -> ${getValueText(selected?.expected)}`
-              : `${getValueText(item.arguments)} -> ${getValueText(item.expected)}`
-          }
+              : `${getValueText(item.arguments)} -> ${getValueText(item.expected)}`}
+          </div>
+          {editable && selected?.id !== item.id && (
+            <>
+              <button
+                className={`btn ${itemActionClassName} btn-outline-secondary`}
+                title={`Edit example: ${item.id}`}
+                type="button"
+                onClick={() => handleEdit(item)}
+              >
+                <FontAwesomeIcon icon="pen" />
+              </button>
+              <button
+                className={`btn ${itemActionClassName} btn-outline-danger rounded-right`}
+                title={`Remove example: ${item.id}`}
+                type="button"
+                onClick={() => handleDelete(item)}
+              >
+                <FontAwesomeIcon icon="trash" />
+              </button>
+            </>
+          )}
         </div>
-        {editable && selected?.id !== item.id && (
-          <>
-            <button
-              type="button"
-              title={`Edit example: ${item.id}`}
-              className={`btn ${itemActionClassName} btn-outline-secondary`}
-              onClick={() => handleEdit(item)}
-            >
-              <FontAwesomeIcon icon="pen" />
-            </button>
-            <button
-              type="button"
-              title={`Remove example: ${item.id}`}
-              className={`btn ${itemActionClassName} btn-outline-danger rounded-right`}
-              onClick={() => handleDelete(item)}
-            >
-              <FontAwesomeIcon icon="trash" />
-            </button>
-          </>
-        )}
-      </div>
-    ))}
-    {!isEmpty(selected) && !items.some(item => item.id === selected.id) && (
-      <div
-        key={selected.id}
-        className={`${itemClassName} border-warning`}
-        role="group"
-      >
-        <div
-          title="New Example"
-          className={itemActionClassName}
+      ))}
+      {!isEmpty(selected) && !items.some((item) => item.id === selected.id) && (
+        <div key={selected.id} className={`${itemClassName} border-warning`} role="group">
+          <div className={itemActionClassName} title="New Example">
+            {`${getValueText(selected.arguments)} -> ${getValueText(selected.expected)}`}
+          </div>
+        </div>
+      )}
+      {!isEmpty(selected) && items.some((item) => item.id === selected.id) && (
+        <button
+          className={itemAddClassName}
+          title="Add input parameter"
+          type="button"
+          onClick={handleAdd}
         >
-          {`${getValueText(selected.arguments)} -> ${getValueText(selected.expected)}`}
-        </div>
-      </div>
-    )}
-    {!isEmpty(selected) && items.some(item => item.id === selected.id) && (
-      <button
-        type="button"
-        title="Add input parameter"
-        className={itemAddClassName}
-        onClick={handleAdd}
-      >
-        <FontAwesomeIcon icon="plus" />
-      </button>
-    )}
-  </>
-);
+          <FontAwesomeIcon icon="plus" />
+        </button>
+      )}
+    </>
+  );
+}
 
 export default ExamplesTrack;

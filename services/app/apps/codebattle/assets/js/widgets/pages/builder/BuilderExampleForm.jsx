@@ -1,10 +1,4 @@
-import React, {
-  useRef,
-  useState,
-  useCallback,
-  memo,
-  useContext,
-} from 'react';
+import React, { useRef, useState, useCallback, memo, useContext } from 'react';
 
 import cn from 'classnames';
 import cloneDeep from 'lodash/cloneDeep';
@@ -53,9 +47,9 @@ function BuilderExampleForm() {
     }
   });
 
-  const inputSignature = useSelector(state => state.builder.task.inputSignature);
-  const outputSignature = useSelector(state => state.builder.task.outputSignature);
-  const examples = useSelector(state => state.builder.task.assertsExamples);
+  const inputSignature = useSelector((state) => state.builder.task.inputSignature);
+  const outputSignature = useSelector((state) => state.builder.task.outputSignature);
+  const examples = useSelector((state) => state.builder.task.assertsExamples);
 
   const [inputSuggest, setInputSuggest] = useState();
   const [outputSuggest, setOutputSuggest] = useState();
@@ -66,21 +60,33 @@ function BuilderExampleForm() {
     setTimeout(() => inputEditTabRef.current?.click(), 10);
     setTimeout(() => inputArgumentNameInputRef.current?.focus(), 400);
   }, [setInputSuggest]);
-  const editInputType = useCallback(item => {
-    setInputSuggest(cloneDeep(item));
-    setTimeout(() => inputEditTabRef.current?.click(), 10);
-    setTimeout(() => inputSuggestRef.current?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'nearest',
-      inline: 'start',
-    }), 10);
-  }, [setInputSuggest]);
-  const deleteInputType = useCallback(item => {
-    dispatch(actions.removeTaskInputType({
-      typeId: item.id,
-    }));
-    taskService.send('CHANGES');
-  }, [dispatch, taskService]);
+  const editInputType = useCallback(
+    (item) => {
+      setInputSuggest(cloneDeep(item));
+      setTimeout(() => inputEditTabRef.current?.click(), 10);
+      setTimeout(
+        () =>
+          inputSuggestRef.current?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'nearest',
+            inline: 'start',
+          }),
+        10,
+      );
+    },
+    [setInputSuggest],
+  );
+  const deleteInputType = useCallback(
+    (item) => {
+      dispatch(
+        actions.removeTaskInputType({
+          typeId: item.id,
+        }),
+      );
+      taskService.send('CHANGES');
+    },
+    [dispatch, taskService],
+  );
   const clearInputSuggest = useCallback(() => {
     setInputSuggest();
     argumentsTabRef.current?.click();
@@ -91,18 +97,20 @@ function BuilderExampleForm() {
     taskService.send('CHANGES');
 
     let inputSignatureTypeCount = inputSignature.length;
-    const existedInputType = inputSignature.find(
-      item => item.id === inputSuggest.id,
-    );
+    const existedInputType = inputSignature.find((item) => item.id === inputSuggest.id);
 
     if (existedInputType) {
-      dispatch(actions.updateTaskInputType({
-        newType: cloneDeep(inputSuggest),
-      }));
+      dispatch(
+        actions.updateTaskInputType({
+          newType: cloneDeep(inputSuggest),
+        }),
+      );
     } else {
-      dispatch(actions.addTaskInputType({
-        newType: cloneDeep(inputSuggest),
-      }));
+      dispatch(
+        actions.addTaskInputType({
+          newType: cloneDeep(inputSuggest),
+        }),
+      );
       inputSignatureTypeCount += 1;
     }
 
@@ -111,20 +119,32 @@ function BuilderExampleForm() {
     } else {
       createInputTypeSuggest();
     }
-  }, [createInputTypeSuggest, clearInputSuggest, inputSignature, inputSuggest, dispatch, taskService]);
+  }, [
+    createInputTypeSuggest,
+    clearInputSuggest,
+    inputSignature,
+    inputSuggest,
+    dispatch,
+    taskService,
+  ]);
 
-  const editOutputType = useCallback(newOutputSignature => {
-    setOutputSuggest(cloneDeep(newOutputSignature));
-    setTimeout(() => outputEditTabRef.current?.click(), 10);
-  }, [setOutputSuggest]);
+  const editOutputType = useCallback(
+    (newOutputSignature) => {
+      setOutputSuggest(cloneDeep(newOutputSignature));
+      setTimeout(() => outputEditTabRef.current?.click(), 10);
+    },
+    [setOutputSuggest],
+  );
   const clearOutputSuggest = useCallback(() => {
     setOutputSuggest();
     argumentsTabRef.current?.click();
   }, [setOutputSuggest]);
   const submitNewOutputType = useCallback(() => {
-    dispatch(actions.updateTaskOutputType({
-      newType: cloneDeep(outputSuggest),
-    }));
+    dispatch(
+      actions.updateTaskOutputType({
+        newType: cloneDeep(outputSuggest),
+      }),
+    );
 
     taskService.send('CHANGES');
     clearOutputSuggest();
@@ -135,36 +155,48 @@ function BuilderExampleForm() {
     setTimeout(() => exampleEditTabRef.current?.click(), 10);
     setTimeout(() => exampleArgumentsInputRef.current?.focus(), 400);
   }, []);
-  const editExample = useCallback(example => {
-    setExampleSuggest(cloneDeep(example));
-    setTimeout(() => exampleEditTabRef.current?.click(), 10);
-    setTimeout(() => exampleSuggestRef.current?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'nearest',
-      inline: 'start',
-    }), 10);
-  }, [setExampleSuggest]);
-  const deleteExample = useCallback(example => {
-    dispatch(actions.removeTaskExample({
-      exampleId: example.id,
-    }));
-    taskService.send('CHANGES');
-  }, [dispatch, taskService]);
+  const editExample = useCallback(
+    (example) => {
+      setExampleSuggest(cloneDeep(example));
+      setTimeout(() => exampleEditTabRef.current?.click(), 10);
+      setTimeout(
+        () =>
+          exampleSuggestRef.current?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'nearest',
+            inline: 'start',
+          }),
+        10,
+      );
+    },
+    [setExampleSuggest],
+  );
+  const deleteExample = useCallback(
+    (example) => {
+      dispatch(
+        actions.removeTaskExample({
+          exampleId: example.id,
+        }),
+      );
+      taskService.send('CHANGES');
+    },
+    [dispatch, taskService],
+  );
   const clearExample = useCallback(() => {
     setExampleSuggest();
     argumentsTabRef.current?.click();
   }, [setExampleSuggest]);
   const submitNewExample = useCallback(() => {
-    const existingExample = examples.find(example => (example.id === exampleSuggest.id));
+    const existingExample = examples.find((example) => example.id === exampleSuggest.id);
 
     taskService.send('CHANGES');
-    const setExample = existingExample
-      ? actions.updateTaskExample
-      : actions.addTaskExample;
+    const setExample = existingExample ? actions.updateTaskExample : actions.addTaskExample;
 
-    dispatch(setExample({
-      newExample: cloneDeep(exampleSuggest),
-    }));
+    dispatch(
+      setExample({
+        newExample: cloneDeep(exampleSuggest),
+      }),
+    );
 
     createExampleSuggest();
   }, [examples, exampleSuggest, createExampleSuggest, dispatch, taskService]);
@@ -185,55 +217,55 @@ function BuilderExampleForm() {
         >
           <a
             ref={argumentsTabRef}
-            className={`${navbarItemClassName} active`}
-            id="arguments-tab"
-            data-toggle="tab"
-            href="#arguments"
-            role="tab"
             aria-controls="arguments"
             aria-selected="true"
+            className={`${navbarItemClassName} active`}
+            data-toggle="tab"
+            href="#arguments"
+            id="arguments-tab"
+            role="tab"
           >
             Step 2
           </a>
           <a
             ref={inputEditTabRef}
+            aria-controls="inputEdit"
+            aria-selected="false"
+            data-toggle="tab"
+            href="#inputEdit"
+            id="inputEdit-tab"
+            role="tab"
             className={cn(navbarItemClassName, {
               'd-none': !inputSuggest,
             })}
-            id="inputEdit-tab"
-            data-toggle="tab"
-            href="#inputEdit"
-            role="tab"
-            aria-controls="inputEdit"
-            aria-selected="false"
           >
             Input
           </a>
           <a
             ref={outputEditTabRef}
+            aria-controls="outputEdit"
+            aria-selected="false"
+            data-toggle="tab"
+            href="#outputEdit"
+            id="outputEdit-tab"
+            role="tab"
             className={cn(navbarItemClassName, {
               'd-none': !outputSuggest,
             })}
-            id="outputEdit-tab"
-            data-toggle="tab"
-            href="#outputEdit"
-            role="tab"
-            aria-controls="outputEdit"
-            aria-selected="false"
           >
             Output
           </a>
           <a
             ref={exampleEditTabRef}
+            aria-controls="exampleEdit"
+            aria-selected="false"
+            data-toggle="tab"
+            href="#exampleEdit"
+            id="exampleEdit-tab"
+            role="tab"
             className={cn(navbarItemClassName, {
               'd-none': !exampleSuggest,
             })}
-            id="exampleEdit-tab"
-            data-toggle="tab"
-            href="#exampleEdit"
-            role="tab"
-            aria-controls="exampleEdit"
-            aria-selected="false"
           >
             Example
           </a>
@@ -244,77 +276,77 @@ function BuilderExampleForm() {
         id="nav-tabContent"
       >
         <div
+          aria-labelledby="task-tab"
           className="tab-pane fade show active"
           id="arguments"
           role="tabpanel"
-          aria-labelledby="task-tab"
         >
           <PreviewAssertsPanel
-            haveInputSuggest={!!inputSuggest}
-            haveExampleSuggest={!!exampleSuggest}
-            clearSuggests={clearSuggests}
-            openInputEditPanel={openInputEditPanel}
-            openExampleEditPanel={openExampleEditPanel}
-            createInputTypeSuggest={createInputTypeSuggest}
-            editInputType={editInputType}
-            deleteInputType={deleteInputType}
-            editOutputType={editOutputType}
-            createExampleSuggest={createExampleSuggest}
-            editExample={editExample}
             clearExample={clearExample}
+            clearSuggests={clearSuggests}
+            createExampleSuggest={createExampleSuggest}
+            createInputTypeSuggest={createInputTypeSuggest}
             deleteExample={deleteExample}
+            deleteInputType={deleteInputType}
+            editExample={editExample}
+            editInputType={editInputType}
+            editOutputType={editOutputType}
+            haveExampleSuggest={!!exampleSuggest}
+            haveInputSuggest={!!inputSuggest}
+            openExampleEditPanel={openExampleEditPanel}
+            openInputEditPanel={openInputEditPanel}
           />
         </div>
         <div
+          aria-labelledby="intputEdit-tab"
           className="tab-pane fade show"
           id="inputEdit"
           role="tabpanel"
-          aria-labelledby="intputEdit-tab"
         >
           <InputSignatureEditPanel
             argumentNameInputRef={inputArgumentNameInputRef}
+            handleAdd={createInputTypeSuggest}
+            handleClear={clearInputSuggest}
+            handleDelete={deleteInputType}
+            handleEdit={editInputType}
+            handleSubmit={submitNewInputSignature}
             items={inputSignature}
             suggest={inputSuggest}
             suggestRef={inputSuggestRef}
-            handleAdd={createInputTypeSuggest}
-            handleEdit={editInputType}
-            handleDelete={deleteInputType}
-            handleSubmit={submitNewInputSignature}
-            handleClear={clearInputSuggest}
           />
         </div>
         <div
+          aria-labelledby="outputEdit-tab"
           className="tab-pane fade show"
           id="outputEdit"
           role="tabpanel"
-          aria-labelledby="outputEdit-tab"
         >
           <OutputSignatureEditPanel
-            item={outputSignature}
-            suggest={outputSuggest}
+            handleClear={clearOutputSuggest}
             handleEdit={editOutputType}
             handleSubmit={submitNewOutputType}
-            handleClear={clearOutputSuggest}
+            item={outputSignature}
+            suggest={outputSuggest}
           />
         </div>
         <div
+          aria-labelledby="exampleEdit-tab"
           className="tab-pane fade show"
           id="exampleEdit"
           role="tabpanel"
-          aria-labelledby="exampleEdit-tab"
         >
           <ExamplesEditPanel
             argumentsInputRef={exampleArgumentsInputRef}
-            items={examples}
+            handleAdd={createExampleSuggest}
+            handleClear={clearExample}
+            handleDelete={deleteExample}
+            handleEdit={editExample}
+            handleSubmit={submitNewExample}
             inputSignature={inputSignature}
+            items={examples}
             outputSignature={outputSignature}
             suggest={exampleSuggest}
             suggestRef={exampleSuggestRef}
-            handleAdd={createExampleSuggest}
-            handleEdit={editExample}
-            handleDelete={deleteExample}
-            handleSubmit={submitNewExample}
-            handleClear={clearExample}
           />
         </div>
       </div>

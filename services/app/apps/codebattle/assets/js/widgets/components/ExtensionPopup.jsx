@@ -4,20 +4,23 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { createRoot } from 'react-dom';
 
-const isExtensionInstalled = info => new Promise(resolve => {
-  const img = new Image();
-  img.src = `chrome-extension://${info.id}/${info.path}`;
-  img.onload = () => {
+const isExtensionInstalled = (info) =>
+  new Promise((resolve) => {
+    const img = new Image();
+    img.src = `chrome-extension://${info.id}/${info.path}`;
+    img.onload = () => {
       resolve(true);
-  };
-  img.onerror = () => {
-    resolve(false);
-  };
-});
+    };
+    img.onerror = () => {
+      resolve(false);
+    };
+  });
 
 function ExtensionPopup() {
   const [modalShowing, setModalShowing] = useState(true);
-  const handleHide = () => { setModalShowing(false); };
+  const handleHide = () => {
+    setModalShowing(false);
+  };
 
   return (
     <Modal show={modalShowing} onHide={handleHide}>
@@ -30,10 +33,10 @@ function ExtensionPopup() {
         <p>
           {'We have a '}
           <a
-            href="https://chrome.google.com/webstore/detail/codebattle-web-extension/embfhnfkfobkdohleknckodkmhgmpdli?hl=en&"
-            target="_blank"
-            rel="noreferrer"
             className="alert-link"
+            href="https://chrome.google.com/webstore/detail/codebattle-web-extension/embfhnfkfobkdohleknckodkmhgmpdli?hl=en&"
+            rel="noreferrer"
+            target="_blank"
           >
             chrome extension
           </a>
@@ -42,17 +45,14 @@ function ExtensionPopup() {
       </Modal.Body>
       <Modal.Footer className="mx-auto">
         <Button
-          variant="outline-success"
-          target="_blank"
-          rel="noreferrer"
           href="https://chrome.google.com/webstore/detail/codebattle-web-extension/embfhnfkfobkdohleknckodkmhgmpdli?hl=en&"
+          rel="noreferrer"
+          target="_blank"
+          variant="outline-success"
         >
           Install
         </Button>
-        <Button
-          variant="outline-secondary"
-          onClick={handleHide}
-        >
+        <Button variant="outline-secondary" onClick={handleHide}>
           Close
         </Button>
       </Modal.Footer>
@@ -60,7 +60,7 @@ function ExtensionPopup() {
   );
 }
 
-export default domElement => {
+export default (domElement) => {
   const lastCheckExtension = window.localStorage.getItem('lastCheckExtension');
   const nowTime = Date.now();
   const threeDay = 1000 * 60 * 60 * 24 * 3;
@@ -68,7 +68,7 @@ export default domElement => {
   if (window.chrome && isExpired) {
     // TODO: move to env config extension id and icon path
     const extensionInfo = { id: 'embfhnfkfobkdohleknckodkmhgmpdli', path: 'assets/128.png' };
-    isExtensionInstalled(extensionInfo).then(isInstall => {
+    isExtensionInstalled(extensionInfo).then((isInstall) => {
       if (!isInstall) {
         window.localStorage.setItem('lastCheckExtension', nowTime);
         createRoot(domElement).render(<ExtensionPopup />);

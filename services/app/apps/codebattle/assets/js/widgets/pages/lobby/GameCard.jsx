@@ -29,14 +29,12 @@ const getPerfomance = (won, lost) => {
   return `${int}.${rest.slice(0, 2)}`;
 };
 
-function UserSimpleStats({
-  user,
-}) {
+function UserSimpleStats({ user }) {
   const [state, setState] = useState('closed');
   const [data, setData] = useState();
 
   const load = () => {
-    const onSuccess = payload => {
+    const onSuccess = (payload) => {
       setData(payload.data.stats.games);
       setState('opened');
     };
@@ -51,18 +49,14 @@ function UserSimpleStats({
   return (
     <>
       {state === 'loading' && (
-        <button
-          type="button"
-          className="btn btn-sm btn-secondary rounded-lg"
-          disabled
-        >
+        <button disabled className="btn btn-sm btn-secondary rounded-lg" type="button">
           Loading...
         </button>
       )}
       {state === 'closed' && (
         <button
-          type="button"
           className="btn btn-sm btn-success text-nowrap text-white rounded-lg"
+          type="button"
           onClick={load}
         >
           Show stats
@@ -72,11 +66,7 @@ function UserSimpleStats({
         <span className="text-nowrap">{`Won/Lost: ${getPerfomance(data.won, data.lost)}`}</span>
       )}
       {state === 'error' && (
-        <button
-          type="button"
-          className="btn btn-sm btn-danger rounded-lg"
-          onClick={load}
-        >
+        <button className="btn btn-sm btn-danger rounded-lg" type="button" onClick={load}>
           Reload
         </button>
       )}
@@ -84,13 +74,7 @@ function UserSimpleStats({
   );
 }
 
-function GameCard({
-  type,
-  game,
-  currentUserId = null,
-  isGuest = true,
-  isOnline = false,
-}) {
+function GameCard({ currentUserId = null, game, isGuest = true, isOnline = false, type }) {
   return (
     <div
       key={`card-${game.id}`}
@@ -105,36 +89,34 @@ function GameCard({
         </div>
         <div className="d-flex flex-column align-self-center">
           {game.players.length === 1 ? (
-            <>
-              <div className="d-flex flex-column align-items-center">
-                <UserInfo user={game.players[0]} />
-                {currentUserId !== game.players[0] && (
-                  <UserSimpleStats user={game.players[0]} />
-                )}
-              </div>
-            </>
+            <div className="d-flex flex-column align-items-center">
+              <UserInfo user={game.players[0]} />
+              {currentUserId !== game.players[0] && <UserSimpleStats user={game.players[0]} />}
+            </div>
           ) : (
             <>
               <div className="d-flex flex-column align-items-center position-relative">
                 <div className="d-flex">
-                  <ResultIcon gameId={game.id} player1={game.players[0]} player2={game.players[1]} />
+                  <ResultIcon
+                    gameId={game.id}
+                    player1={game.players[0]}
+                    player2={game.players[1]}
+                  />
                   <UserInfo user={game.players[0]} />
                 </div>
-                {
-                    type === 'active'
-                      && <GameProgressBar player={game.players[0]} position="left" />
-                }
+                {type === 'active' && <GameProgressBar player={game.players[0]} position="left" />}
               </div>
               <span className="text-center">VS</span>
               <div className="d-flex flex-column align-items-center position-relative">
                 <div className="d-flex">
-                  <ResultIcon gameId={game.id} player1={game.players[1]} player2={game.players[0]} />
+                  <ResultIcon
+                    gameId={game.id}
+                    player1={game.players[1]}
+                    player2={game.players[0]}
+                  />
                   <UserInfo user={game.players[1]} />
                 </div>
-                {
-                    type === 'active'
-                      && <GameProgressBar player={game.players[1]} position="left" />
-                }
+                {type === 'active' && <GameProgressBar player={game.players[1]} position="left" />}
               </div>
             </>
           )}
@@ -142,15 +124,15 @@ function GameCard({
       </div>
       {type === 'active' && (
         <GameActionButton
-          type="card"
-          game={game}
           currentUserId={currentUserId}
+          game={game}
           isGuest={isGuest}
           isOnline={isOnline}
+          type="card"
         />
       )}
       {type === 'completed' && (
-        <a type="button" className="btn btn-secondary btn-sm rounded-lg" href={`/games/${game.id}`}>
+        <a className="btn btn-secondary btn-sm rounded-lg" href={`/games/${game.id}`} type="button">
           Show
         </a>
       )}

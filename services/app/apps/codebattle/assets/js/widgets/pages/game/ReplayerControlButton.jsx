@@ -35,11 +35,11 @@ function ReplayerControlButton() {
     case roomCurrent.matches({ replayer: replayerMachineStates.empty }): {
       return (
         <button
+          aria-label="Open Record Player"
+          className="btn btn-secondary btn-block rounded-lg"
+          disabled={isPreviewRoom}
           type="button"
           onClick={loadReplayer}
-          className="btn btn-secondary btn-block rounded-lg"
-          aria-label="Open Record Player"
-          disabled={isPreviewRoom}
         >
           {i18n.t('Open History')}
         </button>
@@ -48,11 +48,11 @@ function ReplayerControlButton() {
     case roomCurrent.matches({ replayer: replayerMachineStates.off }): {
       return (
         <button
+          aria-label="Open Record Player"
+          className="btn btn-secondary btn-block rounded-lg"
+          disabled={isPreviewRoom}
           type="button"
           onClick={openLoadedReplayer}
-          className="btn btn-secondary btn-block rounded-lg"
-          aria-label="Open Record Player"
-          disabled={isPreviewRoom}
         >
           {i18n.t('Open History')}
         </button>
@@ -61,10 +61,10 @@ function ReplayerControlButton() {
     case roomCurrent.matches({ replayer: replayerMachineStates.on }): {
       return (
         <button
+          aria-label="Close Record Player"
+          className="btn btn-secondary btn-block rounded-lg"
           type="button"
           onClick={() => mainService.send('CLOSE_REPLAYER')}
-          className="btn btn-secondary btn-block rounded-lg"
-          aria-label="Close Record Player"
         >
           {i18n.t('Return to game')}
         </button>

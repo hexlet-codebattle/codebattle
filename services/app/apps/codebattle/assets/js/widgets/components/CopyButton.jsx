@@ -3,7 +3,7 @@ import React, { useState, useCallback } from 'react';
 import copy from 'copy-to-clipboard';
 import i18n from 'i18next';
 
-function CopyButton({ className, value, disabled = false }) {
+function CopyButton({ className, disabled = false, value }) {
   const [copied, setCopied] = useState(false);
 
   const onClick = useCallback(() => {
@@ -15,11 +15,11 @@ function CopyButton({ className, value, disabled = false }) {
 
   return (
     <button
-      type="button"
       className={className}
-      onClick={onClick}
       data-testid="copy-button"
       disabled={disabled}
+      type="button"
+      onClick={onClick}
     >
       {i18n.t(textButtonCopy)}
     </button>

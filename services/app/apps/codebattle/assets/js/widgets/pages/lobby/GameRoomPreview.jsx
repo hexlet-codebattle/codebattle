@@ -9,7 +9,7 @@ const defaultAvatarUrl = 'https://avatars.githubusercontent.com/u/35539033?v=4';
 const players = Gon.getAsset('players');
 
 // TODO : user user.avatarUrl
-const GameRoomPreview = ({ pageName }) => {
+function GameRoomPreview({ pageName }) {
   if (pageName === 'builder') {
     return (
       <div className="preview container-fluid slideInLeft">
@@ -34,33 +34,41 @@ const GameRoomPreview = ({ pageName }) => {
     <div className="preview container-fluid slideInLeft">
       <div className="preview__container w-100 d-flex align-items-center">
         <div className="player1">
-          <img src={player1.avatar_url || defaultAvatarUrl} alt="avatar" className="player1__avatar" />
+          <img
+            alt="avatar"
+            className="player1__avatar"
+            src={player1.avatar_url || defaultAvatarUrl}
+          />
           <p className="player1__name">{player1.name}</p>
           <div className="player1__status">
             <LanguageIcon className="preview__icon" lang={player1.lang} />
             <span className="preview__info">{player1.lang}</span>
-            <img className="preview__icon" src="/assets/images/rating.svg" alt="rating" />
+            <img alt="rating" className="preview__icon" src="/assets/images/rating.svg" />
             <span className="preview__info">{player1.rating}</span>
           </div>
         </div>
 
         <div className="preview__middle">
-          <img src="/assets/images/fight.svg" alt="fight" className="preview__fight" />
+          <img alt="fight" className="preview__fight" src="/assets/images/fight.svg" />
         </div>
 
         <div className="player2">
-          <img src={player2.avatar_url || defaultAvatarUrl} alt="avatar" className="player2__avatar" />
+          <img
+            alt="avatar"
+            className="player2__avatar"
+            src={player2.avatar_url || defaultAvatarUrl}
+          />
           <p className="player2__name">{player2.name}</p>
           <div className="player2__status">
             <LanguageIcon className="preview__icon" lang={player2.lang} />
             <span className="preview__info">{player2.lang}</span>
-            <img className="preview__icon" src="/assets/images/rating.svg" alt="rating" />
+            <img alt="rating" className="preview__icon" src="/assets/images/rating.svg" />
             <span className="preview__info">{player2.rating}</span>
           </div>
         </div>
       </div>
     </div>
   );
-};
+}
 
 export default GameRoomPreview;

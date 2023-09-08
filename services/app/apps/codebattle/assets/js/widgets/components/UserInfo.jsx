@@ -24,12 +24,12 @@ function UserPopoverContent({ user }) {
       .get(`/api/v1/user/${userId}/stats`, {
         signal: controller.signal,
       })
-      .then(response => {
+      .then((response) => {
         if (!controller.signal.aborted) {
           setStats(camelizeKeys(response.data));
         }
       })
-      .catch(error => {
+      .catch((error) => {
         dispatch(actions.setError(error));
       });
 
@@ -38,11 +38,15 @@ function UserPopoverContent({ user }) {
     };
   }, [dispatch, setStats, user.id]);
 
-  return <UserStats user={user} data={stats} />;
+  return <UserStats data={stats} user={user} />;
 }
 
 function UserInfo({
-  user, hideInfo = false, truncate = false, hideOnlineIndicator = false, loading = false,
+  hideInfo = false,
+  hideOnlineIndicator = false,
+  loading = false,
+  truncate = false,
+  user,
 }) {
   const { presenceList } = useSelector(selectors.lobbyDataSelector);
   const content = useMemo(() => <UserPopoverContent user={user} />, [user]);
@@ -62,27 +66,23 @@ function UserInfo({
     return (
       <div className={userClassName}>
         <UserName
-          user={user}
-          truncate={truncate}
-          isOnline={isOnline}
           hideOnlineIndicator={hideOnlineIndicator}
+          isOnline={isOnline}
+          truncate={truncate}
+          user={user}
         />
       </div>
     );
   }
 
   return (
-    <PopoverStickOnHover
-      id={`user-info-${user?.id}`}
-      placement="bottom-start"
-      component={content}
-    >
+    <PopoverStickOnHover component={content} id={`user-info-${user?.id}`} placement="bottom-start">
       <div className={userClassName}>
         <UserName
-          user={user}
-          truncate={truncate}
-          isOnline={isOnline}
           hideOnlineIndicator={hideOnlineIndicator}
+          isOnline={isOnline}
+          truncate={truncate}
+          user={user}
         />
       </div>
     </PopoverStickOnHover>

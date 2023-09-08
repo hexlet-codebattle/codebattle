@@ -9,7 +9,7 @@ import Tooltip from 'react-bootstrap/Tooltip';
 import i18n from '../../i18n';
 import color from '../config/statusColor';
 
-const getMessage = status => {
+const getMessage = (status) => {
   switch (status) {
     case 'error':
       return i18n.t('solution cannot be executed');
@@ -22,21 +22,25 @@ const getMessage = status => {
   }
 };
 
-const AccordeonBox = ({ children }) => (
-  <div className="accordion border-top" id="accordionExample">
-    {children}
-  </div>
-);
+function AccordeonBox({ children }) {
+  return (
+    <div className="accordion border-top" id="accordionExample">
+      {children}
+    </div>
+  );
+}
 
-const renderFirstAssert = firstAssert => (
-  <AccordeonBox.SubMenu statusColor={color[firstAssert.status]} assert={firstAssert} hasOutput={firstAssert.output}>
+const renderFirstAssert = (firstAssert) => (
+  <AccordeonBox.SubMenu
+    assert={firstAssert}
+    hasOutput={firstAssert.output}
+    statusColor={color[firstAssert.status]}
+  >
     <AccordeonBox.Item output={firstAssert.output} />
   </AccordeonBox.SubMenu>
 );
 
-function Menu({
- children, firstAssert, resultData, assertsCount, successCount,
-}) {
+function Menu({ assertsCount, children, firstAssert, resultData, successCount }) {
   const [show, setShow] = useState(true);
   const isSyntaxError = resultData.status === 'error';
   const statusColor = color[resultData.status];
@@ -47,11 +51,14 @@ function Menu({
   };
   const uniqIndex = uniqueId('heading');
   const percent = (100 * successCount) / assertsCount;
-  const assertsStatusMessage = i18n.t('You passed %{successCount} from %{assertsCount} asserts. (%{percent}%)', {
-    successCount,
-    assertsCount,
-    percent,
-  });
+  const assertsStatusMessage = i18n.t(
+    'You passed %{successCount} from %{assertsCount} asserts. (%{percent}%)',
+    {
+      successCount,
+      assertsCount,
+      percent,
+    },
+  );
 
   useEffect(() => {
     setShow(isSyntaxError);
@@ -63,35 +70,41 @@ function Menu({
         <>
           <div className="card-header" id={`heading${uniqIndex} `}>
             <button
+              aria-controls={`collapse${uniqIndex}`}
+              aria-expanded="true"
               className="btn btn-sm btn-outline-secondary mr-3"
+              data-toggle="collapse"
               type="button"
               onClick={handleClick}
-              data-toggle="collapse"
-              aria-expanded="true"
-              aria-controls={`collapse${uniqIndex}`}
             >
-              {show ? <FontAwesomeIcon icon="arrow-circle-up" /> : <FontAwesomeIcon icon="arrow-circle-down" />}
+              {show ? (
+                <FontAwesomeIcon icon="arrow-circle-up" />
+              ) : (
+                <FontAwesomeIcon icon="arrow-circle-down" />
+              )}
             </button>
-            {!isSyntaxError && <span className="font-weight-bold small mr-3">{assertsStatusMessage}</span>}
+            {!isSyntaxError && (
+              <span className="font-weight-bold small mr-3">{assertsStatusMessage}</span>
+            )}
             <span className={`badge badge-${statusColor}`}>{message}</span>
           </div>
           {firstAssert && renderFirstAssert(firstAssert)}
         </>
       ) : (
-        <>
-          <span className={`badge badge-${statusColor}`}>{message}</span>
-        </>
+        <span className={`badge badge-${statusColor}`}>{message}</span>
       )}
-      <div id={`collapse${uniqIndex}`} className={classCollapse} aria-labelledby={`heading${uniqIndex}`}>
+      <div
+        aria-labelledby={`heading${uniqIndex}`}
+        className={classCollapse}
+        id={`collapse${uniqIndex}`}
+      >
         <div className="list-group list-group-flush">{children}</div>
       </div>
     </div>
   );
 }
 
-function SubMenu({
- children, statusColor, assert, hasOutput, uniqIndex, executionTime,
-}) {
+function SubMenu({ assert, children, executionTime, hasOutput, statusColor, uniqIndex }) {
   const [isShowLog, setIsShowLog] = useState(true);
   const classCollapse = cn('collapse', {
     show: isShowLog,
@@ -118,15 +131,19 @@ function SubMenu({
             </OverlayTrigger>
             {assert.output && (
               <button
+                aria-controls={`collapse${uniqIndex}`}
+                aria-expanded="true"
                 className="btn btn-sm btn-outline-info badge ml-2"
+                data-toggle="collapse"
                 type="button"
                 onClick={() => setIsShowLog(!isShowLog)}
-                data-toggle="collapse"
-                aria-expanded="true"
-                aria-controls={`collapse${uniqIndex}`}
               >
                 <span>
-                  {isShowLog ? <FontAwesomeIcon icon="arrow-circle-up" /> : <FontAwesomeIcon icon="arrow-circle-down" />}
+                  {isShowLog ? (
+                    <FontAwesomeIcon icon="arrow-circle-up" />
+                  ) : (
+                    <FontAwesomeIcon icon="arrow-circle-down" />
+                  )}
                   {' Log'}
                 </span>
               </button>
@@ -135,22 +152,28 @@ function SubMenu({
         </div>
         <pre className="my-1">
           <span className="d-block">{`${i18n.t('Receive:')} ${JSON.stringify(result)}`}</span>
-          <span className="d-block">{`${i18n.t('Expected:')} ${JSON.stringify(assert.expected)}`}</span>
-          <span className="d-block">{`${i18n.t('Arguments:')} ${JSON.stringify(assert.arguments)}`}</span>
+          <span className="d-block">{`${i18n.t('Expected:')} ${JSON.stringify(
+            assert.expected,
+          )}`}</span>
+          <span className="d-block">{`${i18n.t('Arguments:')} ${JSON.stringify(
+            assert.arguments,
+          )}`}</span>
         </pre>
         {hasOutput && (
-          <>
-            <div id={`collapse${uniqIndex}`} className={classCollapse} aria-labelledby={`heading${uniqIndex}`}>
-              {children}
-            </div>
-          </>
+          <div
+            aria-labelledby={`heading${uniqIndex}`}
+            className={classCollapse}
+            id={`collapse${uniqIndex}`}
+          >
+            {children}
+          </div>
         )}
       </div>
     </div>
   );
 }
 
-const Item = ({ output }) => {
+function Item({ output }) {
   if (output === '') {
     return null;
   }
@@ -163,7 +186,7 @@ const Item = ({ output }) => {
       </pre>
     </div>
   );
-};
+}
 
 AccordeonBox.Item = Item;
 AccordeonBox.Menu = Menu;

@@ -1,9 +1,4 @@
-import React, {
-  useState,
-  useContext,
-  useCallback,
-  memo,
-} from 'react';
+import React, { useState, useContext, useCallback, memo } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
@@ -20,10 +15,7 @@ import {
   isTaskAssertsReadySelector,
   taskStateSelector,
 } from '../../machines/selectors';
-import {
-  getGeneratorStatus,
-  validationStatuses,
-} from '../../machines/task';
+import { getGeneratorStatus, validationStatuses } from '../../machines/task';
 import { reloadGeneratorAndSolutionTemplates } from '../../middlewares/Game';
 import * as selectors from '../../selectors';
 import { actions } from '../../slices';
@@ -35,13 +27,12 @@ import VimModeButton from '../game/VimModeButton';
 import AssertsOutput from './AssertsOutput';
 import TaskPropStatusIcon from './TaskPropStatusIcon';
 
-const isGeneratorsError = status => (
-  status === assertsStatuses.error
-    || status === assertsStatuses.memoryLeak
-    || status === assertsStatuses.timeout
-);
+const isGeneratorsError = (status) =>
+  status === assertsStatuses.error ||
+  status === assertsStatuses.memoryLeak ||
+  status === assertsStatuses.timeout;
 
-const InfoPopup = ({ reloadGeneratorCode, editable, origin }) => {
+function InfoPopup({ editable, origin, reloadGeneratorCode }) {
   const infoClassName = cn(
     'd-flex align-items-center justify-content-around position-absolute w-100 h-100 p-3',
     'bg-gray text-black  cb-opacity-75',
@@ -58,11 +49,10 @@ const InfoPopup = ({ reloadGeneratorCode, editable, origin }) => {
     <div className={infoClassName}>
       {editable ? (
         <span className="text-center">
-          Reload (Press
-          {' '}
+          Reload (Press{' '}
           <button
-            type="button"
             className="btn border-0 rounded-lg p-1"
+            type="button"
             onClick={reloadGeneratorCode}
           >
             <FontAwesomeIcon icon="redo" />
@@ -70,11 +60,13 @@ const InfoPopup = ({ reloadGeneratorCode, editable, origin }) => {
           ) Generator/Solution code.
         </span>
       ) : (
-        <span className="text-center">Tests are not generated automatically. They are based only on examples</span>
+        <span className="text-center">
+          Tests are not generated automatically. They are based only on examples
+        </span>
       )}
     </div>
   );
-};
+}
 
 function BuilderEditorsWidget() {
   const dispatch = useDispatch();
@@ -92,19 +84,17 @@ function BuilderEditorsWidget() {
   const asserts = useSelector(selectors.taskAssertsSelector);
   const assertsStatus = useSelector(selectors.taskAssertsStatusSelector);
   const editorsLang = useSelector(selectors.taskGeneratorLangSelector);
-  const textArgumentsGenerator = useSelector(
-    selectors.taskTextArgumentsGeneratorSelector,
-  );
+  const textArgumentsGenerator = useSelector(selectors.taskTextArgumentsGeneratorSelector);
   const textSolution = useSelector(selectors.taskTextSolutionSelector);
   const currentUserId = useSelector(selectors.currentUserIdSelector);
   const theme = useSelector(selectors.editorsThemeSelector(currentUserId));
   const editorsMode = useSelector(selectors.editorsModeSelector(currentUserId));
 
   const [isValidArgumentsGenerator, invalidGeneratorReason] = useSelector(
-    state => state.builder.validationStatuses.argumentsGenerator,
+    (state) => state.builder.validationStatuses.argumentsGenerator,
   );
   const [isValidSolution, invalidSolutionReason] = useSelector(
-    state => state.builder.validationStatuses.solution,
+    (state) => state.builder.validationStatuses.solution,
   );
 
   const reloadCode = useCallback(() => {
@@ -138,20 +128,24 @@ function BuilderEditorsWidget() {
   };
 
   const changeTaskServiceState = useCallback(() => taskService.send('CHANGES'), [taskService]);
-  const handleChanges = isAssertsReady
-    ? changeTaskServiceState
-    : noop;
+  const handleChanges = isAssertsReady ? changeTaskServiceState : noop;
 
-  const onChangeGenerator = useCallback(value => {
-    handleChanges();
+  const onChangeGenerator = useCallback(
+    (value) => {
+      handleChanges();
 
-    dispatch(actions.setTaskArgumentsGenerator({ value }));
-  }, [dispatch, handleChanges]);
-  const onChangeSolution = useCallback(value => {
-    handleChanges();
+      dispatch(actions.setTaskArgumentsGenerator({ value }));
+    },
+    [dispatch, handleChanges],
+  );
+  const onChangeSolution = useCallback(
+    (value) => {
+      handleChanges();
 
-    dispatch(actions.setTaskSolution({ value }));
-  }, [dispatch, handleChanges]);
+      dispatch(actions.setTaskSolution({ value }));
+    },
+    [dispatch, handleChanges],
+  );
 
   const generatorParams = {
     ...params,
@@ -175,57 +169,55 @@ function BuilderEditorsWidget() {
   return (
     <>
       <div className="col-12 col-lg-6 p-1" data-editor-state="idle">
-        <div
-          className="card h-100 shadow-sm position-relative"
-          style={gameRoomEditorStyles}
-        >
+        <div className="card h-100 shadow-sm position-relative" style={gameRoomEditorStyles}>
           <div className="rounded-top" data-player-type="current_user">
-            <div className="btn-toolbar justify-content-between align-items-center m-1 mb-2" role="toolbar">
+            <div
+              className="btn-toolbar justify-content-between align-items-center m-1 mb-2"
+              role="toolbar"
+            >
               <div className="d-flex justify-content-between">
                 <div className="d-flex align-items-center p-1">
                   <div className="py-2">
                     <TaskPropStatusIcon
                       id="editorArgumentsGenerator"
+                      reason={invalidSolutionReason}
                       status={
                         !isValidArgumentsGenerator
                           ? validationStatuses.invalid
                           : getGeneratorStatus(templatesState, taskCurrent)
                       }
-                      reason={invalidSolutionReason}
                     />
                   </div>
                   <h5 className="pt-2">Step 3: Generator</h5>
                 </div>
                 <div
+                  aria-label="Editor mode"
                   className="btn-group align-items-center ml-2 mr-auto"
                   role="group"
-                  aria-label="Editor mode"
                 >
                   <VimModeButton playerId={currentUserId} />
                   <DakModeButton playerId={currentUserId} />
                 </div>
               </div>
               <div
-                className={
-                  cn('btn-group justify-content-between align-items-center', {
-                    'd-flex': params.edibatle,
-                    'd-none': !params.editable,
-                  })
-                }
+                className={cn('btn-group justify-content-between align-items-center', {
+                  'd-flex': params.edibatle,
+                  'd-none': !params.editable,
+                })}
               >
                 <button
+                  className="btn btn-sm btn-light rounded-left"
                   title="Reset Code"
                   type="button"
-                  className="btn btn-sm btn-light rounded-left"
                   onClick={resetCode}
                 >
                   <FontAwesomeIcon className="mr-2" icon="sync" />
                   Reset
                 </button>
                 <button
+                  className="btn btn-sm btn-light ml-1 rounded-right"
                   title="Reject asserts generation"
                   type="button"
-                  className="btn btn-sm btn-light ml-1 rounded-right"
                   onClick={rejectAssertsGeneration}
                 >
                   <FontAwesomeIcon className="mr-2" icon="window-close" />
@@ -236,33 +228,36 @@ function BuilderEditorsWidget() {
           </div>
           <Editor {...generatorParams} />
           {disabledEditors && (
-            <InfoPopup editable={editable} reloadGeneratorCode={reloadCode} origin={origin} />
+            <InfoPopup editable={editable} origin={origin} reloadGeneratorCode={reloadCode} />
           )}
         </div>
       </div>
       <div className="col-12 col-lg-6 p-1" data-editor-state="idle">
         <div className="card h-100 shadow-sm" style={gameRoomEditorStyles}>
           <div className="rounded-top" data-player-type="current_user">
-            <div className="btn-toolbar justify-content-between align-items-center m-1" role="toolbar">
+            <div
+              className="btn-toolbar justify-content-between align-items-center m-1"
+              role="toolbar"
+            >
               <div className="d-flex align-items-center p-1">
                 <div className="py-2">
                   <TaskPropStatusIcon
                     id="editorSolution"
+                    reason={invalidGeneratorReason}
                     status={
                       !isValidSolution
                         ? validationStatuses.invalid
                         : getGeneratorStatus(templatesState, taskCurrent)
                     }
-                    reason={invalidGeneratorReason}
                   />
                 </div>
                 <h5 className="pt-2">Step 4: Solution Example</h5>
                 <button
+                  className="btn btn-secondary ml-2 rounded-lg text-nowrap"
+                  disabled={assertsStatus.status === 'none'}
                   title={assertsPanelShowing ? 'Open solution code' : 'Open task asserts'}
                   type="button"
-                  className="btn btn-secondary ml-2 rounded-lg text-nowrap"
                   onClick={toggleAssertsPanel}
-                  disabled={assertsStatus.status === 'none'}
                 >
                   {assertsPanelShowing ? (
                     <>
@@ -273,26 +268,30 @@ function BuilderEditorsWidget() {
                     <>
                       <FontAwesomeIcon className="mr-2" icon="tasks" />
                       Asserts
-                      {asserts.length !== 0 && <span className={assertsBadgeClassName}>{asserts.length}</span>}
-                      {asserts.length === 0 && isGeneratorsError(assertsStatus.status) && <span className={assertsBadgeClassName}>!</span>}
+                      {asserts.length !== 0 && (
+                        <span className={assertsBadgeClassName}>{asserts.length}</span>
+                      )}
+                      {asserts.length === 0 && isGeneratorsError(assertsStatus.status) && (
+                        <span className={assertsBadgeClassName}>!</span>
+                      )}
                     </>
                   )}
                 </button>
               </div>
-              <LanguagePickerView
-                currentLangSlug={editorsLang}
-                isDisabled
-              />
+              <LanguagePickerView isDisabled currentLangSlug={editorsLang} />
             </div>
           </div>
           <div className={!assertsPanelShowing ? 'd-none' : ''}>
             <AssertsOutput asserts={asserts} {...assertsStatus} />
           </div>
-          <div id="editor" className={assertsPanelShowing ? 'd-none' : 'd-flex flex-column flex-grow-1'}>
+          <div
+            className={assertsPanelShowing ? 'd-none' : 'd-flex flex-column flex-grow-1'}
+            id="editor"
+          >
             <Editor {...solutionParams} />
           </div>
           {disabledEditors && (
-            <InfoPopup editable={editable} reloadGeneratorCode={reloadCode} origin={origin} />
+            <InfoPopup editable={editable} origin={origin} reloadGeneratorCode={reloadCode} />
           )}
         </div>
       </div>

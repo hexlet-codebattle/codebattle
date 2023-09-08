@@ -41,16 +41,17 @@ class Editor extends PureComponent {
   // eslint-disable-next-line react/sort-comp
   notIncludedSyntaxHightlight = new Set(['haskell', 'elixir']);
 
-  ctrPlusS = null
+  ctrPlusS = null;
 
-  remoteKeys = []
+  remoteKeys = [];
 
   constructor(props) {
     super(props);
     this.statusBarRef = React.createRef();
-    const convertRemToPixels = rem => rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
+    // const convertRemToPixels = (rem) =>
+    //   rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
     // statusBarHeight = lineHeight = current fontSize * 1.5
-    this.statusBarHeight = convertRemToPixels(1) * 1.5;
+    // this.statusBarHeight = convertRemToPixels(1) * 1.5;
     this.options = {
       tabSize: getLanguageTabSize(props.syntax),
       insertSpaces: shouldReplaceTabsWithSpaces(props.syntax),
@@ -72,18 +73,13 @@ class Editor extends PureComponent {
       },
     };
     /** @param {KeyboardEvent} e */
-    this.ctrPlusS = e => {
+    this.ctrPlusS = (e) => {
       if (e.key === 's' && (e.metaKey || e.ctrlKey)) e.preventDefault();
     };
   }
 
   async componentDidMount() {
-    const {
-      mode,
-      syntax,
-      checkResult,
-      toggleMuteSound,
-    } = this.props;
+    const { checkResult, mode, syntax, toggleMuteSound } = this.props;
 
     this.modes = {
       default: () => null,
@@ -121,12 +117,7 @@ class Editor extends PureComponent {
 
   async componentDidUpdate(prevProps, prevState) {
     const { remote } = this.state;
-    const {
-      syntax,
-      mode,
-      editable,
-      loading = false,
-    } = this.props;
+    const { editable, loading = false, mode, syntax } = this.props;
 
     if (mode !== prevProps.mode) {
       if (this.currentMode) {
@@ -157,16 +148,15 @@ class Editor extends PureComponent {
     const model = this.editor.getModel();
 
     if (prevProps.syntax !== syntax) {
-      model.updateOptions({ tabSize: getLanguageTabSize(syntax), insertSpaces: shouldReplaceTabsWithSpaces(syntax) });
+      model.updateOptions({
+        tabSize: getLanguageTabSize(syntax),
+        insertSpaces: shouldReplaceTabsWithSpaces(syntax),
+      });
 
       await this.updateHightLightForNotIncludeSyntax(syntax);
     }
 
-    if (
-      prevState.remote !== remote
-        && remote.cursor.range
-        && remote.selection.range
-    ) {
+    if (prevState.remote !== remote && remote.cursor.range && remote.selection.range) {
       this.remoteKeys = this.editor.deltaDecorations(this.remoteKeys, Object.values(remote));
     }
 
@@ -181,7 +171,7 @@ class Editor extends PureComponent {
     this.clearCursorListeners();
   }
 
-  updateHightLightForNotIncludeSyntax = async syntax => {
+  updateHightLightForNotIncludeSyntax = async (syntax) => {
     if (this.notIncludedSyntaxHightlight.has(syntax)) {
       const { default: HighlightRules } = await import(
         `monaco-ace-tokenizer/lib/ace/definitions/${syntax}`
@@ -196,7 +186,7 @@ class Editor extends PureComponent {
 
   handleResize = () => this.editor.layout();
 
-  handleChangeCursorSelection = e => {
+  handleChangeCursorSelection = (e) => {
     const { editable, gameMode, onChangeCursorSelection } = this.props;
     const isTournament = gameMode === GameRoomModes.tournament;
 
@@ -210,7 +200,7 @@ class Editor extends PureComponent {
     }
   };
 
-  handleChangeCursorPosition = e => {
+  handleChangeCursorPosition = (e) => {
     const { editable, onChangeCursorPosition } = this.props;
 
     if (editable && onChangeCursorPosition) {
@@ -221,9 +211,8 @@ class Editor extends PureComponent {
 
   updateRemoteCursorSelection = (startOffset, endOffset) => {
     const { editable, userType } = this.props;
-    const userClassName = userType === editorUserTypes.opponent
-      ? 'cb-remote-opponent'
-      : 'cb-remote-player';
+    const userClassName =
+      userType === editorUserTypes.opponent ? 'cb-remote-opponent' : 'cb-remote-player';
 
     if (!editable) {
       const startPosition = this.editor.getModel().getPositionAt(startOffset);
@@ -235,27 +224,21 @@ class Editor extends PureComponent {
       const endLineNumber = endPosition.lineNumber;
 
       const selection = {
-        range: new this.monaco.Range(
-          startLineNumber,
-          startColumn,
-          endLineNumber,
-          endColumn,
-        ),
+        range: new this.monaco.Range(startLineNumber, startColumn, endLineNumber, endColumn),
         options: { className: `cb-editor-remote-selection ${userClassName}` },
       };
 
-      this.setState(state => ({
+      this.setState((state) => ({
         remote: { ...state.remote, selection },
       }));
     }
-  }
+  };
 
-  updateRemoteCursorPosition = offset => {
+  updateRemoteCursorPosition = (offset) => {
     const { editable, userType } = this.props;
     const position = this.editor.getModel().getPositionAt(offset);
-    const userClassName = userType === editorUserTypes.opponent
-      ? 'cb-remote-opponent'
-      : 'cb-remote-player';
+    const userClassName =
+      userType === editorUserTypes.opponent ? 'cb-remote-opponent' : 'cb-remote-player';
 
     if (!editable) {
       const cursor = {
@@ -268,14 +251,14 @@ class Editor extends PureComponent {
         options: { className: `cb-editor-remote-cursor ${userClassName}` },
       };
 
-      this.setState(state => ({
+      this.setState((state) => ({
         remote: {
           ...state.remote,
           cursor,
         },
       }));
     }
-  }
+  };
 
   clearCursorListeners = () => {};
 
@@ -303,17 +286,11 @@ class Editor extends PureComponent {
     if (editable && !isTournament && !isBuilder) {
       this.editor.focus();
     } else if (editable && isTournament) {
-      this.editor.addCommand(
-        monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_V,
-        () => null,
-      );
+      this.editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_V, () => null);
       this.editor.focus();
     } else {
       // disable copying for spectator
-      this.editor.addCommand(
-        monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_C,
-        () => null,
-      );
+      this.editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_C, () => null);
       // this.editor.onDidChangeCursorSelection(() => {
       //   const { column, lineNumber } = this.editor.getPosition();
       //   this.editor.setPosition({ lineNumber, column });
@@ -322,23 +299,15 @@ class Editor extends PureComponent {
 
     // this.editor.getModel().updateOptions({ tabSize: this.tabSize });
 
-    this.editor.addCommand(
-      this.monaco.KeyMod.CtrlCmd | this.monaco.KeyCode.Enter,
-      () => null,
-    );
+    this.editor.addCommand(this.monaco.KeyMod.CtrlCmd | this.monaco.KeyCode.Enter, () => null);
 
-    this.editor.addCommand(
-      this.monaco.KeyMod.CtrlCmd | this.monaco.KeyCode.KEY_M,
-      () => null,
-    );
+    this.editor.addCommand(this.monaco.KeyMod.CtrlCmd | this.monaco.KeyCode.KEY_M, () => null);
 
     window.addEventListener('resize', this.handleResize);
   };
 
   render() {
-    const {
-      value, syntax, onChange, theme, loading = false,
-    } = this.props;
+    const { loading = false, onChange, syntax, theme, value } = this.props;
     // FIXME: move here and apply mapping object
     const mappedSyntax = languages[syntax];
     const statusBarClassName = cn('position-absolute px-1', {
@@ -346,36 +315,37 @@ class Editor extends PureComponent {
       'bg-white text-dark': theme === editorThemes.light,
     });
 
-    const loadingClassName = cn('position-absolute align-items-center justify-content-center w-100 h-100', {
-      'd-flex cb-loading-background': loading,
-      'd-none': !loading,
-    });
+    const loadingClassName = cn(
+      'position-absolute align-items-center justify-content-center w-100 h-100',
+      {
+        'd-flex cb-loading-background': loading,
+        'd-none': !loading,
+      },
+    );
 
     return (
       <>
         <MonacoEditor
-          theme={theme}
-          options={this.options}
-          width="100%"
+          data-guide-id="Editor"
+          editorDidMount={this.editorDidMount}
           height="100%"
           language={mappedSyntax}
-          editorDidMount={this.editorDidMount}
+          options={this.options}
+          theme={theme}
           value={value}
+          width="100%"
           onChange={onChange}
-          data-guide-id="Editor"
         />
-        <div
-          ref={this.statusBarRef}
-          className={statusBarClassName}
-          style={{ bottom: '40px' }}
-        />
-        <div className={loadingClassName}><Loading /></div>
+        <div ref={this.statusBarRef} className={statusBarClassName} style={{ bottom: '40px' }} />
+        <div className={loadingClassName}>
+          <Loading />
+        </div>
       </>
     );
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   const gameMode = gameModeSelector(state);
   return {
     gameMode,

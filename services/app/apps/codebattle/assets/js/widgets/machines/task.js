@@ -33,11 +33,10 @@ export const mapStateToValidationStatus = {
   [states.prepareTesting]: validationStatuses.validation,
 };
 
-export const getGeneratorStatus = (templateState, current) => (
+export const getGeneratorStatus = (templateState, current) =>
   templateState === taskTemplatesStates.none
     ? validationStatuses.none
-    : mapStateToValidationStatus[current.value]
-);
+    : mapStateToValidationStatus[current.value];
 
 const machine = {
   id: 'task',
@@ -106,12 +105,12 @@ export const config = {
     isSaved: (_ctx, { payload }) => payload.state !== taskStateCodes.blank,
   },
   actions: {
-    openTesting: () => { },
-    saveTask: () => { },
-    showTaskSaveConfirmation: () => { },
-    onSuccess: () => { },
-    onFailure: () => { },
-    onError: () => { },
+    openTesting: () => {},
+    saveTask: () => {},
+    showTaskSaveConfirmation: () => {},
+    onSuccess: () => {},
+    onFailure: () => {},
+    onError: () => {},
     handleError: assign({
       errorMessage: (_ctx, { payload }) => payload.message,
     }),

@@ -3,10 +3,12 @@ import React from 'react';
 import i18n from '../../../i18n';
 import color from '../../config/statusColor';
 
-const getMessage = status => {
+const getMessage = (status) => {
   switch (status) {
     case 'timeout':
-      return i18n.t("We couldn't retrieve check results. Check your network connection or your solution for bugs or :prod_is_down:");
+      return i18n.t(
+        "We couldn't retrieve check results. Check your network connection or your solution for bugs or :prod_is_down:",
+      );
     case 'error':
       return i18n.t('solution cannot be executed');
     case 'failure':
@@ -18,8 +20,8 @@ const getMessage = status => {
   }
 };
 
-const OutputTab = ({ sideOutput }) => {
-  const { successCount, assertsCount, status } = sideOutput;
+function OutputTab({ sideOutput }) {
+  const { assertsCount, status, successCount } = sideOutput;
   const isShowMessage = status === 'failure';
   const statusColor = color[status];
   const message = getMessage(status);
@@ -34,7 +36,7 @@ const OutputTab = ({ sideOutput }) => {
       {isShowMessage && <span className="font-weight-bold small mr-3">{assertsStatusMessage}</span>}
       <span className={`p-2 bg-${statusColor}`}>{message}</span>
     </>
-);
-};
+  );
+}
 
 export default OutputTab;

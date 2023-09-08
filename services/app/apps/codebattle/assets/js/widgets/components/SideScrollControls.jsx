@@ -1,9 +1,4 @@
-import React, {
-  useState,
-  useRef,
-  useEffect,
-  useCallback,
-} from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
@@ -53,9 +48,12 @@ function HorizontalScrollControls({ children }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleScroll = useCallback(event => {
-    setScrollLeft(event.currentTarget.scrollLeft);
-  }, [setScrollLeft]);
+  const handleScroll = useCallback(
+    (event) => {
+      setScrollLeft(event.currentTarget.scrollLeft);
+    },
+    [setScrollLeft],
+  );
 
   const handleScrollItemsRight = useCallback(() => {
     scrolledListRef.current.scrollBy({
@@ -70,50 +68,36 @@ function HorizontalScrollControls({ children }) {
       <div
         ref={leftButtonRef}
         style={{ left: 0, zIndex: 1000 }}
-        className={cn(
-          className,
-          'cb-left-scroll-control',
-          {
-            'd-flex': showLeftControl,
-            'd-none': !showLeftControl,
-          },
-        )}
+        className={cn(className, 'cb-left-scroll-control', {
+          'd-flex': showLeftControl,
+          'd-none': !showLeftControl,
+        })}
       >
         <button
-          type="button"
           className="btn border-0 rounded-circle p-2"
+          type="button"
           onClick={handleScrollItemsLeft}
         >
           <FontAwesomeIcon icon="chevron-left" />
         </button>
       </div>
-      <div
-        ref={scrolledListRef}
-        onScroll={handleScroll}
-        className="d-flex pb-2 overflow-auto"
-      >
+      <div ref={scrolledListRef} className="d-flex pb-2 overflow-auto" onScroll={handleScroll}>
         {children}
       </div>
       <div
         ref={rightButtonRef}
         style={{ right: 0, zIndex: 1000 }}
-        className={cn(
-          className,
-          'cb-right-scroll-control',
-          {
-            'd-flex': showRightControl,
-            'd-none': !showRightControl,
-          },
-        )}
+        className={cn(className, 'cb-right-scroll-control', {
+          'd-flex': showRightControl,
+          'd-none': !showRightControl,
+        })}
       >
         <button
-          type="button"
           className="btn border-0 rounded-circle p-2"
+          type="button"
           onClick={handleScrollItemsRight}
         >
-          <FontAwesomeIcon
-            icon="chevron-right"
-          />
+          <FontAwesomeIcon icon="chevron-right" />
         </button>
       </div>
     </>

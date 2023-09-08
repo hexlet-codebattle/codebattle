@@ -1,8 +1,4 @@
-import React, {
-  useContext,
-  useMemo,
-  useRef,
-} from 'react';
+import React, { useContext, useMemo, useRef } from 'react';
 
 import cn from 'classnames';
 import filter from 'lodash/filter';
@@ -37,13 +33,13 @@ function ChatWidget() {
   const openedReplayer = useMachineStateSelector(mainService, openedReplayerSelector);
   const isTestingRoom = useMachineStateSelector(mainService, inTestingRoomSelector);
 
-  const isTournamentGame = (gameMode === GameRoomModes.tournament);
-  const isStandardGame = (gameMode === GameRoomModes.standard);
+  const isTournamentGame = gameMode === GameRoomModes.tournament;
+  const isStandardGame = gameMode === GameRoomModes.standard;
   const showChatInput = !openedReplayer && !isTestingRoom;
 
   const inputRef = useRef(null);
 
-  const { menuId, menuRequest, displayMenu } = useChatContextMenu({
+  const { displayMenu, menuId, menuRequest } = useChatContextMenu({
     type: 'game',
     users,
     canInvite: isStandardGame,
@@ -57,14 +53,10 @@ function ChatWidget() {
   }, [isTournamentGame, users]);
 
   const activeRoom = useSelector(selectors.activeRoomSelector);
-  const filteredMessages = messages.filter(message => shouldShowMessage(message, activeRoom));
+  const filteredMessages = messages.filter((message) => shouldShowMessage(message, activeRoom));
 
   return (
-    <ChatContextMenu
-      menuId={menuId}
-      inputRef={inputRef}
-      request={menuRequest}
-    >
+    <ChatContextMenu inputRef={inputRef} menuId={menuId} request={menuRequest}>
       <div className="d-flex flex-wrap flex-sm-nowrap shadow-sm h-100 rounded-lg">
         <div
           className={cn(
@@ -72,15 +64,15 @@ function ChatWidget() {
             'game-chat-container cb-messages-container',
           )}
         >
-          <ChatHeader showRooms={isStandardGame} disabled={!isOnline} />
-          {openedReplayer
-            ? <Messages messages={historyMessages} />
-            : <Messages displayMenu={displayMenu} messages={filteredMessages} />}
-          {showChatInput && <ChatInput inputRef={inputRef} disabled={!isOnline} />}
+          <ChatHeader disabled={!isOnline} showRooms={isStandardGame} />
+          {openedReplayer ? (
+            <Messages messages={historyMessages} />
+          ) : (
+            <Messages displayMenu={displayMenu} messages={filteredMessages} />
+          )}
+          {showChatInput && <ChatInput disabled={!isOnline} inputRef={inputRef} />}
           {isTestingRoom && (
-            <div
-              className="d-flex position-absolute w-100 h-100 bg-dark cb-opacity-50 rounded-left justify-content-center text-white"
-            >
+            <div className="d-flex position-absolute w-100 h-100 bg-dark cb-opacity-50 rounded-left justify-content-center text-white">
               <span className="align-self-center">Chat is Disabled</span>
             </div>
           )}
@@ -92,23 +84,21 @@ function ChatWidget() {
             </div>
             {!isTestingRoom && (
               <div className="px-3 py-3 w-100 border-top">
-                <p className="mb-1 text-nowrap">
-                  {`Online players: ${listOfUsers.length}`}
-                </p>
-                {listOfUsers.map(user => (
+                <p className="mb-1 text-nowrap">{`Online players: ${listOfUsers.length}`}</p>
+                {listOfUsers.map((user) => (
                   <div
-                    role="button"
-                    tabIndex={0}
-                    className="my-1"
-                    title={user.name}
                     key={user.id}
+                    className="my-1"
                     data-user-id={user.id}
                     data-user-name={user.name}
-                    onContextMenu={displayMenu}
+                    role="button"
+                    tabIndex={0}
+                    title={user.name}
                     onClick={displayMenu}
+                    onContextMenu={displayMenu}
                     onKeyPress={displayMenu}
                   >
-                    <UserInfo user={user} hideInfo hideOnlineIndicator />
+                    <UserInfo hideInfo hideOnlineIndicator user={user} />
                   </div>
                 ))}
               </div>

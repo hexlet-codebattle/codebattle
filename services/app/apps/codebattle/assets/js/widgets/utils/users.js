@@ -1,5 +1,5 @@
-export const isBotId = userId => userId < 0;
+export const isBotId = (userId) => userId < 0;
 
 export default {
- isBotId,
+  isBotId,
 };

@@ -5,10 +5,11 @@ import keys from 'lodash/keys';
 
 import taskDescriptionLanguages from '../config/taskDescriptionLanguages';
 
-const useTaskDescriptionParams = (task, taskLanguage) => useMemo(() => {
+const useTaskDescriptionParams = (task, taskLanguage) =>
+  useMemo(() => {
     const avaibleLanguages = keys(task)
-      .filter(key => key.includes('description'))
-      .map(key => key.split('description'))
+      .filter((key) => key.includes('description'))
+      .map((key) => key.split('description'))
       .map(([, language]) => language.toLowerCase());
 
     const displayLanguage = includes(avaibleLanguages, taskLanguage)

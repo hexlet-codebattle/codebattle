@@ -6,20 +6,16 @@ import Output from '../game/Output';
 import OutputTab from '../game/OutputTab';
 
 function StairwayOutputTab({ playerId }) {
-  const output = useSelector(
-    state => state.executionOutput.results[playerId],
-  );
+  const output = useSelector((state) => state.executionOutput.results[playerId]);
   const isShowOutput = output && output.status;
 
   return (
-    <>
-      {isShowOutput && (
-        <>
-          <OutputTab sideOutput={output} side="left" />
-          <Output sideOutput={output} />
-        </>
-      )}
-    </>
+    !!isShowOutput && (
+      <>
+        <OutputTab side="left" sideOutput={output} />
+        <Output sideOutput={output} />
+      </>
+    )
   );
 }
 

@@ -1,7 +1,4 @@
-import React, {
-  memo,
-  useMemo,
-} from 'react';
+import React, { memo, useMemo } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
@@ -17,27 +14,23 @@ import * as selectors from '../../selectors';
 import JoinButton from './JoinButton';
 import TournamentMainControlButtons from './TournamentMainControlButtons';
 
-const getIconByAccessType = accessType => (
-  accessType === 'token'
-    ? 'lock'
-    : 'unlock'
-);
+const getIconByAccessType = (accessType) => (accessType === 'token' ? 'lock' : 'unlock');
 
 function TournamentHeader({
-  id: tournamentId,
-  state,
-  type,
-  accessType,
   accessToken,
+  accessType,
+  creatorId,
+  currentUserId,
+  id: tournamentId,
   isLive,
+  isOnline = false,
+  isOver = false,
+  level,
   name,
   players,
   playersCount,
-  creatorId,
-  currentUserId,
-  level,
-  isOnline = false,
-  isOver = false,
+  state,
+  type,
 }) {
   const isAdmin = useSelector(selectors.currentUserIsAdminSelector);
   const canModerate = useMemo(
@@ -49,22 +42,20 @@ function TournamentHeader({
     <>
       <div className="d-flex flex-column flex-sm-row align-items-begin justify-content-between border-bottom">
         <div className="d-flex align-items-center pb-2">
-          <h2 title={name} className="m-0 text-capitalize text-nowrap overflow-auto">{name}</h2>
+          <h2 className="m-0 text-capitalize text-nowrap overflow-auto" title={name}>
+            {name}
+          </h2>
           <div
             className="text-center ml-3"
-            data-toggle="tooltip"
             data-placement="right"
+            data-toggle="tooltip"
             title="Tournament level"
           >
             <GameLevelBadge level={level} />
           </div>
           <div
-            title={
-              accessType === 'token'
-                ? 'Private tournament'
-                : 'Public tournament'
-            }
             className="text-center ml-2"
+            title={accessType === 'token' ? 'Private tournament' : 'Public tournament'}
           >
             <FontAwesomeIcon icon={getIconByAccessType(accessType)} />
           </div>
@@ -85,35 +76,27 @@ function TournamentHeader({
           )}
         </div>
         {!isOver && isLive && (
-          <div
-            className="d-flex justify-items-center pb-2"
-          >
+          <div className="d-flex justify-items-center pb-2">
             {type !== 'team' && (
               <JoinButton
-                isShow={isLive && state !== TournamentStates.active}
-                isParticipant={!!players[currentUserId]}
                 disabled={!isOnline || !isLive}
+                isParticipant={!!players[currentUserId]}
+                isShow={isLive && state !== TournamentStates.active}
               />
             )}
             {canModerate && (
               <TournamentMainControlButtons
                 accessType={accessType}
-                tournamentId={tournamentId}
-                canStart={
-                  state === TournamentStates.waitingParticipants
-                  && playersCount > 0
-                }
+                canStart={state === TournamentStates.waitingParticipants && playersCount > 0}
                 disabled={!isOnline}
+                tournamentId={tournamentId}
               />
             )}
           </div>
         )}
       </div>
       <div className="d-flex small text-nowrap text-muted mt-2">
-        <div
-          title={type}
-          className="d-flex align-items-center"
-        >
+        <div className="d-flex align-items-center" title={type}>
           Mode:
           <span className="ml-2">
             <TournamentType type={type} />
@@ -121,13 +104,15 @@ function TournamentHeader({
         </div>
         {canModerate && accessType === 'token' && (
           <div className="d-flex input-group ml-2">
-            <div title="Access token" className="input-group-prepend">
-              <span className="input-group-text"><FontAwesomeIcon icon="key" /></span>
+            <div className="input-group-prepend" title="Access token">
+              <span className="input-group-text">
+                <FontAwesomeIcon icon="key" />
+              </span>
             </div>
             <CopyButton
               className="btn btn-secondary rounded-right"
-              value={accessToken}
               disabled={!isLive}
+              value={accessToken}
             />
           </div>
         )}

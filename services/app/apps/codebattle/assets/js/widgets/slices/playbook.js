@@ -20,7 +20,9 @@ const playbook = createSlice({
   initialState,
   reducers: {
     loadPlaybook: (state, { payload }) => {
-      const mainEvents = payload.records.filter(record => parse(record).type === 'check_complete').map(parse);
+      const mainEvents = payload.records
+        .filter((record) => parse(record).type === 'check_complete')
+        .map(parse);
       return { ...state, ...payload, mainEvents };
     },
     changeSolutionType: (state, { payload }) => ({ ...state, solutionType: payload.solutionType }),

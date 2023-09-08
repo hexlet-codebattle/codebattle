@@ -16,4 +16,4 @@ const invitesSlice = createSlice({
 
 export default invitesSlice.reducer;
 export const { actions } = invitesSlice;
-export const selectors = invitesAdapter.getSelectors(state => state.invites);
+export const selectors = invitesAdapter.getSelectors((state) => state.invites);

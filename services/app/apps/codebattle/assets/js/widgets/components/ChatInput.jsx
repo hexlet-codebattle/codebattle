@@ -13,18 +13,18 @@ import useClickAway from '../utils/useClickAway';
 import EmojiPicker from './EmojiPicker';
 import EmojiToolTip from './EmojiTooltip';
 
-const trimColons = message => message.slice(0, message.lastIndexOf(':'));
+const trimColons = (message) => message.slice(0, message.lastIndexOf(':'));
 
-const getColons = message => message.slice(message.lastIndexOf(':') + 1);
+const getColons = (message) => message.slice(message.lastIndexOf(':') + 1);
 
-const getTooltipVisibility = async msg => {
+const getTooltipVisibility = async (msg) => {
   const endsWithEmojiCodeRegex = /.*:[a-zA-Z]{0,}([^ ])+$/;
   if (!endsWithEmojiCodeRegex.test(msg)) return Promise.resolve(false);
   const colons = getColons(msg);
   return !isEmpty(await SearchIndex.search(colons));
 };
 
-export default function ChatInput({ inputRef, disabled = false }) {
+export default function ChatInput({ disabled = false, inputRef }) {
   const [isPickerVisible, setPickerVisibility] = useState(false);
   const [isTooltipVisible, setTooltipVisibility] = useState(false);
   const [text, setText] = useState('');
@@ -35,7 +35,7 @@ export default function ChatInput({ inputRef, disabled = false }) {
     setTooltipVisibility(await getTooltipVisibility(value));
   };
 
-  const handleSubmit = e => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     const message = {
       text,
@@ -69,10 +69,7 @@ export default function ChatInput({ inputRef, disabled = false }) {
     hideTooltip();
     await setText(`${before}${native}${after}`);
     input.focus();
-    input.setSelectionRange(
-      caretPosition + native.length,
-      caretPosition + native.length,
-    );
+    input.setSelectionRange(caretPosition + native.length, caretPosition + native.length);
   };
 
   useClickAway(
@@ -88,17 +85,14 @@ export default function ChatInput({ inputRef, disabled = false }) {
   }, []);
 
   return (
-    <form
-      className="border-top input-group mb-0 p-2"
-      onSubmit={handleSubmit}
-    >
+    <form className="border-top input-group mb-0 p-2" onSubmit={handleSubmit}>
       <input
+        ref={inputRef}
         className="form-control h-auto border-gray border-right-0 rounded-left"
+        disabled={disabled}
         placeholder="Please be nice in the chat!"
         value={text}
         onChange={handleChange}
-        ref={inputRef}
-        disabled={disabled}
       />
       {isTooltipVisible && (
         <EmojiToolTip
@@ -108,25 +102,21 @@ export default function ChatInput({ inputRef, disabled = false }) {
         />
       )}
       {isPickerVisible && (
-        <EmojiPicker
-          handleSelect={handleSelectEmodji}
-          hide={hidePicker}
-          disabled={disabled}
-        />
+        <EmojiPicker disabled={disabled} handleSelect={handleSelectEmodji} hide={hidePicker} />
       )}
       <div className="input-group-append border-left rounded-right">
         <button
-          type="button"
           className="btn bg-white border-gray border-left-0 border-right-0 px-2 py-0"
+          type="button"
           onClick={togglePickerVisibility}
         >
           <em-emoji id="grinning" size={20} />
         </button>
         <button
           className="btn btn-secondary border-gray border-left rounded-right"
+          disabled={disabled}
           type="button"
           onClick={handleSubmit}
-          disabled={disabled}
         >
           Send
         </button>

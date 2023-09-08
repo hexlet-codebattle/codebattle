@@ -18,7 +18,7 @@ import BuilderActions from './BuilderActions';
 import ExamplesTrack from './ExamplesTrack';
 import SignatureTrack from './SignatureTrack';
 
-const TaskStateBadge = ({ state }) => {
+function TaskStateBadge({ state }) {
   const className = cn('badge py-2 mb-2', {
     'badge-danger': state === taskStateCodes.disabled,
     'badge-success': state === taskStateCodes.active,
@@ -30,39 +30,37 @@ const TaskStateBadge = ({ state }) => {
   }
 
   return <span className={className}>{state}</span>;
-};
+}
 
 function PreviewAssertsPanel({
-  haveInputSuggest,
-  haveExampleSuggest,
-
   clearSuggests,
-
-  openInputEditPanel,
-  openExampleEditPanel,
+  createExampleSuggest,
 
   createInputTypeSuggest,
-  editInputType,
-  deleteInputType,
-  editOutputType,
 
-  createExampleSuggest,
-  editExample,
   deleteExample,
+  deleteInputType,
+
+  editExample,
+  editInputType,
+  editOutputType,
+  haveExampleSuggest,
+
+  haveInputSuggest,
+  openExampleEditPanel,
+  openInputEditPanel,
 }) {
   const {
+    assertsExamples: examples,
     inputSignature,
     outputSignature,
-    assertsExamples: examples,
     state: taskState,
-  } = useSelector(state => state.builder.task);
+  } = useSelector((state) => state.builder.task);
 
   const validInputSignature = useSelector(
-    state => state.builder.validationStatuses.inputSignature[0],
+    (state) => state.builder.validationStatuses.inputSignature[0],
   );
-  const validExamples = useSelector(
-    state => state.builder.validationStatuses.assertsExamples[0],
-  );
+  const validExamples = useSelector((state) => state.builder.validationStatuses.assertsExamples[0]);
 
   const editable = useSelector(selectors.canEditTask);
 
@@ -74,23 +72,21 @@ function PreviewAssertsPanel({
           <div className="d-flex overflow-auto pb-2">
             <SignatureTrack
               editable={editable}
+              handleDelete={deleteInputType}
+              handleEdit={editInputType}
               items={inputSignature}
               valid={validInputSignature}
-              handleEdit={editInputType}
-              handleDelete={deleteInputType}
             />
           </div>
           {editable && inputSignature.length !== MAX_INPUT_ARGUMENTS_COUNT && (
             <div className="d-flex mb-2">
               <button
-                type="button"
                 title="Add input parameter"
+                type="button"
                 className={cn(itemAddClassName, {
                   'ml-1': inputSignature.length === 0,
                 })}
-                onClick={
-                  haveInputSuggest ? openInputEditPanel : createInputTypeSuggest
-                }
+                onClick={haveInputSuggest ? openInputEditPanel : createInputTypeSuggest}
               >
                 <FontAwesomeIcon icon={haveInputSuggest ? 'edit' : 'plus'} />
               </button>
@@ -102,17 +98,14 @@ function PreviewAssertsPanel({
           <div className="d-flex overflow-auto pb-2">
             {!!outputSignature && (
               <div className={itemClassName} role="group">
-                <div
-                  title={`(${outputSignature.type.name})`}
-                  className={itemActionClassName}
-                >
+                <div className={itemActionClassName} title={`(${outputSignature.type.name})`}>
                   {`(${outputSignature.type.name})`}
                 </div>
                 {editable && (
                   <button
-                    type="button"
-                    title="Edit output parameter"
                     className={`btn ${itemActionClassName} btn-outline-secondary rounded-right`}
+                    title="Edit output parameter"
+                    type="button"
                     onClick={() => editOutputType({ ...outputSignature })}
                   >
                     <FontAwesomeIcon icon="pen" />
@@ -126,27 +119,23 @@ function PreviewAssertsPanel({
         <div className="d-flex">
           <div className="d-flex overflow-auto pb-2">
             <ExamplesTrack
-              items={examples}
               editable={editable}
-              valid={validExamples}
-              handleEdit={editExample}
               handleDelete={deleteExample}
+              handleEdit={editExample}
+              items={examples}
+              valid={validExamples}
             />
           </div>
           {editable && (
             <div className="d-flex mb-2">
               <button
-                type="button"
+                disabled={inputSignature.length === 0}
                 title="Add example"
+                type="button"
                 className={cn(itemAddClassName, {
                   'ml-1': examples.length === 0,
                 })}
-                onClick={
-                  haveExampleSuggest
-                    ? openExampleEditPanel
-                    : createExampleSuggest
-                }
-                disabled={inputSignature.length === 0}
+                onClick={haveExampleSuggest ? openExampleEditPanel : createExampleSuggest}
               >
                 <FontAwesomeIcon icon={haveExampleSuggest ? 'edit' : 'plus'} />
               </button>
@@ -156,10 +145,7 @@ function PreviewAssertsPanel({
       </div>
       <div className="d-flex flex-column pl-1">
         <TaskStateBadge state={taskState} />
-        <BuilderActions
-          validExamples={validExamples}
-          clearSuggests={clearSuggests}
-        />
+        <BuilderActions clearSuggests={clearSuggests} validExamples={validExamples} />
       </div>
     </div>
   );

@@ -6,24 +6,24 @@ import { compressEditorHeight, expandEditorHeight } from '../../middlewares/Game
 
 function EditorHeightButtons({ editor: { userId } }) {
   const dispatch = useDispatch();
-  const compressEditor = userID => () => dispatch(compressEditorHeight(userID));
-  const expandEditor = userID => () => dispatch(expandEditorHeight(userID));
+  const compressEditor = (userID) => () => dispatch(compressEditorHeight(userID));
+  const expandEditor = (userID) => () => dispatch(expandEditorHeight(userID));
 
   return (
-    <div className="mx-1" role="group" aria-label="Editor height">
+    <div aria-label="Editor height" className="mx-1" role="group">
       <button
-        type="button"
         className="btn btn-sm btn-light border"
+        type="button"
         onClick={compressEditor(userId)}
       >
-        <i className="fas fa-compress-arrows-alt" aria-hidden="true" />
+        <i aria-hidden="true" className="fas fa-compress-arrows-alt" />
       </button>
       <button
-        type="button"
         className="btn btn-sm btn-light border ml-2"
+        type="button"
         onClick={expandEditor(userId)}
       >
-        <i className="fas fa-expand-arrows-alt" aria-hidden="true" />
+        <i aria-hidden="true" className="fas fa-expand-arrows-alt" />
       </button>
     </div>
   );

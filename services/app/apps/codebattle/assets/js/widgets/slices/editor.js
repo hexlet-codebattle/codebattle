@@ -16,21 +16,21 @@ const meta = createSlice({
   name: 'meta',
   initialState: initial.editor.meta,
   reducers: {
-    updateEditorLang: (state, { payload: { userId, currentLangSlug } }) => {
+    updateEditorLang: (state, { payload: { currentLangSlug, userId } }) => {
       state[userId] = {
         ...state[userId],
         userId,
         currentLangSlug,
       };
     },
-    updateEditorTextHistory: (state, { payload: { userId, langSlug } }) => {
+    updateEditorTextHistory: (state, { payload: { langSlug, userId } }) => {
       state[userId] = {
         ...state[userId],
         userId,
         historyCurrentLangSlug: langSlug,
       };
     },
-    updateEditorText: (state, { payload: { userId, langSlug } }) => {
+    updateEditorText: (state, { payload: { langSlug, userId } }) => {
       state[userId] = {
         ...state[userId],
         userId,
@@ -59,10 +59,7 @@ const text = createSlice({
   name: 'text',
   initialState: initial.editor.text,
   extraReducers: {
-    [meta.actions.updateEditorText]: (
-      state,
-      { payload: { userId, langSlug, editorText } },
-    ) => {
+    [meta.actions.updateEditorText]: (state, { payload: { editorText, langSlug, userId } }) => {
       state[makeEditorTextKey(userId, langSlug)] = editorText;
     },
   },
@@ -72,7 +69,7 @@ const textHistory = createSlice({
   name: 'textHistory',
   initialState: initial.editor.textHistory,
   extraReducers: {
-    [meta.actions.updateEditorTextHistory]: (state, { payload: { userId, editorText } }) => {
+    [meta.actions.updateEditorTextHistory]: (state, { payload: { editorText, userId } }) => {
       state[userId] = editorText;
     },
   },
@@ -92,7 +89,7 @@ const langsHistory = createSlice({
   name: 'langsHistory',
   initialState: initial.editor.langsHistory,
   extraReducers: {
-    [meta.actions.updateEditorTextHistory]: (state, { payload: { userId, langSlug } }) => {
+    [meta.actions.updateEditorTextHistory]: (state, { payload: { langSlug, userId } }) => {
       state[userId] = langSlug;
     },
   },

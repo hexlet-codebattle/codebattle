@@ -23,7 +23,8 @@ export const MAX_DESCRIPTION_LENGTH = 1024;
 
 export const itemClassName = 'btn-group border-gray rounded-lg m-1 mr-2';
 export const itemActionClassName = 'btn-sm text-nowrap border-0';
-export const itemAddClassName = 'btn btn-sm btn-outline-secondary border-0 text-nowrap rounded-lg my-1 py-2';
+export const itemAddClassName =
+  'btn btn-sm btn-outline-secondary border-0 text-nowrap rounded-lg my-1 py-2';
 
 export const argumentTypeNames = [
   argumentTypes.integer,
@@ -39,43 +40,48 @@ export const defaultSignatureByType = {
   [argumentTypes.string]: { type: { name: argumentTypes.string } },
   [argumentTypes.float]: { type: { name: argumentTypes.float } },
   [argumentTypes.boolean]: { type: { name: argumentTypes.boolean } },
-  [argumentTypes.hash]: { type: { name: argumentTypes.hash, nested: { name: argumentTypes.integer } } },
-  [argumentTypes.array]: { type: { name: argumentTypes.array, nested: { name: argumentTypes.integer } } },
+  [argumentTypes.hash]: {
+    type: { name: argumentTypes.hash, nested: { name: argumentTypes.integer } },
+  },
+  [argumentTypes.array]: {
+    type: { name: argumentTypes.array, nested: { name: argumentTypes.integer } },
+  },
 };
 
-export const getDefaultInputSignatureByType = type => ({
-  argumentName: '', ...defaultSignatureByType[type],
+export const getDefaultInputSignatureByType = (type) => ({
+  argumentName: '',
+  ...defaultSignatureByType[type],
 });
 
-export const getExamplesFromAsserts = asserts => (
-  `\`\`\`\n${asserts.map(({ expected, arguments: args }) => {
+export const getExamplesFromAsserts = (asserts) =>
+  `\`\`\`\n${asserts
+    .map(({ arguments: args, expected }) => {
       const argsStr = JSON.stringify(JSON.parse(args));
       return `${expected} == solution(${argsStr.slice(1, argsStr.length - 1)})`;
-  }).join('\n')}`
-);
+    })
+    .join('\n')}`;
 
-export const labelTaskParamsWithIds = task => ({
+export const labelTaskParamsWithIds = (task) => ({
   ...task,
   assertsExamples: task.assertsExamples.map((item, index) => ({ ...item, id: index })),
   inputSignature: task.inputSignature.map((item, index) => ({ ...item, id: index })),
   outputSignature: { ...task.outputSignature, id: Date.now() },
 });
 
-export const getTaskTemplates = task => ({
-  state: !task.solution && !task.argumentsGenerator
-    ? taskTemplatesStates.none
-    : taskTemplatesStates.init,
-  solution: task.solution
-    ? { [task.generatorLang]: task.solution }
-    : {},
+export const getTaskTemplates = (task) => ({
+  state:
+    !task.solution && !task.argumentsGenerator
+      ? taskTemplatesStates.none
+      : taskTemplatesStates.init,
+  solution: task.solution ? { [task.generatorLang]: task.solution } : {},
   argumentsGenerator: task.argumentsGenerator
     ? { [task.generatorLang]: task.argumentsGenerator }
     : {},
 });
 
-export const haveNestedType = type => !!defaultSignatureByType[type].type.nested;
+export const haveNestedType = (type) => !!defaultSignatureByType[type].type.nested;
 
-export const validateTaskName = name => {
+export const validateTaskName = (name) => {
   if (!name || name.length === 0) {
     return [false, 'Name is required'];
   }
@@ -91,7 +97,7 @@ export const validateTaskName = name => {
   return [true];
 };
 
-export const validateDescription = description => {
+export const validateDescription = (description) => {
   if (!description || description.length === 0) {
     return [false, 'Description is required'];
   }
@@ -107,7 +113,7 @@ export const validateDescription = description => {
   return [true];
 };
 
-export const validateInputSignatures = inputSignature => {
+export const validateInputSignatures = (inputSignature) => {
   if (inputSignature.length === 0) {
     return [false, 'At least 1 argument must be described'];
   }
@@ -115,7 +121,7 @@ export const validateInputSignatures = inputSignature => {
   return [true];
 };
 
-export const validateExamples = examples => {
+export const validateExamples = (examples) => {
   if (examples.length < MIN_EXAMPLES_COUNT) {
     return [false, `Must be at least ${MIN_EXAMPLES_COUNT} examples`];
   }

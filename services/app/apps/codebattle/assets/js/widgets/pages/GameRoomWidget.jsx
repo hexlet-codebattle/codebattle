@@ -42,17 +42,12 @@ const steps = [
     disableOverlayClose: true,
     title: 'Game page',
     content: (
-      <>
-        <div className="text-justify">
-          This is a
-          <b> game page</b>
-          . You need to solve the task
-          <b> first </b>
-          and pass all tests
-          <b> successfully</b>
-          .
-        </div>
-      </>
+      <div className="text-justify">
+        This is a<b> game page</b>. You need to solve the task
+        <b> first </b>
+        and pass all tests
+        <b> successfully</b>.
+      </div>
     ),
     locale: {
       skip: 'Skip guide',
@@ -130,8 +125,7 @@ const steps = [
     },
     target: '[data-guide-id="LeftEditor"] [data-guide-id="CheckResultButton"]',
     title: 'Check button',
-    content:
-      'Click the button to check your solution or use Ctrl+Enter/Cmd+Enter',
+    content: 'Click the button to check your solution or use Ctrl+Enter/Cmd+Enter',
     locale: {
       skip: 'Skip guide',
     },
@@ -140,8 +134,7 @@ const steps = [
     disableOverlayClose: true,
     target: '#leftOutput-tab',
     title: 'Result output',
-    content:
-      'Here you will see the results of the tests or compilation errors after check',
+    content: 'Here you will see the results of the tests or compilation errors after check',
     locale: {
       skip: 'Skip guide',
     },
@@ -153,7 +146,7 @@ function GameWidgetGuide() {
   const [isFirstTime, setIsFirstTime] = useState(
     window.localStorage.getItem('guideGamePassed') === null,
   );
-  const isShowGuide = useSelector(state => isShowGuideSelector(state));
+  const isShowGuide = useSelector((state) => isShowGuideSelector(state));
 
   return (
     (isShowGuide || isFirstTime) && (
@@ -163,8 +156,8 @@ function GameWidgetGuide() {
         scrollToFirstStep
         showProgress
         showSkipButton
-        steps={steps}
         spotlightPadding={6}
+        steps={steps}
         callback={({ status }) => {
           if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status)) {
             window.localStorage.setItem('guideGamePassed', 'true');
@@ -186,20 +179,14 @@ function GameWidgetGuide() {
   );
 }
 
-function GameRoomWidget({
-  pageName,
-  mainMachine,
-  taskMachine,
-  editorMachine,
-  toggleMuteSound,
-}) {
+function GameRoomWidget({ editorMachine, mainMachine, pageName, taskMachine, toggleMuteSound }) {
   const dispatch = useDispatch();
 
   const [taskModalShowing, setTaskModalShowing] = useState(false);
   const [taskConfigurationModalShowing, setTaskConfigurationModalShowing] = useState(false);
   const [resultModalShowing, setResultModalShowing] = useState(false);
 
-  const mute = useSelector(state => state.userSettings.mute);
+  const mute = useSelector((state) => state.userSettings.mute);
   const machines = useGameRoomMachine({
     setTaskModalShowing,
     setResultModalShowing,
@@ -207,10 +194,7 @@ function GameRoomWidget({
     taskMachine,
   });
 
-  const roomCurrent = useMachineStateSelector(
-    machines.mainService,
-    roomStateSelector,
-  );
+  const roomCurrent = useMachineStateSelector(machines.mainService, roomStateSelector);
   const inBuilderRoom = inBuilderRoomSelector(roomCurrent);
   const inPreviewRoom = inPreviewRoomSelector(roomCurrent);
   const inWaitingRoom = inWaitingRoomSelector(roomCurrent);
@@ -230,9 +214,7 @@ function GameRoomWidget({
       return clearTask;
     }
 
-    const clearGame = GameRoomActions.connectToGame(machines.mainService)(
-      dispatch,
-    );
+    const clearGame = GameRoomActions.connectToGame(machines.mainService)(dispatch);
     const clearChat = ChatActions.connectToChat()(dispatch);
 
     return () => {
@@ -243,7 +225,7 @@ function GameRoomWidget({
   }, []);
 
   useEffect(() => {
-    const muteSound = e => {
+    const muteSound = (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'm') {
         e.preventDefault();
 
@@ -273,10 +255,10 @@ function GameRoomWidget({
     <SwitchTransition mode="out-in">
       <CSSTransition
         key={gameRoomKey}
+        classNames={`game-room-${gameRoomKey}`}
         addEndListener={(node, done) => {
           node.addEventListener('transitionend', done, false);
         }}
-        classNames={`game-room-${gameRoomKey}`}
       >
         <RoomContext.Provider value={machines}>
           <div className="x-outline-none">
@@ -294,15 +276,13 @@ function GameRoomWidget({
                   setModalShowing={setTaskConfigurationModalShowing}
                 />
                 <AnimationModal
-                  setModalShowing={setResultModalShowing}
                   modalShowing={resultModalShowing}
+                  setModalShowing={setResultModalShowing}
                 />
                 {inBuilderRoom || (pageName === 'builder' && inPreviewRoom) ? (
                   <>
                     <BuilderSettingsWidget
-                      setConfigurationModalShowing={
-                        setTaskConfigurationModalShowing
-                      }
+                      setConfigurationModalShowing={setTaskConfigurationModalShowing}
                     />
                     <BuilderEditorsWidget />
                   </>
@@ -314,11 +294,7 @@ function GameRoomWidget({
                 )}
                 {mute && (
                   <div className="rounded p-2 bg-dark cb-mute-icon">
-                    <FontAwesomeIcon
-                      size="lg"
-                      color="white"
-                      icon={['fas', 'volume-mute']}
-                    />
+                    <FontAwesomeIcon color="white" icon={['fas', 'volume-mute']} size="lg" />
                   </div>
                 )}
                 {!replayerIsOpen && <FeedbackWidget />}

@@ -16,39 +16,43 @@ import EditorContainer from './EditorContainer';
 import Output from './Output';
 import OutputTab from './OutputTab';
 
-const EditorWrapper = ({ children, id, className }) => (
-  <div id={id} className={className}>
-    {children}
-  </div>
-);
-
-function RightSide({ output, children }) {
-  const [showTab, setShowTab] = useState('editor');
-  const isShowOutput = output && output.status;
-  const content = showTab === 'editor' ? (
-    <EditorWrapper id="editor" className="d-flex flex-column flex-grow-1 position-relative">
+function EditorWrapper({ children, className, id }) {
+  return (
+    <div className={className} id={id}>
       {children}
-    </EditorWrapper>
-  ) : (
-    <div className="d-flex flex-column flex-grow-1 overflow-auto">
-      <div className="h-auto">
-        {isShowOutput && <Output sideOutput={output} />}
-      </div>
     </div>
   );
+}
+
+function RightSide({ children, output }) {
+  const [showTab, setShowTab] = useState('editor');
+  const isShowOutput = output && output.status;
+  const content =
+    showTab === 'editor' ? (
+      <EditorWrapper className="d-flex flex-column flex-grow-1 position-relative" id="editor">
+        {children}
+      </EditorWrapper>
+    ) : (
+      <div className="d-flex flex-column flex-grow-1 overflow-auto">
+        <div className="h-auto">{isShowOutput && <Output sideOutput={output} />}</div>
+      </div>
+    );
 
   return (
     <>
       {content}
       <nav>
-        <div className="nav nav-tabs bg-gray text-uppercase text-center font-weight-bold" id="nav-tab" role="tablist">
+        <div
+          className="nav nav-tabs bg-gray text-uppercase text-center font-weight-bold"
+          id="nav-tab"
+          role="tablist"
+        >
           <a
-            className={cn(
-              'nav-item nav-link flex-grow-1 text-black rounded-0 px-5',
-              { active: showTab === 'editor' },
-            )}
             href="#Editor"
-            onClick={e => {
+            className={cn('nav-item nav-link flex-grow-1 text-black rounded-0 px-5', {
+              active: showTab === 'editor',
+            })}
+            onClick={(e) => {
               e.preventDefault();
               setShowTab('editor');
             }}
@@ -56,17 +60,16 @@ function RightSide({ output, children }) {
             Editor
           </a>
           <a
-            className={cn(
-              'nav-item nav-link flex-grow-1 text-black rounded-0 p-2 block',
-              { active: showTab === 'output' },
-            )}
             href="#Output"
-            onClick={e => {
+            className={cn('nav-item nav-link flex-grow-1 text-black rounded-0 p-2 block', {
+              active: showTab === 'output',
+            })}
+            onClick={(e) => {
               e.preventDefault();
               setShowTab('output');
             }}
           >
-            {isShowOutput && <OutputTab sideOutput={output} side="right" />}
+            {isShowOutput && <OutputTab side="right" sideOutput={output} />}
           </a>
         </div>
       </nav>
@@ -83,12 +86,12 @@ function GameWidget({ editorMachine }) {
   const rightEditor = useSelector(selectors.rightEditorSelector(roomCurrent));
   const leftUserId = get(leftEditor, ['userId'], null);
   const rightUserId = get(rightEditor, ['userId'], null);
-  const leftUserType = currentUserId === leftUserId
-    ? editorUserTypes.currentUser
-    : editorUserTypes.player;
-  const rightUserType = leftUserType === editorUserTypes.currentUser
-    ? editorUserTypes.opponent
-    : editorUserTypes.player;
+  const leftUserType =
+    currentUserId === leftUserId ? editorUserTypes.currentUser : editorUserTypes.player;
+  const rightUserType =
+    leftUserType === editorUserTypes.currentUser
+      ? editorUserTypes.opponent
+      : editorUserTypes.player;
 
   const leftEditorHeight = useSelector(selectors.editorHeightSelector(roomCurrent, leftUserId));
   const rightEditorHeight = useSelector(selectors.editorHeightSelector(roomCurrent, rightUserId));
@@ -99,32 +102,30 @@ function GameWidget({ editorMachine }) {
   return (
     <>
       <EditorContainer
-        id={leftUserId}
-        editorMachine={editorMachine}
-        type={leftUserType}
-        orientation="left"
-        editorState={leftEditor}
         cardClassName="card h-100 shadow-sm position-relative"
-        theme={theme}
         editorHeight={leftEditorHeight}
+        editorMachine={editorMachine}
         editorMode={leftEditorsMode}
+        editorState={leftEditor}
+        id={leftUserId}
+        orientation="left"
+        theme={theme}
+        type={leftUserType}
       >
-        {params => (
-          <Editor {...params} />
-        )}
+        {(params) => <Editor {...params} />}
       </EditorContainer>
       <EditorContainer
-        id={rightUserId}
-        editorMachine={editorMachine}
-        type={rightUserType}
-        orientation="right"
-        editorState={rightEditor}
         cardClassName="card h-100 shadow-sm"
-        theme={theme}
         editorHeight={rightEditorHeight}
+        editorMachine={editorMachine}
         editorMode={editorModes.default}
+        editorState={rightEditor}
+        id={rightUserId}
+        orientation="right"
+        theme={theme}
+        type={rightUserType}
       >
-        {params => (
+        {(params) => (
           <RightSide output={rightOutput}>
             <Editor {...params} />
           </RightSide>

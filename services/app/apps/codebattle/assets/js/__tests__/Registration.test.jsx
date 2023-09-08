@@ -12,7 +12,7 @@ import { getTestData } from './helpers';
 jest.mock('axios');
 
 const { invalidData, validData } = getTestData('signUpData.json');
-const { data, route, headers } = validData;
+const { data, headers, route } = validData;
 
 describe('sign up', () => {
   function setup(jsx) {
@@ -39,7 +39,7 @@ describe('sign up', () => {
   });
 
   test.each(invalidData)('%s', async (testName, value, validationMessage, inputName) => {
-    const { getByLabelText, findByText, user } = setup(<Registration />);
+    const { findByText, getByLabelText, user } = setup(<Registration />);
 
     const nameInput = getByLabelText(inputName);
     if (value) {

@@ -2,16 +2,12 @@ import React from 'react';
 
 import Dropdown from 'react-bootstrap/Dropdown';
 
-const TaskLanguagesSelection = ({
-  avaibleLanguages,
-  displayLanguage,
-  handleSetLanguage,
-}) => {
+function TaskLanguagesSelection({ avaibleLanguages, displayLanguage, handleSetLanguage }) {
   if (avaibleLanguages.length < 2) {
     return null;
   }
 
-  const renderLanguage = language => (
+  const renderLanguage = (language) => (
     <Dropdown.Item
       key={language}
       active={language === displayLanguage}
@@ -24,8 +20,8 @@ const TaskLanguagesSelection = ({
   return (
     <Dropdown className="d-flex">
       <Dropdown.Toggle
-        id="tasklang-dropdown-toggle"
         className="shadow-none rounded-lg p-1 btn-sm"
+        id="tasklang-dropdown-toggle"
         variant="outline-secondary"
       >
         {displayLanguage.toUpperCase()}
@@ -35,6 +31,6 @@ const TaskLanguagesSelection = ({
       </Dropdown.Menu>
     </Dropdown>
   );
-};
+}
 
 export default TaskLanguagesSelection;

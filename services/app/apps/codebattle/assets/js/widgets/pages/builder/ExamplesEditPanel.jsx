@@ -11,22 +11,24 @@ import ExamplesTrack from './ExamplesTrack';
 import SignatureTrack from './SignatureTrack';
 
 function ExampleForm({
+  argumentsInputRef,
   example,
   exampleRef,
-  argumentsInputRef,
-  validationStatus,
   handleClear,
   handleEdit,
   handleReset,
   handleSubmit,
+  validationStatus,
 }) {
   const handleArguments = useCallback(
-    event => {
+    (event) => {
       const data = event.target.value;
       const newExample = cloneDeep({ ...example, arguments: data });
       if (exampleRef?.current) {
         exampleRef.current.scrollIntoView({
-          behavior: 'smooth', block: 'nearest', inline: 'start',
+          behavior: 'smooth',
+          block: 'nearest',
+          inline: 'start',
         });
       }
 
@@ -35,12 +37,14 @@ function ExampleForm({
     [example, exampleRef, handleEdit],
   );
   const handleExpected = useCallback(
-    event => {
+    (event) => {
       const data = event.target.value;
       const newExample = cloneDeep({ ...example, expected: data });
       if (exampleRef?.current) {
         exampleRef.current.scrollIntoView({
-          behavior: 'smooth', block: 'nearest', inline: 'start',
+          behavior: 'smooth',
+          block: 'nearest',
+          inline: 'start',
         });
       }
 
@@ -55,57 +59,44 @@ function ExampleForm({
         <div className="d-flex position-relative">
           <input
             ref={argumentsInputRef}
-            className={cn(
-              'form-control cb-builder-argument-input m-1 rounded-lg',
-              {
-                'is-invalid': !validationStatus.arguments.valid,
-              },
-            )}
             value={example?.arguments || ''}
+            className={cn('form-control cb-builder-argument-input m-1 rounded-lg', {
+              'is-invalid': !validationStatus.arguments.valid,
+            })}
             onChange={handleArguments}
           />
-          <div className="invalid-tooltip">
-            {validationStatus.arguments.reason}
-          </div>
+          <div className="invalid-tooltip">{validationStatus.arguments.reason}</div>
         </div>
         <div className="d-flex position-relative">
           <input
-            className={cn(
-              'form-control cb-builder-argument-input m-1 rounded-lg',
-              {
-                'is-invalid': !validationStatus.expected.valid,
-              },
-            )}
             value={example?.expected || ''}
+            className={cn('form-control cb-builder-argument-input m-1 rounded-lg', {
+              'is-invalid': !validationStatus.expected.valid,
+            })}
             onChange={handleExpected}
           />
-          <div className="invalid-tooltip">
-            {validationStatus.expected.reason}
-          </div>
+          <div className="invalid-tooltip">{validationStatus.expected.reason}</div>
         </div>
       </div>
       <div className="d-flex">
         <button
-          type="button"
           className="btn btn-sm m-1 text-white btn-success rounded-lg"
+          disabled={!validationStatus.arguments.valid || !validationStatus.expected.valid}
+          type="button"
           onClick={handleSubmit}
-          disabled={
-            !validationStatus.arguments.valid
-            || !validationStatus.expected.valid
-          }
         >
           Submit
         </button>
         <button
-          type="button"
           className="btn btn-sm m-1 mx-1 btn-secondary rounded-lg"
+          type="button"
           onClick={handleReset}
         >
           <FontAwesomeIcon icon="redo" />
         </button>
         <button
-          type="button"
           className="btn btn-sm m-1 btn-danger rounded-lg"
+          type="button"
           onClick={handleClear}
         >
           <FontAwesomeIcon icon="times" />
@@ -116,21 +107,21 @@ function ExampleForm({
 }
 
 function ExamplesEditPanel({
-  items,
   argumentsInputRef,
+  handleAdd,
+  handleClear,
+  handleDelete,
+  handleEdit,
+  handleSubmit,
+  inputSignature,
+  items,
+  outputSignature,
   suggest,
   suggestRef,
   valid = true,
-  inputSignature,
-  outputSignature,
-  handleAdd,
-  handleEdit,
-  handleDelete,
-  handleSubmit,
-  handleClear,
 }) {
   const handleReset = useCallback(() => {
-    const existedExample = items.find(item => item.id === suggest?.id);
+    const existedExample = items.find((item) => item.id === suggest?.id);
 
     if (existedExample) {
       handleEdit(cloneDeep(existedExample));
@@ -156,23 +147,21 @@ function ExamplesEditPanel({
             <SignatureTrack items={inputSignature} />
             <div className="text-nowrap align-self-center mr-2">{'->'}</div>
             <div className={itemClassName} role="group">
-              <div className={itemActionClassName}>
-                {`(${outputSignature.type.name})`}
-              </div>
+              <div className={itemActionClassName}>{`(${outputSignature.type.name})`}</div>
             </div>
           </div>
           <h6 className="pl-1">Examples: </h6>
           <div className="d-flex mb-2">
             <ExamplesTrack
+              editable
+              handleAdd={handleAdd}
+              handleClear={handleClear}
+              handleDelete={handleDelete}
+              handleEdit={handleEdit}
               items={items}
               selected={suggest}
               selectedRef={suggestRef}
               valid={valid}
-              handleAdd={handleAdd}
-              handleEdit={handleEdit}
-              handleDelete={handleDelete}
-              handleClear={handleClear}
-              editable
             />
           </div>
         </div>
@@ -180,24 +169,20 @@ function ExamplesEditPanel({
           <h6 className="pl-1">Example Value Edit: </h6>
           <div className="overflow-auto d-flex">
             <ExampleForm
+              argumentsInputRef={argumentsInputRef}
               example={suggest}
               exampleRef={suggestRef}
-              argumentsInputRef={argumentsInputRef}
-              validationStatus={validationStatus}
+              handleClear={handleClear}
               handleEdit={handleEdit}
               handleReset={handleReset}
-              handleClear={handleClear}
               handleSubmit={handleSubmit}
+              validationStatus={validationStatus}
             />
           </div>
         </div>
       </div>
       <div>
-        <button
-          type="button"
-          className="btn btn-sm rounded-circle"
-          onClick={handleClear}
-        >
+        <button className="btn btn-sm rounded-circle" type="button" onClick={handleClear}>
           <FontAwesomeIcon icon="times" />
         </button>
       </div>

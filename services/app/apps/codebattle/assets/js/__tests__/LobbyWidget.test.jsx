@@ -22,7 +22,8 @@ Object.defineProperty(window, 'scrollTo', {
 
 jest.mock(
   '../widgets/components/UserInfo',
-  () => function UserInfo() {
+  () =>
+    function UserInfo() {
       return (
         <div>
           <ul className="list-inline">
@@ -44,11 +45,9 @@ jest.mock(
     },
 );
 
-jest.mock(
-  '../widgets/utils/useStayScrolled',
-  () => () => ({ stayScrolled: jest.fn() }),
-  { virtual: true },
-);
+jest.mock('../widgets/utils/useStayScrolled', () => () => ({ stayScrolled: jest.fn() }), {
+  virtual: true,
+});
 
 jest.mock(
   'gon',
@@ -58,7 +57,7 @@ jest.mock(
       current_user: { id: 1, sound_settings: {} },
       task_tags: ['math', 'string', 'asd', 'rest'],
     };
-    return { getAsset: type => gonParams[type] };
+    return { getAsset: (type) => gonParams[type] };
   },
   { virtual: true },
 );
@@ -66,28 +65,31 @@ jest.mock(
 jest.mock('axios');
 
 const {
-  elementaryTasksFromBackend,
-  easyTasksFromBackend,
-  tasksMatchingRestTags,
-  tasksUnsuitableForRestTags,
-  tasksMatchingMathTag,
-  tasksUnsuitableForMathTag,
-  tasksMatchingMathAndStringTags,
-  tasksUnsuitableForMathAndStringTags,
-  tasksFilteredByName,
-  tasksEliminatedByName,
-  tasksFilteredByNameAndTag,
-  tasksEliminatedByNameAndTag,
-  gamesPage1,
-  pageInfo1,
-  gamesPage2,
-  pageInfo2,
-  gameRepeatedOnPages,
-  uniqueGamesOnPage2,
   allGames,
+  easyTasksFromBackend,
+  elementaryTasksFromBackend,
+  gameRepeatedOnPages,
+  gamesPage1,
+  gamesPage2,
+  pageInfo1,
+  pageInfo2,
+  tasksEliminatedByName,
+  tasksEliminatedByNameAndTag,
+  tasksFilteredByName,
+  tasksFilteredByNameAndTag,
+  tasksMatchingMathAndStringTags,
+  tasksMatchingMathTag,
+  tasksMatchingRestTags,
+  tasksUnsuitableForMathAndStringTags,
+  tasksUnsuitableForMathTag,
+  tasksUnsuitableForRestTags,
+  uniqueGamesOnPage2,
 } = getTestData('testData.json');
 
-const users = [{ name: 'user1', id: -4 }, { name: 'user2', id: -2 }];
+const users = [
+  { name: 'user1', id: -4 },
+  { name: 'user2', id: -2 },
+];
 
 axios.get.mockResolvedValue({
   data: {
@@ -107,65 +109,53 @@ jest.mock('react-select/async');
   Button "filter tasks by name" simulates a user to type 'name' into the Select
 */
 
-jest.mock(
-  '../widgets/middlewares/Lobby',
-  () => {
-    const originalModule = jest.requireActual('../widgets/middlewares/Lobby');
+jest.mock('../widgets/middlewares/Lobby', () => {
+  const originalModule = jest.requireActual('../widgets/middlewares/Lobby');
 
-    return {
-      __esModule: true,
-      ...originalModule,
-      createGame: jest.fn(),
-    };
-  },
-);
+  return {
+    __esModule: true,
+    ...originalModule,
+    createGame: jest.fn(),
+  };
+});
 
-jest.mock(
-  '../widgets/middlewares/Invite',
-  () => {
-    const originalModule = jest.requireActual('../widgets/middlewares/Invite');
+jest.mock('../widgets/middlewares/Invite', () => {
+  const originalModule = jest.requireActual('../widgets/middlewares/Invite');
 
-    return {
-      __esModule: true,
-      ...originalModule,
-      createInvite: jest.fn(() => ({ type: '', payload: {} })),
-    };
-  },
-);
+  return {
+    __esModule: true,
+    ...originalModule,
+    createInvite: jest.fn(() => ({ type: '', payload: {} })),
+  };
+});
 
-jest.mock(
-  'phoenix',
-  () => {
-    const originalModule = jest.requireActual('phoenix');
+jest.mock('phoenix', () => {
+  const originalModule = jest.requireActual('phoenix');
 
-    return {
-      __esModule: true,
-      ...originalModule,
-      Socket: jest.fn().mockImplementation(() => ({
-        channel: jest.fn(() => {
-          const channel = {
-            join: jest.fn(() => channel),
-            receive: jest.fn(),
-            on: jest.fn(),
-            off: jest.fn(),
-            push: jest.fn(),
-            onError: jest.fn(),
-          };
+  return {
+    __esModule: true,
+    ...originalModule,
+    Socket: jest.fn().mockImplementation(() => ({
+      channel: jest.fn(() => {
+        const channel = {
+          join: jest.fn(() => channel),
+          receive: jest.fn(),
+          on: jest.fn(),
+          off: jest.fn(),
+          push: jest.fn(),
+          onError: jest.fn(),
+        };
 
-          return channel;
-        }),
-        connect: jest.fn(() => {}),
-      })),
-    };
-  },
-);
+        return channel;
+      }),
+      connect: jest.fn(() => {}),
+    })),
+  };
+});
 
 const reducer = combineReducers(reducers);
 
-const players = [
-  { user: { id: -4, name: 'Bot_1' } },
-  { user: { id: -2, name: 'Bot_2' } },
-];
+const players = [{ user: { id: -4, name: 'Bot_1' } }, { user: { id: -2, name: 'Bot_2' } }];
 
 const preloadedState = {
   lobby: {
@@ -219,11 +209,8 @@ beforeEach(() => {
   });
 });
 
-test('test rendering GameList', async () => {
-  const {
-    getByText,
-    findAllByText,
-  } = render(
+test('rendering of GameList', async () => {
+  const { findAllByText, getByText } = render(
     <Provider store={store}>
       <LobbyWidget />
     </Provider>,
@@ -248,13 +235,7 @@ describe('test task choice', () => {
 
   test('choose a task', async () => {
     const user = userEvent.setup();
-    const {
-      getByText,
-      getByRole,
-      findByRole,
-      findAllByText,
-      getByTitle,
-    } = render(
+    const { findAllByText, findByRole, getByRole, getByText, getByTitle } = render(
       <Provider store={store}>
         <LobbyWidget />
       </Provider>,
@@ -349,12 +330,7 @@ describe('test task choice', () => {
 
   test('filter tasks by level', async () => {
     const user = userEvent.setup();
-    const {
-      findByRole,
-      getByTitle,
-      queryByRole,
-      findAllByText,
-    } = render(
+    const { findAllByText, findByRole, getByTitle, queryByRole } = render(
       <Provider store={store}>
         <LobbyWidget />
       </Provider>,
@@ -371,24 +347,23 @@ describe('test task choice', () => {
     for (let i = 0; i < elementaryTasksFromBackend.length; i += 1) {
       expect(await findByRole('button', { name: elementaryTasksFromBackend[i].name })).toBeInTheDocument(); // eslint-disable-line
     }
-    easyTasksFromBackend.forEach(task => expect(queryByRole('button', { name: task.name })).not.toBeInTheDocument());
+    easyTasksFromBackend.forEach((task) =>
+      expect(queryByRole('button', { name: task.name })).not.toBeInTheDocument(),
+    );
 
     await user.click(getByTitle('easy'));
 
     for (let i = 0; i < easyTasksFromBackend.length; i += 1) {
       expect(await findByRole('button', { name: easyTasksFromBackend[i].name })).toBeInTheDocument(); // eslint-disable-line
     }
-    elementaryTasksFromBackend.forEach(task => expect(queryByRole('button', { name: task.name })).not.toBeInTheDocument());
+    elementaryTasksFromBackend.forEach((task) =>
+      expect(queryByRole('button', { name: task.name })).not.toBeInTheDocument(),
+    );
   }, 12000);
 
   test('filter tasks by tags', async () => {
     const user = userEvent.setup();
-    const {
-      getByRole,
-      findByRole,
-      findAllByText,
-      queryByRole,
-    } = render(
+    const { findAllByText, findByRole, getByRole, queryByRole } = render(
       <Provider store={store}>
         <LobbyWidget />
       </Provider>,
@@ -410,11 +385,13 @@ describe('test task choice', () => {
       expect(stringTag).toBeDisabled();
       expect(asdTag).toBeDisabled();
 
-      tasksMatchingRestTags.forEach(task => expect(getByRole('button', { name: task.name })).toBeInTheDocument());
+      tasksMatchingRestTags.forEach((task) =>
+        expect(getByRole('button', { name: task.name })).toBeInTheDocument(),
+      );
 
-      tasksUnsuitableForRestTags.forEach(task => (
-        expect(queryByRole('button', { name: task.name })).not.toBeInTheDocument()
-      ));
+      tasksUnsuitableForRestTags.forEach((task) =>
+        expect(queryByRole('button', { name: task.name })).not.toBeInTheDocument(),
+      );
     });
 
     await user.click(restTag);
@@ -424,7 +401,9 @@ describe('test task choice', () => {
       expect(stringTag).toBeEnabled();
       expect(asdTag).toBeEnabled();
 
-      elementaryTasksFromBackend.forEach(task => expect(getByRole('button', { name: task.name })).toBeInTheDocument());
+      elementaryTasksFromBackend.forEach((task) =>
+        expect(getByRole('button', { name: task.name })).toBeInTheDocument(),
+      );
     });
 
     await user.click(mathTag);
@@ -433,10 +412,12 @@ describe('test task choice', () => {
       expect(stringTag).toBeEnabled();
       expect(asdTag).toBeDisabled();
       expect(restTag).toBeEnabled();
-      tasksMatchingMathTag.forEach(task => expect(getByRole('button', { name: task.name })).toBeInTheDocument());
-      tasksUnsuitableForMathTag.forEach(task => (
-        expect(queryByRole('button', { name: task.name })).not.toBeInTheDocument()
-      ));
+      tasksMatchingMathTag.forEach((task) =>
+        expect(getByRole('button', { name: task.name })).toBeInTheDocument(),
+      );
+      tasksUnsuitableForMathTag.forEach((task) =>
+        expect(queryByRole('button', { name: task.name })).not.toBeInTheDocument(),
+      );
     });
 
     await user.click(stringTag);
@@ -444,10 +425,12 @@ describe('test task choice', () => {
     await waitFor(() => {
       expect(restTag).toBeDisabled();
       expect(asdTag).toBeDisabled();
-      tasksMatchingMathAndStringTags.forEach(task => expect(getByRole('button', { name: task.name })).toBeInTheDocument());
-      tasksUnsuitableForMathAndStringTags.forEach(task => (
-        expect(queryByRole('button', { name: task.name })).not.toBeInTheDocument()
-      ));
+      tasksMatchingMathAndStringTags.forEach((task) =>
+        expect(getByRole('button', { name: task.name })).toBeInTheDocument(),
+      );
+      tasksUnsuitableForMathAndStringTags.forEach((task) =>
+        expect(queryByRole('button', { name: task.name })).not.toBeInTheDocument(),
+      );
     });
 
     await user.click(mathTag);
@@ -456,18 +439,15 @@ describe('test task choice', () => {
     await waitFor(() => {
       expect(asdTag).toBeEnabled();
       expect(restTag).toBeEnabled();
-      elementaryTasksFromBackend.forEach(task => expect(getByRole('button', { name: task.name })).toBeInTheDocument());
+      elementaryTasksFromBackend.forEach((task) =>
+        expect(getByRole('button', { name: task.name })).toBeInTheDocument(),
+      );
     });
   }, 12000);
 
   test('filter tasks by name', async () => {
     const user = userEvent.setup();
-    const {
-      getByRole,
-      findByRole,
-      findAllByText,
-      queryByRole,
-    } = render(
+    const { findAllByText, findByRole, getByRole, queryByRole } = render(
       <Provider store={store}>
         <LobbyWidget />
       </Provider>,
@@ -480,19 +460,18 @@ describe('test task choice', () => {
     await user.click(await findByRole('button', { name: 'filter tasks by name' }));
 
     await waitFor(() => {
-      tasksFilteredByName.forEach(task => expect(getByRole('button', { name: task.name })).toBeInTheDocument());
-      tasksEliminatedByName.forEach(task => expect(queryByRole('button', { name: task.name })).not.toBeInTheDocument());
+      tasksFilteredByName.forEach((task) =>
+        expect(getByRole('button', { name: task.name })).toBeInTheDocument(),
+      );
+      tasksEliminatedByName.forEach((task) =>
+        expect(queryByRole('button', { name: task.name })).not.toBeInTheDocument(),
+      );
     });
   });
 
   test('filter tasks by name and tags', async () => {
     const user = userEvent.setup();
-    const {
-      getByRole,
-      findByRole,
-      findAllByText,
-      queryByRole,
-    } = render(
+    const { findAllByText, findByRole, getByRole, queryByRole } = render(
       <Provider store={store}>
         <LobbyWidget />
       </Provider>,
@@ -504,23 +483,18 @@ describe('test task choice', () => {
     await user.click(await findByRole('button', { name: 'filter tasks by name' }));
     await user.click(getByRole('button', { name: 'math' }));
 
-    tasksFilteredByNameAndTag.forEach(task => expect(queryByRole('button', { name: task.name })).toBeInTheDocument());
-    tasksEliminatedByNameAndTag.forEach(task => (
-      expect(queryByRole('button', { name: task.name })).not.toBeInTheDocument()
-    ));
+    tasksFilteredByNameAndTag.forEach((task) =>
+      expect(queryByRole('button', { name: task.name })).toBeInTheDocument(),
+    );
+    tasksEliminatedByNameAndTag.forEach((task) =>
+      expect(queryByRole('button', { name: task.name })).not.toBeInTheDocument(),
+    );
   });
 });
 
-test('test lobby completed games infinite scroll', async () => {
+test('lobby completed games infinite scroll', async () => {
   const user = userEvent.setup();
-  const {
-    findByText,
-    findByRole,
-    queryByText,
-    findByTestId,
-    findAllByText,
-    getByText,
-  } = render(
+  const { findAllByText, findByRole, findByTestId, findByText, getByText, queryByText } = render(
     <Provider store={store}>
       <LobbyWidget />
     </Provider>,
@@ -532,10 +506,10 @@ test('test lobby completed games infinite scroll', async () => {
 
   expect(await findByText(`Total games: ${pageInfo1.totalEntries}`)).toBeInTheDocument();
   expect(axiosSpy).toHaveBeenCalledWith('/api/v1/games/completed?page_size=20');
-  gamesPage1.forEach(game => expect(getByText(toLocalTime(game.finishesAt))).toBeInTheDocument());
-  uniqueGamesOnPage2.forEach(game => (
-    expect(queryByText(toLocalTime(game.finishesAt))).not.toBeInTheDocument()
-  ));
+  gamesPage1.forEach((game) => expect(getByText(toLocalTime(game.finishesAt))).toBeInTheDocument());
+  uniqueGamesOnPage2.forEach((game) =>
+    expect(queryByText(toLocalTime(game.finishesAt))).not.toBeInTheDocument(),
+  );
 
   axiosSpy.mockResolvedValueOnce({
     data: {

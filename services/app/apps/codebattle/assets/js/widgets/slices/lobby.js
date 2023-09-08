@@ -27,22 +27,19 @@ const lobby = createSlice({
   name: 'lobby',
   initialState,
   reducers: {
-    initGameList: (
-      state,
-      { payload: { activeGames, tournaments } },
-    ) => ({
+    initGameList: (state, { payload: { activeGames, tournaments } }) => ({
       ...state,
       activeGames,
-      liveTournaments: tournaments.filter(x => x.isLive),
-      completedTournaments: tournaments.filter(x => !x.isLive),
+      liveTournaments: tournaments.filter((x) => x.isLive),
+      completedTournaments: tournaments.filter((x) => !x.isLive),
       channel: { online: true },
     }),
     updateCheckResult: (state, { payload }) => {
-      state.activeGames = state.activeGames.map(game => {
+      state.activeGames = state.activeGames.map((game) => {
         if (game.id === payload.gameId) {
-          const newPlayers = game.players.map(player => (player.id === payload.userId
-              ? { ...player, checkResult: payload.checkResult }
-              : player));
+          const newPlayers = game.players.map((player) =>
+            player.id === payload.userId ? { ...player, checkResult: payload.checkResult } : player,
+          );
 
           return { ...game, players: newPlayers };
         }
@@ -71,12 +68,12 @@ const lobby = createSlice({
     finishGame: (state, { payload: { game } }) => {
       state.activeGames = reject(state.activeGames, { id: game.id });
     },
-    showCreateGameModal: state => {
+    showCreateGameModal: (state) => {
       state.createGameModal.show = true;
       state.createGameModal.gameOptions = {};
       state.createGameModal.opponentInfo = null;
     },
-    closeCreateGameModal: state => {
+    closeCreateGameModal: (state) => {
       state.createGameModal.show = false;
       state.createGameModal.gameOptions = {};
       state.createGameModal.opponentInfo = null;

@@ -4,7 +4,7 @@ import find from 'lodash/find';
 
 import TaskAssignment from '../game/TaskAssignment';
 
-const StairwayGameInfo = ({ tasks, currentTaskId }) => {
+function StairwayGameInfo({ currentTaskId, tasks }) {
   if (!tasks) {
     return null;
   }
@@ -16,6 +16,6 @@ const StairwayGameInfo = ({ tasks, currentTaskId }) => {
   }
 
   return <TaskAssignment task={task} />;
-};
+}
 
 export default memo(StairwayGameInfo);

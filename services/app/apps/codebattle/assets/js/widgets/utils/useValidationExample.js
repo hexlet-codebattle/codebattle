@@ -28,13 +28,17 @@ const isValidValueToSignature = (value, signature) => {
       return isBoolean(value);
     }
     case argumentTypes.array: {
-      return isArray(value) && !value.some(item => !isValidValueToSignature(item, signature.nested));
+      return (
+        isArray(value) && !value.some((item) => !isValidValueToSignature(item, signature.nested))
+      );
     }
     case argumentTypes.hash: {
-      return !isArray(value)
-        && isObject(value)
-        && !Object.keys(value).some(item => item.length === 0)
-        && !Object.values(value).some(item => !isValidValueToSignature(item, signature.nested));
+      return (
+        !isArray(value) &&
+        isObject(value) &&
+        !Object.keys(value).some((item) => item.length === 0) &&
+        !Object.values(value).some((item) => !isValidValueToSignature(item, signature.nested))
+      );
     }
     default: {
       return false;
@@ -42,11 +46,7 @@ const isValidValueToSignature = (value, signature) => {
   }
 };
 
-const useValidationExample = ({
-  suggest,
-  inputSignature,
-  outputSignature,
-}) => {
+const useValidationExample = ({ inputSignature, outputSignature, suggest }) => {
   const [validArguments, reasonInvalidArguments] = useMemo(() => {
     try {
       if (!suggest) {
@@ -67,10 +67,8 @@ const useValidationExample = ({
         return [false, `Must be ${inputSignature.length} args [Now ${data.length}]`];
       }
 
-      if (
-        data.some((arg, index) => !isValidValueToSignature(arg, inputSignature[index].type))
-      ) {
-        return [false, 'Doesn\'t match with signature'];
+      if (data.some((arg, index) => !isValidValueToSignature(arg, inputSignature[index].type))) {
+        return [false, "Doesn't match with signature"];
       }
 
       return [true];
@@ -91,7 +89,7 @@ const useValidationExample = ({
       const data = JSON.parse(suggest.expected);
 
       if (!isValidValueToSignature(data, outputSignature.type)) {
-        return [false, 'Doesn\'t match with signature'];
+        return [false, "Doesn't match with signature"];
       }
 
       return [true];
@@ -100,10 +98,13 @@ const useValidationExample = ({
     }
   }, [suggest, outputSignature]);
 
-  const validationStatus = useMemo(() => ({
-    arguments: { valid: validArguments, reason: reasonInvalidArguments },
-    expected: { valid: validExpected, reason: reasonInvalidExpected },
-  }), [validArguments, validExpected, reasonInvalidArguments, reasonInvalidExpected]);
+  const validationStatus = useMemo(
+    () => ({
+      arguments: { valid: validArguments, reason: reasonInvalidArguments },
+      expected: { valid: validExpected, reason: reasonInvalidExpected },
+    }),
+    [validArguments, validExpected, reasonInvalidArguments, reasonInvalidExpected],
+  );
 
   return validationStatus;
 };

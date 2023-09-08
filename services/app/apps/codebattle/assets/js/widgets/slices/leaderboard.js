@@ -10,38 +10,33 @@ const periodMapping = {
   [periodTypes.WEEKLY]: 'week',
 };
 
-export const leaderboardSelector = state => state.leaderboard;
+export const leaderboardSelector = (state) => state.leaderboard;
 
-const fetchUsers = createAsyncThunk(
-  'users/fetchUsers',
-  async ({ periodType }, { getState }) => {
-    const { loading } = getState().leaderboard;
-    if (loading !== 'pending') {
-      return;
-    }
+const fetchUsers = createAsyncThunk('users/fetchUsers', async ({ periodType }, { getState }) => {
+  const { loading } = getState().leaderboard;
+  if (loading !== 'pending') {
+    return;
+  }
 
-    const baseParams = {
-      s: 'rating+desc',
-      page_size: '7',
-      with_bots: false,
-    };
+  const baseParams = {
+    s: 'rating+desc',
+    page_size: '7',
+    with_bots: false,
+  };
 
-    const params = periodType === periodTypes.ALL
-        ? baseParams
-        : {
-            ...baseParams,
-            date_from: moment()
-              .startOf(periodMapping[periodType])
-              .utc()
-              .format('YYYY-MM-DD'),
-          };
+  const params =
+    periodType === periodTypes.ALL
+      ? baseParams
+      : {
+          ...baseParams,
+          date_from: moment().startOf(periodMapping[periodType]).utc().format('YYYY-MM-DD'),
+        };
 
-    const response = await axios.get('/api/v1/users', { params });
+  const response = await axios.get('/api/v1/users', { params });
 
-    /* eslint-disable-next-line */
+  /* eslint-disable-next-line */
     return response.data;
-  },
-);
+});
 
 const leaderboardSlice = createSlice({
   name: 'leaderboard',
@@ -57,7 +52,7 @@ const leaderboardSlice = createSlice({
     },
   },
   extraReducers: {
-    [fetchUsers.pending]: state => {
+    [fetchUsers.pending]: (state) => {
       if (state.loading === 'idle') {
         state.loading = 'pending';
       }

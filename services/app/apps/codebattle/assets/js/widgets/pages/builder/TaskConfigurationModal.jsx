@@ -1,6 +1,4 @@
-import React, {
- useState, useCallback, useRef, useEffect, memo,
-} from 'react';
+import React, { useState, useCallback, useRef, useEffect, memo } from 'react';
 
 import cn from 'classnames';
 import Modal from 'react-bootstrap/Modal';
@@ -16,10 +14,10 @@ function TaskConfigurationModal({ modalShowing, setModalShowing }) {
 
   const [configState, setConfigState] = useState('init');
 
-  const task = useSelector(state => state.builder.task);
+  const task = useSelector((state) => state.builder.task);
 
   const onChangeVisibility = useCallback(
-    event => {
+    (event) => {
       if (configState === 'loading') {
         return;
       }
@@ -62,18 +60,16 @@ function TaskConfigurationModal({ modalShowing, setModalShowing }) {
       </Modal.Header>
       <Modal.Body>
         <div
-          className={
-            cn('d-flex custom-control custom-switch', {
-              'text-muted': configState === 'loading',
-            })
-          }
+          className={cn('d-flex custom-control custom-switch', {
+            'text-muted': configState === 'loading',
+          })}
         >
           <input
             ref={visibilityInputRef}
-            type="checkbox"
+            checked={task.visibility === taskVisibilityCodes.public}
             className="custom-control-input"
             id="visibility"
-            checked={task.visibility === taskVisibilityCodes.public}
+            type="checkbox"
             onChange={onChangeVisibility}
           />
           {/* eslint-disable-next-line jsx-a11y/label-has-associated-control, jsx-a11y/label-has-for */}

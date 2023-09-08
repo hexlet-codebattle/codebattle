@@ -21,17 +21,13 @@ const getPlayerStatus = (rematchInitiatorId, currentUserId) => {
 };
 
 const RematchButton = ({
-  gameStatus: { rematchState, rematchInitiatorId },
   currentUserId,
-  isOpponentInGame,
   disabled,
+  gameStatus: { rematchInitiatorId, rematchState },
+  isOpponentInGame,
 }) => {
   const renderBtnAfterReject = () => (
-    <button
-      type="button"
-      className="btn btn-danger btn-block"
-      disabled={disabled}
-    >
+    <button className="btn btn-danger btn-block" disabled={disabled} type="button">
       {i18n.t('Rejected Offer')}
     </button>
   );
@@ -43,11 +39,7 @@ const RematchButton = ({
       'btn-warning': !isOpponentInGame,
     });
     return (
-      <button
-        type="button"
-        className={classNames}
-        disabled
-      >
+      <button disabled className={classNames} type="button">
         {i18n.t(text)}
       </button>
     );
@@ -59,23 +51,19 @@ const RematchButton = ({
       <div className="d-flex">
         <button
           className="btn btn-outline-secondary mr-1"
+          title="Accept"
           type="button"
           onClick={sendAcceptToRematch}
-          title="Accept"
         >
-          <FontAwesomeIcon
-            icon={faCheck}
-          />
+          <FontAwesomeIcon icon={faCheck} />
         </button>
         <button
           className="btn btn-outline-secondary"
+          title="Decline"
           type="button"
           onClick={sendRejectToRematch}
-          title="Decline"
         >
-          <FontAwesomeIcon
-            icon={faXmark}
-          />
+          <FontAwesomeIcon icon={faXmark} />
         </button>
       </div>
     </div>
@@ -83,10 +71,10 @@ const RematchButton = ({
 
   const renderBtnByDefault = () => (
     <button
-      type="button"
       className="btn btn-secondary btn-block rounded-lg"
-      onClick={sendOfferToRematch}
       disabled={disabled}
+      type="button"
+      onClick={sendOfferToRematch}
     >
       {disabled ? i18n.t('Opponent has left') : i18n.t('Rematch')}
     </button>
@@ -102,11 +90,12 @@ const RematchButton = ({
 
   const playerStatus = getPlayerStatus(rematchInitiatorId, currentUserId);
 
-  return mapRematchStateToButtons[`${rematchState}_${playerStatus}`]
-    || mapRematchStateToButtons.none;
+  return (
+    mapRematchStateToButtons[`${rematchState}_${playerStatus}`] || mapRematchStateToButtons.none
+  );
 };
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   const currentUserId = selectors.currentUserIdSelector(state);
 
   return {

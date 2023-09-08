@@ -20,26 +20,16 @@ function GameResultIcon({ editor: { userId } }) {
 
   if (resultUser1 === 'gave_up') {
     return (
-      <OverlayTrigger
-        overlay={<Tooltip id={tooltipId}>Player gave up</Tooltip>}
-        placement="left"
-      >
-        <img
-          src="/assets/images/big-flag.png"
-          alt="white-flag"
-          style={{ width: '200px' }}
-        />
+      <OverlayTrigger overlay={<Tooltip id={tooltipId}>Player gave up</Tooltip>} placement="left">
+        <img alt="white-flag" src="/assets/images/big-flag.png" style={{ width: '200px' }} />
       </OverlayTrigger>
     );
   }
 
   if (resultUser1 === 'won' && resultUser2 !== 'gave_up') {
     return (
-      <OverlayTrigger
-        overlay={<Tooltip id={tooltipId}>Player won</Tooltip>}
-        placement="left"
-      >
-        <img src="/assets/images/big-gold-cup.png" alt="gold-cup" />
+      <OverlayTrigger overlay={<Tooltip id={tooltipId}>Player won</Tooltip>} placement="left">
+        <img alt="gold-cup" src="/assets/images/big-gold-cup.png" />
       </OverlayTrigger>
     );
   }

@@ -14,26 +14,28 @@ export default function Rooms({ disabled }) {
   const activeRoom = useSelector(selectors.activeRoomSelector);
 
   return (
-    <>
-      <Dropdown as={ButtonGroup} title="" disabled={disabled}>
-        <Dropdown.Toggle className="rounded-top" split variant="secondary" id="dropdown-rooms" disabled={disabled}>
-          <span className="mr-2">{activeRoom.name}</span>
-        </Dropdown.Toggle>
+    <Dropdown as={ButtonGroup} disabled={disabled} title="">
+      <Dropdown.Toggle
+        split
+        className="rounded-top"
+        disabled={disabled}
+        id="dropdown-rooms"
+        variant="secondary"
+      >
+        <span className="mr-2">{activeRoom.name}</span>
+      </Dropdown.Toggle>
 
-        <Dropdown.Menu>
-          {
-            rooms.map(room => (
-              <Dropdown.Item
-                href="#"
-                key={room.targetUserId || room.name}
-                onSelect={() => dispatch(actions.setActiveRoom(room))}
-              >
-                {room.name}
-              </Dropdown.Item>
-            ))
-          }
-        </Dropdown.Menu>
-      </Dropdown>
-    </>
+      <Dropdown.Menu>
+        {rooms.map((room) => (
+          <Dropdown.Item
+            key={room.targetUserId || room.name}
+            href="#"
+            onSelect={() => dispatch(actions.setActiveRoom(room))}
+          >
+            {room.name}
+          </Dropdown.Item>
+        ))}
+      </Dropdown.Menu>
+    </Dropdown>
   );
 }

@@ -5,7 +5,7 @@ import Select from 'react-select';
 import UserInfo from '../../components/UserInfo';
 
 const customStyle = {
-  control: provided => ({
+  control: (provided) => ({
     ...provided,
     height: '33px',
     minHeight: '31px',
@@ -13,58 +13,55 @@ const customStyle = {
     borderRadius: 'unset',
     backgroundColor: 'hsl(0, 0%, 100%)',
   }),
-  indicatorsContainer: provided => ({
+  indicatorsContainer: (provided) => ({
     ...provided,
     height: '29px',
   }),
-  clearIndicator: provided => ({
+  clearIndicator: (provided) => ({
     ...provided,
     padding: '5px',
   }),
-  dropdownIndicator: provided => ({
+  dropdownIndicator: (provided) => ({
     ...provided,
     padding: '5px',
   }),
-  input: provided => ({
+  input: (provided) => ({
     ...provided,
     height: '21px',
   }),
 };
 
-function PlayerPicker({
- players, activePlayer, changePlayer, isDisabled,
-}) {
+function PlayerPicker({ activePlayer, changePlayer, isDisabled, players }) {
   const options = useMemo(
-    () => players
-        .filter(player => player.id !== activePlayer.id)
-        .map(player => ({
-          label: <UserInfo user={player} truncate />,
+    () =>
+      players
+        .filter((player) => player.id !== activePlayer.id)
+        .map((player) => ({
+          label: <UserInfo truncate user={player} />,
           value: player.id,
         })),
     [players, activePlayer],
   );
   const defaultValue = useMemo(
-    () => ({ label: <UserInfo user={activePlayer} truncate /> }),
+    () => ({ label: <UserInfo truncate user={activePlayer} /> }),
     [activePlayer],
   );
 
   if (isDisabled) {
     return (
-      <button className="btn btn-sm" type="button" disabled>
-        <UserInfo user={activePlayer} truncate />
+      <button disabled className="btn btn-sm" type="button">
+        <UserInfo truncate user={activePlayer} />
       </button>
     );
   }
 
   return (
-    <>
-      <Select
-        styles={customStyle}
-        defaultValue={defaultValue}
-        onChange={changePlayer}
-        options={options}
-      />
-    </>
+    <Select
+      defaultValue={defaultValue}
+      options={options}
+      styles={customStyle}
+      onChange={changePlayer}
+    />
   );
 }
 

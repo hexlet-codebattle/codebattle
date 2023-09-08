@@ -16,7 +16,7 @@ const prefixes = {
   },
 };
 
-const getChatName = entityName => {
+const getChatName = (entityName) => {
   if (tournamentId) {
     return `${prefixes[entityName].tournament}_${tournamentId}`;
   }

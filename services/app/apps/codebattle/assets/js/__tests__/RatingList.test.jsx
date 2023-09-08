@@ -13,10 +13,14 @@ jest.mock('@fortawesome/react-fontawesome', () => ({
   FontAwesomeIcon: 'img',
 }));
 
-jest.mock('gon', () => {
-  const gonParams = { local: 'en', current_user: { sound_settings: {} } };
-  return { getAsset: type => gonParams[type] };
-}, { virtual: true });
+jest.mock(
+  'gon',
+  () => {
+    const gonParams = { local: 'en', current_user: { sound_settings: {} } };
+    return { getAsset: (type) => gonParams[type] };
+  },
+  { virtual: true },
+);
 
 jest.mock('axios');
 axios.get.mockResolvedValue({
@@ -28,14 +32,18 @@ axios.get.mockResolvedValue({
   },
 });
 
-test('test rendering RatingList', async () => {
+test('rendering RatingList', async () => {
   const reducer = combineReducers(reducers);
   const store = configureStore({
     reducer,
     preloadedState: {},
   });
 
-  const { getByText } = render(<Provider store={store}><RatingList /></Provider>);
+  const { getByText } = render(
+    <Provider store={store}>
+      <RatingList />
+    </Provider>,
+  );
 
   expect(getByText(/Users rating/)).toBeInTheDocument();
   expect(getByText(/Total entries: 0/)).toBeInTheDocument();

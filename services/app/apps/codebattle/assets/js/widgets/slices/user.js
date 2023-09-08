@@ -17,24 +17,22 @@ const userSlice = createSlice({
     },
     updateUsers: (state, { payload }) => {
       const { users: usersList } = payload;
-      const users = usersList.reduce(
-        (acc, user) => ({ ...acc, [user.id]: user }),
-        {},
-      );
+      const users = usersList.reduce((acc, user) => ({ ...acc, [user.id]: user }), {});
       if (!isEmpty(users)) {
         Object.assign(state.users, users);
       }
     },
     updateUsersStats: (state, { payload }) => {
-      const { userId, stats, achievements } = payload;
+      const { achievements, stats, userId } = payload;
       state.usersStats[userId] = { stats, achievements };
     },
     updateUsersRatingPage: (state, { payload }) => {
-      const {
-        users, pageInfo, dateFrom, withBots,
-      } = payload;
+      const { dateFrom, pageInfo, users, withBots } = payload;
       state.usersRatingPage = {
-        users, pageInfo, dateFrom, withBots: (withBots === 'true'),
+        users,
+        pageInfo,
+        dateFrom,
+        withBots: withBots === 'true',
       };
     },
   },

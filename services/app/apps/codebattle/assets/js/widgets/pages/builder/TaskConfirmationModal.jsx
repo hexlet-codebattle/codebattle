@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useCallback,
-  useRef,
-  useEffect,
-  memo,
-} from 'react';
+import React, { useState, useCallback, useRef, useEffect, memo } from 'react';
 
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
@@ -27,7 +21,7 @@ function TaskConfirmationModal({ modalShowing, taskService }) {
   const [error, setError] = useState(null);
 
   const taskParams = useSelector(taskSelector);
-  const templateState = useSelector(state => state.builder.templates.state);
+  const templateState = useSelector((state) => state.builder.templates.state);
 
   const handleConfirmation = useCallback(() => {
     dispatch(saveTask(taskService, setError));
@@ -47,16 +41,11 @@ function TaskConfirmationModal({ modalShowing, taskService }) {
     return null;
   }
 
-  const title = taskParams.state === taskStateCodes.blank
-    ? 'Confirm task creation'
-    : 'Confirm task changes';
+  const title =
+    taskParams.state === taskStateCodes.blank ? 'Confirm task creation' : 'Confirm task changes';
 
   return (
-    <Modal
-      contentClassName="overflow-auto h-75"
-      show={modalShowing}
-      onHide={handleCancel}
-    >
+    <Modal contentClassName="overflow-auto h-75" show={modalShowing} onHide={handleCancel}>
       <Modal.Header closeButton>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
@@ -112,18 +101,15 @@ function TaskConfirmationModal({ modalShowing, taskService }) {
       </Modal.Body>
       <Modal.Footer>
         <div className="d-flex justify-content-between w-100">
-          <Button
-            onClick={handleCancel}
-            className="btn btn-secondary rounded-lg"
-          >
+          <Button className="btn btn-secondary rounded-lg" onClick={handleCancel}>
             Cancel
           </Button>
           <div className="d-flex">
             {error && <div className="invalid-feedback">{error.message}</div>}
             <Button
               ref={confirmBtnRef}
-              onClick={handleConfirmation}
               className="btn btn-success text-white rounded-lg"
+              onClick={handleConfirmation}
             >
               Confirm
             </Button>

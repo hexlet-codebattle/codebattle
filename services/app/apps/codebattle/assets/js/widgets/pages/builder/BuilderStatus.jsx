@@ -19,96 +19,89 @@ function BuilderStatus() {
   const taskCurrent = useMachineStateSelector(taskService, taskStateSelector);
 
   const [isValidName, invalidNameReason] = useSelector(
-    state => state.builder.validationStatuses.name,
+    (state) => state.builder.validationStatuses.name,
   );
   const [isValidDescription, invalidDescriptionReason] = useSelector(
-    state => state.builder.validationStatuses.description,
+    (state) => state.builder.validationStatuses.description,
   );
   const [isValidInputSignature, invalidInputReason] = useSelector(
-    state => state.builder.validationStatuses.inputSignature,
+    (state) => state.builder.validationStatuses.inputSignature,
   );
   const [isValidExamples, invalidExamplesReason] = useSelector(
-    state => state.builder.validationStatuses.assertsExamples,
+    (state) => state.builder.validationStatuses.assertsExamples,
   );
-  const [
-    isValidArgumentsGenerator,
-    invalidArgumentsGeneratorReason,
-  ] = useSelector(state => state.builder.validationStatuses.argumentsGenerator);
+  const [isValidArgumentsGenerator, invalidArgumentsGeneratorReason] = useSelector(
+    (state) => state.builder.validationStatuses.argumentsGenerator,
+  );
   const [isValidSolution, invalidSolutionReason] = useSelector(
-    state => state.builder.validationStatuses.solution,
+    (state) => state.builder.validationStatuses.solution,
   );
 
-  const templateState = useSelector(state => state.builder.templates.state);
+  const templateState = useSelector((state) => state.builder.templates.state);
 
   return (
     <div className="p-3">
       <p className="small">
         <TaskPropStatusIcon
           id="statusName"
-          status={
-            isValidName ? validationStatuses.valid : validationStatuses.invalid
-          }
           reason={invalidNameReason}
+          status={isValidName ? validationStatuses.valid : validationStatuses.invalid}
         />
         Name
       </p>
       <p className="small">
         <TaskPropStatusIcon
           id="statusDescription"
-          status={
-            isValidDescription
-              ? validationStatuses.valid
-              : validationStatuses.invalid
-          }
           reason={invalidDescriptionReason}
+          status={isValidDescription ? validationStatuses.valid : validationStatuses.invalid}
         />
         Description
       </p>
       <p className="small">
         <TaskPropStatusIcon
           id="statusSignature"
+          reason={invalidInputReason}
           status={
             !isValidInputSignature
               ? validationStatuses.invalid
               : mapStateToValidationStatus[taskCurrent.value]
           }
-          reason={invalidInputReason}
         />
         Type Signatures
       </p>
       <p className="small">
         <TaskPropStatusIcon
           id="statusExamples"
+          reason={invalidExamplesReason}
           status={
             !isValidExamples
               ? validationStatuses.invalid
               : mapStateToValidationStatus[taskCurrent.value]
           }
-          reason={invalidExamplesReason}
         />
         Examples
       </p>
       <p className="small">
         <TaskPropStatusIcon
           id="statusArgumentsGenerator"
+          reason={invalidArgumentsGeneratorReason}
           status={
             !isValidArgumentsGenerator
               ? validationStatuses.invalid
               : getGeneratorStatus(templateState, taskCurrent)
           }
-          reason={invalidArgumentsGeneratorReason}
         />
         Input arguments generator
       </p>
       <p className="small">
         <TaskPropStatusIcon
           id="statusSolution"
+          reason={invalidSolutionReason}
           status={
             !isValidSolution
               ? validationStatuses.invalid
               : getGeneratorStatus(templateState, taskCurrent)
           }
-          reason={invalidSolutionReason}
         />
         Solution Example
       </p>
