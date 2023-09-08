@@ -16,15 +16,13 @@ import i18n from '../../../i18n';
 import * as selectors from '../../selectors';
 import { actions } from '../../slices';
 
-const isRandomTask = task => !has(task, 'id');
+const isRandomTask = (task) => !has(task, 'id');
 
 const mapTagsToTaskIds = (tasks, tags) => {
   const otherTag = tags.at(-1);
   const popularTags = tags.slice(0, -1);
 
-  const initAcc = tags.reduce((acc, tag) => (
-    { ...acc, [tag]: [] }
-  ), {});
+  const initAcc = tags.reduce((acc, tag) => ({ ...acc, [tag]: [] }), {});
 
   return tasks.reduce((acc, task) => {
     const newAcc = task.tags.reduce((currentAcc, tag) => {
@@ -53,7 +51,7 @@ const mapTagsToTaskIds = (tasks, tags) => {
 };
 
 const getTaskIdsByTags = (dictionary, tags) => {
-  const taskIds = tags.map(tag => dictionary[tag]);
+  const taskIds = tags.map((tag) => dictionary[tag]);
   return intersection(...taskIds);
 };
 
@@ -63,60 +61,45 @@ const filterTasksByTagsAndLevel = (tasks, tags, dictionary) => {
   }
 
   const availableTaskIds = getTaskIdsByTags(dictionary, tags);
-  return tasks.filter(task => availableTaskIds.includes(task.id));
+  return tasks.filter((task) => availableTaskIds.includes(task.id));
 };
 
-const CurrentUserTaskLabel = ({ task, userStats = { user: { avatarUrl: '' } } }) => {
-  const { user: { avatarUrl } } = userStats;
+function CurrentUserTaskLabel({ task, userStats = { user: { avatarUrl: '' } } }) {
+  const {
+    user: { avatarUrl },
+  } = userStats;
 
   return (
     <div className="d-flex align-items-center">
       <div className="mr-1">
         <img
-          className="img-fluid"
-          style={{ maxHeight: '16px', width: '16px' }}
-          src={avatarUrl}
           alt="User avatar"
+          className="img-fluid"
+          src={avatarUrl}
+          style={{ maxHeight: '16px', width: '16px' }}
         />
       </div>
       <div>
-        <span className="text-truncate">
-          {task.name}
-        </span>
+        <span className="text-truncate">{task.name}</span>
       </div>
     </div>
   );
-};
+}
 
-const renderIcon = type => {
+const renderIcon = (type) => {
   switch (type) {
     case 'user':
-      return (
-        <FontAwesomeIcon
-          icon={faUser}
-          className="mr-1"
-        />
-      );
+      return <FontAwesomeIcon className="mr-1" icon={faUser} />;
     case 'github':
-      return (
-        <FontAwesomeIcon
-          icon={['fab', 'github']}
-          className="mr-1"
-        />
-      );
+      return <FontAwesomeIcon className="mr-1" icon={['fab', 'github']} />;
     default:
-      return (
-        <FontAwesomeIcon
-          icon={faShuffle}
-          className="mr-1"
-        />
-      );
+      return <FontAwesomeIcon className="mr-1" icon={faShuffle} />;
   }
 };
 
 const isCreatedByCurrentUser = (taskCreatorId, userId) => taskCreatorId && taskCreatorId === userId;
 
-const TaskLabel = ({ task, userStats, currentUserId }) => {
+function TaskLabel({ currentUserId, task, userStats }) {
   if (isCreatedByCurrentUser(task.creatorId, currentUserId)) {
     return <CurrentUserTaskLabel task={task} userStats={userStats} />;
   }
@@ -127,14 +110,9 @@ const TaskLabel = ({ task, userStats, currentUserId }) => {
       <span>{task.name}</span>
     </span>
   );
-};
+}
 
-function TaskSelect({
-  setChosenTask,
-  randomTask,
-  tasks,
-  level,
-}) {
+function TaskSelect({ level, randomTask, setChosenTask, tasks }) {
   const dispatch = useDispatch();
   const defaultOption = { label: <TaskLabel task={randomTask} />, value: randomTask.name };
   const currentUserId = useSelector(selectors.currentUserIdSelector);
@@ -144,10 +122,10 @@ function TaskSelect({
   useEffect(() => {
     axios
       .get(`/api/v1/user/${currentUserId}/stats`)
-      .then(response => {
+      .then((response) => {
         setUserStats(camelizeKeys(response.data));
       })
-      .catch(error => {
+      .catch((error) => {
         dispatch(actions.setError(error));
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -165,32 +143,25 @@ function TaskSelect({
       key={`task-choise-${level}`}
       className="w-100"
       defaultValue={defaultOption}
-      onChange={onChange}
-      filterOption={({ value: { name } }, inputValue) => (
+      filterOption={({ value: { name } }, inputValue) =>
         name.toLowerCase().includes(inputValue.toLowerCase())
-      )}
-      options={
-        allTasks.map(task => (
-          {
-            label: <TaskLabel
-              task={task}
-              userStats={userStats}
-              currentUserId={currentUserId}
-            />,
-            value: task,
-          }))
-        }
+      }
+      options={allTasks.map((task) => ({
+        label: <TaskLabel currentUserId={currentUserId} task={task} userStats={userStats} />,
+        value: task,
+      }))}
+      onChange={onChange}
     />
   );
 }
 
 export default function TaskChoice({
-  chosenTask,
-  setChosenTask,
   chosenTags,
-  setChosenTags,
+  chosenTask,
   level,
   randomTask,
+  setChosenTags,
+  setChosenTask,
 }) {
   const dispatch = useDispatch();
   const taskTags = Gon.getAsset('task_tags');
@@ -204,7 +175,7 @@ export default function TaskChoice({
         const { tasks } = camelizeKeys(data);
         setAllTasks(tasks);
       })
-      .catch(error => {
+      .catch((error) => {
         dispatch(actions.setError(error));
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -212,11 +183,16 @@ export default function TaskChoice({
 
   const tagsToTaskIdsDictionary = mapTagsToTaskIds(allTasks, taskTags);
 
-  const tasksFilteredByLevel = allTasks.filter(task => task.level === level);
+  const tasksFilteredByLevel = allTasks.filter((task) => task.level === level);
 
-  const filteredTasks = filterTasksByTagsAndLevel(tasksFilteredByLevel, chosenTags, tagsToTaskIdsDictionary, level);
+  const filteredTasks = filterTasksByTagsAndLevel(
+    tasksFilteredByLevel,
+    chosenTags,
+    tagsToTaskIdsDictionary,
+    level,
+  );
 
-  const isTagButtonDisabled = tag => {
+  const isTagButtonDisabled = (tag) => {
     if (!isRandomTask(chosenTask)) {
       return true;
     }
@@ -224,15 +200,14 @@ export default function TaskChoice({
     return availableTaskIds.length === 0;
   };
 
-  const isTagChosen = tag => (
+  const isTagChosen = (tag) =>
     isRandomTask(chosenTask)
       ? chosenTags.includes(tag)
-      : tagsToTaskIdsDictionary[tag].includes(chosenTask.id)
-  );
+      : tagsToTaskIdsDictionary[tag].includes(chosenTask.id);
 
-  const toggleTagButton = tag => {
+  const toggleTagButton = (tag) => {
     if (chosenTags.includes(tag)) {
-      const tagsWithoutChosen = chosenTags.filter(chosenTag => chosenTag !== tag);
+      const tagsWithoutChosen = chosenTags.filter((chosenTag) => chosenTag !== tag);
       setChosenTags(tagsWithoutChosen);
       return;
     }
@@ -244,25 +219,25 @@ export default function TaskChoice({
       <h5>{i18n.t('Choose task by name or tags')}</h5>
       <div className="d-flex justify-content-around px-5 mt-3 mb-2">
         <TaskSelect
-          setChosenTask={setChosenTask}
-          randomTask={randomTask}
-          tasks={filteredTasks}
           level={level}
+          randomTask={randomTask}
+          setChosenTask={setChosenTask}
+          tasks={filteredTasks}
         />
       </div>
       <div className="d-flex flex-column justify-content-around px-5 mt-3 mb-2">
         <h6>{i18n.t('Tags')}</h6>
         <div className="border p-2 rounded-lg">
-          {taskTags.map(tag => (
+          {taskTags.map((tag) => (
             <button
               key={tag}
+              disabled={isTagButtonDisabled(tag)}
               type="button"
               className={cn('btn btn-sm mr-1 tag rounded-lg', {
                 'bg-orange text-white': isTagChosen(tag),
                 'tag-btn-outline-orange': !isTagChosen(tag),
               })}
               onClick={() => toggleTagButton(tag)}
-              disabled={isTagButtonDisabled(tag)}
             >
               {tag}
             </button>

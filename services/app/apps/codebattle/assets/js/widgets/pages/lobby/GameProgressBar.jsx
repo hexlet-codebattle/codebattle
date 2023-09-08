@@ -4,11 +4,11 @@ import cn from 'classnames';
 
 import PlayerLoading from '../../components/PlayerLoading';
 
-const getPregressbarClass = player => cn('cb-check-result-bar shadow-sm', player.checkResult.status);
+const getPregressbarClass = (player) =>
+  cn('cb-check-result-bar shadow-sm', player.checkResult.status);
 
-const getPregressbarWidth = player => `${
-  (player.checkResult?.successCount / player.checkResult?.assertsCount) * 100
-}%`;
+const getPregressbarWidth = (player) =>
+  `${(player.checkResult.successCount / player.checkResult.assertsCount) * 100}%`;
 
 function GameProgressBar({ player, position }) {
   const positionStyle = position === 'right' ? { right: 0 } : {};
@@ -21,10 +21,7 @@ function GameProgressBar({ player, position }) {
           style={{ width: getPregressbarWidth(player), ...positionStyle }}
         />
       </div>
-      <PlayerLoading
-        show={player.checkResult.status === 'started'}
-        small
-      />
+      <PlayerLoading small show={player.checkResult.status === 'started'} />
     </>
   );
 }

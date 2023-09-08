@@ -6,6 +6,7 @@ plugins:
   - jsx-a11y
   - jest
   - react-hooks
+  - sort-destructure-keys
 env:
   node: true
   browser: true
@@ -15,6 +16,7 @@ parser: "@babel/eslint-parser"
 extends:
   - "airbnb"
   - "plugin:jest/recommended"
+  - "plugin:prettier/recommended"
 
 rules:
   no-console: 0
@@ -43,13 +45,31 @@ rules:
         group: internal
     pathGroupsExcludedImportTypes:
       - internal
+  import/extensions:
+    - error
+    - js: never
+      jsx: never
   no-param-reassign: 0
   arrow-parens:
     - 2
-    - "as-needed"
+    - "always"
   react/jsx-props-no-spreading: 0
   react/static-property-placement: 0
   react/state-in-constructor: 0
+  react/function-component-definition: "off"
+  react/jsx-sort-props:
+    - 1
+    - callbacksLast: true
+      shorthandFirst: true
+      shorthandLast: false
+      ignoreCase: false
+      noSortAlphabetically: false
+      reservedFirst: true
+      multiline: last
+  react/no-unstable-nested-components:
+    - warn
+    - allowAsProps: true
+  class-methods-use-this: "off"
   jest/no-disabled-tests: "warn"
   jest/no-focused-tests: "error"
   jest/no-identical-title: "error"
@@ -60,3 +80,6 @@ rules:
   template-curly-spacing: "off"
   indent: "off"
   max-len: ["error", 140, 2]
+  sort-destructure-keys/sort-destructure-keys:
+    - 1
+    - caseSensitive: false

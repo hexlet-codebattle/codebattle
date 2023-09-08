@@ -20,9 +20,6 @@ export default class Modal extends React.Component {
 
   render() {
     const { children } = this.props;
-    return createPortal(
-      children,
-      this.el,
-    );
+    return createPortal(children, this.el);
   }
 }

@@ -12,7 +12,7 @@ const getKey = (id, time, name) => {
   return `${time}-${name}`;
 };
 
-function Messages({ messages, displayMenu = () => {} }) {
+function Messages({ displayMenu = () => {}, messages }) {
   const listRef = useRef();
 
   const { stayScrolled /* , scrollBottom */ } = useStayScrolled(listRef);
@@ -23,33 +23,29 @@ function Messages({ messages, displayMenu = () => {} }) {
   }, [messages.length, stayScrolled]);
 
   return (
-    <>
-      <ul
-        ref={listRef}
-        className="overflow-auto pt-0 pl-3 pr-2 position-relative cb-messages-list flex-grow-1"
-      >
-        {messages.map(message => {
-          const {
-            id, userId, name, text, type, time, meta,
-          } = message;
+    <ul
+      ref={listRef}
+      className="overflow-auto pt-0 pl-3 pr-2 position-relative cb-messages-list flex-grow-1"
+    >
+      {messages.map((message) => {
+        const { id, meta, name, text, time, type, userId } = message;
 
-          const key = getKey(id, time, name);
+        const key = getKey(id, time, name);
 
-          return (
-            <Message
-              name={name}
-              userId={userId}
-              text={text}
-              key={key}
-              type={type}
-              time={time}
-              meta={meta}
-              displayMenu={displayMenu}
-            />
-          );
-        })}
-      </ul>
-    </>
+        return (
+          <Message
+            key={key}
+            displayMenu={displayMenu}
+            meta={meta}
+            name={name}
+            text={text}
+            time={time}
+            type={type}
+            userId={userId}
+          />
+        );
+      })}
+    </ul>
   );
 }
 

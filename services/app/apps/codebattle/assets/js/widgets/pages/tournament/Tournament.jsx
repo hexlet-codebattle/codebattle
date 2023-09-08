@@ -4,10 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import TournamentStates from '../../config/tournament';
 import { connectToChat } from '../../middlewares/Chat';
-import {
-  connectToTournament,
-  kickFromTournament,
-} from '../../middlewares/Tournament';
+import { connectToTournament, kickFromTournament } from '../../middlewares/Tournament';
 import * as selectors from '../../selectors';
 
 import IndividualMatches from './IndividualMatches';
@@ -21,10 +18,7 @@ function Tournament() {
   const dispatch = useDispatch();
 
   const tournament = useSelector(selectors.tournamentSelector);
-  const playersCount = useMemo(
-    () => Object.keys(tournament.players).length,
-    [tournament.players],
-  );
+  const playersCount = useMemo(() => Object.keys(tournament.players).length, [tournament.players]);
   const isOver = useMemo(
     () => [TournamentStates.finished, TournamentStates.cancelled].includes(tournament.state),
     [tournament.state],
@@ -33,7 +27,7 @@ function Tournament() {
   const currentUserId = useSelector(selectors.currentUserIdSelector);
   const isAdmin = useSelector(selectors.currentUserIsAdminSelector);
   const isGuest = useSelector(selectors.currentUserIsGuestSelector);
-  const handleKick = useCallback(event => {
+  const handleKick = useCallback((event) => {
     const { playerId } = event.currentTarget.dataset;
     if (playerId) {
       kickFromTournament(playerId);
@@ -61,12 +55,7 @@ function Tournament() {
         <h1 className="text-center">{tournament.name}</h1>
         <p className="text-center">
           <span>
-            Please
-            {' '}
-            <a href="/session/new">sign in</a>
-            {' '}
-            to see the tournament
-            details
+            Please <a href="/session/new">sign in</a> to see the tournament details
           </span>
         </p>
       </>
@@ -77,20 +66,20 @@ function Tournament() {
     return (
       <>
         <TournamentHeader
-          id={tournament.id}
-          state={tournament.state}
-          type={tournament.type}
-          accessType={tournament.accessType}
           accessToken={tournament.accessToken}
+          accessType={tournament.accessType}
+          creatorId={tournament.creatorId}
+          currentUserId={currentUserId}
+          id={tournament.id}
           isLive={tournament.isLive}
+          isOnline={tournament.channel.online}
+          isOver={isOver}
+          level={tournament.level}
           name={tournament.name}
           players={tournament.players}
           playersCount={playersCount}
-          creatorId={tournament.creatorId}
-          currentUserId={currentUserId}
-          level={tournament.level}
-          isOver={isOver}
-          isOnline={tournament.channel.online}
+          state={tournament.state}
+          type={tournament.type}
         />
         Tournament stairways
         {/* Chat  */}
@@ -123,25 +112,22 @@ function Tournament() {
           <div className="col-12 col-lg-9 mb-2 mb-lg-0">
             <div className="bg-white shadow-sm rounded-lg p-3">
               <TournamentHeader
-                id={tournament.id}
-                state={tournament.state}
-                type={tournament.type}
-                accessType={tournament.accessType}
                 accessToken={tournament.accessToken}
+                accessType={tournament.accessType}
+                creatorId={tournament.creatorId}
+                currentUserId={currentUserId}
+                id={tournament.id}
                 isLive={tournament.isLive}
+                isOnline={tournament.channel.online}
+                isOver={isOver}
+                level={tournament.level}
                 name={tournament.name}
                 players={tournament.players}
                 playersCount={playersCount}
-                creatorId={tournament.creatorId}
-                currentUserId={currentUserId}
-                level={tournament.level}
-                isOver={isOver}
-                isOnline={tournament.channel.online}
+                state={tournament.state}
+                type={tournament.type}
               />
-              <TeamMatches
-                matches={tournament.matches}
-                currentUserId={currentUserId}
-              />
+              <TeamMatches currentUserId={currentUserId} matches={tournament.matches} />
             </div>
           </div>
           <div className="col-12 col-lg-3">
@@ -153,55 +139,50 @@ function Tournament() {
   }
 
   return (
-    <>
-      <div className="container-fluid">
-        <div className="row flex-lg-row-reverse">
-          <div className="col-12 col-lg-9 mb-2 mb-lg-0">
-            <div className="bg-white h-100 shadow-sm rounded-lg p-3">
-              <TournamentHeader
-                id={tournament.id}
-                state={tournament.state}
-                type={tournament.type}
-                accessType={tournament.accessType}
-                accessToken={tournament.accessToken}
-                name={tournament.name}
-                players={tournament.players}
-                playersCount={playersCount}
-                creatorId={tournament.creatorId}
-                currentUserId={currentUserId}
-                level={tournament.level}
-                isOver={isOver}
-                isLive={tournament.isLive}
-                isOnline={tournament.channel.online}
-              />
-              <IndividualMatches
-                state={tournament.state}
-                startsAt={tournament.startsAt}
-                matches={tournament.matches}
-                players={tournament.players}
-                playersCount={playersCount}
-                currentUserId={currentUserId}
-                isOver={isOver}
-                isLive={tournament.isLive}
-                isOnline={tournament.channel.online}
-              />
-            </div>
-          </div>
-          <div className="d-flex flex-column flex-lg-column-reverse col-12 col-lg-3">
-            <Players
+    <div className="container-fluid">
+      <div className="row flex-lg-row-reverse">
+        <div className="col-12 col-lg-9 mb-2 mb-lg-0">
+          <div className="bg-white h-100 shadow-sm rounded-lg p-3">
+            <TournamentHeader
+              accessToken={tournament.accessToken}
+              accessType={tournament.accessType}
+              creatorId={tournament.creatorId}
+              currentUserId={currentUserId}
+              id={tournament.id}
+              isLive={tournament.isLive}
+              isOnline={tournament.channel.online}
+              isOver={isOver}
+              level={tournament.level}
+              name={tournament.name}
               players={tournament.players}
               playersCount={playersCount}
-              canBan={
-                isAdmin
-                && tournament.state === TournamentStates.waitingParticipants
-              }
-              handleKick={handleKick}
+              state={tournament.state}
+              type={tournament.type}
             />
-            <TournamentChat />
+            <IndividualMatches
+              currentUserId={currentUserId}
+              isLive={tournament.isLive}
+              isOnline={tournament.channel.online}
+              isOver={isOver}
+              matches={tournament.matches}
+              players={tournament.players}
+              playersCount={playersCount}
+              startsAt={tournament.startsAt}
+              state={tournament.state}
+            />
           </div>
         </div>
+        <div className="d-flex flex-column flex-lg-column-reverse col-12 col-lg-3">
+          <Players
+            canBan={isAdmin && tournament.state === TournamentStates.waitingParticipants}
+            handleKick={handleKick}
+            players={tournament.players}
+            playersCount={playersCount}
+          />
+          <TournamentChat />
+        </div>
       </div>
-    </>
+    </div>
   );
 }
 

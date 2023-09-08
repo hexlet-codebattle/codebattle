@@ -133,7 +133,10 @@ const machine = {
           ),
           on: {
             JOIN: { target: 'connected', actions: ['handleReconnection'] },
-            SHOW_ERROR_MESSAGE: { target: 'disconnectedWithMessage', actions: ['handleDisconnection'] },
+            SHOW_ERROR_MESSAGE: {
+              target: 'disconnectedWithMessage',
+              actions: ['handleDisconnection'],
+            },
           },
         },
         disconnectedWithMessage: {
@@ -287,9 +290,9 @@ export const config = {
       throw new Error(`Unexpected behavior (payload: ${JSON.stringify(payload)})`);
     },
     // network actions
-    handleFailureJoin: () => { },
-    handleDisconnection: () => { },
-    handleReconnection: () => { },
+    handleFailureJoin: () => {},
+    handleDisconnection: () => {},
+    handleReconnection: () => {},
 
     // game actions
     soundWin: () => {
@@ -304,7 +307,7 @@ export const config = {
     soundTournamentRoundCreated: () => {
       sound.play('round_created');
     },
-    soundRematchUpdateStatus: () => { },
+    soundRematchUpdateStatus: () => {},
 
     // replayer actions
     toggleSpeedMode: assign({

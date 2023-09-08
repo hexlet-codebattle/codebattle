@@ -7,7 +7,7 @@ import * as selectors from '../selectors';
 
 import Rooms from './Rooms';
 
-export default function ChatHeader({ showRooms = false, disabled = false }) {
+export default function ChatHeader({ disabled = false, showRooms = false }) {
   const currentUserIsAdmin = useSelector(selectors.currentUserIsAdminSelector);
 
   const handleCleanBanned = () => {
@@ -19,12 +19,12 @@ export default function ChatHeader({ showRooms = false, disabled = false }) {
       {showRooms && <Rooms disabled={disabled} />}
       {currentUserIsAdmin && (
         <button
-          type="button"
           className="btn btn-sm btn-link text-danger rounded-lg"
+          disabled={disabled}
+          type="button"
           onClick={() => {
             handleCleanBanned();
           }}
-          disabled={disabled}
         >
           Clean banned
         </button>

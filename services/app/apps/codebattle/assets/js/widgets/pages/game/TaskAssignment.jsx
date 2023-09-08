@@ -13,11 +13,11 @@ import ContributorsList from './ContributorsList';
 import TaskDescriptionMarkdown from './TaskDescriptionMarkdown';
 import TaskLanguagesSelection from './TaskLanguageSelection';
 
-const renderTaskLink = name => {
+const renderTaskLink = (name) => {
   const link = `https://github.com/hexlet-codebattle/battle_asserts/tree/master/src/battle_asserts/issues/${name}.clj`;
 
   return (
-    <a href={link} className="d-inline-block">
+    <a className="d-inline-block" href={link}>
       <span className="fab fa-github mr-1" />
       link
     </a>
@@ -32,19 +32,19 @@ function ShowGuideButton() {
 
   return (
     <button
-      type="button"
       className="btn btn-outline-secondary btn-sm mx-2 text-nowrap rounded-lg"
-      onClick={guideShow}
-      data-toggle="tooltip"
       data-placement="top"
+      data-toggle="tooltip"
       title="Show guide"
+      type="button"
+      onClick={guideShow}
     >
       Show guide
     </button>
   );
 }
 
-function TaskAssignment({ task, taskLanguage, handleSetLanguage }) {
+function TaskAssignment({ handleSetLanguage, task, taskLanguage }) {
   const [avaibleLanguages, displayLanguage, description] = useTaskDescriptionParams(
     task,
     taskLanguage,
@@ -65,9 +65,9 @@ function TaskAssignment({ task, taskLanguage, handleSetLanguage }) {
           </h6>
           <div className="d-flex align-items-center">
             <TaskLanguagesSelection
-              handleSetLanguage={handleSetLanguage}
               avaibleLanguages={avaibleLanguages}
               displayLanguage={displayLanguage}
+              handleSetLanguage={handleSetLanguage}
             />
             <ShowGuideButton />
           </div>
@@ -83,9 +83,7 @@ function TaskAssignment({ task, taskLanguage, handleSetLanguage }) {
             <div className="d-flex align-items-end flex-column flex-sm-row justify-content-between">
               <h6 className="card-text small font-italic text-black-50">
                 <span className="mr-2">
-                  {i18n.t(
-                    'Found a mistake? Have something to add? Pull Requests are welcome: ',
-                  )}
+                  {i18n.t('Found a mistake? Have something to add? Pull Requests are welcome: ')}
                 </span>
                 {renderTaskLink(task.name)}
               </h6>

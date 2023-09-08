@@ -13,16 +13,11 @@ import {
   isTaskPrepareTestingSelector,
   taskStateSelector,
 } from '../../machines/selectors';
-import {
-  buildTaskAsserts,
-  deleteTask,
-  publishTask,
-  updateTaskState,
-} from '../../middlewares/Game';
+import { buildTaskAsserts, deleteTask, publishTask, updateTaskState } from '../../middlewares/Game';
 import * as selectors from '../../selectors';
 import useMachineStateSelector from '../../utils/useMachineStateSelector';
 
-function BuilderActions({ validExamples, clearSuggests }) {
+function BuilderActions({ clearSuggests, validExamples }) {
   const dispatch = useDispatch();
 
   const { taskService } = useContext(RoomContext);
@@ -38,12 +33,10 @@ function BuilderActions({ validExamples, clearSuggests }) {
   const isAdmin = useSelector(selectors.currentUserIsAdminSelector);
   const isOwner = useSelector(selectors.isTaskOwner);
 
-  const { id: taskId, state: taskState } = useSelector(
-    state => state.builder.task,
-  );
+  const { id: taskId, state: taskState } = useSelector((state) => state.builder.task);
 
-  const notPublished = taskState === taskStateCodes.draft
-    && taskState === taskStateCodes.moderation;
+  const notPublished =
+    taskState === taskStateCodes.draft && taskState === taskStateCodes.moderation;
   const readyTesting = validExamples;
   const readySave = useSelector(selectors.isValidTask);
 
@@ -54,10 +47,7 @@ function BuilderActions({ validExamples, clearSuggests }) {
     () => dispatch(buildTaskAsserts(taskService)),
     [taskService, dispatch],
   );
-  const finishPreparing = useCallback(
-    () => taskService.send('SUCCESS'),
-    [taskService],
-  );
+  const finishPreparing = useCallback(() => taskService.send('SUCCESS'), [taskService]);
   const prepareAsserts = isIdleTaskState ? buildAsserts : finishPreparing;
 
   const handleOpenTesting = useCallback(() => {
@@ -100,16 +90,16 @@ function BuilderActions({ validExamples, clearSuggests }) {
   return (
     <>
       <button
-        type="button"
         className="btn btn-md btn-secondary text-nowrap rounded-lg mb-2"
-        onClick={handleOpenTesting}
         disabled={disabledTestingBtn}
+        type="button"
+        onClick={handleOpenTesting}
       >
         {isTestingPrepare ? (
           <span
+            aria-hidden="true"
             className="spinner-border spinner-border-sm mr-2"
             role="status"
-            aria-hidden="true"
           />
         ) : (
           <FontAwesomeIcon className="mr-2" icon="play" />
@@ -117,16 +107,16 @@ function BuilderActions({ validExamples, clearSuggests }) {
         <span>Testing</span>
       </button>
       <button
-        type="button"
         className="btn btn-md btn-success text-nowrap text-white rounded-lg mb-2"
-        onClick={handleSaveTask}
         disabled={disabledSaveBtn}
+        type="button"
+        onClick={handleSaveTask}
       >
         {isSavingPrepare ? (
           <span
+            aria-hidden="true"
             className="spinner-border spinner-border-sm mr-2"
             role="status"
-            aria-hidden="true"
           />
         ) : (
           <FontAwesomeIcon className="mr-2" icon="save" />
@@ -135,8 +125,8 @@ function BuilderActions({ validExamples, clearSuggests }) {
       </button>
       {notPublished && (
         <button
-          type="button"
           className="btn btn-md btn-danger text-nowrap rounded-lg mb-2"
+          type="button"
           onClick={handleDeleteTask}
         >
           <FontAwesomeIcon className="mr-2" icon="trash" />
@@ -145,8 +135,8 @@ function BuilderActions({ validExamples, clearSuggests }) {
       )}
       {taskState === taskStateCodes.draft && (
         <button
-          type="button"
           className="btn btn-md btn-primary text-nowrap rounded-lg mb-2"
+          type="button"
           onClick={handlePublishTask}
         >
           <FontAwesomeIcon className="mr-2" icon="paper-plane" />
@@ -156,19 +146,19 @@ function BuilderActions({ validExamples, clearSuggests }) {
       {taskState === taskStateCodes.moderation && (
         <>
           <button
-            type="button"
-            className="btn btn-md btn-outline-danger text-nowrap rounded-top"
             disabled
+            className="btn btn-md btn-outline-danger text-nowrap rounded-top"
+            type="button"
           >
             On moderation
           </button>
           {(isOwner || !isAdmin) && (
             <button
+              className="btn btn-md btn-primary text-nowrap rounded-bottom mb-2"
+              disabled={!isOwner}
               title="Cancel moderation"
               type="button"
-              className="btn btn-md btn-primary text-nowrap rounded-bottom mb-2"
               onClick={handleUnpublishTask}
-              disabled={!isOwner}
             >
               <FontAwesomeIcon className="mr-2" icon="share" />
               Cancel
@@ -176,8 +166,8 @@ function BuilderActions({ validExamples, clearSuggests }) {
           )}
           {isAdmin && (
             <button
-              type="button"
               className="btn btn-md btn-primary text-nowrap rounded-bottom mb-2"
+              type="button"
               onClick={handlePublishTask}
             >
               <FontAwesomeIcon className="mr-2" icon="share" />
@@ -188,8 +178,8 @@ function BuilderActions({ validExamples, clearSuggests }) {
       )}
       {taskState === taskStateCodes.active && (
         <button
-          type="button"
           className="btn btn-md btn-danger text-nowrap rounded-lg mb-2"
+          type="button"
           onClick={handleDisableTask}
         >
           <FontAwesomeIcon className="mr-2" icon="times-circle" />
@@ -198,8 +188,8 @@ function BuilderActions({ validExamples, clearSuggests }) {
       )}
       {taskState === taskStateCodes.disabled && (
         <button
-          type="button"
           className="btn btn-md btn-primary text-nowrap rounded-lg mb-2"
+          type="button"
           onClick={handleActivateTask}
         >
           <FontAwesomeIcon className="mr-2" icon="check-circle" />

@@ -1,6 +1,4 @@
-import React, {
- memo, useMemo,
-} from 'react';
+import React, { memo, useMemo } from 'react';
 
 import cn from 'classnames';
 import capitalize from 'lodash/capitalize';
@@ -78,7 +76,7 @@ const getLinkParams = (match, currentUserId) => {
   switch (true) {
     case match.state === 'waiting' && isParticipant:
       return ['Wait', cn(cardClassName, 'bg-warning')];
-    case (match.state === 'active' && isParticipant):
+    case match.state === 'active' && isParticipant:
       return ['Join', cn(cardClassName, 'bg-winner')];
     case isWinner:
       return ['Show', cn(cardClassName, 'bg-winner')];
@@ -89,26 +87,21 @@ const getLinkParams = (match, currentUserId) => {
   }
 };
 
-const getRange = (count, min, max) => (
-  count - min === count - max
-    ? [count - min]
-    : [count - max, count - min]
-);
+const getRange = (count, min, max) =>
+  count - min === count - max ? [count - min] : [count - max, count - min];
 
 const getMatchesByRound = (matches, type, playersCount) => {
   const maxPlayers = maxPlayersPerRoundType[type];
   const minPlayers = maxPlayers / 2 + 1;
 
-  const result = Object.values(matches).slice(
-    ...getRange(playersCount, minPlayers, maxPlayers),
-  );
+  const result = Object.values(matches).slice(...getRange(playersCount, minPlayers, maxPlayers));
 
   console.log([type, playersCount], [maxPlayers, minPlayers], matches, result);
 
   return result;
 };
 
-const getTitleByState = state => {
+const getTitleByState = (state) => {
   switch (state) {
     case TournamentStates.cancelled:
       return 'The tournament is cancelled';
@@ -121,9 +114,7 @@ const getTitleByState = state => {
 
 const getResultClass = (match, playerId) => (match.winnerId === playerId ? 'fa fa-trophy' : '');
 
-function Round({
- matches, players, playersCount, type, currentUserId,
-}) {
+function Round({ currentUserId, matches, players, playersCount, type }) {
   const showRound = playersCount > maxPlayersPerRoundType[type] / 2;
 
   const matchesPerRound = useMemo(
@@ -132,16 +123,14 @@ function Round({
   );
 
   if (!showRound) {
-    return <></>;
+    return null;
   }
 
   return (
     <div className="round">
-      <div className="h4 text-center">
-        {getTitleByRoundType(type, playersCount)}
-      </div>
+      <div className="h4 text-center">{getTitleByRoundType(type, playersCount)}</div>
       <div className="round-inner">
-        {matchesPerRound.map(match => (
+        {matchesPerRound.map((match) => (
           <div key={match.gameId} className="match">
             <div className="match__content">
               {match ? (
@@ -149,20 +138,17 @@ function Round({
                   <div className="d-flex justify-content-center align-items-center">
                     <span>{match.state}</span>
                     <div id={match.gameId}>
-                      <a
-                        href={`/games/${match.gameId}`}
-                        className="btn btn-sm btn-success m-1"
-                      >
+                      <a className="btn btn-sm btn-success m-1" href={`/games/${match.gameId}`}>
                         {getLinkParams(match, currentUserId)[0]}
                       </a>
                     </div>
                   </div>
                   <div className="d-flex flex-column justify-content-around">
-                    {match.playerIds.map(id => (
+                    {match.playerIds.map((id) => (
                       <div
                         className={`d-flex align-items-center bg-light tournament-bg-${match.state}`}
                       >
-                        <UserInfo user={players[id]} hideOnlineIndicator />
+                        <UserInfo hideOnlineIndicator user={players[id]} />
                         <span className={getResultClass(match, id)} />
                       </div>
                     ))}
@@ -181,7 +167,7 @@ function Round({
   );
 }
 
-function TournamentTimer({ startsAt, isOnline }) {
+function TournamentTimer({ isOnline, startsAt }) {
   const [duration, seconds] = useTimer(startsAt);
 
   if (!isOnline) {
@@ -207,15 +193,15 @@ function TournamentStatus({ children }) {
 }
 
 function IndividualMatches({
-  state,
-  startsAt,
+  currentUserId,
+  isLive,
+  isOnline,
+  isOver,
   matches,
   players,
   playersCount = 0,
-  currentUserId,
-  isLive,
-  isOver,
-  isOnline,
+  startsAt,
+  state,
 }) {
   if (!isLive && !isOver) {
     return (
@@ -228,7 +214,7 @@ function IndividualMatches({
   if (state === TournamentStates.waitingParticipants) {
     return (
       <TournamentStatus>
-        <TournamentTimer startsAt={startsAt} isOnline={isOnline} />
+        <TournamentTimer isOnline={isOnline} startsAt={startsAt} />
       </TournamentStatus>
     );
   }
@@ -239,13 +225,13 @@ function IndividualMatches({
 
       <div className="overflow-auto mt-2">
         <div className="bracket">
-          {roundTypesValues.map(type => (
+          {roundTypesValues.map((type) => (
             <Round
+              currentUserId={currentUserId}
               matches={matches}
               players={players}
               playersCount={playersCount}
               type={type}
-              currentUserId={currentUserId}
             />
           ))}
         </div>

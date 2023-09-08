@@ -5,23 +5,16 @@ import PropTypes from 'prop-types';
 import Overlay from 'react-bootstrap/Overlay';
 import Popover from 'react-bootstrap/Popover';
 
-function PopoverStickOnHover({
-  id,
-  delay,
-  onMouseEnter,
-  children,
-  component,
-  placement,
-}) {
+function PopoverStickOnHover({ children, component, delay, id, onMouseEnter, placement }) {
   const [showPopover, setShowPopover] = useState(false);
   const childNode = useRef(null);
   let setTimeoutConst = null;
 
   useEffect(() => () => {
-      if (setTimeoutConst) {
-        clearTimeout(setTimeoutConst);
-      }
-    });
+    if (setTimeoutConst) {
+      clearTimeout(setTimeoutConst);
+    }
+  });
 
   const handleMouseEnter = () => {
     setTimeoutConst = setTimeout(() => {
@@ -35,34 +28,31 @@ function PopoverStickOnHover({
     setShowPopover(false);
   };
 
-  const displayChild = React.Children.map(children, child => React.cloneElement(child, {
+  const displayChild = React.Children.map(children, (child) =>
+    React.cloneElement(child, {
       onMouseEnter: handleMouseEnter,
       onMouseLeave: handleMouseLeave,
-      ref: node => {
+      ref: (node) => {
         childNode.current = node;
         const { ref } = child;
         if (typeof ref === 'function') {
           ref(node);
         }
       },
-    }))[0];
+    }),
+  )[0];
 
   return (
     <>
       {displayChild}
-      <Overlay
-        show={showPopover}
-        placement={placement}
-        target={childNode}
-        shouldUpdatePosition
-      >
+      <Overlay shouldUpdatePosition placement={placement} show={showPopover} target={childNode}>
         <Popover
+          id={id}
           trigger="click"
+          onMouseLeave={handleMouseLeave}
           onMouseEnter={() => {
             setShowPopover(true);
           }}
-          onMouseLeave={handleMouseLeave}
-          id={id}
         >
           {component}
         </Popover>

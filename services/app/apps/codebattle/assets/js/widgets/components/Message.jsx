@@ -5,15 +5,7 @@ import moment from 'moment';
 
 import MessageTag from './MessageTag';
 
-const Message = ({
-  text = '',
-  name = '',
-  userId,
-  type,
-  time,
-  meta,
-  displayMenu,
-}) => {
+function Message({ displayMenu, meta, name = '', text = '', time, type, userId }) {
   if (!text) {
     return null;
   }
@@ -66,30 +58,27 @@ const Message = ({
   return (
     <div className="d-flex align-items-baseline flex-wrap">
       <span
+        data-user-id={userId}
+        data-user-name={name}
         role="button"
         tabIndex={0}
         title={`Message (${name})`}
-        data-user-id={userId}
-        data-user-name={name}
-        onContextMenu={displayMenu}
         onClick={displayMenu}
+        onContextMenu={displayMenu}
         onKeyPress={displayMenu}
       >
         <MessageTag messageType={meta?.type} />
-        <span className="font-weight-bold">
-          {`${name}: `}
-        </span>
+        <span className="font-weight-bold">{`${name}: `}</span>
       </span>
-      <span className={cn(
-        'ml-1 text-break', {
-        'cb-private-text': meta?.type === 'private',
-      },
-      )}
+      <span
+        className={cn('ml-1 text-break', {
+          'cb-private-text': meta?.type === 'private',
+        })}
       >
         {parts.map((part, i) => renderMessagePart(part, i))}
       </span>
     </div>
   );
-};
+}
 
 export default Message;

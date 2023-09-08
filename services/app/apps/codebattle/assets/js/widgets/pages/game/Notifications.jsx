@@ -25,8 +25,8 @@ function Notifications() {
   const { tournamentId } = useSelector(selectors.gameStatusSelector);
   const currentUserId = useSelector(selectors.currentUserIdSelector);
   const players = useSelector(selectors.gamePlayersSelector);
-  const playbookSolutionType = useSelector(state => state.playbook.solutionType);
-  const tournamentsInfo = useSelector(state => state.game.tournamentsInfo);
+  const playbookSolutionType = useSelector((state) => state.playbook.solutionType);
+  const tournamentsInfo = useSelector((state) => state.game.tournamentsInfo);
   const isAdmin = useSelector(selectors.currentUserIsAdminSelector);
   const isCurrentUserPlayer = hasIn(players, currentUserId);
   const isTournamentGame = !!tournamentId;
@@ -36,23 +36,22 @@ function Notifications() {
     <>
       {roomCurrent.matches({ room: roomMachineStates.testing }) && <BackToTaskBuilderButton />}
       <ReplayerControlButton />
-      {(isCurrentUserPlayer && roomCurrent.matches({ room: roomMachineStates.gameOver }))
-        && (
-          <>
-            <GameResult />
-            <ActionsAfterGame />
-          </>
-        )}
-      {(isAdmin && !roomCurrent.matches({ replayer: replayerMachineStates.off })) && (
+      {isCurrentUserPlayer && roomCurrent.matches({ room: roomMachineStates.gameOver }) && (
         <>
-          <ApprovePlaybookButtons playbookSolutionType={playbookSolutionType} />
+          <GameResult />
+          <ActionsAfterGame />
         </>
       )}
-      {isTournamentGame && isActiveTournament
-        && <GoToNextGame tournamentsInfo={tournamentsInfo} currentUserId={currentUserId} />}
+      {isAdmin && !roomCurrent.matches({ replayer: replayerMachineStates.off }) && (
+        <ApprovePlaybookButtons playbookSolutionType={playbookSolutionType} />
+      )}
+      {isTournamentGame && isActiveTournament && (
+        <GoToNextGame currentUserId={currentUserId} tournamentsInfo={tournamentsInfo} />
+      )}
       {isTournamentGame && <BackToTournamentButton />}
-      {!isTournamentGame && !roomCurrent.matches({ room: roomMachineStates.testing })
-        && <BackToHomeButton />}
+      {!isTournamentGame && !roomCurrent.matches({ room: roomMachineStates.testing }) && (
+        <BackToHomeButton />
+      )}
     </>
   );
 }

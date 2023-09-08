@@ -1,12 +1,8 @@
 import builder, { actions as builderActions } from './builder';
 import chat, { actions as chatActions } from './chat';
-import completedGames, {
-  actions as completedGamesActions,
-} from './completedGames';
+import completedGames, { actions as completedGamesActions } from './completedGames';
 import editor, { actions as editorActions } from './editor';
-import executionOutput, {
-  actions as executionOutputActions,
-} from './executionOutput';
+import executionOutput, { actions as executionOutputActions } from './executionOutput';
 import game, { actions as gameActions } from './game';
 import gameUI, { actions as gameUIActions } from './gameUI';
 import invites, { actions as invitesActions } from './invites';
@@ -20,7 +16,7 @@ import user, { actions as userActions } from './user';
 import userSettings, { actions as userSettingActions } from './userSettings';
 import usersInfo, { actions as usersInfoActions } from './usersInfo';
 
-const setError = error => ({
+const setError = (error) => ({
   type: 'ERROR',
   error: true,
   payload: error,
@@ -47,7 +43,7 @@ export const actions = {
   ...tournamentActions,
 };
 
-export const redirectToNewGame = gameId => {
+export const redirectToNewGame = (gameId) => {
   window.location.href = `/games/${gameId}`;
 };
 

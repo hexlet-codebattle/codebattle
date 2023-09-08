@@ -10,13 +10,11 @@ import UserInfo from '../../components/UserInfo';
 import { getUsersRatingPage } from '../../middlewares/Users';
 import { usersListSelector } from '../../selectors';
 
-const decorateJoinedDate = str => moment.utc(str).format('LL');
+const decorateJoinedDate = (str) => moment.utc(str).format('LL');
 
 const renderSortArrow = (attribute, sortParams) => {
   const { attribute: currentAttribute, direction } = sortParams;
-  const classes = attribute === currentAttribute
-      ? `cb-sort-arrow ${direction}`
-      : 'sort-arrows';
+  const classes = attribute === currentAttribute ? `cb-sort-arrow ${direction}` : 'sort-arrows';
 
   return <span className={`d-inline-block ${classes}`} />;
 };
@@ -24,18 +22,15 @@ const renderSortArrow = (attribute, sortParams) => {
 const renderUser = (page, pageSize, user, index) => (
   <tr key={user.id}>
     <td className="p-3 align-middle text-nowrap text-muted">
-      #
-      {(page - 1) * pageSize + index + 1}
+      #{(page - 1) * pageSize + index + 1}
     </td>
     <td className="tex-left p-3 align-middle text-nowrap ">
-      <UserInfo user={user} truncate />
+      <UserInfo truncate user={user} />
     </td>
     <td className="p-3 align-middle text-nowrap ">{user.rank}</td>
     <td className="p-3 align-middle text-nowrap ">{user.rating}</td>
     <td className="p-3 align-middle text-nowrap ">{user.gamesPlayed}</td>
-    <td className="p-3 align-middle text-nowrap ">
-      {decorateJoinedDate(user.insertedAt)}
-    </td>
+    <td className="p-3 align-middle text-nowrap ">{decorateJoinedDate(user.insertedAt)}</td>
     <td className="p-3 align-middle text-nowrap ">
       {user.githubId ? (
         <a
@@ -55,30 +50,22 @@ const renderUser = (page, pageSize, user, index) => (
   </tr>
 );
 
-const renderPagination = (
-  { pageInfo: { pageNumber, pageSize, totalEntries } },
-  setPage,
-) => (
+const renderPagination = ({ pageInfo: { pageNumber, pageSize, totalEntries } }, setPage) => (
   <Pagination
     activePage={pageNumber}
+    itemClass="page-item"
     itemsCountPerPage={pageSize}
-    totalItemsCount={totalEntries}
+    linkClass="page-link"
     pageRangeDisplayed={5}
-    onChange={page => {
+    totalItemsCount={totalEntries}
+    onChange={(page) => {
       setPage(page);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }}
-    itemClass="page-item"
-    linkClass="page-link"
   />
 );
 
-const renderFilterPeriodButtons = (
-  period,
-  filterParams,
-  setFilterParams,
-  setPage,
-) => {
+const renderFilterPeriodButtons = (period, filterParams, setFilterParams, setPage) => {
   const classes = cn(
     'mr-1 btn nav-link',
     filterParams.period === period ? 'nav-link active' : 'btn-link',
@@ -87,8 +74,8 @@ const renderFilterPeriodButtons = (
   return (
     <li key={period} className="nav-item">
       <button
-        type="button"
         className={classes}
+        type="button"
         onClick={() => {
           setFilterParams({ ...filterParams, period });
           setPage(1);
@@ -132,7 +119,7 @@ function UsersRating() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterParams, sortParams, page, pageSize]);
 
-  const triggerSort = attribute => {
+  const triggerSort = (attribute) => {
     const direction = sortParams.direction === 'desc' ? 'asc' : 'desc';
 
     setSortParams({
@@ -148,12 +135,9 @@ function UsersRating() {
       <p>{`Total entries: ${totalEntries}`}</p>
 
       <ul className="nav nav-pills justify-content-center mb-3">
-        {periods.map(period => renderFilterPeriodButtons(
-            period,
-            filterParams,
-            setFilterParams,
-            setPage,
-          ))}
+        {periods.map((period) =>
+          renderFilterPeriodButtons(period, filterParams, setFilterParams, setPage),
+        )}
       </ul>
 
       <div className="form-inline justify-content-between">
@@ -164,13 +148,13 @@ function UsersRating() {
             </span>
           </div>
           <input
-            type="text"
+            aria-describedby="basic-addon1"
+            aria-label="Username"
             className="form-control"
             placeholder="Username"
-            aria-label="Username"
-            aria-describedby="basic-addon1"
+            type="text"
             value={filterParams.name}
-            onChange={e => {
+            onChange={(e) => {
               setFilterParams({ ...filterParams, name: e.target.value });
               setPage(1);
             }}
@@ -183,7 +167,7 @@ function UsersRating() {
               <select
                 className="custom-select"
                 id="usersPerPage"
-                onChange={e => {
+                onChange={(e) => {
                   setPageSize(e.target.value);
                   setPage(1);
                 }}
@@ -200,10 +184,11 @@ function UsersRating() {
           <div className="form-check ml-3 mb-3">
             <label className="form-check-label" htmlFor="withBots">
               <input
-                id="withBots"
                 className="form-check-input"
-                type="checkbox"
+                defaultChecked={withBots}
+                id="withBots"
                 name="with_bots"
+                type="checkbox"
                 onChange={() => {
                   setFilterParams({
                     ...filterParams,
@@ -211,7 +196,6 @@ function UsersRating() {
                   });
                   setPage(1);
                 }}
-                defaultChecked={withBots}
               />
               With bots
             </label>

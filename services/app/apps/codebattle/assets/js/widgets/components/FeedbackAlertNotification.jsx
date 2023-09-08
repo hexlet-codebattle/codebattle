@@ -9,7 +9,7 @@ import AlertCodes from '../config/alertCodes';
 import { gameAlertsSelector } from '../selectors/index';
 import { actions } from '../slices';
 
-const getNotification = status => {
+const getNotification = (status) => {
   switch (status) {
     case AlertCodes.feedbackSendSuccessful: {
       return {
@@ -33,12 +33,15 @@ function FeedbackAlertNotification() {
   const dispatch = useDispatch();
   const alerts = useSelector(gameAlertsSelector);
 
-  const handleClose = useCallback(id => {
-    dispatch(actions.deleteAlert(id));
-  }, [dispatch]);
+  const handleClose = useCallback(
+    (id) => {
+      dispatch(actions.deleteAlert(id));
+    },
+    [dispatch],
+  );
 
   if (isEmpty(alerts)) {
-    return <></>;
+    return null;
   }
 
   return Object.entries(alerts).map(([key, value]) => {
@@ -46,11 +49,11 @@ function FeedbackAlertNotification() {
 
     return (
       <Alert
-        dismissible
-        onClose={() => handleClose(key)}
         key={key}
-        variant={result.status}
+        dismissible
         className="row mb-0 rounded-0 alert alert-info alert-dismissible fade show"
+        variant={result.status}
+        onClose={() => handleClose(key)}
       >
         {result.message}
       </Alert>

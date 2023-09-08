@@ -8,7 +8,7 @@ import { actions } from '../slices';
 const players = Gon.getAsset('players') || [];
 const currentUser = Gon.getAsset('current_user') || {};
 
-const getMajorState = metas => (
+const getMajorState = (metas) =>
   metas.reduce((state, item) => {
     switch (item.state) {
       case 'playing':
@@ -22,30 +22,29 @@ const getMajorState = metas => (
       default:
         return state;
     }
-  }, 'lobby')
-);
+  }, 'lobby');
 
 const getUserStateByPath = () => {
   const { pathname } = document.location;
 
   if (pathname.startsWith('/games')) {
-    const state = players.some(player => player.id === currentUser.id) ? 'playing' : 'watching';
+    const state = players.some((player) => player.id === currentUser.id) ? 'playing' : 'watching';
 
-    return ({
+    return {
       state,
-    });
+    };
   }
 
   if (pathname === '/') {
-    return ({
+    return {
       state: 'lobby',
-    });
+    };
   }
 
   if (pathname.startsWith('/tasks')) {
-    return ({
+    return {
       state: 'task',
-    });
+    };
   }
 
   return { state: 'online' };
@@ -61,19 +60,18 @@ const listBy = (id, { metas: [first, ...rest] }) => {
   return first;
 };
 
-const camelizeKeysAndDispatch = (dispatch, actionCreator) => data => (
-  dispatch(actionCreator(camelizeKeys(data)))
-);
+const camelizeKeysAndDispatch = (dispatch, actionCreator) => (data) =>
+  dispatch(actionCreator(camelizeKeys(data)));
 
-const initPresence = () => dispatch => {
+const initPresence = () => (dispatch) => {
   presence.onSync(() => {
     const list = presence.list(listBy);
     camelizeKeysAndDispatch(dispatch, actions.syncPresenceList)(list);
   });
 
-  channel
-    .join()
-    .receive('ok', () => { camelizeKeysAndDispatch(dispatch, actions.syncPresenceList); });
+  channel.join().receive('ok', () => {
+    camelizeKeysAndDispatch(dispatch, actions.syncPresenceList);
+  });
 
   channel.onError(() => dispatch(actions.updateMainChannelState(false)));
 };

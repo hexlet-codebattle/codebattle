@@ -3,13 +3,16 @@ import React, { useContext } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { inTestingRoomSelector, openedReplayerSelector } from '../machines/selectors';
-import { sendCurrentLangAndSetTemplate, updateCurrentLangAndSetTemplate } from '../middlewares/Game';
+import {
+  sendCurrentLangAndSetTemplate,
+  updateCurrentLangAndSetTemplate,
+} from '../middlewares/Game';
 import useMachineStateSelector from '../utils/useMachineStateSelector';
 
 import LanguagePickerView from './LanguagePickerView';
 import RoomContext from './RoomContext';
 
-function LanguagePicker({ status, editor: { currentLangSlug } }) {
+function LanguagePicker({ editor: { currentLangSlug }, status }) {
   const dispatch = useDispatch();
 
   const { mainService } = useContext(RoomContext);
@@ -25,9 +28,9 @@ function LanguagePicker({ status, editor: { currentLangSlug } }) {
 
   return (
     <LanguagePickerView
-      isDisabled={isOpenedReplayer || status === 'disabled'}
-      currentLangSlug={currentLangSlug}
       changeLang={changeLang}
+      currentLangSlug={currentLangSlug}
+      isDisabled={isOpenedReplayer || status === 'disabled'}
     />
   );
 }

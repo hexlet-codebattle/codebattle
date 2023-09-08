@@ -17,7 +17,7 @@ import task from '../widgets/machines/task';
 import RootContainer from '../widgets/pages/GameRoomWidget';
 import reducers from '../widgets/slices';
 
-const createPlayer = params => ({
+const createPlayer = (params) => ({
   is_admin: false,
   id: 0,
   name: '',
@@ -35,13 +35,10 @@ jest.mock(
       local: 'en',
       current_user: { id: 1, sound_settings: {} },
       game_id: 10,
-      players: [
-        createPlayer({ name: 'Tim Urban' }),
-        createPlayer({ name: 'John Kramer' }),
-      ],
+      players: [createPlayer({ name: 'Tim Urban' }), createPlayer({ name: 'John Kramer' })],
     };
 
-    return { getAsset: type => gonParams[type] };
+    return { getAsset: (type) => gonParams[type] };
   },
   { virtual: true },
 );
@@ -49,24 +46,21 @@ jest.mock(
 jest.mock('axios');
 jest.mock(
   '../widgets/pages/game/EditorContainer',
-  () => function EditorContainer() {
-    return <></>;
-  },
+  () =>
+    function EditorContainer() {
+      return null;
+    },
 );
 
-jest.mock(
-  '../widgets/utils/useStayScrolled',
-  () => () => ({ stayScrolled: () => {} }),
-  { virtual: true },
-);
+jest.mock('../widgets/utils/useStayScrolled', () => () => ({ stayScrolled: () => {} }), {
+  virtual: true,
+});
 
 axios.get.mockResolvedValue({ data: {} });
 
-jest.mock('react-select', () => ({ options, value, onChange }) => {
+jest.mock('react-select', () => ({ onChange, options, value }) => {
   function handleChange(event) {
-    const option = options.find(
-      opt => opt.value === event.currentTarget.value,
-    );
+    const option = options.find((opt) => opt.value === event.currentTarget.value);
     onChange(option);
   }
   return (
@@ -80,32 +74,29 @@ jest.mock('react-select', () => ({ options, value, onChange }) => {
   );
 });
 
-jest.mock(
-  'phoenix',
-  () => {
-    const originalModule = jest.requireActual('phoenix');
+jest.mock('phoenix', () => {
+  const originalModule = jest.requireActual('phoenix');
 
-    return {
-      __esModule: true,
-      ...originalModule,
-      Socket: jest.fn().mockImplementation(() => ({
-        channel: jest.fn(() => {
-          const channel = {
-            join: jest.fn(() => channel),
-            receive: jest.fn(() => channel),
-            on: jest.fn(),
-            off: jest.fn(),
-            push: jest.fn(),
-            onError: jest.fn(),
-          };
+  return {
+    __esModule: true,
+    ...originalModule,
+    Socket: jest.fn().mockImplementation(() => ({
+      channel: jest.fn(() => {
+        const channel = {
+          join: jest.fn(() => channel),
+          receive: jest.fn(() => channel),
+          on: jest.fn(),
+          off: jest.fn(),
+          push: jest.fn(),
+          onError: jest.fn(),
+        };
 
-          return channel;
-        }),
-        connect: jest.fn(() => {}),
-      })),
-    };
-  },
-);
+        return channel;
+      }),
+      connect: jest.fn(() => {}),
+    })),
+  };
+});
 
 const reducer = combineReducers(reducers);
 
@@ -152,8 +143,8 @@ const preloadedState = {
     },
   },
   usersInfo: {
-    1: { },
-    2: { },
+    1: {},
+    2: {},
   },
   chat: {
     users: Object.values(players),
@@ -179,7 +170,7 @@ const preloadedState = {
 game.states.room.initial = 'active';
 editor.initial = 'idle';
 
-test('test rendering preview game component', () => {
+test('rendering preview game component', () => {
   const store = configureStore({
     reducer,
     preloadedState,
@@ -188,10 +179,10 @@ test('test rendering preview game component', () => {
   render(
     <Provider store={store}>
       <RootContainer
-        pageName="game"
-        mainMachine={createMachine({ predictableActionArguments: true, ...game })}
-        taskMachine={createMachine({ predictableActionArguments: true, ...task })}
         editorMachine={createMachine({ predictableActionArguments: true, ...editor })}
+        mainMachine={createMachine({ predictableActionArguments: true, ...game })}
+        pageName="game"
+        taskMachine={createMachine({ predictableActionArguments: true, ...task })}
       />
     </Provider>,
   );
@@ -199,7 +190,7 @@ test('test rendering preview game component', () => {
   expect(screen.getByText(/Examples:/)).toBeInTheDocument();
 });
 
-test('test game guide', async () => {
+test('game guide', async () => {
   const user = userEvent.setup();
   const store = configureStore({
     reducer,
@@ -209,10 +200,10 @@ test('test game guide', async () => {
   const { getByRole } = render(
     <Provider store={store}>
       <RootContainer
-        pageName="game"
-        mainMachine={createMachine({ predictableActionArguments: true, ...game })}
-        taskMachine={createMachine({ predictableActionArguments: true, ...task })}
         editorMachine={createMachine({ predictableActionArguments: true, ...editor })}
+        mainMachine={createMachine({ predictableActionArguments: true, ...game })}
+        pageName="game"
+        taskMachine={createMachine({ predictableActionArguments: true, ...task })}
       />
     </Provider>,
   );
@@ -229,7 +220,7 @@ test('test game guide', async () => {
   expect(closeGuideButton).not.toBeInTheDocument();
 });
 
-test('test a bot invite button', async () => {
+test('a bot invite button', async () => {
   const user = userEvent.setup();
   const store = configureStore({
     reducer,
@@ -239,10 +230,10 @@ test('test a bot invite button', async () => {
   const { getByLabelText, getByTitle } = render(
     <Provider store={store}>
       <RootContainer
-        pageName="game"
-        mainMachine={createMachine({ predictableActionArguments: true, ...game })}
-        taskMachine={createMachine({ predictableActionArguments: true, ...task })}
         editorMachine={createMachine({ predictableActionArguments: true, ...editor })}
+        mainMachine={createMachine({ predictableActionArguments: true, ...game })}
+        pageName="game"
+        taskMachine={createMachine({ predictableActionArguments: true, ...task })}
       />
     </Provider>,
   );

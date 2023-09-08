@@ -1,42 +1,41 @@
-import React, {
-  useMemo,
-  useCallback,
-} from 'react';
+import React, { useMemo, useCallback } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
 
-import {
-  argumentTypes,
-  defaultSignatureByType,
-} from '../../utils/builder';
+import { argumentTypes, defaultSignatureByType } from '../../utils/builder';
 
 import SignatureForm from './SignatureForm';
 import SignatureTrack from './SignatureTrack';
 
 function InputSignatureEditPanel({
-  items = [],
   argumentNameInputRef,
+  handleAdd,
+  handleClear,
+  handleDelete,
+  handleEdit,
+  handleSubmit,
+  items = [],
   suggest,
   suggestRef,
   valid = true,
-  handleAdd,
-  handleEdit,
-  handleDelete,
-  handleSubmit,
-  handleClear,
 }) {
-  const handleChangeName = useCallback(event => {
-    handleEdit({ ...suggest, argumentName: event.target.value });
-    if (suggestRef?.current) {
-      suggestRef.current.scrollIntoView({
-        behavior: 'smooth', block: 'nearest', inline: 'start',
-      });
-    }
-  }, [suggest, suggestRef, handleEdit]);
+  const handleChangeName = useCallback(
+    (event) => {
+      handleEdit({ ...suggest, argumentName: event.target.value });
+      if (suggestRef?.current) {
+        suggestRef.current.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+          inline: 'start',
+        });
+      }
+    },
+    [suggest, suggestRef, handleEdit],
+  );
 
   const handleReset = useCallback(() => {
-    const existedInputSignature = items.find(item => item.id === suggest?.id);
+    const existedInputSignature = items.find((item) => item.id === suggest?.id);
 
     if (existedInputSignature) {
       handleEdit(existedInputSignature);
@@ -64,7 +63,9 @@ function InputSignatureEditPanel({
       return [false, 'Only lowercase latin'];
     }
 
-    if (items.find(item => item.id !== suggest.id && item.argumentName === suggest.argumentName)) {
+    if (
+      items.find((item) => item.id !== suggest.id && item.argumentName === suggest.argumentName)
+    ) {
       return [false, 'Name must be unig'];
     }
 
@@ -79,14 +80,14 @@ function InputSignatureEditPanel({
           <div className="overflow-auto mb-2">
             {suggest && (
               <SignatureTrack
+                editable
+                handleAdd={handleAdd}
+                handleDelete={handleDelete}
+                handleEdit={handleEdit}
                 items={items}
                 selected={suggest}
                 selectedRef={suggestRef}
                 valid={valid}
-                handleAdd={handleAdd}
-                handleEdit={handleEdit}
-                handleDelete={handleDelete}
-                editable
               />
             )}
           </div>
@@ -98,14 +99,11 @@ function InputSignatureEditPanel({
               <div className="input-group position-relative">
                 <input
                   ref={argumentNameInputRef}
-                  className={cn(
-                    'form-control cb-builder-argument-input m-1 rounded-lg',
-                    {
-                      'is-invalid': !validName,
-                    },
-                  )}
-                  onChange={handleChangeName}
                   value={suggest?.argumentName || ''}
+                  className={cn('form-control cb-builder-argument-input m-1 rounded-lg', {
+                    'is-invalid': !validName,
+                  })}
+                  onChange={handleChangeName}
                 />
               </div>
             </div>
@@ -113,30 +111,27 @@ function InputSignatureEditPanel({
               <h6 className="pl-1">Type: </h6>
               <div className="d-flex">
                 <div className="overflow-auto d-flex pb-2">
-                  <SignatureForm
-                    signature={suggest}
-                    handleEdit={handleEdit}
-                  />
+                  <SignatureForm handleEdit={handleEdit} signature={suggest} />
                 </div>
                 <div className="d-flex btn-group pb-2 m-1">
                   <button
-                    type="button"
                     className="btn btn-sm text-white btn-success rounded-lg"
-                    onClick={handleSubmit}
                     disabled={!validName}
+                    type="button"
+                    onClick={handleSubmit}
                   >
                     Submit
                   </button>
                   <button
-                    type="button"
                     className="btn btn-sm mx-2 btn-secondary rounded-lg"
+                    type="button"
                     onClick={handleReset}
                   >
                     <FontAwesomeIcon icon="redo" />
                   </button>
                   <button
-                    type="button"
                     className="btn btn-sm btn-danger rounded-lg"
+                    type="button"
                     onClick={handleClear}
                   >
                     <FontAwesomeIcon icon="times" />
@@ -149,9 +144,9 @@ function InputSignatureEditPanel({
       </div>
       <div>
         <button
-          type="button"
-          title="Clear suggest"
           className="btn btn-sm rounded-circle"
+          title="Clear suggest"
+          type="button"
           onClick={handleClear}
         >
           <FontAwesomeIcon icon="times" />

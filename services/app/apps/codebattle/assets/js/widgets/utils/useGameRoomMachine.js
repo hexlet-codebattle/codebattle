@@ -4,9 +4,9 @@ import { useDispatch } from 'react-redux';
 import { actions } from '../slices';
 
 const useGameRoomMachine = ({
-  setTaskModalShowing,
-  setResultModalShowing,
   mainMachine,
+  setResultModalShowing,
+  setTaskModalShowing,
   taskMachine,
 }) => {
   const dispatch = useDispatch();
@@ -33,23 +33,29 @@ const useGameRoomMachine = ({
         setTaskModalShowing(false);
       },
       onSuccess: () => {
-        dispatch(actions.setValidationStatuses({
-          solution: [true],
-          assertsExamples: [true],
-          argumentsGenerator: [true],
-        }));
+        dispatch(
+          actions.setValidationStatuses({
+            solution: [true],
+            assertsExamples: [true],
+            argumentsGenerator: [true],
+          }),
+        );
       },
       onFailure: (_ctx, event) => {
-        dispatch(actions.setValidationStatuses({
-          solution: [false, event.message],
-          assertsExamples: [false, event.message],
-        }));
+        dispatch(
+          actions.setValidationStatuses({
+            solution: [false, event.message],
+            assertsExamples: [false, event.message],
+          }),
+        );
       },
       onError: (_ctx, event) => {
-        dispatch(actions.setValidationStatuses({
-          solution: [false, event.message],
-          argumentsGenerator: [false, event.message],
-        }));
+        dispatch(
+          actions.setValidationStatuses({
+            solution: [false, event.message],
+            argumentsGenerator: [false, event.message],
+          }),
+        );
       },
     },
   });

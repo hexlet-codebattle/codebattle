@@ -24,11 +24,12 @@ const soundSettings = Gon.getAsset('current_user').sound_settings;
 const soundType = soundSettings.type;
 const defaultSoundLevel = soundSettings.level * 0.1;
 
-const audio = (type = soundType, volume = defaultSoundLevel) => new Howl({
-  src: audioPaths[type],
-  sprite: audioConfigs[type]?.sprite,
-  volume,
-});
+const audio = (type = soundType, volume = defaultSoundLevel) =>
+  new Howl({
+    src: audioPaths[type],
+    sprite: audioConfigs[type]?.sprite,
+    volume,
+  });
 
 const sound = {
   play: (type, soundLevel) => {
@@ -44,7 +45,7 @@ const sound = {
   },
 };
 
-const createSound = slug => ({
+const createSound = (slug) => ({
   play: (type, soundLevel) => {
     const soundEffect = audio(slug, soundLevel);
     soundEffect.play(type);

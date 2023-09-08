@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import { userGameScoreSelector } from '../../selectors';
 
 function UserGameScore({ userId }) {
-  const { winnerId, results } = useSelector(userGameScoreSelector);
+  const { results, winnerId } = useSelector(userGameScoreSelector);
 
   const showScore = Object.values(results).reduce((acc, score) => acc + Number(score), 0) > 0;
 

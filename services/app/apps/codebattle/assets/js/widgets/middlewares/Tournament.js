@@ -8,22 +8,19 @@ const tournamentId = Gon.getAsset('tournament_id');
 const channelName = `tournament:${tournamentId}`;
 const channel = socket.channel(channelName);
 
-const initTournamentChannel = dispatch => {
+const initTournamentChannel = (dispatch) => {
   const onJoinFailure = () => {
     window.location.reload();
   };
 
-  const onJoinSuccess = response => {
+  const onJoinSuccess = (response) => {
     const data = camelizeKeys(response);
 
     console.log(data.tournament);
     dispatch(actions.setTournamentData(data.tournament));
   };
 
-  channel
-    .join()
-    .receive('ok', onJoinSuccess)
-    .receive('error', onJoinFailure);
+  channel.join().receive('ok', onJoinSuccess).receive('error', onJoinFailure);
 
   channel.onError(() => {
     dispatch(actions.updateTournamentChannelState(false));
@@ -32,16 +29,16 @@ const initTournamentChannel = dispatch => {
 
 // export const soundNotification = notification();
 
-export const connectToTournament = () => dispatch => {
+export const connectToTournament = () => (dispatch) => {
   initTournamentChannel(dispatch);
 
-  const handleUpdate = response => {
+  const handleUpdate = (response) => {
     const data = camelizeKeys(response);
 
     dispatch(actions.updateTournamentData(data.tournament));
   };
 
-  const handleRoundCreated = response => {
+  const handleRoundCreated = (response) => {
     const data = camelizeKeys(response);
 
     dispatch(actions.setNextRound(data.tournament));
@@ -67,34 +64,36 @@ export const connectToTournament = () => dispatch => {
   return clearTournamentChannel;
 };
 
-export const joinTournament = teamId => {
+export const joinTournament = (teamId) => {
   const params = teamId ? { team_id: teamId } : {};
-  channel.push('tournament:join', params).receive('error', error => console.error(error));
+  channel.push('tournament:join', params).receive('error', (error) => console.error(error));
 };
 
-export const leaveTournament = teamId => {
+export const leaveTournament = (teamId) => {
   const params = teamId ? { team_id: teamId } : {};
-  channel.push('tournament:leave', params).receive('error', error => console.error(error));
+  channel.push('tournament:leave', params).receive('error', (error) => console.error(error));
 };
 
 export const startTournament = () => {
-  channel.push('tournament:start', {}).receive('error', error => console.error(error));
+  channel.push('tournament:start', {}).receive('error', (error) => console.error(error));
 };
 
 export const cancelTournament = () => {
-  channel.push('tournament:cancel', {}).receive('error', error => console.error(error));
+  channel.push('tournament:cancel', {}).receive('error', (error) => console.error(error));
 };
 
 export const restartTournament = () => {
-  channel.push('tournament:restart', {}).receive('error', error => console.error(error));
+  channel.push('tournament:restart', {}).receive('error', (error) => console.error(error));
 };
 
 export const openUpTournament = () => {
-  channel.push('tournament:open_up', {}).receive('error', error => console.error(error));
+  channel.push('tournament:open_up', {}).receive('error', (error) => console.error(error));
 };
 
-export const kickFromTournament = userId => {
-  channel.push('tournament:kick', { user_id: userId }).receive('error', error => console.error(error));
+export const kickFromTournament = (userId) => {
+  channel
+    .push('tournament:kick', { user_id: userId })
+    .receive('error', (error) => console.error(error));
 };
 
 export default {};

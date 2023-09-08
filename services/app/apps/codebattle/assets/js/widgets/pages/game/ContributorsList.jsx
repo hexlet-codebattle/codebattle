@@ -6,21 +6,21 @@ import { useDispatch } from 'react-redux';
 
 import { actions } from '../../slices';
 
-const renderContributorsList = contributors => (
+const renderContributorsList = (contributors) => (
   <ul className="d-flex flex-row align-items-begin list-unstyled mb-2">
     {contributors
       ? contributors.map(({ avatarLink, link }) => (
-        <li key={avatarLink}>
-          <a href={link}>
-            <img
-              className="img-fluid mr-3 rounded-lg"
-              width="40"
-              height="40"
-              src={avatarLink}
-              alt="avatar"
-            />
-          </a>
-        </li>
+          <li key={avatarLink}>
+            <a href={link}>
+              <img
+                alt="avatar"
+                className="img-fluid mr-3 rounded-lg"
+                height="40"
+                src={avatarLink}
+                width="40"
+              />
+            </a>
+          </li>
         ))
       : null}
   </ul>
@@ -40,15 +40,15 @@ function ContributorsList({ name }) {
     }
     axios
       .get(url)
-      .then(res => {
-        const authors = res.data.filter(item => item.author);
-        const contributorsList = authors.map(el => ({
+      .then((res) => {
+        const authors = res.data.filter((item) => item.author);
+        const contributorsList = authors.map((el) => ({
           avatarLink: el.author.avatar_url,
           link: el.author.html_url,
         }));
         setAvatars(uniqBy(contributorsList, 'avatarLink'));
       })
-      .catch(error => {
+      .catch((error) => {
         dispatch(actions.setError(error));
       });
   }, [url, name, dispatch]);

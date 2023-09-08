@@ -1,8 +1,4 @@
-import React, {
-  memo,
-  useCallback,
-  useRef,
-} from 'react';
+import React, { memo, useCallback, useRef } from 'react';
 
 import { useSelector } from 'react-redux';
 
@@ -28,7 +24,7 @@ function TournamentChat() {
 
   const inputRef = useRef(null);
 
-  const { menuId, menuRequest, displayMenu } = useChatContextMenu({
+  const { displayMenu, menuId, menuRequest } = useChatContextMenu({
     type: 'tournament',
     users,
     canInvite: false,
@@ -37,21 +33,18 @@ function TournamentChat() {
   useChatRooms('channel');
 
   return (
-    <ChatContextMenu menuId={menuId} inputRef={inputRef} request={menuRequest}>
+    <ChatContextMenu inputRef={inputRef} menuId={menuId} request={menuRequest}>
       <div className="sticky-top bg-white rounded-lg">
         <div className="rounded-top shadow-sm" style={{ height: '350px' }}>
-          <div
-            className="overflow-auto h-100 text-break"
-            id="new-chat-message"
-          >
+          <div className="overflow-auto h-100 text-break" id="new-chat-message">
             <div className="d-flex border-bottom align-items-center">
               <Rooms disabled={!isOnline} />
               {currentUserIsAdmin && (
                 <button
-                  type="button"
                   className="btn btn-sm btn-link text-danger"
-                  onClick={handleCleanBanned}
                   disabled={!isOnline}
+                  type="button"
+                  onClick={handleCleanBanned}
                 >
                   Clean banned
                 </button>

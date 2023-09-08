@@ -21,10 +21,7 @@ const game = createSlice({
       Object.assign(state.gameStatus, payload);
     },
     updateGamePlayers: (state, { payload: { players: playersList } }) => {
-      const newPlayersState = playersList.reduce(
-        setPlayerToSliceState,
-        state.players,
-      );
+      const newPlayersState = playersList.reduce(setPlayerToSliceState, state.players);
       state.players = newPlayersState;
     },
     updateCheckStatus: (state, { payload }) => {

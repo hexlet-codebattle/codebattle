@@ -10,7 +10,7 @@ import { actions } from '../../slices';
 function DakModeButton({ playerId }) {
   const dispatch = useDispatch();
 
-  const currentTheme = useSelector(state => editorsThemeSelector(playerId)(state));
+  const currentTheme = useSelector((state) => editorsThemeSelector(playerId)(state));
 
   const isDarkMode = currentTheme === editorThemes.dark;
   const mode = isDarkMode ? editorThemes.light : editorThemes.dark;
@@ -25,7 +25,7 @@ function DakModeButton({ playerId }) {
   };
 
   return (
-    <button type="button" className={classNames} onClick={handleToggleDarkMode}>
+    <button className={classNames} type="button" onClick={handleToggleDarkMode}>
       {isDarkMode ? 'Light' : 'Dark'}
     </button>
   );

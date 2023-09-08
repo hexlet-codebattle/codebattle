@@ -1,9 +1,6 @@
 import React, { Suspense } from 'react';
 
-import {
-  configureStore,
-  combineReducers,
-} from '@reduxjs/toolkit';
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
 import { persistStore, persistReducer, PERSIST } from 'redux-persist';
 import { PersistGate } from 'redux-persist/integration/react';
@@ -14,14 +11,10 @@ import rollbar from '@/lib/rollbar';
 import machines from '@/machines';
 import reducers from '@/slices';
 
-const { game: mainMachine, editor: editorMachine, task: taskMachine } = machines;
+const { editor: editorMachine, game: mainMachine, task: taskMachine } = machines;
 const { gameUI: gameUIReducer, ...otherReducers } = reducers;
 
-const gameUIPersistWhitelist = [
-  'editorMode',
-  'editorTheme',
-  'taskDescriptionLanguage',
-];
+const gameUIPersistWhitelist = ['editorMode', 'editorTheme', 'taskDescriptionLanguage'];
 
 const gameUIPersistConfig = {
   key: 'gameUI',
@@ -38,9 +31,10 @@ const rollbarRedux = rollbarMiddleware(rollbar);
 // TODO: put initial state from gon
 const store = configureStore({
   reducer: rootReducer,
-  middleware: getDefaultMiddleware => getDefaultMiddleware({
-    serializableCheck: { ignoredActions: ['ERROR', PERSIST] },
-  }).concat(rollbarRedux),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: { ignoredActions: ['ERROR', PERSIST] },
+    }).concat(rollbarRedux),
 });
 
 const persistor = persistStore(store);
@@ -54,108 +48,126 @@ const UserProfile = React.lazy(() => import('./pages/profile'));
 const Registration = React.lazy(() => import('./pages/registration'));
 const Tournament = React.lazy(() => import('./pages/tournament'));
 
-export const Invites = () => (
-  <Provider store={store}>
-    <InvitesContainer />
-  </Provider>
-);
+export function Invites() {
+  return (
+    <Provider store={store}>
+      <InvitesContainer />
+    </Provider>
+  );
+}
 
-export const Game = () => (
-  <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-      <Suspense>
-        <GameRoomWidget
-          pageName="game"
-          mainMachine={mainMachine}
-          taskMachine={taskMachine}
-          editorMachine={editorMachine}
-        />
-      </Suspense>
-    </PersistGate>
-  </Provider>
-);
+export function Game() {
+  return (
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <Suspense>
+          <GameRoomWidget
+            editorMachine={editorMachine}
+            mainMachine={mainMachine}
+            pageName="game"
+            taskMachine={taskMachine}
+          />
+        </Suspense>
+      </PersistGate>
+    </Provider>
+  );
+}
 
-export const Builder = () => (
-  <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-      <Suspense>
-        <GameRoomWidget
-          pageName="builder"
-          mainMachine={mainMachine}
-          taskMachine={taskMachine}
-          editorMachine={editorMachine}
-        />
-      </Suspense>
-    </PersistGate>
-  </Provider>
-);
+export function Builder() {
+  return (
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <Suspense>
+          <GameRoomWidget
+            editorMachine={editorMachine}
+            mainMachine={mainMachine}
+            pageName="builder"
+            taskMachine={taskMachine}
+          />
+        </Suspense>
+      </PersistGate>
+    </Provider>
+  );
+}
 
-export const Lobby = () => (
-  <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-      <Suspense>
-        <LobbyWidget />
-      </Suspense>
-    </PersistGate>
-  </Provider>
-);
+export function Lobby() {
+  return (
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <Suspense>
+          <LobbyWidget />
+        </Suspense>
+      </PersistGate>
+    </Provider>
+  );
+}
 
-export const UsersRating = () => (
-  <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-      <Suspense>
-        <RatingList />
-      </Suspense>
-    </PersistGate>
-  </Provider>
-);
+export function UsersRating() {
+  return (
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <Suspense>
+          <RatingList />
+        </Suspense>
+      </PersistGate>
+    </Provider>
+  );
+}
 
-export const UserPage = () => (
-  <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-      <Suspense>
-        <UserProfile />
-      </Suspense>
-    </PersistGate>
-  </Provider>
-);
+export function UserPage() {
+  return (
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <Suspense>
+          <UserProfile />
+        </Suspense>
+      </PersistGate>
+    </Provider>
+  );
+}
 
-export const SettingsPage = () => (
-  <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-      <Suspense>
-        <UserSettings />
-      </Suspense>
-    </PersistGate>
-  </Provider>
-);
+export function SettingsPage() {
+  return (
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <Suspense>
+          <UserSettings />
+        </Suspense>
+      </PersistGate>
+    </Provider>
+  );
+}
 
-export const RegistrationPage = () => (
-  <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-      <Suspense>
-        <Registration />
-      </Suspense>
-    </PersistGate>
-  </Provider>
-);
+export function RegistrationPage() {
+  return (
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <Suspense>
+          <Registration />
+        </Suspense>
+      </PersistGate>
+    </Provider>
+  );
+}
 
-export const StairwayGamePage = () => (
-  <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-      <Suspense>
-        {/* <Stairway /> */}
-      </Suspense>
-    </PersistGate>
-  </Provider>
-);
+export function StairwayGamePage() {
+  return (
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <Suspense>{/* <Stairway /> */}</Suspense>
+      </PersistGate>
+    </Provider>
+  );
+}
 
-export const TournamentPage = () => (
-  <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-      <Suspense>
-        <Tournament />
-      </Suspense>
-    </PersistGate>
-  </Provider>
-);
+export function TournamentPage() {
+  return (
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <Suspense>
+          <Tournament />
+        </Suspense>
+      </PersistGate>
+    </Provider>
+  );
+}

@@ -1,9 +1,4 @@
-import React, {
-  memo,
-  useEffect,
-  useMemo,
-  useRef,
-} from 'react';
+import React, { memo, useEffect, useMemo, useRef } from 'react';
 
 import cn from 'classnames';
 import moment from 'moment';
@@ -18,7 +13,7 @@ import GameCard from './GameCard';
 
 const CompletedGamesRows = memo(({ games }) => (
   <>
-    {games.map(game => (
+    {games.map((game) => (
       <tr key={game.id}>
         <td className="p-3 align-middle text-nowrap">
           <GameLevelBadge level={game.level} />
@@ -26,23 +21,29 @@ const CompletedGamesRows = memo(({ games }) => (
         <td className="px-1 py-3 align-middle text-nowrap cb-username-td text-truncate">
           <div className="d-flex align-items-center">
             <ResultIcon gameId={game.id} player1={game.players[0]} player2={game.players[1]} />
-            <UserInfo user={game.players[0]} truncate="true" />
+            <UserInfo truncate="true" user={game.players[0]} />
           </div>
         </td>
         <td className="px-1 py-3 align-middle text-nowrap cb-username-td text-truncate">
           <div className="d-flex align-items-center">
             <ResultIcon gameId={game.id} player1={game.players[1]} player2={game.players[0]} />
-            <UserInfo user={game.players[1]} truncate="true" />
+            <UserInfo truncate="true" user={game.players[1]} />
           </div>
         </td>
-        <td className="px-1 py-3 align-middle text-nowrap">{moment.utc(game.finishesAt).local().format('MM.DD HH:mm')}</td>
+        <td className="px-1 py-3 align-middle text-nowrap">
+          {moment.utc(game.finishesAt).local().format('MM.DD HH:mm')}
+        </td>
         <td className="px-1 py-3 align-middle">
-          <a type="button" className="btn btn-secondary btn-sm rounded-lg" href={`/games/${game.id}`}>
+          <a
+            className="btn btn-secondary btn-sm rounded-lg"
+            href={`/games/${game.id}`}
+            type="button"
+          >
             Show
           </a>
         </td>
       </tr>
-      ))}
+    ))}
   </>
 ));
 
@@ -50,15 +51,15 @@ const commonTableClassName = 'table table-sm table-striped border-gray border-0 
 const commonClassName = 'd-none d-sm-none d-md-block';
 
 function CompletedGames({
+  className,
   games,
   loadNextPage = null,
-  totalGames,
-  className,
   tableClassName = '',
+  totalGames,
 }) {
   const dispatch = useDispatch();
 
-  const { nextPage, totalPages } = useSelector(state => state.completedGames);
+  const { nextPage, totalPages } = useSelector((state) => state.completedGames);
   const object = useMemo(
     () => ({ loading: false }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -82,18 +83,24 @@ function CompletedGames({
 
     const onCardsScroll = () => {
       if (!cardListRef.current) return;
-      const width = cardListRef.current.scrollWidth - cardListRef.current.parentElement?.offsetWidth;
+      const width =
+        cardListRef.current.scrollWidth - (cardListRef.current.parentElement?.offsetWidth || 0);
       const delta = width - cardListRef.current.scrollLeft;
 
-      if (delta < 50) { load(); }
+      if (delta < 50) {
+        load();
+      }
     };
 
     const onTableScroll = () => {
       if (!tableRef.current) return;
-      const height = tableRef.current.scrollHeight - tableRef.current.parentElement?.offsetHeight;
+      const height =
+        tableRef.current.scrollHeight - (tableRef.current.parentElement?.offsetHeight || 0);
       const delta = height - tableRef.current.scrollTop;
 
-      if (delta < 500) { load(); }
+      if (delta < 500) {
+        load();
+      }
     };
 
     observerTableRef.current?.addEventListener('scroll', onTableScroll);
@@ -113,14 +120,8 @@ function CompletedGames({
 
   return (
     <>
-      <div
-        ref={tableRef}
-        className={cn(commonClassName, className)}
-        data-testid="scroll"
-      >
-        <table
-          className={cn(commonTableClassName, tableClassName)}
-        >
+      <div ref={tableRef} className={cn(commonClassName, className)} data-testid="scroll">
+        <table className={cn(commonTableClassName, tableClassName)}>
           <thead>
             <tr>
               <th className="p-3 border-0">Level</th>
@@ -136,14 +137,13 @@ function CompletedGames({
           </tbody>
         </table>
       </div>
-      <div ref={cardListRef} className="d-none d-sm-block d-md-none d-flex m-2 overflow-auto position-relative">
+      <div
+        ref={cardListRef}
+        className="d-none d-sm-block d-md-none d-flex m-2 overflow-auto position-relative"
+      >
         <HorizontalScrollControls>
-          {games.map(game => (
-            <GameCard
-              key={`card-${game.id}`}
-              type="completed"
-              game={game}
-            />
+          {games.map((game) => (
+            <GameCard key={`card-${game.id}`} game={game} type="completed" />
           ))}
         </HorizontalScrollControls>
       </div>

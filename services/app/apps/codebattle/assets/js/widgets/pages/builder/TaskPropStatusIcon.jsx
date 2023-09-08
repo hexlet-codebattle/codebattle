@@ -16,33 +16,38 @@ const iconByValidStatus = {
   [validationStatuses.validation]: ['fas', 'spinner'],
 };
 
-const getStatusClassName = status => cn('mx-2', {
-  'text-success': status === validationStatuses.valid,
-  'text-danger': status === validationStatuses.invalid,
-  'text-warning cb-loading-icon': status === validationStatuses.validation,
-  'text-black-50': status === validationStatuses.none || status === validationStatuses.edited,
-});
+const getStatusClassName = (status) =>
+  cn('mx-2', {
+    'text-success': status === validationStatuses.valid,
+    'text-danger': status === validationStatuses.invalid,
+    'text-warning cb-loading-icon': status === validationStatuses.validation,
+    'text-black-50': status === validationStatuses.none || status === validationStatuses.edited,
+  });
 
-const Icon = ({ status }) => (
-  <FontAwesomeIcon
-    data-task-prop-status={status}
-    className={getStatusClassName(status)}
-    icon={iconByValidStatus[status]}
-  />
-);
+function Icon({ status }) {
+  return (
+    <FontAwesomeIcon
+      className={getStatusClassName(status)}
+      data-task-prop-status={status}
+      icon={iconByValidStatus[status]}
+    />
+  );
+}
 
-const TaskPropStatusIcon = ({ id, status, reason }) => (
-  reason ? (
+function TaskPropStatusIcon({ id, reason, status }) {
+  return reason ? (
     <OverlayTrigger
-      trigger={isSafari() ? 'click' : 'focus'}
+      overlay={<Tooltip id={id}>reason</Tooltip>}
       placement="top"
-      overlay={(<Tooltip id={id}>reason</Tooltip>)}
+      trigger={isSafari() ? 'click' : 'focus'}
     >
       <span className="cursor-pointer">
         <Icon status={status} />
       </span>
     </OverlayTrigger>
-  ) : (<Icon status={status} />)
-);
+  ) : (
+    <Icon status={status} />
+  );
+}
 
 export default TaskPropStatusIcon;

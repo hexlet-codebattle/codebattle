@@ -68,9 +68,7 @@ const Hooks = {
     },
   },
 };
-const csrfToken = document
-  .querySelector("meta[name='csrf-token']")
-  .getAttribute('content');
+const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute('content');
 const liveSocket = new LiveSocket('/live', Socket, {
   hooks: Hooks,
   params: {
@@ -80,8 +78,8 @@ const liveSocket = new LiveSocket('/live', Socket, {
   },
 });
 
-window.addEventListener('phx:page-loading-start', _info => NProgress.start());
-window.addEventListener('phx:page-loading-stop', _info => NProgress.done());
+window.addEventListener('phx:page-loading-start', (_info) => NProgress.start());
+window.addEventListener('phx:page-loading-stop', (_info) => NProgress.done());
 
 liveSocket.connect();
 

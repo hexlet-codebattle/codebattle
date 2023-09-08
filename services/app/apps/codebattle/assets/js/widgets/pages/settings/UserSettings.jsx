@@ -13,26 +13,26 @@ import UserSettingsForm from './UserSettingsForm';
 
 const PROVIDERS = ['github', 'discord'];
 
-const BindSocialBtn = ({ provider, disabled, isBinded }) => {
+function BindSocialBtn({ disabled, isBinded, provider }) {
   const formatedProviderName = capitalize(provider);
 
   return (
     <div className="d-flex mb-2 align-items-center">
       <FontAwesomeIcon
+        icon={['fab', provider]}
         className={cn({
           'mr-2': true,
           'text-muted': isBinded,
         })}
-        icon={['fab', provider]}
       />
       {isBinded ? (
         <button
-          type="button"
           className="bind-social"
-          data-method="delete"
           data-csrf={window.csrf_token}
+          data-method="delete"
           data-to={`/auth/${provider}`}
           disabled={disabled}
+          type="button"
         >
           {`Unlink ${formatedProviderName}`}
         </button>
@@ -43,18 +43,18 @@ const BindSocialBtn = ({ provider, disabled, isBinded }) => {
       )}
     </div>
   );
-};
+}
 
-const renderSocialBtns = currentUserSettings => {
-  const getProviderName = slug => currentUserSettings[`${slug}_name`];
-  return PROVIDERS.map(provider => {
+const renderSocialBtns = (currentUserSettings) => {
+  const getProviderName = (slug) => currentUserSettings[`${slug}_name`];
+  return PROVIDERS.map((provider) => {
     const providerName = getProviderName(provider);
     return (
       <BindSocialBtn
-        provider={provider}
-        isBinded={providerName && providerName.length}
-        disabled={providerName && providerName.length}
         key={provider}
+        disabled={providerName && providerName.length}
+        isBinded={providerName && providerName.length}
+        provider={provider}
       />
     );
   });
@@ -90,7 +90,7 @@ function UserSettings() {
     await setTimeout(() => setAnimation('done'), 1600);
   };
 
-  const getNotificationMessage = status => {
+  const getNotificationMessage = (status) => {
     let message;
     switch (status) {
       case 'editSuccess': {
@@ -124,10 +124,7 @@ function UserSettings() {
 
         <h2 className="font-weight-normal">Settings</h2>
       </div>
-      <UserSettingsForm
-        settings={settings}
-        onSubmit={handleUpdateUserSettings}
-      />
+      <UserSettingsForm settings={settings} onSubmit={handleUpdateUserSettings} />
       <div className="mt-3 ml-2 d-flex flex-column">
         <h3 className="mb-3 font-weight-normal">Socials</h3>
         {renderSocialBtns(settings)}

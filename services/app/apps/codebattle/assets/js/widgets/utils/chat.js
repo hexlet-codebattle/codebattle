@@ -6,29 +6,27 @@ import rooms from '../config/rooms';
 
 const currentUser = Gon.getAsset('current_user');
 
-export const isGeneralRoom = room => room.name === rooms.general.name;
+export const isGeneralRoom = (room) => room.name === rooms.general.name;
 
-export const isPrivateRoom = room => !Object.values(rooms).some(r => r.name === room.name);
+export const isPrivateRoom = (room) => !Object.values(rooms).some((r) => r.name === room.name);
 
-export const isPrivateMessage = messageType => messageType === messageTypes.private;
+export const isPrivateMessage = (messageType) => messageType === messageTypes.private;
 
-export const isSystemMessage = messageType => messageType === messageTypes.system;
+export const isSystemMessage = (messageType) => messageType === messageTypes.system;
 
-export const isMessageForCurrentPrivateRoom = (room, message) => (
-  room.targetUserId === message.meta?.targetUserId || room.targetUserId === message.userId
-);
+export const isMessageForCurrentPrivateRoom = (room, message) =>
+  room.targetUserId === message.meta?.targetUserId || room.targetUserId === message.userId;
 
-export const isMessageForCurrentUser = message => (
-  message.meta?.type === messageTypes.private
-  && (message.userId === currentUser.id || message.meta.targetUserId === currentUser.id)
-);
+export const isMessageForCurrentUser = (message) =>
+  message.meta?.type === messageTypes.private &&
+  (message.userId === currentUser.id || message.meta.targetUserId === currentUser.id);
 
-export const isMessageForEveryone = message => !message.meta || message.meta.type === messageTypes.general;
+export const isMessageForEveryone = (message) =>
+  !message.meta || message.meta.type === messageTypes.general;
 
-const isProperPrivateRoomActive = (message, room) => (
-  (room.targetUserId === message.meta.targetUserId && message.userId === currentUser.id)
-  || (room.targetUserId === message.userId && message.meta.targetUserId === currentUser.id)
-);
+const isProperPrivateRoomActive = (message, room) =>
+  (room.targetUserId === message.meta.targetUserId && message.userId === currentUser.id) ||
+  (room.targetUserId === message.userId && message.meta.targetUserId === currentUser.id);
 
 export const shouldShowMessage = (message, room) => {
   if (isSystemMessage(message.type)) {
@@ -40,11 +38,11 @@ export const shouldShowMessage = (message, room) => {
   }
 
   switch (room.name) {
-    case (rooms.general.name): {
+    case rooms.general.name: {
       return true;
     }
 
-    case (rooms.system.name): {
+    case rooms.system.name: {
       return message.type === messageTypes.system;
     }
 
@@ -54,12 +52,12 @@ export const shouldShowMessage = (message, room) => {
 };
 
 export const getSystemMessage = ({
-  type = messageTypes.system,
-  text = '',
-  status = 'event',
-  userId,
   name,
+  status = 'event',
+  text = '',
   time,
+  type = messageTypes.system,
+  userId,
 }) => ({
   id: new Date().getTime(),
   type,

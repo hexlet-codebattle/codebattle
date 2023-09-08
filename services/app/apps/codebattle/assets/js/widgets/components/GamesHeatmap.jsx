@@ -16,10 +16,10 @@ function GamesHeatmap() {
   useEffect(() => {
     axios
       .get('/api/v1/game_activity')
-      .then(response => {
+      .then((response) => {
         setActivities(response.data.activities);
       })
-      .catch(error => {
+      .catch((error) => {
         dispatch(actions.setError(error));
       });
   }, [dispatch]);
@@ -33,13 +33,13 @@ function GamesHeatmap() {
         <CalendarHeatmap
           showWeekdayLabels
           values={activities}
-          classForValue={value => {
+          classForValue={(value) => {
             if (!value) {
               return 'color-empty';
             }
             return GamesHeatmap.colorScale(value.count);
           }}
-          titleForValue={value => {
+          titleForValue={(value) => {
             if (!value) {
               return 'No games';
             }
@@ -51,7 +51,7 @@ function GamesHeatmap() {
   );
 }
 
-GamesHeatmap.colorScale = count => {
+GamesHeatmap.colorScale = (count) => {
   if (count >= 5) {
     return 'color-huge';
   }

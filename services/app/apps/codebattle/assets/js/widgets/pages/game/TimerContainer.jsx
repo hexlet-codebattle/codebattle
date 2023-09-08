@@ -15,9 +15,7 @@ const gameStatuses = {
   timeout: 'game_over',
 };
 
-function TimerContainer({
- time, mode, timeoutSeconds, gameStateName,
-}) {
+function TimerContainer({ gameStateName, mode, time, timeoutSeconds }) {
   const { mainService, taskService } = useContext(RoomContext);
   const roomCurrent = useMachineStateSelector(mainService, roomStateSelector);
   const taskCurrent = useMachineStateSelector(taskService, taskStateSelector);
@@ -51,8 +49,8 @@ function TimerContainer({
   }
 
   if (
-    roomCurrent.matches({ room: roomMachineStates.gameOver })
-    || roomCurrent.matches({ room: roomMachineStates.stored })
+    roomCurrent.matches({ room: roomMachineStates.gameOver }) ||
+    roomCurrent.matches({ room: roomMachineStates.stored })
   ) {
     return gameStatuses[gameStateName];
   }
@@ -62,7 +60,7 @@ function TimerContainer({
   }
 
   if (!time) {
-    return <></>;
+    return null;
   }
 
   return <Timer time={time} />;

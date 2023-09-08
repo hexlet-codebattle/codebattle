@@ -28,38 +28,31 @@ const renderOnlineIndicator = (user, isOnline) => {
 
   return (
     <span>
-      <FontAwesomeIcon
-        icon={['fa', 'circle']}
-        className={onlineIndicatorClassName}
-      />
+      <FontAwesomeIcon className={onlineIndicatorClassName} icon={['fa', 'circle']} />
     </span>
   );
 };
 
-const UserName = ({
-  user, truncate, isOnline, hideOnlineIndicator,
-}) => (
-  <div className="d-flex align-items-baseline">
-    {!hideOnlineIndicator && renderOnlineIndicator(user, isOnline)}
-    <span className="d-flex align-items-center">
-      <LanguageIcon lang={user.lang || 'js'} />
-      <a
-        href={`/users/${user.id}`}
-        key={user.id}
-        className={cn('d-flex align-items-center', {
-          'text-danger': user.isAdmin,
-        })}
-      >
-        <p
-          className={`text-truncate m-0 ${
-              truncate ? 'x-username-truncated' : ''
-            }`}
+function UserName({ hideOnlineIndicator, isOnline, truncate, user }) {
+  return (
+    <div className="d-flex align-items-baseline">
+      {!hideOnlineIndicator && renderOnlineIndicator(user, isOnline)}
+      <span className="d-flex align-items-center">
+        <LanguageIcon lang={user.lang || 'js'} />
+        <a
+          key={user.id}
+          href={`/users/${user.id}`}
+          className={cn('d-flex align-items-center', {
+            'text-danger': user.isAdmin,
+          })}
         >
-          <u>{renderUserName(user)}</u>
-        </p>
-      </a>
-    </span>
-  </div>
+          <p className={`text-truncate m-0 ${truncate ? 'x-username-truncated' : ''}`}>
+            <u>{renderUserName(user)}</u>
+          </p>
+        </a>
+      </span>
+    </div>
   );
+}
 
 export default UserName;

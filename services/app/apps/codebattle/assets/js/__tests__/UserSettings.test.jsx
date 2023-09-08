@@ -49,7 +49,7 @@ jest.mock(
       current_user: { sound_settings: {} },
       game_id: 10,
     };
-    return { getAsset: type => gonParams[type] };
+    return { getAsset: (type) => gonParams[type] };
   },
   { virtual: true },
 );
@@ -76,12 +76,7 @@ describe('UserSettings test cases', () => {
   // eslint-disable-next-line jest/no-disabled-tests
   test.skip('show success notification', async () => {
     const settingUpdaterSpy = jest.spyOn(axios, 'patch').mockResolvedValueOnce({ data: {} });
-    const {
-      getByRole,
-      getByLabelText,
-      getByTestId,
-      user,
-    } = setup(
+    const { getByLabelText, getByRole, getByTestId, user } = setup(
       <Provider store={store}>
         <UserSettings />
       </Provider>,
@@ -98,17 +93,11 @@ describe('UserSettings test cases', () => {
     });
   });
 
-  test.skip.each(settings)('editing profile test with lang %s', async lang => {
+  // eslint-disable-next-line jest/no-disabled-tests
+  test.skip.each(settings)('editing profile test with lang %s', async (lang) => {
     const handleSubmit = jest.fn();
-    const {
-      user,
-      getByTestId,
-      getByLabelText,
-    } = setup(
-      <UserSettingsForm
-        onSubmit={handleSubmit}
-        settings={preloadedState.userSettings}
-      />,
+    const { getByLabelText, getByTestId, user } = setup(
+      <UserSettingsForm settings={preloadedState.userSettings} onSubmit={handleSubmit} />,
     );
 
     await userEvent.type(getByTestId('nameInput'), 'Dmitry');
@@ -119,21 +108,22 @@ describe('UserSettings test cases', () => {
 
     await waitFor(() => {
       expect(handleSubmit).toHaveBeenCalled();
-      expect(handleSubmit).toHaveBeenCalledWith({
-        name: 'Dmitry',
-        lang,
-        sound_settings: {
-          level: 6,
-          type: 'standart',
+      expect(handleSubmit).toHaveBeenCalledWith(
+        {
+          name: 'Dmitry',
+          lang,
+          sound_settings: {
+            level: 6,
+            type: 'standart',
+          },
         },
-      }, expect.anything());
+        expect.anything(),
+      );
     });
   });
 
   test('show error when username is not trimmed string or it is empty', async () => {
-    const {
-      getByText, getByTestId, getByLabelText,
-    } = setup(
+    const { getByLabelText, getByTestId, getByText } = setup(
       <Provider store={store}>
         <UserSettings />
       </Provider>,

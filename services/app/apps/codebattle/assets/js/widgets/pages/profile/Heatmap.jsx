@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux';
 import Loading from '../../components/Loading';
 import { actions } from '../../slices';
 
-const getColorScale = count => {
+const getColorScale = (count) => {
   if (count >= 5) {
     return 'color-huge';
   }
@@ -29,10 +29,10 @@ function Heatmap() {
     const userId = window.location.pathname.split('/').pop();
     axios
       .get(`/api/v1/${userId}/activity`)
-      .then(response => {
+      .then((response) => {
         setActivities(response.data.activities);
       })
-      .catch(error => {
+      .catch((error) => {
         dispatch(actions.setError(error));
       });
   }, [setActivities, dispatch]);
@@ -50,13 +50,13 @@ function Heatmap() {
         <CalendarHeatmap
           showWeekdayLabels
           values={activities}
-          classForValue={value => {
+          classForValue={(value) => {
             if (!value) {
               return 'color-empty';
             }
             return getColorScale(value.count);
           }}
-          titleForValue={value => {
+          titleForValue={(value) => {
             if (!value) {
               return 'No games';
             }

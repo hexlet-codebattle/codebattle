@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 function TournamentType({ type }) {
   if (type === 'individual') {
-    return (<FontAwesomeIcon icon="users" />);
+    return <FontAwesomeIcon icon="users" />;
   }
 
   if (type === 'team') {
@@ -26,12 +26,7 @@ function TournamentType({ type }) {
     );
   }
 
-  return (
-    <FontAwesomeIcon
-      title="Unknown tournament type"
-      icon="question-circle"
-    />
-  );
+  return <FontAwesomeIcon icon="question-circle" title="Unknown tournament type" />;
 }
 
 export default TournamentType;

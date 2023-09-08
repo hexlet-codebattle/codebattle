@@ -6,7 +6,10 @@ import useMachineStateSelector from '../../utils/useMachineStateSelector';
 
 function NetworkAlert() {
   const { mainService } = useContext(RoomContext);
-  const isDisconnectedWithMessage = useMachineStateSelector(mainService, isDisconnectedWithMessageSelector);
+  const isDisconnectedWithMessage = useMachineStateSelector(
+    mainService,
+    isDisconnectedWithMessageSelector,
+  );
 
   if (isDisconnectedWithMessage) {
     return (
@@ -18,7 +21,7 @@ function NetworkAlert() {
     );
   }
 
-  return (<></>);
+  return null;
 }
 
 export default memo(NetworkAlert);

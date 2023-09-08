@@ -15,10 +15,11 @@ export const pushCommandTypes = {
   cleanBanned: 'clead_banned',
 };
 
-const establishChat = () => dispatch => {
-  const camelizeKeysAndDispatch = actionCreator => data => dispatch(actionCreator(camelizeKeys(data)));
+const establishChat = () => (dispatch) => {
+  const camelizeKeysAndDispatch = (actionCreator) => (data) =>
+    dispatch(actionCreator(camelizeKeys(data)));
 
-  channel.join().receive('ok', data => {
+  channel.join().receive('ok', (data) => {
     const page = getChatName('page');
     const greetingMessage = getSystemMessage({
       text: `Joined channel: ${capitalize(page)}`,
@@ -58,7 +59,7 @@ const establishChat = () => dispatch => {
   return clearChatListeners;
 };
 
-export const connectToChat = () => dispatch => {
+export const connectToChat = () => (dispatch) => {
   if (!isRecord) {
     const clearChatConnection = establishChat()(dispatch);
 
@@ -68,14 +69,12 @@ export const connectToChat = () => dispatch => {
   return () => {};
 };
 
-export const addMessage = payload => {
+export const addMessage = (payload) => {
   channel
     .push('chat:add_msg', decamelizeKeys(payload, { separator: '_' }))
-    .receive('error', error => console.error(error));
+    .receive('error', (error) => console.error(error));
 };
 
-export const pushCommand = command => {
-  channel
-    .push('chat:command', command)
-    .receive('error', error => console.error(error));
+export const pushCommand = (command) => {
+  channel.push('chat:command', command).receive('error', (error) => console.error(error));
 };

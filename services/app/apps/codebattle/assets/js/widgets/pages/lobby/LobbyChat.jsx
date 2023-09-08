@@ -18,95 +18,95 @@ import { shouldShowMessage } from '../../utils/chat';
 import useChatContextMenu from '../../utils/useChatContextMenu';
 import useChatRooms from '../../utils/useChatRooms';
 
-function ChatGroupedPlayersList({ players, displayMenu }) {
+function ChatGroupedPlayersList({ displayMenu, players }) {
   const {
-    watching: watchingList = [],
-    online: onlineList = [],
     lobby: lobbyList = [],
+    online: onlineList = [],
     playing: playingList = [],
     task: builderList = [],
+    watching: watchingList = [],
   } = groupBy(players, 'currentState');
 
   return (
     <>
       {watchingList.length !== 0 && <div>Watching: </div>}
-      {watchingList.map(player => (
+      {watchingList.map((player) => (
         <div
-          role="button"
-          tabIndex={0}
-          className="mb-1"
           key={player.id}
+          className="mb-1"
           data-user-id={player.id}
           data-user-name={player.user.name}
-          onContextMenu={displayMenu}
+          role="button"
+          tabIndex={0}
           onClick={displayMenu}
+          onContextMenu={displayMenu}
           onKeyPress={displayMenu}
         >
-          <UserInfo user={player.user} hideInfo hideOnlineIndicator />
+          <UserInfo hideInfo hideOnlineIndicator user={player.user} />
         </div>
       ))}
       {playingList.length !== 0 && <div>Playing: </div>}
-      {playingList.map(player => (
+      {playingList.map((player) => (
         <div
-          role="button"
-          tabIndex={0}
-          className="mb-1"
           key={player.id}
+          className="mb-1"
           data-user-id={player.id}
           data-user-name={player.user.name}
-          onContextMenu={displayMenu}
+          role="button"
+          tabIndex={0}
           onClick={displayMenu}
+          onContextMenu={displayMenu}
           onKeyPress={displayMenu}
         >
-          <UserInfo user={player.user} hideInfo hideOnlineIndicator />
+          <UserInfo hideInfo hideOnlineIndicator user={player.user} />
         </div>
       ))}
       {lobbyList.length !== 0 && <div>Lobby: </div>}
-      {lobbyList.map(player => (
+      {lobbyList.map((player) => (
         <div
-          role="button"
-          tabIndex={0}
-          className="mb-1"
           key={player.id}
+          className="mb-1"
           data-user-id={player.id}
           data-user-name={player.user.name}
-          onContextMenu={displayMenu}
+          role="button"
+          tabIndex={0}
           onClick={displayMenu}
+          onContextMenu={displayMenu}
           onKeyPress={displayMenu}
         >
-          <UserInfo user={player.user} hideInfo hideOnlineIndicator />
+          <UserInfo hideInfo hideOnlineIndicator user={player.user} />
         </div>
       ))}
       {onlineList.length !== 0 && <div>Online: </div>}
-      {onlineList.map(player => (
+      {onlineList.map((player) => (
         <div
-          role="button"
-          tabIndex={0}
-          className="mb-1"
           key={player.id}
+          className="mb-1"
           data-user-id={player.id}
           data-user-name={player.user.name}
-          onContextMenu={displayMenu}
+          role="button"
+          tabIndex={0}
           onClick={displayMenu}
+          onContextMenu={displayMenu}
           onKeyPress={displayMenu}
         >
-          <UserInfo user={player.user} hideInfo hideOnlineIndicator />
+          <UserInfo hideInfo hideOnlineIndicator user={player.user} />
         </div>
       ))}
       {builderList.length !== 0 && <div>Edit task: </div>}
-      {builderList.map(player => (
+      {builderList.map((player) => (
         <div
-          role="button"
-          tabIndex={0}
-          className="mb-1"
           key={player.id}
+          className="mb-1"
           data-user-id={player.id}
           data-user-name={player.user.name}
-          onContextMenu={displayMenu}
+          role="button"
+          tabIndex={0}
           onClick={displayMenu}
+          onContextMenu={displayMenu}
           onKeyPress={displayMenu}
         >
-          <UserInfo user={player.user} hideInfo hideOnlineIndicator />
+          <UserInfo hideInfo hideOnlineIndicator user={player.user} />
         </div>
       ))}
     </>
@@ -118,26 +118,18 @@ const chatHeaderClassName = cn(
   'p-0 bg-light rounded-left h-sm-100 cb-lobby-widget-container w-100',
 );
 
-function LobbyChat({
-  connectToChat,
-  presenceList,
-  setOpenActionModalShowing,
-  inputRef,
-}) {
+function LobbyChat({ connectToChat, inputRef, presenceList, setOpenActionModalShowing }) {
   const messages = useSelector(selectors.chatMessagesSelector);
   const isOnline = useSelector(selectors.chatChannelStateSelector);
 
-  const users = useMemo(
-    () => presenceList.map(({ user }) => user),
-    [presenceList],
-  );
+  const users = useMemo(() => presenceList.map(({ user }) => user), [presenceList]);
 
   useEffect(() => {
     connectToChat();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const { menuId, menuRequest, displayMenu } = useChatContextMenu({
+  const { displayMenu, menuId, menuRequest } = useChatContextMenu({
     type: 'lobby',
     users,
     canInvite: true,
@@ -154,19 +146,17 @@ function LobbyChat({
   useChatRooms('page');
 
   const activeRoom = useSelector(selectors.activeRoomSelector);
-  const filteredMessages = messages.filter(message => shouldShowMessage(message, activeRoom));
+  const filteredMessages = messages.filter((message) => shouldShowMessage(message, activeRoom));
 
   if (!presenceList) {
     return null;
   }
 
   return (
-    <ChatContextMenu menuId={menuId} inputRef={inputRef} request={menuRequest}>
+    <ChatContextMenu inputRef={inputRef} menuId={menuId} request={menuRequest}>
       <div className="d-flex flex-column flex-lg-row flex-md-row rounded shadow-sm mt-2">
-        <div
-          className={chatHeaderClassName}
-        >
-          <ChatHeader disabled={!isOnline} showRooms />
+        <div className={chatHeaderClassName}>
+          <ChatHeader showRooms disabled={!isOnline} />
           <Messages displayMenu={displayMenu} messages={filteredMessages} />
           <ChatInput disabled={!isOnline} inputRef={inputRef} />
         </div>
@@ -184,37 +174,30 @@ function LobbyChat({
               )}
               <div className="d-flex justify-items-center p-2">
                 <button
-                  type="button"
                   className="btn btn-sm p-0 rounded-lg mr-1"
-                  onClick={openSendMessageModal}
                   disabled={!isOnline || presenceList.length <= 1}
+                  type="button"
+                  onClick={openSendMessageModal}
                 >
-                  <FontAwesomeIcon
-                    title="Send message"
-                    className="text-dark"
-                    icon={faEnvelope}
-                  />
+                  <FontAwesomeIcon className="text-dark" icon={faEnvelope} title="Send message" />
                 </button>
                 <button
-                  type="button"
                   className="btn btn-sm p-0 rounded-lg"
-                  onClick={openSendInviteModal}
                   disabled={!isOnline || presenceList.length <= 1}
+                  type="button"
+                  onClick={openSendInviteModal}
                 >
                   <img
-                    title="Send fight invite"
                     alt="fight"
-                    style={{ width: '16px', height: '16px' }}
                     src="/assets/images/fight-black.png"
+                    style={{ width: '16px', height: '16px' }}
+                    title="Send fight invite"
                   />
                 </button>
               </div>
             </div>
             <div className="d-flex px-3 flex-column align-items-start overflow-auto">
-              <ChatGroupedPlayersList
-                players={presenceList}
-                displayMenu={displayMenu}
-              />
+              <ChatGroupedPlayersList displayMenu={displayMenu} players={presenceList} />
             </div>
           </div>
         </div>

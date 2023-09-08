@@ -14,16 +14,13 @@ import { actions } from '../slices';
 
 import getChatName from './names';
 
-const useChatRooms = key => {
+const useChatRooms = (key) => {
   const dispatch = useDispatch();
   const pageName = getChatName(key);
   const rooms = useSelector(selectors.roomsSelector);
   const currentUserId = useSelector(selectors.currentUserIdSelector);
 
-  const storageKey = useMemo(
-    () => getStorageKey(currentUserId),
-    [currentUserId],
-  );
+  const storageKey = useMemo(() => getStorageKey(currentUserId), [currentUserId]);
 
   useEffect(() => {
     clearExpiredPrivateRooms(storageKey);

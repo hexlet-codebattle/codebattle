@@ -7,7 +7,11 @@ import { useDispatch } from 'react-redux';
 
 import RoomContext from '../../components/RoomContext';
 import { inTestingRoomSelector } from '../../machines/selectors';
-import { sendGiveUp, resetTextToTemplateAndSend, resetTextToTemplate } from '../../middlewares/Game';
+import {
+  sendGiveUp,
+  resetTextToTemplateAndSend,
+  resetTextToTemplate,
+} from '../../middlewares/Game';
 import { actions } from '../../slices';
 import useMachineStateSelector from '../../utils/useMachineStateSelector';
 
@@ -26,19 +30,19 @@ function CheckResultButton({ onClick, status }) {
     case 'enabled':
       return (
         <button type="button" {...commonProps}>
-          <FontAwesomeIcon icon={['fas', 'play-circle']} className="success" />
+          <FontAwesomeIcon className="success" icon={['fas', 'play-circle']} />
         </button>
       );
     case 'checking':
       return (
         <button type="button" {...commonProps} disabled>
-          <FontAwesomeIcon icon="spinner" pulse />
+          <FontAwesomeIcon pulse icon="spinner" />
         </button>
       );
     case 'disabled':
       return (
         <button type="button" {...commonProps} disabled>
-          <FontAwesomeIcon icon={['fas', 'play-circle']} className="success" />
+          <FontAwesomeIcon className="success" icon={['fas', 'play-circle']} />
         </button>
       );
     default: {
@@ -111,11 +115,11 @@ function ResetButton({ onClick, status }) {
 }
 
 function GameActionButtons({
-  currentEditorLangSlug,
-  checkResult,
   checkBtnStatus,
-  resetBtnStatus,
+  checkResult,
+  currentEditorLangSlug,
   giveUpBtnStatus,
+  resetBtnStatus,
 }) {
   const dispatch = useDispatch();
 
@@ -147,21 +151,23 @@ function GameActionButtons({
 
   const renderModal = () => (
     <Modal show={modalShowing} onHide={modalHide}>
-      <Modal.Body className="text-center">
-        Are you sure you want to give up?
-      </Modal.Body>
+      <Modal.Body className="text-center">Are you sure you want to give up?</Modal.Body>
       <Modal.Footer className="mx-auto">
-        <Button onClick={handleGiveUp} className="btn-danger rounded-lg">Give up</Button>
-        <Button onClick={modalHide} className="btn-secondary rounded-lg">Cancel</Button>
+        <Button className="btn-danger rounded-lg" onClick={handleGiveUp}>
+          Give up
+        </Button>
+        <Button className="btn-secondary rounded-lg" onClick={modalHide}>
+          Cancel
+        </Button>
       </Modal.Footer>
     </Modal>
   );
 
   return (
     <div className="py-2 mr-2" role="toolbar">
-      <GiveUpButton onClick={modalShow} status={giveUpBtnStatus} />
-      <ResetButton onClick={handleReset} status={resetBtnStatus} />
-      <CheckResultButton onClick={checkResult} status={checkBtnStatus} />
+      <GiveUpButton status={giveUpBtnStatus} onClick={modalShow} />
+      <ResetButton status={resetBtnStatus} onClick={handleReset} />
+      <CheckResultButton status={checkBtnStatus} onClick={checkResult} />
       {renderModal()}
     </div>
   );

@@ -5,7 +5,7 @@ import capitalize from 'lodash/capitalize';
 
 const userSettings = Gon.getAsset('current_user');
 
-const createValidationErrors = response => {
+const createValidationErrors = (response) => {
   const [fieldName] = Object.keys(response.data.errors);
   const [errorMessage] = response.data.errors[fieldName];
   const normalizedErrorMessage = capitalize(errorMessage);
@@ -48,12 +48,12 @@ const userSettingsSlice = createSlice({
   name: 'userSettings',
   initialState,
   reducers: {
-    toggleMuteSound: state => {
+    toggleMuteSound: (state) => {
       localStorage.setItem('ui_mute_sound', !state.mute);
-      return ({ ...state, mute: !state.mute });
+      return { ...state, mute: !state.mute };
     },
   },
-  extraReducers: builder => {
+  extraReducers: (builder) => {
     // The `builder` callback form is used here because it provides correctly typed reducers from the action creators
     builder.addCase(updateUserSettings.fulfilled, (state, { payload }) => {
       Object.assign(state, payload);

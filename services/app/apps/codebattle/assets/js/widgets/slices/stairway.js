@@ -21,7 +21,7 @@ const stairwayGame = createSlice({
       state.game = payload;
     },
     // changeEditorLang: (state, { payload: { editorLang } }) =>
-      // _.update(state, 'editorValue.editorLang', editorLang),
+    // _.update(state, 'editorValue.editorLang', editorLang),
     // reducerName: () => {},
   },
 });

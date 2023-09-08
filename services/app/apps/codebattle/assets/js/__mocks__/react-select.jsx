@@ -1,32 +1,26 @@
 import React, { useState } from 'react';
 
-const Select = ({ options, onChange, filterOption }) => {
+function Select({ filterOption, onChange, options }) {
   const [selectInput, setSelectInput] = useState('task');
 
   return (
     <div>
       {options
-        .filter(option => (
-          filterOption({ value: { name: option.value.name } }, selectInput)
-        ))
-        .map(option => (
+        .filter((option) => filterOption({ value: { name: option.value.name } }, selectInput))
+        .map((option) => (
           <button
+            key={option.value.name}
             type="button"
             onClick={() => onChange({ value: option.value })}
-            key={option.value.name}
           >
             {option.value.name}
           </button>
-      ))}
-      <button
-        type="button"
-        onClick={() => setSelectInput('nAme')}
-        key="filterOption"
-      >
+        ))}
+      <button key="filterOption" type="button" onClick={() => setSelectInput('nAme')}>
         filter tasks by name
       </button>
     </div>
   );
-};
+}
 
 export default Select;

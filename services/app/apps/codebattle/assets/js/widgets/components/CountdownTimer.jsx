@@ -4,9 +4,7 @@ import cn from 'classnames';
 import moment from 'moment';
 import PropTypes from 'prop-types';
 
-const getProgress = (a, b) => (
-  100 - Math.ceil((a / b) * 100)
-);
+const getProgress = (a, b) => 100 - Math.ceil((a / b) * 100);
 
 const getDuration = (time, timeoutSeconds) => {
   const diff = moment().diff(moment.utc(time));
@@ -47,10 +45,7 @@ function CountdownTimer({ time, timeoutSeconds }) {
         {timeoutSeconds && 'Timeout in: '}
         <span>{moment.utc(duration).format('HH:mm:ss')}</span>
       </span>
-      <div
-        className={progressBgColor}
-        style={{ width: `${progress}%` }}
-      />
+      <div className={progressBgColor} style={{ width: `${progress}%` }} />
     </>
   );
 }

@@ -7,13 +7,13 @@ export const editorBtnStatuses = {
 };
 
 const defaultSettings = {
-    editable: false,
-    showControlBtns: false,
-    checkBtnStatus: editorBtnStatuses.disabled,
-    resetBtnStatus: editorBtnStatuses.disabled,
-    langPickerStatus: editorBtnStatuses.disabled,
-    giveUpBtnStatus: editorBtnStatuses.disabled,
-    modeBtnsStatus: editorBtnStatuses.disabled,
+  editable: false,
+  showControlBtns: false,
+  checkBtnStatus: editorBtnStatuses.disabled,
+  resetBtnStatus: editorBtnStatuses.disabled,
+  langPickerStatus: editorBtnStatuses.disabled,
+  giveUpBtnStatus: editorBtnStatuses.disabled,
+  modeBtnsStatus: editorBtnStatuses.disabled,
 };
 
 export const editorSettingsByUserType = {

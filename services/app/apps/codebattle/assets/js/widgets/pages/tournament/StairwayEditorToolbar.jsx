@@ -17,25 +17,21 @@ const toolbarClassNames = 'btn-toolbar justify-content-between align-items-cente
 const editorSettingClassNames = 'btn-group align-items-center m-1';
 const userInfoClassNames = 'btn-group align-items-center justify-content-end m-1';
 
-const ModeButtons = ({ player }) => (
-  <div
-    className="btn-group align-items-center mr-auto"
-    role="group"
-    aria-label="Editor mode"
-  >
-    <VimModeButton player={player} />
-    <DarkModeButton player={player} />
-  </div>
-);
+function ModeButtons({ player }) {
+  return (
+    <div aria-label="Editor mode" className="btn-group align-items-center mr-auto" role="group">
+      <VimModeButton player={player} />
+      <DarkModeButton player={player} />
+    </div>
+  );
+}
 
-function StairwayEditorToolbar({
-  activePlayer,
-  setActivePlayerId,
-  players,
-}) {
+function StairwayEditorToolbar({ activePlayer, players, setActivePlayerId }) {
   const dispatch = useDispatch();
 
-  const playerData = useSelector(state => find(state.stairwayGame.game?.players, { id: activePlayer.id }));
+  const playerData = useSelector((state) =>
+    find(state.stairwayGame.game?.players, { id: activePlayer.id }),
+  );
   const currentUserId = useSelector(currentUserIdSelector);
   const changeLang = useCallback(
     ({ label: { props } }) => dispatch(actions.changeEditorLang({ editorLang: props.slug })),
@@ -47,7 +43,7 @@ function StairwayEditorToolbar({
   );
   const isDisabledLanguagePicker = activePlayer.id !== currentUserId;
   const isDisabledPlayerPicker = useMemo(
-    () => players.some(player => player.id === currentUserId),
+    () => players.some((player) => player.id === currentUserId),
     [players, currentUserId],
   );
   const actionBtnsProps = {
@@ -59,41 +55,29 @@ function StairwayEditorToolbar({
   };
 
   return (
-    <>
-      <div data-player-type={type}>
-        <div className={toolbarClassNames} role="toolbar">
-          <div
-            className={editorSettingClassNames}
-            role="group"
-            aria-label="Editor settings"
-          >
-            <LanguagePickerView
-              isDisabled={isDisabledLanguagePicker}
-              currentLangSlug={playerData?.editorLang}
-              changeLang={changeLang}
-            />
-          </div>
+    <div data-player-type={type}>
+      <div className={toolbarClassNames} role="toolbar">
+        <div aria-label="Editor settings" className={editorSettingClassNames} role="group">
+          <LanguagePickerView
+            changeLang={changeLang}
+            currentLangSlug={playerData?.editorLang}
+            isDisabled={isDisabledLanguagePicker}
+          />
+        </div>
 
-          <>
-            <ModeButtons player={activePlayer} />
-            <GameActionButtons {...actionBtnsProps} />
-          </>
+        <ModeButtons player={activePlayer} />
+        <GameActionButtons {...actionBtnsProps} />
 
-          <div
-            className={userInfoClassNames}
-            role="group"
-            aria-label="User info"
-          >
-            <PlayerPicker
-              isDisabled={isDisabledPlayerPicker}
-              players={players}
-              changePlayer={changePlayer}
-              activePlayer={activePlayer}
-            />
-          </div>
+        <div aria-label="User info" className={userInfoClassNames} role="group">
+          <PlayerPicker
+            activePlayer={activePlayer}
+            changePlayer={changePlayer}
+            isDisabled={isDisabledPlayerPicker}
+            players={players}
+          />
         </div>
       </div>
-    </>
+    </div>
   );
 }
 

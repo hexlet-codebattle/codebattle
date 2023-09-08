@@ -1,15 +1,15 @@
 import userTypes from '../config/userTypes';
 
 export const getGameStatus = ({
-  state,
-  startsAt,
-  type,
   mode,
-  timeoutSeconds,
-  rematchState,
-  tournamentId,
   rematchInitiatorId,
+  rematchState,
   score,
+  startsAt,
+  state,
+  timeoutSeconds,
+  tournamentId,
+  type,
 }) => ({
   state,
   type,
@@ -32,13 +32,13 @@ export const getGamePlayers = ([firstPlayer, secondPlayer]) => {
   return players;
 };
 
-export const getPlayersText = player => ({
+export const getPlayersText = (player) => ({
   userId: player.id,
   editorText: player.editorText,
   langSlug: player.editorLang,
 });
 
-export const getPlayersExecutionData = player => ({
+export const getPlayersExecutionData = (player) => ({
   ...player.checkResult,
   userId: player.id,
 });

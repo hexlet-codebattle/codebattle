@@ -25,14 +25,10 @@ function ActionsAfterGame() {
   }
 
   if (gameMode === GameRoomModes.tournament) {
-    return <></>;
+    return null;
   }
 
-  return (
-    <>
-      <RematchButton disabled={isRematchDisabled} />
-    </>
-  );
+  return <RematchButton disabled={isRematchDisabled} />;
 }
 
 export default ActionsAfterGame;

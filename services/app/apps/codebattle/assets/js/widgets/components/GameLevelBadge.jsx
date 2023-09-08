@@ -1,14 +1,11 @@
 import React from 'react';
 
-const GameLevelBadge = ({ level }) => (
-  <div
-    className="text-center"
-    data-toggle="tooltip"
-    data-placement="right"
-    title={level}
-  >
-    <img alt={level} src={`/assets/images/levels/${level}.svg`} />
-  </div>
-);
+function GameLevelBadge({ level }) {
+  return (
+    <div className="text-center" data-placement="right" data-toggle="tooltip" title={level}>
+      <img alt={level} src={`/assets/images/levels/${level}.svg`} />
+    </div>
+  );
+}
 
 export default GameLevelBadge;

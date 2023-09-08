@@ -18,49 +18,51 @@ import useTaskDescriptionParams from '../../utils/useTaskDescriptionParams';
 import TaskDescriptionMarkdown from '../game/TaskDescriptionMarkdown';
 import TaskLanguagesSelection from '../game/TaskLanguageSelection';
 
-const defaultLevels = ['elementary', 'easy', 'medium', 'hard'].map(level => ({
+const defaultLevels = ['elementary', 'easy', 'medium', 'hard'].map((level) => ({
   value: level,
   label: capitalize(level),
 }));
 
-const ConfigurationButton = ({ onClick, disabled }) => (
-  <button
-    type="button"
-    className="btn btn-outline-secondary mr-1 btn-sm text-nowrap rounded-lg"
-    onClick={onClick}
-    data-toggle="tooltip"
-    data-placement="top"
-    title="Open task details"
-    disabled={disabled}
-  >
-    <FontAwesomeIcon icon="cog" />
-    <span className="ml-1">Details</span>
-  </button>
-);
+function ConfigurationButton({ disabled, onClick }) {
+  return (
+    <button
+      className="btn btn-outline-secondary mr-1 btn-sm text-nowrap rounded-lg"
+      data-placement="top"
+      data-toggle="tooltip"
+      disabled={disabled}
+      title="Open task details"
+      type="button"
+      onClick={onClick}
+    >
+      <FontAwesomeIcon icon="cog" />
+      <span className="ml-1">Details</span>
+    </button>
+  );
+}
 
 const renderGameLevelSelectButton = (level, handleSetLevel) => (
   <div className="dropdown mr-1">
     <button
-      type="button"
+      aria-expanded="false"
+      data-offset="10,20"
+      data-toggle="dropdown"
       title="level"
+      type="button"
       className={cn('btn border-gray dropdown-toggle rounded-lg', {
         'p-0': level === 'hard' || level === 'medium',
         'p-1': level === 'elementary' || level === 'easy',
       })}
-      data-toggle="dropdown"
-      aria-expanded="false"
-      data-offset="10,20"
     >
       <img alt={level} src={`/assets/images/levels/${level}.svg`} />
     </button>
     <div className="dropdown-menu">
-      {defaultLevels.map(({ value, label }) => (
+      {defaultLevels.map(({ label, value }) => (
         <button
           key={value}
-          type="button"
           aria-label={value}
           className={cn('dropdown-item', { active: value === level })}
           data-value={value}
+          type="button"
           onClick={handleSetLevel}
         >
           {label}
@@ -70,16 +72,14 @@ const renderGameLevelSelectButton = (level, handleSetLevel) => (
   </div>
 );
 
-function BuilderTaskAssignment({
-  task,
-  taskLanguage,
-  handleSetLanguage,
-  openConfiguration,
-}) {
+function BuilderTaskAssignment({ handleSetLanguage, openConfiguration, task, taskLanguage }) {
   const dispatch = useDispatch();
 
   const editable = useSelector(selectors.canEditTask);
-  const [avaibleLanguages, displayLanguage, description] = useTaskDescriptionParams(task, taskLanguage);
+  const [avaibleLanguages, displayLanguage, description] = useTaskDescriptionParams(
+    task,
+    taskLanguage,
+  );
   const descriptionTextMapping = {
     en: task.descriptionEn,
     ru: task.descriptionRu,
@@ -87,7 +87,7 @@ function BuilderTaskAssignment({
   const taskDescriptionText = descriptionTextMapping[taskLanguage];
 
   const handleSetLevel = useCallback(
-    event => {
+    (event) => {
       const { value } = event.currentTarget.dataset;
       dispatch(actions.setTaskLevel({ level: value }));
     },
@@ -95,7 +95,7 @@ function BuilderTaskAssignment({
   );
 
   const handleSetDescription = useCallback(
-    event => {
+    (event) => {
       dispatch(
         actions.setTaskDescription({
           lang: taskLanguage,
@@ -107,17 +107,17 @@ function BuilderTaskAssignment({
   );
 
   const [validName, invalidNameReason] = useSelector(
-    state => state.builder.validationStatuses.name,
+    (state) => state.builder.validationStatuses.name,
   );
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const validateName = useCallback(
-    debounce(name => dispatch(validateTaskName(name)), 700),
+    debounce((name) => dispatch(validateTaskName(name)), 700),
     [],
   );
 
   const handleSetName = useCallback(
-    event => {
+    (event) => {
       dispatch(actions.setTaskName({ name: event.target.value }));
       validateName(event.target.value);
     },
@@ -139,23 +139,18 @@ function BuilderTaskAssignment({
               {task.state === taskStateCodes.blank ? (
                 <div className="position-relative">
                   <input
-                    type="text"
-                    className={cn(
-                      'form-control form-control-sm rounded-lg ml-2',
-                      {
-                        'is-invalid': !validName && task.name.length > 0,
-                      },
-                    )}
-                    placeholder="Enter name"
-                    aria-label="Task Name"
                     aria-describedby="basic-addon1"
+                    aria-label="Task Name"
+                    placeholder="Enter name"
+                    type="text"
                     value={task.name}
+                    className={cn('form-control form-control-sm rounded-lg ml-2', {
+                      'is-invalid': !validName && task.name.length > 0,
+                    })}
                     onChange={handleSetName}
                   />
                   {!validName && task.name.length > 0 && (
-                    <div className="invalid-tooltip ml-2">
-                      {invalidNameReason}
-                    </div>
+                    <div className="invalid-tooltip ml-2">{invalidNameReason}</div>
                   )}
                 </div>
               ) : (
@@ -170,11 +165,11 @@ function BuilderTaskAssignment({
             </h6>
           )}
           <div className="d-flex align-items-center mb-2">
-            <ConfigurationButton onClick={openConfiguration} disabled={!editable} />
+            <ConfigurationButton disabled={!editable} onClick={openConfiguration} />
             <TaskLanguagesSelection
-              handleSetLanguage={handleSetLanguage}
               avaibleLanguages={avaibleLanguages}
               displayLanguage={displayLanguage}
+              handleSetLanguage={handleSetLanguage}
             />
           </div>
         </div>

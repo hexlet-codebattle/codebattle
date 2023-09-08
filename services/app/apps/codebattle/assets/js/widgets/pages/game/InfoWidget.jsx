@@ -3,7 +3,11 @@ import React, { useContext, memo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import RoomContext from '../../components/RoomContext';
-import { inPreviewRoomSelector, inTestingRoomSelector, roomStateSelector } from '../../machines/selectors';
+import {
+  inPreviewRoomSelector,
+  inTestingRoomSelector,
+  roomStateSelector,
+} from '../../machines/selectors';
 import {
   gameTaskSelector,
   gameStatusSelector,
@@ -30,16 +34,16 @@ function InfoWidget() {
   const taskLanguage = useSelector(taskDescriptionLanguageselector);
   const task = useSelector(isTestingRoom ? builderTaskSelector : gameTaskSelector);
   const {
-    startsAt,
-    timeoutSeconds,
-    state: gameStateName,
     mode: gameRoomMode,
+    startsAt,
+    state: gameStateName,
+    timeoutSeconds,
   } = useSelector(gameStatusSelector);
   const leftOutput = useSelector(leftExecutionOutputSelector(roomCurrent));
   const isShowOutput = leftOutput && leftOutput.status;
   const idOutput = 'leftOutput';
 
-  const handleSetLanguage = lang => () => dispatch(actions.setTaskDescriptionLanguage(lang));
+  const handleSetLanguage = (lang) => () => dispatch(actions.setTaskDescriptionLanguage(lang));
 
   return (
     <>
@@ -52,65 +56,66 @@ function InfoWidget() {
               role="tablist"
             >
               <a
-                className="nav-item nav-link col-3 border-0 active rounded-0 px-1 py-2"
-                id="task-tab"
-                data-toggle="tab"
-                href="#task"
-                role="tab"
                 aria-controls="task"
                 aria-selected="true"
+                className="nav-item nav-link col-3 border-0 active rounded-0 px-1 py-2"
+                data-toggle="tab"
+                href="#task"
+                id="task-tab"
+                role="tab"
               >
                 Task
               </a>
               <a
-                className="nav-item nav-link col-3 border-0 rounded-0 px-1 py-2"
-                id={`${idOutput}-tab`}
-                data-toggle="tab"
-                href={`#${idOutput}`}
-                role="tab"
                 aria-controls={`${idOutput}`}
                 aria-selected="false"
+                className="nav-item nav-link col-3 border-0 rounded-0 px-1 py-2"
+                data-toggle="tab"
+                href={`#${idOutput}`}
+                id={`${idOutput}-tab`}
+                role="tab"
               >
                 Output
               </a>
-              <div
-                className="rounded-0 text-center bg-white border-left col-6 text-black px-1 py-2"
-              >
+              <div className="rounded-0 text-center bg-white border-left col-6 text-black px-1 py-2">
                 {isPreviewRoom ? (
                   'Loading...'
                 ) : (
                   <TimerContainer
-                    time={startsAt}
-                    mode={gameRoomMode}
-                    timeoutSeconds={timeoutSeconds}
                     gameStateName={gameStateName}
+                    mode={gameRoomMode}
+                    time={startsAt}
+                    timeoutSeconds={timeoutSeconds}
                   />
                 )}
               </div>
             </div>
           </nav>
-          <div className="tab-content flex-grow-1 bg-white rounded-bottom overflow-auto " id="nav-tabContent">
+          <div
+            className="tab-content flex-grow-1 bg-white rounded-bottom overflow-auto "
+            id="nav-tabContent"
+          >
             <div
+              aria-labelledby="task-tab"
               className="tab-pane fade show active h-100"
               id="task"
               role="tabpanel"
-              aria-labelledby="task-tab"
             >
               <TaskAssignment
+                handleSetLanguage={handleSetLanguage}
                 task={task}
                 taskLanguage={taskLanguage}
-                handleSetLanguage={handleSetLanguage}
               />
             </div>
             <div
+              aria-labelledby={`${idOutput}-tab`}
               className="tab-pane h-100"
               id={idOutput}
               role="tabpanel"
-              aria-labelledby={`${idOutput}-tab`}
             >
               {isShowOutput && (
                 <>
-                  <OutputTab sideOutput={leftOutput} side="left" />
+                  <OutputTab side="left" sideOutput={leftOutput} />
                   <Output sideOutput={leftOutput} />
                 </>
               )}

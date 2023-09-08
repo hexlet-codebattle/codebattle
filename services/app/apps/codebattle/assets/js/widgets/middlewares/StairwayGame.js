@@ -13,10 +13,10 @@ const tournamentChannelName = `tournament:${tournamentId}`;
 const tournamentChannel = socket.channel(tournamentChannelName);
 
 // export const soundNotification = notification();
-const connectToStairwayGame = gameId => dispatch => {
+const connectToStairwayGame = (gameId) => (dispatch) => {
   const activeMatchChannelName = `game:${gameId}`;
   const activeMatchChannel = socket.channel(activeMatchChannelName);
-  const onJoinSuccess = response => {
+  const onJoinSuccess = (response) => {
     const data = camelizeKeys(response);
     dispatch(actions.setGameData(data));
     dispatch(actions.setLangs(data));
@@ -28,28 +28,25 @@ const connectToStairwayGame = gameId => dispatch => {
   // .receive('error', onJoinFailure);
 };
 
-const initTournamentChannel = dispatch => {
+const initTournamentChannel = (dispatch) => {
   const onJoinFailure = () => {
     window.location.reload();
   };
 
-  const onJoinSuccess = response => {
+  const onJoinSuccess = (response) => {
     const data = camelizeKeys(response);
     dispatch(actions.setTournamentData(data));
     const { gameId } = data.activeMatch;
     dispatch(connectToStairwayGame(gameId));
   };
 
-  tournamentChannel
-    .join()
-    .receive('ok', onJoinSuccess)
-    .receive('error', onJoinFailure);
+  tournamentChannel.join().receive('ok', onJoinSuccess).receive('error', onJoinFailure);
 };
 
-export const connectToStairwayTournament = () => dispatch => {
+export const connectToStairwayTournament = () => (dispatch) => {
   initTournamentChannel(dispatch);
 
-  tournamentChannel.on('tournament:update', response => {
+  tournamentChannel.on('tournament:update', (response) => {
     const data = camelizeKeys(response);
     const matches = groupBy(data.tournament.matches, 'roundId');
     set(data, 'tournament.matches', matches);
@@ -61,7 +58,7 @@ export const connectToStairwayTournament = () => dispatch => {
   // round:update_match(round, newMatch)
   // round:update_participants(players)
   // round:update_statistics(statistics)
-  tournamentChannel.on('round:created', response => {
+  tournamentChannel.on('round:created', (response) => {
     const { tournament } = camelizeKeys(response);
 
     dispatch(actions.setNextRound(tournament));
@@ -82,19 +79,16 @@ const initActiveMatchChannel = (dispatch, state) => {
       window.location.reload();
     };
 
-    const onJoinSuccess = response => {
+    const onJoinSuccess = (response) => {
       const data = camelizeKeys(response);
       dispatch(actions.setNextRound(data));
     };
 
-    activeMatchChannel
-      .join()
-      .receive('ok', onJoinSuccess)
-      .receive('error', onJoinFailure);
+    activeMatchChannel.join().receive('ok', onJoinSuccess).receive('error', onJoinFailure);
   }
 };
 
-export const connectToActiveMatch = activeMatch => (dispatch, state) => {
+export const connectToActiveMatch = (activeMatch) => (dispatch, state) => {
   const nextMatchId = find(activeMatch.gameId);
   initActiveMatchChannel(dispatch, state, nextMatchId);
 };

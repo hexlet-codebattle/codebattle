@@ -30,9 +30,7 @@ import Heatmap from './Heatmap';
 
 function UserProfile() {
   const [stats, setStats] = useState(null);
-  const { completedGames, totalGames } = useSelector(
-    selectors.completedGamesData,
-  );
+  const { completedGames, totalGames } = useSelector(selectors.completedGamesData);
 
   const dispatch = useDispatch();
 
@@ -41,10 +39,10 @@ function UserProfile() {
 
     axios
       .get(`/api/v1/user/${userId}/stats`)
-      .then(response => {
+      .then((response) => {
         setStats(camelizeKeys(response.data));
       })
-      .catch(error => {
+      .catch((error) => {
         dispatch(actions.setError(error));
       });
   }, [dispatch]);
@@ -53,27 +51,28 @@ function UserProfile() {
     dispatch(fetchCompletedGames());
   }, [dispatch]);
 
-  const dateParse = date => new Date(date).toLocaleString('en-US', {
+  const dateParse = (date) =>
+    new Date(date).toLocaleString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
     });
 
-  const renderAchivement = achievement => {
+  const renderAchivement = (achievement) => {
     if (achievement.includes('win_games_with')) {
       const langs = achievement.split('?').pop().split('_');
 
       return (
         <div className="cb-polyglot mr-1 mb-1" title={achievement}>
           <div className="d-flex h-75 flex-wrap align-items-center justify-content-around cb-polyglot-icons">
-            {langs.map(lang => (
+            {langs.map((lang) => (
               <img
-                src={`/assets/images/achievements/${lang}.png`}
+                key={lang}
                 alt={lang}
+                height="14"
+                src={`/assets/images/achievements/${lang}.png`}
                 title={lang}
                 width="14"
-                height="14"
-                key={lang}
               />
             ))}
           </div>
@@ -82,12 +81,12 @@ function UserProfile() {
     }
     return (
       <img
-        className="mr-1 mb-1"
-        src={`/assets/images/achievements/${achievement}.png`}
         alt={achievement}
+        className="mr-1 mb-1"
+        height="65"
+        src={`/assets/images/achievements/${achievement}.png`}
         title={achievement}
         width="65"
-        height="65"
       />
     );
   };
@@ -119,26 +118,25 @@ function UserProfile() {
     ];
 
     const groups = groupBy(stats.stats.all, 'lang');
-    const reducedByLangStats = mapValues(groups, group => group.reduce((total, item) => total + item.count, 0));
-    const resultDataForPie = Object.entries(reducedByLangStats).map(
-      ([lang, count]) => ({ name: lang, value: count }),
+    const reducedByLangStats = mapValues(groups, (group) =>
+      group.reduce((total, item) => total + item.count, 0),
     );
+    const resultDataForPie = Object.entries(reducedByLangStats).map(([lang, count]) => ({
+      name: lang,
+      value: count,
+    }));
     const fullMark = Math.max(...Object.values(stats.stats.games));
-    const resultDataForRadar = Object.keys(stats.stats.games).map(
-      subject => ({
-        subject,
-        A: stats.stats.games[subject],
-        fullMark,
-      }),
-    );
+    const resultDataForRadar = Object.keys(stats.stats.games).map((subject) => ({
+      subject,
+      A: stats.stats.games[subject],
+      fullMark,
+    }));
 
-    const sortedDataForPie = resultDataForPie.sort(
-      ({ value: a }, { value: b }) => {
-        if (a < b) return 1;
-        if (a > b) return -1;
-        return 0;
-      },
-    );
+    const sortedDataForPie = resultDataForPie.sort(({ value: a }, { value: b }) => {
+      if (a < b) return 1;
+      if (a > b) return -1;
+      return 0;
+    });
     const sortedDataForRadar = resultDataForRadar.sort((a, b) => {
       if (a.subject === 'won') return -1;
       if (b.subject === 'won') return 1;
@@ -150,42 +148,28 @@ function UserProfile() {
     return (
       <>
         <div className="col-6">
-          <ResponsiveContainer width="100%" height="100%">
-            <RadarChart
-              cx="50%"
-              cy="50%"
-              outerRadius="80%"
-              data={sortedDataForRadar}
-            >
+          <ResponsiveContainer height="100%" width="100%">
+            <RadarChart cx="50%" cy="50%" data={sortedDataForRadar} outerRadius="80%">
               <PolarGrid />
               <PolarAngleAxis dataKey="subject" />
               <PolarRadiusAxis />
-              <Radar
-                name="count"
-                dataKey="A"
-                stroke="#8884d8"
-                fill="#8884d8"
-                fillOpacity={0.6}
-              />
+              <Radar dataKey="A" fill="#8884d8" fillOpacity={0.6} name="count" stroke="#8884d8" />
               <Tooltip />
             </RadarChart>
           </ResponsiveContainer>
         </div>
         <div className="col-6">
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer height="100%" width="100%">
             <PieChart>
               <Pie
-                dataKey="value"
-                data={sortedDataForPie}
-                labelLine={false}
                 label
+                data={sortedDataForPie}
+                dataKey="value"
+                labelLine={false}
                 position="inside"
               >
                 {sortedDataForPie.map(({ name }, index) => (
-                  <Cell
-                    key={`cell-${name}`}
-                    fill={colors[index % colors.length]}
-                  />
+                  <Cell key={`cell-${name}`} fill={colors[index % colors.length]} />
                 ))}
               </Pie>
               <Tooltip />
@@ -217,10 +201,7 @@ function UserProfile() {
           <p className="lead">games_played</p>
         </div>
       </div>
-      <div
-        className="row my-4 justify-content-center"
-        style={{ width: '100%', height: 400 }}
-      >
+      <div className="row my-4 justify-content-center" style={{ width: '100%', height: 400 }}>
         {renderCustomPieChart()}
       </div>
       <div className="row my-4 justify-content-center">
@@ -236,24 +217,20 @@ function UserProfile() {
       <div className="col-12">
         <div className="text-left">
           {completedGames && completedGames.length > 0 && (
-            <>
-              <CompletedGames
-                className="table-responsive scroll h-75"
-                games={completedGames}
-                loadNextPage={loadNextPage}
-                totalGames={totalGames}
-              />
-            </>
+            <CompletedGames
+              className="table-responsive scroll h-75"
+              games={completedGames}
+              loadNextPage={loadNextPage}
+              totalGames={totalGames}
+            />
           )}
           {completedGames && completedGames.length === 0 && (
-            <>
-              <div
-                style={{ height: 498 }}
-                className="d-flex align-items-center justify-content-center border text-muted"
-              >
-                No completed games
-              </div>
-            </>
+            <div
+              className="d-flex align-items-center justify-content-center border text-muted"
+              style={{ height: 498 }}
+            >
+              No completed games
+            </div>
           )}
         </div>
       </div>
@@ -264,24 +241,24 @@ function UserProfile() {
       <nav>
         <div className="nav nav-tabs bg-gray" id="nav-tab" role="tablist">
           <a
-            className="nav-item nav-link active text-uppercase rounded-0 text-black font-weight-bold p-3"
-            id="statistics-tab"
-            data-toggle="tab"
-            href="#statistics"
-            role="tab"
             aria-controls="statistics"
             aria-selected="true"
+            className="nav-item nav-link active text-uppercase rounded-0 text-black font-weight-bold p-3"
+            data-toggle="tab"
+            href="#statistics"
+            id="statistics-tab"
+            role="tab"
           >
             Statistics
           </a>
           <a
-            className="nav-item nav-link text-uppercase rounded-0 text-black font-weight-bold p-3"
-            id="completedGames-tab"
-            data-toggle="tab"
-            href="#completedGames"
-            role="tab"
             aria-controls="completedGames"
             aria-selected="false"
+            className="nav-item nav-link text-uppercase rounded-0 text-black font-weight-bold p-3"
+            data-toggle="tab"
+            href="#completedGames"
+            id="completedGames-tab"
+            role="tab"
           >
             Completed games
           </a>
@@ -289,18 +266,18 @@ function UserProfile() {
       </nav>
       <div className="tab-content" id="nav-tabContent">
         <div
+          aria-labelledby="statistics-tab"
           className="tab-pane fade border show active"
           id="statistics"
           role="tabpanel"
-          aria-labelledby="statistics-tab"
         >
           {renderStatistics()}
         </div>
         <div
+          aria-labelledby="completedGames-tab"
           className="tab-pane fade"
           id="completedGames"
           role="tabpanel"
-          aria-labelledby="completedGames-tab"
         >
           {renderCompletedGames()}
         </div>
@@ -314,9 +291,9 @@ function UserProfile() {
         <div className="col-12 col-md-3 my-4 cb-user-data d-flex flex-column">
           <div className="mb-2 mb-sm-4 d-flex justify-content-center">
             <img
+              alt="User avatar"
               className="cb-profile-avatar rounded"
               src={stats.user.avatarUrl}
-              alt="User avatar"
             />
           </div>
           <div className="text-center">
@@ -325,11 +302,11 @@ function UserProfile() {
             <h3 className="my-2 cb-heading">
               <span className="d-none d-sm-block">Lang:</span>
               <img
-                src={`/assets/images/achievements/${langIconNames[stats.user.lang]}.png`}
                 alt={stats.user.lang}
+                height="30"
+                src={`/assets/images/achievements/${langIconNames[stats.user.lang]}.png`}
                 title={stats.user.lang}
                 width="30"
-                height="30"
               />
             </h3>
             <hr />
@@ -340,9 +317,9 @@ function UserProfile() {
             <h1 className="my-2">
               {stats.user.githubName && (
                 <a
-                  title="Github account"
                   className="text-muted"
                   href={`https://github.com/${stats.user.githubName}`}
+                  title="Github account"
                 >
                   <span className="fab fa-github" />
                 </a>
@@ -354,10 +331,8 @@ function UserProfile() {
                   <hr className="mt-2" />
                   <h5 className="text-break cb-heading">Achievements</h5>
                   <div className="col d-flex flex-wrap justify-content-start cb-profile mt-3 pl-0">
-                    {stats.user.achievements.map(achievement => (
-                      <div key={achievement}>
-                        {renderAchivement(achievement)}
-                      </div>
+                    {stats.user.achievements.map((achievement) => (
+                      <div key={achievement}>{renderAchivement(achievement)}</div>
                     ))}
                   </div>
                 </>
@@ -365,9 +340,7 @@ function UserProfile() {
             </div>
           </div>
         </div>
-        <div className="col-12 col-md-9 my-4 cb-user-stats">
-          {statContainers()}
-        </div>
+        <div className="col-12 col-md-9 my-4 cb-user-stats">{statContainers()}</div>
       </div>
     </div>
   );

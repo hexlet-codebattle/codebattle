@@ -1,9 +1,6 @@
 import { assign } from 'xstate';
 
-import {
-  editorBtnStatuses,
-  editorSettingsByUserType,
-} from '../config/editorSettingsByUserType';
+import { editorBtnStatuses, editorSettingsByUserType } from '../config/editorSettingsByUserType';
 import editorUserTypes from '../config/editorUserTypes';
 import sound from '../lib/sound';
 
@@ -47,11 +44,12 @@ const settingsByState = {
 };
 
 // const initContextByState = state => assign(({ userId }) => ({ ...settingsByState[state], userId }));
-const initContextByState = state => assign(({ userId, type }) => ({
-  ...editorSettingsByUserType[type],
-  ...settingsByState[state],
-  userId,
-}));
+const initContextByState = (state) =>
+  assign(({ type, userId }) => ({
+    ...editorSettingsByUserType[type],
+    ...settingsByState[state],
+    userId,
+  }));
 
 const initActiveEditor = assign(() => ({ editorState: 'active' }));
 const initTestingEditor = assign(() => ({ editorState: 'testing' }));
@@ -89,7 +87,11 @@ const editor = {
       after: {
         50000: {
           target: 'idle',
-          actions: ['soundFailureChecking', 'handleTimeoutFailureChecking', 'openCheckResultOutput'],
+          actions: [
+            'soundFailureChecking',
+            'handleTimeoutFailureChecking',
+            'openCheckResultOutput',
+          ],
         },
       },
       on: {
@@ -106,9 +108,9 @@ const editor = {
 
 export const config = {
   actions: {
-    userSendSolution: () => { },
-    handleTimeoutFailureChecking: () => { },
-    openCheckResultOutput: ctx => {
+    userSendSolution: () => {},
+    handleTimeoutFailureChecking: () => {},
+    openCheckResultOutput: (ctx) => {
       if (ctx.type === editorUserTypes.currentUser) {
         document.getElementById('leftOutput-tab').click();
       }

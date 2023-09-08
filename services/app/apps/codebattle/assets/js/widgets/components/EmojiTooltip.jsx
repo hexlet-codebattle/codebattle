@@ -10,7 +10,7 @@ export default function EmojiTooltip({ colons, handleSelect, hide }) {
   const [emojis, setEmojis] = useState([]);
 
   const increaseIndex = () => {
-    setActiveIndex(prevIndex => {
+    setActiveIndex((prevIndex) => {
       const increment = prevIndex !== emojis.length - 1 ? 1 : -emojis.length + 1;
       return prevIndex + increment;
     });
@@ -19,7 +19,7 @@ export default function EmojiTooltip({ colons, handleSelect, hide }) {
   useEffect(() => {
     const fetchEmojis = async () => {
       const rawEmojis = await SearchIndex.search(colons);
-      const preparedEmojis = rawEmojis.map(emoji => ({
+      const preparedEmojis = rawEmojis.map((emoji) => ({
         ...emoji,
         native: emoji.skins[0].native,
         colons: emoji.skins[0].shortcodes,
@@ -31,7 +31,7 @@ export default function EmojiTooltip({ colons, handleSelect, hide }) {
   }, [colons]);
 
   const decreaseIndex = () => {
-    setActiveIndex(prevIndex => {
+    setActiveIndex((prevIndex) => {
       const decrement = prevIndex !== 0 ? 1 : -emojis.length + 1;
       return prevIndex - decrement;
     });
@@ -39,31 +39,38 @@ export default function EmojiTooltip({ colons, handleSelect, hide }) {
 
   useKey('Escape', () => hide());
 
-  useKey('Enter', e => {
-    e.preventDefault();
-    handleSelect(emojis[activeIndex]);
-  }, {}, [activeIndex, emojis]);
+  useKey(
+    'Enter',
+    (e) => {
+      e.preventDefault();
+      handleSelect(emojis[activeIndex]);
+    },
+    {},
+    [activeIndex, emojis],
+  );
 
   useKey('ArrowUp', () => decreaseIndex(), {}, [emojis]);
   useKey('ArrowDown', () => increaseIndex(), {}, [emojis]);
 
   return (
     <select
-      value={activeIndex}
       className="d-flex position-absolute flex-column border rounded w-50 x-bottom-75 custom-select mb-2"
-      onChange={e => { setActiveIndex(e.target.value); }}
-      onClick={() => { handleSelect(emojis[activeIndex]); }}
       size="4"
+      value={activeIndex}
+      onChange={(e) => {
+        setActiveIndex(e.target.value);
+      }}
+      onClick={() => {
+        handleSelect(emojis[activeIndex]);
+      }}
     >
-      {!isEmpty(emojis) && emojis.map((emoji, i) => (
-        <option
-          key={emoji.id}
-          value={+i}
-        >
-          {emoji.native}
-          {emoji.colons}
-        </option>
-      ))}
+      {!isEmpty(emojis) &&
+        emojis.map((emoji, i) => (
+          <option key={emoji.id} value={+i}>
+            {emoji.native}
+            {emoji.colons}
+          </option>
+        ))}
     </select>
   );
 }

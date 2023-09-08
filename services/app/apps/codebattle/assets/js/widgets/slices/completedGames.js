@@ -20,19 +20,16 @@ export const fetchCompletedGames = createAsyncThunk(
   },
 );
 
-export const loadNextPage = createAsyncThunk(
-  'completedGames/loadNextPage',
-  async page => {
-    const userId = window.location.pathname.split('/').pop() || null;
-    const route = userId
-      ? `/api/v1/games/completed?user_id=${userId}&page_size=20&page=${page}`
-      : `/api/v1/games/completed?page_size=20&page=${page}`;
+export const loadNextPage = createAsyncThunk('completedGames/loadNextPage', async (page) => {
+  const userId = window.location.pathname.split('/').pop() || null;
+  const route = userId
+    ? `/api/v1/games/completed?user_id=${userId}&page_size=20&page=${page}`
+    : `/api/v1/games/completed?page_size=20&page=${page}`;
 
-    const response = await axios.get(route);
+  const response = await axios.get(route);
 
-    return camelizeKeys(response.data);
-  },
-);
+  return camelizeKeys(response.data);
+});
 
 const completedGames = createSlice({
   name: 'completedGames',
@@ -46,7 +43,7 @@ const completedGames = createSlice({
   },
   reducers: {},
   extraReducers: {
-    [fetchCompletedGames.pending]: state => {
+    [fetchCompletedGames.pending]: (state) => {
       state.status = 'loading';
       state.error = null;
     },
@@ -61,7 +58,7 @@ const completedGames = createSlice({
       state.status = 'rejected';
       state.error = action.error;
     },
-    [loadNextPage.pending]: state => {
+    [loadNextPage.pending]: (state) => {
       state.status = 'loading';
       state.error = null;
     },

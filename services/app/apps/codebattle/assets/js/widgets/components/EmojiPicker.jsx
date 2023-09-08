@@ -5,22 +5,22 @@ import Picker from '@emoji-mart/react';
 
 import useKey from '../utils/useKey';
 
-export default function EmojiPicker({ handleSelect, hide, disabled = false }) {
+export default function EmojiPicker({ disabled = false, handleSelect, hide }) {
   useKey('Escape', () => hide(), { event: 'keyup' });
 
   const handleOnClickOutside = () => hide();
 
   return (
     <Picker
+      autoFocus
       data={data}
+      disabled={disabled}
+      emojiSize={20}
+      perLine={8}
       previewPosition="none"
       skinTonePosition="none"
-      perLine={8}
-      emojiSize={20}
-      onEmojiSelect={handleSelect}
       onClickOutside={handleOnClickOutside}
-      autoFocus
-      disabled={disabled}
+      onEmojiSelect={handleSelect}
     />
   );
 }

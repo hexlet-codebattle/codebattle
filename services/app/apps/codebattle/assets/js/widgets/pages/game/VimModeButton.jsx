@@ -9,7 +9,7 @@ import { actions } from '../../slices';
 
 function VimModeButton({ playerId }) {
   const dispatch = useDispatch();
-  const currentMode = useSelector(state => editorsModeSelector(playerId)(state));
+  const currentMode = useSelector((state) => editorsModeSelector(playerId)(state));
 
   const isVimMode = currentMode === editorModes.vim;
 
@@ -25,7 +25,7 @@ function VimModeButton({ playerId }) {
   };
 
   return (
-    <button type="button" className={classNames} onClick={handleToggleVimMode}>
+    <button className={classNames} type="button" onClick={handleToggleVimMode}>
       Vim
     </button>
   );
