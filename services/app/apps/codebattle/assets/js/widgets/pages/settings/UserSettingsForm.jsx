@@ -79,7 +79,7 @@ const UserSettingsForm = ({ onSubmit, settings }) => {
             <Form>
               <div className="container">
                 <div className="row form-group mb-3">
-                  <div className="col-3">
+                  <div className="col-lg-3">
                     <TextInput
                       className="col-5"
                       data-testid="nameInput"
@@ -90,7 +90,7 @@ const UserSettingsForm = ({ onSubmit, settings }) => {
                       placeholder="Enter your name"
                     />
                   </div>
-                  <div className="col-3">
+                  <div className="col-lg-3">
                     <div className="h6">Your weapon</div>
                     <Field
                       as="select"
