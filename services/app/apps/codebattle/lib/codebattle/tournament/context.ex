@@ -220,10 +220,14 @@ defmodule Codebattle.Tournament.Context do
 
   def mark_as_live(tournament), do: Map.put(tournament, :is_live, true)
 
-  defp get_module(%{type: "team"}), do: Tournament.Team
-  defp get_module(%{"type" => "team"}), do: Tournament.Team
-  defp get_module(%{type: "stairway"}), do: Tournament.Stairway
+  defp get_module(%{"type" => "ladder"}), do: Tournament.Ladder
+  defp get_module(%{type: "ladder"}), do: Tournament.Ladder
   defp get_module(%{"type" => "stairway"}), do: Tournament.Stairway
+  defp get_module(%{type: "stairway"}), do: Tournament.Stairway
+  defp get_module(%{"type" => "swiss"}), do: Tournament.Swiss
+  defp get_module(%{type: "swiss"}), do: Tournament.Swiss
+  defp get_module(%{"type" => "team"}), do: Tournament.Team
+  defp get_module(%{type: "team"}), do: Tournament.Team
   defp get_module(_), do: Tournament.Individual
 
   defp add_module(tournament), do: Map.put(tournament, :module, get_module(tournament))
