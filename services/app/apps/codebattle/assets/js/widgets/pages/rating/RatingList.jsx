@@ -64,6 +64,10 @@ const renderPagination = (
     itemsCountPerPage={pageSize}
     totalItemsCount={totalEntries}
     pageRangeDisplayed={5}
+    prevPageText="<"
+    firstPageText="<<"	
+    lastPageText=">>"	
+    nextPageText=">"
     onChange={page => {
       setPage(page);
       window.scrollTo({ top: 0, behavior: 'smooth' });
