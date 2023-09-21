@@ -74,7 +74,7 @@ function UserInfo({
   return (
     <PopoverStickOnHover
       id={`user-info-${user?.id}`}
-      placement="bottom-start"
+      placement="bottom-end"
       component={content}
     >
       <div className={userClassName}>
