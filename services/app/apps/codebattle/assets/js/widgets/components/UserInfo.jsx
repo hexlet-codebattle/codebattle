@@ -5,6 +5,7 @@ import cn from 'classnames';
 import { camelizeKeys } from 'humps';
 import { useDispatch, useSelector } from 'react-redux';
 
+import Placements from '../config/placements';
 import * as selectors from '../selectors';
 import { actions } from '../slices';
 
@@ -42,7 +43,12 @@ function UserPopoverContent({ user }) {
 }
 
 function UserInfo({
-  user, hideInfo = false, truncate = false, hideOnlineIndicator = false, loading = false,
+  user,
+  hideInfo = false,
+  truncate = false,
+  hideOnlineIndicator = false,
+  loading = false,
+  placement = Placements.bottomStart,
 }) {
   const { presenceList } = useSelector(selectors.lobbyDataSelector);
   const content = useMemo(() => <UserPopoverContent user={user} />, [user]);
@@ -74,7 +80,7 @@ function UserInfo({
   return (
     <PopoverStickOnHover
       id={`user-info-${user?.id}`}
-      placement="bottom-end"
+      placement={placement}
       component={content}
     >
       <div className={userClassName}>
