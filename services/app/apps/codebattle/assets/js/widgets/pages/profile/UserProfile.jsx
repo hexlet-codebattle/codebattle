@@ -149,12 +149,13 @@ function UserProfile() {
 
     return (
       <>
-        <div className="col-6">
-          <ResponsiveContainer width="100%" height="100%">
+        <div className="col-12 col-md-7">
+          <ResponsiveContainer aspect={1}>
             <RadarChart
               cx="50%"
               cy="50%"
-              outerRadius="80%"
+              outerRadius="70%"
+              margin={{ right: 70 }}
               data={sortedDataForRadar}
             >
               <PolarGrid />
@@ -171,8 +172,8 @@ function UserProfile() {
             </RadarChart>
           </ResponsiveContainer>
         </div>
-        <div className="col-6">
-          <ResponsiveContainer width="100%" height="100%">
+        <div className="col-10 col-md-5 mt-n5 mt-md-0 pt-md-4">
+          <ResponsiveContainer aspect={1}>
             <PieChart>
               <Pie
                 dataKey="value"
@@ -199,7 +200,7 @@ function UserProfile() {
 
   const renderStatistics = () => (
     <>
-      <div className="row my-4 justify-content-center">
+      <div className="row mt-4 justify-content-center">
         {!stats.user.isBot && (
           <div className="col-md-3 col-5 text-center">
             <div className="h1 cb-stats-number">{stats.user.rank}</div>
@@ -218,8 +219,7 @@ function UserProfile() {
         </div>
       </div>
       <div
-        className="row my-4 justify-content-center"
-        style={{ width: '100%', height: 400 }}
+        className="row justify-content-center"
       >
         {renderCustomPieChart()}
       </div>
