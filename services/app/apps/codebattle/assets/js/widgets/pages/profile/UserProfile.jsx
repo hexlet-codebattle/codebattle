@@ -260,7 +260,7 @@ function UserProfile() {
     </div>
   );
   const statContainers = () => (
-    <div>
+    <div className="pr-md-2">
       <nav>
         <div className="nav nav-tabs bg-gray" id="nav-tab" role="tablist">
           <a
@@ -309,9 +309,9 @@ function UserProfile() {
   );
 
   return (
-    <div className="container-lg">
-      <div className="row">
-        <div className="col-12 col-md-3 my-4 cb-user-data d-flex flex-column">
+    <div className="row">
+      <div className="col-12 col-md-3 my-4 cb-user-data">
+        <div className="pl-md-2">
           <div className="mb-2 mb-sm-4 d-flex justify-content-center">
             <img
               className="cb-profile-avatar rounded"
@@ -365,9 +365,9 @@ function UserProfile() {
             </div>
           </div>
         </div>
-        <div className="col-12 col-md-9 my-4 cb-user-stats">
-          {statContainers()}
-        </div>
+      </div>
+      <div className="col-12 col-md-9 my-4 cb-user-stats">
+        {statContainers()}
       </div>
     </div>
   );
