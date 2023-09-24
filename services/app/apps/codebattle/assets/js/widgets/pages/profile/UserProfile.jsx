@@ -310,16 +310,16 @@ function UserProfile() {
 
   return (
     <div className="row">
-      <div className="col-12 col-md-3 my-4 cb-user-data">
-        <div className="pl-md-2">
-          <div className="mb-2 mb-sm-4 d-flex justify-content-center">
+      <div className="col-12 col-md-3 my-4">
+        <div className="pl-md-2 text-center">
+          <div className="mb-2 mb-sm-4">
             <img
               className="cb-profile-avatar rounded"
               src={stats.user.avatarUrl}
               alt="User avatar"
             />
           </div>
-          <div className="text-center">
+          <div>
             <h2 className="my-2 text-break cb-heading font-weight-bold">{stats.user.name}</h2>
             <hr />
             <h3 className="my-2 cb-heading">
@@ -366,7 +366,7 @@ function UserProfile() {
           </div>
         </div>
       </div>
-      <div className="col-12 col-md-9 my-4 cb-user-stats">
+      <div className="col-12 col-md-9 my-4">
         {statContainers()}
       </div>
     </div>
