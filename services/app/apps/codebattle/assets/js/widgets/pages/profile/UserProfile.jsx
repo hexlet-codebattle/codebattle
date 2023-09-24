@@ -200,18 +200,18 @@ function UserProfile() {
 
   const renderStatistics = () => (
     <>
-      <div className="row mt-4 justify-content-center">
+      <div className="row mt-5 px-3 justify-content-center">
         {!stats.user.isBot && (
-          <div className="col-md-3 col-5 text-center">
+          <div className="col col-md-3 text-center">
             <div className="h1 cb-stats-number">{stats.user.rank}</div>
             <p className="lead">rank</p>
           </div>
         )}
-        <div className="col-md-3 col-5 text-center">
+        <div className="col col-md-3 text-center">
           <div className="h1 cb-stats-number">{stats.user.rating}</div>
           <p className="lead">elo_rating</p>
         </div>
-        <div className="col-md-3 col-5 text-center">
+        <div className="col col-md-3 text-center">
           <div className="h1 cb-stats-number">
             {Object.values(stats.stats.games).reduce((a, b) => a + b, 0)}
           </div>
