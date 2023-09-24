@@ -223,8 +223,8 @@ function UserProfile() {
       >
         {renderCustomPieChart()}
       </div>
-      <div className="row my-4 justify-content-center">
-        <div className="col-10 col-lg-8 cb-heatmap">
+      <div className="row mt-5 mt-md-n3 mb-md-3 mb-lg-4">
+        <div className="col-md-11 col-lg-10 mx-auto">
           <Heatmap />
         </div>
       </div>
