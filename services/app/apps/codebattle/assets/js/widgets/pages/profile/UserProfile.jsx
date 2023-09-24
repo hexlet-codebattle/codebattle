@@ -149,7 +149,7 @@ function UserProfile() {
 
     return (
       <>
-        <div className="col-12 col-md-7">
+        <div className="col-12 col-md-7 mb-sm-n5 mb-md-0">
           <ResponsiveContainer aspect={1}>
             <RadarChart
               cx="50%"
@@ -168,11 +168,11 @@ function UserProfile() {
                 fill="#8884d8"
                 fillOpacity={0.6}
               />
-              <Tooltip />
+              <Tooltip contentStyle={{ padding: '0 10px' }} />
             </RadarChart>
           </ResponsiveContainer>
         </div>
-        <div className="col-10 col-md-5 mt-n5 mt-md-0 pt-md-4">
+        <div className="col-10 col-sm-8 col-md-5 mt-n5 mt-md-0 pt-md-4">
           <ResponsiveContainer aspect={1}>
             <PieChart>
               <Pie
