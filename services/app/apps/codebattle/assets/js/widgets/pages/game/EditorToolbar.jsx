@@ -3,6 +3,7 @@ import React from 'react';
 import LanguagePicker from '../../components/LanguagePicker';
 import UserInfo from '../../components/UserInfo';
 import GameRoomModes from '../../config/gameModes';
+import Placements from '../../config/placements';
 
 import DarkModeButton from './DarkModeButton';
 import GameActionButtons from './GameActionButtons';
@@ -57,7 +58,7 @@ const EditorToolbar = ({
             role="group"
             aria-label="User info"
           >
-            <UserInfo user={player} />
+            <UserInfo user={player} placement={Placements.bottomEnd} />
             {mode === GameRoomModes.standard && (
               <UserGameScore userId={player.id} />
             )}
