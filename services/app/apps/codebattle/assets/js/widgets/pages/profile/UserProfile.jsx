@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 
 import axios from 'axios';
+import cn from 'classnames';
 import { camelizeKeys } from 'humps';
 import groupBy from 'lodash/groupBy';
 import mapValues from 'lodash/mapValues';
+import sum from 'lodash/sum';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   Radar,
@@ -198,38 +200,40 @@ function UserProfile() {
     );
   };
 
-  const renderStatistics = () => (
-    <>
-      <div className="row mt-5 px-3 justify-content-center">
-        {!stats.user.isBot && (
+  const renderStatistics = () => {
+    const gamesCount = sum(Object.values(stats.stats.games));
+
+    return (
+      <>
+        <div className="row mt-5 px-3 justify-content-center">
+          {!stats.user.isBot && (
+            <div className="col col-md-3 text-center">
+              <div className="h1 cb-stats-number">{stats.user.rank}</div>
+              <p className="lead">rank</p>
+            </div>
+          )}
           <div className="col col-md-3 text-center">
-            <div className="h1 cb-stats-number">{stats.user.rank}</div>
-            <p className="lead">rank</p>
+            <div className="h1 cb-stats-number">{stats.user.rating}</div>
+            <p className="lead">elo_rating</p>
           </div>
-        )}
-        <div className="col col-md-3 text-center">
-          <div className="h1 cb-stats-number">{stats.user.rating}</div>
-          <p className="lead">elo_rating</p>
-        </div>
-        <div className="col col-md-3 text-center">
-          <div className="h1 cb-stats-number">
-            {Object.values(stats.stats.games).reduce((a, b) => a + b, 0)}
+          <div className="col col-md-3 text-center">
+            <div className="h1 cb-stats-number">
+              {gamesCount}
+            </div>
+            <p className="lead">games_played</p>
           </div>
-          <p className="lead">games_played</p>
         </div>
-      </div>
-      <div
-        className="row justify-content-center"
-      >
-        {renderCustomPieChart()}
-      </div>
-      <div className="row mt-5 mt-md-n3 mb-md-3 mb-lg-4">
-        <div className="col-md-11 col-lg-10 mx-auto">
-          <Heatmap />
+        <div className="row justify-content-center">
+          {gamesCount > 0 && renderCustomPieChart()}
         </div>
-      </div>
-    </>
-  );
+        <div className={cn('row mt-5 mb-md-3 mb-lg-4', { 'mt-md-n3': gamesCount > 0 })}>
+          <div className="col-md-11 col-lg-10 mx-auto">
+            <Heatmap />
+          </div>
+        </div>
+      </>
+    );
+  };
 
   const renderCompletedGames = () => (
     <div className="row justify-content-center">
