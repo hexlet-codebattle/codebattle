@@ -31,8 +31,12 @@ export default function ChatInput({ inputRef, disabled = false }) {
   const activeRoom = useSelector(selectors.activeRoomSelector);
 
   const handleChange = async ({ target: { value } }) => {
-    setText(value);
-    setTooltipVisibility(await getTooltipVisibility(value));
+    if (value.length <= 1025) {
+      setText(value);
+      setTooltipVisibility(await getTooltipVisibility(value));
+    } else {
+      return;
+    }
   };
 
   const handleSubmit = e => {
