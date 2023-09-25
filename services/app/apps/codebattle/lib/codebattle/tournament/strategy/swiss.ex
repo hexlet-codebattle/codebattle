@@ -17,7 +17,13 @@ defmodule Codebattle.Tournament.Swiss do
   end
 
   @impl Tournament.Base
+  def default_meta(), do: %{rounds_limit: 3}
+
+  @impl Tournament.Base
   def calculate_round_results(t), do: t
+
+  @impl Tournament.Base
+  def round_ends_by_time?(_t), do: true
 
   @impl Tournament.Base
   def build_matches(tournament) do
@@ -25,7 +31,7 @@ defmodule Codebattle.Tournament.Swiss do
 
     new_matches =
       player_pairs
-      |> Enum.with_index(tournament.current_round * players_count(tournament))
+      |> Enum.with_index(Enum.count(tournament.matches))
       |> Enum.map(fn {[p1, p2], index} ->
         game_id =
           create_game(tournament, index, [Tournament.Player.new!(p1), Tournament.Player.new!(p2)])

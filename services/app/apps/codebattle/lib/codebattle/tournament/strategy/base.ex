@@ -10,7 +10,9 @@ defmodule Codebattle.Tournament.Base do
   @callback build_matches(Tournament.t()) :: Tournament.t()
   @callback calculate_round_results(Tournament.t()) :: Tournament.t()
   @callback complete_players(Tournament.t()) :: Tournament.t()
-  @callback finish_tournament?(Tournament.t()) :: Tournament.t()
+  @callback round_ends_by_time?(Tournament.t()) :: boolean()
+  @callback finish_tournament?(Tournament.t()) :: boolean()
+  @callback default_meta() :: map()
 
   defmacro __using__(_opts) do
     quote location: :keep do
@@ -86,6 +88,26 @@ defmodule Codebattle.Tournament.Base do
         end
       end
 
+      def restart(tournament, %{user: user}) do
+        if can_moderate?(tournament, user) do
+          tournament
+          |> update_struct(%{
+            players: %{},
+            meta: default_meta(),
+            matches: %{},
+            players_count: 0,
+            current_round: 0,
+            last_round_started_at: nil,
+            starts_at: NaiveDateTime.utc_now() |> NaiveDateTime.add(5 * 60, :second),
+            state: "waiting_participants"
+          })
+        else
+          tournament
+        end
+      end
+
+      def restart(tournament, _user), do: tournament
+
       def start(tournament = %{state: "waiting_participants"}, %{user: user}) do
         if can_moderate?(tournament, user) do
           tournament =
@@ -106,38 +128,14 @@ defmodule Codebattle.Tournament.Base do
 
       def start(tournament, _params), do: tournament
 
-      def restart(tournament, %{user: user}) do
-        if can_moderate?(tournament, user) do
-          tournament
-          |> update_struct(%{
-            players: %{},
-            matches: %{},
-            players_count: 0,
-            current_round: 0,
-            last_round_started_at: nil,
-            state: "waiting_participants"
-          })
-        else
-          tournament
-        end
-      end
-
-      def restart(tournament, _user), do: tournament
-
-      def finish_match(tournament, payload) do
-        tournament
-        |> handle_game_result(payload)
-        |> maybe_start_next_round()
-      end
-
       def stop_round_break(tournament) do
         tournament
-        |> update_struct(%{current_round: tournament.current_round + 1})
+        |> increment_current_round()
         |> start_round()
       end
 
       def handle_game_result(tournament, params) do
-        match = tournament.matches[to_id(params.ref)]
+        match = get_match(tournament, params.ref)
         winner_id = pick_game_winner_id(match.player_ids, params.player_results)
 
         tournament =
@@ -169,16 +167,65 @@ defmodule Codebattle.Tournament.Base do
       end
 
       def maybe_start_next_round(tournament) do
-        matches = get_matches(tournament)
-
-        if Enum.any?(matches, fn match -> match.state == "playing" end) do
+        if round_ends_by_time?(tournament) or
+             Enum.any?(get_matches(tournament), &(&1.state == "playing")) do
           tournament
         else
+          start_next_round(tournament)
+        end
+      end
+
+      def finish_round_force(tournament) do
+        matches_to_finish = get_matches(tournament, "playing")
+
+        new_tournament =
+          Enum.reduce(matches_to_finish, tournament, fn match_to_finish, acc ->
+            update_in(acc.matches[to_id(match_to_finish.id)], &%{&1 | state: "timeout"})
+          end)
+
+        start_next_round(new_tournament)
+      end
+
+      def start_next_round(tournament) do
+        tournament
+        |> update_struct(%{last_round_ended_at: NaiveDateTime.utc_now(:second)})
+        |> calculate_round_results()
+        |> maybe_finish()
+        |> start_round_or_break_or_finish()
+      end
+
+      def finish_match(tournament, params) do
+        tournament
+        |> handle_game_result(params)
+        |> maybe_start_rematch(params)
+        |> maybe_start_next_round()
+      end
+
+      defp maybe_start_rematch(tournament, params) do
+        if round_ends_by_time?(tournament) do
+          finished_match = get_match(tournament, params.ref)
+
+          match_id = Enum.count(tournament.matches)
+          player_ids = finished_match.player_ids
+
+          players =
+            player_ids
+            |> Enum.map(&get_player(tournament, &1))
+            |> Enum.map(&Tournament.Player.new!/1)
+
+          game_id = create_game(tournament, match_id, players)
+
+          match = %Tournament.Match{
+            id: match_id,
+            game_id: game_id,
+            state: "playing",
+            player_ids: player_ids,
+            round: tournament.current_round
+          }
+
+          put_in(tournament.matches[to_id(match_id)], match)
+        else
           tournament
-          |> update_struct(%{last_round_ended_at: NaiveDateTime.utc_now(:second)})
-          |> calculate_round_results()
-          |> maybe_finish()
-          |> start_round_or_break_or_finish()
         end
       end
 
@@ -205,8 +252,12 @@ defmodule Codebattle.Tournament.Base do
 
       defp start_round_or_break_or_finish(tournament) do
         tournament
-        |> update_struct(%{current_round: tournament.current_round + 1})
+        |> increment_current_round()
         |> start_round()
+      end
+
+      defp increment_current_round(tournament) do
+        update_struct(tournament, %{current_round: tournament.current_round + 1})
       end
 
       defp start_round(tournament) do

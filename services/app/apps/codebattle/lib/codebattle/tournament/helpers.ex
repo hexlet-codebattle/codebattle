@@ -2,10 +2,16 @@ defmodule Codebattle.Tournament.Helpers do
   alias Codebattle.User
   alias Codebattle.Tournament
 
+  def get_player(tournament, id), do: Map.get(tournament.players, to_id(id))
   def get_players(tournament), do: tournament.players |> Map.values()
   def get_players(tournament, ids), do: Enum.map(ids, &get_player(tournament, &1))
+  def get_match(tournament, id), do: Map.get(tournament.matches, to_id(id))
   def get_matches(tournament), do: tournament.matches |> Map.values()
-  def get_matches(tournament, range), do: Enum.map(range, &get_match(tournament, &1))
+  def get_matches(tournament, range = %Range{}), do: Enum.map(range, &get_match(tournament, &1))
+
+  def get_matches(tournament, state) when is_binary(state) do
+    tournament |> get_matches() |> Enum.filter(&(&1.state == state))
+  end
 
   def get_round_matches(tournament) do
     tournament
@@ -23,9 +29,6 @@ defmodule Codebattle.Tournament.Helpers do
     |> get_matches
     |> Enum.filter(&(&1.round == tournament.current_round and &1.state == "playing"))
   end
-
-  def get_player(tournament, id), do: Map.get(tournament.players, to_id(id))
-  def get_match(tournament, id), do: Map.get(tournament.matches, to_id(id))
 
   def get_first_match(tournament),
     do: tournament.matches |> Map.get(to_id(0))

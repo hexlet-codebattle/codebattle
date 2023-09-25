@@ -124,7 +124,7 @@ defmodule Codebattle.Tournament.Context do
   end
 
   def send_event(tournament_id, event_type, params) do
-    Tournament.Server.handle_event(tournament_id, event_type, params)
+    Tournament.Server.send_event(tournament_id, event_type, params)
   end
 
   @spec update(Tournament.t(), map()) :: {:ok, Tournament.t()} | {:error, Ecto.Changeset.t()}
@@ -200,6 +200,10 @@ defmodule Codebattle.Tournament.Context do
         }
 
       "stairway" ->
+        rounds = params |> Map.get("rounds_limit", "3") |> String.to_integer()
+        %{rounds_limit: rounds}
+
+      "swiss" ->
         rounds = params |> Map.get("rounds_limit", "3") |> String.to_integer()
         %{rounds_limit: rounds}
 

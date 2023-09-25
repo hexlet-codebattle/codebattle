@@ -3,22 +3,24 @@ defmodule Codebattle.Tournament.Server do
   require Logger
   alias Codebattle.Tournament
 
+  @type tournament_id :: pos_integer()
+
   # API
   def start_link(tournament_id) do
     GenServer.start(__MODULE__, tournament_id, name: server_name(tournament_id))
   end
 
   def get_tournament(id) do
-    try do
-      GenServer.call(server_name(id), :get_tournament)
-    catch
-      :exit, {:noproc, _} ->
-        nil
+    # try do
+    GenServer.call(server_name(id), :get_tournament)
+    # catch
+    #   :exit, {:noproc, _} ->
+    #     nil
 
-      :exit, reason ->
-        Logger.error("Error to get tournament: #{inspect(reason)}")
-        nil
-    end
+    #   :exit, reason ->
+    #     Logger.error("Error to get tournament: #{inspect(reason)}")
+    #     nil
+    # end
   end
 
   def update_tournament(tournament) do
@@ -31,7 +33,18 @@ defmodule Codebattle.Tournament.Server do
     end
   end
 
-  def handle_event(tournament_id, event_type, params) do
+  @spec finish_round_after(tournament_id, pos_integer()) :: :ok | {:error, :not_found}
+  def finish_round_after(tournament_id, timeout_in_seconds) do
+    try do
+      GenServer.call(server_name(tournament_id), {:finish_round_after, timeout_in_seconds})
+    catch
+      :exit, reason ->
+        Logger.error("Error to send message: #{inspect(reason)}")
+        {:error, :not_found}
+    end
+  end
+
+  def send_event(tournament_id, event_type, params) do
     try do
       GenServer.call(server_name(tournament_id), {event_type, params})
     catch
@@ -58,6 +71,16 @@ defmodule Codebattle.Tournament.Server do
     {:reply, :ok, %{state | tournament: new_tournament}}
   end
 
+  def handle_call({:finish_round_after, timeout_in_seconds}, _from, state) do
+    Process.send_after(
+      self(),
+      :finish_round_force,
+      :timer.seconds(timeout_in_seconds)
+    )
+
+    {:reply, :ok, state}
+  end
+
   def handle_call(:get_tournament, _from, state) do
     {:reply, state.tournament, state}
   end
@@ -73,6 +96,14 @@ defmodule Codebattle.Tournament.Server do
 
   def handle_info(:stop_round_break, %{tournament: tournament}) do
     new_tournament = tournament.module.stop_round_break(tournament)
+
+    broadcast_tournament_update(new_tournament)
+
+    {:noreply, %{tournament: new_tournament}}
+  end
+
+  def handle_info(:finish_round_force, %{tournament: tournament}) do
+    new_tournament = tournament.module.finish_round_force(tournament)
 
     broadcast_tournament_update(new_tournament)
 

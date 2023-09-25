@@ -55,7 +55,7 @@ defmodule CodebattleWeb.Factory do
 
   def task_factory do
     %Task{
-      name: Base.encode16(:crypto.strong_rand_bytes(2)),
+      name: sequence(:name, &"task#{&1}"),
       description_en: "test sum",
       description_ru: "проверка суммы",
       level: "easy",
@@ -79,7 +79,7 @@ defmodule CodebattleWeb.Factory do
 
   def task_with_all_data_types_factory do
     %Task{
-      name: Base.encode16(:crypto.strong_rand_bytes(2)),
+      name: sequence(:name, &"full_task#{&1}"),
       description_en: "test sum",
       level: "easy",
       asserts: [

@@ -1,4 +1,4 @@
-defmodule Codebattle.Tournament.Individual do
+defmodule Codebattle.Tournament.Ladder do
   use Codebattle.Tournament.Base
 
   alias Codebattle.Bot
@@ -6,21 +6,25 @@ defmodule Codebattle.Tournament.Individual do
 
   @impl Tournament.Base
   def complete_players(tournament) do
-    bots_count =
-      if players_count(tournament) > 1 do
-        power = tournament |> players_count() |> :math.log2() |> ceil()
-        round(:math.pow(2, power)) - players_count(tournament)
-      else
-        1
-      end
-
-    bots = Bot.Context.build_list(bots_count)
-
-    add_players(tournament, %{users: bots})
+    if rem(players_count(tournament), 2) == 0 do
+      tournament
+    else
+      # bots = Bot.Context.build_list(21)
+      # add_players(tournament, %{users: bots})
+      bot = Bot.Context.build()
+      add_players(tournament, %{users: [bot]})
+    end
   end
 
   @impl Tournament.Base
+  def default_meta(), do: %{}
+
+  @impl Tournament.Base
   def calculate_round_results(t), do: t
+
+
+  @impl Tournament.Base
+  def round_ends_by_time?(_t), do: false
 
   @impl Tournament.Base
   def build_matches(tournament = %{current_round: 0}) do
