@@ -323,7 +323,7 @@ function UserProfile() {
             <h2 className="my-2 text-break cb-heading font-weight-bold">{stats.user.name}</h2>
             <hr />
             <h3 className="my-2 cb-heading">
-              <span className="d-none d-sm-block">Lang:</span>
+              <span>Lang:</span>
               <img
                 src={`/assets/images/achievements/${langIconNames[stats.user.lang]}.png`}
                 alt={stats.user.lang}
