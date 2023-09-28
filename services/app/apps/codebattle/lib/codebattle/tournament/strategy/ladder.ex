@@ -5,23 +5,13 @@ defmodule Codebattle.Tournament.Ladder do
   alias Codebattle.Tournament
 
   @impl Tournament.Base
-  def complete_players(tournament) do
-    if rem(players_count(tournament), 2) == 0 do
-      tournament
-    else
-      # bots = Bot.Context.build_list(21)
-      # add_players(tournament, %{users: bots})
-      bot = Bot.Context.build()
-      add_players(tournament, %{users: [bot]})
-    end
-  end
+  def complete_players(t), do: t
 
   @impl Tournament.Base
-  def default_meta(), do: %{}
+  def default_meta(), do: %{rounds_limit: 3}
 
   @impl Tournament.Base
   def calculate_round_results(t), do: t
-
 
   @impl Tournament.Base
   def round_ends_by_time?(_t), do: false
@@ -62,36 +52,31 @@ defmodule Codebattle.Tournament.Ladder do
   end
 
   @impl Tournament.Base
-  def finish_tournament?(tournament), do: final_round?(tournament)
+  def finish_tournament?(tournament) do
+    tournament.meta.rounds_limit - 1 == tournament.current_round
+  end
 
   defp pair_players_to_matches(players, tournament, init_ref) do
     players
     |> Enum.chunk_every(2)
     |> Enum.with_index(init_ref)
     # todo: use async stream
-    |> Enum.map(fn
-      {players = [%{is_bot: true}, %{is_bot: true}], index} ->
-        %Tournament.Match{
-          id: index,
-          state: "canceled",
-          round: tournament.current_round,
-          player_ids: Enum.map(players, & &1.id)
-        }
+    |> Enum.map(fn {players, index} ->
+      players =
+        case players do
+          [%{}, %{}] -> players
+          [player] -> [player, Bot.Context.build()]
+        end
 
-      {players, index} ->
-        game_id = create_game(tournament, index, Enum.map(players, &Tournament.Player.new!(&1)))
+      game_id = create_game(tournament, index, Enum.map(players, &Tournament.Player.new!(&1)))
 
-        %Tournament.Match{
-          id: index,
-          game_id: game_id,
-          state: "playing",
-          round: tournament.current_round,
-          player_ids: Enum.map(players, & &1.id)
-        }
+      %Tournament.Match{
+        id: index,
+        game_id: game_id,
+        state: "playing",
+        round: tournament.current_round,
+        player_ids: Enum.map(players, & &1.id)
+      }
     end)
-  end
-
-  defp final_round?(tournament) do
-    Enum.count(tournament.players) == :math.pow(2, tournament.current_round + 1)
   end
 end

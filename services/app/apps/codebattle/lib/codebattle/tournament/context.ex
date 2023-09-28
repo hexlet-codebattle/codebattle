@@ -207,6 +207,10 @@ defmodule Codebattle.Tournament.Context do
         rounds = params |> Map.get("rounds_limit", "3") |> String.to_integer()
         %{rounds_limit: rounds}
 
+      "ladder" ->
+        rounds = params |> Map.get("rounds_limit", "3") |> String.to_integer()
+        %{rounds_limit: rounds}
+
       _ ->
         %{}
     end
