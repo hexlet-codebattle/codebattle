@@ -6,64 +6,44 @@ import axios from 'axios';
 import cn from 'classnames';
 import Gon from 'gon';
 import { camelizeKeys } from 'humps';
+import difference from 'lodash/difference';
 import get from 'lodash/get';
-import has from 'lodash/has';
-import intersection from 'lodash/intersection';
+import groupBy from 'lodash/groupBy';
+import isEmpty from 'lodash/isEmpty';
+import isEqual from 'lodash/isEqual';
+import mapValues from 'lodash/mapValues';
+import omitBy from 'lodash/omitBy';
+import uniqBy from 'lodash/uniqBy';
 import { useDispatch, useSelector } from 'react-redux';
-import Select from 'react-select';
+import Select, { createFilter } from 'react-select';
 
 import i18n from '../../../i18n';
 import * as selectors from '../../selectors';
 import { actions } from '../../slices';
 
-const isRandomTask = task => !has(task, 'id');
+const groupTasksByLevelByTags = (allTasks, taskTags) => {
+  const [restTag, ...popularTags] = taskTags.slice().reverse();
 
-const mapTagsToTaskIds = (tasks, tags) => {
-  const otherTag = tags.at(-1);
-  const popularTags = tags.slice(0, -1);
+  const groupTasksByTags = tasks => {
+    const tasksByPopularTags = popularTags.reduce((acc, tag) => ({
+      ...acc,
+      [tag]: tasks.filter(({ tags }) => tags.includes(tag)),
+    }), {});
 
-  const initAcc = tags.reduce((acc, tag) => (
-    { ...acc, [tag]: [] }
-  ), {});
+    const restTasks = tasks.filter(({ tags }) => isEmpty(tags) || !isEmpty(difference(tags, popularTags)));
 
-  return tasks.reduce((acc, task) => {
-    const newAcc = task.tags.reduce((currentAcc, tag) => {
-      if (tag === '') {
-        const withoutTagsTaskIds = get(acc, 'withoutTags', []);
-        return { ...currentAcc, withoutTags: [...withoutTagsTaskIds, task.id] };
-      }
-
-      if (!popularTags.includes(tag)) {
-        const withUnpopularTagsTasksIds = get(acc, otherTag, []);
-        return {
-          ...currentAcc,
-          [otherTag]: [...withUnpopularTagsTasksIds, task.id],
-        };
-      }
-
-      const taskIds = get(acc, tag, []);
-      return { ...currentAcc, [tag]: [...taskIds, task.id] };
-    }, {});
+    const tasksByTags = omitBy({ ...tasksByPopularTags, [restTag]: restTasks }, isEmpty);
 
     return {
-      ...acc,
-      ...newAcc,
+      ...tasksByTags,
+      all: tasks,
+      tags: Object.keys(tasksByTags),
     };
-  }, initAcc);
-};
+  };
 
-const getTaskIdsByTags = (dictionary, tags) => {
-  const taskIds = tags.map(tag => dictionary[tag]);
-  return intersection(...taskIds);
-};
+  const tasksByLevel = groupBy(allTasks, 'level');
 
-const filterTasksByTagsAndLevel = (tasks, tags, dictionary) => {
-  if (tags.length === 0) {
-    return tasks;
-  }
-
-  const availableTaskIds = getTaskIdsByTags(dictionary, tags);
-  return tasks.filter(task => availableTaskIds.includes(task.id));
+  return mapValues(tasksByLevel, groupTasksByTags);
 };
 
 const CurrentUserTaskLabel = ({ task, userStats = { user: { avatarUrl: '' } } }) => {
@@ -130,16 +110,13 @@ const TaskLabel = ({ task, userStats, currentUserId }) => {
 };
 
 function TaskSelect({
-  setChosenTask,
-  randomTask,
-  tasks,
-  level,
+  value,
+  onChange,
+  options,
 }) {
   const dispatch = useDispatch();
-  const defaultOption = { label: <TaskLabel task={randomTask} />, value: randomTask.name };
   const currentUserId = useSelector(selectors.currentUserIdSelector);
   const [userStats, setUserStats] = useState({});
-  const allTasks = [randomTask, ...tasks];
 
   useEffect(() => {
     axios
@@ -153,33 +130,15 @@ function TaskSelect({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUserId]);
 
-  useEffect(() => {
-    setChosenTask(defaultOption.value);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [level]);
-
-  const onChange = ({ value }) => setChosenTask(value);
-
   return (
     <Select
-      key={`task-choise-${level}`}
       className="w-100"
-      defaultValue={defaultOption}
+      value={value}
       onChange={onChange}
-      filterOption={({ value: { name } }, inputValue) => (
-        name.toLowerCase().includes(inputValue.toLowerCase())
-      )}
-      options={
-        allTasks.map(task => (
-          {
-            label: <TaskLabel
-              task={task}
-              userStats={userStats}
-              currentUserId={currentUserId}
-            />,
-            value: task,
-          }))
-        }
+      options={options}
+      getOptionLabel={task => <TaskLabel task={task} userStats={userStats} currentUserId={currentUserId} />}
+      getOptionValue={task => task.id}
+      filterOption={createFilter({ stringify: option => option.data.name })}
     />
   );
 }
@@ -190,83 +149,72 @@ export default function TaskChoice({
   chosenTags,
   setChosenTags,
   level,
-  randomTask,
 }) {
   const dispatch = useDispatch();
   const taskTags = Gon.getAsset('task_tags');
 
-  const [allTasks, setAllTasks] = useState([]);
+  const [groupedTasks, setGroupedTasks] = useState({});
 
   useEffect(() => {
     axios
       .get('/api/v1/tasks')
       .then(({ data }) => {
         const { tasks } = camelizeKeys(data);
-        setAllTasks(tasks);
+        setGroupedTasks(groupTasksByLevelByTags(tasks, taskTags));
       })
       .catch(error => {
         dispatch(actions.setError(error));
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [taskTags]);
 
-  const tagsToTaskIdsDictionary = mapTagsToTaskIds(allTasks, taskTags);
-
-  const tasksFilteredByLevel = allTasks.filter(task => task.level === level);
-
-  const filteredTasks = filterTasksByTagsAndLevel(tasksFilteredByLevel, chosenTags, tagsToTaskIdsDictionary, level);
-
-  const isTagButtonDisabled = tag => {
-    if (!isRandomTask(chosenTask)) {
-      return true;
-    }
-    const availableTaskIds = getTaskIdsByTags(tagsToTaskIdsDictionary, [...chosenTags, tag]);
-    return availableTaskIds.length === 0;
-  };
-
-  const isTagChosen = tag => (
-    isRandomTask(chosenTask)
-      ? chosenTags.includes(tag)
-      : tagsToTaskIdsDictionary[tag].includes(chosenTask.id)
+  const toggleTagButton = tag => setChosenTags(
+    prevTags => (prevTags.includes(tag)
+      ? prevTags.filter(prevTag => prevTag !== tag)
+      : prevTags.concat(tag)),
   );
 
-  const toggleTagButton = tag => {
-    if (chosenTags.includes(tag)) {
-      const tagsWithoutChosen = chosenTags.filter(chosenTag => chosenTag !== tag);
-      setChosenTags(tagsWithoutChosen);
-      return;
-    }
-    setChosenTags([...chosenTags, tag]);
-  };
+  const randomTask = { id: null, name: i18n.t('random task'), tags: [] };
+  const isTaskChosen = chosenTask.id !== null;
+  const tasksByLevel = get(groupedTasks, level, { all: [], tags: [] });
+  const filteredTasks = isTaskChosen || isEmpty(chosenTags) || isEqual(chosenTags, taskTags)
+    ? tasksByLevel.all
+    : uniqBy(chosenTags.flatMap(tag => tasksByLevel[tag]), 'id');
 
   return (
     <>
       <h5>{i18n.t('Choose task by name or tags')}</h5>
       <div className="d-flex justify-content-around px-5 mt-3 mb-2">
         <TaskSelect
-          setChosenTask={setChosenTask}
-          randomTask={randomTask}
-          tasks={filteredTasks}
-          level={level}
+          value={isTaskChosen ? chosenTask : randomTask}
+          onChange={value => {
+            setChosenTask(value);
+            setChosenTags(value.tags);
+          }}
+          options={[randomTask].concat(filteredTasks)}
         />
       </div>
       <div className="d-flex flex-column justify-content-around px-5 mt-3 mb-2">
         <h6>{i18n.t('Tags')}</h6>
         <div className="border p-2 rounded-lg">
-          {taskTags.map(tag => (
-            <button
-              key={tag}
-              type="button"
-              className={cn('btn btn-sm mr-1 tag rounded-lg', {
-                'bg-orange text-white': isTagChosen(tag),
-                'tag-btn-outline-orange': !isTagChosen(tag),
-              })}
-              onClick={() => toggleTagButton(tag)}
-              disabled={isTagButtonDisabled(tag)}
-            >
-              {tag}
-            </button>
-          ))}
+          {tasksByLevel.tags.map(tag => {
+            const isTagChosen = chosenTags.includes(tag);
+
+            return (
+              <button
+                key={tag}
+                type="button"
+                className={cn('btn btn-sm mr-1 tag rounded-lg', {
+                  'bg-orange text-white': isTagChosen,
+                  'tag-btn-outline-orange': !isTagChosen,
+                })}
+                onClick={() => toggleTagButton(tag)}
+                disabled={isTaskChosen}
+              >
+                {tag}
+              </button>
+            );
+          })}
         </div>
       </div>
     </>

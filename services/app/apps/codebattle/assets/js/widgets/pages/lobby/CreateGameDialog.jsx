@@ -4,7 +4,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
 import cn from 'classnames';
 import { camelizeKeys } from 'humps';
-import get from 'lodash/get';
 import qs from 'qs';
 import { useDispatch, useSelector } from 'react-redux';
 import AsyncSelect from 'react-select/async';
@@ -98,8 +97,8 @@ function CreateGameDialog({ hideModal }) {
 
   const [opponent, setOpponent] = useState(opponentInfo);
 
-  const randomTask = { name: i18n.t('random task'), value: {} };
-  const [chosenTask, setChosenTask] = useState(randomTask);
+  const unchosenTask = { id: null };
+  const [chosenTask, setChosenTask] = useState(unchosenTask);
   const [chosenTags, setChosenTags] = useState([]);
 
   const [game, setGame] = useState({
@@ -123,7 +122,7 @@ function CreateGameDialog({ hideModal }) {
           timeout_seconds: game.timeoutSeconds,
           recipient_id: opponent.id,
           recipient_name: opponent.name,
-          task_id: get(chosenTask, 'id', null),
+          task_id: chosenTask.id,
           task_tags: chosenTags,
         }),
       );
@@ -132,7 +131,7 @@ function CreateGameDialog({ hideModal }) {
         level: game.level,
         opponent_type: game.type,
         timeout_seconds: game.timeoutSeconds,
-        task_id: get(chosenTask, 'id', null),
+        task_id: chosenTask.id,
         task_tags: chosenTags,
       });
     }
@@ -165,7 +164,13 @@ function CreateGameDialog({ hideModal }) {
               'bg-orange': game.level === level,
               'btn-outline-orange': game.level !== level,
             })}
-            onClick={() => setGame({ ...game, level })}
+            onClick={() => {
+              if (game.level === level) return;
+
+              setGame({ ...game, level });
+              setChosenTask(unchosenTask);
+              setChosenTags([]);
+            }}
             data-toggle="tooltip"
             data-placement="right"
             title={level}
@@ -209,7 +214,6 @@ function CreateGameDialog({ hideModal }) {
         chosenTags={chosenTags}
         setChosenTags={setChosenTags}
         level={game.level}
-        randomTask={randomTask}
       />
       <button
         type="button"
