@@ -46,83 +46,16 @@ const groupTasksByLevelByTags = (allTasks, taskTags) => {
   return mapValues(tasksByLevel, groupTasksByTags);
 };
 
-const CurrentUserTaskLabel = ({ task, userStats = { user: { avatarUrl: '' } } }) => {
-  const { user: { avatarUrl } } = userStats;
-
-  return (
-    <div className="d-flex align-items-center">
-      <div className="mr-1">
-        <img
-          className="img-fluid"
-          style={{ maxHeight: '16px', width: '16px' }}
-          src={avatarUrl}
-          alt="User avatar"
-        />
-      </div>
-      <div>
-        <span className="text-truncate">
-          {task.name}
-        </span>
-      </div>
-    </div>
-  );
-};
-
-const renderIcon = type => {
-  switch (type) {
-    case 'user':
-      return (
-        <FontAwesomeIcon
-          icon={faUser}
-          className="mr-1"
-        />
-      );
-    case 'github':
-      return (
-        <FontAwesomeIcon
-          icon={['fab', 'github']}
-          className="mr-1"
-        />
-      );
-    default:
-      return (
-        <FontAwesomeIcon
-          icon={faShuffle}
-          className="mr-1"
-        />
-      );
-  }
-};
-
-const isCreatedByCurrentUser = (taskCreatorId, userId) => taskCreatorId && taskCreatorId === userId;
-
-const TaskLabel = ({ task, userStats, currentUserId }) => {
-  if (isCreatedByCurrentUser(task.creatorId, currentUserId)) {
-    return <CurrentUserTaskLabel task={task} userStats={userStats} />;
-  }
-
-  return (
-    <span className="text-truncate">
-      {renderIcon(task.origin)}
-      <span>{task.name}</span>
-    </span>
-  );
-};
-
-function TaskSelect({
-  value,
-  onChange,
-  options,
-}) {
+function TaskSelect({ value, onChange, options }) {
   const dispatch = useDispatch();
   const currentUserId = useSelector(selectors.currentUserIdSelector);
-  const [userStats, setUserStats] = useState({});
+  const [avatarUrl, setAvatarUrl] = useState('');
 
   useEffect(() => {
     axios
       .get(`/api/v1/user/${currentUserId}/stats`)
       .then(response => {
-        setUserStats(camelizeKeys(response.data));
+        setAvatarUrl(response.data.user.avatar_url);
       })
       .catch(error => {
         dispatch(actions.setError(error));
@@ -130,13 +63,38 @@ function TaskSelect({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUserId]);
 
+  const taskOriginToIcon = {
+    user: faUser,
+    github: ['fab', 'github'],
+  };
+
+  const renderOptionLabel = task => (
+    <div className="d-flex align-items-center">
+      {task.creatorId === currentUserId ? (
+        <img
+          className="img-fluid"
+          style={{ maxHeight: '16px', width: '16px' }}
+          src={avatarUrl}
+          alt="User avatar"
+        />
+      ) : (
+        <FontAwesomeIcon
+          icon={get(taskOriginToIcon, task.origin, faShuffle)}
+        />
+      )}
+      <span className="text-truncate ml-1">
+        {task.name}
+      </span>
+    </div>
+  );
+
   return (
     <Select
       className="w-100"
       value={value}
       onChange={onChange}
       options={options}
-      getOptionLabel={task => <TaskLabel task={task} userStats={userStats} currentUserId={currentUserId} />}
+      getOptionLabel={task => renderOptionLabel(task)}
       getOptionValue={task => task.id}
       filterOption={createFilter({ stringify: option => option.data.name })}
     />
