@@ -153,9 +153,9 @@ function CreateGameDialog({ hideModal }) {
     ));
 
   return (
-    <div>
+    <div className="mb-2">
       <h5>{i18n.t('Level')}</h5>
-      <div className="d-flex justify-content-around px-5 mt-3">
+      <div className="d-flex justify-content-around px-5">
         {gameLevels.map(level => (
           <button
             key={level}
@@ -180,12 +180,12 @@ function CreateGameDialog({ hideModal }) {
         ))}
       </div>
 
-      <h5>{i18n.t('Game Type')}</h5>
-      <div className="d-flex justify-content-around px-5 mt-3 mb-2">
+      <h5 className="mt-1">{i18n.t('Game Type')}</h5>
+      <div className="d-flex justify-content-around px-5 mt-3">
         {renderPickGameType()}
       </div>
-      <h5>{i18n.t('Time control')}</h5>
-      <div className="d-flex flex-column px-5 mt-3 mb-2">
+      <h5 className="mt-3">{i18n.t('Time control')}</h5>
+      <div className={cn('px-5 mt-3', { 'mb-2': !isInvite })}>
         <input
           type="range"
           className="form-range w-100"
@@ -196,14 +196,14 @@ function CreateGameDialog({ hideModal }) {
           step="1"
           id="customRange3"
         />
-        <span className="text-center text-orange">
+        <span className="d-block text-center text-orange">
           {i18n.t(`${game.timeoutSeconds / 60} min`)}
         </span>
       </div>
       {isInvite && (
         <>
           <h5>{i18n.t('Choose opponent')}</h5>
-          <div className="d-flex justify-content-around px-5 mt-3 mb-2">
+          <div className="px-5 mt-3 mb-3">
             <OpponentSelect setOpponent={setOpponent} opponent={opponent} />
           </div>
         </>
@@ -217,7 +217,7 @@ function CreateGameDialog({ hideModal }) {
       />
       <button
         type="button"
-        className="btn btn-success mb-2 mt-4 d-flex ml-auto text-white font-weight-bold rounded-lg"
+        className="btn btn-success mt-4 d-flex ml-auto text-white font-weight-bold rounded-lg"
         onClick={createGame}
         disabled={isInvite && !opponent}
       >

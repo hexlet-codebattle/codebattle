@@ -64,8 +64,9 @@ function TaskSelect({ value, onChange, options }) {
   }, [currentUserId]);
 
   const taskOriginToIcon = {
-    user: faUser,
-    github: ['fab', 'github'],
+    user: { icon: faUser },
+    github: { icon: ['fab', 'github'], transform: 'down-1' },
+    random: { icon: faShuffle, transform: 'down-1' },
   };
 
   const renderOptionLabel = task => (
@@ -73,13 +74,14 @@ function TaskSelect({ value, onChange, options }) {
       {task.creatorId === currentUserId ? (
         <img
           className="img-fluid"
-          style={{ maxHeight: '16px', width: '16px' }}
+          style={{ maxHeight: '24px', width: '16px' }}
           src={avatarUrl}
           alt="User avatar"
         />
       ) : (
         <FontAwesomeIcon
-          icon={get(taskOriginToIcon, task.origin, faShuffle)}
+          icon={taskOriginToIcon[task.origin].icon}
+          transform={taskOriginToIcon[task.origin].transform}
         />
       )}
       <span className="text-truncate ml-1">
@@ -132,7 +134,9 @@ export default function TaskChoice({
       : prevTags.concat(tag)),
   );
 
-  const randomTask = { id: null, name: i18n.t('random task'), tags: [] };
+  const randomTask = {
+    id: null, name: i18n.t('random task'), origin: 'random', tags: [],
+  };
   const isTaskChosen = chosenTask.id !== null;
   const tasksByLevel = get(groupedTasks, level, { all: [], tags: [] });
   const filteredTasks = isTaskChosen || isEmpty(chosenTags) || isEqual(chosenTags, taskTags)
@@ -142,7 +146,7 @@ export default function TaskChoice({
   return (
     <>
       <h5>{i18n.t('Choose task by name or tags')}</h5>
-      <div className="d-flex justify-content-around px-5 mt-3 mb-2">
+      <div className="px-5 mt-3 mb-2">
         <TaskSelect
           value={isTaskChosen ? chosenTask : randomTask}
           onChange={value => {
@@ -152,9 +156,9 @@ export default function TaskChoice({
           options={[randomTask].concat(filteredTasks)}
         />
       </div>
-      <div className="d-flex flex-column justify-content-around px-5 mt-3 mb-2">
+      <div className="px-5 mt-3 mb-2">
         <h6>{i18n.t('Tags')}</h6>
-        <div className="border p-2 rounded-lg">
+        <div className="d-flex border p-2 rounded-lg">
           {tasksByLevel.tags.map(tag => {
             const isTagChosen = chosenTags.includes(tag);
 
@@ -162,7 +166,7 @@ export default function TaskChoice({
               <button
                 key={tag}
                 type="button"
-                className={cn('btn btn-sm mr-1 tag rounded-lg', {
+                className={cn('btn btn-sm mr-1 rounded-lg', {
                   'bg-orange text-white': isTagChosen,
                   'tag-btn-outline-orange': !isTagChosen,
                 })}
