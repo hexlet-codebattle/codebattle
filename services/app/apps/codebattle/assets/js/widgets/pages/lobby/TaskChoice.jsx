@@ -146,7 +146,7 @@ export default function TaskChoice({
   return (
     <>
       <h5>{i18n.t('Choose task by name or tags')}</h5>
-      <div className="px-5 mt-3 mb-2">
+      <div className="px-sm-3 px-md-5 mt-3 mb-2">
         <TaskSelect
           value={isTaskChosen ? chosenTask : randomTask}
           onChange={value => {
@@ -156,9 +156,9 @@ export default function TaskChoice({
           options={[randomTask].concat(filteredTasks)}
         />
       </div>
-      <div className="px-5 mt-3 mb-2">
+      <div className="px-sm-3 px-md-5 mt-3 mb-2">
         <h6>{i18n.t('Tags')}</h6>
-        <div className="d-flex border p-2 rounded-lg">
+        <div className="d-flex flex-wrap border pt-2 px-2 pb-1 pb-sm-2 rounded-lg">
           {tasksByLevel.tags.map(tag => {
             const isTagChosen = chosenTags.includes(tag);
 
@@ -166,7 +166,7 @@ export default function TaskChoice({
               <button
                 key={tag}
                 type="button"
-                className={cn('btn btn-sm mr-1 rounded-lg', {
+                className={cn('btn btn-sm mr-1 mb-1 mb-sm-0 rounded-lg text-nowrap', {
                   'bg-orange text-white': isTagChosen,
                   'tag-btn-outline-orange': !isTagChosen,
                 })}

@@ -142,7 +142,7 @@ function CreateGameDialog({ hideModal }) {
     <button
       type="button"
       key={gameType}
-      className={cn('btn rounded-lg', {
+      className={cn('btn mr-1 mb-1 mb-sm-0 rounded-lg text-nowrap', {
           'bg-orange text-white': game.type === gameType,
           'btn-outline-orange': game.type !== gameType,
         })}
@@ -155,7 +155,7 @@ function CreateGameDialog({ hideModal }) {
   return (
     <div className="mb-2">
       <h5>{i18n.t('Level')}</h5>
-      <div className="d-flex justify-content-around px-5">
+      <div className="d-flex justify-content-around px-sm-3 px-md-5">
         {gameLevels.map(level => (
           <button
             key={level}
@@ -181,11 +181,11 @@ function CreateGameDialog({ hideModal }) {
       </div>
 
       <h5 className="mt-1">{i18n.t('Game Type')}</h5>
-      <div className="d-flex justify-content-around px-5 mt-3">
+      <div className="d-flex flex-wrap flex-sm-nowrap justify-content-around px-sm-3 px-md-5 mt-3">
         {renderPickGameType()}
       </div>
-      <h5 className="mt-3">{i18n.t('Time control')}</h5>
-      <div className={cn('px-5 mt-3', { 'mb-2': !isInvite })}>
+      <h5 className="mt-2 mt-sm-3">{i18n.t('Time control')}</h5>
+      <div className={cn('px-sm-3 px-md-5 mt-3', { 'mb-2': !isInvite })}>
         <input
           type="range"
           className="form-range w-100"
@@ -203,7 +203,7 @@ function CreateGameDialog({ hideModal }) {
       {isInvite && (
         <>
           <h5>{i18n.t('Choose opponent')}</h5>
-          <div className="px-5 mt-3 mb-3">
+          <div className="px-sm-3 px-md-5 mt-3 mb-3">
             <OpponentSelect setOpponent={setOpponent} opponent={opponent} />
           </div>
         </>
