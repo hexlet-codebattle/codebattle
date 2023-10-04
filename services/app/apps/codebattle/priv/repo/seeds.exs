@@ -10,7 +10,8 @@ creator = Repo.get!(Codebattle.User, -15)
     task_params = %{
       level: level,
       name: "task_#{level}_#{x}",
-      tags: Enum.take_random(["math", "lol", "kek", "asdf"], 3),
+      tags:
+        Enum.take_random(["math", "lol", "kek", "asdf", "strings", "hash-maps", "collections"], 3),
       origin: "github",
       state: "active",
       visibility: "public",
