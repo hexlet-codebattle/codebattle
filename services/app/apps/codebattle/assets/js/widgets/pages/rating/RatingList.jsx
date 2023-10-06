@@ -65,8 +65,8 @@ const renderPagination = (
     totalItemsCount={totalEntries}
     pageRangeDisplayed={5}
     prevPageText="<"
-    firstPageText="<<"	
-    lastPageText=">>"	
+    firstPageText="<<"
+    lastPageText=">>"
     nextPageText=">"
     onChange={page => {
       setPage(page);
