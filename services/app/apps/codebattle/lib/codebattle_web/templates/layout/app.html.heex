@@ -260,19 +260,28 @@
     <%= render_gon_script(@conn) %>
   </body>
   <footer>
-    <div class="footer-container">
-      <%= link("Current version: #{app_short_version()}",
-        to: github_commit_link(),
-        class: "footer-link"
-      ) %>
-      <%= if Application.get_env(:codebattle, :html_include_prod_scripts) do %>
-        <a href="https://hits.seeyoufarm.com">
-          <img
-            class="mb-1"
-            src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fhexlet-codebattle%2Fcodebattle&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false"
-          />
-        </a>
-      <% end %>
+    <div class="footer-container container-lg">
+      <div>
+        <p class="mb-0 mr-4">
+          ©
+          <a href="https://hexlet.io/?promo_name=main&promo_position=body&promo_type=link">Hexlet ltd</a>
+          , 2023
+        </p>
+      </div>
+      <div>
+        <%= link("Current version: #{app_short_version()}",
+          to: github_commit_link(),
+          class: "footer-link"
+        ) %>
+        <%= if Application.get_env(:codebattle, :html_include_prod_scripts) do %>
+          <a href="https://hits.seeyoufarm.com">
+            <img
+              class="mb-1"
+              src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fhexlet-codebattle%2Fcodebattle&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false"
+            />
+          </a>
+        <% end %>
+      </div>
     </div>
   </footer>
 </html>
