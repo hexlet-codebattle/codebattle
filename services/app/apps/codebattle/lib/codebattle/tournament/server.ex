@@ -11,16 +11,16 @@ defmodule Codebattle.Tournament.Server do
   end
 
   def get_tournament(id) do
-    # try do
-    GenServer.call(server_name(id), :get_tournament)
-    # catch
-    #   :exit, {:noproc, _} ->
-    #     nil
+    try do
+      GenServer.call(server_name(id), :get_tournament)
+    catch
+      :exit, {:noproc, _} ->
+        nil
 
-    #   :exit, reason ->
-    #     Logger.error("Error to get tournament: #{inspect(reason)}")
-    #     nil
-    # end
+      :exit, reason ->
+        Logger.error("Error to get tournament: #{inspect(reason)}")
+        nil
+    end
   end
 
   def update_tournament(tournament) do

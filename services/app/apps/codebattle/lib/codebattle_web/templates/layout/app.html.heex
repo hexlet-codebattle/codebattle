@@ -271,10 +271,11 @@
         </p>
       </div>
       <div>
-        <%= link("Current version: #{app_short_version()}",
-          to: github_commit_link(),
-          class: "footer-link"
-        ) %>
+        <p>
+          <%= link("Current version: #{app_short_version()}",
+            to: github_commit_link(),
+          ) %>
+        </p>
         <%= if Application.get_env(:codebattle, :html_include_prod_scripts) do %>
           <a href="https://hits.seeyoufarm.com">
             <img
