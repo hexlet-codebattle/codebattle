@@ -6,8 +6,6 @@ import cn from 'classnames';
 import capitalize from 'lodash/capitalize';
 
 import UserInfo from '../../components/UserInfo';
-import TournamentStates from '../../config/tournament';
-import useTimer from '../../utils/useTimer';
 
 const RoundTypes = {
   one: 'one',
@@ -108,17 +106,6 @@ const getMatchesByRound = (matches, type, playersCount) => {
   return result;
 };
 
-const getTitleByState = state => {
-  switch (state) {
-    case TournamentStates.cancelled:
-      return 'The tournament is cancelled';
-    case TournamentStates.finished:
-      return 'The tournament is finished';
-    default:
-      return '';
-  }
-};
-
 const getResultClass = (match, playerId) => (match.winnerId === playerId ? 'fa fa-trophy' : '');
 
 function Round({
@@ -181,61 +168,14 @@ function Round({
   );
 }
 
-function TournamentTimer({ startsAt, isOnline }) {
-  const [duration, seconds] = useTimer(startsAt);
-
-  if (!isOnline) {
-    return null;
-  }
-
-  return seconds > 0 ? (
-    <span>
-      The tournament will start in&nbsp;
-      {duration}
-    </span>
-  ) : (
-    <span>The tournament will start soon</span>
-  );
-}
-
-function TournamentStatus({ children }) {
-  return (
-    <div className="d-flex align-items-center justify-content-center mt-2">
-      <h3 className="ml-3">{children}</h3>
-    </div>
-  );
-}
-
 function IndividualMatches({
-  state,
-  startsAt,
   matches,
   players,
   playersCount = 0,
   currentUserId,
-  isLive,
-  isOver,
-  isOnline,
 }) {
-  if (!isLive && !isOver) {
-    return (
-      <TournamentStatus>
-        <span>The tournament is cancelled</span>
-      </TournamentStatus>
-    );
-  }
-
-  if (state === TournamentStates.waitingParticipants) {
-    return (
-      <TournamentStatus>
-        <TournamentTimer startsAt={startsAt} isOnline={isOnline} />
-      </TournamentStatus>
-    );
-  }
-
   return (
     <>
-      <TournamentStatus>{getTitleByState(state)}</TournamentStatus>
 
       <div className="overflow-auto mt-2">
         <div className="bracket">

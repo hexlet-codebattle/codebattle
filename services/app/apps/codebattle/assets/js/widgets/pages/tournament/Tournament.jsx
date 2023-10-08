@@ -17,22 +17,62 @@ import TournamentChat from './TournamentChat';
 import TournamentHeader from './TournamentHeader';
 // import TeamTournamentInfoPanel from './TeamTournamentInfoPanel';
 
+function Matches({
+  currentUserId, tournament, playersCount, isOver,
+}) {
+  if (tournament.state === TournamentStates.waitingParticipants) {
+    return (
+      <>
+        <span className="d-flex justify-content-center align-items-center h-100">Tournament is not started yet</span>
+      </>
+    );
+  }
+
+  switch (tournament.type) {
+    case 'team':
+      return (
+        <TeamMatches
+          matches={tournament.matches}
+          currentUserId={currentUserId}
+        />
+      );
+    case 'individual':
+      return (
+        <IndividualMatches
+          state={tournament.state}
+          startsAt={tournament.startsAt}
+          matches={tournament.matches}
+          players={tournament.players}
+          playersCount={playersCount}
+          currentUserId={currentUserId}
+          isOver={isOver}
+          isLive={tournament.isLive}
+          isOnline={tournament.channel.online}
+        />
+      );
+    default: <></>;
+  }
+}
+
 function Tournament() {
   const dispatch = useDispatch();
 
+  const currentUserId = useSelector(selectors.currentUserIdSelector);
+  const isAdmin = useSelector(selectors.currentUserIsAdminSelector);
+  const isGuest = useSelector(selectors.currentUserIsGuestSelector);
   const tournament = useSelector(selectors.tournamentSelector);
+
   const playersCount = useMemo(
     () => Object.keys(tournament.players).length,
     [tournament.players],
   );
   const isOver = useMemo(
-    () => [TournamentStates.finished, TournamentStates.cancelled].includes(tournament.state),
+    () => [TournamentStates.finished, TournamentStates.cancelled].includes(
+      tournament.state,
+    ),
     [tournament.state],
   );
 
-  const currentUserId = useSelector(selectors.currentUserIdSelector);
-  const isAdmin = useSelector(selectors.currentUserIsAdminSelector);
-  const isGuest = useSelector(selectors.currentUserIsGuestSelector);
   const handleKick = useCallback(event => {
     const { playerId } = event.currentTarget.dataset;
     if (playerId) {
@@ -51,7 +91,7 @@ function Tournament() {
       };
     }
 
-    return () => {};
+    return () => { };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -79,6 +119,7 @@ function Tournament() {
         <TournamentHeader
           id={tournament.id}
           state={tournament.state}
+          startsAt={tournament.startsAt}
           type={tournament.type}
           accessType={tournament.accessType}
           accessToken={tournament.accessToken}
@@ -86,6 +127,7 @@ function Tournament() {
           name={tournament.name}
           players={tournament.players}
           playersCount={playersCount}
+          playersLimit={tournament.playersLimit}
           creatorId={tournament.creatorId}
           currentUserId={currentUserId}
           level={tournament.level}
@@ -116,74 +158,37 @@ function Tournament() {
     );
   }
 
-  if (tournament.type === 'team') {
-    return (
-      <div className="container-fluid">
-        <div className="row flex-lg-row-reverse">
-          <div className="col-12 col-lg-9 mb-2 mb-lg-0">
-            <div className="bg-white shadow-sm rounded-lg p-3">
-              <TournamentHeader
-                id={tournament.id}
-                state={tournament.state}
-                type={tournament.type}
-                accessType={tournament.accessType}
-                accessToken={tournament.accessToken}
-                isLive={tournament.isLive}
-                name={tournament.name}
-                players={tournament.players}
-                playersCount={playersCount}
-                creatorId={tournament.creatorId}
-                currentUserId={currentUserId}
-                level={tournament.level}
-                isOver={isOver}
-                isOnline={tournament.channel.online}
-              />
-              <TeamMatches
-                matches={tournament.matches}
-                currentUserId={currentUserId}
-              />
-            </div>
-          </div>
-          <div className="col-12 col-lg-3">
-            <TournamentChat />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <>
+      <div className="container-fluid mb-2">
+        <TournamentHeader
+          id={tournament.id}
+          state={tournament.state}
+          startsAt={tournament.startsAt}
+          type={tournament.type}
+          accessType={tournament.accessType}
+          accessToken={tournament.accessToken}
+          name={tournament.name}
+          players={tournament.players}
+          playersCount={playersCount}
+          playersLimit={tournament.playersLimit}
+          creatorId={tournament.creatorId}
+          currentUserId={currentUserId}
+          level={tournament.level}
+          isOver={isOver}
+          isLive={tournament.isLive}
+          isOnline={tournament.channel.online}
+        />
+      </div>
       <div className="container-fluid">
         <div className="row flex-lg-row-reverse">
           <div className="col-12 col-lg-9 mb-2 mb-lg-0">
             <div className="bg-white h-100 shadow-sm rounded-lg p-3">
-              <TournamentHeader
-                id={tournament.id}
-                state={tournament.state}
-                type={tournament.type}
-                accessType={tournament.accessType}
-                accessToken={tournament.accessToken}
-                name={tournament.name}
-                players={tournament.players}
-                playersCount={playersCount}
-                creatorId={tournament.creatorId}
+              <Matches
                 currentUserId={currentUserId}
-                level={tournament.level}
+                tournament={tournament}
                 isOver={isOver}
-                isLive={tournament.isLive}
-                isOnline={tournament.channel.online}
-              />
-              <IndividualMatches
-                state={tournament.state}
-                startsAt={tournament.startsAt}
-                matches={tournament.matches}
-                players={tournament.players}
                 playersCount={playersCount}
-                currentUserId={currentUserId}
-                isOver={isOver}
-                isLive={tournament.isLive}
-                isOnline={tournament.channel.online}
               />
             </div>
           </div>

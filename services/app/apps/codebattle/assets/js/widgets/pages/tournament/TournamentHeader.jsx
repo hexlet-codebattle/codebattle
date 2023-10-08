@@ -1,7 +1,4 @@
-import React, {
-  memo,
-  useMemo,
-} from 'react';
+import React, { memo, useMemo } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
@@ -13,19 +10,77 @@ import Loading from '../../components/Loading';
 import TournamentType from '../../components/TournamentType';
 import TournamentStates from '../../config/tournament';
 import * as selectors from '../../selectors';
+import useTimer from '../../utils/useTimer';
 
 import JoinButton from './JoinButton';
 import TournamentMainControlButtons from './TournamentMainControlButtons';
 
-const getIconByAccessType = accessType => (
-  accessType === 'token'
-    ? 'lock'
-    : 'unlock'
-);
+const getIconByAccessType = accessType => (accessType === 'token' ? 'lock' : 'unlock');
+
+const getBadgeTitle = (state, breakState) => {
+  if (state === TournamentStates.active) {
+    return breakState === 'off' ? 'Active' : 'Round Break';
+  }
+
+  switch (state) {
+    case TournamentStates.waitingParticipants: return 'Waiting Participants';
+    case TournamentStates.cancelled: return 'Cancelled';
+    case TournamentStates.finished: return 'Finished';
+    default: return 'Loading';
+  }
+};
+
+const getDescriptionByState = state => {
+  switch (state) {
+    case TournamentStates.cancelled:
+      return 'The tournament is cancelled';
+    case TournamentStates.finished:
+      return 'The tournament is finished';
+    default:
+      return '';
+  }
+};
+
+function TournamentTimer({ startsAt, isOnline }) {
+  const [duration, seconds] = useTimer(startsAt);
+
+  if (!isOnline) {
+    return null;
+  }
+
+  return seconds > 0 ? (
+    <span>
+      The tournament will start in&nbsp;
+      {duration}
+    </span>
+  ) : (
+    <span>The tournament will start soon</span>
+  );
+}
+
+function TournamentStateDescription({
+  state, startsAt, isLive, isOver, isOnline,
+}) {
+  if (!isLive && !isOver) {
+    return (
+      <span>The tournament is cancelled</span>
+    );
+  }
+
+  if (state === TournamentStates.waitingParticipants) {
+    return (
+      <TournamentTimer startsAt={startsAt} isOnline={isOnline} />
+    );
+  }
+
+  return getDescriptionByState(state);
+}
 
 function TournamentHeader({
   id: tournamentId,
   state,
+  breakState,
+  startsAt,
   type,
   accessType,
   accessToken,
@@ -33,6 +88,7 @@ function TournamentHeader({
   name,
   players,
   playersCount,
+  playersLimit,
   creatorId,
   currentUserId,
   level,
@@ -44,93 +100,127 @@ function TournamentHeader({
     () => creatorId === currentUserId || isAdmin,
     [creatorId, currentUserId, isAdmin],
   );
+  const stateBadgeTitle = useMemo(
+    () => getBadgeTitle(state, breakState),
+    [state, breakState],
+  );
+  const stateClassName = cn('badge mr-2', {
+    'badge-warning': state === TournamentStates.waitingParticipants,
+    'badge-success': breakState === 'off' || state === TournamentStates.finished,
+    'badge-light': state === TournamentStates.cancelled,
+    'badge-danger': breakState === 'on',
+  });
 
   return (
     <>
-      <div className="d-flex flex-column flex-sm-row align-items-begin justify-content-between border-bottom">
-        <div className="d-flex align-items-center pb-2">
-          <h2 title={name} className="m-0 text-capitalize text-nowrap overflow-auto">{name}</h2>
-          <div
-            className="text-center ml-3"
-            data-toggle="tooltip"
-            data-placement="right"
-            title="Tournament level"
-          >
-            <GameLevelBadge level={level} />
-          </div>
-          <div
-            title={
-              accessType === 'token'
-                ? 'Private tournament'
-                : 'Public tournament'
-            }
-            className="text-center ml-2"
-          >
-            <FontAwesomeIcon icon={getIconByAccessType(accessType)} />
-          </div>
-          {isOnline ? (
-            <div
-              title={isLive ? 'Active tournament' : 'Inactive tournament'}
-              className={cn('text-center ml-2', {
-                'text-primary': isLive,
-                'text-light': !isLive,
-              })}
+      <div className="col bg-white shadow-sm rounded-lg p-2">
+        <div className="d-flex flex-column flex-lg-row justify-content-between border-bottom">
+          <div className="d-flex align-items-center pb-2">
+            <h2
+              title={name}
+              className="m-0 text-capitalize text-nowrap overflow-auto"
             >
-              <FontAwesomeIcon icon="wifi" />
+              {name}
+            </h2>
+            <div
+              className="text-center ml-3"
+              data-toggle="tooltip"
+              data-placement="right"
+              title="Tournament level"
+            >
+              <GameLevelBadge level={level} />
             </div>
-          ) : (
-            <div className="text-center ml-2">
-              <Loading adaptive />
+            <div
+              title={
+                accessType === 'token'
+                  ? 'Private tournament'
+                  : 'Public tournament'
+              }
+              className="text-center ml-2"
+            >
+              <FontAwesomeIcon icon={getIconByAccessType(accessType)} />
+            </div>
+            {isOnline ? (
+              <div
+                title={isLive ? 'Active tournament' : 'Inactive tournament'}
+                className={cn('text-center ml-2', {
+                  'text-primary': isLive,
+                  'text-light': !isLive,
+                })}
+              >
+                <FontAwesomeIcon icon="wifi" />
+              </div>
+            ) : (
+              <div className="text-center ml-2">
+                <Loading adaptive />
+              </div>
+            )}
+          </div>
+          {!isOver && isLive && (
+            <div className="d-flex justify-items-center pb-2">
+              {type !== 'team' && (
+                <JoinButton
+                  isShow={isLive && state !== TournamentStates.active}
+                  isParticipant={!!players[currentUserId]}
+                  disabled={!isOnline || !isLive}
+                />
+              )}
+              {canModerate && (
+                <TournamentMainControlButtons
+                  accessType={accessType}
+                  tournamentId={tournamentId}
+                  canStart={
+                    state === TournamentStates.waitingParticipants
+                    && playersCount > 0
+                  }
+                  disabled={!isOnline}
+                />
+              )}
             </div>
           )}
         </div>
-        {!isOver && isLive && (
+        <div className="d-flex small text-nowrap text-muted mt-1">
+          <div title={type} className="d-flex align-items-center mr-2">
+            Mode:
+            <span className="ml-2">
+              <TournamentType type={type} />
+            </span>
+          </div>
           <div
-            className="d-flex justify-items-center pb-2"
+            title={`Players Limit is ${playersLimit}`}
+            className="d-flex align-items-center"
           >
-            {type !== 'team' && (
-              <JoinButton
-                isShow={isLive && state !== TournamentStates.active}
-                isParticipant={!!players[currentUserId]}
-                disabled={!isOnline || !isLive}
-              />
-            )}
-            {canModerate && (
-              <TournamentMainControlButtons
-                accessType={accessType}
-                tournamentId={tournamentId}
-                canStart={
-                  state === TournamentStates.waitingParticipants
-                  && playersCount > 0
-                }
-                disabled={!isOnline}
-              />
-            )}
+            {`Players Limit: ${playersLimit}`}
           </div>
-        )}
-      </div>
-      <div className="d-flex small text-nowrap text-muted mt-2">
-        <div
-          title={type}
-          className="d-flex align-items-center"
-        >
-          Mode:
-          <span className="ml-2">
-            <TournamentType type={type} />
-          </span>
-        </div>
-        {canModerate && accessType === 'token' && (
-          <div className="d-flex input-group ml-2">
-            <div title="Access token" className="input-group-prepend">
-              <span className="input-group-text"><FontAwesomeIcon icon="key" /></span>
+          {canModerate && accessType === 'token' && (
+            <div className="d-flex input-group ml-2">
+              <div title="Access token" className="input-group-prepend">
+                <span className="input-group-text">
+                  <FontAwesomeIcon icon="key" />
+                </span>
+              </div>
+              <CopyButton
+                className="btn btn-secondary rounded-right"
+                value={accessToken}
+                disabled={!isLive}
+              />
             </div>
-            <CopyButton
-              className="btn btn-secondary rounded-right"
-              value={accessToken}
-              disabled={!isLive}
+          )}
+        </div>
+      </div>
+      <div className="col bg-white shadow-sm rounded-lg p-2 mt-2">
+        <p className="h5 mb-0">
+          <span className={stateClassName}>{stateBadgeTitle}</span>
+          <span className="text-nowrap">
+            <TournamentStateDescription
+              state={state}
+              startsAt={startsAt}
+              isLive={isLive}
+              isOver={isOver}
+              isOnline={isOnline}
             />
-          </div>
-        )}
+          </span>
+        </p>
       </div>
     </>
   );

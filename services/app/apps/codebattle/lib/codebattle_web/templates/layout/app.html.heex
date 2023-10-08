@@ -56,7 +56,7 @@
     <!--End Google Tag Manager-->
   </head>
 
-  <body class="position-relative">
+  <body class="position-relative h-100">
     <!--Google Tag Manager (noscript)-->
     <%= if Application.get_env(:codebattle, :html_include_prod_scripts) do %>
       <noscript>
@@ -70,6 +70,7 @@
       </noscript>
     <% end %>
 
+    <div class="d-flex flex-column min-vh-100">
     <div class="dark-bg">
       <div class="container-lg">
         <nav class="navbar navbar-dark navbar-expand-sm justify-content-between px-0 main-nav">
@@ -257,12 +258,10 @@
     <div id="extension"></div>
     <div class="content my-1"></div>
     <%= @inner_content %>
-    <%= render_gon_script(@conn) %>
-  </body>
   <footer>
     <div class="footer-container container-lg">
       <div>
-        <p class="mb-0 mr-4">
+        <p class="text-nowrap mb-0 mr-4">
           ©
           <a href="https://hexlet.io/?promo_name=main&promo_position=body&promo_type=link">
             Hexlet ltd
@@ -287,4 +286,7 @@
       </div>
     </div>
   </footer>
+  </div>
+  <%= render_gon_script(@conn) %>
+  </body>
 </html>

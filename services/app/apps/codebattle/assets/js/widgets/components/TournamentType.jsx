@@ -3,6 +3,14 @@ import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 function TournamentType({ type }) {
+  if (type === 'ladder') {
+    return 'First step';
+  }
+
+  if (type === 'swiss') {
+    return 'Second step';
+  }
+
   if (type === 'individual') {
     return (<FontAwesomeIcon icon="users" />);
   }

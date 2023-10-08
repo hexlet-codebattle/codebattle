@@ -8,7 +8,7 @@ const Players = ({
   canBan,
   handleKick,
 }) => (
-  <div className="my-2 bg-white shadow-sm p-3 rounded-lg">
+  <div className="mb-lg-0 my-md-2 my-sm-2 bg-white shadow-sm p-3 rounded-lg">
     <div className="d-flex align-items-center flex-wrap justify-content-start">
       <h5 className="mb-2 mr-5 text-nowrap">{`Total players: ${playersCount}`}</h5>
     </div>
@@ -20,7 +20,7 @@ const Players = ({
           <div key={player.id} className="my-3 d-flex">
             <span>{index}</span>
             <div className="ml-4">
-              <UserInfo user={player} />
+              <UserInfo user={player} hideOnlineIndicator />
             </div>
             {canBan && (
               <button

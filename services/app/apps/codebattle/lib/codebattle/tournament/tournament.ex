@@ -12,6 +12,8 @@ defmodule Codebattle.Tournament do
              :creator,
              :creator_id,
              :id,
+             :break_duration_seconds,
+             :break_state,
              :is_live,
              :level,
              :matches,
