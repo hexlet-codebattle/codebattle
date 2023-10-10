@@ -159,7 +159,6 @@ const TaskChoice = memo(({
       });
   }, [dispatch]);
 
-  const randomTask = { id: null, name: i18n.t('random task'), origin: 'random' };
   const isTaskChosen = chosenTask.id !== null;
   const isShowAllTasks = isEmpty(chosenTags) || isEqual(chosenTags, taskTags);
 
@@ -167,6 +166,8 @@ const TaskChoice = memo(({
   const filteredTasks = isShowAllTasks
     ? tasksByLevel.all
     : uniqBy(chosenTags.flatMap(tag => tasksByLevel[tag]), 'id');
+  const randomTaskName = i18n.t('random task (%{total} available)', { total: filteredTasks.length });
+  const randomTask = { id: null, name: randomTaskName, origin: 'random' };
   const taskSelectValue = isTaskChosen ? chosenTask : randomTask;
   const taskOptions = [randomTask].concat(filteredTasks);
   const tagGroupValue = isTaskChosen ? chosenTask.tags : chosenTags;

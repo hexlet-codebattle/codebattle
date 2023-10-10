@@ -418,7 +418,7 @@ describe('test task choice', () => {
     expect(asdTag).toBeDisabled();
     expect(restTag).toBeDisabled();
 
-    await user.click(await findByRole('button', { name: 'random task' }));
+    await user.click(await findByRole('button', { name: /random task/ }));
 
     await waitFor(() => {
       tasksMatchingRestTags.forEach(task => expect(getByRole('button', { name: task.name })).toBeInTheDocument());

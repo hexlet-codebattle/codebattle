@@ -96,7 +96,7 @@
   ],
   "tasksMatchingRestTags": [
     { 
-      "name": "random task"
+      "name": "random task (2 available)"
     },
     {
       "name": "task4 name"
@@ -121,7 +121,7 @@
   ],
   "tasksMatchingMathTag": [
     { 
-      "name": "random task"
+      "name": "random task (4 available)"
     },
     {
       "name": "task1 name"
@@ -146,7 +146,7 @@
   ],
   "tasksMatchingMathAndStringTags": [
     { 
-      "name": "random task"
+      "name": "random task (4 available)"
     },
     {
       "name": "task1 name"
