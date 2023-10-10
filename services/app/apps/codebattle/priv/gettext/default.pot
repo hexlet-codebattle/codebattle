@@ -378,3 +378,6 @@ msgstr "Your feedback has been delivered!"
 
 msgid "Feedback not sent."
 msgstr "Oops, Your feedback was not delivered!"
+
+msgid "random task (%{total} available)"
+msgstr "random task (%{total} available)"

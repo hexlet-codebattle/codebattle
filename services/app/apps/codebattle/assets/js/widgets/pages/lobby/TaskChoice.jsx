@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 
 import { faShuffle, faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -6,269 +6,188 @@ import axios from 'axios';
 import cn from 'classnames';
 import Gon from 'gon';
 import { camelizeKeys } from 'humps';
+import difference from 'lodash/difference';
 import get from 'lodash/get';
-import has from 'lodash/has';
-import intersection from 'lodash/intersection';
+import groupBy from 'lodash/groupBy';
+import isEmpty from 'lodash/isEmpty';
+import isEqual from 'lodash/isEqual';
+import mapValues from 'lodash/mapValues';
+import omitBy from 'lodash/omitBy';
+import uniqBy from 'lodash/uniqBy';
 import { useDispatch, useSelector } from 'react-redux';
-import Select from 'react-select';
+import Select, { createFilter } from 'react-select';
 
 import i18n from '../../../i18n';
 import * as selectors from '../../selectors';
 import { actions } from '../../slices';
 
-const isRandomTask = task => !has(task, 'id');
+const taskTags = Gon.getAsset('task_tags');
 
-const mapTagsToTaskIds = (tasks, tags) => {
-  const otherTag = tags.at(-1);
-  const popularTags = tags.slice(0, -1);
+const groupTasksByLevelByTags = (allTasks, allTags) => {
+  const [restTag, ...popularTags] = allTags.slice().reverse();
 
-  const initAcc = tags.reduce((acc, tag) => (
-    { ...acc, [tag]: [] }
-  ), {});
+  const groupTasksByTags = tasks => {
+    const tasksByPopularTags = popularTags.reduce((acc, tag) => ({
+      ...acc,
+      [tag]: tasks.filter(({ tags }) => tags.includes(tag)),
+    }), {});
 
-  return tasks.reduce((acc, task) => {
-    const newAcc = task.tags.reduce((currentAcc, tag) => {
-      if (tag === '') {
-        const withoutTagsTaskIds = get(acc, 'withoutTags', []);
-        return { ...currentAcc, withoutTags: [...withoutTagsTaskIds, task.id] };
-      }
+    const restTasks = tasks.filter(({ tags }) => isEmpty(tags) || !isEmpty(difference(tags, popularTags)));
 
-      if (!popularTags.includes(tag)) {
-        const withUnpopularTagsTasksIds = get(acc, otherTag, []);
-        return {
-          ...currentAcc,
-          [otherTag]: [...withUnpopularTagsTasksIds, task.id],
-        };
-      }
-
-      const taskIds = get(acc, tag, []);
-      return { ...currentAcc, [tag]: [...taskIds, task.id] };
-    }, {});
+    const tasksByTags = omitBy({ ...tasksByPopularTags, [restTag]: restTasks }, isEmpty);
 
     return {
-      ...acc,
-      ...newAcc,
+      ...tasksByTags,
+      all: tasks,
+      tags: Object.keys(tasksByTags),
     };
-  }, initAcc);
+  };
+
+  const tasksByLevel = groupBy(allTasks, 'level');
+
+  return mapValues(tasksByLevel, groupTasksByTags);
 };
 
-const getTaskIdsByTags = (dictionary, tags) => {
-  const taskIds = tags.map(tag => dictionary[tag]);
-  return intersection(...taskIds);
-};
-
-const filterTasksByTagsAndLevel = (tasks, tags, dictionary) => {
-  if (tags.length === 0) {
-    return tasks;
-  }
-
-  const availableTaskIds = getTaskIdsByTags(dictionary, tags);
-  return tasks.filter(task => availableTaskIds.includes(task.id));
-};
-
-const CurrentUserTaskLabel = ({ task, userStats = { user: { avatarUrl: '' } } }) => {
-  const { user: { avatarUrl } } = userStats;
-
-  return (
-    <div className="d-flex align-items-center">
-      <div className="mr-1">
-        <img
-          className="img-fluid"
-          style={{ maxHeight: '16px', width: '16px' }}
-          src={avatarUrl}
-          alt="User avatar"
-        />
-      </div>
-      <div>
-        <span className="text-truncate">
-          {task.name}
-        </span>
-      </div>
-    </div>
-  );
-};
-
-const renderIcon = type => {
-  switch (type) {
-    case 'user':
-      return (
-        <FontAwesomeIcon
-          icon={faUser}
-          className="mr-1"
-        />
-      );
-    case 'github':
-      return (
-        <FontAwesomeIcon
-          icon={['fab', 'github']}
-          className="mr-1"
-        />
-      );
-    default:
-      return (
-        <FontAwesomeIcon
-          icon={faShuffle}
-          className="mr-1"
-        />
-      );
-  }
-};
-
-const isCreatedByCurrentUser = (taskCreatorId, userId) => taskCreatorId && taskCreatorId === userId;
-
-const TaskLabel = ({ task, userStats, currentUserId }) => {
-  if (isCreatedByCurrentUser(task.creatorId, currentUserId)) {
-    return <CurrentUserTaskLabel task={task} userStats={userStats} />;
-  }
-
-  return (
-    <span className="text-truncate">
-      {renderIcon(task.origin)}
-      <span>{task.name}</span>
-    </span>
-  );
-};
-
-function TaskSelect({
-  setChosenTask,
-  randomTask,
-  tasks,
-  level,
-}) {
+function TaskSelect({ value, onChange, options }) {
   const dispatch = useDispatch();
-  const defaultOption = { label: <TaskLabel task={randomTask} />, value: randomTask.name };
   const currentUserId = useSelector(selectors.currentUserIdSelector);
-  const [userStats, setUserStats] = useState({});
-  const allTasks = [randomTask, ...tasks];
+  const [avatarUrl, setAvatarUrl] = useState('');
 
   useEffect(() => {
     axios
       .get(`/api/v1/user/${currentUserId}/stats`)
       .then(response => {
-        setUserStats(camelizeKeys(response.data));
+        setAvatarUrl(response.data.user.avatar_url);
       })
       .catch(error => {
         dispatch(actions.setError(error));
       });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentUserId]);
+  }, [currentUserId, dispatch]);
 
-  useEffect(() => {
-    setChosenTask(defaultOption.value);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [level]);
+  const taskOriginToIcon = {
+    user: { icon: faUser },
+    github: { icon: ['fab', 'github'], transform: 'down-1' },
+    random: { icon: faShuffle, transform: 'down-1' },
+  };
 
-  const onChange = ({ value }) => setChosenTask(value);
+  const renderOptionLabel = task => (
+    <div className="d-flex align-items-center">
+      {task.creatorId === currentUserId ? (
+        <img
+          className="img-fluid"
+          style={{ maxHeight: '24px', width: '16px' }}
+          src={avatarUrl}
+          alt="User avatar"
+        />
+      ) : (
+        <FontAwesomeIcon
+          icon={taskOriginToIcon[task.origin].icon}
+          transform={taskOriginToIcon[task.origin].transform}
+        />
+      )}
+      <span className="text-truncate ml-1">
+        {task.name}
+      </span>
+    </div>
+  );
 
   return (
     <Select
-      key={`task-choise-${level}`}
       className="w-100"
-      defaultValue={defaultOption}
+      value={value}
       onChange={onChange}
-      filterOption={({ value: { name } }, inputValue) => (
-        name.toLowerCase().includes(inputValue.toLowerCase())
-      )}
-      options={
-        allTasks.map(task => (
-          {
-            label: <TaskLabel
-              task={task}
-              userStats={userStats}
-              currentUserId={currentUserId}
-            />,
-            value: task,
-          }))
-        }
+      options={options}
+      getOptionLabel={task => renderOptionLabel(task)}
+      getOptionValue={task => task.id}
+      filterOption={createFilter({ stringify: option => option.data.name })}
     />
   );
 }
 
-export default function TaskChoice({
+function TagButtonGroup({
+  tags, value, onChange, disabled,
+}) {
+  const getTagClassName = tag => {
+    const isTagMarked = value.includes(tag);
+    return cn('btn btn-sm mr-1 mb-1 mb-sm-0 rounded-lg text-nowrap', {
+      'bg-orange text-white': isTagMarked,
+      'tag-btn-outline-orange': !isTagMarked,
+    });
+  };
+
+  const toggleTagButton = tag => {
+    const newValue = value.includes(tag) ? value.filter(item => item !== tag) : value.concat(tag);
+    onChange(newValue);
+  };
+
+  return (
+    <div className="d-flex flex-wrap border pt-2 px-2 pb-1 pb-sm-2 rounded-lg">
+      {tags.map(tag => (
+        <button
+          key={tag}
+          type="button"
+          className={getTagClassName(tag)}
+          onClick={() => toggleTagButton(tag)}
+          disabled={disabled}
+        >
+          {tag}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+const TaskChoice = memo(({
   chosenTask,
   setChosenTask,
   chosenTags,
   setChosenTags,
   level,
-  randomTask,
-}) {
+}) => {
   const dispatch = useDispatch();
-  const taskTags = Gon.getAsset('task_tags');
-
-  const [allTasks, setAllTasks] = useState([]);
+  const [groupedTasks, setGroupedTasks] = useState({});
 
   useEffect(() => {
     axios
       .get('/api/v1/tasks')
       .then(({ data }) => {
         const { tasks } = camelizeKeys(data);
-        setAllTasks(tasks);
+        setGroupedTasks(groupTasksByLevelByTags(tasks, taskTags));
       })
       .catch(error => {
         dispatch(actions.setError(error));
       });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [dispatch]);
 
-  const tagsToTaskIdsDictionary = mapTagsToTaskIds(allTasks, taskTags);
+  const isTaskChosen = chosenTask.id !== null;
+  const isShowAllTasks = isEmpty(chosenTags) || isEqual(chosenTags, taskTags);
 
-  const tasksFilteredByLevel = allTasks.filter(task => task.level === level);
-
-  const filteredTasks = filterTasksByTagsAndLevel(tasksFilteredByLevel, chosenTags, tagsToTaskIdsDictionary, level);
-
-  const isTagButtonDisabled = tag => {
-    if (!isRandomTask(chosenTask)) {
-      return true;
-    }
-    const availableTaskIds = getTaskIdsByTags(tagsToTaskIdsDictionary, [...chosenTags, tag]);
-    return availableTaskIds.length === 0;
-  };
-
-  const isTagChosen = tag => (
-    isRandomTask(chosenTask)
-      ? chosenTags.includes(tag)
-      : tagsToTaskIdsDictionary[tag].includes(chosenTask.id)
-  );
-
-  const toggleTagButton = tag => {
-    if (chosenTags.includes(tag)) {
-      const tagsWithoutChosen = chosenTags.filter(chosenTag => chosenTag !== tag);
-      setChosenTags(tagsWithoutChosen);
-      return;
-    }
-    setChosenTags([...chosenTags, tag]);
-  };
+  const tasksByLevel = get(groupedTasks, level, { all: [], tags: [] });
+  const filteredTasks = isShowAllTasks
+    ? tasksByLevel.all
+    : uniqBy(chosenTags.flatMap(tag => tasksByLevel[tag]), 'id');
+  const randomTaskName = i18n.t('random task (%{total} available)', { total: filteredTasks.length });
+  const randomTask = { id: null, name: randomTaskName, origin: 'random' };
+  const taskSelectValue = isTaskChosen ? chosenTask : randomTask;
+  const taskOptions = [randomTask].concat(filteredTasks);
+  const tagGroupValue = isTaskChosen ? chosenTask.tags : chosenTags;
 
   return (
     <>
-      <h5>{i18n.t('Choose task by name or tags')}</h5>
-      <div className="d-flex justify-content-around px-5 mt-3 mb-2">
-        <TaskSelect
-          setChosenTask={setChosenTask}
-          randomTask={randomTask}
-          tasks={filteredTasks}
-          level={level}
-        />
+      <div className="px-sm-3 px-md-5 mt-3">
+        <TaskSelect value={taskSelectValue} onChange={setChosenTask} options={taskOptions} />
       </div>
-      <div className="d-flex flex-column justify-content-around px-5 mt-3 mb-2">
+      <div className="px-sm-3 px-md-5 mt-3">
         <h6>{i18n.t('Tags')}</h6>
-        <div className="border p-2 rounded-lg">
-          {taskTags.map(tag => (
-            <button
-              key={tag}
-              type="button"
-              className={cn('btn btn-sm mr-1 tag rounded-lg', {
-                'bg-orange text-white': isTagChosen(tag),
-                'tag-btn-outline-orange': !isTagChosen(tag),
-              })}
-              onClick={() => toggleTagButton(tag)}
-              disabled={isTagButtonDisabled(tag)}
-            >
-              {tag}
-            </button>
-          ))}
-        </div>
+        <TagButtonGroup
+          tags={tasksByLevel.tags}
+          value={tagGroupValue}
+          onChange={setChosenTags}
+          disabled={isTaskChosen}
+        />
       </div>
     </>
   );
-}
+});
+
+export default TaskChoice;

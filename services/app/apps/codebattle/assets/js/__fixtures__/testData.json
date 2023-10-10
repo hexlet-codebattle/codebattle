@@ -96,7 +96,10 @@
   ],
   "tasksMatchingRestTags": [
     { 
-      "name": "random task"
+      "name": "random task (2 available)"
+    },
+    {
+      "name": "task4 name"
     },
     {
       "name": "task5 name"
@@ -113,15 +116,12 @@
       "name": "task3 filtered"
     },
     {
-      "name": "task4 name"
-    },
-    {
       "name": "task6 name"
     }
   ],
   "tasksMatchingMathTag": [
     { 
-      "name": "random task"
+      "name": "random task (4 available)"
     },
     {
       "name": "task1 name"
@@ -146,13 +146,11 @@
   ],
   "tasksMatchingMathAndStringTags": [
     { 
-      "name": "random task"
+      "name": "random task (4 available)"
     },
     {
       "name": "task1 name"
-    }
-  ],
-  "tasksUnsuitableForMathAndStringTags": [
+    },
     {
       "name": "task2 name"
     },
@@ -160,10 +158,12 @@
       "name": "task3 filtered"
     },
     {
-      "name": "task4 name"
-    },
-    {
       "name": "task5 name"
+    }
+  ],
+  "tasksUnsuitableForMathAndStringTags": [
+    {
+      "name": "task4 name"
     },
     {
       "name": "task6 name"

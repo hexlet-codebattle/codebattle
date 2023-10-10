@@ -378,3 +378,6 @@ msgstr "34 min"
 
 msgid "Timeout 3300 seconds"
 msgstr "55 min"
+
+msgid "random task (%{total} available)"
+msgstr "random task (%{total} available)"

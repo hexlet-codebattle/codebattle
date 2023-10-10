@@ -719,11 +719,7 @@ main {
 .tag-btn-outline-orange {
   border-color: $orange;
   color: $orange;
-}
-
-.tag-btn-outline-orange:hover {
-  border-color: $orange;
-  color: $orange;
+  @include button-outline-variant($orange);
 }
 
 .game-chat-container {
