@@ -99,6 +99,9 @@
       "name": "random task"
     },
     {
+      "name": "task4 name"
+    },
+    {
       "name": "task5 name"
     }
   ],
@@ -111,9 +114,6 @@
     },
     {
       "name": "task3 filtered"
-    },
-    {
-      "name": "task4 name"
     },
     {
       "name": "task6 name"
@@ -150,9 +150,7 @@
     },
     {
       "name": "task1 name"
-    }
-  ],
-  "tasksUnsuitableForMathAndStringTags": [
+    },
     {
       "name": "task2 name"
     },
@@ -160,10 +158,12 @@
       "name": "task3 filtered"
     },
     {
-      "name": "task4 name"
-    },
-    {
       "name": "task5 name"
+    }
+  ],
+  "tasksUnsuitableForMathAndStringTags": [
+    {
+      "name": "task4 name"
     },
     {
       "name": "task6 name"

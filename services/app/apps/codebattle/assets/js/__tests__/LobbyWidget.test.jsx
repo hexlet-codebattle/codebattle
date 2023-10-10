@@ -88,6 +88,7 @@ const {
 } = getTestData('testData.json');
 
 const users = [{ name: 'user1', id: -4 }, { name: 'user2', id: -2 }];
+const userData = { avatarUrl: '' };
 
 axios.get.mockResolvedValue({
   data: {
@@ -95,6 +96,7 @@ axios.get.mockResolvedValue({
     users,
     games: gamesPage1,
     pageInfo: pageInfo1,
+    user: userData,
   },
 });
 
@@ -403,13 +405,22 @@ describe('test task choice', () => {
     const asdTag = await findByRole('button', { name: 'asd' });
     const restTag = await findByRole('button', { name: 'rest' });
 
+    expect(mathTag).toBeEnabled();
+    expect(stringTag).toBeEnabled();
+    expect(asdTag).toBeEnabled();
+    expect(restTag).toBeEnabled();
+
     await user.click(restTag);
+    await user.click(await findByRole('button', { name: 'task5 name' }));
+
+    expect(mathTag).toBeDisabled();
+    expect(stringTag).toBeDisabled();
+    expect(asdTag).toBeDisabled();
+    expect(restTag).toBeDisabled();
+
+    await user.click(await findByRole('button', { name: 'random task' }));
 
     await waitFor(() => {
-      expect(mathTag).toBeEnabled();
-      expect(stringTag).toBeDisabled();
-      expect(asdTag).toBeDisabled();
-
       tasksMatchingRestTags.forEach(task => expect(getByRole('button', { name: task.name })).toBeInTheDocument());
 
       tasksUnsuitableForRestTags.forEach(task => (
@@ -420,19 +431,12 @@ describe('test task choice', () => {
     await user.click(restTag);
 
     await waitFor(() => {
-      expect(mathTag).toBeEnabled();
-      expect(stringTag).toBeEnabled();
-      expect(asdTag).toBeEnabled();
-
       elementaryTasksFromBackend.forEach(task => expect(getByRole('button', { name: task.name })).toBeInTheDocument());
     });
 
     await user.click(mathTag);
 
     await waitFor(() => {
-      expect(stringTag).toBeEnabled();
-      expect(asdTag).toBeDisabled();
-      expect(restTag).toBeEnabled();
       tasksMatchingMathTag.forEach(task => expect(getByRole('button', { name: task.name })).toBeInTheDocument());
       tasksUnsuitableForMathTag.forEach(task => (
         expect(queryByRole('button', { name: task.name })).not.toBeInTheDocument()
@@ -442,8 +446,6 @@ describe('test task choice', () => {
     await user.click(stringTag);
 
     await waitFor(() => {
-      expect(restTag).toBeDisabled();
-      expect(asdTag).toBeDisabled();
       tasksMatchingMathAndStringTags.forEach(task => expect(getByRole('button', { name: task.name })).toBeInTheDocument());
       tasksUnsuitableForMathAndStringTags.forEach(task => (
         expect(queryByRole('button', { name: task.name })).not.toBeInTheDocument()
@@ -454,8 +456,6 @@ describe('test task choice', () => {
     await user.click(stringTag);
 
     await waitFor(() => {
-      expect(asdTag).toBeEnabled();
-      expect(restTag).toBeEnabled();
       elementaryTasksFromBackend.forEach(task => expect(getByRole('button', { name: task.name })).toBeInTheDocument());
     });
   }, 12000);
