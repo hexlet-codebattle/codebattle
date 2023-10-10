@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 
 import axios from 'axios';
+import cn from 'classnames';
 import { camelizeKeys } from 'humps';
 import groupBy from 'lodash/groupBy';
 import mapValues from 'lodash/mapValues';
+import sum from 'lodash/sum';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   Radar,
@@ -149,12 +151,13 @@ function UserProfile() {
 
     return (
       <>
-        <div className="col-6">
-          <ResponsiveContainer width="100%" height="100%">
+        <div className="col-12 col-md-7 mb-sm-n5 mb-md-0">
+          <ResponsiveContainer aspect={1}>
             <RadarChart
               cx="50%"
               cy="50%"
-              outerRadius="80%"
+              outerRadius="70%"
+              margin={{ right: 70 }}
               data={sortedDataForRadar}
             >
               <PolarGrid />
@@ -167,12 +170,12 @@ function UserProfile() {
                 fill="#8884d8"
                 fillOpacity={0.6}
               />
-              <Tooltip />
+              <Tooltip contentStyle={{ padding: '0 10px' }} />
             </RadarChart>
           </ResponsiveContainer>
         </div>
-        <div className="col-6">
-          <ResponsiveContainer width="100%" height="100%">
+        <div className="col-10 col-sm-8 col-md-5 mt-n5 mt-md-0 pt-md-4">
+          <ResponsiveContainer aspect={1}>
             <PieChart>
               <Pie
                 dataKey="value"
@@ -197,39 +200,40 @@ function UserProfile() {
     );
   };
 
-  const renderStatistics = () => (
-    <>
-      <div className="row my-4 justify-content-center">
-        {!stats.user.isBot && (
-          <div className="col-md-3 col-5 text-center">
-            <div className="h1 cb-stats-number">{stats.user.rank}</div>
-            <p className="lead">rank</p>
+  const renderStatistics = () => {
+    const gamesCount = sum(Object.values(stats.stats.games));
+
+    return (
+      <>
+        <div className="row mt-5 px-3 justify-content-center">
+          {!stats.user.isBot && (
+            <div className="col col-md-3 text-center">
+              <div className="h1 cb-stats-number">{stats.user.rank}</div>
+              <p className="lead">rank</p>
+            </div>
+          )}
+          <div className="col col-md-3 text-center">
+            <div className="h1 cb-stats-number">{stats.user.rating}</div>
+            <p className="lead">elo_rating</p>
           </div>
-        )}
-        <div className="col-md-3 col-5 text-center">
-          <div className="h1 cb-stats-number">{stats.user.rating}</div>
-          <p className="lead">elo_rating</p>
-        </div>
-        <div className="col-md-3 col-5 text-center">
-          <div className="h1 cb-stats-number">
-            {Object.values(stats.stats.games).reduce((a, b) => a + b, 0)}
+          <div className="col col-md-3 text-center">
+            <div className="h1 cb-stats-number">
+              {gamesCount}
+            </div>
+            <p className="lead">games_played</p>
           </div>
-          <p className="lead">games_played</p>
         </div>
-      </div>
-      <div
-        className="row my-4 justify-content-center"
-        style={{ width: '100%', height: 400 }}
-      >
-        {renderCustomPieChart()}
-      </div>
-      <div className="row my-4 justify-content-center">
-        <div className="col-10 col-lg-8 cb-heatmap">
-          <Heatmap />
+        <div className="row justify-content-center">
+          {gamesCount > 0 && renderCustomPieChart()}
         </div>
-      </div>
-    </>
-  );
+        <div className={cn('row mt-5 mb-md-3 mb-lg-4', { 'mt-md-n3': gamesCount > 0 })}>
+          <div className="col-md-11 col-lg-10 mx-auto">
+            <Heatmap />
+          </div>
+        </div>
+      </>
+    );
+  };
 
   const renderCompletedGames = () => (
     <div className="row justify-content-center">
@@ -260,7 +264,7 @@ function UserProfile() {
     </div>
   );
   const statContainers = () => (
-    <div>
+    <div className="pr-md-2">
       <nav>
         <div className="nav nav-tabs bg-gray" id="nav-tab" role="tablist">
           <a
@@ -309,21 +313,21 @@ function UserProfile() {
   );
 
   return (
-    <div className="container-lg">
-      <div className="row">
-        <div className="col-12 col-md-3 my-4 cb-user-data d-flex flex-column">
-          <div className="mb-2 mb-sm-4 d-flex justify-content-center">
+    <div className="row">
+      <div className="col-12 col-md-3 my-4">
+        <div className="pl-md-2 text-center">
+          <div className="mb-2 mb-sm-4">
             <img
               className="cb-profile-avatar rounded"
               src={stats.user.avatarUrl}
               alt="User avatar"
             />
           </div>
-          <div className="text-center">
+          <div>
             <h2 className="my-2 text-break cb-heading font-weight-bold">{stats.user.name}</h2>
             <hr />
             <h3 className="my-2 cb-heading">
-              <span className="d-none d-sm-block">Lang:</span>
+              <span>Lang:</span>
               <img
                 src={`/assets/images/achievements/${langIconNames[stats.user.lang]}.png`}
                 alt={stats.user.lang}
@@ -365,9 +369,9 @@ function UserProfile() {
             </div>
           </div>
         </div>
-        <div className="col-12 col-md-9 my-4 cb-user-stats">
-          {statContainers()}
-        </div>
+      </div>
+      <div className="col-12 col-md-9 my-4">
+        {statContainers()}
       </div>
     </div>
   );

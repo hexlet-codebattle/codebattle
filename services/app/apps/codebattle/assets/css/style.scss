@@ -678,22 +678,11 @@ main {
   .cb-heading {
     font-size: 18px;
   }
-  .cb-user-data {
-    flex: 1 1 30%;
-    max-width: 30%;
-  }
-  .cb-user-stats {
-    max-width: 70%;
-  }
   .cb-stats-number {
     font-size: 22px;
   }
   .lead {
     font-size: 14px;
-  }
-  .cb-heatmap {
-    max-width: 95%;
-    flex-basis: 95%;
   }
 }
 
@@ -704,12 +693,6 @@ main {
 }
 
 @media (max-width: $sm) {
-  .cb-user-data {
-    max-width: 100%;
-  }
-  .cb-user-stats {
-    max-width: 100%;
-  }
   .cb-heading {
     font-size: 20px;
   }
