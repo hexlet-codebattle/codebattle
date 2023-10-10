@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, memo } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
@@ -18,6 +18,19 @@ import { actions } from '../../slices';
 import TaskChoice from './TaskChoice';
 
 const TIMEOUT = 480;
+const gameLevels = Object.keys(levelRatio);
+const gameTypeNames = {
+  other_user: i18n.t('With other users'),
+  invite: i18n.t('With a friend'),
+  bot: i18n.t('With a bot'),
+};
+const gameTypeCodes = Object.keys(gameTypeNames);
+const defaultGameOptions = {
+  level: gameLevels[0],
+  type: gameTypeCodes[0],
+  timeoutSeconds: TIMEOUT,
+};
+const unchosenTask = { id: null };
 
 function UserLabel({ user }) {
   const { presenceList } = useSelector(selectors.lobbyDataSelector);
@@ -40,7 +53,7 @@ function UserLabel({ user }) {
   );
 }
 
-function OpponentSelect({ setOpponent, opponent }) {
+const OpponentSelect = memo(({ setOpponent, opponent }) => {
   const currentUserId = useSelector(selectors.currentUserIdSelector);
   const dispatch = useDispatch();
 
@@ -81,123 +94,133 @@ function OpponentSelect({ setOpponent, opponent }) {
       loadOptions={loadOptions}
     />
   );
-}
+});
+
+const LevelButtonGroup = memo(({ value, onChange }) => {
+  const getLevelClassName = level => {
+    const isLevelActive = level === value;
+    return cn('btn border-0 mb-2 rounded-lg', {
+      'bg-orange': isLevelActive,
+      'btn-outline-orange': !isLevelActive,
+    });
+  };
+
+  const changeGameLevel = level => {
+    if (level === value) return;
+    onChange(level);
+  };
+
+  return (
+    <div className="d-flex justify-content-around px-sm-3 px-md-5">
+      {gameLevels.map(level => (
+        <button
+          key={level}
+          type="button"
+          className={getLevelClassName(level)}
+          onClick={() => changeGameLevel(level)}
+          data-toggle="tooltip"
+          data-placement="right"
+          title={level}
+        >
+          <img alt={level} src={`/assets/images/levels/${level}.svg`} />
+        </button>
+      ))}
+    </div>
+  );
+});
+
+const GameTypeButtonGroup = memo(({ value, onChange }) => {
+  const getGameTypeClassName = gameType => {
+    const isGameTypeActive = gameType === value;
+    return cn('btn mr-1 mb-1 mb-sm-0 rounded-lg text-nowrap', {
+      'bg-orange text-white': isGameTypeActive,
+      'btn-outline-orange': !isGameTypeActive,
+    });
+  };
+
+  return (
+    <div className="d-flex flex-wrap flex-sm-nowrap justify-content-around px-sm-3 px-md-5 mt-3">
+      {gameTypeCodes.map(gameTypeCode => (
+        <button
+          key={gameTypeCode}
+          type="button"
+          className={getGameTypeClassName(gameTypeCode)}
+          onClick={() => onChange(gameTypeCode)}
+        >
+          {gameTypeNames[gameTypeCode]}
+        </button>
+      ))}
+    </div>
+  );
+});
 
 function CreateGameDialog({ hideModal }) {
   const dispatch = useDispatch();
-
-  const { gameOptions, opponentInfo } = useSelector(selectors.modalSelector);
-  const gameLevels = Object.keys(levelRatio);
-  const currentGameTypeCodes = ['other_user', 'invite', 'bot'];
-  const gameTypeName = {
-    other_user: i18n.t('With other users'),
-    invite: i18n.t('With a friend'),
-    bot: i18n.t('With a bot'),
-  };
-
+  const { gameOptions: givenGameOptions, opponentInfo } = useSelector(selectors.modalSelector);
   const [opponent, setOpponent] = useState(opponentInfo);
-
-  const unchosenTask = { id: null };
   const [chosenTask, setChosenTask] = useState(unchosenTask);
   const [chosenTags, setChosenTags] = useState([]);
 
-  const [game, setGame] = useState({
-    level: gameLevels[0],
-    type: 'other_user',
-    timeoutSeconds: TIMEOUT,
-    ...gameOptions,
-  });
+  const gameOptions = { ...defaultGameOptions, ...givenGameOptions };
+  const [gameLevel, setGameLevel] = useState(gameOptions.level);
+  const [gameType, setGameType] = useState(gameOptions.type);
+  const [gameTimeout, setGameTimeout] = useState(gameOptions.timeoutSeconds);
 
-  const isInvite = game.type === 'invite';
+  const isInvite = gameType === 'invite';
+  const isTaskChosen = chosenTask.id !== null;
 
-  const createBtnTitle = isInvite
-    ? i18n.t('Create invite')
-    : i18n.t('Create battle');
+  const handleTimeoutChange = useCallback(e => setGameTimeout(e.target.value * 60), [setGameTimeout]);
+
+  const switchGameLevel = useCallback(level => {
+    setGameLevel(level);
+    setChosenTask(unchosenTask);
+    setChosenTags([]);
+  }, [setGameLevel, setChosenTask, setChosenTags]);
 
   const createGame = () => {
     if (isInvite && opponent) {
       dispatch(
         invitesMiddleware.createInvite({
-          level: game.level,
-          timeout_seconds: game.timeoutSeconds,
+          level: gameLevel,
+          timeout_seconds: gameTimeout,
           recipient_id: opponent.id,
           recipient_name: opponent.name,
           task_id: chosenTask.id,
-          task_tags: chosenTags,
+          task_tags: isTaskChosen ? [] : chosenTags,
         }),
       );
     } else if (!isInvite) {
       lobbyMiddlewares.createGame({
-        level: game.level,
-        opponent_type: game.type,
-        timeout_seconds: game.timeoutSeconds,
+        level: gameLevel,
+        opponent_type: gameType,
+        timeout_seconds: gameTimeout,
         task_id: chosenTask.id,
-        task_tags: chosenTags,
+        task_tags: isTaskChosen ? [] : chosenTags,
       });
     }
     hideModal();
   };
 
-  const renderPickGameType = () => currentGameTypeCodes.map(gameType => (
-    <button
-      type="button"
-      key={gameType}
-      className={cn('btn mr-1 mb-1 mb-sm-0 rounded-lg text-nowrap', {
-          'bg-orange text-white': game.type === gameType,
-          'btn-outline-orange': game.type !== gameType,
-        })}
-      onClick={() => setGame({ ...game, type: gameType })}
-    >
-      {gameTypeName[gameType]}
-    </button>
-    ));
-
   return (
     <div className="mb-2">
       <h5>{i18n.t('Level')}</h5>
-      <div className="d-flex justify-content-around px-sm-3 px-md-5">
-        {gameLevels.map(level => (
-          <button
-            key={level}
-            type="button"
-            className={cn('btn border-0 mb-2 rounded-lg', {
-              'bg-orange': game.level === level,
-              'btn-outline-orange': game.level !== level,
-            })}
-            onClick={() => {
-              if (game.level === level) return;
-
-              setGame({ ...game, level });
-              setChosenTask(unchosenTask);
-              setChosenTags([]);
-            }}
-            data-toggle="tooltip"
-            data-placement="right"
-            title={level}
-          >
-            <img alt={level} src={`/assets/images/levels/${level}.svg`} />
-          </button>
-        ))}
-      </div>
-
+      <LevelButtonGroup value={gameLevel} onChange={switchGameLevel} />
       <h5 className="mt-1">{i18n.t('Game Type')}</h5>
-      <div className="d-flex flex-wrap flex-sm-nowrap justify-content-around px-sm-3 px-md-5 mt-3">
-        {renderPickGameType()}
-      </div>
+      <GameTypeButtonGroup value={gameType} onChange={setGameType} />
       <h5 className="mt-2 mt-sm-3">{i18n.t('Time control')}</h5>
-      <div className={cn('px-sm-3 px-md-5 mt-3', { 'mb-2': !isInvite })}>
+      <div className="px-sm-3 px-md-5 mt-3">
         <input
           type="range"
           className="form-range w-100"
-          value={game.timeoutSeconds / 60}
-          onChange={e => setGame({ ...game, timeoutSeconds: e.target.value * 60 })}
+          value={gameTimeout / 60}
+          onChange={handleTimeoutChange}
           min="3"
           max="60"
           step="1"
           id="customRange3"
         />
         <span className="d-block text-center text-orange">
-          {i18n.t(`${game.timeoutSeconds / 60} min`)}
+          {i18n.t(`${gameTimeout / 60} min`)}
         </span>
       </div>
       {isInvite && (
@@ -208,20 +231,21 @@ function CreateGameDialog({ hideModal }) {
           </div>
         </>
       )}
+      <h5 className="mt-2">{i18n.t('Choose task by name or tags')}</h5>
       <TaskChoice
         chosenTask={chosenTask}
         setChosenTask={setChosenTask}
         chosenTags={chosenTags}
         setChosenTags={setChosenTags}
-        level={game.level}
+        level={gameLevel}
       />
       <button
         type="button"
-        className="btn btn-success mt-4 d-flex ml-auto text-white font-weight-bold rounded-lg"
+        className="btn btn-success d-block mt-4 ml-auto text-white font-weight-bold rounded-lg"
         onClick={createGame}
         disabled={isInvite && !opponent}
       >
-        {createBtnTitle}
+        {isInvite ? i18n.t('Create invite') : i18n.t('Create battle')}
       </button>
     </div>
   );

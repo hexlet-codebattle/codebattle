@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 
 import { faShuffle, faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -21,8 +21,10 @@ import i18n from '../../../i18n';
 import * as selectors from '../../selectors';
 import { actions } from '../../slices';
 
-const groupTasksByLevelByTags = (allTasks, taskTags) => {
-  const [restTag, ...popularTags] = taskTags.slice().reverse();
+const taskTags = Gon.getAsset('task_tags');
+
+const groupTasksByLevelByTags = (allTasks, allTags) => {
+  const [restTag, ...popularTags] = allTags.slice().reverse();
 
   const groupTasksByTags = tasks => {
     const tasksByPopularTags = popularTags.reduce((acc, tag) => ({
@@ -60,8 +62,7 @@ function TaskSelect({ value, onChange, options }) {
       .catch(error => {
         dispatch(actions.setError(error));
       });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentUserId]);
+  }, [currentUserId, dispatch]);
 
   const taskOriginToIcon = {
     user: { icon: faUser },
@@ -103,16 +104,47 @@ function TaskSelect({ value, onChange, options }) {
   );
 }
 
-export default function TaskChoice({
+function TagButtonGroup({
+  tags, value, onChange, disabled,
+}) {
+  const getTagClassName = tag => {
+    const isTagMarked = value.includes(tag);
+    return cn('btn btn-sm mr-1 mb-1 mb-sm-0 rounded-lg text-nowrap', {
+      'bg-orange text-white': isTagMarked,
+      'tag-btn-outline-orange': !isTagMarked,
+    });
+  };
+
+  const toggleTagButton = tag => {
+    const newValue = value.includes(tag) ? value.filter(item => item !== tag) : value.concat(tag);
+    onChange(newValue);
+  };
+
+  return (
+    <div className="d-flex flex-wrap border pt-2 px-2 pb-1 pb-sm-2 rounded-lg">
+      {tags.map(tag => (
+        <button
+          key={tag}
+          type="button"
+          className={getTagClassName(tag)}
+          onClick={() => toggleTagButton(tag)}
+          disabled={disabled}
+        >
+          {tag}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+const TaskChoice = memo(({
   chosenTask,
   setChosenTask,
   chosenTags,
   setChosenTags,
   level,
-}) {
+}) => {
   const dispatch = useDispatch();
-  const taskTags = Gon.getAsset('task_tags');
-
   const [groupedTasks, setGroupedTasks] = useState({});
 
   useEffect(() => {
@@ -125,60 +157,36 @@ export default function TaskChoice({
       .catch(error => {
         dispatch(actions.setError(error));
       });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [taskTags]);
+  }, [dispatch]);
 
-  const toggleTagButton = tag => setChosenTags(
-    prevTags => (prevTags.includes(tag)
-      ? prevTags.filter(prevTag => prevTag !== tag)
-      : prevTags.concat(tag)),
-  );
-
-  const randomTask = {
-    id: null, name: i18n.t('random task'), origin: 'random', tags: [],
-  };
+  const randomTask = { id: null, name: i18n.t('random task'), origin: 'random' };
   const isTaskChosen = chosenTask.id !== null;
+  const isShowAllTasks = isEmpty(chosenTags) || isEqual(chosenTags, taskTags);
+
   const tasksByLevel = get(groupedTasks, level, { all: [], tags: [] });
-  const filteredTasks = isTaskChosen || isEmpty(chosenTags) || isEqual(chosenTags, taskTags)
+  const filteredTasks = isShowAllTasks
     ? tasksByLevel.all
     : uniqBy(chosenTags.flatMap(tag => tasksByLevel[tag]), 'id');
+  const taskSelectValue = isTaskChosen ? chosenTask : randomTask;
+  const taskOptions = [randomTask].concat(filteredTasks);
+  const tagGroupValue = isTaskChosen ? chosenTask.tags : chosenTags;
 
   return (
     <>
-      <h5>{i18n.t('Choose task by name or tags')}</h5>
-      <div className="px-sm-3 px-md-5 mt-3 mb-2">
-        <TaskSelect
-          value={isTaskChosen ? chosenTask : randomTask}
-          onChange={value => {
-            setChosenTask(value);
-            setChosenTags(value.tags);
-          }}
-          options={[randomTask].concat(filteredTasks)}
-        />
+      <div className="px-sm-3 px-md-5 mt-3">
+        <TaskSelect value={taskSelectValue} onChange={setChosenTask} options={taskOptions} />
       </div>
-      <div className="px-sm-3 px-md-5 mt-3 mb-2">
+      <div className="px-sm-3 px-md-5 mt-3">
         <h6>{i18n.t('Tags')}</h6>
-        <div className="d-flex flex-wrap border pt-2 px-2 pb-1 pb-sm-2 rounded-lg">
-          {tasksByLevel.tags.map(tag => {
-            const isTagChosen = chosenTags.includes(tag);
-
-            return (
-              <button
-                key={tag}
-                type="button"
-                className={cn('btn btn-sm mr-1 mb-1 mb-sm-0 rounded-lg text-nowrap', {
-                  'bg-orange text-white': isTagChosen,
-                  'tag-btn-outline-orange': !isTagChosen,
-                })}
-                onClick={() => toggleTagButton(tag)}
-                disabled={isTaskChosen}
-              >
-                {tag}
-              </button>
-            );
-          })}
-        </div>
+        <TagButtonGroup
+          tags={tasksByLevel.tags}
+          value={tagGroupValue}
+          onChange={setChosenTags}
+          disabled={isTaskChosen}
+        />
       </div>
     </>
   );
-}
+});
+
+export default TaskChoice;
