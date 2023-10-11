@@ -93,7 +93,7 @@ export default function ChatInput({ inputRef, disabled = false }) {
       onSubmit={handleSubmit}
     >
       <input
-        className="form-control form-control-sm pr-1 h-auto border-gray border-right-0 rounded-left"
+        className="form-control h-auto border-gray border-right-0 rounded-left"
         placeholder="Please be nice in the chat!"
         value={text}
         onChange={handleChange}
@@ -114,7 +114,7 @@ export default function ChatInput({ inputRef, disabled = false }) {
           disabled={disabled}
         />
       )}
-      <div className="input-group-append rounded-right">
+      <div className="input-group-append border-left rounded-right">
         <button
           type="button"
           className="btn bg-white border-gray border-left-0 border-right-0 px-2 py-0"
