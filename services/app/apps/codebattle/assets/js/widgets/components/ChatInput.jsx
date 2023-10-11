@@ -94,7 +94,7 @@ export default function ChatInput({ inputRef, disabled = false }) {
     >
       <input
         className="form-control h-auto border-gray border-right-0 rounded-left"
-        placeholder="Please be nice in the chat!"
+        placeholder="Be nice in chat!"
         value={text}
         onChange={handleChange}
         ref={inputRef}
