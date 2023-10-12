@@ -23,6 +23,7 @@ defmodule Codebattle.Game do
              :starts_at,
              :state,
              :type,
+             :use_chat,
              :visibility_type
            ]}
 
@@ -49,6 +50,7 @@ defmodule Codebattle.Game do
     field(:is_live, :boolean, default: false, virtual: true)
     field(:is_bot, :boolean, default: false, virtual: true)
     field(:is_tournament, :boolean, default: false, virtual: true)
+    field(:use_chat, :boolean, default: true, virtual: true)
 
     timestamps()
 

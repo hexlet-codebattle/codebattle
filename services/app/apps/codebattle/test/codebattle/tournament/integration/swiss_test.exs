@@ -70,7 +70,7 @@ defmodule Codebattle.Tournament.Integration.SwissTest do
       assert %Player{score: 4, wins_count: 0} = tournament |> get_player(opponent_id)
       assert %Player{score: 12, wins_count: 1} = tournament |> get_player(user_id1)
 
-      Tournament.Server.finish_round_after(tournament.id, 0)
+      Tournament.Server.finish_round_after(tournament.id, tournament.current_round, 0)
       :timer.sleep(50)
 
       tournament = Tournament.Server.get_tournament(tournament.id)
@@ -123,7 +123,7 @@ defmodule Codebattle.Tournament.Integration.SwissTest do
       assert MapSet.size(tournament.played_pair_ids) == 200
       assert tournament.current_round == 1
 
-      Tournament.Server.finish_round_after(tournament.id, 0)
+      Tournament.Server.finish_round_after(tournament.id, tournament.current_round, 0)
       :timer.sleep(50)
       tournament = Tournament.Server.get_tournament(tournament.id)
       assert tournament |> get_matches("game_over") |> Enum.count() == 5
@@ -132,7 +132,7 @@ defmodule Codebattle.Tournament.Integration.SwissTest do
       assert MapSet.size(tournament.played_pair_ids) == 300
       assert tournament.current_round == 2
 
-      Tournament.Server.finish_round_after(tournament.id, 0)
+      Tournament.Server.finish_round_after(tournament.id, tournament.current_round, 0)
       :timer.sleep(50)
 
       tournament = Tournament.Server.get_tournament(tournament.id)

@@ -33,6 +33,7 @@ defmodule Codebattle.Game.Context do
           optional(:type) => String.t(),
           optional(:mode) => String.t(),
           optional(:visibility_type) => String.t(),
+          optional(:use_chat) => boolean(),
           # fix nil task in stairway tournament
           optional(:task) => Codebattle.Task.t() | nil
         }

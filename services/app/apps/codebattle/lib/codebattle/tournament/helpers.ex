@@ -85,6 +85,7 @@ defmodule Codebattle.Tournament.Helpers do
   def is_team?(tournament), do: tournament.type == "team"
   def is_public?(tournament), do: tournament.access_type == "public"
   def is_visible_by_token?(tournament), do: tournament.access_type == "token"
+  def in_break?(tournament), do: tournament.break_state == "on"
 
   def is_player?(tournament, player_id) do
     tournament.players

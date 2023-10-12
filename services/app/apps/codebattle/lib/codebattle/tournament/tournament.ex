@@ -9,30 +9,32 @@ defmodule Codebattle.Tournament do
 
   @derive {Jason.Encoder,
            only: [
-             :creator,
-             :creator_id,
-             :id,
+             :access_token,
+             :access_type,
              :break_duration_seconds,
              :break_state,
+             :creator,
+             :creator_id,
+             :current_round,
+             :description,
+             :id,
              :is_live,
              :level,
              :matches,
              :meta,
              :name,
+             :played_pair_ids,
              :players,
              :players_limit,
              :players_count,
              :starts_at,
              :state,
              :stats,
-             :type,
-             :access_type,
-             :access_token,
-             :current_round,
              :task_pack_name,
-             :task_strategy,
              :task_provider,
-             :played_pair_ids
+             :task_strategy,
+             :type,
+             :use_chat
            ]}
 
   @access_types ~w(public token)
@@ -41,7 +43,7 @@ defmodule Codebattle.Tournament do
   @states ~w(waiting_participants canceled active finished)
   @task_providers ~w(level task_pack tags)
   @task_strategies ~w(game round)
-  @types ~w(individual team stairway swiss ladder)
+  @types ~w(individual team stairway swiss ladder punchline)
 
   @default_match_timeout Application.compile_env(:codebattle, :tournament_match_timeout)
 
@@ -54,6 +56,7 @@ defmodule Codebattle.Tournament do
     field(:break_state, :string, default: "off")
     field(:current_round, :integer, default: 0)
     field(:default_language, :string, default: "js")
+    field(:description, :string)
     field(:finished_at, :naive_datetime)
     field(:labels, {:array, :string})
     field(:last_round_ended_at, :naive_datetime)
@@ -71,6 +74,7 @@ defmodule Codebattle.Tournament do
     field(:task_provider, :string, default: "level")
     field(:task_strategy, :string, default: "game")
     field(:type, :string, default: "individual")
+    field(:use_chat, :boolean, default: true)
     field(:winner_ids, {:array, :integer})
 
     field(:is_live, :boolean, virtual: true, default: false)
@@ -92,6 +96,7 @@ defmodule Codebattle.Tournament do
       :break_state,
       :current_round,
       :default_language,
+      :description,
       :last_round_ended_at,
       :last_round_started_at,
       :level,
@@ -106,7 +111,8 @@ defmodule Codebattle.Tournament do
       :starts_at,
       :state,
       :task_strategy,
-      :type
+      :type,
+      :use_chat
     ])
     |> validate_inclusion(:access_type, @access_types)
     |> validate_inclusion(:break_state, @break_states)

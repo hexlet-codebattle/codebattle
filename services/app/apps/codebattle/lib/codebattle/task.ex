@@ -31,6 +31,25 @@ defmodule Codebattle.Task do
              :generator_lang
            ]}
 
+  @level_order %{
+    "elementary" => 0,
+    "easy" => 1,
+    "medium" => 2,
+    "hard" => 3
+  }
+
+  @state_order %{
+    "blank" => 0,
+    "draft" => 1,
+    "on_moderation" => 2,
+    "active" => 3,
+    "disabled" => 4
+  }
+  @origin_order %{
+    "user" => 0,
+    "github" => 1
+  }
+
   @levels ~w(elementary easy medium hard)
   @states ~w(blank draft on_moderation active disabled)
   @origin_types ~w(github user)
@@ -129,8 +148,10 @@ defmodule Codebattle.Task do
   def list_visible(user) do
     __MODULE__
     |> filter_visibility(user)
-    |> order_by([{:desc, :origin}, :state, :level, :name])
     |> Repo.all()
+    |> Enum.sort_by(
+      &{@origin_order[&1.origin], @state_order[&1.state], @level_order[&1.level], &1.name}
+    )
   end
 
   defp filter_visibility(query, user) do

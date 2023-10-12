@@ -19,7 +19,11 @@ defmodule CodebattleWeb.Live.Tournament.EditView do
        current_user: session["current_user"],
        user_timezone: user_timezone,
        tournament: tournament,
-       changeset: Codebattle.Tournament.changeset(tournament)
+       changeset:
+         Codebattle.Tournament.changeset(tournament, %{
+           type: tournament.type,
+           meta: tournament.meta
+         })
      )}
   end
 

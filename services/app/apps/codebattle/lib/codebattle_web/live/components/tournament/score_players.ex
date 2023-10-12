@@ -14,11 +14,7 @@ defmodule CodebattleWeb.Live.Tournament.ScorePlayersComponent do
           <div class="my-3 d-flex">
             <span><%= i %></span>
             <div class="ml-4">
-              <PlayerComponent.render
-                player={player}
-                max_score={(@tournament.current_round + 1) * 10}
-                render_score={true}
-              />
+              <PlayerComponent.render player={player} max_score={@max_score} render_score={true} />
             </div>
           </div>
         <% end %>

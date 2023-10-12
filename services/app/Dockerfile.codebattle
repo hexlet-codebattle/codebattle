@@ -20,7 +20,7 @@ COPY apps/codebattle/priv/gettext ./priv/gettext
 
 RUN yarn build
 
-FROM elixir:1.15.4 AS compile-image
+FROM elixir:1.15.6 AS compile-image
 ARG GIT_HASH
 
 ENV APP_VERSION=$GIT_HASH
@@ -51,7 +51,7 @@ RUN mix phx.digest
 RUN mix release codebattle \
   && mv _build/prod/rel/codebattle /opt/release
 
-FROM elixir:1.15.4 AS runtime-image
+FROM elixir:1.15.6 AS runtime-image
 
 RUN apt-get update && apt-get install --no-install-recommends -y ca-certificates wkhtmltopdf git make curl vim \
   && rm -rf /var/lib/apt/lists/*

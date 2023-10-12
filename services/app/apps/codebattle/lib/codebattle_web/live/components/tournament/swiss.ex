@@ -1,4 +1,4 @@
-defmodule CodebattleWeb.Live.Tournament.StairwayComponent do
+defmodule CodebattleWeb.Live.Tournament.SwissComponent do
   use CodebattleWeb, :live_component
 
   import Codebattle.Tournament.Helpers
@@ -40,7 +40,7 @@ defmodule CodebattleWeb.Live.Tournament.StairwayComponent do
               <div class="row">
                 <div class="col-3">
                   <ScorePlayersComponent.render
-                    max_score={@tournament.current_round(+1 * 10)}
+                    max_score={nil}
                     players_count={@tournament.players_count}
                     current_user={@current_user}
                     players={players_ordered_by_score(@tournament)}

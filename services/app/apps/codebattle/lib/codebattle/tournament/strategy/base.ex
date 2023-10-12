@@ -98,7 +98,7 @@ defmodule Codebattle.Tournament.Base do
             players_count: 0,
             current_round: 0,
             last_round_started_at: nil,
-            starts_at: NaiveDateTime.utc_now() |> NaiveDateTime.add(5 * 60, :second),
+            starts_at: DateTime.utc_now(:second) |> DateTime.add(5 * 60, :second),
             state: "waiting_participants"
           })
         else
@@ -117,7 +117,6 @@ defmodule Codebattle.Tournament.Base do
           tournament
           |> update_struct(%{
             players_count: players_count(tournament),
-            last_round_started_at: NaiveDateTime.utc_now(:second),
             state: "active"
           })
           |> start_round()
@@ -144,8 +143,10 @@ defmodule Codebattle.Tournament.Base do
             &%{&1 | state: params.game_state, winner_id: winner_id}
           )
 
-        Enum.reduce(
-          Map.values(params.player_results),
+        params.player_results
+        |> Map.values()
+        |> Enum.filter(fn player_result -> tournament.players[to_id(player_result.id)] end)
+        |> Enum.reduce(
           tournament,
           fn player_result, tournament ->
             update_in(
@@ -175,11 +176,12 @@ defmodule Codebattle.Tournament.Base do
         end
       end
 
-      def finish_round_force(tournament) do
+      def finish_round(tournament) do
         matches_to_finish = get_matches(tournament, "playing")
 
         new_tournament =
           Enum.reduce(matches_to_finish, tournament, fn match_to_finish, acc ->
+            Game.Context.trigger_timeout(match_to_finish.game_id)
             update_in(acc.matches[to_id(match_to_finish.id)], &%{&1 | state: "timeout"})
           end)
 
@@ -247,6 +249,12 @@ defmodule Codebattle.Tournament.Base do
              }
            )
            when break_duration_seconds not in [nil, 0] do
+        Process.send_after(
+          self(),
+          :stop_round_break,
+          :timer.seconds(tournament.break_duration_seconds)
+        )
+
         update_struct(tournament, %{break_state: "on"})
       end
 
@@ -266,6 +274,7 @@ defmodule Codebattle.Tournament.Base do
           break_state: "off",
           last_round_started_at: NaiveDateTime.utc_now(:second)
         })
+        |> start_round_timer()
         |> maybe_set_task_for_round()
         |> build_matches()
         |> db_save!()
@@ -281,6 +290,7 @@ defmodule Codebattle.Tournament.Base do
             level: tournament.level,
             tournament_id: tournament.id,
             timeout_seconds: tournament.match_timeout_seconds,
+            use_chat: tournament.use_chat,
             players: players
           })
 
@@ -311,6 +321,16 @@ defmodule Codebattle.Tournament.Base do
 
       defp set_winner_ids(tournament) do
         update_struct(tournament, %{winner_ids: get_winner_ids(tournament)})
+      end
+
+      defp start_round_timer(tournament) do
+        Process.send_after(
+          self(),
+          {:finish_round_force, tournament.current_round},
+          :timer.seconds(tournament.match_timeout_seconds)
+        )
+
+        tournament
       end
 
       defp maybe_set_task_for_round(tournament = %{task_strategy: "round"}) do

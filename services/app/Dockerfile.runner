@@ -1,4 +1,4 @@
-FROM elixir:1.15.4 AS compile-image
+FROM elixir:1.15.6 AS compile-image
 ENV MIX_ENV=prod
 
 WORKDIR /opt/app
@@ -18,7 +18,7 @@ COPY ./apps/runner/ ./apps/runner/
 RUN mix release runner \
   && mv _build/prod/rel/runner /opt/release
 
-FROM elixir:1.15.4 AS runtime-image
+FROM elixir:1.15.6 AS runtime-image
 
 ENV DOCKER_CHANNEL stable
 ENV DOCKER_VERSION 20.10.9

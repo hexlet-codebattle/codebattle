@@ -21,6 +21,7 @@ defmodule Codebattle.Game.Engine do
       params[:task] ||
         Codebattle.Task.get_task_by_level(params[:level] || get_random_level())
 
+    use_chat = Map.get(params, :use_chat, true)
     state = params[:state] || get_state_from_params(params)
     type = params[:type] || "duo"
     mode = params[:mode] || "standard"
@@ -54,6 +55,7 @@ defmodule Codebattle.Game.Engine do
              starts_at: TimeHelper.utc_now()
            }),
          game = fill_virtual_fields(game),
+         game = Map.put(game, :use_chat, use_chat),
          game = mark_as_live(game),
          {:ok, _} <- Game.GlobalSupervisor.start_game(game),
          :ok <- maybe_fire_playing_game_side_effects(game),

@@ -5,6 +5,14 @@ defmodule CodebattleWeb.Live.Tournament.StairwayRoundComponent do
 
   alias CodebattleWeb.Live.Tournament.PlayerComponent
 
+  @fake_bot_player %{
+    id: -10,
+    avatar_url: "https://avatars3.githubusercontent.com/u/10835816",
+    name: "Bot",
+    score: 0,
+    rating: 1200
+  }
+
   def render(assigns) do
     ~H"""
     <%= if @round <= @current_round do %>
@@ -25,7 +33,7 @@ defmodule CodebattleWeb.Live.Tournament.StairwayRoundComponent do
                 <PlayerComponent.render
                   render_score={true}
                   max_score={(@tournament.current_round + 1) * 10}
-                  player={get_player(@tournament, Enum.at(match.player_ids, 0))}
+                  player={get_player(@tournament, Enum.at(match.player_ids, 0)) || build_bot_player()}
                 />
                 <span class={get_result_class(match, Enum.at(match.player_ids, 0))}></span>
               </div>
@@ -36,7 +44,7 @@ defmodule CodebattleWeb.Live.Tournament.StairwayRoundComponent do
                 <PlayerComponent.render
                   render_score={true}
                   max_score={(@tournament.current_round + 1) * 10}
-                  player={get_player(@tournament, Enum.at(match.player_ids, 1))}
+                  player={get_player(@tournament, Enum.at(match.player_ids, 1)) || build_bot_player()}
                 />
                 <span class={get_result_class(match, Enum.at(match.player_ids, 1))}></span>
               </div>
@@ -59,7 +67,7 @@ defmodule CodebattleWeb.Live.Tournament.StairwayRoundComponent do
     """
   end
 
-  def get_game_link_name(match, player_id) do
+  defp get_game_link_name(match, player_id) do
     case {match.state, is_match_player?(match, player_id)} do
       {"pending", true} -> "Pending"
       {"playing", true} -> "Join"
@@ -67,7 +75,7 @@ defmodule CodebattleWeb.Live.Tournament.StairwayRoundComponent do
     end
   end
 
-  def get_match_bg_class(match, player_id) do
+  defp get_match_bg_class(match, player_id) do
     if is_match_player?(match, player_id) do
       "p-1 border bg-winner"
     else
@@ -75,7 +83,9 @@ defmodule CodebattleWeb.Live.Tournament.StairwayRoundComponent do
     end
   end
 
-  def get_result_class(match, player_id) do
+  defp get_result_class(match, player_id) do
     if match.winner_id == player_id, do: "fa fa-trophy", else: nil
   end
+
+  defp build_bot_player(), do: @fake_bot_player
 end

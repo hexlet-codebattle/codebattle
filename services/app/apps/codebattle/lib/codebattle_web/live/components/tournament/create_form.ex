@@ -40,6 +40,25 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
           </div>
         </div>
         <div class="form-row justify-content-between mt-3">
+          <div class="col-11 d-flex flex-column justify-content-between">
+            <%= label(f, :description) %>
+            <%= textarea(f, :description,
+              class: "form-control",
+              value:
+                f.params["description"] ||
+                  "Markdown description. [stream_link](https://codebattle.hexlet.io)",
+              maxlength: "350",
+              required: true
+            ) %>
+            <%= error_tag(f, :description) %>
+          </div>
+          <div class="col-1 d-flex flex-column justify-content-between">
+            <%= label(f, :use_chat) %>
+            <%= checkbox(f, :use_chat, class: "form-control") %>
+            <%= error_tag(f, :use_chat) %>
+          </div>
+        </div>
+        <div class="form-row justify-content-between mt-3">
           <div class="col-6 d-flex flex-column justify-content-between">
             <label>Starts at (<%= @user_timezone %>)</label>
             <%= datetime_local_input(f, :starts_at,
@@ -234,6 +253,29 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
               <%= label(f, :rounds_limit) %>
               <%= select(f, :rounds_limit, [3, 5, 7], class: "form-control") %>
               <%= error_tag(f, :rounds_limit) %>
+            </div>
+          </div>
+        <% end %>
+        <%= if f.params["type"] == "swiss" do %>
+          <div class="form-row justify-content-between mt-3">
+            <div class="col-4">
+              <%= label(f, :rounds_limit) %>
+              <%= select(f, :rounds_limit, [3, 5, 7], class: "form-control") %>
+              <%= error_tag(f, :rounds_limit) %>
+            </div>
+          </div>
+        <% end %>
+        <%= if f.params["type"] == "punchline" do %>
+          <div class="form-row justify-content-between mt-3">
+            <div class="col-4">
+              <%= label(f, :rounds_limit) %>
+              <%= select(f, :rounds_limit, [3, 5, 7], class: "form-control") %>
+              <%= error_tag(f, :rounds_limit) %>
+            </div>
+            <div class="col-4">
+              <%= label(f, :task_pack_ids) %>
+              <%= text_input(f, :task_pack_ids, class: "form-control") %>
+              <%= error_tag(f, :task_pack_ids) %>
             </div>
           </div>
         <% end %>
