@@ -19,6 +19,15 @@ const tournament = createSlice({
     updateTournamentChannelState: (state, { payload }) => {
       state.channel.online = payload;
     },
+    setTournamentPlayers: (state, { payload }) => {
+      state.players = payload;
+    },
+    clearTournamentPlayers: state => {
+      state.players = [];
+    },
+    setTournamentPlayersPageNumber: (state, { payload }) => {
+      state.playersPageNumber = payload;
+    },
   },
 });
 

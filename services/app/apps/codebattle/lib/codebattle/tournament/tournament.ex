@@ -21,6 +21,7 @@ defmodule Codebattle.Tournament do
              :name,
              :players,
              :players_limit,
+             :players_count,
              :starts_at,
              :state,
              :stats,

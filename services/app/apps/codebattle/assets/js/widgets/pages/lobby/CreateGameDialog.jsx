@@ -1,6 +1,5 @@
 import React, { useState, useCallback, memo } from 'react';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from 'axios';
 import cn from 'classnames';
 import { camelizeKeys } from 'humps';
@@ -9,6 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import AsyncSelect from 'react-select/async';
 
 import i18n from '../../../i18n';
+import UserLabel from '../../components/UserLabel';
 import levelRatio from '../../config/levelRatio';
 import * as invitesMiddleware from '../../middlewares/Invite';
 import * as lobbyMiddlewares from '../../middlewares/Lobby';
@@ -32,32 +32,11 @@ const defaultGameOptions = {
 };
 const unchosenTask = { id: null };
 
-function UserLabel({ user }) {
-  const { presenceList } = useSelector(selectors.lobbyDataSelector);
-  const isOnline = presenceList.some(({ id }) => id === user.id);
-  const onlineIndicatorClassName = cn('mr-1', {
-    'cb-user-online': isOnline,
-    'cb-user-offline': !isOnline,
-  });
-
-  return (
-    <>
-      <span className="text-truncate">
-        <FontAwesomeIcon
-          icon={['fa', 'circle']}
-          className={onlineIndicatorClassName}
-        />
-        <span>{user.name}</span>
-      </span>
-    </>
-  );
-}
-
 const OpponentSelect = memo(({ setOpponent, opponent }) => {
-  const currentUserId = useSelector(selectors.currentUserIdSelector);
   const dispatch = useDispatch();
+  const currentUserId = useSelector(selectors.currentUserIdSelector);
 
-  const loadOptions = (inputValue, callback) => {
+  const loadOptions = useCallback((inputValue, callback) => {
     const queryParamsString = qs.stringify({
       q: {
         name_ilike: inputValue,
@@ -78,7 +57,7 @@ const OpponentSelect = memo(({ setOpponent, opponent }) => {
       .catch(error => {
         dispatch(actions.setError(error));
       });
-  };
+  }, [currentUserId, dispatch]);
 
   return (
     <AsyncSelect

@@ -204,7 +204,9 @@ const defaultTournamentParams = {
   playersCount: 0,
   startsAt: null,
   insertedAt: null,
-  meta: {},
+  meta: {
+    roundsLimit: 1,
+  },
 
   accessType: 'token',
   accessToken: null,
@@ -214,8 +216,13 @@ const defaultTournamentParams = {
   matchTimeoutSeconds: 0,
   playedPairIds: [],
 
+  breakState: 'off',
+
   taskStrategy: 'game',
   taskProvider: 'level',
+
+  playersPageNumber: 1,
+  playersPageSize: 20,
 
   channel: { online: false },
 };

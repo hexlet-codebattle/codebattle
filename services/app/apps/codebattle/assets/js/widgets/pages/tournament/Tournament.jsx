@@ -10,15 +10,15 @@ import {
 } from '../../middlewares/Tournament';
 import * as selectors from '../../selectors';
 
+import CustomMatchesPanel from './CustomMatchesPanel';
 import IndividualMatches from './IndividualMatches';
 import Players from './Participants';
 import TeamMatches from './TeamMatches';
 import TournamentChat from './TournamentChat';
 import TournamentHeader from './TournamentHeader';
-// import TeamTournamentInfoPanel from './TeamTournamentInfoPanel';
 
 function Matches({
-  currentUserId, tournament, playersCount, isOver,
+  currentUserId, tournament, playersCount,
 }) {
   if (tournament.state === TournamentStates.waitingParticipants) {
     return (
@@ -39,18 +39,21 @@ function Matches({
     case 'individual':
       return (
         <IndividualMatches
-          state={tournament.state}
-          startsAt={tournament.startsAt}
           matches={tournament.matches}
           players={tournament.players}
           playersCount={playersCount}
           currentUserId={currentUserId}
-          isOver={isOver}
-          isLive={tournament.isLive}
-          isOnline={tournament.channel.online}
         />
       );
-    default: <></>;
+    default:
+      return (
+        <CustomMatchesPanel
+          players={tournament.players}
+          matches={tournament.matches}
+          currentUserId={currentUserId}
+          roundsLimit={tournament.meta?.roundsLimit}
+        />
+      );
   }
 }
 
@@ -65,6 +68,10 @@ function Tournament() {
   const playersCount = useMemo(
     () => Object.keys(tournament.players).length,
     [tournament.players],
+  );
+  const showChat = useMemo(
+    () => tournament.type !== 'swiss' && tournament.type === 'ladder',
+    [tournament.type],
   );
   const isOver = useMemo(
     () => [TournamentStates.finished, TournamentStates.cancelled].includes(
@@ -83,10 +90,21 @@ function Tournament() {
   useEffect(() => {
     if (tournament.isLive) {
       const clearTournament = connectToTournament()(dispatch);
-      const clearChat = connectToChat()(dispatch);
 
       return () => {
         clearTournament();
+      };
+    }
+
+    return () => { };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (tournament.isLive && showChat) {
+      const clearChat = connectToChat()(dispatch);
+
+      return () => {
         clearChat();
       };
     }
@@ -128,6 +146,7 @@ function Tournament() {
           players={tournament.players}
           playersCount={playersCount}
           playersLimit={tournament.playersLimit}
+          breakState={tournament.breakState}
           creatorId={tournament.creatorId}
           currentUserId={currentUserId}
           level={tournament.level}
@@ -172,6 +191,7 @@ function Tournament() {
           players={tournament.players}
           playersCount={playersCount}
           playersLimit={tournament.playersLimit}
+          breakState={tournament.breakState}
           creatorId={tournament.creatorId}
           currentUserId={currentUserId}
           level={tournament.level}
@@ -185,14 +205,13 @@ function Tournament() {
           <div className="col-12 col-lg-9 mb-2 mb-lg-0">
             <div className="bg-white h-100 shadow-sm rounded-lg p-3">
               <Matches
-                currentUserId={currentUserId}
                 tournament={tournament}
-                isOver={isOver}
                 playersCount={playersCount}
+                currentUserId={currentUserId}
               />
             </div>
           </div>
-          <div className="d-flex flex-column flex-lg-column-reverse col-12 col-lg-3">
+          <div className="d-flex flex-column flex-lg-column-reverse col-12 col-lg-3 h-100">
             <Players
               players={tournament.players}
               playersCount={playersCount}
@@ -202,7 +221,7 @@ function Tournament() {
               }
               handleKick={handleKick}
             />
-            <TournamentChat />
+            {showChat && (<TournamentChat />)}
           </div>
         </div>
       </div>

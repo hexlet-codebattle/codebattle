@@ -153,7 +153,7 @@ defmodule Codebattle.Tournament.Helpers do
       tournament
       |> get_matches
       |> Enum.find(fn match ->
-        match_is_active?(match) && Enum.any?(match.players, fn p -> p.id == current_user.id end)
+        match_is_active?(match) && Enum.any?(match.player_ids, fn id -> id == current_user.id end)
       end)
 
     case match do

@@ -101,8 +101,6 @@ const getMatchesByRound = (matches, type, playersCount) => {
     ...getRange(playersCount, minPlayers, maxPlayers),
   );
 
-  console.log([type, playersCount], [maxPlayers, minPlayers], matches, result);
-
   return result;
 };
 
@@ -176,7 +174,6 @@ function IndividualMatches({
 }) {
   return (
     <>
-
       <div className="overflow-auto mt-2">
         <div className="bracket">
           {roundTypesValues.map(type => (

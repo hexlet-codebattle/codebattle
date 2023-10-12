@@ -16,8 +16,11 @@ const initTournamentChannel = dispatch => {
   const onJoinSuccess = response => {
     const data = camelizeKeys(response);
 
-    console.log(data.tournament);
-    dispatch(actions.setTournamentData(data.tournament));
+    dispatch(actions.setTournamentData({
+      ...data.tournament,
+      playersPageNumber: 1,
+      playersPageSize: 20,
+    }));
   };
 
   channel
@@ -67,6 +70,31 @@ export const connectToTournament = () => dispatch => {
   return clearTournamentChannel;
 };
 
+export const subscribePlayers = players => {
+  if (players.length < 1) {
+    return () => {};
+  }
+
+  const clearFunctions = players.map(player => {
+    const playerChannelName = `tournament:${tournamentId}:subscribe:${player.id}`;
+    const playerChannel = socket.channel(playerChannelName);
+
+    const ref = playerChannel.on('matches:update', () => {});
+
+    return () => {
+      playerChannel.off('matches:update', ref);
+    };
+  });
+
+  const clearTournamentPlayerChannels = () => {
+    clearFunctions.forEach(clearPlayerChannel => {
+      clearPlayerChannel();
+    });
+  };
+
+  return clearTournamentPlayerChannels;
+};
+
 export const joinTournament = teamId => {
   const params = teamId ? { team_id: teamId } : {};
   channel.push('tournament:join', params).receive('error', error => console.error(error));
@@ -97,4 +125,29 @@ export const kickFromTournament = userId => {
   channel.push('tournament:kick', { user_id: userId }).receive('error', error => console.error(error));
 };
 
-export default {};
+export const searchTournamentPlayers = params => (
+  new Promise((resolve, reject) => {
+    channel.push('tournament:search_player', params)
+      .receive('ok', data => resolve(camelizeKeys(data)))
+      .receive('error', error => {
+        console.error(error);
+        reject(error);
+      });
+  })
+);
+
+export const changeTournamentPlayersList = pageNumber => dispatch => {
+  dispatch(actions.setTournamentPlayersPageNumber(pageNumber));
+  dispatch(actions.clearTournamentPlayers());
+
+  channel.push('tournament:show_players', { pageNumber })
+    .receive('ok', data => {
+      const { players } = camelizeKeys(data);
+
+      dispatch(actions.updateUsers({ users: players }));
+      dispatch(actions.setTournamentPlayers(players));
+    })
+    .receive('error', error => {
+      console.error(error);
+    });
+};

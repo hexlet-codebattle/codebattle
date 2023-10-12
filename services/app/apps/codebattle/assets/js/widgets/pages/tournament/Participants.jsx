@@ -1,16 +1,24 @@
 import React, { memo } from 'react';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 import UserInfo from '../../components/UserInfo';
 
 const Players = ({
-  players,
-  playersCount,
-  canBan,
-  handleKick,
+ players, playersCount, canBan, handleKick,
 }) => (
-  <div className="mb-lg-0 my-md-2 my-sm-2 bg-white shadow-sm p-3 rounded-lg">
+  <div className="bg-white shadow-sm p-3 rounded-lg">
     <div className="d-flex align-items-center flex-wrap justify-content-start">
-      <h5 className="mb-2 mr-5 text-nowrap">{`Total players: ${playersCount}`}</h5>
+      <h5 className="mb-2 mr-5 text-nowrap">
+        {playersCount > 99 ? (
+          <>
+            <FontAwesomeIcon title="Total players" icon="users" />
+            {`: ${playersCount}`}
+          </>
+        ) : (
+          <>{`Total players: ${playersCount}`}</>
+        )}
+      </h5>
     </div>
     <div className="my-2">
       {playersCount === 0 ? (

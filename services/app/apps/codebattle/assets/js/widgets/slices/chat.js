@@ -17,6 +17,7 @@ const initialState = {
     users: [],
     messages: [],
   },
+  disabled: false,
   channel: { online: false },
 };
 

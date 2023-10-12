@@ -19,7 +19,7 @@ const getIconByAccessType = accessType => (accessType === 'token' ? 'lock' : 'un
 
 const getBadgeTitle = (state, breakState) => {
   if (state === TournamentStates.active) {
-    return breakState === 'off' ? 'Active' : 'Round Break';
+    return breakState === 'off' ? 'Active' : 'Round break';
   }
 
   switch (state) {
@@ -59,14 +59,8 @@ function TournamentTimer({ startsAt, isOnline }) {
 }
 
 function TournamentStateDescription({
-  state, startsAt, isLive, isOver, isOnline,
+  state, startsAt, isOnline,
 }) {
-  if (!isLive && !isOver) {
-    return (
-      <span>The tournament is cancelled</span>
-    );
-  }
-
   if (state === TournamentStates.waitingParticipants) {
     return (
       <TournamentTimer startsAt={startsAt} isOnline={isOnline} />
@@ -118,7 +112,7 @@ function TournamentHeader({
           <div className="d-flex align-items-center pb-2">
             <h2
               title={name}
-              className="m-0 text-capitalize text-nowrap overflow-auto"
+              className="pb-1 m-0 text-capitalize text-nowrap cb-overflow-x-auto cb-overflow-y-hidden"
             >
               {name}
             </h2>
@@ -173,13 +167,18 @@ function TournamentHeader({
                     state === TournamentStates.waitingParticipants
                     && playersCount > 0
                   }
+                  canRestart={
+                    state === TournamentStates.active
+                    || state === TournamentStates.finished
+                    || state === TournamentStates.cancelled
+                  }
                   disabled={!isOnline}
                 />
               )}
             </div>
           )}
         </div>
-        <div className="d-flex small text-nowrap text-muted mt-1">
+        <div className="d-flex small text-nowrap text-muted mt-1 cb-grid-divider">
           <div title={type} className="d-flex align-items-center mr-2">
             Mode:
             <span className="ml-2">
@@ -187,10 +186,10 @@ function TournamentHeader({
             </span>
           </div>
           <div
-            title={`Players Limit is ${playersLimit}`}
+            title={`Players limit is ${playersLimit}`}
             className="d-flex align-items-center"
           >
-            {`Players Limit: ${playersLimit}`}
+            {`Players limit: ${playersLimit}`}
           </div>
           {canModerate && accessType === 'token' && (
             <div className="d-flex input-group ml-2">

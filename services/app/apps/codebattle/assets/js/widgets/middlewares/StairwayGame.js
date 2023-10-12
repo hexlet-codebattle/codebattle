@@ -35,7 +35,13 @@ const initTournamentChannel = dispatch => {
 
   const onJoinSuccess = response => {
     const data = camelizeKeys(response);
-    dispatch(actions.setTournamentData(data));
+
+    dispatch(actions.setTournamentData({
+      ...data,
+      playersPageNumber: 1,
+      playersPageSize: 20,
+    }));
+
     const { gameId } = data.activeMatch;
     dispatch(connectToStairwayGame(gameId));
   };
@@ -54,7 +60,7 @@ export const connectToStairwayTournament = () => dispatch => {
     const matches = groupBy(data.tournament.matches, 'roundId');
     set(data, 'tournament.matches', matches);
 
-    dispatch(actions.setTournamentData(data));
+    dispatch(actions.updateTournamentData(data));
   });
 
   // TODO: (client/server) break update event on pieces

@@ -10,11 +10,11 @@ import {
   openUpTournament as handleOpenUpTournament,
 } from '../../middlewares/Tournament';
 
-const CustomToggle = React.forwardRef(({ onClick, disabled }, ref) => (
+const CustomToggle = React.forwardRef(({ onClick, variant, disabled }, ref) => (
   <button
     type="button"
     ref={ref}
-    className="btn btn-success text-white rounded-right"
+    className={`btn btn-${variant} text-white rounded-right`}
     onClick={onClick}
     disabled={disabled}
   >
@@ -26,44 +26,63 @@ const TournamentMainControlButtons = ({
   accessType,
   tournamentId,
   canStart,
+  canRestart,
   disabled = true,
 }) => (
   <>
-    <button
-      type="button"
-      className="btn btn-success text-white text-nowrap ml-2 rounded-left"
-      onClick={handleStartTournament}
-      disabled={!canStart || disabled}
-    >
-      <FontAwesomeIcon className="mr-2" icon="play" />
-      Start
-    </button>
-    <Dropdown
-      title="Task actions"
-      className="d-flex"
-    >
+    {canRestart ? (
+      <button
+        type="button"
+        className="btn btn-info text-white text-nowrap ml-lg-2 rounded-left"
+        onClick={handleRestartTournament}
+        disabled={!canRestart || disabled}
+      >
+        <FontAwesomeIcon className="mr-2" icon="sync" />
+        Restart
+      </button>
+    ) : (
+      <button
+        type="button"
+        className="btn btn-success text-white text-nowrap ml-lg-2 rounded-left"
+        onClick={handleStartTournament}
+        disabled={!canStart || disabled}
+      >
+        <FontAwesomeIcon className="mr-2" icon="play" />
+        Start
+      </button>
+    )}
+    <Dropdown title="Task actions" className="d-flex">
       <Dropdown.Toggle
         as={CustomToggle}
         id="tournament-actions-dropdown-toggle"
+        variant={canRestart ? 'info' : 'success'}
         disabled={disabled}
       />
       <Dropdown.Menu>
-        <Dropdown.Item disabled={disabled} key="edit" href={`/tournaments/${tournamentId}/edit`}>
+        <Dropdown.Item
+          disabled={disabled}
+          key="edit"
+          href={`/tournaments/${tournamentId}/edit`}
+        >
           <FontAwesomeIcon className="mr-2" icon="edit" />
           Edit
         </Dropdown.Item>
-        <Dropdown.Item disabled={disabled} key="restart" onSelect={handleRestartTournament}>
-          <FontAwesomeIcon className="mr-2" icon="sync" />
-          Restart
-        </Dropdown.Item>
-        <Dropdown.Item disabled={disabled} key="cancel" onSelect={handleCancelTournament}>
+        <Dropdown.Item
+          disabled={disabled}
+          key="cancel"
+          onSelect={handleCancelTournament}
+        >
           <FontAwesomeIcon className="mr-2" icon="trash" />
           Cancel
         </Dropdown.Item>
         {accessType === 'token' && (
           <>
             <Dropdown.Divider />
-            <Dropdown.Item disabled={disabled} key="openUp" onSelect={handleOpenUpTournament}>
+            <Dropdown.Item
+              disabled={disabled}
+              key="openUp"
+              onSelect={handleOpenUpTournament}
+            >
               <FontAwesomeIcon className="mr-2" icon="unlock" />
               Open up
             </Dropdown.Item>
