@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 import data from '@emoji-mart/data';
 import { SearchIndex, init } from 'emoji-mart';
@@ -53,7 +53,10 @@ export default function ChatInput({ inputRef, disabled = false }) {
     }
   };
 
-  const togglePickerVisibility = () => setPickerVisibility(!isPickerVisible);
+  const togglePickerVisibility = useCallback(e => {
+    e.stopPropagation();
+    setPickerVisibility(!isPickerVisible);
+  }, [setPickerVisibility, isPickerVisible]);
 
   const hidePicker = () => setPickerVisibility(false);
 
