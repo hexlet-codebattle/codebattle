@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 import data from '@emoji-mart/data';
 import { SearchIndex, init } from 'emoji-mart';
@@ -53,10 +53,10 @@ export default function ChatInput({ inputRef, disabled = false }) {
     }
   };
 
-  const togglePickerVisibility = e => {
+  const togglePickerVisibility = useCallback(e => {
     e.stopPropagation();
     setPickerVisibility(!isPickerVisible);
-  };
+  }, [setPickerVisibility, isPickerVisible]);
 
   const hidePicker = () => setPickerVisibility(false);
 
@@ -121,7 +121,7 @@ export default function ChatInput({ inputRef, disabled = false }) {
         <button
           type="button"
           className="btn bg-white border-gray border-left-0 border-right-0 px-2 py-0"
-          onClick={e => togglePickerVisibility(e)}
+          onClick={togglePickerVisibility}
         >
           <em-emoji id="grinning" size={20} />
         </button>
