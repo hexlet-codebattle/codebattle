@@ -53,7 +53,10 @@ export default function ChatInput({ inputRef, disabled = false }) {
     }
   };
 
-  const togglePickerVisibility = () => setPickerVisibility(!isPickerVisible);
+  const togglePickerVisibility = (e) => {
+    e.stopPropagation();
+    setPickerVisibility(!isPickerVisible);
+  };
 
   const hidePicker = () => setPickerVisibility(false);
 
@@ -118,7 +121,7 @@ export default function ChatInput({ inputRef, disabled = false }) {
         <button
           type="button"
           className="btn bg-white border-gray border-left-0 border-right-0 px-2 py-0"
-          onClick={togglePickerVisibility}
+          onClick={(e) => togglePickerVisibility(e)}
         >
           <em-emoji id="grinning" size={20} />
         </button>
