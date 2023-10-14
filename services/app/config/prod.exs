@@ -9,7 +9,7 @@ config :codebattle, CodebattleWeb.Endpoint,
   version: Mix.Project.config()[:version],
   check_origin: false
 
-config :logger, level: :error, backends: [:console, Sentry.LoggerBackend]
+config :logger, level: :error
 
 config :codebattle, Codebattle.Invite, timeout: :timer.minutes(15)
 config :codebattle, Codebattle.Invite, lifetime: :timer.minutes(15)

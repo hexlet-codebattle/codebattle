@@ -31,20 +31,31 @@ defmodule Codebattle.CodeCheck.Executor.Remote do
   defp execute(params) do
     headers = [{"content-type", "application/json"}, {"x-auth-key", api_key()}]
     body = Jason.encode!(params)
+    now = :os.system_time(:millisecond)
 
     case HTTPoison.post("#{executor_url()}/api/v1/execute", body, headers,
            timeout: 30_000,
            recv_timeout: 30_000
          ) do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
+        Logger.error(
+          "RemoteExecutor success lang: #{params.lang_slug}, time_ms: #{:os.system_time(:millisecond) - now}}"
+        )
+
         AtomizedMap.load(body)
 
       {:ok, %HTTPoison.Response{body: body}} ->
-        Logger.error("RemoteExecutor failure: #{inspect(body)}")
+        Logger.error(
+          "RemoteExecutor failure lang: #{params.lang_slug},time_ms: #{:os.system_time(:millisecond) - now}, body: #{inspect(body)}"
+        )
+
         {:error, %{base: "RemoteExecutor failure: #{inspect(body)}"}}
 
       {:error, %HTTPoison.Error{reason: reason}} ->
-        Logger.error("RemoteExecutor failure: #{inspect(reason)}")
+        Logger.error(
+          "RemoteExecutor error lang: #{params.lang_slug}, time_ms: #{:os.system_time(:millisecond) - now}, body: #{inspect(body)}"
+        )
+
         {:error, "RemoteExecutor failure: #{inspect(reason)}"}
     end
   end
