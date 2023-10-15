@@ -251,7 +251,7 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
           <div class="form-row justify-content-between mt-3">
             <div class="col-4">
               <%= label(f, :rounds_limit) %>
-              <%= select(f, :rounds_limit, [3, 5, 7], class: "form-control") %>
+              <%= select(f, :rounds_limit, [3, 4, 5, 6, 7], class: "form-control") %>
               <%= error_tag(f, :rounds_limit) %>
             </div>
           </div>
@@ -260,7 +260,7 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
           <div class="form-row justify-content-between mt-3">
             <div class="col-4">
               <%= label(f, :rounds_limit) %>
-              <%= select(f, :rounds_limit, [3, 5, 7], class: "form-control") %>
+              <%= select(f, :rounds_limit, [3, 4, 5, 6, 7], class: "form-control") %>
               <%= error_tag(f, :rounds_limit) %>
             </div>
           </div>

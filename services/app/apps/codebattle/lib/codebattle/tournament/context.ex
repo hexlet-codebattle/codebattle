@@ -200,11 +200,11 @@ defmodule Codebattle.Tournament.Context do
         }
 
       "stairway" ->
-        rounds = params |> Map.get("rounds_limit", "3") |> String.to_integer()
-        %{rounds_limit: rounds}
+        rounds_limit = params |> Map.get("rounds_limit", "3") |> String.to_integer()
+        %{rounds_limit: rounds_limit}
 
       "swiss" ->
-        rounds = params |> Map.get("rounds_limit", "3") |> String.to_integer()
+        rounds_limit = params |> Map.get("rounds_limit", "3") |> String.to_integer()
 
         task_pack_ids =
           params
@@ -215,8 +215,8 @@ defmodule Codebattle.Tournament.Context do
         %{rounds_limit: rounds_limit, task_pack_ids: task_pack_ids}
 
       "ladder" ->
-        rounds = params |> Map.get("rounds_limit", "3") |> String.to_integer()
-        %{rounds_limit: rounds}
+        rounds_limit = params |> Map.get("rounds_limit", "3") |> String.to_integer()
+        %{rounds_limit: rounds_limit}
 
       _ ->
         %{}
