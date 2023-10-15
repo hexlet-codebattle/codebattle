@@ -205,14 +205,16 @@ function TournamentHeader({
               </div>
             )}
           </div>
-          {!isOver && isLive && (
+          {!isOver ? (
             <div className="d-flex justify-items-center pb-2">
               {type !== 'team' && (
-                <JoinButton
-                  isShow={isLive && state !== TournamentStates.active}
-                  isParticipant={!!players[currentUserId]}
-                  disabled={!isOnline || !isLive}
-                />
+                <div className="mr-2 mr-lg-0">
+                  <JoinButton
+                    isShow={state !== TournamentStates.active}
+                    isParticipant={!!players[currentUserId]}
+                    disabled={!isOnline}
+                  />
+                </div>
               )}
               {canModerate && (
                 <TournamentMainControlButtons
@@ -230,6 +232,16 @@ function TournamentHeader({
                   disabled={!isOnline}
                 />
               )}
+            </div>
+          ) : (
+            <div className="d-flex justify-items-center pb-2">
+              <a
+                className="btn btn-primary rounded-lg ml-lg-2 ml-md-2"
+                href="/tournaments"
+              >
+                <FontAwesomeIcon className="mr-2" icon="undo" />
+                Return to tournaments
+              </a>
             </div>
           )}
         </div>

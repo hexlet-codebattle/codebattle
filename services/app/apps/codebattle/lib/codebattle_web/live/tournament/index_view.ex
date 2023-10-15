@@ -55,11 +55,13 @@ defmodule CodebattleWeb.Live.Tournament.IndexView do
                 <td class="align-middle text-nowrap">
                   <%= format_datetime(tournament.starts_at, @user_timezone) %>
                 </td>
-                <td class="align-middle text-nowrap"></td>
+                <td class="align-middle text-nowrap">
+                  <%= tournament.players_count %>
+                </td>
                 <td class="align-middle text-nowrap">
                   <%= link("Show",
                     to: Routes.tournament_path(@socket, :show, tournament.id),
-                    class: "btn btn-success mt-2"
+                    class: "btn btn-success text-white rounded-lg mt-2"
                   ) %>
                 </td>
               </tr>

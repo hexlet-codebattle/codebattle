@@ -68,6 +68,13 @@ const TournamentMainControlButtons = ({
           Edit
         </Dropdown.Item>
         <Dropdown.Item
+          key="tournaments"
+          href="/tournaments"
+        >
+          <FontAwesomeIcon className="mr-2" icon="trophy" />
+          Tournaments
+        </Dropdown.Item>
+        <Dropdown.Item
           disabled={disabled}
           key="cancel"
           onSelect={handleCancelTournament}

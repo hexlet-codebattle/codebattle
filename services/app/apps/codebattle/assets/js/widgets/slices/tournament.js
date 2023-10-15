@@ -10,7 +10,6 @@ const tournament = createSlice({
   reducers: {
     setTournamentData: (state, { payload }) => ({
       ...payload,
-      channel: { online: true },
     }),
     updateTournamentData: (state, { payload }) => ({
       ...state,

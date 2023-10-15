@@ -54,7 +54,7 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
           </div>
           <div class="col-1 d-flex flex-column justify-content-between">
             <%= label(f, :use_chat) %>
-            <%= checkbox(f, :use_chat, class: "form-control") %>
+            <%= checkbox(f, :use_chat, class: "form-control rounded-lg") %>
             <%= error_tag(f, :use_chat) %>
           </div>
         </div>
@@ -267,7 +267,7 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
         <% end %>
         <%= submit("Create",
           phx_disable_with: "Creating...",
-          class: "btn btn-primary my-4"
+          class: "btn btn-primary rounded-lg my-4"
         ) %>
       </.form>
     </div>

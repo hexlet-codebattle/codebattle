@@ -81,8 +81,9 @@ defmodule CodebattleWeb.TournamentChannel do
 
   def handle_in("tournament:restart", _, socket) do
     tournament_id = socket.assigns.tournament_id
+    tournament = Tournament.Server.get_tournament(tournament_id)
 
-    Tournament.Context.restart(socket.assigns.tournament)
+    Tournament.Context.restart(tournament)
 
     Tournament.Context.send_event(tournament_id, :restart, %{
       user: socket.assigns.current_user

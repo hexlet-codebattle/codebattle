@@ -18,6 +18,7 @@ const initTournamentChannel = dispatch => {
 
     dispatch(actions.setTournamentData({
       ...data.tournament,
+      channel: { online: true },
       playersPageNumber: 1,
       playersPageSize: 20,
     }));
