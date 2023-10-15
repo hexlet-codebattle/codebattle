@@ -13,11 +13,7 @@ export default (players, tournamentState) => {
 
   useEffect(() => {
     if (tournamentState === TournamentStateCodes.active) {
-      const clearPlayersSubscribtion = subscribePlayers(players);
-
-      return () => {
-        clearPlayersSubscribtion();
-      };
+      subscribePlayers(players);
     }
 
     return () => {};

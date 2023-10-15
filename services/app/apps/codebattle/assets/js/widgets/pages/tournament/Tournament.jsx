@@ -20,6 +20,18 @@ import TournamentHeader from './TournamentHeader';
 function Matches({
   currentUserId, tournament, playersCount,
 }) {
+  if (tournament.type === 'team') {
+      return (
+        <TeamMatches
+          state={tournament.state}
+          players={tournament.players}
+          teams={tournament.meta.teams}
+          matches={tournament.matches}
+          currentUserId={currentUserId}
+        />
+      );
+  }
+
   if (tournament.state === TournamentStates.waitingParticipants) {
     return (
       <>
@@ -29,13 +41,6 @@ function Matches({
   }
 
   switch (tournament.type) {
-    case 'team':
-      return (
-        <TeamMatches
-          matches={tournament.matches}
-          currentUserId={currentUserId}
-        />
-      );
     case 'individual':
       return (
         <IndividualMatches
@@ -214,7 +219,6 @@ function Tournament() {
           <div className="d-flex flex-column flex-lg-column-reverse col-12 col-lg-3 h-100">
             <Players
               players={tournament.players}
-              playersCount={playersCount}
               canBan={
                 isAdmin
                 && tournament.state === TournamentStates.waitingParticipants

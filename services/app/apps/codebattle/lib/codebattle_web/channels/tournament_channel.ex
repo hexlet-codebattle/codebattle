@@ -29,7 +29,7 @@ defmodule CodebattleWeb.TournamentChannel do
 
     Tournament.Context.send_event(tournament_id, :join, %{
       user: socket.assigns.current_user,
-      team_id: String.to_integer(team_id)
+      team_id: to_string(team_id)
     })
 
     {:noreply, socket}
@@ -50,7 +50,7 @@ defmodule CodebattleWeb.TournamentChannel do
 
     Tournament.Context.send_event(tournament_id, :leave, %{
       user_id: socket.assigns.current_user.id,
-      team_id: String.to_integer(team_id)
+      team_id: to_string(team_id)
     })
 
     {:noreply, socket}

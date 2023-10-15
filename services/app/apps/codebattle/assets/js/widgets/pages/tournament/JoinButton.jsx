@@ -6,7 +6,7 @@ import cn from 'classnames';
 import { leaveTournament, joinTournament } from '../../middlewares/Tournament';
 
 const JoinButton = ({
- isShow, isParticipant, title, matchId, disabled = true,
+ isShow, isParticipant, title, teamId, disabled = true,
 }) => {
   const onClick = isParticipant ? leaveTournament : joinTournament;
   const text = isParticipant ? 'Leave' : 'Join';
@@ -18,7 +18,7 @@ const JoinButton = ({
       <button
         type="button"
         onClick={() => {
-          onClick(matchId);
+          onClick(teamId);
         }}
         className={cn('btn text-nowrap rounded-lg', {
           'btn-outline-danger': isParticipant,

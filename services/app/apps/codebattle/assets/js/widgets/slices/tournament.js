@@ -16,6 +16,37 @@ const tournament = createSlice({
       ...state,
       ...payload,
     }),
+    updateTournamentMatches: (state, { payload }) => {
+      const newMatches = payload.reduce((acc, params) => ({
+        ...acc,
+        [params.id]: {
+          ...(state.matches[params.id] || {}),
+          ...params,
+        },
+      }), {});
+
+      state.matches = {
+        ...state.matches,
+        ...newMatches,
+      };
+    },
+    updateTournamentPlayers: (state, { payload }) => {
+      const newPlayers = payload.reduce((acc, params) => ({
+        ...acc,
+        [params.id]: {
+          ...(state.players[params.id] || {}),
+          ...params,
+        },
+      }), {});
+
+      state.players = {
+        ...state.players,
+        ...newPlayers,
+      };
+    },
+    changeTournamentPageNumber: (state, { payload }) => {
+      state.playersPageNumber = payload;
+    },
     updateTournamentChannelState: (state, { payload }) => {
       state.channel.online = payload;
     },

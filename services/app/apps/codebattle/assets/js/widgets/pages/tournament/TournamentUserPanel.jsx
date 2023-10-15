@@ -1,5 +1,5 @@
 import React, {
-  memo, useState,
+  memo, useCallback, useState,
 } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -27,11 +27,20 @@ function TournamentUserPanel({
     },
   );
 
+  const handleClick = useCallback(event => {
+    if (searchedUserId === userId) {
+      return;
+    }
+
+    event.preventDefault();
+    setOpen(!open);
+  }, [open, setOpen, searchedUserId, userId]);
+
   return (
     <div className={panelClassName}>
       <div
         className="btn d-flex align-items-center justify-content-between"
-        onClick={() => setOpen(!open)}
+        onClick={handleClick}
         aria-hidden
         aria-expanded={open}
         aria-controls={`collapse-matches-${userId}`}
@@ -69,10 +78,8 @@ function TournamentUserPanel({
         <button
           type="button"
           className="btn"
-          onClick={event => {
-            event.preventDefault();
-            setOpen(!open);
-          }}
+          onClick={handleClick}
+          disabled={searchedUserId === userId}
         >
           <FontAwesomeIcon icon={open ? 'chevron-up' : 'chevron-down'} />
         </button>

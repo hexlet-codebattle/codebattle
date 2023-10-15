@@ -206,6 +206,7 @@ const defaultTournamentParams = {
   insertedAt: null,
   meta: {
     roundsLimit: 1,
+    teams: [],
   },
 
   accessType: 'token',

@@ -47,13 +47,15 @@ function UsersMatchList({ currentUserId, matches }) {
             key={match.id}
             className={matchClassName}
           >
-            <div className="d-flex align-items-center">
-              <span className="pr-2">{index}</span>
-              <TournamentMatchBadge
-                matchState={match.state}
-                isWinner={isWinner}
-                currentUserIsPlayer={currentUserIsPlayer}
-              />
+            <div className="d-flex align-items-center justify-content-between">
+              <span className="d-flex align-items-center">
+                <span className="pr-2">{index}</span>
+                <TournamentMatchBadge
+                  matchState={match.state}
+                  isWinner={isWinner}
+                  currentUserIsPlayer={currentUserIsPlayer}
+                />
+              </span>
               <div className="d-flex flex-column flex-lg-row flex-md-row flex-sm-row">
                 <div className="d-flex align-items-center">
                   {match.winnerId === match.playerIds[0] && (
@@ -70,7 +72,7 @@ function UsersMatchList({ currentUserId, matches }) {
                 </div>
               </div>
             </div>
-            <div className="d-flex ml-2">
+            <div className="d-flex justify-content-end ml-lg-2">
               <MatchAction
                 match={match}
                 currentUserIsPlayer={currentUserIsPlayer}

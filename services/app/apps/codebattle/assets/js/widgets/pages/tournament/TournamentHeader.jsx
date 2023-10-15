@@ -2,6 +2,7 @@ import React, { memo, useMemo } from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import cn from 'classnames';
+import moment from 'moment';
 import { useSelector } from 'react-redux';
 
 import CopyButton from '../../components/CopyButton';
@@ -23,10 +24,14 @@ const getBadgeTitle = (state, breakState) => {
   }
 
   switch (state) {
-    case TournamentStates.waitingParticipants: return 'Waiting Participants';
-    case TournamentStates.cancelled: return 'Cancelled';
-    case TournamentStates.finished: return 'Finished';
-    default: return 'Loading';
+    case TournamentStates.waitingParticipants:
+      return 'Waiting Participants';
+    case TournamentStates.cancelled:
+      return 'Cancelled';
+    case TournamentStates.finished:
+      return 'Finished';
+    default:
+      return 'Loading';
   }
 };
 
@@ -58,12 +63,54 @@ function TournamentTimer({ startsAt, isOnline }) {
   );
 }
 
+function TournamentRemainingTimer({
+  lastRoundEndedAt,
+  duration,
+}) {
+  const startsAt = useMemo(
+    () => moment.utc(lastRoundEndedAt)
+      .add(duration, 'seconds').local().format('HH:mm:ss'),
+    [lastRoundEndedAt, duration],
+  );
+  const [time, seconds] = useTimer(startsAt);
+
+  return seconds > 0 ? time : '';
+}
+
 function TournamentStateDescription({
-  state, startsAt, isOnline,
+  state,
+  startsAt,
+  breakState,
+  breakDurationSeconds,
+  matchTimeoutSeconds,
+  lastRoundEndedAt,
+  isOnline,
 }) {
   if (state === TournamentStates.waitingParticipants) {
+    return <TournamentTimer startsAt={startsAt} isOnline={isOnline} />;
+  }
+
+  if (state === TournamentStates.active && breakState === 'off') {
     return (
-      <TournamentTimer startsAt={startsAt} isOnline={isOnline} />
+      <span>
+        {'Round ends in '}
+        <TournamentRemainingTimer
+          lastRoundEndedAt={lastRoundEndedAt}
+          duration={matchTimeoutSeconds}
+        />
+      </span>
+    );
+  }
+
+  if (state === TournamentStates.active && breakState === 'on') {
+    return (
+      <span>
+        {'Next round will start in '}
+        <TournamentRemainingTimer
+          lastRoundEndedAt={lastRoundEndedAt}
+          duration={breakDurationSeconds}
+        />
+      </span>
     );
   }
 
@@ -74,6 +121,9 @@ function TournamentHeader({
   id: tournamentId,
   state,
   breakState,
+  breakDurationSeconds,
+  matchTimeoutSeconds,
+  lastRoundEndedAt,
   startsAt,
   type,
   accessType,
@@ -100,7 +150,8 @@ function TournamentHeader({
   );
   const stateClassName = cn('badge mr-2', {
     'badge-warning': state === TournamentStates.waitingParticipants,
-    'badge-success': breakState === 'off' || state === TournamentStates.finished,
+    'badge-success':
+      breakState === 'off' || state === TournamentStates.finished,
     'badge-light': state === TournamentStates.cancelled,
     'badge-danger': breakState === 'on',
   });
@@ -108,7 +159,7 @@ function TournamentHeader({
   return (
     <>
       <div className="col bg-white shadow-sm rounded-lg p-2">
-        <div className="d-flex flex-column flex-lg-row justify-content-between border-bottom">
+        <div className="d-flex flex-column flex-lg-row flex-md-row justify-content-between border-bottom">
           <div className="d-flex align-items-center pb-2">
             <h2
               title={name}
@@ -210,10 +261,14 @@ function TournamentHeader({
       <div className="col bg-white shadow-sm rounded-lg p-2 mt-2">
         <p className="h5 mb-0">
           <span className={stateClassName}>{stateBadgeTitle}</span>
-          <span className="text-nowrap">
+          <span className="h6 text-nowrap">
             <TournamentStateDescription
               state={state}
               startsAt={startsAt}
+              breakState={breakState}
+              breakDurationSeconds={breakDurationSeconds}
+              matchTimeoutSeconds={matchTimeoutSeconds}
+              lastRoundEndedAt={lastRoundEndedAt}
               isLive={isLive}
               isOver={isOver}
               isOnline={isOnline}

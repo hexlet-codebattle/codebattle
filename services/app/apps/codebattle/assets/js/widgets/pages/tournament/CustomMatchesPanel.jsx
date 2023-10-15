@@ -1,72 +1,72 @@
 import React, {
-  memo, useMemo, useState, useEffect, useCallback,
+ memo, useMemo, useState, useEffect, useCallback,
 } from 'react';
 
 import cn from 'classnames';
 import range from 'lodash/range';
 import reverse from 'lodash/reverse';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import AsyncSelect from 'react-select/async';
 
 import UserLabel from '../../components/UserLabel';
-import { searchTournamentPlayers } from '../../middlewares/Tournament';
+import { uploadPlayersMatches } from '../../middlewares/Tournament';
+import {
+  currentUserIsAdminSelector,
+  tournamentSelector,
+} from '../../selectors';
 import { actions } from '../../slices';
 import useSubscribeTournamentPlayers from '../../utils/useSubscribeTournamentPlayers';
 
 import TournamentPlayersPagination from './TournamentPlayersPagination';
 import TournamentUserPanel from './TournamentUserPanel';
-import UsersMatchList from './UsersMatchList';
 
 const navTabsClassName = cn(
   'nav nav-tabs flex-nowrap text-center border-0',
-  'text-uppercase font-weight-bold',
+  'text-uppercase font-weight-bold pb-2',
   'cb-overflow-x-auto cb-overflow-y-hidden',
 );
 
 const tabLinkClassName = active => cn(
-  'nav-item nav-link text-uppercase text-nowrap rounded-0 font-weight-bold p-3 border-0 w-100',
-  { active },
-);
-
-const tabContentClassName = active => cn('tab-pane fade', {
-  'd-flex flex-column show active': active,
-});
-
-function PlayersFilterPanel({
-  option,
-  showAllPlayers,
-  setOption,
-  setShowAllPlayers,
-}) {
-  const dispatch = useDispatch();
-
-  const onChangeSearchedPlayer = useCallback(({ value }) => setOption(value), [setOption]);
-  const loadOptions = useCallback(
-    (inputValue, callback) => {
-      searchTournamentPlayers({ name_ilike: inputValue })
-        .then(users => {
-          const options = users.map(user => ({
-            label: <UserLabel user={user} />,
-            value: user,
-          }));
-
-          callback(options);
-        })
-        .catch(error => {
-          dispatch(actions.setError(error));
-        });
-    },
-    [dispatch],
+    'nav-item nav-link text-uppercase text-nowrap rounded-0 font-weight-bold p-3 border-0 w-100',
+    { active },
   );
 
-  const onChangeView = useCallback(() => {
-    setShowAllPlayers(!showAllPlayers);
-  }, [setShowAllPlayers, showAllPlayers]);
+const tabContentClassName = active => cn('tab-pane fade', {
+    'd-flex flex-column show active': active,
+  });
+
+function PlayersFilterPanel({ option, setOption }) {
+  const isAdmin = useSelector(currentUserIsAdminSelector);
+  const allPlayers = useSelector(tournamentSelector).players;
+
+  const onChangeSearchedPlayer = useCallback(
+    ({ value }) => setOption(value),
+    [setOption],
+  );
+  const loadOptions = useCallback(
+    (inputValue, callback) => {
+      const substr = inputValue.toLowerCase();
+
+      const options = Object.values(allPlayers)
+        .filter(player => player.name.toLowerCase().indexOf(substr) !== -1)
+        .map(player => ({
+          label: <UserLabel user={player} />,
+          value: player,
+        }));
+
+      callback(options);
+    },
+    [allPlayers],
+  );
+
+  if (!isAdmin) {
+    return <></>;
+  }
 
   return (
-    <div className="d-flex justify-content-between mb-2">
+    <div className="d-flex justify-content-between mb-2 w-50">
       <AsyncSelect
-        className="w-25"
+        className="w-75"
         value={
           option && {
             label: <UserLabel user={option} />,
@@ -77,22 +77,6 @@ function PlayersFilterPanel({
         onChange={onChangeSearchedPlayer}
         loadOptions={loadOptions}
       />
-      <div className="d-flex custom-control custom-switch">
-        <input
-          type="checkbox"
-          className="custom-control-input"
-          id="tournament-matches-view"
-          checked={showAllPlayers}
-          onChange={onChangeView}
-        />
-        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control, jsx-a11y/label-has-for */}
-        <label
-          className="custom-control-label"
-          htmlFor="tournament-matches-view"
-        >
-          Show all players
-        </label>
-      </div>
     </div>
   );
 }
@@ -110,30 +94,35 @@ const mapStagesToTitle = {
   9: 'ten',
 };
 
-function PlayersList({
-  players, matchList, currentUserId, searchedUserId,
-}) {
-  return players.map(player => {
-    if (searchedUserId === player.id) {
-      return <></>;
-    }
+const PlayersList = memo(
+  ({
+    players,
+    mapPlayerIdToLocalRating,
+    matchList,
+    currentUserId,
+    searchedUserId,
+  }) => players.map(player => {
+      if (player.id === searchedUserId) {
+        return <></>;
+      }
 
-    const userMatches = matchList.filter(match => match.playerIds.includes(player.id));
+      const userMatches = matchList.filter(match => match.playerIds.includes(player.id));
 
-    return (
-      <TournamentUserPanel
-        key={`user-panel-${player.id}`}
-        matches={userMatches}
-        currentUserId={currentUserId}
-        userId={player.id}
-        name={player.name}
-        score={player.score}
-        rank={player.rank}
-        searchedUserId={searchedUserId}
-      />
-    );
-  });
-}
+      return (
+        <TournamentUserPanel
+          key={`user-panel-${player.id}`}
+          matches={userMatches}
+          currentUserId={currentUserId}
+          userId={player.id}
+          name={player.name}
+          score={player.score}
+          place={player.rank}
+          localPlace={mapPlayerIdToLocalRating[player.id]}
+          searchedUserId={searchedUserId}
+        />
+      );
+    }),
+);
 
 function CustomMatchesPanel({
   roundsLimit = 1,
@@ -145,25 +134,28 @@ function CustomMatchesPanel({
   const [searchedUser, setSearchedUser] = useState();
   const [openedStage, setOpenedStage] = useState(0);
 
-  const playersList = useMemo(() => Object.values(players).reduce((acc, player) => {
-    if (player.id === currentUserId) {
-      return [player, ...acc];
-    }
+  const playersList = useMemo(
+    () => Object.values(players).reduce((acc, player) => {
+        if (player.id === currentUserId) {
+          return [player, ...acc];
+        }
 
-    acc.push(player);
-    return acc;
-  }, []), [players, currentUserId]);
+        acc.push(player);
+        return acc;
+      }, []),
+    [players, currentUserId],
+  );
+  const mapPlayerIdToLocalRating = useMemo(
+    () => playersList
+        .sort((a, b) => b.score - a.score)
+        .reduce((acc, p, index) => ({ ...acc, [p.id]: index + 1 }), {}),
+    [playersList],
+  );
   const matchList = useMemo(() => reverse(Object.values(matches)), [matches]);
   const stages = useMemo(() => range(roundsLimit), [roundsLimit]);
 
-  const [showAllPlayers, setShowAllPlayers] = useState(
-    !playersList.some(p => p.id === currentUserId),
-  );
-
-  const currentUserMatches = useMemo(
-    () => matchList.filter(match => match.playerIds.includes(currentUserId)),
-    [matchList, currentUserId],
-  );
+  const pageNumber = useSelector(state => state.tournament.playersPageNumber);
+  const pageSize = useSelector(state => state.tournament.playersPageSize);
 
   useEffect(() => {
     if (playersList.length !== 0) {
@@ -171,43 +163,46 @@ function CustomMatchesPanel({
     }
   }, [playersList, dispatch]);
 
+  useEffect(() => {
+    if (searchedUser) {
+      dispatch(
+        uploadPlayersMatches(searchedUser?.id),
+      );
+    }
+  }, [dispatch, searchedUser]);
+
   useSubscribeTournamentPlayers(playersList);
 
   return (
     <>
-      <PlayersFilterPanel
-        option={searchedUser}
-        showAllPlayers={showAllPlayers}
-        setOption={setSearchedUser}
-        setShowAllPlayers={setShowAllPlayers}
-      />
+      <PlayersFilterPanel option={searchedUser} setOption={setSearchedUser} />
       {roundsLimit < 2 ? (
-        <div>
-          {showAllPlayers ? (
-            playersList.map(player => {
-              const userMatches = matchList.filter(match => match.playerIds.includes(player.id));
+        <>
+          {searchedUser
+            && (() => {
+              const userMatches = matchList.filter(match => match.playerIds.includes(searchedUser.id));
 
               return (
                 <TournamentUserPanel
-                  key={`user-panel-${player.id}`}
-                  matches={reverse(userMatches)}
+                  key={`user-panel-${searchedUser.id}`}
+                  matches={userMatches}
                   currentUserId={currentUserId}
-                  userId={player.id}
-                  name={player.name}
-                  score={player.score}
-                  rank={player.rank}
-                  searchedUserId={searchedUser?.id}
+                  userId={searchedUser.id}
+                  name={searchedUser.name}
+                  score={searchedUser.score}
+                  place={searchedUser.rank}
+                  searchedUserId={searchedUser.id}
                 />
               );
-            })
-          ) : (
-            <UsersMatchList
-              key={`match-list-${currentUserId}`}
-              currentUserId={currentUserId}
-              matches={currentUserMatches}
-            />
-          )}
-        </div>
+            })}
+          <PlayersList
+            players={playersList}
+            mapPlayerIdToLocalRating={mapPlayerIdToLocalRating}
+            matchList={matchList}
+            currentUserId={currentUserId}
+            searchedUserId={searchedUser?.id}
+          />
+        </>
       ) : (
         <nav>
           <div className={navTabsClassName} id="nav-matches-tab" role="tablist">
@@ -236,8 +231,7 @@ function CustomMatchesPanel({
           >
             {stages.map(stage => {
               const stageMatches = matchList.filter(
-                match => match.round === stage
-                  && (showAllPlayers || match.playerIds.includes(currentUserId)),
+                match => match.round === stage,
               );
 
               return (
@@ -248,27 +242,23 @@ function CustomMatchesPanel({
                   role="tabpanel"
                   aria-labelledby={`stage-${mapStagesToTitle[stage]}-tab`}
                 >
-                  {showAllPlayers ? (
-                    <PlayersList
-                      players={playersList}
-                      matchList={stageMatches}
-                      currentUserId={currentUserId}
-                      searchedUserId={searchedUser?.id}
-                    />
-                  ) : (
-                    <UsersMatchList
-                      key={`match-list-${currentUserId}`}
-                      currentUserId={currentUserId}
-                      matches={stageMatches}
-                    />
-                  )}
+                  <PlayersList
+                    players={playersList}
+                    mapPlayerIdToLocalRating={mapPlayerIdToLocalRating}
+                    matchList={stageMatches}
+                    currentUserId={currentUserId}
+                    searchedUserId={searchedUser?.id}
+                  />
                 </div>
               );
             })}
           </div>
         </nav>
       )}
-      <TournamentPlayersPagination />
+      <TournamentPlayersPagination
+        pageNumber={pageNumber}
+        pageSize={pageSize}
+      />
     </>
   );
 }

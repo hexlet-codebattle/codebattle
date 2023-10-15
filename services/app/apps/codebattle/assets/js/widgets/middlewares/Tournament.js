@@ -50,6 +50,18 @@ export const connectToTournament = () => dispatch => {
     dispatch(actions.setNextRound(data.tournament));
   };
 
+  const handleMatchesUpdate = response => {
+    const data = camelizeKeys(response);
+
+    dispatch(actions.updateTournamentMatches(data.matches));
+  };
+
+  const handlePlayersUpdate = response => {
+    const data = camelizeKeys(response);
+
+    dispatch(actions.updateTournamentPlayers(data.players));
+  };
+
   const refs = [
     channel.on('tournament:update', handleUpdate),
 
@@ -58,6 +70,9 @@ export const connectToTournament = () => dispatch => {
     // round:update_participants(players)
     // round:update_statistics(statistics)
     channel.on('tournament:round_created', handleRoundCreated),
+    // TODO (tournaments): send updates
+    channel.on('tournament:matches:update', handleMatchesUpdate),
+    channel.on('tournament:players:update', handlePlayersUpdate),
   ];
 
   const oldChannel = channel;
@@ -65,34 +80,32 @@ export const connectToTournament = () => dispatch => {
   const clearTournamentChannel = () => {
     oldChannel.off('tournament:update', refs[0]);
     oldChannel.off('tournament:round_created', refs[1]);
+    oldChannel.off('tournament:matches:update', refs[2]);
+    oldChannel.off('tournament:players:update', refs[3]);
   };
 
   return clearTournamentChannel;
 };
 
+// TODO (tournaments): request matches by searched player id
+export const uploadPlayersMatches = playerId => dispatch => {
+  channel.push('tournament:matches:request', { player_id: playerId })
+    .receive('ok', response => {
+      const data = camelizeKeys(response);
+
+      dispatch(actions.updateTournamentMatches(data.matches));
+    })
+    .receive('error', error => console.error(error));
+};
+
 export const subscribePlayers = players => {
   if (players.length < 1) {
-    return () => {};
+    return;
   }
 
-  const clearFunctions = players.map(player => {
-    const playerChannelName = `tournament:${tournamentId}:subscribe:${player.id}`;
-    const playerChannel = socket.channel(playerChannelName);
-
-    const ref = playerChannel.on('matches:update', () => {});
-
-    return () => {
-      playerChannel.off('matches:update', ref);
-    };
-  });
-
-  const clearTournamentPlayerChannels = () => {
-    clearFunctions.forEach(clearPlayerChannel => {
-      clearPlayerChannel();
-    });
-  };
-
-  return clearTournamentPlayerChannels;
+  const ids = players.map(p => p.id);
+  // TODO (tournaments): subscribe on players updates
+  channel.push('tournament:subscribe_players', { player_ids: ids });
 };
 
 export const joinTournament = teamId => {
@@ -123,31 +136,4 @@ export const openUpTournament = () => {
 
 export const kickFromTournament = userId => {
   channel.push('tournament:kick', { user_id: userId }).receive('error', error => console.error(error));
-};
-
-export const searchTournamentPlayers = params => (
-  new Promise((resolve, reject) => {
-    channel.push('tournament:search_player', params)
-      .receive('ok', data => resolve(camelizeKeys(data)))
-      .receive('error', error => {
-        console.error(error);
-        reject(error);
-      });
-  })
-);
-
-export const changeTournamentPlayersList = pageNumber => dispatch => {
-  dispatch(actions.setTournamentPlayersPageNumber(pageNumber));
-  dispatch(actions.clearTournamentPlayers());
-
-  channel.push('tournament:show_players', { pageNumber })
-    .receive('ok', data => {
-      const { players } = camelizeKeys(data);
-
-      dispatch(actions.updateUsers({ users: players }));
-      dispatch(actions.setTournamentPlayers(players));
-    })
-    .receive('error', error => {
-      console.error(error);
-    });
 };
