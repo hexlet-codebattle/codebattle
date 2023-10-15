@@ -265,20 +265,6 @@ defmodule CodebattleWeb.Live.Tournament.CreateFormComponent do
             </div>
           </div>
         <% end %>
-        <%= if f.params["type"] == "punchline" do %>
-          <div class="form-row justify-content-between mt-3">
-            <div class="col-4">
-              <%= label(f, :rounds_limit) %>
-              <%= select(f, :rounds_limit, [3, 5, 7], class: "form-control") %>
-              <%= error_tag(f, :rounds_limit) %>
-            </div>
-            <div class="col-4">
-              <%= label(f, :task_pack_ids) %>
-              <%= text_input(f, :task_pack_ids, class: "form-control") %>
-              <%= error_tag(f, :task_pack_ids) %>
-            </div>
-          </div>
-        <% end %>
         <%= submit("Create",
           phx_disable_with: "Creating...",
           class: "btn btn-primary my-4"

@@ -196,21 +196,6 @@ defmodule CodebattleWeb.Live.Tournament.EditFormComponent do
             </div>
           </div>
         <% end %>
-        <%= if f.params["type"] == "punchline" do %>
-          <div class="form-row justify-content-between mt-3">
-            <div class="col-4">
-              <% IO.inspect(f) %>
-              <%= label(f, :rounds_limit) %>
-              <%= select(f, :rounds_limit, [3, 5, 7], class: "form-control") %>
-              <%= error_tag(f, :rounds_limit) %>
-            </div>
-            <div class="col-4">
-              <%= label(f, :task_pack_ids) %>
-              <%= text_input(f, :task_pack_ids, class: "form-control") %>
-              <%= error_tag(f, :task_pack_ids) %>
-            </div>
-          </div>
-        <% end %>
         <%= submit("Update",
           phx_disable_with: "Updating...",
           class: "btn btn-primary my-4"

@@ -7,7 +7,6 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
   alias CodebattleWeb.Live.Tournament.HeaderComponent
   alias CodebattleWeb.Live.Tournament.IndividualComponent
   alias CodebattleWeb.Live.Tournament.LadderComponent
-  alias CodebattleWeb.Live.Tournament.PunchlineComponent
   alias CodebattleWeb.Live.Tournament.StairwayComponent
   alias CodebattleWeb.Live.Tournament.SwissComponent
   alias CodebattleWeb.Live.Tournament.TeamComponent
@@ -132,16 +131,6 @@ defmodule CodebattleWeb.Live.Tournament.ShowView do
           <.live_component
             id="main-tournament"
             module={LadderComponent}
-            messages={@messages}
-            tournament={@tournament}
-            players={@tournament.players}
-            current_user={@current_user}
-          />
-        <% end %>
-        <%= if @tournament.type == "punchline" do %>
-          <.live_component
-            id="main-tournament"
-            module={PunchlineComponent}
             messages={@messages}
             tournament={@tournament}
             players={@tournament.players}

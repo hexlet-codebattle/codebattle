@@ -205,14 +205,6 @@ defmodule Codebattle.Tournament.Context do
 
       "swiss" ->
         rounds = params |> Map.get("rounds_limit", "3") |> String.to_integer()
-        %{rounds_limit: rounds}
-
-      "ladder" ->
-        rounds = params |> Map.get("rounds_limit", "3") |> String.to_integer()
-        %{rounds_limit: rounds}
-
-      "punchline" ->
-        rounds_limit = params |> Map.get("rounds_limit", "3") |> String.to_integer()
 
         task_pack_ids =
           params
@@ -221,6 +213,10 @@ defmodule Codebattle.Tournament.Context do
           |> Enum.map(&String.to_integer/1)
 
         %{rounds_limit: rounds_limit, task_pack_ids: task_pack_ids}
+
+      "ladder" ->
+        rounds = params |> Map.get("rounds_limit", "3") |> String.to_integer()
+        %{rounds_limit: rounds}
 
       _ ->
         %{}
@@ -240,7 +236,6 @@ defmodule Codebattle.Tournament.Context do
   def mark_as_live(tournament), do: Map.put(tournament, :is_live, true)
 
   defp get_module(%{type: "ladder"}), do: Tournament.Ladder
-  defp get_module(%{type: "punchline"}), do: Tournament.Punchline
   defp get_module(%{type: "stairway"}), do: Tournament.Stairway
   defp get_module(%{type: "swiss"}), do: Tournament.Swiss
   defp get_module(%{type: "team"}), do: Tournament.Team
